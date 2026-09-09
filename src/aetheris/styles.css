@@ -409,3 +409,6 @@
   .composer{grid-template-columns:1fr}
   .composer>span{display:none}
 }
+.eyebrow{display:flex;align-items:center;gap:6px}
+.eyebrow svg{flex:none}
+.home-question h1{font-size:clamp(38px,5vw,74px)}
