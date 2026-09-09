@@ -607,14 +607,17 @@ function Memory({ people, select, notes }: { people: Member[]; select: (p: Membe
         <h2>The graph changed.</h2>
         <div className="memory-cats">{(['All', ...memoryCategories] as const).map(c =>
           <button key={c} className={cat === c ? 'active' : ''} onClick={() => setCat(c)}>{c}</button>)}</div>
-        {shown.map((l, index) => <article key={l.id} className="learning-row">
-          {people[index % people.length] && <Avatar person={people[index % people.length]!} portrait />}
-          <div>
-          <span>{l.category}</span>
-          <p>{l.text}</p>
-          <small>{l.source} · {l.confidence}% confidence · {scopeLabel[l.scope]} · {l.when}</small>
-          </div>
-        </article>)}
+        {shown.map((l, index) => {
+          const relatedPerson = people[index % people.length]
+          return <article key={l.id} className="learning-row">
+            {relatedPerson && <Avatar person={relatedPerson} portrait />}
+            <div>
+              <span>{l.category}</span>
+              <p>{l.text}</p>
+              <small>{l.source} · {l.confidence}% confidence · {scopeLabel[l.scope]} · {l.when}</small>
+            </div>
+          </article>
+        })}
         {!shown.length && <p className="empty-state">Nothing learned in this category yet.</p>}
       </aside>
     </div>
@@ -1062,7 +1065,7 @@ export default function App() {
         <ContextRail page={page} people={people} select={setSelected} onAsk={() => setAskOpen(true)} objectives={objectives} openThread={() => openThread('t1')} />
       </div>
     </div>
-    <nav className="mobile-nav">{nav.slice(0, 5).map(item => {
+    <nav className="mobile-nav">{nav.map(item => {
       const Icon = item.icon
       return <button key={item.id} className={page === item.id ? 'active' : ''} onClick={() => setPage(item.id)}><Icon size={18} /><span>{item.label}</span></button>
     })}</nav>
