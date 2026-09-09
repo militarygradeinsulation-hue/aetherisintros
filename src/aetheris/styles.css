@@ -265,3 +265,10 @@
   .discover-search{height:52px;padding:0 12px}
   .discover-search>span{display:none}
 }
+.memory-stage{display:flex}
+.memory-stage .memory-graph{flex:1;min-height:640px;height:auto}
+.memory-changes{align-self:start}
+.messages-layout{min-height:min(760px,calc(100vh - 240px))}
+.profile-settings .section-heading{align-items:start}
+.profile-settings .section-heading h2{margin:8px 0 0}
+.profile-settings .settings-copy{margin-top:14px}
