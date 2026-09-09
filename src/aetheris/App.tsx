@@ -75,7 +75,7 @@ function RadarViz({ people, onSelect }: { people: Person[]; onSelect: (p: Person
     <div className="radar-sweep"/>
     <div className="you-node"><MiniLogo/><span>YOU</span></div>
     {people.map((p, i) => {
-      const [x,y] = positions[i % positions.length]
+      const [x,y] = positions[i % positions.length]!
       return <button key={p.id} className={`person-node state-${p.radar}`} style={{ left: `${x}%`, top: `${y}%` }} onClick={() => onSelect(p)} aria-label={`Open ${p.name}`}>
         <span className="node-dot"/><span className="node-label">{p.name.split(' ')[0]}</span>
       </button>
