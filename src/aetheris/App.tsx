@@ -102,7 +102,30 @@ function RadarViz({ people, onSelect }: { people: Person[]; onSelect: (p: Person
   </div>
 }
 
-function PersonDrawer({ person, onClose, onDraft }: { person: Person | null; onClose: () => void; onDraft: (p: Person) => void }) {
+function MemorySection({ person, notes, onAddNote }: { person: Person; notes: MemoryNote[]; onAddNote: (text: string, scope: PrivacyScope) => void }) {
+  const [text, setText] = useState('')
+  const [scope, setScope] = useState<PrivacyScope>('private')
+  const mine = notes.filter(n => n.personId === person.id)
+  return <section className="drawer-section">
+    <div className="section-title"><h4>RELATIONSHIP MEMORY</h4><span>privacy scoped</span></div>
+    <div className="memory-list">
+      {mine.length === 0 && <p className="micro">No memory recorded yet. Anything you add keeps its own privacy scope.</p>}
+      {mine.map(n => <div className="memory-item" key={n.id}>
+        <span className={`scope-tag scope-${n.scope}`}><LockKeyhole size={11}/>{scopeLabel[n.scope]}</span>
+        <p>{n.text}</p>
+        <small>{n.createdAt} · {scopeNote[n.scope]}</small>
+      </div>)}
+    </div>
+    <div className="memory-form">
+      <textarea rows={3} value={text} onChange={e=>setText(e.target.value)} placeholder="What did you learn about this relationship?"/>
+      <div className="scope-picker">{scopeOrder.map(s => <button key={s} className={scope===s?'active':''} onClick={()=>setScope(s)}>{scopeLabel[s]}</button>)}</div>
+      <p className="micro">{scopeNote[scope]}</p>
+      <button className="btn secondary compact" disabled={!text.trim()} onClick={()=>{onAddNote(text.trim(), scope); setText('')}}>Record intelligence</button>
+    </div>
+  </section>
+}
+
+function PersonDrawer({ person, onClose, onDraft, notes, onAddNote }: { person: Person | null; onClose: () => void; onDraft: (p: Person) => void; notes: MemoryNote[]; onAddNote: (personId: string, text: string, scope: PrivacyScope) => void }) {
   if (!person) return null
   const scores = [
     ['Strategic fit', person.score.strategicFit], ['Mutual value', person.score.mutualValue], ['Timing', person.score.timing],
