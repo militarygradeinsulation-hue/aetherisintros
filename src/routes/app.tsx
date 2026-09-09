@@ -5,17 +5,17 @@ import "@/aetheris/styles.css";
 export const Route = createFileRoute("/app")({
   head: () => ({
     meta: [
-      { title: "Command Center — Aetheris Nexus" },
+      { title: "Intelligence System — Aetheris Intros" },
       {
         name: "description",
         content:
-          "The Aetheris Nexus command center: relationship radar, connection scoring, warm paths, forensics, meeting intelligence and relationship ROI.",
+          "The Aetheris Intros relationship intelligence system: active memory, trusted paths, introductions, needs and meaningful signals.",
       },
-      { property: "og:title", content: "Command Center — Aetheris Nexus" },
+      { property: "og:title", content: "Intelligence System — Aetheris Intros" },
       {
         property: "og:description",
         content:
-          "Diagnose the outcome, map the graph, score the relationship, choose the smallest intelligent next action.",
+          "Know who matters, why the relationship makes sense, why now, and the smartest next action.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
