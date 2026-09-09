@@ -1045,7 +1045,10 @@ function AskModal({ open, onClose, people, select }: { open: boolean; onClose: (
 function Onboarding({ open, onClose }: { open: boolean; onClose: () => void }) {
   const net = useNetwork()
   const [step, setStep] = useState(0)
-  const [answers, setAnswers] = useState<Record<string, string>>({})
+  const [answers, setAnswers] = useState<Record<string, string>>(() => {
+    const p = net.profile
+    return { who: p.title, focus: p.focus, need: p.lookingFor, help: p.canHelpWith, industries: p.industries.join(', '), where: p.location, meet: p.wantToMeet ?? '', valuable: p.introPreferences ?? '', never: p.boundaries ?? '' }
+  })
   if (!open) return null
   const q = onboardingQuestions[step]!
   const learned = onboardingQuestions.slice(0, step).filter(x => answers[x.key]?.trim())
