@@ -274,3 +274,5 @@
 .profile-settings .settings-copy{margin-top:14px}
 .memory-stage{display:grid}
 .memory-stage .memory-graph{height:640px;min-height:640px;position:sticky;top:24px;align-self:start}
+.memory-changes{max-height:640px;overflow-y:auto}
+@media(max-width:920px){.memory-changes{max-height:none}}
