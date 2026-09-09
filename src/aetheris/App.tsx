@@ -1,501 +1,112 @@
 import { useEffect, useMemo, useState } from 'react'
 import {
-  Activity, ArrowRight, BarChart3, BrainCircuit, CalendarDays, CheckCircle2, ChevronRight,
-  CircleDollarSign, Clock3, Command, ContactRound, Eye, Fingerprint, GitBranch, Handshake,
-  Link2, Mail, Menu, MessageSquareText, Network, Radar, Search, Settings, ShieldCheck,
-  Sparkles, Target, UserRoundSearch, UsersRound, X, Zap, AlertTriangle, TrendingUp,
-  Route, ScanSearch, Send, UserPlus, SlidersHorizontal, CircleDot, LockKeyhole
+  Activity, ArrowRight, BarChart3, BrainCircuit, CalendarDays, Check, CheckCircle2, ChevronLeft,
+  ChevronRight, CircleDot, Clock3, Command, Eye, Fingerprint, Handshake, LockKeyhole, Mail,
+  Menu, MessageSquareText, Network, Plus, Search, Send, Settings, ShieldCheck, Sparkles, Target,
+  UserRound, UsersRound, X, Zap, AlertTriangle, SlidersHorizontal
 } from 'lucide-react'
-import { defaultDigitalYou, leaks as seedLeaks, meetings as seedMeetings, objectives as seedObjectives, people as seedPeople } from './data'
-import type { AutonomyLevel, DigitalYouProfile, Meeting, Objective, Person, PrivacyScope, RadarState } from './types'
-import { classifyConnection, composeWarmIntro, radarLabel, scoreTone } from './lib/engine'
+import { defaultDigitalYou, leaks, meetings, objectives as seedObjectives, people as seedPeople } from './data'
+import type { AutonomyLevel, DigitalYouProfile, Objective, Person, PrivacyScope } from './types'
+import { classifyConnection, composeWarmIntro, radarLabel } from './lib/engine'
 
-type MemoryNote = { id: string; personId: string; text: string; scope: PrivacyScope; createdAt: string }
-
-const scopeOrder: PrivacyScope[] = ['private', 'team', 'organization', 'shareable', 'public']
-const scopeLabel: Record<PrivacyScope, string> = {
-  private: 'Private', team: 'Team', organization: 'Organization', shareable: 'Shareable', public: 'Public',
-}
-const scopeNote: Record<PrivacyScope, string> = {
-  private: 'Informs relevance only. Never quoted to anyone else.',
-  team: 'Visible to your team. Not shareable outside it.',
-  organization: 'Visible across the organization.',
-  shareable: 'Cleared for use inside an introduction.',
-  public: 'Already public information.',
-}
-
-type IqResult = {
-  personId: string; reasonNow: string; status: string; opportunity: string; bestAction: string; score: number; confidence: number
-}
-
-type Page = 'command' | 'intros' | 'network' | 'forensics' | 'meetings' | 'digital-you' | 'roi' | 'settings'
-
-type Integration = { id: string; name: string; detail: string; connected: boolean; icon: 'mail' | 'calendar' | 'crm' | 'network' }
-
-const nav: Array<{ id: Page; label: string; icon: typeof Command }> = [
-  { id: 'command', label: 'Command Center', icon: Command },
-  { id: 'intros', label: 'Intros', icon: Handshake },
-  { id: 'network', label: 'Relationship Map', icon: Network },
-  { id: 'forensics', label: 'Forensics', icon: ScanSearch },
-  { id: 'meetings', label: 'Meetings', icon: CalendarDays },
-  { id: 'digital-you', label: 'Digital You', icon: Fingerprint },
-  { id: 'roi', label: 'Relationship ROI', icon: BarChart3 },
-  { id: 'settings', label: 'Settings', icon: Settings },
+type Page = 'home' | 'intros' | 'people' | 'messages' | 'memory' | 'needs' | 'insights' | 'profile'
+type MemoryNote = { id:string; personId:string; text:string; scope:PrivacyScope; createdAt:string }
+type OptIn = 'pending'|'yes'|'no'
+const nav:Array<{id:Page;label:string;icon:typeof Command}> = [
+  {id:'home',label:'Home',icon:Command},{id:'intros',label:'Intros',icon:Handshake},
+  {id:'people',label:'People',icon:UsersRound},{id:'messages',label:'Messages',icon:MessageSquareText},
+  {id:'memory',label:'Memory',icon:Network},{id:'needs',label:'Needs',icon:Target},
+  {id:'insights',label:'Insights',icon:BarChart3},{id:'profile',label:'Profile',icon:UserRound},
 ]
+const legacyPage:Record<string,Page>={command:'home',network:'memory',forensics:'insights',meetings:'messages','digital-you':'profile',roi:'insights',settings:'profile'}
+const scopeLabel:Record<PrivacyScope,string>={private:'Private',team:'Team',organization:'Organization',shareable:'Shareable',public:'Public'}
+const scopeText:Record<PrivacyScope,string>={private:'Only you. It informs relevance but is never quoted.',team:'Visible to your trusted team.',organization:'Visible across your organization.',shareable:'Cleared for an introduction.',public:'Already public context.'}
+const scopes:PrivacyScope[]=['private','team','organization','shareable','public']
 
-const labelForPage: Record<Page, string> = {
-  command: 'Command Center', intros: 'Intros', network: 'Relationship Map', forensics: 'Relationship Forensics',
-  meetings: 'Meeting Intelligence', 'digital-you': 'Digital You · Connector Mode', roi: 'Relationship ROI', settings: 'Settings'
-}
+function Brand(){return <div className="brand-mark"><span className="brand-monogram">AI</span><span className="brand-name">Aetheris<em>Intros</em></span></div>}
+function Avatar({person,large=false}:{person:Person;large?:boolean}){return <span className={`person-avatar ${large?'large':''}`}>{person.initials}</span>}
+function Button({children,kind='primary',onClick,disabled=false,className=''}:{children:React.ReactNode;kind?:'primary'|'secondary'|'quiet';onClick?:()=>void;disabled?:boolean;className?:string}){return <button className={`btn ${kind} ${className}`} onClick={onClick} disabled={disabled}>{children}</button>}
+function Label({children,signal=false}:{children:React.ReactNode;signal?:boolean}){return <span className={`eyebrow ${signal?'signal':''}`}>{children}</span>}
+function Score({value}:{value:number}){return <div className="editorial-score"><strong>{value}</strong><span>/100</span></div>}
 
-function money(n?: number) {
-  if (!n) return '$0'
-  return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(n)
-}
-
-function MiniLogo() {
-  return <div className="mini-logo"><Eye size={20} strokeWidth={2.2}/></div>
-}
-
-function ScoreRing({ score, size = 66 }: { score: number; size?: number }) {
-  const r = 25
-  const c = 2 * Math.PI * r
-  const o = c - (score / 100) * c
-  return (
-    <div className={`score-ring ${scoreTone(score)}`} style={{ width: size, height: size }}>
-      <svg viewBox="0 0 60 60" aria-hidden="true">
-        <circle cx="30" cy="30" r={r} className="ring-bg" />
-        <circle cx="30" cy="30" r={r} className="ring-meter" strokeDasharray={c} strokeDashoffset={o} />
-      </svg>
-      <strong>{score}</strong>
-    </div>
-  )
-}
-
-function Pill({ children, tone = 'neutral' }: { children: React.ReactNode; tone?: 'neutral' | 'orange' | 'gold' | 'danger' | 'success' }) {
-  return <span className={`pill pill-${tone}`}>{children}</span>
-}
-
-function StatCard({ icon: Icon, value, label, detail }: { icon: typeof Activity; value: string; label: string; detail: string }) {
-  return <div className="stat-card panel">
-    <div className="stat-icon"><Icon size={18}/></div>
-    <div><div className="stat-value">{value}</div><div className="stat-label">{label}</div><div className="stat-detail">{detail}</div></div>
+function MemoryGraph({people,onSelect,compact=false}:{people:Person[];onSelect:(p:Person)=>void;compact?:boolean}){
+  const positions=[[18,25],[72,16],[84,49],[67,76],[25,78],[43,36]]
+  return <div className={`memory-graph ${compact?'compact':''}`}>
+    <div className="graph-rings"><i/><i/><i/></div><div className="graph-lines"/>
+    <button className="graph-origin" aria-label="Your current context"><Eye size={18}/><small>YOU</small></button>
+    {people.map((p,i)=>{const pos=positions[i%positions.length]??[50,50];return <button key={p.id} className={`graph-node ${i===1?'selected':''} ${p.radar==='hot_now'?'signal':''}`} style={{left:`${pos[0]}%`,top:`${pos[1]}%`}} onClick={()=>onSelect(p)}><i/><span>{p.name.split(' ')[0]}</span></button>})}
+    <div className="graph-taxonomy"><span>PEOPLE</span><span>COMPANIES</span><span>NEEDS</span><span>DECISIONS</span><span>INTRODUCTIONS</span><span>CONVERSATIONS</span></div>
   </div>
 }
 
-function RadarViz({ people, onSelect }: { people: Person[]; onSelect: (p: Person) => void }) {
-  const positions = [
-    [51,18],[72,30],[78,55],[63,75],[39,78],[21,60],[26,34],[53,47],[41,34],[67,48],[34,56],[56,66]
-  ]
-  return <div className="radar-viz">
-    <div className="radar-axis radar-axis-x"/><div className="radar-axis radar-axis-y"/>
-    <div className="radar-circle rc1"/><div className="radar-circle rc2"/><div className="radar-circle rc3"/>
-    <div className="radar-sweep"/>
-    <div className="you-node"><MiniLogo/><span>YOU</span></div>
-    {people.map((p, i) => {
-      const [x,y] = positions[i % positions.length]!
-      return <button key={p.id} className={`person-node state-${p.radar}`} style={{ left: `${x}%`, top: `${y}%` }} onClick={() => onSelect(p)} aria-label={`Open ${p.name}`}>
-        <span className="node-dot"/><span className="node-label">{p.name.split(' ')[0]}</span>
-      </button>
-    })}
-    <div className="radar-key"><span><i className="key-hot"/> Hot now</span><span><i className="key-gold"/> Strong</span><span><i className="key-gray"/> Dormant</span></div>
-  </div>
-}
+function MatchReport({person,onOpen,onIntro}:{person:Person;onOpen:()=>void;onIntro:()=>void}){return <article className="match-report">
+  <header><Avatar person={person} large/><div className="match-identity"><Label>{radarLabel[person.radar]}</Label><h3>{person.name}</h3><p>{person.title} · {person.company}</p></div><Score value={person.scoreTotal}/></header>
+  <div className="match-thesis"><span>WHY THIS PERSON</span><p>{person.whyThem}</p></div>
+  <div className="match-columns"><div><span>LOOKING FOR</span><p>{person.needs.slice(0,2).join(' · ')}</p></div><div><span>CAN HELP WITH</span><p>{person.offers.slice(0,2).join(' · ')}</p></div></div>
+  <div className="match-reasons"><div><span>WHY YOU MATTER</span><p>{person.whyYou}</p></div><div><span>WHY NOW</span><p>{person.whyNow}</p></div></div>
+  <div className="trust-path"><span>TRUST PATH</span>{person.bestPath.map((x,i)=><span key={x}><b>{x}</b>{i<person.bestPath.length-1&&<ArrowRight size={12}/>}</span>)}</div>
+  <footer><Button kind="quiet" onClick={onOpen}>View reasoning</Button><Button kind="secondary" onClick={onIntro}><MessageSquareText size={15}/> Message</Button><Button onClick={onIntro}><Handshake size={15}/> Request introduction</Button></footer>
+</article>}
 
-function MemorySection({ person, notes, onAddNote }: { person: Person; notes: MemoryNote[]; onAddNote: (text: string, scope: PrivacyScope) => void }) {
-  const [text, setText] = useState('')
-  const [scope, setScope] = useState<PrivacyScope>('private')
-  const mine = notes.filter(n => n.personId === person.id)
-  return <section className="drawer-section">
-    <div className="section-title"><h4>RELATIONSHIP MEMORY</h4><span>privacy scoped</span></div>
-    <div className="memory-list">
-      {mine.length === 0 && <p className="micro">No memory recorded yet. Anything you add keeps its own privacy scope.</p>}
-      {mine.map(n => <div className="memory-item" key={n.id}>
-        <span className={`scope-tag scope-${n.scope}`}><LockKeyhole size={11}/>{scopeLabel[n.scope]}</span>
-        <p>{n.text}</p>
-        <small>{n.createdAt} · {scopeNote[n.scope]}</small>
-      </div>)}
-    </div>
-    <div className="memory-form">
-      <textarea rows={3} value={text} onChange={e=>setText(e.target.value)} placeholder="What did you learn about this relationship?"/>
-      <div className="scope-picker">{scopeOrder.map(s => <button key={s} className={scope===s?'active':''} onClick={()=>setScope(s)}>{scopeLabel[s]}</button>)}</div>
-      <p className="micro">{scopeNote[scope]}</p>
-      <button className="btn secondary compact" disabled={!text.trim()} onClick={()=>{onAddNote(text.trim(), scope); setText('')}}>Record intelligence</button>
-    </div>
-  </section>
-}
+function Home({people,select,setPage,openNeed}:{people:Person[];select:(p:Person)=>void;setPage:(p:Page)=>void;openNeed:()=>void}){
+  const top=[...people].sort((a,b)=>b.scoreTotal-a.scoreTotal).slice(0,3)
+  return <><header className="home-question"><Label>PEOPLE × CONTEXT × OPPORTUNITY</Label><h1>What do you need<br/><em>right now?</em></h1><button className="need-input" onClick={openNeed}><span>Describe the outcome you want to create…</span><ArrowRight size={20}/></button><p>Tell Intros the outcome. It will find the people, context and path.</p></header>
+  <section className="home-grid"><div className="home-matches"><div className="section-heading"><div><Label>PEOPLE TO KNOW NOW</Label><h2>Three relationships with timing.</h2></div><button className="text-action" onClick={()=>setPage('intros')}>View all <ArrowRight size={14}/></button></div>{top.map((p,i)=><button className="person-brief" key={p.id} onClick={()=>select(p)}><span className="brief-index">0{i+1}</span><Avatar person={p}/><span className="brief-copy"><strong>{p.name}</strong><small>{p.title} · {p.company}</small><p>{p.whyNow}</p></span><Score value={p.scoreTotal}/><ChevronRight size={16}/></button>)}</div>
+  <aside className="attention-panel"><Label signal>REQUIRES ATTENTION</Label><h2>Two conversations are waiting on context.</h2>{people.slice(1,3).map(p=><button key={p.id} onClick={()=>select(p)}><span className="signal-dot"/><span><strong>{p.name}</strong><small>{p.nextAction}</small></span><ArrowRight size={14}/></button>)}<div className="active-need"><span>ACTIVE NEED</span><strong>Founder & PE introductions</strong><small>5 qualified conversations · critical</small></div></aside></section>
+  <section className="memory-signal"><div><Label>ACTIVE MEMORY</Label><h2>The graph changed in three places.</h2><p>One role expanded. Two warm paths gained timing. A dormant relationship now warrants attention.</p><button className="text-action" onClick={()=>setPage('memory')}>Open memory <ArrowRight size={14}/></button></div><MemoryGraph people={people} onSelect={select} compact/></section></>}
 
-function PersonDrawer({ person, onClose, onDraft, notes, onAddNote }: { person: Person | null; onClose: () => void; onDraft: (p: Person) => void; notes: MemoryNote[]; onAddNote: (personId: string, text: string, scope: PrivacyScope) => void }) {
-  if (!person) return null
-  const scores = [
-    ['Strategic fit', person.score.strategicFit], ['Mutual value', person.score.mutualValue], ['Timing', person.score.timing],
-    ['Trust', person.score.trust], ['Relationship', person.score.relationshipStrength], ['Influence', person.score.decisionInfluence],
-    ['Opportunity', person.score.opportunityValue], ['Low friction', 100 - person.score.friction]
-  ]
-  return <div className="drawer-wrap" onMouseDown={onClose}>
-    <aside className="drawer" onMouseDown={(e) => e.stopPropagation()}>
-      <div className="drawer-head">
-        <div className="person-avatar large">{person.initials}</div>
-        <div className="grow"><div className="eyebrow">RELATIONSHIP INTELLIGENCE</div><h2>{person.name}</h2><p>{person.title} · {person.company}</p></div>
-        <button className="icon-btn" onClick={onClose}><X size={18}/></button>
-      </div>
-      <div className="drawer-score"><ScoreRing score={person.scoreTotal} size={78}/><div><strong>{classifyConnection(person.scoreTotal)}</strong><p>{radarLabel[person.radar]} · {person.confidence}% confidence</p></div></div>
-      <section className="drawer-section"><h4>WHY THIS PERSON MATTERS</h4><p>{person.whyThem}</p></section>
-      <section className="drawer-section"><h4>WHY YOU MATTER TO THEM</h4><p>{person.whyYou}</p></section>
-      <section className="drawer-section"><h4>WHY NOW</h4><p>{person.whyNow}</p></section>
-      <section className="drawer-section"><div className="section-title"><h4>CONNECTION SIGNALS</h4><span>weighted</span></div>
-        <div className="score-grid">{scores.map(([label, raw]) => { const v = Number(raw); return <div key={String(label)} className="signal-row"><span>{label}</span><div className="signal-track"><i style={{ width: `${v}%` }}/></div><b>{v}</b></div> })}</div>
-      </section>
-      <section className="drawer-section"><h4>BEST PATH</h4><div className="pathline">{person.bestPath.map((x,i) => <span key={x}><b>{x}</b>{i < person.bestPath.length - 1 && <ArrowRight size={14}/>}</span>)}</div></section>
-      <section className="drawer-section"><h4>BEST NEXT ACTION</h4><p className="action-copy">{person.nextAction}</p><div className="warning"><AlertTriangle size={16}/><span><b>Do not:</b> {person.dontDo}</span></div></section>
-      {(person.opportunityLow || person.opportunityHigh) && <section className="drawer-section"><h4>MODELED ACCESSIBLE VALUE</h4><div className="value-range">{money(person.opportunityLow)} <span>to</span> {money(person.opportunityHigh)}</div><p className="micro">Modeled range, not booked revenue.</p></section>}
-      <MemorySection person={person} notes={notes} onAddNote={(t,s)=>onAddNote(person.id,t,s)}/>
-      <div className="drawer-actions"><button className="btn secondary" onClick={onClose}>Close</button><button className="btn primary" onClick={() => onDraft(person)}><MessageSquareText size={16}/> Draft approach</button></div>
-    </aside>
-  </div>
-}
+function Intros({people,select,draft}:{people:Person[];select:(p:Person)=>void;draft:(p:Person)=>void}){return <><PageHead label="CURATED MATCHES" title="People worth knowing now." copy="Not a directory. Each recommendation carries mutual value, timing and a credible path."/>
+  <div className="reports-list">{[...people].sort((a,b)=>b.scoreTotal-a.scoreTotal).slice(0,4).map(p=><MatchReport key={p.id} person={p} onOpen={()=>select(p)} onIntro={()=>draft(p)}/>)}</div></>}
+function PageHead({label,title,copy,action}:{label:string;title:string;copy:string;action?:React.ReactNode}){return <header className="page-title"><div><Label>{label}</Label><h1>{title}</h1><p>{copy}</p></div>{action}</header>}
 
-type OptIn = 'pending' | 'yes' | 'no'
+function People({people,select}:{people:Person[];select:(p:Person)=>void}){
+  const [q,setQ]=useState('');const [filter,setFilter]=useState('All context');const filtered=people.filter(p=>`${p.name} ${p.company} ${p.location} ${p.tags} ${p.needs} ${p.offers}`.toLowerCase().includes(q.toLowerCase()))
+  return <><PageHead label="RELATIONSHIP DIRECTORY" title="People, with context." copy="Search what someone needs, offers, knows and can make possible."/>
+  <div className="people-tools"><label><Search size={17}/><input value={q} onChange={e=>setQ(e.target.value)} placeholder="Search people, needs, offers or industries"/></label><button onClick={()=>setFilter(filter==='All context'?'High match':'All context')}><SlidersHorizontal size={16}/>{filter}</button></div>
+  <div className="people-grid">{filtered.map(p=><button className="member-tile" key={p.id} onClick={()=>select(p)}><div className="member-top"><Avatar person={p} large/><span className="member-score">{p.scoreTotal}</span></div><Label>{p.location}</Label><h3>{p.name}</h3><p>{p.title}<br/>{p.company}</p><div className="member-context"><span>NEEDS</span><p>{p.needs[0]}</p><span>OFFERS</span><p>{p.offers[0]}</p></div><footer><span>{radarLabel[p.radar]}</span><ArrowRight size={14}/></footer></button>)}</div></>}
 
-function IntroModal({ person, onClose }: { person: Person | null; onClose: () => void }) {
-  const [text, setText] = useState('')
-  const [you, setYou] = useState<OptIn>('pending')
-  const [them, setThem] = useState<OptIn>('pending')
-  useEffect(() => { if (person) { setText(composeWarmIntro(person)); setYou('pending'); setThem('pending') } }, [person])
-  if (!person) return null
-  const connector = person.bestPath[1] ?? 'your connector'
-  const authorized = you === 'yes' && them === 'yes'
-  const declined = you === 'no' || them === 'no'
-  const optRow = (label: string, detail: string, value: OptIn, set: (v: OptIn) => void) => (
-    <div className="optin-row">
-      <div><strong>{label}</strong><small>{detail}</small></div>
-      <div className="optin-buttons">
-        <button className={value === 'yes' ? 'yes' : ''} onClick={() => set('yes')}>Interested</button>
-        <button className={value === 'no' ? 'no' : ''} onClick={() => set('no')}>Not now</button>
-      </div>
-    </div>
-  )
-  return <div className="modal-wrap" onMouseDown={onClose}><div className="modal panel" onMouseDown={e=>e.stopPropagation()}>
-    <div className="modal-head"><div><div className="eyebrow">DIGITAL YOU · DRAFT</div><h2>Approach {person.name}</h2></div><button className="icon-btn" onClick={onClose}><X size={18}/></button></div>
-    <div className="context-strip"><Sparkles size={16}/><span>Drafted from relationship context, not a generic outreach template.</span></div>
-    <textarea value={text} onChange={e=>setText(e.target.value)} rows={10}/>
-    <section className="optin-block">
-      <div className="section-title"><h4>DOUBLE OPT-IN</h4><span>required before an introduction is authorized</span></div>
-      {optRow('You', `Confirm the conversation with ${person.name.split(' ')[0]} is worth ${connector}’s credibility.`, you, setYou)}
-      {optRow(person.name, `${person.name.split(' ')[0]} confirms interest before any introduction is made.`, them, setThem)}
-      <div className={`optin-verdict ${authorized ? 'ok' : declined ? 'blocked' : ''}`}>
-        {authorized ? <><CheckCircle2 size={16}/><span><b>INTRODUCTION AUTHORIZED.</b> Both parties agreed. The draft can be sent.</span></>
-          : declined ? <><AlertTriangle size={16}/><span><b>HELD.</b> One side declined. Hold the relationship and revisit when timing changes.</span></>
-          : <><LockKeyhole size={16}/><span><b>NOT AUTHORIZED YET.</b> Nexus waits for both sides before making an introduction.</span></>}
-      </div>
-    </section>
-    <div className="modal-actions"><button className="btn secondary" onClick={()=>setText(composeWarmIntro(person))}>Regenerate from context</button><button className="btn primary" disabled={!authorized} onClick={()=>{navigator.clipboard?.writeText(text); onClose()}}><Send size={16}/> {authorized ? 'Copy authorized intro' : 'Awaiting both sides'}</button></div>
-  </div></div>
-}
+function Messages({people,select}:{people:Person[];select:(p:Person)=>void}){const [active,setActive]=useState(people[2]??people[0]);const [text,setText]=useState('');if(!active)return null;return <><PageHead label="CONVERSATIONS" title="Context before contact." copy="The conversation stays central. Intelligence stays beside it."/>
+  <div className="messages-layout"><aside className="thread-list"><div className="thread-search"><Search size={15}/> Conversations</div>{people.slice(0,5).map((p,i)=><button className={active.id===p.id?'active':''} key={p.id} onClick={()=>setActive(p)}><Avatar person={p}/><span><strong>{p.name}</strong><small>{i===0?'Introduction context ready':p.company}</small></span>{i<2&&<i/>}</button>)}</aside>
+  <section className="conversation"><header><Avatar person={active}/><div><strong>{active.name}</strong><small>{active.title} · {active.company}</small></div><button className="icon-btn" onClick={()=>select(active)}><BrainCircuit size={17}/></button></header><div className="intro-context"><Label>INTRODUCTION CONTEXT</Label><p>{active.whyNow}</p></div><div className="messages"><div className="message incoming">The timing is useful. I’m looking closely at this problem now.<small>10:42 AM</small></div><div className="message outgoing">That is exactly why I thought a conversation could be useful. No pitch—just compare notes on the current constraints.<small>10:49 AM</small></div></div><div className="composer"><button title="Draft with context"><Sparkles size={17}/></button><textarea value={text} onChange={e=>setText(e.target.value)} placeholder="Write with the relationship in mind…"/><button onClick={()=>setText('')} disabled={!text.trim()}><Send size={17}/></button></div></section>
+  <aside className="conversation-intel"><Label>RELATIONSHIP CONTEXT</Label><h3>Why you’re connected</h3><p>{active.whyThem}</p><dl><div><dt>ACTIVE NEED OVERLAP</dt><dd>{active.needs[0]}</dd></div><div><dt>MUTUAL CONTEXT</dt><dd>{active.bestPath.join(' → ')}</dd></div><div><dt>LAST COMMITMENT</dt><dd>Share a concise point of view before Friday.</dd></div><div><dt>NEXT MOVE</dt><dd>{active.nextAction}</dd></div></dl></aside></div></>}
 
-const emptyDiagnostic = { goal: '', who: '', outcome: '', whyNow: '', valueOffer: '', success: '', constraints: '', distance: 'Warm introduction' }
+function Memory({people,select,notes}:{people:Person[];select:(p:Person)=>void;notes:MemoryNote[]}){return <><PageHead label="ACTIVE MEMORY" title="What the system remembers—and why." copy="Every signal keeps its source, confidence and privacy boundary."/>
+  <div className="memory-layout"><section className="memory-stage"><MemoryGraph people={people} onSelect={select}/><div className="memory-legend"><span><i className="cobalt"/>Current context</span><span><i className="amber"/>Live signal</span><span><LockKeyhole size={12}/>Private memory</span></div></section><aside className="memory-changes"><Label signal>RECENTLY LEARNED</Label><h2>Three changes to the graph.</h2>{[
+    ['Role change','Alison now leads national partnerships.','Public profile · 92%'],['Conversation signal','Scott is reviewing CRM adoption this quarter.','Meeting · 96%'],['Private note',notes[0]?.text||'No private note recorded yet.','Private · explicit'],
+  ].map(([k,v,s])=><article key={k}><span>{k}</span><p>{v}</p><small>{s}</small></article>)}</aside></div></>}
 
-function DiagnoseModal({ open, onClose, onCreate }: { open: boolean; onClose: () => void; onCreate: (o: Objective) => void }) {
-  const [form, setForm] = useState(emptyDiagnostic)
-  const [priority, setPriority] = useState<Objective['priority']>('high')
-  useEffect(() => { if (open) { setForm(emptyDiagnostic); setPriority('high') } }, [open])
-  if (!open) return null
-  const set = (k: keyof typeof form, v: string) => setForm({ ...form, [k]: v })
-  const missing = [
-    !form.goal.trim() && 'the outcome you want',
-    !form.who.trim() && 'the kind of person who could influence it',
-    !form.whyNow.trim() && 'why now',
-    !form.valueOffer.trim() && 'what you offer them',
-  ].filter(Boolean) as string[]
-  const ready = missing.length === 0
-  const field = (k: keyof typeof form, label: string, placeholder: string) => (
-    <label className="diag-field"><span>{label}</span><input value={form[k]} onChange={e=>set(k, e.target.value)} placeholder={placeholder}/></label>
-  )
-  return <div className="modal-wrap" onMouseDown={onClose}><div className="modal diag-modal panel" onMouseDown={e=>e.stopPropagation()}>
-    <div className="modal-head"><div><div className="eyebrow">STAGE 1 · DIAGNOSE</div><h2>What outcome are you trying to create?</h2></div><button className="icon-btn" onClick={onClose}><X size={18}/></button></div>
-    <div className="context-strip"><Target size={16}/><span>Nexus does not search for people until the objective is clear.</span></div>
-    <div className="diag-grid">
-      {field('goal', 'GOAL', 'Open five serious conversations with multi-company operators')}
-      {field('who', 'WHO COULD INFLUENCE IT', 'Operating partners, portfolio CROs, founder-operators')}
-      {field('outcome', 'DESIRED OUTCOME', 'A working pilot inside one portfolio company')}
-      {field('whyNow', 'WHY NOW', 'They just consolidated revenue reporting across four companies')}
-      {field('valueOffer', 'WHAT YOU OFFER THEM', 'A forensic view of where pipeline disappears between teams')}
-      {field('success', 'SUCCESS CONDITION', 'A second meeting with the person who owns the budget')}
-      {field('constraints', 'CONSTRAINTS · WHAT TO AVOID', 'No cold outreach, no agencies, nothing that risks Gary’s credibility')}
-      <label className="diag-field"><span>RELATIONSHIP PREFERENCE</span>
-        <select value={form.distance} onChange={e=>set('distance', e.target.value)}>
-          {['Existing relationship','Warm introduction','Second-degree path','Strategic advisor','Connector','Cold discovery'].map(x=><option key={x}>{x}</option>)}
-        </select>
-      </label>
-      <label className="diag-field"><span>PRIORITY</span>
-        <select value={priority} onChange={e=>setPriority(e.target.value as Objective['priority'])}>
-          {['low','medium','high','critical'].map(x=><option key={x} value={x}>{x.toUpperCase()}</option>)}
-        </select>
-      </label>
-    </div>
-    {ready
-      ? <div className="diag-summary"><div className="eyebrow">STRUCTURED OBJECTIVE</div>
-          <p><b>Objective:</b> {form.goal}</p>
-          <p><b>Target person:</b> {form.who}</p>
-          <p><b>Desired outcome:</b> {form.outcome || 'Unknown — will be inferred from the first conversation.'}</p>
-          <p><b>Mutual value hypothesis:</b> {form.valueOffer}</p>
-          <p><b>Timing:</b> {form.whyNow}</p>
-          <p><b>Success condition:</b> {form.success || 'Unknown.'}</p>
-          <p><b>Constraints:</b> {form.constraints || 'None stated.'}</p>
-          <p><b>Search strategy:</b> {form.distance}</p>
-        </div>
-      : <div className="diag-missing"><AlertTriangle size={16}/><span>Still missing: {missing.join(', ')}. These would materially change the recommendation.</span></div>}
-    <div className="modal-actions">
-      <button className="btn secondary" onClick={onClose}>Cancel</button>
-      <button className="btn primary" disabled={!ready} onClick={()=>{
-        onCreate({ id: `o${Date.now()}`, title: form.goal, outcome: form.outcome || 'Outcome not yet defined', target: form.who, whyNow: form.whyNow, valueOffer: form.valueOffer, success: form.success || 'Not yet defined', priority })
-        onClose()
-      }}><Target size={16}/> Create objective</button>
-    </div>
-  </div></div>
-}
+function Needs({objectives,onNew}:{objectives:Objective[];onNew:()=>void}){const active=objectives[0];return <><PageHead label="CASE BRIEFS" title="Needs, clearly stated." copy="A person is not an opportunity. Start with the outcome." action={<Button onClick={onNew}><Plus size={15}/>New need</Button>}/>{active&&<article className="need-case"><header><Label signal>ACTIVE · {active.priority}</Label><span>CASE 01 / {new Date().getFullYear()}</span></header><h2>{active.title}</h2><p className="case-outcome">{active.outcome}</p><div className="case-grid"><div><span>WHO COULD HELP</span><p>{active.target}</p></div><div><span>WHY NOW</span><p>{active.whyNow}</p></div><div><span>MUTUAL VALUE</span><p>{active.valueOffer}</p></div><div><span>SUCCESS</span><p>{active.success}</p></div></div><footer><span>DIAGNOSE</span><i/><span>MAP</span><i/><span>SCORE</span><i/><span>CONNECT</span><i/><span>COMPOUND</span></footer></article>}<section className="need-archive"><div className="section-heading"><div><Label>ARCHIVE</Label><h2>Prior case files.</h2></div></div>{objectives.slice(1).map(o=><article key={o.id}><span>{o.priority}</span><strong>{o.title}</strong><p>{o.outcome}</p><ArrowRight size={14}/></article>)}{objectives.length<2&&<p className="empty-state">Completed and paused needs will appear here as an evidence archive.</p>}</section></>}
 
-function CommandPage({ people, select, setPage }: { people: Person[]; select: (p: Person)=>void; setPage:(p:Page)=>void }) {
-  const hot = people.filter(p=>p.radar==='hot_now').length
-  const dormant = people.filter(p=>p.radar==='dormant'||p.radar==='at_risk').length
-  return <>
-    <div className="hero-row">
-      <div><div className="eyebrow">RELATIONSHIP INTELLIGENCE · LIVE</div><h1>Good morning.</h1><p className="lead">You do not need more contacts. You need to know which relationships can change the outcome.</p></div>
-      <button className="btn primary" onClick={()=>setPage('forensics')}><ScanSearch size={16}/> Scan my network</button>
-    </div>
-    <div className="stats-grid">
-      <StatCard icon={Zap} value={String(hot)} label="Hot now" detail="High-fit relationships with timing"/>
-      <StatCard icon={Route} value="3" label="Warm paths" detail="Credible introduction routes"/>
-      <StatCard icon={Clock3} value={String(dormant)} label="Need attention" detail="Dormant or at-risk relationships"/>
-      <StatCard icon={CircleDollarSign} value="$1.39M" label="Modeled accessible value" detail="Across current relationship signals"/>
-    </div>
-    <div className="dashboard-grid">
-      <section className="panel radar-panel"><div className="section-head"><div><div className="eyebrow">RELATIONSHIP RADAR</div><h3>Who matters right now</h3></div><button className="text-btn" onClick={()=>setPage('network')}>Open map <ChevronRight size={15}/></button></div><RadarViz people={people} onSelect={select}/></section>
-      <section className="panel moves-panel"><div className="section-head"><div><div className="eyebrow">TODAY'S MOVES</div><h3>What should happen next</h3></div></div>
-        <div className="move-list">{people.slice().sort((a,b)=>b.scoreTotal-a.scoreTotal).slice(0,4).map((p,i)=><button className="move-row" key={p.id} onClick={()=>select(p)}><span className="move-index">0{i+1}</span><span className="move-main"><strong>{p.name}</strong><small>{p.nextAction}</small></span><span className="move-score">{p.scoreTotal}</span><ChevronRight size={16}/></button>)}</div>
-      </section>
-    </div>
-    <div className="lower-grid">
-      <section className="panel"><div className="section-head"><div><div className="eyebrow">OBJECTIVE</div><h3>Founder & PE introductions</h3></div><Pill tone="orange">CRITICAL</Pill></div>
-        <p className="panel-copy">Open five serious conversations with operators who can expose Aetheris to multiple companies.</p>
-        <div className="objective-flow"><span>DIAGNOSE</span><i/><span>MAP</span><i/><span>SCORE</span><i/><span>CONNECT</span><i/><span>COMPOUND</span></div>
-      </section>
-      <section className="panel"><div className="section-head"><div><div className="eyebrow">NEXUS IQ</div><h3>Ask the graph, not the internet</h3></div><BrainCircuit size={20}/></div>
-        <div className="iq-prompt"><Search size={16}/><span>Who should I talk to this week?</span><kbd>↵</kbd></div>
-        <div className="quick-asks"><button>Who can get me into PE?</button><button>Which relationships are going cold?</button></div>
-      </section>
-    </div>
-  </>
-}
+function Insights({people,select}:{people:Person[];select:(p:Person)=>void}){return <><PageHead label="RELATIONSHIP INTELLIGENCE" title="Signals worth acting on." copy="No vanity metrics. Only changes that could alter an outcome."/>
+  <div className="insight-numbers"><div><span>DORMANT VALUE</span><strong>2</strong><small>high-trust relationships</small></div><div><span>PROMISING PATHS</span><strong>3</strong><small>with credible connectors</small></div><div><span>COOLING</span><strong>1</strong><small>conversation needs attention</small></div></div>
+  <div className="insight-list">{leaks.map((leak,i)=>{const p=people.find(x=>x.id===leak.personId);if(!p)return null;return <button key={leak.id} onClick={()=>select(p)}><span className="insight-index">0{i+1}</span><span className="insight-main"><Label signal={leak.urgency==='high'}>{leak.type}</Label><h3>{p.name}</h3><p>{leak.businessReason}</p><small>{leak.evidence}</small></span><span className="insight-confidence"><strong>{leak.confidence}</strong><small>confidence</small></span><ArrowRight size={17}/></button>})}</div>
+  <section className="evidence-line"><div><Label>90 DAY RELATIONSHIP RETURN</Label><h2>More context. Better intros. Stronger outcomes.</h2></div><div className="line-chart"><svg viewBox="0 0 600 120" preserveAspectRatio="none"><path d="M0 100 C80 95 90 75 165 80 S250 30 330 55 S450 25 600 12"/><circle cx="600" cy="12" r="5"/></svg><span>$486K influenced · 46 introductions · 24 meetings</span></div></section></>}
 
-function IntrosPage({ people, select, draft, objectives, onDiagnose }: { people:Person[]; select:(p:Person)=>void; draft:(p:Person)=>void; objectives:Objective[]; onDiagnose:()=>void }) {
-  const [q,setQ]=useState('')
-  const filtered = people.filter(p => `${p.name} ${p.company} ${p.tags.join(' ')}`.toLowerCase().includes(q.toLowerCase()))
-  return <>
-    <div className="page-title"><div><div className="eyebrow">MATCH THE PERSON, NOT THE PROFILE</div><h1>Intros</h1><p>Every recommendation must answer: why them, why you, why now.</p></div><button className="btn primary" onClick={onDiagnose}><Target size={16}/> New objective</button></div>
-    <div className="objective-strip">{objectives.map(o=><article className="panel objective-card" key={o.id}>
-      <div className="objective-top"><Pill tone={o.priority==='critical'?'orange':o.priority==='high'?'gold':'neutral'}>{o.priority.toUpperCase()}</Pill><span>{o.target}</span></div>
-      <h3>{o.title}</h3>
-      <p><b>Why now:</b> {o.whyNow}</p>
-      <p><b>You offer:</b> {o.valueOffer}</p>
-      <small>Success: {o.success}</small>
-    </article>)}</div>
-    <div className="toolbar panel"><div className="searchbox"><Search size={16}/><input placeholder="Search relationships, companies or context" value={q} onChange={e=>setQ(e.target.value)}/></div><button className="filter-btn"><SlidersHorizontal size={16}/> Filters</button></div>
-    <div className="people-table panel">
-      <div className="table-head"><span>Relationship</span><span>Why now</span><span>State</span><span>Score</span><span></span></div>
-      {filtered.map(p=><div className="table-row" key={p.id}>
-        <button className="person-cell" onClick={()=>select(p)}><span className="person-avatar">{p.initials}</span><span><strong>{p.name}</strong><small>{p.title} · {p.company}</small></span></button>
-        <button className="why-cell" onClick={()=>select(p)}>{p.whyNow}</button><span><Pill tone={p.radar==='hot_now'?'orange':p.radar==='at_risk'?'danger':p.radar==='dormant'?'neutral':'gold'}>{radarLabel[p.radar]}</Pill></span>
-        <button className="score-cell" onClick={()=>select(p)}><ScoreRing score={p.scoreTotal} size={52}/></button>
-        <button className="btn compact secondary" onClick={()=>draft(p)}>Draft approach</button>
-      </div>)}
-    </div>
-  </>
-}
+function Profile({profile,setProfile,autonomy,setAutonomy}:{profile:DigitalYouProfile;setProfile:(x:DigitalYouProfile)=>void;autonomy:AutonomyLevel;setAutonomy:(x:AutonomyLevel)=>void}){const sliders:[keyof DigitalYouProfile,string,string,string][]=[['directness','Directness','Soft','Direct'],['formality','Formality','Casual','Formal'],['warmth','Warmth','Reserved','Warm'],['brevity','Brevity','Detailed','Tight']];return <><PageHead label="MEMBER PROFILE" title="Joseph Toney" copy="Founder · Relationship systems strategist · Charlotte, NC"/>
+  <section className="profile-hero"><div className="profile-portrait">JT</div><div><Label>CURRENT FOCUS</Label><h2>Building systems that turn relationship context into better decisions.</h2><div className="profile-facts"><div><span>LOOKING FOR</span><p>PE operating partners and founder-led design partners.</p></div><div><span>CAN HELP WITH</span><p>Revenue leak forensics, AI systems and relationship strategy.</p></div><div><span>VALUES</span><p>Evidence, mutual value, good timing and human judgment.</p></div><div><span>AVAILABILITY</span><p>Selective introductions · 3 conversations this month.</p></div></div></div></section>
+  <div className="profile-settings"><section><div className="section-heading"><div><Label>DIGITAL YOU</Label><h2>Relationship mode.</h2></div><Fingerprint size={20}/></div>{sliders.map(([key,label,low,high])=><label className="slider-row" key={key}><span><b>{label}</b><em>{Number(profile[key])}</em></span><input type="range" min="0" max="100" value={Number(profile[key])} onChange={e=>setProfile({...profile,[key]:Number(e.target.value)})}/><small>{low}<i>{high}</i></small></label>)}</section><section><div className="section-heading"><div><Label>PRIVACY & AUTONOMY</Label><h2>Intelligence, permissioned.</h2></div><ShieldCheck size={20}/></div><p className="settings-copy">Private context can inform relevance without becoming shareable content.</p><div className="autonomy-levels">{['Observe','Recommend','Draft','Approve','Authorized'].map((x,i)=><button className={autonomy===i?'active':''} key={x} onClick={()=>setAutonomy(i as AutonomyLevel)}><span>{i}</span><div><strong>{x}</strong><small>{i<3?'No external action':'Explicit permission required'}</small></div>{autonomy===i&&<Check size={15}/>}</button>)}</div></section></div></>}
 
-function NetworkPage({ people, select }: { people:Person[]; select:(p:Person)=>void }) {
-  const [focus,setFocus]=useState('All strategic relationships')
-  return <>
-    <div className="page-title"><div><div className="eyebrow">LIVING RELATIONSHIP GRAPH</div><h1>Relationship Map</h1><p>Distance means relevance to the objective. Node size means strategic weight, not status.</p></div><div className="segmented"><button className="active">Graph</button><button>Paths</button></div></div>
-    <div className="map-layout">
-      <section className="panel map-stage"><div className="map-top"><div className="objective-chip"><Target size={14}/>{focus}</div><button className="text-btn" onClick={()=>setFocus(focus==='All strategic relationships'?'Founder & PE introductions':'All strategic relationships')}>Change objective</button></div><RadarViz people={people} onSelect={select}/></section>
-      <aside className="panel path-panel"><div className="eyebrow">STRONGEST PATH</div><h3>Gary → Maya</h3><p>Shortest is not always strongest. This path combines recent activity, trust and target relevance.</p>
-        <div className="vertical-path"><div className="path-person"><span>YOU</span><small>origin</small></div><i/><div className="path-person gold"><span>Gary Frey</span><small>connector · trust 83</small></div><i/><div className="path-person orange"><span>Maya Chen</span><small>target · fit 93</small></div></div>
-        <div className="path-metrics"><div><span>Path strength</span><b>86</b></div><div><span>Intro likelihood</span><b>78%</b></div><div><span>Degrees</span><b>2</b></div></div>
-        <button className="btn primary full" onClick={()=>select(people.find(p=>p.id==='p2')!)}>Inspect path</button></aside>
-    </div>
-  </>
-}
+function PersonDrawer({person,onClose,onDraft,notes,onAdd}:{person:Person|null;onClose:()=>void;onDraft:(p:Person)=>void;notes:MemoryNote[];onAdd:(id:string,text:string,scope:PrivacyScope)=>void}){const [text,setText]=useState('');const [scope,setScope]=useState<PrivacyScope>('private');if(!person)return null;return <div className="drawer-wrap" onMouseDown={onClose}><aside className="intel-drawer" onMouseDown={e=>e.stopPropagation()}><header><button className="icon-btn" onClick={onClose}><X size={17}/></button><Label>MEMBER INTELLIGENCE</Label><Score value={person.scoreTotal}/></header><div className="drawer-person"><Avatar person={person} large/><div><h2>{person.name}</h2><p>{person.title} · {person.company}</p></div></div><div className="drawer-thesis"><Label>WHY THIS INTRO</Label><h3>{classifyConnection(person.scoreTotal)}</h3><p>{person.whyThem}</p></div>{[['WHY YOU MATTER',person.whyYou],['WHY NOW',person.whyNow],['RECOMMENDED NEXT MOVE',person.nextAction]].map(([a,b])=><section key={a}><span>{a}</span><p>{b}</p></section>)}<section><span>TRUST PATH</span><div className="drawer-path">{person.bestPath.join(' → ')}</div></section><section className="drawer-memory"><div className="section-heading"><span>ACTIVE MEMORY</span><small><LockKeyhole size={11}/>privacy scoped</small></div>{notes.filter(n=>n.personId===person.id).map(n=><article key={n.id}><b>{scopeLabel[n.scope]}</b><p>{n.text}</p><small>{n.createdAt}</small></article>)}<textarea rows={3} value={text} onChange={e=>setText(e.target.value)} placeholder="Record what changed in this relationship…"/><div className="scope-picker">{scopes.map(s=><button className={scope===s?'active':''} onClick={()=>setScope(s)} key={s}>{scopeLabel[s]}</button>)}</div><small>{scopeText[scope]}</small><Button kind="secondary" disabled={!text.trim()} onClick={()=>{onAdd(person.id,text.trim(),scope);setText('')}}>Record intelligence</Button></section><footer><Button kind="quiet" onClick={onClose}>Close</Button><Button onClick={()=>onDraft(person)}>Draft approach <ArrowRight size={14}/></Button></footer></aside></div>}
 
-function ForensicsPage({ people, select }: { people:Person[]; select:(p:Person)=>void }) {
-  const [scanned,setScanned]=useState(false)
-  return <>
-    <div className="page-title"><div><div className="eyebrow">RELATIONSHIP LEAK FORENSICS</div><h1>Your network already contains opportunities.</h1><p>Find value that exists inside old conversations, dormant relationships and unfinished promises.</p></div><button className="btn primary" onClick={()=>setScanned(true)}><ScanSearch size={16}/>{scanned?'Scan complete':'Run forensic scan'}</button></div>
-    <div className="forensic-summary panel"><div><span>Relationship leaks</span><strong>23</strong></div><div><span>High-priority</span><strong>6</strong></div><div><span>Warm paths available</span><strong>3</strong></div><div><span>Modeled value</span><strong>$840K–$1.4M</strong></div><p>Modeled opportunity range based on current demo signals. It is not booked revenue.</p></div>
-    <div className="leak-grid">{seedLeaks.map(leak=>{const p=people.find(x=>x.id===leak.personId)!; return <article className="panel leak-card" key={leak.id}><div className="leak-top"><Pill tone={leak.urgency==='high'?'danger':'gold'}>{leak.type}</Pill><span>{leak.confidence}% confidence</span></div><div className="leak-person"><span className="person-avatar">{p.initials}</span><div><h3>{p.name}</h3><p>{p.title} · {p.company}</p></div></div><p className="leak-reason">{leak.businessReason}</p><div className="evidence"><Eye size={15}/><span>{leak.evidence}</span></div>{leak.estimatedValue&&<div className="modeled-value">{leak.estimatedValue}</div>}<div className="leak-action"><span>RECOMMENDED</span><p>{leak.recommendedAction}</p></div><button className="btn secondary full" onClick={()=>select(p)}>Open intelligence</button></article>})}</div>
-  </>
-}
+function IntroModal({person,onClose}:{person:Person|null;onClose:()=>void}){const [text,setText]=useState('');const [you,setYou]=useState<OptIn>('pending');const [them,setThem]=useState<OptIn>('pending');useEffect(()=>{if(person){setText(composeWarmIntro(person));setYou('pending');setThem('pending')}},[person]);if(!person)return null;const ok=you==='yes'&&them==='yes';return <div className="modal-wrap" onMouseDown={onClose}><div className="modal editorial-modal" onMouseDown={e=>e.stopPropagation()}><header><div><Label>DOUBLE OPT-IN</Label><h2>A considered introduction.</h2><p>Both sides protect the connector’s credibility.</p></div><button className="icon-btn" onClick={onClose}><X size={17}/></button></header><div className="intro-person"><Avatar person={person}/><span><strong>{person.name}</strong><small>{person.title} · {person.company}</small></span></div><textarea rows={8} value={text} onChange={e=>setText(e.target.value)}/>{[['You',you,setYou], [person.name,them,setThem]].map(([label,value,setter])=><div className="opt-row" key={String(label)}><span><strong>{String(label)}</strong><small>Confirm this conversation is worth making.</small></span><div><button className={value==='yes'?'active':''} onClick={()=>typeof setter==='function'&&setter('yes')}>Interested</button><button className={value==='no'?'declined':''} onClick={()=>typeof setter==='function'&&setter('no')}>Not now</button></div></div>)}<div className={`authorization ${ok?'ready':''}`}>{ok?<CheckCircle2 size={17}/>:<LockKeyhole size={17}/>}<span>{ok?'Introduction authorized. Both parties agreed.':'Waiting for both parties before anything is sent.'}</span></div><footer><Button kind="quiet" onClick={onClose}>Cancel</Button><Button disabled={!ok} onClick={()=>{navigator.clipboard?.writeText(text);onClose()}}><Send size={15}/>Copy authorized intro</Button></footer></div></div>}
 
-function MeetingCard({ meeting, person }: { meeting: Meeting; person:Person }) {
-  const [open,setOpen]=useState(false)
-  return <article className="panel meeting-card"><div className="meeting-header"><div><div className="eyebrow">{meeting.date}</div><h3>{person.name}</h3><p>{person.title} · {person.company}</p></div><div className="person-avatar large">{person.initials}</div></div><div className="meeting-reason"><span>WHY THIS MEETING EXISTS</span><p>{meeting.reason}</p></div><div className="meeting-grid"><div><span>BEST OPENING</span><p>{meeting.opening}</p></div><div><span>DESIRED OUTCOME</span><p>{meeting.desiredOutcome}</p></div></div><button className="text-btn" onClick={()=>setOpen(!open)}>{open?'Hide full brief':'Open full brief'} <ChevronRight size={15}/></button>{open&&<div className="expanded-brief"><div><h4>WHAT THEY CARE ABOUT</h4><ul>{meeting.caresAbout.map(x=><li key={x}>{x}</li>)}</ul></div><div><h4>RECENT SIGNALS</h4><ul>{meeting.recentSignals.map(x=><li key={x}>{x}</li>)}</ul></div><div><h4>QUESTIONS WORTH ASKING</h4><ol>{meeting.questions.map(x=><li key={x}>{x}</li>)}</ol></div><div className="warning"><AlertTriangle size={16}/><span><b>Do not:</b> {meeting.avoid}</span></div></div>}</article>
-}
+const blank={goal:'',who:'',outcome:'',whyNow:'',valueOffer:'',success:''}
+function NeedModal({open,onClose,onCreate}:{open:boolean;onClose:()=>void;onCreate:(o:Objective)=>void}){const [form,setForm]=useState(blank);if(!open)return null;const ready=form.goal&&form.who&&form.whyNow&&form.valueOffer;return <div className="modal-wrap light-modal-wrap" onMouseDown={onClose}><div className="modal need-modal" onMouseDown={e=>e.stopPropagation()}><header><div><Label>DIAGNOSE · 01</Label><h2>What outcome are you trying to create?</h2><p>Intros begins with the need, not a list of people.</p></div><button className="icon-btn" onClick={onClose}><X size={17}/></button></header><div className="need-form">{([['goal','What do you need right now?','Open five serious conversations…'],['who','Who could change the outcome?','Operating partners, founders, trusted connectors…'],['outcome','What would progress look like?','A working pilot inside one portfolio company…'],['whyNow','Why now?','The timing signal that makes this relevant…'],['valueOffer','What can you offer them?','A useful perspective, access or capability…'],['success','What does success mean?','A second meeting with the right owner…']] as const).map(([key,label,placeholder],i)=><label key={key}><span>0{i+1} / {label}</span><textarea rows={i===0?2:1} value={form[key]} onChange={e=>setForm({...form,[key]:e.target.value})} placeholder={placeholder}/></label>)}</div><footer><Button kind="quiet" onClick={onClose}>Cancel</Button><Button disabled={!ready} onClick={()=>{onCreate({id:`o${Date.now()}`,title:form.goal,outcome:form.outcome||form.goal,target:form.who,whyNow:form.whyNow,valueOffer:form.valueOffer,success:form.success||'A qualified next conversation',priority:'high'});setForm(blank);onClose()}}>Create case brief <ArrowRight size={15}/></Button></footer></div></div>}
 
-function MeetingsPage({ people }: { people:Person[] }) {
-  return <><div className="page-title"><div><div className="eyebrow">CONTEXT BEFORE THE CALL</div><h1>Meeting Intelligence</h1><p>Do not summarize the person. Surface only what matters for this conversation.</p></div><button className="btn secondary"><CalendarDays size={16}/> Calendar</button></div><div className="meeting-list">{seedMeetings.map(m=><MeetingCard key={m.id} meeting={m} person={people.find(p=>p.id===m.personId)!}/>)}</div></>
-}
+function ContextRail({page,people,select}:{page:Page;people:Person[];select:(p:Person)=>void}){const p=people[1]??people[0];if(!p)return null;return <aside className="context-rail"><div className="context-label"><span>CONTEXT / {page.toUpperCase()}</span><CircleDot size={12}/></div><div className="context-number"><strong>{p.scoreTotal}</strong><span>strongest<br/>active match</span></div><button className="context-person" onClick={()=>select(p)}><Avatar person={p}/><span><strong>{p.name}</strong><small>{p.company}</small></span><ArrowRight size={14}/></button><div className="context-reason"><span>WHY NOW</span><p>{p.whyNow}</p></div><div className="context-signal"><span className="signal-dot"/><div><strong>Memory changed</strong><small>3 new signals this week</small></div></div><button className="ask-button"><BrainCircuit size={16}/><span>Ask Intros</span><kbd>⌘K</kbd></button></aside>}
 
-function Slider({ label, value, onChange, low, high }: { label:string; value:number; onChange:(n:number)=>void; low:string; high:string }) {
-  return <div className="slider-row"><div className="slider-title"><span>{label}</span><b>{value}</b></div><input type="range" min="0" max="100" value={value} onChange={e=>onChange(Number(e.target.value))}/><div className="slider-labels"><span>{low}</span><span>{high}</span></div></div>
-}
-
-function DigitalYouPage({ profile, setProfile }: { profile:DigitalYouProfile; setProfile:(x:DigitalYouProfile)=>void }) {
-  const update=(k:keyof DigitalYouProfile,n:number)=>setProfile({...profile,[k]:n})
-  return <><div className="page-title"><div><div className="eyebrow">DIGITAL YOU · CONNECTOR MODE</div><h1>Teach Intros how you handle people.</h1><p>Learn judgment and communication patterns without mechanically copying old messages.</p></div><Pill tone="success">ACTIVE</Pill></div><div className="dy-grid"><section className="panel"><div className="section-head"><div><div className="eyebrow">BEHAVIOR PROFILE</div><h3>Relationship style</h3></div><Fingerprint size={22}/></div><Slider label="Directness" value={profile.directness} onChange={n=>update('directness',n)} low="Soft" high="Direct"/><Slider label="Formality" value={profile.formality} onChange={n=>update('formality',n)} low="Casual" high="Formal"/><Slider label="Humor" value={profile.humor} onChange={n=>update('humor',n)} low="Straight" high="Playful"/><Slider label="Brevity" value={profile.brevity} onChange={n=>update('brevity',n)} low="Detailed" high="Tight"/><Slider label="Warmth" value={profile.warmth} onChange={n=>update('warmth',n)} low="Reserved" high="Warm"/><Slider label="Selling aggression" value={profile.sellingAggressiveness} onChange={n=>update('sellingAggressiveness',n)} low="Never push" high="Direct close"/></section><section className="panel"><div className="section-head"><div><div className="eyebrow">LANGUAGE GUARDRAILS</div><h3>Never sound like generic AI</h3></div><ShieldCheck size={22}/></div><div className="phrase-list">{profile.prohibitedPhrases.map(x=><span key={x}>{x}<X size={13}/></span>)}</div><div className="example-note"><span>INTROS SHOULD ASK</span><strong>Would you actually send this?</strong><p>When timing is wrong, the system should recommend waiting instead of generating outreach.</p></div><div className="autonomy-note"><LockKeyhole size={18}/><div><strong>Execution is permissioned</strong><p>Digital You drafts and recommends. Sending can remain approval-only.</p></div></div></section></div></>
-}
-
-function ROIPage() {
-  const stages=[['Introductions',46,100],['Accepted',33,72],['Meetings',24,52],['Opportunities',11,24],['Closed',4,9]]
-  return <><div className="page-title"><div><div className="eyebrow">RELATIONSHIP RETURN, NOT VANITY</div><h1>Relationship ROI</h1><p>Track what relationships actually create: meetings, opportunity, revenue, partnerships and referrals.</p></div><Pill tone="orange">LAST 90 DAYS</Pill></div><div className="stats-grid"><StatCard icon={Handshake} value="46" label="Introductions" detail="33 accepted"/><StatCard icon={CalendarDays} value="24" label="Meetings" detail="52% of intros"/><StatCard icon={TrendingUp} value="$486K" label="Revenue influenced" detail="$142K directly attributed"/><StatCard icon={UserPlus} value="9" label="Reactivations" detail="Dormant relationships revived"/></div><div className="roi-grid"><section className="panel"><div className="section-head"><div><div className="eyebrow">RELATIONSHIP FUNNEL</div><h3>Value through the graph</h3></div></div><div className="funnel">{stages.map(([label,value,width])=><div className="funnel-row" key={String(label)}><span>{label}</span><div><i style={{width:`${width}%`}}/></div><b>{value}</b></div>)}</div></section><section className="panel"><div className="eyebrow">ATTRIBUTION RULE</div><h3>Evidence before credit.</h3><p className="panel-copy">Intros separates direct value, influenced value and modeled value. Every attributed outcome keeps an evidence trail and confidence score.</p><div className="attribution-list"><div><CircleDot size={16}/><span><b>$142K</b> direct value</span></div><div><CircleDot size={16}/><span><b>$344K</b> influenced value</span></div><div><CircleDot size={16}/><span><b>$840K–$1.4M</b> modeled accessible value</span></div></div></section></div></>
-}
-
-function SettingsPage({ autonomy, setAutonomy }: { autonomy:AutonomyLevel; setAutonomy:(x:AutonomyLevel)=>void }) {
-  const [integrations,setIntegrations]=useState<Integration[]>([
-    {id:'gmail',name:'Gmail',detail:'Conversation context and thread continuity',connected:true,icon:'mail'},
-    {id:'calendar',name:'Google Calendar',detail:'Availability and meeting context',connected:true,icon:'calendar'},
-    {id:'hubspot',name:'HubSpot',detail:'Companies, deals and outcome attribution',connected:false,icon:'crm'},
-    {id:'linkedin',name:'LinkedIn',detail:'Relationship identity and public role context',connected:false,icon:'network'},
-  ])
-  const icon=(x:Integration['icon'])=>x==='mail'?<Mail size={19}/>:x==='calendar'?<CalendarDays size={19}/>:x==='crm'?<ContactRound size={19}/>:<Network size={19}/>
-  return <><div className="page-title"><div><div className="eyebrow">CONTROL THE SYSTEM</div><h1>Settings</h1><p>Privacy, connected sources and autonomy stay explicit.</p></div></div><div className="settings-grid"><section className="panel"><div className="section-head"><div><div className="eyebrow">DATA SOURCES</div><h3>Connections</h3></div></div><div className="integration-list">{integrations.map(i=><div className="integration" key={i.id}><span className="integration-icon">{icon(i.icon)}</span><div className="grow"><strong>{i.name}</strong><small>{i.detail}</small></div><button className={`toggle ${i.connected?'on':''}`} onClick={()=>setIntegrations(integrations.map(x=>x.id===i.id?{...x,connected:!x.connected}:x))}><i/></button></div>)}</div><p className="micro top-gap">Demo toggles only. Production connectors require provider OAuth credentials and scoped permissions.</p></section><section className="panel"><div className="section-head"><div><div className="eyebrow">AUTONOMY</div><h3>How far can Intros go?</h3></div><b className="autonomy-badge">LEVEL {autonomy}</b></div><div className="autonomy-levels">{[['Observe','Read and analyze only'],['Recommend','Suggest next actions'],['Draft','Create messages and intros'],['Approve','Ask before any external action'],['Authorized','Execute approved action classes']].map(([name,desc],i)=><button key={name} className={autonomy===i?'active':''} onClick={()=>setAutonomy(i as AutonomyLevel)}><span>{i}</span><div><strong>{name}</strong><small>{desc}</small></div>{autonomy===i&&<CheckCircle2 size={17}/>}</button>)}</div></section><section className="panel privacy-card"><ShieldCheck size={24}/><div><div className="eyebrow">PRIVATE BY DEFAULT</div><h3>Context can inform relevance without becoming shareable content.</h3><p>Every memory is scoped Private, Team, Organization, Shareable or Public. Intros should never reveal a private message to another person just because it influenced a match.</p></div></section></div></>
-}
-
-function nexusIq(query: string, people: Person[]): { read: string; unknown: string; results: IqResult[] } {
-  const q = query.toLowerCase()
-  const toResult = (p: Person): IqResult => ({
-    personId: p.id,
-    reasonNow: p.whyNow,
-    status: `${radarLabel[p.radar]} · last contact ${p.lastInteractionDays} days ago`,
-    opportunity: p.opportunityLow || p.opportunityHigh
-      ? `Modeled ${money(p.opportunityLow)}–${money(p.opportunityHigh)}`
-      : 'Unquantified — not enough evidence to assign value',
-    bestAction: p.nextAction,
-    score: p.scoreTotal,
-    confidence: p.confidence,
-  })
-  const byScore = (a: Person, b: Person) => b.scoreTotal - a.scoreTotal
-
-  if (q.includes('cold') || q.includes('dormant') || q.includes('neglect') || q.includes('risk')) {
-    const set = people.filter(p => p.radar === 'dormant' || p.radar === 'at_risk')
-      .sort((a, b) => b.score.relationshipStrength - a.score.relationshipStrength).slice(0, 3)
-    return {
-      read: 'Two relationships are decaying with real value still inside them. Reconnection is the move, not a pitch — the reason to reach out has to be about them, not about your product.',
-      unknown: 'We do not know whether either of them has budget authority in their current role.',
-      results: set.map(toResult),
-    }
-  }
-  if (q.includes('intro') || q.includes('path') || q.includes('pe') || q.includes('invest') || q.includes('reach')) {
-    const set = people.filter(p => p.bestPath.length > 1).sort(byScore).slice(0, 3)
-    return {
-      read: 'The strongest route runs through your existing connectors rather than a direct approach. Validate the connector’s willingness before asking for the introduction — an unrequested ask spends their credibility, not yours.',
-      unknown: 'We do not know whether the connector has spoken to the target recently.',
-      results: set.map(toResult),
-    }
-  }
-  if (q.includes('customer') || q.includes('referral')) {
-    const set = people.filter(p => p.score.trust >= 70).sort(byScore).slice(0, 3)
-    return {
-      read: 'Trust is already established with these relationships, which makes a referral request low-friction. Ask for perspective on who else has the same problem before asking for a name.',
-      unknown: 'We do not know whether their organizations permit referrals.',
-      results: set.map(toResult),
-    }
-  }
-  const set = people.filter(p => p.score.timing >= 50).sort(byScore).slice(0, 3)
-  return {
-    read: 'Three relationships justify a conversation this week. They combine strategic fit with an actual timing reason — the rest of the graph should stay untouched until something changes.',
-    unknown: 'We do not know whether any of them are currently mid-evaluation with another vendor.',
-    results: (set.length ? set : people.slice().sort(byScore).slice(0, 3)).map(toResult),
-  }
-}
-
-function IqResults({ answer, people, onSelect }: { answer: { read: string; unknown: string; results: IqResult[] }; people: Person[]; onSelect: (p: Person) => void }) {
-  return <div className="iq-answer">
-    <div className="eyebrow">NEXUS READ</div>
-    <p>{answer.read}</p>
-    <div className="iq-cards">{answer.results.map(r => {
-      const p = people.find(x => x.id === r.personId)
-      if (!p) return null
-      return <button className="iq-card" key={r.personId} onClick={() => onSelect(p)}>
-        <div className="iq-card-top"><span className="person-avatar">{p.initials}</span><div><strong>{p.name}</strong><small>{p.title} · {p.company}</small></div><b className="iq-score">{r.score}</b></div>
-        <div className="iq-line"><span>REASON NOW</span><p>{r.reasonNow}</p></div>
-        <div className="iq-line"><span>RELATIONSHIP STATUS</span><p>{r.status}</p></div>
-        <div className="iq-line"><span>OPPORTUNITY</span><p>{r.opportunity}</p></div>
-        <div className="iq-line"><span>BEST ACTION</span><p>{r.bestAction}</p></div>
-        <div className="iq-foot"><span>{classifyConnection(r.score)}</span><span>{r.confidence}% confidence</span></div>
-      </button>
-    })}</div>
-    <div className="iq-unknown"><AlertTriangle size={15}/><span><b>Unknown:</b> {answer.unknown}</span></div>
-  </div>
-}
-
-function App() {
-  const [page,setPage]=useState<Page>(() => (localStorage.getItem('aetheris-intros-page') as Page) || 'command')
-  const [people] = useState<Person[]>(seedPeople)
-  const [selected,setSelected]=useState<Person|null>(null)
-  const [draftPerson,setDraftPerson]=useState<Person|null>(null)
-  const [menuOpen,setMenuOpen]=useState(false)
-  const [profile,setProfileState]=useState<DigitalYouProfile>(()=>{ try{return JSON.parse(localStorage.getItem('aetheris-intros-dy')||'')||defaultDigitalYou}catch{return defaultDigitalYou} })
+export default function App(){
+  const stored=typeof window!=='undefined'?localStorage.getItem('aetheris-intros-page'):null
+  const initial=(stored&&nav.some(n=>n.id===stored)?stored:legacyPage[stored??'']??'home') as Page
+  const [page,setPage]=useState<Page>(initial);const [collapsed,setCollapsed]=useState(false);const [mobileOpen,setMobileOpen]=useState(false);const [selected,setSelected]=useState<Person|null>(null);const [draft,setDraft]=useState<Person|null>(null);const [needOpen,setNeedOpen]=useState(false)
+  const [profile,setProfileState]=useState<DigitalYouProfile>(()=>{try{return JSON.parse(localStorage.getItem('aetheris-intros-dy')||'')||defaultDigitalYou}catch{return defaultDigitalYou}})
   const [autonomy,setAutonomyState]=useState<AutonomyLevel>(()=>Number(localStorage.getItem('aetheris-intros-autonomy')||'2') as AutonomyLevel)
-  const [objectives,setObjectivesState]=useState<Objective[]>(()=>{ try{const s=localStorage.getItem('aetheris-nexus-objectives'); return s?JSON.parse(s) as Objective[]:seedObjectives}catch{return seedObjectives} })
-  const [notes,setNotesState]=useState<MemoryNote[]>(()=>{ try{const s=localStorage.getItem('aetheris-nexus-memory'); return s?JSON.parse(s) as MemoryNote[]:[]}catch{return []} })
-  const [diagnoseOpen,setDiagnoseOpen]=useState(false)
-  const [iqOpen,setIqOpen]=useState(false)
-  const [iq,setIq]=useState('')
-  const [iqAnswer,setIqAnswer]=useState<ReturnType<typeof nexusIq>|null>(null)
-
+  const [objectives,setObjectives]=useState<Objective[]>(()=>{try{return JSON.parse(localStorage.getItem('aetheris-nexus-objectives')||'')||seedObjectives}catch{return seedObjectives}})
+  const [notes,setNotes]=useState<MemoryNote[]>(()=>{try{return JSON.parse(localStorage.getItem('aetheris-nexus-memory')||'')||[]}catch{return []}})
+  const people=seedPeople
   useEffect(()=>localStorage.setItem('aetheris-intros-page',page),[page])
-  const setProfile=(x:DigitalYouProfile)=>{setProfileState(x); localStorage.setItem('aetheris-intros-dy',JSON.stringify(x))}
-  const setAutonomy=(x:AutonomyLevel)=>{setAutonomyState(x);localStorage.setItem('aetheris-intros-autonomy',String(x))}
-  const addObjective=(o:Objective)=>{const next=[o,...objectives];setObjectivesState(next);localStorage.setItem('aetheris-nexus-objectives',JSON.stringify(next));setPage('intros')}
-  const addNote=(personId:string,text:string,scope:PrivacyScope)=>{
-    const next=[{id:`m${Date.now()}`,personId,text,scope,createdAt:new Date().toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'})},...notes]
-    setNotesState(next);localStorage.setItem('aetheris-nexus-memory',JSON.stringify(next))
-  }
-  const askIq=(question:string)=>{setIq(question);setIqAnswer(nexusIq(question,people))}
-
-  const pageContent = useMemo(()=>{
-    switch(page){
-      case 'command': return <CommandPage people={people} select={setSelected} setPage={setPage}/>
-      case 'intros': return <IntrosPage people={people} select={setSelected} draft={setDraftPerson} objectives={objectives} onDiagnose={()=>setDiagnoseOpen(true)}/>
-      case 'network': return <NetworkPage people={people} select={setSelected}/>
-      case 'forensics': return <ForensicsPage people={people} select={setSelected}/>
-      case 'meetings': return <MeetingsPage people={people}/>
-      case 'digital-you': return <DigitalYouPage profile={profile} setProfile={setProfile}/>
-      case 'roi': return <ROIPage/>
-      case 'settings': return <SettingsPage autonomy={autonomy} setAutonomy={setAutonomy}/>
-    }
-  },[page,people,profile,autonomy,objectives])
-
-  return <div className="app-shell">
-    <aside className={`sidebar ${menuOpen?'mobile-open':''}`}>
-      <div className="brand"><MiniLogo/><div><strong>AETHERIS</strong><span>NEXUS</span></div></div>
-      <nav>{nav.map(item=>{const Icon=item.icon;return <button key={item.id} className={page===item.id?'active':''} onClick={()=>{setPage(item.id);setMenuOpen(false)}}><Icon size={18}/><span>{item.label}</span>{page===item.id&&<i/>}</button>})}</nav>
-      <div className="sidebar-bottom"><div className="system-status"><span className="live-dot"/><div><strong>Relationship graph</strong><small>Demo intelligence live</small></div></div><div className="profile-mini"><div className="person-avatar">JT</div><div><strong>Joseph</strong><small>Autonomy · L{autonomy}</small></div></div></div>
-    </aside>
-    <div className="workspace">
-      <header className="topbar"><button className="icon-btn mobile-menu" onClick={()=>setMenuOpen(!menuOpen)}><Menu size={20}/></button><div className="crumb"><span>Aetheris Nexus</span><ChevronRight size={14}/><strong>{labelForPage[page]}</strong></div><div className="top-actions"><button className="icon-btn" onClick={()=>setDiagnoseOpen(true)} title="New objective"><Target size={19}/></button><button className="icon-btn" onClick={()=>setIqOpen(true)} title="Nexus IQ"><BrainCircuit size={19}/></button><button className="status-chip"><span className="live-dot"/> INTELLIGENCE ACTIVE</button></div></header>
-      <main className="content">{pageContent}</main>
-    </div>
-    <PersonDrawer person={selected} onClose={()=>setSelected(null)} onDraft={(p)=>{setSelected(null);setDraftPerson(p)}} notes={notes} onAddNote={addNote}/>
-    <IntroModal person={draftPerson} onClose={()=>setDraftPerson(null)}/>
-    <DiagnoseModal open={diagnoseOpen} onClose={()=>setDiagnoseOpen(false)} onCreate={addObjective}/>
-    {iqOpen&&<div className="modal-wrap" onMouseDown={()=>setIqOpen(false)}><div className="modal iq-modal panel" onMouseDown={e=>e.stopPropagation()}>
-      <div className="modal-head"><div><div className="eyebrow">NEXUS IQ</div><h2>Ask the relationship graph.</h2></div><button className="icon-btn" onClick={()=>setIqOpen(false)}><X size={18}/></button></div>
-      <div className="iq-input"><Search size={18}/><input autoFocus value={iq} onChange={e=>setIq(e.target.value)} onKeyDown={e=>e.key==='Enter'&&askIq(iq)} placeholder="Who should I talk to this week?"/><button className="btn primary compact" onClick={()=>askIq(iq)}>Ask</button></div>
-      {iqAnswer&&<IqResults answer={iqAnswer} people={people} onSelect={(p)=>{setIqOpen(false);setSelected(p)}}/>}
-      <div className="quick-asks">{['Who should I talk to this week?','Which relationships are going cold?','Who could introduce me into PE?','Which customers could introduce other buyers?'].map(x=><button key={x} onClick={()=>askIq(x)}>{x}</button>)}</div>
-    </div></div>}
-  </div>
+  const saveProfile=(x:DigitalYouProfile)=>{setProfileState(x);localStorage.setItem('aetheris-intros-dy',JSON.stringify(x))};const saveAutonomy=(x:AutonomyLevel)=>{setAutonomyState(x);localStorage.setItem('aetheris-intros-autonomy',String(x))}
+  const addNeed=(o:Objective)=>{const x=[o,...objectives];setObjectives(x);localStorage.setItem('aetheris-nexus-objectives',JSON.stringify(x));setPage('needs')};const addNote=(personId:string,text:string,scope:PrivacyScope)=>{const x=[{id:`m${Date.now()}`,personId,text,scope,createdAt:new Date().toLocaleDateString()},...notes];setNotes(x);localStorage.setItem('aetheris-nexus-memory',JSON.stringify(x))}
+  const content=useMemo(()=>({home:<Home people={people} select={setSelected} setPage={setPage} openNeed={()=>setNeedOpen(true)}/>,intros:<Intros people={people} select={setSelected} draft={setDraft}/>,people:<People people={people} select={setSelected}/>,messages:<Messages people={people} select={setSelected}/>,memory:<Memory people={people} select={setSelected} notes={notes}/>,needs:<Needs objectives={objectives} onNew={()=>setNeedOpen(true)}/>,insights:<Insights people={people} select={setSelected}/>,profile:<Profile profile={profile} setProfile={saveProfile} autonomy={autonomy} setAutonomy={saveAutonomy}/>})[page],[page,people,notes,objectives,profile,autonomy])
+  return <div className={`app-shell ${collapsed?'rail-collapsed':''}`}><aside className={`nav-rail ${mobileOpen?'mobile-open':''}`}><div className="rail-head"><Brand/><button className="rail-toggle" onClick={()=>setCollapsed(!collapsed)} title="Collapse navigation"><ChevronLeft size={16}/></button></div><nav>{nav.map(item=>{const Icon=item.icon;return <button key={item.id} className={page===item.id?'active':''} title={item.label} onClick={()=>{setPage(item.id);setMobileOpen(false)}}><Icon size={18}/><span>{item.label}</span></button>})}</nav><div className="rail-foot"><span className="live-dot"/><span>Memory live</span><button onClick={()=>setPage('profile')}><span>JT</span></button></div></aside><div className="workspace"><header className="topbar"><button className="icon-btn mobile-menu" onClick={()=>setMobileOpen(!mobileOpen)}><Menu size={19}/></button><span className="topbar-title">Aetheris Intros <i>/</i> {nav.find(n=>n.id===page)?.label}</span><div><button className="icon-btn" title="New need" onClick={()=>setNeedOpen(true)}><Plus size={18}/></button><button className="icon-btn" title="Ask Intros"><BrainCircuit size={18}/></button></div></header><div className="workspace-grid"><main className="content">{content}</main><ContextRail page={page} people={people} select={setSelected}/></div></div><nav className="mobile-nav">{nav.slice(0,5).map(item=>{const Icon=item.icon;return <button key={item.id} className={page===item.id?'active':''} onClick={()=>setPage(item.id)}><Icon size={18}/><span>{item.label}</span></button>})}</nav><PersonDrawer person={selected} onClose={()=>setSelected(null)} onDraft={p=>{setSelected(null);setDraft(p)}} notes={notes} onAdd={addNote}/><IntroModal person={draft} onClose={()=>setDraft(null)}/><NeedModal open={needOpen} onClose={()=>setNeedOpen(false)} onCreate={addNeed}/></div>
 }
-
-export default App
