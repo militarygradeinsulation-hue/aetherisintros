@@ -83,7 +83,7 @@ function SaveButton({ saved, onToggle }: { saved: boolean; onToggle: () => void 
 }
 
 /** Editorial ivory field beside a monochrome portrait — the signature Aetheris page opening. */
-function EditorialHero({ folio, title, statement, copy, caption, focus = 'center 30%', stats, action }: {
+function EditorialHero({ folio, title, statement, copy, caption, focus = 'center 30%', stats, action, image = portraitImg }: {
   folio: string; title: React.ReactNode; statement: string; copy: string; caption: string
   focus?: string; stats?: Array<{ k: string; v: string }>; action?: React.ReactNode; image?: string
 }) {
@@ -98,7 +98,7 @@ function EditorialHero({ folio, title, statement, copy, caption, focus = 'center
       <div className="blueprint-cross">+</div>
     </div>
     <figure className="editorial-plate">
-       <img src={arguments[0].image ?? portraitImg} alt="A composed professional in architectural window light" style={{ objectPosition: focus }} loading="lazy" />
+       <img src={image} alt="A composed professional in architectural window light" style={{ objectPosition: focus }} loading="lazy" />
       <figcaption><span>ACTIVE MEMORY</span><p>{caption}</p></figcaption>
     </figure>
   </section>
