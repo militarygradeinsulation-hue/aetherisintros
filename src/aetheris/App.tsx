@@ -155,15 +155,103 @@ function PersonDrawer({ person, onClose, onDraft, notes, onAddNote }: { person: 
   </div>
 }
 
+type OptIn = 'pending' | 'yes' | 'no'
+
 function IntroModal({ person, onClose }: { person: Person | null; onClose: () => void }) {
   const [text, setText] = useState('')
-  useEffect(() => { if (person) setText(composeWarmIntro(person)) }, [person])
+  const [you, setYou] = useState<OptIn>('pending')
+  const [them, setThem] = useState<OptIn>('pending')
+  useEffect(() => { if (person) { setText(composeWarmIntro(person)); setYou('pending'); setThem('pending') } }, [person])
   if (!person) return null
+  const connector = person.bestPath[1] ?? 'your connector'
+  const authorized = you === 'yes' && them === 'yes'
+  const declined = you === 'no' || them === 'no'
+  const optRow = (label: string, detail: string, value: OptIn, set: (v: OptIn) => void) => (
+    <div className="optin-row">
+      <div><strong>{label}</strong><small>{detail}</small></div>
+      <div className="optin-buttons">
+        <button className={value === 'yes' ? 'yes' : ''} onClick={() => set('yes')}>Interested</button>
+        <button className={value === 'no' ? 'no' : ''} onClick={() => set('no')}>Not now</button>
+      </div>
+    </div>
+  )
   return <div className="modal-wrap" onMouseDown={onClose}><div className="modal panel" onMouseDown={e=>e.stopPropagation()}>
     <div className="modal-head"><div><div className="eyebrow">DIGITAL YOU · DRAFT</div><h2>Approach {person.name}</h2></div><button className="icon-btn" onClick={onClose}><X size={18}/></button></div>
     <div className="context-strip"><Sparkles size={16}/><span>Drafted from relationship context, not a generic outreach template.</span></div>
-    <textarea value={text} onChange={e=>setText(e.target.value)} rows={12}/>
-    <div className="modal-actions"><button className="btn secondary" onClick={()=>setText(composeWarmIntro(person))}>Regenerate from context</button><button className="btn primary" onClick={()=>{navigator.clipboard?.writeText(text); onClose()}}><Send size={16}/> Copy draft</button></div>
+    <textarea value={text} onChange={e=>setText(e.target.value)} rows={10}/>
+    <section className="optin-block">
+      <div className="section-title"><h4>DOUBLE OPT-IN</h4><span>required before an introduction is authorized</span></div>
+      {optRow('You', `Confirm the conversation with ${person.name.split(' ')[0]} is worth ${connector}’s credibility.`, you, setYou)}
+      {optRow(person.name, `${person.name.split(' ')[0]} confirms interest before any introduction is made.`, them, setThem)}
+      <div className={`optin-verdict ${authorized ? 'ok' : declined ? 'blocked' : ''}`}>
+        {authorized ? <><CheckCircle2 size={16}/><span><b>INTRODUCTION AUTHORIZED.</b> Both parties agreed. The draft can be sent.</span></>
+          : declined ? <><AlertTriangle size={16}/><span><b>HELD.</b> One side declined. Hold the relationship and revisit when timing changes.</span></>
+          : <><LockKeyhole size={16}/><span><b>NOT AUTHORIZED YET.</b> Nexus waits for both sides before making an introduction.</span></>}
+      </div>
+    </section>
+    <div className="modal-actions"><button className="btn secondary" onClick={()=>setText(composeWarmIntro(person))}>Regenerate from context</button><button className="btn primary" disabled={!authorized} onClick={()=>{navigator.clipboard?.writeText(text); onClose()}}><Send size={16}/> {authorized ? 'Copy authorized intro' : 'Awaiting both sides'}</button></div>
+  </div></div>
+}
+
+const emptyDiagnostic = { goal: '', who: '', outcome: '', whyNow: '', valueOffer: '', success: '', constraints: '', distance: 'Warm introduction' }
+
+function DiagnoseModal({ open, onClose, onCreate }: { open: boolean; onClose: () => void; onCreate: (o: Objective) => void }) {
+  const [form, setForm] = useState(emptyDiagnostic)
+  const [priority, setPriority] = useState<Objective['priority']>('high')
+  useEffect(() => { if (open) { setForm(emptyDiagnostic); setPriority('high') } }, [open])
+  if (!open) return null
+  const set = (k: keyof typeof form, v: string) => setForm({ ...form, [k]: v })
+  const missing = [
+    !form.goal.trim() && 'the outcome you want',
+    !form.who.trim() && 'the kind of person who could influence it',
+    !form.whyNow.trim() && 'why now',
+    !form.valueOffer.trim() && 'what you offer them',
+  ].filter(Boolean) as string[]
+  const ready = missing.length === 0
+  const field = (k: keyof typeof form, label: string, placeholder: string) => (
+    <label className="diag-field"><span>{label}</span><input value={form[k]} onChange={e=>set(k, e.target.value)} placeholder={placeholder}/></label>
+  )
+  return <div className="modal-wrap" onMouseDown={onClose}><div className="modal diag-modal panel" onMouseDown={e=>e.stopPropagation()}>
+    <div className="modal-head"><div><div className="eyebrow">STAGE 1 · DIAGNOSE</div><h2>What outcome are you trying to create?</h2></div><button className="icon-btn" onClick={onClose}><X size={18}/></button></div>
+    <div className="context-strip"><Target size={16}/><span>Nexus does not search for people until the objective is clear.</span></div>
+    <div className="diag-grid">
+      {field('goal', 'GOAL', 'Open five serious conversations with multi-company operators')}
+      {field('who', 'WHO COULD INFLUENCE IT', 'Operating partners, portfolio CROs, founder-operators')}
+      {field('outcome', 'DESIRED OUTCOME', 'A working pilot inside one portfolio company')}
+      {field('whyNow', 'WHY NOW', 'They just consolidated revenue reporting across four companies')}
+      {field('valueOffer', 'WHAT YOU OFFER THEM', 'A forensic view of where pipeline disappears between teams')}
+      {field('success', 'SUCCESS CONDITION', 'A second meeting with the person who owns the budget')}
+      {field('constraints', 'CONSTRAINTS · WHAT TO AVOID', 'No cold outreach, no agencies, nothing that risks Gary’s credibility')}
+      <label className="diag-field"><span>RELATIONSHIP PREFERENCE</span>
+        <select value={form.distance} onChange={e=>set('distance', e.target.value)}>
+          {['Existing relationship','Warm introduction','Second-degree path','Strategic advisor','Connector','Cold discovery'].map(x=><option key={x}>{x}</option>)}
+        </select>
+      </label>
+      <label className="diag-field"><span>PRIORITY</span>
+        <select value={priority} onChange={e=>setPriority(e.target.value as Objective['priority'])}>
+          {['low','medium','high','critical'].map(x=><option key={x} value={x}>{x.toUpperCase()}</option>)}
+        </select>
+      </label>
+    </div>
+    {ready
+      ? <div className="diag-summary"><div className="eyebrow">STRUCTURED OBJECTIVE</div>
+          <p><b>Objective:</b> {form.goal}</p>
+          <p><b>Target person:</b> {form.who}</p>
+          <p><b>Desired outcome:</b> {form.outcome || 'Unknown — will be inferred from the first conversation.'}</p>
+          <p><b>Mutual value hypothesis:</b> {form.valueOffer}</p>
+          <p><b>Timing:</b> {form.whyNow}</p>
+          <p><b>Success condition:</b> {form.success || 'Unknown.'}</p>
+          <p><b>Constraints:</b> {form.constraints || 'None stated.'}</p>
+          <p><b>Search strategy:</b> {form.distance}</p>
+        </div>
+      : <div className="diag-missing"><AlertTriangle size={16}/><span>Still missing: {missing.join(', ')}. These would materially change the recommendation.</span></div>}
+    <div className="modal-actions">
+      <button className="btn secondary" onClick={onClose}>Cancel</button>
+      <button className="btn primary" disabled={!ready} onClick={()=>{
+        onCreate({ id: `o${Date.now()}`, title: form.goal, outcome: form.outcome || 'Outcome not yet defined', target: form.who, whyNow: form.whyNow, valueOffer: form.valueOffer, success: form.success || 'Not yet defined', priority })
+        onClose()
+      }}><Target size={16}/> Create objective</button>
+    </div>
   </div></div>
 }
 
