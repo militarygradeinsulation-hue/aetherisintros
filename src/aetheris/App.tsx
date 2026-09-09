@@ -149,6 +149,7 @@ function PersonDrawer({ person, onClose, onDraft, notes, onAddNote }: { person: 
       <section className="drawer-section"><h4>BEST PATH</h4><div className="pathline">{person.bestPath.map((x,i) => <span key={x}><b>{x}</b>{i < person.bestPath.length - 1 && <ArrowRight size={14}/>}</span>)}</div></section>
       <section className="drawer-section"><h4>BEST NEXT ACTION</h4><p className="action-copy">{person.nextAction}</p><div className="warning"><AlertTriangle size={16}/><span><b>Do not:</b> {person.dontDo}</span></div></section>
       {(person.opportunityLow || person.opportunityHigh) && <section className="drawer-section"><h4>MODELED ACCESSIBLE VALUE</h4><div className="value-range">{money(person.opportunityLow)} <span>to</span> {money(person.opportunityHigh)}</div><p className="micro">Modeled range, not booked revenue.</p></section>}
+      <MemorySection person={person} notes={notes} onAddNote={(t,s)=>onAddNote(person.id,t,s)}/>
       <div className="drawer-actions"><button className="btn secondary" onClick={onClose}>Close</button><button className="btn primary" onClick={() => onDraft(person)}><MessageSquareText size={16}/> Draft approach</button></div>
     </aside>
   </div>
