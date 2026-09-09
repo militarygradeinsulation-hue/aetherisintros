@@ -370,6 +370,74 @@ function SettingsPage({ autonomy, setAutonomy }: { autonomy:AutonomyLevel; setAu
   return <><div className="page-title"><div><div className="eyebrow">CONTROL THE SYSTEM</div><h1>Settings</h1><p>Privacy, connected sources and autonomy stay explicit.</p></div></div><div className="settings-grid"><section className="panel"><div className="section-head"><div><div className="eyebrow">DATA SOURCES</div><h3>Connections</h3></div></div><div className="integration-list">{integrations.map(i=><div className="integration" key={i.id}><span className="integration-icon">{icon(i.icon)}</span><div className="grow"><strong>{i.name}</strong><small>{i.detail}</small></div><button className={`toggle ${i.connected?'on':''}`} onClick={()=>setIntegrations(integrations.map(x=>x.id===i.id?{...x,connected:!x.connected}:x))}><i/></button></div>)}</div><p className="micro top-gap">Demo toggles only. Production connectors require provider OAuth credentials and scoped permissions.</p></section><section className="panel"><div className="section-head"><div><div className="eyebrow">AUTONOMY</div><h3>How far can Intros go?</h3></div><b className="autonomy-badge">LEVEL {autonomy}</b></div><div className="autonomy-levels">{[['Observe','Read and analyze only'],['Recommend','Suggest next actions'],['Draft','Create messages and intros'],['Approve','Ask before any external action'],['Authorized','Execute approved action classes']].map(([name,desc],i)=><button key={name} className={autonomy===i?'active':''} onClick={()=>setAutonomy(i as AutonomyLevel)}><span>{i}</span><div><strong>{name}</strong><small>{desc}</small></div>{autonomy===i&&<CheckCircle2 size={17}/>}</button>)}</div></section><section className="panel privacy-card"><ShieldCheck size={24}/><div><div className="eyebrow">PRIVATE BY DEFAULT</div><h3>Context can inform relevance without becoming shareable content.</h3><p>Every memory is scoped Private, Team, Organization, Shareable or Public. Intros should never reveal a private message to another person just because it influenced a match.</p></div></section></div></>
 }
 
+function nexusIq(query: string, people: Person[]): { read: string; unknown: string; results: IqResult[] } {
+  const q = query.toLowerCase()
+  const toResult = (p: Person): IqResult => ({
+    personId: p.id,
+    reasonNow: p.whyNow,
+    status: `${radarLabel[p.radar]} · last contact ${p.lastInteractionDays} days ago`,
+    opportunity: p.opportunityLow || p.opportunityHigh
+      ? `Modeled ${money(p.opportunityLow)}–${money(p.opportunityHigh)}`
+      : 'Unquantified — not enough evidence to assign value',
+    bestAction: p.nextAction,
+    score: p.scoreTotal,
+    confidence: p.confidence,
+  })
+  const byScore = (a: Person, b: Person) => b.scoreTotal - a.scoreTotal
+
+  if (q.includes('cold') || q.includes('dormant') || q.includes('neglect') || q.includes('risk')) {
+    const set = people.filter(p => p.radar === 'dormant' || p.radar === 'at_risk')
+      .sort((a, b) => b.score.relationshipStrength - a.score.relationshipStrength).slice(0, 3)
+    return {
+      read: 'Two relationships are decaying with real value still inside them. Reconnection is the move, not a pitch — the reason to reach out has to be about them, not about your product.',
+      unknown: 'We do not know whether either of them has budget authority in their current role.',
+      results: set.map(toResult),
+    }
+  }
+  if (q.includes('intro') || q.includes('path') || q.includes('pe') || q.includes('invest') || q.includes('reach')) {
+    const set = people.filter(p => p.bestPath.length > 1).sort(byScore).slice(0, 3)
+    return {
+      read: 'The strongest route runs through your existing connectors rather than a direct approach. Validate the connector’s willingness before asking for the introduction — an unrequested ask spends their credibility, not yours.',
+      unknown: 'We do not know whether the connector has spoken to the target recently.',
+      results: set.map(toResult),
+    }
+  }
+  if (q.includes('customer') || q.includes('referral')) {
+    const set = people.filter(p => p.score.trust >= 70).sort(byScore).slice(0, 3)
+    return {
+      read: 'Trust is already established with these relationships, which makes a referral request low-friction. Ask for perspective on who else has the same problem before asking for a name.',
+      unknown: 'We do not know whether their organizations permit referrals.',
+      results: set.map(toResult),
+    }
+  }
+  const set = people.filter(p => p.score.timing >= 50).sort(byScore).slice(0, 3)
+  return {
+    read: 'Three relationships justify a conversation this week. They combine strategic fit with an actual timing reason — the rest of the graph should stay untouched until something changes.',
+    unknown: 'We do not know whether any of them are currently mid-evaluation with another vendor.',
+    results: (set.length ? set : people.slice().sort(byScore).slice(0, 3)).map(toResult),
+  }
+}
+
+function IqResults({ answer, people, onSelect }: { answer: { read: string; unknown: string; results: IqResult[] }; people: Person[]; onSelect: (p: Person) => void }) {
+  return <div className="iq-answer">
+    <div className="eyebrow">NEXUS READ</div>
+    <p>{answer.read}</p>
+    <div className="iq-cards">{answer.results.map(r => {
+      const p = people.find(x => x.id === r.personId)
+      if (!p) return null
+      return <button className="iq-card" key={r.personId} onClick={() => onSelect(p)}>
+        <div className="iq-card-top"><span className="person-avatar">{p.initials}</span><div><strong>{p.name}</strong><small>{p.title} · {p.company}</small></div><b className="iq-score">{r.score}</b></div>
+        <div className="iq-line"><span>REASON NOW</span><p>{r.reasonNow}</p></div>
+        <div className="iq-line"><span>RELATIONSHIP STATUS</span><p>{r.status}</p></div>
+        <div className="iq-line"><span>OPPORTUNITY</span><p>{r.opportunity}</p></div>
+        <div className="iq-line"><span>BEST ACTION</span><p>{r.bestAction}</p></div>
+        <div className="iq-foot"><span>{classifyConnection(r.score)}</span><span>{r.confidence}% confidence</span></div>
+      </button>
+    })}</div>
+    <div className="iq-unknown"><AlertTriangle size={15}/><span><b>Unknown:</b> {answer.unknown}</span></div>
+  </div>
+}
+
 function App() {
   const [page,setPage]=useState<Page>(() => (localStorage.getItem('aetheris-intros-page') as Page) || 'command')
   const [people] = useState<Person[]>(seedPeople)
@@ -378,18 +446,27 @@ function App() {
   const [menuOpen,setMenuOpen]=useState(false)
   const [profile,setProfileState]=useState<DigitalYouProfile>(()=>{ try{return JSON.parse(localStorage.getItem('aetheris-intros-dy')||'')||defaultDigitalYou}catch{return defaultDigitalYou} })
   const [autonomy,setAutonomyState]=useState<AutonomyLevel>(()=>Number(localStorage.getItem('aetheris-intros-autonomy')||'2') as AutonomyLevel)
+  const [objectives,setObjectivesState]=useState<Objective[]>(()=>{ try{const s=localStorage.getItem('aetheris-nexus-objectives'); return s?JSON.parse(s) as Objective[]:seedObjectives}catch{return seedObjectives} })
+  const [notes,setNotesState]=useState<MemoryNote[]>(()=>{ try{const s=localStorage.getItem('aetheris-nexus-memory'); return s?JSON.parse(s) as MemoryNote[]:[]}catch{return []} })
+  const [diagnoseOpen,setDiagnoseOpen]=useState(false)
   const [iqOpen,setIqOpen]=useState(false)
   const [iq,setIq]=useState('')
-  const [iqAnswer,setIqAnswer]=useState('')
+  const [iqAnswer,setIqAnswer]=useState<ReturnType<typeof nexusIq>|null>(null)
 
   useEffect(()=>localStorage.setItem('aetheris-intros-page',page),[page])
   const setProfile=(x:DigitalYouProfile)=>{setProfileState(x); localStorage.setItem('aetheris-intros-dy',JSON.stringify(x))}
   const setAutonomy=(x:AutonomyLevel)=>{setAutonomyState(x);localStorage.setItem('aetheris-intros-autonomy',String(x))}
+  const addObjective=(o:Objective)=>{const next=[o,...objectives];setObjectivesState(next);localStorage.setItem('aetheris-nexus-objectives',JSON.stringify(next));setPage('intros')}
+  const addNote=(personId:string,text:string,scope:PrivacyScope)=>{
+    const next=[{id:`m${Date.now()}`,personId,text,scope,createdAt:new Date().toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'})},...notes]
+    setNotesState(next);localStorage.setItem('aetheris-nexus-memory',JSON.stringify(next))
+  }
+  const askIq=(question:string)=>{setIq(question);setIqAnswer(nexusIq(question,people))}
 
   const pageContent = useMemo(()=>{
     switch(page){
       case 'command': return <CommandPage people={people} select={setSelected} setPage={setPage}/>
-      case 'intros': return <IntrosPage people={people} select={setSelected} draft={setDraftPerson}/>
+      case 'intros': return <IntrosPage people={people} select={setSelected} draft={setDraftPerson} objectives={objectives} onDiagnose={()=>setDiagnoseOpen(true)}/>
       case 'network': return <NetworkPage people={people} select={setSelected}/>
       case 'forensics': return <ForensicsPage people={people} select={setSelected}/>
       case 'meetings': return <MeetingsPage people={people}/>
@@ -397,29 +474,27 @@ function App() {
       case 'roi': return <ROIPage/>
       case 'settings': return <SettingsPage autonomy={autonomy} setAutonomy={setAutonomy}/>
     }
-  },[page,people,profile,autonomy])
-
-  const runIq=()=>{
-    const q=iq.toLowerCase()
-    let ans='Scott Kelley is the strongest immediate relationship. Fit is high, timing is active, and you already have direct trust. The next move is a narrow forensic conversation, not a product pitch.'
-    if(q.includes('cold')||q.includes('dormant')) ans='Alison Kaiser and Prateek Sanjay deserve attention. Alison is the better business move because her role expanded, creating a new reason to reconnect. Prateek is a relationship-preservation move, not an urgent sales move.'
-    if(q.includes('pe')||q.includes('invest')) ans='Gary Frey is the strongest connector path into PE-adjacent operators. Maya Chen is the highest-value current target, but the recommended move is to validate Gary’s interest before asking for the introduction.'
-    setIqAnswer(ans)
-  }
+  },[page,people,profile,autonomy,objectives])
 
   return <div className="app-shell">
     <aside className={`sidebar ${menuOpen?'mobile-open':''}`}>
-      <div className="brand"><MiniLogo/><div><strong>AETHERIS</strong><span>INTROS</span></div></div>
+      <div className="brand"><MiniLogo/><div><strong>AETHERIS</strong><span>NEXUS</span></div></div>
       <nav>{nav.map(item=>{const Icon=item.icon;return <button key={item.id} className={page===item.id?'active':''} onClick={()=>{setPage(item.id);setMenuOpen(false)}}><Icon size={18}/><span>{item.label}</span>{page===item.id&&<i/>}</button>})}</nav>
       <div className="sidebar-bottom"><div className="system-status"><span className="live-dot"/><div><strong>Relationship graph</strong><small>Demo intelligence live</small></div></div><div className="profile-mini"><div className="person-avatar">JT</div><div><strong>Joseph</strong><small>Autonomy · L{autonomy}</small></div></div></div>
     </aside>
     <div className="workspace">
-      <header className="topbar"><button className="icon-btn mobile-menu" onClick={()=>setMenuOpen(!menuOpen)}><Menu size={20}/></button><div className="crumb"><span>Aetheris Intros</span><ChevronRight size={14}/><strong>{labelForPage[page]}</strong></div><div className="top-actions"><button className="icon-btn" onClick={()=>setIqOpen(true)} title="Nexus IQ"><BrainCircuit size={19}/></button><button className="status-chip"><span className="live-dot"/> INTELLIGENCE ACTIVE</button></div></header>
+      <header className="topbar"><button className="icon-btn mobile-menu" onClick={()=>setMenuOpen(!menuOpen)}><Menu size={20}/></button><div className="crumb"><span>Aetheris Nexus</span><ChevronRight size={14}/><strong>{labelForPage[page]}</strong></div><div className="top-actions"><button className="icon-btn" onClick={()=>setDiagnoseOpen(true)} title="New objective"><Target size={19}/></button><button className="icon-btn" onClick={()=>setIqOpen(true)} title="Nexus IQ"><BrainCircuit size={19}/></button><button className="status-chip"><span className="live-dot"/> INTELLIGENCE ACTIVE</button></div></header>
       <main className="content">{pageContent}</main>
     </div>
-    <PersonDrawer person={selected} onClose={()=>setSelected(null)} onDraft={(p)=>{setSelected(null);setDraftPerson(p)}}/>
+    <PersonDrawer person={selected} onClose={()=>setSelected(null)} onDraft={(p)=>{setSelected(null);setDraftPerson(p)}} notes={notes} onAddNote={addNote}/>
     <IntroModal person={draftPerson} onClose={()=>setDraftPerson(null)}/>
-    {iqOpen&&<div className="modal-wrap" onMouseDown={()=>setIqOpen(false)}><div className="modal iq-modal panel" onMouseDown={e=>e.stopPropagation()}><div className="modal-head"><div><div className="eyebrow">NEXUS IQ</div><h2>Ask the relationship graph.</h2></div><button className="icon-btn" onClick={()=>setIqOpen(false)}><X size={18}/></button></div><div className="iq-input"><Search size={18}/><input autoFocus value={iq} onChange={e=>setIq(e.target.value)} onKeyDown={e=>e.key==='Enter'&&runIq()} placeholder="Who should I talk to this week?"/><button className="btn primary compact" onClick={runIq}>Ask</button></div>{iqAnswer&&<div className="iq-answer"><div className="eyebrow">INTROS READ</div><p>{iqAnswer}</p></div>}<div className="quick-asks"><button onClick={()=>{setIq('Which relationships are going cold?');setIqAnswer('Alison Kaiser and Prateek Sanjay deserve attention. Alison is the stronger business move because her role expanded, creating a new reason to reconnect.')}}>Which relationships are going cold?</button><button onClick={()=>{setIq('Who can get me into PE?');setIqAnswer('Gary Frey is the strongest connector path. Maya Chen is the highest-value current target, but validate Gary’s interest before asking for the introduction.')}}>Who can get me into PE?</button></div></div></div>}
+    <DiagnoseModal open={diagnoseOpen} onClose={()=>setDiagnoseOpen(false)} onCreate={addObjective}/>
+    {iqOpen&&<div className="modal-wrap" onMouseDown={()=>setIqOpen(false)}><div className="modal iq-modal panel" onMouseDown={e=>e.stopPropagation()}>
+      <div className="modal-head"><div><div className="eyebrow">NEXUS IQ</div><h2>Ask the relationship graph.</h2></div><button className="icon-btn" onClick={()=>setIqOpen(false)}><X size={18}/></button></div>
+      <div className="iq-input"><Search size={18}/><input autoFocus value={iq} onChange={e=>setIq(e.target.value)} onKeyDown={e=>e.key==='Enter'&&askIq(iq)} placeholder="Who should I talk to this week?"/><button className="btn primary compact" onClick={()=>askIq(iq)}>Ask</button></div>
+      {iqAnswer&&<IqResults answer={iqAnswer} people={people} onSelect={(p)=>{setIqOpen(false);setSelected(p)}}/>}
+      <div className="quick-asks">{['Who should I talk to this week?','Which relationships are going cold?','Who could introduce me into PE?','Which customers could introduce other buyers?'].map(x=><button key={x} onClick={()=>askIq(x)}>{x}</button>)}</div>
+    </div></div>}
   </div>
 }
 
