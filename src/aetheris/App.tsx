@@ -292,7 +292,14 @@ function IntrosPage({ people, select, draft, objectives, onDiagnose }: { people:
   const [q,setQ]=useState('')
   const filtered = people.filter(p => `${p.name} ${p.company} ${p.tags.join(' ')}`.toLowerCase().includes(q.toLowerCase()))
   return <>
-    <div className="page-title"><div><div className="eyebrow">MATCH THE PERSON, NOT THE PROFILE</div><h1>Intros</h1><p>Every recommendation must answer: why them, why you, why now.</p></div><button className="btn primary"><Target size={16}/> New objective</button></div>
+    <div className="page-title"><div><div className="eyebrow">MATCH THE PERSON, NOT THE PROFILE</div><h1>Intros</h1><p>Every recommendation must answer: why them, why you, why now.</p></div><button className="btn primary" onClick={onDiagnose}><Target size={16}/> New objective</button></div>
+    <div className="objective-strip">{objectives.map(o=><article className="panel objective-card" key={o.id}>
+      <div className="objective-top"><Pill tone={o.priority==='critical'?'orange':o.priority==='high'?'gold':'neutral'}>{o.priority.toUpperCase()}</Pill><span>{o.target}</span></div>
+      <h3>{o.title}</h3>
+      <p><b>Why now:</b> {o.whyNow}</p>
+      <p><b>You offer:</b> {o.valueOffer}</p>
+      <small>Success: {o.success}</small>
+    </article>)}</div>
     <div className="toolbar panel"><div className="searchbox"><Search size={16}/><input placeholder="Search relationships, companies or context" value={q} onChange={e=>setQ(e.target.value)}/></div><button className="filter-btn"><SlidersHorizontal size={16}/> Filters</button></div>
     <div className="people-table panel">
       <div className="table-head"><span>Relationship</span><span>Why now</span><span>State</span><span>Score</span><span></span></div>
