@@ -449,3 +449,88 @@ export const onboardingQuestions: Array<{ key: string; label: string; placeholde
   { key: 'valuable', label: 'What types of intros are valuable to you?', placeholder: 'Warm, specific, decision-level…', learns: 'Intro preferences saved' },
   { key: 'never', label: 'What should Intros never do on your behalf?', placeholder: 'Your hard boundaries…', learns: 'Boundaries locked' },
 ]
+
+/* ------------------------------------------------- professional feed content */
+
+export interface Post {
+  id: string
+  memberId: string
+  kind: 'Insight' | 'Milestone' | 'Hiring' | 'Raising capital' | 'Partnership' | 'Event takeaway' | 'Strategic ask'
+  text: string
+  detail: string
+  when: string
+  responses: number
+}
+
+export const posts: Post[] = [
+  {
+    id: 'f1', memberId: 'p3', kind: 'Insight',
+    text: 'Most plants do not have a data problem. They have a handoff problem.',
+    detail: 'We replaced two dashboards with one daily standing question: what changed on the floor since yesterday? Scrap fell 11% in six weeks without a single new system.',
+    when: '2h ago', responses: 14,
+  },
+  {
+    id: 'f2', memberId: 'p8', kind: 'Raising capital',
+    text: 'Opening a Series B in October and doing it differently this time.',
+    detail: 'Before the deck, I want three operators who have taken a services business past $50M to tell me where my model breaks. Strategic capital only — I would rather have one investor who knows the sector than five who like the chart.',
+    when: '5h ago', responses: 22,
+  },
+  {
+    id: 'f3', memberId: 'p7', kind: 'Hiring',
+    text: 'Searching for a VP Revenue Operations who has lived through an integration.',
+    detail: 'Two acquisitions, three CRMs, one confused pipeline. I need someone who has cleaned this up before and can hold a room of skeptical regional managers.',
+    when: 'Yesterday', responses: 9,
+  },
+  {
+    id: 'f4', memberId: 'p10', kind: 'Partnership',
+    text: 'Looking for a logistics partner for a Midwest distribution pilot.',
+    detail: 'We have committed volume and a customer willing to co-sign the pilot. What we do not have is a partner who can hold service levels through Q4 peak.',
+    when: 'Yesterday', responses: 6,
+  },
+  {
+    id: 'f5', memberId: 'p9', kind: 'Event takeaway',
+    text: 'The most useful sentence at the healthcare operators dinner had nothing to do with AI.',
+    detail: '“We stopped measuring adoption and started measuring the decision it changed.” Every vendor in the room went quiet. That is the bar now.',
+    when: '2 days ago', responses: 18,
+  },
+  {
+    id: 'f6', memberId: 'p5', kind: 'Milestone',
+    text: 'Crossed $40M ARR with the same account team we had at $12M.',
+    detail: 'Not a growth-hack story. We removed four steps from the enterprise handoff and let the people who close also stay for onboarding.',
+    when: '3 days ago', responses: 27,
+  },
+  {
+    id: 'f7', memberId: 'p12', kind: 'Strategic ask',
+    text: 'Who has taken a regional construction brand into two new states without diluting the culture?',
+    detail: 'Happy to trade everything I have learned about field labor retention for an honest hour on multi-state expansion.',
+    when: '4 days ago', responses: 11,
+  },
+]
+
+export const trendingSectors: Array<{ sector: string; note: string; move: string }> = [
+  { sector: 'Industrial AI', note: '9 members added this focus', move: '+31%' },
+  { sector: 'Private equity operations', note: '6 active operating-partner asks', move: '+18%' },
+  { sector: 'Field services roll-ups', note: '4 needs matched this week', move: '+12%' },
+  { sector: 'Healthcare logistics', note: '3 new members, 2 warm paths', move: '+9%' },
+  { sector: 'Enterprise fintech', note: 'Hiring demand cooling slightly', move: '−4%' },
+]
+
+export const events: Array<{ id: string; name: string; when: string; where: string; who: string }> = [
+  { id: 'e1', name: 'Operators & Owners Dinner', when: 'Sep 24 · 6:30pm', where: 'Charlotte, NC', who: '18 members attending · 4 in your graph' },
+  { id: 'e2', name: 'Midwest Manufacturing Forum', when: 'Oct 2 · all day', where: 'Indianapolis, IN', who: '31 members · Gary Frey speaking' },
+  { id: 'e3', name: 'PE Value Creation Roundtable', when: 'Oct 15 · private', where: 'Chicago, IL', who: 'Invitation only · 2 warm paths available' },
+]
+
+export const circles: Array<{ id: string; name: string; members: string; why: string }> = [
+  { id: 'c1', name: 'Industrial Operators', members: '212 members', why: 'Your last three needs were manufacturing-shaped.' },
+  { id: 'c2', name: 'PE Operating Partners', members: '96 members', why: 'Two members already share a trust path with you.' },
+  { id: 'c3', name: 'Founders Raising in 2026', members: '148 members', why: 'Matches the capital strategy conversations in your memory.' },
+]
+
+export const howItWorks5 = [
+  { step: 'Capture context', copy: 'Your focus, needs, offers and conversations become structured relationship context.' },
+  { step: 'Map relationships', copy: 'People, companies and trust paths are connected into one living graph.' },
+  { step: 'Identify shared goals', copy: 'Intros looks for genuine overlap between what you need and what others can move.' },
+  { step: 'Recommend warm introductions', copy: 'Only matches with mutual value, credible timing and a real path are surfaced.' },
+  { step: 'Track outcomes', copy: 'What happened next is remembered, so the next recommendation is sharper.' },
+]
