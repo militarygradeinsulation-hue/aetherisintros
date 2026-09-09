@@ -30,7 +30,7 @@ function build(raw: RawMember): Member {
   const score = { ...base, ...raw.score }
   const scoreTotal = calculateConnectionScore(score)
   const partial = { ...raw, score, scoreTotal }
-  return { ...partial, radar: determineRadarState({ ...partial, radar: 'unknown_path' }) }
+  return { ...partial, radar: determineRadarState(partial) }
 }
 
 /** Extra editorial/social attributes for the six original relationship seeds. */

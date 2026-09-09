@@ -112,7 +112,7 @@ function MemberCard({ person, onOpen, onMessage, onIntro, saved, onSave }: { per
   </article>
 }
 
-function AskCard({ ask, member, onMessage, onOpen, saved, onSave }: { ask: NetworkAsk; member?: Member; onMessage: () => void; onOpen: () => void; saved: boolean; onSave: () => void }) {
+function AskCard({ ask, member, onMessage, onOpen, saved, onSave }: { ask: NetworkAsk; member: Member | undefined; onMessage: () => void; onOpen: () => void; saved: boolean; onSave: () => void }) {
   return <article className="feed-card ask-card">
     <header>
       <button className="ask-author" onClick={onOpen}>{member && <Avatar person={member} />}<span><strong>{member?.name ?? 'Member'}</strong><small>{member?.title} · {member?.company}</small></span></button>
