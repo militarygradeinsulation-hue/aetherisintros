@@ -7,8 +7,26 @@ import {
   Route, ScanSearch, Send, UserPlus, SlidersHorizontal, CircleDot, LockKeyhole
 } from 'lucide-react'
 import { defaultDigitalYou, leaks as seedLeaks, meetings as seedMeetings, objectives as seedObjectives, people as seedPeople } from './data'
-import type { AutonomyLevel, DigitalYouProfile, Meeting, Objective, Person, RadarState } from './types'
+import type { AutonomyLevel, DigitalYouProfile, Meeting, Objective, Person, PrivacyScope, RadarState } from './types'
 import { classifyConnection, composeWarmIntro, radarLabel, scoreTone } from './lib/engine'
+
+type MemoryNote = { id: string; personId: string; text: string; scope: PrivacyScope; createdAt: string }
+
+const scopeOrder: PrivacyScope[] = ['private', 'team', 'organization', 'shareable', 'public']
+const scopeLabel: Record<PrivacyScope, string> = {
+  private: 'Private', team: 'Team', organization: 'Organization', shareable: 'Shareable', public: 'Public',
+}
+const scopeNote: Record<PrivacyScope, string> = {
+  private: 'Informs relevance only. Never quoted to anyone else.',
+  team: 'Visible to your team. Not shareable outside it.',
+  organization: 'Visible across the organization.',
+  shareable: 'Cleared for use inside an introduction.',
+  public: 'Already public information.',
+}
+
+type IqResult = {
+  personId: string; reasonNow: string; status: string; opportunity: string; bestAction: string; score: number; confidence: number
+}
 
 type Page = 'command' | 'intros' | 'network' | 'forensics' | 'meetings' | 'digital-you' | 'roi' | 'settings'
 
