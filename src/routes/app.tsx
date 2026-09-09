@@ -21,10 +21,10 @@ export const Route = createFileRoute("/app")({
       { name: "twitter:card", content: "summary_large_image" },
     ],
   }),
-  component: AppРRoute,
+  component: AppRoute,
 });
 
-function AppРRoute() {
+function AppRoute() {
   return (
     <ClientOnly fallback={null}>
       <App />
