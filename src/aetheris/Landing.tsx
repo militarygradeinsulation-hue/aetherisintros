@@ -1,4 +1,4 @@
-import { ArrowRight, Eye, LockKeyhole, Network, Sparkles } from 'lucide-react'
+import { ArrowRight, Eye, LockKeyhole, Network } from 'lucide-react'
 import { Link } from '@tanstack/react-router'
 import portrait from '@/assets/aetheris-editorial-portrait.jpg'
 
