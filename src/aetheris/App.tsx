@@ -85,7 +85,7 @@ function SaveButton({ saved, onToggle }: { saved: boolean; onToggle: () => void 
 /** Editorial ivory field beside a monochrome portrait — the signature Aetheris page opening. */
 function EditorialHero({ folio, title, statement, copy, caption, focus = 'center 30%', stats, action }: {
   folio: string; title: React.ReactNode; statement: string; copy: string; caption: string
-  focus?: string; stats?: Array<{ k: string; v: string }>; action?: React.ReactNode
+  focus?: string; stats?: Array<{ k: string; v: string }>; action?: React.ReactNode; image?: string
 }) {
   return <section className="editorial-hero">
     <div className="editorial-field">
@@ -98,7 +98,7 @@ function EditorialHero({ folio, title, statement, copy, caption, focus = 'center
       <div className="blueprint-cross">+</div>
     </div>
     <figure className="editorial-plate">
-      <img src={portraitImg} alt="A composed professional in architectural window light" style={{ objectPosition: focus }} loading="lazy" />
+       <img src={arguments[0].image ?? portraitImg} alt="A composed professional in architectural window light" style={{ objectPosition: focus }} loading="lazy" />
       <figcaption><span>ACTIVE MEMORY</span><p>{caption}</p></figcaption>
     </figure>
   </section>
@@ -220,6 +220,7 @@ function Home({ people, select, setPage, openNeed, openThread, saved, toggleSave
       statement="Your network already contains opportunities."
       copy="This is what changed in your professional network: people worth meeting, what they need, what they can move, and where a conversation is justified today."
       caption="Every signal here comes from context you or the network already shared."
+      image={sarahPortrait}
       stats={[{ k: 'Members in graph', v: String(people.length) }, { k: 'Warm paths open', v: String(people.filter(p => p.bestPath.length > 2).length) }, { k: 'Active asks', v: String(networkAsks.length) }]}
       action={<><Button onClick={openNeed}><Plus size={14} /> Post a need</Button><button className="text-action" onClick={() => setPage('discover')}>Browse the network <ArrowRight size={13} /></button></>}
     />
@@ -346,6 +347,7 @@ function Discover({ people, select, saved, toggleSave, setPage }: { people: Memb
       statement="Search the way you would brief a trusted friend."
       copy="Describe the outcome you want and Intros reads needs, offers, expertise, location, availability and the trust paths already open to you."
       caption="Members are surfaced with reasoning, never as an anonymous list."
+      image={marcusPortrait}
       focus="center 22%"
     />
     <PageHead label="DISCOVER" title="Browse the people, not a database."
@@ -433,6 +435,7 @@ function Intros({ people, select, draft, setPage }: { people: Member[]; select: 
   const ranked = [...people].sort((a, b) => b.scoreTotal - a.scoreTotal)
   const shown = state === 'all' ? ranked.slice(0, 6) : ranked.filter(p => p.introState === state)
   return <>
+    <EditorialHero folio="INTROS / MUTUAL VALUE" title={<>A warm path is<br /><em>earned context.</em></>} statement="The right conversation, with a reason for both sides." copy="Each report explains the mutual value, live timing and trust path before anyone asks for an introduction." caption="Both people retain agency. Nothing moves until both choose the conversation." image={priyaPortrait} />
     <PageHead label="CURATED INTRODUCTIONS" title="People worth knowing now."
       copy="Every introduction carries mutual value, timing and a credible path. Nothing is sent until both sides agree."
       proof="46 introductions made · 24 became working conversations." />
@@ -464,6 +467,7 @@ function Messages({ people, select, activeId, setActiveId }: { people: Member[];
   if (!person) return null
   const extra = sent[thread.id] ?? []
   return <>
+    <EditorialHero folio="MESSAGES / RELATIONSHIP CONTEXT" title={<>Conversation with<br /><em>memory beside it.</em></>} statement="People speak to people. Context stays quietly available." copy="Commitments, mutual connections and the reason for the introduction remain beside the thread—not inside the conversation." caption="A professional exchange remains human when intelligence knows when to stay quiet." image={elliotPortrait} />
     <PageHead label="MESSAGES" title="Context before contact."
       copy="Real conversations between members. Intros keeps the relationship context beside the thread, never in the middle of it."
       proof="Every thread remembers the last commitment made." />
@@ -527,6 +531,7 @@ function Needs({ objectives, onNew, people, select, saved, toggleSave, setPage }
   const forYou = networkAsks.filter(a => ['a1', 'a4', 'a3'].includes(a.id))
   const list = tab === 'network' ? networkAsks : tab === 'saved' ? networkAsks.filter(a => saved.includes(a.id)) : forYou
   return <>
+    <EditorialHero folio="NEEDS / PROFESSIONAL ASKS" title={<>State the outcome.<br /><em>Find who can move it.</em></>} statement="Serious asks create useful professional context." copy="A need is not a broadcast. It is a concise case for why the right person should care, why now matters and what value moves both ways." caption="Specific needs produce considered responses—not noisy outreach." image={sarahPortrait} />
     <PageHead label="NEEDS" title="Tell the network what you need."
       copy="State the outcome you are trying to create. Intros finds who can move it forward and why they would want to."
       proof="Network-visible asks feed matching. Private asks stay private."
@@ -639,6 +644,7 @@ function Memory({ people, select, notes }: { people: Member[]; select: (p: Membe
 function Insights({ people, select, setPage, saved, toggleSave }: { people: Member[]; select: (p: Member) => void; setPage: (p: Page) => void; saved: string[]; toggleSave: (id: string) => void }) {
   const [dismissed, setDismissed] = useState<string[]>([])
   return <>
+    <EditorialHero folio="INSIGHTS / RELATIONSHIP MOVEMENT" title={<>Notice what changed.<br /><em>Act while it matters.</em></>} statement="Signals become useful only when they change the next move." copy="Role changes, cooling conversations, matching needs and warm paths are organized around action—not analytics theater." caption="The strongest signal is often a small change in a relationship you already trust." image={marcusPortrait} />
     <PageHead label="INSIGHTS" title="Signals worth acting on."
       copy="No vanity metrics. Only relationship changes that could alter an outcome, each with an action attached."
       proof="$486K influenced across 46 introductions in 90 days." />
