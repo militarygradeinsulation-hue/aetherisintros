@@ -1,11 +1,15 @@
 import { useEffect, useMemo, useState } from 'react'
 import {
-  AlertTriangle, ArrowRight, Bookmark, BookmarkCheck, BrainCircuit, CalendarDays, Check, CheckCircle2, ChevronLeft,
+  AlertTriangle, ArrowRight, Bookmark, BookmarkCheck, CalendarDays, Check, CheckCircle2, ChevronLeft,
   CircleDot, Compass, Eye, Fingerprint, Handshake, Home as HomeIcon, Layers, LockKeyhole,
-  Menu, MessageSquareText, Network, Plus, Search, Send, Share2, ShieldCheck, Sparkles, Target,
+  Menu, MessageSquareText, Network, Plus, Search, Send, Share2, ShieldCheck, Target,
   TrendingUp, UserRound, Users, X,
 } from 'lucide-react'
 import portraitImg from '@/assets/aetheris-editorial-portrait.jpg'
+import marcusPortrait from '@/assets/member-marcus.jpg'
+import priyaPortrait from '@/assets/member-priya.jpg'
+import sarahPortrait from '@/assets/member-sarah.jpg'
+import elliotPortrait from '@/assets/member-elliot.jpg'
 import { defaultDigitalYou, leaks, objectives as seedObjectives } from './data'
 import type { AutonomyLevel, DigitalYouProfile, Objective, PrivacyScope } from './types'
 import {
@@ -49,8 +53,13 @@ const scopes: PrivacyScope[] = ['private', 'team', 'organization', 'shareable', 
 function Brand() {
   return <div className="brand-mark"><span className="brand-monogram">AI</span><span className="brand-name">Aetheris<em>Intros</em></span></div>
 }
+function AetherisGlyph({ size = 18 }: { size?: number }) {
+  return <span className="aetheris-glyph" style={{ width: size, height: size }} aria-hidden="true"><i /><b /></span>
+}
+const memberPortraits: Record<string, string> = { p7: sarahPortrait, p8: marcusPortrait, p11: priyaPortrait, p14: elliotPortrait }
 function Avatar({ person, large = false, portrait = false }: { person: Member; large?: boolean; portrait?: boolean }) {
-  return <span className={`person-avatar ${large ? 'large' : ''} ${portrait ? 'portrait' : ''}`}>{person.initials}</span>
+  const image = memberPortraits[person.id]
+  return <span className={`person-avatar ${large ? 'large' : ''} ${portrait ? 'portrait' : ''}`}>{image ? <img src={image} alt="" width={1024} height={1280} loading="lazy" /> : person.initials}</span>
 }
 function Button({ children, kind = 'primary', onClick, disabled = false, className = '' }: { children: React.ReactNode; kind?: 'primary' | 'secondary' | 'quiet'; onClick?: () => void; disabled?: boolean; className?: string }) {
   return <button className={`btn ${kind} ${className}`} onClick={onClick} disabled={disabled}>{children}</button>
@@ -63,7 +72,7 @@ function Score({ value }: { value: number }) {
 }
 function PageHead({ label, title, copy, proof, action }: { label: string; title: string; copy: string; proof?: string; action?: React.ReactNode }) {
   return <header className="page-title">
-    <div><Label>{label}</Label><h1>{title}</h1><p>{copy}</p>{proof && <small className="page-proof"><Sparkles size={11} />{proof}</small>}</div>
+    <div><Label>{label}</Label><h1>{title}</h1><p>{copy}</p>{proof && <small className="page-proof"><AetherisGlyph size={12} />{proof}</small>}</div>
     {action}
   </header>
 }
@@ -475,16 +484,16 @@ function Messages({ people, select, activeId, setActiveId }: { people: Member[];
         <header>
           <Avatar person={person} />
           <div><strong>{person.name}</strong><small>{person.title} · {person.company}</small></div>
-          <button className="icon-btn" onClick={() => select(person)} aria-label="Open relationship intelligence"><BrainCircuit size={17} /></button>
+           <button className="icon-btn" onClick={() => select(person)} aria-label="Open relationship intelligence"><AetherisGlyph size={17} /></button>
         </header>
         <div className="intro-context"><Label>INTRODUCTION CONTEXT</Label><p>{thread.introContext}</p></div>
         <div className="messages">
           {thread.messages.map(m => <div key={m.id} className={`message ${m.from === 'me' ? 'outgoing' : 'incoming'}`}>{m.text}<small>{m.at}</small></div>)}
           {extra.map((t, i) => <div key={i} className="message outgoing">{t}<small>Just now</small></div>)}
-          <div className="shared-context"><Sparkles size={12} /><span>Shared context: {person.needs[0]} · {person.offers[0]}</span></div>
+           <div className="shared-context"><AetherisGlyph size={12} /><span>Shared context: {person.needs[0]} · {person.offers[0]}</span></div>
         </div>
         <div className="composer-wrap">
-          <button className="suggested" onClick={() => setText(thread.suggested)}><Sparkles size={13} /> Use suggested reply</button>
+           <button className="suggested" onClick={() => setText(thread.suggested)}><AetherisGlyph size={13} /> Use contextual draft</button>
           <div className="composer">
             <textarea value={text} onChange={e => setText(e.target.value)} placeholder="Write with the relationship in mind…" />
             <button onClick={() => { if (text.trim()) { setSent(s => ({ ...s, [thread.id]: [...(s[thread.id] ?? []), text.trim()] })); setText('') } }} disabled={!text.trim()} aria-label="Send"><Send size={17} /></button>
@@ -565,9 +574,25 @@ function Memory({ people, select, notes }: { people: Member[]; select: (p: Membe
   ]
   const shown = cat === 'All' ? items : items.filter(l => l.category === cat)
   return <>
-    <PageHead label="ACTIVE MEMORY" title="Intros remembers the context people lose."
-      copy="Every signal keeps its source, confidence, privacy scope and the moment it was learned."
-      proof="Nothing private is ever quoted in an introduction." />
+    <section className="memory-editorial">
+      <div className="memory-editorial-copy">
+        <Brand />
+        <Label>PEOPLE CREATE POSSIBILITIES</Label>
+        <h1>Memory that keeps<br />relationships <em>alive.</em></h1>
+        <p>A professional memory for builders, backed by real people, real context, and real intent.</p>
+        <blockquote>“Most opportunities aren’t lost because people say no. They’re lost because context is forgotten.”</blockquote>
+        <dl>
+          <div><dt>Relationships</dt><dd>10K+</dd></div><div><dt>Companies</dt><dd>312</dd></div>
+          <div><dt>Countries</dt><dd>28</dd></div><div><dt>Years of context</dt><dd>06</dd></div>
+        </dl>
+        <button className="memory-cta">Your Network Remembers <ArrowRight size={15} /></button>
+      </div>
+      <figure><img src={portraitImg} alt="Thoughtful professional in architectural window light" width={1280} height={1600} /><figcaption>ACTIVE MEMORY / CONTEXT HELD WITH INTENT</figcaption></figure>
+    </section>
+    <section className="memory-dark-intro">
+      <div><Label signal>ACTIVE MEMORY GRAPH</Label><h2>Not a contact list.<br />A living record of <em>why.</em></h2></div>
+      <blockquote>“Intros remembers the context people normally lose between conversations.”<small>NOT JUST WHAT PEOPLE SAID. BUT WHAT THEY CARE ABOUT. WHAT THEY’RE BUILDING. AND WHERE THINGS LEFT OFF.</small></blockquote>
+    </section>
     <div className="memory-layout">
       <section className="memory-stage">
         <MemoryGraph people={people} onSelect={select} />
@@ -582,14 +607,27 @@ function Memory({ people, select, notes }: { people: Member[]; select: (p: Membe
         <h2>The graph changed.</h2>
         <div className="memory-cats">{(['All', ...memoryCategories] as const).map(c =>
           <button key={c} className={cat === c ? 'active' : ''} onClick={() => setCat(c)}>{c}</button>)}</div>
-        {shown.map(l => <article key={l.id}>
+        {shown.map((l, index) => <article key={l.id} className="learning-row">
+          {people[index % people.length] && <Avatar person={people[index % people.length]!} portrait />}
+          <div>
           <span>{l.category}</span>
           <p>{l.text}</p>
           <small>{l.source} · {l.confidence}% confidence · {scopeLabel[l.scope]} · {l.when}</small>
+          </div>
         </article>)}
         {!shown.length && <p className="empty-state">Nothing learned in this category yet.</p>}
       </aside>
     </div>
+    <section className="memory-totals">
+      <div><strong>10,428</strong><span>relationship facts retained</span></div><div><strong>816</strong><span>commitments remembered</span></div>
+      <div><strong>147</strong><span>warm paths with live context</span></div><div><strong>93%</strong><span>source-attributed memory</span></div>
+    </section>
+    <section className="memory-modules">
+      <article><Label signal>RELATIONSHIP PATTERNS</Label><h3>You create the strongest outcomes through operator-to-operator introductions.</h3><p>11 of your last 14 successful conversations began with shared operating context.</p></article>
+      <article><Label signal>NEWLY LEARNED NEEDS</Label><h3>Five members now need people already inside your trusted graph.</h3><p>Industrial AI, operating partners and regional expansion appear most often.</p></article>
+      <article><Label signal>RECONNECT OPPORTUNITIES</Label><h3>Tomás Bergeron has relevant timing after 168 quiet days.</h3><p>Reconnect around bid qualification. Do not reference the time gap.</p></article>
+      <article><Label signal>COOLING CONVERSATIONS</Label><h3>Scott Kelley is waiting on one promised pipeline observation.</h3><p>A short, specific follow-up will close the loop without forcing a meeting.</p></article>
+    </section>
   </>
 }
 
@@ -668,29 +706,32 @@ function Profile({ profile, setProfile, autonomy, setAutonomy, people, setPage, 
   profile: DigitalYouProfile; setProfile: (x: DigitalYouProfile) => void; autonomy: AutonomyLevel
   setAutonomy: (x: AutonomyLevel) => void; people: Member[]; setPage: (p: Page) => void; notes: MemoryNote[]
 }) {
+  const [connected, setConnected] = useState(false)
   const sliders: [keyof DigitalYouProfile, string, string, string][] = [
     ['directness', 'Directness', 'Soft', 'Direct'], ['formality', 'Formality', 'Casual', 'Formal'],
     ['warmth', 'Warmth', 'Reserved', 'Warm'], ['brevity', 'Brevity', 'Detailed', 'Tight'],
   ]
   return <>
     <section className="identity-header">
-      <div className="identity-portrait"><span>{me.initials}</span><small>AETHERIS MEMBER SINCE 2024</small></div>
+      <div className="identity-portrait"><img src={portraitImg} alt="Joseph Toney in architectural window light" width={1280} height={1600} /><small>AETHERIS MEMBER SINCE 2024</small></div>
       <div className="identity-copy">
         <Label>MEMBER PROFILE</Label>
-        <h1>{me.name}</h1>
+        <h1>Joseph<br /><em>Toney</em></h1>
         <p className="identity-role">{me.title}<br />{me.company} · {me.location}</p>
         <p className="identity-thesis">{me.thesis}</p>
+        <blockquote>“Evidence, mutual value, good timing and human judgment.”</blockquote>
         <div className="identity-actions">
-          <Button kind="secondary" onClick={() => setPage('messages')}><MessageSquareText size={14} /> Message</Button>
-          <Button onClick={() => setPage('intros')}><Handshake size={14} /> Request intro</Button>
-          <Button kind="quiet" onClick={() => setPage('discover')}><Bookmark size={14} /> Save</Button>
+          <Button onClick={() => setPage('messages')}><MessageSquareText size={14} /> Message</Button>
+          <Button kind="secondary" onClick={() => setConnected(!connected)}>{connected ? <Check size={14} /> : <Plus size={14} />}{connected ? 'Connected' : 'Connect'}</Button>
+          <Button kind="secondary" onClick={() => setPage('intros')}><Handshake size={14} /> Request intro</Button>
+          <Button kind="quiet" onClick={() => setPage('discover')}><Bookmark size={14} /> Save to network</Button>
           <Button kind="quiet" onClick={() => navigator.clipboard?.writeText('https://aetheris-intros.app/joseph-toney')}><Share2 size={14} /> Share profile</Button>
         </div>
       </div>
     </section>
 
     <div className="profile-facts">
-      {[['CURRENT FOCUS', me.focus], ['LOOKING FOR', me.lookingFor], ['CAN HELP WITH', me.canHelpWith],
+      {[['ABOUT MEMBER', 'Founder building relationship systems for consequential business decisions.'], ['FOCUS AREAS', me.focus], ['GOALS', 'Place Aetheris with serious operators and document the outcomes.'], ['CAN HELP WITH', me.canHelpWith], ['CURRENTLY LOOKING FOR', me.lookingFor],
       ['INDUSTRIES', me.industries.join(' · ')], ['EXPERTISE', me.expertise.join(' · ')], ['VALUES', me.values],
       ['AVAILABILITY', me.availability], ['RECENT ASK', 'Founder & PE introductions · 5 qualified conversations']].map(([k, v]) =>
         <div key={k}><span>{k}</span><p>{v}</p></div>)}
@@ -721,9 +762,9 @@ function Profile({ profile, setProfile, autonomy, setAutonomy, people, setPage, 
         </ul>
       </article>
       <article className="module compat">
-        <header><Label signal>RELATIONSHIP COMPATIBILITY</Label><h3>How Intros reads the fit.</h3></header>
+        <header><Label signal>COMPATIBILITY INSIGHTS</Label><h3>How Aetheris reads the fit.</h3></header>
         <div className="compat-rings">
-          {[['Strategic fit', 86], ['Mutual value', 78], ['Timing', 71]].map(([k, v]) => <div key={String(k)}>
+          {[['Strategic alignment', 86], ['Shared interests', 78], ['Network value', 71]].map(([k, v]) => <div key={String(k)}>
             <svg viewBox="0 0 100 100" aria-hidden="true">
               <circle cx="50" cy="50" r="42" className="ring-track" />
               <circle cx="50" cy="50" r="42" className="ring-value" strokeDasharray={`${(Number(v) / 100) * 264} 264`} />
@@ -731,15 +772,24 @@ function Profile({ profile, setProfile, autonomy, setAutonomy, people, setPage, 
             <strong>{v}</strong><small>{k}</small>
           </div>)}
         </div>
+        <dl className="compat-rows"><div><dt>Mutual Connections</dt><dd>4 trusted paths</dd></div><div><dt>Conversation Potential</dt><dd>High</dd></div><div><dt>Long-Term Impact</dt><dd>Strong</dd></div><div><dt>Complementary Expertise</dt><dd>Revenue systems × capital</dd></div></dl>
+      </article>
+      <article className="module relationship-history">
+        <header><Label>RELATIONSHIP HISTORY</Label><h3>Context across time.</h3></header>
+        <ol><li><strong>Introduction accepted</strong><small>Marcus Adeyemi · Sep 2026</small></li><li><strong>Shared operating thesis</strong><small>Private note · Aug 2026</small></li><li><strong>First mapped warm path</strong><small>via Maya Chen · Jun 2026</small></li></ol>
+      </article>
+      <article className="module availability-panel">
+        <header><Label>AVAILABILITY</Label><h3><i /> Open for three considered conversations.</h3></header><p>Best for founders, operators and investors with a specific outcome and credible mutual value.</p><Button kind="secondary" onClick={() => setPage('messages')}><CalendarDays size={14} /> Book a 30 min call</Button>
       </article>
     </section>
 
     <section className="intro-recommendation">
-      <header><Label signal><Sparkles size={11} /> INTRODUCTION RECOMMENDATION</Label><h2>The smallest intelligent next move.</h2></header>
-      <p>{people[0] ? `Ask ${people[0].bestPath[1] ?? 'your shared contact'} to introduce you to ${people[0].name}. ${people[0].whyNow}` : 'No recommendation yet.'}</p>
+      <header><Label signal><AetherisGlyph size={13} /> AETHERIS INTRODUCTION RECOMMENDATION</Label><h2>You and {people[0]?.name ?? 'this member'} should compare operating notes.</h2></header>
+      <p>{people[0] ? `${people[0].whyThem} ${people[0].whyYou}` : 'No recommendation yet.'}</p>
+      <div className="why-now-block"><span>WHY NOW</span><p>{people[0]?.whyNow}</p></div>
       <footer>
-        <Button onClick={() => setPage('intros')}><Handshake size={14} /> Review the match report</Button>
-        <Button kind="secondary" onClick={() => setPage('memory')}><BrainCircuit size={14} /> See what informed this</Button>
+        <Button onClick={() => setPage('intros')}><Handshake size={14} /> Request introduction</Button>
+        <Button kind="secondary" onClick={() => setPage('memory')}><AetherisGlyph size={14} /> View reasoning</Button>
         <small><LockKeyhole size={12} /> Nothing is sent without both sides opting in.</small>
       </footer>
     </section>
@@ -930,7 +980,7 @@ function ContextRail({ page, people, select, onAsk, objectives, openThread }: {
       <button key={w.id} onClick={() => select(w)}><b>{w.name}</b><small>via {w.bestPath[1]}</small></button>)}</div>
     <button className="rail-cooling" onClick={openThread}><span className="signal-dot" /><div><strong>Conversation cooling</strong><small>Scott Kelley · commitment open</small></div></button>
     <div className="context-signal"><span className="signal-dot" /><div><strong>Active Memory</strong><small>{learnings.length} signals · 3 new this week</small></div></div>
-    <button className="ask-button" onClick={onAsk}><BrainCircuit size={16} /><span>Ask Intros</span><kbd>⌘K</kbd></button>
+    <button className="ask-button" onClick={onAsk}><AetherisGlyph size={16} /><span>Ask Intros</span><kbd>⌘K</kbd></button>
   </aside>
 }
 
@@ -1002,9 +1052,9 @@ export default function App() {
         <button className="icon-btn mobile-menu" onClick={() => setMobileOpen(!mobileOpen)} aria-label="Menu"><Menu size={19} /></button>
         <span className="topbar-title">Aetheris Intros <i>/</i> {nav.find(n => n.id === page)?.label}</span>
         <div>
-          <button className="icon-btn" title="Build your profile" onClick={() => setOnboardOpen(true)} aria-label="Build your profile"><Sparkles size={17} /></button>
+          <button className="icon-btn" title="Build your profile" onClick={() => setOnboardOpen(true)} aria-label="Build your profile"><Fingerprint size={17} /></button>
           <button className="icon-btn" title="Post a need" onClick={() => setNeedOpen(true)} aria-label="Post a need"><Plus size={18} /></button>
-          <button className="icon-btn" title="Ask Intros" onClick={() => setAskOpen(true)} aria-label="Ask Intros"><BrainCircuit size={18} /></button>
+          <button className="icon-btn" title="Ask Intros" onClick={() => setAskOpen(true)} aria-label="Ask Intros"><AetherisGlyph size={18} /></button>
         </div>
       </header>
       <div className="workspace-grid">
