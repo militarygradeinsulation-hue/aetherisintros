@@ -977,13 +977,17 @@ function IntroModal({ person, onClose, onMessage }: { person: Member | null; onC
       <textarea rows={8} value={text} onChange={e => setText(e.target.value)} />
       {rows.map(r => <div className="opt-row" key={r.label}>
         <span><strong>{r.label}</strong><small>Confirm this conversation is worth making.</small></span>
-        <div><button className={r.value === 'yes' ? 'active' : ''} onClick={() => r.set('yes')}>Interested</button>
-          <button className={r.value === 'no' ? 'declined' : ''} onClick={() => r.set('no')}>Not now</button></div>
+        <div><button className={r.value === 'yes' ? 'active' : ''} onClick={() => { r.set('yes'); if (r.value !== 'yes') net.requestIntro(person.id) }}>Interested</button>
+          <button className={r.value === 'no' ? 'declined' : ''} onClick={() => { r.set('no'); net.declineIntro(person.id) }}>Not now</button></div>
       </div>)}
       <div className={`authorization ${ok ? 'ready' : ''}`}>{ok ? <CheckCircle2 size={17} /> : <LockKeyhole size={17} />}
         <span>{ok ? 'Introduction authorized. Both parties agreed.' : 'Waiting for both parties before anything is sent.'}</span></div>
       <footer><Button kind="quiet" onClick={onClose}>Cancel</Button>
-        <Button disabled={!ok} onClick={() => { navigator.clipboard?.writeText(text); onClose() }}><Send size={15} />Copy authorized intro</Button></footer>
+        <Button disabled={!ok} onClick={() => {
+          net.authorizeIntro(person.id, text)
+          navigator.clipboard?.writeText(text)
+          onClose(); onMessage(person.id)
+        }}><Send size={15} />Send authorized intro</Button></footer>
     </div>
   </div>
 }
