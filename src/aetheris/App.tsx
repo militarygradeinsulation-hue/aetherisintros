@@ -1,17 +1,20 @@
 import { useEffect, useMemo, useState } from 'react'
 import {
-  AlertTriangle, ArrowRight, Bookmark, BookmarkCheck, BrainCircuit, Check, CheckCircle2, ChevronLeft,
-  ChevronRight, CircleDot, Compass, Eye, Fingerprint, Handshake, Home as HomeIcon, LockKeyhole,
+  AlertTriangle, ArrowRight, Bookmark, BookmarkCheck, BrainCircuit, CalendarDays, Check, CheckCircle2, ChevronLeft,
+  CircleDot, Compass, Eye, Fingerprint, Handshake, Home as HomeIcon, Layers, LockKeyhole,
   Menu, MessageSquareText, Network, Plus, Search, Send, Share2, ShieldCheck, Sparkles, Target,
-  TrendingUp, UserRound, X,
+  TrendingUp, UserRound, Users, X,
 } from 'lucide-react'
+import portraitImg from '@/assets/aetheris-editorial-portrait.jpg'
 import { defaultDigitalYou, leaks, objectives as seedObjectives } from './data'
 import type { AutonomyLevel, DigitalYouProfile, Objective, PrivacyScope } from './types'
 import {
-  howIntrosWorks, introStateLabel, learnings, me, members, networkAsks, onboardingQuestions, signals, threads,
-  type Learning, type Member, type NetworkAsk, type Thread,
+  circles, events, howItWorks5, howIntrosWorks, introStateLabel, learnings, me, members, networkAsks,
+  onboardingQuestions, posts, signals, threads, trendingSectors,
+  type Learning, type Member, type NetworkAsk, type Post, type Thread,
 } from './social'
 import { classifyConnection, composeWarmIntro, radarLabel } from './lib/engine'
+
 
 type Page = 'home' | 'discover' | 'intros' | 'messages' | 'needs' | 'memory' | 'insights' | 'profile'
 type MemoryNote = { id: string; personId: string; text: string; scope: PrivacyScope; createdAt: string }
@@ -69,6 +72,39 @@ function SaveButton({ saved, onToggle }: { saved: boolean; onToggle: () => void 
     {saved ? <BookmarkCheck size={15} /> : <Bookmark size={15} />}
   </button>
 }
+
+/** Editorial ivory field beside a monochrome portrait — the signature Aetheris page opening. */
+function EditorialHero({ folio, title, statement, copy, caption, focus = 'center 30%', stats, action }: {
+  folio: string; title: React.ReactNode; statement: string; copy: string; caption: string
+  focus?: string; stats?: Array<{ k: string; v: string }>; action?: React.ReactNode
+}) {
+  return <section className="editorial-hero">
+    <div className="editorial-field">
+      <span className="folio">{folio}</span>
+      <h1>{title}</h1>
+      <h2>{statement}</h2>
+      <p>{copy}</p>
+      {action && <div className="editorial-hero-actions">{action}</div>}
+      {stats && <dl className="editorial-stats">{stats.map(s => <div key={s.k}><dt>{s.k}</dt><dd>{s.v}</dd></div>)}</dl>}
+      <div className="blueprint-cross">+</div>
+    </div>
+    <figure className="editorial-plate">
+      <img src={portraitImg} alt="A composed professional in architectural window light" style={{ objectPosition: focus }} loading="lazy" />
+      <figcaption><span>ACTIVE MEMORY</span><p>{caption}</p></figcaption>
+    </figure>
+  </section>
+}
+
+function HowItWorks() {
+  return <section className="how-block">
+    <header><Label>HOW INTROS WORKS</Label><h2>Context becomes a conversation worth having.</h2></header>
+    <ol className="how-sequence">
+      {howItWorks5.map((s, i) => <li key={s.step}><span>{String(i + 1).padStart(2, '0')}</span><h3>{s.step}</h3><p>{s.copy}</p></li>)}
+    </ol>
+  </section>
+}
+
+
 
 function MemoryGraph({ people, onSelect, compact = false }: { people: Member[]; onSelect: (p: Member) => void; compact?: boolean }) {
   const positions = [[16, 22], [40, 12], [74, 16], [87, 44], [78, 74], [52, 86], [24, 78], [11, 52], [33, 40], [64, 36], [60, 64], [36, 62]]
@@ -135,14 +171,50 @@ function AskCard({ ask, member, onMessage, onOpen, saved, onSave }: { ask: Netwo
   </article>
 }
 
+function PostCard({ post, member, onOpen, onMessage }: { post: Post; member: Member | undefined; onOpen: () => void; onMessage: () => void }) {
+  const [responded, setResponded] = useState(false)
+  return <article className="post-card">
+    <header>
+      {member && <button className="post-author" onClick={onOpen}><Avatar person={member} portrait /><span><strong>{member.name}</strong><small>{member.title} · {member.company}</small></span></button>}
+      <span className="post-kind">{post.kind}</span>
+    </header>
+    <h3>{post.text}</h3>
+    <p>{post.detail}</p>
+    <footer>
+      <small>{post.when} · {post.responses + (responded ? 1 : 0)} responses</small>
+      <div>
+        <Button kind="quiet" onClick={() => setResponded(true)}>{responded ? <><Check size={14} /> Responded</> : <>Respond</>}</Button>
+        <Button kind="secondary" onClick={onMessage}><MessageSquareText size={14} /> Message</Button>
+      </div>
+    </footer>
+  </article>
+}
+
 function Home({ people, select, setPage, openNeed, openThread, saved, toggleSave, objectives }: {
   people: Member[]; select: (p: Member) => void; setPage: (p: Page) => void; openNeed: () => void
   openThread: (id: string) => void; saved: string[]; toggleSave: (id: string) => void; objectives: Objective[]
 }) {
-  const [tab, setTab] = useState<'people' | 'asks' | 'signals'>('people')
+  const [tab, setTab] = useState<'feed' | 'people' | 'asks' | 'signals'>('feed')
+  const [composer, setComposer] = useState('')
+  const [posted, setPosted] = useState<Post[]>([])
   const ranked = useMemo(() => [...people].sort((a, b) => b.scoreTotal - a.scoreTotal), [people])
   const activeNeed = objectives[0]
+  const share = () => {
+    if (!composer.trim()) return
+    setPosted(p => [{ id: `own-${p.length}`, memberId: 'me', kind: 'Insight', text: composer.trim(), detail: 'Shared with your network. Intros added this to your active memory as current context.', when: 'Just now', responses: 0 }, ...p])
+    setComposer('')
+  }
   return <>
+    <EditorialHero
+      folio="MEMBER HOME / NETWORK PULSE"
+      title={<>Know who matters.<br /><em>Know why now.</em></>}
+      statement="Your network already contains opportunities."
+      copy="This is what changed in your professional network: people worth meeting, what they need, what they can move, and where a conversation is justified today."
+      caption="Every signal here comes from context you or the network already shared."
+      stats={[{ k: 'Members in graph', v: String(people.length) }, { k: 'Warm paths open', v: String(people.filter(p => p.bestPath.length > 2).length) }, { k: 'Active asks', v: String(networkAsks.length) }]}
+      action={<><Button onClick={openNeed}><Plus size={14} /> Post a need</Button><button className="text-action" onClick={() => setPage('discover')}>Browse the network <ArrowRight size={13} /></button></>}
+    />
+
     <header className="home-question">
       <Label>PEOPLE × CONTEXT × OPPORTUNITY</Label>
       <h1>What do you need<br /><em>right now?</em></h1>
@@ -150,13 +222,29 @@ function Home({ people, select, setPage, openNeed, openThread, saved, toggleSave
       <p>Tell Intros the outcome. It will find the people, context and path.</p>
     </header>
 
+    <section className="composer">
+      <span className="person-avatar portrait">{me.initials}</span>
+      <div>
+        <textarea value={composer} onChange={e => setComposer(e.target.value)} rows={2}
+          placeholder="Share something useful — an insight, a milestone, a partnership you are looking for…" />
+        <footer>
+          <small>Visible to your network · Intros learns from what you share</small>
+          <Button onClick={share} disabled={!composer.trim()}><Send size={14} /> Share</Button>
+        </footer>
+      </div>
+    </section>
+
     <div className="feed-tabs">
-      {([['people', 'People to know now'], ['asks', 'Network asks'], ['signals', 'Professional signals']] as const).map(([id, label]) =>
+      {([['feed', 'Network feed'], ['people', 'Who to meet'], ['asks', 'Network asks'], ['signals', 'Professional signals']] as const).map(([id, label]) =>
         <button key={id} className={tab === id ? 'active' : ''} onClick={() => setTab(id)}>{label}</button>)}
       <button className="text-action feed-tab-action" onClick={() => setPage('discover')}>Browse the network <ArrowRight size={13} /></button>
     </div>
 
     <div className="feed">
+      {tab === 'feed' && [...posted, ...posts].map(post =>
+        <PostCard key={post.id} post={post} member={people.find(p => p.id === post.memberId) ?? undefined}
+          onOpen={() => { const m = people.find(p => p.id === post.memberId); if (m) select(m) }}
+          onMessage={() => setPage('messages')} />)}
       {tab === 'people' && ranked.slice(0, 4).map(p =>
         <MemberCard key={p.id} person={p} onOpen={() => select(p)} onMessage={() => setPage('messages')} onIntro={() => select(p)} saved={saved.includes(p.id)} onSave={() => toggleSave(p.id)} />)}
       {tab === 'asks' && networkAsks.map(a =>
@@ -172,12 +260,41 @@ function Home({ people, select, setPage, openNeed, openThread, saved, toggleSave
       })}</section>}
     </div>
 
+    <section className="home-modules">
+      <article className="module">
+        <header><Label signal>WHO TO MEET THIS WEEK</Label><h3>Three relationships with real timing.</h3></header>
+        <ul className="module-people">{ranked.slice(0, 3).map(p => <li key={p.id}>
+          <button onClick={() => select(p)}><Avatar person={p} portrait /><span><strong>{p.name}</strong><small>{p.title} · {p.company}</small><em>{p.whyNow}</em></span><span className="module-score">{p.scoreTotal}</span></button>
+        </li>)}</ul>
+      </article>
+      <article className="module">
+        <header><Label>TRENDING IN YOUR SECTORS</Label><h3>Where the network is moving.</h3></header>
+        <ul className="module-sectors">{trendingSectors.map(s => <li key={s.sector}>
+          <span><strong>{s.sector}</strong><small>{s.note}</small></span><em className={s.move.startsWith('−') ? 'down' : ''}>{s.move}</em>
+        </li>)}</ul>
+      </article>
+      <article className="module">
+        <header><Label><CalendarDays size={11} /> UPCOMING BUSINESS EVENTS</Label><h3>Rooms your graph is already in.</h3></header>
+        <ul className="module-events">{events.map(e => <li key={e.id}>
+          <strong>{e.name}</strong><small>{e.when} · {e.where}</small><em>{e.who}</em>
+        </li>)}</ul>
+      </article>
+      <article className="module">
+        <header><Label><Users size={11} /> SUGGESTED CIRCLES</Label><h3>Groups that match your focus.</h3></header>
+        <ul className="module-circles">{circles.map(c => <li key={c.id}>
+          <span><strong>{c.name}</strong><small>{c.members}</small><em>{c.why}</em></span><Button kind="quiet">Join</Button>
+        </li>)}</ul>
+      </article>
+    </section>
+
     <section className="home-education">
       <div><Label>WHY THIS FEED LOOKS LIKE THIS</Label><h2>Your network already contains opportunities.</h2>
         <p>Intros reads needs, offers, timing and trust paths, then shows only the relationships where a conversation is justified now.</p>
         <button className="text-action" onClick={() => setPage('intros')}>See the reasoning behind a match <ArrowRight size={14} /></button></div>
       <MemoryGraph people={people} onSelect={select} compact />
     </section>
+
+    <HowItWorks />
 
     <section className="home-mobile-rail">
       <Label signal>ON YOUR DESK</Label>
@@ -189,6 +306,7 @@ function Home({ people, select, setPage, openNeed, openThread, saved, toggleSave
     </section>
   </>
 }
+
 
 /* ----------------------------------------------------------------- discover */
 
@@ -213,6 +331,14 @@ function Discover({ people, select, saved, toggleSave, setPage }: { people: Memb
     })
   })
   return <>
+    <EditorialHero
+      folio="DISCOVER / PROFESSIONAL NETWORK"
+      title={<>Find the person,<br /><em>not the job title.</em></>}
+      statement="Search the way you would brief a trusted friend."
+      copy="Describe the outcome you want and Intros reads needs, offers, expertise, location, availability and the trust paths already open to you."
+      caption="Members are surfaced with reasoning, never as an anonymous list."
+      focus="center 22%"
+    />
     <PageHead label="DISCOVER" title="Browse the people, not a database."
       copy="Search in your own words. Intros reads needs, offers, expertise, location and the paths already open to you."
       proof="Try: “manufacturing CEO in Indiana looking for AI help.”" />
@@ -246,6 +372,15 @@ function Discover({ people, select, saved, toggleSave, setPage }: { people: Memb
       </article>)}
       {!filtered.length && <p className="empty-state">No members match that yet. Broaden the filters or describe the outcome instead of the title.</p>}
     </div>
+    <section className="network-insight-strip">
+      <header><Label signal>NETWORK INSIGHT</Label><h2>What this search tells Intros.</h2></header>
+      <div>
+        <article><span>STRONGEST MATCH IN VIEW</span><strong>{[...filtered].sort((a, b) => b.scoreTotal - a.scoreTotal)[0]?.name ?? '—'}</strong><small>Ranked on mutual value, timing and trust — not keyword overlap.</small></article>
+        <article><span>WARM PATHS AVAILABLE</span><strong>{filtered.filter(p => p.bestPath.length > 2).length} of {filtered.length}</strong><small>Someone in your graph can make the introduction credible.</small></article>
+        <article><span>AVAILABLE NOW</span><strong>{filtered.filter(p => /open|weekly|two|always|fortnightly/i.test(p.availability)).length} members</strong><small>Availability is member-stated, so timing stays honest.</small></article>
+        <article><span>MOST COMMON NEED</span><strong>{filtered[0]?.needs[0] ?? '—'}</strong><small>Needs shape the feed you see on Home.</small></article>
+      </div>
+    </section>
   </>
 }
 
@@ -494,6 +629,29 @@ function Insights({ people, select, setPage, saved, toggleSave }: { people: Memb
       })}
       {leaks.length === dismissed.length && <p className="empty-state">All signals handled. Intros will surface the next change as the graph moves.</p>}
     </div>
+    <section className="opportunity-clusters">
+      <header><Label><Layers size={11} /> OPPORTUNITY CLUSTERS</Label><h2>Where several relationships point the same way.</h2></header>
+      <div>
+        {[
+          { name: 'Industrial AI adoption', people: people.filter(p => /Manufacturing|AI/i.test(p.industry)).slice(0, 4), why: 'Four members are solving the same operational problem within a quarter of each other.' },
+          { name: 'Capital & operating partners', people: people.filter(p => /equity|capital|Fintech/i.test(p.industry)).slice(0, 4), why: 'Three raise conversations and two operating-partner mandates overlap with your offer.' },
+          { name: 'Field and logistics operators', people: people.filter(p => /Logistics|Field|Construction|Energy/i.test(p.industry)).slice(0, 4), why: 'Repeated pipeline-visibility asks across services businesses you already understand.' },
+        ].map(c => <article key={c.name}>
+          <h3>{c.name}</h3>
+          <p>{c.why}</p>
+          <ul>{c.people.map(p => <li key={p.id}><button onClick={() => select(p)}><Avatar person={p} />{p.name}</button></li>)}</ul>
+          <button className="text-action" onClick={() => setPage('intros')}>See the introductions <ArrowRight size={13} /></button>
+        </article>)}
+      </div>
+    </section>
+
+    <section className="intelligence-map">
+      <div><Label signal>RELATIONSHIP INTELLIGENCE MAP</Label><h2>The same graph, read for opportunity.</h2>
+        <p>Amber nodes carry a live signal. Selecting one opens the reasoning, the trust path and the smallest next action.</p>
+        <button className="text-action" onClick={() => setPage('memory')}>Open Active Memory <ArrowRight size={13} /></button></div>
+      <MemoryGraph people={people} onSelect={select} compact />
+    </section>
+
     <section className="evidence-line">
       <div><Label>90 DAY RELATIONSHIP RETURN</Label><h2>More context. Better intros. Stronger outcomes.</h2></div>
       <div className="line-chart">
@@ -546,6 +704,44 @@ function Profile({ profile, setProfile, autonomy, setAutonomy, people, setPage, 
         <article><span>STRONGEST TRUST PATH</span><p>{people[0]?.bestPath.join(' → ')}</p></article>
         <article><span>SAVED NOTES</span><p>{notes[0]?.text ?? 'No private notes recorded yet. Open any member to record what changed.'}</p></article>
       </div>
+    </section>
+
+    <section className="profile-social">
+      <article className="module">
+        <header><Label>SHARED CONNECTIONS</Label><h3>Who you both already trust.</h3></header>
+        <ul className="module-people">{people.slice(0, 4).map(p => <li key={p.id}>
+          <button onClick={() => setPage('discover')}><Avatar person={p} portrait /><span><strong>{p.name}</strong><small>{p.company}</small><em>{p.mutuals.length ? `Mutual: ${p.mutuals.join(', ')}` : 'Direct relationship'}</em></span></button>
+        </li>)}</ul>
+      </article>
+      <article className="module">
+        <header><Label>RECENT ACTIVITY</Label><h3>What this profile has been doing.</h3></header>
+        <ul className="module-activity">
+          {[['Posted an insight on pipeline handoffs', '2h ago'], ['Opened a need: PE operating partners', 'Yesterday'], ['Offered an introduction to Maya Chen', '3 days ago'], ['Recorded a private note after a working call', 'Last week']].map(([t, w]) =>
+            <li key={t}><CircleDot size={12} /><span><strong>{t}</strong><small>{w}</small></span></li>)}
+        </ul>
+      </article>
+      <article className="module compat">
+        <header><Label signal>RELATIONSHIP COMPATIBILITY</Label><h3>How Intros reads the fit.</h3></header>
+        <div className="compat-rings">
+          {[['Strategic fit', 86], ['Mutual value', 78], ['Timing', 71]].map(([k, v]) => <div key={String(k)}>
+            <svg viewBox="0 0 100 100" aria-hidden="true">
+              <circle cx="50" cy="50" r="42" className="ring-track" />
+              <circle cx="50" cy="50" r="42" className="ring-value" strokeDasharray={`${(Number(v) / 100) * 264} 264`} />
+            </svg>
+            <strong>{v}</strong><small>{k}</small>
+          </div>)}
+        </div>
+      </article>
+    </section>
+
+    <section className="intro-recommendation">
+      <header><Label signal><Sparkles size={11} /> INTRODUCTION RECOMMENDATION</Label><h2>The smallest intelligent next move.</h2></header>
+      <p>{people[0] ? `Ask ${people[0].bestPath[1] ?? 'your shared contact'} to introduce you to ${people[0].name}. ${people[0].whyNow}` : 'No recommendation yet.'}</p>
+      <footer>
+        <Button onClick={() => setPage('intros')}><Handshake size={14} /> Review the match report</Button>
+        <Button kind="secondary" onClick={() => setPage('memory')}><BrainCircuit size={14} /> See what informed this</Button>
+        <small><LockKeyhole size={12} /> Nothing is sent without both sides opting in.</small>
+      </footer>
     </section>
 
     <div className="profile-settings">
