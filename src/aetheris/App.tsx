@@ -288,7 +288,7 @@ function CommandPage({ people, select, setPage }: { people: Person[]; select: (p
   </>
 }
 
-function IntrosPage({ people, select, draft }: { people:Person[]; select:(p:Person)=>void; draft:(p:Person)=>void }) {
+function IntrosPage({ people, select, draft, objectives, onDiagnose }: { people:Person[]; select:(p:Person)=>void; draft:(p:Person)=>void; objectives:Objective[]; onDiagnose:()=>void }) {
   const [q,setQ]=useState('')
   const filtered = people.filter(p => `${p.name} ${p.company} ${p.tags.join(' ')}`.toLowerCase().includes(q.toLowerCase()))
   return <>
