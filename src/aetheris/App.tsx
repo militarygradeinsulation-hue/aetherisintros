@@ -1043,6 +1043,7 @@ function AskModal({ open, onClose, people, select }: { open: boolean; onClose: (
 }
 
 function Onboarding({ open, onClose }: { open: boolean; onClose: () => void }) {
+  const net = useNetwork()
   const [step, setStep] = useState(0)
   const [answers, setAnswers] = useState<Record<string, string>>({})
   if (!open) return null
