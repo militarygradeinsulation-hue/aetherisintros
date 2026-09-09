@@ -950,11 +950,20 @@ function PersonDrawer({ person, onClose, onDraft, onMessage }: {
   </div>
 }
 
-function IntroModal({ person, onClose }: { person: Member | null; onClose: () => void }) {
+function IntroModal({ person, onClose, onMessage }: { person: Member | null; onClose: () => void; onMessage: (id: string) => void }) {
+  const net = useNetwork()
   const [text, setText] = useState('')
   const [you, setYou] = useState<OptIn>('pending')
   const [them, setThem] = useState<OptIn>('pending')
-  useEffect(() => { if (person) { setText(composeWarmIntro(person)); setYou('pending'); setThem('pending') } }, [person])
+  useEffect(() => {
+    if (person) {
+      setText(composeWarmIntro(person))
+      setYou(person.introState === 'requested' || person.introState === 'introduced' ? 'yes' : 'pending')
+      setThem(person.introState === 'introduced' ? 'yes' : 'pending')
+      if (person.introState === 'recommended') net.requestIntro(person.id)
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [person])
   if (!person) return null
   const ok = you === 'yes' && them === 'yes'
   const rows: Array<{ label: string; value: OptIn; set: (v: OptIn) => void }> = [
