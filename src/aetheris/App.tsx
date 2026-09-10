@@ -1006,6 +1006,7 @@ function Messages({ people, select, activeId, setActiveId }: { people: Member[];
     <PageHead label="MESSAGES" title="Context before contact."
       copy="Real conversations between members. Intros keeps the relationship context beside the thread, never in the middle of it."
       proof="Every thread remembers the last commitment made." />
+    {outreachModal}
     <div className="messages-layout">
       <aside className="thread-list">
         <div className="thread-search"><Search size={15} /> Conversations</div>
