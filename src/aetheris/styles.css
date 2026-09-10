@@ -348,6 +348,18 @@
 .post-card>footer{display:flex;align-items:center;justify-content:space-between;gap:14px;border-top:1px solid var(--line-dark);margin-top:18px;padding-top:14px}
 .post-card>footer small{color:var(--muted);font:600 9px var(--sans);letter-spacing:.1em;text-transform:uppercase}
 .post-card>footer>div{display:flex;gap:8px;flex-wrap:wrap}
+.feed-controls{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:12px;margin:-8px 0 18px;padding:14px 16px;border:1px solid var(--line-dark);background:var(--raised)}
+.feed-scope{display:flex;gap:6px;overflow-x:auto}
+.feed-scope button,.topic-chips button{border:1px solid var(--line-dark);background:transparent;color:var(--muted);padding:8px 11px;font:700 8px var(--sans);letter-spacing:.12em;text-transform:uppercase;cursor:pointer;white-space:nowrap}
+.feed-scope button.active,.topic-chips button.active{border-color:var(--cobalt);background:rgba(15,92,203,.15);color:var(--soft)}
+.feed-customizer{grid-column:1/-1;display:grid;grid-template-columns:minmax(0,1fr) 220px;gap:18px;padding:18px 0 4px;border-top:1px solid var(--line-dark)}
+.feed-customizer label{display:grid;gap:10px;align-content:start}.feed-customizer select{width:100%;background:var(--night);border:1px solid var(--line-dark);color:var(--soft);padding:10px;font:500 11px var(--sans)}
+.feed-customizer>p{grid-column:1/-1;margin:0;color:var(--muted);font:400 10px/1.5 var(--sans)}
+.topic-chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}.live-topic-line{grid-column:1/-1;display:flex;align-items:center;gap:8px;color:var(--muted);font:600 9px var(--sans);letter-spacing:.08em;text-transform:uppercase}.live-topic-line .live-dot{background:var(--amber);box-shadow:0 0 0 3px rgba(244,161,37,.13)}
+.post-actions .btn{min-height:32px}.post-actions .btn.quiet{padding-inline:9px}
+.post-discussion{margin:16px -22px -22px;padding:14px 22px 18px;border-top:1px solid var(--line-dark);background:#0a0d10}.post-discussion>div{display:grid;grid-template-columns:30px minmax(0,1fr);gap:10px;align-items:start;margin-top:10px}.post-discussion .person-avatar{width:30px;height:30px;font-size:8px}.post-discussion p{margin:0;padding:9px 11px;border:1px solid var(--line-dark);color:#c4c8ce;font:400 11px/1.55 var(--sans)}.post-discussion p strong,.post-discussion p small{display:block}.post-discussion p strong{color:var(--soft);margin-bottom:3px}.post-discussion p small{color:var(--muted);margin-top:5px;font-size:8px}.comment-composer input{min-width:0;width:100%;border:1px solid var(--line-dark);background:var(--raised);color:var(--soft);padding:10px 12px;font:400 11px var(--sans);outline:none}.comment-composer input:focus{border-color:var(--cobalt)}
+.feed-empty{border:1px solid var(--line-dark);padding:34px;background:var(--raised)}.feed-empty h3{font:500 28px var(--serif);margin:12px 0 6px}.feed-empty p{color:var(--muted);font-size:12px;margin:0 0 18px}
+@media(max-width:680px){.feed-controls{grid-template-columns:1fr}.feed-controls>.btn{justify-self:start}.feed-customizer{grid-template-columns:1fr}.feed-customizer>p{grid-column:auto}.post-discussion{margin:16px -18px -18px;padding-inline:18px}.post-actions .btn{flex:0 1 auto!important}}
 
 /* Home modules, discover strip, clusters, profile social */
 .home-modules,.profile-social{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;margin-top:26px}

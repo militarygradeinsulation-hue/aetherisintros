@@ -1,9 +1,9 @@
 import { useEffect, useMemo, useState } from 'react'
 import {
   AlertTriangle, ArrowLeftRight, ArrowRight, Bookmark, BookmarkCheck, Building2, CalendarDays, Check, CheckCircle2, ChevronLeft,
-  CircleDot, Compass, Eye, Fingerprint, Handshake, Home as HomeIcon, Layers, LockKeyhole,
+  CircleDot, Compass, Eye, Fingerprint, Handshake, Heart, Home as HomeIcon, Layers, LockKeyhole,
   MapPin, Menu, MessageSquareText, Network, Plus, Search, Send, Share2, ShieldCheck, Target,
-  Settings2, TrendingUp, UserRound, Users, X,
+  MessageCircle, Repeat2, Settings2, SlidersHorizontal, TrendingUp, UserRound, Users, X,
 } from 'lucide-react'
 import editorialPortrait from '@/assets/aetheris-editorial-portrait.jpg'
 import marcusPortrait from '@/assets/member-marcus.jpg'
@@ -435,28 +435,43 @@ function PostCard({ post, member, onOpen }: { post: Post; member: Member | undef
   const net = useNetwork()
   const nav = useNav()
   const responded = net.postResponses.includes(post.id)
+  const liked = net.likedPosts.includes(post.id)
+  const reposted = net.repostedPosts.includes(post.id)
+  const comments = net.postComments[post.id] ?? []
   const mine = post.memberId === 'me'
+  const [commenting, setCommenting] = useState(false)
+  const [comment, setComment] = useState('')
+  const submitComment = () => {
+    if (!comment.trim()) return
+    net.addPostComment(post.id, comment.trim(), post.memberId)
+    setComment('')
+  }
   return <article className="post-card">
     <header>
       {member
         ? <button className="post-author" onClick={onOpen}><Avatar person={member} portrait /><span><strong>{member.name}</strong><small>{member.title} · {member.company}</small></span></button>
         : <div className="post-author"><span className="person-avatar portrait">{net.profile.initials}</span><span><strong>You</strong><small>{net.profile.title}</small></span></div>}
-      <span className="post-kind">{post.kind}</span>
+      <span className="post-kind">{member?.industry ?? net.profile.industries[0] ?? post.kind}</span>
     </header>
     <h3>{post.text}</h3>
     <p>{post.detail}</p>
     <footer>
-      <small>{post.when} · {post.responses + (responded ? 1 : 0)} responses</small>
-      <div>
-        {!mine && member && <>
-          <Button kind="quiet" onClick={() => { const id = net.respondToPost(post.id, member.id); if (id) nav.goToThread(id) }}>
-            {responded ? <><Check size={14} /> Responded</> : <>Respond</>}
-          </Button>
-          <Button kind="secondary" onClick={() => nav.messageMember(member.id)}><MessageSquareText size={14} /> Message</Button>
-        </>}
+      <small>{post.when} · {post.responses + comments.length + (responded ? 1 : 0)} responses</small>
+      <div className="post-actions">
+        <Button kind="quiet" onClick={() => net.togglePostLike(post.id)}><Heart size={14} fill={liked ? 'currentColor' : 'none'} /> {liked ? 'Liked' : 'Like'}</Button>
+        <Button kind="quiet" onClick={() => setCommenting(value => !value)}><MessageCircle size={14} /> Comment</Button>
+        {!mine && <Button kind="quiet" onClick={() => net.togglePostRepost(post.id, post.memberId)}><Repeat2 size={14} /> {reposted ? 'Reposted' : 'Repost'}</Button>}
+        <SaveButton saved={net.saved.includes(post.id)} onToggle={() => net.toggleSave(post.id, 'this post')} />
+        {!mine && member && <Button kind="secondary" onClick={() => { const id = net.respondToPost(post.id, member.id); if (id) nav.goToThread(id) }}>
+          {responded ? <><Check size={14} /> Responded</> : <><MessageSquareText size={14} /> Message privately</>}
+        </Button>}
         {mine && <small className="post-own">Shared with your network · added to Active Memory</small>}
       </div>
     </footer>
+    {(commenting || comments.length > 0) && <section className="post-discussion">
+      {comments.map(item => <div key={item.id}><span className="person-avatar">{net.profile.initials}</span><p><strong>You</strong>{item.text}<small>{item.when}</small></p></div>)}
+      {commenting && <div className="comment-composer"><span className="person-avatar">{net.profile.initials}</span><input value={comment} onChange={event => setComment(event.target.value)} onKeyDown={event => { if (event.key === 'Enter') submitComment() }} placeholder="Add useful context to the discussion…" /><Button disabled={!comment.trim()} onClick={submitComment}><Send size={13} /></Button></div>}
+    </section>}
   </article>
 }
 
@@ -465,9 +480,38 @@ function Home({ people, select, setPage, openNeed, openThread }: {
   openThread: (id: string) => void
 }) {
   const net = useNetwork()
+  const platform = usePlatform()
   const [tab, setTab] = useState<'feed' | 'people' | 'asks' | 'signals'>('feed')
   const [composer, setComposer] = useState('')
+  const [customizing, setCustomizing] = useState(false)
   const ranked = useMemo(() => [...people].sort((a, b) => b.scoreTotal - a.scoreTotal), [people])
+  const industries = useMemo(() => Array.from(new Set(people.map(person => person.industry))).sort(), [people])
+  const joinedCircles = useMemo(() => platform.circles.filter(circle => circle.memberIds.includes('me')), [platform.circles])
+  const visiblePosts = useMemo(() => {
+    const industryFor = (post: Post) => people.find(person => person.id === post.memberId)?.industry ?? net.profile.industries[0] ?? ''
+    const filtered = net.posts.filter(post => {
+      const industry = industryFor(post)
+      if (net.feedPreferences.scope === 'saved') return net.saved.includes(post.id)
+      if (net.feedPreferences.scope === 'circle') {
+        const circle = joinedCircles.find(item => item.id === net.feedPreferences.circleId) ?? joinedCircles[0]
+        return Boolean(circle?.memberIds.includes(post.memberId))
+      }
+      if (net.feedPreferences.scope === 'industry') {
+        const chosen = net.feedPreferences.industries.length ? net.feedPreferences.industries : net.profile.industries
+        return chosen.some(value => value.toLowerCase() === industry.toLowerCase())
+      }
+      return true
+    })
+    if (net.feedPreferences.scope !== 'all') return filtered
+    const interests = new Set([...net.feedPreferences.industries, ...net.profile.industries].map(value => value.toLowerCase()))
+    return [...filtered].sort((a, b) => {
+      const relevance = (post: Post) => (net.connections.includes(post.memberId) ? 5 : 0)
+        + (net.follows.includes(post.memberId) ? 4 : 0)
+        + (interests.has(industryFor(post).toLowerCase()) ? 3 : 0)
+        + (post.memberId === 'me' ? 6 : 0)
+      return relevance(b) - relevance(a)
+    })
+  }, [joinedCircles, net.connections, net.feedPreferences, net.follows, net.posts, net.profile.industries, net.saved, people])
   const activeNeed = net.objectives[0]
   const share = () => {
     if (!composer.trim()) return
@@ -502,10 +546,28 @@ function Home({ people, select, setPage, openNeed, openThread }: {
       <button className="text-action feed-tab-action" onClick={() => setPage('discover')}>Browse the network <ArrowRight size={13} /></button>
     </div>
 
+    {tab === 'feed' && <section className="feed-controls">
+      <div className="feed-scope" aria-label="Feed view">
+        {([['all', 'For you'], ['circle', 'My circles'], ['industry', 'Industries'], ['saved', 'Saved']] as const).map(([scope, label]) =>
+          <button key={scope} className={net.feedPreferences.scope === scope ? 'active' : ''} onClick={() => net.setFeedPreferences({ ...net.feedPreferences, scope })}>{label}</button>)}
+      </div>
+      <Button kind="quiet" onClick={() => setCustomizing(value => !value)}><SlidersHorizontal size={14} /> Customize</Button>
+      {customizing && <div className="feed-customizer">
+        <div><Label>INDUSTRIES YOU FOLLOW</Label><div className="topic-chips">{industries.map(industry => {
+          const active = net.feedPreferences.industries.includes(industry)
+          return <button key={industry} className={active ? 'active' : ''} onClick={() => net.setFeedPreferences({ ...net.feedPreferences, industries: active ? net.feedPreferences.industries.filter(value => value !== industry) : [...net.feedPreferences.industries, industry] })}>{industry}</button>
+        })}</div></div>
+        <label><Label>ACTIVE CIRCLE</Label><select value={net.feedPreferences.circleId} onChange={event => net.setFeedPreferences({ ...net.feedPreferences, circleId: event.target.value })}><option value="">Choose a circle</option>{joinedCircles.map(circle => <option key={circle.id} value={circle.id}>{circle.name}</option>)}</select></label>
+        <p>Your choices persist with your profile and shape what appears first.</p>
+      </div>}
+      <div className="live-topic-line"><span className="live-dot" /> Live topics: {(net.feedPreferences.industries.length ? net.feedPreferences.industries : net.profile.industries).slice(0, 4).join(' · ') || 'Your professional network'}</div>
+    </section>}
+
     <div className="feed">
-      {tab === 'feed' && net.posts.map(post =>
+      {tab === 'feed' && visiblePosts.map(post =>
         <PostCard key={post.id} post={post} member={people.find(p => p.id === post.memberId) ?? undefined}
           onOpen={() => { const m = people.find(p => p.id === post.memberId); if (m) select(m) }} />)}
+      {tab === 'feed' && visiblePosts.length === 0 && <section className="feed-empty"><Label>YOUR FEED IS READY TO LEARN</Label><h3>No posts match this view yet.</h3><p>Choose more industries, join a circle, or return to For you.</p><Button onClick={() => net.setFeedPreferences({ ...net.feedPreferences, scope: 'all' })}>Show my full network</Button></section>}
       {tab === 'people' && ranked.slice(0, 4).map(p =>
         <MemberCard key={p.id} person={p} onOpen={() => select(p)} />)}
       {tab === 'asks' && net.asks.map(a =>

@@ -45,6 +45,18 @@ export interface PreferenceSettings {
   retention: string
 }
 
+export interface FeedPreferences {
+  scope: 'all' | 'circle' | 'industry' | 'saved'
+  industries: string[]
+  circleId: string
+}
+
+export interface PostComment {
+  id: string
+  text: string
+  when: string
+}
+
 interface Persisted {
   connections: string[]
   follows: string[]
@@ -52,6 +64,10 @@ interface Persisted {
   introStates: Record<string, IntroState>
   ownPosts: Post[]
   postResponses: string[]
+  likedPosts: string[]
+  repostedPosts: string[]
+  postComments: Record<string, PostComment[]>
+  feedPreferences: FeedPreferences
   ownAsks: NetworkAsk[]
   askResponses: Record<string, string[]>
   warmPaths: string[]
@@ -74,11 +90,14 @@ const KEY = 'aetheris-intros-graph-v1'
 /** Settings that live in the member's preferences document rather than a table. */
 const DOC_KEYS = [
   'objectives', 'profile', 'digitalYou', 'autonomy', 'preferences',
-  'registeredEvents', 'savedEvents', 'warmPaths', 'postResponses', 'activity',
+  'registeredEvents', 'savedEvents', 'warmPaths', 'postResponses', 'likedPosts',
+  'repostedPosts', 'postComments', 'feedPreferences', 'activity',
 ] as const
 
 const empty: Persisted = {
   connections: [], follows: [], saved: [], introStates: {}, ownPosts: [], postResponses: [],
+  likedPosts: [], repostedPosts: [], postComments: {},
+  feedPreferences: { scope: 'all', industries: [], circleId: '' },
   ownAsks: [], askResponses: {}, warmPaths: [], sentMessages: {}, ownThreads: [],
   learned: [], activity: [], notes: [], objectives: seedObjectives,
   profile: { ...seedMe }, digitalYou: defaultDigitalYou, autonomy: 2,
@@ -139,6 +158,10 @@ interface NetworkApi {
   follows: string[]
   saved: string[]
   postResponses: string[]
+  likedPosts: string[]
+  repostedPosts: string[]
+  postComments: Record<string, PostComment[]>
+  feedPreferences: FeedPreferences
   askResponses: Record<string, string[]>
   warmPaths: string[]
   /** True once this member's own graph has been read from the database. */
@@ -154,6 +177,10 @@ interface NetworkApi {
   declineIntro: (id: string) => void
   addPost: (text: string, detail?: string) => void
   respondToPost: (postId: string, memberId: string) => string | null
+  togglePostLike: (postId: string) => void
+  togglePostRepost: (postId: string, memberId: string) => void
+  addPostComment: (postId: string, text: string, memberId: string) => void
+  setFeedPreferences: (settings: FeedPreferences) => void
   addAsk: (ask: Omit<NetworkAsk, 'id' | 'posted' | 'responses' | 'memberId' | 'mine'>) => void
   respondToAsk: (askId: string, text: string) => string | null
   requestWarmPath: (askId: string) => void
@@ -337,6 +364,10 @@ export function NetworkProvider({ children }: { children: React.ReactNode }) {
       follows: s.follows,
       saved: s.saved,
       postResponses: s.postResponses,
+      likedPosts: s.likedPosts,
+      repostedPosts: s.repostedPosts,
+      postComments: s.postComments,
+      feedPreferences: s.feedPreferences,
       askResponses: s.askResponses,
       warmPaths: s.warmPaths,
 
@@ -416,6 +447,33 @@ export function NetworkProvider({ children }: { children: React.ReactNode }) {
         }))
         return threadId
       },
+
+      togglePostLike: (postId) => patch(prev => ({
+        likedPosts: prev.likedPosts.includes(postId)
+          ? prev.likedPosts.filter(id => id !== postId)
+          : [...prev.likedPosts, postId],
+      })),
+
+      togglePostRepost: (postId, memberId) => patch(prev => {
+        const reposted = prev.repostedPosts.includes(postId)
+        return {
+          repostedPosts: reposted ? prev.repostedPosts.filter(id => id !== postId) : [...prev.repostedPosts, postId],
+          ...(!reposted ? {
+            learned: remember(prev, { category: 'Interests', text: `You reposted ${nameOf(memberId)}'s professional update.`, source: 'Network feed', confidence: 100, scope: 'public' }),
+            activity: log(prev, { memberId, kind: 'New project', text: `You shared ${nameOf(memberId)}'s update with your network.` }),
+          } : {}),
+        }
+      }),
+
+      addPostComment: (postId, text, memberId) => patch(prev => ({
+        postComments: {
+          ...prev.postComments,
+          [postId]: [...(prev.postComments[postId] ?? []), { id: rowId(), text, when: 'Just now' }],
+        },
+        learned: remember(prev, { category: 'Interests', text: `You joined the discussion on ${nameOf(memberId)}'s post.`, source: 'Network feed', confidence: 100, scope: 'public' }),
+      })),
+
+      setFeedPreferences: (feedPreferences) => patch(() => ({ feedPreferences })),
 
       addAsk: (ask) => patch(prev => ({
         ownAsks: [{ ...ask, id: uid('ask'), memberId: 'me', posted: 'Just now', responses: 0, mine: true }, ...prev.ownAsks],
