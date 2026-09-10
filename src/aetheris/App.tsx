@@ -750,8 +750,8 @@ function Memory({ people, select }: { people: Member[]; select: (p: Member) => v
             return <article key={l.id} className="learned-row">
               {relatedPerson && <button onClick={() => relatedPerson && select(relatedPerson)} aria-label={relatedPerson.name}><Avatar person={relatedPerson} portrait /></button>}
               <div className="learned-text">
-                <p><strong>{relatedPerson?.name}</strong> {l.text}</p>
-                <small>From: {l.source}</small>
+                <p>{l.text}</p>
+                <small>{relatedPerson?.name} · From: {l.source}</small>
               </div>
               <div className="learned-cell"><strong>{l.confidence}%</strong><small>Confidence</small></div>
               <div className="learned-cell"><strong>{scopeLabel[l.scope]}</strong><small>{l.scope === 'private' ? 'Only you' : l.scope === 'team' ? 'With your team' : 'Cleared for intros'}</small></div>
