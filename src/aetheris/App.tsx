@@ -1022,7 +1022,17 @@ function AskModal({ open, onClose, people, select }: { open: boolean; onClose: (
   const [query, setQuery] = useState('')
   const [asked, setAsked] = useState(false)
   if (!open) return null
-  const ranked = [...people].sort((a, b) => b.scoreTotal - a.scoreTotal).slice(0, 3)
+  const q = query.toLowerCase()
+  const terms = q.split(/\s+/).filter(t => t.length > 3)
+  const cooling = /cool|dormant|risk|lost|quiet/.test(q)
+  const ranked = [...people]
+    .map(p => {
+      const text = `${p.name} ${p.title} ${p.company} ${p.industry} ${p.role} ${p.focus} ${p.needs.join(' ')} ${p.offers.join(' ')} ${p.location}`.toLowerCase()
+      const match = terms.filter(t => text.includes(t)).length * 14
+      const timing = cooling ? Math.min(p.lastInteractionDays, 120) : p.score.timing / 4
+      return { p, rank: p.scoreTotal + match + timing }
+    })
+    .sort((a, b) => b.rank - a.rank).slice(0, 3).map(x => x.p)
   return <div className="modal-wrap" onMouseDown={onClose}>
     <div className="modal ask-modal" onMouseDown={e => e.stopPropagation()}>
       <header><div><Label>ASK INTROS</Label><h2>Ask the relationship graph.</h2><p>Answers use relationship context, timing, trust and stated unknowns.</p></div>
