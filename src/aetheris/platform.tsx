@@ -7,13 +7,12 @@
  */
 import { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react'
 import type {
-  AvailabilityWindow, Circle, CollectionLike, ContextCapsule, DigitalHandshake, IntentCard,
-  MeetingContinuity, OpenLoop, Outcome, Placement, PlacementStage, SystemRecord, TriggerMemory,
+  AvailabilityWindow, Circle, ContextCapsule, DigitalHandshake, IntentCard,
+  MeetingContinuity, OpenLoop, Outcome, Placement, PlacementStage, SystemRecord,
 } from './domain/models'
 import type { Collections } from './domain/repository'
 import { getDataLayer } from './domain/repository'
 
-// `CollectionLike` is intentionally absent from models; keep the import list honest.
 export type { Collections }
 
 const uid = (p: string) => `${p}-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 6)}`
