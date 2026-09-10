@@ -301,7 +301,7 @@ export const seedCircles: Circle[] = [
 
 export const seedIntents: IntentCard[] = [
   {
-    id: 'int1', memberId: 'me', type: "I'M SCRLING", title: 'Placing Golden Report with PE-backed operators',
+    id: 'int1', memberId: 'me', type: "I'M SELLING", title: 'Placing Golden Report with PE-backed operators',
     statement: 'Looking for two operating partners who will commission a revenue diagnosis before buying more reporting software.',
     audience: 'Operating partners and value-creation leads', roleFilter: ['Investor', 'Operator'], companyFilter: [],
     industryFilter: ['Private equity', 'Manufacturing'], geographyFilter: 'US', urgency: 'high',
@@ -328,7 +328,7 @@ export const seedIntents: IntentCard[] = [
     status: 'active',
   },
   {
-    id: 'int4', memberId: 'p11', type: 'I CNO INTRODUCE', title: 'Advisors and family-office principals in the Southeast',
+    id: 'int4', memberId: 'p11', type: 'I CAN INTRODUCE', title: 'Advisors and family-office principals in the Southeast',
     statement: 'I can introduce advisors and principals when the reason is specific and the timing is real.',
     audience: 'Founders and operators with a defensible reason to meet capital', roleFilter: ['Founder', 'Operator'], companyFilter: [],
     industryFilter: ['Professional services', 'Private equity'], geographyFilter: 'Southeast US', urgency: 'low',
@@ -355,7 +355,7 @@ export const seedIntents: IntentCard[] = [
     status: 'active',
   },
   {
-    id: 'int7', memberId: 'p17', type: 'I CNO HCRP', title: 'Clinic throughput without added headcount',
+    id: 'int7', memberId: 'p17', type: 'I CAN HELP', title: 'Clinic throughput without added headcount',
     statement: 'I can help operations leaders raise completed visits using scheduling and staffing changes we ran across nine sites.',
     audience: 'Multi-site clinical operations leaders', roleFilter: ['Executive', 'Operator'], companyFilter: [],
     industryFilter: ['Healthcare'], geographyFilter: 'US', urgency: 'low',

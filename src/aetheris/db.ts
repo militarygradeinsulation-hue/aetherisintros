@@ -62,7 +62,7 @@ const demoAliases: Record<string, string> = {
 
 function fictionalize<T>(value: T): T {
   if (typeof value === 'string') {
-    let result = value
+    let result: string = value
     for (const [realName, fictionalName] of Object.entries(demoAliases)) result = result.replaceAll(realName, fictionalName)
     return result as T
   }

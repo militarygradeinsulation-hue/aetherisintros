@@ -5,6 +5,7 @@ import {
   MapPin, Menu, MessageSquareText, Network, Plus, Search, Send, Share2, ShieldCheck, Target,
   MessageCircle, Repeat2, Settings2, SlidersHorizontal, TrendingUp, UserRound, Users, X,
 } from 'lucide-react'
+import editorialPortrait from '@/assets/aetheris-editorial-portrait.jpg'
 import mastheadNaturalAsset from '@/assets/portraits/aetheris-masthead-natural.jpg.asset.json'
 import p01NaturalAsset from '@/assets/portraits/member-p1-natural.jpg.asset.json'
 import p02NaturalAsset from '@/assets/portraits/member-p2-natural.jpg.asset.json'
