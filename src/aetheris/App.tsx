@@ -1079,7 +1079,7 @@ function Messages({ people, select, activeId, setActiveId }: { people: Member[];
               const t = text.trim()
               if (!t) return
               const commercial = /demo|pricing|proposal|our (product|platform|software|solution)|quick call|book a|vendor/i.test(t)
-              const verdict = pro.boundaryCheck(commercial ? 'Vendor pitch' : 'Any outreach', {
+              const verdict = pro.boundaryCheck(commercial ? 'Software vendor' : 'Any outreach', {
                 recipientId: person.id, warmPath: net.connections.includes(person.id),
               })
               if (!verdict.allowed) {
