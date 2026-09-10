@@ -686,4 +686,4 @@
 .memory-modules .mod{border:0;border-radius:0}
 .memory-modules .mod:nth-child(4){grid-column:3;grid-row:2}
 @media(max-width:920px){.memory-map-row{grid-template-columns:1fr}.memory-quote-rail{border-left:0;border-top:1px solid var(--line-dark)}.memory-modules{grid-template-columns:1fr 1fr}.memory-modules .mod:nth-child(4){grid-column:auto;grid-row:auto}}
-@media(max-width:680px){.memory-modules{grid-template-columns:1fr}.memory-quote-rail blockquote{padding:28px 22px 20px}.memory-quote-rail>span{padding:0 22px 24px}.memory-quote-rail dl div{padding:14px 22px}}
+@media(max-width:680px){.memory-modules{grid-template-columns:1fr}.memory-quote-rail blockquote{padding:28px 22px 20px}.memory-quote-rail>span{padding:0 22px 24px}.memory-quote-rail dl div{padding:14px 22px}.global-network{overflow:hidden}.globe-plate{width:100%;min-width:0;aspect-ratio:16/9;min-height:0}.globe-plate img{min-width:0}}
