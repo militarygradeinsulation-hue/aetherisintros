@@ -1,8 +1,8 @@
 import { useEffect, useMemo, useState } from 'react'
 import {
-  AlertTriangle, ArrowRight, Bookmark, BookmarkCheck, Building2, CalendarDays, Check, CheckCircle2, ChevronLeft,
+  AlertTriangle, ArrowLeftRight, ArrowRight, Bookmark, BookmarkCheck, Building2, CalendarDays, Check, CheckCircle2, ChevronLeft,
   CircleDot, Compass, Eye, Fingerprint, Handshake, Home as HomeIcon, Layers, LockKeyhole,
-  Menu, MessageSquareText, Network, Plus, Search, Send, Share2, ShieldCheck, Target,
+  MapPin, Menu, MessageSquareText, Network, Plus, Search, Send, Share2, ShieldCheck, Target,
   Settings2, TrendingUp, UserRound, Users, X,
 } from 'lucide-react'
 import editorialPortrait from '@/assets/aetheris-editorial-portrait.jpg'
@@ -467,16 +467,7 @@ function Home({ people, select, setPage, openNeed, openThread }: {
     setComposer('')
   }
   return <>
-    <EditorialHero
-      folio="MEMBER HOME / NETWORK PULSE"
-      title={<>Know who matters.<br /><em>Know why now.</em></>}
-      statement="Your network already contains opportunities."
-      copy="This is what changed in your professional network: people worth meeting, what they need, what they can move, and where a conversation is justified today."
-      caption="Every signal here comes from context you or the network already shared."
-      image={portrait25Asset.url}
-      stats={[{ k: 'Members in graph', v: String(people.length) }, { k: 'Connections', v: String(net.connections.length) }, { k: 'Active asks', v: String(net.asks.length) }]}
-      action={<><Button onClick={openNeed}><Plus size={14} /> Post a need</Button><button className="text-action" onClick={() => setPage('discover')}>Browse the network <ArrowRight size={13} /></button></>}
-    />
+    <HomeMasthead people={people} select={select} setPage={setPage} openNeed={openNeed} openThread={openThread} />
 
     <header className="home-question">
       <Label>PEOPLE × CONTEXT × OPPORTUNITY</Label>
