@@ -2,6 +2,7 @@ import { AlertTriangle, ArrowLeft, Check, Lightbulb, MessageSquareText, ShieldCh
 import { useNetwork } from '../store'
 import { usePlatform } from '../platform'
 import { useNav } from '../nav'
+import { useMoat } from '../moat-store'
 import { Btn, Eyebrow, Face, Head, Numeral, Why } from '../ui'
 import { assessCompanyFit, deriveChain } from '../domain/engine'
 import type { CompanyProfile } from '../domain/models'
