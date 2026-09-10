@@ -76,7 +76,7 @@ export async function loadDirectory(): Promise<Directory> {
       const base = byId.get(row.id)
       return {
         ...(base ?? {}),
-        id: row.id, name: row.name, initials: row.initials, title: row.title,
+        id: row.id, name: base?.name ?? row.name, initials: base?.initials ?? row.initials, title: row.title,
         company: row.company, location: row.location, role: row.role, industry: row.industry,
         tags: row.tags ?? [], expertise: row.expertise ?? [], needs: row.needs ?? [],
         offers: row.offers ?? [], focus: row.focus, thesis: row.thesis,

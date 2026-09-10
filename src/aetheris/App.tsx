@@ -6,6 +6,10 @@ import {
   MessageCircle, Repeat2, Settings2, SlidersHorizontal, TrendingUp, UserRound, Users, X,
 } from 'lucide-react'
 import editorialPortrait from '@/assets/aetheris-editorial-portrait.jpg'
+import mastheadNaturalAsset from '@/assets/portraits/aetheris-masthead-natural.jpg.asset.json'
+import p01NaturalAsset from '@/assets/portraits/member-p1-natural.jpg.asset.json'
+import p02NaturalAsset from '@/assets/portraits/member-p2-natural.jpg.asset.json'
+import p03NaturalAsset from '@/assets/portraits/member-p3-natural.jpg.asset.json'
 import marcusPortrait from '@/assets/member-marcus.jpg'
 import priyaPortrait from '@/assets/member-priya.jpg'
 import sarahPortrait from '@/assets/member-sarah.jpg'
@@ -137,7 +141,7 @@ function AetherisGlyph({ size = 18 }: { size?: number }) {
   return <span className="aetheris-glyph" style={{ width: size, height: size }} aria-hidden="true"><i /><b /></span>
 }
 const memberPortraits: Record<string, string> = {
-  p1: p01PortraitAsset.url, p2: p02PortraitAsset.url, p3: p03PortraitAsset.url,
+  p1: p01NaturalAsset.url, p2: p02NaturalAsset.url, p3: p03NaturalAsset.url,
   p4: p04PortraitAsset.url, p5: p05PortraitAsset.url, p6: p06PortraitAsset.url,
   p7: sarahPortrait, p8: marcusPortrait, p9: p09PortraitAsset.url,
   p10: p10PortraitAsset.url, p11: priyaPortrait, p12: p12PortraitAsset.url,
@@ -231,7 +235,7 @@ function HomeMasthead({ people, select, setPage, openNeed, openThread }: {
     </div>
 
     <figure className="masthead-plate">
-      <img src={editorialPortrait} alt="A composed professional considering a decision in hard window light" loading="lazy" />
+      <img src={mastheadNaturalAsset.url} alt="A fictional professional walking beside architectural windows" width={1024} height={1280} />
       <figcaption>BETTER<br />PEOPLE<br />BUILD A<br />BRIGHTER<br />TOMORROW.</figcaption>
     </figure>
 
@@ -273,7 +277,7 @@ function HomeMasthead({ people, select, setPage, openNeed, openThread }: {
         <header><span><AetherisGlyph size={13} /> WHY THIS INTRODUCTION</span><em>EVIDENCE</em></header>
         <p>Intros found a relevant introduction based on mutual context, goals and conversation history.</p>
         <div className="deck-pair">
-          <span><Avatar person={lead} portrait /><b>{lead.name}</b><small>{lead.title}</small></span>
+          <span><span className="person-avatar portrait" aria-hidden="true">{lead.initials}</span><b>{lead.name}</b><small>{lead.title}</small></span>
           <ArrowLeftRight size={14} />
           <span><Avatar person={counterpart} portrait /><b>{counterpart.name}</b><small>{counterpart.title}</small></span>
         </div>
