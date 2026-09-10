@@ -599,7 +599,7 @@ function Discover({ people, select }: { people: Member[]; select: (p: Member) =>
 
 /* -------------------------------------------------------------------- intros */
 
-function MatchReport({ person, match, onOpen, onIntro }: { person: Member; match?: MatchResult; onOpen: () => void; onIntro: () => void }) {
+function MatchReport({ person, match, onOpen, onIntro }: { person: Member; match?: MatchResult | undefined; onOpen: () => void; onIntro: () => void }) {
   const net = useNetwork()
   const nav = useNav()
   return <article className="match-report">
