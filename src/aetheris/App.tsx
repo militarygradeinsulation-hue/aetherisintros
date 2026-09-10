@@ -1068,7 +1068,9 @@ function Onboarding({ open, onClose }: { open: boolean; onClose: () => void }) {
       </div>
       <footer>
         <Button kind="quiet" onClick={() => step ? setStep(step - 1) : onClose()}>{step ? 'Back' : 'Later'}</Button>
-        <Button onClick={() => last ? onClose() : setStep(step + 1)}>{last ? 'Enter Intros' : 'Continue'} <ArrowRight size={15} /></Button>
+        <Button onClick={() => {
+          if (last) { net.completeOnboarding(answers); onClose() } else setStep(step + 1)
+        }}>{last ? 'Save profile & enter Intros' : 'Continue'} <ArrowRight size={15} /></Button>
       </footer>
     </div>
   </div>
