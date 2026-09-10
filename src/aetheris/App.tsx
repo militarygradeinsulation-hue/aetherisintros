@@ -124,9 +124,9 @@ function AetherisGlyph({ size = 18 }: { size?: number }) {
 const memberPortraits: Record<string, string> = {
   p1: p01PortraitAsset.url, p2: p02PortraitAsset.url, p3: p03PortraitAsset.url,
   p4: p04PortraitAsset.url, p5: p05PortraitAsset.url, p6: p06PortraitAsset.url,
-  p7: portrait07Asset.url, p8: portrait08Asset.url, p9: p09PortraitAsset.url,
-  p10: p10PortraitAsset.url, p11: portrait11Asset.url, p12: p12PortraitAsset.url,
-  p13: p13PortraitAsset.url, p14: portrait14Asset.url, p15: p15PortraitAsset.url,
+  p7: sarahPortrait, p8: marcusPortrait, p9: p09PortraitAsset.url,
+  p10: p10PortraitAsset.url, p11: priyaPortrait, p12: p12PortraitAsset.url,
+  p13: p13PortraitAsset.url, p14: elliotPortrait, p15: p15PortraitAsset.url,
   p16: p16PortraitAsset.url, p17: p17PortraitAsset.url, p18: p18PortraitAsset.url,
   p19: p19PortraitAsset.url, p20: p20PortraitAsset.url, p21: p21PortraitAsset.url,
   p22: p22PortraitAsset.url, p23: p23PortraitAsset.url, p24: p24PortraitAsset.url,
@@ -341,7 +341,7 @@ function Home({ people, select, setPage, openNeed, openThread }: {
       statement="Your network already contains opportunities."
       copy="This is what changed in your professional network: people worth meeting, what they need, what they can move, and where a conversation is justified today."
       caption="Every signal here comes from context you or the network already shared."
-      image={sarahPortrait}
+      image={portrait25Asset.url}
       stats={[{ k: 'Members in graph', v: String(people.length) }, { k: 'Connections', v: String(net.connections.length) }, { k: 'Active asks', v: String(net.asks.length) }]}
       action={<><Button onClick={openNeed}><Plus size={14} /> Post a need</Button><button className="text-action" onClick={() => setPage('discover')}>Browse the network <ArrowRight size={13} /></button></>}
     />
@@ -501,7 +501,7 @@ function Discover({ people, select }: { people: Member[]; select: (p: Member) =>
       statement="Search the way you would brief a trusted friend."
       copy="Describe the outcome you want and Intros reads needs, offers, expertise, location, availability and the trust paths already open to you."
       caption="Members are surfaced with reasoning, never as an anonymous list."
-      image={marcusPortrait}
+      image={portrait26Asset.url}
       focus="center 22%"
     />
     <div className="discover-shell">
@@ -622,7 +622,7 @@ function Intros({ people, select, draft }: { people: Member[]; select: (p: Membe
   const ranked = [...people].sort((a, b) => b.scoreTotal - a.scoreTotal)
   const shown = state === 'all' ? ranked.slice(0, 6) : ranked.filter(p => p.introState === state)
   return <>
-    <EditorialHero folio="INTROS / MUTUAL VALUE" title={<>A warm path is<br /><em>earned context.</em></>} statement="The right conversation, with a reason for both sides." copy="Each report explains the mutual value, live timing and trust path before anyone asks for an introduction." caption="Both people retain agency. Nothing moves until both choose the conversation." image={priyaPortrait} />
+    <EditorialHero folio="INTROS / MUTUAL VALUE" title={<>A warm path is<br /><em>earned context.</em></>} statement="The right conversation, with a reason for both sides." copy="Each report explains the mutual value, live timing and trust path before anyone asks for an introduction." caption="Both people retain agency. Nothing moves until both choose the conversation." image={portrait27Asset.url} />
     <PageHead label="CURATED INTRODUCTIONS" title="People worth knowing now."
       copy="Every introduction carries mutual value, timing and a credible path. Nothing is sent until both sides agree."
       proof="46 introductions made · 24 became working conversations." />
@@ -654,7 +654,7 @@ function Messages({ people, select, activeId, setActiveId }: { people: Member[];
   const person = people.find(p => p.id === thread?.memberId)
   if (!thread || !person) return null
   return <>
-    <EditorialHero folio="MESSAGES / RELATIONSHIP CONTEXT" title={<>Conversation with<br /><em>memory beside it.</em></>} statement="People speak to people. Context stays quietly available." copy="Commitments, mutual connections and the reason for the introduction remain beside the thread—not inside the conversation." caption="A professional exchange remains human when intelligence knows when to stay quiet." image={elliotPortrait} />
+    <EditorialHero folio="MESSAGES / RELATIONSHIP CONTEXT" title={<>Conversation with<br /><em>memory beside it.</em></>} statement="People speak to people. Context stays quietly available." copy="Commitments, mutual connections and the reason for the introduction remain beside the thread—not inside the conversation." caption="A professional exchange remains human when intelligence knows when to stay quiet." image={portrait24Asset.url} />
     <PageHead label="MESSAGES" title="Context before contact."
       copy="Real conversations between members. Intros keeps the relationship context beside the thread, never in the middle of it."
       proof="Every thread remembers the last commitment made." />
