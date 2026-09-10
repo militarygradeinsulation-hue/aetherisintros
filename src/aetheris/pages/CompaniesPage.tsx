@@ -1,13 +1,14 @@
-import { ArrowLeft, MessageSquareText } from 'lucide-react'
+import { AlertTriangle, ArrowLeft, Check, Lightbulb, MessageSquareText, ShieldCheck } from 'lucide-react'
 import { useNetwork } from '../store'
 import { usePlatform } from '../platform'
 import { useNav } from '../nav'
 import { Btn, Eyebrow, Face, Head, Numeral, Why } from '../ui'
-import { deriveChain } from '../domain/engine'
+import { assessCompanyFit, deriveChain } from '../domain/engine'
 import type { CompanyProfile } from '../domain/models'
 
 export function CompaniesPage({ openId, setOpenId }: { openId: string | null; setOpenId: (id: string | null) => void }) {
   const platform = usePlatform()
+  const net = useNetwork()
   const open = platform.companies.find(c => c.id === openId) ?? null
   if (open) return <CompanyDetail company={open} onBack={() => setOpenId(null)} />
 
@@ -19,12 +20,12 @@ export function CompaniesPage({ openId, setOpenId }: { openId: string | null; se
       proof={`${platform.companies.length} organizations mapped from your relationships`}
     />
     <section className="company-list">
-      {platform.companies.map(c => <CompanyRow key={c.id} company={c} onOpen={() => setOpenId(c.id)} />)}
+      {platform.companies.map(c => <CompanyRow key={c.id} company={c} score={assessCompanyFit(c, { members: net.members, systems: platform.systems, intents: platform.intents, circles: platform.circles, relationships: platform.orgRelationships, outcomes: platform.outcomes }).score} onOpen={() => setOpenId(c.id)} />)}
     </section>
   </>
 }
 
-function CompanyRow({ company, onOpen }: { company: CompanyProfile; onOpen: () => void }) {
+function CompanyRow({ company, score, onOpen }: { company: CompanyProfile; score: number; onOpen: () => void }) {
   const net = useNetwork()
   const people = company.peopleIds.map(id => net.members.find(m => m.id === id)).filter(Boolean).slice(0, 3)
   return <article className="company-row">
@@ -35,6 +36,7 @@ function CompanyRow({ company, onOpen }: { company: CompanyProfile; onOpen: () =
       <p>{company.strongestEntry}</p>
     </button>
     <div className="company-row-side">
+      <div className="company-fit-preview"><strong>{score}</strong><span>GOLDEN FIT<br />/100</span></div>
       <div className="circle-faces">{people.map(m => m && <Face key={m.id} person={m} />)}<small>{company.peopleIds.length} known</small></div>
       <Btn kind="secondary" onClick={onOpen}>Open organization</Btn>
     </div>
@@ -52,6 +54,10 @@ function CompanyDetail({ company, onBack }: { company: CompanyProfile; onBack: (
   const orgRels = platform.orgRelationships.filter(r => r.companyName === company.name)
   const strongest = [...people].filter(Boolean).sort((a, b) => b!.score.trust - a!.score.trust)[0]
   const chain = strongest ? deriveChain(strongest, net.members) : null
+  const fit = assessCompanyFit(company, {
+    members: net.members, systems: platform.systems, intents: platform.intents,
+    circles: platform.circles, relationships: platform.orgRelationships, outcomes: platform.outcomes,
+  })
 
   return <article className="company-detail">
     <button className="back-link" onClick={onBack}><ArrowLeft size={15} /> All companies</button>
@@ -72,6 +78,29 @@ function CompanyDetail({ company, onBack }: { company: CompanyProfile; onBack: (
         {chain && <><span>BEST NEXT HOP</span><p>{chain.bestNextHop}</p></>}
       </aside>
     </header>
+
+    <section className="golden-report">
+      <header className="golden-report-head">
+        <div><Eyebrow>THE GOLDEN FIT REPORT</Eyebrow><h2>Company compatibility, without the sales gloss.</h2><p>{fit.standard}</p></div>
+        <div className="golden-score"><strong>{fit.score}</strong><span>/100 FIT</span><em>{fit.verdict}</em><small>{fit.confidence}% evidence confidence</small></div>
+      </header>
+      <div className="golden-dimensions">
+        {fit.dimensions.map(dimension => <article key={dimension.label}>
+          <div><span>{dimension.label}</span><strong>{dimension.score}</strong></div>
+          <i><b style={{ width: `${dimension.score}%` }} /></i>
+          <p>{dimension.evidence}</p><small>{Math.round(dimension.weight * 100)}% of overall score</small>
+        </article>)}
+      </div>
+      <div className="golden-truth-grid">
+        <section><header><Check size={14} /><span>STRENGTHS</span></header><ul>{fit.strengths.map(item => <li key={item}>{item}</li>)}</ul></section>
+        <section><header><AlertTriangle size={14} /><span>WEAKNESSES & RISKS</span></header><ul>{fit.weaknesses.map(item => <li key={item}>{item}</li>)}</ul></section>
+        <section><header><ShieldCheck size={14} /><span>WHAT IS STILL UNKNOWN</span></header><ul>{fit.unknowns.map(item => <li key={item}>{item}</li>)}</ul></section>
+      </div>
+      <section className="golden-ideas">
+        <header><Lightbulb size={15} /><div><span>WAYS THESE COMPANIES COULD WORK TOGETHER</span><small>Ideas are hypotheses until both sides validate them.</small></div></header>
+        <div>{fit.collaborationIdeas.map((idea, index) => <article key={idea.title}><em>0{index + 1}</em><h3>{idea.title}</h3><p>{idea.detail}</p><small>FIRST STEP</small><strong>{idea.firstStep}</strong></article>)}</div>
+      </section>
+    </section>
 
     <div className="sys-modules">
       <section className="mod">
