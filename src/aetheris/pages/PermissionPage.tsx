@@ -11,7 +11,7 @@ export function PermissionPage() {
   const net = useNetwork()
   const pro = usePro()
   const nav = useNav()
-  const [category, setCategory] = useState('Vendor or software pitch')
+  const [category, setCategory] = useState('Software vendor')
   const [reason, setReason] = useState('')
   const [whyRelevant, setWhyRelevant] = useState('')
   const [value, setValue] = useState('')
@@ -49,7 +49,7 @@ export function PermissionPage() {
         </label>
         <label>Category
           <select value={category} onChange={e => setCategory(e.target.value)}>
-            {['Vendor or software pitch', 'Fundraising pitch', 'Recruiting approach', 'Partnership proposal', 'Advisory inquiry', 'Any outreach'].map(c => <option key={c} value={c}>{c}</option>)}
+            {['Software vendor', 'Fundraising ask', 'Executive search', 'Board inquiry', 'Partnership proposal', 'Unknown path', 'Any outreach'].map(c => <option key={c} value={c}>{c}</option>)}
           </select>
         </label>
 
