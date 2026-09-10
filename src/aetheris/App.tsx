@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import { createContext, useContext, useEffect, useMemo, useState } from 'react'
 import {
   AlertTriangle, ArrowRight, Bookmark, BookmarkCheck, CalendarDays, Check, CheckCircle2, ChevronLeft,
   CircleDot, Compass, Eye, Fingerprint, Handshake, Home as HomeIcon, Layers, LockKeyhole,
@@ -10,18 +10,18 @@ import marcusPortrait from '@/assets/member-marcus.jpg'
 import priyaPortrait from '@/assets/member-priya.jpg'
 import sarahPortrait from '@/assets/member-sarah.jpg'
 import elliotPortrait from '@/assets/member-elliot.jpg'
-import { defaultDigitalYou, leaks, objectives as seedObjectives } from './data'
+import { leaks } from './data'
 import type { AutonomyLevel, DigitalYouProfile, Objective, PrivacyScope } from './types'
 import {
-  circles, events, howItWorks5, howIntrosWorks, introStateLabel, learnings, me, members, networkAsks,
-  onboardingQuestions, posts, signals, threads, trendingSectors,
+  circles, events, howItWorks5, howIntrosWorks, introStateLabel,
+  onboardingQuestions, trendingSectors,
   type Learning, type Member, type NetworkAsk, type Post, type Thread,
 } from './social'
+import { NetworkProvider, useNetwork, type MemoryNote, type MeProfile } from './store'
 import { classifyConnection, composeWarmIntro, radarLabel } from './lib/engine'
 
 
 type Page = 'home' | 'discover' | 'intros' | 'messages' | 'needs' | 'memory' | 'insights' | 'profile'
-type MemoryNote = { id: string; personId: string; text: string; scope: PrivacyScope; createdAt: string }
 type OptIn = 'pending' | 'yes' | 'no'
 
 const nav: Array<{ id: Page; label: string; icon: typeof HomeIcon }> = [
@@ -47,6 +47,22 @@ const scopeText: Record<PrivacyScope, string> = {
   public: 'Already public context.',
 }
 const scopes: PrivacyScope[] = ['private', 'team', 'organization', 'shareable', 'public']
+
+/** Navigation intents any member surface can trigger. */
+interface NavApi {
+  setPage: (p: Page) => void
+  openMember: (m: Member) => void
+  openIntro: (m: Member) => void
+  messageMember: (memberId: string) => void
+  goToThread: (threadId: string) => void
+  postNeed: () => void
+}
+const NavCtx = createContext<NavApi | null>(null)
+function useNav() {
+  const ctx = useContext(NavCtx)
+  if (!ctx) throw new Error('useNav must be used inside the Intros shell')
+  return ctx
+}
 
 /* ---------------------------------------------------------------- primitives */
 
@@ -132,7 +148,24 @@ function MemoryGraph({ people, onSelect, compact = false }: { people: Member[]; 
 
 /* --------------------------------------------------------------------- home */
 
-function MemberCard({ person, onOpen, onMessage, onIntro, saved, onSave }: { person: Member; onOpen: () => void; onMessage: () => void; onIntro: () => void; saved: boolean; onSave: () => void }) {
+/** Relationship actions shared by every member surface, so each click changes the graph. */
+function MemberActions({ person, compact = false }: { person: Member; compact?: boolean }) {
+  const net = useNetwork()
+  const nav = useNav()
+  const connected = net.connections.includes(person.id)
+  const following = net.follows.includes(person.id)
+  return <>
+    <SaveButton saved={net.saved.includes(person.id)} onToggle={() => net.toggleSave(person.id)} />
+    <Button kind="quiet" onClick={() => net.connect(person.id)}>
+      {connected ? <><Check size={14} /> Connected</> : <><Plus size={14} /> Connect</>}
+    </Button>
+    {!compact && <Button kind="quiet" onClick={() => net.follow(person.id)}>{following ? 'Following' : 'Follow'}</Button>}
+    <Button kind="secondary" onClick={() => nav.messageMember(person.id)}><MessageSquareText size={14} /> Message</Button>
+    <Button onClick={() => nav.openIntro(person)}><Handshake size={14} /> Request intro</Button>
+  </>
+}
+
+function MemberCard({ person, onOpen }: { person: Member; onOpen: () => void }) {
   return <article className="feed-card member-card">
     <header>
       <button className="card-identity" onClick={onOpen}>
@@ -148,19 +181,27 @@ function MemberCard({ person, onOpen, onMessage, onIntro, saved, onSave }: { per
     <div className="card-why"><span>WHY NOW</span><p>{person.whyNow}</p></div>
     <footer>
       <small>{person.mutuals.length ? `Mutual: ${person.mutuals.join(', ')}` : 'Path available through the graph'}</small>
-      <div>
-        <SaveButton saved={saved} onToggle={onSave} />
-        <Button kind="secondary" onClick={onMessage}><MessageSquareText size={14} /> Message</Button>
-        <Button onClick={onIntro}><Handshake size={14} /> Request intro</Button>
-      </div>
+      <div><MemberActions person={person} /></div>
     </footer>
   </article>
 }
 
-function AskCard({ ask, member, onMessage, onOpen, saved, onSave }: { ask: NetworkAsk; member: Member | undefined; onMessage: () => void; onOpen: () => void; saved: boolean; onSave: () => void }) {
+function AskCard({ ask, member, onOpen }: { ask: NetworkAsk; member: Member | undefined; onOpen: () => void }) {
+  const net = useNetwork()
+  const nav = useNav()
+  const [reply, setReply] = useState('')
+  const [open, setOpen] = useState(false)
+  const responded = (net.askResponses[ask.id]?.length ?? 0) > 0
+  const warm = net.warmPaths.includes(ask.id)
+  const mine = ask.memberId === 'me'
+  const send = () => {
+    const threadId = net.respondToAsk(ask.id, reply.trim())
+    setReply(''); setOpen(false)
+    if (threadId) nav.goToThread(threadId)
+  }
   return <article className="feed-card ask-card">
     <header>
-      <button className="ask-author" onClick={onOpen}>{member && <Avatar person={member} />}<span><strong>{member?.name ?? 'Member'}</strong><small>{member?.title} · {member?.company}</small></span></button>
+      <button className="ask-author" onClick={onOpen}>{member && <Avatar person={member} />}<span><strong>{mine ? 'You' : member?.name ?? 'Member'}</strong><small>{mine ? 'Your ask · visible to the network' : `${member?.title} · ${member?.company}`}</small></span></button>
       <span className={`urgency ${ask.urgency}`}>{ask.urgency === 'high' ? 'Time sensitive' : ask.urgency === 'medium' ? 'Active' : 'Open'}</span>
     </header>
     <h3>{ask.ask}</h3>
@@ -169,22 +210,36 @@ function AskCard({ ask, member, onMessage, onOpen, saved, onSave }: { ask: Netwo
       <div><dt>WHY NOW</dt><dd>{ask.whyNow}</dd></div>
       <div><dt>WHAT THEY OFFER</dt><dd>{ask.offer}</dd></div>
     </dl>
+    {open && !mine && <div className="ask-reply">
+      <textarea rows={3} autoFocus value={reply} onChange={e => setReply(e.target.value)}
+        placeholder={`Answer ${member?.name.split(' ')[0] ?? 'them'} with something specific and useful…`} />
+      <div><Button kind="quiet" onClick={() => setOpen(false)}>Cancel</Button>
+        <Button disabled={!reply.trim()} onClick={send}><Send size={14} /> Send response</Button></div>
+    </div>}
     <footer>
-      <small>{ask.industry} · {ask.location} · {ask.posted} · {ask.responses} responses</small>
+      <small>{ask.industry} · {ask.location} · {ask.posted} · {ask.responses} responses{warm ? ' · warm path requested' : ''}{responded ? ' · you responded' : ''}</small>
       <div>
-        <SaveButton saved={saved} onToggle={onSave} />
-        <Button kind="quiet" onClick={onOpen}>Ask for a warm path</Button>
-        <Button kind="secondary" onClick={onMessage}>Respond</Button>
+        <SaveButton saved={net.saved.includes(ask.id)} onToggle={() => net.toggleSave(ask.id, `the ask from ${mine ? 'you' : member?.name ?? 'a member'}`)} />
+        {!mine && <Button kind="quiet" disabled={warm} onClick={() => net.requestWarmPath(ask.id)}>{warm ? <><Check size={14} /> Warm path requested</> : 'Ask for a warm path'}</Button>}
+        {!mine && member && <Button kind="quiet" onClick={() => nav.messageMember(member.id)}><MessageSquareText size={14} /> Message</Button>}
+        {mine
+          ? <Button kind="secondary" onClick={onOpen}>See who matches</Button>
+          : <Button kind="secondary" onClick={() => setOpen(true)}>{responded ? 'Respond again' : 'Respond'}</Button>}
       </div>
     </footer>
   </article>
 }
 
-function PostCard({ post, member, onOpen, onMessage }: { post: Post; member: Member | undefined; onOpen: () => void; onMessage: () => void }) {
-  const [responded, setResponded] = useState(false)
+function PostCard({ post, member, onOpen }: { post: Post; member: Member | undefined; onOpen: () => void }) {
+  const net = useNetwork()
+  const nav = useNav()
+  const responded = net.postResponses.includes(post.id)
+  const mine = post.memberId === 'me'
   return <article className="post-card">
     <header>
-      {member && <button className="post-author" onClick={onOpen}><Avatar person={member} portrait /><span><strong>{member.name}</strong><small>{member.title} · {member.company}</small></span></button>}
+      {member
+        ? <button className="post-author" onClick={onOpen}><Avatar person={member} portrait /><span><strong>{member.name}</strong><small>{member.title} · {member.company}</small></span></button>
+        : <div className="post-author"><span className="person-avatar portrait">{net.profile.initials}</span><span><strong>You</strong><small>{net.profile.title}</small></span></div>}
       <span className="post-kind">{post.kind}</span>
     </header>
     <h3>{post.text}</h3>
@@ -192,25 +247,30 @@ function PostCard({ post, member, onOpen, onMessage }: { post: Post; member: Mem
     <footer>
       <small>{post.when} · {post.responses + (responded ? 1 : 0)} responses</small>
       <div>
-        <Button kind="quiet" onClick={() => setResponded(true)}>{responded ? <><Check size={14} /> Responded</> : <>Respond</>}</Button>
-        <Button kind="secondary" onClick={onMessage}><MessageSquareText size={14} /> Message</Button>
+        {!mine && member && <>
+          <Button kind="quiet" onClick={() => { const id = net.respondToPost(post.id, member.id); if (id) nav.goToThread(id) }}>
+            {responded ? <><Check size={14} /> Responded</> : <>Respond</>}
+          </Button>
+          <Button kind="secondary" onClick={() => nav.messageMember(member.id)}><MessageSquareText size={14} /> Message</Button>
+        </>}
+        {mine && <small className="post-own">Shared with your network · added to Active Memory</small>}
       </div>
     </footer>
   </article>
 }
 
-function Home({ people, select, setPage, openNeed, openThread, saved, toggleSave, objectives }: {
+function Home({ people, select, setPage, openNeed, openThread }: {
   people: Member[]; select: (p: Member) => void; setPage: (p: Page) => void; openNeed: () => void
-  openThread: (id: string) => void; saved: string[]; toggleSave: (id: string) => void; objectives: Objective[]
+  openThread: (id: string) => void
 }) {
+  const net = useNetwork()
   const [tab, setTab] = useState<'feed' | 'people' | 'asks' | 'signals'>('feed')
   const [composer, setComposer] = useState('')
-  const [posted, setPosted] = useState<Post[]>([])
   const ranked = useMemo(() => [...people].sort((a, b) => b.scoreTotal - a.scoreTotal), [people])
-  const activeNeed = objectives[0]
+  const activeNeed = net.objectives[0]
   const share = () => {
     if (!composer.trim()) return
-    setPosted(p => [{ id: `own-${p.length}`, memberId: 'me', kind: 'Insight', text: composer.trim(), detail: 'Shared with your network. Intros added this to your active memory as current context.', when: 'Just now', responses: 0 }, ...p])
+    net.addPost(composer.trim())
     setComposer('')
   }
   return <>
@@ -221,7 +281,7 @@ function Home({ people, select, setPage, openNeed, openThread, saved, toggleSave
       copy="This is what changed in your professional network: people worth meeting, what they need, what they can move, and where a conversation is justified today."
       caption="Every signal here comes from context you or the network already shared."
       image={sarahPortrait}
-      stats={[{ k: 'Members in graph', v: String(people.length) }, { k: 'Warm paths open', v: String(people.filter(p => p.bestPath.length > 2).length) }, { k: 'Active asks', v: String(networkAsks.length) }]}
+      stats={[{ k: 'Members in graph', v: String(people.length) }, { k: 'Connections', v: String(net.connections.length) }, { k: 'Active asks', v: String(net.asks.length) }]}
       action={<><Button onClick={openNeed}><Plus size={14} /> Post a need</Button><button className="text-action" onClick={() => setPage('discover')}>Browse the network <ArrowRight size={13} /></button></>}
     />
 
@@ -233,7 +293,7 @@ function Home({ people, select, setPage, openNeed, openThread, saved, toggleSave
     </header>
 
     <section className="composer">
-      <span className="person-avatar portrait">{me.initials}</span>
+      <span className="person-avatar portrait">{net.profile.initials}</span>
       <div>
         <textarea value={composer} onChange={e => setComposer(e.target.value)} rows={2}
           placeholder="Share something useful — an insight, a milestone, a partnership you are looking for…" />
@@ -251,15 +311,14 @@ function Home({ people, select, setPage, openNeed, openThread, saved, toggleSave
     </div>
 
     <div className="feed">
-      {tab === 'feed' && [...posted, ...posts].map(post =>
+      {tab === 'feed' && net.posts.map(post =>
         <PostCard key={post.id} post={post} member={people.find(p => p.id === post.memberId) ?? undefined}
-          onOpen={() => { const m = people.find(p => p.id === post.memberId); if (m) select(m) }}
-          onMessage={() => setPage('messages')} />)}
+          onOpen={() => { const m = people.find(p => p.id === post.memberId); if (m) select(m) }} />)}
       {tab === 'people' && ranked.slice(0, 4).map(p =>
-        <MemberCard key={p.id} person={p} onOpen={() => select(p)} onMessage={() => setPage('messages')} onIntro={() => select(p)} saved={saved.includes(p.id)} onSave={() => toggleSave(p.id)} />)}
-      {tab === 'asks' && networkAsks.map(a =>
-        <AskCard key={a.id} ask={a} member={people.find(p => p.id === a.memberId)} onMessage={() => setPage('messages')} onOpen={() => { const m = people.find(p => p.id === a.memberId); if (m) select(m) }} saved={saved.includes(a.id)} onSave={() => toggleSave(a.id)} />)}
-      {tab === 'signals' && <section className="signal-list">{signals.map(s => {
+        <MemberCard key={p.id} person={p} onOpen={() => select(p)} />)}
+      {tab === 'asks' && net.asks.map(a =>
+        <AskCard key={a.id} ask={a} member={people.find(p => p.id === a.memberId)} onOpen={() => { const m = people.find(p => p.id === a.memberId); if (m) select(m); else setPage('needs') }} />)}
+      {tab === 'signals' && <section className="signal-list">{net.activity.map(s => {
         const m = people.find(p => p.id === s.memberId)
         return <button key={s.id} onClick={() => { if (m) select(m) }}>
           <span className="signal-dot" />
@@ -326,7 +385,7 @@ const filterGroups: Array<{ label: string; options: string[] }> = [
   { label: 'Signal', options: ['Warm path available', 'High match', 'Available now'] },
 ]
 
-function Discover({ people, select, saved, toggleSave, setPage }: { people: Member[]; select: (p: Member) => void; saved: string[]; toggleSave: (id: string) => void; setPage: (p: Page) => void }) {
+function Discover({ people, select }: { people: Member[]; select: (p: Member) => void }) {
   const [q, setQ] = useState('')
   const [active, setActive] = useState<string[]>([])
   const toggle = (o: string) => setActive(a => a.includes(o) ? a.filter(x => x !== o) : [...a, o])
@@ -375,11 +434,7 @@ function Discover({ people, select, saved, toggleSave, setPage }: { people: Memb
           <ul className="tile-tags">{p.expertise.slice(0, 3).map(t => <li key={t}>{t}</li>)}</ul>
           <small className="tile-path">{p.bestPath.length > 2 ? `Warm path via ${p.bestPath[1]}` : 'Direct relationship'} · {p.availability}</small>
         </button>
-        <footer>
-          <SaveButton saved={saved.includes(p.id)} onToggle={() => toggleSave(p.id)} />
-          <Button kind="secondary" onClick={() => setPage('messages')}><MessageSquareText size={14} /> Message</Button>
-          <Button onClick={() => select(p)}><Handshake size={14} /> Intro</Button>
-        </footer>
+        <footer><MemberActions person={p} compact /></footer>
       </article>)}
       {!filtered.length && <p className="empty-state">No members match that yet. Broaden the filters or describe the outcome instead of the title.</p>}
     </div>
@@ -397,7 +452,9 @@ function Discover({ people, select, saved, toggleSave, setPage }: { people: Memb
 
 /* -------------------------------------------------------------------- intros */
 
-function MatchReport({ person, onOpen, onIntro, onMessage }: { person: Member; onOpen: () => void; onIntro: () => void; onMessage: () => void }) {
+function MatchReport({ person, onOpen, onIntro }: { person: Member; onOpen: () => void; onIntro: () => void }) {
+  const net = useNetwork()
+  const nav = useNav()
   return <article className="match-report">
     <header>
       <Avatar person={person} large portrait />
@@ -424,13 +481,14 @@ function MatchReport({ person, onOpen, onIntro, onMessage }: { person: Member; o
     <div className="match-move"><span>RECOMMENDED NEXT MOVE</span><p>{person.nextAction}</p></div>
     <footer>
       <Button kind="quiet" onClick={onOpen}>View reasoning</Button>
-      <Button kind="secondary" onClick={onMessage}><MessageSquareText size={15} /> Message</Button>
-      <Button onClick={onIntro}><Handshake size={15} /> Request introduction</Button>
+      <SaveButton saved={net.saved.includes(person.id)} onToggle={() => net.toggleSave(person.id)} />
+      <Button kind="secondary" onClick={() => nav.messageMember(person.id)}><MessageSquareText size={15} /> Message</Button>
+      <Button onClick={onIntro}><Handshake size={15} /> {person.introState === 'requested' ? 'Review opt-in' : 'Request introduction'}</Button>
     </footer>
   </article>
 }
 
-function Intros({ people, select, draft, setPage }: { people: Member[]; select: (p: Member) => void; draft: (p: Member) => void; setPage: (p: Page) => void }) {
+function Intros({ people, select, draft }: { people: Member[]; select: (p: Member) => void; draft: (p: Member) => void }) {
   const [state, setState] = useState<'all' | Member['introState']>('all')
   const ranked = [...people].sort((a, b) => b.scoreTotal - a.scoreTotal)
   const shown = state === 'all' ? ranked.slice(0, 6) : ranked.filter(p => p.introState === state)
@@ -447,7 +505,7 @@ function Intros({ people, select, draft, setPage }: { people: Member[]; select: 
         </button>)}
     </div>
     <div className="reports-list">
-      {shown.map(p => <MatchReport key={p.id} person={p} onOpen={() => select(p)} onIntro={() => draft(p)} onMessage={() => setPage('messages')} />)}
+      {shown.map(p => <MatchReport key={p.id} person={p} onOpen={() => select(p)} onIntro={() => draft(p)} />)}
       {!shown.length && <p className="empty-state">No introductions in this state yet.</p>}
     </div>
     <section className="how-it-works">
@@ -460,12 +518,12 @@ function Intros({ people, select, draft, setPage }: { people: Member[]; select: 
 /* ------------------------------------------------------------------ messages */
 
 function Messages({ people, select, activeId, setActiveId }: { people: Member[]; select: (p: Member) => void; activeId: string; setActiveId: (id: string) => void }) {
-  const [sent, setSent] = useState<Record<string, string[]>>({})
+  const net = useNetwork()
   const [text, setText] = useState('')
-  const thread: Thread = threads.find(t => t.id === activeId) ?? threads[0]!
-  const person = people.find(p => p.id === thread.memberId)
-  if (!person) return null
-  const extra = sent[thread.id] ?? []
+  const threads = net.threads
+  const thread: Thread | undefined = threads.find(t => t.id === activeId) ?? threads[0]
+  const person = people.find(p => p.id === thread?.memberId)
+  if (!thread || !person) return null
   return <>
     <EditorialHero folio="MESSAGES / RELATIONSHIP CONTEXT" title={<>Conversation with<br /><em>memory beside it.</em></>} statement="People speak to people. Context stays quietly available." copy="Commitments, mutual connections and the reason for the introduction remain beside the thread—not inside the conversation." caption="A professional exchange remains human when intelligence knows when to stay quiet." image={elliotPortrait} />
     <PageHead label="MESSAGES" title="Context before contact."
@@ -493,14 +551,14 @@ function Messages({ people, select, activeId, setActiveId }: { people: Member[];
         <div className="intro-context"><Label>INTRODUCTION CONTEXT</Label><p>{thread.introContext}</p></div>
         <div className="messages">
           {thread.messages.map(m => <div key={m.id} className={`message ${m.from === 'me' ? 'outgoing' : 'incoming'}`}>{m.text}<small>{m.at}</small></div>)}
-          {extra.map((t, i) => <div key={i} className="message outgoing">{t}<small>Just now</small></div>)}
+          {!thread.messages.length && <p className="empty-state">New conversation. Open with the reason this matters to both sides.</p>}
            <div className="shared-context"><AetherisGlyph size={12} /><span>Shared context: {person.needs[0]} · {person.offers[0]}</span></div>
         </div>
         <div className="composer-wrap">
            <button className="suggested" onClick={() => setText(thread.suggested)}><AetherisGlyph size={13} /> Use contextual draft</button>
           <div className="composer">
             <textarea value={text} onChange={e => setText(e.target.value)} placeholder="Write with the relationship in mind…" />
-            <button onClick={() => { if (text.trim()) { setSent(s => ({ ...s, [thread.id]: [...(s[thread.id] ?? []), text.trim()] })); setText('') } }} disabled={!text.trim()} aria-label="Send"><Send size={17} /></button>
+            <button onClick={() => { if (text.trim()) { net.sendMessage(thread.id, text.trim()); setText('') } }} disabled={!text.trim()} aria-label="Send"><Send size={17} /></button>
           </div>
         </div>
       </section>
@@ -510,7 +568,7 @@ function Messages({ people, select, activeId, setActiveId }: { people: Member[];
         <p>{person.whyThem}</p>
         <dl>
           <div><dt>THEY ARE LOOKING FOR</dt><dd>{person.needs.join(' · ')}</dd></div>
-          <div><dt>YOU CAN HELP WITH</dt><dd>{me.canHelpWith}</dd></div>
+          <div><dt>YOU CAN HELP WITH</dt><dd>{net.profile.canHelpWith}</dd></div>
           <div><dt>MUTUAL PATH</dt><dd>{person.bestPath.join(' → ')}</dd></div>
           <div><dt>LAST COMMITMENT</dt><dd>{thread.commitment}</dd></div>
           <div><dt>RECOMMENDED NEXT STEP</dt><dd>{person.nextAction}</dd></div>
@@ -523,13 +581,23 @@ function Messages({ people, select, activeId, setActiveId }: { people: Member[];
 
 /* --------------------------------------------------------------------- needs */
 
-function Needs({ objectives, onNew, people, select, saved, toggleSave, setPage }: {
-  objectives: Objective[]; onNew: () => void; people: Member[]; select: (p: Member) => void
-  saved: string[]; toggleSave: (id: string) => void; setPage: (p: Page) => void
+function Needs({ onNew, people, select, setPage }: {
+  onNew: () => void; people: Member[]; select: (p: Member) => void; setPage: (p: Page) => void
 }) {
+  const net = useNetwork()
   const [tab, setTab] = useState<'for-you' | 'yours' | 'network' | 'saved'>('for-you')
-  const forYou = networkAsks.filter(a => ['a1', 'a4', 'a3'].includes(a.id))
-  const list = tab === 'network' ? networkAsks : tab === 'saved' ? networkAsks.filter(a => saved.includes(a.id)) : forYou
+  const objectives = net.objectives
+  const asks = net.asks
+  const mine = asks.filter(a => a.memberId === 'me')
+  const focus = `${net.profile.focus} ${net.profile.lookingFor} ${objectives.map(o => o.title).join(' ')}`.toLowerCase()
+  const forYou = asks.filter(a => a.memberId !== 'me' && (
+    focus.includes(a.industry.toLowerCase()) ||
+    a.ask.toLowerCase().split(/\s+/).some(w => w.length > 5 && focus.includes(w)) ||
+    a.urgency === 'high'
+  )).slice(0, 6)
+  const list = tab === 'network' ? asks.filter(a => a.memberId !== 'me')
+    : tab === 'saved' ? asks.filter(a => net.saved.includes(a.id))
+      : forYou
   return <>
     <EditorialHero folio="NEEDS / PROFESSIONAL ASKS" title={<>State the outcome.<br /><em>Find who can move it.</em></>} statement="Serious asks create useful professional context." copy="A need is not a broadcast. It is a concise case for why the right person should care, why now matters and what value moves both ways." caption="Specific needs produce considered responses—not noisy outreach." image={sarahPortrait} />
     <PageHead label="NEEDS" title="Tell the network what you need."
@@ -541,6 +609,7 @@ function Needs({ objectives, onNew, people, select, saved, toggleSave, setPage }
         <button key={id} className={tab === id ? 'active' : ''} onClick={() => setTab(id)}>{label}</button>)}
     </div>
     {tab === 'yours' ? <div className="feed">
+      {mine.map(a => <AskCard key={a.id} ask={a} member={undefined} onOpen={() => setPage('intros')} />)}
       {objectives.map((o, i) => <article className="need-case" key={o.id}>
         <header><Label signal>ACTIVE · {o.priority}</Label><span>CASE {String(i + 1).padStart(2, '0')} / {new Date().getFullYear()}</span></header>
         <h2>{o.title}</h2>
@@ -556,11 +625,11 @@ function Needs({ objectives, onNew, people, select, saved, toggleSave, setPage }
           <Button kind="quiet" onClick={() => setPage('discover')}>Browse the network</Button>
         </footer>
       </article>)}
-      {!objectives.length && <p className="empty-state">You have not posted a need yet. Start with the outcome, not a list of people.</p>}
+      {!objectives.length && !mine.length && <p className="empty-state">You have not posted a need yet. Start with the outcome, not a list of people.</p>}
     </div> : <div className="feed">
-      {list.map(a => <AskCard key={a.id} ask={a} member={people.find(p => p.id === a.memberId)} onMessage={() => setPage('messages')}
-        onOpen={() => { const m = people.find(p => p.id === a.memberId); if (m) select(m) }} saved={saved.includes(a.id)} onSave={() => toggleSave(a.id)} />)}
-      {!list.length && <p className="empty-state">Nothing saved yet. Save an ask to keep it beside your own needs.</p>}
+      {list.map(a => <AskCard key={a.id} ask={a} member={people.find(p => p.id === a.memberId)}
+        onOpen={() => { const m = people.find(p => p.id === a.memberId); if (m) select(m) }} />)}
+      {!list.length && <p className="empty-state">{tab === 'saved' ? 'Nothing saved yet. Save an ask to keep it beside your own needs.' : 'No matching asks yet. Post your own need or browse every network ask.'}</p>}
     </div>}
   </>
 }
@@ -569,13 +638,14 @@ function Needs({ objectives, onNew, people, select, saved, toggleSave, setPage }
 
 const memoryCategories: Learning['category'][] = ['People', 'Companies', 'Needs', 'Messages', 'Introductions', 'Decisions', 'Interests', 'Commitments']
 
-function Memory({ people, select, notes }: { people: Member[]; select: (p: Member) => void; notes: MemoryNote[] }) {
+function Memory({ people, select }: { people: Member[]; select: (p: Member) => void }) {
+  const net = useNetwork()
   const [cat, setCat] = useState<Learning['category'] | 'All'>('All')
   const items: Learning[] = [
-    ...notes.slice(0, 4).map((n, i): Learning => ({
+    ...net.notes.slice(0, 4).map((n, i): Learning => ({
       id: `n${i}`, category: 'People', text: n.text, source: 'Recorded by you', confidence: 100, scope: n.scope, when: n.createdAt,
     })),
-    ...learnings,
+    ...net.learnings,
   ]
   const shown = cat === 'All' ? items : items.filter(l => l.category === cat)
   return <>
@@ -641,7 +711,9 @@ function Memory({ people, select, notes }: { people: Member[]; select: (p: Membe
 
 /* ------------------------------------------------------------------ insights */
 
-function Insights({ people, select, setPage, saved, toggleSave }: { people: Member[]; select: (p: Member) => void; setPage: (p: Page) => void; saved: string[]; toggleSave: (id: string) => void }) {
+function Insights({ people, select, setPage }: { people: Member[]; select: (p: Member) => void; setPage: (p: Page) => void }) {
+  const net = useNetwork()
+  const nav = useNav()
   const [dismissed, setDismissed] = useState<string[]>([])
   return <>
     <EditorialHero folio="INSIGHTS / RELATIONSHIP MOVEMENT" title={<>Notice what changed.<br /><em>Act while it matters.</em></>} statement="Signals become useful only when they change the next move." copy="Role changes, cooling conversations, matching needs and warm paths are organized around action—not analytics theater." caption="The strongest signal is often a small change in a relationship you already trust." image={marcusPortrait} />
@@ -667,9 +739,9 @@ function Insights({ people, select, setPage, saved, toggleSave }: { people: Memb
           <div className="insight-confidence"><strong>{leak.confidence}</strong><small>confidence</small></div>
           <div className="insight-actions">
             <Button kind="quiet" onClick={() => select(p)}>Open profile</Button>
-            <Button kind="secondary" onClick={() => setPage('messages')}>Message</Button>
-            <Button onClick={() => select(p)}>Ask for intro</Button>
-            <SaveButton saved={saved.includes(p.id)} onToggle={() => toggleSave(p.id)} />
+            <Button kind="secondary" onClick={() => nav.messageMember(p.id)}>Message</Button>
+            <Button onClick={() => nav.openIntro(p)}>Ask for intro</Button>
+            <SaveButton saved={net.saved.includes(p.id)} onToggle={() => net.toggleSave(p.id)} />
             <button className="dismiss" onClick={() => setDismissed(d => [...d, leak.id])}>Dismiss</button>
           </div>
         </article>
@@ -711,11 +783,17 @@ function Insights({ people, select, setPage, saved, toggleSave }: { people: Memb
 
 /* ------------------------------------------------------------------- profile */
 
-function Profile({ profile, setProfile, autonomy, setAutonomy, people, setPage, notes }: {
-  profile: DigitalYouProfile; setProfile: (x: DigitalYouProfile) => void; autonomy: AutonomyLevel
-  setAutonomy: (x: AutonomyLevel) => void; people: Member[]; setPage: (p: Page) => void; notes: MemoryNote[]
+function Profile({ people, setPage, openOnboarding }: {
+  people: Member[]; setPage: (p: Page) => void; openOnboarding: () => void
 }) {
-  const [connected, setConnected] = useState(false)
+  const net = useNetwork()
+  const me: MeProfile = net.profile
+  const notes: MemoryNote[] = net.notes
+  const profile: DigitalYouProfile = net.digitalYou
+  const setProfile = net.setDigitalYou
+  const autonomy: AutonomyLevel = net.autonomy
+  const setAutonomy = net.setAutonomy
+  const [copied, setCopied] = useState(false)
   const sliders: [keyof DigitalYouProfile, string, string, string][] = [
     ['directness', 'Directness', 'Soft', 'Direct'], ['formality', 'Formality', 'Casual', 'Formal'],
     ['warmth', 'Warmth', 'Reserved', 'Warm'], ['brevity', 'Brevity', 'Detailed', 'Tight'],
@@ -730,11 +808,11 @@ function Profile({ profile, setProfile, autonomy, setAutonomy, people, setPage, 
         <p className="identity-thesis">{me.thesis}</p>
         <blockquote>“Evidence, mutual value, good timing and human judgment.”</blockquote>
         <div className="identity-actions">
-          <Button onClick={() => setPage('messages')}><MessageSquareText size={14} /> Message</Button>
-          <Button kind="secondary" onClick={() => setConnected(!connected)}>{connected ? <Check size={14} /> : <Plus size={14} />}{connected ? 'Connected' : 'Connect'}</Button>
-          <Button kind="secondary" onClick={() => setPage('intros')}><Handshake size={14} /> Request intro</Button>
-          <Button kind="quiet" onClick={() => setPage('discover')}><Bookmark size={14} /> Save to network</Button>
-          <Button kind="quiet" onClick={() => navigator.clipboard?.writeText('https://aetheris-intros.app/joseph-toney')}><Share2 size={14} /> Share profile</Button>
+          <Button onClick={openOnboarding}><Fingerprint size={14} /> {me.onboarded ? 'Update your profile' : 'Complete your profile'}</Button>
+          <Button kind="secondary" onClick={() => setPage('messages')}><MessageSquareText size={14} /> Conversations</Button>
+          <Button kind="secondary" onClick={() => setPage('intros')}><Handshake size={14} /> Your introductions</Button>
+          <Button kind="quiet" onClick={() => setPage('needs')}><Bookmark size={14} /> Saved · {net.saved.length}</Button>
+          <Button kind="quiet" onClick={() => { void navigator.clipboard?.writeText('https://aetheris-intros.app/joseph-toney').catch(() => {}); setCopied(true) }}><Share2 size={14} /> {copied ? 'Link copied' : 'Share profile'}</Button>
         </div>
       </div>
     </section>
@@ -742,7 +820,9 @@ function Profile({ profile, setProfile, autonomy, setAutonomy, people, setPage, 
     <div className="profile-facts">
       {[['ABOUT MEMBER', 'Founder building relationship systems for consequential business decisions.'], ['FOCUS AREAS', me.focus], ['GOALS', 'Place Aetheris with serious operators and document the outcomes.'], ['CAN HELP WITH', me.canHelpWith], ['CURRENTLY LOOKING FOR', me.lookingFor],
       ['INDUSTRIES', me.industries.join(' · ')], ['EXPERTISE', me.expertise.join(' · ')], ['VALUES', me.values],
-      ['AVAILABILITY', me.availability], ['RECENT ASK', 'Founder & PE introductions · 5 qualified conversations']].map(([k, v]) =>
+      ['AVAILABILITY', me.availability], ['WHO YOU WANT TO MEET', me.wantToMeet ?? 'Not stated yet — complete your profile.'],
+      ['VALUABLE INTROS', me.introPreferences ?? 'Not stated yet.'], ['BOUNDARIES', me.boundaries ?? 'No boundaries recorded yet.'],
+      ['RECENT ASK', net.objectives[0]?.title ?? 'No active need posted yet.']].map(([k, v]) =>
         <div key={k}><span>{k}</span><p>{v}</p></div>)}
     </div>
 
@@ -766,7 +846,7 @@ function Profile({ profile, setProfile, autonomy, setAutonomy, people, setPage, 
       <article className="module">
         <header><Label>RECENT ACTIVITY</Label><h3>What this profile has been doing.</h3></header>
         <ul className="module-activity">
-          {[['Posted an insight on pipeline handoffs', '2h ago'], ['Opened a need: PE operating partners', 'Yesterday'], ['Offered an introduction to Maya Chen', '3 days ago'], ['Recorded a private note after a working call', 'Last week']].map(([t, w]) =>
+          {(net.learnings.slice(0, 5).map(l => [l.text, `${l.source} · ${l.when}`]) as Array<[string, string]>).map(([t, w]) =>
             <li key={t}><CircleDot size={12} /><span><strong>{t}</strong><small>{w}</small></span></li>)}
         </ul>
       </article>
@@ -828,13 +908,16 @@ function Profile({ profile, setProfile, autonomy, setAutonomy, people, setPage, 
 
 /* ------------------------------------------------------- drawer and modals */
 
-function PersonDrawer({ person, onClose, onDraft, notes, onAdd, saved, onSave, onMessage }: {
-  person: Member | null; onClose: () => void; onDraft: (p: Member) => void; notes: MemoryNote[]
-  onAdd: (id: string, text: string, scope: PrivacyScope) => void; saved: boolean; onSave: () => void; onMessage: () => void
+function PersonDrawer({ person, onClose, onDraft, onMessage }: {
+  person: Member | null; onClose: () => void; onDraft: (p: Member) => void; onMessage: (id: string) => void
 }) {
+  const net = useNetwork()
   const [text, setText] = useState('')
   const [scope, setScope] = useState<PrivacyScope>('private')
   if (!person) return null
+  const notes = net.notes
+  const onAdd = net.addNote
+  const connected = net.connections.includes(person.id)
   return <div className="drawer-wrap" onMouseDown={onClose}>
     <aside className="intel-drawer" onMouseDown={e => e.stopPropagation()}>
       <header><button className="icon-btn" onClick={onClose} aria-label="Close"><X size={17} /></button><Label>MEMBER INTELLIGENCE</Label><Score value={person.scoreTotal} /></header>
@@ -858,19 +941,29 @@ function PersonDrawer({ person, onClose, onDraft, notes, onAdd, saved, onSave, o
         <Button kind="secondary" disabled={!text.trim()} onClick={() => { onAdd(person.id, text.trim(), scope); setText('') }}>Record intelligence</Button>
       </section>
       <footer>
-        <SaveButton saved={saved} onToggle={onSave} />
-        <Button kind="quiet" onClick={onMessage}>Message</Button>
+        <SaveButton saved={net.saved.includes(person.id)} onToggle={() => net.toggleSave(person.id)} />
+        <Button kind="quiet" onClick={() => net.connect(person.id)}>{connected ? 'Connected' : 'Connect'}</Button>
+        <Button kind="quiet" onClick={() => onMessage(person.id)}>Message</Button>
         <Button onClick={() => onDraft(person)}>Request introduction <ArrowRight size={14} /></Button>
       </footer>
     </aside>
   </div>
 }
 
-function IntroModal({ person, onClose }: { person: Member | null; onClose: () => void }) {
+function IntroModal({ person, onClose, onMessage }: { person: Member | null; onClose: () => void; onMessage: (id: string) => void }) {
+  const net = useNetwork()
   const [text, setText] = useState('')
   const [you, setYou] = useState<OptIn>('pending')
   const [them, setThem] = useState<OptIn>('pending')
-  useEffect(() => { if (person) { setText(composeWarmIntro(person)); setYou('pending'); setThem('pending') } }, [person])
+  useEffect(() => {
+    if (person) {
+      setText(composeWarmIntro(person))
+      setYou(person.introState === 'requested' || person.introState === 'introduced' ? 'yes' : 'pending')
+      setThem(person.introState === 'introduced' ? 'yes' : 'pending')
+      if (person.introState === 'recommended') net.requestIntro(person.id)
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [person])
   if (!person) return null
   const ok = you === 'yes' && them === 'yes'
   const rows: Array<{ label: string; value: OptIn; set: (v: OptIn) => void }> = [
@@ -884,13 +977,18 @@ function IntroModal({ person, onClose }: { person: Member | null; onClose: () =>
       <textarea rows={8} value={text} onChange={e => setText(e.target.value)} />
       {rows.map(r => <div className="opt-row" key={r.label}>
         <span><strong>{r.label}</strong><small>Confirm this conversation is worth making.</small></span>
-        <div><button className={r.value === 'yes' ? 'active' : ''} onClick={() => r.set('yes')}>Interested</button>
-          <button className={r.value === 'no' ? 'declined' : ''} onClick={() => r.set('no')}>Not now</button></div>
+        <div><button className={r.value === 'yes' ? 'active' : ''} onClick={() => { r.set('yes'); if (r.value !== 'yes') net.requestIntro(person.id) }}>Interested</button>
+          <button className={r.value === 'no' ? 'declined' : ''} onClick={() => { r.set('no'); net.declineIntro(person.id) }}>Not now</button></div>
       </div>)}
       <div className={`authorization ${ok ? 'ready' : ''}`}>{ok ? <CheckCircle2 size={17} /> : <LockKeyhole size={17} />}
         <span>{ok ? 'Introduction authorized. Both parties agreed.' : 'Waiting for both parties before anything is sent.'}</span></div>
       <footer><Button kind="quiet" onClick={onClose}>Cancel</Button>
-        <Button disabled={!ok} onClick={() => { navigator.clipboard?.writeText(text); onClose() }}><Send size={15} />Copy authorized intro</Button></footer>
+        <Button disabled={!ok} onClick={() => {
+          net.authorizeIntro(person.id)
+          net.sendMessage(net.openThreadWith(person.id), text)
+          void navigator.clipboard?.writeText(text).catch(() => {})
+          onClose(); onMessage(person.id)
+        }}><Send size={15} />Send authorized intro</Button></footer>
     </div>
   </div>
 }
@@ -925,7 +1023,17 @@ function AskModal({ open, onClose, people, select }: { open: boolean; onClose: (
   const [query, setQuery] = useState('')
   const [asked, setAsked] = useState(false)
   if (!open) return null
-  const ranked = [...people].sort((a, b) => b.scoreTotal - a.scoreTotal).slice(0, 3)
+  const q = query.toLowerCase()
+  const terms = q.split(/\s+/).filter(t => t.length > 3)
+  const cooling = /cool|dormant|risk|lost|quiet/.test(q)
+  const ranked = [...people]
+    .map(p => {
+      const text = `${p.name} ${p.title} ${p.company} ${p.industry} ${p.role} ${p.focus} ${p.needs.join(' ')} ${p.offers.join(' ')} ${p.location}`.toLowerCase()
+      const match = terms.filter(t => text.includes(t)).length * 14
+      const timing = cooling ? Math.min(p.lastInteractionDays, 120) : p.score.timing / 4
+      return { p, rank: p.scoreTotal + match + timing }
+    })
+    .sort((a, b) => b.rank - a.rank).slice(0, 3).map(x => x.p)
   return <div className="modal-wrap" onMouseDown={onClose}>
     <div className="modal ask-modal" onMouseDown={e => e.stopPropagation()}>
       <header><div><Label>ASK INTROS</Label><h2>Ask the relationship graph.</h2><p>Answers use relationship context, timing, trust and stated unknowns.</p></div>
@@ -934,7 +1042,9 @@ function AskModal({ open, onClose, people, select }: { open: boolean; onClose: (
         <input autoFocus value={query} onChange={e => setQuery(e.target.value)} onKeyDown={e => { if (e.key === 'Enter' && query.trim()) setAsked(true) }} placeholder="Who should I talk to this week?" />
         <Button disabled={!query.trim()} onClick={() => setAsked(true)}>Ask</Button></div>
       {asked && <div className="ask-results">
-        <p>Three relationships justify attention now. They combine strategic fit with a current timing signal; the rest of the graph should stay untouched.</p>
+        <p>{cooling
+          ? 'These relationships are cooling: real prior strength, no recent contact. Reactivate with something useful before asking for anything.'
+          : 'Three relationships justify attention now. They combine strategic fit with a current timing signal; the rest of the graph should stay untouched.'}</p>
         {ranked.map(p => <button key={p.id} onClick={() => { onClose(); select(p) }}>
           <Avatar person={p} /><span><strong>{p.name}</strong><small>{p.whyNow}</small></span><Score value={p.scoreTotal} /></button>)}
         <div className="ask-unknown"><AlertTriangle size={14} /><span><b>Unknown:</b> whether any are currently evaluating another option.</span></div>
@@ -946,8 +1056,12 @@ function AskModal({ open, onClose, people, select }: { open: boolean; onClose: (
 }
 
 function Onboarding({ open, onClose }: { open: boolean; onClose: () => void }) {
+  const net = useNetwork()
   const [step, setStep] = useState(0)
-  const [answers, setAnswers] = useState<Record<string, string>>({})
+  const [answers, setAnswers] = useState<Record<string, string>>(() => {
+    const p = net.profile
+    return { who: p.title, focus: p.focus, need: p.lookingFor, help: p.canHelpWith, industries: p.industries.join(', '), where: p.location, meet: p.wantToMeet ?? '', valuable: p.introPreferences ?? '', never: p.boundaries ?? '' }
+  })
   if (!open) return null
   const q = onboardingQuestions[step]!
   const learned = onboardingQuestions.slice(0, step).filter(x => answers[x.key]?.trim())
@@ -967,17 +1081,23 @@ function Onboarding({ open, onClose }: { open: boolean; onClose: () => void }) {
       </div>
       <footer>
         <Button kind="quiet" onClick={() => step ? setStep(step - 1) : onClose()}>{step ? 'Back' : 'Later'}</Button>
-        <Button onClick={() => last ? onClose() : setStep(step + 1)}>{last ? 'Enter Intros' : 'Continue'} <ArrowRight size={15} /></Button>
+        <Button onClick={() => {
+          if (last) { net.completeOnboarding(answers); onClose() } else setStep(step + 1)
+        }}>{last ? 'Save profile & enter Intros' : 'Continue'} <ArrowRight size={15} /></Button>
       </footer>
     </div>
   </div>
 }
 
-function ContextRail({ page, people, select, onAsk, objectives, openThread }: {
-  page: Page; people: Member[]; select: (p: Member) => void; onAsk: () => void; objectives: Objective[]; openThread: () => void
+function ContextRail({ page, people, select, onAsk }: {
+  page: Page; people: Member[]; select: (p: Member) => void; onAsk: () => void
 }) {
+  const net = useNetwork()
+  const nav = useNav()
+  const objectives = net.objectives
   const ranked = [...people].sort((a, b) => b.scoreTotal - a.scoreTotal)
   const p = ranked[0]
+  const cool = [...people].sort((a, b) => b.lastInteractionDays - a.lastInteractionDays)[0]
   const warm = people.filter(x => x.bestPath.length > 2).slice(0, 2)
   if (!p) return null
   return <aside className="context-rail">
@@ -987,8 +1107,9 @@ function ContextRail({ page, people, select, onAsk, objectives, openThread }: {
     <button className="context-person" onClick={() => select(p)}><Avatar person={p} /><span><strong>{p.name}</strong><small>{p.company}</small></span><ArrowRight size={14} /></button>
     <div className="rail-block"><span>NEW WARM PATHS</span>{warm.map(w =>
       <button key={w.id} onClick={() => select(w)}><b>{w.name}</b><small>via {w.bestPath[1]}</small></button>)}</div>
-    <button className="rail-cooling" onClick={openThread}><span className="signal-dot" /><div><strong>Conversation cooling</strong><small>Scott Kelley · commitment open</small></div></button>
-    <div className="context-signal"><span className="signal-dot" /><div><strong>Active Memory</strong><small>{learnings.length} signals · 3 new this week</small></div></div>
+    {cool && <button className="rail-cooling" onClick={() => nav.messageMember(cool.id)}><span className="signal-dot" />
+      <div><strong>Conversation cooling</strong><small>{cool.name} · {cool.lastInteractionDays} days quiet</small></div></button>}
+    <div className="context-signal"><span className="signal-dot" /><div><strong>Active Memory</strong><small>{net.learnings.length} signals · {net.connections.length} connections</small></div></div>
     <button className="ask-button" onClick={onAsk}><AetherisGlyph size={16} /><span>Ask Intros</span><kbd>⌘K</kbd></button>
   </aside>
 }
@@ -996,6 +1117,11 @@ function ContextRail({ page, people, select, onAsk, objectives, openThread }: {
 /* ---------------------------------------------------------------------- app */
 
 export default function App() {
+  return <NetworkProvider><Shell /></NetworkProvider>
+}
+
+function Shell() {
+  const net = useNetwork()
   const stored = typeof window !== 'undefined' ? localStorage.getItem('aetheris-intros-page') : null
   const initial = (stored && nav.some(n => n.id === stored) ? stored : legacyPage[stored ?? ''] ?? 'home') as Page
   const [page, setPage] = useState<Page>(initial)
@@ -1006,13 +1132,10 @@ export default function App() {
   const [needOpen, setNeedOpen] = useState(false)
   const [askOpen, setAskOpen] = useState(false)
   const [onboardOpen, setOnboardOpen] = useState(false)
-  const [threadId, setThreadId] = useState('t1')
-  const [profile, setProfileState] = useState<DigitalYouProfile>(() => { try { return JSON.parse(localStorage.getItem('aetheris-intros-dy') || '') || defaultDigitalYou } catch { return defaultDigitalYou } })
-  const [autonomy, setAutonomyState] = useState<AutonomyLevel>(() => Number(localStorage.getItem('aetheris-intros-autonomy') || '2') as AutonomyLevel)
-  const [objectives, setObjectives] = useState<Objective[]>(() => { try { return JSON.parse(localStorage.getItem('aetheris-nexus-objectives') || '') || seedObjectives } catch { return seedObjectives } })
-  const [notes, setNotes] = useState<MemoryNote[]>(() => { try { return JSON.parse(localStorage.getItem('aetheris-nexus-memory') || '') || [] } catch { return [] } })
-  const [saved, setSaved] = useState<string[]>(() => { try { return JSON.parse(localStorage.getItem('aetheris-intros-saved') || '') || [] } catch { return [] } })
-  const people = members
+  const [threadId, setThreadIdState] = useState(() => (typeof window === 'undefined' ? '' : localStorage.getItem('aetheris-intros-thread') ?? ''))
+  const setThreadId = (id: string) => { setThreadIdState(id); localStorage.setItem('aetheris-intros-thread', id) }
+  const people = net.members
+  const me = net.profile
 
   useEffect(() => { localStorage.setItem('aetheris-intros-page', page) }, [page])
   useEffect(() => {
@@ -1021,67 +1144,69 @@ export default function App() {
     return () => window.removeEventListener('keydown', onKey)
   }, [])
 
-  const saveProfile = (x: DigitalYouProfile) => { setProfileState(x); localStorage.setItem('aetheris-intros-dy', JSON.stringify(x)) }
-  const saveAutonomy = (x: AutonomyLevel) => { setAutonomyState(x); localStorage.setItem('aetheris-intros-autonomy', String(x)) }
-  const addNeed = (o: Objective) => { const x = [o, ...objectives]; setObjectives(x); localStorage.setItem('aetheris-nexus-objectives', JSON.stringify(x)); setPage('needs') }
-  const addNote = (personId: string, text: string, scope: PrivacyScope) => {
-    const x = [{ id: `m${Date.now()}`, personId, text, scope, createdAt: new Date().toLocaleDateString() }, ...notes]
-    setNotes(x); localStorage.setItem('aetheris-nexus-memory', JSON.stringify(x))
+  const addNeed = (o: Objective) => {
+    net.addObjective(o)
+    net.addAsk({ ask: o.title, detail: o.outcome, whyNow: o.whyNow, offer: o.valueOffer, industry: 'Cross-industry', location: me.location, urgency: 'high', visibility: 'network' })
+    setPage('needs')
   }
-  const toggleSave = (id: string) => {
-    const x = saved.includes(id) ? saved.filter(s => s !== id) : [...saved, id]
-    setSaved(x); localStorage.setItem('aetheris-intros-saved', JSON.stringify(x))
+  const goToThread = (id: string) => { setThreadId(id); setPage('messages') }
+  const messageMember = (memberId: string) => {
+    setSelected(null); setDraft(null)
+    goToThread(net.openThreadWith(memberId))
   }
-  const openThread = (id: string) => { setThreadId(id); setPage('messages') }
+  const navApi: NavApi = {
+    setPage, openMember: setSelected, openIntro: p => { setSelected(null); setDraft(p) },
+    messageMember, goToThread, postNeed: () => setNeedOpen(true),
+  }
 
-  const content = useMemo(() => ({
-    home: <Home people={people} select={setSelected} setPage={setPage} openNeed={() => setNeedOpen(true)} openThread={openThread} saved={saved} toggleSave={toggleSave} objectives={objectives} />,
-    discover: <Discover people={people} select={setSelected} saved={saved} toggleSave={toggleSave} setPage={setPage} />,
-    intros: <Intros people={people} select={setSelected} draft={setDraft} setPage={setPage} />,
+  const content = {
+    home: <Home people={people} select={setSelected} setPage={setPage} openNeed={() => setNeedOpen(true)} openThread={goToThread} />,
+    discover: <Discover people={people} select={setSelected} />,
+    intros: <Intros people={people} select={setSelected} draft={setDraft} />,
     messages: <Messages people={people} select={setSelected} activeId={threadId} setActiveId={setThreadId} />,
-    needs: <Needs objectives={objectives} onNew={() => setNeedOpen(true)} people={people} select={setSelected} saved={saved} toggleSave={toggleSave} setPage={setPage} />,
-    memory: <Memory people={people} select={setSelected} notes={notes} />,
-    insights: <Insights people={people} select={setSelected} setPage={setPage} saved={saved} toggleSave={toggleSave} />,
-    profile: <Profile profile={profile} setProfile={saveProfile} autonomy={autonomy} setAutonomy={saveAutonomy} people={people} setPage={setPage} notes={notes} />,
-  })[page], [page, people, notes, objectives, profile, autonomy, saved, threadId])
+    needs: <Needs onNew={() => setNeedOpen(true)} people={people} select={setSelected} setPage={setPage} />,
+    memory: <Memory people={people} select={setSelected} />,
+    insights: <Insights people={people} select={setSelected} setPage={setPage} />,
+    profile: <Profile people={people} setPage={setPage} openOnboarding={() => setOnboardOpen(true)} />,
+  }[page]
 
-  return <div className={`app-shell ${collapsed ? 'rail-collapsed' : ''}`}>
-    <aside className={`nav-rail ${mobileOpen ? 'mobile-open' : ''}`}>
-      <div className="rail-head"><Brand /><button className="rail-toggle" onClick={() => setCollapsed(!collapsed)} aria-label="Collapse navigation"><ChevronLeft size={16} /></button></div>
-      <nav>{nav.map(item => {
-        const Icon = item.icon
-        return <button key={item.id} className={page === item.id ? 'active' : ''} title={item.label} onClick={() => { setPage(item.id); setMobileOpen(false) }}>
-          <Icon size={18} /><span>{item.label}</span></button>
-      })}</nav>
-      <div className="rail-foot"><span className="live-dot" /><span>Memory live</span>
-        <button onClick={() => setPage('profile')} aria-label="Your profile"><span>{me.initials}</span></button></div>
-    </aside>
-    <div className="workspace">
-      <header className="topbar">
-        <button className="icon-btn mobile-menu" onClick={() => setMobileOpen(!mobileOpen)} aria-label="Menu"><Menu size={19} /></button>
-        <span className="topbar-title">Aetheris Intros <i>/</i> {nav.find(n => n.id === page)?.label}</span>
-        <div>
-          <button className="icon-btn" title="Build your profile" onClick={() => setOnboardOpen(true)} aria-label="Build your profile"><Fingerprint size={17} /></button>
-          <button className="icon-btn" title="Post a need" onClick={() => setNeedOpen(true)} aria-label="Post a need"><Plus size={18} /></button>
-          <button className="icon-btn" title="Ask Intros" onClick={() => setAskOpen(true)} aria-label="Ask Intros"><AetherisGlyph size={18} /></button>
+  return <NavCtx.Provider value={navApi}>
+    <div className={`app-shell ${collapsed ? 'rail-collapsed' : ''}`}>
+      <aside className={`nav-rail ${mobileOpen ? 'mobile-open' : ''}`}>
+        <div className="rail-head"><Brand /><button className="rail-toggle" onClick={() => setCollapsed(!collapsed)} aria-label="Collapse navigation"><ChevronLeft size={16} /></button></div>
+        <nav>{nav.map(item => {
+          const Icon = item.icon
+          return <button key={item.id} className={page === item.id ? 'active' : ''} title={item.label} onClick={() => { setPage(item.id); setMobileOpen(false) }}>
+            <Icon size={18} /><span>{item.label}</span></button>
+        })}</nav>
+        <div className="rail-foot"><span className="live-dot" /><span>Memory live</span>
+          <button onClick={() => setPage('profile')} aria-label="Your profile"><span>{me.initials}</span></button></div>
+      </aside>
+      <div className="workspace">
+        <header className="topbar">
+          <button className="icon-btn mobile-menu" onClick={() => setMobileOpen(!mobileOpen)} aria-label="Menu"><Menu size={19} /></button>
+          <span className="topbar-title">Aetheris Intros <i>/</i> {nav.find(n => n.id === page)?.label}</span>
+          <div>
+            <button className="icon-btn" title="Build your profile" onClick={() => setOnboardOpen(true)} aria-label="Build your profile"><Fingerprint size={17} /></button>
+            <button className="icon-btn" title="Post a need" onClick={() => setNeedOpen(true)} aria-label="Post a need"><Plus size={18} /></button>
+            <button className="icon-btn" title="Ask Intros" onClick={() => setAskOpen(true)} aria-label="Ask Intros"><AetherisGlyph size={18} /></button>
+          </div>
+        </header>
+        <div className="workspace-grid">
+          <main className="content">{content}</main>
+          <ContextRail page={page} people={people} select={setSelected} onAsk={() => setAskOpen(true)} />
         </div>
-      </header>
-      <div className="workspace-grid">
-        <main className="content">{content}</main>
-        <ContextRail page={page} people={people} select={setSelected} onAsk={() => setAskOpen(true)} objectives={objectives} openThread={() => openThread('t1')} />
       </div>
+      <nav className="mobile-nav">{nav.map(item => {
+        const Icon = item.icon
+        return <button key={item.id} className={page === item.id ? 'active' : ''} onClick={() => setPage(item.id)}><Icon size={18} /><span>{item.label}</span></button>
+      })}</nav>
+      <PersonDrawer person={selected} onClose={() => setSelected(null)} onDraft={p => { setSelected(null); setDraft(p) }} onMessage={messageMember} />
+      <IntroModal person={draft} onClose={() => setDraft(null)} onMessage={messageMember} />
+      <NeedModal open={needOpen} onClose={() => setNeedOpen(false)} onCreate={addNeed} />
+      <AskModal open={askOpen} onClose={() => setAskOpen(false)} people={people} select={setSelected} />
+      <Onboarding open={onboardOpen} onClose={() => setOnboardOpen(false)} />
+      {mobileOpen && <button className="rail-scrim" aria-label="Close menu" onClick={() => setMobileOpen(false)} />}
     </div>
-    <nav className="mobile-nav">{nav.map(item => {
-      const Icon = item.icon
-      return <button key={item.id} className={page === item.id ? 'active' : ''} onClick={() => setPage(item.id)}><Icon size={18} /><span>{item.label}</span></button>
-    })}</nav>
-    <PersonDrawer person={selected} onClose={() => setSelected(null)} onDraft={p => { setSelected(null); setDraft(p) }} notes={notes} onAdd={addNote}
-      saved={selected ? saved.includes(selected.id) : false} onSave={() => selected && toggleSave(selected.id)}
-      onMessage={() => { setSelected(null); setPage('messages') }} />
-    <IntroModal person={draft} onClose={() => setDraft(null)} />
-    <NeedModal open={needOpen} onClose={() => setNeedOpen(false)} onCreate={addNeed} />
-    <AskModal open={askOpen} onClose={() => setAskOpen(false)} people={people} select={setSelected} />
-    <Onboarding open={onboardOpen} onClose={() => setOnboardOpen(false)} />
-    {mobileOpen && <button className="rail-scrim" aria-label="Close menu" onClick={() => setMobileOpen(false)} />}
-  </div>
+  </NavCtx.Provider>
 }
