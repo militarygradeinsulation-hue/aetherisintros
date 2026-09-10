@@ -623,6 +623,7 @@ export const seedBoundaries: ProfessionalBoundaryRule[] = [
   { id: 'bd4', memberId: 'me', label: 'No outreach from unknown paths', category: 'Unknown path', action: 'require-permission', explanation: 'Members with no shared context need to explain relevance before messaging.', active: false, custom: false },
   { id: 'bd5', memberId: 'me', label: 'Board and advisory inquiries welcome', category: 'Board inquiry', action: 'reroute', rerouteTo: 'Your advisory availability window', explanation: 'Board inquiries go straight to the availability window rather than the inbox.', active: true, custom: true },
   { id: 'bd6', memberId: 'p17', label: 'Only warm introductions until November', category: 'Any outreach', action: 'require-permission', explanation: 'Heads down on a rollout; warm paths only.', active: true, custom: false },
+  { id: 'bd8', memberId: 'p3', label: 'No product demos without permission', category: 'Software vendor', action: 'require-permission', explanation: 'This member has declared that vendor and demo conversations need a permission request with evidence first, even inside an existing relationship.', active: true, custom: true },
   { id: 'bd7', memberId: 'p21', label: 'No consumer fundraising asks', category: 'Fundraising ask', action: 'block', explanation: 'Outside the thesis. Blocked rather than ignored.', active: true, custom: true },
 ]
 
