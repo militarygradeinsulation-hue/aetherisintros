@@ -9,6 +9,21 @@ import type { Page } from '../nav'
 
 const routable = new Set<string>(['opportunities', 'dealrooms', 'expertise', 'talent', 'capital', 'intelrooms', 'presence', 'permission', 'knowledgeassets', 'discover', 'companies', 'systems', 'circles'])
 
+/** Real browser download of the generated export. */
+function download(fileName: string, content: string, format: 'json' | 'csv') {
+  if (typeof document === 'undefined') return
+  const blob = new Blob([content], { type: format === 'csv' ? 'text/csv;charset=utf-8' : 'application/json;charset=utf-8' })
+  const url = URL.createObjectURL(blob)
+  const a = document.createElement('a')
+  a.href = url
+  a.download = fileName
+  a.rel = 'noopener'
+  document.body.appendChild(a)
+  a.click()
+  a.remove()
+  setTimeout(() => URL.revokeObjectURL(url), 2000)
+}
+
 export function VaultPage() {
   const net = useNetwork()
   const pro = usePro()
