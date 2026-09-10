@@ -1589,7 +1589,7 @@ function Shell() {
             {moveKinds.map(m => <button key={m.kind} className={page === m.page ? 'active' : ''} onClick={() => setPage(m.page)}>{m.kind}</button>)}
           </div>
           <div>
-            <button className="topbar-search" onClick={() => setGlobalSearchOpen(true)}><Search size={15} /><span>Search people, companies, topics, or ideas…</span><kbd>⌘K</kbd></button>
+            <button className="topbar-search" aria-label="Search people, companies, topics, or ideas…" onClick={() => setGlobalSearchOpen(true)}><Search size={15} /><span>Search people, companies, topics, or ideas…</span><kbd>⌘K</kbd></button>
             <button className="icon-btn" title="Post live intent" onClick={() => setIntentOpen(true)} aria-label="Post live intent"><Layers size={17} /></button>
             <button className="icon-btn" title="Build your profile" onClick={() => setOnboardOpen(true)} aria-label="Build your profile"><Fingerprint size={17} /></button>
             <button className="icon-btn" title="Post a need" onClick={() => setNeedOpen(true)} aria-label="Post a need"><Plus size={18} /></button>
