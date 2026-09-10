@@ -73,8 +73,15 @@ function AetherisGlyph({ size = 18 }: { size?: number }) {
   return <span className="aetheris-glyph" style={{ width: size, height: size }} aria-hidden="true"><i /><b /></span>
 }
 const memberPortraits: Record<string, string> = { p7: sarahPortrait, p8: marcusPortrait, p11: priyaPortrait, p14: elliotPortrait }
+const portraitPool = [portraitImg, marcusPortrait, sarahPortrait, elliotPortrait, priyaPortrait]
+function portraitFor(id: string) {
+  if (memberPortraits[id]) return memberPortraits[id]
+  let h = 0
+  for (const ch of id) h = (h * 31 + ch.charCodeAt(0)) % 9973
+  return portraitPool[h % portraitPool.length]
+}
 function Avatar({ person, large = false, portrait = false }: { person: Member; large?: boolean; portrait?: boolean }) {
-  const image = memberPortraits[person.id]
+  const image = portraitFor(person.id)
   return <span className={`person-avatar ${large ? 'large' : ''} ${portrait ? 'portrait' : ''}`}>{image ? <img src={image} alt="" width={1024} height={1280} loading="lazy" /> : person.initials}</span>
 }
 function Button({ children, kind = 'primary', onClick, disabled = false, className = '' }: { children: React.ReactNode; kind?: 'primary' | 'secondary' | 'quiet'; onClick?: () => void; disabled?: boolean; className?: string }) {
@@ -1069,7 +1076,7 @@ function MemberProfile({ person, people, onClose, onDraft, onMessage }: {
         {copied && <small className="copied-note">Profile link copied.</small>}
       </div>
       <figure className="member-plate">
-        <img src={memberPortraits[person.id] ?? portraitImg} alt={`${person.name}, monochrome editorial portrait`} loading="lazy" />
+        <img src={portraitFor(person.id)} alt={`${person.name}, monochrome editorial portrait`} loading="lazy" />
         <figcaption><span>{classifyConnection(person.scoreTotal).toUpperCase()}</span><p>{person.focus}</p></figcaption>
       </figure>
     </section>
