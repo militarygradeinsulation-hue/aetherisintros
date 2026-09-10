@@ -220,7 +220,7 @@ export function PlatformProvider({ children }: { children: React.ReactNode }) {
       bookSlot: (slotId, purpose, capsuleId) => {
         void availability.update(slotId, { bookedBy: 'me', meetingPurpose: purpose, ...(capsuleId ? { capsuleId } : {}) })
       },
-      releaseSlot: slotId => { void availability.update(slotId, { bookedBy: undefined, meetingPurpose: undefined } as Partial<AvailabilityWindow>) },
+      releaseSlot: slotId => { void availability.update(slotId, { bookedBy: '', meetingPurpose: '' }) },
       addAvailability: draft => { void availability.create({ ...draft, id: uid('av') }) },
       closeMeetingLoop: (id, after) => { void meetings.update(id, { closed: true, after }) },
       createMeeting: draft => {
