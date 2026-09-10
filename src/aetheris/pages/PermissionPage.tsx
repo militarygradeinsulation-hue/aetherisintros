@@ -4,6 +4,7 @@ import { useNetwork } from '../store'
 import { usePro } from '../pro-store'
 import { useNav } from '../nav'
 import { Btn, Eyebrow, Head, memberById } from '../ui'
+import { useOutreachGate } from '../moat-ui'
 import { pitchReadiness } from '../domain/pro-engine'
 
 export function PermissionPage() {
@@ -18,6 +19,7 @@ export function PermissionPage() {
   const [evidence, setEvidence] = useState('')
   const [recipientId, setRecipientId] = useState(net.members[0]?.id ?? '')
   const [label, setLabel] = useState('')
+  const { gate, modal: outreachModal } = useOutreachGate()
 
   const readiness = pitchReadiness({
     category, reason, whyRelevant, valueToRecipient: value, whyNow,
@@ -75,13 +77,18 @@ export function PermissionPage() {
 
         <p className={`readiness ${readiness.ready ? 'ok' : 'not'}`}>{readiness.note}</p>
         <Btn disabled={!readiness.ready} onClick={() => {
-          pro.requestPermission({
-            recipientId, category, reason: reason.trim(), whyRelevant: whyRelevant.trim(),
-            valueToRecipient: value.trim(), whyNow: whyNow.trim(),
-            ...(net.connections.includes(recipientId) ? { warmPath: 'Existing direct relationship' } : {}),
-            evidence: evidence.trim() ? [evidence.trim()] : [],
-          })
-          setReason(''); setWhyRelevant(''); setValue(''); setWhyNow(''); setEvidence('')
+          const recipient = memberById(net.members, recipientId)
+          gate(`${reason} ${whyRelevant} ${value} ${whyNow}`,
+            { channel: 'pitch-request', authorId: 'me', ...(recipient ? { recipient } : {}) },
+            () => {
+              pro.requestPermission({
+                recipientId, category, reason: reason.trim(), whyRelevant: whyRelevant.trim(),
+                valueToRecipient: value.trim(), whyNow: whyNow.trim(),
+                ...(net.connections.includes(recipientId) ? { warmPath: 'Existing direct relationship' } : {}),
+                evidence: evidence.trim() ? [evidence.trim()] : [],
+              })
+              setReason(''); setWhyRelevant(''); setValue(''); setWhyNow(''); setEvidence('')
+            })
         }}>Send the request</Btn>
       </article>
 
