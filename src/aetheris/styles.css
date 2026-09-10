@@ -642,3 +642,7 @@
   .insight-bars li { grid-template-columns: 96px 1fr 34px; }
   .member-footer { flex-direction: column; align-items: flex-start; gap: 8px; }
 }
+.member-plate > img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: center 22%; filter: grayscale(1) contrast(1.12); }
+.ring-dial { position: relative; display: grid; place-items: center; }
+.ring-dial svg { width: 100%; max-width: 92px; transform: rotate(-90deg); }
+.compat-ring strong { position: absolute; inset: 0; display: grid; place-items: center; top: 0; font: 400 21px/1 'Bodoni Moda', Georgia, serif; color: var(--soft); }

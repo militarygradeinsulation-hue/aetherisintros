@@ -1069,7 +1069,7 @@ function MemberProfile({ person, people, onClose, onDraft, onMessage }: {
         {copied && <small className="copied-note">Profile link copied.</small>}
       </div>
       <figure className="member-plate">
-        <Avatar person={person} large portrait />
+        <img src={memberPortraits[person.id] ?? portraitImg} alt={`${person.name}, monochrome editorial portrait`} loading="lazy" />
         <figcaption><span>{classifyConnection(person.scoreTotal).toUpperCase()}</span><p>{person.focus}</p></figcaption>
       </figure>
     </section>
