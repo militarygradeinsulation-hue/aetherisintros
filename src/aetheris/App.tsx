@@ -3,7 +3,7 @@ import {
   AlertTriangle, ArrowRight, Bookmark, BookmarkCheck, Building2, CalendarDays, Check, CheckCircle2, ChevronLeft,
   CircleDot, Compass, Eye, Fingerprint, Handshake, Home as HomeIcon, Layers, LockKeyhole,
   Menu, MessageSquareText, Network, Plus, Search, Send, Share2, ShieldCheck, Target,
-  TrendingUp, UserRound, Users, X,
+  Settings2, TrendingUp, UserRound, Users, X,
 } from 'lucide-react'
 import editorialPortrait from '@/assets/aetheris-editorial-portrait.jpg'
 import marcusPortrait from '@/assets/member-marcus.jpg'
@@ -69,7 +69,7 @@ import {
 import { NetworkProvider, useNetwork, type MemoryNote, type MeProfile } from './store'
 import { classifyConnection, composeWarmIntro, radarLabel } from './lib/engine'
 import { NavCtx, useNav, type NavApi, type Page } from './nav'
-import { PlatformProvider } from './platform'
+import { PlatformProvider, usePlatform } from './platform'
 import type { MoveKind } from './domain/models'
 import { SystemsPage } from './pages/SystemsPage'
 import { CirclesPage, CreateCircleModal } from './pages/CirclesPage'
@@ -79,6 +79,8 @@ import { LoopsPage } from './pages/LoopsPage'
 import { OrganizationPage } from './pages/OrganizationPage'
 import { HandshakeModal } from './pages/Handshake'
 import { IntentBoard, IntentModal, IntentStrip } from './pages/Intents'
+import { EventsPage } from './pages/EventsPage'
+import { PreferencesPage } from './pages/PreferencesPage'
 
 
 
@@ -93,6 +95,7 @@ const nav: Array<{ id: Page; label: string; icon: typeof HomeIcon }> = [
   { id: 'messages', label: 'Messages', icon: MessageSquareText },
   { id: 'needs', label: 'Needs', icon: Target },
   { id: 'memory', label: 'Memory', icon: Network },
+  { id: 'events', label: 'Events', icon: CalendarDays },
   { id: 'insights', label: 'Insights', icon: TrendingUp },
   { id: 'profile', label: 'Profile', icon: UserRound },
 ]
@@ -101,6 +104,7 @@ const navSecondary: Array<{ id: Page; label: string; icon: typeof HomeIcon }> = 
   { id: 'companies', label: 'Companies', icon: Building2 },
   { id: 'outcomes', label: 'Outcomes', icon: CheckCircle2 },
   { id: 'organization', label: 'Organization', icon: ShieldCheck },
+  { id: 'preferences', label: 'Preferences', icon: Settings2 },
 ]
 const allNav = [...nav, ...navSecondary]
 const moveKinds: Array<{ kind: MoveKind; page: Page }> = [
@@ -1433,6 +1437,31 @@ function ContextRail({ page, people, select, onAsk }: {
   </aside>
 }
 
+function GlobalSearch({ open, onClose, people }: { open: boolean; onClose: () => void; people: Member[] }) {
+  const platform = usePlatform()
+  const nav = useNav()
+  const [query, setQuery] = useState('')
+  if (!open) return null
+  const term = query.trim().toLowerCase()
+  const matches = <T extends { id: string }>(rows: T[], text: (row: T) => string) => term ? rows.filter(row => text(row).toLowerCase().includes(term)).slice(0, 5) : rows.slice(0, 3)
+  const personRows = matches(people, person => `${person.name} ${person.title} ${person.company} ${person.industry} ${person.expertise.join(' ')}`)
+  const systemRows = matches(platform.systems, system => `${system.name} ${system.thesis} ${system.category} ${system.industries.join(' ')}`)
+  const circleRows = matches(platform.circles, circle => `${circle.name} ${circle.purpose} ${circle.sharedIntents.join(' ')}`)
+  const companyRows = matches(platform.companies, company => `${company.name} ${company.industry} ${company.location}`)
+  const closeThen = (action: () => void) => { onClose(); setQuery(''); action() }
+  return <div className="modal-wrap global-search-wrap" onMouseDown={onClose}>
+    <section className="global-search-panel" onMouseDown={event => event.stopPropagation()}>
+      <header><Search size={20} /><input autoFocus value={query} onChange={event => setQuery(event.target.value)} placeholder="Search people, companies, systems, circles, or ideas…" /><button className="icon-btn" onClick={onClose} aria-label="Close search"><X size={17} /></button></header>
+      <div className="global-results">
+        <section><Label>PEOPLE</Label>{personRows.map(person => <button key={person.id} onClick={() => closeThen(() => nav.openMember(person))}><Avatar person={person} /><span><b>{person.name}</b><small>{person.title} · {person.company}</small></span><ArrowRight size={14} /></button>)}</section>
+        <section><Label>SYSTEMS</Label>{systemRows.map(system => <button key={system.id} onClick={() => closeThen(() => nav.openSystem(system.id))}><Layers size={17} /><span><b>{system.name}</b><small>{system.thesis}</small></span><ArrowRight size={14} /></button>)}</section>
+        <section><Label>CIRCLES</Label>{circleRows.map(circle => <button key={circle.id} onClick={() => closeThen(() => nav.openCircle(circle.id))}><Users size={17} /><span><b>{circle.name}</b><small>{circle.purpose}</small></span><ArrowRight size={14} /></button>)}</section>
+        <section><Label>COMPANIES</Label>{companyRows.map(company => <button key={company.id} onClick={() => closeThen(() => nav.openCompany(company.id))}><Building2 size={17} /><span><b>{company.name}</b><small>{company.industry} · {company.location}</small></span><ArrowRight size={14} /></button>)}</section>
+      </div>
+    </section>
+  </div>
+}
+
 /* ---------------------------------------------------------------------- app */
 
 export default function App() {
@@ -1457,6 +1486,7 @@ function Shell() {
   const [handshakeId, setHandshakeId] = useState<string | null>(null)
   const [intentOpen, setIntentOpen] = useState(false)
   const [circleFormOpen, setCircleFormOpen] = useState(false)
+  const [globalSearchOpen, setGlobalSearchOpen] = useState(false)
   const setPage = (p: Page) => { setSelected(null); setPageState(p) }
   const [threadId, setThreadIdState] = useState(() => (typeof window === 'undefined' ? '' : localStorage.getItem('aetheris-intros-thread') ?? ''))
   const setThreadId = (id: string) => { setThreadIdState(id); localStorage.setItem('aetheris-intros-thread', id) }
@@ -1465,7 +1495,7 @@ function Shell() {
 
   useEffect(() => { localStorage.setItem('aetheris-intros-page', page) }, [page])
   useEffect(() => {
-    const onKey = (e: KeyboardEvent) => { if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k') { e.preventDefault(); setAskOpen(true) } }
+    const onKey = (e: KeyboardEvent) => { if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k') { e.preventDefault(); setGlobalSearchOpen(true) } }
     window.addEventListener('keydown', onKey)
     return () => window.removeEventListener('keydown', onKey)
   }, [])
@@ -1525,8 +1555,10 @@ function Shell() {
       messages: <Messages people={people} select={setSelected} activeId={threadId} setActiveId={setThreadId} />,
       needs: <><Needs onNew={() => setNeedOpen(true)} people={people} select={setSelected} setPage={setPage} /><IntentBoard /></>,
       memory: <Memory people={people} select={setSelected} />,
+      events: <EventsPage />,
       insights: <Insights people={people} select={setSelected} setPage={setPage} />,
       profile: <Profile people={people} setPage={setPage} openOnboarding={() => setOnboardOpen(true)} />,
+      preferences: <PreferencesPage />,
     }[page]
 
   return <NavCtx.Provider value={navApi}>
@@ -1557,6 +1589,7 @@ function Shell() {
             {moveKinds.map(m => <button key={m.kind} className={page === m.page ? 'active' : ''} onClick={() => setPage(m.page)}>{m.kind}</button>)}
           </div>
           <div>
+            <button className="topbar-search" onClick={() => setGlobalSearchOpen(true)}><Search size={15} /><span>Search people, companies, topics, or ideas…</span><kbd>⌘K</kbd></button>
             <button className="icon-btn" title="Post live intent" onClick={() => setIntentOpen(true)} aria-label="Post live intent"><Layers size={17} /></button>
             <button className="icon-btn" title="Build your profile" onClick={() => setOnboardOpen(true)} aria-label="Build your profile"><Fingerprint size={17} /></button>
             <button className="icon-btn" title="Post a need" onClick={() => setNeedOpen(true)} aria-label="Post a need"><Plus size={18} /></button>
@@ -1577,6 +1610,7 @@ function Shell() {
       <NeedModal open={needOpen} onClose={() => setNeedOpen(false)} onCreate={addNeed} />
       <AskModal open={askOpen} onClose={() => setAskOpen(false)} people={people} select={setSelected} />
       <Onboarding open={onboardOpen} onClose={() => setOnboardOpen(false)} />
+      <GlobalSearch open={globalSearchOpen} onClose={() => setGlobalSearchOpen(false)} people={people} />
       {intentOpen && <IntentModal onClose={() => setIntentOpen(false)} />}
       {circleFormOpen && <CreateCircleModal onClose={() => setCircleFormOpen(false)} />}
       {handshakeId && <HandshakeModal memberId={handshakeId} onClose={() => setHandshakeId(null)} />}

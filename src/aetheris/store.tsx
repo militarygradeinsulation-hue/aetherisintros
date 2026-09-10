@@ -15,6 +15,30 @@ export type MeProfile = typeof seedMe & {
   onboarded?: boolean
 }
 
+export interface PreferenceSettings {
+  title: string
+  focus: string
+  profileVisibility: 'network' | 'connections' | 'private'
+  availability: string
+  meetingFormat: string
+  allowBooking: boolean
+  useRecommendations: boolean
+  prioritizeMutual: boolean
+  crossIndustry: boolean
+  includeEarlyStage: boolean
+  serendipity: number
+  notificationFrequency: string
+  coolingAlerts: boolean
+  introAlerts: boolean
+  contactPermission: string
+  requireDoubleOptIn: boolean
+  shareActivity: boolean
+  rememberConversations: boolean
+  rememberActions: boolean
+  sharedMemory: boolean
+  retention: string
+}
+
 interface Persisted {
   connections: string[]
   follows: string[]
@@ -34,6 +58,9 @@ interface Persisted {
   profile: MeProfile
   digitalYou: DigitalYouProfile
   autonomy: AutonomyLevel
+  preferences: PreferenceSettings
+  registeredEvents: string[]
+  savedEvents: string[]
 }
 
 const KEY = 'aetheris-intros-graph-v1'
@@ -43,6 +70,16 @@ const empty: Persisted = {
   ownAsks: [], askResponses: {}, warmPaths: [], sentMessages: {}, ownThreads: [],
   learned: [], activity: [], notes: [], objectives: seedObjectives,
   profile: { ...seedMe }, digitalYou: defaultDigitalYou, autonomy: 2,
+  preferences: {
+    title: seedMe.title, focus: seedMe.focus, profileVisibility: 'network',
+    availability: 'Open to two conversations a week', meetingFormat: 'Video call', allowBooking: true,
+    useRecommendations: true, prioritizeMutual: true, crossIndustry: true, includeEarlyStage: true,
+    serendipity: 28, notificationFrequency: 'Weekly relationship review', coolingAlerts: true,
+    introAlerts: true, contactPermission: 'Connections and warm introductions', requireDoubleOptIn: true,
+    shareActivity: true, rememberConversations: true, rememberActions: true, sharedMemory: false,
+    retention: 'Until I delete it',
+  },
+  registeredEvents: [], savedEvents: [],
 }
 
 function load(): Persisted {
@@ -80,6 +117,9 @@ interface NetworkApi {
   profile: MeProfile
   digitalYou: DigitalYouProfile
   autonomy: AutonomyLevel
+  preferences: PreferenceSettings
+  registeredEvents: string[]
+  savedEvents: string[]
   connections: string[]
   follows: string[]
   saved: string[]
@@ -105,6 +145,9 @@ interface NetworkApi {
   setDigitalYou: (x: DigitalYouProfile) => void
   setAutonomy: (x: AutonomyLevel) => void
   completeOnboarding: (answers: Record<string, string>) => void
+  setPreferences: (settings: PreferenceSettings) => void
+  toggleEventRegistration: (id: string) => void
+  toggleEventSave: (id: string) => void
 }
 
 const Ctx = createContext<NetworkApi | null>(null)
@@ -163,6 +206,9 @@ export function NetworkProvider({ children }: { children: React.ReactNode }) {
       profile: s.profile,
       digitalYou: s.digitalYou,
       autonomy: s.autonomy,
+      preferences: s.preferences,
+      registeredEvents: s.registeredEvents,
+      savedEvents: s.savedEvents,
       connections: s.connections,
       follows: s.follows,
       saved: s.saved,
@@ -298,6 +344,18 @@ export function NetworkProvider({ children }: { children: React.ReactNode }) {
 
       setDigitalYou: (x) => patch(() => ({ digitalYou: x })),
       setAutonomy: (x) => patch(() => ({ autonomy: x })),
+      setPreferences: (preferences) => patch(prev => ({
+        preferences,
+        profile: { ...prev.profile, title: preferences.title, focus: preferences.focus },
+        learned: remember(prev, { category: 'Decisions', text: 'You updated how Intros may recommend, remember and share relationship context.', source: 'Preferences', confidence: 100, scope: 'private' }),
+      })),
+      toggleEventRegistration: (id) => patch(prev => ({
+        registeredEvents: prev.registeredEvents.includes(id) ? prev.registeredEvents.filter(item => item !== id) : [...prev.registeredEvents, id],
+        learned: remember(prev, { category: 'Commitments', text: `${prev.registeredEvents.includes(id) ? 'Removed' : 'Registered for'} a professional event.`, source: 'Events', confidence: 100, scope: 'private' }),
+      })),
+      toggleEventSave: (id) => patch(prev => ({
+        savedEvents: prev.savedEvents.includes(id) ? prev.savedEvents.filter(item => item !== id) : [...prev.savedEvents, id],
+      })),
 
       completeOnboarding: (answers) => patch(prev => {
         const trim = (k: string) => answers[k]?.trim() ?? ''

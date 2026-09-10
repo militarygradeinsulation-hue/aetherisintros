@@ -3,7 +3,7 @@ import type { Member } from './social'
 
 export type Page =
   | 'home' | 'discover' | 'intros' | 'messages' | 'needs' | 'memory' | 'insights' | 'profile'
-  | 'systems' | 'circles' | 'companies' | 'outcomes' | 'loops' | 'organization'
+  | 'systems' | 'circles' | 'companies' | 'outcomes' | 'loops' | 'organization' | 'events' | 'preferences'
 
 /** Navigation intents any surface can trigger. */
 export interface NavApi {
