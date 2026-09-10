@@ -100,6 +100,7 @@ import { homeStrips, trustAdvice as trustAdviceFor } from './domain/os-engine'
 import type { IntroQualityReview, PathKind } from './domain/os-models'
 import { PreferencesPage } from './pages/PreferencesPage'
 import { MoatProvider } from './moat-store'
+import { AvailabilityWindows, ConnectorAskGuard, DecayPrevention, PassportModule, ReciprocityNote, RepresentativeAsk, useOutreachGate } from './moat-ui'
 import { AskNetworkPage } from './pages/AskNetworkPage'
 import { ConstitutionPage } from './pages/ConstitutionPage'
 import { SerendipityPage } from './pages/SerendipityPage'
@@ -995,6 +996,7 @@ function Messages({ people, select, activeId, setActiveId }: { people: Member[];
   const net = useNetwork()
   const [text, setText] = useState('')
   const nav = useNav()
+  const { gate, modal: outreachModal } = useOutreachGate()
   const threads = net.threads
   const thread: Thread | undefined = threads.find(t => t.id === activeId) ?? threads[0]
   const person = people.find(p => p.id === thread?.memberId)
@@ -1033,7 +1035,11 @@ function Messages({ people, select, activeId, setActiveId }: { people: Member[];
            <button className="suggested" onClick={() => setText(thread.suggested)}><AetherisGlyph size={13} /> Use contextual draft</button>
           <div className="composer">
             <textarea value={text} onChange={e => setText(e.target.value)} placeholder="Write with the relationship in mind…" />
-            <button onClick={() => { if (text.trim()) { net.sendMessage(thread.id, text.trim()); setText('') } }} disabled={!text.trim()} aria-label="Send"><Send size={17} /></button>
+            <button onClick={() => {
+              const t = text.trim()
+              if (!t) return
+              gate(t, { channel: 'message', authorId: 'me', recipientId: person.id }, final => { net.sendMessage(thread.id, final); setText('') })
+            }} disabled={!text.trim()} aria-label="Send"><Send size={17} /></button>
           </div>
         </div>
       </section>
@@ -1526,6 +1532,13 @@ function MemberProfile({ person, people, onClose, onDraft, onMessage }: {
           <Button kind="quiet" onClick={() => setReasoning(r => !r)}>{reasoning ? 'Hide Reasoning' : 'View Reasoning'}</Button>
         </footer>
       </section>
+
+      <PassportModule memberId={person.id} />
+      <DecayPrevention person={person} />
+      <RepresentativeAsk person={person} />
+      <AvailabilityWindows memberId={person.id} />
+      <ReciprocityNote memberId={person.id} />
+      <ConnectorAskGuard memberId={person.id} />
 
       <div className="member-modules four">
         <section className="mod">
