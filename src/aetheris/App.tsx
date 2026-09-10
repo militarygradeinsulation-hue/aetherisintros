@@ -136,7 +136,10 @@ function portraitFor(id: string) {
 }
 function Avatar({ person, large = false, portrait = false }: { person: Member; large?: boolean; portrait?: boolean }) {
   const image = portraitFor(person.id)
-  return <span className={`person-avatar ${large ? 'large' : ''} ${portrait ? 'portrait' : ''}`}>{image ? <img src={image} alt="" width={1024} height={1280} loading="lazy" /> : person.initials}</span>
+  return <span className={`person-avatar ${large ? 'large' : ''} ${portrait ? 'portrait' : ''}`} data-person-portrait={person.id} aria-label={person.name}>
+    <span className="avatar-initials" aria-hidden="true">{person.initials}</span>
+    {image && <img src={image} alt="" width={1024} height={1280} loading="lazy" />}
+  </span>
 }
 function Button({ children, kind = 'primary', onClick, disabled = false, className = '' }: { children: React.ReactNode; kind?: 'primary' | 'secondary' | 'quiet'; onClick?: () => void; disabled?: boolean; className?: string }) {
   return <button className={`btn ${kind} ${className}`} onClick={onClick} disabled={disabled}>{children}</button>
@@ -791,7 +794,7 @@ function Memory({ people, select }: { people: Member[]; select: (p: Member) => v
         </dl>
         <button className="memory-cta">Your Network Remembers <ArrowRight size={15} /></button>
       </div>
-      <figure><img src={portrait25Asset.url} alt="Thoughtful professional in architectural window light" width={1280} height={1600} /><figcaption>ACTIVE MEMORY / CONTEXT HELD WITH INTENT</figcaption></figure>
+      <figure><img src={portrait23Asset.url} alt="Thoughtful professional in architectural window light" width={1280} height={1600} /><figcaption>ACTIVE MEMORY / CONTEXT HELD WITH INTENT</figcaption></figure>
     </section>
     <section className="memory-dark-intro">
       <div><Label signal>ACTIVE MEMORY GRAPH</Label><h2>Not a contact list.<br />A living record of <em>why.</em></h2></div>
@@ -881,7 +884,7 @@ function Insights({ people, select, setPage }: { people: Member[]; select: (p: M
   const nav = useNav()
   const [dismissed, setDismissed] = useState<string[]>([])
   return <>
-    <EditorialHero folio="INSIGHTS / RELATIONSHIP MOVEMENT" title={<>Notice what changed.<br /><em>Act while it matters.</em></>} statement="Signals become useful only when they change the next move." copy="Role changes, cooling conversations, matching needs and warm paths are organized around action—not analytics theater." caption="The strongest signal is often a small change in a relationship you already trust." image={portrait26Asset.url} />
+    <EditorialHero folio="INSIGHTS / RELATIONSHIP MOVEMENT" title={<>Notice what changed.<br /><em>Act while it matters.</em></>} statement="Signals become useful only when they change the next move." copy="Role changes, cooling conversations, matching needs and warm paths are organized around action—not analytics theater." caption="The strongest signal is often a small change in a relationship you already trust." image={portrait22Asset.url} />
     <PageHead label="INSIGHTS" title="Signals worth acting on."
       copy="No vanity metrics. Only relationship changes that could alter an outcome, each with an action attached."
       proof="$486K influenced across 46 introductions in 90 days." />
@@ -1138,7 +1141,7 @@ function MemberProfile({ person, people, onClose, onDraft, onMessage }: {
         </div>
         {copied && <small className="copied-note">Profile link copied.</small>}
       </div>
-      <figure className="member-plate">
+      <figure className="member-plate" data-person-portrait={person.id}>
         <img src={portraitFor(person.id)} alt={`${person.name}, monochrome editorial portrait`} loading="lazy" />
         <figcaption><span>{classifyConnection(person.scoreTotal).toUpperCase()}</span><p>{person.focus}</p></figcaption>
       </figure>
@@ -1449,6 +1452,22 @@ function Shell() {
     window.addEventListener('keydown', onKey)
     return () => window.removeEventListener('keydown', onKey)
   }, [])
+  useEffect(() => {
+    const enforceUniquePortraits = () => {
+      const seen = new Set<string>()
+      document.querySelectorAll<HTMLElement>('[data-person-portrait]').forEach(node => {
+        const id = node.dataset.personPortrait
+        if (!id) return
+        const repeated = seen.has(id)
+        node.classList.toggle('portrait-repeat', repeated)
+        seen.add(id)
+      })
+    }
+    enforceUniquePortraits()
+    const observer = new MutationObserver(enforceUniquePortraits)
+    observer.observe(document.body, { childList: true, subtree: true })
+    return () => observer.disconnect()
+  }, [page, selected, draft, askOpen, needOpen, onboardOpen, threadId])
 
   const addNeed = (o: Objective) => {
     net.addObjective(o)
