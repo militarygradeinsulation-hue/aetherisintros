@@ -644,8 +644,11 @@ function MatchReport({ person, match, onOpen, onIntro }: { person: Member; match
 }
 
 function Intros({ people, select, draft }: { people: Member[]; select: (p: Member) => void; draft: (p: Member) => void }) {
+  const net = useNetwork()
   const [state, setState] = useState<'all' | Member['introState']>('all')
-  const ranked = [...people].sort((a, b) => b.scoreTotal - a.scoreTotal)
+  const scored = useMemo(() => rankMatches(net.profile, people, net.connections), [net.profile, people, net.connections])
+  const matchOf = (id: string) => scored.find(entry => entry.member.id === id)?.match
+  const ranked = scored.map(entry => entry.member)
   const shown = state === 'all' ? ranked.slice(0, 6) : ranked.filter(p => p.introState === state)
   return <>
     <EditorialHero folio="INTROS / MUTUAL VALUE" title={<>A warm path is<br /><em>earned context.</em></>} statement="The right conversation, with a reason for both sides." copy="Each report explains the mutual value, live timing and trust path before anyone asks for an introduction." caption="Both people retain agency. Nothing moves until both choose the conversation." image={portrait27Asset.url} />
