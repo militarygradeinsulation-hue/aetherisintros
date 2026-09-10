@@ -14,7 +14,10 @@ const safeNext = (value: unknown) => {
 }
 
 export const Route = createFileRoute('/auth')({
-  validateSearch: (search: Record<string, unknown>) => ({ next: safeNext(search.next) }),
+  validateSearch: (search: Record<string, unknown>): { next?: string } => {
+    const next = safeNext(search['next'])
+    return next ? { next } : {}
+  },
   beforeLoad: ({ search }) => {
     // A pending agent-integration consent flow always needs the sign-in screen.
     if (!AUTH_REQUIRED && !search.next) throw redirect({ to: '/app' })
