@@ -1031,7 +1031,9 @@ function Intros({ people, select, draft }: { people: Member[]; select: (p: Membe
 
 function Messages({ people, select, activeId, setActiveId }: { people: Member[]; select: (p: Member) => void; activeId: string; setActiveId: (id: string) => void }) {
   const net = useNetwork()
+  const pro = usePro()
   const [text, setText] = useState('')
+  const [blocked, setBlocked] = useState<{ explanation: string; rerouteTo?: string } | null>(null)
   const nav = useNav()
   const { gate, modal: outreachModal } = useOutreachGate()
   const threads = net.threads
