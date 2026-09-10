@@ -4,4 +4,4 @@
 - [x] Add Preferences & Customization with persistent profile, recommendation, privacy, and memory controls.
 - [x] Add global people/company/topic search to the authenticated frame.
 - [x] Verify every destination and core interaction across desktop and mobile.
-- [ ] Replace prominent portraits with unique candid photography and fictionalize the demo cast.
+- [x] Replace prominent portraits with unique candid photography and fictionalize the demo cast.

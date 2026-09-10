@@ -117,7 +117,13 @@ function load(): Persisted {
   if (typeof window === 'undefined') return empty
   try {
     const raw = localStorage.getItem(KEY)
-    if (raw) return { ...empty, ...(JSON.parse(raw) as Partial<Persisted>) }
+    if (raw) {
+      const stored = JSON.parse(raw) as Partial<Persisted>
+      const profile = stored.profile?.name === 'Joseph Toney'
+        ? { ...stored.profile, name: seedMe.name, initials: seedMe.initials }
+        : stored.profile
+      return { ...empty, ...stored, ...(profile ? { profile } : {}) }
+    }
   } catch { /* fall through to legacy migration */ }
   const legacy = <T,>(k: string, fallback: T): T => {
     try { return (JSON.parse(localStorage.getItem(k) || '') as T) ?? fallback } catch { return fallback }

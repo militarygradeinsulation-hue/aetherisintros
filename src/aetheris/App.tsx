@@ -1173,7 +1173,7 @@ function Profile({ people, setPage, openOnboarding }: {
       <div className="identity-portrait"><img src={josephPortraitAsset.url} alt="Fictional Aetheris member in architectural window light" width={1280} height={1600} /><small>AETHERIS MEMBER SINCE 2024</small></div>
       <div className="identity-copy">
         <Label>MEMBER PROFILE</Label>
-        <h1>Joseph<br /><em>Toney</em></h1>
+        <h1>Jordan<br /><em>Ellery</em></h1>
         <p className="identity-role">{me.title}<br />{me.company} · {me.location}</p>
         <p className="identity-thesis">{me.thesis}</p>
         <blockquote>“Evidence, mutual value, good timing and human judgment.”</blockquote>

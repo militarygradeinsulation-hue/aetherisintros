@@ -49,6 +49,30 @@ export interface RemoteGraph {
 const relKind = { connections: 'connection', follows: 'follow', saved: 'saved' } as const
 type RelGroup = keyof typeof relKind
 
+const demoAliases: Record<string, string> = {
+  'Gary Frey': 'Adrian Vale', 'Maya Chen': 'Mina Park', 'Scott Kelley': 'Nolan Pierce',
+  'Alison Kaiser': 'Celeste Arden', 'Prateek Sanjay': 'Rohan Vey', 'Kevin Ward': 'Caleb Wynn',
+  'Sarah Villalobos': 'Mara Solis', 'Marcus Adeyemi': 'Darius Cole', 'Lena Hartmann': 'Elara Voss',
+  'Diego Ferreira': 'Mateo Quinn', 'Priya Raghavan': 'Anika Rao', 'Tomás Bergeron': 'Luc Moreau',
+  'Ava Lindqvist': 'Freya Bell', 'Elliot Nakamura': 'Kenji Vale', 'Nadia Okonjo': 'Amara Nwosu',
+  'Ben Halvorsen': 'Elias North', 'Grace Iwuoha': 'Simone Adebayo', 'Rafael Duarte': 'Theo Maren',
+  'Hannah Beckett': 'Clara Fenwick', 'Yusuf Karim': 'Idris Hale', 'Camille Renaud': 'Elise Laurent',
+  'Oliver Mensah': 'Micah Kone', 'Ingrid Sørensen': 'Astrid Dahl', 'Julian Reyes': 'Gabriel Soto',
+}
+
+function fictionalize<T>(value: T): T {
+  if (typeof value === 'string') {
+    let result = value
+    for (const [realName, fictionalName] of Object.entries(demoAliases)) result = result.replaceAll(realName, fictionalName)
+    return result as T
+  }
+  if (Array.isArray(value)) return value.map(fictionalize) as T
+  if (value && typeof value === 'object') {
+    return Object.fromEntries(Object.entries(value).map(([key, item]) => [key, fictionalize(item)])) as T
+  }
+  return value
+}
+
 export async function currentUserId(): Promise<string | null> {
   const { data } = await supabase.auth.getUser()
   return data.user?.id ?? null
@@ -91,7 +115,7 @@ export async function loadDirectory(): Promise<Directory> {
       } as unknown as Member
     })
 
-    return {
+    return fictionalize({
       members,
       posts: postRows.data?.length
         ? postRows.data.map(r => ({ id: r.id, memberId: r.member_id ?? 'me', kind: r.kind, text: r.text, detail: r.detail, when: r.when_label, responses: r.response_count } as Post))
@@ -108,7 +132,7 @@ export async function loadDirectory(): Promise<Directory> {
       learnings: learningRows.data?.length
         ? learningRows.data.map(r => ({ id: r.id, category: r.category, text: r.text, source: r.source, confidence: r.confidence, scope: r.scope, when: r.when_label } as Learning))
         : catalogueLearnings,
-    }
+    })
   } catch {
     return fallback
   }
