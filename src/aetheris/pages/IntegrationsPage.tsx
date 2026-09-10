@@ -63,7 +63,7 @@ export function IntegrationsPage() {
         <p><b>Relationship weather.</b> {answer.weather}</p>
         <p><b>Open loops.</b> {answer.openLoops.join(' · ') || 'None'}</p>
         <p><b>What they are moving.</b> {answer.currentIntent}</p>
-        <p><b>Best next action.</b> {answer.nextAction}</p>
+        <p><b>Best next action.</b> {answer.bestNextMove}</p>
         {!!answer.withheld.length && <p className="probe-withheld"><b>Withheld by your consent settings.</b> {answer.withheld.join(' · ')}</p>}
       </div>}
       <p className="probe-note">Outside surfaces receive shareable context only. Private notes, memory and intents never leave Aetheris unless you widen their scope in the consent ledger.</p>
