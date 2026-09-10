@@ -1476,7 +1476,7 @@
 
 /* ------------------------------------------------ home masthead composition */
 .masthead{
-  display:grid; grid-template-columns:minmax(340px,1fr) minmax(260px,.85fr) minmax(420px,1.15fr);
+  display:grid; grid-template-columns:minmax(280px,1fr) minmax(180px,.7fr) minmax(300px,1.05fr);
   grid-template-areas:'brand plate intel' 'deck deck deck' 'foot foot foot';
   border:1px solid var(--hairline); background:var(--paper); margin-bottom:34px; overflow:hidden;
 }
