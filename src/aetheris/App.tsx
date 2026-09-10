@@ -984,7 +984,8 @@ function IntroModal({ person, onClose, onMessage }: { person: Member | null; onC
         <span>{ok ? 'Introduction authorized. Both parties agreed.' : 'Waiting for both parties before anything is sent.'}</span></div>
       <footer><Button kind="quiet" onClick={onClose}>Cancel</Button>
         <Button disabled={!ok} onClick={() => {
-          net.authorizeIntro(person.id, text)
+          net.authorizeIntro(person.id)
+          net.sendMessage(net.openThreadWith(person.id), text)
           navigator.clipboard?.writeText(text)
           onClose(); onMessage(person.id)
         }}><Send size={15} />Send authorized intro</Button></footer>
