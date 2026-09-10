@@ -23,3 +23,11 @@
 - [x] Home attention strip wiring the OS into the daily surface.
 - [x] Postgres schema for all OS tables with ownership, privacy scope and RLS enabled.
 - [x] Desktop and mobile QA across every new destination and workflow; build and typecheck clean.
+
+# Visual clarity and navigation cleanup
+
+- [ ] Restore the earlier Aetheris Home masthead treatment without the newly introduced person image.
+- [ ] Prevent popovers, drawers, and dropdown content from overlapping surrounding copy.
+- [ ] Strengthen section separation and visual flow without adding dashboard noise.
+- [ ] Make top tab rows horizontally scrollable with no clipped destinations.
+- [ ] Verify portrait uniqueness and the visual cleanup across desktop and mobile.
