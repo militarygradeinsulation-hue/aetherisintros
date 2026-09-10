@@ -2512,3 +2512,9 @@ input, textarea, select { font: inherit; }
 
 .masthead-callout.standalone { position: static; margin: 18px 0 0; display: block; border-radius: 8px; }
 .home-education { align-items: start; }
+.home-education-panel { padding: 26px; border-left: 1px solid var(--line-dark); display: grid; gap: 18px; align-content: center; }
+.home-education-panel blockquote { margin: 0; font: 400 clamp(18px,2vw,26px)/1.4 var(--serif); color: var(--soft); }
+.home-education-panel ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; }
+.home-education-panel li { font: 400 12.5px/1.7 var(--sans); color: var(--muted); }
+.home-education-panel b { color: var(--soft); }
+@media (max-width: 860px) { .home-education-panel { border-left: 0; border-top: 1px solid var(--line-dark); padding: 20px; } }
