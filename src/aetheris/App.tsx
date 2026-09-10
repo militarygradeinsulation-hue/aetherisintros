@@ -1106,8 +1106,9 @@ function ContextRail({ page, people, select, onAsk }: {
     <button className="context-person" onClick={() => select(p)}><Avatar person={p} /><span><strong>{p.name}</strong><small>{p.company}</small></span><ArrowRight size={14} /></button>
     <div className="rail-block"><span>NEW WARM PATHS</span>{warm.map(w =>
       <button key={w.id} onClick={() => select(w)}><b>{w.name}</b><small>via {w.bestPath[1]}</small></button>)}</div>
-    <button className="rail-cooling" onClick={openThread}><span className="signal-dot" /><div><strong>Conversation cooling</strong><small>Scott Kelley · commitment open</small></div></button>
-    <div className="context-signal"><span className="signal-dot" /><div><strong>Active Memory</strong><small>{learnings.length} signals · 3 new this week</small></div></div>
+    {cool && <button className="rail-cooling" onClick={() => nav.messageMember(cool.id)}><span className="signal-dot" />
+      <div><strong>Conversation cooling</strong><small>{cool.name} · {cool.lastInteractionDays} days quiet</small></div></button>}
+    <div className="context-signal"><span className="signal-dot" /><div><strong>Active Memory</strong><small>{net.learnings.length} signals · {net.connections.length} connections</small></div></div>
     <button className="ask-button" onClick={onAsk}><AetherisGlyph size={16} /><span>Ask Intros</span><kbd>⌘K</kbd></button>
   </aside>
 }
