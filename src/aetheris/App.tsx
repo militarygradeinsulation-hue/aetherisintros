@@ -6,6 +6,7 @@ import {
   MessageCircle, Repeat2, Settings2, SlidersHorizontal, TrendingUp, UserRound, Users, X,
   Inbox, DoorOpen, GitMerge, Radar, Flag, FileSearch, Gauge, Mic,
   HelpCircle, BookOpen, Sparkle, Map as MapIcon, History, BadgeCheck, Lock, ScrollText, Puzzle,
+  Briefcase, FolderLock, GraduationCap, UsersRound, Coins, Landmark, PlaneTakeoff, ShieldAlert, Newspaper, Archive, FileText,
 } from 'lucide-react'
 import editorialPortrait from '@/assets/aetheris-editorial-portrait.jpg'
 import mastheadNaturalAsset from '@/assets/portraits/aetheris-masthead-natural.jpg.asset.json'
@@ -113,6 +114,19 @@ import { AttributionPage } from './pages/AttributionPage'
 import { KnowledgePage } from './pages/KnowledgePage'
 import { AdvisoryBoardsPage } from './pages/AdvisoryBoardsPage'
 import { IntegrationsPage } from './pages/IntegrationsPage'
+import { ProProvider } from './pro-store'
+import { PassportPage } from './pages/PassportPage'
+import { OpportunitiesPage } from './pages/OpportunitiesPage'
+import { DealRoomsPage } from './pages/DealRoomsPage'
+import { ExpertisePage } from './pages/ExpertisePage'
+import { TalentPage } from './pages/TalentPage'
+import { CapitalPage } from './pages/CapitalPage'
+import { IntelligenceRoomsPage } from './pages/IntelligenceRoomsPage'
+import { PresencePage } from './pages/PresencePage'
+import { PermissionPage } from './pages/PermissionPage'
+import { BriefingPage } from './pages/BriefingPage'
+import { VaultPage } from './pages/VaultPage'
+import { KnowledgeAssetsPage } from './pages/KnowledgeAssetsPage'
 
 
 
@@ -128,6 +142,8 @@ const nav: Array<{ id: Page; label: string; icon: typeof HomeIcon }> = [
   { id: 'needs', label: 'Needs', icon: Target },
   { id: 'memory', label: 'Memory', icon: Network },
   { id: 'events', label: 'Events', icon: CalendarDays },
+  { id: 'briefing', label: 'Briefing', icon: Newspaper },
+  { id: 'opportunities', label: 'Opportunities', icon: Briefcase },
   { id: 'ask', label: 'Ask network', icon: HelpCircle },
   { id: 'knowledge', label: 'Knowledge', icon: BookOpen },
   { id: 'insights', label: 'Insights', icon: TrendingUp },
@@ -154,6 +170,16 @@ const navSecondary: Array<{ id: Page; label: string; icon: typeof HomeIcon }> = 
   { id: 'identity', label: 'Portable identity', icon: BadgeCheck },
   { id: 'consent', label: 'Consent ledger', icon: Lock },
   { id: 'constitution', label: 'Constitution', icon: ScrollText },
+  { id: 'passport', label: 'Passport', icon: FileText },
+  { id: 'dealrooms', label: 'Deal rooms', icon: FolderLock },
+  { id: 'expertise', label: 'Expertise', icon: GraduationCap },
+  { id: 'talent', label: 'Talent', icon: UsersRound },
+  { id: 'capital', label: 'Capital and boards', icon: Coins },
+  { id: 'intelrooms', label: 'Industry rooms', icon: Landmark },
+  { id: 'presence', label: 'Presence', icon: PlaneTakeoff },
+  { id: 'permission', label: 'Permission', icon: ShieldAlert },
+  { id: 'knowledgeassets', label: 'Knowledge assets', icon: BookOpen },
+  { id: 'vault', label: 'Search and vault', icon: Archive },
   { id: 'integrations', label: 'Intros everywhere', icon: Puzzle },
   { id: 'preferences', label: 'Preferences', icon: Settings2 },
 ]
@@ -1914,7 +1940,7 @@ function GlobalSearch({ open, onClose, people }: { open: boolean; onClose: () =>
 /* ---------------------------------------------------------------------- app */
 
 export default function App({ startPage }: { startPage?: Page | undefined }) {
-  return <NetworkProvider><PlatformProvider><OSProvider><MoatProvider><Shell startPage={startPage} /></MoatProvider></OSProvider></PlatformProvider></NetworkProvider>
+  return <NetworkProvider><PlatformProvider><OSProvider><MoatProvider><ProProvider><Shell startPage={startPage} /></ProProvider></MoatProvider></OSProvider></PlatformProvider></NetworkProvider>
 }
 
 function Shell({ startPage }: { startPage?: Page | undefined }) {
@@ -2031,6 +2057,18 @@ function Shell({ startPage }: { startPage?: Page | undefined }) {
       knowledge: <KnowledgePage />,
       boards: <AdvisoryBoardsPage />,
       integrations: <IntegrationsPage />,
+      passport: <PassportPage />,
+      opportunities: <OpportunitiesPage />,
+      dealrooms: <DealRoomsPage />,
+      expertise: <ExpertisePage />,
+      talent: <TalentPage />,
+      capital: <CapitalPage />,
+      intelrooms: <IntelligenceRoomsPage />,
+      presence: <PresencePage />,
+      permission: <PermissionPage />,
+      briefing: <BriefingPage />,
+      vault: <VaultPage />,
+      knowledgeassets: <KnowledgeAssetsPage />,
     }[page]
 
   return <NavCtx.Provider value={navApi}>

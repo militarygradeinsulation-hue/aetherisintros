@@ -545,3 +545,60 @@ begin
     execute format('alter table public.%I enable row level security', t);
   end loop;
 end $$;
+
+-- ---------- Professional layer (passport, opportunities, deal rooms, expertise, talent, capital, rooms, presence, permission, briefing, vault, knowledge) ----------
+create table if not exists public.professional_passport_profiles (id text primary key, owner_id uuid, scope text, data jsonb not null default '{}', created_at timestamptz not null default now(), updated_at timestamptz not null default now());
+create table if not exists public.passport_credentials (id text primary key, owner_id uuid, scope text, data jsonb not null default '{}', created_at timestamptz not null default now(), updated_at timestamptz not null default now());
+create table if not exists public.proof_of_work_nodes (id text primary key, owner_id uuid, scope text, data jsonb not null default '{}', created_at timestamptz not null default now(), updated_at timestamptz not null default now());
+create table if not exists public.proof_of_work_edges (id text primary key, owner_id uuid, scope text, data jsonb not null default '{}', created_at timestamptz not null default now(), updated_at timestamptz not null default now());
+create table if not exists public.contextual_reputations (id text primary key, owner_id uuid, scope text, data jsonb not null default '{}', created_at timestamptz not null default now(), updated_at timestamptz not null default now());
+create table if not exists public.professional_opportunities (id text primary key, owner_id uuid, scope text, data jsonb not null default '{}', created_at timestamptz not null default now(), updated_at timestamptz not null default now());
+create table if not exists public.deal_rooms (id text primary key, owner_id uuid, scope text, data jsonb not null default '{}', created_at timestamptz not null default now(), updated_at timestamptz not null default now());
+create table if not exists public.expertise_offers (id text primary key, owner_id uuid, scope text, data jsonb not null default '{}', created_at timestamptz not null default now(), updated_at timestamptz not null default now());
+create table if not exists public.professional_referrals (id text primary key, owner_id uuid, scope text, data jsonb not null default '{}', created_at timestamptz not null default now(), updated_at timestamptz not null default now());
+create table if not exists public.introducer_records (id text primary key, owner_id uuid, scope text, data jsonb not null default '{}', created_at timestamptz not null default now(), updated_at timestamptz not null default now());
+create table if not exists public.capability_problems (id text primary key, owner_id uuid, scope text, data jsonb not null default '{}', created_at timestamptz not null default now(), updated_at timestamptz not null default now());
+create table if not exists public.suggested_teams (id text primary key, owner_id uuid, scope text, data jsonb not null default '{}', created_at timestamptz not null default now(), updated_at timestamptz not null default now());
+create table if not exists public.capital_profiles (id text primary key, owner_id uuid, scope text, data jsonb not null default '{}', created_at timestamptz not null default now(), updated_at timestamptz not null default now());
+create table if not exists public.acquisition_intents (id text primary key, owner_id uuid, scope text, data jsonb not null default '{}', created_at timestamptz not null default now(), updated_at timestamptz not null default now());
+create table if not exists public.board_advisory_intents (id text primary key, owner_id uuid, scope text, data jsonb not null default '{}', created_at timestamptz not null default now(), updated_at timestamptz not null default now());
+create table if not exists public.industry_rooms (id text primary key, owner_id uuid, scope text, data jsonb not null default '{}', created_at timestamptz not null default now(), updated_at timestamptz not null default now());
+create table if not exists public.industry_intelligence_items (id text primary key, owner_id uuid, scope text, data jsonb not null default '{}', created_at timestamptz not null default now(), updated_at timestamptz not null default now());
+create table if not exists public.peer_councils (id text primary key, owner_id uuid, scope text, data jsonb not null default '{}', created_at timestamptz not null default now(), updated_at timestamptz not null default now());
+create table if not exists public.event_presences (id text primary key, owner_id uuid, scope text, data jsonb not null default '{}', created_at timestamptz not null default now(), updated_at timestamptz not null default now());
+create table if not exists public.travel_plans (id text primary key, owner_id uuid, scope text, data jsonb not null default '{}', created_at timestamptz not null default now(), updated_at timestamptz not null default now());
+create table if not exists public.professional_availability (id text primary key, owner_id uuid, scope text, data jsonb not null default '{}', created_at timestamptz not null default now(), updated_at timestamptz not null default now());
+create table if not exists public.pitch_permission_requests (id text primary key, owner_id uuid, scope text, data jsonb not null default '{}', created_at timestamptz not null default now(), updated_at timestamptz not null default now());
+create table if not exists public.professional_boundary_rules (id text primary key, owner_id uuid, scope text, data jsonb not null default '{}', created_at timestamptz not null default now(), updated_at timestamptz not null default now());
+create table if not exists public.import_batches (id text primary key, owner_id uuid, scope text, data jsonb not null default '{}', created_at timestamptz not null default now(), updated_at timestamptz not null default now());
+create table if not exists public.relationship_vault_exports (id text primary key, owner_id uuid, scope text, data jsonb not null default '{}', created_at timestamptz not null default now(), updated_at timestamptz not null default now());
+create table if not exists public.professional_inbox_decisions (id text primary key, owner_id uuid, scope text, data jsonb not null default '{}', created_at timestamptz not null default now(), updated_at timestamptz not null default now());
+create table if not exists public.transaction_records (id text primary key, owner_id uuid, scope text, data jsonb not null default '{}', created_at timestamptz not null default now(), updated_at timestamptz not null default now());
+create table if not exists public.marketplace_listings (id text primary key, owner_id uuid, scope text, data jsonb not null default '{}', created_at timestamptz not null default now(), updated_at timestamptz not null default now());
+create table if not exists public.knowledge_assets (id text primary key, owner_id uuid, scope text, data jsonb not null default '{}', created_at timestamptz not null default now(), updated_at timestamptz not null default now());
+create table if not exists public.human_concierge_reviews (id text primary key, owner_id uuid, scope text, data jsonb not null default '{}', created_at timestamptz not null default now(), updated_at timestamptz not null default now());
+create table if not exists public.aetheris_standard_acceptances (id text primary key, owner_id uuid, scope text, data jsonb not null default '{}', created_at timestamptz not null default now(), updated_at timestamptz not null default now());
+
+do $$
+declare t text;
+begin
+  foreach t in array array[
+    'professional_passport_profiles','passport_credentials','proof_of_work_nodes',
+    'proof_of_work_edges','contextual_reputations','professional_opportunities',
+    'deal_rooms','expertise_offers','professional_referrals',
+    'introducer_records','capability_problems','suggested_teams',
+    'capital_profiles','acquisition_intents','board_advisory_intents',
+    'industry_rooms','industry_intelligence_items','peer_councils',
+    'event_presences','travel_plans','professional_availability',
+    'pitch_permission_requests','professional_boundary_rules','import_batches',
+    'relationship_vault_exports','professional_inbox_decisions','transaction_records',
+    'marketplace_listings','knowledge_assets','human_concierge_reviews',
+    'aetheris_standard_acceptances'
+  ] loop
+    execute format('grant select, insert, update, delete on public.%I to authenticated', t);
+    execute format('grant all on public.%I to service_role', t);
+    execute format('alter table public.%I enable row level security', t);
+    execute format($p$create policy "own %s rows" on public.%I for all to authenticated using (owner_id = auth.uid()) with check (owner_id = auth.uid())$p$, t, t);
+  end loop;
+end $$;
+
