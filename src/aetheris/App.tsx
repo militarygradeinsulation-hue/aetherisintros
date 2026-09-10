@@ -1116,6 +1116,11 @@ function ContextRail({ page, people, select, onAsk }: {
 /* ---------------------------------------------------------------------- app */
 
 export default function App() {
+  return <NetworkProvider><Shell /></NetworkProvider>
+}
+
+function Shell() {
+  const net = useNetwork()
   const stored = typeof window !== 'undefined' ? localStorage.getItem('aetheris-intros-page') : null
   const initial = (stored && nav.some(n => n.id === stored) ? stored : legacyPage[stored ?? ''] ?? 'home') as Page
   const [page, setPage] = useState<Page>(initial)
@@ -1126,13 +1131,9 @@ export default function App() {
   const [needOpen, setNeedOpen] = useState(false)
   const [askOpen, setAskOpen] = useState(false)
   const [onboardOpen, setOnboardOpen] = useState(false)
-  const [threadId, setThreadId] = useState('t1')
-  const [profile, setProfileState] = useState<DigitalYouProfile>(() => { try { return JSON.parse(localStorage.getItem('aetheris-intros-dy') || '') || defaultDigitalYou } catch { return defaultDigitalYou } })
-  const [autonomy, setAutonomyState] = useState<AutonomyLevel>(() => Number(localStorage.getItem('aetheris-intros-autonomy') || '2') as AutonomyLevel)
-  const [objectives, setObjectives] = useState<Objective[]>(() => { try { return JSON.parse(localStorage.getItem('aetheris-nexus-objectives') || '') || seedObjectives } catch { return seedObjectives } })
-  const [notes, setNotes] = useState<MemoryNote[]>(() => { try { return JSON.parse(localStorage.getItem('aetheris-nexus-memory') || '') || [] } catch { return [] } })
-  const [saved, setSaved] = useState<string[]>(() => { try { return JSON.parse(localStorage.getItem('aetheris-intros-saved') || '') || [] } catch { return [] } })
-  const people = members
+  const [threadId, setThreadId] = useState('')
+  const people = net.members
+  const me = net.profile
 
   useEffect(() => { localStorage.setItem('aetheris-intros-page', page) }, [page])
   useEffect(() => {
@@ -1141,67 +1142,69 @@ export default function App() {
     return () => window.removeEventListener('keydown', onKey)
   }, [])
 
-  const saveProfile = (x: DigitalYouProfile) => { setProfileState(x); localStorage.setItem('aetheris-intros-dy', JSON.stringify(x)) }
-  const saveAutonomy = (x: AutonomyLevel) => { setAutonomyState(x); localStorage.setItem('aetheris-intros-autonomy', String(x)) }
-  const addNeed = (o: Objective) => { const x = [o, ...objectives]; setObjectives(x); localStorage.setItem('aetheris-nexus-objectives', JSON.stringify(x)); setPage('needs') }
-  const addNote = (personId: string, text: string, scope: PrivacyScope) => {
-    const x = [{ id: `m${Date.now()}`, personId, text, scope, createdAt: new Date().toLocaleDateString() }, ...notes]
-    setNotes(x); localStorage.setItem('aetheris-nexus-memory', JSON.stringify(x))
+  const addNeed = (o: Objective) => {
+    net.addObjective(o)
+    net.addAsk({ ask: o.title, detail: o.outcome, whyNow: o.whyNow, offer: o.valueOffer, industry: 'Cross-industry', location: me.location, urgency: 'high', visibility: 'network' })
+    setPage('needs')
   }
-  const toggleSave = (id: string) => {
-    const x = saved.includes(id) ? saved.filter(s => s !== id) : [...saved, id]
-    setSaved(x); localStorage.setItem('aetheris-intros-saved', JSON.stringify(x))
+  const goToThread = (id: string) => { setThreadId(id); setPage('messages') }
+  const messageMember = (memberId: string) => {
+    setSelected(null); setDraft(null)
+    goToThread(net.openThreadWith(memberId))
   }
-  const openThread = (id: string) => { setThreadId(id); setPage('messages') }
+  const navApi: NavApi = {
+    setPage, openMember: setSelected, openIntro: p => { setSelected(null); setDraft(p) },
+    messageMember, goToThread, postNeed: () => setNeedOpen(true),
+  }
 
-  const content = useMemo(() => ({
-    home: <Home people={people} select={setSelected} setPage={setPage} openNeed={() => setNeedOpen(true)} openThread={openThread} saved={saved} toggleSave={toggleSave} objectives={objectives} />,
-    discover: <Discover people={people} select={setSelected} saved={saved} toggleSave={toggleSave} setPage={setPage} />,
-    intros: <Intros people={people} select={setSelected} draft={setDraft} setPage={setPage} />,
+  const content = {
+    home: <Home people={people} select={setSelected} setPage={setPage} openNeed={() => setNeedOpen(true)} openThread={goToThread} />,
+    discover: <Discover people={people} select={setSelected} />,
+    intros: <Intros people={people} select={setSelected} draft={setDraft} />,
     messages: <Messages people={people} select={setSelected} activeId={threadId} setActiveId={setThreadId} />,
-    needs: <Needs objectives={objectives} onNew={() => setNeedOpen(true)} people={people} select={setSelected} saved={saved} toggleSave={toggleSave} setPage={setPage} />,
-    memory: <Memory people={people} select={setSelected} notes={notes} />,
-    insights: <Insights people={people} select={setSelected} setPage={setPage} saved={saved} toggleSave={toggleSave} />,
-    profile: <Profile profile={profile} setProfile={saveProfile} autonomy={autonomy} setAutonomy={saveAutonomy} people={people} setPage={setPage} notes={notes} />,
-  })[page], [page, people, notes, objectives, profile, autonomy, saved, threadId])
+    needs: <Needs onNew={() => setNeedOpen(true)} people={people} select={setSelected} setPage={setPage} />,
+    memory: <Memory people={people} select={setSelected} />,
+    insights: <Insights people={people} select={setSelected} setPage={setPage} />,
+    profile: <Profile people={people} setPage={setPage} openOnboarding={() => setOnboardOpen(true)} />,
+  }[page]
 
-  return <div className={`app-shell ${collapsed ? 'rail-collapsed' : ''}`}>
-    <aside className={`nav-rail ${mobileOpen ? 'mobile-open' : ''}`}>
-      <div className="rail-head"><Brand /><button className="rail-toggle" onClick={() => setCollapsed(!collapsed)} aria-label="Collapse navigation"><ChevronLeft size={16} /></button></div>
-      <nav>{nav.map(item => {
-        const Icon = item.icon
-        return <button key={item.id} className={page === item.id ? 'active' : ''} title={item.label} onClick={() => { setPage(item.id); setMobileOpen(false) }}>
-          <Icon size={18} /><span>{item.label}</span></button>
-      })}</nav>
-      <div className="rail-foot"><span className="live-dot" /><span>Memory live</span>
-        <button onClick={() => setPage('profile')} aria-label="Your profile"><span>{me.initials}</span></button></div>
-    </aside>
-    <div className="workspace">
-      <header className="topbar">
-        <button className="icon-btn mobile-menu" onClick={() => setMobileOpen(!mobileOpen)} aria-label="Menu"><Menu size={19} /></button>
-        <span className="topbar-title">Aetheris Intros <i>/</i> {nav.find(n => n.id === page)?.label}</span>
-        <div>
-          <button className="icon-btn" title="Build your profile" onClick={() => setOnboardOpen(true)} aria-label="Build your profile"><Fingerprint size={17} /></button>
-          <button className="icon-btn" title="Post a need" onClick={() => setNeedOpen(true)} aria-label="Post a need"><Plus size={18} /></button>
-          <button className="icon-btn" title="Ask Intros" onClick={() => setAskOpen(true)} aria-label="Ask Intros"><AetherisGlyph size={18} /></button>
+  return <NavCtx.Provider value={navApi}>
+    <div className={`app-shell ${collapsed ? 'rail-collapsed' : ''}`}>
+      <aside className={`nav-rail ${mobileOpen ? 'mobile-open' : ''}`}>
+        <div className="rail-head"><Brand /><button className="rail-toggle" onClick={() => setCollapsed(!collapsed)} aria-label="Collapse navigation"><ChevronLeft size={16} /></button></div>
+        <nav>{nav.map(item => {
+          const Icon = item.icon
+          return <button key={item.id} className={page === item.id ? 'active' : ''} title={item.label} onClick={() => { setPage(item.id); setMobileOpen(false) }}>
+            <Icon size={18} /><span>{item.label}</span></button>
+        })}</nav>
+        <div className="rail-foot"><span className="live-dot" /><span>Memory live</span>
+          <button onClick={() => setPage('profile')} aria-label="Your profile"><span>{me.initials}</span></button></div>
+      </aside>
+      <div className="workspace">
+        <header className="topbar">
+          <button className="icon-btn mobile-menu" onClick={() => setMobileOpen(!mobileOpen)} aria-label="Menu"><Menu size={19} /></button>
+          <span className="topbar-title">Aetheris Intros <i>/</i> {nav.find(n => n.id === page)?.label}</span>
+          <div>
+            <button className="icon-btn" title="Build your profile" onClick={() => setOnboardOpen(true)} aria-label="Build your profile"><Fingerprint size={17} /></button>
+            <button className="icon-btn" title="Post a need" onClick={() => setNeedOpen(true)} aria-label="Post a need"><Plus size={18} /></button>
+            <button className="icon-btn" title="Ask Intros" onClick={() => setAskOpen(true)} aria-label="Ask Intros"><AetherisGlyph size={18} /></button>
+          </div>
+        </header>
+        <div className="workspace-grid">
+          <main className="content">{content}</main>
+          <ContextRail page={page} people={people} select={setSelected} onAsk={() => setAskOpen(true)} />
         </div>
-      </header>
-      <div className="workspace-grid">
-        <main className="content">{content}</main>
-        <ContextRail page={page} people={people} select={setSelected} onAsk={() => setAskOpen(true)} objectives={objectives} openThread={() => openThread('t1')} />
       </div>
+      <nav className="mobile-nav">{nav.map(item => {
+        const Icon = item.icon
+        return <button key={item.id} className={page === item.id ? 'active' : ''} onClick={() => setPage(item.id)}><Icon size={18} /><span>{item.label}</span></button>
+      })}</nav>
+      <PersonDrawer person={selected} onClose={() => setSelected(null)} onDraft={p => { setSelected(null); setDraft(p) }} onMessage={messageMember} />
+      <IntroModal person={draft} onClose={() => setDraft(null)} onMessage={messageMember} />
+      <NeedModal open={needOpen} onClose={() => setNeedOpen(false)} onCreate={addNeed} />
+      <AskModal open={askOpen} onClose={() => setAskOpen(false)} people={people} select={setSelected} />
+      <Onboarding open={onboardOpen} onClose={() => setOnboardOpen(false)} />
+      {mobileOpen && <button className="rail-scrim" aria-label="Close menu" onClick={() => setMobileOpen(false)} />}
     </div>
-    <nav className="mobile-nav">{nav.map(item => {
-      const Icon = item.icon
-      return <button key={item.id} className={page === item.id ? 'active' : ''} onClick={() => setPage(item.id)}><Icon size={18} /><span>{item.label}</span></button>
-    })}</nav>
-    <PersonDrawer person={selected} onClose={() => setSelected(null)} onDraft={p => { setSelected(null); setDraft(p) }} notes={notes} onAdd={addNote}
-      saved={selected ? saved.includes(selected.id) : false} onSave={() => selected && toggleSave(selected.id)}
-      onMessage={() => { setSelected(null); setPage('messages') }} />
-    <IntroModal person={draft} onClose={() => setDraft(null)} />
-    <NeedModal open={needOpen} onClose={() => setNeedOpen(false)} onCreate={addNeed} />
-    <AskModal open={askOpen} onClose={() => setAskOpen(false)} people={people} select={setSelected} />
-    <Onboarding open={onboardOpen} onClose={() => setOnboardOpen(false)} />
-    {mobileOpen && <button className="rail-scrim" aria-label="Close menu" onClick={() => setMobileOpen(false)} />}
-  </div>
+  </NavCtx.Provider>
 }
