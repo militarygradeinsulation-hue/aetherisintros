@@ -1,0 +1,125 @@
+import { ArrowLeft, MessageSquareText } from 'lucide-react'
+import { useNetwork } from '../store'
+import { usePlatform } from '../platform'
+import { useNav } from '../nav'
+import { Btn, Eyebrow, Face, Head, Numeral, Why } from '../ui'
+import { deriveChain } from '../domain/engine'
+import type { CompanyProfile } from '../domain/models'
+
+export function CompaniesPage({ openId, setOpenId }: { openId: string | null; setOpenId: (id: string | null) => void }) {
+  const platform = usePlatform()
+  const open = platform.companies.find(c => c.id === openId) ?? null
+  if (open) return <CompanyDetail company={open} onBack={() => setOpenId(null)} />
+
+  return <>
+    <Head
+      label="COMPANIES / ORGANIZATIONAL VIEW"
+      title="You do not reach a company. You reach a person inside it."
+      copy="Every organization here shows the people you already know, the strongest entry, the conversations that already happened, and what went quiet."
+      proof={`${platform.companies.length} organizations mapped from your relationships`}
+    />
+    <section className="company-list">
+      {platform.companies.map(c => <CompanyRow key={c.id} company={c} onOpen={() => setOpenId(c.id)} />)}
+    </section>
+  </>
+}
+
+function CompanyRow({ company, onOpen }: { company: CompanyProfile; onOpen: () => void }) {
+  const net = useNetwork()
+  const people = company.peopleIds.map(id => net.members.find(m => m.id === id)).filter(Boolean).slice(0, 3)
+  return <article className="company-row">
+    <button onClick={onOpen}>
+      <Eyebrow>{company.industry.toUpperCase()}</Eyebrow>
+      <h3>{company.name}</h3>
+      <small>{company.location} · {company.size}</small>
+      <p>{company.strongestEntry}</p>
+    </button>
+    <div className="company-row-side">
+      <div className="circle-faces">{people.map(m => m && <Face key={m.id} person={m} />)}<small>{company.peopleIds.length} known</small></div>
+      <Btn kind="secondary" onClick={onOpen}>Open organization</Btn>
+    </div>
+  </article>
+}
+
+function CompanyDetail({ company, onBack }: { company: CompanyProfile; onBack: () => void }) {
+  const platform = usePlatform()
+  const net = useNetwork()
+  const nav = useNav()
+  const people = company.peopleIds.map(id => net.members.find(m => m.id === id)).filter(Boolean)
+  const systems = platform.systems.filter(s => company.relevantSystemIds.includes(s.id))
+  const intents = platform.intents.filter(i => company.openIntentIds.includes(i.id))
+  const circles = platform.circles.filter(c => company.relatedCircleIds.includes(c.id))
+  const orgRels = platform.orgRelationships.filter(r => r.companyName === company.name)
+  const strongest = [...people].filter(Boolean).sort((a, b) => b!.score.trust - a!.score.trust)[0]
+  const chain = strongest ? deriveChain(strongest, net.members) : null
+
+  return <article className="company-detail">
+    <button className="back-link" onClick={onBack}><ArrowLeft size={15} /> All companies</button>
+    <header className="circle-hero">
+      <div>
+        <Eyebrow>{company.industry.toUpperCase()} · {company.size.toUpperCase()}</Eyebrow>
+        <h1>{company.name}</h1>
+        <h2>{company.strongestEntry}</h2>
+        <p>{company.location}. {company.peopleIds.length} people in your graph work or worked here.</p>
+        <div className="sys-hero-actions">
+          {strongest && <Btn onClick={() => nav.openHandshake(strongest.id)}>Prepare handshake</Btn>}
+          {strongest && <Btn kind="secondary" onClick={() => nav.messageMember(strongest.id)}><MessageSquareText size={14} /> Message {strongest.name.split(' ')[0]}</Btn>}
+        </div>
+      </div>
+      <aside className="sys-hero-side">
+        <span>CONTEXTUAL PATHS</span>
+        <ul className="mod-list">{company.contextualPaths.map(p => <li key={p}>{p}</li>)}</ul>
+        {chain && <><span>BEST NEXT HOP</span><p>{chain.bestNextHop}</p></>}
+      </aside>
+    </header>
+
+    <div className="sys-modules">
+      <section className="mod">
+        <header><span>WHO YOU KNOW HERE</span></header>
+        <ul className="shared-list">{people.map(m => m && <li key={m.id}>
+          <Face person={m} portrait />
+          <div><strong>{m.name}</strong><small>{m.title}</small></div>
+          <button className="mod-link" onClick={() => nav.openMember(m)}>View</button>
+        </li>)}</ul>
+      </section>
+      <section className="mod">
+        <header><span>PREVIOUS CONVERSATIONS</span></header>
+        <ul className="mod-list">{company.previousConversations.map(c => <li key={c}>{c}</li>)}</ul>
+        <header className="mod-second"><span>WHAT WENT DORMANT</span></header>
+        <ul className="mod-list amber">{company.dormantOpportunities.map(c => <li key={c}>{c}</li>)}</ul>
+      </section>
+      <section className="mod">
+        <header><span>ORGANIZATIONAL RELATIONSHIPS</span></header>
+        <ul className="mod-rows">{orgRels.map(r => <li key={r.id}>
+          <span><b>{r.ownerName}</b><small>{r.relationshipType} · {r.note}</small></span>
+          <Numeral value={r.strength} of=" strength" />
+        </li>)}{orgRels.length === 0 && <li><small>No shared organizational relationships recorded.</small></li>}</ul>
+      </section>
+    </div>
+
+    <div className="sys-modules two">
+      <section className="mod">
+        <header><span>RELEVANT SYSTEMS</span></header>
+        <ul className="mod-rows">{systems.map(s => <li key={s.id}>
+          <button onClick={() => nav.openSystem(s.id)}><b>{s.name}</b><small>{s.thesis}</small></button>
+        </li>)}{systems.length === 0 && <li><small>Nothing of yours is a natural fit here yet.</small></li>}</ul>
+        <header className="mod-second"><span>RELATED CIRCLES</span></header>
+        <ul className="mod-rows">{circles.map(c => <li key={c.id}>
+          <button onClick={() => nav.openCircle(c.id)}><b>{c.name}</b><small>{c.purpose}</small></button>
+        </li>)}</ul>
+      </section>
+      <section className="mod">
+        <header><span>OPEN INTENTS INSIDE</span></header>
+        <ul className="mod-rows">{intents.map(i => <li key={i.id}>
+          <span><b>{i.title}</b><small>{i.type} · {i.statement}</small></span>
+        </li>)}{intents.length === 0 && <li><small>Nobody here has posted a live intent.</small></li>}</ul>
+        {chain && <Why>{chain.recommendation}</Why>}
+      </section>
+    </div>
+
+    <section className="mod">
+      <header><span>RELATIONSHIP TIMELINE</span></header>
+      <ol className="history-line">{company.timeline.map(t => <li key={`${t.when}-${t.text}`}><i /><div><p>{t.text}</p><small>{t.when}</small></div></li>)}</ol>
+    </section>
+  </article>
+}
