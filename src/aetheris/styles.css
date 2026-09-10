@@ -1564,3 +1564,14 @@
 .auth-visual .portrait-caption{z-index:3;padding-top:20px;border-top:1px solid var(--line-dark)}
 @media(max-width:980px){.auth-page{grid-template-columns:1fr}.auth-panel{min-height:auto;padding-top:118px;padding-bottom:70px}.auth-visual{min-height:650px;border-left:0;border-top:1px solid var(--line-light)}}
 @media(max-width:620px){.auth-panel{padding:104px 20px 54px;background-size:68px 68px}.auth-brand{left:20px;top:24px}.auth-index>span:last-child{display:none}.auth-panel h1{font-size:66px}.auth-proof{grid-template-columns:1fr}.auth-proof span+span{border-left:0;border-top:1px solid var(--line-light);padding-left:0}.auth-form{grid-template-columns:1fr}.auth-form .btn.primary{width:100%}.auth-visual{min-height:520px}.auth-visual .portrait-caption{left:20px;right:20px}}
+
+/* Active Memory radar motion */
+@keyframes memory-radar-sweep{from{transform:translate(-50%,-50%) rotate(0deg)}to{transform:translate(-50%,-50%) rotate(360deg)}}
+@keyframes memory-signal-pulse{0%,100%{opacity:.55;transform:scale(.82)}50%{opacity:1;transform:scale(1.35)}}
+@keyframes memory-origin-pulse{0%,100%{opacity:.55;transform:translate(-50%,-50%) scale(.82)}50%{opacity:1;transform:translate(-50%,-50%) scale(1.35)}}
+@keyframes memory-ring-breathe{0%,100%{opacity:.45}50%{opacity:1}}
+.memory-graph:before,.preview-graph:after{content:'';position:absolute;z-index:1;left:50%;top:50%;width:min(88%,520px);aspect-ratio:1;border-radius:50%;pointer-events:none;transform-origin:0 0;background:conic-gradient(from 0deg,transparent 0deg 316deg,color-mix(in oklab,var(--amber) 5%,transparent) 330deg,color-mix(in oklab,var(--amber) 38%,transparent) 359deg,transparent 360deg);animation:memory-radar-sweep 8s linear infinite}
+.memory-graph:after,.preview-graph:before{content:'';position:absolute;z-index:1;left:50%;top:50%;width:8px;height:8px;border-radius:50%;background:var(--amber);box-shadow:0 0 0 8px color-mix(in oklab,var(--amber) 10%,transparent),0 0 28px var(--amber);transform:translate(-50%,-50%);animation:memory-origin-pulse 2.4s ease-in-out infinite;pointer-events:none}
+.graph-rings i{animation:memory-ring-breathe 4s ease-in-out infinite}.graph-rings i:nth-child(2){animation-delay:.7s}.graph-rings i:nth-child(3){animation-delay:1.4s}
+.graph-node.signal i,.preview-node i{animation:memory-signal-pulse 2.2s ease-in-out infinite}.graph-node:nth-of-type(3) i,.preview-node:nth-child(3) i{animation-delay:.55s}.graph-node:nth-of-type(5) i,.preview-node:nth-child(5) i{animation-delay:1.1s}
+@media(prefers-reduced-motion:reduce){.memory-graph:before,.memory-graph:after,.preview-graph:before,.preview-graph:after,.graph-rings i,.graph-node i,.preview-node i{animation:none!important}}
