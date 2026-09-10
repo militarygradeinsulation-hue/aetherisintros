@@ -1,6 +1,6 @@
-import { createContext, useContext, useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import {
-  AlertTriangle, ArrowRight, Bookmark, BookmarkCheck, CalendarDays, Check, CheckCircle2, ChevronLeft,
+  AlertTriangle, ArrowRight, Bookmark, BookmarkCheck, Building2, CalendarDays, Check, CheckCircle2, ChevronLeft,
   CircleDot, Compass, Eye, Fingerprint, Handshake, Home as HomeIcon, Layers, LockKeyhole,
   Menu, MessageSquareText, Network, Plus, Search, Send, Share2, ShieldCheck, Target,
   TrendingUp, UserRound, Users, X,
@@ -68,20 +68,46 @@ import {
 } from './social'
 import { NetworkProvider, useNetwork, type MemoryNote, type MeProfile } from './store'
 import { classifyConnection, composeWarmIntro, radarLabel } from './lib/engine'
+import { NavCtx, useNav, type NavApi, type Page } from './nav'
+import { PlatformProvider } from './platform'
+import type { MoveKind } from './domain/models'
+import { SystemsPage } from './pages/SystemsPage'
+import { CirclesPage, CreateCircleModal } from './pages/CirclesPage'
+import { CompaniesPage } from './pages/CompaniesPage'
+import { OutcomesPage } from './pages/OutcomesPage'
+import { LoopsPage } from './pages/LoopsPage'
+import { OrganizationPage } from './pages/OrganizationPage'
+import { HandshakeModal } from './pages/Handshake'
+import { IntentBoard, IntentModal, IntentStrip } from './pages/Intents'
 
 
-type Page = 'home' | 'discover' | 'intros' | 'messages' | 'needs' | 'memory' | 'insights' | 'profile'
+
 type OptIn = 'pending' | 'yes' | 'no'
 
 const nav: Array<{ id: Page; label: string; icon: typeof HomeIcon }> = [
   { id: 'home', label: 'Home', icon: HomeIcon },
   { id: 'discover', label: 'Discover', icon: Compass },
+  { id: 'systems', label: 'Systems', icon: Layers },
+  { id: 'circles', label: 'Circles', icon: Users },
   { id: 'intros', label: 'Intros', icon: Handshake },
   { id: 'messages', label: 'Messages', icon: MessageSquareText },
   { id: 'needs', label: 'Needs', icon: Target },
   { id: 'memory', label: 'Memory', icon: Network },
   { id: 'insights', label: 'Insights', icon: TrendingUp },
   { id: 'profile', label: 'Profile', icon: UserRound },
+]
+const navSecondary: Array<{ id: Page; label: string; icon: typeof HomeIcon }> = [
+  { id: 'loops', label: 'Open loops', icon: CircleDot },
+  { id: 'companies', label: 'Companies', icon: Building2 },
+  { id: 'outcomes', label: 'Outcomes', icon: CheckCircle2 },
+  { id: 'organization', label: 'Organization', icon: ShieldCheck },
+]
+const allNav = [...nav, ...navSecondary]
+const moveKinds: Array<{ kind: MoveKind; page: Page }> = [
+  { kind: 'Need', page: 'needs' },
+  { kind: 'Relationship', page: 'discover' },
+  { kind: 'System', page: 'systems' },
+  { kind: 'Opportunity', page: 'outcomes' },
 ]
 const legacyPage: Record<string, Page> = {
   command: 'home', people: 'discover', network: 'memory', forensics: 'insights',
@@ -96,22 +122,6 @@ const scopeText: Record<PrivacyScope, string> = {
   public: 'Already public context.',
 }
 const scopes: PrivacyScope[] = ['private', 'team', 'organization', 'shareable', 'public']
-
-/** Navigation intents any member surface can trigger. */
-interface NavApi {
-  setPage: (p: Page) => void
-  openMember: (m: Member) => void
-  openIntro: (m: Member) => void
-  messageMember: (memberId: string) => void
-  goToThread: (threadId: string) => void
-  postNeed: () => void
-}
-const NavCtx = createContext<NavApi | null>(null)
-function useNav() {
-  const ctx = useContext(NavCtx)
-  if (!ctx) throw new Error('useNav must be used inside the Intros shell')
-  return ctx
-}
 
 /* ---------------------------------------------------------------- primitives */
 
@@ -1426,14 +1436,14 @@ function ContextRail({ page, people, select, onAsk }: {
 /* ---------------------------------------------------------------------- app */
 
 export default function App() {
-  return <NetworkProvider><Shell /></NetworkProvider>
+  return <NetworkProvider><PlatformProvider><Shell /></PlatformProvider></NetworkProvider>
 }
 
 function Shell() {
   const net = useNetwork()
   const stored = typeof window !== 'undefined' ? localStorage.getItem('aetheris-intros-page') : null
-  const initial = (stored && nav.some(n => n.id === stored) ? stored : legacyPage[stored ?? ''] ?? 'home') as Page
-  const [page, setPage] = useState<Page>(initial)
+  const initial = (stored && allNav.some(n => n.id === stored) ? stored : legacyPage[stored ?? ''] ?? 'home') as Page
+  const [page, setPageState] = useState<Page>(initial)
   const [collapsed, setCollapsed] = useState(false)
   const [mobileOpen, setMobileOpen] = useState(false)
   const [selected, setSelected] = useState<Member | null>(null)
@@ -1441,6 +1451,13 @@ function Shell() {
   const [needOpen, setNeedOpen] = useState(false)
   const [askOpen, setAskOpen] = useState(false)
   const [onboardOpen, setOnboardOpen] = useState(false)
+  const [systemId, setSystemId] = useState<string | null>(null)
+  const [circleId, setCircleId] = useState<string | null>(null)
+  const [companyId, setCompanyId] = useState<string | null>(null)
+  const [handshakeId, setHandshakeId] = useState<string | null>(null)
+  const [intentOpen, setIntentOpen] = useState(false)
+  const [circleFormOpen, setCircleFormOpen] = useState(false)
+  const setPage = (p: Page) => { setSelected(null); setPageState(p) }
   const [threadId, setThreadIdState] = useState(() => (typeof window === 'undefined' ? '' : localStorage.getItem('aetheris-intros-thread') ?? ''))
   const setThreadId = (id: string) => { setThreadIdState(id); localStorage.setItem('aetheris-intros-thread', id) }
   const people = net.members
@@ -1482,16 +1499,31 @@ function Shell() {
   const navApi: NavApi = {
     setPage, openMember: setSelected, openIntro: p => { setSelected(null); setDraft(p) },
     messageMember, goToThread, postNeed: () => setNeedOpen(true),
+    openSystem: id => { setSystemId(id); setPage('systems') },
+    openCircle: id => { setCircleId(id); setPage('circles') },
+    openCompany: id => { setCompanyId(id); setPage('companies') },
+    openHandshake: id => setHandshakeId(id),
+    openIntent: () => setIntentOpen(true),
   }
 
   const content = selected
     ? <MemberProfile person={selected} people={people} onClose={() => setSelected(null)} onDraft={p => { setSelected(null); setDraft(p) }} onMessage={messageMember} />
     : {
-      home: <Home people={people} select={setSelected} setPage={setPage} openNeed={() => setNeedOpen(true)} openThread={goToThread} />,
+      home: <>
+        <IntentStrip onCreate={() => setIntentOpen(true)} />
+        <Home people={people} select={setSelected} setPage={setPage} openNeed={() => setNeedOpen(true)} openThread={goToThread} />
+        <IntentBoard />
+      </>,
       discover: <Discover people={people} select={setSelected} />,
+      systems: <SystemsPage openId={systemId} setOpenId={setSystemId} />,
+      circles: <CirclesPage openId={circleId} setOpenId={setCircleId} />,
+      companies: <CompaniesPage openId={companyId} setOpenId={setCompanyId} />,
+      outcomes: <OutcomesPage />,
+      loops: <LoopsPage />,
+      organization: <OrganizationPage />,
       intros: <Intros people={people} select={setSelected} draft={setDraft} />,
       messages: <Messages people={people} select={setSelected} activeId={threadId} setActiveId={setThreadId} />,
-      needs: <Needs onNew={() => setNeedOpen(true)} people={people} select={setSelected} setPage={setPage} />,
+      needs: <><Needs onNew={() => setNeedOpen(true)} people={people} select={setSelected} setPage={setPage} /><IntentBoard /></>,
       memory: <Memory people={people} select={setSelected} />,
       insights: <Insights people={people} select={setSelected} setPage={setPage} />,
       profile: <Profile people={people} setPage={setPage} openOnboarding={() => setOnboardOpen(true)} />,
@@ -1505,15 +1537,27 @@ function Shell() {
           const Icon = item.icon
           return <button key={item.id} className={page === item.id ? 'active' : ''} title={item.label} onClick={() => { setPage(item.id); setMobileOpen(false) }}>
             <Icon size={18} /><span>{item.label}</span></button>
-        })}</nav>
+        })}
+          <span className="rail-divider">RELATIONSHIP CAPITAL</span>
+          {navSecondary.map(item => {
+            const Icon = item.icon
+            return <button key={item.id} className={page === item.id ? 'active' : ''} title={item.label} onClick={() => { setPage(item.id); setMobileOpen(false) }}>
+              <Icon size={18} /><span>{item.label}</span></button>
+          })}
+        </nav>
         <div className="rail-foot"><span className="live-dot" /><span>Memory live</span>
           <button onClick={() => setPage('profile')} aria-label="Your profile"><span>{me.initials}</span></button></div>
       </aside>
       <div className="workspace">
         <header className="topbar">
           <button className="icon-btn mobile-menu" onClick={() => setMobileOpen(!mobileOpen)} aria-label="Menu"><Menu size={19} /></button>
-          <span className="topbar-title">Aetheris Intros <i>/</i> {nav.find(n => n.id === page)?.label}</span>
+          <span className="topbar-title">Aetheris Intros <i>/</i> {allNav.find(n => n.id === page)?.label}</span>
+          <div className="move-switch">
+            <span>MOVE</span>
+            {moveKinds.map(m => <button key={m.kind} className={page === m.page ? 'active' : ''} onClick={() => setPage(m.page)}>{m.kind}</button>)}
+          </div>
           <div>
+            <button className="icon-btn" title="Post live intent" onClick={() => setIntentOpen(true)} aria-label="Post live intent"><Layers size={17} /></button>
             <button className="icon-btn" title="Build your profile" onClick={() => setOnboardOpen(true)} aria-label="Build your profile"><Fingerprint size={17} /></button>
             <button className="icon-btn" title="Post a need" onClick={() => setNeedOpen(true)} aria-label="Post a need"><Plus size={18} /></button>
             <button className="icon-btn" title="Ask Intros" onClick={() => setAskOpen(true)} aria-label="Ask Intros"><AetherisGlyph size={18} /></button>
@@ -1524,15 +1568,18 @@ function Shell() {
           <ContextRail page={page} people={people} select={setSelected} onAsk={() => setAskOpen(true)} />
         </div>
       </div>
-      <nav className="mobile-nav">{nav.map(item => {
+      <nav className="mobile-nav">{[...nav.slice(0, 5), navSecondary[0]!].map(item => {
         const Icon = item.icon
         return <button key={item.id} className={page === item.id ? 'active' : ''} onClick={() => setPage(item.id)}><Icon size={18} /><span>{item.label}</span></button>
       })}</nav>
-      
+
       <IntroModal person={draft} onClose={() => setDraft(null)} onMessage={messageMember} />
       <NeedModal open={needOpen} onClose={() => setNeedOpen(false)} onCreate={addNeed} />
       <AskModal open={askOpen} onClose={() => setAskOpen(false)} people={people} select={setSelected} />
       <Onboarding open={onboardOpen} onClose={() => setOnboardOpen(false)} />
+      {intentOpen && <IntentModal onClose={() => setIntentOpen(false)} />}
+      {circleFormOpen && <CreateCircleModal onClose={() => setCircleFormOpen(false)} />}
+      {handshakeId && <HandshakeModal memberId={handshakeId} onClose={() => setHandshakeId(null)} />}
       {mobileOpen && <button className="rail-scrim" aria-label="Close menu" onClick={() => setMobileOpen(false)} />}
     </div>
   </NavCtx.Provider>
