@@ -742,6 +742,13 @@
   .workspace-grid{grid-template-columns:1fr}
 }
 
+@media(max-width:920px){
+  .editorial-hero,.memory-editorial,.member-identity{border-radius:0}
+  .editorial-field,.memory-editorial-copy,.member-identity-copy{background-image:linear-gradient(var(--line-light) 1px,transparent 1px),linear-gradient(90deg,var(--line-light) 1px,transparent 1px);background-size:72px 72px}
+  .editorial-plate,.memory-editorial figure,.member-plate{order:-1}
+  .memory-map-row,.memory-layout,.memory-stage,.memory-stage .memory-graph{max-width:100%;min-width:0}
+}
+
 /* The references use compact architectural modules rather than floating dashboard cards. */
 .feed-card,.post-card,.match-report,.need-case,.insight-list,.insight-numbers,.messages-layout,.home-education,.home-matches,.attention-panel,.home-modules .module,.profile-social .module,.opportunity-clusters article,.intelligence-map,.evidence-line{border-radius:4px;box-shadow:none}
 .feed,.reports-list{gap:10px}
