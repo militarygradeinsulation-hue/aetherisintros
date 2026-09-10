@@ -1970,3 +1970,8 @@
   .room-stageline,.lane-row{overflow-x:auto;flex-wrap:nowrap}
   .os-strip-head{align-items:flex-start}
 }
+
+/* the expanded mobile rail must scroll: the OS destinations extend past the viewport */
+@media(max-width:900px){
+  .nav-rail.mobile-open{overflow-y:auto;-webkit-overflow-scrolling:touch;max-height:100dvh;padding-bottom:calc(24px + env(safe-area-inset-bottom))}
+}
