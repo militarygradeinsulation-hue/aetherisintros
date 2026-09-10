@@ -154,5 +154,6 @@ export function PermissionPage() {
         <p>Every other professional network sells your attention to whoever pays for it. Here, a boundary is code: blocked categories never arrive, permission categories become a structured request with a real decision, and &ldquo;not now&rdquo; comes with the trigger that will make it now. Saying no costs you nothing socially.</p>
         <button className="text-action" onClick={() => nav.setPage('briefing')}>Open your briefing <ArrowRight size={14} /></button></div>
     </section>
+    {outreachModal}
   </>
 }
