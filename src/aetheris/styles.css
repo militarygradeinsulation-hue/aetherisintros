@@ -646,3 +646,7 @@
 .ring-dial { position: relative; display: grid; place-items: center; }
 .ring-dial svg { width: 100%; max-width: 92px; transform: rotate(-90deg); }
 .compat-ring strong { position: absolute; inset: 0; display: grid; place-items: center; top: 0; font: 400 21px/1 'Bodoni Moda', Georgia, serif; color: var(--soft); }
+.memory-editorial-copy h1 { font-size: clamp(34px, 4.2vw, 62px); line-height: .96; overflow-wrap: break-word; }
+.memory-editorial-copy .eyebrow { display: block; margin-top: 14px; }
+.memory-layout { grid-template-columns: minmax(0, 1fr); }
+.memory-changes { border-left: 0; }
