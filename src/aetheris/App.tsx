@@ -4,6 +4,7 @@ import {
   CircleDot, Compass, Eye, Fingerprint, Handshake, Heart, Home as HomeIcon, Layers, LockKeyhole,
   MapPin, Menu, MessageSquareText, Network, Plus, Search, Send, Share2, ShieldCheck, Target,
   MessageCircle, Repeat2, Settings2, SlidersHorizontal, TrendingUp, UserRound, Users, X,
+  Inbox, DoorOpen, GitMerge, Radar, Flag, FileSearch, Gauge, Mic,
 } from 'lucide-react'
 import editorialPortrait from '@/assets/aetheris-editorial-portrait.jpg'
 import mastheadNaturalAsset from '@/assets/portraits/aetheris-masthead-natural.jpg.asset.json'
@@ -82,6 +83,20 @@ import { OrganizationPage } from './pages/OrganizationPage'
 import { HandshakeModal } from './pages/Handshake'
 import { IntentBoard, IntentModal, IntentStrip } from './pages/Intents'
 import { EventsPage } from './pages/EventsPage'
+import { OpportunityRoomsPage } from './pages/OpportunityRoomsPage'
+import { RelationshipInboxPage, InboxRow } from './pages/RelationshipInboxPage'
+import { CollisionsPage, CollisionCard } from './pages/CollisionsPage'
+import { SimulationPage } from './pages/SimulationPage'
+import { StrategyPage, StrategyCard } from './pages/StrategyPage'
+import { EvidenceLedgerPage } from './pages/EvidenceLedgerPage'
+import { AutopilotPage } from './pages/AutopilotPage'
+import { OSProvider, useOS } from './os-store'
+import {
+  AutopilotCard, EvidenceLink, IntroQualityReviewPanel, LatentPathList, PathToggle,
+  TrustBudgetNote, TwinPanel, VoiceCaptureModal,
+} from './os-ui'
+import { homeStrips, trustAdvice as trustAdviceFor } from './domain/os-engine'
+import type { IntroQualityReview, PathKind } from './domain/os-models'
 import { PreferencesPage } from './pages/PreferencesPage'
 
 
@@ -102,6 +117,13 @@ const nav: Array<{ id: Page; label: string; icon: typeof HomeIcon }> = [
   { id: 'profile', label: 'Profile', icon: UserRound },
 ]
 const navSecondary: Array<{ id: Page; label: string; icon: typeof HomeIcon }> = [
+  { id: 'inbox', label: 'Attention', icon: Inbox },
+  { id: 'rooms', label: 'Opportunity rooms', icon: DoorOpen },
+  { id: 'collisions', label: 'Collisions', icon: GitMerge },
+  { id: 'simulation', label: 'Simulation', icon: Radar },
+  { id: 'strategy', label: 'Strategy', icon: Flag },
+  { id: 'evidence', label: 'Evidence', icon: FileSearch },
+  { id: 'autopilot', label: 'Autopilot', icon: Gauge },
   { id: 'loops', label: 'Open loops', icon: CircleDot },
   { id: 'companies', label: 'Companies', icon: Building2 },
   { id: 'outcomes', label: 'Outcomes', icon: CheckCircle2 },
@@ -476,6 +498,86 @@ function PostCard({ post, member, onOpen }: { post: Post; member: Member | undef
   </article>
 }
 
+function OSStrip({ people, select }: { people: Member[]; select: (p: Member) => void }) {
+  const os = useOS()
+  const net = useNetwork()
+  const platform = usePlatform()
+  const nav = useNav()
+  const strips = useMemo(() => homeStrips({
+    inbox: os.inbox, collisions: os.collisions, rooms: os.rooms, strategies: os.strategies,
+    evidence: os.evidence, autopilot: os.autopilot, people,
+  }), [os.inbox, os.collisions, os.rooms, os.strategies, os.evidence, os.autopilot, people])
+  const loops = platform.loops.filter(l => l.status === 'open').slice(0, 3)
+  const meetings = platform.meetings.filter(m => !m.closed).slice(0, 2)
+
+  return <section className="os-strip">
+    <header className="os-strip-head">
+      <div><Label signal>WHAT DESERVES YOUR ATTENTION</Label>
+        <h2>Eight things are moving. Three of them need you.</h2></div>
+      <div className="os-strip-actions">
+        <Button kind="secondary" onClick={() => nav.captureConversation()}><Mic size={14} /> Capture conversation</Button>
+        <Button kind="quiet" onClick={() => nav.setPage('inbox')}>Open the full list <ArrowRight size={14} /></Button>
+      </div>
+    </header>
+
+    <div className="os-attention">{strips.attention.map(i => <InboxRow key={i.id} item={i} compact />)}
+      {!strips.attention.length && <p className="quiet-empty">Nothing outstanding. Rare, and worth protecting.</p>}</div>
+
+    {strips.collisions.map(c => <CollisionCard key={c.id} collision={c} compact />)}
+
+    <div className="os-strip-grid">
+      <article className="module">
+        <header><Label>PEOPLE YOU CAN HELP TODAY</Label><h3>Give before you ask.</h3></header>
+        <ul className="module-people">{strips.canHelp.map(p => <li key={p.id}>
+          <button onClick={() => select(p)}><Avatar person={p} /><span><strong>{p.name}</strong><small>{p.needs[0]}</small></span></button>
+        </li>)}</ul>
+      </article>
+      <article className="module">
+        <header><Label>SYSTEMS WORTH PLACING</Label><h3>Work that has somewhere to go.</h3></header>
+        <ul className="module-sectors">{strips.systemsWorthPlacing.map(r => <li key={r.id}>
+          <span><strong>{r.name}</strong><small>{r.nextAction}</small></span>
+          <button className="text-action" onClick={() => nav.openRoom(r.id)}>Open</button>
+        </li>)}
+        {!strips.systemsWorthPlacing.length && <li className="quiet-empty">No placement in motion.</li>}</ul>
+      </article>
+      <article className="module">
+        <header><Label>STRATEGY PROGRESS</Label><h3>Relationships, not follower counts.</h3></header>
+        <ul className="module-sectors">{strips.strategies.map(st => <li key={st.id}>
+          <span><strong>{st.goal}</strong><small>{st.progressPersonIds.length} of {st.targetCount} held</small></span>
+          <button className="text-action" onClick={() => nav.setPage('strategy')}>View</button>
+        </li>)}
+        {!strips.strategies.length && <li className="quiet-empty">No strategy set yet.</li>}</ul>
+      </article>
+      <article className="module">
+        <header><Label signal>CONTEXT JUST BECAME RELEVANT</Label><h3>New evidence in your graph.</h3></header>
+        <ul className="module-sectors">{strips.newContext.map(e => <li key={e.id}>
+          <span><strong>{e.statement}</strong><small>{e.sourceLabel} · {e.date}</small></span>
+        </li>)}</ul>
+        <EvidenceLink ids={strips.newContext.map(e => e.id)} label="Open the ledger" />
+      </article>
+      <article className="module">
+        <header><Label>OPEN LOOPS</Label><h3>Commitments still owed.</h3></header>
+        <ul className="module-sectors">{loops.map(l => <li key={l.id}>
+          <span><strong>{l.title}</strong><small>{l.source}</small></span>
+        </li>)}
+        {!loops.length && <li className="quiet-empty">Nothing owed either way.</li>}</ul>
+      </article>
+      <article className="module">
+        <header><Label>MEETINGS TO CLOSE THE LOOP</Label><h3>What has not been written down.</h3></header>
+        <ul className="module-sectors">{meetings.map(m => <li key={m.id}>
+          <span><strong>{m.purpose}</strong><small>{m.when}</small></span>
+        </li>)}
+        {!meetings.length && <li className="quiet-empty">Every meeting is closed out.</li>}</ul>
+      </article>
+    </div>
+
+    <footer className="os-strip-foot">
+      <span><b>{strips.autopilotCount} considered moves prepared.</b> Nothing sends without your approval.</span>
+      <Button kind="quiet" onClick={() => nav.setPage('autopilot')}>Review Autopilot <ArrowRight size={14} /></Button>
+    </footer>
+  </section>
+}
+
 function Home({ people, select, setPage, openNeed, openThread }: {
   people: Member[]; select: (p: Member) => void; setPage: (p: Page) => void; openNeed: () => void
   openThread: (id: string) => void
@@ -584,6 +686,8 @@ function Home({ people, select, setPage, openNeed, openThread }: {
       })}</section>}
     </div>
 
+    <OSStrip people={people} select={select} />
+
     <section className="home-modules">
       <article className="module">
         <header><Label signal>WHO TO MEET THIS WEEK</Label><h3>Three relationships with real timing.</h3></header>
@@ -638,6 +742,7 @@ const memberRoles: MemberRole[] = ['Founder', 'Operator', 'Investor', 'Advisor',
 const signalFilters = ['Warm path available', 'High match', 'Available now']
 
 function Discover({ people, select }: { people: Member[]; select: (p: Member) => void }) {
+  const [pathKind, setPathKind] = useState<PathKind | 'all'>('all')
   const [q, setQ] = useState('')
   const [roles, setRoles] = useState<string[]>([])
   const [active, setActive] = useState<string[]>([])
@@ -721,6 +826,14 @@ function Discover({ people, select }: { people: Member[]; select: (p: Member) =>
         <PageHead label="DISCOVER" title="Browse the people, not a database."
           copy="Search in your own words. Intros reads needs, offers, expertise, location and the paths already open to you."
           proof="Try: “manufacturing CEO in Indiana looking for AI help.”" />
+        <section className="invisible-layer">
+          <header className="section-line">
+            <Label signal>THE INVISIBLE LAYER</Label>
+            <PathToggle value={pathKind} onChange={setPathKind} />
+          </header>
+          <p className="invisible-lede">You do not know these people, but you are one credible relationship away. Every path below is built from context already in your graph — work history, boards, investments, events, geography, shared circles.</p>
+          <LatentPathList kind={pathKind} />
+        </section>
         <div className="discover-grid">
           {filtered.map(p => <article className="discover-tile" key={p.id}>
             <button className="tile-open" onClick={() => select(p)}>
@@ -855,6 +968,7 @@ function Intros({ people, select, draft }: { people: Member[]; select: (p: Membe
 function Messages({ people, select, activeId, setActiveId }: { people: Member[]; select: (p: Member) => void; activeId: string; setActiveId: (id: string) => void }) {
   const net = useNetwork()
   const [text, setText] = useState('')
+  const nav = useNav()
   const threads = net.threads
   const thread: Thread | undefined = threads.find(t => t.id === activeId) ?? threads[0]
   const person = people.find(p => p.id === thread?.memberId)
@@ -909,6 +1023,8 @@ function Messages({ people, select, activeId, setActiveId }: { people: Member[];
           <div><dt>RECOMMENDED NEXT STEP</dt><dd>{person.nextAction}</dd></div>
           <div><dt>RELATIONSHIP MEMORY</dt><dd>{person.focus}</dd></div>
         </dl>
+        <TwinPanel person={person} compact />
+        <button className="text-action" onClick={() => nav.captureConversation()}><Mic size={13} /> Capture this conversation</button>
       </aside>
     </div>
   </>
@@ -1082,6 +1198,20 @@ function Memory({ people, select }: { people: Member[]; select: (p: Member) => v
 
 /* ------------------------------------------------------------------ insights */
 
+function InsightCollisions() {
+  const os = useOS()
+  const nav = useNav()
+  const live = os.collisions.filter(c => c.status === 'new').slice(0, 2)
+  if (!live.length) return null
+  return <section className="insight-collisions">
+    <header className="section-line">
+      <Label signal>OPPORTUNITY COLLISIONS</Label>
+      <button className="text-action" onClick={() => nav.setPage('collisions')}>See all <ArrowRight size={13} /></button>
+    </header>
+    {live.map(c => <CollisionCard key={c.id} collision={c} compact />)}
+  </section>
+}
+
 function Insights({ people, select, setPage }: { people: Member[]; select: (p: Member) => void; setPage: (p: Page) => void }) {
   const net = useNetwork()
   const nav = useNav()
@@ -1091,6 +1221,7 @@ function Insights({ people, select, setPage }: { people: Member[]; select: (p: M
     <PageHead label="INSIGHTS" title="Signals worth acting on."
       copy="No vanity metrics. Only relationship changes that could alter an outcome, each with an action attached."
       proof="$486K influenced across 46 introductions in 90 days." />
+    <InsightCollisions />
     <div className="insight-numbers">
       {[['4', 'people worth reconnecting with'], ['3', 'warm paths opened this week'], ['2', 'conversations cooling'], ['1', 'contact moved into a relevant role'], ['5', 'needs now match your network']].map(([n, c]) =>
         <div key={c}><strong>{n}</strong><small>{c}</small></div>)}
@@ -1448,6 +1579,15 @@ function MemberProfile({ person, people, onClose, onDraft, onMessage }: {
         </section>
       </div>
 
+      <TwinPanel person={person} />
+
+      <section className="mod">
+        <header><span>PATHS TO {person.name.split(' ')[0]!.toUpperCase()}</span><small>direct · warm · contextual</small></header>
+        <LatentPathList personId={person.id} />
+      </section>
+
+      <ProfileRooms personId={person.id} />
+
       <section className="mod member-notes">
         <header><span>ACTIVE MEMORY</span><small><LockKeyhole size={11} /> privacy scoped</small></header>
         {notes.map(n => <article key={n.id} className="note-row"><b>{scopeLabel[n.scope]}</b><p>{n.text}</p><small>{n.createdAt}</small></article>)}
@@ -1462,11 +1602,25 @@ function MemberProfile({ person, people, onClose, onDraft, onMessage }: {
   </article>
 }
 
+function ProfileRooms({ personId }: { personId: string }) {
+  const os = useOS()
+  const nav = useNav()
+  const rooms = os.rooms.filter(r => !r.archived && r.peopleIds.includes(personId))
+  if (!rooms.length) return null
+  return <section className="mod">
+    <header><span>OPPORTUNITY ROOMS</span><small>{rooms.length} live</small></header>
+    <ul className="profile-rooms">{rooms.map(r => <li key={r.id}>
+      <button onClick={() => nav.openRoom(r.id)}><b>{r.name}</b><em>{r.stage} · {r.nextAction}</em></button>
+    </li>)}</ul>
+  </section>
+}
+
 function IntroModal({ person, onClose, onMessage }: { person: Member | null; onClose: () => void; onMessage: (id: string) => void }) {
   const net = useNetwork()
   const [text, setText] = useState('')
   const [you, setYou] = useState<OptIn>('pending')
   const [them, setThem] = useState<OptIn>('pending')
+  const [review, setReview] = useState<IntroQualityReview | null>(null)
   useEffect(() => {
     if (person) {
       setText(composeWarmIntro(person))
@@ -1478,6 +1632,7 @@ function IntroModal({ person, onClose, onMessage }: { person: Member | null; onC
   }, [person])
   if (!person) return null
   const ok = you === 'yes' && them === 'yes'
+  const blocked = review?.verdict === 'Do Not Send Yet'
   const rows: Array<{ label: string; value: OptIn; set: (v: OptIn) => void }> = [
     { label: 'You', value: you, set: setYou }, { label: person.name, value: them, set: setThem },
   ]
@@ -1487,6 +1642,9 @@ function IntroModal({ person, onClose, onMessage }: { person: Member | null; onC
         <button className="icon-btn" onClick={onClose} aria-label="Close"><X size={17} /></button></header>
       <div className="intro-person"><Avatar person={person} /><span><strong>{person.name}</strong><small>{person.title} · {person.company}</small></span></div>
       <textarea rows={8} value={text} onChange={e => setText(e.target.value)} />
+      <IntroQualityReviewPanel person={person} mutualValueText={`${person.whyThem} ${person.whyYou}`} contextText={text} onVerdict={setReview} />
+      <TrustBudgetNote candidateIds={person.bestPath.length > 1 ? [person.id] : []} />
+      {blocked && <p className="intro-blocked">This introduction is not ready. Fix the missing context above before sending — an unearned intro costs the connector, not you.</p>}
       {rows.map(r => <div className="opt-row" key={r.label}>
         <span><strong>{r.label}</strong><small>Confirm this conversation is worth making.</small></span>
         <div><button className={r.value === 'yes' ? 'active' : ''} onClick={() => { r.set('yes'); if (r.value !== 'yes') net.requestIntro(person.id) }}>Interested</button>
@@ -1495,7 +1653,7 @@ function IntroModal({ person, onClose, onMessage }: { person: Member | null; onC
       <div className={`authorization ${ok ? 'ready' : ''}`}>{ok ? <CheckCircle2 size={17} /> : <LockKeyhole size={17} />}
         <span>{ok ? 'Introduction authorized. Both parties agreed.' : 'Waiting for both parties before anything is sent.'}</span></div>
       <footer><Button kind="quiet" onClick={onClose}>Cancel</Button>
-        <Button disabled={!ok} onClick={() => {
+        <Button disabled={!ok || blocked} onClick={() => {
           net.authorizeIntro(person.id)
           net.sendMessage(net.openThreadWith(person.id), text)
           void navigator.clipboard?.writeText(text).catch(() => {})
@@ -1532,6 +1690,8 @@ function NeedModal({ open, onClose, onCreate }: { open: boolean; onClose: () => 
 }
 
 function AskModal({ open, onClose, people, select }: { open: boolean; onClose: () => void; people: Member[]; select: (p: Member) => void }) {
+  const os = useOS()
+  const nav = useNav()
   const [query, setQuery] = useState('')
   const [asked, setAsked] = useState(false)
   if (!open) return null
@@ -1553,6 +1713,7 @@ function AskModal({ open, onClose, people, select }: { open: boolean; onClose: (
       <div className="ask-input"><Search size={17} />
         <input autoFocus value={query} onChange={e => setQuery(e.target.value)} onKeyDown={e => { if (e.key === 'Enter' && query.trim()) setAsked(true) }} placeholder="Who should I talk to this week?" />
         <Button disabled={!query.trim()} onClick={() => setAsked(true)}>Ask</Button></div>
+      {asked && <AskOSAnswer query={query} onGo={page => { onClose(); nav.setPage(page) }} />}
       {asked && <div className="ask-results">
         <p>{cooling
           ? 'These relationships are cooling: real prior strength, no recent contact. Reactivate with something useful before asking for anything.'
@@ -1561,10 +1722,69 @@ function AskModal({ open, onClose, people, select }: { open: boolean; onClose: (
           <Avatar person={p} /><span><strong>{p.name}</strong><small>{p.whyNow}</small></span><Score value={p.scoreTotal} /></button>)}
         <div className="ask-unknown"><AlertTriangle size={14} /><span><b>Unknown:</b> whether any are currently evaluating another option.</span></div>
       </div>}
-      <div className="quick-questions">{['Who should I talk to this week?', 'Which relationships are cooling?', 'Who can open a trusted path into PE?'].map(q =>
+      <div className="quick-questions">{['What deserves my attention?', 'What opportunities just formed?', 'Where should I place this system?', 'Which connector should I avoid overusing?', 'What are my next five moves?', 'Who should I talk to this week?'].map(q =>
         <button key={q} onClick={() => { setQuery(q); setAsked(true) }}>{q}</button>)}</div>
     </div>
   </div>
+}
+
+function AskOSAnswer({ query, onGo }: { query: string; onGo: (p: Page) => void }) {
+  const os = useOS()
+  const q = query.toLowerCase()
+  const advice = trustAdviceFor(os.trustBudgets, [])
+
+  if (/attention|deserve|today|priorit/.test(q)) {
+    const items = os.inbox.filter(i => i.status === 'open').sort((a, b) => b.priority - a.priority).slice(0, 3)
+    return <div className="ask-os">
+      <p>Three things carry consequence right now. Everything else can wait.</p>
+      <ul>{items.map(i => <li key={i.id}><b>{i.title}</b><em>{i.whyNow}</em><span>{i.nextMove}</span></li>)}</ul>
+      <button className="text-action" onClick={() => onGo('inbox')}>Open the relationship inbox <ArrowRight size={14} /></button>
+    </div>
+  }
+  if (/collision|just formed|opportunit(y|ies) (just|form)/.test(q)) {
+    const items = os.collisions.filter(c => c.status === 'new').slice(0, 2)
+    return <div className="ask-os">
+      <p>Separate signals combined into openings with a limited window.</p>
+      <ul>{items.map(c => <li key={c.id}><b>{c.headline}</b><em>{c.timingEvent}</em><span>{c.recommendedAction}</span></li>)}</ul>
+      <button className="text-action" onClick={() => onGo('collisions')}>Review collisions <ArrowRight size={14} /></button>
+    </div>
+  }
+  if (/place (this )?system|placement|where should i place/.test(q)) {
+    const rooms = os.rooms.filter(r => r.systemIds.length && !r.archived).slice(0, 3)
+    return <div className="ask-os">
+      <p>Placement follows an owned outcome, not a target list. These rooms already have an owner and a reason.</p>
+      <ul>{rooms.map(r => <li key={r.id}><b>{r.name}</b><em>{r.stage}</em><span>{r.nextAction}</span></li>)}</ul>
+      <button className="text-action" onClick={() => onGo('rooms')}>Open opportunity rooms <ArrowRight size={14} /></button>
+    </div>
+  }
+  if (/connector|overus|avoid|trust budget/.test(q)) {
+    return <div className="ask-os">
+      <p>{advice.sentence}</p>
+      <ul>{advice.caution.map(c => <li key={c}><b>{c}</b></li>)}</ul>
+    </div>
+  }
+  if (/next five|next 5|moves|strategy/.test(q)) {
+    const strategy = os.strategies[0]
+    if (!strategy) return null
+    return <div className="ask-os">
+      <p>Toward “{strategy.goal}”.</p>
+      <ul>{strategy.nextMoves.filter(m => !m.done).slice(0, 5).map(m => <li key={m.id}><b>{m.text}</b></li>)}</ul>
+      <button className="text-action" onClick={() => onGo('strategy')}>Open strategy <ArrowRight size={14} /></button>
+    </div>
+  }
+  if (/simulate|how do i reach|what happens if/.test(q)) {
+    return <div className="ask-os">
+      <p>That is a simulation, not a search. Intros will map the paths, the connectors, the friction and where the data is thin — in bands, never invented percentages.</p>
+      <button className="text-action" onClick={() => onGo('simulation')}>Run a network simulation <ArrowRight size={14} /></button>
+    </div>
+  }
+  if (/changed in this relationship|what changed/.test(q)) {
+    return <div className="ask-os">
+      <p>Open a member profile and read the Relationship Twin — it records what changed recently, what usually works, and what to avoid.</p>
+      <button className="text-action" onClick={() => onGo('discover')}>Find the person <ArrowRight size={14} /></button>
+    </div>
+  }
+  return null
 }
 
 function Onboarding({ open, onClose }: { open: boolean; onClose: () => void }) {
@@ -1654,7 +1874,7 @@ function GlobalSearch({ open, onClose, people }: { open: boolean; onClose: () =>
 /* ---------------------------------------------------------------------- app */
 
 export default function App({ startPage }: { startPage?: Page | undefined }) {
-  return <NetworkProvider><PlatformProvider><Shell startPage={startPage} /></PlatformProvider></NetworkProvider>
+  return <NetworkProvider><PlatformProvider><OSProvider><Shell startPage={startPage} /></OSProvider></PlatformProvider></NetworkProvider>
 }
 
 function Shell({ startPage }: { startPage?: Page | undefined }) {
@@ -1676,6 +1896,8 @@ function Shell({ startPage }: { startPage?: Page | undefined }) {
   const [intentOpen, setIntentOpen] = useState(false)
   const [circleFormOpen, setCircleFormOpen] = useState(false)
   const [globalSearchOpen, setGlobalSearchOpen] = useState(false)
+  const [roomId, setRoomId] = useState<string | null>(null)
+  const [captureOpen, setCaptureOpen] = useState(false)
   const setPage = (p: Page) => { setSelected(null); setPageState(p) }
   const [threadId, setThreadIdState] = useState(() => (typeof window === 'undefined' ? '' : localStorage.getItem('aetheris-intros-thread') ?? ''))
   const setThreadId = (id: string) => { setThreadIdState(id); localStorage.setItem('aetheris-intros-thread', id) }
@@ -1723,6 +1945,8 @@ function Shell({ startPage }: { startPage?: Page | undefined }) {
     openCompany: id => { setCompanyId(id); setPage('companies') },
     openHandshake: id => setHandshakeId(id),
     openIntent: () => setIntentOpen(true),
+    openRoom: id => { setRoomId(id); setPage('rooms') },
+    captureConversation: () => setCaptureOpen(true),
   }
 
   const content = selected
@@ -1748,6 +1972,13 @@ function Shell({ startPage }: { startPage?: Page | undefined }) {
       insights: <Insights people={people} select={setSelected} setPage={setPage} />,
       profile: <Profile people={people} setPage={setPage} openOnboarding={() => setOnboardOpen(true)} />,
       preferences: <PreferencesPage />,
+      inbox: <RelationshipInboxPage />,
+      rooms: <OpportunityRoomsPage openId={roomId} setOpenId={setRoomId} />,
+      collisions: <CollisionsPage />,
+      simulation: <SimulationPage />,
+      strategy: <StrategyPage />,
+      evidence: <EvidenceLedgerPage />,
+      autopilot: <AutopilotPage />,
     }[page]
 
   return <NavCtx.Provider value={navApi}>
@@ -1781,6 +2012,7 @@ function Shell({ startPage }: { startPage?: Page | undefined }) {
             <button className="topbar-search" aria-label="Search people, companies, topics, or ideas…" onClick={() => setGlobalSearchOpen(true)}><Search size={15} /><span>Search people, companies, topics, or ideas…</span><kbd>⌘K</kbd></button>
             <button className="icon-btn" title="Post live intent" onClick={() => setIntentOpen(true)} aria-label="Post live intent"><Layers size={17} /></button>
             <button className="icon-btn" title="Build your profile" onClick={() => setOnboardOpen(true)} aria-label="Build your profile"><Fingerprint size={17} /></button>
+            <button className="icon-btn" title="Capture conversation" onClick={() => setCaptureOpen(true)} aria-label="Capture conversation"><Mic size={17} /></button>
             <button className="icon-btn" title="Post a need" onClick={() => setNeedOpen(true)} aria-label="Post a need"><Plus size={18} /></button>
             <button className="icon-btn" title="Ask Intros" onClick={() => setAskOpen(true)} aria-label="Ask Intros"><AetherisGlyph size={18} /></button>
           </div>
@@ -1803,6 +2035,7 @@ function Shell({ startPage }: { startPage?: Page | undefined }) {
       {intentOpen && <IntentModal onClose={() => setIntentOpen(false)} />}
       {circleFormOpen && <CreateCircleModal onClose={() => setCircleFormOpen(false)} />}
       {handshakeId && <HandshakeModal memberId={handshakeId} onClose={() => setHandshakeId(null)} />}
+      {captureOpen && <VoiceCaptureModal onClose={() => setCaptureOpen(false)} />}
       {mobileOpen && <button className="rail-scrim" aria-label="Close menu" onClick={() => setMobileOpen(false)} />}
     </div>
   </NavCtx.Provider>
