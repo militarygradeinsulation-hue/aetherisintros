@@ -1,6 +1,6 @@
 import { createFileRoute, Link, redirect, useNavigate } from '@tanstack/react-router'
 import { ArrowRight, LockKeyhole } from 'lucide-react'
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 
 import { supabase } from '@/integrations/supabase/client'
 import { lovable } from '@/integrations/lovable/index'
@@ -8,9 +8,19 @@ import { AUTH_REQUIRED } from '@/aetheris/config'
 import authPortrait from '@/assets/portraits/portrait-26.jpg.asset.json'
 import '@/aetheris/styles.css'
 
+const safeNext = (value: unknown) => {
+  if (typeof value !== 'string' || !value.startsWith('/') || value.startsWith('//')) return ''
+  return value
+}
+
 export const Route = createFileRoute('/auth')({
-  beforeLoad: () => {
-    if (!AUTH_REQUIRED) throw redirect({ to: '/app' })
+  validateSearch: (search: Record<string, unknown>): { next?: string } => {
+    const next = safeNext(search['next'])
+    return next ? { next } : {}
+  },
+  beforeLoad: ({ search }) => {
+    // A pending agent-integration consent flow always needs the sign-in screen.
+    if (!AUTH_REQUIRED && !search.next) throw redirect({ to: '/app' })
   },
   head: () => ({
     meta: [
@@ -34,6 +44,7 @@ export const Route = createFileRoute('/auth')({
 
 function AuthPage() {
   const navigate = useNavigate()
+  const { next } = Route.useSearch()
   const [mode, setMode] = useState<'signin' | 'signup'>('signin')
   const [name, setName] = useState('')
   const [email, setEmail] = useState('')
@@ -42,18 +53,21 @@ function AuthPage() {
   const [error, setError] = useState('')
   const [notice, setNotice] = useState('')
 
+  const land = useCallback(() => {
+    if (next) { window.location.replace(next); return }
+    void navigate({ to: '/app', replace: true })
+  }, [navigate, next])
+
   useEffect(() => {
     let cancelled = false
     void supabase.auth.getSession().then(({ data }) => {
-      if (!cancelled && data.session) void navigate({ to: '/app', replace: true })
+      if (!cancelled && data.session) land()
     })
     const { data: sub } = supabase.auth.onAuthStateChange((event, session) => {
-      if (session && (event === 'SIGNED_IN' || event === 'INITIAL_SESSION')) {
-        void navigate({ to: '/app', replace: true })
-      }
+      if (session && (event === 'SIGNED_IN' || event === 'INITIAL_SESSION')) land()
     })
     return () => { cancelled = true; sub.subscription.unsubscribe() }
-  }, [navigate])
+  }, [land])
 
   const submit = async (event: React.FormEvent) => {
     event.preventDefault()
@@ -64,7 +78,7 @@ function AuthPage() {
           email,
           password,
           options: {
-            emailRedirectTo: `${window.location.origin}/app`,
+            emailRedirectTo: `${window.location.origin}${next || '/app'}`,
             data: { name: name || email.split('@')[0] },
           },
         })
@@ -86,14 +100,16 @@ function AuthPage() {
 
   const google = async () => {
     setBusy(true); setError('')
-    const result = await lovable.auth.signInWithOAuth('google', { redirect_uri: window.location.origin })
+    const result = await lovable.auth.signInWithOAuth('google', {
+      redirect_uri: `${window.location.origin}${next || '/app'}`,
+    })
     if (result.error) {
       setError('Google sign-in could not start. Try email instead.')
       setBusy(false)
       return
     }
     if (result.redirected) return
-    void navigate({ to: '/app', replace: true })
+    land()
   }
 
   return <main className="auth-page">
