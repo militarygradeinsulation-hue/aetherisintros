@@ -1132,7 +1132,8 @@ function Shell() {
   const [needOpen, setNeedOpen] = useState(false)
   const [askOpen, setAskOpen] = useState(false)
   const [onboardOpen, setOnboardOpen] = useState(false)
-  const [threadId, setThreadId] = useState('')
+  const [threadId, setThreadIdState] = useState(() => (typeof window === 'undefined' ? '' : localStorage.getItem('aetheris-intros-thread') ?? ''))
+  const setThreadId = (id: string) => { setThreadIdState(id); localStorage.setItem('aetheris-intros-thread', id) }
   const people = net.members
   const me = net.profile
 
