@@ -598,7 +598,7 @@ function Discover({ people, select }: { people: Member[]; select: (p: Member) =>
 
 /* -------------------------------------------------------------------- intros */
 
-function MatchReport({ person, onOpen, onIntro }: { person: Member; onOpen: () => void; onIntro: () => void }) {
+function MatchReport({ person, match, onOpen, onIntro }: { person: Member; match?: MatchResult; onOpen: () => void; onIntro: () => void }) {
   const net = useNetwork()
   const nav = useNav()
   return <article className="match-report">
@@ -608,9 +608,9 @@ function MatchReport({ person, onOpen, onIntro }: { person: Member; onOpen: () =
         <Label>{radarLabel[person.radar]} · {introStateLabel[person.introState]}</Label>
         <h3>{person.name}</h3><p>{person.title} · {person.company} · {person.location}</p>
       </div>
-      <Score value={person.scoreTotal} />
+      <Score value={match?.total ?? person.scoreTotal} />
     </header>
-    <div className="match-thesis"><span>WHY THIS PERSON</span><p>{person.whyThem}</p></div>
+    <div className="match-thesis"><span>WHY THIS PERSON</span><p>{match?.headline ?? person.whyThem}</p></div>
     <div className="match-columns">
       <div><span>LOOKING FOR</span><p>{person.needs.join(' · ')}</p></div>
       <div><span>CAN HELP WITH</span><p>{person.offers.join(' · ')}</p></div>
@@ -619,9 +619,18 @@ function MatchReport({ person, onOpen, onIntro }: { person: Member; onOpen: () =
       <div><span>WHY YOU MATTER TO THEM</span><p>{person.whyYou}</p></div>
       <div><span>WHY NOW</span><p>{person.whyNow}</p></div>
     </div>
+    {match && <div className="match-breakdown">
+      <span>COMPATIBILITY, COMPONENT BY COMPONENT</span>
+      <ul>{match.components.map(component => <li key={component.label}>
+        <b>{component.label}</b>
+        <i><em style={{ width: `${Math.round(component.score)}%` }} /></i>
+        <strong>{Math.round(component.score)}</strong>
+        <small>{component.evidence}</small>
+      </li>)}</ul>
+    </div>}
     <div className="match-mutual">
-      <div><span>MUTUAL INTERESTS</span><p>{person.tags.join(' · ')}</p></div>
-      <div><span>MUTUAL CONNECTIONS</span><p>{person.mutuals.length ? person.mutuals.join(' · ') : 'None yet — path built from context'}</p></div>
+      <div><span>MUTUAL INTERESTS</span><p>{(match?.sharedInterests.length ? match.sharedInterests : person.tags).join(' · ')}</p></div>
+      <div><span>MUTUAL CONNECTIONS</span><p>{match?.mutualConnections.length ? `${match.mutualConnections.join(' · ')} (in your connections)` : person.mutuals.length ? person.mutuals.join(' · ') : 'None yet — path built from context'}</p></div>
     </div>
     <div className="trust-path"><span>TRUST PATH</span>{person.bestPath.map((x, i) => <span key={x}><b>{x}</b>{i < person.bestPath.length - 1 && <ArrowRight size={12} />}</span>)}</div>
     <div className="match-move"><span>RECOMMENDED NEXT MOVE</span><p>{person.nextAction}</p></div>
