@@ -70,18 +70,32 @@ import { NetworkProvider, useNetwork, type MemoryNote, type MeProfile } from './
 import { classifyConnection, composeWarmIntro, radarLabel } from './lib/engine'
 
 
-type Page = 'home' | 'discover' | 'intros' | 'messages' | 'needs' | 'memory' | 'insights' | 'profile'
 type OptIn = 'pending' | 'yes' | 'no'
 
 const nav: Array<{ id: Page; label: string; icon: typeof HomeIcon }> = [
   { id: 'home', label: 'Home', icon: HomeIcon },
   { id: 'discover', label: 'Discover', icon: Compass },
+  { id: 'systems', label: 'Systems', icon: Layers },
+  { id: 'circles', label: 'Circles', icon: Users },
   { id: 'intros', label: 'Intros', icon: Handshake },
   { id: 'messages', label: 'Messages', icon: MessageSquareText },
   { id: 'needs', label: 'Needs', icon: Target },
   { id: 'memory', label: 'Memory', icon: Network },
   { id: 'insights', label: 'Insights', icon: TrendingUp },
   { id: 'profile', label: 'Profile', icon: UserRound },
+]
+const navSecondary: Array<{ id: Page; label: string; icon: typeof HomeIcon }> = [
+  { id: 'loops', label: 'Open loops', icon: CircleDot },
+  { id: 'companies', label: 'Companies', icon: Building2 },
+  { id: 'outcomes', label: 'Outcomes', icon: CheckCircle2 },
+  { id: 'organization', label: 'Organization', icon: ShieldCheck },
+]
+const allNav = [...nav, ...navSecondary]
+const moveKinds: Array<{ kind: MoveKind; page: Page }> = [
+  { kind: 'Need', page: 'needs' },
+  { kind: 'Relationship', page: 'discover' },
+  { kind: 'System', page: 'systems' },
+  { kind: 'Opportunity', page: 'outcomes' },
 ]
 const legacyPage: Record<string, Page> = {
   command: 'home', people: 'discover', network: 'memory', forensics: 'insights',
@@ -96,22 +110,6 @@ const scopeText: Record<PrivacyScope, string> = {
   public: 'Already public context.',
 }
 const scopes: PrivacyScope[] = ['private', 'team', 'organization', 'shareable', 'public']
-
-/** Navigation intents any member surface can trigger. */
-interface NavApi {
-  setPage: (p: Page) => void
-  openMember: (m: Member) => void
-  openIntro: (m: Member) => void
-  messageMember: (memberId: string) => void
-  goToThread: (threadId: string) => void
-  postNeed: () => void
-}
-const NavCtx = createContext<NavApi | null>(null)
-function useNav() {
-  const ctx = useContext(NavCtx)
-  if (!ctx) throw new Error('useNav must be used inside the Intros shell')
-  return ctx
-}
 
 /* ---------------------------------------------------------------- primitives */
 
