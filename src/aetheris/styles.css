@@ -743,6 +743,7 @@
 }
 
 @media(max-width:920px){
+  html,body,#root,.app-shell{max-width:100%;overflow-x:clip}
   .editorial-hero,.memory-editorial,.member-identity{border-radius:0}
   .editorial-field,.memory-editorial-copy,.member-identity-copy{background-image:linear-gradient(var(--line-light) 1px,transparent 1px),linear-gradient(90deg,var(--line-light) 1px,transparent 1px);background-size:72px 72px}
   .editorial-plate,.memory-editorial figure,.member-plate{order:-1}
