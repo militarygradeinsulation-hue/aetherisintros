@@ -223,7 +223,8 @@ export function NetworkProvider({ children }: { children: React.ReactNode }) {
       const directory = await loadDirectory()
       if (!cancelled) setDir(directory)
       const id = await currentUserId()
-      if (cancelled || !id) { setSynced(true); return }
+      if (cancelled) return
+      if (!id) { setSynced(true); return }
       setUserId(id)
       const remote = await loadUserGraph(id)
       if (cancelled) return
