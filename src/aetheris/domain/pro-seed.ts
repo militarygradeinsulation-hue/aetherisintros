@@ -130,6 +130,8 @@ export const seedCredentials: PassportCredential[] = [
   { id: 'pc13', memberId: 'p18', kind: 'Speaking', title: 'Grid interconnection queue realities', organization: 'Midwest Energy Forum', detail: 'Two hundred attendees, published slides.', from: '2025', state: 'verified', verifiedBy: 'Conference programme', evidenceIds: [], scope: 'public' },
   { id: 'pc14', memberId: 'me', kind: 'Work sample', title: 'Golden Report methodology', organization: 'Aetheris', detail: 'Company-fit report used in five diligence conversations.', from: '2025', state: 'unverified', evidenceIds: [], scope: 'public' },
   { id: 'pc15', memberId: 'p9', kind: 'Certification', title: 'HITRUST certified architect', organization: 'HITRUST', detail: 'Covers the current platform architecture.', from: '2024', state: 'verified', verifiedBy: 'Certificate registry', evidenceIds: [], scope: 'public' },
+  { id: 'pc16', memberId: 'me', kind: 'Prior role', title: 'Head of revenue systems', organization: 'ForgeLine Systems', detail: 'Rebuilt quoting and commercial review across three plants.', from: '2019', to: '2023', state: 'verified', verifiedBy: 'Former COO reference', evidenceIds: [], scope: 'public' },
+  { id: 'pc17', memberId: 'me', kind: 'Work sample', title: 'Relationship system handover pack', organization: 'Raghavan Advisory', detail: 'Cadence, owners and review rhythm that survived the engagement ending.', from: '2024', state: 'verified', verifiedBy: 'Client reference', evidenceIds: [], scope: 'shareable' },
 ]
 
 /* ------------------------------------------------------- proof of work */
