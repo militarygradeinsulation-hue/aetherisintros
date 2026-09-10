@@ -8,61 +8,13 @@ import {
   HelpCircle, BookOpen, Sparkle, Map as MapIcon, History, BadgeCheck, Lock, ScrollText, Puzzle,
   Briefcase, FolderLock, GraduationCap, UsersRound, Coins, Landmark, PlaneTakeoff, ShieldAlert, Newspaper, Archive, FileText,
 } from 'lucide-react'
-import editorialPortrait from '@/assets/aetheris-editorial-portrait.jpg'
-import mastheadNaturalAsset from '@/assets/portraits/aetheris-masthead-natural.jpg.asset.json'
-import p01NaturalAsset from '@/assets/portraits/member-p1-natural.jpg.asset.json'
-import p02NaturalAsset from '@/assets/portraits/member-p2-natural.jpg.asset.json'
-import p03NaturalAsset from '@/assets/portraits/member-p3-natural.jpg.asset.json'
-import marcusPortrait from '@/assets/member-marcus.jpg'
-import priyaPortrait from '@/assets/member-priya.jpg'
-import sarahPortrait from '@/assets/member-sarah.jpg'
-import elliotPortrait from '@/assets/member-elliot.jpg'
-import portrait01Asset from '@/assets/portraits/portrait-01.jpg.asset.json'
-import portrait02Asset from '@/assets/portraits/portrait-02.jpg.asset.json'
-import portrait03Asset from '@/assets/portraits/portrait-03.jpg.asset.json'
-import portrait04Asset from '@/assets/portraits/portrait-04.jpg.asset.json'
-import portrait05Asset from '@/assets/portraits/portrait-05.jpg.asset.json'
-import portrait06Asset from '@/assets/portraits/portrait-06.jpg.asset.json'
-import portrait07Asset from '@/assets/portraits/portrait-07.jpg.asset.json'
-import portrait08Asset from '@/assets/portraits/portrait-08.jpg.asset.json'
-import portrait09Asset from '@/assets/portraits/portrait-09.jpg.asset.json'
-import portrait10Asset from '@/assets/portraits/portrait-10.jpg.asset.json'
-import portrait11Asset from '@/assets/portraits/portrait-11.jpg.asset.json'
-import portrait12Asset from '@/assets/portraits/portrait-12.jpg.asset.json'
-import portrait13Asset from '@/assets/portraits/portrait-13.jpg.asset.json'
-import portrait14Asset from '@/assets/portraits/portrait-14.jpg.asset.json'
-import portrait15Asset from '@/assets/portraits/portrait-15.jpg.asset.json'
-import portrait16Asset from '@/assets/portraits/portrait-16.jpg.asset.json'
-import portrait17Asset from '@/assets/portraits/portrait-17.jpg.asset.json'
-import portrait18Asset from '@/assets/portraits/portrait-18.jpg.asset.json'
-import portrait19Asset from '@/assets/portraits/portrait-19.jpg.asset.json'
-import portrait20Asset from '@/assets/portraits/portrait-20.jpg.asset.json'
-import portrait21Asset from '@/assets/portraits/portrait-21.jpg.asset.json'
-import portrait22Asset from '@/assets/portraits/portrait-22.jpg.asset.json'
-import portrait23Asset from '@/assets/portraits/portrait-23.jpg.asset.json'
 import { rankMatches, type MatchResult } from '@/aetheris/matching'
-import portrait24Asset from '@/assets/portraits/portrait-24.jpg.asset.json'
-import portrait25Asset from '@/assets/portraits/portrait-25.jpg.asset.json'
-import portrait26Asset from '@/assets/portraits/portrait-26.jpg.asset.json'
-import portrait27Asset from '@/assets/portraits/portrait-27.jpg.asset.json'
-import josephPortraitAsset from '@/assets/portraits/member-joseph.jpg.asset.json'
-import p04PortraitAsset from '@/assets/portraits/member-p4.jpg.asset.json'
-import p05PortraitAsset from '@/assets/portraits/member-p5.jpg.asset.json'
-import p06PortraitAsset from '@/assets/portraits/member-p6.jpg.asset.json'
-import p09PortraitAsset from '@/assets/portraits/member-p9.jpg.asset.json'
-import p10PortraitAsset from '@/assets/portraits/member-p10.jpg.asset.json'
-import p12PortraitAsset from '@/assets/portraits/member-p12.jpg.asset.json'
-import p13PortraitAsset from '@/assets/portraits/member-p13.jpg.asset.json'
-import p15PortraitAsset from '@/assets/portraits/member-p15.jpg.asset.json'
-import p16PortraitAsset from '@/assets/portraits/member-p16.jpg.asset.json'
-import p17PortraitAsset from '@/assets/portraits/member-p17.jpg.asset.json'
-import p18PortraitAsset from '@/assets/portraits/member-p18.jpg.asset.json'
-import p19PortraitAsset from '@/assets/portraits/member-p19.jpg.asset.json'
-import p20PortraitAsset from '@/assets/portraits/member-p20.jpg.asset.json'
-import p21PortraitAsset from '@/assets/portraits/member-p21.jpg.asset.json'
-import p22PortraitAsset from '@/assets/portraits/member-p22.jpg.asset.json'
-import p23PortraitAsset from '@/assets/portraits/member-p23.jpg.asset.json'
-import p24PortraitAsset from '@/assets/portraits/member-p24.jpg.asset.json'
+import discoverEditorialAsset from '@/assets/editorial-discover.jpg.asset.json'
+import introsEditorialAsset from '@/assets/editorial-intros.jpg.asset.json'
+import messagesEditorialAsset from '@/assets/editorial-messages.jpg.asset.json'
+import needsEditorialAsset from '@/assets/editorial-needs.jpg.asset.json'
+import memoryEditorialAsset from '@/assets/editorial-memory.jpg.asset.json'
+import insightsEditorialAsset from '@/assets/editorial-insights.jpg.asset.json'
 import worldNetworkImg from '@/assets/aetheris-world-network.jpg'
 import { leaks } from './data'
 import type { AutonomyLevel, DigitalYouProfile, Objective, PrivacyScope } from './types'
@@ -127,6 +79,7 @@ import { PermissionPage } from './pages/PermissionPage'
 import { BriefingPage } from './pages/BriefingPage'
 import { VaultPage } from './pages/VaultPage'
 import { KnowledgeAssetsPage } from './pages/KnowledgeAssetsPage'
+import { portraitFor } from './portraits'
 
 
 
@@ -212,19 +165,6 @@ function Brand() {
 function AetherisGlyph({ size = 18 }: { size?: number }) {
   return <span className="aetheris-glyph" style={{ width: size, height: size }} aria-hidden="true"><i /><b /></span>
 }
-const memberPortraits: Record<string, string> = {
-  p1: p01NaturalAsset.url, p2: p02NaturalAsset.url, p3: p03NaturalAsset.url,
-  p4: p04PortraitAsset.url, p5: p05PortraitAsset.url, p6: p06PortraitAsset.url,
-  p7: sarahPortrait, p8: marcusPortrait, p9: p09PortraitAsset.url,
-  p10: p10PortraitAsset.url, p11: priyaPortrait, p12: p12PortraitAsset.url,
-  p13: p13PortraitAsset.url, p14: elliotPortrait, p15: p15PortraitAsset.url,
-  p16: p16PortraitAsset.url, p17: p17PortraitAsset.url, p18: p18PortraitAsset.url,
-  p19: p19PortraitAsset.url, p20: p20PortraitAsset.url, p21: p21PortraitAsset.url,
-  p22: p22PortraitAsset.url, p23: p23PortraitAsset.url, p24: p24PortraitAsset.url,
-}
-function portraitFor(id: string) {
-  return memberPortraits[id] ?? portrait25Asset.url
-}
 function Avatar({ person, large = false, portrait = false }: { person: Member; large?: boolean; portrait?: boolean }) {
   const image = portraitFor(person.id)
   return <span className={`person-avatar ${large ? 'large' : ''} ${portrait ? 'portrait' : ''}`} data-person-portrait={person.id} aria-label={person.name}>
@@ -254,9 +194,9 @@ function SaveButton({ saved, onToggle }: { saved: boolean; onToggle: () => void 
 }
 
 /** Editorial ivory field beside a monochrome portrait — the signature Aetheris page opening. */
-function EditorialHero({ folio, title, statement, copy, caption, focus = 'center 30%', stats, action, image = portrait25Asset.url }: {
+function EditorialHero({ folio, title, statement, copy, caption, focus = 'center 30%', stats, action, image }: {
   folio: string; title: React.ReactNode; statement: string; copy: string; caption: string
-  focus?: string; stats?: Array<{ k: string; v: string }>; action?: React.ReactNode; image?: string
+  focus?: string; stats?: Array<{ k: string; v: string }>; action?: React.ReactNode; image: string
 }) {
   return <section className="editorial-hero">
     <div className="editorial-field">
@@ -306,9 +246,14 @@ function HomeMasthead({ people, select, setPage, openNeed, openThread }: {
       <span className="masthead-kicker">PEOPLE × CONTEXT × OPPORTUNITY</span>
     </div>
 
-    <figure className="masthead-plate">
-      <img src={mastheadNaturalAsset.url} alt="A fictional professional walking beside architectural windows" width={1024} height={1280} />
-      <figcaption>BETTER<br />PEOPLE<br />BUILD A<br />BRIGHTER<br />TOMORROW.</figcaption>
+    <figure className="masthead-plate masthead-architecture" aria-label="Aetheris relationship architecture">
+      <div className="masthead-architecture-mark" aria-hidden="true">AI</div>
+      <div className="masthead-architecture-copy">
+        <span>TRUSTED NETWORK / 01</span>
+        <strong>People<br />with purpose.</strong>
+        <p>Context before contact.<br />Permission before access.</p>
+      </div>
+      <figcaption>BETTER<br />CONTEXT.<br />BETTER<br />RELATIONSHIPS.</figcaption>
     </figure>
 
     <aside className="masthead-intel">
@@ -864,7 +809,7 @@ function Discover({ people, select }: { people: Member[]; select: (p: Member) =>
       statement="Search the way you would brief a trusted friend."
       copy="Describe the outcome you want and Intros reads needs, offers, expertise, location, availability and the trust paths already open to you."
       caption="Members are surfaced with reasoning, never as an anonymous list."
-      image={portrait26Asset.url}
+       image={discoverEditorialAsset.url}
       focus="center 22%"
     />
     <div className="discover-shell">
@@ -1005,7 +950,7 @@ function Intros({ people, select, draft }: { people: Member[]; select: (p: Membe
   const ranked = scored.map(entry => entry.member)
   const shown = state === 'all' ? ranked.slice(0, 6) : ranked.filter(p => p.introState === state)
   return <>
-    <EditorialHero folio="INTROS / MUTUAL VALUE" title={<>A warm path is<br /><em>earned context.</em></>} statement="The right conversation, with a reason for both sides." copy="Each report explains the mutual value, live timing and trust path before anyone asks for an introduction." caption="Both people retain agency. Nothing moves until both choose the conversation." image={portrait27Asset.url} />
+    <EditorialHero folio="INTROS / MUTUAL VALUE" title={<>A warm path is<br /><em>earned context.</em></>} statement="The right conversation, with a reason for both sides." copy="Each report explains the mutual value, live timing and trust path before anyone asks for an introduction." caption="Both people retain agency. Nothing moves until both choose the conversation." image={introsEditorialAsset.url} />
     <PageHead label="CURATED INTRODUCTIONS" title="People worth knowing now."
       copy="Every introduction carries mutual value, timing and a credible path. Nothing is sent until both sides agree."
       proof="46 introductions made · 24 became working conversations." />
@@ -1041,7 +986,7 @@ function Messages({ people, select, activeId, setActiveId }: { people: Member[];
   const person = people.find(p => p.id === thread?.memberId)
   if (!thread || !person) return null
   return <>
-    <EditorialHero folio="MESSAGES / RELATIONSHIP CONTEXT" title={<>Conversation with<br /><em>memory beside it.</em></>} statement="People speak to people. Context stays quietly available." copy="Commitments, mutual connections and the reason for the introduction remain beside the thread—not inside the conversation." caption="A professional exchange remains human when intelligence knows when to stay quiet." image={portrait24Asset.url} />
+    <EditorialHero folio="MESSAGES / RELATIONSHIP CONTEXT" title={<>Conversation with<br /><em>memory beside it.</em></>} statement="People speak to people. Context stays quietly available." copy="Commitments, mutual connections and the reason for the introduction remain beside the thread—not inside the conversation." caption="A professional exchange remains human when intelligence knows when to stay quiet." image={messagesEditorialAsset.url} />
     <PageHead label="MESSAGES" title="Context before contact."
       copy="Real conversations between members. Intros keeps the relationship context beside the thread, never in the middle of it."
       proof="Every thread remembers the last commitment made." />
@@ -1132,7 +1077,7 @@ function Needs({ onNew, people, select, setPage }: {
     : tab === 'saved' ? asks.filter(a => net.saved.includes(a.id))
       : forYou
   return <>
-    <EditorialHero folio="NEEDS / PROFESSIONAL ASKS" title={<>State the outcome.<br /><em>Find who can move it.</em></>} statement="Serious asks create useful professional context." copy="A need is not a broadcast. It is a concise case for why the right person should care, why now matters and what value moves both ways." caption="Specific needs produce considered responses—not noisy outreach." image={editorialPortrait} />
+    <EditorialHero folio="NEEDS / PROFESSIONAL ASKS" title={<>State the outcome.<br /><em>Find who can move it.</em></>} statement="Serious asks create useful professional context." copy="A need is not a broadcast. It is a concise case for why the right person should care, why now matters and what value moves both ways." caption="Specific needs produce considered responses—not noisy outreach." image={needsEditorialAsset.url} />
     <PageHead label="NEEDS" title="Tell the network what you need."
       copy="State the outcome you are trying to create. Intros finds who can move it forward and why they would want to."
       proof="Network-visible asks feed matching. Private asks stay private."
@@ -1195,7 +1140,7 @@ function Memory({ people, select }: { people: Member[]; select: (p: Member) => v
         </dl>
         <button className="memory-cta">Your Network Remembers <ArrowRight size={15} /></button>
       </div>
-      <figure><img src={portrait23Asset.url} alt="Thoughtful professional in architectural window light" width={1280} height={1600} /><figcaption>ACTIVE MEMORY / CONTEXT HELD WITH INTENT</figcaption></figure>
+      <figure><img src={memoryEditorialAsset.url} alt="Thoughtful professional in architectural window light" width={1024} height={1280} /><figcaption>ACTIVE MEMORY / CONTEXT HELD WITH INTENT</figcaption></figure>
     </section>
     <section className="memory-dark-intro">
       <div><Label signal>ACTIVE MEMORY GRAPH</Label><h2>Not a contact list.<br />A living record of <em>why.</em></h2></div>
@@ -1299,7 +1244,7 @@ function Insights({ people, select, setPage }: { people: Member[]; select: (p: M
   const nav = useNav()
   const [dismissed, setDismissed] = useState<string[]>([])
   return <>
-    <EditorialHero folio="INSIGHTS / RELATIONSHIP MOVEMENT" title={<>Notice what changed.<br /><em>Act while it matters.</em></>} statement="Signals become useful only when they change the next move." copy="Role changes, cooling conversations, matching needs and warm paths are organized around action—not analytics theater." caption="The strongest signal is often a small change in a relationship you already trust." image={portrait22Asset.url} />
+    <EditorialHero folio="INSIGHTS / RELATIONSHIP MOVEMENT" title={<>Notice what changed.<br /><em>Act while it matters.</em></>} statement="Signals become useful only when they change the next move." copy="Role changes, cooling conversations, matching needs and warm paths are organized around action—not analytics theater." caption="The strongest signal is often a small change in a relationship you already trust." image={insightsEditorialAsset.url} />
     <PageHead label="INSIGHTS" title="Signals worth acting on."
       copy="No vanity metrics. Only relationship changes that could alter an outcome, each with an action attached."
       proof="$486K influenced across 46 introductions in 90 days." />
@@ -1384,7 +1329,7 @@ function Profile({ people, setPage, openOnboarding }: {
   ]
   return <>
     <section className="identity-header">
-      <div className="identity-portrait"><img src={josephPortraitAsset.url} alt="Fictional Aetheris member in architectural window light" width={1280} height={1600} /><small>AETHERIS MEMBER SINCE 2024</small></div>
+      <div className="identity-portrait" data-person-portrait="me">{portraitFor('me') && <img src={portraitFor('me')} alt="Fictional Aetheris member in architectural window light" width={1024} height={1280} />}<small>AETHERIS MEMBER SINCE 2024</small></div>
       <div className="identity-copy">
         <Label>MEMBER PROFILE</Label>
         <h1>Jordan<br /><em>Ellery</em></h1>
@@ -2002,13 +1947,17 @@ function Shell({ startPage }: { startPage?: Page | undefined }) {
   }, [])
   useEffect(() => {
     const enforceUniquePortraits = () => {
-      const seen = new Set<string>()
+      const seenPeople = new Set<string>()
+      const seenSources = new Set<string>()
       document.querySelectorAll<HTMLElement>('[data-person-portrait]').forEach(node => {
         const id = node.dataset['personPortrait']
         if (!id) return
-        const repeated = seen.has(id)
+        const image = node.querySelector<HTMLImageElement>('img')
+        const source = image?.currentSrc || image?.getAttribute('src')
+        const repeated = seenPeople.has(id) || Boolean(source && seenSources.has(source))
         node.classList.toggle('portrait-repeat', repeated)
-        seen.add(id)
+        seenPeople.add(id)
+        if (source) seenSources.add(source)
       })
     }
     enforceUniquePortraits()

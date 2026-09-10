@@ -3,7 +3,6 @@ import marcusPortrait from '@/assets/member-marcus.jpg'
 import priyaPortrait from '@/assets/member-priya.jpg'
 import sarahPortrait from '@/assets/member-sarah.jpg'
 import elliotPortrait from '@/assets/member-elliot.jpg'
-import portrait25Asset from '@/assets/portraits/portrait-25.jpg.asset.json'
 import p04PortraitAsset from '@/assets/portraits/member-p4.jpg.asset.json'
 import p05PortraitAsset from '@/assets/portraits/member-p5.jpg.asset.json'
 import p06PortraitAsset from '@/assets/portraits/member-p6.jpg.asset.json'
@@ -38,6 +37,6 @@ export const memberPortraits: Record<string, string> = {
   p22: p22PortraitAsset.url, p23: p23PortraitAsset.url, p24: p24PortraitAsset.url,
 }
 
-export function portraitFor(id: string) {
-  return memberPortraits[id] ?? portrait25Asset.url
+export function portraitFor(id: string): string | undefined {
+  return memberPortraits[id]
 }

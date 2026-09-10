@@ -31,9 +31,10 @@ export function Head({ label, title, copy, proof, action }: {
 }
 
 export function Face({ person, large = false, portrait = false }: { person: { id: string; name: string; initials: string }; large?: boolean; portrait?: boolean }) {
+  const image = portraitFor(person.id)
   return <span className={`person-avatar ${large ? 'large' : ''} ${portrait ? 'portrait' : ''}`} data-person-portrait={person.id} aria-label={person.name}>
     <span className="avatar-initials" aria-hidden="true">{person.initials}</span>
-    <img src={portraitFor(person.id)} alt="" width={1024} height={1280} loading="lazy" />
+    {image && <img src={image} alt="" width={1024} height={1280} loading="lazy" />}
   </span>
 }
 
