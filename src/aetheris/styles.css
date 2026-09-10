@@ -2509,3 +2509,6 @@ input, textarea, select { font: inherit; }
   .modal-veil { padding: 12px; align-items: flex-start; }
   .modal-veil > .modal, .modal-veil > div { padding: 18px; }
 }
+
+.masthead-callout.standalone { position: static; margin: 18px 0 0; display: block; border-radius: 8px; }
+.home-education { align-items: start; }
