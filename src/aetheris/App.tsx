@@ -231,10 +231,11 @@ function HomeMasthead({ people, select, setPage, openNeed, openThread }: {
   const companies = new Set(people.map(p => p.company)).size
   return <section className="masthead">
     <div className="masthead-brand">
-      <span className="folio">PEOPLE CREATE POSSIBILITIES</span>
-      <h1 className="masthead-title">Memory that keeps<br /><em>relationships alive.</em></h1>
-      <h2>A professional memory for builders, backed by real people, real context, and real intent.</h2>
-      <p>Aetheris Intros is the high-trust business network where Active Memory learns who you know, what you need, and why now—so every introduction makes sense for both sides. No selling. No spam. No hollow networking.</p>
+      <span className="folio">THE BUSINESS NETWORK WITHOUT THE NOISE</span>
+      <h1 className="masthead-title">Aetheris<br /><em>Intros</em></h1>
+      <h2>Real business networking.<br />No selling. No spam.</h2>
+      <p>The professional network built around trusted context instead of reach—where human judgment and quiet intelligence work as one. Meet people because the relationship makes sense for both sides, never because someone bought your attention.</p>
+
       <div className="masthead-actions">
         <Button onClick={openNeed}>Get started <ArrowRight size={14} /></Button>
         <Button kind="secondary" onClick={() => setPage('intros')}>See how it works</Button>
@@ -247,9 +248,9 @@ function HomeMasthead({ people, select, setPage, openNeed, openThread }: {
       <span className="masthead-kicker">PEOPLE × CONTEXT × OPPORTUNITY</span>
     </div>
 
-    <figure className="masthead-plate" aria-label="A professional in thought — memory that keeps relationships alive">
+    <figure className="masthead-plate" aria-label="A professional in thought — real business networking without the noise">
       <img src={homeEditorialAsset.url} alt="Fictional professional in quiet thought beside hard window light" width={1024} height={1280} />
-      <figcaption>MEMORY<br />THAT KEEPS<br />RELATIONSHIPS<br />ALIVE.</figcaption>
+      <figcaption>BETTER<br />CONTEXT.<br />BETTER<br />RELATIONSHIPS.</figcaption>
     </figure>
 
     <aside className="masthead-intel">
@@ -258,13 +259,11 @@ function HomeMasthead({ people, select, setPage, openNeed, openThread }: {
         <small>A SMARTER<br />WORLD IS A<br />MORE CONNECTED ONE.</small>
       </header>
       <div className="masthead-intel-head">
-        <div><h3>ACTIVE MEMORY GRAPH</h3><p>People. Context. Possibilities.</p></div>
+        <div><h3>WHY AETHERIS INTROS</h3><p>People. Context. Possibilities.</p></div>
         <ul><li><b>{people.length}</b> PEOPLE</li><li><b>{companies}</b> COMPANIES</li><li><b>{net.learnings.length}</b> LEARNED THEMES</li></ul>
       </div>
-      <div className="masthead-graph">
-        <MemoryGraph people={people} onSelect={select} compact />
-        <div className="masthead-callout">MORE CONTEXT<br />BETTER INTROS<br />STRONGER OUTCOMES</div>
-      </div>
+      <div className="masthead-callout standalone">MORE CONTEXT<br />BETTER INTROS<br />STRONGER OUTCOMES</div>
+
       <footer>
         <div><b>87%</b><small>Match accuracy</small></div>
         <div><b>3.2x</b><small>Warmer replies</small></div>
@@ -723,8 +722,17 @@ function Home({ people, select, setPage, openNeed, openThread }: {
       <div><Label>BUSINESS NETWORKING, REBUILT</Label><h2>A professional network without pitches, spam or performative reach.</h2>
         <p>Aetheris Intros reads needs, offers, timing and trust paths, then shows only relationships where a conversation creates credible value for both people.</p>
         <button className="text-action" onClick={() => setPage('intros')}>See the reasoning behind a match <ArrowRight size={14} /></button></div>
-      <MemoryGraph people={people} onSelect={select} compact />
+      <div className="home-education-panel">
+        <blockquote>“Every introduction here arrives with a reason, a shared context and a moment that makes sense for both people.”</blockquote>
+        <ul>
+          <li><b>No mass outreach.</b> Nobody can buy your attention.</li>
+          <li><b>Both sides opt in.</b> An introduction only exists if two people agree to it.</li>
+          <li><b>Explainable, always.</b> You see the evidence behind every recommendation.</li>
+        </ul>
+        <button className="text-action" onClick={() => setPage('memory')}>Open Active Memory <ArrowRight size={14} /></button>
+      </div>
     </section>
+
 
     <HowItWorks />
 

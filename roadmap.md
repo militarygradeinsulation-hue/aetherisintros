@@ -31,3 +31,9 @@
 - [x] Strengthen section separation and visual flow without adding dashboard noise.
 - [x] Make top tab rows horizontally scrollable with no clipped destinations.
 - [x] Verify portrait uniqueness and the visual cleanup across desktop and mobile.
+
+## Home + Ask Network pass (Sep 10)
+- [x] Ask Network page styled (composer, audience chips, routed rows, replies)
+- [x] Shared dialog/overlay/chip/meter styles for previously unstyled blocks
+- [x] Removed Active Memory Graph from the Home page
+- [x] Restored original Aetheris Intros home wording, kept the picture
