@@ -8,7 +8,6 @@ import {
   HelpCircle, BookOpen, Sparkle, Map as MapIcon, History, BadgeCheck, Lock, ScrollText, Puzzle,
   Briefcase, FolderLock, GraduationCap, UsersRound, Coins, Landmark, PlaneTakeoff, ShieldAlert, Newspaper, Archive, FileText,
 } from 'lucide-react'
-import mastheadNaturalAsset from '@/assets/portraits/aetheris-masthead-natural.jpg.asset.json'
 import { rankMatches, type MatchResult } from '@/aetheris/matching'
 import discoverEditorialAsset from '@/assets/editorial-discover.jpg.asset.json'
 import introsEditorialAsset from '@/assets/editorial-intros.jpg.asset.json'
@@ -247,9 +246,14 @@ function HomeMasthead({ people, select, setPage, openNeed, openThread }: {
       <span className="masthead-kicker">PEOPLE × CONTEXT × OPPORTUNITY</span>
     </div>
 
-    <figure className="masthead-plate">
-      <img src={mastheadNaturalAsset.url} alt="A fictional professional walking beside architectural windows" width={1024} height={1280} />
-      <figcaption>BETTER<br />PEOPLE<br />BUILD A<br />BRIGHTER<br />TOMORROW.</figcaption>
+    <figure className="masthead-plate masthead-architecture" aria-label="Aetheris relationship architecture">
+      <div className="masthead-architecture-mark" aria-hidden="true">AI</div>
+      <div className="masthead-architecture-copy">
+        <span>TRUSTED NETWORK / 01</span>
+        <strong>People<br />with purpose.</strong>
+        <p>Context before contact.<br />Permission before access.</p>
+      </div>
+      <figcaption>BETTER<br />CONTEXT.<br />BETTER<br />RELATIONSHIPS.</figcaption>
     </figure>
 
     <aside className="masthead-intel">
