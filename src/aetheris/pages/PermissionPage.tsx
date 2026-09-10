@@ -4,13 +4,14 @@ import { useNetwork } from '../store'
 import { usePro } from '../pro-store'
 import { useNav } from '../nav'
 import { Btn, Eyebrow, Head, memberById } from '../ui'
+import { useOutreachGate } from '../moat-ui'
 import { pitchReadiness } from '../domain/pro-engine'
 
 export function PermissionPage() {
   const net = useNetwork()
   const pro = usePro()
   const nav = useNav()
-  const [category, setCategory] = useState('Vendor or software pitch')
+  const [category, setCategory] = useState('Software vendor')
   const [reason, setReason] = useState('')
   const [whyRelevant, setWhyRelevant] = useState('')
   const [value, setValue] = useState('')
@@ -18,6 +19,7 @@ export function PermissionPage() {
   const [evidence, setEvidence] = useState('')
   const [recipientId, setRecipientId] = useState(net.members[0]?.id ?? '')
   const [label, setLabel] = useState('')
+  const { gate, modal: outreachModal } = useOutreachGate()
 
   const readiness = pitchReadiness({
     category, reason, whyRelevant, valueToRecipient: value, whyNow,
@@ -47,7 +49,7 @@ export function PermissionPage() {
         </label>
         <label>Category
           <select value={category} onChange={e => setCategory(e.target.value)}>
-            {['Vendor or software pitch', 'Fundraising pitch', 'Recruiting approach', 'Partnership proposal', 'Advisory inquiry', 'Any outreach'].map(c => <option key={c} value={c}>{c}</option>)}
+            {['Software vendor', 'Fundraising ask', 'Executive search', 'Board inquiry', 'Partnership proposal', 'Unknown path', 'Any outreach'].map(c => <option key={c} value={c}>{c}</option>)}
           </select>
         </label>
 
@@ -75,13 +77,18 @@ export function PermissionPage() {
 
         <p className={`readiness ${readiness.ready ? 'ok' : 'not'}`}>{readiness.note}</p>
         <Btn disabled={!readiness.ready} onClick={() => {
-          pro.requestPermission({
-            recipientId, category, reason: reason.trim(), whyRelevant: whyRelevant.trim(),
-            valueToRecipient: value.trim(), whyNow: whyNow.trim(),
-            ...(net.connections.includes(recipientId) ? { warmPath: 'Existing direct relationship' } : {}),
-            evidence: evidence.trim() ? [evidence.trim()] : [],
-          })
-          setReason(''); setWhyRelevant(''); setValue(''); setWhyNow(''); setEvidence('')
+          const recipient = memberById(net.members, recipientId)
+          gate(`${reason} ${whyRelevant} ${value} ${whyNow}`,
+            { channel: 'pitch-request', authorId: 'me', ...(recipient ? { recipient } : {}) },
+            () => {
+              pro.requestPermission({
+                recipientId, category, reason: reason.trim(), whyRelevant: whyRelevant.trim(),
+                valueToRecipient: value.trim(), whyNow: whyNow.trim(),
+                ...(net.connections.includes(recipientId) ? { warmPath: 'Existing direct relationship' } : {}),
+                evidence: evidence.trim() ? [evidence.trim()] : [],
+              })
+              setReason(''); setWhyRelevant(''); setValue(''); setWhyNow(''); setEvidence('')
+            })
         }}>Send the request</Btn>
       </article>
 
@@ -147,5 +154,6 @@ export function PermissionPage() {
         <p>Every other professional network sells your attention to whoever pays for it. Here, a boundary is code: blocked categories never arrive, permission categories become a structured request with a real decision, and &ldquo;not now&rdquo; comes with the trigger that will make it now. Saying no costs you nothing socially.</p>
         <button className="text-action" onClick={() => nav.setPage('briefing')}>Open your briefing <ArrowRight size={14} /></button></div>
     </section>
+    {outreachModal}
   </>
 }

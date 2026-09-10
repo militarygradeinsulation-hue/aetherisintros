@@ -114,7 +114,7 @@ import { AttributionPage } from './pages/AttributionPage'
 import { KnowledgePage } from './pages/KnowledgePage'
 import { AdvisoryBoardsPage } from './pages/AdvisoryBoardsPage'
 import { IntegrationsPage } from './pages/IntegrationsPage'
-import { ProProvider } from './pro-store'
+import { ProProvider, usePro } from './pro-store'
 import { PassportPage } from './pages/PassportPage'
 import { OpportunitiesPage } from './pages/OpportunitiesPage'
 import { DealRoomsPage } from './pages/DealRoomsPage'
@@ -638,6 +638,7 @@ function Home({ people, select, setPage, openNeed, openThread }: {
   const net = useNetwork()
   const platform = usePlatform()
   const [tab, setTab] = useState<'feed' | 'people' | 'asks' | 'signals'>('feed')
+  const [homeMode, setHomeMode] = useState<'social' | 'briefing'>('social')
   const [composer, setComposer] = useState('')
   const [customizing, setCustomizing] = useState(false)
   const ranked = useMemo(() => [...people].sort((a, b) => b.scoreTotal - a.scoreTotal), [people])
@@ -675,6 +676,15 @@ function Home({ people, select, setPage, openNeed, openThread }: {
     setComposer('')
   }
   return <>
+    <nav className="home-mode-switch" role="tablist" aria-label="Home mode">
+      {([['social', 'Social'], ['briefing', 'Briefing']] as const).map(([id, label]) =>
+        <button key={id} role="tab" aria-selected={homeMode === id} className={homeMode === id ? 'on' : ''} onClick={() => setHomeMode(id)}>{label}</button>)}
+      <small>{homeMode === 'social' ? 'The professional network, as it is moving today.' : 'What needs you today, composed rather than counted.'}</small>
+    </nav>
+
+    {homeMode === 'briefing' && <BriefingPage />}
+
+    {homeMode === 'social' && <>
     <HomeMasthead people={people} select={select} setPage={setPage} openNeed={openNeed} openThread={openThread} />
 
     <header className="home-question">
@@ -785,6 +795,7 @@ function Home({ people, select, setPage, openNeed, openThread }: {
         <button onClick={() => openThread('t1')}><span>CONVERSATION COOLING</span><strong>Nolan Pierce</strong><small>Waiting on the observation you promised.</small></button>
       </div>
     </section>
+    </>}
   </>
 }
 
@@ -1020,7 +1031,9 @@ function Intros({ people, select, draft }: { people: Member[]; select: (p: Membe
 
 function Messages({ people, select, activeId, setActiveId }: { people: Member[]; select: (p: Member) => void; activeId: string; setActiveId: (id: string) => void }) {
   const net = useNetwork()
+  const pro = usePro()
   const [text, setText] = useState('')
+  const [blocked, setBlocked] = useState<{ explanation: string; rerouteTo?: string } | null>(null)
   const nav = useNav()
   const { gate, modal: outreachModal } = useOutreachGate()
   const threads = net.threads
@@ -1065,9 +1078,19 @@ function Messages({ people, select, activeId, setActiveId }: { people: Member[];
             <button onClick={() => {
               const t = text.trim()
               if (!t) return
+              const commercial = /demo|pricing|proposal|our (product|platform|software|solution)|quick call|book a|vendor/i.test(t)
+              const verdict = pro.boundaryCheck(commercial ? 'Software vendor' : 'Any outreach', {
+                recipientId: person.id, warmPath: net.connections.includes(person.id),
+              })
+              if (!verdict.allowed) {
+                setBlocked({ explanation: verdict.explanation, ...(verdict.rerouteTo ? { rerouteTo: verdict.rerouteTo } : {}) })
+                return
+              }
+              setBlocked(null)
               gate(t, { channel: 'message', authorId: 'me', recipient: person }, final => { net.sendMessage(thread.id, final); setText('') })
             }} disabled={!text.trim()} aria-label="Send"><Send size={17} /></button>
           </div>
+          {blocked && <p className="composer-blocked"><b>Held.</b> {blocked.explanation}{blocked.rerouteTo ? ` Referred elsewhere: ${blocked.rerouteTo}.` : ''} <button className="text-action" onClick={() => nav.setPage('permission')}>Request permission properly</button></p>}
         </div>
       </section>
       <aside className="conversation-intel">
@@ -1561,6 +1584,7 @@ function MemberProfile({ person, people, onClose, onDraft, onMessage }: {
       </section>
 
       <PassportModule memberId={person.id} />
+      <ProCredibilityModule memberId={person.id} />
       <DecayPrevention person={person} />
       <RepresentativeAsk person={person} />
       <AvailabilityWindows memberId={person.id} />
@@ -2129,4 +2153,37 @@ function Shell({ startPage }: { startPage?: Page | undefined }) {
       {mobileOpen && <button className="rail-scrim" aria-label="Close menu" onClick={() => setMobileOpen(false)} />}
     </div>
   </NavCtx.Provider>
+}
+
+/* ------------------------------------ professional proof on a member profile */
+
+function ProCredibilityModule({ memberId }: { memberId: string }) {
+  const pro = usePro()
+  const credibility = pro.credibility(memberId)
+  const graph = pro.proofGraph(memberId)
+  const reputations = pro.reputationFor(memberId)
+  const bare = !graph.nodes.length && !reputations.length && !credibility.verified
+  return <section className="module pro-credibility">
+    <header>
+      <div><Label>PROOF OF WORK AND CONTEXTUAL REPUTATION</Label>
+        <h3>What is verified, what is self-stated, and what has evidence behind it.</h3>
+        <p>{credibility.reasoning}</p></div>
+      <div className="pro-cred-score"><strong>{credibility.score}</strong><span>/100</span><em>{credibility.verdict}</em></div>
+    </header>
+    {bare && <p className="pro-cred-answer">No delivered work, verified credential or contextual reputation has been recorded here yet. Everything on this profile should be read as self-stated until it carries evidence.</p>}
+    {!!graph.nodes.length && <>
+      <p className="pro-cred-answer">{graph.answer}</p>
+      <ul className="mod-list">{graph.nodes.slice(0, 5).map(n => <li key={n.id}>
+        <b>{n.kind}</b> {n.label} <small>{n.evidence ? `Evidence: ${n.evidence}` : 'No named evidence — treated as self-stated.'}</small>
+      </li>)}</ul>
+    </>}
+    {!!reputations.length && <div className="pro-cred-reputation">
+      {reputations.map(r => <article key={r.id}>
+        <span>{r.context.toUpperCase()}</span>
+        <strong>{r.bestFor}</strong>
+        <small>Trusted in {r.trustedIn.join(' · ')} · proven with {r.provenWith.join(' · ')}</small>
+        <em>{r.outcomesCreated} recorded outcome{r.outcomesCreated === 1 ? '' : 's'} · intro quality {r.introQuality} · referral strength {r.referralStrength}</em>
+      </article>)}
+    </div>}
+  </section>
 }

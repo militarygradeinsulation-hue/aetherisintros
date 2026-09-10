@@ -5,7 +5,7 @@
 import type {
   AcquisitionIntent, AetherisStandardAcceptance, BoardAdvisoryIntent, CapabilityProblem,
   CapitalProfile, ContextualReputation, DealRoom, EventPresence, ExpertiseOffer,
-  HumanConciergeReview, ImportBatch, IndustryIntelligenceItem, IndustryRoom, IntroducerRecord,
+  HumanConciergeReview, ImportBatch, ImportProposal, IndustryIntelligenceItem, IndustryRoom, IntroducerRecord,
   KnowledgeAsset, MarketplaceListing, PassportCredential, PeerCouncil, PitchPermissionRequest,
   ProfessionalAvailability, ProfessionalBoundaryRule, ProfessionalInboxDecision,
   ProfessionalOpportunity, ProfessionalPassportProfile, ProfessionalReferral, ProofOfWorkEdge,
@@ -623,6 +623,7 @@ export const seedBoundaries: ProfessionalBoundaryRule[] = [
   { id: 'bd4', memberId: 'me', label: 'No outreach from unknown paths', category: 'Unknown path', action: 'require-permission', explanation: 'Members with no shared context need to explain relevance before messaging.', active: false, custom: false },
   { id: 'bd5', memberId: 'me', label: 'Board and advisory inquiries welcome', category: 'Board inquiry', action: 'reroute', rerouteTo: 'Your advisory availability window', explanation: 'Board inquiries go straight to the availability window rather than the inbox.', active: true, custom: true },
   { id: 'bd6', memberId: 'p17', label: 'Only warm introductions until November', category: 'Any outreach', action: 'require-permission', explanation: 'Heads down on a rollout; warm paths only.', active: true, custom: false },
+  { id: 'bd8', memberId: 'p3', label: 'No product demos without permission', category: 'Software vendor', action: 'require-permission', explanation: 'This member has declared that vendor and demo conversations need a permission request with evidence first, even inside an existing relationship.', active: true, custom: true },
   { id: 'bd7', memberId: 'p21', label: 'No consumer fundraising asks', category: 'Fundraising ask', action: 'block', explanation: 'Outside the thesis. Blocked rather than ignored.', active: true, custom: true },
 ]
 
@@ -709,4 +710,19 @@ export const seedStandard: AetherisStandardAcceptance[] = [
     accepted: true, acceptedAt: iso(-120),
     note: 'Accepted at onboarding. Referenced whenever a boundary or permission decision is made.',
   },
+]
+
+/* ------------------------------- import proposals (per-record review) */
+
+export const seedImportProposals: ImportProposal[] = [
+  { id: 'ip1', batchId: 'ib1', kind: 'person', label: 'Delia Marsh — Plant manager, Kestrel Forming', detail: 'New person. Met twice at the operations circle; no record in your graph yet.', action: 'create', defaultScope: 'private', provenance: 'CSV row 4 · operator-contacts-sample.csv' },
+  { id: 'ip2', batchId: 'ib1', kind: 'relationship', label: 'Mark Nolan Pierce as a working relationship', detail: 'Existing member. The file shows eleven exchanges over two years.', action: 'update', defaultScope: 'team', provenance: 'CSV row 9 · frequency column' },
+  { id: 'ip3', batchId: 'ib1', kind: 'memory', label: 'Quoting delays cost roughly two days per order', detail: 'Learned context to attach to ForgeLine Systems.', action: 'create', defaultScope: 'private', provenance: 'CSV notes column, row 9' },
+  { id: 'ip4', batchId: 'ib1', kind: 'open loop', label: 'Send the diagnostic summary before the plant review', detail: 'A promise with no owner recorded. Import as an open loop owned by you.', action: 'create', defaultScope: 'private', provenance: 'CSV notes column, row 12' },
+  { id: 'ip5', batchId: 'ib1', kind: 'company', label: 'Kestrel Forming — 240 people, second-tier automotive', detail: 'New company. Two people in this file work there.', action: 'create', defaultScope: 'shareable', provenance: 'CSV rows 4 and 17' },
+  { id: 'ip6', batchId: 'ib1', kind: 'memory', label: 'Personal note: prefers Friday calls', detail: 'Low-value personal detail. Suggested skip — you can approve it if you disagree.', action: 'skip', defaultScope: 'private', provenance: 'CSV notes column, row 22' },
+  { id: 'ip7', batchId: 'ib4', kind: 'person', label: 'Sasha Renner — Head of partnerships, Vantage Rail', detail: 'New person from your export. No mutual context found yet.', action: 'create', defaultScope: 'private', provenance: 'LinkedIn export row 31' },
+  { id: 'ip8', batchId: 'ib4', kind: 'relationship', label: 'Mina Park — mark as an existing connection', detail: 'Already a member here. This only records that the relationship predates Aetheris.', action: 'update', defaultScope: 'shareable', provenance: 'LinkedIn export row 88' },
+  { id: 'ip9', batchId: 'ib4', kind: 'person', label: '46 contacts with no recorded interaction', detail: 'Suggested skip. Importing dormant contacts inflates a network without making it useful.', action: 'skip', defaultScope: 'private', provenance: 'LinkedIn export, no-interaction rows' },
+  { id: 'ip10', batchId: 'ib4', kind: 'meeting', label: 'Three meetings referenced in the export', detail: 'Meeting history with dates but no notes. Import as bare meeting records.', action: 'create', defaultScope: 'private', provenance: 'LinkedIn export, event rows' },
 ]

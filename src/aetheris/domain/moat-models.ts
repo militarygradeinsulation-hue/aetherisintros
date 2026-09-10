@@ -76,7 +76,7 @@ export interface OutreachFlag {
 
 export interface OutreachQualityReview {
   id: ID
-  channel: 'message' | 'intro' | 'ask' | 'network-question'
+  channel: 'message' | 'intro' | 'ask' | 'network-question' | 'pitch-request'
   authorId: ID
   recipientId?: ID
   text: string

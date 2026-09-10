@@ -11,7 +11,7 @@ import type { Repository, TableGateway } from './repository'
 import type {
   AcquisitionIntent, AetherisStandardAcceptance, BoardAdvisoryIntent, CapabilityProblem,
   CapitalProfile, ContextualReputation, DealRoom, EventPresence, ExpertiseOffer,
-  HumanConciergeReview, ImportBatch, IndustryIntelligenceItem, IndustryRoom, IntroducerRecord,
+  HumanConciergeReview, ImportBatch, ImportProposal, IndustryIntelligenceItem, IndustryRoom, IntroducerRecord,
   KnowledgeAsset, MarketplaceListing, PassportCredential, PeerCouncil, PitchPermissionRequest,
   ProfessionalAvailability, ProfessionalBoundaryRule, ProfessionalInboxDecision,
   ProfessionalOpportunity, ProfessionalPassportProfile, ProfessionalReferral, ProofOfWorkEdge,
@@ -19,7 +19,7 @@ import type {
 } from './pro-models'
 import {
   seedAcquisitions, seedBoardIntents, seedBoundaries, seedCapital, seedConcierge, seedCouncils,
-  seedCredentials, seedDealRooms, seedEventPresence, seedExpertise, seedImports,
+  seedCredentials, seedDealRooms, seedEventPresence, seedExpertise, seedImportProposals, seedImports,
   seedIndustryRooms, seedInboxDecisions, seedIntelligenceItems, seedIntroducerRecords,
   seedKnowledgeAssets, seedMarketplace, seedOpportunities, seedPassportProfiles,
   seedPitchRequests, seedProAvailability, seedProblems, seedProofEdges, seedProofNodes,
@@ -51,6 +51,7 @@ export interface ProCollections {
   pitchRequests: PitchPermissionRequest[]
   boundaries: ProfessionalBoundaryRule[]
   imports: ImportBatch[]
+  importProposals: ImportProposal[]
   vaultExports: RelationshipVaultExport[]
   inboxDecisions: ProfessionalInboxDecision[]
   transactions: TransactionRecord[]
@@ -87,6 +88,7 @@ export const proTableNames: Record<ProCollectionName, string> = {
   pitchRequests: 'pitch_permission_requests',
   boundaries: 'professional_boundary_rules',
   imports: 'import_batches',
+  importProposals: 'import_proposals',
   vaultExports: 'relationship_vault_exports',
   inboxDecisions: 'professional_inbox_decisions',
   transactions: 'transaction_records',
@@ -107,6 +109,7 @@ export function seedProCollections(): ProCollections {
     intelligence: seedIntelligenceItems, councils: seedCouncils,
     eventPresence: seedEventPresence, travel: seedTravel, proAvailability: seedProAvailability,
     pitchRequests: seedPitchRequests, boundaries: seedBoundaries, imports: seedImports,
+    importProposals: seedImportProposals,
     vaultExports: [], inboxDecisions: seedInboxDecisions, transactions: seedTransactions,
     marketplace: seedMarketplace, knowledgeAssets: seedKnowledgeAssets, concierge: seedConcierge,
     standard: seedStandard,

@@ -571,6 +571,7 @@ create table if not exists public.professional_availability (id text primary key
 create table if not exists public.pitch_permission_requests (id text primary key, owner_id uuid, scope text, data jsonb not null default '{}', created_at timestamptz not null default now(), updated_at timestamptz not null default now());
 create table if not exists public.professional_boundary_rules (id text primary key, owner_id uuid, scope text, data jsonb not null default '{}', created_at timestamptz not null default now(), updated_at timestamptz not null default now());
 create table if not exists public.import_batches (id text primary key, owner_id uuid, scope text, data jsonb not null default '{}', created_at timestamptz not null default now(), updated_at timestamptz not null default now());
+create table if not exists public.import_proposals (id text primary key, owner_id uuid, batch_id text, scope text, data jsonb not null default '{}', created_at timestamptz not null default now(), updated_at timestamptz not null default now());
 create table if not exists public.relationship_vault_exports (id text primary key, owner_id uuid, scope text, data jsonb not null default '{}', created_at timestamptz not null default now(), updated_at timestamptz not null default now());
 create table if not exists public.professional_inbox_decisions (id text primary key, owner_id uuid, scope text, data jsonb not null default '{}', created_at timestamptz not null default now(), updated_at timestamptz not null default now());
 create table if not exists public.transaction_records (id text primary key, owner_id uuid, scope text, data jsonb not null default '{}', created_at timestamptz not null default now(), updated_at timestamptz not null default now());
@@ -590,7 +591,7 @@ begin
     'capital_profiles','acquisition_intents','board_advisory_intents',
     'industry_rooms','industry_intelligence_items','peer_councils',
     'event_presences','travel_plans','professional_availability',
-    'pitch_permission_requests','professional_boundary_rules','import_batches',
+    'pitch_permission_requests','professional_boundary_rules','import_batches','import_proposals',
     'relationship_vault_exports','professional_inbox_decisions','transaction_records',
     'marketplace_listings','knowledge_assets','human_concierge_reviews',
     'aetheris_standard_acceptances'

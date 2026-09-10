@@ -105,6 +105,9 @@ export interface ProApi extends ProCollections {
   /* search, imports, vault */
   search(query: string, corpus: SearchCorpusItem[]): ReturnType<typeof universalSearch>
   setImportState(id: ID, state: ImportBatch['state']): void
+  setProposalAccepted(id: ID, accepted: boolean): void
+  commitImport(batchId: ID): { accepted: number; skipped: number }
+  removeImportSource(batchId: ID): void
   exportVault(input: { scope: RelationshipVaultExport['scope']; format: 'json' | 'csv'; includes: string[]; rows: Array<Record<string, unknown>> }): { record: RelationshipVaultExport; content: string }
 
   /* inbox + briefing */
@@ -412,6 +415,25 @@ export function ProProvider({ children }: { children: ReactNode }) {
         state: importState,
         ...(importState === 'reviewing' ? { reviewedAt: today() } : {}),
         ...(importState === 'committed' ? { committedAt: today() } : {}),
+      })
+    },
+    setProposalAccepted(id, accepted) { patch('importProposals', id, { accepted }) },
+    commitImport(batchId) {
+      const rows = state.importProposals.filter(p => p.batchId === batchId)
+      const accepted = rows.filter(p => p.accepted === true)
+      for (const row of rows.filter(p => p.accepted !== true)) patch('importProposals', row.id, { accepted: false })
+      patch('imports', batchId, {
+        state: 'committed', committedAt: today(), rowCount: accepted.length,
+        note: `${accepted.length} record${accepted.length === 1 ? '' : 's'} approved and committed. ${rows.length - accepted.length} left out.`,
+      })
+      return { accepted: accepted.length, skipped: rows.length - accepted.length }
+    },
+    removeImportSource(batchId) {
+      const rows = state.importProposals.filter(p => p.batchId === batchId)
+      for (const row of rows) patch('importProposals', row.id, { accepted: false })
+      patch('imports', batchId, {
+        state: 'removed', rowCount: 0,
+        note: 'Source removed. Every record that arrived with it has been withdrawn from your graph.',
       })
     },
     exportVault({ scope, format, includes, rows }) {

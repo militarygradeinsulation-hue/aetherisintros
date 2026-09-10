@@ -9,6 +9,21 @@ import type { Page } from '../nav'
 
 const routable = new Set<string>(['opportunities', 'dealrooms', 'expertise', 'talent', 'capital', 'intelrooms', 'presence', 'permission', 'knowledgeassets', 'discover', 'companies', 'systems', 'circles'])
 
+/** Real browser download of the generated export. */
+function download(fileName: string, content: string, format: 'json' | 'csv') {
+  if (typeof document === 'undefined') return
+  const blob = new Blob([content], { type: format === 'csv' ? 'text/csv;charset=utf-8' : 'application/json;charset=utf-8' })
+  const url = URL.createObjectURL(blob)
+  const a = document.createElement('a')
+  a.href = url
+  a.download = fileName
+  a.rel = 'noopener'
+  document.body.appendChild(a)
+  a.click()
+  a.remove()
+  setTimeout(() => URL.revokeObjectURL(url), 2000)
+}
+
 export function VaultPage() {
   const net = useNetwork()
   const pro = usePro()
@@ -108,17 +123,42 @@ export function VaultPage() {
       <article className="module import-block">
         <Eyebrow>IMPORT WITHOUT LOCK-IN</Eyebrow>
         <h3>Bring your relationships in. Take them out whenever you like.</h3>
-        <p className="availability-copy">Nothing is imported silently. Every source produces proposals you review one by one, with a default privacy scope and where the information came from. You can remove an imported source and everything that came with it.</p>
-        {pro.imports.map(b => <div key={b.id} className={`import-row ${b.state}`}>
-          <div><strong>{b.source}</strong><small>{b.fileName ? `${b.fileName} · ` : ''}{b.rowCount} record{b.rowCount === 1 ? '' : 's'} · {b.state.replace('-', ' ')}</small><em>{b.note}</em></div>
-          <div className="team-role-actions">
-            {b.state === 'available' && <Btn kind="secondary" onClick={() => pro.setImportState(b.id, 'reviewing')}>Review proposals</Btn>}
-            {b.state === 'reviewing' && <Btn onClick={() => pro.setImportState(b.id, 'committed')}>Accept reviewed records</Btn>}
-            {b.state === 'committed' && <Btn kind="quiet" onClick={() => pro.setImportState(b.id, 'removed')}>Remove this source</Btn>}
-            {b.state === 'not-connected' && <span className="scope-tag">Not connected</span>}
-            {b.state === 'removed' && <Btn kind="quiet" onClick={() => pro.setImportState(b.id, 'available')}>Reconnect</Btn>}
+        <p className="availability-copy">Nothing is imported silently. Every source produces proposals you review one by one, with a default privacy scope and where the information came from. Only what you approve is committed, and removing a source withdraws everything that arrived with it.</p>
+        {pro.imports.map(b => {
+          const proposals = pro.importProposals.filter(p => p.batchId === b.id)
+          const approved = proposals.filter(p => p.accepted === true).length
+          return <div key={b.id} className={`import-row ${b.state}`}>
+            <div>
+              <strong>{b.source}</strong>
+              <small>{b.fileName ? `${b.fileName} · ` : ''}{b.rowCount} record{b.rowCount === 1 ? '' : 's'} · {b.state.replace('-', ' ')}</small>
+              <em>{b.note}</em>
+              {b.state === 'reviewing' && <div className="import-proposals">
+                <Eyebrow>PROPOSED RECORDS · {approved} of {proposals.length} approved</Eyebrow>
+                {proposals.map(p => <div key={p.id} className={`import-proposal ${p.accepted === true ? 'on' : p.accepted === false ? 'off' : ''}`}>
+                  <div>
+                    <span className="scope-tag">{p.kind} · {p.action}</span>
+                    <strong>{p.label}</strong>
+                    <small>{p.detail}</small>
+                    <em>From {p.provenance} · default privacy {p.defaultScope}</em>
+                  </div>
+                  <div className="team-role-actions">
+                    <button className="text-action" onClick={() => pro.setProposalAccepted(p.id, true)}>Approve</button>
+                    <button className="text-action" onClick={() => pro.setProposalAccepted(p.id, false)}>Reject</button>
+                    {p.accepted !== undefined && <span className="req-state">{p.accepted ? 'approved' : 'rejected'}</span>}
+                  </div>
+                </div>)}
+                {!proposals.length && <p className="empty-state">This source produced no proposals.</p>}
+              </div>}
+            </div>
+            <div className="team-role-actions">
+              {b.state === 'available' && <Btn kind="secondary" onClick={() => pro.setImportState(b.id, 'reviewing')}>Review proposals</Btn>}
+              {b.state === 'reviewing' && <Btn disabled={!approved} onClick={() => pro.commitImport(b.id)}>Commit {approved} approved</Btn>}
+              {b.state === 'committed' && <Btn kind="quiet" onClick={() => pro.removeImportSource(b.id)}>Remove this source</Btn>}
+              {b.state === 'not-connected' && <span className="scope-tag">Not connected</span>}
+              {b.state === 'removed' && <Btn kind="quiet" onClick={() => pro.setImportState(b.id, 'available')}>Reconnect</Btn>}
+            </div>
           </div>
-        </div>)}
+        })}
       </article>
 
       <article className="module vault-block">
@@ -135,11 +175,17 @@ export function VaultPage() {
               <option value="json">JSON</option><option value="csv">CSV</option>
             </select>
           </label>
-          <Btn onClick={() => {
+          <Btn kind="secondary" onClick={() => {
             const rows = rowsFor(scope)
             const { content } = pro.exportVault({ scope, format, includes: [scope], rows })
             setPreview(content.slice(0, 4000))
-          }}>Generate export</Btn>
+          }}>Preview export</Btn>
+          <Btn onClick={() => {
+            const rows = rowsFor(scope)
+            const { record, content } = pro.exportVault({ scope, format, includes: [scope], rows })
+            setPreview(content.slice(0, 4000))
+            download(record.fileName, content, format)
+          }}>Download {format.toUpperCase()}</Btn>
         </div>
         {preview !== null && <pre className="vault-preview">{preview || 'Nothing recorded in this scope yet.'}</pre>}
         {!!pro.vaultExports.length && <div className="deal-block">
