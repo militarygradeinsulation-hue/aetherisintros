@@ -662,3 +662,4 @@
 .compat-ring strong { position: absolute; left: 0; right: 0; top: 50%; transform: translateY(-50%); display: block; text-align: center; font: 400 20px/1 'Bodoni Moda', Georgia, serif; color: var(--soft); }
 .compat-rings .compat-ring strong { margin: 0; }
 .compat-rings .compat-ring span { margin-top: 8px; }
+.compat-rings .compat-ring strong { top: 52%; }
