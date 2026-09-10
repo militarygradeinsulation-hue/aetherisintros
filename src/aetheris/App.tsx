@@ -15,7 +15,7 @@ import type { AutonomyLevel, DigitalYouProfile, Objective, PrivacyScope } from '
 import {
   circles, events, howItWorks5, howIntrosWorks, introStateLabel,
   onboardingQuestions, trendingSectors,
-  type Learning, type Member, type NetworkAsk, type Post, type Thread,
+  type Learning, type Member, type MemberRole, type NetworkAsk, type Post, type Thread,
 } from './social'
 import { NetworkProvider, useNetwork, type MemoryNote, type MeProfile } from './store'
 import { classifyConnection, composeWarmIntro, radarLabel } from './lib/engine'
@@ -73,8 +73,15 @@ function AetherisGlyph({ size = 18 }: { size?: number }) {
   return <span className="aetheris-glyph" style={{ width: size, height: size }} aria-hidden="true"><i /><b /></span>
 }
 const memberPortraits: Record<string, string> = { p7: sarahPortrait, p8: marcusPortrait, p11: priyaPortrait, p14: elliotPortrait }
+const portraitPool = [portraitImg, marcusPortrait, sarahPortrait, elliotPortrait, priyaPortrait]
+function portraitFor(id: string) {
+  if (memberPortraits[id]) return memberPortraits[id]
+  let h = 0
+  for (const ch of id) h = (h * 31 + ch.charCodeAt(0)) % 9973
+  return portraitPool[h % portraitPool.length]
+}
 function Avatar({ person, large = false, portrait = false }: { person: Member; large?: boolean; portrait?: boolean }) {
-  const image = memberPortraits[person.id]
+  const image = portraitFor(person.id)
   return <span className={`person-avatar ${large ? 'large' : ''} ${portrait ? 'portrait' : ''}`}>{image ? <img src={image} alt="" width={1024} height={1280} loading="lazy" /> : person.initials}</span>
 }
 function Button({ children, kind = 'primary', onClick, disabled = false, className = '' }: { children: React.ReactNode; kind?: 'primary' | 'secondary' | 'quiet'; onClick?: () => void; disabled?: boolean; className?: string }) {
@@ -379,19 +386,33 @@ function Home({ people, select, setPage, openNeed, openThread }: {
 
 /* ----------------------------------------------------------------- discover */
 
-const filterGroups: Array<{ label: string; options: string[] }> = [
-  { label: 'Role', options: ['Founder', 'Investor', 'Operator', 'Executive', 'Advisor', 'Specialist', 'Connector'] },
-  { label: 'Industry', options: ['Manufacturing', 'SaaS', 'Finance', 'Construction', 'Healthcare', 'Logistics', 'AI', 'Professional services', 'Consumer brands', 'Field services', 'Private equity', 'Energy', 'Fintech', 'Executive search'] },
-  { label: 'Signal', options: ['Warm path available', 'High match', 'Available now'] },
-]
+const memberRoles: MemberRole[] = ['Founder', 'Operator', 'Investor', 'Advisor', 'Executive', 'Specialist', 'Connector']
+const signalFilters = ['Warm path available', 'High match', 'Available now']
 
 function Discover({ people, select }: { people: Member[]; select: (p: Member) => void }) {
   const [q, setQ] = useState('')
+  const [roles, setRoles] = useState<string[]>([])
   const [active, setActive] = useState<string[]>([])
+  const [company, setCompany] = useState('')
+  const [expertise, setExpertise] = useState('')
+  const [location, setLocation] = useState('')
+  const [industry, setIndustry] = useState('')
+  const [strength, setStrength] = useState('')
+  const [tab, setTab] = useState<'Top Locations' | 'Top Industries' | 'Top Roles'>('Top Locations')
+  const uniq = (xs: string[]) => [...new Set(xs)].sort()
   const toggle = (o: string) => setActive(a => a.includes(o) ? a.filter(x => x !== o) : [...a, o])
+  const toggleRole = (o: string) => setRoles(a => a.includes(o) ? a.filter(x => x !== o) : [...a, o])
+  const clearAll = () => { setQ(''); setRoles([]); setActive([]); setCompany(''); setExpertise(''); setLocation(''); setIndustry(''); setStrength('') }
   const filtered = people.filter(p => {
     const hay = `${p.name} ${p.title} ${p.company} ${p.location} ${p.role} ${p.industry} ${p.tags.join(' ')} ${p.expertise.join(' ')} ${p.needs.join(' ')} ${p.offers.join(' ')} ${p.focus}`.toLowerCase()
     if (q.trim() && !q.toLowerCase().split(/\s+/).some(w => w.length > 2 && hay.includes(w))) return false
+    if (company && p.company !== company) return false
+    if (expertise && !p.expertise.includes(expertise)) return false
+    if (location && p.location !== location) return false
+    if (industry && p.industry !== industry) return false
+    if (roles.length && !roles.includes(p.role)) return false
+    if (strength === 'Strong' && p.score.relationshipStrength < 70) return false
+    if (strength === 'Building' && p.score.relationshipStrength >= 70) return false
     return active.every(f => {
       if (f === 'Warm path available') return p.bestPath.length > 2
       if (f === 'High match') return p.scoreTotal >= 80
@@ -399,6 +420,20 @@ function Discover({ people, select }: { people: Member[]; select: (p: Member) =>
       return hay.includes(f.toLowerCase())
     })
   })
+  const counts = (key: (p: Member) => string) => {
+    const map = new Map<string, number>()
+    people.forEach(p => map.set(key(p), (map.get(key(p)) ?? 0) + 1))
+    return [...map.entries()].sort((a, b) => b[1] - a[1]).slice(0, 5)
+  }
+  const rows = tab === 'Top Locations' ? counts(p => p.location) : tab === 'Top Industries' ? counts(p => p.industry) : counts(p => p.role)
+  const max = Math.max(1, ...rows.map(r => r[1]))
+  const selects: Array<{ icon: React.ReactNode; label: string; value: string; set: (v: string) => void; options: string[]; any: string }> = [
+    { icon: <Layers size={14} />, label: 'Company', value: company, set: setCompany, options: uniq(people.map(p => p.company)), any: 'All Companies' },
+    { icon: <Fingerprint size={14} />, label: 'Expertise', value: expertise, set: setExpertise, options: uniq(people.flatMap(p => p.expertise)), any: 'Select Expertise' },
+    { icon: <UserRound size={14} />, label: 'Location', value: location, set: setLocation, options: uniq(people.map(p => p.location)), any: 'Any Location' },
+    { icon: <Network size={14} />, label: 'Industry', value: industry, set: setIndustry, options: uniq(people.map(p => p.industry)), any: 'All Industries' },
+    { icon: <ShieldCheck size={14} />, label: 'Relationship Strength', value: strength, set: setStrength, options: ['Strong', 'Building'], any: 'Any Strength' },
+  ]
   return <>
     <EditorialHero
       folio="DISCOVER / PROFESSIONAL NETWORK"
@@ -409,43 +444,78 @@ function Discover({ people, select }: { people: Member[]; select: (p: Member) =>
       image={marcusPortrait}
       focus="center 22%"
     />
-    <PageHead label="DISCOVER" title="Browse the people, not a database."
-      copy="Search in your own words. Intros reads needs, offers, expertise, location and the paths already open to you."
-      proof="Try: “manufacturing CEO in Indiana looking for AI help.”" />
-    <div className="discover-search">
-      <Search size={18} />
-      <input value={q} onChange={e => setQ(e.target.value)} placeholder="Describe who you want to meet…" />
-      <span>{filtered.length} members</span>
-    </div>
-    <div className="filter-bank">{filterGroups.map(g => <div key={g.label}><span>{g.label.toUpperCase()}</span><div>{g.options.map(o =>
-      <button key={o} className={active.includes(o) ? 'active' : ''} onClick={() => toggle(o)}>{o}</button>)}</div></div>)}</div>
-    <div className="discover-grid">
-      {filtered.map(p => <article className="discover-tile" key={p.id}>
-        <button className="tile-open" onClick={() => select(p)}>
-          <div className="tile-portrait"><Avatar person={p} large portrait /><span className="tile-score">{p.scoreTotal}</span></div>
-          <Label>{p.role} · {p.location}</Label>
-          <h3>{p.name}</h3>
-          <p className="tile-role">{p.title}<br />{p.company}</p>
-          <p className="tile-focus">{p.focus}</p>
-          <dl>
-            <div><dt>LOOKING FOR</dt><dd>{p.needs[0]}</dd></div>
-            <div><dt>CAN HELP WITH</dt><dd>{p.offers[0]}</dd></div>
-          </dl>
-          <ul className="tile-tags">{p.expertise.slice(0, 3).map(t => <li key={t}>{t}</li>)}</ul>
-          <small className="tile-path">{p.bestPath.length > 2 ? `Warm path via ${p.bestPath[1]}` : 'Direct relationship'} · {p.availability}</small>
-        </button>
-        <footer><MemberActions person={p} compact /></footer>
-      </article>)}
-      {!filtered.length && <p className="empty-state">No members match that yet. Broaden the filters or describe the outcome instead of the title.</p>}
-    </div>
-    <section className="network-insight-strip">
-      <header><Label signal>NETWORK INSIGHT</Label><h2>What this search tells Intros.</h2></header>
-      <div>
-        <article><span>STRONGEST MATCH IN VIEW</span><strong>{[...filtered].sort((a, b) => b.scoreTotal - a.scoreTotal)[0]?.name ?? '—'}</strong><small>Ranked on mutual value, timing and trust — not keyword overlap.</small></article>
-        <article><span>WARM PATHS AVAILABLE</span><strong>{filtered.filter(p => p.bestPath.length > 2).length} of {filtered.length}</strong><small>Someone in your graph can make the introduction credible.</small></article>
-        <article><span>AVAILABLE NOW</span><strong>{filtered.filter(p => /open|weekly|two|always|fortnightly/i.test(p.availability)).length} members</strong><small>Availability is member-stated, so timing stays honest.</small></article>
-        <article><span>MOST COMMON NEED</span><strong>{filtered[0]?.needs[0] ?? '—'}</strong><small>Needs shape the feed you see on Home.</small></article>
+    <div className="discover-shell">
+      <aside className="filter-panel">
+        <header><span>FILTER PEOPLE</span><button className="mod-link" onClick={clearAll}>Clear All</button></header>
+        <div className="filter-search"><Search size={16} /><input value={q} onChange={e => setQ(e.target.value)} placeholder="Name, title, company, or keyword…" /></div>
+        {selects.map(s => <div className="filter-field" key={s.label}>
+          <label>{s.icon}{s.label}</label>
+          <select value={s.value} onChange={e => s.set(e.target.value)} aria-label={s.label}>
+            <option value="">{s.any}</option>
+            {s.options.map(o => <option key={o} value={o}>{o}</option>)}
+          </select>
+        </div>)}
+        <ul className="filter-checks">{memberRoles.map(r => <li key={r}>
+          <label><input type="checkbox" checked={roles.includes(r)} onChange={() => toggleRole(r)} /><span />{r}s</label>
+        </li>)}</ul>
+        <ul className="filter-signals">{signalFilters.map(f =>
+          <li key={f}><button className={active.includes(f) ? 'active' : ''} onClick={() => toggle(f)}>{f}</button></li>)}</ul>
+        <Button className="filter-apply">Apply Filters <ArrowRight size={15} /></Button>
+        <small className="filter-count">{filtered.length} of {people.length} members</small>
+      </aside>
+      <div className="discover-main">
+        <PageHead label="DISCOVER" title="Browse the people, not a database."
+          copy="Search in your own words. Intros reads needs, offers, expertise, location and the paths already open to you."
+          proof="Try: “manufacturing CEO in Indiana looking for AI help.”" />
+        <div className="discover-grid">
+          {filtered.map(p => <article className="discover-tile" key={p.id}>
+            <button className="tile-open" onClick={() => select(p)}>
+              <div className="tile-portrait"><Avatar person={p} large portrait /><span className="tile-score">{p.scoreTotal}</span></div>
+              <Label>{p.role} · {p.location}</Label>
+              <h3>{p.name}</h3>
+              <p className="tile-role">{p.title}<br />{p.company}</p>
+              <p className="tile-focus">{p.focus}</p>
+              <dl>
+                <div><dt>LOOKING FOR</dt><dd>{p.needs[0]}</dd></div>
+                <div><dt>CAN HELP WITH</dt><dd>{p.offers[0]}</dd></div>
+              </dl>
+              <ul className="tile-tags">{p.expertise.slice(0, 3).map(t => <li key={t}>{t}</li>)}</ul>
+              <small className="tile-path">{p.bestPath.length > 2 ? `Warm path via ${p.bestPath[1]}` : 'Direct relationship'} · {p.availability}</small>
+            </button>
+            <footer><MemberActions person={p} compact /></footer>
+          </article>)}
+          {!filtered.length && <p className="empty-state">No members match that yet. Broaden the filters or describe the outcome instead of the title.</p>}
+        </div>
       </div>
+    </div>
+
+    <section className="global-network">
+      <header><span>A GLOBAL NETWORK<br />OF POSSIBILITY</span>
+        <p>PEOPLE<br />IDEAS<br />CAPITAL<br />INFRASTRUCTURE<br />A MORE<br />CONNECTED<br />TOMORROW.</p></header>
+      <div className="globe-plate" aria-hidden="true">{Array.from({ length: 44 }).map((_, i) =>
+        <i key={i} style={{ left: `${(i * 37) % 96 + 2}%`, top: `${(i * 53) % 82 + 9}%`, opacity: 0.35 + ((i * 7) % 6) / 10 }} />)}</div>
+      <dl className="global-stats">
+        <div><dd>10K+</dd><dt>Professionals</dt></div><div><dd>312</dd><dt>Companies</dt></div>
+        <div><dd>28</dd><dt>Countries</dt></div><div><dd>92%</dd><dt>Relevant Matches</dt></div>
+      </dl>
+      <div className="network-insight-cards">
+        <section className="mod">
+          <header><span>NETWORK INSIGHTS</span><small>Global</small></header>
+          <div className="insight-tabs">{(['Top Locations', 'Top Industries', 'Top Roles'] as const).map(t =>
+            <button key={t} className={tab === t ? 'active' : ''} onClick={() => setTab(t)}>{t}</button>)}</div>
+          <ul className="insight-bars">{rows.map(([k, v]) => <li key={k}><span>{k}</span>
+            <i><b style={{ width: `${(v / max) * 100}%` }} /></i><em>{v}</em></li>)}</ul>
+        </section>
+        <section className="mod">
+          <header><span>PEOPLE ON AETHERIS</span><button className="mod-link">View All <ArrowRight size={12} /></button></header>
+          <ul className="joined-list">{[...people].sort((a, b) => b.joined.localeCompare(a.joined)).slice(0, 3).map(p =>
+            <li key={p.id}><button onClick={() => select(p)}><Avatar person={p} portrait />
+              <div><strong>{p.name}</strong><small>{p.title}, {p.company}</small></div>
+              <span className="joined-flag"><i className="live-dot" />Joined this week</span></button></li>)}</ul>
+        </section>
+      </div>
+      <blockquote className="global-quote">“The best opportunities come from the right people.”<small>— AETHERIS MEMBER</small></blockquote>
+      <footer className="member-footer"><span>THE INTELLIGENCE LAYER FOR MEANINGFUL CONNECTIONS</span><b>AETHERIS INTROS</b></footer>
     </section>
   </>
 }
@@ -678,34 +748,66 @@ function Memory({ people, select }: { people: Member[]; select: (p: Member) => v
         </div>
       </section>
       <aside className="memory-changes">
-        <Label signal>WHAT INTROS LEARNED RECENTLY</Label>
-        <h2>The graph changed.</h2>
+        <header className="mod-head"><span>WHAT INTROS LEARNED RECENTLY</span><button className="mod-link">View all <ArrowRight size={12} /></button></header>
         <div className="memory-cats">{(['All', ...memoryCategories] as const).map(c =>
           <button key={c} className={cat === c ? 'active' : ''} onClick={() => setCat(c)}>{c}</button>)}</div>
-        {shown.map((l, index) => {
-          const relatedPerson = people[index % people.length]
-          return <article key={l.id} className="learning-row">
-            {relatedPerson && <Avatar person={relatedPerson} portrait />}
-            <div>
-              <span>{l.category}</span>
-              <p>{l.text}</p>
-              <small>{l.source} · {l.confidence}% confidence · {scopeLabel[l.scope]} · {l.when}</small>
-            </div>
-          </article>
-        })}
-        {!shown.length && <p className="empty-state">Nothing learned in this category yet.</p>}
+        <div className="learned-table">
+          {shown.map((l, index) => {
+            const relatedPerson = people[index % people.length]
+            return <article key={l.id} className="learned-row">
+              {relatedPerson && <button onClick={() => relatedPerson && select(relatedPerson)} aria-label={relatedPerson.name}><Avatar person={relatedPerson} portrait /></button>}
+              <div className="learned-text">
+                <p>{l.text}</p>
+                <small>{relatedPerson?.name} · From: {l.source}</small>
+              </div>
+              <div className="learned-cell"><strong>{l.confidence}%</strong><small>Confidence</small></div>
+              <div className="learned-cell"><strong>{scopeLabel[l.scope]}</strong><small>{l.scope === 'private' ? 'Only you' : l.scope === 'team' ? 'With your team' : 'Cleared for intros'}</small></div>
+              <span className="learned-when">{l.when}</span>
+            </article>
+          })}
+          {!shown.length && <p className="empty-state">Nothing learned in this category yet.</p>}
+        </div>
       </aside>
     </div>
     <section className="memory-totals">
-      <div><strong>10,428</strong><span>relationship facts retained</span></div><div><strong>816</strong><span>commitments remembered</span></div>
-      <div><strong>147</strong><span>warm paths with live context</span></div><div><strong>93%</strong><span>source-attributed memory</span></div>
+      <div><strong>4,892</strong><span>Conversations remembered</span></div>
+      <div><strong>1,246</strong><span>People in memory</span></div>
+      <div><strong>3,281</strong><span>Contextual connections</span></div>
+      <div><strong>93%</strong><span>Source-attributed memory</span></div>
     </section>
-    <section className="memory-modules">
-      <article><Label signal>RELATIONSHIP PATTERNS</Label><h3>You create the strongest outcomes through operator-to-operator introductions.</h3><p>11 of your last 14 successful conversations began with shared operating context.</p></article>
-      <article><Label signal>NEWLY LEARNED NEEDS</Label><h3>Five members now need people already inside your trusted graph.</h3><p>Industrial AI, operating partners and regional expansion appear most often.</p></article>
-      <article><Label signal>RECONNECT OPPORTUNITIES</Label><h3>Tomás Bergeron has relevant timing after 168 quiet days.</h3><p>Reconnect around bid qualification. Do not reference the time gap.</p></article>
-      <article><Label signal>COOLING CONVERSATIONS</Label><h3>Scott Kelley is waiting on one promised pipeline observation.</h3><p>A short, specific follow-up will close the loop without forcing a meeting.</p></article>
-    </section>
+    <div className="memory-modules">
+      <section className="mod">
+        <header><span>RELATIONSHIP PATTERNS</span><button className="mod-link">View all <ArrowRight size={12} /></button></header>
+        <div className="pattern-body">
+          <div className="pattern-faces">{people.slice(0, 3).map(p => <Avatar key={p.id} person={p} portrait />)}</div>
+          <p>You often connect operators, founders and investors working on the same industrial and AI problems.</p>
+        </div>
+        <strong className="pattern-stat">19 successful introductions</strong>
+        <small>in the last 6 months.</small>
+      </section>
+      <section className="mod">
+        <header><span>NEWLY LEARNED NEEDS</span><button className="mod-link">View all <ArrowRight size={12} /></button></header>
+        <ul className="need-signals">
+          <li><Target size={15} /><p>2 people need design partners in the next 3 months.</p></li>
+          <li><TrendingUp size={15} /><p>3 founders are exploring Series A or B funding.</p></li>
+          <li><Network size={15} /><p>4 people are looking for introductions in APAC.</p></li>
+        </ul>
+      </section>
+      <section className="mod">
+        <header><span>RECONNECT OPPORTUNITIES</span><button className="mod-link">View all <ArrowRight size={12} /></button></header>
+        <ul className="reconnect-list">{[...people].sort((a, b) => b.lastInteractionDays - a.lastInteractionDays).slice(0, 3).map(p =>
+          <li key={p.id}><button onClick={() => select(p)}><Avatar person={p} portrait />
+            <div><strong>{p.name}</strong><small>Last conversation {Math.max(1, Math.round(p.lastInteractionDays / 30))} months ago</small>
+              <small>{p.whyNow}</small></div></button></li>)}</ul>
+      </section>
+      <section className="mod">
+        <header><span>COOLING CONVERSATIONS</span><button className="mod-link">View all <ArrowRight size={12} /></button></header>
+        <ul className="reconnect-list">{people.filter(p => p.score.timing < 70).slice(0, 3).map(p =>
+          <li key={p.id}><button onClick={() => select(p)}><Avatar person={p} portrait />
+            <div><strong>{p.name}</strong><small>Last message {Math.max(1, Math.round(p.lastInteractionDays / 7))} weeks ago</small>
+              <small>{p.nextAction}</small></div></button></li>)}</ul>
+      </section>
+    </div>
   </>
 }
 
@@ -906,48 +1008,189 @@ function Profile({ people, setPage, openOnboarding }: {
   </>
 }
 
-/* ------------------------------------------------------- drawer and modals */
+/* ------------------------------------------------ member profile and modals */
 
-function PersonDrawer({ person, onClose, onDraft, onMessage }: {
-  person: Member | null; onClose: () => void; onDraft: (p: Member) => void; onMessage: (id: string) => void
+function Ring({ value, label }: { value: number; label: string }) {
+  const c = 2 * Math.PI * 42
+  return <div className="compat-ring">
+    <div className="ring-dial">
+      <svg viewBox="0 0 100 100" aria-hidden="true">
+        <circle cx="50" cy="50" r="42" className="ring-track" />
+        <circle cx="50" cy="50" r="42" className="ring-value" strokeDasharray={`${(c * value) / 100} ${c}`} />
+      </svg>
+      <strong>{value}%</strong>
+    </div>
+    <span>{label}</span>
+  </div>
+}
+
+/** Full member profile: editorial ivory identity beside the dark relationship record. */
+function MemberProfile({ person, people, onClose, onDraft, onMessage }: {
+  person: Member; people: Member[]; onClose: () => void; onDraft: (p: Member) => void; onMessage: (id: string) => void
 }) {
   const net = useNetwork()
   const [text, setText] = useState('')
   const [scope, setScope] = useState<PrivacyScope>('private')
-  if (!person) return null
-  const notes = net.notes
-  const onAdd = net.addNote
+  const [reasoning, setReasoning] = useState(false)
+  const [copied, setCopied] = useState(false)
   const connected = net.connections.includes(person.id)
-  return <div className="drawer-wrap" onMouseDown={onClose}>
-    <aside className="intel-drawer" onMouseDown={e => e.stopPropagation()}>
-      <header><button className="icon-btn" onClick={onClose} aria-label="Close"><X size={17} /></button><Label>MEMBER INTELLIGENCE</Label><Score value={person.scoreTotal} /></header>
-      <div className="drawer-person">
-        <Avatar person={person} large portrait />
-        <div><h2>{person.name}</h2><p>{person.title} · {person.company}</p><p>{person.location} · {person.role} · {person.industry}</p></div>
+  const following = net.follows.includes(person.id)
+  const notes = net.notes.filter(n => n.personId === person.id)
+  const named = people.filter(p => person.mutuals.includes(p.name))
+  const shared = (named.length ? named : people.filter(p => p.id !== person.id).slice(0, 3)).slice(0, 3)
+  const activity = net.posts.filter(p => p.memberId === person.id).slice(0, 2)
+  const history = [
+    { text: `You both engaged with ${person.industry.toLowerCase()} conversations on Intros`, when: `Joined ${person.joined}` },
+    ...(person.bestPath.length > 2 ? [{ text: `Warm path opened through ${person.bestPath[1]}`, when: 'Trust path active' }] : []),
+    { text: person.mutuals.length ? `Shared connections: ${person.mutuals.join(', ')}` : 'No shared connections yet', when: `${person.mutuals.length} mutual` },
+    { text: `${person.name.split(' ')[0]} last interacted with your network`, when: `${person.lastInteractionDays} days ago` },
+  ]
+  return <article className="member-page">
+    <button className="member-back" onClick={onClose}><ChevronLeft size={16} /> Back to the network</button>
+
+    <section className="member-identity">
+      <div className="member-identity-copy">
+        <Brand />
+        <Label>MEMBER PROFILE / {person.role.toUpperCase()}</Label>
+        <h1>{person.name}</h1>
+        <p className="member-role">{person.title}<br />{person.company}</p>
+        <p className="member-meta">{person.location} · {person.industry} · Member since {person.joined}</p>
+        <blockquote>“{person.thesis}”</blockquote>
+        <dl className="member-metrics">
+          <div><dt>Match</dt><dd>{person.scoreTotal}</dd></div>
+          <div><dt>Mutual</dt><dd>{String(person.mutuals.length).padStart(2, '0')}</dd></div>
+          <div><dt>Trust path</dt><dd>{person.bestPath.length > 2 ? '2nd' : '1st'}</dd></div>
+          <div><dt>Confidence</dt><dd>{person.confidence}%</dd></div>
+        </dl>
+        <div className="member-cta-row">
+          <Button kind="secondary" onClick={() => onMessage(person.id)}><MessageSquareText size={14} /> Message</Button>
+          <Button kind="quiet" onClick={() => net.connect(person.id)}>{connected ? <><Check size={14} /> Connected</> : <><Plus size={14} /> Connect</>}</Button>
+          <Button onClick={() => onDraft(person)}><Handshake size={14} /> Request Intro</Button>
+          <SaveButton saved={net.saved.includes(person.id)} onToggle={() => net.toggleSave(person.id)} />
+          <button className="save-btn" aria-label="Share profile" onClick={() => {
+            void navigator.clipboard?.writeText(`https://aetheris-intros.app/${person.id}`).catch(() => {})
+            setCopied(true); window.setTimeout(() => setCopied(false), 1600)
+          }}><Share2 size={15} /></button>
+          <Button kind="quiet" onClick={() => net.follow(person.id)}>{following ? 'Following' : 'Follow'}</Button>
+        </div>
+        {copied && <small className="copied-note">Profile link copied.</small>}
       </div>
-      <div className="drawer-thesis"><Label>WHY THIS INTRO</Label><h3>{classifyConnection(person.scoreTotal)}</h3><p>{person.whyThem}</p></div>
-      {([['PROFESSIONAL THESIS', person.thesis], ['CURRENT FOCUS', person.focus], ['LOOKING FOR', person.needs.join(' · ')],
-      ['CAN HELP WITH', person.offers.join(' · ')], ['WHY YOU MATTER TO THEM', person.whyYou], ['WHY NOW', person.whyNow],
-      ['MUTUAL CONNECTIONS', person.mutuals.join(' · ') || 'None yet'], ['AVAILABILITY', person.availability],
-      ['RECOMMENDED NEXT MOVE', person.nextAction], ['AVOID', person.dontDo]] as const).map(([a, b]) =>
-        <section key={a}><span>{a}</span><p>{b}</p></section>)}
-      <section><span>TRUST PATH</span><div className="drawer-path">{person.bestPath.join(' → ')}</div></section>
-      <section className="drawer-memory">
-        <div className="section-heading"><span>ACTIVE MEMORY</span><small><LockKeyhole size={11} />privacy scoped</small></div>
-        {notes.filter(n => n.personId === person.id).map(n => <article key={n.id}><b>{scopeLabel[n.scope]}</b><p>{n.text}</p><small>{n.createdAt}</small></article>)}
+      <figure className="member-plate">
+        <img src={portraitFor(person.id)} alt={`${person.name}, monochrome editorial portrait`} loading="lazy" />
+        <figcaption><span>{classifyConnection(person.scoreTotal).toUpperCase()}</span><p>{person.focus}</p></figcaption>
+      </figure>
+    </section>
+
+    <div className="member-dark">
+      <div className="member-search"><Search size={18} /><input placeholder="Search people, companies, or ideas…" aria-label="Search Aetheris" /></div>
+
+      <section className="intro-reco">
+        <header><AetherisGlyph size={16} /><Label signal>INTRODUCTION RECOMMENDATION</Label><b className="beta">BETA</b></header>
+        <h2>{classifyConnection(person.scoreTotal)} fit. {person.score.mutualValue >= 80 ? 'High potential value.' : 'Clear mutual value.'}</h2>
+        <p>{person.whyThem} {person.mutuals.length ? `${person.name.split(' ')[0]} is also connected to ${person.mutuals.length} ${person.mutuals.length === 1 ? 'person' : 'people'} in your network.` : ''}</p>
+        <div className="why-now"><AetherisGlyph size={15} /><div><strong>Why now</strong><p>{person.whyNow}</p></div></div>
+        {reasoning && <div className="reasoning-panel">
+          <div><span>WHY YOU MATTER TO THEM</span><p>{person.whyYou}</p></div>
+          <div><span>TRUST PATH</span><p>{person.bestPath.join(' → ')}</p></div>
+          <div><span>RECOMMENDED NEXT MOVE</span><p>{person.nextAction}</p></div>
+          <div><span>AVOID</span><p>{person.dontDo}</p></div>
+        </div>}
+        <footer>
+          <Button onClick={() => onDraft(person)}><Send size={15} /> Request Introduction</Button>
+          <Button kind="quiet" onClick={() => setReasoning(r => !r)}>{reasoning ? 'Hide Reasoning' : 'View Reasoning'}</Button>
+        </footer>
+      </section>
+
+      <div className="member-modules four">
+        <section className="mod">
+          <header><span>ABOUT {person.name.split(' ')[0]?.toUpperCase()}</span></header>
+          <p>{person.thesis} {person.focus}</p>
+          <ul className="mod-facts">
+            <li><Layers size={13} />{person.company}</li>
+            <li><Target size={13} />{person.industry}</li>
+            <li><UserRound size={13} />{person.role} · {person.location}</li>
+          </ul>
+        </section>
+        <section className="mod">
+          <header><span>FOCUS AREAS</span></header>
+          <ul className="mod-chips">{[...person.expertise, ...person.tags].slice(0, 6).map(t => <li key={t}>{t}</li>)}</ul>
+        </section>
+        <section className="mod">
+          <header><span>GOALS</span></header>
+          <ul className="mod-goals">
+            <li><Target size={14} />{person.needs[0]}</li>
+            <li><Users size={14} />{person.whyYou}</li>
+            <li><TrendingUp size={14} />{person.focus}</li>
+          </ul>
+        </section>
+        <section className="mod">
+          <header><span>CAN HELP WITH</span></header>
+          <ul className="mod-list"><Handshake size={16} className="mod-icon" />{person.offers.map(o => <li key={o}>{o}</li>)}</ul>
+          <header className="mod-second"><span>CURRENTLY LOOKING FOR</span></header>
+          <ul className="mod-list"><Search size={16} className="mod-icon" />{person.needs.map(o => <li key={o}>{o}</li>)}</ul>
+        </section>
+      </div>
+
+      <div className="member-modules three">
+        <section className="mod">
+          <header><span>COMPATIBILITY INSIGHTS</span></header>
+          <div className="compat-rings">
+            <Ring value={person.score.strategicFit} label="Strategic Alignment" />
+            <Ring value={person.score.mutualValue} label="Shared Interests" />
+            <Ring value={person.score.decisionInfluence} label="Network Value" />
+          </div>
+          <ul className="compat-rows">
+            <li><Users size={14} /><b>{person.mutuals.length}</b>Mutual Connections</li>
+            <li><MessageSquareText size={14} /><b>{person.score.timing >= 75 ? 'High' : 'Steady'}</b>Conversation Potential</li>
+            <li><Fingerprint size={14} /><b>{person.score.trust >= 75 ? 'Aligned' : 'Building'}</b>On Long-Term Impact</li>
+            <li><ShieldCheck size={14} /><b>{person.score.opportunityValue >= 75 ? 'Strong' : 'Emerging'}</b>Complementary Expertise</li>
+          </ul>
+        </section>
+        <section className="mod">
+          <header><span>SHARED CONNECTIONS ({shared.length})</span><button className="mod-link">View All</button></header>
+          <ul className="shared-list">{shared.map(p => <li key={p.id}>
+            <Avatar person={p} portrait />
+            <div><strong>{p.name}</strong><small>{p.title}, {p.company}</small></div>
+            <span className="degree">{net.connections.includes(p.id) ? '1st' : '2nd'}</span>
+          </li>)}</ul>
+        </section>
+        <section className="mod">
+          <header><span>RELATIONSHIP HISTORY</span></header>
+          <ol className="history-line">{history.map(h => <li key={h.text}><i />
+            <div><p>{h.text}</p><small>{h.when}</small></div></li>)}</ol>
+        </section>
+      </div>
+
+      <div className="member-modules two">
+        <section className="mod">
+          <header><span>RECENT ACTIVITY</span><button className="mod-link">View All</button></header>
+          {activity.length ? activity.map(a => <article className="activity-row" key={a.id}>
+            <Avatar person={person} portrait />
+            <div><strong>{person.name}</strong><em>{a.kind}</em><p>{a.text}</p>
+              <small>♡ {a.responses * 8} · ◇ {a.responses} · ↗ {Math.max(1, Math.round(a.responses / 2))}</small></div>
+            <span className="activity-when">{a.when}</span>
+          </article>) : <p className="empty-state">No public activity yet. Context will appear as {person.name.split(' ')[0]} posts or responds.</p>}
+        </section>
+        <section className="mod availability-mod">
+          <header><span>AVAILABILITY</span></header>
+          <p className="avail-state"><i className="live-dot" />{person.availability}</p>
+          <p>Actively meeting operators, founders and specialists aligned with {person.focus.toLowerCase()}</p>
+          <button className="book-call" onClick={() => onMessage(person.id)}><CalendarDays size={17} /> Book a 30 min call <ArrowRight size={15} /></button>
+        </section>
+      </div>
+
+      <section className="mod member-notes">
+        <header><span>ACTIVE MEMORY</span><small><LockKeyhole size={11} /> privacy scoped</small></header>
+        {notes.map(n => <article key={n.id} className="note-row"><b>{scopeLabel[n.scope]}</b><p>{n.text}</p><small>{n.createdAt}</small></article>)}
         <textarea rows={3} value={text} onChange={e => setText(e.target.value)} placeholder="Record what changed in this relationship…" />
         <div className="scope-picker">{scopes.map(s => <button className={scope === s ? 'active' : ''} onClick={() => setScope(s)} key={s}>{scopeLabel[s]}</button>)}</div>
         <small>{scopeText[scope]}</small>
-        <Button kind="secondary" disabled={!text.trim()} onClick={() => { onAdd(person.id, text.trim(), scope); setText('') }}>Record intelligence</Button>
+        <Button kind="secondary" disabled={!text.trim()} onClick={() => { net.addNote(person.id, text.trim(), scope); setText('') }}>Record intelligence</Button>
       </section>
-      <footer>
-        <SaveButton saved={net.saved.includes(person.id)} onToggle={() => net.toggleSave(person.id)} />
-        <Button kind="quiet" onClick={() => net.connect(person.id)}>{connected ? 'Connected' : 'Connect'}</Button>
-        <Button kind="quiet" onClick={() => onMessage(person.id)}>Message</Button>
-        <Button onClick={() => onDraft(person)}>Request introduction <ArrowRight size={14} /></Button>
-      </footer>
-    </aside>
-  </div>
+
+      <footer className="member-footer"><span>THE INTELLIGENCE LAYER FOR MEANINGFUL CONNECTIONS</span><b>AETHERIS INTROS</b></footer>
+    </div>
+  </article>
 }
 
 function IntroModal({ person, onClose, onMessage }: { person: Member | null; onClose: () => void; onMessage: (id: string) => void }) {
@@ -1159,16 +1402,18 @@ function Shell() {
     messageMember, goToThread, postNeed: () => setNeedOpen(true),
   }
 
-  const content = {
-    home: <Home people={people} select={setSelected} setPage={setPage} openNeed={() => setNeedOpen(true)} openThread={goToThread} />,
-    discover: <Discover people={people} select={setSelected} />,
-    intros: <Intros people={people} select={setSelected} draft={setDraft} />,
-    messages: <Messages people={people} select={setSelected} activeId={threadId} setActiveId={setThreadId} />,
-    needs: <Needs onNew={() => setNeedOpen(true)} people={people} select={setSelected} setPage={setPage} />,
-    memory: <Memory people={people} select={setSelected} />,
-    insights: <Insights people={people} select={setSelected} setPage={setPage} />,
-    profile: <Profile people={people} setPage={setPage} openOnboarding={() => setOnboardOpen(true)} />,
-  }[page]
+  const content = selected
+    ? <MemberProfile person={selected} people={people} onClose={() => setSelected(null)} onDraft={p => { setSelected(null); setDraft(p) }} onMessage={messageMember} />
+    : {
+      home: <Home people={people} select={setSelected} setPage={setPage} openNeed={() => setNeedOpen(true)} openThread={goToThread} />,
+      discover: <Discover people={people} select={setSelected} />,
+      intros: <Intros people={people} select={setSelected} draft={setDraft} />,
+      messages: <Messages people={people} select={setSelected} activeId={threadId} setActiveId={setThreadId} />,
+      needs: <Needs onNew={() => setNeedOpen(true)} people={people} select={setSelected} setPage={setPage} />,
+      memory: <Memory people={people} select={setSelected} />,
+      insights: <Insights people={people} select={setSelected} setPage={setPage} />,
+      profile: <Profile people={people} setPage={setPage} openOnboarding={() => setOnboardOpen(true)} />,
+    }[page]
 
   return <NavCtx.Provider value={navApi}>
     <div className={`app-shell ${collapsed ? 'rail-collapsed' : ''}`}>
@@ -1201,7 +1446,7 @@ function Shell() {
         const Icon = item.icon
         return <button key={item.id} className={page === item.id ? 'active' : ''} onClick={() => setPage(item.id)}><Icon size={18} /><span>{item.label}</span></button>
       })}</nav>
-      <PersonDrawer person={selected} onClose={() => setSelected(null)} onDraft={p => { setSelected(null); setDraft(p) }} onMessage={messageMember} />
+      
       <IntroModal person={draft} onClose={() => setDraft(null)} onMessage={messageMember} />
       <NeedModal open={needOpen} onClose={() => setNeedOpen(false)} onCreate={addNeed} />
       <AskModal open={askOpen} onClose={() => setAskOpen(false)} people={people} select={setSelected} />
