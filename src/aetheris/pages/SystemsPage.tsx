@@ -45,7 +45,7 @@ export function SystemsPage({ openId, setOpenId }: { openId: string | null; setO
     {archived.length > 0 && <section className="sys-list">
       <header className="section-line"><Eyebrow>ARCHIVED</Eyebrow><small>{archived.length}</small></header>
       {archived.map(s => <SystemRow key={s.id} system={s} onOpen={() => setOpenId(s.id)} />)}
-    </section>
+    </section>}
 
     <section className="teach-block">
       <div><Eyebrow>WHY SYSTEMS EXIST HERE</Eyebrow>
