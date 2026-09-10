@@ -248,9 +248,9 @@ function HomeMasthead({ people, select, setPage, openNeed, openThread }: {
       <span className="masthead-kicker">PEOPLE × CONTEXT × OPPORTUNITY</span>
     </div>
 
-    <figure className="masthead-plate" aria-label="A professional in thought — memory that keeps relationships alive">
+    <figure className="masthead-plate" aria-label="A professional in thought — real business networking without the noise">
       <img src={homeEditorialAsset.url} alt="Fictional professional in quiet thought beside hard window light" width={1024} height={1280} />
-      <figcaption>MEMORY<br />THAT KEEPS<br />RELATIONSHIPS<br />ALIVE.</figcaption>
+      <figcaption>BETTER<br />CONTEXT.<br />BETTER<br />RELATIONSHIPS.</figcaption>
     </figure>
 
     <aside className="masthead-intel">
@@ -259,13 +259,11 @@ function HomeMasthead({ people, select, setPage, openNeed, openThread }: {
         <small>A SMARTER<br />WORLD IS A<br />MORE CONNECTED ONE.</small>
       </header>
       <div className="masthead-intel-head">
-        <div><h3>ACTIVE MEMORY GRAPH</h3><p>People. Context. Possibilities.</p></div>
+        <div><h3>WHY AETHERIS INTROS</h3><p>People. Context. Possibilities.</p></div>
         <ul><li><b>{people.length}</b> PEOPLE</li><li><b>{companies}</b> COMPANIES</li><li><b>{net.learnings.length}</b> LEARNED THEMES</li></ul>
       </div>
-      <div className="masthead-graph">
-        <MemoryGraph people={people} onSelect={select} compact />
-        <div className="masthead-callout">MORE CONTEXT<br />BETTER INTROS<br />STRONGER OUTCOMES</div>
-      </div>
+      <div className="masthead-callout standalone">MORE CONTEXT<br />BETTER INTROS<br />STRONGER OUTCOMES</div>
+
       <footer>
         <div><b>87%</b><small>Match accuracy</small></div>
         <div><b>3.2x</b><small>Warmer replies</small></div>
