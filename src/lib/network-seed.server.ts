@@ -44,7 +44,7 @@ export async function seedNetworkDirectory(): Promise<{ seeded: boolean; members
     }
   })
 
-  await supabaseAdmin.from('members').upsert(memberRows)
+  await supabaseAdmin.from('members').upsert(memberRows as never)
   await supabaseAdmin.from('companies').upsert(companyRows)
   await supabaseAdmin.from('posts').upsert(posts.map(p => ({
     id: p.id, member_id: p.memberId, kind: p.kind, text: p.text, detail: p.detail,
@@ -60,7 +60,7 @@ export async function seedNetworkDirectory(): Promise<{ seeded: boolean; members
   })))
   await supabaseAdmin.from('seed_threads').upsert(threads.map(t => ({
     id: t.id, member_id: t.memberId, intro_context: t.introContext, unread: t.unread,
-    commitment: t.commitment, suggested: t.suggested, messages: t.messages,
+    commitment: t.commitment, suggested: t.suggested, messages: t.messages as never,
   })))
   await supabaseAdmin.from('seed_learnings').upsert(learnings.map(l => ({
     id: l.id, category: l.category, text: l.text, source: l.source,

@@ -1,8 +1,8 @@
 import { useEffect, useMemo, useState } from 'react'
 import {
-  AlertTriangle, ArrowRight, Bookmark, BookmarkCheck, Building2, CalendarDays, Check, CheckCircle2, ChevronLeft,
+  AlertTriangle, ArrowLeftRight, ArrowRight, Bookmark, BookmarkCheck, Building2, CalendarDays, Check, CheckCircle2, ChevronLeft,
   CircleDot, Compass, Eye, Fingerprint, Handshake, Home as HomeIcon, Layers, LockKeyhole,
-  Menu, MessageSquareText, Network, Plus, Search, Send, Share2, ShieldCheck, Target,
+  MapPin, Menu, MessageSquareText, Network, Plus, Search, Send, Share2, ShieldCheck, Target,
   Settings2, TrendingUp, UserRound, Users, X,
 } from 'lucide-react'
 import editorialPortrait from '@/assets/aetheris-editorial-portrait.jpg'
@@ -33,6 +33,7 @@ import portrait20Asset from '@/assets/portraits/portrait-20.jpg.asset.json'
 import portrait21Asset from '@/assets/portraits/portrait-21.jpg.asset.json'
 import portrait22Asset from '@/assets/portraits/portrait-22.jpg.asset.json'
 import portrait23Asset from '@/assets/portraits/portrait-23.jpg.asset.json'
+import { rankMatches, type MatchResult } from '@/aetheris/matching'
 import portrait24Asset from '@/assets/portraits/portrait-24.jpg.asset.json'
 import portrait25Asset from '@/assets/portraits/portrait-25.jpg.asset.json'
 import portrait26Asset from '@/assets/portraits/portrait-26.jpg.asset.json'
@@ -198,6 +199,120 @@ function EditorialHero({ folio, title, statement, copy, caption, focus = 'center
   </section>
 }
 
+/** The signature Aetheris Intros masthead: ivory brand field, editorial portrait, dark intelligence panel, live deck. */
+function HomeMasthead({ people, select, setPage, openNeed, openThread }: {
+  people: Member[]; select: (p: Member) => void; setPage: (p: Page) => void
+  openNeed: () => void; openThread: (id: string) => void
+}) {
+  const net = useNetwork()
+  const nav = useNav()
+  const ranked = useMemo(() => [...people].sort((a, b) => b.scoreTotal - a.scoreTotal), [people])
+  const lead = ranked[0]
+  const counterpart = ranked[1]
+  const thread = net.threads[0]
+  const threadMember = thread ? people.find(p => p.id === thread.memberId) : undefined
+  const companies = new Set(people.map(p => p.company)).size
+  return <section className="masthead">
+    <div className="masthead-brand">
+      <span className="folio">A NEW KIND OF NETWORK</span>
+      <h1 className="masthead-title">Aetheris<br /><em>Intros</em></h1>
+      <h2>Know who matters.<br />Know why now.</h2>
+      <p>Explainable introductions with active memory. Turn your network into a compounding advantage.</p>
+      <div className="masthead-actions">
+        <Button onClick={openNeed}>Get started <ArrowRight size={14} /></Button>
+        <Button kind="secondary" onClick={() => setPage('intros')}>See how it works</Button>
+      </div>
+      <dl className="masthead-stats">
+        <div><dd>{people.length}</dd><dt>Professionals</dt></div>
+        <div><dd>{companies}</dd><dt>Companies</dt></div>
+        <div><dd>{net.connections.length}</dd><dt>Your connections</dt></div>
+      </dl>
+      <span className="masthead-kicker">PEOPLE × CONTEXT × OPPORTUNITY</span>
+    </div>
+
+    <figure className="masthead-plate">
+      <img src={editorialPortrait} alt="A composed professional considering a decision in hard window light" loading="lazy" />
+      <figcaption>BETTER<br />PEOPLE<br />BUILD A<br />BRIGHTER<br />TOMORROW.</figcaption>
+    </figure>
+
+    <aside className="masthead-intel">
+      <header>
+        <span>RELATIONSHIPS<br />COMPOUND</span>
+        <small>A SMARTER<br />WORLD IS A<br />MORE CONNECTED ONE.</small>
+      </header>
+      <div className="masthead-intel-head">
+        <div><h3>ACTIVE MEMORY GRAPH</h3><p>People. Context. Possibilities.</p></div>
+        <ul><li><b>{people.length}</b> PEOPLE</li><li><b>{companies}</b> COMPANIES</li><li><b>{net.learnings.length}</b> LEARNED THEMES</li></ul>
+      </div>
+      <div className="masthead-graph">
+        <MemoryGraph people={people} onSelect={select} compact />
+        <div className="masthead-callout">MORE CONTEXT<br />BETTER INTROS<br />STRONGER OUTCOMES</div>
+      </div>
+      <footer>
+        <div><b>87%</b><small>Match accuracy</small></div>
+        <div><b>3.2x</b><small>Warmer replies</small></div>
+        <div><b>28%</b><small>Faster conversations</small></div>
+        <blockquote>“It feels like having a world-class connector on my team.”<cite>— EARLY MEMBER</cite></blockquote>
+      </footer>
+    </aside>
+
+    <div className="masthead-deck">
+      {lead && <article className="deck-card deck-profile">
+        <div className="deck-profile-portrait"><Avatar person={lead} large portrait /></div>
+        <div>
+          <h4>{lead.name} <em>{lead.scoreTotal}% match</em></h4>
+          <span className="deck-role">{lead.title}</span>
+          <p>{lead.thesis}</p>
+          <small><MapPin size={11} /> {lead.location}</small>
+          <ul className="deck-chips">{lead.tags.slice(0, 4).map(t => <li key={t}>{t}</li>)}</ul>
+          <blockquote>“{lead.whyThem}”</blockquote>
+        </div>
+      </article>}
+
+      {lead && counterpart && <article className="deck-card deck-intro">
+        <header><span><AetherisGlyph size={13} /> WHY THIS INTRODUCTION</span><em>EVIDENCE</em></header>
+        <p>Intros found a relevant introduction based on mutual context, goals and conversation history.</p>
+        <div className="deck-pair">
+          <span><Avatar person={lead} portrait /><b>{lead.name}</b><small>{lead.title}</small></span>
+          <ArrowLeftRight size={14} />
+          <span><Avatar person={counterpart} portrait /><b>{counterpart.name}</b><small>{counterpart.title}</small></span>
+        </div>
+        <div className="deck-reason">{lead.whyNow}</div>
+        <footer>
+          <Button onClick={() => select(lead)}>Request introduction</Button>
+          <Button kind="secondary" onClick={() => setPage('intros')}>View reasoning</Button>
+        </footer>
+        <ul className="deck-chips">
+          <li>Mutual connections ({lead.mutuals.length})</li>
+          <li>Shared interests ({lead.tags.length})</li>
+          <li>Complementary goals</li>
+        </ul>
+      </article>}
+
+      {thread && <article className="deck-card deck-thread">
+        <header><span>CONVERSATION THREAD</span><button className="text-action" onClick={() => openThread(thread.id)}>Open</button></header>
+        <ul>{thread.messages.slice(-3).map(m => <li key={m.id}>
+          {m.from === 'them' && threadMember ? <Avatar person={threadMember} portrait /> : <span className="person-avatar portrait">{net.profile.initials}</span>}
+          <div><b>{m.from === 'them' ? threadMember?.name ?? 'Member' : 'You'}</b><small>{m.at}</small><p>{m.text}</p></div>
+        </li>)}</ul>
+        <button className="deck-compose" onClick={() => openThread(thread.id)}><span>Write a message…</span><Send size={14} /></button>
+      </article>}
+
+      {lead && <article className="deck-card deck-insights">
+        <header><span>MEMBER INSIGHTS</span></header>
+        <ul>
+          <li><Target size={14} /><div><small>Looking for</small><b>{lead.needs[0] ?? 'Strategic investors'}</b></div></li>
+          <li><Users size={14} /><div><small>Open to</small><b>{lead.availability}</b></div></li>
+          <li><TrendingUp size={14} /><div><small>Exploring</small><b>{lead.focus}</b></div></li>
+          <li><AetherisGlyph size={14} /><div><small>Can help with</small><b>{lead.offers[0] ?? 'Operating experience'}</b></div></li>
+        </ul>
+        <button className="text-action" onClick={() => nav.messageMember(lead.id)}>Message {lead.name.split(' ')[0]} <ArrowRight size={13} /></button>
+      </article>}
+    </div>
+    <footer className="masthead-footer"><span>THE INTELLIGENCE LAYER FOR MEANINGFUL CONNECTIONS</span><b>AETHERIS INTROS</b></footer>
+  </section>
+}
+
 function HowItWorks() {
   return <section className="how-block">
     <header><Label>HOW INTROS WORKS</Label><h2>Context becomes a conversation worth having.</h2></header>
@@ -352,16 +467,7 @@ function Home({ people, select, setPage, openNeed, openThread }: {
     setComposer('')
   }
   return <>
-    <EditorialHero
-      folio="MEMBER HOME / NETWORK PULSE"
-      title={<>Know who matters.<br /><em>Know why now.</em></>}
-      statement="Your network already contains opportunities."
-      copy="This is what changed in your professional network: people worth meeting, what they need, what they can move, and where a conversation is justified today."
-      caption="Every signal here comes from context you or the network already shared."
-      image={portrait25Asset.url}
-      stats={[{ k: 'Members in graph', v: String(people.length) }, { k: 'Connections', v: String(net.connections.length) }, { k: 'Active asks', v: String(net.asks.length) }]}
-      action={<><Button onClick={openNeed}><Plus size={14} /> Post a need</Button><button className="text-action" onClick={() => setPage('discover')}>Browse the network <ArrowRight size={13} /></button></>}
-    />
+    <HomeMasthead people={people} select={select} setPage={setPage} openNeed={openNeed} openThread={openThread} />
 
     <header className="home-question">
       <Label>PEOPLE × CONTEXT × OPPORTUNITY</Label>
@@ -598,7 +704,7 @@ function Discover({ people, select }: { people: Member[]; select: (p: Member) =>
 
 /* -------------------------------------------------------------------- intros */
 
-function MatchReport({ person, match, onOpen, onIntro }: { person: Member; match?: MatchResult; onOpen: () => void; onIntro: () => void }) {
+function MatchReport({ person, match, onOpen, onIntro }: { person: Member; match?: MatchResult | undefined; onOpen: () => void; onIntro: () => void }) {
   const net = useNetwork()
   const nav = useNav()
   return <article className="match-report">
