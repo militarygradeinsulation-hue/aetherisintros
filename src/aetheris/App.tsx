@@ -1436,14 +1436,14 @@ function ContextRail({ page, people, select, onAsk }: {
 /* ---------------------------------------------------------------------- app */
 
 export default function App() {
-  return <NetworkProvider><Shell /></NetworkProvider>
+  return <NetworkProvider><PlatformProvider><Shell /></PlatformProvider></NetworkProvider>
 }
 
 function Shell() {
   const net = useNetwork()
   const stored = typeof window !== 'undefined' ? localStorage.getItem('aetheris-intros-page') : null
-  const initial = (stored && nav.some(n => n.id === stored) ? stored : legacyPage[stored ?? ''] ?? 'home') as Page
-  const [page, setPage] = useState<Page>(initial)
+  const initial = (stored && allNav.some(n => n.id === stored) ? stored : legacyPage[stored ?? ''] ?? 'home') as Page
+  const [page, setPageState] = useState<Page>(initial)
   const [collapsed, setCollapsed] = useState(false)
   const [mobileOpen, setMobileOpen] = useState(false)
   const [selected, setSelected] = useState<Member | null>(null)
@@ -1451,6 +1451,13 @@ function Shell() {
   const [needOpen, setNeedOpen] = useState(false)
   const [askOpen, setAskOpen] = useState(false)
   const [onboardOpen, setOnboardOpen] = useState(false)
+  const [systemId, setSystemId] = useState<string | null>(null)
+  const [circleId, setCircleId] = useState<string | null>(null)
+  const [companyId, setCompanyId] = useState<string | null>(null)
+  const [handshakeId, setHandshakeId] = useState<string | null>(null)
+  const [intentOpen, setIntentOpen] = useState(false)
+  const [circleFormOpen, setCircleFormOpen] = useState(false)
+  const setPage = (p: Page) => { setSelected(null); setPageState(p) }
   const [threadId, setThreadIdState] = useState(() => (typeof window === 'undefined' ? '' : localStorage.getItem('aetheris-intros-thread') ?? ''))
   const setThreadId = (id: string) => { setThreadIdState(id); localStorage.setItem('aetheris-intros-thread', id) }
   const people = net.members
