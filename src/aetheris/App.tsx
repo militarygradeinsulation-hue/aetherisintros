@@ -663,7 +663,7 @@ function Intros({ people, select, draft }: { people: Member[]; select: (p: Membe
         </button>)}
     </div>
     <div className="reports-list">
-      {shown.map(p => <MatchReport key={p.id} person={p} onOpen={() => select(p)} onIntro={() => draft(p)} />)}
+      {shown.map(p => <MatchReport key={p.id} person={p} match={matchOf(p.id)} onOpen={() => select(p)} onIntro={() => draft(p)} />)}
       {!shown.length && <p className="empty-state">No introductions in this state yet.</p>}
     </div>
     <section className="how-it-works">
