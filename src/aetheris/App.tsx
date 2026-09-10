@@ -214,10 +214,10 @@ function HomeMasthead({ people, select, setPage, openNeed, openThread }: {
   const companies = new Set(people.map(p => p.company)).size
   return <section className="masthead">
     <div className="masthead-brand">
-      <span className="folio">A NEW KIND OF NETWORK</span>
+      <span className="folio">THE BUSINESS NETWORK WITHOUT THE NOISE</span>
       <h1 className="masthead-title">Aetheris<br /><em>Intros</em></h1>
-      <h2>Know who matters.<br />Know why now.</h2>
-      <p>Explainable introductions with active memory. Turn your network into a compounding advantage.</p>
+      <h2>Real business networking.<br />No selling. No spam.</h2>
+      <p>The only professional social network built around trusted context instead of reach. Meet people because the relationship makes sense for both sides.</p>
       <div className="masthead-actions">
         <Button onClick={openNeed}>Get started <ArrowRight size={14} /></Button>
         <Button kind="secondary" onClick={() => setPage('intros')}>See how it works</Button>
@@ -309,7 +309,7 @@ function HomeMasthead({ people, select, setPage, openNeed, openThread }: {
         <button className="text-action" onClick={() => nav.messageMember(lead.id)}>Message {lead.name.split(' ')[0]} <ArrowRight size={13} /></button>
       </article>}
     </div>
-    <footer className="masthead-footer"><span>THE INTELLIGENCE LAYER FOR MEANINGFUL CONNECTIONS</span><b>AETHERIS INTROS</b></footer>
+    <footer className="masthead-footer"><span>THE SOCIAL NETWORK FOR REAL BUSINESS RELATIONSHIPS — NEVER MASS OUTREACH</span><b>AETHERIS INTROS</b></footer>
   </section>
 }
 
@@ -541,8 +541,8 @@ function Home({ people, select, setPage, openNeed, openThread }: {
     </section>
 
     <section className="home-education">
-      <div><Label>WHY THIS FEED LOOKS LIKE THIS</Label><h2>Your network already contains opportunities.</h2>
-        <p>Intros reads needs, offers, timing and trust paths, then shows only the relationships where a conversation is justified now.</p>
+      <div><Label>BUSINESS NETWORKING, REBUILT</Label><h2>A professional network without pitches, spam or performative reach.</h2>
+        <p>Aetheris Intros reads needs, offers, timing and trust paths, then shows only relationships where a conversation creates credible value for both people.</p>
         <button className="text-action" onClick={() => setPage('intros')}>See the reasoning behind a match <ArrowRight size={14} /></button></div>
       <MemoryGraph people={people} onSelect={select} compact />
     </section>

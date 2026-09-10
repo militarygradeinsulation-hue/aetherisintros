@@ -9,13 +9,13 @@ export const Route = createFileRoute("/")({
       {
         name: "description",
         content:
-          "Your network already contains opportunities. Aetheris Intros reveals who matters, why now, and the trusted path forward.",
+          "Aetheris Intros is the professional social network for real business relationships—without spam, mass outreach, or selling your attention.",
       },
       { property: "og:title", content: "Aetheris Intros — Relationship Intelligence" },
       {
         property: "og:description",
         content:
-          "A living map of who matters, why they matter and what should happen next — not a CRM or contact directory.",
+          "Real business networking built on trusted context, mutual value and timing—not spam, paid reach, or mass outreach.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
