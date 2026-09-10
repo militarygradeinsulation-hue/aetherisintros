@@ -663,3 +663,27 @@
 .compat-rings .compat-ring strong { margin: 0; }
 .compat-rings .compat-ring span { margin-top: 8px; }
 .compat-rings .compat-ring strong { top: 52%; }
+
+/* Reference-locked refinements */
+.member-identity,.member-search,.mod,.intro-reco,.filter-panel,.global-network{border-radius:4px}
+.member-identity-copy h1{letter-spacing:0}
+.intro-reco{background:#090d12}
+.filter-panel{top:84px;background:#080c0f;gap:13px}
+.globe-plate{aspect-ratio:20/7;height:auto;min-height:190px;border:0;border-bottom:1px solid var(--line-dark);border-radius:0;background:#050608}
+.globe-plate img{width:100%;height:100%;display:block;object-fit:cover;object-position:center;filter:contrast(1.06)}
+.memory-dark-intro{display:block;background:transparent}
+.memory-dark-intro>div{border:0}
+.memory-map-row{display:grid;grid-template-columns:minmax(0,1.42fr) minmax(290px,.58fr);border:1px solid var(--line-dark);border-top:0}
+.memory-map-row .memory-stage{min-width:0}
+.memory-quote-rail{border-left:1px solid var(--line-dark);background:#080b0e;display:flex;flex-direction:column}
+.memory-quote-rail blockquote{font:italic 500 clamp(25px,2.5vw,38px)/1.22 var(--serif);margin:0;padding:42px 34px 25px}
+.memory-quote-rail>span{font:700 9px/1.8 var(--sans);letter-spacing:.19em;color:var(--muted);padding:0 34px 34px}
+.memory-quote-rail dl{margin:auto 0 0;border-top:1px solid var(--line-dark)}
+.memory-quote-rail dl div{padding:17px 34px;border-bottom:1px solid var(--line-dark);display:flex;flex-direction:column-reverse}
+.memory-quote-rail dt{color:var(--muted);font:400 11px var(--sans)}
+.memory-quote-rail dd{font:500 39px/1 var(--serif);margin:0 0 4px}
+.memory-modules{grid-template-columns:1.25fr .9fr 1fr;margin-top:0}
+.memory-modules .mod{border:0;border-radius:0}
+.memory-modules .mod:nth-child(4){grid-column:3;grid-row:2}
+@media(max-width:920px){.memory-map-row{grid-template-columns:1fr}.memory-quote-rail{border-left:0;border-top:1px solid var(--line-dark)}.memory-modules{grid-template-columns:1fr 1fr}.memory-modules .mod:nth-child(4){grid-column:auto;grid-row:auto}}
+@media(max-width:680px){.memory-modules{grid-template-columns:1fr}.memory-quote-rail blockquote{padding:28px 22px 20px}.memory-quote-rail>span{padding:0 22px 24px}.memory-quote-rail dl div{padding:14px 22px}.global-network{overflow:hidden}.globe-plate{width:100%;min-width:0;aspect-ratio:16/9;min-height:0}.globe-plate img{min-width:0}}

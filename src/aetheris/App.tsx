@@ -10,6 +10,7 @@ import marcusPortrait from '@/assets/member-marcus.jpg'
 import priyaPortrait from '@/assets/member-priya.jpg'
 import sarahPortrait from '@/assets/member-sarah.jpg'
 import elliotPortrait from '@/assets/member-elliot.jpg'
+import worldNetworkImg from '@/assets/aetheris-world-network.jpg'
 import { leaks } from './data'
 import type { AutonomyLevel, DigitalYouProfile, Objective, PrivacyScope } from './types'
 import {
@@ -397,19 +398,23 @@ function Discover({ people, select }: { people: Member[]; select: (p: Member) =>
   const [expertise, setExpertise] = useState('')
   const [location, setLocation] = useState('')
   const [industry, setIndustry] = useState('')
+  const [profession, setProfession] = useState('')
+  const [investmentStage, setInvestmentStage] = useState('')
   const [strength, setStrength] = useState('')
   const [tab, setTab] = useState<'Top Locations' | 'Top Industries' | 'Top Roles'>('Top Locations')
   const uniq = (xs: string[]) => [...new Set(xs)].sort()
   const toggle = (o: string) => setActive(a => a.includes(o) ? a.filter(x => x !== o) : [...a, o])
   const toggleRole = (o: string) => setRoles(a => a.includes(o) ? a.filter(x => x !== o) : [...a, o])
-  const clearAll = () => { setQ(''); setRoles([]); setActive([]); setCompany(''); setExpertise(''); setLocation(''); setIndustry(''); setStrength('') }
+  const clearAll = () => { setQ(''); setRoles([]); setActive([]); setCompany(''); setExpertise(''); setProfession(''); setLocation(''); setIndustry(''); setInvestmentStage(''); setStrength('') }
   const filtered = people.filter(p => {
     const hay = `${p.name} ${p.title} ${p.company} ${p.location} ${p.role} ${p.industry} ${p.tags.join(' ')} ${p.expertise.join(' ')} ${p.needs.join(' ')} ${p.offers.join(' ')} ${p.focus}`.toLowerCase()
     if (q.trim() && !q.toLowerCase().split(/\s+/).some(w => w.length > 2 && hay.includes(w))) return false
     if (company && p.company !== company) return false
     if (expertise && !p.expertise.includes(expertise)) return false
+    if (profession && p.role !== profession) return false
     if (location && p.location !== location) return false
     if (industry && p.industry !== industry) return false
+    if (investmentStage && !`${p.tags.join(' ')} ${p.focus} ${p.needs.join(' ')}`.toLowerCase().includes(investmentStage.toLowerCase())) return false
     if (roles.length && !roles.includes(p.role)) return false
     if (strength === 'Strong' && p.score.relationshipStrength < 70) return false
     if (strength === 'Building' && p.score.relationshipStrength >= 70) return false
@@ -430,8 +435,10 @@ function Discover({ people, select }: { people: Member[]; select: (p: Member) =>
   const selects: Array<{ icon: React.ReactNode; label: string; value: string; set: (v: string) => void; options: string[]; any: string }> = [
     { icon: <Layers size={14} />, label: 'Company', value: company, set: setCompany, options: uniq(people.map(p => p.company)), any: 'All Companies' },
     { icon: <Fingerprint size={14} />, label: 'Expertise', value: expertise, set: setExpertise, options: uniq(people.flatMap(p => p.expertise)), any: 'Select Expertise' },
+    { icon: <Users size={14} />, label: 'Profession', value: profession, set: setProfession, options: memberRoles, any: 'All Professions' },
     { icon: <UserRound size={14} />, label: 'Location', value: location, set: setLocation, options: uniq(people.map(p => p.location)), any: 'Any Location' },
     { icon: <Network size={14} />, label: 'Industry', value: industry, set: setIndustry, options: uniq(people.map(p => p.industry)), any: 'All Industries' },
+    { icon: <CircleDot size={14} />, label: 'Investment Stage', value: investmentStage, set: setInvestmentStage, options: ['Seed', 'Series A', 'Series B', 'Growth'], any: 'Any Stage' },
     { icon: <ShieldCheck size={14} />, label: 'Relationship Strength', value: strength, set: setStrength, options: ['Strong', 'Building'], any: 'Any Strength' },
   ]
   return <>
@@ -455,7 +462,7 @@ function Discover({ people, select }: { people: Member[]; select: (p: Member) =>
             {s.options.map(o => <option key={o} value={o}>{o}</option>)}
           </select>
         </div>)}
-        <ul className="filter-checks">{memberRoles.map(r => <li key={r}>
+        <ul className="filter-checks">{memberRoles.slice(0, 5).map(r => <li key={r}>
           <label><input type="checkbox" checked={roles.includes(r)} onChange={() => toggleRole(r)} /><span />{r}s</label>
         </li>)}</ul>
         <ul className="filter-signals">{signalFilters.map(f =>
@@ -492,8 +499,7 @@ function Discover({ people, select }: { people: Member[]; select: (p: Member) =>
     <section className="global-network">
       <header><span>A GLOBAL NETWORK<br />OF POSSIBILITY</span>
         <p>PEOPLE<br />IDEAS<br />CAPITAL<br />INFRASTRUCTURE<br />A MORE<br />CONNECTED<br />TOMORROW.</p></header>
-      <div className="globe-plate" aria-hidden="true">{Array.from({ length: 44 }).map((_, i) =>
-        <i key={i} style={{ left: `${(i * 37) % 96 + 2}%`, top: `${(i * 53) % 82 + 9}%`, opacity: 0.35 + ((i * 7) % 6) / 10 }} />)}</div>
+      <div className="globe-plate"><img src={worldNetworkImg} alt="Global Aetheris network connections across cities and regions" width={1600} height={720} loading="lazy" /></div>
       <dl className="global-stats">
         <div><dd>10K+</dd><dt>Professionals</dt></div><div><dd>312</dd><dt>Companies</dt></div>
         <div><dd>28</dd><dt>Countries</dt></div><div><dd>92%</dd><dt>Relevant Matches</dt></div>
@@ -736,9 +742,8 @@ function Memory({ people, select }: { people: Member[]; select: (p: Member) => v
     </section>
     <section className="memory-dark-intro">
       <div><Label signal>ACTIVE MEMORY GRAPH</Label><h2>Not a contact list.<br />A living record of <em>why.</em></h2></div>
-      <blockquote>“Intros remembers the context people normally lose between conversations.”<small>NOT JUST WHAT PEOPLE SAID. BUT WHAT THEY CARE ABOUT. WHAT THEY’RE BUILDING. AND WHERE THINGS LEFT OFF.</small></blockquote>
     </section>
-    <div className="memory-layout">
+    <div className="memory-map-row">
       <section className="memory-stage">
         <MemoryGraph people={people} onSelect={select} />
         <div className="memory-legend">
@@ -747,7 +752,18 @@ function Memory({ people, select }: { people: Member[]; select: (p: Member) => v
           <span><LockKeyhole size={12} />Private memory</span>
         </div>
       </section>
-      <aside className="memory-changes">
+      <aside className="memory-quote-rail">
+        <blockquote>“Intros remembers the context people normally lose between conversations.”</blockquote>
+        <span>NOT JUST WHAT PEOPLE SAID. BUT WHAT THEY CARE ABOUT. WHAT THEY’RE BUILDING. AND WHERE THINGS LEFT OFF.</span>
+        <dl>
+          <div><dt>Conversations remembered</dt><dd>4,892</dd></div>
+          <div><dt>People in memory</dt><dd>1,246</dd></div>
+          <div><dt>Contextual connections</dt><dd>3,281</dd></div>
+        </dl>
+      </aside>
+    </div>
+    <div className="memory-layout">
+      <section className="memory-changes">
         <header className="mod-head"><span>WHAT INTROS LEARNED RECENTLY</span><button className="mod-link">View all <ArrowRight size={12} /></button></header>
         <div className="memory-cats">{(['All', ...memoryCategories] as const).map(c =>
           <button key={c} className={cat === c ? 'active' : ''} onClick={() => setCat(c)}>{c}</button>)}</div>
@@ -767,14 +783,8 @@ function Memory({ people, select }: { people: Member[]; select: (p: Member) => v
           })}
           {!shown.length && <p className="empty-state">Nothing learned in this category yet.</p>}
         </div>
-      </aside>
+      </section>
     </div>
-    <section className="memory-totals">
-      <div><strong>4,892</strong><span>Conversations remembered</span></div>
-      <div><strong>1,246</strong><span>People in memory</span></div>
-      <div><strong>3,281</strong><span>Contextual connections</span></div>
-      <div><strong>93%</strong><span>Source-attributed memory</span></div>
-    </section>
     <div className="memory-modules">
       <section className="mod">
         <header><span>RELATIONSHIP PATTERNS</span><button className="mod-link">View all <ArrowRight size={12} /></button></header>
