@@ -15,6 +15,7 @@ import messagesEditorialAsset from '@/assets/editorial-messages.jpg.asset.json'
 import needsEditorialAsset from '@/assets/editorial-needs.jpg.asset.json'
 import memoryEditorialAsset from '@/assets/editorial-memory.jpg.asset.json'
 import insightsEditorialAsset from '@/assets/editorial-insights.jpg.asset.json'
+import homeEditorialAsset from '@/assets/aetheris-home-portrait.jpg.asset.json'
 import worldNetworkImg from '@/assets/aetheris-world-network.jpg'
 import { leaks } from './data'
 import type { AutonomyLevel, DigitalYouProfile, Objective, PrivacyScope } from './types'
@@ -230,10 +231,10 @@ function HomeMasthead({ people, select, setPage, openNeed, openThread }: {
   const companies = new Set(people.map(p => p.company)).size
   return <section className="masthead">
     <div className="masthead-brand">
-      <span className="folio">THE BUSINESS NETWORK WITHOUT THE NOISE</span>
-      <h1 className="masthead-title">Aetheris<br /><em>Intros</em></h1>
-      <h2>Real business networking.<br />No selling. No spam.</h2>
-      <p>The professional network built around trusted context instead of reach—where human judgment and quiet intelligence work as one. Meet people because the relationship makes sense for both sides, never because someone bought your attention.</p>
+      <span className="folio">PEOPLE CREATE POSSIBILITIES</span>
+      <h1 className="masthead-title">Memory that keeps<br /><em>relationships alive.</em></h1>
+      <h2>A professional memory for builders, backed by real people, real context, and real intent.</h2>
+      <p>Aetheris Intros is the high-trust business network where Active Memory learns who you know, what you need, and why now—so every introduction makes sense for both sides. No selling. No spam. No hollow networking.</p>
       <div className="masthead-actions">
         <Button onClick={openNeed}>Get started <ArrowRight size={14} /></Button>
         <Button kind="secondary" onClick={() => setPage('intros')}>See how it works</Button>
@@ -246,14 +247,9 @@ function HomeMasthead({ people, select, setPage, openNeed, openThread }: {
       <span className="masthead-kicker">PEOPLE × CONTEXT × OPPORTUNITY</span>
     </div>
 
-    <figure className="masthead-plate masthead-architecture" aria-label="Aetheris relationship architecture">
-      <div className="masthead-architecture-mark" aria-hidden="true">AI</div>
-      <div className="masthead-architecture-copy">
-        <span>TRUSTED NETWORK / 01</span>
-        <strong>People<br />with purpose.</strong>
-        <p>Context before contact.<br />Permission before access.</p>
-      </div>
-      <figcaption>BETTER<br />CONTEXT.<br />BETTER<br />RELATIONSHIPS.</figcaption>
+    <figure className="masthead-plate" aria-label="A professional in thought — memory that keeps relationships alive">
+      <img src={homeEditorialAsset.url} alt="Fictional professional in quiet thought beside hard window light" width={1024} height={1280} />
+      <figcaption>MEMORY<br />THAT KEEPS<br />RELATIONSHIPS<br />ALIVE.</figcaption>
     </figure>
 
     <aside className="masthead-intel">
