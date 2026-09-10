@@ -722,7 +722,8 @@ function Home({ people, select, setPage, openNeed, openThread }: {
       <div><Label>BUSINESS NETWORKING, REBUILT</Label><h2>A professional network without pitches, spam or performative reach.</h2>
         <p>Aetheris Intros reads needs, offers, timing and trust paths, then shows only relationships where a conversation creates credible value for both people.</p>
         <button className="text-action" onClick={() => setPage('intros')}>See the reasoning behind a match <ArrowRight size={14} /></button></div>
-      <MemoryGraph people={people} onSelect={select} compact />
+      <button className="text-action" onClick={() => setPage('memory')}>Open Active Memory <ArrowRight size={14} /></button>
+
     </section>
 
     <HowItWorks />
