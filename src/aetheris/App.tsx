@@ -325,14 +325,22 @@ function HowItWorks() {
 
 
 function MemoryGraph({ people, onSelect, compact = false }: { people: Member[]; onSelect: (p: Member) => void; compact?: boolean }) {
+  const net = useNetwork()
   const positions = [[16, 22], [40, 12], [74, 16], [87, 44], [78, 74], [52, 86], [24, 78], [11, 52], [33, 40], [64, 36], [60, 64], [36, 62]]
+  const matches = useMemo(
+    () => rankMatches(net.profile, people, net.connections)
+      .filter(({ match }) => match.total >= 25)
+      .slice(0, compact ? 6 : 12),
+    [net.profile, people, net.connections, compact],
+  )
   return <div className={`memory-graph ${compact ? 'compact' : ''}`}>
+    <div className="graph-live-status"><span className="live-dot" />{matches.length} POTENTIAL FITS</div>
     <div className="graph-rings"><i /><i /><i /></div><div className="graph-lines" />
     <button className="graph-origin" aria-label="Your current context"><Eye size={18} /><small>YOU</small></button>
-    {people.slice(0, compact ? 6 : 12).map((p, i) => {
+    {matches.map(({ member: p, match }, i) => {
       const pos = positions[i % positions.length] ?? [50, 50]
-      return <button key={p.id} className={`graph-node ${i === 1 ? 'selected' : ''} ${p.radar === 'hot_now' ? 'signal' : ''}`} style={{ left: `${pos[0]}%`, top: `${pos[1]}%` }} onClick={() => onSelect(p)}>
-        <i /><span>{p.name.split(' ')[0]}</span>
+      return <button key={p.id} className={`graph-node ${i === 0 ? 'selected' : ''} ${match.total >= 55 || p.radar === 'hot_now' ? 'signal' : ''}`} style={{ left: `${pos[0]}%`, top: `${pos[1]}%`, animationDelay: `${i * 120}ms` }} onClick={() => onSelect(p)} title={`${match.total}% fit · ${match.headline}`} aria-label={`Open ${p.name}'s introduction profile, ${match.total} percent fit`}>
+        <i /><span>{p.name.split(' ')[0]}<b>{match.total}</b></span><small>{p.title}</small>
       </button>
     })}
     <div className="graph-taxonomy">{['PEOPLE', 'COMPANIES', 'NEEDS', 'MESSAGES', 'INTRODUCTIONS', 'DECISIONS', 'INTERESTS', 'COMMITMENTS'].map(t => <span key={t}>{t}</span>)}</div>
