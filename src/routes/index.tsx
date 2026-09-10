@@ -1,5 +1,5 @@
-import { createFileRoute } from "@tanstack/react-router";
-import Landing from "@/aetheris/Landing";
+import { ClientOnly, createFileRoute } from "@tanstack/react-router";
+import App from "@/aetheris/App";
 import "@/aetheris/styles.css";
 
 export const Route = createFileRoute("/")({
@@ -25,5 +25,9 @@ export const Route = createFileRoute("/")({
 });
 
 function Index() {
-  return <Landing />;
+  return (
+    <ClientOnly fallback={null}>
+      <App startPage="home" />
+    </ClientOnly>
+  );
 }
