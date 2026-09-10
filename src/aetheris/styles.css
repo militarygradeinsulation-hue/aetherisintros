@@ -2518,3 +2518,13 @@ input, textarea, select { font: inherit; }
 .home-education-panel li { font: 400 12.5px/1.7 var(--sans); color: var(--muted); }
 .home-education-panel b { color: var(--soft); }
 @media (max-width: 860px) { .home-education-panel { border-left: 0; border-top: 1px solid var(--line-dark); padding: 20px; } }
+
+/* Agent integration (MCP) consent screen */
+.consent-page { min-height: 100dvh; display: grid; place-items: center; background: var(--paper); padding: 32px 20px; }
+.consent-panel { width: min(560px, 100%); display: grid; gap: 16px; border: 1px solid var(--hairline); background: #fff; padding: clamp(24px, 4vw, 40px); }
+.consent-panel h1 { font: 500 clamp(30px, 4vw, 44px)/1.05 var(--serif); color: var(--ink); margin: 0; }
+.consent-panel h1 em { font-style: normal; color: var(--cobalt); }
+.consent-lede { margin: 0; font: 400 14.5px/1.6 var(--sans); color: color-mix(in oklab, var(--ink) 68%, transparent); }
+.consent-scope { list-style: none; margin: 0; padding: 14px 0; display: grid; gap: 8px; border-top: 1px solid var(--hairline); border-bottom: 1px solid var(--hairline); }
+.consent-scope li { font: 400 12.5px/1.5 var(--sans); color: color-mix(in oklab, var(--ink) 72%, transparent); }
+.consent-actions { display: flex; gap: 10px; flex-wrap: wrap; }
