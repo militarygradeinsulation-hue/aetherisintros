@@ -5,14 +5,121 @@
  */
 import type { Member } from '../social'
 import type {
-  Circle, ConnectionChain, ContextCapsule, DigitalHandshake, IntentCard, OpenLoop,
-  Outcome, Placement, PlacementStage, RelationshipWeather, SystemRecord, TriggerMemory, WeatherState,
+  Circle, CompanyProfile, ConnectionChain, ContextCapsule, DigitalHandshake, IntentCard, OpenLoop,
+  OrganizationRelationship, Outcome, Placement, PlacementStage, RelationshipWeather, SystemRecord, TriggerMemory, WeatherState,
 } from './models'
 
 const clamp = (n: number) => Math.max(0, Math.min(100, Math.round(n)))
 const overlap = (a: string[], b: string[]) => {
   const lower = b.map(x => x.toLowerCase())
   return a.filter(x => lower.some(y => y.includes(x.toLowerCase()) || x.toLowerCase().includes(y))).length
+}
+
+/* --------------------------------------------------------- company fit report */
+
+export interface CompanyFitDimension {
+  label: string
+  score: number
+  weight: number
+  evidence: string
+}
+
+export interface CompanyFitReport {
+  score: number
+  confidence: number
+  verdict: 'Strong alignment' | 'Promising with conditions' | 'Exploratory fit' | 'Not enough alignment yet'
+  dimensions: CompanyFitDimension[]
+  strengths: string[]
+  weaknesses: string[]
+  unknowns: string[]
+  collaborationIdeas: Array<{ title: string; detail: string; firstStep: string }>
+  standard: string
+}
+
+/**
+ * The Golden Fit Report scores the business-to-business case, not personal likability.
+ * Every point is derived from visible systems, intent, relationship, timing and outcome evidence.
+ */
+export function assessCompanyFit(company: CompanyProfile, context: {
+  members: Member[]
+  systems: SystemRecord[]
+  intents: IntentCard[]
+  circles: Circle[]
+  relationships: OrganizationRelationship[]
+  outcomes: Outcome[]
+}): CompanyFitReport {
+  const people = context.members.filter(member => company.peopleIds.includes(member.id))
+  const systems = context.systems.filter(system => company.relevantSystemIds.includes(system.id))
+  const intents = context.intents.filter(intent => company.openIntentIds.includes(intent.id) && intent.status === 'active')
+  const circles = context.circles.filter(circle => company.relatedCircleIds.includes(circle.id))
+  const relationships = context.relationships.filter(relationship => relationship.companyName === company.name)
+  const outcomes = context.outcomes.filter(outcome => outcome.companyName === company.name)
+  const industryMatches = systems.filter(system => overlap(system.industries, [company.industry]) > 0 || system.bestFitCompanies.includes(company.name))
+  const average = (values: number[], fallback: number) => values.length ? values.reduce((sum, value) => sum + value, 0) / values.length : fallback
+  const trust = clamp(average([
+    ...relationships.map(relationship => relationship.strength),
+    ...people.map(member => member.score.trust),
+  ], 30))
+  const strategic = clamp(25 + industryMatches.length * 22 + systems.length * 12 + circles.length * 7)
+  const mutual = clamp(22 + intents.length * 22 + systems.filter(system => system.whoBenefits.length > 0).length * 12 + people.reduce((sum, member) => sum + Math.min(12, member.offers.length * 4), 0))
+  const operating = clamp(28 + systems.reduce((sum, system) => sum + Math.min(18, system.proof.length * 7), 0) + outcomes.length * 18 - company.dormantOpportunities.length * 5)
+  const timing = clamp(38 + intents.length * 24 + company.timeline.filter(item => /requested|active|adopted|offered|walkthrough/i.test(item.text)).length * 10 - company.dormantOpportunities.length * 9)
+  const evidence = clamp(20 + company.previousConversations.length * 13 + relationships.length * 14 + outcomes.length * 22 + people.length * 5)
+  const dimensions: CompanyFitDimension[] = [
+    { label: 'Strategic alignment', score: strategic, weight: .25, evidence: industryMatches.length ? `${industryMatches.map(system => system.name).join(' and ')} match ${company.industry.toLowerCase()} priorities.` : `No system-to-industry match is proven yet.` },
+    { label: 'Mutual value', score: mutual, weight: .2, evidence: intents.length ? `${intents.length} live intent${intents.length === 1 ? '' : 's'} show a current reason for both sides to engage.` : `No live intent inside ${company.name}; value is inferred from known needs.` },
+    { label: 'Operating compatibility', score: operating, weight: .2, evidence: outcomes.length ? `${outcomes.length} recorded outcome${outcomes.length === 1 ? '' : 's'} provide operating evidence.` : `No completed shared outcome is recorded yet.` },
+    { label: 'Relationship trust', score: trust, weight: .15, evidence: relationships.length ? `${relationships.length} organizational relationship${relationships.length === 1 ? '' : 's'} support the path.` : `The path depends on individual context rather than institutional trust.` },
+    { label: 'Timing and readiness', score: timing, weight: .1, evidence: intents.length ? `Live intent makes the timing observable.` : `Timing is based on conversation and activity signals, not a declared buying window.` },
+    { label: 'Evidence quality', score: evidence, weight: .1, evidence: `${company.previousConversations.length} conversation${company.previousConversations.length === 1 ? '' : 's'}, ${relationships.length} relationship record${relationships.length === 1 ? '' : 's'}, and ${outcomes.length} outcome${outcomes.length === 1 ? '' : 's'} inform this report.` },
+  ]
+  const score = clamp(dimensions.reduce((sum, dimension) => sum + dimension.score * dimension.weight, 0))
+  const confidence = clamp(35 + Math.min(20, people.length * 5) + Math.min(20, relationships.length * 8) + Math.min(15, company.previousConversations.length * 6) + Math.min(10, outcomes.length * 10))
+  const strengths = [
+    ...(industryMatches.length ? [`Clear strategic overlap through ${industryMatches.map(system => system.name).join(' and ')}.`] : []),
+    ...(trust >= 70 ? [`The relationship path is credible, with ${trust}/100 average trust evidence.`] : []),
+    ...(intents.length ? [`A live intent creates a specific business reason to engage now.`] : []),
+    ...(outcomes.length ? [`A recorded outcome reduces the risk of an untested partnership.`] : []),
+    ...(circles.length ? [`${circles.length} shared circle${circles.length === 1 ? '' : 's'} can support context and accountability.`] : []),
+  ].slice(0, 4)
+  const weaknesses = [
+    ...(intents.length === 0 ? [`No declared live intent confirms budget, ownership, or urgency.`] : []),
+    ...(outcomes.length === 0 ? [`No shared commercial outcome has been verified.`] : []),
+    ...(trust < 65 ? [`Institutional trust is still thin; the relationship may not survive beyond one contact.`] : []),
+    ...company.dormantOpportunities.map(item => `Dormant: ${item}.`),
+    ...(systems.length === 0 ? [`No current Aetheris system maps cleanly to this company.`] : []),
+  ].slice(0, 4)
+  const unknowns = [
+    `Who owns the decision and who can stop it inside ${company.name}?`,
+    ...(intents.length === 0 ? [`Whether the problem is funded or merely interesting.`] : []),
+    ...(outcomes.length === 0 ? [`What evidence would make a first pilot defensible internally.`] : []),
+    `Whether both companies agree on scope, pace, and the definition of success.`,
+  ].slice(0, 3)
+  const leadSystem = systems[0]
+  const leadCircle = circles[0]
+  const leadPerson = people.sort((a, b) => b.score.decisionInfluence - a.score.decisionInfluence)[0]
+  const collaborationIdeas = [
+    {
+      title: leadSystem ? `Run a narrow ${leadSystem.name} proof` : `Start with a mutual diagnostic`,
+      detail: leadSystem ? `Test one measurable problem before discussing a larger partnership. Success must be visible to both companies.` : `Compare one current operating problem and one useful capability from each side before proposing a commercial relationship.`,
+      firstStep: leadPerson ? `Ask ${leadPerson.name} to name one outcome worth proving in 30 days.` : `Identify the accountable operator on both sides.`,
+    },
+    {
+      title: leadCircle ? `Use ${leadCircle.name} as the trust room` : `Create a small operator working session`,
+      detail: leadCircle ? `Pressure-test the fit with peers who understand the context, without turning the room into a sales channel.` : `Bring two operators together to challenge assumptions and expose conflicts early.`,
+      firstStep: leadCircle ? `Share the problem statement with the circle moderator before inviting the company.` : `Agree what can be shared and what remains private.`,
+    },
+    {
+      title: `Trade evidence before access`,
+      detail: `Each company contributes one useful artifact, reference, or operating insight before requesting introductions or broader access.`,
+      firstStep: leadSystem?.proof[0] ? `Lead with: ${leadSystem.proof[0]}.` : `Choose one proof point each side can verify independently.`,
+    },
+  ]
+  const verdict: CompanyFitReport['verdict'] = score >= 78 ? 'Strong alignment' : score >= 62 ? 'Promising with conditions' : score >= 45 ? 'Exploratory fit' : 'Not enough alignment yet'
+  return {
+    score, confidence, verdict, dimensions, strengths, weaknesses, unknowns, collaborationIdeas,
+    standard: 'Golden standard: evidence over enthusiasm. Strengths, weaknesses and unknowns stay visible until both sides verify them.',
+  }
 }
 
 /* ------------------------------------------------------- placement candidates */
