@@ -487,20 +487,31 @@ function Home({ people, select, setPage, openNeed, openThread }: {
   const ranked = useMemo(() => [...people].sort((a, b) => b.scoreTotal - a.scoreTotal), [people])
   const industries = useMemo(() => Array.from(new Set(people.map(person => person.industry))).sort(), [people])
   const joinedCircles = useMemo(() => platform.circles.filter(circle => circle.memberIds.includes('me')), [platform.circles])
-  const visiblePosts = useMemo(() => net.posts.filter(post => {
-    const member = people.find(person => person.id === post.memberId)
-    const industry = member?.industry ?? net.profile.industries[0] ?? ''
-    if (net.feedPreferences.scope === 'saved') return net.saved.includes(post.id)
-    if (net.feedPreferences.scope === 'circle') {
-      const circle = joinedCircles.find(item => item.id === net.feedPreferences.circleId) ?? joinedCircles[0]
-      return Boolean(circle?.memberIds.includes(post.memberId))
-    }
-    if (net.feedPreferences.scope === 'industry') {
-      const chosen = net.feedPreferences.industries.length ? net.feedPreferences.industries : net.profile.industries
-      return chosen.some(value => value.toLowerCase() === industry.toLowerCase())
-    }
-    return true
-  }), [joinedCircles, net.feedPreferences, net.posts, net.profile.industries, net.saved, people])
+  const visiblePosts = useMemo(() => {
+    const industryFor = (post: Post) => people.find(person => person.id === post.memberId)?.industry ?? net.profile.industries[0] ?? ''
+    const filtered = net.posts.filter(post => {
+      const industry = industryFor(post)
+      if (net.feedPreferences.scope === 'saved') return net.saved.includes(post.id)
+      if (net.feedPreferences.scope === 'circle') {
+        const circle = joinedCircles.find(item => item.id === net.feedPreferences.circleId) ?? joinedCircles[0]
+        return Boolean(circle?.memberIds.includes(post.memberId))
+      }
+      if (net.feedPreferences.scope === 'industry') {
+        const chosen = net.feedPreferences.industries.length ? net.feedPreferences.industries : net.profile.industries
+        return chosen.some(value => value.toLowerCase() === industry.toLowerCase())
+      }
+      return true
+    })
+    if (net.feedPreferences.scope !== 'all') return filtered
+    const interests = new Set([...net.feedPreferences.industries, ...net.profile.industries].map(value => value.toLowerCase()))
+    return [...filtered].sort((a, b) => {
+      const relevance = (post: Post) => (net.connections.includes(post.memberId) ? 5 : 0)
+        + (net.follows.includes(post.memberId) ? 4 : 0)
+        + (interests.has(industryFor(post).toLowerCase()) ? 3 : 0)
+        + (post.memberId === 'me' ? 6 : 0)
+      return relevance(b) - relevance(a)
+    })
+  }, [joinedCircles, net.connections, net.feedPreferences, net.follows, net.posts, net.profile.industries, net.saved, people])
   const activeNeed = net.objectives[0]
   const share = () => {
     if (!composer.trim()) return
