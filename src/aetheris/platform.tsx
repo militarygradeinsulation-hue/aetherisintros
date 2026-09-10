@@ -242,4 +242,3 @@ export function usePlatform() {
   return ctx
 }
 
-export type { CollectionLike }
