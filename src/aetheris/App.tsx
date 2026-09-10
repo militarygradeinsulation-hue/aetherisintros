@@ -1499,16 +1499,31 @@ function Shell() {
   const navApi: NavApi = {
     setPage, openMember: setSelected, openIntro: p => { setSelected(null); setDraft(p) },
     messageMember, goToThread, postNeed: () => setNeedOpen(true),
+    openSystem: id => { setSystemId(id); setPage('systems') },
+    openCircle: id => { setCircleId(id); setPage('circles') },
+    openCompany: id => { setCompanyId(id); setPage('companies') },
+    openHandshake: id => setHandshakeId(id),
+    openIntent: () => setIntentOpen(true),
   }
 
   const content = selected
     ? <MemberProfile person={selected} people={people} onClose={() => setSelected(null)} onDraft={p => { setSelected(null); setDraft(p) }} onMessage={messageMember} />
     : {
-      home: <Home people={people} select={setSelected} setPage={setPage} openNeed={() => setNeedOpen(true)} openThread={goToThread} />,
+      home: <>
+        <IntentStrip onCreate={() => setIntentOpen(true)} />
+        <Home people={people} select={setSelected} setPage={setPage} openNeed={() => setNeedOpen(true)} openThread={goToThread} />
+        <IntentBoard />
+      </>,
       discover: <Discover people={people} select={setSelected} />,
+      systems: <SystemsPage openId={systemId} setOpenId={setSystemId} />,
+      circles: <CirclesPage openId={circleId} setOpenId={setCircleId} />,
+      companies: <CompaniesPage openId={companyId} setOpenId={setCompanyId} />,
+      outcomes: <OutcomesPage />,
+      loops: <LoopsPage />,
+      organization: <OrganizationPage />,
       intros: <Intros people={people} select={setSelected} draft={setDraft} />,
       messages: <Messages people={people} select={setSelected} activeId={threadId} setActiveId={setThreadId} />,
-      needs: <Needs onNew={() => setNeedOpen(true)} people={people} select={setSelected} setPage={setPage} />,
+      needs: <><Needs onNew={() => setNeedOpen(true)} people={people} select={setSelected} setPage={setPage} /><IntentBoard /></>,
       memory: <Memory people={people} select={setSelected} />,
       insights: <Insights people={people} select={setSelected} setPage={setPage} />,
       profile: <Profile people={people} setPage={setPage} openOnboarding={() => setOnboardOpen(true)} />,
@@ -1522,15 +1537,27 @@ function Shell() {
           const Icon = item.icon
           return <button key={item.id} className={page === item.id ? 'active' : ''} title={item.label} onClick={() => { setPage(item.id); setMobileOpen(false) }}>
             <Icon size={18} /><span>{item.label}</span></button>
-        })}</nav>
+        })}
+          <span className="rail-divider">RELATIONSHIP CAPITAL</span>
+          {navSecondary.map(item => {
+            const Icon = item.icon
+            return <button key={item.id} className={page === item.id ? 'active' : ''} title={item.label} onClick={() => { setPage(item.id); setMobileOpen(false) }}>
+              <Icon size={18} /><span>{item.label}</span></button>
+          })}
+        </nav>
         <div className="rail-foot"><span className="live-dot" /><span>Memory live</span>
           <button onClick={() => setPage('profile')} aria-label="Your profile"><span>{me.initials}</span></button></div>
       </aside>
       <div className="workspace">
         <header className="topbar">
           <button className="icon-btn mobile-menu" onClick={() => setMobileOpen(!mobileOpen)} aria-label="Menu"><Menu size={19} /></button>
-          <span className="topbar-title">Aetheris Intros <i>/</i> {nav.find(n => n.id === page)?.label}</span>
+          <span className="topbar-title">Aetheris Intros <i>/</i> {allNav.find(n => n.id === page)?.label}</span>
+          <div className="move-switch">
+            <span>MOVE</span>
+            {moveKinds.map(m => <button key={m.kind} className={page === m.page ? 'active' : ''} onClick={() => setPage(m.page)}>{m.kind}</button>)}
+          </div>
           <div>
+            <button className="icon-btn" title="Post live intent" onClick={() => setIntentOpen(true)} aria-label="Post live intent"><Layers size={17} /></button>
             <button className="icon-btn" title="Build your profile" onClick={() => setOnboardOpen(true)} aria-label="Build your profile"><Fingerprint size={17} /></button>
             <button className="icon-btn" title="Post a need" onClick={() => setNeedOpen(true)} aria-label="Post a need"><Plus size={18} /></button>
             <button className="icon-btn" title="Ask Intros" onClick={() => setAskOpen(true)} aria-label="Ask Intros"><AetherisGlyph size={18} /></button>
@@ -1541,15 +1568,18 @@ function Shell() {
           <ContextRail page={page} people={people} select={setSelected} onAsk={() => setAskOpen(true)} />
         </div>
       </div>
-      <nav className="mobile-nav">{nav.map(item => {
+      <nav className="mobile-nav">{[...nav.slice(0, 5), navSecondary[0]!].map(item => {
         const Icon = item.icon
         return <button key={item.id} className={page === item.id ? 'active' : ''} onClick={() => setPage(item.id)}><Icon size={18} /><span>{item.label}</span></button>
       })}</nav>
-      
+
       <IntroModal person={draft} onClose={() => setDraft(null)} onMessage={messageMember} />
       <NeedModal open={needOpen} onClose={() => setNeedOpen(false)} onCreate={addNeed} />
       <AskModal open={askOpen} onClose={() => setAskOpen(false)} people={people} select={setSelected} />
       <Onboarding open={onboardOpen} onClose={() => setOnboardOpen(false)} />
+      {intentOpen && <IntentModal onClose={() => setIntentOpen(false)} />}
+      {circleFormOpen && <CreateCircleModal onClose={() => setCircleFormOpen(false)} />}
+      {handshakeId && <HandshakeModal memberId={handshakeId} onClose={() => setHandshakeId(null)} />}
       {mobileOpen && <button className="rail-scrim" aria-label="Close menu" onClick={() => setMobileOpen(false)} />}
     </div>
   </NavCtx.Provider>
