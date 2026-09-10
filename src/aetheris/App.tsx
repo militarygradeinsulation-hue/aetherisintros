@@ -5,6 +5,7 @@ import {
   MapPin, Menu, MessageSquareText, Network, Plus, Search, Send, Share2, ShieldCheck, Target,
   MessageCircle, Repeat2, Settings2, SlidersHorizontal, TrendingUp, UserRound, Users, X,
   Inbox, DoorOpen, GitMerge, Radar, Flag, FileSearch, Gauge, Mic,
+  HelpCircle, BookOpen, Sparkle, Map as MapIcon, History, BadgeCheck, Lock, ScrollText, Puzzle,
 } from 'lucide-react'
 import editorialPortrait from '@/assets/aetheris-editorial-portrait.jpg'
 import mastheadNaturalAsset from '@/assets/portraits/aetheris-masthead-natural.jpg.asset.json'
@@ -98,6 +99,20 @@ import {
 import { homeStrips, trustAdvice as trustAdviceFor } from './domain/os-engine'
 import type { IntroQualityReview, PathKind } from './domain/os-models'
 import { PreferencesPage } from './pages/PreferencesPage'
+import { MoatProvider } from './moat-store'
+import { AvailabilityWindows, ConnectorAskGuard, DecayPrevention, PassportModule, ReciprocityNote, RepresentativeAsk, useOutreachGate } from './moat-ui'
+import { AskNetworkPage } from './pages/AskNetworkPage'
+import { ConstitutionPage } from './pages/ConstitutionPage'
+import { SerendipityPage } from './pages/SerendipityPage'
+import { EventModePage } from './pages/EventModePage'
+import { GapMapPage } from './pages/GapMapPage'
+import { IdentityPage } from './pages/IdentityPage'
+import { ConsentLedgerPage } from './pages/ConsentLedgerPage'
+import { TimeMachinePage } from './pages/TimeMachinePage'
+import { AttributionPage } from './pages/AttributionPage'
+import { KnowledgePage } from './pages/KnowledgePage'
+import { AdvisoryBoardsPage } from './pages/AdvisoryBoardsPage'
+import { IntegrationsPage } from './pages/IntegrationsPage'
 
 
 
@@ -113,6 +128,8 @@ const nav: Array<{ id: Page; label: string; icon: typeof HomeIcon }> = [
   { id: 'needs', label: 'Needs', icon: Target },
   { id: 'memory', label: 'Memory', icon: Network },
   { id: 'events', label: 'Events', icon: CalendarDays },
+  { id: 'ask', label: 'Ask network', icon: HelpCircle },
+  { id: 'knowledge', label: 'Knowledge', icon: BookOpen },
   { id: 'insights', label: 'Insights', icon: TrendingUp },
   { id: 'profile', label: 'Profile', icon: UserRound },
 ]
@@ -128,6 +145,16 @@ const navSecondary: Array<{ id: Page; label: string; icon: typeof HomeIcon }> = 
   { id: 'companies', label: 'Companies', icon: Building2 },
   { id: 'outcomes', label: 'Outcomes', icon: CheckCircle2 },
   { id: 'organization', label: 'Organization', icon: ShieldCheck },
+  { id: 'boards', label: 'Advisory boards', icon: Users },
+  { id: 'serendipity', label: 'Unexpectedly relevant', icon: Sparkle },
+  { id: 'gaps', label: 'Gap map', icon: MapIcon },
+  { id: 'eventmode', label: 'Event mode', icon: CalendarDays },
+  { id: 'timemachine', label: 'Time machine', icon: History },
+  { id: 'attribution', label: 'Attribution', icon: GitMerge },
+  { id: 'identity', label: 'Portable identity', icon: BadgeCheck },
+  { id: 'consent', label: 'Consent ledger', icon: Lock },
+  { id: 'constitution', label: 'Constitution', icon: ScrollText },
+  { id: 'integrations', label: 'Intros everywhere', icon: Puzzle },
   { id: 'preferences', label: 'Preferences', icon: Settings2 },
 ]
 const allNav = [...nav, ...navSecondary]
@@ -969,6 +996,7 @@ function Messages({ people, select, activeId, setActiveId }: { people: Member[];
   const net = useNetwork()
   const [text, setText] = useState('')
   const nav = useNav()
+  const { gate, modal: outreachModal } = useOutreachGate()
   const threads = net.threads
   const thread: Thread | undefined = threads.find(t => t.id === activeId) ?? threads[0]
   const person = people.find(p => p.id === thread?.memberId)
@@ -978,6 +1006,7 @@ function Messages({ people, select, activeId, setActiveId }: { people: Member[];
     <PageHead label="MESSAGES" title="Context before contact."
       copy="Real conversations between members. Intros keeps the relationship context beside the thread, never in the middle of it."
       proof="Every thread remembers the last commitment made." />
+    {outreachModal}
     <div className="messages-layout">
       <aside className="thread-list">
         <div className="thread-search"><Search size={15} /> Conversations</div>
@@ -1007,7 +1036,11 @@ function Messages({ people, select, activeId, setActiveId }: { people: Member[];
            <button className="suggested" onClick={() => setText(thread.suggested)}><AetherisGlyph size={13} /> Use contextual draft</button>
           <div className="composer">
             <textarea value={text} onChange={e => setText(e.target.value)} placeholder="Write with the relationship in mind…" />
-            <button onClick={() => { if (text.trim()) { net.sendMessage(thread.id, text.trim()); setText('') } }} disabled={!text.trim()} aria-label="Send"><Send size={17} /></button>
+            <button onClick={() => {
+              const t = text.trim()
+              if (!t) return
+              gate(t, { channel: 'message', authorId: 'me', recipient: person }, final => { net.sendMessage(thread.id, final); setText('') })
+            }} disabled={!text.trim()} aria-label="Send"><Send size={17} /></button>
           </div>
         </div>
       </section>
@@ -1501,6 +1534,13 @@ function MemberProfile({ person, people, onClose, onDraft, onMessage }: {
         </footer>
       </section>
 
+      <PassportModule memberId={person.id} />
+      <DecayPrevention person={person} />
+      <RepresentativeAsk person={person} />
+      <AvailabilityWindows memberId={person.id} />
+      <ReciprocityNote memberId={person.id} />
+      <ConnectorAskGuard memberId={person.id} />
+
       <div className="member-modules four">
         <section className="mod">
           <header><span>ABOUT {person.name.split(' ')[0]?.toUpperCase()}</span></header>
@@ -1874,7 +1914,7 @@ function GlobalSearch({ open, onClose, people }: { open: boolean; onClose: () =>
 /* ---------------------------------------------------------------------- app */
 
 export default function App({ startPage }: { startPage?: Page | undefined }) {
-  return <NetworkProvider><PlatformProvider><OSProvider><Shell startPage={startPage} /></OSProvider></PlatformProvider></NetworkProvider>
+  return <NetworkProvider><PlatformProvider><OSProvider><MoatProvider><Shell startPage={startPage} /></MoatProvider></OSProvider></PlatformProvider></NetworkProvider>
 }
 
 function Shell({ startPage }: { startPage?: Page | undefined }) {
@@ -1979,6 +2019,18 @@ function Shell({ startPage }: { startPage?: Page | undefined }) {
       strategy: <StrategyPage />,
       evidence: <EvidenceLedgerPage />,
       autopilot: <AutopilotPage />,
+      ask: <AskNetworkPage />,
+      constitution: <ConstitutionPage />,
+      serendipity: <SerendipityPage />,
+      eventmode: <EventModePage />,
+      gaps: <GapMapPage />,
+      identity: <IdentityPage />,
+      consent: <ConsentLedgerPage />,
+      timemachine: <TimeMachinePage />,
+      attribution: <AttributionPage />,
+      knowledge: <KnowledgePage />,
+      boards: <AdvisoryBoardsPage />,
+      integrations: <IntegrationsPage />,
     }[page]
 
   return <NavCtx.Provider value={navApi}>

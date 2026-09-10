@@ -497,3 +497,51 @@ begin
     execute format('alter table public.%I enable row level security', t);
   end loop;
 end $$;
+
+/* ============================================================
+   MOAT LAYER TABLES
+   Passport, constitution, network questions, serendipity,
+   organization passports, events, gaps, portable identity,
+   consent ledger, reciprocity, decay, representative,
+   availability, snapshots, attribution, knowledge, boards,
+   context adapters and context queries.
+   ============================================================ */
+
+create table if not exists public.professional_passports (id text primary key, owner_id uuid, data jsonb not null default '{}', created_at timestamptz not null default now(), updated_at timestamptz not null default now());
+create table if not exists public.network_constitution_rules (id text primary key, data jsonb not null default '{}', created_at timestamptz not null default now());
+create table if not exists public.outreach_quality_reviews (id text primary key, owner_id uuid, data jsonb not null default '{}', created_at timestamptz not null default now());
+create table if not exists public.outreach_strike_ledgers (id text primary key, owner_id uuid, data jsonb not null default '{}', updated_at timestamptz not null default now());
+create table if not exists public.network_questions (id text primary key, owner_id uuid, data jsonb not null default '{}', created_at timestamptz not null default now());
+create table if not exists public.serendipity_matches (id text primary key, owner_id uuid, data jsonb not null default '{}', created_at timestamptz not null default now());
+create table if not exists public.organization_relationship_passports (id text primary key, owner_id uuid, data jsonb not null default '{}', updated_at timestamptz not null default now());
+create table if not exists public.live_events (id text primary key, owner_id uuid, data jsonb not null default '{}', created_at timestamptz not null default now());
+create table if not exists public.relationship_gaps (id text primary key, owner_id uuid, data jsonb not null default '{}', created_at timestamptz not null default now());
+create table if not exists public.portable_identities (id text primary key, owner_id uuid, data jsonb not null default '{}', updated_at timestamptz not null default now());
+create table if not exists public.consent_ledger_entries (id text primary key, owner_id uuid, scope text, data jsonb not null default '{}', updated_at timestamptz not null default now());
+create table if not exists public.reciprocity_signals (id text primary key, owner_id uuid, data jsonb not null default '{}', updated_at timestamptz not null default now());
+create table if not exists public.relationship_decay_risks (id text primary key, owner_id uuid, data jsonb not null default '{}', updated_at timestamptz not null default now());
+create table if not exists public.digital_representative_policies (id text primary key, owner_id uuid, data jsonb not null default '{}', updated_at timestamptz not null default now());
+create table if not exists public.introduction_availability (id text primary key, owner_id uuid, data jsonb not null default '{}', updated_at timestamptz not null default now());
+create table if not exists public.network_snapshots (id text primary key, owner_id uuid, data jsonb not null default '{}', created_at timestamptz not null default now());
+create table if not exists public.outcome_attribution_edges (id text primary key, owner_id uuid, data jsonb not null default '{}', created_at timestamptz not null default now());
+create table if not exists public.knowledge_posts (id text primary key, owner_id uuid, data jsonb not null default '{}', created_at timestamptz not null default now());
+create table if not exists public.advisory_boards (id text primary key, owner_id uuid, data jsonb not null default '{}', created_at timestamptz not null default now());
+create table if not exists public.relationship_context_adapters (id text primary key, owner_id uuid, data jsonb not null default '{}', created_at timestamptz not null default now());
+create table if not exists public.relationship_context_queries (id text primary key, owner_id uuid, data jsonb not null default '{}', created_at timestamptz not null default now());
+
+do $$
+declare t text;
+begin
+  foreach t in array array[
+    'professional_passports','network_constitution_rules','outreach_quality_reviews','outreach_strike_ledgers',
+    'network_questions','serendipity_matches','organization_relationship_passports','live_events',
+    'relationship_gaps','portable_identities','consent_ledger_entries','reciprocity_signals',
+    'relationship_decay_risks','digital_representative_policies','introduction_availability',
+    'network_snapshots','outcome_attribution_edges','knowledge_posts','advisory_boards',
+    'relationship_context_adapters','relationship_context_queries'
+  ] loop
+    execute format('grant select, insert, update, delete on public.%I to authenticated', t);
+    execute format('grant all on public.%I to service_role', t);
+    execute format('alter table public.%I enable row level security', t);
+  end loop;
+end $$;

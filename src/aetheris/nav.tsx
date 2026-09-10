@@ -5,6 +5,8 @@ export type Page =
   | 'home' | 'discover' | 'intros' | 'messages' | 'needs' | 'memory' | 'insights' | 'profile'
   | 'systems' | 'circles' | 'companies' | 'outcomes' | 'loops' | 'organization' | 'events' | 'preferences'
   | 'inbox' | 'rooms' | 'collisions' | 'simulation' | 'strategy' | 'evidence' | 'autopilot'
+  | 'ask' | 'constitution' | 'serendipity' | 'eventmode' | 'gaps' | 'identity' | 'consent'
+  | 'timemachine' | 'attribution' | 'knowledge' | 'boards' | 'integrations'
 
 /** Navigation intents any surface can trigger. */
 export interface NavApi {
