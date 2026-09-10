@@ -1640,3 +1640,7 @@
 @media(hover:none){
   .topbar-search span{display:none}
 }
+
+/* Editorial captions stay legible over bright photography */
+.memory-editorial figure:after,.masthead-plate:after,.editorial-plate:after{content:'';position:absolute;inset:auto 0 0;height:46%;background:linear-gradient(180deg,transparent,rgba(9,12,15,.82));pointer-events:none;z-index:1}
+.memory-editorial figure figcaption,.masthead-plate figcaption,.editorial-plate figcaption{z-index:2;text-shadow:0 1px 10px rgba(9,12,15,.7)}
