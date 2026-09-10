@@ -2154,3 +2154,35 @@ function Shell({ startPage }: { startPage?: Page | undefined }) {
     </div>
   </NavCtx.Provider>
 }
+
+/* ------------------------------------ professional proof on a member profile */
+
+function ProCredibilityModule({ memberId }: { memberId: string }) {
+  const pro = usePro()
+  const credibility = pro.credibility(memberId)
+  const graph = pro.proofGraph(memberId)
+  const reputations = pro.reputationFor(memberId)
+  if (!graph.nodes.length && !reputations.length && !credibility.verified) return null
+  return <section className="module pro-credibility">
+    <header>
+      <div><Label>PROOF OF WORK AND CONTEXTUAL REPUTATION</Label>
+        <h3>What is verified, what is self-stated, and what has evidence behind it.</h3>
+        <p>{credibility.reasoning}</p></div>
+      <div className="pro-cred-score"><strong>{credibility.score}</strong><span>/100</span><em>{credibility.verdict}</em></div>
+    </header>
+    {!!graph.nodes.length && <>
+      <p className="pro-cred-answer">{graph.answer}</p>
+      <ul className="mod-list">{graph.nodes.slice(0, 5).map(n => <li key={n.id}>
+        <b>{n.kind}</b> {n.title} <small>{n.evidence ? `Evidence: ${n.evidence}` : 'No named evidence — treated as self-stated.'}</small>
+      </li>)}</ul>
+    </>}
+    {!!reputations.length && <div className="pro-cred-reputation">
+      {reputations.map(r => <article key={r.id}>
+        <span>{r.context.toUpperCase()}</span>
+        <strong>{r.bestFor}</strong>
+        <small>Trusted in {r.trustedIn.join(' · ')} · proven with {r.provenWith.join(' · ')}</small>
+        <em>{r.outcomesCreated} recorded outcome{r.outcomesCreated === 1 ? '' : 's'} · intro quality {r.introQuality} · referral strength {r.referralStrength}</em>
+      </article>)}
+    </div>}
+  </section>
+}
