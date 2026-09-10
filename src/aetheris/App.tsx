@@ -98,6 +98,19 @@ import {
 import { homeStrips, trustAdvice as trustAdviceFor } from './domain/os-engine'
 import type { IntroQualityReview, PathKind } from './domain/os-models'
 import { PreferencesPage } from './pages/PreferencesPage'
+import { MoatProvider } from './moat-store'
+import { AskNetworkPage } from './pages/AskNetworkPage'
+import { ConstitutionPage } from './pages/ConstitutionPage'
+import { SerendipityPage } from './pages/SerendipityPage'
+import { EventModePage } from './pages/EventModePage'
+import { GapMapPage } from './pages/GapMapPage'
+import { IdentityPage } from './pages/IdentityPage'
+import { ConsentLedgerPage } from './pages/ConsentLedgerPage'
+import { TimeMachinePage } from './pages/TimeMachinePage'
+import { AttributionPage } from './pages/AttributionPage'
+import { KnowledgePage } from './pages/KnowledgePage'
+import { AdvisoryBoardsPage } from './pages/AdvisoryBoardsPage'
+import { IntegrationsPage } from './pages/IntegrationsPage'
 
 
 
@@ -113,6 +126,8 @@ const nav: Array<{ id: Page; label: string; icon: typeof HomeIcon }> = [
   { id: 'needs', label: 'Needs', icon: Target },
   { id: 'memory', label: 'Memory', icon: Network },
   { id: 'events', label: 'Events', icon: CalendarDays },
+  { id: 'ask', label: 'Ask network', icon: HelpCircle },
+  { id: 'knowledge', label: 'Knowledge', icon: BookOpen },
   { id: 'insights', label: 'Insights', icon: TrendingUp },
   { id: 'profile', label: 'Profile', icon: UserRound },
 ]
@@ -128,6 +143,16 @@ const navSecondary: Array<{ id: Page; label: string; icon: typeof HomeIcon }> = 
   { id: 'companies', label: 'Companies', icon: Building2 },
   { id: 'outcomes', label: 'Outcomes', icon: CheckCircle2 },
   { id: 'organization', label: 'Organization', icon: ShieldCheck },
+  { id: 'boards', label: 'Advisory boards', icon: Users },
+  { id: 'serendipity', label: 'Unexpectedly relevant', icon: Sparkle },
+  { id: 'gaps', label: 'Gap map', icon: Map },
+  { id: 'eventmode', label: 'Event mode', icon: CalendarDays },
+  { id: 'timemachine', label: 'Time machine', icon: History },
+  { id: 'attribution', label: 'Attribution', icon: GitMerge },
+  { id: 'identity', label: 'Portable identity', icon: BadgeCheck },
+  { id: 'consent', label: 'Consent ledger', icon: Lock },
+  { id: 'constitution', label: 'Constitution', icon: ScrollText },
+  { id: 'integrations', label: 'Intros everywhere', icon: Puzzle },
   { id: 'preferences', label: 'Preferences', icon: Settings2 },
 ]
 const allNav = [...nav, ...navSecondary]
@@ -1874,7 +1899,7 @@ function GlobalSearch({ open, onClose, people }: { open: boolean; onClose: () =>
 /* ---------------------------------------------------------------------- app */
 
 export default function App({ startPage }: { startPage?: Page | undefined }) {
-  return <NetworkProvider><PlatformProvider><OSProvider><Shell startPage={startPage} /></OSProvider></PlatformProvider></NetworkProvider>
+  return <NetworkProvider><PlatformProvider><OSProvider><MoatProvider><Shell startPage={startPage} /></MoatProvider></OSProvider></PlatformProvider></NetworkProvider>
 }
 
 function Shell({ startPage }: { startPage?: Page | undefined }) {
@@ -1979,6 +2004,18 @@ function Shell({ startPage }: { startPage?: Page | undefined }) {
       strategy: <StrategyPage />,
       evidence: <EvidenceLedgerPage />,
       autopilot: <AutopilotPage />,
+      ask: <AskNetworkPage />,
+      constitution: <ConstitutionPage />,
+      serendipity: <SerendipityPage />,
+      eventmode: <EventModePage />,
+      gaps: <GapMapPage />,
+      identity: <IdentityPage />,
+      consent: <ConsentLedgerPage />,
+      timemachine: <TimeMachinePage />,
+      attribution: <AttributionPage />,
+      knowledge: <KnowledgePage />,
+      boards: <AdvisoryBoardsPage />,
+      integrations: <IntegrationsPage />,
     }[page]
 
   return <NavCtx.Provider value={navApi}>
