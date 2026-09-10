@@ -638,6 +638,7 @@ function Home({ people, select, setPage, openNeed, openThread }: {
   const net = useNetwork()
   const platform = usePlatform()
   const [tab, setTab] = useState<'feed' | 'people' | 'asks' | 'signals'>('feed')
+  const [homeMode, setHomeMode] = useState<'social' | 'briefing'>('social')
   const [composer, setComposer] = useState('')
   const [customizing, setCustomizing] = useState(false)
   const ranked = useMemo(() => [...people].sort((a, b) => b.scoreTotal - a.scoreTotal), [people])
@@ -794,6 +795,7 @@ function Home({ people, select, setPage, openNeed, openThread }: {
         <button onClick={() => openThread('t1')}><span>CONVERSATION COOLING</span><strong>Nolan Pierce</strong><small>Waiting on the observation you promised.</small></button>
       </div>
     </section>
+    </>}
   </>
 }
 
