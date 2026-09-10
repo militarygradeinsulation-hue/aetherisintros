@@ -1006,11 +1006,13 @@ function Profile({ people, setPage, openOnboarding }: {
 function Ring({ value, label }: { value: number; label: string }) {
   const c = 2 * Math.PI * 42
   return <div className="compat-ring">
-    <svg viewBox="0 0 100 100" aria-hidden="true">
-      <circle cx="50" cy="50" r="42" className="ring-track" />
-      <circle cx="50" cy="50" r="42" className="ring-value" strokeDasharray={`${(c * value) / 100} ${c}`} />
-    </svg>
-    <strong>{value}%</strong>
+    <div className="ring-dial">
+      <svg viewBox="0 0 100 100" aria-hidden="true">
+        <circle cx="50" cy="50" r="42" className="ring-track" />
+        <circle cx="50" cy="50" r="42" className="ring-value" strokeDasharray={`${(c * value) / 100} ${c}`} />
+      </svg>
+      <strong>{value}%</strong>
+    </div>
     <span>{label}</span>
   </div>
 }
