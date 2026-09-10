@@ -40,7 +40,7 @@ export interface PlatformApi extends Collections {
   setCirclePurpose: (id: string, status: Circle['purposeStatus']) => void
   createCircle: (draft: { name: string; purpose: string; description: string; sharedIntents: string[] }) => string
   /* intents */
-  createIntent: (draft: Omit<IntentCard, 'id' | 'memberId' | 'status' | 'startsAt'> & { expiresAt?: string }) => string
+  createIntent: (draft: Omit<IntentCard, 'id' | 'memberId' | 'status' | 'startsAt' | 'expiresAt'> & { expiresAt?: string }) => string
   expireIntent: (id: string) => void
   reactivateIntent: (id: string) => void
   /* handshake + capsule */
@@ -220,7 +220,7 @@ export function PlatformProvider({ children }: { children: React.ReactNode }) {
       bookSlot: (slotId, purpose, capsuleId) => {
         void availability.update(slotId, { bookedBy: 'me', meetingPurpose: purpose, ...(capsuleId ? { capsuleId } : {}) })
       },
-      releaseSlot: slotId => { void availability.update(slotId, { bookedBy: undefined, meetingPurpose: undefined }) },
+      releaseSlot: slotId => { void availability.update(slotId, { bookedBy: undefined, meetingPurpose: undefined } as Partial<AvailabilityWindow>) },
       addAvailability: draft => { void availability.create({ ...draft, id: uid('av') }) },
       closeMeetingLoop: (id, after) => { void meetings.update(id, { closed: true, after }) },
       createMeeting: draft => {
