@@ -15,6 +15,7 @@ import messagesEditorialAsset from '@/assets/editorial-messages.jpg.asset.json'
 import needsEditorialAsset from '@/assets/editorial-needs.jpg.asset.json'
 import memoryEditorialAsset from '@/assets/editorial-memory.jpg.asset.json'
 import insightsEditorialAsset from '@/assets/editorial-insights.jpg.asset.json'
+import homeEditorialAsset from '@/assets/aetheris-home-editorial.jpg.asset.json'
 import worldNetworkImg from '@/assets/aetheris-world-network.jpg'
 import { leaks } from './data'
 import type { AutonomyLevel, DigitalYouProfile, Objective, PrivacyScope } from './types'
@@ -246,14 +247,9 @@ function HomeMasthead({ people, select, setPage, openNeed, openThread }: {
       <span className="masthead-kicker">PEOPLE × CONTEXT × OPPORTUNITY</span>
     </div>
 
-    <figure className="masthead-plate masthead-architecture" aria-label="Aetheris relationship architecture">
-      <div className="masthead-architecture-mark" aria-hidden="true">AI</div>
-      <div className="masthead-architecture-copy">
-        <span>TRUSTED NETWORK / 01</span>
-        <strong>People<br />with purpose.</strong>
-        <p>Context before contact.<br />Permission before access.</p>
-      </div>
-      <figcaption>BETTER<br />CONTEXT.<br />BETTER<br />RELATIONSHIPS.</figcaption>
+    <figure className="masthead-plate" aria-label="A professional in thought — memory that keeps relationships alive">
+      <img src={homeEditorialAsset.url} alt="Fictional professional in quiet thought beside hard window light" width={1024} height={1280} />
+      <figcaption>MEMORY<br />THAT KEEPS<br />RELATIONSHIPS<br />ALIVE.</figcaption>
     </figure>
 
     <aside className="masthead-intel">
