@@ -1041,7 +1041,9 @@ function AskModal({ open, onClose, people, select }: { open: boolean; onClose: (
         <input autoFocus value={query} onChange={e => setQuery(e.target.value)} onKeyDown={e => { if (e.key === 'Enter' && query.trim()) setAsked(true) }} placeholder="Who should I talk to this week?" />
         <Button disabled={!query.trim()} onClick={() => setAsked(true)}>Ask</Button></div>
       {asked && <div className="ask-results">
-        <p>Three relationships justify attention now. They combine strategic fit with a current timing signal; the rest of the graph should stay untouched.</p>
+        <p>{cooling
+          ? 'These relationships are cooling: real prior strength, no recent contact. Reactivate with something useful before asking for anything.'
+          : 'Three relationships justify attention now. They combine strategic fit with a current timing signal; the rest of the graph should stay untouched.'}</p>
         {ranked.map(p => <button key={p.id} onClick={() => { onClose(); select(p) }}>
           <Avatar person={p} /><span><strong>{p.name}</strong><small>{p.whyNow}</small></span><Score value={p.scoreTotal} /></button>)}
         <div className="ask-unknown"><AlertTriangle size={14} /><span><b>Unknown:</b> whether any are currently evaluating another option.</span></div>
