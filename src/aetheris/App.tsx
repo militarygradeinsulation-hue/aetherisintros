@@ -6,6 +6,10 @@ import {
   MessageCircle, Repeat2, Settings2, SlidersHorizontal, TrendingUp, UserRound, Users, X,
 } from 'lucide-react'
 import editorialPortrait from '@/assets/aetheris-editorial-portrait.jpg'
+import mastheadNaturalAsset from '@/assets/portraits/aetheris-masthead-natural.jpg.asset.json'
+import p01NaturalAsset from '@/assets/portraits/member-p1-natural.jpg.asset.json'
+import p02NaturalAsset from '@/assets/portraits/member-p2-natural.jpg.asset.json'
+import p03NaturalAsset from '@/assets/portraits/member-p3-natural.jpg.asset.json'
 import marcusPortrait from '@/assets/member-marcus.jpg'
 import priyaPortrait from '@/assets/member-priya.jpg'
 import sarahPortrait from '@/assets/member-sarah.jpg'
@@ -39,9 +43,6 @@ import portrait25Asset from '@/assets/portraits/portrait-25.jpg.asset.json'
 import portrait26Asset from '@/assets/portraits/portrait-26.jpg.asset.json'
 import portrait27Asset from '@/assets/portraits/portrait-27.jpg.asset.json'
 import josephPortraitAsset from '@/assets/portraits/member-joseph.jpg.asset.json'
-import p01PortraitAsset from '@/assets/portraits/member-p1.jpg.asset.json'
-import p02PortraitAsset from '@/assets/portraits/member-p2.jpg.asset.json'
-import p03PortraitAsset from '@/assets/portraits/member-p3.jpg.asset.json'
 import p04PortraitAsset from '@/assets/portraits/member-p4.jpg.asset.json'
 import p05PortraitAsset from '@/assets/portraits/member-p5.jpg.asset.json'
 import p06PortraitAsset from '@/assets/portraits/member-p6.jpg.asset.json'
@@ -137,7 +138,7 @@ function AetherisGlyph({ size = 18 }: { size?: number }) {
   return <span className="aetheris-glyph" style={{ width: size, height: size }} aria-hidden="true"><i /><b /></span>
 }
 const memberPortraits: Record<string, string> = {
-  p1: p01PortraitAsset.url, p2: p02PortraitAsset.url, p3: p03PortraitAsset.url,
+  p1: p01NaturalAsset.url, p2: p02NaturalAsset.url, p3: p03NaturalAsset.url,
   p4: p04PortraitAsset.url, p5: p05PortraitAsset.url, p6: p06PortraitAsset.url,
   p7: sarahPortrait, p8: marcusPortrait, p9: p09PortraitAsset.url,
   p10: p10PortraitAsset.url, p11: priyaPortrait, p12: p12PortraitAsset.url,
@@ -231,7 +232,7 @@ function HomeMasthead({ people, select, setPage, openNeed, openThread }: {
     </div>
 
     <figure className="masthead-plate">
-      <img src={editorialPortrait} alt="A composed professional considering a decision in hard window light" loading="lazy" />
+      <img src={mastheadNaturalAsset.url} alt="A fictional professional walking beside architectural windows" width={1024} height={1280} />
       <figcaption>BETTER<br />PEOPLE<br />BUILD A<br />BRIGHTER<br />TOMORROW.</figcaption>
     </figure>
 
@@ -273,7 +274,7 @@ function HomeMasthead({ people, select, setPage, openNeed, openThread }: {
         <header><span><AetherisGlyph size={13} /> WHY THIS INTRODUCTION</span><em>EVIDENCE</em></header>
         <p>Intros found a relevant introduction based on mutual context, goals and conversation history.</p>
         <div className="deck-pair">
-          <span><Avatar person={lead} portrait /><b>{lead.name}</b><small>{lead.title}</small></span>
+          <span><span className="person-avatar portrait" aria-hidden="true">{lead.initials}</span><b>{lead.name}</b><small>{lead.title}</small></span>
           <ArrowLeftRight size={14} />
           <span><Avatar person={counterpart} portrait /><b>{counterpart.name}</b><small>{counterpart.title}</small></span>
         </div>
@@ -624,7 +625,7 @@ function Home({ people, select, setPage, openNeed, openThread }: {
       <div>
         {activeNeed && <article><span>ACTIVE NEED</span><strong>{activeNeed.title}</strong><small>{activeNeed.success}</small></article>}
         {ranked[0] && <button onClick={() => select(ranked[0]!)}><span>STRONGEST MATCH</span><strong>{ranked[0]!.name}</strong><small>{ranked[0]!.whyNow}</small></button>}
-        <button onClick={() => openThread('t1')}><span>CONVERSATION COOLING</span><strong>Scott Kelley</strong><small>Waiting on the observation you promised.</small></button>
+        <button onClick={() => openThread('t1')}><span>CONVERSATION COOLING</span><strong>Nolan Pierce</strong><small>Waiting on the observation you promised.</small></button>
       </div>
     </section>
   </>
@@ -1170,10 +1171,10 @@ function Profile({ people, setPage, openOnboarding }: {
   ]
   return <>
     <section className="identity-header">
-      <div className="identity-portrait"><img src={josephPortraitAsset.url} alt="Joseph Toney in architectural window light" width={1280} height={1600} /><small>AETHERIS MEMBER SINCE 2024</small></div>
+      <div className="identity-portrait"><img src={josephPortraitAsset.url} alt="Fictional Aetheris member in architectural window light" width={1280} height={1600} /><small>AETHERIS MEMBER SINCE 2024</small></div>
       <div className="identity-copy">
         <Label>MEMBER PROFILE</Label>
-        <h1>Joseph<br /><em>Toney</em></h1>
+        <h1>Jordan<br /><em>Ellery</em></h1>
         <p className="identity-role">{me.title}<br />{me.company} · {me.location}</p>
         <p className="identity-thesis">{me.thesis}</p>
         <blockquote>“Evidence, mutual value, good timing and human judgment.”</blockquote>
@@ -1235,7 +1236,7 @@ function Profile({ people, setPage, openOnboarding }: {
       </article>
       <article className="module relationship-history">
         <header><Label>RELATIONSHIP HISTORY</Label><h3>Context across time.</h3></header>
-        <ol><li><strong>Introduction accepted</strong><small>Marcus Adeyemi · Sep 2026</small></li><li><strong>Shared operating thesis</strong><small>Private note · Aug 2026</small></li><li><strong>First mapped warm path</strong><small>via Maya Chen · Jun 2026</small></li></ol>
+        <ol><li><strong>Introduction accepted</strong><small>Darius Cole · Sep 2026</small></li><li><strong>Shared operating thesis</strong><small>Private note · Aug 2026</small></li><li><strong>First mapped warm path</strong><small>via Mina Park · Jun 2026</small></li></ol>
       </article>
       <article className="module availability-panel">
         <header><Label>AVAILABILITY</Label><h3><i /> Open for three considered conversations.</h3></header><p>Best for founders, operators and investors with a specific outcome and credible mutual value.</p><Button kind="secondary" onClick={() => setPage('messages')}><CalendarDays size={14} /> Book a 30 min call</Button>

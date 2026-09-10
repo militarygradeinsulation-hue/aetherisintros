@@ -107,7 +107,7 @@ function AddLoop({ onClose }: { onClose: () => void }) {
         <p>Name the commitment and who owns it. Intros will surface it when it matters.</p></div>
         <button className="icon-btn" onClick={onClose} aria-label="Close"><X size={17} /></button></header>
       <div className="need-form">
-        <label><span>01 / What is outstanding</span><textarea rows={2} value={form.title} onChange={e => setForm({ ...form, title: e.target.value })} placeholder="Send the throughput model to Maya" /></label>
+        <label><span>01 / What is outstanding</span><textarea rows={2} value={form.title} onChange={e => setForm({ ...form, title: e.target.value })} placeholder="Send the throughput model to Mina" /></label>
         <label><span>02 / Person</span>
           <select value={form.memberId} onChange={e => setForm({ ...form, memberId: e.target.value })}>
             {net.members.map(m => <option key={m.id} value={m.id}>{m.name}</option>)}

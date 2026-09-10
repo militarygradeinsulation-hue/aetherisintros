@@ -4,9 +4,6 @@ import priyaPortrait from '@/assets/member-priya.jpg'
 import sarahPortrait from '@/assets/member-sarah.jpg'
 import elliotPortrait from '@/assets/member-elliot.jpg'
 import portrait25Asset from '@/assets/portraits/portrait-25.jpg.asset.json'
-import p01PortraitAsset from '@/assets/portraits/member-p1.jpg.asset.json'
-import p02PortraitAsset from '@/assets/portraits/member-p2.jpg.asset.json'
-import p03PortraitAsset from '@/assets/portraits/member-p3.jpg.asset.json'
 import p04PortraitAsset from '@/assets/portraits/member-p4.jpg.asset.json'
 import p05PortraitAsset from '@/assets/portraits/member-p5.jpg.asset.json'
 import p06PortraitAsset from '@/assets/portraits/member-p6.jpg.asset.json'
@@ -25,10 +22,13 @@ import p22PortraitAsset from '@/assets/portraits/member-p22.jpg.asset.json'
 import p23PortraitAsset from '@/assets/portraits/member-p23.jpg.asset.json'
 import p24PortraitAsset from '@/assets/portraits/member-p24.jpg.asset.json'
 import josephPortraitAsset from '@/assets/portraits/member-joseph.jpg.asset.json'
+import p01NaturalAsset from '@/assets/portraits/member-p1-natural.jpg.asset.json'
+import p02NaturalAsset from '@/assets/portraits/member-p2-natural.jpg.asset.json'
+import p03NaturalAsset from '@/assets/portraits/member-p3-natural.jpg.asset.json'
 
 export const memberPortraits: Record<string, string> = {
   me: josephPortraitAsset.url,
-  p1: p01PortraitAsset.url, p2: p02PortraitAsset.url, p3: p03PortraitAsset.url,
+  p1: p01NaturalAsset.url, p2: p02NaturalAsset.url, p3: p03NaturalAsset.url,
   p4: p04PortraitAsset.url, p5: p05PortraitAsset.url, p6: p06PortraitAsset.url,
   p7: sarahPortrait, p8: marcusPortrait, p9: p09PortraitAsset.url,
   p10: p10PortraitAsset.url, p11: priyaPortrait, p12: p12PortraitAsset.url,
