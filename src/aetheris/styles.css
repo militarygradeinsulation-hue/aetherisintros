@@ -1683,7 +1683,7 @@
 .memory-editorial figure figcaption,.masthead-plate figcaption,.editorial-plate figcaption{z-index:2;text-shadow:0 1px 10px rgba(9,12,15,.7)}
 
 @media(max-width:900px){
-  .masthead-plate figcaption{left:auto;right:16px;bottom:16px;top:auto;text-align:right}
+  .masthead-plate figcaption{left:16px;right:16px;bottom:14px;top:auto;text-align:right;font-size:10px;letter-spacing:.2em;line-height:1.8}
 }
 
 /* ============================================================ relationship OS
