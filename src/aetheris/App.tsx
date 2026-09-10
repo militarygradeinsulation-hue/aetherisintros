@@ -1298,16 +1298,18 @@ function Shell() {
     messageMember, goToThread, postNeed: () => setNeedOpen(true),
   }
 
-  const content = {
-    home: <Home people={people} select={setSelected} setPage={setPage} openNeed={() => setNeedOpen(true)} openThread={goToThread} />,
-    discover: <Discover people={people} select={setSelected} />,
-    intros: <Intros people={people} select={setSelected} draft={setDraft} />,
-    messages: <Messages people={people} select={setSelected} activeId={threadId} setActiveId={setThreadId} />,
-    needs: <Needs onNew={() => setNeedOpen(true)} people={people} select={setSelected} setPage={setPage} />,
-    memory: <Memory people={people} select={setSelected} />,
-    insights: <Insights people={people} select={setSelected} setPage={setPage} />,
-    profile: <Profile people={people} setPage={setPage} openOnboarding={() => setOnboardOpen(true)} />,
-  }[page]
+  const content = selected
+    ? <MemberProfile person={selected} people={people} onClose={() => setSelected(null)} onDraft={p => { setSelected(null); setDraft(p) }} onMessage={messageMember} />
+    : {
+      home: <Home people={people} select={setSelected} setPage={setPage} openNeed={() => setNeedOpen(true)} openThread={goToThread} />,
+      discover: <Discover people={people} select={setSelected} />,
+      intros: <Intros people={people} select={setSelected} draft={setDraft} />,
+      messages: <Messages people={people} select={setSelected} activeId={threadId} setActiveId={setThreadId} />,
+      needs: <Needs onNew={() => setNeedOpen(true)} people={people} select={setSelected} setPage={setPage} />,
+      memory: <Memory people={people} select={setSelected} />,
+      insights: <Insights people={people} select={setSelected} setPage={setPage} />,
+      profile: <Profile people={people} setPage={setPage} openOnboarding={() => setOnboardOpen(true)} />,
+    }[page]
 
   return <NavCtx.Provider value={navApi}>
     <div className={`app-shell ${collapsed ? 'rail-collapsed' : ''}`}>
@@ -1340,7 +1342,7 @@ function Shell() {
         const Icon = item.icon
         return <button key={item.id} className={page === item.id ? 'active' : ''} onClick={() => setPage(item.id)}><Icon size={18} /><span>{item.label}</span></button>
       })}</nav>
-      <PersonDrawer person={selected} onClose={() => setSelected(null)} onDraft={p => { setSelected(null); setDraft(p) }} onMessage={messageMember} />
+      
       <IntroModal person={draft} onClose={() => setDraft(null)} onMessage={messageMember} />
       <NeedModal open={needOpen} onClose={() => setNeedOpen(false)} onCreate={addNeed} />
       <AskModal open={askOpen} onClose={() => setAskOpen(false)} people={people} select={setSelected} />
