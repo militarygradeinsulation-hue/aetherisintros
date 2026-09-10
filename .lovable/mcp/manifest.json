@@ -1,0 +1,348 @@
+{
+  "version": 1,
+  "sdk_version": "2.0.4",
+  "path": "/mcp",
+  "auth": {
+    "type": "oauth",
+    "issuer": "https://uactagkdvafjombseswx.supabase.co/auth/v1",
+    "accepted_audiences": [
+      "authenticated"
+    ]
+  },
+  "mcp": {
+    "server": {
+      "name": "aetheris-intros",
+      "version": "0.1.0",
+      "title": "Aetheris Intros"
+    },
+    "tools": [
+      {
+        "name": "get_my_profile",
+        "title": "Get my profile",
+        "description": "Read the signed-in member's own Aetheris Intros profile: focus, thesis, looking for, can help with, boundaries, availability, industries and expertise.",
+        "annotations": {
+          "readOnlyHint": true,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "$schema": "https://json-schema.org/draft/2020-12/schema",
+          "type": "object",
+          "properties": {}
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "search_members",
+        "title": "Search members",
+        "description": "Search the Aetheris Intros network for members by name, role, industry, expertise, needs or offers. Returns match reasoning fields (why them, why you, why now) when present.",
+        "annotations": {
+          "readOnlyHint": true,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "$schema": "https://json-schema.org/draft/2020-12/schema",
+          "type": "object",
+          "properties": {
+            "query": {
+              "description": "Free text to match against name, title, company, industry or bio.",
+              "type": "string",
+              "minLength": 1
+            },
+            "industry": {
+              "description": "Restrict results to one industry.",
+              "type": "string",
+              "minLength": 1
+            },
+            "limit": {
+              "default": 10,
+              "description": "Maximum members to return.",
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 50
+            }
+          }
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "get_member",
+        "title": "Get member",
+        "description": "Read one Aetheris Intros member in full, including focus, thesis, availability, trust path, next action and the reasoning behind a possible introduction.",
+        "annotations": {
+          "readOnlyHint": true,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "$schema": "https://json-schema.org/draft/2020-12/schema",
+          "type": "object",
+          "properties": {
+            "member_id": {
+              "type": "string",
+              "minLength": 1,
+              "description": "The member id returned by search_members."
+            }
+          },
+          "required": [
+            "member_id"
+          ]
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "list_asks",
+        "title": "List network asks",
+        "description": "List the professional asks (what members need right now) visible to the signed-in member, newest first. Optionally filter by industry or urgency.",
+        "annotations": {
+          "readOnlyHint": true,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "$schema": "https://json-schema.org/draft/2020-12/schema",
+          "type": "object",
+          "properties": {
+            "industry": {
+              "description": "Restrict asks to one industry.",
+              "type": "string",
+              "minLength": 1
+            },
+            "urgency": {
+              "description": "Restrict asks to one urgency level.",
+              "type": "string",
+              "enum": [
+                "low",
+                "medium",
+                "high"
+              ]
+            },
+            "limit": {
+              "default": 15,
+              "description": "Maximum asks to return.",
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 50
+            }
+          }
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "post_ask",
+        "title": "Post an ask",
+        "description": "Post a professional ask for the signed-in member: what they need right now, why now, and what they can offer in return. No mass outreach — one clear ask at a time.",
+        "annotations": {
+          "readOnlyHint": false,
+          "destructiveHint": false,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "$schema": "https://json-schema.org/draft/2020-12/schema",
+          "type": "object",
+          "properties": {
+            "ask": {
+              "type": "string",
+              "minLength": 4,
+              "description": "The ask in one sentence."
+            },
+            "detail": {
+              "description": "Context that helps someone judge whether they can help.",
+              "type": "string"
+            },
+            "why_now": {
+              "description": "Why the timing matters.",
+              "type": "string"
+            },
+            "offer": {
+              "description": "What the member gives in return.",
+              "type": "string"
+            },
+            "industry": {
+              "type": "string"
+            },
+            "location": {
+              "type": "string"
+            },
+            "urgency": {
+              "default": "medium",
+              "type": "string",
+              "enum": [
+                "low",
+                "medium",
+                "high"
+              ]
+            },
+            "visibility": {
+              "default": "network",
+              "type": "string",
+              "enum": [
+                "network",
+                "private"
+              ]
+            }
+          },
+          "required": [
+            "ask"
+          ]
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "request_intro",
+        "title": "Request an introduction",
+        "description": "Request a double opt-in introduction to a member for the signed-in member. The request is recorded as 'requested' — the other side still has to opt in, so this never sends a pitch.",
+        "annotations": {
+          "readOnlyHint": false,
+          "destructiveHint": false,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "$schema": "https://json-schema.org/draft/2020-12/schema",
+          "type": "object",
+          "properties": {
+            "member_id": {
+              "type": "string",
+              "minLength": 1,
+              "description": "The member to be introduced to."
+            },
+            "reason": {
+              "type": "string",
+              "minLength": 4,
+              "description": "Why this relationship makes sense."
+            },
+            "mutual_value": {
+              "description": "What the other person gets out of it.",
+              "type": "string"
+            }
+          },
+          "required": [
+            "member_id",
+            "reason"
+          ]
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "list_intro_requests",
+        "title": "List my introductions",
+        "description": "List the signed-in member's introduction requests with their double opt-in status, reason and mutual value.",
+        "annotations": {
+          "readOnlyHint": true,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "$schema": "https://json-schema.org/draft/2020-12/schema",
+          "type": "object",
+          "properties": {
+            "status": {
+              "description": "Filter by status.",
+              "type": "string",
+              "enum": [
+                "requested",
+                "accepted",
+                "declined",
+                "connected"
+              ]
+            },
+            "limit": {
+              "default": 20,
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 50
+            }
+          }
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "list_memories",
+        "title": "List Active Memory",
+        "description": "List the signed-in member's Active Memory entries — learned context about people, needs, timing and commitments, newest first.",
+        "annotations": {
+          "readOnlyHint": true,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "$schema": "https://json-schema.org/draft/2020-12/schema",
+          "type": "object",
+          "properties": {
+            "category": {
+              "description": "Filter by category, e.g. People, Needs, Timing.",
+              "type": "string",
+              "minLength": 1
+            },
+            "member_id": {
+              "description": "Only memories about this member.",
+              "type": "string",
+              "minLength": 1
+            },
+            "limit": {
+              "default": 25,
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100
+            }
+          }
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "add_memory",
+        "title": "Add to Active Memory",
+        "description": "Record a piece of learned context in the signed-in member's Active Memory so future introductions and timing improve. Private by default.",
+        "annotations": {
+          "readOnlyHint": false,
+          "destructiveHint": false,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "$schema": "https://json-schema.org/draft/2020-12/schema",
+          "type": "object",
+          "properties": {
+            "text": {
+              "type": "string",
+              "minLength": 4,
+              "description": "The observation, commitment or context to remember."
+            },
+            "category": {
+              "default": "People",
+              "description": "e.g. People, Needs, Timing, Commitments.",
+              "type": "string",
+              "minLength": 1
+            },
+            "member_id": {
+              "description": "The member this context is about, if any.",
+              "type": "string",
+              "minLength": 1
+            },
+            "scope": {
+              "default": "private",
+              "type": "string",
+              "enum": [
+                "private",
+                "team",
+                "organization",
+                "shareable",
+                "public"
+              ]
+            },
+            "confidence": {
+              "default": 100,
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100
+            }
+          },
+          "required": [
+            "text"
+          ]
+        },
+        "outputSchema": null
+      }
+    ]
+  }
+}
