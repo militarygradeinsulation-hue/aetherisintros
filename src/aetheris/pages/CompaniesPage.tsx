@@ -48,6 +48,8 @@ function CompanyDetail({ company, onBack }: { company: CompanyProfile; onBack: (
   const platform = usePlatform()
   const net = useNetwork()
   const nav = useNav()
+  const moat = useMoat()
+  const passport = moat.orgPassports.find(p => p.companyId === company.id || p.companyName === company.name)
   const people = company.peopleIds.map(id => net.members.find(m => m.id === id)).filter(Boolean)
   const systems = platform.systems.filter(s => company.relevantSystemIds.includes(s.id))
   const intents = platform.intents.filter(i => company.openIntentIds.includes(i.id))
@@ -102,6 +104,42 @@ function CompanyDetail({ company, onBack }: { company: CompanyProfile; onBack: (
         <div>{fit.collaborationIdeas.map((idea, index) => <article key={idea.title}><em>0{index + 1}</em><h3>{idea.title}</h3><p>{idea.detail}</p><small>FIRST STEP</small><strong>{idea.firstStep}</strong></article>)}</div>
       </section>
     </section>
+
+    {passport && <section className="org-passport">
+      <header>
+        <div><Eyebrow>ORGANIZATION RELATIONSHIP PASSPORT · {passport.scope.toUpperCase()}</Eyebrow>
+          <h2>Everything your side of the house knows about {passport.companyName}.</h2>
+          <p>{passport.summary}</p>
+          <small>Last updated {passport.updatedAt}. Only what this scope permits is shown.</small></div>
+        <div className="org-passport-owners">
+          <span>RELATIONSHIP OWNERS</span>
+          {passport.relationshipOwners.map(o => <p key={o.memberId}><strong>{o.name}</strong><small>{o.role}</small></p>)}
+        </div>
+      </header>
+      <div className="org-passport-grid">
+        <section className="mod">
+          <header><span>OPEN LOOPS</span></header>
+          <ul className="mod-list amber">{passport.openLoops.map(l => <li key={l}>{l}</li>)}</ul>
+          {!passport.openLoops.length && <p className="empty-state">Nothing open.</p>}
+        </section>
+        <section className="mod">
+          <header><span>DORMANT OPPORTUNITIES</span></header>
+          <ul className="mod-list">{passport.dormantOpportunities.map(l => <li key={l}>{l}</li>)}</ul>
+          {!passport.dormantOpportunities.length && <p className="empty-state">Nothing dormant.</p>}
+        </section>
+        <section className="mod">
+          <header><span>PEOPLE WHO MOVED ON</span></header>
+          <ul className="mod-list">{passport.formerEmployees.map(f => <li key={f.memberId}>{f.name} — now at {f.nowAt}</li>)}</ul>
+          {!passport.formerEmployees.length && <p className="empty-state">No recorded departures.</p>}
+        </section>
+      </div>
+      <section className="mod org-passport-chronology">
+        <header><span>RELATIONSHIP CHRONOLOGY</span></header>
+        <ul className="mod-list">{passport.chronology.map(e => <li key={e.id}>
+          <b>{e.when} · {e.kind}</b> {e.text} <small>{e.scope}</small>
+        </li>)}</ul>
+      </section>
+    </section>}
 
     <div className="sys-modules">
       <section className="mod">
