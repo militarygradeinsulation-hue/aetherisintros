@@ -7,14 +7,14 @@ import { Btn, Eyebrow, Face, Head } from '../ui'
 import { useOutreachGate } from '../moat-ui'
 import type { KnowledgePostKind } from '../domain/moat-models'
 
-const kinds: KnowledgePostKind[] = ['what worked', 'what failed', 'how we solved it', 'hard-won lesson', 'market observation']
+const kinds: KnowledgePostKind[] = ['Field Note', 'Decision Lesson', 'System Insight', 'Event Debrief', 'Ask', 'Offer']
 
 export function KnowledgePage() {
   const moat = useMoat()
   const net = useNetwork()
   const nav = useNav()
   const { gate, modal } = useOutreachGate()
-  const [kind, setKind] = useState<KnowledgePostKind>('what worked')
+  const [kind, setKind] = useState<KnowledgePostKind>('Field Note')
   const [title, setTitle] = useState('')
   const [body, setBody] = useState('')
   const [filter, setFilter] = useState<'all' | 'saved' | KnowledgePostKind>('all')

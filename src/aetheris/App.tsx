@@ -5,7 +5,7 @@ import {
   MapPin, Menu, MessageSquareText, Network, Plus, Search, Send, Share2, ShieldCheck, Target,
   MessageCircle, Repeat2, Settings2, SlidersHorizontal, TrendingUp, UserRound, Users, X,
   Inbox, DoorOpen, GitMerge, Radar, Flag, FileSearch, Gauge, Mic,
-  HelpCircle, BookOpen, Sparkle, Map, History, BadgeCheck, Lock, ScrollText, Puzzle,
+  HelpCircle, BookOpen, Sparkle, Map as MapIcon, History, BadgeCheck, Lock, ScrollText, Puzzle,
 } from 'lucide-react'
 import editorialPortrait from '@/assets/aetheris-editorial-portrait.jpg'
 import mastheadNaturalAsset from '@/assets/portraits/aetheris-masthead-natural.jpg.asset.json'
@@ -146,7 +146,7 @@ const navSecondary: Array<{ id: Page; label: string; icon: typeof HomeIcon }> = 
   { id: 'organization', label: 'Organization', icon: ShieldCheck },
   { id: 'boards', label: 'Advisory boards', icon: Users },
   { id: 'serendipity', label: 'Unexpectedly relevant', icon: Sparkle },
-  { id: 'gaps', label: 'Gap map', icon: Map },
+  { id: 'gaps', label: 'Gap map', icon: MapIcon },
   { id: 'eventmode', label: 'Event mode', icon: CalendarDays },
   { id: 'timemachine', label: 'Time machine', icon: History },
   { id: 'attribution', label: 'Attribution', icon: GitMerge },

@@ -45,9 +45,9 @@ export function IntegrationsPage() {
           const result = relationshipContext({
             member,
             weather: `${member.relationshipStatus} · last exchange ${member.lastInteractionDays} days ago`,
-            openLoops: os.inbox.filter(i => i.memberId === member.id && i.status === 'open').map(i => i.title),
+            openLoops: os.inbox.filter(i => i.personId === member.id && i.status === 'open').map(i => i.title),
             currentIntent: member.needs[0] ?? 'Nothing declared',
-            roomIds: os.rooms.filter(r => r.memberIds.includes(member.id)).map(r => r.id),
+            roomIds: os.rooms.filter(r => r.peopleIds.includes(member.id)).map(r => r.id),
             scopesAllowed: ['shareable', 'public'],
             ledger: moat.consent,
           })

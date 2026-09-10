@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { Copy, Link2 } from 'lucide-react'
 import { useMoat } from '../moat-store'
+import type { DigitalRepresentativePolicy, PortableIdentity } from '../domain/moat-models'
 import { useNetwork } from '../store'
 import { Btn, Eyebrow, Head } from '../ui'
 import { AvailabilityWindows, PassportModule } from '../moat-ui'
@@ -18,8 +19,8 @@ const shareToggles = [
 export function IdentityPage() {
   const moat = useMoat()
   const net = useNetwork()
-  const identity = moat.identity[0]
-  const policy = moat.representative[0]
+  const identity = moat.identities[0]
+  const policy = moat.representatives[0]
   const [copied, setCopied] = useState(false)
   const [name, setName] = useState('')
   const [email, setEmail] = useState('')
@@ -68,9 +69,9 @@ export function IdentityPage() {
     </div>
 
     <section className="module identity-requests-list">
-      <header><div><Eyebrow signal>INBOUND FROM YOUR LINK</Eyebrow><h3>{identity.requests.filter(r => r.status === 'new').length} waiting</h3></div></header>
+      <header><div><Eyebrow signal>INBOUND FROM YOUR LINK</Eyebrow><h3>{identity.requests.filter((r) => r.status === 'new').length} waiting</h3></div></header>
       <ul>
-        {identity.requests.map(r => <li key={r.id} className={r.status}>
+        {identity.requests.map((r: PortableIdentity['requests'][number]) => <li key={r.id} className={r.status}>
           <div><strong>{r.name}</strong><small>{r.email} · {r.kind} · {r.when}</small><p>{r.context}</p></div>
           {r.status === 'new'
             ? <div className="request-actions">
@@ -91,7 +92,7 @@ export function IdentityPage() {
       </div>
     </section>
 
-    <PassportModule memberId={net.profile.id ?? 'me'} />
+    <PassportModule memberId="me" />
     <AvailabilityWindows memberId="me" />
 
     {policy && <section className="module rep-policy">
@@ -99,13 +100,13 @@ export function IdentityPage() {
         <button className={`switch ${policy.enabled ? 'on' : ''}`} onClick={() => moat.updateRepresentative({ enabled: !policy.enabled })} aria-label="Toggle representative"><i /></button></header>
       <p>{policy.handoffNote}</p>
       <div className="rep-columns">
-        <div><Eyebrow>PERMITTED TOPICS</Eyebrow><ul>{policy.allowedTopics.map(t => <li key={t}>{t}</li>)}</ul></div>
-        <div><Eyebrow signal>NEVER DISCUSSED</Eyebrow><ul>{policy.blockedTopics.map(t => <li key={t}>{t}</li>)}</ul></div>
-        <div><Eyebrow>AUTHORITY LIMITS</Eyebrow><ul>{policy.authorityLimits.map(t => <li key={t}>{t}</li>)}</ul></div>
+        <div><Eyebrow>PERMITTED TOPICS</Eyebrow><ul>{policy.allowedTopics.map((t: string) => <li key={t}>{t}</li>)}</ul></div>
+        <div><Eyebrow signal>NEVER DISCUSSED</Eyebrow><ul>{policy.blockedTopics.map((t: string) => <li key={t}>{t}</li>)}</ul></div>
+        <div><Eyebrow>AUTHORITY LIMITS</Eyebrow><ul>{policy.authorityLimits.map((t: string) => <li key={t}>{t}</li>)}</ul></div>
       </div>
       <p className="rep-note">It always identifies itself as a representative, never as you. It cannot commit, price, or book anything.</p>
       {!!policy.transcript.length && <ul className="rep-transcript">
-        {policy.transcript.map(t => <li key={t.id}><b>{t.from}</b> asked “{t.question}”<em>{t.answer}</em>
+        {policy.transcript.map((t: DigitalRepresentativePolicy['transcript'][number]) => <li key={t.id}><b>{t.from}</b> asked “{t.question}”<em>{t.answer}</em>
           <small>{t.permitted ? 'Answered from approved context' : 'Refused'}{t.handedOff ? ' · handed to you' : ''}</small></li>)}
       </ul>}
     </section>}

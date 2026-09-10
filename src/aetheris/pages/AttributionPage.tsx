@@ -27,13 +27,13 @@ export function AttributionPage() {
 
     <nav className="lane-row" role="tablist" aria-label="Traced outcomes">
       {traced.map(id => <button key={id} role="tab" aria-selected={outcomeId === id} className={outcomeId === id ? 'on' : ''} onClick={() => setOutcomeId(id)}>
-        {platform.outcomes.find(o => o.id === id)?.title ?? id}
+        {platform.outcomes.find(o => o.id === id)?.headline ?? id}
       </button>)}
     </nav>
 
     <section className="module attribution">
       <header><div><Eyebrow signal>ORIGIN</Eyebrow>
-        <h3>{outcome?.title ?? 'Outcome'}</h3>
+        <h3>{outcome?.headline ?? 'Outcome'}</h3>
         <p>It started with {summary.origin}, {summary.steps} traceable steps ago.</p></div>
         <div className="attribution-counts">
           <span><b>{summary.direct}</b> direct</span><span><b>{summary.influenced}</b> influenced</span><span><b>{summary.contextual}</b> contextual</span>

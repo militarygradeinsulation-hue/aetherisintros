@@ -95,7 +95,7 @@ function EventDetail({ event }: { event: LiveEvent }) {
           {canHelp.map(m => <li key={m!.id}><strong>{m!.name}</strong><span>{m!.needs[0]}</span>
             <Btn kind="quiet" onClick={() => nav.messageMember(m!.id)}>Offer something</Btn></li>)}
         </ul>
-        <ReciprocityNote circleId={event.circleIds[0]} />
+        {event.circleIds[0] && <ReciprocityNote circleId={event.circleIds[0]} />}
       </section>
 
       <section className="module">
