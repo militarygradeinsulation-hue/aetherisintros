@@ -1948,7 +1948,8 @@ function Shell({ startPage }: { startPage?: Page | undefined }) {
       document.querySelectorAll<HTMLElement>('[data-person-portrait]').forEach(node => {
         const id = node.dataset['personPortrait']
         if (!id) return
-        const source = node.querySelector<HTMLImageElement>('img')?.currentSrc
+        const image = node.querySelector<HTMLImageElement>('img')
+        const source = image?.currentSrc || image?.getAttribute('src')
         const repeated = seenPeople.has(id) || Boolean(source && seenSources.has(source))
         node.classList.toggle('portrait-repeat', repeated)
         seenPeople.add(id)
