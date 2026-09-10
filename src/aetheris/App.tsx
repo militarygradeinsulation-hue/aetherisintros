@@ -379,19 +379,33 @@ function Home({ people, select, setPage, openNeed, openThread }: {
 
 /* ----------------------------------------------------------------- discover */
 
-const filterGroups: Array<{ label: string; options: string[] }> = [
-  { label: 'Role', options: ['Founder', 'Investor', 'Operator', 'Executive', 'Advisor', 'Specialist', 'Connector'] },
-  { label: 'Industry', options: ['Manufacturing', 'SaaS', 'Finance', 'Construction', 'Healthcare', 'Logistics', 'AI', 'Professional services', 'Consumer brands', 'Field services', 'Private equity', 'Energy', 'Fintech', 'Executive search'] },
-  { label: 'Signal', options: ['Warm path available', 'High match', 'Available now'] },
-]
+const memberRoles: MemberRole[] = ['Founder', 'Operator', 'Investor', 'Advisor', 'Executive', 'Specialist', 'Connector']
+const signalFilters = ['Warm path available', 'High match', 'Available now']
 
 function Discover({ people, select }: { people: Member[]; select: (p: Member) => void }) {
   const [q, setQ] = useState('')
+  const [roles, setRoles] = useState<string[]>([])
   const [active, setActive] = useState<string[]>([])
+  const [company, setCompany] = useState('')
+  const [expertise, setExpertise] = useState('')
+  const [location, setLocation] = useState('')
+  const [industry, setIndustry] = useState('')
+  const [strength, setStrength] = useState('')
+  const [tab, setTab] = useState<'Top Locations' | 'Top Industries' | 'Top Roles'>('Top Locations')
+  const uniq = (xs: string[]) => [...new Set(xs)].sort()
   const toggle = (o: string) => setActive(a => a.includes(o) ? a.filter(x => x !== o) : [...a, o])
+  const toggleRole = (o: string) => setRoles(a => a.includes(o) ? a.filter(x => x !== o) : [...a, o])
+  const clearAll = () => { setQ(''); setRoles([]); setActive([]); setCompany(''); setExpertise(''); setLocation(''); setIndustry(''); setStrength('') }
   const filtered = people.filter(p => {
     const hay = `${p.name} ${p.title} ${p.company} ${p.location} ${p.role} ${p.industry} ${p.tags.join(' ')} ${p.expertise.join(' ')} ${p.needs.join(' ')} ${p.offers.join(' ')} ${p.focus}`.toLowerCase()
     if (q.trim() && !q.toLowerCase().split(/\s+/).some(w => w.length > 2 && hay.includes(w))) return false
+    if (company && p.company !== company) return false
+    if (expertise && !p.expertise.includes(expertise)) return false
+    if (location && p.location !== location) return false
+    if (industry && p.industry !== industry) return false
+    if (roles.length && !roles.includes(p.role)) return false
+    if (strength === 'Strong' && p.score.relationshipStrength < 70) return false
+    if (strength === 'Building' && p.score.relationshipStrength >= 70) return false
     return active.every(f => {
       if (f === 'Warm path available') return p.bestPath.length > 2
       if (f === 'High match') return p.scoreTotal >= 80
@@ -399,6 +413,20 @@ function Discover({ people, select }: { people: Member[]; select: (p: Member) =>
       return hay.includes(f.toLowerCase())
     })
   })
+  const counts = (key: (p: Member) => string) => {
+    const map = new Map<string, number>()
+    people.forEach(p => map.set(key(p), (map.get(key(p)) ?? 0) + 1))
+    return [...map.entries()].sort((a, b) => b[1] - a[1]).slice(0, 5)
+  }
+  const rows = tab === 'Top Locations' ? counts(p => p.location) : tab === 'Top Industries' ? counts(p => p.industry) : counts(p => p.role)
+  const max = Math.max(1, ...rows.map(r => r[1]))
+  const selects: Array<{ icon: React.ReactNode; label: string; value: string; set: (v: string) => void; options: string[]; any: string }> = [
+    { icon: <Layers size={14} />, label: 'Company', value: company, set: setCompany, options: uniq(people.map(p => p.company)), any: 'All Companies' },
+    { icon: <Fingerprint size={14} />, label: 'Expertise', value: expertise, set: setExpertise, options: uniq(people.flatMap(p => p.expertise)), any: 'Select Expertise' },
+    { icon: <UserRound size={14} />, label: 'Location', value: location, set: setLocation, options: uniq(people.map(p => p.location)), any: 'Any Location' },
+    { icon: <Network size={14} />, label: 'Industry', value: industry, set: setIndustry, options: uniq(people.map(p => p.industry)), any: 'All Industries' },
+    { icon: <ShieldCheck size={14} />, label: 'Relationship Strength', value: strength, set: setStrength, options: ['Strong', 'Building'], any: 'Any Strength' },
+  ]
   return <>
     <EditorialHero
       folio="DISCOVER / PROFESSIONAL NETWORK"
@@ -409,43 +437,78 @@ function Discover({ people, select }: { people: Member[]; select: (p: Member) =>
       image={marcusPortrait}
       focus="center 22%"
     />
-    <PageHead label="DISCOVER" title="Browse the people, not a database."
-      copy="Search in your own words. Intros reads needs, offers, expertise, location and the paths already open to you."
-      proof="Try: “manufacturing CEO in Indiana looking for AI help.”" />
-    <div className="discover-search">
-      <Search size={18} />
-      <input value={q} onChange={e => setQ(e.target.value)} placeholder="Describe who you want to meet…" />
-      <span>{filtered.length} members</span>
-    </div>
-    <div className="filter-bank">{filterGroups.map(g => <div key={g.label}><span>{g.label.toUpperCase()}</span><div>{g.options.map(o =>
-      <button key={o} className={active.includes(o) ? 'active' : ''} onClick={() => toggle(o)}>{o}</button>)}</div></div>)}</div>
-    <div className="discover-grid">
-      {filtered.map(p => <article className="discover-tile" key={p.id}>
-        <button className="tile-open" onClick={() => select(p)}>
-          <div className="tile-portrait"><Avatar person={p} large portrait /><span className="tile-score">{p.scoreTotal}</span></div>
-          <Label>{p.role} · {p.location}</Label>
-          <h3>{p.name}</h3>
-          <p className="tile-role">{p.title}<br />{p.company}</p>
-          <p className="tile-focus">{p.focus}</p>
-          <dl>
-            <div><dt>LOOKING FOR</dt><dd>{p.needs[0]}</dd></div>
-            <div><dt>CAN HELP WITH</dt><dd>{p.offers[0]}</dd></div>
-          </dl>
-          <ul className="tile-tags">{p.expertise.slice(0, 3).map(t => <li key={t}>{t}</li>)}</ul>
-          <small className="tile-path">{p.bestPath.length > 2 ? `Warm path via ${p.bestPath[1]}` : 'Direct relationship'} · {p.availability}</small>
-        </button>
-        <footer><MemberActions person={p} compact /></footer>
-      </article>)}
-      {!filtered.length && <p className="empty-state">No members match that yet. Broaden the filters or describe the outcome instead of the title.</p>}
-    </div>
-    <section className="network-insight-strip">
-      <header><Label signal>NETWORK INSIGHT</Label><h2>What this search tells Intros.</h2></header>
-      <div>
-        <article><span>STRONGEST MATCH IN VIEW</span><strong>{[...filtered].sort((a, b) => b.scoreTotal - a.scoreTotal)[0]?.name ?? '—'}</strong><small>Ranked on mutual value, timing and trust — not keyword overlap.</small></article>
-        <article><span>WARM PATHS AVAILABLE</span><strong>{filtered.filter(p => p.bestPath.length > 2).length} of {filtered.length}</strong><small>Someone in your graph can make the introduction credible.</small></article>
-        <article><span>AVAILABLE NOW</span><strong>{filtered.filter(p => /open|weekly|two|always|fortnightly/i.test(p.availability)).length} members</strong><small>Availability is member-stated, so timing stays honest.</small></article>
-        <article><span>MOST COMMON NEED</span><strong>{filtered[0]?.needs[0] ?? '—'}</strong><small>Needs shape the feed you see on Home.</small></article>
+    <div className="discover-shell">
+      <aside className="filter-panel">
+        <header><span>FILTER PEOPLE</span><button className="mod-link" onClick={clearAll}>Clear All</button></header>
+        <div className="filter-search"><Search size={16} /><input value={q} onChange={e => setQ(e.target.value)} placeholder="Name, title, company, or keyword…" /></div>
+        {selects.map(s => <div className="filter-field" key={s.label}>
+          <label>{s.icon}{s.label}</label>
+          <select value={s.value} onChange={e => s.set(e.target.value)} aria-label={s.label}>
+            <option value="">{s.any}</option>
+            {s.options.map(o => <option key={o} value={o}>{o}</option>)}
+          </select>
+        </div>)}
+        <ul className="filter-checks">{memberRoles.map(r => <li key={r}>
+          <label><input type="checkbox" checked={roles.includes(r)} onChange={() => toggleRole(r)} /><span />{r}s</label>
+        </li>)}</ul>
+        <ul className="filter-signals">{signalFilters.map(f =>
+          <li key={f}><button className={active.includes(f) ? 'active' : ''} onClick={() => toggle(f)}>{f}</button></li>)}</ul>
+        <Button className="filter-apply">Apply Filters <ArrowRight size={15} /></Button>
+        <small className="filter-count">{filtered.length} of {people.length} members</small>
+      </aside>
+      <div className="discover-main">
+        <PageHead label="DISCOVER" title="Browse the people, not a database."
+          copy="Search in your own words. Intros reads needs, offers, expertise, location and the paths already open to you."
+          proof="Try: “manufacturing CEO in Indiana looking for AI help.”" />
+        <div className="discover-grid">
+          {filtered.map(p => <article className="discover-tile" key={p.id}>
+            <button className="tile-open" onClick={() => select(p)}>
+              <div className="tile-portrait"><Avatar person={p} large portrait /><span className="tile-score">{p.scoreTotal}</span></div>
+              <Label>{p.role} · {p.location}</Label>
+              <h3>{p.name}</h3>
+              <p className="tile-role">{p.title}<br />{p.company}</p>
+              <p className="tile-focus">{p.focus}</p>
+              <dl>
+                <div><dt>LOOKING FOR</dt><dd>{p.needs[0]}</dd></div>
+                <div><dt>CAN HELP WITH</dt><dd>{p.offers[0]}</dd></div>
+              </dl>
+              <ul className="tile-tags">{p.expertise.slice(0, 3).map(t => <li key={t}>{t}</li>)}</ul>
+              <small className="tile-path">{p.bestPath.length > 2 ? `Warm path via ${p.bestPath[1]}` : 'Direct relationship'} · {p.availability}</small>
+            </button>
+            <footer><MemberActions person={p} compact /></footer>
+          </article>)}
+          {!filtered.length && <p className="empty-state">No members match that yet. Broaden the filters or describe the outcome instead of the title.</p>}
+        </div>
       </div>
+    </div>
+
+    <section className="global-network">
+      <header><span>A GLOBAL NETWORK<br />OF POSSIBILITY</span>
+        <p>PEOPLE<br />IDEAS<br />CAPITAL<br />INFRASTRUCTURE<br />A MORE<br />CONNECTED<br />TOMORROW.</p></header>
+      <div className="globe-plate" aria-hidden="true">{Array.from({ length: 44 }).map((_, i) =>
+        <i key={i} style={{ left: `${(i * 37) % 96 + 2}%`, top: `${(i * 53) % 82 + 9}%`, opacity: 0.35 + ((i * 7) % 6) / 10 }} />)}</div>
+      <dl className="global-stats">
+        <div><dd>10K+</dd><dt>Professionals</dt></div><div><dd>312</dd><dt>Companies</dt></div>
+        <div><dd>28</dd><dt>Countries</dt></div><div><dd>92%</dd><dt>Relevant Matches</dt></div>
+      </dl>
+      <div className="network-insight-cards">
+        <section className="mod">
+          <header><span>NETWORK INSIGHTS</span><small>Global</small></header>
+          <div className="insight-tabs">{(['Top Locations', 'Top Industries', 'Top Roles'] as const).map(t =>
+            <button key={t} className={tab === t ? 'active' : ''} onClick={() => setTab(t)}>{t}</button>)}</div>
+          <ul className="insight-bars">{rows.map(([k, v]) => <li key={k}><span>{k}</span>
+            <i><b style={{ width: `${(v / max) * 100}%` }} /></i><em>{v}</em></li>)}</ul>
+        </section>
+        <section className="mod">
+          <header><span>PEOPLE ON AETHERIS</span><button className="mod-link">View All <ArrowRight size={12} /></button></header>
+          <ul className="joined-list">{[...people].sort((a, b) => b.joined.localeCompare(a.joined)).slice(0, 3).map(p =>
+            <li key={p.id}><button onClick={() => select(p)}><Avatar person={p} portrait />
+              <div><strong>{p.name}</strong><small>{p.title}, {p.company}</small></div>
+              <span className="joined-flag"><i className="live-dot" />Joined this week</span></button></li>)}</ul>
+        </section>
+      </div>
+      <blockquote className="global-quote">“The best opportunities come from the right people.”<small>— AETHERIS MEMBER</small></blockquote>
+      <footer className="member-footer"><span>THE INTELLIGENCE LAYER FOR MEANINGFUL CONNECTIONS</span><b>AETHERIS INTROS</b></footer>
     </section>
   </>
 }
