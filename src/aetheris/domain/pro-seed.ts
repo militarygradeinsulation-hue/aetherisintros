@@ -5,7 +5,7 @@
 import type {
   AcquisitionIntent, AetherisStandardAcceptance, BoardAdvisoryIntent, CapabilityProblem,
   CapitalProfile, ContextualReputation, DealRoom, EventPresence, ExpertiseOffer,
-  HumanConciergeReview, ImportBatch, IndustryIntelligenceItem, IndustryRoom, IntroducerRecord,
+  HumanConciergeReview, ImportBatch, ImportProposal, IndustryIntelligenceItem, IndustryRoom, IntroducerRecord,
   KnowledgeAsset, MarketplaceListing, PassportCredential, PeerCouncil, PitchPermissionRequest,
   ProfessionalAvailability, ProfessionalBoundaryRule, ProfessionalInboxDecision,
   ProfessionalOpportunity, ProfessionalPassportProfile, ProfessionalReferral, ProofOfWorkEdge,
