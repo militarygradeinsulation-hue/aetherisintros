@@ -20,7 +20,7 @@ const seed = [
     whyThem: 'She oversees growth across multiple operating companies that match the ideal Aetheris diagnostic use case.',
     whyYou: 'Aetheris can surface revenue leakage without forcing every portfolio company into the same software stack.',
     whyNow: 'Northline recently added two operating companies and is standardizing growth reporting.',
-    bestPath: ['You', 'Adrian Vale', 'Mina Park'], nextAction: 'Use Gary as context only after validating his willingness to make the introduction.', dontDo: 'Do not cold-send a long deck.', confidence: 82, opportunityLow: 125000, opportunityHigh: 600000,
+    bestPath: ['You', 'Adrian Vale', 'Mina Park'], nextAction: 'Use Adrian as context only after validating his willingness to make the introduction.', dontDo: 'Do not cold-send a long deck.', confidence: 82, opportunityLow: 125000, opportunityHigh: 600000,
   },
   {
     id: 'p3', name: 'Nolan Pierce', initials: 'NP', title: 'CEO', company: 'ForgeLine Systems', location: 'Indianapolis, IN',
@@ -75,9 +75,9 @@ export const objectives: Objective[] = [
 ]
 
 export const leaks: ForensicLeak[] = [
-  { id: 'l1', type: 'Dormant high-value relationship', personId: 'p4', businessReason: 'Alison now controls a wider national partnership remit than when you last spoke.', evidence: 'Strong prior relationship + 228 days inactive + role scope expanded.', urgency: 'high', recommendedAction: 'Reactivate with a direct note tied to her expanded role.', confidence: 84, estimatedValue: '$15K–$90K modeled' },
+  { id: 'l1', type: 'Dormant high-value relationship', personId: 'p4', businessReason: 'Celeste now controls a wider national partnership remit than when you last spoke.', evidence: 'Strong prior relationship + 228 days inactive + role scope expanded.', urgency: 'high', recommendedAction: 'Reactivate with a direct note tied to her expanded role.', confidence: 84, estimatedValue: '$15K–$90K modeled' },
   { id: 'l2', type: 'Relationship at risk', personId: 'p5', businessReason: 'Strong trust history but more than a year without meaningful contact.', evidence: 'Relationship strength 82 / 100; 510 days since interaction.', urgency: 'medium', recommendedAction: 'Send something useful with no immediate ask.', confidence: 91 },
-  { id: 'l3', type: 'Warm path available', personId: 'p2', businessReason: 'Maya is a high-fit operator and a credible two-hop path already exists.', evidence: 'Gary → Maya path; Strategic Fit 93 / 100.', urgency: 'high', recommendedAction: 'Validate connector interest before requesting the introduction.', confidence: 82, estimatedValue: '$125K–$600K modeled' },
+  { id: 'l3', type: 'Warm path available', personId: 'p2', businessReason: 'Mina is a high-fit operator and a credible two-hop path already exists.', evidence: 'Adrian → Mina path; Strategic Fit 93 / 100.', urgency: 'high', recommendedAction: 'Validate connector interest before requesting the introduction.', confidence: 82, estimatedValue: '$125K–$600K modeled' },
 ]
 
 export const meetings: Meeting[] = [

@@ -392,7 +392,7 @@ const cohort: RawMember[] = [
   },
   {
     id: 'p24', name: 'Gabriel Soto', initials: 'GS', title: 'Founder', company: 'Terrace Property Group',
-    location: 'San Diego, AK', role: 'Founder', industry: 'Real estate',
+    location: 'San Mateo, AK', role: 'Founder', industry: 'Real estate',
     tags: ['Real estate', 'Development', 'Capital'], expertise: ['Mixed-use development', 'Capital raising', 'Municipal relations'],
     needs: ['Institutional capital relationships', 'Operators for two mixed-use sites'],
     offers: ['Development experience', 'Municipal relationships', 'Deal access'],
@@ -558,7 +558,7 @@ export const signals: Signal[] = [
   { id: 's8', memberId: 'p20', kind: 'Role change', text: 'Idris Hale now leads the merged platform organisation at Braxton.', when: '1 week ago' },
   { id: 's9', memberId: 'p17', kind: 'Expansion', text: 'Ridgeline Health Partners added three clinics to the access programme.', when: '2 days ago' },
   { id: 's10', memberId: 'p19', kind: 'New need', text: 'Clara Fenwick needs two interim HBOs for mid-market turnarounds.', when: '2 days ago' },
-  { id: 's11', memberId: 'p24', kind: 'New project', text: 'Gabriel Soto started financing two mixed-use developments in San Diego.', when: '1 week ago' },
+  { id: 's11', memberId: 'p24', kind: 'New project', text: 'Gabriel Soto started financing two mixed-use developments in San Mateo.', when: '1 week ago' },
 ]
 
 export interface ThreadMessage { id: string; from: 'me' | 'them'; text: string; at: string }
@@ -577,7 +577,7 @@ export const threads: Thread[] = [
     id: 't1', memberId: 'p3', unread: true,
     introContext: 'Introduced by Adrian Vale · shared interest in pipeline accountability.',
     commitment: 'You said you would send one observation before Friday.',
-    suggested: 'Scott — the pattern I keep seeing is inbound leads going quiet at the 48-hour mark. Want me to look at that one path with your data?',
+    suggested: 'Nolan — the pattern I keep seeing is inbound leads going quiet at the 48-hour mark. Want me to look at that one path with your data?',
     messages: [
       { id: 'm1', from: 'them', text: 'The timing is useful. I’m looking closely at this problem now.', at: 'Mon 10:42' },
       { id: 'm2', from: 'me', text: 'That is exactly why I thought a conversation could be useful. No pitch — just compare notes on the current constraints.', at: 'Mon 10:49' },
@@ -588,16 +588,16 @@ export const threads: Thread[] = [
     id: 't2', memberId: 'p7', unread: true,
     introContext: 'Warm path through Nolan Pierce · she is hiring for four new regions.',
     commitment: 'She asked for one example of a multi-region handoff failure.',
-    suggested: 'Sarah — the break usually appears between regional dispatch and central billing. Happy to walk through what to watch for before the hiring starts.',
+    suggested: 'Mara — the break usually appears between regional dispatch and central billing. Happy to walk through what to watch for before the hiring starts.',
     messages: [
-      { id: 'm1', from: 'them', text: 'Scott mentioned you look at where revenue quietly leaks. We are about to quadruple our regions.', at: 'Wed 16:20' },
+      { id: 'm1', from: 'them', text: 'Nolan mentioned you look at where revenue quietly leaks. We are about to quadruple our regions.', at: 'Wed 16:20' },
     ],
   },
   {
     id: 't3', memberId: 'p11', unread: false,
     introContext: 'Long-standing relationship · overlapping advisory clients.',
     commitment: 'You agreed to map one of her client networks as a shared experiment.',
-    suggested: 'Priya — pick the client with the messiest buying committee and I will map who actually decides.',
+    suggested: 'Anika — pick the client with the messiest buying committee and I will map who actually decides.',
     messages: [
       { id: 'm1', from: 'me', text: 'Two of your founders would get value from a relationship map before they raise.', at: 'Thu 09:02' },
       { id: 'm2', from: 'them', text: 'Agreed. Let’s try it with one client and see whether the reasoning holds up.', at: 'Thu 09:40' },
@@ -608,9 +608,9 @@ export const threads: Thread[] = [
     id: 't4', memberId: 'p14', unread: false,
     introContext: 'Introduced by Caleb Wynn · both looking for real operational problems.',
     commitment: 'He is holding a design partner slot until month end.',
-    suggested: 'Elliot — I have one operational problem with a named owner and a measurable outcome. Worth twenty minutes?',
+    suggested: 'Kenji — I have one operational problem with a named owner and a measurable outcome. Worth twenty minutes?',
     messages: [
-      { id: 'm1', from: 'them', text: 'Kevin said you frame problems well. That is rarer than model access.', at: 'Fri 11:12' },
+      { id: 'm1', from: 'them', text: 'Caleb said you frame problems well. That is rarer than model access.', at: 'Fri 11:12' },
       { id: 'm2', from: 'me', text: 'I will bring one problem, one owner and one number worth moving.', at: 'Fri 11:30' },
     ],
   },
@@ -618,7 +618,7 @@ export const threads: Thread[] = [
     id: 't5', memberId: 'p1', unread: false,
     introContext: 'Active relationship · he is testing the Intros model with founders.',
     commitment: 'He offered feedback on positioning before you approach operators.',
-    suggested: 'Gary — one question before Friday: what would make you trust the match score enough to forward it?',
+    suggested: 'Adrian — one question before Friday: what would make you trust the match score enough to forward it?',
     messages: [
       { id: 'm1', from: 'them', text: 'Send me the version you would show a skeptical founder.', at: 'Sun 18:05' },
     ],
