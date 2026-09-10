@@ -76,7 +76,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
   head: () => ({
     meta: [
       { charSet: "utf-8" },
-      { name: "viewport", content: "width=device-width, initial-scale=1" },
+      { name: "viewport", content: "width=device-width, initial-scale=1, viewport-fit=cover" },
       { title: "Aetheris Intros — Relationship Intelligence" },
       { name: "description", content: "Know who matters, why they matter, and why now." },
       { name: "author", content: "Aetheris Intros" },
