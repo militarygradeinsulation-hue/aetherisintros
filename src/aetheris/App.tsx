@@ -1088,11 +1088,15 @@ function Onboarding({ open, onClose }: { open: boolean; onClose: () => void }) {
   </div>
 }
 
-function ContextRail({ page, people, select, onAsk, objectives, openThread }: {
-  page: Page; people: Member[]; select: (p: Member) => void; onAsk: () => void; objectives: Objective[]; openThread: () => void
+function ContextRail({ page, people, select, onAsk }: {
+  page: Page; people: Member[]; select: (p: Member) => void; onAsk: () => void
 }) {
+  const net = useNetwork()
+  const nav = useNav()
+  const objectives = net.objectives
   const ranked = [...people].sort((a, b) => b.scoreTotal - a.scoreTotal)
   const p = ranked[0]
+  const cool = [...people].sort((a, b) => b.lastInteractionDays - a.lastInteractionDays)[0]
   const warm = people.filter(x => x.bestPath.length > 2).slice(0, 2)
   if (!p) return null
   return <aside className="context-rail">
