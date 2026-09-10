@@ -1,13 +1,17 @@
-import { createFileRoute, Link, useNavigate } from '@tanstack/react-router'
+import { createFileRoute, Link, redirect, useNavigate } from '@tanstack/react-router'
 import { ArrowRight, LockKeyhole } from 'lucide-react'
 import { useEffect, useState } from 'react'
 
 import { supabase } from '@/integrations/supabase/client'
 import { lovable } from '@/integrations/lovable/index'
+import { AUTH_REQUIRED } from '@/aetheris/config'
 import authPortrait from '@/assets/portraits/portrait-26.jpg.asset.json'
 import '@/aetheris/styles.css'
 
 export const Route = createFileRoute('/auth')({
+  beforeLoad: () => {
+    if (!AUTH_REQUIRED) throw redirect({ to: '/app' })
+  },
   head: () => ({
     meta: [
       { title: 'Sign in — Aetheris Intros' },
@@ -98,12 +102,18 @@ function AuthPage() {
         <span className="brand-monogram">AI</span>
         <span className="brand-name">Aetheris<em>Intros</em></span>
       </Link>
-      <span className="folio">MEMBER ACCESS / 2026</span>
+      <div className="auth-index"><span className="folio">MEMBER ACCESS / 2026</span><span>01 / PRIVATE NETWORK</span></div>
       <h1>{mode === 'signin' ? <>Welcome<br /><em>back.</em></> : <>Join the<br /><em>network.</em></>}</h1>
       <p className="auth-lede">
         Your introductions, active memory and preferences stay with your account — private,
         permissioned and available on any device.
       </p>
+
+      <div className="auth-proof" aria-label="Member access principles">
+        <span><b>01</b> Private by default</span>
+        <span><b>02</b> Double opt-in</span>
+        <span><b>03</b> Your memory, controlled</span>
+      </div>
 
       <button className="btn google" type="button" onClick={() => void google()} disabled={busy}>
         Continue with Google
@@ -137,6 +147,7 @@ function AuthPage() {
     </section>
     <aside className="auth-visual">
       <img src={authPortrait.url} alt="A composed professional in architectural window light" width={1280} height={1600} />
+      <span className="auth-visual-mark" aria-hidden="true">+</span>
       <div className="portrait-caption">
         <span>ACTIVE MEMORY / 01</span>
         <p>Signed in, every conversation makes the next introduction sharper.</p>

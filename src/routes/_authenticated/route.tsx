@@ -1,10 +1,12 @@
 import { createFileRoute, Outlet, redirect } from '@tanstack/react-router'
 
+import { AUTH_REQUIRED } from '@/aetheris/config'
 import { supabase } from '@/integrations/supabase/client'
 
 export const Route = createFileRoute('/_authenticated')({
   ssr: false,
   beforeLoad: async () => {
+    if (!AUTH_REQUIRED) return { user: null }
     const { data, error } = await supabase.auth.getUser()
     if (error || !data.user) throw redirect({ to: '/auth' })
     return { user: data.user }
