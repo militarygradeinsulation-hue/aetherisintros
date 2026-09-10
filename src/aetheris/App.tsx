@@ -906,48 +906,187 @@ function Profile({ people, setPage, openOnboarding }: {
   </>
 }
 
-/* ------------------------------------------------------- drawer and modals */
+/* ------------------------------------------------ member profile and modals */
 
-function PersonDrawer({ person, onClose, onDraft, onMessage }: {
-  person: Member | null; onClose: () => void; onDraft: (p: Member) => void; onMessage: (id: string) => void
+function Ring({ value, label }: { value: number; label: string }) {
+  const c = 2 * Math.PI * 42
+  return <div className="compat-ring">
+    <svg viewBox="0 0 100 100" aria-hidden="true">
+      <circle cx="50" cy="50" r="42" className="ring-track" />
+      <circle cx="50" cy="50" r="42" className="ring-value" strokeDasharray={`${(c * value) / 100} ${c}`} />
+    </svg>
+    <strong>{value}%</strong>
+    <span>{label}</span>
+  </div>
+}
+
+/** Full member profile: editorial ivory identity beside the dark relationship record. */
+function MemberProfile({ person, people, onClose, onDraft, onMessage }: {
+  person: Member; people: Member[]; onClose: () => void; onDraft: (p: Member) => void; onMessage: (id: string) => void
 }) {
   const net = useNetwork()
   const [text, setText] = useState('')
   const [scope, setScope] = useState<PrivacyScope>('private')
-  if (!person) return null
-  const notes = net.notes
-  const onAdd = net.addNote
+  const [reasoning, setReasoning] = useState(false)
+  const [copied, setCopied] = useState(false)
   const connected = net.connections.includes(person.id)
-  return <div className="drawer-wrap" onMouseDown={onClose}>
-    <aside className="intel-drawer" onMouseDown={e => e.stopPropagation()}>
-      <header><button className="icon-btn" onClick={onClose} aria-label="Close"><X size={17} /></button><Label>MEMBER INTELLIGENCE</Label><Score value={person.scoreTotal} /></header>
-      <div className="drawer-person">
-        <Avatar person={person} large portrait />
-        <div><h2>{person.name}</h2><p>{person.title} · {person.company}</p><p>{person.location} · {person.role} · {person.industry}</p></div>
+  const following = net.follows.includes(person.id)
+  const notes = net.notes.filter(n => n.personId === person.id)
+  const named = people.filter(p => person.mutuals.includes(p.name))
+  const shared = (named.length ? named : people.filter(p => p.id !== person.id).slice(0, 3)).slice(0, 3)
+  const activity = net.posts.filter(p => p.memberId === person.id).slice(0, 2)
+  const history = [
+    { text: `You both engaged with ${person.industry.toLowerCase()} conversations on Intros`, when: `Joined ${person.joined}` },
+    ...(person.bestPath.length > 2 ? [{ text: `Warm path opened through ${person.bestPath[1]}`, when: 'Trust path active' }] : []),
+    { text: person.mutuals.length ? `Shared connections: ${person.mutuals.join(', ')}` : 'No shared connections yet', when: `${person.mutuals.length} mutual` },
+    { text: `${person.name.split(' ')[0]} last interacted with your network`, when: `${person.lastInteractionDays} days ago` },
+  ]
+  return <article className="member-page">
+    <button className="member-back" onClick={onClose}><ChevronLeft size={16} /> Back to the network</button>
+
+    <section className="member-identity">
+      <div className="member-identity-copy">
+        <Brand />
+        <Label>MEMBER PROFILE / {person.role.toUpperCase()}</Label>
+        <h1>{person.name}</h1>
+        <p className="member-role">{person.title}<br />{person.company}</p>
+        <p className="member-meta">{person.location} · {person.industry} · Member since {person.joined}</p>
+        <blockquote>“{person.thesis}”</blockquote>
+        <dl className="member-metrics">
+          <div><dt>Match</dt><dd>{person.scoreTotal}</dd></div>
+          <div><dt>Mutual</dt><dd>{String(person.mutuals.length).padStart(2, '0')}</dd></div>
+          <div><dt>Trust path</dt><dd>{person.bestPath.length > 2 ? '2nd' : '1st'}</dd></div>
+          <div><dt>Confidence</dt><dd>{person.confidence}%</dd></div>
+        </dl>
+        <div className="member-cta-row">
+          <Button kind="secondary" onClick={() => onMessage(person.id)}><MessageSquareText size={14} /> Message</Button>
+          <Button kind="quiet" onClick={() => net.connect(person.id)}>{connected ? <><Check size={14} /> Connected</> : <><Plus size={14} /> Connect</>}</Button>
+          <Button onClick={() => onDraft(person)}><Handshake size={14} /> Request Intro</Button>
+          <SaveButton saved={net.saved.includes(person.id)} onToggle={() => net.toggleSave(person.id)} />
+          <button className="save-btn" aria-label="Share profile" onClick={() => {
+            void navigator.clipboard?.writeText(`https://aetheris-intros.app/${person.id}`).catch(() => {})
+            setCopied(true); window.setTimeout(() => setCopied(false), 1600)
+          }}><Share2 size={15} /></button>
+          <Button kind="quiet" onClick={() => net.follow(person.id)}>{following ? 'Following' : 'Follow'}</Button>
+        </div>
+        {copied && <small className="copied-note">Profile link copied.</small>}
       </div>
-      <div className="drawer-thesis"><Label>WHY THIS INTRO</Label><h3>{classifyConnection(person.scoreTotal)}</h3><p>{person.whyThem}</p></div>
-      {([['PROFESSIONAL THESIS', person.thesis], ['CURRENT FOCUS', person.focus], ['LOOKING FOR', person.needs.join(' · ')],
-      ['CAN HELP WITH', person.offers.join(' · ')], ['WHY YOU MATTER TO THEM', person.whyYou], ['WHY NOW', person.whyNow],
-      ['MUTUAL CONNECTIONS', person.mutuals.join(' · ') || 'None yet'], ['AVAILABILITY', person.availability],
-      ['RECOMMENDED NEXT MOVE', person.nextAction], ['AVOID', person.dontDo]] as const).map(([a, b]) =>
-        <section key={a}><span>{a}</span><p>{b}</p></section>)}
-      <section><span>TRUST PATH</span><div className="drawer-path">{person.bestPath.join(' → ')}</div></section>
-      <section className="drawer-memory">
-        <div className="section-heading"><span>ACTIVE MEMORY</span><small><LockKeyhole size={11} />privacy scoped</small></div>
-        {notes.filter(n => n.personId === person.id).map(n => <article key={n.id}><b>{scopeLabel[n.scope]}</b><p>{n.text}</p><small>{n.createdAt}</small></article>)}
+      <figure className="member-plate">
+        <Avatar person={person} large portrait />
+        <figcaption><span>{classifyConnection(person.scoreTotal).toUpperCase()}</span><p>{person.focus}</p></figcaption>
+      </figure>
+    </section>
+
+    <div className="member-dark">
+      <div className="member-search"><Search size={18} /><input placeholder="Search people, companies, or ideas…" aria-label="Search Aetheris" /></div>
+
+      <section className="intro-reco">
+        <header><AetherisGlyph size={16} /><Label signal>INTRODUCTION RECOMMENDATION</Label><b className="beta">BETA</b></header>
+        <h2>{classifyConnection(person.scoreTotal)} fit. {person.score.mutualValue >= 80 ? 'High potential value.' : 'Clear mutual value.'}</h2>
+        <p>{person.whyThem} {person.mutuals.length ? `${person.name.split(' ')[0]} is also connected to ${person.mutuals.length} ${person.mutuals.length === 1 ? 'person' : 'people'} in your network.` : ''}</p>
+        <div className="why-now"><AetherisGlyph size={15} /><div><strong>Why now</strong><p>{person.whyNow}</p></div></div>
+        {reasoning && <div className="reasoning-panel">
+          <div><span>WHY YOU MATTER TO THEM</span><p>{person.whyYou}</p></div>
+          <div><span>TRUST PATH</span><p>{person.bestPath.join(' → ')}</p></div>
+          <div><span>RECOMMENDED NEXT MOVE</span><p>{person.nextAction}</p></div>
+          <div><span>AVOID</span><p>{person.dontDo}</p></div>
+        </div>}
+        <footer>
+          <Button onClick={() => onDraft(person)}><Send size={15} /> Request Introduction</Button>
+          <Button kind="quiet" onClick={() => setReasoning(r => !r)}>{reasoning ? 'Hide Reasoning' : 'View Reasoning'}</Button>
+        </footer>
+      </section>
+
+      <div className="member-modules four">
+        <section className="mod">
+          <header><span>ABOUT {person.name.split(' ')[0]?.toUpperCase()}</span></header>
+          <p>{person.thesis} {person.focus}</p>
+          <ul className="mod-facts">
+            <li><Layers size={13} />{person.company}</li>
+            <li><Target size={13} />{person.industry}</li>
+            <li><UserRound size={13} />{person.role} · {person.location}</li>
+          </ul>
+        </section>
+        <section className="mod">
+          <header><span>FOCUS AREAS</span></header>
+          <ul className="mod-chips">{[...person.expertise, ...person.tags].slice(0, 6).map(t => <li key={t}>{t}</li>)}</ul>
+        </section>
+        <section className="mod">
+          <header><span>GOALS</span></header>
+          <ul className="mod-goals">
+            <li><Target size={14} />{person.needs[0]}</li>
+            <li><Users size={14} />{person.whyYou}</li>
+            <li><TrendingUp size={14} />{person.focus}</li>
+          </ul>
+        </section>
+        <section className="mod">
+          <header><span>CAN HELP WITH</span></header>
+          <ul className="mod-list"><Handshake size={16} className="mod-icon" />{person.offers.map(o => <li key={o}>{o}</li>)}</ul>
+          <header className="mod-second"><span>CURRENTLY LOOKING FOR</span></header>
+          <ul className="mod-list"><Search size={16} className="mod-icon" />{person.needs.map(o => <li key={o}>{o}</li>)}</ul>
+        </section>
+      </div>
+
+      <div className="member-modules three">
+        <section className="mod">
+          <header><span>COMPATIBILITY INSIGHTS</span></header>
+          <div className="compat-rings">
+            <Ring value={person.score.strategicFit} label="Strategic Alignment" />
+            <Ring value={person.score.mutualValue} label="Shared Interests" />
+            <Ring value={person.score.decisionInfluence} label="Network Value" />
+          </div>
+          <ul className="compat-rows">
+            <li><Users size={14} /><b>{person.mutuals.length}</b>Mutual Connections</li>
+            <li><MessageSquareText size={14} /><b>{person.score.timing >= 75 ? 'High' : 'Steady'}</b>Conversation Potential</li>
+            <li><Fingerprint size={14} /><b>{person.score.trust >= 75 ? 'Aligned' : 'Building'}</b>On Long-Term Impact</li>
+            <li><ShieldCheck size={14} /><b>{person.score.opportunityValue >= 75 ? 'Strong' : 'Emerging'}</b>Complementary Expertise</li>
+          </ul>
+        </section>
+        <section className="mod">
+          <header><span>SHARED CONNECTIONS ({shared.length})</span><button className="mod-link">View All</button></header>
+          <ul className="shared-list">{shared.map(p => <li key={p.id}>
+            <Avatar person={p} portrait />
+            <div><strong>{p.name}</strong><small>{p.title}, {p.company}</small></div>
+            <span className="degree">{net.connections.includes(p.id) ? '1st' : '2nd'}</span>
+          </li>)}</ul>
+        </section>
+        <section className="mod">
+          <header><span>RELATIONSHIP HISTORY</span></header>
+          <ol className="history-line">{history.map(h => <li key={h.text}><i />
+            <div><p>{h.text}</p><small>{h.when}</small></div></li>)}</ol>
+        </section>
+      </div>
+
+      <div className="member-modules two">
+        <section className="mod">
+          <header><span>RECENT ACTIVITY</span><button className="mod-link">View All</button></header>
+          {activity.length ? activity.map(a => <article className="activity-row" key={a.id}>
+            <Avatar person={person} portrait />
+            <div><strong>{person.name}</strong><em>{a.kind}</em><p>{a.text}</p>
+              <small>♡ {a.responses * 8} · ◇ {a.responses} · ↗ {Math.max(1, Math.round(a.responses / 2))}</small></div>
+            <span className="activity-when">{a.when}</span>
+          </article>) : <p className="empty-state">No public activity yet. Context will appear as {person.name.split(' ')[0]} posts or responds.</p>}
+        </section>
+        <section className="mod availability-mod">
+          <header><span>AVAILABILITY</span></header>
+          <p className="avail-state"><i className="live-dot" />{person.availability}</p>
+          <p>Actively meeting operators, founders and specialists aligned with {person.focus.toLowerCase()}</p>
+          <button className="book-call" onClick={() => onMessage(person.id)}><CalendarDays size={17} /> Book a 30 min call <ArrowRight size={15} /></button>
+        </section>
+      </div>
+
+      <section className="mod member-notes">
+        <header><span>ACTIVE MEMORY</span><small><LockKeyhole size={11} /> privacy scoped</small></header>
+        {notes.map(n => <article key={n.id} className="note-row"><b>{scopeLabel[n.scope]}</b><p>{n.text}</p><small>{n.createdAt}</small></article>)}
         <textarea rows={3} value={text} onChange={e => setText(e.target.value)} placeholder="Record what changed in this relationship…" />
         <div className="scope-picker">{scopes.map(s => <button className={scope === s ? 'active' : ''} onClick={() => setScope(s)} key={s}>{scopeLabel[s]}</button>)}</div>
         <small>{scopeText[scope]}</small>
-        <Button kind="secondary" disabled={!text.trim()} onClick={() => { onAdd(person.id, text.trim(), scope); setText('') }}>Record intelligence</Button>
+        <Button kind="secondary" disabled={!text.trim()} onClick={() => { net.addNote(person.id, text.trim(), scope); setText('') }}>Record intelligence</Button>
       </section>
-      <footer>
-        <SaveButton saved={net.saved.includes(person.id)} onToggle={() => net.toggleSave(person.id)} />
-        <Button kind="quiet" onClick={() => net.connect(person.id)}>{connected ? 'Connected' : 'Connect'}</Button>
-        <Button kind="quiet" onClick={() => onMessage(person.id)}>Message</Button>
-        <Button onClick={() => onDraft(person)}>Request introduction <ArrowRight size={14} /></Button>
-      </footer>
-    </aside>
-  </div>
+
+      <footer className="member-footer"><span>THE INTELLIGENCE LAYER FOR MEANINGFUL CONNECTIONS</span><b>AETHERIS INTROS</b></footer>
+    </div>
+  </article>
 }
 
 function IntroModal({ person, onClose, onMessage }: { person: Member | null; onClose: () => void; onMessage: (id: string) => void }) {
