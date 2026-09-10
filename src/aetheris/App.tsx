@@ -1456,7 +1456,7 @@ function Shell() {
     const enforceUniquePortraits = () => {
       const seen = new Set<string>()
       document.querySelectorAll<HTMLElement>('[data-person-portrait]').forEach(node => {
-        const id = node.dataset.personPortrait
+        const id = node.dataset['personPortrait']
         if (!id) return
         const repeated = seen.has(id)
         node.classList.toggle('portrait-repeat', repeated)
