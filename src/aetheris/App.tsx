@@ -812,7 +812,7 @@ function Profile({ people, setPage, openOnboarding }: {
           <Button kind="secondary" onClick={() => setPage('messages')}><MessageSquareText size={14} /> Conversations</Button>
           <Button kind="secondary" onClick={() => setPage('intros')}><Handshake size={14} /> Your introductions</Button>
           <Button kind="quiet" onClick={() => setPage('needs')}><Bookmark size={14} /> Saved · {net.saved.length}</Button>
-          <Button kind="quiet" onClick={() => { navigator.clipboard?.writeText('https://aetheris-intros.app/joseph-toney'); setCopied(true) }}><Share2 size={14} /> {copied ? 'Link copied' : 'Share profile'}</Button>
+          <Button kind="quiet" onClick={() => { void navigator.clipboard?.writeText('https://aetheris-intros.app/joseph-toney').catch(() => {}); setCopied(true) }}><Share2 size={14} /> {copied ? 'Link copied' : 'Share profile'}</Button>
         </div>
       </div>
     </section>
@@ -986,7 +986,7 @@ function IntroModal({ person, onClose, onMessage }: { person: Member | null; onC
         <Button disabled={!ok} onClick={() => {
           net.authorizeIntro(person.id)
           net.sendMessage(net.openThreadWith(person.id), text)
-          navigator.clipboard?.writeText(text)
+          void navigator.clipboard?.writeText(text).catch(() => {})
           onClose(); onMessage(person.id)
         }}><Send size={15} />Send authorized intro</Button></footer>
     </div>
