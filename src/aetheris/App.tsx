@@ -15,7 +15,8 @@ import type { AutonomyLevel, DigitalYouProfile, Objective, PrivacyScope } from '
 import {
   circles, events, howItWorks5, howIntrosWorks, introStateLabel,
   onboardingQuestions, trendingSectors,
-  type Learning, type Member, type NetworkAsk, type Post, type Thread,
+  memoryCategories,
+  type Learning, type Member, type MemberRole, type NetworkAsk, type Post, type Thread,
 } from './social'
 import { NetworkProvider, useNetwork, type MemoryNote, type MeProfile } from './store'
 import { classifyConnection, composeWarmIntro, radarLabel } from './lib/engine'
