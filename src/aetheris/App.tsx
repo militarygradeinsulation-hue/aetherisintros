@@ -5,6 +5,11 @@ import {
   Menu, MessageSquareText, Network, Plus, Search, Send, Share2, ShieldCheck, Target,
   TrendingUp, UserRound, Users, X,
 } from 'lucide-react'
+import editorialPortrait from '@/assets/aetheris-editorial-portrait.jpg'
+import marcusPortrait from '@/assets/member-marcus.jpg'
+import priyaPortrait from '@/assets/member-priya.jpg'
+import sarahPortrait from '@/assets/member-sarah.jpg'
+import elliotPortrait from '@/assets/member-elliot.jpg'
 import portrait01Asset from '@/assets/portraits/portrait-01.jpg.asset.json'
 import portrait02Asset from '@/assets/portraits/portrait-02.jpg.asset.json'
 import portrait03Asset from '@/assets/portraits/portrait-03.jpg.asset.json'
@@ -307,7 +312,7 @@ function Home({ people, select, setPage, openNeed, openThread }: {
       statement="Your network already contains opportunities."
       copy="This is what changed in your professional network: people worth meeting, what they need, what they can move, and where a conversation is justified today."
       caption="Every signal here comes from context you or the network already shared."
-      image={portrait25Asset.url}
+      image={sarahPortrait}
       stats={[{ k: 'Members in graph', v: String(people.length) }, { k: 'Connections', v: String(net.connections.length) }, { k: 'Active asks', v: String(net.asks.length) }]}
       action={<><Button onClick={openNeed}><Plus size={14} /> Post a need</Button><button className="text-action" onClick={() => setPage('discover')}>Browse the network <ArrowRight size={13} /></button></>}
     />
@@ -467,7 +472,7 @@ function Discover({ people, select }: { people: Member[]; select: (p: Member) =>
       statement="Search the way you would brief a trusted friend."
       copy="Describe the outcome you want and Intros reads needs, offers, expertise, location, availability and the trust paths already open to you."
       caption="Members are surfaced with reasoning, never as an anonymous list."
-      image={portrait26Asset.url}
+      image={marcusPortrait}
       focus="center 22%"
     />
     <div className="discover-shell">
@@ -588,7 +593,7 @@ function Intros({ people, select, draft }: { people: Member[]; select: (p: Membe
   const ranked = [...people].sort((a, b) => b.scoreTotal - a.scoreTotal)
   const shown = state === 'all' ? ranked.slice(0, 6) : ranked.filter(p => p.introState === state)
   return <>
-    <EditorialHero folio="INTROS / MUTUAL VALUE" title={<>A warm path is<br /><em>earned context.</em></>} statement="The right conversation, with a reason for both sides." copy="Each report explains the mutual value, live timing and trust path before anyone asks for an introduction." caption="Both people retain agency. Nothing moves until both choose the conversation." image={portrait27Asset.url} />
+    <EditorialHero folio="INTROS / MUTUAL VALUE" title={<>A warm path is<br /><em>earned context.</em></>} statement="The right conversation, with a reason for both sides." copy="Each report explains the mutual value, live timing and trust path before anyone asks for an introduction." caption="Both people retain agency. Nothing moves until both choose the conversation." image={priyaPortrait} />
     <PageHead label="CURATED INTRODUCTIONS" title="People worth knowing now."
       copy="Every introduction carries mutual value, timing and a credible path. Nothing is sent until both sides agree."
       proof="46 introductions made · 24 became working conversations." />
@@ -620,7 +625,7 @@ function Messages({ people, select, activeId, setActiveId }: { people: Member[];
   const person = people.find(p => p.id === thread?.memberId)
   if (!thread || !person) return null
   return <>
-    <EditorialHero folio="MESSAGES / RELATIONSHIP CONTEXT" title={<>Conversation with<br /><em>memory beside it.</em></>} statement="People speak to people. Context stays quietly available." copy="Commitments, mutual connections and the reason for the introduction remain beside the thread—not inside the conversation." caption="A professional exchange remains human when intelligence knows when to stay quiet." image={portrait24Asset.url} />
+    <EditorialHero folio="MESSAGES / RELATIONSHIP CONTEXT" title={<>Conversation with<br /><em>memory beside it.</em></>} statement="People speak to people. Context stays quietly available." copy="Commitments, mutual connections and the reason for the introduction remain beside the thread—not inside the conversation." caption="A professional exchange remains human when intelligence knows when to stay quiet." image={elliotPortrait} />
     <PageHead label="MESSAGES" title="Context before contact."
       copy="Real conversations between members. Intros keeps the relationship context beside the thread, never in the middle of it."
       proof="Every thread remembers the last commitment made." />
@@ -694,7 +699,7 @@ function Needs({ onNew, people, select, setPage }: {
     : tab === 'saved' ? asks.filter(a => net.saved.includes(a.id))
       : forYou
   return <>
-    <EditorialHero folio="NEEDS / PROFESSIONAL ASKS" title={<>State the outcome.<br /><em>Find who can move it.</em></>} statement="Serious asks create useful professional context." copy="A need is not a broadcast. It is a concise case for why the right person should care, why now matters and what value moves both ways." caption="Specific needs produce considered responses—not noisy outreach." image={portrait23Asset.url} />
+    <EditorialHero folio="NEEDS / PROFESSIONAL ASKS" title={<>State the outcome.<br /><em>Find who can move it.</em></>} statement="Serious asks create useful professional context." copy="A need is not a broadcast. It is a concise case for why the right person should care, why now matters and what value moves both ways." caption="Specific needs produce considered responses—not noisy outreach." image={editorialPortrait} />
     <PageHead label="NEEDS" title="Tell the network what you need."
       copy="State the outcome you are trying to create. Intros finds who can move it forward and why they would want to."
       proof="Network-visible asks feed matching. Private asks stay private."
@@ -757,7 +762,7 @@ function Memory({ people, select }: { people: Member[]; select: (p: Member) => v
         </dl>
         <button className="memory-cta">Your Network Remembers <ArrowRight size={15} /></button>
       </div>
-      <figure><img src={portrait22Asset.url} alt="Thoughtful professional in architectural window light" width={1280} height={1600} /><figcaption>ACTIVE MEMORY / CONTEXT HELD WITH INTENT</figcaption></figure>
+      <figure><img src={portrait25Asset.url} alt="Thoughtful professional in architectural window light" width={1280} height={1600} /><figcaption>ACTIVE MEMORY / CONTEXT HELD WITH INTENT</figcaption></figure>
     </section>
     <section className="memory-dark-intro">
       <div><Label signal>ACTIVE MEMORY GRAPH</Label><h2>Not a contact list.<br />A living record of <em>why.</em></h2></div>
@@ -847,7 +852,7 @@ function Insights({ people, select, setPage }: { people: Member[]; select: (p: M
   const nav = useNav()
   const [dismissed, setDismissed] = useState<string[]>([])
   return <>
-    <EditorialHero folio="INSIGHTS / RELATIONSHIP MOVEMENT" title={<>Notice what changed.<br /><em>Act while it matters.</em></>} statement="Signals become useful only when they change the next move." copy="Role changes, cooling conversations, matching needs and warm paths are organized around action—not analytics theater." caption="The strongest signal is often a small change in a relationship you already trust." image={portrait21Asset.url} />
+    <EditorialHero folio="INSIGHTS / RELATIONSHIP MOVEMENT" title={<>Notice what changed.<br /><em>Act while it matters.</em></>} statement="Signals become useful only when they change the next move." copy="Role changes, cooling conversations, matching needs and warm paths are organized around action—not analytics theater." caption="The strongest signal is often a small change in a relationship you already trust." image={portrait26Asset.url} />
     <PageHead label="INSIGHTS" title="Signals worth acting on."
       copy="No vanity metrics. Only relationship changes that could alter an outcome, each with an action attached."
       proof="$486K influenced across 46 introductions in 90 days." />
