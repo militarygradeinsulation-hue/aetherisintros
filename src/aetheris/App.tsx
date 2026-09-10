@@ -1078,9 +1078,19 @@ function Messages({ people, select, activeId, setActiveId }: { people: Member[];
             <button onClick={() => {
               const t = text.trim()
               if (!t) return
+              const commercial = /demo|pricing|proposal|our (product|platform|software|solution)|quick call|book a|vendor/i.test(t)
+              const verdict = pro.boundaryCheck(commercial ? 'Vendor pitch' : 'Any outreach', {
+                recipientId: person.id, warmPath: net.connections.includes(person.id),
+              })
+              if (!verdict.allowed) {
+                setBlocked({ explanation: verdict.explanation, ...(verdict.rerouteTo ? { rerouteTo: verdict.rerouteTo } : {}) })
+                return
+              }
+              setBlocked(null)
               gate(t, { channel: 'message', authorId: 'me', recipient: person }, final => { net.sendMessage(thread.id, final); setText('') })
             }} disabled={!text.trim()} aria-label="Send"><Send size={17} /></button>
           </div>
+          {blocked && <p className="composer-blocked"><b>Held.</b> {blocked.explanation}{blocked.rerouteTo ? ` Referred elsewhere: ${blocked.rerouteTo}.` : ''} <button className="text-action" onClick={() => nav.setPage('permission')}>Request permission properly</button></p>}
         </div>
       </section>
       <aside className="conversation-intel">
