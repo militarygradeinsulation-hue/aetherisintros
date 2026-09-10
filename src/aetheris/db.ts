@@ -88,7 +88,7 @@ export async function loadDirectory(): Promise<Directory> {
         confidence: row.confidence, introState: row.intro_state, joined: row.joined,
         ...(row.opportunity_low != null ? { opportunityLow: row.opportunity_low } : {}),
         ...(row.opportunity_high != null ? { opportunityHigh: row.opportunity_high } : {}),
-      } as Member
+      } as unknown as Member
     })
 
     return {
@@ -103,7 +103,7 @@ export async function loadDirectory(): Promise<Directory> {
         ? signalRows.data.map(r => ({ id: r.id, memberId: r.member_id, kind: r.kind, text: r.text, when: r.when_label } as Signal))
         : catalogueSignals,
       threads: threadRows.data?.length
-        ? threadRows.data.map(r => ({ id: r.id, memberId: r.member_id, introContext: r.intro_context, unread: r.unread, commitment: r.commitment, suggested: r.suggested, messages: (r.messages ?? []) as Thread['messages'] }))
+        ? threadRows.data.map(r => ({ id: r.id, memberId: r.member_id, introContext: r.intro_context, unread: r.unread, commitment: r.commitment, suggested: r.suggested, messages: (r.messages ?? []) as unknown as Thread['messages'] }))
         : catalogueThreads,
       learnings: learningRows.data?.length
         ? learningRows.data.map(r => ({ id: r.id, category: r.category, text: r.text, source: r.source, confidence: r.confidence, scope: r.scope, when: r.when_label } as Learning))
@@ -242,9 +242,9 @@ export function saveMessage(userId: string, threadId: string, message: { id: str
 
 /** Remaining member-owned settings (profile answers, autonomy, needs, events). */
 export function saveDoc(userId: string, doc: Record<string, unknown>) {
-  fire(supabase.from('preferences').upsert({ user_id: userId, data: doc }, { onConflict: 'user_id' }))
+  fire(supabase.from('preferences').upsert({ user_id: userId, data: doc as never }, { onConflict: 'user_id' }))
 }
 
 export function saveProfileFields(userId: string, fields: Record<string, unknown>) {
-  fire(supabase.from('profiles').update(fields).eq('id', userId))
+  fire(supabase.from('profiles').update(fields as never).eq('id', userId))
 }
