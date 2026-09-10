@@ -30,4 +30,4 @@
 - [x] Prevent popovers, drawers, and dropdown content from overlapping surrounding copy.
 - [x] Strengthen section separation and visual flow without adding dashboard noise.
 - [x] Make top tab rows horizontally scrollable with no clipped destinations.
-- [ ] Verify portrait uniqueness and the visual cleanup across desktop and mobile.
+- [x] Verify portrait uniqueness and the visual cleanup across desktop and mobile.
