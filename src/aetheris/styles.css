@@ -657,3 +657,6 @@
 @media (max-width: 900px) { .discover-grid { grid-template-columns: 1fr; } }
 .discover-tile > footer { display: flex; flex-wrap: wrap; gap: 8px; }
 .discover-tile > footer > * { flex: 0 1 auto; }
+.ring-dial { position: relative; display: block; width: min(100%, 92px); margin: 0 auto; }
+.ring-dial svg { display: block; width: 100%; transform: rotate(-90deg); }
+.compat-ring strong { position: absolute; left: 0; right: 0; top: 50%; transform: translateY(-50%); display: block; text-align: center; font: 400 20px/1 'Bodoni Moda', Georgia, serif; color: var(--soft); }
