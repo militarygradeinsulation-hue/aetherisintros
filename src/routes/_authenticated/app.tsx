@@ -2,7 +2,7 @@ import { createFileRoute, ClientOnly } from "@tanstack/react-router";
 import App from "@/aetheris/App";
 import "@/aetheris/styles.css";
 
-export const Route = createFileRoute("/app")({
+export const Route = createFileRoute("/_authenticated/app")({
   head: () => ({
     meta: [
       { title: "Intelligence System — Aetheris Intros" },
