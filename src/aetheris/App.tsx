@@ -68,6 +68,18 @@ import {
 } from './social'
 import { NetworkProvider, useNetwork, type MemoryNote, type MeProfile } from './store'
 import { classifyConnection, composeWarmIntro, radarLabel } from './lib/engine'
+import { NavCtx, useNav, type NavApi, type Page } from './nav'
+import { PlatformProvider } from './platform'
+import type { MoveKind } from './domain/models'
+import { SystemsPage } from './pages/SystemsPage'
+import { CirclesPage, CreateCircleModal } from './pages/CirclesPage'
+import { CompaniesPage } from './pages/CompaniesPage'
+import { OutcomesPage } from './pages/OutcomesPage'
+import { LoopsPage } from './pages/LoopsPage'
+import { OrganizationPage } from './pages/OrganizationPage'
+import { HandshakeModal } from './pages/Handshake'
+import { IntentBoard, IntentModal, IntentStrip } from './pages/Intents'
+
 
 
 type OptIn = 'pending' | 'yes' | 'no'
