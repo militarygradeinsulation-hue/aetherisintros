@@ -675,6 +675,15 @@ function Home({ people, select, setPage, openNeed, openThread }: {
     setComposer('')
   }
   return <>
+    <nav className="home-mode-switch" role="tablist" aria-label="Home mode">
+      {([['social', 'Social'], ['briefing', 'Briefing']] as const).map(([id, label]) =>
+        <button key={id} role="tab" aria-selected={homeMode === id} className={homeMode === id ? 'on' : ''} onClick={() => setHomeMode(id)}>{label}</button>)}
+      <small>{homeMode === 'social' ? 'The professional network, as it is moving today.' : 'What needs you today, composed rather than counted.'}</small>
+    </nav>
+
+    {homeMode === 'briefing' && <BriefingPage />}
+
+    {homeMode === 'social' && <>
     <HomeMasthead people={people} select={select} setPage={setPage} openNeed={openNeed} openThread={openThread} />
 
     <header className="home-question">
