@@ -1582,11 +1582,11 @@ function GlobalSearch({ open, onClose, people }: { open: boolean; onClose: () =>
 
 /* ---------------------------------------------------------------------- app */
 
-export default function App({ startPage }: { startPage?: Page }) {
+export default function App({ startPage }: { startPage?: Page | undefined }) {
   return <NetworkProvider><PlatformProvider><Shell startPage={startPage} /></PlatformProvider></NetworkProvider>
 }
 
-function Shell({ startPage }: { startPage?: Page }) {
+function Shell({ startPage }: { startPage?: Page | undefined }) {
   const net = useNetwork()
   const stored = typeof window !== 'undefined' ? localStorage.getItem('aetheris-intros-page') : null
   const initial = startPage ?? (stored && allNav.some(n => n.id === stored) ? stored : legacyPage[stored ?? ''] ?? 'home') as Page
