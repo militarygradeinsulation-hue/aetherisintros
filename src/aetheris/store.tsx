@@ -1,13 +1,19 @@
-import { createContext, useContext, useEffect, useMemo, useState } from 'react'
+import { createContext, useContext, useEffect, useMemo, useRef, useState } from 'react'
 import type { AutonomyLevel, DigitalYouProfile, Objective, PrivacyScope } from './types'
 import { defaultDigitalYou, objectives as seedObjectives } from './data'
 import {
-  learnings as seedLearnings, me as seedMe, members as baseMembers, networkAsks as seedAsks,
-  posts as seedPosts, signals as seedSignals, threads as seedThreads,
+  learnings as catalogueLearnings, me as seedMe, members as catalogueMembers,
+  networkAsks as catalogueAsks, posts as cataloguePosts, signals as catalogueSignals,
+  threads as catalogueThreads,
   type IntroState, type Learning, type Member, type NetworkAsk, type Post, type Signal, type Thread,
 } from './social'
+import {
+  currentUserId, loadDirectory, loadUserGraph, saveAsk, saveAskResponse, saveDoc, saveIntro,
+  saveLearning, saveMessage, saveNote, savePost, saveProfileFields, saveRelationship, saveThread,
+  type Directory, type MemoryNote,
+} from './db'
 
-export type MemoryNote = { id: string; personId: string; text: string; scope: PrivacyScope; createdAt: string }
+export type { MemoryNote }
 export type MeProfile = typeof seedMe & {
   wantToMeet?: string
   introPreferences?: string
@@ -65,6 +71,12 @@ interface Persisted {
 
 const KEY = 'aetheris-intros-graph-v1'
 
+/** Settings that live in the member's preferences document rather than a table. */
+const DOC_KEYS = [
+  'objectives', 'profile', 'digitalYou', 'autonomy', 'preferences',
+  'registeredEvents', 'savedEvents', 'warmPaths', 'postResponses', 'activity',
+] as const
+
 const empty: Persisted = {
   connections: [], follows: [], saved: [], introStates: {}, ownPosts: [], postResponses: [],
   ownAsks: [], askResponses: {}, warmPaths: [], sentMessages: {}, ownThreads: [],
@@ -104,6 +116,9 @@ function load(): Persisted {
 const now = () => new Date().toLocaleDateString(undefined, { month: 'short', day: 'numeric' })
 const clock = () => new Date().toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit' })
 const uid = (p: string) => `${p}-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 6)}`
+const rowId = () => (typeof crypto !== 'undefined' && 'randomUUID' in crypto
+  ? crypto.randomUUID()
+  : `${Date.now().toString(16)}-${Math.random().toString(16).slice(2, 10)}`)
 
 interface NetworkApi {
   members: Member[]
@@ -126,6 +141,8 @@ interface NetworkApi {
   postResponses: string[]
   askResponses: Record<string, string[]>
   warmPaths: string[]
+  /** True once this member's own graph has been read from the database. */
+  synced: boolean
   /* graph actions */
   connect: (id: string) => void
   follow: (id: string) => void
@@ -152,21 +169,127 @@ interface NetworkApi {
 
 const Ctx = createContext<NetworkApi | null>(null)
 
+const catalogue: Directory = {
+  members: catalogueMembers, posts: cataloguePosts, asks: catalogueAsks,
+  signals: catalogueSignals, threads: catalogueThreads, learnings: catalogueLearnings,
+}
+
 export function NetworkProvider({ children }: { children: React.ReactNode }) {
   const [s, setS] = useState<Persisted>(load)
+  const [dir, setDir] = useState<Directory>(catalogue)
+  const [userId, setUserId] = useState<string | null>(null)
+  const [synced, setSynced] = useState(false)
+  const lastSynced = useRef<Persisted | null>(null)
+
   useEffect(() => { try { localStorage.setItem(KEY, JSON.stringify(s)) } catch { /* storage full */ } }, [s])
+
+  /* hydrate: shared catalogue, then this member's own graph */
+  useEffect(() => {
+    let cancelled = false
+    void (async () => {
+      const directory = await loadDirectory()
+      if (!cancelled) setDir(directory)
+      const id = await currentUserId()
+      if (cancelled || !id) { setSynced(true); return }
+      setUserId(id)
+      const remote = await loadUserGraph(id)
+      if (cancelled) return
+      setS(prev => {
+        const doc = (remote.doc ?? {}) as Partial<Persisted>
+        const next: Persisted = { ...prev }
+        for (const key of DOC_KEYS) {
+          if (doc[key] !== undefined) (next[key] as unknown) = doc[key]
+        }
+        const take = <K extends keyof Persisted>(key: K, value: Persisted[K] | undefined, filled: boolean) => {
+          if (value !== undefined && filled) (next[key] as unknown) = value
+        }
+        take('connections', remote.connections, true)
+        take('follows', remote.follows, true)
+        take('saved', remote.saved, true)
+        take('introStates', remote.introStates, true)
+        take('learned', remote.learned, true)
+        take('notes', remote.notes, true)
+        take('ownPosts', remote.ownPosts, true)
+        take('ownAsks', remote.ownAsks, true)
+        take('askResponses', remote.askResponses, true)
+        take('ownThreads', remote.ownThreads, true)
+        take('sentMessages', remote.sentMessages, true)
+        lastSynced.current = next
+        return next
+      })
+      setSynced(true)
+    })()
+    return () => { cancelled = true }
+  }, [])
+
+  /* write-through: persist only what changed since the last database read */
+  useEffect(() => {
+    if (!userId || !synced) return
+    const prev = lastSynced.current
+    lastSynced.current = s
+    if (!prev) return
+
+    const groups = ['connections', 'follows', 'saved'] as const
+    for (const group of groups) {
+      for (const id of s[group]) if (!prev[group].includes(id)) saveRelationship(userId, group, id, true)
+      for (const id of prev[group]) if (!s[group].includes(id)) saveRelationship(userId, group, id, false)
+    }
+    for (const [memberId, status] of Object.entries(s.introStates)) {
+      if (prev.introStates[memberId] !== status) saveIntro(userId, memberId, status)
+    }
+    for (const learning of s.learned) {
+      if (!prev.learned.some(l => l.id === learning.id)) saveLearning(userId, learning)
+    }
+    for (const note of s.notes) {
+      if (!prev.notes.some(n => n.id === note.id)) saveNote(userId, note)
+    }
+    for (const post of s.ownPosts) {
+      if (!prev.ownPosts.some(p => p.id === post.id)) savePost(userId, post)
+    }
+    for (const ask of s.ownAsks) {
+      if (!prev.ownAsks.some(a => a.id === ask.id)) saveAsk(userId, ask)
+    }
+    for (const [askId, texts] of Object.entries(s.askResponses)) {
+      const before = prev.askResponses[askId] ?? []
+      texts.slice(before.length).forEach(text => saveAskResponse(userId, askId, text))
+    }
+    for (const thread of s.ownThreads) {
+      if (!prev.ownThreads.some(t => t.id === thread.id)) saveThread(userId, thread)
+    }
+    for (const [threadId, messages] of Object.entries(s.sentMessages)) {
+      const before = prev.sentMessages[threadId] ?? []
+      messages.slice(before.length).forEach(message => saveMessage(userId, threadId, message))
+    }
+    if (DOC_KEYS.some(key => prev[key] !== s[key])) {
+      const doc: Record<string, unknown> = {}
+      for (const key of DOC_KEYS) doc[key] = s[key]
+      saveDoc(userId, doc)
+      if (prev.profile !== s.profile) {
+        saveProfileFields(userId, {
+          name: s.profile.name, title: s.profile.title, company: s.profile.company,
+          location: s.profile.location, focus: s.profile.focus, thesis: s.profile.thesis,
+          looking_for: s.profile.lookingFor, can_help_with: s.profile.canHelpWith,
+          want_to_meet: s.profile.wantToMeet ?? null, intro_preferences: s.profile.introPreferences ?? null,
+          boundaries: s.profile.boundaries ?? null, availability: s.profile.availability,
+          industries: s.profile.industries, expertise: s.profile.expertise,
+          onboarded: s.profile.onboarded ?? false,
+        })
+      }
+    }
+  }, [s, userId, synced])
 
   const api = useMemo<NetworkApi>(() => {
     const patch = (fn: (prev: Persisted) => Partial<Persisted>) => setS(prev => ({ ...prev, ...fn(prev) }))
+    const baseMembers = dir.members
     const nameOf = (id: string) => baseMembers.find(m => m.id === id)?.name ?? 'a member'
 
     const remember = (prev: Persisted, l: Omit<Learning, 'id' | 'when'>): Learning[] =>
-      [{ ...l, id: uid('learn'), when: 'Just now' }, ...prev.learned]
+      [{ ...l, id: rowId(), when: 'Just now' }, ...prev.learned]
     const log = (prev: Persisted, a: Omit<Signal, 'id' | 'when'>): Signal[] =>
       [{ ...a, id: uid('act'), when: 'Just now' }, ...prev.activity]
 
     const threadFor = (prev: Persisted, memberId: string) => {
-      const existing = [...seedThreads, ...prev.ownThreads].find(t => t.memberId === memberId)
+      const existing = [...dir.threads, ...prev.ownThreads].find(t => t.memberId === memberId)
       return existing?.id ?? null
     }
 
@@ -185,22 +308,23 @@ export function NetworkProvider({ children }: { children: React.ReactNode }) {
     }
 
     return {
+      synced,
       members: baseMembers.map(m => ({
         ...m,
         introState: s.introStates[m.id] ?? m.introState,
         saved: s.saved.includes(m.id),
         relationshipStatus: s.connections.includes(m.id) && m.relationshipStatus === 'new' ? 'active' : m.relationshipStatus,
       })),
-      posts: [...s.ownPosts, ...seedPosts],
-      asks: [...s.ownAsks, ...seedAsks].map(a => ({
+      posts: [...s.ownPosts, ...dir.posts],
+      asks: [...s.ownAsks, ...dir.asks].map(a => ({
         ...a, responses: a.responses + (s.askResponses[a.id]?.length ?? 0),
       })),
-      threads: [...s.ownThreads, ...seedThreads].map(t => ({
+      threads: [...s.ownThreads, ...dir.threads].map(t => ({
         ...t,
         messages: [...t.messages, ...(s.sentMessages[t.id] ?? []).map(m => ({ id: m.id, from: 'me' as const, text: m.text, at: m.at }))],
       })),
-      learnings: [...s.learned, ...seedLearnings],
-      activity: [...s.activity, ...seedSignals],
+      learnings: [...s.learned, ...dir.learnings],
+      activity: [...s.activity, ...dir.signals],
       notes: s.notes,
       objectives: s.objectives,
       profile: s.profile,
@@ -239,7 +363,7 @@ export function NetworkProvider({ children }: { children: React.ReactNode }) {
       openThreadWith: (id) => {
         const existing = threadFor(s, id)
         if (existing) return existing
-        const threadId = uid('t')
+        const threadId = rowId()
         setS(prev => ({
           ...prev,
           ownThreads: [makeThread(id, threadId), ...prev.ownThreads],
@@ -249,10 +373,10 @@ export function NetworkProvider({ children }: { children: React.ReactNode }) {
       },
 
       sendMessage: (threadId, text) => patch(prev => {
-        const thread = [...prev.ownThreads, ...seedThreads].find(t => t.id === threadId)
+        const thread = [...prev.ownThreads, ...dir.threads].find(t => t.id === threadId)
         const who = thread ? nameOf(thread.memberId) : 'a member'
         return {
-          sentMessages: { ...prev.sentMessages, [threadId]: [...(prev.sentMessages[threadId] ?? []), { id: uid('msg'), text, at: clock() }] },
+          sentMessages: { ...prev.sentMessages, [threadId]: [...(prev.sentMessages[threadId] ?? []), { id: rowId(), text, at: clock() }] },
           learned: remember(prev, { category: 'Messages', text: `You sent ${who} a message: “${text.slice(0, 70)}${text.length > 70 ? '…' : ''}”`, source: 'Conversation', confidence: 99, scope: 'private' }),
         }
       }),
@@ -283,7 +407,7 @@ export function NetworkProvider({ children }: { children: React.ReactNode }) {
       respondToPost: (postId, memberId) => {
         if (memberId === 'me') return null
         const existing = threadFor(s, memberId)
-        const threadId = existing ?? uid('t')
+        const threadId = existing ?? rowId()
         setS(prev => ({
           ...prev,
           ownThreads: existing ? prev.ownThreads : [makeThread(memberId, threadId), ...prev.ownThreads],
@@ -300,14 +424,14 @@ export function NetworkProvider({ children }: { children: React.ReactNode }) {
       })),
 
       respondToAsk: (askId, text) => {
-        const ask = [...s.ownAsks, ...seedAsks].find(a => a.id === askId)
+        const ask = [...s.ownAsks, ...dir.asks].find(a => a.id === askId)
         if (!ask || ask.memberId === 'me') return null
         const existing = threadFor(s, ask.memberId)
-        const threadId = existing ?? uid('t')
+        const threadId = existing ?? rowId()
         setS(prev => ({
           ...prev,
           ownThreads: existing ? prev.ownThreads : [makeThread(ask.memberId, threadId, `You responded to their ask: ${ask.ask}`), ...prev.ownThreads],
-          sentMessages: { ...prev.sentMessages, [threadId]: [...(prev.sentMessages[threadId] ?? []), { id: uid('msg'), text, at: clock() }] },
+          sentMessages: { ...prev.sentMessages, [threadId]: [...(prev.sentMessages[threadId] ?? []), { id: rowId(), text, at: clock() }] },
           askResponses: { ...prev.askResponses, [askId]: [...(prev.askResponses[askId] ?? []), text] },
           learned: remember(prev, { category: 'Needs', text: `You responded to ${nameOf(ask.memberId)}'s ask about ${ask.industry.toLowerCase()}.`, source: 'Needs marketplace', confidence: 100, scope: 'shareable' }),
           activity: log(prev, { memberId: ask.memberId, kind: 'Waiting on you', text: `You responded to ${nameOf(ask.memberId)}'s ask — awaiting their reply.` }),
@@ -316,7 +440,7 @@ export function NetworkProvider({ children }: { children: React.ReactNode }) {
       },
 
       requestWarmPath: (askId) => patch(prev => {
-        const ask = [...prev.ownAsks, ...seedAsks].find(a => a.id === askId)
+        const ask = [...prev.ownAsks, ...dir.asks].find(a => a.id === askId)
         if (!ask) return {}
         const m = baseMembers.find(x => x.id === ask.memberId)
         const via = m && m.bestPath.length > 2 ? m.bestPath[1] : m?.mutuals[0]
@@ -338,7 +462,7 @@ export function NetworkProvider({ children }: { children: React.ReactNode }) {
       })),
 
       addNote: (personId, text, scope) => patch(prev => ({
-        notes: [{ id: uid('note'), personId, text, scope, createdAt: now() }, ...prev.notes],
+        notes: [{ id: rowId(), personId, text, scope, createdAt: now() }, ...prev.notes],
         learned: remember(prev, { category: 'People', text, source: `Private note · ${nameOf(personId)}`, confidence: 100, scope }),
       })),
 
@@ -386,7 +510,7 @@ export function NetworkProvider({ children }: { children: React.ReactNode }) {
         const learned = map
           .filter(([k]) => trim(k))
           .map(([k, category, scope, text]): Learning => ({
-            id: uid('learn'), category, scope, confidence: 100, when: 'Just now',
+            id: rowId(), category, scope, confidence: 100, when: 'Just now',
             source: 'Profile onboarding', text: text(trim(k)),
           }))
         const objectives = trim('need')
@@ -404,7 +528,7 @@ export function NetworkProvider({ children }: { children: React.ReactNode }) {
         }
       }),
     }
-  }, [s])
+  }, [s, dir, synced])
 
   return <Ctx.Provider value={api}>{children}</Ctx.Provider>
 }
