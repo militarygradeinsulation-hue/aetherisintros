@@ -7,6 +7,8 @@ export type Page =
   | 'inbox' | 'rooms' | 'collisions' | 'simulation' | 'strategy' | 'evidence' | 'autopilot'
   | 'ask' | 'constitution' | 'serendipity' | 'eventmode' | 'gaps' | 'identity' | 'consent'
   | 'timemachine' | 'attribution' | 'knowledge' | 'boards' | 'integrations'
+  | 'passport' | 'opportunities' | 'dealrooms' | 'expertise' | 'talent' | 'capital'
+  | 'intelrooms' | 'presence' | 'permission' | 'briefing' | 'vault' | 'knowledgeassets'
 
 /** Navigation intents any surface can trigger. */
 export interface NavApi {

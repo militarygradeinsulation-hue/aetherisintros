@@ -2164,3 +2164,82 @@
   .knowledge-relevance, .knowledge-tags { margin-left: 0; }
   .event-plan-add input, .board-add input, .probe-row input, .identity-simulate input { flex: 1 1 100%; }
 }
+
+/* ---------- Professional layer: passport, opportunities, deal rooms, expertise, talent, capital, rooms, presence, permission, briefing, vault, knowledge ---------- */
+.opp-grid, .opp-list, .expertise-list, .talent-list, .knowledge-list, .capital-matches, .briefing, .pro-inbox, .presence-grid, .vault-grid, .capital-grid, .room-items { display: grid; gap: 16px; }
+.opp-grid, .vault-grid, .presence-grid, .capital-grid { grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); }
+.opp-objective, .opp-qual, .opp-evidence, .knowledge-summary, .availability-copy, .room-charter, .passport-summary { font-size: 13.8px; line-height: 1.68; color: #d4d8de; }
+.opp-evidence, .proof-evidence, .concierge-wording { font-size: 12.8px; color: var(--muted); }
+.opp-foot, .permission-actions, .opp-respond-actions, .introducer-stats, .knowledge-meta, .proof-kinds, .reputation-stats, .team-role-actions, .vault-controls, .deal-parties, .council-members { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+.opp-foot { padding-top: 11px; margin-top: 11px; border-top: 1px solid var(--hairline-dark); }
+.opp-questions, .opp-respond, .council-question, .council-response, .deal-answer-form, .expertise-publish label, .knowledge-publish label, .permission-form label, .vault-controls label { display: flex; flex-direction: column; gap: 6px; font-size: 12.5px; color: var(--muted); }
+.deal-answer-form, .opp-respond, .vault-controls { flex-direction: row; flex-wrap: wrap; align-items: flex-end; }
+.opp-interest, .expertise-score, .capital-verdict, .passport-score { margin-left: auto; text-align: right; }
+.passport-score span, .capital-verdict span, .expertise-score span { display: block; font-size: 11.5px; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); }
+input, textarea, select { font: inherit; }
+.expertise-publish input, .expertise-publish textarea, .knowledge-publish input, .knowledge-publish textarea, .permission-form input, .permission-form textarea, .talent-post input, .talent-post textarea, .universal-input, .deal-answer-form input, .opp-respond input, .opp-respond textarea, .council-question input, .council-response input, .room-post input, .room-post textarea, .import-row input, .vault-controls select, .scope-control select, .travel-card input {
+  background: rgba(255,255,255,.03); border: 1px solid var(--hairline-dark); border-radius: 8px; color: var(--text-light); padding: 9px 11px; font-size: 13.5px; width: 100%;
+}
+.universal-input { font-size: 16px; padding: 13px 14px; margin: 12px 0 4px; }
+.deal-answer-form input, .opp-respond input, .council-question input, .council-response input { flex: 1 1 240px; width: auto; }
+.knowledge-publish, .expertise-publish, .permission-form, .talent-post, .universal-search { display: grid; gap: 11px; }
+.deal-room, .permission-layout, .passport-layout, .room-layout { display: grid; grid-template-columns: minmax(0, 1.9fr) minmax(0, 1fr); gap: 18px; align-items: start; }
+.deal-rail, .permission-rail, .passport-rail, .room-rail { display: grid; gap: 16px; }
+.deal-block, .briefing-section, .inbox-bucket, .council-section, .concierge-section { display: grid; gap: 9px; }
+.deal-block { margin-top: 14px; padding-top: 13px; border-top: 1px solid var(--hairline-dark); }
+.deal-block p, .briefing-item p, .inbox-row p, .credential-row em, .proof-row em, .reputation-row p { font-size: 13.4px; color: #cfd3d9; margin: 0; }
+.deal-stage-row { display: flex; flex-wrap: wrap; gap: 7px; }
+.deal-stage-row button { font-size: 12px; padding: 6px 10px; border-radius: 999px; border: 1px solid var(--hairline-dark); background: transparent; color: #cfd3d9; cursor: pointer; }
+.deal-stage-row button.on { background: var(--cobalt); border-color: var(--cobalt); color: #fff; }
+.deal-party, .travel-person, .room-member, .team-role, .credential-row, .proof-row, .reputation-row, .briefing-item, .inbox-row, .search-result, .import-row, .permission-request, .travel-slot, .deal-diligence, .deal-tx, .deal-decision, .room-item, .availability-list > li, .standard-list > li {
+  display: flex; gap: 12px; align-items: flex-start; text-align: left; padding: 11px 0; border-bottom: 1px solid var(--hairline-dark); background: transparent; border-left: 0; border-right: 0; border-top: 0; color: inherit; width: 100%;
+}
+.deal-party, .room-member, .travel-person { cursor: pointer; }
+.deal-party strong, .briefing-item strong, .inbox-row strong, .search-result strong, .credential-row strong, .proof-row strong, .reputation-row strong { display: block; font-size: 14.6px; color: var(--text-light); }
+.deal-party small, .briefing-item small, .inbox-row small, .search-result small, .credential-row small, .proof-row small, .import-row small { display: block; font-size: 12px; color: var(--muted); }
+.briefing-item em, .inbox-row em, .search-result em, .credential-row em, .proof-row em, .team-path, .council-missing { display: block; font-style: normal; font-size: 12.6px; color: var(--muted); margin-top: 5px; }
+.briefing-item > div:first-of-type, .inbox-row > div:nth-child(2), .search-result > div:first-child, .credential-row > div:first-child, .proof-row > div:first-child { flex: 1 1 auto; min-width: 0; }
+.team-role-actions { margin-left: auto; }
+.inbox-bucket header, .credential-state { display: flex; flex-direction: column; gap: 4px; }
+.inbox-bucket header small { font-size: 12.4px; color: var(--muted); }
+.inbox-row.handled, .inbox-row.dismissed, .import-row.removed, .permission-request.declined { opacity: .6; }
+.req-state, .verify-tag, .proof-edge b { font-size: 11.5px; letter-spacing: .09em; text-transform: uppercase; color: var(--muted); }
+.verify-tag { border: 1px solid var(--hairline-dark); border-radius: 999px; padding: 4px 9px; white-space: nowrap; }
+.verify-tag.verified { border-color: rgba(15,92,203,.5); color: #8fb6ef; }
+.verify-tag.pending { border-color: rgba(244,161,37,.4); color: var(--signal); }
+.passport-head { display: flex; gap: 16px; align-items: flex-start; flex-wrap: wrap; }
+.passport-head h2 { font-family: var(--serif); font-size: 33px; margin: 6px 0 4px; line-height: 1.06; }
+.passport-headline { font-size: 14.5px; color: #d4d8de; margin: 0 0 5px; }
+.passport-stats { display: flex; flex-wrap: wrap; gap: 22px; margin: 14px 0; padding: 13px 0; border-top: 1px solid var(--hairline-dark); border-bottom: 1px solid var(--hairline-dark); }
+.passport-stats strong { display: block; font-family: var(--serif); font-size: 28px; }
+.passport-stats span { font-size: 11.5px; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); }
+.proof-collaborators { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 6px; }
+.proof-edge { font-size: 13px; color: #cfd3d9; }
+.proof-edge b { text-transform: none; letter-spacing: 0; font-size: 13px; color: var(--text-light); }
+.reputation-row { display: block; }
+.reputation-stats span, .knowledge-meta .scope-tag, .introducer-stats span { font-size: 11.8px; color: var(--muted); }
+.scope-control { display: flex; justify-content: space-between; gap: 10px; align-items: center; padding: 8px 0; border-bottom: 1px solid var(--hairline-dark); font-size: 13px; }
+.scope-control select { width: auto; min-width: 130px; }
+.search-results { display: grid; gap: 2px; }
+.vault-preview { max-height: 260px; overflow: auto; background: rgba(255,255,255,.03); border: 1px solid var(--hairline-dark); border-radius: 8px; padding: 12px; font-size: 12px; color: #cfd3d9; white-space: pre-wrap; word-break: break-word; }
+.concierge-scope { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 14px; margin: 12px 0; }
+.concierge-scope ul { list-style: none; margin: 7px 0 0; padding: 0; }
+.concierge-scope li { font-size: 13px; color: #cfd3d9; padding: 5px 0; border-bottom: 1px solid var(--hairline-dark); }
+.knowledge-card h3, .capital-card h3, .talent-card h3, .expertise-card h3, .concierge-card h3, .room-main h3, .travel-card h3, .standard-card h3, .vault-block h3, .import-block h3, .council-card h3, .referral-card h3, .introducer-card h3, .event-presence-card h3, .availability-block h3, .acquisition-card h3, .board-card h3, .deal-main h3 { font-family: var(--serif); font-size: 22px; margin: 5px 0 7px; line-height: 1.14; }
+.deal-next, .deal-value, .capital-gap, .travel-context, .council-missing { font-size: 13.4px; color: #cfd3d9; }
+.deal-check { display: inline-flex; gap: 7px; align-items: center; font-size: 13px; color: #cfd3d9; }
+.deal-columns, .capital-match-head { display: flex; flex-wrap: wrap; gap: 14px; align-items: flex-start; }
+.empty-state { font-size: 13.4px; color: var(--muted); }
+.text-action { background: transparent; border: 0; padding: 0; color: var(--cobalt); font-size: 12.8px; cursor: pointer; display: inline-flex; gap: 5px; align-items: center; }
+
+@media (max-width: 960px) {
+  .deal-room, .permission-layout, .passport-layout, .room-layout { grid-template-columns: minmax(0, 1fr); }
+}
+@media (max-width: 720px) {
+  .opp-grid, .vault-grid, .presence-grid, .capital-grid, .concierge-scope { grid-template-columns: minmax(0, 1fr); }
+  .passport-head h2 { font-size: 27px; }
+  .opp-interest, .expertise-score, .capital-verdict, .passport-score, .team-role-actions { margin-left: 0; text-align: left; }
+  .passport-stats { gap: 14px; }
+  .deal-answer-form input, .opp-respond input, .council-question input, .council-response input { flex: 1 1 100%; }
+  .scope-control { flex-wrap: wrap; }
+}
