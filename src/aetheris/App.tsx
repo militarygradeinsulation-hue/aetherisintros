@@ -231,10 +231,10 @@ function HomeMasthead({ people, select, setPage, openNeed, openThread }: {
   const companies = new Set(people.map(p => p.company)).size
   return <section className="masthead">
     <div className="masthead-brand">
-      <span className="folio">THE BUSINESS NETWORK WITHOUT THE NOISE</span>
-      <h1 className="masthead-title">Aetheris<br /><em>Intros</em></h1>
-      <h2>Real business networking.<br />No selling. No spam.</h2>
-      <p>The professional network built around trusted context instead of reach—where human judgment and quiet intelligence work as one. Meet people because the relationship makes sense for both sides, never because someone bought your attention.</p>
+      <span className="folio">PEOPLE CREATE POSSIBILITIES</span>
+      <h1 className="masthead-title">Memory that keeps<br /><em>relationships alive.</em></h1>
+      <h2>A professional memory for builders, backed by real people, real context, and real intent.</h2>
+      <p>Aetheris Intros is the high-trust business network where Active Memory learns who you know, what you need, and why now—so every introduction makes sense for both sides. No selling. No spam. No hollow networking.</p>
       <div className="masthead-actions">
         <Button onClick={openNeed}>Get started <ArrowRight size={14} /></Button>
         <Button kind="secondary" onClick={() => setPage('intros')}>See how it works</Button>
