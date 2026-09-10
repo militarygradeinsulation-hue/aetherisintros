@@ -1039,7 +1039,7 @@ function Messages({ people, select, activeId, setActiveId }: { people: Member[];
             <button onClick={() => {
               const t = text.trim()
               if (!t) return
-              gate(t, { channel: 'message', authorId: 'me', recipientId: person.id }, final => { net.sendMessage(thread.id, final); setText('') })
+              gate(t, { channel: 'message', authorId: 'me', recipient: person }, final => { net.sendMessage(thread.id, final); setText('') })
             }} disabled={!text.trim()} aria-label="Send"><Send size={17} /></button>
           </div>
         </div>
