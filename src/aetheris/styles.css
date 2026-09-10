@@ -1428,8 +1428,10 @@
   .sys-row, .company-row, .loop-row { grid-template-columns: minmax(0, 1fr); gap: 18px; }
   .candidate dl, .handshake-body dl, .value-pair, .candidate-meters { grid-template-columns: minmax(0, 1fr); }
 }
-@media (max-width: 720px) {
+@media (max-width: 1500px) {
   .move-switch { display: none; }
+}
+@media (max-width: 720px) {
   .handshake-head { grid-template-columns: auto minmax(0, 1fr); }
   .justified { grid-column: 1 / -1; text-align: left; }
   .sys-hero h1, .circle-hero h1 { font-size: 34px; }
