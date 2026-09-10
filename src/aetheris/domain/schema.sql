@@ -303,3 +303,197 @@ begin
     execute format('alter table public.%I enable row level security', t);
   end loop;
 end $$;
+
+-- ---------------------------------------------------------------------------
+-- Relationship OS layer. Same ownership + privacy discipline as above: every
+-- table carries owner_id and (where the record can be surfaced to another
+-- member) a privacy scope, so RLS can scope reads without further migration.
+
+create table if not exists public.opportunity_rooms (
+  id text primary key,
+  owner_id uuid not null,
+  name text not null,
+  outcome text not null,
+  stage text not null default 'Forming',
+  company_id text,
+  company_name text,
+  people_ids text[] not null default '{}',
+  system_ids text[] not null default '{}',
+  circle_ids text[] not null default '{}',
+  intent_ids text[] not null default '{}',
+  open_loop_ids text[] not null default '{}',
+  meeting_ids text[] not null default '{}',
+  evidence_ids text[] not null default '{}',
+  weather text,
+  next_action text,
+  blockers text[] not null default '{}',
+  timeline jsonb not null default '[]',
+  value_state value_state not null default 'unquantified',
+  value_note text,
+  archived boolean not null default false,
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now()
+);
+
+create table if not exists public.relationship_twins (
+  id text primary key,
+  owner_id uuid not null,
+  person_id text not null,
+  cares_about text[] not null default '{}',
+  decision_style text,
+  communication_style text,
+  typical_response text,
+  what_works text[] not null default '{}',
+  what_does_not text[] not null default '{}',
+  recent_changes text[] not null default '{}',
+  motivations text[] not null default '{}',
+  inferences jsonb not null default '[]',
+  confidence int not null default 0,
+  scope privacy_scope not null default 'private',
+  updated_at timestamptz not null default now()
+);
+
+create table if not exists public.network_simulations (
+  id text primary key,
+  owner_id uuid not null,
+  question text not null,
+  target_kind text not null,
+  target_label text not null,
+  people_involved text[] not null default '{}',
+  paths jsonb not null default '[]',
+  sequence text[] not null default '{}',
+  friction text[] not null default '{}',
+  uncertainty text[] not null default '{}',
+  likelihood_band text not null default 'Medium',
+  time_band text,
+  effort_band text,
+  saved boolean not null default false,
+  created_at timestamptz not null default now()
+);
+
+create table if not exists public.opportunity_collisions (
+  id text primary key,
+  owner_id uuid not null,
+  headline text not null,
+  signals jsonb not null default '[]',
+  people_ids text[] not null default '{}',
+  system_ids text[] not null default '{}',
+  circle_ids text[] not null default '{}',
+  why_now text,
+  timing_event text,
+  window_note text,
+  recommended_action text,
+  confidence int not null default 0,
+  status text not null default 'new',
+  created_at timestamptz not null default now()
+);
+
+create table if not exists public.latent_network_paths (
+  id text primary key,
+  owner_id uuid not null,
+  target_label text not null,
+  target_person_id text,
+  kind text not null default 'warm',
+  hops jsonb not null default '[]',
+  statement text not null,
+  strength_band text not null default 'Medium',
+  consent_required boolean not null default true,
+  created_at timestamptz not null default now()
+);
+
+create table if not exists public.trust_budget_states (
+  id text primary key,
+  owner_id uuid not null,
+  connector_id text not null,
+  asks_last_90 int not null default 0,
+  reciprocity int not null default 0,
+  fatigue text not null default 'healthy',
+  note text,
+  updated_at timestamptz not null default now()
+);
+
+create table if not exists public.relationship_inbox_items (
+  id text primary key,
+  owner_id uuid not null,
+  kind text not null,
+  title text not null,
+  person_id text,
+  room_id text,
+  why_now text,
+  what_changed text,
+  next_move text,
+  priority int not null default 0,
+  status text not null default 'open',
+  snooze_until date,
+  created_at timestamptz not null default now()
+);
+
+create table if not exists public.evidence_items (
+  id text primary key,
+  owner_id uuid not null,
+  category text not null,
+  source_type text not null default 'derived',
+  source_label text,
+  statement text not null,
+  observed_on date,
+  confidence int not null default 0,
+  scope privacy_scope not null default 'private',
+  shareable boolean not null default false,
+  person_id text,
+  created_at timestamptz not null default now()
+);
+
+create table if not exists public.voice_memory_captures (
+  id text primary key,
+  owner_id uuid not null,
+  person_id text,
+  transcript text not null,
+  proposals jsonb not null default '[]',
+  status text not null default 'pending',
+  created_at timestamptz not null default now()
+);
+
+create table if not exists public.autopilot_actions (
+  id text primary key,
+  owner_id uuid not null,
+  kind text not null,
+  title text not null,
+  person_id text,
+  room_id text,
+  draft text,
+  reason text,
+  autonomy_level int not null default 1,
+  requires_approval boolean not null default true,
+  status text not null default 'proposed',
+  created_at timestamptz not null default now()
+);
+
+create table if not exists public.network_strategies (
+  id text primary key,
+  owner_id uuid not null,
+  goal text not null,
+  horizon text,
+  target_roles text[] not null default '{}',
+  target_industries text[] not null default '{}',
+  target_circles text[] not null default '{}',
+  constraints text[] not null default '{}',
+  current_people_ids text[] not null default '{}',
+  gaps text[] not null default '{}',
+  next_moves jsonb not null default '[]',
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now()
+);
+
+do $$
+declare t text;
+begin
+  foreach t in array array[
+    'opportunity_rooms','relationship_twins','network_simulations','opportunity_collisions',
+    'latent_network_paths','trust_budget_states','relationship_inbox_items','evidence_items',
+    'voice_memory_captures','autopilot_actions','network_strategies'
+  ] loop
+    execute format('grant select, insert, update, delete on public.%I to authenticated', t);
+    execute format('grant all on public.%I to service_role', t);
+    execute format('alter table public.%I enable row level security', t);
+  end loop;
+end $$;

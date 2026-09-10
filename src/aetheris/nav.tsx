@@ -4,6 +4,7 @@ import type { Member } from './social'
 export type Page =
   | 'home' | 'discover' | 'intros' | 'messages' | 'needs' | 'memory' | 'insights' | 'profile'
   | 'systems' | 'circles' | 'companies' | 'outcomes' | 'loops' | 'organization' | 'events' | 'preferences'
+  | 'inbox' | 'rooms' | 'collisions' | 'simulation' | 'strategy' | 'evidence' | 'autopilot'
 
 /** Navigation intents any surface can trigger. */
 export interface NavApi {
@@ -18,6 +19,8 @@ export interface NavApi {
   openCompany: (companyId: string) => void
   openHandshake: (memberId: string) => void
   openIntent: (memberId?: string) => void
+  openRoom: (roomId: string) => void
+  captureConversation: () => void
 }
 
 export const NavCtx = createContext<NavApi | null>(null)
