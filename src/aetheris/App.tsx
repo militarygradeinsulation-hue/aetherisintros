@@ -218,7 +218,7 @@ function HomeMasthead({ people, select, setPage, openNeed, openThread }: {
       <span className="folio">THE BUSINESS NETWORK WITHOUT THE NOISE</span>
       <h1 className="masthead-title">Aetheris<br /><em>Intros</em></h1>
       <h2>Real business networking.<br />No selling. No spam.</h2>
-      <p>The only professional social network built around trusted context instead of reach. Meet people because the relationship makes sense for both sides.</p>
+      <p>The professional network built around trusted context instead of reach—where human judgment and quiet intelligence work as one. Meet people because the relationship makes sense for both sides, never because someone bought your attention.</p>
       <div className="masthead-actions">
         <Button onClick={openNeed}>Get started <ArrowRight size={14} /></Button>
         <Button kind="secondary" onClick={() => setPage('intros')}>See how it works</Button>
