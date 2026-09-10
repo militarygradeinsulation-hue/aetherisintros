@@ -678,34 +678,66 @@ function Memory({ people, select }: { people: Member[]; select: (p: Member) => v
         </div>
       </section>
       <aside className="memory-changes">
-        <Label signal>WHAT INTROS LEARNED RECENTLY</Label>
-        <h2>The graph changed.</h2>
+        <header className="mod-head"><span>WHAT INTROS LEARNED RECENTLY</span><button className="mod-link">View all <ArrowRight size={12} /></button></header>
         <div className="memory-cats">{(['All', ...memoryCategories] as const).map(c =>
           <button key={c} className={cat === c ? 'active' : ''} onClick={() => setCat(c)}>{c}</button>)}</div>
-        {shown.map((l, index) => {
-          const relatedPerson = people[index % people.length]
-          return <article key={l.id} className="learning-row">
-            {relatedPerson && <Avatar person={relatedPerson} portrait />}
-            <div>
-              <span>{l.category}</span>
-              <p>{l.text}</p>
-              <small>{l.source} · {l.confidence}% confidence · {scopeLabel[l.scope]} · {l.when}</small>
-            </div>
-          </article>
-        })}
-        {!shown.length && <p className="empty-state">Nothing learned in this category yet.</p>}
+        <div className="learned-table">
+          {shown.map((l, index) => {
+            const relatedPerson = people[index % people.length]
+            return <article key={l.id} className="learned-row">
+              {relatedPerson && <button onClick={() => relatedPerson && select(relatedPerson)} aria-label={relatedPerson.name}><Avatar person={relatedPerson} portrait /></button>}
+              <div className="learned-text">
+                <p><strong>{relatedPerson?.name}</strong> {l.text}</p>
+                <small>From: {l.source}</small>
+              </div>
+              <div className="learned-cell"><strong>{l.confidence}%</strong><small>Confidence</small></div>
+              <div className="learned-cell"><strong>{scopeLabel[l.scope]}</strong><small>{l.scope === 'private' ? 'Only you' : l.scope === 'team' ? 'With your team' : 'Cleared for intros'}</small></div>
+              <span className="learned-when">{l.when}</span>
+            </article>
+          })}
+          {!shown.length && <p className="empty-state">Nothing learned in this category yet.</p>}
+        </div>
       </aside>
     </div>
     <section className="memory-totals">
-      <div><strong>10,428</strong><span>relationship facts retained</span></div><div><strong>816</strong><span>commitments remembered</span></div>
-      <div><strong>147</strong><span>warm paths with live context</span></div><div><strong>93%</strong><span>source-attributed memory</span></div>
+      <div><strong>4,892</strong><span>Conversations remembered</span></div>
+      <div><strong>1,246</strong><span>People in memory</span></div>
+      <div><strong>3,281</strong><span>Contextual connections</span></div>
+      <div><strong>93%</strong><span>Source-attributed memory</span></div>
     </section>
-    <section className="memory-modules">
-      <article><Label signal>RELATIONSHIP PATTERNS</Label><h3>You create the strongest outcomes through operator-to-operator introductions.</h3><p>11 of your last 14 successful conversations began with shared operating context.</p></article>
-      <article><Label signal>NEWLY LEARNED NEEDS</Label><h3>Five members now need people already inside your trusted graph.</h3><p>Industrial AI, operating partners and regional expansion appear most often.</p></article>
-      <article><Label signal>RECONNECT OPPORTUNITIES</Label><h3>Tomás Bergeron has relevant timing after 168 quiet days.</h3><p>Reconnect around bid qualification. Do not reference the time gap.</p></article>
-      <article><Label signal>COOLING CONVERSATIONS</Label><h3>Scott Kelley is waiting on one promised pipeline observation.</h3><p>A short, specific follow-up will close the loop without forcing a meeting.</p></article>
-    </section>
+    <div className="memory-modules">
+      <section className="mod">
+        <header><span>RELATIONSHIP PATTERNS</span><button className="mod-link">View all <ArrowRight size={12} /></button></header>
+        <div className="pattern-body">
+          <div className="pattern-faces">{people.slice(0, 3).map(p => <Avatar key={p.id} person={p} portrait />)}</div>
+          <p>You often connect operators, founders and investors working on the same industrial and AI problems.</p>
+        </div>
+        <strong className="pattern-stat">19 successful introductions</strong>
+        <small>in the last 6 months.</small>
+      </section>
+      <section className="mod">
+        <header><span>NEWLY LEARNED NEEDS</span><button className="mod-link">View all <ArrowRight size={12} /></button></header>
+        <ul className="need-signals">
+          <li><Target size={15} /><p>2 people need design partners in the next 3 months.</p></li>
+          <li><TrendingUp size={15} /><p>3 founders are exploring Series A or B funding.</p></li>
+          <li><Network size={15} /><p>4 people are looking for introductions in APAC.</p></li>
+        </ul>
+      </section>
+      <section className="mod">
+        <header><span>RECONNECT OPPORTUNITIES</span><button className="mod-link">View all <ArrowRight size={12} /></button></header>
+        <ul className="reconnect-list">{[...people].sort((a, b) => b.lastInteractionDays - a.lastInteractionDays).slice(0, 3).map(p =>
+          <li key={p.id}><button onClick={() => select(p)}><Avatar person={p} portrait />
+            <div><strong>{p.name}</strong><small>Last conversation {Math.max(1, Math.round(p.lastInteractionDays / 30))} months ago</small>
+              <small>{p.whyNow}</small></div></button></li>)}</ul>
+      </section>
+      <section className="mod">
+        <header><span>COOLING CONVERSATIONS</span><button className="mod-link">View all <ArrowRight size={12} /></button></header>
+        <ul className="reconnect-list">{people.filter(p => p.score.timing < 70).slice(0, 3).map(p =>
+          <li key={p.id}><button onClick={() => select(p)}><Avatar person={p} portrait />
+            <div><strong>{p.name}</strong><small>Last message {Math.max(1, Math.round(p.lastInteractionDays / 7))} weeks ago</small>
+              <small>{p.nextAction}</small></div></button></li>)}</ul>
+      </section>
+    </div>
   </>
 }
 
