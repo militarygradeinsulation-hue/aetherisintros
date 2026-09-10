@@ -442,14 +442,14 @@
 .member-identity { display: grid; grid-template-columns: 1.05fr .95fr; gap: 0; background: var(--ivory); color: var(--ink); border: 1px solid var(--line-light); border-radius: 8px; overflow: hidden; }
 .member-identity-copy { padding: 44px 44px 40px; display: flex; flex-direction: column; gap: 16px; }
 .member-identity-copy .brand-mark { margin-bottom: 6px; }
-.member-identity-copy h1 { font: 400 clamp(44px, 6vw, 84px)/.92 'Bodoni Moda', 'Cormorant Garamond', Georgia, serif; letter-spacing: -.02em; margin: 4px 0 0; }
+.member-identity-copy h1 { font: 400 clamp(44px, 6vw, 84px)/.92 'Cormorant Garamond', Georgia, serif; letter-spacing: -.02em; margin: 4px 0 0; }
 .member-role { font: 500 16px/1.4 'Space Grotesk', Inter, sans-serif; margin: 0; }
 .member-meta { font: 400 12.5px/1.5 Inter, sans-serif; letter-spacing: .04em; text-transform: uppercase; color: #5c6067; margin: 0; }
-.member-identity-copy blockquote { margin: 6px 0 0; padding-left: 18px; border-left: 2px solid var(--cobalt); font: italic 400 20px/1.45 'Bodoni Moda', Georgia, serif; }
+.member-identity-copy blockquote { margin: 6px 0 0; padding-left: 18px; border-left: 2px solid var(--cobalt); font: italic 400 20px/1.45 'Cormorant Garamond', Georgia, serif; }
 .member-metrics { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0; border-top: 1px solid var(--line-light); border-bottom: 1px solid var(--line-light); margin: 6px 0 0; }
 .member-metrics div { padding: 14px 10px 14px 0; }
 .member-metrics dt { font: 500 9.5px/1 Inter, sans-serif; letter-spacing: .16em; text-transform: uppercase; color: #6d7178; }
-.member-metrics dd { margin: 6px 0 0; font: 400 28px/1 'Bodoni Moda', Georgia, serif; }
+.member-metrics dd { margin: 6px 0 0; font: 400 28px/1 'Cormorant Garamond', Georgia, serif; }
 .member-cta-row { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
 .member-identity-copy .btn.quiet { border-color: var(--line-light); color: var(--ink); }
 .member-identity-copy .save-btn { border-color: var(--line-light); color: var(--ink); }
@@ -486,17 +486,17 @@
 .mod-goals svg, .mod-facts svg, .need-signals svg { color: var(--cobalt-bright); }
 .mod-list { list-style: none; margin: 0; padding: 0 0 0 30px; position: relative; display: grid; gap: 5px; }
 .mod-list .mod-icon { position: absolute; left: 0; top: 2px; color: #d9dce0; }
-.mod-list li { font: 400 12.8px/1.5 'Bodoni Moda', Georgia, serif; color: #dcdfe3; }
+.mod-list li { font: 400 12.8px/1.5 'Cormorant Garamond', Georgia, serif; color: #dcdfe3; }
 
 .compat-rings { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; padding-bottom: 16px; border-bottom: 1px solid var(--line-dark); }
 .compat-ring { position: relative; text-align: center; }
 .compat-ring svg { width: 100%; max-width: 92px; transform: rotate(-90deg); }
 .compat-ring .ring-track { fill: none; stroke: rgba(255,255,255,.12); stroke-width: 7; }
 .compat-ring .ring-value { fill: none; stroke: var(--cobalt-bright); stroke-width: 7; stroke-linecap: round; }
-.compat-ring strong { position: absolute; left: 0; right: 0; top: 30px; font: 400 21px/1 'Bodoni Moda', Georgia, serif; color: var(--soft); }
-.compat-ring span { display: block; margin-top: 6px; font: 400 12px/1.3 'Bodoni Moda', Georgia, serif; color: #d3d6da; }
+.compat-ring strong { position: absolute; left: 0; right: 0; top: 30px; font: 400 21px/1 'Cormorant Garamond', Georgia, serif; color: var(--soft); }
+.compat-ring span { display: block; margin-top: 6px; font: 400 12px/1.3 'Cormorant Garamond', Georgia, serif; color: #d3d6da; }
 .compat-rows { list-style: none; margin: 14px 0 0; padding: 0; display: grid; gap: 11px; }
-.compat-rows li { display: grid; grid-template-columns: 18px auto 1fr; gap: 10px; align-items: center; font: 400 12.8px/1.3 'Bodoni Moda', Georgia, serif; color: #cfd2d7; }
+.compat-rows li { display: grid; grid-template-columns: 18px auto 1fr; gap: 10px; align-items: center; font: 400 12.8px/1.3 'Cormorant Garamond', Georgia, serif; color: #cfd2d7; }
 .compat-rows svg { color: var(--cobalt-bright); }
 .compat-rows b { font: 500 12.5px/1 Inter, sans-serif; color: var(--soft); }
 
@@ -520,13 +520,13 @@
 .activity-row .person-avatar { width: 44px; height: 44px; border-radius: 999px; }
 .activity-row strong { font: 500 13.5px/1.2 Inter, sans-serif; color: var(--soft); }
 .activity-row em { display: block; margin: 3px 0 5px; font: italic 400 12px/1.2 Inter, sans-serif; color: var(--muted); }
-.activity-row p { font: 400 13.5px/1.45 'Bodoni Moda', Georgia, serif; color: #dcdfe3; margin: 0; }
+.activity-row p { font: 400 13.5px/1.45 'Cormorant Garamond', Georgia, serif; color: #dcdfe3; margin: 0; }
 .activity-row small { display: block; margin-top: 7px; font: 400 11.5px/1 Inter, sans-serif; color: var(--muted); letter-spacing: .06em; }
 .activity-when { font: 400 11px/1 Inter, sans-serif; color: var(--muted); }
 
-.availability-mod .avail-state { display: flex; align-items: center; gap: 10px; font: 400 15px/1.3 'Bodoni Moda', Georgia, serif; color: var(--soft); margin-bottom: 8px; }
+.availability-mod .avail-state { display: flex; align-items: center; gap: 10px; font: 400 15px/1.3 'Cormorant Garamond', Georgia, serif; color: var(--soft); margin-bottom: 8px; }
 .availability-mod .live-dot { background: #3ddc97; box-shadow: 0 0 0 4px rgba(61,220,151,.14); }
-.book-call { margin-top: 18px; width: 100%; display: flex; align-items: center; gap: 12px; padding: 13px 14px; background: transparent; border: 1px solid var(--line-dark); border-radius: 6px; color: var(--soft); font: 400 14.5px/1 'Bodoni Moda', Georgia, serif; cursor: pointer; }
+.book-call { margin-top: 18px; width: 100%; display: flex; align-items: center; gap: 12px; padding: 13px 14px; background: transparent; border: 1px solid var(--line-dark); border-radius: 6px; color: var(--soft); font: 400 14.5px/1 'Cormorant Garamond', Georgia, serif; cursor: pointer; }
 .book-call svg:last-child { margin-left: auto; }
 .book-call:hover { border-color: var(--cobalt); }
 
@@ -534,10 +534,10 @@
 .intro-reco header { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
 .intro-reco .beta { border: 1px solid var(--cobalt-bright); border-radius: 5px; padding: 3px 8px; font: 500 9.5px/1 Inter, sans-serif; letter-spacing: .16em; color: var(--cobalt-bright); }
 .intro-reco h2 { font: 500 22px/1.3 'Space Grotesk', Inter, sans-serif; margin: 0 0 10px; color: var(--soft); }
-.intro-reco > p { font: 400 15px/1.55 'Bodoni Moda', Georgia, serif; color: #d8dbdf; margin: 0 0 16px; }
+.intro-reco > p { font: 400 15px/1.55 'Cormorant Garamond', Georgia, serif; color: #d8dbdf; margin: 0 0 16px; }
 .why-now { display: grid; grid-template-columns: 20px 1fr; gap: 12px; padding: 16px 18px; border: 1px solid rgba(20,118,255,.45); border-radius: 6px; }
 .why-now strong { display: block; font: 500 14.5px/1 Inter, sans-serif; color: var(--soft); margin-bottom: 6px; }
-.why-now p { margin: 0; font: 400 13.8px/1.5 'Bodoni Moda', Georgia, serif; color: #d1d4d9; }
+.why-now p { margin: 0; font: 400 13.8px/1.5 'Cormorant Garamond', Georgia, serif; color: #d1d4d9; }
 .reasoning-panel { display: grid; gap: 12px; margin-top: 14px; padding-top: 14px; border-top: 1px solid var(--line-dark); }
 .reasoning-panel span { font: 500 9.5px/1 Inter, sans-serif; letter-spacing: .18em; color: var(--amber); }
 .reasoning-panel p { margin: 5px 0 0; font: 400 13px/1.5 Inter, sans-serif; color: #c9ccd1; }
@@ -558,7 +558,7 @@
 .learned-row { display: grid; grid-template-columns: 44px minmax(0, 1fr) 92px 118px 58px; gap: 14px; align-items: center; padding: 13px 0; border-bottom: 1px solid var(--line-dark); }
 .learned-row > button { background: none; border: 0; padding: 0; cursor: pointer; }
 .learned-row .person-avatar { width: 44px; height: 44px; border-radius: 999px; }
-.learned-text p { margin: 0; font: 400 13.5px/1.45 'Bodoni Moda', Georgia, serif; color: #dcdfe3; }
+.learned-text p { margin: 0; font: 400 13.5px/1.45 'Cormorant Garamond', Georgia, serif; color: #dcdfe3; }
 .learned-text strong { font-family: Inter, sans-serif; font-weight: 600; font-size: 13px; color: var(--soft); }
 .learned-text small { display: block; margin-top: 5px; font: 400 10.5px/1 Inter, sans-serif; letter-spacing: .06em; color: var(--muted); }
 .learned-cell strong { display: block; font: 500 13px/1 Inter, sans-serif; color: var(--soft); }
@@ -568,11 +568,11 @@
 .pattern-faces { display: flex; }
 .pattern-faces .person-avatar { width: 40px; height: 40px; border-radius: 999px; margin-left: -12px; border: 1px solid var(--raised); }
 .pattern-faces .person-avatar:first-child { margin-left: 0; }
-.pattern-stat { display: block; margin-top: 16px; font: 400 20px/1.2 'Bodoni Moda', Georgia, serif; color: var(--soft); }
+.pattern-stat { display: block; margin-top: 16px; font: 400 20px/1.2 'Cormorant Garamond', Georgia, serif; color: var(--soft); }
 .mod > small { font: 400 12px/1.4 Inter, sans-serif; color: var(--muted); }
 .need-signals { list-style: none; margin: 0; padding: 0; display: grid; gap: 14px; }
 .need-signals li { display: grid; grid-template-columns: 18px 1fr; gap: 12px; align-items: start; }
-.need-signals p { font: 400 13.2px/1.45 'Bodoni Moda', Georgia, serif; color: #d8dbdf; }
+.need-signals p { font: 400 13.2px/1.45 'Cormorant Garamond', Georgia, serif; color: #d8dbdf; }
 .reconnect-list li { border-bottom: 1px solid var(--line-dark); }
 .reconnect-list button, .joined-list button { display: grid; grid-template-columns: 40px 1fr auto; gap: 12px; align-items: center; width: 100%; text-align: left; background: none; border: 0; padding: 10px 0; cursor: pointer; }
 .reconnect-list .person-avatar, .joined-list .person-avatar { width: 40px; height: 40px; border-radius: 999px; }
@@ -610,7 +610,7 @@
 .global-stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0; margin: 0; border-top: 1px solid var(--line-dark); border-bottom: 1px solid var(--line-dark); }
 .global-stats div { padding: 18px 14px; border-right: 1px solid var(--line-dark); }
 .global-stats div:last-child { border-right: 0; }
-.global-stats dd { margin: 0; font: 400 30px/1 'Bodoni Moda', Georgia, serif; color: var(--soft); }
+.global-stats dd { margin: 0; font: 400 30px/1 'Cormorant Garamond', Georgia, serif; color: var(--soft); }
 .global-stats dt { margin-top: 7px; font: 400 12px/1 Inter, sans-serif; color: var(--muted); }
 .network-insight-cards { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
 .insight-tabs { display: flex; gap: 18px; border-bottom: 1px solid var(--line-dark); margin-bottom: 14px; }
@@ -623,7 +623,7 @@
 .insight-bars em { font-style: normal; text-align: right; color: var(--muted); }
 .joined-flag { display: inline-flex; align-items: center; gap: 7px; font: 400 11px/1 Inter, sans-serif; color: var(--muted); white-space: nowrap; }
 .joined-flag .live-dot { background: #3ddc97; box-shadow: 0 0 0 3px rgba(61,220,151,.14); }
-.global-quote { margin: 0; padding: 22px 0 0; border-top: 1px solid var(--line-dark); font: italic 400 clamp(20px, 2.4vw, 30px)/1.35 'Bodoni Moda', Georgia, serif; color: var(--soft); }
+.global-quote { margin: 0; padding: 22px 0 0; border-top: 1px solid var(--line-dark); font: italic 400 clamp(20px, 2.4vw, 30px)/1.35 'Cormorant Garamond', Georgia, serif; color: var(--soft); }
 .global-quote small { display: block; margin-top: 12px; font: 500 10px/1 Inter, sans-serif; letter-spacing: .24em; color: var(--muted); }
 
 @media (max-width: 1180px) {
@@ -650,7 +650,7 @@
 .member-plate > img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: center 22%; filter: grayscale(1) contrast(1.12); }
 .ring-dial { position: relative; display: grid; place-items: center; }
 .ring-dial svg { width: 100%; max-width: 92px; transform: rotate(-90deg); }
-.compat-ring strong { position: absolute; inset: 0; display: grid; place-items: center; top: 0; font: 400 21px/1 'Bodoni Moda', Georgia, serif; color: var(--soft); }
+.compat-ring strong { position: absolute; inset: 0; display: grid; place-items: center; top: 0; font: 400 21px/1 'Cormorant Garamond', Georgia, serif; color: var(--soft); }
 .memory-editorial-copy h1 { font-size: clamp(34px, 4.2vw, 62px); line-height: .96; overflow-wrap: break-word; }
 .memory-editorial-copy .eyebrow { display: block; margin-top: 14px; }
 .memory-layout { grid-template-columns: minmax(0, 1fr); }
@@ -664,7 +664,7 @@
 .discover-tile > footer > * { flex: 0 1 auto; }
 .ring-dial { position: relative; display: block; width: min(100%, 92px); margin: 0 auto; }
 .ring-dial svg { display: block; width: 100%; transform: rotate(-90deg); }
-.compat-ring strong { position: absolute; left: 0; right: 0; top: 50%; transform: translateY(-50%); display: block; text-align: center; font: 400 20px/1 'Bodoni Moda', Georgia, serif; color: var(--soft); }
+.compat-ring strong { position: absolute; left: 0; right: 0; top: 50%; transform: translateY(-50%); display: block; text-align: center; font: 400 20px/1 'Cormorant Garamond', Georgia, serif; color: var(--soft); }
 .compat-rings .compat-ring strong { margin: 0; }
 .compat-rings .compat-ring span { margin-top: 8px; }
 .compat-rings .compat-ring strong { top: 52%; }
