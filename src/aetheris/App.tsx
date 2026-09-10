@@ -2162,7 +2162,7 @@ function ProCredibilityModule({ memberId }: { memberId: string }) {
   const credibility = pro.credibility(memberId)
   const graph = pro.proofGraph(memberId)
   const reputations = pro.reputationFor(memberId)
-  if (!graph.nodes.length && !reputations.length && !credibility.verified) return null
+  const bare = !graph.nodes.length && !reputations.length && !credibility.verified
   return <section className="module pro-credibility">
     <header>
       <div><Label>PROOF OF WORK AND CONTEXTUAL REPUTATION</Label>
@@ -2170,6 +2170,7 @@ function ProCredibilityModule({ memberId }: { memberId: string }) {
         <p>{credibility.reasoning}</p></div>
       <div className="pro-cred-score"><strong>{credibility.score}</strong><span>/100</span><em>{credibility.verdict}</em></div>
     </header>
+    {bare && <p className="pro-cred-answer">No delivered work, verified credential or contextual reputation has been recorded here yet. Everything on this profile should be read as self-stated until it carries evidence.</p>}
     {!!graph.nodes.length && <>
       <p className="pro-cred-answer">{graph.answer}</p>
       <ul className="mod-list">{graph.nodes.slice(0, 5).map(n => <li key={n.id}>
