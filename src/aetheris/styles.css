@@ -1605,3 +1605,46 @@
 .graph-rings i{animation:memory-ring-breathe 4s ease-in-out infinite}.graph-rings i:nth-child(2){animation-delay:.7s}.graph-rings i:nth-child(3){animation-delay:1.4s}
 .graph-node.signal i,.preview-node i{animation:memory-signal-pulse 2.2s ease-in-out infinite}.graph-node:nth-of-type(3) i,.preview-node:nth-child(3) i{animation-delay:.55s}.graph-node:nth-of-type(5) i,.preview-node:nth-child(5) i{animation-delay:1.1s}
 @media(prefers-reduced-motion:reduce){.memory-graph:before,.memory-graph:after,.preview-graph:before,.preview-graph:after,.graph-rings i,.graph-node i,.preview-node i{animation:none!important}}
+
+/* ============ Mobile fit: nothing cut off on phones/tablets ============ */
+@media(max-width:900px){
+  .app-shell{min-height:100dvh}
+  /* top bar wraps instead of clipping its controls */
+  .topbar{height:auto;min-height:58px;padding:9px 12px;row-gap:8px;align-items:center}
+  .move-switch{display:none!important}
+  .topbar>div{flex-wrap:wrap;justify-content:flex-end;gap:6px}
+  /* long editorial captions wrap inside their plates */
+  figure figcaption{max-width:100%;white-space:normal;overflow-wrap:anywhere;word-break:break-word}
+  .masthead-plate figcaption,
+  .editorial-plate figcaption,
+  .memory-editorial figure figcaption{left:16px;right:16px;text-align:left;letter-spacing:.16em;line-height:1.9}
+  .masthead-plate figcaption{top:auto;bottom:16px}
+  h1,h2,h3,.masthead-title,.page-title h1{overflow-wrap:anywhere}
+  /* bottom nav: all destinations visible, no horizontal scroll, safe-area aware */
+  .mobile-nav{grid-template-columns:repeat(6,minmax(0,1fr))!important;overflow:visible;height:auto;min-height:62px;padding:8px 2px calc(8px + env(safe-area-inset-bottom))}
+  .mobile-nav button{padding:0 2px;min-width:0}
+  .mobile-nav button span{max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:7px}
+  .workspace-grid{padding-bottom:calc(78px + env(safe-area-inset-bottom))}
+  /* wide data rows stay reachable by scroll instead of being clipped */
+  table,.scroll-x{display:block;max-width:100%;overflow-x:auto}
+}
+@media(max-width:520px){
+  .topbar-search{width:36px}
+  .mobile-nav button svg{width:17px;height:17px}
+  .masthead-plate{min-height:360px}
+  .masthead-brand{padding:26px 18px 24px}
+  .masthead-stats{grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+  .masthead-stats dd{font-size:24px}
+  .masthead-intel{padding:18px 16px}
+}
+@media(hover:none){
+  .topbar-search span{display:none}
+}
+
+/* Editorial captions stay legible over bright photography */
+.memory-editorial figure:after,.masthead-plate:after,.editorial-plate:after{content:'';position:absolute;inset:auto 0 0;height:46%;background:linear-gradient(180deg,transparent,rgba(9,12,15,.82));pointer-events:none;z-index:1}
+.memory-editorial figure figcaption,.masthead-plate figcaption,.editorial-plate figcaption{z-index:2;text-shadow:0 1px 10px rgba(9,12,15,.7)}
+
+@media(max-width:900px){
+  .masthead-plate figcaption{left:auto;right:16px;bottom:16px;top:auto;text-align:right}
+}
