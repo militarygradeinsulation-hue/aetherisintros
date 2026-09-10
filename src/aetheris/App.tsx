@@ -2173,7 +2173,7 @@ function ProCredibilityModule({ memberId }: { memberId: string }) {
     {!!graph.nodes.length && <>
       <p className="pro-cred-answer">{graph.answer}</p>
       <ul className="mod-list">{graph.nodes.slice(0, 5).map(n => <li key={n.id}>
-        <b>{n.kind}</b> {n.title} <small>{n.evidence ? `Evidence: ${n.evidence}` : 'No named evidence — treated as self-stated.'}</small>
+        <b>{n.kind}</b> {n.label} <small>{n.evidence ? `Evidence: ${n.evidence}` : 'No named evidence — treated as self-stated.'}</small>
       </li>)}</ul>
     </>}
     {!!reputations.length && <div className="pro-cred-reputation">
