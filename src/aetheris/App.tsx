@@ -1584,6 +1584,7 @@ function MemberProfile({ person, people, onClose, onDraft, onMessage }: {
       </section>
 
       <PassportModule memberId={person.id} />
+      <ProCredibilityModule memberId={person.id} />
       <DecayPrevention person={person} />
       <RepresentativeAsk person={person} />
       <AvailabilityWindows memberId={person.id} />
