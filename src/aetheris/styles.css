@@ -2246,13 +2246,13 @@ input, textarea, select { font: inherit; }
 
 /* ---------------------------------------------- audit patch: new surfaces */
 
-.home-mode-switch { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; padding: 14px 0 18px; border-bottom: 1px solid var(--hairline); }
-.home-mode-switch button { font: 600 12px/1 var(--ui); letter-spacing: .14em; text-transform: uppercase; padding: 9px 16px; border: 1px solid var(--hairline); border-radius: 7px; background: transparent; color: var(--muted); cursor: pointer; }
+.home-mode-switch { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; padding: 14px 0 18px; border-bottom: 1px solid var(--line-dark); }
+.home-mode-switch button { font: 600 12px/1 var(--sans); letter-spacing: .14em; text-transform: uppercase; padding: 9px 16px; border: 1px solid var(--line-dark); border-radius: 7px; background: transparent; color: var(--muted); cursor: pointer; }
 .home-mode-switch button.on { background: var(--cobalt); border-color: var(--cobalt); color: #fff; }
 .home-mode-switch small { color: var(--muted); font-size: 12.5px; }
 
-.import-proposals { margin-top: 14px; border-top: 1px solid var(--hairline); padding-top: 12px; display: grid; gap: 10px; }
-.import-proposal { display: flex; justify-content: space-between; gap: 14px; align-items: flex-start; padding: 11px 13px; border: 1px solid var(--hairline); border-radius: 9px; flex-wrap: wrap; }
+.import-proposals { margin-top: 14px; border-top: 1px solid var(--line-dark); padding-top: 12px; display: grid; gap: 10px; }
+.import-proposal { display: flex; justify-content: space-between; gap: 14px; align-items: flex-start; padding: 11px 13px; border: 1px solid var(--line-dark); border-radius: 9px; flex-wrap: wrap; }
 .import-proposal.on { border-color: var(--cobalt); }
 .import-proposal.off { opacity: .55; }
 .import-proposal strong { display: block; font-size: 14px; }
@@ -2261,24 +2261,24 @@ input, textarea, select { font: inherit; }
 .composer-blocked { margin: 10px 0 0; font-size: 13px; color: var(--muted); border-left: 2px solid var(--amber); padding-left: 12px; }
 .composer-blocked b { color: var(--amber); }
 
-.org-passport { margin: 34px 0; border: 1px solid var(--hairline); border-radius: 12px; padding: 26px; display: grid; gap: 22px; }
+.org-passport { margin: 34px 0; border: 1px solid var(--line-dark); border-radius: 12px; padding: 26px; display: grid; gap: 22px; }
 .org-passport > header { display: flex; justify-content: space-between; gap: 28px; flex-wrap: wrap; }
-.org-passport h2 { font: 400 clamp(24px, 3vw, 34px)/1.1 var(--display); margin: 8px 0; }
+.org-passport h2 { font: 400 clamp(24px, 3vw, 34px)/1.1 var(--serif); margin: 8px 0; }
 .org-passport small { color: var(--muted); font-size: 12px; }
 .org-passport-owners { min-width: 200px; }
-.org-passport-owners span { font: 600 11px/1 var(--ui); letter-spacing: .16em; color: var(--muted); }
+.org-passport-owners span { font: 600 11px/1 var(--sans); letter-spacing: .16em; color: var(--muted); }
 .org-passport-owners p { margin: 10px 0 0; }
 .org-passport-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; }
 .org-passport-chronology .mod-list li b { display: block; font-size: 12px; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
 
 .pro-credibility > header { display: flex; justify-content: space-between; gap: 24px; flex-wrap: wrap; }
 .pro-cred-score { text-align: right; }
-.pro-cred-score strong { font: 400 40px/1 var(--display); }
+.pro-cred-score strong { font: 400 40px/1 var(--serif); }
 .pro-cred-score span, .pro-cred-score em { display: block; font-size: 12px; color: var(--muted); }
 .pro-cred-answer { color: var(--muted); font-size: 13.5px; }
 .pro-cred-reputation { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 14px; }
-.pro-cred-reputation article { border: 1px solid var(--hairline); border-radius: 9px; padding: 14px; }
-.pro-cred-reputation span { font: 600 10.5px/1 var(--ui); letter-spacing: .16em; color: var(--muted); }
+.pro-cred-reputation article { border: 1px solid var(--line-dark); border-radius: 9px; padding: 14px; }
+.pro-cred-reputation span { font: 600 10.5px/1 var(--sans); letter-spacing: .16em; color: var(--muted); }
 .pro-cred-reputation strong { display: block; margin: 8px 0; font-size: 14.5px; }
 .pro-cred-reputation small, .pro-cred-reputation em { display: block; font-size: 12px; color: var(--muted); }
 
