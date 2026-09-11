@@ -2611,3 +2611,15 @@ input, textarea, select { font: inherit; }
 .related-tools button:hover{color:var(--soft);border-color:var(--cobalt)}
 @media(max-width:680px){.briefing-grid{grid-template-columns:1fr}.briefing-panel>header{grid-template-columns:auto minmax(0,1fr);row-gap:8px}.briefing-panel>header button{grid-column:1/-1;justify-self:start}}
 @media(max-width:920px){.mobile-nav{grid-template-columns:repeat(5,minmax(58px,1fr))}}
+
+/* Desktop frame: the top-right utility strip stays compact and icon-led. */
+@media(min-width:921px){
+  .topbar{display:flex;align-items:center;justify-content:flex-end;gap:6px}
+  .topbar-title{display:none}
+  .topbar-dropbtn span,.briefing-toggle span{display:none}
+  .topbar-dropbtn,.briefing-toggle{width:34px;padding:0;justify-content:center;flex:none}
+  .topbar-dropbtn svg:last-child{display:none}
+  .topbar-search{width:36px;padding:0;justify-content:center;flex:none}
+  .topbar-search span,.topbar-search kbd{display:none}
+  .topbar-actions{flex:none;gap:6px;overflow:visible}
+}
