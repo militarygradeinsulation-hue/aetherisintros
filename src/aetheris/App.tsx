@@ -6,7 +6,7 @@ import {
   MessageCircle, Repeat2, Settings2, SlidersHorizontal, TrendingUp, UserRound, Users, X,
   Inbox, DoorOpen, GitMerge, Radar, Flag, FileSearch, Gauge, Mic,
   HelpCircle, BookOpen, Sparkle, Map as MapIcon, History, BadgeCheck, Lock, ScrollText, Puzzle,
-  Briefcase, FolderLock, GraduationCap, UsersRound, Coins, Landmark, PlaneTakeoff, ShieldAlert, Newspaper, Archive, FileText,
+  ChevronDown, Briefcase, FolderLock, GraduationCap, UsersRound, Coins, Landmark, PlaneTakeoff, ShieldAlert, Newspaper, Archive, FileText,
 } from 'lucide-react'
 import { rankMatches, type MatchResult } from '@/aetheris/matching'
 import discoverEditorialAsset from '@/assets/editorial-discover.jpg.asset.json'
@@ -26,6 +26,7 @@ import {
 } from './social'
 import { NetworkProvider, useNetwork, type MemoryNote, type MeProfile } from './store'
 import { classifyConnection, composeWarmIntro, radarLabel } from './lib/engine'
+import { useGrabScroll } from './lib/dragScroll'
 import { NavCtx, useNav, type NavApi, type Page } from './nav'
 import { PlatformProvider, usePlatform } from './platform'
 import type { MoveKind } from './domain/models'
@@ -1923,6 +1924,7 @@ function Shell({ startPage }: { startPage?: Page | undefined }) {
   const [page, setPageState] = useState<Page>(initial)
   const [collapsed, setCollapsed] = useState(false)
   const [mobileOpen, setMobileOpen] = useState(false)
+  const [topMenuOpen, setTopMenuOpen] = useState(false)
   const [selected, setSelected] = useState<Member | null>(null)
   const [draft, setDraft] = useState<Member | null>(null)
   const [needOpen, setNeedOpen] = useState(false)
@@ -2048,6 +2050,8 @@ function Shell({ startPage }: { startPage?: Page | undefined }) {
       knowledgeassets: <KnowledgeAssetsPage />,
     }[page]
 
+  useGrabScroll()
+
   return <NavCtx.Provider value={navApi}>
     <div className={`app-shell ${collapsed ? 'rail-collapsed' : ''}`}>
       <aside className={`nav-rail ${mobileOpen ? 'mobile-open' : ''}`}>
@@ -2071,15 +2075,24 @@ function Shell({ startPage }: { startPage?: Page | undefined }) {
         <header className="topbar">
           <button className="icon-btn mobile-menu" onClick={() => setMobileOpen(!mobileOpen)} aria-label="Menu"><Menu size={19} /></button>
           <span className="topbar-title">Aetheris Intros <i>/</i> {allNav.find(n => n.id === page)?.label}</span>
-          <div className="move-switch">
-            <span>MOVE</span>
-            {moveKinds.map(m => <button key={m.kind} className={page === m.page ? 'active' : ''} onClick={() => setPage(m.page)}>{m.kind}</button>)}
+          <div className="topbar-dropdown">
+            <button className="topbar-dropbtn" aria-expanded={topMenuOpen} onClick={() => setTopMenuOpen(!topMenuOpen)}>
+              <SlidersHorizontal size={14} /><span>Move &amp; tools</span><ChevronDown size={13} />
+            </button>
+            {topMenuOpen && <>
+              <button className="dropdown-scrim" aria-label="Close menu" onClick={() => setTopMenuOpen(false)} />
+              <div className="topbar-dropmenu" role="menu">
+                <span className="drop-label">WHAT ARE YOU MOVING</span>
+                {moveKinds.map(m => <button key={m.kind} role="menuitem" className={page === m.page ? 'active' : ''} onClick={() => { setPage(m.page); setTopMenuOpen(false) }}>{m.kind}</button>)}
+                <span className="drop-label">QUICK ACTIONS</span>
+                <button role="menuitem" onClick={() => { setIntentOpen(true); setTopMenuOpen(false) }}><Layers size={14} /> Post live intent</button>
+                <button role="menuitem" onClick={() => { setOnboardOpen(true); setTopMenuOpen(false) }}><Fingerprint size={14} /> Build your profile</button>
+                <button role="menuitem" onClick={() => { setCaptureOpen(true); setTopMenuOpen(false) }}><Mic size={14} /> Capture conversation</button>
+              </div>
+            </>}
           </div>
-          <div>
+          <div className="topbar-actions">
             <button className="topbar-search" aria-label="Search people, companies, topics, or ideas…" onClick={() => setGlobalSearchOpen(true)}><Search size={15} /><span>Search people, companies, topics, or ideas…</span><kbd>⌘K</kbd></button>
-            <button className="icon-btn" title="Post live intent" onClick={() => setIntentOpen(true)} aria-label="Post live intent"><Layers size={17} /></button>
-            <button className="icon-btn" title="Build your profile" onClick={() => setOnboardOpen(true)} aria-label="Build your profile"><Fingerprint size={17} /></button>
-            <button className="icon-btn" title="Capture conversation" onClick={() => setCaptureOpen(true)} aria-label="Capture conversation"><Mic size={17} /></button>
             <button className="icon-btn" title="Post a need" onClick={() => setNeedOpen(true)} aria-label="Post a need"><Plus size={18} /></button>
             <button className="icon-btn" title="Ask Intros" onClick={() => setAskOpen(true)} aria-label="Ask Intros"><AetherisGlyph size={18} /></button>
           </div>
