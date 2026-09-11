@@ -2538,7 +2538,7 @@ input, textarea, select { font: inherit; }
 .topbar-dropbtn{height:34px;display:inline-flex;align-items:center;gap:8px;padding:0 11px;border:1px solid var(--line-dark);border-radius:6px;background:var(--raised);color:var(--muted);font:700 8px var(--sans);letter-spacing:.14em;text-transform:uppercase;cursor:pointer;white-space:nowrap}
 .topbar-dropbtn:hover,.topbar-dropbtn[aria-expanded=true]{color:var(--soft);border-color:var(--cobalt)}
 .dropdown-scrim{position:fixed;inset:0;border:0;background:transparent;z-index:60;cursor:default}
-.topbar-dropmenu{position:absolute;top:calc(100% + 8px);left:0;z-index:61;min-width:230px;display:grid;background:var(--raised);border:1px solid var(--line-dark);box-shadow:0 24px 60px rgba(0,0,0,.5);padding:8px}
+.topbar-dropmenu{position:absolute;top:calc(100% + 8px);right:0;z-index:61;min-width:230px;display:grid;background:var(--raised);border:1px solid var(--line-dark);box-shadow:0 24px 60px rgba(0,0,0,.5);padding:8px}
 .topbar-dropmenu .drop-label{display:block;padding:9px 9px 6px;color:var(--muted);font:700 7px var(--sans);letter-spacing:.19em}
 .topbar-dropmenu .drop-label+.drop-label,.topbar-dropmenu button+.drop-label{border-top:1px solid var(--line-dark);margin-top:6px}
 .topbar-dropmenu button{border:0;background:transparent;color:var(--soft);display:flex;align-items:center;gap:9px;padding:9px;border-radius:5px;text-align:left;font:600 10px var(--sans);text-transform:capitalize;cursor:pointer}
