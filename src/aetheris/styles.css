@@ -2623,3 +2623,4 @@ input, textarea, select { font: inherit; }
   .topbar-search span,.topbar-search kbd{display:none}
   .topbar-actions{flex:none;gap:6px;overflow:visible}
 }
+@media(min-width:921px){.rail-more{width:auto}}
