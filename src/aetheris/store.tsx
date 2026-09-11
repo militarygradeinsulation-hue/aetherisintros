@@ -358,11 +358,29 @@ export function NetworkProvider({ children, mode = 'live' }: { children: React.R
       texts.slice(before.length).forEach(text => saveAskResponse(userId, askId, text))
     }
     for (const thread of s.ownThreads) {
-      if (!prev.ownThreads.some(t => t.id === thread.id)) saveThread(userId, thread)
+      if (prev.ownThreads.some(t => t.id === thread.id)) continue
+      if (live) createLiveThread(thread.id, userId, thread.memberId, thread.introContext)
+      else saveThread(userId, thread)
     }
     for (const [threadId, messages] of Object.entries(s.sentMessages)) {
       const before = prev.sentMessages[threadId] ?? []
-      messages.slice(before.length).forEach(message => saveMessage(userId, threadId, message))
+      messages.slice(before.length).forEach(message => {
+        if (live) {
+          sendLiveMessage(threadId, userId, message.text)
+          const peer = [...s.ownThreads, ...dir.threads].find(t => t.id === threadId)?.memberId
+          if (peer) notify(peer, userId, 'message', `${s.profile.name || 'A member'} sent you a message.`)
+        } else saveMessage(userId, threadId, message)
+      })
+    }
+    if (live) {
+      for (const id of s.likedPosts) if (!prev.likedPosts.includes(id)) saveReaction(id, userId, 'like', true)
+      for (const id of prev.likedPosts) if (!s.likedPosts.includes(id)) saveReaction(id, userId, 'like', false)
+      for (const id of s.repostedPosts) if (!prev.repostedPosts.includes(id)) saveReaction(id, userId, 'repost', true)
+      for (const id of prev.repostedPosts) if (!s.repostedPosts.includes(id)) saveReaction(id, userId, 'repost', false)
+      for (const [postId, comments] of Object.entries(s.postComments)) {
+        const before = prev.postComments[postId] ?? []
+        comments.slice(before.length).forEach(comment => saveComment(postId, userId, comment.text))
+      }
     }
     if (DOC_KEYS.some(key => prev[key] !== s[key])) {
       const doc: Record<string, unknown> = {}
