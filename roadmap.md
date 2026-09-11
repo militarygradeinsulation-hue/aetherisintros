@@ -37,3 +37,5 @@
 - [x] Shared dialog/overlay/chip/meter styles for previously unstyled blocks
 - [x] Removed Active Memory Graph from the Home page
 - [x] Restored original Aetheris Intros home wording, kept the picture
+
+- [x] IA pass: 7 primary destinations + More index drawer, central page metadata, global Briefing mode, mobile Home/Discover/Intros/Messages/More
