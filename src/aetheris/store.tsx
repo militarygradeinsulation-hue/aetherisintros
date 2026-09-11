@@ -272,9 +272,16 @@ export function NetworkProvider({ children, mode = 'live' }: { children: React.R
         for (const key of DOC_KEYS) {
           if (doc[key] !== undefined) (next[key] as unknown) = doc[key]
         }
-        // In the live network your identity always comes from your own profile row,
-        // never from anything left behind by the demo showcase.
-        if (live) next.profile = profileFromRow(blankMe, meRow ?? ({ industries: [], expertise: [] } as unknown as LiveProfileRow))
+        // In the live network your identity and your stated needs always come from
+        // your own record — never from anything left behind by the demo showcase.
+        if (live) {
+          next.profile = profileFromRow(blankMe, meRow ?? ({ industries: [], expertise: [] } as unknown as LiveProfileRow))
+          if (doc['objectives'] === undefined) next.objectives = []
+          if (doc['activity'] === undefined) next.activity = []
+          if (doc['preferences'] === undefined) {
+            next.preferences = { ...empty.preferences, title: next.profile.title, focus: next.profile.focus }
+          }
+        }
         const take = <K extends keyof Persisted>(key: K, value: Persisted[K] | undefined, filled: boolean) => {
           if (value !== undefined && filled) (next[key] as unknown) = value
         }
