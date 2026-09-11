@@ -214,6 +214,13 @@ const catalogue: Directory = {
   signals: catalogueSignals, threads: catalogueThreads, learnings: catalogueLearnings,
 }
 
+/** A live member starts from an empty identity, not from the showcase persona. */
+const blankMe: MeProfile = {
+  name: '', initials: '', title: '', company: '', location: '', thesis: '', focus: '',
+  lookingFor: '', canHelpWith: '', industries: [], values: '', availability: '', expertise: [],
+  wantToMeet: '', introPreferences: '', boundaries: '', onboarded: false,
+}
+
 /** The signed-in member's own identity, read from their real profile row. */
 function profileFromRow(prev: MeProfile, row: LiveProfileRow): MeProfile {
   return {
