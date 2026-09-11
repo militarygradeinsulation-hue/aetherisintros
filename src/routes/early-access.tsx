@@ -4,7 +4,7 @@ import { useCallback, useEffect, useState } from 'react'
 
 import { claimAccess, foundingLabel, foundingStats, joinWaitlist, useAccess, type FoundingStats } from '@/aetheris/access'
 import { supabase } from '@/integrations/supabase/client'
-import accessPortrait from '@/assets/portraits/portrait-27.jpg.asset.json'
+import accessPortrait from '@/assets/portraits/aetheris-masthead-natural.jpg.asset.json'
 import '@/aetheris/styles.css'
 
 export const Route = createFileRoute('/early-access')({
@@ -96,10 +96,11 @@ function EarlyAccessPage() {
       {access.loading && <p className="auth-notice">Checking your place…</p>}
 
       {!access.loading && !access.signedIn && <>
-        <p className="auth-lede">Create your account first, then claim your founding place.</p>
-        <Link to="/auth" search={{ next: '/early-access' }} className="btn primary">
-          Create your account <ArrowRight size={15} />
-        </Link>
+        <p className="auth-lede">Explore the complete showcase without an account. Create one only when you are ready to build your real professional network.</p>
+        <div className="access-entry-actions">
+          <Link to="/demo" className="btn primary">Demo the system <ArrowRight size={15} /></Link>
+          <Link to="/auth" search={{ next: '/early-access' }} className="btn access-account">Create your account</Link>
+        </div>
       </>}
 
       {!access.loading && access.signedIn && access.status !== 'approved' && <>
@@ -136,14 +137,14 @@ function EarlyAccessPage() {
         <span><b>03</b> Your memory, controlled</span>
       </div>
       <span className="auth-foot"><LockKeyhole size={12} /> {access.foundingNumber ? foundingLabel(access.foundingNumber, stats.capacity) : 'Nothing is shared without your explicit opt-in.'}</span>
-      <Link to="/demo" className="auth-switch">Prefer to look first? See the labelled showcase.</Link>
+      {access.signedIn && <Link to="/demo" className="auth-switch">Open the labelled showcase.</Link>}
     </section>
     <aside className="auth-visual">
-      <img src={accessPortrait.url} alt="A composed professional in architectural window light" width={1280} height={1600} />
+      <img src={accessPortrait.url} alt="A professional looking across an architectural city interior" width={1024} height={1280} />
       <span className="auth-visual-mark" aria-hidden="true">+</span>
       <div className="portrait-caption">
-        <span>FOUNDING MEMBERS / 01</span>
-        <p>The first thousand set the standard the network keeps.</p>
+        <span>REAL IDENTITY. REAL CONTEXT.</span>
+        <p>Demo the system freely. Join the live network when you are ready to participate.</p>
       </div>
     </aside>
   </main>

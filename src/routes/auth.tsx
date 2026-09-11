@@ -5,7 +5,7 @@ import { useCallback, useEffect, useState } from 'react'
 import { supabase } from '@/integrations/supabase/client'
 import { lovable } from '@/integrations/lovable/index'
 import { AUTH_REQUIRED } from '@/aetheris/config'
-import authPortrait from '@/assets/portraits/portrait-26.jpg.asset.json'
+import authPortrait from '@/assets/portraits/aetheris-masthead-natural.jpg.asset.json'
 import '@/aetheris/styles.css'
 
 const safeNext = (value: unknown) => {
@@ -121,8 +121,8 @@ function AuthPage() {
       <div className="auth-index"><span className="folio">MEMBER ACCESS / 2026</span><span>01 / PRIVATE NETWORK</span></div>
       <h1>{mode === 'signin' ? <>Welcome<br /><em>back.</em></> : <>Join the<br /><em>network.</em></>}</h1>
       <p className="auth-lede">
-        Your introductions, active memory and preferences stay with your account — private,
-        permissioned and available on any device.
+        The demo is open to explore. Your account is where real introductions, professional context,
+        active memory and preferences stay private, permissioned and available on any device.
       </p>
 
       <div className="auth-proof" aria-label="Member access principles">
@@ -159,10 +159,11 @@ function AuthPage() {
       <button className="auth-switch" type="button" onClick={() => { setMode(mode === 'signin' ? 'signup' : 'signin'); setError('') }}>
         {mode === 'signin' ? 'No account yet? Create one.' : 'Already a member? Sign in.'}
       </button>
+      <Link to="/demo" className="auth-switch">Not ready to join? Open the demo.</Link>
       <span className="auth-foot"><LockKeyhole size={12} /> Nothing is shared without your explicit opt-in.</span>
     </section>
     <aside className="auth-visual">
-      <img src={authPortrait.url} alt="A composed professional in architectural window light" width={1280} height={1600} />
+      <img src={authPortrait.url} alt="A professional looking across an architectural city interior" width={1024} height={1280} />
       <span className="auth-visual-mark" aria-hidden="true">+</span>
       <div className="portrait-caption">
         <span>ACTIVE MEMORY / 01</span>
