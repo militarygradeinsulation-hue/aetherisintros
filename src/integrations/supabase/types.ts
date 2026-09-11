@@ -46,6 +46,7 @@ export type Database = {
           detail: string
           id: string
           industry: string
+          is_demo: boolean
           location: string
           member_id: string | null
           offer: string
@@ -62,6 +63,7 @@ export type Database = {
           detail?: string
           id: string
           industry?: string
+          is_demo?: boolean
           location?: string
           member_id?: string | null
           offer?: string
@@ -78,6 +80,7 @@ export type Database = {
           detail?: string
           id?: string
           industry?: string
+          is_demo?: boolean
           location?: string
           member_id?: string | null
           offer?: string
@@ -89,11 +92,36 @@ export type Database = {
         }
         Relationships: []
       }
+      circle_memberships: {
+        Row: {
+          circle_id: string
+          created_at: string
+          id: string
+          role: string
+          user_id: string
+        }
+        Insert: {
+          circle_id: string
+          created_at?: string
+          id?: string
+          role?: string
+          user_id: string
+        }
+        Update: {
+          circle_id?: string
+          created_at?: string
+          id?: string
+          role?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       companies: {
         Row: {
           about: string
           id: string
           industry: string
+          is_demo: boolean
           location: string
           member_ids: string[]
           name: string
@@ -102,6 +130,7 @@ export type Database = {
           about?: string
           id: string
           industry?: string
+          is_demo?: boolean
           location?: string
           member_ids?: string[]
           name: string
@@ -110,9 +139,135 @@ export type Database = {
           about?: string
           id?: string
           industry?: string
+          is_demo?: boolean
           location?: string
           member_ids?: string[]
           name?: string
+        }
+        Relationships: []
+      }
+      dm_messages: {
+        Row: {
+          created_at: string
+          id: string
+          sender_id: string
+          text: string
+          thread_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          sender_id: string
+          text: string
+          thread_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          sender_id?: string
+          text?: string
+          thread_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "dm_messages_thread_id_fkey"
+            columns: ["thread_id"]
+            isOneToOne: false
+            referencedRelation: "dm_threads"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      dm_threads: {
+        Row: {
+          created_at: string
+          created_by: string
+          id: string
+          intro_context: string
+          member_a: string
+          member_b: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          created_by: string
+          id?: string
+          intro_context?: string
+          member_a: string
+          member_b: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string
+          id?: string
+          intro_context?: string
+          member_a?: string
+          member_b?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      early_access_members: {
+        Row: {
+          approved_at: string | null
+          created_at: string
+          email: string
+          founding_member_number: number | null
+          id: string
+          invite_id: string | null
+          source: string
+          status: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          approved_at?: string | null
+          created_at?: string
+          email: string
+          founding_member_number?: number | null
+          id?: string
+          invite_id?: string | null
+          source?: string
+          status?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          approved_at?: string | null
+          created_at?: string
+          email?: string
+          founding_member_number?: number | null
+          id?: string
+          invite_id?: string | null
+          source?: string
+          status?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      follows: {
+        Row: {
+          created_at: string
+          followee_id: string
+          follower_id: string
+          id: string
+          kind: string
+        }
+        Insert: {
+          created_at?: string
+          followee_id: string
+          follower_id: string
+          id?: string
+          kind?: string
+        }
+        Update: {
+          created_at?: string
+          followee_id?: string
+          follower_id?: string
+          id?: string
+          kind?: string
         }
         Relationships: []
       }
@@ -126,6 +281,7 @@ export type Database = {
           reason: string
           requester_opt_in: boolean
           status: string
+          target_user_id: string | null
           updated_at: string
           user_id: string
         }
@@ -138,6 +294,7 @@ export type Database = {
           reason?: string
           requester_opt_in?: boolean
           status?: string
+          target_user_id?: string | null
           updated_at?: string
           user_id: string
         }
@@ -150,8 +307,69 @@ export type Database = {
           reason?: string
           requester_opt_in?: boolean
           status?: string
+          target_user_id?: string | null
           updated_at?: string
           user_id?: string
+        }
+        Relationships: []
+      }
+      invitations: {
+        Row: {
+          code: string
+          created_at: string
+          created_by: string | null
+          email: string | null
+          expires_at: string | null
+          id: string
+          max_uses: number
+          revoked: boolean
+          uses: number
+        }
+        Insert: {
+          code: string
+          created_at?: string
+          created_by?: string | null
+          email?: string | null
+          expires_at?: string | null
+          id?: string
+          max_uses?: number
+          revoked?: boolean
+          uses?: number
+        }
+        Update: {
+          code?: string
+          created_at?: string
+          created_by?: string | null
+          email?: string | null
+          expires_at?: string | null
+          id?: string
+          max_uses?: number
+          revoked?: boolean
+          uses?: number
+        }
+        Relationships: []
+      }
+      launch_settings: {
+        Row: {
+          capacity: number
+          id: number
+          mode: string
+          updated_at: string
+          updated_by: string | null
+        }
+        Insert: {
+          capacity?: number
+          id?: number
+          mode?: string
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Update: {
+          capacity?: number
+          id?: number
+          mode?: string
+          updated_at?: string
+          updated_by?: string | null
         }
         Relationships: []
       }
@@ -170,6 +388,7 @@ export type Database = {
           industry: string
           initials: string
           intro_state: string
+          is_demo: boolean
           joined: string
           last_interaction_days: number
           location: string
@@ -206,6 +425,7 @@ export type Database = {
           industry: string
           initials: string
           intro_state?: string
+          is_demo?: boolean
           joined?: string
           last_interaction_days?: number
           location: string
@@ -242,6 +462,7 @@ export type Database = {
           industry?: string
           initials?: string
           intro_state?: string
+          is_demo?: boolean
           joined?: string
           last_interaction_days?: number
           location?: string
@@ -338,12 +559,94 @@ export type Database = {
         }
         Relationships: []
       }
+      notifications: {
+        Row: {
+          actor_id: string | null
+          created_at: string
+          id: string
+          kind: string
+          link: string
+          read: boolean
+          text: string
+          user_id: string
+        }
+        Insert: {
+          actor_id?: string | null
+          created_at?: string
+          id?: string
+          kind: string
+          link?: string
+          read?: boolean
+          text: string
+          user_id: string
+        }
+        Update: {
+          actor_id?: string | null
+          created_at?: string
+          id?: string
+          kind?: string
+          link?: string
+          read?: boolean
+          text?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      post_comments: {
+        Row: {
+          author_id: string
+          created_at: string
+          id: string
+          post_id: string
+          text: string
+        }
+        Insert: {
+          author_id: string
+          created_at?: string
+          id?: string
+          post_id: string
+          text: string
+        }
+        Update: {
+          author_id?: string
+          created_at?: string
+          id?: string
+          post_id?: string
+          text?: string
+        }
+        Relationships: []
+      }
+      post_reactions: {
+        Row: {
+          created_at: string
+          id: string
+          kind: string
+          post_id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          kind?: string
+          post_id: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          kind?: string
+          post_id?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       posts: {
         Row: {
           author_id: string | null
           created_at: string
           detail: string
           id: string
+          is_demo: boolean
           kind: string
           member_id: string | null
           response_count: number
@@ -355,6 +658,7 @@ export type Database = {
           created_at?: string
           detail?: string
           id: string
+          is_demo?: boolean
           kind?: string
           member_id?: string | null
           response_count?: number
@@ -366,6 +670,7 @@ export type Database = {
           created_at?: string
           detail?: string
           id?: string
+          is_demo?: boolean
           kind?: string
           member_id?: string | null
           response_count?: number
@@ -395,6 +700,7 @@ export type Database = {
       profiles: {
         Row: {
           availability: string
+          avatar_url: string | null
           bio: string
           boundaries: string
           can_help_with: string
@@ -416,10 +722,12 @@ export type Database = {
           title: string
           updated_at: string
           values_text: string
+          visibility: string
           want_to_meet: string
         }
         Insert: {
           availability?: string
+          avatar_url?: string | null
           bio?: string
           boundaries?: string
           can_help_with?: string
@@ -441,10 +749,12 @@ export type Database = {
           title?: string
           updated_at?: string
           values_text?: string
+          visibility?: string
           want_to_meet?: string
         }
         Update: {
           availability?: string
+          avatar_url?: string | null
           bio?: string
           boundaries?: string
           can_help_with?: string
@@ -466,6 +776,7 @@ export type Database = {
           title?: string
           updated_at?: string
           values_text?: string
+          visibility?: string
           want_to_meet?: string
         }
         Relationships: []
@@ -557,6 +868,7 @@ export type Database = {
       signals: {
         Row: {
           id: string
+          is_demo: boolean
           kind: string
           member_id: string
           text: string
@@ -564,6 +876,7 @@ export type Database = {
         }
         Insert: {
           id: string
+          is_demo?: boolean
           kind: string
           member_id: string
           text: string
@@ -571,6 +884,7 @@ export type Database = {
         }
         Update: {
           id?: string
+          is_demo?: boolean
           kind?: string
           member_id?: string
           text?: string
@@ -608,14 +922,122 @@ export type Database = {
         }
         Relationships: []
       }
+      user_roles: {
+        Row: {
+          created_at: string
+          id: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id?: string
+        }
+        Relationships: []
+      }
+      waitlist_entries: {
+        Row: {
+          email: string
+          id: string
+          name: string
+          requested_at: string
+          source: string
+          status: string
+          user_id: string | null
+        }
+        Insert: {
+          email: string
+          id?: string
+          name?: string
+          requested_at?: string
+          source?: string
+          status?: string
+          user_id?: string | null
+        }
+        Update: {
+          email?: string
+          id?: string
+          name?: string
+          requested_at?: string
+          source?: string
+          status?: string
+          user_id?: string | null
+        }
+        Relationships: []
+      }
+      whitelist_entries: {
+        Row: {
+          added_by: string | null
+          created_at: string
+          email: string
+          id: string
+          note: string
+          status: string
+        }
+        Insert: {
+          added_by?: string | null
+          created_at?: string
+          email: string
+          id?: string
+          note?: string
+          status?: string
+        }
+        Update: {
+          added_by?: string | null
+          created_at?: string
+          email?: string
+          id?: string
+          note?: string
+          status?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      claim_early_access: {
+        Args: { p_invite_code?: string }
+        Returns: {
+          founding_member_number: number
+          mode: string
+          status: string
+        }[]
+      }
+      founding_stats: {
+        Args: never
+        Returns: {
+          approved: number
+          capacity: number
+          mode: string
+        }[]
+      }
+      has_role: {
+        Args: {
+          _role: Database["public"]["Enums"]["app_role"]
+          _user_id: string
+        }
+        Returns: boolean
+      }
+      is_admin: { Args: never; Returns: boolean }
+      is_live_member: { Args: never; Returns: boolean }
+      join_waitlist: {
+        Args: { p_email: string; p_name?: string }
+        Returns: undefined
+      }
+      tighten_noop: { Args: never; Returns: undefined }
     }
     Enums: {
+      app_role: "admin" | "moderator" | "member"
       privacy_scope_v2:
         | "private"
         | "team"
@@ -749,6 +1171,7 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
+      app_role: ["admin", "moderator", "member"],
       privacy_scope_v2: [
         "private",
         "team",
