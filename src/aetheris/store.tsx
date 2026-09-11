@@ -12,6 +12,13 @@ import {
   saveLearning, saveMessage, saveNote, savePost, saveProfileFields, saveRelationship, saveThread,
   type Directory, type MemoryNote,
 } from './db'
+import {
+  createLiveThread, emptyDirectory, loadLiveDirectory, mirrorFollow, notify, saveComment,
+  saveReaction, sendLiveMessage, type LiveProfileRow,
+} from './live'
+
+/** 'live' = real members only (the network). 'demo' = the labelled showcase. */
+export type NetworkMode = 'live' | 'demo'
 
 export type { MemoryNote }
 export type MeProfile = typeof seedMe & {
