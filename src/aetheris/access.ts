@@ -58,7 +58,9 @@ export async function joinWaitlist(email: string, name = '') {
 /** Atomically claim (or re-check) this account's place in the launch. */
 export async function claimAccess(inviteCode?: string): Promise<{ status: AccessStatus; foundingNumber: number | null }> {
   const trimmed = inviteCode?.trim()
-  const { data, error } = await supabase.rpc('claim_early_access', trimmed ? { p_invite_code: trimmed } : {})
+  const args: { p_invite_code?: string } = {}
+  if (trimmed) args.p_invite_code = trimmed
+  const { data, error } = await supabase.rpc('claim_early_access', args)
   if (error) throw error
   const row = Array.isArray(data) ? data[0] : data
   return {
