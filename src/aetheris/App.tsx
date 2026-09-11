@@ -6,7 +6,7 @@ import {
   MessageCircle, Repeat2, Settings2, SlidersHorizontal, TrendingUp, UserRound, Users, X,
   Inbox, DoorOpen, GitMerge, Radar, Flag, FileSearch, Gauge, Mic,
   HelpCircle, BookOpen, Sparkle, Map as MapIcon, History, BadgeCheck, Lock, ScrollText, Puzzle,
-  ChevronDown, Briefcase, FolderLock, GraduationCap, UsersRound, Coins, Landmark, PlaneTakeoff, ShieldAlert, Newspaper, Archive, FileText,
+  ChevronDown, LayoutGrid, Briefcase, FolderLock, GraduationCap, UsersRound, Coins, Landmark, PlaneTakeoff, ShieldAlert, Newspaper, Archive, FileText,
 } from 'lucide-react'
 import { rankMatches, type MatchResult } from '@/aetheris/matching'
 import discoverEditorialAsset from '@/assets/editorial-discover.jpg.asset.json'
@@ -27,6 +27,9 @@ import {
 import { NetworkProvider, useNetwork, type MemoryNote, type MeProfile } from './store'
 import { classifyConnection, composeWarmIntro, radarLabel } from './lib/engine'
 import { useGrabScroll } from './lib/dragScroll'
+import { metaById, primaryPages, pageMeta } from './pageMeta'
+import { MoreDrawer, rememberRecent } from './pages/MoreDrawer'
+import { BriefingModeToggle, BriefingPanel, RelatedTools, useBriefingMode } from './BriefingMode'
 import { NavCtx, useNav, type NavApi, type Page } from './nav'
 import { PlatformProvider, usePlatform } from './platform'
 import type { MoveKind } from './domain/models'
@@ -87,57 +90,13 @@ import { portraitFor } from './portraits'
 
 type OptIn = 'pending' | 'yes' | 'no'
 
-const nav: Array<{ id: Page; label: string; icon: typeof HomeIcon }> = [
-  { id: 'home', label: 'Home', icon: HomeIcon },
-  { id: 'discover', label: 'Discover', icon: Compass },
-  { id: 'systems', label: 'Systems', icon: Layers },
-  { id: 'circles', label: 'Circles', icon: Users },
-  { id: 'intros', label: 'Intros', icon: Handshake },
-  { id: 'messages', label: 'Messages', icon: MessageSquareText },
-  { id: 'needs', label: 'Needs', icon: Target },
-  { id: 'memory', label: 'Memory', icon: Network },
-  { id: 'events', label: 'Events', icon: CalendarDays },
-  { id: 'briefing', label: 'Briefing', icon: Newspaper },
-  { id: 'opportunities', label: 'Opportunities', icon: Briefcase },
-  { id: 'ask', label: 'Ask network', icon: HelpCircle },
-  { id: 'knowledge', label: 'Knowledge', icon: BookOpen },
-  { id: 'insights', label: 'Insights', icon: TrendingUp },
-  { id: 'profile', label: 'Profile', icon: UserRound },
-]
-const navSecondary: Array<{ id: Page; label: string; icon: typeof HomeIcon }> = [
-  { id: 'inbox', label: 'Attention', icon: Inbox },
-  { id: 'rooms', label: 'Opportunity rooms', icon: DoorOpen },
-  { id: 'collisions', label: 'Collisions', icon: GitMerge },
-  { id: 'simulation', label: 'Simulation', icon: Radar },
-  { id: 'strategy', label: 'Strategy', icon: Flag },
-  { id: 'evidence', label: 'Evidence', icon: FileSearch },
-  { id: 'autopilot', label: 'Autopilot', icon: Gauge },
-  { id: 'loops', label: 'Open loops', icon: CircleDot },
-  { id: 'companies', label: 'Companies', icon: Building2 },
-  { id: 'outcomes', label: 'Outcomes', icon: CheckCircle2 },
-  { id: 'organization', label: 'Organization', icon: ShieldCheck },
-  { id: 'boards', label: 'Advisory boards', icon: Users },
-  { id: 'serendipity', label: 'Unexpectedly relevant', icon: Sparkle },
-  { id: 'gaps', label: 'Gap map', icon: MapIcon },
-  { id: 'eventmode', label: 'Event mode', icon: CalendarDays },
-  { id: 'timemachine', label: 'Time machine', icon: History },
-  { id: 'attribution', label: 'Attribution', icon: GitMerge },
-  { id: 'identity', label: 'Portable identity', icon: BadgeCheck },
-  { id: 'consent', label: 'Consent ledger', icon: Lock },
-  { id: 'constitution', label: 'Constitution', icon: ScrollText },
-  { id: 'passport', label: 'Passport', icon: FileText },
-  { id: 'dealrooms', label: 'Deal rooms', icon: FolderLock },
-  { id: 'expertise', label: 'Expertise', icon: GraduationCap },
-  { id: 'talent', label: 'Talent', icon: UsersRound },
-  { id: 'capital', label: 'Capital and boards', icon: Coins },
-  { id: 'intelrooms', label: 'Industry rooms', icon: Landmark },
-  { id: 'presence', label: 'Presence', icon: PlaneTakeoff },
-  { id: 'permission', label: 'Permission', icon: ShieldAlert },
-  { id: 'knowledgeassets', label: 'Knowledge assets', icon: BookOpen },
-  { id: 'vault', label: 'Search and vault', icon: Archive },
-  { id: 'integrations', label: 'Intros everywhere', icon: Puzzle },
-  { id: 'preferences', label: 'Preferences', icon: Settings2 },
-]
+const nav: Array<{ id: Page; label: string; icon: typeof HomeIcon }> = primaryPages.map(id => {
+  const meta = metaById[id]!
+  return { id, label: meta.label, icon: meta.icon }
+})
+const navSecondary: Array<{ id: Page; label: string; icon: typeof HomeIcon }> = pageMeta
+  .filter(p => !primaryPages.includes(p.id))
+  .map(p => ({ id: p.id, label: p.label, icon: p.icon }))
 const allNav = [...nav, ...navSecondary]
 const moveKinds: Array<{ kind: MoveKind; page: Page }> = [
   { kind: 'Need', page: 'needs' },
@@ -618,7 +577,7 @@ function Home({ people, select, setPage, openNeed, openThread }: {
   }
   return <>
     <nav className="home-mode-switch" role="tablist" aria-label="Home mode">
-      {([['social', 'Social'], ['briefing', 'Briefing']] as const).map(([id, label]) =>
+      {([['social', 'Social'], ['briefing', 'Daily Briefing']] as const).map(([id, label]) =>
         <button key={id} role="tab" aria-selected={homeMode === id} className={homeMode === id ? 'on' : ''} onClick={() => setHomeMode(id)}>{label}</button>)}
       <small>{homeMode === 'social' ? 'The professional network, as it is moving today.' : 'What needs you today, composed rather than counted.'}</small>
     </nav>
@@ -1897,6 +1856,9 @@ function GlobalSearch({ open, onClose, people }: { open: boolean; onClose: () =>
   const systemRows = matches(platform.systems, system => `${system.name} ${system.thesis} ${system.category} ${system.industries.join(' ')}`)
   const circleRows = matches(platform.circles, circle => `${circle.name} ${circle.purpose} ${circle.sharedIntents.join(' ')}`)
   const companyRows = matches(platform.companies, company => `${company.name} ${company.industry} ${company.location}`)
+  const pageRows = (term
+    ? pageMeta.filter(meta => `${meta.label} ${meta.blurb} ${meta.group} ${meta.keywords.join(' ')}`.toLowerCase().includes(term))
+    : pageMeta.filter(meta => primaryPages.includes(meta.id))).slice(0, 6)
   const closeThen = (action: () => void) => { onClose(); setQuery(''); action() }
   return <div className="modal-wrap global-search-wrap" onMouseDown={onClose}>
     <section className="global-search-panel" onMouseDown={event => event.stopPropagation()}>
@@ -1905,6 +1867,10 @@ function GlobalSearch({ open, onClose, people }: { open: boolean; onClose: () =>
         <section><Label>PEOPLE</Label>{personRows.map(person => <button key={person.id} onClick={() => closeThen(() => nav.openMember(person))}><Avatar person={person} /><span><b>{person.name}</b><small>{person.title} · {person.company}</small></span><ArrowRight size={14} /></button>)}</section>
         <section><Label>SYSTEMS</Label>{systemRows.map(system => <button key={system.id} onClick={() => closeThen(() => nav.openSystem(system.id))}><Layers size={17} /><span><b>{system.name}</b><small>{system.thesis}</small></span><ArrowRight size={14} /></button>)}</section>
         <section><Label>CIRCLES</Label>{circleRows.map(circle => <button key={circle.id} onClick={() => closeThen(() => nav.openCircle(circle.id))}><Users size={17} /><span><b>{circle.name}</b><small>{circle.purpose}</small></span><ArrowRight size={14} /></button>)}</section>
+        <section><Label>PAGES</Label>{pageRows.map(meta => {
+          const Icon = meta.icon
+          return <button key={meta.id} onClick={() => closeThen(() => nav.setPage(meta.id))}><Icon size={17} /><span><b>{meta.label}</b><small>{meta.blurb}</small></span><ArrowRight size={14} /></button>
+        })}</section>
         <section><Label>COMPANIES</Label>{companyRows.map(company => <button key={company.id} onClick={() => closeThen(() => nav.openCompany(company.id))}><Building2 size={17} /><span><b>{company.name}</b><small>{company.industry} · {company.location}</small></span><ArrowRight size={14} /></button>)}</section>
       </div>
     </section>
@@ -1925,6 +1891,8 @@ function Shell({ startPage }: { startPage?: Page | undefined }) {
   const [collapsed, setCollapsed] = useState(false)
   const [mobileOpen, setMobileOpen] = useState(false)
   const [topMenuOpen, setTopMenuOpen] = useState(false)
+  const [moreOpen, setMoreOpen] = useState(false)
+  const briefing = useBriefingMode()
   const [selected, setSelected] = useState<Member | null>(null)
   const [draft, setDraft] = useState<Member | null>(null)
   const [needOpen, setNeedOpen] = useState(false)
@@ -2051,6 +2019,7 @@ function Shell({ startPage }: { startPage?: Page | undefined }) {
     }[page]
 
   useGrabScroll()
+  useEffect(() => { rememberRecent(page) }, [page])
 
   return <NavCtx.Provider value={navApi}>
     <div className={`app-shell ${collapsed ? 'rail-collapsed' : ''}`}>
@@ -2061,12 +2030,9 @@ function Shell({ startPage }: { startPage?: Page | undefined }) {
           return <button key={item.id} className={page === item.id ? 'active' : ''} title={item.label} onClick={() => { setPage(item.id); setMobileOpen(false) }}>
             <Icon size={18} /><span>{item.label}</span></button>
         })}
-          <span className="rail-divider">RELATIONSHIP CAPITAL</span>
-          {navSecondary.map(item => {
-            const Icon = item.icon
-            return <button key={item.id} className={page === item.id ? 'active' : ''} title={item.label} onClick={() => { setPage(item.id); setMobileOpen(false) }}>
-              <Icon size={18} /><span>{item.label}</span></button>
-          })}
+          <span className="rail-divider">EVERYTHING ELSE</span>
+          <button className={`rail-more ${moreOpen ? 'active' : ''}`} title="All tools" onClick={() => { setMoreOpen(true); setMobileOpen(false) }}>
+            <LayoutGrid size={18} /><span>More</span></button>
         </nav>
         <div className="rail-foot"><span className="live-dot" /><span>Memory live</span>
           <button onClick={() => setPage('profile')} aria-label="Your profile"><span>{me.initials}</span></button></div>
@@ -2074,7 +2040,7 @@ function Shell({ startPage }: { startPage?: Page | undefined }) {
       <div className="workspace">
         <header className="topbar">
           <button className="icon-btn mobile-menu" onClick={() => setMobileOpen(!mobileOpen)} aria-label="Menu"><Menu size={19} /></button>
-          <span className="topbar-title">Aetheris Intros <i>/</i> {allNav.find(n => n.id === page)?.label}</span>
+          <span className="topbar-title">Aetheris Intros <i>/</i> {metaById[page]?.label ?? allNav.find(n => n.id === page)?.label}</span>
           <div className="topbar-dropdown">
             <button className="topbar-dropbtn" aria-expanded={topMenuOpen} onClick={() => setTopMenuOpen(!topMenuOpen)}>
               <SlidersHorizontal size={14} /><span>Move &amp; tools</span><ChevronDown size={13} />
@@ -2092,20 +2058,29 @@ function Shell({ startPage }: { startPage?: Page | undefined }) {
             </>}
           </div>
           <div className="topbar-actions">
+            <BriefingModeToggle on={briefing.on} toggle={briefing.toggle} />
             <button className="topbar-search" aria-label="Search people, companies, topics, or ideas…" onClick={() => setGlobalSearchOpen(true)}><Search size={15} /><span>Search people, companies, topics, or ideas…</span><kbd>⌘K</kbd></button>
             <button className="icon-btn" title="Post a need" onClick={() => setNeedOpen(true)} aria-label="Post a need"><Plus size={18} /></button>
             <button className="icon-btn" title="Ask Intros" onClick={() => setAskOpen(true)} aria-label="Ask Intros"><AetherisGlyph size={18} /></button>
           </div>
         </header>
         <div className="workspace-grid">
-          <main className="content">{content}</main>
+          <main className="content">
+            {briefing.on && <BriefingPanel key={page} page={page} />}
+            <RelatedTools page={page} onNavigate={setPage} />
+            {content}
+          </main>
           <ContextRail page={page} people={people} select={setSelected} onAsk={() => setAskOpen(true)} />
         </div>
       </div>
-      <nav className="mobile-nav">{[...nav.slice(0, 5), navSecondary[0]!].map(item => {
-        const Icon = item.icon
-        return <button key={item.id} className={page === item.id ? 'active' : ''} onClick={() => setPage(item.id)}><Icon size={18} /><span>{item.label}</span></button>
-      })}</nav>
+      <nav className="mobile-nav">
+        {(['home', 'discover', 'intros', 'messages'] as Page[]).map(id => {
+          const meta = metaById[id]!
+          const Icon = meta.icon
+          return <button key={id} className={page === id ? 'active' : ''} onClick={() => setPage(id)}><Icon size={18} /><span>{meta.label}</span></button>
+        })}
+        <button className={moreOpen ? 'active' : ''} onClick={() => setMoreOpen(true)}><LayoutGrid size={18} /><span>More</span></button>
+      </nav>
 
       <IntroModal person={draft} onClose={() => setDraft(null)} onMessage={messageMember} />
       <NeedModal open={needOpen} onClose={() => setNeedOpen(false)} onCreate={addNeed} />
@@ -2116,6 +2091,7 @@ function Shell({ startPage }: { startPage?: Page | undefined }) {
       {circleFormOpen && <CreateCircleModal onClose={() => setCircleFormOpen(false)} />}
       {handshakeId && <HandshakeModal memberId={handshakeId} onClose={() => setHandshakeId(null)} />}
       {captureOpen && <VoiceCaptureModal onClose={() => setCaptureOpen(false)} />}
+      <MoreDrawer open={moreOpen} page={page} onClose={() => setMoreOpen(false)} onNavigate={setPage} />
       {mobileOpen && <button className="rail-scrim" aria-label="Close menu" onClick={() => setMobileOpen(false)} />}
     </div>
   </NavCtx.Provider>
