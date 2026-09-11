@@ -6,7 +6,7 @@ import {
   MessageCircle, Repeat2, Settings2, SlidersHorizontal, TrendingUp, UserRound, Users, X,
   Inbox, DoorOpen, GitMerge, Radar, Flag, FileSearch, Gauge, Mic,
   HelpCircle, BookOpen, Sparkle, Map as MapIcon, History, BadgeCheck, Lock, ScrollText, Puzzle,
-  Briefcase, FolderLock, GraduationCap, UsersRound, Coins, Landmark, PlaneTakeoff, ShieldAlert, Newspaper, Archive, FileText,
+  ChevronDown, Briefcase, FolderLock, GraduationCap, UsersRound, Coins, Landmark, PlaneTakeoff, ShieldAlert, Newspaper, Archive, FileText,
 } from 'lucide-react'
 import { rankMatches, type MatchResult } from '@/aetheris/matching'
 import discoverEditorialAsset from '@/assets/editorial-discover.jpg.asset.json'
@@ -26,6 +26,7 @@ import {
 } from './social'
 import { NetworkProvider, useNetwork, type MemoryNote, type MeProfile } from './store'
 import { classifyConnection, composeWarmIntro, radarLabel } from './lib/engine'
+import { useGrabScroll } from './lib/dragScroll'
 import { NavCtx, useNav, type NavApi, type Page } from './nav'
 import { PlatformProvider, usePlatform } from './platform'
 import type { MoveKind } from './domain/models'

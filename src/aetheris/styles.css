@@ -2528,3 +2528,22 @@ input, textarea, select { font: inherit; }
 .consent-scope { list-style: none; margin: 0; padding: 14px 0; display: grid; gap: 8px; border-top: 1px solid var(--hairline); border-bottom: 1px solid var(--hairline); }
 .consent-scope li { font: 400 12.5px/1.5 var(--sans); color: color-mix(in oklab, var(--ink) 72%, transparent); }
 .consent-actions { display: flex; gap: 10px; flex-wrap: wrap; }
+
+/* --------------------------------------------- grab-to-scroll rows + top menu */
+.feed-tabs,.state-filters,.preference-tabs,.lane-row,.topbar-actions,.thread-list,.feed-scope,.room-stageline,[data-drag-scroll]{cursor:grab}
+.feed-tabs.is-grabbing,.state-filters.is-grabbing,.preference-tabs.is-grabbing,.lane-row.is-grabbing,.topbar-actions.is-grabbing,.thread-list.is-grabbing,.feed-scope.is-grabbing,.room-stageline.is-grabbing,[data-drag-scroll].is-grabbing{cursor:grabbing;user-select:none;scroll-behavior:auto}
+.feed-tabs button,.state-filters button,.preference-tabs button,.lane-row button{cursor:pointer}
+
+.topbar-dropdown{position:relative;display:flex;align-items:center}
+.topbar-dropbtn{height:34px;display:inline-flex;align-items:center;gap:8px;padding:0 11px;border:1px solid var(--line-dark);border-radius:6px;background:var(--raised);color:var(--muted);font:700 8px var(--sans);letter-spacing:.14em;text-transform:uppercase;cursor:pointer;white-space:nowrap}
+.topbar-dropbtn:hover,.topbar-dropbtn[aria-expanded=true]{color:var(--soft);border-color:var(--cobalt)}
+.dropdown-scrim{position:fixed;inset:0;border:0;background:transparent;z-index:60;cursor:default}
+.topbar-dropmenu{position:absolute;top:calc(100% + 8px);left:0;z-index:61;min-width:230px;display:grid;background:var(--raised);border:1px solid var(--line-dark);box-shadow:0 24px 60px rgba(0,0,0,.5);padding:8px}
+.topbar-dropmenu .drop-label{display:block;padding:9px 9px 6px;color:var(--muted);font:700 7px var(--sans);letter-spacing:.19em}
+.topbar-dropmenu .drop-label+.drop-label,.topbar-dropmenu button+.drop-label{border-top:1px solid var(--line-dark);margin-top:6px}
+.topbar-dropmenu button{border:0;background:transparent;color:var(--soft);display:flex;align-items:center;gap:9px;padding:9px;border-radius:5px;text-align:left;font:600 10px var(--sans);text-transform:capitalize;cursor:pointer}
+.topbar-dropmenu button:hover{background:rgba(255,255,255,.05)}
+.topbar-dropmenu button.active{color:#78A7EC;background:rgba(15,92,203,.13)}
+.topbar-actions{display:flex;gap:7px;align-items:center;min-width:0;max-width:100%;overflow-x:auto;overflow-y:hidden;scrollbar-width:none}
+.topbar-actions::-webkit-scrollbar{height:0}
+@media(max-width:920px){.topbar{grid-template-columns:auto minmax(0,1fr) auto auto}.topbar-dropbtn span{display:none}.topbar-dropbtn{padding:0 8px}.topbar-dropmenu{left:auto;right:0}}
