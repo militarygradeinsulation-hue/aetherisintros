@@ -1923,6 +1923,7 @@ function Shell({ startPage }: { startPage?: Page | undefined }) {
   const [page, setPageState] = useState<Page>(initial)
   const [collapsed, setCollapsed] = useState(false)
   const [mobileOpen, setMobileOpen] = useState(false)
+  const [topMenuOpen, setTopMenuOpen] = useState(false)
   const [selected, setSelected] = useState<Member | null>(null)
   const [draft, setDraft] = useState<Member | null>(null)
   const [needOpen, setNeedOpen] = useState(false)
