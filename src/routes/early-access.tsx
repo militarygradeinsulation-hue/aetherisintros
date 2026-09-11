@@ -1,0 +1,150 @@
+import { createFileRoute, Link, useNavigate } from '@tanstack/react-router'
+import { ArrowRight, Check, Clock, LockKeyhole, ShieldAlert } from 'lucide-react'
+import { useCallback, useEffect, useState } from 'react'
+
+import { claimAccess, foundingLabel, foundingStats, joinWaitlist, useAccess, type FoundingStats } from '@/aetheris/access'
+import { supabase } from '@/integrations/supabase/client'
+import accessPortrait from '@/assets/portraits/portrait-27.jpg.asset.json'
+import '@/aetheris/styles.css'
+
+export const Route = createFileRoute('/early-access')({
+  head: () => ({
+    meta: [
+      { title: 'Founding 1,000 — Aetheris Intros' },
+      {
+        name: 'description',
+        content:
+          'Aetheris Intros is opening to its first 1,000 members. Claim a founding place and join a business network without selling, mass outreach or spam.',
+      },
+      { property: 'og:title', content: 'Founding 1,000 — Aetheris Intros' },
+      { property: 'og:description', content: 'The first 1,000 members shape the network. Claim your founding place.' },
+      { property: 'og:type', content: 'website' },
+      { name: 'twitter:card', content: 'summary_large_image' },
+    ],
+  }),
+  component: EarlyAccessPage,
+})
+
+function EarlyAccessPage() {
+  const { access, refresh } = useAccess()
+  const navigate = useNavigate()
+  const [stats, setStats] = useState<FoundingStats>({ approved: 0, capacity: 1000, mode: 'first_1000' })
+  const [code, setCode] = useState('')
+  const [waitEmail, setWaitEmail] = useState('')
+  const [busy, setBusy] = useState(false)
+  const [error, setError] = useState('')
+  const [notice, setNotice] = useState('')
+
+  const reloadStats = useCallback(() => { void foundingStats().then(setStats) }, [])
+  useEffect(reloadStats, [reloadStats])
+
+  useEffect(() => {
+    if (!access.loading && access.status === 'approved') {
+      void navigate({ to: access.onboarded ? '/app' : '/onboarding', replace: true })
+    }
+  }, [access, navigate])
+
+  const claim = async () => {
+    setBusy(true); setError(''); setNotice('')
+    try {
+      const result = await claimAccess(code)
+      await refresh()
+      reloadStats()
+      if (result.status === 'approved') void navigate({ to: '/onboarding', replace: true })
+      else if (result.status === 'waitlisted') setNotice('The founding places are taken. You are on the waitlist and we will write when a place opens.')
+      else setError('This account is not approved yet. An invitation or admin approval is needed.')
+    } catch (caught) {
+      setError(caught instanceof Error ? caught.message : 'Something went wrong. Try again.')
+    } finally { setBusy(false) }
+  }
+
+  const wait = async () => {
+    setBusy(true); setError(''); setNotice('')
+    try {
+      await joinWaitlist(waitEmail, '')
+      setNotice('You are on the waitlist. We will write to you when a place opens.')
+      setWaitEmail('')
+    } catch { setError('That email could not be added. Check it and try again.') }
+    finally { setBusy(false) }
+  }
+
+  const remaining = Math.max(0, stats.capacity - stats.approved)
+  const modeCopy = stats.mode === 'first_1000'
+    ? `${remaining.toLocaleString()} founding places remain of ${stats.capacity.toLocaleString()}.`
+    : stats.mode === 'invite_only'
+      ? 'Access is currently by invitation only.'
+      : 'Registration is closed. Approved members can still sign in.'
+
+  return <main className="auth-page">
+    <section className="auth-panel">
+      <Link to="/" className="auth-brand">
+        <span className="brand-monogram">AI</span>
+        <span className="brand-name">Aetheris<em>Intros</em></span>
+      </Link>
+      <div className="auth-index"><span className="folio">FOUNDING 1,000 / 2026</span><span>01 / MEMBER ACCESS</span></div>
+      <h1>The first<br /><em>thousand.</em></h1>
+      <p className="auth-lede">
+        Aetheris Intros opens with 1,000 members. No selling, no mass outreach, no bought attention —
+        every introduction needs both sides to agree.
+      </p>
+
+      <div className="access-meter" aria-label="Founding member places">
+        <div className="access-meter-bar"><i style={{ width: `${Math.min(100, (stats.approved / Math.max(1, stats.capacity)) * 100)}%` }} /></div>
+        <span>{stats.approved.toLocaleString()} claimed · {modeCopy}</span>
+      </div>
+
+      {access.loading && <p className="auth-notice">Checking your place…</p>}
+
+      {!access.loading && !access.signedIn && <>
+        <p className="auth-lede">Create your account first, then claim your founding place.</p>
+        <Link to="/auth" search={{ next: '/early-access' }} className="btn primary">
+          Create your account <ArrowRight size={15} />
+        </Link>
+      </>}
+
+      {!access.loading && access.signedIn && access.status !== 'approved' && <>
+        {access.status === 'waitlisted' && <p className="auth-notice"><Clock size={13} /> You are on the waitlist. Nothing more to do — we will write when a place opens.</p>}
+        {access.status === 'suspended' && <p className="auth-error"><ShieldAlert size={13} /> This account is suspended. Reply to your welcome email and we will look at it.</p>}
+        {access.status === 'denied' && <p className="auth-error"><ShieldAlert size={13} /> This account was not approved for early access.</p>}
+        {(access.status === 'none' || access.status === 'pending') && <>
+          <label className="access-field">
+            <span>INVITATION CODE (OPTIONAL)</span>
+            <input value={code} onChange={e => setCode(e.target.value)} placeholder="If a member invited you" />
+          </label>
+          <button className="btn primary" type="button" onClick={() => void claim()} disabled={busy}>
+            {busy ? 'One moment…' : 'Claim my founding place'} <ArrowRight size={15} />
+          </button>
+        </>}
+        {error && <p className="auth-error">{error}</p>}
+        {notice && <p className="auth-notice">{notice}</p>}
+        <button className="auth-switch" type="button" onClick={() => void supabase.auth.signOut().then(refresh)}>
+          Use a different account
+        </button>
+      </>}
+
+      {!access.loading && !access.signedIn && stats.mode !== 'first_1000' && <div className="access-waitlist">
+        <label className="access-field">
+          <span>JOIN THE WAITLIST</span>
+          <input type="email" value={waitEmail} onChange={e => setWaitEmail(e.target.value)} placeholder="you@company.com" />
+        </label>
+        <button className="btn ghost" type="button" onClick={() => void wait()} disabled={busy || !waitEmail}>Add me to the waitlist</button>
+      </div>}
+
+      <div className="auth-proof" aria-label="What founding members get">
+        <span><b>01</b> <Check size={12} /> Permanent founding number</span>
+        <span><b>02</b> Double opt-in introductions</span>
+        <span><b>03</b> Your memory, controlled</span>
+      </div>
+      <span className="auth-foot"><LockKeyhole size={12} /> {access.foundingNumber ? foundingLabel(access.foundingNumber, stats.capacity) : 'Nothing is shared without your explicit opt-in.'}</span>
+      <Link to="/demo" className="auth-switch">Prefer to look first? See the labelled showcase.</Link>
+    </section>
+    <aside className="auth-visual">
+      <img src={accessPortrait.url} alt="A composed professional in architectural window light" width={1280} height={1600} />
+      <span className="auth-visual-mark" aria-hidden="true">+</span>
+      <div className="portrait-caption">
+        <span>FOUNDING MEMBERS / 01</span>
+        <p>The first thousand set the standard the network keeps.</p>
+      </div>
+    </aside>
+  </main>
+}

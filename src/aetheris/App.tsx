@@ -24,7 +24,7 @@ import {
   onboardingQuestions, trendingSectors,
   type Learning, type Member, type MemberRole, type NetworkAsk, type Post, type Thread,
 } from './social'
-import { NetworkProvider, useNetwork, type MemoryNote, type MeProfile } from './store'
+import { NetworkProvider, useNetwork, type MemoryNote, type MeProfile, type NetworkMode } from './store'
 import { classifyConnection, composeWarmIntro, radarLabel } from './lib/engine'
 import { useGrabScroll } from './lib/dragScroll'
 import { metaById, primaryPages, pageMeta } from './pageMeta'
@@ -1879,8 +1879,8 @@ function GlobalSearch({ open, onClose, people }: { open: boolean; onClose: () =>
 
 /* ---------------------------------------------------------------------- app */
 
-export default function App({ startPage }: { startPage?: Page | undefined }) {
-  return <NetworkProvider><PlatformProvider><OSProvider><MoatProvider><ProProvider><Shell startPage={startPage} /></ProProvider></MoatProvider></OSProvider></PlatformProvider></NetworkProvider>
+export default function App({ startPage, mode = 'live' }: { startPage?: Page | undefined; mode?: NetworkMode }) {
+  return <NetworkProvider mode={mode}><PlatformProvider><OSProvider><MoatProvider><ProProvider><Shell startPage={startPage} /></ProProvider></MoatProvider></OSProvider></PlatformProvider></NetworkProvider>
 }
 
 function Shell({ startPage }: { startPage?: Page | undefined }) {

@@ -12,6 +12,13 @@ import {
   saveLearning, saveMessage, saveNote, savePost, saveProfileFields, saveRelationship, saveThread,
   type Directory, type MemoryNote,
 } from './db'
+import {
+  createLiveThread, emptyDirectory, loadLiveDirectory, mirrorFollow, notify, saveComment,
+  saveReaction, sendLiveMessage, type LiveProfileRow,
+} from './live'
+
+/** 'live' = real members only (the network). 'demo' = the labelled showcase. */
+export type NetworkMode = 'live' | 'demo'
 
 export type { MemoryNote }
 export type MeProfile = typeof seedMe & {
@@ -141,6 +148,11 @@ function load(): Persisted {
 const now = () => new Date().toLocaleDateString(undefined, { month: 'short', day: 'numeric' })
 const clock = () => new Date().toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit' })
 const uid = (p: string) => `${p}-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 6)}`
+/** Keep the first record for each id — optimistic rows and their saved twin. */
+const byId = <T extends { id: string }>(items: T[]): T[] => {
+  const seen = new Set<string>()
+  return items.filter(item => (seen.has(item.id) ? false : (seen.add(item.id), true)))
+}
 const rowId = () => (typeof crypto !== 'undefined' && 'randomUUID' in crypto
   ? crypto.randomUUID()
   : `${Date.now().toString(16)}-${Math.random().toString(16).slice(2, 10)}`)
@@ -207,25 +219,63 @@ const catalogue: Directory = {
   signals: catalogueSignals, threads: catalogueThreads, learnings: catalogueLearnings,
 }
 
-export function NetworkProvider({ children }: { children: React.ReactNode }) {
+/** A live member starts from an empty identity, not from the showcase persona. */
+const blankMe: MeProfile = {
+  name: '', initials: '', title: '', company: '', location: '', thesis: '', focus: '',
+  lookingFor: '', canHelpWith: '', industries: [], values: '', availability: '', expertise: [],
+  wantToMeet: '', introPreferences: '', boundaries: '', onboarded: false,
+}
+
+/** The signed-in member's own identity, read from their real profile row. */
+function profileFromRow(prev: MeProfile, row: LiveProfileRow): MeProfile {
+  return {
+    ...prev,
+    name: row.name || prev.name,
+    initials: row.initials || prev.initials,
+    title: row.title,
+    company: row.company,
+    location: row.location,
+    focus: row.focus,
+    thesis: row.thesis,
+    lookingFor: row.looking_for,
+    canHelpWith: row.can_help_with,
+    availability: row.availability,
+    industries: row.industries ?? [],
+    expertise: row.expertise ?? [],
+    wantToMeet: row.want_to_meet,
+    onboarded: row.onboarded,
+  }
+}
+
+export function NetworkProvider({ children, mode = 'live' }: { children: React.ReactNode; mode?: NetworkMode }) {
+  const live = mode === 'live'
   const [s, setS] = useState<Persisted>(load)
-  const [dir, setDir] = useState<Directory>(catalogue)
+  const [dir, setDir] = useState<Directory>(live ? emptyDirectory : catalogue)
   const [userId, setUserId] = useState<string | null>(null)
   const [synced, setSynced] = useState(false)
   const lastSynced = useRef<Persisted | null>(null)
 
   useEffect(() => { try { localStorage.setItem(KEY, JSON.stringify(s)) } catch { /* storage full */ } }, [s])
 
-  /* hydrate: shared catalogue, then this member's own graph */
+  /* hydrate: the network this member may see, then their own private graph */
   useEffect(() => {
     let cancelled = false
     void (async () => {
-      const directory = await loadDirectory()
-      if (!cancelled) setDir(directory)
+      if (!live) {
+        const directory = await loadDirectory()
+        if (!cancelled) setDir(directory)
+      }
       const id = await currentUserId()
       if (cancelled) return
       if (!id) { setSynced(true); return }
       setUserId(id)
+      let meRow: LiveProfileRow | null = null
+      if (live) {
+        const { directory, me } = await loadLiveDirectory(id)
+        if (cancelled) return
+        meRow = me
+        setDir(directory)
+      }
       const remote = await loadUserGraph(id)
       if (cancelled) return
       setS(prev => {
@@ -233,6 +283,16 @@ export function NetworkProvider({ children }: { children: React.ReactNode }) {
         const next: Persisted = { ...prev }
         for (const key of DOC_KEYS) {
           if (doc[key] !== undefined) (next[key] as unknown) = doc[key]
+        }
+        // In the live network your identity and your stated needs always come from
+        // your own record — never from anything left behind by the demo showcase.
+        if (live) {
+          next.profile = profileFromRow(blankMe, meRow ?? ({ industries: [], expertise: [] } as unknown as LiveProfileRow))
+          if (doc['objectives'] === undefined) next.objectives = []
+          if (doc['activity'] === undefined) next.activity = []
+          if (doc['preferences'] === undefined) {
+            next.preferences = { ...empty.preferences, title: next.profile.title, focus: next.profile.focus }
+          }
         }
         const take = <K extends keyof Persisted>(key: K, value: Persisted[K] | undefined, filled: boolean) => {
           if (value !== undefined && filled) (next[key] as unknown) = value
@@ -263,13 +323,28 @@ export function NetworkProvider({ children }: { children: React.ReactNode }) {
     lastSynced.current = s
     if (!prev) return
 
+    const relayKind = { connections: 'connection', follows: 'follow', saved: 'saved' } as const
     const groups = ['connections', 'follows', 'saved'] as const
     for (const group of groups) {
-      for (const id of s[group]) if (!prev[group].includes(id)) saveRelationship(userId, group, id, true)
-      for (const id of prev[group]) if (!s[group].includes(id)) saveRelationship(userId, group, id, false)
+      for (const id of s[group]) if (!prev[group].includes(id)) {
+        saveRelationship(userId, group, id, true)
+        if (live) {
+          mirrorFollow(userId, id, relayKind[group], true)
+          if (group !== 'saved') notify(id, userId, group === 'connections' ? 'connection' : 'follow', `${s.profile.name || 'A member'} ${group === 'connections' ? 'connected with you' : 'is following your work'}.`)
+        }
+      }
+      for (const id of prev[group]) if (!s[group].includes(id)) {
+        saveRelationship(userId, group, id, false)
+        if (live) mirrorFollow(userId, id, relayKind[group], false)
+      }
     }
     for (const [memberId, status] of Object.entries(s.introStates)) {
-      if (prev.introStates[memberId] !== status) saveIntro(userId, memberId, status)
+      if (prev.introStates[memberId] !== status) {
+        saveIntro(userId, memberId, status)
+        if (live && status === 'requested') {
+          notify(memberId, userId, 'intro_request', `${s.profile.name || 'A member'} asked for an introduction — both sides must opt in.`)
+        }
+      }
     }
     for (const learning of s.learned) {
       if (!prev.learned.some(l => l.id === learning.id)) saveLearning(userId, learning)
@@ -288,11 +363,29 @@ export function NetworkProvider({ children }: { children: React.ReactNode }) {
       texts.slice(before.length).forEach(text => saveAskResponse(userId, askId, text))
     }
     for (const thread of s.ownThreads) {
-      if (!prev.ownThreads.some(t => t.id === thread.id)) saveThread(userId, thread)
+      if (prev.ownThreads.some(t => t.id === thread.id)) continue
+      if (live) createLiveThread(thread.id, userId, thread.memberId, thread.introContext)
+      else saveThread(userId, thread)
     }
     for (const [threadId, messages] of Object.entries(s.sentMessages)) {
       const before = prev.sentMessages[threadId] ?? []
-      messages.slice(before.length).forEach(message => saveMessage(userId, threadId, message))
+      messages.slice(before.length).forEach(message => {
+        if (live) {
+          sendLiveMessage(threadId, userId, message.text)
+          const peer = [...s.ownThreads, ...dir.threads].find(t => t.id === threadId)?.memberId
+          if (peer) notify(peer, userId, 'message', `${s.profile.name || 'A member'} sent you a message.`)
+        } else saveMessage(userId, threadId, message)
+      })
+    }
+    if (live) {
+      for (const id of s.likedPosts) if (!prev.likedPosts.includes(id)) saveReaction(id, userId, 'like', true)
+      for (const id of prev.likedPosts) if (!s.likedPosts.includes(id)) saveReaction(id, userId, 'like', false)
+      for (const id of s.repostedPosts) if (!prev.repostedPosts.includes(id)) saveReaction(id, userId, 'repost', true)
+      for (const id of prev.repostedPosts) if (!s.repostedPosts.includes(id)) saveReaction(id, userId, 'repost', false)
+      for (const [postId, comments] of Object.entries(s.postComments)) {
+        const before = prev.postComments[postId] ?? []
+        comments.slice(before.length).forEach(comment => saveComment(postId, userId, comment.text))
+      }
     }
     if (DOC_KEYS.some(key => prev[key] !== s[key])) {
       const doc: Record<string, unknown> = {}
@@ -310,7 +403,7 @@ export function NetworkProvider({ children }: { children: React.ReactNode }) {
         })
       }
     }
-  }, [s, userId, synced])
+  }, [s, userId, synced, live, dir])
 
   const api = useMemo<NetworkApi>(() => {
     const patch = (fn: (prev: Persisted) => Partial<Persisted>) => setS(prev => ({ ...prev, ...fn(prev) }))
@@ -349,11 +442,11 @@ export function NetworkProvider({ children }: { children: React.ReactNode }) {
         saved: s.saved.includes(m.id),
         relationshipStatus: s.connections.includes(m.id) && m.relationshipStatus === 'new' ? 'active' : m.relationshipStatus,
       })),
-      posts: [...s.ownPosts, ...dir.posts],
-      asks: [...s.ownAsks, ...dir.asks].map(a => ({
+      posts: byId([...s.ownPosts, ...dir.posts]),
+      asks: byId([...s.ownAsks, ...dir.asks]).map(a => ({
         ...a, responses: a.responses + (s.askResponses[a.id]?.length ?? 0),
       })),
-      threads: [...s.ownThreads, ...dir.threads].map(t => ({
+      threads: byId([...dir.threads, ...s.ownThreads]).map(t => ({
         ...t,
         messages: [...t.messages, ...(s.sentMessages[t.id] ?? []).map(m => ({ id: m.id, from: 'me' as const, text: m.text, at: m.at }))],
       })),

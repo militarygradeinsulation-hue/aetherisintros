@@ -55,7 +55,7 @@ function AuthPage() {
 
   const land = useCallback(() => {
     if (next) { window.location.replace(next); return }
-    void navigate({ to: '/app', replace: true })
+    void navigate({ to: '/early-access', replace: true })
   }, [navigate, next])
 
   useEffect(() => {
@@ -78,7 +78,7 @@ function AuthPage() {
           email,
           password,
           options: {
-            emailRedirectTo: `${window.location.origin}${next || '/app'}`,
+            emailRedirectTo: `${window.location.origin}${next || '/early-access'}`,
             data: { name: name || email.split('@')[0] },
           },
         })
@@ -101,7 +101,7 @@ function AuthPage() {
   const google = async () => {
     setBusy(true); setError('')
     const result = await lovable.auth.signInWithOAuth('google', {
-      redirect_uri: `${window.location.origin}${next || '/app'}`,
+      redirect_uri: `${window.location.origin}${next || '/early-access'}`,
     })
     if (result.error) {
       setError('Google sign-in could not start. Try email instead.')

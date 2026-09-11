@@ -208,8 +208,10 @@ export function saveRelationship(userId: string, group: RelGroup, memberId: stri
 }
 
 export function saveIntro(userId: string, memberId: string, status: IntroState, extra?: { reason?: string; mutualValue?: string }) {
+  const isLiveMember = /^[0-9a-f-]{36}$/i.test(memberId)
   fire(supabase.from('intro_requests').upsert({
     user_id: userId, member_id: memberId, status,
+    ...(isLiveMember ? { target_user_id: memberId } : {}),
     requester_opt_in: true, member_opt_in: status === 'introduced',
     ...(extra?.reason ? { reason: extra.reason } : {}),
     ...(extra?.mutualValue ? { mutual_value: extra.mutualValue } : {}),

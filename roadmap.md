@@ -39,3 +39,14 @@
 - [x] Restored original Aetheris Intros home wording, kept the picture
 
 - [x] IA pass: 7 primary destinations + More index drawer, central page metadata, global Briefing mode, mobile Home/Discover/Intros/Messages/More
+
+## Live early-access network (Sep 11)
+- [x] Launch settings, early-access members, whitelist, invitations, waitlist, roles + RLS
+- [x] Atomic founding-place claim (1-1000) and waitlist overflow
+- [x] Live-only data layer (src/aetheris/live.ts); demo catalogue quarantined to /demo
+- [x] Public landing, /early-access, /auth, real /onboarding, admin launch control
+- [x] Auth required again; /app gated on approved + onboarded
+- [x] First account to sign up becomes the launch administrator
+- [x] docs/LIVE_NETWORK_AUDIT.md route/data-source audit
+- [x] Typecheck + build clean; public routes verified with no errors or overflow
+- [ ] Signed-in end-to-end pass (needs the first real confirmed account)
