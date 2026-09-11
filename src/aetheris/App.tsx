@@ -1856,6 +1856,9 @@ function GlobalSearch({ open, onClose, people }: { open: boolean; onClose: () =>
   const systemRows = matches(platform.systems, system => `${system.name} ${system.thesis} ${system.category} ${system.industries.join(' ')}`)
   const circleRows = matches(platform.circles, circle => `${circle.name} ${circle.purpose} ${circle.sharedIntents.join(' ')}`)
   const companyRows = matches(platform.companies, company => `${company.name} ${company.industry} ${company.location}`)
+  const pageRows = (term
+    ? pageMeta.filter(meta => `${meta.label} ${meta.blurb} ${meta.group} ${meta.keywords.join(' ')}`.toLowerCase().includes(term))
+    : pageMeta.filter(meta => primaryPages.includes(meta.id))).slice(0, 6)
   const closeThen = (action: () => void) => { onClose(); setQuery(''); action() }
   return <div className="modal-wrap global-search-wrap" onMouseDown={onClose}>
     <section className="global-search-panel" onMouseDown={event => event.stopPropagation()}>
@@ -1864,6 +1867,10 @@ function GlobalSearch({ open, onClose, people }: { open: boolean; onClose: () =>
         <section><Label>PEOPLE</Label>{personRows.map(person => <button key={person.id} onClick={() => closeThen(() => nav.openMember(person))}><Avatar person={person} /><span><b>{person.name}</b><small>{person.title} · {person.company}</small></span><ArrowRight size={14} /></button>)}</section>
         <section><Label>SYSTEMS</Label>{systemRows.map(system => <button key={system.id} onClick={() => closeThen(() => nav.openSystem(system.id))}><Layers size={17} /><span><b>{system.name}</b><small>{system.thesis}</small></span><ArrowRight size={14} /></button>)}</section>
         <section><Label>CIRCLES</Label>{circleRows.map(circle => <button key={circle.id} onClick={() => closeThen(() => nav.openCircle(circle.id))}><Users size={17} /><span><b>{circle.name}</b><small>{circle.purpose}</small></span><ArrowRight size={14} /></button>)}</section>
+        <section><Label>PAGES</Label>{pageRows.map(meta => {
+          const Icon = meta.icon
+          return <button key={meta.id} onClick={() => closeThen(() => nav.setPage(meta.id))}><Icon size={17} /><span><b>{meta.label}</b><small>{meta.blurb}</small></span><ArrowRight size={14} /></button>
+        })}</section>
         <section><Label>COMPANIES</Label>{companyRows.map(company => <button key={company.id} onClick={() => closeThen(() => nav.openCompany(company.id))}><Building2 size={17} /><span><b>{company.name}</b><small>{company.industry} · {company.location}</small></span><ArrowRight size={14} /></button>)}</section>
       </div>
     </section>
