@@ -255,3 +255,14 @@ export function saveReaction(postId: string, userId: string, kind: 'like' | 'sav
     ? supabase.from('post_reactions').upsert({ post_id: postId, user_id: userId, kind }, { onConflict: 'post_id,user_id,kind' })
     : supabase.from('post_reactions').delete().eq('post_id', postId).eq('user_id', userId).eq('kind', kind))
 }
+
+/** Create the conversation row with a caller-supplied id (optimistic UI). */
+export function createLiveThread(id: string, userId: string, peerId: string, context: string) {
+  if (!/^[0-9a-f-]{36}$/i.test(peerId)) return
+  const [a, b] = [userId, peerId].sort()
+  fire(supabase.from('dm_threads').insert({ id, member_a: a!, member_b: b!, created_by: userId, intro_context: context }))
+}
+
+export function saveLiveAskResponse(askId: string, userId: string, text: string) {
+  fire(supabase.from('ask_responses').insert({ ask_id: askId, user_id: userId, text }))
+}
