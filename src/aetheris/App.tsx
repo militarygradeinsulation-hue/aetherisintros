@@ -27,6 +27,9 @@ import {
 import { NetworkProvider, useNetwork, type MemoryNote, type MeProfile } from './store'
 import { classifyConnection, composeWarmIntro, radarLabel } from './lib/engine'
 import { useGrabScroll } from './lib/dragScroll'
+import { metaById, primaryPages, pageMeta } from './pageMeta'
+import { MoreDrawer, rememberRecent } from './pages/MoreDrawer'
+import { BriefingModeToggle, BriefingPanel, RelatedTools, useBriefingMode } from './BriefingMode'
 import { NavCtx, useNav, type NavApi, type Page } from './nav'
 import { PlatformProvider, usePlatform } from './platform'
 import type { MoveKind } from './domain/models'
@@ -87,57 +90,13 @@ import { portraitFor } from './portraits'
 
 type OptIn = 'pending' | 'yes' | 'no'
 
-const nav: Array<{ id: Page; label: string; icon: typeof HomeIcon }> = [
-  { id: 'home', label: 'Home', icon: HomeIcon },
-  { id: 'discover', label: 'Discover', icon: Compass },
-  { id: 'systems', label: 'Systems', icon: Layers },
-  { id: 'circles', label: 'Circles', icon: Users },
-  { id: 'intros', label: 'Intros', icon: Handshake },
-  { id: 'messages', label: 'Messages', icon: MessageSquareText },
-  { id: 'needs', label: 'Needs', icon: Target },
-  { id: 'memory', label: 'Memory', icon: Network },
-  { id: 'events', label: 'Events', icon: CalendarDays },
-  { id: 'briefing', label: 'Briefing', icon: Newspaper },
-  { id: 'opportunities', label: 'Opportunities', icon: Briefcase },
-  { id: 'ask', label: 'Ask network', icon: HelpCircle },
-  { id: 'knowledge', label: 'Knowledge', icon: BookOpen },
-  { id: 'insights', label: 'Insights', icon: TrendingUp },
-  { id: 'profile', label: 'Profile', icon: UserRound },
-]
-const navSecondary: Array<{ id: Page; label: string; icon: typeof HomeIcon }> = [
-  { id: 'inbox', label: 'Attention', icon: Inbox },
-  { id: 'rooms', label: 'Opportunity rooms', icon: DoorOpen },
-  { id: 'collisions', label: 'Collisions', icon: GitMerge },
-  { id: 'simulation', label: 'Simulation', icon: Radar },
-  { id: 'strategy', label: 'Strategy', icon: Flag },
-  { id: 'evidence', label: 'Evidence', icon: FileSearch },
-  { id: 'autopilot', label: 'Autopilot', icon: Gauge },
-  { id: 'loops', label: 'Open loops', icon: CircleDot },
-  { id: 'companies', label: 'Companies', icon: Building2 },
-  { id: 'outcomes', label: 'Outcomes', icon: CheckCircle2 },
-  { id: 'organization', label: 'Organization', icon: ShieldCheck },
-  { id: 'boards', label: 'Advisory boards', icon: Users },
-  { id: 'serendipity', label: 'Unexpectedly relevant', icon: Sparkle },
-  { id: 'gaps', label: 'Gap map', icon: MapIcon },
-  { id: 'eventmode', label: 'Event mode', icon: CalendarDays },
-  { id: 'timemachine', label: 'Time machine', icon: History },
-  { id: 'attribution', label: 'Attribution', icon: GitMerge },
-  { id: 'identity', label: 'Portable identity', icon: BadgeCheck },
-  { id: 'consent', label: 'Consent ledger', icon: Lock },
-  { id: 'constitution', label: 'Constitution', icon: ScrollText },
-  { id: 'passport', label: 'Passport', icon: FileText },
-  { id: 'dealrooms', label: 'Deal rooms', icon: FolderLock },
-  { id: 'expertise', label: 'Expertise', icon: GraduationCap },
-  { id: 'talent', label: 'Talent', icon: UsersRound },
-  { id: 'capital', label: 'Capital and boards', icon: Coins },
-  { id: 'intelrooms', label: 'Industry rooms', icon: Landmark },
-  { id: 'presence', label: 'Presence', icon: PlaneTakeoff },
-  { id: 'permission', label: 'Permission', icon: ShieldAlert },
-  { id: 'knowledgeassets', label: 'Knowledge assets', icon: BookOpen },
-  { id: 'vault', label: 'Search and vault', icon: Archive },
-  { id: 'integrations', label: 'Intros everywhere', icon: Puzzle },
-  { id: 'preferences', label: 'Preferences', icon: Settings2 },
-]
+const nav: Array<{ id: Page; label: string; icon: typeof HomeIcon }> = primaryPages.map(id => {
+  const meta = metaById[id]!
+  return { id, label: meta.label, icon: meta.icon }
+})
+const navSecondary: Array<{ id: Page; label: string; icon: typeof HomeIcon }> = pageMeta
+  .filter(p => !primaryPages.includes(p.id))
+  .map(p => ({ id: p.id, label: p.label, icon: p.icon }))
 const allNav = [...nav, ...navSecondary]
 const moveKinds: Array<{ kind: MoveKind; page: Page }> = [
   { kind: 'Need', page: 'needs' },
