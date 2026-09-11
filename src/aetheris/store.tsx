@@ -214,25 +214,56 @@ const catalogue: Directory = {
   signals: catalogueSignals, threads: catalogueThreads, learnings: catalogueLearnings,
 }
 
-export function NetworkProvider({ children }: { children: React.ReactNode }) {
+/** The signed-in member's own identity, read from their real profile row. */
+function profileFromRow(prev: MeProfile, row: LiveProfileRow): MeProfile {
+  return {
+    ...prev,
+    name: row.name || prev.name,
+    initials: row.initials || prev.initials,
+    title: row.title,
+    company: row.company,
+    location: row.location,
+    focus: row.focus,
+    thesis: row.thesis,
+    lookingFor: row.looking_for,
+    canHelpWith: row.can_help_with,
+    availability: row.availability,
+    industries: row.industries ?? [],
+    expertise: row.expertise ?? [],
+    wantToMeet: row.want_to_meet,
+    onboarded: row.onboarded,
+  }
+}
+
+export function NetworkProvider({ children, mode = 'live' }: { children: React.ReactNode; mode?: NetworkMode }) {
+  const live = mode === 'live'
   const [s, setS] = useState<Persisted>(load)
-  const [dir, setDir] = useState<Directory>(catalogue)
+  const [dir, setDir] = useState<Directory>(live ? emptyDirectory : catalogue)
   const [userId, setUserId] = useState<string | null>(null)
   const [synced, setSynced] = useState(false)
   const lastSynced = useRef<Persisted | null>(null)
 
   useEffect(() => { try { localStorage.setItem(KEY, JSON.stringify(s)) } catch { /* storage full */ } }, [s])
 
-  /* hydrate: shared catalogue, then this member's own graph */
+  /* hydrate: the network this member may see, then their own private graph */
   useEffect(() => {
     let cancelled = false
     void (async () => {
-      const directory = await loadDirectory()
-      if (!cancelled) setDir(directory)
+      if (!live) {
+        const directory = await loadDirectory()
+        if (!cancelled) setDir(directory)
+      }
       const id = await currentUserId()
       if (cancelled) return
       if (!id) { setSynced(true); return }
       setUserId(id)
+      let meRow: LiveProfileRow | null = null
+      if (live) {
+        const { directory, me } = await loadLiveDirectory(id)
+        if (cancelled) return
+        meRow = me
+        setDir(directory)
+      }
       const remote = await loadUserGraph(id)
       if (cancelled) return
       setS(prev => {
@@ -241,6 +272,7 @@ export function NetworkProvider({ children }: { children: React.ReactNode }) {
         for (const key of DOC_KEYS) {
           if (doc[key] !== undefined) (next[key] as unknown) = doc[key]
         }
+        if (live) next.profile = profileFromRow(meRow ? profileFromRow(next.profile, meRow) : next.profile, meRow ?? ({} as LiveProfileRow))
         const take = <K extends keyof Persisted>(key: K, value: Persisted[K] | undefined, filled: boolean) => {
           if (value !== undefined && filled) (next[key] as unknown) = value
         }
