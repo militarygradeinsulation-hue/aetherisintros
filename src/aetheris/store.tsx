@@ -398,7 +398,7 @@ export function NetworkProvider({ children, mode = 'live' }: { children: React.R
         })
       }
     }
-  }, [s, userId, synced])
+  }, [s, userId, synced, live, dir])
 
   const api = useMemo<NetworkApi>(() => {
     const patch = (fn: (prev: Persisted) => Partial<Persisted>) => setS(prev => ({ ...prev, ...fn(prev) }))
@@ -437,11 +437,11 @@ export function NetworkProvider({ children, mode = 'live' }: { children: React.R
         saved: s.saved.includes(m.id),
         relationshipStatus: s.connections.includes(m.id) && m.relationshipStatus === 'new' ? 'active' : m.relationshipStatus,
       })),
-      posts: [...s.ownPosts, ...dir.posts],
-      asks: [...s.ownAsks, ...dir.asks].map(a => ({
+      posts: byId([...s.ownPosts, ...dir.posts]),
+      asks: byId([...s.ownAsks, ...dir.asks]).map(a => ({
         ...a, responses: a.responses + (s.askResponses[a.id]?.length ?? 0),
       })),
-      threads: [...s.ownThreads, ...dir.threads].map(t => ({
+      threads: byId([...dir.threads, ...s.ownThreads]).map(t => ({
         ...t,
         messages: [...t.messages, ...(s.sentMessages[t.id] ?? []).map(m => ({ id: m.id, from: 'me' as const, text: m.text, at: m.at }))],
       })),
