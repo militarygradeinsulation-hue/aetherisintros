@@ -318,13 +318,28 @@ export function NetworkProvider({ children, mode = 'live' }: { children: React.R
     lastSynced.current = s
     if (!prev) return
 
+    const relayKind = { connections: 'connection', follows: 'follow', saved: 'saved' } as const
     const groups = ['connections', 'follows', 'saved'] as const
     for (const group of groups) {
-      for (const id of s[group]) if (!prev[group].includes(id)) saveRelationship(userId, group, id, true)
-      for (const id of prev[group]) if (!s[group].includes(id)) saveRelationship(userId, group, id, false)
+      for (const id of s[group]) if (!prev[group].includes(id)) {
+        saveRelationship(userId, group, id, true)
+        if (live) {
+          mirrorFollow(userId, id, relayKind[group], true)
+          if (group !== 'saved') notify(id, userId, group === 'connections' ? 'connection' : 'follow', `${s.profile.name || 'A member'} ${group === 'connections' ? 'connected with you' : 'is following your work'}.`)
+        }
+      }
+      for (const id of prev[group]) if (!s[group].includes(id)) {
+        saveRelationship(userId, group, id, false)
+        if (live) mirrorFollow(userId, id, relayKind[group], false)
+      }
     }
     for (const [memberId, status] of Object.entries(s.introStates)) {
-      if (prev.introStates[memberId] !== status) saveIntro(userId, memberId, status)
+      if (prev.introStates[memberId] !== status) {
+        saveIntro(userId, memberId, status)
+        if (live && status === 'requested') {
+          notify(memberId, userId, 'intro_request', `${s.profile.name || 'A member'} asked for an introduction — both sides must opt in.`)
+        }
+      }
     }
     for (const learning of s.learned) {
       if (!prev.learned.some(l => l.id === learning.id)) saveLearning(userId, learning)
