@@ -1034,7 +1034,6 @@ export type Database = {
         Args: { p_email: string; p_name?: string }
         Returns: undefined
       }
-      tighten_noop: { Args: never; Returns: undefined }
     }
     Enums: {
       app_role: "admin" | "moderator" | "member"
