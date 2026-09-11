@@ -24,7 +24,7 @@ import {
   onboardingQuestions, trendingSectors,
   type Learning, type Member, type MemberRole, type NetworkAsk, type Post, type Thread,
 } from './social'
-import { NetworkProvider, useNetwork, type MemoryNote, type MeProfile } from './store'
+import { NetworkProvider, useNetwork, type MemoryNote, type MeProfile, type NetworkMode } from './store'
 import { classifyConnection, composeWarmIntro, radarLabel } from './lib/engine'
 import { useGrabScroll } from './lib/dragScroll'
 import { metaById, primaryPages, pageMeta } from './pageMeta'
