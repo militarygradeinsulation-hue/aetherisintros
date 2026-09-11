@@ -37,7 +37,7 @@ const PROFILE_COLUMNS =
   'id, name, initials, title, company, location, focus, thesis, bio, looking_for, can_help_with, want_to_meet, availability, industries, expertise, avatar_url, onboarded, created_at'
 
 const initialsOf = (name: string) =>
-  name.trim().split(/\s+/).slice(0, 2).map(part => part[0］ ?? '').join('').toUpperCase() || 'M'
+  name.trim().split(/\s+/).slice(0, 2).map(part => part[0] ?? '').join('').toUpperCase() || 'M'
 
 const list = (value: string) => value.split(/[,·;/]+/).map(x => x.trim()).filter(Boolean)
 const overlap = (a: string[], b: string[]) => {
