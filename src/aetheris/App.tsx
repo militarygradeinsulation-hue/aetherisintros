@@ -2048,6 +2048,8 @@ function Shell({ startPage }: { startPage?: Page | undefined }) {
       knowledgeassets: <KnowledgeAssetsPage />,
     }[page]
 
+  useGrabScroll()
+
   return <NavCtx.Provider value={navApi}>
     <div className={`app-shell ${collapsed ? 'rail-collapsed' : ''}`}>
       <aside className={`nav-rail ${mobileOpen ? 'mobile-open' : ''}`}>
