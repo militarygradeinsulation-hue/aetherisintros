@@ -1,4 +1,4 @@
-import { ClientOnly, createFileRoute, Link } from '@tanstack/react-router'
+import { ClientOnly, createFileRoute } from '@tanstack/react-router'
 
 import App from '@/aetheris/App'
 import '@/aetheris/styles.css'
@@ -22,14 +22,7 @@ export const Route = createFileRoute('/demo')({
 })
 
 function DemoRoute() {
-  return <>
-    <div className="demo-banner" role="note">
-      <span>SHOWCASE</span>
-      <p>Everyone here is an illustrative example, not a member. The live network contains real approved professionals only.</p>
-      <Link to="/early-access" className="btn primary">Claim a founding place</Link>
-    </div>
-    <ClientOnly fallback={null}>
-      <App mode="demo" />
-    </ClientOnly>
-  </>
+  return <ClientOnly fallback={null}>
+    <App mode="demo" />
+  </ClientOnly>
 }

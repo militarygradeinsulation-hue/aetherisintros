@@ -14,7 +14,7 @@ import {
 } from './db'
 import {
   createLiveThread, emptyDirectory, loadLiveDirectory, mirrorFollow, notify, saveComment,
-  saveReaction, sendLiveMessage, type LiveProfileRow,
+  saveReaction, sendLiveMessage, uploadProfileAvatar, type LiveProfileRow,
 } from './live'
 
 /** 'live' = real members only (the network). 'demo' = the labelled showcase. */
@@ -26,6 +26,7 @@ export type MeProfile = typeof seedMe & {
   introPreferences?: string
   boundaries?: string
   onboarded?: boolean
+  avatarUrl?: string | undefined
 }
 
 export interface PreferenceSettings {
@@ -126,10 +127,7 @@ function load(): Persisted {
     const raw = localStorage.getItem(KEY)
     if (raw) {
       const stored = JSON.parse(raw) as Partial<Persisted>
-      const profile = stored.profile?.name === 'Joseph Toney'
-        ? { ...stored.profile, name: seedMe.name, initials: seedMe.initials }
-        : stored.profile
-      return { ...empty, ...stored, ...(profile ? { profile } : {}) }
+      return { ...empty, ...stored }
     }
   } catch { /* fall through to legacy migration */ }
   const legacy = <T,>(k: string, fallback: T): T => {
@@ -156,6 +154,14 @@ const byId = <T extends { id: string }>(items: T[]): T[] => {
 const rowId = () => (typeof crypto !== 'undefined' && 'randomUUID' in crypto
   ? crypto.randomUUID()
   : `${Date.now().toString(16)}-${Math.random().toString(16).slice(2, 10)}`)
+const identityInitials = (name: string) =>
+  name.trim().split(/\s+/).slice(0, 2).map(part => part[0] ?? '').join('').toUpperCase() || 'M'
+const fileToDataUrl = (file: File) => new Promise<string>((resolve, reject) => {
+  const reader = new FileReader()
+  reader.onload = () => resolve(String(reader.result))
+  reader.onerror = () => reject(reader.error ?? new Error('Could not read that image.'))
+  reader.readAsDataURL(file)
+})
 
 interface NetworkApi {
   members: Member[]
@@ -206,6 +212,7 @@ interface NetworkApi {
   addNote: (personId: string, text: string, scope: PrivacyScope) => void
   setDigitalYou: (x: DigitalYouProfile) => void
   setAutonomy: (x: AutonomyLevel) => void
+  updateIdentity: (fields: { name: string; photo?: File | null }) => Promise<void>
   completeOnboarding: (answers: Record<string, string>) => void
   setPreferences: (settings: PreferenceSettings) => void
   toggleEventRegistration: (id: string) => void
@@ -244,6 +251,7 @@ function profileFromRow(prev: MeProfile, row: LiveProfileRow): MeProfile {
     expertise: row.expertise ?? [],
     wantToMeet: row.want_to_meet,
     onboarded: row.onboarded,
+    avatarUrl: row.avatar_url ?? undefined,
   }
 }
 
@@ -393,12 +401,13 @@ export function NetworkProvider({ children, mode = 'live' }: { children: React.R
       saveDoc(userId, doc)
       if (prev.profile !== s.profile) {
         saveProfileFields(userId, {
-          name: s.profile.name, title: s.profile.title, company: s.profile.company,
+          name: s.profile.name, initials: s.profile.initials, title: s.profile.title, company: s.profile.company,
           location: s.profile.location, focus: s.profile.focus, thesis: s.profile.thesis,
           looking_for: s.profile.lookingFor, can_help_with: s.profile.canHelpWith,
           want_to_meet: s.profile.wantToMeet ?? null, intro_preferences: s.profile.introPreferences ?? null,
           boundaries: s.profile.boundaries ?? null, availability: s.profile.availability,
           industries: s.profile.industries, expertise: s.profile.expertise,
+          avatar_url: s.profile.avatarUrl ?? null,
           onboarded: s.profile.onboarded ?? false,
         })
       }
@@ -626,6 +635,21 @@ export function NetworkProvider({ children, mode = 'live' }: { children: React.R
 
       setDigitalYou: (x) => patch(() => ({ digitalYou: x })),
       setAutonomy: (x) => patch(() => ({ autonomy: x })),
+      updateIdentity: async ({ name, photo }) => {
+        const cleanName = name.trim().replace(/\s+/g, ' ')
+        if (!cleanName) throw new Error('Enter your name.')
+        let avatarUrl = s.profile.avatarUrl
+        if (photo) {
+          if (live && !userId) throw new Error('Sign in again, then save your profile.')
+          avatarUrl = live
+            ? await uploadProfileAvatar(userId!, photo)
+            : await fileToDataUrl(photo)
+        }
+        patch(prev => ({
+          profile: { ...prev.profile, name: cleanName, initials: identityInitials(cleanName), ...(avatarUrl ? { avatarUrl } : {}) },
+          learned: remember(prev, { category: 'People', text: 'You corrected your profile identity.', source: 'Profile edit', confidence: 100, scope: 'private' }),
+        }))
+      },
       setPreferences: (preferences) => patch(prev => ({
         preferences,
         profile: { ...prev.profile, title: preferences.title, focus: preferences.focus },
@@ -686,7 +710,7 @@ export function NetworkProvider({ children, mode = 'live' }: { children: React.R
         }
       }),
     }
-  }, [s, dir, synced])
+  }, [s, dir, synced, live, userId])
 
   return <Ctx.Provider value={api}>{children}</Ctx.Provider>
 }
