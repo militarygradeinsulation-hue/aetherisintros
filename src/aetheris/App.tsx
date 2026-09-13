@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useState, type ReactNode } from 'react'
 import {
   AlertTriangle, ArrowLeftRight, ArrowRight, Bookmark, BookmarkCheck, Building2, CalendarDays, Camera, Check, CheckCircle2, ChevronLeft,
   CircleDot, Compass, Eye, Fingerprint, Handshake, Heart, Home as HomeIcon, Layers, LockKeyhole,
@@ -29,7 +29,7 @@ import { NetworkProvider, useNetwork, type MemoryNote, type MeProfile, type Netw
 import { isShowcase, setShowcaseMode, showcaseOnly } from './showcase'
 import { classifyConnection, composeWarmIntro, radarLabel } from './lib/engine'
 import { useGrabScroll } from './lib/dragScroll'
-import { metaById, primaryPages, pageMeta } from './pageMeta'
+import { metaById, primaryPages, pageMeta, networkTabs, networkAdvanced, opportunityTabs, opportunityAdvanced } from './pageMeta'
 import { MoreDrawer, rememberRecent } from './pages/MoreDrawer'
 import { BriefingModeToggle, BriefingPanel, RelatedTools, useBriefingMode } from './BriefingMode'
 import { NavCtx, useNav, type NavApi, type Page } from './nav'
@@ -541,6 +541,55 @@ function OSStrip({ people, select }: { people: Member[]; select: (p: Member) => 
   </section>
 }
 
+
+function HomeIdentityCard({ openNeed, setPage }: { openNeed: () => void; setPage: (p: Page) => void }) {
+  const net = useNetwork()
+  const me = net.profile
+  const fields: Array<[string, string]> = [
+    ['Role', me.title], ['Company', me.company], ['Location', me.location],
+    ['Looking for', me.lookingFor], ['Can help with', me.canHelpWith], ['Photo', me.avatarUrl ? 'Added' : ''],
+  ]
+  const done = fields.filter(([, v]) => Boolean(v && v.trim())).length
+  const pct = Math.round((done / fields.length) * 100)
+  return <section className="side-card identity-card">
+    <button className="identity-card-head" onClick={() => setPage('profile')}>
+      <SelfAvatar portrait />
+      <span><b>{me.name || 'Your profile'}</b><small>{[me.title, me.company].filter(Boolean).join(' · ') || 'Add your role and company'}</small></span>
+    </button>
+    <div className="completion"><span>Profile strength</span><i><em style={{ width: `${pct}%` }} /></i><b>{pct}%</b></div>
+    {pct < 100 && <ul className="completion-todo">{fields.filter(([, v]) => !v || !v.trim()).slice(0, 3).map(([k]) =>
+      <li key={k}>Add your {k.toLowerCase()}</li>)}</ul>}
+    <div className="side-card-avail"><span>AVAILABILITY</span><p>{me.availability || 'Not stated yet.'}</p></div>
+    <Button onClick={openNeed}><Plus size={14} /> Post what you need</Button>
+    <div className="side-links">
+      <button onClick={() => setPage('profile')}>Your profile</button>
+      <button onClick={() => setPage('network')}>Your network</button>
+      <button onClick={() => setPage('opportunities')}>What you are moving</button>
+    </div>
+  </section>
+}
+
+function HomeAttention({ ranked, activeNeed, select, setPage, openThread }: {
+  ranked: Member[]; activeNeed: Objective | undefined; select: (p: Member) => void
+  setPage: (p: Page) => void; openThread: (id: string) => void
+}) {
+  const net = useNetwork()
+  const top = ranked[0]
+  const waiting = net.threads.find(t => t.unread)
+  const loop = net.learnings[0]
+  return <section className="side-card attention-card">
+    <header><Label signal>WHAT DESERVES YOUR ATTENTION</Label><h3>A short list, not a dashboard.</h3></header>
+    <ul>
+      {activeNeed && <li><span>YOUR ACTIVE NEED</span><b>{activeNeed.title}</b><small>{activeNeed.success}</small></li>}
+      {top && <li><button onClick={() => select(top)}><span>STRONGEST FIT</span><b>{top.name}</b><small>{top.whyNow}</small></button></li>}
+      {waiting && <li><button onClick={() => openThread(waiting.id)}><span>WAITING ON YOU</span><b>Unanswered conversation</b><small>{waiting.commitment}</small></button></li>}
+      {loop && <li><span>RECENTLY LEARNED</span><b>{loop.text}</b><small>{loop.source}</small></li>}
+      {!activeNeed && !top && !waiting && !loop && <li><span>NOTHING URGENT</span><b>Your network is quiet.</b><small>Post what you need, or add context to your profile.</small></li>}
+    </ul>
+    <button className="text-action" onClick={() => setPage('briefing')}>Open the full briefing <ArrowRight size={13} /></button>
+  </section>
+}
+
 function Home({ people, select, setPage, openNeed, openThread }: {
   people: Member[]; select: (p: Member) => void; setPage: (p: Page) => void; openNeed: () => void
   openThread: (id: string) => void
@@ -595,15 +644,13 @@ function Home({ people, select, setPage, openNeed, openThread }: {
     {homeMode === 'briefing' && <BriefingPage />}
 
     {homeMode === 'social' && <>
-    <HomeMasthead people={people} select={select} setPage={setPage} openNeed={openNeed} openThread={openThread} />
+    {isShowcase() && <HomeMasthead people={people} select={select} setPage={setPage} openNeed={openNeed} openThread={openThread} />}
 
-    <header className="home-question">
-      <Label>PEOPLE × CONTEXT × OPPORTUNITY</Label>
-      <h1>What do you need<br /><em>right now?</em></h1>
-      <button className="need-input" onClick={openNeed}><span>Describe the outcome you want to create…</span><ArrowRight size={20} /></button>
-      <p>Tell Intros the outcome. It will find the people, context and path.</p>
-    </header>
-
+    <div className="home-3col">
+    <aside className="home-side home-side-left">
+      <HomeIdentityCard openNeed={openNeed} setPage={setPage} />
+    </aside>
+    <div className="home-center">
     <section className="composer">
       <SelfAvatar portrait />
       <div>
@@ -658,10 +705,15 @@ function Home({ people, select, setPage, openNeed, openThread }: {
         </button>
       })}</section>}
     </div>
+    </div>
+    <aside className="home-side home-side-right">
+      <HomeAttention ranked={ranked} activeNeed={activeNeed} select={select} setPage={setPage} openThread={openThread} />
+    </aside>
+    </div>
 
     <OSStrip people={people} select={select} />
 
-    <section className="home-modules">
+    {isShowcase() && <section className="home-modules">
       <article className="module">
         <header><Label signal>WHO TO MEET THIS WEEK</Label><h3>Three relationships with real timing.</h3></header>
         <ul className="module-people">{ranked.slice(0, 3).map(p => <li key={p.id}>
@@ -691,9 +743,9 @@ function Home({ people, select, setPage, openNeed, openThread }: {
         {!showcaseOnly(circles).length && <p className="empty-state">Circles appear once members create them. You can start one from Circles.</p>}
       </article>
 
-    </section>
+    </section>}
 
-    <section className="home-education">
+    {isShowcase() && <section className="home-education">
       <div><Label>BUSINESS NETWORKING, REBUILT</Label><h2>A professional network without pitches, spam or performative reach.</h2>
         <p>Aetheris Intros reads needs, offers, timing and trust paths, then shows only relationships where a conversation creates credible value for both people.</p>
         <button className="text-action" onClick={() => setPage('intros')}>See the reasoning behind a match <ArrowRight size={14} /></button></div>
@@ -706,10 +758,9 @@ function Home({ people, select, setPage, openNeed, openThread }: {
         </ul>
         <button className="text-action" onClick={() => setPage('memory')}>Open Active Memory <ArrowRight size={14} /></button>
       </div>
-    </section>
+    </section>}
 
-
-    <HowItWorks />
+    {isShowcase() && <HowItWorks />}
 
     <section className="home-mobile-rail">
       <Label signal>ON YOUR DESK</Label>
@@ -958,6 +1009,7 @@ function Messages({ people, select, activeId, setActiveId }: { people: Member[];
   const pro = usePro()
   const [text, setText] = useState('')
   const [blocked, setBlocked] = useState<{ explanation: string; rerouteTo?: string } | null>(null)
+  const [contextOpen, setContextOpen] = useState(false)
   const nav = useNav()
   const { gate, modal: outreachModal } = useOutreachGate()
   const threads = net.threads
@@ -965,12 +1017,9 @@ function Messages({ people, select, activeId, setActiveId }: { people: Member[];
   const person = people.find(p => p.id === thread?.memberId)
   if (!thread || !person) return null
   return <>
-    <EditorialHero folio="MESSAGES / RELATIONSHIP CONTEXT" title={<>Conversation with<br /><em>memory beside it.</em></>} statement="People speak to people. Context stays quietly available." copy="Commitments, mutual connections and the reason for the introduction remain beside the thread—not inside the conversation." caption="A professional exchange remains human when intelligence knows when to stay quiet." image={messagesEditorialAsset.url} />
-    <PageHead label="MESSAGES" title="Context before contact."
-      copy="Real conversations between members. Intros keeps the relationship context beside the thread, never in the middle of it."
-      proof="Every thread remembers the last commitment made." />
+    {isShowcase() && <EditorialHero folio="MESSAGES / RELATIONSHIP CONTEXT" title={<>Conversation with<br /><em>memory beside it.</em></>} statement="People speak to people. Context stays quietly available." copy="Commitments, mutual connections and the reason for the introduction remain beside the thread—not inside the conversation." caption="A professional exchange remains human when intelligence knows when to stay quiet." image={messagesEditorialAsset.url} />}
     {outreachModal}
-    <div className="messages-layout">
+    <div className={`messages-layout ${contextOpen ? 'context-open' : 'context-closed'}`}>
       <aside className="thread-list">
         <div className="thread-search"><Search size={15} /> Conversations</div>
         {threads.map(t => {
@@ -987,7 +1036,10 @@ function Messages({ people, select, activeId, setActiveId }: { people: Member[];
         <header>
           <Avatar person={person} />
           <div><strong>{person.name}</strong><small>{person.title} · {person.company}</small></div>
-           <button className="icon-btn" onClick={() => select(person)} aria-label="Open relationship intelligence"><AetherisGlyph size={17} /></button>
+          <button className="context-toggle" onClick={() => setContextOpen(v => !v)} aria-expanded={contextOpen}>
+            <AetherisGlyph size={13} /> {contextOpen ? 'Hide context' : 'Context'}
+          </button>
+          <button className="icon-btn" onClick={() => select(person)} aria-label="Open this person's profile"><UserRound size={17} /></button>
         </header>
         <div className="intro-context"><Label>INTRODUCTION CONTEXT</Label><p>{thread.introContext}</p></div>
         <div className="messages">
@@ -1017,8 +1069,9 @@ function Messages({ people, select, activeId, setActiveId }: { people: Member[];
           {blocked && <p className="composer-blocked"><b>Held.</b> {blocked.explanation}{blocked.rerouteTo ? ` Referred elsewhere: ${blocked.rerouteTo}.` : ''} <button className="text-action" onClick={() => nav.setPage('permission')}>Request permission properly</button></p>}
         </div>
       </section>
-      <aside className="conversation-intel">
-        <Label>RELATIONSHIP CONTEXT</Label>
+      {contextOpen && <aside className="conversation-intel">
+        <header className="intel-head"><Label>RELATIONSHIP CONTEXT</Label>
+          <button className="icon-btn" onClick={() => setContextOpen(false)} aria-label="Close context"><X size={15} /></button></header>
         <h3>Why you’re connected</h3>
         <p>{person.whyThem}</p>
         <dl>
@@ -1031,7 +1084,7 @@ function Messages({ people, select, activeId, setActiveId }: { people: Member[];
         </dl>
         <TwinPanel person={person} compact />
         <button className="text-action" onClick={() => nav.captureConversation()}><Mic size={13} /> Capture this conversation</button>
-      </aside>
+      </aside>}
     </div>
   </>
 }
@@ -1416,6 +1469,8 @@ function Profile({ people, setPage, openOnboarding }: {
         <div key={k}><span>{k}</span><p>{v}</p></div>)}
     </div>
 
+    <details className="profile-deep">
+      <summary>Relationship intelligence, proof and history</summary>
     <section className="private-panel">
       <header><Label signal>PRIVATE RELATIONSHIP INTELLIGENCE</Label><small><LockKeyhole size={12} /> Visible only to you</small></header>
       <div>
@@ -1472,6 +1527,7 @@ function Profile({ people, setPage, openOnboarding }: {
         <small><LockKeyhole size={12} /> Nothing is sent without both sides opting in.</small>
       </footer>
     </section>
+    </details>
 
     <div className="profile-settings">
       <section>
@@ -1982,6 +2038,45 @@ export default function App({ startPage, mode = 'live' }: { startPage?: Page | u
   return <NetworkProvider mode={mode}><PlatformProvider><OSProvider><MoatProvider><ProProvider><Shell startPage={startPage} /></ProProvider></MoatProvider></OSProvider></PlatformProvider></NetworkProvider>
 }
 
+
+/* --------------------------------------------------------------------- hubs */
+
+function Hub({ storeKey, title, blurb, tabs, advanced, onNavigate }: {
+  storeKey: string; title: string; blurb: string
+  tabs: Array<{ id: Page; label: string; node: ReactNode }>
+  advanced: Page[]; onNavigate: (p: Page) => void
+}) {
+  const first = tabs[0]
+  const [tab, setTab] = useState<string>(() => {
+    if (typeof window === 'undefined') return first?.id ?? ''
+    return localStorage.getItem(storeKey) ?? first?.id ?? ''
+  })
+  if (!first) return null
+  const current = tabs.find(t => t.id === tab) ?? first
+  const go = (id: string) => { setTab(id); try { localStorage.setItem(storeKey, id) } catch { /* ignore */ } }
+  return <>
+    <header className="hub-head">
+      <div><Label>{title.toUpperCase()}</Label><h1>{blurb}</h1></div>
+      <p>{metaById[current.id]?.blurb}</p>
+    </header>
+    <nav className="hub-tabs" role="tablist" aria-label={`${title} sections`}>
+      {tabs.map(t => <button key={t.id} role="tab" aria-selected={t.id === current.id}
+        className={t.id === current.id ? 'active' : ''} onClick={() => go(t.id)}>{t.label}</button>)}
+    </nav>
+    <details className="hub-advanced">
+      <summary>Advanced in {title}</summary>
+      <div>{advanced.map(id => {
+        const meta = metaById[id]
+        if (!meta) return null
+        const Icon = meta.icon
+        return <button key={id} onClick={() => onNavigate(id)}><Icon size={14} />
+          <span><b>{meta.label}</b><small>{meta.blurb}</small></span></button>
+      })}</div>
+    </details>
+    <section className="hub-panel" key={current.id}>{current.node}</section>
+  </>
+}
+
 function Shell({ startPage }: { startPage?: Page | undefined }) {
   const net = useNetwork()
   const stored = typeof window !== 'undefined' ? localStorage.getItem('aetheris-intros-page') : null
@@ -2063,9 +2158,7 @@ function Shell({ startPage }: { startPage?: Page | undefined }) {
     captureConversation: () => setCaptureOpen(true),
   }
 
-  const content = selected
-    ? <MemberProfile person={selected} people={people} onClose={() => setSelected(null)} onDraft={p => { setSelected(null); setDraft(p) }} onMessage={messageMember} />
-    : {
+  const pageNode: Partial<Record<Page, ReactNode>> = {
       home: <>
         <IntentStrip onCreate={() => setIntentOpen(true)} />
         <Home people={people} select={setSelected} setPage={setPage} openNeed={() => setNeedOpen(true)} openThread={goToThread} />
@@ -2118,7 +2211,23 @@ function Shell({ startPage }: { startPage?: Page | undefined }) {
       briefing: <BriefingPage />,
       vault: <VaultPage />,
       knowledgeassets: <KnowledgeAssetsPage />,
-    }[page]
+    }
+  const hubLabel: Partial<Record<Page, string>> = {
+    directory: 'People', opportunities: 'Active', rooms: 'Rooms', dealrooms: 'Deal rooms', discover: 'Discover',
+  }
+  const hubTabs = (ids: Page[]) => ids.flatMap(id => {
+    const node = pageNode[id]
+    return node ? [{ id, label: hubLabel[id] ?? metaById[id]?.label ?? id, node }] : []
+  })
+  const content = selected
+    ? <MemberProfile person={selected} people={people} onClose={() => setSelected(null)} onDraft={p => { setSelected(null); setDraft(p) }} onMessage={messageMember} />
+    : page === 'network'
+      ? <Hub storeKey="aetheris.hub.network" title="Network" blurb="People, companies and introductions worth knowing."
+          tabs={hubTabs(networkTabs)} advanced={networkAdvanced} onNavigate={setPage} />
+      : page === 'opportunities'
+        ? <Hub storeKey="aetheris.hub.opportunities" title="Opportunities" blurb="What you are moving, and what it needs next."
+            tabs={hubTabs(opportunityTabs)} advanced={opportunityAdvanced} onNavigate={setPage} />
+        : pageNode[page]
 
   useGrabScroll()
   useEffect(() => { rememberRecent(page) }, [page])
@@ -2176,7 +2285,7 @@ function Shell({ startPage }: { startPage?: Page | undefined }) {
         </div>
       </div>
       <nav className="mobile-nav">
-        {(['home', 'discover', 'intros', 'messages'] as Page[]).map(id => {
+        {(['home', 'network', 'opportunities', 'messages'] as Page[]).map(id => {
           const meta = metaById[id]!
           const Icon = meta.icon
           return <button key={id} className={page === id ? 'active' : ''} onClick={() => setPage(id)}><Icon size={18} /><span>{meta.label}</span></button>
