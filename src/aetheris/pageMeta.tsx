@@ -55,14 +55,14 @@ export const pageMeta: PageMeta[] = [
     next: 'Open one person and read the reasoning before acting.',
     hints: ['Advanced network tools stay one click away under “Advanced in Network”.'],
   }, ['people', 'discover', 'companies', 'circles', 'events', 'directory']),
-  m('discover', 'Discover', Compass, 'PRIMARY', 'Find people worth knowing, with the context that explains why.', {
+  m('discover', 'Discover', Compass, 'NETWORK', 'Find people worth knowing, with the context that explains why.', {
     does: 'Finds people worth knowing and explains why the relationship makes sense for both sides.',
     look: 'Fit reasoning, mutual context and people whose current focus overlaps yours.',
     changes: 'Filters, circles and stated intent reshape who surfaces here.',
     next: 'Open one person and read the reasoning before acting.',
     why: 'Discovery is scored on mutual relevance, not reach — a low score means the timing is wrong, not the person.',
   }, ['people', 'search', 'network']),
-  m('intros', 'Intros', Handshake, 'PRIMARY', 'Curated matches and double opt-in introductions.', {
+  m('intros', 'Intros', Handshake, 'NETWORK', 'Curated matches and double opt-in introductions.', {
     does: 'Ranks introductions by compatibility and moves them through double opt-in.',
     look: 'Match reasoning, shared context and who still has to agree.',
     changes: 'Every accepted or declined intro teaches future ranking.',
@@ -75,13 +75,13 @@ export const pageMeta: PageMeta[] = [
     changes: 'Captured context and outcomes from conversations feed Memory.',
     next: 'Reply to the thread where you owe the answer.',
   }, ['chat', 'inbox', 'threads']),
-  m('needs', 'Needs', Target, 'PRIMARY', 'What members are trying to move right now, and who can help.', {
+  m('needs', 'Needs', Target, 'OPPORTUNITY & EXECUTION', 'What members are trying to move right now, and who can help.', {
     does: 'Runs the asks marketplace: what members need now and who can help.',
     look: 'Fresh asks, responses you can give and warm paths worth requesting.',
     changes: 'Posting, responding and closing needs updates matching and Memory.',
     next: 'Give before asking — answer one need you can genuinely help with.',
   }, ['asks', 'marketplace', 'requests']),
-  m('memory', 'Memory', Network, 'PRIMARY', 'The context people usually lose between conversations.', {
+  m('memory', 'Memory', Network, 'RELATIONSHIP INTELLIGENCE', 'The context people usually lose between conversations.', {
     does: 'Keeps the context people usually lose between conversations.',
     look: 'New needs, cooling relationships, commitments and changes in direction.',
     changes: 'Approved notes, conversations and outcomes alter future recommendations.',
