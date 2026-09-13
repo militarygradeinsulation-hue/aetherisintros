@@ -658,25 +658,30 @@ function Home({ people, select, setPage, openNeed, openThread }: {
         <ul className="module-people">{ranked.slice(0, 3).map(p => <li key={p.id}>
           <button onClick={() => select(p)}><Avatar person={p} portrait /><span><strong>{p.name}</strong><small>{p.title} · {p.company}</small><em>{p.whyNow}</em></span><span className="module-score">{p.scoreTotal}</span></button>
         </li>)}</ul>
+        {!ranked.length && <p className="empty-state">No members to suggest yet. As founding members complete their profiles, the strongest current fits appear here.</p>}
       </article>
       <article className="module">
         <header><Label>TRENDING IN YOUR SECTORS</Label><h3>Where the network is moving.</h3></header>
         <ul className="module-sectors">{showcaseOnly(trendingSectors).map(s => <li key={s.sector}>
           <span><strong>{s.sector}</strong><small>{s.note}</small></span><em className={s.move.startsWith('−') ? 'down' : ''}>{s.move}</em>
         </li>)}</ul>
+        {!showcaseOnly(trendingSectors).length && <p className="empty-state">Sector movement is calculated from what members actually post. Nothing has been posted yet.</p>}
       </article>
       <article className="module">
         <header><Label><CalendarDays size={11} /> UPCOMING BUSINESS EVENTS</Label><h3>Rooms your graph is already in.</h3></header>
         <ul className="module-events">{showcaseOnly(events).map(e => <li key={e.id}>
           <strong>{e.name}</strong><small>{e.when} · {e.where}</small><em>{e.who}</em>
         </li>)}</ul>
+        {!showcaseOnly(events).length && <p className="empty-state">No member events scheduled yet.</p>}
       </article>
       <article className="module">
         <header><Label><Users size={11} /> SUGGESTED CIRCLES</Label><h3>Groups that match your focus.</h3></header>
         <ul className="module-circles">{showcaseOnly(circles).map(c => <li key={c.id}>
           <span><strong>{c.name}</strong><small>{c.members}</small><em>{c.why}</em></span><Button kind="quiet">Join</Button>
         </li>)}</ul>
+        {!showcaseOnly(circles).length && <p className="empty-state">Circles appear once members create them. You can start one from Circles.</p>}
       </article>
+
     </section>
 
     <section className="home-education">
