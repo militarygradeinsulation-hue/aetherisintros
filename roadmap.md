@@ -62,3 +62,11 @@
 - [x] Finish editable profile name/photo and verify persistence.
 - [x] Set /onboarding social/search image to Aetheris Intros instead of the default thumbnail.
 - [x] Verify Messages sends, threads and persistence across demo/live paths.
+
+# Navigation and visual simplification (Sep 13)
+- [x] Keep only four primary destinations plus More in persistent navigation.
+- [x] Consolidate create, profile, preferences, Briefing, and context controls into one Actions menu.
+- [x] Remove duplicate related-tools navigation strips.
+- [x] Reduce Network and Opportunities hubs to four primary sections each.
+- [x] Make the context rail optional and hidden by default.
+- [x] Verify desktop and mobile journeys, overlays, and overflow.

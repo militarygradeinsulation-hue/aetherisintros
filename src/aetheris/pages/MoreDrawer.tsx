@@ -20,7 +20,6 @@ export function rememberRecent(page: Page) {
 
 type View = 'az' | PageGroup
 
-const shortcuts: Page[] = ['needs', 'memory', 'opportunities']
 const PINNED_KEY = 'aetheris.more.pinned'
 
 function readPinned(): Page[] {
@@ -97,14 +96,6 @@ export function MoreDrawer({ open, page, onClose, onNavigate }: {
         <Search size={15} />
         <input value={query} onChange={e => setQuery(e.target.value)} placeholder="Find a page or capability…" autoFocus />
       </label>
-
-      <div className="more-shortcuts">
-        {shortcuts.map(id => {
-          const meta = metaById[id]!
-          const Icon = meta.icon
-          return <button key={id} onClick={() => go(id)}><Icon size={14} />{meta.label}</button>
-        })}
-      </div>
 
       {!!pinned.length && !results && <section className="more-recent">
         <span className="more-label">FAVOURITES</span>

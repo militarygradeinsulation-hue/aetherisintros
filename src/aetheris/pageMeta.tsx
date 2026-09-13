@@ -371,10 +371,10 @@ export function pageLabel(id: Page) { return metaById[id]?.label ?? id }
 export const primaryPages: Page[] = ['home', 'network', 'opportunities', 'messages']
 
 /** Tabs consolidated inside the Network and Opportunities hubs. */
-export const networkTabs: Page[] = ['discover', 'directory', 'companies', 'intros', 'circles', 'expertise', 'events']
-export const networkAdvanced: Page[] = ['serendipity', 'gaps', 'identity', 'organization', 'talent', 'knowledge', 'boards', 'intelrooms', 'passport', 'ask']
-export const opportunityTabs: Page[] = ['needs', 'opportunities', 'rooms', 'dealrooms', 'systems', 'strategy', 'outcomes']
-export const opportunityAdvanced: Page[] = ['simulation', 'collisions', 'capital', 'attribution', 'loops', 'knowledgeassets', 'timemachine']
+export const networkTabs: Page[] = ['discover', 'directory', 'intros', 'companies']
+export const networkAdvanced: Page[] = ['circles', 'expertise', 'events', 'serendipity', 'gaps', 'identity', 'organization', 'talent', 'knowledge', 'boards', 'intelrooms', 'passport', 'ask']
+export const opportunityTabs: Page[] = ['needs', 'opportunities', 'rooms', 'outcomes']
+export const opportunityAdvanced: Page[] = ['dealrooms', 'systems', 'strategy', 'simulation', 'collisions', 'capital', 'attribution', 'loops', 'knowledgeassets', 'timemachine']
 
 export const groupOrder: PageGroup[] = [
   'NETWORK', 'RELATIONSHIP INTELLIGENCE', 'OPPORTUNITY & EXECUTION', 'TRUST, PERMISSION & CONTROL',

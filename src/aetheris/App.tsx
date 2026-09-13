@@ -31,10 +31,9 @@ import { classifyConnection, composeWarmIntro, radarLabel } from './lib/engine'
 import { useGrabScroll } from './lib/dragScroll'
 import { metaById, primaryPages, pageMeta, networkTabs, networkAdvanced, opportunityTabs, opportunityAdvanced } from './pageMeta'
 import { MoreDrawer, rememberRecent } from './pages/MoreDrawer'
-import { BriefingModeToggle, BriefingPanel, RelatedTools, useBriefingMode } from './BriefingMode'
+import { BriefingPanel, useBriefingMode } from './BriefingMode'
 import { NavCtx, useNav, type NavApi, type Page } from './nav'
 import { PlatformProvider, usePlatform } from './platform'
-import type { MoveKind } from './domain/models'
 import { SystemsPage } from './pages/SystemsPage'
 import { CirclesPage, CreateCircleModal } from './pages/CirclesPage'
 import { CompaniesPage } from './pages/CompaniesPage'
@@ -97,16 +96,7 @@ const nav: Array<{ id: Page; label: string; icon: typeof HomeIcon }> = primaryPa
   const meta = metaById[id]!
   return { id, label: meta.label, icon: meta.icon }
 })
-const navSecondary: Array<{ id: Page; label: string; icon: typeof HomeIcon }> = pageMeta
-  .filter(p => !primaryPages.includes(p.id))
-  .map(p => ({ id: p.id, label: p.label, icon: p.icon }))
-const allNav = [...nav, ...navSecondary]
-const moveKinds: Array<{ kind: MoveKind; page: Page }> = [
-  { kind: 'Need', page: 'needs' },
-  { kind: 'Relationship', page: 'discover' },
-  { kind: 'System', page: 'systems' },
-  { kind: 'Opportunity', page: 'outcomes' },
-]
+const allNav: Array<{ id: Page; label: string; icon: typeof HomeIcon }> = pageMeta.map(p => ({ id: p.id, label: p.label, icon: p.icon }))
 const legacyPage: Record<string, Page> = {
   command: 'home', people: 'discover', network: 'memory', forensics: 'insights',
   meetings: 'messages', 'digital-you': 'profile', roi: 'insights', settings: 'profile',
@@ -136,11 +126,11 @@ function Avatar({ person, large = false, portrait = false }: { person: Member; l
     {image && <AvatarImage source={image} alt="" width={1024} height={1280} />}
   </span>
 }
-function SelfAvatar({ portrait = false, large = false }: { portrait?: boolean; large?: boolean }) {
+function SelfAvatar({ portrait = false, large = false, image = true }: { portrait?: boolean; large?: boolean; image?: boolean }) {
   const net = useNetwork()
-  return <span className={`person-avatar ${large ? 'large' : ''} ${portrait ? 'portrait' : ''}`} data-person-portrait="me" aria-label={net.profile.name || 'Your profile'}>
+  return <span className={`person-avatar ${large ? 'large' : ''} ${portrait ? 'portrait' : ''}`} {...(image ? { 'data-person-portrait': 'me' } : {})} aria-label={net.profile.name || 'Your profile'}>
     <span className="avatar-initials" aria-hidden="true">{net.profile.initials || 'M'}</span>
-    {net.profile.avatarUrl && <AvatarImage source={net.profile.avatarUrl} alt="" width={1024} height={1280} />}
+    {image && net.profile.avatarUrl && <AvatarImage source={net.profile.avatarUrl} alt="" width={1024} height={1280} />}
   </span>
 }
 function Button({ children, kind = 'primary', onClick, disabled = false, className = '' }: { children: React.ReactNode; kind?: 'primary' | 'secondary' | 'quiet'; onClick?: () => void; disabled?: boolean; className?: string }) {
@@ -561,11 +551,6 @@ function HomeIdentityCard({ openNeed, setPage }: { openNeed: () => void; setPage
       <li key={k}>Add your {k.toLowerCase()}</li>)}</ul>}
     <div className="side-card-avail"><span>AVAILABILITY</span><p>{me.availability || 'Not stated yet.'}</p></div>
     <Button onClick={openNeed}><Plus size={14} /> Post what you need</Button>
-    <div className="side-links">
-      <button onClick={() => setPage('profile')}>Your profile</button>
-      <button onClick={() => setPage('network')}>Your network</button>
-      <button onClick={() => setPage('opportunities')}>What you are moving</button>
-    </div>
   </section>
 }
 
@@ -1430,16 +1415,21 @@ function Profile({ people, setPage, openOnboarding }: {
         <div className="identity-actions">
           <Button onClick={() => { setIdentityEditing(value => !value); setIdentityMessage('') }}><Camera size={14} /> Edit name or photo</Button>
           <Button onClick={openOnboarding}><Fingerprint size={14} /> {me.onboarded ? 'Update your profile' : 'Complete your profile'}</Button>
-          <Button kind="secondary" onClick={() => setPage('messages')}><MessageSquareText size={14} /> Conversations</Button>
-          <Button kind="secondary" onClick={() => setPage('intros')}><Handshake size={14} /> Your introductions</Button>
-          <Button kind="quiet" onClick={() => setPage('needs')}><Bookmark size={14} /> Saved · {net.saved.length}</Button>
-          <Button kind="quiet" onClick={() => { void navigator.clipboard?.writeText(window.location.href).catch(() => {}); setCopied(true) }}><Share2 size={14} /> {copied ? 'Link copied' : 'Share profile'}</Button>
+          <details className="identity-more">
+            <summary>More actions <ChevronDown size={13} /></summary>
+            <div>
+              <button onClick={() => setPage('messages')}><MessageSquareText size={14} /> Conversations</button>
+              <button onClick={() => setPage('intros')}><Handshake size={14} /> Your introductions</button>
+              <button onClick={() => setPage('needs')}><Bookmark size={14} /> Saved · {net.saved.length}</button>
+              <button onClick={() => { void navigator.clipboard?.writeText(window.location.href).catch(() => {}); setCopied(true) }}><Share2 size={14} /> {copied ? 'Link copied' : 'Share profile'}</button>
+            </div>
+          </details>
         </div>
       </div>
     </section>
 
     {identityEditing && <section className="identity-editor" aria-label="Edit profile identity">
-      <div className="identity-preview" data-person-portrait="me-preview">
+      <div className="identity-preview">
         {photoPreview
           ? <img src={photoPreview} alt="Selected profile preview" />
           : me.avatarUrl
@@ -2086,6 +2076,7 @@ function Shell({ startPage }: { startPage?: Page | undefined }) {
   const [mobileOpen, setMobileOpen] = useState(false)
   const [topMenuOpen, setTopMenuOpen] = useState(false)
   const [moreOpen, setMoreOpen] = useState(false)
+  const [contextOpen, setContextOpen] = useState(false)
   const briefing = useBriefingMode()
   const [selected, setSelected] = useState<Member | null>(null)
   const [draft, setDraft] = useState<Member | null>(null)
@@ -2233,7 +2224,7 @@ function Shell({ startPage }: { startPage?: Page | undefined }) {
   useEffect(() => { rememberRecent(page) }, [page])
 
   return <NavCtx.Provider value={navApi}>
-    <div className={`app-shell ${collapsed ? 'rail-collapsed' : ''}`}>
+    <div className={`app-shell ${collapsed ? 'rail-collapsed' : ''} ${contextOpen ? 'show-context' : ''}`}>
       <aside className={`nav-rail ${mobileOpen ? 'mobile-open' : ''}`}>
         <div className="rail-head"><Brand /><button className="rail-toggle" onClick={() => setCollapsed(!collapsed)} aria-label="Collapse navigation"><ChevronLeft size={16} /></button></div>
         <nav>{nav.map(item => {
@@ -2246,42 +2237,41 @@ function Shell({ startPage }: { startPage?: Page | undefined }) {
             <LayoutGrid size={18} /><span>More</span></button>
         </nav>
         <div className="rail-foot"><span className="live-dot" /><span>Memory live</span>
-          <button onClick={() => setPage('profile')} aria-label="Your profile"><SelfAvatar /></button></div>
+          <button onClick={() => setPage('profile')} aria-label="Your profile"><SelfAvatar image={false} /></button></div>
       </aside>
       <div className="workspace">
         <header className="topbar">
           <button className="icon-btn mobile-menu" onClick={() => setMobileOpen(!mobileOpen)} aria-label="Menu"><Menu size={19} /></button>
           <span className="topbar-title">Aetheris Intros <i>/</i> {metaById[page]?.label ?? allNav.find(n => n.id === page)?.label}</span>
-          <div className="topbar-dropdown">
-            <button className="topbar-dropbtn" aria-expanded={topMenuOpen} onClick={() => setTopMenuOpen(!topMenuOpen)}>
-              <SlidersHorizontal size={14} /><span>Move &amp; tools</span><ChevronDown size={13} />
-            </button>
-            {topMenuOpen && <>
-              <button className="dropdown-scrim" aria-label="Close menu" onClick={() => setTopMenuOpen(false)} />
-              <div className="topbar-dropmenu" role="menu">
-                <span className="drop-label">WHAT ARE YOU MOVING</span>
-                {moveKinds.map(m => <button key={m.kind} role="menuitem" className={page === m.page ? 'active' : ''} onClick={() => { setPage(m.page); setTopMenuOpen(false) }}>{m.kind}</button>)}
-                <span className="drop-label">QUICK ACTIONS</span>
-                <button role="menuitem" onClick={() => { setIntentOpen(true); setTopMenuOpen(false) }}><Layers size={14} /> Post live intent</button>
-                <button role="menuitem" onClick={() => { setOnboardOpen(true); setTopMenuOpen(false) }}><Fingerprint size={14} /> Build your profile</button>
-                <button role="menuitem" onClick={() => { setCaptureOpen(true); setTopMenuOpen(false) }}><Mic size={14} /> Capture conversation</button>
-              </div>
-            </>}
-          </div>
           <div className="topbar-actions">
-            <BriefingModeToggle on={briefing.on} toggle={briefing.toggle} />
             <button className="topbar-search" aria-label="Search people, companies, topics, or ideas…" onClick={() => setGlobalSearchOpen(true)}><Search size={15} /><span>Search people, companies, topics, or ideas…</span><kbd>⌘K</kbd></button>
-            <button className="icon-btn" title="Post a need" onClick={() => setNeedOpen(true)} aria-label="Post a need"><Plus size={18} /></button>
-            <button className="icon-btn" title="Ask Intros" onClick={() => setAskOpen(true)} aria-label="Ask Intros"><AetherisGlyph size={18} /></button>
+            <div className="topbar-dropdown">
+              <button className="topbar-dropbtn" aria-expanded={topMenuOpen} onClick={() => setTopMenuOpen(!topMenuOpen)}>
+                <SlidersHorizontal size={14} /><span>Actions</span><ChevronDown size={13} />
+              </button>
+              {topMenuOpen && <>
+                <div className="topbar-dropmenu" role="menu">
+                  <span className="drop-label">CREATE</span>
+                  <button role="menuitem" onClick={() => { setNeedOpen(true); setTopMenuOpen(false) }}><Plus size={14} /> Post a need</button>
+                  <button role="menuitem" onClick={() => { setIntentOpen(true); setTopMenuOpen(false) }}><Layers size={14} /> Post live intent</button>
+                  <button role="menuitem" onClick={() => { setCaptureOpen(true); setTopMenuOpen(false) }}><Mic size={14} /> Capture conversation</button>
+                  <button role="menuitem" onClick={() => { setAskOpen(true); setTopMenuOpen(false) }}><AetherisGlyph size={14} /> Ask Intros</button>
+                  <span className="drop-label">VIEW</span>
+                  <button role="menuitem" className={briefing.on ? 'active' : ''} onClick={() => { briefing.toggle(); setTopMenuOpen(false) }}><Newspaper size={14} /> Briefing mode <small>{briefing.on ? 'On' : 'Off'}</small></button>
+                  <button role="menuitem" className={contextOpen ? 'active' : ''} onClick={() => { setContextOpen(value => !value); setTopMenuOpen(false) }}><Eye size={14} /> Context panel <small>{contextOpen ? 'Shown' : 'Hidden'}</small></button>
+                  <button role="menuitem" onClick={() => { setPage('profile'); setTopMenuOpen(false) }}><UserRound size={14} /> Profile</button>
+                  <button role="menuitem" onClick={() => { setPage('preferences'); setTopMenuOpen(false) }}><Settings2 size={14} /> Preferences</button>
+                </div>
+              </>}
+            </div>
           </div>
         </header>
         <div className="workspace-grid">
           <main className="content">
             {briefing.on && <BriefingPanel key={page} page={page} />}
-            <RelatedTools page={page} onNavigate={setPage} />
             {content}
           </main>
-          <ContextRail page={page} people={people} select={setSelected} onAsk={() => setAskOpen(true)} />
+          {contextOpen && <ContextRail page={page} people={people} select={setSelected} onAsk={() => setAskOpen(true)} />}
         </div>
       </div>
       <nav className="mobile-nav">
