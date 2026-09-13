@@ -17,6 +17,7 @@ import needsEditorialAsset from '@/assets/editorial-needs.jpg.asset.json'
 import memoryEditorialAsset from '@/assets/editorial-memory.jpg.asset.json'
 import insightsEditorialAsset from '@/assets/editorial-insights.jpg.asset.json'
 import homeEditorialAsset from '@/assets/aetheris-home-portrait.jpg.asset.json'
+import logoAsset from '@/assets/aetheris-logo.jpg.asset.json'
 import worldNetworkImg from '@/assets/aetheris-world-network.jpg'
 import { leaks } from './data'
 import type { AutonomyLevel, DigitalYouProfile, Objective, PrivacyScope } from './types'
@@ -114,7 +115,7 @@ const scopes: PrivacyScope[] = ['private', 'team', 'organization', 'shareable', 
 /* ---------------------------------------------------------------- primitives */
 
 function Brand() {
-  return <div className="brand-mark"><span className="brand-monogram">AI</span><span className="brand-name">Aetheris<em>Intros</em></span></div>
+  return <div className="brand-mark"><img className="brand-logo" src={logoAsset.url} alt="Aetheris Intros logo" /><span className="brand-name">Aetheris<em>Intros</em></span></div>
 }
 function AetherisGlyph({ size = 18 }: { size?: number }) {
   return <span className="aetheris-glyph" style={{ width: size, height: size }} aria-hidden="true"><i /><b /></span>

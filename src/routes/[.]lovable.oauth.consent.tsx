@@ -1,3 +1,4 @@
+import logoAsset from '@/assets/aetheris-logo.jpg.asset.json'
 import { createFileRoute, redirect } from '@tanstack/react-router'
 import { useState } from 'react'
 import { LockKeyhole } from 'lucide-react'
@@ -72,7 +73,7 @@ function Consent() {
 
   return <main className="consent-page">
     <section className="consent-panel">
-      <span className="brand-monogram">AI</span>
+      <img className="brand-logo" src={logoAsset.url} alt="Aetheris Intros logo" />
       <span className="folio">AGENT ACCESS / PERMISSIONED</span>
       <h1>Connect <em>{client}</em> to your account</h1>
       <p className="consent-lede">
