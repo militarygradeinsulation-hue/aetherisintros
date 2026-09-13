@@ -436,7 +436,7 @@ function PostCard({ post, member, onOpen }: { post: Post; member: Member | undef
     <header>
       {member
         ? <button className="post-author" onClick={onOpen}><Avatar person={member} portrait /><span><strong>{member.name}</strong><small>{member.title} · {member.company}</small></span></button>
-        : <div className="post-author"><SelfAvatar portrait /><span><strong>{net.profile.name || 'You'}</strong><small>{net.profile.title}</small></span></div>}}
+        : <div className="post-author"><SelfAvatar portrait /><span><strong>{net.profile.name || 'You'}</strong><small>{net.profile.title}</small></span></div>}
       <span className="post-kind">{member?.industry ?? net.profile.industries[0] ?? post.kind}</span>
     </header>
     <h3>{post.text}</h3>
