@@ -640,8 +640,9 @@ export function NetworkProvider({ children, mode = 'live' }: { children: React.R
         if (!cleanName) throw new Error('Enter your name.')
         let avatarUrl = s.profile.avatarUrl
         if (photo) {
+          if (live && !userId) throw new Error('Sign in again, then save your profile.')
           avatarUrl = live
-            ? await uploadProfileAvatar(userId ?? '', photo)
+            ? await uploadProfileAvatar(userId!, photo)
             : await fileToDataUrl(photo)
         }
         patch(prev => ({
