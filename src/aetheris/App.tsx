@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 import {
-  AlertTriangle, ArrowLeftRight, ArrowRight, Bookmark, BookmarkCheck, Building2, CalendarDays, Check, CheckCircle2, ChevronLeft,
+  AlertTriangle, ArrowLeftRight, ArrowRight, Bookmark, BookmarkCheck, Building2, CalendarDays, Camera, Check, CheckCircle2, ChevronLeft,
   CircleDot, Compass, Eye, Fingerprint, Handshake, Heart, Home as HomeIcon, Layers, LockKeyhole,
   MapPin, Menu, MessageSquareText, Network, Plus, Search, Send, Share2, ShieldCheck, Target,
   MessageCircle, Repeat2, Settings2, SlidersHorizontal, TrendingUp, UserRound, Users, X,
@@ -9,6 +9,7 @@ import {
   ChevronDown, LayoutGrid, Briefcase, FolderLock, GraduationCap, UsersRound, Coins, Landmark, PlaneTakeoff, ShieldAlert, Newspaper, Archive, FileText,
 } from 'lucide-react'
 import { rankMatches, type MatchResult } from '@/aetheris/matching'
+import { AvatarImage } from './avatar'
 import discoverEditorialAsset from '@/assets/editorial-discover.jpg.asset.json'
 import introsEditorialAsset from '@/assets/editorial-intros.jpg.asset.json'
 import messagesEditorialAsset from '@/assets/editorial-messages.jpg.asset.json'
@@ -129,10 +130,17 @@ function AetherisGlyph({ size = 18 }: { size?: number }) {
   return <span className="aetheris-glyph" style={{ width: size, height: size }} aria-hidden="true"><i /><b /></span>
 }
 function Avatar({ person, large = false, portrait = false }: { person: Member; large?: boolean; portrait?: boolean }) {
-  const image = portraitFor(person.id)
+  const image = person.avatarUrl ?? portraitFor(person.id)
   return <span className={`person-avatar ${large ? 'large' : ''} ${portrait ? 'portrait' : ''}`} data-person-portrait={person.id} aria-label={person.name}>
     <span className="avatar-initials" aria-hidden="true">{person.initials}</span>
-    {image && <img src={image} alt="" width={1024} height={1280} loading="lazy" />}
+    {image && <AvatarImage source={image} alt="" width={1024} height={1280} />}
+  </span>
+}
+function SelfAvatar({ portrait = false, large = false }: { portrait?: boolean; large?: boolean }) {
+  const net = useNetwork()
+  return <span className={`person-avatar ${large ? 'large' : ''} ${portrait ? 'portrait' : ''}`} data-person-portrait="me" aria-label={net.profile.name || 'Your profile'}>
+    <span className="avatar-initials" aria-hidden="true">{net.profile.initials || 'M'}</span>
+    {net.profile.avatarUrl && <AvatarImage source={net.profile.avatarUrl} alt="" width={1024} height={1280} />}
   </span>
 }
 function Button({ children, kind = 'primary', onClick, disabled = false, className = '' }: { children: React.ReactNode; kind?: 'primary' | 'secondary' | 'quiet'; onClick?: () => void; disabled?: boolean; className?: string }) {
