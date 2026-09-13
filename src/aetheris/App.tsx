@@ -1359,7 +1359,7 @@ function Profile({ people, setPage, openOnboarding }: {
 
   return <>
     <section className="identity-header">
-      <div className="identity-portrait" data-person-portrait="me">
+      <div className="identity-portrait" data-person-portrait="me" data-portrait-primary="true">
         {me.avatarUrl
           ? <AvatarImage source={me.avatarUrl} alt={`${me.name || 'Member'} profile portrait`} width={1024} height={1280} loading="eager" />
           : isShowcase() && portraitFor('me')
@@ -1563,7 +1563,7 @@ function MemberProfile({ person, people, onClose, onDraft, onMessage }: {
         </div>
         {copied && <small className="copied-note">Profile link copied.</small>}
       </div>
-      <figure className="member-plate" data-person-portrait={person.id}>
+      <figure className="member-plate" data-person-portrait={person.id} data-portrait-primary="true">
         {(person.avatarUrl ?? portraitFor(person.id)) && <AvatarImage source={person.avatarUrl ?? portraitFor(person.id)} alt={`${person.name}, monochrome editorial portrait`} />}
         <figcaption><span>{classifyConnection(person.scoreTotal).toUpperCase()}</span><p>{person.focus}</p></figcaption>
       </figure>
@@ -2022,7 +2022,9 @@ function Shell({ startPage }: { startPage?: Page | undefined }) {
     const enforceUniquePortraits = () => {
       const seenPeople = new Set<string>()
       const seenSources = new Set<string>()
-      document.querySelectorAll<HTMLElement>('[data-person-portrait]').forEach(node => {
+      const portraits = Array.from(document.querySelectorAll<HTMLElement>('[data-person-portrait]'))
+        .sort((a, b) => Number(b.dataset['portraitPrimary'] === 'true') - Number(a.dataset['portraitPrimary'] === 'true'))
+      portraits.forEach(node => {
         const id = node.dataset['personPortrait']
         if (!id) return
         const image = node.querySelector<HTMLImageElement>('img')
