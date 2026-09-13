@@ -541,6 +541,55 @@ function OSStrip({ people, select }: { people: Member[]; select: (p: Member) => 
   </section>
 }
 
+
+function HomeIdentityCard({ openNeed, setPage }: { openNeed: () => void; setPage: (p: Page) => void }) {
+  const net = useNetwork()
+  const me = net.profile
+  const fields: Array<[string, string]> = [
+    ['Role', me.title], ['Company', me.company], ['Location', me.location],
+    ['Looking for', me.lookingFor], ['Can help with', me.canHelpWith], ['Photo', me.avatarUrl ? 'Added' : ''],
+  ]
+  const done = fields.filter(([, v]) => Boolean(v && v.trim())).length
+  const pct = Math.round((done / fields.length) * 100)
+  return <section className="side-card identity-card">
+    <button className="identity-card-head" onClick={() => setPage('profile')}>
+      <SelfAvatar portrait />
+      <span><b>{me.name || 'Your profile'}</b><small>{[me.title, me.company].filter(Boolean).join(' · ') || 'Add your role and company'}</small></span>
+    </button>
+    <div className="completion"><span>Profile strength</span><i><em style={{ width: `${pct}%` }} /></i><b>{pct}%</b></div>
+    {pct < 100 && <ul className="completion-todo">{fields.filter(([, v]) => !v || !v.trim()).slice(0, 3).map(([k]) =>
+      <li key={k}>Add your {k.toLowerCase()}</li>)}</ul>}
+    <div className="side-card-avail"><span>AVAILABILITY</span><p>{me.availability || 'Not stated yet.'}</p></div>
+    <Button onClick={openNeed}><Plus size={14} /> Post what you need</Button>
+    <div className="side-links">
+      <button onClick={() => setPage('profile')}>Your profile</button>
+      <button onClick={() => setPage('network')}>Your network</button>
+      <button onClick={() => setPage('opportunities')}>What you are moving</button>
+    </div>
+  </section>
+}
+
+function HomeAttention({ ranked, activeNeed, select, setPage, openThread }: {
+  ranked: Member[]; activeNeed: Objective | undefined; select: (p: Member) => void
+  setPage: (p: Page) => void; openThread: (id: string) => void
+}) {
+  const net = useNetwork()
+  const top = ranked[0]
+  const waiting = net.threads.find(t => t.unread)
+  const loop = net.learnings[0]
+  return <section className="side-card attention-card">
+    <header><Label signal>WHAT DESERVES YOUR ATTENTION</Label><h3>A short list, not a dashboard.</h3></header>
+    <ul>
+      {activeNeed && <li><span>YOUR ACTIVE NEED</span><b>{activeNeed.title}</b><small>{activeNeed.success}</small></li>}
+      {top && <li><button onClick={() => select(top)}><span>STRONGEST FIT</span><b>{top.name}</b><small>{top.whyNow}</small></button></li>}
+      {waiting && <li><button onClick={() => openThread(waiting.id)}><span>WAITING ON YOU</span><b>Unanswered conversation</b><small>{waiting.commitment}</small></button></li>}
+      {loop && <li><span>RECENTLY LEARNED</span><b>{loop.text}</b><small>{loop.source}</small></li>}
+      {!activeNeed && !top && !waiting && !loop && <li><span>NOTHING URGENT</span><b>Your network is quiet.</b><small>Post what you need, or add context to your profile.</small></li>}
+    </ul>
+    <button className="text-action" onClick={() => setPage('briefing')}>Open the full briefing <ArrowRight size={13} /></button>
+  </section>
+}
+
 function Home({ people, select, setPage, openNeed, openThread }: {
   people: Member[]; select: (p: Member) => void; setPage: (p: Page) => void; openNeed: () => void
   openThread: (id: string) => void
@@ -595,15 +644,13 @@ function Home({ people, select, setPage, openNeed, openThread }: {
     {homeMode === 'briefing' && <BriefingPage />}
 
     {homeMode === 'social' && <>
-    <HomeMasthead people={people} select={select} setPage={setPage} openNeed={openNeed} openThread={openThread} />
+    {isShowcase() && <HomeMasthead people={people} select={select} setPage={setPage} openNeed={openNeed} openThread={openThread} />}
 
-    <header className="home-question">
-      <Label>PEOPLE × CONTEXT × OPPORTUNITY</Label>
-      <h1>What do you need<br /><em>right now?</em></h1>
-      <button className="need-input" onClick={openNeed}><span>Describe the outcome you want to create…</span><ArrowRight size={20} /></button>
-      <p>Tell Intros the outcome. It will find the people, context and path.</p>
-    </header>
-
+    <div className="home-3col">
+    <aside className="home-side home-side-left">
+      <HomeIdentityCard openNeed={openNeed} setPage={setPage} />
+    </aside>
+    <div className="home-center">
     <section className="composer">
       <SelfAvatar portrait />
       <div>
@@ -658,10 +705,15 @@ function Home({ people, select, setPage, openNeed, openThread }: {
         </button>
       })}</section>}
     </div>
+    </div>
+    <aside className="home-side home-side-right">
+      <HomeAttention ranked={ranked} activeNeed={activeNeed} select={select} setPage={setPage} openThread={openThread} />
+    </aside>
+    </div>
 
     <OSStrip people={people} select={select} />
 
-    <section className="home-modules">
+    {isShowcase() && <section className="home-modules">
       <article className="module">
         <header><Label signal>WHO TO MEET THIS WEEK</Label><h3>Three relationships with real timing.</h3></header>
         <ul className="module-people">{ranked.slice(0, 3).map(p => <li key={p.id}>
@@ -691,9 +743,9 @@ function Home({ people, select, setPage, openNeed, openThread }: {
         {!showcaseOnly(circles).length && <p className="empty-state">Circles appear once members create them. You can start one from Circles.</p>}
       </article>
 
-    </section>
+    </section>}
 
-    <section className="home-education">
+    {isShowcase() && <section className="home-education">
       <div><Label>BUSINESS NETWORKING, REBUILT</Label><h2>A professional network without pitches, spam or performative reach.</h2>
         <p>Aetheris Intros reads needs, offers, timing and trust paths, then shows only relationships where a conversation creates credible value for both people.</p>
         <button className="text-action" onClick={() => setPage('intros')}>See the reasoning behind a match <ArrowRight size={14} /></button></div>
@@ -706,10 +758,9 @@ function Home({ people, select, setPage, openNeed, openThread }: {
         </ul>
         <button className="text-action" onClick={() => setPage('memory')}>Open Active Memory <ArrowRight size={14} /></button>
       </div>
-    </section>
+    </section>}
 
-
-    <HowItWorks />
+    {isShowcase() && <HowItWorks />}
 
     <section className="home-mobile-rail">
       <Label signal>ON YOUR DESK</Label>
