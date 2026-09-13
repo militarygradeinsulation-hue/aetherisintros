@@ -6,6 +6,7 @@
  * to `createRemoteDataLayer` — no UI or domain code changes. Table names and
  * ownership/visibility columns are declared in ./schema.sql.
  */
+import { isShowcase } from '../showcase'
 import type {
   AvailabilityWindow, Circle, CompanyProfile, ConnectionChain, ConnectorReputation, ContextCapsule,
   DigitalHandshake, ID, IntentCard, MeetingContinuity, OpenLoop, OrganizationRelationship, Outcome,
@@ -65,6 +66,11 @@ export const tableNames: Record<CollectionName, string> = {
   outcomes: 'outcomes',
 }
 
+/** The live network starts empty: only member-created rows may appear. */
+export function emptyCollections(): Collections {
+  return Object.fromEntries(Object.keys(tableNames).map(key => [key, []])) as unknown as Collections
+}
+
 export function seedCollections(): Collections {
   return {
     systems: seedSystems, placements: seedPlacements, circles: seedCircles, intents: seedIntents,
@@ -83,14 +89,15 @@ export interface DataLayer {
 }
 
 const KEY = 'aetheris-platform-v1'
+const storeKey = () => `${KEY}-${isShowcase() ? 'demo' : 'live'}`
 
 /** Local adapter: synchronous snapshot for render, async repositories for parity. */
 export function createLocalDataLayer(): DataLayer {
-  const seeded = seedCollections()
+  const seeded = isShowcase() ? seedCollections() : emptyCollections()
   let state: Collections = (() => {
     if (typeof window === 'undefined') return seeded
     try {
-      const raw = localStorage.getItem(KEY)
+      const raw = localStorage.getItem(storeKey())
       if (!raw) return seeded
       const parsed = JSON.parse(raw) as Partial<Collections>
       const merged = { ...seeded } as Collections
@@ -108,7 +115,7 @@ export function createLocalDataLayer(): DataLayer {
   const commit = (next: Collections) => {
     state = next
     if (typeof window !== 'undefined') {
-      try { localStorage.setItem(KEY, JSON.stringify(state)) } catch { /* storage full */ }
+      try { localStorage.setItem(storeKey(), JSON.stringify(state)) } catch { /* storage full */ }
     }
     listeners.forEach(l => l(state))
   }
@@ -200,8 +207,12 @@ export function createRemoteDataLayer(gateway: TableGateway): DataLayer {
 }
 
 let active: DataLayer | null = null
+let activeShowcase: boolean | null = null
 /** Single entry point. Swap in `createRemoteDataLayer` once a database is wired. */
 export function getDataLayer(): DataLayer {
-  if (!active) active = createLocalDataLayer()
+  if (!active || activeShowcase !== isShowcase()) {
+    activeShowcase = isShowcase()
+    active = createLocalDataLayer()
+  }
   return active
 }

@@ -6,6 +6,7 @@
  * wired, implement `TableGateway` and pass it to `createRemoteMoatLayer` —
  * no surface changes required. Tables are declared in ./schema.sql.
  */
+import { isShowcase } from '../showcase'
 import type { ID } from './models'
 import type { Repository, TableGateway } from './repository'
 import type {
@@ -72,6 +73,11 @@ export const moatTableNames: Record<MoatCollectionName, string> = {
   contextQueries: 'relationship_context_queries',
 }
 
+/** The live network starts empty: only member-created rows may appear. */
+export function emptyMoatCollections(): MoatCollections {
+  return Object.fromEntries(Object.keys(moatTableNames).map(key => [key, []])) as unknown as MoatCollections
+}
+
 export function seedMoatCollections(): MoatCollections {
   return {
     passports: seedPassports, constitution: seedConstitution, reviews: [], strikes: seedStrikes,
@@ -91,13 +97,14 @@ export interface MoatDataLayer {
 }
 
 const KEY = 'aetheris-moat-v1'
+const storeKey = () => `${KEY}-${isShowcase() ? 'demo' : 'live'}`
 
 export function createLocalMoatLayer(): MoatDataLayer {
-  const seeded = seedMoatCollections()
+  const seeded = isShowcase() ? seedMoatCollections() : emptyMoatCollections()
   let state: MoatCollections = (() => {
     if (typeof window === 'undefined') return seeded
     try {
-      const raw = localStorage.getItem(KEY)
+      const raw = localStorage.getItem(storeKey())
       if (!raw) return seeded
       const parsed = JSON.parse(raw) as Partial<MoatCollections>
       const merged = { ...seeded } as MoatCollections
@@ -115,7 +122,7 @@ export function createLocalMoatLayer(): MoatDataLayer {
   const commit = (next: MoatCollections) => {
     state = next
     if (typeof window !== 'undefined') {
-      try { localStorage.setItem(KEY, JSON.stringify(state)) } catch { /* storage full */ }
+      try { localStorage.setItem(storeKey(), JSON.stringify(state)) } catch { /* storage full */ }
     }
     listeners.forEach(l => l(state))
   }
@@ -196,8 +203,12 @@ export function createRemoteMoatLayer(gateway: TableGateway): MoatDataLayer {
 }
 
 let active: MoatDataLayer | null = null
+let activeShowcase: boolean | null = null
 /** Single entry point. Swap in `createRemoteMoatLayer` once a database is wired. */
 export function getMoatDataLayer(): MoatDataLayer {
-  if (!active) active = createLocalMoatLayer()
+  if (!active || activeShowcase !== isShowcase()) {
+    activeShowcase = isShowcase()
+    active = createLocalMoatLayer()
+  }
   return active
 }
