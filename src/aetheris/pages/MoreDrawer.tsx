@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
-import { Search, X, ArrowRight } from 'lucide-react'
+import { Search, X, ArrowRight, Star } from 'lucide-react'
 import type { Page } from '../nav'
 import { groupOrder, groupedSecondary, metaById, secondaryPages, type PageGroup, type PageMeta } from '../pageMeta'
 
@@ -21,6 +21,14 @@ export function rememberRecent(page: Page) {
 type View = 'az' | PageGroup
 
 const shortcuts: Page[] = ['needs', 'memory', 'opportunities']
+const PINNED_KEY = 'aetheris.more.pinned'
+
+function readPinned(): Page[] {
+  try {
+    const raw = JSON.parse(localStorage.getItem(PINNED_KEY) ?? '[]')
+    return Array.isArray(raw) ? raw.filter(id => typeof id === 'string' && metaById[id]) : []
+  } catch { return [] }
+}
 
 /** Full-height editorial index of every secondary destination. */
 export function MoreDrawer({ open, page, onClose, onNavigate }: {
@@ -29,8 +37,14 @@ export function MoreDrawer({ open, page, onClose, onNavigate }: {
   const [query, setQuery] = useState('')
   const [view, setView] = useState<View>('az')
   const [recent, setRecent] = useState<Page[]>([])
+  const [pinned, setPinned] = useState<Page[]>([])
+  const togglePin = (id: Page) => {
+    const next = pinned.includes(id) ? pinned.filter(p => p !== id) : [...pinned, id]
+    setPinned(next)
+    try { localStorage.setItem(PINNED_KEY, JSON.stringify(next)) } catch { /* ignore */ }
+  }
 
-  useEffect(() => { if (open) { setRecent(readRecent()); setQuery('') } }, [open])
+  useEffect(() => { if (open) { setRecent(readRecent()); setPinned(readPinned()); setQuery('') } }, [open])
   useEffect(() => {
     if (!open) return
     const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') onClose() }
@@ -52,11 +66,17 @@ export function MoreDrawer({ open, page, onClose, onNavigate }: {
 
   const Item = ({ meta }: { meta: PageMeta }) => {
     const Icon = meta.icon
-    return <button className={`more-item ${page === meta.id ? 'current' : ''}`} onClick={() => go(meta.id)}>
-      <span className="more-item-icon"><Icon size={16} /></span>
-      <span className="more-item-copy"><b>{meta.label}</b><small>{meta.blurb}</small></span>
-      {page === meta.id ? <em>Current</em> : <ArrowRight size={14} />}
-    </button>
+    return <div className={`more-item ${page === meta.id ? 'current' : ''}`}>
+      <button className="more-item-go" onClick={() => go(meta.id)}>
+        <span className="more-item-icon"><Icon size={16} /></span>
+        <span className="more-item-copy"><b>{meta.label}</b><small>{meta.blurb}</small></span>
+        {page === meta.id ? <em>Current</em> : <ArrowRight size={14} />}
+      </button>
+      <button className={`more-pin ${pinned.includes(meta.id) ? 'on' : ''}`} onClick={() => togglePin(meta.id)}
+        aria-pressed={pinned.includes(meta.id)} aria-label={pinned.includes(meta.id) ? `Unpin ${meta.label}` : `Pin ${meta.label}`}>
+        <Star size={13} />
+      </button>
+    </div>
   }
 
   const listed = results ?? (view === 'az' ? secondaryPages : groupedSecondary(view))
@@ -85,6 +105,15 @@ export function MoreDrawer({ open, page, onClose, onNavigate }: {
           return <button key={id} onClick={() => go(id)}><Icon size={14} />{meta.label}</button>
         })}
       </div>
+
+      {!!pinned.length && !results && <section className="more-recent">
+        <span className="more-label">FAVOURITES</span>
+        <div>{pinned.map(id => {
+          const meta = metaById[id]
+          if (!meta) return null
+          return <button key={id} onClick={() => go(id)}>{meta.label}</button>
+        })}</div>
+      </section>}
 
       {!!recent.length && !results && <section className="more-recent">
         <span className="more-label">RECENTLY USED</span>
