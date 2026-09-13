@@ -54,6 +54,6 @@
 # Live network honesty + starter directory
 
 - [x] Remove all manufactured records, example lists and invented statistics from the signed-in network.
-- [ ] Import the uploaded company and contact lists as a real lookup directory members can search.
-- [ ] Add every new signup to that directory automatically.
-- [ ] Add a Directory page with search by name, company, industry and location.
+- [x] Import the uploaded company and contact lists as a real lookup directory members can search.
+- [x] Add every new signup to that directory automatically.
+- [x] Add a Directory page with search by name, company, industry and location.
