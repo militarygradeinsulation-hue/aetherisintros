@@ -1,3 +1,4 @@
+import logoAsset from '@/assets/aetheris-logo.jpg.asset.json'
 import { createFileRoute, Link, useNavigate } from '@tanstack/react-router'
 import { ArrowRight, Check, Clock, LockKeyhole, ShieldAlert } from 'lucide-react'
 import { useCallback, useEffect, useState } from 'react'
@@ -78,7 +79,7 @@ function EarlyAccessPage() {
   return <main className="auth-page">
     <section className="auth-panel">
       <Link to="/" className="auth-brand">
-        <span className="brand-monogram">AI</span>
+        <img className="brand-logo" src={logoAsset.url} alt="Aetheris Intros logo" />
         <span className="brand-name">Aetheris<em>Intros</em></span>
       </Link>
       <div className="auth-index"><span className="folio">FOUNDING 1,000 / 2026</span><span>01 / MEMBER ACCESS</span></div>
