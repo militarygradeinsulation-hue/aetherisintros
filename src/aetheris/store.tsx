@@ -14,7 +14,7 @@ import {
 } from './db'
 import {
   createLiveThread, emptyDirectory, loadLiveDirectory, mirrorFollow, notify, saveComment,
-  saveReaction, sendLiveMessage, type LiveProfileRow,
+  saveReaction, sendLiveMessage, uploadProfileAvatar, type LiveProfileRow,
 } from './live'
 
 /** 'live' = real members only (the network). 'demo' = the labelled showcase. */
@@ -26,6 +26,7 @@ export type MeProfile = typeof seedMe & {
   introPreferences?: string
   boundaries?: string
   onboarded?: boolean
+  avatarUrl?: string
 }
 
 export interface PreferenceSettings {
@@ -203,6 +204,7 @@ interface NetworkApi {
   addNote: (personId: string, text: string, scope: PrivacyScope) => void
   setDigitalYou: (x: DigitalYouProfile) => void
   setAutonomy: (x: AutonomyLevel) => void
+  updateIdentity: (fields: { name: string; photo?: File | null }) => Promise<void>
   completeOnboarding: (answers: Record<string, string>) => void
   setPreferences: (settings: PreferenceSettings) => void
   toggleEventRegistration: (id: string) => void
@@ -241,6 +243,7 @@ function profileFromRow(prev: MeProfile, row: LiveProfileRow): MeProfile {
     expertise: row.expertise ?? [],
     wantToMeet: row.want_to_meet,
     onboarded: row.onboarded,
+    avatarUrl: row.avatar_url ?? undefined,
   }
 }
 
@@ -390,12 +393,13 @@ export function NetworkProvider({ children, mode = 'live' }: { children: React.R
       saveDoc(userId, doc)
       if (prev.profile !== s.profile) {
         saveProfileFields(userId, {
-          name: s.profile.name, title: s.profile.title, company: s.profile.company,
+          name: s.profile.name, initials: s.profile.initials, title: s.profile.title, company: s.profile.company,
           location: s.profile.location, focus: s.profile.focus, thesis: s.profile.thesis,
           looking_for: s.profile.lookingFor, can_help_with: s.profile.canHelpWith,
           want_to_meet: s.profile.wantToMeet ?? null, intro_preferences: s.profile.introPreferences ?? null,
           boundaries: s.profile.boundaries ?? null, availability: s.profile.availability,
           industries: s.profile.industries, expertise: s.profile.expertise,
+          avatar_url: s.profile.avatarUrl ?? null,
           onboarded: s.profile.onboarded ?? false,
         })
       }

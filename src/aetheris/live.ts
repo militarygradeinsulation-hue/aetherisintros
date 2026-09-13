@@ -207,6 +207,21 @@ export async function loadLiveDirectory(userId: string): Promise<{ directory: Di
 
 /* ------------------------------------------------------------------ writes */
 
+/** Store a member's photo in their own private folder and persist only its path. */
+export async function uploadProfileAvatar(userId: string, file: File): Promise<string> {
+  if (!file.type.startsWith('image/')) throw new Error('Choose an image file.')
+  if (file.size > 5 * 1024 * 1024) throw new Error('Profile photos must be 5 MB or smaller.')
+  const extension = (file.name.split('.').pop() || 'jpg').toLowerCase().replace(/[^a-z0-9]/g, '') || 'jpg'
+  const path = `${userId}/avatar-${Date.now()}.${extension}`
+  const { error } = await supabase.storage.from('avatars').upload(path, file, {
+    cacheControl: '3600',
+    contentType: file.type,
+    upsert: false,
+  })
+  if (error) throw error
+  return path
+}
+
 const fire = (work: PromiseLike<unknown>) => {
   void Promise.resolve(work).catch(error => console.error('live write failed', error))
 }
