@@ -74,6 +74,18 @@ export async function fetchAccess(): Promise<AccessState> {
   const user = userData.user
   if (!user) return { ...noAccess, loading: false }
 
+  // A confirmed account with no membership row yet claims its place automatically:
+  // in FIRST_1000 the founding place is granted, otherwise the row records the
+  // waitlisted / pending / denied outcome so the member always sees a real state.
+  const existing = await supabase
+    .from('early_access_members')
+    .select('status')
+    .eq('user_id', user.id)
+    .maybeSingle()
+  if (!existing.data) {
+    try { await claimAccess() } catch { /* the page surfaces the state below */ }
+  }
+
   const [membership, roles, profile, stats] = await Promise.all([
     supabase.from('early_access_members').select('status, founding_member_number').eq('user_id', user.id).maybeSingle(),
     supabase.from('user_roles').select('role').eq('user_id', user.id),
