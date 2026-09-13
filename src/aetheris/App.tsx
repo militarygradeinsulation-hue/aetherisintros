@@ -25,6 +25,7 @@ import {
   type Learning, type Member, type MemberRole, type NetworkAsk, type Post, type Thread,
 } from './social'
 import { NetworkProvider, useNetwork, type MemoryNote, type MeProfile, type NetworkMode } from './store'
+import { isShowcase, setShowcaseMode, showcaseOnly } from './showcase'
 import { classifyConnection, composeWarmIntro, radarLabel } from './lib/engine'
 import { useGrabScroll } from './lib/dragScroll'
 import { metaById, primaryPages, pageMeta } from './pageMeta'
@@ -657,25 +658,30 @@ function Home({ people, select, setPage, openNeed, openThread }: {
         <ul className="module-people">{ranked.slice(0, 3).map(p => <li key={p.id}>
           <button onClick={() => select(p)}><Avatar person={p} portrait /><span><strong>{p.name}</strong><small>{p.title} · {p.company}</small><em>{p.whyNow}</em></span><span className="module-score">{p.scoreTotal}</span></button>
         </li>)}</ul>
+        {!ranked.length && <p className="empty-state">No members to suggest yet. As founding members complete their profiles, the strongest current fits appear here.</p>}
       </article>
       <article className="module">
         <header><Label>TRENDING IN YOUR SECTORS</Label><h3>Where the network is moving.</h3></header>
-        <ul className="module-sectors">{trendingSectors.map(s => <li key={s.sector}>
+        <ul className="module-sectors">{showcaseOnly(trendingSectors).map(s => <li key={s.sector}>
           <span><strong>{s.sector}</strong><small>{s.note}</small></span><em className={s.move.startsWith('−') ? 'down' : ''}>{s.move}</em>
         </li>)}</ul>
+        {!showcaseOnly(trendingSectors).length && <p className="empty-state">Sector movement is calculated from what members actually post. Nothing has been posted yet.</p>}
       </article>
       <article className="module">
         <header><Label><CalendarDays size={11} /> UPCOMING BUSINESS EVENTS</Label><h3>Rooms your graph is already in.</h3></header>
-        <ul className="module-events">{events.map(e => <li key={e.id}>
+        <ul className="module-events">{showcaseOnly(events).map(e => <li key={e.id}>
           <strong>{e.name}</strong><small>{e.when} · {e.where}</small><em>{e.who}</em>
         </li>)}</ul>
+        {!showcaseOnly(events).length && <p className="empty-state">No member events scheduled yet.</p>}
       </article>
       <article className="module">
         <header><Label><Users size={11} /> SUGGESTED CIRCLES</Label><h3>Groups that match your focus.</h3></header>
-        <ul className="module-circles">{circles.map(c => <li key={c.id}>
+        <ul className="module-circles">{showcaseOnly(circles).map(c => <li key={c.id}>
           <span><strong>{c.name}</strong><small>{c.members}</small><em>{c.why}</em></span><Button kind="quiet">Join</Button>
         </li>)}</ul>
+        {!showcaseOnly(circles).length && <p className="empty-state">Circles appear once members create them. You can start one from Circles.</p>}
       </article>
+
     </section>
 
     <section className="home-education">
@@ -1203,6 +1209,17 @@ function InsightCollisions() {
   </section>
 }
 
+/** Counts read from the member's real graph — never invented. */
+function insightCounts(net: ReturnType<typeof useNetwork>, people: Member[]): Array<[string, string]> {
+  return [
+    [String(net.saved.length), 'people you saved to revisit'],
+    [String(net.connections.length), 'connections in your graph'],
+    [String(net.threads.length), 'conversations open'],
+    [String(people.filter(p => (p.scoreTotal ?? 0) >= 60).length), 'members with strong current fit'],
+    [String(net.asks.length), 'needs your network posted'],
+  ]
+}
+
 function Insights({ people, select, setPage }: { people: Member[]; select: (p: Member) => void; setPage: (p: Page) => void }) {
   const net = useNetwork()
   const nav = useNav()
@@ -1211,14 +1228,14 @@ function Insights({ people, select, setPage }: { people: Member[]; select: (p: M
     <EditorialHero folio="INSIGHTS / RELATIONSHIP MOVEMENT" title={<>Notice what changed.<br /><em>Act while it matters.</em></>} statement="Signals become useful only when they change the next move." copy="Role changes, cooling conversations, matching needs and warm paths are organized around action—not analytics theater." caption="The strongest signal is often a small change in a relationship you already trust." image={insightsEditorialAsset.url} />
     <PageHead label="INSIGHTS" title="Signals worth acting on."
       copy="No vanity metrics. Only relationship changes that could alter an outcome, each with an action attached."
-      proof="$486K influenced across 46 introductions in 90 days." />
+      proof={isShowcase() ? '$486K influenced across 46 introductions in 90 days.' : `${people.length} members in your network · ${net.connections.length} connections`} />
     <InsightCollisions />
     <div className="insight-numbers">
-      {[['4', 'people worth reconnecting with'], ['3', 'warm paths opened this week'], ['2', 'conversations cooling'], ['1', 'contact moved into a relevant role'], ['5', 'needs now match your network']].map(([n, c]) =>
+      {insightCounts(net, people).map(([n, c]) =>
         <div key={c}><strong>{n}</strong><small>{c}</small></div>)}
     </div>
     <div className="insight-list">
-      {leaks.filter(l => !dismissed.includes(l.id)).map((leak, i) => {
+      {showcaseOnly(leaks).filter(l => !dismissed.includes(l.id)).map((leak, i) => {
         const p = people.find(x => x.id === leak.personId)
         if (!p) return null
         return <article key={leak.id}>
@@ -1239,7 +1256,7 @@ function Insights({ people, select, setPage }: { people: Member[]; select: (p: M
           </div>
         </article>
       })}
-      {leaks.length === dismissed.length && <p className="empty-state">All signals handled. Intros will surface the next change as the graph moves.</p>}
+      {showcaseOnly(leaks).length === dismissed.length && <p className="empty-state">No relationship signals yet. As members join, message and update what they are working on, changes worth acting on appear here.</p>}
     </div>
     <section className="opportunity-clusters">
       <header><Label><Layers size={11} /> OPPORTUNITY CLUSTERS</Label><h2>Where several relationships point the same way.</h2></header>
@@ -1880,6 +1897,8 @@ function GlobalSearch({ open, onClose, people }: { open: boolean; onClose: () =>
 /* ---------------------------------------------------------------------- app */
 
 export default function App({ startPage, mode = 'live' }: { startPage?: Page | undefined; mode?: NetworkMode }) {
+  // The live network may only ever render real member-created records.
+  setShowcaseMode(mode === 'demo')
   return <NetworkProvider mode={mode}><PlatformProvider><OSProvider><MoatProvider><ProProvider><Shell startPage={startPage} /></ProProvider></MoatProvider></OSProvider></PlatformProvider></NetworkProvider>
 }
 

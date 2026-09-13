@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react'
 import { ArrowRight, Bookmark, CalendarDays, Check, MapPin, Users } from 'lucide-react'
 import { events } from '../social'
+import { showcaseOnly } from '../showcase'
 import { useNetwork } from '../store'
 import { useNav } from '../nav'
 import { Btn, Eyebrow, Face, Head, Why } from '../ui'
@@ -16,7 +17,7 @@ export function EventsPage() {
   const nav = useNav()
   const [filter, setFilter] = useState('All')
   const filters = ['All', 'Private dinner', 'Industry summit', 'Private roundtable']
-  const rows = useMemo(() => events.map((event, index) => ({ ...event, ...eventDetails[index % eventDetails.length]! }))
+  const rows = useMemo(() => showcaseOnly(events).map((event, index) => ({ ...event, ...eventDetails[index % eventDetails.length]! }))
     .filter(event => filter === 'All' || event.type === filter), [filter])
 
   return <>
@@ -24,7 +25,7 @@ export function EventsPage() {
       label="EVENTS / ROOMS WITH CONSEQUENCE"
       title="Be in the room before the opportunity is obvious."
       copy="Professional events become useful when you know who is attending, what they are moving, and where a credible conversation already has context."
-      proof={`${events.length} relevant rooms · ${net.registeredEvents.length} on your calendar`}
+      proof={`${showcaseOnly(events).length} relevant rooms · ${net.registeredEvents.length} on your calendar`}
     />
 
     <section className="event-editorial">
@@ -34,7 +35,7 @@ export function EventsPage() {
 
     <div className="state-filters event-filters">{filters.map(item => <button key={item} className={filter === item ? 'active' : ''} onClick={() => setFilter(item)}>{item}</button>)}</div>
 
-    <section className="event-list">{rows.map((event, index) => {
+    <section className="event-list">{!rows.length && <p className="empty-state">No member events yet. Events appear here as members and circles schedule real rooms.</p>}{rows.map((event, index) => {
       const attendees = event.attendeeIds.map(id => net.members.find(member => member.id === id)).filter(Boolean)
       const registered = net.registeredEvents.includes(event.id)
       const saved = net.savedEvents.includes(event.id)

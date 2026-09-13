@@ -6,6 +6,7 @@
  * `TableGateway` and pass it to `createRemoteOSLayer`. No UI changes needed.
  * Table names and columns are declared in ./schema.sql.
  */
+import { isShowcase } from '../showcase'
 import type { ID } from './models'
 import type { Repository, TableGateway } from './repository'
 import type {
@@ -48,6 +49,11 @@ export const osTableNames: Record<OSCollectionName, string> = {
   strategies: 'network_strategies',
 }
 
+/** The live network starts empty: only member-created rows may appear. */
+export function emptyOSCollections(): OSCollections {
+  return Object.fromEntries(Object.keys(osTableNames).map(key => [key, []])) as unknown as OSCollections
+}
+
 export function seedOSCollections(): OSCollections {
   return {
     rooms: seedRooms, twins: seedTwins, simulations: seedSimulations, collisions: seedCollisions,
@@ -64,13 +70,14 @@ export interface OSDataLayer {
 }
 
 const KEY = 'aetheris-relationship-os-v1'
+const storeKey = () => `${KEY}-${isShowcase() ? 'demo' : 'live'}`
 
 export function createLocalOSLayer(): OSDataLayer {
-  const seeded = seedOSCollections()
+  const seeded = isShowcase() ? seedOSCollections() : emptyOSCollections()
   let state: OSCollections = (() => {
     if (typeof window === 'undefined') return seeded
     try {
-      const raw = localStorage.getItem(KEY)
+      const raw = localStorage.getItem(storeKey())
       if (!raw) return seeded
       const parsed = JSON.parse(raw) as Partial<OSCollections>
       const merged = { ...seeded } as OSCollections
@@ -88,7 +95,7 @@ export function createLocalOSLayer(): OSDataLayer {
   const commit = (next: OSCollections) => {
     state = next
     if (typeof window !== 'undefined') {
-      try { localStorage.setItem(KEY, JSON.stringify(state)) } catch { /* storage full */ }
+      try { localStorage.setItem(storeKey(), JSON.stringify(state)) } catch { /* storage full */ }
     }
     listeners.forEach(l => l(state))
   }
@@ -122,7 +129,7 @@ export function createLocalOSLayer(): OSDataLayer {
 
 /** Remote adapter. Keeps the seeded snapshot until the first load resolves. */
 export function createRemoteOSLayer(gateway: TableGateway): OSDataLayer {
-  const state = seedOSCollections()
+  const state = isShowcase() ? seedOSCollections() : emptyOSCollections()
   const listeners = new Set<(next: OSCollections) => void>()
   const emit = () => listeners.forEach(l => l(state))
 
@@ -169,8 +176,12 @@ export function createRemoteOSLayer(gateway: TableGateway): OSDataLayer {
 }
 
 let active: OSDataLayer | null = null
+let activeShowcase: boolean | null = null
 /** Single entry point. Swap in `createRemoteOSLayer` once a database is wired. */
 export function getOSDataLayer(): OSDataLayer {
-  if (!active) active = createLocalOSLayer()
+  if (!active || activeShowcase !== isShowcase()) {
+    activeShowcase = isShowcase()
+    active = createLocalOSLayer()
+  }
   return active
 }

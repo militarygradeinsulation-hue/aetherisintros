@@ -6,6 +6,7 @@
  * seeded demo content), and a database adapter can be swapped in by
  * implementing `TableGateway`. Tables are declared in ./schema.sql.
  */
+import { isShowcase } from '../showcase'
 import type { ID } from './models'
 import type { Repository, TableGateway } from './repository'
 import type {
@@ -98,6 +99,11 @@ export const proTableNames: Record<ProCollectionName, string> = {
   standard: 'aetheris_standard_acceptances',
 }
 
+/** The live network starts empty: only member-created rows may appear. */
+export function emptyProCollections(): ProCollections {
+  return Object.fromEntries(Object.keys(proTableNames).map(key => [key, []])) as unknown as ProCollections
+}
+
 export function seedProCollections(): ProCollections {
   return {
     passportProfiles: seedPassportProfiles, credentials: seedCredentials,
@@ -124,13 +130,14 @@ export interface ProDataLayer {
 }
 
 const KEY = 'aetheris-pro-v1'
+const storeKey = () => `${KEY}-${isShowcase() ? 'demo' : 'live'}`
 
 export function createLocalProLayer(): ProDataLayer {
-  const seeded = seedProCollections()
+  const seeded = isShowcase() ? seedProCollections() : emptyProCollections()
   let state: ProCollections = (() => {
     if (typeof window === 'undefined') return seeded
     try {
-      const raw = localStorage.getItem(KEY)
+      const raw = localStorage.getItem(storeKey())
       if (!raw) return seeded
       const parsed = JSON.parse(raw) as Partial<ProCollections>
       const merged = { ...seeded } as ProCollections
@@ -148,7 +155,7 @@ export function createLocalProLayer(): ProDataLayer {
   const commit = (next: ProCollections) => {
     state = next
     if (typeof window !== 'undefined') {
-      try { localStorage.setItem(KEY, JSON.stringify(state)) } catch { /* storage full */ }
+      try { localStorage.setItem(storeKey(), JSON.stringify(state)) } catch { /* storage full */ }
     }
     listeners.forEach(l => l(state))
   }
@@ -182,7 +189,7 @@ export function createLocalProLayer(): ProDataLayer {
 
 /** Remote adapter. Keeps the seeded snapshot until the first load resolves. */
 export function createRemoteProLayer(gateway: TableGateway): ProDataLayer {
-  const state = seedProCollections()
+  const state = isShowcase() ? seedProCollections() : emptyProCollections()
   const listeners = new Set<(next: ProCollections) => void>()
   const emit = () => listeners.forEach(l => l(state))
 
@@ -229,8 +236,12 @@ export function createRemoteProLayer(gateway: TableGateway): ProDataLayer {
 }
 
 let active: ProDataLayer | null = null
+let activeShowcase: boolean | null = null
 /** Single entry point. Swap in `createRemoteProLayer` once a database is wired. */
 export function getProDataLayer(): ProDataLayer {
-  if (!active) active = createLocalProLayer()
+  if (!active || activeShowcase !== isShowcase()) {
+    activeShowcase = isShowcase()
+    active = createLocalProLayer()
+  }
   return active
 }
