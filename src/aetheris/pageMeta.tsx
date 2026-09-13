@@ -120,6 +120,13 @@ export const pageMeta: PageMeta[] = [
     changes: 'RSVPs and saves inform presence and recommendations.',
     next: 'Save one event and note who you want to meet.',
   }, ['calendar', 'conferences']),
+  m('directory', 'Directory', Building2, 'NETWORK', 'Look up people and companies before you reach out.', {
+    does: 'Lets you look up people and companies by name, industry or city.',
+    look: 'Whether someone is already a member here, and the context on record.',
+    changes: 'Every new member joins the directory automatically.',
+    next: 'Search a company you care about and see who is already inside the network.',
+    why: 'Reference records are lookup context only — never a list to blast.',
+  }, ['lookup', 'companies', 'contacts', 'search', 'database']),
   m('expertise', 'Expertise', GraduationCap, 'NETWORK', 'Provable expertise and trusted referrals.', {
     does: 'Maps provable expertise and the referrals that vouch for it.',
     look: 'Evidence behind a claim, not the claim itself.',
