@@ -48,6 +48,13 @@ export const pageMeta: PageMeta[] = [
     next: 'Handle the highest-consequence item before browsing.',
     hints: ['Social shows the network moving. Daily Briefing composes what needs you.'],
   }, ['feed', 'today', 'briefing']),
+  m('network', 'Network', Users, 'PRIMARY', 'People, companies, intros, circles, expertise and events in one place.', {
+    does: 'Brings discovery, people, companies, introductions, circles, expertise and events together.',
+    look: 'Who is worth knowing now, and the context that explains why.',
+    changes: 'Connecting, following and asking reshapes what surfaces here.',
+    next: 'Open one person and read the reasoning before acting.',
+    hints: ['Advanced network tools stay one click away under “Advanced in Network”.'],
+  }, ['people', 'discover', 'companies', 'circles', 'events', 'directory']),
   m('discover', 'Discover', Compass, 'PRIMARY', 'Find people worth knowing, with the context that explains why.', {
     does: 'Finds people worth knowing and explains why the relationship makes sense for both sides.',
     look: 'Fit reasoning, mutual context and people whose current focus overlaps yours.',
@@ -361,7 +368,13 @@ export const metaById: Record<string, PageMeta> = Object.fromEntries(pageMeta.ma
 export function pageLabel(id: Page) { return metaById[id]?.label ?? id }
 
 /** The short, always-visible rail. */
-export const primaryPages: Page[] = ['home', 'discover', 'intros', 'messages', 'needs', 'memory', 'opportunities']
+export const primaryPages: Page[] = ['home', 'network', 'opportunities', 'messages']
+
+/** Tabs consolidated inside the Network and Opportunities hubs. */
+export const networkTabs: Page[] = ['discover', 'directory', 'companies', 'intros', 'circles', 'expertise', 'events']
+export const networkAdvanced: Page[] = ['serendipity', 'gaps', 'identity', 'organization', 'talent', 'knowledge', 'boards', 'intelrooms', 'passport', 'ask']
+export const opportunityTabs: Page[] = ['needs', 'opportunities', 'rooms', 'dealrooms', 'systems', 'strategy', 'outcomes']
+export const opportunityAdvanced: Page[] = ['simulation', 'collisions', 'capital', 'attribution', 'loops', 'knowledgeassets', 'timemachine']
 
 export const groupOrder: PageGroup[] = [
   'NETWORK', 'RELATIONSHIP INTELLIGENCE', 'OPPORTUNITY & EXECUTION', 'TRUST, PERMISSION & CONTROL',
@@ -385,5 +398,7 @@ export const relatedPages: Partial<Record<Page, { label: string; pages: Page[] }
   discover: { label: 'Explore more', pages: ['circles', 'companies', 'expertise', 'talent', 'serendipity', 'gaps'] },
   profile: { label: 'Identity tools', pages: ['passport', 'identity', 'permission', 'consent', 'preferences', 'presence'] },
   passport: { label: 'Identity tools', pages: ['profile', 'identity', 'permission', 'consent', 'preferences', 'presence'] },
+  network: { label: 'More in Network', pages: ['memory', 'insights', 'serendipity', 'gaps'] },
+  messages: { label: 'Conversation tools', pages: ['loops', 'evidence', 'permission', 'constitution'] },
   insights: { label: 'Intelligence tools', pages: ['collisions', 'simulation', 'strategy', 'inbox'] },
 }
