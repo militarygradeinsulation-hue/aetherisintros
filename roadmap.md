@@ -59,6 +59,6 @@
 - [x] Add a Directory page with search by name, company, industry and location.
 
 # Profile identity + share metadata (Sep 13)
-- [ ] Finish editable profile name/photo and verify persistence.
-- [ ] Set /onboarding social/search image to Aetheris Intros instead of the default thumbnail.
-- [ ] Verify Messages sends, threads and persistence across demo/live paths.
+- [x] Finish editable profile name/photo and verify persistence.
+- [x] Set /onboarding social/search image to Aetheris Intros instead of the default thumbnail.
+- [x] Verify Messages sends, threads and persistence across demo/live paths.
