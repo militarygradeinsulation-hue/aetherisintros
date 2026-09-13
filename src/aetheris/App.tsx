@@ -278,7 +278,7 @@ function HomeMasthead({ people, select, setPage, openNeed, openThread }: {
       {thread && <article className="deck-card deck-thread">
         <header><span>CONVERSATION THREAD</span><button className="text-action" onClick={() => openThread(thread.id)}>Open</button></header>
         <ul>{thread.messages.slice(-3).map(m => <li key={m.id}>
-          {m.from === 'them' && threadMember ? <Avatar person={threadMember} portrait /> : <span className="person-avatar portrait">{net.profile.initials}</span>}
+          {m.from === 'them' && threadMember ? <Avatar person={threadMember} portrait /> : <SelfAvatar portrait />}
           <div><b>{m.from === 'them' ? threadMember?.name ?? 'Member' : 'You'}</b><small>{m.at}</small><p>{m.text}</p></div>
         </li>)}</ul>
         <button className="deck-compose" onClick={() => openThread(thread.id)}><span>Write a message…</span><Send size={14} /></button>
@@ -436,7 +436,7 @@ function PostCard({ post, member, onOpen }: { post: Post; member: Member | undef
     <header>
       {member
         ? <button className="post-author" onClick={onOpen}><Avatar person={member} portrait /><span><strong>{member.name}</strong><small>{member.title} · {member.company}</small></span></button>
-        : <div className="post-author"><span className="person-avatar portrait">{net.profile.initials}</span><span><strong>You</strong><small>{net.profile.title}</small></span></div>}
+        : <div className="post-author"><SelfAvatar portrait /><span><strong>{net.profile.name || 'You'}</strong><small>{net.profile.title}</small></span></div>}}
       <span className="post-kind">{member?.industry ?? net.profile.industries[0] ?? post.kind}</span>
     </header>
     <h3>{post.text}</h3>
@@ -455,8 +455,8 @@ function PostCard({ post, member, onOpen }: { post: Post; member: Member | undef
       </div>
     </footer>
     {(commenting || comments.length > 0) && <section className="post-discussion">
-      {comments.map(item => <div key={item.id}><span className="person-avatar">{net.profile.initials}</span><p><strong>You</strong>{item.text}<small>{item.when}</small></p></div>)}
-      {commenting && <div className="comment-composer"><span className="person-avatar">{net.profile.initials}</span><input value={comment} onChange={event => setComment(event.target.value)} onKeyDown={event => { if (event.key === 'Enter') submitComment() }} placeholder="Add useful context to the discussion…" /><Button disabled={!comment.trim()} onClick={submitComment}><Send size={13} /></Button></div>}
+      {comments.map(item => <div key={item.id}><SelfAvatar /><p><strong>{net.profile.name || 'You'}</strong>{item.text}<small>{item.when}</small></p></div>)}
+      {commenting && <div className="comment-composer"><SelfAvatar /><input value={comment} onChange={event => setComment(event.target.value)} onKeyDown={event => { if (event.key === 'Enter') submitComment() }} placeholder="Add useful context to the discussion…" /><Button disabled={!comment.trim()} onClick={submitComment}><Send size={13} /></Button></div>}
     </section>}
   </article>
 }
@@ -605,7 +605,7 @@ function Home({ people, select, setPage, openNeed, openThread }: {
     </header>
 
     <section className="composer">
-      <span className="person-avatar portrait">{net.profile.initials}</span>
+      <SelfAvatar portrait />
       <div>
         <textarea value={composer} onChange={e => setComposer(e.target.value)} rows={2}
           placeholder="Share something useful — an insight, a milestone, a partnership you are looking for…" />
@@ -2064,7 +2064,7 @@ function Shell({ startPage }: { startPage?: Page | undefined }) {
             <LayoutGrid size={18} /><span>More</span></button>
         </nav>
         <div className="rail-foot"><span className="live-dot" /><span>Memory live</span>
-          <button onClick={() => setPage('profile')} aria-label="Your profile"><span>{me.initials}</span></button></div>
+          <button onClick={() => setPage('profile')} aria-label="Your profile"><SelfAvatar /></button></div>
       </aside>
       <div className="workspace">
         <header className="topbar">
