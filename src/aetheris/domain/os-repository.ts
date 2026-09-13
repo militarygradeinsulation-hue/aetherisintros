@@ -129,7 +129,7 @@ export function createLocalOSLayer(): OSDataLayer {
 
 /** Remote adapter. Keeps the seeded snapshot until the first load resolves. */
 export function createRemoteOSLayer(gateway: TableGateway): OSDataLayer {
-  const state = seedOSCollections()
+  const state = isShowcase() ? seedOSCollections() : emptyOSCollections()
   const listeners = new Set<(next: OSCollections) => void>()
   const emit = () => listeners.forEach(l => l(state))
 

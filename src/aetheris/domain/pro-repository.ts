@@ -189,7 +189,7 @@ export function createLocalProLayer(): ProDataLayer {
 
 /** Remote adapter. Keeps the seeded snapshot until the first load resolves. */
 export function createRemoteProLayer(gateway: TableGateway): ProDataLayer {
-  const state = seedProCollections()
+  const state = isShowcase() ? seedProCollections() : emptyProCollections()
   const listeners = new Set<(next: ProCollections) => void>()
   const emit = () => listeners.forEach(l => l(state))
 

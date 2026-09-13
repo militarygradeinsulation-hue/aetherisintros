@@ -156,7 +156,7 @@ export function createLocalMoatLayer(): MoatDataLayer {
 
 /** Remote adapter. Keeps the seeded snapshot until the first load resolves. */
 export function createRemoteMoatLayer(gateway: TableGateway): MoatDataLayer {
-  const state = seedMoatCollections()
+  const state = isShowcase() ? seedMoatCollections() : emptyMoatCollections()
   const listeners = new Set<(next: MoatCollections) => void>()
   const emit = () => listeners.forEach(l => l(state))
 

@@ -160,7 +160,7 @@ export interface TableGateway {
 
 /** Remote adapter. Falls back to the seeded snapshot until the first load resolves. */
 export function createRemoteDataLayer(gateway: TableGateway): DataLayer {
-  let state = seedCollections()
+  let state = isShowcase() ? seedCollections() : emptyCollections()
   const listeners = new Set<(next: Collections) => void>()
   const emit = () => listeners.forEach(l => l(state))
 
