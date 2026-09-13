@@ -1564,7 +1564,7 @@ function MemberProfile({ person, people, onClose, onDraft, onMessage }: {
         {copied && <small className="copied-note">Profile link copied.</small>}
       </div>
       <figure className="member-plate" data-person-portrait={person.id}>
-        <img src={portraitFor(person.id)} alt={`${person.name}, monochrome editorial portrait`} loading="lazy" />
+        {(person.avatarUrl ?? portraitFor(person.id)) && <AvatarImage source={person.avatarUrl ?? portraitFor(person.id)} alt={`${person.name}, monochrome editorial portrait`} />}
         <figcaption><span>{classifyConnection(person.scoreTotal).toUpperCase()}</span><p>{person.focus}</p></figcaption>
       </figure>
     </section>
