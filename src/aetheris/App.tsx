@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useState, type ReactNode } from 'react'
 import {
   AlertTriangle, ArrowLeftRight, ArrowRight, Bookmark, BookmarkCheck, Building2, CalendarDays, Camera, Check, CheckCircle2, ChevronLeft,
   CircleDot, Compass, Eye, Fingerprint, Handshake, Heart, Home as HomeIcon, Layers, LockKeyhole,
@@ -29,7 +29,7 @@ import { NetworkProvider, useNetwork, type MemoryNote, type MeProfile, type Netw
 import { isShowcase, setShowcaseMode, showcaseOnly } from './showcase'
 import { classifyConnection, composeWarmIntro, radarLabel } from './lib/engine'
 import { useGrabScroll } from './lib/dragScroll'
-import { metaById, primaryPages, pageMeta } from './pageMeta'
+import { metaById, primaryPages, pageMeta, networkTabs, networkAdvanced, opportunityTabs, opportunityAdvanced } from './pageMeta'
 import { MoreDrawer, rememberRecent } from './pages/MoreDrawer'
 import { BriefingModeToggle, BriefingPanel, RelatedTools, useBriefingMode } from './BriefingMode'
 import { NavCtx, useNav, type NavApi, type Page } from './nav'
@@ -1982,6 +1982,45 @@ export default function App({ startPage, mode = 'live' }: { startPage?: Page | u
   return <NetworkProvider mode={mode}><PlatformProvider><OSProvider><MoatProvider><ProProvider><Shell startPage={startPage} /></ProProvider></MoatProvider></OSProvider></PlatformProvider></NetworkProvider>
 }
 
+
+/* --------------------------------------------------------------------- hubs */
+
+function Hub({ storeKey, title, blurb, tabs, advanced, onNavigate }: {
+  storeKey: string; title: string; blurb: string
+  tabs: Array<{ id: Page; label: string; node: ReactNode }>
+  advanced: Page[]; onNavigate: (p: Page) => void
+}) {
+  const first = tabs[0]
+  const [tab, setTab] = useState<string>(() => {
+    if (typeof window === 'undefined') return first?.id ?? ''
+    return localStorage.getItem(storeKey) ?? first?.id ?? ''
+  })
+  if (!first) return null
+  const current = tabs.find(t => t.id === tab) ?? first
+  const go = (id: string) => { setTab(id); try { localStorage.setItem(storeKey, id) } catch { /* ignore */ } }
+  return <>
+    <header className="hub-head">
+      <div><Label>{title.toUpperCase()}</Label><h1>{blurb}</h1></div>
+      <p>{metaById[current.id]?.blurb}</p>
+    </header>
+    <nav className="hub-tabs" role="tablist" aria-label={`${title} sections`}>
+      {tabs.map(t => <button key={t.id} role="tab" aria-selected={t.id === current.id}
+        className={t.id === current.id ? 'active' : ''} onClick={() => go(t.id)}>{t.label}</button>)}
+    </nav>
+    <details className="hub-advanced">
+      <summary>Advanced in {title}</summary>
+      <div>{advanced.map(id => {
+        const meta = metaById[id]
+        if (!meta) return null
+        const Icon = meta.icon
+        return <button key={id} onClick={() => onNavigate(id)}><Icon size={14} />
+          <span><b>{meta.label}</b><small>{meta.blurb}</small></span></button>
+      })}</div>
+    </details>
+    <section className="hub-panel" key={current.id}>{current.node}</section>
+  </>
+}
+
 function Shell({ startPage }: { startPage?: Page | undefined }) {
   const net = useNetwork()
   const stored = typeof window !== 'undefined' ? localStorage.getItem('aetheris-intros-page') : null
@@ -2063,9 +2102,7 @@ function Shell({ startPage }: { startPage?: Page | undefined }) {
     captureConversation: () => setCaptureOpen(true),
   }
 
-  const content = selected
-    ? <MemberProfile person={selected} people={people} onClose={() => setSelected(null)} onDraft={p => { setSelected(null); setDraft(p) }} onMessage={messageMember} />
-    : {
+  const pageNode: Partial<Record<Page, ReactNode>> = {
       home: <>
         <IntentStrip onCreate={() => setIntentOpen(true)} />
         <Home people={people} select={setSelected} setPage={setPage} openNeed={() => setNeedOpen(true)} openThread={goToThread} />
@@ -2118,7 +2155,23 @@ function Shell({ startPage }: { startPage?: Page | undefined }) {
       briefing: <BriefingPage />,
       vault: <VaultPage />,
       knowledgeassets: <KnowledgeAssetsPage />,
-    }[page]
+    }
+  const hubLabel: Partial<Record<Page, string>> = {
+    directory: 'People', opportunities: 'Active', rooms: 'Rooms', dealrooms: 'Deal rooms', discover: 'Discover',
+  }
+  const hubTabs = (ids: Page[]) => ids.flatMap(id => {
+    const node = pageNode[id]
+    return node ? [{ id, label: hubLabel[id] ?? metaById[id]?.label ?? id, node }] : []
+  })
+  const content = selected
+    ? <MemberProfile person={selected} people={people} onClose={() => setSelected(null)} onDraft={p => { setSelected(null); setDraft(p) }} onMessage={messageMember} />
+    : page === 'network'
+      ? <Hub storeKey="aetheris.hub.network" title="Network" blurb="People, companies and introductions worth knowing."
+          tabs={hubTabs(networkTabs)} advanced={networkAdvanced} onNavigate={setPage} />
+      : page === 'opportunities'
+        ? <Hub storeKey="aetheris.hub.opportunities" title="Opportunities" blurb="What you are moving, and what it needs next."
+            tabs={hubTabs(opportunityTabs)} advanced={opportunityAdvanced} onNavigate={setPage} />
+        : pageNode[page]
 
   useGrabScroll()
   useEffect(() => { rememberRecent(page) }, [page])
@@ -2176,7 +2229,7 @@ function Shell({ startPage }: { startPage?: Page | undefined }) {
         </div>
       </div>
       <nav className="mobile-nav">
-        {(['home', 'discover', 'intros', 'messages'] as Page[]).map(id => {
+        {(['home', 'network', 'opportunities', 'messages'] as Page[]).map(id => {
           const meta = metaById[id]!
           const Icon = meta.icon
           return <button key={id} className={page === id ? 'active' : ''} onClick={() => setPage(id)}><Icon size={18} /><span>{meta.label}</span></button>
