@@ -146,6 +146,108 @@ export type Database = {
         }
         Relationships: []
       }
+      directory_companies: {
+        Row: {
+          city: string
+          country: string
+          created_at: string
+          employees: string
+          id: string
+          industry: string
+          name: string
+          phone: string
+          region: string
+          revenue: string
+          source: string
+          updated_at: string
+          website: string
+        }
+        Insert: {
+          city?: string
+          country?: string
+          created_at?: string
+          employees?: string
+          id?: string
+          industry?: string
+          name: string
+          phone?: string
+          region?: string
+          revenue?: string
+          source?: string
+          updated_at?: string
+          website?: string
+        }
+        Update: {
+          city?: string
+          country?: string
+          created_at?: string
+          employees?: string
+          id?: string
+          industry?: string
+          name?: string
+          phone?: string
+          region?: string
+          revenue?: string
+          source?: string
+          updated_at?: string
+          website?: string
+        }
+        Relationships: []
+      }
+      directory_contacts: {
+        Row: {
+          company_name: string
+          created_at: string
+          email: string
+          full_name: string
+          id: string
+          industry: string
+          is_member: boolean
+          linkedin_url: string
+          location: string
+          phone: string
+          seniority: string
+          source: string
+          title: string
+          updated_at: string
+          user_id: string | null
+        }
+        Insert: {
+          company_name?: string
+          created_at?: string
+          email?: string
+          full_name: string
+          id?: string
+          industry?: string
+          is_member?: boolean
+          linkedin_url?: string
+          location?: string
+          phone?: string
+          seniority?: string
+          source?: string
+          title?: string
+          updated_at?: string
+          user_id?: string | null
+        }
+        Update: {
+          company_name?: string
+          created_at?: string
+          email?: string
+          full_name?: string
+          id?: string
+          industry?: string
+          is_member?: boolean
+          linkedin_url?: string
+          location?: string
+          phone?: string
+          seniority?: string
+          source?: string
+          title?: string
+          updated_at?: string
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       dm_messages: {
         Row: {
           created_at: string
@@ -1034,6 +1136,8 @@ export type Database = {
         Args: { p_email: string; p_name?: string }
         Returns: undefined
       }
+      show_limit: { Args: never; Returns: number }
+      show_trgm: { Args: { "": string }; Returns: string[] }
     }
     Enums: {
       app_role: "admin" | "moderator" | "member"

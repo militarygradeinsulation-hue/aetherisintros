@@ -2644,3 +2644,14 @@ input, textarea, select { font: inherit; }
 .empty-note{margin:0;font:400 12px var(--sans);color:var(--muted)}
 @media (max-width:900px){.onboarding-page{grid-template-columns:1fr}.onboarding-head{position:static}.demo-banner{grid-template-columns:1fr;gap:8px;text-align:left}.demo-banner .btn.primary{justify-self:start}}
 @media(max-width:620px){.access-entry-actions{display:grid;grid-template-columns:1fr}.access-entry-actions .btn{width:100%}}
+
+/* ------------------------------------------------------------- directory */
+.directory-list{display:grid;gap:12px;margin-top:22px}
+.directory-card{display:grid;grid-template-columns:52px minmax(0,1fr);gap:16px;align-items:start;padding:18px 20px}
+.directory-mark{display:grid;place-items:center;width:52px;height:52px;border:1px solid var(--line-dark);color:var(--muted);font:700 13px var(--sans);letter-spacing:.06em}
+.directory-body h3{display:flex;align-items:center;gap:7px;font:500 20px var(--serif);margin:4px 0 3px}
+.directory-body h3 svg{color:var(--cobalt)}
+.directory-body small{display:block;color:var(--muted);font:500 11px var(--sans)}
+.directory-body p{margin-top:8px;color:var(--muted);font:400 11px/1.6 var(--sans);word-break:break-word}
+@media (max-width:640px){.directory-card{grid-template-columns:40px minmax(0,1fr);gap:12px;padding:15px}
+.directory-mark{width:40px;height:40px;font-size:11px}}

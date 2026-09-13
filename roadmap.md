@@ -50,3 +50,10 @@
 - [x] docs/LIVE_NETWORK_AUDIT.md route/data-source audit
 - [x] Typecheck + build clean; public routes verified with no errors or overflow
 - [ ] Signed-in end-to-end pass (needs the first real confirmed account)
+
+# Live network honesty + starter directory
+
+- [x] Remove all manufactured records, example lists and invented statistics from the signed-in network.
+- [x] Import the uploaded company and contact lists as a real lookup directory members can search.
+- [x] Add every new signup to that directory automatically.
+- [x] Add a Directory page with search by name, company, industry and location.
