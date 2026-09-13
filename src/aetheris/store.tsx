@@ -154,6 +154,14 @@ const byId = <T extends { id: string }>(items: T[]): T[] => {
 const rowId = () => (typeof crypto !== 'undefined' && 'randomUUID' in crypto
   ? crypto.randomUUID()
   : `${Date.now().toString(16)}-${Math.random().toString(16).slice(2, 10)}`)
+const identityInitials = (name: string) =>
+  name.trim().split(/\s+/).slice(0, 2).map(part => part[0] ?? '').join('').toUpperCase() || 'M'
+const fileToDataUrl = (file: File) => new Promise<string>((resolve, reject) => {
+  const reader = new FileReader()
+  reader.onload = () => resolve(String(reader.result))
+  reader.onerror = () => reject(reader.error ?? new Error('Could not read that image.'))
+  reader.readAsDataURL(file)
+})
 
 interface NetworkApi {
   members: Member[]
@@ -627,6 +635,20 @@ export function NetworkProvider({ children, mode = 'live' }: { children: React.R
 
       setDigitalYou: (x) => patch(() => ({ digitalYou: x })),
       setAutonomy: (x) => patch(() => ({ autonomy: x })),
+      updateIdentity: async ({ name, photo }) => {
+        const cleanName = name.trim().replace(/\s+/g, ' ')
+        if (!cleanName) throw new Error('Enter your name.')
+        let avatarUrl = s.profile.avatarUrl
+        if (photo) {
+          avatarUrl = live
+            ? await uploadProfileAvatar(userId ?? '', photo)
+            : await fileToDataUrl(photo)
+        }
+        patch(prev => ({
+          profile: { ...prev.profile, name: cleanName, initials: identityInitials(cleanName), ...(avatarUrl ? { avatarUrl } : {}) },
+          learned: remember(prev, { category: 'People', text: 'You corrected your profile identity.', source: 'Profile edit', confidence: 100, scope: 'private' }),
+        }))
+      },
       setPreferences: (preferences) => patch(prev => ({
         preferences,
         profile: { ...prev.profile, title: preferences.title, focus: preferences.focus },
@@ -687,7 +709,7 @@ export function NetworkProvider({ children, mode = 'live' }: { children: React.R
         }
       }),
     }
-  }, [s, dir, synced])
+  }, [s, dir, synced, live, userId])
 
   return <Ctx.Provider value={api}>{children}</Ctx.Provider>
 }
