@@ -1,4 +1,5 @@
 /** Shared editorial primitives used by every platform surface. */
+import { AvatarImage } from './avatar'
 import { portraitFor } from './portraits'
 import type { Member } from './social'
 
@@ -30,11 +31,11 @@ export function Head({ label, title, copy, proof, action }: {
   </header>
 }
 
-export function Face({ person, large = false, portrait = false }: { person: { id: string; name: string; initials: string }; large?: boolean; portrait?: boolean }) {
-  const image = portraitFor(person.id)
+export function Face({ person, large = false, portrait = false }: { person: { id: string; name: string; initials: string; avatarUrl?: string }; large?: boolean; portrait?: boolean }) {
+  const image = person.avatarUrl ?? portraitFor(person.id)
   return <span className={`person-avatar ${large ? 'large' : ''} ${portrait ? 'portrait' : ''}`} data-person-portrait={person.id} aria-label={person.name}>
     <span className="avatar-initials" aria-hidden="true">{person.initials}</span>
-    {image && <img src={image} alt="" width={1024} height={1280} loading="lazy" />}
+    {image && <AvatarImage source={image} alt="" width={1024} height={1280} />}
   </span>
 }
 

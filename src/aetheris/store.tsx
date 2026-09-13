@@ -126,10 +126,7 @@ function load(): Persisted {
     const raw = localStorage.getItem(KEY)
     if (raw) {
       const stored = JSON.parse(raw) as Partial<Persisted>
-      const profile = stored.profile?.name === 'Joseph Toney'
-        ? { ...stored.profile, name: seedMe.name, initials: seedMe.initials }
-        : stored.profile
-      return { ...empty, ...stored, ...(profile ? { profile } : {}) }
+      return { ...empty, ...stored }
     }
   } catch { /* fall through to legacy migration */ }
   const legacy = <T,>(k: string, fallback: T): T => {
