@@ -23,7 +23,7 @@ export interface Person {
   email?: string
   linkedin?: string
   /** Private storage object path, or a direct/demo image URL. */
-  avatarUrl?: string
+  avatarUrl?: string | undefined
   tags: string[]
   needs: string[]
   offers: string[]

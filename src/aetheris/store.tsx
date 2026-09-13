@@ -26,7 +26,7 @@ export type MeProfile = typeof seedMe & {
   introPreferences?: string
   boundaries?: string
   onboarded?: boolean
-  avatarUrl?: string
+  avatarUrl?: string | undefined
 }
 
 export interface PreferenceSettings {

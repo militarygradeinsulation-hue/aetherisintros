@@ -27,7 +27,7 @@ async function resolveAvatarUrl(source: string): Promise<string | null> {
 
 /** Renders either a direct image URL or a private member-owned storage object. */
 export function AvatarImage({ source, alt = '', className = '', width, height, loading = 'lazy', style }: {
-  source?: string | null
+  source?: string | null | undefined
   alt?: string
   className?: string
   width?: number
