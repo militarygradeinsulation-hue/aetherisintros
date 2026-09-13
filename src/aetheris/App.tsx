@@ -1313,28 +1313,99 @@ function Profile({ people, setPage, openOnboarding }: {
   const autonomy: AutonomyLevel = net.autonomy
   const setAutonomy = net.setAutonomy
   const [copied, setCopied] = useState(false)
+  const [identityEditing, setIdentityEditing] = useState(false)
+  const [nameDraft, setNameDraft] = useState(me.name)
+  const [photo, setPhoto] = useState<File | null>(null)
+  const [photoPreview, setPhotoPreview] = useState<string | null>(null)
+  const [identitySaving, setIdentitySaving] = useState(false)
+  const [identityMessage, setIdentityMessage] = useState('')
   const sliders: [keyof DigitalYouProfile, string, string, string][] = [
     ['directness', 'Directness', 'Soft', 'Direct'], ['formality', 'Formality', 'Casual', 'Formal'],
     ['warmth', 'Warmth', 'Reserved', 'Warm'], ['brevity', 'Brevity', 'Detailed', 'Tight'],
   ]
+  const nameParts = me.name.trim().split(/\s+/).filter(Boolean)
+  const firstName = nameParts[0] ?? 'Your'
+  const restName = nameParts.slice(1).join(' ') || 'Profile'
+
+  useEffect(() => { setNameDraft(me.name) }, [me.name])
+  useEffect(() => () => { if (photoPreview) URL.revokeObjectURL(photoPreview) }, [photoPreview])
+
+  const choosePhoto = (file: File | null) => {
+    setIdentityMessage('')
+    if (!file) return
+    if (!file.type.startsWith('image/')) { setIdentityMessage('Choose an image file.'); return }
+    if (file.size > 5 * 1024 * 1024) { setIdentityMessage('Profile photos must be 5 MB or smaller.'); return }
+    if (photoPreview) URL.revokeObjectURL(photoPreview)
+    setPhoto(file)
+    setPhotoPreview(URL.createObjectURL(file))
+  }
+
+  const saveIdentity = async () => {
+    setIdentitySaving(true)
+    setIdentityMessage('')
+    try {
+      await net.updateIdentity({ name: nameDraft, photo })
+      setPhoto(null)
+      if (photoPreview) URL.revokeObjectURL(photoPreview)
+      setPhotoPreview(null)
+      setIdentityEditing(false)
+      setIdentityMessage('Profile updated.')
+    } catch (error) {
+      setIdentityMessage(error instanceof Error ? error.message : 'Could not save your profile.')
+    } finally {
+      setIdentitySaving(false)
+    }
+  }
+
   return <>
     <section className="identity-header">
-      <div className="identity-portrait" data-person-portrait="me">{portraitFor('me') && <img src={portraitFor('me')} alt="Fictional Aetheris member in architectural window light" width={1024} height={1280} />}<small>AETHERIS MEMBER SINCE 2024</small></div>
+      <div className="identity-portrait" data-person-portrait="me">
+        {me.avatarUrl
+          ? <AvatarImage source={me.avatarUrl} alt={`${me.name || 'Member'} profile portrait`} width={1024} height={1280} loading="eager" />
+          : isShowcase() && portraitFor('me')
+            ? <AvatarImage source={portraitFor('me')} alt="Fictional Aetheris member in architectural window light" width={1024} height={1280} loading="eager" />
+            : <span className="identity-placeholder" aria-hidden="true">{me.initials || 'M'}</span>}
+        <small>AETHERIS MEMBER PROFILE</small>
+      </div>
       <div className="identity-copy">
         <Label>MEMBER PROFILE</Label>
-        <h1>Jordan<br /><em>Ellery</em></h1>
-        <p className="identity-role">{me.title}<br />{me.company} · {me.location}</p>
-        <p className="identity-thesis">{me.thesis}</p>
+        <h1>{firstName}<br /><em>{restName}</em></h1>
+        <p className="identity-role">{me.title || 'Add your role'}<br />{[me.company, me.location].filter(Boolean).join(' · ') || 'Add your company and location'}</p>
+        <p className="identity-thesis">{me.thesis || 'Your professional thesis will appear here after onboarding.'}</p>
         <blockquote>“Evidence, mutual value, good timing and human judgment.”</blockquote>
+        {identityMessage && !identityEditing && <p className="identity-saved">{identityMessage}</p>}
         <div className="identity-actions">
+          <Button onClick={() => { setIdentityEditing(value => !value); setIdentityMessage('') }}><Camera size={14} /> Edit name or photo</Button>
           <Button onClick={openOnboarding}><Fingerprint size={14} /> {me.onboarded ? 'Update your profile' : 'Complete your profile'}</Button>
           <Button kind="secondary" onClick={() => setPage('messages')}><MessageSquareText size={14} /> Conversations</Button>
           <Button kind="secondary" onClick={() => setPage('intros')}><Handshake size={14} /> Your introductions</Button>
           <Button kind="quiet" onClick={() => setPage('needs')}><Bookmark size={14} /> Saved · {net.saved.length}</Button>
-          <Button kind="quiet" onClick={() => { void navigator.clipboard?.writeText('https://aetheris-intros.app/joseph-toney').catch(() => {}); setCopied(true) }}><Share2 size={14} /> {copied ? 'Link copied' : 'Share profile'}</Button>
+          <Button kind="quiet" onClick={() => { void navigator.clipboard?.writeText(window.location.href).catch(() => {}); setCopied(true) }}><Share2 size={14} /> {copied ? 'Link copied' : 'Share profile'}</Button>
         </div>
       </div>
     </section>
+
+    {identityEditing && <section className="identity-editor" aria-label="Edit profile identity">
+      <div className="identity-preview" data-person-portrait="me-preview">
+        {photoPreview
+          ? <img src={photoPreview} alt="Selected profile preview" />
+          : me.avatarUrl
+            ? <AvatarImage source={me.avatarUrl} alt="Current profile portrait" />
+            : <span>{me.initials || 'M'}</span>}
+      </div>
+      <div className="identity-edit-fields">
+        <Label>YOUR PUBLIC IDENTITY</Label>
+        <h2>Make sure people recognize the right person.</h2>
+        <label><span>Full name</span><input value={nameDraft} onChange={event => setNameDraft(event.target.value)} placeholder="Your full name" autoFocus /></label>
+        <label className="identity-file"><span>Profile photo</span><input type="file" accept="image/*" onChange={event => choosePhoto(event.target.files?.[0] ?? null)} /><em><Camera size={14} /> {photo ? photo.name : 'Choose a clear photo'} · up to 5 MB</em></label>
+        <p>Your name and photo appear on your profile, posts, comments, messages and introduction requests. Photos stay visible only to signed-in members.</p>
+        {identityMessage && <small className="identity-error">{identityMessage}</small>}
+        <footer>
+          <Button onClick={() => { void saveIdentity() }} disabled={identitySaving || !nameDraft.trim()}>{identitySaving ? 'Saving…' : 'Save identity'}</Button>
+          <Button kind="secondary" onClick={() => { setIdentityEditing(false); setPhoto(null); setNameDraft(me.name); setIdentityMessage('') }}>Cancel</Button>
+        </footer>
+      </div>
+    </section>}
 
     <div className="profile-facts">
       {[['ABOUT MEMBER', 'Founder building relationship systems for consequential business decisions.'], ['FOCUS AREAS', me.focus], ['GOALS', 'Place Aetheris with serious operators and document the outcomes.'], ['CAN HELP WITH', me.canHelpWith], ['CURRENTLY LOOKING FOR', me.lookingFor],
