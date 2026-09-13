@@ -1009,6 +1009,7 @@ function Messages({ people, select, activeId, setActiveId }: { people: Member[];
   const pro = usePro()
   const [text, setText] = useState('')
   const [blocked, setBlocked] = useState<{ explanation: string; rerouteTo?: string } | null>(null)
+  const [contextOpen, setContextOpen] = useState(false)
   const nav = useNav()
   const { gate, modal: outreachModal } = useOutreachGate()
   const threads = net.threads
@@ -1016,12 +1017,9 @@ function Messages({ people, select, activeId, setActiveId }: { people: Member[];
   const person = people.find(p => p.id === thread?.memberId)
   if (!thread || !person) return null
   return <>
-    <EditorialHero folio="MESSAGES / RELATIONSHIP CONTEXT" title={<>Conversation with<br /><em>memory beside it.</em></>} statement="People speak to people. Context stays quietly available." copy="Commitments, mutual connections and the reason for the introduction remain beside the thread—not inside the conversation." caption="A professional exchange remains human when intelligence knows when to stay quiet." image={messagesEditorialAsset.url} />
-    <PageHead label="MESSAGES" title="Context before contact."
-      copy="Real conversations between members. Intros keeps the relationship context beside the thread, never in the middle of it."
-      proof="Every thread remembers the last commitment made." />
+    {isShowcase() && <EditorialHero folio="MESSAGES / RELATIONSHIP CONTEXT" title={<>Conversation with<br /><em>memory beside it.</em></>} statement="People speak to people. Context stays quietly available." copy="Commitments, mutual connections and the reason for the introduction remain beside the thread—not inside the conversation." caption="A professional exchange remains human when intelligence knows when to stay quiet." image={messagesEditorialAsset.url} />}
     {outreachModal}
-    <div className="messages-layout">
+    <div className={`messages-layout ${contextOpen ? 'context-open' : 'context-closed'}`}>
       <aside className="thread-list">
         <div className="thread-search"><Search size={15} /> Conversations</div>
         {threads.map(t => {
@@ -1038,7 +1036,10 @@ function Messages({ people, select, activeId, setActiveId }: { people: Member[];
         <header>
           <Avatar person={person} />
           <div><strong>{person.name}</strong><small>{person.title} · {person.company}</small></div>
-           <button className="icon-btn" onClick={() => select(person)} aria-label="Open relationship intelligence"><AetherisGlyph size={17} /></button>
+          <button className="context-toggle" onClick={() => setContextOpen(v => !v)} aria-expanded={contextOpen}>
+            <AetherisGlyph size={13} /> {contextOpen ? 'Hide context' : 'Context'}
+          </button>
+          <button className="icon-btn" onClick={() => select(person)} aria-label="Open this person's profile"><UserRound size={17} /></button>
         </header>
         <div className="intro-context"><Label>INTRODUCTION CONTEXT</Label><p>{thread.introContext}</p></div>
         <div className="messages">
@@ -1068,8 +1069,9 @@ function Messages({ people, select, activeId, setActiveId }: { people: Member[];
           {blocked && <p className="composer-blocked"><b>Held.</b> {blocked.explanation}{blocked.rerouteTo ? ` Referred elsewhere: ${blocked.rerouteTo}.` : ''} <button className="text-action" onClick={() => nav.setPage('permission')}>Request permission properly</button></p>}
         </div>
       </section>
-      <aside className="conversation-intel">
-        <Label>RELATIONSHIP CONTEXT</Label>
+      {contextOpen && <aside className="conversation-intel">
+        <header className="intel-head"><Label>RELATIONSHIP CONTEXT</Label>
+          <button className="icon-btn" onClick={() => setContextOpen(false)} aria-label="Close context"><X size={15} /></button></header>
         <h3>Why you’re connected</h3>
         <p>{person.whyThem}</p>
         <dl>
@@ -1082,7 +1084,7 @@ function Messages({ people, select, activeId, setActiveId }: { people: Member[];
         </dl>
         <TwinPanel person={person} compact />
         <button className="text-action" onClick={() => nav.captureConversation()}><Mic size={13} /> Capture this conversation</button>
-      </aside>
+      </aside>}
     </div>
   </>
 }
@@ -1467,6 +1469,8 @@ function Profile({ people, setPage, openOnboarding }: {
         <div key={k}><span>{k}</span><p>{v}</p></div>)}
     </div>
 
+    <details className="profile-deep">
+      <summary>Relationship intelligence, proof and history</summary>
     <section className="private-panel">
       <header><Label signal>PRIVATE RELATIONSHIP INTELLIGENCE</Label><small><LockKeyhole size={12} /> Visible only to you</small></header>
       <div>
@@ -1523,6 +1527,7 @@ function Profile({ people, setPage, openOnboarding }: {
         <small><LockKeyhole size={12} /> Nothing is sent without both sides opting in.</small>
       </footer>
     </section>
+    </details>
 
     <div className="profile-settings">
       <section>
