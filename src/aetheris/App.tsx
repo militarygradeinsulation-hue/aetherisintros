@@ -76,6 +76,7 @@ import { ProProvider, usePro } from './pro-store'
 import { PassportPage } from './pages/PassportPage'
 import { OpportunitiesPage } from './pages/OpportunitiesPage'
 import { DealRoomsPage } from './pages/DealRoomsPage'
+import { DirectoryPage } from './pages/DirectoryPage'
 import { ExpertisePage } from './pages/ExpertisePage'
 import { TalentPage } from './pages/TalentPage'
 import { CapitalPage } from './pages/CapitalPage'
@@ -2026,6 +2027,7 @@ function Shell({ startPage }: { startPage?: Page | undefined }) {
       passport: <PassportPage />,
       opportunities: <OpportunitiesPage />,
       dealrooms: <DealRoomsPage />,
+      directory: <DirectoryPage />,
       expertise: <ExpertisePage />,
       talent: <TalentPage />,
       capital: <CapitalPage />,
