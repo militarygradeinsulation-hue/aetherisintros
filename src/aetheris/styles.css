@@ -14,7 +14,7 @@
 .lv-nav nav{font:700 9px var(--sans);letter-spacing:.17em;text-transform:uppercase;color:var(--muted);white-space:nowrap}
 .lv-nav-actions{display:flex;gap:10px;align-items:center}
 .lv-nav-actions .btn.ghost{border-color:var(--line-dark);color:var(--soft)}
-.lv-hero{min-height:calc(100vh - 78px);display:grid;grid-template-columns:minmax(0,1fr) minmax(340px,52%);position:relative;border-bottom:1px solid var(--line-dark)}
+.lv-hero{min-height:calc(100vh - 112px);display:grid;grid-template-columns:minmax(0,1fr) minmax(340px,52%);position:relative;border-bottom:1px solid var(--line-dark)}
 .lv-hero-copy{padding:clamp(48px,7vw,100px) clamp(30px,6vw,90px);display:flex;flex-direction:column;justify-content:center;position:relative}
 .lv-hero-topright{position:absolute;right:clamp(20px,4vw,40px);top:clamp(28px,4vw,48px);font:700 9px var(--sans);letter-spacing:.2em;color:var(--amber)}
 .lv-hero-copy h1{font:500 clamp(64px,9vw,132px)/.74 var(--serif);letter-spacing:0;margin:0 0 28px;color:var(--soft)}
