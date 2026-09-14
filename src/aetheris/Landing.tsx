@@ -79,7 +79,8 @@ function LandingPage({ signedIn }: { signedIn: boolean }) {
           <span className="lv-hero-scale">RELATIONSHIPS · INTELLIGENCE · OPPORTUNITY AT SCALE</span>
           <div className="lv-hero-actions">
             {demoBtn('Demo the system', 'btn primary')}
-            {accountBtn(showDemo ? 'btn ghost' : 'btn primary')}
+            {loginBtn('btn ghost')}
+            {accountBtn(showDemo ? 'btn primary' : 'btn primary')}
           </div>
         </div>
         <div className="lv-hero-visual">
