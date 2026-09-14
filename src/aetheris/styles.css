@@ -2891,3 +2891,47 @@ input, textarea, select { font: inherit; }
 .landing-film video{display:block;width:100%;aspect-ratio:21/9;object-fit:cover;background:#0B0D0F;border:1px solid rgba(16,18,22,.14);border-radius:10px}
 .landing-film figcaption{margin-top:10px;font-size:11px;letter-spacing:.16em;text-transform:uppercase;opacity:.5}
 @media (max-width:900px){.landing-film{grid-template-columns:1fr;gap:24px;padding:44px 20px}.landing-film video{aspect-ratio:16/9}}
+
+/* ------------------------------------------------------------ ivory form modals: readable, larger text */
+.need-modal > header,
+.need-modal > footer { background: var(--ivory); border-bottom-color: var(--line-light); }
+.need-modal > header h2 { color: var(--ink); font-size: 34px; }
+.need-modal > header p { color: #4E5257; font-size: 13px; line-height: 1.55; }
+.need-modal .eyebrow { color: var(--cobalt); font-size: 10px; }
+.need-form label > span { font-size: 10px; letter-spacing: .12em; color: #3F4348; }
+.need-form textarea,
+.need-form select,
+.need-form input {
+  width: 100%;
+  background: #FFFDF8;
+  border: 1px solid var(--line-light);
+  border-radius: 6px;
+  color: var(--ink);
+  font-family: var(--sans);
+  font-size: 15px;
+  line-height: 1.55;
+  padding: 10px 12px;
+}
+.need-form textarea::placeholder,
+.need-form input::placeholder { color: #7B8087; opacity: 1; }
+.need-form textarea:focus,
+.need-form select:focus,
+.need-form input:focus { outline: 2px solid rgba(15,92,203,.35); outline-offset: 1px; }
+.need-form select option { color: var(--ink); background: #FFFDF8; }
+.need-modal .btn.quiet { color: #3F4348; }
+
+/* ------------------------------------------------------------ text size preference */
+html.text-scale-small body { zoom: .92; }
+html.text-scale-default body { zoom: 1; }
+html.text-scale-large body { zoom: 1.1; }
+html.text-scale-larger body { zoom: 1.22; }
+.scale-picker { display: flex; flex-wrap: wrap; gap: 8px; margin: 12px 0 6px; }
+.scale-picker button {
+  border: 1px solid var(--line-dark); border-radius: 6px; background: transparent;
+  color: var(--muted); font-family: var(--sans); padding: 9px 14px; cursor: pointer;
+}
+.scale-picker button:nth-child(1) { font-size: 11px; }
+.scale-picker button:nth-child(2) { font-size: 13px; }
+.scale-picker button:nth-child(3) { font-size: 15px; }
+.scale-picker button:nth-child(4) { font-size: 17px; }
+.scale-picker button.active { border-color: var(--cobalt); color: #79A9EF; background: rgba(15,92,203,.12); }
