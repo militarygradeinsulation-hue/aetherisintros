@@ -1,8 +1,10 @@
 import { useEffect, useState } from 'react'
-import { Camera, Check, LockKeyhole, ShieldCheck, Type } from 'lucide-react'
+import { Camera, Check, LockKeyhole, MousePointer2, ShieldCheck, Type } from 'lucide-react'
 import { useNetwork, type PreferenceSettings } from '../store'
 import { AvatarImage } from '../avatar'
 import { Btn, Eyebrow, Head } from '../ui'
+import { cursorScaleLabels, cursorScales, readCursorScale, setCursorScale, type CursorScale } from '../cursorScale'
+
 import { readTextScale, setTextScale, textScaleLabels, textScales, type TextScale } from '../textScale'
 
 const tabs = ['Profile', 'Display', 'Availability', 'Preferences', 'Notifications', 'Privacy', 'Memory Controls'] as const
