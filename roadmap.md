@@ -77,3 +77,9 @@
 - [x] Connect Home metrics, priority relationships, filters, sorting, search, and actions to current state.
 - [x] Verify desktop and mobile Home rendering, interactions, and overflow.
 - [x] Restore the editorial photographic portrait to the Home masthead.
+
+# Home connections + theme (Sep 14)
+
+- [x] Replace connection initials with recognizable platform logos.
+- [x] Make Home dark below its light top bar by default and add a persistent light/dark switch.
+- [x] Verify the updated Home at desktop and mobile sizes.

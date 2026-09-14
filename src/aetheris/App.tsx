@@ -3,11 +3,15 @@ import {
   AlertTriangle, ArrowLeftRight, ArrowRight, Bell, Bookmark, BookmarkCheck, Building2, CalendarDays, Camera, Check, CheckCircle2, ChevronLeft, ChevronRight,
   CircleDot, Compass, Eye, Fingerprint, Handshake, Heart, Home as HomeIcon, Layers, LockKeyhole,
   MapPin, Menu, MessageSquareText, Network, Plus, Search, Send, Share2, ShieldCheck, Target,
-  MessageCircle, Repeat2, Settings2, SlidersHorizontal, TrendingUp, UserRound, Users, X,
+  MessageCircle, Moon, Repeat2, Settings2, SlidersHorizontal, Sun, TrendingUp, UserRound, Users, X,
   Inbox, DoorOpen, GitMerge, Radar, Flag, FileSearch, Gauge, Mic,
   HelpCircle, BookOpen, Sparkle, Map as MapIcon, History, BadgeCheck, Lock, ScrollText, Puzzle,
   ChevronDown, LayoutGrid, Briefcase, FolderLock, GraduationCap, UsersRound, Coins, Landmark, PlaneTakeoff, Play, ShieldAlert, Newspaper, Archive, FileText,
 } from 'lucide-react'
+import { FaLinkedin, FaMicrosoft, FaSalesforce } from 'react-icons/fa'
+import { BsMicrosoftTeams, BsSlack } from 'react-icons/bs'
+import { PiMicrosoftOutlookLogoFill } from 'react-icons/pi'
+import { SiGmail, SiGooglecalendar, SiHubspot, SiNotion, SiZoom } from 'react-icons/si'
 import { rankMatches, type MatchResult } from '@/aetheris/matching'
 import { AvatarImage } from './avatar'
 import discoverEditorialAsset from '@/assets/editorial-discover.jpg.asset.json'
@@ -596,6 +600,16 @@ function Home({ people, select, setPage, openNeed, openThread }: {
   const [filter, setFilter] = useState<HomeConnectionFilter>('all')
   const [sort, setSort] = useState<HomeConnectionSort>('score')
   const [query, setQuery] = useState('')
+  const [darkHome, setDarkHome] = useState(true)
+  useEffect(() => {
+    const saved = window.localStorage.getItem('aetheris.home.theme')
+    if (saved === 'light') setDarkHome(false)
+  }, [])
+  const toggleHomeTheme = () => setDarkHome(current => {
+    const next = !current
+    window.localStorage.setItem('aetheris.home.theme', next ? 'dark' : 'light')
+    return next
+  })
   const ranked = useMemo(() => [...people].sort((a, b) => b.scoreTotal - a.scoreTotal), [people])
   const connections = useMemo(() => ranked.filter(person => {
     const text = `${person.name} ${person.title} ${person.company} ${person.whyYou} ${person.whyThem} ${person.whyNow}`.toLowerCase()
@@ -617,11 +631,22 @@ function Home({ people, select, setPage, openNeed, openThread }: {
   const statusLabel = (person: Member) => person.relationshipStatus === 'at-risk' ? 'AT RISK' : radarLabel[person.radar].toUpperCase()
   const filters: Array<[HomeConnectionFilter, string]> = [['all', 'All'], ['hot_now', 'Hot Now'], ['emerging', 'Emerging'], ['strategic', 'Strategic'], ['dormant', 'Dormant'], ['at_risk', 'At Risk']]
   const dashboardNav: Array<[string, Page]> = [['Home', 'home'], ['Network', 'network'], ['Opportunities', 'opportunities'], ['Introductions', 'intros'], ['Meetings', 'messages'], ['Analytics', 'insights'], ['Settings', 'preferences']]
-  const integrations = ['LinkedIn', 'Gmail', 'Outlook', 'Google Calendar', 'Slack', 'Zoom', 'Microsoft Teams', 'HubSpot', 'Salesforce', 'Notion']
+  const integrations = [
+    { name: 'LinkedIn', icon: FaLinkedin, tone: 'linkedin' },
+    { name: 'Gmail', icon: SiGmail, tone: 'gmail' },
+    { name: 'Outlook', icon: PiMicrosoftOutlookLogoFill, tone: 'outlook' },
+    { name: 'Google Calendar', icon: SiGooglecalendar, tone: 'calendar' },
+    { name: 'Slack', icon: BsSlack, tone: 'slack' },
+    { name: 'Zoom', icon: SiZoom, tone: 'zoom' },
+    { name: 'Microsoft Teams', icon: BsMicrosoftTeams, tone: 'teams' },
+    { name: 'HubSpot', icon: SiHubspot, tone: 'hubspot' },
+    { name: 'Salesforce', icon: FaSalesforce, tone: 'salesforce' },
+    { name: 'Notion', icon: SiNotion, tone: 'notion' },
+  ]
   const draftMessage = (person: Member) => openThread(net.openThreadWith(person.id))
 
-  return <div className="editorial-home">
-    <header className="eh-brandbar"><HomeBrand /><div><span>RELATIONSHIP<br />INTELLIGENCE AT WORK</span><i /></div></header>
+  return <div className={`editorial-home ${darkHome ? 'home-theme-dark' : 'home-theme-light'}`}>
+    <header className="eh-brandbar"><HomeBrand /><div className="eh-brand-actions"><button type="button" onClick={toggleHomeTheme} aria-label={`Use ${darkHome ? 'light' : 'dark'} Home theme`} title={`Use ${darkHome ? 'light' : 'dark'} theme`}>{darkHome ? <Sun size={16} /> : <Moon size={16} />}</button><span>RELATIONSHIP<br />INTELLIGENCE AT WORK</span><i /></div></header>
 
     <section className="eh-hero">
       <div className="eh-hero-copy">
@@ -690,7 +715,7 @@ function Home({ people, select, setPage, openNeed, openThread }: {
       </div>
     </section>
 
-    <section className="eh-integrations"><h2>CONNECTS ACROSS THE TOOLS YOU ALREADY USE</h2><div>{integrations.map(name => <button key={name} onClick={() => setPage('integrations')}><span>{name.split(/\s+/).map(word => word[0]).join('').slice(0, 2)}</span><b>{name}</b></button>)}</div></section>
+    <section className="eh-integrations"><h2>10 PLATFORMS. ONE INTELLIGENT NETWORK.</h2><p>Connect the tools people already use, so relationship context becomes useful without changing how they work.</p><div>{integrations.map(({ name, icon: Icon, tone }) => <button key={name} onClick={() => setPage('integrations')} aria-label={`Explore ${name} connection`}><span className={`eh-platform-logo ${tone}`}><Icon aria-hidden="true" /></span><b>{name}</b></button>)}</div></section>
     <footer className="eh-footer"><i /><p>More than introductions. A smarter way to grow.</p><i /></footer>
   </div>
 }
