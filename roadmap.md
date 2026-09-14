@@ -75,4 +75,4 @@
 
 - [x] Replace only Home with the ivory/black editorial relationship-intelligence composition.
 - [x] Connect Home metrics, priority relationships, filters, sorting, search, and actions to current state.
-- [ ] Verify desktop and mobile Home rendering, interactions, and overflow.
+- [x] Verify desktop and mobile Home rendering, interactions, and overflow.
