@@ -2937,3 +2937,7 @@ html.text-scale-larger body { zoom: 1.22; }
 .scale-picker button:nth-child(3) { font-size: 15px; }
 .scale-picker button:nth-child(4) { font-size: 17px; }
 .scale-picker button.active { border-color: var(--cobalt); color: #79A9EF; background: rgba(15,92,203,.12); }
+
+/* Signed-in members are handed from the public page to their real network. */
+.landing-handoff{min-height:100dvh;display:grid;place-items:center}
+.landing-handoff p{font-size:13px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted)}
