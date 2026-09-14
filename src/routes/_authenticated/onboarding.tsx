@@ -7,6 +7,7 @@ import { supabase } from '@/integrations/supabase/client'
 import '@/aetheris/styles.css'
 
 export const Route = createFileRoute('/_authenticated/onboarding')({
+  staticData: { sitemap: false },
   head: () => ({
     meta: [
       { title: 'Build your profile — Aetheris Intros' },

@@ -9,6 +9,7 @@ import accessPortrait from '@/assets/portraits/aetheris-masthead-natural.jpg.ass
 import '@/aetheris/styles.css'
 
 export const Route = createFileRoute('/early-access')({
+  staticData: { sitemap: true },
   head: () => ({
     meta: [
       { title: 'Founding 1,000 — Aetheris Intros' },
@@ -21,7 +22,9 @@ export const Route = createFileRoute('/early-access')({
       { property: 'og:description', content: 'The first 1,000 members shape the network. Claim your founding place.' },
       { property: 'og:type', content: 'website' },
       { name: 'twitter:card', content: 'summary_large_image' },
+      { property: 'og:url', content: 'https://intros.today/early-access' },
     ],
+    links: [{ rel: 'canonical', href: 'https://intros.today/early-access' }],
   }),
   component: EarlyAccessPage,
 })

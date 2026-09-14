@@ -4,6 +4,7 @@ import App from '@/aetheris/App'
 import '@/aetheris/styles.css'
 
 export const Route = createFileRoute('/demo')({
+  staticData: { sitemap: true },
   head: () => ({
     meta: [
       { title: 'Guided showcase — Aetheris Intros' },
@@ -16,7 +17,9 @@ export const Route = createFileRoute('/demo')({
       { property: 'og:description', content: 'See how relationship context, timing and double opt-in introductions work.' },
       { property: 'og:type', content: 'website' },
       { name: 'twitter:card', content: 'summary_large_image' },
+      { property: 'og:url', content: 'https://intros.today/demo' },
     ],
+    links: [{ rel: 'canonical', href: 'https://intros.today/demo' }],
   }),
   component: DemoRoute,
 })

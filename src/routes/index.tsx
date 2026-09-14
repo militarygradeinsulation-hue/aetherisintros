@@ -4,6 +4,7 @@ import Landing from '@/aetheris/Landing'
 import '@/aetheris/styles.css'
 
 export const Route = createFileRoute('/')({
+  staticData: { sitemap: true },
   head: () => ({
     meta: [
       { title: 'Aetheris Intros — Business networking without the spam' },
@@ -19,7 +20,9 @@ export const Route = createFileRoute('/')({
       },
       { property: 'og:type', content: 'website' },
       { name: 'twitter:card', content: 'summary_large_image' },
+      { property: 'og:url', content: 'https://intros.today/' },
     ],
+    links: [{ rel: 'canonical', href: 'https://intros.today/' }],
   }),
   component: Landing,
 })

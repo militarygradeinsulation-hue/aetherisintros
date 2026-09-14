@@ -6,6 +6,7 @@ import { supabase } from '@/integrations/supabase/client'
 import '@/aetheris/styles.css'
 
 export const Route = createFileRoute('/_authenticated/admin/early-access')({
+  staticData: { sitemap: false },
   head: () => ({
     meta: [
       { title: 'Launch control — Aetheris Intros' },
