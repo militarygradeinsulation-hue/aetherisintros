@@ -375,7 +375,7 @@ export const metaById: Record<string, PageMeta> = Object.fromEntries(pageMeta.ma
 export function pageLabel(id: Page) { return metaById[id]?.label ?? id }
 
 /** The short, always-visible rail. */
-export const primaryPages: Page[] = ['home', 'network', 'opportunities', 'messages']
+export const primaryPages: Page[] = ['home', 'simple', 'network', 'opportunities', 'messages']
 
 /** Tabs consolidated inside the Network and Opportunities hubs. */
 export const networkTabs: Page[] = ['discover', 'directory', 'intros', 'companies', 'calendar']
