@@ -17,6 +17,8 @@ import { AvatarImage } from './avatar'
 import { supabase } from '@/integrations/supabase/client'
 import { useAccess } from './access'
 import { applyTextScale, readTextScale } from './textScale'
+import { applyCursorScale, readCursorScale } from './cursorScale'
+
 import discoverEditorialAsset from '@/assets/editorial-discover.jpg.asset.json'
 import introsEditorialAsset from '@/assets/editorial-intros.jpg.asset.json'
 import messagesEditorialAsset from '@/assets/editorial-messages.jpg.asset.json'
