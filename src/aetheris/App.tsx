@@ -707,18 +707,20 @@ function Home({ people, select, setPage, openNeed, openThread }: {
         <p>A short walk through the platform: how context is captured, how the right people surface at the right time, and how introductions happen with both sides agreeing.</p>
         <ul><li>Why this person, why you, why now</li><li>Double opt-in introductions, never cold outreach</li><li>Memory that keeps relationships alive</li></ul>
       </div>
-      <figure>
-        <video src={overviewFilmAsset.url} controls preload="metadata" playsInline poster={homeEditorialAsset.url}>
-          <track kind="captions" />
-        </video>
-        <figcaption>Platform overview · 2 min</figcaption>
-      </figure>
-      <figure>
-        <video src={introVideoAsset.url} controls preload="metadata" playsInline>
-          <track kind="captions" />
-        </video>
-        <figcaption>Aetheris Intros · from the founder</figcaption>
-      </figure>
+      <div className="eh-film-videos">
+        <figure>
+          <video src={overviewFilmAsset.url} controls preload="metadata" playsInline poster={homeEditorialAsset.url}>
+            <track kind="captions" />
+          </video>
+          <figcaption>Platform overview · 2 min</figcaption>
+        </figure>
+        <figure>
+          <video src={introVideoAsset.url} controls preload="metadata" playsInline>
+            <track kind="captions" />
+          </video>
+          <figcaption>Aetheris Intros · from the founder</figcaption>
+        </figure>
+      </div>
     </section>
 
     <section className="eh-connections">

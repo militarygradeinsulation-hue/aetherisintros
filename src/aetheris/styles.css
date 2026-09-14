@@ -2803,6 +2803,7 @@ input, textarea, select { font: inherit; }
 .eh-film-copy li{font-size:13px;padding-left:14px;position:relative;opacity:.85}
 .eh-film-copy li::before{content:'';position:absolute;left:0;top:8px;width:5px;height:5px;background:var(--cobalt,#0F5CCB)}
 .eh-film figure{margin:0}
+.eh-film-videos{display:grid;gap:22px}
 .eh-film video{display:block;width:100%;aspect-ratio:21/9;object-fit:cover;background:#0B0D0F;border:1px solid var(--eh-line);border-radius:10px}
 .eh-film figcaption{margin-top:10px;font-size:11px;letter-spacing:.16em;text-transform:uppercase;opacity:.55}
 @media (max-width:900px){.eh-film{grid-template-columns:1fr;gap:22px;padding:34px 18px}.eh-film video{aspect-ratio:16/9}}
