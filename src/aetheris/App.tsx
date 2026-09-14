@@ -6,7 +6,7 @@ import {
   MessageCircle, Moon, Repeat2, Settings2, SlidersHorizontal, Sun, TrendingUp, UserRound, Users, X,
   Inbox, DoorOpen, GitMerge, Radar, Flag, FileSearch, Gauge, Mic,
   HelpCircle, BookOpen, Sparkle, Map as MapIcon, History, BadgeCheck, Lock, ScrollText, Puzzle,
-  ChevronDown, LayoutGrid, Briefcase, FolderLock, GraduationCap, UsersRound, Coins, Landmark, PlaneTakeoff, Play, ShieldAlert, Newspaper, Archive, FileText,
+  ChevronDown, LayoutGrid, Briefcase, FolderLock, GraduationCap, UsersRound, Coins, Landmark, PlaneTakeoff, Play, ShieldAlert, Newspaper, Archive, FileText, LogIn, LogOut,
 } from 'lucide-react'
 import { FaLinkedin, FaMicrosoft, FaSalesforce } from 'react-icons/fa'
 import { BsMicrosoftTeams, BsSlack } from 'react-icons/bs'
@@ -14,6 +14,8 @@ import { PiMicrosoftOutlookLogoFill } from 'react-icons/pi'
 import { SiGmail, SiGooglecalendar, SiHubspot, SiNotion, SiZoom } from 'react-icons/si'
 import { rankMatches, type MatchResult } from '@/aetheris/matching'
 import { AvatarImage } from './avatar'
+import { supabase } from '@/integrations/supabase/client'
+import { useAccess } from './access'
 import { applyTextScale, readTextScale } from './textScale'
 import discoverEditorialAsset from '@/assets/editorial-discover.jpg.asset.json'
 import introsEditorialAsset from '@/assets/editorial-intros.jpg.asset.json'
