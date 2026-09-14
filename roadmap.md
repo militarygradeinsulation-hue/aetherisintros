@@ -99,4 +99,4 @@
 # Compact page imagery (Sep 14)
 
 - [x] Reduce page-top imagery everywhere except Home.
-- [ ] Verify visual balance and flow on desktop and mobile.
+- [x] Verify visual balance and flow on desktop and mobile.
