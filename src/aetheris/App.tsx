@@ -6,7 +6,7 @@ import {
   MessageCircle, Moon, Repeat2, Settings2, SlidersHorizontal, Sun, TrendingUp, UserRound, Users, X,
   Inbox, DoorOpen, GitMerge, Radar, Flag, FileSearch, Gauge, Mic,
   HelpCircle, BookOpen, Sparkle, Map as MapIcon, History, BadgeCheck, Lock, ScrollText, Puzzle,
-  ChevronDown, LayoutGrid, Briefcase, FolderLock, GraduationCap, UsersRound, Coins, Landmark, PlaneTakeoff, Play, ShieldAlert, Newspaper, Archive, FileText,
+  ChevronDown, LayoutGrid, Briefcase, FolderLock, GraduationCap, UsersRound, Coins, Landmark, PlaneTakeoff, Play, ShieldAlert, Newspaper, Archive, FileText, LogIn, LogOut,
 } from 'lucide-react'
 import { FaLinkedin, FaMicrosoft, FaSalesforce } from 'react-icons/fa'
 import { BsMicrosoftTeams, BsSlack } from 'react-icons/bs'
@@ -14,6 +14,8 @@ import { PiMicrosoftOutlookLogoFill } from 'react-icons/pi'
 import { SiGmail, SiGooglecalendar, SiHubspot, SiNotion, SiZoom } from 'react-icons/si'
 import { rankMatches, type MatchResult } from '@/aetheris/matching'
 import { AvatarImage } from './avatar'
+import { supabase } from '@/integrations/supabase/client'
+import { useAccess } from './access'
 import { applyTextScale, readTextScale } from './textScale'
 import discoverEditorialAsset from '@/assets/editorial-discover.jpg.asset.json'
 import introsEditorialAsset from '@/assets/editorial-intros.jpg.asset.json'
@@ -2009,6 +2011,40 @@ function GlobalSearch({ open, onClose, people }: { open: boolean; onClose: () =>
   </div>
 }
 
+/**
+ * Explicit sign in / sign out control.
+ *
+ * Signing out clears every locally cached Aetheris record so the next person
+ * on this device can never see the previous member's network.
+ */
+function AccountControl() {
+  const { access } = useAccess()
+  const [busy, setBusy] = useState(false)
+
+  if (access.loading) return null
+
+  if (!access.signedIn) {
+    return <a className="topbar-auth" href="/auth" title="Sign in to your account">
+      <LogIn size={13} /><span>Sign in</span></a>
+  }
+
+  const signOut = async () => {
+    setBusy(true)
+    try {
+      await supabase.auth.signOut()
+    } finally {
+      try {
+        Object.keys(localStorage).filter(k => k.startsWith('aetheris.')).forEach(k => localStorage.removeItem(k))
+      } catch { /* storage unavailable */ }
+      window.location.replace('/auth')
+    }
+  }
+
+  return <button className="topbar-auth" disabled={busy} title={access.email ? `Signed in as ${access.email}` : 'Sign out'}
+    onClick={() => { void signOut() }}>
+    <LogOut size={13} /><span>{busy ? 'Signing out…' : 'Sign out'}</span></button>
+}
+
 /* ---------------------------------------------------------------------- app */
 
 export default function App({ startPage, mode = 'live' }: { startPage?: Page | undefined; mode?: NetworkMode }) {
@@ -2227,6 +2263,7 @@ function Shell({ startPage }: { startPage?: Page | undefined }) {
         </nav>
         <div className="rail-foot"><span className="live-dot" /><span>Memory live</span>
           <button onClick={() => setPage('profile')} aria-label="Your profile"><SelfAvatar /></button></div>
+        <div className="rail-auth"><AccountControl /></div>
       </aside>
       <div className="workspace">
         <header className="topbar">
@@ -2253,6 +2290,7 @@ function Shell({ startPage }: { startPage?: Page | undefined }) {
                 </div>
               </>}
             </div>
+            <AccountControl />
             <button className="topbar-avatar" aria-label="Your profile" onClick={() => setPage('profile')}><SelfAvatar /></button>
           </div>
 
