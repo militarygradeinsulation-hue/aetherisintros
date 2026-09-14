@@ -3041,3 +3041,12 @@ input,textarea,[contenteditable="true"]{cursor:text}
   .more-tabs::-webkit-scrollbar{display:none}
   .more-tabs button{font-size:9px;padding:10px 12px 12px}
 }
+
+/* Messages — empty state (no conversations yet) */
+.messages-empty{display:flex;flex-direction:column;gap:22px}
+.messages-start-list{list-style:none;margin:0;padding:0;display:grid;gap:1px;background:var(--line-dark);border:1px solid var(--line-dark);border-radius:10px;overflow:hidden}
+.messages-start-list li{display:flex;align-items:center;gap:14px;padding:14px 16px;background:var(--raised)}
+.messages-start-list li>div{flex:1;min-width:0;display:flex;flex-direction:column}
+.messages-start-list strong{font:600 15px var(--sans);color:var(--soft)}
+.messages-start-list small{font:400 12px var(--sans);color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+@media(max-width:680px){.messages-start-list li{flex-wrap:wrap}}
