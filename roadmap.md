@@ -76,3 +76,4 @@
 - [x] Replace only Home with the ivory/black editorial relationship-intelligence composition.
 - [x] Connect Home metrics, priority relationships, filters, sorting, search, and actions to current state.
 - [x] Verify desktop and mobile Home rendering, interactions, and overflow.
+- [x] Restore the editorial photographic portrait to the Home masthead.
