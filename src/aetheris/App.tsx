@@ -614,7 +614,7 @@ function Home({ people, select, setPage, openNeed, openThread }: {
   const activeOpportunities = os.rooms.filter(room => !room.archived && room.stage !== 'Lost/Not Now').length + platform.placements.filter(placement => !['Adopted', 'Referred', 'Not Now'].includes(placement.stage)).length
   const coldConversations = net.threads.filter(thread => thread.unread).length
   const firstName = net.profile.name.trim().split(/\s+/)[0] || 'Joseph'
-  const statusLabel = (person: Member) => person.relationshipStatus === 'at-risk' ? 'AT RISK' : radarLabel(person.radar).toUpperCase()
+  const statusLabel = (person: Member) => person.relationshipStatus === 'at-risk' ? 'AT RISK' : radarLabel[person.radar].toUpperCase()
   const filters: Array<[HomeConnectionFilter, string]> = [['all', 'All'], ['hot_now', 'Hot Now'], ['emerging', 'Emerging'], ['strategic', 'Strategic'], ['dormant', 'Dormant'], ['at_risk', 'At Risk']]
   const dashboardNav: Array<[string, Page]> = [['Home', 'home'], ['Network', 'network'], ['Opportunities', 'opportunities'], ['Introductions', 'intros'], ['Meetings', 'messages'], ['Analytics', 'insights'], ['Settings', 'preferences']]
   const integrations = ['LinkedIn', 'Gmail', 'Outlook', 'Google Calendar', 'Slack', 'Zoom', 'Microsoft Teams', 'HubSpot', 'Salesforce', 'Notion']
