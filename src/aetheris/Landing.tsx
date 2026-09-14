@@ -47,6 +47,15 @@ function LandingPage({ signedIn }: { signedIn: boolean }) {
   const accountBtn = (cls: string) => <Link to={signedIn ? '/app' : '/early-access'} className={cls}>{signedIn ? 'Enter your network' : 'Create an account'}</Link>
   return (
     <main className="lv">
+      {/* ── Top strip: WHY ME · WHY THEM · WHY NOW ── */}
+      <div className="lv-topstrip" aria-hidden="true">
+        <span className="t-orange">WHY ME</span>
+        <i>·</i>
+        <span className="t-blue">WHY THEM</span>
+        <i>·</i>
+        <span className="t-orange">WHY NOW</span>
+      </div>
+
       {/* ── Section 1: Black hero ── */}
       <header className="lv-nav">
         <div className="brand-mark">
