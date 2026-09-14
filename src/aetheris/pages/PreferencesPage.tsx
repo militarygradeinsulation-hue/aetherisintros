@@ -34,6 +34,8 @@ export function PreferencesPage() {
       <main className="preference-panel">
         {tab === 'Profile' && <section>
           <Eyebrow>PROFESSIONAL IDENTITY</Eyebrow><h2>How you appear in the network.</h2>
+          <IdentityCard />
+
           <label><span>Professional title</span><input value={draft.title} onChange={event => update('title', event.target.value)} /></label>
           <label><span>Current focus</span><textarea rows={3} value={draft.focus} onChange={event => update('focus', event.target.value)} /></label>
           <label><span>Profile visibility</span><select value={draft.profileVisibility} onChange={event => update('profileVisibility', event.target.value as PreferenceSettings['profileVisibility'])}><option value="network">Aetheris network</option><option value="connections">Connections only</option><option value="private">Private</option></select></label>
