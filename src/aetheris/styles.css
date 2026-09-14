@@ -2944,7 +2944,7 @@ html.text-scale-larger body { zoom: 1.22; }
 
 /* The pointer is the Aetheris "A": graphite with an ivory halo so it stays
    legible on both ivory editorial pages and near-black intelligence panels. */
-html,body,.landing,.app-shell{cursor:url(/cursor-aetheris.png) 15 2,auto}
-a,button,summary,label,select,[role="button"],[role="tab"],[role="menuitem"],.btn,.icon-btn,.text-action,.person-brief,.context-person{cursor:url(/cursor-aetheris-action.png) 15 2,pointer}
+html,body,.landing,.app-shell{cursor:url(/cursor-aetheris.png) 20 7,auto}
+a,button,summary,label,select,[role="button"],[role="tab"],[role="menuitem"],.btn,.icon-btn,.text-action,.person-brief,.context-person{cursor:url(/cursor-aetheris-action.png) 20 7,pointer}
 button:disabled,[aria-disabled="true"]{cursor:not-allowed}
 input,textarea,[contenteditable="true"]{cursor:text}
