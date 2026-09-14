@@ -2011,6 +2011,40 @@ function GlobalSearch({ open, onClose, people }: { open: boolean; onClose: () =>
   </div>
 }
 
+/**
+ * Explicit sign in / sign out control.
+ *
+ * Signing out clears every locally cached Aetheris record so the next person
+ * on this device can never see the previous member's network.
+ */
+function AccountControl() {
+  const { access } = useAccess()
+  const [busy, setBusy] = useState(false)
+
+  if (access.loading) return null
+
+  if (!access.signedIn) {
+    return <a className="topbar-auth" href="/auth" title="Sign in to your account">
+      <LogIn size={13} /><span>Sign in</span></a>
+  }
+
+  const signOut = async () => {
+    setBusy(true)
+    try {
+      await supabase.auth.signOut()
+    } finally {
+      try {
+        Object.keys(localStorage).filter(k => k.startsWith('aetheris.')).forEach(k => localStorage.removeItem(k))
+      } catch { /* storage unavailable */ }
+      window.location.replace('/auth')
+    }
+  }
+
+  return <button className="topbar-auth" disabled={busy} title={access.email ? `Signed in as ${access.email}` : 'Sign out'}
+    onClick={() => { void signOut() }}>
+    <LogOut size={13} /><span>{busy ? 'Signing out…' : 'Sign out'}</span></button>
+}
+
 /* ---------------------------------------------------------------------- app */
 
 export default function App({ startPage, mode = 'live' }: { startPage?: Page | undefined; mode?: NetworkMode }) {
