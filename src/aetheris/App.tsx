@@ -651,7 +651,7 @@ function Home({ people, select, setPage, openNeed, openThread }: {
 
     <section className="eh-hero">
       <div className="eh-hero-copy">
-        <span>WHY ME · WHY THEM · WHY NOW</span>
+        <span>RELATIONSHIP INTELLIGENCE</span>
         <h1>The right people.<br /><em>At the right time.</em></h1>
         <p>Aetheris Intros is an AI-powered relationship intelligence platform that helps you identify, reach, and build the relationships that matter most to your business.</p>
         <div><button className="eh-primary" onClick={openNeed}>GET STARTED <ArrowRight size={15} /></button><button className="eh-secondary" onClick={() => setPage('intros')}><Play size={13} /> SEE HOW IT WORKS</button></div>
