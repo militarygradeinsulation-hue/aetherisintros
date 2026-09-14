@@ -2263,6 +2263,7 @@ function Shell({ startPage }: { startPage?: Page | undefined }) {
         </nav>
         <div className="rail-foot"><span className="live-dot" /><span>Memory live</span>
           <button onClick={() => setPage('profile')} aria-label="Your profile"><SelfAvatar /></button></div>
+        <div className="rail-auth"><AccountControl /></div>
       </aside>
       <div className="workspace">
         <header className="topbar">
@@ -2289,6 +2290,7 @@ function Shell({ startPage }: { startPage?: Page | undefined }) {
                 </div>
               </>}
             </div>
+            <AccountControl />
             <button className="topbar-avatar" aria-label="Your profile" onClick={() => setPage('profile')}><SelfAvatar /></button>
           </div>
 
