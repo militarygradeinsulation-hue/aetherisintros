@@ -88,3 +88,4 @@
 - [x] Recompose Simple View to match the supplied Intro Ledger.
 - [x] Verify connected actions, desktop/mobile layout, and build health.
 - [x] Replace the Simple View navy and blue palette with the site's black, white, and amber system.
+- [x] Align Simple Mode typography, surfaces, controls, and accent roles with the signed-in Aetheris interface.
