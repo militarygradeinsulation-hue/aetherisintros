@@ -368,6 +368,12 @@ export const pageMeta: PageMeta[] = [
     next: 'Act on the lead item before reading further.',
     why: 'Daily Briefing is today’s composed edition. Briefing Mode is the explanatory layer that teaches what pages mean.',
   }, ['daily', 'today', 'digest']),
+  m('simple', 'Simple view', Layers, 'PRIMARY', 'One calm screen: who matters, why now, and the next useful move.', {
+    does: 'Puts the whole system on one ledger screen with a single search across people, signals, needs, memory and conversations.',
+    look: 'The lead relationship with its reasoning, then signals, memory, needs and waiting conversations.',
+    changes: 'Everything updates from the same live network state as the full product.',
+    next: 'Act on the lead story, or search for the thing you actually came for.',
+  }, ['simple', 'ledger', 'one page', 'calm']),
 ]
 
 export const metaById: Record<string, PageMeta> = Object.fromEntries(pageMeta.map(p => [p.id, p]))
@@ -375,7 +381,7 @@ export const metaById: Record<string, PageMeta> = Object.fromEntries(pageMeta.ma
 export function pageLabel(id: Page) { return metaById[id]?.label ?? id }
 
 /** The short, always-visible rail. */
-export const primaryPages: Page[] = ['home', 'network', 'opportunities', 'messages']
+export const primaryPages: Page[] = ['home', 'simple', 'network', 'opportunities', 'messages']
 
 /** Tabs consolidated inside the Network and Opportunities hubs. */
 export const networkTabs: Page[] = ['discover', 'directory', 'intros', 'companies', 'calendar']
