@@ -86,4 +86,4 @@
 
 # Simple View ledger fidelity (Sep 14)
 - [x] Recompose Simple View to match the supplied Intro Ledger.
-- [ ] Verify connected actions, desktop/mobile layout, and build health.
+- [x] Verify connected actions, desktop/mobile layout, and build health.
