@@ -83,3 +83,7 @@
 - [x] Replace connection initials with recognizable platform logos.
 - [x] Make Home dark below its light top bar by default and add a persistent light/dark switch.
 - [x] Verify the updated Home at desktop and mobile sizes.
+
+# Simple View ledger fidelity (Sep 14)
+- [ ] Recompose Simple View to match the supplied Intro Ledger.
+- [ ] Verify connected actions, desktop/mobile layout, and build health.
