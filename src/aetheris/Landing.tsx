@@ -66,7 +66,8 @@ function LandingPage({ signedIn }: { signedIn: boolean }) {
         <nav>PEOPLE&nbsp;&nbsp;|&nbsp;&nbsp;IDEAS&nbsp;&nbsp;|&nbsp;&nbsp;OPPORTUNITIES</nav>
         <div className="lv-nav-actions">
           {demoBtn('Demo', 'btn primary')}
-          {accountBtn(showDemo ? 'btn ghost' : 'btn primary')}
+          {loginBtn('btn ghost')}
+          {accountBtn(showDemo ? 'btn primary' : 'btn primary')}
         </div>
       </header>
 
