@@ -630,8 +630,8 @@ function Home({ people, select, setPage, openNeed, openThread }: {
         <p>Aetheris Intros is an AI-powered relationship intelligence platform that helps you identify, reach, and build the relationships that matter most to your business.</p>
         <div><button className="eh-primary" onClick={openNeed}>GET STARTED <ArrowRight size={15} /></button><button className="eh-secondary" onClick={() => setPage('intros')}><Play size={13} /> SEE HOW IT WORKS</button></div>
       </div>
-      <div className="eh-hero-art" aria-label="An abstract professional silhouette in architectural window light">
-        <div className="eh-window" /><div className="eh-silhouette"><i /><b /></div>
+      <div className="eh-hero-art">
+        <img src={homeEditorialAsset.url} alt="A professional in quiet thought beside hard window light" width={597} height={804} />
         <p>REAL PEOPLE. REAL OPPORTUNITIES. A BRIGHTER TOMORROW.</p>
       </div>
     </section>
