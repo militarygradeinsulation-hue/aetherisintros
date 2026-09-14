@@ -97,7 +97,7 @@ export function MoreDrawer({ open, page, onClose, onNavigate }: {
         <input value={query} onChange={e => setQuery(e.target.value)} placeholder="Find a page or capability…" autoFocus />
       </label>
 
-      {!!pinned.length && !results && <section className="more-recent">
+      {!!pinned.length && !results && <section className="more-recent favourites">
         <span className="more-label">FAVOURITES</span>
         <div>{pinned.map(id => {
           const meta = metaById[id]
