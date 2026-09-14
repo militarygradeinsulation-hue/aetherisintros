@@ -1,6 +1,7 @@
-import { useState } from 'react'
-import { Check, LockKeyhole, ShieldCheck } from 'lucide-react'
+import { useEffect, useState } from 'react'
+import { Camera, Check, LockKeyhole, ShieldCheck } from 'lucide-react'
 import { useNetwork, type PreferenceSettings } from '../store'
+import { AvatarImage } from '../avatar'
 import { Btn, Eyebrow, Head } from '../ui'
 
 const tabs = ['Profile', 'Availability', 'Preferences', 'Notifications', 'Privacy', 'Memory Controls'] as const
@@ -10,6 +11,63 @@ type Tab = typeof tabs[number]
 function Toggle({ checked, onChange, label }: { checked: boolean; onChange: (value: boolean) => void; label: string }) {
   return <button type="button" role="switch" aria-checked={checked} className={`control-toggle ${checked ? 'active' : ''}`} onClick={() => onChange(!checked)}><span /><b>{label}</b></button>
 }
+
+/** Name and profile photo, saved straight onto the member's own account. */
+function IdentityCard() {
+  const net = useNetwork()
+  const me = net.profile
+  const [name, setName] = useState(me.name)
+  const [photo, setPhoto] = useState<File | null>(null)
+  const [preview, setPreview] = useState<string | null>(null)
+  const [busy, setBusy] = useState(false)
+  const [message, setMessage] = useState('')
+
+  useEffect(() => { setName(me.name) }, [me.name])
+  useEffect(() => () => { if (preview) URL.revokeObjectURL(preview) }, [preview])
+
+  const choose = (file: File | null) => {
+    setMessage('')
+    if (!file) return
+    if (!file.type.startsWith('image/')) { setMessage('Choose an image file.'); return }
+    if (file.size > 5 * 1024 * 1024) { setMessage('Profile photos must be 5 MB or smaller.'); return }
+    if (preview) URL.revokeObjectURL(preview)
+    setPhoto(file)
+    setPreview(URL.createObjectURL(file))
+  }
+
+  const save = async () => {
+    setBusy(true); setMessage('')
+    try {
+      await net.updateIdentity({ name, photo })
+      setPhoto(null)
+      if (preview) URL.revokeObjectURL(preview)
+      setPreview(null)
+      setMessage('Saved to your account.')
+    } catch (error) {
+      setMessage(error instanceof Error ? error.message : 'Could not save your profile.')
+    } finally { setBusy(false) }
+  }
+
+  return <div className="settings-identity">
+    <span className="settings-identity-photo" aria-hidden="true">
+      {preview
+        ? <img src={preview} alt="" />
+        : me.avatarUrl
+          ? <AvatarImage source={me.avatarUrl} alt="" loading="eager" />
+          : <b>{me.initials || 'M'}</b>}
+    </span>
+    <div className="settings-identity-fields">
+      <label><span>Your name</span><input value={name} onChange={event => setName(event.target.value)} /></label>
+      <label className="settings-photo-input">
+        <span>Profile photo</span>
+        <input type="file" accept="image/*" onChange={event => choose(event.target.files?.[0] ?? null)} />
+      </label>
+      <Btn onClick={() => void save()} disabled={busy}><Camera size={14} /> {busy ? 'Saving…' : 'Save name and photo'}</Btn>
+      {message && <small className="settings-identity-note">{message}</small>}
+    </div>
+  </div>
+}
+
 
 export function PreferencesPage() {
   const net = useNetwork()
