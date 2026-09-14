@@ -582,7 +582,8 @@ function HomeAttention({ ranked, activeNeed, select, setPage, openThread }: {
 
 function HomeBrand({ compact = false }: { compact?: boolean }) {
   return <div className={`home-ai-brand ${compact ? 'compact' : ''}`} aria-label="Aetheris Intros">
-    <span className="home-ai-monogram">AI<i /></span><b>AETHERIS INTROS</b>
+    <span className="home-ai-monogram">AI<i /></span>
+    <span className="home-ai-namestack"><b>AETHERIS INTROS</b>{!compact && <small>WHY ME · WHY THEM · WHY NOW</small>}</span>
   </div>
 }
 
