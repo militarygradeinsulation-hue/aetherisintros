@@ -456,6 +456,7 @@ export type Database = {
           capacity: number
           id: number
           mode: string
+          owner_user_id: string | null
           updated_at: string
           updated_by: string | null
         }
@@ -463,6 +464,7 @@ export type Database = {
           capacity?: number
           id?: number
           mode?: string
+          owner_user_id?: string | null
           updated_at?: string
           updated_by?: string | null
         }
@@ -470,6 +472,7 @@ export type Database = {
           capacity?: number
           id?: number
           mode?: string
+          owner_user_id?: string | null
           updated_at?: string
           updated_by?: string | null
         }
