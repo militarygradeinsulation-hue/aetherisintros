@@ -115,7 +115,7 @@ const scopes: PrivacyScope[] = ['private', 'team', 'organization', 'shareable', 
 /* ---------------------------------------------------------------- primitives */
 
 function Brand() {
-  return <div className="brand-mark"><img className="brand-logo" src={logoAsset.url} alt="Aetheris Intros logo" /><span className="brand-name">Aetheris<em>Intros</em></span></div>
+  return <HomeBrand compact />
 }
 function AetherisGlyph({ size = 18 }: { size?: number }) {
   return <span className="aetheris-glyph" style={{ width: size, height: size }} aria-hidden="true"><i /><b /></span>
