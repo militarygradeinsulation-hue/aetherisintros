@@ -2248,6 +2248,8 @@ function Shell({ startPage }: { startPage?: Page | undefined }) {
 
   useGrabScroll()
   useEffect(() => { applyTextScale(readTextScale()) }, [])
+  useEffect(() => { applyCursorScale(readCursorScale()) }, [])
+
   useEffect(() => { rememberRecent(page) }, [page])
 
   return <NavCtx.Provider value={navApi}>
