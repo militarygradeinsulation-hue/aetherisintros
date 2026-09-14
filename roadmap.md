@@ -85,5 +85,5 @@
 - [x] Verify the updated Home at desktop and mobile sizes.
 
 # Simple View ledger fidelity (Sep 14)
-- [ ] Recompose Simple View to match the supplied Intro Ledger.
+- [x] Recompose Simple View to match the supplied Intro Ledger.
 - [ ] Verify connected actions, desktop/mobile layout, and build health.
