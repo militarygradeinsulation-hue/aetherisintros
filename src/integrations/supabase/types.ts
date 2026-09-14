@@ -92,6 +92,51 @@ export type Database = {
         }
         Relationships: []
       }
+      calendar_events: {
+        Row: {
+          all_day: boolean
+          created_at: string
+          ends_at: string
+          id: string
+          kind: string
+          location: string
+          member_id: string | null
+          notes: string
+          starts_at: string
+          title: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          all_day?: boolean
+          created_at?: string
+          ends_at: string
+          id?: string
+          kind?: string
+          location?: string
+          member_id?: string | null
+          notes?: string
+          starts_at: string
+          title: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          all_day?: boolean
+          created_at?: string
+          ends_at?: string
+          id?: string
+          kind?: string
+          location?: string
+          member_id?: string | null
+          notes?: string
+          starts_at?: string
+          title?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       circle_memberships: {
         Row: {
           circle_id: string
