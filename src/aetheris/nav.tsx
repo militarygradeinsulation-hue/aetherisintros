@@ -3,7 +3,7 @@ import type { Member } from './social'
 
 export type Page =
   | 'home' | 'network' | 'discover' | 'intros' | 'messages' | 'needs' | 'memory' | 'insights' | 'profile'
-  | 'systems' | 'circles' | 'companies' | 'outcomes' | 'loops' | 'organization' | 'events' | 'preferences'
+  | 'calendar' | 'systems' | 'circles' | 'companies' | 'outcomes' | 'loops' | 'organization' | 'events' | 'preferences'
   | 'inbox' | 'rooms' | 'collisions' | 'simulation' | 'strategy' | 'evidence' | 'autopilot'
   | 'ask' | 'constitution' | 'serendipity' | 'eventmode' | 'gaps' | 'identity' | 'consent'
   | 'timemachine' | 'attribution' | 'knowledge' | 'boards' | 'integrations'

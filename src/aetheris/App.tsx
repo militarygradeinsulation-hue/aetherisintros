@@ -21,6 +21,7 @@ import needsEditorialAsset from '@/assets/editorial-needs.jpg.asset.json'
 import memoryEditorialAsset from '@/assets/editorial-memory.jpg.asset.json'
 import insightsEditorialAsset from '@/assets/editorial-insights.jpg.asset.json'
 import homeEditorialAsset from '@/assets/aetheris-home-portrait.jpg.asset.json'
+import overviewFilmAsset from '@/assets/aetheris-intros-overview.mp4.asset.json'
 import logoAsset from '@/assets/aetheris-logo.jpg.asset.json'
 import worldNetworkImg from '@/assets/aetheris-world-network.jpg'
 import { leaks } from './data'
@@ -48,6 +49,7 @@ import { OrganizationPage } from './pages/OrganizationPage'
 import { HandshakeModal } from './pages/Handshake'
 import { IntentBoard, IntentModal, IntentStrip } from './pages/Intents'
 import { EventsPage } from './pages/EventsPage'
+import { CalendarPage } from './pages/CalendarPage'
 import { OpportunityRoomsPage } from './pages/OpportunityRoomsPage'
 import { RelationshipInboxPage, InboxRow } from './pages/RelationshipInboxPage'
 import { CollisionsPage, CollisionCard } from './pages/CollisionsPage'
@@ -694,6 +696,21 @@ function Home({ people, select, setPage, openNeed, openThread }: {
       <article className="orange"><span>WHY ME</span><i /><p>Built with business, AI, and real-world execution in mind.</p></article>
       <article className="blue"><span>WHY THEM</span><i /><p>Focused on the people, context, and opportunity that actually matter.</p></article>
       <article className="orange"><span>WHY NOW</span><i /><p>The best relationships are built before the market catches up.</p></article>
+    </section>
+
+    <section className="eh-film">
+      <div className="eh-film-copy">
+        <span>WATCH FIRST</span>
+        <h2>See how Aetheris Intros works.</h2>
+        <p>A short walk through the platform: how context is captured, how the right people surface at the right time, and how introductions happen with both sides agreeing.</p>
+        <ul><li>Why this person, why you, why now</li><li>Double opt-in introductions, never cold outreach</li><li>Memory that keeps relationships alive</li></ul>
+      </div>
+      <figure>
+        <video src={overviewFilmAsset.url} controls preload="metadata" playsInline poster={homeEditorialAsset.url}>
+          <track kind="captions" />
+        </video>
+        <figcaption>Platform overview · 2 min</figcaption>
+      </figure>
     </section>
 
     <section className="eh-connections">
@@ -2127,6 +2144,7 @@ function Shell({ startPage }: { startPage?: Page | undefined }) {
       needs: <><Needs onNew={() => setNeedOpen(true)} people={people} select={setSelected} setPage={setPage} /><IntentBoard /></>,
       memory: <Memory people={people} select={setSelected} />,
       events: <EventsPage />,
+      calendar: <CalendarPage />,
       insights: <Insights people={people} select={setSelected} setPage={setPage} />,
       profile: <Profile people={people} setPage={setPage} openOnboarding={() => setOnboardOpen(true)} />,
       preferences: <PreferencesPage />,

@@ -114,6 +114,13 @@ export const pageMeta: PageMeta[] = [
     changes: 'Joining or creating circles changes feed relevance and routing.',
     next: 'Join the one circle closest to what you are moving.',
   }, ['groups', 'communities']),
+  m('calendar', 'Calendar', CalendarDays, 'NETWORK', 'Your own calendar: meetings, intros, follow-ups and personal time.', {
+    does: 'Keeps your personal calendar of meetings, introductions, follow-ups and personal time.',
+    look: 'Month, week, day and agenda views of everything you have committed to.',
+    changes: 'Adding, moving and completing events informs timing across the network.',
+    next: 'Put the commitment you just made on the calendar before it is forgotten.',
+    why: 'Your calendar is private to you — nobody else in the network can see it.',
+  }, ['calendar', 'events', 'schedule', 'meetings', 'agenda', 'diary']),
   m('companies', 'Companies', Building2, 'NETWORK', 'Organisations, their people and company-level fit.', {
     does: 'Profiles organisations, their people and the Golden Fit between two companies.',
     look: 'Strengths, risks, unknowns and honest collaboration hypotheses.',
@@ -371,7 +378,7 @@ export function pageLabel(id: Page) { return metaById[id]?.label ?? id }
 export const primaryPages: Page[] = ['home', 'network', 'opportunities', 'messages']
 
 /** Tabs consolidated inside the Network and Opportunities hubs. */
-export const networkTabs: Page[] = ['discover', 'directory', 'intros', 'companies']
+export const networkTabs: Page[] = ['discover', 'directory', 'intros', 'companies', 'calendar']
 export const networkAdvanced: Page[] = ['circles', 'expertise', 'events', 'serendipity', 'gaps', 'identity', 'organization', 'talent', 'knowledge', 'boards', 'intelrooms', 'passport', 'ask']
 export const opportunityTabs: Page[] = ['needs', 'opportunities', 'rooms', 'outcomes']
 export const opportunityAdvanced: Page[] = ['dealrooms', 'systems', 'strategy', 'simulation', 'collisions', 'capital', 'attribution', 'loops', 'knowledgeassets', 'timemachine']
