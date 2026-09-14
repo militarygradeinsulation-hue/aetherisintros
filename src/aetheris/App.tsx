@@ -2224,7 +2224,9 @@ function Shell({ startPage }: { startPage?: Page | undefined }) {
                 </div>
               </>}
             </div>
+            <button className="topbar-avatar" aria-label="Your profile" onClick={() => setPage('profile')}><SelfAvatar /></button>
           </div>
+
         </header>
         <div className="workspace-grid">
           <main className="content">
