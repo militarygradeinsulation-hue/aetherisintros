@@ -1,12 +1,12 @@
 import { useEffect, useMemo, useState, type ReactNode } from 'react'
 import {
-  AlertTriangle, ArrowLeftRight, ArrowRight, Bookmark, BookmarkCheck, Building2, CalendarDays, Camera, Check, CheckCircle2, ChevronLeft,
+  AlertTriangle, ArrowLeftRight, ArrowRight, Bell, Bookmark, BookmarkCheck, Building2, CalendarDays, Camera, Check, CheckCircle2, ChevronLeft, ChevronRight,
   CircleDot, Compass, Eye, Fingerprint, Handshake, Heart, Home as HomeIcon, Layers, LockKeyhole,
   MapPin, Menu, MessageSquareText, Network, Plus, Search, Send, Share2, ShieldCheck, Target,
   MessageCircle, Repeat2, Settings2, SlidersHorizontal, TrendingUp, UserRound, Users, X,
   Inbox, DoorOpen, GitMerge, Radar, Flag, FileSearch, Gauge, Mic,
   HelpCircle, BookOpen, Sparkle, Map as MapIcon, History, BadgeCheck, Lock, ScrollText, Puzzle,
-  ChevronDown, LayoutGrid, Briefcase, FolderLock, GraduationCap, UsersRound, Coins, Landmark, PlaneTakeoff, ShieldAlert, Newspaper, Archive, FileText,
+  ChevronDown, LayoutGrid, Briefcase, FolderLock, GraduationCap, UsersRound, Coins, Landmark, PlaneTakeoff, Play, ShieldAlert, Newspaper, Archive, FileText,
 } from 'lucide-react'
 import { rankMatches, type MatchResult } from '@/aetheris/matching'
 import { AvatarImage } from './avatar'
@@ -576,188 +576,123 @@ function HomeAttention({ ranked, activeNeed, select, setPage, openThread }: {
   </section>
 }
 
+function HomeBrand({ compact = false }: { compact?: boolean }) {
+  return <div className={`home-ai-brand ${compact ? 'compact' : ''}`} aria-label="Aetheris Intros">
+    <span className="home-ai-monogram">AI<i /></span><b>AETHERIS INTROS</b>
+  </div>
+}
+
+type HomeConnectionFilter = 'all' | 'hot_now' | 'emerging' | 'strategic' | 'dormant' | 'at_risk'
+type HomeConnectionSort = 'score' | 'timing' | 'relationship' | 'contact'
+
 function Home({ people, select, setPage, openNeed, openThread }: {
   people: Member[]; select: (p: Member) => void; setPage: (p: Page) => void; openNeed: () => void
   openThread: (id: string) => void
 }) {
   const net = useNetwork()
   const platform = usePlatform()
-  const [tab, setTab] = useState<'feed' | 'people' | 'asks' | 'signals'>('feed')
-  const [homeMode, setHomeMode] = useState<'social' | 'briefing'>('social')
-  const [composer, setComposer] = useState('')
-  const [customizing, setCustomizing] = useState(false)
+  const os = useOS()
+  const nav = useNav()
+  const [filter, setFilter] = useState<HomeConnectionFilter>('all')
+  const [sort, setSort] = useState<HomeConnectionSort>('score')
+  const [query, setQuery] = useState('')
   const ranked = useMemo(() => [...people].sort((a, b) => b.scoreTotal - a.scoreTotal), [people])
-  const industries = useMemo(() => Array.from(new Set(people.map(person => person.industry))).sort(), [people])
-  const joinedCircles = useMemo(() => platform.circles.filter(circle => circle.memberIds.includes('me')), [platform.circles])
-  const visiblePosts = useMemo(() => {
-    const industryFor = (post: Post) => people.find(person => person.id === post.memberId)?.industry ?? net.profile.industries[0] ?? ''
-    const filtered = net.posts.filter(post => {
-      const industry = industryFor(post)
-      if (net.feedPreferences.scope === 'saved') return net.saved.includes(post.id)
-      if (net.feedPreferences.scope === 'circle') {
-        const circle = joinedCircles.find(item => item.id === net.feedPreferences.circleId) ?? joinedCircles[0]
-        return Boolean(circle?.memberIds.includes(post.memberId))
-      }
-      if (net.feedPreferences.scope === 'industry') {
-        const chosen = net.feedPreferences.industries.length ? net.feedPreferences.industries : net.profile.industries
-        return chosen.some(value => value.toLowerCase() === industry.toLowerCase())
-      }
-      return true
-    })
-    if (net.feedPreferences.scope !== 'all') return filtered
-    const interests = new Set([...net.feedPreferences.industries, ...net.profile.industries].map(value => value.toLowerCase()))
-    return [...filtered].sort((a, b) => {
-      const relevance = (post: Post) => (net.connections.includes(post.memberId) ? 5 : 0)
-        + (net.follows.includes(post.memberId) ? 4 : 0)
-        + (interests.has(industryFor(post).toLowerCase()) ? 3 : 0)
-        + (post.memberId === 'me' ? 6 : 0)
-      return relevance(b) - relevance(a)
-    })
-  }, [joinedCircles, net.connections, net.feedPreferences, net.follows, net.posts, net.profile.industries, net.saved, people])
-  const activeNeed = net.objectives[0]
-  const share = () => {
-    if (!composer.trim()) return
-    net.addPost(composer.trim())
-    setComposer('')
-  }
-  return <>
-    <nav className="home-mode-switch" role="tablist" aria-label="Home mode">
-      {([['social', 'Social'], ['briefing', 'Daily Briefing']] as const).map(([id, label]) =>
-        <button key={id} role="tab" aria-selected={homeMode === id} className={homeMode === id ? 'on' : ''} onClick={() => setHomeMode(id)}>{label}</button>)}
-      <small>{homeMode === 'social' ? 'The professional network, as it is moving today.' : 'What needs you today, composed rather than counted.'}</small>
-    </nav>
+  const connections = useMemo(() => ranked.filter(person => {
+    const text = `${person.name} ${person.title} ${person.company} ${person.whyYou} ${person.whyThem} ${person.whyNow}`.toLowerCase()
+    if (query.trim() && !text.includes(query.trim().toLowerCase())) return false
+    if (filter === 'at_risk') return person.relationshipStatus === 'at-risk'
+    if (filter !== 'all' && person.radar !== filter) return false
+    return true
+  }).sort((a, b) => {
+    if (sort === 'timing') return b.score.timing - a.score.timing
+    if (sort === 'relationship') return b.score.relationshipStrength - a.score.relationshipStrength
+    if (sort === 'contact') return a.lastInteractionDays - b.lastInteractionDays
+    return b.scoreTotal - a.scoreTotal
+  }), [filter, people, query, ranked, sort])
+  const needingAttention = people.filter(person => person.relationshipStatus === 'at-risk' || person.lastInteractionDays > 60).length
+  const highValuePaths = people.filter(person => person.scoreTotal >= 75).length
+  const activeOpportunities = os.rooms.filter(room => !room.archived && room.stage !== 'Lost/Not Now').length + platform.placements.filter(placement => !['Adopted', 'Referred', 'Not Now'].includes(placement.stage)).length
+  const coldConversations = net.threads.filter(thread => thread.unread).length
+  const firstName = net.profile.name.trim().split(/\s+/)[0] || 'Joseph'
+  const statusLabel = (person: Member) => person.relationshipStatus === 'at-risk' ? 'AT RISK' : radarLabel(person.radar).toUpperCase()
+  const filters: Array<[HomeConnectionFilter, string]> = [['all', 'All'], ['hot_now', 'Hot Now'], ['emerging', 'Emerging'], ['strategic', 'Strategic'], ['dormant', 'Dormant'], ['at_risk', 'At Risk']]
+  const dashboardNav: Array<[string, Page]> = [['Home', 'home'], ['Network', 'network'], ['Opportunities', 'opportunities'], ['Introductions', 'intros'], ['Meetings', 'messages'], ['Analytics', 'insights'], ['Settings', 'preferences']]
+  const integrations = ['LinkedIn', 'Gmail', 'Outlook', 'Google Calendar', 'Slack', 'Zoom', 'Microsoft Teams', 'HubSpot', 'Salesforce', 'Notion']
+  const draftMessage = (person: Member) => openThread(net.openThreadWith(person.id))
 
-    {homeMode === 'briefing' && <BriefingPage />}
+  return <div className="editorial-home">
+    <header className="eh-brandbar"><HomeBrand /><div><span>RELATIONSHIP<br />INTELLIGENCE AT WORK</span><i /></div></header>
 
-    {homeMode === 'social' && <>
-    {isShowcase() && <HomeMasthead people={people} select={select} setPage={setPage} openNeed={openNeed} openThread={openThread} />}
-
-    <div className="home-3col">
-    <aside className="home-side home-side-left">
-      <HomeIdentityCard openNeed={openNeed} setPage={setPage} />
-    </aside>
-    <div className="home-center">
-    <section className="composer">
-      <SelfAvatar portrait />
-      <div>
-        <textarea value={composer} onChange={e => setComposer(e.target.value)} rows={2}
-          placeholder="Share something useful — an insight, a milestone, a partnership you are looking for…" />
-        <footer>
-          <small>Visible to your network · Intros learns from what you share</small>
-          <Button onClick={share} disabled={!composer.trim()}><Send size={14} /> Share</Button>
-        </footer>
+    <section className="eh-hero">
+      <div className="eh-hero-copy">
+        <span>WHY ME · WHY THEM · WHY NOW</span>
+        <h1>The right people.<br /><em>At the right time.</em></h1>
+        <p>Aetheris Intros is an AI-powered relationship intelligence platform that helps you identify, reach, and build the relationships that matter most to your business.</p>
+        <div><button className="eh-primary" onClick={openNeed}>GET STARTED <ArrowRight size={15} /></button><button className="eh-secondary" onClick={() => setPage('intros')}><Play size={13} /> SEE HOW IT WORKS</button></div>
+      </div>
+      <div className="eh-hero-art" aria-label="An abstract professional silhouette in architectural window light">
+        <div className="eh-window" /><div className="eh-silhouette"><i /><b /></div>
+        <p>REAL PEOPLE. REAL OPPORTUNITIES. A BRIGHTER TOMORROW.</p>
       </div>
     </section>
 
-    <div className="feed-tabs">
-      {([['feed', 'Network feed'], ['people', 'Who to meet'], ['asks', 'Network asks'], ['signals', 'Professional signals']] as const).map(([id, label]) =>
-        <button key={id} className={tab === id ? 'active' : ''} onClick={() => setTab(id)}>{label}</button>)}
-      <button className="text-action feed-tab-action" onClick={() => setPage('discover')}>Browse the network <ArrowRight size={13} /></button>
-    </div>
+    <dl className="eh-metrics">
+      <div><dd>{net.connections.length}</dd><dt>Relationships</dt></div>
+      <div><dd>{highValuePaths}</dd><dt>High-Value Paths</dt></div>
+      <div><dd>{activeOpportunities}</dd><dt>Active Opportunities</dt></div>
+      <div><dd>{coldConversations}</dd><dt>Conversations Needing Attention</dt></div>
+    </dl>
 
-    {tab === 'feed' && <section className="feed-controls">
-      <div className="feed-scope" aria-label="Feed view">
-        {([['all', 'For you'], ['circle', 'My circles'], ['industry', 'Industries'], ['saved', 'Saved']] as const).map(([scope, label]) =>
-          <button key={scope} className={net.feedPreferences.scope === scope ? 'active' : ''} onClick={() => net.setFeedPreferences({ ...net.feedPreferences, scope })}>{label}</button>)}
-      </div>
-      <Button kind="quiet" onClick={() => setCustomizing(value => !value)}><SlidersHorizontal size={14} /> Customize</Button>
-      {customizing && <div className="feed-customizer">
-        <div><Label>INDUSTRIES YOU FOLLOW</Label><div className="topic-chips">{industries.map(industry => {
-          const active = net.feedPreferences.industries.includes(industry)
-          return <button key={industry} className={active ? 'active' : ''} onClick={() => net.setFeedPreferences({ ...net.feedPreferences, industries: active ? net.feedPreferences.industries.filter(value => value !== industry) : [...net.feedPreferences.industries, industry] })}>{industry}</button>
-        })}</div></div>
-        <label><Label>ACTIVE CIRCLE</Label><select value={net.feedPreferences.circleId} onChange={event => net.setFeedPreferences({ ...net.feedPreferences, circleId: event.target.value })}><option value="">Choose a circle</option>{joinedCircles.map(circle => <option key={circle.id} value={circle.id}>{circle.name}</option>)}</select></label>
-        <p>Your choices persist with your profile and shape what appears first.</p>
-      </div>}
-      <div className="live-topic-line"><span className="live-dot" /> Live topics: {(net.feedPreferences.industries.length ? net.feedPreferences.industries : net.profile.industries).slice(0, 4).join(' · ') || 'Your professional network'}</div>
-    </section>}
-
-    <div className="feed">
-      {tab === 'feed' && visiblePosts.map(post =>
-        <PostCard key={post.id} post={post} member={people.find(p => p.id === post.memberId) ?? undefined}
-          onOpen={() => { const m = people.find(p => p.id === post.memberId); if (m) select(m) }} />)}
-      {tab === 'feed' && visiblePosts.length === 0 && <section className="feed-empty"><Label>YOUR FEED IS READY TO LEARN</Label><h3>No posts match this view yet.</h3><p>Choose more industries, join a circle, or return to For you.</p><Button onClick={() => net.setFeedPreferences({ ...net.feedPreferences, scope: 'all' })}>Show my full network</Button></section>}
-      {tab === 'people' && ranked.slice(0, 4).map(p =>
-        <MemberCard key={p.id} person={p} onOpen={() => select(p)} />)}
-      {tab === 'asks' && net.asks.map(a =>
-        <AskCard key={a.id} ask={a} member={people.find(p => p.id === a.memberId)} onOpen={() => { const m = people.find(p => p.id === a.memberId); if (m) select(m); else setPage('needs') }} />)}
-      {tab === 'signals' && <section className="signal-list">{net.activity.map(s => {
-        const m = people.find(p => p.id === s.memberId)
-        return <button key={s.id} onClick={() => { if (m) select(m) }}>
-          <span className="signal-dot" />
-          <span className="signal-kind">{s.kind}</span>
-          <span className="signal-copy"><strong>{s.text}</strong><small>{s.when}</small></span>
-          <ArrowRight size={15} />
-        </button>
-      })}</section>}
-    </div>
-    </div>
-    <aside className="home-side home-side-right">
-      <HomeAttention ranked={ranked} activeNeed={activeNeed} select={select} setPage={setPage} openThread={openThread} />
-    </aside>
-    </div>
-
-    <OSStrip people={people} select={select} />
-
-    {isShowcase() && <section className="home-modules">
-      <article className="module">
-        <header><Label signal>WHO TO MEET THIS WEEK</Label><h3>Three relationships with real timing.</h3></header>
-        <ul className="module-people">{ranked.slice(0, 3).map(p => <li key={p.id}>
-          <button onClick={() => select(p)}><Avatar person={p} portrait /><span><strong>{p.name}</strong><small>{p.title} · {p.company}</small><em>{p.whyNow}</em></span><span className="module-score">{p.scoreTotal}</span></button>
-        </li>)}</ul>
-        {!ranked.length && <p className="empty-state">No members to suggest yet. As founding members complete their profiles, the strongest current fits appear here.</p>}
-      </article>
-      <article className="module">
-        <header><Label>TRENDING IN YOUR SECTORS</Label><h3>Where the network is moving.</h3></header>
-        <ul className="module-sectors">{showcaseOnly(trendingSectors).map(s => <li key={s.sector}>
-          <span><strong>{s.sector}</strong><small>{s.note}</small></span><em className={s.move.startsWith('−') ? 'down' : ''}>{s.move}</em>
-        </li>)}</ul>
-        {!showcaseOnly(trendingSectors).length && <p className="empty-state">Sector movement is calculated from what members actually post. Nothing has been posted yet.</p>}
-      </article>
-      <article className="module">
-        <header><Label><CalendarDays size={11} /> UPCOMING BUSINESS EVENTS</Label><h3>Rooms your graph is already in.</h3></header>
-        <ul className="module-events">{showcaseOnly(events).map(e => <li key={e.id}>
-          <strong>{e.name}</strong><small>{e.when} · {e.where}</small><em>{e.who}</em>
-        </li>)}</ul>
-        {!showcaseOnly(events).length && <p className="empty-state">No member events scheduled yet.</p>}
-      </article>
-      <article className="module">
-        <header><Label><Users size={11} /> SUGGESTED CIRCLES</Label><h3>Groups that match your focus.</h3></header>
-        <ul className="module-circles">{showcaseOnly(circles).map(c => <li key={c.id}>
-          <span><strong>{c.name}</strong><small>{c.members}</small><em>{c.why}</em></span><Button kind="quiet">Join</Button>
-        </li>)}</ul>
-        {!showcaseOnly(circles).length && <p className="empty-state">Circles appear once members create them. You can start one from Circles.</p>}
-      </article>
-
-    </section>}
-
-    {isShowcase() && <section className="home-education">
-      <div><Label>BUSINESS NETWORKING, REBUILT</Label><h2>A professional network without pitches, spam or performative reach.</h2>
-        <p>Aetheris Intros reads needs, offers, timing and trust paths, then shows only relationships where a conversation creates credible value for both people.</p>
-        <button className="text-action" onClick={() => setPage('intros')}>See the reasoning behind a match <ArrowRight size={14} /></button></div>
-      <div className="home-education-panel">
-        <blockquote>“Every introduction here arrives with a reason, a shared context and a moment that makes sense for both people.”</blockquote>
-        <ul>
-          <li><b>No mass outreach.</b> Nobody can buy your attention.</li>
-          <li><b>Both sides opt in.</b> An introduction only exists if two people agree to it.</li>
-          <li><b>Explainable, always.</b> You see the evidence behind every recommendation.</li>
-        </ul>
-        <button className="text-action" onClick={() => setPage('memory')}>Open Active Memory <ArrowRight size={14} /></button>
-      </div>
-    </section>}
-
-    {isShowcase() && <HowItWorks />}
-
-    <section className="home-mobile-rail">
-      <Label signal>ON YOUR DESK</Label>
-      <div>
-        {activeNeed && <article><span>ACTIVE NEED</span><strong>{activeNeed.title}</strong><small>{activeNeed.success}</small></article>}
-        {ranked[0] && <button onClick={() => select(ranked[0]!)}><span>STRONGEST MATCH</span><strong>{ranked[0]!.name}</strong><small>{ranked[0]!.whyNow}</small></button>}
-        <button onClick={() => openThread('t1')}><span>CONVERSATION COOLING</span><strong>Nolan Pierce</strong><small>Waiting on the observation you promised.</small></button>
+    <section className="eh-dashboard">
+      <header><HomeBrand compact /><button onClick={() => setPage('discover')}><Search size={14} /><span>Search for people, companies, or opportunities…</span></button><button className="eh-icon" aria-label="Notifications" onClick={() => setPage('inbox')}><Bell size={17} />{coldConversations > 0 && <i />}</button><button className="eh-dash-avatar" aria-label="Open your profile" onClick={() => setPage('profile')}><SelfAvatar /></button></header>
+      <div className="eh-dash-body">
+        <nav>{dashboardNav.map(([label, id]) => <button key={id} className={id === 'home' ? 'active' : ''} onClick={() => setPage(id)}>{label}<ChevronRight size={13} /></button>)}</nav>
+        <main>
+          <div className="eh-greeting"><span>YOUR RELATIONSHIP INTELLIGENCE</span><h2>Good morning, {firstName}.</h2><p>Here’s what matters today.</p></div>
+          <div className="eh-summary">
+            <button onClick={() => setPage('inbox')}><b>{needingAttention}</b><span>Relationships<br />need attention</span></button>
+            <button onClick={() => setPage('intros')}><b>{highValuePaths}</b><span>High-value<br />paths available</span></button>
+            <button onClick={() => setPage('messages')}><b>{coldConversations}</b><span>Conversations<br />going cold</span></button>
+            <button onClick={() => setPage('opportunities')}><b>{activeOpportunities}</b><span>Opportunity<br />changed</span></button>
+          </div>
+          <div className="eh-priority-head"><div><span>PRIORITY RELATIONSHIPS</span><h3>Where timing and fit converge.</h3></div><button onClick={() => setPage('network')}>View network <ArrowRight size={13} /></button></div>
+          <div className="eh-priority-list">
+            {ranked.slice(0, 5).map(person => <button key={person.id} onClick={() => select(person)}><span className="eh-initials">{person.initials}</span><span><b>{person.name}</b><small>{person.title} · {person.company}</small></span><em className={`status-${person.radar}`}>{statusLabel(person)}</em><strong>{person.scoreTotal}<small>CONNECTION SCORE</small></strong><ChevronRight size={16} /></button>)}
+            {!ranked.length && <p>No relationships yet. Complete your profile and connect with members to build this view.</p>}
+          </div>
+        </main>
       </div>
     </section>
-    </>}
-  </>
+
+    <section className="eh-why">
+      <article className="orange"><span>WHY ME</span><i /><p>Built with business, AI, and real-world execution in mind.</p></article>
+      <article className="blue"><span>WHY THEM</span><i /><p>Focused on the people, context, and opportunity that actually matter.</p></article>
+      <article className="orange"><span>WHY NOW</span><i /><p>The best relationships are built before the market catches up.</p></article>
+    </section>
+
+    <section className="eh-connections">
+      <header><div><span>RELATIONSHIP INTELLIGENCE</span><h2>Connections</h2><p>The people Aetheris Intros thinks matter most right now.</p></div><strong>{connections.length}<small>VISIBLE CONNECTIONS</small></strong></header>
+      <div className="eh-connection-tools">
+        <label><Search size={15} /><input value={query} onChange={event => setQuery(event.target.value)} placeholder="Search people, companies, or context…" /></label>
+        <select value={sort} onChange={event => setSort(event.target.value as HomeConnectionSort)} aria-label="Sort connections"><option value="score">Connection Score</option><option value="timing">Timing</option><option value="relationship">Relationship Strength</option><option value="contact">Last Contact</option></select>
+      </div>
+      <nav>{filters.map(([id, label]) => <button key={id} className={filter === id ? 'active' : ''} onClick={() => setFilter(id)}>{label}</button>)}</nav>
+      <div className="eh-connection-list">
+        <div className="eh-connection-labels"><span>PERSON</span><span>RELATIONSHIP</span><span>WHY THIS CONNECTION</span><span>PATH & NEXT ACTION</span><span>ACTIONS</span></div>
+        {connections.map(person => <article key={person.id} tabIndex={0} role="button" onClick={() => select(person)} onKeyDown={event => { if (event.key === 'Enter') select(person) }}>
+          <div className="eh-person"><Avatar person={person} portrait /><span><b>{person.name}</b><small>{person.title}<br />{person.company}</small></span></div>
+          <div className="eh-status"><em>{statusLabel(person)}</em><strong>{person.scoreTotal}<small>CONNECTION SCORE</small></strong></div>
+          <div className="eh-reasons"><p><b>WHY ME</b>{person.whyYou}</p><p><b>WHY THEM</b>{person.whyThem}</p><p><b>WHY NOW</b>{person.whyNow}</p></div>
+          <div className="eh-path"><p><b>STRONGEST PATH</b>{person.bestPath.length ? person.bestPath.join(' → ') : person.mutuals[0] ? `Via ${person.mutuals[0]}` : 'Direct relationship'}</p><p><b>NEXT BEST ACTION</b>{person.nextAction}</p></div>
+          <div className="eh-row-actions"><button onClick={event => { event.stopPropagation(); select(person) }}>View</button><button onClick={event => { event.stopPropagation(); nav.openIntro(person) }}>Intro</button><button onClick={event => { event.stopPropagation(); draftMessage(person) }}>Draft</button></div>
+        </article>)}
+        {!connections.length && <div className="eh-empty">No connections match this view. Adjust the filter or search.</div>}
+      </div>
+    </section>
+
+    <section className="eh-integrations"><h2>CONNECTS ACROSS THE TOOLS YOU ALREADY USE</h2><div>{integrations.map(name => <button key={name} onClick={() => setPage('integrations')}><span>{name.split(/\s+/).map(word => word[0]).join('').slice(0, 2)}</span><b>{name}</b></button>)}</div></section>
+    <footer className="eh-footer"><i /><p>More than introductions. A smarter way to grow.</p><i /></footer>
+  </div>
 }
 
 
@@ -2152,9 +2087,7 @@ function Shell({ startPage }: { startPage?: Page | undefined }) {
 
   const pageNode: Partial<Record<Page, ReactNode>> = {
       home: <>
-        <IntentStrip onCreate={() => setIntentOpen(true)} />
         <Home people={people} select={setSelected} setPage={setPage} openNeed={() => setNeedOpen(true)} openThread={goToThread} />
-        <IntentBoard />
       </>,
       discover: <Discover people={people} select={setSelected} />,
       systems: <SystemsPage openId={systemId} setOpenId={setSystemId} />,
@@ -2247,7 +2180,7 @@ function Shell({ startPage }: { startPage?: Page | undefined }) {
           <div className="topbar-actions">
             <button className="topbar-search" aria-label="Search people, companies, topics, or ideas…" onClick={() => setGlobalSearchOpen(true)}><Search size={15} /><span>Search people, companies, topics, or ideas…</span><kbd>⌘K</kbd></button>
             <div className="topbar-dropdown">
-              <button className="topbar-dropbtn" aria-expanded={topMenuOpen} onClick={() => setTopMenuOpen(!topMenuOpen)}>
+              <button className="topbar-dropbtn" aria-label="Actions" aria-expanded={topMenuOpen} onClick={() => setTopMenuOpen(!topMenuOpen)}>
                 <SlidersHorizontal size={14} /><span>Actions</span><ChevronDown size={13} />
               </button>
               {topMenuOpen && <>
