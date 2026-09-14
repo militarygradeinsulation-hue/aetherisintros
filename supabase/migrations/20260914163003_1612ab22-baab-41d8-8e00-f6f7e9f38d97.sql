@@ -1,0 +1,1 @@
+REVOKE ALL ON FUNCTION public.connect_new_member_to_owner() FROM PUBLIC, anon, authenticated;
