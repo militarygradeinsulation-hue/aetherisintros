@@ -70,3 +70,9 @@
 - [x] Reduce Network and Opportunities hubs to four primary sections each.
 - [x] Make the context rail optional and hidden by default.
 - [x] Verify desktop and mobile journeys, overlays, and overflow.
+
+# Editorial Home redesign (Sep 14)
+
+- [x] Replace only Home with the ivory/black editorial relationship-intelligence composition.
+- [x] Connect Home metrics, priority relationships, filters, sorting, search, and actions to current state.
+- [x] Verify desktop and mobile Home rendering, interactions, and overflow.
