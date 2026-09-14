@@ -996,7 +996,7 @@ function Messages({ people, select, activeId, setActiveId }: { people: Member[];
   if (!thread || !person) {
     const startable = people.slice(0, 12)
     return <div className="messages-empty">
-      <Head
+      <PageHead
         label="MESSAGES"
         title="Conversations start with a reason."
         copy="No open conversations yet. Pick a member below and Aetheris keeps the relationship context — why you're connected, what they need, what you can help with — beside the thread."
