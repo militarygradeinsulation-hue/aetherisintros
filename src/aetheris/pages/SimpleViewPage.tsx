@@ -1,4 +1,5 @@
 import { useMemo, useState } from 'react'
+import { ArrowUpRight, Search } from 'lucide-react'
 import { useNetwork } from '../store'
 import { useNav } from '../nav'
 import { rankMatches } from '../matching'
@@ -24,7 +25,7 @@ export default function SimpleViewPage() {
   )
   const lead = ranked[0]
 
-  const people = ranked.filter(r => hit(r.member.name, r.member.company, r.member.title, r.member.focus, r.member.industry)).slice(0, 6)
+  const people = ranked.filter(r => r.member.id !== lead?.member.id && hit(r.member.name, r.member.company, r.member.title, r.member.focus, r.member.industry)).slice(0, 6)
   const signals = net.activity.filter(s => hit(s.text, s.kind)).slice(0, 6)
   const memory = net.learnings.filter(l => hit(l.text, l.category, l.source)).slice(0, 6)
   const asks = net.asks.filter(a => hit(a.ask, a.detail, a.industry, a.location)).slice(0, 5)
@@ -41,89 +42,100 @@ export default function SimpleViewPage() {
   const nameOf = (id: string) => net.members.find(m => m.id === id)?.name ?? 'A member'
 
   return <div className="sv">
-    <section className="sv-masthead">
-      <div>
-        <div className="sv-eyebrow">Explainable introductions with active memory</div>
-        <h1>Turn your network into a compounding advantage.</h1>
-        <p>One screen: who matters, why now, what you owe, and the next useful move. Nothing here is decoration — every line is live.</p>
-        <div className="sv-search">
-          <input value={q} onChange={e => setQ(e.target.value)} placeholder="Search people, signals, needs, memory, conversations…" aria-label="Search the ledger" />
-          {q ? <button className="sv-ghost" onClick={() => setQ('')}>Clear</button> : null}
-        </div>
+    <header className="sv-header">
+      <div className="sv-brandline">
+        <div><span className="sv-brandmark">A</span><strong>INTRO LEDGER</strong></div>
+        <span>DIAGNOSE → MAP → SCORE → CONNECT → COMPOUND ↺</span>
       </div>
-      <aside className="sv-rail">
-        <div className="sv-kicker">Profile signal</div>
-        <div className="sv-progress"><span style={{ width: `${complete}%` }} /></div>
-        <div className="sv-progress-text"><strong>{complete}%</strong> of your context is on record</div>
-        <div className="sv-stats">
-          <div><b>{net.asks.filter(a => a.mine).length}</b><span>Open asks</span></div>
-          <div><b>{net.threads.length}</b><span>Conversations</span></div>
-          <div><b>{net.connections.length}</b><span>Connections</span></div>
+      <div className="sv-masthead">
+        <div className="sv-intro">
+          <div className="sv-eyebrow">Explainable introductions with active memory</div>
+          <h1>Your network.<br /><em>Clearly explained.</em></h1>
+          <p>Who matters, why now, what is moving, and the next useful action — in one live relationship ledger.</p>
+          <label className="sv-search">
+            <Search size={17} aria-hidden="true" />
+            <input value={q} onChange={e => setQ(e.target.value)} placeholder="Search the entire ledger…" aria-label="Search the ledger" />
+            {q ? <button className="sv-clear" onClick={() => setQ('')}>Clear</button> : <span>⌘ K</span>}
+          </label>
         </div>
-        <div className="sv-rail-actions">
-          <button className="sv-primary" onClick={() => nav.postNeed()}>What do you need right now?</button>
-          <button className="sv-ghost" onClick={() => nav.setPage('profile')}>Edit your profile</button>
-        </div>
-      </aside>
-    </section>
+        <aside className="sv-rail">
+          <div className="sv-profile-head">
+            <span className="sv-self-avatar">{me.initials || 'ME'}</span>
+            <div><div className="sv-kicker">Your relationship signal</div><strong>{me.name || 'Complete your profile'}</strong><small>{me.title || 'Add your role'}{me.company ? ` · ${me.company}` : ''}</small></div>
+          </div>
+          <div className="sv-progress-label"><span>Context synced</span><strong>{complete}%</strong></div>
+          <div className="sv-progress"><span style={{ width: `${complete}%` }} /></div>
+          <div className="sv-stats">
+            <div><b>{net.connections.length}</b><span>Connections</span></div>
+            <div><b>{net.asks.filter(a => a.mine).length}</b><span>Open asks</span></div>
+            <div><b>{net.threads.length}</b><span>Threads</span></div>
+          </div>
+          <button className="sv-text-action" onClick={() => nav.setPage('profile')}>Review profile <ArrowUpRight size={14} /></button>
+        </aside>
+      </div>
+    </header>
 
+    <section className="sv-section-head"><div><span>01</span><h2>Lead introduction</h2></div><p>The strongest current fit, with the evidence left visible.</p></section>
     {lead ? <section className="sv-lead">
+      <div className="sv-lead-person">
+        <Face person={lead.member} large portrait />
+        <div><div className="sv-eyebrow">Highest-confidence path</div><h2>{lead.member.name}</h2><p>{lead.member.title} at {lead.member.company}<br />{lead.member.location}</p></div>
+      </div>
       <div className="sv-lead-main">
-        <div className="sv-eyebrow">Lead story</div>
-        <h2>{lead.member.name} — {lead.match.headline}</h2>
-        <p>{lead.member.title} at {lead.member.company} · {lead.member.location}. {lead.member.focus}</p>
+        <div className="sv-kicker">Why this introduction</div>
+        <h3>{lead.match.headline}</h3>
+        <p>{lead.member.focus}</p>
         <ul className="sv-reasons">
           {lead.match.components.slice(0, 4).map(c => <li key={c.label}>
             <span className="sv-reason-label">{c.label}</span>
-            <span className="sv-reason-score">{c.score}</span>
             <span className="sv-reason-evidence">{c.evidence}</span>
+            <span className="sv-reason-score">+{c.score}</span>
           </li>)}
         </ul>
-        <div className="sv-actions">
-          <button className="sv-primary" onClick={() => nav.openIntro(lead.member)}>Request intro</button>
-          <button className="sv-ghost" onClick={() => nav.messageMember(lead.member.id)}>Message</button>
-          <button className="sv-ghost" onClick={() => openMember(lead.member)}>Open profile</button>
-        </div>
       </div>
       <div className="sv-lead-score">
-        <div className="sv-kicker">Compatibility</div>
-        <strong>{lead.match.total}</strong>
-        <span>/100</span>
+        <div className="sv-kicker">Relationship fit</div>
+        <div><strong>{lead.match.total}</strong><span>/100</span></div>
         <p>{lead.match.sharedInterests.slice(0, 3).join(' · ') || 'Shared context builds as you act.'}</p>
+        <button className="sv-primary" onClick={() => nav.openIntro(lead.member)}>Request introduction</button>
+        <button className="sv-ghost" onClick={() => nav.messageMember(lead.member.id)}>Message</button>
+        <button className="sv-text-action" onClick={() => openMember(lead.member)}>View full profile <ArrowUpRight size={14} /></button>
       </div>
-    </section> : null}
+    </section> : <section className="sv-empty-panel"><strong>No introduction is ready yet.</strong><p>Build your profile and connections to create an explainable match.</p><button className="sv-primary" onClick={() => nav.setPage('profile')}>Complete profile</button></section>}
 
+    <section className="sv-section-head"><div><span>02</span><h2>Relationship field</h2></div><p>The people, intentions, and context shaping your next move.</p></section>
     <section className="sv-columns">
-      <article className="sv-col">
-        <div className="sv-eyebrow">People worth knowing</div>
+      <article className="sv-col sv-people-widget">
+        <div className="sv-panel-head"><div><span>PEOPLE</span><strong>Worth knowing</strong></div><b>{people.length.toString().padStart(2, '0')}</b></div>
         {people.length ? <ul className="sv-list">
-          {people.map(r => <li key={r.member.id}>
-            <Face person={r.member} />
+          {people.map((r, index) => <li key={r.member.id}>
+            <span className="sv-row-index">{String(index + 1).padStart(2, '0')}</span>
             <div className="sv-list-copy">
               <button className="sv-link" onClick={() => openMember(r.member)}>{r.member.name}</button>
               <small>{r.member.title} · {r.member.company}</small>
             </div>
-            <span className="sv-score">{r.match.total}</span>
-            <button className="sv-mini" onClick={() => nav.messageMember(r.member.id)}>Message</button>
+            <span className="sv-score">{r.match.total}<small>FIT</small></span>
+            <button className="sv-icon-action" aria-label={`Message ${r.member.name}`} onClick={() => nav.messageMember(r.member.id)}>↗</button>
           </li>)}
         </ul> : <p className="sv-empty">No members match that search yet.</p>}
-        <button className="sv-ghost" onClick={() => nav.setPage('discover')}>Open Discover</button>
+        <button className="sv-text-action" onClick={() => nav.setPage('discover')}>Open people network <ArrowUpRight size={14} /></button>
       </article>
 
       <article className="sv-col">
-        <div className="sv-eyebrow">Signals</div>
-        {signals.length ? <ul className="sv-plain">
-          {signals.map(s => <li key={s.id}>
-            <span className="sv-tag">{s.kind}</span>
-            <b>{s.text}</b>
-            <small>{s.when}</small>
+        <div className="sv-panel-head"><div><span>INTENT</span><strong>Needs on the ledger</strong></div><b>{asks.length.toString().padStart(2, '0')}</b></div>
+        {asks.length ? <ul className="sv-plain sv-asks">
+          {asks.map(a => <li key={a.id}>
+            <span className="sv-tag">{a.industry || 'Open need'}</span>
+            <b>{a.ask}</b>
+            <small>{nameOf(a.memberId)} · {a.location || 'Location open'} · {a.posted}</small>
+            <div className="sv-inline"><button className="sv-mini" onClick={() => nav.messageMember(a.memberId)}>Respond</button><button className="sv-mini" onClick={() => net.requestWarmPath(a.id)}>Warm path</button></div>
           </li>)}
-        </ul> : <p className="sv-empty">Signals appear as relationships move.</p>}
-        <button className="sv-ghost" onClick={() => nav.setPage('insights')}>Open Insights</button>
+        </ul> : <p className="sv-empty">No needs match. Add yours so the network can act.</p>}
+        <div className="sv-inline"><button className="sv-primary" onClick={() => nav.postNeed()}>Post a need</button><button className="sv-text-action" onClick={() => nav.setPage('needs')}>View all <ArrowUpRight size={14} /></button></div>
       </article>
 
       <article className="sv-col">
-        <div className="sv-eyebrow">Active memory</div>
+        <div className="sv-panel-head"><div><span>MEMORY</span><strong>Context retained</strong></div><b>{memory.length.toString().padStart(2, '0')}</b></div>
         {memory.length ? <ul className="sv-plain">
           {memory.map(l => <li key={l.id}>
             <span className="sv-tag">{l.category}</span>
@@ -131,40 +143,36 @@ export default function SimpleViewPage() {
             <small>{l.source} · confidence {l.confidence}</small>
           </li>)}
         </ul> : <p className="sv-empty">Memory fills in as you talk and act.</p>}
-        <button className="sv-ghost" onClick={() => nav.setPage('memory')}>Open Memory</button>
+        <button className="sv-text-action" onClick={() => nav.setPage('memory')}>Open Active Memory <ArrowUpRight size={14} /></button>
       </article>
     </section>
 
+    <section className="sv-section-head"><div><span>03</span><h2>Current movement</h2></div><p>A ledger of changing signals and conversations already in motion.</p></section>
     <section className="sv-split">
       <article className="sv-col">
-        <div className="sv-eyebrow">Needs on the ledger</div>
-        {asks.length ? <ul className="sv-plain">
-          {asks.map(a => <li key={a.id}>
-            <b>{a.ask}</b>
-            <small>{nameOf(a.memberId)} · {a.industry} · {a.posted}</small>
-            <div className="sv-inline">
-              <button className="sv-mini" onClick={() => nav.messageMember(a.memberId)}>Respond</button>
-              <button className="sv-mini" onClick={() => net.requestWarmPath(a.id)}>Warm path</button>
-            </div>
+        <div className="sv-panel-head"><div><span>ACTION LOG</span><strong>Signals worth attention</strong></div><b>{signals.length.toString().padStart(2, '0')}</b></div>
+        {signals.length ? <ul className="sv-log">
+          {signals.map((s, index) => <li key={s.id}>
+            <span>{String(index + 1).padStart(2, '0')}</span>
+            <i />
+            <div><b>{s.text}</b><small>{s.kind} · {s.when}</small></div>
           </li>)}
-        </ul> : <p className="sv-empty">No needs match. Post yours and the network reads it.</p>}
-        <div className="sv-inline">
-          <button className="sv-primary" onClick={() => nav.postNeed()}>Post a need</button>
-          <button className="sv-ghost" onClick={() => nav.setPage('needs')}>Open Needs</button>
-        </div>
+        </ul> : <p className="sv-empty">Signals appear here as relationships change.</p>}
+        <button className="sv-text-action" onClick={() => nav.setPage('insights')}>Open relationship insights <ArrowUpRight size={14} /></button>
       </article>
 
       <article className="sv-col">
-        <div className="sv-eyebrow">Conversations waiting</div>
-        {threads.length ? <ul className="sv-plain">
+        <div className="sv-panel-head"><div><span>ROOMS</span><strong>Conversations in motion</strong></div><b>{threads.length.toString().padStart(2, '0')}</b></div>
+        {threads.length ? <ul className="sv-rooms">
           {threads.map(t => <li key={t.id}>
-            <b>{nameOf(t.memberId)}</b>
-            <small>{t.messages[t.messages.length - 1]?.text ?? t.introContext}</small>
-            <button className="sv-mini" onClick={() => nav.goToThread(t.id)}>Open thread</button>
+            <span className="sv-room-avatar">{nameOf(t.memberId).split(/\s+/).slice(0, 2).map(word => word[0]).join('')}</span>
+            <div><b>{nameOf(t.memberId)}</b><small>{t.messages[t.messages.length - 1]?.text ?? t.introContext}</small></div>
+            <button className="sv-icon-action" aria-label={`Open conversation with ${nameOf(t.memberId)}`} onClick={() => nav.goToThread(t.id)}>↗</button>
           </li>)}
         </ul> : <p className="sv-empty">Start a conversation with a reason and it lands here.</p>}
-        <button className="sv-ghost" onClick={() => nav.setPage('messages')}>Open Messages</button>
+        <button className="sv-text-action" onClick={() => nav.setPage('messages')}>Open all messages <ArrowUpRight size={14} /></button>
       </article>
     </section>
+    <footer className="sv-footer"><span>AETHERIS INTROS</span><p>People × Context × Opportunity.</p><button className="sv-primary" onClick={() => nav.postNeed()}>What do you need right now?</button></footer>
   </div>
 }
