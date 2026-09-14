@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react'
-import { ArrowUpRight, Compass, Home, Menu, MessageSquare, MoreHorizontal, Search, Sparkles, Users } from 'lucide-react'
+import { ArrowUpRight, Compass, Home, Menu, MessageSquare, MoreHorizontal, Radar, Search, Users } from 'lucide-react'
 import { useNetwork } from '../store'
 import { useNav, type Page } from '../nav'
 import { rankMatches } from '../matching'
@@ -47,7 +47,7 @@ export default function SimpleViewPage() {
         <input value={q} onChange={event => setQ(event.target.value)} placeholder="Search people, needs, memory, conversations…" aria-label="Search Simple View" />
         {q ? <button className="sv-clear" onClick={() => setQ('')}>Clear</button> : <span>/</span>}
       </label>
-      <button className="sv-sync" onClick={() => nav.setPage('memory')}><Sparkles size={14} /> Memory {complete}%</button>
+      <button className="sv-sync" onClick={() => nav.setPage('memory')}><Radar size={14} /> Memory {complete}%</button>
       <button className="sv-menu" onClick={() => nav.setPage('briefing')} aria-label="Open tools"><Menu size={16} /></button>
     </header>
 
