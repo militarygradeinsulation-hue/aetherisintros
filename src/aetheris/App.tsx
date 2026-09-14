@@ -23,6 +23,7 @@ import memoryEditorialAsset from '@/assets/editorial-memory.jpg.asset.json'
 import insightsEditorialAsset from '@/assets/editorial-insights.jpg.asset.json'
 import homeEditorialAsset from '@/assets/aetheris-home-portrait.jpg.asset.json'
 import overviewFilmAsset from '@/assets/aetheris-intros-overview.mp4.asset.json'
+import introVideoAsset from '@/assets/aetheris-intro-video.mp4.asset.json'
 import logoAsset from '@/assets/aetheris-logo.jpg.asset.json'
 import worldNetworkImg from '@/assets/aetheris-world-network.jpg'
 import { leaks } from './data'
@@ -706,12 +707,20 @@ function Home({ people, select, setPage, openNeed, openThread }: {
         <p>A short walk through the platform: how context is captured, how the right people surface at the right time, and how introductions happen with both sides agreeing.</p>
         <ul><li>Why this person, why you, why now</li><li>Double opt-in introductions, never cold outreach</li><li>Memory that keeps relationships alive</li></ul>
       </div>
-      <figure>
-        <video src={overviewFilmAsset.url} controls preload="metadata" playsInline poster={homeEditorialAsset.url}>
-          <track kind="captions" />
-        </video>
-        <figcaption>Platform overview · 2 min</figcaption>
-      </figure>
+      <div className="eh-film-videos">
+        <figure>
+          <video src={overviewFilmAsset.url} controls preload="metadata" playsInline poster={homeEditorialAsset.url}>
+            <track kind="captions" />
+          </video>
+          <figcaption>Platform overview · 2 min</figcaption>
+        </figure>
+        <figure>
+          <video src={introVideoAsset.url} controls preload="metadata" playsInline>
+            <track kind="captions" />
+          </video>
+          <figcaption>Aetheris Intros · from the founder</figcaption>
+        </figure>
+      </div>
     </section>
 
     <section className="eh-connections">
