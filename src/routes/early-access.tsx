@@ -141,7 +141,7 @@ function EarlyAccessPage() {
         <span><b>03</b> Your memory, controlled</span>
       </div>
       <span className="auth-foot"><LockKeyhole size={12} /> {access.foundingNumber ? foundingLabel(access.foundingNumber, stats.capacity) : 'Nothing is shared without your explicit opt-in.'}</span>
-      {access.signedIn && <Link to="/demo" className="auth-switch">Open the labelled showcase.</Link>}
+      {access.status === 'approved' && <Link to="/app" className="auth-switch">Enter your network.</Link>}
     </section>
     <aside className="auth-visual">
       <img src={accessPortrait.url} alt="A professional looking across an architectural city interior" width={1024} height={1280} />
