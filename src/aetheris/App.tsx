@@ -2197,7 +2197,7 @@ function Shell({ startPage }: { startPage?: Page | undefined }) {
             <LayoutGrid size={18} /><span>More</span></button>
         </nav>
         <div className="rail-foot"><span className="live-dot" /><span>Memory live</span>
-          <button onClick={() => setPage('profile')} aria-label="Your profile"><SelfAvatar image={false} /></button></div>
+          <button onClick={() => setPage('profile')} aria-label="Your profile"><SelfAvatar /></button></div>
       </aside>
       <div className="workspace">
         <header className="topbar">
@@ -2224,7 +2224,9 @@ function Shell({ startPage }: { startPage?: Page | undefined }) {
                 </div>
               </>}
             </div>
+            <button className="topbar-avatar" aria-label="Your profile" onClick={() => setPage('profile')}><SelfAvatar /></button>
           </div>
+
         </header>
         <div className="workspace-grid">
           <main className="content">
