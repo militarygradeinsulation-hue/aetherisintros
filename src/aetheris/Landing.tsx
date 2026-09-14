@@ -45,6 +45,7 @@ function LandingPage({ signedIn }: { signedIn: boolean }) {
     ? <Link to="/demo" className={cls}>{label} <ArrowRight size={15} /></Link>
     : null
   const accountBtn = (cls: string) => <Link to={signedIn ? '/app' : '/early-access'} className={cls}>{signedIn ? 'Enter your network' : 'Create an account'}</Link>
+  const loginBtn = (cls: string) => signedIn ? null : <Link to="/auth" search={{ next: '/' }} className={cls}>Log in</Link>
   return (
     <main className="lv">
       {/* ── Top strip: WHY ME · WHY THEM · WHY NOW ── */}
@@ -65,7 +66,8 @@ function LandingPage({ signedIn }: { signedIn: boolean }) {
         <nav>PEOPLE&nbsp;&nbsp;|&nbsp;&nbsp;IDEAS&nbsp;&nbsp;|&nbsp;&nbsp;OPPORTUNITIES</nav>
         <div className="lv-nav-actions">
           {demoBtn('Demo', 'btn primary')}
-          {accountBtn(showDemo ? 'btn ghost' : 'btn primary')}
+          {loginBtn('btn ghost')}
+          {accountBtn(showDemo ? 'btn primary' : 'btn primary')}
         </div>
       </header>
 
@@ -77,7 +79,8 @@ function LandingPage({ signedIn }: { signedIn: boolean }) {
           <span className="lv-hero-scale">RELATIONSHIPS · INTELLIGENCE · OPPORTUNITY AT SCALE</span>
           <div className="lv-hero-actions">
             {demoBtn('Demo the system', 'btn primary')}
-            {accountBtn(showDemo ? 'btn ghost' : 'btn primary')}
+            {loginBtn('btn ghost')}
+            {accountBtn(showDemo ? 'btn primary' : 'btn primary')}
           </div>
         </div>
         <div className="lv-hero-visual">
