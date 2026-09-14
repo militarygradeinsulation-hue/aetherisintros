@@ -89,3 +89,9 @@
 - [x] Verify connected actions, desktop/mobile layout, and build health.
 - [x] Replace the Simple View navy and blue palette with the site's black, white, and amber system.
 - [x] Align Simple Mode typography, surfaces, controls, and accent roles with the signed-in Aetheris interface.
+
+# Memory readability + member directory (Sep 14)
+
+- [x] Rework “What Intros learned recently” so long context and metadata fit cleanly.
+- [x] Default the Directory to real signed-up members and retain reference records as an optional view.
+- [x] Add direct profile access for every member who has completed profile setup.

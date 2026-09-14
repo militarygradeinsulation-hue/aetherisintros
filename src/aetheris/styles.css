@@ -641,15 +641,16 @@
 
 /* ============================ reference composition: memory =============== */
 .learned-table { display: grid; gap: 0; }
-.learned-row { display: grid; grid-template-columns: 44px minmax(0, 1fr) 92px 118px 58px; gap: 14px; align-items: center; padding: 13px 0; border-bottom: 1px solid var(--line-dark); }
+.memory-learned-head{display:flex;align-items:flex-end;justify-content:space-between;gap:24px;padding-bottom:18px;border-bottom:1px solid var(--line-dark);margin-bottom:14px}.memory-learned-head>div{min-width:0}.memory-learned-head span{font:700 8px var(--sans);letter-spacing:.2em;color:var(--amber)}.memory-learned-head h2{max-width:620px;margin:7px 0 6px;font:500 clamp(27px,3vw,40px)/1 var(--serif)}.memory-learned-head p{max-width:620px;margin:0;color:var(--muted);font:400 11px/1.55 var(--sans)}.memory-learned-head>strong{flex:none;font:500 28px/1 var(--serif);color:var(--cobalt-bright)}
+.learned-row { display: grid; grid-template-columns: 44px minmax(220px, 1fr) minmax(76px,92px) minmax(104px,128px) minmax(62px,auto); gap: 16px; align-items: start; padding: 16px 0; border-bottom: 1px solid var(--line-dark); }
 .learned-row > button { background: none; border: 0; padding: 0; cursor: pointer; }
 .learned-row .person-avatar { width: 44px; height: 44px; border-radius: 999px; }
-.learned-text p { margin: 0; font: 400 13.5px/1.45 'Cormorant Garamond', Georgia, serif; color: #dcdfe3; }
+.learned-text p { margin: 0; max-width:72ch; overflow-wrap:anywhere; font: 400 16px/1.42 var(--serif); color: var(--soft); }
 .learned-text strong { font-family: Inter, sans-serif; font-weight: 600; font-size: 13px; color: var(--soft); }
 .learned-text small { display: block; margin-top: 5px; font: 400 10.5px/1 Inter, sans-serif; letter-spacing: .06em; color: var(--muted); }
-.learned-cell strong { display: block; font: 500 13px/1 Inter, sans-serif; color: var(--soft); }
+.learned-cell{padding-top:2px}.learned-cell strong { display: block; overflow-wrap:anywhere; font: 500 13px/1.25 Inter, sans-serif; color: var(--soft); }
 .learned-cell small { display: block; margin-top: 5px; font: 400 10.5px/1.2 Inter, sans-serif; color: var(--muted); }
-.learned-when { font: 400 11px/1 Inter, sans-serif; color: var(--muted); text-align: right; }
+.learned-when { padding-top:3px;font: 400 11px/1.3 Inter, sans-serif; color: var(--muted); text-align: right; }
 .pattern-body { display: grid; grid-template-columns: auto 1fr; gap: 14px; align-items: center; }
 .pattern-faces { display: flex; }
 .pattern-faces .person-avatar { width: 40px; height: 40px; border-radius: 999px; margin-left: -12px; border: 1px solid var(--raised); }
@@ -724,8 +725,9 @@
   .member-identity-copy { padding: 26px 22px; }
   .member-modules.four, .member-modules.two { grid-template-columns: 1fr; }
   .member-metrics { grid-template-columns: repeat(2, 1fr); }
-  .learned-row { grid-template-columns: 40px minmax(0, 1fr); }
-  .learned-cell, .learned-when { grid-column: 2; }
+  .learned-row { grid-template-columns: 40px minmax(0, 1fr);gap:10px 13px; }
+  .learned-cell, .learned-when { grid-column: 2;text-align:left; }
+  .learned-cell{display:inline-grid;grid-template-columns:auto 1fr;align-items:baseline;gap:7px}.learned-cell small{margin-top:0}
   .global-stats { grid-template-columns: repeat(2, 1fr); }
   .global-network { padding: 20px; }
   .global-network > header { grid-template-columns: 1fr; }
@@ -2716,7 +2718,7 @@ input, textarea, select { font: inherit; }
 .directory-body h3{display:flex;align-items:center;gap:7px;font:500 20px var(--serif);margin:4px 0 3px}
 .directory-body h3 svg{color:var(--cobalt)}
 .directory-body small{display:block;color:var(--muted);font:500 11px var(--sans)}
-.directory-body p{margin-top:8px;color:var(--muted);font:400 11px/1.6 var(--sans);word-break:break-word}
+.directory-body p{margin-top:8px;color:var(--muted);font:400 11px/1.6 var(--sans);word-break:break-word}.directory-member{border-color:color-mix(in oklab,var(--cobalt) 45%,var(--line-dark));background:linear-gradient(90deg,color-mix(in oklab,var(--cobalt) 7%,var(--raised)),var(--raised) 42%)}.directory-body .btn{margin-top:13px;min-height:34px}.directory-profile-note{margin-top:12px;color:var(--amber)!important}
 @media (max-width:640px){.directory-card{grid-template-columns:40px minmax(0,1fr);gap:12px;padding:15px}
 .directory-mark{width:40px;height:40px;font-size:11px}}
 

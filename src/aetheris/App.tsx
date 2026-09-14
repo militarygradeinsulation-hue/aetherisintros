@@ -1199,7 +1199,10 @@ function Memory({ people, select }: { people: Member[]; select: (p: Member) => v
     </div>
     <div className="memory-layout">
       <section className="memory-changes">
-        <header className="mod-head"><span>WHAT INTROS LEARNED RECENTLY</span><button className="mod-link">View all <ArrowRight size={12} /></button></header>
+        <header className="memory-learned-head">
+          <div><span>RECENTLY RETAINED CONTEXT</span><h2>What Intros learned recently.</h2><p>New context is grouped by subject, source, confidence, and who can see it.</p></div>
+          <strong>{shown.length.toString().padStart(2, '0')} items</strong>
+        </header>
         <div className="memory-cats">{(['All', ...memoryCategories] as const).map(c =>
           <button key={c} className={cat === c ? 'active' : ''} onClick={() => setCat(c)}>{c}</button>)}</div>
         <div className="learned-table">
