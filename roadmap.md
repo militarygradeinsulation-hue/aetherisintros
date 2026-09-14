@@ -95,3 +95,8 @@
 - [x] Rework “What Intros learned recently” so long context and metadata fit cleanly.
 - [x] Default the Directory to real signed-up members and retain reference records as an optional view.
 - [x] Add direct profile access for every member who has completed profile setup.
+
+# Compact page imagery (Sep 14)
+
+- [x] Reduce page-top imagery everywhere except Home.
+- [ ] Verify visual balance and flow on desktop and mobile.
