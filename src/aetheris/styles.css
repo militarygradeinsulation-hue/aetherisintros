@@ -3011,6 +3011,20 @@ input,textarea,[contenteditable]{cursor:url(/cursor-aetheris.png) 26 10,text !im
 button:disabled,[aria-disabled="true"]{cursor:not-allowed}
 input,textarea,[contenteditable="true"]{cursor:text}
 
+/* Member-chosen pointer size (Settings / Display). */
+.cursor-scale-small html,.cursor-scale-small body,.cursor-scale-small body *{cursor:url(/cursor-aetheris-small.png) 17 7,auto !important}
+.cursor-scale-small a,.cursor-scale-small button,.cursor-scale-small summary,.cursor-scale-small label,.cursor-scale-small select,.cursor-scale-small [role="button"],.cursor-scale-small [role="tab"],.cursor-scale-small [role="menuitem"]{cursor:url(/cursor-aetheris-action-small.png) 17 7,pointer !important}
+.cursor-scale-small input,.cursor-scale-small textarea,.cursor-scale-small [contenteditable]{cursor:url(/cursor-aetheris-small.png) 17 7,text !important}
+
+.cursor-scale-large body,.cursor-scale-large body *{cursor:url(/cursor-aetheris-large.png) 32 12,auto !important}
+.cursor-scale-large a,.cursor-scale-large button,.cursor-scale-large summary,.cursor-scale-large label,.cursor-scale-large select,.cursor-scale-large [role="button"],.cursor-scale-large [role="tab"],.cursor-scale-large [role="menuitem"]{cursor:url(/cursor-aetheris-action-large.png) 32 12,pointer !important}
+.cursor-scale-large input,.cursor-scale-large textarea,.cursor-scale-large [contenteditable]{cursor:url(/cursor-aetheris-large.png) 32 12,text !important}
+
+.cursor-scale-largest body,.cursor-scale-largest body *{cursor:url(/cursor-aetheris-largest.png) 38 14,auto !important}
+.cursor-scale-largest a,.cursor-scale-largest button,.cursor-scale-largest summary,.cursor-scale-largest label,.cursor-scale-largest select,.cursor-scale-largest [role="button"],.cursor-scale-largest [role="tab"],.cursor-scale-largest [role="menuitem"]{cursor:url(/cursor-aetheris-action-largest.png) 38 14,pointer !important}
+.cursor-scale-largest input,.cursor-scale-largest textarea,.cursor-scale-largest [contenteditable]{cursor:url(/cursor-aetheris-largest.png) 38 14,text !important}
+
+
 /* ------------------------------------------- explicit sign in / sign out */
 .topbar-auth{height:34px;display:inline-flex;align-items:center;gap:7px;padding:0 12px;border:1px solid var(--line-dark);border-radius:6px;background:var(--raised);color:var(--soft);font:700 8px var(--sans);letter-spacing:.14em;text-transform:uppercase;text-decoration:none;white-space:nowrap;cursor:pointer}
 .topbar-auth:hover{border-color:var(--cobalt);color:var(--cobalt)}

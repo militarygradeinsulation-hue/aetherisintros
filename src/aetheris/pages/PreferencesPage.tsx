@@ -1,8 +1,10 @@
 import { useEffect, useState } from 'react'
-import { Camera, Check, LockKeyhole, ShieldCheck, Type } from 'lucide-react'
+import { Camera, Check, LockKeyhole, MousePointer2, ShieldCheck, Type } from 'lucide-react'
 import { useNetwork, type PreferenceSettings } from '../store'
 import { AvatarImage } from '../avatar'
 import { Btn, Eyebrow, Head } from '../ui'
+import { cursorScaleLabels, cursorScales, readCursorScale, setCursorScale, type CursorScale } from '../cursorScale'
+
 import { readTextScale, setTextScale, textScaleLabels, textScales, type TextScale } from '../textScale'
 
 const tabs = ['Profile', 'Display', 'Availability', 'Preferences', 'Notifications', 'Privacy', 'Memory Controls'] as const
@@ -70,11 +72,13 @@ function IdentityCard() {
 }
 
 
-/** Interface text size, applied straight away and remembered in this browser. */
+/** Interface text size and pointer size, applied straight away and remembered in this browser. */
 function DisplayCard() {
   const [scale, setScale] = useState<TextScale>('default')
-  useEffect(() => { setScale(readTextScale()) }, [])
+  const [cursor, setCursor] = useState<CursorScale>('default')
+  useEffect(() => { setScale(readTextScale()); setCursor(readCursorScale()) }, [])
   const choose = (value: TextScale) => { setScale(value); setTextScale(value) }
+  const chooseCursor = (value: CursorScale) => { setCursor(value); setCursorScale(value) }
   return <>
     <div className="scale-picker" role="group" aria-label="Interface text size">
       {textScales.map(option => (
@@ -85,8 +89,20 @@ function DisplayCard() {
       ))}
     </div>
     <p className="settings-identity-note"><Type size={13} /> Changes apply immediately across every page and stay set on this device.</p>
+
+    <Eyebrow>POINTER SIZE</Eyebrow>
+    <div className="scale-picker" role="group" aria-label="Pointer size">
+      {cursorScales.map(option => (
+        <button key={option} type="button" aria-pressed={cursor === option}
+          className={cursor === option ? 'active' : ''} onClick={() => chooseCursor(option)}>
+          {cursorScaleLabels[option]}
+        </button>
+      ))}
+    </div>
+    <p className="settings-identity-note"><MousePointer2 size={13} /> Sets how large the Aetheris pointer appears on this device.</p>
   </>
 }
+
 
 export function PreferencesPage() {
   const net = useNetwork()
