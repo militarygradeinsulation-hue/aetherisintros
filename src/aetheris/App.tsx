@@ -582,7 +582,8 @@ function HomeAttention({ ranked, activeNeed, select, setPage, openThread }: {
 
 function HomeBrand({ compact = false }: { compact?: boolean }) {
   return <div className={`home-ai-brand ${compact ? 'compact' : ''}`} aria-label="Aetheris Intros">
-    <span className="home-ai-monogram">AI<i /></span><b>AETHERIS INTROS</b>
+    <span className="home-ai-monogram">AI<i /></span>
+    <span className="home-ai-namestack"><b>AETHERIS INTROS</b>{!compact && <small>WHY ME · WHY THEM · WHY NOW</small>}</span>
   </div>
 }
 
@@ -650,7 +651,7 @@ function Home({ people, select, setPage, openNeed, openThread }: {
 
     <section className="eh-hero">
       <div className="eh-hero-copy">
-        <span>WHY ME · WHY THEM · WHY NOW</span>
+        <span>RELATIONSHIP INTELLIGENCE</span>
         <h1>The right people.<br /><em>At the right time.</em></h1>
         <p>Aetheris Intros is an AI-powered relationship intelligence platform that helps you identify, reach, and build the relationships that matter most to your business.</p>
         <div><button className="eh-primary" onClick={openNeed}>GET STARTED <ArrowRight size={15} /></button><button className="eh-secondary" onClick={() => setPage('intros')}><Play size={13} /> SEE HOW IT WORKS</button></div>
