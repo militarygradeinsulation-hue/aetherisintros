@@ -1,10 +1,11 @@
 import { useEffect, useState } from 'react'
-import { Camera, Check, LockKeyhole, ShieldCheck } from 'lucide-react'
+import { Camera, Check, LockKeyhole, ShieldCheck, Type } from 'lucide-react'
 import { useNetwork, type PreferenceSettings } from '../store'
 import { AvatarImage } from '../avatar'
 import { Btn, Eyebrow, Head } from '../ui'
+import { readTextScale, setTextScale, textScaleLabels, textScales, type TextScale } from '../textScale'
 
-const tabs = ['Profile', 'Availability', 'Preferences', 'Notifications', 'Privacy', 'Memory Controls'] as const
+const tabs = ['Profile', 'Display', 'Availability', 'Preferences', 'Notifications', 'Privacy', 'Memory Controls'] as const
 
 type Tab = typeof tabs[number]
 
@@ -69,6 +70,24 @@ function IdentityCard() {
 }
 
 
+/** Interface text size, applied straight away and remembered in this browser. */
+function DisplayCard() {
+  const [scale, setScale] = useState<TextScale>('default')
+  useEffect(() => { setScale(readTextScale()) }, [])
+  const choose = (value: TextScale) => { setScale(value); setTextScale(value) }
+  return <>
+    <div className="scale-picker" role="group" aria-label="Interface text size">
+      {textScales.map(option => (
+        <button key={option} type="button" aria-pressed={scale === option}
+          className={scale === option ? 'active' : ''} onClick={() => choose(option)}>
+          {textScaleLabels[option]}
+        </button>
+      ))}
+    </div>
+    <p className="settings-identity-note"><Type size={13} /> Changes apply immediately across every page and stay set on this device.</p>
+  </>
+}
+
 export function PreferencesPage() {
   const net = useNetwork()
   const [tab, setTab] = useState<Tab>('Profile')
@@ -97,6 +116,10 @@ export function PreferencesPage() {
           <label><span>Professional title</span><input value={draft.title} onChange={event => update('title', event.target.value)} /></label>
           <label><span>Current focus</span><textarea rows={3} value={draft.focus} onChange={event => update('focus', event.target.value)} /></label>
           <label><span>Profile visibility</span><select value={draft.profileVisibility} onChange={event => update('profileVisibility', event.target.value as PreferenceSettings['profileVisibility'])}><option value="network">Aetheris network</option><option value="connections">Connections only</option><option value="private">Private</option></select></label>
+        </section>}
+        {tab === 'Display' && <section>
+          <Eyebrow>READABILITY</Eyebrow><h2>Set a text size that reads comfortably.</h2>
+          <DisplayCard />
         </section>}
         {tab === 'Availability' && <section>
           <Eyebrow>MEETING PREFERENCES</Eyebrow><h2>Make good conversations easier to schedule.</h2>

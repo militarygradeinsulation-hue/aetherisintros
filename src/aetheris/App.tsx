@@ -14,6 +14,7 @@ import { PiMicrosoftOutlookLogoFill } from 'react-icons/pi'
 import { SiGmail, SiGooglecalendar, SiHubspot, SiNotion, SiZoom } from 'react-icons/si'
 import { rankMatches, type MatchResult } from '@/aetheris/matching'
 import { AvatarImage } from './avatar'
+import { applyTextScale, readTextScale } from './textScale'
 import discoverEditorialAsset from '@/assets/editorial-discover.jpg.asset.json'
 import introsEditorialAsset from '@/assets/editorial-intros.jpg.asset.json'
 import messagesEditorialAsset from '@/assets/editorial-messages.jpg.asset.json'
@@ -2199,6 +2200,7 @@ function Shell({ startPage }: { startPage?: Page | undefined }) {
         : pageNode[page]
 
   useGrabScroll()
+  useEffect(() => { applyTextScale(readTextScale()) }, [])
   useEffect(() => { rememberRecent(page) }, [page])
 
   return <NavCtx.Provider value={navApi}>
