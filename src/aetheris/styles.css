@@ -2941,3 +2941,10 @@ html.text-scale-larger body { zoom: 1.22; }
 /* Signed-in members are handed from the public page to their real network. */
 .landing-handoff{min-height:100dvh;display:grid;place-items:center}
 .landing-handoff p{font-size:13px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted)}
+
+/* The pointer is the Aetheris "A": graphite with an ivory halo so it stays
+   legible on both ivory editorial pages and near-black intelligence panels. */
+html,body,.landing,.app-shell{cursor:url(/cursor-aetheris.png) 15 2,auto}
+a,button,summary,label,select,[role="button"],[role="tab"],[role="menuitem"],.btn,.icon-btn,.text-action,.person-brief,.context-person{cursor:url(/cursor-aetheris-action.png) 15 2,pointer}
+button:disabled,[aria-disabled="true"]{cursor:not-allowed}
+input,textarea,[contenteditable="true"]{cursor:text}
