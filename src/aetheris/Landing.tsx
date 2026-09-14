@@ -1,12 +1,28 @@
 import logoAsset from '@/assets/aetheris-logo.jpg.asset.json'
-import { ArrowRight, Eye, LockKeyhole, Network } from 'lucide-react'
+import { ArrowRight, LockKeyhole } from 'lucide-react'
 import { Link, useNavigate } from '@tanstack/react-router'
 import { useEffect } from 'react'
 import landingPortraitAsset from '@/assets/aetheris-home-portrait.jpg.asset.json'
-
-import overviewFilmAsset from '@/assets/aetheris-intros-overview.mp4.asset.json'
-import introVideoAsset from '@/assets/aetheris-intro-video.mp4.asset.json'
+import { FaLinkedin, FaMicrosoft, FaSalesforce } from 'react-icons/fa'
+import { BsMicrosoftTeams, BsSlack } from 'react-icons/bs'
+import { PiMicrosoftOutlookLogoFill } from 'react-icons/pi'
+import { SiGmail, SiGooglecalendar, SiHubspot, SiNotion, SiZoom } from 'react-icons/si'
 import { isLiveMember, useAccess } from './access'
+
+const platforms = [
+  { name: 'LinkedIn', icon: FaLinkedin, tone: 'linkedin', blurb: 'Networking' },
+  { name: 'Gmail', icon: SiGmail, tone: 'gmail', blurb: 'Email' },
+  { name: 'Outlook', icon: PiMicrosoftOutlookLogoFill, tone: 'outlook', blurb: 'Email' },
+  { name: 'Calendar', icon: SiGooglecalendar, tone: 'calendar', blurb: 'Scheduling' },
+  { name: 'Slack', icon: BsSlack, tone: 'slack', blurb: 'Messaging' },
+  { name: 'Zoom', icon: SiZoom, tone: 'zoom', blurb: 'Video' },
+  { name: 'Teams', icon: BsMicrosoftTeams, tone: 'teams', blurb: 'Collaboration' },
+  { name: 'HubSpot', icon: SiHubspot, tone: 'hubspot', blurb: 'CRM' },
+  { name: 'Salesforce', icon: FaSalesforce, tone: 'salesforce', blurb: 'CRM' },
+  { name: 'Notion', icon: SiNotion, tone: 'notion', blurb: 'Notes' },
+]
+
+const eliminates = ['Fragmented tools', 'Lost context', 'Cold outreach', 'Disconnected conversations', 'Forgotten follow-up', 'Scattered notes']
 
 /**
  * Public front page. A signed-in member never sees the marketing page or any
@@ -29,5 +45,91 @@ function LandingPage({ signedIn }: { signedIn: boolean }) {
     ? <Link to="/demo" className={cls}>{label} <ArrowRight size={15} /></Link>
     : null
   const accountBtn = (cls: string) => <Link to={signedIn ? '/app' : '/early-access'} className={cls}>{signedIn ? 'Enter your network' : 'Create an account'}</Link>
-  return <main className="landing"><header className="landing-nav"><div className="brand-mark"><img className="brand-logo" src={logoAsset.url} alt="Aetheris Intros logo" /><span className="brand-name">Aetheris<em>Intros</em></span></div><nav><a href="#film">Watch</a><a href="#method">Method</a><a href="#intelligence">Intelligence</a></nav>{demoBtn('Demo the system', 'btn primary') ?? accountBtn('btn primary')}</header><section className="landing-hero"><div className="landing-copy"><span className="folio">WHY ME · WHY THEM · WHY NOW</span><h1>Aetheris<br/><em>Intros</em></h1><h2>Real business networking.<br/>No selling. No spam.</h2><p>A place where professionals and quiet intelligence work cohesively. Aetheris understands people, context, trust, timing and what you are trying to move—then helps you make the right introduction for both sides.</p><div className="landing-actions">{demoBtn('Demo the system', 'btn primary')}{accountBtn(showDemo ? 'btn ghost' : 'btn primary')}<span>{showDemo ? 'Explore freely. Join to use it for real.' : 'Real people. Real context. Real introductions.'}</span></div></div><div className="landing-visual"><img src={landingPortraitAsset.url} alt="A professional in quiet thought beside hard window light" width={597} height={804}/><div className="portrait-caption"><span>PEOPLE × CONTEXT × OPPORTUNITY</span><p>More context. Better introductions. Stronger outcomes.</p></div><div className="blueprint-cross">+</div></div></section><section className="landing-film" id="film"><div className="landing-film-copy"><span>WATCH FIRST</span><h2>See how Aetheris Intros works.</h2><p>A short walk through the platform: how context is captured, how the right people surface at the right time, and how introductions happen with both sides agreeing.</p><ul><li>Why me, why them, why now—explained, never guessed</li><li>Double opt-in introductions, never cold outreach</li><li>Memory that keeps relationships alive between conversations</li></ul><div className="landing-actions">{demoBtn('Demo the system', 'btn primary')}{accountBtn(showDemo ? 'btn ghost' : 'btn primary')}</div></div><div className="landing-film-videos"><figure><video src={overviewFilmAsset.url} controls preload="metadata" playsInline poster={landingPortraitAsset.url}><track kind="captions"/></video><figcaption>Platform overview · 2 min</figcaption></figure><figure><video src={introVideoAsset.url} controls preload="metadata" playsInline><track kind="captions"/></video><figcaption>Aetheris Intros · from the founder</figcaption></figure></div></section><section className="landing-intelligence" id="intelligence"><div className="editorial-statement"><span>THE PREMISE</span><h2>A network should protect your attention.</h2><p>No mass outreach, paid access to your inbox or engagement bait. Aetheris surfaces a relationship only when relevance, mutual value and timing justify the conversation.</p></div><div className="landing-preview"><header><span><i/>INTELLIGENCE LIVE</span><small>Private by default</small></header><div className="preview-graph"><div className="preview-origin"><Eye size={18}/></div>{['Mina','Adrian','Nolan','Celeste'].map((x,i)=><span className={`preview-node n${i+1}`} key={x}><i/>{x}</span>)}</div><footer><div><span>STRONGEST SIGNAL</span><strong>Mina Park · 86</strong></div><ArrowRight size={18}/></footer></div></section><section className="landing-method" id="method"><header><span>THE INTROS METHOD</span><h2>From need to trusted action.</h2></header><div>{['Diagnose','Map','Score','Connect','Compound'].map((x,i)=><article key={x}><span>0{i+1}</span><h3>{x}</h3><p>{['Clarify the outcome before searching for people.','Build a living graph of context and trust.','Rank mutual value, timing and credibility.','Recommend the smallest intelligent next move.','Let every conversation improve the memory.'][i]}</p></article>)}</div></section><section className="landing-close"><Network size={22}/><h2>{showDemo ? <>Explore the complete system first.<br/><em>Create an account when you are ready to use it for real.</em></> : <>Your account is ready.<br/><em>Real people. Real context. Real introductions.</em></>}</h2><div className="landing-close-actions">{demoBtn('Open the demo', 'btn primary')}{accountBtn(showDemo ? 'btn ghost' : 'btn primary')}</div></section><footer className="landing-foot"><div className="brand-mark"><img className="brand-logo" src={logoAsset.url} alt="Aetheris Intros logo" /><span className="brand-name">Aetheris<em>Intros</em></span></div><span><LockKeyhole size={12}/>No spam. No selling your attention. Private by default.</span><span>© 2026 Aetheris</span></footer></main>
+  return (
+    <main className="lv">
+      {/* ── Section 1: Black hero ── */}
+      <header className="lv-nav">
+        <div className="brand-mark">
+          <img className="brand-logo" src={logoAsset.url} alt="Aetheris Intros logo" />
+          <span className="brand-name">Aetheris<em>Intros</em></span>
+        </div>
+        <nav>PEOPLE&nbsp;&nbsp;|&nbsp;&nbsp;IDEAS&nbsp;&nbsp;|&nbsp;&nbsp;OPPORTUNITIES</nav>
+        <div className="lv-nav-actions">
+          {demoBtn('Demo', 'btn primary')}
+          {accountBtn(showDemo ? 'btn ghost' : 'btn primary')}
+        </div>
+      </header>
+
+      <section className="lv-hero">
+        <div className="lv-hero-copy">
+          <span className="lv-hero-topright">A MORE CONNECTED TOMORROW.</span>
+          <h1>People Create<br /><em>Possibilities.</em></h1>
+          <p className="lv-hero-sub">A smarter way to connect, collaborate, and create real opportunities.</p>
+          <span className="lv-hero-scale">RELATIONSHIPS · INTELLIGENCE · OPPORTUNITY AT SCALE</span>
+          <div className="lv-hero-actions">
+            {demoBtn('Demo the system', 'btn primary')}
+            {accountBtn(showDemo ? 'btn ghost' : 'btn primary')}
+          </div>
+        </div>
+        <div className="lv-hero-visual">
+          <img src={landingPortraitAsset.url} alt="A professional in quiet thought beside hard window light" />
+        </div>
+      </section>
+
+      {/* ── Section 2: Ivory WHY ME / WHY THEM / WHY NOW ── */}
+      <section className="lv-why">
+        <article className="orange">
+          <span>WHY ME</span>
+          <i />
+          <p>Unique blend of business, AI, and real-world execution. Built by an operator who understands what actually works.</p>
+        </article>
+        <article className="blue">
+          <span>WHY THEM</span>
+          <i />
+          <p>Access to the right people, opportunities, and know-how. A trusted, curated network built for a serious outcome.</p>
+        </article>
+        <article className="orange">
+          <span>WHY NOW</span>
+          <i />
+          <p>The world is more connected but more fragmented than ever. The biggest opportunities go to those who move first.</p>
+        </article>
+      </section>
+
+      {/* ── Section 3: Black connected system ── */}
+      <section className="lv-connect">
+        <header className="lv-connect-head">
+          <span>WHAT AETHERIS INTROS BRINGS TOGETHER</span>
+          <h2>One Connected System.</h2>
+          <p>PEOPLE. CONTEXT. OPPORTUNITIES. ALL IN ONE PLACE.</p>
+        </header>
+        <div className="lv-platforms">
+          {platforms.map(({ name, icon: Icon, tone, blurb }) => (
+            <div key={name} className="lv-platform">
+              <span className={`eh-platform-logo ${tone}`}><Icon aria-hidden="true" /></span>
+              <b>{name}</b>
+              <small>{blurb}</small>
+            </div>
+          ))}
+        </div>
+        <div className="lv-eliminates">
+          <span>ELIMINATES WHAT HOLDS YOU BACK</span>
+          <p>{eliminates.map((e, i) => <span key={e}>{e}{i < eliminates.length - 1 && <i />}</span>)}</p>
+        </div>
+        <footer className="lv-foot">
+          <span>REAL PEOPLE. REAL OPPORTUNITIES. A BRIGHTER TOMORROW.</span>
+          <i />
+          <span>ONE NETWORK FOR WHAT'S NEXT.</span>
+        </footer>
+      </section>
+
+      <footer className="lv-legal">
+        <div className="brand-mark">
+          <img className="brand-logo" src={logoAsset.url} alt="Aetheris Intros logo" />
+          <span className="brand-name">Aetheris<em>Intros</em></span>
+        </div>
+        <span><LockKeyhole size={12} />No spam. No selling your attention. Private by default.</span>
+        <span>© 2026 Aetheris</span>
+      </footer>
+    </main>
+  )
 }
