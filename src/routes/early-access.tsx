@@ -9,6 +9,7 @@ import accessPortrait from '@/assets/portraits/aetheris-masthead-natural.jpg.ass
 import '@/aetheris/styles.css'
 
 export const Route = createFileRoute('/early-access')({
+  staticData: { sitemap: true },
   head: () => ({
     meta: [
       { title: 'Founding 1,000 — Aetheris Intros' },

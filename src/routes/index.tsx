@@ -4,6 +4,7 @@ import Landing from '@/aetheris/Landing'
 import '@/aetheris/styles.css'
 
 export const Route = createFileRoute('/')({
+  staticData: { sitemap: true },
   head: () => ({
     meta: [
       { title: 'Aetheris Intros — Business networking without the spam' },

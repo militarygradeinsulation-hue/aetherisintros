@@ -8,6 +8,7 @@ import { seedNetworkDirectory } from '@/lib/network-seed.server'
  * directory holds rows, so it cannot alter or expose member data.
  */
 export const Route = createFileRoute('/api/public/seed-network')({
+  staticData: { sitemap: false },
   server: {
     handlers: {
       POST: async () => {

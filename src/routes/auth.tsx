@@ -15,6 +15,7 @@ const safeNext = (value: unknown) => {
 }
 
 export const Route = createFileRoute('/auth')({
+  staticData: { sitemap: false },
   validateSearch: (search: Record<string, unknown>): { next?: string } => {
     const next = safeNext(search['next'])
     return next ? { next } : {}

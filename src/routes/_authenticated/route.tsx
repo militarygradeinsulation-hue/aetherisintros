@@ -4,6 +4,7 @@ import { AUTH_REQUIRED } from '@/aetheris/config'
 import { supabase } from '@/integrations/supabase/client'
 
 export const Route = createFileRoute('/_authenticated')({
+  staticData: { sitemap: "exclude-subtree" },
   ssr: false,
   beforeLoad: async () => {
     if (!AUTH_REQUIRED) return { user: null }

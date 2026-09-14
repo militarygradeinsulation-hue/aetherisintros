@@ -4,6 +4,7 @@ import App from '@/aetheris/App'
 import '@/aetheris/styles.css'
 
 export const Route = createFileRoute('/demo')({
+  staticData: { sitemap: true },
   head: () => ({
     meta: [
       { title: 'Guided showcase — Aetheris Intros' },
