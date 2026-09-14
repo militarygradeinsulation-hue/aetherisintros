@@ -15,6 +15,7 @@ import { Route as AuthRouteImport } from './routes/auth'
 import { Route as DemoRouteImport } from './routes/demo'
 import { Route as EarlyAccessRouteImport } from './routes/early-access'
 import { Route as McpRouteImport } from './routes/mcp'
+import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as Char91DotwellKnownChar93OauthProtectedResourceRouteImport } from './routes/[.well-known]/oauth-protected-resource'
 import { Route as AuthenticatedAppRouteImport } from './routes/_authenticated/app'
 import { Route as AuthenticatedOnboardingRouteImport } from './routes/_authenticated/onboarding'
@@ -49,6 +50,11 @@ const EarlyAccessRoute = EarlyAccessRouteImport.update({
 const McpRoute = McpRouteImport.update({
   id: '/mcp',
   path: '/mcp',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
+  id: '/sitemap.xml',
+  path: '/sitemap.xml',
   getParentRoute: () => rootRouteImport,
 } as any)
 const Char91DotwellKnownChar93OauthProtectedResourceRoute =
@@ -90,6 +96,7 @@ export interface FileRoutesByFullPath {
   '/demo': typeof DemoRoute
   '/early-access': typeof EarlyAccessRoute
   '/mcp': typeof McpRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
   '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
   '/app': typeof AuthenticatedAppRoute
   '/onboarding': typeof AuthenticatedOnboardingRoute
@@ -103,6 +110,7 @@ export interface FileRoutesByTo {
   '/demo': typeof DemoRoute
   '/early-access': typeof EarlyAccessRoute
   '/mcp': typeof McpRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
   '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
   '/app': typeof AuthenticatedAppRoute
   '/onboarding': typeof AuthenticatedOnboardingRoute
@@ -118,6 +126,7 @@ export interface FileRoutesById {
   '/demo': typeof DemoRoute
   '/early-access': typeof EarlyAccessRoute
   '/mcp': typeof McpRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
   '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
   '/_authenticated/app': typeof AuthenticatedAppRoute
   '/_authenticated/onboarding': typeof AuthenticatedOnboardingRoute
@@ -133,6 +142,7 @@ export interface FileRouteTypes {
     | '/demo'
     | '/early-access'
     | '/mcp'
+    | '/sitemap.xml'
     | '/.well-known/oauth-protected-resource'
     | '/app'
     | '/onboarding'
@@ -146,6 +156,7 @@ export interface FileRouteTypes {
     | '/demo'
     | '/early-access'
     | '/mcp'
+    | '/sitemap.xml'
     | '/.well-known/oauth-protected-resource'
     | '/app'
     | '/onboarding'
@@ -160,6 +171,7 @@ export interface FileRouteTypes {
     | '/demo'
     | '/early-access'
     | '/mcp'
+    | '/sitemap.xml'
     | '/.well-known/oauth-protected-resource'
     | '/_authenticated/app'
     | '/_authenticated/onboarding'
@@ -175,6 +187,7 @@ export interface RootRouteChildren {
   DemoRoute: typeof DemoRoute
   EarlyAccessRoute: typeof EarlyAccessRoute
   McpRoute: typeof McpRoute
+  SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   Char91DotwellKnownChar93OauthProtectedResourceRoute: typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
   DotlovableOauthConsentRoute: typeof DotlovableOauthConsentRoute
   ApiPublicSeedNetworkRoute: typeof ApiPublicSeedNetworkRoute
@@ -222,6 +235,13 @@ declare module '@tanstack/react-router' {
       path: '/mcp'
       fullPath: '/mcp'
       preLoaderRoute: typeof McpRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/sitemap.xml': {
+      id: '/sitemap.xml'
+      path: '/sitemap.xml'
+      fullPath: '/sitemap.xml'
+      preLoaderRoute: typeof SitemapDotxmlRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/.well-known/oauth-protected-resource': {
@@ -291,6 +311,7 @@ const rootRouteChildren: RootRouteChildren = {
   DemoRoute: DemoRoute,
   EarlyAccessRoute: EarlyAccessRoute,
   McpRoute: McpRoute,
+  SitemapDotxmlRoute: SitemapDotxmlRoute,
   Char91DotwellKnownChar93OauthProtectedResourceRoute:
     Char91DotwellKnownChar93OauthProtectedResourceRoute,
   DotlovableOauthConsentRoute: DotlovableOauthConsentRoute,
