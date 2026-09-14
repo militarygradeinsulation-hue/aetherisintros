@@ -990,10 +990,32 @@ function Messages({ people, select, activeId, setActiveId }: { people: Member[];
   const [contextOpen, setContextOpen] = useState(false)
   const nav = useNav()
   const { gate, modal: outreachModal } = useOutreachGate()
-  const threads = net.threads
+  const threads = net.threads.filter(t => people.some(p => p.id === t.memberId))
   const thread: Thread | undefined = threads.find(t => t.id === activeId) ?? threads[0]
   const person = people.find(p => p.id === thread?.memberId)
-  if (!thread || !person) return null
+  if (!thread || !person) {
+    const startable = people.slice(0, 12)
+    return <div className="messages-empty">
+      <Head
+        label="MESSAGES"
+        title="Conversations start with a reason."
+        copy="No open conversations yet. Pick a member below and Aetheris keeps the relationship context — why you're connected, what they need, what you can help with — beside the thread."
+        proof={`${people.length} ${people.length === 1 ? 'member' : 'members'} in your network`}
+      />
+      {startable.length ? <ul className="messages-start-list">
+        {startable.map(m => <li key={m.id}>
+          <Avatar person={m} />
+          <div><strong>{m.name}</strong><small>{[m.title, m.company].filter(Boolean).join(' · ')}</small></div>
+          <Button kind="secondary" onClick={() => setActiveId(net.openThreadWith(m.id))}>
+            <MessageSquareText size={14} /> Message
+          </Button>
+        </li>)}
+      </ul> : <p className="empty-state">
+        Your network is still empty. Find people in Discover, then start a conversation from their profile.
+      </p>}
+    </div>
+  }
+
   return <>
     {isShowcase() && <EditorialHero folio="MESSAGES / RELATIONSHIP CONTEXT" title={<>Conversation with<br /><em>memory beside it.</em></>} statement="People speak to people. Context stays quietly available." copy="Commitments, mutual connections and the reason for the introduction remain beside the thread—not inside the conversation." caption="A professional exchange remains human when intelligence knows when to stay quiet." image={messagesEditorialAsset.url} />}
     {outreachModal}
