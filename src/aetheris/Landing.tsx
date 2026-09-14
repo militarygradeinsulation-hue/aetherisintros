@@ -76,15 +76,16 @@ function LandingPage({ signedIn }: { signedIn: boolean }) {
         </div>
       </section>
 
-      {/* ── Section 2: Ivory WHY ME / WHY THEM / WHY NOW ── */}
+      {/* ── Section 2: Ivory WHY ME / WHY YOU / WHY NOW ── */}
       <section className="lv-why">
+        <div className="lv-why-label">Answering The:</div>
         <article className="orange">
           <span>WHY ME</span>
           <i />
           <p>Unique blend of business, AI, and real-world execution. Built by an operator who understands what actually works.</p>
         </article>
         <article className="blue">
-          <span>WHY THEM</span>
+          <span>WHY YOU</span>
           <i />
           <p>Access to the right people, opportunities, and know-how. A trusted, curated network built for a serious outcome.</p>
         </article>
