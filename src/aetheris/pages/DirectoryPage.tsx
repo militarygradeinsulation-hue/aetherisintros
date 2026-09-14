@@ -1,12 +1,15 @@
 import { useEffect, useMemo, useState } from 'react'
-import { BadgeCheck, Building2, Search } from 'lucide-react'
+import { ArrowUpRight, BadgeCheck, Building2, Search } from 'lucide-react'
 import { supabase } from '@/integrations/supabase/client'
 import { Btn, Eyebrow, Head } from '../ui'
+import { useNetwork } from '../store'
+import { useNav } from '../nav'
 
 type Tab = 'people' | 'companies'
 
 interface ContactRow {
   id: string
+  user_id: string | null
   full_name: string
   title: string
   company_name: string
@@ -36,9 +39,12 @@ const place = (row: CompanyRow) => [row.city, row.region, row.country].filter(Bo
  * signed-up member — never generated. Only signed-in members can read it.
  */
 export function DirectoryPage() {
+  const net = useNetwork()
+  const nav = useNav()
   const [tab, setTab] = useState<Tab>('people')
   const [query, setQuery] = useState('')
-  const [membersOnly, setMembersOnly] = useState(false)
+  const [membersOnly, setMembersOnly] = useState(true)
+  const [currentUserId, setCurrentUserId] = useState<string | null>(null)
   const [contacts, setContacts] = useState<ContactRow[]>([])
   const [companies, setCompanies] = useState<CompanyRow[]>([])
   const [counts, setCounts] = useState<{ people: number; companies: number; members: number }>({ people: 0, companies: 0, members: 0 })
@@ -47,12 +53,14 @@ export function DirectoryPage() {
   useEffect(() => {
     let live = true
     void (async () => {
+      const { data: authData } = await supabase.auth.getUser()
       const [people, comps, members] = await Promise.all([
         supabase.from('directory_contacts').select('id', { count: 'exact', head: true }),
         supabase.from('directory_companies').select('id', { count: 'exact', head: true }),
         supabase.from('directory_contacts').select('id', { count: 'exact', head: true }).eq('is_member', true),
       ])
       if (!live) return
+      setCurrentUserId(authData.user?.id ?? null)
       setCounts({ people: people.count ?? 0, companies: comps.count ?? 0, members: members.count ?? 0 })
     })()
     return () => { live = false }
@@ -67,7 +75,7 @@ export function DirectoryPage() {
         if (tab === 'people') {
           let q = supabase
             .from('directory_contacts')
-            .select('id, full_name, title, company_name, industry, location, seniority, is_member')
+            .select('id, user_id, full_name, title, company_name, industry, location, seniority, is_member')
             .order('is_member', { ascending: false })
             .limit(60)
           if (membersOnly) q = q.eq('is_member', true)
@@ -98,8 +106,8 @@ export function DirectoryPage() {
   return <>
     <Head
       label="DIRECTORY"
-      title="Look someone up before you ever reach out."
-      copy="A reference directory of companies and people, so the network is useful on your first day. Members are marked. Reference records are lookup context only — no mass outreach, no exports, no cold sequences."
+      title="Every member, clearly searchable."
+      copy="Find everyone who has joined Aetheris Intros by name, company, role, industry or location, then open their full profile. Reference records remain available separately for context."
       proof={proof}
       action={<Btn kind="secondary" onClick={() => setMembersOnly(m => !m)}>{membersOnly ? 'Show everyone' : 'Members only'}</Btn>}
     />
@@ -120,15 +128,23 @@ export function DirectoryPage() {
     </label>
 
     {tab === 'people' && <section className="directory-list">
-      {contacts.map(row => <article key={row.id} className="module directory-card">
+      {contacts.map(row => {
+        const member = row.user_id ? net.members.find(person => person.id === row.user_id) : undefined
+        const isMe = Boolean(row.user_id && row.user_id === currentUserId)
+        return <article key={row.id} className={`module directory-card ${row.is_member ? 'directory-member' : ''}`}>
         <div className="directory-mark">{initials(row.full_name)}</div>
         <div className="directory-body">
-          <Eyebrow>{row.is_member ? 'MEMBER' : 'REFERENCE RECORD'}</Eyebrow>
+          <Eyebrow>{isMe ? 'YOUR PROFILE' : row.is_member ? 'AETHERIS MEMBER' : 'REFERENCE RECORD'}</Eyebrow>
           <h3>{row.full_name} {row.is_member && <BadgeCheck size={14} />}</h3>
           <small>{[row.title, row.company_name].filter(Boolean).join(' · ') || 'No stated role'}</small>
           <p>{[row.industry, row.location, row.seniority].filter(Boolean).join(' · ') || 'No further context on record.'}</p>
+          {isMe
+            ? <Btn kind="secondary" onClick={() => nav.setPage('profile')}>View my profile <ArrowUpRight size={13} /></Btn>
+            : member
+              ? <Btn kind="secondary" onClick={() => nav.openMember(member)}>View profile <ArrowUpRight size={13} /></Btn>
+              : row.is_member && <small className="directory-profile-note">Profile setup is not finished yet.</small>}
         </div>
-      </article>)}
+      </article>})}
       {!loading && contacts.length === 0 && <p className="empty-state">Nobody matches that yet. Try a company, a city or a job title.</p>}
     </section>}
 
