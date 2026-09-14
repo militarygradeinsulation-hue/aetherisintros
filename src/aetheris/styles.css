@@ -2952,3 +2952,12 @@ a,button,summary,label,select,[role="button"],[role="tab"],[role="menuitem"],.bt
 input,textarea,[contenteditable]{cursor:url(/cursor-aetheris.png) 26 10,text !important}
 button:disabled,[aria-disabled="true"]{cursor:not-allowed}
 input,textarea,[contenteditable="true"]{cursor:text}
+
+/* ------------------------------------------- explicit sign in / sign out */
+.topbar-auth{height:34px;display:inline-flex;align-items:center;gap:7px;padding:0 12px;border:1px solid var(--line-dark);border-radius:6px;background:var(--raised);color:var(--soft);font:700 8px var(--sans);letter-spacing:.14em;text-transform:uppercase;text-decoration:none;white-space:nowrap;cursor:pointer}
+.topbar-auth:hover{border-color:var(--cobalt);color:var(--cobalt)}
+.topbar-auth:disabled{opacity:.6;cursor:default}
+.rail-auth{padding:0 12px 12px}
+.rail-auth .topbar-auth{width:100%;justify-content:center}
+@media(min-width:921px){.rail-auth{display:none}}
+@media(max-width:920px){.topbar-auth span{display:none}.topbar-auth{padding:0 9px}.rail-auth .topbar-auth span{display:inline}}
