@@ -3005,24 +3005,24 @@ html.text-scale-larger body { zoom: 1.22; }
 
 /* The pointer is the Aetheris "A": graphite with an ivory halo so it stays
    legible on both ivory editorial pages and near-black intelligence panels. */
-html,body,body *,.landing,.app-shell{cursor:url(/cursor-aetheris.png) 26 10,auto !important}
-a,button,summary,label,select,[role="button"],[role="tab"],[role="menuitem"],.btn,.icon-btn,.text-action,.person-brief,.context-person{cursor:url(/cursor-aetheris-action.png) 26 10,pointer !important}
-input,textarea,[contenteditable]{cursor:url(/cursor-aetheris.png) 26 10,text !important}
+html,body,body *,.landing,.app-shell{cursor:url(/cursor-aetheris.png) 9 3,auto !important}
+a,button,summary,label,select,[role="button"],[role="tab"],[role="menuitem"],.btn,.icon-btn,.text-action,.person-brief,.context-person{cursor:url(/cursor-aetheris-action.png) 9 3,pointer !important}
+input,textarea,[contenteditable]{cursor:url(/cursor-aetheris.png) 9 3,text !important}
 button:disabled,[aria-disabled="true"]{cursor:not-allowed}
 input,textarea,[contenteditable="true"]{cursor:text}
 
 /* Member-chosen pointer size (Settings / Display). */
-.cursor-scale-small html,.cursor-scale-small body,.cursor-scale-small body *{cursor:url(/cursor-aetheris-small.png) 17 7,auto !important}
-.cursor-scale-small a,.cursor-scale-small button,.cursor-scale-small summary,.cursor-scale-small label,.cursor-scale-small select,.cursor-scale-small [role="button"],.cursor-scale-small [role="tab"],.cursor-scale-small [role="menuitem"]{cursor:url(/cursor-aetheris-action-small.png) 17 7,pointer !important}
-.cursor-scale-small input,.cursor-scale-small textarea,.cursor-scale-small [contenteditable]{cursor:url(/cursor-aetheris-small.png) 17 7,text !important}
+.cursor-scale-small html,.cursor-scale-small body,.cursor-scale-small body *{cursor:url(/cursor-aetheris-small.png) 6 2,auto !important}
+.cursor-scale-small a,.cursor-scale-small button,.cursor-scale-small summary,.cursor-scale-small label,.cursor-scale-small select,.cursor-scale-small [role="button"],.cursor-scale-small [role="tab"],.cursor-scale-small [role="menuitem"]{cursor:url(/cursor-aetheris-action-small.png) 6 2,pointer !important}
+.cursor-scale-small input,.cursor-scale-small textarea,.cursor-scale-small [contenteditable]{cursor:url(/cursor-aetheris-small.png) 6 2,text !important}
 
-.cursor-scale-large body,.cursor-scale-large body *{cursor:url(/cursor-aetheris-large.png) 32 12,auto !important}
-.cursor-scale-large a,.cursor-scale-large button,.cursor-scale-large summary,.cursor-scale-large label,.cursor-scale-large select,.cursor-scale-large [role="button"],.cursor-scale-large [role="tab"],.cursor-scale-large [role="menuitem"]{cursor:url(/cursor-aetheris-action-large.png) 32 12,pointer !important}
-.cursor-scale-large input,.cursor-scale-large textarea,.cursor-scale-large [contenteditable]{cursor:url(/cursor-aetheris-large.png) 32 12,text !important}
+.cursor-scale-large body,.cursor-scale-large body *{cursor:url(/cursor-aetheris-large.png) 11 4,auto !important}
+.cursor-scale-large a,.cursor-scale-large button,.cursor-scale-large summary,.cursor-scale-large label,.cursor-scale-large select,.cursor-scale-large [role="button"],.cursor-scale-large [role="tab"],.cursor-scale-large [role="menuitem"]{cursor:url(/cursor-aetheris-action-large.png) 11 4,pointer !important}
+.cursor-scale-large input,.cursor-scale-large textarea,.cursor-scale-large [contenteditable]{cursor:url(/cursor-aetheris-large.png) 11 4,text !important}
 
-.cursor-scale-largest body,.cursor-scale-largest body *{cursor:url(/cursor-aetheris-largest.png) 38 14,auto !important}
-.cursor-scale-largest a,.cursor-scale-largest button,.cursor-scale-largest summary,.cursor-scale-largest label,.cursor-scale-largest select,.cursor-scale-largest [role="button"],.cursor-scale-largest [role="tab"],.cursor-scale-largest [role="menuitem"]{cursor:url(/cursor-aetheris-action-largest.png) 38 14,pointer !important}
-.cursor-scale-largest input,.cursor-scale-largest textarea,.cursor-scale-largest [contenteditable]{cursor:url(/cursor-aetheris-largest.png) 38 14,text !important}
+.cursor-scale-largest body,.cursor-scale-largest body *{cursor:url(/cursor-aetheris-largest.png) 13 5,auto !important}
+.cursor-scale-largest a,.cursor-scale-largest button,.cursor-scale-largest summary,.cursor-scale-largest label,.cursor-scale-largest select,.cursor-scale-largest [role="button"],.cursor-scale-largest [role="tab"],.cursor-scale-largest [role="menuitem"]{cursor:url(/cursor-aetheris-action-largest.png) 13 5,pointer !important}
+.cursor-scale-largest input,.cursor-scale-largest textarea,.cursor-scale-largest [contenteditable]{cursor:url(/cursor-aetheris-largest.png) 13 5,text !important}
 
 
 /* ------------------------------------------- explicit sign in / sign out */
