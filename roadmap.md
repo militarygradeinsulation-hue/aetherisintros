@@ -80,6 +80,6 @@
 
 # Home connections + theme (Sep 14)
 
-- [ ] Replace connection initials with recognizable platform logos.
-- [ ] Make Home dark below its light top bar by default and add a persistent light/dark switch.
-- [ ] Verify the updated Home at desktop and mobile sizes.
+- [x] Replace connection initials with recognizable platform logos.
+- [x] Make Home dark below its light top bar by default and add a persistent light/dark switch.
+- [x] Verify the updated Home at desktop and mobile sizes.
