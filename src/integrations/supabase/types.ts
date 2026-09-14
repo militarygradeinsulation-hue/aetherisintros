@@ -642,6 +642,7 @@ export type Database = {
           category: string
           confidence: number
           created_at: string
+          fact_key: string | null
           id: string
           kind: string
           member_id: string | null
@@ -655,6 +656,7 @@ export type Database = {
           category?: string
           confidence?: number
           created_at?: string
+          fact_key?: string | null
           id?: string
           kind?: string
           member_id?: string | null
@@ -668,6 +670,7 @@ export type Database = {
           category?: string
           confidence?: number
           created_at?: string
+          fact_key?: string | null
           id?: string
           kind?: string
           member_id?: string | null
@@ -1184,6 +1187,7 @@ export type Database = {
         Args: { p_email: string; p_name?: string }
         Returns: undefined
       }
+      relative_label: { Args: { ts: string }; Returns: string }
       show_limit: { Args: never; Returns: number }
       show_trgm: { Args: { "": string }; Returns: string[] }
     }
