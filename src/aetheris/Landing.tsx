@@ -79,21 +79,23 @@ function LandingPage({ signedIn }: { signedIn: boolean }) {
       {/* ── Section 2: Ivory WHY ME / WHY YOU / WHY NOW ── */}
       <section className="lv-why">
         <div className="lv-why-label">Answering The:</div>
-        <article className="orange">
-          <span>WHY ME</span>
-          <i />
-          <p>Unique blend of business, AI, and real-world execution. Built by an operator who understands what actually works.</p>
-        </article>
-        <article className="blue">
-          <span>WHY YOU</span>
-          <i />
-          <p>Access to the right people, opportunities, and know-how. A trusted, curated network built for a serious outcome.</p>
-        </article>
-        <article className="orange">
-          <span>WHY NOW</span>
-          <i />
-          <p>The world is more connected but more fragmented than ever. The biggest opportunities go to those who move first.</p>
-        </article>
+        <div className="lv-why-articles">
+          <article className="orange">
+            <span>WHY ME</span>
+            <i />
+            <p>Unique blend of business, AI, and real-world execution. Built by an operator who understands what actually works.</p>
+          </article>
+          <article className="blue">
+            <span>WHY YOU</span>
+            <i />
+            <p>Access to the right people, opportunities, and know-how. A trusted, curated network built for a serious outcome.</p>
+          </article>
+          <article className="orange">
+            <span>WHY NOW</span>
+            <i />
+            <p>The world is more connected but more fragmented than ever. The biggest opportunities go to those who move first.</p>
+          </article>
+        </div>
       </section>
 
       {/* ── Section 3: Black connected system ── */}
