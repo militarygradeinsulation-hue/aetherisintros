@@ -2574,6 +2574,9 @@ input, textarea, select { font: inherit; }
 .more-recent>div{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
 .more-recent button{border:1px solid var(--line-dark);border-radius:20px;background:transparent;color:var(--muted);padding:6px 11px;font:600 9px var(--sans);cursor:pointer}
 .more-recent button:hover{color:var(--soft);border-color:var(--cobalt)}
+.more-recent.favourites .more-label{color:var(--amber)}
+.more-recent.favourites button{color:var(--amber);border-color:color-mix(in oklab,var(--amber) 45%,transparent)}
+.more-recent.favourites button:hover{color:var(--soft);border-color:var(--amber);background:color-mix(in oklab,var(--amber) 14%,transparent)}
 .more-label{display:block;color:var(--muted);font:700 8px var(--sans);letter-spacing:.19em;padding:14px 0 8px}
 .more-tabs{display:flex;gap:4px;padding:12px 20px 0;overflow-x:auto;scrollbar-width:thin;scrollbar-color:var(--cobalt) transparent;border-bottom:1px solid var(--line-dark)}
 .more-tabs button{border:0;border-bottom:2px solid transparent;background:transparent;color:var(--muted);padding:10px 10px 12px;white-space:nowrap;font:700 8px var(--sans);letter-spacing:.13em;text-transform:uppercase;cursor:pointer}
