@@ -23,6 +23,7 @@ import memoryEditorialAsset from '@/assets/editorial-memory.jpg.asset.json'
 import insightsEditorialAsset from '@/assets/editorial-insights.jpg.asset.json'
 import homeEditorialAsset from '@/assets/aetheris-home-portrait.jpg.asset.json'
 import overviewFilmAsset from '@/assets/aetheris-intros-overview.mp4.asset.json'
+import introVideoAsset from '@/assets/aetheris-intro-video.mp4.asset.json'
 import logoAsset from '@/assets/aetheris-logo.jpg.asset.json'
 import worldNetworkImg from '@/assets/aetheris-world-network.jpg'
 import { leaks } from './data'
@@ -711,6 +712,12 @@ function Home({ people, select, setPage, openNeed, openThread }: {
           <track kind="captions" />
         </video>
         <figcaption>Platform overview · 2 min</figcaption>
+      </figure>
+      <figure>
+        <video src={introVideoAsset.url} controls preload="metadata" playsInline>
+          <track kind="captions" />
+        </video>
+        <figcaption>Aetheris Intros · from the founder</figcaption>
       </figure>
     </section>
 
