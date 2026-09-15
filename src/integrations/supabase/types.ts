@@ -801,9 +801,11 @@ export type Database = {
           id: string
           is_demo: boolean
           kind: string
+          media: Json
           member_id: string | null
           response_count: number
           text: string
+          visibility: string
           when_label: string
         }
         Insert: {
@@ -813,9 +815,11 @@ export type Database = {
           id: string
           is_demo?: boolean
           kind?: string
+          media?: Json
           member_id?: string | null
           response_count?: number
           text: string
+          visibility?: string
           when_label?: string
         }
         Update: {
@@ -825,9 +829,11 @@ export type Database = {
           id?: string
           is_demo?: boolean
           kind?: string
+          media?: Json
           member_id?: string | null
           response_count?: number
           text?: string
+          visibility?: string
           when_label?: string
         }
         Relationships: []

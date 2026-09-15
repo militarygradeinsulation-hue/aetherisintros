@@ -14,6 +14,7 @@ import { PiMicrosoftOutlookLogoFill } from 'react-icons/pi'
 import { SiGmail, SiGooglecalendar, SiHubspot, SiNotion, SiZoom } from 'react-icons/si'
 import { rankMatches, type MatchResult } from '@/aetheris/matching'
 import { AvatarImage } from './avatar'
+import { journalKindFor, journalUrl, uploadJournalMedia } from './live'
 import { supabase } from '@/integrations/supabase/client'
 import { useAccess } from './access'
 import { applyTextScale, readTextScale } from './textScale'
@@ -35,7 +36,7 @@ import type { AutonomyLevel, DigitalYouProfile, Objective, PrivacyScope } from '
 import {
   circles, events, howItWorks5, howIntrosWorks, introStateLabel,
   onboardingQuestions, trendingSectors,
-  type Learning, type Member, type MemberRole, type NetworkAsk, type Post, type Thread,
+  type JournalAttachment, type Learning, type Member, type MemberRole, type NetworkAsk, type Post, type Thread,
 } from './social'
 import { NetworkProvider, useNetwork, type MemoryNote, type MeProfile, type NetworkMode } from './store'
 import { isShowcase, setShowcaseMode, showcaseOnly } from './showcase'
@@ -421,6 +422,128 @@ function AskCard({ ask, member, onOpen }: { ask: NetworkAsk; member: Member | un
   </article>
 }
 
+/* ------------------------------------------------------------------ journal */
+
+function JournalFile({ item }: { item: JournalAttachment }) {
+  const [url, setUrl] = useState<string | null>(null)
+  useEffect(() => {
+    let active = true
+    void journalUrl(item.path).then(resolved => { if (active) setUrl(resolved) })
+    return () => { active = false }
+  }, [item.path])
+
+  if (item.kind === 'image') {
+    return <figure className="journal-image">{url ? <img src={url} alt={item.name} loading="lazy" /> : <span>{item.name}</span>}</figure>
+  }
+  if (item.kind === 'video') {
+    return <figure className="journal-video">{url
+      ? <video src={url} controls preload="metadata" playsInline><track kind="captions" /></video>
+      : <span>{item.name}</span>}</figure>
+  }
+  return <a className="journal-doc" href={url ?? undefined} target="_blank" rel="noreferrer">
+    <FileText size={15} /><span>{item.name}</span><small>{Math.max(1, Math.round(item.size / 1024))} KB</small>
+  </a>
+}
+
+function JournalMedia({ media }: { media?: JournalAttachment[] | undefined }) {
+  if (!media?.length) return null
+  const images = media.filter(m => m.kind === 'image')
+  const rest = media.filter(m => m.kind !== 'image')
+  return <div className="journal-media">
+    {images.length > 0 && <div className={`journal-gallery count-${Math.min(images.length, 4)}`}>{images.map(item => <JournalFile key={item.path} item={item} />)}</div>}
+    {rest.map(item => <JournalFile key={item.path} item={item} />)}
+  </div>
+}
+
+/** Write a Journal entry: a headline, a note, attachments and who can see it. */
+function JournalComposer({ compact = false }: { compact?: boolean }) {
+  const net = useNetwork()
+  const [text, setText] = useState('')
+  const [detail, setDetail] = useState('')
+  const [files, setFiles] = useState<File[]>([])
+  const [visibility, setVisibility] = useState<'network' | 'private'>('network')
+  const [message, setMessage] = useState('')
+  const [saving, setSaving] = useState(false)
+
+  const choose = (chosen: FileList | null) => {
+    setMessage('')
+    if (!chosen?.length) return
+    const next = [...files]
+    for (const file of Array.from(chosen)) {
+      if (next.length >= 6) { setMessage('Up to 6 attachments per entry.'); break }
+      const kind = journalKindFor(file)
+      if (!kind) { setMessage(`${file.name} is not a supported picture, video or document.`); continue }
+      const limit = kind === 'video' ? 200 * 1024 * 1024 : 25 * 1024 * 1024
+      if (file.size > limit) { setMessage(`${file.name} is too large — ${kind === 'video' ? 'videos up to 200 MB' : 'pictures and documents up to 25 MB'}.`); continue }
+      next.push(file)
+    }
+    setFiles(next)
+  }
+
+  const publish = async () => {
+    if (!text.trim()) return
+    setSaving(true)
+    setMessage('')
+    try {
+      let media: JournalAttachment[] = []
+      if (files.length) {
+        const { data } = await supabase.auth.getUser()
+        const userId = data.user?.id
+        if (!userId) throw new Error('Sign in again to attach files.')
+        media = await Promise.all(files.map(file => uploadJournalMedia(userId, file)))
+      }
+      net.addPost(text.trim(), detail.trim() || (visibility === 'private' ? 'Private to you.' : 'Shared with your network.'), media, visibility)
+      setText(''); setDetail(''); setFiles([]); setMessage('Journal entry added.')
+    } catch (error) {
+      setMessage(error instanceof Error ? error.message : 'Could not save this entry.')
+    } finally {
+      setSaving(false)
+    }
+  }
+
+  return <section className={`journal-composer${compact ? ' compact' : ''}`}>
+    <header><Label>YOUR JOURNAL</Label><h3>Write what you are working on.</h3>
+      <p>Entries sit on your profile so members understand your current focus. Attach pictures, video or documents when they help.</p></header>
+    <input className="journal-headline" value={text} onChange={event => setText(event.target.value)} placeholder="A clear headline — what happened or what you are building" />
+    <textarea rows={compact ? 3 : 4} value={detail} onChange={event => setDetail(event.target.value)} placeholder="The detail worth knowing: context, outcome, what you need next…" />
+    {files.length > 0 && <ul className="journal-queue">{files.map((file, index) => <li key={`${file.name}-${index}`}>
+      <span>{journalKindFor(file) === 'image' ? <Camera size={13} /> : journalKindFor(file) === 'video' ? <Play size={13} /> : <FileText size={13} />}</span>
+      <b>{file.name}</b><small>{Math.max(1, Math.round(file.size / 1024))} KB</small>
+      <button type="button" aria-label={`Remove ${file.name}`} onClick={() => setFiles(files.filter((_, i) => i !== index))}><X size={13} /></button>
+    </li>)}</ul>}
+    <footer>
+      <label className="journal-attach"><input type="file" multiple accept="image/jpeg,image/png,image/webp,image/gif,video/mp4,video/webm,video/quicktime,.pdf,.doc,.docx,.ppt,.pptx,.xls,.xlsx,.txt,.csv" onChange={event => { choose(event.target.files); event.target.value = '' }} /><span><Plus size={14} /> Add pictures, video or documents</span></label>
+      <div className="journal-visibility">
+        <button type="button" className={visibility === 'network' ? 'on' : ''} onClick={() => setVisibility('network')}><Users size={13} /> My network</button>
+        <button type="button" className={visibility === 'private' ? 'on' : ''} onClick={() => setVisibility('private')}><LockKeyhole size={13} /> Private to me</button>
+      </div>
+      <Button disabled={saving || !text.trim()} onClick={() => { void publish() }}>{saving ? 'Saving…' : 'Add Journal entry'}</Button>
+    </footer>
+    {message && <small className="journal-message">{message}</small>}
+  </section>
+}
+
+/** A member's Journal entries, newest first. */
+function JournalFeed({ member, name }: { member?: Member | undefined; name: string }) {
+  const net = useNetwork()
+  const nav = useNav()
+  const memberId = member?.id ?? 'me'
+  const mine = !member
+  const entries = net.posts.filter(post => post.memberId === memberId)
+  const [showAll, setShowAll] = useState(false)
+  const visible = showAll ? entries : entries.slice(0, 3)
+
+  return <section className="journal-feed">
+    <header><Label>JOURNAL</Label><h3>{mine ? 'Your entries' : `${name.split(' ')[0]}’s entries`}</h3>
+      {entries.length > 3 && <button className="text-action" onClick={() => setShowAll(value => !value)}>{showAll ? 'Show less' : `See all ${entries.length}`}</button>}</header>
+    {visible.length
+      ? visible.map(post => <PostCard key={post.id} post={post} member={member} onOpen={() => { if (member) nav.openMember(member) }} />)
+      : <p className="empty-state">{mine
+        ? 'No entries yet. A Journal is where you record what you are building, what changed and what you need next — members read it on your profile.'
+        : `No Journal entries yet from ${name.split(' ')[0]}.`}</p>}
+  </section>
+}
+
 function PostCard({ post, member, onOpen }: { post: Post; member: Member | undefined; onOpen: () => void }) {
   const net = useNetwork()
   const nav = useNav()
@@ -445,6 +568,7 @@ function PostCard({ post, member, onOpen }: { post: Post; member: Member | undef
     </header>
     <h3>{post.text}</h3>
     <p>{post.detail}</p>
+    <JournalMedia media={post.media} />
     <footer>
       <small>{post.when} · {post.responses + comments.length + (responded ? 1 : 0)} responses</small>
       <div className="post-actions">
@@ -455,7 +579,7 @@ function PostCard({ post, member, onOpen }: { post: Post; member: Member | undef
         {!mine && member && <Button kind="secondary" onClick={() => { const id = net.respondToPost(post.id, member.id); if (id) nav.goToThread(id) }}>
           {responded ? <><Check size={14} /> Responded</> : <><MessageSquareText size={14} /> Message privately</>}
         </Button>}
-        {mine && <small className="post-own">Shared with your network · added to Active Memory</small>}
+        {mine && <small className="post-own">{post.visibility === 'private' ? <><LockKeyhole size={12} /> Private to you · added to Active Memory</> : 'Shared with your network · added to Active Memory'}</small>}
       </div>
     </footer>
     {(commenting || comments.length > 0) && <section className="post-discussion">
@@ -1478,6 +1602,9 @@ function Profile({ people, setPage, openOnboarding }: {
         <div key={k}><span>{k}</span><p>{v}</p></div>)}
     </div>
 
+    <JournalComposer />
+    <JournalFeed name={me.name || 'You'} />
+
     <details className="profile-deep">
       <summary>Relationship intelligence, proof and history</summary>
     <section className="private-panel">
@@ -1748,6 +1875,8 @@ function MemberProfile({ person, people, onClose, onDraft, onMessage }: {
       </section>
 
       <ProfileRooms personId={person.id} />
+
+      <JournalFeed member={person} name={person.name} />
 
       <section className="mod member-notes">
         <header><span>ACTIVE MEMORY</span><small><LockKeyhole size={11} /> privacy scoped</small></header>
