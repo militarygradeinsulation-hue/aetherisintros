@@ -677,6 +677,14 @@ export const onboardingQuestions: Array<{ key: string; label: string; placeholde
 
 /* ------------------------------------------------- professional feed content */
 
+export interface JournalAttachment {
+  path: string
+  kind: 'image' | 'video' | 'document'
+  name: string
+  mime: string
+  size: number
+}
+
 export interface Post {
   id: string
   memberId: string
@@ -685,6 +693,8 @@ export interface Post {
   detail: string
   when: string
   responses: number
+  media?: JournalAttachment[]
+  visibility?: 'network' | 'private'
 }
 
 export const posts: Post[] = [
