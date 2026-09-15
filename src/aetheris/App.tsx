@@ -1602,6 +1602,9 @@ function Profile({ people, setPage, openOnboarding }: {
         <div key={k}><span>{k}</span><p>{v}</p></div>)}
     </div>
 
+    <JournalComposer />
+    <JournalFeed name={me.name || 'You'} />
+
     <details className="profile-deep">
       <summary>Relationship intelligence, proof and history</summary>
     <section className="private-panel">
@@ -1872,6 +1875,8 @@ function MemberProfile({ person, people, onClose, onDraft, onMessage }: {
       </section>
 
       <ProfileRooms personId={person.id} />
+
+      <JournalFeed member={person} name={person.name} />
 
       <section className="mod member-notes">
         <header><span>ACTIVE MEMORY</span><small><LockKeyhole size={11} /> privacy scoped</small></header>
