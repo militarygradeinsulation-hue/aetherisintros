@@ -100,3 +100,8 @@
 
 - [x] Reduce page-top imagery everywhere except Home.
 - [x] Verify visual balance and flow on desktop and mobile.
+
+# Mobile menu visibility (Sep 15)
+
+- [x] Keep mobile header actions visible without clipping or wrapping below the fixed bar.
+- [x] Keep the navigation and Create panels inside the viewport with independent scrolling.
