@@ -180,6 +180,8 @@ export async function loadLiveDirectory(userId: string): Promise<{ directory: Di
       detail: r.detail ?? '',
       when: relative(r.created_at),
       responses: r.response_count ?? 0,
+      media: (r.media ?? []) as unknown as Post['media'],
+      visibility: (r.visibility ?? 'network') as Post['visibility'],
     }))
 
     const asks: NetworkAsk[] = (askRows.data ?? []).map(r => ({
