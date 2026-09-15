@@ -94,7 +94,7 @@ export function MoreDrawer({ open, page, onClose, onNavigate }: {
 
       <label className="more-search">
         <Search size={15} />
-        <input value={query} onChange={e => setQuery(e.target.value)} placeholder="Find a page or capability…" autoFocus />
+        <input value={query} onChange={e => setQuery(e.target.value)} placeholder="Find a page or capability…" />
       </label>
 
       {!!pinned.length && !results && <section className="more-recent favourites">
