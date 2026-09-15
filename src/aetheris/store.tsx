@@ -5,7 +5,7 @@ import {
   learnings as catalogueLearnings, me as seedMe, members as catalogueMembers,
   networkAsks as catalogueAsks, posts as cataloguePosts, signals as catalogueSignals,
   threads as catalogueThreads,
-  type IntroState, type Learning, type Member, type NetworkAsk, type Post, type Signal, type Thread,
+  type IntroState, type JournalAttachment, type Learning, type Member, type NetworkAsk, type Post, type Signal, type Thread,
 } from './social'
 import {
   currentUserId, loadDirectory, loadUserGraph, saveAsk, saveAskResponse, saveDoc, saveIntro,
