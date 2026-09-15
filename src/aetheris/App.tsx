@@ -14,6 +14,7 @@ import { PiMicrosoftOutlookLogoFill } from 'react-icons/pi'
 import { SiGmail, SiGooglecalendar, SiHubspot, SiNotion, SiZoom } from 'react-icons/si'
 import { rankMatches, type MatchResult } from '@/aetheris/matching'
 import { AvatarImage } from './avatar'
+import { journalKindFor, journalUrl, uploadJournalMedia } from './live'
 import { supabase } from '@/integrations/supabase/client'
 import { useAccess } from './access'
 import { applyTextScale, readTextScale } from './textScale'
@@ -35,7 +36,7 @@ import type { AutonomyLevel, DigitalYouProfile, Objective, PrivacyScope } from '
 import {
   circles, events, howItWorks5, howIntrosWorks, introStateLabel,
   onboardingQuestions, trendingSectors,
-  type Learning, type Member, type MemberRole, type NetworkAsk, type Post, type Thread,
+  type JournalAttachment, type Learning, type Member, type MemberRole, type NetworkAsk, type Post, type Thread,
 } from './social'
 import { NetworkProvider, useNetwork, type MemoryNote, type MeProfile, type NetworkMode } from './store'
 import { isShowcase, setShowcaseMode, showcaseOnly } from './showcase'
@@ -523,10 +524,11 @@ function JournalComposer({ compact = false }: { compact?: boolean }) {
 }
 
 /** A member's Journal entries, newest first. */
-function JournalFeed({ memberId, name }: { memberId: string; name: string }) {
+function JournalFeed({ member, name }: { member?: Member; name: string }) {
   const net = useNetwork()
   const nav = useNav()
-  const mine = memberId === 'me'
+  const memberId = member?.id ?? 'me'
+  const mine = !member
   const entries = net.posts.filter(post => post.memberId === memberId)
   const [showAll, setShowAll] = useState(false)
   const visible = showAll ? entries : entries.slice(0, 3)
@@ -535,7 +537,7 @@ function JournalFeed({ memberId, name }: { memberId: string; name: string }) {
     <header><Label>JOURNAL</Label><h3>{mine ? 'Your entries' : `${name.split(' ')[0]}’s entries`}</h3>
       {entries.length > 3 && <button className="text-action" onClick={() => setShowAll(value => !value)}>{showAll ? 'Show less' : `See all ${entries.length}`}</button>}</header>
     {visible.length
-      ? visible.map(post => <PostCard key={post.id} post={post} member={mine ? undefined : net.people.find(p => p.id === memberId)} onOpen={() => { if (!mine) nav.openMember(memberId) }} />)
+      ? visible.map(post => <PostCard key={post.id} post={post} member={member} onOpen={() => { if (member) nav.openMember(member) }} />)
       : <p className="empty-state">{mine
         ? 'No entries yet. A Journal is where you record what you are building, what changed and what you need next — members read it on your profile.'
         : `No Journal entries yet from ${name.split(' ')[0]}.`}</p>}
@@ -566,6 +568,7 @@ function PostCard({ post, member, onOpen }: { post: Post; member: Member | undef
     </header>
     <h3>{post.text}</h3>
     <p>{post.detail}</p>
+    <JournalMedia media={post.media} />
     <footer>
       <small>{post.when} · {post.responses + comments.length + (responded ? 1 : 0)} responses</small>
       <div className="post-actions">
@@ -576,7 +579,7 @@ function PostCard({ post, member, onOpen }: { post: Post; member: Member | undef
         {!mine && member && <Button kind="secondary" onClick={() => { const id = net.respondToPost(post.id, member.id); if (id) nav.goToThread(id) }}>
           {responded ? <><Check size={14} /> Responded</> : <><MessageSquareText size={14} /> Message privately</>}
         </Button>}
-        {mine && <small className="post-own">Shared with your network · added to Active Memory</small>}
+        {mine && <small className="post-own">{post.visibility === 'private' ? <><LockKeyhole size={12} /> Private to you · added to Active Memory</> : 'Shared with your network · added to Active Memory'}</small>}
       </div>
     </footer>
     {(commenting || comments.length > 0) && <section className="post-discussion">
