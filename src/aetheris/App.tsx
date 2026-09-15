@@ -445,7 +445,7 @@ function JournalFile({ item }: { item: JournalAttachment }) {
   </a>
 }
 
-function JournalMedia({ media }: { media?: JournalAttachment[] }) {
+function JournalMedia({ media }: { media?: JournalAttachment[] | undefined }) {
   if (!media?.length) return null
   const images = media.filter(m => m.kind === 'image')
   const rest = media.filter(m => m.kind !== 'image')
@@ -524,7 +524,7 @@ function JournalComposer({ compact = false }: { compact?: boolean }) {
 }
 
 /** A member's Journal entries, newest first. */
-function JournalFeed({ member, name }: { member?: Member; name: string }) {
+function JournalFeed({ member, name }: { member?: Member | undefined; name: string }) {
   const net = useNetwork()
   const nav = useNav()
   const memberId = member?.id ?? 'me'

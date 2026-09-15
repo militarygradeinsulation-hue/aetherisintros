@@ -693,8 +693,8 @@ export interface Post {
   detail: string
   when: string
   responses: number
-  media?: JournalAttachment[]
-  visibility?: 'network' | 'private'
+  media?: JournalAttachment[] | undefined
+  visibility?: 'network' | 'private' | undefined
 }
 
 export const posts: Post[] = [
