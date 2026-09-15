@@ -237,6 +237,7 @@ export function savePost(userId: string, post: Post) {
   fire(supabase.from('posts').insert({
     id: post.id, author_id: userId, kind: post.kind, text: post.text,
     detail: post.detail, when_label: post.when, response_count: 0,
+    media: (post.media ?? []) as never, visibility: post.visibility ?? 'network',
   }))
 }
 
