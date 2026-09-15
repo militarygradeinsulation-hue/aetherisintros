@@ -224,6 +224,44 @@ export async function uploadProfileAvatar(userId: string, file: File): Promise<s
   return path
 }
 
+const imageTypes = /^image\/(jpeg|png|webp|gif)$/i
+const videoTypes = /^video\/(mp4|webm|quicktime)$/i
+const documentTypes = /^(application\/pdf|application\/msword|application\/vnd\.openxmlformats-officedocument\..+|application\/vnd\.ms-(excel|powerpoint)|text\/(plain|csv))$/i
+
+export type JournalKind = 'image' | 'video' | 'document'
+
+export function journalKindFor(file: File): JournalKind | null {
+  if (imageTypes.test(file.type)) return 'image'
+  if (videoTypes.test(file.type)) return 'video'
+  if (documentTypes.test(file.type)) return 'document'
+  return null
+}
+
+/** Upload one Journal attachment into the member's own private folder. */
+export async function uploadJournalMedia(userId: string, file: File) {
+  const kind = journalKindFor(file)
+  if (!kind) throw new Error(`${file.name} is not a supported picture, video or document.`)
+  const limit = kind === 'video' ? 200 * 1024 * 1024 : 25 * 1024 * 1024
+  if (file.size > limit) throw new Error(`${file.name} is too large — ${kind === 'video' ? 'videos' : 'pictures and documents'} must be ${kind === 'video' ? '200 MB' : '25 MB'} or smaller.`)
+  const extension = (file.name.split('.').pop() || 'bin').toLowerCase().replace(/[^a-z0-9]/g, '') || 'bin'
+  const path = `${userId}/${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${extension}`
+  const { error } = await supabase.storage.from('journal').upload(path, file, { contentType: file.type, upsert: false })
+  if (error) throw error
+  return { path, kind, name: file.name, mime: file.type, size: file.size }
+}
+
+const journalUrls = new Map<string, string>()
+
+/** Short-lived signed URL for a private Journal file, cached in memory. */
+export async function journalUrl(path: string): Promise<string | null> {
+  const cached = journalUrls.get(path)
+  if (cached) return cached
+  const { data, error } = await supabase.storage.from('journal').createSignedUrl(path, 60 * 60)
+  if (error || !data?.signedUrl) return null
+  journalUrls.set(path, data.signedUrl)
+  return data.signedUrl
+}
+
 const fire = (work: PromiseLike<unknown>) => {
   void Promise.resolve(work).catch(error => console.error('live write failed', error))
 }
