@@ -199,7 +199,7 @@ interface NetworkApi {
   requestIntro: (id: string) => void
   authorizeIntro: (id: string) => void
   declineIntro: (id: string) => void
-  addPost: (text: string, detail?: string) => void
+  addPost: (text: string, detail?: string, media?: JournalAttachment[], visibility?: 'network' | 'private') => void
   respondToPost: (postId: string, memberId: string) => string | null
   togglePostLike: (postId: string) => void
   togglePostRepost: (postId: string, memberId: string) => void
