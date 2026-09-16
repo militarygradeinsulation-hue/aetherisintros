@@ -141,6 +141,10 @@ function LandingPage({ signedIn }: { signedIn: boolean }) {
         </div>
       </section>
 
+      <section className="lv-quote" aria-label="Aetheris Intros principle">
+        <blockquote>You&rsquo;re defined by the people you surround yourself with.</blockquote>
+      </section>
+
       <JoinBand signedIn={signedIn} />
 
 
