@@ -1730,6 +1730,9 @@ function MemberProfile({ person, people, onClose, onDraft, onMessage }: {
   person: Member; people: Member[]; onClose: () => void; onDraft: (p: Member) => void; onMessage: (id: string) => void
 }) {
   const net = useNetwork()
+  const ops = useOps()
+  const nav = useNav()
+  const crmPerson = ops.personForMember(person.id)
   const [text, setText] = useState('')
   const [scope, setScope] = useState<PrivacyScope>('private')
   const [reasoning, setReasoning] = useState(false)
@@ -1773,6 +1776,10 @@ function MemberProfile({ person, people, onClose, onDraft, onMessage }: {
             setCopied(true); window.setTimeout(() => setCopied(false), 1600)
           }}><Share2 size={15} /></button>
           <Button kind="quiet" onClick={() => net.follow(person.id)}>{following ? 'Following' : 'Follow'}</Button>
+          <Button kind="quiet" onClick={() => {
+            if (crmPerson) nav.setPage('crm')
+            else void ops.addMemberToCrm({ id: person.id, name: person.name, title: person.title, company: person.company, location: person.location }).then(() => nav.setPage('crm'))
+          }}><Briefcase size={14} /> {crmPerson ? 'Open in CRM' : 'Add to CRM'}</Button>
         </div>
         {copied && <small className="copied-note">Profile link copied.</small>}
       </div>
