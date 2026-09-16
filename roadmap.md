@@ -110,3 +110,9 @@
 
 - [x] Position Aetheris Intros as “The Relationship Network for CEOs.” across the public homepage and signed-in Home.
 - [x] Use “Who matters. Why they matter. Why now.” consistently in search and social metadata.
+
+# Founder Story micro-book (Sep 16)
+
+- [ ] Build the 19-chapter founder micro-book at `/founder-story` without adding facts beyond Joseph’s source material.
+- [ ] Add restrained entry points on public Home, signed-in Home, and Joseph’s founder profile surfaces.
+- [ ] Add page metadata and sitemap inclusion, then verify desktop/mobile layout and navigation.
