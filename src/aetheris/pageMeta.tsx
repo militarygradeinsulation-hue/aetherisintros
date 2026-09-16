@@ -428,4 +428,6 @@ export const relatedPages: Partial<Record<Page, { label: string; pages: Page[] }
   network: { label: 'More in Network', pages: ['memory', 'insights', 'serendipity', 'gaps'] },
   messages: { label: 'Conversation tools', pages: ['loops', 'evidence', 'permission', 'constitution'] },
   insights: { label: 'Intelligence tools', pages: ['collisions', 'simulation', 'strategy', 'inbox'] },
+  crm: { label: 'Your operating system', pages: ['grid', 'opportunities', 'calendar', 'directory', 'memory'] },
+  grid: { label: 'Your operating system', pages: ['crm', 'opportunities', 'vault', 'directory'] },
 }
