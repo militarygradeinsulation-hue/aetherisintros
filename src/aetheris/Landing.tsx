@@ -3,7 +3,7 @@ import { ArrowRight, LockKeyhole } from 'lucide-react'
 import { Link, useNavigate } from '@tanstack/react-router'
 import { useEffect } from 'react'
 import landingPortraitAsset from '@/assets/aetheris-home-portrait.jpg.asset.json'
-import showcaseAsset from '@/assets/one-connected-system.png.asset.json'
+
 import { FaLinkedin, FaMicrosoft, FaSalesforce } from 'react-icons/fa'
 import { BsMicrosoftTeams, BsSlack } from 'react-icons/bs'
 import { PiMicrosoftOutlookLogoFill } from 'react-icons/pi'
