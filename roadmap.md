@@ -113,6 +113,6 @@
 
 # Founder Story micro-book (Sep 16)
 
-- [ ] Build the 19-chapter founder micro-book at `/founder-story` without adding facts beyond Joseph’s source material.
-- [ ] Add restrained entry points on public Home, signed-in Home, and Joseph’s founder profile surfaces.
-- [ ] Add page metadata and sitemap inclusion, then verify desktop/mobile layout and navigation.
+- [x] Build the 19-chapter founder micro-book at `/founder-story` without adding facts beyond Joseph’s source material.
+- [x] Add restrained entry points on public Home, signed-in Home, and Joseph’s founder profile surfaces.
+- [x] Add page metadata and sitemap inclusion, then verify desktop/mobile layout and navigation.
