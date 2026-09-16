@@ -116,3 +116,15 @@
 - [x] Build the 19-chapter founder micro-book at `/founder-story` without adding facts beyond Joseph’s source material.
 - [x] Add restrained entry points on public Home, signed-in Home, and Joseph’s founder profile surfaces.
 - [x] Add page metadata and sitemap inclusion, then verify desktop/mobile layout and navigation.
+
+# Aetheris CRM + Aetheris Grid (Sep 16)
+
+- [x] Private, account-scoped record layer: people, companies, pipelines/stages, opportunities, activities, tasks, notes, tags, custom fields, change ledger, entity links — every table owner-locked.
+- [x] Grid schema: workbooks, sheets (linked/freeform), columns, rows, saved views.
+- [x] Safe formula engine (SUM/AVERAGE/COUNT/MIN/MAX/ROUND/IF/CONCAT/TODAY/NOW, cell refs, ranges) with visible errors instead of code execution.
+- [x] CRM module: Overview, People, Companies, Opportunities (table + pipeline board), Activities, Tasks, Analytics, record detail with timeline, notes and network intelligence.
+- [x] Grid module: linked sheets over canonical records, freeform sheets, keyboard navigation, paste, CSV import/export, column types, freeze, sort/filter, templates.
+- [x] Once-and-done: linked cell edits write the canonical record; new linked rows create canonical records.
+- [x] Navigation: CRM and Grid in the rail, cross-links between modules, “Add to CRM” / “Open in CRM” on member profiles.
+- [x] Global search across network people, CRM records and Grid sheets, plus quick-create commands.
+- [ ] Signed-in end-to-end verification (create/edit records, linked-sheet write-through) — blocked: no preview session could be minted for authenticated checks.
