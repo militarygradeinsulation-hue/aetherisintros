@@ -3,6 +3,7 @@ import { ArrowRight, LockKeyhole } from 'lucide-react'
 import { Link, useNavigate } from '@tanstack/react-router'
 import { useEffect, useState } from 'react'
 import landingPortraitAsset from '@/assets/aetheris-home-portrait.jpg.asset.json'
+import showcaseAsset from '@/assets/one-connected-system.png.asset.json'
 
 import { FaLinkedin, FaMicrosoft, FaSalesforce } from 'react-icons/fa'
 import { BsMicrosoftTeams, BsSlack } from 'react-icons/bs'
@@ -177,8 +178,22 @@ function LandingPage({ signedIn }: { signedIn: boolean }) {
         </div>
       </section>
 
-
-
+      {/* ── Showcase: One Connected System for CEOs ── */}
+      <section className="lv-showcase">
+        <div className="lv-showcase-copy">
+          <span>ONE CONNECTED SYSTEM</span>
+          <h2>One Connected System for <em>CEOs.</em></h2>
+          <p>The tools companies pay for separately. Now native inside Aetheris Intros — social network, CRM, spreadsheets, calendar, meetings, signals, knowledge and analytics in one account, one data graph, one place.</p>
+          <div className="lv-showcase-actions">
+            {accountBtn('btn primary')}
+            {demoBtn('See the system', 'btn ghost')}
+          </div>
+        </div>
+        <div className="lv-showcase-plate">
+          <img src={showcaseAsset.url} alt="One Connected System for CEOs — the tools companies pay for separately, now native inside Aetheris Intros" />
+        </div>
+        <p className="lv-showcase-foot">Instead of paying for disconnected tools, Intros gives you <em>one native system.</em></p>
+      </section>
 
       {/* ── Section 3: Black connected system ── */}
       <section className="lv-connect">
