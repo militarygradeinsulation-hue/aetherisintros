@@ -136,5 +136,5 @@
 - [x] Reviewer console at /admin/verification (role-gated, audited)
 - [x] Security & Privacy settings: verification, MFA status, sessions, events, export, deletion, proof retention
 - [x] Editorial verified badges (CEO / FOUNDER / OWNER / MANAGING PARTNER)
-- [ ] Showcase the "One Connected System for CEOs" panel on the logged-out home page (uploaded reference)
+- [x] Showcase the "One Connected System for CEOs" panel on the logged-out home page (uploaded reference)
 - [ ] Real third-party identity/KYC provider still requires an external service + credentials
