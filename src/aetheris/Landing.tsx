@@ -40,13 +40,63 @@ export default function Landing() {
   return <LandingPage signedIn={access.signedIn} />
 }
 
+function JoinBand({ signedIn }: { signedIn: boolean }) {
+  const [name, setName] = useState('')
+  const [email, setEmail] = useState('')
+  const [state, setState] = useState<'idle' | 'sending' | 'done' | 'error'>('idle')
+  const [stats, setStats] = useState<FoundingStats | null>(null)
+  useEffect(() => { void foundingStats().then(setStats) }, [])
+
+  const submit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    if (!email.trim() || state === 'sending') return
+    setState('sending')
+    try { await joinWaitlist(email.trim().toLowerCase(), name.trim()); setState('done') }
+    catch { setState('error') }
+  }
+
+  const remaining = stats ? Math.max(stats.capacity - stats.approved, 0) : null
+
+  return (
+    <section className="lv-join" id="whitelist">
+      <div className="lv-join-copy">
+        <span>THE FOUNDING 1,000 · WHITELIST</span>
+        <h2>Join the <em>whitelist.</em></h2>
+        <p>Aetheris Intros opens to 1,000 founding members. Add your name and we review it against the standard: CEOs, founders, owners, managing partners and principal operators. Verified people only — that is what makes an introduction here worth taking.</p>
+        <ul>
+          <li><i />Reviewed by a person, not a signup form</li>
+          <li><i />Double opt-in introductions, always</li>
+          <li><i />No spam, no selling your attention</li>
+        </ul>
+      </div>
+      <form className="lv-join-form" onSubmit={e => void submit(e)}>
+        {remaining != null && <span className="lv-join-count">{remaining.toLocaleString()} FOUNDING PLACES REMAINING</span>}
+        {state === 'done'
+          ? <>
+              <p className="lv-join-ok">You're on the whitelist. We'll email {email} when your place is ready.</p>
+              <Link to="/demo" className="btn primary">Explore the demo now <ArrowRight size={15} /></Link>
+            </>
+          : <>
+              <label><b>NAME</b><input value={name} onChange={e => setName(e.target.value)} placeholder="Joseph Toney" autoComplete="name" /></label>
+              <label><b>WORK EMAIL</b><input type="email" required value={email} onChange={e => setEmail(e.target.value)} placeholder="you@company.com" autoComplete="email" /></label>
+              <button className="btn primary" type="submit" disabled={state === 'sending'}>{state === 'sending' ? 'Adding you…' : 'Request whitelist access'}</button>
+              {state === 'error' && <small>That didn't go through. Please check the email and try again.</small>}
+              {!signedIn && <Link to="/demo" className="lv-join-demo">Or try the demo first <ArrowRight size={13} /></Link>}
+              <small>Ready now? <Link to="/early-access" className="lv-join-demo" style={{ display: 'inline-flex' }}>Create an account</Link></small>
+            </>}
+      </form>
+    </section>
+  )
+}
+
 function LandingPage({ signedIn }: { signedIn: boolean }) {
   const showDemo = !signedIn
   const demoBtn = (label: string, cls: string) => showDemo
     ? <Link to="/demo" className={cls}>{label} <ArrowRight size={15} /></Link>
     : null
-  const accountBtn = (cls: string) => <Link to={signedIn ? '/app' : '/early-access'} className={cls}>{signedIn ? 'Enter your network' : 'Create an account'}</Link>
+  const accountBtn = (cls: string) => <Link to={signedIn ? '/app' : '/early-access'} className={cls}>{signedIn ? 'Enter your network' : 'Join the whitelist'}</Link>
   const loginBtn = (cls: string) => signedIn ? null : <Link to="/auth" search={{ next: '/' }} className={cls}>Log in</Link>
+
   return (
     <main className="lv">
       {/* ── Top strip: WHY ME · WHY THEM · WHY NOW ── */}
