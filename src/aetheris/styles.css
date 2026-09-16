@@ -2568,7 +2568,7 @@ input, textarea, select { font: inherit; }
 .match-breakdown li { display: grid; grid-template-columns: minmax(0,1fr) auto; column-gap: 14px; row-gap: 7px; padding: 13px 0; border-top: 1px solid var(--line-dark); align-items: center; }
 .match-breakdown li:first-child { border-top: 0; }
 .match-breakdown b { font: 600 10.5px var(--sans); letter-spacing: .1em; text-transform: uppercase; color: var(--soft); }
-.match-breakdown strong { font: 500 16px/1 var(--serif); color: var(--soft); text-align: right; }
+.match-breakdown strong { grid-row: 1; grid-column: 2; font: 500 16px/1 var(--serif); color: var(--soft); text-align: right; }
 .match-breakdown i { grid-column: 1 / -1; height: 3px; border-radius: 2px; background: var(--line-dark); overflow: hidden; display: block; }
 .match-breakdown i em { display: block; height: 100%; border-radius: 2px; background: var(--cobalt); }
 .match-breakdown small { grid-column: 1 / -1; font: 400 11px/1.6 var(--sans); color: var(--muted); }
