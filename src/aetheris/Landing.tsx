@@ -5,27 +5,7 @@ import { useEffect, useState } from 'react'
 import landingPortraitAsset from '@/assets/aetheris-home-portrait.jpg.asset.json'
 import showcaseAsset from '@/assets/one-connected-system.png.asset.json'
 
-import { FaLinkedin, FaMicrosoft, FaSalesforce } from 'react-icons/fa'
-import { BsMicrosoftTeams, BsSlack } from 'react-icons/bs'
-import { PiMicrosoftOutlookLogoFill } from 'react-icons/pi'
-import { SiGmail, SiGooglecalendar, SiHubspot, SiNotion, SiZoom } from 'react-icons/si'
 import { foundingStats, isLiveMember, joinWaitlist, useAccess, type FoundingStats } from './access'
-
-
-const platforms = [
-  { name: 'LinkedIn', icon: FaLinkedin, tone: 'linkedin', blurb: 'Networking' },
-  { name: 'Gmail', icon: SiGmail, tone: 'gmail', blurb: 'Email' },
-  { name: 'Outlook', icon: PiMicrosoftOutlookLogoFill, tone: 'outlook', blurb: 'Email' },
-  { name: 'Calendar', icon: SiGooglecalendar, tone: 'calendar', blurb: 'Scheduling' },
-  { name: 'Slack', icon: BsSlack, tone: 'slack', blurb: 'Messaging' },
-  { name: 'Zoom', icon: SiZoom, tone: 'zoom', blurb: 'Video' },
-  { name: 'Teams', icon: BsMicrosoftTeams, tone: 'teams', blurb: 'Collaboration' },
-  { name: 'HubSpot', icon: SiHubspot, tone: 'hubspot', blurb: 'CRM' },
-  { name: 'Salesforce', icon: FaSalesforce, tone: 'salesforce', blurb: 'CRM' },
-  { name: 'Notion', icon: SiNotion, tone: 'notion', blurb: 'Notes' },
-]
-
-const eliminates = ['Fragmented tools', 'Lost context', 'Cold outreach', 'Disconnected conversations', 'Forgotten follow-up', 'Scattered notes']
 
 /**
  * Public front page. A signed-in member never sees the marketing page or any
@@ -197,32 +177,6 @@ function LandingPage({ signedIn }: { signedIn: boolean }) {
         </div>
       </section>
 
-      {/* ── Section 3: Black connected system ── */}
-      <section className="lv-connect">
-        <header className="lv-connect-head">
-          <span>WHAT AETHERIS INTROS BRINGS TOGETHER</span>
-          <h2>One Connected System.</h2>
-          <p>PEOPLE. CONTEXT. OPPORTUNITIES. ALL IN ONE PLACE.</p>
-        </header>
-        <div className="lv-platforms">
-          {platforms.map(({ name, icon: Icon, tone, blurb }) => (
-            <div key={name} className="lv-platform">
-              <span className={`eh-platform-logo ${tone}`}><Icon aria-hidden="true" /></span>
-              <b>{name}</b>
-              <small>{blurb}</small>
-            </div>
-          ))}
-        </div>
-        <div className="lv-eliminates">
-          <span>ELIMINATES WHAT HOLDS YOU BACK</span>
-          <p>{eliminates.map((e, i) => <span key={e}>{e}{i < eliminates.length - 1 && <i />}</span>)}</p>
-        </div>
-        <footer className="lv-foot">
-          <span>REAL PEOPLE. REAL OPPORTUNITIES. A BRIGHTER TOMORROW.</span>
-          <i />
-          <span>ONE NETWORK FOR WHAT'S NEXT.</span>
-        </footer>
-      </section>
 
       <footer className="lv-legal">
         <div className="brand-mark">
