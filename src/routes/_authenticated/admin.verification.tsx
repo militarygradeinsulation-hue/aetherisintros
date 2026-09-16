@@ -85,7 +85,7 @@ function ReviewConsole() {
     const { error } = await supabase.rpc('review_member_verification', {
       p_user_id: claim.user_id, p_status: status,
       p_verified_role: status === 'verified' ? role : '',
-      p_reason: reason, p_public_summary: status === 'verified' ? `${claim.claimed_role}, ${claim.business_name}` : null,
+      p_reason: reason, p_public_summary: status === 'verified' ? `${claim.claimed_role}, ${claim.business_name}` : undefined,
       p_notes: notes,
     })
     if (error) { setNotice(error.message); return }

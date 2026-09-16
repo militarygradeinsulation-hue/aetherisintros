@@ -117,7 +117,7 @@ export async function submitClaim(input: ClaimInput) {
 export async function addEvidence(evidenceType: string, sourceUrl = '', storagePath: string | null = null, label = '') {
   const { error } = await supabase.rpc('add_verification_evidence', {
     p_evidence_type: evidenceType, p_source_url: sourceUrl,
-    p_storage_path: storagePath, p_label: label,
+    p_storage_path: storagePath ?? undefined, p_label: label,
   })
   if (error) throw error
 }
