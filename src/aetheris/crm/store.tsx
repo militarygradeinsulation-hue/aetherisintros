@@ -9,7 +9,7 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react'
 import type { ReactNode } from 'react'
 import {
-  activityRepo, columnRepo, companyRepo, ensureDefaultPipeline, emptySnapshot, loadSnapshot, logEvent,
+  activityRepo, columnRepo, companyRepo, currentAccountId, ensureDefaultPipeline, emptySnapshot, loadSnapshot, logEvent,
   noteRepo, opportunityRepo, personRepo, rowRepo, sheetRepo, taskRepo, viewRepo, workbookRepo,
   type OperationalSnapshot,
 } from './repo'
