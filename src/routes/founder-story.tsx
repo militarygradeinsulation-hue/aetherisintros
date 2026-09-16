@@ -23,7 +23,7 @@ const chapters: Chapter[] = [
     title: 'Growing Up With Service, Faith, and Responsibility',
     paragraphs: [
       'Leadership was never supposed to be a title. It meant carrying responsibility for what happened to others.',
-      'Family, loyalty, usefulness, truth, and responsibility became standards—not abstractions, but measures for how a person should act when the outcome affects someone else.',
+      'Family, loyalty, usefulness, truth, and responsibility became standards — not abstractions, but measures for how a person should act when the outcome affects someone else.',
     ],
   },
   {
@@ -36,14 +36,14 @@ const chapters: Chapter[] = [
   {
     title: 'The Mission Ended. The Consequences Did Not.',
     paragraphs: [
-      'I was wounded during deployment, remained with the team, and completed the mission. The service-connected consequences lasted beyond the mission itself.',
+      'I was wounded during deployment. I remained with the team and completed the mission. The service-connected consequences lasted beyond the mission itself.',
       'That experience made one principle impossible to ignore: when evidence is scattered, truth can remain functionally invisible. Systems must preserve what people cannot carry mentally forever.',
     ],
   },
   {
     title: 'Education Gave Me More Ways to Understand the Evidence',
     paragraphs: [
-      'I studied psychology, marketing, AI engineering, machine learning, Python, neural networks, business systems, and software development, including IBM AI Engineering and developer education and Harvard edX AI coursework.',
+      'I studied psychology, marketing, AI engineering, machine learning, Python, neural networks, business systems, and software development — including IBM AI Engineering and developer education, and Harvard edX AI coursework.',
       'Psychology helped explain people. Marketing explained demand. Ownership explained consequences. Technology explained systems. AI created a way to connect evidence at scale.',
     ],
   },
@@ -58,7 +58,7 @@ const chapters: Chapter[] = [
     title: 'Running Companies Changed the Meaning of Business Problems',
     paragraphs: [
       'My work crossed telecom, technology, homebuilding, design, advertising, construction, insulation, marketing, business analysis, manufacturing, ecommerce, distribution, CRM architecture, automation, consulting, cryptocurrency, and AI.',
-      'I founded and operated construction businesses, managed as many as 60 employees, grew companies into the millions, and exited them. That work taught me the difference between talking about business and carrying one—between observing a problem and being responsible for payroll, quality, customers, timing, and consequences.',
+      'I founded and operated construction businesses, managed as many as 60 employees, grew companies into the millions, and exited them. That work taught me the difference between talking about business and carrying one — between observing a problem and being responsible for payroll, quality, customers, timing, and consequences.',
     ],
   },
   {
@@ -71,7 +71,7 @@ const chapters: Chapter[] = [
   {
     title: 'What I Saw Across Industries',
     paragraphs: [
-      'Across more than 100 small-business marketing environments—and larger CRM, ecommerce, manufacturing, and distribution environments—the same pattern kept appearing: companies bought more leads when follow-up was the real failure, and departments operated from fragmented versions of the truth.',
+      'Across more than 100 small-business marketing environments — and larger CRM, ecommerce, manufacturing, and distribution environments — the same pattern kept appearing: companies bought more leads when follow-up was the real failure, and departments operated from fragmented versions of the truth.',
       'In one environment, the evidence included 957 duplicate HubSpot company records, 157 workflows, and 87 inactive workflows. The numbers mattered because they exposed the operating condition beneath them. Leadership cannot correct what it cannot see clearly.',
     ],
   },
@@ -114,7 +114,7 @@ const chapters: Chapter[] = [
     title: 'The Pattern Became the Method',
     paragraphs: [
       'Military service, injury, the VA, fatherhood, construction, telecommunications, psychology, marketing, CRM, automation, cryptocurrency, AI, system-building, grief, and exploitation all became evidence.',
-      'Across different environments, they pointed toward the same discipline: business forensics—the practice of connecting what happened, why it happened, what it affected, and what must happen next.',
+      'Across different environments, they pointed toward the same discipline: business forensics — the practice of connecting what happened, why it happened, what it affected, and what must happen next.',
     ],
   },
   {
@@ -142,7 +142,7 @@ const chapters: Chapter[] = [
     title: 'The Mandate',
     paragraphs: [
       'Aetheris exists to turn scattered business chaos into clear decisions, cleaner systems, and measurable action.',
-      'The relationship network carries the same mandate: understand who matters, why they matter, and why now—then preserve the context required to act with judgment.',
+      'The relationship network carries the same mandate: understand who matters, why they matter, and why now — then preserve the context required to act with judgment.',
     ],
   },
 ]
