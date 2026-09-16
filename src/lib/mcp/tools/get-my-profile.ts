@@ -11,7 +11,13 @@ export default defineTool({
   handler: async (_input, ctx) => {
     if (!ctx.isAuthenticated()) return { content: [{ type: "text", text: "Not authenticated" }], isError: true };
     const supabase = supabaseForUser(ctx);
-    const { data, error } = await supabase.from("profiles").select("*").eq("id", ctx.getUserId()!).maybeSingle();
+    const { data, error } = await supabase
+      .from("profiles")
+      .select(
+        "id, name, initials, title, company, location, focus, thesis, bio, looking_for, can_help_with, want_to_meet, availability, industries, expertise, avatar_url, onboarded, created_at",
+      )
+      .eq("id", ctx.getUserId()!)
+      .maybeSingle();
     if (error) return { content: [{ type: "text", text: error.message }], isError: true };
     if (!data) {
       return {
