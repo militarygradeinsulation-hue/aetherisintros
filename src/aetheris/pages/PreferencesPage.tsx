@@ -138,6 +138,10 @@ export function PreferencesPage() {
           <Eyebrow>READABILITY</Eyebrow><h2>Set a text size that reads comfortably.</h2>
           <DisplayCard />
         </section>}
+        {tab === 'Security & Privacy' && <section>
+          <Eyebrow>SECURITY &amp; PRIVACY</Eyebrow><h2>Verification, devices and your data.</h2>
+          <SecurityPage />
+        </section>}
         {tab === 'Availability' && <section>
           <Eyebrow>MEETING PREFERENCES</Eyebrow><h2>Make good conversations easier to schedule.</h2>
           <label><span>Availability</span><select value={draft.availability} onChange={event => update('availability', event.target.value)}><option>Open to two conversations a week</option><option>Selective · warm paths only</option><option>Message first</option><option>Not taking meetings</option></select></label>
