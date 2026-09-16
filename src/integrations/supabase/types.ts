@@ -2139,6 +2139,7 @@ export type Database = {
         Returns: boolean
       }
       is_admin: { Args: never; Returns: boolean }
+      is_circle_member: { Args: { p_circle: string }; Returns: boolean }
       is_live_member: { Args: never; Returns: boolean }
       join_waitlist: {
         Args: { p_email: string; p_name?: string }
