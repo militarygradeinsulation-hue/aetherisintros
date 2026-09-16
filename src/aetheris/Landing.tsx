@@ -5,27 +5,7 @@ import { useEffect, useState } from 'react'
 import landingPortraitAsset from '@/assets/aetheris-home-portrait.jpg.asset.json'
 import showcaseAsset from '@/assets/one-connected-system.png.asset.json'
 
-import { FaLinkedin, FaMicrosoft, FaSalesforce } from 'react-icons/fa'
-import { BsMicrosoftTeams, BsSlack } from 'react-icons/bs'
-import { PiMicrosoftOutlookLogoFill } from 'react-icons/pi'
-import { SiGmail, SiGooglecalendar, SiHubspot, SiNotion, SiZoom } from 'react-icons/si'
 import { foundingStats, isLiveMember, joinWaitlist, useAccess, type FoundingStats } from './access'
-
-
-const platforms = [
-  { name: 'LinkedIn', icon: FaLinkedin, tone: 'linkedin', blurb: 'Networking' },
-  { name: 'Gmail', icon: SiGmail, tone: 'gmail', blurb: 'Email' },
-  { name: 'Outlook', icon: PiMicrosoftOutlookLogoFill, tone: 'outlook', blurb: 'Email' },
-  { name: 'Calendar', icon: SiGooglecalendar, tone: 'calendar', blurb: 'Scheduling' },
-  { name: 'Slack', icon: BsSlack, tone: 'slack', blurb: 'Messaging' },
-  { name: 'Zoom', icon: SiZoom, tone: 'zoom', blurb: 'Video' },
-  { name: 'Teams', icon: BsMicrosoftTeams, tone: 'teams', blurb: 'Collaboration' },
-  { name: 'HubSpot', icon: SiHubspot, tone: 'hubspot', blurb: 'CRM' },
-  { name: 'Salesforce', icon: FaSalesforce, tone: 'salesforce', blurb: 'CRM' },
-  { name: 'Notion', icon: SiNotion, tone: 'notion', blurb: 'Notes' },
-]
-
-const eliminates = ['Fragmented tools', 'Lost context', 'Cold outreach', 'Disconnected conversations', 'Forgotten follow-up', 'Scattered notes']
 
 /**
  * Public front page. A signed-in member never sees the marketing page or any
