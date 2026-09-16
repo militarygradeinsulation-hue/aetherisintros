@@ -13,6 +13,21 @@ import type {
 
 type Row = Record<string, unknown>
 
+
+/**
+ * Loose facade for the few helpers that address tables by variable name.
+ * RLS still applies; this only relaxes the generated table-literal typing.
+ */
+interface LooseQuery extends PromiseLike<{ data: Row[] | null; error: unknown }> {
+  insert(payload: Row | Row[]): LooseQuery
+  update(payload: Row): LooseQuery
+  delete(): LooseQuery
+  select(columns?: string): LooseQuery
+  eq(column: string, value: unknown): LooseQuery
+  single(): Promise<{ data: Row | null; error: unknown }>
+}
+const db = supabase as unknown as { from(table: string): LooseQuery }
+
 const str = (v: unknown, fallback = '') => (typeof v === 'string' ? v : fallback)
 const nul = (v: unknown) => (typeof v === 'string' && v ? v : null)
 const nbr = (v: unknown, fallback = 0) => (typeof v === 'number' ? v : Number(v ?? fallback) || fallback)
@@ -113,7 +128,7 @@ const toView = (r: Row): GridView => ({
 export async function logEvent(entityType: string, entityId: string, event: string, summary: string, detail: Record<string, unknown> = {}) {
   const owner = await currentAccountId()
   if (!owner) return
-  await supabase.from('entity_events').insert({ owner_id: owner, entity_type: entityType, entity_id: entityId, event, summary, detail })
+  await db.from('entity_events').insert({ owner_id: owner, entity_type: entityType, entity_id: entityId, event, summary, detail })
 }
 
 /* -------------------------------------------------------------------- loads */
@@ -194,13 +209,13 @@ export async function ensureDefaultPipeline(): Promise<string | null> {
 async function insert<T>(table: string, payload: Row, map: (r: Row) => T): Promise<T | null> {
   const owner = await currentAccountId()
   if (!owner) return null
-  const { data, error } = await supabase.from(table).insert({ ...payload, owner_id: owner }).select('*').single()
+  const { data, error } = await db.from(table).insert({ ...payload, owner_id: owner }).select('*').single()
   if (error || !data) return null
   return map(data as Row)
 }
 
 async function patch<T>(table: string, id: ID, payload: Row, map: (r: Row) => T): Promise<T | null> {
-  const { data, error } = await supabase.from(table).update(payload).eq('id', id).select('*').single()
+  const { data, error } = await db.from(table).update(payload).eq('id', id).select('*').single()
   if (error || !data) return null
   return map(data as Row)
 }
@@ -385,7 +400,7 @@ export const rowRepo = {
   createMany: async (sheetId: ID, rows: Array<{ position: number; values: Record<string, unknown> }>) => {
     const owner = await currentAccountId()
     if (!owner) return []
-    const { data } = await supabase.from('grid_rows')
+    const { data } = await db.from('grid_rows')
       .insert(rows.map(r => ({ owner_id: owner, sheet_id: sheetId, position: r.position, values: r.values })))
       .select('*')
     return (data ?? []).map(r => toGridRow(r as Row))

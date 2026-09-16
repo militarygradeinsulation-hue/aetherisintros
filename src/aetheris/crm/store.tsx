@@ -9,7 +9,7 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react'
 import type { ReactNode } from 'react'
 import {
-  activityRepo, columnRepo, companyRepo, ensureDefaultPipeline, emptySnapshot, loadSnapshot, logEvent,
+  activityRepo, columnRepo, companyRepo, currentAccountId, ensureDefaultPipeline, emptySnapshot, loadSnapshot, logEvent,
   noteRepo, opportunityRepo, personRepo, rowRepo, sheetRepo, taskRepo, viewRepo, workbookRepo,
   type OperationalSnapshot,
 } from './repo'
@@ -92,6 +92,9 @@ export function OpsProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     let live = true
     void (async () => {
+      // Signed-out visitors (landing, /demo) have no private account layer to load.
+      const owner = await currentAccountId()
+      if (!owner) { if (live) setReady(true); return }
       await ensureDefaultPipeline()
       const next = await loadSnapshot()
       if (!live) return
@@ -187,10 +190,9 @@ export function OpsProvider({ children }: { children: ReactNode }) {
       /* ------------------------------------------------------ opportunities */
       createOpportunity: async p => {
         const stage = p.stageId ? stageFor(p.stageId) : firstStage
-        const companyId = p.companyId ?? (p.company_name_hint ? null : null)
         const created = await opportunityRepo.create({
           ...p,
-          companyId: companyId ?? p.companyId ?? null,
+          companyId: p.companyId ?? null,
           pipelineId: p.pipelineId ?? defaultPipeline?.id ?? null,
           stageId: stage?.id ?? null,
           stageName: stage?.name ?? '',

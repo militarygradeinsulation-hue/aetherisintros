@@ -47,6 +47,9 @@ import { metaById, primaryPages, pageMeta, networkTabs, networkAdvanced, opportu
 import { MoreDrawer, rememberRecent } from './pages/MoreDrawer'
 import { BriefingPanel, useBriefingMode } from './BriefingMode'
 import { NavCtx, useNav, type NavApi, type Page } from './nav'
+import { OpsProvider, useOps } from './crm/store'
+import CrmPage from './pages/CrmPage'
+import GridPage from './pages/GridPage'
 import { PlatformProvider, usePlatform } from './platform'
 import { SystemsPage } from './pages/SystemsPage'
 import { CirclesPage, CreateCircleModal } from './pages/CirclesPage'
@@ -1727,6 +1730,9 @@ function MemberProfile({ person, people, onClose, onDraft, onMessage }: {
   person: Member; people: Member[]; onClose: () => void; onDraft: (p: Member) => void; onMessage: (id: string) => void
 }) {
   const net = useNetwork()
+  const ops = useOps()
+  const nav = useNav()
+  const crmPerson = ops.personForMember(person.id)
   const [text, setText] = useState('')
   const [scope, setScope] = useState<PrivacyScope>('private')
   const [reasoning, setReasoning] = useState(false)
@@ -1770,6 +1776,10 @@ function MemberProfile({ person, people, onClose, onDraft, onMessage }: {
             setCopied(true); window.setTimeout(() => setCopied(false), 1600)
           }}><Share2 size={15} /></button>
           <Button kind="quiet" onClick={() => net.follow(person.id)}>{following ? 'Following' : 'Follow'}</Button>
+          <Button kind="quiet" onClick={() => {
+            if (crmPerson) nav.setPage('crm')
+            else void ops.addMemberToCrm({ id: person.id, name: person.name, title: person.title, company: person.company, location: person.location }).then(() => nav.setPage('crm'))
+          }}><Briefcase size={14} /> {crmPerson ? 'Open in CRM' : 'Add to CRM'}</Button>
         </div>
         {copied && <small className="copied-note">Profile link copied.</small>}
       </div>
@@ -2158,6 +2168,7 @@ function ContextRail({ page, people, select, onAsk }: {
 
 function GlobalSearch({ open, onClose, people }: { open: boolean; onClose: () => void; people: Member[] }) {
   const platform = usePlatform()
+  const ops = useOps()
   const nav = useNav()
   const [query, setQuery] = useState('')
   if (!open) return null
@@ -2167,15 +2178,33 @@ function GlobalSearch({ open, onClose, people }: { open: boolean; onClose: () =>
   const systemRows = matches(platform.systems, system => `${system.name} ${system.thesis} ${system.category} ${system.industries.join(' ')}`)
   const circleRows = matches(platform.circles, circle => `${circle.name} ${circle.purpose} ${circle.sharedIntents.join(' ')}`)
   const companyRows = matches(platform.companies, company => `${company.name} ${company.industry} ${company.location}`)
+  const crmPeople = matches(ops.people.filter(p => !p.archived), p => `${p.fullName} ${p.title} ${p.companyName} ${p.email} ${p.lifecycle}`)
+  const crmCompanies = matches(ops.companies.filter(c => !c.archived), c => `${c.name} ${c.industry} ${c.location}`)
+  const crmOpps = matches(ops.opportunities.filter(o => !o.archived), o => `${o.name} ${o.stageName} ${o.nextAction}`)
+  const gridRows = matches(ops.sheets.filter(s => !s.archived), s => `${s.name} ${s.mode} ${s.entityType ?? ''}`)
   const pageRows = (term
     ? pageMeta.filter(meta => `${meta.label} ${meta.blurb} ${meta.group} ${meta.keywords.join(' ')}`.toLowerCase().includes(term))
     : pageMeta.filter(meta => primaryPages.includes(meta.id))).slice(0, 6)
   const closeThen = (action: () => void) => { onClose(); setQuery(''); action() }
+  const quickCreate = [
+    { label: 'New person', run: () => { void ops.createPerson({ fullName: query.trim() || 'Untitled person' }); nav.setPage('crm') } },
+    { label: 'New company', run: () => { void ops.createCompany({ name: query.trim() || 'Untitled company' }); nav.setPage('crm') } },
+    { label: 'New opportunity', run: () => { void ops.createOpportunity({ name: query.trim() || 'Untitled opportunity' }); nav.setPage('crm') } },
+    { label: 'New task', run: () => { void ops.createTask({ title: query.trim() || 'Untitled task' }); nav.setPage('crm') } },
+    { label: 'New workbook', run: () => { void ops.createWorkbook(query.trim() || 'New workbook'); nav.setPage('grid') } },
+  ]
   return <div className="modal-wrap global-search-wrap" onMouseDown={onClose}>
     <section className="global-search-panel" onMouseDown={event => event.stopPropagation()}>
-      <header><Search size={20} /><input autoFocus value={query} onChange={event => setQuery(event.target.value)} placeholder="Search people, companies, systems, circles, or ideas…" /><button className="icon-btn" onClick={onClose} aria-label="Close search"><X size={17} /></button></header>
+      <header><Search size={20} /><input autoFocus value={query} onChange={event => setQuery(event.target.value)} placeholder="Search people, CRM records, companies, sheets, systems…" /><button className="icon-btn" onClick={onClose} aria-label="Close search"><X size={17} /></button></header>
       <div className="global-results">
         <section><Label>PEOPLE</Label>{personRows.map(person => <button key={person.id} onClick={() => closeThen(() => nav.openMember(person))}><Avatar person={person} /><span><b>{person.name}</b><small>{person.title} · {person.company}</small></span><ArrowRight size={14} /></button>)}</section>
+        <section><Label>CRM RECORDS</Label>
+          {crmPeople.map(p => <button key={p.id} onClick={() => closeThen(() => nav.setPage('crm'))}><UserRound size={17} /><span><b>{p.fullName}</b><small>{p.lifecycle}{p.companyName ? ` · ${p.companyName}` : ''}</small></span><ArrowRight size={14} /></button>)}
+          {crmCompanies.map(c => <button key={c.id} onClick={() => closeThen(() => nav.setPage('crm'))}><Building2 size={17} /><span><b>{c.name}</b><small>{c.industry || 'Company'}</small></span><ArrowRight size={14} /></button>)}
+          {crmOpps.map(o => <button key={o.id} onClick={() => closeThen(() => nav.setPage('crm'))}><Target size={17} /><span><b>{o.name}</b><small>{o.stageName || 'Opportunity'}</small></span><ArrowRight size={14} /></button>)}
+        </section>
+        <section><Label>GRID SHEETS</Label>{gridRows.map(s => <button key={s.id} onClick={() => closeThen(() => nav.setPage('grid'))}><Layers size={17} /><span><b>{s.name}</b><small>{s.mode === 'linked' ? 'Linked to your records' : 'Freeform sheet'}</small></span><ArrowRight size={14} /></button>)}</section>
+        <section><Label>QUICK CREATE</Label>{quickCreate.map(item => <button key={item.label} onClick={() => closeThen(item.run)}><Plus size={17} /><span><b>{item.label}</b><small>{query.trim() ? `Named “${query.trim()}”` : 'Create and open'}</small></span><ArrowRight size={14} /></button>)}</section>
         <section><Label>SYSTEMS</Label>{systemRows.map(system => <button key={system.id} onClick={() => closeThen(() => nav.openSystem(system.id))}><Layers size={17} /><span><b>{system.name}</b><small>{system.thesis}</small></span><ArrowRight size={14} /></button>)}</section>
         <section><Label>CIRCLES</Label>{circleRows.map(circle => <button key={circle.id} onClick={() => closeThen(() => nav.openCircle(circle.id))}><Users size={17} /><span><b>{circle.name}</b><small>{circle.purpose}</small></span><ArrowRight size={14} /></button>)}</section>
         <section><Label>PAGES</Label>{pageRows.map(meta => {
@@ -2227,7 +2256,7 @@ function AccountControl() {
 export default function App({ startPage, mode = 'live' }: { startPage?: Page | undefined; mode?: NetworkMode }) {
   // The live network may only ever render real member-created records.
   setShowcaseMode(mode === 'demo')
-  return <NetworkProvider mode={mode}><PlatformProvider><OSProvider><MoatProvider><ProProvider><Shell startPage={startPage} /></ProProvider></MoatProvider></OSProvider></PlatformProvider></NetworkProvider>
+  return <NetworkProvider mode={mode}><PlatformProvider><OSProvider><MoatProvider><ProProvider><OpsProvider><Shell startPage={startPage} /></OpsProvider></ProProvider></MoatProvider></OSProvider></PlatformProvider></NetworkProvider>
 }
 
 
@@ -2404,6 +2433,8 @@ function Shell({ startPage }: { startPage?: Page | undefined }) {
       vault: <VaultPage />,
       knowledgeassets: <KnowledgeAssetsPage />,
       simple: <SimpleViewPage />,
+      crm: <CrmPage />,
+      grid: <GridPage />,
     }
   const hubLabel: Partial<Record<Page, string>> = {
     directory: 'People', opportunities: 'Active', rooms: 'Rooms', dealrooms: 'Deal rooms', discover: 'Discover',

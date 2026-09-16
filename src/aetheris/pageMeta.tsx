@@ -374,6 +374,20 @@ export const pageMeta: PageMeta[] = [
     changes: 'Everything updates from the same live network state as the full product.',
     next: 'Act on the lead story, or search for the thing you actually came for.',
   }, ['simple', 'ledger', 'one page', 'calm']),
+  m('crm', 'CRM', Briefcase, 'PRIMARY', 'Your private people, companies, pipeline and commitments.', {
+    does: 'Keeps one canonical record per person, company, opportunity and task in your account.',
+    look: 'Open pipeline, relationships with no activity, and what is due.',
+    changes: 'Every edit here changes the same record Grid and your linked views read.',
+    next: 'Add the relationship you keep re-typing elsewhere.',
+    why: 'CRM is private to you. Network members never see your notes, contacts, tasks or deal values.',
+  }, ['crm', 'contacts', 'pipeline', 'deals', 'companies', 'tasks', 'leads']),
+  m('grid', 'Grid', Layers, 'PRIMARY', 'Spreadsheets that read and write your real records.', {
+    does: 'Gives you spreadsheets: linked sheets over your CRM records, plus freeform sheets for your own numbers.',
+    look: 'Whether a column is writable or read-only network intelligence.',
+    changes: 'Editing a linked cell updates the underlying record everywhere.',
+    next: 'Create a linked Pipeline sheet and edit a value in place.',
+    why: 'A linked sheet is a view, never a copy — there is only ever one version of the number.',
+  }, ['grid', 'spreadsheet', 'excel', 'sheets', 'workbook', 'formula', 'csv']),
 ]
 
 export const metaById: Record<string, PageMeta> = Object.fromEntries(pageMeta.map(p => [p.id, p]))
@@ -381,7 +395,7 @@ export const metaById: Record<string, PageMeta> = Object.fromEntries(pageMeta.ma
 export function pageLabel(id: Page) { return metaById[id]?.label ?? id }
 
 /** The short, always-visible rail. */
-export const primaryPages: Page[] = ['home', 'simple', 'network', 'opportunities', 'messages']
+export const primaryPages: Page[] = ['home', 'simple', 'network', 'opportunities', 'crm', 'grid', 'messages']
 
 /** Tabs consolidated inside the Network and Opportunities hubs. */
 export const networkTabs: Page[] = ['discover', 'directory', 'intros', 'companies', 'calendar']
@@ -414,4 +428,6 @@ export const relatedPages: Partial<Record<Page, { label: string; pages: Page[] }
   network: { label: 'More in Network', pages: ['memory', 'insights', 'serendipity', 'gaps'] },
   messages: { label: 'Conversation tools', pages: ['loops', 'evidence', 'permission', 'constitution'] },
   insights: { label: 'Intelligence tools', pages: ['collisions', 'simulation', 'strategy', 'inbox'] },
+  crm: { label: 'Your operating system', pages: ['grid', 'opportunities', 'calendar', 'directory', 'memory'] },
+  grid: { label: 'Your operating system', pages: ['crm', 'opportunities', 'vault', 'directory'] },
 }
