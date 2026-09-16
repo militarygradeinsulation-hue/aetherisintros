@@ -9,6 +9,7 @@
 import { useCallback, useEffect, useState } from 'react'
 
 import { supabase } from '@/integrations/supabase/client'
+import { fetchVerification, type VerificationStatus } from './verification'
 
 export type AccessStatus = 'approved' | 'waitlisted' | 'pending' | 'suspended' | 'denied' | 'none'
 export type LaunchMode = 'first_1000' | 'invite_only' | 'closed'
@@ -24,15 +25,19 @@ export interface AccessState {
   mode: LaunchMode
   isAdmin: boolean
   onboarded: boolean
+  /** Membership verification decides network access; the database enforces it too. */
+  verification: VerificationStatus
 }
 
 export const noAccess: AccessState = {
   loading: true, signedIn: false, userId: null, email: '', name: '',
   status: 'none', foundingNumber: null, mode: 'first_1000', isAdmin: false, onboarded: false,
+  verification: 'none',
 }
 
 /** The single guard every network-facing surface must respect. */
-export const isLiveMember = (access: AccessState) => access.signedIn && access.status === 'approved'
+export const isLiveMember = (access: AccessState) =>
+  access.signedIn && access.status === 'approved' && access.verification === 'verified'
 
 export interface FoundingStats { approved: number; capacity: number; mode: LaunchMode }
 
