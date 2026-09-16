@@ -91,11 +91,12 @@ export async function fetchAccess(): Promise<AccessState> {
     try { await claimAccess() } catch { /* the page surfaces the state below */ }
   }
 
-  const [membership, roles, profile, stats] = await Promise.all([
+  const [membership, roles, profile, stats, verification] = await Promise.all([
     supabase.from('early_access_members').select('status, founding_member_number').eq('user_id', user.id).maybeSingle(),
     supabase.from('user_roles').select('role').eq('user_id', user.id),
     supabase.from('profiles').select('onboarded, name').eq('id', user.id).maybeSingle(),
     foundingStats(),
+    fetchVerification(),
   ])
 
   return {
@@ -109,6 +110,7 @@ export async function fetchAccess(): Promise<AccessState> {
     mode: stats.mode,
     isAdmin: (roles.data ?? []).some(r => r.role === 'admin'),
     onboarded: profile.data?.onboarded ?? false,
+    verification: verification.status,
   }
 }
 
