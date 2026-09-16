@@ -14,6 +14,7 @@ import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as DemoRouteImport } from './routes/demo'
 import { Route as EarlyAccessRouteImport } from './routes/early-access'
+import { Route as FounderStoryRouteImport } from './routes/founder-story'
 import { Route as McpRouteImport } from './routes/mcp'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as Char91DotwellKnownChar93OauthProtectedResourceRouteImport } from './routes/[.well-known]/oauth-protected-resource'
@@ -45,6 +46,11 @@ const DemoRoute = DemoRouteImport.update({
 const EarlyAccessRoute = EarlyAccessRouteImport.update({
   id: '/early-access',
   path: '/early-access',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const FounderStoryRoute = FounderStoryRouteImport.update({
+  id: '/founder-story',
+  path: '/founder-story',
   getParentRoute: () => rootRouteImport,
 } as any)
 const McpRoute = McpRouteImport.update({
@@ -95,6 +101,7 @@ export interface FileRoutesByFullPath {
   '/auth': typeof AuthRoute
   '/demo': typeof DemoRoute
   '/early-access': typeof EarlyAccessRoute
+  '/founder-story': typeof FounderStoryRoute
   '/mcp': typeof McpRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
@@ -109,6 +116,7 @@ export interface FileRoutesByTo {
   '/auth': typeof AuthRoute
   '/demo': typeof DemoRoute
   '/early-access': typeof EarlyAccessRoute
+  '/founder-story': typeof FounderStoryRoute
   '/mcp': typeof McpRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
@@ -125,6 +133,7 @@ export interface FileRoutesById {
   '/auth': typeof AuthRoute
   '/demo': typeof DemoRoute
   '/early-access': typeof EarlyAccessRoute
+  '/founder-story': typeof FounderStoryRoute
   '/mcp': typeof McpRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
@@ -141,6 +150,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/demo'
     | '/early-access'
+    | '/founder-story'
     | '/mcp'
     | '/sitemap.xml'
     | '/.well-known/oauth-protected-resource'
@@ -155,6 +165,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/demo'
     | '/early-access'
+    | '/founder-story'
     | '/mcp'
     | '/sitemap.xml'
     | '/.well-known/oauth-protected-resource'
@@ -170,6 +181,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/demo'
     | '/early-access'
+    | '/founder-story'
     | '/mcp'
     | '/sitemap.xml'
     | '/.well-known/oauth-protected-resource'
@@ -186,6 +198,7 @@ export interface RootRouteChildren {
   AuthRoute: typeof AuthRoute
   DemoRoute: typeof DemoRoute
   EarlyAccessRoute: typeof EarlyAccessRoute
+  FounderStoryRoute: typeof FounderStoryRoute
   McpRoute: typeof McpRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   Char91DotwellKnownChar93OauthProtectedResourceRoute: typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
@@ -228,6 +241,13 @@ declare module '@tanstack/react-router' {
       path: '/early-access'
       fullPath: '/early-access'
       preLoaderRoute: typeof EarlyAccessRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/founder-story': {
+      id: '/founder-story'
+      path: '/founder-story'
+      fullPath: '/founder-story'
+      preLoaderRoute: typeof FounderStoryRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/mcp': {
@@ -310,6 +330,7 @@ const rootRouteChildren: RootRouteChildren = {
   AuthRoute: AuthRoute,
   DemoRoute: DemoRoute,
   EarlyAccessRoute: EarlyAccessRoute,
+  FounderStoryRoute: FounderStoryRoute,
   McpRoute: McpRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
   Char91DotwellKnownChar93OauthProtectedResourceRoute:

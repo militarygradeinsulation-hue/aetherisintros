@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState, type ReactNode } from 'react'
+import { Link } from '@tanstack/react-router'
 import {
   AlertTriangle, ArrowLeftRight, ArrowRight, Bell, Bookmark, BookmarkCheck, Building2, CalendarDays, Camera, Check, CheckCircle2, ChevronLeft, ChevronRight,
   CircleDot, Compass, Eye, Fingerprint, Handshake, Heart, Home as HomeIcon, Layers, LockKeyhole,
@@ -829,6 +830,13 @@ function Home({ people, select, setPage, openNeed, openThread }: {
       <article className="orange"><span>WHY NOW</span><i /><p>The best relationships are built before the market catches up.</p></article>
     </section>
 
+    <section className="eh-founder-story">
+      <span>FOUNDER CONTEXT / WHY ME</span>
+      <h2>The Architect Behind the Operator</h2>
+      <p>Before Aetheris was software, it was a lifetime of learning how people, systems, pressure, failure, and responsibility connect.</p>
+      <Link to="/founder-story">Read My Story <ArrowRight size={14} /></Link>
+    </section>
+
     <section className="eh-film">
       <div className="eh-film-copy">
         <span>WATCH FIRST</span>
@@ -1602,6 +1610,8 @@ function Profile({ people, setPage, openOnboarding }: {
         <div key={k}><span>{k}</span><p>{v}</p></div>)}
     </div>
 
+    {me.name.trim().toLowerCase() === 'joseph toney' && <FounderContext />}
+
     <JournalComposer />
     <JournalFeed name={me.name || 'You'} />
 
@@ -1704,6 +1714,14 @@ function Ring({ value, label }: { value: number; label: string }) {
   </div>
 }
 
+function FounderContext() {
+  return <section className="founder-context">
+    <div><Label signal>FOUNDER CONTEXT / WHY ME</Label><h2>The Architect Behind the Operator</h2></div>
+    <p>Before Aetheris was software, it was a lifetime of learning how people, systems, pressure, failure, and responsibility connect.</p>
+    <Link to="/founder-story">Read My Story <ArrowRight size={14} /></Link>
+  </section>
+}
+
 /** Full member profile: editorial ivory identity beside the dark relationship record. */
 function MemberProfile({ person, people, onClose, onDraft, onMessage }: {
   person: Member; people: Member[]; onClose: () => void; onDraft: (p: Member) => void; onMessage: (id: string) => void
@@ -1780,6 +1798,8 @@ function MemberProfile({ person, people, onClose, onDraft, onMessage }: {
           <Button kind="quiet" onClick={() => setReasoning(r => !r)}>{reasoning ? 'Hide Reasoning' : 'View Reasoning'}</Button>
         </footer>
       </section>
+
+      {person.name.trim().toLowerCase() === 'joseph toney' && <FounderContext />}
 
       <PassportModule memberId={person.id} />
       <ProCredibilityModule memberId={person.id} />
