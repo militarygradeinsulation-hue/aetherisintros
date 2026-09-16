@@ -20,8 +20,10 @@ import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as Char91DotwellKnownChar93OauthProtectedResourceRouteImport } from './routes/[.well-known]/oauth-protected-resource'
 import { Route as AuthenticatedAppRouteImport } from './routes/_authenticated/app'
 import { Route as AuthenticatedOnboardingRouteImport } from './routes/_authenticated/onboarding'
+import { Route as AuthenticatedVerifyRouteImport } from './routes/_authenticated/verify'
 import { Route as DotlovableOauthConsentRouteImport } from './routes/[.]lovable.oauth.consent'
 import { Route as AuthenticatedAdminEarlyAccessRouteImport } from './routes/_authenticated/admin.early-access'
+import { Route as AuthenticatedAdminVerificationRouteImport } from './routes/_authenticated/admin.verification'
 import { Route as ApiPublicSeedNetworkRouteImport } from './routes/api/public/seed-network'
 
 const IndexRoute = IndexRouteImport.update({
@@ -79,6 +81,11 @@ const AuthenticatedOnboardingRoute = AuthenticatedOnboardingRouteImport.update({
   path: '/onboarding',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedVerifyRoute = AuthenticatedVerifyRouteImport.update({
+  id: '/verify',
+  path: '/verify',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const DotlovableOauthConsentRoute = DotlovableOauthConsentRouteImport.update({
   id: '/.lovable/oauth/consent',
   path: '/.lovable/oauth/consent',
@@ -88,6 +95,12 @@ const AuthenticatedAdminEarlyAccessRoute =
   AuthenticatedAdminEarlyAccessRouteImport.update({
     id: '/admin/early-access',
     path: '/admin/early-access',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedAdminVerificationRoute =
+  AuthenticatedAdminVerificationRouteImport.update({
+    id: '/admin/verification',
+    path: '/admin/verification',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
 const ApiPublicSeedNetworkRoute = ApiPublicSeedNetworkRouteImport.update({
@@ -107,8 +120,10 @@ export interface FileRoutesByFullPath {
   '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
   '/app': typeof AuthenticatedAppRoute
   '/onboarding': typeof AuthenticatedOnboardingRoute
+  '/verify': typeof AuthenticatedVerifyRoute
   '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
   '/admin/early-access': typeof AuthenticatedAdminEarlyAccessRoute
+  '/admin/verification': typeof AuthenticatedAdminVerificationRoute
   '/api/public/seed-network': typeof ApiPublicSeedNetworkRoute
 }
 export interface FileRoutesByTo {
@@ -122,8 +137,10 @@ export interface FileRoutesByTo {
   '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
   '/app': typeof AuthenticatedAppRoute
   '/onboarding': typeof AuthenticatedOnboardingRoute
+  '/verify': typeof AuthenticatedVerifyRoute
   '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
   '/admin/early-access': typeof AuthenticatedAdminEarlyAccessRoute
+  '/admin/verification': typeof AuthenticatedAdminVerificationRoute
   '/api/public/seed-network': typeof ApiPublicSeedNetworkRoute
 }
 export interface FileRoutesById {
@@ -139,8 +156,10 @@ export interface FileRoutesById {
   '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
   '/_authenticated/app': typeof AuthenticatedAppRoute
   '/_authenticated/onboarding': typeof AuthenticatedOnboardingRoute
+  '/_authenticated/verify': typeof AuthenticatedVerifyRoute
   '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
   '/_authenticated/admin/early-access': typeof AuthenticatedAdminEarlyAccessRoute
+  '/_authenticated/admin/verification': typeof AuthenticatedAdminVerificationRoute
   '/api/public/seed-network': typeof ApiPublicSeedNetworkRoute
 }
 export interface FileRouteTypes {
@@ -156,8 +175,10 @@ export interface FileRouteTypes {
     | '/.well-known/oauth-protected-resource'
     | '/app'
     | '/onboarding'
+    | '/verify'
     | '/.lovable/oauth/consent'
     | '/admin/early-access'
+    | '/admin/verification'
     | '/api/public/seed-network'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -171,8 +192,10 @@ export interface FileRouteTypes {
     | '/.well-known/oauth-protected-resource'
     | '/app'
     | '/onboarding'
+    | '/verify'
     | '/.lovable/oauth/consent'
     | '/admin/early-access'
+    | '/admin/verification'
     | '/api/public/seed-network'
   id:
     | '__root__'
@@ -187,8 +210,10 @@ export interface FileRouteTypes {
     | '/.well-known/oauth-protected-resource'
     | '/_authenticated/app'
     | '/_authenticated/onboarding'
+    | '/_authenticated/verify'
     | '/.lovable/oauth/consent'
     | '/_authenticated/admin/early-access'
+    | '/_authenticated/admin/verification'
     | '/api/public/seed-network'
   fileRoutesById: FileRoutesById
 }
@@ -285,6 +310,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedOnboardingRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/verify': {
+      id: '/_authenticated/verify'
+      path: '/verify'
+      fullPath: '/verify'
+      preLoaderRoute: typeof AuthenticatedVerifyRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/.lovable/oauth/consent': {
       id: '/.lovable/oauth/consent'
       path: '/.lovable/oauth/consent'
@@ -297,6 +329,13 @@ declare module '@tanstack/react-router' {
       path: '/admin/early-access'
       fullPath: '/admin/early-access'
       preLoaderRoute: typeof AuthenticatedAdminEarlyAccessRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/admin/verification': {
+      id: '/_authenticated/admin/verification'
+      path: '/admin/verification'
+      fullPath: '/admin/verification'
+      preLoaderRoute: typeof AuthenticatedAdminVerificationRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/api/public/seed-network': {
@@ -312,13 +351,17 @@ declare module '@tanstack/react-router' {
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedAppRoute: typeof AuthenticatedAppRoute
   AuthenticatedOnboardingRoute: typeof AuthenticatedOnboardingRoute
+  AuthenticatedVerifyRoute: typeof AuthenticatedVerifyRoute
   AuthenticatedAdminEarlyAccessRoute: typeof AuthenticatedAdminEarlyAccessRoute
+  AuthenticatedAdminVerificationRoute: typeof AuthenticatedAdminVerificationRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedAppRoute: AuthenticatedAppRoute,
   AuthenticatedOnboardingRoute: AuthenticatedOnboardingRoute,
+  AuthenticatedVerifyRoute: AuthenticatedVerifyRoute,
   AuthenticatedAdminEarlyAccessRoute: AuthenticatedAdminEarlyAccessRoute,
+  AuthenticatedAdminVerificationRoute: AuthenticatedAdminVerificationRoute,
 }
 
 const AuthenticatedRouteRouteWithChildren =

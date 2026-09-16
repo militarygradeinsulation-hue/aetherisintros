@@ -14,6 +14,39 @@ export type Database = {
   }
   public: {
     Tables: {
+      account_security_events: {
+        Row: {
+          actor_id: string | null
+          created_at: string
+          device_hint: string
+          event: string
+          id: string
+          ip_hint: string
+          summary: string
+          user_id: string
+        }
+        Insert: {
+          actor_id?: string | null
+          created_at?: string
+          device_hint?: string
+          event: string
+          id?: string
+          ip_hint?: string
+          summary?: string
+          user_id?: string
+        }
+        Update: {
+          actor_id?: string | null
+          created_at?: string
+          device_hint?: string
+          event?: string
+          id?: string
+          ip_hint?: string
+          summary?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       ask_responses: {
         Row: {
           ask_id: string
@@ -1473,6 +1506,102 @@ export type Database = {
         }
         Relationships: []
       }
+      member_verifications: {
+        Row: {
+          account_id: string | null
+          business_dba: string
+          business_domain: string
+          business_location: string
+          business_name: string
+          claimed_role: string
+          created_at: string
+          decision_reason: string
+          display_name: string
+          id: string
+          legal_name: string
+          professional_url: string
+          proof_retention: string
+          public_summary: string
+          registration_jurisdiction: string
+          registration_number: string
+          reviewed_at: string | null
+          reviewer_id: string | null
+          reviewer_notes: string
+          risk_flags: Json
+          scanned_at: string | null
+          status: Database["public"]["Enums"]["verification_status"]
+          submitted_at: string | null
+          updated_at: string
+          user_id: string
+          verification_level: number
+          verified_at: string | null
+          verified_role: Database["public"]["Enums"]["verified_role"] | null
+          work_email: string
+        }
+        Insert: {
+          account_id?: string | null
+          business_dba?: string
+          business_domain?: string
+          business_location?: string
+          business_name?: string
+          claimed_role?: string
+          created_at?: string
+          decision_reason?: string
+          display_name?: string
+          id?: string
+          legal_name?: string
+          professional_url?: string
+          proof_retention?: string
+          public_summary?: string
+          registration_jurisdiction?: string
+          registration_number?: string
+          reviewed_at?: string | null
+          reviewer_id?: string | null
+          reviewer_notes?: string
+          risk_flags?: Json
+          scanned_at?: string | null
+          status?: Database["public"]["Enums"]["verification_status"]
+          submitted_at?: string | null
+          updated_at?: string
+          user_id: string
+          verification_level?: number
+          verified_at?: string | null
+          verified_role?: Database["public"]["Enums"]["verified_role"] | null
+          work_email?: string
+        }
+        Update: {
+          account_id?: string | null
+          business_dba?: string
+          business_domain?: string
+          business_location?: string
+          business_name?: string
+          claimed_role?: string
+          created_at?: string
+          decision_reason?: string
+          display_name?: string
+          id?: string
+          legal_name?: string
+          professional_url?: string
+          proof_retention?: string
+          public_summary?: string
+          registration_jurisdiction?: string
+          registration_number?: string
+          reviewed_at?: string | null
+          reviewer_id?: string | null
+          reviewer_notes?: string
+          risk_flags?: Json
+          scanned_at?: string | null
+          status?: Database["public"]["Enums"]["verification_status"]
+          submitted_at?: string | null
+          updated_at?: string
+          user_id?: string
+          verification_level?: number
+          verified_at?: string | null
+          verified_role?: Database["public"]["Enums"]["verified_role"] | null
+          work_email?: string
+        }
+        Relationships: []
+      }
       members: {
         Row: {
           availability: string
@@ -1831,6 +1960,10 @@ export type Database = {
           title: string
           updated_at: string
           values_text: string
+          verification_public_summary: string
+          verified_at: string | null
+          verified_business: string
+          verified_role: Database["public"]["Enums"]["verified_role"] | null
           visibility: string
           want_to_meet: string
         }
@@ -1858,6 +1991,10 @@ export type Database = {
           title?: string
           updated_at?: string
           values_text?: string
+          verification_public_summary?: string
+          verified_at?: string | null
+          verified_business?: string
+          verified_role?: Database["public"]["Enums"]["verified_role"] | null
           visibility?: string
           want_to_meet?: string
         }
@@ -1885,6 +2022,10 @@ export type Database = {
           title?: string
           updated_at?: string
           values_text?: string
+          verification_public_summary?: string
+          verified_at?: string | null
+          verified_business?: string
+          verified_role?: Database["public"]["Enums"]["verified_role"] | null
           visibility?: string
           want_to_meet?: string
         }
@@ -2052,6 +2193,144 @@ export type Database = {
         }
         Relationships: []
       }
+      verification_checks: {
+        Row: {
+          check_type: string
+          checked_at: string
+          confidence: number
+          evidence_summary: string
+          id: string
+          result: string
+          source_type: string
+          verification_id: string
+        }
+        Insert: {
+          check_type: string
+          checked_at?: string
+          confidence?: number
+          evidence_summary?: string
+          id?: string
+          result?: string
+          source_type?: string
+          verification_id: string
+        }
+        Update: {
+          check_type?: string
+          checked_at?: string
+          confidence?: number
+          evidence_summary?: string
+          id?: string
+          result?: string
+          source_type?: string
+          verification_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "verification_checks_verification_id_fkey"
+            columns: ["verification_id"]
+            isOneToOne: false
+            referencedRelation: "member_verifications"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      verification_events: {
+        Row: {
+          actor_id: string | null
+          created_at: string
+          detail: Json
+          event: string
+          id: string
+          summary: string
+          user_id: string | null
+          verification_id: string
+        }
+        Insert: {
+          actor_id?: string | null
+          created_at?: string
+          detail?: Json
+          event: string
+          id?: string
+          summary?: string
+          user_id?: string | null
+          verification_id: string
+        }
+        Update: {
+          actor_id?: string | null
+          created_at?: string
+          detail?: Json
+          event?: string
+          id?: string
+          summary?: string
+          user_id?: string | null
+          verification_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "verification_events_verification_id_fkey"
+            columns: ["verification_id"]
+            isOneToOne: false
+            referencedRelation: "member_verifications"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      verification_evidence: {
+        Row: {
+          confidence: number
+          created_at: string
+          evidence_type: string
+          expires_at: string | null
+          id: string
+          label: string
+          private_storage_path: string | null
+          purged: boolean
+          result: string
+          source_url: string
+          status: string
+          user_id: string
+          verification_id: string
+        }
+        Insert: {
+          confidence?: number
+          created_at?: string
+          evidence_type: string
+          expires_at?: string | null
+          id?: string
+          label?: string
+          private_storage_path?: string | null
+          purged?: boolean
+          result?: string
+          source_url?: string
+          status?: string
+          user_id?: string
+          verification_id: string
+        }
+        Update: {
+          confidence?: number
+          created_at?: string
+          evidence_type?: string
+          expires_at?: string | null
+          id?: string
+          label?: string
+          private_storage_path?: string | null
+          purged?: boolean
+          result?: string
+          source_url?: string
+          status?: string
+          user_id?: string
+          verification_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "verification_evidence_verification_id_fkey"
+            columns: ["verification_id"]
+            isOneToOne: false
+            referencedRelation: "member_verifications"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       waitlist_entries: {
         Row: {
           email: string
@@ -2114,6 +2393,15 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      add_verification_evidence: {
+        Args: {
+          p_evidence_type: string
+          p_label?: string
+          p_source_url?: string
+          p_storage_path?: string
+        }
+        Returns: string
+      }
       claim_early_access: {
         Args: { p_invite_code?: string }
         Returns: {
@@ -2141,13 +2429,59 @@ export type Database = {
       is_admin: { Args: never; Returns: boolean }
       is_circle_member: { Args: { p_circle: string }; Returns: boolean }
       is_live_member: { Args: never; Returns: boolean }
+      is_verified_member: { Args: never; Returns: boolean }
       join_waitlist: {
         Args: { p_email: string; p_name?: string }
         Returns: undefined
       }
+      my_verification: {
+        Args: never
+        Returns: {
+          business_domain: string
+          business_name: string
+          claimed_role: string
+          decision_reason: string
+          evidence_count: number
+          proof_retention: string
+          public_summary: string
+          status: Database["public"]["Enums"]["verification_status"]
+          submitted_at: string
+          verification_level: number
+          verified_at: string
+          verified_role: Database["public"]["Enums"]["verified_role"]
+        }[]
+      }
+      purge_verification_proof: { Args: never; Returns: number }
       relative_label: { Args: { ts: string }; Returns: string }
+      review_member_verification: {
+        Args: {
+          p_notes?: string
+          p_public_summary?: string
+          p_reason?: string
+          p_status: string
+          p_user_id: string
+          p_verified_role?: string
+        }
+        Returns: undefined
+      }
       show_limit: { Args: never; Returns: number }
       show_trgm: { Args: { "": string }; Returns: string[] }
+      submit_member_verification: {
+        Args: {
+          p_business_dba: string
+          p_business_domain: string
+          p_business_location: string
+          p_business_name: string
+          p_claimed_role: string
+          p_display_name: string
+          p_legal_name: string
+          p_professional_url: string
+          p_registration_jurisdiction?: string
+          p_registration_number?: string
+          p_work_email: string
+        }
+        Returns: string
+      }
     }
     Enums: {
       app_role: "admin" | "moderator" | "member"
@@ -2157,6 +2491,21 @@ export type Database = {
         | "organization"
         | "shareable"
         | "public"
+      verification_status:
+        | "pending"
+        | "scanning"
+        | "manual_review"
+        | "needs_more_proof"
+        | "verified"
+        | "rejected"
+        | "suspended"
+      verified_role:
+        | "ceo"
+        | "founder"
+        | "owner"
+        | "managing_partner"
+        | "principal"
+        | "other"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -2291,6 +2640,23 @@ export const Constants = {
         "organization",
         "shareable",
         "public",
+      ],
+      verification_status: [
+        "pending",
+        "scanning",
+        "manual_review",
+        "needs_more_proof",
+        "verified",
+        "rejected",
+        "suspended",
+      ],
+      verified_role: [
+        "ceo",
+        "founder",
+        "owner",
+        "managing_partner",
+        "principal",
+        "other",
       ],
     },
   },
