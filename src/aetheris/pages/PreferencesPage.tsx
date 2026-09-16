@@ -4,10 +4,11 @@ import { useNetwork, type PreferenceSettings } from '../store'
 import { AvatarImage } from '../avatar'
 import { Btn, Eyebrow, Head } from '../ui'
 import { cursorScaleLabels, cursorScales, readCursorScale, setCursorScale, type CursorScale } from '../cursorScale'
+import { SecurityPage } from './SecurityPage'
 
 import { readTextScale, setTextScale, textScaleLabels, textScales, type TextScale } from '../textScale'
 
-const tabs = ['Profile', 'Display', 'Availability', 'Preferences', 'Notifications', 'Privacy', 'Memory Controls'] as const
+const tabs = ['Profile', 'Display', 'Security & Privacy', 'Availability', 'Preferences', 'Notifications', 'Privacy', 'Memory Controls'] as const
 
 type Tab = typeof tabs[number]
 
