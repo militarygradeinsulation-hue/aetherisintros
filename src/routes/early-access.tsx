@@ -43,7 +43,10 @@ function EarlyAccessPage() {
   useEffect(reloadStats, [reloadStats])
 
   useEffect(() => {
-    if (!access.loading && access.status === 'approved') {
+    if (access.loading || !access.signedIn) return
+    // A founding place is only half of membership: the business role must be verified too.
+    if (access.verification !== 'verified') { void navigate({ to: '/verify', replace: true }); return }
+    if (access.status === 'approved') {
       void navigate({ to: access.onboarded ? '/app' : '/onboarding', replace: true })
     }
   }, [access, navigate])
@@ -54,7 +57,7 @@ function EarlyAccessPage() {
       const result = await claimAccess(code)
       await refresh()
       reloadStats()
-      if (result.status === 'approved') void navigate({ to: '/onboarding', replace: true })
+      if (result.status === 'approved') void navigate({ to: '/verify', replace: true })
       else if (result.status === 'waitlisted') setNotice('The founding places are taken. You are on the waitlist and we will write when a place opens.')
       else setError('This account is not approved yet. An invitation or admin approval is needed.')
     } catch (caught) {

@@ -35,14 +35,17 @@ function AppRoute() {
 function Gate() {
   const { access } = useAccess()
   const navigate = useNavigate()
+  const ready = access.status === 'approved' && access.verification === 'verified' && access.onboarded
 
   useEffect(() => {
     if (access.loading) return
-    if (access.status !== 'approved') void navigate({ to: '/early-access', replace: true })
+    // Verification decides network access; the database enforces the same rule.
+    if (access.verification !== 'verified') void navigate({ to: '/verify', replace: true })
+    else if (access.status !== 'approved') void navigate({ to: '/early-access', replace: true })
     else if (!access.onboarded) void navigate({ to: '/onboarding', replace: true })
   }, [access, navigate])
 
-  if (access.loading || access.status !== 'approved' || !access.onboarded) {
+  if (access.loading || !ready) {
     return <main className="access-waiting"><span className="folio">AETHERIS INTROS</span><p>Checking your membership…</p></main>
   }
   return <App mode="live" />
