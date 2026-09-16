@@ -135,8 +135,8 @@ function LandingPage({ signedIn }: { signedIn: boolean }) {
         <div className="lv-showcase-foot">
           <p>Instead of paying for disconnected tools, Intros gives you <b>one native system.</b> Every member is verified, so every relationship starts with a real person.</p>
           <div className="lv-showcase-actions">
-            {accountBtn('lv-btn primary')}
-            {demoBtn('See the system', 'lv-btn ghost')}
+            {accountBtn('btn primary')}
+            {demoBtn('See the system', 'btn ghost')}
           </div>
         </div>
       </section>
