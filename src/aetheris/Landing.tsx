@@ -141,6 +141,10 @@ function LandingPage({ signedIn }: { signedIn: boolean }) {
         </div>
       </section>
 
+      <JoinBand signedIn={signedIn} />
+
+
+
       <section className="lv-founder-band">
         <span>FOUNDER CONTEXT / WHY ME</span>
         <p>Before Aetheris was software, it was a lifetime of learning how people, systems, pressure, failure, and responsibility connect.</p>
