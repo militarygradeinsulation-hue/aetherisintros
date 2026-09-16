@@ -12,7 +12,7 @@ import type {
 } from './types'
 
 type Row = Record<string, unknown>
-type Json = Parameters<typeof JSON.parse>[0] extends string ? unknown : never
+
 
 /**
  * Loose facade for the few helpers that address tables by variable name.
