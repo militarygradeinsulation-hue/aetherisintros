@@ -92,6 +92,9 @@ export function OpsProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     let live = true
     void (async () => {
+      // Signed-out visitors (landing, /demo) have no private account layer to load.
+      const owner = await currentAccountId()
+      if (!owner) { if (live) setReady(true); return }
       await ensureDefaultPipeline()
       const next = await loadSnapshot()
       if (!live) return
