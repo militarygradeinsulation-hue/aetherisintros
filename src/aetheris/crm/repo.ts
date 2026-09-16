@@ -18,7 +18,7 @@ type Row = Record<string, unknown>
  * Loose facade for the few helpers that address tables by variable name.
  * RLS still applies; this only relaxes the generated table-literal typing.
  */
-interface LooseQuery {
+interface LooseQuery extends PromiseLike<{ data: Row[] | null; error: unknown }> {
   insert(payload: Row | Row[]): LooseQuery
   update(payload: Row): LooseQuery
   delete(): LooseQuery
