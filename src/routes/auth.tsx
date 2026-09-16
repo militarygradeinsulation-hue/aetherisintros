@@ -6,6 +6,7 @@ import { useCallback, useEffect, useState } from 'react'
 import { supabase } from '@/integrations/supabase/client'
 import { lovable } from '@/integrations/lovable/index'
 import { AUTH_REQUIRED } from '@/aetheris/config'
+import { logSecurityEvent, passwordProblem } from '@/aetheris/verification'
 import authPortrait from '@/assets/portraits/aetheris-masthead-natural.jpg.asset.json'
 import '@/aetheris/styles.css'
 
@@ -57,7 +58,7 @@ function AuthPage() {
 
   const land = useCallback(() => {
     if (next) { window.location.replace(next); return }
-    void navigate({ to: '/early-access', replace: true })
+    void navigate({ to: '/verify', replace: true })
   }, [navigate, next])
 
   useEffect(() => {
@@ -66,6 +67,7 @@ function AuthPage() {
       if (!cancelled && data.session) land()
     })
     const { data: sub } = supabase.auth.onAuthStateChange((event, session) => {
+      if (session && event === 'SIGNED_IN') void logSecurityEvent('signed_in', 'Signed in to Aetheris Intros.')
       if (session && (event === 'SIGNED_IN' || event === 'INITIAL_SESSION')) land()
     })
     return () => { cancelled = true; sub.subscription.unsubscribe() }
@@ -76,11 +78,13 @@ function AuthPage() {
     setBusy(true); setError(''); setNotice('')
     try {
       if (mode === 'signup') {
+        const weak = passwordProblem(password)
+        if (weak) throw new Error(weak)
         const { data, error: signUpError } = await supabase.auth.signUp({
           email,
           password,
           options: {
-            emailRedirectTo: `${window.location.origin}${next || '/early-access'}`,
+            emailRedirectTo: `${window.location.origin}${next || '/verify'}`,
             data: { name: name || email.split('@')[0] },
           },
         })
@@ -103,7 +107,7 @@ function AuthPage() {
   const google = async () => {
     setBusy(true); setError('')
     const result = await lovable.auth.signInWithOAuth('google', {
-      redirect_uri: `${window.location.origin}${next || '/early-access'}`,
+      redirect_uri: `${window.location.origin}${next || '/verify'}`,
     })
     if (result.error) {
       setError('Google sign-in could not start. Try email instead.')
@@ -123,8 +127,8 @@ function AuthPage() {
       <div className="auth-index"><span className="folio">MEMBER ACCESS / 2026</span><span>01 / PRIVATE NETWORK</span></div>
       <h1>{mode === 'signin' ? <>Welcome<br /><em>back.</em></> : <>Join the<br /><em>network.</em></>}</h1>
       <p className="auth-lede">
-        The demo is open to explore. Your account is where real introductions, professional context,
-        active memory and preferences stay private, permissioned and available on any device.
+        A network built for people who actually run companies. Every member is verified, so every
+        relationship starts with a real person — and your context stays private and permissioned.
       </p>
 
       <div className="auth-proof" aria-label="Member access principles">
@@ -149,7 +153,7 @@ function AuthPage() {
         </label>
         <label>
           <span>PASSWORD</span>
-          <input type="password" required minLength={6} value={password} onChange={e => setPassword(e.target.value)} autoComplete={mode === 'signin' ? 'current-password' : 'new-password'} placeholder="At least 6 characters" />
+          <input type="password" required minLength={mode === 'signin' ? 6 : 12} value={password} onChange={e => setPassword(e.target.value)} autoComplete={mode === 'signin' ? 'current-password' : 'new-password'} placeholder={mode === 'signin' ? 'Your password' : 'At least 12 characters, mixed case, number, symbol'} />
         </label>
         {error && <p className="auth-error">{error}</p>}
         {notice && <p className="auth-notice">{notice}</p>}

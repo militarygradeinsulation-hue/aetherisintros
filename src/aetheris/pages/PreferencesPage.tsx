@@ -4,10 +4,11 @@ import { useNetwork, type PreferenceSettings } from '../store'
 import { AvatarImage } from '../avatar'
 import { Btn, Eyebrow, Head } from '../ui'
 import { cursorScaleLabels, cursorScales, readCursorScale, setCursorScale, type CursorScale } from '../cursorScale'
+import { SecurityPage } from './SecurityPage'
 
 import { readTextScale, setTextScale, textScaleLabels, textScales, type TextScale } from '../textScale'
 
-const tabs = ['Profile', 'Display', 'Availability', 'Preferences', 'Notifications', 'Privacy', 'Memory Controls'] as const
+const tabs = ['Profile', 'Display', 'Security & Privacy', 'Availability', 'Preferences', 'Notifications', 'Privacy', 'Memory Controls'] as const
 
 type Tab = typeof tabs[number]
 
@@ -136,6 +137,10 @@ export function PreferencesPage() {
         {tab === 'Display' && <section>
           <Eyebrow>READABILITY</Eyebrow><h2>Set a text size that reads comfortably.</h2>
           <DisplayCard />
+        </section>}
+        {tab === 'Security & Privacy' && <section>
+          <Eyebrow>SECURITY &amp; PRIVACY</Eyebrow><h2>Verification, devices and your data.</h2>
+          <SecurityPage />
         </section>}
         {tab === 'Availability' && <section>
           <Eyebrow>MEETING PREFERENCES</Eyebrow><h2>Make good conversations easier to schedule.</h2>

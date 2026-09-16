@@ -128,3 +128,13 @@
 - [x] Navigation: CRM and Grid in the rail, cross-links between modules, “Add to CRM” / “Open in CRM” on member profiles.
 - [x] Global search across network people, CRM records and Grid sheets, plus quick-create commands.
 - [ ] Signed-in end-to-end verification (create/edit records, linked-sheet write-through) — blocked: no preview session could be minted for authenticated checks.
+
+## Membership verification + security layer (Sep 16)
+- [x] Verification schema, RLS, private proof bucket, audit + security event tables
+- [x] Business-role checking engine (provider-neutral adapter, no fabricated results)
+- [x] Member verification portal at /verify, gated network access
+- [x] Reviewer console at /admin/verification (role-gated, audited)
+- [x] Security & Privacy settings: verification, MFA status, sessions, events, export, deletion, proof retention
+- [x] Editorial verified badges (CEO / FOUNDER / OWNER / MANAGING PARTNER)
+- [x] Showcase the "One Connected System for CEOs" panel on the logged-out home page (uploaded reference)
+- [ ] Real third-party identity/KYC provider still requires an external service + credentials

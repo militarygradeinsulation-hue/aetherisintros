@@ -3,6 +3,7 @@ import { ArrowRight, LockKeyhole } from 'lucide-react'
 import { Link, useNavigate } from '@tanstack/react-router'
 import { useEffect } from 'react'
 import landingPortraitAsset from '@/assets/aetheris-home-portrait.jpg.asset.json'
+import showcaseAsset from '@/assets/one-connected-system.png.asset.json'
 import { FaLinkedin, FaMicrosoft, FaSalesforce } from 'react-icons/fa'
 import { BsMicrosoftTeams, BsSlack } from 'react-icons/bs'
 import { PiMicrosoftOutlookLogoFill } from 'react-icons/pi'
@@ -116,6 +117,31 @@ function LandingPage({ signedIn }: { signedIn: boolean }) {
           </article>
         </div>
       </section>
+
+      {/* ── Showcase: the whole system, in one frame ── */}
+      <section className="lv-showcase" id="one-connected-system">
+        <header>
+          <span>THE TOOLS COMPANIES PAY FOR SEPARATELY</span>
+          <h2>One Connected System for <em>CEOs.</em></h2>
+          <p>
+            Social network. CRM. Spreadsheets. Calendar. Meetings. Signals. Knowledge.
+            Built natively inside Aetheris Intros — one account, one data graph, one place.
+          </p>
+        </header>
+        <figure className="lv-showcase-plate">
+          <img src={showcaseAsset.url} alt="Aetheris Intros: one connected system for CEOs, replacing a fragmented stack of separate tools"
+            width={1448} height={1086} loading="lazy" />
+        </figure>
+        <div className="lv-showcase-foot">
+          <p>Instead of paying for disconnected tools, Intros gives you <b>one native system.</b> Every member is verified, so every relationship starts with a real person.</p>
+          <div className="lv-showcase-actions">
+            {accountBtn('btn primary')}
+            {demoBtn('See the system', 'btn ghost')}
+          </div>
+        </div>
+      </section>
+
+
 
       {/* ── Section 3: Black connected system ── */}
       <section className="lv-connect">
