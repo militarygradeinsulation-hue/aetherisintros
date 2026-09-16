@@ -48,6 +48,7 @@ import { MoreDrawer, rememberRecent } from './pages/MoreDrawer'
 import { BriefingPanel, useBriefingMode } from './BriefingMode'
 import { NavCtx, useNav, type NavApi, type Page } from './nav'
 import { OpsProvider, useOps } from './crm/store'
+import { VerifiedBadge } from './badge'
 import CrmPage from './pages/CrmPage'
 import GridPage from './pages/GridPage'
 import { PlatformProvider, usePlatform } from './platform'
@@ -1757,6 +1758,7 @@ function MemberProfile({ person, people, onClose, onDraft, onMessage }: {
         <Brand />
         <Label>MEMBER PROFILE / {person.role.toUpperCase()}</Label>
         <h1>{person.name}</h1>
+        <VerifiedBadge memberId={person.id} detail />
         <p className="member-role">{person.title}<br />{person.company}</p>
         <p className="member-meta">{person.location} · {person.industry} · Member since {person.joined}</p>
         <blockquote>“{person.thesis}”</blockquote>
