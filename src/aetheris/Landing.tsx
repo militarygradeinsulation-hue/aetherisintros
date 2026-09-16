@@ -160,15 +160,6 @@ function LandingPage({ signedIn }: { signedIn: boolean }) {
 
       {/* ── Showcase: One Connected System for CEOs ── */}
       <section className="lv-showcase">
-        <header>
-          <span>ONE CONNECTED SYSTEM</span>
-          <h2>One Connected System for <em>CEOs.</em></h2>
-          <p>The tools companies pay for separately. Now native inside Aetheris Intros — social network, CRM, spreadsheets, calendar, meetings, signals, knowledge and analytics in one account, one data graph, one place.</p>
-          <div className="lv-showcase-actions">
-            {accountBtn('btn primary')}
-            {demoBtn('See the system', 'btn ghost')}
-          </div>
-        </header>
         <div className="lv-showcase-plate">
           <img src={showcaseAsset.url} alt="One Connected System for CEOs — the tools companies pay for separately, now native inside Aetheris Intros" />
         </div>
