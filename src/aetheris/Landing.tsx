@@ -73,10 +73,10 @@ function LandingPage({ signedIn }: { signedIn: boolean }) {
 
       <section className="lv-hero">
         <div className="lv-hero-copy">
-          <span className="lv-hero-topright">A MORE CONNECTED TOMORROW.</span>
-          <h1>People Create<br /><em>Possibilities.</em></h1>
-          <p className="lv-hero-sub">A smarter way to connect, collaborate, and create real opportunities.</p>
-          <span className="lv-hero-scale">RELATIONSHIPS · INTELLIGENCE · OPPORTUNITY AT SCALE</span>
+          <span className="lv-hero-topright">AETHERIS INTROS</span>
+          <h1><span>Aetheris Intros</span><em>The Relationship Network for CEOs.</em></h1>
+          <p className="lv-hero-sub">Who matters. Why they matter. Why now.</p>
+          <span className="lv-hero-scale">RELATIONSHIPS · INTELLIGENCE · OPPORTUNITY</span>
           <div className="lv-hero-actions">
             {demoBtn('Demo the system', 'btn primary')}
             {loginBtn('btn ghost')}

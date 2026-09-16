@@ -9,16 +9,16 @@ export const Route = createFileRoute('/_authenticated/app')({
   staticData: { sitemap: false },
   head: () => ({
     meta: [
-      { title: 'Your network — Aetheris Intros' },
+      { title: 'Aetheris Intros — The Relationship Network for CEOs' },
       {
         name: 'description',
         content:
-          'The Aetheris Intros network: real members, active memory, trusted paths, double opt-in introductions and the needs your network can actually move.',
+          'The relationship network for CEOs. See who matters, why they matter, and why now.',
       },
-      { property: 'og:title', content: 'Your network — Aetheris Intros' },
+      { property: 'og:title', content: 'Aetheris Intros — The Relationship Network for CEOs' },
       {
         property: 'og:description',
-        content: 'Know who matters, why the relationship makes sense, why now, and the smartest next action.',
+        content: 'Who matters. Why they matter. Why now.',
       },
       { property: 'og:type', content: 'website' },
       { name: 'twitter:card', content: 'summary_large_image' },
