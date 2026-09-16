@@ -197,32 +197,6 @@ function LandingPage({ signedIn }: { signedIn: boolean }) {
         </div>
       </section>
 
-      {/* ── Section 3: Black connected system ── */}
-      <section className="lv-connect">
-        <header className="lv-connect-head">
-          <span>WHAT AETHERIS INTROS BRINGS TOGETHER</span>
-          <h2>One Connected System.</h2>
-          <p>PEOPLE. CONTEXT. OPPORTUNITIES. ALL IN ONE PLACE.</p>
-        </header>
-        <div className="lv-platforms">
-          {platforms.map(({ name, icon: Icon, tone, blurb }) => (
-            <div key={name} className="lv-platform">
-              <span className={`eh-platform-logo ${tone}`}><Icon aria-hidden="true" /></span>
-              <b>{name}</b>
-              <small>{blurb}</small>
-            </div>
-          ))}
-        </div>
-        <div className="lv-eliminates">
-          <span>ELIMINATES WHAT HOLDS YOU BACK</span>
-          <p>{eliminates.map((e, i) => <span key={e}>{e}{i < eliminates.length - 1 && <i />}</span>)}</p>
-        </div>
-        <footer className="lv-foot">
-          <span>REAL PEOPLE. REAL OPPORTUNITIES. A BRIGHTER TOMORROW.</span>
-          <i />
-          <span>ONE NETWORK FOR WHAT'S NEXT.</span>
-        </footer>
-      </section>
 
       <footer className="lv-legal">
         <div className="brand-mark">
