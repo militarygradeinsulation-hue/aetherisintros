@@ -224,7 +224,7 @@ function FounderStoryPage() {
 
         <footer className="founder-closing">
           <Quote size={24} />
-          <blockquote>“Aetheris is not here to decorate chaos.<br />It is here to investigate it.<br />Protect what matters.<br />Recover what was lost.<br />Prove what is real.<br />Fix what is broken.<br />Verify the recovery.<br />Then build the system that keeps it from happening again.”</blockquote>
+          <blockquote>“Find what is hidden.<br />Prove what is real.<br />Fix what is broken.<br />Verify the recovery.<br />Then build the system that keeps it from happening again.”</blockquote>
           <span>JOSEPH TONEY · FOUNDER, AETHERIS</span>
           <Link to="/" className="btn primary">Return to Aetheris Intros <ArrowRight size={14} /></Link>
         </footer>
