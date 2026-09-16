@@ -7,14 +7,14 @@ export const Route = createFileRoute('/demo')({
   staticData: { sitemap: true },
   head: () => ({
     meta: [
-      { title: 'Guided showcase — Aetheris Intros' },
+      { title: 'Aetheris Intros CEO Network — Guided Showcase' },
       {
         name: 'description',
         content:
-          'A guided showcase of Aetheris Intros using illustrative example people. Every member in the live network is a real, approved professional.',
+          'Explore Aetheris Intros, the relationship network for CEOs. Who matters. Why they matter. Why now.',
       },
-      { property: 'og:title', content: 'Guided showcase — Aetheris Intros' },
-      { property: 'og:description', content: 'See how relationship context, timing and double opt-in introductions work.' },
+      { property: 'og:title', content: 'Aetheris Intros — The Relationship Network for CEOs' },
+      { property: 'og:description', content: 'Who matters. Why they matter. Why now.' },
       { property: 'og:type', content: 'website' },
       { name: 'twitter:card', content: 'summary_large_image' },
       { property: 'og:url', content: 'https://intros.today/demo' },

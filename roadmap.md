@@ -105,3 +105,8 @@
 
 - [x] Keep mobile header actions visible without clipping or wrapping below the fixed bar.
 - [x] Keep the navigation and Create panels inside the viewport with independent scrolling.
+
+# CEO positioning (Sep 16)
+
+- [x] Position Aetheris Intros as “The Relationship Network for CEOs.” across the public homepage and signed-in Home.
+- [x] Use “Who matters. Why they matter. Why now.” consistently in search and social metadata.

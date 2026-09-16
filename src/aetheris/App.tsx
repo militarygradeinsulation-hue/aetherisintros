@@ -206,10 +206,10 @@ function HomeMasthead({ people, select, setPage, openNeed, openThread }: {
   const companies = new Set(people.map(p => p.company)).size
   return <section className="masthead">
     <div className="masthead-brand">
-      <span className="folio">THE BUSINESS NETWORK WITHOUT THE NOISE</span>
+       <span className="folio">THE RELATIONSHIP NETWORK FOR CEOs</span>
       <h1 className="masthead-title">Aetheris<br /><em>Intros</em></h1>
-      <h2>Real business networking.<br />No selling. No spam.</h2>
-      <p>The professional network built around trusted context instead of reach—where human judgment and quiet intelligence work as one. Meet people because the relationship makes sense for both sides, never because someone bought your attention.</p>
+       <h2>Who matters.<br />Why they matter. Why now.</h2>
+       <p>A relationship network for CEOs, built around trusted context and timely introductions—so every connection has a clear reason to matter.</p>
 
       <div className="masthead-actions">
         <Button onClick={openNeed}>Get started <ArrowRight size={14} /></Button>
@@ -234,7 +234,7 @@ function HomeMasthead({ people, select, setPage, openNeed, openThread }: {
         <small>A SMARTER<br />WORLD IS A<br />MORE CONNECTED ONE.</small>
       </header>
       <div className="masthead-intel-head">
-        <div><h3>WHY AETHERIS INTROS</h3><p>People. Context. Possibilities.</p></div>
+         <div><h3>AETHERIS INTROS</h3><p>The Relationship Network for CEOs.</p></div>
         <ul><li><b>{people.length}</b> PEOPLE</li><li><b>{companies}</b> COMPANIES</li><li><b>{net.learnings.length}</b> LEARNED THEMES</li></ul>
       </div>
       <div className="masthead-callout standalone">MORE CONTEXT<br />BETTER INTROS<br />STRONGER OUTCOMES</div>
@@ -784,9 +784,9 @@ function Home({ people, select, setPage, openNeed, openThread }: {
 
     <section className="eh-hero">
       <div className="eh-hero-copy">
-        <span>RELATIONSHIP INTELLIGENCE</span>
-        <h1>The right people.<br /><em>At the right time.</em></h1>
-        <p>Aetheris Intros is an AI-powered relationship intelligence platform that helps you identify, reach, and build the relationships that matter most to your business.</p>
+        <span>AETHERIS INTROS</span>
+        <h1>The Relationship Network<br /><em>for CEOs.</em></h1>
+        <p>Who matters. Why they matter. Why now.</p>
         <div><button className="eh-primary" onClick={openNeed}>GET STARTED <ArrowRight size={15} /></button><button className="eh-secondary" onClick={() => setPage('intros')}><Play size={13} /> SEE HOW IT WORKS</button></div>
       </div>
       <div className="eh-hero-art">
