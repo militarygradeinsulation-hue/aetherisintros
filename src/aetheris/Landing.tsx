@@ -82,10 +82,17 @@ function LandingPage({ signedIn }: { signedIn: boolean }) {
             {loginBtn('btn ghost')}
             {accountBtn(showDemo ? 'btn primary' : 'btn primary')}
           </div>
+          <Link to="/founder-story" className="lv-founder-link">Read My Story <ArrowRight size={14} /></Link>
         </div>
         <div className="lv-hero-visual">
           <img src={landingPortraitAsset.url} alt="A professional in quiet thought beside hard window light" />
         </div>
+      </section>
+
+      <section className="lv-founder-band">
+        <span>FOUNDER CONTEXT / WHY ME</span>
+        <p>Before Aetheris was software, it was a lifetime of learning how people, systems, pressure, failure, and responsibility connect.</p>
+        <Link to="/founder-story">Read My Story <ArrowRight size={15} /></Link>
       </section>
 
       {/* ── Section 2: Ivory WHY ME / WHY YOU / WHY NOW ── */}
