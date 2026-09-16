@@ -5,10 +5,10 @@
  * Intros links to. A person entered once is the same person everywhere; nothing
  * is copied between modules.
  */
-import { useMemo, useState } from 'react'
+import { useState } from 'react'
 import {
   ArrowRight, Building2, CheckCircle2, ChevronLeft, ClipboardList, Compass, Grid3x3,
-  Handshake, Plus, Target, TrendingUp, UserRound,
+  Handshake, Plus, Target, UserRound,
 } from 'lucide-react'
 
 import { Btn, Eyebrow, Head } from '../ui'
@@ -428,5 +428,3 @@ function CreateForm({ kind, onClose }: { kind: 'person' | 'company' | 'opportuni
     <small>Saved once, available in CRM, Grid and every linked view.</small>
   </section>
 }
-
-export { TrendingUp }
