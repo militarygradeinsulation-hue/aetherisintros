@@ -1,14 +1,15 @@
 import logoAsset from '@/assets/aetheris-logo.jpg.asset.json'
 import { ArrowRight, LockKeyhole } from 'lucide-react'
 import { Link, useNavigate } from '@tanstack/react-router'
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import landingPortraitAsset from '@/assets/aetheris-home-portrait.jpg.asset.json'
 
 import { FaLinkedin, FaMicrosoft, FaSalesforce } from 'react-icons/fa'
 import { BsMicrosoftTeams, BsSlack } from 'react-icons/bs'
 import { PiMicrosoftOutlookLogoFill } from 'react-icons/pi'
 import { SiGmail, SiGooglecalendar, SiHubspot, SiNotion, SiZoom } from 'react-icons/si'
-import { isLiveMember, useAccess } from './access'
+import { foundingStats, isLiveMember, joinWaitlist, useAccess, type FoundingStats } from './access'
+
 
 const platforms = [
   { name: 'LinkedIn', icon: FaLinkedin, tone: 'linkedin', blurb: 'Networking' },
