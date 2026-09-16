@@ -206,14 +206,14 @@ class Parser {
     if (t.t === 'fn') {
       this.pos += 1
       const slots = this.args()
-      const flat = slots.flat()
+      const flat = slots.flat() as unknown[]
       switch (t.v) {
-        case 'SUM': return flat.reduce((a, b) => a + num(b), 0)
+        case 'SUM': return flat.reduce<number>((a, b) => a + num(b), 0)
         case 'COUNT': return flat.filter(v => v !== '' && v !== null && v !== undefined && Number.isFinite(num(v)) && String(v).trim() !== '').length
         case 'AVERAGE': {
           const usable = flat.filter(v => v !== '' && v !== null && v !== undefined)
           if (!usable.length) throw new Error('no values')
-          return usable.reduce((a, b) => a + num(b), 0) / usable.length
+          return usable.reduce<number>((a, b) => a + num(b), 0) / usable.length
         }
         case 'MIN': return flat.length ? Math.min(...flat.map(num)) : 0
         case 'MAX': return flat.length ? Math.max(...flat.map(num)) : 0

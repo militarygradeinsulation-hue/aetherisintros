@@ -12,6 +12,21 @@ import type {
 } from './types'
 
 type Row = Record<string, unknown>
+type Json = Parameters<typeof JSON.parse>[0] extends string ? unknown : never
+
+/**
+ * Loose facade for the few helpers that address tables by variable name.
+ * RLS still applies; this only relaxes the generated table-literal typing.
+ */
+interface LooseQuery {
+  insert(payload: Row | Row[]): LooseQuery
+  update(payload: Row): LooseQuery
+  delete(): LooseQuery
+  select(columns?: string): LooseQuery
+  eq(column: string, value: unknown): LooseQuery
+  single(): Promise<{ data: Row | null; error: unknown }>
+}
+const db = supabase as unknown as { from(table: string): LooseQuery }
 
 const str = (v: unknown, fallback = '') => (typeof v === 'string' ? v : fallback)
 const nul = (v: unknown) => (typeof v === 'string' && v ? v : null)

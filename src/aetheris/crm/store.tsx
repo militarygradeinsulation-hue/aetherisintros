@@ -187,10 +187,9 @@ export function OpsProvider({ children }: { children: ReactNode }) {
       /* ------------------------------------------------------ opportunities */
       createOpportunity: async p => {
         const stage = p.stageId ? stageFor(p.stageId) : firstStage
-        const companyId = p.companyId ?? (p.company_name_hint ? null : null)
         const created = await opportunityRepo.create({
           ...p,
-          companyId: companyId ?? p.companyId ?? null,
+          companyId: p.companyId ?? null,
           pipelineId: p.pipelineId ?? defaultPipeline?.id ?? null,
           stageId: stage?.id ?? null,
           stageName: stage?.name ?? '',
