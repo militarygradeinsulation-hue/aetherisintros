@@ -82,12 +82,13 @@ function ReviewConsole() {
   }
 
   const decide = async (claim: Claim, status: string) => {
-    const { error } = await supabase.rpc('review_member_verification', {
+    const args: { p_user_id: string; p_status: string; p_verified_role: string; p_reason: string; p_notes: string; p_public_summary?: string } = {
       p_user_id: claim.user_id, p_status: status,
       p_verified_role: status === 'verified' ? role : '',
-      p_reason: reason, p_public_summary: status === 'verified' ? `${claim.claimed_role}, ${claim.business_name}` : undefined,
-      p_notes: notes,
-    })
+      p_reason: reason, p_notes: notes,
+    }
+    if (status === 'verified') args.p_public_summary = `${claim.claimed_role}, ${claim.business_name}`
+    const { error } = await supabase.rpc('review_member_verification', args)
     if (error) { setNotice(error.message); return }
     setNotice(`Membership set to ${status.replace(/_/g, ' ')}.`)
     setOpenId(null)

@@ -115,10 +115,10 @@ export async function submitClaim(input: ClaimInput) {
 }
 
 export async function addEvidence(evidenceType: string, sourceUrl = '', storagePath: string | null = null, label = '') {
-  const { error } = await supabase.rpc('add_verification_evidence', {
-    p_evidence_type: evidenceType, p_source_url: sourceUrl,
-    p_storage_path: storagePath ?? undefined, p_label: label,
-  })
+  const args: { p_evidence_type: string; p_source_url: string; p_label: string; p_storage_path?: string } =
+    { p_evidence_type: evidenceType, p_source_url: sourceUrl, p_label: label }
+  if (storagePath) args.p_storage_path = storagePath
+  const { error } = await supabase.rpc('add_verification_evidence', args)
   if (error) throw error
 }
 
