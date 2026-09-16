@@ -153,7 +153,7 @@ function AuthPage() {
         </label>
         <label>
           <span>PASSWORD</span>
-          <input type="password" required minLength={12} value={password} onChange={e => setPassword(e.target.value)} autoComplete={mode === 'signin' ? 'current-password' : 'new-password'} placeholder={mode === 'signin' ? 'Your password' : 'At least 12 characters, mixed case, number, symbol'} />
+          <input type="password" required minLength={mode === 'signin' ? 6 : 12} value={password} onChange={e => setPassword(e.target.value)} autoComplete={mode === 'signin' ? 'current-password' : 'new-password'} placeholder={mode === 'signin' ? 'Your password' : 'At least 12 characters, mixed case, number, symbol'} />
         </label>
         {error && <p className="auth-error">{error}</p>}
         {notice && <p className="auth-notice">{notice}</p>}
