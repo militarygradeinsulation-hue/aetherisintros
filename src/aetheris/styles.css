@@ -61,6 +61,27 @@
 .lv-legal{display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:28px;padding:28px clamp(24px,4vw,68px);font:600 9px var(--sans);letter-spacing:.1em;background:#000;border-top:1px solid var(--line-dark);color:var(--muted)}
 .lv-legal>span{display:flex;gap:6px;align-items:center}
 .lv-legal .brand-name{color:var(--soft)}
+.lv-join{background:#000;color:var(--soft);display:grid;grid-template-columns:minmax(0,1fr) minmax(0,420px);gap:clamp(28px,5vw,80px);align-items:start;padding:clamp(60px,6vw,96px) clamp(24px,5vw,72px);border-top:1px solid var(--line-dark)}
+.lv-join-copy>span{font:700 9px var(--sans);letter-spacing:.22em;color:var(--amber);display:block;margin-bottom:18px}
+.lv-join-copy h2{font:500 clamp(38px,4.6vw,66px)/.98 var(--serif);margin:0 0 16px;color:var(--soft)}
+.lv-join-copy h2 em{font-style:normal;color:var(--cobalt)}
+.lv-join-copy p{font:500 15px/1.6 var(--sans);color:var(--muted-light);margin:0 0 18px;max-width:60ch}
+.lv-join-copy ul{list-style:none;margin:0;padding:0;display:grid;gap:10px}
+.lv-join-copy li{font:600 10px var(--sans);letter-spacing:.14em;text-transform:uppercase;color:var(--muted);display:flex;gap:10px;align-items:center}
+.lv-join-copy li i{width:3px;height:3px;background:var(--gold);border-radius:50%}
+.lv-join-form{border:1px solid var(--line-dark);background:#11151A;padding:clamp(22px,2.4vw,32px);border-radius:10px;display:grid;gap:14px}
+.lv-join-form span.lv-join-count{font:700 9px var(--sans);letter-spacing:.18em;color:var(--amber)}
+.lv-join-form label{display:grid;gap:7px}
+.lv-join-form label b{font:700 9px var(--sans);letter-spacing:.16em;color:var(--muted)}
+.lv-join-form input{background:#0B0D0F;border:1px solid var(--line-dark);color:var(--soft);border-radius:6px;padding:12px 13px;font:500 15px var(--sans)}
+.lv-join-form input::placeholder{color:#6C737C}
+.lv-join-form input:focus{outline:none;border-color:var(--cobalt)}
+.lv-join-form .btn{width:100%;justify-content:center}
+.lv-join-form small{font:500 11px/1.5 var(--sans);color:var(--muted)}
+.lv-join-form .lv-join-demo{color:var(--cobalt);font:700 9px var(--sans);letter-spacing:.14em;text-transform:uppercase;display:inline-flex;gap:7px;align-items:center;justify-content:center}
+.lv-join-ok{font:500 14px/1.55 var(--sans);color:var(--soft)}
+@media(max-width:920px){.lv-join{grid-template-columns:1fr}}
+
 @media(max-width:920px){.lv-hero{grid-template-columns:1fr}.lv-hero-visual{min-height:420px;order:-1}.lv-hero-visual:after{background:linear-gradient(0deg,rgba(0,0,0,.5) 0%,transparent 40%)}.lv-platforms{grid-template-columns:repeat(5,1fr)}.lv-foot{grid-template-columns:1fr;gap:8px;text-align:center}.lv-foot span:first-child{text-align:center}.lv-foot i{display:none}.lv-why-articles{grid-template-columns:1fr}}
 @media(max-width:920px){.lv-founder-band{grid-template-columns:1fr}.lv-founder-band a{width:max-content}}
 @media(max-width:680px){.lv-nav{grid-template-columns:auto 1fr;padding:0 18px}.lv-nav nav{display:none}.lv-nav-actions .btn.ghost{display:none}.lv-hero-copy h1{font-size:50px}.lv-hero-copy h1 span{font-size:.58em;margin-bottom:14px}.lv-hero-sub{font-size:16px}.lv-hero-topright{display:none}.lv-why-articles{grid-template-columns:1fr}.lv-why article{border-right:0;border-bottom:1px solid rgba(15,92,203,.18);padding:40px 24px}.lv-why article:last-child{border-bottom:0}.lv-platforms{grid-template-columns:repeat(2,1fr)}.lv-platform b{font-size:8px;white-space:nowrap}.lv-connect-head h2{font-size:44px}.lv-eliminates p span{gap:8px}.lv-eliminates p i{margin:0 4px}.lv-legal{grid-template-columns:1fr;gap:8px;text-align:center}.lv-legal .brand-mark{justify-content:center}}
