@@ -2230,7 +2230,7 @@ function AccountControl() {
 export default function App({ startPage, mode = 'live' }: { startPage?: Page | undefined; mode?: NetworkMode }) {
   // The live network may only ever render real member-created records.
   setShowcaseMode(mode === 'demo')
-  return <NetworkProvider mode={mode}><PlatformProvider><OSProvider><MoatProvider><ProProvider><Shell startPage={startPage} /></ProProvider></MoatProvider></OSProvider></PlatformProvider></NetworkProvider>
+  return <NetworkProvider mode={mode}><PlatformProvider><OSProvider><MoatProvider><ProProvider><OpsProvider><Shell startPage={startPage} /></OpsProvider></ProProvider></MoatProvider></OSProvider></PlatformProvider></NetworkProvider>
 }
 
 
@@ -2407,6 +2407,8 @@ function Shell({ startPage }: { startPage?: Page | undefined }) {
       vault: <VaultPage />,
       knowledgeassets: <KnowledgeAssetsPage />,
       simple: <SimpleViewPage />,
+      crm: <CrmPage />,
+      grid: <GridPage />,
     }
   const hubLabel: Partial<Record<Page, string>> = {
     directory: 'People', opportunities: 'Active', rooms: 'Rooms', dealrooms: 'Deal rooms', discover: 'Discover',
