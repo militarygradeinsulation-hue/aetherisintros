@@ -180,7 +180,7 @@ function LandingPage({ signedIn }: { signedIn: boolean }) {
 
       {/* ── Showcase: One Connected System for CEOs ── */}
       <section className="lv-showcase">
-        <div className="lv-showcase-copy">
+        <header>
           <span>ONE CONNECTED SYSTEM</span>
           <h2>One Connected System for <em>CEOs.</em></h2>
           <p>The tools companies pay for separately. Now native inside Aetheris Intros — social network, CRM, spreadsheets, calendar, meetings, signals, knowledge and analytics in one account, one data graph, one place.</p>
@@ -188,11 +188,13 @@ function LandingPage({ signedIn }: { signedIn: boolean }) {
             {accountBtn('btn primary')}
             {demoBtn('See the system', 'btn ghost')}
           </div>
-        </div>
+        </header>
         <div className="lv-showcase-plate">
           <img src={showcaseAsset.url} alt="One Connected System for CEOs — the tools companies pay for separately, now native inside Aetheris Intros" />
         </div>
-        <p className="lv-showcase-foot">Instead of paying for disconnected tools, Intros gives you <em>one native system.</em></p>
+        <div className="lv-showcase-foot">
+          <p>Instead of paying for disconnected tools, Intros gives you <b>one native system.</b></p>
+        </div>
       </section>
 
       {/* ── Section 3: Black connected system ── */}
