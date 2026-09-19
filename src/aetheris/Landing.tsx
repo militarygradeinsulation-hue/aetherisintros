@@ -1,24 +1,15 @@
 import logoAsset from '@/assets/aetheris-logo.jpg.asset.json'
 import { ArrowRight, LockKeyhole } from 'lucide-react'
-import { Link, useNavigate } from '@tanstack/react-router'
+import { Link } from '@tanstack/react-router'
 import { useEffect, useState } from 'react'
 import landingPortraitAsset from '@/assets/aetheris-home-portrait.jpg.asset.json'
 import showcaseAsset from '@/assets/one-connected-system.png.asset.json'
 
-import { foundingStats, isLiveMember, joinWaitlist, useAccess, type FoundingStats } from './access'
+import { foundingStats, joinWaitlist, useAccess, type FoundingStats } from './access'
 
-/**
- * Public front page. A signed-in member never sees the marketing page or any
- * showcase entry point: they are handed straight to their real network.
- */
+/** Public front page. The root URL always remains the public Aetheris page. */
 export default function Landing() {
   const { access } = useAccess()
-  const navigate = useNavigate()
-  const member = isLiveMember(access)
-  useEffect(() => {
-    if (!access.loading && member) navigate({ to: '/app', replace: true })
-  }, [access.loading, member, navigate])
-  if (member) return <main className="landing landing-handoff"><p>Opening your network…</p></main>
   return <LandingPage signedIn={access.signedIn} />
 }
 

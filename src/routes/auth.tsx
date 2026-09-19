@@ -7,7 +7,6 @@ import { supabase } from '@/integrations/supabase/client'
 import { lovable } from '@/integrations/lovable/index'
 import { AUTH_REQUIRED } from '@/aetheris/config'
 import { logSecurityEvent, passwordProblem } from '@/aetheris/verification'
-import authPortrait from '@/assets/portraits/aetheris-masthead-natural.jpg.asset.json'
 import '@/aetheris/styles.css'
 
 const safeNext = (value: unknown) => {
@@ -168,9 +167,11 @@ function AuthPage() {
       <Link to="/demo" className="auth-switch">Not ready to join? Open the demo.</Link>
       <span className="auth-foot"><LockKeyhole size={12} /> Nothing is shared without your explicit opt-in.</span>
     </section>
-    <aside className="auth-visual">
-      <img src={authPortrait.url} alt="A professional looking across an architectural city interior" width={1024} height={1280} />
+    <aside className="auth-visual auth-visual-type" aria-label="Aetheris Intros relationship principles">
       <span className="auth-visual-mark" aria-hidden="true">+</span>
+      <div className="auth-visual-statement" aria-hidden="true">
+        <span>PEOPLE</span><i>×</i><span>CONTEXT</span><i>×</i><span>OPPORTUNITY</span>
+      </div>
       <div className="portrait-caption">
         <span>ACTIVE MEMORY / 01</span>
         <p>Signed in, every conversation makes the next introduction sharper.</p>
