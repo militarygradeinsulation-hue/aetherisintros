@@ -5,7 +5,9 @@ import { askIntros, type AskIntrosAction } from '@/lib/askIntros.functions'
 import { pageMeta } from './pageMeta'
 import { readTextScale } from './textScale'
 import { readCursorScale } from './cursorScale'
-import { AetherisGlyph } from './badge'
+function AetherisGlyph({ size = 18 }: { size?: number }) {
+  return <span className="aetheris-glyph" style={{ width: size, height: size }} aria-hidden="true"><i /><b /></span>
+}
 
 export type { AskIntrosAction }
 
