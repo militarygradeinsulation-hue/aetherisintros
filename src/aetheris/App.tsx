@@ -2535,6 +2535,8 @@ function Shell({ startPage }: { startPage?: Page | undefined }) {
       {handshakeId && <HandshakeModal memberId={handshakeId} onClose={() => setHandshakeId(null)} />}
       {captureOpen && <VoiceCaptureModal onClose={() => setCaptureOpen(false)} />}
       <MoreDrawer open={moreOpen} page={page} onClose={() => setMoreOpen(false)} onNavigate={setPage} />
+      <AskIntrosDock page={page} peopleNames={people.map(p => p.name)} memberName={me.name}
+        briefing={briefing.on} contextPanel={contextOpen} run={runAssistantAction} />
       {mobileOpen && <button className="rail-scrim" aria-label="Close menu" onClick={() => setMobileOpen(false)} />}
     </div>
   </NavCtx.Provider>
