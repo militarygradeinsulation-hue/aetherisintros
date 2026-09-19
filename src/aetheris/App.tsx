@@ -2382,6 +2382,59 @@ function Shell({ startPage }: { startPage?: Page | undefined }) {
     captureConversation: () => setCaptureOpen(true),
   }
 
+  /** Ask Intros operates the product: every action it may take runs through here. */
+  const runAssistantAction = (action: AskIntrosAction): string | null => {
+    const find = (name: string | null) => {
+      if (!name) return null
+      const needle = name.toLowerCase()
+      return people.find(p => p.name.toLowerCase() === needle)
+        ?? people.find(p => p.name.toLowerCase().includes(needle)) ?? null
+    }
+    switch (action.kind) {
+      case 'navigate': {
+        const target = action.page as Page | null
+        if (!target || !allNav.some(n => n.id === target)) return null
+        setPage(target)
+        return `Opened ${metaById[target]?.label ?? target}`
+      }
+      case 'text-size': {
+        const value = action.value as TextScale | null
+        if (!value || !textScales.includes(value)) return null
+        setTextScale(value)
+        return `Text size set to ${value}`
+      }
+      case 'cursor-size': {
+        const value = action.value as CursorScale | null
+        if (!value || !cursorScales.includes(value)) return null
+        setCursorScale(value)
+        return `Pointer size set to ${value}`
+      }
+      case 'open-tools': setMoreOpen(true); return 'Opened All Tools'
+      case 'open-search': setGlobalSearchOpen(true); return 'Opened search'
+      case 'post-need': setNeedOpen(true); return 'Opened the need composer'
+      case 'post-intent': setIntentOpen(true); return 'Opened live intent'
+      case 'capture-conversation': setCaptureOpen(true); return 'Opened conversation capture'
+      case 'toggle-briefing': briefing.toggle(); return briefing.on ? 'Briefing mode off' : 'Briefing mode on'
+      case 'toggle-context': setContextOpen(value => !value); return contextOpen ? 'Context rail hidden' : 'Context rail shown'
+      case 'open-profile': setPage('profile'); return 'Opened your profile'
+      case 'open-preferences': setPage('preferences'); return 'Opened preferences'
+      case 'open-member': {
+        const person = find(action.value)
+        if (!person) return null
+        setSelected(person)
+        return `Opened ${person.name}`
+      }
+      case 'message-member': {
+        const person = find(action.value)
+        if (!person) return null
+        messageMember(person.id)
+        return `Opened your conversation with ${person.name}`
+      }
+      default: return null
+    }
+  }
+
+
   const pageNode: Partial<Record<Page, ReactNode>> = {
       home: <>
         <Home people={people} select={setSelected} setPage={setPage} openNeed={() => setNeedOpen(true)} openThread={goToThread} />
