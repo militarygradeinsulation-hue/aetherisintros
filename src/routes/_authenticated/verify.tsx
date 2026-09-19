@@ -10,7 +10,6 @@ import {
 } from '@/aetheris/verification'
 import { runVerificationScan } from '@/lib/verification.functions'
 import { supabase } from '@/integrations/supabase/client'
-import verifyPortrait from '@/assets/portraits/aetheris-masthead-natural.jpg.asset.json'
 import '@/aetheris/styles.css'
 
 export const Route = createFileRoute('/_authenticated/verify')({
@@ -238,9 +237,11 @@ function VerifyPortal() {
       </div>
     </section>
 
-    <aside className="auth-visual">
-      <img src={verifyPortrait.url} alt="A business owner in an architectural interior" width={1024} height={1280} />
+    <aside className="auth-visual auth-visual-type" aria-label="Aetheris Intros verification principles">
       <span className="auth-visual-mark" aria-hidden="true">+</span>
+      <div className="auth-visual-statement" aria-hidden="true">
+        <span>REAL IDENTITY</span><i>×</i><span>REAL CONTEXT</span><i>×</i><span>TRUST</span>
+      </div>
       <div className="portrait-caption">
         <span><BadgeCheck size={13} /> CEO VERIFIED · FOUNDER VERIFIED · OWNER VERIFIED</span>
         <p>Every member is verified. Every relationship starts with a real person.</p>

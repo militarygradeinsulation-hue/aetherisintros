@@ -5,7 +5,6 @@ import { useCallback, useEffect, useState } from 'react'
 
 import { claimAccess, foundingLabel, foundingStats, joinWaitlist, useAccess, type FoundingStats } from '@/aetheris/access'
 import { supabase } from '@/integrations/supabase/client'
-import accessPortrait from '@/assets/portraits/aetheris-masthead-natural.jpg.asset.json'
 import '@/aetheris/styles.css'
 
 export const Route = createFileRoute('/early-access')({
@@ -146,9 +145,11 @@ function EarlyAccessPage() {
       <span className="auth-foot"><LockKeyhole size={12} /> {access.foundingNumber ? foundingLabel(access.foundingNumber, stats.capacity) : 'Nothing is shared without your explicit opt-in.'}</span>
       {access.status === 'approved' && <Link to="/app" className="auth-switch">Enter your network.</Link>}
     </section>
-    <aside className="auth-visual">
-      <img src={accessPortrait.url} alt="A professional looking across an architectural city interior" width={1024} height={1280} />
+    <aside className="auth-visual auth-visual-type" aria-label="Aetheris Intros founding network principles">
       <span className="auth-visual-mark" aria-hidden="true">+</span>
+      <div className="auth-visual-statement" aria-hidden="true">
+        <span>WHY ME</span><i>×</i><span>WHY THEM</span><i>×</i><span>WHY NOW</span>
+      </div>
       <div className="portrait-caption">
         <span>REAL IDENTITY. REAL CONTEXT.</span>
         <p>Demo the system freely. Join the live network when you are ready to participate.</p>
