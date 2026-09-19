@@ -1,31 +1,21 @@
-# Founder Story micro-book
+# Founder Story book layout
 
-## What will be built
+## What will change
 
-- Add a public `/founder-story` page titled **“The Architect Behind the Operator”**, presented as a premium Aetheris micro-book rather than a standard About page.
-- Preserve the current Home composition and functionality, adding only a restrained founder-story entry point near the public hero and a dedicated editorial band on signed-in Home.
-- Add a **Founder Context** link on Joseph Toney’s profile surface so members can read the story without leaving Aetheris.
-- Keep the story accessible to both visitors and signed-in members, with clear paths back to Home or the member network.
+- Preserve every word and all 19 chapters from Joseph’s supplied manuscript.
+- Reflow sentence-sized fragments into consistent book paragraphs without rewriting or summarizing the text.
+- Replace the uneven wide chapter layout with a centered, book-width reading page, clear chapter openers, folios, restrained rules, and reliable vertical rhythm.
+- Keep the chapter index, but style it as a quiet contents rail that supports reading instead of competing with the manuscript.
+- Retain the existing cover, Joseph portrait, Aetheris branding, navigation, and exact closing mandate.
 
-## Reading experience
+## Reading behavior
 
-- Build a high-contrast cover using the supplied title, subtitle, tagline, founder line, CEO-network positioning, and existing Joseph portrait.
-- Add an accessible, responsive chapter navigator for all 19 chapters, with chapter numbers and direct anchors.
-- Use a restrained ivory reading field, black case-file bands, cobalt actions, warm-orange evidence markers, serif chapter typography, grid lines, generous whitespace, and a comfortable long-form measure.
-- Organize the supplied narrative into 19 faithful chapters without adding biographical claims or sensationalizing service, health, family, or loss.
-- Close with the exact supplied statement: “Aetheris is not here to decorate chaos…”
+- Desktop will resemble a bound editorial volume: dark outer field, warm paper page, narrow readable measure, running chapter details, indented body paragraphs, and page-like chapter transitions.
+- Mobile will become a clean single-column paperback layout with the chapter index behind the existing contents control.
+- Long and short source passages will flow evenly while preserving their original order and wording.
 
-## Integration points
+## Verification
 
-- Public Home: add “Read My Story” beside the existing primary actions and retain the current hero, portrait, platform section, and account/demo flows.
-- Signed-in Home: add a quiet founder-evidence section after the “WHY ME / WHY THEM / WHY NOW” band.
-- Founder profile: show Founder Context only when the viewed profile is Joseph Toney, plus the same link on Joseph’s own profile.
-- Add route-specific title, description, social metadata, canonical URL, and sitemap inclusion for `https://intros.today/founder-story`.
-
-## Technical details
-
-- Create the story content as structured chapter data and render it in a dedicated TanStack route.
-- Use native document links and anchored navigation with visible focus states and semantic `article`, `nav`, and section headings.
-- Add only scoped founder-story styles to the existing Aetheris stylesheet and reuse current color/type tokens.
-- Verify the route, Home entry points, profile entry point, chapter navigation, layout, overflow, and readability on desktop and mobile.
-- Keep the project unpublished; the live site will receive the page only after the next publish.
+- Confirm all 19 chapters and all source text still render.
+- Check desktop and phone layouts for readable measure, even spacing, no clipping, and working chapter navigation.
+- Keep the project unpublished.
