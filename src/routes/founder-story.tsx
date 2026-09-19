@@ -7,6 +7,35 @@ import josephPortraitAsset from '@/assets/portraits/member-joseph.jpg.asset.json
 import { founderStoryChapters as chapters } from '@/aetheris/founder-story-content'
 import '@/aetheris/styles.css'
 
+const MIN_PARAGRAPH_LENGTH = 240
+const MAX_PARAGRAPH_LENGTH = 620
+
+/**
+ * The supplied manuscript intentionally stores many sentence-length beats as
+ * separate entries. Join adjacent beats into book paragraphs at render time;
+ * the source text, sequence, chapter boundaries and wording remain untouched.
+ */
+function flowBookParagraphs(paragraphs: string[]) {
+  const flowed: string[] = []
+  let current = ''
+
+  for (const paragraph of paragraphs) {
+    const sentence = paragraph.trim()
+    if (!sentence) continue
+    const nextLength = current ? current.length + sentence.length + 1 : sentence.length
+
+    if (current && (current.length >= MIN_PARAGRAPH_LENGTH || nextLength > MAX_PARAGRAPH_LENGTH)) {
+      flowed.push(current)
+      current = sentence
+    } else {
+      current = current ? `${current} ${sentence}` : sentence
+    }
+  }
+
+  if (current) flowed.push(current)
+  return flowed
+}
+
 export const Route = createFileRoute('/founder-story')({
   staticData: { sitemap: true },
   head: () => ({
@@ -75,12 +104,25 @@ function FounderStoryPage() {
       </nav>
 
       <article className="founder-manuscript">
-        {chapters.map((chapter, index) => <section id={`chapter-${index + 1}`} className="founder-chapter" key={chapter.title}>
-          <header><span>CHAPTER {String(index + 1).padStart(2, '0')}</span><i /></header>
-          <h2>{chapter.title}</h2>
-          {chapter.paragraphs.map((paragraph, paragraphIndex) => <p key={`${index}-${paragraphIndex}`}>{paragraph}</p>)}
-          {index < chapters.length - 1 && <a className="founder-next" href={`#chapter-${index + 2}`}>Continue to chapter {String(index + 2).padStart(2, '0')} <ArrowRight size={14} /></a>}
-        </section>)}
+        {chapters.map((chapter, index) => {
+          const chapterNumber = String(index + 1).padStart(2, '0')
+          const bookParagraphs = flowBookParagraphs(chapter.paragraphs)
+          return <section id={`chapter-${index + 1}`} className="founder-chapter" key={chapter.title}>
+            <header className="founder-chapter-opening">
+              <span>CHAPTER {chapterNumber}</span>
+              <i />
+              <h2>{chapter.title}</h2>
+            </header>
+            <div className="founder-prose">
+              {bookParagraphs.map((paragraph, paragraphIndex) => <p key={`${index}-${paragraphIndex}`}>{paragraph}</p>)}
+            </div>
+            <footer className="founder-page-folio">
+              <span>AETHERIS / ORIGIN FILE 001</span>
+              <b>{chapterNumber}</b>
+            </footer>
+            {index < chapters.length - 1 && <a className="founder-next" href={`#chapter-${index + 2}`}>Continue to chapter {String(index + 2).padStart(2, '0')} <ArrowRight size={14} /></a>}
+          </section>
+        })}
 
         <footer className="founder-closing">
           <Quote size={24} />

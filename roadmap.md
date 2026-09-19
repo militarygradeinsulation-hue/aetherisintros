@@ -1,6 +1,7 @@
 # Aetheris specification completion
 
 - [x] Keep the public Aetheris landing page at the root URL for signed-in and signed-out visitors; remove the rejected access-screen portrait.
+- [x] Reflow the complete Founder Story manuscript into a consistent, literal book-reading layout without changing its wording.
 
 - [x] Add a complete Events network with persistent save and registration actions.
 - [x] Add Preferences & Customization with persistent profile, recommendation, privacy, and memory controls.
