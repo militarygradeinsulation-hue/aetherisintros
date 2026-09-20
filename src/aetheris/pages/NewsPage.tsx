@@ -1,14 +1,20 @@
 import { useMemo, useState } from 'react'
-import { ArrowUpRight, RefreshCw } from 'lucide-react'
+import { ArrowUpRight, RefreshCw, X } from 'lucide-react'
 import { Btn, Eyebrow, Head } from '../ui'
 import { newsAge, useAetherisNews, type NewsItem } from '../news'
 import { NewsReader } from './NewsReader'
+import { NewsActions } from './NewsActions'
+import { useNewsShelf } from '../newsShelf'
+
+type Tab = 'feed' | 'later' | 'library'
 
 export function NewsPage() {
   const { data, isLoading, isError, isFetching, refetch } = useAetherisNews()
   const [filter, setFilter] = useState<string>('ALL')
   const [q, setQ] = useState('')
   const [open, setOpen] = useState<NewsItem | null>(null)
+  const [tab, setTab] = useState<Tab>('feed')
+  const shelf = useNewsShelf()
 
   const items = data?.items ?? []
 
@@ -17,11 +23,19 @@ export function NewsPage() {
     [items],
   )
   const query = q.trim().toLowerCase()
-  const shown = items.filter(item =>
-    (filter === 'ALL' || item.category === filter)
+  const source = tab === 'feed' ? items : (tab === 'later' ? shelf.later : shelf.library).map(entry => entry.item)
+  const shown = source.filter(item =>
+    (tab !== 'feed' || filter === 'ALL' || item.category === filter)
     && (!query || `${item.title} ${item.summary} ${item.source}`.toLowerCase().includes(query)))
 
   if (open) return <NewsReader item={open} onBack={() => setOpen(null)} />
+
+  const tabs: { id: Tab; label: string; count: number }[] = [
+    { id: 'feed', label: 'Feed', count: items.length },
+    { id: 'later', label: 'Read later', count: shelf.later.length },
+    { id: 'library', label: 'Library', count: shelf.library.length },
+  ]
+
 
   return <>
     <Head
