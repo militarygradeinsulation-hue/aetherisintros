@@ -52,18 +52,25 @@ function extractParagraphs(html: string): string[] {
     .replace(/<style[\s\S]*?<\/style>/gi, ' ')
     .replace(/<figure[\s\S]*?<\/figure>/gi, ' ')
   const out: string[] = []
+  const seen = new Set<string>()
   const re = /<(p|h2|h3)\b[^>]*>([\s\S]*?)<\/\1>/gi
   let match: RegExpExecArray | null
   let total = 0
+  const junk = /^(share this|subscribe|advertisement|cookie|sign up|related|posts from this|follow topics|more in this stream|read more|comments|newsletter|by signing up)/i
   while ((match = re.exec(body))) {
     const text = decode((match[2] ?? '').replace(/<[^>]*>/g, ' ')).replace(/\s+/g, ' ').trim()
     if (text.length < 45) continue
-    if (/^(share this|subscribe|advertisement|cookie|sign up|related)/i.test(text)) continue
+    if (junk.test(text)) continue
+    if (/(email digest|homepage feed|terms of use|privacy notice)/i.test(text)) continue
+    const key = text.toLowerCase().slice(0, 80)
+    if (seen.has(key)) continue
+    seen.add(key)
     out.push(text)
     total += text.length
     if (total > MAX_TEXT) break
   }
   return out
+
 }
 
 async function fetchArticle(link: string): Promise<string[]> {
