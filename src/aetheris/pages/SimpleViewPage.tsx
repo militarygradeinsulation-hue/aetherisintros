@@ -234,8 +234,6 @@ function MemberSheet({ memberId, openThread }: { memberId: string; openThread: (
       <div><dt>Focus</dt><dd>{member.focus || '—'}</dd></div>
       <div><dt>Availability</dt><dd>{member.availability || '—'}</dd></div>
     </dl>
-
-    </dl>
     <div className="sv-sheet-actions">
       <button className="sv-primary" onClick={() => openThread(net.openThreadWith(member.id))}>Message</button>
       <button className="sv-ghost" onClick={() => net.connect(member.id)}>{connected ? 'Connected' : 'Connect'}</button>
