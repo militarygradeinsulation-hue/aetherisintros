@@ -388,6 +388,13 @@ export const pageMeta: PageMeta[] = [
     next: 'Create a linked Pipeline sheet and edit a value in place.',
     why: 'A linked sheet is a view, never a copy — there is only ever one version of the number.',
   }, ['grid', 'spreadsheet', 'excel', 'sheets', 'workbook', 'formula', 'csv']),
+  m('news', 'News', Newspaper, 'PRIMARY', 'The live Aetheris intelligence feed: analysis, industry, AI and security.', {
+    does: 'Pulls the live Aetheris news feed into your network so coverage and relationships sit side by side.',
+    look: 'Newsroom analysis first, then industry, AI and security reporting by recency.',
+    changes: 'It refreshes from aetheris.technology/news, so the feed moves as the story does.',
+    next: 'Read one item, then act on it with the person it matters to.',
+    why: 'Coverage is only useful when it turns into a conversation with the right person.',
+  }, ['news', 'feed', 'press', 'industry', 'security', 'ai', 'aetheris']),
 ]
 
 export const metaById: Record<string, PageMeta> = Object.fromEntries(pageMeta.map(p => [p.id, p]))
@@ -395,7 +402,7 @@ export const metaById: Record<string, PageMeta> = Object.fromEntries(pageMeta.ma
 export function pageLabel(id: Page) { return metaById[id]?.label ?? id }
 
 /** The short, always-visible rail. */
-export const primaryPages: Page[] = ['crm', 'grid', 'home', 'messages', 'network', 'opportunities', 'simple']
+export const primaryPages: Page[] = ['crm', 'grid', 'home', 'messages', 'network', 'news', 'opportunities', 'simple']
 
 /** Tabs consolidated inside the Network and Opportunities hubs. */
 export const networkTabs: Page[] = ['discover', 'directory', 'intros', 'companies', 'calendar']

@@ -107,6 +107,7 @@ import { BriefingPage } from './pages/BriefingPage'
 import { VaultPage } from './pages/VaultPage'
 import { KnowledgeAssetsPage } from './pages/KnowledgeAssetsPage'
 import SimpleViewPage from './pages/SimpleViewPage'
+import { NewsPage } from './pages/NewsPage'
 import { portraitFor } from './portraits'
 
 
@@ -2491,6 +2492,7 @@ function Shell({ startPage }: { startPage?: Page | undefined }) {
       simple: <SimpleViewPage />,
       crm: <CrmPage />,
       grid: <GridPage />,
+      news: <NewsPage />,
     }
   const hubLabel: Partial<Record<Page, string>> = {
     directory: 'People', opportunities: 'Active', rooms: 'Rooms', dealrooms: 'Deal rooms', discover: 'Discover',
