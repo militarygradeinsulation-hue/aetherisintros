@@ -1,14 +1,17 @@
 import { useMemo, useState } from 'react'
 import { ArrowUpRight, RefreshCw } from 'lucide-react'
 import { Btn, Eyebrow, Head } from '../ui'
-import { newsAge, useAetherisNews } from '../news'
+import { newsAge, useAetherisNews, type NewsItem } from '../news'
+import { NewsReader } from './NewsReader'
 
 export function NewsPage() {
   const { data, isLoading, isError, isFetching, refetch } = useAetherisNews()
   const [filter, setFilter] = useState<string>('ALL')
   const [q, setQ] = useState('')
+  const [open, setOpen] = useState<NewsItem | null>(null)
 
   const items = data?.items ?? []
+
   const categories = useMemo(
     () => ['ALL', ...Array.from(new Set(items.map(item => item.category)))].slice(0, 9),
     [items],
