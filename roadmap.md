@@ -87,10 +87,10 @@
 - [x] Make Home dark below its light top bar by default and add a persistent light/dark switch.
 - [x] Verify the updated Home at desktop and mobile sizes.
 
-# Simple View ledger fidelity (Sep 14)
-- [x] Recompose Simple View to match the supplied Intro Ledger.
+# Social View ledger fidelity (Sep 14)
+- [x] Recompose Social View to match the supplied Intro Ledger.
 - [x] Verify connected actions, desktop/mobile layout, and build health.
-- [x] Replace the Simple View navy and blue palette with the site's black, white, and amber system.
+- [x] Replace the Social View navy and blue palette with the site's black, white, and amber system.
 - [x] Align Simple Mode typography, surfaces, controls, and accent roles with the signed-in Aetheris interface.
 
 # Memory readability + member directory (Sep 14)

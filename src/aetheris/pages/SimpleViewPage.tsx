@@ -41,10 +41,10 @@ export default function SimpleViewPage() {
 
   return <div className="sv">
     <header className="sv-utility">
-      <div className="sv-utility-brand"><span className="sv-brandmark">A</span><div><strong>Simple View</strong><small>Relationship intelligence</small></div></div>
+      <div className="sv-utility-brand"><span className="sv-brandmark">A</span><div><strong>Social View</strong><small>Relationship intelligence</small></div></div>
       <label className="sv-search">
         <Search size={15} aria-hidden="true" />
-        <input value={q} onChange={event => setQ(event.target.value)} placeholder="Search people, needs, memory, conversations…" aria-label="Search Simple View" />
+        <input value={q} onChange={event => setQ(event.target.value)} placeholder="Search people, needs, memory, conversations…" aria-label="Search Social View" />
         {q ? <button className="sv-clear" onClick={() => setQ('')}>Clear</button> : <span>/</span>}
       </label>
       <button className="sv-sync" onClick={() => nav.setPage('memory')}><Radar size={14} /> Memory {complete}%</button>
@@ -62,7 +62,7 @@ export default function SimpleViewPage() {
           <div><b>{net.asks.filter(ask => ask.mine).length}</b><span>Open asks</span></div>
           <div><b>{net.threads.length}</b><span>Threads</span></div>
         </div>
-        <nav className="sv-local-nav" aria-label="Simple View navigation">
+        <nav className="sv-local-nav" aria-label="Social View navigation">
           {workspaceNav.map(item => <button key={item.label} className={item.label === 'Home' ? 'active' : ''} onClick={() => nav.setPage(item.page)}>
             <item.icon size={14} /><span>{item.label}</span><small>{item.note}</small>
           </button>)}
