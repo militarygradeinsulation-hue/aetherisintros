@@ -3054,10 +3054,14 @@ html.text-scale-larger { --ui-body-text: 17px; --ui-detail-text: 15px; --ui-cont
 html[class*="text-scale-"] .app-shell :where(.eyebrow, small),
 html[class*="text-scale-"] .ask-dock :where(small, .ask-dock-did li) { font-size: var(--ui-detail-text); }
 html[class*="text-scale-"] .app-shell :where(input, textarea, select),
-html[class*="text-scale-"] .ask-dock :where(input, button) { font-size: var(--ui-control-text); }
+html[class*="text-scale-"] .ask-dock :where(input, button),
+html[class*="text-scale-"] .ask-dock-fab { font-size: var(--ui-control-text); }
 html[class*="text-scale-"] .app-shell :where(.btn, .text-action, .back-link) { font-size: var(--ui-control-text); }
 html[class*="text-scale-"] .app-shell :where(.nav-rail nav button, .rail-foot, .mobile-nav button, .mobile-nav button span, .topbar-title, .topbar-search span, .topbar-search kbd, .topbar-dropbtn, .topbar-dropmenu button, .topbar-dropmenu .drop-label, .briefing-toggle) { font-size: var(--ui-nav-text); }
 html[class*="text-scale-"] .app-shell :where(.page-title p, .hub-head p, .mod p, .module p, .side-card p, .feed-card p, .post-card p, .match-report p, .need-case p, .messages p, .memory-changes p, .more-head p, .more-item-copy small, .briefing-summary p, .briefing-why, .briefing-hints li) { font-size: var(--ui-body-text); }
+html[class*="text-scale-"] .ask-dock-turn p { font-size: var(--ui-body-text); }
+html[class*="text-scale-"] :where(.lv, .landing, .founder-book, .auth-page, .onboarding-page, .verify-page) :where(small, .eyebrow) { font-size: var(--ui-detail-text); }
+html[class*="text-scale-"] :where(.lv, .landing, .founder-book, .auth-page, .onboarding-page, .verify-page) :where(.btn, button, input, textarea, select, label > span) { font-size: var(--ui-control-text); }
 .scale-picker { display: flex; flex-wrap: wrap; gap: 8px; margin: 12px 0 6px; }
 .scale-picker button {
   border: 1px solid var(--line-dark); border-radius: 6px; background: transparent;
