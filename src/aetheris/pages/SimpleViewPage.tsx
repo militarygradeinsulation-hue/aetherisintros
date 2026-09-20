@@ -39,6 +39,8 @@ export default function SimpleViewPage() {
   const complete = Math.round((filled / 8) * 100)
   const nameOf = (id: string) => net.members.find(member => member.id === id)?.name ?? 'A member'
   const openMember = (member: Member) => nav.openMember(member)
+  const news = useAetherisNews()
+  const headlines = (news.data?.items ?? []).filter(item => hit(item.title, item.summary, item.source, item.category)).slice(0, 5)
 
   return <div className="sv">
     <header className="sv-utility">
