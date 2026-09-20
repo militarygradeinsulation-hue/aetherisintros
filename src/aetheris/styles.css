@@ -3690,6 +3690,17 @@ button.news-link{background:none;border:0;padding:0;cursor:pointer}
 .reader-image{border:1px solid var(--line-dark);border-radius:10px;overflow:hidden;max-height:340px}
 .reader-image img{width:100%;height:100%;object-fit:cover;display:block;max-height:340px}
 .reader-label{font:700 8px var(--sans);letter-spacing:.18em;text-transform:uppercase;color:var(--muted);margin:0 0 10px}
+
+/* read later / library / send to network */
+.news-acts{display:flex;flex-wrap:wrap;gap:7px}
+.news-card>.news-acts{padding:0 18px}
+.news-acts button{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line-dark);background:transparent;color:var(--muted);border-radius:6px;padding:7px 10px;font:600 9px var(--sans);letter-spacing:.06em;cursor:pointer;transition:color .15s,border-color .15s,background .15s}
+.news-acts button:hover{color:var(--soft);border-color:rgba(255,255,255,.26)}
+.news-acts button.on{color:var(--amber);border-color:rgba(244,161,37,.45);background:rgba(244,161,37,.10)}
+.news-acts.compact button{font-size:8px;padding:6px 9px}
+.news-remove{background:none;border:0;padding:0;color:var(--muted);cursor:pointer;display:inline-flex;align-items:center}
+.news-remove:hover{color:var(--amber)}
+
 .reader-label.signal{color:var(--amber)}
 .reader-summary{font:400 15px/1.75 var(--sans);color:var(--soft);margin:0}
 .reader-points{list-style:none;margin:14px 0 0;padding:0;display:grid;gap:9px}
