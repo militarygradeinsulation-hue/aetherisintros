@@ -100,6 +100,7 @@ export function OpsProvider({ children }: { children: ReactNode }) {
       // Signed-out visitors (landing, /demo) have no private account layer to load.
       const owner = await currentAccountId()
       if (!owner) { if (live) setReady(true); return }
+      if (live) setSignedIn(true)
       await ensureDefaultPipeline()
       const next = await loadSnapshot()
       if (!live) return
