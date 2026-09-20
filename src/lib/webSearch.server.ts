@@ -35,7 +35,7 @@ async function searchProxy(query: string, limit: number): Promise<WebResult[]> {
 
   const out: WebResult[] = []
   const seen = new Set<string>()
-  const re = /^##+\s*\[([^\]]+)\]\(([^)]+)\)([\s\S]{0,900}?)(?=\n##|\n$)/gm
+  const re = /^##+\s*\[([^\]]+)\]\(([^)]+)\)([\s\S]*?)(?=\n##+\s*\[|$)/gm
   let match: RegExpExecArray | null
   while ((match = re.exec(markdown)) && out.length < limit) {
     const url = unwrapDuck(match[2] ?? '')
