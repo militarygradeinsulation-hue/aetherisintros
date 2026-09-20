@@ -18,27 +18,40 @@ const strip = (html: string): string => decode(html.replace(/<[^>]*>/g, ' ')).re
 
 const UA = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0 Safari/537.36'
 
-/** Bing's keyless RSS results — stable and cheap to parse. */
-async function searchBing(query: string, limit: number): Promise<WebResult[]> {
-  const url = `https://www.bing.com/search?format=rss&count=${limit * 2}&q=${encodeURIComponent(query)}`
-  const res = await fetch(url, { headers: { 'user-agent': UA, accept: 'application/rss+xml,text/xml' } })
-  if (!res.ok) throw new Error(`bing ${res.status}`)
-  const xml = await res.text()
+const unwrapDuck = (raw: string): string => {
+  let url = decode(raw)
+  const redirect = /[?&]uddg=([^&]+)/.exec(url)
+  if (redirect?.[1]) url = decodeURIComponent(redirect[1])
+  if (url.startsWith('//')) url = `https:${url}`
+  return url
+}
+
+/** Reader-proxy search, used when the direct endpoint refuses the request. */
+async function searchProxy(query: string, limit: number): Promise<WebResult[]> {
+  const target = `https://duckduckgo.com/html/?q=${encodeURIComponent(query)}`
+  const res = await fetch(`https://r.jina.ai/${target}`, {
+    headers: { 'user-agent': UA, accept: 'text/plain' },
+  })
+  if (!res.ok) throw new Error(`proxy ${res.status}`)
+  const markdown = await res.text()
+
   const out: WebResult[] = []
   const seen = new Set<string>()
-  const re = /<item>([\s\S]*?)<\/item>/gi
+  const re = /^##+\s*\[([^\]]+)\]\(([^)]+)\)([\s\S]{0,900}?)(?=\n##|\n$)/gm
   let match: RegExpExecArray | null
-  while ((match = re.exec(xml)) && out.length < limit) {
-    const block = match[1] ?? ''
-    const pick = (tag: string) => {
-      const found = new RegExp(`<${tag}>([\\s\\S]*?)</${tag}>`, 'i').exec(block)?.[1] ?? ''
-      return strip(found.replace(/<!\[CDATA\[|\]\]>/g, ''))
-    }
-    const link = pick('link')
-    const title = pick('title')
-    if (!title || !/^https?:/i.test(link) || seen.has(link)) continue
-    seen.add(link)
-    out.push({ title, url: link, snippet: pick('description').slice(0, 400) })
+  while ((match = re.exec(markdown)) && out.length < limit) {
+    const url = unwrapDuck(match[2] ?? '')
+    const title = strip(match[1] ?? '')
+    if (!title || !/^https?:/i.test(url)) continue
+    if (/duckduckgo\.com/i.test(url) || seen.has(url)) continue
+    seen.add(url)
+    const snippet = (match[3] ?? '')
+      .split('\n')
+      .map(line => line.trim())
+      .filter(line => line && !line.startsWith('[') && !line.startsWith('!') && !line.startsWith('#'))
+      .join(' ')
+      .slice(0, 400)
+    out.push({ title, url, snippet })
   }
   return out
 }
