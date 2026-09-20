@@ -80,10 +80,7 @@ export const fetchAetherisNews = createServerFn({ method: 'GET' }).handler(async
     seen.add(key)
     return true
   })
-  unique.sort((a, b) => {
-    if (a.kind !== b.kind) return a.kind === 'aetheris' ? -1 : 1
-    return new Date(b.published ?? 0).getTime() - new Date(a.published ?? 0).getTime()
-  })
+  unique.sort((a, b) => new Date(b.published ?? 0).getTime() - new Date(a.published ?? 0).getTime())
 
   return {
     items: unique.slice(0, 80),
