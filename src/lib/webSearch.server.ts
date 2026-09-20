@@ -29,9 +29,7 @@ const unwrapDuck = (raw: string): string => {
 /** Reader-proxy search, used when the direct endpoint refuses the request. */
 async function searchProxy(query: string, limit: number): Promise<WebResult[]> {
   const target = `https://duckduckgo.com/html/?q=${encodeURIComponent(query)}`
-  const res = await fetch(`https://r.jina.ai/${target}`, {
-    headers: { 'user-agent': UA, accept: 'text/plain' },
-  })
+  const res = await fetch(`https://r.jina.ai/${target}`, { headers: { accept: 'text/plain' } })
   if (!res.ok) throw new Error(`proxy ${res.status}`)
   const markdown = await res.text()
 
@@ -110,7 +108,7 @@ export async function readPage(url: string, max = 9000): Promise<string> {
 }
 
 async function readProxy(url: string, max: number): Promise<string> {
-  const res = await fetch(`https://r.jina.ai/${url}`, { headers: { 'user-agent': UA, accept: 'text/plain' } })
+  const res = await fetch(`https://r.jina.ai/${url}`, { headers: { accept: 'text/plain' } })
   if (!res.ok) throw new Error(`proxy page ${res.status}`)
   const text = await res.text()
   return text
