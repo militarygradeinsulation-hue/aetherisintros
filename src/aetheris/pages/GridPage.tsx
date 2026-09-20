@@ -77,6 +77,21 @@ export default function GridPage() {
   const [sheetId, setSheetId] = useState<string>('')
   const sheet = sheets.find(s => s.id === sheetId) ?? sheets[0]
 
+  const [busy, setBusy] = useState(false)
+  const [notice, setNotice] = useState('')
+
+  const makeWorkbook = async (name: string, description = '') => {
+    setNotice('')
+    setBusy(true)
+    try {
+      const created = await ops.createWorkbook(name, description)
+      if (created) { setWorkbookId(created.id); setSheetId('') }
+      else setNotice(ops.lastError() || 'The workbook could not be created just now. Try again in a moment.')
+    } finally {
+      setBusy(false)
+    }
+  }
+
   const columns = useMemo(
     () => ops.columns.filter(c => c.sheetId === sheet?.id).sort((a, b) => a.position - b.position),
     [ops.columns, sheet?.id],
