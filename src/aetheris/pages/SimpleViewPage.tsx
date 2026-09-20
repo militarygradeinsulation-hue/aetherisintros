@@ -224,15 +224,17 @@ function MemberSheet({ memberId, openThread }: { memberId: string; openThread: (
   if (!member) return <p className="sv-empty">This member is no longer in view.</p>
   const connected = net.connections.includes(member.id)
   const saved = net.saved.includes(member.id)
-  const introState = net.introStates[member.id]
+  const requested = member.introState !== 'recommended'
   return <div className="sv-sheet-stack">
     <div className="sv-sheet-person"><Face person={member} large portrait /><div><strong>{member.name}</strong><small>{member.title} · {member.company}</small><small>{member.location}</small></div></div>
     <p>{member.thesis}</p>
     <dl className="sv-sheet-facts">
-      <div><dt>Currently looking for</dt><dd>{member.lookingFor || '—'}</dd></div>
-      <div><dt>Can help with</dt><dd>{member.canHelpWith || '—'}</dd></div>
+      <div><dt>Currently looking for</dt><dd>{member.needs.join(' · ') || '—'}</dd></div>
+      <div><dt>Can help with</dt><dd>{member.offers.join(' · ') || '—'}</dd></div>
       <div><dt>Focus</dt><dd>{member.focus || '—'}</dd></div>
       <div><dt>Availability</dt><dd>{member.availability || '—'}</dd></div>
+    </dl>
+
     </dl>
     <div className="sv-sheet-actions">
       <button className="sv-primary" onClick={() => openThread(net.openThreadWith(member.id))}>Message</button>
