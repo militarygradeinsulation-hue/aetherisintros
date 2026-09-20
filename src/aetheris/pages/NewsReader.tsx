@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react'
 import { useServerFn } from '@tanstack/react-start'
-import { ArrowLeft, ArrowUpRight, Loader2 } from 'lucide-react'
+import { ArrowLeft, Loader2 } from 'lucide-react'
 import { Btn, Eyebrow } from '../ui'
 import { newsAge, type NewsItem } from '../news'
 import { askNewsPerspective, readNewsArticle, type ArticleRead } from '../../lib/newsReader.functions'

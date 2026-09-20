@@ -1,6 +1,8 @@
 import { createServerFn } from '@tanstack/react-start'
-import { streamText } from 'ai'
+import { stepCountIs, streamText, tool } from 'ai'
 import { createOpenAI } from '@ai-sdk/openai'
+import { z } from 'zod'
+import { readPage, searchWeb } from './webSearch.server'
 
 export interface AskIntrosMessage { role: 'user' | 'assistant'; content: string }
 
