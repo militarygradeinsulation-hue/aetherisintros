@@ -48,16 +48,29 @@ export function NewsPage() {
 
     <section className="module news-controls">
       <div className="news-filters">
-        {categories.map(cat => <button key={cat} className={filter === cat ? 'on' : ''} onClick={() => setFilter(cat)}>{cat}</button>)}
+        {tabs.map(entry => <button
+          key={entry.id}
+          className={tab === entry.id ? 'on' : ''}
+          onClick={() => setTab(entry.id)}
+        >{entry.label} {entry.count ? `· ${entry.count}` : ''}</button>)}
       </div>
       <input value={q} onChange={e => setQ(e.target.value)} placeholder="Search the feed…" aria-label="Search the news feed" />
     </section>
 
-    {isLoading && <section className="module"><p className="sv-empty">Loading the feed…</p></section>}
-    {isError && <section className="module"><p className="sv-empty">The feed is unavailable right now. Try refreshing in a moment.</p></section>}
-    {data?.degraded && <section className="module"><p className="sv-empty">Part of the feed did not respond. Showing everything that did.</p></section>}
+    {tab === 'feed' && <section className="module news-controls">
+      <div className="news-filters">
+        {categories.map(cat => <button key={cat} className={filter === cat ? 'on' : ''} onClick={() => setFilter(cat)}>{cat}</button>)}
+      </div>
+    </section>}
 
-    {!isLoading && !isError && <section className="news-grid">
+    {tab === 'feed' && isLoading && <section className="module"><p className="sv-empty">Loading the feed…</p></section>}
+    {tab === 'feed' && isError && <section className="module"><p className="sv-empty">The feed is unavailable right now. Try refreshing in a moment.</p></section>}
+    {tab === 'feed' && data?.degraded && <section className="module"><p className="sv-empty">Part of the feed did not respond. Showing everything that did.</p></section>}
+
+    {tab === 'later' && !shelf.later.length && <section className="module"><p className="sv-empty">Nothing set aside yet. Use Read later on any story and it waits here for you.</p></section>}
+    {tab === 'library' && !shelf.library.length && <section className="module"><p className="sv-empty">Your library is empty. Save the pieces worth returning to and they stay here.</p></section>}
+
+    {!(tab === 'feed' && (isLoading || isError)) && <section className="news-grid">
       {shown.map(item => <article key={item.id} className="news-card">
         {item.image && <button className="news-thumb" onClick={() => setOpen(item)} aria-label={`Read ${item.title}`}>
           <img src={item.image} alt="" loading="lazy" onError={e => { (e.currentTarget.closest('.news-thumb') as HTMLElement | null)?.remove() }} />
@@ -65,17 +78,20 @@ export function NewsPage() {
         <header><Eyebrow signal={item.kind === 'aetheris'}>{item.source}</Eyebrow><small>{newsAge(item.published)}</small></header>
         <h3><button className="news-title" onClick={() => setOpen(item)}>{item.title}</button></h3>
         {item.summary && <p>{item.summary}</p>}
+        <NewsActions item={item} compact />
         <footer>
           <span className="news-tag">{item.category}</span>
           <div className="news-actions">
             <button className="news-link" onClick={() => setOpen(item)}>Read <ArrowUpRight size={13} /></button>
             <a className="news-source-link" href={item.link} target="_blank" rel="noreferrer">Original</a>
+            {tab !== 'feed' && <button className="news-remove" onClick={() => shelf.remove(tab === 'later' ? 'later' : 'library', item.id)} aria-label="Remove from this shelf"><X size={12} /></button>}
           </div>
         </footer>
       </article>)}
-      {!shown.length && <p className="sv-empty">Nothing matches that filter yet.</p>}
+      {!shown.length && tab === 'feed' && <p className="sv-empty">Nothing matches that filter yet.</p>}
     </section>}
   </>
+
 }
 
 
