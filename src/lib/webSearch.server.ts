@@ -22,7 +22,7 @@ export async function searchWeb(query: string, limit = 6): Promise<WebResult[]> 
     method: 'POST',
     headers: {
       'content-type': 'application/x-www-form-urlencoded',
-      'user-agent': 'Mozilla/5.0 (compatible; AskIntros/1.0)',
+      'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0 Safari/537.36',
       accept: 'text/html',
     },
     body: new URLSearchParams({ q: query }).toString(),
@@ -53,7 +53,7 @@ export async function searchWeb(query: string, limit = 6): Promise<WebResult[]> 
 export async function readPage(url: string, max = 9000): Promise<string> {
   const res = await fetch(url, {
     headers: {
-      'user-agent': 'Mozilla/5.0 (compatible; AskIntros/1.0)',
+      'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0 Safari/537.36',
       accept: 'text/html,application/xhtml+xml',
     },
   })
