@@ -5,6 +5,8 @@ import { Btn, Eyebrow } from '../ui'
 import { newsAge, type NewsItem } from '../news'
 import { askNewsPerspective, readNewsArticle, type ArticleRead } from '../../lib/newsReader.functions'
 import { useQuery } from '@tanstack/react-query'
+import { NewsActions } from './NewsActions'
+
 
 const VIEWS: { label: string; question: string }[] = [
   { label: 'The other side', question: 'What is the strongest counterargument to the framing in this article?' },
@@ -63,6 +65,8 @@ export function NewsReader({ item, onBack }: { item: NewsItem; onBack: () => voi
       </div>
       <h1>{item.title}</h1>
       {item.image && <div className="reader-image"><img src={item.image} alt="" loading="lazy" /></div>}
+      <NewsActions item={item} />
+
     </header>
 
     <section className="module reader-brief">
