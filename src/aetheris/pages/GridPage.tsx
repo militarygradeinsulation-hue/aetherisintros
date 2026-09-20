@@ -283,7 +283,7 @@ export default function GridPage() {
     <Head label="AETHERIS GRID" title={activeWorkbook.name}
       copy={activeWorkbook.description || 'Linked sheets read your canonical records. Freeform sheets are your own working numbers.'}
       proof="Edit a linked cell and the CRM record changes with it."
-      action={<Btn kind="secondary" onClick={() => { void ops.createWorkbook(`Workbook ${workbooks.length + 1}`) }}><FilePlus2 size={14} /> New workbook</Btn>} />
+      action={<Btn kind="secondary" disabled={busy} onClick={() => { void makeWorkbook(`Workbook ${workbooks.length + 1}`) }}><FilePlus2 size={14} /> {busy ? 'Creating…' : 'New workbook'}</Btn>} />
 
     <div className="grid-shell">
       <div className="grid-bar">
