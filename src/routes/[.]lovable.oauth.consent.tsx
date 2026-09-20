@@ -74,11 +74,11 @@ function Consent() {
 
   return <main className="consent-page">
     <section className="consent-panel">
-      <img className="brand-logo" src={logoAsset.url} alt="Aetheris Intros logo" />
+      <img className="brand-logo" src={logoAsset.url} alt="Ask Intros logo" />
       <span className="folio">AGENT ACCESS / PERMISSIONED</span>
       <h1>Connect <em>{client}</em> to your account</h1>
       <p className="consent-lede">
-        {client} will act as you inside Aetheris Intros: read your profile and Active Memory,
+        {client} will act as you inside Ask Intros: read your profile and Active Memory,
         search the network, read and post asks, and request double opt-in introductions on your
         behalf. It never sees other members&rsquo; private context, and no introduction happens
         unless both sides opt in.

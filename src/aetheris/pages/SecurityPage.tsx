@@ -86,7 +86,7 @@ export function SecurityPage() {
   }
 
   const requestDeletion = async () => {
-    if (!window.confirm('Delete your Aetheris Intros account and its data? This cannot be undone.')) return
+    if (!window.confirm('Delete your Ask Intros account and its data? This cannot be undone.')) return
     setBusy(true); setMessage('')
     await logSecurityEvent('deletion_requested', 'Member requested account and data deletion.')
     setMessage('Deletion requested. Your account is queued for removal and a confirmation will be emailed. Only a minimal verification record is retained for security and legal reasons.')
@@ -151,7 +151,7 @@ export function SecurityPage() {
         </li>)}
         {!events.length && <li><span>No security activity recorded yet.</span></li>}
       </ul>
-      <p className="security-note"><ShieldCheck size={15} /> Aetheris Intros makes no certification claims. Security here means real controls you can see and use.</p>
+      <p className="security-note"><ShieldCheck size={15} /> Ask Intros makes no certification claims. Security here means real controls you can see and use.</p>
     </section>
   </div>
 }

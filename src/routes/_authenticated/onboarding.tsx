@@ -10,18 +10,18 @@ export const Route = createFileRoute('/_authenticated/onboarding')({
   staticData: { sitemap: false },
   head: () => ({
     meta: [
-      { title: 'Build your profile — Aetheris Intros' },
+      { title: 'Build your profile — Ask Intros' },
       {
         name: 'description',
-        content: 'Answer nine questions and Aetheris Intros builds your professional profile and the memory behind your introductions.',
+        content: 'Answer nine questions and Ask Intros builds your professional profile and the memory behind your introductions.',
       },
-      { property: 'og:title', content: 'Build your profile — Aetheris Intros' },
+      { property: 'og:title', content: 'Build your profile — Ask Intros' },
       { property: 'og:description', content: 'Real identity, real work, real context. Nine questions is all it takes.' },
       { property: 'og:type', content: 'website' },
       { property: 'og:url', content: 'https://intros.today/onboarding' },
       { property: 'og:image', content: 'https://intros.today/aetheris-social.png' },
       { name: 'twitter:card', content: 'summary_large_image' },
-      { name: 'twitter:title', content: 'Build your profile — Aetheris Intros' },
+      { name: 'twitter:title', content: 'Build your profile — Ask Intros' },
       { name: 'twitter:description', content: 'Real identity, real work, real context. Nine questions is all it takes.' },
       { name: 'twitter:image', content: 'https://intros.today/aetheris-social.png' },
     ],

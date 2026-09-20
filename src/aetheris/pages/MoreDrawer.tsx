@@ -87,7 +87,7 @@ export function MoreDrawer({ open, page, onClose, onNavigate }: {
         <div>
           <span className="more-eyebrow">THE INDEX</span>
           <h2>All tools</h2>
-          <p>Every capability in Aetheris Intros, in plain language.</p>
+          <p>Every capability in Ask Intros, in plain language.</p>
         </div>
         <button className="icon-btn" onClick={onClose} aria-label="Close"><X size={17} /></button>
       </header>

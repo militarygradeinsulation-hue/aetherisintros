@@ -434,7 +434,7 @@ export const me = {
   name: 'Jordan Ellery', initials: 'JT', title: 'Founder · Relationship systems strategist',
   company: 'Aetheris', location: 'Charlotte, NC',
   thesis: 'I build systems that turn relationship context into better business decisions.',
-  focus: 'Placing Aetheris Intros with founders, operating partners and trusted connectors.',
+  focus: 'Placing Ask Intros with founders, operating partners and trusted connectors.',
   lookingFor: 'PE operating partners and founder-led design partners.',
   canHelpWith: 'Revenue leak forensics, AI systems and relationship strategy.',
   industries: ['SaaS', 'Manufacturing', 'Private equity', 'Professional services'],

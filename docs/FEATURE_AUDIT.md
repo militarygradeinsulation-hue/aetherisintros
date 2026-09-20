@@ -1,4 +1,4 @@
-# Aetheris Intros — Feature Completeness Audit
+# Ask Intros — Feature Completeness Audit
 
 Method: a capability counts as **Working** only when the interaction was exercised in the
 running preview (Playwright, desktop 1440 / tablet 768 / mobile 390 and 360) and produced a

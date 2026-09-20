@@ -1,6 +1,6 @@
-# Aetheris Intros
+# Ask Intros
 
-Aetheris Intros is a relationship-intelligence operating system for high-value professional introductions.
+Ask Intros is a relationship-intelligence operating system for high-value professional introductions.
 
 It is intentionally **not** a CRM, contact database, cold-outreach engine, or profile directory. The product is built around five stages:
 

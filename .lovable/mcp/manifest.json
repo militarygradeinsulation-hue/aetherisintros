@@ -13,13 +13,13 @@
     "server": {
       "name": "aetheris-intros",
       "version": "0.1.0",
-      "title": "Aetheris Intros"
+      "title": "Ask Intros"
     },
     "tools": [
       {
         "name": "get_my_profile",
         "title": "Get my profile",
-        "description": "Read the signed-in member's own Aetheris Intros profile: focus, thesis, looking for, can help with, boundaries, availability, industries and expertise.",
+        "description": "Read the signed-in member's own Ask Intros profile: focus, thesis, looking for, can help with, boundaries, availability, industries and expertise.",
         "annotations": {
           "readOnlyHint": true,
           "idempotentHint": true,
@@ -35,7 +35,7 @@
       {
         "name": "search_members",
         "title": "Search members",
-        "description": "Search the Aetheris Intros network for members by name, role, industry, expertise, needs or offers. Returns match reasoning fields (why them, why you, why now) when present.",
+        "description": "Search the Ask Intros network for members by name, role, industry, expertise, needs or offers. Returns match reasoning fields (why them, why you, why now) when present.",
         "annotations": {
           "readOnlyHint": true,
           "idempotentHint": true,
@@ -69,7 +69,7 @@
       {
         "name": "get_member",
         "title": "Get member",
-        "description": "Read one Aetheris Intros member in full, including focus, thesis, availability, trust path, next action and the reasoning behind a possible introduction.",
+        "description": "Read one Ask Intros member in full, including focus, thesis, availability, trust path, next action and the reasoning behind a possible introduction.",
         "annotations": {
           "readOnlyHint": true,
           "idempotentHint": true,

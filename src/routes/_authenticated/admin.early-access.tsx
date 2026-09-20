@@ -9,9 +9,9 @@ export const Route = createFileRoute('/_authenticated/admin/early-access')({
   staticData: { sitemap: false },
   head: () => ({
     meta: [
-      { title: 'Launch control — Aetheris Intros' },
-      { name: 'description', content: 'Admin launch control for the Aetheris Intros founding cohort: mode, capacity, invitations and waitlist.' },
-      { property: 'og:title', content: 'Launch control — Aetheris Intros' },
+      { title: 'Launch control — Ask Intros' },
+      { name: 'description', content: 'Admin launch control for the Ask Intros founding cohort: mode, capacity, invitations and waitlist.' },
+      { property: 'og:title', content: 'Launch control — Ask Intros' },
       { property: 'og:description', content: 'Control who may join the founding network.' },
       { property: 'og:type', content: 'website' },
       { name: 'twitter:card', content: 'summary_large_image' },

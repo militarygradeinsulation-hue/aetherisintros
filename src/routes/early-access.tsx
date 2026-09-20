@@ -11,13 +11,13 @@ export const Route = createFileRoute('/early-access')({
   staticData: { sitemap: true },
   head: () => ({
     meta: [
-      { title: 'Founding 1,000 — Aetheris Intros' },
+      { title: 'Founding 1,000 — Ask Intros' },
       {
         name: 'description',
         content:
-          'Aetheris Intros is opening to its first 1,000 members. Claim a founding place and join a business network without selling, mass outreach or spam.',
+          'Ask Intros is opening to its first 1,000 members. Claim a founding place and join a business network without selling, mass outreach or spam.',
       },
-      { property: 'og:title', content: 'Founding 1,000 — Aetheris Intros' },
+      { property: 'og:title', content: 'Founding 1,000 — Ask Intros' },
       { property: 'og:description', content: 'The first 1,000 members shape the network. Claim your founding place.' },
       { property: 'og:type', content: 'website' },
       { name: 'twitter:card', content: 'summary_large_image' },
@@ -84,13 +84,13 @@ function EarlyAccessPage() {
   return <main className="auth-page">
     <section className="auth-panel">
       <Link to="/" className="auth-brand">
-        <img className="brand-logo" src={logoAsset.url} alt="Aetheris Intros logo" />
-        <span className="brand-name">Aetheris<em>Intros</em></span>
+        <img className="brand-logo" src={logoAsset.url} alt="Ask Intros logo" />
+        <span className="brand-name">Ask<em>Intros</em></span>
       </Link>
       <div className="auth-index"><span className="folio">FOUNDING 1,000 / 2026</span><span>01 / MEMBER ACCESS</span></div>
       <h1>The first<br /><em>thousand.</em></h1>
       <p className="auth-lede">
-        Aetheris Intros opens with 1,000 members. No selling, no mass outreach, no bought attention —
+        Ask Intros opens with 1,000 members. No selling, no mass outreach, no bought attention —
         every introduction needs both sides to agree.
       </p>
 
@@ -145,7 +145,7 @@ function EarlyAccessPage() {
       <span className="auth-foot"><LockKeyhole size={12} /> {access.foundingNumber ? foundingLabel(access.foundingNumber, stats.capacity) : 'Nothing is shared without your explicit opt-in.'}</span>
       {access.status === 'approved' && <Link to="/app" className="auth-switch">Enter your network.</Link>}
     </section>
-    <aside className="auth-visual auth-visual-type" aria-label="Aetheris Intros founding network principles">
+    <aside className="auth-visual auth-visual-type" aria-label="Ask Intros founding network principles">
       <span className="auth-visual-mark" aria-hidden="true">+</span>
       <div className="auth-visual-statement" aria-hidden="true">
         <span>WHY ME</span><i>×</i><span>WHY THEM</span><i>×</i><span>WHY NOW</span>

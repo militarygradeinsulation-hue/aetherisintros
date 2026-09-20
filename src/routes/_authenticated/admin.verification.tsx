@@ -11,9 +11,9 @@ export const Route = createFileRoute('/_authenticated/admin/verification')({
   staticData: { sitemap: false },
   head: () => ({
     meta: [
-      { title: 'Verification review — Aetheris Intros' },
-      { name: 'description', content: 'Restricted review console for Aetheris Intros membership verification: evidence, checks, conflicts and decisions.' },
-      { property: 'og:title', content: 'Verification review — Aetheris Intros' },
+      { title: 'Verification review — Ask Intros' },
+      { name: 'description', content: 'Restricted review console for Ask Intros membership verification: evidence, checks, conflicts and decisions.' },
+      { property: 'og:title', content: 'Verification review — Ask Intros' },
       { property: 'og:description', content: 'Confirm that every member truly runs the business they claim.' },
       { property: 'og:type', content: 'website' },
       { name: 'twitter:card', content: 'summary_large_image' },

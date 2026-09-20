@@ -9,13 +9,13 @@ export const Route = createFileRoute('/_authenticated/app')({
   staticData: { sitemap: false },
   head: () => ({
     meta: [
-      { title: 'Aetheris Intros — The Relationship Network for CEOs' },
+      { title: 'Ask Intros — The Relationship Network for CEOs' },
       {
         name: 'description',
         content:
           'The relationship network for CEOs. See who matters, why they matter, and why now.',
       },
-      { property: 'og:title', content: 'Aetheris Intros — The Relationship Network for CEOs' },
+      { property: 'og:title', content: 'Ask Intros — The Relationship Network for CEOs' },
       {
         property: 'og:description',
         content: 'Who matters. Why they matter. Why now.',
@@ -46,7 +46,7 @@ function Gate() {
   }, [access, navigate])
 
   if (access.loading || !ready) {
-    return <main className="access-waiting"><span className="folio">AETHERIS INTROS</span><p>Checking your membership…</p></main>
+    return <main className="access-waiting"><span className="folio">ASK INTROS</span><p>Checking your membership…</p></main>
   }
   return <App mode="live" />
 }

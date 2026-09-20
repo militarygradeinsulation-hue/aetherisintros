@@ -26,13 +26,13 @@ export const Route = createFileRoute('/auth')({
   },
   head: () => ({
     meta: [
-      { title: 'Sign in — Aetheris Intros' },
+      { title: 'Sign in — Ask Intros' },
       {
         name: 'description',
         content:
-          'Sign in to Aetheris Intros to keep your introductions, active memory and relationship preferences between sessions.',
+          'Sign in to Ask Intros to keep your introductions, active memory and relationship preferences between sessions.',
       },
-      { property: 'og:title', content: 'Sign in — Aetheris Intros' },
+      { property: 'og:title', content: 'Sign in — Ask Intros' },
       {
         property: 'og:description',
         content: 'Your introductions, memory and preferences, kept private and permissioned.',
@@ -66,7 +66,7 @@ function AuthPage() {
       if (!cancelled && data.session) land()
     })
     const { data: sub } = supabase.auth.onAuthStateChange((event, session) => {
-      if (session && event === 'SIGNED_IN') void logSecurityEvent('signed_in', 'Signed in to Aetheris Intros.')
+      if (session && event === 'SIGNED_IN') void logSecurityEvent('signed_in', 'Signed in to Ask Intros.')
       if (session && (event === 'SIGNED_IN' || event === 'INITIAL_SESSION')) land()
     })
     return () => { cancelled = true; sub.subscription.unsubscribe() }
@@ -120,8 +120,8 @@ function AuthPage() {
   return <main className="auth-page">
     <section className="auth-panel">
       <Link to="/" className="auth-brand">
-        <img className="brand-logo" src={logoAsset.url} alt="Aetheris Intros logo" />
-        <span className="brand-name">Aetheris<em>Intros</em></span>
+        <img className="brand-logo" src={logoAsset.url} alt="Ask Intros logo" />
+        <span className="brand-name">Ask<em>Intros</em></span>
       </Link>
       <div className="auth-index"><span className="folio">MEMBER ACCESS / 2026</span><span>01 / PRIVATE NETWORK</span></div>
       <h1>{mode === 'signin' ? <>Welcome<br /><em>back.</em></> : <>Join the<br /><em>network.</em></>}</h1>
@@ -167,7 +167,7 @@ function AuthPage() {
       <Link to="/demo" className="auth-switch">Not ready to join? Open the demo.</Link>
       <span className="auth-foot"><LockKeyhole size={12} /> Nothing is shared without your explicit opt-in.</span>
     </section>
-    <aside className="auth-visual auth-visual-type" aria-label="Aetheris Intros relationship principles">
+    <aside className="auth-visual auth-visual-type" aria-label="Ask Intros relationship principles">
       <span className="auth-visual-mark" aria-hidden="true">+</span>
       <div className="auth-visual-statement" aria-hidden="true">
         <span>PEOPLE</span><i>×</i><span>CONTEXT</span><i>×</i><span>OPPORTUNITY</span>

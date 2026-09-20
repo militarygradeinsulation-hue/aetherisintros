@@ -5,7 +5,7 @@ export default defineTool({
   name: "get_my_profile",
   title: "Get my profile",
   description:
-    "Read the signed-in member's own Aetheris Intros profile: focus, thesis, looking for, can help with, boundaries, availability, industries and expertise.",
+    "Read the signed-in member's own Ask Intros profile: focus, thesis, looking for, can help with, boundaries, availability, industries and expertise.",
   inputSchema: {},
   annotations: { readOnlyHint: true, idempotentHint: true, openWorldHint: false },
   handler: async (_input, ctx) => {
@@ -21,7 +21,7 @@ export default defineTool({
     if (error) return { content: [{ type: "text", text: error.message }], isError: true };
     if (!data) {
       return {
-        content: [{ type: "text", text: "No profile yet — complete onboarding in Aetheris Intros first." }],
+        content: [{ type: "text", text: "No profile yet — complete onboarding in Ask Intros first." }],
         isError: true,
       };
     }

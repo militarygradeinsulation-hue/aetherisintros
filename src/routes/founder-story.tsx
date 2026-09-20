@@ -58,9 +58,9 @@ function FounderStoryPage() {
 
   return <main className="founder-book">
     <header className="founder-book-bar">
-      <Link to="/" className="brand-mark" aria-label="Aetheris Intros Home">
-        <img className="brand-logo" src={logoAsset.url} alt="Aetheris Intros logo" />
-        <span className="brand-name">Aetheris<em>Intros</em></span>
+      <Link to="/" className="brand-mark" aria-label="Ask Intros Home">
+        <img className="brand-logo" src={logoAsset.url} alt="Ask Intros logo" />
+        <span className="brand-name">Ask<em>Intros</em></span>
       </Link>
       <span>FOUNDER CASE FILE · 2026</span>
       <Link to="/" className="founder-back"><ArrowLeft size={14} /> Home</Link>
@@ -74,7 +74,7 @@ function FounderStoryPage() {
         <h2>Why I Built Aetheris</h2>
         <p className="founder-byline">Joseph Toney · Founder, Aetheris · Chaos Theory Forensics Operator</p>
         <div className="founder-positioning">
-          <span>AETHERIS INTROS</span>
+          <span>ASK INTROS</span>
           <strong>The Relationship Network for CEOs.</strong>
           <p>Who matters. Why they matter. Why now.</p>
         </div>
@@ -128,7 +128,7 @@ function FounderStoryPage() {
           <Quote size={24} />
           <blockquote>“Find what is hidden.<br />Prove what is real.<br />Fix what is broken.<br />Verify the recovery.<br />Then build the system that keeps it from happening again.”</blockquote>
           <span>JOSEPH TONEY · FOUNDER, AETHERIS</span>
-          <Link to="/" className="btn primary">Return to Aetheris Intros <ArrowRight size={14} /></Link>
+          <Link to="/" className="btn primary">Return to Ask Intros <ArrowRight size={14} /></Link>
         </footer>
       </article>
     </div>

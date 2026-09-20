@@ -1,5 +1,5 @@
 /**
- * Aetheris Intros — production domain models.
+ * Ask Intros — production domain models.
  *
  * These models are storage-agnostic. The local adapter keeps them in
  * localStorage for the preview; the remote adapter maps the same shapes onto

@@ -1,5 +1,5 @@
 /**
- * Aetheris Intros — professional layer domain models.
+ * Ask Intros — professional layer domain models.
  *
  * Storage-agnostic, exactly like ./models.ts, ./os-models.ts and
  * ./moat-models.ts. The preview runs on the local adapter (localStorage +

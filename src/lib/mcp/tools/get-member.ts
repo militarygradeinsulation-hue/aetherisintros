@@ -6,7 +6,7 @@ export default defineTool({
   name: "get_member",
   title: "Get member",
   description:
-    "Read one Aetheris Intros member in full, including focus, thesis, availability, trust path, next action and the reasoning behind a possible introduction.",
+    "Read one Ask Intros member in full, including focus, thesis, availability, trust path, next action and the reasoning behind a possible introduction.",
   inputSchema: { member_id: z.string().trim().min(1).describe("The member id returned by search_members.") },
   annotations: { readOnlyHint: true, idempotentHint: true, openWorldHint: false },
   handler: async ({ member_id }, ctx) => {
