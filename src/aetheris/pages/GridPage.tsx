@@ -77,6 +77,21 @@ export default function GridPage() {
   const [sheetId, setSheetId] = useState<string>('')
   const sheet = sheets.find(s => s.id === sheetId) ?? sheets[0]
 
+  const [busy, setBusy] = useState(false)
+  const [notice, setNotice] = useState('')
+
+  const makeWorkbook = async (name: string, description = '') => {
+    setNotice('')
+    setBusy(true)
+    try {
+      const created = await ops.createWorkbook(name, description)
+      if (created) { setWorkbookId(created.id); setSheetId('') }
+      else setNotice(ops.lastError() || 'The workbook could not be created just now. Try again in a moment.')
+    } finally {
+      setBusy(false)
+    }
+  }
+
   const columns = useMemo(
     () => ops.columns.filter(c => c.sheetId === sheet?.id).sort((a, b) => a.position - b.position),
     [ops.columns, sheet?.id],
@@ -246,12 +261,15 @@ export default function GridPage() {
         copy="Grid is not a second copy of your data. A linked sheet is a live view of your CRM people, companies, pipeline and tasks — edit a cell and the record changes everywhere. Freeform sheets are yours alone for budgets, lists and modelling."
         proof="Every workbook is private to your account." />
       <section className="ops-empty">
-        <Eyebrow>NO WORKBOOKS YET</Eyebrow>
+        <Eyebrow>{ops.signedIn ? 'NO WORKBOOKS YET' : 'SIGN IN TO USE GRID'}</Eyebrow>
         <h2>Start with one workbook.</h2>
-        <p>Each workbook holds as many sheets as you need — linked views of your records, plus freeform sheets for your own numbers.</p>
-        <Btn onClick={() => { void ops.createWorkbook('Operating Workbook', 'Relationships, pipeline and numbers in one place.') }}>
-          <Plus size={14} /> Create workbook
+        <p>{ops.signedIn
+          ? 'Each workbook holds as many sheets as you need — linked views of your records, plus freeform sheets for your own numbers.'
+          : 'Workbooks live inside your own account, so nothing can be saved here while you are signed out. Sign in and your first workbook takes one click.'}</p>
+        <Btn disabled={busy} onClick={() => { void makeWorkbook('Operating Workbook', 'Relationships, pipeline and numbers in one place.') }}>
+          <Plus size={14} /> {busy ? 'Creating…' : 'Create workbook'}
         </Btn>
+        {notice && <p className="ops-note" role="status">{notice}</p>}
       </section>
     </>
   }
@@ -265,7 +283,7 @@ export default function GridPage() {
     <Head label="AETHERIS GRID" title={activeWorkbook.name}
       copy={activeWorkbook.description || 'Linked sheets read your canonical records. Freeform sheets are your own working numbers.'}
       proof="Edit a linked cell and the CRM record changes with it."
-      action={<Btn kind="secondary" onClick={() => { void ops.createWorkbook(`Workbook ${workbooks.length + 1}`) }}><FilePlus2 size={14} /> New workbook</Btn>} />
+      action={<Btn kind="secondary" disabled={busy} onClick={() => { void makeWorkbook(`Workbook ${workbooks.length + 1}`) }}><FilePlus2 size={14} /> {busy ? 'Creating…' : 'New workbook'}</Btn>} />
 
     <div className="grid-shell">
       <div className="grid-bar">

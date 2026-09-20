@@ -10,7 +10,7 @@ import { createContext, useCallback, useContext, useEffect, useMemo, useState } 
 import type { ReactNode } from 'react'
 import {
   activityRepo, columnRepo, companyRepo, currentAccountId, ensureDefaultPipeline, emptySnapshot, loadSnapshot, logEvent,
-  noteRepo, opportunityRepo, personRepo, rowRepo, sheetRepo, taskRepo, viewRepo, workbookRepo,
+  lastWriteError, noteRepo, opportunityRepo, personRepo, rowRepo, sheetRepo, taskRepo, viewRepo, workbookRepo,
   type OperationalSnapshot,
 } from './repo'
 import { blankColumns, templateById, type LinkedField } from './linked'
@@ -20,6 +20,10 @@ import type {
 
 export interface OpsApi extends OperationalSnapshot {
   ready: boolean
+  /** True once an account session is available; private records need one. */
+  signedIn: boolean
+  /** Plain-language reason the last save failed, if it did. */
+  lastError: () => string
   refresh: () => Promise<void>
   /* people */
   createPerson: (p: Partial<CrmPerson>) => Promise<CrmPerson | null>
@@ -82,6 +86,7 @@ const slug = (name: string) =>
 export function OpsProvider({ children }: { children: ReactNode }) {
   const [snap, setSnap] = useState<OperationalSnapshot>(emptySnapshot)
   const [ready, setReady] = useState(false)
+  const [signedIn, setSignedIn] = useState(false)
 
   const refresh = useCallback(async () => {
     const next = await loadSnapshot()
@@ -95,6 +100,7 @@ export function OpsProvider({ children }: { children: ReactNode }) {
       // Signed-out visitors (landing, /demo) have no private account layer to load.
       const owner = await currentAccountId()
       if (!owner) { if (live) setReady(true); return }
+      if (live) setSignedIn(true)
       await ensureDefaultPipeline()
       const next = await loadSnapshot()
       if (!live) return
@@ -132,6 +138,8 @@ export function OpsProvider({ children }: { children: ReactNode }) {
     return {
       ...snap,
       ready,
+      signedIn,
+      lastError: lastWriteError,
       refresh,
 
       /* ------------------------------------------------------------- people */
@@ -422,7 +430,7 @@ export function OpsProvider({ children }: { children: ReactNode }) {
         }
       },
     }
-  }, [snap, ready, refresh])
+  }, [snap, ready, signedIn, refresh])
 
   return <OpsCtx.Provider value={api}>{children}</OpsCtx.Provider>
 }
