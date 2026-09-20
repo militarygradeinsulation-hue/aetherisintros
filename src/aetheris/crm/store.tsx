@@ -10,7 +10,7 @@ import { createContext, useCallback, useContext, useEffect, useMemo, useState } 
 import type { ReactNode } from 'react'
 import {
   activityRepo, columnRepo, companyRepo, currentAccountId, ensureDefaultPipeline, emptySnapshot, loadSnapshot, logEvent,
-  noteRepo, opportunityRepo, personRepo, rowRepo, sheetRepo, taskRepo, viewRepo, workbookRepo,
+  lastWriteError, noteRepo, opportunityRepo, personRepo, rowRepo, sheetRepo, taskRepo, viewRepo, workbookRepo,
   type OperationalSnapshot,
 } from './repo'
 import { blankColumns, templateById, type LinkedField } from './linked'
@@ -430,7 +430,7 @@ export function OpsProvider({ children }: { children: ReactNode }) {
         }
       },
     }
-  }, [snap, ready, refresh])
+  }, [snap, ready, signedIn, refresh])
 
   return <OpsCtx.Provider value={api}>{children}</OpsCtx.Provider>
 }
