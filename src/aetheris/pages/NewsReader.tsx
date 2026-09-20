@@ -63,6 +63,8 @@ export function NewsReader({ item, onBack }: { item: NewsItem; onBack: () => voi
       </div>
       <h1>{item.title}</h1>
       {item.image && <div className="reader-image"><img src={item.image} alt="" loading="lazy" /></div>}
+      <NewsActions item={item} />
+
     </header>
 
     <section className="module reader-brief">
