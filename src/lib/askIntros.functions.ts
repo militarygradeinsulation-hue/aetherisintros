@@ -106,6 +106,33 @@ export const askIntros = createServerFn({ method: 'POST' })
         model: lovable.responses('openai/gpt-6-astra'),
         system: buildPrompt(data.context),
         messages: data.messages.slice(-12),
+        stopWhen: stepCountIs(8),
+        tools: {
+          web_search: tool({
+            description: 'Search the live web. Returns titles, URLs and snippets.',
+            inputSchema: z.object({ query: z.string().describe('The search query') }),
+            execute: async ({ query }) => {
+              try {
+                const results = await searchWeb(query)
+                return results.length ? { results } : { results: [], note: 'No results came back for that query.' }
+              } catch {
+                return { results: [], note: 'The web search could not be completed.' }
+              }
+            },
+          }),
+          read_page: tool({
+            description: 'Read the readable text of one web page, by URL, for detail a snippet does not give.',
+            inputSchema: z.object({ url: z.string().describe('The full https URL to read') }),
+            execute: async ({ url }) => {
+              try {
+                const text = await readPage(url)
+                return text ? { text } : { text: '', note: 'That page returned no readable text.' }
+              } catch {
+                return { text: '', note: 'That page could not be read.' }
+              }
+            },
+          }),
+        },
         providerOptions: {
           openai: {
             store: false,
