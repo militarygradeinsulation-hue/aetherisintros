@@ -20,6 +20,10 @@ import type {
 
 export interface OpsApi extends OperationalSnapshot {
   ready: boolean
+  /** True once an account session is available; private records need one. */
+  signedIn: boolean
+  /** Plain-language reason the last save failed, if it did. */
+  lastError: () => string
   refresh: () => Promise<void>
   /* people */
   createPerson: (p: Partial<CrmPerson>) => Promise<CrmPerson | null>
@@ -82,6 +86,7 @@ const slug = (name: string) =>
 export function OpsProvider({ children }: { children: ReactNode }) {
   const [snap, setSnap] = useState<OperationalSnapshot>(emptySnapshot)
   const [ready, setReady] = useState(false)
+  const [signedIn, setSignedIn] = useState(false)
 
   const refresh = useCallback(async () => {
     const next = await loadSnapshot()
