@@ -85,9 +85,9 @@ async function searchDuck(query: string, limit: number): Promise<WebResult[]> {
   return out
 }
 
-/** Live web search with no third-party key, across two public sources. */
+/** Live web search with no third-party key: direct first, reader proxy as backup. */
 export async function searchWeb(query: string, limit = 6): Promise<WebResult[]> {
-  const settled = await Promise.allSettled([searchBing(query, limit), searchDuck(query, limit)])
+  const settled = await Promise.allSettled([searchDuck(query, limit), searchProxy(query, limit)])
   const out: WebResult[] = []
   const seen = new Set<string>()
   for (const attempt of settled) {
@@ -103,11 +103,27 @@ export async function searchWeb(query: string, limit = 6): Promise<WebResult[]> 
 
 /** Reads one page and returns readable text, for grounding an answer. */
 export async function readPage(url: string, max = 9000): Promise<string> {
+  const direct = await readDirect(url, max).catch(() => '')
+  if (direct.length > 400) return direct
+  const proxied = await readProxy(url, max).catch(() => '')
+  return proxied.length > direct.length ? proxied : direct
+}
+
+async function readProxy(url: string, max: number): Promise<string> {
+  const res = await fetch(`https://r.jina.ai/${url}`, { headers: { 'user-agent': UA, accept: 'text/plain' } })
+  if (!res.ok) throw new Error(`proxy page ${res.status}`)
+  const text = await res.text()
+  return text
+    .split('\n')
+    .filter(line => !/^!\[/.test(line.trim()))
+    .join('\n')
+    .replace(/\n{3,}/g, '\n\n')
+    .slice(0, max)
+}
+
+async function readDirect(url: string, max: number): Promise<string> {
   const res = await fetch(url, {
-    headers: {
-      'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0 Safari/537.36',
-      accept: 'text/html,application/xhtml+xml',
-    },
+    headers: { 'user-agent': UA, accept: 'text/html,application/xhtml+xml' },
   })
   if (!res.ok) throw new Error(`page ${res.status}`)
   const html = (await res.text())
