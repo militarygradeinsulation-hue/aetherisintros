@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react'
 import { useServerFn } from '@tanstack/react-start'
-import { ArrowLeft, ArrowUpRight, Loader2 } from 'lucide-react'
+import { ArrowLeft, Loader2 } from 'lucide-react'
 import { Btn, Eyebrow } from '../ui'
 import { newsAge, type NewsItem } from '../news'
 import { askNewsPerspective, readNewsArticle, type ArticleRead } from '../../lib/newsReader.functions'
@@ -109,7 +109,7 @@ export function NewsReader({ item, onBack }: { item: NewsItem; onBack: () => voi
 
     <footer className="reader-foot">
       {data?.partial && <p className="sv-empty">The publisher limits full-text reading, so this view is built from the feed summary.</p>}
-      <a className="news-link" href={item.link} target="_blank" rel="noreferrer">Open the original at {item.source} <ArrowUpRight size={13} /></a>
+      <p className="sv-empty">Reported by {item.source}. You read it here — Ask Intros keeps the whole piece inside Intros.</p>
     </footer>
 
     {!isLoading && !data?.partial && !!data?.paragraphs?.length && <section className="module reader-body">
@@ -117,7 +117,7 @@ export function NewsReader({ item, onBack }: { item: NewsItem; onBack: () => voi
       {data.paragraphs.map((para, index) => <p key={index}>{para}</p>)}
     </section>}
 
-    {isError && <section className="module"><p className="sv-empty">This article could not be opened. Use the original link above.</p></section>}
+    {isError && <section className="module"><p className="sv-empty">This piece could not be read just now. Try again in a moment.</p></section>}
   </article>
 }
 

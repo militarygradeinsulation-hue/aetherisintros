@@ -17,8 +17,7 @@ export function NewsActions({ item, compact }: { item: NewsItem; compact?: boole
     if (sent) return
     const detail = [
       item.summary,
-      `Source: ${item.source}`,
-      item.link,
+      `Reported by ${item.source} — read it inside Intros under News.`,
     ].filter(Boolean).join('\n\n')
     net.addPost(item.title, detail, [], 'network')
     setSent(true)

@@ -83,7 +83,7 @@ export function NewsPage() {
           <span className="news-tag">{item.category}</span>
           <div className="news-actions">
             <button className="news-link" onClick={() => setOpen(item)}>Read <ArrowUpRight size={13} /></button>
-            <a className="news-source-link" href={item.link} target="_blank" rel="noreferrer">Original</a>
+            <span className="news-source-link">{item.source}</span>
             {tab !== 'feed' && <button className="news-remove" onClick={() => shelf.remove(tab === 'later' ? 'later' : 'library', item.id)} aria-label="Remove from this shelf"><X size={12} /></button>}
           </div>
         </footer>

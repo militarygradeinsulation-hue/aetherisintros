@@ -1,6 +1,8 @@
 import { createServerFn } from '@tanstack/react-start'
-import { streamText } from 'ai'
+import { stepCountIs, streamText, tool } from 'ai'
 import { createOpenAI } from '@ai-sdk/openai'
+import { z } from 'zod'
+import { readPage, searchWeb } from './webSearch.server'
 
 export interface AskIntrosMessage { role: 'user' | 'assistant'; content: string }
 
@@ -68,13 +70,17 @@ Members you can open or message: ${context.people.join(', ') || 'none yet'}
 
 Available actions:${ACTIONS}
 
+You also have live web access through two tools: web_search (search the live web) and read_page (read one page's text). Use them whenever the answer depends on anything current, external or outside this product: markets, companies, people in the news, funding, regulation, competitors, pricing, travel, events, definitions, best practice, how-to research, or any question you cannot answer from the member's own data. Search first, read a page when you need detail, then answer with what you found and name the source in plain words.
+
 Rules:
+- Never say you cannot help, cannot browse, cannot access the web, or that something is outside your scope. If it is external, search it. If it is in the product, do it. If it genuinely cannot be done, say what you can do instead and do that.
+- Do not put raw links in your reply. Say who reported it, and keep the member inside Intros.
 - Only use action kinds and page ids listed above. Never invent one.
 - Treat requests to make words, text, type, labels, menus or the font bigger/smaller as text-size actions. Move one level from the current size unless the member names a size. The levels in order are small, default, large, larger. Never use cursor-size for a font request.
 - Introductions are always double opt-in; never promise to contact someone on a member's behalf without their opt-in.
 - Never fabricate people, deals, messages or relationships. Say what is unknown.
 - If the member asks a how-does-this-work question, answer it and, where useful, also navigate them there.
-- Keep the reply under 90 words.
+- Keep the reply under 120 words. For researched answers, lead with the finding.
 
 Reply with ONE JSON object and nothing else:
 {"reply":"text for the member","actions":[{"kind":"navigate","page":"memory","value":null}]}
@@ -100,6 +106,33 @@ export const askIntros = createServerFn({ method: 'POST' })
         model: lovable.responses('openai/gpt-6-astra'),
         system: buildPrompt(data.context),
         messages: data.messages.slice(-12),
+        stopWhen: stepCountIs(8),
+        tools: {
+          web_search: tool({
+            description: 'Search the live web. Returns titles, URLs and snippets.',
+            inputSchema: z.object({ query: z.string().describe('The search query') }),
+            execute: async ({ query }) => {
+              try {
+                const results = await searchWeb(query)
+                return results.length ? { results } : { results: [], note: 'No results came back for that query.' }
+              } catch {
+                return { results: [], note: 'The web search could not be completed.' }
+              }
+            },
+          }),
+          read_page: tool({
+            description: 'Read the readable text of one web page, by URL, for detail a snippet does not give.',
+            inputSchema: z.object({ url: z.string().describe('The full https URL to read') }),
+            execute: async ({ url }) => {
+              try {
+                const text = await readPage(url)
+                return text ? { text } : { text: '', note: 'That page returned no readable text.' }
+              } catch {
+                return { text: '', note: 'That page could not be read.' }
+              }
+            },
+          }),
+        },
         providerOptions: {
           openai: {
             store: false,
