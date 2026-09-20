@@ -92,7 +92,7 @@ export function NewsReader({ item, onBack }: { item: NewsItem; onBack: () => voi
       </div>
       <form className="reader-ask" onSubmit={e => { e.preventDefault(); const q = custom.trim(); if (!q) return; setCustom(''); void ask('Your question', q) }}>
         <input value={custom} onChange={e => setCustom(e.target.value)} placeholder="Ask your own question about this piece…" aria-label="Ask a question about this article" />
-        <Btn kind="secondary" type="submit" disabled={!!pending || !custom.trim()}>Ask</Btn>
+        <Btn kind="secondary" disabled={!!pending || !custom.trim()} onClick={() => { const q = custom.trim(); if (!q) return; setCustom(''); void ask('Your question', q) }}>Ask</Btn>
       </form>
       {!!views.length && <div className="reader-answers">
         {views.map((view, index) => <div key={`${view.label}-${index}`} className="reader-answer">
