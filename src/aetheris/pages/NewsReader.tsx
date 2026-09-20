@@ -5,6 +5,8 @@ import { Btn, Eyebrow } from '../ui'
 import { newsAge, type NewsItem } from '../news'
 import { askNewsPerspective, readNewsArticle, type ArticleRead } from '../../lib/newsReader.functions'
 import { useQuery } from '@tanstack/react-query'
+import { NewsActions } from './NewsActions'
+
 
 const VIEWS: { label: string; question: string }[] = [
   { label: 'The other side', question: 'What is the strongest counterargument to the framing in this article?' },
