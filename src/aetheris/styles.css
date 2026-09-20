@@ -3045,10 +3045,19 @@ input, textarea, select { font: inherit; }
 .need-modal .btn.quiet { color: #3F4348; }
 
 /* ------------------------------------------------------------ text size preference */
-html.text-scale-small body { zoom: .92; }
-html.text-scale-default body { zoom: 1; }
-html.text-scale-large body { zoom: 1.1; }
-html.text-scale-larger body { zoom: 1.22; }
+html.text-scale-small { --ui-body-text: 11px; --ui-detail-text: 9px; --ui-control-text: 10px; --ui-nav-text: 9px; }
+html.text-scale-default { --ui-body-text: 13px; --ui-detail-text: 11px; --ui-control-text: 12px; --ui-nav-text: 11px; }
+html.text-scale-large { --ui-body-text: 15px; --ui-detail-text: 13px; --ui-control-text: 14px; --ui-nav-text: 13px; }
+html.text-scale-larger { --ui-body-text: 17px; --ui-detail-text: 15px; --ui-control-text: 16px; --ui-nav-text: 15px; }
+
+/* Text preferences resize words only. Layout, images and controls keep their dimensions. */
+html[class*="text-scale-"] .app-shell :where(.eyebrow, small),
+html[class*="text-scale-"] .ask-dock :where(small, .ask-dock-did li) { font-size: var(--ui-detail-text); }
+html[class*="text-scale-"] .app-shell :where(input, textarea, select),
+html[class*="text-scale-"] .ask-dock :where(input, button) { font-size: var(--ui-control-text); }
+html[class*="text-scale-"] .app-shell :where(.btn, .text-action, .back-link) { font-size: var(--ui-control-text); }
+html[class*="text-scale-"] .app-shell :where(.nav-rail nav button, .rail-foot, .mobile-nav button, .mobile-nav button span, .topbar-title, .topbar-search span, .topbar-search kbd, .topbar-dropbtn, .topbar-dropmenu button, .topbar-dropmenu .drop-label, .briefing-toggle) { font-size: var(--ui-nav-text); }
+html[class*="text-scale-"] .app-shell :where(.page-title p, .hub-head p, .mod p, .module p, .side-card p, .feed-card p, .post-card p, .match-report p, .need-case p, .messages p, .memory-changes p, .more-head p, .more-item-copy small, .briefing-summary p, .briefing-why, .briefing-hints li) { font-size: var(--ui-body-text); }
 .scale-picker { display: flex; flex-wrap: wrap; gap: 8px; margin: 12px 0 6px; }
 .scale-picker button {
   border: 1px solid var(--line-dark); border-radius: 6px; background: transparent;
