@@ -146,6 +146,18 @@ export default function SimpleViewPage() {
           <article className="sv-module"><header><div><span className="sv-kicker">Action log</span><h3>Signals worth attention</h3></div><b>{String(signals.length).padStart(2, '0')}</b></header>{signals.length ? <ul className="sv-log">{signals.map((signal, index) => <li key={signal.id}><span>{String(index + 1).padStart(2, '0')}</span><i /><div><strong>{signal.text}</strong><small>{signal.kind} · {signal.when}</small></div></li>)}</ul> : <p className="sv-empty">Signals appear here as relationships change.</p>}</article>
           <article className="sv-module"><header><div><span className="sv-kicker">Conversations</span><h3>Rooms in motion</h3></div><b>{String(threads.length).padStart(2, '0')}</b></header>{threads.length ? <ul className="sv-rooms">{threads.map(thread => <li key={thread.id}><span className="sv-room-avatar">{nameOf(thread.memberId).split(/\s+/).slice(0, 2).map(word => word[0]).join('')}</span><div><strong>{nameOf(thread.memberId)}</strong><small>{thread.messages[thread.messages.length - 1]?.text ?? thread.introContext}</small></div><button className="sv-icon-action" onClick={() => nav.goToThread(thread.id)} aria-label={`Open conversation with ${nameOf(thread.memberId)}`}>↗</button></li>)}</ul> : <p className="sv-empty">Start a conversation with a reason and it lands here.</p>}</article>
         </section>
+
+        <section className="sv-lower">
+          <article className="sv-module">
+            <header><div><span className="sv-kicker">News</span><h3>The intelligence feed</h3></div><b>{String(headlines.length).padStart(2, '0')}</b></header>
+            {news.isLoading ? <p className="sv-empty">Loading the Aetheris feed…</p>
+              : headlines.length ? <ul className="sv-news-list">{headlines.map(item => <li key={item.id}>
+                <small>{item.source} · {newsAge(item.published)}</small>
+                <a href={item.link} target="_blank" rel="noreferrer">{item.title}</a>
+              </li>)}</ul> : <p className="sv-empty">The feed is quiet right now.</p>}
+            <button className="sv-text-action" onClick={() => nav.setPage('news')}>Open News <ArrowUpRight size={13} /></button>
+          </article>
+        </section>
       </main>
     </div>
   </div>
