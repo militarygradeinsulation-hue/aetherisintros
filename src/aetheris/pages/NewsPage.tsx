@@ -21,6 +21,8 @@ export function NewsPage() {
     (filter === 'ALL' || item.category === filter)
     && (!query || `${item.title} ${item.summary} ${item.source}`.toLowerCase().includes(query)))
 
+  if (open) return <NewsReader item={open} onBack={() => setOpen(null)} />
+
   return <>
     <Head
       label="NEWS"
@@ -43,17 +45,24 @@ export function NewsPage() {
 
     {!isLoading && !isError && <section className="news-grid">
       {shown.map(item => <article key={item.id} className="news-card">
+        {item.image && <button className="news-thumb" onClick={() => setOpen(item)} aria-label={`Read ${item.title}`}>
+          <img src={item.image} alt="" loading="lazy" onError={e => { (e.currentTarget.closest('.news-thumb') as HTMLElement | null)?.remove() }} />
+        </button>}
         <header><Eyebrow signal={item.kind === 'aetheris'}>{item.source}</Eyebrow><small>{newsAge(item.published)}</small></header>
-        <h3>{item.title}</h3>
+        <h3><button className="news-title" onClick={() => setOpen(item)}>{item.title}</button></h3>
         {item.summary && <p>{item.summary}</p>}
         <footer>
           <span className="news-tag">{item.category}</span>
-          <a className="news-link" href={item.link} target="_blank" rel="noreferrer">Read <ArrowUpRight size={13} /></a>
+          <div className="news-actions">
+            <button className="news-link" onClick={() => setOpen(item)}>Read <ArrowUpRight size={13} /></button>
+            <a className="news-source-link" href={item.link} target="_blank" rel="noreferrer">Original</a>
+          </div>
         </footer>
       </article>)}
       {!shown.length && <p className="sv-empty">Nothing matches that filter yet.</p>}
     </section>}
   </>
 }
+
 
 export default NewsPage
