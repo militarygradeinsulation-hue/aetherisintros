@@ -138,6 +138,8 @@ export function OpsProvider({ children }: { children: ReactNode }) {
     return {
       ...snap,
       ready,
+      signedIn,
+      lastError: lastWriteError,
       refresh,
 
       /* ------------------------------------------------------------- people */
