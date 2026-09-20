@@ -239,7 +239,7 @@ function MemberSheet({ memberId, openThread }: { memberId: string; openThread: (
     <div className="sv-sheet-actions">
       <button className="sv-primary" onClick={() => openThread(net.openThreadWith(member.id))}>Message</button>
       <button className="sv-ghost" onClick={() => net.connect(member.id)}>{connected ? 'Connected' : 'Connect'}</button>
-      <button className="sv-ghost" onClick={() => net.requestIntro(member.id)}>{introState ? 'Intro requested' : 'Request intro'}</button>
+      <button className="sv-ghost" onClick={() => net.requestIntro(member.id)}>{requested ? 'Intro requested' : 'Request intro'}</button>
       <button className="sv-ghost" onClick={() => net.toggleSave(member.id, member.name)}>{saved ? 'Saved' : 'Save'}</button>
     </div>
   </div>
