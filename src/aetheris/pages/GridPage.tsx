@@ -246,12 +246,15 @@ export default function GridPage() {
         copy="Grid is not a second copy of your data. A linked sheet is a live view of your CRM people, companies, pipeline and tasks — edit a cell and the record changes everywhere. Freeform sheets are yours alone for budgets, lists and modelling."
         proof="Every workbook is private to your account." />
       <section className="ops-empty">
-        <Eyebrow>NO WORKBOOKS YET</Eyebrow>
+        <Eyebrow>{ops.signedIn ? 'NO WORKBOOKS YET' : 'SIGN IN TO USE GRID'}</Eyebrow>
         <h2>Start with one workbook.</h2>
-        <p>Each workbook holds as many sheets as you need — linked views of your records, plus freeform sheets for your own numbers.</p>
-        <Btn onClick={() => { void ops.createWorkbook('Operating Workbook', 'Relationships, pipeline and numbers in one place.') }}>
-          <Plus size={14} /> Create workbook
+        <p>{ops.signedIn
+          ? 'Each workbook holds as many sheets as you need — linked views of your records, plus freeform sheets for your own numbers.'
+          : 'Workbooks live inside your own account, so nothing can be saved here while you are signed out. Sign in and your first workbook takes one click.'}</p>
+        <Btn disabled={busy} onClick={() => { void makeWorkbook('Operating Workbook', 'Relationships, pipeline and numbers in one place.') }}>
+          <Plus size={14} /> {busy ? 'Creating…' : 'Create workbook'}
         </Btn>
+        {notice && <p className="ops-note" role="status">{notice}</p>}
       </section>
     </>
   }
