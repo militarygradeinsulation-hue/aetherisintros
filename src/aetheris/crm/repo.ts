@@ -206,11 +206,24 @@ export async function ensureDefaultPipeline(): Promise<string | null> {
 
 /* ------------------------------------------------------------------ writes */
 
+/** Last write failure, in plain language, for surfaces that need to explain it. */
+let writeError = ''
+export const lastWriteError = () => writeError
+
 async function insert<T>(table: string, payload: Row, map: (r: Row) => T): Promise<T | null> {
   const owner = await currentAccountId()
-  if (!owner) return null
+  if (!owner) {
+    writeError = 'Sign in to your account first — this workspace is private, so nothing can be saved while you are signed out.'
+    return null
+  }
   const { data, error } = await db.from(table).insert({ ...payload, owner_id: owner }).select('*').single()
-  if (error || !data) return null
+  if (error || !data) {
+    const message = error && typeof error === 'object' && 'message' in error ? String((error as { message: unknown }).message) : ''
+    writeError = message || 'That could not be saved just now. Try again in a moment.'
+    console.error('[ops] insert failed', table, error)
+    return null
+  }
+  writeError = ''
   return map(data as Row)
 }
 
