@@ -197,7 +197,7 @@ function EditorialHero({ folio, title, statement, copy, caption, focus = 'center
   </section>
 }
 
-/** The signature Aetheris Intros masthead: ivory brand field, editorial portrait, dark intelligence panel, live deck. */
+/** The signature Ask Intros masthead: ivory brand field, editorial portrait, dark intelligence panel, live deck. */
 function HomeMasthead({ people, select, setPage, openNeed, openThread }: {
   people: Member[]; select: (p: Member) => void; setPage: (p: Page) => void
   openNeed: () => void; openThread: (id: string) => void
@@ -213,7 +213,7 @@ function HomeMasthead({ people, select, setPage, openNeed, openThread }: {
   return <section className="masthead">
     <div className="masthead-brand">
        <span className="folio">THE RELATIONSHIP NETWORK FOR CEOs</span>
-      <h1 className="masthead-title">Aetheris<br /><em>Intros</em></h1>
+      <h1 className="masthead-title">Ask<br /><em>Intros</em></h1>
        <h2>Who matters.<br />Why they matter. Why now.</h2>
        <p>A relationship network for CEOs, built around trusted context and timely introductions—so every connection has a clear reason to matter.</p>
 
@@ -240,7 +240,7 @@ function HomeMasthead({ people, select, setPage, openNeed, openThread }: {
         <small>A SMARTER<br />WORLD IS A<br />MORE CONNECTED ONE.</small>
       </header>
       <div className="masthead-intel-head">
-         <div><h3>AETHERIS INTROS</h3><p>The Relationship Network for CEOs.</p></div>
+         <div><h3>ASK INTROS</h3><p>The Relationship Network for CEOs.</p></div>
         <ul><li><b>{people.length}</b> PEOPLE</li><li><b>{companies}</b> COMPANIES</li><li><b>{net.learnings.length}</b> LEARNED THEMES</li></ul>
       </div>
       <div className="masthead-callout standalone">MORE CONTEXT<br />BETTER INTROS<br />STRONGER OUTCOMES</div>
@@ -306,7 +306,7 @@ function HomeMasthead({ people, select, setPage, openNeed, openThread }: {
         <button className="text-action" onClick={() => nav.messageMember(lead.id)}>Message {lead.name.split(' ')[0]} <ArrowRight size={13} /></button>
       </article>}
     </div>
-    <footer className="masthead-footer"><span>THE SOCIAL NETWORK FOR REAL BUSINESS RELATIONSHIPS — NEVER MASS OUTREACH</span><b>AETHERIS INTROS</b></footer>
+    <footer className="masthead-footer"><span>THE SOCIAL NETWORK FOR REAL BUSINESS RELATIONSHIPS — NEVER MASS OUTREACH</span><b>ASK INTROS</b></footer>
   </section>
 }
 
@@ -720,9 +720,9 @@ function HomeAttention({ ranked, activeNeed, select, setPage, openThread }: {
 }
 
 function HomeBrand({ compact = false }: { compact?: boolean }) {
-  return <div className={`home-ai-brand ${compact ? 'compact' : ''}`} aria-label="Aetheris Intros">
+  return <div className={`home-ai-brand ${compact ? 'compact' : ''}`} aria-label="Ask Intros">
     <span className="home-ai-monogram">AI<i /></span>
-    <span className="home-ai-namestack"><b>AETHERIS INTROS</b>{!compact && <small className="home-ai-tagline"><span className="t-orange">WHY ME</span> · <span className="t-blue">WHY THEM</span> · <span className="t-orange">WHY NOW</span></small>}</span>
+    <span className="home-ai-namestack"><b>ASK INTROS</b>{!compact && <small className="home-ai-tagline"><span className="t-orange">WHY ME</span> · <span className="t-blue">WHY THEM</span> · <span className="t-orange">WHY NOW</span></small>}</span>
   </div>
 }
 
@@ -790,7 +790,7 @@ function Home({ people, select, setPage, openNeed, openThread }: {
 
     <section className="eh-hero">
       <div className="eh-hero-copy">
-        <span>AETHERIS INTROS</span>
+        <span>ASK INTROS</span>
         <h1>The Relationship Network<br /><em>for CEOs.</em></h1>
         <p>Who matters. Why they matter. Why now.</p>
         <div><button className="eh-primary" onClick={openNeed}>GET STARTED <ArrowRight size={15} /></button><button className="eh-secondary" onClick={() => setPage('intros')}><Play size={13} /> SEE HOW IT WORKS</button></div>
@@ -845,7 +845,7 @@ function Home({ people, select, setPage, openNeed, openThread }: {
     <section className="eh-film">
       <div className="eh-film-copy">
         <span>WATCH FIRST</span>
-        <h2>See how Aetheris Intros works.</h2>
+        <h2>See how Ask Intros works.</h2>
         <p>A short walk through the platform: how context is captured, how the right people surface at the right time, and how introductions happen with both sides agreeing.</p>
         <ul><li>Why this person, why you, why now</li><li>Double opt-in introductions, never cold outreach</li><li>Memory that keeps relationships alive</li></ul>
       </div>
@@ -860,13 +860,13 @@ function Home({ people, select, setPage, openNeed, openThread }: {
           <video src={introVideoAsset.url} controls preload="metadata" playsInline>
             <track kind="captions" />
           </video>
-          <figcaption>Aetheris Intros · from the founder</figcaption>
+          <figcaption>Ask Intros · from the founder</figcaption>
         </figure>
       </div>
     </section>
 
     <section className="eh-connections">
-      <header><div><span>RELATIONSHIP INTELLIGENCE</span><h2>Connections</h2><p>The people Aetheris Intros thinks matter most right now.</p></div><strong>{connections.length}<small>VISIBLE CONNECTIONS</small></strong></header>
+      <header><div><span>RELATIONSHIP INTELLIGENCE</span><h2>Connections</h2><p>The people Ask Intros thinks matter most right now.</p></div><strong>{connections.length}<small>VISIBLE CONNECTIONS</small></strong></header>
       <div className="eh-connection-tools">
         <label><Search size={15} /><input value={query} onChange={event => setQuery(event.target.value)} placeholder="Search people, companies, or context…" /></label>
         <select value={sort} onChange={event => setSort(event.target.value as HomeConnectionSort)} aria-label="Sort connections"><option value="score">Connection Score</option><option value="timing">Timing</option><option value="relationship">Relationship Strength</option><option value="contact">Last Contact</option></select>
@@ -1036,7 +1036,7 @@ function Discover({ people, select }: { people: Member[]; select: (p: Member) =>
         </section>
       </div>
       <blockquote className="global-quote">“The best opportunities come from the right people.”<small>— AETHERIS MEMBER</small></blockquote>
-      <footer className="member-footer"><span>THE INTELLIGENCE LAYER FOR MEANINGFUL CONNECTIONS</span><b>AETHERIS INTROS</b></footer>
+      <footer className="member-footer"><span>THE INTELLIGENCE LAYER FOR MEANINGFUL CONNECTIONS</span><b>ASK INTROS</b></footer>
     </section>
   </>
 }
@@ -1920,7 +1920,7 @@ function MemberProfile({ person, people, onClose, onDraft, onMessage }: {
         <Button kind="secondary" disabled={!text.trim()} onClick={() => { net.addNote(person.id, text.trim(), scope); setText('') }}>Record intelligence</Button>
       </section>
 
-      <footer className="member-footer"><span>THE INTELLIGENCE LAYER FOR MEANINGFUL CONNECTIONS</span><b>AETHERIS INTROS</b></footer>
+      <footer className="member-footer"><span>THE INTELLIGENCE LAYER FOR MEANINGFUL CONNECTIONS</span><b>ASK INTROS</b></footer>
     </div>
   </article>
 }
@@ -2535,7 +2535,7 @@ function Shell({ startPage }: { startPage?: Page | undefined }) {
       <div className="workspace">
         <header className="topbar">
           <button className="icon-btn mobile-menu" onClick={() => setMobileOpen(!mobileOpen)} aria-label="Menu"><Menu size={19} /></button>
-          <span className="topbar-title">Aetheris Intros <i>/</i> {metaById[page]?.label ?? allNav.find(n => n.id === page)?.label}</span>
+          <span className="topbar-title">Ask Intros <i>/</i> {metaById[page]?.label ?? allNav.find(n => n.id === page)?.label}</span>
           <div className="topbar-actions">
             <button className="topbar-search" aria-label="Search people, companies, topics, or ideas…" onClick={() => setGlobalSearchOpen(true)}><Search size={15} /><span>Search people, companies, topics, or ideas…</span><kbd>⌘K</kbd></button>
             <div className="topbar-dropdown">

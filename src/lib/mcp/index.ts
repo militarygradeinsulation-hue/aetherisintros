@@ -16,10 +16,10 @@ const projectRef = import.meta.env['VITE_SUPABASE_PROJECT_ID'] ?? "project-ref-u
 
 export default defineMcp({
   name: "aetheris-intros",
-  title: "Aetheris Intros",
+  title: "Ask Intros",
   version: "0.1.0",
   instructions:
-    "Tools for Aetheris Intros, a high-trust business network. Read the signed-in member's profile and Active Memory, search the network with match reasoning, read and post professional asks, and request double opt-in introductions. Never use these tools for mass outreach, pitching or spam: an introduction only happens when both sides opt in.",
+    "Tools for Ask Intros, a high-trust business network. Read the signed-in member's profile and Active Memory, search the network with match reasoning, read and post professional asks, and request double opt-in introductions. Never use these tools for mass outreach, pitching or spam: an introduction only happens when both sides opt in.",
   auth: auth.oauth.issuer({
     issuer: `https://${projectRef}.supabase.co/auth/v1`,
     acceptedAudiences: "authenticated",

@@ -7,13 +7,13 @@ export const Route = createFileRoute('/demo')({
   staticData: { sitemap: true },
   head: () => ({
     meta: [
-      { title: 'Aetheris Intros CEO Network — Guided Showcase' },
+      { title: 'Ask Intros CEO Network — Guided Showcase' },
       {
         name: 'description',
         content:
-          'Explore Aetheris Intros, the relationship network for CEOs. Who matters. Why they matter. Why now.',
+          'Explore Ask Intros, the relationship network for CEOs. Who matters. Why they matter. Why now.',
       },
-      { property: 'og:title', content: 'Aetheris Intros — The Relationship Network for CEOs' },
+      { property: 'og:title', content: 'Ask Intros — The Relationship Network for CEOs' },
       { property: 'og:description', content: 'Who matters. Why they matter. Why now.' },
       { property: 'og:type', content: 'website' },
       { name: 'twitter:card', content: 'summary_large_image' },

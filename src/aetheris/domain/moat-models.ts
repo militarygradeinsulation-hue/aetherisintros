@@ -1,5 +1,5 @@
 /**
- * Aetheris Intros — moat layer domain models.
+ * Ask Intros — moat layer domain models.
  *
  * Storage-agnostic, exactly like ./models.ts and ./os-models.ts. The preview
  * runs on the local adapter (localStorage + seeded demo content); a Postgres /

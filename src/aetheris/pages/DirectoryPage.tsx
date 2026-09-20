@@ -107,7 +107,7 @@ export function DirectoryPage() {
     <Head
       label="DIRECTORY"
       title="Every member, clearly searchable."
-      copy="Find everyone who has joined Aetheris Intros by name, company, role, industry or location, then open their full profile. Reference records remain available separately for context."
+      copy="Find everyone who has joined Ask Intros by name, company, role, industry or location, then open their full profile. Reference records remain available separately for context."
       proof={proof}
       action={<Btn kind="secondary" onClick={() => setMembersOnly(m => !m)}>{membersOnly ? 'Show everyone' : 'Members only'}</Btn>}
     />

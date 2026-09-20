@@ -78,10 +78,10 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1, viewport-fit=cover" },
-      { title: "Aetheris Intros — The Relationship Network for CEOs" },
+      { title: "Ask Intros — The Relationship Network for CEOs" },
       { name: "description", content: "Who matters. Why they matter. Why now." },
-      { name: "author", content: "Aetheris Intros" },
-      { property: "og:title", content: "Aetheris Intros — The Relationship Network for CEOs" },
+      { name: "author", content: "Ask Intros" },
+      { property: "og:title", content: "Ask Intros — The Relationship Network for CEOs" },
       { property: "og:description", content: "Who matters. Why they matter. Why now." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },

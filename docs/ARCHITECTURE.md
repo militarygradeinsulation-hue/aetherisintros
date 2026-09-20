@@ -1,8 +1,8 @@
-# Aetheris Intros Architecture
+# Ask Intros Architecture
 
 ## Product category
 
-Aetheris Intros is a **Relationship Intelligence Operating System**.
+Ask Intros is a **Relationship Intelligence Operating System**.
 
 The core question is not “Who can we message?” It is:
 

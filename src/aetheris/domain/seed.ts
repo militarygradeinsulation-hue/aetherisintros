@@ -47,7 +47,7 @@ export const seedSystems: SystemRecord[] = [
     status: 'active', visibility: 'network', createdAt: day(-150), updatedAt: day(-9),
   },
   {
-    id: 'sys-intros', name: 'Aetheris Intros', ownerId: 'me', category: 'Product',
+    id: 'sys-intros', name: 'Ask Intros', ownerId: 'me', category: 'Product',
     thesis: 'The professional network that understands what everyone is trying to move.',
     description: 'People, systems, circles, intent and memory in one graph, so an introduction happens when it is justified for both sides — and the reasoning is visible.',
     bestFitCompanies: ['Northline Capital', 'Verdant Growth Partners', 'Anything But Typical'],
@@ -519,7 +519,7 @@ export const seedCompanies: CompanyProfile[] = [
     peopleIds: ['p21'], strongestEntry: 'Darius Cole → Elise Laurent (asked, awaiting reply)',
     contextualPaths: ['Darius has co-invested twice', 'Elise posted a relationship-tracking intent'],
     previousConversations: ['No direct conversation yet'],
-    dormantOpportunities: ['Design partnership for Aetheris Intros'],
+    dormantOpportunities: ['Design partnership for Ask Intros'],
     relevantSystemIds: ['sys-intros'], openIntentIds: ['int8'], relatedCircleIds: ['cir-pe-revenue'],
     timeline: [
       { when: day(-4), text: 'Warm path requested through Darius Cole.' },

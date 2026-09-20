@@ -35,7 +35,7 @@ function JoinBand({ signedIn }: { signedIn: boolean }) {
       <div className="lv-join-copy">
         <span>THE FOUNDING 1,000 · WHITELIST</span>
         <h2>Join the <em>whitelist.</em></h2>
-        <p>Aetheris Intros opens to 1,000 founding members. Add your name and we review it against the standard: CEOs, founders, owners, managing partners and principal operators. Verified people only — that is what makes an introduction here worth taking.</p>
+        <p>Ask Intros opens to 1,000 founding members. Add your name and we review it against the standard: CEOs, founders, owners, managing partners and principal operators. Verified people only — that is what makes an introduction here worth taking.</p>
         <ul>
           <li><i />Reviewed by a person, not a signup form</li>
           <li><i />Double opt-in introductions, always</li>
@@ -84,8 +84,8 @@ function LandingPage({ signedIn }: { signedIn: boolean }) {
       {/* ── Section 1: Black hero ── */}
       <header className="lv-nav">
         <div className="brand-mark">
-          <img className="brand-logo" src={logoAsset.url} alt="Aetheris Intros logo" />
-          <span className="brand-name">Aetheris<em>Intros</em></span>
+          <img className="brand-logo" src={logoAsset.url} alt="Ask Intros logo" />
+          <span className="brand-name">Ask<em>Intros</em></span>
         </div>
         <nav>PEOPLE&nbsp;&nbsp;|&nbsp;&nbsp;IDEAS&nbsp;&nbsp;|&nbsp;&nbsp;OPPORTUNITIES</nav>
         <div className="lv-nav-actions">
@@ -97,8 +97,8 @@ function LandingPage({ signedIn }: { signedIn: boolean }) {
 
       <section className="lv-hero">
         <div className="lv-hero-copy">
-          <span className="lv-hero-topright">AETHERIS INTROS</span>
-          <h1><span>Aetheris Intros</span><em>The Relationship Network for CEOs.</em></h1>
+          <span className="lv-hero-topright">ASK INTROS</span>
+          <h1><span>Ask Intros</span><em>The Relationship Network for CEOs.</em></h1>
           <p className="lv-hero-sub">Who matters. Why they matter. Why now.</p>
           <span className="lv-hero-scale">RELATIONSHIPS · INTELLIGENCE · OPPORTUNITY</span>
           <div className="lv-hero-actions">
@@ -113,7 +113,7 @@ function LandingPage({ signedIn }: { signedIn: boolean }) {
         </div>
       </section>
 
-      <section className="lv-quote" aria-label="Aetheris Intros principle">
+      <section className="lv-quote" aria-label="Ask Intros principle">
         <blockquote>You&rsquo;re defined by the people you surround yourself with.</blockquote>
       </section>
 
@@ -152,7 +152,7 @@ function LandingPage({ signedIn }: { signedIn: boolean }) {
       {/* ── Showcase: One Connected System for CEOs ── */}
       <section className="lv-showcase">
         <div className="lv-showcase-plate">
-          <img src={showcaseAsset.url} alt="One Connected System for CEOs — the tools companies pay for separately, now native inside Aetheris Intros" />
+          <img src={showcaseAsset.url} alt="One Connected System for CEOs — the tools companies pay for separately, now native inside Ask Intros" />
         </div>
         <div className="lv-showcase-foot">
           <p>Instead of paying for disconnected tools, Intros gives you <b>one native system.</b></p>
@@ -162,8 +162,8 @@ function LandingPage({ signedIn }: { signedIn: boolean }) {
 
       <footer className="lv-legal">
         <div className="brand-mark">
-          <img className="brand-logo" src={logoAsset.url} alt="Aetheris Intros logo" />
-          <span className="brand-name">Aetheris<em>Intros</em></span>
+          <img className="brand-logo" src={logoAsset.url} alt="Ask Intros logo" />
+          <span className="brand-name">Ask<em>Intros</em></span>
         </div>
         <span><LockKeyhole size={12} />No spam. No selling your attention. Private by default.</span>
         <span>© 2026 Aetheris</span>

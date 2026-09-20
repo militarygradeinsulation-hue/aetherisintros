@@ -39,7 +39,7 @@
 - [x] Ask Network page styled (composer, audience chips, routed rows, replies)
 - [x] Shared dialog/overlay/chip/meter styles for previously unstyled blocks
 - [x] Removed Active Memory Graph from the Home page
-- [x] Restored original Aetheris Intros home wording, kept the picture
+- [x] Restored original Ask Intros home wording, kept the picture
 
 - [x] IA pass: 7 primary destinations + More index drawer, central page metadata, global Briefing mode, mobile Home/Discover/Intros/Messages/More
 
@@ -63,7 +63,7 @@
 
 # Profile identity + share metadata (Sep 13)
 - [x] Finish editable profile name/photo and verify persistence.
-- [x] Set /onboarding social/search image to Aetheris Intros instead of the default thumbnail.
+- [x] Set /onboarding social/search image to Ask Intros instead of the default thumbnail.
 - [x] Verify Messages sends, threads and persistence across demo/live paths.
 
 # Navigation and visual simplification (Sep 13)
@@ -111,7 +111,7 @@
 
 # CEO positioning (Sep 16)
 
-- [x] Position Aetheris Intros as “The Relationship Network for CEOs.” across the public homepage and signed-in Home.
+- [x] Position Ask Intros as “The Relationship Network for CEOs.” across the public homepage and signed-in Home.
 - [x] Use “Who matters. Why they matter. Why now.” consistently in search and social metadata.
 
 # Founder Story micro-book (Sep 16)

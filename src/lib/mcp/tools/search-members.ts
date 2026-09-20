@@ -6,7 +6,7 @@ export default defineTool({
   name: "search_members",
   title: "Search members",
   description:
-    "Search the Aetheris Intros network for members by name, role, industry, expertise, needs or offers. Returns match reasoning fields (why them, why you, why now) when present.",
+    "Search the Ask Intros network for members by name, role, industry, expertise, needs or offers. Returns match reasoning fields (why them, why you, why now) when present.",
   inputSchema: {
     query: z.string().trim().min(1).optional().describe("Free text to match against name, title, company, industry or bio."),
     industry: z.string().trim().min(1).optional().describe("Restrict results to one industry."),

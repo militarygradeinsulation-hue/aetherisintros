@@ -16,12 +16,12 @@ export const Route = createFileRoute('/_authenticated/verify')({
   staticData: { sitemap: false },
   head: () => ({
     meta: [
-      { title: 'Membership verification — Aetheris Intros' },
+      { title: 'Membership verification — Ask Intros' },
       {
         name: 'description',
-        content: 'A network built for people who actually run companies. Every Aetheris Intros member is verified before they reach the network.',
+        content: 'A network built for people who actually run companies. Every Ask Intros member is verified before they reach the network.',
       },
-      { property: 'og:title', content: 'Membership verification — Aetheris Intros' },
+      { property: 'og:title', content: 'Membership verification — Ask Intros' },
       { property: 'og:description', content: 'Every member is verified. Every relationship starts with a real person.' },
       { property: 'og:type', content: 'website' },
       { name: 'twitter:card', content: 'summary_large_image' },
@@ -131,8 +131,8 @@ function VerifyPortal() {
   return <main className="verify-page">
     <section className="verify-panel">
       <Link to="/" className="auth-brand">
-        <img className="brand-logo" src={logoAsset.url} alt="Aetheris Intros logo" />
-        <span className="brand-name">Aetheris<em>Intros</em></span>
+        <img className="brand-logo" src={logoAsset.url} alt="Ask Intros logo" />
+        <span className="brand-name">Ask<em>Intros</em></span>
       </Link>
       <div className="auth-index"><span className="folio">MEMBERSHIP VERIFICATION / 2026</span><span>01 / REAL OPERATORS ONLY</span></div>
       <h1>A network built for people who<br /><em>actually run companies.</em></h1>
@@ -237,7 +237,7 @@ function VerifyPortal() {
       </div>
     </section>
 
-    <aside className="auth-visual auth-visual-type" aria-label="Aetheris Intros verification principles">
+    <aside className="auth-visual auth-visual-type" aria-label="Ask Intros verification principles">
       <span className="auth-visual-mark" aria-hidden="true">+</span>
       <div className="auth-visual-statement" aria-hidden="true">
         <span>REAL IDENTITY</span><i>×</i><span>REAL CONTEXT</span><i>×</i><span>TRUST</span>

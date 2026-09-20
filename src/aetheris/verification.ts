@@ -1,7 +1,7 @@
 /**
  * Membership verification — client layer.
  *
- * Aetheris Intros is a private network for people who actually run companies.
+ * Ask Intros is a private network for people who actually run companies.
  * Creating an account does not grant network access: the member must claim a
  * business identity and have a controlling business role verified.
  */
