@@ -1,4 +1,5 @@
 import { useMemo, useState } from 'react'
+import { createPortal } from 'react-dom'
 import { ArrowUpRight, Compass, Home, Menu, MessageSquare, MoreHorizontal, PenLine, Radar, Search, Send, Users, X } from 'lucide-react'
 import { useNetwork } from '../store'
 import { useNav, type Page } from '../nav'
@@ -201,7 +202,7 @@ function SocialSheet({ panel, close, openMember, openThread }: {
     : panel.kind === 'signals' ? 'Every signal'
     : 'Reading'
 
-  return <div className="sv-sheet-wrap" role="dialog" aria-label={title}>
+  const sheet = <div className="sv-sheet-wrap" role="dialog" aria-label={title}>
     <button className="sv-sheet-scrim" aria-label="Close" onClick={close} />
     <section className="sv-sheet">
       <header><span className="sv-kicker">Stays on this page</span><strong>{title}</strong><button className="sv-sheet-close" onClick={close} aria-label="Close"><X size={15} /></button></header>
@@ -216,6 +217,7 @@ function SocialSheet({ panel, close, openMember, openThread }: {
       </div>
     </section>
   </div>
+  return typeof document === 'undefined' ? sheet : createPortal(sheet, document.body)
 }
 
 function MemberSheet({ memberId, openThread }: { memberId: string; openThread: (id: string) => void }) {
