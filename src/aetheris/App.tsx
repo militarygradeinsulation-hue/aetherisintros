@@ -107,6 +107,7 @@ import { BriefingPage } from './pages/BriefingPage'
 import { VaultPage } from './pages/VaultPage'
 import { KnowledgeAssetsPage } from './pages/KnowledgeAssetsPage'
 import SimpleViewPage from './pages/SimpleViewPage'
+import { NewsPage } from './pages/NewsPage'
 import { portraitFor } from './portraits'
 
 
