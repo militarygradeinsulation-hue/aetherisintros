@@ -13,7 +13,7 @@ export type { AskIntrosAction }
 
 interface Turn { role: 'user' | 'assistant'; content: string; did?: string[] }
 
-const openers = [
+const startingOpeners = [
   'What should I do first today?',
   'Make the text bigger',
   'Explain Active Memory',
@@ -41,6 +41,7 @@ export function AskIntrosDock({ page, peopleNames, memberName, briefing, context
     role: 'assistant',
     content: `I am Ask Intros. Ask me how anything here works, or tell me to do it — change your text size, open a page, post a need, find who matters this week.`,
   }])
+  const [openers, setOpeners] = useState<string[]>(startingOpeners)
   const listRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => { listRef.current?.scrollTo({ top: listRef.current.scrollHeight }) }, [turns, open])
@@ -73,6 +74,8 @@ export function AskIntrosDock({ page, peopleNames, memberName, briefing, context
         return note ? [note] : []
       })
       setTurns(current => [...current, { role: 'assistant', content: answer.reply, did }])
+      const next = answer.suggestions.filter(item => item.toLowerCase() !== question.toLowerCase())
+      if (next.length) setOpeners(next.slice(0, 4))
     } catch {
       setTurns(current => [...current, { role: 'assistant', content: 'I could not reach Ask Intros just now. Try again in a moment.' }])
     } finally {
@@ -101,7 +104,7 @@ export function AskIntrosDock({ page, peopleNames, memberName, briefing, context
         {busy && <div className="ask-dock-turn assistant"><p className="ask-dock-thinking">Thinking…</p></div>}
       </div>
 
-      <div className="ask-dock-openers">{openers.map(item =>
+      <div className="ask-dock-openers">{openers.length > 0 && <span className="ask-dock-openers-label">Next</span>}{openers.map(item =>
         <button key={item} disabled={busy} onClick={() => void send(item)}>{item}</button>)}</div>
 
       <form className="ask-dock-input" onSubmit={event => { event.preventDefault(); void send(input) }}>
