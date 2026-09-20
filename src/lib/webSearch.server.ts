@@ -44,10 +44,11 @@ async function searchProxy(query: string, limit: number): Promise<WebResult[]> {
     if (/duckduckgo\.com/i.test(url) || seen.has(url)) continue
     seen.add(url)
     const snippet = (match[3] ?? '')
-      .split('\n')
-      .map(line => line.trim())
-      .filter(line => line && !line.startsWith('[') && !line.startsWith('!') && !line.startsWith('#'))
-      .join(' ')
+      .replace(/!\[[^\]]*\]\([^)]*\)/g, ' ')
+      .replace(/\[([^\]]*)\]\([^)]*\)/g, '$1')
+      .replace(/https?:\/\/\S+/g, ' ')
+      .replace(/\s+/g, ' ')
+      .trim()
       .slice(0, 400)
     out.push({ title, url, snippet })
   }
