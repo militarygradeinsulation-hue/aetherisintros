@@ -153,7 +153,7 @@ export default function SimpleViewPage() {
             {news.isLoading ? <p className="sv-empty">Loading the Aetheris feed…</p>
               : headlines.length ? <ul className="sv-news-list">{headlines.map(item => <li key={item.id}>
                 <small>{item.source} · {newsAge(item.published)}</small>
-                <a href={item.link} target="_blank" rel="noreferrer">{item.title}</a>
+                <button type="button" className="sv-news-title" onClick={() => nav.setPage('news')}>{item.title}</button>
               </li>)}</ul> : <p className="sv-empty">The feed is quiet right now.</p>}
             <button className="sv-text-action" onClick={() => nav.setPage('news')}>Open News <ArrowUpRight size={13} /></button>
           </article>
