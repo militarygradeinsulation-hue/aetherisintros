@@ -3,6 +3,7 @@ import { ArrowUpRight, Compass, Home, Menu, MessageSquare, MoreHorizontal, Radar
 import { useNetwork } from '../store'
 import { useNav, type Page } from '../nav'
 import { rankMatches } from '../matching'
+import { newsAge, useAetherisNews } from '../news'
 import { Face } from '../ui'
 import type { Member } from '../social'
 
