@@ -29,6 +29,8 @@ export interface AskIntrosInput {
 export interface AskIntrosResult {
   reply: string
   actions: AskIntrosAction[]
+  /** Three short follow-ups the member can tap next, written from this conversation. */
+  suggestions: string[]
   error?: string
 }
 
@@ -82,8 +84,10 @@ Rules:
 - If the member asks a how-does-this-work question, answer it and, where useful, also navigate them there.
 - Keep the reply under 120 words. For researched answers, lead with the finding.
 
+Always end by offering three follow-ups the member is likely to want next, written in their voice, three to seven words each, specific to what was just discussed. Never repeat a follow-up you already offered in this conversation.
+
 Reply with ONE JSON object and nothing else:
-{"reply":"text for the member","actions":[{"kind":"navigate","page":"memory","value":null}]}
+{"reply":"text for the member","actions":[{"kind":"navigate","page":"memory","value":null}],"suggestions":["Show me who matters this week","Explain double opt-in","Post that as a need"]}
 Use an empty actions array when no action is needed.`
 }
 
@@ -92,7 +96,7 @@ export const askIntros = createServerFn({ method: 'POST' })
   .handler(async ({ data }): Promise<AskIntrosResult> => {
     const apiKey = process.env['LOVABLE_API_KEY']
     if (!apiKey) {
-      return { reply: 'Ask Intros is not configured yet on this account.', actions: [], error: 'missing-key' }
+      return { reply: 'Ask Intros is not configured yet on this account.', actions: [], suggestions: [], error: 'missing-key' }
     }
 
     const lovable = createOpenAI({
@@ -147,7 +151,7 @@ export const askIntros = createServerFn({ method: 'POST' })
       return parseAnswer(text)
     } catch (error) {
       const message = error instanceof Error ? error.message : 'Ask Intros could not answer just now.'
-      return { reply: 'Ask Intros could not answer just now. Try again in a moment.', actions: [], error: message }
+      return { reply: 'Ask Intros could not answer just now. Try again in a moment.', actions: [], suggestions: [], error: message }
     }
   })
 
@@ -160,7 +164,14 @@ function parseAnswer(text: string): AskIntrosResult {
       const parsed = JSON.parse(cleaned.slice(start, end + 1)) as {
         reply?: unknown
         actions?: unknown
+        suggestions?: unknown
       }
+      const suggestions = Array.isArray(parsed.suggestions)
+        ? parsed.suggestions
+            .filter((item): item is string => typeof item === 'string' && item.trim().length > 0)
+            .map(item => item.trim().slice(0, 60))
+            .slice(0, 4)
+        : []
       const actions = Array.isArray(parsed.actions)
         ? parsed.actions.flatMap(entry => {
             const item = entry as Record<string, unknown>
@@ -173,11 +184,11 @@ function parseAnswer(text: string): AskIntrosResult {
           })
         : []
       if (typeof parsed.reply === 'string' && parsed.reply.trim()) {
-        return { reply: parsed.reply.trim(), actions }
+        return { reply: parsed.reply.trim(), actions, suggestions }
       }
     } catch {
       /* fall through to plain text */
     }
   }
-  return { reply: cleaned || 'I did not catch that. Ask me again?', actions: [] }
+  return { reply: cleaned || 'I did not catch that. Ask me again?', actions: [], suggestions: [] }
 }
