@@ -22,7 +22,7 @@ export function applyTextScale(scale: TextScale) {
   const root = document.documentElement
   for (const option of textScales) root.classList.remove(`text-scale-${option}`)
   root.classList.add(`text-scale-${scale}`)
-  root.dataset.textScale = scale
+  root.dataset['textScale'] = scale
 }
 
 export function setTextScale(scale: TextScale) {
