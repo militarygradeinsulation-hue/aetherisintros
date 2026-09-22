@@ -1,7 +1,7 @@
 import { useMemo, useState } from 'react'
 import { ArrowUpRight, RefreshCw, X } from 'lucide-react'
 import { Btn, Eyebrow, Head } from '../ui'
-import { newsAge, useAetherisNews, type NewsItem } from '../news'
+import { NewsImagesProvider, newsAge, useAetherisNews, useNewsImages, type NewsItem } from '../news'
 import { NewsReader } from './NewsReader'
 import { NewsActions } from './NewsActions'
 import { useNewsShelf } from '../newsShelf'
@@ -29,7 +29,11 @@ export function NewsPage() {
     (tab !== 'feed' || filter === 'ALL' || item.category === filter)
     && (!query || `${item.title} ${item.summary} ${item.source}`.toLowerCase().includes(query)))
 
-  if (open) return <NewsReader item={open} onBack={() => setOpen(null)} />
+  const resolvedImages = useNewsImages(items)
+
+  if (open) return <NewsImagesProvider value={resolvedImages}>
+    <NewsReader item={open} onBack={() => setOpen(null)} />
+  </NewsImagesProvider>
 
   const tabs: { id: Tab; label: string; count: number }[] = [
     { id: 'feed', label: 'Feed', count: items.length },
@@ -38,7 +42,7 @@ export function NewsPage() {
   ]
 
 
-  return <>
+  return <NewsImagesProvider value={resolvedImages}>
     <Head
       label="NEWS"
       title="The intelligence feed, read alongside your relationships."
@@ -91,7 +95,7 @@ export function NewsPage() {
       </article>)}
       {!shown.length && tab === 'feed' && <p className="sv-empty">Nothing matches that filter yet.</p>}
     </section>}
-  </>
+  </NewsImagesProvider>
 
 }
 

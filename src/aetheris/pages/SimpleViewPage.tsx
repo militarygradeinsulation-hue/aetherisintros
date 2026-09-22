@@ -4,7 +4,7 @@ import { ArrowUpRight, Compass, Home, Menu, MessageSquare, MoreHorizontal, PenLi
 import { useNetwork } from '../store'
 import { useNav, type Page } from '../nav'
 import { rankMatches } from '../matching'
-import { newsAge, useAetherisNews, type NewsItem } from '../news'
+import { NewsImagesProvider, newsAge, useAetherisNews, useNewsImages, type NewsItem } from '../news'
 import { Face } from '../ui'
 import { NewsReader } from './NewsReader'
 import type { Member } from '../social'
@@ -56,8 +56,9 @@ export default function SimpleViewPage() {
   const openConversation = (memberId: string) => setPanel({ kind: 'thread', threadId: net.openThreadWith(memberId) })
   const news = useAetherisNews()
   const headlines = (news.data?.items ?? []).filter(item => hit(item.title, item.summary, item.source, item.category)).slice(0, 5)
+  const resolvedImages = useNewsImages(news.data?.items ?? [])
 
-  return <div className="sv">
+  return <NewsImagesProvider value={resolvedImages}><div className="sv">
     <header className="sv-utility">
       <div className="sv-utility-brand"><span className="sv-brandmark">A</span><div><strong>Social View</strong><small>Relationship intelligence</small></div></div>
       <label className="sv-search">
@@ -182,7 +183,7 @@ export default function SimpleViewPage() {
     </div>
 
     {panel && <SocialSheet panel={panel} close={() => setPanel(null)} openMember={id => setPanel({ kind: 'member', memberId: id })} openThread={id => setPanel({ kind: 'thread', threadId: id })} />}
-  </div>
+  </div></NewsImagesProvider>
 }
 
 /** One in-page sheet: profiles, conversations, needs, journal, memory, signals and news all stay here. */
