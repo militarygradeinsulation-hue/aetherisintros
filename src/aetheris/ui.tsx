@@ -10,7 +10,7 @@ export function Glyph({ size = 18 }: { size?: number }) {
 export function Btn({ children, kind = 'primary', onClick, disabled = false, className = '' }: {
   children: React.ReactNode; kind?: 'primary' | 'secondary' | 'quiet'; onClick?: () => void; disabled?: boolean; className?: string
 }) {
-  return <button className={`btn ${kind} ${className}`} onClick={onClick} disabled={disabled}>{children}</button>
+  return <button type="button" className={`btn ${kind} ${className}`} onClick={onClick} disabled={disabled}>{children}</button>
 }
 
 export function Eyebrow({ children, signal = false }: { children: React.ReactNode; signal?: boolean }) {
