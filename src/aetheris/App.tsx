@@ -22,6 +22,8 @@ import { applyTextScale, readTextScale, setTextScale, textScales, type TextScale
 import { applyCursorScale, readCursorScale, setCursorScale, cursorScales, type CursorScale } from './cursorScale'
 import { AskIntrosDock, type AskIntrosAction } from './AskIntrosDock'
 import ConstellationField from './ConstellationField'
+import { VoiceBar } from './VoiceBar'
+import { currentPagePassages, readAloud, readPageOrSelection, setVoiceSettings, speechSupported, stopReading, readerSnapshot } from './voice'
 
 import discoverEditorialAsset from '@/assets/editorial-discover.jpg.asset.json'
 import introsEditorialAsset from '@/assets/editorial-intros.jpg.asset.json'
