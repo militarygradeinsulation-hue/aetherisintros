@@ -123,6 +123,11 @@ function LandingPage({ signedIn }: { signedIn: boolean }) {
 
   return (
     <main className="lv">
+      {/* ── Manifesto band ── */}
+      <div className="lv-manifesto" aria-label="Ask Intros manifesto">
+        <p>Stop using LinkedIn, Facebook, HubSpot, Salesforce, and every other system that just creates chaos.</p>
+      </div>
+
       {/* ── Top strip: WHY ME · WHY THEM · WHY NOW ── */}
       <div className="lv-topstrip" aria-hidden="true">
         <span className="t-orange">WHY ME</span>
