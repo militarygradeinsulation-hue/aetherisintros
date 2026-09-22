@@ -14,6 +14,14 @@ export type PageGroup =
   | 'OPPORTUNITY & EXECUTION'
   | 'TRUST, PERMISSION & CONTROL'
 
+/** Five plain-language hubs. Everything in the product lives in exactly one of them. */
+export type Hub =
+  | 'EVERYDAY'
+  | 'PEOPLE & NETWORK'
+  | 'OPPORTUNITIES & WORK'
+  | 'INTELLIGENCE & MEMORY'
+  | 'TRUST & CONTROL'
+
 export interface Briefing {
   does: string
   look: string
