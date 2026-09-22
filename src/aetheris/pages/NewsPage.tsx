@@ -29,7 +29,11 @@ export function NewsPage() {
     (tab !== 'feed' || filter === 'ALL' || item.category === filter)
     && (!query || `${item.title} ${item.summary} ${item.source}`.toLowerCase().includes(query)))
 
-  if (open) return <NewsReader item={open} onBack={() => setOpen(null)} />
+  const resolvedImages = useNewsImages(items)
+
+  if (open) return <NewsImagesProvider value={resolvedImages}>
+    <NewsReader item={open} onBack={() => setOpen(null)} />
+  </NewsImagesProvider>
 
   const tabs: { id: Tab; label: string; count: number }[] = [
     { id: 'feed', label: 'Feed', count: items.length },
