@@ -101,6 +101,9 @@ function DisplayCard() {
       ))}
     </div>
     <p className="settings-identity-note"><MousePointer2 size={13} /> Sets how large the Aetheris pointer appears on this device.</p>
+
+    <Eyebrow>VOICE</Eyebrow>
+    <VoiceCard />
   </>
 }
 
