@@ -7,6 +7,7 @@ import showcaseAsset from '@/assets/one-connected-system.png.asset.json'
 
 import { foundingStats, joinWaitlist, useAccess, type FoundingStats } from './access'
 import { CinematicFooter } from './CinematicFooter'
+import ParticleDrift from './ParticleDrift'
 
 /** Public front page. The root URL always remains the public Aetheris page. */
 export default function Landing() {
@@ -145,6 +146,7 @@ function LandingPage({ signedIn }: { signedIn: boolean }) {
       </header>
 
       <section className="lv-hero">
+        <ParticleDrift className="lv-hero-drift" />
         <div className="lv-hero-copy">
           <span className="lv-hero-topright">ASK INTROS</span>
           <h1><span>Ask Intros</span><em>The Relationship Network for CEOs.</em></h1>
