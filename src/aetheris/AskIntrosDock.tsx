@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { ArrowUp, X } from 'lucide-react'
+import { ThinkingOrb } from '@/components/ui/thinking-orbs'
 
 import { askIntros, type AskIntrosAction } from '@/lib/askIntros.functions'
 import { pageMeta } from './pageMeta'
