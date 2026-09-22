@@ -88,8 +88,8 @@ export default function ParticleDrift({ className }: { className?: string }) {
       ctx.lineWidth = 0.5
       for (let i = 0; i < nodes.length; i++) {
         for (let j = i + 1; j < nodes.length; j++) {
-          const a = nodes[i]
-          const b = nodes[j]
+          const a = nodes[i]!
+          const b = nodes[j]!
           const d = Math.hypot(a.x - b.x, a.y - b.y)
           if (d < 120) {
             ctx.strokeStyle = `rgba(${GRAPHITE}, ${0.15 * (1 - d / 120)})`
