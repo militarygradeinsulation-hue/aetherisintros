@@ -3908,3 +3908,8 @@ button.news-link{background:none;border:0;padding:0;cursor:pointer}
 .voice-bar-speed { display: inline-flex; align-items: center; gap: 5px; color: #9EA4AC; padding: 0 6px 0 8px; }
 .voice-bar-speed select { background: transparent; border: 0; color: #F1EFE9; font-size: var(--text-control, 12px); }
 @media (max-width: 780px) { .voice-bar-state small { max-width: 16ch; } }
+
+/* highlight-to-read button */
+.selection-read{position:fixed;z-index:200;display:inline-flex;align-items:center;gap:7px;padding:8px 12px;border:1px solid rgba(255,255,255,.18);border-radius:8px;background:var(--graphite,#1A1F25);color:var(--soft,#F1EFE9);font:600 10px var(--sans);letter-spacing:.1em;text-transform:uppercase;cursor:pointer;box-shadow:0 14px 34px rgba(0,0,0,.45)}
+.selection-read:hover{border-color:var(--cobalt,#0F5CCB);color:#fff}
+.selection-read svg{color:var(--amber,#F4A125)}

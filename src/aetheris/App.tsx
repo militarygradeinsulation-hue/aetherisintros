@@ -23,6 +23,7 @@ import { applyCursorScale, readCursorScale, setCursorScale, cursorScales, type C
 import { AskIntrosDock, type AskIntrosAction } from './AskIntrosDock'
 import ConstellationField from './ConstellationField'
 import { VoiceBar } from './VoiceBar'
+import { SelectionReader } from './SelectionReader'
 import { currentPagePassages, readAloud, readPageOrSelection, setVoiceSettings, speechSupported, stopReading, readerSnapshot } from './voice'
 
 import discoverEditorialAsset from '@/assets/editorial-discover.jpg.asset.json'
@@ -2623,6 +2624,7 @@ function Shell({ startPage }: { startPage?: Page | undefined }) {
       {captureOpen && <VoiceCaptureModal onClose={() => setCaptureOpen(false)} />}
       <MoreDrawer open={moreOpen} page={page} onClose={() => setMoreOpen(false)} onNavigate={setPage} />
       <VoiceBar />
+      <SelectionReader />
       <AskIntrosDock page={page} peopleNames={people.map(p => p.name)} memberName={me.name}
         briefing={briefing.on} contextPanel={contextOpen} run={runAssistantAction} />
       {mobileOpen && <button className="rail-scrim" aria-label="Close menu" onClick={() => setMobileOpen(false)} />}
