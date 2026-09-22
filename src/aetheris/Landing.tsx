@@ -179,36 +179,6 @@ function LandingPage({ signedIn }: { signedIn: boolean }) {
 
       <JoinBand signedIn={signedIn} />
 
-
-
-      <section className="lv-founder-band">
-        <span>FOUNDER CONTEXT / WHY ME</span>
-        <p>Before Aetheris was software, it was a lifetime of learning how people, systems, pressure, failure, and responsibility connect.</p>
-        <Link to="/founder-story">Read My Story <ArrowRight size={15} /></Link>
-      </section>
-
-      {/* ── Section 2: Ivory WHY ME / WHY YOU / WHY NOW ── */}
-      <section className="lv-why">
-        <div className="lv-why-label">Answering The:</div>
-        <div className="lv-why-articles">
-          <article className="orange">
-            <span>WHY ME</span>
-            <i />
-            <p>Unique blend of business, AI, and real-world execution. Built by an operator who understands what actually works.</p>
-          </article>
-          <article className="blue">
-            <span>WHY YOU</span>
-            <i />
-            <p>Access to the right people, opportunities, and know-how. A trusted, curated network built for a serious outcome.</p>
-          </article>
-          <article className="orange">
-            <span>WHY NOW</span>
-            <i />
-            <p>The world is more connected but more fragmented than ever. The biggest opportunities go to those who move first.</p>
-          </article>
-        </div>
-      </section>
-
       {/* ── Showcase: One Connected System for CEOs ── */}
       <section className="lv-showcase">
         <div className="lv-showcase-plate">
