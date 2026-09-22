@@ -95,7 +95,7 @@ export function NewsPage() {
       </article>)}
       {!shown.length && tab === 'feed' && <p className="sv-empty">Nothing matches that filter yet.</p>}
     </section>}
-  </>
+  </NewsImagesProvider>
 
 }
 
