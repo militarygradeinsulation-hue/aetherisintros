@@ -3898,3 +3898,9 @@ button.news-link{background:none;border:0;padding:0;cursor:pointer}
 @media (prefers-reduced-motion: reduce) {
   .ask-dock-status.listening i { animation: none; }
 }
+.voice-bar-state { display: grid; gap: 1px; white-space: normal; }
+.voice-bar-state b { color: #F1EFE9; font-size: var(--text-control, 12px); font-weight: 600; }
+.voice-bar-state small { color: #9EA4AC; font-size: var(--text-detail, 11px); display: block; max-width: 44ch; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.voice-bar-speed { display: inline-flex; align-items: center; gap: 5px; color: #9EA4AC; padding: 0 6px 0 8px; }
+.voice-bar-speed select { background: transparent; border: 0; color: #F1EFE9; font-size: var(--text-control, 12px); }
+@media (max-width: 780px) { .voice-bar-state small { max-width: 16ch; } }
