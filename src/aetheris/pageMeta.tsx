@@ -457,9 +457,19 @@ export const networkAdvanced: Page[] = ['circles', 'expertise', 'events', 'seren
 export const opportunityTabs: Page[] = ['needs', 'opportunities', 'rooms', 'outcomes']
 export const opportunityAdvanced: Page[] = ['dealrooms', 'systems', 'strategy', 'simulation', 'collisions', 'capital', 'attribution', 'loops', 'knowledgeassets', 'timemachine']
 
-export const groupOrder: PageGroup[] = [
-  'NETWORK', 'RELATIONSHIP INTELLIGENCE', 'OPPORTUNITY & EXECUTION', 'TRUST, PERMISSION & CONTROL',
+/** The five hubs, in the order members read them. */
+export const groupOrder: Hub[] = [
+  'EVERYDAY', 'PEOPLE & NETWORK', 'OPPORTUNITIES & WORK', 'INTELLIGENCE & MEMORY', 'TRUST & CONTROL',
 ]
+
+/** One plain sentence per hub, shown above its list. */
+export const hubBlurb: Record<Hub, string> = {
+  EVERYDAY: 'The screens you open daily: today’s picture, conversations, your calendar and the news.',
+  'PEOPLE & NETWORK': 'Everyone you know or should know — people, companies, circles and introductions.',
+  'OPPORTUNITIES & WORK': 'What you are trying to move: asks, opportunities, pipeline, rooms and results.',
+  'INTELLIGENCE & MEMORY': 'What Intros has learned, what changed, and why something matters now.',
+  'TRUST & CONTROL': 'Who may reach you, who may see what, and how the product behaves for you.',
+}
 
 const byLabel = (a: PageMeta, b: PageMeta) => a.label.localeCompare(b.label)
 
@@ -468,8 +478,8 @@ export const secondaryPages: PageMeta[] = pageMeta
   .filter(p => !primaryPages.includes(p.id))
   .sort(byLabel)
 
-export function groupedSecondary(group: PageGroup): PageMeta[] {
-  return secondaryPages.filter(p => p.group === group).sort(byLabel)
+export function groupedSecondary(hub: Hub): PageMeta[] {
+  return secondaryPages.filter(p => p.hub === hub).sort(byLabel)
 }
 
 /** Local "related tools" rows so members are not forced to learn the whole map. */
