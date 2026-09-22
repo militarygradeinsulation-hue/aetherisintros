@@ -3643,6 +3643,7 @@ input,textarea,[contenteditable="true"]{cursor:text}
 }
 .ask-dock-turn.assistant { max-width: 96%; }
 .ask-dock-thinking { color: #9EA4AC; font-style: italic; }
+.ask-dock-thinking-pill { display: inline-flex; align-items: center; gap: 8px; color: #9EA4AC; font-style: italic; }
 .ask-dock-did { list-style: none; margin: 9px 0 0; padding: 0; display: flex; flex-direction: column; gap: 5px; }
 .ask-dock-did li {
   font: 600 10.5px/1.3 'Space Grotesk', Inter, sans-serif; letter-spacing: .09em; text-transform: uppercase;
