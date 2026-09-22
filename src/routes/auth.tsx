@@ -8,6 +8,7 @@ import { lovable } from '@/integrations/lovable/index'
 import { AUTH_REQUIRED } from '@/aetheris/config'
 import { logSecurityEvent, passwordProblem } from '@/aetheris/verification'
 import '@/aetheris/styles.css'
+import ConstellationField from '@/aetheris/ConstellationField'
 
 const safeNext = (value: unknown) => {
   if (typeof value !== 'string' || !value.startsWith('/') || value.startsWith('//')) return ''
@@ -168,6 +169,7 @@ function AuthPage() {
       <span className="auth-foot"><LockKeyhole size={12} /> Nothing is shared without your explicit opt-in.</span>
     </section>
     <aside className="auth-visual auth-visual-type" aria-label="Ask Intros relationship principles">
+      <ConstellationField className="auth-constellation" />
       <span className="auth-visual-mark" aria-hidden="true">+</span>
       <div className="auth-visual-statement" aria-hidden="true">
         <span>PEOPLE</span><i>×</i><span>CONTEXT</span><i>×</i><span>OPPORTUNITY</span>

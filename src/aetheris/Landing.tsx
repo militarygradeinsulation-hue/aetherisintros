@@ -8,6 +8,7 @@ import showcaseAsset from '@/assets/one-connected-system.png.asset.json'
 import { foundingStats, joinWaitlist, useAccess, type FoundingStats } from './access'
 import { CinematicFooter } from './CinematicFooter'
 import ParticleDrift from './ParticleDrift'
+import ConstellationField from './ConstellationField'
 
 /** Public front page. The root URL always remains the public Aetheris page. */
 export default function Landing() {
@@ -165,6 +166,7 @@ function LandingPage({ signedIn }: { signedIn: boolean }) {
       </section>
 
       <section className="lv-quote" aria-label="Ask Intros principle">
+        <ConstellationField className="lv-quote-constellation" />
         <blockquote>You&rsquo;re defined by the people you surround yourself with.</blockquote>
       </section>
 
