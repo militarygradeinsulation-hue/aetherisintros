@@ -2435,6 +2435,16 @@ function Shell({ startPage }: { startPage?: Page | undefined }) {
         messageMember(person.id)
         return `Opened your conversation with ${person.name}`
       }
+      case 'read-page': {
+        if (!speechSupported()) return 'This device has no speech built in'
+        const passages = currentPagePassages()
+        if (!passages.length) return null
+        readAloud(passages, 'Reading this page')
+        return 'Reading this page to you'
+      }
+      case 'stop-reading': stopReading(); return 'Stopped reading'
+      case 'voice-off': setVoiceSettings({ speakReplies: false, conversation: false }); stopReading(); return 'Spoken replies off'
+      case 'voice-on': setVoiceSettings({ speakReplies: true }); return 'Spoken replies on'
       default: return null
     }
   }
