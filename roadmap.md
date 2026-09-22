@@ -150,3 +150,6 @@
 
 ## Cinematic footer (Sep 22)
 - [x] Public Home closes with a GSAP cinematic footer: scrolling marquee (Know Who Matters / Why They Matter / Why Now / Verified Members / Double Opt-In / Private by Default), blueprint grid + cobalt aurora glow, giant parallax INTROS backdrop, glowing "The Relationship Network for CEOs." heading, magnetic glass pills (Create an account, Log in, Read My Story, Join the whitelist, back-to-top), legal strip; reduced-motion safe, mobile verified.
+
+## Ambient relationship field (Sep 22)
+- [x] Extend restrained, interactive constellation motion behind every authenticated and demo workspace while preserving readability and reduced-motion preferences.

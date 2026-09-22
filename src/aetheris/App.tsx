@@ -21,6 +21,7 @@ import { useAccess } from './access'
 import { applyTextScale, readTextScale, setTextScale, textScales, type TextScale } from './textScale'
 import { applyCursorScale, readCursorScale, setCursorScale, cursorScales, type CursorScale } from './cursorScale'
 import { AskIntrosDock, type AskIntrosAction } from './AskIntrosDock'
+import ConstellationField from './ConstellationField'
 
 import discoverEditorialAsset from '@/assets/editorial-discover.jpg.asset.json'
 import introsEditorialAsset from '@/assets/editorial-intros.jpg.asset.json'
@@ -2519,6 +2520,7 @@ function Shell({ startPage }: { startPage?: Page | undefined }) {
 
   return <NavCtx.Provider value={navApi}>
     <div className={`app-shell ${collapsed ? 'rail-collapsed' : ''} ${contextOpen ? 'show-context' : ''}`}>
+      <ConstellationField className="app-shell-ambient" />
       <aside className={`nav-rail ${mobileOpen ? 'mobile-open' : ''}`}>
         <div className="rail-head"><Brand /><button className="rail-toggle" onClick={() => setCollapsed(!collapsed)} aria-label="Collapse navigation"><ChevronLeft size={16} /></button></div>
         <nav>{nav.map(item => {
