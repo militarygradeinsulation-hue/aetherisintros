@@ -24,6 +24,7 @@ import { Route as AuthenticatedVerifyRouteImport } from './routes/_authenticated
 import { Route as DotlovableOauthConsentRouteImport } from './routes/[.]lovable.oauth.consent'
 import { Route as AuthenticatedAdminEarlyAccessRouteImport } from './routes/_authenticated/admin.early-access'
 import { Route as AuthenticatedAdminVerificationRouteImport } from './routes/_authenticated/admin.verification'
+import { Route as ApiPublicNewsImageRouteImport } from './routes/api/public/news-image'
 import { Route as ApiPublicSeedNetworkRouteImport } from './routes/api/public/seed-network'
 
 const IndexRoute = IndexRouteImport.update({
@@ -103,6 +104,11 @@ const AuthenticatedAdminVerificationRoute =
     path: '/admin/verification',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const ApiPublicNewsImageRoute = ApiPublicNewsImageRouteImport.update({
+  id: '/api/public/news-image',
+  path: '/api/public/news-image',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiPublicSeedNetworkRoute = ApiPublicSeedNetworkRouteImport.update({
   id: '/api/public/seed-network',
   path: '/api/public/seed-network',
@@ -124,6 +130,7 @@ export interface FileRoutesByFullPath {
   '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
   '/admin/early-access': typeof AuthenticatedAdminEarlyAccessRoute
   '/admin/verification': typeof AuthenticatedAdminVerificationRoute
+  '/api/public/news-image': typeof ApiPublicNewsImageRoute
   '/api/public/seed-network': typeof ApiPublicSeedNetworkRoute
 }
 export interface FileRoutesByTo {
@@ -141,6 +148,7 @@ export interface FileRoutesByTo {
   '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
   '/admin/early-access': typeof AuthenticatedAdminEarlyAccessRoute
   '/admin/verification': typeof AuthenticatedAdminVerificationRoute
+  '/api/public/news-image': typeof ApiPublicNewsImageRoute
   '/api/public/seed-network': typeof ApiPublicSeedNetworkRoute
 }
 export interface FileRoutesById {
@@ -160,6 +168,7 @@ export interface FileRoutesById {
   '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
   '/_authenticated/admin/early-access': typeof AuthenticatedAdminEarlyAccessRoute
   '/_authenticated/admin/verification': typeof AuthenticatedAdminVerificationRoute
+  '/api/public/news-image': typeof ApiPublicNewsImageRoute
   '/api/public/seed-network': typeof ApiPublicSeedNetworkRoute
 }
 export interface FileRouteTypes {
@@ -179,6 +188,7 @@ export interface FileRouteTypes {
     | '/.lovable/oauth/consent'
     | '/admin/early-access'
     | '/admin/verification'
+    | '/api/public/news-image'
     | '/api/public/seed-network'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -196,6 +206,7 @@ export interface FileRouteTypes {
     | '/.lovable/oauth/consent'
     | '/admin/early-access'
     | '/admin/verification'
+    | '/api/public/news-image'
     | '/api/public/seed-network'
   id:
     | '__root__'
@@ -214,6 +225,7 @@ export interface FileRouteTypes {
     | '/.lovable/oauth/consent'
     | '/_authenticated/admin/early-access'
     | '/_authenticated/admin/verification'
+    | '/api/public/news-image'
     | '/api/public/seed-network'
   fileRoutesById: FileRoutesById
 }
@@ -228,6 +240,7 @@ export interface RootRouteChildren {
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   Char91DotwellKnownChar93OauthProtectedResourceRoute: typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
   DotlovableOauthConsentRoute: typeof DotlovableOauthConsentRoute
+  ApiPublicNewsImageRoute: typeof ApiPublicNewsImageRoute
   ApiPublicSeedNetworkRoute: typeof ApiPublicSeedNetworkRoute
 }
 
@@ -338,6 +351,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminVerificationRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/api/public/news-image': {
+      id: '/api/public/news-image'
+      path: '/api/public/news-image'
+      fullPath: '/api/public/news-image'
+      preLoaderRoute: typeof ApiPublicNewsImageRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/public/seed-network': {
       id: '/api/public/seed-network'
       path: '/api/public/seed-network'
@@ -379,6 +399,7 @@ const rootRouteChildren: RootRouteChildren = {
   Char91DotwellKnownChar93OauthProtectedResourceRoute:
     Char91DotwellKnownChar93OauthProtectedResourceRoute,
   DotlovableOauthConsentRoute: DotlovableOauthConsentRoute,
+  ApiPublicNewsImageRoute: ApiPublicNewsImageRoute,
   ApiPublicSeedNetworkRoute: ApiPublicSeedNetworkRoute,
 }
 export const routeTree = rootRouteImport
