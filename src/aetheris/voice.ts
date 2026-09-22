@@ -4,14 +4,16 @@
  */
 import { useEffect, useRef, useState } from 'react'
 
-export const voiceSpeeds = ['slow', 'normal', 'fast', 'fastest'] as const
+export const voiceSpeeds = ['slowest', 'slow', 'normal', 'fast', 'faster', 'fastest'] as const
 export type VoiceSpeed = typeof voiceSpeeds[number]
 
 export const voiceSpeedLabels: Record<VoiceSpeed, string> = {
-  slow: 'Slow', normal: 'Normal', fast: 'Fast', fastest: 'Fastest',
+  slowest: 'Slowest', slow: 'Slow', normal: 'Normal', fast: 'Fast', faster: 'Faster', fastest: 'Fastest',
 }
 
-const rateOf: Record<VoiceSpeed, number> = { slow: 0.8, normal: 1, fast: 1.25, fastest: 1.6 }
+const rateOf: Record<VoiceSpeed, number> = {
+  slowest: 0.65, slow: 0.85, normal: 1, fast: 1.2, faster: 1.45, fastest: 1.75,
+}
 
 export interface VoiceSettings {
   /** Read-aloud controls are available and spoken output is allowed. */
@@ -58,9 +60,14 @@ export function readVoiceSettings(): VoiceSettings {
 }
 
 export function setVoiceSettings(patch: Partial<VoiceSettings>) {
-  settings = { ...load(), ...patch }
+  const before = load()
+  settings = { ...before, ...patch }
   try { window.localStorage.setItem(KEY, JSON.stringify(settings)) } catch { /* private mode */ }
   settingListeners.forEach(listener => listener())
+  /* Speed and voice changes take effect on the words being read right now. */
+  const changed = (patch.speed !== undefined && patch.speed !== before.speed)
+    || (patch.voiceName !== undefined && patch.voiceName !== before.voiceName)
+  if (changed) restartCurrent()
 }
 
 /** Live voice settings, shared by every control in the product. */
@@ -115,15 +122,52 @@ function chosenVoice(): SpeechSynthesisVoice | null {
   return listVoices().find(voice => voice.name === name) ?? null
 }
 
+/** Voices that actually sound like a person, best first — device engines vary wildly. */
+export function naturalVoices(): { name: string; lang: string; label: string }[] {
+  const wanted = /^(en)/i
+  const premium = /(natural|neural|enhanced|premium|siri|google|eloquence)/i
+  const known = /(samantha|serena|daniel|karen|moira|alex|ava|allison|tessa|fiona|nicky|aaron|joelle|matilda|jamie|zoe)/i
+  const scored = listVoices()
+    .filter(item => wanted.test(item.lang || 'en'))
+    .map(item => ({
+      name: item.name,
+      lang: item.lang,
+      label: item.name.replace(/\s*\((?:enhanced|premium)\)/i, '').trim(),
+      score: (premium.test(item.name) ? 4 : 0) + (known.test(item.name) ? 2 : 0) + (item.localService ? 1 : 0),
+    }))
+  scored.sort((a, b) => b.score - a.score || a.label.localeCompare(b.label))
+  const seen = new Set<string>()
+  return scored
+    .filter(item => (seen.has(item.label) ? false : (seen.add(item.label), true)))
+    .map(({ name, lang, label }) => ({ name, lang, label }))
+}
+
+/** Best natural voice on this device, used when the member has not picked one. */
+function bestVoice(): SpeechSynthesisVoice | null {
+  const top = naturalVoices()[0]
+  if (!top) return null
+  return listVoices().find(item => item.name === top.name) ?? null
+}
+
+/** Re-speak the passage in progress so a new speed or voice is heard at once. */
+function restartCurrent() {
+  if (state === 'idle' || !segments.length || !speechSupported()) return
+  token += 1
+  window.speechSynthesis.cancel()
+  speakCurrent(token)
+}
+
 function speakCurrent(run: number) {
   if (!speechSupported()) return
   const text = segments[index]
   if (run !== token) return
   if (text === undefined) { stopReading(); return }
   const utterance = new SpeechSynthesisUtterance(text)
-  const voice = chosenVoice()
-  if (voice) utterance.voice = voice
+  const voice = chosenVoice() ?? bestVoice()
+  if (voice) { utterance.voice = voice; utterance.lang = voice.lang }
   utterance.rate = rateOf[readVoiceSettings().speed]
+  utterance.pitch = 1
+  utterance.volume = 1
   utterance.onend = () => {
     if (run !== token) return
     if (index + 1 < segments.length) { index += 1; announce(); speakCurrent(run) }
