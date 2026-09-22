@@ -86,12 +86,15 @@ export interface ReaderSnapshot {
   index: number
   total: number
   label: string
+  /** Set when this device cannot speak, so the member is told instead of ignored. */
+  problem: string
 }
 
 let segments: string[] = []
 let index = 0
 let state: ReaderState = 'idle'
 let label = ''
+let problem = ''
 let token = 0
 const readerListeners = new Set<() => void>()
 
@@ -126,7 +129,17 @@ function speakCurrent(run: number) {
     if (index + 1 < segments.length) { index += 1; announce(); speakCurrent(run) }
     else stopReading()
   }
-  utterance.onerror = () => { if (run === token) stopReading() }
+  utterance.onerror = event => {
+    if (run !== token) return
+    const reason = (event as unknown as { error?: string })?.error ?? ''
+    stopReading()
+    if (reason && reason !== 'interrupted' && reason !== 'canceled') {
+      problem = reason === 'not-allowed'
+        ? 'Reading needs a tap first on this device. Press the speaker again.'
+        : 'This device has no reading voice installed, so Intros cannot read aloud here.'
+      announce()
+    }
+  }
   state = 'speaking'
   announce()
   window.speechSynthesis.speak(utterance)
@@ -134,7 +147,12 @@ function speakCurrent(run: number) {
 
 /** Read an ordered list of passages aloud, replacing anything being read now. */
 export function readAloud(passages: string[], readingLabel = 'Reading') {
-  if (!speechSupported()) return
+  if (!speechSupported()) {
+    problem = 'This browser cannot read aloud. Try Chrome, Edge or Safari.'
+    announce()
+    return
+  }
+  problem = ''
   const clean = passages.map(item => item.replace(/\s+/g, ' ').trim()).filter(item => item.length > 1)
   stopReading()
   if (!clean.length) return
@@ -181,12 +199,12 @@ export function skipSegment(step: 1 | -1) {
 }
 
 export function readerSnapshot(): ReaderSnapshot {
-  return { state, current: segments[index] ?? '', index, total: segments.length, label }
+  return { state, current: segments[index] ?? '', index, total: segments.length, label, problem }
 }
 
 /** Live reader state for the reading bar and speaker buttons. */
 export function useReader(): ReaderSnapshot {
-  const [snapshot, setSnapshot] = useState<ReaderSnapshot>({ state: 'idle', current: '', index: 0, total: 0, label: '' })
+  const [snapshot, setSnapshot] = useState<ReaderSnapshot>({ state: 'idle', current: '', index: 0, total: 0, label: '', problem: '' })
   useEffect(() => {
     const listener = () => setSnapshot(readerSnapshot())
     readerListeners.add(listener)

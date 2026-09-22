@@ -29,15 +29,15 @@ export function VoiceBar() {
     return () => document.removeEventListener('click', onClick, true)
   }, [voice.tapToRead])
 
-  if (!reading && !voice.tapToRead) return null
+  if (!reading && !voice.tapToRead && !reader.problem) return null
 
   return <div className="voice-bar" role="region" aria-label="Reading controls" data-voice-skip="true">
     <span className="voice-bar-mark" aria-hidden="true"><Volume2 size={14} /></span>
     <div className="voice-bar-state">
-      <b>{reading ? reader.label : 'Read on tap'}</b>
+      <b>{reading ? reader.label : reader.problem ? 'Reading unavailable' : 'Read on tap'}</b>
       <small>{reading
         ? `${Math.min(reader.index + 1, reader.total)} of ${reader.total} · ${reader.current.slice(0, 90)}`
-        : 'Click any paragraph or card to hear just that part.'}</small>
+        : reader.problem || 'Click any paragraph or card to hear just that part.'}</small>
     </div>
     <div className="voice-bar-controls">
       {reading && (reader.state === 'paused'
