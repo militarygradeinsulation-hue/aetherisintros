@@ -6,6 +6,7 @@ import landingPortraitAsset from '@/assets/aetheris-home-portrait.jpg.asset.json
 import showcaseAsset from '@/assets/one-connected-system.png.asset.json'
 
 import { foundingStats, joinWaitlist, useAccess, type FoundingStats } from './access'
+import { CinematicFooter } from './CinematicFooter'
 
 /** Public front page. The root URL always remains the public Aetheris page. */
 export default function Landing() {
@@ -210,14 +211,7 @@ function LandingPage({ signedIn }: { signedIn: boolean }) {
       <Capabilities />
 
 
-      <footer className="lv-legal">
-        <div className="brand-mark">
-          <img className="brand-logo" src={logoAsset.url} alt="Ask Intros logo" />
-          <span className="brand-name">Ask<em>Intros</em></span>
-        </div>
-        <span><LockKeyhole size={12} />No spam. No selling your attention. Private by default.</span>
-        <span>© 2026 Aetheris</span>
-      </footer>
+      <CinematicFooter />
     </main>
   )
 }
