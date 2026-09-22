@@ -156,3 +156,6 @@
 
 ## News thumbnail resilience (Sep 22)
 - [x] Decode malformed publisher image addresses and provide a branded editorial thumbnail whenever a story has no image or its publisher blocks loading.
+
+## Voice
+- [x] Read aloud anywhere (top-bar speaker, per-page and per-reply speakers, reading bar with pause/next/speed, read-on-tap) plus Ask Intros voice control and conversation mode, with Settings → Display → Voice controls.

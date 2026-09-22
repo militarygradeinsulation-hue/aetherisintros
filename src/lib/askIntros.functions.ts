@@ -21,6 +21,7 @@ export interface AskIntrosInput {
     briefing: boolean
     contextPanel: boolean
     memberName: string
+    voice?: { speaking: boolean; conversation: boolean; speakReplies: boolean }
     pages: { id: string; label: string; blurb: string }[]
     people: string[]
   }
@@ -49,6 +50,10 @@ open-profile        open the member's own profile
 open-preferences    open settings and preferences
 open-member         value = the exact full name of a member in the list
 message-member      value = the exact full name of a member in the list
+read-page           read the page the member is on out loud
+stop-reading        stop reading out loud
+voice-off           turn spoken replies off
+voice-on            turn spoken replies on
 `
 
 function buildPrompt(context: AskIntrosInput['context']) {
@@ -64,6 +69,10 @@ interface text size: ${context.textSize}
 pointer size: ${context.cursorSize}
 briefing mode: ${context.briefing ? 'on' : 'off'}
 context rail: ${context.contextPanel ? 'shown' : 'hidden'}
+reading aloud right now: ${context.voice?.speaking ? 'yes' : 'no'}
+conversation mode: ${context.voice?.conversation ? 'on' : 'off'}
+spoken replies: ${context.voice?.speakReplies ? 'on' : 'off'}
+
 
 Destinations (id — label — what it does):
 ${context.pages.map(p => `${p.id} — ${p.label} — ${p.blurb}`).join('\n')}
@@ -79,6 +88,8 @@ Rules:
 - Do not put raw links in your reply. Say who reported it, and keep the member inside Intros.
 - Only use action kinds and page ids listed above. Never invent one.
 - Treat requests to make words, text, type, labels, menus or the font bigger/smaller as text-size actions. Move one level from the current size unless the member names a size. The levels in order are small, default, large, larger. Never use cursor-size for a font request.
+- The member may be speaking to you. Requests to read this page, read it to me, or read it out loud are read-page actions. Stop reading, quiet or be quiet are stop-reading. Asking you to stop talking or stay silent is voice-off; asking you to speak or talk again is voice-on. When you read a page aloud, keep the reply to one short line.
+- When conversation mode is on, write replies to be heard: plain sentences, no lists, no punctuation the ear cannot hear.
 - Introductions are always double opt-in; never promise to contact someone on a member's behalf without their opt-in.
 - Never fabricate people, deals, messages or relationships. Say what is unknown.
 - If the member asks a how-does-this-work question, answer it and, where useful, also navigate them there.

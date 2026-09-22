@@ -7,7 +7,7 @@ import {
   MessageCircle, Moon, Repeat2, Settings2, SlidersHorizontal, Sun, TrendingUp, UserRound, Users, X,
   Inbox, DoorOpen, GitMerge, Radar, Flag, FileSearch, Gauge, Mic,
   HelpCircle, BookOpen, Sparkle, Map as MapIcon, History, BadgeCheck, Lock, ScrollText, Puzzle,
-  ChevronDown, LayoutGrid, Briefcase, FolderLock, GraduationCap, UsersRound, Coins, Landmark, PlaneTakeoff, Play, ShieldAlert, Newspaper, Archive, FileText, LogIn, LogOut,
+  ChevronDown, LayoutGrid, Briefcase, FolderLock, GraduationCap, UsersRound, Coins, Landmark, PlaneTakeoff, Play, ShieldAlert, Newspaper, Archive, FileText, LogIn, LogOut, Volume2, VolumeX,
 } from 'lucide-react'
 import { FaLinkedin, FaMicrosoft, FaSalesforce } from 'react-icons/fa'
 import { BsMicrosoftTeams, BsSlack } from 'react-icons/bs'
@@ -22,6 +22,8 @@ import { applyTextScale, readTextScale, setTextScale, textScales, type TextScale
 import { applyCursorScale, readCursorScale, setCursorScale, cursorScales, type CursorScale } from './cursorScale'
 import { AskIntrosDock, type AskIntrosAction } from './AskIntrosDock'
 import ConstellationField from './ConstellationField'
+import { VoiceBar } from './VoiceBar'
+import { currentPagePassages, readAloud, readPageOrSelection, setVoiceSettings, speechSupported, stopReading, readerSnapshot } from './voice'
 
 import discoverEditorialAsset from '@/assets/editorial-discover.jpg.asset.json'
 import introsEditorialAsset from '@/assets/editorial-intros.jpg.asset.json'
@@ -2303,6 +2305,22 @@ function Hub({ storeKey, title, blurb, tabs, advanced, onNavigate }: {
   </>
 }
 
+/** Read the page you are on — or just what you highlighted — from the top bar. */
+function TopbarVoice() {
+  const [speaking, setSpeaking] = useState(false)
+  useEffect(() => {
+    const timer = window.setInterval(() => setSpeaking(readerSnapshot().state !== 'idle'), 400)
+    return () => window.clearInterval(timer)
+  }, [])
+  if (!speechSupported()) return null
+  return <button className={`topbar-voice ${speaking ? 'active' : ''}`} data-voice-skip="true"
+    aria-label={speaking ? 'Stop reading aloud' : 'Read this page aloud'}
+    title={speaking ? 'Stop reading aloud' : 'Read this page aloud — or highlight text first'}
+    onClick={() => { if (speaking) { stopReading(); setSpeaking(false) } else { readPageOrSelection(); setSpeaking(true) } }}>
+    {speaking ? <VolumeX size={15} /> : <Volume2 size={15} />}
+  </button>
+}
+
 function Shell({ startPage }: { startPage?: Page | undefined }) {
   const net = useNetwork()
   const stored = typeof window !== 'undefined' ? localStorage.getItem('aetheris-intros-page') : null
@@ -2433,6 +2451,16 @@ function Shell({ startPage }: { startPage?: Page | undefined }) {
         messageMember(person.id)
         return `Opened your conversation with ${person.name}`
       }
+      case 'read-page': {
+        if (!speechSupported()) return 'This device has no speech built in'
+        const passages = currentPagePassages()
+        if (!passages.length) return null
+        readAloud(passages, 'Reading this page')
+        return 'Reading this page to you'
+      }
+      case 'stop-reading': stopReading(); return 'Stopped reading'
+      case 'voice-off': setVoiceSettings({ speakReplies: false, conversation: false }); stopReading(); return 'Spoken replies off'
+      case 'voice-on': setVoiceSettings({ speakReplies: true }); return 'Spoken replies on'
       default: return null
     }
   }
@@ -2542,6 +2570,7 @@ function Shell({ startPage }: { startPage?: Page | undefined }) {
           <span className="topbar-title">Ask Intros <i>/</i> {metaById[page]?.label ?? allNav.find(n => n.id === page)?.label}</span>
           <div className="topbar-actions">
             <button className="topbar-search" aria-label="Search people, companies, topics, or ideas…" onClick={() => setGlobalSearchOpen(true)}><Search size={15} /><span>Search people, companies, topics, or ideas…</span><kbd>⌘K</kbd></button>
+            <TopbarVoice />
             <div className="topbar-dropdown">
               <button className="topbar-dropbtn" aria-label="Actions" aria-expanded={topMenuOpen} onClick={() => setTopMenuOpen(!topMenuOpen)}>
                 <SlidersHorizontal size={14} /><span>Actions</span><ChevronDown size={13} />
@@ -2593,6 +2622,7 @@ function Shell({ startPage }: { startPage?: Page | undefined }) {
       {handshakeId && <HandshakeModal memberId={handshakeId} onClose={() => setHandshakeId(null)} />}
       {captureOpen && <VoiceCaptureModal onClose={() => setCaptureOpen(false)} />}
       <MoreDrawer open={moreOpen} page={page} onClose={() => setMoreOpen(false)} onNavigate={setPage} />
+      <VoiceBar />
       <AskIntrosDock page={page} peopleNames={people.map(p => p.name)} memberName={me.name}
         briefing={briefing.on} contextPanel={contextOpen} run={runAssistantAction} />
       {mobileOpen && <button className="rail-scrim" aria-label="Close menu" onClick={() => setMobileOpen(false)} />}
