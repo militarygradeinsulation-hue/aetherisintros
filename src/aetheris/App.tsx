@@ -7,7 +7,7 @@ import {
   MessageCircle, Moon, Repeat2, Settings2, SlidersHorizontal, Sun, TrendingUp, UserRound, Users, X,
   Inbox, DoorOpen, GitMerge, Radar, Flag, FileSearch, Gauge, Mic,
   HelpCircle, BookOpen, Sparkle, Map as MapIcon, History, BadgeCheck, Lock, ScrollText, Puzzle,
-  ChevronDown, LayoutGrid, Briefcase, FolderLock, GraduationCap, UsersRound, Coins, Landmark, PlaneTakeoff, Play, ShieldAlert, Newspaper, Archive, FileText, LogIn, LogOut,
+  ChevronDown, LayoutGrid, Briefcase, FolderLock, GraduationCap, UsersRound, Coins, Landmark, PlaneTakeoff, Play, ShieldAlert, Newspaper, Archive, FileText, LogIn, LogOut, Volume2, VolumeX,
 } from 'lucide-react'
 import { FaLinkedin, FaMicrosoft, FaSalesforce } from 'react-icons/fa'
 import { BsMicrosoftTeams, BsSlack } from 'react-icons/bs'
@@ -2554,6 +2554,7 @@ function Shell({ startPage }: { startPage?: Page | undefined }) {
           <span className="topbar-title">Ask Intros <i>/</i> {metaById[page]?.label ?? allNav.find(n => n.id === page)?.label}</span>
           <div className="topbar-actions">
             <button className="topbar-search" aria-label="Search people, companies, topics, or ideas…" onClick={() => setGlobalSearchOpen(true)}><Search size={15} /><span>Search people, companies, topics, or ideas…</span><kbd>⌘K</kbd></button>
+            <TopbarVoice />
             <div className="topbar-dropdown">
               <button className="topbar-dropbtn" aria-label="Actions" aria-expanded={topMenuOpen} onClick={() => setTopMenuOpen(!topMenuOpen)}>
                 <SlidersHorizontal size={14} /><span>Actions</span><ChevronDown size={13} />
