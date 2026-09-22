@@ -6,6 +6,7 @@ import { newsAge, type NewsItem } from '../news'
 import { askNewsPerspective, readNewsArticle, type ArticleRead } from '../../lib/newsReader.functions'
 import { useQuery } from '@tanstack/react-query'
 import { NewsActions } from './NewsActions'
+import { NewsThumbnail } from './NewsThumbnail'
 
 
 const VIEWS: { label: string; question: string }[] = [
@@ -64,7 +65,7 @@ export function NewsReader({ item, onBack }: { item: NewsItem; onBack: () => voi
         <span>{newsAge(item.published)}</span>
       </div>
       <h1>{item.title}</h1>
-      {item.image && <div className="reader-image"><img src={item.image} alt="" loading="lazy" /></div>}
+      <div className="reader-image"><NewsThumbnail item={item} large /></div>
       <NewsActions item={item} />
 
     </header>

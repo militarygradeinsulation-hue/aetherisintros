@@ -153,3 +153,6 @@
 
 ## Ambient relationship field (Sep 22)
 - [x] Extend restrained, interactive constellation motion behind every authenticated and demo workspace while preserving readability and reduced-motion preferences.
+
+## News thumbnail resilience (Sep 22)
+- [x] Decode malformed publisher image addresses and provide a branded editorial thumbnail whenever a story has no image or its publisher blocks loading.

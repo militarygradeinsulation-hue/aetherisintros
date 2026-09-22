@@ -5,6 +5,7 @@ import { newsAge, useAetherisNews, type NewsItem } from '../news'
 import { NewsReader } from './NewsReader'
 import { NewsActions } from './NewsActions'
 import { useNewsShelf } from '../newsShelf'
+import { NewsThumbnail } from './NewsThumbnail'
 
 type Tab = 'feed' | 'later' | 'library'
 
@@ -72,9 +73,9 @@ export function NewsPage() {
 
     {!(tab === 'feed' && (isLoading || isError)) && <section className="news-grid">
       {shown.map(item => <article key={item.id} className="news-card">
-        {item.image && <button className="news-thumb" onClick={() => setOpen(item)} aria-label={`Read ${item.title}`}>
-          <img src={item.image} alt="" loading="lazy" onError={e => { (e.currentTarget.closest('.news-thumb') as HTMLElement | null)?.remove() }} />
-        </button>}
+        <button className="news-thumb" onClick={() => setOpen(item)} aria-label={`Read ${item.title}`}>
+          <NewsThumbnail item={item} />
+        </button>
         <header><Eyebrow signal={item.kind === 'aetheris'}>{item.source}</Eyebrow><small>{newsAge(item.published)}</small></header>
         <h3><button className="news-title" onClick={() => setOpen(item)}>{item.title}</button></h3>
         {item.summary && <p>{item.summary}</p>}

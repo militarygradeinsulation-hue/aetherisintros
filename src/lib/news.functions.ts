@@ -19,6 +19,13 @@ const NEWS_HOME = 'https://aetheris.technology/news'
 const str = (value: unknown): string => (typeof value === 'string' ? value : '')
 const clean = (value: unknown, max = 420): string =>
   str(value).replace(/<[^>]*>/g, ' ').replace(/&[a-z#0-9]+;/gi, ' ').replace(/\s+/g, ' ').trim().slice(0, max)
+const imageUrl = (value: unknown): string | null => {
+  const url = str(value)
+    .replace(/&#0*38;|&amp;/gi, '&')
+    .replace(/&#0*39;|&#x0*27;/gi, "'")
+    .trim()
+  return /^https?:\/\//i.test(url) ? url : null
+}
 
 async function get(url: string): Promise<any> {
   const res = await fetch(url, { headers: { accept: 'application/json' } })
@@ -48,7 +55,7 @@ export const fetchAetherisNews = createServerFn({ method: 'GET' }).handler(async
         source: clean(raw?.source_label, 60) || clean(raw?.source, 60) || 'Industry',
         category: (clean(raw?.category, 30) || 'news').toUpperCase(),
         published: str(raw?.published_at) || str(raw?.created_at) || null,
-        image: str(raw?.image_url) || null,
+        image: imageUrl(raw?.image_url),
         kind: 'industry',
       })
     }
@@ -67,7 +74,7 @@ export const fetchAetherisNews = createServerFn({ method: 'GET' }).handler(async
         source: 'Aetheris',
         category: 'ANALYSIS',
         published: str(raw?.published_at) || str(raw?.created_at) || null,
-        image: str(raw?.image_url) || str(raw?.cover_image) || null,
+        image: imageUrl(raw?.image_url) ?? imageUrl(raw?.cover_image),
         kind: 'aetheris',
       })
     }
