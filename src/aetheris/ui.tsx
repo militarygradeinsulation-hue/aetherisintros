@@ -1,7 +1,27 @@
 /** Shared editorial primitives used by every platform surface. */
+import { Volume2, VolumeX } from 'lucide-react'
 import { AvatarImage } from './avatar'
 import { portraitFor } from './portraits'
 import type { Member } from './social'
+import { readAloud, speechSupported, stopReading, useReader } from './voice'
+
+/** Speaker button: reads one passage, one section, or the whole page. */
+export function ReadButton({ passages, label = 'Read aloud', className = '' }: {
+  passages: string[] | (() => string[]); label?: string; className?: string
+}) {
+  const reader = useReader()
+  if (!speechSupported()) return null
+  const speaking = reader.state !== 'idle'
+  return <button type="button" className={`read-btn ${speaking ? 'active' : ''} ${className}`}
+    aria-label={speaking ? 'Stop reading' : label} title={speaking ? 'Stop reading' : label}
+    onClick={() => {
+      if (speaking) { stopReading(); return }
+      const list = typeof passages === 'function' ? passages() : passages
+      readAloud(list, label)
+    }}>
+    {speaking ? <VolumeX size={14} /> : <Volume2 size={14} />}
+  </button>
+}
 
 export function Glyph({ size = 18 }: { size?: number }) {
   return <span className="aetheris-glyph" style={{ width: size, height: size }} aria-hidden="true"><i /><b /></span>
