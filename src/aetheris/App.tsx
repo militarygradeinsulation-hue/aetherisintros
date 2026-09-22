@@ -2305,6 +2305,22 @@ function Hub({ storeKey, title, blurb, tabs, advanced, onNavigate }: {
   </>
 }
 
+/** Read the page you are on — or just what you highlighted — from the top bar. */
+function TopbarVoice() {
+  const [speaking, setSpeaking] = useState(false)
+  useEffect(() => {
+    const timer = window.setInterval(() => setSpeaking(readerSnapshot().state !== 'idle'), 400)
+    return () => window.clearInterval(timer)
+  }, [])
+  if (!speechSupported()) return null
+  return <button className={`topbar-voice ${speaking ? 'active' : ''}`} data-voice-skip="true"
+    aria-label={speaking ? 'Stop reading aloud' : 'Read this page aloud'}
+    title={speaking ? 'Stop reading aloud' : 'Read this page aloud — or highlight text first'}
+    onClick={() => { if (speaking) { stopReading(); setSpeaking(false) } else { readPageOrSelection(); setSpeaking(true) } }}>
+    {speaking ? <VolumeX size={15} /> : <Volume2 size={15} />}
+  </button>
+}
+
 function Shell({ startPage }: { startPage?: Page | undefined }) {
   const net = useNetwork()
   const stored = typeof window !== 'undefined' ? localStorage.getItem('aetheris-intros-page') : null
@@ -2606,6 +2622,7 @@ function Shell({ startPage }: { startPage?: Page | undefined }) {
       {handshakeId && <HandshakeModal memberId={handshakeId} onClose={() => setHandshakeId(null)} />}
       {captureOpen && <VoiceCaptureModal onClose={() => setCaptureOpen(false)} />}
       <MoreDrawer open={moreOpen} page={page} onClose={() => setMoreOpen(false)} onNavigate={setPage} />
+      <VoiceBar />
       <AskIntrosDock page={page} peopleNames={people.map(p => p.name)} memberName={me.name}
         briefing={briefing.on} contextPanel={contextOpen} run={runAssistantAction} />
       {mobileOpen && <button className="rail-scrim" aria-label="Close menu" onClick={() => setMobileOpen(false)} />}
