@@ -95,7 +95,7 @@ let label = ''
 let token = 0
 const readerListeners = new Set<() => void>()
 
-function announce() { readerListeners.add; readerListeners.forEach(listener => listener()) }
+function announce() { readerListeners.forEach(listener => listener()) }
 
 export function speechSupported() {
   return typeof window !== 'undefined' && 'speechSynthesis' in window
