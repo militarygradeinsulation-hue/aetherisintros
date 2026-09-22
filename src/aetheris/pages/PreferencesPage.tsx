@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
-import { Camera, Check, LockKeyhole, MousePointer2, ShieldCheck, Type } from 'lucide-react'
+import { Camera, Check, LockKeyhole, MousePointer2, ShieldCheck, Type, Volume2 } from 'lucide-react'
+import { listVoices, readAloud, speechSupported, stopReading, useVoiceSettings, voiceSpeedLabels, voiceSpeeds } from '../voice'
 import { useNetwork, type PreferenceSettings } from '../store'
 import { AvatarImage } from '../avatar'
 import { Btn, Eyebrow, Head } from '../ui'
@@ -70,6 +71,51 @@ function IdentityCard() {
       {message && <small className="settings-identity-note">{message}</small>}
     </div>
   </div>
+}
+
+/** Reading out loud and talking with Ask Intros. */
+function VoiceCard() {
+  const [voice, setVoice] = useVoiceSettings()
+  const [voices, setVoices] = useState<{ name: string; lang: string }[]>([])
+  useEffect(() => {
+    const load = () => setVoices(listVoices().map(item => ({ name: item.name, lang: item.lang })))
+    load()
+    if (typeof window !== 'undefined' && window.speechSynthesis) {
+      window.speechSynthesis.addEventListener('voiceschanged', load)
+      return () => window.speechSynthesis.removeEventListener('voiceschanged', load)
+    }
+    return undefined
+  }, [])
+
+  if (!speechSupported()) {
+    return <p className="settings-identity-note"><Volume2 size={13} /> This browser has no built-in speech, so reading out loud is unavailable here. Chrome, Edge and Safari support it.</p>
+  }
+
+  return <>
+    <div className="voice-settings">
+      <Toggle checked={voice.readAloud} label="Show the read-aloud controls" onChange={value => setVoice({ readAloud: value })} />
+      <Toggle checked={voice.speakReplies} label="Speak Ask Intros replies out loud" onChange={value => { setVoice({ speakReplies: value }); if (!value) stopReading() }} />
+      <Toggle checked={voice.conversation} label="Conversation mode — talk back and forth" onChange={value => setVoice({ conversation: value })} />
+      <Toggle checked={voice.tapToRead} label="Read a section when I tap it" onChange={value => setVoice({ tapToRead: value })} />
+    </div>
+    <div className="scale-picker" role="group" aria-label="Reading speed">
+      {voiceSpeeds.map(option => (
+        <button key={option} type="button" aria-pressed={voice.speed === option}
+          className={voice.speed === option ? 'active' : ''} onClick={() => setVoice({ speed: option })}>
+          {voiceSpeedLabels[option]}
+        </button>
+      ))}
+    </div>
+    {voices.length > 0 && <label className="voice-picker">
+      <span>Reading voice</span>
+      <select value={voice.voiceName} onChange={event => setVoice({ voiceName: event.target.value })}>
+        <option value="">Your device default</option>
+        {voices.map(item => <option key={item.name} value={item.name}>{item.name} — {item.lang}</option>)}
+      </select>
+    </label>}
+    <p className="settings-identity-note"><Volume2 size={13} /> Press the speaker in the top bar to hear the page you are on, or highlight a passage first to hear only that.</p>
+    <Btn kind="secondary" onClick={() => readAloud(['This is how Ask Intros will read to you.'], 'Voice test')}><Volume2 size={14} /> Hear a sample</Btn>
+  </>
 }
 
 
