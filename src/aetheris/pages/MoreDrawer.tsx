@@ -86,8 +86,8 @@ export function MoreDrawer({ open, page, onClose, onNavigate }: {
       <header className="more-head">
         <div>
           <span className="more-eyebrow">THE INDEX</span>
-          <h2>All tools</h2>
-          <p>Every capability in Ask Intros, in plain language.</p>
+          <h2>Everything, in five places</h2>
+          <p>Everyday · People &amp; Network · Opportunities &amp; Work · Intelligence &amp; Memory · Trust &amp; Control.</p>
         </div>
         <button className="icon-btn" onClick={onClose} aria-label="Close"><X size={17} /></button>
       </header>
