@@ -56,7 +56,7 @@ export function MoreDrawer({ open, page, onClose, onNavigate }: {
     if (!q) return null
     return secondaryPages.filter(p =>
       p.label.toLowerCase().includes(q) || p.blurb.toLowerCase().includes(q)
-      || p.group.toLowerCase().includes(q) || p.keywords.some(k => k.includes(q)))
+      || p.hub.toLowerCase().includes(q) || p.keywords.some(k => k.includes(q)))
   }, [query])
 
   if (!open) return null
