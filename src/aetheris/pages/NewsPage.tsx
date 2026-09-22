@@ -42,7 +42,7 @@ export function NewsPage() {
   ]
 
 
-  return <>
+  return <NewsImagesProvider value={resolvedImages}>
     <Head
       label="NEWS"
       title="The intelligence feed, read alongside your relationships."
