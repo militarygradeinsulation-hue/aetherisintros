@@ -2191,7 +2191,7 @@ function GlobalSearch({ open, onClose, people }: { open: boolean; onClose: () =>
   const crmOpps = matches(ops.opportunities.filter(o => !o.archived), o => `${o.name} ${o.stageName} ${o.nextAction}`)
   const gridRows = matches(ops.sheets.filter(s => !s.archived), s => `${s.name} ${s.mode} ${s.entityType ?? ''}`)
   const pageRows = (term
-    ? pageMeta.filter(meta => `${meta.label} ${meta.blurb} ${meta.group} ${meta.keywords.join(' ')}`.toLowerCase().includes(term))
+    ? pageMeta.filter(meta => `${meta.label} ${meta.blurb} ${meta.hub} ${meta.keywords.join(' ')}`.toLowerCase().includes(term))
     : pageMeta.filter(meta => primaryPages.includes(meta.id))).slice(0, 6)
   const closeThen = (action: () => void) => { onClose(); setQuery(''); action() }
   const quickCreate = [
