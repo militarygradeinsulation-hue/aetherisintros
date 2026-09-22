@@ -3714,6 +3714,7 @@ input,textarea,[contenteditable="true"]{cursor:text}
 .news-thumbnail img{width:100%;height:100%;object-fit:cover;display:block;filter:saturate(.85) contrast(1.04);transition:transform .3s,filter .2s}
 .news-card:hover .news-thumbnail img{transform:scale(1.03);filter:saturate(1) contrast(1.06)}
 .news-thumbnail-fallback{position:relative;width:100%;height:100%;min-height:170px;display:grid;grid-template-columns:1fr auto;grid-template-rows:auto 1fr auto;align-items:start;padding:18px;text-align:left;color:var(--soft);background-color:var(--night);background-image:linear-gradient(var(--line-dark) 1px,transparent 1px),linear-gradient(90deg,var(--line-dark) 1px,transparent 1px);background-size:44px 44px;overflow:hidden}
+.news-thumbnail-fallback::before{content:'';position:absolute;inset:0;background:radial-gradient(120% 90% at 18% 12%,color-mix(in oklab,var(--cobalt) 26%,transparent),transparent 62%),radial-gradient(90% 80% at 92% 96%,color-mix(in oklab,var(--amber) 16%,transparent),transparent 60%),repeating-linear-gradient(118deg,transparent 0 22px,rgba(255,255,255,.035) 22px 23px)}
 .news-thumbnail-fallback::after{content:'';position:absolute;inset:auto 18px 18px auto;width:44%;height:1px;background:var(--cobalt);box-shadow:0 -5px 18px color-mix(in oklab,var(--cobalt) 45%,transparent)}
 .news-thumbnail-fallback span,.news-thumbnail-fallback small{position:relative;z-index:1;font:700 8px var(--sans);letter-spacing:.16em;text-transform:uppercase}
 .news-thumbnail-fallback span{color:var(--muted)}
