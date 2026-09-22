@@ -44,7 +44,7 @@ export default function ParticleDrift({ className }: { className?: string }) {
         x: Math.random() * width,
         y: Math.random() * height,
         vy: Math.random() * 0.4 + 0.1,
-        char: GLYPHS[Math.floor(Math.random() * GLYPHS.length)],
+        char: GLYPHS[Math.floor(Math.random() * GLYPHS.length)]!,
         signal: Math.random() < 0.08, // sparse amber intelligence signals
       }))
       beams = Array.from({ length: Math.max(10, Math.round(width / 60)) }, () => ({
@@ -113,7 +113,7 @@ export default function ParticleDrift({ className }: { className?: string }) {
         }
         const dist = Math.hypot(mouse.x - n.x, mouse.y - n.y)
         if (dist < 180 || Math.random() > 0.98) {
-          n.char = GLYPHS[Math.floor(Math.random() * GLYPHS.length)]
+          n.char = GLYPHS[Math.floor(Math.random() * GLYPHS.length)]!
         }
         if (dist < 180) {
           ctx.strokeStyle = `rgba(${COBALT}, ${0.5 * (1 - dist / 180)})`
