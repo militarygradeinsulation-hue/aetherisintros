@@ -156,10 +156,14 @@ function LandingPage({ signedIn }: { signedIn: boolean }) {
       <section className="lv-hero">
         <ParticleDrift className="lv-hero-drift" />
         <div className="lv-hero-copy">
-          <span className="lv-hero-topright">ASK INTROS</span>
-          <h1><span>Ask Intros</span><em>The Relationship Network for CEOs.</em></h1>
-          <p className="lv-hero-sub">Who matters. Why they matter. Why now.</p>
-          <span className="lv-hero-scale">RELATIONSHIPS · INTELLIGENCE · OPPORTUNITY</span>
+          <span className="lv-hero-topright">THE FOUNDING 1,000 · WHITELIST</span>
+          <h1><span>Join the </span><em>whitelist.</em></h1>
+          <p className="lv-hero-sub">Ask Intros opens to 1,000 founding members. Add your name and we review it against the standard: CEOs, founders, owners, managing partners and principal operators. Verified people only — that is what makes an introduction here worth taking.</p>
+          <ul className="lv-hero-points">
+            <li><i />Reviewed by a person, not a signup form</li>
+            <li><i />Double opt-in introductions, always</li>
+            <li><i />No spam, no selling your attention</li>
+          </ul>
           <div className="lv-hero-actions">
             {demoBtn('Demo the system', 'btn primary')}
             {loginBtn('btn ghost')}
@@ -176,8 +180,6 @@ function LandingPage({ signedIn }: { signedIn: boolean }) {
         <ConstellationField className="lv-quote-constellation" />
         <blockquote>You&rsquo;re defined by the people you surround yourself with.</blockquote>
       </section>
-
-      <JoinBand signedIn={signedIn} />
 
       {/* ── Showcase: One Connected System for CEOs ── */}
       <section className="lv-showcase">
