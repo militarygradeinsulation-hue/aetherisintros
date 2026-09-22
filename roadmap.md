@@ -4,7 +4,7 @@
 - [x] Refine the public Home entrance while preserving Ask Intros identity, portrait, copy, and actions.
 - [x] Add an animated asymmetric capability grid grounded in real Ask Intros functions.
 - [x] Add a fifth Calendar Timeline view with persistent drag, keyboard movement, zoom, and existing event editing.
-- [ ] Verify Home and Calendar across desktop/mobile, interactions, and runtime health.
+- [x] Verify Home and Calendar across desktop/mobile, interactions, and runtime health.
 
 - [x] Keep the public Aetheris landing page at the root URL for signed-in and signed-out visitors; remove the rejected access-screen portrait.
 - [x] Reflow the complete Founder Story manuscript into a consistent, literal book-reading layout without changing its wording.
