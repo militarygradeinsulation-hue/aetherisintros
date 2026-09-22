@@ -151,6 +151,8 @@ function LandingPage({ signedIn }: { signedIn: boolean }) {
         </div>
       </header>
 
+      <CinematicFooter />
+
       <section className="lv-hero">
         <ParticleDrift className="lv-hero-drift" />
         <div className="lv-hero-copy">
@@ -218,9 +220,6 @@ function LandingPage({ signedIn }: { signedIn: boolean }) {
       </section>
 
       <Capabilities />
-
-
-      <CinematicFooter />
     </main>
   )
 }
