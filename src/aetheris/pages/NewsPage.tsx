@@ -1,7 +1,7 @@
 import { useMemo, useState } from 'react'
 import { ArrowUpRight, RefreshCw, X } from 'lucide-react'
 import { Btn, Eyebrow, Head } from '../ui'
-import { newsAge, useAetherisNews, type NewsItem } from '../news'
+import { NewsImagesProvider, newsAge, useAetherisNews, useNewsImages, type NewsItem } from '../news'
 import { NewsReader } from './NewsReader'
 import { NewsActions } from './NewsActions'
 import { useNewsShelf } from '../newsShelf'
