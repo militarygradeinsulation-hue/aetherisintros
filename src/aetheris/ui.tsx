@@ -47,7 +47,10 @@ export function Head({ label, title, copy, proof, action }: {
   return <header className="page-title">
     <div><Eyebrow>{label}</Eyebrow><h1>{title}</h1><p>{copy}</p>
       {proof && <small className="page-proof"><Glyph size={12} />{proof}</small>}</div>
-    {action}
+    <div className="page-title-actions" data-voice-skip="true">
+      <ReadButton passages={currentPagePassages} label="Read this page aloud" />
+      {action}
+    </div>
   </header>
 }
 
