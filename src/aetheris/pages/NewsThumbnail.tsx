@@ -1,5 +1,5 @@
-import { useState } from 'react'
-import type { NewsItem } from '../news'
+import { useEffect, useState } from 'react'
+import { newsImageSrc, useResolvedNewsImage, type NewsItem } from '../news'
 
 function markFor(item: NewsItem) {
   return item.title
@@ -12,11 +12,16 @@ function markFor(item: NewsItem) {
 }
 
 export function NewsThumbnail({ item, large = false }: { item: NewsItem; large?: boolean }) {
+  const resolved = useResolvedNewsImage(item)
+  const src = newsImageSrc(resolved)
   const [failed, setFailed] = useState(false)
-  const showImage = Boolean(item.image) && !failed
+
+  useEffect(() => { setFailed(false) }, [src])
+
+  const showImage = Boolean(src) && !failed
 
   return <div className={`news-thumbnail ${large ? 'large' : ''} ${showImage ? 'has-image' : 'is-fallback'}`}>
-    {showImage && <img src={item.image ?? ''} alt="" loading="lazy" onError={() => setFailed(true)} />}
+    {showImage && <img src={src ?? ''} alt="" loading="lazy" onError={() => setFailed(true)} />}
     {!showImage && <div className="news-thumbnail-fallback" aria-hidden="true">
       <span>{item.source}</span>
       <strong>{markFor(item)}</strong>
