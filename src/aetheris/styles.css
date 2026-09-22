@@ -25,7 +25,10 @@
 .lv-hero-topright{position:absolute;right:clamp(20px,4vw,40px);top:clamp(28px,4vw,48px);font:700 9px var(--sans);letter-spacing:.2em;color:var(--amber)}
 .lv-hero-copy h1{font:500 clamp(54px,7.2vw,104px)/.82 var(--serif);letter-spacing:0;margin:0 0 28px;color:var(--soft);max-width:780px}
 .lv-hero-copy h1 span,.lv-hero-copy h1 em{display:block}.lv-hero-copy h1 span{font-size:.52em;line-height:1.1;margin-bottom:18px}.lv-hero-copy h1 em{font-style:italic;color:var(--cobalt-bright)}
-.lv-hero-sub{font:400 clamp(16px,1.6vw,22px)/1.45 var(--sans);max-width:490px;margin:0 0 28px;color:var(--muted-light)}
+.lv-hero-sub{font:400 clamp(16px,1.6vw,22px)/1.45 var(--sans);max-width:490px;margin:0 0 20px;color:var(--muted-light)}
+.lv-hero-points{list-style:none;margin:0 0 28px;padding:0;display:grid;gap:10px}
+.lv-hero-points li{font:600 10px var(--sans);letter-spacing:.14em;text-transform:uppercase;color:var(--muted);display:flex;gap:10px;align-items:center}
+.lv-hero-points li i{width:3px;height:3px;background:var(--gold);border-radius:50%}
 .lv-hero-scale{font:700 9px var(--sans);letter-spacing:.18em;color:var(--muted);text-transform:uppercase;display:block;margin-bottom:30px}
 .lv-hero-actions{display:flex;align-items:center;gap:14px}
 .lv-founder-link{display:inline-flex;align-items:center;gap:8px;margin-top:22px;width:max-content;color:var(--amber);font:700 9px var(--sans);letter-spacing:.15em;text-transform:uppercase;border-bottom:1px solid color-mix(in oklab,var(--amber) 45%,transparent);padding-bottom:5px}
