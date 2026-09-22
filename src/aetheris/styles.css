@@ -3814,3 +3814,10 @@ button.news-link{background:none;border:0;padding:0;cursor:pointer}
 .lv-hero-drift{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;opacity:.55;z-index:0}
 .lv-hero-copy,.lv-hero-visual{position:relative;z-index:1}
 @media (prefers-reduced-motion:reduce){.lv-hero-drift{display:none}}
+
+/* Constellation Field canvases */
+.lv-quote{position:relative;overflow:hidden}
+.lv-quote-constellation{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;opacity:.6;z-index:0}
+.lv-quote blockquote{position:relative;z-index:1}
+.auth-constellation{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;opacity:.7;z-index:1}
+@media (prefers-reduced-motion:reduce){.lv-quote-constellation,.auth-constellation{display:none}}
