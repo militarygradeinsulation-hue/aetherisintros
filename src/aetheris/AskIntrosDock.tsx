@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { ArrowUp, X } from 'lucide-react'
+import { ThinkingOrb } from '@/components/ui/thinking-orbs'
 
 import { askIntros, type AskIntrosAction } from '@/lib/askIntros.functions'
 import { pageMeta } from './pageMeta'
@@ -101,7 +102,7 @@ export function AskIntrosDock({ page, peopleNames, memberName, briefing, context
           <p>{turn.content}</p>
           {turn.did && turn.did.length > 0 && <ul className="ask-dock-did">{turn.did.map(note => <li key={note}>{note}</li>)}</ul>}
         </div>)}
-        {busy && <div className="ask-dock-turn assistant"><p className="ask-dock-thinking">Thinking…</p></div>}
+        {busy && <div className="ask-dock-turn assistant"><span className="ask-dock-thinking-pill"><ThinkingOrb state="solving" size={20} theme="dark" /><span>Thinking…</span></span></div>}
       </div>
 
       <div className="ask-dock-openers">{openers.length > 0 && <span className="ask-dock-openers-label">Next</span>}{openers.map(item =>
