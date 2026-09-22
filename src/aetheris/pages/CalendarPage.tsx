@@ -179,8 +179,10 @@ function EventForm({ value, onChange, onSave, onDelete, onClose, saving }: {
 
 /* -------------------------------------------------------------------- page */
 
-type View = 'month' | 'week' | 'day' | 'agenda'
-const views: [View, string][] = [['month', 'Month'], ['week', 'Week'], ['day', 'Day'], ['agenda', 'Agenda']]
+type View = 'month' | 'week' | 'day' | 'agenda' | 'timeline'
+const views: [View, string][] = [['month', 'Month'], ['week', 'Week'], ['day', 'Day'], ['agenda', 'Agenda'], ['timeline', 'Timeline']]
+const timelineHours = Array.from({ length: 16 }, (_, i) => i + 7)
+const timelineKinds = Object.keys(kindLabel) as CalKind[]
 
 export function CalendarPage() {
   const cal = useCalendar()
@@ -188,6 +190,8 @@ export function CalendarPage() {
   const [cursor, setCursor] = useState(() => startOfDay(new Date()))
   const [editing, setEditing] = useState<{ id?: string; draft: Omit<CalEvent, 'id'> } | null>(null)
   const [saving, setSaving] = useState(false)
+  const [timelineZoom, setTimelineZoom] = useState(100)
+  const [timelineDrag, setTimelineDrag] = useState<{ eventId: string; startX: number; moved: boolean } | null>(null)
 
   useEffect(() => { localStorage.setItem('aetheris.calendar.view', view) }, [view])
 
@@ -201,7 +205,8 @@ export function CalendarPage() {
     if (view === 'month') return new Date(current.getFullYear(), current.getMonth() + dir, 1)
     if (view === 'week') return addDays(current, dir * 7)
     if (view === 'day') return addDays(current, dir)
-    return addDays(current, dir * 14)
+    if (view === 'agenda') return addDays(current, dir * 14)
+    return addDays(current, dir)
   })
 
   const openNew = (day: Date) => setEditing({ draft: blankDraft(day) })
@@ -224,7 +229,28 @@ export function CalendarPage() {
     await cal.update(event.id, { startsAt: next.toISOString(), endsAt: new Date(next.getTime() + duration).toISOString() })
   }
 
-  const heading = view === 'day' ? dayLabel(cursor)
+  const moveOnTimeline = async (event: CalEvent, kind: CalKind, minute: number) => {
+    const start = new Date(event.startsAt)
+    const duration = Math.max(new Date(event.endsAt).getTime() - start.getTime(), 15 * 60 * 1000)
+    const snapped = Math.max(7 * 60, Math.min(22 * 60 - 15, Math.round(minute / 15) * 15))
+    const next = new Date(cursor)
+    next.setHours(Math.floor(snapped / 60), snapped % 60, 0, 0)
+    await cal.update(event.id, { kind, startsAt: next.toISOString(), endsAt: new Date(next.getTime() + duration).toISOString(), allDay: false })
+  }
+
+  const timelineDrop = (event: React.PointerEvent<HTMLElement>, kind: CalKind) => {
+    if (!timelineDrag) return
+    const item = cal.events.find(entry => entry.id === timelineDrag.eventId)
+    const track = event.currentTarget.querySelector<HTMLElement>('.cal-timeline-track')
+    if (item && track && timelineDrag.moved) {
+      const rect = track.getBoundingClientRect()
+      const ratio = Math.max(0, Math.min(1, (event.clientX - rect.left) / rect.width))
+      void moveOnTimeline(item, kind, 7 * 60 + ratio * 15 * 60)
+    }
+    setTimelineDrag(null)
+  }
+
+  const heading = view === 'day' || view === 'timeline' ? dayLabel(cursor)
     : view === 'week' ? `${startOfWeek(cursor).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })} – ${addDays(startOfWeek(cursor), 6).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}`
       : view === 'agenda' ? 'Next two weeks' : monthLabel(cursor)
 
@@ -316,6 +342,53 @@ export function CalendarPage() {
           })}
         </div>}
 
+        {!cal.loading && view === 'timeline' && <div className="cal-timeline-shell">
+          <div className="cal-timeline-tools">
+            <span>RELATIONSHIP SCHEDULE</span>
+            <label>Visible range <input aria-label="Timeline visible range" type="range" min="75" max="160" step="5" value={timelineZoom} onChange={e => setTimelineZoom(Number(e.target.value))} /></label>
+          </div>
+          <div className="cal-timeline-scroll">
+            <div className="cal-timeline" style={{ '--timeline-zoom': `${timelineZoom}%` } as React.CSSProperties}>
+              <div className="cal-timeline-head"><b>Type</b><div className="cal-timeline-track">{timelineHours.map(hour => <span key={hour}>{new Date(2020, 0, 1, hour).toLocaleTimeString(undefined, { hour: 'numeric' })}</span>)}</div></div>
+              {timelineKinds.map(kind => <div key={kind} className={`cal-timeline-row kind-${kind}`}
+                data-timeline-kind={kind}
+                onPointerMove={e => timelineDrag && setTimelineDrag(current => current ? { ...current, moved: current.moved || Math.abs(e.clientX - current.startX) > 5 } : null)}
+                onPointerUp={e => timelineDrop(e, kind)}>
+                <strong><span className={`cal-dot kind-${kind}`} />{kindLabel[kind]}</strong>
+                <div className="cal-timeline-track">
+                  {timelineHours.map(hour => <i key={hour} />)}
+                  {sameDay(cursor, today) && (() => {
+                    const now = new Date(); const minutes = now.getHours() * 60 + now.getMinutes()
+                    return minutes >= 420 && minutes <= 1320 ? <span className="cal-timeline-now" style={{ left: `${((minutes - 420) / 900) * 100}%` }}><b>Now</b></span> : null
+                  })()}
+                  {eventsOn(cursor).filter(item => item.kind === kind).map(item => {
+                    const start = new Date(item.startsAt)
+                    const startMinute = item.allDay ? 420 : start.getHours() * 60 + start.getMinutes()
+                    const duration = item.allDay ? 60 : Math.max(15, (new Date(item.endsAt).getTime() - start.getTime()) / 60000)
+                    const left = Math.max(0, ((startMinute - 420) / 900) * 100)
+                    const width = Math.max(4, Math.min(100 - left, (duration / 900) * 100))
+                    return <button key={item.id} className={`cal-timeline-event kind-${kind}`}
+                      style={{ left: `${left}%`, width: `${width}%` }}
+                      onPointerDown={e => { e.currentTarget.setPointerCapture(e.pointerId); setTimelineDrag({ eventId: item.id, startX: e.clientX, moved: false }) }}
+                      onClick={() => { if (!timelineDrag?.moved) openEdit(item) }}
+                      onKeyDown={e => {
+                        if (!['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown'].includes(e.key)) return
+                        e.preventDefault()
+                        const kindIndex = timelineKinds.indexOf(item.kind)
+                        const nextKind = e.key === 'ArrowUp' ? timelineKinds[Math.max(0, kindIndex - 1)] : e.key === 'ArrowDown' ? timelineKinds[Math.min(timelineKinds.length - 1, kindIndex + 1)] : item.kind
+                        const delta = e.key === 'ArrowLeft' ? -15 : e.key === 'ArrowRight' ? 15 : 0
+                        if (nextKind) void moveOnTimeline(item, nextKind, startMinute + delta)
+                      }}>
+                      <b>{item.title}</b><em>{item.allDay ? 'All day' : timeLabel(item.startsAt)}</em>
+                    </button>
+                  })}
+                </div>
+              </div>)}
+            </div>
+          </div>
+          <p className="cal-timeline-help">Drag an event across time or between types. Arrow keys move it in 15-minute steps; up and down change its type.</p>
+        </div>}
+
         {!cal.loading && view === 'agenda' && <div className="cal-agenda">
           {agendaDays.map(day => {
             const list = eventsOn(day)
@@ -337,7 +410,7 @@ export function CalendarPage() {
             <p className="cal-empty">Nothing scheduled in the next two weeks. Add the commitments you have already made so timing can inform your relationships.</p>}
         </div>}
 
-        {!cal.loading && !cal.events.length && view !== 'agenda' &&
+        {!cal.loading && !cal.events.length && view !== 'agenda' && view !== 'timeline' &&
           <p className="cal-empty"><CalendarDays size={15} /> Your calendar is empty. Click any day to add an event — drag an event to move it.</p>}
         {!cal.loading && !cal.signedIn &&
           <p className="cal-note">You are viewing the showcase. Events you add here stay in this browser until you sign in.</p>}
@@ -347,7 +420,7 @@ export function CalendarPage() {
         onChange={draft => setEditing({ ...editing, draft })}
         onSave={() => void save()}
         onClose={() => setEditing(null)}
-        onDelete={editing.id ? () => { void cal.remove(editing.id!); setEditing(null) } : undefined} />}
+        onDelete={editing.id ? () => { const id = editing.id; if (id) void cal.remove(id); setEditing(null) } : undefined} />}
     </div>
   </div>
 }
