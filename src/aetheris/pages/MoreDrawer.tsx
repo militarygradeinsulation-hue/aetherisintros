@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import { Search, X, ArrowRight, Star } from 'lucide-react'
 import type { Page } from '../nav'
-import { groupOrder, groupedSecondary, metaById, secondaryPages, type PageGroup, type PageMeta } from '../pageMeta'
+import { groupOrder, groupedSecondary, hubBlurb, metaById, secondaryPages, type Hub, type PageMeta } from '../pageMeta'
 
 const RECENT_KEY = 'aetheris.more.recent'
 
