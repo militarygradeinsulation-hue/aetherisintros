@@ -3,7 +3,7 @@ import { Volume2, VolumeX } from 'lucide-react'
 import { AvatarImage } from './avatar'
 import { portraitFor } from './portraits'
 import type { Member } from './social'
-import { readAloud, speechSupported, stopReading, useReader } from './voice'
+import { currentPagePassages, readAloud, speechSupported, stopReading, useReader } from './voice'
 
 /** Speaker button: reads one passage, one section, or the whole page. */
 export function ReadButton({ passages, label = 'Read aloud', className = '' }: {
