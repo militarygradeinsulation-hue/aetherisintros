@@ -3809,3 +3809,8 @@ button.news-link{background:none;border:0;padding:0;cursor:pointer}
   .sv-sheet-scrim{display:none}
   .sv-field-row{grid-template-columns:1fr}
 }
+
+/* Particle Drift hero canvas */
+.lv-hero-drift{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;opacity:.55;z-index:0}
+.lv-hero-copy,.lv-hero-visual{position:relative;z-index:1}
+@media (prefers-reduced-motion:reduce){.lv-hero-drift{display:none}}
