@@ -147,3 +147,6 @@
 - [x] Editorial verified badges (CEO / FOUNDER / OWNER / MANAGING PARTNER)
 - [x] Showcase the "One Connected System for CEOs" panel on the logged-out home page (uploaded reference)
 - [ ] Real third-party identity/KYC provider still requires an external service + credentials
+
+## Cinematic footer (Sep 22)
+- [x] Public Home closes with a GSAP cinematic footer: scrolling marquee (Know Who Matters / Why They Matter / Why Now / Verified Members / Double Opt-In / Private by Default), blueprint grid + cobalt aurora glow, giant parallax INTROS backdrop, glowing "The Relationship Network for CEOs." heading, magnetic glass pills (Create an account, Log in, Read My Story, Join the whitelist, back-to-top), legal strip; reduced-motion safe, mobile verified.
