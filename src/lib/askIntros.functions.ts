@@ -21,6 +21,7 @@ export interface AskIntrosInput {
     briefing: boolean
     contextPanel: boolean
     memberName: string
+    voice?: { speaking: boolean; conversation: boolean; speakReplies: boolean }
     pages: { id: string; label: string; blurb: string }[]
     people: string[]
   }
@@ -49,6 +50,10 @@ open-profile        open the member's own profile
 open-preferences    open settings and preferences
 open-member         value = the exact full name of a member in the list
 message-member      value = the exact full name of a member in the list
+read-page           read the page the member is on out loud
+stop-reading        stop reading out loud
+voice-off           turn spoken replies off
+voice-on            turn spoken replies on
 `
 
 function buildPrompt(context: AskIntrosInput['context']) {
@@ -64,6 +69,10 @@ interface text size: ${context.textSize}
 pointer size: ${context.cursorSize}
 briefing mode: ${context.briefing ? 'on' : 'off'}
 context rail: ${context.contextPanel ? 'shown' : 'hidden'}
+reading aloud right now: ${context.voice?.speaking ? 'yes' : 'no'}
+conversation mode: ${context.voice?.conversation ? 'on' : 'off'}
+spoken replies: ${context.voice?.speakReplies ? 'on' : 'off'}
+
 
 Destinations (id — label — what it does):
 ${context.pages.map(p => `${p.id} — ${p.label} — ${p.blurb}`).join('\n')}
