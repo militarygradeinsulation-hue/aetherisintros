@@ -36,18 +36,21 @@ export interface PageMeta {
   label: string
   icon: typeof HomeIcon
   group: PageGroup
+  hub: Hub
   blurb: string
   keywords: string[]
   briefing: Briefing
 }
 
+type BaseMeta = Omit<PageMeta, 'hub'>
+
 const m = (
   id: Page, label: string, icon: typeof HomeIcon, group: PageGroup, blurb: string,
   briefing: Briefing, keywords: string[] = [],
-): PageMeta => ({ id, label, icon, group, blurb, keywords, briefing })
+): BaseMeta => ({ id, label, icon, group, blurb, keywords, briefing })
 
 /** Single source of truth for every destination: label, group, description, briefing copy. */
-export const pageMeta: PageMeta[] = [
+const basePages: BaseMeta[] = [
   /* -------------------------------------------------------------- primary */
   m('home', 'Home', HomeIcon, 'PRIMARY', 'The relationships, needs and opportunities worth your attention today.', {
     does: 'Shows the relationships, needs and opportunities most worth your attention today.',
