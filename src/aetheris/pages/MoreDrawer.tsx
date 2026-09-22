@@ -125,6 +125,7 @@ export function MoreDrawer({ open, page, onClose, onNavigate }: {
       <div className="more-list">
         {results && <span className="more-label">{results.length} MATCH{results.length === 1 ? '' : 'ES'}</span>}
         {!results && <span className="more-label">{view === 'az' ? 'EVERY DESTINATION, A–Z' : view}</span>}
+        {!results && view !== 'az' && <p className="more-hub-blurb">{hubBlurb[view]}</p>}
         {listed.map(meta => <Item key={meta.id} meta={meta} />)}
         {!listed.length && <p className="more-empty">Nothing matches that. Try a capability, not a feature name.</p>}
       </div>
