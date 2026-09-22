@@ -62,14 +62,24 @@ function JoinBand({ signedIn }: { signedIn: boolean }) {
   )
 }
 
-const capabilityCards = [
+type CapabilityCard = {
+  id: string
+  icon: typeof BrainCircuit
+  title: string
+  copy: string
+  visual: 'memory' | 'layout' | 'network' | 'signal' | 'security' | 'mobile'
+  featured?: boolean
+  wide?: boolean
+}
+
+const capabilityCards: CapabilityCard[] = [
   { id: 'context', icon: BrainCircuit, title: 'Active Memory', copy: 'Living context that remembers what matters across relationships, asks and conversations.', visual: 'memory', featured: true },
   { id: 'adapt', icon: LayoutGrid, title: 'One adaptive workspace', copy: 'Social View, CRM, Grid and Calendar move as one connected system.', visual: 'layout' },
   { id: 'network', icon: Globe2, title: 'Relationship network', copy: 'See the people, warm paths and mutual context already around you.', visual: 'network', featured: true },
   { id: 'timing', icon: Zap, title: 'Why now', copy: 'Timely signals surface the conversations and opportunities ready for action.', visual: 'signal' },
   { id: 'trust', icon: ShieldCheck, title: 'Trust by design', copy: 'Verified membership, private defaults and double opt-in introductions.', visual: 'security', wide: true },
   { id: 'mobile', icon: Smartphone, title: 'Ready wherever you lead', copy: 'A focused operating view that stays useful on every screen.', visual: 'mobile', wide: true },
-] as const
+] 
 
 function CapabilityVisual({ visual }: { visual: typeof capabilityCards[number]['visual'] }) {
   if (visual === 'memory') return <div className="lv-cap-type" aria-hidden="true"><span>Who</span><em>Why</em><b>Now</b></div>
