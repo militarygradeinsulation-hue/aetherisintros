@@ -408,12 +408,48 @@ const basePages: BaseMeta[] = [
   }, ['news', 'feed', 'press', 'industry', 'security', 'ai', 'aetheris']),
 ]
 
+/** Every page belongs to one of five hubs, so nothing has to be hunted for. */
+const hubOf: Partial<Record<Page, Hub>> = {
+  home: 'EVERYDAY', simple: 'EVERYDAY', messages: 'EVERYDAY', news: 'EVERYDAY',
+  calendar: 'EVERYDAY', briefing: 'EVERYDAY', inbox: 'EVERYDAY', eventmode: 'EVERYDAY',
+
+  network: 'PEOPLE & NETWORK', discover: 'PEOPLE & NETWORK', directory: 'PEOPLE & NETWORK',
+  intros: 'PEOPLE & NETWORK', companies: 'PEOPLE & NETWORK', circles: 'PEOPLE & NETWORK',
+  expertise: 'PEOPLE & NETWORK', talent: 'PEOPLE & NETWORK', boards: 'PEOPLE & NETWORK',
+  events: 'PEOPLE & NETWORK', intelrooms: 'PEOPLE & NETWORK', knowledge: 'PEOPLE & NETWORK',
+  organization: 'PEOPLE & NETWORK', profile: 'PEOPLE & NETWORK', passport: 'PEOPLE & NETWORK',
+  presence: 'PEOPLE & NETWORK', ask: 'PEOPLE & NETWORK', serendipity: 'PEOPLE & NETWORK',
+
+  needs: 'OPPORTUNITIES & WORK', opportunities: 'OPPORTUNITIES & WORK', rooms: 'OPPORTUNITIES & WORK',
+  dealrooms: 'OPPORTUNITIES & WORK', outcomes: 'OPPORTUNITIES & WORK', capital: 'OPPORTUNITIES & WORK',
+  systems: 'OPPORTUNITIES & WORK', strategy: 'OPPORTUNITIES & WORK', crm: 'OPPORTUNITIES & WORK',
+  grid: 'OPPORTUNITIES & WORK', knowledgeassets: 'OPPORTUNITIES & WORK', vault: 'OPPORTUNITIES & WORK',
+
+  memory: 'INTELLIGENCE & MEMORY', insights: 'INTELLIGENCE & MEMORY', evidence: 'INTELLIGENCE & MEMORY',
+  gaps: 'INTELLIGENCE & MEMORY', loops: 'INTELLIGENCE & MEMORY', collisions: 'INTELLIGENCE & MEMORY',
+  simulation: 'INTELLIGENCE & MEMORY', attribution: 'INTELLIGENCE & MEMORY',
+  timemachine: 'INTELLIGENCE & MEMORY', autopilot: 'INTELLIGENCE & MEMORY',
+
+  consent: 'TRUST & CONTROL', constitution: 'TRUST & CONTROL', permission: 'TRUST & CONTROL',
+  identity: 'TRUST & CONTROL', preferences: 'TRUST & CONTROL', integrations: 'TRUST & CONTROL',
+}
+
+const hubFallback: Record<PageGroup, Hub> = {
+  PRIMARY: 'EVERYDAY',
+  NETWORK: 'PEOPLE & NETWORK',
+  'RELATIONSHIP INTELLIGENCE': 'INTELLIGENCE & MEMORY',
+  'OPPORTUNITY & EXECUTION': 'OPPORTUNITIES & WORK',
+  'TRUST, PERMISSION & CONTROL': 'TRUST & CONTROL',
+}
+
+export const pageMeta: PageMeta[] = basePages.map(p => ({ ...p, hub: hubOf[p.id] ?? hubFallback[p.group] }))
+
 export const metaById: Record<string, PageMeta> = Object.fromEntries(pageMeta.map(p => [p.id, p]))
 
 export function pageLabel(id: Page) { return metaById[id]?.label ?? id }
 
-/** The short, always-visible rail. */
-export const primaryPages: Page[] = ['crm', 'grid', 'home', 'messages', 'network', 'news', 'opportunities', 'simple']
+/** The short, always-visible rail: only the places used every day. */
+export const primaryPages: Page[] = ['home', 'simple', 'network', 'opportunities', 'messages', 'crm', 'news']
 
 /** Tabs consolidated inside the Network and Opportunities hubs. */
 export const networkTabs: Page[] = ['discover', 'directory', 'intros', 'companies', 'calendar']
