@@ -18,7 +18,7 @@ export function rememberRecent(page: Page) {
   try { localStorage.setItem(RECENT_KEY, JSON.stringify(next)) } catch { /* ignore */ }
 }
 
-type View = 'az' | PageGroup
+type View = 'az' | Hub
 
 const PINNED_KEY = 'aetheris.more.pinned'
 
