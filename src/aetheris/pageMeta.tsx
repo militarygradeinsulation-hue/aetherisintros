@@ -14,6 +14,14 @@ export type PageGroup =
   | 'OPPORTUNITY & EXECUTION'
   | 'TRUST, PERMISSION & CONTROL'
 
+/** Five plain-language hubs. Everything in the product lives in exactly one of them. */
+export type Hub =
+  | 'EVERYDAY'
+  | 'PEOPLE & NETWORK'
+  | 'OPPORTUNITIES & WORK'
+  | 'INTELLIGENCE & MEMORY'
+  | 'TRUST & CONTROL'
+
 export interface Briefing {
   does: string
   look: string
@@ -28,18 +36,21 @@ export interface PageMeta {
   label: string
   icon: typeof HomeIcon
   group: PageGroup
+  hub: Hub
   blurb: string
   keywords: string[]
   briefing: Briefing
 }
 
+type BaseMeta = Omit<PageMeta, 'hub'>
+
 const m = (
   id: Page, label: string, icon: typeof HomeIcon, group: PageGroup, blurb: string,
   briefing: Briefing, keywords: string[] = [],
-): PageMeta => ({ id, label, icon, group, blurb, keywords, briefing })
+): BaseMeta => ({ id, label, icon, group, blurb, keywords, briefing })
 
 /** Single source of truth for every destination: label, group, description, briefing copy. */
-export const pageMeta: PageMeta[] = [
+const basePages: BaseMeta[] = [
   /* -------------------------------------------------------------- primary */
   m('home', 'Home', HomeIcon, 'PRIMARY', 'The relationships, needs and opportunities worth your attention today.', {
     does: 'Shows the relationships, needs and opportunities most worth your attention today.',
@@ -397,12 +408,48 @@ export const pageMeta: PageMeta[] = [
   }, ['news', 'feed', 'press', 'industry', 'security', 'ai', 'aetheris']),
 ]
 
+/** Every page belongs to one of five hubs, so nothing has to be hunted for. */
+const hubOf: Partial<Record<Page, Hub>> = {
+  home: 'EVERYDAY', simple: 'EVERYDAY', messages: 'EVERYDAY', news: 'EVERYDAY',
+  calendar: 'EVERYDAY', briefing: 'EVERYDAY', inbox: 'EVERYDAY', eventmode: 'EVERYDAY',
+
+  network: 'PEOPLE & NETWORK', discover: 'PEOPLE & NETWORK', directory: 'PEOPLE & NETWORK',
+  intros: 'PEOPLE & NETWORK', companies: 'PEOPLE & NETWORK', circles: 'PEOPLE & NETWORK',
+  expertise: 'PEOPLE & NETWORK', talent: 'PEOPLE & NETWORK', boards: 'PEOPLE & NETWORK',
+  events: 'PEOPLE & NETWORK', intelrooms: 'PEOPLE & NETWORK', knowledge: 'PEOPLE & NETWORK',
+  organization: 'PEOPLE & NETWORK', profile: 'PEOPLE & NETWORK', passport: 'PEOPLE & NETWORK',
+  presence: 'PEOPLE & NETWORK', ask: 'PEOPLE & NETWORK', serendipity: 'PEOPLE & NETWORK',
+
+  needs: 'OPPORTUNITIES & WORK', opportunities: 'OPPORTUNITIES & WORK', rooms: 'OPPORTUNITIES & WORK',
+  dealrooms: 'OPPORTUNITIES & WORK', outcomes: 'OPPORTUNITIES & WORK', capital: 'OPPORTUNITIES & WORK',
+  systems: 'OPPORTUNITIES & WORK', strategy: 'OPPORTUNITIES & WORK', crm: 'OPPORTUNITIES & WORK',
+  grid: 'OPPORTUNITIES & WORK', knowledgeassets: 'OPPORTUNITIES & WORK', vault: 'OPPORTUNITIES & WORK',
+
+  memory: 'INTELLIGENCE & MEMORY', insights: 'INTELLIGENCE & MEMORY', evidence: 'INTELLIGENCE & MEMORY',
+  gaps: 'INTELLIGENCE & MEMORY', loops: 'INTELLIGENCE & MEMORY', collisions: 'INTELLIGENCE & MEMORY',
+  simulation: 'INTELLIGENCE & MEMORY', attribution: 'INTELLIGENCE & MEMORY',
+  timemachine: 'INTELLIGENCE & MEMORY', autopilot: 'INTELLIGENCE & MEMORY',
+
+  consent: 'TRUST & CONTROL', constitution: 'TRUST & CONTROL', permission: 'TRUST & CONTROL',
+  identity: 'TRUST & CONTROL', preferences: 'TRUST & CONTROL', integrations: 'TRUST & CONTROL',
+}
+
+const hubFallback: Record<PageGroup, Hub> = {
+  PRIMARY: 'EVERYDAY',
+  NETWORK: 'PEOPLE & NETWORK',
+  'RELATIONSHIP INTELLIGENCE': 'INTELLIGENCE & MEMORY',
+  'OPPORTUNITY & EXECUTION': 'OPPORTUNITIES & WORK',
+  'TRUST, PERMISSION & CONTROL': 'TRUST & CONTROL',
+}
+
+export const pageMeta: PageMeta[] = basePages.map(p => ({ ...p, hub: hubOf[p.id] ?? hubFallback[p.group] }))
+
 export const metaById: Record<string, PageMeta> = Object.fromEntries(pageMeta.map(p => [p.id, p]))
 
 export function pageLabel(id: Page) { return metaById[id]?.label ?? id }
 
-/** The short, always-visible rail. */
-export const primaryPages: Page[] = ['crm', 'grid', 'home', 'messages', 'network', 'news', 'opportunities', 'simple']
+/** The short, always-visible rail: only the places used every day. */
+export const primaryPages: Page[] = ['home', 'simple', 'network', 'opportunities', 'messages', 'crm', 'news']
 
 /** Tabs consolidated inside the Network and Opportunities hubs. */
 export const networkTabs: Page[] = ['discover', 'directory', 'intros', 'companies', 'calendar']
@@ -410,9 +457,19 @@ export const networkAdvanced: Page[] = ['circles', 'expertise', 'events', 'seren
 export const opportunityTabs: Page[] = ['needs', 'opportunities', 'rooms', 'outcomes']
 export const opportunityAdvanced: Page[] = ['dealrooms', 'systems', 'strategy', 'simulation', 'collisions', 'capital', 'attribution', 'loops', 'knowledgeassets', 'timemachine']
 
-export const groupOrder: PageGroup[] = [
-  'NETWORK', 'RELATIONSHIP INTELLIGENCE', 'OPPORTUNITY & EXECUTION', 'TRUST, PERMISSION & CONTROL',
+/** The five hubs, in the order members read them. */
+export const groupOrder: Hub[] = [
+  'EVERYDAY', 'PEOPLE & NETWORK', 'OPPORTUNITIES & WORK', 'INTELLIGENCE & MEMORY', 'TRUST & CONTROL',
 ]
+
+/** One plain sentence per hub, shown above its list. */
+export const hubBlurb: Record<Hub, string> = {
+  EVERYDAY: 'The screens you open daily: today’s picture, conversations, your calendar and the news.',
+  'PEOPLE & NETWORK': 'Everyone you know or should know — people, companies, circles and introductions.',
+  'OPPORTUNITIES & WORK': 'What you are trying to move: asks, opportunities, pipeline, rooms and results.',
+  'INTELLIGENCE & MEMORY': 'What Intros has learned, what changed, and why something matters now.',
+  'TRUST & CONTROL': 'Who may reach you, who may see what, and how the product behaves for you.',
+}
 
 const byLabel = (a: PageMeta, b: PageMeta) => a.label.localeCompare(b.label)
 
@@ -421,8 +478,8 @@ export const secondaryPages: PageMeta[] = pageMeta
   .filter(p => !primaryPages.includes(p.id))
   .sort(byLabel)
 
-export function groupedSecondary(group: PageGroup): PageMeta[] {
-  return secondaryPages.filter(p => p.group === group).sort(byLabel)
+export function groupedSecondary(hub: Hub): PageMeta[] {
+  return secondaryPages.filter(p => p.hub === hub).sort(byLabel)
 }
 
 /** Local "related tools" rows so members are not forced to learn the whole map. */

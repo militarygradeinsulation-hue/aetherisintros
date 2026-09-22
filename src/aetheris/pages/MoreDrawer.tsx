@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import { Search, X, ArrowRight, Star } from 'lucide-react'
 import type { Page } from '../nav'
-import { groupOrder, groupedSecondary, metaById, secondaryPages, type PageGroup, type PageMeta } from '../pageMeta'
+import { groupOrder, groupedSecondary, hubBlurb, metaById, secondaryPages, type Hub, type PageMeta } from '../pageMeta'
 
 const RECENT_KEY = 'aetheris.more.recent'
 
@@ -18,7 +18,7 @@ export function rememberRecent(page: Page) {
   try { localStorage.setItem(RECENT_KEY, JSON.stringify(next)) } catch { /* ignore */ }
 }
 
-type View = 'az' | PageGroup
+type View = 'az' | Hub
 
 const PINNED_KEY = 'aetheris.more.pinned'
 
@@ -56,7 +56,7 @@ export function MoreDrawer({ open, page, onClose, onNavigate }: {
     if (!q) return null
     return secondaryPages.filter(p =>
       p.label.toLowerCase().includes(q) || p.blurb.toLowerCase().includes(q)
-      || p.group.toLowerCase().includes(q) || p.keywords.some(k => k.includes(q)))
+      || p.hub.toLowerCase().includes(q) || p.keywords.some(k => k.includes(q)))
   }, [query])
 
   if (!open) return null
@@ -86,8 +86,8 @@ export function MoreDrawer({ open, page, onClose, onNavigate }: {
       <header className="more-head">
         <div>
           <span className="more-eyebrow">THE INDEX</span>
-          <h2>All tools</h2>
-          <p>Every capability in Ask Intros, in plain language.</p>
+          <h2>Everything, in five places</h2>
+          <p>Everyday · People &amp; Network · Opportunities &amp; Work · Intelligence &amp; Memory · Trust &amp; Control.</p>
         </div>
         <button className="icon-btn" onClick={onClose} aria-label="Close"><X size={17} /></button>
       </header>
@@ -125,6 +125,7 @@ export function MoreDrawer({ open, page, onClose, onNavigate }: {
       <div className="more-list">
         {results && <span className="more-label">{results.length} MATCH{results.length === 1 ? '' : 'ES'}</span>}
         {!results && <span className="more-label">{view === 'az' ? 'EVERY DESTINATION, A–Z' : view}</span>}
+        {!results && view !== 'az' && <p className="more-hub-blurb">{hubBlurb[view]}</p>}
         {listed.map(meta => <Item key={meta.id} meta={meta} />)}
         {!listed.length && <p className="more-empty">Nothing matches that. Try a capability, not a feature name.</p>}
       </div>

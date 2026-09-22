@@ -3913,3 +3913,80 @@ button.news-link{background:none;border:0;padding:0;cursor:pointer}
 .selection-read{position:fixed;z-index:200;display:inline-flex;align-items:center;gap:7px;padding:8px 12px;border:1px solid rgba(255,255,255,.18);border-radius:8px;background:var(--graphite,#1A1F25);color:var(--soft,#F1EFE9);font:600 10px var(--sans);letter-spacing:.1em;text-transform:uppercase;cursor:pointer;box-shadow:0 14px 34px rgba(0,0,0,.45)}
 .selection-read:hover{border-color:var(--cobalt,#0F5CCB);color:#fff}
 .selection-read svg{color:var(--amber,#F4A125)}
+
+/* ============================================================
+   CLEAN SEPARATION PASS
+   One card language across every page: obsidian ground, graphite
+   panels, hairline borders, generous air, unmistakable headings.
+   ============================================================ */
+
+.workspace-grid .content{--panel:#11151A;--panel-line:rgba(255,255,255,.08)}
+
+/* Every section reads as its own calm panel. */
+.content .module,
+.content .mod,
+.content .feed-card,
+.content .post-card,
+.content .match-report,
+.content .need-case,
+.content .insight-list,
+.content .insight-numbers,
+.content .attention-panel,
+.content .home-education,
+.content .home-matches,
+.content .org-passport,
+.content .pro-credibility,
+.content .opportunity-clusters article,
+.content .intelligence-map{
+  border-radius:14px!important;
+  border:1px solid rgba(255,255,255,.08)!important;
+  background:#11151A!important;
+  padding:26px 28px!important;
+  box-shadow:0 1px 0 rgba(255,255,255,.02) inset!important;
+}
+
+/* Air between sections instead of a wall of cards. */
+.content .feed,
+.content .reports-list{gap:20px!important}
+.content .home-modules,
+.content .profile-social{gap:20px!important;margin-top:34px}
+.content>*+*{margin-top:0}
+.content .module+.module{margin-top:0}
+
+/* Headings stay unmistakable: amber tag, serif line, one plain sentence. */
+.content .page-title{margin-bottom:30px;padding-bottom:22px;border-bottom:1px solid rgba(255,255,255,.08)}
+.content .page-title p{max-width:60ch;color:#9EA4AC;font-size:var(--text-body,13px);line-height:1.75}
+.content .module>header,
+.content .mod>header{padding-bottom:16px!important;margin-bottom:6px;border-bottom:1px solid rgba(255,255,255,.08)!important}
+.content .module>header h3{font-size:22px;margin:8px 0 10px}
+.content .module>header p{color:#9EA4AC;line-height:1.7;margin:0}
+.content .eyebrow{letter-spacing:.16em}
+
+/* Lists inside a panel breathe and never run together. */
+.content .module li{padding-block:14px}
+.content .module li+li{border-top:1px solid rgba(255,255,255,.07)!important}
+
+/* Tab rows read as navigation, not decoration. */
+.content .feed-tabs,
+.content .state-filters{gap:6px;padding-bottom:12px;margin-bottom:22px;border-bottom:1px solid rgba(255,255,255,.08)}
+
+/* Page-top imagery stays restrained everywhere except Home. */
+.content .editorial-hero{border-radius:14px;overflow:hidden;border:1px solid rgba(255,255,255,.08);margin-bottom:34px}
+
+/* The index reads as five clear places. */
+.more-hub-blurb{margin:2px 0 14px;color:#9EA4AC;font:400 12px/1.7 var(--sans);max-width:52ch}
+
+@media(max-width:780px){
+  .content .module,
+  .content .mod,
+  .content .feed-card,
+  .content .post-card,
+  .content .match-report,
+  .content .need-case,
+  .content .attention-panel,
+  .content .home-education,
+  .content .home-matches{padding:20px!important;border-radius:12px!important}
+  .content .home-modules,
+  .content .profile-social{grid-template-columns:minmax(0,1fr)!important;gap:16px!important}
+  .content .feed{gap:16px!important}
+}
