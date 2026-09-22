@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { Camera, Check, LockKeyhole, MousePointer2, ShieldCheck, Type, Volume2 } from 'lucide-react'
-import { listVoices, readAloud, speechSupported, stopReading, useVoiceSettings, voiceSpeedLabels, voiceSpeeds } from '../voice'
+import { naturalVoices, readAloud, speechSupported, stopReading, useVoiceSettings, voiceSpeedLabels, voiceSpeeds } from '../voice'
 import { useNetwork, type PreferenceSettings } from '../store'
 import { AvatarImage } from '../avatar'
 import { Btn, Eyebrow, Head } from '../ui'
@@ -76,9 +76,9 @@ function IdentityCard() {
 /** Reading out loud and talking with Ask Intros. */
 function VoiceCard() {
   const [voice, setVoice] = useVoiceSettings()
-  const [voices, setVoices] = useState<{ name: string; lang: string }[]>([])
+  const [voices, setVoices] = useState<{ name: string; lang: string; label: string }[]>([])
   useEffect(() => {
-    const load = () => setVoices(listVoices().map(item => ({ name: item.name, lang: item.lang })))
+    const load = () => setVoices(naturalVoices())
     load()
     if (typeof window !== 'undefined' && window.speechSynthesis) {
       window.speechSynthesis.addEventListener('voiceschanged', load)
@@ -109,12 +109,12 @@ function VoiceCard() {
     {voices.length > 0 && <label className="voice-picker">
       <span>Reading voice</span>
       <select value={voice.voiceName} onChange={event => setVoice({ voiceName: event.target.value })}>
-        <option value="">Your device default</option>
-        {voices.map(item => <option key={item.name} value={item.name}>{item.name} — {item.lang}</option>)}
+        <option value="">Most natural on this device</option>
+        {voices.map(item => <option key={item.name} value={item.name}>{item.label} — {item.lang}</option>)}
       </select>
     </label>}
     <p className="settings-identity-note"><Volume2 size={13} /> Press the speaker in the top bar to hear the page you are on, or highlight a passage first to hear only that.</p>
-    <Btn kind="secondary" onClick={() => readAloud(['This is how Ask Intros will read to you.'], 'Voice test')}><Volume2 size={14} /> Hear a sample</Btn>
+    <Btn kind="secondary" onClick={() => readAloud(['This is how Ask Intros will read to you, at the speed and voice you chose.'], 'Voice test')}><Volume2 size={14} /> Hear a sample</Btn>
   </>
 }
 
