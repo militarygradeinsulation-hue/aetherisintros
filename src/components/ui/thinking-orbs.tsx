@@ -2,6 +2,8 @@
 // Six hand-tuned canvas states: working · searching · solving · listening · composing · shaping.
 // Theme-aware (auto resolves from data-theme/dark class/prefers-color-scheme); SSR-safe.
 // Source & playground: https://orbs.jakubantalik.com
+import { ThinkingOrb } from "thinking-orbs"
+
 export { ThinkingOrb } from "thinking-orbs"
 export type {
   ThinkingOrbProps,
