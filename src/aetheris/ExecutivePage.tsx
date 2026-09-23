@@ -36,6 +36,8 @@ function useRecommendations(memberId: string) {
   const [rows, setRows] = useState<Recommendation[]>([])
   const [ready, setReady] = useState(false)
   const reload = async () => {
+    const { data: auth } = await supabase.auth.getUser()
+    if (!auth.user) { setRows([]); setReady(true); return }
     const result = await supabase.from('executive_recommendations').select('*').eq('recipient_id', memberId).order('created_at', { ascending: false })
     const recommendations = (result.data ?? []) as Recommendation[]
     const ids = [...new Set(recommendations.map(row => row.author_id))]

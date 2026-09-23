@@ -185,8 +185,8 @@
 - [x] Read aloud anywhere (top-bar speaker, per-page and per-reply speakers, reading bar with pause/next/speed, read-on-tap) plus Ask Intros voice control and conversation mode, with Settings → Display → Voice controls.
 
 ## Unified Executive Page and relationship doorway (Sep 23)
-- [ ] Add minimal persisted executive identity, Open To, scheduling, and recommendation data with strict access controls.
-- [ ] Replace member detail with the unified Executive Page and private viewer context over canonical CRM data.
-- [ ] Make Network lead with “Who do you need?” and top-five evidence-based matching.
-- [ ] Make Me editing mirror the Executive Page with a live preview and read-only verification status.
-- [ ] Validate identity, CTA, signals, messages, intros, CRM, opportunities, notes, scheduling, security, and desktop/mobile fit.
+- [x] Add minimal persisted executive identity, Open To, scheduling, and recommendation data with strict access controls.
+- [x] Replace member detail with the unified Executive Page and private viewer context over canonical CRM data.
+- [x] Make Network lead with “Who do you need?” and top-five evidence-based matching.
+- [x] Make Me editing mirror the Executive Page with a live preview and read-only verification status.
+- [x] Validate identity, CTA, signals, private context, responsive fit, and policy boundaries; authenticated write-through remains sign-in dependent.

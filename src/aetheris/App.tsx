@@ -2615,6 +2615,7 @@ function Shell({ startPage }: { startPage?: Page | undefined }) {
   useEffect(() => { applyCursorScale(readCursorScale()) }, [])
 
   useEffect(() => { rememberRecent(page) }, [page])
+  useEffect(() => { window.scrollTo({ top: 0, behavior: 'auto' }) }, [page, selected?.id])
 
   return <NavCtx.Provider value={navApi}>
     <div className={`app-shell ${collapsed ? 'rail-collapsed' : ''} ${contextOpen ? 'show-context' : ''}`}>
