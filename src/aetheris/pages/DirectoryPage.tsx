@@ -49,6 +49,7 @@ export function DirectoryPage() {
   const [companies, setCompanies] = useState<CompanyRow[]>([])
   const [counts, setCounts] = useState<{ people: number; companies: number; members: number }>({ people: 0, companies: 0, members: 0 })
   const [loading, setLoading] = useState(false)
+  const [loadError, setLoadError] = useState('')
 
   useEffect(() => {
     let live = true
@@ -80,7 +81,8 @@ export function DirectoryPage() {
             .limit(60)
           if (membersOnly) q = q.eq('is_member', true)
           if (term) q = q.or(`full_name.ilike.%${term}%,company_name.ilike.%${term}%,title.ilike.%${term}%,industry.ilike.%${term}%,location.ilike.%${term}%`)
-          const { data } = await q
+          const { data, error } = await q
+          if (live) setLoadError(error ? 'The directory could not be loaded. Sign in with a verified membership to search it.' : '')
           if (live) setContacts((data ?? []) as ContactRow[])
         } else {
           let q = supabase
@@ -89,7 +91,8 @@ export function DirectoryPage() {
             .order('name')
             .limit(60)
           if (term) q = q.or(`name.ilike.%${term}%,industry.ilike.%${term}%,city.ilike.%${term}%,country.ilike.%${term}%`)
-          const { data } = await q
+          const { data, error } = await q
+          if (live) setLoadError(error ? 'The directory could not be loaded. Sign in with a verified membership to search it.' : '')
           if (live) setCompanies((data ?? []) as CompanyRow[])
         }
         if (live) setLoading(false)
@@ -127,6 +130,8 @@ export function DirectoryPage() {
       />
     </label>
 
+    {loadError && <p className="empty-state" role="alert">{loadError}</p>}
+
     {tab === 'people' && <section className="directory-list">
       {contacts.map(row => {
         const member = row.user_id ? net.members.find(person => person.id === row.user_id) : undefined
@@ -145,7 +150,7 @@ export function DirectoryPage() {
               : row.is_member && <small className="directory-profile-note">Profile setup is not finished yet.</small>}
         </div>
       </article>})}
-      {!loading && contacts.length === 0 && <p className="empty-state">Nobody matches that yet. Try a company, a city or a job title.</p>}
+      {!loading && !loadError && contacts.length === 0 && <p className="empty-state">Nobody matches that yet. Try a company, a city or a job title.</p>}
     </section>}
 
     {tab === 'companies' && <section className="directory-list">
@@ -158,7 +163,7 @@ export function DirectoryPage() {
           {row.website && <p>{row.website}</p>}
         </div>
       </article>)}
-      {!loading && companies.length === 0 && <p className="empty-state">No company matches that yet. Try a shorter search.</p>}
+      {!loading && !loadError && companies.length === 0 && <p className="empty-state">No company matches that yet. Try a shorter search.</p>}
     </section>}
   </>
 }

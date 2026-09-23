@@ -229,8 +229,11 @@ export const runVerificationScan = createServerFn({ method: 'POST' })
       })
     }
 
-    await supabase.from('verification_checks').insert(
+    // Check results are system-authored; members cannot write them directly.
+    const { supabaseAdmin } = await import('@/integrations/supabase/client.server')
+    const checkWrite = await supabaseAdmin.from('verification_checks').insert(
       checks.map(check => ({ ...check, verification_id: claim.id })))
+    if (checkWrite.error) console.error('verification_checks insert failed', checkWrite.error)
 
     const conflicts = checks.filter(c => c.result === 'conflict')
     const matches = checks.filter(c => c.result === 'match')
@@ -253,7 +256,7 @@ export const runVerificationScan = createServerFn({ method: 'POST' })
       risk_flags: conflicts.map(c => ({ check: c.check_type, note: c.evidence_summary })),
     }).eq('id', claim.id)
 
-    await supabase.from('verification_events').insert({
+    await supabaseAdmin.from('verification_events').insert({
       verification_id: claim.id, user_id: userId, actor_id: userId, event: 'scanned',
       summary: `Consistency scan finished: ${matches.length} consistent, ${conflicts.length} conflicting, ${checks.length} checks.`,
       detail: { status },

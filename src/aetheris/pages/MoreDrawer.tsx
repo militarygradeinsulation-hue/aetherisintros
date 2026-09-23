@@ -15,7 +15,7 @@ export function rememberRecent(page: Page) {
 }
 
 const utilities: Array<{ id: Page; label: string; note: string; icon: typeof ShieldCheck }> = [
-  { id: 'preferences', label: 'Security & Privacy', note: 'Verification, privacy, sessions and data controls.', icon: ShieldCheck },
+  { id: 'permission', label: 'Security & Privacy', note: 'Verification, privacy, sessions and data controls.', icon: ShieldCheck },
   { id: 'integrations', label: 'Connected Apps', note: 'Manage the services you already use.', icon: PlugZap },
   { id: 'preferences', label: 'Preferences', note: 'Display, voice, pointer and reading choices.', icon: Settings2 },
 ]

@@ -4,7 +4,7 @@
  * views. Events are stored per signed-in member in the database, and fall back
  * to this browser when there is no session (showcase / demo).
  */
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useState , useRef} from 'react'
 import {
   CalendarDays, ChevronLeft, ChevronRight, Clock, MapPin, Plus, Trash2, X,
 } from 'lucide-react'
@@ -191,6 +191,7 @@ export function CalendarPage() {
   const [editing, setEditing] = useState<{ id?: string; draft: Omit<CalEvent, 'id'> } | null>(null)
   const [saving, setSaving] = useState(false)
   const [timelineZoom, setTimelineZoom] = useState(100)
+  const suppressClick = useRef(false)
   const [timelineDrag, setTimelineDrag] = useState<{ eventId: string; startX: number; moved: boolean } | null>(null)
 
   useEffect(() => { localStorage.setItem('aetheris.calendar.view', view) }, [view])
@@ -247,6 +248,7 @@ export function CalendarPage() {
       const ratio = Math.max(0, Math.min(1, (event.clientX - rect.left) / rect.width))
       void moveOnTimeline(item, kind, 7 * 60 + ratio * 15 * 60)
     }
+    if (timelineDrag.moved) suppressClick.current = true
     setTimelineDrag(null)
   }
 
@@ -369,8 +371,8 @@ export function CalendarPage() {
                     const width = Math.max(4, Math.min(100 - left, (duration / 900) * 100))
                     return <button key={item.id} className={`cal-timeline-event kind-${kind}`}
                       style={{ left: `${left}%`, width: `${width}%` }}
-                      onPointerDown={e => { e.currentTarget.setPointerCapture(e.pointerId); setTimelineDrag({ eventId: item.id, startX: e.clientX, moved: false }) }}
-                      onClick={() => { if (!timelineDrag?.moved) openEdit(item) }}
+                      onPointerDown={e => { suppressClick.current = false; setTimelineDrag({ eventId: item.id, startX: e.clientX, moved: false }) }}
+                      onClick={() => { if (suppressClick.current) { suppressClick.current = false; return } openEdit(item) }}
                       onKeyDown={e => {
                         if (!['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown'].includes(e.key)) return
                         e.preventDefault()
