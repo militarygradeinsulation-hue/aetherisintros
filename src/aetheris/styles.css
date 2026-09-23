@@ -3057,10 +3057,10 @@ input, textarea, select { font: inherit; }
 .need-modal .btn.quiet { color: #3F4348; }
 
 /* ------------------------------------------------------------ text size preference */
-html.text-scale-small { --ui-body-text: 11px; --ui-detail-text: 9px; --ui-control-text: 10px; --ui-nav-text: 9px; }
-html.text-scale-default { --ui-body-text: 13px; --ui-detail-text: 11px; --ui-control-text: 12px; --ui-nav-text: 11px; }
-html.text-scale-large { --ui-body-text: 15px; --ui-detail-text: 13px; --ui-control-text: 14px; --ui-nav-text: 13px; }
-html.text-scale-larger { --ui-body-text: 17px; --ui-detail-text: 15px; --ui-control-text: 16px; --ui-nav-text: 15px; }
+html.text-scale-small { --ui-body-text: 13px; --ui-detail-text: 11.5px; --ui-control-text: 12.5px; --ui-nav-text: 12px; }
+html.text-scale-default { --ui-body-text: 15px; --ui-detail-text: 13px; --ui-control-text: 14px; --ui-nav-text: 13px; }
+html.text-scale-large { --ui-body-text: 17px; --ui-detail-text: 15px; --ui-control-text: 16px; --ui-nav-text: 15px; }
+html.text-scale-larger { --ui-body-text: 19px; --ui-detail-text: 17px; --ui-control-text: 18px; --ui-nav-text: 17px; }
 
 /* Text preferences resize words only. Layout, images and controls keep their dimensions. */
 html[class*="text-scale-"] .app-shell :where(.eyebrow, small),
