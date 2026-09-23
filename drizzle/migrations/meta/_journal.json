@@ -8,6 +8,20 @@
       "when": 1790198472598,
       "tag": "0000_admin_insert_verification_events",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1790203224383,
+      "tag": "0001_unified_executive_profiles_and_recommendations",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1790203354817,
+      "tag": "0002_grant_executive_profile_columns",
+      "breakpoints": true
     }
   ]
 }

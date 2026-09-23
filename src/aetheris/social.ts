@@ -17,6 +17,11 @@ export interface Member extends Person {
   saved?: boolean
   introState: IntroState
   joined: string
+  /** Network-safe executive identity fields persisted on the verified profile. */
+  whatIDo?: string
+  building?: string
+  openTo?: string[]
+  schedulingEnabled?: boolean
 }
 
 const base: ScoreBreakdown = {

@@ -1147,6 +1147,60 @@ export type Database = {
         }
         Relationships: []
       }
+      executive_recommendations: {
+        Row: {
+          author_id: string
+          body: string
+          created_at: string
+          display_approved: boolean
+          id: string
+          outcome: string
+          recipient_id: string
+          relationship_context: string
+          updated_at: string
+          who_should_meet: string
+        }
+        Insert: {
+          author_id: string
+          body: string
+          created_at?: string
+          display_approved?: boolean
+          id?: string
+          outcome?: string
+          recipient_id: string
+          relationship_context?: string
+          updated_at?: string
+          who_should_meet?: string
+        }
+        Update: {
+          author_id?: string
+          body?: string
+          created_at?: string
+          display_approved?: boolean
+          id?: string
+          outcome?: string
+          recipient_id?: string
+          relationship_context?: string
+          updated_at?: string
+          who_should_meet?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "executive_recommendations_author_id_fkey"
+            columns: ["author_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "executive_recommendations_recipient_id_fkey"
+            columns: ["recipient_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       follows: {
         Row: {
           created_at: string
@@ -1941,6 +1995,7 @@ export type Database = {
           avatar_url: string | null
           bio: string
           boundaries: string
+          building: string
           can_help_with: string
           company: string
           created_at: string
@@ -1955,7 +2010,9 @@ export type Database = {
           looking_for: string
           name: string
           onboarded: boolean
+          open_to: string[]
           portrait_key: string | null
+          scheduling_enabled: boolean
           thesis: string
           title: string
           updated_at: string
@@ -1966,12 +2023,14 @@ export type Database = {
           verified_role: Database["public"]["Enums"]["verified_role"] | null
           visibility: string
           want_to_meet: string
+          what_i_do: string
         }
         Insert: {
           availability?: string
           avatar_url?: string | null
           bio?: string
           boundaries?: string
+          building?: string
           can_help_with?: string
           company?: string
           created_at?: string
@@ -1986,7 +2045,9 @@ export type Database = {
           looking_for?: string
           name?: string
           onboarded?: boolean
+          open_to?: string[]
           portrait_key?: string | null
+          scheduling_enabled?: boolean
           thesis?: string
           title?: string
           updated_at?: string
@@ -1997,12 +2058,14 @@ export type Database = {
           verified_role?: Database["public"]["Enums"]["verified_role"] | null
           visibility?: string
           want_to_meet?: string
+          what_i_do?: string
         }
         Update: {
           availability?: string
           avatar_url?: string | null
           bio?: string
           boundaries?: string
+          building?: string
           can_help_with?: string
           company?: string
           created_at?: string
@@ -2017,7 +2080,9 @@ export type Database = {
           looking_for?: string
           name?: string
           onboarded?: boolean
+          open_to?: string[]
           portrait_key?: string | null
+          scheduling_enabled?: boolean
           thesis?: string
           title?: string
           updated_at?: string
@@ -2028,6 +2093,7 @@ export type Database = {
           verified_role?: Database["public"]["Enums"]["verified_role"] | null
           visibility?: string
           want_to_meet?: string
+          what_i_do?: string
         }
         Relationships: []
       }
@@ -2464,6 +2530,10 @@ export type Database = {
         }
         Returns: undefined
       }
+      set_executive_recommendation_display: {
+        Args: { p_display_approved: boolean; p_id: string }
+        Returns: undefined
+      }
       show_limit: { Args: never; Returns: number }
       show_trgm: { Args: { "": string }; Returns: string[] }
       submit_member_verification: {
@@ -2481,6 +2551,16 @@ export type Database = {
           p_work_email: string
         }
         Returns: string
+      }
+      update_my_executive_recommendation: {
+        Args: {
+          p_body: string
+          p_id: string
+          p_outcome?: string
+          p_relationship_context?: string
+          p_who_should_meet?: string
+        }
+        Returns: undefined
       }
     }
     Enums: {

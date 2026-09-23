@@ -1,0 +1,2 @@
+GRANT SELECT (what_i_do, building, open_to, scheduling_enabled) ON public.profiles TO authenticated;
+GRANT UPDATE (what_i_do, building, open_to, scheduling_enabled) ON public.profiles TO authenticated;
