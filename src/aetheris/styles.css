@@ -4242,3 +4242,9 @@ button.news-link{background:none;border:0;padding:0;cursor:pointer}
 .passport-kicker,.passport-foot{font-size:.72rem;letter-spacing:.12em;opacity:.65}
 .passport-verified{color:#0f5ccb;font-weight:600}
 .passport-public blockquote{margin:8px 0;padding-left:12px;border-left:2px solid #0f5ccb}
+.delegate-page .delegate-invite{border:1px solid var(--hairline,rgba(16,18,22,.12));border-radius:10px;padding:14px;margin:10px 0;display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.delegate-page .delegate-invite p{flex-basis:100%;margin:0;font-size:.85rem}
+.delegate-modules{display:grid;gap:16px;margin:18px 0;min-width:0}
+.delegate-modules section{border-top:1px solid rgba(16,18,22,.12);padding-top:10px;min-width:0}
+.delegate-modules ul{padding-left:18px;overflow-wrap:anywhere}
+.delegate-modules textarea{width:100%;min-height:70px}
