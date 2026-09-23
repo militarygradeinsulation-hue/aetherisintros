@@ -712,7 +712,7 @@ export function NetworkProvider({ children, mode = 'live' }: { children: React.R
       updateExecutiveProfile: async fields => {
         patch(prev => ({
           profile: { ...prev.profile, ...fields },
-          learned: remember(prev, { category: 'People', text: 'You updated your executive identity and conversation preferences.', source: 'Executive Page', confidence: 100, scope: 'public' }),
+          learned: remember(prev, { category: 'People', text: 'You updated your executive identity and conversation preferences.', source: 'Executive Page', confidence: 100, scope: 'shareable' }),
         }))
       },
       setPreferences: (preferences) => patch(prev => ({

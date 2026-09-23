@@ -52,7 +52,7 @@ function splitValues(value: string) {
   return value.split(/[,;·\n]+/).map(item => item.trim()).filter(Boolean).slice(0, 6)
 }
 
-function ScheduleDialog({ person, crmPersonId, onClose }: { person: Member; crmPersonId?: string; onClose: () => void }) {
+function ScheduleDialog({ person, crmPersonId, onClose }: { person: Member; crmPersonId: string | undefined; onClose: () => void }) {
   const ops = useOps()
   const start = new Date(Date.now() + 86400000)
   start.setHours(10, 0, 0, 0)
@@ -249,6 +249,7 @@ export function ExecutiveIdentityEditor({ openPhotoEditor }: { openPhotoEditor: 
     await net.updateExecutiveProfile({ ...draft, focus: draft.building })
     setMessage('Executive identity updated across Ask Intros.')
   }
+  const previewOpenTo = draft.openTo
   const preview: Member = {
     id: 'me', name: net.profile.name || 'Your name', initials: net.profile.initials || 'ME', title: draft.title,
     company: draft.company, location: draft.location, role: 'Executive', industry: net.profile.industries[0] ?? '', tags: net.profile.expertise,
@@ -256,7 +257,7 @@ export function ExecutiveIdentityEditor({ openPhotoEditor }: { openPhotoEditor: 
     thesis: net.profile.thesis, availability: draft.availability, mutuals: [], introState: 'recommended', joined: '', lastInteractionDays: 0,
     relationshipStatus: 'active', score: { strategicFit: 0, mutualValue: 0, timing: 0, trust: 0, relationshipStrength: 0, decisionInfluence: 0, opportunityValue: 0, friction: 0 },
     scoreTotal: 0, radar: 'strategic', whyThem: '', whyYou: '', whyNow: '', bestPath: [], nextAction: '', dontDo: '', confidence: 0,
-    avatarUrl: net.profile.avatarUrl, whatIDo: draft.whatIDo, building: draft.building, openTo: draft.openTo, schedulingEnabled: draft.schedulingEnabled,
+    avatarUrl: net.profile.avatarUrl, whatIDo: draft.whatIDo, building: draft.building, openTo: previewOpenTo, schedulingEnabled: draft.schedulingEnabled,
   }
   return <div className="executive-editor-page">
     <header className="executive-editor-head"><div><Eyebrow>ME / EXECUTIVE IDENTITY</Eyebrow><h1>One identity. Every relationship.</h1><p>Edit the same concise profile verified members see. Verification remains controlled by the review system.</p></div><span className="executive-unverified">Verification status is not editable</span></header>
@@ -277,7 +278,7 @@ export function ExecutiveIdentityEditor({ openPhotoEditor }: { openPhotoEditor: 
         <label className="executive-scheduling-toggle"><input type="checkbox" checked={draft.schedulingEnabled} onChange={event => setDraft({ ...draft, schedulingEnabled: event.target.checked })} /><span><b>Enable Find a Time</b><small>Verified members can add a relationship-linked meeting to their calendar.</small></span></label>
         <div className="executive-save"><Btn onClick={() => void save()}>Save executive identity</Btn>{message && <small>{message}</small>}</div>
       </section>
-      <aside className="executive-live-preview"><Eyebrow>LIVE PROFILE PREVIEW</Eyebrow><Face person={preview} large portrait /><h2>{preview.name}</h2><p>{preview.title}{preview.company ? ` · ${preview.company}` : ''}</p><blockquote>“{preview.whatIDo || 'Add the clearest statement of what you actually do.'}”</blockquote><small>{[preview.location, preview.industry].filter(Boolean).join(' · ')}</small><div className="executive-preview-open">{preview.openTo.map(item => <span key={item}>{item}</span>)}</div></aside>
+      <aside className="executive-live-preview"><Eyebrow>LIVE PROFILE PREVIEW</Eyebrow><Face person={preview} large portrait /><h2>{preview.name}</h2><p>{preview.title}{preview.company ? ` · ${preview.company}` : ''}</p><blockquote>“{preview.whatIDo || 'Add the clearest statement of what you actually do.'}”</blockquote><small>{[preview.location, preview.industry].filter(Boolean).join(' · ')}</small><div className="executive-preview-open">{previewOpenTo.map(item => <span key={item}>{item}</span>)}</div></aside>
     </div>
   </div>
 }
