@@ -910,6 +910,8 @@ const signalFilters = ['Warm path available', 'High match', 'Available now']
 
 function Discover({ people, select }: { people: Member[]; select: (p: Member) => void }) {
   const net = useNetwork()
+  const graph = useGraph()
+  const [useMissionFocus, setMissionFocus] = useState(true)
   const [pathKind, setPathKind] = useState<PathKind | 'all'>('all')
   const [q, setQ] = useState('')
   const [roles, setRoles] = useState<string[]>([])
