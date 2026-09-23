@@ -138,15 +138,6 @@ function LandingPage({ signedIn }: { signedIn: boolean }) {
       </div>
 
       {/* ── Section 1: Black hero ── */}
-      <header className="lv-nav">
-        <AskIntrosLockup variant="compact" />
-        <nav>PEOPLE&nbsp;&nbsp;|&nbsp;&nbsp;IDEAS&nbsp;&nbsp;|&nbsp;&nbsp;OPPORTUNITIES</nav>
-        <div className="lv-nav-actions">
-          {demoBtn('Demo', 'btn primary')}
-          {loginBtn('btn ghost')}
-          {accountBtn(showDemo ? 'btn primary' : 'btn primary')}
-        </div>
-      </header>
 
       <CinematicFooter />
 
