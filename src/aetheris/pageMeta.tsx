@@ -465,7 +465,7 @@ export const primaryPages: Page[] = ['home', 'network', 'work', 'messages', 'me'
 
 /** Tabs consolidated inside the Network and Opportunities hubs. */
 export const networkTabs: Page[] = ['discover', 'intros', 'companies', 'circles', 'events']
-export const networkAdvanced: Page[] = ['circles', 'expertise', 'events', 'serendipity', 'gaps', 'identity', 'organization', 'talent', 'knowledge', 'boards', 'intelrooms', 'passport', 'ask']
+export const networkAdvanced: Page[] = ['directory', 'expertise', 'serendipity', 'gaps', 'identity', 'organization', 'talent', 'knowledge', 'boards', 'intelrooms', 'passport', 'ask']
 export const workTabs: Page[] = ['crm', 'opportunities', 'grid', 'calendar', 'outcomes']
 export const workAdvanced: Page[] = ['needs', 'rooms', 'dealrooms', 'systems', 'strategy', 'simulation', 'collisions', 'capital', 'attribution', 'loops', 'knowledgeassets', 'timemachine']
 export const meTabs: Page[] = ['profile', 'passport', 'permission', 'preferences', 'integrations']

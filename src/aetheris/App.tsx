@@ -2476,15 +2476,15 @@ function Shell({ startPage }: { startPage?: Page | undefined }) {
         setCursorScale(value)
         return `Pointer size set to ${value}`
       }
-      case 'open-tools': setMoreOpen(true); return 'Opened All Tools'
+      case 'open-tools': setGlobalSearchOpen(true); return 'Opened capability search'
       case 'open-search': setGlobalSearchOpen(true); return 'Opened search'
       case 'post-need': setNeedOpen(true); return 'Opened the need composer'
       case 'post-intent': setIntentOpen(true); return 'Opened live intent'
       case 'capture-conversation': setCaptureOpen(true); return 'Opened conversation capture'
       case 'toggle-briefing': briefing.toggle(); return briefing.on ? 'Briefing mode off' : 'Briefing mode on'
       case 'toggle-context': setContextOpen(value => !value); return contextOpen ? 'Context rail hidden' : 'Context rail shown'
-      case 'open-profile': setPage('profile'); return 'Opened your profile'
-      case 'open-preferences': setPage('preferences'); return 'Opened preferences'
+      case 'open-profile': setPage('me'); return 'Opened Me'
+      case 'open-preferences': setPage('me'); return 'Opened Me controls'
       case 'open-member': {
         const person = find(action.value)
         if (!person) return null
