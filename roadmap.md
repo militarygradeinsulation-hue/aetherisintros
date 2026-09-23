@@ -5,7 +5,7 @@
 - [x] Reflow content, actions, forms, Home widgets, and settings without clipping or removing information.
 - [x] Preserve message context and relationship context through mobile disclosures instead of hide-only rules.
 - [x] Give CRM, pipeline, Grid, Calendar, and other wide tools bounded horizontal-scroll behavior.
-- [ ] Verify public and signed-in/demo journeys at 360px, 390px, and tablet widths without publishing.
+- [x] Verify public and signed-in/demo journeys at 360px, 390px, and tablet widths without publishing.
 
 ## Five-hub signed-in redesign (Sep 23)
 - [x] Replace persistent navigation with Home, Network, Work, Messages, and Me only.
