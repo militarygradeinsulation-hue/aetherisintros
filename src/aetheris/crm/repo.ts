@@ -81,6 +81,8 @@ const toTask = (r: Row): CrmTask => ({
   priority: (str(r['priority'], 'medium') as CrmTask['priority']), status: (str(r['status'], 'open') as CrmTask['status']),
   assignee: str(r['assignee']), personId: nul(r['person_id']), companyId: nul(r['company_id']),
   opportunityId: nul(r['opportunity_id']), createdAt: str(r['created_at']),
+  kind: str(r['kind'], 'task') === 'commitment' ? 'commitment' : 'task', owedTo: str(r['owed_to']),
+  waitingOn: str(r['waiting_on'], 'me') === 'them' ? 'them' : 'me', threadId: nul(r['thread_id']), calendarEventId: nul(r['calendar_event_id']),
 })
 
 const toNote = (r: Row): CrmNote => ({
@@ -317,6 +319,8 @@ export const taskRepo = {
     title: p.title ?? 'Untitled task', detail: p.detail ?? '', due_at: p.dueAt ?? null,
     priority: p.priority ?? 'medium', status: p.status ?? 'open', assignee: p.assignee ?? '',
     person_id: p.personId ?? null, company_id: p.companyId ?? null, opportunity_id: p.opportunityId ?? null,
+    kind: p.kind ?? 'task', owed_to: p.owedTo ?? '', waiting_on: p.waitingOn ?? 'me',
+    thread_id: p.threadId ?? null, calendar_event_id: p.calendarEventId ?? null,
   }, toTask),
   update: (id: ID, p: Partial<CrmTask>) => patch('crm_tasks', id, {
     ...(p.title !== undefined && { title: p.title }),
@@ -328,6 +332,9 @@ export const taskRepo = {
     ...(p.personId !== undefined && { person_id: p.personId }),
     ...(p.companyId !== undefined && { company_id: p.companyId }),
     ...(p.opportunityId !== undefined && { opportunity_id: p.opportunityId }),
+    ...(p.kind !== undefined && { kind: p.kind }),
+    ...(p.owedTo !== undefined && { owed_to: p.owedTo }),
+    ...(p.waitingOn !== undefined && { waiting_on: p.waitingOn }),
   }, toTask),
   remove: (id: ID) => supabase.from('crm_tasks').delete().eq('id', id),
 }

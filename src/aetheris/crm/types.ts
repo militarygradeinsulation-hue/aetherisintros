@@ -134,6 +134,12 @@ export interface CrmTask {
   companyId: ID | null
   opportunityId: ID | null
   createdAt: string
+  /** 'commitment' = a promise owed to/by someone. Same canonical task record. */
+  kind?: 'task' | 'commitment'
+  owedTo?: string
+  waitingOn?: 'me' | 'them'
+  threadId?: string | null
+  calendarEventId?: string | null
 }
 
 export interface CrmNote {
