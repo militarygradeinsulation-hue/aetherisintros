@@ -75,16 +75,22 @@ export type Database = {
         Row: {
           ask: string
           author_id: string | null
+          category: string
+          company: string
           created_at: string
           detail: string
+          expires_at: string | null
           id: string
           industry: string
           is_demo: boolean
           location: string
           member_id: string | null
+          mission_id: string | null
           offer: string
           posted: string
           response_count: number
+          reveal_identity: boolean
+          status: string
           urgency: string
           visibility: string
           why_now: string
@@ -92,16 +98,22 @@ export type Database = {
         Insert: {
           ask: string
           author_id?: string | null
+          category?: string
+          company?: string
           created_at?: string
           detail?: string
+          expires_at?: string | null
           id: string
           industry?: string
           is_demo?: boolean
           location?: string
           member_id?: string | null
+          mission_id?: string | null
           offer?: string
           posted?: string
           response_count?: number
+          reveal_identity?: boolean
+          status?: string
           urgency?: string
           visibility?: string
           why_now?: string
@@ -109,16 +121,22 @@ export type Database = {
         Update: {
           ask?: string
           author_id?: string | null
+          category?: string
+          company?: string
           created_at?: string
           detail?: string
+          expires_at?: string | null
           id?: string
           industry?: string
           is_demo?: boolean
           location?: string
           member_id?: string | null
+          mission_id?: string | null
           offer?: string
           posted?: string
           response_count?: number
+          reveal_identity?: boolean
+          status?: string
           urgency?: string
           visibility?: string
           why_now?: string
@@ -875,6 +893,69 @@ export type Database = {
           },
         ]
       }
+      delegates: {
+        Row: {
+          created_at: string
+          delegate_email: string
+          delegate_user_id: string | null
+          id: string
+          permissions: string[]
+          principal_id: string
+          role_label: string
+          status: string
+        }
+        Insert: {
+          created_at?: string
+          delegate_email: string
+          delegate_user_id?: string | null
+          id?: string
+          permissions?: string[]
+          principal_id?: string
+          role_label?: string
+          status?: string
+        }
+        Update: {
+          created_at?: string
+          delegate_email?: string
+          delegate_user_id?: string | null
+          id?: string
+          permissions?: string[]
+          principal_id?: string
+          role_label?: string
+          status?: string
+        }
+        Relationships: []
+      }
+      digital_you_rules: {
+        Row: {
+          action: string
+          created_at: string
+          enabled: boolean
+          id: string
+          owner_id: string
+          params: Json
+          rule_kind: string
+        }
+        Insert: {
+          action?: string
+          created_at?: string
+          enabled?: boolean
+          id?: string
+          owner_id?: string
+          params?: Json
+          rule_kind: string
+        }
+        Update: {
+          action?: string
+          created_at?: string
+          enabled?: boolean
+          id?: string
+          owner_id?: string
+          params?: Json
+          rule_kind?: string
+        }
+        Relationships: []
+      }
       directory_companies: {
         Row: {
           city: string
@@ -1455,6 +1536,124 @@ export type Database = {
         }
         Relationships: []
       }
+      intro_context_capsules: {
+        Row: {
+          author_id: string
+          created_at: string
+          excluded_context: string
+          first_goal: string
+          id: string
+          intro_request_id: string
+          mission_title: string
+          requester_approved: boolean
+          shared_context: string
+          signal_text: string
+          target_approved: boolean
+          updated_at: string
+          why_exists: string
+          why_now: string
+          why_requester: string
+          why_target: string
+        }
+        Insert: {
+          author_id?: string
+          created_at?: string
+          excluded_context?: string
+          first_goal?: string
+          id?: string
+          intro_request_id: string
+          mission_title?: string
+          requester_approved?: boolean
+          shared_context?: string
+          signal_text?: string
+          target_approved?: boolean
+          updated_at?: string
+          why_exists?: string
+          why_now?: string
+          why_requester?: string
+          why_target?: string
+        }
+        Update: {
+          author_id?: string
+          created_at?: string
+          excluded_context?: string
+          first_goal?: string
+          id?: string
+          intro_request_id?: string
+          mission_title?: string
+          requester_approved?: boolean
+          shared_context?: string
+          signal_text?: string
+          target_approved?: boolean
+          updated_at?: string
+          why_exists?: string
+          why_now?: string
+          why_requester?: string
+          why_target?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "intro_context_capsules_intro_request_id_fkey"
+            columns: ["intro_request_id"]
+            isOneToOne: true
+            referencedRelation: "intro_requests"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      intro_feedback: {
+        Row: {
+          author_id: string
+          connector_name: string
+          context_accurate: boolean | null
+          created_at: string
+          id: string
+          intro_request_id: string | null
+          member_id: string
+          outcome_category: string
+          private_note: string
+          relevant: boolean | null
+          shareable: boolean
+          would_take_again: boolean | null
+        }
+        Insert: {
+          author_id?: string
+          connector_name?: string
+          context_accurate?: boolean | null
+          created_at?: string
+          id?: string
+          intro_request_id?: string | null
+          member_id?: string
+          outcome_category?: string
+          private_note?: string
+          relevant?: boolean | null
+          shareable?: boolean
+          would_take_again?: boolean | null
+        }
+        Update: {
+          author_id?: string
+          connector_name?: string
+          context_accurate?: boolean | null
+          created_at?: string
+          id?: string
+          intro_request_id?: string | null
+          member_id?: string
+          outcome_category?: string
+          private_note?: string
+          relevant?: boolean | null
+          shareable?: boolean
+          would_take_again?: boolean | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "intro_feedback_intro_request_id_fkey"
+            columns: ["intro_request_id"]
+            isOneToOne: false
+            referencedRelation: "intro_requests"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       intro_requests: {
         Row: {
           created_at: string
@@ -1845,6 +2044,69 @@ export type Database = {
         }
         Relationships: []
       }
+      missions: {
+        Row: {
+          created_at: string
+          horizon: string
+          id: string
+          linked_ask_id: string | null
+          linked_company_id: string | null
+          linked_opportunity_id: string | null
+          mission_type: string
+          objective: string
+          owner_id: string
+          privacy: string
+          status: string
+          success_definition: string
+          target_company: string
+          target_date: string | null
+          target_geography: string
+          target_industry: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          horizon?: string
+          id?: string
+          linked_ask_id?: string | null
+          linked_company_id?: string | null
+          linked_opportunity_id?: string | null
+          mission_type?: string
+          objective?: string
+          owner_id?: string
+          privacy?: string
+          status?: string
+          success_definition?: string
+          target_company?: string
+          target_date?: string | null
+          target_geography?: string
+          target_industry?: string
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          horizon?: string
+          id?: string
+          linked_ask_id?: string | null
+          linked_company_id?: string | null
+          linked_opportunity_id?: string | null
+          mission_type?: string
+          objective?: string
+          owner_id?: string
+          privacy?: string
+          status?: string
+          success_definition?: string
+          target_company?: string
+          target_date?: string | null
+          target_geography?: string
+          target_industry?: string
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       notifications: {
         Row: {
           actor_id: string | null
@@ -1875,6 +2137,42 @@ export type Database = {
           read?: boolean
           text?: string
           user_id?: string
+        }
+        Relationships: []
+      }
+      passports: {
+        Row: {
+          created_at: string
+          fields: string[]
+          id: string
+          kind: string
+          label: string
+          owner_id: string
+          revoked: boolean
+          selected_ask_id: string | null
+          token: string
+        }
+        Insert: {
+          created_at?: string
+          fields?: string[]
+          id?: string
+          kind?: string
+          label?: string
+          owner_id?: string
+          revoked?: boolean
+          selected_ask_id?: string | null
+          token?: string
+        }
+        Update: {
+          created_at?: string
+          fields?: string[]
+          id?: string
+          kind?: string
+          label?: string
+          owner_id?: string
+          revoked?: boolean
+          selected_ask_id?: string | null
+          token?: string
         }
         Relationships: []
       }
@@ -2096,6 +2394,59 @@ export type Database = {
           what_i_do?: string
         }
         Relationships: []
+      }
+      relationship_rooms: {
+        Row: {
+          commitments: Json
+          created_at: string
+          id: string
+          intro_request_id: string
+          meeting_at: string | null
+          next_steps: Json
+          outcome: string
+          participant_a: string
+          participant_b: string
+          shared_links: Json
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          commitments?: Json
+          created_at?: string
+          id?: string
+          intro_request_id: string
+          meeting_at?: string | null
+          next_steps?: Json
+          outcome?: string
+          participant_a: string
+          participant_b: string
+          shared_links?: Json
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          commitments?: Json
+          created_at?: string
+          id?: string
+          intro_request_id?: string
+          meeting_at?: string | null
+          next_steps?: Json
+          outcome?: string
+          participant_a?: string
+          participant_b?: string
+          shared_links?: Json
+          status?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "relationship_rooms_intro_request_id_fkey"
+            columns: ["intro_request_id"]
+            isOneToOne: true
+            referencedRelation: "intro_requests"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       relationships: {
         Row: {
@@ -2485,6 +2836,7 @@ export type Database = {
           mode: string
         }[]
       }
+      get_passport: { Args: { p_token: string }; Returns: Json }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
