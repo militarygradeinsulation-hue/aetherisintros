@@ -48,7 +48,7 @@ import { NetworkProvider, useNetwork, type MemoryNote, type MeProfile, type Netw
 import { isShowcase, setShowcaseMode, showcaseOnly } from './showcase'
 import { classifyConnection, composeWarmIntro, radarLabel } from './lib/engine'
 import { useGrabScroll } from './lib/dragScroll'
-import { metaById, primaryPages, pageMeta, networkTabs, networkAdvanced, opportunityTabs, opportunityAdvanced } from './pageMeta'
+import { metaById, primaryPages, pageMeta, networkTabs, networkAdvanced, workTabs, workAdvanced, meTabs, meAdvanced } from './pageMeta'
 import { MoreDrawer, rememberRecent } from './pages/MoreDrawer'
 import { BriefingPanel, useBriefingMode } from './BriefingMode'
 import { NavCtx, useNav, type NavApi, type Page } from './nav'
@@ -113,6 +113,9 @@ import { KnowledgeAssetsPage } from './pages/KnowledgeAssetsPage'
 import SimpleViewPage from './pages/SimpleViewPage'
 import { NewsPage } from './pages/NewsPage'
 import { portraitFor } from './portraits'
+import { ExecutiveHome } from './pages/ExecutiveHome'
+import { HubIntro, RadarMini, SignalPath, TileShell } from './hub-ui'
+import { badgeLabel, useVerification } from './verification'
 
 
 
@@ -124,8 +127,8 @@ const nav: Array<{ id: Page; label: string; icon: typeof HomeIcon }> = primaryPa
 })
 const allNav: Array<{ id: Page; label: string; icon: typeof HomeIcon }> = pageMeta.map(p => ({ id: p.id, label: p.label, icon: p.icon }))
 const legacyPage: Record<string, Page> = {
-  command: 'home', people: 'discover', network: 'memory', forensics: 'insights',
-  meetings: 'messages', 'digital-you': 'profile', roi: 'insights', settings: 'profile',
+  command: 'home', people: 'network', forensics: 'insights', simple: 'home',
+  meetings: 'messages', 'digital-you': 'me', roi: 'insights', settings: 'me',
 }
 const scopeLabel: Record<PrivacyScope, string> = { private: 'Private', team: 'Team', organization: 'Organization', shareable: 'Shareable', public: 'Public' }
 const scopeText: Record<PrivacyScope, string> = {
