@@ -16,6 +16,7 @@ import { useNav } from '../nav'
 import { useNetwork } from '../store'
 import { useOps } from '../crm/store'
 import { lifecycles } from '../crm/types'
+import { WeatherPanel } from '../opportunity-ui'
 import type { CrmCompany, CrmOpportunity, CrmPerson, CrmTask, Lifecycle } from '../crm/types'
 
 type Tab = 'overview' | 'people' | 'companies' | 'opportunities' | 'activities' | 'tasks' | 'analytics'
@@ -300,6 +301,7 @@ function CrmDetail({ selection, onClose, onOpen }: {
         <Btn kind="quiet" onClick={() => nav.setPage('grid')}><Grid3x3 size={14} /> Open in Grid</Btn>
       </div>
     </header>
+    {member && <WeatherPanel member={member} />}
 
     {member && <section className="ops-panel ops-intel">
       <Eyebrow>RELATIONSHIP INTELLIGENCE · LINKED NETWORK MEMBER</Eyebrow>

@@ -190,3 +190,9 @@
 - [x] Make Network lead with “Who do you need?” and top-five evidence-based matching.
 - [x] Make Me editing mirror the Executive Page with a live preview and read-only verification status.
 - [x] Validate identity, CTA, signals, private context, responsive fit, and policy boundaries; authenticated write-through remains sign-in dependent.
+
+## Opportunity Graph OS (Sep 23)
+- [x] Data foundation: missions, intent columns + private-safe Signal policy, capsules, relationship rooms, intro feedback, delegates, passports, Digital You rules.
+- [x] Deterministic graph engine: mission fit, weather, trust dimensions, routing, reverse discovery, brief/debrief, rules, insights.
+- [x] Home tiles, Network rerank + reverse discovery, Executive Page panels, CRM weather, Needs Intent Exchange, Autopilot rules, Organization delegates, Passport manager + public link, Ask Intros offline answers.
+- [ ] Cross-account checks (capsule approval, room, shared feedback, network passport, delegate sign-in) — needs a second verified account.

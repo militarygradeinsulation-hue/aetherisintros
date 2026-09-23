@@ -12,6 +12,7 @@ import { useNav } from './nav'
 import type { Member } from './social'
 import { useNetwork } from './store'
 import { Btn, Eyebrow, Face } from './ui'
+import { IntroWorkflow, MeetingBriefPanel, ReverseDiscoveryPanel, RoutingPanel, TrustPanel, WeatherPanel } from './opportunity-ui'
 
 export const OPEN_TO_OPTIONS = [
   'Customer conversations', 'Strategic partnerships', 'Investment conversations',
@@ -198,6 +199,9 @@ export function ExecutivePage({ person, onClose, onIntro, onMessage }: {
             {!ask && !posts.length && <p className="executive-empty">No current network-safe Signals recorded.</p>}
           </div>
         </section>
+        <RoutingPanel target={person} />
+        <ReverseDiscoveryPanel memberId={person.id} limit={1} />
+        <IntroWorkflow member={person} />
         <section className="executive-section"><Eyebrow>RELATIONSHIP PROOF</Eyebrow>
           <div className="executive-proof">
             {badge?.role && <article><BadgeCheck size={18} /><b>{badge.business ? `Verified ${badge.business}` : 'Verified executive'}</b><p>{badge.summary || 'Identity and controlling role reviewed by Ask Intros.'}</p></article>}
@@ -205,6 +209,7 @@ export function ExecutivePage({ person, onClose, onIntro, onMessage }: {
             {proof.map(item => <article key={item.id}><BadgeCheck size={18} /><b>{item.authorName}</b><p>{item.body}</p>{item.outcome && <small>{item.outcome}</small>}</article>)}
             {!badge?.role && !proof.length && !['introduced', 'conversing', 'closed'].includes(person.introState) && <p className="executive-empty">No verified relationship outcomes recorded yet.</p>}
           </div>
+          <TrustPanel member={person} verified={Boolean(badge?.role)} approvedRecommendations={proof.length} />
           <details className="executive-recommend"><summary>Recommend {person.name.split(' ')[0]}</summary><textarea value={recommendation} onChange={event => setRecommendation(event.target.value)} rows={3} placeholder="What are they actually good at, who should meet them, or what did the connection lead to?" /><Btn disabled={recommendation.trim().length < 10} onClick={() => void submitRecommendation()}>Send for approval</Btn>{recommendationNote && <small>{recommendationNote}</small>}</details>
         </section>
       </main>
@@ -213,6 +218,7 @@ export function ExecutivePage({ person, onClose, onIntro, onMessage }: {
         <button className="executive-private-toggle" onClick={() => setRelationshipOpen(value => !value)}><LockKeyhole size={14} /><span>Your relationship</span><em>{relationshipOpen ? 'Hide' : 'Open'}</em></button>
         <div className="executive-private-body">
           <header><Eyebrow>PRIVATE CONTEXT</Eyebrow><small>Visible only to you</small></header>
+          <WeatherPanel member={person} />
           <dl>
             <div><dt>Status</dt><dd>{connected ? 'Connected' : person.relationshipStatus}</dd></div>
             <div><dt>Last interaction</dt><dd>{crmPerson?.lastActivityAt ? new Date(crmPerson.lastActivityAt).toLocaleDateString() : person.lastInteractionDays ? `${person.lastInteractionDays} days ago` : 'Not recorded'}</dd></div>
@@ -228,6 +234,7 @@ export function ExecutivePage({ person, onClose, onIntro, onMessage }: {
           <div className="executive-private-action"><label>Private note<textarea rows={3} value={note} onChange={event => setNote(event.target.value)} placeholder="Context, promise, or next move…" /></label><Btn kind="secondary" disabled={!note.trim()} onClick={() => void addPrivateNote()}>Record note</Btn></div>
           <div className="executive-private-action"><label>New opportunity<input value={opportunityName} onChange={event => setOpportunityName(event.target.value)} placeholder={`Opportunity with ${person.name}`} /></label><Btn kind="secondary" disabled={!opportunityName.trim()} onClick={() => void addOpportunity()}><Target size={14} /> Create linked opportunity</Btn></div>
           {(privateMemories.length > 0 || crmNotes.length > 0) && <div className="executive-private-list"><Eyebrow>NOTES & MEMORY</Eyebrow>{[...privateMemories.map(item => ({ id: item.id, body: item.text })), ...crmNotes].slice(0, 5).map(item => <p key={item.id}>{item.body}</p>)}</div>}
+          <MeetingBriefPanel member={person} />
           {activities.length > 0 && <div className="executive-private-list"><Eyebrow>RECENT HISTORY</Eyebrow>{activities.map(item => <p key={item.id}><b>{item.subject}</b><small>{new Date(item.occurredAt).toLocaleDateString()}</small></p>)}</div>}
         </div>
       </aside>

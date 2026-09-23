@@ -117,6 +117,9 @@ import { ExecutiveHome } from './pages/ExecutiveHome'
 import { HubIntro, RadarMini, SignalPath, TileShell } from './hub-ui'
 import { badgeLabel, useVerification } from './verification'
 import { ExecutiveIdentityEditor, ExecutivePage } from './ExecutivePage'
+import { GraphProvider, useGraph } from './graph-store'
+import { DelegatesPanel, DigitalYouRulesPanel, IntentExchangePanel, OrganizationRelationshipView, PassportManager, ReverseDiscoveryPanel } from './opportunity-ui'
+import { activeMission, missionFit, missionTypeLabel } from './opportunity-graph'
 
 
 
@@ -907,6 +910,8 @@ const signalFilters = ['Warm path available', 'High match', 'Available now']
 
 function Discover({ people, select }: { people: Member[]; select: (p: Member) => void }) {
   const net = useNetwork()
+  const graph = useGraph()
+  const [useMissionFocus, setMissionFocus] = useState(true)
   const [pathKind, setPathKind] = useState<PathKind | 'all'>('all')
   const [q, setQ] = useState('')
   const [roles, setRoles] = useState<string[]>([])
@@ -942,13 +947,15 @@ function Discover({ people, select }: { people: Member[]; select: (p: Member) =>
       return hay.includes(f.toLowerCase())
     })
   })
+  const mission = useMissionFocus ? activeMission(graph.missions) : undefined
+  const fitOf = (person: Member) => missionFit(person, mission).score
   const ranked = rankMatches(net.profile, filtered, net.connections)
     .sort((a, b) => {
-      if (!q.trim()) return b.match.total - a.match.total
+      if (!q.trim()) return (b.match.total + fitOf(b.member)) - (a.match.total + fitOf(a.member))
       const terms = q.toLowerCase().split(/\s+/).filter(word => word.length > 2)
       const text = (person: Member) => `${person.title} ${person.company} ${person.industry} ${person.expertise.join(' ')} ${person.needs.join(' ')} ${person.offers.join(' ')} ${person.whatIDo ?? ''} ${person.building ?? ''}`.toLowerCase()
       const relevance = (person: Member) => terms.reduce((score, term) => score + (text(person).includes(term) ? 12 : 0), 0)
-      return (relevance(b.member) + b.match.total) - (relevance(a.member) + a.match.total)
+      return (relevance(b.member) + b.match.total + fitOf(b.member)) - (relevance(a.member) + a.match.total + fitOf(a.member))
     }).slice(0, 5)
   const counts = (key: (p: Member) => string) => {
     const map = new Map<string, number>()
@@ -979,12 +986,14 @@ function Discover({ people, select }: { people: Member[]; select: (p: Member) =>
     <section className="executive-discovery">
       <Label signal>WHO DO YOU NEED?</Label>
       <h2>Describe the person, outcome, or help you need.</h2>
+      {activeMission(graph.missions) && <label className="og-check og-mission-toggle"><input type="checkbox" checked={useMissionFocus} onChange={e => setMissionFocus(e.target.checked)} /> Rerank around mission: <b>{activeMission(graph.missions)?.title}</b> <small>({missionTypeLabel[activeMission(graph.missions)!.missionType]})</small></label>}
       <div className="executive-discovery-input"><Search size={19} /><input value={q} onChange={event => setQ(event.target.value)} placeholder="A manufacturing CEO in Indiana looking for responsible AI help…" /></div>
       <div className="executive-match-list">{ranked.map(({ member, match }, index) => <article key={member.id}>
-        <button onClick={() => select(member)}><span className="executive-rank">0{index + 1}</span><Avatar person={member} /><span><b>{member.name}</b><small>{member.title} · {member.company}</small><p>{match.headline}</p></span><strong>{match.total}</strong><ArrowRight size={15} /></button>
+        <button onClick={() => select(member)}><span className="executive-rank">0{index + 1}</span><Avatar person={member} /><span><b>{member.name}</b><small>{member.title} · {member.company}</small><p>{match.headline}{mission && fitOf(member) > 0 ? ` · Mission fit: ${missionFit(member, mission).reasons.map(r => r.label.toLowerCase()).join(', ')}` : ''}</p></span><strong>{match.total}</strong><ArrowRight size={15} /></button>
       </article>)}</div>
       {!people.length && <p className="empty-state">No verified member profiles are available yet.</p>}
     </section>
+    <ReverseDiscoveryPanel />
     <details className="executive-browse"><summary>Browse and filter the full network</summary><div className="discover-shell">
       <aside className="filter-panel">
         <header><span>FILTER PEOPLE</span><button className="mod-link" onClick={clearAll}>Clear All</button></header>
@@ -2288,7 +2297,7 @@ function AccountControl() {
 export default function App({ startPage, mode = 'live' }: { startPage?: Page | undefined; mode?: NetworkMode }) {
   // The live network may only ever render real member-created records.
   setShowcaseMode(mode === 'demo')
-  return <NetworkProvider mode={mode}><PlatformProvider><OSProvider><MoatProvider><ProProvider><OpsProvider><Shell startPage={startPage} /></OpsProvider></ProProvider></MoatProvider></OSProvider></PlatformProvider></NetworkProvider>
+  return <NetworkProvider mode={mode}><PlatformProvider><OSProvider><MoatProvider><ProProvider><OpsProvider><GraphProvider><Shell startPage={startPage} /></GraphProvider></OpsProvider></ProProvider></MoatProvider></OSProvider></PlatformProvider></NetworkProvider>
 }
 
 
@@ -2542,10 +2551,10 @@ function Shell({ startPage }: { startPage?: Page | undefined }) {
       companies: <CompaniesPage openId={companyId} setOpenId={setCompanyId} />,
       outcomes: <OutcomesPage />,
       loops: <LoopsPage />,
-      organization: <OrganizationPage />,
+      organization: <><OrganizationPage /><div className="og-stack"><OrganizationRelationshipView /><DelegatesPanel /></div></>,
       intros: <Intros people={people} select={setSelected} draft={setDraft} />,
       messages: <MessageHub people={people} select={setSelected} activeId={threadId} setActiveId={setThreadId} />,
-      needs: <><Needs onNew={() => setNeedOpen(true)} people={people} select={setSelected} setPage={setPage} /><IntentBoard /></>,
+      needs: <><IntentExchangePanel /><Needs onNew={() => setNeedOpen(true)} people={people} select={setSelected} setPage={setPage} /><IntentBoard /></>,
       memory: <Memory people={people} select={setSelected} />,
       events: <EventsPage />,
       calendar: <CalendarPage />,
@@ -2558,7 +2567,7 @@ function Shell({ startPage }: { startPage?: Page | undefined }) {
       simulation: <SimulationPage />,
       strategy: <StrategyPage />,
       evidence: <EvidenceLedgerPage />,
-      autopilot: <AutopilotPage />,
+      autopilot: <><div className="og-stack"><DigitalYouRulesPanel /></div><AutopilotPage /></>,
       ask: <AskNetworkPage />,
       constitution: <ConstitutionPage />,
       serendipity: <SerendipityPage />,
@@ -2571,7 +2580,7 @@ function Shell({ startPage }: { startPage?: Page | undefined }) {
       knowledge: <KnowledgePage />,
       boards: <AdvisoryBoardsPage />,
       integrations: <IntegrationsPage />,
-      passport: <PassportPage />,
+      passport: <><div className="og-stack"><PassportManager /></div><PassportPage /></>,
       opportunities: <OpportunitiesPage />,
       dealrooms: <DealRoomsPage />,
       directory: <DirectoryPage />,

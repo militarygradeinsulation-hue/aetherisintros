@@ -6,6 +6,8 @@ import { askIntros, type AskIntrosAction } from '@/lib/askIntros.functions'
 import { pageMeta } from './pageMeta'
 import { readTextScale } from './textScale'
 import { readCursorScale } from './cursorScale'
+import { useGraphInputs } from './graph-store'
+import { answerGraphQuestion } from './opportunity-graph'
 import {
   isStopPhrase, readAloud, readerSnapshot, speechSupported, stopReading, useDictation, useReader, useVoiceSettings,
 } from './voice'
@@ -50,6 +52,7 @@ export function AskIntrosDock({ page, peopleNames, memberName, briefing, context
   const reader = useReader()
   const listRef = useRef<HTMLDivElement>(null)
   const sending = useRef(false)
+  const graphInputs = useGraphInputs()
 
   useEffect(() => { listRef.current?.scrollTo({ top: listRef.current.scrollHeight }) }, [turns, open])
   useEffect(() => {
@@ -65,6 +68,12 @@ export function AskIntrosDock({ page, peopleNames, memberName, briefing, context
     setInput('')
     const history = [...turns, { role: 'user' as const, content: question }]
     setTurns(history)
+    const local = answerGraphQuestion(question, graphInputs)
+    if (local) {
+      setTurns(current => [...current, { role: 'assistant', content: local }])
+      sending.current = false
+      return
+    }
     setBusy(true)
     try {
       const answer = await askIntros({
@@ -95,7 +104,7 @@ export function AskIntrosDock({ page, peopleNames, memberName, briefing, context
         readAloud([answer.reply], 'Ask Intros')
       }
     } catch {
-      setTurns(current => [...current, { role: 'assistant', content: 'I could not reach Ask Intros just now. Try again in a moment.' }])
+      setTurns(current => [...current, { role: 'assistant', content: 'The language service is unavailable right now, so I am answering from your recorded data only. Try: “Who is most relevant to my active mission?”, “Who needs something I can provide?”, “Which relationship is going quiet?” or “Who can introduce me to <name>?”' }])
     } finally {
       setBusy(false)
       sending.current = false
