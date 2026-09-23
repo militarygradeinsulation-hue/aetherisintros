@@ -50,6 +50,13 @@
       "when": 1790206831627,
       "tag": "0006_ceo_operating_system",
       "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1790207326470,
+      "tag": "0007_ceo_os_tighten_privileges",
+      "breakpoints": true
     }
   ]
 }
