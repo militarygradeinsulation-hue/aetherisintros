@@ -1,134 +1,55 @@
-import { useEffect, useMemo, useState } from 'react'
-import { Search, X, ArrowRight, Star } from 'lucide-react'
+import { useEffect } from 'react'
+import { BookOpen, CircleHelp, LogOut, PlugZap, Settings2, ShieldCheck, X } from 'lucide-react'
+import { supabase } from '@/integrations/supabase/client'
 import type { Page } from '../nav'
-import { groupOrder, groupedSecondary, hubBlurb, metaById, secondaryPages, type Hub, type PageMeta } from '../pageMeta'
 
 const RECENT_KEY = 'aetheris.more.recent'
 
 export function readRecent(): Page[] {
-  try {
-    const raw = JSON.parse(localStorage.getItem(RECENT_KEY) ?? '[]')
-    return Array.isArray(raw) ? raw.filter(id => typeof id === 'string' && metaById[id]).slice(0, 5) : []
-  } catch { return [] }
+  try { return JSON.parse(localStorage.getItem(RECENT_KEY) ?? '[]') as Page[] } catch { return [] }
 }
 
 export function rememberRecent(page: Page) {
-  if (!metaById[page]) return
-  const next = [page, ...readRecent().filter(p => p !== page)].slice(0, 5)
-  try { localStorage.setItem(RECENT_KEY, JSON.stringify(next)) } catch { /* ignore */ }
+  const next = [page, ...readRecent().filter(item => item !== page)].slice(0, 5)
+  try { localStorage.setItem(RECENT_KEY, JSON.stringify(next)) } catch { /* unavailable */ }
 }
 
-type View = 'az' | Hub
+const utilities: Array<{ id: Page; label: string; note: string; icon: typeof ShieldCheck }> = [
+  { id: 'preferences', label: 'Security & Privacy', note: 'Verification, privacy, sessions and data controls.', icon: ShieldCheck },
+  { id: 'integrations', label: 'Connected Apps', note: 'Manage the services you already use.', icon: PlugZap },
+  { id: 'preferences', label: 'Preferences', note: 'Display, voice, pointer and reading choices.', icon: Settings2 },
+]
 
-const PINNED_KEY = 'aetheris.more.pinned'
-
-function readPinned(): Page[] {
-  try {
-    const raw = JSON.parse(localStorage.getItem(PINNED_KEY) ?? '[]')
-    return Array.isArray(raw) ? raw.filter(id => typeof id === 'string' && metaById[id]) : []
-  } catch { return [] }
-}
-
-/** Full-height editorial index of every secondary destination. */
-export function MoreDrawer({ open, page, onClose, onNavigate }: {
-  open: boolean; page: Page; onClose: () => void; onNavigate: (p: Page) => void
+/** Deliberately small utility menu. Advanced capabilities remain available through search and hub context. */
+export function MoreDrawer({ open, onClose, onNavigate }: {
+  open: boolean; page: Page; onClose: () => void; onNavigate: (page: Page) => void
 }) {
-  const [query, setQuery] = useState('')
-  const [view, setView] = useState<View>('az')
-  const [recent, setRecent] = useState<Page[]>([])
-  const [pinned, setPinned] = useState<Page[]>([])
-  const togglePin = (id: Page) => {
-    const next = pinned.includes(id) ? pinned.filter(p => p !== id) : [...pinned, id]
-    setPinned(next)
-    try { localStorage.setItem(PINNED_KEY, JSON.stringify(next)) } catch { /* ignore */ }
-  }
-
-  useEffect(() => { if (open) { setRecent(readRecent()); setPinned(readPinned()); setQuery('') } }, [open])
   useEffect(() => {
     if (!open) return
-    const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') onClose() }
+    const onKey = (event: KeyboardEvent) => { if (event.key === 'Escape') onClose() }
     window.addEventListener('keydown', onKey)
     return () => window.removeEventListener('keydown', onKey)
   }, [open, onClose])
 
-  const results = useMemo(() => {
-    const q = query.trim().toLowerCase()
-    if (!q) return null
-    return secondaryPages.filter(p =>
-      p.label.toLowerCase().includes(q) || p.blurb.toLowerCase().includes(q)
-      || p.hub.toLowerCase().includes(q) || p.keywords.some(k => k.includes(q)))
-  }, [query])
-
   if (!open) return null
-
-  const go = (p: Page) => { onNavigate(p); onClose() }
-
-  const Item = ({ meta }: { meta: PageMeta }) => {
-    const Icon = meta.icon
-    return <div className={`more-item ${page === meta.id ? 'current' : ''}`}>
-      <button className="more-item-go" onClick={() => go(meta.id)}>
-        <span className="more-item-icon"><Icon size={16} /></span>
-        <span className="more-item-copy"><b>{meta.label}</b><small>{meta.blurb}</small></span>
-        {page === meta.id ? <em>Current</em> : <ArrowRight size={14} />}
-      </button>
-      <button className={`more-pin ${pinned.includes(meta.id) ? 'on' : ''}`} onClick={() => togglePin(meta.id)}
-        aria-pressed={pinned.includes(meta.id)} aria-label={pinned.includes(meta.id) ? `Unpin ${meta.label}` : `Pin ${meta.label}`}>
-        <Star size={13} />
-      </button>
-    </div>
+  const go = (page: Page) => { onNavigate(page); onClose() }
+  const signOut = async () => {
+    await supabase.auth.signOut()
+    try { Object.keys(localStorage).filter(key => key.startsWith('aetheris.')).forEach(key => localStorage.removeItem(key)) } catch { /* unavailable */ }
+    window.location.replace('/auth')
   }
 
-  const listed = results ?? (view === 'az' ? secondaryPages : groupedSecondary(view))
-
-  return <div className="more-wrap" role="dialog" aria-label="All tools">
-    <button className="more-scrim" aria-label="Close all tools" onClick={onClose} />
-    <aside className="more-panel">
-      <header className="more-head">
-        <div>
-          <span className="more-eyebrow">THE INDEX</span>
-          <h2>Everything, in five places</h2>
-          <p>Everyday · People &amp; Network · Opportunities &amp; Work · Intelligence &amp; Memory · Trust &amp; Control.</p>
-        </div>
-        <button className="icon-btn" onClick={onClose} aria-label="Close"><X size={17} /></button>
-      </header>
-
-      <label className="more-search">
-        <Search size={15} />
-        <input value={query} onChange={e => setQuery(e.target.value)} placeholder="Find a page or capability…" />
-      </label>
-
-      {!!pinned.length && !results && <section className="more-recent favourites">
-        <span className="more-label">FAVOURITES</span>
-        <div>{pinned.map(id => {
-          const meta = metaById[id]
-          if (!meta) return null
-          return <button key={id} onClick={() => go(id)}>{meta.label}</button>
-        })}</div>
-      </section>}
-
-      {!!recent.length && !results && <section className="more-recent">
-        <span className="more-label">RECENTLY USED</span>
-        <div>{recent.map(id => {
-          const meta = metaById[id]
-          if (!meta) return null
-          return <button key={id} onClick={() => go(id)}>{meta.label}</button>
-        })}</div>
-      </section>}
-
-      {!results && <nav className="more-tabs" role="tablist" aria-label="Categories">
-        {(['az', ...groupOrder] as View[]).map(v =>
-          <button key={v} role="tab" aria-selected={view === v} className={view === v ? 'on' : ''} onClick={() => setView(v)}>
-            {v === 'az' ? 'A–Z' : v}
-          </button>)}
-      </nav>}
-
-      <div className="more-list">
-        {results && <span className="more-label">{results.length} MATCH{results.length === 1 ? '' : 'ES'}</span>}
-        {!results && <span className="more-label">{view === 'az' ? 'EVERY DESTINATION, A–Z' : view}</span>}
-        {!results && view !== 'az' && <p className="more-hub-blurb">{hubBlurb[view]}</p>}
-        {listed.map(meta => <Item key={meta.id} meta={meta} />)}
-        {!listed.length && <p className="more-empty">Nothing matches that. Try a capability, not a feature name.</p>}
-      </div>
+  return <div className="more-wrap utility-wrap" role="dialog" aria-label="Utilities">
+    <button className="more-scrim" aria-label="Close menu" onClick={onClose} />
+    <aside className="more-panel utility-panel">
+      <header className="more-head"><div><span className="more-eyebrow">ACCOUNT</span><h2>Utilities</h2><p>The essentials, without a directory of features.</p></div>
+        <button className="icon-btn" onClick={onClose} aria-label="Close"><X size={17} /></button></header>
+      <nav className="utility-list">
+        {utilities.map((item, index) => { const Icon = item.icon; return <button key={`${item.label}-${index}`} onClick={() => go(item.id)}><Icon size={18} /><span><b>{item.label}</b><small>{item.note}</small></span></button> })}
+        <button onClick={() => { onClose(); window.dispatchEvent(new CustomEvent('aetheris:open-assistant')) }}><CircleHelp size={18} /><span><b>Help</b><small>Ask Intros about any page, action or decision.</small></span></button>
+        <a href="/founder-story"><BookOpen size={18} /><span><b>Founder Story</b><small>Read the complete Architect Behind the Operator.</small></span></a>
+        <button className="utility-signout" onClick={() => { void signOut() }}><LogOut size={18} /><span><b>Sign Out</b><small>End this private session.</small></span></button>
+      </nav>
     </aside>
   </div>
 }

@@ -52,6 +52,11 @@ export function AskIntrosDock({ page, peopleNames, memberName, briefing, context
   const sending = useRef(false)
 
   useEffect(() => { listRef.current?.scrollTo({ top: listRef.current.scrollHeight }) }, [turns, open])
+  useEffect(() => {
+    const show = () => setOpen(true)
+    window.addEventListener('aetheris:open-assistant', show)
+    return () => window.removeEventListener('aetheris:open-assistant', show)
+  }, [])
 
   const send = async (text: string) => {
     const question = text.trim()
