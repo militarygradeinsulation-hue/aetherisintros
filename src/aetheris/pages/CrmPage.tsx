@@ -125,6 +125,7 @@ export default function CrmPage() {
         <input value={query} onChange={e => setQuery(e.target.value)} placeholder="Search people, titles, companies…" aria-label="Search people" />
         <Btn kind="secondary" onClick={() => setCreating('person')}><Plus size={14} /> New person</Btn>
       </div>
+      <div className="ops-table-scroll" tabIndex={0} aria-label="CRM people table">
       <table className="ops-table">
         <thead><tr><th>Person</th><th>Lifecycle</th><th>Company</th><th>Title</th><th>Network</th><th>Last activity</th></tr></thead>
         <tbody>
@@ -140,6 +141,7 @@ export default function CrmPage() {
           })}
         </tbody>
       </table>
+      </div>
     </section>}
 
     {tab === 'companies' && <section>
@@ -147,6 +149,7 @@ export default function CrmPage() {
         <input value={query} onChange={e => setQuery(e.target.value)} placeholder="Search companies…" aria-label="Search companies" />
         <Btn kind="secondary" onClick={() => setCreating('company')}><Plus size={14} /> New company</Btn>
       </div>
+      <div className="ops-table-scroll" tabIndex={0} aria-label="CRM companies table">
       <table className="ops-table">
         <thead><tr><th>Company</th><th>Industry</th><th>Location</th><th>People</th><th>Open value</th></tr></thead>
         <tbody>
@@ -157,6 +160,7 @@ export default function CrmPage() {
           </tr>)}
         </tbody>
       </table>
+      </div>
     </section>}
 
     {tab === 'opportunities' && <section>
@@ -178,6 +182,7 @@ export default function CrmPage() {
           </div>
         })}
       </div>
+      <div className="ops-table-scroll" tabIndex={0} aria-label="CRM opportunities table">
       <table className="ops-table">
         <thead><tr><th>Opportunity</th><th>Stage</th><th>Value</th><th>Probability</th><th>Expected close</th><th>Next action</th></tr></thead>
         <tbody>
@@ -187,6 +192,7 @@ export default function CrmPage() {
           </tr>)}
         </tbody>
       </table>
+      </div>
     </section>}
 
     {tab === 'activities' && <section className="ops-panel">
@@ -204,6 +210,7 @@ export default function CrmPage() {
         <input value={query} onChange={e => setQuery(e.target.value)} placeholder="Search tasks…" aria-label="Search tasks" />
         <Btn kind="secondary" onClick={() => setCreating('task')}><Plus size={14} /> New task</Btn>
       </div>
+      <div className="ops-table-scroll" tabIndex={0} aria-label="CRM tasks table">
       <table className="ops-table">
         <thead><tr><th>Task</th><th>Status</th><th>Priority</th><th>Due</th><th>Related</th><th /></tr></thead>
         <tbody>
@@ -218,6 +225,7 @@ export default function CrmPage() {
           </tr>)}
         </tbody>
       </table>
+      </div>
     </section>}
 
     {tab === 'analytics' && <section className="ops-cols">

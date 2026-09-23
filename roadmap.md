@@ -1,11 +1,11 @@
 # Aetheris specification completion
 
 ## Complete mobile fit pass (Sep 23)
-- [ ] Make the shared shell, navigation, overlays, Ask Intros, and voice controls safe across phone widths and safe areas.
-- [ ] Reflow content, actions, forms, Home widgets, and settings without clipping or removing information.
-- [ ] Preserve message search and context panels through mobile disclosures instead of hide-only rules.
-- [ ] Give CRM, pipeline, Grid, Calendar, and other wide tools bounded horizontal-scroll behavior.
-- [ ] Verify public and signed-in/demo journeys at 360px, 390px, and tablet widths without publishing.
+- [x] Make the shared shell, navigation, overlays, Ask Intros, and voice controls safe across phone widths and safe areas.
+- [x] Reflow content, actions, forms, Home widgets, and settings without clipping or removing information.
+- [x] Preserve message context and relationship context through mobile disclosures instead of hide-only rules.
+- [x] Give CRM, pipeline, Grid, Calendar, and other wide tools bounded horizontal-scroll behavior.
+- [x] Verify public and signed-in/demo journeys at 360px, 390px, and tablet widths without publishing.
 
 ## Five-hub signed-in redesign (Sep 23)
 - [x] Replace persistent navigation with Home, Network, Work, Messages, and Me only.
