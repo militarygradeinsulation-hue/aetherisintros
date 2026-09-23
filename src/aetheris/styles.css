@@ -17,7 +17,7 @@
 .lv-nav nav{font:700 9px var(--sans);letter-spacing:.17em;text-transform:uppercase;color:var(--muted);white-space:nowrap}
 .lv-nav-actions{display:flex;gap:10px;align-items:center}
 .lv-nav-actions .btn.ghost{border-color:var(--line-dark);color:var(--soft)}
-.lv-hero{min-height:calc(100vh - 112px);display:grid;grid-template-columns:minmax(0,1fr) minmax(340px,52%);position:relative;border-bottom:1px solid var(--line-dark)}
+.lv-hero{min-height:auto;display:grid;grid-template-columns:minmax(0,1fr) minmax(280px,40%);position:relative;border-bottom:1px solid var(--line-dark)}
 .lv-hero-copy{padding:clamp(48px,7vw,100px) clamp(30px,6vw,90px);display:flex;flex-direction:column;justify-content:center;position:relative}
 .lv-hero-copy>*{animation:lv-hero-enter .75s cubic-bezier(.16,1,.3,1) both}.lv-hero-copy>*:nth-child(2){animation-delay:.06s}.lv-hero-copy>*:nth-child(3){animation-delay:.12s}.lv-hero-copy>*:nth-child(4){animation-delay:.18s}.lv-hero-copy>*:nth-child(5){animation-delay:.24s}.lv-hero-visual img{animation:lv-portrait-enter 1s cubic-bezier(.16,1,.3,1) both}
 @keyframes lv-hero-enter{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:translateY(0)}}
@@ -32,7 +32,7 @@
 .lv-hero-scale{font:700 9px var(--sans);letter-spacing:.18em;color:var(--muted);text-transform:uppercase;display:block;margin-bottom:30px}
 .lv-hero-actions{display:flex;align-items:center;gap:14px}
 .lv-founder-link{display:inline-flex;align-items:center;gap:8px;margin-top:22px;width:max-content;color:var(--amber);font:700 9px var(--sans);letter-spacing:.15em;text-transform:uppercase;border-bottom:1px solid color-mix(in oklab,var(--amber) 45%,transparent);padding-bottom:5px}
-.lv-hero-visual{position:relative;overflow:hidden;min-height:560px}
+.lv-hero-visual{position:relative;overflow:hidden;min-height:340px}
 .lv-hero-visual img{width:100%;height:100%;object-fit:cover;display:block;filter:contrast(1.1) grayscale(.15)}
 .lv-hero-visual:after{content:'';position:absolute;inset:0;border-left:1px solid var(--line-dark);background:linear-gradient(90deg,rgba(0,0,0,.55) 0%,transparent 30%)}
 .lv-why{background:var(--ivory);color:var(--ink);display:flex;flex-direction:column;border-bottom:1px solid var(--line-light)}
