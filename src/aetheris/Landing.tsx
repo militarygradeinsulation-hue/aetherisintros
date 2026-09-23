@@ -174,8 +174,6 @@ function LandingPage({ signedIn }: { signedIn: boolean }) {
         </div>
       </section>
 
-      <JoinBand signedIn={signedIn} />
-
       <section className="lv-quote" aria-label="Ask Intros principle">
         <ConstellationField className="lv-quote-constellation" />
         <blockquote>You&rsquo;re defined by the people you surround yourself with.</blockquote>
