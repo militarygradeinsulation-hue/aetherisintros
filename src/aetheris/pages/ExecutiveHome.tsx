@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react'
-import { ArrowRight, CalendarDays, CircleDot, MessageSquareText, Newspaper, Plus, Target, Users } from 'lucide-react'
+import { ArrowRight, CalendarDays, CircleDot, MessageSquareText, Plus, Target } from 'lucide-react'
 
 import { useNav } from '../nav'
 import { useNetwork } from '../store'
@@ -25,7 +25,7 @@ export function ExecutiveHome() {
   const people = useMemo(() => [...net.members].sort((a, b) => b.scoreTotal - a.scoreTotal).slice(0, 4), [net.members])
   const tasks = ops.tasks.filter(task => task.status !== 'done' && task.status !== 'cancelled').slice(0, 4)
   const pipeline = ops.opportunities.filter(opportunity => !opportunity.archived && opportunity.status === 'open')
-  const loops = os.inbox.filter(item => item.status === 'open').slice(0, 4)
+  const loops = os.inbox.filter(item => item.status === 'open').slice(0, 3)
   const firstName = net.profile.name.trim().split(/\s+/)[0] || 'there'
   const attention = tasks.length + net.threads.filter(thread => thread.unread).length + loops.length
 
