@@ -2513,9 +2513,7 @@ function Shell({ startPage }: { startPage?: Page | undefined }) {
 
 
   const pageNode: Partial<Record<Page, ReactNode>> = {
-      home: <>
-        <Home people={people} select={setSelected} setPage={setPage} openNeed={() => setNeedOpen(true)} openThread={goToThread} />
-      </>,
+      home: <ExecutiveHome />,
       discover: <Discover people={people} select={setSelected} />,
       systems: <SystemsPage openId={systemId} setOpenId={setSystemId} />,
       circles: <CirclesPage openId={circleId} setOpenId={setCircleId} />,
@@ -2524,7 +2522,7 @@ function Shell({ startPage }: { startPage?: Page | undefined }) {
       loops: <LoopsPage />,
       organization: <OrganizationPage />,
       intros: <Intros people={people} select={setSelected} draft={setDraft} />,
-      messages: <Messages people={people} select={setSelected} activeId={threadId} setActiveId={setThreadId} />,
+      messages: <MessageHub people={people} select={setSelected} activeId={threadId} setActiveId={setThreadId} />,
       needs: <><Needs onNew={() => setNeedOpen(true)} people={people} select={setSelected} setPage={setPage} /><IntentBoard /></>,
       memory: <Memory people={people} select={setSelected} />,
       events: <EventsPage />,
@@ -2570,7 +2568,8 @@ function Shell({ startPage }: { startPage?: Page | undefined }) {
       news: <NewsPage />,
     }
   const hubLabel: Partial<Record<Page, string>> = {
-    directory: 'People', opportunities: 'Active', rooms: 'Rooms', dealrooms: 'Deal rooms', discover: 'Discover',
+    discover: 'People', opportunities: 'Pipeline', outcomes: 'Forecast', rooms: 'Rooms', dealrooms: 'Deal rooms',
+    profile: 'Identity', passport: 'Passport', permission: 'Privacy', preferences: 'Controls', integrations: 'Apps',
   }
   const hubTabs = (ids: Page[]) => ids.flatMap(id => {
     const node = pageNode[id]
@@ -2580,11 +2579,14 @@ function Shell({ startPage }: { startPage?: Page | undefined }) {
     ? <MemberProfile person={selected} people={people} onClose={() => setSelected(null)} onDraft={p => { setSelected(null); setDraft(p) }} onMessage={messageMember} />
     : page === 'network'
       ? <Hub storeKey="aetheris.hub.network" title="Network" blurb="People, companies and introductions worth knowing."
-          tabs={hubTabs(networkTabs)} advanced={networkAdvanced} onNavigate={setPage} />
-      : page === 'opportunities'
-        ? <Hub storeKey="aetheris.hub.opportunities" title="Opportunities" blurb="What you are moving, and what it needs next."
-            tabs={hubTabs(opportunityTabs)} advanced={opportunityAdvanced} onNavigate={setPage} />
-        : pageNode[page]
+          tabs={hubTabs(networkTabs)} advanced={networkAdvanced} onNavigate={setPage} kind="network" />
+      : page === 'work'
+        ? <Hub storeKey="aetheris.hub.work" title="Work" blurb="One system for relationships, movement and time."
+            tabs={hubTabs(workTabs)} advanced={workAdvanced} onNavigate={setPage} kind="work" />
+        : page === 'me'
+          ? <Hub storeKey="aetheris.hub.me" title="Me" blurb="Your executive identity and your controls."
+              tabs={hubTabs(meTabs)} advanced={meAdvanced} onNavigate={setPage} kind="me" />
+          : pageNode[page]
 
   useGrabScroll()
   useEffect(() => { applyTextScale(readTextScale()) }, [])
@@ -2602,12 +2604,12 @@ function Shell({ startPage }: { startPage?: Page | undefined }) {
           return <button key={item.id} className={page === item.id ? 'active' : ''} title={item.label} onClick={() => { setPage(item.id); setMobileOpen(false) }}>
             <Icon size={18} /><span>{item.label}</span></button>
         })}
-          <span className="rail-divider">EVERYTHING ELSE</span>
-          <button className={`rail-more ${moreOpen ? 'active' : ''}`} title="All tools" onClick={() => { setMoreOpen(true); setMobileOpen(false) }}>
-            <LayoutGrid size={18} /><span>More</span></button>
+          <span className="rail-divider">ACCOUNT</span>
+          <button className={`rail-more ${moreOpen ? 'active' : ''}`} title="Utilities" onClick={() => { setMoreOpen(true); setMobileOpen(false) }}>
+            <Settings2 size={18} /><span>Utilities</span></button>
         </nav>
         <div className="rail-foot"><span className="live-dot" /><span>Memory live</span>
-          <button onClick={() => setPage('profile')} aria-label="Your profile"><SelfAvatar /></button></div>
+          <button onClick={() => setPage('me')} aria-label="Your profile"><SelfAvatar /></button></div>
         <div className="rail-auth"><AccountControl /></div>
       </aside>
       <div className="workspace">
@@ -2631,13 +2633,13 @@ function Shell({ startPage }: { startPage?: Page | undefined }) {
                   <span className="drop-label">VIEW</span>
                   <button role="menuitem" className={briefing.on ? 'active' : ''} onClick={() => { briefing.toggle(); setTopMenuOpen(false) }}><Newspaper size={14} /> Briefing mode <small>{briefing.on ? 'On' : 'Off'}</small></button>
                   <button role="menuitem" className={contextOpen ? 'active' : ''} onClick={() => { setContextOpen(value => !value); setTopMenuOpen(false) }}><Eye size={14} /> Context panel <small>{contextOpen ? 'Shown' : 'Hidden'}</small></button>
-                  <button role="menuitem" onClick={() => { setPage('profile'); setTopMenuOpen(false) }}><UserRound size={14} /> Profile</button>
+                  <button role="menuitem" onClick={() => { setPage('me'); setTopMenuOpen(false) }}><UserRound size={14} /> Me</button>
                   <button role="menuitem" onClick={() => { setPage('preferences'); setTopMenuOpen(false) }}><Settings2 size={14} /> Preferences</button>
                 </div>
               </>}
             </div>
             <AccountControl />
-            <button className="topbar-avatar" aria-label="Your profile" onClick={() => setPage('profile')}><SelfAvatar /></button>
+            <button className="topbar-avatar" aria-label="Your profile" onClick={() => setPage('me')}><SelfAvatar /></button>
           </div>
 
         </header>
@@ -2650,12 +2652,11 @@ function Shell({ startPage }: { startPage?: Page | undefined }) {
         </div>
       </div>
       <nav className="mobile-nav">
-        {(['home', 'network', 'opportunities', 'messages'] as Page[]).map(id => {
+        {(['home', 'network', 'work', 'messages', 'me'] as Page[]).map(id => {
           const meta = metaById[id]!
           const Icon = meta.icon
           return <button key={id} className={page === id ? 'active' : ''} onClick={() => setPage(id)}><Icon size={18} /><span>{meta.label}</span></button>
         })}
-        <button className={moreOpen ? 'active' : ''} onClick={() => setMoreOpen(true)}><LayoutGrid size={18} /><span>More</span></button>
       </nav>
 
       <IntroModal person={draft} onClose={() => setDraft(null)} onMessage={messageMember} />
