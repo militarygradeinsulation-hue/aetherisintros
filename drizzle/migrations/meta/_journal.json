@@ -15,6 +15,13 @@
       "when": 1790203224383,
       "tag": "0001_unified_executive_profiles_and_recommendations",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1790203354817,
+      "tag": "0002_grant_executive_profile_columns",
+      "breakpoints": true
     }
   ]
 }
