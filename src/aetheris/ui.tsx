@@ -3,14 +3,15 @@ import { Volume2, VolumeX } from 'lucide-react'
 import { AvatarImage } from './avatar'
 import { portraitFor } from './portraits'
 import type { Member } from './social'
-import { currentPagePassages, readAloud, speechSupported, stopReading, useReader } from './voice'
+import { currentPagePassages, readAloud, speechSupported, stopReading, useReader, useVoiceSettings } from './voice'
 
 /** Speaker button: reads one passage, one section, or the whole page. */
 export function ReadButton({ passages, label = 'Read aloud', className = '' }: {
   passages: string[] | (() => string[]); label?: string; className?: string
 }) {
   const reader = useReader()
-  if (!speechSupported()) return null
+  const [voice] = useVoiceSettings()
+  if (!speechSupported() || !voice.readAloud) return null
   const speaking = reader.state !== 'idle'
   return <button type="button" className={`read-btn ${speaking ? 'active' : ''} ${className}`}
     aria-label={speaking ? 'Stop reading' : label} title={speaking ? 'Stop reading' : label}
