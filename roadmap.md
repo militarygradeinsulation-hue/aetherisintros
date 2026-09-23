@@ -196,3 +196,7 @@
 - [x] Deterministic graph engine: mission fit, weather, trust dimensions, routing, reverse discovery, brief/debrief, rules, insights.
 - [x] Home tiles, Network rerank + reverse discovery, Executive Page panels, CRM weather, Needs Intent Exchange, Autopilot rules, Organization delegates, Passport manager + public link, Ask Intros offline answers.
 - [ ] Cross-account checks (capsule approval, room, shared feedback, network passport, delegate sign-in) — needs a second verified account.
+
+## CEO Operating System (Sep 23)
+- [x] Home CEO Now tiles (What Changed, Company Pulse, Chief of Staff, Approvals), Who Can Change This, Decision Room, Commitments on canonical CRM tasks, Relationship Health, Prepare me / Close the meeting, Forecast confidence + delta, Network ROI, Executive/Board/Investor brief, Approval queue, Ask Intros offline commands, Trust Passport.
+- [ ] Signed-in write-through checks (decisions, approvals, commitments, meeting close) — needs a signed-in verified account in the preview.

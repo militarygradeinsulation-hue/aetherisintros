@@ -12,6 +12,7 @@ import { useNav } from './nav'
 import type { Member } from './social'
 import { useNetwork } from './store'
 import { Btn, Eyebrow, Face } from './ui'
+import { CeoActions, HealthBadge, TrustPassportSummary } from './ceo-ui'
 import { IntroWorkflow, MeetingBriefPanel, ReverseDiscoveryPanel, RoutingPanel, TrustPanel, WeatherPanel } from './opportunity-ui'
 
 export const OPEN_TO_OPTIONS = [
@@ -209,6 +210,7 @@ export function ExecutivePage({ person, onClose, onIntro, onMessage }: {
             {proof.map(item => <article key={item.id}><BadgeCheck size={18} /><b>{item.authorName}</b><p>{item.body}</p>{item.outcome && <small>{item.outcome}</small>}</article>)}
             {!badge?.role && !proof.length && !['introduced', 'conversing', 'closed'].includes(person.introState) && <p className="executive-empty">No verified relationship outcomes recorded yet.</p>}
           </div>
+          <TrustPassportSummary memberId={person.id} />
           <TrustPanel member={person} verified={Boolean(badge?.role)} approvedRecommendations={proof.length} />
           <details className="executive-recommend"><summary>Recommend {person.name.split(' ')[0]}</summary><textarea value={recommendation} onChange={event => setRecommendation(event.target.value)} rows={3} placeholder="What are they actually good at, who should meet them, or what did the connection lead to?" /><Btn disabled={recommendation.trim().length < 10} onClick={() => void submitRecommendation()}>Send for approval</Btn>{recommendationNote && <small>{recommendationNote}</small>}</details>
         </section>
@@ -218,7 +220,9 @@ export function ExecutivePage({ person, onClose, onIntro, onMessage }: {
         <button className="executive-private-toggle" onClick={() => setRelationshipOpen(value => !value)}><LockKeyhole size={14} /><span>Your relationship</span><em>{relationshipOpen ? 'Hide' : 'Open'}</em></button>
         <div className="executive-private-body">
           <header><Eyebrow>PRIVATE CONTEXT</Eyebrow><small>Visible only to you</small></header>
+          <HealthBadge member={person} />
           <WeatherPanel member={person} />
+          <CeoActions member={person} {...(thread ? { threadId: thread.id } : {})} />
           <dl>
             <div><dt>Status</dt><dd>{connected ? 'Connected' : person.relationshipStatus}</dd></div>
             <div><dt>Last interaction</dt><dd>{crmPerson?.lastActivityAt ? new Date(crmPerson.lastActivityAt).toLocaleDateString() : person.lastInteractionDays ? `${person.lastInteractionDays} days ago` : 'Not recorded'}</dd></div>

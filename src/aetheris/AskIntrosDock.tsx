@@ -8,6 +8,8 @@ import { readTextScale } from './textScale'
 import { readCursorScale } from './cursorScale'
 import { useGraphInputs } from './graph-store'
 import { answerGraphQuestion } from './opportunity-graph'
+import { ceoViewLabel, recognizeCommand } from './ceo-engine'
+import { openCeo } from './ceo-store'
 import {
   isStopPhrase, readAloud, readerSnapshot, speechSupported, stopReading, useDictation, useReader, useVoiceSettings,
 } from './voice'
@@ -20,7 +22,10 @@ export type { AskIntrosAction }
 interface Turn { role: 'user' | 'assistant'; content: string; did?: string[] }
 
 const startingOpeners = [
-  'What should I do first today?',
+  'What changed?',
+  'What am I forgetting?',
+  'Who can change this?',
+  'Show pending approvals',
   'Read this page to me',
   'Make the text bigger',
   'Explain Active Memory',
@@ -68,6 +73,13 @@ export function AskIntrosDock({ page, peopleNames, memberName, briefing, context
     setInput('')
     const history = [...turns, { role: 'user' as const, content: question }]
     setTurns(history)
+    const command = recognizeCommand(question)
+    if (command?.view) {
+      openCeo(command)
+      setTurns(current => [...current, { role: 'assistant', content: `Opening ${ceoViewLabel[command.view!]}${command.arg && command.view === 'who' ? ` for “${command.arg}”` : ''}. Everything in it comes from your recorded data — no AI needed.`, did: [ceoViewLabel[command.view!]] }])
+      sending.current = false
+      return
+    }
     const local = answerGraphQuestion(question, graphInputs)
     if (local) {
       setTurns(current => [...current, { role: 'assistant', content: local }])

@@ -10,11 +10,13 @@ import { NewsThumbnail } from './NewsThumbnail'
 import { NewsReader } from './NewsReader'
 import { Btn } from '../ui'
 import { ActiveMissionTile, OpportunityGraphTile } from '../opportunity-ui'
+import { ApprovalsTile, ChiefOfStaffTile, CompanyPulseTile, WhatChangedTile } from '../ceo-ui'
 import { HubIntro, RadarMini, SignalPath, TileShell } from '../hub-ui'
 
 const dueLabel = (value: string | null) => value ? new Date(value).toLocaleDateString(undefined, { month: 'short', day: 'numeric' }) : 'No date'
 
 const widgetNames: Record<HomeWidgetId, string> = {
+  changed: 'What changed', pulse: 'Company pulse', chief: 'Chief of Staff', approvals: 'Approvals',
   mission: 'Active mission', graph: 'Opportunity Graph',
   matters: 'What matters now', signals: 'Changing signals', people: 'People who matter', memory: 'Active Memory',
   pipeline: 'Work and pipeline', calendar: 'Meetings and tasks', news: 'Intelligence and news', assistant: 'Ask Intros',
@@ -75,6 +77,10 @@ export function ExecutiveHome() {
 
   const renderWidget = (id: HomeWidgetId) => {
     switch (id) {
+      case 'changed': return <WhatChangedTile />
+      case 'pulse': return <CompanyPulseTile />
+      case 'chief': return <ChiefOfStaffTile />
+      case 'approvals': return <ApprovalsTile />
       case 'mission': return <ActiveMissionTile />
       case 'graph': return <OpportunityGraphTile />
       case 'matters': return <TileShell label="WHAT MATTERS NOW" title={attention ? `${attention} live items, ordered by consequence.` : 'Nothing urgent. Use the quiet well.'} variant="hero"
@@ -120,7 +126,7 @@ export function ExecutiveHome() {
 
   return <NewsImagesProvider value={images}>
     <div className="core-hub home-hub">
-      <HubIntro label="TODAY / EXECUTIVE BRIEF" title={<>Good morning, {firstName}.<br /><em>Here is what matters now.</em></>}
+      <HubIntro label="CEO NOW / TODAY" title={<>Good morning, {firstName}.<br /><em>Here is what matters now.</em></>}
         copy="A concise reading of timing, relationships, commitments and movement across your private operating system."
         aside={<div className="home-intro-aside"><div className="hub-now"><strong>{attention}</strong><span>items may need<br />your attention</span></div><Btn kind={customizing ? 'primary' : 'secondary'} onClick={() => setCustomizing(value => !value)}>{customizing ? <Check size={14} /> : <LayoutDashboard size={14} />}{customizing ? 'Done' : 'Customize Home'}</Btn></div>} />
 
