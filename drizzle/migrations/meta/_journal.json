@@ -43,6 +43,13 @@
       "when": 1790205711898,
       "tag": "0005_delegate_drafts_privileges",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1790206831627,
+      "tag": "0006_ceo_operating_system",
+      "breakpoints": true
     }
   ]
 }

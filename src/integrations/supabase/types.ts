@@ -47,6 +47,42 @@ export type Database = {
         }
         Relationships: []
       }
+      approval_queue: {
+        Row: {
+          acted_at: string | null
+          action_type: string
+          created_at: string
+          id: string
+          payload: Json
+          source: string
+          status: string
+          summary: string
+          user_id: string
+        }
+        Insert: {
+          acted_at?: string | null
+          action_type: string
+          created_at?: string
+          id?: string
+          payload?: Json
+          source?: string
+          status?: string
+          summary: string
+          user_id?: string
+        }
+        Update: {
+          acted_at?: string | null
+          action_type?: string
+          created_at?: string
+          id?: string
+          payload?: Json
+          source?: string
+          status?: string
+          summary?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       ask_responses: {
         Row: {
           ask_id: string
@@ -824,50 +860,65 @@ export type Database = {
         Row: {
           account_id: string | null
           assignee: string
+          calendar_event_id: string | null
           company_id: string | null
           created_at: string
           detail: string
           due_at: string | null
           id: string
+          kind: string
           opportunity_id: string | null
+          owed_to: string
           owner_id: string
           person_id: string | null
           priority: string
           status: string
+          thread_id: string | null
           title: string
           updated_at: string
+          waiting_on: string
         }
         Insert: {
           account_id?: string | null
           assignee?: string
+          calendar_event_id?: string | null
           company_id?: string | null
           created_at?: string
           detail?: string
           due_at?: string | null
           id?: string
+          kind?: string
           opportunity_id?: string | null
+          owed_to?: string
           owner_id?: string
           person_id?: string | null
           priority?: string
           status?: string
+          thread_id?: string | null
           title: string
           updated_at?: string
+          waiting_on?: string
         }
         Update: {
           account_id?: string | null
           assignee?: string
+          calendar_event_id?: string | null
           company_id?: string | null
           created_at?: string
           detail?: string
           due_at?: string | null
           id?: string
+          kind?: string
           opportunity_id?: string | null
+          owed_to?: string
           owner_id?: string
           person_id?: string | null
           priority?: string
           status?: string
+          thread_id?: string | null
           title?: string
           updated_at?: string
+          waiting_on?: string
         }
         Relationships: [
           {
@@ -892,6 +943,75 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      decisions: {
+        Row: {
+          actual_outcome: string
+          assumptions: string
+          chosen_option: string
+          context: string
+          created_at: string
+          decided_at: string | null
+          expected_outcome: string
+          id: string
+          linked_company_ids: string[]
+          linked_event_ids: string[]
+          linked_opportunity_ids: string[]
+          linked_person_ids: string[]
+          options: Json
+          rationale: string
+          review_date: string | null
+          risks: string
+          status: string
+          title: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          actual_outcome?: string
+          assumptions?: string
+          chosen_option?: string
+          context?: string
+          created_at?: string
+          decided_at?: string | null
+          expected_outcome?: string
+          id?: string
+          linked_company_ids?: string[]
+          linked_event_ids?: string[]
+          linked_opportunity_ids?: string[]
+          linked_person_ids?: string[]
+          options?: Json
+          rationale?: string
+          review_date?: string | null
+          risks?: string
+          status?: string
+          title: string
+          updated_at?: string
+          user_id?: string
+        }
+        Update: {
+          actual_outcome?: string
+          assumptions?: string
+          chosen_option?: string
+          context?: string
+          created_at?: string
+          decided_at?: string | null
+          expected_outcome?: string
+          id?: string
+          linked_company_ids?: string[]
+          linked_event_ids?: string[]
+          linked_opportunity_ids?: string[]
+          linked_person_ids?: string[]
+          options?: Json
+          rationale?: string
+          review_date?: string | null
+          risks?: string
+          status?: string
+          title?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
       }
       delegate_message_drafts: {
         Row: {
