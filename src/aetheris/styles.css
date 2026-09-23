@@ -3993,3 +3993,65 @@ button.news-link{background:none;border:0;padding:0;cursor:pointer}
   .content .profile-social{grid-template-columns:minmax(0,1fr)!important;gap:16px!important}
   .content .feed{gap:16px!important}
 }
+
+/* ============================================================ readable type pass
+   Inside the app (never the public landing page) no words render smaller than
+   13px. Tiny hardcoded sizes are lifted to the member's chosen text tokens. */
+.app-shell .content,
+.app-shell .content p,
+.app-shell .content li,
+.app-shell .content dd,
+.app-shell .content dt,
+.app-shell .content label,
+.app-shell .content span,
+.app-shell .content strong,
+.app-shell .content em,
+.app-shell .content b { font-size: var(--ui-body-text, 15px); }
+
+.app-shell .content h1,
+.app-shell .content h2,
+.app-shell .content h3,
+.app-shell .content h4,
+.app-shell .content blockquote,
+.app-shell .content .compat-ring strong,
+.app-shell .content .global-stats dd,
+.app-shell .content .pattern-stat,
+.app-shell .content .global-quote { font-size: revert; }
+
+.app-shell .content small,
+.app-shell .content .eyebrow,
+.app-shell .content time,
+.app-shell .content .chip,
+.app-shell .content .tag,
+.app-shell .content .learned-when,
+.app-shell .content .joined-flag,
+.app-shell .content .filter-count,
+.app-shell .content .filter-signals button { font-size: var(--ui-detail-text, 13px) !important; }
+
+.app-shell .content input,
+.app-shell .content textarea,
+.app-shell .content select,
+.app-shell .content .btn,
+.app-shell .content .text-action,
+.app-shell .content button { font-size: var(--ui-control-text, 14px); }
+
+.app-shell .nav-rail nav button,
+.app-shell .rail-foot,
+.app-shell .mobile-nav button,
+.app-shell .mobile-nav button span,
+.app-shell .topbar-title,
+.app-shell .topbar-search span,
+.app-shell .topbar-dropbtn,
+.app-shell .topbar-dropmenu button,
+.app-shell .topbar-dropmenu .drop-label { font-size: var(--ui-nav-text, 13px) !important; }
+
+.more-drawer small,
+.more-drawer .more-item-copy small,
+.more-hub-blurb { font-size: var(--ui-detail-text, 13px) !important; }
+.more-drawer button strong,
+.more-drawer p { font-size: var(--ui-body-text, 15px) !important; }
+
+.ask-dock p,
+.ask-dock button,
+.ask-dock input { font-size: var(--ui-control-text, 14px); }
+.ask-dock-turn p { font-size: var(--ui-body-text, 15px) !important; }
