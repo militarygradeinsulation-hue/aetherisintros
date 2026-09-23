@@ -1,8 +1,8 @@
 # Aetheris specification completion
 
 ## Public Ask Intros brand lockup (Sep 23)
-- [ ] Replace the old public header image-and-text brand with the approved reusable SVG lockup.
-- [ ] Add a responsive hero lockup above the existing Founding 1,000 copy without changing page functionality.
+- [x] Replace the old public header image-and-text brand with the approved reusable SVG lockup.
+- [x] Add a responsive hero lockup above the existing Founding 1,000 copy without changing page functionality.
 - [ ] Update the site icon from the same mark and verify desktop/mobile overflow and duplicate branding.
 
 ## Complete mobile fit pass (Sep 23)
