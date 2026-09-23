@@ -1,4 +1,3 @@
-import logoAsset from '@/assets/aetheris-logo.jpg.asset.json'
 import { ArrowRight, BrainCircuit, Globe2, LayoutGrid, LockKeyhole, ShieldCheck, Smartphone, Zap } from 'lucide-react'
 import { Link } from '@tanstack/react-router'
 import { useEffect, useState } from 'react'
@@ -9,6 +8,7 @@ import { foundingStats, joinWaitlist, useAccess, type FoundingStats } from './ac
 import { CinematicFooter } from './CinematicFooter'
 import ParticleDrift from './ParticleDrift'
 import ConstellationField from './ConstellationField'
+import { AskIntrosLockup } from './AskIntrosLockup'
 
 /** Public front page. The root URL always remains the public Aetheris page. */
 export default function Landing() {
@@ -139,10 +139,7 @@ function LandingPage({ signedIn }: { signedIn: boolean }) {
 
       {/* ── Section 1: Black hero ── */}
       <header className="lv-nav">
-        <div className="brand-mark">
-          <img className="brand-logo" src={logoAsset.url} alt="Ask Intros logo" />
-          <span className="brand-name">Ask<em>Intros</em></span>
-        </div>
+        <AskIntrosLockup variant="compact" />
         <nav>PEOPLE&nbsp;&nbsp;|&nbsp;&nbsp;IDEAS&nbsp;&nbsp;|&nbsp;&nbsp;OPPORTUNITIES</nav>
         <div className="lv-nav-actions">
           {demoBtn('Demo', 'btn primary')}
@@ -156,6 +153,7 @@ function LandingPage({ signedIn }: { signedIn: boolean }) {
       <section className="lv-hero">
         <ParticleDrift className="lv-hero-drift" />
         <div className="lv-hero-copy">
+          <AskIntrosLockup variant="hero" />
           <span className="lv-hero-topright">THE FOUNDING 1,000 · WHITELIST</span>
           <h1><span>Join the </span><em>whitelist.</em></h1>
           <p className="lv-hero-sub">Ask Intros opens to 1,000 founding members. Add your name and we review it against the standard: CEOs, founders, owners, managing partners and principal operators. Verified people only — that is what makes an introduction here worth taking.</p>
