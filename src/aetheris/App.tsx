@@ -2273,9 +2273,41 @@ export default function App({ startPage, mode = 'live' }: { startPage?: Page | u
 
 /* --------------------------------------------------------------------- hubs */
 
-function Hub({ storeKey, title, blurb, tabs, advanced, onNavigate }: {
+function HubPrelude({ kind, onNavigate }: { kind: 'network' | 'work' | 'me'; onNavigate: (page: Page) => void }) {
+  const net = useNetwork()
+  const ops = useOps()
+  const { verification } = useVerification()
+  if (kind === 'network') {
+    const lead = [...net.members].sort((a, b) => b.scoreTotal - a.scoreTotal)[0]
+    return <section className="hub-prelude network-prelude">
+      <TileShell label="PEOPLE WHO MATTER" title={lead?.name ?? 'Your trusted network starts here.'} variant="hero">
+        <RadarMini values={net.members.slice(0, 5).map(member => member.scoreTotal)} />
+        <p>{lead?.whyNow ?? 'Discover verified members through context, not vanity metrics.'}</p>
+      </TileShell>
+      <TileShell label="WARM PATHS" title={`${net.connections.length} trusted connections`} variant="graph"><SignalPath points={5} active={Math.min(4, net.connections.length)} /></TileShell>
+      <TileShell label="INTRODUCTIONS" title="Why me. Why them. Why now." variant="action"><p>Every request stays double opt-in and carries the evidence for timing.</p><button className="tile-cta" onClick={() => onNavigate('intros')}>Review introductions <ArrowRight size={14} /></button></TileShell>
+    </section>
+  }
+  if (kind === 'work') {
+    const active = ops.opportunities.filter(item => !item.archived && item.status === 'open')
+    const tasks = ops.tasks.filter(item => item.status !== 'done' && item.status !== 'cancelled')
+    return <section className="hub-prelude work-prelude">
+      <TileShell label="ONE OPERATING SYSTEM" title="Records become movement." variant="hero"><div className="work-flow"><span>CRM</span><i /><span>PIPELINE</span><i /><span>GRID</span><i /><span>TIME</span></div><p>Every view reads and updates the same private working record.</p></TileShell>
+      <TileShell label="PIPELINE" title={`${active.length} active`} variant="data"><div className="pipeline-mini">{ops.stages.slice(0, 5).map(stage => <span key={stage.id}><i style={{ height: `${Math.max(10, active.filter(item => item.stageId === stage.id).length * 22)}px` }} /><b>{stage.name}</b></span>)}</div></TileShell>
+      <TileShell label="OPEN LOOPS" title={`${tasks.length} tasks`} variant="action"><p>Tasks stay connected to the people, companies and work that created them.</p></TileShell>
+    </section>
+  }
+  const verified = verification.status === 'verified'
+  return <section className="hub-prelude me-prelude">
+    <TileShell label="MY EXECUTIVE IDENTITY" title={net.profile.name || 'Complete your identity'} variant="hero"><p>{net.profile.title || 'Add your role'}{net.profile.company ? ` · ${net.profile.company}` : ''}</p><div className={`verification-mark ${verified ? 'verified' : ''}`}><ShieldCheck size={18} /> {verified ? badgeLabel(verification.verifiedRole) : 'Verification required'}</div></TileShell>
+    <TileShell label="VISIBILITY" title="You control the context." variant="data"><div className="lock-stack" aria-hidden="true"><i /><i /><i /></div><p>Privacy, permissions and double opt-in remain enforced underneath every view.</p></TileShell>
+    <TileShell label="CONNECTED SYSTEMS" title="Bring context, not chaos." variant="action"><p>Review the services connected to your private relationship system.</p><button className="tile-cta" onClick={() => onNavigate('integrations')}>Connected apps <ArrowRight size={14} /></button></TileShell>
+  </section>
+}
+
+function Hub({ storeKey, title, blurb, tabs, advanced, onNavigate, kind }: {
   storeKey: string; title: string; blurb: string
-  tabs: Array<{ id: Page; label: string; node: ReactNode }>
+  tabs: Array<{ id: Page; label: string; node: ReactNode }>; kind: 'network' | 'work' | 'me'
   advanced: Page[]; onNavigate: (p: Page) => void
 }) {
   const first = tabs[0]
@@ -2287,10 +2319,11 @@ function Hub({ storeKey, title, blurb, tabs, advanced, onNavigate }: {
   const current = tabs.find(t => t.id === tab) ?? first
   const go = (id: string) => { setTab(id); try { localStorage.setItem(storeKey, id) } catch { /* ignore */ } }
   return <>
-    <header className="hub-head">
+    <header className={`hub-head ${kind}-hub-head`}>
       <div><Label>{title.toUpperCase()}</Label><h1>{blurb}</h1></div>
       <p>{metaById[current.id]?.blurb}</p>
     </header>
+    <HubPrelude kind={kind} onNavigate={onNavigate} />
     <nav className="hub-tabs" role="tablist" aria-label={`${title} sections`}>
       {tabs.map(t => <button key={t.id} role="tab" aria-selected={t.id === current.id}
         className={t.id === current.id ? 'active' : ''} onClick={() => go(t.id)}>{t.label}</button>)}
@@ -2307,6 +2340,15 @@ function Hub({ storeKey, title, blurb, tabs, advanced, onNavigate }: {
     </details>
     <section className="hub-panel" key={current.id}>{current.node}</section>
   </>
+}
+
+function MessageHub({ people, select, activeId, setActiveId }: { people: Member[]; select: (member: Member) => void; activeId: string; setActiveId: (id: string) => void }) {
+  const net = useNetwork()
+  return <div className="core-hub messages-hub">
+    <HubIntro label="PRIVATE COMMUNICATION" title={<>Conversations with<br /><em>relationship context.</em></>} copy="Threads, introductions, meetings and commitments stay together—so a message never arrives without the history that gives it meaning." aside={<div className="hub-now"><strong>{net.threads.filter(thread => thread.unread).length}</strong><span>unread<br />conversations</span></div>} />
+    <div className="message-context-line"><span>PRIVATE THREADS</span><i /><span>INTRO CONTEXT</span><i /><span>OPEN LOOPS</span><i /><span>FOLLOW-UP</span></div>
+    <Messages people={people} select={select} activeId={activeId} setActiveId={setActiveId} />
+  </div>
 }
 
 /** Read the page you are on — or just what you highlighted — from the top bar. */
