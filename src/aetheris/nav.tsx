@@ -2,7 +2,7 @@ import { createContext, useContext } from 'react'
 import type { Member } from './social'
 
 export type Page =
-  | 'home' | 'network' | 'discover' | 'intros' | 'messages' | 'needs' | 'memory' | 'insights' | 'profile'
+  | 'home' | 'network' | 'work' | 'messages' | 'me' | 'discover' | 'intros' | 'needs' | 'memory' | 'insights' | 'profile'
   | 'calendar' | 'systems' | 'circles' | 'companies' | 'outcomes' | 'loops' | 'organization' | 'events' | 'preferences'
   | 'inbox' | 'rooms' | 'collisions' | 'simulation' | 'strategy' | 'evidence' | 'autopilot'
   | 'ask' | 'constitution' | 'serendipity' | 'eventmode' | 'gaps' | 'identity' | 'consent'

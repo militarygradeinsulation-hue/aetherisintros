@@ -1,5 +1,11 @@
 # Aetheris specification completion
 
+## Five-hub signed-in redesign (Sep 23)
+- [x] Replace persistent navigation with Home, Network, Work, Messages, and Me only.
+- [x] Consolidate existing functionality into five distinct hub compositions without changing data or security contracts.
+- [x] Replace the feature directory with a small utility menu while preserving advanced search/deep access.
+- [x] Verify all five hubs, legacy destinations, core CRM/Grid/opportunity interactions, and desktop/mobile layouts.
+
 ## Supplied interaction style integration (Sep 22)
 - [x] Refine the public Home entrance while preserving Ask Intros identity, portrait, copy, and actions.
 - [x] Add an animated asymmetric capability grid grounded in real Ask Intros functions.

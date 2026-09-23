@@ -48,7 +48,7 @@ import { NetworkProvider, useNetwork, type MemoryNote, type MeProfile, type Netw
 import { isShowcase, setShowcaseMode, showcaseOnly } from './showcase'
 import { classifyConnection, composeWarmIntro, radarLabel } from './lib/engine'
 import { useGrabScroll } from './lib/dragScroll'
-import { metaById, primaryPages, pageMeta, networkTabs, networkAdvanced, opportunityTabs, opportunityAdvanced } from './pageMeta'
+import { metaById, primaryPages, pageMeta, networkTabs, networkAdvanced, workTabs, workAdvanced, meTabs, meAdvanced } from './pageMeta'
 import { MoreDrawer, rememberRecent } from './pages/MoreDrawer'
 import { BriefingPanel, useBriefingMode } from './BriefingMode'
 import { NavCtx, useNav, type NavApi, type Page } from './nav'
@@ -113,6 +113,9 @@ import { KnowledgeAssetsPage } from './pages/KnowledgeAssetsPage'
 import SimpleViewPage from './pages/SimpleViewPage'
 import { NewsPage } from './pages/NewsPage'
 import { portraitFor } from './portraits'
+import { ExecutiveHome } from './pages/ExecutiveHome'
+import { HubIntro, RadarMini, SignalPath, TileShell } from './hub-ui'
+import { badgeLabel, useVerification } from './verification'
 
 
 
@@ -124,8 +127,8 @@ const nav: Array<{ id: Page; label: string; icon: typeof HomeIcon }> = primaryPa
 })
 const allNav: Array<{ id: Page; label: string; icon: typeof HomeIcon }> = pageMeta.map(p => ({ id: p.id, label: p.label, icon: p.icon }))
 const legacyPage: Record<string, Page> = {
-  command: 'home', people: 'discover', network: 'memory', forensics: 'insights',
-  meetings: 'messages', 'digital-you': 'profile', roi: 'insights', settings: 'profile',
+  command: 'home', people: 'network', forensics: 'insights', simple: 'home',
+  meetings: 'messages', 'digital-you': 'me', roi: 'insights', settings: 'me',
 }
 const scopeLabel: Record<PrivacyScope, string> = { private: 'Private', team: 'Team', organization: 'Organization', shareable: 'Shareable', public: 'Public' }
 const scopeText: Record<PrivacyScope, string> = {
@@ -2270,9 +2273,41 @@ export default function App({ startPage, mode = 'live' }: { startPage?: Page | u
 
 /* --------------------------------------------------------------------- hubs */
 
-function Hub({ storeKey, title, blurb, tabs, advanced, onNavigate }: {
+function HubPrelude({ kind, onNavigate }: { kind: 'network' | 'work' | 'me'; onNavigate: (page: Page) => void }) {
+  const net = useNetwork()
+  const ops = useOps()
+  const { verification } = useVerification()
+  if (kind === 'network') {
+    const lead = [...net.members].sort((a, b) => b.scoreTotal - a.scoreTotal)[0]
+    return <section className="hub-prelude network-prelude">
+      <TileShell label="PEOPLE WHO MATTER" title={lead?.name ?? 'Your trusted network starts here.'} variant="hero">
+        <RadarMini values={net.members.slice(0, 5).map(member => member.scoreTotal)} />
+        <p>{lead?.whyNow ?? 'Discover verified members through context, not vanity metrics.'}</p>
+      </TileShell>
+      <TileShell label="WARM PATHS" title={`${net.connections.length} trusted connections`} variant="graph"><SignalPath points={5} active={Math.min(4, net.connections.length)} /></TileShell>
+      <TileShell label="INTRODUCTIONS" title="Why me. Why them. Why now." variant="action"><p>Every request stays double opt-in and carries the evidence for timing.</p><button className="tile-cta" onClick={() => onNavigate('intros')}>Review introductions <ArrowRight size={14} /></button></TileShell>
+    </section>
+  }
+  if (kind === 'work') {
+    const active = ops.opportunities.filter(item => !item.archived && item.status === 'open')
+    const tasks = ops.tasks.filter(item => item.status !== 'done' && item.status !== 'cancelled')
+    return <section className="hub-prelude work-prelude">
+      <TileShell label="ONE OPERATING SYSTEM" title="Records become movement." variant="hero"><div className="work-flow"><span>CRM</span><i /><span>PIPELINE</span><i /><span>GRID</span><i /><span>TIME</span></div><p>Every view reads and updates the same private working record.</p></TileShell>
+      <TileShell label="PIPELINE" title={`${active.length} active`} variant="data"><div className="pipeline-mini">{ops.stages.slice(0, 5).map(stage => <span key={stage.id}><i style={{ height: `${Math.max(10, active.filter(item => item.stageId === stage.id).length * 22)}px` }} /><b>{stage.name}</b></span>)}</div></TileShell>
+      <TileShell label="OPEN LOOPS" title={`${tasks.length} tasks`} variant="action"><p>Tasks stay connected to the people, companies and work that created them.</p></TileShell>
+    </section>
+  }
+  const verified = verification.status === 'verified'
+  return <section className="hub-prelude me-prelude">
+    <TileShell label="MY EXECUTIVE IDENTITY" title={net.profile.name || 'Complete your identity'} variant="hero"><p>{net.profile.title || 'Add your role'}{net.profile.company ? ` · ${net.profile.company}` : ''}</p><div className={`verification-mark ${verified ? 'verified' : ''}`}><ShieldCheck size={18} /> {verified ? badgeLabel(verification.verifiedRole) : 'Verification required'}</div></TileShell>
+    <TileShell label="VISIBILITY" title="You control the context." variant="data"><div className="lock-stack" aria-hidden="true"><i /><i /><i /></div><p>Privacy, permissions and double opt-in remain enforced underneath every view.</p></TileShell>
+    <TileShell label="CONNECTED SYSTEMS" title="Bring context, not chaos." variant="action"><p>Review the services connected to your private relationship system.</p><button className="tile-cta" onClick={() => onNavigate('integrations')}>Connected apps <ArrowRight size={14} /></button></TileShell>
+  </section>
+}
+
+function Hub({ storeKey, title, blurb, tabs, advanced, onNavigate, kind }: {
   storeKey: string; title: string; blurb: string
-  tabs: Array<{ id: Page; label: string; node: ReactNode }>
+  tabs: Array<{ id: Page; label: string; node: ReactNode }>; kind: 'network' | 'work' | 'me'
   advanced: Page[]; onNavigate: (p: Page) => void
 }) {
   const first = tabs[0]
@@ -2284,10 +2319,11 @@ function Hub({ storeKey, title, blurb, tabs, advanced, onNavigate }: {
   const current = tabs.find(t => t.id === tab) ?? first
   const go = (id: string) => { setTab(id); try { localStorage.setItem(storeKey, id) } catch { /* ignore */ } }
   return <>
-    <header className="hub-head">
+    <header className={`hub-head ${kind}-hub-head`}>
       <div><Label>{title.toUpperCase()}</Label><h1>{blurb}</h1></div>
       <p>{metaById[current.id]?.blurb}</p>
     </header>
+    <HubPrelude kind={kind} onNavigate={onNavigate} />
     <nav className="hub-tabs" role="tablist" aria-label={`${title} sections`}>
       {tabs.map(t => <button key={t.id} role="tab" aria-selected={t.id === current.id}
         className={t.id === current.id ? 'active' : ''} onClick={() => go(t.id)}>{t.label}</button>)}
@@ -2304,6 +2340,15 @@ function Hub({ storeKey, title, blurb, tabs, advanced, onNavigate }: {
     </details>
     <section className="hub-panel" key={current.id}>{current.node}</section>
   </>
+}
+
+function MessageHub({ people, select, activeId, setActiveId }: { people: Member[]; select: (member: Member) => void; activeId: string; setActiveId: (id: string) => void }) {
+  const net = useNetwork()
+  return <div className="core-hub messages-hub">
+    <HubIntro label="PRIVATE COMMUNICATION" title={<>Conversations with<br /><em>relationship context.</em></>} copy="Threads, introductions, meetings and commitments stay together—so a message never arrives without the history that gives it meaning." aside={<div className="hub-now"><strong>{net.threads.filter(thread => thread.unread).length}</strong><span>unread<br />conversations</span></div>} />
+    <div className="message-context-line"><span>PRIVATE THREADS</span><i /><span>INTRO CONTEXT</span><i /><span>OPEN LOOPS</span><i /><span>FOLLOW-UP</span></div>
+    <Messages people={people} select={select} activeId={activeId} setActiveId={setActiveId} />
+  </div>
 }
 
 /** Read the page you are on — or just what you highlighted — from the top bar. */
@@ -2431,15 +2476,15 @@ function Shell({ startPage }: { startPage?: Page | undefined }) {
         setCursorScale(value)
         return `Pointer size set to ${value}`
       }
-      case 'open-tools': setMoreOpen(true); return 'Opened All Tools'
+      case 'open-tools': setGlobalSearchOpen(true); return 'Opened capability search'
       case 'open-search': setGlobalSearchOpen(true); return 'Opened search'
       case 'post-need': setNeedOpen(true); return 'Opened the need composer'
       case 'post-intent': setIntentOpen(true); return 'Opened live intent'
       case 'capture-conversation': setCaptureOpen(true); return 'Opened conversation capture'
       case 'toggle-briefing': briefing.toggle(); return briefing.on ? 'Briefing mode off' : 'Briefing mode on'
       case 'toggle-context': setContextOpen(value => !value); return contextOpen ? 'Context rail hidden' : 'Context rail shown'
-      case 'open-profile': setPage('profile'); return 'Opened your profile'
-      case 'open-preferences': setPage('preferences'); return 'Opened preferences'
+      case 'open-profile': setPage('me'); return 'Opened Me'
+      case 'open-preferences': setPage('me'); return 'Opened Me controls'
       case 'open-member': {
         const person = find(action.value)
         if (!person) return null
@@ -2468,9 +2513,7 @@ function Shell({ startPage }: { startPage?: Page | undefined }) {
 
 
   const pageNode: Partial<Record<Page, ReactNode>> = {
-      home: <>
-        <Home people={people} select={setSelected} setPage={setPage} openNeed={() => setNeedOpen(true)} openThread={goToThread} />
-      </>,
+      home: <ExecutiveHome />,
       discover: <Discover people={people} select={setSelected} />,
       systems: <SystemsPage openId={systemId} setOpenId={setSystemId} />,
       circles: <CirclesPage openId={circleId} setOpenId={setCircleId} />,
@@ -2479,7 +2522,7 @@ function Shell({ startPage }: { startPage?: Page | undefined }) {
       loops: <LoopsPage />,
       organization: <OrganizationPage />,
       intros: <Intros people={people} select={setSelected} draft={setDraft} />,
-      messages: <Messages people={people} select={setSelected} activeId={threadId} setActiveId={setThreadId} />,
+      messages: <MessageHub people={people} select={setSelected} activeId={threadId} setActiveId={setThreadId} />,
       needs: <><Needs onNew={() => setNeedOpen(true)} people={people} select={setSelected} setPage={setPage} /><IntentBoard /></>,
       memory: <Memory people={people} select={setSelected} />,
       events: <EventsPage />,
@@ -2525,7 +2568,8 @@ function Shell({ startPage }: { startPage?: Page | undefined }) {
       news: <NewsPage />,
     }
   const hubLabel: Partial<Record<Page, string>> = {
-    directory: 'People', opportunities: 'Active', rooms: 'Rooms', dealrooms: 'Deal rooms', discover: 'Discover',
+    discover: 'People', opportunities: 'Pipeline', outcomes: 'Forecast', rooms: 'Rooms', dealrooms: 'Deal rooms',
+    profile: 'Identity', passport: 'Passport', permission: 'Privacy', preferences: 'Controls', integrations: 'Apps',
   }
   const hubTabs = (ids: Page[]) => ids.flatMap(id => {
     const node = pageNode[id]
@@ -2535,11 +2579,14 @@ function Shell({ startPage }: { startPage?: Page | undefined }) {
     ? <MemberProfile person={selected} people={people} onClose={() => setSelected(null)} onDraft={p => { setSelected(null); setDraft(p) }} onMessage={messageMember} />
     : page === 'network'
       ? <Hub storeKey="aetheris.hub.network" title="Network" blurb="People, companies and introductions worth knowing."
-          tabs={hubTabs(networkTabs)} advanced={networkAdvanced} onNavigate={setPage} />
-      : page === 'opportunities'
-        ? <Hub storeKey="aetheris.hub.opportunities" title="Opportunities" blurb="What you are moving, and what it needs next."
-            tabs={hubTabs(opportunityTabs)} advanced={opportunityAdvanced} onNavigate={setPage} />
-        : pageNode[page]
+          tabs={hubTabs(networkTabs)} advanced={networkAdvanced} onNavigate={setPage} kind="network" />
+      : page === 'work'
+        ? <Hub storeKey="aetheris.hub.work" title="Work" blurb="One system for relationships, movement and time."
+            tabs={hubTabs(workTabs)} advanced={workAdvanced} onNavigate={setPage} kind="work" />
+        : page === 'me'
+          ? <Hub storeKey="aetheris.hub.me" title="Me" blurb="Your executive identity and your controls."
+              tabs={hubTabs(meTabs)} advanced={meAdvanced} onNavigate={setPage} kind="me" />
+          : pageNode[page]
 
   useGrabScroll()
   useEffect(() => { applyTextScale(readTextScale()) }, [])
@@ -2557,12 +2604,12 @@ function Shell({ startPage }: { startPage?: Page | undefined }) {
           return <button key={item.id} className={page === item.id ? 'active' : ''} title={item.label} onClick={() => { setPage(item.id); setMobileOpen(false) }}>
             <Icon size={18} /><span>{item.label}</span></button>
         })}
-          <span className="rail-divider">EVERYTHING ELSE</span>
-          <button className={`rail-more ${moreOpen ? 'active' : ''}`} title="All tools" onClick={() => { setMoreOpen(true); setMobileOpen(false) }}>
-            <LayoutGrid size={18} /><span>More</span></button>
+          <span className="rail-divider">ACCOUNT</span>
+          <button className={`rail-more ${moreOpen ? 'active' : ''}`} title="Utilities" onClick={() => { setMoreOpen(true); setMobileOpen(false) }}>
+            <Settings2 size={18} /><span>Utilities</span></button>
         </nav>
         <div className="rail-foot"><span className="live-dot" /><span>Memory live</span>
-          <button onClick={() => setPage('profile')} aria-label="Your profile"><SelfAvatar /></button></div>
+          <button onClick={() => setPage('me')} aria-label="Your profile"><SelfAvatar /></button></div>
         <div className="rail-auth"><AccountControl /></div>
       </aside>
       <div className="workspace">
@@ -2586,13 +2633,13 @@ function Shell({ startPage }: { startPage?: Page | undefined }) {
                   <span className="drop-label">VIEW</span>
                   <button role="menuitem" className={briefing.on ? 'active' : ''} onClick={() => { briefing.toggle(); setTopMenuOpen(false) }}><Newspaper size={14} /> Briefing mode <small>{briefing.on ? 'On' : 'Off'}</small></button>
                   <button role="menuitem" className={contextOpen ? 'active' : ''} onClick={() => { setContextOpen(value => !value); setTopMenuOpen(false) }}><Eye size={14} /> Context panel <small>{contextOpen ? 'Shown' : 'Hidden'}</small></button>
-                  <button role="menuitem" onClick={() => { setPage('profile'); setTopMenuOpen(false) }}><UserRound size={14} /> Profile</button>
+                  <button role="menuitem" onClick={() => { setPage('me'); setTopMenuOpen(false) }}><UserRound size={14} /> Me</button>
                   <button role="menuitem" onClick={() => { setPage('preferences'); setTopMenuOpen(false) }}><Settings2 size={14} /> Preferences</button>
                 </div>
               </>}
             </div>
             <AccountControl />
-            <button className="topbar-avatar" aria-label="Your profile" onClick={() => setPage('profile')}><SelfAvatar /></button>
+            <button className="topbar-avatar" aria-label="Your profile" onClick={() => setPage('me')}><SelfAvatar /></button>
           </div>
 
         </header>
@@ -2605,12 +2652,11 @@ function Shell({ startPage }: { startPage?: Page | undefined }) {
         </div>
       </div>
       <nav className="mobile-nav">
-        {(['home', 'network', 'opportunities', 'messages'] as Page[]).map(id => {
+        {(['home', 'network', 'work', 'messages', 'me'] as Page[]).map(id => {
           const meta = metaById[id]!
           const Icon = meta.icon
           return <button key={id} className={page === id ? 'active' : ''} onClick={() => setPage(id)}><Icon size={18} /><span>{meta.label}</span></button>
         })}
-        <button className={moreOpen ? 'active' : ''} onClick={() => setMoreOpen(true)}><LayoutGrid size={18} /><span>More</span></button>
       </nav>
 
       <IntroModal person={draft} onClose={() => setDraft(null)} onMessage={messageMember} />
