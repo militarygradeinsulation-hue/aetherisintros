@@ -57,7 +57,7 @@ export interface PreferenceSettings {
   retention: string
 }
 
-export type HomeWidgetId = 'matters' | 'signals' | 'people' | 'memory' | 'pipeline' | 'calendar' | 'news' | 'assistant'
+export type HomeWidgetId = 'mission' | 'graph' | 'matters' | 'signals' | 'people' | 'memory' | 'pipeline' | 'calendar' | 'news' | 'assistant'
 export type HomeWidgetSize = 'compact' | 'standard' | 'wide'
 export interface HomeWidgetConfig {
   id: HomeWidgetId
@@ -66,6 +66,8 @@ export interface HomeWidgetConfig {
 }
 
 export const defaultHomeLayout: HomeWidgetConfig[] = [
+  { id: 'mission', size: 'standard', visible: true },
+  { id: 'graph', size: 'standard', visible: true },
   { id: 'matters', size: 'wide', visible: true },
   { id: 'signals', size: 'compact', visible: true },
   { id: 'people', size: 'standard', visible: true },
@@ -163,7 +165,9 @@ function normalizeHomeLayout(value: unknown): HomeWidgetConfig[] {
     })
   }
   for (const widget of defaultHomeLayout) {
-    if (!normalized.some(item => item.id === widget.id)) normalized.push({ ...widget })
+    if (normalized.some(item => item.id === widget.id)) continue
+    if (widget.id === 'mission' || widget.id === 'graph') normalized.unshift({ ...widget })
+    else normalized.push({ ...widget })
   }
   return normalized
 }
