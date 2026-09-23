@@ -135,6 +135,7 @@ function VerifyPortal() {
         <span className="brand-name">Ask<em>Intros</em></span>
       </Link>
       <div className="auth-index"><span className="folio">MEMBERSHIP VERIFICATION / 2026</span><span>01 / REAL OPERATORS ONLY</span></div>
+      <p className="auth-lede">Invited as someone’s assistant or operator? <Link to="/delegate">Open the delegate workspace</Link>.</p>
       <h1>A network built for people who<br /><em>actually run companies.</em></h1>
       <p className="auth-lede">
         Every member is verified. Every relationship starts with a real person. Verification protects

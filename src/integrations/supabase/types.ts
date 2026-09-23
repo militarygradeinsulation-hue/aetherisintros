@@ -893,6 +893,33 @@ export type Database = {
           },
         ]
       }
+      delegate_message_drafts: {
+        Row: {
+          author_id: string
+          body: string
+          created_at: string
+          id: string
+          principal_id: string
+          recipient_label: string
+        }
+        Insert: {
+          author_id?: string
+          body: string
+          created_at?: string
+          id?: string
+          principal_id: string
+          recipient_label?: string
+        }
+        Update: {
+          author_id?: string
+          body?: string
+          created_at?: string
+          id?: string
+          principal_id?: string
+          recipient_label?: string
+        }
+        Relationships: []
+      }
       delegates: {
         Row: {
           created_at: string
@@ -2810,6 +2837,7 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      accept_delegate_invite: { Args: { p_id: string }; Returns: undefined }
       add_verification_evidence: {
         Args: {
           p_evidence_type: string
@@ -2827,6 +2855,7 @@ export type Database = {
           status: string
         }[]
       }
+      decline_delegate_invite: { Args: { p_id: string }; Returns: undefined }
       ensure_default_pipeline: { Args: never; Returns: string }
       founding_stats: {
         Args: never
@@ -2837,6 +2866,10 @@ export type Database = {
         }[]
       }
       get_passport: { Args: { p_token: string }; Returns: Json }
+      has_delegate_permission: {
+        Args: { p_perm: string; p_principal: string }
+        Returns: boolean
+      }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
@@ -2851,6 +2884,17 @@ export type Database = {
       join_waitlist: {
         Args: { p_email: string; p_name?: string }
         Returns: undefined
+      }
+      my_delegate_invites: {
+        Args: never
+        Returns: {
+          created_at: string
+          id: string
+          permissions: string[]
+          principal_name: string
+          role_label: string
+          status: string
+        }[]
       }
       my_verification: {
         Args: never
