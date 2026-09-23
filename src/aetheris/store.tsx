@@ -53,6 +53,25 @@ export interface PreferenceSettings {
   retention: string
 }
 
+export type HomeWidgetId = 'matters' | 'signals' | 'people' | 'memory' | 'pipeline' | 'calendar' | 'news' | 'assistant'
+export type HomeWidgetSize = 'compact' | 'standard' | 'wide'
+export interface HomeWidgetConfig {
+  id: HomeWidgetId
+  size: HomeWidgetSize
+  visible: boolean
+}
+
+export const defaultHomeLayout: HomeWidgetConfig[] = [
+  { id: 'matters', size: 'wide', visible: true },
+  { id: 'signals', size: 'compact', visible: true },
+  { id: 'people', size: 'standard', visible: true },
+  { id: 'memory', size: 'standard', visible: true },
+  { id: 'pipeline', size: 'wide', visible: true },
+  { id: 'calendar', size: 'compact', visible: true },
+  { id: 'news', size: 'wide', visible: true },
+  { id: 'assistant', size: 'compact', visible: true },
+]
+
 export interface FeedPreferences {
   scope: 'all' | 'circle' | 'industry' | 'saved'
   industries: string[]
@@ -89,6 +108,7 @@ interface Persisted {
   digitalYou: DigitalYouProfile
   autonomy: AutonomyLevel
   preferences: PreferenceSettings
+  homeLayout: HomeWidgetConfig[]
   registeredEvents: string[]
   savedEvents: string[]
 }
@@ -98,6 +118,7 @@ const KEY = 'aetheris-intros-graph-v1'
 /** Settings that live in the member's preferences document rather than a table. */
 const DOC_KEYS = [
   'objectives', 'profile', 'digitalYou', 'autonomy', 'preferences',
+  'homeLayout',
   'registeredEvents', 'savedEvents', 'warmPaths', 'postResponses', 'likedPosts',
   'repostedPosts', 'postComments', 'feedPreferences', 'activity',
 ] as const
@@ -118,7 +139,29 @@ const empty: Persisted = {
     shareActivity: true, rememberConversations: true, rememberActions: true, sharedMemory: false,
     retention: 'Until I delete it',
   },
+  homeLayout: defaultHomeLayout.map(widget => ({ ...widget })),
   registeredEvents: [], savedEvents: [],
+}
+
+function normalizeHomeLayout(value: unknown): HomeWidgetConfig[] {
+  const validIds = new Set(defaultHomeLayout.map(widget => widget.id))
+  const validSizes = new Set<HomeWidgetSize>(['compact', 'standard', 'wide'])
+  const incoming = Array.isArray(value) ? value : []
+  const normalized: HomeWidgetConfig[] = []
+  for (const item of incoming) {
+    if (!item || typeof item !== 'object') continue
+    const candidate = item as Partial<HomeWidgetConfig>
+    if (!candidate.id || !validIds.has(candidate.id) || normalized.some(widget => widget.id === candidate.id)) continue
+    normalized.push({
+      id: candidate.id,
+      size: candidate.size && validSizes.has(candidate.size) ? candidate.size : 'standard',
+      visible: candidate.visible !== false,
+    })
+  }
+  for (const widget of defaultHomeLayout) {
+    if (!normalized.some(item => item.id === widget.id)) normalized.push({ ...widget })
+  }
+  return normalized
 }
 
 function load(): Persisted {
@@ -127,7 +170,7 @@ function load(): Persisted {
     const raw = localStorage.getItem(KEY)
     if (raw) {
       const stored = JSON.parse(raw) as Partial<Persisted>
-      return { ...empty, ...stored }
+      return { ...empty, ...stored, homeLayout: normalizeHomeLayout(stored.homeLayout) }
     }
   } catch { /* fall through to legacy migration */ }
   const legacy = <T,>(k: string, fallback: T): T => {
@@ -176,6 +219,7 @@ interface NetworkApi {
   digitalYou: DigitalYouProfile
   autonomy: AutonomyLevel
   preferences: PreferenceSettings
+  homeLayout: HomeWidgetConfig[]
   registeredEvents: string[]
   savedEvents: string[]
   connections: string[]
@@ -215,6 +259,7 @@ interface NetworkApi {
   updateIdentity: (fields: { name: string; photo?: File | null }) => Promise<void>
   completeOnboarding: (answers: Record<string, string>) => void
   setPreferences: (settings: PreferenceSettings) => void
+  setHomeLayout: (layout: HomeWidgetConfig[]) => void
   toggleEventRegistration: (id: string) => void
   toggleEventSave: (id: string) => void
 }
@@ -292,6 +337,7 @@ export function NetworkProvider({ children, mode = 'live' }: { children: React.R
         for (const key of DOC_KEYS) {
           if (doc[key] !== undefined) (next[key] as unknown) = doc[key]
         }
+        next.homeLayout = normalizeHomeLayout(doc.homeLayout ?? next.homeLayout)
         // In the live network your identity and your stated needs always come from
         // your own record — never from anything left behind by the demo showcase.
         if (live) {
@@ -467,6 +513,7 @@ export function NetworkProvider({ children, mode = 'live' }: { children: React.R
       digitalYou: s.digitalYou,
       autonomy: s.autonomy,
       preferences: s.preferences,
+      homeLayout: normalizeHomeLayout(s.homeLayout),
       registeredEvents: s.registeredEvents,
       savedEvents: s.savedEvents,
       connections: s.connections,
@@ -655,6 +702,7 @@ export function NetworkProvider({ children, mode = 'live' }: { children: React.R
         profile: { ...prev.profile, title: preferences.title, focus: preferences.focus },
         learned: remember(prev, { category: 'Decisions', text: 'You updated how Intros may recommend, remember and share relationship context.', source: 'Preferences', confidence: 100, scope: 'private' }),
       })),
+      setHomeLayout: (homeLayout) => patch(() => ({ homeLayout: normalizeHomeLayout(homeLayout) })),
       toggleEventRegistration: (id) => patch(prev => ({
         registeredEvents: prev.registeredEvents.includes(id) ? prev.registeredEvents.filter(item => item !== id) : [...prev.registeredEvents, id],
         learned: remember(prev, { category: 'Commitments', text: `${prev.registeredEvents.includes(id) ? 'Removed' : 'Registered for'} a professional event.`, source: 'Events', confidence: 100, scope: 'private' }),

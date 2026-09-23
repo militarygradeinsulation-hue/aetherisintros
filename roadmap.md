@@ -8,9 +8,9 @@
 - [x] Rebalance Home tiles into full-width rows without unused grid space and promote News to persistent navigation.
 
 ## Customizable Home (Sep 23)
-- [ ] Add an edit mode for reordering, resizing, hiding, and restoring Home widgets.
-- [ ] Persist each member’s Home layout without changing shared network, CRM, or security data.
-- [ ] Verify customization, reset behavior, desktop layout, and mobile layout.
+- [x] Add an edit mode for reordering, resizing, hiding, and restoring Home widgets.
+- [x] Persist each member’s Home layout without changing shared network, CRM, or security data.
+- [x] Verify customization, reset behavior, desktop layout, and mobile layout.
 
 ## Supplied interaction style integration (Sep 22)
 - [x] Refine the public Home entrance while preserving Ask Intros identity, portrait, copy, and actions.
