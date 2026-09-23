@@ -42,7 +42,7 @@ export function ExecutiveHome() {
           action={<Btn onClick={() => nav.postNeed()}><Plus size={14} /> Post a need</Btn>}>
           <div className="today-stack">
             {tasks.slice(0, 2).map(task => <button key={task.id} onClick={() => nav.setPage('work')}><Target size={15} /><span><b>{task.title}</b><small>Task · {dueLabel(task.dueAt)}</small></span><ArrowRight size={14} /></button>)}
-            {loops.slice(0, 2).map(loop => <button key={loop.id} onClick={() => nav.setPage('loops')}><CircleDot size={15} /><span><b>{loop.title}</b><small>Open relationship loop</small></span><ArrowRight size={14} /></button>)}
+            {loops.slice(0, 2).map(loop => <button key={loop.id} onClick={() => nav.setPage('loops')}><CircleDot size={15} /><span><b>{loop.title}</b><small>{loop.whyNow || 'Open relationship loop'}</small></span><ArrowRight size={14} /></button>)}
             {!tasks.length && !loops.length && <p>Your commitments are clear. Ask Intros what deserves proactive attention next.</p>}
           </div>
         </TileShell>
@@ -59,7 +59,7 @@ export function ExecutiveHome() {
         </TileShell>
 
         <TileShell label="ACTIVE MEMORY" title="Open loops stay visible." variant="tall" action={<button className="tile-link" onClick={() => nav.setPage('memory')}>Memory</button>}>
-          <div className="memory-lines">{loops.map(loop => <button key={loop.id} onClick={() => nav.setPage('loops')}><b>{loop.title}</b><small>{loop.reason}</small></button>)}
+          <div className="memory-lines">{loops.map(loop => <button key={loop.id} onClick={() => nav.setPage('loops')}><b>{loop.title}</b><small>{loop.whyThisMatters}</small></button>)}
             {!loops.length && <p>No open relationship loops. Captured commitments will appear here.</p>}</div>
         </TileShell>
 

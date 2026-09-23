@@ -66,6 +66,18 @@ const basePages: BaseMeta[] = [
     next: 'Open one person and read the reasoning before acting.',
     hints: ['Advanced network tools stay one click away under “Advanced in Network”.'],
   }, ['people', 'discover', 'companies', 'circles', 'events', 'directory']),
+  m('work', 'Work', Briefcase, 'PRIMARY', 'CRM, pipeline, Grid, calendar and forecast over one private record system.', {
+    does: 'Brings your records, pipeline, sheets, calendar and outcomes into one operating view.',
+    look: 'The next commitment, the moving opportunity and the record that needs attention.',
+    changes: 'Every edit continues to update the same canonical record used by CRM and Grid.',
+    next: 'Move the work item closest to a real decision.',
+  }, ['crm', 'pipeline', 'grid', 'calendar', 'forecast', 'tasks', 'work']),
+  m('me', 'Me', UserRound, 'PRIMARY', 'Your verified executive identity, controls, connected apps and private data.', {
+    does: 'Keeps your professional identity and account controls together.',
+    look: 'Verification, visibility, security and anything you want to update.',
+    changes: 'Profile and preference changes apply across the product.',
+    next: 'Keep your current focus and privacy choices accurate.',
+  }, ['profile', 'security', 'privacy', 'preferences', 'integrations', 'account']),
   m('discover', 'Discover', Compass, 'NETWORK', 'Find people worth knowing, with the context that explains why.', {
     does: 'Finds people worth knowing and explains why the relationship makes sense for both sides.',
     look: 'Fit reasoning, mutual context and people whose current focus overlaps yours.',
@@ -420,7 +432,7 @@ const hubOf: Partial<Record<Page, Hub>> = {
   organization: 'PEOPLE & NETWORK', profile: 'PEOPLE & NETWORK', passport: 'PEOPLE & NETWORK',
   presence: 'PEOPLE & NETWORK', ask: 'PEOPLE & NETWORK', serendipity: 'PEOPLE & NETWORK',
 
-  needs: 'OPPORTUNITIES & WORK', opportunities: 'OPPORTUNITIES & WORK', rooms: 'OPPORTUNITIES & WORK',
+  work: 'OPPORTUNITIES & WORK', needs: 'OPPORTUNITIES & WORK', opportunities: 'OPPORTUNITIES & WORK', rooms: 'OPPORTUNITIES & WORK',
   dealrooms: 'OPPORTUNITIES & WORK', outcomes: 'OPPORTUNITIES & WORK', capital: 'OPPORTUNITIES & WORK',
   systems: 'OPPORTUNITIES & WORK', strategy: 'OPPORTUNITIES & WORK', crm: 'OPPORTUNITIES & WORK',
   grid: 'OPPORTUNITIES & WORK', knowledgeassets: 'OPPORTUNITIES & WORK', vault: 'OPPORTUNITIES & WORK',
@@ -430,7 +442,7 @@ const hubOf: Partial<Record<Page, Hub>> = {
   simulation: 'INTELLIGENCE & MEMORY', attribution: 'INTELLIGENCE & MEMORY',
   timemachine: 'INTELLIGENCE & MEMORY', autopilot: 'INTELLIGENCE & MEMORY',
 
-  consent: 'TRUST & CONTROL', constitution: 'TRUST & CONTROL', permission: 'TRUST & CONTROL',
+  me: 'TRUST & CONTROL', consent: 'TRUST & CONTROL', constitution: 'TRUST & CONTROL', permission: 'TRUST & CONTROL',
   identity: 'TRUST & CONTROL', preferences: 'TRUST & CONTROL', integrations: 'TRUST & CONTROL',
 }
 
@@ -449,13 +461,15 @@ export const metaById: Record<string, PageMeta> = Object.fromEntries(pageMeta.ma
 export function pageLabel(id: Page) { return metaById[id]?.label ?? id }
 
 /** The short, always-visible rail: only the places used every day. */
-export const primaryPages: Page[] = ['home', 'simple', 'network', 'opportunities', 'messages', 'crm', 'news']
+export const primaryPages: Page[] = ['home', 'network', 'work', 'messages', 'me']
 
 /** Tabs consolidated inside the Network and Opportunities hubs. */
-export const networkTabs: Page[] = ['discover', 'directory', 'intros', 'companies', 'calendar']
+export const networkTabs: Page[] = ['discover', 'intros', 'companies', 'circles', 'events']
 export const networkAdvanced: Page[] = ['circles', 'expertise', 'events', 'serendipity', 'gaps', 'identity', 'organization', 'talent', 'knowledge', 'boards', 'intelrooms', 'passport', 'ask']
-export const opportunityTabs: Page[] = ['needs', 'opportunities', 'rooms', 'outcomes']
-export const opportunityAdvanced: Page[] = ['dealrooms', 'systems', 'strategy', 'simulation', 'collisions', 'capital', 'attribution', 'loops', 'knowledgeassets', 'timemachine']
+export const workTabs: Page[] = ['crm', 'opportunities', 'grid', 'calendar', 'outcomes']
+export const workAdvanced: Page[] = ['needs', 'rooms', 'dealrooms', 'systems', 'strategy', 'simulation', 'collisions', 'capital', 'attribution', 'loops', 'knowledgeassets', 'timemachine']
+export const meTabs: Page[] = ['profile', 'passport', 'permission', 'preferences', 'integrations']
+export const meAdvanced: Page[] = ['identity', 'consent', 'constitution', 'presence', 'vault', 'autopilot']
 
 /** The five hubs, in the order members read them. */
 export const groupOrder: Hub[] = [
