@@ -5,6 +5,7 @@
 - [x] Consolidate existing functionality into five distinct hub compositions without changing data or security contracts.
 - [x] Replace the feature directory with a small utility menu while preserving advanced search/deep access.
 - [x] Verify all five hubs, legacy destinations, core CRM/Grid/opportunity interactions, and desktop/mobile layouts.
+- [x] Rebalance Home tiles into full-width rows without unused grid space and promote News to persistent navigation.
 
 ## Supplied interaction style integration (Sep 22)
 - [x] Refine the public Home entrance while preserving Ask Intros identity, portrait, copy, and actions.

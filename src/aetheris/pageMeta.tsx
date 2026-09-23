@@ -461,7 +461,7 @@ export const metaById: Record<string, PageMeta> = Object.fromEntries(pageMeta.ma
 export function pageLabel(id: Page) { return metaById[id]?.label ?? id }
 
 /** The short, always-visible rail: only the places used every day. */
-export const primaryPages: Page[] = ['home', 'network', 'work', 'messages', 'me']
+export const primaryPages: Page[] = ['home', 'network', 'work', 'messages', 'news', 'me']
 
 /** Tabs consolidated inside the Network and Opportunities hubs. */
 export const networkTabs: Page[] = ['discover', 'intros', 'companies', 'circles', 'events']
@@ -471,7 +471,7 @@ export const workAdvanced: Page[] = ['needs', 'rooms', 'dealrooms', 'systems', '
 export const meTabs: Page[] = ['profile', 'passport', 'permission', 'preferences', 'integrations']
 export const meAdvanced: Page[] = ['identity', 'consent', 'constitution', 'presence', 'vault', 'autopilot']
 
-/** The five hubs, in the order members read them. */
+/** The five capability hubs, in the order members read them. News is a daily destination. */
 export const groupOrder: Hub[] = [
   'EVERYDAY', 'PEOPLE & NETWORK', 'OPPORTUNITIES & WORK', 'INTELLIGENCE & MEMORY', 'TRUST & CONTROL',
 ]

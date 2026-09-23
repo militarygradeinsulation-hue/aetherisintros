@@ -2652,7 +2652,7 @@ function Shell({ startPage }: { startPage?: Page | undefined }) {
         </div>
       </div>
       <nav className="mobile-nav">
-        {(['home', 'network', 'work', 'messages', 'me'] as Page[]).map(id => {
+        {primaryPages.map(id => {
           const meta = metaById[id]!
           const Icon = meta.icon
           return <button key={id} className={page === id ? 'active' : ''} onClick={() => setPage(id)}><Icon size={18} /><span>{meta.label}</span></button>
