@@ -520,6 +520,12 @@ export function OrganizationRelationshipView() {
 
 const PASSPORT_FIELDS = [['identity', 'Verified identity'], ['company', 'Verified company'], ['what_i_do', 'What I do'], ['building', 'Building'], ['looking_for', 'Looking for'], ['can_help_with', 'Can help with'], ['open_to', 'Open To'], ['recommendations', 'Approved recommendations'], ['signal', 'Selected Signal'], ['scheduling', 'Scheduling availability']] as const
 
+function PassportQr({ url }: { url: string }) {
+  const [src, setSrc] = useState('')
+  useEffect(() => { void import('qrcode').then(q => q.toDataURL(url, { margin: 1, width: 120 })).then(setSrc) }, [url])
+  return src ? <img className="og-qr" alt="Passport QR code" src={src} /> : null
+}
+
 export function PassportManager() {
   const graph = useGraph()
   const net = useNetwork()
@@ -544,7 +550,7 @@ export function PassportManager() {
     <div className="og-mine">{graph.passports.map(p => { const url = `${origin}/passport/${p.token}`; return <article key={p.id}>
       <b>{p.label}</b><span>{p.kind === 'network' ? 'Verified members' : 'Shareable'} · {p.fields.length} fields{p.revoked ? ' · REVOKED' : ''}</span>
       {!p.revoked && <><small className="og-url">{url}</small>
-        <img className="og-qr" alt="Passport QR code" src={`https://api.qrserver.com/v1/create-qr-code/?size=120x120&data=${encodeURIComponent(url)}`} />
+        <PassportQr url={url} />
         <button onClick={() => void navigator.clipboard?.writeText(url)}>Copy link</button><button onClick={() => void graph.revokePassport(p.id)}>Revoke</button></>}
     </article> })}</div>
   </section>
