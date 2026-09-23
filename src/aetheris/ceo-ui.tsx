@@ -544,3 +544,17 @@ export function CeoHost() {
     </section>
   </div>
 }
+
+/** Upcoming linked meetings with Prepare me / Close the meeting, above the calendar. */
+export function CalendarMeetingBar() {
+  const ceo = useCeo()
+  const net = useNetwork()
+  const list = ceo.inputs.meetings.filter(m => new Date(m.endsAt).getTime() > Date.now() - DAY).slice(0, 6)
+  if (!list.length) return null
+  return <section className="og-tile ceo-tile ceo-calbar">
+    <Eyebrow>MEETINGS AHEAD</Eyebrow>
+    <ul className="ceo-items">{list.map(m => { const member = m.memberId ? net.members.find(x => x.id === m.memberId) : undefined; const past = new Date(m.startsAt).getTime() < Date.now()
+      return <li key={m.id} className="tone-info"><div><small>{new Date(m.startsAt).toLocaleString(undefined, { weekday: 'short', month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' })}{member ? ` · ${member.name}` : ' · no linked person'}</small><b>{m.title}</b>
+        {member && <div className="og-row-actions"><button onClick={() => openCeo({ view: 'prepare', memberId: member.id })}>Prepare me</button>{past && <button onClick={() => openCeo({ view: 'close', memberId: member.id })}>Close the meeting</button>}<button onClick={() => openCeo({ view: 'commit', memberId: member.id })}>Create commitment</button></div>}</div></li> })}</ul>
+  </section>
+}

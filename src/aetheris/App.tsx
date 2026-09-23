@@ -119,7 +119,7 @@ import { badgeLabel, useVerification } from './verification'
 import { ExecutiveIdentityEditor, ExecutivePage } from './ExecutivePage'
 import { GraphProvider, useGraph } from './graph-store'
 import { CeoProvider } from './ceo-store'
-import { ApprovalQueuePanel, CeoActions, CeoHost, ForecastConfidencePanel, NetworkRoiPanel, TrustPassportSummary, WorkCeoBar } from './ceo-ui'
+import { ApprovalQueuePanel, CalendarMeetingBar, CeoActions, CeoHost, ForecastConfidencePanel, NetworkRoiPanel, TrustPassportSummary, WorkCeoBar } from './ceo-ui'
 import { openCeo } from './ceo-store'
 import { DelegatesPanel, DigitalYouRulesPanel, IntentExchangePanel, OrganizationRelationshipView, PassportManager, ReverseDiscoveryPanel } from './opportunity-ui'
 import { activeMission, missionFit, missionTypeLabel } from './opportunity-graph'
@@ -2570,7 +2570,7 @@ function Shell({ startPage }: { startPage?: Page | undefined }) {
       needs: <><IntentExchangePanel /><Needs onNew={() => setNeedOpen(true)} people={people} select={setSelected} setPage={setPage} /><IntentBoard /></>,
       memory: <Memory people={people} select={setSelected} />,
       events: <EventsPage />,
-      calendar: <CalendarPage />,
+      calendar: <><CalendarMeetingBar /><CalendarPage /></>,
       insights: <Insights people={people} select={setSelected} setPage={setPage} />,
       profile: <Profile people={people} setPage={setPage} openOnboarding={() => setOnboardOpen(true)} />,
       preferences: <PreferencesPage />,
