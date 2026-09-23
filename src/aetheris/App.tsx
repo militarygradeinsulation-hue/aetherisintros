@@ -118,6 +118,9 @@ import { HubIntro, RadarMini, SignalPath, TileShell } from './hub-ui'
 import { badgeLabel, useVerification } from './verification'
 import { ExecutiveIdentityEditor, ExecutivePage } from './ExecutivePage'
 import { GraphProvider, useGraph } from './graph-store'
+import { CeoProvider } from './ceo-store'
+import { ApprovalQueuePanel, CeoActions, CeoHost, ForecastConfidencePanel, NetworkRoiPanel, TrustPassportSummary, WorkCeoBar } from './ceo-ui'
+import { openCeo } from './ceo-store'
 import { DelegatesPanel, DigitalYouRulesPanel, IntentExchangePanel, OrganizationRelationshipView, PassportManager, ReverseDiscoveryPanel } from './opportunity-ui'
 import { activeMission, missionFit, missionTypeLabel } from './opportunity-graph'
 
@@ -1216,6 +1219,7 @@ function Messages({ people, select, activeId, setActiveId }: { people: Member[];
           <button className="icon-btn" onClick={() => select(person)} aria-label="Open this person's profile"><UserRound size={17} /></button>
         </header>
         <div className="intro-context"><Label>INTRODUCTION CONTEXT</Label><p>{thread.introContext}</p></div>
+        <CeoActions member={person} threadId={thread.id} />
         <div className="messages">
           {thread.messages.map(m => <div key={m.id} className={`message ${m.from === 'me' ? 'outgoing' : 'incoming'}`}>{m.text}<small>{m.at}</small></div>)}
           {!thread.messages.length && <p className="empty-state">New conversation. Open with the reason this matters to both sides.</p>}
@@ -2297,11 +2301,16 @@ function AccountControl() {
 export default function App({ startPage, mode = 'live' }: { startPage?: Page | undefined; mode?: NetworkMode }) {
   // The live network may only ever render real member-created records.
   setShowcaseMode(mode === 'demo')
-  return <NetworkProvider mode={mode}><PlatformProvider><OSProvider><MoatProvider><ProProvider><OpsProvider><GraphProvider><Shell startPage={startPage} /></GraphProvider></OpsProvider></ProProvider></MoatProvider></OSProvider></PlatformProvider></NetworkProvider>
+  return <NetworkProvider mode={mode}><PlatformProvider><OSProvider><MoatProvider><ProProvider><OpsProvider><GraphProvider><CeoProvider><Shell startPage={startPage} /></CeoProvider></GraphProvider></OpsProvider></ProProvider></MoatProvider></OSProvider></PlatformProvider></NetworkProvider>
 }
 
 
 /* --------------------------------------------------------------------- hubs */
+
+function MyTrustPassport() {
+  const graph = useGraph()
+  return graph.userId ? <TrustPassportSummary memberId={graph.userId} own /> : <p>Sign in to see your verification passport.</p>
+}
 
 function HubPrelude({ kind, onNavigate }: { kind: 'network' | 'work' | 'me'; onNavigate: (page: Page) => void }) {
   const net = useNetwork()
@@ -2316,6 +2325,8 @@ function HubPrelude({ kind, onNavigate }: { kind: 'network' | 'work' | 'me'; onN
       </TileShell>
       <TileShell label="WARM PATHS" title={`${net.connections.length} trusted connections`} variant="graph"><SignalPath points={5} active={Math.min(4, net.connections.length)} /></TileShell>
       <TileShell label="INTRODUCTIONS" title="Why me. Why them. Why now." variant="action"><p>Every request stays double opt-in and carries the evidence for timing.</p><button className="tile-cta" onClick={() => onNavigate('intros')}>Review introductions <ArrowRight size={14} /></button></TileShell>
+      <TileShell label="WHO CAN CHANGE THIS?" title="Name the problem. See who can move it." variant="action"><p>Ranked from people actually available to you, with the evidence, the warmest path and one next move.</p><button className="tile-cta" onClick={() => openCeo({ view: 'who' })}>Who can change this? <ArrowRight size={14} /></button></TileShell>
+      <TileShell label="NETWORK ROI" title="What intros produced." variant="data"><p>Accepted intros, meetings, linked and won deals — value only when it is recorded.</p><button className="tile-cta" onClick={() => openCeo({ view: 'roi' })}>Open Network ROI <ArrowRight size={14} /></button></TileShell>
     </section>
   }
   if (kind === 'work') {
@@ -2325,6 +2336,7 @@ function HubPrelude({ kind, onNavigate }: { kind: 'network' | 'work' | 'me'; onN
       <TileShell label="ONE OPERATING SYSTEM" title="Records become movement." variant="hero"><div className="work-flow"><span>CRM</span><i /><span>PIPELINE</span><i /><span>GRID</span><i /><span>TIME</span></div><p>Every view reads and updates the same private working record.</p></TileShell>
       <TileShell label="PIPELINE" title={`${active.length} active`} variant="data"><div className="pipeline-mini">{ops.stages.slice(0, 5).map(stage => <span key={stage.id}><i style={{ height: `${Math.max(10, active.filter(item => item.stageId === stage.id).length * 22)}px` }} /><b>{stage.name}</b></span>)}</div></TileShell>
       <TileShell label="OPEN LOOPS" title={`${tasks.length} tasks`} variant="action"><p>Tasks stay connected to the people, companies and work that created them.</p></TileShell>
+      <WorkCeoBar />
     </section>
   }
   const verified = verification.status === 'verified'
@@ -2332,6 +2344,7 @@ function HubPrelude({ kind, onNavigate }: { kind: 'network' | 'work' | 'me'; onN
     <TileShell label="MY EXECUTIVE IDENTITY" title={net.profile.name || 'Complete your identity'} variant="hero"><p>{net.profile.title || 'Add your role'}{net.profile.company ? ` · ${net.profile.company}` : ''}</p><div className={`verification-mark ${verified ? 'verified' : ''}`}><ShieldCheck size={18} /> {verified ? badgeLabel(verification.verifiedRole) : 'Verification required'}</div></TileShell>
     <TileShell label="VISIBILITY" title="You control the context." variant="data"><div className="lock-stack" aria-hidden="true"><i /><i /><i /></div><p>Privacy, permissions and double opt-in remain enforced underneath every view.</p></TileShell>
     <TileShell label="CONNECTED SYSTEMS" title="Bring context, not chaos." variant="action"><p>Review the services connected to your private relationship system.</p><button className="tile-cta" onClick={() => onNavigate('integrations')}>Connected apps <ArrowRight size={14} /></button></TileShell>
+    <TileShell label="TRUST + APPROVALS" title="Your passport and your queue." variant="data"><MyTrustPassport /><button className="tile-cta" onClick={() => openCeo({ view: 'approvals' })}>Approval queue <ArrowRight size={14} /></button></TileShell>
   </section>
 }
 
@@ -2549,7 +2562,7 @@ function Shell({ startPage }: { startPage?: Page | undefined }) {
       systems: <SystemsPage openId={systemId} setOpenId={setSystemId} />,
       circles: <CirclesPage openId={circleId} setOpenId={setCircleId} />,
       companies: <CompaniesPage openId={companyId} setOpenId={setCompanyId} />,
-      outcomes: <OutcomesPage />,
+      outcomes: <><div className="og-stack"><ForecastConfidencePanel /><NetworkRoiPanel /></div><OutcomesPage /></>,
       loops: <LoopsPage />,
       organization: <><OrganizationPage /><div className="og-stack"><OrganizationRelationshipView /><DelegatesPanel /></div></>,
       intros: <Intros people={people} select={setSelected} draft={setDraft} />,
@@ -2567,7 +2580,7 @@ function Shell({ startPage }: { startPage?: Page | undefined }) {
       simulation: <SimulationPage />,
       strategy: <StrategyPage />,
       evidence: <EvidenceLedgerPage />,
-      autopilot: <><div className="og-stack"><DigitalYouRulesPanel /></div><AutopilotPage /></>,
+      autopilot: <><div className="og-stack"><section className="og-tile"><h3>Approval queue</h3><ApprovalQueuePanel /></section><DigitalYouRulesPanel /></div><AutopilotPage /></>,
       ask: <AskNetworkPage />,
       constitution: <ConstitutionPage />,
       serendipity: <SerendipityPage />,
@@ -2703,6 +2716,7 @@ function Shell({ startPage }: { startPage?: Page | undefined }) {
       <MoreDrawer open={moreOpen} page={page} onClose={() => setMoreOpen(false)} onNavigate={setPage} />
       <VoiceBar />
       <SelectionReader />
+      <CeoHost />
       <AskIntrosDock page={page} peopleNames={people.map(p => p.name)} memberName={me.name}
         briefing={briefing.on} contextPanel={contextOpen} run={runAssistantAction} />
       {mobileOpen && <button className="rail-scrim" aria-label="Close menu" onClick={() => setMobileOpen(false)} />}
