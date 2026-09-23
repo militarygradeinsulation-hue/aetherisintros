@@ -40,7 +40,7 @@ function PassportView() {
       {text('verified_business') && <p className="passport-verified">Verified · {text('verified_business')}</p>}
       {([['what_i_do', 'What I do'], ['building', 'Building'], ['looking_for', 'Looking for'], ['can_help_with', 'Can help with'], ['signal', 'Current Signal']] as const).map(([k, l]) => text(k) ? <section key={k}><h2>{l}</h2><p>{text(k)}</p></section> : null)}
       {list('open_to').length > 0 && <section><h2>Open to</h2><p>{list('open_to').join(' · ')}</p></section>}
-      {data.scheduling_enabled === true && <section><h2>Scheduling</h2><p>Open to scheduling through Ask Intros.</p></section>}
+      {data['scheduling_enabled'] === true && <section><h2>Scheduling</h2><p>Open to scheduling through Ask Intros.</p></section>}
       {list('recommendations').length > 0 && <section><h2>Recommendations</h2>{(list('recommendations') as Array<{ body: string }>).map((r, i) => <blockquote key={i}>{r.body}</blockquote>)}</section>}
       <p className="passport-foot">Shared by explicit choice. No contact details or private records are included.</p>
     </>}

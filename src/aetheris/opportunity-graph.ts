@@ -408,7 +408,7 @@ export function graphInsights(g: GraphInputs, since: string | null): Insight[] {
   const byCompany = new Map<string, Member[]>()
   g.members.filter(m => g.connections.includes(m.id) && m.company).forEach(m => byCompany.set(m.company, [...(byCompany.get(m.company) ?? []), m]))
   const multi = [...byCompany.entries()].filter(([, list]) => list.length >= 2).sort((a, b) => b[1].length - a[1].length)[0]
-  if (multi) out.push({ id: 'company', question: 'Which company has multiple warm relationships?', title: `${multi[0]} · ${multi[1].length} connections`, evidence: multi[1].map(m => `${m.name}, ${m.title}`), action: { label: 'Open Executive Page', memberId: multi[1][0]?.id } })
+  if (multi) out.push({ id: 'company', question: 'Which company has multiple warm relationships?', title: `${multi[0]} · ${multi[1].length} connections`, evidence: multi[1].map(m => `${m.name}, ${m.title}`), action: multi[1][0] ? { label: 'Open Executive Page', memberId: multi[1][0].id } : { label: 'Open Network', page: 'network' } })
   if (since) {
     const newActs = g.crm.activities.filter(a => a.occurredAt > since).length
     const newMsgs = g.threads.filter(t => t.unread).length
