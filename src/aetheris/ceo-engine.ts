@@ -264,15 +264,15 @@ export function whoCanChange(problem: string, kind: ChangeKind, g: GraphInputs, 
     const best = route.best
     const direct = evidence.filter(e => e.startsWith('Can help') || e.startsWith('Works at') || e.startsWith('Expertise')).length
     const strength: ChangeMatch['strength'] = direct >= 2 || score >= 60 ? 'strong' : direct >= 1 && score >= 35 ? 'moderate' : 'weak'
-    const path = best ? best.hops : ['You', m.name]
+    const path = best ? best.labels : ['You', m.name]
     return {
       score, match: {
         member: m, strength, evidence,
         whyThem: m.whyThem || evidence[0] || '',
         whyYou: m.whyYou || (g.me.offers[0] ? `You list “${g.me.offers[0]}” as something you can help with.` : 'Not enough recorded evidence about what you offer them.'),
         whyNow: m.whyNow || (g.asks.find(a => a.memberId === m.id)?.ask ? `Active Signal: ${g.asks.find(a => a.memberId === m.id)!.ask}` : 'No time-bound signal recorded.'),
-        path, pathNote: best ? best.why.join(' · ') : g.connections.includes(m.id) ? 'Direct connection' : 'No recorded warm path — a direct, reasoned request is the honest option.',
-        next: g.connections.includes(m.id) ? `Message ${m.name.split(' ')[0]} with the specific ask` : best && best.hops.length > 2 ? `Ask ${best.hops[1]} for a double-opt-in intro` : `Request a double-opt-in intro to ${m.name.split(' ')[0]}`,
+        path, pathNote: best ? `${best.recorded ? 'Recorded path' : 'Suggested path'} · ${best.reasons.map(r => r.label).join(' · ')}` : g.connections.includes(m.id) ? 'Direct connection' : 'No recorded warm path — a direct, reasoned request is the honest option.',
+        next: g.connections.includes(m.id) ? `Message ${m.name.split(' ')[0]} with the specific ask` : best && best.hops[0] ? `Ask ${best.hops[0].name} for a double-opt-in intro` : `Request a double-opt-in intro to ${m.name.split(' ')[0]}`,
       } satisfies ChangeMatch,
     }
   }).filter(Boolean) as { score: number; match: ChangeMatch }[]
