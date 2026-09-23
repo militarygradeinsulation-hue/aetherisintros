@@ -116,6 +116,7 @@ import { portraitFor } from './portraits'
 import { ExecutiveHome } from './pages/ExecutiveHome'
 import { HubIntro, RadarMini, SignalPath, TileShell } from './hub-ui'
 import { badgeLabel, useVerification } from './verification'
+import { ExecutiveIdentityEditor, ExecutivePage } from './ExecutivePage'
 
 
 
@@ -905,6 +906,7 @@ const memberRoles: MemberRole[] = ['Founder', 'Operator', 'Investor', 'Advisor',
 const signalFilters = ['Warm path available', 'High match', 'Available now']
 
 function Discover({ people, select }: { people: Member[]; select: (p: Member) => void }) {
+  const net = useNetwork()
   const [pathKind, setPathKind] = useState<PathKind | 'all'>('all')
   const [q, setQ] = useState('')
   const [roles, setRoles] = useState<string[]>([])
@@ -940,6 +942,14 @@ function Discover({ people, select }: { people: Member[]; select: (p: Member) =>
       return hay.includes(f.toLowerCase())
     })
   })
+  const ranked = rankMatches(net.profile, filtered, net.connections)
+    .sort((a, b) => {
+      if (!q.trim()) return b.match.total - a.match.total
+      const terms = q.toLowerCase().split(/\s+/).filter(word => word.length > 2)
+      const text = (person: Member) => `${person.title} ${person.company} ${person.industry} ${person.expertise.join(' ')} ${person.needs.join(' ')} ${person.offers.join(' ')} ${person.whatIDo ?? ''} ${person.building ?? ''}`.toLowerCase()
+      const relevance = (person: Member) => terms.reduce((score, term) => score + (text(person).includes(term) ? 12 : 0), 0)
+      return (relevance(b.member) + b.match.total) - (relevance(a.member) + a.match.total)
+    }).slice(0, 5)
   const counts = (key: (p: Member) => string) => {
     const map = new Map<string, number>()
     people.forEach(p => map.set(key(p), (map.get(key(p)) ?? 0) + 1))
@@ -966,7 +976,16 @@ function Discover({ people, select }: { people: Member[]; select: (p: Member) =>
        image={discoverEditorialAsset.url}
       focus="center 22%"
     />
-    <div className="discover-shell">
+    <section className="executive-discovery">
+      <Label signal>WHO DO YOU NEED?</Label>
+      <h2>Describe the person, outcome, or help you need.</h2>
+      <div className="executive-discovery-input"><Search size={19} /><input value={q} onChange={event => setQ(event.target.value)} placeholder="A manufacturing CEO in Indiana looking for responsible AI help…" /></div>
+      <div className="executive-match-list">{ranked.map(({ member, match }, index) => <article key={member.id}>
+        <button onClick={() => select(member)}><span className="executive-rank">0{index + 1}</span><Avatar person={member} /><span><b>{member.name}</b><small>{member.title} · {member.company}</small><p>{match.headline}</p></span><strong>{match.total}</strong><ArrowRight size={15} /></button>
+      </article>)}</div>
+      {!people.length && <p className="empty-state">No verified member profiles are available yet.</p>}
+    </section>
+    <details className="executive-browse"><summary>Browse and filter the full network</summary><div className="discover-shell">
       <aside className="filter-panel">
         <header><span>FILTER PEOPLE</span><button className="mod-link" onClick={clearAll}>Clear All</button></header>
         <div className="filter-search"><Search size={16} /><input value={q} onChange={e => setQ(e.target.value)} placeholder="Name, title, company, or keyword…" /></div>
@@ -1017,7 +1036,7 @@ function Discover({ people, select }: { people: Member[]; select: (p: Member) =>
           {!filtered.length && <p className="empty-state">No members match that yet. Broaden the filters or describe the outcome instead of the title.</p>}
         </div>
       </div>
-    </div>
+    </div></details>
 
     <section className="global-network">
       <header><span>A GLOBAL NETWORK<br />OF POSSIBILITY</span>
@@ -1560,6 +1579,8 @@ function Profile({ people, setPage, openOnboarding }: {
   }
 
   return <>
+    <ExecutiveIdentityEditor openPhotoEditor={() => { setIdentityEditing(true); setIdentityMessage('') }} />
+    <details className="profile-legacy-tools"><summary>Profile history, Journal and advanced controls</summary>
     <section className="identity-header">
       <div className="identity-portrait" data-person-portrait="me" data-portrait-primary="true">
         {me.avatarUrl
@@ -1707,7 +1728,7 @@ function Profile({ people, setPage, openOnboarding }: {
             {autonomy === i && <Check size={15} />}
           </button>)}</div>
       </section>
-    </div>
+    </div></details>
   </>
 }
 
@@ -2577,7 +2598,7 @@ function Shell({ startPage }: { startPage?: Page | undefined }) {
     return node ? [{ id, label: hubLabel[id] ?? metaById[id]?.label ?? id, node }] : []
   })
   const content = selected
-    ? <MemberProfile person={selected} people={people} onClose={() => setSelected(null)} onDraft={p => { setSelected(null); setDraft(p) }} onMessage={messageMember} />
+    ? <ExecutivePage person={selected} onClose={() => setSelected(null)} onIntro={p => { setSelected(null); setDraft(p) }} onMessage={messageMember} />
     : page === 'network'
       ? <Hub storeKey="aetheris.hub.network" title="Network" blurb="People, companies and introductions worth knowing."
           tabs={hubTabs(networkTabs)} advanced={networkAdvanced} onNavigate={setPage} kind="network" />

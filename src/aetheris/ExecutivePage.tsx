@@ -236,7 +236,6 @@ export function ExecutivePage({ person, onClose, onIntro, onMessage }: {
 
 export function ExecutiveIdentityEditor({ openPhotoEditor }: { openPhotoEditor: () => void }) {
   const net = useNetwork()
-  const badge = usePublicBadge(net.profile.id ?? null)
   const [draft, setDraft] = useState({
     title: net.profile.title, company: net.profile.company, location: net.profile.location,
     whatIDo: net.profile.whatIDo ?? '', building: net.profile.building ?? net.profile.focus,
@@ -260,7 +259,7 @@ export function ExecutiveIdentityEditor({ openPhotoEditor }: { openPhotoEditor: 
     avatarUrl: net.profile.avatarUrl, whatIDo: draft.whatIDo, building: draft.building, openTo: draft.openTo, schedulingEnabled: draft.schedulingEnabled,
   }
   return <div className="executive-editor-page">
-    <header className="executive-editor-head"><div><Eyebrow>ME / EXECUTIVE IDENTITY</Eyebrow><h1>One identity. Every relationship.</h1><p>Edit the same concise profile verified members see. Verification remains controlled by the review system.</p></div><div>{badge?.role ? <VerifiedBadge memberId={net.profile.id} detail /> : <span className="executive-unverified">Verification status is not editable</span>}</div></header>
+    <header className="executive-editor-head"><div><Eyebrow>ME / EXECUTIVE IDENTITY</Eyebrow><h1>One identity. Every relationship.</h1><p>Edit the same concise profile verified members see. Verification remains controlled by the review system.</p></div><span className="executive-unverified">Verification status is not editable</span></header>
     <div className="executive-editor-grid">
       <section className="executive-edit-form">
         <Btn kind="secondary" onClick={openPhotoEditor}>Change name or photo</Btn>

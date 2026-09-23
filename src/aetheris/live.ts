@@ -31,10 +31,14 @@ export interface LiveProfileRow {
   avatar_url: string | null
   onboarded: boolean
   created_at: string
+  what_i_do: string
+  building: string
+  open_to: string[]
+  scheduling_enabled: boolean
 }
 
 const PROFILE_COLUMNS =
-  'id, name, initials, title, company, location, focus, thesis, bio, looking_for, can_help_with, want_to_meet, availability, industries, expertise, avatar_url, onboarded, created_at'
+  'id, name, initials, title, company, location, focus, thesis, bio, looking_for, can_help_with, want_to_meet, availability, industries, expertise, avatar_url, onboarded, created_at, what_i_do, building, open_to, scheduling_enabled'
 
 const initialsOf = (name: string) =>
   name.trim().split(/\s+/).slice(0, 2).map(part => part[0] ?? '').join('').toUpperCase() || 'M'
@@ -106,6 +110,10 @@ export function profileToMember(row: LiveProfileRow, me: LiveProfileRow | null):
     introState: 'recommended' as const,
     joined: new Date(row.created_at).getFullYear().toString(),
     avatarUrl: row.avatar_url ?? undefined,
+    whatIDo: row.what_i_do,
+    building: row.building,
+    openTo: row.open_to ?? [],
+    schedulingEnabled: row.scheduling_enabled,
   }
   return { ...partial, radar: determineRadarState(partial) } as unknown as Member
 }

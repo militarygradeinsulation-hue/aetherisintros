@@ -27,6 +27,10 @@ export type MeProfile = typeof seedMe & {
   boundaries?: string
   onboarded?: boolean
   avatarUrl?: string | undefined
+  whatIDo?: string
+  building?: string
+  openTo?: string[]
+  schedulingEnabled?: boolean
 }
 
 export interface PreferenceSettings {
@@ -257,6 +261,7 @@ interface NetworkApi {
   setDigitalYou: (x: DigitalYouProfile) => void
   setAutonomy: (x: AutonomyLevel) => void
   updateIdentity: (fields: { name: string; photo?: File | null }) => Promise<void>
+  updateExecutiveProfile: (fields: Partial<Pick<MeProfile, 'title' | 'company' | 'location' | 'whatIDo' | 'building' | 'focus' | 'lookingFor' | 'canHelpWith' | 'openTo' | 'schedulingEnabled' | 'availability'>>) => Promise<void>
   completeOnboarding: (answers: Record<string, string>) => void
   setPreferences: (settings: PreferenceSettings) => void
   setHomeLayout: (layout: HomeWidgetConfig[]) => void
@@ -276,6 +281,7 @@ const blankMe: MeProfile = {
   name: '', initials: '', title: '', company: '', location: '', thesis: '', focus: '',
   lookingFor: '', canHelpWith: '', industries: [], values: '', availability: '', expertise: [],
   wantToMeet: '', introPreferences: '', boundaries: '', onboarded: false,
+  whatIDo: '', building: '', openTo: [], schedulingEnabled: false,
 }
 
 /** The signed-in member's own identity, read from their real profile row. */
@@ -297,6 +303,10 @@ function profileFromRow(prev: MeProfile, row: LiveProfileRow): MeProfile {
     wantToMeet: row.want_to_meet,
     onboarded: row.onboarded,
     avatarUrl: row.avatar_url ?? undefined,
+    whatIDo: row.what_i_do,
+    building: row.building,
+    openTo: row.open_to ?? [],
+    schedulingEnabled: row.scheduling_enabled,
   }
 }
 
@@ -455,6 +465,8 @@ export function NetworkProvider({ children, mode = 'live' }: { children: React.R
           industries: s.profile.industries, expertise: s.profile.expertise,
           avatar_url: s.profile.avatarUrl ?? null,
           onboarded: s.profile.onboarded ?? false,
+          what_i_do: s.profile.whatIDo ?? '', building: s.profile.building ?? '',
+          open_to: s.profile.openTo ?? [], scheduling_enabled: s.profile.schedulingEnabled ?? false,
         })
       }
     }
@@ -695,6 +707,12 @@ export function NetworkProvider({ children, mode = 'live' }: { children: React.R
         patch(prev => ({
           profile: { ...prev.profile, name: cleanName, initials: identityInitials(cleanName), ...(avatarUrl ? { avatarUrl } : {}) },
           learned: remember(prev, { category: 'People', text: 'You corrected your profile identity.', source: 'Profile edit', confidence: 100, scope: 'private' }),
+        }))
+      },
+      updateExecutiveProfile: async fields => {
+        patch(prev => ({
+          profile: { ...prev.profile, ...fields },
+          learned: remember(prev, { category: 'People', text: 'You updated your executive identity and conversation preferences.', source: 'Executive Page', confidence: 100, scope: 'public' }),
         }))
       },
       setPreferences: (preferences) => patch(prev => ({
