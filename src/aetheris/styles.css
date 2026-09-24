@@ -4419,3 +4419,7 @@ button.news-link{background:none;border:0;padding:0;cursor:pointer}
 @media(max-width:1220px){.messages-layout{grid-template-columns:minmax(210px,250px) minmax(430px,1fr)}.intros-system-features>header{grid-template-columns:1fr}}
 @media(max-width:700px){.home-brief-embedded{padding:38px 10px 68px}.draggable-widget-grid{grid-template-columns:1fr!important;grid-auto-rows:minmax(260px,auto)!important}.draggable-widget{grid-column:1!important;grid-row:auto!important;min-height:260px}.home-brief-tools{align-items:flex-start;flex-direction:column}.intros-system-features{margin-top:42px}.intros-feature-bento{grid-template-columns:1fr!important;grid-auto-rows:auto}.intros-feature-bento>div{min-height:260px}.message-actions{padding:9px 12px;overflow-x:auto}.message-actions .ceo-actions{display:flex;flex-wrap:nowrap;width:max-content}.message-actions .ceo-actions button{min-width:max-content}.messages{padding:20px 14px}}
 @media(max-width:680px){.messages-layout .thread-list{align-content:flex-start;align-items:flex-start;max-height:270px}.messages-layout .thread-list>button{align-self:flex-start}}
+
+/* Cursor glow — shows what the pointer is over */
+.cursor-glow{position:fixed;left:0;top:0;z-index:9999;pointer-events:none;border-radius:50%;opacity:0;transition:opacity .35s ease;mix-blend-mode:screen;background:radial-gradient(circle,rgba(244,161,37,.16) 0%,rgba(15,92,203,.10) 35%,transparent 68%);will-change:transform}
+@media (prefers-reduced-motion:reduce),(pointer:coarse){.cursor-glow{display:none}}
