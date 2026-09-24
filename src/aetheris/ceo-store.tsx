@@ -9,7 +9,7 @@ import { createContext, useCallback, useContext, useEffect, useMemo, useRef, use
 import { supabase } from '@/integrations/supabase/client'
 import { useOps } from './crm/store'
 import { useGraph, useGraphInputs } from './graph-store'
-import { snapshotOf, type Approval, type ApprovalStatus, type ApprovalType, type CalMeeting, type CeoInputs, type Mark, type CeoRoute, type Decision, type OppSnapshot } from './ceo-engine'
+import { snapshotOf, type Approval, type ApprovalStatus, type ApprovalType, type CalMeeting, type CeoInputs, type Mark, type CeoRoute, type Decision, type NegotiationRoom, type OfficeHour, type OfficeHourRequest, type OppSnapshot, type ScenarioRoom } from './ceo-engine'
 
 interface CeoApi {
   inputs: CeoInputs
@@ -24,6 +24,14 @@ interface CeoApi {
   setApproval: (id: string, status: ApprovalStatus) => Promise<void>
   saveMark: (m: Partial<Mark> & { kind: Mark['kind']; subjectId: string }) => Promise<void>
   removeMark: (id: string) => Promise<void>
+  negotiations: NegotiationRoom[]
+  scenarios: ScenarioRoom[]
+  officeHours: OfficeHour[]
+  officeRequests: OfficeHourRequest[]
+  saveNegotiation: (room: Partial<NegotiationRoom> & { title: string }) => Promise<void>
+  saveScenario: (room: Partial<ScenarioRoom> & { title: string }) => Promise<void>
+  saveOfficeHour: (window: { label: string; startsAt: string; endsAt: string; durationMinutes: number; capacity: number; purpose: string; relevance: string }) => Promise<void>
+  setOfficeRequest: (id: string, status: OfficeHourRequest['status']) => Promise<void>
 }
 
 const Ctx = createContext<CeoApi | null>(null)
@@ -69,6 +77,10 @@ export function CeoProvider({ children }: { children: ReactNode }) {
   const [approvals, setApprovals] = useState<Approval[]>([])
   const [meetings, setMeetings] = useState<CalMeeting[]>([])
   const [marks, setMarks] = useState<Mark[]>([])
+  const [negotiations, setNegotiations] = useState<NegotiationRoom[]>([])
+  const [scenarios, setScenarios] = useState<ScenarioRoom[]>([])
+  const [officeHours, setOfficeHours] = useState<OfficeHour[]>([])
+  const [officeRequests, setOfficeRequests] = useState<OfficeHourRequest[]>([])
   const [error, setError] = useState('')
   const [route, setRoute] = useState<CeoRoute | null>(null)
   const [since] = useState(() => { if (typeof window === 'undefined') return Date.now() - 86_400_000; const v = Number(localStorage.getItem(VISIT)); return v > 0 ? v : Date.now() - 86_400_000 })
@@ -84,17 +96,25 @@ export function CeoProvider({ children }: { children: ReactNode }) {
       setMeetings([]); return
     }
     const horizon = new Date(Date.now() + 14 * 86_400_000).toISOString()
-    const [d, a, m, k] = await Promise.all([
+    const [d, a, m, k, n, s, oh, oq] = await Promise.all([
       db.from('decisions').select('*').order('updated_at', { ascending: false }),
       db.from('approval_queue').select('*').order('created_at', { ascending: false }).limit(100),
       db.from('calendar_events').select('id,title,starts_at,ends_at,member_id,kind,notes').gte('ends_at', new Date(Date.now() - 90 * 86_400_000).toISOString()).lte('starts_at', horizon).order('starts_at'),
       db.from('ceo_relationship_marks').select('*').order('updated_at', { ascending: false }),
+      db.from('negotiation_rooms').select('*').order('updated_at', { ascending: false }),
+      db.from('scenario_rooms').select('*').order('updated_at', { ascending: false }),
+      db.from('executive_office_hours').select('*').eq('owner_id', graph.userId).order('starts_at'),
+      db.from('office_hour_requests').select('*').order('created_at', { ascending: false }),
     ])
     setMarks((k.data ?? []).map(markFromRow))
     if (d.error || a.error) setError('Some private CEO records could not load. Try again shortly.')
     setDecisions((d.data ?? []).map(decisionFromRow))
     setApprovals((a.data ?? []).map(approvalFromRow))
     setMeetings((m.data ?? []).map((r: any) => ({ id: r.id, title: r.title, startsAt: r.starts_at, endsAt: r.ends_at, memberId: r.member_id, kind: r.kind, notes: r.notes ?? '' })))
+    setNegotiations((n.data ?? []).map((r: any) => ({ id: r.id, title: r.title, status: r.status, linkedPersonId: r.linked_person_key ?? r.linked_person_id, linkedCompanyId: r.linked_company_key ?? r.linked_company_id, linkedOpportunityId: r.linked_opportunity_key ?? r.linked_opportunity_id, objective: r.objective, desiredOutcome: r.desired_outcome, mustHaves: r.must_haves, niceToHaves: r.nice_to_haves, walkAway: r.walk_away, counterpartPriorities: r.counterpart_priorities, leverageEvidence: r.leverage_evidence, unknowns: r.unknowns, batna: r.batna, concessions: Array.isArray(r.concessions) ? r.concessions.map(String) : [], meetingPrep: r.meeting_prep, outcome: r.outcome, createdAt: r.created_at, updatedAt: r.updated_at })))
+    setScenarios((s.data ?? []).map((r: any) => ({ id: r.id, title: r.title, linkedOpportunityId: r.linked_opportunity_key ?? r.linked_opportunity_id, scenarioType: r.scenario_type, recordedInputs: r.recorded_inputs ?? {}, assumptions: r.assumptions ?? {}, baseline: r.baseline ?? {}, scenarioResult: r.scenario_result ?? {}, notes: r.notes, createdAt: r.created_at, updatedAt: r.updated_at })))
+    setOfficeHours((oh.data ?? []).map((r: any) => ({ id: r.id, ownerId: r.owner_id, label: r.label, startsAt: r.starts_at, endsAt: r.ends_at, durationMinutes: r.duration_minutes, capacity: r.capacity, purpose: r.purpose, relevance: r.relevance, enabled: r.enabled, createdAt: r.created_at, updatedAt: r.updated_at })))
+    setOfficeRequests((oq.data ?? []).map((r: any) => ({ id: r.id, windowId: r.window_id, requesterId: r.requester_id, ownerId: r.owner_id, reason: r.reason, status: r.status, createdAt: r.created_at, actedAt: r.acted_at })))
   }, [graph.userId])
 
   useEffect(() => { void refresh() }, [refresh])
@@ -183,9 +203,32 @@ export function CeoProvider({ children }: { children: ReactNode }) {
 
   const inputs = useMemo<CeoInputs>(() => ({ g, events: ops.events, decisions, approvals, meetings, marks, companies: ops.companies, since, snapshot }), [g, ops.events, ops.companies, decisions, approvals, meetings, marks, since, snapshot])
 
+  const saveNegotiation = useCallback(async (room: Partial<NegotiationRoom> & { title: string }) => {
+    const row = { title: room.title, ...(room.status !== undefined && { status: room.status }), ...(room.linkedPersonId !== undefined && { linked_person_key: room.linkedPersonId }), ...(room.linkedCompanyId !== undefined && { linked_company_key: room.linkedCompanyId }), ...(room.linkedOpportunityId !== undefined && { linked_opportunity_key: room.linkedOpportunityId }), objective: room.objective ?? '', desired_outcome: room.desiredOutcome ?? '', must_haves: room.mustHaves ?? '', nice_to_haves: room.niceToHaves ?? '', walk_away: room.walkAway ?? '', counterpart_priorities: room.counterpartPriorities ?? '', leverage_evidence: room.leverageEvidence ?? '', unknowns: room.unknowns ?? '', batna: room.batna ?? '', concessions: room.concessions ?? [], meeting_prep: room.meetingPrep ?? '', outcome: room.outcome ?? '' }
+    if (!graph.userId) { setError('Sign in to save a private negotiation room.'); return }
+    const res = room.id ? await db.from('negotiation_rooms').update(row).eq('id', room.id) : await db.from('negotiation_rooms').insert(row)
+    if (res.error) setError('The negotiation room could not be saved.'); else await refresh()
+  }, [graph.userId, refresh])
+  const saveScenario = useCallback(async (room: Partial<ScenarioRoom> & { title: string }) => {
+    const row = { title: room.title, linked_opportunity_key: room.linkedOpportunityId ?? null, scenario_type: room.scenarioType ?? 'custom', recorded_inputs: room.recordedInputs ?? {}, assumptions: room.assumptions ?? {}, baseline: room.baseline ?? {}, scenario_result: room.scenarioResult ?? {}, notes: room.notes ?? '' }
+    if (!graph.userId) { setError('Sign in to save a private scenario.'); return }
+    const res = room.id ? await db.from('scenario_rooms').update(row).eq('id', room.id) : await db.from('scenario_rooms').insert(row)
+    if (res.error) setError('The scenario could not be saved.'); else await refresh()
+  }, [graph.userId, refresh])
+  const saveOfficeHour = useCallback(async (window: { label: string; startsAt: string; endsAt: string; durationMinutes: number; capacity: number; purpose: string; relevance: string }) => {
+    if (!graph.userId) { setError('Sign in to offer executive office hours.'); return }
+    const res = await db.from('executive_office_hours').insert({ label: window.label, starts_at: window.startsAt, ends_at: window.endsAt, duration_minutes: window.durationMinutes, capacity: window.capacity, purpose: window.purpose, relevance: window.relevance })
+    if (res.error) setError('The office-hours window could not be saved.'); else await refresh()
+  }, [graph.userId, refresh])
+  const setOfficeRequest = useCallback(async (id: string, status: OfficeHourRequest['status']) => {
+    const res = await db.from('office_hour_requests').update({ status, acted_at: now() }).eq('id', id)
+    if (res.error) setError('The office-hours request could not be updated.'); else await refresh()
+  }, [refresh])
+
   const api = useMemo<CeoApi>(() => ({
     inputs, signedIn, error, route, open: setRoute, close: () => setRoute(null), saveDecision, removeDecision, queueApproval, setApproval, saveMark, removeMark,
-  }), [inputs, signedIn, error, route, saveDecision, removeDecision, queueApproval, setApproval, saveMark, removeMark])
+    negotiations, scenarios, officeHours, officeRequests, saveNegotiation, saveScenario, saveOfficeHour, setOfficeRequest,
+  }), [inputs, signedIn, error, route, saveDecision, removeDecision, queueApproval, setApproval, saveMark, removeMark, negotiations, scenarios, officeHours, officeRequests, saveNegotiation, saveScenario, saveOfficeHour, setOfficeRequest])
 
   return <Ctx.Provider value={api}>{children}</Ctx.Provider>
 }

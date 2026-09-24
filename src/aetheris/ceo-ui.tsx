@@ -19,6 +19,7 @@ import type { CrmTask } from './crm/types'
 import { openCeo, useCeo } from './ceo-store'
 import { BlindSpotPanel, CollisionsPanel, CompanyMatchPanel, CoveragePanel, GapBox, HelpPanel, MarkButtons, PatternsPanel, PromisePanel, ProvBadge, RedTeamPanel, ReplayPanel, SinglesPanel, StrategicPanel, TimeRoiPanel, Why } from './ceo-insights-ui'
 import { forecastGap, whoGap } from './ceo-insights'
+import { AdvisorPanel, BoardNetworkPanel, CapitalMapPanel, CustomerRiskPanel, DealMemoryPanel, DelegationPanel, DependenciesPanel, NegotiationPanel, OfficeHoursPanel, PrivateAskPanel, ScenarioPanel, TrustProfilePanel } from './ceo-leverage-ui'
 import {
   ceoViewLabel, chiefOfStaff, companyPulse, dealHealth, dealHealthRule, detectKind, executiveBrief, forecastDelta, needingAttention,
   networkRoi, relationshipHealth, sinceDecided, whatChanged, whoCanChange,
@@ -500,6 +501,9 @@ export function WorkCeoBar() {
     <button onClick={() => openCeo({ view: 'decisions' })}><Gavel size={12} /> Decision Room</button>
     <button onClick={() => openCeo({ view: 'commitments' })}><ListChecks size={12} /> Commitments</button>
     <button onClick={() => openCeo({ view: 'forecast' })}>Forecast confidence</button>
+    <button onClick={() => openCeo({ view: 'customerRisk' })}>Customer Risk Radar</button>
+    <button onClick={() => openCeo({ view: 'negotiation' })}>Negotiation Room</button>
+    <button onClick={() => openCeo({ view: 'scenario' })}>Scenario Room</button>
     <button onClick={() => openCeo({ view: 'who' })}>Who can change this?</button>
     <button onClick={() => openCeo({ view: 'brief', arg: 'weekly' })}>Generate Executive Brief</button>
   </div>
@@ -541,6 +545,18 @@ export function CeoHost() {
     case 'replay': body = <ReplayPanel arg={r.arg ?? ''} memberId={r.memberId} />; break
     case 'patterns': body = <PatternsPanel />; break
     case 'singles': body = <SinglesPanel />; break
+    case 'customerRisk': body = <CustomerRiskPanel />; break
+    case 'capitalMap': body = <CapitalMapPanel />; break
+    case 'negotiation': body = <NegotiationPanel initial={r.arg ?? ''} />; break
+    case 'scenario': body = <ScenarioPanel initial={r.arg ?? ''} />; break
+    case 'delegation': body = <DelegationPanel />; break
+    case 'boardNetwork': body = <BoardNetworkPanel initial={r.arg} />; break
+    case 'advisor': body = <AdvisorPanel initial={r.arg} />; break
+    case 'trustProfile': body = <TrustProfilePanel initial={r.arg} />; break
+    case 'dealMemory': body = <DealMemoryPanel initial={r.arg ?? ''} memberId={r.memberId} />; break
+    case 'dependencies': body = <DependenciesPanel />; break
+    case 'officeHours': body = <OfficeHoursPanel />; break
+    case 'privateAsk': body = <PrivateAskPanel />; break
     case 'changed': { const items = whatChanged(ceo.inputs); body = <ItemList items={items} empty="Nothing important changed. Go run your company." />; break }
     case 'forgetting': body = <ItemList items={chiefOfStaff(ceo.inputs)} empty="Nothing is slipping: no open promises, stale deals, unanswered messages, due decisions or pending approvals." />; break
     case 'who': body = <WhoCanChangePanel initial={r.arg ?? ''} />; break

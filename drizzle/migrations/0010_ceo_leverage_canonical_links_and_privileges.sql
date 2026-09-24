@@ -1,0 +1,12 @@
+ALTER TABLE public.negotiation_rooms ADD COLUMN linked_person_key text;
+ALTER TABLE public.negotiation_rooms ADD COLUMN linked_company_key text;
+ALTER TABLE public.negotiation_rooms ADD COLUMN linked_opportunity_key text;
+ALTER TABLE public.scenario_rooms ADD COLUMN linked_opportunity_key text;
+COMMENT ON COLUMN public.negotiation_rooms.linked_person_id IS 'DEPRECATED: canonical CRM text identifiers use linked_person_key.';
+COMMENT ON COLUMN public.negotiation_rooms.linked_company_id IS 'DEPRECATED: canonical CRM text identifiers use linked_company_key.';
+COMMENT ON COLUMN public.negotiation_rooms.linked_opportunity_id IS 'DEPRECATED: canonical CRM text identifiers use linked_opportunity_key.';
+COMMENT ON COLUMN public.scenario_rooms.linked_opportunity_id IS 'DEPRECATED: canonical CRM text identifiers use linked_opportunity_key.';
+REVOKE ALL ON public.negotiation_rooms, public.scenario_rooms, public.executive_office_hours, public.office_hour_requests FROM anon, PUBLIC, authenticated;
+GRANT SELECT, INSERT, UPDATE, DELETE ON public.negotiation_rooms, public.scenario_rooms, public.executive_office_hours TO authenticated;
+GRANT SELECT, INSERT, UPDATE ON public.office_hour_requests TO authenticated;
+GRANT ALL ON public.negotiation_rooms, public.scenario_rooms, public.executive_office_hours, public.office_hour_requests TO service_role;

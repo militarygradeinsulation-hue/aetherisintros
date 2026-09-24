@@ -12,6 +12,7 @@ import { Btn } from '../ui'
 import { ActiveMissionTile, OpportunityGraphTile } from '../opportunity-ui'
 import { ApprovalsTile, ChiefOfStaffTile, CompanyPulseTile, WhatChangedTile } from '../ceo-ui'
 import { DigitalOffice, HelpTile, MissingTile, StrategicTile } from '../ceo-insights-ui'
+import { LeverageTile, RiskTile } from '../ceo-leverage-ui'
 import { HubIntro, RadarMini, SignalPath, TileShell } from '../hub-ui'
 
 const dueLabel = (value: string | null) => value ? new Date(value).toLocaleDateString(undefined, { month: 'short', day: 'numeric' }) : 'No date'
@@ -19,6 +20,7 @@ const dueLabel = (value: string | null) => value ? new Date(value).toLocaleDateS
 const widgetNames: Record<HomeWidgetId, string> = {
   missing: 'What am I missing?', help: 'Who can I help?', strategic: 'Strategic relationships',
   changed: 'What changed', pulse: 'Company pulse', chief: 'Chief of Staff', approvals: 'Approvals',
+  risk: 'Risk Radar', leverage: 'Leverage',
   mission: 'Active mission', graph: 'Opportunity Graph',
   matters: 'What matters now', signals: 'Changing signals', people: 'People who matter', memory: 'Active Memory',
   pipeline: 'Work and pipeline', calendar: 'Meetings and tasks', news: 'Intelligence and news', assistant: 'Ask Intros',
@@ -86,6 +88,8 @@ export function ExecutiveHome() {
       case 'pulse': return <CompanyPulseTile />
       case 'chief': return <ChiefOfStaffTile />
       case 'approvals': return <ApprovalsTile />
+      case 'risk': return <RiskTile />
+      case 'leverage': return <LeverageTile />
       case 'mission': return <ActiveMissionTile />
       case 'graph': return <OpportunityGraphTile />
       case 'matters': return <TileShell label="WHAT MATTERS NOW" title={attention ? `${attention} live items, ordered by consequence.` : 'Nothing urgent. Use the quiet well.'} variant="hero"
