@@ -168,7 +168,7 @@ export function CeoProvider({ children }: { children: ReactNode }) {
       writeLocal(decisions, approvals, [next, ...marks.filter(x => x.id !== next.id)]); return
     }
     const res = existing
-      ? await db.from('ceo_relationship_marks').update(markToRow({ ...m, kind: undefined, subjectId: undefined } as Partial<Mark>)).eq('id', existing.id).select().single()
+      ? await db.from('ceo_relationship_marks').update(markToRow((({ kind: _k, subjectId: _s, ...rest }) => rest)(m))).eq('id', existing.id).select().single()
       : await db.from('ceo_relationship_marks').insert(markToRow(m)).select().single()
     if (res.error) { setError('That could not be saved privately. Try again.'); return }
     const saved = markFromRow(res.data)

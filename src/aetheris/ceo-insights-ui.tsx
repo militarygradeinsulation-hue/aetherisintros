@@ -262,7 +262,7 @@ export function StrategicPanel({ kind = 'strategic' }: { kind?: 'strategic' | 'b
     <div className="og-row-actions">
       <button onClick={() => setOpen(open === r.mark.id ? null : r.mark.id)}>{open === r.mark.id ? 'Close' : 'Edit plan'}</button>
       {r.memberId && <button onClick={() => { const m = net.members.find(x => x.id === r.memberId); if (m) { ceo.close(); nav.openMember(m) } }}>Executive Page</button>}
-      {r.memberId && <button onClick={() => openCeo({ view: 'prepare', memberId: r.memberId })}>Prepare me</button>}
+      {r.memberId && <button onClick={() => openCeo({ view: 'prepare', memberId: r.memberId! })}>Prepare me</button>}
     </div>
     {open === r.mark.id && <MarkEditor mark={r.mark} bench={bench} />}
   </li>)}</ul>
