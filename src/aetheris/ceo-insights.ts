@@ -103,7 +103,7 @@ function daysSinceSubject(inp: CeoInputs, subjectId: string) {
   const person = inp.g.crm.people.find(p => p.id === subjectId) ?? inp.g.crm.personForMember(subjectId)
   const crmLast = person ? lastTouch(inp.g, person.id) : null
   const thread = inp.g.threads.find(x => x.memberId === subjectId)
-  const vals = [crmLast, (thread as { updatedAt?: string } | undefined)?.updatedAt].filter(Boolean) as string[]
+  const vals = [crmLast, thread?.messages[thread.messages.length - 1]?.at].filter(v => v && Number.isFinite(t(v))) as string[]
   if (!vals.length) { const m = inp.g.members.find(x => x.id === subjectId); if (m && Number.isFinite(m.lastInteractionDays) && m.lastInteractionDays < 9999) return m.lastInteractionDays; return null }
   return Math.min(...vals.map(v => ago(v) ?? 9999))
 }
