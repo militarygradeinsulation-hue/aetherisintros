@@ -69,7 +69,11 @@ export function AskIntrosDock({ page, peopleNames, memberName, briefing, context
 
   useEffect(() => { listRef.current?.scrollTo({ top: listRef.current.scrollHeight }) }, [turns, open])
   useEffect(() => {
-    const show = () => setOpen(true)
+    const show = (event: Event) => {
+      setOpen(true)
+      const prompt = (event as CustomEvent<string>).detail
+      if (typeof prompt === 'string') setInput(prompt)
+    }
     window.addEventListener('aetheris:open-assistant', show)
     return () => window.removeEventListener('aetheris:open-assistant', show)
   }, [])

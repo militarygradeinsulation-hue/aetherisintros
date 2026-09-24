@@ -263,7 +263,7 @@ interface NetworkApi {
   requestIntro: (id: string) => void
   authorizeIntro: (id: string) => void
   declineIntro: (id: string) => void
-  addPost: (text: string, detail?: string, media?: JournalAttachment[], visibility?: 'network' | 'private') => void
+  addPost: (text: string, detail?: string, media?: JournalAttachment[], visibility?: 'network' | 'private', kind?: Post['kind']) => void
   respondToPost: (postId: string, memberId: string) => string | null
   togglePostLike: (postId: string) => void
   togglePostRepost: (postId: string, memberId: string) => void
@@ -613,8 +613,8 @@ export function NetworkProvider({ children, mode = 'live' }: { children: React.R
         learned: remember(prev, { category: 'Decisions', text: `You set the ${nameOf(id)} introduction to “not now”.`, source: 'Your action', confidence: 100, scope: 'private' }),
       })),
 
-      addPost: (text, detail, media, visibility) => patch(prev => ({
-        ownPosts: [{ id: uid('post'), memberId: 'me', kind: 'Insight', text, detail: detail ?? 'Shared with your network.', when: 'Just now', responses: 0, media: media ?? [], visibility: visibility ?? 'network' }, ...prev.ownPosts],
+      addPost: (text, detail, media, visibility, kind = 'Insight') => patch(prev => ({
+        ownPosts: [{ id: uid('post'), memberId: 'me', kind, text, detail: detail ?? 'Shared with your network.', when: 'Just now', responses: 0, media: media ?? [], visibility: visibility ?? 'network' }, ...prev.ownPosts],
         learned: remember(prev, { category: 'Interests', text: `You wrote in your Journal: “${text.slice(0, 80)}${text.length > 80 ? '…' : ''}”`, source: 'Your Journal', confidence: 100, scope: visibility === 'private' ? 'private' : 'public' }),
         activity: log(prev, { memberId: 'me', kind: 'New project', text: `You added a Journal entry.` }),
       })),

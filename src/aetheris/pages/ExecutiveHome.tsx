@@ -44,7 +44,7 @@ function HomeWidgetFrame({ config, editing, index, count, children, onMove, onHi
   </div>
 }
 
-export function ExecutiveHome() {
+export function ExecutiveHome({ embedded = false }: { embedded?: boolean }) {
   const net = useNetwork()
   const ops = useOps()
   const os = useOS()
@@ -134,10 +134,12 @@ export function ExecutiveHome() {
   if (article) return <NewsImagesProvider value={images}><NewsReader item={article} onBack={() => setArticle(null)} /></NewsImagesProvider>
 
   return <NewsImagesProvider value={images}>
-    <div className="core-hub home-hub">
-      <HubIntro label="CEO NOW / TODAY" title={<>Good morning, {firstName}.<br /><em>Here is what matters now.</em></>}
+    <div className={`core-hub home-hub ${embedded ? 'home-brief-embedded' : ''}`}>
+      {!embedded && <HubIntro label="CEO NOW / TODAY" title={<>Good morning, {firstName}.<br /><em>Here is what matters now.</em></>}
         copy="A concise reading of timing, relationships, commitments and movement across your private operating system."
-        aside={<div className="home-intro-aside"><div className="hub-now"><strong>{attention}</strong><span>items may need<br />your attention</span></div><Btn kind={customizing ? 'primary' : 'secondary'} onClick={() => setCustomizing(value => !value)}>{customizing ? <Check size={14} /> : <LayoutDashboard size={14} />}{customizing ? 'Done' : 'Customize Home'}</Btn></div>} />
+        aside={<div className="home-intro-aside"><div className="hub-now"><strong>{attention}</strong><span>items may need<br />your attention</span></div><Btn kind={customizing ? 'primary' : 'secondary'} onClick={() => setCustomizing(value => !value)}>{customizing ? <Check size={14} /> : <LayoutDashboard size={14} />}{customizing ? 'Done' : 'Customize Home'}</Btn></div>} />}
+
+      {embedded && <div className="home-brief-tools"><div><span>EXECUTIVE BRIEF</span><h2>Everything that deserves your attention.</h2></div><Btn kind={customizing ? 'primary' : 'secondary'} onClick={() => setCustomizing(value => !value)}>{customizing ? <Check size={14} /> : <LayoutDashboard size={14} />}{customizing ? 'Done' : 'Customize brief'}</Btn></div>}
 
       <DigitalOffice />
 

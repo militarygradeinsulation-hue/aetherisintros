@@ -460,8 +460,8 @@ export const metaById: Record<string, PageMeta> = Object.fromEntries(pageMeta.ma
 
 export function pageLabel(id: Page) { return metaById[id]?.label ?? id }
 
-/** The short, always-visible rail: only the places used every day. */
-export const primaryPages: Page[] = ['home', 'network', 'work', 'messages', 'news', 'me']
+/** The familiar social navigation. News remains available through Home and deep search. */
+export const primaryPages: Page[] = ['home', 'network', 'messages', 'work', 'me']
 
 /** Tabs consolidated inside the Network and Opportunities hubs. */
 export const networkTabs: Page[] = ['discover', 'intros', 'companies', 'circles', 'events']
