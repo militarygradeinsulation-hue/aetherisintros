@@ -382,6 +382,11 @@ export function InsightBar({ where }: { where: 'work' | 'network' }) {
       <button onClick={() => openCeo({ view: 'promises' })}>Trust at risk</button>
       <button onClick={() => openCeo({ view: 'patterns' })}>Patterns</button>
       <button onClick={() => openCeo({ view: 'replay' })}>Replay</button>
+      <button onClick={() => openCeo({ view: 'customerRisk' })}>Customer risk</button>
+      <button onClick={() => openCeo({ view: 'negotiation' })}>Negotiation</button>
+      <button onClick={() => openCeo({ view: 'scenario' })}>Scenario</button>
+      <button onClick={() => openCeo({ view: 'delegation' })}>Delegation</button>
+      <button onClick={() => openCeo({ view: 'dependencies' })}>Key-person dependency</button>
     </> : <>
       <button onClick={() => openCeo({ view: 'help' })}><HandHeart size={12} /> Who can I help?</button>
       <button onClick={() => openCeo({ view: 'strategic' })}>Strategic relationships</button>
@@ -389,6 +394,11 @@ export function InsightBar({ where }: { where: 'work' | 'network' }) {
       <button onClick={() => openCeo({ view: 'collisions' })}>Opportunity collisions</button>
       <button onClick={() => openCeo({ view: 'companies' })}>Company match</button>
       <button onClick={() => openCeo({ view: 'coverage' })}>Coverage</button>
+      <button onClick={() => openCeo({ view: 'capitalMap' })}>Capital map</button>
+      <button onClick={() => openCeo({ view: 'advisor' })}>Advisor on demand</button>
+      <button onClick={() => openCeo({ view: 'boardNetwork' })}>Board network</button>
+      <button onClick={() => openCeo({ view: 'privateAsk' })}>Private ask</button>
+      <button onClick={() => openCeo({ view: 'officeHours' })}>Office hours</button>
     </>}
   </div>
 }
@@ -408,8 +418,8 @@ export function DigitalOffice() {
   </div>
   return <section className="digital-office" aria-label="CEO digital office">
     {col('TODAY', [['What changed', { view: 'changed' }], ['What needs me', { view: 'forgetting' }], ['What am I missing', { view: 'missing' }, String(spots.length)]])}
-    {col('RELATIONSHIPS', [['Who matters', { view: 'health' }], ['Who can I help', { view: 'help' }, String(help)], ['Strategic relationships', { view: 'strategic' }, `${strat.filter(r => (r.dueIn ?? 1) <= 0).length}/${strat.length}`]])}
+    {col('RELATIONSHIPS', [['Who matters', { view: 'health' }], ['Who can I help', { view: 'help' }, String(help)], ['Strategic relationships', { view: 'strategic' }, `${strat.filter(r => (r.dueIn ?? 1) <= 0).length}/${strat.length}`], ['Customer risk', { view: 'customerRisk' }], ['Capital map', { view: 'capitalMap' }]])}
     {col('DECISIONS', [['Decisions needing review', { view: 'decisions' }, String(reviews)], ['Pending approvals', { view: 'approvals' }, String(pending)], ['Challenge this', { view: 'redteam' }]])}
-    {col('ACT', [['Make introductions', { view: 'collisions' }], ['Prepare for meetings', { view: 'prepare' }], ['Follow up', { view: 'promises' }], ['Review commitments', { view: 'commitments' }], ['Generate executive brief', { view: 'brief', arg: 'weekly' }]])}
+    {col('ACT', [['Make introductions', { view: 'collisions' }], ['Prepare for meetings', { view: 'prepare' }], ['Open negotiation', { view: 'negotiation' }], ['Run scenario', { view: 'scenario' }], ['Follow up', { view: 'promises' }], ['Review commitments', { view: 'commitments' }]])}
   </section>
 }
