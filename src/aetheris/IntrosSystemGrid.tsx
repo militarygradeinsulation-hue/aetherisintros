@@ -10,7 +10,7 @@ export function IntrosSystemBento({ children, className = '' }: { children: Reac
 
 export { BentoGridItem }
 
-export function IntrosWidgetGrid({ items, editable, onChange, renderItem, className = '' }: {
+export function IntrosWidgetGrid({ items, editable, onChange, renderItem, className = '', maxColumns = 4, cellSize = 176, gap = 14 }: {
   items: WidgetItem[]
   editable: boolean
   onChange: (items: WidgetItem[]) => void
