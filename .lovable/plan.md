@@ -1,16 +1,22 @@
-# Custom Home dashboard and Messages correction
+# Use Joseph’s voice for Intros speech
 
-## Home
-- Make the existing customizable widget dashboard the permanent Home view.
-- Keep every member’s saved widget order, size, and visibility, with controls to move, resize, hide, restore, and reset widgets.
-- Preserve the premium dark editorial system and all existing Home data and actions; remove the competing fixed showcase Home.
+## Build
+- Create a private ElevenLabs voice from the uploaded recording and keep its identifier only in server configuration.
+- Add a protected speech endpoint that turns each requested passage or Ask Intros reply into audio with that voice.
+- Route page reading, individual speaker buttons, and spoken Ask Intros replies through the new voice.
+- Preserve the existing browser voice as a fallback when ElevenLabs is unavailable, and show the provider’s safe error instead of failing silently.
 
-## Messages
-- Rebalance the conversation list, active thread, and relationship context so the center conversation uses the available space.
-- Replace the oversized empty action area with compact, useful message controls and ensure long labels and copy fit naturally.
-- Keep introductions, commitments, contextual drafting, outreach safeguards, and profile access unchanged.
+## Experience
+- Keep the current reading bar, pause, resume, skip, stop, and speed controls.
+- Keep microphone dictation and conversation mode unchanged; only spoken output changes.
+- Label the managed voice clearly in Preferences while retaining device voice choices as fallback options.
 
-## Verification
-- Confirm Home customization persists after reload.
-- Check Messages and Home at desktop, tablet, 390px, and 360px for overlap, clipping, empty columns, and horizontal overflow.
-- Keep the work preview-only; do not publish.
+## Validation
+- Test voice creation and one short synthesis request.
+- Check Ask Intros and page-reading controls on desktop and mobile.
+- Confirm the app remains build-clean and is not published.
+
+## Technical notes
+- ElevenLabs stays server-side through the linked project connection.
+- Generated audio is requested only when the member presses a reading control or enables spoken replies; provider usage may consume ElevenLabs credits.
+- The uploaded recording is used for voice creation, not shipped as a public app asset.
