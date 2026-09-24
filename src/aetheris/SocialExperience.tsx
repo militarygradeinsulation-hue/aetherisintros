@@ -131,11 +131,17 @@ export function SocialHome() {
   const [mode, setMode] = useState<'feed' | 'brief'>('feed')
   const feed = useMemo(() => {
     const rows: Array<{ id: string; type: 'post' | 'ask'; post?: Post; ask?: NetworkAsk; member?: Member }> = []
-    net.posts.filter(post => post.visibility !== 'private' || post.memberId === 'me').forEach(post => rows.push({ id: `p-${post.id}`, type: 'post', post, member: net.members.find(member => member.id === post.memberId) }))
+    net.posts.filter(post => post.visibility !== 'private' || post.memberId === 'me').forEach(post => {
+      const member = net.members.find(item => item.id === post.memberId)
+      rows.push({ id: `p-${post.id}`, type: 'post', post, ...(member ? { member } : {}) })
+    })
     net.asks.filter(ask => ask.visibility !== 'private' && ask.memberId !== 'me').forEach(ask => { const member = net.members.find(item => item.id === ask.memberId); if (member) rows.push({ id: `a-${ask.id}`, type: 'ask', ask, member }) })
     return rows.slice(0, 12)
   }, [net.posts, net.asks, net.members])
-  return <div className="social-home"><nav className="home-view-switch" aria-label="Home view"><button className={mode === 'feed' ? 'active' : ''} onClick={() => setMode('feed')}>Feed</button><button className={mode === 'brief' ? 'active' : ''} onClick={() => setMode('brief')}>Executive Brief</button></nav>{mode === 'brief' ? <ExecutiveHome embedded /> : <div className="social-home-grid"><SocialRails /><main className="social-feed"><SignalComposer /><IntelligenceCards />{feed.map(row => row.type === 'post' && row.post ? <FeedPost key={row.id} post={row.post} member={row.member} /> : row.ask && row.member ? <FeedAsk key={row.id} ask={row.ask} member={row.member} /> : null)}{!feed.length && <section className="social-empty"><CircleDot size={22} /><h2>Your Signal Feed is ready.</h2><p>Share what you are building, looking for, or able to help with. Relevant member Signals will appear here as the network grows.</p></section>}</main></div>}</div>
+  return <div className="social-home"><nav className="home-view-switch" aria-label="Home view"><button className={mode === 'feed' ? 'active' : ''} onClick={() => setMode('feed')}>Feed</button><button className={mode === 'brief' ? 'active' : ''} onClick={() => setMode('brief')}>Executive Brief</button></nav>{mode === 'brief' ? <ExecutiveHome embedded /> : <div className="social-home-grid"><SocialRails /><main className="social-feed"><SignalComposer /><IntelligenceCards />{feed.map(row => {
+    if (row.type === 'post' && row.post) return row.member ? <FeedPost key={row.id} post={row.post} member={row.member} /> : <FeedPost key={row.id} post={row.post} />
+    return row.ask && row.member ? <FeedAsk key={row.id} ask={row.ask} member={row.member} /> : null
+  })}{!feed.length && <section className="social-empty"><CircleDot size={22} /><h2>Your Signal Feed is ready.</h2><p>Share what you are building, looking for, or able to help with. Relevant member Signals will appear here as the network grows.</p></section>}</main></div>}</div>
 }
 
 type PeopleFilter = 'FOR YOU' | 'CUSTOMERS' | 'CAPITAL' | 'PARTNERS' | 'TALENT' | 'ADVISORS' | 'NEARBY' | 'CONNECTED'
