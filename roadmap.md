@@ -212,3 +212,10 @@
 - [ ] Add deterministic Ask Intros routing for every new capability.
 - [ ] Apply and verify strict owner-scoped RLS, minimum grants, and immutable owners.
 - [ ] Verify desktop/mobile behavior, command routing, and existing CRM/Grid/CEO OS flows without publishing.
+
+## Social-first signed-in experience (Sep 24)
+- [ ] Replace the desktop rail with a social top header and keep mobile navigation exactly Home / Network / Messages / Work / Me.
+- [ ] Make Home default to a real unified Signal feed with a preserved Executive Brief mode.
+- [ ] Simplify Network discovery, Executive profiles, Messages, notifications, and universal Search/Ask without duplicating data systems.
+- [ ] Preserve every deep destination, CEO OS workflow, CRM/Grid record, verification boundary, and deterministic fallback.
+- [ ] Verify desktop, tablet, 390px, and 360px behavior; do not publish.
