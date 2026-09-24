@@ -235,3 +235,8 @@
 - [x] Give Work a distinct editorial masthead while preserving CRM/Pipeline/Grid/Calendar/Forecast.
 - [x] Consolidate overlay styling and verify every requested viewport and deep destination without publishing.
 - [x] Execute the approved premium C-level overhaul in the current preview only; do not publish.
+
+## Custom Home dashboard + Messages correction (Sep 24)
+- [ ] Make the customizable widget dashboard the permanent Home experience.
+- [ ] Rebalance Messages so conversation content uses the available width without oversized empty action areas.
+- [ ] Verify saved Home customization and responsive Home/Messages layouts without publishing.

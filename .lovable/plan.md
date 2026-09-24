@@ -1,18 +1,16 @@
-# Premium signed-in editorial overhaul
+# Custom Home dashboard and Messages correction
 
-## Scope
-- Restore the desktop navigation: Home, People, Intros, Messages, Memory, Insights, News, Work. Keep the focused five-item mobile bar.
-- Replace the crowded feed-first Home with an asymmetric ivory portrait and dark intelligence composition using only real records and honest empty states.
-- Keep each major destination distinct: editorial People discovery, contextual Messages, curated Intros, living Memory, evidence-led Insights, live News, and the existing Work system.
-- Preserve every existing action, route, data provider, CEO operating system feature, privacy rule, and deterministic fallback.
+## Home
+- Make the existing customizable widget dashboard the permanent Home view.
+- Keep every member’s saved widget order, size, and visibility, with controls to move, resize, hide, restore, and reset widgets.
+- Preserve the premium dark editorial system and all existing Home data and actions; remove the competing fixed showcase Home.
 
-## Visual system
-- Use reusable ivory editorial fields, grayscale portrait plates, dark intelligence zones, cobalt actions, amber live signals, hairline rules, and generous negative space.
-- Restyle overlays and menus as compact near-black editorial utilities; keep the More menu grouped.
-- Remove social-pass crowding and unsupported sample metrics.
+## Messages
+- Rebalance the conversation list, active thread, and relationship context so the center conversation uses the available space.
+- Replace the oversized empty action area with compact, useful message controls and ensure long labels and copy fit naturally.
+- Keep introductions, commitments, contextual drafting, outreach safeguards, and profile access unchanged.
 
 ## Verification
-- Confirm the build is clean.
-- Test Home, People, Profile, Messages, Intros, Memory, Insights, News, and Work at desktop, tablet, 390px, and 360px.
-- Check News loading, image rendering, deep CRM/Grid/CEO OS navigation, clipping, overlap, and horizontal overflow.
-- Keep all changes preview-only; do not publish.
+- Confirm Home customization persists after reload.
+- Check Messages and Home at desktop, tablet, 390px, and 360px for overlap, clipping, empty columns, and horizontal overflow.
+- Keep the work preview-only; do not publish.
