@@ -25,8 +25,12 @@ export type MarkKind = 'strategic' | 'bench' | 'influence'
 export interface Mark { id: string; kind: MarkKind; subjectId: string; companyId: string | null; label: string; outcome: string; cadenceDays: number | null; valueGive: string; valueNeed: string; nextAction: string; nextTouch: string | null; missionId: string | null; notes: string; createdAt: string; updatedAt: string }
 export interface CalMeeting { id: string; title: string; startsAt: string; endsAt: string; memberId: string | null; kind: string; notes: string }
 export type OppSnapshot = Record<string, { name: string; stage: string; amount: number; probability: number; status: string; expectedClose: string | null; nextAction: string }>
+export interface NegotiationRoom { id: string; title: string; status: 'preparing' | 'active' | 'paused' | 'agreed' | 'walked_away' | 'closed'; linkedPersonId: string | null; linkedCompanyId: string | null; linkedOpportunityId: string | null; objective: string; desiredOutcome: string; mustHaves: string; niceToHaves: string; walkAway: string; counterpartPriorities: string; leverageEvidence: string; unknowns: string; batna: string; concessions: string[]; meetingPrep: string; outcome: string; createdAt: string; updatedAt: string }
+export interface ScenarioRoom { id: string; title: string; linkedOpportunityId: string | null; scenarioType: 'deal_slip' | 'customer_churn' | 'opportunity_win' | 'opportunity_loss' | 'headcount' | 'probability' | 'revenue' | 'custom'; recordedInputs: Record<string, number | string>; assumptions: Record<string, number | string>; baseline: Record<string, number>; scenarioResult: Record<string, number>; notes: string; createdAt: string; updatedAt: string }
+export interface OfficeHour { id: string; ownerId: string; label: string; startsAt: string; endsAt: string; durationMinutes: number; capacity: number; purpose: string; relevance: string; enabled: boolean; createdAt: string; updatedAt: string }
+export interface OfficeHourRequest { id: string; windowId: string; requesterId: string; ownerId: string; reason: string; status: 'pending' | 'approved' | 'declined' | 'cancelled'; createdAt: string; actedAt: string | null }
 
-export type CeoView = 'missing' | 'redteam' | 'help' | 'coverage' | 'strategic' | 'time' | 'promises' | 'collisions' | 'companies' | 'bench' | 'replay' | 'patterns' | 'singles' | 'changed' | 'forgetting' | 'who' | 'decisions' | 'commitments' | 'health' | 'forecast' | 'brief' | 'approvals' | 'prepare' | 'close' | 'roi' | 'commit'
+export type CeoView = 'missing' | 'redteam' | 'help' | 'coverage' | 'strategic' | 'time' | 'promises' | 'collisions' | 'companies' | 'bench' | 'replay' | 'patterns' | 'singles' | 'changed' | 'forgetting' | 'who' | 'decisions' | 'commitments' | 'health' | 'forecast' | 'brief' | 'approvals' | 'prepare' | 'close' | 'roi' | 'commit' | 'customerRisk' | 'capitalMap' | 'negotiation' | 'scenario' | 'delegation' | 'boardNetwork' | 'advisor' | 'trustProfile' | 'dealMemory' | 'dependencies' | 'officeHours' | 'privateAsk'
 export interface CeoRoute { view?: CeoView; page?: string; memberId?: string; threadId?: string; arg?: string }
 export interface CeoItem { id: string; kind: string; title: string; detail: string; tone: 'signal' | 'risk' | 'info'; route: CeoRoute }
 
@@ -363,6 +367,21 @@ export function executiveBrief(variant: BriefVariant, inp: CeoInputs, outcomes: 
 /* ───────────── Ask Intros command recognition ───────────── */
 export function recognizeCommand(text: string): CeoRoute | null {
   const q = text.toLowerCase().trim()
+  if (/show my capital map|who could fund this|introduce me to capital|capital map/.test(q)) return { view: 'capitalMap', arg: q.replace(/.*(?:capital map|fund this|capital)/, '').replace(/[?.!]+$/, '').trim() }
+  if (/which customers? need attention|customer risk|accounts? at risk/.test(q)) return { view: 'customerRisk' }
+  const negotiation = q.match(/(?:open|start|show)(?: the| a)? negotiation room(?: for)?\s*(.*)$/)
+  if (negotiation || /negotiation room/.test(q)) return { view: 'negotiation', arg: negotiation?.[1]?.replace(/[?.!]+$/, '').trim() ?? '' }
+  const scenario = q.match(/(?:run|open|start)(?: a)? scenario(?: for)?\s*(.*)$/)
+  if (scenario || /what if .*deal slips?|deal slips? (?:30|60|90) days?/.test(q)) return { view: 'scenario', arg: scenario?.[1]?.replace(/[?.!]+$/, '').trim() || q }
+  if (/review for delegation|what can i delegate|delegation intelligence/.test(q)) return { view: 'delegation' }
+  if (/board network|board help|who could advise the board/.test(q)) return { view: 'boardNetwork', arg: q.replace(/.*(?:board help|board network)/, '').trim() }
+  if (/advisor on demand|find (?:me )?an advisor|advisor search|who can advise/.test(q)) return { view: 'advisor', arg: q.replace(/.*(?:advisor|advise)(?: on| me on)?/, '').replace(/[?.!]+$/, '').trim() }
+  if (/office hours|availability windows?/.test(q)) return { view: 'officeHours' }
+  if (/trust profile|executive reputation/.test(q)) return { view: 'trustProfile', arg: q.replace(/.*(?:trust profile|reputation)(?: for| of)?/, '').replace(/[?.!]+$/, '').trim() }
+  if (/private ask|share this ask privately/.test(q)) return { view: 'privateAsk' }
+  const memory = q.match(/(?:deal|company) memory(?: for)?\s*(.*)$/)
+  if (memory || /why are we here/.test(q)) return { view: 'dealMemory', arg: memory?.[1]?.replace(/[?.!]+$/, '').trim() ?? '' }
+  if (/key[- ]person dependenc|dependency risk/.test(q)) return { view: 'dependencies' }
   if (/what am i missing|blind spots?/.test(q)) return { view: 'missing' }
   if (/challenge this|red team|argue against/.test(q)) return { view: 'redteam' }
   if (/who can i help|give value/.test(q)) return { view: 'help' }
@@ -405,4 +424,7 @@ export const ceoViewLabel: Record<CeoView, string> = {
   changed: 'What changed', forgetting: 'What am I forgetting?', who: 'Who can change this?', decisions: 'Decision Room', commitments: 'Commitments',
   health: 'Relationships needing attention', forecast: 'Forecast confidence', brief: 'Executive brief', approvals: 'Approval queue',
   prepare: 'Prepare me', close: 'Close the meeting', roi: 'Network ROI', commit: 'Create commitment',
+  customerRisk: 'Customer Risk Radar', capitalMap: 'Capital Map', negotiation: 'Negotiation Room', scenario: 'Scenario Room', delegation: 'Delegation Intelligence',
+  boardNetwork: 'Board Network', advisor: 'Advisor on Demand', trustProfile: 'Executive Trust Profile', dealMemory: 'Deal & Company Memory', dependencies: 'Key-person dependency',
+  officeHours: 'Executive Office Hours', privateAsk: 'Private Ask',
 }
