@@ -234,3 +234,4 @@
 - [ ] Finish Messages with category rail, intro strip, persistent desktop context, and mobile context drawer.
 - [ ] Give Work a distinct editorial masthead while preserving CRM/Pipeline/Grid/Calendar/Forecast.
 - [ ] Consolidate overlay styling and verify every requested viewport and deep destination without publishing.
+- [x] Execute the approved premium C-level overhaul in the current preview only; do not publish.
