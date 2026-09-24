@@ -1057,8 +1057,8 @@ function Discover({ people, select }: { people: Member[]; select: (p: Member) =>
         <p>PEOPLE<br />IDEAS<br />CAPITAL<br />INFRASTRUCTURE<br />A MORE<br />CONNECTED<br />TOMORROW.</p></header>
       <div className="globe-plate"><img src={worldNetworkImg} alt="Global Aetheris network connections across cities and regions" width={1600} height={720} loading="lazy" /></div>
       <dl className="global-stats">
-        <div><dd>10K+</dd><dt>Professionals</dt></div><div><dd>312</dd><dt>Companies</dt></div>
-        <div><dd>28</dd><dt>Countries</dt></div><div><dd>92%</dd><dt>Relevant Matches</dt></div>
+        <div><dd>{people.length}</dd><dt>Available professionals</dt></div><div><dd>{new Set(people.map(person => person.company).filter(Boolean)).size}</dd><dt>Companies represented</dt></div>
+        <div><dd>{new Set(people.map(person => person.location).filter(Boolean)).size}</dd><dt>Locations represented</dt></div><div><dd>{filtered.length}</dd><dt>People in this view</dt></div>
       </dl>
       <div className="network-insight-cards">
         <section className="mod">
