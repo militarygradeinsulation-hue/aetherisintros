@@ -200,3 +200,15 @@
 ## CEO Operating System (Sep 23)
 - [x] Home CEO Now tiles (What Changed, Company Pulse, Chief of Staff, Approvals), Who Can Change This, Decision Room, Commitments on canonical CRM tasks, Relationship Health, Prepare me / Close the meeting, Forecast confidence + delta, Network ROI, Executive/Board/Investor brief, Approval queue, Ask Intros offline commands, Trust Passport.
 - [ ] Signed-in write-through checks (decisions, approvals, commitments, meeting close) — needs a signed-in verified account in the preview.
+
+## Remaining CEO leverage layer (Sep 24)
+- [ ] Add evidence-based Customer Risk Radar and expanded key-person dependency analysis.
+- [ ] Add private Negotiation Rooms and deterministic saved Scenario comparisons.
+- [ ] Add Capital Map, Delegation Intelligence, Board Network, and Advisor on Demand from authorized records.
+- [ ] Extend existing Signals with Private Ask targeting and consent-safe matching.
+- [ ] Add factual Trust Profiles and Deal/Company Memory summaries over existing timelines.
+- [ ] Add verified-member Executive Office Hours with approval-only requests.
+- [ ] Aggregate Risk Radar and Leverage on Home without changing permanent navigation.
+- [ ] Add deterministic Ask Intros routing for every new capability.
+- [ ] Apply and verify strict owner-scoped RLS, minimum grants, and immutable owners.
+- [ ] Verify desktop/mobile behavior, command routing, and existing CRM/Grid/CEO OS flows without publishing.

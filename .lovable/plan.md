@@ -1,38 +1,39 @@
-# Unified Executive Page and relationship doorway
+# Finish the CEO leverage layer
 
-## Outcome
-- Replace the current member detail with one clean Executive Page that combines verified identity, relationship reasoning, current signals, factual proof, and one context-aware next action.
-- Make Network lead with “Who do you need?” and return a short ranked set using the existing matching engine.
-- Reshape Me around editing the same executive identity members see, with a live preview and persisted availability choices.
-- Preserve the six current destinations, verified-member gate, double opt-in introductions, private account boundaries, CRM/Grid canonical records, messaging, calendar, memory, and all existing advanced tools.
+## Goal
+Add only the high-value CEO capabilities not already covered, keeping Home, Network, Work, Messages, News, and Me unchanged as the permanent navigation. All intelligence remains deterministic, evidence-labelled, private by default, and based on canonical records.
+
+## Reuse instead of duplication
+- Extend the current CEO insight engine, drawer host, Truth Layer, confidence gaps, Approval Queue, Executive Replay, Coverage, Time ROI, Decision Room, Signals/Intent Exchange, Opportunity Graph, Executive Page, and Home customizer.
+- Treat existing Time ROI delegation signals, Trust Passport/dimensions, Replay chronology, private asks, capital/advisor Mission matching, and single-thread coverage as foundations—not parallel features.
+- Keep CRM people, companies, opportunities, activities, tasks, notes, calendar events, decisions, asks, profiles, and introductions canonical.
 
 ## Build
-- Extend the existing profile record minimally with `what_i_do`, `building`, `open_to`, and `scheduling_enabled`; hydrate these into the current member/profile model and save through the existing profile write path.
-- Add a small recommendations table with author ownership, recipient display approval, verified-member reads only for approved recommendations, strict grants/RLS, and no access to private notes or evidence.
-- Recompose member detail into:
-  - essential executive identity and verified status;
-  - one primary action chosen from Signal response, Message, Request Introduction, or Request Connection;
-  - optional Find a Time only when scheduling is enabled;
-  - Why Them / Why You / Why Now using current matching and relationship data;
-  - Open To, Building, Looking For, Can Help With, current asks/posts/signals, and recorded proof;
-  - a clearly private relationship drawer backed by the viewer’s existing CRM person, company, opportunities, tasks, activities, notes, memory, intros, messages, and calendar context.
-- Keep one canonical CRM person by matching `member_id`; Add to CRM will reuse the existing deduplicating path. Person actions will create linked opportunities, notes, messages, and meetings against that same identity.
-- Recompose Network’s first tab around a natural-language search, score results with current `rankMatches`, and show only the top five with evidence and one action. Existing People, Intros, Companies, Circles, and Events remain reachable in the hub.
-- Recompose Me so editing mirrors the Executive Page and saves the existing profile fields plus Open To/scheduling fields; verification remains read-only and sourced from the current verification system.
+1. Add deterministic engines and contextual panels for Customer Risk Radar, Capital Map, Delegation Intelligence, Board Network, Advisor on Demand, and expanded key-person dependency.
+2. Add a private Negotiation Room linked to existing people, companies, opportunities, meetings, commitments, influence tags, and Decision Room evidence.
+3. Add a private Scenario Room that compares recorded baselines with clearly separated user assumptions; no inferred or fabricated financial inputs.
+4. Extend Signals/Intent Exchange with a real Private Ask mode using verified-member targeting rules, expiration, share limits, and existing collision/double-opt-in flows.
+5. Add factual Trust Profile presentation from verification, introductions, feedback, outcomes, responsiveness, stated expertise, and approved recommendations—without a score or ranking.
+6. Extend Replay into Deal Memory and Company Memory with unresolved loops and an evidence-only “Why are we here?” summary.
+7. Add verified-member Executive Office Hours settings and request flow, always requiring approval and never auto-booking.
+8. Add only two compact Home widgets—Risk Radar and Leverage—and add contextual Work/Network/Executive Page entry points.
+9. Extend deterministic Ask Intros recognition for every requested phrase and useful entity arguments.
 
-## Privacy and security
-- Keep the entire experience under the existing authenticated and verified-member route gates.
-- Profile extensions are network-safe only under the existing profile visibility policy.
-- Recommendations expose only approved display records to verified members; authors manage their own text and recipients control display.
-- Private CRM data, notes, memory, meetings, messages, opportunity values, Grid data, verification evidence, and security events stay owner-scoped and appear only in the viewer’s private context area.
+## Data and security
+- Add only minimal owner-scoped persistence for negotiation records, scenarios, and office hours/requests; extend existing asks for private targeting if needed.
+- Every new table receives explicit minimum grants before RLS policies, no anonymous or PUBLIC access, service access only where required, and immutable owner columns.
+- Authenticated users receive no TRUNCATE, REFERENCES, or TRIGGER privileges.
+- Office-hours discovery exposes only explicitly enabled, verified-member-safe fields; requests use existing approval and consent safeguards.
+- Verification evidence, private CRM/Grid data, private memory, and unrelated network context never leave their existing boundaries.
 
-## Validation
-- Verify profile entry from Network, ranked search, CTA changes, messaging/intro routing, CRM deduplication and linked opportunity/note actions, Signal response context, profile/Open To persistence, scheduling visibility, and verification display.
-- Confirm existing Home, Work/CRM/Grid/Calendar, Messages, News, and Me remain reachable.
-- Test desktop, 390px mobile, and 360px mobile for overflow and action accessibility.
-- Confirm signed-out/unverified access remains blocked and do not publish.
+## Verification
+- Run focused type checks and confirm the preview build is clean.
+- Exercise each new panel and every deterministic command on desktop, 390px, and 360px widths with no horizontal overflow.
+- Verify schema policies, grants, immutable owners, private targeting, and no anonymous reads.
+- Confirm the permanent navigation is unchanged and CRM, Grid, Opportunity Graph, CEO OS, Decision Room, Approval Queue, and existing Executive Page actions still work.
+- Do not publish production.
 
-## Technical details
-- Add one database migration with explicit grants before RLS policies for every new public table.
-- Update generated database types through the supported type-generation path after migration.
-- Keep changes inside the current TanStack Start, shared stores, and existing navigation/action APIs; add no new top-level route or parallel feed/CRM model.
+## Assumptions
+- “Customer” means a canonical CRM company/person explicitly marked Customer or attached to recorded customer/opportunity activity; no sentiment or churn score will be invented.
+- Board/advisor reach uses only visible member statements, recorded connections, strategic marks, and authorized CRM context.
+- Office-hours visibility is limited to verified members; private windows remain visible only through an approved request flow.
