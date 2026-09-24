@@ -59,7 +59,7 @@ const basePages: BaseMeta[] = [
     next: 'Handle the highest-consequence item before browsing.',
     hints: ['Social shows the network moving. Daily Briefing composes what needs you.'],
   }, ['feed', 'today', 'briefing']),
-  m('network', 'Network', Users, 'PRIMARY', 'People, companies, intros, circles, expertise and events in one place.', {
+  m('network', 'People', Users, 'PRIMARY', 'People, companies, expertise and trusted paths in one place.', {
     does: 'Brings discovery, people, companies, introductions, circles, expertise and events together.',
     look: 'Who is worth knowing now, and the context that explains why.',
     changes: 'Connecting, following and asking reshapes what surfaces here.',
@@ -460,8 +460,8 @@ export const metaById: Record<string, PageMeta> = Object.fromEntries(pageMeta.ma
 
 export function pageLabel(id: Page) { return metaById[id]?.label ?? id }
 
-/** The familiar social navigation. News remains available through Home and deep search. */
-export const primaryPages: Page[] = ['home', 'network', 'messages', 'work', 'me']
+/** The permanent editorial navigation. Mobile uses its own focused five-item set. */
+export const primaryPages: Page[] = ['home', 'network', 'intros', 'messages', 'memory', 'insights', 'news', 'work']
 
 /** Tabs consolidated inside the Network and Opportunities hubs. */
 export const networkTabs: Page[] = ['discover', 'intros', 'companies', 'circles', 'events']

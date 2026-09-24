@@ -30,6 +30,8 @@ export function NewsPage() {
     && (!query || `${item.title} ${item.summary} ${item.source}`.toLowerCase().includes(query)))
 
   const resolvedImages = useNewsImages(items)
+  const featured = shown[0]
+  const remaining = shown.slice(1)
 
   if (open) return <NewsImagesProvider value={resolvedImages}>
     <NewsReader item={open} onBack={() => setOpen(null)} />
@@ -43,13 +45,10 @@ export function NewsPage() {
 
 
   return <NewsImagesProvider value={resolvedImages}>
-    <Head
-      label="NEWS"
-      title="The intelligence feed, read alongside your relationships."
-      copy="Live coverage from the Aetheris newsroom: analysis written by the operator, plus the industry, AI and security reporting worth your attention. Read the signal, then act on it with the people who care about it."
-      proof="Pulled live from aetheris.technology/news"
-      action={<Btn kind="secondary" onClick={() => refetch()}><RefreshCw size={13} /> {isFetching ? 'Refreshing…' : 'Refresh'}</Btn>}
-    />
+    <header className="news-editorial-head">
+      <div><Eyebrow>EXECUTIVE INTELLIGENCE / LIVE</Eyebrow><h1>Read the signal.<br /><em>Call the right person.</em></h1><p>Live reporting, considered alongside the relationships and work already moving through your private operating system.</p></div>
+      <Btn kind="secondary" onClick={() => refetch()}><RefreshCw size={13} /> {isFetching ? 'Refreshing…' : 'Refresh'}</Btn>
+    </header>
 
     <section className="module news-controls">
       <div className="news-filters">
@@ -75,8 +74,13 @@ export function NewsPage() {
     {tab === 'later' && !shelf.later.length && <section className="module"><p className="sv-empty">Nothing set aside yet. Use Read later on any story and it waits here for you.</p></section>}
     {tab === 'library' && !shelf.library.length && <section className="module"><p className="sv-empty">Your library is empty. Save the pieces worth returning to and they stay here.</p></section>}
 
+    {!(tab === 'feed' && (isLoading || isError)) && featured && <article className="news-featured">
+      <button className="news-thumb" onClick={() => setOpen(featured)} aria-label={`Read ${featured.title}`}><NewsThumbnail item={featured} /></button>
+      <div><header><Eyebrow signal={featured.kind === 'aetheris'}>{featured.source}</Eyebrow><small>{newsAge(featured.published)}</small></header><h2><button className="news-title" onClick={() => setOpen(featured)}>{featured.title}</button></h2>{featured.summary && <p>{featured.summary}</p>}<NewsActions item={featured} compact /><button className="news-link" onClick={() => setOpen(featured)}>Read the full brief <ArrowUpRight size={13} /></button></div>
+    </article>}
+
     {!(tab === 'feed' && (isLoading || isError)) && <section className="news-grid">
-      {shown.map(item => <article key={item.id} className="news-card">
+      {remaining.map(item => <article key={item.id} className="news-card">
         <button className="news-thumb" onClick={() => setOpen(item)} aria-label={`Read ${item.title}`}>
           <NewsThumbnail item={item} />
         </button>
