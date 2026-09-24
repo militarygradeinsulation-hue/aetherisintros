@@ -124,7 +124,7 @@ import { ApprovalQueuePanel, CalendarMeetingBar, CeoActions, CeoHost, ForecastCo
 import { openCeo } from './ceo-store'
 import { DelegatesPanel, DigitalYouRulesPanel, IntentExchangePanel, OrganizationRelationshipView, PassportManager, ReverseDiscoveryPanel } from './opportunity-ui'
 import { activeMission, missionFit, missionTypeLabel } from './opportunity-graph'
-import { NotificationsDrawer, SocialHome, SocialNetwork } from './SocialExperience'
+import { NotificationsDrawer, SocialHome } from './SocialExperience'
 
 
 
@@ -1473,7 +1473,7 @@ function Insights({ people, select, setPage }: { people: Member[]; select: (p: M
     <EditorialHero folio="INSIGHTS / RELATIONSHIP MOVEMENT" title={<>Notice what changed.<br /><em>Act while it matters.</em></>} statement="Signals become useful only when they change the next move." copy="Role changes, cooling conversations, matching needs and warm paths are organized around action—not analytics theater." caption="The strongest signal is often a small change in a relationship you already trust." image={insightsEditorialAsset.url} />
     <PageHead label="INSIGHTS" title="Signals worth acting on."
       copy="No vanity metrics. Only relationship changes that could alter an outcome, each with an action attached."
-      proof={isShowcase() ? '$486K influenced across 46 introductions in 90 days.' : `${people.length} members in your network · ${net.connections.length} connections`} />
+      proof={`${people.length} members in your network · ${net.connections.length} connections`} />
     <InsightCollisions />
     <div className="insight-numbers">
       {insightCounts(net, people).map(([n, c]) =>
@@ -1503,7 +1503,7 @@ function Insights({ people, select, setPage }: { people: Member[]; select: (p: M
       })}
       {showcaseOnly(leaks).length === dismissed.length && <p className="empty-state">No relationship signals yet. As members join, message and update what they are working on, changes worth acting on appear here.</p>}
     </div>
-    <section className="opportunity-clusters">
+    {people.length > 0 && <section className="opportunity-clusters">
       <header><Label><Layers size={11} /> OPPORTUNITY CLUSTERS</Label><h2>Where several relationships point the same way.</h2></header>
       <div>
         {[
@@ -1517,7 +1517,7 @@ function Insights({ people, select, setPage }: { people: Member[]; select: (p: M
           <button className="text-action" onClick={() => setPage('intros')}>See the introductions <ArrowRight size={13} /></button>
         </article>)}
       </div>
-    </section>
+    </section>}
 
     <section className="intelligence-map">
       <div><Label signal>RELATIONSHIP INTELLIGENCE MAP</Label><h2>The same graph, read for opportunity.</h2>
@@ -1526,13 +1526,6 @@ function Insights({ people, select, setPage }: { people: Member[]; select: (p: M
       <MemoryGraph people={people} onSelect={select} compact />
     </section>
 
-    <section className="evidence-line">
-      <div><Label>90 DAY RELATIONSHIP RETURN</Label><h2>More context. Better intros. Stronger outcomes.</h2></div>
-      <div className="line-chart">
-        <svg viewBox="0 0 600 120" preserveAspectRatio="none" aria-hidden="true"><path d="M0 100 C80 95 90 75 165 80 S250 30 330 55 S450 25 600 12" /><circle cx="600" cy="12" r="5" /></svg>
-        <span>$486K influenced · 46 introductions · 24 meetings</span>
-      </div>
-    </section>
   </>
 }
 
@@ -2563,6 +2556,7 @@ function Shell({ startPage }: { startPage?: Page | undefined }) {
 
   const pageNode: Partial<Record<Page, ReactNode>> = {
       home: <SocialHome />,
+      network: <Discover people={people} select={setSelected} />,
       discover: <Discover people={people} select={setSelected} />,
       systems: <SystemsPage openId={systemId} setOpenId={setSystemId} />,
       circles: <CirclesPage openId={circleId} setOpenId={setCircleId} />,
@@ -2626,10 +2620,7 @@ function Shell({ startPage }: { startPage?: Page | undefined }) {
   })
   const content = selected
     ? <ExecutivePage person={selected} onClose={() => setSelected(null)} onIntro={p => { setSelected(null); setDraft(p) }} onMessage={messageMember} />
-    : page === 'network'
-      ? <div className="social-network-hub"><SocialNetwork people={people} /><details className="social-deep-tools"><summary>More Network tools <ChevronDown size={15} /></summary><Hub storeKey="aetheris.hub.network" title="More in Network" blurb="Introductions, companies, circles, and events—when you need the deeper system."
-          tabs={hubTabs(networkTabs.filter(id => id !== 'discover'))} advanced={networkAdvanced} onNavigate={setPage} kind="network" /></details></div>
-      : page === 'work'
+    : page === 'work'
         ? <Hub storeKey="aetheris.hub.work" title="Work" blurb="One system for relationships, movement and time."
             tabs={hubTabs(workTabs)} advanced={workAdvanced} onNavigate={setPage} kind="work" />
         : page === 'me'
@@ -2695,8 +2686,8 @@ function Shell({ startPage }: { startPage?: Page | undefined }) {
           {contextOpen && <ContextRail page={page} people={people} select={setSelected} onAsk={() => setAskOpen(true)} />}
         </div>
       </div>
-      <nav className="mobile-nav">
-        {primaryPages.map(id => {
+       <nav className="mobile-nav">
+         {(['home', 'network', 'messages', 'work', 'me'] as Page[]).map(id => {
           const meta = metaById[id]!
           const Icon = meta.icon
           return <button key={id} className={page === id ? 'active' : ''} onClick={() => setPage(id)}><Icon size={18} /><span>{meta.label}</span></button>
