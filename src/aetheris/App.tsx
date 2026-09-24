@@ -1932,7 +1932,7 @@ function MemberProfile({ person, people, onClose, onDraft, onMessage }: {
           {activity.length ? activity.map(a => <article className="activity-row" key={a.id}>
             <Avatar person={person} portrait />
             <div><strong>{person.name}</strong><em>{a.kind}</em><p>{a.text}</p>
-              <small>♡ {a.responses * 8} · ◇ {a.responses} · ↗ {Math.max(1, Math.round(a.responses / 2))}</small></div>
+              <small>◇ {a.responses} recorded {a.responses === 1 ? 'response' : 'responses'}</small></div>
             <span className="activity-when">{a.when}</span>
           </article>) : <p className="empty-state">No public activity yet. Context will appear as {person.name.split(' ')[0]} posts or responds.</p>}
         </section>
@@ -2220,6 +2220,7 @@ function GlobalSearch({ open, onClose, people }: { open: boolean; onClose: () =>
   const [query, setQuery] = useState('')
   if (!open) return null
   const term = query.trim().toLowerCase()
+  const looksLikeQuestion = /^(who|what|which|where|when|why|how|show|find|open|run|prepare|help|should|can)\b/.test(term) || query.includes('?')
   const matches = <T extends { id: string }>(rows: T[], text: (row: T) => string) => term ? rows.filter(row => text(row).toLowerCase().includes(term)).slice(0, 5) : rows.slice(0, 3)
   const personRows = matches(people, person => `${person.name} ${person.title} ${person.company} ${person.industry} ${person.expertise.join(' ')}`)
   const systemRows = matches(platform.systems, system => `${system.name} ${system.thesis} ${system.category} ${system.industries.join(' ')}`)
@@ -2244,6 +2245,7 @@ function GlobalSearch({ open, onClose, people }: { open: boolean; onClose: () =>
     <section className="global-search-panel" onMouseDown={event => event.stopPropagation()}>
       <header><Search size={20} /><input autoFocus value={query} onChange={event => setQuery(event.target.value)} placeholder="Search people, CRM records, companies, sheets, systems…" /><button className="icon-btn" onClick={onClose} aria-label="Close search"><X size={17} /></button></header>
       <div className="global-results">
+        {looksLikeQuestion && <section><Label>ASK INTROS</Label><button onClick={() => closeThen(() => window.dispatchEvent(new CustomEvent('aetheris:open-assistant', { detail: query.trim() })))}><AetherisGlyph size={17} /><span><b>Ask “{query.trim()}”</b><small>Use your relationship context and deterministic operating-system analysis.</small></span><ArrowRight size={14} /></button></section>}
         <section><Label>PEOPLE</Label>{personRows.map(person => <button key={person.id} onClick={() => closeThen(() => nav.openMember(person))}><Avatar person={person} /><span><b>{person.name}</b><small>{person.title} · {person.company}</small></span><ArrowRight size={14} /></button>)}</section>
         <section><Label>CRM RECORDS</Label>
           {crmPeople.map(p => <button key={p.id} onClick={() => closeThen(() => nav.setPage('crm'))}><UserRound size={17} /><span><b>{p.fullName}</b><small>{p.lifecycle}{p.companyName ? ` · ${p.companyName}` : ''}</small></span><ArrowRight size={14} /></button>)}
@@ -2625,8 +2627,8 @@ function Shell({ startPage }: { startPage?: Page | undefined }) {
   const content = selected
     ? <ExecutivePage person={selected} onClose={() => setSelected(null)} onIntro={p => { setSelected(null); setDraft(p) }} onMessage={messageMember} />
     : page === 'network'
-      ? <div className="social-network-hub"><SocialNetwork people={people} /><Hub storeKey="aetheris.hub.network" title="More in Network" blurb="Introductions, companies, circles, and events—when you need the deeper system."
-          tabs={hubTabs(networkTabs.filter(id => id !== 'discover'))} advanced={networkAdvanced} onNavigate={setPage} kind="network" /></div>
+      ? <div className="social-network-hub"><SocialNetwork people={people} /><details className="social-deep-tools"><summary>More Network tools <ChevronDown size={15} /></summary><Hub storeKey="aetheris.hub.network" title="More in Network" blurb="Introductions, companies, circles, and events—when you need the deeper system."
+          tabs={hubTabs(networkTabs.filter(id => id !== 'discover'))} advanced={networkAdvanced} onNavigate={setPage} kind="network" /></details></div>
       : page === 'work'
         ? <Hub storeKey="aetheris.hub.work" title="Work" blurb="One system for relationships, movement and time."
             tabs={hubTabs(workTabs)} advanced={workAdvanced} onNavigate={setPage} kind="work" />
