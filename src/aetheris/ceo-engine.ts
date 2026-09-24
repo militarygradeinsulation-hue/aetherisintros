@@ -4,7 +4,7 @@
  * CRM people/opportunities/tasks/activities, entity events, threads,
  * calendar events, members, missions, decisions and approvals.
  */
-import type { CrmOpportunity, CrmTask, EntityEvent } from './crm/types'
+import type { CrmCompany, CrmOpportunity, CrmTask, EntityEvent } from './crm/types'
 import type { Member } from './social'
 import type { Outcome } from './domain/models'
 import { relationshipWeather, routeTo, type GraphInputs } from './opportunity-graph'
@@ -15,14 +15,18 @@ export interface Decision {
   rationale: string; assumptions: string; risks: string; expectedOutcome: string; reviewDate: string | null; actualOutcome: string
   linkedPersonIds: string[]; linkedCompanyIds: string[]; linkedOpportunityIds: string[]; linkedEventIds: string[]
   createdAt: string; decidedAt: string | null; updatedAt: string
+  /** Future Me: user-entered prediction + confidence, reviewed later. */
+  prediction?: string; confidence?: number | null; assumptionReview?: string; sameAgain?: '' | 'yes' | 'no' | 'unsure'
 }
 export type ApprovalType = 'send_message' | 'request_intro' | 'update_opportunity' | 'create_follow_up' | 'schedule_meeting' | 'share_data' | 'other'
 export type ApprovalStatus = 'pending' | 'approved' | 'rejected' | 'executed'
 export interface Approval { id: string; actionType: ApprovalType; summary: string; payload: Record<string, unknown>; source: string; status: ApprovalStatus; createdAt: string; actedAt: string | null }
+export type MarkKind = 'strategic' | 'bench' | 'influence'
+export interface Mark { id: string; kind: MarkKind; subjectId: string; companyId: string | null; label: string; outcome: string; cadenceDays: number | null; valueGive: string; valueNeed: string; nextAction: string; nextTouch: string | null; missionId: string | null; notes: string; createdAt: string; updatedAt: string }
 export interface CalMeeting { id: string; title: string; startsAt: string; endsAt: string; memberId: string | null; kind: string; notes: string }
 export type OppSnapshot = Record<string, { name: string; stage: string; amount: number; probability: number; status: string; expectedClose: string | null; nextAction: string }>
 
-export type CeoView = 'changed' | 'forgetting' | 'who' | 'decisions' | 'commitments' | 'health' | 'forecast' | 'brief' | 'approvals' | 'prepare' | 'close' | 'roi' | 'commit'
+export type CeoView = 'missing' | 'redteam' | 'help' | 'coverage' | 'strategic' | 'time' | 'promises' | 'collisions' | 'companies' | 'bench' | 'replay' | 'patterns' | 'singles' | 'changed' | 'forgetting' | 'who' | 'decisions' | 'commitments' | 'health' | 'forecast' | 'brief' | 'approvals' | 'prepare' | 'close' | 'roi' | 'commit'
 export interface CeoRoute { view?: CeoView; page?: string; memberId?: string; threadId?: string; arg?: string }
 export interface CeoItem { id: string; kind: string; title: string; detail: string; tone: 'signal' | 'risk' | 'info'; route: CeoRoute }
 
@@ -32,6 +36,8 @@ export interface CeoInputs {
   decisions: Decision[]
   approvals: Approval[]
   meetings: CalMeeting[]
+  marks: Mark[]
+  companies: CrmCompany[]
   since: number
   snapshot: OppSnapshot | null
 }
@@ -357,6 +363,21 @@ export function executiveBrief(variant: BriefVariant, inp: CeoInputs, outcomes: 
 /* ───────────── Ask Intros command recognition ───────────── */
 export function recognizeCommand(text: string): CeoRoute | null {
   const q = text.toLowerCase().trim()
+  if (/what am i missing|blind spots?/.test(q)) return { view: 'missing' }
+  if (/challenge this|red team|argue against/.test(q)) return { view: 'redteam' }
+  if (/who can i help|give value/.test(q)) return { view: 'help' }
+  if (/where is my time|time roi/.test(q)) return { view: 'time' }
+  if (/single[- ]thread/.test(q)) return { view: 'singles' }
+  if (/promises? (put|at risk)|trust at risk|revenue at risk/.test(q)) return { view: 'promises' }
+  const rep = q.match(/^replay\s*(?:this)?\s*(.*)$/)
+  if (rep) return { view: 'replay', arg: rep[1]?.replace(/^(relationship|deal)\b/, '').replace(/[?.!]+$/, '').trim() ?? '' }
+  if (/how did (this|the) deal get here/.test(q)) return { view: 'replay' }
+  if (/show patterns|patterns?$/.test(q)) return { view: 'patterns' }
+  if (/strategic relationships|stay close to|who should i stay close/.test(q)) return { view: 'strategic' }
+  if (/\bbench\b/.test(q)) return { view: 'bench' }
+  if (/coverage|relationship map|influence map/.test(q)) return { view: 'coverage', arg: q.replace(/.*(?:coverage|map)(?: for| at| of)?/, '').replace(/[?.!]+$/, '').trim() }
+  if (/collision|who should meet/.test(q)) return { view: 'collisions' }
+  if (/company(?:-to-| to )company|company match/.test(q)) return { view: 'companies' }
   if (/forecast/.test(q) && /(change|moved|delta|what)/.test(q)) return { view: 'forecast' }
   if (/what changed|what's new|what is new|since my last/.test(q)) return { view: 'changed' }
   if (/forget|chief of staff|what needs me/.test(q)) return { view: 'forgetting' }
@@ -378,6 +399,9 @@ export function recognizeCommand(text: string): CeoRoute | null {
   return null
 }
 export const ceoViewLabel: Record<CeoView, string> = {
+  missing: 'What am I missing?', redteam: 'Challenge this', help: 'Who can I help?', coverage: 'Relationship coverage', strategic: 'Strategic relationships',
+  time: 'CEO time ROI', promises: 'Trust at risk', collisions: 'Opportunity collisions', companies: 'Company-to-company match', bench: 'Executive bench',
+  replay: 'Executive replay', patterns: 'Patterns from outcomes', singles: 'Single-thread risk',
   changed: 'What changed', forgetting: 'What am I forgetting?', who: 'Who can change this?', decisions: 'Decision Room', commitments: 'Commitments',
   health: 'Relationships needing attention', forecast: 'Forecast confidence', brief: 'Executive brief', approvals: 'Approval queue',
   prepare: 'Prepare me', close: 'Close the meeting', roi: 'Network ROI', commit: 'Create commitment',
