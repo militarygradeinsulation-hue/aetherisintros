@@ -221,9 +221,17 @@
 - [ ] Verify desktop, tablet, 390px, and 360px behavior; do not publish.
 
 ## Premium editorial signed-in overhaul (Sep 24)
-- [ ] Replace crowded social Home and generic inner-page presentation with split ivory / near-black editorial compositions.
-- [ ] Restore desktop navigation to Home / People / Intros / Messages / Memory / Insights / News / Work and keep mobile Home / People / Messages / Work / Me.
-- [ ] Recompose Home, People, Profile, Messages, Intros, Memory, Insights, News, and Work around their real data and existing actions.
-- [ ] Create shared editorial hero, portrait, intelligence-zone, premium module, and small-overlay styling without changing business logic or security.
-- [ ] Preserve all CEO OS, Opportunity Graph, CRM/Grid, deep routes, canonical records, privacy, verification, and deterministic fallbacks.
-- [ ] Verify build and browser behavior at 1440, 1280, tablet, 390, and 360 without publishing.
+- [x] Replace crowded social Home and generic inner-page presentation with split ivory / near-black editorial compositions.
+- [x] Restore desktop navigation to Home / People / Intros / Messages / Memory / Insights / News / Work and keep mobile Home / People / Messages / Work / Me.
+- [x] Recompose Home, People, Profile, Messages, Intros, Memory, Insights, News, and Work around their real data and existing actions.
+- [x] Create shared editorial hero, portrait, intelligence-zone, premium module, and small-overlay styling without changing business logic or security.
+- [x] Preserve all CEO OS, Opportunity Graph, CRM/Grid, deep routes, canonical records, privacy, verification, and deterministic fallbacks.
+- [x] Verify build and browser behavior at 1440, 1280, tablet, 390, and 360 without publishing.
+
+## Premium C-level visual completion (Sep 24)
+- [x] Make People image-first with visible filters, featured connectors, and full discovery grid.
+- [x] Add focused Executive Page sections and five private relationship tabs.
+- [x] Finish Messages with category rail, intro strip, persistent desktop context, and mobile context drawer.
+- [x] Give Work a distinct editorial masthead while preserving CRM/Pipeline/Grid/Calendar/Forecast.
+- [x] Consolidate overlay styling and verify every requested viewport and deep destination without publishing.
+- [x] Execute the approved premium C-level overhaul in the current preview only; do not publish.

@@ -158,9 +158,9 @@ function Brand() {
 function AetherisGlyph({ size = 18 }: { size?: number }) {
   return <span className="aetheris-glyph" style={{ width: size, height: size }} aria-hidden="true"><i /><b /></span>
 }
-function Avatar({ person, large = false, portrait = false }: { person: Member; large?: boolean; portrait?: boolean }) {
+function Avatar({ person, large = false, portrait = false, primary = false }: { person: Member; large?: boolean; portrait?: boolean; primary?: boolean }) {
   const image = person.avatarUrl ?? portraitFor(person.id)
-  return <span className={`person-avatar ${large ? 'large' : ''} ${portrait ? 'portrait' : ''}`} data-person-portrait={person.id} aria-label={person.name}>
+  return <span className={`person-avatar ${large ? 'large' : ''} ${portrait ? 'portrait' : ''}`} data-person-portrait={person.id} {...(primary ? { 'data-portrait-primary': 'true' } : {})} aria-label={person.name}>
     <span className="avatar-initials" aria-hidden="true">{person.initials}</span>
     {image && <AvatarImage source={image} alt="" width={1024} height={1280} />}
   </span>
@@ -988,6 +988,9 @@ function Discover({ people, select }: { people: Member[]; select: (p: Member) =>
       const relevance = (person: Member) => terms.reduce((score, term) => score + (text(person).includes(term) ? 12 : 0), 0)
       return (relevance(b.member) + b.match.total + fitOf(b.member)) - (relevance(a.member) + a.match.total + fitOf(a.member))
     }).slice(0, 5)
+  const featured = ranked.slice(0, 3).map(entry => entry.member)
+  const featuredIds = new Set(featured.map(person => person.id))
+  const browsePeople = filtered.filter(person => !featuredIds.has(person.id))
   const counts = (key: (p: Member) => string) => {
     const map = new Map<string, number>()
     people.forEach(p => map.set(key(p), (map.get(key(p)) ?? 0) + 1))
@@ -1024,8 +1027,15 @@ function Discover({ people, select }: { people: Member[]; select: (p: Member) =>
       </article>)}</div>
       {!people.length && <p className="empty-state">No verified member profiles are available yet.</p>}
     </section>
+    {featured.length > 0 && <section className="featured-connectors">
+      <header><div><Label signal>FEATURED CONNECTORS</Label><h2>People with a credible path to your current work.</h2></div><p>Selected from the profile, mission, timing and relationship evidence already in your account.</p></header>
+      <div>{featured.map(person => <article key={person.id}>
+        <button className="featured-portrait" onClick={() => select(person)}><Avatar person={person} large portrait primary /></button>
+        <div><Label>{person.role} · {person.location}</Label><h3>{person.name}</h3><p>{person.title} · {person.company}</p><strong>{person.whyNow || person.nextAction}</strong><small>{person.bestPath.length > 2 ? `Warm path via ${person.bestPath[1]}` : 'Direct relationship'}</small><MemberActions person={person} compact /></div>
+      </article>)}</div>
+    </section>}
     <ReverseDiscoveryPanel />
-    <details className="executive-browse"><summary>Browse and filter the full network</summary><div className="discover-shell">
+    <details className="executive-browse" open><summary>Browse and filter the full network</summary><div className="discover-shell">
       <aside className="filter-panel">
         <header><span>FILTER PEOPLE</span><button className="mod-link" onClick={clearAll}>Clear All</button></header>
         <div className="filter-search"><Search size={16} /><input value={q} onChange={e => setQ(e.target.value)} placeholder="Name, title, company, or keyword…" /></div>
@@ -1057,7 +1067,7 @@ function Discover({ people, select }: { people: Member[]; select: (p: Member) =>
           <LatentPathList kind={pathKind} />
         </section>
         <div className="discover-grid">
-          {filtered.map(p => <article className="discover-tile" key={p.id}>
+          {browsePeople.map(p => <article className="discover-tile" key={p.id}>
             <button className="tile-open" onClick={() => select(p)}>
               <div className="tile-portrait"><Avatar person={p} large portrait /><span className="tile-score">{p.scoreTotal}</span></div>
               <Label>{p.role} · {p.location}</Label>
@@ -1073,7 +1083,7 @@ function Discover({ people, select }: { people: Member[]; select: (p: Member) =>
             </button>
             <footer><MemberActions person={p} compact /></footer>
           </article>)}
-          {!filtered.length && <p className="empty-state">No members match that yet. Broaden the filters or describe the outcome instead of the title.</p>}
+          {!browsePeople.length && <p className="empty-state">No additional members match that yet. Broaden the filters or describe the outcome instead of the title.</p>}
         </div>
       </div>
     </div></details>
@@ -1193,11 +1203,17 @@ function Messages({ people, select, activeId, setActiveId }: { people: Member[];
   const [text, setText] = useState('')
   const [blocked, setBlocked] = useState<{ explanation: string; rerouteTo?: string } | null>(null)
   const [contextOpen, setContextOpen] = useState(false)
+  const [messageCategory, setMessageCategory] = useState<'all' | 'unread' | 'intros'>('all')
   const nav = useNav()
   const { gate, modal: outreachModal } = useOutreachGate()
   const threads = net.threads.filter(t => people.some(p => p.id === t.memberId))
+  const visibleThreads = threads.filter(item => messageCategory === 'all' || (messageCategory === 'unread' ? item.unread : Boolean(item.introContext)))
   const thread: Thread | undefined = threads.find(t => t.id === activeId) ?? threads[0]
   const person = people.find(p => p.id === thread?.memberId)
+  useEffect(() => {
+    const media = window.matchMedia('(min-width: 1221px)')
+    setContextOpen(media.matches)
+  }, [])
   if (!thread || !person) {
     const startable = people.slice(0, 12)
     return <div className="messages-empty">
@@ -1223,11 +1239,13 @@ function Messages({ people, select, activeId, setActiveId }: { people: Member[];
 
   return <>
     <EditorialHero folio="MESSAGES / RELATIONSHIP CONTEXT" title={<>Conversation with<br /><em>memory beside it.</em></>} statement="People speak to people. Context stays quietly available." copy="Commitments, mutual connections and the reason for the introduction remain beside the thread—not inside the conversation." caption="A professional exchange remains human when intelligence knows when to stay quiet." image={messagesEditorialAsset.url} />
+    <section className="intro-request-strip"><Label signal>INTRODUCTION REQUESTS</Label><p>{people.filter(item => item.introState === 'requested' || item.introState === 'waiting').length ? `${people.filter(item => item.introState === 'requested' || item.introState === 'waiting').length} introduction requests need review.` : 'No introduction requests need review.'}</p><button className="text-action" onClick={() => nav.setPage('intros')}>Open Intros <ArrowRight size={13} /></button></section>
     {outreachModal}
     <div className={`messages-layout ${contextOpen ? 'context-open' : 'context-closed'}`}>
       <aside className="thread-list">
+        <div className="thread-categories">{([['all', 'All'], ['unread', 'Unread'], ['intros', 'Intros']] as const).map(([id, label]) => <button key={id} className={messageCategory === id ? 'active' : ''} onClick={() => setMessageCategory(id)}>{label}</button>)}</div>
         <div className="thread-search"><Search size={15} /> Conversations</div>
-        {threads.map(t => {
+        {visibleThreads.map(t => {
           const m = people.find(p => p.id === t.memberId)
           if (!m) return null
           return <button className={thread.id === t.id ? 'active' : ''} key={t.id} onClick={() => setActiveId(t.id)}>
@@ -1529,12 +1547,12 @@ function Insights({ people, select, setPage }: { people: Member[]; select: (p: M
       <header><Label><Layers size={11} /> OPPORTUNITY CLUSTERS</Label><h2>Where several relationships point the same way.</h2></header>
       <div>
         {[
-          { name: 'Industrial AI adoption', people: people.filter(p => /Manufacturing|AI/i.test(p.industry)).slice(0, 4), why: 'Four members are solving the same operational problem within a quarter of each other.' },
-          { name: 'Capital & operating partners', people: people.filter(p => /equity|capital|Fintech/i.test(p.industry)).slice(0, 4), why: 'Three raise conversations and two operating-partner mandates overlap with your offer.' },
-          { name: 'Field and logistics operators', people: people.filter(p => /Logistics|Field|Construction|Energy/i.test(p.industry)).slice(0, 4), why: 'Repeated pipeline-visibility asks across services businesses you already understand.' },
-        ].map(c => <article key={c.name}>
+          { name: 'Industrial AI adoption', people: people.filter(p => /Manufacturing|AI/i.test(`${p.industry} ${p.expertise.join(' ')}`)).slice(0, 4) },
+          { name: 'Capital & operating partners', people: people.filter(p => /equity|capital|Fintech/i.test(`${p.industry} ${p.expertise.join(' ')}`)).slice(0, 4) },
+          { name: 'Field and logistics operators', people: people.filter(p => /Logistics|Field|Construction|Energy/i.test(`${p.industry} ${p.expertise.join(' ')}`)).slice(0, 4) },
+        ].filter(cluster => cluster.people.length > 0).map(c => <article key={c.name}>
           <h3>{c.name}</h3>
-          <p>{c.why}</p>
+          <p>{c.people.length} {c.people.length === 1 ? 'person has' : 'people have'} explicit profile evidence connected to this area.</p>
           <ul>{c.people.map(p => <li key={p.id}><button onClick={() => select(p)}><Avatar person={p} />{p.name}</button></li>)}</ul>
           <button className="text-action" onClick={() => setPage('intros')}>See the introductions <ArrowRight size={13} /></button>
         </article>)}
@@ -1666,7 +1684,7 @@ function Profile({ people, setPage, openOnboarding }: {
     </section>}
 
     <div className="profile-facts">
-      {[['ABOUT MEMBER', 'Founder building relationship systems for consequential business decisions.'], ['FOCUS AREAS', me.focus], ['GOALS', 'Place Aetheris with serious operators and document the outcomes.'], ['CAN HELP WITH', me.canHelpWith], ['CURRENTLY LOOKING FOR', me.lookingFor],
+      {[['ABOUT MEMBER', me.whatIDo || me.thesis || 'No executive statement recorded yet.'], ['FOCUS AREAS', me.focus], ['GOALS', net.objectives[0]?.title ?? 'No active objective recorded yet.'], ['CAN HELP WITH', me.canHelpWith], ['CURRENTLY LOOKING FOR', me.lookingFor],
       ['INDUSTRIES', me.industries.join(' · ')], ['EXPERTISE', me.expertise.join(' · ')], ['VALUES', me.values],
       ['AVAILABILITY', me.availability], ['WHO YOU WANT TO MEET', me.wantToMeet ?? 'Not stated yet — complete your profile.'],
       ['VALUABLE INTROS', me.introPreferences ?? 'Not stated yet.'], ['BOUNDARIES', me.boundaries ?? 'No boundaries recorded yet.'],
@@ -1685,7 +1703,7 @@ function Profile({ people, setPage, openOnboarding }: {
       <header><Label signal>PRIVATE RELATIONSHIP INTELLIGENCE</Label><small><LockKeyhole size={12} /> Visible only to you</small></header>
       <div>
         <article><span>WHY THESE PEOPLE, WHY NOW</span><p>Three relationships combine strategic fit with a live timing signal. The rest of the graph is deliberately quiet.</p></article>
-        <article><span>RELATIONSHIP HISTORY</span><p>{people.length} members mapped · 46 introductions · 24 working conversations.</p></article>
+        <article><span>RELATIONSHIP HISTORY</span><p>{people.length} members mapped · {net.threads.length} working conversations · {net.connections.length} connected relationships.</p></article>
         <article><span>STRONGEST TRUST PATH</span><p>{people[0]?.bestPath.join(' → ')}</p></article>
         <article><span>SAVED NOTES</span><p>{notes[0]?.text ?? 'No private notes recorded yet. Open any member to record what changed.'}</p></article>
       </div>
@@ -1707,20 +1725,11 @@ function Profile({ people, setPage, openOnboarding }: {
       </article>
       <article className="module compat">
         <header><Label signal>COMPATIBILITY INSIGHTS</Label><h3>How Aetheris reads the fit.</h3></header>
-        <div className="compat-rings">
-          {[['Strategic alignment', 86], ['Shared interests', 78], ['Network value', 71]].map(([k, v]) => <div key={String(k)}>
-            <svg viewBox="0 0 100 100" aria-hidden="true">
-              <circle cx="50" cy="50" r="42" className="ring-track" />
-              <circle cx="50" cy="50" r="42" className="ring-value" strokeDasharray={`${(Number(v) / 100) * 264} 264`} />
-            </svg>
-            <strong>{v}</strong><small>{k}</small>
-          </div>)}
-        </div>
-        <dl className="compat-rows"><div><dt>Mutual Connections</dt><dd>4 trusted paths</dd></div><div><dt>Conversation Potential</dt><dd>High</dd></div><div><dt>Long-Term Impact</dt><dd>Strong</dd></div><div><dt>Complementary Expertise</dt><dd>Revenue systems × capital</dd></div></dl>
+        <dl className="compat-rows"><div><dt>People mapped</dt><dd>{people.length}</dd></div><div><dt>Connected relationships</dt><dd>{net.connections.length}</dd></div><div><dt>Open conversations</dt><dd>{net.threads.length}</dd></div><div><dt>Current evidence</dt><dd>{net.learnings.length ? `${net.learnings.length} retained context items` : 'Not enough context yet'}</dd></div></dl>
       </article>
       <article className="module relationship-history">
         <header><Label>RELATIONSHIP HISTORY</Label><h3>Context across time.</h3></header>
-        <ol><li><strong>Introduction accepted</strong><small>Darius Cole · Sep 2026</small></li><li><strong>Shared operating thesis</strong><small>Private note · Aug 2026</small></li><li><strong>First mapped warm path</strong><small>via Mina Park · Jun 2026</small></li></ol>
+        <ol>{net.learnings.slice(0, 3).map(item => <li key={item.id}><strong>{item.text}</strong><small>{item.source} · {item.when}</small></li>)}{!net.learnings.length && <li><strong>No relationship history yet.</strong><small>Verified activity appears here as it happens.</small></li>}</ol>
       </article>
       <article className="module availability-panel">
         <header><Label>AVAILABILITY</Label><h3><i /> Open for three considered conversations.</h3></header><p>Best for founders, operators and investors with a specific outcome and credible mutual value.</p><Button kind="secondary" onClick={() => setPage('messages')}><CalendarDays size={14} /> Book a 30 min call</Button>
@@ -2383,6 +2392,7 @@ function Hub({ storeKey, title, blurb, tabs, advanced, onNavigate, kind }: {
   const current = tabs.find(t => t.id === tab) ?? first
   const go = (id: string) => { setTab(id); try { localStorage.setItem(storeKey, id) } catch { /* ignore */ } }
   return <>
+    {kind === 'work' && <section className="work-editorial-masthead"><div><HomeBrand /><Label>PRIVATE EXECUTIVE WORKSPACE</Label><h1>Turn relationships<br />into <em>movement.</em></h1><p>CRM, pipeline, Grid, calendar and forecast share one canonical working record—with relationship context beside the work.</p></div><figure><img src={needsEditorialAsset.url} alt="Executive reviewing consequential work in architectural light" /><figcaption><Label signal>ONE OPERATING SYSTEM</Label><p>People. Commitments. Opportunities. Time.</p></figcaption></figure></section>}
     <header className={`hub-head ${kind}-hub-head`}>
       <div><Label>{title.toUpperCase()}</Label><h1>{blurb}</h1></div>
       <p>{metaById[current.id]?.blurb}</p>
