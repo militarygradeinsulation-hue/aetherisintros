@@ -988,6 +988,9 @@ function Discover({ people, select }: { people: Member[]; select: (p: Member) =>
       const relevance = (person: Member) => terms.reduce((score, term) => score + (text(person).includes(term) ? 12 : 0), 0)
       return (relevance(b.member) + b.match.total + fitOf(b.member)) - (relevance(a.member) + a.match.total + fitOf(a.member))
     }).slice(0, 5)
+  const featured = ranked.slice(0, 3).map(entry => entry.member)
+  const featuredIds = new Set(featured.map(person => person.id))
+  const browsePeople = filtered.filter(person => !featuredIds.has(person.id))
   const counts = (key: (p: Member) => string) => {
     const map = new Map<string, number>()
     people.forEach(p => map.set(key(p), (map.get(key(p)) ?? 0) + 1))
@@ -1024,8 +1027,15 @@ function Discover({ people, select }: { people: Member[]; select: (p: Member) =>
       </article>)}</div>
       {!people.length && <p className="empty-state">No verified member profiles are available yet.</p>}
     </section>
+    {featured.length > 0 && <section className="featured-connectors">
+      <header><div><Label signal>FEATURED CONNECTORS</Label><h2>People with a credible path to your current work.</h2></div><p>Selected from the profile, mission, timing and relationship evidence already in your account.</p></header>
+      <div>{featured.map(person => <article key={person.id}>
+        <button className="featured-portrait" onClick={() => select(person)}><Avatar person={person} large portrait /></button>
+        <div><Label>{person.role} · {person.location}</Label><h3>{person.name}</h3><p>{person.title} · {person.company}</p><strong>{person.whyNow || person.nextAction}</strong><small>{person.bestPath.length > 2 ? `Warm path via ${person.bestPath[1]}` : 'Direct relationship'}</small><MemberActions person={person} compact /></div>
+      </article>)}</div>
+    </section>}
     <ReverseDiscoveryPanel />
-    <details className="executive-browse"><summary>Browse and filter the full network</summary><div className="discover-shell">
+    <details className="executive-browse" open><summary>Browse and filter the full network</summary><div className="discover-shell">
       <aside className="filter-panel">
         <header><span>FILTER PEOPLE</span><button className="mod-link" onClick={clearAll}>Clear All</button></header>
         <div className="filter-search"><Search size={16} /><input value={q} onChange={e => setQ(e.target.value)} placeholder="Name, title, company, or keyword…" /></div>
@@ -1057,7 +1067,7 @@ function Discover({ people, select }: { people: Member[]; select: (p: Member) =>
           <LatentPathList kind={pathKind} />
         </section>
         <div className="discover-grid">
-          {filtered.map(p => <article className="discover-tile" key={p.id}>
+          {browsePeople.map(p => <article className="discover-tile" key={p.id}>
             <button className="tile-open" onClick={() => select(p)}>
               <div className="tile-portrait"><Avatar person={p} large portrait /><span className="tile-score">{p.scoreTotal}</span></div>
               <Label>{p.role} · {p.location}</Label>
@@ -1073,7 +1083,7 @@ function Discover({ people, select }: { people: Member[]; select: (p: Member) =>
             </button>
             <footer><MemberActions person={p} compact /></footer>
           </article>)}
-          {!filtered.length && <p className="empty-state">No members match that yet. Broaden the filters or describe the outcome instead of the title.</p>}
+          {!browsePeople.length && <p className="empty-state">No additional members match that yet. Broaden the filters or describe the outcome instead of the title.</p>}
         </div>
       </div>
     </div></details>
@@ -1193,11 +1203,17 @@ function Messages({ people, select, activeId, setActiveId }: { people: Member[];
   const [text, setText] = useState('')
   const [blocked, setBlocked] = useState<{ explanation: string; rerouteTo?: string } | null>(null)
   const [contextOpen, setContextOpen] = useState(false)
+  const [messageCategory, setMessageCategory] = useState<'all' | 'unread' | 'intros'>('all')
   const nav = useNav()
   const { gate, modal: outreachModal } = useOutreachGate()
   const threads = net.threads.filter(t => people.some(p => p.id === t.memberId))
+  const visibleThreads = threads.filter(item => messageCategory === 'all' || (messageCategory === 'unread' ? item.unread : Boolean(item.introContext)))
   const thread: Thread | undefined = threads.find(t => t.id === activeId) ?? threads[0]
   const person = people.find(p => p.id === thread?.memberId)
+  useEffect(() => {
+    const media = window.matchMedia('(min-width: 1221px)')
+    setContextOpen(media.matches)
+  }, [])
   if (!thread || !person) {
     const startable = people.slice(0, 12)
     return <div className="messages-empty">
@@ -1223,11 +1239,13 @@ function Messages({ people, select, activeId, setActiveId }: { people: Member[];
 
   return <>
     <EditorialHero folio="MESSAGES / RELATIONSHIP CONTEXT" title={<>Conversation with<br /><em>memory beside it.</em></>} statement="People speak to people. Context stays quietly available." copy="Commitments, mutual connections and the reason for the introduction remain beside the thread—not inside the conversation." caption="A professional exchange remains human when intelligence knows when to stay quiet." image={messagesEditorialAsset.url} />
+    <section className="intro-request-strip"><Label signal>INTRODUCTION REQUESTS</Label><p>{people.filter(item => item.introState === 'requested' || item.introState === 'waiting').length ? `${people.filter(item => item.introState === 'requested' || item.introState === 'waiting').length} introduction requests need review.` : 'No introduction requests need review.'}</p><button className="text-action" onClick={() => nav.setPage('intros')}>Open Intros <ArrowRight size={13} /></button></section>
     {outreachModal}
     <div className={`messages-layout ${contextOpen ? 'context-open' : 'context-closed'}`}>
       <aside className="thread-list">
+        <div className="thread-categories">{([['all', 'All'], ['unread', 'Unread'], ['intros', 'Intros']] as const).map(([id, label]) => <button key={id} className={messageCategory === id ? 'active' : ''} onClick={() => setMessageCategory(id)}>{label}</button>)}</div>
         <div className="thread-search"><Search size={15} /> Conversations</div>
-        {threads.map(t => {
+        {visibleThreads.map(t => {
           const m = people.find(p => p.id === t.memberId)
           if (!m) return null
           return <button className={thread.id === t.id ? 'active' : ''} key={t.id} onClick={() => setActiveId(t.id)}>
