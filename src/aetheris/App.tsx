@@ -2328,6 +2328,7 @@ function HubPrelude({ kind, onNavigate }: { kind: 'network' | 'work' | 'me'; onN
       <TileShell label="INTRODUCTIONS" title="Why me. Why them. Why now." variant="action"><p>Every request stays double opt-in and carries the evidence for timing.</p><button className="tile-cta" onClick={() => onNavigate('intros')}>Review introductions <ArrowRight size={14} /></button></TileShell>
       <TileShell label="WHO CAN CHANGE THIS?" title="Name the problem. See who can move it." variant="action"><p>Ranked from people actually available to you, with the evidence, the warmest path and one next move.</p><button className="tile-cta" onClick={() => openCeo({ view: 'who' })}>Who can change this? <ArrowRight size={14} /></button></TileShell>
       <TileShell label="NETWORK ROI" title="What intros produced." variant="data"><p>Accepted intros, meetings, linked and won deals — value only when it is recorded.</p><button className="tile-cta" onClick={() => openCeo({ view: 'roi' })}>Open Network ROI <ArrowRight size={14} /></button></TileShell>
+      <InsightBar where="network" />
     </section>
   }
   if (kind === 'work') {
