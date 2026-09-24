@@ -1847,7 +1847,7 @@ function MemberProfile({ person, people, onClose, onDraft, onMessage }: {
           <Button kind="quiet" onClick={() => net.follow(person.id)}>{following ? 'Following' : 'Follow'}</Button>
           <Button kind="quiet" onClick={() => {
             if (crmPerson) nav.setPage('crm')
-            else void ops.addMemberToCrm({ id: person.id, name: person.name, title: person.title, company: person.company, location: person.location }).then(() => nav.setPage('crm'))
+            else void ops.addMemberToCrm({ id: person.id, name: person.name, title: person.title, company: person.company, location: person.location }).then(created => { if (created) nav.setPage('crm') })
           }}><Briefcase size={14} /> {crmPerson ? 'Open in CRM' : 'Add to CRM'}</Button>
         </div>
         {copied && <small className="copied-note">Profile link copied.</small>}

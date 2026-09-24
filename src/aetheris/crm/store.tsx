@@ -8,6 +8,7 @@
  */
 import { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react'
 import type { ReactNode } from 'react'
+import { toast } from 'sonner'
 import {
   activityRepo, columnRepo, companyRepo, currentAccountId, ensureDefaultPipeline, emptySnapshot, loadSnapshot, logEvent,
   lastWriteError, noteRepo, opportunityRepo, personRepo, rowRepo, sheetRepo, taskRepo, viewRepo, workbookRepo,
@@ -174,6 +175,9 @@ export function OpsProvider({ children }: { children: ReactNode }) {
         if (created) {
           await activityRepo.create({ kind: 'intro', subject: `Linked ${member.name} from the Aetheris network`, personId: created.id })
           await after('crm_person', created.id, 'linked', `${member.name} linked from the network`)
+          toast.success(`${member.name} added to your CRM`)
+        } else {
+          toast.error(lastWriteError() || `${member.name} could not be added to your CRM.`)
         }
         return created
       },
