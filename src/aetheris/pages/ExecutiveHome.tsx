@@ -1,5 +1,5 @@
 import { useMemo, useState, type ReactNode } from 'react'
-import { ArrowDown, ArrowRight, ArrowUp, CalendarDays, Check, CircleDot, EyeOff, LayoutDashboard, MessageSquareText, Plus, RotateCcw, Target } from 'lucide-react'
+import { ArrowRight, CalendarDays, Check, CircleDot, EyeOff, LayoutDashboard, MessageSquareText, Plus, RotateCcw, Target } from 'lucide-react'
 
 import { useNav } from '../nav'
 import { defaultHomeLayout, useNetwork, type HomeWidgetConfig, type HomeWidgetId, type HomeWidgetSize } from '../store'
@@ -14,6 +14,9 @@ import { ApprovalsTile, ChiefOfStaffTile, CompanyPulseTile, WhatChangedTile } fr
 import { DigitalOffice, HelpTile, MissingTile, StrategicTile } from '../ceo-insights-ui'
 import { LeverageTile, RiskTile } from '../ceo-leverage-ui'
 import { HubIntro, RadarMini, SignalPath, TileShell } from '../hub-ui'
+import { IntrosSystemFeatures } from '@/components/blocks/intros-system-features'
+import { IntrosWidgetGrid } from '../IntrosSystemGrid'
+import type { WidgetItem, WidgetSize } from '@/components/ui/draggable-widget-grid'
 
 const dueLabel = (value: string | null) => value ? new Date(value).toLocaleDateString(undefined, { month: 'short', day: 'numeric' }) : 'No date'
 
@@ -26,9 +29,9 @@ const widgetNames: Record<HomeWidgetId, string> = {
   pipeline: 'Work and pipeline', calendar: 'Meetings and tasks', news: 'Intelligence and news', assistant: 'Ask Intros',
 }
 
-function HomeWidgetFrame({ config, editing, index, count, children, onMove, onHide, onSize }: {
-  config: HomeWidgetConfig; editing: boolean; index: number; count: number; children: ReactNode
-  onMove: (direction: -1 | 1) => void; onHide: () => void; onSize: (size: HomeWidgetSize) => void
+function HomeWidgetFrame({ config, editing, children, onHide, onSize }: {
+  config: HomeWidgetConfig; editing: boolean; children: ReactNode
+  onHide: () => void; onSize: (size: HomeWidgetSize) => void
 }) {
   return <div className={`home-widget home-widget-${config.size} ${editing ? 'is-editing' : ''}`}>
     {editing && <div className="home-widget-controls" aria-label={`Customize ${widgetNames[config.id]}`}>
@@ -36,12 +39,16 @@ function HomeWidgetFrame({ config, editing, index, count, children, onMove, onHi
       <div className="home-widget-sizes" aria-label="Widget size">
         {(['compact', 'standard', 'wide'] as const).map(size => <button type="button" key={size} className={config.size === size ? 'active' : ''} onClick={() => onSize(size)} aria-label={`${size} size`} title={`${size} size`}>{size[0]?.toUpperCase()}</button>)}
       </div>
-      <button type="button" onClick={() => onMove(-1)} disabled={index === 0} aria-label="Move widget up" title="Move up"><ArrowUp size={14} /></button>
-      <button type="button" onClick={() => onMove(1)} disabled={index === count - 1} aria-label="Move widget down" title="Move down"><ArrowDown size={14} /></button>
       <button type="button" onClick={onHide} aria-label="Hide widget" title="Hide widget"><EyeOff size={14} /></button>
     </div>}
     {children}
   </div>
+}
+
+const toWidgetSize = (config: HomeWidgetConfig): WidgetSize => {
+  if (config.size === 'compact') return 'sm'
+  if (config.size === 'wide') return 'wide'
+  return ['memory', 'people', 'chief', 'graph'].includes(config.id) ? 'tall' : 'sm'
 }
 
 export function ExecutiveHome({ embedded = false }: { embedded?: boolean }) {
@@ -66,17 +73,13 @@ export function ExecutiveHome({ embedded = false }: { embedded?: boolean }) {
   const updateWidget = (id: HomeWidgetId, change: Partial<HomeWidgetConfig>) => {
     net.setHomeLayout(net.homeLayout.map(widget => widget.id === id ? { ...widget, ...change } : widget))
   }
-  const moveWidget = (id: HomeWidgetId, direction: -1 | 1) => {
-    const layout = [...net.homeLayout]
-    const from = layout.findIndex(widget => widget.id === id)
-    if (from < 0) return
-    const visible = layout.filter(widget => widget.visible)
-    const visibleIndex = visible.findIndex(widget => widget.id === id)
-    const neighbor = visible[visibleIndex + direction]
-    if (!neighbor) return
-    const to = layout.findIndex(widget => widget.id === neighbor.id)
-    ;[layout[from], layout[to]] = [layout[to] as HomeWidgetConfig, layout[from] as HomeWidgetConfig]
-    net.setHomeLayout(layout)
+  const widgetItems: WidgetItem[] = visibleWidgets.map(config => ({ id: config.id, size: toWidgetSize(config), label: widgetNames[config.id] }))
+  const reorderWidgets = (items: WidgetItem[]) => {
+    const visibleIds = items.map(item => item.id as HomeWidgetId)
+    const byId = new Map(net.homeLayout.map(widget => [widget.id, widget]))
+    const reordered = visibleIds.map(id => byId.get(id)).filter((widget): widget is HomeWidgetConfig => Boolean(widget))
+    const hidden = net.homeLayout.filter(widget => !widget.visible)
+    net.setHomeLayout([...reordered, ...hidden])
   }
 
   const renderWidget = (id: HomeWidgetId) => {
@@ -149,12 +152,15 @@ export function ExecutiveHome({ embedded = false }: { embedded?: boolean }) {
         {hiddenWidgets.length > 0 && <div className="home-hidden-widgets"><b>Add widgets</b>{hiddenWidgets.map(widget => <button type="button" key={widget.id} onClick={() => updateWidget(widget.id, { visible: true })}><Plus size={13} />{widgetNames[widget.id]}</button>)}</div>}
       </section>}
 
-      <section className="hub-bento home-bento">
-        {visibleWidgets.map((config, index) => <HomeWidgetFrame key={config.id} config={config} editing={customizing} index={index} count={visibleWidgets.length}
-          onMove={direction => moveWidget(config.id, direction)} onHide={() => updateWidget(config.id, { visible: false })} onSize={size => updateWidget(config.id, { size })}>
-          {renderWidget(config.id)}
-        </HomeWidgetFrame>)}
-      </section>
+      <IntrosWidgetGrid items={widgetItems} editable={customizing} onChange={reorderWidgets} className="home-bento"
+        renderItem={item => {
+          const config = visibleWidgets.find(widget => widget.id === item.id)
+          if (!config) return null
+          return <HomeWidgetFrame config={config} editing={customizing} onHide={() => updateWidget(config.id, { visible: false })} onSize={size => updateWidget(config.id, { size })}>
+            {renderWidget(config.id)}
+          </HomeWidgetFrame>
+        }} />
+      <IntrosSystemFeatures compact />
     </div>
   </NewsImagesProvider>
 }

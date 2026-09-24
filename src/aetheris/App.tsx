@@ -126,6 +126,7 @@ import { DelegatesPanel, DigitalYouRulesPanel, IntentExchangePanel, Organization
 import { activeMission, missionFit, missionTypeLabel } from './opportunity-graph'
 import { NotificationsDrawer } from './SocialExperience'
 import { newsAge, useAetherisNews } from './news'
+import { IntrosSystemBento, BentoGridItem } from './IntrosSystemGrid'
 
 
 
@@ -733,12 +734,12 @@ function PremiumHome({ people, select, setPage, openNeed, openThread }: {
     <div className="premium-home-copy"><HomeBrand /><Label>RELATIONSHIP INTELLIGENCE FOR EXECUTIVES</Label><h1>Know who matters.<br />Know <em>why now.</em></h1><p>Your relationships, current mission, conversations and live signals—held in one private operating system.</p><div className="premium-home-actions"><Button onClick={openNeed}>State what you need <ArrowRight size={14} /></Button><Button kind="secondary" onClick={() => setPage('briefing')}>Open Executive Brief</Button></div><dl><div><dt>Relationships</dt><dd>{net.connections.length}</dd></div><div><dt>Open conversations</dt><dd>{net.threads.length}</dd></div><div><dt>Active missions</dt><dd>{graph.missions.filter(item => item.status === 'active').length}</dd></div></dl></div>
     <figure className="premium-home-portrait"><img src={net.profile.avatarUrl || homeEditorialAsset.url} alt={net.profile.avatarUrl ? `${net.profile.name || 'Member'} executive portrait` : 'Executive in architectural window light'} /><figcaption>{net.profile.name || 'YOUR EXECUTIVE PAGE'}<small>{[net.profile.title, net.profile.company].filter(Boolean).join(' · ') || 'Complete your executive identity'}</small></figcaption></figure>
     <aside className="premium-home-intel"><header><Label signal>ACTIVE RELATIONSHIP FIELD</Label><h2>Who matters now.</h2></header><MemoryGraph people={ranked.slice(0, 6)} onSelect={select} compact />{lead ? <button className="premium-home-person" onClick={() => select(lead)}><Avatar person={lead} portrait /><span><b>{lead.name}</b><small>{lead.whyNow || lead.nextAction}</small></span><ArrowRight size={14} /></button> : <p className="quiet-empty">Your relationship field will form as verified people enter your network.</p>}<div className="premium-home-mission"><span>ACTIVE MISSION / WHY NOW</span><h3>{mission?.title ?? 'No active mission yet.'}</h3><p>{mission?.objective || mission?.successDefinition || 'State the outcome that should shape who and what rises to the surface.'}</p><button onClick={() => setPage('work')}>Open Work <ArrowRight size={13} /></button></div></aside>
-  </section><section className="premium-home-deck">
-    <article>{lead ? <><Label>SUGGESTED PERSON</Label><button onClick={() => select(lead)}><Avatar person={lead} portrait /><span><h3>{lead.name}</h3><p>{lead.title} · {lead.company}</p><small>{lead.whyThem}</small></span></button></> : <><Label>SUGGESTED PERSON</Label><h3>No suggestion yet.</h3><p>Add current context to sharpen who appears.</p></>}</article>
-    <article>{second ? <><Label signal>INTRO RECOMMENDATION</Label><h3>{second.name}</h3><p>{second.whyYou}</p><button className="text-action" onClick={() => setPage('intros')}>Review the warm path <ArrowRight size={13} /></button></> : <><Label signal>INTRO RECOMMENDATION</Label><h3>No introduction queued.</h3><p>Recommendations appear only when there is evidence for both sides.</p></>}</article>
-    <article><Label>CONVERSATION</Label>{thread && threadPerson ? <button onClick={() => openThread(thread.id)}><Avatar person={threadPerson} /><span><h3>{threadPerson.name}</h3><p>{thread.commitment || thread.messages.at(-1)?.text}</p></span></button> : <><h3>No open conversation.</h3><p>Your private threads will appear here.</p></>}</article>
-    <article><Label>EXECUTIVE NEWS</Label>{story ? <><h3>{story.title}</h3><p>{story.source} · {newsAge(story.published)}</p><button className="text-action" onClick={() => setPage('news')}>Open News <ArrowRight size={13} /></button></> : <><h3>No live brief available.</h3><p>News will appear when the provider responds.</p></>}</article>
-  </section></div>
+  </section><IntrosSystemBento className="premium-home-deck md:grid-cols-4">
+    <BentoGridItem className="premium-home-module" header={lead ? <button onClick={() => select(lead)}><Avatar person={lead} portrait /><span><h3>{lead.name}</h3><p>{lead.title} · {lead.company}</p></span></button> : null} title="Suggested person" description={lead?.whyThem || 'Add current context to sharpen who appears.'} />
+    <BentoGridItem className="premium-home-module" header={second ? <div><Label signal>INTRO RECOMMENDATION</Label><h3>{second.name}</h3></div> : null} title="Warm path" description={second?.whyYou || 'Recommendations appear only when there is evidence for both sides.'} onClick={() => setPage('intros')} />
+    <BentoGridItem className="premium-home-module" header={thread && threadPerson ? <button onClick={() => openThread(thread.id)}><Avatar person={threadPerson} /><span><h3>{threadPerson.name}</h3></span></button> : null} title="Conversation" description={thread?.commitment || thread?.messages.at(-1)?.text || 'Your private threads will appear here.'} />
+    <BentoGridItem className="premium-home-module" header={story ? <div><Label>EXECUTIVE NEWS</Label><h3>{story.title}</h3></div> : null} title="Executive news" description={story ? `${story.source} · ${newsAge(story.published)}` : 'News will appear when the provider responds.'} onClick={() => setPage('news')} />
+  </IntrosSystemBento><ExecutiveHome embedded /></div>
 }
 
 function HomeAttention({ ranked, activeNeed, select, setPage, openThread }: {
@@ -1265,7 +1266,7 @@ function Messages({ people, select, activeId, setActiveId }: { people: Member[];
           <button className="icon-btn" onClick={() => select(person)} aria-label="Open this person's profile"><UserRound size={17} /></button>
         </header>
         <div className="intro-context"><Label>INTRODUCTION CONTEXT</Label><p>{thread.introContext}</p></div>
-        <CeoActions member={person} threadId={thread.id} />
+        <div className="message-actions"><CeoActions member={person} threadId={thread.id} /></div>
         <div className="messages">
           {thread.messages.map(m => <div key={m.id} className={`message ${m.from === 'me' ? 'outgoing' : 'incoming'}`}>{m.text}<small>{m.at}</small></div>)}
           {!thread.messages.length && <p className="empty-state">New conversation. Open with the reason this matters to both sides.</p>}
@@ -1545,18 +1546,15 @@ function Insights({ people, select, setPage }: { people: Member[]; select: (p: M
     </div>
     {people.length > 0 && <section className="opportunity-clusters">
       <header><Label><Layers size={11} /> OPPORTUNITY CLUSTERS</Label><h2>Where several relationships point the same way.</h2></header>
-      <div>
+      <IntrosSystemBento className="insight-cluster-bento md:grid-cols-3">
         {[
           { name: 'Industrial AI adoption', people: people.filter(p => /Manufacturing|AI/i.test(`${p.industry} ${p.expertise.join(' ')}`)).slice(0, 4) },
           { name: 'Capital & operating partners', people: people.filter(p => /equity|capital|Fintech/i.test(`${p.industry} ${p.expertise.join(' ')}`)).slice(0, 4) },
           { name: 'Field and logistics operators', people: people.filter(p => /Logistics|Field|Construction|Energy/i.test(`${p.industry} ${p.expertise.join(' ')}`)).slice(0, 4) },
-        ].filter(cluster => cluster.people.length > 0).map(c => <article key={c.name}>
-          <h3>{c.name}</h3>
-          <p>{c.people.length} {c.people.length === 1 ? 'person has' : 'people have'} explicit profile evidence connected to this area.</p>
-          <ul>{c.people.map(p => <li key={p.id}><button onClick={() => select(p)}><Avatar person={p} />{p.name}</button></li>)}</ul>
-          <button className="text-action" onClick={() => setPage('intros')}>See the introductions <ArrowRight size={13} /></button>
-        </article>)}
-      </div>
+        ].filter(cluster => cluster.people.length > 0).map(c => <BentoGridItem key={c.name} className="insight-cluster-item" header={<ul>{c.people.map(p => <li key={p.id}><button onClick={() => select(p)}><Avatar person={p} />{p.name}</button></li>)}</ul>} title={c.name} description={`${c.people.length} ${c.people.length === 1 ? 'person has' : 'people have'} explicit profile evidence connected to this area.`}
+          onClick={() => setPage('intros')}>
+        </BentoGridItem>)}
+      </IntrosSystemBento>
     </section>}
 
     <section className="intelligence-map">
