@@ -219,3 +219,11 @@
 - [ ] Simplify Network discovery, Executive profiles, Messages, notifications, and universal Search/Ask without duplicating data systems.
 - [ ] Preserve every deep destination, CEO OS workflow, CRM/Grid record, verification boundary, and deterministic fallback.
 - [ ] Verify desktop, tablet, 390px, and 360px behavior; do not publish.
+
+## Premium editorial signed-in overhaul (Sep 24)
+- [ ] Replace crowded social Home and generic inner-page presentation with split ivory / near-black editorial compositions.
+- [ ] Restore desktop navigation to Home / People / Intros / Messages / Memory / Insights / News / Work and keep mobile Home / People / Messages / Work / Me.
+- [ ] Recompose Home, People, Profile, Messages, Intros, Memory, Insights, News, and Work around their real data and existing actions.
+- [ ] Create shared editorial hero, portrait, intelligence-zone, premium module, and small-overlay styling without changing business logic or security.
+- [ ] Preserve all CEO OS, Opportunity Graph, CRM/Grid, deep routes, canonical records, privacy, verification, and deterministic fallbacks.
+- [ ] Verify build and browser behavior at 1440, 1280, tablet, 390, and 360 without publishing.
