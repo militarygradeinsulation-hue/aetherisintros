@@ -16,9 +16,12 @@ export function IntrosWidgetGrid({ items, editable, onChange, renderItem, classN
   onChange: (items: WidgetItem[]) => void
   renderItem: (item: WidgetItem, index: number) => ReactNode
   className?: string
+  maxColumns?: number
+  cellSize?: number
+  gap?: number
 }) {
   return <DraggableWidgetGrid items={items} editable={editable} onChange={onChange} renderItem={renderItem}
-    maxColumns={4} cellSize={176} gap={14} radius={8} className={className} />
+    maxColumns={maxColumns} cellSize={cellSize} gap={gap} radius={8} className={className} />
 }
 
 export function IntrosSystemGrid({ items, editable, onChange, renderItem, showFeatures = false }: {
