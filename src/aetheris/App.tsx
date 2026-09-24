@@ -124,6 +124,7 @@ import { ApprovalQueuePanel, CalendarMeetingBar, CeoActions, CeoHost, ForecastCo
 import { openCeo } from './ceo-store'
 import { DelegatesPanel, DigitalYouRulesPanel, IntentExchangePanel, OrganizationRelationshipView, PassportManager, ReverseDiscoveryPanel } from './opportunity-ui'
 import { activeMission, missionFit, missionTypeLabel } from './opportunity-graph'
+import { NotificationsDrawer, SocialHome, SocialNetwork } from './SocialExperience'
 
 
 
@@ -2419,10 +2420,9 @@ function Shell({ startPage }: { startPage?: Page | undefined }) {
   const stored = typeof window !== 'undefined' ? localStorage.getItem('aetheris-intros-page') : null
   const initial = startPage ?? (stored && allNav.some(n => n.id === stored) ? stored : legacyPage[stored ?? ''] ?? 'home') as Page
   const [page, setPageState] = useState<Page>(initial)
-  const [collapsed, setCollapsed] = useState(false)
-  const [mobileOpen, setMobileOpen] = useState(false)
   const [topMenuOpen, setTopMenuOpen] = useState(false)
   const [moreOpen, setMoreOpen] = useState(false)
+  const [notificationsOpen, setNotificationsOpen] = useState(false)
   const [contextOpen, setContextOpen] = useState(false)
   const briefing = useBriefingMode()
   const [selected, setSelected] = useState<Member | null>(null)
@@ -2560,7 +2560,7 @@ function Shell({ startPage }: { startPage?: Page | undefined }) {
 
 
   const pageNode: Partial<Record<Page, ReactNode>> = {
-      home: <ExecutiveHome />,
+      home: <SocialHome />,
       discover: <Discover people={people} select={setSelected} />,
       systems: <SystemsPage openId={systemId} setOpenId={setSystemId} />,
       circles: <CirclesPage openId={circleId} setOpenId={setCircleId} />,
@@ -2625,8 +2625,8 @@ function Shell({ startPage }: { startPage?: Page | undefined }) {
   const content = selected
     ? <ExecutivePage person={selected} onClose={() => setSelected(null)} onIntro={p => { setSelected(null); setDraft(p) }} onMessage={messageMember} />
     : page === 'network'
-      ? <Hub storeKey="aetheris.hub.network" title="Network" blurb="People, companies and introductions worth knowing."
-          tabs={hubTabs(networkTabs)} advanced={networkAdvanced} onNavigate={setPage} kind="network" />
+      ? <div className="social-network-hub"><SocialNetwork people={people} /><Hub storeKey="aetheris.hub.network" title="More in Network" blurb="Introductions, companies, circles, and events—when you need the deeper system."
+          tabs={hubTabs(networkTabs.filter(id => id !== 'discover'))} advanced={networkAdvanced} onNavigate={setPage} kind="network" /></div>
       : page === 'work'
         ? <Hub storeKey="aetheris.hub.work" title="Work" blurb="One system for relationships, movement and time."
             tabs={hubTabs(workTabs)} advanced={workAdvanced} onNavigate={setPage} kind="work" />
@@ -2643,26 +2643,20 @@ function Shell({ startPage }: { startPage?: Page | undefined }) {
   useEffect(() => { window.scrollTo({ top: 0, behavior: 'auto' }) }, [page, selected?.id])
 
   return <NavCtx.Provider value={navApi}>
-    <div className={`app-shell ${collapsed ? 'rail-collapsed' : ''} ${contextOpen ? 'show-context' : ''}`}>
+    <div className={`app-shell social-shell ${contextOpen ? 'show-context' : ''}`}>
       <ConstellationField className="app-shell-ambient" />
-      <aside className={`nav-rail ${mobileOpen ? 'mobile-open' : ''}`}>
-        <div className="rail-head"><Brand /><button className="rail-toggle" onClick={() => setCollapsed(!collapsed)} aria-label="Collapse navigation"><ChevronLeft size={16} /></button></div>
-        <nav>{nav.map(item => {
+      <header className="social-topnav">
+        <button className="social-brand" onClick={() => setPage('home')} aria-label="Ask Intros Home"><Brand /></button>
+        <nav aria-label="Primary navigation">{nav.map(item => {
           const Icon = item.icon
-          return <button key={item.id} className={page === item.id ? 'active' : ''} title={item.label} onClick={() => { setPage(item.id); setMobileOpen(false) }}>
+          return <button key={item.id} className={page === item.id ? 'active' : ''} title={item.label} onClick={() => setPage(item.id)}>
             <Icon size={18} /><span>{item.label}</span></button>
-        })}
-          <span className="rail-divider">ACCOUNT</span>
-          <button className={`rail-more ${moreOpen ? 'active' : ''}`} title="Utilities" onClick={() => { setMoreOpen(true); setMobileOpen(false) }}>
-            <Settings2 size={18} /><span>Utilities</span></button>
-        </nav>
-        <div className="rail-foot"><span className="live-dot" /><span>Memory live</span>
-          <button onClick={() => setPage('me')} aria-label="Your profile"><SelfAvatar /></button></div>
-        <div className="rail-auth"><AccountControl /></div>
-      </aside>
+        })}</nav>
+        <button className="social-nav-search" aria-label="Search" onClick={() => setGlobalSearchOpen(true)}><Search size={17} /><span>Search</span><kbd>⌘K</kbd></button>
+        <div className="social-nav-actions"><button className="icon-btn" onClick={() => setNotificationsOpen(true)} aria-label="Notifications"><Bell size={18} /></button><button className="icon-btn" onClick={() => window.dispatchEvent(new CustomEvent('aetheris:open-assistant'))} aria-label="Ask Intros"><AetherisGlyph size={18} /></button><button className={`icon-btn ${moreOpen ? 'active' : ''}`} onClick={() => setMoreOpen(true)} aria-label="More"><Settings2 size={18} /></button><button className="topbar-avatar" aria-label="Your profile" onClick={() => setPage('me')}><SelfAvatar /></button></div>
+      </header>
       <div className="workspace">
         <header className="topbar">
-          <button className="icon-btn mobile-menu" onClick={() => setMobileOpen(!mobileOpen)} aria-label="Menu"><Menu size={19} /></button>
           <span className="topbar-title">Ask Intros <i>/</i> {metaById[page]?.label ?? allNav.find(n => n.id === page)?.label}</span>
           <div className="topbar-actions">
             <button className="topbar-search" aria-label="Search people, companies, topics, or ideas…" onClick={() => setGlobalSearchOpen(true)}><Search size={15} /><span>Search people, companies, topics, or ideas…</span><kbd>⌘K</kbd></button>
@@ -2686,8 +2680,8 @@ function Shell({ startPage }: { startPage?: Page | undefined }) {
                 </div>
               </>}
             </div>
-            <AccountControl />
-            <button className="topbar-avatar" aria-label="Your profile" onClick={() => setPage('me')}><SelfAvatar /></button>
+            <button className="icon-btn mobile-notifications" onClick={() => setNotificationsOpen(true)} aria-label="Notifications"><Bell size={18} /></button>
+            <button className="icon-btn mobile-more" onClick={() => setMoreOpen(true)} aria-label="More"><Settings2 size={18} /></button>
           </div>
 
         </header>
@@ -2717,12 +2711,12 @@ function Shell({ startPage }: { startPage?: Page | undefined }) {
       {handshakeId && <HandshakeModal memberId={handshakeId} onClose={() => setHandshakeId(null)} />}
       {captureOpen && <VoiceCaptureModal onClose={() => setCaptureOpen(false)} />}
       <MoreDrawer open={moreOpen} page={page} onClose={() => setMoreOpen(false)} onNavigate={setPage} />
+      <NotificationsDrawer open={notificationsOpen} onClose={() => setNotificationsOpen(false)} />
       <VoiceBar />
       <SelectionReader />
       <CeoHost />
       <AskIntrosDock page={page} peopleNames={people.map(p => p.name)} memberName={me.name}
         briefing={briefing.on} contextPanel={contextOpen} run={runAssistantAction} />
-      {mobileOpen && <button className="rail-scrim" aria-label="Close menu" onClick={() => setMobileOpen(false)} />}
     </div>
   </NavCtx.Provider>
 }
