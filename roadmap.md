@@ -237,6 +237,14 @@
 - [x] Execute the approved premium C-level overhaul in the current preview only; do not publish.
 
 ## Custom Home dashboard + Messages correction (Sep 24)
-- [ ] Make the customizable widget dashboard the permanent Home experience.
-- [ ] Rebalance Messages so conversation content uses the available width without oversized empty action areas.
-- [ ] Verify saved Home customization and responsive Home/Messages layouts without publishing.
+- [x] Make the customizable widget dashboard the permanent Home experience.
+- [x] Rebalance Messages so conversation content uses the available width without oversized empty action areas.
+- [x] Verify saved Home customization and responsive Home/Messages layouts without publishing.
+
+## Unified bento + draggable system layer (Sep 24)
+- [x] Add the supplied reusable BentoGrid primitive and install Motion for the accessible draggable widget grid.
+- [x] Build the responsive mouse, long-press touch, and Alt+Arrow draggable widget behavior.
+- [x] Replace Executive Brief move controls with persisted drag/keyboard reordering while preserving hide, restore, and size controls.
+- [ ] Apply BentoGrid to premium Home modules and suitable Work/Insights panel collections without changing their underlying features.
+- [ ] Add the real-data Ask Intros system feature block to an existing explanatory surface.
+- [ ] Verify Home, Executive Brief, Work, Insights, and unaffected CRM/Grid/News/Messages/Profile flows across desktop and mobile.
