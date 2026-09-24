@@ -1444,6 +1444,51 @@ export type Database = {
         }
         Relationships: []
       }
+      executive_office_hours: {
+        Row: {
+          capacity: number
+          created_at: string
+          duration_minutes: number
+          enabled: boolean
+          ends_at: string
+          id: string
+          label: string
+          owner_id: string
+          purpose: string
+          relevance: string
+          starts_at: string
+          updated_at: string
+        }
+        Insert: {
+          capacity?: number
+          created_at?: string
+          duration_minutes?: number
+          enabled?: boolean
+          ends_at: string
+          id?: string
+          label: string
+          owner_id?: string
+          purpose?: string
+          relevance?: string
+          starts_at: string
+          updated_at?: string
+        }
+        Update: {
+          capacity?: number
+          created_at?: string
+          duration_minutes?: number
+          enabled?: boolean
+          ends_at?: string
+          id?: string
+          label?: string
+          owner_id?: string
+          purpose?: string
+          relevance?: string
+          starts_at?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       executive_recommendations: {
         Row: {
           author_id: string
@@ -2323,6 +2368,78 @@ export type Database = {
         }
         Relationships: []
       }
+      negotiation_rooms: {
+        Row: {
+          batna: string
+          concessions: Json
+          counterpart_priorities: string
+          created_at: string
+          desired_outcome: string
+          id: string
+          leverage_evidence: string
+          linked_company_id: string | null
+          linked_opportunity_id: string | null
+          linked_person_id: string | null
+          meeting_prep: string
+          must_haves: string
+          nice_to_haves: string
+          objective: string
+          outcome: string
+          owner_id: string
+          status: string
+          title: string
+          unknowns: string
+          updated_at: string
+          walk_away: string
+        }
+        Insert: {
+          batna?: string
+          concessions?: Json
+          counterpart_priorities?: string
+          created_at?: string
+          desired_outcome?: string
+          id?: string
+          leverage_evidence?: string
+          linked_company_id?: string | null
+          linked_opportunity_id?: string | null
+          linked_person_id?: string | null
+          meeting_prep?: string
+          must_haves?: string
+          nice_to_haves?: string
+          objective?: string
+          outcome?: string
+          owner_id?: string
+          status?: string
+          title: string
+          unknowns?: string
+          updated_at?: string
+          walk_away?: string
+        }
+        Update: {
+          batna?: string
+          concessions?: Json
+          counterpart_priorities?: string
+          created_at?: string
+          desired_outcome?: string
+          id?: string
+          leverage_evidence?: string
+          linked_company_id?: string | null
+          linked_opportunity_id?: string | null
+          linked_person_id?: string | null
+          meeting_prep?: string
+          must_haves?: string
+          nice_to_haves?: string
+          objective?: string
+          outcome?: string
+          owner_id?: string
+          status?: string
+          title?: string
+          unknowns?: string
+          updated_at?: string
+          walk_away?: string
+        }
+        Relationships: []
+      }
       notifications: {
         Row: {
           actor_id: string | null
@@ -2355,6 +2472,47 @@ export type Database = {
           user_id?: string
         }
         Relationships: []
+      }
+      office_hour_requests: {
+        Row: {
+          acted_at: string | null
+          created_at: string
+          id: string
+          owner_id: string
+          reason: string
+          requester_id: string
+          status: string
+          window_id: string
+        }
+        Insert: {
+          acted_at?: string | null
+          created_at?: string
+          id?: string
+          owner_id: string
+          reason: string
+          requester_id?: string
+          status?: string
+          window_id: string
+        }
+        Update: {
+          acted_at?: string | null
+          created_at?: string
+          id?: string
+          owner_id?: string
+          reason?: string
+          requester_id?: string
+          status?: string
+          window_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "office_hour_requests_window_id_fkey"
+            columns: ["window_id"]
+            isOneToOne: false
+            referencedRelation: "executive_office_hours"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       passports: {
         Row: {
@@ -2685,6 +2843,51 @@ export type Database = {
           kind?: string
           member_id?: string
           user_id?: string
+        }
+        Relationships: []
+      }
+      scenario_rooms: {
+        Row: {
+          assumptions: Json
+          baseline: Json
+          created_at: string
+          id: string
+          linked_opportunity_id: string | null
+          notes: string
+          owner_id: string
+          recorded_inputs: Json
+          scenario_result: Json
+          scenario_type: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          assumptions?: Json
+          baseline?: Json
+          created_at?: string
+          id?: string
+          linked_opportunity_id?: string | null
+          notes?: string
+          owner_id?: string
+          recorded_inputs?: Json
+          scenario_result?: Json
+          scenario_type?: string
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          assumptions?: Json
+          baseline?: Json
+          created_at?: string
+          id?: string
+          linked_opportunity_id?: string | null
+          notes?: string
+          owner_id?: string
+          recorded_inputs?: Json
+          scenario_result?: Json
+          scenario_type?: string
+          title?: string
+          updated_at?: string
         }
         Relationships: []
       }

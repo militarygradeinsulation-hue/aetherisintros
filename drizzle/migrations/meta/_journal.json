@@ -64,6 +64,13 @@
       "when": 1790218450532,
       "tag": "0008_ceo_intelligence_layer",
       "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "7",
+      "when": 1790220060984,
+      "tag": "0009_ceo_leverage_layer",
+      "breakpoints": true
     }
   ]
 }
