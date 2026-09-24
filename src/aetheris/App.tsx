@@ -1547,12 +1547,12 @@ function Insights({ people, select, setPage }: { people: Member[]; select: (p: M
       <header><Label><Layers size={11} /> OPPORTUNITY CLUSTERS</Label><h2>Where several relationships point the same way.</h2></header>
       <div>
         {[
-          { name: 'Industrial AI adoption', people: people.filter(p => /Manufacturing|AI/i.test(p.industry)).slice(0, 4), why: 'Four members are solving the same operational problem within a quarter of each other.' },
-          { name: 'Capital & operating partners', people: people.filter(p => /equity|capital|Fintech/i.test(p.industry)).slice(0, 4), why: 'Three raise conversations and two operating-partner mandates overlap with your offer.' },
-          { name: 'Field and logistics operators', people: people.filter(p => /Logistics|Field|Construction|Energy/i.test(p.industry)).slice(0, 4), why: 'Repeated pipeline-visibility asks across services businesses you already understand.' },
-        ].map(c => <article key={c.name}>
+          { name: 'Industrial AI adoption', people: people.filter(p => /Manufacturing|AI/i.test(`${p.industry} ${p.expertise.join(' ')}`)).slice(0, 4) },
+          { name: 'Capital & operating partners', people: people.filter(p => /equity|capital|Fintech/i.test(`${p.industry} ${p.expertise.join(' ')}`)).slice(0, 4) },
+          { name: 'Field and logistics operators', people: people.filter(p => /Logistics|Field|Construction|Energy/i.test(`${p.industry} ${p.expertise.join(' ')}`)).slice(0, 4) },
+        ].filter(cluster => cluster.people.length > 0).map(c => <article key={c.name}>
           <h3>{c.name}</h3>
-          <p>{c.why}</p>
+          <p>{c.people.length} {c.people.length === 1 ? 'person has' : 'people have'} explicit profile evidence connected to this area.</p>
           <ul>{c.people.map(p => <li key={p.id}><button onClick={() => select(p)}><Avatar person={p} />{p.name}</button></li>)}</ul>
           <button className="text-action" onClick={() => setPage('intros')}>See the introductions <ArrowRight size={13} /></button>
         </article>)}
@@ -1703,7 +1703,7 @@ function Profile({ people, setPage, openOnboarding }: {
       <header><Label signal>PRIVATE RELATIONSHIP INTELLIGENCE</Label><small><LockKeyhole size={12} /> Visible only to you</small></header>
       <div>
         <article><span>WHY THESE PEOPLE, WHY NOW</span><p>Three relationships combine strategic fit with a live timing signal. The rest of the graph is deliberately quiet.</p></article>
-        <article><span>RELATIONSHIP HISTORY</span><p>{people.length} members mapped · 46 introductions · 24 working conversations.</p></article>
+        <article><span>RELATIONSHIP HISTORY</span><p>{people.length} members mapped · {net.threads.length} working conversations · {net.connections.length} connected relationships.</p></article>
         <article><span>STRONGEST TRUST PATH</span><p>{people[0]?.bestPath.join(' → ')}</p></article>
         <article><span>SAVED NOTES</span><p>{notes[0]?.text ?? 'No private notes recorded yet. Open any member to record what changed.'}</p></article>
       </div>
@@ -1725,20 +1725,11 @@ function Profile({ people, setPage, openOnboarding }: {
       </article>
       <article className="module compat">
         <header><Label signal>COMPATIBILITY INSIGHTS</Label><h3>How Aetheris reads the fit.</h3></header>
-        <div className="compat-rings">
-          {[['Strategic alignment', 86], ['Shared interests', 78], ['Network value', 71]].map(([k, v]) => <div key={String(k)}>
-            <svg viewBox="0 0 100 100" aria-hidden="true">
-              <circle cx="50" cy="50" r="42" className="ring-track" />
-              <circle cx="50" cy="50" r="42" className="ring-value" strokeDasharray={`${(Number(v) / 100) * 264} 264`} />
-            </svg>
-            <strong>{v}</strong><small>{k}</small>
-          </div>)}
-        </div>
-        <dl className="compat-rows"><div><dt>Mutual Connections</dt><dd>4 trusted paths</dd></div><div><dt>Conversation Potential</dt><dd>High</dd></div><div><dt>Long-Term Impact</dt><dd>Strong</dd></div><div><dt>Complementary Expertise</dt><dd>Revenue systems × capital</dd></div></dl>
+        <dl className="compat-rows"><div><dt>People mapped</dt><dd>{people.length}</dd></div><div><dt>Connected relationships</dt><dd>{net.connections.length}</dd></div><div><dt>Open conversations</dt><dd>{net.threads.length}</dd></div><div><dt>Current evidence</dt><dd>{net.learnings.length ? `${net.learnings.length} retained context items` : 'Not enough context yet'}</dd></div></dl>
       </article>
       <article className="module relationship-history">
         <header><Label>RELATIONSHIP HISTORY</Label><h3>Context across time.</h3></header>
-        <ol><li><strong>Introduction accepted</strong><small>Darius Cole · Sep 2026</small></li><li><strong>Shared operating thesis</strong><small>Private note · Aug 2026</small></li><li><strong>First mapped warm path</strong><small>via Mina Park · Jun 2026</small></li></ol>
+        <ol>{net.learnings.slice(0, 3).map(item => <li key={item.id}><strong>{item.text}</strong><small>{item.source} · {item.when}</small></li>)}{!net.learnings.length && <li><strong>No relationship history yet.</strong><small>Verified activity appears here as it happens.</small></li>}</ol>
       </article>
       <article className="module availability-panel">
         <header><Label>AVAILABILITY</Label><h3><i /> Open for three considered conversations.</h3></header><p>Best for founders, operators and investors with a specific outcome and credible mutual value.</p><Button kind="secondary" onClick={() => setPage('messages')}><CalendarDays size={14} /> Book a 30 min call</Button>
