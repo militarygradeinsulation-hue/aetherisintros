@@ -4284,10 +4284,17 @@ button.news-link{background:none;border:0;padding:0;cursor:pointer}
 .ceo-brief textarea{width:100%;box-sizing:border-box;font-family:ui-monospace,monospace;font-size:.8rem;background:var(--panel,#11151a);color:inherit;border:1px solid var(--line,rgba(255,255,255,.1));border-radius:8px;padding:12px}
 .ceo-passport{padding:10px 0}.ceo-passport ul{list-style:none;margin:6px 0 0;padding:0;display:grid;gap:4px}
 .ceo-passport li{display:flex;gap:6px;align-items:center;flex-wrap:wrap;font-size:.82rem}.ceo-passport li svg{color:var(--cobalt,#4d8ef0)}.ceo-passport small{color:var(--muted,#9ea4ac)}
-.ceo-actions{margin:8px 0}.ceo-workbar{grid-column:1/-1}
+.ceo-actions{grid-column:1/-1;margin:8px 0}
+.hub-prelude>.ceo-actions{width:100%;min-width:0}
 .ceo-prepare ol,.ceo-prepare ul{margin:0;padding-left:18px}
 .ceo-calbar{margin-bottom:16px}
-@media (max-width:720px){.ceo-decision-grid{grid-template-columns:1fr}.ceo-pulse{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:720px){
+  .ceo-decision-grid{grid-template-columns:1fr}
+  .ceo-pulse{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .hub-prelude>.ceo-actions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+  .hub-prelude>.ceo-actions button{width:100%;min-height:44px;justify-content:center;padding:8px 10px;line-height:1.25;text-align:center;white-space:normal;overflow-wrap:normal}
+  .hub-prelude>.ceo-actions button:last-child:nth-child(odd){grid-column:1/-1}
+}
 
 /* ───────── CEO intelligence layer ───────── */
 .prov { display:inline-flex; align-items:center; font: 600 9px/1 var(--font-sans, 'Space Grotesk', sans-serif); letter-spacing:.12em; padding:3px 6px; border-radius:4px; border:1px solid var(--line, rgba(255,255,255,.14)); margin-right:6px; vertical-align:middle; color: var(--muted, #9EA4AC) }
