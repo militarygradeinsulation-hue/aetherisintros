@@ -1,24 +1,18 @@
-# Clean bento flow across signed-in pages
+# Premium signed-in editorial overhaul
 
-## Goal
-Apply the supplied asymmetric bento-grid format across the current signed-in experience so each page feels clean, intentional, and easy to scan without changing any data, actions, security, or navigation.
+## Scope
+- Restore the desktop navigation: Home, People, Intros, Messages, Memory, Insights, News, Work. Keep the focused five-item mobile bar.
+- Replace the crowded feed-first Home with an asymmetric ivory portrait and dark intelligence composition using only real records and honest empty states.
+- Keep each major destination distinct: editorial People discovery, contextual Messages, curated Intros, living Memory, evidence-led Insights, live News, and the existing Work system.
+- Preserve every existing action, route, data provider, CEO operating system feature, privacy rule, and deterministic fallback.
 
-## Changes
-1. Create one shared page rhythm for Home, Network, Messages, Work, Me, and deep pages: editorial heading, concise context, primary action, then an asymmetric content grid.
-2. Rebalance existing modules by importance: one clear focal module, supporting wide/compact modules, and purposeful open space instead of dense equal-weight card walls.
-3. Standardize module surfaces, borders, spacing, typography, labels, action placement, and restrained entrance/hover motion using the existing Aetheris dark editorial tokens.
-4. Refine shared Hub and page wrappers so the format propagates across current pages without rewriting or duplicating their features.
-5. Keep social Feed content naturally single-column while styling its surrounding intelligence and supporting areas with the same bento hierarchy.
-6. Reflow each layout responsively: structured asymmetric grids on desktop, balanced two-column sections on tablet, and a clear single-column reading order on phones.
-
-## Guardrails
-- Preserve Home / Network / Messages / Work / Me navigation and every deep destination.
-- Preserve CRM/Grid, Opportunity Graph, CEO OS, messages, profiles, forms, privacy, and all existing interactions.
-- Use existing real content only; no new sample data or invented metrics.
-- Keep the permanent Editorial Noir visual system; use the supplied component as a layout reference, not as replacement branding.
-- Preview only; do not publish.
+## Visual system
+- Use reusable ivory editorial fields, grayscale portrait plates, dark intelligence zones, cobalt actions, amber live signals, hairline rules, and generous negative space.
+- Restyle overlays and menus as compact near-black editorial utilities; keep the More menu grouped.
+- Remove social-pass crowding and unsupported sample metrics.
 
 ## Verification
-- Check Home, Network, Messages, Work, Me, and representative deep pages at desktop, 390px, and 360px.
-- Confirm readable hierarchy, intentional card spans, no clipped text, no overlapping controls, and no horizontal overflow.
-- Confirm preview build and runtime remain clean.
+- Confirm the build is clean.
+- Test Home, People, Profile, Messages, Intros, Memory, Insights, News, and Work at desktop, tablet, 390px, and 360px.
+- Check News loading, image rendering, deep CRM/Grid/CEO OS navigation, clipping, overlap, and horizontal overflow.
+- Keep all changes preview-only; do not publish.

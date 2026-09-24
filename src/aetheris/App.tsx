@@ -125,6 +125,7 @@ import { openCeo } from './ceo-store'
 import { DelegatesPanel, DigitalYouRulesPanel, IntentExchangePanel, OrganizationRelationshipView, PassportManager, ReverseDiscoveryPanel } from './opportunity-ui'
 import { activeMission, missionFit, missionTypeLabel } from './opportunity-graph'
 import { NotificationsDrawer, SocialHome } from './SocialExperience'
+import { newsAge, useAetherisNews } from './news'
 
 
 
@@ -715,6 +716,31 @@ function HomeIdentityCard({ openNeed, setPage }: { openNeed: () => void; setPage
   </section>
 }
 
+function PremiumHome({ people, select, setPage, openNeed, openThread }: {
+  people: Member[]; select: (p: Member) => void; setPage: (p: Page) => void; openNeed: () => void; openThread: (id: string) => void
+}) {
+  const net = useNetwork()
+  const graph = useGraph()
+  const { data: news } = useAetherisNews()
+  const ranked = useMemo(() => [...people].sort((a, b) => b.scoreTotal - a.scoreTotal), [people])
+  const lead = ranked[0]
+  const second = ranked[1]
+  const thread = net.threads.find(item => item.unread) ?? net.threads[0]
+  const threadPerson = people.find(person => person.id === thread?.memberId)
+  const mission = activeMission(graph.missions)
+  const story = news?.items[0]
+  return <div className="premium-home"><section className="premium-home-stage">
+    <div className="premium-home-copy"><HomeBrand /><Label>RELATIONSHIP INTELLIGENCE FOR EXECUTIVES</Label><h1>Know who matters.<br />Know <em>why now.</em></h1><p>Your relationships, current mission, conversations and live signals—held in one private operating system.</p><div className="premium-home-actions"><Button onClick={openNeed}>State what you need <ArrowRight size={14} /></Button><Button kind="secondary" onClick={() => setPage('briefing')}>Open Executive Brief</Button></div><dl><div><dt>Relationships</dt><dd>{net.connections.length}</dd></div><div><dt>Open conversations</dt><dd>{net.threads.length}</dd></div><div><dt>Active missions</dt><dd>{graph.missions.filter(item => item.status === 'active').length}</dd></div></dl></div>
+    <figure className="premium-home-portrait"><img src={net.profile.avatarUrl || homeEditorialAsset.url} alt={net.profile.avatarUrl ? `${net.profile.name || 'Member'} executive portrait` : 'Executive in architectural window light'} /><figcaption>{net.profile.name || 'YOUR EXECUTIVE PAGE'}<small>{[net.profile.title, net.profile.company].filter(Boolean).join(' · ') || 'Complete your executive identity'}</small></figcaption></figure>
+    <aside className="premium-home-intel"><header><Label signal>ACTIVE RELATIONSHIP FIELD</Label><h2>Who matters now.</h2></header><MemoryGraph people={ranked.slice(0, 6)} onSelect={select} compact />{lead ? <button className="premium-home-person" onClick={() => select(lead)}><Avatar person={lead} portrait /><span><b>{lead.name}</b><small>{lead.whyNow || lead.nextAction}</small></span><ArrowRight size={14} /></button> : <p className="quiet-empty">Your relationship field will form as verified people enter your network.</p>}<div className="premium-home-mission"><span>ACTIVE MISSION / WHY NOW</span><h3>{mission?.title ?? 'No active mission yet.'}</h3><p>{mission?.whyNow ?? 'State the outcome that should shape who and what rises to the surface.'}</p><button onClick={() => setPage('work')}>Open Work <ArrowRight size={13} /></button></div></aside>
+  </section><section className="premium-home-deck">
+    <article>{lead ? <><Label>SUGGESTED PERSON</Label><button onClick={() => select(lead)}><Avatar person={lead} portrait /><span><h3>{lead.name}</h3><p>{lead.title} · {lead.company}</p><small>{lead.whyThem}</small></span></button></> : <><Label>SUGGESTED PERSON</Label><h3>No suggestion yet.</h3><p>Add current context to sharpen who appears.</p></>}</article>
+    <article>{second ? <><Label signal>INTRO RECOMMENDATION</Label><h3>{second.name}</h3><p>{second.whyYou}</p><button className="text-action" onClick={() => setPage('intros')}>Review the warm path <ArrowRight size={13} /></button></> : <><Label signal>INTRO RECOMMENDATION</Label><h3>No introduction queued.</h3><p>Recommendations appear only when there is evidence for both sides.</p></>}</article>
+    <article><Label>CONVERSATION</Label>{thread && threadPerson ? <button onClick={() => openThread(thread.id)}><Avatar person={threadPerson} /><span><h3>{threadPerson.name}</h3><p>{thread.commitment || thread.messages.at(-1)?.text}</p></span></button> : <><h3>No open conversation.</h3><p>Your private threads will appear here.</p></>}</article>
+    <article><Label>EXECUTIVE NEWS</Label>{story ? <><h3>{story.title}</h3><p>{story.source} · {newsAge(story.published)}</p><button className="text-action" onClick={() => setPage('news')}>Open News <ArrowRight size={13} /></button></> : <><h3>No live brief available.</h3><p>News will appear when the provider responds.</p></>}</article>
+  </section></div>
+}
+
 function HomeAttention({ ranked, activeNeed, select, setPage, openThread }: {
   ranked: Member[]; activeNeed: Objective | undefined; select: (p: Member) => void
   setPage: (p: Page) => void; openThread: (id: string) => void
@@ -1140,7 +1166,7 @@ function Intros({ people, select, draft }: { people: Member[]; select: (p: Membe
     <EditorialHero folio="INTROS / MUTUAL VALUE" title={<>A warm path is<br /><em>earned context.</em></>} statement="The right conversation, with a reason for both sides." copy="Each report explains the mutual value, live timing and trust path before anyone asks for an introduction." caption="Both people retain agency. Nothing moves until both choose the conversation." image={introsEditorialAsset.url} />
     <PageHead label="CURATED INTRODUCTIONS" title="People worth knowing now."
       copy="Every introduction carries mutual value, timing and a credible path. Nothing is sent until both sides agree."
-      proof="46 introductions made · 24 became working conversations." />
+      proof={`${ranked.length} evidence-ranked people · ${ranked.filter(p => ['accepted', 'introduced', 'conversing', 'closed'].includes(p.introState)).length} progressed introductions`} />
     <div className="state-filters">
       {(['all', 'recommended', 'requested', 'waiting', 'accepted', 'introduced', 'conversing', 'closed'] as const).map(s =>
         <button key={s} className={state === s ? 'active' : ''} onClick={() => setState(s)}>
@@ -1196,7 +1222,7 @@ function Messages({ people, select, activeId, setActiveId }: { people: Member[];
   }
 
   return <>
-    {isShowcase() && <EditorialHero folio="MESSAGES / RELATIONSHIP CONTEXT" title={<>Conversation with<br /><em>memory beside it.</em></>} statement="People speak to people. Context stays quietly available." copy="Commitments, mutual connections and the reason for the introduction remain beside the thread—not inside the conversation." caption="A professional exchange remains human when intelligence knows when to stay quiet." image={messagesEditorialAsset.url} />}
+    <EditorialHero folio="MESSAGES / RELATIONSHIP CONTEXT" title={<>Conversation with<br /><em>memory beside it.</em></>} statement="People speak to people. Context stays quietly available." copy="Commitments, mutual connections and the reason for the introduction remain beside the thread—not inside the conversation." caption="A professional exchange remains human when intelligence knows when to stay quiet." image={messagesEditorialAsset.url} />
     {outreachModal}
     <div className={`messages-layout ${contextOpen ? 'context-open' : 'context-closed'}`}>
       <aside className="thread-list">
@@ -1347,8 +1373,8 @@ function Memory({ people, select }: { people: Member[]; select: (p: Member) => v
         <p>A professional memory for builders, backed by real people, real context, and real intent.</p>
         <blockquote>“Most opportunities aren’t lost because people say no. They’re lost because context is forgotten.”</blockquote>
         <dl>
-          <div><dt>Relationships</dt><dd>10K+</dd></div><div><dt>Companies</dt><dd>312</dd></div>
-          <div><dt>Countries</dt><dd>28</dd></div><div><dt>Years of context</dt><dd>06</dd></div>
+          <div><dt>Relationships</dt><dd>{net.connections.length}</dd></div><div><dt>People mapped</dt><dd>{people.length}</dd></div>
+          <div><dt>Context items</dt><dd>{items.length}</dd></div><div><dt>Private notes</dt><dd>{net.notes.length}</dd></div>
         </dl>
         <button className="memory-cta">Your Network Remembers <ArrowRight size={15} /></button>
       </div>
@@ -1370,9 +1396,9 @@ function Memory({ people, select }: { people: Member[]; select: (p: Member) => v
         <blockquote>“Intros remembers the context people normally lose between conversations.”</blockquote>
         <span>NOT JUST WHAT PEOPLE SAID. BUT WHAT THEY CARE ABOUT. WHAT THEY’RE BUILDING. AND WHERE THINGS LEFT OFF.</span>
         <dl>
-          <div><dt>Conversations remembered</dt><dd>4,892</dd></div>
-          <div><dt>People in memory</dt><dd>1,246</dd></div>
-          <div><dt>Contextual connections</dt><dd>3,281</dd></div>
+          <div><dt>Conversations remembered</dt><dd>{net.threads.length}</dd></div>
+          <div><dt>People in memory</dt><dd>{people.length}</dd></div>
+          <div><dt>Context items</dt><dd>{items.length}</dd></div>
         </dl>
       </aside>
     </div>
@@ -1409,16 +1435,12 @@ function Memory({ people, select }: { people: Member[]; select: (p: Member) => v
           <div className="pattern-faces">{people.slice(0, 3).map(p => <Avatar key={p.id} person={p} portrait />)}</div>
           <p>You often connect operators, founders and investors working on the same industrial and AI problems.</p>
         </div>
-        <strong className="pattern-stat">19 successful introductions</strong>
-        <small>in the last 6 months.</small>
+        <strong className="pattern-stat">{net.connections.length} connected relationships</strong>
+        <small>in your current graph.</small>
       </section>
       <section className="mod">
         <header><span>NEWLY LEARNED NEEDS</span><button className="mod-link">View all <ArrowRight size={12} /></button></header>
-        <ul className="need-signals">
-          <li><Target size={15} /><p>2 people need design partners in the next 3 months.</p></li>
-          <li><TrendingUp size={15} /><p>3 founders are exploring Series A or B funding.</p></li>
-          <li><Network size={15} /><p>4 people are looking for introductions in APAC.</p></li>
-        </ul>
+        <ul className="need-signals">{net.asks.slice(0, 3).map(ask => <li key={ask.id}><Target size={15} /><p>{ask.ask}</p></li>)}{!net.asks.length && <li><Network size={15} /><p>No network needs have been recorded yet.</p></li>}</ul>
       </section>
       <section className="mod">
         <header><span>RECONNECT OPPORTUNITIES</span><button className="mod-link">View all <ArrowRight size={12} /></button></header>
@@ -2555,7 +2577,7 @@ function Shell({ startPage }: { startPage?: Page | undefined }) {
 
 
   const pageNode: Partial<Record<Page, ReactNode>> = {
-      home: <SocialHome />,
+       home: <PremiumHome people={people} select={setSelected} setPage={setPage} openNeed={() => setNeedOpen(true)} openThread={goToThread} />,
       network: <Discover people={people} select={setSelected} />,
       discover: <Discover people={people} select={setSelected} />,
       systems: <SystemsPage openId={systemId} setOpenId={setSystemId} />,
