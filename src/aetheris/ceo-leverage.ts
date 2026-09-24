@@ -16,7 +16,8 @@ export function customerRisk(inp: CeoInputs): RiskRow[] {
   const customerPeople = g.crm.people.filter(p => !p.archived && p.lifecycle === 'Customer')
   const ids = new Set(customerPeople.map(p => p.companyId).filter(Boolean) as string[])
   for (const o of g.crm.opportunities.filter(o => !o.archived && o.status === 'open' && o.companyId)) ids.add(o.companyId!)
-  return [...ids].map(companyId => {
+  const rows: RiskRow[] = []
+  for (const companyId of ids) {
     const co = inp.companies.find(c => c.id === companyId)
     const people = g.crm.people.filter(p => p.companyId === companyId && !p.archived)
     const opps = g.crm.opportunities.filter(o => o.companyId === companyId && !o.archived && o.status === 'open')
@@ -36,10 +37,11 @@ export function customerRisk(inp: CeoInputs): RiskRow[] {
     const memberIds = people.map(p => p.memberId).filter(Boolean)
     const future = inp.meetings.some(m => m.memberId && memberIds.includes(m.memberId) && at(m.startsAt) > Date.now())
     if (!future) reasons.push({ text: 'No future meeting is recorded with a known account contact.', source: 'RECORDED' })
-    if (!reasons.length) return null
+    if (!reasons.length) continue
     const severe = late.length >= 2 || reasons.length >= 3
-    return { id: companyId, company: co?.name ?? people[0]?.companyName ?? 'Unidentified account', level: severe ? 'AT RISK' : 'WATCH', reasons, missing: [...(!people.length ? ['Known account contact'] : []), ...(!future ? ['Future meeting'] : [])], next: late.length ? 'Review and renegotiate overdue commitments.' : people.length <= 1 ? 'Add an executive or second relationship.' : 'Schedule the next evidence-producing conversation.', companyId }
-  }).filter((x): x is RiskRow => Boolean(x)).sort((a, b) => (a.level === 'AT RISK' ? 0 : 1) - (b.level === 'AT RISK' ? 0 : 1))
+    rows.push({ id: companyId, company: co?.name ?? people[0]?.companyName ?? 'Unidentified account', level: severe ? 'AT RISK' : 'WATCH', reasons, missing: [...(!people.length ? ['Known account contact'] : []), ...(!future ? ['Future meeting'] : [])], next: late.length ? 'Review and renegotiate overdue commitments.' : people.length <= 1 ? 'Add an executive or second relationship.' : 'Schedule the next evidence-producing conversation.', companyId })
+  }
+  return rows.sort((a, b) => (a.level === 'AT RISK' ? 0 : 1) - (b.level === 'AT RISK' ? 0 : 1))
 }
 
 export interface CapitalMatch { member: Member; capitalType: string; evidence: Evidence[]; path: string; relationship: string; gap: Gap; next: string }
@@ -70,14 +72,16 @@ export type ExpertKind = 'advisor' | 'board'
 export interface ExpertMatch { member: Member; evidence: Evidence[]; path: string; gap: string[] }
 export function expertMatches(problem: string, kind: ExpertKind, inp: CeoInputs): ExpertMatch[] {
   const q = tokens(problem)
-  return inp.g.members.map(member => {
+  const rows: ExpertMatch[] = []
+  for (const member of inp.g.members) {
     const statements = [...member.expertise, ...member.offers, ...(member.openTo ?? []), member.title, member.role]
     const role = kind === 'board' ? statements.filter(x => /board|director|chair|advisor/i.test(x)) : statements.filter(x => /advisor|advisory|expert|mentor|specialist/i.test(x))
     const subject = q.length ? statements.filter(x => tokens(x).some(w => q.includes(w))) : []
-    if (!role.length && !subject.length) return null
+    if (!role.length && !subject.length) continue
     const route = routeTo(member, inp.g)
-    return { member, evidence: [...role.slice(0, 2).map(text => ({ text, source: 'DIRECT' as const })), ...subject.slice(0, 2).map(text => ({ text: `Problem match: ${text}`, source: 'DIRECT' as const }))], path: route.best?.labels.join(' → ') ?? 'No recorded warm path', gap: [...(!role.length ? [`No explicit ${kind} role is stated.`] : []), ...(!subject.length && q.length ? ['No subject-specific match is stated.'] : []), ...(!route.best ? ['No warm path recorded.'] : [])] }
-  }).filter((x): x is ExpertMatch => Boolean(x)).sort((a, b) => b.evidence.length - a.evidence.length).slice(0, 12)
+    rows.push({ member, evidence: [...role.slice(0, 2).map(text => ({ text, source: 'DIRECT' as const })), ...subject.slice(0, 2).map(text => ({ text: `Problem match: ${text}`, source: 'DIRECT' as const }))], path: route.best?.labels.join(' → ') ?? 'No recorded warm path', gap: [...(!role.length ? [`No explicit ${kind} role is stated.`] : []), ...(!subject.length && q.length ? ['No subject-specific match is stated.'] : []), ...(!route.best ? ['No warm path recorded.'] : [])] })
+  }
+  return rows.sort((a, b) => b.evidence.length - a.evidence.length).slice(0, 12)
 }
 
 export interface Dependency { company: string; people: string[]; evidence: Evidence[]; missing: string[]; level: 'WATCH' | 'HIGH' }

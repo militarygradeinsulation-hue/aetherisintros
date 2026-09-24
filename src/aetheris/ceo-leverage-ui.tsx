@@ -39,15 +39,15 @@ export function CapitalMapPanel() {
   return <div className="og-reverse-list">{rows.map(r => <article key={r.member.id} className="ceo-match"><div className="ceo-finding-head"><small>{r.capitalType}</small><ProvBadge source="DIRECT" /></div><b>{r.member.name}</b><small>{r.member.title} · {r.member.company}</small><p><b>Why relevant:</b> {r.evidence[0]?.text}</p><p><b>Warm path:</b> {r.path}<br /><b>Relationship:</b> {r.relationship}<br /><b>Next:</b> {r.next}</p><Why evidence={r.evidence} gap={r.gap} /><button onClick={() => { ceo.close(); nav.openMember(r.member) }}>Executive Page</button></article>)}</div>
 }
 
-function ExpertPanel({ kind, initial = '' }: { kind: 'advisor' | 'board'; initial?: string }) {
+function ExpertPanel({ kind, initial = '' }: { kind: 'advisor' | 'board'; initial?: string | undefined }) {
   const ceo = useCeo(); const nav = useNav(); const [problem, setProblem] = useState(initial); const [query, setQuery] = useState(initial)
   const rows = useMemo(() => expertMatches(query, kind, ceo.inputs), [query, kind, ceo.inputs])
   return <section><form className="ceo-who-form" onSubmit={e => { e.preventDefault(); setQuery(problem) }}><input value={problem} onChange={e => setProblem(e.target.value)} placeholder={kind === 'board' ? 'Board issue, market or capability…' : 'Problem you need advice on…'} /><Btn onClick={() => setQuery(problem)}>Match</Btn></form>
     {!rows.length && <p className="ceo-empty">No authorized member states matching {kind === 'board' ? 'board/advisory experience' : 'advisor expertise'}. No expert has been invented.</p>}
     <div className="og-reverse-list">{rows.map(r => <article key={r.member.id} className="ceo-match"><b>{r.member.name}</b><small>{r.member.title} · {r.member.company}</small><p><b>Path:</b> {r.path}</p><Why evidence={r.evidence} gap={{ known: r.evidence.map(e => e.text), unknown: r.gap, improve: 'Confirm relevance, availability and scope directly.' }} /><button onClick={() => { ceo.close(); nav.openMember(r.member) }}>Executive Page</button></article>)}</div></section>
 }
-export const BoardNetworkPanel = ({ initial }: { initial?: string }) => <ExpertPanel kind="board" initial={initial} />
-export const AdvisorPanel = ({ initial }: { initial?: string }) => <ExpertPanel kind="advisor" initial={initial} />
+export const BoardNetworkPanel = ({ initial }: { initial?: string | undefined }) => <ExpertPanel kind="board" initial={initial} />
+export const AdvisorPanel = ({ initial }: { initial?: string | undefined }) => <ExpertPanel kind="advisor" initial={initial} />
 
 export function DelegationPanel() {
   const ceo = useCeo(); const rows = useMemo(() => delegationCandidates(ceo.inputs), [ceo.inputs]); const [queued, setQueued] = useState<string[]>([])
@@ -80,12 +80,12 @@ export function ScenarioPanel({ initial = '' }: { initial?: string }) {
     <div className="scenario-compare"><div><Eyebrow>RECORDED BASELINE</Eyebrow><pre>{JSON.stringify(projection.baseline, null, 2)}</pre></div><div><Eyebrow signal>SCENARIO · USER ASSUMPTIONS</Eyebrow><pre>{JSON.stringify(projection.result, null, 2)}</pre></div></div><Btn onClick={() => void ceo.saveScenario({ title, linkedOpportunityId: oppId || null, scenarioType: type, recordedInputs: opp ? { amount: opp.amount, probability: opp.probability, expectedClose: opp.expectedClose ?? '' } : {}, assumptions, baseline: projection.baseline, scenarioResult: projection.result, notes })}><LockKeyhole size={14} /> Save scenario</Btn></section>
 }
 
-export function DealMemoryPanel({ initial = '', memberId }: { initial?: string; memberId?: string }) {
+export function DealMemoryPanel({ initial = '', memberId }: { initial?: string | undefined; memberId?: string | undefined }) {
   const ceo = useCeo(); const [q,setQ] = useState(initial); const memory = useMemo(() => dealMemory(q, ceo.inputs, q ? undefined : memberId), [q, memberId, ceo.inputs])
   return <section><label className="og-form">Deal, company or person<input value={q} onChange={e => setQ(e.target.value)} placeholder="Type a name…" /></label>{!memory ? <p className="ceo-empty">No matching canonical record.</p> : <><Eyebrow signal>WHY ARE WE HERE?</Eyebrow><h3>{memory.subject}</h3><p>{memory.why}</p><Eyebrow>UNRESOLVED LOOPS</Eyebrow>{memory.unresolved.length ? <ul>{memory.unresolved.map(x => <li key={x}>{x}</li>)}</ul> : <p className="ceo-empty">No unresolved task or next action recorded.</p>}<Eyebrow>CHRONOLOGY</Eyebrow><ol className="replay">{memory.steps.map((s,i) => <li key={i}><small>{new Date(s.at).toLocaleDateString()} · {s.kind}</small><ProvBadge source={s.source} /><span>{s.text}</span></li>)}</ol></>}</section>
 }
 
-export function TrustProfilePanel({ initial = '' }: { initial?: string }) {
+export function TrustProfilePanel({ initial = '' }: { initial?: string | undefined }) {
   const ceo = useCeo(); const net = useNetwork(); const [id,setId] = useState(() => net.members.find(m => m.name.toLowerCase().includes(initial.toLowerCase()))?.id ?? net.members[0]?.id ?? ''); const m = net.members.find(x => x.id === id); const badge = usePublicBadge(id); const person = m ? ceo.inputs.g.crm.personForMember(m.id) : undefined; const thread = m ? ceo.inputs.g.threads.find(t => t.memberId === m.id) : undefined; const feedback = ceo.inputs.g.feedback.filter(f => f.memberId === id && f.shareable); const won = person ? ceo.inputs.g.crm.opportunities.filter(o => o.personId === person.id && o.status === 'won').length : 0
   return <section><label className="og-form">Executive<select value={id} onChange={e => setId(e.target.value)}>{net.members.map(x => <option key={x.id} value={x.id}>{x.name}</option>)}</select></label>{m && <><h3>{m.name}</h3><p className="ceo-note">Factual profile only. Ask Intros does not calculate a reputation score.</p><ul className="ceo-findings"><li><b>Verified identity / business / role</b><span>{badge?.role ? `${badge.role}${badge.business ? ` · ${badge.business}` : ''}` : 'No completed public verification recorded.'}</span></li><li><b>Explicit expertise</b><span>{m.expertise.join(' · ') || 'Not stated'}</span></li><li><b>Completed introductions</b><span>{['introduced','conversing','closed'].includes(m.introState) ? 'A completed introduction state is recorded.' : 'No completed introduction recorded.'}</span></li><li><b>Explicit feedback and outcomes</b><span>{feedback.length} shareable feedback record(s) · {won} won linked opportunity outcome(s)</span></li><li><b>Objective responsiveness</b><span>{thread ? `${thread.messages.filter(x => x.from === 'them').length} recorded replies in ${thread.messages.length} messages` : 'No conversation recorded.'}</span></li></ul></>}</section>
 }
