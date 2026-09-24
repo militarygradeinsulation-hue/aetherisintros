@@ -10,6 +10,7 @@ import {
 import { useEffect, type ReactNode } from "react";
 
 import { Toaster } from "@/components/ui/sonner";
+import { CursorGlow } from "@/components/ui/cursor-glow";
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 import { applyTextScale, readTextScale } from "../aetheris/textScale";
@@ -118,6 +119,7 @@ function RootShell({ children }: { children: ReactNode }) {
       <body>
         {children}
         <Toaster position="bottom-right" />
+        <CursorGlow />
         <Scripts />
       </body>
     </html>
