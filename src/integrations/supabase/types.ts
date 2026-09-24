@@ -224,6 +224,63 @@ export type Database = {
         }
         Relationships: []
       }
+      ceo_relationship_marks: {
+        Row: {
+          cadence_days: number | null
+          company_id: string | null
+          created_at: string
+          id: string
+          kind: string
+          label: string
+          mission_id: string | null
+          next_action: string
+          next_touch: string | null
+          notes: string
+          outcome: string
+          subject_id: string
+          updated_at: string
+          user_id: string
+          value_give: string
+          value_need: string
+        }
+        Insert: {
+          cadence_days?: number | null
+          company_id?: string | null
+          created_at?: string
+          id?: string
+          kind: string
+          label?: string
+          mission_id?: string | null
+          next_action?: string
+          next_touch?: string | null
+          notes?: string
+          outcome?: string
+          subject_id: string
+          updated_at?: string
+          user_id?: string
+          value_give?: string
+          value_need?: string
+        }
+        Update: {
+          cadence_days?: number | null
+          company_id?: string | null
+          created_at?: string
+          id?: string
+          kind?: string
+          label?: string
+          mission_id?: string | null
+          next_action?: string
+          next_touch?: string | null
+          notes?: string
+          outcome?: string
+          subject_id?: string
+          updated_at?: string
+          user_id?: string
+          value_give?: string
+          value_need?: string
+        }
+        Relationships: []
+      }
       circle_memberships: {
         Row: {
           circle_id: string
@@ -947,8 +1004,10 @@ export type Database = {
       decisions: {
         Row: {
           actual_outcome: string
+          assumption_review: string
           assumptions: string
           chosen_option: string
+          confidence: number | null
           context: string
           created_at: string
           decided_at: string | null
@@ -959,9 +1018,11 @@ export type Database = {
           linked_opportunity_ids: string[]
           linked_person_ids: string[]
           options: Json
+          prediction: string
           rationale: string
           review_date: string | null
           risks: string
+          same_again: string
           status: string
           title: string
           updated_at: string
@@ -969,8 +1030,10 @@ export type Database = {
         }
         Insert: {
           actual_outcome?: string
+          assumption_review?: string
           assumptions?: string
           chosen_option?: string
+          confidence?: number | null
           context?: string
           created_at?: string
           decided_at?: string | null
@@ -981,9 +1044,11 @@ export type Database = {
           linked_opportunity_ids?: string[]
           linked_person_ids?: string[]
           options?: Json
+          prediction?: string
           rationale?: string
           review_date?: string | null
           risks?: string
+          same_again?: string
           status?: string
           title: string
           updated_at?: string
@@ -991,8 +1056,10 @@ export type Database = {
         }
         Update: {
           actual_outcome?: string
+          assumption_review?: string
           assumptions?: string
           chosen_option?: string
+          confidence?: number | null
           context?: string
           created_at?: string
           decided_at?: string | null
@@ -1003,9 +1070,11 @@ export type Database = {
           linked_opportunity_ids?: string[]
           linked_person_ids?: string[]
           options?: Json
+          prediction?: string
           rationale?: string
           review_date?: string | null
           risks?: string
+          same_again?: string
           status?: string
           title?: string
           updated_at?: string
