@@ -2378,8 +2378,11 @@ export type Database = {
           id: string
           leverage_evidence: string
           linked_company_id: string | null
+          linked_company_key: string | null
           linked_opportunity_id: string | null
+          linked_opportunity_key: string | null
           linked_person_id: string | null
+          linked_person_key: string | null
           meeting_prep: string
           must_haves: string
           nice_to_haves: string
@@ -2401,8 +2404,11 @@ export type Database = {
           id?: string
           leverage_evidence?: string
           linked_company_id?: string | null
+          linked_company_key?: string | null
           linked_opportunity_id?: string | null
+          linked_opportunity_key?: string | null
           linked_person_id?: string | null
+          linked_person_key?: string | null
           meeting_prep?: string
           must_haves?: string
           nice_to_haves?: string
@@ -2424,8 +2430,11 @@ export type Database = {
           id?: string
           leverage_evidence?: string
           linked_company_id?: string | null
+          linked_company_key?: string | null
           linked_opportunity_id?: string | null
+          linked_opportunity_key?: string | null
           linked_person_id?: string | null
+          linked_person_key?: string | null
           meeting_prep?: string
           must_haves?: string
           nice_to_haves?: string
@@ -2853,6 +2862,7 @@ export type Database = {
           created_at: string
           id: string
           linked_opportunity_id: string | null
+          linked_opportunity_key: string | null
           notes: string
           owner_id: string
           recorded_inputs: Json
@@ -2867,6 +2877,7 @@ export type Database = {
           created_at?: string
           id?: string
           linked_opportunity_id?: string | null
+          linked_opportunity_key?: string | null
           notes?: string
           owner_id?: string
           recorded_inputs?: Json
@@ -2881,6 +2892,7 @@ export type Database = {
           created_at?: string
           id?: string
           linked_opportunity_id?: string | null
+          linked_opportunity_key?: string | null
           notes?: string
           owner_id?: string
           recorded_inputs?: Json
