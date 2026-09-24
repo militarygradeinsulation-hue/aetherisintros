@@ -11,11 +11,13 @@ import { NewsReader } from './NewsReader'
 import { Btn } from '../ui'
 import { ActiveMissionTile, OpportunityGraphTile } from '../opportunity-ui'
 import { ApprovalsTile, ChiefOfStaffTile, CompanyPulseTile, WhatChangedTile } from '../ceo-ui'
+import { DigitalOffice, HelpTile, MissingTile, StrategicTile } from '../ceo-insights-ui'
 import { HubIntro, RadarMini, SignalPath, TileShell } from '../hub-ui'
 
 const dueLabel = (value: string | null) => value ? new Date(value).toLocaleDateString(undefined, { month: 'short', day: 'numeric' }) : 'No date'
 
 const widgetNames: Record<HomeWidgetId, string> = {
+  missing: 'What am I missing?', help: 'Who can I help?', strategic: 'Strategic relationships',
   changed: 'What changed', pulse: 'Company pulse', chief: 'Chief of Staff', approvals: 'Approvals',
   mission: 'Active mission', graph: 'Opportunity Graph',
   matters: 'What matters now', signals: 'Changing signals', people: 'People who matter', memory: 'Active Memory',
@@ -77,6 +79,9 @@ export function ExecutiveHome() {
 
   const renderWidget = (id: HomeWidgetId) => {
     switch (id) {
+      case 'missing': return <MissingTile />
+      case 'help': return <HelpTile />
+      case 'strategic': return <StrategicTile />
       case 'changed': return <WhatChangedTile />
       case 'pulse': return <CompanyPulseTile />
       case 'chief': return <ChiefOfStaffTile />
@@ -129,6 +134,8 @@ export function ExecutiveHome() {
       <HubIntro label="CEO NOW / TODAY" title={<>Good morning, {firstName}.<br /><em>Here is what matters now.</em></>}
         copy="A concise reading of timing, relationships, commitments and movement across your private operating system."
         aside={<div className="home-intro-aside"><div className="hub-now"><strong>{attention}</strong><span>items may need<br />your attention</span></div><Btn kind={customizing ? 'primary' : 'secondary'} onClick={() => setCustomizing(value => !value)}>{customizing ? <Check size={14} /> : <LayoutDashboard size={14} />}{customizing ? 'Done' : 'Customize Home'}</Btn></div>} />
+
+      <DigitalOffice />
 
       {customizing && <section className="home-customizer" aria-label="Home customization">
         <div><span>YOUR HOME</span><h2>Arrange the view around your priorities.</h2><p>Move, resize, or hide any widget. Changes save automatically.</p></div>

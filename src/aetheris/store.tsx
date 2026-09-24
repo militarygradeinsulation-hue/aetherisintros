@@ -57,7 +57,7 @@ export interface PreferenceSettings {
   retention: string
 }
 
-export type HomeWidgetId = 'changed' | 'pulse' | 'chief' | 'approvals' | 'mission' | 'graph' | 'matters' | 'signals' | 'people' | 'memory' | 'pipeline' | 'calendar' | 'news' | 'assistant'
+export type HomeWidgetId = 'missing' | 'help' | 'strategic' | 'changed' | 'pulse' | 'chief' | 'approvals' | 'mission' | 'graph' | 'matters' | 'signals' | 'people' | 'memory' | 'pipeline' | 'calendar' | 'news' | 'assistant'
 export type HomeWidgetSize = 'compact' | 'standard' | 'wide'
 export interface HomeWidgetConfig {
   id: HomeWidgetId
@@ -67,9 +67,12 @@ export interface HomeWidgetConfig {
 
 export const defaultHomeLayout: HomeWidgetConfig[] = [
   { id: 'changed', size: 'wide', visible: true },
-  { id: 'pulse', size: 'standard', visible: true },
   { id: 'chief', size: 'standard', visible: true },
+  { id: 'missing', size: 'standard', visible: true },
+  { id: 'help', size: 'standard', visible: true },
+  { id: 'strategic', size: 'standard', visible: true },
   { id: 'approvals', size: 'compact', visible: true },
+  { id: 'pulse', size: 'standard', visible: true },
   { id: 'mission', size: 'standard', visible: true },
   { id: 'graph', size: 'standard', visible: true },
   { id: 'matters', size: 'wide', visible: true },
@@ -170,8 +173,8 @@ function normalizeHomeLayout(value: unknown): HomeWidgetConfig[] {
   }
   for (const widget of defaultHomeLayout) {
     if (normalized.some(item => item.id === widget.id)) continue
-    if (['changed', 'pulse', 'chief', 'approvals', 'mission', 'graph'].includes(widget.id)) {
-      const order = ['changed', 'pulse', 'chief', 'approvals', 'mission', 'graph']
+    if (['changed', 'chief', 'missing', 'help', 'strategic', 'approvals', 'pulse', 'mission', 'graph'].includes(widget.id)) {
+      const order = ['changed', 'chief', 'missing', 'help', 'strategic', 'approvals', 'pulse', 'mission', 'graph']
       const at = normalized.findIndex(item => order.indexOf(item.id) === -1 || order.indexOf(item.id) > order.indexOf(widget.id))
       normalized.splice(at < 0 ? normalized.length : at, 0, { ...widget })
     } else normalized.push({ ...widget })

@@ -17,6 +17,8 @@ import { meetingBrief } from './opportunity-graph'
 import type { Member } from './social'
 import type { CrmTask } from './crm/types'
 import { openCeo, useCeo } from './ceo-store'
+import { BlindSpotPanel, CollisionsPanel, CompanyMatchPanel, CoveragePanel, GapBox, HelpPanel, MarkButtons, PatternsPanel, PromisePanel, ProvBadge, RedTeamPanel, ReplayPanel, SinglesPanel, StrategicPanel, TimeRoiPanel, Why } from './ceo-insights-ui'
+import { forecastGap, whoGap } from './ceo-insights'
 import {
   ceoViewLabel, chiefOfStaff, companyPulse, dealHealth, dealHealthRule, detectKind, executiveBrief, forecastDelta, needingAttention,
   networkRoi, relationshipHealth, sinceDecided, whatChanged, whoCanChange,
@@ -45,6 +47,7 @@ function ItemList({ items, empty }: { items: CeoItem[]; empty: string }) {
   if (!items.length) return <p className="ceo-empty">{empty}</p>
   return <ul className="ceo-items">{items.map(i => <li key={i.id} className={`tone-${i.tone}`}>
     <button type="button" onClick={() => go(i.route)}><small>{i.kind}</small><b>{i.title}</b>{i.detail && <span>{i.detail}</span>}<ArrowRight size={13} /></button>
+    <Why evidence={[{ text: i.detail || i.title, source: /stale|quiet|no activity|days/i.test(`${i.title} ${i.detail}`) ? 'OBSERVED' : 'RECORDED' }]} />
   </li>)}</ul>
 }
 
@@ -114,6 +117,7 @@ export function WhoCanChangePanel({ initial = '' }: { initial?: string }) {
     </form>
     <div className="state-filters">{kinds.map(k => <button type="button" key={k} className={kind === k ? 'active' : ''} onClick={() => setKind(k)}>{k === 'any' ? `Auto${detected !== 'any' ? ` (${detected})` : ''}` : k}</button>)}</div>
     {asked && !results.length && <p className="ceo-empty">No one in the records available to you lists matching offers, expertise, role or company. Post it as a Signal so the right people can see it.</p>}
+    {asked && <GapBox gap={whoGap(asked, ceo.inputs.g, results.length)} />}
     <div className="og-reverse-list">{results.map(r => <article key={r.member.id} className={`ceo-match strength-${r.strength}`}>
       <header><small>{r.strength.toUpperCase()} MATCH · {r.evidence.length} evidence point{r.evidence.length === 1 ? '' : 's'}</small><b>{r.member.name}</b><span>{r.member.title}{r.member.company ? `, ${r.member.company}` : ''}</span></header>
       <dl className="og-reverse">
@@ -123,7 +127,8 @@ export function WhoCanChangePanel({ initial = '' }: { initial?: string }) {
         <div><dt>WARMEST PATH</dt><dd><div className="og-path">{r.path.map(p => <span key={p}>{p}</span>)}</div><small>{r.pathNote}</small></dd></div>
         <div><dt>NEXT MOVE</dt><dd>{r.next}</dd></div>
       </dl>
-      <details><summary>Evidence</summary><ul>{r.evidence.map(e => <li key={e}>{e}</li>)}</ul></details>
+      <Why evidence={r.evidence.map(e => ({ text: e, source: ceo.inputs.g.verifiedIds.has(r.member.id) && /verif/i.test(e) ? 'VERIFIED' as const : /path|connect|mutual|message|meeting/i.test(e) ? 'OBSERVED' as const : 'DIRECT' as const }))} label="WHY? · EVIDENCE" />
+      <MarkButtons subjectId={r.member.id} />
       <div className="og-row-actions"><button onClick={() => { ceo.close(); nav.openMember(r.member) }}>Executive Page</button><button onClick={() => { ceo.close(); nav.openIntro(r.member) }}>Request intro</button></div>
     </article>)}</div>
   </section>
@@ -153,7 +158,7 @@ export function DecisionRoom({ initial }: { initial?: string }) {
     {!ceo.inputs.decisions.length && <p className="ceo-empty">No decisions recorded. Capture the question, the options and why you chose — then Ask Intros reminds you to review it against what actually happened.</p>}
     <div className="og-mission-list">{ceo.inputs.decisions.map(d => <article key={d.id} className="og-mission">
       <div><small>{d.status.toUpperCase()}{d.reviewDate ? ` · review ${fmt(d.reviewDate)}` : ''}{d.reviewDate && new Date(d.reviewDate).getTime() <= Date.now() && d.status !== 'archived' ? ' · DUE' : ''}</small><b>{d.title}</b>{d.chosenOption && <p>Chosen: {d.chosenOption}</p>}</div>
-      <div className="og-row-actions"><button onClick={() => { setDraft(toDraft(d)); setEditing(true) }}>Open</button><button aria-label="Delete decision" onClick={() => void ceo.removeDecision(d.id)}><Trash2 size={12} /></button></div>
+      <div className="og-row-actions"><button onClick={() => { setDraft(toDraft(d)); setEditing(true) }}>Open</button><button onClick={() => openCeo({ view: 'redteam', arg: d.id })}>Challenge</button><button aria-label="Delete decision" onClick={() => void ceo.removeDecision(d.id)}><Trash2 size={12} /></button></div>
     </article>)}</div>
   </section>
   return <section className="ceo-decision">
@@ -183,7 +188,7 @@ export function DecisionRoom({ initial }: { initial?: string }) {
       </aside>
     </div>
     {ceo.error && <p className="executive-form-note">{ceo.error}</p>}
-    <div className="og-row-actions"><Btn disabled={!draft.title.trim()} onClick={() => void save()}><Gavel size={14} /> Save decision</Btn><button onClick={() => setEditing(false)}>All decisions</button></div>
+    <div className="og-row-actions"><Btn disabled={!draft.title.trim()} onClick={() => void save()}><Gavel size={14} /> Save decision</Btn>{draft.id && <button onClick={() => openCeo({ view: 'redteam', arg: draft.id! })}>Challenge this</button>}<button onClick={() => setEditing(false)}>All decisions</button></div>
   </section>
 }
 
@@ -252,7 +257,7 @@ export function HealthBadge({ member }: { member: Member }) {
   const h = useMemo(() => relationshipHealth(member, ceo.inputs.g), [member, ceo.inputs.g])
   return <details className={`ceo-health state-${h.state.replace(' ', '-').toLowerCase()}`}>
     <summary><Eyebrow>RELATIONSHIP HEALTH</Eyebrow><b>{h.state}</b></summary>
-    <ul>{h.reasons.map(r => <li key={r}>{r}</li>)}</ul>
+    <ul>{h.reasons.map(r => <li key={r}><ProvBadge source={/no recorded|not recorded/i.test(r) ? 'UNKNOWN' : 'OBSERVED'} />{r}</li>)}</ul>
     <small>Derived from recorded activity only — never sentiment.</small>
   </details>
 }
@@ -379,7 +384,8 @@ export function ForecastConfidencePanel() {
     <Eyebrow signal>WHAT CHANGED IN FORECAST?</Eyebrow>
     {ceo.inputs.snapshot ? (delta.length ? <ul>{delta.map(d => <li key={d}>{d}</li>)}</ul> : <p className="ceo-empty">No stage, value, probability, status or close-date changes since your last visit.</p>) : <p className="ceo-empty">The first snapshot is saved on this visit; deltas appear from your next visit.</p>}
     <Eyebrow>DEAL HEALTH</Eyebrow>
-    <p className="og-note">{dealHealthRule}</p>
+    <p className="og-note"><ProvBadge source="INFERRED" /> {dealHealthRule}</p>
+    <GapBox gap={forecastGap(ceo.inputs.g)} />
     {!rows.length && <p className="ceo-empty">No open opportunities recorded in Work.</p>}
     <ul className="ceo-items">{rows.map(r => <li key={r.opp.id} className={r.label === 'At risk' ? 'tone-risk' : r.label === 'Watch' ? 'tone-signal' : 'tone-info'}><div>
       <small>{r.label.toUpperCase()} · {r.opp.probability}% · weighted {Math.round(r.weighted).toLocaleString()} {r.opp.currency}</small><b>{r.opp.name}</b>
@@ -522,6 +528,19 @@ export function CeoHost() {
   const member = picked ?? (r.memberId ? net.members.find(m => m.id === r.memberId) : byArg)
   let body: ReactNode
   switch (r.view) {
+    case 'missing': body = <BlindSpotPanel />; break
+    case 'redteam': body = <RedTeamPanel decisionId={r.arg && ceo.inputs.decisions.some(d => d.id === r.arg) ? r.arg : undefined} />; break
+    case 'help': body = <HelpPanel />; break
+    case 'coverage': body = <CoveragePanel arg={r.arg ?? ''} />; break
+    case 'strategic': body = <StrategicPanel />; break
+    case 'bench': body = <StrategicPanel kind="bench" />; break
+    case 'time': body = <TimeRoiPanel />; break
+    case 'promises': body = <PromisePanel />; break
+    case 'collisions': body = <CollisionsPanel />; break
+    case 'companies': body = <CompanyMatchPanel />; break
+    case 'replay': body = <ReplayPanel arg={r.arg ?? ''} memberId={r.memberId} />; break
+    case 'patterns': body = <PatternsPanel />; break
+    case 'singles': body = <SinglesPanel />; break
     case 'changed': { const items = whatChanged(ceo.inputs); body = <ItemList items={items} empty="Nothing important changed. Go run your company." />; break }
     case 'forgetting': body = <ItemList items={chiefOfStaff(ceo.inputs)} empty="Nothing is slipping: no open promises, stale deals, unanswered messages, due decisions or pending approvals." />; break
     case 'who': body = <WhoCanChangePanel initial={r.arg ?? ''} />; break
