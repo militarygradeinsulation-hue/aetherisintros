@@ -227,3 +227,10 @@
 - [ ] Create shared editorial hero, portrait, intelligence-zone, premium module, and small-overlay styling without changing business logic or security.
 - [ ] Preserve all CEO OS, Opportunity Graph, CRM/Grid, deep routes, canonical records, privacy, verification, and deterministic fallbacks.
 - [ ] Verify build and browser behavior at 1440, 1280, tablet, 390, and 360 without publishing.
+
+## Premium C-level visual completion (Sep 24)
+- [ ] Make People image-first with visible filters, featured connectors, and full discovery grid.
+- [ ] Add focused Executive Page sections and five private relationship tabs.
+- [ ] Finish Messages with category rail, intro strip, persistent desktop context, and mobile context drawer.
+- [ ] Give Work a distinct editorial masthead while preserving CRM/Pipeline/Grid/Calendar/Forecast.
+- [ ] Consolidate overlay styling and verify every requested viewport and deep destination without publishing.
