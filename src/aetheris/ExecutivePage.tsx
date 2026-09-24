@@ -13,6 +13,7 @@ import type { Member } from './social'
 import { useNetwork } from './store'
 import { Btn, Eyebrow, Face } from './ui'
 import { CeoActions, HealthBadge, TrustPassportSummary } from './ceo-ui'
+import { MarkButtons } from './ceo-insights-ui'
 import { IntroWorkflow, MeetingBriefPanel, ReverseDiscoveryPanel, RoutingPanel, TrustPanel, WeatherPanel } from './opportunity-ui'
 
 export const OPEN_TO_OPTIONS = [
@@ -223,6 +224,7 @@ export function ExecutivePage({ person, onClose, onIntro, onMessage }: {
           <HealthBadge member={person} />
           <WeatherPanel member={person} />
           <CeoActions member={person} {...(thread ? { threadId: thread.id } : {})} />
+          <MarkButtons subjectId={person.id} />
           <dl>
             <div><dt>Status</dt><dd>{connected ? 'Connected' : person.relationshipStatus}</dd></div>
             <div><dt>Last interaction</dt><dd>{crmPerson?.lastActivityAt ? new Date(crmPerson.lastActivityAt).toLocaleDateString() : person.lastInteractionDays ? `${person.lastInteractionDays} days ago` : 'Not recorded'}</dd></div>

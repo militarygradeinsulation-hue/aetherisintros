@@ -9,7 +9,7 @@ import { createContext, useCallback, useContext, useEffect, useMemo, useRef, use
 import { supabase } from '@/integrations/supabase/client'
 import { useOps } from './crm/store'
 import { useGraph, useGraphInputs } from './graph-store'
-import { snapshotOf, type Approval, type ApprovalStatus, type ApprovalType, type CalMeeting, type CeoInputs, type CeoRoute, type Decision, type OppSnapshot } from './ceo-engine'
+import { snapshotOf, type Approval, type ApprovalStatus, type ApprovalType, type CalMeeting, type CeoInputs, type Mark, type CeoRoute, type Decision, type OppSnapshot } from './ceo-engine'
 
 interface CeoApi {
   inputs: CeoInputs
@@ -22,6 +22,8 @@ interface CeoApi {
   removeDecision: (id: string) => Promise<void>
   queueApproval: (a: { actionType: ApprovalType; summary: string; payload?: Record<string, unknown>; source?: string }) => Promise<void>
   setApproval: (id: string, status: ApprovalStatus) => Promise<void>
+  saveMark: (m: Partial<Mark> & { kind: Mark['kind']; subjectId: string }) => Promise<void>
+  removeMark: (id: string) => Promise<void>
 }
 
 const Ctx = createContext<CeoApi | null>(null)
@@ -37,6 +39,7 @@ const decisionFromRow = (r: any): Decision => ({
   chosenOption: r.chosen_option, rationale: r.rationale, assumptions: r.assumptions, risks: r.risks, expectedOutcome: r.expected_outcome,
   reviewDate: r.review_date, actualOutcome: r.actual_outcome, linkedPersonIds: r.linked_person_ids ?? [], linkedCompanyIds: r.linked_company_ids ?? [],
   linkedOpportunityIds: r.linked_opportunity_ids ?? [], linkedEventIds: r.linked_event_ids ?? [], createdAt: r.created_at, decidedAt: r.decided_at, updatedAt: r.updated_at,
+  prediction: r.prediction ?? '', confidence: r.confidence ?? null, assumptionReview: r.assumption_review ?? '', sameAgain: r.same_again ?? '',
 })
 const decisionToRow = (d: Partial<Decision>) => ({
   ...(d.title !== undefined && { title: d.title }), ...(d.status !== undefined && { status: d.status }), ...(d.context !== undefined && { context: d.context }),
@@ -47,7 +50,15 @@ const decisionToRow = (d: Partial<Decision>) => ({
   ...(d.linkedPersonIds !== undefined && { linked_person_ids: d.linkedPersonIds }), ...(d.linkedCompanyIds !== undefined && { linked_company_ids: d.linkedCompanyIds }),
   ...(d.linkedOpportunityIds !== undefined && { linked_opportunity_ids: d.linkedOpportunityIds }), ...(d.linkedEventIds !== undefined && { linked_event_ids: d.linkedEventIds }),
   ...(d.decidedAt !== undefined && { decided_at: d.decidedAt }),
+  ...(d.prediction !== undefined && { prediction: d.prediction }), ...(d.confidence !== undefined && { confidence: d.confidence }),
+  ...(d.assumptionReview !== undefined && { assumption_review: d.assumptionReview }), ...(d.sameAgain !== undefined && { same_again: d.sameAgain }),
 })
+const markFromRow = (r: any): Mark => ({ id: r.id, kind: r.kind, subjectId: r.subject_id, companyId: r.company_id, label: r.label ?? '', outcome: r.outcome ?? '', cadenceDays: r.cadence_days,
+  valueGive: r.value_give ?? '', valueNeed: r.value_need ?? '', nextAction: r.next_action ?? '', nextTouch: r.next_touch, missionId: r.mission_id, notes: r.notes ?? '', createdAt: r.created_at, updatedAt: r.updated_at })
+const markToRow = (m: Partial<Mark>) => ({ ...(m.kind !== undefined && { kind: m.kind }), ...(m.subjectId !== undefined && { subject_id: m.subjectId }), ...(m.companyId !== undefined && { company_id: m.companyId }),
+  ...(m.label !== undefined && { label: m.label }), ...(m.outcome !== undefined && { outcome: m.outcome }), ...(m.cadenceDays !== undefined && { cadence_days: m.cadenceDays }),
+  ...(m.valueGive !== undefined && { value_give: m.valueGive }), ...(m.valueNeed !== undefined && { value_need: m.valueNeed }), ...(m.nextAction !== undefined && { next_action: m.nextAction }),
+  ...(m.nextTouch !== undefined && { next_touch: m.nextTouch || null }), ...(m.missionId !== undefined && { mission_id: m.missionId }), ...(m.notes !== undefined && { notes: m.notes }) })
 const approvalFromRow = (r: any): Approval => ({ id: r.id, actionType: r.action_type, summary: r.summary, payload: r.payload ?? {}, source: r.source, status: r.status, createdAt: r.created_at, actedAt: r.acted_at })
 
 export function CeoProvider({ children }: { children: ReactNode }) {
@@ -57,6 +68,7 @@ export function CeoProvider({ children }: { children: ReactNode }) {
   const [decisions, setDecisions] = useState<Decision[]>([])
   const [approvals, setApprovals] = useState<Approval[]>([])
   const [meetings, setMeetings] = useState<CalMeeting[]>([])
+  const [marks, setMarks] = useState<Mark[]>([])
   const [error, setError] = useState('')
   const [route, setRoute] = useState<CeoRoute | null>(null)
   const [since] = useState(() => { if (typeof window === 'undefined') return Date.now() - 86_400_000; const v = Number(localStorage.getItem(VISIT)); return v > 0 ? v : Date.now() - 86_400_000 })
@@ -64,19 +76,21 @@ export function CeoProvider({ children }: { children: ReactNode }) {
   const signedIn = Boolean(graph.userId)
   const db = supabase as any
 
-  const writeLocal = (d: Decision[], a: Approval[]) => { setDecisions(d); setApprovals(a); localStorage.setItem(LOCAL, JSON.stringify({ decisions: d, approvals: a })) }
+  const writeLocal = (d: Decision[], a: Approval[], k?: Mark[]) => { setDecisions(d); setApprovals(a); if (k) setMarks(k); let prev: Mark[] = []; try { prev = JSON.parse(localStorage.getItem(LOCAL) ?? '{}').marks ?? [] } catch { /* empty */ } localStorage.setItem(LOCAL, JSON.stringify({ decisions: d, approvals: a, marks: k ?? prev })) }
 
   const refresh = useCallback(async () => {
     if (!graph.userId) {
-      try { const l = JSON.parse(localStorage.getItem(LOCAL) ?? '{}'); setDecisions(l.decisions ?? []); setApprovals(l.approvals ?? []) } catch { /* empty */ }
+      try { const l = JSON.parse(localStorage.getItem(LOCAL) ?? '{}'); setDecisions(l.decisions ?? []); setApprovals(l.approvals ?? []); setMarks(l.marks ?? []) } catch { /* empty */ }
       setMeetings([]); return
     }
     const horizon = new Date(Date.now() + 14 * 86_400_000).toISOString()
-    const [d, a, m] = await Promise.all([
+    const [d, a, m, k] = await Promise.all([
       db.from('decisions').select('*').order('updated_at', { ascending: false }),
       db.from('approval_queue').select('*').order('created_at', { ascending: false }).limit(100),
-      db.from('calendar_events').select('id,title,starts_at,ends_at,member_id,kind,notes').gte('ends_at', new Date(Date.now() - 86_400_000).toISOString()).lte('starts_at', horizon).order('starts_at'),
+      db.from('calendar_events').select('id,title,starts_at,ends_at,member_id,kind,notes').gte('ends_at', new Date(Date.now() - 90 * 86_400_000).toISOString()).lte('starts_at', horizon).order('starts_at'),
+      db.from('ceo_relationship_marks').select('*').order('updated_at', { ascending: false }),
     ])
+    setMarks((k.data ?? []).map(markFromRow))
     if (d.error || a.error) setError('Some private CEO records could not load. Try again shortly.')
     setDecisions((d.data ?? []).map(decisionFromRow))
     setApprovals((a.data ?? []).map(approvalFromRow))
@@ -146,11 +160,32 @@ export function CeoProvider({ children }: { children: ReactNode }) {
     void graph.logEvent('approval', id, status, `Approval ${status}`)
   }, [graph, decisions, approvals])
 
-  const inputs = useMemo<CeoInputs>(() => ({ g, events: ops.events, decisions, approvals, meetings, since, snapshot }), [g, ops.events, decisions, approvals, meetings, since, snapshot])
+  const saveMark = useCallback(async (m: Partial<Mark> & { kind: Mark['kind']; subjectId: string }) => {
+    setError('')
+    const existing = marks.find(x => x.kind === m.kind && x.subjectId === m.subjectId)
+    if (!graph.userId) {
+      const next: Mark = { id: existing?.id ?? uid(), companyId: null, label: '', outcome: '', cadenceDays: null, valueGive: '', valueNeed: '', nextAction: '', nextTouch: null, missionId: null, notes: '', createdAt: existing?.createdAt ?? now(), ...existing, ...m, updatedAt: now() } as Mark
+      writeLocal(decisions, approvals, [next, ...marks.filter(x => x.id !== next.id)]); return
+    }
+    const res = existing
+      ? await db.from('ceo_relationship_marks').update(markToRow((({ kind: _k, subjectId: _s, ...rest }) => rest)(m))).eq('id', existing.id).select().single()
+      : await db.from('ceo_relationship_marks').insert(markToRow(m)).select().single()
+    if (res.error) { setError('That could not be saved privately. Try again.'); return }
+    const saved = markFromRow(res.data)
+    setMarks(list => [saved, ...list.filter(x => x.id !== saved.id)])
+  }, [graph.userId, marks, decisions, approvals])
+
+  const removeMark = useCallback(async (id: string) => {
+    if (!graph.userId) { writeLocal(decisions, approvals, marks.filter(x => x.id !== id)); return }
+    await db.from('ceo_relationship_marks').delete().eq('id', id)
+    setMarks(list => list.filter(x => x.id !== id))
+  }, [graph.userId, marks, decisions, approvals])
+
+  const inputs = useMemo<CeoInputs>(() => ({ g, events: ops.events, decisions, approvals, meetings, marks, companies: ops.companies, since, snapshot }), [g, ops.events, ops.companies, decisions, approvals, meetings, marks, since, snapshot])
 
   const api = useMemo<CeoApi>(() => ({
-    inputs, signedIn, error, route, open: setRoute, close: () => setRoute(null), saveDecision, removeDecision, queueApproval, setApproval,
-  }), [inputs, signedIn, error, route, saveDecision, removeDecision, queueApproval, setApproval])
+    inputs, signedIn, error, route, open: setRoute, close: () => setRoute(null), saveDecision, removeDecision, queueApproval, setApproval, saveMark, removeMark,
+  }), [inputs, signedIn, error, route, saveDecision, removeDecision, queueApproval, setApproval, saveMark, removeMark])
 
   return <Ctx.Provider value={api}>{children}</Ctx.Provider>
 }

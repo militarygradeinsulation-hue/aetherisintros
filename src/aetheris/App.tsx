@@ -119,6 +119,7 @@ import { badgeLabel, useVerification } from './verification'
 import { ExecutiveIdentityEditor, ExecutivePage } from './ExecutivePage'
 import { GraphProvider, useGraph } from './graph-store'
 import { CeoProvider } from './ceo-store'
+import { InsightBar } from './ceo-insights-ui'
 import { ApprovalQueuePanel, CalendarMeetingBar, CeoActions, CeoHost, ForecastConfidencePanel, NetworkRoiPanel, TrustPassportSummary, WorkCeoBar } from './ceo-ui'
 import { openCeo } from './ceo-store'
 import { DelegatesPanel, DigitalYouRulesPanel, IntentExchangePanel, OrganizationRelationshipView, PassportManager, ReverseDiscoveryPanel } from './opportunity-ui'
@@ -2327,6 +2328,7 @@ function HubPrelude({ kind, onNavigate }: { kind: 'network' | 'work' | 'me'; onN
       <TileShell label="INTRODUCTIONS" title="Why me. Why them. Why now." variant="action"><p>Every request stays double opt-in and carries the evidence for timing.</p><button className="tile-cta" onClick={() => onNavigate('intros')}>Review introductions <ArrowRight size={14} /></button></TileShell>
       <TileShell label="WHO CAN CHANGE THIS?" title="Name the problem. See who can move it." variant="action"><p>Ranked from people actually available to you, with the evidence, the warmest path and one next move.</p><button className="tile-cta" onClick={() => openCeo({ view: 'who' })}>Who can change this? <ArrowRight size={14} /></button></TileShell>
       <TileShell label="NETWORK ROI" title="What intros produced." variant="data"><p>Accepted intros, meetings, linked and won deals — value only when it is recorded.</p><button className="tile-cta" onClick={() => openCeo({ view: 'roi' })}>Open Network ROI <ArrowRight size={14} /></button></TileShell>
+      <InsightBar where="network" />
     </section>
   }
   if (kind === 'work') {
@@ -2337,6 +2339,7 @@ function HubPrelude({ kind, onNavigate }: { kind: 'network' | 'work' | 'me'; onN
       <TileShell label="PIPELINE" title={`${active.length} active`} variant="data"><div className="pipeline-mini">{ops.stages.slice(0, 5).map(stage => <span key={stage.id}><i style={{ height: `${Math.max(10, active.filter(item => item.stageId === stage.id).length * 22)}px` }} /><b>{stage.name}</b></span>)}</div></TileShell>
       <TileShell label="OPEN LOOPS" title={`${tasks.length} tasks`} variant="action"><p>Tasks stay connected to the people, companies and work that created them.</p></TileShell>
       <WorkCeoBar />
+      <InsightBar where="work" />
     </section>
   }
   const verified = verification.status === 'verified'

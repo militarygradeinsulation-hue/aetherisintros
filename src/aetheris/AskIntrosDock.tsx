@@ -23,6 +23,10 @@ interface Turn { role: 'user' | 'assistant'; content: string; did?: string[] }
 
 const startingOpeners = [
   'What changed?',
+  'What am I missing?',
+  'Who can I help?',
+  'Where is my time going?',
+  'Challenge this decision',
   'What am I forgetting?',
   'Who can change this?',
   'Show pending approvals',

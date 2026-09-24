@@ -57,6 +57,13 @@
       "when": 1790207326470,
       "tag": "0007_ceo_os_tighten_privileges",
       "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "7",
+      "when": 1790218450532,
+      "tag": "0008_ceo_intelligence_layer",
+      "breakpoints": true
     }
   ]
 }
