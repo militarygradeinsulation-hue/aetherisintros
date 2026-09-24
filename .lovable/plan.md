@@ -1,39 +1,36 @@
-# Finish the CEO leverage layer
+# Social-first signed-in experience
 
 ## Goal
-Add only the high-value CEO capabilities not already covered, keeping Home, Network, Work, Messages, News, and Me unchanged as the permanent navigation. All intelligence remains deterministic, evidence-labelled, private by default, and based on canonical records.
+Make Ask Intros immediately familiar as a professional social network while preserving the complete CEO Operating System beneath it. The permanent navigation becomes Home, Network, Messages, Work, and Me; News and advanced capabilities remain available through the feed, search, contextual actions, and More. Preview only.
 
-## Reuse instead of duplication
-- Extend the current CEO insight engine, drawer host, Truth Layer, confidence gaps, Approval Queue, Executive Replay, Coverage, Time ROI, Decision Room, Signals/Intent Exchange, Opportunity Graph, Executive Page, and Home customizer.
-- Treat existing Time ROI delegation signals, Trust Passport/dimensions, Replay chronology, private asks, capital/advisor Mission matching, and single-thread coverage as foundations—not parallel features.
-- Keep CRM people, companies, opportunities, activities, tasks, notes, calendar events, decisions, asks, profiles, and introductions canonical.
+## What will change
+1. Replace the signed-in desktop side rail with a sticky top social header: compact brand, large “Search people, companies, or ask Intros…” control, Home/Network/Messages/Work, real notifications, Me, and More. Keep the mobile bottom bar exactly Home/Network/Messages/Work/Me, with notifications and Ask/search in the mobile header.
+2. Rebuild Home around two modes: **Feed** by default and **Executive Brief** second. Preserve the current customizable Executive Home intact inside Executive Brief.
+3. Build the Feed as a centered three-column social layout: real identity and active-Mission summary on the left; Signal composer and unified feed in the center; concise real people, meetings, opportunities, changes, and news on the right. On smaller screens, supporting modules move inline without duplication.
+4. Reuse the existing post, ask/intent, attachment, privacy, reaction, comment, save, message, intro, and response flows. Normalize visible social copy to “Signal,” add supported Signal-type selection, and connect “I can help” choices to existing ask response, message, warm-path, and introduction actions. Never show invented counts or unsupported actions.
+5. Insert evidence-backed CEO intelligence as occasional compact feed cards with one action, using existing relationship, commitment, meeting, approval, customer-risk, capital-path, and change engines. Empty data produces honest empty states.
+6. Simplify Network’s default into familiar people discovery with search, compact filters, profile-first cards, and a small set of actions. Preserve Intros, Companies, Circles, Events, Directory, and every advanced destination as secondary tabs or deep links.
+7. Recompose Executive profiles as one social identity with at most five tabs: About, Activity, Relationship, Business, and Memory. Public-safe identity/activity remains separate from owner-only CRM, relationship, opportunity, meeting, and memory context.
+8. Refine Messages into a familiar conversation list, thread, and relationship-context layout; use a context drawer on mobile while preserving messaging and permission gates.
+9. Add a notification drawer derived from existing messages, introductions, commitments, meetings, relationship changes, opportunities, decisions, approvals, customer-risk findings, and office-hour requests. Every item links to its real source; no fabricated engagement events.
+10. Upgrade universal search so names and companies stay searchable while question-like input opens Ask Intros and deterministic commands. Keep existing deep capability search and creation shortcuts.
+11. Keep Work as the business-software area with a clean CRM, Pipeline, Grid, Calendar, and Forecast tab row. Keep all advanced CEO tools contextual and reachable without adding permanent navigation.
 
-## Build
-1. Add deterministic engines and contextual panels for Customer Risk Radar, Capital Map, Delegation Intelligence, Board Network, Advisor on Demand, and expanded key-person dependency.
-2. Add a private Negotiation Room linked to existing people, companies, opportunities, meetings, commitments, influence tags, and Decision Room evidence.
-3. Add a private Scenario Room that compares recorded baselines with clearly separated user assumptions; no inferred or fabricated financial inputs.
-4. Extend Signals/Intent Exchange with a real Private Ask mode using verified-member targeting rules, expiration, share limits, and existing collision/double-opt-in flows.
-5. Add factual Trust Profile presentation from verification, introductions, feedback, outcomes, responsiveness, stated expertise, and approved recommendations—without a score or ranking.
-6. Extend Replay into Deal Memory and Company Memory with unresolved loops and an evidence-only “Why are we here?” summary.
-7. Add verified-member Executive Office Hours settings and request flow, always requiring approval and never auto-booking.
-8. Add only two compact Home widgets—Risk Radar and Leverage—and add contextual Work/Network/Executive Page entry points.
-9. Extend deterministic Ask Intros recognition for every requested phrase and useful entity arguments.
-
-## Data and security
-- Add only minimal owner-scoped persistence for negotiation records, scenarios, and office hours/requests; extend existing asks for private targeting if needed.
-- Every new table receives explicit minimum grants before RLS policies, no anonymous or PUBLIC access, service access only where required, and immutable owner columns.
-- Authenticated users receive no TRUNCATE, REFERENCES, or TRIGGER privileges.
-- Office-hours discovery exposes only explicitly enabled, verified-member-safe fields; requests use existing approval and consent safeguards.
-- Verification evidence, private CRM/Grid data, private memory, and unrelated network context never leave their existing boundaries.
+## Technical approach
+- Refactor the signed-in shell and social surfaces within the existing React/TanStack structure; do not introduce a parallel router, feed store, CRM, or social database.
+- Add small focused presentation modules for the social Home, notification drawer, and shared social cards; reuse current providers and action functions.
+- Extend the existing post method only as needed to persist supported Signal types through the current `posts.kind` field. No database migration is expected.
+- Preserve RLS, verification gates, private visibility rules, canonical CRM/Grid identity, deterministic fallbacks, and the unique-portrait rule.
+- Keep the current deep page IDs intact so stored navigation and existing links continue to work.
 
 ## Verification
-- Run focused type checks and confirm the preview build is clean.
-- Exercise each new panel and every deterministic command on desktop, 390px, and 360px widths with no horizontal overflow.
-- Verify schema policies, grants, immutable owners, private targeting, and no anonymous reads.
-- Confirm the permanent navigation is unchanged and CRM, Grid, Opportunity Graph, CEO OS, Decision Room, Approval Queue, and existing Executive Page actions still work.
+- Confirm the preview build and focused TypeScript checks are clean.
+- Exercise Feed/Executive Brief, composer and Signal actions, Network, Executive profile tabs, Messages/context, notifications, universal search/Ask, Work tabs, and representative deep destinations.
+- Check 1440px, 1280px, tablet, 390px, and 360px layouts for readable text, usable tap targets, non-overlapping overlays, unique portraits, and no horizontal overflow.
+- Confirm live mode shows only real records, private context remains owner-only, no fake engagement appears, and CRM/Grid/CEO OS workflows still open correctly.
 - Do not publish production.
 
 ## Assumptions
-- “Customer” means a canonical CRM company/person explicitly marked Customer or attached to recorded customer/opportunity activity; no sentiment or churn score will be invented.
-- Board/advisor reach uses only visible member statements, recorded connections, strategic marks, and authorized CRM context.
-- Office-hours visibility is limited to verified members; private windows remain visible only through an approved request flow.
+- Existing persisted likes/comments/reposts are retained because they are already supported; no aggregate or third-party engagement numbers will be invented.
+- Signal types map to the current post kinds where possible; “Looking For,” “Offering,” “Opportunity,” and “Acquisition” remain structured Signal presentation while using the current post/ask persistence rather than new tables.
+- Notification read state remains session-derived unless the existing notification record exposes it; this redesign will not add a database solely for presentation state.
