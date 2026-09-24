@@ -55,6 +55,8 @@ function Widget({ item, index, count, columns, editable, radius, onDrop, onKeybo
 }) {
   const controls = useDragControls()
   const longPress = React.useRef<number | null>(null)
+  const touchOrigin = React.useRef<{ x: number; y: number } | null>(null)
+  const [dragging, setDragging] = React.useState(false)
   const size = dimensions[item.size]
   const spanColumns = Math.min(size.columns, columns)
 
@@ -69,6 +71,7 @@ function Widget({ item, index, count, columns, editable, radius, onDrop, onKeybo
     if (!editable) return
     if (event.pointerType === 'touch') {
       clearPress()
+      touchOrigin.current = { x: event.clientX, y: event.clientY }
       longPress.current = window.setTimeout(() => {
         controls.start(event.nativeEvent)
         longPress.current = null
@@ -81,6 +84,8 @@ function Widget({ item, index, count, columns, editable, radius, onDrop, onKeybo
 
   const finish = (_event: MouseEvent | TouchEvent | PointerEvent, info: PanInfo) => {
     clearPress()
+    touchOrigin.current = null
+    setDragging(false)
     onDrop(item.id, info.point)
   }
 
@@ -91,10 +96,14 @@ function Widget({ item, index, count, columns, editable, radius, onDrop, onKeybo
     dragControls={controls}
     dragMomentum={false}
     onDragEnd={finish}
+    onDragStart={() => setDragging(true)}
     onPointerDown={begin}
     onPointerUp={clearPress}
     onPointerCancel={clearPress}
-    onPointerMove={event => { if (event.pointerType === 'touch' && longPress.current !== null && event.pressure === 0) clearPress() }}
+    onPointerMove={event => {
+      if (event.pointerType !== 'touch' || longPress.current === null || !touchOrigin.current) return
+      if (Math.hypot(event.clientX - touchOrigin.current.x, event.clientY - touchOrigin.current.y) > 8) clearPress()
+    }}
     onKeyDown={event => {
       if (!editable || !event.altKey) return
       const delta = event.key === 'ArrowLeft' || event.key === 'ArrowUp' ? -1 : event.key === 'ArrowRight' || event.key === 'ArrowDown' ? 1 : 0
@@ -107,7 +116,7 @@ function Widget({ item, index, count, columns, editable, radius, onDrop, onKeybo
     aria-label={`${item.label ?? item.id}, position ${index + 1} of ${count}${editable ? '. Hold Alt and use arrow keys to move.' : ''}`}
     data-widget-id={item.id}
     data-widget-size={item.size}
-    className={cn('draggable-widget', editable && 'is-editable')}
+    className={cn('draggable-widget', editable && 'is-editable', dragging && 'is-dragging')}
     style={{ gridColumn: `span ${spanColumns}`, gridRow: `span ${size.rows}`, borderRadius: radius }}
     whileDrag={{ scale: 1.015, zIndex: 20 }}
     transition={{ type: 'spring', stiffness: 360, damping: 34, mass: 0.7 }}
@@ -141,7 +150,7 @@ export function DraggableWidgetGrid({
   const drop = (id: string, point: { x: number; y: number }) => {
     const from = items.findIndex(item => item.id === id)
     const candidates = Array.from(root.current?.querySelectorAll<HTMLElement>('[data-widget-id]') ?? [])
-      .filter(node => node.dataset.widgetId !== id)
+      .filter(node => node.dataset['widgetId'] !== id)
     let target = -1
     let distance = Number.POSITIVE_INFINITY
     for (const node of candidates) {
@@ -149,7 +158,7 @@ export function DraggableWidgetGrid({
       const value = Math.hypot(point.x - (rect.left + rect.width / 2), point.y - (rect.top + rect.height / 2))
       if (value < distance) {
         distance = value
-        target = items.findIndex(item => item.id === node.dataset.widgetId)
+        target = items.findIndex(item => item.id === node.dataset['widgetId'])
       }
     }
     if (target >= 0) commit(from, target)

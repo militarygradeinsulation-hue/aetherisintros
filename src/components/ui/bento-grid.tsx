@@ -20,7 +20,7 @@ const BentoGrid = React.forwardRef<
 });
 BentoGrid.displayName = "BentoGrid";
 
-interface BentoGridItemProps extends React.HTMLAttributes<HTMLDivElement> {
+interface BentoGridItemProps extends Omit<React.HTMLAttributes<HTMLDivElement>, "title"> {
   title?: string | React.ReactNode;
   description?: string | React.ReactNode;
   header?: React.ReactNode;

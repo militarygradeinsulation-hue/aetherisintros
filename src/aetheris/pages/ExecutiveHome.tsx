@@ -47,8 +47,8 @@ function HomeWidgetFrame({ config, editing, children, onHide, onSize }: {
 
 const toWidgetSize = (config: HomeWidgetConfig): WidgetSize => {
   if (config.size === 'compact') return 'sm'
-  if (config.size === 'wide') return 'wide'
-  return ['memory', 'people', 'chief', 'graph'].includes(config.id) ? 'tall' : 'sm'
+  if (config.size === 'wide') return 'lg'
+  return 'wide'
 }
 
 export function ExecutiveHome({ embedded = false }: { embedded?: boolean }) {
@@ -152,7 +152,7 @@ export function ExecutiveHome({ embedded = false }: { embedded?: boolean }) {
         {hiddenWidgets.length > 0 && <div className="home-hidden-widgets"><b>Add widgets</b>{hiddenWidgets.map(widget => <button type="button" key={widget.id} onClick={() => updateWidget(widget.id, { visible: true })}><Plus size={13} />{widgetNames[widget.id]}</button>)}</div>}
       </section>}
 
-      <IntrosWidgetGrid items={widgetItems} editable={customizing} onChange={reorderWidgets} className="home-bento"
+      <IntrosWidgetGrid items={widgetItems} editable={customizing} onChange={reorderWidgets} className="home-bento" maxColumns={4} cellSize={280} gap={12}
         renderItem={item => {
           const config = visibleWidgets.find(widget => widget.id === item.id)
           if (!config) return null
