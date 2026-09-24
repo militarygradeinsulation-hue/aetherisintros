@@ -158,9 +158,9 @@ function Brand() {
 function AetherisGlyph({ size = 18 }: { size?: number }) {
   return <span className="aetheris-glyph" style={{ width: size, height: size }} aria-hidden="true"><i /><b /></span>
 }
-function Avatar({ person, large = false, portrait = false }: { person: Member; large?: boolean; portrait?: boolean }) {
+function Avatar({ person, large = false, portrait = false, primary = false }: { person: Member; large?: boolean; portrait?: boolean; primary?: boolean }) {
   const image = person.avatarUrl ?? portraitFor(person.id)
-  return <span className={`person-avatar ${large ? 'large' : ''} ${portrait ? 'portrait' : ''}`} data-person-portrait={person.id} aria-label={person.name}>
+  return <span className={`person-avatar ${large ? 'large' : ''} ${portrait ? 'portrait' : ''}`} data-person-portrait={person.id} {...(primary ? { 'data-portrait-primary': 'true' } : {})} aria-label={person.name}>
     <span className="avatar-initials" aria-hidden="true">{person.initials}</span>
     {image && <AvatarImage source={image} alt="" width={1024} height={1280} />}
   </span>
@@ -1030,7 +1030,7 @@ function Discover({ people, select }: { people: Member[]; select: (p: Member) =>
     {featured.length > 0 && <section className="featured-connectors">
       <header><div><Label signal>FEATURED CONNECTORS</Label><h2>People with a credible path to your current work.</h2></div><p>Selected from the profile, mission, timing and relationship evidence already in your account.</p></header>
       <div>{featured.map(person => <article key={person.id}>
-        <button className="featured-portrait" onClick={() => select(person)}><Avatar person={person} large portrait /></button>
+        <button className="featured-portrait" onClick={() => select(person)}><Avatar person={person} large portrait primary /></button>
         <div><Label>{person.role} · {person.location}</Label><h3>{person.name}</h3><p>{person.title} · {person.company}</p><strong>{person.whyNow || person.nextAction}</strong><small>{person.bestPath.length > 2 ? `Warm path via ${person.bestPath[1]}` : 'Direct relationship'}</small><MemberActions person={person} compact /></div>
       </article>)}</div>
     </section>}
@@ -1684,7 +1684,7 @@ function Profile({ people, setPage, openOnboarding }: {
     </section>}
 
     <div className="profile-facts">
-      {[['ABOUT MEMBER', 'Founder building relationship systems for consequential business decisions.'], ['FOCUS AREAS', me.focus], ['GOALS', 'Place Aetheris with serious operators and document the outcomes.'], ['CAN HELP WITH', me.canHelpWith], ['CURRENTLY LOOKING FOR', me.lookingFor],
+      {[['ABOUT MEMBER', me.whatIDo || me.thesis || 'No executive statement recorded yet.'], ['FOCUS AREAS', me.focus], ['GOALS', net.objectives[0]?.title ?? 'No active objective recorded yet.'], ['CAN HELP WITH', me.canHelpWith], ['CURRENTLY LOOKING FOR', me.lookingFor],
       ['INDUSTRIES', me.industries.join(' · ')], ['EXPERTISE', me.expertise.join(' · ')], ['VALUES', me.values],
       ['AVAILABILITY', me.availability], ['WHO YOU WANT TO MEET', me.wantToMeet ?? 'Not stated yet — complete your profile.'],
       ['VALUABLE INTROS', me.introPreferences ?? 'Not stated yet.'], ['BOUNDARIES', me.boundaries ?? 'No boundaries recorded yet.'],
@@ -2392,6 +2392,7 @@ function Hub({ storeKey, title, blurb, tabs, advanced, onNavigate, kind }: {
   const current = tabs.find(t => t.id === tab) ?? first
   const go = (id: string) => { setTab(id); try { localStorage.setItem(storeKey, id) } catch { /* ignore */ } }
   return <>
+    {kind === 'work' && <section className="work-editorial-masthead"><div><HomeBrand /><Label>PRIVATE EXECUTIVE WORKSPACE</Label><h1>Turn relationships<br />into <em>movement.</em></h1><p>CRM, pipeline, Grid, calendar and forecast share one canonical working record—with relationship context beside the work.</p></div><figure><img src={needsEditorialAsset.url} alt="Executive reviewing consequential work in architectural light" /><figcaption><Label signal>ONE OPERATING SYSTEM</Label><p>People. Commitments. Opportunities. Time.</p></figcaption></figure></section>}
     <header className={`hub-head ${kind}-hub-head`}>
       <div><Label>{title.toUpperCase()}</Label><h1>{blurb}</h1></div>
       <p>{metaById[current.id]?.blurb}</p>
