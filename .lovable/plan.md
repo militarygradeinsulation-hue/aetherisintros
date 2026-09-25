@@ -1,245 +1,294 @@
-# Ask Intros Capability Layer — hardened plan
+# Ask Intros Capability Layer — revised architecture (v2)
 
-The short version: don't port six apps. Port about eight **verbs** onto the Intros graph Intros already has. Most of what the source projects offer either already exists in Intros or would split the graph in two.
+Core idea: members never open "apps". They ask for an outcome, such as Diagnose, Prepare, Challenge, Find, Fix, Draft, Create or Build. Every request becomes one **capability run**. Each run opens the same **Capability Workspace**, reads only the context it was given, and writes back to the one Intros graph only through findings, proposals and artifacts.
 
-## Challenge first
+Legacy app names never appear in the UI, in prompts, or in ids.
 
-- **Obsidian Coder, Filament/Lumina and ArchVision don't belong in a CEO relationship network.** They are separate products, and adding them turns Intros into "everything for everyone". A CEO won't look for a code IDE or a floor-plan tool inside their intro network. My recommendation: leave them out of Phase 1–2. The only exception is media output that is tied to a relationship. For example: "Create a 60-second intro video for this opportunity" or "Create a deck for this board ask".
-- **Nexus IQ and the Golden Report overlap heavily** with things Intros already does: Company Pulse, Customer Risk, Blind Spots, Red Team, Forecast Confidence, Capital Map. The part that is actually new is **outside-in company diagnostics**: evidence from the public web, plus tech/hiring/content signals.
-- **Referral Connector Hub is about 80% duplicate.** Only port referral attribution (who referred, value, reciprocity owed) and partner tiers. Put both on `crm_people`/`crm_opportunities`. Don't add a new CRM.
-- **The idea's biggest risk is data leakage, not UI.** A capability that runs with the admin client, or that receives "the whole store", breaks the rule that each capability gets only the context it was given. The envelope design below exists to prevent that.
+## Settled decisions (from your review)
 
-## 1. Integration spine (existing, verified)
+1. **Maker capabilities are in, through the same framework.** They come in Phase 3/4 as narrow verbs, open in one Intros-native canvas, and never ship as a separate IDE or studio.
+2. **Live web research only on explicit Diagnose, Research or Competitive runs.** Before the run starts, the member sees the target domain, the fact that the web is used, and a cost estimate. Private graph content is never used as a query.
+3. **Findings and proposals get their own first-class tables.** Proposals go to the approval queue when approval is needed.
+4. **Autonomy starts at Level 1.** Read, analyze and draft always run. Consequential writes ask first. External actions always ask.
+5. **Migrations are covered in section H.**
+6. **Delegates** can only read, analyze or draft, and only with explicit permission. Every write or external proposal needs the principal's approval. A delegate never inherits the principal's "allow" rules.
 
-- Canonical graph: `crm_people`, `crm_companies`, `crm_opportunities`, `crm_tasks`, `crm_activities`, `crm_notes`, plus Grid.
-- Linking: `entity_links` (owner-scoped, text ids).
-- History: `entity_events` (append-only for authenticated users; SELECT/INSERT only).
-- Governance: `approval_queue`, `digital_you_rules` (block / ask / allow / remind), `delegates` plus `has_delegate_permission`.
-- Reasoning objects: `decisions`, `missions`, `negotiation_rooms`, `scenario_rooms`, `asks`/Signals, `memories`.
-- Routing: `recognizeCommand` (regex, in ceo-engine) → `openCeo`, with `askIntros` as the language fallback.
-- Surfaces: `AskIntrosDock`, the CEO panels host, the InsightBar, and Home widgets.
+## A. Capability Workspace — one operating surface
 
-## 2. Additive vs duplicate
-
-| Source | Port (additive) | Do NOT port |
-|---|---|---|
-| Command GDR | Diagnose Company report with evidence-graded findings; "What would I do?" framed as a Digital You simulation; autonomy levels 0–4 wired to the existing rules | Work queue (use `approval_queue` + `crm_tasks`); its own confidence model (reuse the provenance layer) |
-| Nexus IQ | Outside-in signals (hiring, tech, content, competitors); revenue-leak hypotheses as Findings; Content drafts + calendar (use `calendar_events`) | Company profiles and gap lists as new tables; a separate calendar |
-| Referral Hub | Referral attribution, partner tier, reciprocity balance | Partner CRM, contacts, pipeline |
-| Filament/Lumina | Later: Create Asset (brief, script, deck, short video) linked to an entity | Timeline editor, effects, studio UI |
-| ArchVision | Later, only when the company/opportunity tag is real estate/AEC: Analyze Plan | Every other tool it has |
-| Obsidian Coder | Nothing yet. Maybe later: "Build a landing page for this opportunity", through a service boundary | IDE, file explorer, Git, deploy |
-
-## 3. Registry + Router + envelopes
-
-The registry is code-defined and typed. There is no registry table, so users can't install or add capabilities.
-
-```ts
-type Verb = 'diagnose'|'prepare'|'challenge'|'find'|'fix'|'create'|'draft'|'build'|'analyze'
-type EntityRef = { type: 'person'|'company'|'opportunity'|'signal'|'meeting'|'decision'|'mission'; id: string }
-type Scope = 'entity:read'|'links:read'|'activities:read'|'notes:read'|'memory:read'|'web:read'|'asset:write'|'record:propose'
-
-interface Capability<I, O> {
-  id: string                      // 'company.diagnose'
-  verb: Verb; label: string       // 'Diagnose this company'
-  appliesTo: EntityRef['type'][]
-  when?(ctx: SurfaceContext): boolean        // contextual gating (e.g. AEC tag)
-  scopes: Scope[]                             // declared, enforced server-side
-  impact: 'read'|'draft'|'write'|'external'   // drives approval
-  mode: 'instant'|'job'
-  input: ZodSchema<I>; output: ZodSchema<O>
-  deterministic(ctx: ContextEnvelope, i: I): Promise<O> | O   // required
-  ai?(ctx: ContextEnvelope, i: I): Promise<O>                 // optional enhancer
-}
-
-interface ContextEnvelope {           // built server-side ONLY
-  requestId: string; ownerId: string; actor: 'member'|'delegate'
-  subject: EntityRef
-  granted: Scope[]                    // intersection of capability.scopes and consent
-  data: { entity; links?; activities?; notes?; memory? }   // fetched by scope, with RLS
-  budget: { maxRecords: number; maxWebCalls: number }
-}
-
-interface ResultEnvelope<O> {
-  status: 'ok'|'partial'|'unavailable'|'needs_approval'|'failed'
-  engine: 'deterministic'|'ai'|'hybrid'
-  output: O
-  findings?: Finding[]                // claim, evidence[], confidence, source
-  proposals?: Proposal[]              // record changes, never applied directly
-  assets?: AssetRef[]
-  provenance: { inputs: EntityRef[]; sources: string[]; model?: string; runId?: string }
-  unavailableReason?: string
-}
-```
-
-The router has a single entry point, `runCapability(id, subject, input)`, implemented as an auth-gated server function. Its steps:
-
-1. Resolve the capability.
-2. Check that the subject belongs to the caller. Fetch it with the user's RLS client, never the admin client.
-3. Build the envelope using the declared scopes only.
-4. Run the deterministic path. If AI is available, run the AI path and merge.
-5. Validate the output against the zod schema.
-6. Write the run record and events.
-7. Send proposals to approval.
-
-## 4. Ask Intros routing without legacy names
-
-- Use a three-tier router:
-  1. The current regex `recognizeCommand`.
-  2. A deterministic verb+noun matcher built from the registry labels and synonyms, e.g. "diagnose", "what's wrong with", "audit".
-  3. The language model, given the registry as a tool list: `run_capability(id, subject)`.
-- The subject is resolved from what the user is looking at (page, open entity) or from a name lookup through `crm_people`/`crm_companies`.
-- User-facing text uses verbs and outcomes only. Source-app names never appear anywhere in the UI or in prompts.
-
-## 5. Write-back to canonical records
-
-- Capabilities never write to CRM tables directly. They return `Proposal`s, for example `create task`, `update opportunity stage`, `add note`, `add tag`, `set referral source`.
-- Low-impact proposals that Digital You allows are applied by the router through the existing repositories (`crm/repo.ts`). Everything else goes to `approval_queue`.
-- Every created row gets an `entity_links` row: capability_run → record, plus the subject.
-- Findings are stored as `crm_notes` of kind `finding`, with evidence in a JSON field. There is no parallel findings table unless Decision 3 says otherwise.
-
-## 6. Files and assets
-
-- Create a new private bucket, `capability-assets`, with the path `{owner_id}/{run_id}/{file}`. Its storage policy uses the first path segment `= auth.uid()`. Downloads use signed URLs only, following the existing journal pattern.
-- Create a new table, `capability_assets`, with these columns: id, owner_id, run_id, subject_type, subject_id, kind (doc/image/video/audio/deck), mime, bytes, storage_path, title, created_at.
-- Each asset is also linked in `entity_links`, so it shows on the Person, Company or Opportunity page under "Created for this".
-
-## 7. Long-running jobs
-
-- Create a new table, `capability_runs`, with these columns: id, owner_id, capability_id, subject, status (queued/running/needs_approval/done/failed/unavailable/cancelled), progress 0–100, step_label, input_hash, result jsonb, engine, error_code, started_at, finished_at.
-- `mode: 'job'` returns a run id immediately. Work continues in the server function via chunked steps. The client polls or listens through realtime on its own rows.
-- Retries follow the gateway rules: 429/5xx are retried with backoff, 402/403 pause the run and show the reason. Nothing retries forever.
-- Cancel sets status and an abort flag. Deduping uses the same `input_hash` within 10 minutes.
-- Results show up in three places: the Ask Intros dock, a "Running" chip in the InsightBar, and the Home "Work in progress" widget. All three are existing surfaces.
-
-## 8. Approvals and Digital You
-
-- `impact` decides the approval:
-  - `read`: always runs.
-  - `draft`: runs; the output is a draft.
-  - `write`: checked against `digital_you_rules` (rule_kind = capability id or impact class). `allow` applies it and logs it; `ask` sends it to `approval_queue`; `block` refuses.
-  - `external` (sends a message, publishes, contacts someone): always goes to `approval_queue`. Autonomy never bypasses it, and double opt-in still applies.
-- Delegates can run a capability only if they have `has_delegate_permission(principal, 'capability:<verb>')`. Their proposals always go to approval.
-
-## 9–11. Tenant, RLS and context isolation
-
-- All new tables are owner-scoped: minimum grants, no authenticated TRUNCATE/REFERENCES/TRIGGER, immutable `owner_id`, `capability_id`, `subject` and `created_at` (following the existing freeze pattern). `capability_runs.result` can only be changed by the router, meaning service_role.
-- The admin client is used only to write run status. Data reads always use the user's RLS client.
-- The context builder is the only way data reaches a capability. It fetches only the subject, plus rows linked to it through `entity_links`, capped by `budget`. There is no "search all my data" scope in Phase 1.
-- Web reads are logged with their URLs. Private graph data is never sent to web search queries; queries are built only from public company names and domains.
-- Other members' private data (their memories, asks, messages) is never in scope. Only public profile fields are.
-- Each envelope has a `requestId`. The AI prompt gets only the serialized envelope, never the store.
-
-## 10. Audit and provenance
-
-Every run writes `entity_events` rows:
-- `capability.started`
-- `capability.completed` or `capability.failed` or `capability.unavailable`
-- `proposal.created`
-- `proposal.applied` or `proposal.rejected`
-- `asset.created`
-
-Each row's `detail` holds: run_id, capability_id, engine, scopes granted, input entity refs, sources, model, approval id.
-
-This exposes a gap: today `entity_events.source` is free text that the client can insert, so provenance can be forged. The fix is technical debt item #2 below.
-
-## 12–13. UI without a new nav or Apps page
-
-**One component, `CapabilityActions`,** takes an `EntityRef` and shows the 2–4 verbs that apply to it, taken from the registry's `appliesTo` and `when`. It appears:
-
-| Surface | Verbs |
-|---|---|
-| Person | Prepare for meeting, Find warm path, Draft intro, Challenge this relationship, Track referral |
-| Company | Diagnose company, Find revenue leaks, Watch signals, Find who can change this |
-| Opportunity | Challenge the deal, Prepare proposal, Create deck/brief, Fix stalled stage |
-| Signal / Ask | Find who can help, Draft reply, Route to member |
-| Meeting | Prepare brief, Capture outcomes → commitments |
-| Decision | Challenge (red team), What would I do?, Run scenario |
-| Home | "Ready for you" widget (completed runs, pending approvals), plus 1 suggested verb |
-
-The same verbs work typed or spoken in Ask Intros. There is no catalog page. "What can you do here?" in the dock lists the verbs for the current context.
-
-## 14. Verb vocabulary
-
-Diagnose, Prepare, Challenge, Find, Fix, Draft, Create, Analyze, Build. Names are always written as verb + object ("Diagnose Acme"), never as a feature name.
-
-## 15. Phasing
-
-- **Phase 0 (debt, required):** see §17.
-- **Phase 1:** registry/router/envelopes, runs, events, approvals. Five capabilities:
-  - Diagnose Company (deterministic from CRM + public web signals)
-  - Prepare Meeting (upgrades the existing brief)
-  - Challenge Decision/Deal (wraps the existing red team)
-  - Find Who Can Help (wraps the existing routing)
-  - Draft Outreach/Content (draft only)
-- **Phase 2:**
-  - Referral attribution + reciprocity
-  - Find Revenue Leaks
-  - What Would I Do? (Digital You simulation)
-  - Content calendar on `calendar_events`
-  - Assets bucket + Create Brief/Deck (document output)
-- **Phase 3 (only if Decision 1 = yes):** Create short video/audio for an opportunity through a service boundary; Analyze Plan gated to AEC tags.
-- **Not planned:** code building/IDE.
-
-## 16. Copy into Intros vs call through a service
-
-- **Copy and refactor into Intros:** diagnostics scoring rules, finding/evidence model, revenue-leak heuristics, referral logic, content prompt templates, autonomy levels. All of these are pure logic and get rewritten against Intros types.
-- **Service boundary (server function → external API, never an iframe):** media generation/editing (AI Gateway image/video models or ElevenLabs), ArchVision vision models, anything heavy or long-running. The service receives only the envelope subset it needs and returns asset bytes or a URL, which Intros stores.
-- **Never:** a shared database or cross-project login. The other apps stay as they are; Intros doesn't depend on them running.
-
-## 17. Technical debt to fix first
-
-1. **`askIntros` has no auth.** It calls paid AI and web search, and anyone can reach it. Gate it with `requireSupabaseAuth` and pass through the caller's scope.
-2. **`entity_events` provenance can be forged.** Clients can insert any `source`/`event`. Make capability events writable only by the router (a security-definer RPC or service_role), and restrict client inserts to `source = 'app'`.
-3. **`entity_links` uses text ids without integrity.** Add type allow-list CHECKs and a helper RPC that verifies both ends belong to the owner.
-4. **Two migration histories** (`supabase/migrations` and `drizzle/migrations`). Pick one as the source of truth before adding more tables.
-5. **Ownership columns are inconsistent** (`owner_id` vs `user_id`). Document one convention; new tables use `owner_id`.
-6. **Routing is fragile.** `recognizeCommand` is a long regex chain in ceo-engine. Move it into the registry-driven matcher so there's one source of truth.
-7. **`App.tsx` is about 2.8k lines** and `store.tsx` is a large client store. Don't add capability UI there. Put it in `src/aetheris/capabilities/`.
-8. **AI replies are parsed from free-form JSON text.** Switch to tool calls / structured output with a fallback.
-
-## 18. Failure and confusion risks
-
-- Verb overload: showing 12 buttons on every page. Keep it to 4 per entity and rank them by relevance.
-- Two sources of truth for "risk": Diagnose findings versus Customer Risk. Findings must feed the existing risk engines, not compete with them.
-- Silent AI degradation: always show the engine and "Unavailable because…".
-- Cost runaway from web or media jobs: budgets per run and per day, and dedupe.
-- Leakage through prompts: the envelope is the only thing sent.
-- Approval fatigue: batch approvals, and let Digital You learn "allow" rules.
-- Scope creep into IDE or studio territory: refuse at the registry level.
-
-## 19. Directories and sequence
+Everything opens one component, `CapabilityWorkspace`, driven by a `run_id`. That includes Ask Intros, entity menus and suggestion chips.
 
 ```text
-src/aetheris/capabilities/
-  types.ts            Verb, Scope, EntityRef, envelopes, Finding, Proposal
-  registry.ts         capability list (imports defs)
-  match.ts            deterministic verb+noun matcher (absorbs recognizeCommand)
-  defs/diagnose-company.ts  prepare-meeting.ts  challenge.ts  find-help.ts  draft.ts
-  CapabilityActions.tsx  RunChip.tsx  ResultView.tsx  ReadyWidget.tsx
-src/lib/capabilities.functions.ts   runCapability, getRun, cancelRun, decideProposal (auth-gated)
-src/lib/capabilities/context.server.ts   scoped envelope builder (RLS client)
-src/lib/capabilities/writeback.server.ts proposals → repo + links + events
++-----------------------------------------------------------+
+| Diagnose  ·  Acme Holdings                 [Running 62%]  |  header: verb + subject + outcome
+|-----------------------------------------------------------|
+| Context used  (chips, removable before start)             |  granted scopes, entities, web domain
+| Progress      step 3/5 "Reading public hiring signals"    |
+| Result        editorial summary                           |
+| Findings      claim · evidence · confidence · source      |  FACT layer
+| Recommended   ranked next actions                         |  RECOMMENDATION layer
+| Drafts/Assets artifact previews + versions                |
+| Approvals     proposals needing a decision                |
+| Linked to     Acme · Q4 renewal opp · Board decision      |
+| History       earlier runs on this entity                 |
++-----------------------------------------------------------+
 ```
 
-New tables (one migration): `capability_runs`, `capability_proposals` (or reuse `approval_queue` with `run_id`; see Decision 3), `capability_assets`, and the private `capability-assets` bucket.
+- **Desktop:** a right-side sheet, about 560px wide and expandable to full width for Maker canvases. The page underneath stays visible, so the member keeps their place. It is dark Intelligence panel style, with amber used only for live progress.
+- **Mobile:** a full-height bottom sheet with a sticky header. Sections become a segmented control (Result / Evidence / Drafts / Approvals). The primary action is pinned to the bottom.
+- **Ask Intros:** the dock shows a compact run card that says "Open workspace". A conversation can own several runs.
+- **Deep link:** `?run=<id>` on the current page reopens the workspace. No new route and no new nav item.
+- **Entity pages** get a "Runs & findings" module fed by the same data (history, open findings, artifacts).
 
-Sequence:
-1. Debt 1–4
-2. Types + registry + matcher (fold in the existing commands)
-3. Runs table + router + context builder
-4. Events/provenance RPC
-5. Approvals + Digital You wiring
-6. `CapabilityActions` on Company/Person/Opportunity/Decision
-7. Phase 1 capabilities
-8. Home "Ready for you" widget
-9. QA: RLS, privileges, cross-account leakage tests, desktop/mobile, AI-off mode
+## B. Discovery without a catalog
 
-## Decisions to settle first
+There are four entry points, all reading from the registry:
 
-1. **Scope:** Are code building, full media studio and architecture tools in or out? I recommend out, with only entity-linked briefs/decks/short media in Phase 3.
-2. **Web data:** May Diagnose Company use live web search (it costs money per run), or should Phase 1 be CRM-only plus manually pasted evidence?
-3. **Storage shape:** Should Findings and Proposals reuse `crm_notes`/`approval_queue` (fewer tables) or get dedicated tables (cleaner provenance)? I lean toward dedicated `capability_proposals` feeding `approval_queue`.
-4. **Autonomy default:** Should new members start at level 1 (everything asks) or level 2 (low-impact writes auto-apply)?
-5. **Migrations:** Which migration history is canonical going forward?
-6. **Delegates:** Can delegates run capabilities at all in Phase 1?
+1. Natural language in Ask Intros.
+2. One **"Do more"** menu per entity header. It shows the top 3 verbs plus a "More for this…" option that lists every valid verb for that entity type.
+3. **Suggestion chips.** At most 2 appear inline next to a risk, commitment or finding.
+4. **"What can you do here?"** in Ask Intros. It answers in plain sentences with the ranked verbs for the current context.
+
+**Ranking:** each capability `c` that is valid for the subject gets a score, and the top 3–4 are shown (at most 4).
+
+```text
+score(c) = 3.0*entityFit + 2.5*missionFit + 2.0*riskSignal + 1.5*openCommitment
+         + 1.0*roleFit + 1.0*recency - 1.5*recentlyRun - 2.0*dismissed - costPenalty
+```
+
+- `entityFit`: 1 if `c.appliesTo` includes the subject type and `c.when()` passes (for example an AEC tag). If this is 0, the capability is excluded.
+- `missionFit`: overlap between the active mission's target or outcome and the subject or the capability's tags.
+- `riskSignal`: open risk, blind-spot or customer-risk items, or unresolved findings on the subject (normalised 0–1).
+- `openCommitment`: overdue or near-due commitments or tasks tied to the subject.
+- `roleFit`: the member's verified role (CEO, founder, managing partner…) matched against `c.roles`.
+- `recency`: activity on the subject in the last 14 days.
+- `recentlyRun`: the same capability ran on the same subject in the last 7 days.
+- `dismissed`: the member hid this chip for this subject.
+- `costPenalty`: web or media runs rank lower unless there is a direct signal for them.
+
+This is deterministic and needs no AI. The same function feeds all four entry points, so they never disagree.
+
+## C. Maker mode — artifacts and revisions
+
+Maker verbs:
+- Create brief / deck / document
+- Draft post / Signal
+- Create image
+- Create short video
+- Build calculator / form
+- Build client portal / dashboard
+
+Each one produces an **artifact** from a typed template. It opens in the workspace canvas with preview, edit and revise, then save. Publishing or sharing is always an `external` proposal.
+
+```text
+capability_artifacts
+  id, owner_id, run_id, kind (brief|deck|doc|post|signal|script|image|video|audio|form|portal|dashboard),
+  template_id, title, subject_type, subject_id, current_revision_id,
+  status (draft|approved|published|archived), visibility (private|shared_link|network),
+  created_at, updated_at
+capability_artifact_revisions
+  id, artifact_id, owner_id, revision_no, author ('member'|'capability'|'delegate'),
+  content jsonb        -- structured doc/deck/form/portal spec (no raw code)
+  storage_path text    -- binary media in private bucket
+  source_run_id, change_note, created_at      -- immutable rows
+```
+
+Rules:
+- Revisions are append-only. "Restore" creates a new revision.
+- Build outputs are **declarative specs**: form fields, a calculator formula over the existing Grid formula engine, and a portal layout made of approved Intros blocks. Intros renders them. No arbitrary generated code runs in Phase 3. A code-generation service boundary is a Phase 4 option, and only in a sandbox.
+- Binaries go in the private bucket `capability-assets/{owner_id}/{artifact_id}/{revision}`. Access is by signed URL.
+- Sharing uses a revocable token that follows the Passport pattern and is created only after approval. Viewers see only the approved revision.
+
+## D. Digital You — personalization layer
+
+Every result has three layers that are stored and shown separately:
+
+| Layer | Source | May Digital You change it? |
+|---|---|---|
+| FACT / EVIDENCE | records, events, web citations | Never. Only facts that have evidence refs. |
+| RECOMMENDATION | deterministic rules + optional model reasoning over facts | No. It can only re-rank, and the original rank is kept. |
+| STYLE / PRIORITY | Digital You profile (tone, directness, risk appetite, priorities) | Yes. It shapes drafts, ordering and phrasing. |
+
+- The UI labels any re-ranking: "Reordered for your priorities — original ranking."
+- "What would I do?" is an explicitly labelled simulation. Its output is RECOMMENDATION + STYLE, and it must cite the facts it relied on.
+- Digital You never suppresses a finding. It can only collapse a finding when the member has set a rule to do that, and a hidden-by-preference counter stays visible.
+- Autonomy rules (`digital_you_rules`) are the governance part of Digital You. They are evaluated by the router, not by the model.
+
+## E. Diagnose — one capability, layered
+
+`diagnose` applies to company, opportunity and the member's own company. Its layers:
+
+1. **Internal evidence (reused as-is):** Company Pulse, Customer Risk, Relationship Health, Promise Risk, Forecast Confidence, Coverage/Influence, Key-Person Dependency, Blind Spot Radar, Deal/Company Memory. These are wrapped as read-only providers inside the context builder.
+2. **External evidence (new):** the `webSearch.server` / `readPage` already in the project, with queries built only from the public company name and domain. It covers hiring, tech, content and competitor signals. It only runs if the member opted into web research for this run.
+3. **Findings:** claim, evidence refs (internal record ids or URLs), confidence, unknowns, severity.
+4. **Revenue-leak hypotheses:** only produced when at least 2 independent evidence refs support them. Otherwise they are listed as an "Unknown worth checking".
+5. **Gaps / patterns / competitive signals:** reuse the Pattern Recognition and Collisions engines.
+6. **Recommended fixes:** proposals such as a task, an opportunity update, a mark, a mission or a Signal draft.
+7. **Confidence + unknowns summary.**
+
+Write-back works only through findings and proposals. The existing Risk and Blind Spot engines read open `capability_findings` as a new input source, so the output is not a competing risk list.
+
+What comes from the source systems (reimplemented as logic, no code copied wholesale):
+- the evidence-grading rubric and finding schema from the Golden Report
+- the leak taxonomy and the signal categories (tech / hiring / content / competitive) from Nexus
+- the conditional-surface idea, which is our `when()`.
+
+## F. Create/Draft foundation — typed templates
+
+There is one `draft`/`create` engine with typed templates:
+
+| Template | Output kind | Where it lands |
+|---|---|---|
+| follow_up | message draft | Messages composer (approval to send) |
+| intro_note | intro capsule draft | Intros double opt-in flow |
+| sales_script | doc | Opportunity > Artifacts |
+| social_post | post | Journal/Home composer (approval to publish) |
+| signal | ask | Signals composer (approval to post) |
+| exec_update | doc | Home widget + share proposal |
+| board_deck | deck | Decision > Artifacts |
+| meeting_brief | doc | Meeting/Calendar event |
+| content_calendar | calendar entries | existing `calendar_events` as proposals |
+| opportunity_video | video | Opportunity > Artifacts |
+
+Each template declares its input slots, required facts, the Digital You style hooks it uses, its output schema, and its destination. There are no mini-tools.
+
+## G. Lifecycle
+
+```text
+REQUESTED -> CONTEXT_BUILT -> RUNNING -> (NEEDS_INPUT) -> RESULT_READY
+  -> PROPOSALS_READY -> (NEEDS_APPROVAL) -> APPLIED -> CLOSED
+side exits: CANCELLED, FAILED(retryable|terminal), PARTIAL, UNAVAILABLE
+```
+
+What the member sees in the workspace at each step:
+- **REQUESTED:** the header plus a "Preparing context" shimmer.
+- **CONTEXT_BUILT:** the context chips, and for web runs the domain and cost estimate with Start / Adjust. Instant runs skip the confirmation.
+- **RUNNING:** step label, percent, and a Cancel button.
+- **NEEDS_INPUT:** an inline question (for example "Which of these two Acmes?"). The run pauses. It never guesses.
+- **RESULT_READY:** result, findings and recommendations.
+- **PROPOSALS_READY:** a list of proposals with Apply / Send to approval / Dismiss.
+- **NEEDS_APPROVAL:** "Waiting for your approval" (or the principal's, for a delegate), with a link to the Approval Queue.
+- **APPLIED:** each applied change is linked to its record.
+- **CLOSED:** read-only, and kept in the history.
+- **PARTIAL:** results so far, plus a list of what failed and why.
+- **UNAVAILABLE:** a plain reason (credits, provider, region) plus the deterministic result where one exists.
+- **FAILED (retryable):** a Retry button. Only 429/5xx are retried automatically, with bounded backoff.
+- **FAILED (terminal):** the reason, and no retry.
+- **CANCELLED:** "Stopped by you". Partial output is kept.
+
+Transitions happen only on the server, through a security-definer function. The client can never set a status.
+
+## H. Refactor before new capabilities
+
+**What the live database shows today:**
+- The database has two applied histories: 19 files in `supabase/migrations` (up to 16 Sep) and 11 Drizzle entries (0000–0010, from 22 Sep onward).
+- The current tooling (`drizzle.config.ts`, the migration tool) writes only to Drizzle.
+- **Recommendation:** freeze `supabase/migrations` as a historical baseline and never edit or delete it. Treat Drizzle as the only forward path, and write a one-line README that records the split.
+- Don't try to squash the two. Squashing would rewrite applied history and break both journals.
+
+Other findings:
+- **Ask Intros has no sign-in check at all.** `askIntros` calls paid AI and web search without auth.
+- **Approval Queue can be approved by the client.** The owner policy is `FOR ALL`, so a client can set `status = 'executed'` itself, with no run link and a narrow `action_type` list. That means an approval is only a UI convention today, not something the server enforces.
+- **`entity_events` provenance can be forged**, because clients can insert any `source`.
+- **`entity_links` has no type allow-list** and doesn't check that both ends belong to the owner.
+
+Smallest safe sequence (each step is a separate migration or PR, with no behavior change for members):
+1. Gate `askIntros` with auth. Show a friendly signed-out message in the dock.
+2. Harden the approval queue:
+   - Clients may only INSERT `pending` rows and UPDATE `status` to `approved` or `rejected`.
+   - `executed` is set only by the server RPC `execute_approval`.
+   - Add `run_id` and `proposal_id` columns (nullable).
+   - Widen `action_type` to include `capability_proposal`.
+3. Make `entity_events` trustworthy: client inserts are forced to `source = 'app'`, and add `append_capability_event()` (security definer).
+4. Add a type CHECK allow-list to `entity_links`, plus a `link_entities()` RPC that checks both ends belong to the owner.
+5. Extract the router: move `recognizeCommand` into `capabilities/match.ts`, keeping the same exports as thin wrappers so the existing 16+ phrases keep working, and add phrase tests.
+6. Don't grow `App.tsx`. New UI goes under `src/aetheris/capabilities/`. Only one mount line is added to App (the workspace host).
+
+## Schema (new, owner-scoped, minimum grants, immutable identity columns)
+
+```text
+capability_runs        id, owner_id, actor_id, actor_kind(member|delegate), capability_id, verb,
+                       subject_type, subject_id, status, progress, step_label, input jsonb, input_hash,
+                       granted_scopes text[], web_domains text[], cost_estimate int, engine,
+                       error_code, error_message, created_at, started_at, finished_at
+capability_findings    id, owner_id, run_id, subject_type, subject_id, kind(risk|gap|leak|pattern|competitive|unknown),
+                       claim, severity, confidence, evidence jsonb[], status(open|resolved|dismissed),
+                       resolved_note, created_at, resolved_at
+capability_proposals   id, owner_id, run_id, finding_id?, impact(read|draft|write|external), action jsonb,
+                       target_type, target_id, status(proposed|queued|applied|rejected|dismissed),
+                       approval_id?, created_by_actor, created_at, decided_at
+capability_artifacts / capability_artifact_revisions  (section C)
+bucket capability-assets (private)
+```
+
+- Clients can only SELECT these tables and UPDATE a finding's `status`.
+- All run, proposal and artifact writes go through `capabilities.functions.ts`, which verifies the caller and then calls security-definer RPCs.
+- The admin client is never used for reads.
+
+Types and directories:
+
+```text
+src/aetheris/capabilities/  types.ts registry.ts rank.ts match.ts templates/ defs/
+                            Workspace.tsx WorkspaceHost.tsx DoMoreMenu.tsx Chips.tsx RunCard.tsx
+src/lib/capabilities.functions.ts   start, getRun, answerInput, cancel, retry, decideProposal, reviseArtifact
+src/lib/capabilities/context.server.ts  scoped envelope builder (RLS client, budgets)
+src/lib/capabilities/writeback.server.ts
+src/lib/capabilities/providers/*.server.ts  wrappers over existing engines
+```
+
+The Context/Result envelopes stay as in v1, with the `layer: 'fact'|'recommendation'|'style'` tag added to each output item.
+
+## Isolation rules (unchanged, now enforced)
+
+- A capability declares its scopes. The builder fetches only the subject, the rows linked to it, and the declared scopes, up to a record budget.
+- Web queries come from an allow-listed field set: company name and domain.
+- The model receives only the serialized envelope.
+- A delegate's runs are evaluated with `actor_kind = delegate`. They never match "allow" rules.
+
+## I. Roadmap with acceptance criteria
+
+**Phase 0 — Hardening**
+- A signed-out call to `askIntros` returns 401 and the dock shows a friendly message.
+- A client cannot set an approval to `executed`, cannot forge event sources, and cannot link entities it doesn't own. There are SQL tests for all three.
+- All existing command phrases route the same way through the new matcher, covered by a phrase test suite.
+- The build is clean and there are no behavior changes.
+
+**Phase 1 — Framework + first five**
+- Tables, RPCs, router, Workspace (desktop + mobile), Do more menu, chips, "What can you do here?".
+- The first five capabilities: Diagnose (internal only), Prepare Meeting, Challenge, Find Who Can Help, Draft (follow_up, intro_note, exec_update).
+- Acceptance:
+  - Every run shows its context used.
+  - AI-off mode still returns deterministic results or UNAVAILABLE.
+  - A cross-account test shows zero leakage.
+  - A delegate cannot apply a write.
+  - At most 4 verbs appear per entity.
+
+**Phase 2 — Research + growth**
+- Diagnose external layer with web consent and cost display, Competitive Intelligence, revenue-leak hypotheses, and findings feeding the Risk/Blind Spot engines.
+- Referral attribution/reciprocity on CRM records, content_calendar, social_post, signal, sales_script.
+- Acceptance:
+  - No private field ever appears in a logged web query (an audit test checks this).
+  - A leak hypothesis without 2 evidence refs is never shown as a finding.
+
+**Phase 3 — Maker (artifacts)**
+- Artifacts + revisions, brief/deck/doc, image, board_deck, declarative form/calculator, approval-gated sharing links.
+- Acceptance:
+  - Every artifact is linked to a subject.
+  - Revisions are immutable.
+  - Sharing needs an approved proposal and can be revoked.
+
+**Phase 4 — Advanced maker + specialized**
+- Short video/audio through a media service boundary, declarative client portal/dashboard, "Visualize this concept", and "Analyze this plan" gated by AEC/real-estate tags.
+- Optional sandboxed code generation for portals.
+- Acceptance:
+  - Jobs are resumable and cancellable, with a per-member daily budget.
+  - Specialized verbs never rank for non-matching entities.
+
+**Checkpoint: DO NOT BUILD YET.** After Phase 0 is approved and verified, we stop and review before Phase 1 starts.
+
+## Decisions still open
+
+1. **Cost display:** show an estimate in credits per run, or only "uses web research · light/medium/heavy"? I recommend light/medium/heavy plus a daily cap.
+2. **Default daily budget** for web and media runs per member. It could be set by admins in launch settings.
+3. **Portal hosting:** should client portals live on the Passport-style public route (network-visible or shareable link), or only for signed-in network members in Phase 3?
+4. **Findings visibility:** strictly private to the owner, or shareable with delegates who have read permission?
+5. **Referral economics:** do we record monetary referral fees, or only reciprocity (favours given and received)?
