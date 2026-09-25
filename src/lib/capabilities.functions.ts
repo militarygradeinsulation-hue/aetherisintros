@@ -1,6 +1,6 @@
 import { createServerFn } from '@tanstack/react-start'
 import { z } from 'zod'
-import { requireSupabaseAuth } from '@/integrations/supabase/auth-middleware'
+import { requireAuthContract } from './auth-gate'
 import type { EntityType, ResultEnvelope, RunSummary, Scope } from '@/aetheris/capabilities/types'
 import { ENTITY_TYPES, SCOPES } from '@/aetheris/capabilities/types'
 
@@ -33,7 +33,7 @@ function toSummary(r: Record<string, unknown>): RunSummary {
 }
 
 export const startCapabilityRun = createServerFn({ method: 'POST' })
-  .middleware([requireSupabaseAuth])
+  .middleware([requireAuthContract])
   .inputValidator((data: unknown) => StartInput.parse(data))
   .handler(async ({ data, context }): Promise<RunSummary> => {
     const { getServerCapability } = await import('./capabilities/registry.server')
@@ -76,7 +76,7 @@ export const startCapabilityRun = createServerFn({ method: 'POST' })
   })
 
 export const getCapabilityRun = createServerFn({ method: 'GET' })
-  .middleware([requireSupabaseAuth])
+  .middleware([requireAuthContract])
   .inputValidator((data: unknown) => z.object({ runId: z.string().uuid() }).parse(data))
   .handler(async ({ data, context }): Promise<RunSummary | null> => {
     const { data: row } = await context.supabase.from('capability_runs').select('*').eq('id', data.runId).maybeSingle()
@@ -84,7 +84,7 @@ export const getCapabilityRun = createServerFn({ method: 'GET' })
   })
 
 export const cancelCapabilityRun = createServerFn({ method: 'POST' })
-  .middleware([requireSupabaseAuth])
+  .middleware([requireAuthContract])
   .inputValidator((data: unknown) => z.object({ runId: z.string().uuid() }).parse(data))
   .handler(async ({ data, context }): Promise<{ ok: boolean; error?: string }> => {
     const { error } = await context.supabase.rpc('set_capability_run_status', { p_run_id: data.runId, p_status: 'cancelled', p_step_label: 'Stopped by you' } as never)
