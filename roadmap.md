@@ -3,7 +3,8 @@
 ## Capability layer P1 — security spine (Sep 25)
 - [x] Migration policy doc, approval_queue/entity_events/entity_links hardening, capability tables + RPCs.
 - [x] Gate Ask Intros behind sign-in; capability types, server skeleton, scoped context + tests.
-- [x] Verify SQL privileges, cross-account and delegate isolation, command routing, build. Stop before P2.
+- [x] Verify SQL privileges, anon lockout, command routing, build.
+- [ ] Live two-account + delegate tests (blocked: needs approval to sign a test session in as a chosen account). Stop before P2.
 
 ## Public Ask Intros brand lockup (Sep 23)
 - [x] Replace the old public header image-and-text brand with the approved reusable SVG lockup.
