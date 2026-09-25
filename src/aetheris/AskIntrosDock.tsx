@@ -134,7 +134,12 @@ export function AskIntrosDock({ page, peopleNames, memberName, briefing, context
       if (!reads && (voice.speakReplies || voice.conversation) && voiceOutputSupported()) {
         readAloud([answer.reply], 'Ask Intros')
       }
-    } catch {
+    } catch (error) {
+      const { isAuthRequiredError } = await import('@/lib/auth-contract')
+      if (isAuthRequiredError(error)) {
+        setTurns(current => [...current, { role: 'assistant', content: 'Your session has ended. Sign in again to continue the conversation — I can still open pages and answer from recorded data meanwhile.' }])
+        return
+      }
       setTurns(current => [...current, { role: 'assistant', content: 'The language service is unavailable right now, so I am answering from your recorded data only. Try: “Who is most relevant to my active mission?”, “Who needs something I can provide?”, “Which relationship is going quiet?” or “Who can introduce me to <name>?”' }])
     } finally {
       setBusy(false)

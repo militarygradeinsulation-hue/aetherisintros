@@ -1,7 +1,7 @@
 import { createServerFn } from '@tanstack/react-start'
 import { z } from 'zod'
 
-import { requireSupabaseAuth } from '@/integrations/supabase/auth-middleware'
+import { requireAuthContract } from './auth-gate'
 
 const speechInput = z.object({
   text: z.string().trim().min(1).max(1800),
@@ -21,7 +21,7 @@ function safeProviderMessage(body: string, status: number): string {
 
 /** Creates one private spoken passage for the signed-in member. */
 export const speakWithIntrosVoice = createServerFn({ method: 'POST' })
-  .middleware([requireSupabaseAuth])
+  .middleware([requireAuthContract])
   .inputValidator((data: unknown) => speechInput.parse(data))
   .handler(async ({ data }) => {
     const apiKey = process.env['ELEVENLABS_API_KEY']
