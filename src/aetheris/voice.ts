@@ -235,6 +235,13 @@ async function speakCurrent(run: number) {
   }
 
   try {
+    const { supabase } = await import('@/integrations/supabase/client')
+    const { data: sessionData } = await supabase.auth.getSession()
+    if (run !== token) return
+    if (!sessionData.session) { speakWithDevice(text, run); return }
+  } catch { speakWithDevice(text, run); return }
+
+  try {
     const result = await speakWithIntrosVoice({ data: { text: text.slice(0, 1800) } })
     if (run !== token) return
     stopActiveAudio()
