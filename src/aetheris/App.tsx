@@ -24,7 +24,7 @@ import { AskIntrosDock, type AskIntrosAction } from './AskIntrosDock'
 import ConstellationField from './ConstellationField'
 import { VoiceBar } from './VoiceBar'
 import { SelectionReader } from './SelectionReader'
-import { currentPagePassages, readAloud, readPageOrSelection, setVoiceSettings, speechSupported, stopReading, readerSnapshot, useVoiceSettings } from './voice'
+import { currentPagePassages, readAloud, readPageOrSelection, setVoiceSettings, stopReading, readerSnapshot, useVoiceSettings, voiceOutputSupported } from './voice'
 
 import discoverEditorialAsset from '@/assets/editorial-discover.jpg.asset.json'
 import introsEditorialAsset from '@/assets/editorial-intros.jpg.asset.json'
@@ -2431,7 +2431,7 @@ function TopbarVoice() {
     return () => window.clearInterval(timer)
   }, [])
   const [voice] = useVoiceSettings()
-  if (!speechSupported() || !voice.readAloud) return null
+  if (!voiceOutputSupported() || !voice.readAloud) return null
   return <button className={`topbar-voice ${speaking ? 'active' : ''}`} data-voice-skip="true"
     aria-label={speaking ? 'Stop reading aloud' : 'Read this page aloud'}
     title={speaking ? 'Stop reading aloud' : 'Read this page aloud — or highlight text first'}
