@@ -183,6 +183,7 @@
 
 ## Voice
 - [x] Read aloud anywhere (top-bar speaker, per-page and per-reply speakers, reading bar with pause/next/speed, read-on-tap) plus Ask Intros voice control and conversation mode, with Settings → Display → Voice controls.
+- [x] Use Joseph’s private ElevenLabs voice for page reading and Ask Intros replies, with secure server-side synthesis and device fallback.
 
 ## Unified Executive Page and relationship doorway (Sep 23)
 - [x] Add minimal persisted executive identity, Open To, scheduling, and recommendation data with strict access controls.
