@@ -8,7 +8,7 @@ import { authRequiredMessage } from './auth-contract'
  * forged or expired token) becomes one typed contract: HTTP 401 + AUTH_REQUIRED.
  * Errors raised after authentication succeeded pass through untouched.
  */
-const authProbe = createMiddleware({ type: 'function' }).server(async ({ next }) => {
+export const authProbe = createMiddleware({ type: 'function' }).server(async ({ next }) => {
   const probe = { authenticated: false }
   try {
     return await next({ context: { authProbe: probe } })
@@ -23,7 +23,7 @@ const authProbe = createMiddleware({ type: 'function' }).server(async ({ next })
   }
 })
 
-const markAuthenticated = createMiddleware({ type: 'function' }).server(({ next, context }) => {
+export const markAuthenticated = createMiddleware({ type: 'function' }).server(({ next, context }) => {
   const probe = (context as unknown as { authProbe?: { authenticated: boolean } } | undefined)?.authProbe
   if (probe) probe.authenticated = true
   return next()
