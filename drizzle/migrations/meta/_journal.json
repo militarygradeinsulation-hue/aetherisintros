@@ -85,6 +85,13 @@
       "when": 1790342521065,
       "tag": "0011_capability_security_spine",
       "breakpoints": true
+    },
+    {
+      "idx": 12,
+      "version": "7",
+      "when": 1790343514451,
+      "tag": "0012_principal_can_always_revoke_delegate",
+      "breakpoints": true
     }
   ]
 }
