@@ -98,6 +98,13 @@ export function AskIntrosDock({ page, peopleNames, memberName, briefing, context
       sending.current = false
       return
     }
+    const { supabase } = await import('@/integrations/supabase/client')
+    const { data: sessionData } = await supabase.auth.getSession()
+    if (!sessionData.session) {
+      setTurns(current => [...current, { role: 'assistant', content: 'Sign in to have a full conversation with Ask Intros. Until then I can still open pages, change text size, read this page aloud and answer from recorded data — try “What changed?” or “Show my capital map”.' }])
+      sending.current = false
+      return
+    }
     setBusy(true)
     try {
       const answer = await askIntros({
