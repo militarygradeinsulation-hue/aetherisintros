@@ -11,7 +11,7 @@ import { answerGraphQuestion } from './opportunity-graph'
 import { ceoViewLabel, recognizeCommand } from './ceo-engine'
 import { openCeo } from './ceo-store'
 import {
-  isStopPhrase, readAloud, readerSnapshot, speechSupported, stopReading, useDictation, useReader, useVoiceSettings,
+  isStopPhrase, readAloud, readerSnapshot, stopReading, useDictation, useReader, useVoiceSettings, voiceOutputSupported,
 } from './voice'
 function AetherisGlyph({ size = 18 }: { size?: number }) {
   return <span className="aetheris-glyph" style={{ width: size, height: size }} aria-hidden="true"><i /><b /></span>
@@ -124,7 +124,7 @@ export function AskIntrosDock({ page, peopleNames, memberName, briefing, context
       const next = answer.suggestions.filter(item => item.toLowerCase() !== question.toLowerCase())
       if (next.length) setOpeners(next.slice(0, 4))
       const reads = answer.actions.some(action => action.kind === 'read-page')
-      if (!reads && (voice.speakReplies || voice.conversation) && speechSupported()) {
+      if (!reads && (voice.speakReplies || voice.conversation) && voiceOutputSupported()) {
         readAloud([answer.reply], 'Ask Intros')
       }
     } catch {
@@ -169,7 +169,7 @@ export function AskIntrosDock({ page, peopleNames, memberName, briefing, context
       <header>
         <span className="ask-dock-mark"><AetherisGlyph size={14} /></span>
         <div><b>Ask Intros</b><small>Your butler for the whole system</small></div>
-        {speechSupported() && <button className={`icon-btn ${voice.speakReplies ? 'active' : ''}`}
+        {voiceOutputSupported() && <button className={`icon-btn ${voice.speakReplies ? 'active' : ''}`}
           aria-label={voice.speakReplies ? 'Stop speaking replies' : 'Speak replies out loud'}
           title={voice.speakReplies ? 'Speaking replies out loud' : 'Replies are silent'}
           onClick={() => { setVoice({ speakReplies: !voice.speakReplies }); if (voice.speakReplies) stopReading() }}>
@@ -189,7 +189,7 @@ export function AskIntrosDock({ page, peopleNames, memberName, briefing, context
       <div className="ask-dock-log" ref={listRef}>
         {turns.map((turn, index) => <div key={index} className={`ask-dock-turn ${turn.role}`}>
           <p>{turn.content}</p>
-          {turn.role === 'assistant' && speechSupported() && <button type="button" className="ask-dock-say"
+          {turn.role === 'assistant' && voiceOutputSupported() && <button type="button" className="ask-dock-say"
             aria-label="Read this reply aloud" onClick={() => readAloud([turn.content], 'Ask Intros')}><Volume2 size={12} /></button>}
           {turn.did && turn.did.length > 0 && <ul className="ask-dock-did">{turn.did.map(note => <li key={note}>{note}</li>)}</ul>}
         </div>)}

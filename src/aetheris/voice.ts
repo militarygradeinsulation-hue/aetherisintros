@@ -115,6 +115,11 @@ export function speechSupported() {
   return typeof window !== 'undefined' && 'speechSynthesis' in window
 }
 
+/** Managed Intros speech works online; device speech remains the offline fallback. */
+export function voiceOutputSupported() {
+  return readVoiceSettings().voiceName === 'intros-managed' || speechSupported()
+}
+
 export function listVoices(): SpeechSynthesisVoice[] {
   if (!speechSupported()) return []
   return window.speechSynthesis.getVoices()

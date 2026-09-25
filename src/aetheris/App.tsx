@@ -2570,7 +2570,6 @@ function Shell({ startPage }: { startPage?: Page | undefined }) {
         return `Opened your conversation with ${person.name}`
       }
       case 'read-page': {
-        if (!speechSupported()) return 'This device has no speech built in'
         const passages = currentPagePassages()
         if (!passages.length) return null
         readAloud(passages, 'Reading this page')
