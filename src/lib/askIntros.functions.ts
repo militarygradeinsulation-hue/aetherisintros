@@ -3,6 +3,7 @@ import { stepCountIs, streamText, tool } from 'ai'
 import { createOpenAI } from '@ai-sdk/openai'
 import { z } from 'zod'
 import { readPage, searchWeb } from './webSearch.server'
+import { requireSupabaseAuth } from '@/integrations/supabase/auth-middleware'
 
 export interface AskIntrosMessage { role: 'user' | 'assistant'; content: string }
 
@@ -103,6 +104,7 @@ Use an empty actions array when no action is needed.`
 }
 
 export const askIntros = createServerFn({ method: 'POST' })
+  .middleware([requireSupabaseAuth])
   .inputValidator((data: AskIntrosInput) => data)
   .handler(async ({ data }): Promise<AskIntrosResult> => {
     const apiKey = process.env['LOVABLE_API_KEY']

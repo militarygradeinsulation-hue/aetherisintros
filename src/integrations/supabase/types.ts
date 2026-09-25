@@ -54,6 +54,8 @@ export type Database = {
           created_at: string
           id: string
           payload: Json
+          proposal_id: string | null
+          run_id: string | null
           source: string
           status: string
           summary: string
@@ -65,6 +67,8 @@ export type Database = {
           created_at?: string
           id?: string
           payload?: Json
+          proposal_id?: string | null
+          run_id?: string | null
           source?: string
           status?: string
           summary: string
@@ -76,6 +80,8 @@ export type Database = {
           created_at?: string
           id?: string
           payload?: Json
+          proposal_id?: string | null
+          run_id?: string | null
           source?: string
           status?: string
           summary?: string
@@ -223,6 +229,319 @@ export type Database = {
           user_id?: string
         }
         Relationships: []
+      }
+      capability_dismissals: {
+        Row: {
+          capability_id: string
+          created_at: string
+          id: string
+          owner_id: string
+          subject_id: string
+          subject_type: string
+          until: string | null
+        }
+        Insert: {
+          capability_id: string
+          created_at?: string
+          id?: string
+          owner_id?: string
+          subject_id: string
+          subject_type: string
+          until?: string | null
+        }
+        Update: {
+          capability_id?: string
+          created_at?: string
+          id?: string
+          owner_id?: string
+          subject_id?: string
+          subject_type?: string
+          until?: string | null
+        }
+        Relationships: []
+      }
+      capability_findings: {
+        Row: {
+          capability_id: string
+          claim: string
+          confidence: number
+          created_at: string
+          evidence: Json
+          id: string
+          kind: string
+          owner_id: string
+          resolved_at: string | null
+          resolved_note: string
+          run_id: string
+          severity: string
+          status: string
+          subject_id: string
+          subject_type: string
+          unknowns: Json
+        }
+        Insert: {
+          capability_id: string
+          claim: string
+          confidence?: number
+          created_at?: string
+          evidence?: Json
+          id?: string
+          kind: string
+          owner_id: string
+          resolved_at?: string | null
+          resolved_note?: string
+          run_id: string
+          severity?: string
+          status?: string
+          subject_id: string
+          subject_type: string
+          unknowns?: Json
+        }
+        Update: {
+          capability_id?: string
+          claim?: string
+          confidence?: number
+          created_at?: string
+          evidence?: Json
+          id?: string
+          kind?: string
+          owner_id?: string
+          resolved_at?: string | null
+          resolved_note?: string
+          run_id?: string
+          severity?: string
+          status?: string
+          subject_id?: string
+          subject_type?: string
+          unknowns?: Json
+        }
+        Relationships: [
+          {
+            foreignKeyName: "capability_findings_run_id_fkey"
+            columns: ["run_id"]
+            isOneToOne: false
+            referencedRelation: "capability_runs"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      capability_limits: {
+        Row: {
+          heavy_daily: number
+          id: number
+          light_daily: number
+          medium_daily: number
+          updated_at: string
+          updated_by: string | null
+        }
+        Insert: {
+          heavy_daily?: number
+          id?: number
+          light_daily?: number
+          medium_daily?: number
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Update: {
+          heavy_daily?: number
+          id?: number
+          light_daily?: number
+          medium_daily?: number
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Relationships: []
+      }
+      capability_proposals: {
+        Row: {
+          action: Json
+          approval_id: string | null
+          created_at: string
+          created_by: string
+          created_by_kind: string
+          decided_at: string | null
+          finding_id: string | null
+          id: string
+          impact: string
+          owner_id: string
+          run_id: string
+          status: string
+          summary: string
+          target_id: string | null
+          target_type: string
+        }
+        Insert: {
+          action?: Json
+          approval_id?: string | null
+          created_at?: string
+          created_by: string
+          created_by_kind: string
+          decided_at?: string | null
+          finding_id?: string | null
+          id?: string
+          impact: string
+          owner_id: string
+          run_id: string
+          status?: string
+          summary: string
+          target_id?: string | null
+          target_type: string
+        }
+        Update: {
+          action?: Json
+          approval_id?: string | null
+          created_at?: string
+          created_by?: string
+          created_by_kind?: string
+          decided_at?: string | null
+          finding_id?: string | null
+          id?: string
+          impact?: string
+          owner_id?: string
+          run_id?: string
+          status?: string
+          summary?: string
+          target_id?: string | null
+          target_type?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "capability_proposals_finding_id_fkey"
+            columns: ["finding_id"]
+            isOneToOne: false
+            referencedRelation: "capability_findings"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "capability_proposals_run_id_fkey"
+            columns: ["run_id"]
+            isOneToOne: false
+            referencedRelation: "capability_runs"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      capability_runs: {
+        Row: {
+          actor_id: string
+          actor_kind: string
+          capability_id: string
+          cost_tier: string
+          created_at: string
+          engine: string | null
+          error_code: string | null
+          error_message: string | null
+          finished_at: string | null
+          granted_scopes: string[]
+          id: string
+          input: Json
+          input_hash: string
+          owner_id: string
+          progress: number
+          result: Json | null
+          started_at: string | null
+          status: string
+          step_label: string
+          subject_id: string
+          subject_type: string
+          updated_at: string
+          verb: string
+          web_domains: string[]
+        }
+        Insert: {
+          actor_id: string
+          actor_kind?: string
+          capability_id: string
+          cost_tier?: string
+          created_at?: string
+          engine?: string | null
+          error_code?: string | null
+          error_message?: string | null
+          finished_at?: string | null
+          granted_scopes?: string[]
+          id?: string
+          input?: Json
+          input_hash?: string
+          owner_id: string
+          progress?: number
+          result?: Json | null
+          started_at?: string | null
+          status?: string
+          step_label?: string
+          subject_id: string
+          subject_type: string
+          updated_at?: string
+          verb: string
+          web_domains?: string[]
+        }
+        Update: {
+          actor_id?: string
+          actor_kind?: string
+          capability_id?: string
+          cost_tier?: string
+          created_at?: string
+          engine?: string | null
+          error_code?: string | null
+          error_message?: string | null
+          finished_at?: string | null
+          granted_scopes?: string[]
+          id?: string
+          input?: Json
+          input_hash?: string
+          owner_id?: string
+          progress?: number
+          result?: Json | null
+          started_at?: string | null
+          status?: string
+          step_label?: string
+          subject_id?: string
+          subject_type?: string
+          updated_at?: string
+          verb?: string
+          web_domains?: string[]
+        }
+        Relationships: []
+      }
+      capability_usage: {
+        Row: {
+          created_at: string
+          detail: Json
+          id: string
+          owner_id: string
+          provider: string
+          run_id: string | null
+          tier: string
+          units: number
+        }
+        Insert: {
+          created_at?: string
+          detail?: Json
+          id?: string
+          owner_id: string
+          provider?: string
+          run_id?: string | null
+          tier: string
+          units?: number
+        }
+        Update: {
+          created_at?: string
+          detail?: Json
+          id?: string
+          owner_id?: string
+          provider?: string
+          run_id?: string | null
+          tier?: string
+          units?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "capability_usage_run_id_fkey"
+            columns: ["run_id"]
+            isOneToOne: false
+            referencedRelation: "capability_runs"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       ceo_relationship_marks: {
         Row: {
@@ -1081,6 +1400,47 @@ export type Database = {
           user_id?: string
         }
         Relationships: []
+      }
+      delegate_capability_grants: {
+        Row: {
+          access: string
+          capability_id: string
+          created_at: string
+          delegate_id: string
+          id: string
+          principal_id: string
+          subject_id: string | null
+          subject_type: string | null
+        }
+        Insert: {
+          access: string
+          capability_id: string
+          created_at?: string
+          delegate_id: string
+          id?: string
+          principal_id?: string
+          subject_id?: string | null
+          subject_type?: string | null
+        }
+        Update: {
+          access?: string
+          capability_id?: string
+          created_at?: string
+          delegate_id?: string
+          id?: string
+          principal_id?: string
+          subject_id?: string | null
+          subject_type?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "delegate_capability_grants_delegate_id_fkey"
+            columns: ["delegate_id"]
+            isOneToOne: false
+            referencedRelation: "delegates"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       delegate_message_drafts: {
         Row: {
@@ -3242,6 +3602,30 @@ export type Database = {
     }
     Functions: {
       accept_delegate_invite: { Args: { p_id: string }; Returns: undefined }
+      add_capability_finding: {
+        Args: {
+          p_claim: string
+          p_confidence?: number
+          p_evidence?: Json
+          p_kind: string
+          p_run_id: string
+          p_severity?: string
+          p_unknowns?: Json
+        }
+        Returns: string
+      }
+      add_capability_proposal: {
+        Args: {
+          p_action: Json
+          p_finding_id?: string
+          p_impact: string
+          p_run_id: string
+          p_summary: string
+          p_target_id?: string
+          p_target_type: string
+        }
+        Returns: string
+      }
       add_verification_evidence: {
         Args: {
           p_evidence_type: string
@@ -3251,6 +3635,41 @@ export type Database = {
         }
         Returns: string
       }
+      append_capability_event: {
+        Args: {
+          p_detail?: Json
+          p_event: string
+          p_run_id: string
+          p_summary?: string
+        }
+        Returns: string
+      }
+      can_delegate: {
+        Args: {
+          p_access: string
+          p_capability: string
+          p_principal: string
+          p_subject_id: string
+          p_subject_type: string
+        }
+        Returns: boolean
+      }
+      capability_record_owned_by: {
+        Args: { p_id: string; p_owner: string; p_type: string }
+        Returns: boolean
+      }
+      capability_transition_allowed: {
+        Args: { p_from: string; p_to: string }
+        Returns: boolean
+      }
+      capability_usage_totals: {
+        Args: { p_days?: number }
+        Returns: {
+          day: string
+          runs: number
+          tier: string
+        }[]
+      }
       claim_early_access: {
         Args: { p_invite_code?: string }
         Returns: {
@@ -3259,8 +3678,16 @@ export type Database = {
           status: string
         }[]
       }
+      decide_capability_proposal: {
+        Args: { p_decision: string; p_id: string }
+        Returns: string
+      }
       decline_delegate_invite: { Args: { p_id: string }; Returns: undefined }
       ensure_default_pipeline: { Args: never; Returns: string }
+      entity_owned_by: {
+        Args: { p_id: string; p_owner: string; p_type: string }
+        Returns: boolean
+      }
       founding_stats: {
         Args: never
         Returns: {
@@ -3284,10 +3711,30 @@ export type Database = {
       is_admin: { Args: never; Returns: boolean }
       is_circle_member: { Args: { p_circle: string }; Returns: boolean }
       is_live_member: { Args: never; Returns: boolean }
+      is_uuid_text: { Args: { p: string }; Returns: boolean }
       is_verified_member: { Args: never; Returns: boolean }
       join_waitlist: {
         Args: { p_email: string; p_name?: string }
         Returns: undefined
+      }
+      link_entities: {
+        Args: {
+          p_from_id: string
+          p_from_type: string
+          p_relation?: string
+          p_to_id: string
+          p_to_type: string
+        }
+        Returns: string
+      }
+      mark_approval_executed: { Args: { p_id: string }; Returns: undefined }
+      my_capability_usage_today: {
+        Args: never
+        Returns: {
+          daily_limit: number
+          tier: string
+          used: number
+        }[]
       }
       my_delegate_invites: {
         Args: never
@@ -3317,8 +3764,13 @@ export type Database = {
           verified_role: Database["public"]["Enums"]["verified_role"]
         }[]
       }
+      owns_entity: { Args: { p_id: string; p_type: string }; Returns: boolean }
       purge_verification_proof: { Args: never; Returns: number }
       relative_label: { Args: { ts: string }; Returns: string }
+      resolve_capability_finding: {
+        Args: { p_id: string; p_note?: string; p_status: string }
+        Returns: undefined
+      }
       review_member_verification: {
         Args: {
           p_notes?: string
@@ -3330,12 +3782,39 @@ export type Database = {
         }
         Returns: undefined
       }
+      set_capability_run_status: {
+        Args: {
+          p_engine?: string
+          p_error_code?: string
+          p_error_message?: string
+          p_progress?: number
+          p_result?: Json
+          p_run_id: string
+          p_status: string
+          p_step_label?: string
+        }
+        Returns: undefined
+      }
       set_executive_recommendation_display: {
         Args: { p_display_approved: boolean; p_id: string }
         Returns: undefined
       }
       show_limit: { Args: never; Returns: number }
       show_trgm: { Args: { "": string }; Returns: string[] }
+      start_capability_run: {
+        Args: {
+          p_capability_id: string
+          p_cost_tier?: string
+          p_input?: Json
+          p_input_hash?: string
+          p_principal?: string
+          p_scopes?: string[]
+          p_subject_id: string
+          p_subject_type: string
+          p_verb: string
+        }
+        Returns: string
+      }
       submit_member_verification: {
         Args: {
           p_business_dba: string
