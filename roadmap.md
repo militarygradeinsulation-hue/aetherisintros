@@ -1,5 +1,9 @@
 # Aetheris specification completion
 
+## Page width fit (Sep 25)
+- [x] Remove narrow page-level width caps in the signed-in/demo workspace while keeping copy readable and small screens intact.
+- [x] Verify affected pages at desktop and mobile sizes without publishing.
+
 ## Capability layer P1 — security spine (Sep 25)
 - [x] Migration policy doc, approval_queue/entity_events/entity_links hardening, capability tables + RPCs.
 - [x] Gate Ask Intros behind sign-in; capability types, server skeleton, scoped context + tests.
