@@ -2981,8 +2981,8 @@ input, textarea, select { font: inherit; }
 .cal-views button{padding:6px 14px;font:inherit;font-size:12px;color:inherit;background:transparent;border:0;border-right:1px solid var(--line-dark);cursor:pointer}
 .cal-views button:last-child{border-right:0}
 .cal-views button.active{background:var(--cobalt,#0F5CCB);color:#fff}
-.cal-body{display:grid;grid-template-columns:1fr;gap:18px}
-.cal-body.with-form{grid-template-columns:minmax(0,1fr) 320px}
+.cal-body{display:grid;grid-template-columns:minmax(0,1fr);gap:18px;min-width:0}
+.cal-body.with-form{grid-template-columns:minmax(0,1fr) minmax(0,320px)}
 .cal-canvas{min-width:0;border:1px solid var(--line-dark);border-radius:10px;overflow:hidden}
 .cal-weekhead{display:grid;grid-template-columns:repeat(7,1fr);border-bottom:1px solid var(--line-dark)}
 .cal-weekhead span{padding:8px 10px;font-size:10px;letter-spacing:.18em;text-transform:uppercase;opacity:.6}
@@ -3031,12 +3031,12 @@ input, textarea, select { font: inherit; }
 .cal-dot.kind-followup{background:#C78522}
 .cal-dot.kind-personal{background:rgba(255,255,255,.4)}
 .cal-empty,.cal-note{display:flex;align-items:center;gap:8px;padding:18px;font-size:13px;opacity:.6}
-.cal-form{align-self:start;padding:16px;border:1px solid var(--line-dark);border-radius:10px;background:rgba(255,255,255,.03);display:grid;gap:12px}
+.cal-form{align-self:start;min-width:0;padding:16px;border:1px solid var(--line-dark);border-radius:10px;background:rgba(255,255,255,.03);display:grid;gap:12px}
 .cal-form header{display:flex;justify-content:space-between;align-items:center}
 .cal-form header button{background:none;border:0;color:inherit;cursor:pointer;opacity:.6}
-.cal-form label{display:grid;gap:5px;font-size:10px;letter-spacing:.16em;text-transform:uppercase;opacity:.85}
-.cal-form input,.cal-form select,.cal-form textarea{font:inherit;font-size:13px;letter-spacing:0;text-transform:none;padding:8px 10px;color:inherit;background:rgba(0,0,0,.25);border:1px solid var(--line-dark);border-radius:6px}
-.cal-form-row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.cal-form label{display:grid;min-width:0;gap:5px;font-size:10px;letter-spacing:.16em;text-transform:uppercase;opacity:.85}
+.cal-form input,.cal-form select,.cal-form textarea{box-sizing:border-box;min-width:0;width:100%;font:inherit;font-size:13px;letter-spacing:0;text-transform:none;padding:8px 10px;color:inherit;background:rgba(0,0,0,.25);border:1px solid var(--line-dark);border-radius:6px}
+.cal-form-row{display:grid;grid-template-columns:minmax(0,1fr);gap:10px;min-width:0}
 .cal-form .cal-check{display:flex;align-items:center;gap:8px;align-self:end}
 .cal-form .cal-check input{width:auto}
 .cal-form-actions{display:flex;gap:8px;flex-wrap:wrap}
