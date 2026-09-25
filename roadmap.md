@@ -241,6 +241,7 @@
 - [x] Make the customizable widget dashboard the permanent Home experience.
 - [x] Rebalance Messages so conversation content uses the available width without oversized empty action areas.
 - [x] Verify saved Home customization and responsive Home/Messages layouts without publishing.
+- [x] Keep News permanently visible in both desktop and mobile primary navigation.
 
 ## Unified bento + draggable system layer (Sep 24)
 - [x] Add the supplied reusable BentoGrid primitive and install Motion for the accessible draggable widget grid.
