@@ -7,6 +7,8 @@ const errorMiddleware = createMiddleware().server(async ({ next }) => {
   try {
     return await next();
   } catch (error) {
+    // Deliberate HTTP responses (e.g. 401 from the auth middleware) pass through unchanged.
+    if (error instanceof Response) return error;
     if (error != null && typeof error === "object" && "statusCode" in error) {
       throw error;
     }
