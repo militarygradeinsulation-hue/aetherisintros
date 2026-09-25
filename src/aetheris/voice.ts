@@ -158,7 +158,7 @@ function restartCurrent() {
   if (state === 'idle' || !segments.length) return
   token += 1
   stopActiveAudio()
-  window.speechSynthesis.cancel()
+  if (speechSupported()) window.speechSynthesis.cancel()
   void speakCurrent(token)
 }
 
@@ -194,7 +194,6 @@ function speakWithDevice(text: string, run: number) {
     announce()
     return
   }
-  const text = segments[index]
   const utterance = new SpeechSynthesisUtterance(text)
   const voice = chosenVoice() ?? bestVoice()
   if (voice) { utterance.voice = voice; utterance.lang = voice.lang }
@@ -269,7 +268,7 @@ export function readAloud(passages: string[], readingLabel = 'Reading') {
   index = 0
   label = readingLabel
   token += 1
-  window.speechSynthesis.cancel()
+  if (speechSupported()) window.speechSynthesis.cancel()
   void speakCurrent(token)
 }
 
