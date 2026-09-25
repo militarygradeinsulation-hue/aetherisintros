@@ -45,7 +45,9 @@ export interface EvidenceRef { kind: 'record' | 'event' | 'url'; ref: string; la
 
 export interface ResultItem { layer: Layer; text: string; evidence?: EvidenceRef[] }
 
-export interface ResultEnvelope<O = unknown> {
+export type Json = string | number | boolean | null | Json[] | { [key: string]: Json }
+
+export interface ResultEnvelope<O extends Json = Json> {
   status: 'ok' | 'partial' | 'unavailable' | 'needs_approval' | 'failed'
   engine: Engine
   output: O

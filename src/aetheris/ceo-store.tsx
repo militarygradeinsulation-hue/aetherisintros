@@ -176,7 +176,11 @@ export function CeoProvider({ children }: { children: ReactNode }) {
     if (!graph.userId) { writeLocal(decisions, approvals.map(x => x.id === id ? { ...x, status, actedAt } : x)); return }
     // "executed" can only be set server-side, after approval.
     const res = status === 'executed'
-      ? await db.rpc('mark_approval_executed', { p_id: id }).then(async r => r.error ? r : db.from('approval_queue').select().eq('id', id).single())
+      ? await (async () => {
+          const done = await db.rpc('mark_approval_executed', { p_id: id })
+          if (done.error) return { data: null, error: done.error }
+          return db.from('approval_queue').select().eq('id', id).single()
+        })()
       : await db.from('approval_queue').update({ status, acted_at: actedAt }).eq('id', id).select().single()
     if (res.error) { setError('The approval could not be updated.'); return }
     setApprovals(list => list.map(x => x.id === id ? approvalFromRow(res.data) : x))
