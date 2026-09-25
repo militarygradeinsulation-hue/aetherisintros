@@ -4423,3 +4423,14 @@ button.news-link{background:none;border:0;padding:0;cursor:pointer}
 /* Cursor glow — shows what the pointer is over */
 .cursor-glow{position:fixed;left:0;top:0;z-index:9999;pointer-events:none;border-radius:50%;opacity:0;transition:opacity .35s ease;mix-blend-mode:screen;background:radial-gradient(circle,rgba(244,161,37,.16) 0%,rgba(15,92,203,.10) 35%,transparent 68%);will-change:transform}
 @media (prefers-reduced-motion:reduce),(pointer:coarse){.cursor-glow{display:none}}
+
+/* Chat surfaces: visible borders, dark fills, clear typing affordance */
+.message{background:var(--raised,#11151A);border:1px solid rgba(255,255,255,.18);border-radius:10px;color:var(--soft)}
+.message.outgoing{background:var(--graphite,#1A1F25);border-color:rgba(15,92,203,.45)}
+.composer{border:1px solid rgba(255,255,255,.22);border-radius:10px;background:var(--raised,#11151A)}
+.composer:focus-within{border-color:var(--cobalt)}
+.composer textarea::placeholder{color:var(--muted)}
+.sv-chat li{background:var(--raised,#11151A);border-color:rgba(255,255,255,.18)}
+.sv-chat li.mine{border-color:rgba(15,92,203,.45)}
+.comment-composer input{border-color:rgba(255,255,255,.22)}
+.comment-composer input:focus{border-color:var(--cobalt)}
