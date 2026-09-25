@@ -3,6 +3,7 @@
  * Uses the browser's own speech engine, so it works immediately and offline.
  */
 import { useEffect, useRef, useState } from 'react'
+import { speakWithIntrosVoice } from '@/lib/voice.functions'
 
 export const voiceSpeeds = ['slowest', 'slow', 'normal', 'fast', 'faster', 'fastest'] as const
 export type VoiceSpeed = typeof voiceSpeeds[number]
@@ -31,7 +32,7 @@ export interface VoiceSettings {
 const KEY = 'aetheris.voice.settings'
 
 const defaults: VoiceSettings = {
-  readAloud: true, speakReplies: true, conversation: false, tapToRead: false, voiceName: '', speed: 'normal',
+  readAloud: true, speakReplies: true, conversation: false, tapToRead: false, voiceName: 'intros-managed', speed: 'normal',
 }
 
 let settings: VoiceSettings = defaults
@@ -48,6 +49,7 @@ function load(): VoiceSettings {
       settings = {
         ...defaults,
         ...parsed,
+        voiceName: parsed.voiceName || 'intros-managed',
         speed: voiceSpeeds.includes(parsed.speed as VoiceSpeed) ? parsed.speed as VoiceSpeed : 'normal',
       }
     }
@@ -103,12 +105,19 @@ let state: ReaderState = 'idle'
 let label = ''
 let problem = ''
 let token = 0
+let activeAudio: HTMLAudioElement | null = null
+let activeAudioUrl = ''
 const readerListeners = new Set<() => void>()
 
 function announce() { readerListeners.forEach(listener => listener()) }
 
 export function speechSupported() {
   return typeof window !== 'undefined' && 'speechSynthesis' in window
+}
+
+/** Managed Intros speech works online; device speech remains the offline fallback. */
+export function voiceOutputSupported() {
+  return readVoiceSettings().voiceName === 'intros-managed' || speechSupported()
 }
 
 export function listVoices(): SpeechSynthesisVoice[] {
@@ -118,7 +127,7 @@ export function listVoices(): SpeechSynthesisVoice[] {
 
 function chosenVoice(): SpeechSynthesisVoice | null {
   const name = readVoiceSettings().voiceName
-  if (!name) return null
+  if (!name || name === 'intros-managed') return null
   return listVoices().find(voice => voice.name === name) ?? null
 }
 
@@ -151,28 +160,52 @@ function bestVoice(): SpeechSynthesisVoice | null {
 
 /** Re-speak the passage in progress so a new speed or voice is heard at once. */
 function restartCurrent() {
-  if (state === 'idle' || !segments.length || !speechSupported()) return
+  if (state === 'idle' || !segments.length) return
   token += 1
-  window.speechSynthesis.cancel()
-  speakCurrent(token)
+  stopActiveAudio()
+  if (speechSupported()) window.speechSynthesis.cancel()
+  void speakCurrent(token)
 }
 
-function speakCurrent(run: number) {
-  if (!speechSupported()) return
-  const text = segments[index]
+function stopActiveAudio() {
+  if (activeAudio) {
+    activeAudio.onended = null
+    activeAudio.onerror = null
+    activeAudio.pause()
+    activeAudio.src = ''
+    activeAudio = null
+  }
+  if (activeAudioUrl) URL.revokeObjectURL(activeAudioUrl)
+  activeAudioUrl = ''
+}
+
+function base64Audio(value: string, contentType: string): Blob {
+  const decoded = window.atob(value)
+  const bytes = new Uint8Array(decoded.length)
+  for (let position = 0; position < decoded.length; position += 1) bytes[position] = decoded.charCodeAt(position)
+  return new Blob([bytes], { type: contentType })
+}
+
+function finishSegment(run: number) {
   if (run !== token) return
-  if (text === undefined) { stopReading(); return }
+  if (index + 1 < segments.length) { index += 1; announce(); void speakCurrent(run) }
+  else stopReading()
+}
+
+function speakWithDevice(text: string, run: number) {
+  if (!speechSupported() || run !== token) {
+    problem = 'This device has no fallback reading voice installed.'
+    stopReading()
+    announce()
+    return
+  }
   const utterance = new SpeechSynthesisUtterance(text)
   const voice = chosenVoice() ?? bestVoice()
   if (voice) { utterance.voice = voice; utterance.lang = voice.lang }
   utterance.rate = rateOf[readVoiceSettings().speed]
   utterance.pitch = 1
   utterance.volume = 1
-  utterance.onend = () => {
-    if (run !== token) return
-    if (index + 1 < segments.length) { index += 1; announce(); speakCurrent(run) }
-    else stopReading()
-  }
+  utterance.onend = () => finishSegment(run)
   utterance.onerror = event => {
     if (run !== token) return
     const reason = (event as unknown as { error?: string })?.error ?? ''
@@ -189,9 +222,45 @@ function speakCurrent(run: number) {
   window.speechSynthesis.speak(utterance)
 }
 
+async function speakCurrent(run: number) {
+  const text = segments[index]
+  if (run !== token) return
+  if (text === undefined) { stopReading(); return }
+  state = 'speaking'
+  announce()
+
+  if (readVoiceSettings().voiceName !== 'intros-managed') {
+    speakWithDevice(text, run)
+    return
+  }
+
+  try {
+    const result = await speakWithIntrosVoice({ data: { text: text.slice(0, 1800) } })
+    if (run !== token) return
+    stopActiveAudio()
+    activeAudioUrl = URL.createObjectURL(base64Audio(result.audio, result.contentType))
+    const audio = new Audio(activeAudioUrl)
+    activeAudio = audio
+    audio.playbackRate = rateOf[readVoiceSettings().speed]
+    audio.onended = () => { stopActiveAudio(); finishSegment(run) }
+    audio.onerror = () => {
+      if (run !== token) return
+      stopActiveAudio()
+      problem = 'The Intros voice could not play, so your device voice is being used.'
+      speakWithDevice(text, run)
+    }
+    await audio.play()
+  } catch (error) {
+    if (run !== token) return
+    problem = error instanceof Error ? `${error.message} Using your device voice instead.` : 'The Intros voice is unavailable. Using your device voice instead.'
+    announce()
+    speakWithDevice(text, run)
+  }
+}
+
 /** Read an ordered list of passages aloud, replacing anything being read now. */
 export function readAloud(passages: string[], readingLabel = 'Reading') {
-  if (!speechSupported()) {
+  if (!speechSupported() && readVoiceSettings().voiceName !== 'intros-managed') {
     problem = 'This browser cannot read aloud. Try Chrome, Edge or Safari.'
     announce()
     return
@@ -204,8 +273,8 @@ export function readAloud(passages: string[], readingLabel = 'Reading') {
   index = 0
   label = readingLabel
   token += 1
-  window.speechSynthesis.cancel()
-  speakCurrent(token)
+  if (speechSupported()) window.speechSynthesis.cancel()
+  void speakCurrent(token)
 }
 
 export function stopReading() {
@@ -214,20 +283,23 @@ export function stopReading() {
   index = 0
   state = 'idle'
   label = ''
+  stopActiveAudio()
   if (speechSupported()) window.speechSynthesis.cancel()
   announce()
 }
 
 export function pauseReading() {
-  if (!speechSupported() || state !== 'speaking') return
-  window.speechSynthesis.pause()
+  if (state !== 'speaking') return
+  if (activeAudio) activeAudio.pause()
+  else if (speechSupported()) window.speechSynthesis.pause()
   state = 'paused'
   announce()
 }
 
 export function resumeReading() {
-  if (!speechSupported() || state !== 'paused') return
-  window.speechSynthesis.resume()
+  if (state !== 'paused') return
+  if (activeAudio) void activeAudio.play()
+  else if (speechSupported()) window.speechSynthesis.resume()
   state = 'speaking'
   announce()
 }
@@ -238,8 +310,9 @@ export function skipSegment(step: 1 | -1) {
   if (next < 0 || next >= segments.length) { stopReading(); return }
   index = next
   token += 1
+  stopActiveAudio()
   window.speechSynthesis.cancel()
-  speakCurrent(token)
+  void speakCurrent(token)
 }
 
 export function readerSnapshot(): ReaderSnapshot {

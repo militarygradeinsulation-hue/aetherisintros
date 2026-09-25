@@ -87,10 +87,6 @@ function VoiceCard() {
     return undefined
   }, [])
 
-  if (!speechSupported()) {
-    return <p className="settings-identity-note"><Volume2 size={13} /> This browser has no built-in speech, so reading out loud is unavailable here. Chrome, Edge and Safari support it.</p>
-  }
-
   return <>
     <div className="voice-settings">
       <Toggle checked={voice.readAloud} label="Show the read-aloud controls" onChange={value => setVoice({ readAloud: value })} />
@@ -106,13 +102,15 @@ function VoiceCard() {
         </button>
       ))}
     </div>
-    {voices.length > 0 && <label className="voice-picker">
+    <label className="voice-picker">
       <span>Reading voice</span>
       <select value={voice.voiceName} onChange={event => setVoice({ voiceName: event.target.value })}>
-        <option value="">Most natural on this device</option>
+        <option value="intros-managed">Joseph — Ask Intros</option>
+        {speechSupported() && <option value="device-default">Most natural on this device</option>}
         {voices.map(item => <option key={item.name} value={item.name}>{item.label} — {item.lang}</option>)}
       </select>
-    </label>}
+    </label>
+    {!speechSupported() && <p className="settings-identity-note"><Volume2 size={13} /> This browser has no device voice, but the private Ask Intros voice remains available while online.</p>}
     <p className="settings-identity-note"><Volume2 size={13} /> Press the speaker in the top bar to hear the page you are on, or highlight a passage first to hear only that.</p>
     <Btn kind="secondary" onClick={() => readAloud(['This is how Ask Intros will read to you, at the speed and voice you chose.'], 'Voice test')}><Volume2 size={14} /> Hear a sample</Btn>
   </>
