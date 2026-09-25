@@ -110,7 +110,7 @@ Every result has three layers that are stored and shown separately:
 
 - The UI labels any re-ranking: "Reordered for your priorities — original ranking."
 - "What would I do?" is an explicitly labelled simulation. Its output is RECOMMENDATION + STYLE, and it must cite the facts it relied on.
-- Digital You never suppresses a finding. It can only collapse a finding when the member has set a rule to do that, and a hidden-by-preference counter stays visible.
+- Digital You never hides, collapses or rewrites a finding. Only the member can dismiss or resolve one, one finding at a time, with a note.
 - Autonomy rules (`digital_you_rules`) are the governance part of Digital You. They are evaluated by the router, not by the model.
 
 ## E. Diagnose — one capability, layered
@@ -208,7 +208,7 @@ Smallest safe sequence (each step is a separate migration or PR, with no behavio
 ```text
 capability_runs        id, owner_id, actor_id, actor_kind(member|delegate), capability_id, verb,
                        subject_type, subject_id, status, progress, step_label, input jsonb, input_hash,
-                       granted_scopes text[], web_domains text[], cost_estimate int, engine,
+                       granted_scopes text[], web_domains text[], cost_tier(light|medium|heavy), engine,
                        error_code, error_message, created_at, started_at, finished_at
 capability_findings    id, owner_id, run_id, subject_type, subject_id, kind(risk|gap|leak|pattern|competitive|unknown),
                        claim, severity, confidence, evidence jsonb[], status(open|resolved|dismissed),
@@ -285,10 +285,125 @@ The Context/Result envelopes stay as in v1, with the `layer: 'fact'|'recommendat
 
 **Checkpoint: DO NOT BUILD YET.** After Phase 0 is approved and verified, we stop and review before Phase 1 starts.
 
-## Decisions still open
+## Final decisions (settled)
 
-1. **Cost display:** show an estimate in credits per run, or only "uses web research · light/medium/heavy"? I recommend light/medium/heavy plus a daily cap.
-2. **Default daily budget** for web and media runs per member. It could be set by admins in launch settings.
-3. **Portal hosting:** should client portals live on the Passport-style public route (network-visible or shareable link), or only for signed-in network members in Phase 3?
-4. **Findings visibility:** strictly private to the owner, or shareable with delegates who have read permission?
-5. **Referral economics:** do we record monetary referral fees, or only reciprocity (favours given and received)?
+1. **Cost:** members see Light / Medium / Heavy with a plain sentence about what the run uses. Raw provider and credit accounting stays internal, in a server-only usage ledger. Admins can set daily caps.
+2. **Artifacts and portals:** private by default and previewed inside Intros. They can be shared in two ways: with signed-in network members, or through an external revocable link. Both need an approved share proposal.
+3. **Findings:** private to the owner. A delegate can see a finding only with an explicit read grant for that subject or capability. Findings are never visible to the network.
+4. **Referrals:** reciprocity plus optional amount and currency. An amount exists only when it was typed in or comes from a recorded opportunity or outcome. It is never inferred.
+5. **Migrations:** `supabase/migrations` is frozen as history. Drizzle is the only way forward, and this is documented.
+6. **Maker:** Phase 3 is declarative only. Phase 4 allows sandboxed generated code for portals and dashboards only, never running in the main app.
+7. **Digital You:** style and priority only.
+8. **Autonomy:** Level 1 by default. External actions always need approval.
+9. **Naming:** no legacy source names in the UI, in ids, in prompts or in stored `capability_id` values.
+
+## A. Contradictions found and how they are resolved
+
+1. **Digital You "collapse by rule"** (section D) contradicted decision 7. It has been removed: Digital You can no longer hide findings in any way.
+2. **The `cost_estimate int` column** exposed provider-style accounting. It is replaced with `cost_tier`, and a separate server-only `capability_usage` ledger takes over (service_role only; admins read totals through an RPC).
+3. **Delegate permissions are too coarse.** `has_delegate_permission(principal, perm)` has no subject or capability scope, so it can't express decision 3. Fix: add a `delegate_capability_grants` table (delegate_id, capability_id or '*', subject_type, subject_id or null, access read|run) and a `can_delegate(principal, capability, subject, access)` function.
+4. **The approval queue lets any client self-approve.** That breaks decisions 6 and 8, because nothing stops a delegate's or client's row from going straight to executed. Fix (Package 1): clients can set only `approved` or `rejected`, and only the principal can do it. `executed` is set by a server RPC only, and only for rows already `approved`.
+5. **Section B's `dismissed` ranking input** had no storage. Fix: add a small owner-scoped `capability_dismissals` table (subject + capability + until).
+6. **Section C's `visibility`** didn't include signed-in network sharing as a distinct option, and didn't tie visibility to approval. Fix: `visibility private|network|link`, where any value other than private requires `share_proposal_id` to point to an applied proposal. A trigger enforces this.
+7. **The daily caps in section I** had no settings home. Fix: add `capability_limits` (singleton, admin-only write) holding per-tier daily caps per member.
+8. **Section E still names source systems.** That's acceptable in this planning document only. Code, ids, comments visible in the UI, and prompts must use outcome names. A lint check (grep in CI for the legacy names) enforces this.
+9. **Roadmap Phase 0 bundled the router extraction with the security fixes.** They are now split, so security can be verified on its own (see below).
+10. **`roadmap.md` has not been updated yet,** because only the plan can be edited in planning mode. Its first build step is to add these packages there.
+
+## B. Build packages with stop criteria
+
+Each package is small, can be reverted, and ends with a stop: verify, report, and wait for your OK.
+
+**P1 — Security spine (no visible change).** Details in section C below.
+Stop when:
+- The SQL tests pass: cross-account reads return 0 rows, a client can't set `executed` or forge an event source or link rows it doesn't own, and a delegate can't approve.
+- A signed-out `askIntros` call returns 401.
+- The linter is clean, and the build and the existing phrase routing are unchanged.
+
+**P2 — Router extraction (no visible change).**
+- `recognizeCommand` moves into `capabilities/match.ts`, and the old exports stay as wrappers.
+- The registry holds only "adapter" capabilities that point to existing CEO panels.
+- Stop when: a phrase test suite covering every existing command passes, and the Playwright smoke test for Ask Intros opens the same panels.
+
+**P3 — Capability Workspace shell (first visible change).**
+- The workspace sheet opens (desktop sheet, mobile bottom sheet), with the lifecycle states rendered from `capability_runs`.
+- It is wired to one read-only capability: Challenge, which wraps the existing red team.
+- Stop when:
+  - Every lifecycle state renders correctly in a fixture.
+  - There is no horizontal overflow at 1440, 1280, 390 or 360px.
+  - Cancel works.
+  - AI-off mode shows the deterministic result.
+
+**P4 — Discovery.**
+- The "Do more" menu on Person, Company, Opportunity and Decision.
+- The ranking function with unit tests.
+- At most 2 chips.
+- "What can you do here?".
+- Stop when: at most 4 verbs appear, the ranking tests pass, a dismissed chip stays hidden, and no new nav or catalog was added.
+
+**P5 — Findings + proposals + approvals.**
+- Findings UI, proposal apply / send to approval, the Digital You rule evaluation, delegate grants in the UI.
+- Stop when:
+  - Level 1 behaves correctly (writes ask, external always asks).
+  - A delegate's proposals need the principal.
+  - Findings feed the Risk/Blind Spot engines as an input.
+  - Resolving or dismissing a finding is logged.
+
+**P6 — Phase 1 capabilities.**
+- Diagnose (internal only), Prepare Meeting, Find Who Can Help, Draft (follow_up, intro_note, exec_update).
+- Stop when: each one shows its context used, returns a deterministic fallback, links its output to the subject, and passes a cross-account leak test.
+
+**P7 — External research.**
+- The Diagnose web layer with a consent step, the Light/Medium/Heavy label, the usage ledger and the daily caps.
+- Stop when:
+  - An audit test shows no private field in any logged query.
+  - The cap blocks correctly and shows a plain message.
+  - A 402/403 from the provider leaves the run UNAVAILABLE rather than retrying it.
+
+**P8 — Growth templates + referrals.** social_post, signal, sales_script, content_calendar proposals, and referral reciprocity/amount fields.
+
+**P9 — Maker Phase 3.** Artifacts and revisions, declarative doc/deck/form/calculator/portal, approval-gated network or link sharing.
+
+**P10 — Maker Phase 4.** Media service boundary, sandboxed portal code generation, and AEC-gated Analyze Plan / Visualize.
+
+**Checkpoint: DO NOT BUILD beyond P1 until P1 is verified and you approve.**
+
+## C. Minimum first package (P1) — the spine, almost invisible
+
+One Drizzle migration, plus two server-function changes.
+
+1. **Documentation:** `docs/MIGRATIONS.md` states that `supabase/migrations` is frozen and Drizzle is the forward path.
+2. **Hardening of existing tables:**
+   - `approval_queue`:
+     - Split the `FOR ALL` policy into SELECT, INSERT (status must be `pending`) and UPDATE (status only `approved` or `rejected`, owner only).
+     - Add `execute_approval()` (security definer; requires `approved`).
+     - Add nullable `run_id` and `proposal_id` columns.
+     - Add the `capability_proposal` action type.
+   - `entity_events`:
+     - Client insert policy requires `source = 'app'` and an `event` that does not start with `capability.`.
+     - Add `append_capability_event()` (security definer, callable only through the router, which checks the owner).
+   - `entity_links`:
+     - Add a type allow-list CHECK as `NOT VALID`, then check existing rows and validate in a follow-up migration.
+     - Add a `link_entities()` RPC that verifies both ends belong to the owner.
+3. **New tables, empty and not yet used by the UI:**
+   - `capability_runs`, `capability_findings`, `capability_proposals`
+   - `capability_dismissals`
+   - `delegate_capability_grants`
+   - `capability_limits` (admin)
+   - `capability_usage` (service_role only)
+   - `capability_artifacts` + `capability_artifact_revisions` are deferred to P9 to keep P1 small.
+
+   For every table: RLS, minimum grants, no authenticated TRUNCATE/REFERENCES/TRIGGER, `freeze_columns` on the identity columns, and status transitions only through security-definer RPCs: `start_run`, `set_run_status`, `add_finding`, `add_proposal`, `decide_proposal`, `resolve_finding`.
+4. **Server:**
+   - `askIntros` gets `requireSupabaseAuth`. The dock shows a friendly signed-out message; this is the only visible change.
+   - Add a `capabilities.functions.ts` skeleton with `startRun`, `getRun` and `cancelRun`, backed by one internal no-op test capability. It isn't reachable from the UI.
+   - Add `context.server.ts` with scope enforcement and unit tests.
+5. **Types only:** `src/aetheris/capabilities/types.ts`, with the envelopes, the lifecycle enum and `layer` tags.
+6. **Verification** (these are the stop criteria):
+   - Simulated SQL tests as two users plus a delegate.
+   - The linter.
+   - A privilege matrix query.
+   - A signed-out 401 check.
+   - The existing Ask/CEO command smoke test.
+   - The build.
+
