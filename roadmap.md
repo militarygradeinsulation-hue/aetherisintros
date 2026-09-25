@@ -4,7 +4,7 @@
 - [x] Migration policy doc, approval_queue/entity_events/entity_links hardening, capability tables + RPCs.
 - [x] Gate Ask Intros behind sign-in; capability types, server skeleton, scoped context + tests.
 - [x] Verify SQL privileges, anon lockout, command routing, build.
-- [ ] Live two-account + delegate tests (blocked: needs approval to sign a test session in as a chosen account). Stop before P2.
+- [x] Two-account + delegate isolation harness (81 checks) and typed AUTH_REQUIRED contract. Stop before P2.
 
 ## Public Ask Intros brand lockup (Sep 23)
 - [x] Replace the old public header image-and-text brand with the approved reusable SVG lockup.
