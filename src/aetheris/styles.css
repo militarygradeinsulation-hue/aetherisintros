@@ -4434,3 +4434,12 @@ button.news-link{background:none;border:0;padding:0;cursor:pointer}
 .sv-chat li.mine{border-color:rgba(15,92,203,.45)}
 .comment-composer input{border-color:rgba(255,255,255,.22)}
 .comment-composer input:focus{border-color:var(--cobalt)}
+
+/* Let page-level surfaces use the available workspace width. Keep readable copy
+   constrained inside its section rather than limiting the entire section. */
+.social-shell .content{max-width:none}
+.social-shell .social-network,.social-shell .social-deep-tools,.social-shell .home-view-switch{max-width:none}
+.social-shell .social-home-grid{grid-template-columns:minmax(190px,226px) minmax(0,1fr) minmax(230px,270px);justify-content:stretch}
+.social-shell .hub-panel .ops-empty{max-width:none;width:100%}
+@media(max-width:1180px){.social-shell .social-home-grid{grid-template-columns:minmax(190px,210px) minmax(0,1fr)}}
+@media(max-width:920px){.social-shell .social-home-grid{grid-template-columns:minmax(0,1fr)}}
