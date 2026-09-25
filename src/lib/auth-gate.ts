@@ -24,7 +24,8 @@ const authProbe = createMiddleware({ type: 'function' }).server(async ({ next })
 })
 
 const markAuthenticated = createMiddleware({ type: 'function' }).server(({ next, context }) => {
-  ;(context as { authProbe?: { authenticated: boolean } }).authProbe!.authenticated = true
+  const probe = (context as unknown as { authProbe?: { authenticated: boolean } } | undefined)?.authProbe
+  if (probe) probe.authenticated = true
   return next()
 })
 
