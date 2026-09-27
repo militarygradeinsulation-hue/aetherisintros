@@ -32,6 +32,8 @@ export type LedgerCompany = {
   createdAt: string
   /** Set when this row mirrors a record entered in the basic CRM. */
   crmId?: ID
+  /** True for starter examples generated for a new workspace. */
+  starter?: boolean
 }
 
 export type LedgerContact = {
@@ -47,6 +49,7 @@ export type LedgerContact = {
   lastTouch: string
   createdAt: string
   crmId?: ID
+  starter?: boolean
 }
 
 export type LeadSource = 'Inbound' | 'Outbound' | 'Referral' | 'Event' | 'Partner' | 'Network intro'
@@ -62,6 +65,7 @@ export type LedgerLead = {
   value: number
   ownerId: ID
   createdAt: string
+  starter?: boolean
 }
 
 export const DEAL_STAGES = [
@@ -96,6 +100,7 @@ export type LedgerDeal = {
   createdAt: string
   source: LeadSource
   crmId?: ID
+  starter?: boolean
 }
 
 export type LedgerActivity = {
