@@ -168,6 +168,8 @@ function LandingPage({ signedIn }: { signedIn: boolean }) {
           <span className="lv-hero-topright">THE FOUNDING 1,000 · WHITELIST</span>
           <span className="lv-hero-soon"><i aria-hidden="true" />LAUNCHING SOON · LIMITED FOUNDING COHORT</span>
           <h1><span>Join the </span><em>whitelist.</em></h1>
+          <ScarcityLine label="FOUNDING PLACES ALMOST FILLED" tone="dark" />
+
 
           <p className="lv-hero-sub">Ask Intros opens to 1,000 founding members. Add your name and we review it against the standard: CEOs, founders, owners, managing partners and principal operators. Verified people only — that is what makes an introduction here worth taking.</p>
           <ul className="lv-hero-points">
