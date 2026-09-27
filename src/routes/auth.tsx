@@ -130,7 +130,7 @@ function AuthPage() {
         <p>Ask Intros is in private pre-launch. Open sign-up is closed — only whitelisted founding members can sign in right now.</p>
         <div className="auth-soon-actions">
           <Link to="/demo">Explore the demo <ArrowRight size={13} /></Link>
-          <Link to="/" hash="whitelist">Join the whitelist <ArrowRight size={13} /></Link>
+          <Link to="/early-access">Join the whitelist <ArrowRight size={13} /></Link>
         </div>
       </div>
       <h1>{mode === 'signin' ? <>Welcome<br /><em>back.</em></> : <>Join the<br /><em>network.</em></>}</h1>
@@ -171,7 +171,7 @@ function AuthPage() {
         </button>
       </form>
 
-      <Link to="/" hash="whitelist" className="auth-switch">No account yet? Request whitelist access.</Link>
+      <Link to="/early-access" className="auth-switch">No account yet? Request whitelist access.</Link>
       <Link to="/demo" className="auth-switch">Not ready to join? Open the demo.</Link>
 
       <span className="auth-foot"><LockKeyhole size={12} /> Nothing is shared without your explicit opt-in.</span>

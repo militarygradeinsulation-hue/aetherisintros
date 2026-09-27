@@ -296,7 +296,7 @@ export function CinematicFooter() {
             <MagneticButton as={Link} to="/founder-story" className="footer-glass-pill" style={{ display: 'inline-flex', alignItems: 'center', gap: 8, padding: '14px 26px', borderRadius: 999, color: 'inherit', textDecoration: 'none', fontSize: 14, fontWeight: 600 }}>
               Read My Story
             </MagneticButton>
-            <MagneticButton as="a" href="#whitelist" className="footer-glass-pill" style={{ display: 'inline-flex', alignItems: 'center', gap: 8, padding: '14px 26px', borderRadius: 999, color: 'inherit', textDecoration: 'none', fontSize: 14, fontWeight: 600 }}>
+            <MagneticButton as={Link} to="/early-access" className="footer-glass-pill" style={{ display: 'inline-flex', alignItems: 'center', gap: 8, padding: '14px 26px', borderRadius: 999, color: 'inherit', textDecoration: 'none', fontSize: 14, fontWeight: 600 }}>
               <span className="animate-footer-heartbeat" style={{ width: 8, height: 8, borderRadius: '50%', background: 'var(--destructive)', display: 'inline-block' }} aria-hidden="true" />
               Join the whitelist
             </MagneticButton>
