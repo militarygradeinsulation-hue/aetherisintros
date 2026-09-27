@@ -143,7 +143,7 @@ function SocialRails() {
 const feedLanes = ['ALL SIGNALS', 'ASKS', 'INSIGHTS', 'CAPITAL', 'HIRING', 'PARTNERSHIPS'] as const
 type FeedLane = typeof feedLanes[number]
 
-function FeedMasthead({ count, onCompose, onBrief }: { count: number; onCompose: () => void; onBrief: () => void }) {
+function FeedMasthead({ count, onCompose, onBrief }: { count: number; onCompose: () => void; onBrief?: () => void }) {
   const net = useNetwork()
   const first = (net.profile.name || 'you').split(' ')[0]
   const issued = new Date().toLocaleDateString(undefined, { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })
