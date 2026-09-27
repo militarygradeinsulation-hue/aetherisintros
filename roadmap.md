@@ -1,5 +1,9 @@
 # Aetheris specification completion
 
+## Cross-screen box fit (Sep 27)
+- [x] Keep feed cards, headings, actions and working panels inside their mobile columns while preserving desktop editorial layout.
+- [x] Audit primary demo destinations and Full CRM at desktop, tablet and phone widths; do not publish.
+
 ## Page width fit (Sep 25)
 - [x] Remove narrow page-level width caps in the signed-in/demo workspace while keeping copy readable and small screens intact.
 - [x] Verify affected pages at desktop and mobile sizes without publishing.

@@ -4725,3 +4725,72 @@ button.news-link{background:none;border:0;padding:0;cursor:pointer}
 .simp-go>div{display:flex;gap:8px;flex-wrap:wrap}
 .simp-toggle{display:flex;gap:8px;align-items:center;font-size:13px;color:#9EA4AC}
 @media (max-width:640px){.simp-go{grid-template-columns:1fr}}
+
+/* Keep editorial and working panels inside their columns at every width. */
+.feed-editorial-layout,.feed-editorial-main,.feed-grid,.social-editorial,
+.social-composer,.social-intelligence-card,.social-feed-card,.feed-section-head,
+.fcrm,.fcrm-body,.fcrm-panel-area,.simp,.simp-block{min-width:0;max-width:100%}
+.feed-editorial-main{grid-template-columns:minmax(0,1fr)}
+.feed-editorial-main>*,.feed-grid>*,.social-feed-card>*,
+.social-composer-start>*,.social-feed-card>header>*,.fcrm-panel-area>*{min-width:0}
+.social-feed-card :is(h2,p,small,b),.social-intelligence-card :is(h2,p,span),
+.feed-section-head :is(h2,span),.feed-radar :is(b,small),
+.fcrm-card :is(b,small),.simp-block :is(h2,h3,p),
+.people-social-grid :is(h2,p,small){overflow-wrap:anywhere}
+.social-composer-start>button{min-width:0;max-width:100%;overflow-wrap:anywhere;white-space:normal;height:auto;min-height:43px}
+.social-feed-card>footer{flex-wrap:wrap}
+.social-feed-card>footer>button,.help-action>button{white-space:normal;text-align:center}
+.feed-lanes,.signal-type-row,.fcrm-rail,.fcrm-board,.ops-board{
+  max-width:100%;overscroll-behavior-inline:contain;-webkit-overflow-scrolling:touch;
+}
+.fcrm-top>*,.fcrm-panel-head>*,.fcrm-banner>*,.simp-block header>*{min-width:0}
+.fcrm-top-actions,.fcrm-exports{flex-wrap:wrap}
+.fcrm-card{min-width:0;overflow-wrap:anywhere}
+.simp-file{overflow-wrap:anywhere}
+@media (max-width:820px){
+  .feed-editorial-layout{grid-template-columns:minmax(0,1fr)}
+  .feed-section-head{flex-wrap:wrap;gap:8px}
+  .feed-section-head span{flex:none}
+  .feed-grid{grid-template-columns:minmax(0,1fr)}
+  .feed-grid>.social-feed-card.is-lead{grid-column:auto}
+}
+@media (max-width:620px){
+  .social-feed-card>header{flex-wrap:wrap}
+  .social-feed-card>header>button,.social-feed-card>header>div{flex:1 1 180px}
+  .signal-badge{flex:0 1 auto;max-width:100%}
+  .social-feed-card.is-lead{padding:15px}
+  .social-feed-card.is-lead .social-feed-copy h2{font-size:clamp(27px,8vw,34px);letter-spacing:0}
+  .social-feed-card>footer>button,.help-action>button{min-width:0}
+  .social-comments input{min-width:0}
+  .fcrm-panel-head{flex-wrap:wrap}
+  .fcrm-rail button{flex-shrink:0}
+  .simp-steps{max-width:100%;overflow-x:auto}
+  .simp-map{grid-template-columns:repeat(auto-fill,minmax(min(100%,200px),1fr))}
+}
+.work-editorial-masthead{grid-template-columns:minmax(0,1.08fr) minmax(0,.92fr)}
+.fcrm-rail{min-width:0;max-width:100%}
+.fcrm-rail-group,.fcrm-rail button{flex-shrink:0}
+.fcrm-body{grid-template-columns:clamp(180px,15vw,208px) minmax(0,1fr)}
+.ops-cols{grid-template-columns:repeat(auto-fit,minmax(min(100%,280px),1fr))}
+.ops-stats{grid-template-columns:repeat(auto-fit,minmax(min(100%,150px),1fr))}
+.hub-head{grid-template-columns:minmax(0,1fr) auto}
+.lv-platform b{white-space:normal;overflow-wrap:anywhere}
+.work-editorial-masthead>div,.work-editorial-masthead figure{min-width:0;max-width:100%}
+@media(max-width:920px){.work-editorial-masthead,.fcrm-body,.hub-head{grid-template-columns:minmax(0,1fr)}}
+@media(max-width:620px){
+  .work-editorial-masthead .home-ai-brand{max-width:100%;gap:10px}
+  .work-editorial-masthead .home-ai-namestack{min-width:0}
+  .work-editorial-masthead .home-ai-brand b{font-size:12px;letter-spacing:.12em;white-space:normal;overflow-wrap:anywhere}
+  .work-editorial-masthead .home-ai-brand small{font-size:7px;letter-spacing:.07em;white-space:normal;overflow-wrap:anywhere}
+  .work-editorial-masthead h1{overflow-wrap:anywhere}
+  .section-line:has(.path-toggle){flex-wrap:wrap;gap:10px}
+  .path-toggle{max-width:100%;flex-wrap:wrap}
+  .path-toggle button{flex:1 1 auto;padding:8px 9px;white-space:normal}
+  .message-actions .ceo-actions{width:100%;flex-wrap:wrap}
+  .message-actions .ceo-actions button{flex:1 1 calc(50% - 6px);min-width:0;white-space:normal}
+  .premium-home-copy h1{font-size:clamp(40px,11vw,56px);line-height:1.04;max-width:100%}
+  .premium-home-copy h1 em{display:inline}
+  .premium-home-copy dl{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .premium-home-copy dl div{min-width:0}
+  .premium-home-copy dt{overflow-wrap:anywhere}
+}
