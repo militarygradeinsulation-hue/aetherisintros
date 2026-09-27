@@ -1,10 +1,9 @@
 import { ArrowRight, BrainCircuit, Globe2, LayoutGrid, LockKeyhole, ShieldCheck, Smartphone, Zap } from 'lucide-react'
 import { Link } from '@tanstack/react-router'
-import { useState } from 'react'
 import landingPortraitAsset from '@/assets/aetheris-home-portrait.jpg.asset.json'
 import showcaseAsset from '@/assets/one-connected-system.png.asset.json'
 
-import { joinWaitlist, useAccess } from './access'
+import { useAccess } from './access'
 
 import { CinematicFooter } from './CinematicFooter'
 import ParticleDrift from './ParticleDrift'
@@ -25,51 +24,6 @@ function ScarcityLine({ label, tone = 'light' }: { label: string; tone?: 'light'
   </div>
 }
 
-function JoinBand({ signedIn }: { signedIn: boolean }) {
-  const [name, setName] = useState('')
-  const [email, setEmail] = useState('')
-  const [state, setState] = useState<'idle' | 'sending' | 'done' | 'error'>('idle')
-
-  const submit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    if (!email.trim() || state === 'sending') return
-    setState('sending')
-    try { await joinWaitlist(email.trim().toLowerCase(), name.trim()); setState('done') }
-    catch { setState('error') }
-  }
-
-
-
-  return (
-    <section className="lv-join" id="whitelist">
-      <div className="lv-join-copy">
-        <h2>Request your <em>place.</em></h2>
-        <p>Ask Intros opens to 1,000 founding members. Add your name and we review it against the standard: CEOs, founders, owners, managing partners and principal operators. Verified people only — that is what makes an introduction here worth taking.</p>
-        <ul>
-          <li><i />Reviewed by a person, not a signup form</li>
-          <li><i />Double opt-in introductions, always</li>
-          <li><i />No spam, no selling your attention</li>
-        </ul>
-      </div>
-      <form className="lv-join-form" onSubmit={e => void submit(e)}>
-        <ScarcityLine label="LAUNCHING SOON — FOUNDING PLACES ALMOST FILLED" />
-        {state === 'done'
-          ? <>
-              <p className="lv-join-ok">You're on the whitelist. We'll email {email} when your place is ready.</p>
-              <Link to="/demo" className="btn primary">Explore the demo now <ArrowRight size={15} /></Link>
-            </>
-          : <>
-              <label><b>NAME</b><input value={name} onChange={e => setName(e.target.value)} placeholder="Joseph Toney" autoComplete="name" /></label>
-              <label><b>WORK EMAIL</b><input type="email" required value={email} onChange={e => setEmail(e.target.value)} placeholder="you@company.com" autoComplete="email" /></label>
-              <button className="btn primary" type="submit" disabled={state === 'sending'}>{state === 'sending' ? 'Adding you…' : 'Add my name'}</button>
-              {state === 'error' && <small>That didn't go through. Please check the email and try again.</small>}
-              <small>Places are reviewed in the order they arrive.</small>
-            </>}
-      </form>
-    </section>
-
-  )
-}
 
 type CapabilityCard = {
   id: string
@@ -126,7 +80,7 @@ function LandingPage({ signedIn }: { signedIn: boolean }) {
     : null
   const accountBtn = (cls: string) => signedIn
     ? <Link to="/app" className={cls}>Enter your network</Link>
-    : <a href="#whitelist" className={cls}>Request whitelist access</a>
+    : <Link to="/early-access" className={cls}>Request whitelist access</Link>
 
   return (
     <main className="lv">
@@ -182,8 +136,6 @@ function LandingPage({ signedIn }: { signedIn: boolean }) {
       </section>
 
       <Capabilities />
-
-      <JoinBand signedIn={signedIn} />
     </main>
   )
 }
