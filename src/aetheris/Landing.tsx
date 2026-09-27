@@ -43,7 +43,7 @@ function JoinBand({ signedIn }: { signedIn: boolean }) {
   return (
     <section className="lv-join" id="whitelist">
       <div className="lv-join-copy">
-        <h2>Join the <em>whitelist.</em></h2>
+        <h2>Request your <em>place.</em></h2>
         <p>Ask Intros opens to 1,000 founding members. Add your name and we review it against the standard: CEOs, founders, owners, managing partners and principal operators. Verified people only — that is what makes an introduction here worth taking.</p>
         <ul>
           <li><i />Reviewed by a person, not a signup form</li>
@@ -61,9 +61,8 @@ function JoinBand({ signedIn }: { signedIn: boolean }) {
           : <>
               <label><b>NAME</b><input value={name} onChange={e => setName(e.target.value)} placeholder="Joseph Toney" autoComplete="name" /></label>
               <label><b>WORK EMAIL</b><input type="email" required value={email} onChange={e => setEmail(e.target.value)} placeholder="you@company.com" autoComplete="email" /></label>
-              <button className="btn primary" type="submit" disabled={state === 'sending'}>{state === 'sending' ? 'Adding you…' : 'Request whitelist access'}</button>
+              <button className="btn primary" type="submit" disabled={state === 'sending'}>{state === 'sending' ? 'Adding you…' : 'Add my name'}</button>
               {state === 'error' && <small>That didn't go through. Please check the email and try again.</small>}
-              {!signedIn && <Link to="/demo" className="lv-join-demo">Or try the demo first <ArrowRight size={13} /></Link>}
               <small>Places are reviewed in the order they arrive.</small>
             </>}
       </form>
@@ -183,6 +182,8 @@ function LandingPage({ signedIn }: { signedIn: boolean }) {
       </section>
 
       <Capabilities />
+
+      <JoinBand signedIn={signedIn} />
     </main>
   )
 }
