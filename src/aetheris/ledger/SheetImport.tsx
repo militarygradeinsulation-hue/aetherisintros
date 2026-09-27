@@ -139,7 +139,7 @@ export default function SheetImport() {
     setBusy(true)
     let n = 0
     for (const c of skipBad ? good : checked.filter(x => !x.errors.includes('Already in your CRM'))) {
-      const v = c.values as Record<string, string | undefined>
+      const v = c.values
       const res = target === 'people'
         ? await ops.createPerson({
           fullName: v.fullName ?? '', email: v.email ?? '', phone: v.phone ?? '', title: v.title ?? '',
