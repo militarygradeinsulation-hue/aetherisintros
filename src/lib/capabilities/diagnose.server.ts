@@ -9,7 +9,8 @@ import type {
 } from '@/aetheris/capabilities/types'
 import { enforceEvidenceRule } from '@/aetheris/capabilities/evidence'
 
-type Row = Record<string, any>
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type Row = any
 export interface DiagnoseCtx {
   subject: EntityRef
   company: Row | null

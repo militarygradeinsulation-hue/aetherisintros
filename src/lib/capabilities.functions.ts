@@ -93,7 +93,7 @@ export const startCapabilityRun = createServerFn({ method: 'POST' })
     return detail
   })
 
-async function runDiagnose(db: any, runId: string, data: z.infer<typeof StartInput>, granted: Scope[], step: (s: string, e?: Record<string, unknown>) => Promise<any>) {
+async function runDiagnose(db: any, runId: string, data: z.infer<typeof StartInput>, granted: Scope[], step: (s: string, e?: Record<string, unknown>) => PromiseLike<any>) {
   const { gatherContext, evaluateProviders, publicDomainOf } = await import('./capabilities/diagnose.server')
   const ctx = await gatherContext(db, data.subject)
   const { reports, findings, proposals } = evaluateProviders(ctx)

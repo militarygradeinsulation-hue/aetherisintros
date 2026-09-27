@@ -1,7 +1,7 @@
 import { useEffect, useSyncExternalStore } from 'react'
 import type { EntityRef, FindingRow } from './types'
 
-export interface OpenRequest { capabilityId: string; subject?: EntityRef; subjectLabel?: string; focus?: string; runId?: string }
+export interface OpenRequest { capabilityId: string; subject?: EntityRef | undefined; subjectLabel?: string | undefined; focus?: string | undefined; runId?: string | undefined }
 
 export const openCapability = (req: OpenRequest) => window.dispatchEvent(new CustomEvent('aetheris:capability', { detail: req }))
 
