@@ -1,10 +1,11 @@
 import { ArrowRight, BrainCircuit, Globe2, LayoutGrid, LockKeyhole, ShieldCheck, Smartphone, Zap } from 'lucide-react'
 import { Link } from '@tanstack/react-router'
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import landingPortraitAsset from '@/assets/aetheris-home-portrait.jpg.asset.json'
 import showcaseAsset from '@/assets/one-connected-system.png.asset.json'
 
-import { foundingStats, joinWaitlist, useAccess, type FoundingStats } from './access'
+import { joinWaitlist, useAccess } from './access'
+
 import { CinematicFooter } from './CinematicFooter'
 import ParticleDrift from './ParticleDrift'
 import ConstellationField from './ConstellationField'
