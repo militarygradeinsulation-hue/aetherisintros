@@ -125,7 +125,7 @@ import { ApprovalQueuePanel, CalendarMeetingBar, CeoActions, CeoHost, ForecastCo
 import { openCeo } from './ceo-store'
 import { DelegatesPanel, DigitalYouRulesPanel, IntentExchangePanel, OrganizationRelationshipView, PassportManager, ReverseDiscoveryPanel } from './opportunity-ui'
 import { activeMission, missionFit, missionTypeLabel } from './opportunity-graph'
-import { NotificationsDrawer } from './SocialExperience'
+import { EditorialFeed, NotificationsDrawer } from './SocialExperience'
 import { newsAge, useAetherisNews } from './news'
 import { IntrosSystemBento, BentoGridItem } from './IntrosSystemGrid'
 
