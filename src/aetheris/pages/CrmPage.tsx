@@ -76,6 +76,12 @@ export default function CrmPage() {
 
   if (!ops.ready) return <p className="ops-note">Loading your records…</p>
 
+  /* ------------------------------------------------ full workspace */
+
+  if (view === 'full') {
+    return <LedgerProvider><FullCrm onBack={() => setWorkspace('basic')} /></LedgerProvider>
+  }
+
   /* --------------------------------------------------------------- detail */
 
   if (selected) {
@@ -84,16 +90,26 @@ export default function CrmPage() {
 
   const empty = !people.length && !companies.length && !opportunities.length
 
+  const switcher = <div className="crm-switch" role="group" aria-label="CRM view">
+    <button type="button" className="active" aria-pressed>Basic CRM</button>
+    <button type="button" aria-pressed={false} onClick={() => setWorkspace('full')}>
+      <LayoutGrid size={13} /> Full CRM &amp; operations
+    </button>
+  </div>
+
   return <>
     <Head label="AETHERIS CRM" title="One record per person. Everywhere."
       copy="Enter a person, company, opportunity or number once and the whole account uses it — CRM lists, Grid sheets, your pipeline and the relationship intelligence beside them."
       proof="Private to your account. Nothing here is visible to the network."
       action={<Btn onClick={() => setCreating('person')}><Plus size={14} /> New person</Btn>} />
 
+    {switcher}
+
     <nav className="ops-tabs" role="tablist" aria-label="CRM sections">
       {tabs.map(t => <button key={t.id} role="tab" aria-selected={t.id === tab}
         className={t.id === tab ? 'active' : ''} onClick={() => go(t.id)}>{t.label}</button>)}
     </nav>
+
 
     {creating && <CreateForm kind={creating} onClose={() => setCreating(null)} />}
 
