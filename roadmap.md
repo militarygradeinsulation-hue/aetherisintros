@@ -273,4 +273,4 @@
 ## Pre-launch access lock (Sep 27)
 - [x] Lock public sign-in; only demo and whitelist paths open
 - [x] "Launching Soon" urgency strip, hero badge and whitelist badge
-- [ ] Gold scarcity line with dot near the end (no numbers) showing the whitelist nearly full
+- [x] Gold scarcity line with dot near the end (no numbers) showing the whitelist nearly full
