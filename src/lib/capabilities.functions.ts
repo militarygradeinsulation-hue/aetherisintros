@@ -108,7 +108,7 @@ async function runDiagnose(db: any, runId: string, data: z.infer<typeof StartInp
     } else {
       try {
         await db.rpc('record_capability_web_domain', { p_run_id: runId, p_domain: domain })
-        const { searchWeb } = await import('../lib/webSearch.server')
+        const { searchWeb } = await import('./webSearch.server')
         // The query contains only the public domain — never CRM, people or memory content.
         const results = await searchWeb(domain, 5)
         for (const r of results) webItems.push({ title: r.title.slice(0, 140), url: r.url })
