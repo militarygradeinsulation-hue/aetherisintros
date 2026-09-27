@@ -136,8 +136,6 @@ function LandingPage({ signedIn }: { signedIn: boolean }) {
       </section>
 
       <Capabilities />
-
-      <JoinBand signedIn={signedIn} />
     </main>
   )
 }
