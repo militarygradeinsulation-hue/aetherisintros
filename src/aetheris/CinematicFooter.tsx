@@ -289,12 +289,13 @@ export function CinematicFooter() {
           </p>
 
           <div ref={linksRef} style={{ display: 'flex', flexWrap: 'wrap', gap: 14, justifyContent: 'center', alignItems: 'center' }}>
-            <MagneticButton as={Link} to="/early-access" className="footer-glass-pill" style={{ display: 'inline-flex', alignItems: 'center', gap: 8, padding: '14px 26px', borderRadius: 999, color: 'inherit', textDecoration: 'none', fontSize: 14, fontWeight: 600 }}>
-              Create an account <ArrowRight size={15} />
+            <MagneticButton as={Link} to="/demo" className="footer-glass-pill" style={{ display: 'inline-flex', alignItems: 'center', gap: 8, padding: '14px 26px', borderRadius: 999, color: 'inherit', textDecoration: 'none', fontSize: 14, fontWeight: 600 }}>
+              Demo the system <ArrowRight size={15} />
             </MagneticButton>
-            <MagneticButton as={Link} to="/auth" className="footer-glass-pill" style={{ display: 'inline-flex', alignItems: 'center', gap: 8, padding: '14px 26px', borderRadius: 999, color: 'inherit', textDecoration: 'none', fontSize: 14, fontWeight: 600 }}>
-              Log in
+            <MagneticButton as="a" href="#whitelist" className="footer-glass-pill" aria-label="Sign-in is locked until launch. Join the whitelist." style={{ display: 'inline-flex', alignItems: 'center', gap: 8, padding: '14px 26px', borderRadius: 999, color: 'inherit', textDecoration: 'none', fontSize: 14, fontWeight: 600, opacity: 0.62 }}>
+              <LockKeyhole size={14} /> Sign-in locked
             </MagneticButton>
+
             <MagneticButton as={Link} to="/founder-story" className="footer-glass-pill" style={{ display: 'inline-flex', alignItems: 'center', gap: 8, padding: '14px 26px', borderRadius: 999, color: 'inherit', textDecoration: 'none', fontSize: 14, fontWeight: 600 }}>
               Read My Story
             </MagneticButton>
