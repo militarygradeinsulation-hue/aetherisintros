@@ -49,8 +49,17 @@ export default function CrmPage() {
   const [selected, setSelected] = useState<Selection>(null)
   const [query, setQuery] = useState('')
   const [creating, setCreating] = useState<'person' | 'company' | 'opportunity' | 'task' | null>(null)
+  const [view, setView] = useState<'basic' | 'full'>(() =>
+    typeof window === 'undefined' ? 'basic' : (localStorage.getItem('aetheris.crm.view') as 'basic' | 'full') || 'basic')
+
+  const setWorkspace = (next: 'basic' | 'full') => {
+    setView(next)
+    setSelected(null)
+    try { localStorage.setItem('aetheris.crm.view', next) } catch { /* ignore */ }
+  }
 
   const go = (next: Tab) => { setTab(next); setSelected(null); try { localStorage.setItem('aetheris.crm.tab', next) } catch { /* ignore */ } }
+
 
   const people = ops.people.filter(p => !p.archived)
   const companies = ops.companies.filter(c => !c.archived)
