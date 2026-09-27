@@ -176,7 +176,7 @@ check('Web domain refused when public research not approved', denied(await as(A,
 const pX = await as(A, `select public.add_capability_proposal('${runX}','write','Create task','{"kind":"create_task"}'::jsonb,'company','${cA}','${fX}') id`)
 const propX = pX.rows[0]?.id
 check('Write proposal cannot be self-applied', denied(await as(A, `select public.decide_capability_proposal('${propX}','apply')`)))
-const q = await as(A, `select public.decide_capability_proposal('${propX}','queue') id`); const apX = q.rows[0]?.id
+const qX = await as(A, `select public.decide_capability_proposal('${propX}','queue') id`); const apX = qX.rows[0]?.id
 check('B cannot approve A queued action', empty(await as(B, `update public.approval_queue set status='approved' where id='${apX}' returning id`)))
 await as(A, `update public.approval_queue set status='approved' where id='${apX}'`)
 await as(A, `select public.mark_approval_executed('${apX}')`)
