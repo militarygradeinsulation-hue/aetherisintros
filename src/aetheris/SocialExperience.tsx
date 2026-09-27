@@ -114,6 +114,21 @@ function IntelligenceCards() {
   return <>{cards.map(card => <article className="social-intelligence-card" key={card.id}><span>{card.label}</span><Lightbulb size={18} /><h2>{card.title}</h2><p>{card.detail}</p><button onClick={card.run}>{card.action}<ArrowRight size={14} /></button></article>)}</>
 }
 
+function MovingNow() {
+  const net = useNetwork(); const nav = useNav(); const { data } = useAetherisNews()
+  const rows: Array<{ id: string; kicker: string; title: string; meta: string; run: () => void }> = []
+  net.asks.filter(ask => ask.visibility !== 'private' && ask.memberId !== 'me').slice(0, 3).forEach(ask => {
+    const member = net.members.find(item => item.id === ask.memberId)
+    rows.push({ id: `ask-${ask.id}`, kicker: 'Open ask', title: ask.ask, meta: member ? `${member.name} · ${ask.posted}` : ask.posted, run: () => net.requestWarmPath(ask.id) })
+  })
+  ;(data?.items ?? []).slice(0, 2).forEach(item => rows.push({ id: `news-${item.id}`, kicker: 'Signal', title: item.title, meta: `${item.source} · ${newsAge(item.published)}`, run: () => nav.setPage('news') }))
+  if (!rows.length) return null
+  return <section className="feed-radar" aria-labelledby="feed-radar-title">
+    <header><b id="feed-radar-title">Moving in your network</b></header>
+    <ol>{rows.slice(0, 5).map((row, index) => <li key={row.id}><span className="feed-radar-index">{String(index + 1).padStart(2, '0')}</span><button onClick={row.run}><span className="feed-radar-kicker">{row.kicker}</span><b>{row.title}</b><small>{row.meta}</small></button></li>)}</ol>
+  </section>
+}
+
 function SocialRails() {
   const net = useNetwork(); const graph = useGraph(); const ops = useOps(); const ceo = useCeo(); const nav = useNav(); const { data } = useAetherisNews()
   const mission = activeMission(graph.missions); const people = [...net.members].sort((a, b) => b.scoreTotal - a.scoreTotal).slice(0, 3)
