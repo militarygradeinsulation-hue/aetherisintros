@@ -5,7 +5,7 @@
 import * as React from 'react'
 import { useEffect, useRef } from 'react'
 import { Link } from '@tanstack/react-router'
-import { ArrowUp, ArrowRight } from 'lucide-react'
+import { ArrowUp, ArrowRight, LockKeyhole } from 'lucide-react'
 import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 
