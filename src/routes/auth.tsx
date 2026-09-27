@@ -171,10 +171,9 @@ function AuthPage() {
         </button>
       </form>
 
-      <button className="auth-switch" type="button" onClick={() => { setMode(mode === 'signin' ? 'signup' : 'signin'); setError('') }}>
-        {mode === 'signin' ? 'No account yet? Create one.' : 'Already a member? Sign in.'}
-      </button>
+      <Link to="/" hash="whitelist" className="auth-switch">No account yet? Request whitelist access.</Link>
       <Link to="/demo" className="auth-switch">Not ready to join? Open the demo.</Link>
+
       <span className="auth-foot"><LockKeyhole size={12} /> Nothing is shared without your explicit opt-in.</span>
     </section>
     <aside className="auth-visual auth-visual-type" aria-label="Ask Intros relationship principles">
