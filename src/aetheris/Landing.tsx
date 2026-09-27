@@ -43,7 +43,6 @@ function JoinBand({ signedIn }: { signedIn: boolean }) {
   return (
     <section className="lv-join" id="whitelist">
       <div className="lv-join-copy">
-        <span className="lv-join-soon"><i aria-hidden="true" />LAUNCHING SOON · THE FOUNDING 1,000</span>
         <h2>Join the <em>whitelist.</em></h2>
         <p>Ask Intros opens to 1,000 founding members. Add your name and we review it against the standard: CEOs, founders, owners, managing partners and principal operators. Verified people only — that is what makes an introduction here worth taking.</p>
         <ul>
@@ -53,7 +52,7 @@ function JoinBand({ signedIn }: { signedIn: boolean }) {
         </ul>
       </div>
       <form className="lv-join-form" onSubmit={e => void submit(e)}>
-        <ScarcityLine label="FOUNDING PLACES ALMOST FILLED" />
+        <ScarcityLine label="LAUNCHING SOON — FOUNDING PLACES ALMOST FILLED" />
         {state === 'done'
           ? <>
               <p className="lv-join-ok">You're on the whitelist. We'll email {email} when your place is ready.</p>
@@ -128,21 +127,10 @@ function LandingPage({ signedIn }: { signedIn: boolean }) {
     : null
   const accountBtn = (cls: string) => signedIn
     ? <Link to="/app" className={cls}>Enter your network</Link>
-    : <a href="#whitelist" className={cls}>Join the whitelist</a>
-  const loginBtn = (cls: string) => signedIn
-    ? null
-    : <a href="#whitelist" className={`${cls} is-locked`} aria-label="Member sign-in is locked until launch. Join the whitelist."><LockKeyhole size={14} /> Sign-in locked</a>
+    : <a href="#whitelist" className={cls}>Request whitelist access</a>
 
   return (
     <main className="lv">
-      {/* ── Launching soon ribbon ── */}
-      <div className="lv-soon" role="status">
-        <i aria-hidden="true" />
-        <strong>LAUNCHING SOON</strong>
-        <span>Private pre-launch. Sign-in is closed — the founding 1,000 are being selected now.</span>
-        <a href="#whitelist">Get on the whitelist <ArrowRight size={13} /></a>
-      </div>
-
       {/* ── Manifesto band ── */}
       <div className="lv-manifesto" aria-label="Ask Intros manifesto">
         <p>Stop using LinkedIn, Facebook, HubSpot, Salesforce, and every other system that just creates chaos.</p>
@@ -166,22 +154,11 @@ function LandingPage({ signedIn }: { signedIn: boolean }) {
         <ParticleDrift className="lv-hero-drift" />
         <div className="lv-hero-copy">
           <AskIntrosLockup variant="hero" />
-          <span className="lv-hero-topright">THE FOUNDING 1,000 · WHITELIST</span>
-          <span className="lv-hero-soon"><i aria-hidden="true" />LAUNCHING SOON · LIMITED FOUNDING COHORT</span>
           <h1><span>Join the </span><em>whitelist.</em></h1>
-          <ScarcityLine label="FOUNDING PLACES ALMOST FILLED" tone="dark" />
-
-
-          <p className="lv-hero-sub">Ask Intros opens to 1,000 founding members. Add your name and we review it against the standard: CEOs, founders, owners, managing partners and principal operators. Verified people only — that is what makes an introduction here worth taking.</p>
-          <ul className="lv-hero-points">
-            <li><i />Reviewed by a person, not a signup form</li>
-            <li><i />Double opt-in introductions, always</li>
-            <li><i />No spam, no selling your attention</li>
-          </ul>
+          <ScarcityLine label="LAUNCHING SOON — FOUNDING PLACES ALMOST FILLED" tone="dark" />
           <div className="lv-hero-actions">
-            {demoBtn('Demo the system', 'btn primary')}
-            {loginBtn('btn ghost')}
-            {accountBtn(showDemo ? 'btn primary' : 'btn primary')}
+            {demoBtn('Demo the system', 'btn ghost')}
+            {accountBtn('btn primary')}
           </div>
           <Link to="/founder-story" className="lv-founder-link">Read My Story <ArrowRight size={14} /></Link>
         </div>
