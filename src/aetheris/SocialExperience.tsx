@@ -26,9 +26,8 @@ function SelfFace({ large = false }: { large?: boolean }) {
   return <Face person={{ id: 'me', name: net.profile.name || 'You', initials: net.profile.initials || 'ME', avatarUrl: net.profile.avatarUrl }} large={large} portrait />
 }
 
-function SignalComposer() {
+function SignalComposer({ open, setOpen }: { open: boolean; setOpen: (value: boolean) => void }) {
   const net = useNetwork()
-  const [open, setOpen] = useState(false)
   const [type, setType] = useState<SignalLabel>('INSIGHT')
   const [text, setText] = useState('')
   const [detail, setDetail] = useState('')
