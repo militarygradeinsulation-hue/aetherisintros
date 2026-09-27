@@ -7,7 +7,7 @@
 import { useMemo, useState } from 'react'
 import {
   Activity as ActivityIcon, BarChart3, Boxes, Building2, ClipboardList, Download, FileText,
-  Kanban, Package, Receipt, RotateCcw, Sparkles, Truck, UserRound, Users,
+  Kanban, Package, FileUp, Receipt, RotateCcw, Sparkles, Truck, UserRound, Users,
 } from 'lucide-react'
 import {
   Area, AreaChart, Bar, BarChart, CartesianGrid, Cell, Legend, Line, LineChart, Pie, PieChart,
@@ -15,6 +15,7 @@ import {
 } from 'recharts'
 import { Btn, Eyebrow } from '../ui'
 import { useLedger } from './store'
+import SheetImport from './SheetImport'
 import { count, downloadCsv, money, pct, shortDate } from './format'
 import {
   inventoryByLocation, inventoryHealth, kpis, leadsBySource, marginTotals, ordersByMonth,
@@ -25,7 +26,7 @@ import { DEAL_STAGES, orderTotal, type DealStage } from './types'
 
 type Module =
   | 'dashboard' | 'leads' | 'contacts' | 'companies' | 'deals' | 'activities'
-  | 'products' | 'inventory' | 'orders' | 'invoices' | 'vendors' | 'reports'
+  | 'products' | 'inventory' | 'orders' | 'invoices' | 'vendors' | 'reports' | 'import'
 
 const MODULES: Array<{ id: Module; label: string; icon: typeof Kanban; group: string }> = [
   { id: 'dashboard', label: 'Dashboard', icon: BarChart3, group: 'Overview' },
@@ -40,6 +41,7 @@ const MODULES: Array<{ id: Module; label: string; icon: typeof Kanban; group: st
   { id: 'invoices', label: 'Invoices', icon: Receipt, group: 'Finance' },
   { id: 'vendors', label: 'Suppliers', icon: FileText, group: 'Finance' },
   { id: 'reports', label: 'Reports', icon: ActivityIcon, group: 'Finance' },
+  { id: 'import', label: 'Import', icon: FileUp, group: 'Data' },
 ]
 
 const COBALT = '#0F5CCB'
@@ -502,6 +504,8 @@ export default function FullCrm({ onBack }: { onBack: () => void }) {
             </div>
           </>
         })()}
+
+        {module === 'import' && <SheetImport />}
 
         {module === 'reports' && <>
           <div className="ops-cols">
