@@ -36,7 +36,7 @@ function JoinBand({ signedIn }: { signedIn: boolean }) {
   return (
     <section className="lv-join" id="whitelist">
       <div className="lv-join-copy">
-        <span>THE FOUNDING 1,000 · WHITELIST</span>
+        <span className="lv-join-soon"><i aria-hidden="true" />LAUNCHING SOON · THE FOUNDING 1,000</span>
         <h2>Join the <em>whitelist.</em></h2>
         <p>Ask Intros opens to 1,000 founding members. Add your name and we review it against the standard: CEOs, founders, owners, managing partners and principal operators. Verified people only — that is what makes an introduction here worth taking.</p>
         <ul>
@@ -58,10 +58,11 @@ function JoinBand({ signedIn }: { signedIn: boolean }) {
               <button className="btn primary" type="submit" disabled={state === 'sending'}>{state === 'sending' ? 'Adding you…' : 'Request whitelist access'}</button>
               {state === 'error' && <small>That didn't go through. Please check the email and try again.</small>}
               {!signedIn && <Link to="/demo" className="lv-join-demo">Or try the demo first <ArrowRight size={13} /></Link>}
-              <small>Ready now? <Link to="/early-access" className="lv-join-demo" style={{ display: 'inline-flex' }}>Create an account</Link></small>
+              <small>Places are reviewed in the order they arrive. Open sign-up is closed until launch.</small>
             </>}
       </form>
     </section>
+
   )
 }
 
