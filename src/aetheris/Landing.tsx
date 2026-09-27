@@ -16,12 +16,18 @@ export default function Landing() {
   return <LandingPage signedIn={access.signedIn} />
 }
 
+/** Gold Ask Intros rule: a thin line with the node dot almost at the end. No counts shown. */
+function ScarcityLine({ label, tone = 'light' }: { label: string; tone?: 'light' | 'dark' }) {
+  return <div className={`lv-scarcity lv-scarcity-${tone}`} role="img" aria-label={label}>
+    <span className="lv-scarcity-rule" aria-hidden="true"><i /><b /></span>
+    <span className="lv-scarcity-label">{label}</span>
+  </div>
+}
+
 function JoinBand({ signedIn }: { signedIn: boolean }) {
   const [name, setName] = useState('')
   const [email, setEmail] = useState('')
   const [state, setState] = useState<'idle' | 'sending' | 'done' | 'error'>('idle')
-  const [stats, setStats] = useState<FoundingStats | null>(null)
-  useEffect(() => { void foundingStats().then(setStats) }, [])
 
   const submit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -31,7 +37,7 @@ function JoinBand({ signedIn }: { signedIn: boolean }) {
     catch { setState('error') }
   }
 
-  const remaining = stats ? Math.max(stats.capacity - stats.approved, 0) : null
+
 
   return (
     <section className="lv-join" id="whitelist">
