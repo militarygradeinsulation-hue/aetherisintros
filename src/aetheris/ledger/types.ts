@@ -16,6 +16,7 @@ export type LedgerOwner = {
   region: string
   quota: number
   active: boolean
+  starter?: boolean
 }
 
 export type LedgerCompany = {

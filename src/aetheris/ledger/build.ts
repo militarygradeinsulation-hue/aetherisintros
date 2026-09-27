@@ -211,7 +211,7 @@ export function buildLedger(identity: LedgerIdentity, source: LedgerSource): Led
       quota,
       active: true,
       starter: true,
-    } as LedgerOwner & { starter: boolean })
+    })
   })
   me.quota = users.reduce((s, u) => s + u.quota, 0) + int(1200, 3200) * 1000
   const sellers = users.filter(u => u.quota > 0)
