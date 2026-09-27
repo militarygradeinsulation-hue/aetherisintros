@@ -20,7 +20,15 @@
 .auth-soon p{margin:0;font:500 12.5px/1.55 var(--sans);color:color-mix(in oklab,var(--ink) 78%,transparent)}
 .auth-soon-actions{display:flex;flex-wrap:wrap;gap:8px 18px}
 .auth-soon-actions a{display:inline-flex;align-items:center;gap:5px;font:700 11px var(--sans);color:var(--cobalt);text-decoration:none}
+.lv-scarcity{display:grid;gap:9px;width:100%;max-width:440px;margin:6px 0 18px}
+.lv-scarcity-rule{position:relative;display:block;height:1px;background:color-mix(in oklab,var(--amber) 22%,transparent)}
+.lv-scarcity-rule i{position:absolute;inset:0 6% 0 0;display:block;height:1px;background:linear-gradient(90deg,color-mix(in oklab,var(--amber) 35%,transparent),var(--amber));transform-origin:left;animation:lv-scarcity-fill 1.5s cubic-bezier(.22,1,.36,1) both}
+.lv-scarcity-rule b{position:absolute;top:50%;left:94%;width:7px;height:7px;margin:-3.5px 0 0 -3.5px;border-radius:50%;background:var(--amber);box-shadow:0 0 0 4px color-mix(in oklab,var(--amber) 16%,transparent);animation:lv-soon-pulse 1.9s ease-in-out infinite}
+.lv-scarcity-label{font:700 9px var(--sans);letter-spacing:.2em;color:var(--warm-gold,#C78522)}
+.lv-scarcity-dark .lv-scarcity-label{color:var(--amber)}
+@keyframes lv-scarcity-fill{from{transform:scaleX(0)}to{transform:scaleX(1)}}
 .lv-manifesto{display:flex;align-items:center;justify-content:center;width:100%;background:#0B0D0F;border-bottom:1px solid var(--line-dark);padding:11px 18px;text-align:center}
+
 
 .lv-manifesto p{margin:0;font:500 13px/1.4 var(--sans);color:var(--text-light);letter-spacing:.01em}
 .lv-manifesto p em{font-style:normal;color:var(--amber);font-weight:700}
