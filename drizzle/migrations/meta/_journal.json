@@ -92,6 +92,13 @@
       "when": 1790343514451,
       "tag": "0012_principal_can_always_revoke_delegate",
       "breakpoints": true
+    },
+    {
+      "idx": 13,
+      "version": "7",
+      "when": 1790522809429,
+      "tag": "0013_diagnose_financial_evidence_model",
+      "breakpoints": true
     }
   ]
 }
