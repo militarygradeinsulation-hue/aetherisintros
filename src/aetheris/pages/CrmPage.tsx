@@ -5,7 +5,7 @@
  * Intros links to. A person entered once is the same person everywhere; nothing
  * is copied between modules.
  */
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import {
   ArrowRight, Building2, CheckCircle2, ChevronLeft, ClipboardList, Compass, Grid3x3,
   Handshake, Plus, Target, UserRound,
@@ -17,6 +17,9 @@ import { useNetwork } from '../store'
 import { useOps } from '../crm/store'
 import { lifecycles } from '../crm/types'
 import { WeatherPanel } from '../opportunity-ui'
+import { DoMore } from '../capabilities/DoMore'
+import { CompanyIntelligence } from '../capabilities/CompanyIntelligence'
+import { setActiveSubject } from '../capabilities/store'
 import type { CrmCompany, CrmOpportunity, CrmPerson, CrmTask, Lifecycle } from '../crm/types'
 
 type Tab = 'overview' | 'people' | 'companies' | 'opportunities' | 'activities' | 'tasks' | 'analytics'
@@ -266,6 +269,11 @@ function CrmDetail({ selection, onClose, onOpen }: {
   const company = selection.type === 'company' ? ops.companies.find(c => c.id === selection.id) : undefined
   const opportunity = selection.type === 'opportunity' ? ops.opportunities.find(o => o.id === selection.id) : undefined
   const record = person ?? company ?? opportunity
+  const recordName = person?.fullName ?? company?.name ?? opportunity?.name ?? ''
+  useEffect(() => {
+    if (record) setActiveSubject({ type: selection.type, id: record.id }, recordName)
+    return () => setActiveSubject(null)
+  }, [record?.id, recordName])
   if (!record) return <p className="ops-note">That record is no longer available.</p>
 
   const title = person?.fullName ?? company?.name ?? opportunity?.name ?? 'Record'
@@ -299,8 +307,10 @@ function CrmDetail({ selection, onClose, onOpen }: {
         {opportunity && <Btn kind="secondary" onClick={() => nav.setPage('discover')}><Compass size={14} /> Find help in my network</Btn>}
         {member && <Btn kind="secondary" onClick={() => nav.openMember(member)}><Handshake size={14} /> Open network profile</Btn>}
         <Btn kind="quiet" onClick={() => nav.setPage('grid')}><Grid3x3 size={14} /> Open in Grid</Btn>
+        <DoMore subject={{ type: selection.type, id: record.id }} label={title} />
       </div>
     </header>
+    {company && <CompanyIntelligence companyId={company.id} />}
     {member && <WeatherPanel member={member} />}
 
     {member && <section className="ops-panel ops-intel">

@@ -9,6 +9,8 @@ import { useNav } from './nav'
 import { useNetwork } from './store'
 import { Btn, Eyebrow } from './ui'
 import { openCeo, useCeo } from './ceo-store'
+import { useFindings } from './capabilities/store'
+import { findingsAsBlindSpots } from './capabilities/feed'
 import type { CeoRoute, Mark } from './ceo-engine'
 import {
   blindSpots, collisions, companyCoverage, companyMatches, influenceRoles, patterns, PATTERN_MIN, promiseRisk, provenanceNote, redTeam, replay,
@@ -61,7 +63,8 @@ export function GapBox({ gap }: { gap: Gap }) {
 export function BlindSpotPanel() {
   const ceo = useCeo()
   const go = useGo()
-  const list = useMemo(() => blindSpots(ceo.inputs), [ceo.inputs])
+  const { findings } = useFindings()
+  const list = useMemo(() => [...blindSpots(ceo.inputs), ...findingsAsBlindSpots(findings)], [ceo.inputs, findings])
   if (!list.length) return <p className="ceo-empty">No blind spots found in your recorded data. This only checks what is recorded — deals, meetings, decisions, commitments, strategic relationships and your mission.</p>
   return <ul className="ceo-findings">{list.map(f => <li key={f.id} className={`sev-${f.severity}`}>
     <div className="ceo-finding-head"><small>{f.kind}</small><ProvBadge source={f.source} /></div>
@@ -73,7 +76,8 @@ export function BlindSpotPanel() {
 }
 export function MissingTile() {
   const ceo = useCeo()
-  const list = useMemo(() => blindSpots(ceo.inputs), [ceo.inputs])
+  const { findings } = useFindings()
+  const list = useMemo(() => [...blindSpots(ceo.inputs), ...findingsAsBlindSpots(findings)], [ceo.inputs, findings])
   return <div className="og-tile ceo-tile">
     <Eyebrow signal>WHAT AM I MISSING?</Eyebrow>
     <h3>{list.length ? `${list.length} gap${list.length === 1 ? '' : 's'} in your recorded picture.` : 'No blind spots in your recorded data.'}</h3>

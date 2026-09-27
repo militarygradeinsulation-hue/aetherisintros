@@ -151,6 +151,44 @@ for (const f of [`start_capability_run('system.noop_check','test','self','${A}')
 check('Signed-in member cannot read usage ledger', denied(await as(A, `select 1 from public.capability_usage limit 1`)))
 check('Non-admin cannot read usage totals', denied(await as(B, `select * from public.capability_usage_totals()`)))
 
+// ---------- Diagnose: evidence rule, money, outcomes, web, memory ----------
+const dr = await as(A, `select public.start_capability_run('company.diagnose','diagnose','company','${cA}','{}'::jsonb,'','{entity:read}','light') id`)
+const runX = dr.rows[0]?.id
+for (const s of ['context_built', 'running']) await as(A, `select public.set_capability_run_status('${runX}','${s}')`)
+const ev1 = `[{"kind":"record","ref":"crm_opportunities:1"}]`
+const ev2 = `[{"kind":"record","ref":"crm_opportunities:1"},{"kind":"record","ref":"crm_activities:2"}]`
+check('Leak with one evidence ref is rejected', denied(await as(A, `select public.add_capability_finding_v2('${runX}', '{"kind":"leak","claim":"x","evidence":${ev1}}'::jsonb)`)))
+check('Leak with duplicate refs is rejected', denied(await as(A, `select public.add_capability_finding_v2('${runX}', '{"kind":"leak","claim":"x","evidence":[{"kind":"record","ref":"a:1"},{"kind":"record","ref":"a:1"}]}'::jsonb)`)))
+const leak = await as(A, `select public.add_capability_finding_v2('${runX}', '{"kind":"leak","claim":"stalled","evidence":${ev2},"financial_classification":"estimated_exposure","financial_low":10,"financial_high":100,"currency":"USD","overlap_group":"opportunity:1"}'::jsonb) id`)
+check('Leak with two independent refs is accepted', leak.ok, leak.err)
+const fX = leak.rows[0]?.id
+check('Money without evidence is rejected', denied(await as(A, `select public.add_capability_finding_v2('${runX}', '{"kind":"risk","claim":"x","financial_classification":"risk_exposure","financial_high":5,"currency":"USD"}'::jsonb)`)))
+check('Money without currency is rejected', denied(await as(A, `select public.add_capability_finding_v2('${runX}', '{"kind":"risk","claim":"x","evidence":${ev1},"financial_high":5}'::jsonb)`)))
+check('Unverified "verified loss" is rejected', denied(await as(A, `select public.add_capability_finding_v2('${runX}', '{"kind":"risk","claim":"x","evidence":${ev1},"financial_classification":"verified_loss","financial_high":5,"currency":"USD"}'::jsonb)`)))
+check('B cannot add findings to A run', denied(await as(B, `select public.add_capability_finding_v2('${runX}', '{"kind":"gap","claim":"x","evidence":${ev1}}'::jsonb)`)))
+check('B cannot read A diagnose findings', empty(await as(B, `select id from public.capability_findings where run_id='${runX}'`)))
+check('Owner cannot write findings directly', denied(await as(A, `update public.capability_findings set financial_high=999 where id='${fX}'`)) || empty(await as(A, `update public.capability_findings set financial_high=999 where id='${fX}' returning id`)))
+check('Recovery refused before any applied action', denied(await as(A, `select public.record_finding_outcome('${fX}','{}'::jsonb, 100, '${ev1}'::jsonb)`)))
+check('B cannot record outcome on A finding', denied(await as(B, `select public.record_finding_outcome('${fX}','{}'::jsonb, null, '[]'::jsonb)`)))
+check('B cannot set A baseline', denied(await as(B, `select public.set_finding_baseline('${fX}','{}'::jsonb,'{}'::jsonb)`)))
+check('Owner can set baseline', (await as(A, `select public.set_finding_baseline('${fX}','{"metric":"days_since_touch","value":30}'::jsonb,'{"metric":"days_since_touch","value":7}'::jsonb)`)).ok)
+check('Web domain refused when public research not approved', denied(await as(A, `select public.record_capability_web_domain('${runX}','acme.com')`)))
+const pX = await as(A, `select public.add_capability_proposal('${runX}','write','Create task','{"kind":"create_task"}'::jsonb,'company','${cA}','${fX}') id`)
+const propX = pX.rows[0]?.id
+check('Write proposal cannot be self-applied', denied(await as(A, `select public.decide_capability_proposal('${propX}','apply')`)))
+const qX = await as(A, `select public.decide_capability_proposal('${propX}','queue') id`); const apX = qX.rows[0]?.id
+check('B cannot approve A queued action', empty(await as(B, `update public.approval_queue set status='approved' where id='${apX}' returning id`)))
+await as(A, `update public.approval_queue set status='approved' where id='${apX}'`)
+await as(A, `select public.mark_approval_executed('${apX}')`)
+check('Recovery refused without verification evidence', denied(await as(A, `select public.record_finding_outcome('${fX}','{}'::jsonb, 100, '[]'::jsonb)`)))
+const rec = await as(A, `select public.record_finding_outcome('${fX}','{"metric":"days_since_touch","value":1}'::jsonb, 100, '${ev1}'::jsonb)`)
+check('Verified recovery accepted after applied action with evidence', rec.ok, rec.err)
+check('Memory event recorded on subject', (await as(A, `select public.append_capability_event('${runX}','memory.decision','Decided to re-engage')`)).ok)
+check('Unknown event namespace rejected', denied(await as(A, `select public.append_capability_event('${runX}','admin.override','x')`)))
+check('Link types extended for operating graph', (await as(A, `select public.link_entities('company','${cA}','company','${cA2}','vendor_of')`)).ok)
+for (const f of [`add_capability_finding_v2('${runX}','{}'::jsonb)`, `record_finding_outcome('${fX}','{}'::jsonb,null,'[]'::jsonb)`, `set_finding_baseline('${fX}','{}'::jsonb,'{}'::jsonb)`, `record_capability_web_domain('${runX}','a.com')`])
+  check(`anon cannot call ${f.split('(')[0]}`, denied(await as(null, `select public.${f}`)))
+
 console.log(results.join('\n'))
 console.log(`\n${pass} passed, ${fail} failed`)
 process.exit(fail ? 1 : 0)

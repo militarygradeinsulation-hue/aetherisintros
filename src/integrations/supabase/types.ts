@@ -262,58 +262,106 @@ export type Database = {
       }
       capability_findings: {
         Row: {
+          actual_outcome: Json | null
+          baseline_metric: Json | null
           capability_id: string
+          cause_chain: Json
           claim: string
           confidence: number
           created_at: string
+          currency: string | null
           evidence: Json
+          financial_classification: string | null
+          financial_high: number | null
+          financial_low: number | null
           id: string
           kind: string
+          layer: string
+          overlap_group: string | null
+          overlap_ids: string[]
           owner_id: string
+          provider: string
+          recovered_value: number | null
           resolved_at: string | null
           resolved_note: string
+          root_cause: string
           run_id: string
           severity: string
           status: string
           subject_id: string
           subject_type: string
+          target_metric: Json | null
           unknowns: Json
+          updated_at: string
+          verified_at: string | null
         }
         Insert: {
+          actual_outcome?: Json | null
+          baseline_metric?: Json | null
           capability_id: string
+          cause_chain?: Json
           claim: string
           confidence?: number
           created_at?: string
+          currency?: string | null
           evidence?: Json
+          financial_classification?: string | null
+          financial_high?: number | null
+          financial_low?: number | null
           id?: string
           kind: string
+          layer?: string
+          overlap_group?: string | null
+          overlap_ids?: string[]
           owner_id: string
+          provider?: string
+          recovered_value?: number | null
           resolved_at?: string | null
           resolved_note?: string
+          root_cause?: string
           run_id: string
           severity?: string
           status?: string
           subject_id: string
           subject_type: string
+          target_metric?: Json | null
           unknowns?: Json
+          updated_at?: string
+          verified_at?: string | null
         }
         Update: {
+          actual_outcome?: Json | null
+          baseline_metric?: Json | null
           capability_id?: string
+          cause_chain?: Json
           claim?: string
           confidence?: number
           created_at?: string
+          currency?: string | null
           evidence?: Json
+          financial_classification?: string | null
+          financial_high?: number | null
+          financial_low?: number | null
           id?: string
           kind?: string
+          layer?: string
+          overlap_group?: string | null
+          overlap_ids?: string[]
           owner_id?: string
+          provider?: string
+          recovered_value?: number | null
           resolved_at?: string | null
           resolved_note?: string
+          root_cause?: string
           run_id?: string
           severity?: string
           status?: string
           subject_id?: string
           subject_type?: string
+          target_metric?: Json | null
           unknowns?: Json
+          updated_at?: string
+          verified_at?: string | null
         }
         Relationships: [
           {
@@ -3614,6 +3662,10 @@ export type Database = {
         }
         Returns: string
       }
+      add_capability_finding_v2: {
+        Args: { p: Json; p_run_id: string }
+        Returns: string
+      }
       add_capability_proposal: {
         Args: {
           p_action: Json
@@ -3766,6 +3818,19 @@ export type Database = {
       }
       owns_entity: { Args: { p_id: string; p_type: string }; Returns: boolean }
       purge_verification_proof: { Args: never; Returns: number }
+      record_capability_web_domain: {
+        Args: { p_domain: string; p_run_id: string }
+        Returns: undefined
+      }
+      record_finding_outcome: {
+        Args: {
+          p_actual: Json
+          p_evidence: Json
+          p_id: string
+          p_recovered: number
+        }
+        Returns: undefined
+      }
       relative_label: { Args: { ts: string }; Returns: string }
       resolve_capability_finding: {
         Args: { p_id: string; p_note?: string; p_status: string }
@@ -3797,6 +3862,10 @@ export type Database = {
       }
       set_executive_recommendation_display: {
         Args: { p_display_approved: boolean; p_id: string }
+        Returns: undefined
+      }
+      set_finding_baseline: {
+        Args: { p_baseline: Json; p_id: string; p_target: Json }
         Returns: undefined
       }
       show_limit: { Args: never; Returns: number }

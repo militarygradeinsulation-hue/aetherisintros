@@ -10,6 +10,8 @@ export interface ServerCapability {
   /** Internal capabilities are never listed to members or offered in any UI. */
   internal?: boolean
   deterministic(ctx: ContextEnvelope): ResultEnvelope
+  /** Evidence-first engines that write findings/proposals through secure RPCs. */
+  engine?: 'diagnose'
 }
 
 /** Internal spine check: proves the run → context → result path without touching member-facing UI. */
@@ -37,7 +39,20 @@ const noopCheck: ServerCapability = {
   },
 }
 
-const REGISTRY: Record<string, ServerCapability> = { [noopCheck.id]: noopCheck }
+const diagnoseBase = (id: string, verb: Verb, appliesTo: EntityType[]): ServerCapability => ({
+  id, verb, appliesTo, scopes: ['entity:read', 'links:read', 'events:read', 'web:read', 'record:propose'], impact: 'draft', costTier: 'light', engine: 'diagnose',
+  deterministic: ctx => ({ status: 'ok', engine: 'deterministic', output: {}, items: [], provenance: { inputs: [ctx.subject], sources: [] } }),
+})
+
+const REGISTRY: Record<string, ServerCapability> = {
+  [noopCheck.id]: noopCheck,
+  'company.diagnose': diagnoseBase('company.diagnose', 'diagnose', ['company', 'opportunity', 'person']),
+  'company.trace_cause': diagnoseBase('company.trace_cause', 'analyze', ['company', 'opportunity']),
+  'company.model_impact': diagnoseBase('company.model_impact', 'analyze', ['company', 'opportunity']),
+  'company.find_opportunity': diagnoseBase('company.find_opportunity', 'find', ['company', 'person']),
+  'company.prepare_action': diagnoseBase('company.prepare_action', 'prepare', ['company', 'opportunity', 'person', 'decision']),
+  'decision.challenge': diagnoseBase('decision.challenge', 'challenge', ['decision']),
+}
 
 export function getServerCapability(id: string): ServerCapability | undefined {
   return Object.prototype.hasOwnProperty.call(REGISTRY, id) ? REGISTRY[id] : undefined
