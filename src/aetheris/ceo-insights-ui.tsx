@@ -9,6 +9,8 @@ import { useNav } from './nav'
 import { useNetwork } from './store'
 import { Btn, Eyebrow } from './ui'
 import { openCeo, useCeo } from './ceo-store'
+import { useFindings } from './capabilities/store'
+import { findingsAsBlindSpots } from './capabilities/feed'
 import type { CeoRoute, Mark } from './ceo-engine'
 import {
   blindSpots, collisions, companyCoverage, companyMatches, influenceRoles, patterns, PATTERN_MIN, promiseRisk, provenanceNote, redTeam, replay,
