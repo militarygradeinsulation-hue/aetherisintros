@@ -50,6 +50,7 @@
 @keyframes lv-hero-enter{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:translateY(0)}}
 @keyframes lv-portrait-enter{from{opacity:0;transform:scale(1.035)}to{opacity:1;transform:scale(1)}}
 .lv-hero-copy h1{font:500 clamp(54px,7.2vw,104px)/.82 var(--serif);letter-spacing:0;margin:0 0 28px;color:var(--soft);max-width:780px}
+.lv-hero-copy h1 span,.lv-hero-copy h1 em{display:block}.lv-hero-copy h1 span{font-size:.52em;line-height:1.1;margin-bottom:18px}.lv-hero-copy h1 em{font-style:italic;color:var(--cobalt-bright)}
 .lv-hero-scale{font:700 9px var(--sans);letter-spacing:.18em;color:var(--muted);text-transform:uppercase;display:block;margin-bottom:30px}
 .lv-hero-actions{display:flex;align-items:center;gap:14px}
 .lv-founder-link{display:inline-flex;align-items:center;gap:8px;margin-top:22px;width:max-content;color:var(--amber);font:700 9px var(--sans);letter-spacing:.15em;text-transform:uppercase;border-bottom:1px solid color-mix(in oklab,var(--amber) 45%,transparent);padding-bottom:5px}
