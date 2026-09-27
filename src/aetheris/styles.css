@@ -4566,3 +4566,4 @@ button.news-link{background:none;border:0;padding:0;cursor:pointer}
 .company-intel-actions { display: flex; flex-wrap: wrap; gap: 8px; }
 .company-intel-actions button { height: 34px; padding: 0 12px; border-radius: 6px; border: 1px solid var(--cobalt); background: transparent; color: inherit; cursor: pointer; font: 500 13px var(--sans); }
 .company-intel-actions button:first-child { background: var(--cobalt); color: var(--ivory); }
+.bp-cta { display: flex; align-items: center; justify-content: flex-end; }

@@ -28,7 +28,7 @@ export function BusinessPulse() {
   if (!findings.length) return <section className="business-pulse empty" aria-label="Business Pulse">
     <div><Eyebrow signal>BUSINESS PULSE</Eyebrow><h2>Know where value leaks. Know why now.</h2>
       <p>Nothing has been diagnosed yet, so there is nothing to total. Diagnose a company and Intros will read your own records — opportunities, activity, tasks, decisions — and show only what the evidence supports.</p></div>
-    <Btn onClick={() => openCapability({ capabilityId: 'company.diagnose' })}>Diagnose a company <ArrowRight size={14} /></Btn>
+    <div className="bp-cta"><Btn onClick={() => openCapability({ capabilityId: 'company.diagnose' })}>Diagnose a company <ArrowRight size={14} /></Btn></div>
   </section>
 
   const { exposure, top } = p
