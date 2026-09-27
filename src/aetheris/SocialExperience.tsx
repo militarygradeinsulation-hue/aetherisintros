@@ -202,6 +202,51 @@ export function SocialHome() {
   </div>}</div>
 }
 
+/* Editorial magazine feed used on the member home page. */
+export function EditorialFeed({ onBrief }: { onBrief?: () => void }) {
+  const net = useNetwork()
+  const [composerOpen, setComposerOpen] = useState(false)
+  const [lane, setLane] = useState<FeedLane>('ALL SIGNALS')
+  const feed = useMemo(() => {
+    const rows: Array<{ id: string; type: 'post' | 'ask'; post?: Post; ask?: NetworkAsk; member?: Member }> = []
+    net.posts.filter(post => post.visibility !== 'private' || post.memberId === 'me').forEach(post => {
+      const member = net.members.find(item => item.id === post.memberId)
+      rows.push({ id: `p-${post.id}`, type: 'post', post, ...(member ? { member } : {}) })
+    })
+    net.asks.filter(ask => ask.visibility !== 'private' && ask.memberId !== 'me').forEach(ask => { const member = net.members.find(item => item.id === ask.memberId); if (member) rows.push({ id: `a-${ask.id}`, type: 'ask', ask, member }) })
+    return rows.slice(0, 12)
+  }, [net.posts, net.asks, net.members])
+  const shown = useMemo(() => feed.filter(row => {
+    if (lane === 'ALL SIGNALS') return true
+    if (lane === 'ASKS') return row.type === 'ask' || row.post?.kind === 'Strategic ask'
+    const kind = row.post?.kind
+    if (lane === 'INSIGHTS') return kind === 'Insight'
+    if (lane === 'CAPITAL') return kind === 'Raising capital'
+    if (lane === 'HIRING') return kind === 'Hiring'
+    return kind === 'Partnership'
+  }), [feed, lane])
+  return <section className="social-editorial" aria-labelledby="editorial-feed-title">
+    <FeedMasthead count={feed.length} onCompose={() => setComposerOpen(true)} {...(onBrief ? { onBrief } : {})} />
+    <FeedTicker />
+    <div className="feed-editorial-layout">
+      <div className="feed-editorial-main">
+        <header className="feed-section-head"><h2 id="editorial-feed-title">Latest from your network</h2><span>{feed.length} live {feed.length === 1 ? 'Signal' : 'Signals'}</span></header>
+        <SignalComposer open={composerOpen} setOpen={setComposerOpen} />
+        <nav className="feed-lanes" aria-label="Signal categories">{feedLanes.map(item => <button key={item} className={lane === item ? 'active' : ''} onClick={() => setLane(item)}>{item}</button>)}</nav>
+        <IntelligenceCards />
+        <div className="feed-grid">
+          {shown.map((row, index) => {
+            if (row.type === 'post' && row.post) return row.member ? <FeedPost key={row.id} post={row.post} member={row.member} lead={index === 0} /> : <FeedPost key={row.id} post={row.post} lead={index === 0} />
+            return row.ask && row.member ? <FeedAsk key={row.id} ask={row.ask} member={row.member} lead={index === 0} /> : null
+          })}
+        </div>
+        {!shown.length && <section className="social-empty"><CircleDot size={22} /><h2>{feed.length ? 'Nothing in this category yet.' : 'Your Signal Feed is ready.'}</h2><p>{feed.length ? 'Switch back to all Signals, or share one of your own in this category.' : 'Share what you are building, looking for, or able to help with. Relevant member Signals will appear here as the network grows.'}</p></section>}
+      </div>
+      <aside className="feed-editorial-rail"><MovingNow /></aside>
+    </div>
+  </section>
+}
+
 type PeopleFilter = 'FOR YOU' | 'CUSTOMERS' | 'CAPITAL' | 'PARTNERS' | 'TALENT' | 'ADVISORS' | 'NEARBY' | 'CONNECTED'
 export function SocialNetwork({ people }: { people: Member[] }) {
   const net = useNetwork(); const nav = useNav(); const [query, setQuery] = useState(''); const [filter, setFilter] = useState<PeopleFilter>('FOR YOU')
