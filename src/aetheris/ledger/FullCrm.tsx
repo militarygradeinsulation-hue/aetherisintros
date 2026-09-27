@@ -72,7 +72,7 @@ function Panel({ title, action, children }: { title: string; action?: React.Reac
   </article>
 }
 
-function Pill({ tone, children }: { tone?: 'good' | 'warn' | 'bad'; children: React.ReactNode }) {
+function Pill({ tone, children }: { tone?: 'good' | 'warn' | 'bad' | undefined; children: React.ReactNode }) {
   return <span className={`ops-chip fcrm-pill${tone ? ` is-${tone}` : ''}`}>{children}</span>
 }
 
