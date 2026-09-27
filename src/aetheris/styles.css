@@ -4445,7 +4445,7 @@ button.news-link{background:none;border:0;padding:0;cursor:pointer}
 @media(max-width:920px){.social-shell .social-home-grid{grid-template-columns:minmax(0,1fr)}}
 
 /* ───────────── Capability Workspace (single Intros-native sheet) ───────────── */
-.capws-wrap { position: fixed; inset: 0; z-index: 90; background: rgba(11,13,15,.55); display: flex; justify-content: flex-end; }
+.capws-wrap { position: fixed; inset: 0; z-index: 140; background: rgba(11,13,15,.55); display: flex; justify-content: flex-end; }
 .capws { width: min(600px, 100vw); height: 100%; background: var(--ink); color: var(--ivory); border-left: 1px solid var(--line-dark); display: flex; flex-direction: column; min-width: 0; box-sizing: border-box; }
 .capws-head { display: flex; justify-content: space-between; gap: 16px; padding: 22px 24px 14px; border-bottom: 1px solid var(--line-dark); }
 .capws-head h2 { font-family: var(--serif); font-size: clamp(24px, 3vw, 32px); line-height: 1.08; margin: 8px 0 0; font-weight: 500; }
