@@ -2302,9 +2302,10 @@ function AccountControl() {
   if (access.loading) return null
 
   if (!access.signedIn) {
-    return <a className="topbar-auth" href="/auth" title="Sign in to your account">
-      <LogIn size={13} /><span>Sign in</span></a>
+    return <a className="topbar-auth" href="/#whitelist" title="Launching soon — join the whitelist for a founding place">
+      <LogIn size={13} /><span>Launching soon · Join whitelist</span></a>
   }
+
 
   const signOut = async () => {
     setBusy(true)
