@@ -269,3 +269,8 @@
 - [x] Business Pulse on Home; What Intros sees on CRM companies; findings feed Blind Spot radar
 - [x] Closed loop: proposal → approval → applied task → outcome verification → memory
 - [ ] End-to-end run on a real signed-in account (needs Joseph to sign in to the preview)
+
+## Pre-launch access lock (Sep 27)
+- [x] Lock public sign-in; only demo and whitelist paths open
+- [x] "Launching Soon" urgency strip, hero badge and whitelist badge
+- [ ] Gold scarcity line with dot near the end (no numbers) showing the whitelist nearly full
