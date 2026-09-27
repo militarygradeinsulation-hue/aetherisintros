@@ -153,7 +153,7 @@ function FeedMasthead({ count, onCompose, onBrief }: { count: number; onCompose:
     <p className="feed-standfirst">{count ? `${count} live ${count === 1 ? 'Signal' : 'Signals'} from people you can actually reach, ${first}. Context first, then the introduction.` : `Nothing is moving yet, ${first}. Share what you are building or looking for and the network answers with context.`}</p>
     <div className="feed-masthead-actions">
       <button className="feed-primary" onClick={onCompose}>Share a Signal <span aria-hidden="true">↗</span></button>
-      <button className="feed-textlink" onClick={onBrief}>Read the executive brief</button>
+      {onBrief && <button className="feed-textlink" onClick={onBrief}>Read the executive brief</button>}
     </div>
   </header>
 }
