@@ -2,6 +2,7 @@
  * CEO Operating System surfaces: Home tiles, contextual drawers and inline
  * panels. No new navigation — everything opens in place via openCeo().
  */
+import { DoMore } from './capabilities/DoMore'
 import { useEffect, useMemo, useState, type ReactNode } from 'react'
 import { ArrowRight, BadgeCheck, Check, ClipboardCopy, Gavel, ListChecks, Plus, ShieldCheck, Trash2, X } from 'lucide-react'
 
@@ -159,7 +160,7 @@ export function DecisionRoom({ initial }: { initial?: string }) {
     {!ceo.inputs.decisions.length && <p className="ceo-empty">No decisions recorded. Capture the question, the options and why you chose — then Ask Intros reminds you to review it against what actually happened.</p>}
     <div className="og-mission-list">{ceo.inputs.decisions.map(d => <article key={d.id} className="og-mission">
       <div><small>{d.status.toUpperCase()}{d.reviewDate ? ` · review ${fmt(d.reviewDate)}` : ''}{d.reviewDate && new Date(d.reviewDate).getTime() <= Date.now() && d.status !== 'archived' ? ' · DUE' : ''}</small><b>{d.title}</b>{d.chosenOption && <p>Chosen: {d.chosenOption}</p>}</div>
-      <div className="og-row-actions"><button onClick={() => { setDraft(toDraft(d)); setEditing(true) }}>Open</button><button onClick={() => openCeo({ view: 'redteam', arg: d.id })}>Challenge</button><button aria-label="Delete decision" onClick={() => void ceo.removeDecision(d.id)}><Trash2 size={12} /></button></div>
+      <div className="og-row-actions"><button onClick={() => { setDraft(toDraft(d)); setEditing(true) }}>Open</button><button onClick={() => openCeo({ view: 'redteam', arg: d.id })}>Challenge</button><button aria-label="Delete decision" onClick={() => void ceo.removeDecision(d.id)}><Trash2 size={12} /></button><DoMore subject={{ type: 'decision', id: d.id }} label={d.title} /></div>
     </article>)}</div>
   </section>
   return <section className="ceo-decision">
