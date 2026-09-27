@@ -46,7 +46,7 @@ function JoinBand({ signedIn }: { signedIn: boolean }) {
         </ul>
       </div>
       <form className="lv-join-form" onSubmit={e => void submit(e)}>
-        {remaining != null && <span className="lv-join-count">{remaining.toLocaleString()} FOUNDING PLACES REMAINING</span>}
+        <ScarcityLine label="FOUNDING PLACES ALMOST FILLED" />
         {state === 'done'
           ? <>
               <p className="lv-join-ok">You're on the whitelist. We'll email {email} when your place is ready.</p>
