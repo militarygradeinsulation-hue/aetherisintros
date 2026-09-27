@@ -146,7 +146,7 @@ export function ExecutiveHome({ embedded = false }: { embedded?: boolean }) {
       {embedded && <div className="home-brief-tools"><div><span>EXECUTIVE BRIEF</span><h2>Everything that deserves your attention.</h2></div><Btn kind={customizing ? 'primary' : 'secondary'} onClick={() => setCustomizing(value => !value)}>{customizing ? <Check size={14} /> : <LayoutDashboard size={14} />}{customizing ? 'Done' : 'Customize brief'}</Btn></div>}
 
       <DigitalOffice />
-      {!embedded && <BusinessPulse />}
+      <BusinessPulse />
 
       {customizing && <section className="home-customizer" aria-label="Home customization">
         <div><span>YOUR HOME</span><h2>Arrange the view around your priorities.</h2><p>Move, resize, or hide any widget. Changes save automatically.</p></div>
