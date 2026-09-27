@@ -740,7 +740,7 @@ function PremiumHome({ people, select, setPage, openNeed, openThread }: {
     <BentoGridItem className="premium-home-module" header={second ? <div><Label signal>INTRO RECOMMENDATION</Label><h3>{second.name}</h3></div> : null} title="Warm path" description={second?.whyYou || 'Recommendations appear only when there is evidence for both sides.'} onClick={() => setPage('intros')} />
     <BentoGridItem className="premium-home-module" header={thread && threadPerson ? <button onClick={() => openThread(thread.id)}><Avatar person={threadPerson} /><span><h3>{threadPerson.name}</h3></span></button> : null} title="Conversation" description={thread?.commitment || thread?.messages.at(-1)?.text || 'Your private threads will appear here.'} />
     <BentoGridItem className="premium-home-module" header={story ? <div><Label>EXECUTIVE NEWS</Label><h3>{story.title}</h3></div> : null} title="Executive news" description={story ? `${story.source} · ${newsAge(story.published)}` : 'News will appear when the provider responds.'} onClick={() => setPage('news')} />
-  </IntrosSystemBento><ExecutiveHome embedded /></div>
+  </IntrosSystemBento><EditorialFeed onBrief={() => setPage('briefing')} /><ExecutiveHome embedded /></div>
 }
 
 function HomeAttention({ ranked, activeNeed, select, setPage, openThread }: {
