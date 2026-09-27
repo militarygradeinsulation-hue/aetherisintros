@@ -8,7 +8,10 @@ import { readTextScale } from './textScale'
 import { readCursorScale } from './cursorScale'
 import { useGraphInputs } from './graph-store'
 import { answerGraphQuestion } from './opportunity-graph'
-import { ceoViewLabel, recognizeCommand } from './ceo-engine'
+import { ceoViewLabel } from './ceo-engine'
+import { recognizeCommand, recognizeCapabilityIntent } from './capabilities/match'
+import { describe as describeCapability } from './capabilities/registry'
+import { getActiveSubject, openCapability } from './capabilities/store'
 import { openCeo } from './ceo-store'
 import {
   isStopPhrase, readAloud, readerSnapshot, stopReading, useDictation, useReader, useVoiceSettings, voiceOutputSupported,
@@ -22,6 +25,8 @@ export type { AskIntrosAction }
 interface Turn { role: 'user' | 'assistant'; content: string; did?: string[] }
 
 const startingOpeners = [
+  'Where are we losing money?',
+  'What should I fix first?',
   'What changed?',
   'What am I missing?',
   'Who can I help?',
@@ -85,6 +90,15 @@ export function AskIntrosDock({ page, peopleNames, memberName, briefing, context
     setInput('')
     const history = [...turns, { role: 'user' as const, content: question }]
     setTurns(history)
+    const intent = recognizeCapabilityIntent(question)
+    if (intent) {
+      openCapability({ capabilityId: intent.capabilityId, ...(intent.focus ? { focus: intent.focus } : {}) })
+      const subject = getActiveSubject()
+      const label = describeCapability(intent.capabilityId)?.label ?? 'Diagnose'
+      setTurns(current => [...current, { role: 'assistant', content: subject ? `Opening ${label} for ${subject.label}. I will show the evidence I use before anything runs.` : `Opening ${label}. Choose the company — I only read records you have entered, and public research runs only if you allow it.`, did: [label] }])
+      sending.current = false
+      return
+    }
     const command = recognizeCommand(question)
     if (command?.view) {
       openCeo(command)

@@ -21,6 +21,7 @@ import { useAccess } from './access'
 import { applyTextScale, readTextScale, setTextScale, textScales, type TextScale } from './textScale'
 import { applyCursorScale, readCursorScale, setCursorScale, cursorScales, type CursorScale } from './cursorScale'
 import { AskIntrosDock, type AskIntrosAction } from './AskIntrosDock'
+import { CapabilityWorkspaceHost } from './capabilities/CapabilityWorkspace'
 import ConstellationField from './ConstellationField'
 import { VoiceBar } from './VoiceBar'
 import { SelectionReader } from './SelectionReader'
@@ -2737,6 +2738,7 @@ function Shell({ startPage }: { startPage?: Page | undefined }) {
       <VoiceBar />
       <SelectionReader />
       <CeoHost />
+      <CapabilityWorkspaceHost />
       <AskIntrosDock page={page} peopleNames={people.map(p => p.name)} memberName={me.name}
         briefing={briefing.on} contextPanel={contextOpen} run={runAssistantAction} />
     </div>
