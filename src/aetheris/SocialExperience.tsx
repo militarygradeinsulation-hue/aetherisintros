@@ -26,9 +26,8 @@ function SelfFace({ large = false }: { large?: boolean }) {
   return <Face person={{ id: 'me', name: net.profile.name || 'You', initials: net.profile.initials || 'ME', avatarUrl: net.profile.avatarUrl }} large={large} portrait />
 }
 
-function SignalComposer() {
+function SignalComposer({ open, setOpen }: { open: boolean; setOpen: (value: boolean) => void }) {
   const net = useNetwork()
-  const [open, setOpen] = useState(false)
   const [type, setType] = useState<SignalLabel>('INSIGHT')
   const [text, setText] = useState('')
   const [detail, setDetail] = useState('')
@@ -71,13 +70,13 @@ function SignalComposer() {
   </section>
 }
 
-function FeedPost({ post, member }: { post: Post; member?: Member }) {
+function FeedPost({ post, member, lead = false }: { post: Post; member?: Member; lead?: boolean }) {
   const net = useNetwork(); const nav = useNav()
   const mine = post.memberId === 'me'; const liked = net.likedPosts.includes(post.id)
   const comments = net.postComments[post.id] ?? []; const [commenting, setCommenting] = useState(false); const [comment, setComment] = useState('')
   const author = member?.name ?? net.profile.name ?? 'You'
   const sendComment = () => { if (!comment.trim()) return; net.addPostComment(post.id, comment.trim(), post.memberId); setComment('') }
-  return <article className="social-feed-card">
+  return <article className={lead ? 'social-feed-card is-lead' : 'social-feed-card'}>
     <header>{member ? <button onClick={() => nav.openMember(member)}><Face person={member} portrait /><span><b>{member.name} <VerifiedBadge memberId={member.id} /></b><small>{[member.title, member.company].filter(Boolean).join(' · ')}</small><em>{post.when}</em></span></button> : <div><SelfFace /><span><b>{author}</b><small>{[net.profile.title, net.profile.company].filter(Boolean).join(' · ')}</small><em>{post.when}</em></span></div>}<span className="signal-badge">{post.kind}</span></header>
     <div className="social-feed-copy"><h2>{post.text}</h2><p>{post.detail}</p></div>
     {post.media?.length ? <div className="social-media-note"><Image size={16} /><span>{post.media.length} attached {post.media.length === 1 ? 'file' : 'files'} · open this Signal on the member profile to view</span></div> : null}
@@ -95,9 +94,9 @@ function HelpMenu({ ask, member }: { ask: NetworkAsk; member: Member }) {
   ].map((text, index) => <button key={text} onClick={() => answer(text)}>{['I know someone', 'My company can help', 'I have experience here', 'I can make an introduction'][index]}</button>)}</div>}</div>
 }
 
-function FeedAsk({ ask, member }: { ask: NetworkAsk; member: Member }) {
+function FeedAsk({ ask, member, lead = false }: { ask: NetworkAsk; member: Member; lead?: boolean }) {
   const net = useNetwork(); const nav = useNav()
-  return <article className="social-feed-card signal-ask-card"><header><button onClick={() => nav.openMember(member)}><Face person={member} portrait /><span><b>{member.name} <VerifiedBadge memberId={member.id} /></b><small>{member.title} · {member.company}</small><em>{ask.posted}</em></span></button><span className="signal-badge looking">Looking for</span></header><div className="social-feed-copy"><h2>{ask.ask}</h2><p>{ask.detail}</p></div><aside><span>Why now</span><p>{ask.whyNow}</p>{ask.offer && <small>Offers in return: {ask.offer}</small>}</aside><footer><HelpMenu ask={ask} member={member} /><button onClick={() => net.requestWarmPath(ask.id)}><Users size={16} />Introduce</button><button onClick={() => net.toggleSave(ask.id, 'this Signal')}><Bookmark size={16} />Save</button><button onClick={() => nav.messageMember(member.id)}><MessageSquareText size={16} />Message</button></footer></article>
+  return <article className={`social-feed-card signal-ask-card${lead ? ' is-lead' : ''}`}><header><button onClick={() => nav.openMember(member)}><Face person={member} portrait /><span><b>{member.name} <VerifiedBadge memberId={member.id} /></b><small>{member.title} · {member.company}</small><em>{ask.posted}</em></span></button><span className="signal-badge looking">Looking for</span></header><div className="social-feed-copy"><h2>{ask.ask}</h2><p>{ask.detail}</p></div><aside><span>Why now</span><p>{ask.whyNow}</p>{ask.offer && <small>Offers in return: {ask.offer}</small>}</aside><footer><HelpMenu ask={ask} member={member} /><button onClick={() => net.requestWarmPath(ask.id)}><Users size={16} />Introduce</button><button onClick={() => net.toggleSave(ask.id, 'this Signal')}><Bookmark size={16} />Save</button><button onClick={() => nav.messageMember(member.id)}><MessageSquareText size={16} />Message</button></footer></article>
 }
 
 function IntelligenceCards() {
@@ -115,6 +114,21 @@ function IntelligenceCards() {
   return <>{cards.map(card => <article className="social-intelligence-card" key={card.id}><span>{card.label}</span><Lightbulb size={18} /><h2>{card.title}</h2><p>{card.detail}</p><button onClick={card.run}>{card.action}<ArrowRight size={14} /></button></article>)}</>
 }
 
+function MovingNow() {
+  const net = useNetwork(); const nav = useNav(); const { data } = useAetherisNews()
+  const rows: Array<{ id: string; kicker: string; title: string; meta: string; run: () => void }> = []
+  net.asks.filter(ask => ask.visibility !== 'private' && ask.memberId !== 'me').slice(0, 3).forEach(ask => {
+    const member = net.members.find(item => item.id === ask.memberId)
+    rows.push({ id: `ask-${ask.id}`, kicker: 'Open ask', title: ask.ask, meta: member ? `${member.name} · ${ask.posted}` : ask.posted, run: () => net.requestWarmPath(ask.id) })
+  })
+  ;(data?.items ?? []).slice(0, 2).forEach(item => rows.push({ id: `news-${item.id}`, kicker: 'Signal', title: item.title, meta: `${item.source} · ${newsAge(item.published)}`, run: () => nav.setPage('news') }))
+  if (!rows.length) return null
+  return <section className="feed-radar" aria-labelledby="feed-radar-title">
+    <header><b id="feed-radar-title">Moving in your network</b></header>
+    <ol>{rows.slice(0, 5).map((row, index) => <li key={row.id}><span className="feed-radar-index">{String(index + 1).padStart(2, '0')}</span><button onClick={row.run}><span className="feed-radar-kicker">{row.kicker}</span><b>{row.title}</b><small>{row.meta}</small></button></li>)}</ol>
+  </section>
+}
+
 function SocialRails() {
   const net = useNetwork(); const graph = useGraph(); const ops = useOps(); const ceo = useCeo(); const nav = useNav(); const { data } = useAetherisNews()
   const mission = activeMission(graph.missions); const people = [...net.members].sort((a, b) => b.scoreTotal - a.scoreTotal).slice(0, 3)
@@ -122,13 +136,38 @@ function SocialRails() {
   const opportunities = ops.opportunities.filter(item => !item.archived && item.status === 'open').slice(0, 2)
   return <>
     <aside className="social-left-rail"><section className="social-identity-card"><SelfFace large /><VerifiedBadge memberId={graph.userId ?? ''} detail /><h2>{net.profile.name || 'Your profile'}</h2><p>{[net.profile.title, net.profile.company].filter(Boolean).join(' · ') || 'Complete your professional identity'}</p>{net.profile.location && <small>{net.profile.location}</small>}<dl><div><dt>{net.connections.length}</dt><dd>Connections</dd></div><div><dt>{ops.tasks.filter(t => t.kind === 'commitment' && t.status !== 'done').length}</dt><dd>Open commitments</dd></div></dl>{mission && <div className="identity-mission"><span>Active Mission</span><b>{mission.title}</b><small>{mission.successDefinition || mission.objective}</small></div>}<nav><button onClick={() => nav.setPage('me')}>View profile</button><button onClick={() => nav.setPage('network')}>My network</button><button onClick={() => openCeo({ view: 'strategic' })}>Strategic relationships</button></nav></section></aside>
-    <aside className="social-right-rail"><section><header><b>People who matter now</b><button onClick={() => nav.setPage('network')}>See all</button></header>{people.map(person => <button className="social-rail-person" key={person.id} onClick={() => nav.openMember(person)}><Face person={person} /><span><b>{person.name}</b><small>{person.title} · {person.company}</small></span></button>)}</section><section><header><b>Upcoming meetings</b><button onClick={() => nav.setPage('calendar')}>Calendar</button></header>{meetings.map(item => <button className="social-rail-row" key={item.id} onClick={() => nav.setPage('calendar')}><CalendarDays size={15} /><span><b>{item.title}</b><small>{new Date(item.startsAt).toLocaleString(undefined, { month: 'short', day: 'numeric', hour: 'numeric' })}</small></span></button>)}{!meetings.length && <p>No upcoming meetings recorded.</p>}</section><section><header><b>Opportunities for you</b><button onClick={() => nav.setPage('work')}>Work</button></header>{opportunities.map(item => <button className="social-rail-row" key={item.id} onClick={() => nav.setPage('work')}><Target size={15} /><span><b>{item.name}</b><small>{item.nextAction || item.stageName}</small></span></button>)}{!opportunities.length && <p>No open opportunities recorded.</p>}</section><section><header><b>Top intelligence</b><button onClick={() => nav.setPage('news')}>All news</button></header>{(data?.items ?? []).slice(0, 3).map(item => <button className="social-rail-news" key={item.id} onClick={() => nav.setPage('news')}><b>{item.title}</b><small>{item.source} · {newsAge(item.published)}</small></button>)}</section></aside>
+    <aside className="social-right-rail"><MovingNow /><section><header><b>People who matter now</b><button onClick={() => nav.setPage('network')}>See all</button></header>{people.map(person => <button className="social-rail-person" key={person.id} onClick={() => nav.openMember(person)}><Face person={person} /><span><b>{person.name}</b><small>{person.title} · {person.company}</small></span></button>)}</section><section><header><b>Upcoming meetings</b><button onClick={() => nav.setPage('calendar')}>Calendar</button></header>{meetings.map(item => <button className="social-rail-row" key={item.id} onClick={() => nav.setPage('calendar')}><CalendarDays size={15} /><span><b>{item.title}</b><small>{new Date(item.startsAt).toLocaleString(undefined, { month: 'short', day: 'numeric', hour: 'numeric' })}</small></span></button>)}{!meetings.length && <p>No upcoming meetings recorded.</p>}</section><section><header><b>Opportunities for you</b><button onClick={() => nav.setPage('work')}>Work</button></header>{opportunities.map(item => <button className="social-rail-row" key={item.id} onClick={() => nav.setPage('work')}><Target size={15} /><span><b>{item.name}</b><small>{item.nextAction || item.stageName}</small></span></button>)}{!opportunities.length && <p>No open opportunities recorded.</p>}</section><section><header><b>Top intelligence</b><button onClick={() => nav.setPage('news')}>All news</button></header>{(data?.items ?? []).slice(0, 3).map(item => <button className="social-rail-news" key={item.id} onClick={() => nav.setPage('news')}><b>{item.title}</b><small>{item.source} · {newsAge(item.published)}</small></button>)}</section></aside>
   </>
+}
+
+const feedLanes = ['ALL SIGNALS', 'ASKS', 'INSIGHTS', 'CAPITAL', 'HIRING', 'PARTNERSHIPS'] as const
+type FeedLane = typeof feedLanes[number]
+
+function FeedMasthead({ count, onCompose, onBrief }: { count: number; onCompose: () => void; onBrief?: () => void }) {
+  const net = useNetwork()
+  const first = (net.profile.name || 'you').split(' ')[0]
+  const issued = new Date().toLocaleDateString(undefined, { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })
+  return <header className="feed-masthead">
+    <p className="feed-kicker">Network dispatch · {issued}</p>
+    <h1>The signals that shape <em>what happens next.</em></h1>
+    <p className="feed-standfirst">{count ? `${count} live ${count === 1 ? 'Signal' : 'Signals'} from people you can actually reach, ${first}. Context first, then the introduction.` : `Nothing is moving yet, ${first}. Share what you are building or looking for and the network answers with context.`}</p>
+    <div className="feed-masthead-actions">
+      <button className="feed-primary" onClick={onCompose}>Share a Signal <span aria-hidden="true">↗</span></button>
+      {onBrief && <button className="feed-textlink" onClick={onBrief}>Read the executive brief</button>}
+    </div>
+  </header>
+}
+
+function FeedTicker() {
+  const line = 'Know who matters · Know why now · Double opt-in introductions · Context before the ask · No noise'
+  return <div className="feed-ticker" aria-hidden="true"><div className="feed-ticker-track"><span>{line}</span><span>{line}</span><span>{line}</span></div></div>
 }
 
 export function SocialHome() {
   const net = useNetwork()
   const [mode, setMode] = useState<'feed' | 'brief'>('feed')
+  const [composerOpen, setComposerOpen] = useState(false)
+  const [lane, setLane] = useState<FeedLane>('ALL SIGNALS')
   const feed = useMemo(() => {
     const rows: Array<{ id: string; type: 'post' | 'ask'; post?: Post; ask?: NetworkAsk; member?: Member }> = []
     net.posts.filter(post => post.visibility !== 'private' || post.memberId === 'me').forEach(post => {
@@ -138,10 +177,74 @@ export function SocialHome() {
     net.asks.filter(ask => ask.visibility !== 'private' && ask.memberId !== 'me').forEach(ask => { const member = net.members.find(item => item.id === ask.memberId); if (member) rows.push({ id: `a-${ask.id}`, type: 'ask', ask, member }) })
     return rows.slice(0, 12)
   }, [net.posts, net.asks, net.members])
-  return <div className="social-home"><nav className="home-view-switch" aria-label="Home view"><button className={mode === 'feed' ? 'active' : ''} onClick={() => setMode('feed')}>Feed</button><button className={mode === 'brief' ? 'active' : ''} onClick={() => setMode('brief')}>Executive Brief</button></nav>{mode === 'brief' ? <ExecutiveHome embedded /> : <div className="social-home-grid"><SocialRails /><main className="social-feed"><SignalComposer /><IntelligenceCards />{feed.map(row => {
-    if (row.type === 'post' && row.post) return row.member ? <FeedPost key={row.id} post={row.post} member={row.member} /> : <FeedPost key={row.id} post={row.post} />
-    return row.ask && row.member ? <FeedAsk key={row.id} ask={row.ask} member={row.member} /> : null
-  })}{!feed.length && <section className="social-empty"><CircleDot size={22} /><h2>Your Signal Feed is ready.</h2><p>Share what you are building, looking for, or able to help with. Relevant member Signals will appear here as the network grows.</p></section>}</main></div>}</div>
+  const shown = useMemo(() => feed.filter(row => {
+    if (lane === 'ALL SIGNALS') return true
+    if (lane === 'ASKS') return row.type === 'ask' || row.post?.kind === 'Strategic ask'
+    const kind = row.post?.kind
+    if (lane === 'INSIGHTS') return kind === 'Insight'
+    if (lane === 'CAPITAL') return kind === 'Raising capital'
+    if (lane === 'HIRING') return kind === 'Hiring'
+    return kind === 'Partnership'
+  }), [feed, lane])
+  return <div className="social-home"><nav className="home-view-switch" aria-label="Home view"><button className={mode === 'feed' ? 'active' : ''} onClick={() => setMode('feed')}>Feed</button><button className={mode === 'brief' ? 'active' : ''} onClick={() => setMode('brief')}>Executive Brief</button></nav>{mode === 'brief' ? <ExecutiveHome embedded /> : <div className="social-editorial">
+    <FeedMasthead count={feed.length} onCompose={() => setComposerOpen(true)} onBrief={() => setMode('brief')} />
+    <FeedTicker />
+    <div className="social-home-grid"><SocialRails /><main className="social-feed">
+      <SignalComposer open={composerOpen} setOpen={setComposerOpen} />
+      <nav className="feed-lanes" aria-label="Signal categories">{feedLanes.map(item => <button key={item} className={lane === item ? 'active' : ''} onClick={() => setLane(item)}>{item}</button>)}</nav>
+      <IntelligenceCards />
+      {shown.map((row, index) => {
+        if (row.type === 'post' && row.post) return row.member ? <FeedPost key={row.id} post={row.post} member={row.member} lead={index === 0} /> : <FeedPost key={row.id} post={row.post} lead={index === 0} />
+        return row.ask && row.member ? <FeedAsk key={row.id} ask={row.ask} member={row.member} lead={index === 0} /> : null
+      })}
+      {!shown.length && <section className="social-empty"><CircleDot size={22} /><h2>{feed.length ? 'Nothing in this category yet.' : 'Your Signal Feed is ready.'}</h2><p>{feed.length ? 'Switch back to all Signals, or share one of your own in this category.' : 'Share what you are building, looking for, or able to help with. Relevant member Signals will appear here as the network grows.'}</p></section>}
+    </main></div>
+  </div>}</div>
+}
+
+/* Editorial magazine feed used on the member home page. */
+export function EditorialFeed({ onBrief }: { onBrief?: () => void }) {
+  const net = useNetwork()
+  const [composerOpen, setComposerOpen] = useState(false)
+  const [lane, setLane] = useState<FeedLane>('ALL SIGNALS')
+  const feed = useMemo(() => {
+    const rows: Array<{ id: string; type: 'post' | 'ask'; post?: Post; ask?: NetworkAsk; member?: Member }> = []
+    net.posts.filter(post => post.visibility !== 'private' || post.memberId === 'me').forEach(post => {
+      const member = net.members.find(item => item.id === post.memberId)
+      rows.push({ id: `p-${post.id}`, type: 'post', post, ...(member ? { member } : {}) })
+    })
+    net.asks.filter(ask => ask.visibility !== 'private' && ask.memberId !== 'me').forEach(ask => { const member = net.members.find(item => item.id === ask.memberId); if (member) rows.push({ id: `a-${ask.id}`, type: 'ask', ask, member }) })
+    return rows.slice(0, 12)
+  }, [net.posts, net.asks, net.members])
+  const shown = useMemo(() => feed.filter(row => {
+    if (lane === 'ALL SIGNALS') return true
+    if (lane === 'ASKS') return row.type === 'ask' || row.post?.kind === 'Strategic ask'
+    const kind = row.post?.kind
+    if (lane === 'INSIGHTS') return kind === 'Insight'
+    if (lane === 'CAPITAL') return kind === 'Raising capital'
+    if (lane === 'HIRING') return kind === 'Hiring'
+    return kind === 'Partnership'
+  }), [feed, lane])
+  return <section className="social-editorial" aria-labelledby="editorial-feed-title">
+    <FeedMasthead count={feed.length} onCompose={() => setComposerOpen(true)} {...(onBrief ? { onBrief } : {})} />
+    <FeedTicker />
+    <div className="feed-editorial-layout">
+      <div className="feed-editorial-main">
+        <header className="feed-section-head"><h2 id="editorial-feed-title">Latest from your network</h2><span>{feed.length} live {feed.length === 1 ? 'Signal' : 'Signals'}</span></header>
+        <SignalComposer open={composerOpen} setOpen={setComposerOpen} />
+        <nav className="feed-lanes" aria-label="Signal categories">{feedLanes.map(item => <button key={item} className={lane === item ? 'active' : ''} onClick={() => setLane(item)}>{item}</button>)}</nav>
+        <IntelligenceCards />
+        <div className="feed-grid">
+          {shown.map((row, index) => {
+            if (row.type === 'post' && row.post) return row.member ? <FeedPost key={row.id} post={row.post} member={row.member} lead={index === 0} /> : <FeedPost key={row.id} post={row.post} lead={index === 0} />
+            return row.ask && row.member ? <FeedAsk key={row.id} ask={row.ask} member={row.member} lead={index === 0} /> : null
+          })}
+        </div>
+        {!shown.length && <section className="social-empty"><CircleDot size={22} /><h2>{feed.length ? 'Nothing in this category yet.' : 'Your Signal Feed is ready.'}</h2><p>{feed.length ? 'Switch back to all Signals, or share one of your own in this category.' : 'Share what you are building, looking for, or able to help with. Relevant member Signals will appear here as the network grows.'}</p></section>}
+      </div>
+      <aside className="feed-editorial-rail"><MovingNow /></aside>
+    </div>
+  </section>
 }
 
 type PeopleFilter = 'FOR YOU' | 'CUSTOMERS' | 'CAPITAL' | 'PARTNERS' | 'TALENT' | 'ADVISORS' | 'NEARBY' | 'CONNECTED'
