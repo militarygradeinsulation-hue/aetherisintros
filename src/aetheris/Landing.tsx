@@ -118,15 +118,28 @@ function LandingPage({ signedIn }: { signedIn: boolean }) {
   const demoBtn = (label: string, cls: string) => showDemo
     ? <Link to="/demo" className={cls}>{label} <ArrowRight size={15} /></Link>
     : null
-  const accountBtn = (cls: string) => <Link to={signedIn ? '/app' : '/early-access'} className={cls}>{signedIn ? 'Enter your network' : 'Join the whitelist'}</Link>
-  const loginBtn = (cls: string) => signedIn ? null : <Link to="/auth" search={{ next: '/' }} className={cls}>Log in</Link>
+  const accountBtn = (cls: string) => signedIn
+    ? <Link to="/app" className={cls}>Enter your network</Link>
+    : <a href="#whitelist" className={cls}>Join the whitelist</a>
+  const loginBtn = (cls: string) => signedIn
+    ? null
+    : <a href="#whitelist" className={`${cls} is-locked`} aria-label="Member sign-in is locked until launch. Join the whitelist."><LockKeyhole size={14} /> Sign-in locked</a>
 
   return (
     <main className="lv">
+      {/* ── Launching soon ribbon ── */}
+      <div className="lv-soon" role="status">
+        <i aria-hidden="true" />
+        <strong>LAUNCHING SOON</strong>
+        <span>Private pre-launch. Sign-in is closed — the founding 1,000 are being selected now.</span>
+        <a href="#whitelist">Get on the whitelist <ArrowRight size={13} /></a>
+      </div>
+
       {/* ── Manifesto band ── */}
       <div className="lv-manifesto" aria-label="Ask Intros manifesto">
         <p>Stop using LinkedIn, Facebook, HubSpot, Salesforce, and every other system that just creates chaos.</p>
       </div>
+
 
       {/* ── Top strip: WHY ME · WHY THEM · WHY NOW ── */}
       <div className="lv-topstrip" aria-hidden="true">
