@@ -8,3 +8,7 @@
 > Commits you push to the connected branch sync back to Lovable and show up in
 > the editor, so keep the branch in a working state.
 <!-- LOVABLE:END -->
+- Capabilities (Diagnose, Trace cause, Model impact…) all open in the one `src/aetheris/capabilities/CapabilityWorkspace.tsx` host; App.tsx only mounts it. Why: one workspace, no floating mini-tools.
+- Diagnose findings are written only via `add_capability_finding_v2`; leaks need ≥2 independent evidence refs and money needs evidence + currency (enforced in DB trigger and `capabilities/evidence.ts`). Why: never fabricate losses.
+- Evidence areas live as providers in `src/lib/capabilities/diagnose.server.ts`; unsupported areas return `not_connected`. Why: new connectors plug in without changing the Diagnose contract.
+- Ask Intros phrase matching lives in `src/aetheris/capabilities/match.ts` (ceo-engine re-exports it). Why: one matcher, regression-tested.

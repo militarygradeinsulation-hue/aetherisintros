@@ -260,3 +260,12 @@
 - [ ] Apply BentoGrid to premium Home modules and suitable Work/Insights panel collections without changing their underlying features.
 - [ ] Add the real-data Ask Intros system feature block to an existing explanatory surface.
 - [ ] Verify Home, Executive Brief, Work, Insights, and unaffected CRM/Grid/News/Messages/Profile flows across desktop and mobile.
+
+## Diagnose intelligence layer (Sep 27)
+- [x] Findings financial/evidence/cause-chain/outcome model + secure RPCs (migration 0013)
+- [x] Capability Workspace (desktop sheet / mobile full-height), lifecycle, evidence, findings, cause chain, impact, actions, approvals, memory, history
+- [x] Matcher extracted to capabilities/match.ts; diagnostic intents; Do more on company/opportunity/person/decision
+- [x] Diagnose engine with 10 evidence areas (5 wired to recorded data, 5 honestly not connected); consented public research by domain only
+- [x] Business Pulse on Home; What Intros sees on CRM companies; findings feed Blind Spot radar
+- [x] Closed loop: proposal → approval → applied task → outcome verification → memory
+- [ ] End-to-end run on a real signed-in account (needs Joseph to sign in to the preview)
