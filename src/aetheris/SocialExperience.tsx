@@ -70,13 +70,13 @@ function SignalComposer({ open, setOpen }: { open: boolean; setOpen: (value: boo
   </section>
 }
 
-function FeedPost({ post, member }: { post: Post; member?: Member }) {
+function FeedPost({ post, member, lead = false }: { post: Post; member?: Member; lead?: boolean }) {
   const net = useNetwork(); const nav = useNav()
   const mine = post.memberId === 'me'; const liked = net.likedPosts.includes(post.id)
   const comments = net.postComments[post.id] ?? []; const [commenting, setCommenting] = useState(false); const [comment, setComment] = useState('')
   const author = member?.name ?? net.profile.name ?? 'You'
   const sendComment = () => { if (!comment.trim()) return; net.addPostComment(post.id, comment.trim(), post.memberId); setComment('') }
-  return <article className="social-feed-card">
+  return <article className={lead ? 'social-feed-card is-lead' : 'social-feed-card'}>
     <header>{member ? <button onClick={() => nav.openMember(member)}><Face person={member} portrait /><span><b>{member.name} <VerifiedBadge memberId={member.id} /></b><small>{[member.title, member.company].filter(Boolean).join(' · ')}</small><em>{post.when}</em></span></button> : <div><SelfFace /><span><b>{author}</b><small>{[net.profile.title, net.profile.company].filter(Boolean).join(' · ')}</small><em>{post.when}</em></span></div>}<span className="signal-badge">{post.kind}</span></header>
     <div className="social-feed-copy"><h2>{post.text}</h2><p>{post.detail}</p></div>
     {post.media?.length ? <div className="social-media-note"><Image size={16} /><span>{post.media.length} attached {post.media.length === 1 ? 'file' : 'files'} · open this Signal on the member profile to view</span></div> : null}
