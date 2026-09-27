@@ -73,7 +73,8 @@ function autoMap(headers: string[], target: Target): Record<string, number> {
 }
 
 const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
-type Checked = { values: Record<string, string>; errors: string[]; warnings: string[] }
+type Vals = Partial<Record<'fullName'|'firstName'|'lastName'|'email'|'phone'|'title'|'companyName'|'location'|'linkedinUrl'|'notes'|'name'|'domain'|'website'|'industry'|'employees', string>> & Record<string, string | undefined>
+type Checked = { values: Vals; errors: string[]; warnings: string[] }
 
 export default function SheetImport() {
   const ops = useOps()
@@ -104,7 +105,7 @@ export default function SheetImport() {
     const existingEmails = new Set(ops.people.map(p => p.email.toLowerCase()).filter(Boolean))
     const existingCompanies = new Set(ops.companies.map(c => c.name.toLowerCase()))
     return body.map(r => {
-      const values: Record<string, string> = {}
+      const values: Vals = {}
       for (const [k, i] of Object.entries(map)) values[k] = (r[i] ?? '').trim()
       const errors: string[] = [], warnings: string[] = []
       if (target === 'people') {
@@ -138,7 +139,7 @@ export default function SheetImport() {
     setBusy(true)
     let n = 0
     for (const c of skipBad ? good : checked.filter(x => !x.errors.includes('Already in your CRM'))) {
-      const v = c.values
+      const v = c.values as Record<string, string | undefined>
       const res = target === 'people'
         ? await ops.createPerson({
           fullName: v.fullName ?? '', email: v.email ?? '', phone: v.phone ?? '', title: v.title ?? '',
