@@ -64,7 +64,7 @@ function JoinBand({ signedIn }: { signedIn: boolean }) {
               <button className="btn primary" type="submit" disabled={state === 'sending'}>{state === 'sending' ? 'Adding you…' : 'Request whitelist access'}</button>
               {state === 'error' && <small>That didn't go through. Please check the email and try again.</small>}
               {!signedIn && <Link to="/demo" className="lv-join-demo">Or try the demo first <ArrowRight size={13} /></Link>}
-              <small>Places are reviewed in the order they arrive. Open sign-up is closed until launch.</small>
+              <small>Places are reviewed in the order they arrive.</small>
             </>}
       </form>
     </section>

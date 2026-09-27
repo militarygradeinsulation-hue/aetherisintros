@@ -5,7 +5,7 @@
 import * as React from 'react'
 import { useEffect, useRef } from 'react'
 import { Link } from '@tanstack/react-router'
-import { ArrowUp, ArrowRight, LockKeyhole } from 'lucide-react'
+import { ArrowUp, ArrowRight } from 'lucide-react'
 import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 
@@ -291,9 +291,6 @@ export function CinematicFooter() {
           <div ref={linksRef} style={{ display: 'flex', flexWrap: 'wrap', gap: 14, justifyContent: 'center', alignItems: 'center' }}>
             <MagneticButton as={Link} to="/demo" className="footer-glass-pill" style={{ display: 'inline-flex', alignItems: 'center', gap: 8, padding: '14px 26px', borderRadius: 999, color: 'inherit', textDecoration: 'none', fontSize: 14, fontWeight: 600 }}>
               Demo the system <ArrowRight size={15} />
-            </MagneticButton>
-            <MagneticButton as="a" href="#whitelist" className="footer-glass-pill" aria-label="Sign-in is locked until launch. Join the whitelist." style={{ display: 'inline-flex', alignItems: 'center', gap: 8, padding: '14px 26px', borderRadius: 999, color: 'inherit', textDecoration: 'none', fontSize: 14, fontWeight: 600, opacity: 0.62 }}>
-              <LockKeyhole size={14} /> Sign-in locked
             </MagneticButton>
 
             <MagneticButton as={Link} to="/founder-story" className="footer-glass-pill" style={{ display: 'inline-flex', alignItems: 'center', gap: 8, padding: '14px 26px', borderRadius: 999, color: 'inherit', textDecoration: 'none', fontSize: 14, fontWeight: 600 }}>
