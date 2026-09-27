@@ -8,7 +8,7 @@
 import { useEffect, useState } from 'react'
 import {
   ArrowRight, Building2, CheckCircle2, ChevronLeft, ClipboardList, Compass, Grid3x3,
-  Handshake, Plus, Target, UserRound,
+  Handshake, LayoutGrid, Plus, Target, UserRound,
 } from 'lucide-react'
 
 import { Btn, Eyebrow, Head } from '../ui'
@@ -20,7 +20,10 @@ import { WeatherPanel } from '../opportunity-ui'
 import { DoMore } from '../capabilities/DoMore'
 import { CompanyIntelligence } from '../capabilities/CompanyIntelligence'
 import { setActiveSubject } from '../capabilities/store'
+import { LedgerProvider } from '../ledger/store'
+import FullCrm from '../ledger/FullCrm'
 import type { CrmCompany, CrmOpportunity, CrmPerson, CrmTask, Lifecycle } from '../crm/types'
+
 
 type Tab = 'overview' | 'people' | 'companies' | 'opportunities' | 'activities' | 'tasks' | 'analytics'
 type Selection = { type: 'person' | 'company' | 'opportunity'; id: string } | null
@@ -46,8 +49,17 @@ export default function CrmPage() {
   const [selected, setSelected] = useState<Selection>(null)
   const [query, setQuery] = useState('')
   const [creating, setCreating] = useState<'person' | 'company' | 'opportunity' | 'task' | null>(null)
+  const [view, setView] = useState<'basic' | 'full'>(() =>
+    typeof window === 'undefined' ? 'basic' : (localStorage.getItem('aetheris.crm.view') as 'basic' | 'full') || 'basic')
+
+  const setWorkspace = (next: 'basic' | 'full') => {
+    setView(next)
+    setSelected(null)
+    try { localStorage.setItem('aetheris.crm.view', next) } catch { /* ignore */ }
+  }
 
   const go = (next: Tab) => { setTab(next); setSelected(null); try { localStorage.setItem('aetheris.crm.tab', next) } catch { /* ignore */ } }
+
 
   const people = ops.people.filter(p => !p.archived)
   const companies = ops.companies.filter(c => !c.archived)
@@ -64,6 +76,12 @@ export default function CrmPage() {
 
   if (!ops.ready) return <p className="ops-note">Loading your records…</p>
 
+  /* ------------------------------------------------ full workspace */
+
+  if (view === 'full') {
+    return <LedgerProvider><FullCrm onBack={() => setWorkspace('basic')} /></LedgerProvider>
+  }
+
   /* --------------------------------------------------------------- detail */
 
   if (selected) {
@@ -72,16 +90,26 @@ export default function CrmPage() {
 
   const empty = !people.length && !companies.length && !opportunities.length
 
+  const switcher = <div className="crm-switch" role="group" aria-label="CRM view">
+    <button type="button" className="active" aria-pressed>Basic CRM</button>
+    <button type="button" aria-pressed={false} onClick={() => setWorkspace('full')}>
+      <LayoutGrid size={13} /> Full CRM &amp; operations
+    </button>
+  </div>
+
   return <>
     <Head label="AETHERIS CRM" title="One record per person. Everywhere."
       copy="Enter a person, company, opportunity or number once and the whole account uses it — CRM lists, Grid sheets, your pipeline and the relationship intelligence beside them."
       proof="Private to your account. Nothing here is visible to the network."
       action={<Btn onClick={() => setCreating('person')}><Plus size={14} /> New person</Btn>} />
 
+    {switcher}
+
     <nav className="ops-tabs" role="tablist" aria-label="CRM sections">
       {tabs.map(t => <button key={t.id} role="tab" aria-selected={t.id === tab}
         className={t.id === tab ? 'active' : ''} onClick={() => go(t.id)}>{t.label}</button>)}
     </nav>
+
 
     {creating && <CreateForm kind={creating} onClose={() => setCreating(null)} />}
 
