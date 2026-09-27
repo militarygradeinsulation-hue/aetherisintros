@@ -8,7 +8,7 @@
 import { useEffect, useState } from 'react'
 import {
   ArrowRight, Building2, CheckCircle2, ChevronLeft, ClipboardList, Compass, Grid3x3,
-  Handshake, Plus, Target, UserRound,
+  Handshake, LayoutGrid, Plus, Target, UserRound,
 } from 'lucide-react'
 
 import { Btn, Eyebrow, Head } from '../ui'
@@ -20,7 +20,10 @@ import { WeatherPanel } from '../opportunity-ui'
 import { DoMore } from '../capabilities/DoMore'
 import { CompanyIntelligence } from '../capabilities/CompanyIntelligence'
 import { setActiveSubject } from '../capabilities/store'
+import { LedgerProvider } from '../ledger/store'
+import FullCrm from '../ledger/FullCrm'
 import type { CrmCompany, CrmOpportunity, CrmPerson, CrmTask, Lifecycle } from '../crm/types'
+
 
 type Tab = 'overview' | 'people' | 'companies' | 'opportunities' | 'activities' | 'tasks' | 'analytics'
 type Selection = { type: 'person' | 'company' | 'opportunity'; id: string } | null
