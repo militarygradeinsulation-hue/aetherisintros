@@ -419,6 +419,7 @@ export function buildLedger(identity: LedgerIdentity, source: LedgerSource): Led
       ownerId: deal.ownerId,
       companyId: deal.companyId,
       dealId: deal.id,
+      starter: true,
       priority: pick(['Low', 'Normal', 'Normal', 'High'] as const),
     })
   }
@@ -432,6 +433,7 @@ export function buildLedger(identity: LedgerIdentity, source: LedgerSource): Led
     price,
     cost,
     active: true,
+    starter: true,
   }))
 
   const locations = [identity.location || country, 'Central', 'Regional hub'].filter(Boolean).slice(0, 3)
@@ -449,6 +451,7 @@ export function buildLedger(identity: LedgerIdentity, source: LedgerSource): Led
         committed: int(0, 30),
         reorderPoint,
         leadTimeDays: int(4, 52),
+        starter: true,
       })
     }
   }
@@ -470,6 +473,7 @@ export function buildLedger(identity: LedgerIdentity, source: LedgerSource): Led
       status: pick(['Draft', 'Confirmed', 'Confirmed', 'Packing', 'Shipped', 'Delivered', 'Delivered', 'Cancelled'] as const),
       createdAt: iso(-int(0, 330)),
       lines,
+      starter: true,
     })
   }
 
@@ -487,6 +491,7 @@ export function buildLedger(identity: LedgerIdentity, source: LedgerSource): Led
       issuedAt: iso(issuedOffset),
       dueAt: iso(issuedOffset + 30),
       amount: orderTotal(order),
+      starter: true,
     })
   }
 
@@ -502,6 +507,7 @@ export function buildLedger(identity: LedgerIdentity, source: LedgerSource): Led
       onTimeRate: int(74, 100),
       spendYTD: int(12, 640) * 1000,
       status: pick(['Preferred', 'Approved', 'Approved', 'Under review'] as const),
+      starter: true,
     }
   })
 

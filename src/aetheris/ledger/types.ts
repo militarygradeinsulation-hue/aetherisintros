@@ -114,6 +114,7 @@ export type LedgerActivity = {
   companyId: ID
   dealId?: ID
   priority: 'Low' | 'Normal' | 'High'
+  starter?: boolean
 }
 
 export type ProductCategory = 'Core offer' | 'Retainers' | 'Programmes' | 'Services' | 'Goods'
@@ -126,6 +127,7 @@ export type LedgerProduct = {
   price: number
   cost: number
   active: boolean
+  starter?: boolean
 }
 
 export type LedgerInventoryItem = {
@@ -136,6 +138,7 @@ export type LedgerInventoryItem = {
   committed: number
   reorderPoint: number
   leadTimeDays: number
+  starter?: boolean
 }
 
 export type OrderLine = { productId: ID; qty: number; unitPrice: number }
@@ -148,6 +151,7 @@ export type LedgerOrder = {
   status: 'Draft' | 'Confirmed' | 'Packing' | 'Shipped' | 'Delivered' | 'Cancelled'
   createdAt: string
   lines: OrderLine[]
+  starter?: boolean
 }
 
 export type LedgerInvoice = {
@@ -159,6 +163,7 @@ export type LedgerInvoice = {
   issuedAt: string
   dueAt: string
   amount: number
+  starter?: boolean
 }
 
 export type LedgerVendor = {
@@ -170,6 +175,7 @@ export type LedgerVendor = {
   onTimeRate: number
   spendYTD: number
   status: 'Preferred' | 'Approved' | 'Under review'
+  starter?: boolean
 }
 
 export type Ledger = {

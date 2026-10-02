@@ -4794,3 +4794,4 @@ button.news-link{background:none;border:0;padding:0;cursor:pointer}
   .premium-home-copy dl div{min-width:0}
   .premium-home-copy dt{overflow-wrap:anywhere}
 }
+.draggable-widget .feature-tile{overflow-y:auto;overscroll-behavior:contain;scrollbar-width:thin}
