@@ -2677,7 +2677,7 @@ function Shell({ startPage }: { startPage?: Page | undefined }) {
             <Icon size={18} /><span>{item.label}</span></button>
         })}</nav>
         <button className="social-nav-search" aria-label="Search" onClick={() => setGlobalSearchOpen(true)}><Search size={17} /><span>Search</span><kbd>⌘K</kbd></button>
-        <div className="social-nav-actions"><button className="icon-btn" onClick={() => setNotificationsOpen(true)} aria-label="Notifications"><Bell size={18} /></button><button className="icon-btn" onClick={() => window.dispatchEvent(new CustomEvent('aetheris:open-assistant'))} aria-label="Ask Intros"><AetherisGlyph size={18} /></button><button className={`icon-btn ${moreOpen ? 'active' : ''}`} onClick={() => setMoreOpen(true)} aria-label="More"><Settings2 size={18} /></button><button className="topbar-avatar" aria-label="Your profile" onClick={() => setPage('me')}><SelfAvatar /></button></div>
+        <div className="social-nav-actions"><button className="icon-btn" onClick={() => setNotificationsOpen(true)} aria-label="Notifications"><Bell size={18} /></button><button className="icon-btn" onClick={() => window.dispatchEvent(new CustomEvent('aetheris:open-assistant'))} aria-label="Ask Intros"><AetherisGlyph size={18} /></button><button className={`icon-btn ${moreOpen ? 'active' : ''}`} onClick={() => setMoreOpen(true)} aria-label="More"><Settings2 size={18} /></button><AccountControl /><button className="topbar-avatar" aria-label="Your profile" onClick={() => setPage('me')}><SelfAvatar /></button></div>
       </header>
       <div className="workspace">
         <header className="topbar">
