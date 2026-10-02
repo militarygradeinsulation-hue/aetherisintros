@@ -93,14 +93,22 @@ export default function FullCrm({ onBack }: { onBack: () => void }) {
     if (typeof window !== 'undefined') window.localStorage.setItem('aetheris.ledger.module', id)
   }
 
-  const l = api.ledger
+  const l = useMemo(() => {
+    const src = api.ledger
+    if (!hideStarter) return src
+    const real = <T extends { starter?: boolean }>(rows: T[]) => rows.filter(r => !r.starter)
+    return { ...src, companies: real(src.companies), contacts: real(src.contacts), leads: real(src.leads), deals: real(src.deals),
+      activities: real(src.activities), products: real(src.products), inventory: real(src.inventory), orders: real(src.orders),
+      invoices: real(src.invoices), vendors: real(src.vendors) }
+  }, [api.ledger, hideStarter])
   const term = query.trim().toLowerCase()
   const match = (text: string) => !term || text.toLowerCase().includes(term)
   const visible = <T extends { starter?: boolean }>(rows: T[]) => hideStarter ? rows.filter(r => !r.starter) : rows
 
   const k = useMemo(() => kpis(l), [l])
   const margins = useMemo(() => marginTotals(l), [l])
-  const starterCount = l.companies.filter(c => c.starter).length + l.deals.filter(d => d.starter).length
+  const starterCount = (['companies', 'contacts', 'leads', 'deals', 'activities', 'products', 'inventory', 'orders', 'invoices', 'vendors'] as const)
+    .reduce((n, key) => n + (api.ledger[key] as { starter?: boolean }[]).filter(r => r.starter).length, 0)
 
   if (!api.ready) return <p className="ops-note">Building your workspace…</p>
 
@@ -111,7 +119,7 @@ export default function FullCrm({ onBack }: { onBack: () => void }) {
       <div>
         <Eyebrow>FULL CRM &amp; OPERATIONS</Eyebrow>
         <h2>{l.companies.length} accounts · {l.deals.length} opportunities · {l.invoices.length} invoices</h2>
-        <p>Built from your own records. Everything you enter in the basic CRM appears here as the real thing.</p>
+        <p>Built from your records in the basic CRM. Changes made in this view are saved on this device only and do not update your basic CRM records.</p>
       </div>
       <div className="fcrm-top-actions">
         <Btn kind="quiet" onClick={onBack}>Back to basic CRM</Btn>
@@ -120,7 +128,7 @@ export default function FullCrm({ onBack }: { onBack: () => void }) {
 
     {starterCount > 0 && <p className="fcrm-banner">
       Your workspace opened with {starterCount} example records shaped to your industry so nothing sits empty.
-      {' '}Your real records are unmarked.
+      {' '}{hideStarter ? 'Showing only your real records and figures.' : 'Invoices, orders, stock, suppliers and the money figures above include these examples — hide them to see only your own.'}
       <button type="button" onClick={() => setHideStarter(v => !v)}>
         {hideStarter ? 'Show examples' : 'Hide examples'}
       </button>
