@@ -12,10 +12,13 @@ import {
 } from '@/lib/capabilities.functions'
 import { CAPABILITIES, describe } from './registry'
 import { formatMoney, normalizeExposure } from './finance'
+import { EnrichPanel } from './EnrichPanel'
+import { ENRICH_CAPABILITY_ID } from './enrichment'
 import { findingsChanged, getActiveSubject, type OpenRequest } from './store'
 import type { EntityRef, FindingRow, ProposalRow, ProviderReport, RunDetail, RunStatus, RunSummary } from './types'
 
-const LIFECYCLE: RunStatus[] = ['requested', 'context_built', 'running', 'result_ready', 'proposals_ready', 'needs_approval', 'applied', 'closed']
+const LIFECYCLE_BASE: RunStatus[] = ['requested', 'context_built', 'running', 'result_ready', 'proposals_ready', 'needs_approval', 'applied', 'closed']
+const LIFECYCLE_ENRICH: RunStatus[] = ['requested', 'context_built', 'needs_input', 'result_ready', 'proposals_ready', 'needs_approval', 'applied']
 const statusLabel: Record<RunStatus, string> = {
   requested: 'Requested', context_built: 'Context built', running: 'Running', needs_input: 'Needs input', result_ready: 'Result ready',
   proposals_ready: 'Actions ready', needs_approval: 'Needs approval', applied: 'Applied', closed: 'Closed',
@@ -99,6 +102,8 @@ function CapabilityWorkspace({ req, onClose, onSwitch }: { req: OpenRequest; onC
     catch (e) { setError(e instanceof Error ? e.message : 'That did not work.') }
   }
 
+  const isEnrich = cap.id === ENRICH_CAPABILITY_ID
+  const LIFECYCLE = isEnrich ? LIFECYCLE_ENRICH : LIFECYCLE_BASE
   const status = detail?.run.status ?? (busy ? 'running' : 'requested')
   const providers = (detail?.run.result?.output as { providers?: ProviderReport[] } | undefined)?.providers ?? []
   const exposure = useMemo(() => normalizeExposure(detail?.findings ?? []), [detail])
@@ -125,14 +130,30 @@ function CapabilityWorkspace({ req, onClose, onSwitch }: { req: OpenRequest; onC
       </ol>
 
       <div className="capws-body">
-        {!subject && <section className="capws-sec">
+        {!subject && isEnrich && <section className="capws-sec">
+          <Eyebrow>CHOOSE A PERSON</Eyebrow>
+          {ops.people.length === 0 && <p className="capws-muted">Add a person in Work → CRM first.</p>}
+          <div className="capws-pick">{ops.people.slice(0, 12).map(p =>
+            <button key={p.id} onClick={() => { setSubject({ type: 'person', id: p.id }); setLabel(p.fullName) }}><b>{p.fullName}</b><small>{p.title || 'Contact'}</small><ArrowRight size={13} /></button>)}</div>
+        </section>}
+        {!subject && !isEnrich && <section className="capws-sec">
           <Eyebrow>CHOOSE A COMPANY</Eyebrow>
           {ops.companies.filter(c => !c.archived).length === 0 && <p className="capws-muted">Add a company in Work → CRM first. Diagnose only reads records you have entered.</p>}
           <div className="capws-pick">{ops.companies.filter(c => !c.archived).slice(0, 12).map(c =>
             <button key={c.id} onClick={() => { setSubject({ type: 'company', id: c.id }); setLabel(c.name) }}><b>{c.name}</b><small>{c.industry || 'Company'}</small><ArrowRight size={13} /></button>)}</div>
         </section>}
 
-        {subject && !detail && <section className="capws-sec">
+        {subject && !detail && isEnrich && <section className="capws-sec">
+          <Eyebrow>WHAT THIS CHECKS</Eyebrow>
+          <ul className="capws-context">
+            <li><Check size={13} />Title, company and location against a real LinkedIn result</li>
+            <li><Check size={13} />Only the name, company, title and location go into the lookup</li>
+            <li><Check size={13} />Nothing on this record changes until you approve it</li>
+          </ul>
+          <p className="capws-cost"><b>Source:</b> LinkedIn · <b>Usage:</b> {tierCopy.light} One lookup per person per day.</p>
+          <Btn disabled={busy} onClick={() => void run()}>{busy ? 'Preparing…' : 'Start the check'} <ArrowRight size={14} /></Btn>
+        </section>}
+        {subject && !detail && !isEnrich && <section className="capws-sec">
           <Eyebrow>CONTEXT THAT WILL BE USED</Eyebrow>
           <ul className="capws-context">
             <li><Check size={13} />This record, its opportunities, people, tasks and activity timeline</li>
@@ -151,7 +172,13 @@ function CapabilityWorkspace({ req, onClose, onSwitch }: { req: OpenRequest; onC
         {error && <p className="capws-error"><AlertTriangle size={14} />{error}</p>}
         {note && <p className="capws-note"><Check size={14} />{note}</p>}
 
-        {detail && <>
+        {detail && isEnrich && <>
+          <EnrichPanel detail={detail} act={act} />
+          <section className="capws-sec capws-next">
+            <Btn kind="quiet" onClick={() => setDetail(null)}><RotateCcw size={13} /> Start a new check</Btn>
+          </section>
+        </>}
+        {detail && !isEnrich && <>
           <section className="capws-sec">
             <Eyebrow>RESULT</Eyebrow>
             {detail.run.result?.items.map((it, i) => <p key={i} className={`capws-item layer-${it.layer}`}><small>{it.layer === 'fact' ? 'FACT' : it.layer === 'recommendation' ? 'RECOMMENDATION' : 'STYLE'}</small>{it.text}</p>)}

@@ -97,7 +97,7 @@ export async function loadDirectory(): Promise<Directory> {
 
     const byId = new Map(catalogueMembers.map(m => [m.id, m]))
     const members = memberRows.data.map(row => {
-      const base = byId.get(row.id)
+      const base = byId.get(row.id ?? "")
       return {
         ...(base ?? {}),
         id: row.id, name: base?.name ?? row.name, initials: base?.initials ?? row.initials, title: row.title,

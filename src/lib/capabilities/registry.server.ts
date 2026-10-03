@@ -11,7 +11,7 @@ export interface ServerCapability {
   internal?: boolean
   deterministic(ctx: ContextEnvelope): ResultEnvelope
   /** Evidence-first engines that write findings/proposals through secure RPCs. */
-  engine?: 'diagnose'
+  engine?: 'diagnose' | 'enrich'
 }
 
 /** Internal spine check: proves the run → context → result path without touching member-facing UI. */
@@ -52,6 +52,10 @@ const REGISTRY: Record<string, ServerCapability> = {
   'company.find_opportunity': diagnoseBase('company.find_opportunity', 'find', ['company', 'person']),
   'company.prepare_action': diagnoseBase('company.prepare_action', 'prepare', ['company', 'opportunity', 'person', 'decision']),
   'decision.challenge': diagnoseBase('decision.challenge', 'challenge', ['decision']),
+  'enrich.person.professional': {
+    id: 'enrich.person.professional', verb: 'find', appliesTo: ['person'], scopes: ['entity:read', 'record:propose'], impact: 'write', costTier: 'light', engine: 'enrich',
+    deterministic: ctx => ({ status: 'ok', engine: 'deterministic', output: {}, items: [], provenance: { inputs: [ctx.subject], sources: [] } }),
+  },
 }
 
 export function getServerCapability(id: string): ServerCapability | undefined {
