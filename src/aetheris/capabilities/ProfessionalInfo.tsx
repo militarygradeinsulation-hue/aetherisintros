@@ -19,8 +19,8 @@ export function ProfessionalInfo({ person }: { person: { id: string; fullName: s
   }, [person.id])
 
   const latest = info?.snapshots[0]
-  const differs = latest ? diffFields({ title: person.title, companyName: person.companyName, location: person.location, linkedinUrl: person.linkedinUrl }, latest.normalized).length > 0 : false
-  const label = contextualLabel({ confirmed: Boolean(info?.profile), lastCheckedAt: info?.profile?.last_checked_at, differs })
+  const differs = latest ? diffFields({ title: person.title, companyName: person.companyName, location: person.location, linkedinUrl: person.linkedinUrl ?? '' }, latest.normalized).length > 0 : false
+  const label = contextualLabel({ confirmed: Boolean(info?.profile), lastCheckedAt: info?.profile?.last_checked_at ?? null, differs })
   const stale = info?.profile ? isStale(info.profile.last_checked_at) : false
   const open = () => openCapability({ capabilityId: ENRICH_CAPABILITY_ID, subject: { type: 'person', id: person.id }, subjectLabel: person.fullName })
 

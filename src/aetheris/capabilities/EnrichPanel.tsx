@@ -99,7 +99,7 @@ export function EnrichPanel({ detail, act }: { detail: RunDetail; act: Act }) {
     {fieldProposals.length > 0 && <section className="capws-sec">
       <Eyebrow>CURRENT INTROS VALUE · LINKEDIN VALUE</Eyebrow>
       <ul className="enr-diff">{fieldProposals.map(p => {
-        const a = p.action as { field: EnrichField; from: string; to: string }
+        const a = p.action as unknown as { field: EnrichField; from: string; to: string }
         return <li key={p.id} className={`st-${p.status}`}>
           <b>{FIELD_LABEL[a.field]}</b>
           <span className="enr-cur">{a.from || <em>empty</em>}</span>
