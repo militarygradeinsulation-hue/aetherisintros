@@ -328,13 +328,14 @@ function profileFromRow(prev: MeProfile, row: LiveProfileRow): MeProfile {
 
 export function NetworkProvider({ children, mode = 'live' }: { children: React.ReactNode; mode?: NetworkMode }) {
   const live = mode === 'live'
-  const [s, setS] = useState<Persisted>(load)
+  // Live members never inherit anything the demo left on this device.
+  const [s, setS] = useState<Persisted>(() => live ? { ...empty, objectives: [], activity: [], profile: { ...blankMe } } : load())
   const [dir, setDir] = useState<Directory>(live ? emptyDirectory : catalogue)
   const [userId, setUserId] = useState<string | null>(null)
   const [synced, setSynced] = useState(false)
   const lastSynced = useRef<Persisted | null>(null)
 
-  useEffect(() => { try { localStorage.setItem(KEY, JSON.stringify(s)) } catch { /* storage full */ } }, [s])
+  useEffect(() => { if (live) return; try { localStorage.setItem(KEY, JSON.stringify(s)) } catch { /* storage full */ } }, [s, live])
 
   /* hydrate: the network this member may see, then their own private graph */
   useEffect(() => {

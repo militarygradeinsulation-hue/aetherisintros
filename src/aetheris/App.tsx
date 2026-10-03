@@ -2303,8 +2303,9 @@ function AccountControl() {
   if (access.loading) return null
 
   if (!access.signedIn) {
-    return <a className="topbar-auth" href="/early-access" title="Launching soon — join the whitelist for a founding place">
-      <LogIn size={13} /><span>Launching soon · Join whitelist</span></a>
+    return <><a className="topbar-auth" href="/auth" title="Members log in"><LogIn size={13} /><span>Log in</span></a>
+      <a className="topbar-auth" href="/early-access" title="Launching soon — join the whitelist for a founding place">
+      <span>Join whitelist</span></a></>
   }
 
 
