@@ -25,7 +25,10 @@ export async function refreshFindings() {
   loaded = true
   emit()
 }
-export const findingsChanged = () => { void refreshFindings() }
+export const findingsChanged = () => {
+  void refreshFindings()
+  if (typeof window !== 'undefined') window.dispatchEvent(new Event('aetheris:findings-changed'))
+}
 
 export function useFindings(): { findings: FindingRow[]; loaded: boolean } {
   useEffect(() => { if (!loaded) void refreshFindings() }, [])

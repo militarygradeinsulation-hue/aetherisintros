@@ -19,6 +19,7 @@ import { lifecycles } from '../crm/types'
 import { WeatherPanel } from '../opportunity-ui'
 import { DoMore } from '../capabilities/DoMore'
 import { CompanyIntelligence } from '../capabilities/CompanyIntelligence'
+import { ProfessionalInfo } from '../capabilities/ProfessionalInfo'
 import { setActiveSubject } from '../capabilities/store'
 import { LedgerProvider } from '../ledger/store'
 import FullCrm from '../ledger/FullCrm'
@@ -339,6 +340,7 @@ function CrmDetail({ selection, onClose, onOpen }: {
       </div>
     </header>
     {company && <CompanyIntelligence companyId={company.id} />}
+    {person && <ProfessionalInfo person={person} />}
     {member && <WeatherPanel member={member} />}
 
     {member && <section className="ops-panel ops-intel">
