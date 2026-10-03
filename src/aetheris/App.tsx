@@ -1251,7 +1251,7 @@ function Messages({ people, select, activeId, setActiveId }: { people: Member[];
           if (!m) return null
           return <button className={thread.id === t.id ? 'active' : ''} key={t.id} onClick={() => setActiveId(t.id)}>
             <Avatar person={m} />
-            <span><strong>{m.name}</strong><small>{t.messages[t.messages.length - 1]?.text.slice(0, 38)}…</small></span>
+            <span><strong>{m.name}</strong><small>{attachmentPreview(t.messages[t.messages.length - 1]?.text ?? '').slice(0, 38)}…</small></span>
             {t.unread && <i />}
           </button>
         })}
@@ -1268,13 +1268,14 @@ function Messages({ people, select, activeId, setActiveId }: { people: Member[];
         <div className="intro-context"><Label>INTRODUCTION CONTEXT</Label><p>{thread.introContext}</p></div>
         <div className="message-actions"><CeoActions member={person} threadId={thread.id} /></div>
         <div className="messages">
-          {thread.messages.map(m => <div key={m.id} className={`message ${m.from === 'me' ? 'outgoing' : 'incoming'}`}>{m.text}<small>{m.at}</small></div>)}
+          {thread.messages.map(m => <div key={m.id} className={`message ${m.from === 'me' ? 'outgoing' : 'incoming'}`}><MessageBody text={m.text} /><small>{m.at}</small></div>)}
           {!thread.messages.length && <p className="empty-state">New conversation. Open with the reason this matters to both sides.</p>}
            <div className="shared-context"><AetherisGlyph size={12} /><span>Shared context: {person.needs[0]} · {person.offers[0]}</span></div>
         </div>
         <div className="composer-wrap">
            <button className="suggested" onClick={() => setText(thread.suggested)}><AetherisGlyph size={13} /> Use contextual draft</button>
           <div className="composer">
+            <AttachButton threadId={thread.id} onSend={file => net.sendMessage(thread.id, file)} />
             <textarea value={text} onChange={e => setText(e.target.value)} placeholder="Write with the relationship in mind…" />
             <button onClick={() => {
               const t = text.trim()
