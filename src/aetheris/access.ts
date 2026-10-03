@@ -87,8 +87,12 @@ export async function fetchAccess(): Promise<AccessState> {
     .select('status')
     .eq('user_id', user.id)
     .maybeSingle()
-  if (!existing.data) {
-    try { await claimAccess() } catch { /* the page surfaces the state below */ }
+  // Retry with the remembered invite (email-confirm and Google return paths skip /auth).
+  if (!existing.data || existing.data.status === 'pending') {
+    const code = storedInvite()
+    if (!existing.data || code) {
+      try { await claimAccess(code || undefined); if (code) clearInvite() } catch { /* the page surfaces the state below */ }
+    }
   }
 
   const [membership, roles, profile, stats, verification] = await Promise.all([
