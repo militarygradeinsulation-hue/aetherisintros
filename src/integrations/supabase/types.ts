@@ -2410,6 +2410,7 @@ export type Database = {
           expires_at: string | null
           id: string
           max_uses: number
+          personal: boolean
           revoked: boolean
           uses: number
         }
@@ -2421,6 +2422,7 @@ export type Database = {
           expires_at?: string | null
           id?: string
           max_uses?: number
+          personal?: boolean
           revoked?: boolean
           uses?: number
         }
@@ -2432,6 +2434,7 @@ export type Database = {
           expires_at?: string | null
           id?: string
           max_uses?: number
+          personal?: boolean
           revoked?: boolean
           uses?: number
         }
@@ -3988,6 +3991,13 @@ export type Database = {
         }
         Returns: boolean
       }
+      invite_preview: {
+        Args: { p_code: string }
+        Returns: {
+          inviter_name: string
+          valid: boolean
+        }[]
+      }
       is_admin: { Args: never; Returns: boolean }
       is_approved_member: { Args: { p_user: string }; Returns: boolean }
       is_circle_member: { Args: { p_circle: string }; Returns: boolean }
@@ -4034,6 +4044,7 @@ export type Database = {
           status: string
         }[]
       }
+      my_invite_code: { Args: never; Returns: string }
       my_verification: {
         Args: never
         Returns: {

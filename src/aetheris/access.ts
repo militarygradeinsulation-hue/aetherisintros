@@ -136,3 +136,26 @@ export function useAccess() {
 
 export const foundingLabel = (n: number | null, capacity = 1000) =>
   n == null ? '' : `Founding Member ${String(n).padStart(3, '0')} / ${capacity}`
+
+const INVITE_KEY = 'aetheris.invite'
+/** Remember an invite code across sign-up / email confirmation. */
+export function rememberInvite(code: string) {
+  const c = code.trim()
+  try { if (c) localStorage.setItem(INVITE_KEY, c); else localStorage.removeItem(INVITE_KEY) } catch { /* storage blocked */ }
+}
+export function storedInvite(): string {
+  try { return localStorage.getItem(INVITE_KEY) ?? '' } catch { return '' }
+}
+export function clearInvite() { try { localStorage.removeItem(INVITE_KEY) } catch { /* noop */ } }
+
+export async function myInviteCode(): Promise<string> {
+  const { data, error } = await supabase.rpc('my_invite_code')
+  if (error) throw error
+  return data as string
+}
+
+export async function previewInvite(code: string): Promise<{ valid: boolean; inviter: string }> {
+  const { data } = await supabase.rpc('invite_preview', { p_code: code.trim() })
+  const row = Array.isArray(data) ? data[0] : data
+  return { valid: !!row?.valid, inviter: row?.inviter_name ?? '' }
+}

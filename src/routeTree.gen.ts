@@ -22,6 +22,7 @@ import { Route as AuthenticatedAppRouteImport } from './routes/_authenticated/ap
 import { Route as AuthenticatedDelegateRouteImport } from './routes/_authenticated/delegate'
 import { Route as AuthenticatedOnboardingRouteImport } from './routes/_authenticated/onboarding'
 import { Route as AuthenticatedVerifyRouteImport } from './routes/_authenticated/verify'
+import { Route as InviteCodeRouteImport } from './routes/invite.$code'
 import { Route as PassportTokenRouteImport } from './routes/passport.$token'
 import { Route as DotlovableOauthConsentRouteImport } from './routes/[.]lovable.oauth.consent'
 import { Route as AuthenticatedAdminEarlyAccessRouteImport } from './routes/_authenticated/admin.early-access'
@@ -94,6 +95,11 @@ const AuthenticatedVerifyRoute = AuthenticatedVerifyRouteImport.update({
   path: '/verify',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const InviteCodeRoute = InviteCodeRouteImport.update({
+  id: '/invite/$code',
+  path: '/invite/$code',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const PassportTokenRoute = PassportTokenRouteImport.update({
   id: '/passport/$token',
   path: '/passport/$token',
@@ -140,6 +146,7 @@ export interface FileRoutesByFullPath {
   '/delegate': typeof AuthenticatedDelegateRoute
   '/onboarding': typeof AuthenticatedOnboardingRoute
   '/verify': typeof AuthenticatedVerifyRoute
+  '/invite/$code': typeof InviteCodeRoute
   '/passport/$token': typeof PassportTokenRoute
   '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
   '/admin/early-access': typeof AuthenticatedAdminEarlyAccessRoute
@@ -160,6 +167,7 @@ export interface FileRoutesByTo {
   '/delegate': typeof AuthenticatedDelegateRoute
   '/onboarding': typeof AuthenticatedOnboardingRoute
   '/verify': typeof AuthenticatedVerifyRoute
+  '/invite/$code': typeof InviteCodeRoute
   '/passport/$token': typeof PassportTokenRoute
   '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
   '/admin/early-access': typeof AuthenticatedAdminEarlyAccessRoute
@@ -182,6 +190,7 @@ export interface FileRoutesById {
   '/_authenticated/delegate': typeof AuthenticatedDelegateRoute
   '/_authenticated/onboarding': typeof AuthenticatedOnboardingRoute
   '/_authenticated/verify': typeof AuthenticatedVerifyRoute
+  '/invite/$code': typeof InviteCodeRoute
   '/passport/$token': typeof PassportTokenRoute
   '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
   '/_authenticated/admin/early-access': typeof AuthenticatedAdminEarlyAccessRoute
@@ -204,6 +213,7 @@ export interface FileRouteTypes {
     | '/delegate'
     | '/onboarding'
     | '/verify'
+    | '/invite/$code'
     | '/passport/$token'
     | '/.lovable/oauth/consent'
     | '/admin/early-access'
@@ -224,6 +234,7 @@ export interface FileRouteTypes {
     | '/delegate'
     | '/onboarding'
     | '/verify'
+    | '/invite/$code'
     | '/passport/$token'
     | '/.lovable/oauth/consent'
     | '/admin/early-access'
@@ -245,6 +256,7 @@ export interface FileRouteTypes {
     | '/_authenticated/delegate'
     | '/_authenticated/onboarding'
     | '/_authenticated/verify'
+    | '/invite/$code'
     | '/passport/$token'
     | '/.lovable/oauth/consent'
     | '/_authenticated/admin/early-access'
@@ -263,6 +275,7 @@ export interface RootRouteChildren {
   McpRoute: typeof McpRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   Char91DotwellKnownChar93OauthProtectedResourceRoute: typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
+  InviteCodeRoute: typeof InviteCodeRoute
   PassportTokenRoute: typeof PassportTokenRoute
   DotlovableOauthConsentRoute: typeof DotlovableOauthConsentRoute
   ApiPublicNewsImageRoute: typeof ApiPublicNewsImageRoute
@@ -362,6 +375,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedVerifyRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/invite/$code': {
+      id: '/invite/$code'
+      path: '/invite/$code'
+      fullPath: '/invite/$code'
+      preLoaderRoute: typeof InviteCodeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/passport/$token': {
       id: '/passport/$token'
       path: '/passport/$token'
@@ -439,6 +459,7 @@ const rootRouteChildren: RootRouteChildren = {
   SitemapDotxmlRoute: SitemapDotxmlRoute,
   Char91DotwellKnownChar93OauthProtectedResourceRoute:
     Char91DotwellKnownChar93OauthProtectedResourceRoute,
+  InviteCodeRoute: InviteCodeRoute,
   PassportTokenRoute: PassportTokenRoute,
   DotlovableOauthConsentRoute: DotlovableOauthConsentRoute,
   ApiPublicNewsImageRoute: ApiPublicNewsImageRoute,

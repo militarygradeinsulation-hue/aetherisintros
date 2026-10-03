@@ -4828,3 +4828,15 @@ button.news-link{background:none;border:0;padding:0;cursor:pointer}
 .prof-history ul{list-style:none;padding:0;margin:6px 0;display:grid;gap:4px}
 .prof-history li{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:8px;font-size:12px}
 .prof-history li span{overflow-wrap:anywhere}
+
+/* Personal invite card */
+.invite-card{margin:0 0 20px;min-width:0}
+.invite-card h3{overflow-wrap:anywhere}
+.invite-copy{color:var(--muted,#9EA4AC);margin:6px 0 12px;font-size:14px}
+.invite-row{display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding:10px 0;border-top:1px solid rgba(255,255,255,.10);min-width:0}
+.invite-value{flex:1 1 200px;min-width:0;overflow-wrap:anywhere;font-family:'Space Grotesk',sans-serif;font-size:13px}
+.invite-label{font-size:11px;letter-spacing:.14em;opacity:.7}
+.auth-invite{display:grid;gap:6px;margin:0 0 18px;padding:14px 16px;border:1px solid rgba(16,18,22,.12);border-left:2px solid #0F5CCB;border-radius:8px}
+.auth-invite span{font-size:11px;letter-spacing:.14em}
+.auth-invite input{width:100%;min-width:0}
+.auth-invite small{font-size:12px;opacity:.75}

@@ -3,7 +3,7 @@ import { createFileRoute, Link, useNavigate } from '@tanstack/react-router'
 import { ArrowRight, Check, Clock, LockKeyhole, ShieldAlert } from 'lucide-react'
 import { useCallback, useEffect, useState } from 'react'
 
-import { claimAccess, foundingLabel, foundingStats, joinWaitlist, useAccess, type FoundingStats } from '@/aetheris/access'
+import { storedInvite, claimAccess, foundingLabel, foundingStats, joinWaitlist, useAccess, type FoundingStats } from '@/aetheris/access'
 import { supabase } from '@/integrations/supabase/client'
 import '@/aetheris/styles.css'
 
@@ -40,6 +40,7 @@ function EarlyAccessPage() {
 
   const reloadStats = useCallback(() => { void foundingStats().then(setStats) }, [])
   useEffect(reloadStats, [reloadStats])
+  useEffect(() => { const s = storedInvite(); if (s) setCode(s) }, [])
 
   useEffect(() => {
     if (access.loading || !access.signedIn) return
