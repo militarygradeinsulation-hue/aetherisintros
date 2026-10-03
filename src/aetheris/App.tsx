@@ -30,7 +30,6 @@ import { currentPagePassages, readAloud, readPageOrSelection, setVoiceSettings, 
 
 import discoverEditorialAsset from '@/assets/editorial-discover.jpg.asset.json'
 import introsEditorialAsset from '@/assets/editorial-intros.jpg.asset.json'
-import messagesEditorialAsset from '@/assets/editorial-messages.jpg.asset.json'
 import needsEditorialAsset from '@/assets/editorial-needs.jpg.asset.json'
 import memoryEditorialAsset from '@/assets/editorial-memory.jpg.asset.json'
 import insightsEditorialAsset from '@/assets/editorial-insights.jpg.asset.json'
