@@ -17,6 +17,7 @@ export const CAPABILITIES: CapabilityDescriptor[] = [
   { id: 'company.model_impact', verb: 'analyze', label: 'Model impact', outcome: 'What happens if nothing changes', appliesTo: ['company', 'opportunity'], costTier: 'light', web: false },
   { id: 'company.find_opportunity', verb: 'find', label: 'Find opportunity', outcome: 'Openings your records already support', appliesTo: ['company', 'person'], costTier: 'light', web: false },
   { id: 'decision.challenge', verb: 'challenge', label: 'Check assumptions', outcome: 'Which assumptions are overdue for review', appliesTo: ['decision'], costTier: 'light', web: false },
+  { id: 'enrich.person.professional', verb: 'find', label: 'Verify professional info', outcome: 'Check title, company and location against LinkedIn', appliesTo: ['person'], costTier: 'light', web: false },
   { id: 'company.prepare_action', verb: 'prepare', label: 'Prepare action', outcome: 'Draft the next move for your approval', appliesTo: ['company', 'opportunity', 'person', 'decision'], costTier: 'light', web: false },
 ]
 
@@ -34,6 +35,7 @@ export function rankCapabilities(type: EntityType, s: RankSignals = {}, max = 4)
     if (c.id === 'company.find_opportunity') v += type === 'person' ? 16 : 6
     if (c.id === 'company.prepare_action') v += (s.openFindings ?? 0) > 0 ? 14 : 1
     if (c.id === 'decision.challenge') v += 40
+    if (c.id === 'enrich.person.professional') v += s.stale ? 35 : 12
     return v
   }
   return CAPABILITIES.filter(c => c.appliesTo.includes(type)).sort((a, b) => score(b) - score(a)).slice(0, Math.min(max, 4))

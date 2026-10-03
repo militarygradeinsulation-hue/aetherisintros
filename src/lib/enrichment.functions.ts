@@ -21,7 +21,7 @@ export const getProfessionalInfo = createServerFn({ method: 'POST' })
     const [{ data: profiles }, { data: snaps }, { data: props }] = await Promise.all([
       db.from('person_external_profiles').select('id,external_url,status,confirmed_at,last_checked_at,last_changed_at').eq('person_id', data.personId),
       db.from('person_enrichment_snapshots').select('id,source_channel,normalized,checked_at,match_confidence').eq('person_id', data.personId).order('checked_at', { ascending: false }).limit(12),
-      db.from('capability_proposals').select('id,summary,status').eq('target_type', 'person').eq('target_id', data.personId).in('status', ['open', 'queued']).limit(10),
+      db.from('capability_proposals').select('id,summary,status').eq('target_type', 'person').eq('target_id', data.personId).in('status', ['proposed', 'queued']).limit(10),
     ])
     const list = (profiles ?? []) as any[]
     return {

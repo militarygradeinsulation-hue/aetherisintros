@@ -61,6 +61,7 @@ export interface CapabilityIntent { capabilityId: string; focus?: 'evidence' | '
 
 export function recognizeCapabilityIntent(text: string): CapabilityIntent | null {
   const q = text.toLowerCase().trim()
+  if (/(find|look up|search for) (this person|them|him|her|[a-z]+( [a-z]+)?) on linkedin|refresh (their |his |her )?professional info|verify (his|her|their|this) (title|role|company)|is (he|she|they) still at (this|the|that) company|verify professional info/.test(q)) return { capabilityId: 'enrich.person.professional' }
   if (/^diagnose\b|diagnose (this|the|my|a) (company|account|business|opportunity|deal)/.test(q)) return { capabilityId: 'company.diagnose' }
   if (/where (are|am) (we|i) losing money|losing money|revenue leaks?|leaking (money|revenue)/.test(q)) return { capabilityId: 'company.diagnose' }
   if (/why is (our )?revenue (slipping|down|dropping|falling)|revenue (is )?slipping/.test(q)) return { capabilityId: 'company.trace_cause' }
