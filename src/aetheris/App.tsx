@@ -197,11 +197,11 @@ function SaveButton({ saved, onToggle }: { saved: boolean; onToggle: () => void 
 }
 
 /** Editorial ivory field beside a monochrome portrait — the signature Aetheris page opening. */
-function EditorialHero({ folio, title, statement, copy, caption, focus = 'center 30%', stats, action, image }: {
+function EditorialHero({ folio, title, statement, copy, caption, focus = 'center 30%', stats, action, image, compact = false }: {
   folio: string; title: React.ReactNode; statement: string; copy: string; caption: string
-  focus?: string; stats?: Array<{ k: string; v: string }>; action?: React.ReactNode; image: string
+  focus?: string; stats?: Array<{ k: string; v: string }>; action?: React.ReactNode; image: string; compact?: boolean
 }) {
-  return <section className="editorial-hero">
+  return <section className={`editorial-hero${compact ? ' compact' : ''}`}>
     <div className="editorial-field">
       <span className="folio">{folio}</span>
       <h1>{title}</h1>
@@ -1241,7 +1241,7 @@ function Messages({ people, select, activeId, setActiveId }: { people: Member[];
   }
 
   return <>
-    <EditorialHero folio="MESSAGES / RELATIONSHIP CONTEXT" title={<>Conversation with<br /><em>memory beside it.</em></>} statement="People speak to people. Context stays quietly available." copy="Commitments, mutual connections and the reason for the introduction remain beside the thread—not inside the conversation." caption="A professional exchange remains human when intelligence knows when to stay quiet." image={messagesEditorialAsset.url} />
+    <EditorialHero folio="MESSAGES / RELATIONSHIP CONTEXT" title={<>Conversation with<br /><em>memory beside it.</em></>} statement="People speak to people. Context stays quietly available." copy="Commitments, mutual connections and the reason for the introduction remain beside the thread—not inside the conversation." caption="A professional exchange remains human when intelligence knows when to stay quiet." image={messagesEditorialAsset.url} compact />
     <section className="intro-request-strip"><Label signal>INTRODUCTION REQUESTS</Label><p>{people.filter(item => item.introState === 'requested' || item.introState === 'waiting').length ? `${people.filter(item => item.introState === 'requested' || item.introState === 'waiting').length} introduction requests need review.` : 'No introduction requests need review.'}</p><button className="text-action" onClick={() => nav.setPage('intros')}>Open Intros <ArrowRight size={13} /></button></section>
     {outreachModal}
     <div className={`messages-layout ${contextOpen ? 'context-open' : 'context-closed'}`}>
