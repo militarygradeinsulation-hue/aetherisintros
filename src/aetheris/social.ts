@@ -436,8 +436,8 @@ export const members: Member[] = [
 ]
 
 export const me = {
-  name: 'Jordan Ellery', initials: 'JT', title: 'Founder · Relationship systems strategist',
-  company: 'Aetheris', location: 'Charlotte, NC',
+  name: 'Demo Account', initials: 'DA', title: 'Founder · Relationship systems strategist',
+  company: 'Meridian Advisory', location: 'Charlotte, NC',
   thesis: 'I build systems that turn relationship context into better business decisions.',
   focus: 'Placing Ask Intros with founders, operating partners and trusted connectors.',
   lookingFor: 'PE operating partners and founder-led design partners.',
