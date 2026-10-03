@@ -27,7 +27,7 @@ export function AttachButton({ threadId, onSend }: { threadId: string; onSend: (
         let ref: string
         if (data.user && isUuid(threadId)) {
           const path = `${threadId}/${crypto.randomUUID()}-${safe.replace(/[^\w.\-]/g, '_')}`
-          const { error: upErr } = await supabase.storage.from('dm-files').upload(path, file, { contentType: file.type || undefined })
+          const { error: upErr } = await supabase.storage.from('dm-files').upload(path, file, { contentType: file.type || 'application/octet-stream' })
           if (upErr) { setError(`Couldn't send ${file.name}. Try again.`); continue }
           ref = path
         } else {
