@@ -79,6 +79,9 @@ export const startCapabilityRun = createServerFn({ method: 'POST' })
       await step('running', { p_progress: 50, p_step_label: 'Reading evidence' })
       if (cap.engine === 'diagnose') {
         await runDiagnose(db, runId, data, granted, step)
+      } else if (cap.engine === 'enrich') {
+        const { beginEnrichment } = await import('./capabilities/enrichment.server')
+        await beginEnrichment(db, data.subject.id, step)
       } else {
         const result = cap.deterministic(envelope)
         const r = await step('result_ready', { p_engine: result.engine, p_result: result, p_step_label: 'Ready' })
@@ -230,6 +233,10 @@ export const decideProposal = createServerFn({ method: 'POST' })
         due_at: due, opportunity_id: action['opportunityId'] ?? null, company_id: action['companyId'] ?? null,
       } as never)
       if (error) throw new Error(`Approved, but the task could not be created: ${error.message}`)
+    }
+    if (action['kind'] === 'update_person_field') {
+      const { error } = await db.rpc('apply_professional_field', { p_proposal_id: p.id })
+      if (error) throw new Error(`Approved, but the change could not be saved: ${error.message}`)
     }
     const { error: xErr } = await db.rpc('mark_approval_executed', { p_id: p.approval_id })
     if (xErr) throw new Error(xErr.message)
