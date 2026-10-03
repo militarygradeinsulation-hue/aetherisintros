@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import { buildLookupQuery, contextualLabel, diffFields, isStale, linkedinHandle, parseCandidateBlock, rankCandidates, withinLookupWindow, CandidateListSchema } from '../enrichment'
-import { recognizeCapabilityIntent, recognizeCommand } from '../match'
+import { recognizeCapabilityIntent } from '../match'
 
 const person = { fullName: 'Mara Solis', companyName: 'Northwind', title: 'COO', location: 'Lisbon', linkedinUrl: '' }
 
@@ -46,6 +46,6 @@ describe('professional enrichment', () => {
     for (const p of ['find this person on LinkedIn', 'verify her title', 'is he still at this company?', 'refresh professional info'])
       expect(recognizeCapabilityIntent(p)?.capabilityId).toBe('enrich.person.professional')
     expect(recognizeCapabilityIntent('Where are we losing money?')?.capabilityId).toBe('company.diagnose')
-    expect(recognizeCommand('who should I meet')?.capabilityId ?? null).not.toBe('enrich.person.professional')
+    expect(recognizeCapabilityIntent('who should I meet')).toBeNull()
   })
 })
