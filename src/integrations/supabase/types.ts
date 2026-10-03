@@ -4045,6 +4045,13 @@ export type Database = {
         }[]
       }
       my_invite_code: { Args: never; Returns: string }
+      my_top_connections: {
+        Args: never
+        Returns: {
+          member_id: string
+          reason: string
+        }[]
+      }
       my_verification: {
         Args: never
         Returns: {
