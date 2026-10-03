@@ -12,3 +12,5 @@
 - Diagnose findings are written only via `add_capability_finding_v2`; leaks need ≥2 independent evidence refs and money needs evidence + currency (enforced in DB trigger and `capabilities/evidence.ts`). Why: never fabricate losses.
 - Evidence areas live as providers in `src/lib/capabilities/diagnose.server.ts`; unsupported areas return `not_connected`. Why: new connectors plug in without changing the Diagnose contract.
 - Ask Intros phrase matching lives in `src/aetheris/capabilities/match.ts` (ceo-engine re-exports it). Why: one matcher, regression-tested.
+- Professional (LinkedIn) enrichment attaches to canonical `crm_people` via `person_external_profiles` + append-only `person_enrichment_snapshots`, written only by RPCs; CRM fields change only through approved `update_person_field` proposals. Why: no duplicate people, no silent overwrites, full history.
+- LinkedIn results enter only through real hand-off (assistant lookup / manual paste) behind the `ProfessionalProfileProvider` seam; `direct_api` stays unavailable until a licensed provider exists. Why: never fabricate profiles.
