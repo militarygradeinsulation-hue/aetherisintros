@@ -80,7 +80,7 @@ function LandingPage({ signedIn }: { signedIn: boolean }) {
     : null
   const accountBtn = (cls: string) => signedIn
     ? <Link to="/app" className={cls}>Enter your network</Link>
-    : <Link to="/early-access" className={cls}>Request whitelist access</Link>
+    : <><Link to="/early-access" className={cls}>Request whitelist access</Link><Link to="/auth" className="btn ghost">Member log in</Link></>
 
   return (
     <main className="lv">

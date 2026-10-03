@@ -1,3 +1,4 @@
+import { isShowcase } from '../showcase'
 /**
  * Full CRM & operations workspace.
  *
@@ -85,7 +86,9 @@ export default function FullCrm({ onBack }: { onBack: () => void }) {
     return (window.localStorage.getItem('aetheris.ledger.module') as Module) || 'dashboard'
   })
   const [query, setQuery] = useState('')
-  const [hideStarter, setHideStarter] = useState(false)
+  const [hideStarterPref, setHideStarter] = useState(false)
+  // Real accounts only ever see their own records; examples exist in the demo only.
+  const hideStarter = !isShowcase() || hideStarterPref
 
   const go = (id: Module) => {
     setModule(id)
@@ -126,7 +129,7 @@ export default function FullCrm({ onBack }: { onBack: () => void }) {
       </div>
     </header>
 
-    {starterCount > 0 && <p className="fcrm-banner">
+    {isShowcase() && starterCount > 0 && <p className="fcrm-banner">
       Your workspace opened with {starterCount} example records shaped to your industry so nothing sits empty.
       {' '}{hideStarter ? 'Showing only your real records and figures.' : 'Invoices, orders, stock, suppliers and the money figures above include these examples — hide them to see only your own.'}
       <button type="button" onClick={() => setHideStarter(v => !v)}>
