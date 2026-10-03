@@ -4857,3 +4857,12 @@ button.news-link{background:none;border:0;padding:0;cursor:pointer}
 .editorial-hero.compact .editorial-plate{min-height:190px}
 .editorial-hero.compact .editorial-plate figcaption p{display:none}
 @media(max-width:680px){.editorial-hero.compact .editorial-field{padding:22px 20px}.editorial-hero.compact .editorial-field h1{font-size:32px}.editorial-hero.compact .editorial-plate{min-height:150px}}
+
+/* message attachments */
+.composer-attach{flex-shrink:0;display:grid;place-items:center;width:38px;height:38px;border-radius:8px;border:1px solid rgba(255,255,255,.10);background:transparent;color:inherit;cursor:pointer}
+.composer-attach:hover{border-color:#0F5CCB;color:#0F5CCB}
+.composer-attach-note{font-size:12px;opacity:.7;align-self:center}
+.composer-attach-note.is-error{color:#F4A125;opacity:1}
+.message .msg-media{display:block;max-width:min(320px,100%);max-height:320px;border-radius:8px;margin:2px 0 6px;object-fit:cover}
+.message .msg-file{display:inline-flex;align-items:center;gap:8px;max-width:100%;padding:8px 10px;border:1px solid rgba(255,255,255,.12);border-radius:8px;color:inherit;text-decoration:none;margin:2px 0 6px}
+.message .msg-file span{overflow-wrap:anywhere}
