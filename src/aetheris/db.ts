@@ -152,6 +152,8 @@ export async function loadUserGraph(userId: string): Promise<Partial<RemoteGraph
       supabase.from('messages').select('*').eq('user_id', userId).order('created_at'),
       supabase.from('preferences').select('data').eq('user_id', userId).maybeSingle(),
     ])
+    // Inviter first, then the founder, then everyone else.
+    const top = await supabase.rpc('my_top_connections').then(r => (r.data ?? []).map(t => String(t.member_id)), () => [] as string[])
 
     const group = (name: RelGroup) =>
       (rels.data ?? []).filter(r => r.kind === relKind[name]).map(r => r.member_id)
@@ -170,7 +172,7 @@ export async function loadUserGraph(userId: string): Promise<Partial<RemoteGraph
 
     const memoryRows = memories.data ?? []
     return {
-      connections: group('connections'), follows: group('follows'), saved: group('saved'),
+      connections: [...top.filter(id => group('connections').includes(id)), ...group('connections').filter(id => !top.includes(id))], follows: group('follows'), saved: group('saved'),
       introStates,
       learned: memoryRows.filter(m => m.kind === 'learning').map(m => ({
         id: m.id, category: m.category as Learning['category'], text: m.text,
