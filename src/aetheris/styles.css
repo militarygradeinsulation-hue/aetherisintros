@@ -4840,3 +4840,20 @@ button.news-link{background:none;border:0;padding:0;cursor:pointer}
 .auth-invite span{font-size:11px;letter-spacing:.14em}
 .auth-invite input{width:100%;min-width:0}
 .auth-invite small{font-size:12px;opacity:.75}
+
+/* Messages: remove dead gap between last message and composer, reduce page scrolling */
+.messages{justify-content:flex-end;padding:18px 20px}
+.messages-layout{min-height:min(560px,calc(100vh - 260px))}
+.conversation{max-height:calc(100vh - 200px)}
+.messages{overflow-y:auto;overscroll-behavior:contain}
+@media(max-width:680px){.conversation{min-height:0;max-height:none}.messages-layout{min-height:0}}
+
+/* Compact editorial hero (Messages): keep the thread near the top, less scrolling */
+.editorial-hero.compact{margin-bottom:16px}
+.editorial-hero.compact .editorial-field{padding:26px 30px}
+.editorial-hero.compact .editorial-field h1{font-size:clamp(30px,3.4vw,44px);margin:10px 0 8px}
+.editorial-hero.compact .editorial-field h2{font-size:15px;margin:0 0 6px}
+.editorial-hero.compact .editorial-field p{font-size:11px;max-width:52ch}
+.editorial-hero.compact .editorial-plate{min-height:190px}
+.editorial-hero.compact .editorial-plate figcaption p{display:none}
+@media(max-width:680px){.editorial-hero.compact .editorial-field{padding:22px 20px}.editorial-hero.compact .editorial-field h1{font-size:32px}.editorial-hero.compact .editorial-plate{min-height:150px}}
