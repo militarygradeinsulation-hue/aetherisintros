@@ -1852,6 +1852,42 @@ export type Database = {
         }
         Relationships: []
       }
+      events: {
+        Row: {
+          confidence: number
+          created_at: string
+          id: string
+          occurred_at: string
+          payload: Json
+          person_id: string | null
+          source: string
+          type: string
+          user_id: string
+        }
+        Insert: {
+          confidence?: number
+          created_at?: string
+          id?: string
+          occurred_at?: string
+          payload?: Json
+          person_id?: string | null
+          source?: string
+          type: string
+          user_id: string
+        }
+        Update: {
+          confidence?: number
+          created_at?: string
+          id?: string
+          occurred_at?: string
+          payload?: Json
+          person_id?: string | null
+          source?: string
+          type?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       executive_office_hours: {
         Row: {
           capacity: number
@@ -2524,7 +2560,7 @@ export type Database = {
         }
         Relationships: []
       }
-      members: {
+      members_base: {
         Row: {
           availability: string
           best_path: string[]
@@ -3646,7 +3682,46 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      members: {
+        Row: {
+          availability: string | null
+          best_path: string[] | null
+          bio: string | null
+          company: string | null
+          confidence: number | null
+          created_at: string | null
+          dont_do: string | null
+          expertise: string[] | null
+          focus: string | null
+          id: string | null
+          industry: string | null
+          initials: string | null
+          intro_state: string | null
+          is_demo: boolean | null
+          joined: string | null
+          last_interaction_days: number | null
+          location: string | null
+          mutuals: string[] | null
+          name: string | null
+          needs: string[] | null
+          next_action: string | null
+          offers: string[] | null
+          opportunity_high: number | null
+          opportunity_low: number | null
+          radar: string | null
+          relationship_status: string | null
+          role: string | null
+          score: Json | null
+          score_total: number | null
+          tags: string[] | null
+          thesis: string | null
+          title: string | null
+          why_now: string | null
+          why_them: string | null
+          why_you: string | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
       accept_delegate_invite: { Args: { p_id: string }; Returns: undefined }
@@ -3761,6 +3836,7 @@ export type Database = {
         Returns: boolean
       }
       is_admin: { Args: never; Returns: boolean }
+      is_approved_member: { Args: { p_user: string }; Returns: boolean }
       is_circle_member: { Args: { p_circle: string }; Returns: boolean }
       is_live_member: { Args: never; Returns: boolean }
       is_uuid_text: { Args: { p: string }; Returns: boolean }
@@ -3780,6 +3856,11 @@ export type Database = {
         Returns: string
       }
       mark_approval_executed: { Args: { p_id: string }; Returns: undefined }
+      match_reasoning: {
+        Args: { p_target: string; p_viewer: string }
+        Returns: Json
+      }
+      member_profile_strength: { Args: { p_user: string }; Returns: number }
       my_capability_usage_today: {
         Args: never
         Returns: {
@@ -3816,6 +3897,12 @@ export type Database = {
           verified_role: Database["public"]["Enums"]["verified_role"]
         }[]
       }
+      network_brief: {
+        Args: { p_days?: number; p_user: string }
+        Returns: Json
+      }
+      network_health: { Args: never; Returns: Json }
+      nudge_incomplete_onboarding: { Args: never; Returns: number }
       owns_entity: { Args: { p_id: string; p_type: string }; Returns: boolean }
       purge_verification_proof: { Args: never; Returns: number }
       record_capability_web_domain: {
@@ -3847,6 +3934,7 @@ export type Database = {
         }
         Returns: undefined
       }
+      run_verification_scan: { Args: { p_user: string }; Returns: string }
       set_capability_run_status: {
         Args: {
           p_engine?: string
