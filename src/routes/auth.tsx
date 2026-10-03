@@ -6,6 +6,7 @@ import { useCallback, useEffect, useState } from 'react'
 import { supabase } from '@/integrations/supabase/client'
 import { lovable } from '@/integrations/lovable/index'
 import { AUTH_REQUIRED } from '@/aetheris/config'
+import { claimAccess, clearInvite, previewInvite, rememberInvite, storedInvite } from '@/aetheris/access'
 import { logSecurityEvent, passwordProblem } from '@/aetheris/verification'
 import '@/aetheris/styles.css'
 import ConstellationField from '@/aetheris/ConstellationField'
@@ -17,13 +18,14 @@ const safeNext = (value: unknown) => {
 
 export const Route = createFileRoute('/auth')({
   staticData: { sitemap: false },
-  validateSearch: (search: Record<string, unknown>): { next?: string } => {
+  validateSearch: (search: Record<string, unknown>): { next?: string; invite?: string } => {
     const next = safeNext(search['next'])
-    return next ? { next } : {}
+    const invite = typeof search['invite'] === 'string' ? search['invite'].slice(0, 64) : ''
+    return { ...(next ? { next } : {}), ...(invite ? { invite } : {}) }
   },
   beforeLoad: ({ search }) => {
     // A pending agent-integration consent flow always needs the sign-in screen.
-    if (!AUTH_REQUIRED && !search.next) throw redirect({ to: '/app' })
+    if (!AUTH_REQUIRED && !search.next && !search.invite) throw redirect({ to: '/app' })
   },
   head: () => ({
     meta: [
@@ -47,8 +49,17 @@ export const Route = createFileRoute('/auth')({
 
 function AuthPage() {
   const navigate = useNavigate()
-  const { next } = Route.useSearch()
-  const [mode, setMode] = useState<'signin' | 'signup'>('signin')
+  const { next, invite: inviteParam } = Route.useSearch()
+  const [mode, setMode] = useState<'signin' | 'signup'>(inviteParam ? 'signup' : 'signin')
+  const [invite, setInvite] = useState(inviteParam ?? '')
+  const [inviter, setInviter] = useState<{ valid: boolean; inviter: string } | null>(null)
+  useEffect(() => { if (!inviteParam) { const s = storedInvite(); if (s) setInvite(s) } }, [inviteParam])
+  useEffect(() => {
+    const c = invite.trim()
+    if (c.length < 4) { setInviter(null); return }
+    const t = setTimeout(() => { void previewInvite(c).then(setInviter) }, 300)
+    return () => clearTimeout(t)
+  }, [invite])
   const [name, setName] = useState('')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
@@ -56,7 +67,12 @@ function AuthPage() {
   const [error, setError] = useState('')
   const [notice, setNotice] = useState('')
 
-  const land = useCallback(() => {
+  const land = useCallback(async () => {
+    const code = storedInvite()
+    if (code) {
+      // Joining through a member's invite connects both of you once the place is claimed.
+      try { await claimAccess(code); clearInvite() } catch { /* the founding page can retry */ }
+    }
     if (next) { window.location.replace(next); return }
     void navigate({ to: '/verify', replace: true })
   }, [navigate, next])
@@ -64,11 +80,11 @@ function AuthPage() {
   useEffect(() => {
     let cancelled = false
     void supabase.auth.getSession().then(({ data }) => {
-      if (!cancelled && data.session) land()
+      if (!cancelled && data.session) void land()
     })
     const { data: sub } = supabase.auth.onAuthStateChange((event, session) => {
       if (session && event === 'SIGNED_IN') void logSecurityEvent('signed_in', 'Signed in to Ask Intros.')
-      if (session && (event === 'SIGNED_IN' || event === 'INITIAL_SESSION')) land()
+      if (session && (event === 'SIGNED_IN' || event === 'INITIAL_SESSION')) void land()
     })
     return () => { cancelled = true; sub.subscription.unsubscribe() }
   }, [land])
@@ -77,7 +93,10 @@ function AuthPage() {
     event.preventDefault()
     setBusy(true); setError(''); setNotice('')
     try {
+      rememberInvite(invite)
       if (mode === 'signup') {
+        if (!invite.trim()) throw new Error('Sign-up is invite-only right now. Enter the invite code a member sent you.')
+        if (inviter && !inviter.valid) throw new Error('That invite code is not valid. Check it with the person who sent it.')
         const weak = passwordProblem(password)
         if (weak) throw new Error(weak)
         const { data, error: signUpError } = await supabase.auth.signUp({
@@ -85,7 +104,7 @@ function AuthPage() {
           password,
           options: {
             emailRedirectTo: `${window.location.origin}${next || '/verify'}`,
-            data: { name: name || email.split('@')[0] },
+            data: { name: name || email.split('@')[0], invite_code: invite.trim() },
           },
         })
         if (signUpError) throw signUpError
@@ -106,6 +125,7 @@ function AuthPage() {
 
   const google = async () => {
     setBusy(true); setError('')
+    rememberInvite(invite)
     const result = await lovable.auth.signInWithOAuth('google', {
       redirect_uri: `${window.location.origin}${next || '/verify'}`,
     })
@@ -115,7 +135,7 @@ function AuthPage() {
       return
     }
     if (result.redirected) return
-    land()
+    void land()
   }
 
   return <main className="auth-page">
@@ -151,6 +171,12 @@ function AuthPage() {
       </button>
       <div className="auth-divider"><span>or use email</span></div>
 
+      {mode === 'signup' && <label className="auth-invite">
+        <span>INVITE CODE</span>
+        <input value={invite} onChange={e => setInvite(e.target.value)} placeholder="e.g. joseph-3f9a2c" autoComplete="off" />
+        <small>{inviter?.valid ? `Invited by ${inviter.inviter || 'a member'} — you will join each other’s network.` : inviter && !inviter.valid ? 'That code is not valid.' : 'Enter the code from the member who invited you.'}</small>
+      </label>}
+
       <form className="auth-form" onSubmit={event => void submit(event)}>
         {mode === 'signup' && <label>
           <span>FULL NAME</span>
@@ -171,7 +197,10 @@ function AuthPage() {
         </button>
       </form>
 
-      <Link to="/early-access" className="auth-switch">No account yet? Request whitelist access.</Link>
+      <button type="button" className="auth-switch" onClick={() => { setMode(mode === 'signin' ? 'signup' : 'signin'); setError(''); setNotice('') }}>
+        {mode === 'signin' ? 'Have an invite code? Create your account.' : 'Already a member? Sign in.'}
+      </button>
+      <Link to="/early-access" className="auth-switch">No invite yet? Request whitelist access.</Link>
       <Link to="/demo" className="auth-switch">Not ready to join? Open the demo.</Link>
 
       <span className="auth-foot"><LockKeyhole size={12} /> Nothing is shared without your explicit opt-in.</span>
