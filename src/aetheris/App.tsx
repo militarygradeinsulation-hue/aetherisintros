@@ -1241,7 +1241,6 @@ function Messages({ people, select, activeId, setActiveId }: { people: Member[];
   }
 
   return <>
-    <EditorialHero folio="MESSAGES / RELATIONSHIP CONTEXT" title={<>Conversation with<br /><em>memory beside it.</em></>} statement="People speak to people. Context stays quietly available." copy="Commitments, mutual connections and the reason for the introduction remain beside the thread—not inside the conversation." caption="A professional exchange remains human when intelligence knows when to stay quiet." image={messagesEditorialAsset.url} compact />
     <section className="intro-request-strip"><Label signal>INTRODUCTION REQUESTS</Label><p>{people.filter(item => item.introState === 'requested' || item.introState === 'waiting').length ? `${people.filter(item => item.introState === 'requested' || item.introState === 'waiting').length} introduction requests need review.` : 'No introduction requests need review.'}</p><button className="text-action" onClick={() => nav.setPage('intros')}>Open Intros <ArrowRight size={13} /></button></section>
     {outreachModal}
     <div className={`messages-layout ${contextOpen ? 'context-open' : 'context-closed'}`}>
