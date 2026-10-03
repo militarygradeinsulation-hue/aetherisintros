@@ -18,6 +18,7 @@ import { AvatarImage } from './avatar'
 import { journalKindFor, journalUrl, uploadJournalMedia } from './live'
 import { supabase } from '@/integrations/supabase/client'
 import { useAccess } from './access'
+import { InviteCard } from './InviteCard'
 import { applyTextScale, readTextScale, setTextScale, textScales, type TextScale } from './textScale'
 import { applyCursorScale, readCursorScale, setCursorScale, cursorScales, type CursorScale } from './cursorScale'
 import { AskIntrosDock, type AskIntrosAction } from './AskIntrosDock'
@@ -2602,7 +2603,7 @@ function Shell({ startPage }: { startPage?: Page | undefined }) {
       events: <EventsPage />,
       calendar: <><CalendarMeetingBar /><CalendarPage /></>,
       insights: <Insights people={people} select={setSelected} setPage={setPage} />,
-      profile: <Profile people={people} setPage={setPage} openOnboarding={() => setOnboardOpen(true)} />,
+      profile: <><InviteCard /><Profile people={people} setPage={setPage} openOnboarding={() => setOnboardOpen(true)} /></>,
       preferences: <PreferencesPage />,
       inbox: <RelationshipInboxPage />,
       rooms: <OpportunityRoomsPage openId={roomId} setOpenId={setRoomId} />,
