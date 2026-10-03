@@ -16,6 +16,7 @@ import {
   createLiveThread, emptyDirectory, loadLiveDirectory, mirrorFollow, notify, saveComment,
   saveReaction, sendLiveMessage, uploadProfileAvatar, type LiveProfileRow,
 } from './live'
+import { supabase } from '@/integrations/supabase/client'
 
 /** 'live' = real members only (the network). 'demo' = the labelled showcase. */
 export type NetworkMode = 'live' | 'demo'
@@ -396,6 +397,37 @@ export function NetworkProvider({ children, mode = 'live' }: { children: React.R
     })()
     return () => { cancelled = true }
   }, [])
+
+  /* live messaging: new messages and conversations from other members arrive instantly */
+  useEffect(() => {
+    if (!live || !userId) return
+    const refresh = () => { void loadLiveDirectory(userId).then(({ directory }) => setDir(directory)) }
+    const channel = supabase
+      .channel(`dm-${userId}`)
+      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'dm_messages' }, payload => {
+        const m = payload.new as { id: string; thread_id: string; sender_id: string; text: string; created_at: string }
+        if (m.sender_id === userId) return
+        setDir(prev => {
+          const thread = prev.threads.find(t => t.id === m.thread_id)
+          if (!thread) { refresh(); return prev }
+          if (thread.messages.some(x => x.id === m.id)) return prev
+          const at = new Date(m.created_at).toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit' })
+          return {
+            ...prev,
+            threads: [
+              { ...thread, unread: true, messages: [...thread.messages, { id: m.id, from: 'them' as const, text: m.text, at }] },
+              ...prev.threads.filter(t => t.id !== m.thread_id),
+            ],
+          }
+        })
+      })
+      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'dm_threads' }, payload => {
+        const t = payload.new as { created_by: string }
+        if (t.created_by !== userId) refresh()
+      })
+      .subscribe()
+    return () => { void supabase.removeChannel(channel) }
+  }, [live, userId])
 
   /* write-through: persist only what changed since the last database read */
   useEffect(() => {
