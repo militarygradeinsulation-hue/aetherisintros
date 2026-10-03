@@ -3003,6 +3003,142 @@ export type Database = {
         }
         Relationships: []
       }
+      person_enrichment_snapshots: {
+        Row: {
+          checked_at: string
+          content_hash: string
+          created_at: string
+          external_profile_id: string | null
+          id: string
+          match_confidence: number
+          match_reasons: string[]
+          normalized: Json
+          owner_id: string
+          person_id: string
+          provider: string
+          query: Json
+          run_id: string | null
+          source_channel: string
+        }
+        Insert: {
+          checked_at?: string
+          content_hash: string
+          created_at?: string
+          external_profile_id?: string | null
+          id?: string
+          match_confidence?: number
+          match_reasons?: string[]
+          normalized: Json
+          owner_id: string
+          person_id: string
+          provider?: string
+          query?: Json
+          run_id?: string | null
+          source_channel: string
+        }
+        Update: {
+          checked_at?: string
+          content_hash?: string
+          created_at?: string
+          external_profile_id?: string | null
+          id?: string
+          match_confidence?: number
+          match_reasons?: string[]
+          normalized?: Json
+          owner_id?: string
+          person_id?: string
+          provider?: string
+          query?: Json
+          run_id?: string | null
+          source_channel?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "person_enrichment_snapshots_external_profile_id_fkey"
+            columns: ["external_profile_id"]
+            isOneToOne: false
+            referencedRelation: "person_external_profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "person_enrichment_snapshots_person_id_fkey"
+            columns: ["person_id"]
+            isOneToOne: false
+            referencedRelation: "crm_people"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "person_enrichment_snapshots_run_id_fkey"
+            columns: ["run_id"]
+            isOneToOne: false
+            referencedRelation: "capability_runs"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      person_external_profiles: {
+        Row: {
+          confirmed_at: string | null
+          confirmed_by: string | null
+          created_at: string
+          external_handle: string | null
+          external_url: string
+          id: string
+          last_changed_at: string | null
+          last_checked_at: string
+          latest_snapshot_id: string | null
+          owner_id: string
+          person_id: string
+          provider: string
+          status: string
+        }
+        Insert: {
+          confirmed_at?: string | null
+          confirmed_by?: string | null
+          created_at?: string
+          external_handle?: string | null
+          external_url?: string
+          id?: string
+          last_changed_at?: string | null
+          last_checked_at?: string
+          latest_snapshot_id?: string | null
+          owner_id: string
+          person_id: string
+          provider?: string
+          status?: string
+        }
+        Update: {
+          confirmed_at?: string | null
+          confirmed_by?: string | null
+          created_at?: string
+          external_handle?: string | null
+          external_url?: string
+          id?: string
+          last_changed_at?: string | null
+          last_checked_at?: string
+          latest_snapshot_id?: string | null
+          owner_id?: string
+          person_id?: string
+          provider?: string
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "person_external_profiles_latest_fk"
+            columns: ["latest_snapshot_id"]
+            isOneToOne: false
+            referencedRelation: "person_enrichment_snapshots"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "person_external_profiles_person_id_fkey"
+            columns: ["person_id"]
+            isOneToOne: false
+            referencedRelation: "crm_people"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       post_comments: {
         Row: {
           author_id: string
@@ -3771,6 +3907,10 @@ export type Database = {
         }
         Returns: string
       }
+      apply_professional_field: {
+        Args: { p_proposal_id: string }
+        Returns: undefined
+      }
       can_delegate: {
         Args: {
           p_access: string
@@ -3805,11 +3945,24 @@ export type Database = {
           status: string
         }[]
       }
+      confirm_professional_profile: {
+        Args: {
+          p_candidate: Json
+          p_channel: string
+          p_confidence: number
+          p_person_id: string
+          p_query: Json
+          p_reasons: string[]
+          p_run_id: string
+        }
+        Returns: Json
+      }
       decide_capability_proposal: {
         Args: { p_decision: string; p_id: string }
         Returns: string
       }
       decline_delegate_invite: { Args: { p_id: string }; Returns: undefined }
+      enrichment_clean: { Args: { p: Json }; Returns: Json }
       ensure_default_pipeline: { Args: never; Returns: string }
       entity_owned_by: {
         Args: { p_id: string; p_owner: string; p_type: string }
@@ -3855,6 +4008,7 @@ export type Database = {
         }
         Returns: string
       }
+      linkedin_handle: { Args: { p_url: string }; Returns: string }
       mark_approval_executed: { Args: { p_id: string }; Returns: undefined }
       match_reasoning: {
         Args: { p_target: string; p_viewer: string }
@@ -3916,6 +4070,10 @@ export type Database = {
           p_id: string
           p_recovered: number
         }
+        Returns: undefined
+      }
+      reject_professional_candidate: {
+        Args: { p_person_id: string; p_profile_url: string }
         Returns: undefined
       }
       relative_label: { Args: { ts: string }; Returns: string }
