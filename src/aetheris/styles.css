@@ -4840,3 +4840,10 @@ button.news-link{background:none;border:0;padding:0;cursor:pointer}
 .auth-invite span{font-size:11px;letter-spacing:.14em}
 .auth-invite input{width:100%;min-width:0}
 .auth-invite small{font-size:12px;opacity:.75}
+
+/* Messages: remove dead gap between last message and composer, reduce page scrolling */
+.messages{justify-content:flex-end;padding:18px 20px}
+.messages-layout{min-height:min(560px,calc(100vh - 260px))}
+.conversation{max-height:calc(100vh - 200px)}
+.messages{overflow-y:auto;overscroll-behavior:contain}
+@media(max-width:680px){.conversation{min-height:0;max-height:none}.messages-layout{min-height:0}}
