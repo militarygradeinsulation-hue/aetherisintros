@@ -3914,6 +3914,10 @@ export type Database = {
         Args: { p_proposal_id: string }
         Returns: undefined
       }
+      auto_verify_invited: {
+        Args: { p_email: string; p_uid: string }
+        Returns: undefined
+      }
       can_delegate: {
         Args: {
           p_access: string
