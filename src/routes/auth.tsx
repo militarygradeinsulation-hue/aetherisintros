@@ -60,6 +60,7 @@ function AuthPage() {
     const t = setTimeout(() => { void previewInvite(c).then(setInviter) }, 300)
     return () => clearTimeout(t)
   }, [invite])
+  const hasInvite = Boolean(inviteParam) || (mode === 'signup' && Boolean(inviter?.valid))
   const [name, setName] = useState('')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
@@ -109,7 +110,7 @@ function AuthPage() {
         })
         if (signUpError) throw signUpError
         if (!data.session) {
-          setNotice('Check your email to confirm the address, then sign in.')
+          setNotice('Check your email to confirm the address, then sign in. If it does not arrive, check your spam folder too.')
           setMode('signin')
         }
       } else {
@@ -145,14 +146,20 @@ function AuthPage() {
         <span className="brand-name">Ask<em>Intros</em></span>
       </Link>
       <div className="auth-index"><span className="folio">MEMBER ACCESS / 2026</span><span>01 / PRIVATE NETWORK</span></div>
-      <div className="auth-soon" role="status">
-        <span><i aria-hidden="true" />LAUNCHING SOON</span>
-        <p>Ask Intros is in private pre-launch. Open sign-up is closed — only whitelisted founding members can sign in right now.</p>
-        <div className="auth-soon-actions">
-          <Link to="/demo">Explore the demo <ArrowRight size={13} /></Link>
-          <Link to="/early-access">Join the whitelist <ArrowRight size={13} /></Link>
-        </div>
-      </div>
+      {hasInvite
+        ? <p className="auth-invited" role="status">
+            {inviter?.valid
+              ? `You were invited by ${inviter.inviter || 'a member'}. Create your account below.`
+              : 'You were invited by a member. Create your account below.'}
+          </p>
+        : <div className="auth-soon" role="status">
+            <span><i aria-hidden="true" />LAUNCHING SOON</span>
+            <p>Ask Intros is in private pre-launch. Open sign-up is closed — only whitelisted founding members can sign in right now.</p>
+            <div className="auth-soon-actions">
+              <Link to="/demo">Explore the demo <ArrowRight size={13} /></Link>
+              <Link to="/early-access">Join the whitelist <ArrowRight size={13} /></Link>
+            </div>
+          </div>}
       <h1>{mode === 'signin' ? <>Welcome<br /><em>back.</em></> : <>Join the<br /><em>network.</em></>}</h1>
       <p className="auth-lede">
         A network built for people who actually run companies. Every member is verified, so every
