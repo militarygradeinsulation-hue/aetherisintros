@@ -72,3 +72,11 @@ export function recognizeCapabilityIntent(text: string): CapabilityIntent | null
   if (/what changed (at|in|with) (this|the) (company|account|business)/.test(q)) return { capabilityId: 'company.diagnose', focus: 'changed' }
   return null
 }
+
+/** Zero-credit destinations: the private idea room and the company diagnostic. */
+export function recognizeDestination(text: string): 'pocket' | 'diagnostic' | null {
+  const q = text.toLowerCase().trim()
+  if (/open my pocket|my pocket|pocket room|idea room|test an idea|build an idea/.test(q)) return 'pocket'
+  if (/company diagnostic|our diagnostic|explain (our|my|the) (report|diagnostic)|where are we vulnerable|show (my|our) (company )?report/.test(q)) return 'diagnostic'
+  return null
+}

@@ -4,6 +4,7 @@ import {
   History, Home as HomeIcon, Inbox, Landmark, Layers, Lock, Map as MapIcon, MessageSquareText, Network,
   Newspaper, PlaneTakeoff, Puzzle, Radar, ScrollText, Settings2, ShieldAlert, ShieldCheck, Sparkle, Target,
   TrendingUp, UserRound, Users, UsersRound,
+  Lightbulb, Stethoscope,
 } from 'lucide-react'
 import type { Page } from './nav'
 
@@ -404,6 +405,18 @@ const basePages: BaseMeta[] = [
     next: 'Add the relationship you keep re-typing elsewhere.',
     why: 'CRM is private to you. Network members never see your notes, contacts, tasks or deal values.',
   }, ['crm', 'contacts', 'pipeline', 'deals', 'companies', 'tasks', 'leads']),
+  m('pocket', 'Pocket', Lightbulb, 'PRIMARY', 'Your private room to build and test ideas.', {
+    does: 'Lets you shape a client portal, board briefing, concept or calculator and preview it on every screen size.',
+    look: 'The live preview beside your edits, and the review notes under them.',
+    changes: 'Ideas stay private to your account on this device until you export them.',
+    next: 'Start from a shape and ask for a review.',
+  }, ['pocket', 'idea room', 'test an idea', 'sandbox', 'prototype']),
+  m('diagnostic', 'Diagnostic', Stethoscope, 'PRIMARY', 'Where your company needs attention, from your own records.', {
+    does: 'Reads your deals, people and tasks and shows what is stalled, quiet, single-threaded or late.',
+    look: 'The high-severity issues first, with the evidence and cause chain behind each one.',
+    changes: 'Nothing changes until you approve a proposed fix; approved fixes become tasks.',
+    next: 'Press Explain this report to hear the top three priorities.',
+  }, ['diagnostic', 'company report', 'vulnerable', 'problems', 'report']),
   m('grid', 'Grid', Layers, 'PRIMARY', 'Spreadsheets that read and write your real records.', {
     does: 'Gives you spreadsheets: linked sheets over your CRM records, plus freeform sheets for your own numbers.',
     look: 'Whether a column is writable or read-only network intelligence.',
@@ -434,7 +447,7 @@ const hubOf: Partial<Record<Page, Hub>> = {
 
   work: 'OPPORTUNITIES & WORK', needs: 'OPPORTUNITIES & WORK', opportunities: 'OPPORTUNITIES & WORK', rooms: 'OPPORTUNITIES & WORK',
   dealrooms: 'OPPORTUNITIES & WORK', outcomes: 'OPPORTUNITIES & WORK', capital: 'OPPORTUNITIES & WORK',
-  systems: 'OPPORTUNITIES & WORK', strategy: 'OPPORTUNITIES & WORK', crm: 'OPPORTUNITIES & WORK',
+  systems: 'OPPORTUNITIES & WORK', strategy: 'OPPORTUNITIES & WORK', crm: 'OPPORTUNITIES & WORK', pocket: 'OPPORTUNITIES & WORK', diagnostic: 'INTELLIGENCE & MEMORY',
   grid: 'OPPORTUNITIES & WORK', knowledgeassets: 'OPPORTUNITIES & WORK', vault: 'OPPORTUNITIES & WORK',
 
   memory: 'INTELLIGENCE & MEMORY', insights: 'INTELLIGENCE & MEMORY', evidence: 'INTELLIGENCE & MEMORY',
@@ -466,7 +479,7 @@ export const primaryPages: Page[] = ['home', 'network', 'intros', 'messages', 'm
 /** Tabs consolidated inside the Network and Opportunities hubs. */
 export const networkTabs: Page[] = ['discover', 'intros', 'companies', 'circles', 'events']
 export const networkAdvanced: Page[] = ['directory', 'expertise', 'serendipity', 'gaps', 'identity', 'organization', 'talent', 'knowledge', 'boards', 'intelrooms', 'passport', 'ask']
-export const workTabs: Page[] = ['crm', 'opportunities', 'grid', 'calendar', 'outcomes']
+export const workTabs: Page[] = ['crm', 'diagnostic', 'pocket', 'opportunities', 'grid', 'calendar', 'outcomes']
 export const workAdvanced: Page[] = ['needs', 'rooms', 'dealrooms', 'systems', 'strategy', 'simulation', 'collisions', 'capital', 'attribution', 'loops', 'knowledgeassets', 'timemachine']
 export const meTabs: Page[] = ['profile', 'passport', 'permission', 'preferences', 'integrations']
 export const meAdvanced: Page[] = ['identity', 'consent', 'constitution', 'presence', 'vault', 'autopilot']
