@@ -148,6 +148,13 @@
       "when": 1791043235003,
       "tag": "0020_profile_column_grants_and_invite_fallback",
       "breakpoints": true
+    },
+    {
+      "idx": 21,
+      "version": "7",
+      "when": 1791147964585,
+      "tag": "0021_invite_auto_verify",
+      "breakpoints": true
     }
   ]
 }
