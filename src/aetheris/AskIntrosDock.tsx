@@ -106,15 +106,20 @@ export function AskIntrosDock({ page, peopleNames, memberName, briefing, context
       sending.current = false
       return
     }
+    const speak = (text: string) => {
+      if ((voice.speakReplies || voice.conversation) && voiceOutputSupported()) readAloud([text], 'Ask Intros')
+    }
     const local = answerGraphQuestion(question, graphInputs)
     if (local) {
       setTurns(current => [...current, { role: 'assistant', content: local }])
+      speak(local)
       sending.current = false
       return
     }
     const { supabase } = await import('@/integrations/supabase/client')
     const { data: sessionData } = await supabase.auth.getSession()
     if (!sessionData.session) {
+      speak('Sign in to have a full conversation with Ask Intros. Until then I can open pages, read this page aloud and answer from recorded data.')
       setTurns(current => [...current, { role: 'assistant', content: 'Sign in to have a full conversation with Ask Intros. Until then I can still open pages, change text size, read this page aloud and answer from recorded data — try “What changed?” or “Show my capital map”.' }])
       sending.current = false
       return
@@ -154,6 +159,7 @@ export function AskIntrosDock({ page, peopleNames, memberName, briefing, context
         setTurns(current => [...current, { role: 'assistant', content: 'Your session has ended. Sign in again to continue the conversation — I can still open pages and answer from recorded data meanwhile.' }])
         return
       }
+      speak('The language service is unavailable right now, so I am answering from your recorded data only.')
       setTurns(current => [...current, { role: 'assistant', content: 'The language service is unavailable right now, so I am answering from your recorded data only. Try: “Who is most relevant to my active mission?”, “Who needs something I can provide?”, “Which relationship is going quiet?” or “Who can introduce me to <name>?”' }])
     } finally {
       setBusy(false)
