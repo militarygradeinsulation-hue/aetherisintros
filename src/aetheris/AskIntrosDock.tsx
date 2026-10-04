@@ -84,6 +84,7 @@ export function AskIntrosDock({ page, peopleNames, memberName, briefing, context
   }, [])
 
   const send = async (text: string) => {
+    unlockAudio()
     const question = text.trim()
     if (!question || sending.current) return
     sending.current = true
