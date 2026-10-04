@@ -15,6 +15,7 @@ import { getActiveSubject, openCapability } from './capabilities/store'
 import { openCeo } from './ceo-store'
 import {
   isStopPhrase, readAloud, readerSnapshot, stopReading, useDictation, useReader, useVoiceSettings, voiceOutputSupported,
+  unlockAudio,
 } from './voice'
 function AetherisGlyph({ size = 18 }: { size?: number }) {
   return <span className="aetheris-glyph" style={{ width: size, height: size }} aria-hidden="true"><i /><b /></span>
