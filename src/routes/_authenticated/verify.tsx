@@ -60,6 +60,14 @@ function VerifyPortal() {
     }
   }, [loading, access, verification.status, navigate])
 
+  // Invite claims can finish after the first verification read (Google / email-confirm returns).
+  const [rechecked, setRechecked] = useState(false)
+  useEffect(() => {
+    if (rechecked || loading || access.loading || verification.status === 'verified') return
+    setRechecked(true)
+    void refresh()
+  }, [rechecked, loading, access.loading, verification.status, refresh])
+
   useEffect(() => {
     if (access.name && !form.legalName) setForm(prev => ({ ...prev, legalName: access.name, displayName: access.name }))
     if (access.email && !form.workEmail) setForm(prev => ({ ...prev, workEmail: access.email }))
