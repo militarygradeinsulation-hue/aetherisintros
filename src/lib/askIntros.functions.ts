@@ -107,20 +107,23 @@ export const askIntros = createServerFn({ method: 'POST' })
   .middleware([requireAuthContract])
   .inputValidator((data: AskIntrosInput) => data)
   .handler(async ({ data }): Promise<AskIntrosResult> => {
+    const routeKey = process.env['ROUTELLM_API_KEY']
     const apiKey = process.env['LOVABLE_API_KEY']
-    if (!apiKey) {
+    if (!routeKey && !apiKey) {
       return { reply: 'Ask Intros is not configured yet on this account.', actions: [], suggestions: [], error: 'missing-key' }
     }
-
-    const lovable = createOpenAI({
-      baseURL: 'https://ai.gateway.lovable.dev/v1',
-      apiKey,
-      headers: { 'Lovable-API-Key': apiKey, 'X-Lovable-AIG-SDK': 'vercel-ai-sdk' },
-    })
+    // Prefer the member-supplied RouteLLM account so questions never draw on workspace AI credits.
+    const model = routeKey
+      ? createOpenAI({ baseURL: 'https://routellm.abacus.ai/v1', apiKey: routeKey }).chat('route-llm')
+      : createOpenAI({
+          baseURL: 'https://ai.gateway.lovable.dev/v1',
+          apiKey: apiKey!,
+          headers: { 'Lovable-API-Key': apiKey!, 'X-Lovable-AIG-SDK': 'vercel-ai-sdk' },
+        }).responses('openai/gpt-6-astra')
 
     try {
       const result = streamText({
-        model: lovable.responses('openai/gpt-6-astra'),
+        model,
         system: buildPrompt(data.context),
         messages: data.messages.slice(-12),
         stopWhen: stepCountIs(8),
@@ -150,7 +153,7 @@ export const askIntros = createServerFn({ method: 'POST' })
             },
           }),
         },
-        providerOptions: {
+        providerOptions: routeKey ? {} : {
           openai: {
             store: false,
             forceReasoning: true,

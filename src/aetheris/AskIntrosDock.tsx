@@ -9,7 +9,7 @@ import { readCursorScale } from './cursorScale'
 import { useGraphInputs } from './graph-store'
 import { answerGraphQuestion } from './opportunity-graph'
 import { ceoViewLabel } from './ceo-engine'
-import { recognizeCommand, recognizeCapabilityIntent } from './capabilities/match'
+import { recognizeCommand, recognizeCapabilityIntent, recognizeDestination } from './capabilities/match'
 import { describe as describeCapability } from './capabilities/registry'
 import { getActiveSubject, openCapability } from './capabilities/store'
 import { openCeo } from './ceo-store'
@@ -92,6 +92,15 @@ export function AskIntrosDock({ page, peopleNames, memberName, briefing, context
     setInput('')
     const history = [...turns, { role: 'user' as const, content: question }]
     setTurns(history)
+    const destination = recognizeDestination(question)
+    if (destination) {
+      window.dispatchEvent(new CustomEvent('aetheris:navigate', { detail: destination }))
+      const msg = destination === 'pocket' ? 'Opening your Pocket. Pick a starting shape and I will review it for you.' : 'Opening your company diagnostic. Press Explain this report and I will walk you through the top priorities.'
+      setTurns(current => [...current, { role: 'assistant', content: msg, did: [destination === 'pocket' ? 'Pocket' : 'Diagnostic'] }])
+      if ((voice.speakReplies || voice.conversation) && voiceOutputSupported()) readAloud([msg], 'Ask Intros')
+      sending.current = false
+      return
+    }
     const intent = recognizeCapabilityIntent(question)
     if (intent) {
       openCapability({ capabilityId: intent.capabilityId, ...(intent.focus ? { focus: intent.focus } : {}) })

@@ -55,6 +55,8 @@ import { MoreDrawer, rememberRecent } from './pages/MoreDrawer'
 import { BriefingPanel, useBriefingMode } from './BriefingMode'
 import { NavCtx, useNav, type NavApi, type Page } from './nav'
 import { OpsProvider, useOps } from './crm/store'
+import { PocketWorkspace } from './pocket/PocketWorkspace'
+import { CompanyDiagnosticReport } from './capabilities/CompanyDiagnosticReport'
 import { VerifiedBadge } from './badge'
 import CrmPage from './pages/CrmPage'
 import GridPage from './pages/GridPage'
@@ -2640,6 +2642,8 @@ function Shell({ startPage }: { startPage?: Page | undefined }) {
       knowledgeassets: <KnowledgeAssetsPage />,
       simple: <SimpleViewPage />,
       crm: <CrmPage />,
+      pocket: <PocketWorkspace />,
+      diagnostic: <CompanyDiagnosticReport />,
       grid: <GridPage />,
       news: <NewsPage />,
     }
@@ -2666,6 +2670,11 @@ function Shell({ startPage }: { startPage?: Page | undefined }) {
   useEffect(() => { applyCursorScale(readCursorScale()) }, [])
 
   useEffect(() => { rememberRecent(page) }, [page])
+  useEffect(() => {
+    const go = (e: Event) => { const p = (e as CustomEvent<Page>).detail; if (p) { setSelected(null); setPage(p) } }
+    window.addEventListener('aetheris:navigate', go)
+    return () => window.removeEventListener('aetheris:navigate', go)
+  }, [])
   useEffect(() => { window.scrollTo({ top: 0, behavior: 'auto' }) }, [page, selected?.id])
 
   return <NavCtx.Provider value={navApi}>
