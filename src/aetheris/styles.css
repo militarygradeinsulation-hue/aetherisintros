@@ -7,6 +7,7 @@
 .lv{background:#000;color:var(--soft);min-height:100vh;overflow-x:hidden}
 @keyframes lv-soon-pulse{0%,100%{opacity:.35;transform:scale(.8)}50%{opacity:1;transform:scale(1.15)}}
 .auth-soon{display:grid;gap:8px;max-width:590px;padding:14px 16px;margin-bottom:26px;border:1px solid var(--line-light);border-left:3px solid var(--amber);background:#FFFDF8}
+.auth-invited{max-width:590px;padding:14px 16px;margin:0 0 26px;border:1px solid var(--line-light);border-left:3px solid var(--cobalt,#0F5CCB);background:#FFFDF8;font:500 12.5px/1.55 var(--sans);color:color-mix(in oklab,var(--ink) 78%,transparent)}
 .auth-soon>span{display:inline-flex;align-items:center;gap:8px;font:800 9px var(--sans);letter-spacing:.2em;color:var(--warm-gold,#C78522)}
 .auth-soon>span>i{width:7px;height:7px;border-radius:50%;background:var(--amber);animation:lv-soon-pulse 1.6s ease-in-out infinite}
 .auth-soon p{margin:0;font:500 12.5px/1.55 var(--sans);color:color-mix(in oklab,var(--ink) 78%,transparent)}
