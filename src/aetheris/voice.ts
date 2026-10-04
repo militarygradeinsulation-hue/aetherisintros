@@ -107,6 +107,21 @@ let problem = ''
 let token = 0
 let activeAudio: HTMLAudioElement | null = null
 let activeAudioUrl = ''
+/** One audio element unlocked during the member's tap, so later playback is not blocked. */
+let sharedAudio: HTMLAudioElement | null = null
+const SILENCE = 'data:audio/mp3;base64,SUQzBAAAAAAAI1RTU0UAAAAPAAADTGF2ZjU4Ljc2LjEwMAAAAAAAAAAAAAAA//tQxAADB8AhSmxhIIEVCSiJrDCQBTcu3UrAIwUdkRgQbFAZC1CQEwTJ9mjRvBA4UOLD8nKVOWfh+UlK3z/177OXrfOdKl7pyn3Xf//WreyTRUoAWgBgkOAGbZHBgG1OF6zM82DWbZaUmMBptgQhGjsyYqc9ae9XFz280948NMBWInljyzsNRFLPWdnZGWrddDsjK1unuSrVN9jJsK8KuQtQCtMBjCEtImISdNKJOopIpBFpNSMbIHCSRpRR5iakjTiyzLhchUUBwCgyKiweBv/7UsQbg8isVNoMPMjAAAA0gAAABEVFGmgqK////9bP/6XCykxBTUUzLjEwMKqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq'
+function unlockAudio() {
+  if (typeof window === 'undefined') return
+  if (!sharedAudio) sharedAudio = new Audio()
+  try {
+    sharedAudio.src = SILENCE
+    void sharedAudio.play().catch(() => { /* still allowed to try later */ })
+  } catch { /* ignore */ }
+  /* Wake the device voice too, so the fallback can speak after a wait. */
+  if (speechSupported()) {
+    try { window.speechSynthesis.resume() } catch { /* ignore */ }
+  }
+}
 const readerListeners = new Set<() => void>()
 
 function announce() { readerListeners.forEach(listener => listener()) }
@@ -172,7 +187,7 @@ function stopActiveAudio() {
     activeAudio.onended = null
     activeAudio.onerror = null
     activeAudio.pause()
-    activeAudio.src = ''
+    activeAudio.removeAttribute('src')
     activeAudio = null
   }
   if (activeAudioUrl) URL.revokeObjectURL(activeAudioUrl)
@@ -219,7 +234,12 @@ function speakWithDevice(text: string, run: number) {
   }
   state = 'speaking'
   announce()
-  window.speechSynthesis.speak(utterance)
+  /* Chrome drops a sentence spoken straight after cancel, so give it a beat. */
+  window.setTimeout(() => {
+    if (run !== token) return
+    window.speechSynthesis.resume()
+    window.speechSynthesis.speak(utterance)
+  }, 60)
 }
 
 async function speakCurrent(run: number) {
@@ -246,7 +266,8 @@ async function speakCurrent(run: number) {
     if (run !== token) return
     stopActiveAudio()
     activeAudioUrl = URL.createObjectURL(base64Audio(result.audio, result.contentType))
-    const audio = new Audio(activeAudioUrl)
+    const audio = sharedAudio ?? new Audio()
+    audio.src = activeAudioUrl
     activeAudio = audio
     audio.playbackRate = rateOf[readVoiceSettings().speed]
     audio.onended = () => { stopActiveAudio(); finishSegment(run) }
@@ -273,6 +294,7 @@ export function readAloud(passages: string[], readingLabel = 'Reading') {
     return
   }
   problem = ''
+  unlockAudio()
   const clean = passages.map(item => item.replace(/\s+/g, ' ').trim()).filter(item => item.length > 1)
   stopReading()
   if (!clean.length) return
@@ -318,7 +340,7 @@ export function skipSegment(step: 1 | -1) {
   index = next
   token += 1
   stopActiveAudio()
-  window.speechSynthesis.cancel()
+  if (speechSupported()) window.speechSynthesis.cancel()
   void speakCurrent(token)
 }
 
