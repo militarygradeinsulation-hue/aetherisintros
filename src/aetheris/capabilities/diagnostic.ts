@@ -77,7 +77,7 @@ export function buildDiagnostic(snap: Pick<OperationalSnapshot, 'companies' | 'p
   }
 
   for (const p of people) {
-    if (p.lifecycle !== 'customer') continue
+    if (p.lifecycle !== 'Customer') continue
     const quiet = daysSince(p.lastActivityAt, now)
     if (quiet === null || quiet >= 60) {
       issues.push({
