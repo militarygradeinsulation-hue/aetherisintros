@@ -1,8 +1,16 @@
 // @ts-nocheck
 import React from 'react';
 import { AskIntrosLockup } from '@/aetheris/AskIntrosLockup';
-import { Search, Bell, Sparkles, Orbit } from 'lucide-react';
+import { Search, Bell, Sparkles, Orbit, LogOut } from 'lucide-react';
 import { ExecutivePortrait } from '../shared/ExecutivePortrait';
+import { supabase } from '@/integrations/supabase/client';
+
+async function signOut() {
+  try { await supabase.auth.signOut(); } finally {
+    try { Object.keys(localStorage).filter(k => k.startsWith('aetheris.')).forEach(k => localStorage.removeItem(k)); } catch { /* ignore */ }
+    window.location.replace('/auth');
+  }
+}
 
 export type ActivePage = 'home' | 'people' | 'bubbles' | 'intros' | 'messages' | 'insights' | 'profile' | 'news' | 'workspace' | 'memory' | 'work';
 
@@ -37,7 +45,7 @@ export const TopNavigation: React.FC<TopNavigationProps> = ({
         </div>
 
         {/* Zone 2: Navigation Links (Text Links with subtle bottom active line) */}
-        <nav className="flex items-center gap-1 sm:gap-5 md:gap-7">
+        <nav className="flex-1 min-w-0 flex items-center gap-4 md:gap-6 overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden py-1">
           {[
             { id: 'home', label: 'Home' },
             { id: 'people', label: 'People' },
@@ -125,9 +133,19 @@ export const TopNavigation: React.FC<TopNavigationProps> = ({
             className="flex items-center gap-2 p-1 pl-1.5 pr-2 rounded-full hover:bg-white/5 transition-colors cursor-pointer group"
           >
             <ExecutivePortrait name="Sarah Chen" size="sm" />
-            <span className="hidden sm:inline text-xs font-medium text-[#F2EEE6] group-hover:text-white">
+            <span className="hidden 2xl:inline text-xs font-medium text-[#F2EEE6] group-hover:text-white">
               Sarah Chen
             </span>
+          </button>
+
+          <button
+            onClick={signOut}
+            title="Log out"
+            aria-label="Log out"
+            className="flex items-center gap-1.5 p-2 text-[#9CA3AF] hover:text-[#F2EEE6] hover:bg-white/5 rounded-lg transition-colors cursor-pointer"
+          >
+            <LogOut className="w-4 h-4" />
+            <span className="hidden xl:inline text-xs">Log out</span>
           </button>
         </div>
       </div>

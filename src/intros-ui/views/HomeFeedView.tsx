@@ -342,6 +342,23 @@ export const HomeFeedView: React.FC<HomeFeedViewProps> = ({
               Help your network grow stronger with high-value warm introductions.
             </p>
           </div>
+
+          {/* What do you need right now */}
+          <div className="bg-[#0E121A] border border-white/10 rounded-xl p-4 space-y-3">
+            <div className="text-[11px] font-mono tracking-widest uppercase text-[#9CA3AF] font-semibold">What do you need right now?</div>
+            <p className="text-[11px] text-[#9CA3AF]">Post an ask — a hire, an investor, a customer. Intros finds the people who can help.</p>
+            <div className="flex flex-wrap gap-1.5">
+              {['Hiring', 'Fundraising', 'Customers', 'Advisors'].map((t) => (
+                <button key={t} onClick={() => onNavigate('people')} className="text-[11px] px-2.5 py-1 rounded-full border border-white/10 text-[#F2EEE6] hover:border-[#3D6BF2] cursor-pointer">{t}</button>
+              ))}
+            </div>
+          </div>
+
+          {/* Ask Intros */}
+          <div onClick={() => onNavigate('workspace')} className="p-4 rounded-xl border border-white/10 bg-[#0B0D0F] cursor-pointer hover:border-[#3D6BF2] transition-colors">
+            <div className="text-[11px] font-mono tracking-widest uppercase text-[#F4A125] font-semibold mb-1">Ask Intros</div>
+            <p className="text-xs text-[#F2EEE6]">"Who in my network can open a door at a Fortune 500 buyer?"</p>
+          </div>
         </aside>
 
         {/* Center Column: Feed Post Composer & Feed Stream */}
@@ -603,6 +620,14 @@ export const HomeFeedView: React.FC<HomeFeedViewProps> = ({
                 </div>
               ))}
             </div>
+          </div>
+
+          {/* Why now */}
+          <div className="bg-[#0E121A] border border-white/10 rounded-xl p-4 space-y-3">
+            <div className="text-[11px] font-mono tracking-widest uppercase text-[#9CA3AF] font-semibold">Why now</div>
+            <p className="font-serif text-lg leading-snug text-[#F2EEE6]">Know who matters. Know why now.</p>
+            <p className="text-[11px] text-[#9CA3AF]">Intros watches role changes, open asks and cooling conversations so the right moment doesn't pass.</p>
+            <button onClick={() => onNavigate('memory')} className="w-full text-xs font-medium px-3 py-2 rounded-md border border-white/15 hover:border-[#3D6BF2] text-white cursor-pointer">Open Memory</button>
           </div>
         </aside>
       </div>
