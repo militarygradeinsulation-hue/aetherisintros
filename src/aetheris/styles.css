@@ -4975,3 +4975,6 @@ button.news-link{background:none;border:0;padding:0;cursor:pointer}
 .ix-classic .nav-rail{display:none!important}
 .ix-classic :where([class*="light"],[class*="ivory"],[class*="paper"],.editorial,.masthead){--ink:#F2EEE6;--line-light:rgba(255,255,255,.10)}
 .ix-classic :where([class*="light"],[class*="ivory"],[class*="paper"],.editorial,.masthead) :where(p,span,strong,b,small,blockquote,dd,dt,li){color:inherit}
+.ix-classic [class*="editorial"],.ix-classic [class*="masthead"],.ix-classic [class*="-light"]{--ink:#F2EEE6;color:#F2EEE6!important}
+.ix-classic [class*="editorial"] :is(p,blockquote,dt,dd,span,strong,small,li,h1,h2,h3,h4),.ix-classic [class*="masthead"] :is(p,blockquote,dt,dd,span,strong,small,li,h1,h2,h3,h4){color:inherit}
+.ix-classic [class*="editorial"] :is(p,small,dd){color:#C9CDD3!important}
