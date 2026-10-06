@@ -201,12 +201,12 @@
 .ix-classic { min-height: 70vh; }
 
 /* Brand recolor: replace green/red accents with cobalt/amber */
-.ix-root [class*="text-emerald"], .ix-root [class*="text-green"] { color: #5B8DEF !important; }
-.ix-root [class*="bg-emerald"], .ix-root [class*="bg-green"] { background-color: rgba(15,92,203,.14) !important; }
-.ix-root [class*="border-emerald"], .ix-root [class*="border-green"] { border-color: rgba(15,92,203,.35) !important; }
-.ix-root [class*="text-red"], .ix-root [class*="text-rose"] { color: #F4A125 !important; }
-.ix-root [class*="bg-red"], .ix-root [class*="bg-rose"] { background-color: rgba(244,161,37,.12) !important; }
-.ix-root [class*="border-red"], .ix-root [class*="border-rose"] { border-color: rgba(244,161,37,.3) !important; }
+.ix-root [class*="text-emerald"], .ix-root [class*="text-green"] { color: #F5B027 !important; }
+.ix-root [class*="bg-emerald"], .ix-root [class*="bg-green"] { background-color: rgba(245,176,39,.12) !important; }
+.ix-root [class*="border-emerald"], .ix-root [class*="border-green"] { border-color: rgba(245,176,39,.34) !important; }
+.ix-root [class*="text-red"], .ix-root [class*="text-rose"] { color: #F5B027 !important; }
+.ix-root [class*="bg-red"], .ix-root [class*="bg-rose"] { background-color: rgba(245,176,39,.12) !important; }
+.ix-root [class*="border-red"], .ix-root [class*="border-rose"] { border-color: rgba(245,176,39,.34) !important; }
 
 /* ══════════════════════════════════════════════════════════════════════
    ACCENT SHIFT — cobalt out, light black + logo yellow in (Oct 6)
