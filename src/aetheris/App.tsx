@@ -158,7 +158,10 @@ const scopes: PrivacyScope[] = ['private', 'team', 'organization', 'shareable', 
 /* ---------------------------------------------------------------- primitives */
 
 function Brand() {
-  return <HomeBrand compact />
+  return <span className="sys-wordmark">
+    <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><polygon points="12,2 22,22 2,22" fill="#3D6BF2" /><polygon points="12,8 18,20 6,20" fill="#07090C" /></svg>
+    <span className="sys-wordmark-text"><b>Aetheris</b><i>Intros</i></span>
+  </span>
 }
 function AetherisGlyph({ size = 18 }: { size?: number }) {
   return <span className="aetheris-glyph" style={{ width: size, height: size }} aria-hidden="true"><i /><b /></span>
