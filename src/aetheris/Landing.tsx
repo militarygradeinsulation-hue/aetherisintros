@@ -1,7 +1,9 @@
+import { useEffect, useState } from 'react'
 import { ArrowRight } from 'lucide-react'
 import { Link } from '@tanstack/react-router'
 import landingPortraitAsset from '@/assets/aetheris-home-portrait.jpg.asset.json'
 import showcaseAsset from '@/assets/one-connected-system.png.asset.json'
+import MetroHero from '@/components/ui/scroll-locked-video-hero'
 
 import { useAccess } from './access'
 
@@ -26,8 +28,31 @@ function ScarcityLine({ label, tone = 'light' }: { label: string; tone?: 'light'
 }
 
 
+const INTRO_SEEN_KEY = 'aetheris-intro-seen'
+
 function LandingPage({ signedIn }: { signedIn: boolean }) {
   const showDemo = !signedIn
+  // The scroll-locked video intro plays first for signed-out visitors,
+  // once per browser session, then hands off to the landing below.
+  // Decided after mount so server and first client render match.
+  const [introDone, setIntroDone] = useState(true)
+  const [introGone, setIntroGone] = useState(true)
+  const [introChecked, setIntroChecked] = useState(false)
+  useEffect(() => {
+    let seen = true
+    try { seen = signedIn || window.sessionStorage.getItem(INTRO_SEEN_KEY) === '1' } catch { /* private mode */ }
+    if (!seen) {
+      setIntroDone(false)
+      setIntroGone(false)
+    }
+    setIntroChecked(true)
+  }, [signedIn])
+  useEffect(() => {
+    if (!introDone || introGone) return
+    try { window.sessionStorage.setItem(INTRO_SEEN_KEY, '1') } catch { /* private mode */ }
+    const t = window.setTimeout(() => setIntroGone(true), 900)
+    return () => window.clearTimeout(t)
+  }, [introDone, introGone])
   const demoBtn = (label: string, cls: string) => showDemo
     ? <Link to="/demo" className={cls}>{label} <ArrowRight size={15} /></Link>
     : null
@@ -37,6 +62,26 @@ function LandingPage({ signedIn }: { signedIn: boolean }) {
 
   return (
     <main className="lv">
+      {introChecked && !introGone && (
+        <div
+          aria-hidden={introDone}
+          style={{
+            position: 'fixed',
+            inset: 0,
+            zIndex: 90,
+            opacity: introDone ? 0 : 1,
+            transition: 'opacity 0.8s ease',
+            pointerEvents: introDone ? 'none' : 'auto',
+          }}
+        >
+          <MetroHero
+            title="AETHERIS INTROS"
+            tagline="Know who matters. Know why now."
+            scrollHint="SCROLL TO ENTER"
+            onComplete={() => setIntroDone(true)}
+          />
+        </div>
+      )}
       <SerenityAmbient />
       {/* ── Manifesto band ── */}
       <div className="lv-manifesto" aria-label="Ask Intros manifesto">
