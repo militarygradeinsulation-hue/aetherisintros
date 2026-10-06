@@ -49,6 +49,39 @@ export const Route = createFileRoute('/auth')({
 })
 
 function AuthPage() {
+  const visualRef = useRef<HTMLElement>(null)
+
+  // Layered parallax on the visual panel: each [data-parallax-layer] drifts at
+  // its own depth with the pointer and page scroll (gsap, no scroll hijacking).
+  useEffect(() => {
+    const panel = visualRef.current
+    if (!panel || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
+    const layers = Array.from(panel.querySelectorAll<HTMLElement>('[data-parallax-layer]'))
+    if (!layers.length) return
+    const setters = layers.map(el => ({
+      depth: Number(el.dataset.parallaxLayer) || 1,
+      x: gsap.quickTo(el, 'x', { duration: 0.9, ease: 'power3.out' }),
+      y: gsap.quickTo(el, 'y', { duration: 0.9, ease: 'power3.out' }),
+    }))
+    const onMove = (event: MouseEvent) => {
+      const rect = panel.getBoundingClientRect()
+      const nx = (event.clientX - rect.left) / rect.width - 0.5
+      const ny = (event.clientY - rect.top) / rect.height - 0.5
+      for (const s of setters) { s.x(nx * s.depth * -14); s.y(ny * s.depth * -10) }
+    }
+    const onScroll = () => {
+      const drift = Math.min(Math.max(window.scrollY, 0), 400)
+      for (const s of setters) s.y(drift * s.depth * 0.12)
+    }
+    panel.addEventListener('mousemove', onMove)
+    window.addEventListener('scroll', onScroll, { passive: true })
+    return () => {
+      panel.removeEventListener('mousemove', onMove)
+      window.removeEventListener('scroll', onScroll)
+      gsap.killTweensOf(layers)
+    }
+  }, [])
+
   const navigate = useNavigate()
   const { next, invite: inviteParam } = Route.useSearch()
   const [mode, setMode] = useState<'signin' | 'signup'>(inviteParam ? 'signup' : 'signin')
