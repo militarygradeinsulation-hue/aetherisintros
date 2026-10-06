@@ -1,7 +1,7 @@
 import { ClientOnly, createFileRoute, useNavigate } from '@tanstack/react-router'
 import { useEffect } from 'react'
 
-import App from '@/aetheris/App'
+import IntrosApp from '@/intros-ui/IntrosApp'
 import { useAccess } from '@/aetheris/access'
 import '@/aetheris/styles.css'
 
@@ -48,5 +48,5 @@ function Gate() {
   if (access.loading || !ready) {
     return <main className="access-waiting"><span className="folio">ASK INTROS</span><p>Checking your membership…</p></main>
   }
-  return <App mode="live" />
+  return <IntrosApp mode="live" />
 }
