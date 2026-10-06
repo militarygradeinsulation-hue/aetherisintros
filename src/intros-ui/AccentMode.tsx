@@ -39,7 +39,7 @@ export function AccentProvider({ children }: { children: ReactNode }) {
   }, []);
 
   useEffect(() => {
-    document.documentElement.dataset.accent = mode;
+    document.documentElement.dataset["accent"] = mode;
     try {
       window.localStorage.setItem(KEY, mode);
     } catch {
