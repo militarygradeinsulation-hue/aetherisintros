@@ -215,7 +215,7 @@ export default function App({ mode = 'demo' }: { mode?: 'demo' | 'live' }) {
       <BackdropField />
       <div aria-hidden className="pointer-events-none fixed inset-0 -z-10">
         <ParticleDrift className="absolute inset-0 h-full w-full opacity-30" />
-        <ConstellationField className="absolute inset-0 h-full w-full opacity-40" />
+        <ConstellationField className="absolute inset-0 h-full w-full opacity-60" />
       </div>
       {/* Universal Top Navigation Contract */}
       <TopNavigation

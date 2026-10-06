@@ -20,7 +20,7 @@ const LABELS: Record<AccentMode, string> = {
 function readStored(): AccentMode {
   try {
     const v = window.localStorage.getItem(KEY);
-    return MODES.includes(v as AccentMode) ? (v as AccentMode) : "gold";
+    return MODES.includes(v as AccentMode) ? (v as AccentMode) : "blue";
   } catch {
     return "gold";
   }
@@ -28,12 +28,12 @@ function readStored(): AccentMode {
 
 type Value = { mode: AccentMode; setMode: (m: AccentMode) => void };
 
-const AccentCtx = createContext<Value>({ mode: "gold", setMode: () => {} });
+const AccentCtx = createContext<Value>({ mode: "blue", setMode: () => {} });
 
 /** Remembers the member's accent choice and exposes it as `data-accent` on <html>. */
 export function AccentProvider({ children }: { children: ReactNode }) {
   const [mode, setMode] = useState<AccentMode>(() =>
-    typeof window === "undefined" ? "gold" : readStored(),
+    typeof window === "undefined" ? "blue" : readStored(),
   );
 
   useEffect(() => {

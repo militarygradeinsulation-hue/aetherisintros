@@ -619,3 +619,22 @@
 @media (prefers-reduced-motion: reduce) {
   .ix-backdrop-grain { opacity: 0.35; }
 }
+
+/* Blue is the house default; gold and mixed remain explicit choices. */
+:root {
+  --acc: #4F82F7;
+  --acc-bright: #8FB6F2;
+  --acc-strong: #2C63E8;
+  --acc-deep: #12409E;
+  --acc-wash: rgba(61, 107, 242, 0.14);
+  --acc-line: rgba(96, 165, 250, 0.34);
+  --acc-glow: rgba(96, 165, 250, 0.5);
+  --acc-btn: rgba(23, 58, 140, 0.32);
+  --acc-btn-hover: rgba(30, 74, 175, 0.44);
+  --acc-btn-line: rgba(96, 165, 250, 0.36);
+  --acc-spot: rgba(37, 99, 235, 0.16);
+  --acc-field-line: rgba(120, 160, 255, 0.075);
+  --acc-field-fill: rgba(37, 99, 235, 0.08);
+  --acc-field-stroke: rgba(96, 165, 250, 0.30);
+  --acc-field-glow: rgba(59, 130, 246, 0.5);
+}
