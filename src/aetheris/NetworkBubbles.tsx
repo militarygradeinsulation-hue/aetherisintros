@@ -56,7 +56,7 @@ export function NetworkBubbles({ people, select }: NetworkBubblesProps) {
       <div className={`nb-field${paused ? ' paused' : ''}`}>
         {shown.length ? shown.map((p, i) => {
           const size = 44 + Math.round((p.scoreTotal / 100) * 46)
-          const x = 8 + ((i * 37) % 84), y = 10 + ((i * 53) % 78)
+          const a = i * 2.39996, r = Math.sqrt((i + .5) / shown.length) * 42, x = 50 + Math.cos(a) * r, y = 50 + Math.sin(a) * r * .9
           return <button type="button" key={p.id} className={`nb-bubble${spot?.id === p.id ? ' on' : ''}`} style={{ left: `${x}%`, top: `${y}%`, width: size, height: size, animationDelay: `${-(i % 7)}s`, opacity: .55 + p.score.relationshipStrength / 220 }} onClick={() => setSpotId(p.id)} aria-label={`${p.name}, match ${p.scoreTotal}`}><span>{initials(p.name)}</span></button>
         }) : <p className="nb-empty">No one matches these filters yet.</p>}
       </div>

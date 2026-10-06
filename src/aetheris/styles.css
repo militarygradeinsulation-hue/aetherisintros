@@ -4906,7 +4906,7 @@ button.news-link{background:none;border:0;padding:0;cursor:pointer}
 /* ===== Network bubbles (remix connection field) ===== */
 .nb{display:grid;gap:18px;margin:0 0 28px;color:#F2EEE6}
 .nb-head{display:flex;flex-wrap:wrap;justify-content:space-between;gap:20px;padding:24px;border:1px solid rgba(255,255,255,.1);border-radius:12px;background:linear-gradient(135deg,#0C1017,#07090C)}
-.nb-head h2{font:500 clamp(30px,4vw,48px)/1 var(--serif);margin:8px 0}.nb-head h2 em{color:#3D6BF2}.nb-head p{color:#9CA3AF;max-width:52ch;font-size:14px}
+.social-shell .nb .nb-head h2,.nb-head h2{font:500 clamp(30px,4vw,48px)/1 var(--serif);margin:8px 0}.nb-head h2 em{color:#3D6BF2}.nb-head p{color:#9CA3AF;max-width:52ch;font-size:14px}
 .nb-head dl{display:flex;gap:24px;margin:0;align-self:center}.nb-head dt{font:500 10px ui-monospace,monospace;letter-spacing:.2em;text-transform:uppercase;color:#9CA3AF}.nb-head dd{margin:0;font:600 28px var(--serif)}
 .nb-eyebrow{display:inline-flex;align-items:center;gap:8px;font:600 10px ui-monospace,monospace;letter-spacing:.25em;color:#9CA3AF}.nb-eyebrow i{width:7px;height:7px;border-radius:50%;background:#3D6BF2;box-shadow:0 0 8px #3D6BF2}
 .nb-bar{display:flex;flex-wrap:wrap;gap:8px;padding:10px;border:1px solid rgba(255,255,255,.1);border-radius:10px;background:#0E121A}
@@ -4920,7 +4920,7 @@ button.news-link{background:none;border:0;padding:0;cursor:pointer}
 @keyframes nbFloat{0%,100%{margin-top:0}50%{margin-top:-12px}}
 @media (prefers-reduced-motion:reduce){.nb-bubble{animation:none}}
 .nb-spot{padding:20px;border:1px solid rgba(255,255,255,.08);border-radius:12px;background:#0E1116;display:flex;flex-direction:column;gap:10px}
-.nb-spot h3{font:500 30px/1 var(--serif);margin:0}.nb-role{color:#9CA3AF;font-size:13px;margin:0}.nb-spot p{font-size:14px;color:#cfcac0;margin:0}
+.social-shell .nb .nb-spot h3,.nb-spot h3{font:500 30px/1 var(--serif);margin:0}.nb-role{color:#9CA3AF;font-size:13px;margin:0}.nb-spot p{font-size:14px;color:#cfcac0;margin:0}
 .nb-score{display:flex;align-items:baseline;gap:6px}.nb-score b{font:600 30px var(--serif);color:#3D6BF2}.nb-score small{color:#9CA3AF;margin-right:12px;font-size:11px;text-transform:uppercase;letter-spacing:.12em}
 .nb-cta{margin-top:auto;display:inline-flex;align-items:center;gap:8px;justify-content:center;background:#3D6BF2;color:#fff;border:0;border-radius:8px;padding:10px 14px;cursor:pointer}.nb-cta:hover{background:#2563EB}
 .nb-signals{padding:20px;border:1px solid rgba(255,255,255,.08);border-radius:12px;background:#0E1116}
