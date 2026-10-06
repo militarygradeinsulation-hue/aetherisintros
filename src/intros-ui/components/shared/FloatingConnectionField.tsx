@@ -583,6 +583,7 @@ export const FloatingConnectionField: React.FC<FloatingConnectionFieldProps> = (
           const n1 = nodes[i];
           if (!(n1 as any)._appearAt) continue;
           const n2 = nodes[j];
+          if (!(n2 as any)._appearAt) continue;
           const dx = n1.x - n2.x;
           const dy = n1.y - n2.y;
           const dist = Math.sqrt(dx * dx + dy * dy);
