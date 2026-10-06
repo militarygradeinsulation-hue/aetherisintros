@@ -308,3 +308,5 @@
 # Reader voice = my voice (Oct 6)
 - [ ] Make the read-aloud voice the member's own voice everywhere it speaks (Ask Intros replies, selection reader, voice bar).
 - [ ] Verify playback in preview on desktop and phone widths.
+- [ ] Default every member to the blue accent; keep gold and mixed selectable.
+- [ ] Restore the drifting dots/lines + rising glyph animation and layer it with the new grid backdrop.
