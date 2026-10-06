@@ -99,12 +99,13 @@ export default function MetroHero({
 
     // iOS Safari often won't buffer any video data until playback
     // starts. Force a silent play-then-pause to kick off real loading.
+    const v = video
     const kickstartLoad = () => {
-      const p = video.play()
+      const p = v.play()
       if (p && typeof p.then === "function") {
-        p.then(() => video.pause()).catch(() => {})
+        p.then(() => v.pause()).catch(() => {})
       } else {
-        video.pause()
+        v.pause()
       }
     }
     kickstartLoad()
@@ -414,10 +415,7 @@ export default function MetroHero({
       {/* Skip — always available so nobody is trapped. */}
       <button
         type="button"
-        onClick={() => {
-          releaseLock()
-          onCompleteRef.current?.()
-        }}
+        onClick={() => finishRef.current()}
         style={{
           position: "absolute",
           right: "clamp(12px, 2.5vw, 24px)",
