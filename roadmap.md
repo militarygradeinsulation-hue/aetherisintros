@@ -288,3 +288,5 @@
 - [x] Demo runs the GitHub repo's screens exactly, with the Ask Intros logo.
 - [ ] Wire the same screens to real member data on the signed-in app.
 - [x] News in top bar + Ask Intros assistant and earlier tools (CRM, capabilities) reachable inside the new look.
+- [x] Adapted DigitalSerenity ambient (mouse glow, click ripples, word-stagger) onto landing in Aetheris colors.
+- [x] Adapted Spline spotlight card as pointer-tracking cobalt spotlight on capability cards (no Spline dep).

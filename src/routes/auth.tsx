@@ -1,7 +1,8 @@
 import logoAsset from '@/assets/aetheris-logo.jpg.asset.json'
 import { createFileRoute, Link, redirect, useNavigate } from '@tanstack/react-router'
 import { ArrowRight, LockKeyhole } from 'lucide-react'
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
+import gsap from 'gsap'
 
 import { supabase } from '@/integrations/supabase/client'
 import { lovable } from '@/integrations/lovable/index'
@@ -48,6 +49,39 @@ export const Route = createFileRoute('/auth')({
 })
 
 function AuthPage() {
+  const visualRef = useRef<HTMLElement>(null)
+
+  // Layered parallax on the visual panel: each [data-parallax-layer] drifts at
+  // its own depth with the pointer and page scroll (gsap, no scroll hijacking).
+  useEffect(() => {
+    const panel = visualRef.current
+    if (!panel || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
+    const layers = Array.from(panel.querySelectorAll<HTMLElement>('[data-parallax-layer]'))
+    if (!layers.length) return
+    const setters = layers.map(el => ({
+      depth: Number(el.dataset['parallaxLayer']) || 1,
+      x: gsap.quickTo(el, 'x', { duration: 0.9, ease: 'power3.out' }),
+      y: gsap.quickTo(el, 'y', { duration: 0.9, ease: 'power3.out' }),
+    }))
+    const onMove = (event: MouseEvent) => {
+      const rect = panel.getBoundingClientRect()
+      const nx = (event.clientX - rect.left) / rect.width - 0.5
+      const ny = (event.clientY - rect.top) / rect.height - 0.5
+      for (const s of setters) { s.x(nx * s.depth * -14); s.y(ny * s.depth * -10) }
+    }
+    const onScroll = () => {
+      const drift = Math.min(Math.max(window.scrollY, 0), 400)
+      for (const s of setters) s.y(drift * s.depth * 0.12)
+    }
+    panel.addEventListener('mousemove', onMove)
+    window.addEventListener('scroll', onScroll, { passive: true })
+    return () => {
+      panel.removeEventListener('mousemove', onMove)
+      window.removeEventListener('scroll', onScroll)
+      gsap.killTweensOf(layers)
+    }
+  }, [])
+
   const navigate = useNavigate()
   const { next, invite: inviteParam } = Route.useSearch()
   const [mode, setMode] = useState<'signin' | 'signup'>(inviteParam ? 'signup' : 'signin')
@@ -212,13 +246,15 @@ function AuthPage() {
 
       <span className="auth-foot"><LockKeyhole size={12} /> Nothing is shared without your explicit opt-in.</span>
     </section>
-    <aside className="auth-visual auth-visual-type" aria-label="Ask Intros relationship principles">
-      <ConstellationField className="auth-constellation" />
-      <span className="auth-visual-mark" aria-hidden="true">+</span>
-      <div className="auth-visual-statement" aria-hidden="true">
+    <aside ref={visualRef} className="auth-visual auth-visual-type" aria-label="Ask Intros relationship principles">
+      <div className="auth-parallax-ring" data-parallax-layer="4" aria-hidden="true" />
+      <div className="auth-parallax-ring auth-parallax-ring--inner" data-parallax-layer="3" aria-hidden="true" />
+      <div data-parallax-layer="1" className="auth-parallax-layer"><ConstellationField className="auth-constellation" /></div>
+      <span className="auth-visual-mark" data-parallax-layer="2" aria-hidden="true">+</span>
+      <div className="auth-visual-statement" data-parallax-layer="3" aria-hidden="true">
         <span>PEOPLE</span><i>×</i><span>CONTEXT</span><i>×</i><span>OPPORTUNITY</span>
       </div>
-      <div className="portrait-caption">
+      <div className="portrait-caption" data-parallax-layer="2">
         <span>ACTIVE MEMORY / 01</span>
         <p>Signed in, every conversation makes the next introduction sharper.</p>
       </div>
