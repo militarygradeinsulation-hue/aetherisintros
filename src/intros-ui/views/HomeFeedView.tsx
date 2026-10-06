@@ -15,6 +15,10 @@ import {
   Globe,
   PlusCircle,
   CheckCircle2,
+  Image as ImageIcon,
+  Video,
+  FileText,
+  Paperclip,
 } from 'lucide-react';
 import { FeedPost, UPCOMING_EVENTS, SUGGESTED_CIRCLES, TRENDING_SECTORS, NetworkMember } from '../networkData';
 import { ExecutivePortrait } from '../components/shared/ExecutivePortrait';
@@ -54,11 +58,14 @@ export const HomeFeedView: React.FC<HomeFeedViewProps> = ({
   const elena = networkMembers.find((m) => m.id === 'elena-rossi') || networkMembers[2];
   const [heroVisualMode, setHeroVisualMode] = useState<'bubbles' | 'spotlight'>('bubbles');
 
+  const [attachments, setAttachments] = useState<File[]>([]);
   const handleCreatePost = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!composerText.trim()) return;
-    onAddPost(composerText.trim(), composerType);
+    if (!composerText.trim() && attachments.length === 0) return;
+    const names = attachments.map((f) => `📎 ${f.name}`).join('\n');
+    onAddPost([composerText.trim(), names].filter(Boolean).join('\n'), composerType);
     setComposerText('');
+    setAttachments([]);
   };
 
   const toggleEventRegistration = (eventId: string) => {
@@ -536,13 +543,49 @@ export const HomeFeedView: React.FC<HomeFeedViewProps> = ({
                   ))}
                 </div>
 
-                <button
-                  type="submit"
-                  disabled={!composerText.trim()}
-                  className="px-4 py-1.5 text-xs font-semibold text-white bg-[#3D6BF2] hover:bg-[#2563EB] disabled:opacity-40 disabled:cursor-not-allowed rounded-lg transition-colors cursor-pointer"
-                >
-                  Post
-                </button>
+                <div className="flex items-center gap-1">
+                  {[
+                    { label: 'Add image', accept: 'image/*', Icon: ImageIcon },
+                    { label: 'Add video', accept: 'video/*', Icon: Video },
+                    { label: 'Add document', accept: '.pdf,.doc,.docx,.ppt,.pptx,.xls,.xlsx,.txt,.csv', Icon: FileText },
+                    { label: 'Add file', accept: '*/*', Icon: Paperclip },
+                  ].map(({ label, accept, Icon }) => (
+                    <label key={label} title={label} className="p-1.5 rounded-md text-[#9CA3AF] hover:text-white hover:bg-white/5 cursor-pointer focus-within:ring-1 focus-within:ring-[#3D6BF2]">
+                      <Icon className="w-4 h-4" aria-hidden />
+                      <span className="sr-only">{label}</span>
+                      <input
+                        type="file"
+                        accept={accept}
+                        multiple
+                        className="sr-only"
+                        onChange={(e) => {
+                          const files = Array.from(e.target.files || []);
+                          if (files.length) setAttachments((prev) => [...prev, ...files].slice(0, 10));
+                          e.target.value = '';
+                        }}
+                      />
+                    </label>
+                  ))}
+                  <button
+                    type="submit"
+                    disabled={!composerText.trim() && attachments.length === 0}
+                    className="ml-1 px-4 py-1.5 text-xs font-semibold text-white bg-[#3D6BF2] hover:bg-[#2563EB] disabled:opacity-40 disabled:cursor-not-allowed rounded-lg transition-colors cursor-pointer"
+                  >
+                    Post
+                  </button>
+                </div>
+              </div>
+              {attachments.length > 0 && (
+                <div className="flex flex-wrap gap-1.5 pt-2">
+                  {attachments.map((f, i) => (
+                    <span key={i} className="flex items-center gap-1 max-w-[220px] text-[11px] text-[#CBD5E1] bg-white/5 border border-white/10 rounded px-2 py-0.5">
+                      <span className="truncate">{f.name}</span>
+                      <button type="button" aria-label={`Remove ${f.name}`} onClick={() => setAttachments((p) => p.filter((_, j) => j !== i))} className="text-[#9CA3AF] hover:text-white cursor-pointer">×</button>
+                    </span>
+                  ))}
+                </div>
+              )}
+              <div className="hidden">
               </div>
             </form>
           </div>
