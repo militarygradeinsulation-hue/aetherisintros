@@ -625,7 +625,7 @@ const Widget = memo(function Widget({
 			<motion.div
 				initial={{ opacity: 0, y: 18, scale: 0.97 }}
 				animate={{ opacity: 1, y: 0, scale: 1 }}
-				whileHover={held ? undefined : { y: -4, scale: 1.02, transition: { type: 'spring', stiffness: 320, damping: 24 } }}
+				{...(held ? {} : { whileHover: { y: -4, scale: 1.02, transition: { type: 'spring', stiffness: 320, damping: 24 } } })}
 				transition={{
 					type: 'spring',
 					visualDuration: 0.6,
