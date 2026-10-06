@@ -45,7 +45,7 @@ export const TopNavigation: React.FC<TopNavigationProps> = ({
         </div>
 
         {/* Zone 2: Navigation Links (Text Links with subtle bottom active line) */}
-        <nav className="flex-1 min-w-0 flex items-center gap-4 md:gap-6 overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden py-1">
+        <nav className="flex-1 min-w-0 flex items-center gap-4 md:gap-5 overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden py-1">
           {[
             { id: 'home', label: 'Home' },
             { id: 'news', label: 'News' },
