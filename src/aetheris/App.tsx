@@ -20,6 +20,7 @@ import { journalKindFor, journalUrl, uploadJournalMedia } from './live'
 import { supabase } from '@/integrations/supabase/client'
 import { useAccess } from './access'
 import { InviteCard } from './InviteCard'
+import { AskIntrosLockup } from './AskIntrosLockup'
 import { NetworkBubbles } from './NetworkBubbles'
 import { applyTextScale, readTextScale, setTextScale, textScales, type TextScale } from './textScale'
 import { applyCursorScale, readCursorScale, setCursorScale, cursorScales, type CursorScale } from './cursorScale'
@@ -159,9 +160,7 @@ const scopes: PrivacyScope[] = ['private', 'team', 'organization', 'shareable', 
 /* ---------------------------------------------------------------- primitives */
 
 function Brand() {
-  return <span className="sys-wordmark">
-    <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><polygon points="12,2 22,22 2,22" fill="#3D6BF2" /><polygon points="12,8 18,20 6,20" fill="#07090C" /></svg>
-    <span className="sys-wordmark-text"><b>Aetheris</b><i>Intros</i></span>
+  return <AskIntrosLockup variant="compact" />
   </span>
 }
 function AetherisGlyph({ size = 18 }: { size?: number }) {

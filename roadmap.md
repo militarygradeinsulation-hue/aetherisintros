@@ -282,3 +282,4 @@
 ## Remix design merge (Oct 6)
 - [x] Bring the floating connection bubbles + network signals into Network using real members.
 - [ ] Port remaining remix screens (heatmap, voice minutes) onto live data.
+- [x] Restore the Ask Intros logo in the top bar.

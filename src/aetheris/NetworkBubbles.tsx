@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react'
 import { ArrowRight, Pause, Play, Search } from 'lucide-react'
-import type { Member } from './types'
+import type { Member } from './social'
 
 /** Floating connection field + network signals, computed only from the member's real network. */
 export interface NetworkBubblesProps {
@@ -25,7 +25,7 @@ function signalsFor(people: Member[]): Signal[] {
   const clusters = [...byIndustry.entries()].filter(([, list]) => list.length).sort((a, b) => b[1].length - a[1].length)
   if (clusters.length > 1) {
     const bridge = [...people].filter(p => p.bestPath.length > 2).sort((a, b) => b.scoreTotal - a.scoreTotal)[0]
-    if (bridge) out.push({ id: 'bridge', kind: 'Cross-cluster bridge', title: `${bridge.name} links ${clusters[0][0]} and ${bridge.industry}`, detail: `Warm path: ${bridge.bestPath.join(' → ')}`, person: bridge })
+    if (bridge) out.push({ id: 'bridge', kind: 'Cross-cluster bridge', title: `${bridge.name} links ${clusters[0]?.[0] ?? 'your core'} and ${bridge.industry}`, detail: `Warm path: ${bridge.bestPath.join(' → ')}`, person: bridge })
   }
   return out
 }
