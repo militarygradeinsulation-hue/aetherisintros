@@ -28,6 +28,7 @@ import { X, Orbit } from 'lucide-react';
 import ClassicApp, { AetherisAssistant } from '@/aetheris/App';
 import '@/aetheris/styles.css';
 import { useAetherisNews } from '@/aetheris/news';
+import { LiveMembers } from './liveMembers';
 
 function NewsTicker({ onOpen }: { onOpen: () => void }) {
   const { data } = useAetherisNews();
@@ -45,14 +46,14 @@ export default function App({ mode = 'demo' }: { mode?: 'demo' | 'live' }) {
   const [activePage, setActivePage] = useState<ActivePage>('home');
   const [classicPage, setClassicPage] = useState<string>('memory');
   const [selectedProfileId, setSelectedProfileId] = useState<string>('marcus-lee');
-  const [members, setMembers] = useState<NetworkMember[]>(NETWORK_MEMBERS);
-  const [feedPosts, setFeedPosts] = useState<FeedPost[]>(INITIAL_FEED_POSTS);
-  const [conversations, setConversations] = useState<ConversationThread[]>(INITIAL_CONVERSATIONS);
-  const [introRequests, setIntroRequests] = useState<IntroRequest[]>(INITIAL_INTRO_REQUESTS);
+  const [members, setMembers] = useState<NetworkMember[]>(mode === 'live' ? [] : NETWORK_MEMBERS);
+  const [feedPosts, setFeedPosts] = useState<FeedPost[]>(mode === 'live' ? [] : INITIAL_FEED_POSTS);
+  const [conversations, setConversations] = useState<ConversationThread[]>(mode === 'live' ? [] : INITIAL_CONVERSATIONS);
+  const [introRequests, setIntroRequests] = useState<IntroRequest[]>(mode === 'live' ? [] : INITIAL_INTRO_REQUESTS);
   const [connectedMemberIds, setConnectedMemberIds] = useState<Set<string>>(
-    new Set(['marcus-lee', 'sarah-chen'])
+    new Set(mode === 'live' ? [] : ['marcus-lee', 'sarah-chen'])
   );
-  const [savedMemberIds, setSavedMemberIds] = useState<Set<string>>(new Set(['marcus-lee']));
+  const [savedMemberIds, setSavedMemberIds] = useState<Set<string>>(new Set(mode === 'live' ? [] : ['marcus-lee']));
   const [searchQuery, setSearchQuery] = useState('');
   const [showConstellationOverlay, setShowConstellationOverlay] = useState(false);
 
@@ -185,6 +186,7 @@ export default function App({ mode = 'demo' }: { mode?: 'demo' | 'live' }) {
   // Find active profile
   const currentProfileMember =
     members.find((m) => m.id === selectedProfileId) || members[0];
+  const classicPages = ['news','workspace', ...(mode === 'live' ? ['messages','insights','intros'] : [])];
 
   return (
     <div className="ix-root min-h-screen bg-[#07090C] text-[#F2EEE6] flex flex-col font-sans selection:bg-[#3D6BF2]/30 selection:text-white">
@@ -194,10 +196,11 @@ export default function App({ mode = 'demo' }: { mode?: 'demo' | 'live' }) {
         onNavigate={handleNavigate}
         searchQuery={searchQuery}
         onSearchChange={setSearchQuery}
-        unreadCount={12}
+        unreadCount={mode === 'live' ? 0 : 12}
         onToggleConstellationOverlay={() => handleNavigate('bubbles')}
       />
 
+      {mode === 'live' && <LiveMembers onMembers={setMembers} />}
       <NewsTicker onOpen={() => handleNavigate('news')} />
       {/* Primary Page Views */}
       <main className="flex-1">
@@ -231,7 +234,7 @@ export default function App({ mode = 'demo' }: { mode?: 'demo' | 'live' }) {
           />
         )}
 
-        {activePage === 'profile' && (
+        {activePage === 'profile' && currentProfileMember && (
           <ProfileDetailView
             member={currentProfileMember}
             onBack={() => handleNavigate('people')}
@@ -242,7 +245,8 @@ export default function App({ mode = 'demo' }: { mode?: 'demo' | 'live' }) {
           />
         )}
 
-        {activePage === 'messages' && (
+        {mode === 'live' && activePage === 'messages' && <div className="ix-classic"><ClassicApp key="live-messages" mode={mode} startPage="messages" /></div>}
+        {mode !== 'live' && activePage === 'messages' && (
           <MessagesView
             conversations={conversations}
             introRequests={introRequests}
@@ -256,7 +260,8 @@ export default function App({ mode = 'demo' }: { mode?: 'demo' | 'live' }) {
           />
         )}
 
-        {activePage === 'insights' && (
+        {mode === 'live' && activePage === 'insights' && <div className="ix-classic"><ClassicApp key="live-insights" mode={mode} startPage="insights" /></div>}
+        {mode !== 'live' && activePage === 'insights' && (
           <InsightsDashboardView
             onNavigate={handleNavigate}
             onRequestIntro={(member) => setRequestIntroTarget(member)}
@@ -272,7 +277,8 @@ export default function App({ mode = 'demo' }: { mode?: 'demo' | 'live' }) {
           </div>
           <ClassicApp key={classicPage} mode={mode} startPage={classicPage as any} />
         </div>}
-        {activePage === 'intros' && (
+        {mode === 'live' && activePage === 'intros' && <div className="ix-classic"><ClassicApp key="live-intros" mode={mode} startPage="intros" /></div>}
+        {mode !== 'live' && activePage === 'intros' && (
           <IntrosHubView
             introRequests={introRequests}
             networkMembers={members}
@@ -309,7 +315,7 @@ export default function App({ mode = 'demo' }: { mode?: 'demo' | 'live' }) {
         memberName={scheduleMeetingTarget?.name || ''}
         memberTitle={scheduleMeetingTarget?.title || ''}
       />
-      {activePage !== 'news' && activePage !== 'workspace' && (
+      {!classicPages.includes(activePage) && (
         <AetherisAssistant mode={mode} page={activePage} onNavigate={(p) => handleNavigate(p as ActivePage)} />
       )}
     </div>
