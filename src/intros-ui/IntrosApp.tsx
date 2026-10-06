@@ -38,7 +38,7 @@ function NewsTicker({ onOpen }: { onOpen: () => void }) {
   const { data } = useAetherisNews();
   const items = (data?.items ?? []).slice(0, 8);
   if (!items.length) return null;
-  return <button onClick={onOpen} className="w-full overflow-hidden border-b border-white/10 bg-[#0E1116] py-2 text-left">
+  return <button onClick={onOpen} className="w-full overflow-hidden border-b border-white/10 bg-[#12100C] py-2 text-left">
     <div className="flex gap-10 whitespace-nowrap px-4 text-xs text-[#9CA3AF] animate-[ixmarquee_60s_linear_infinite]">
       <span className="font-mono tracking-[0.2em] text-[#F4A125]">LIVE NEWS</span>
       {items.map((n: any) => <span key={n.id}><b className="text-[#F2EEE6] font-medium">{n.title}</b> · {n.source}</span>)}
@@ -208,7 +208,7 @@ export default function App({ mode = 'demo' }: { mode?: 'demo' | 'live' }) {
   const classicPages = ['news','workspace','memory','work','insights', ...(mode === 'live' ? ['messages','intros'] : [])];
 
   return (
-    <div className="ix-root min-h-screen bg-[#07090C] text-[#F2EEE6] flex flex-col font-sans selection:bg-[#F5B027]/30 selection:text-white relative isolate">
+    <div className="ix-root min-h-screen bg-[#12100C] text-[#F2EEE6] flex flex-col font-sans selection:bg-[#F5B027]/30 selection:text-white relative isolate">
       <div aria-hidden className="pointer-events-none fixed inset-0 -z-10">
         <ParticleDrift className="absolute inset-0 h-full w-full opacity-30" />
         <ConstellationField className="absolute inset-0 h-full w-full opacity-40" />

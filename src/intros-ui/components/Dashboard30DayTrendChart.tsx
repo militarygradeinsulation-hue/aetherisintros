@@ -54,9 +54,9 @@ export const Dashboard30DayTrendChart: React.FC<Dashboard30DayTrendChartProps> =
   const [isExpanded, setIsExpanded] = useState<boolean>(true);
 
   return (
-    <div className="w-full mb-6 rounded-2xl bg-[#090C11] border border-white/10 shadow-xl overflow-hidden transition-all">
+    <div className="w-full mb-6 rounded-2xl bg-[#12100C] border border-white/10 shadow-xl overflow-hidden transition-all">
       {/* Header Metric Strip */}
-      <div className="p-4 sm:px-6 sm:py-3.5 bg-[#07090C] border-b border-white/10 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+      <div className="p-4 sm:px-6 sm:py-3.5 bg-[#12100C] border-b border-white/10 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div className="flex items-center gap-3">
           <div className="w-8 h-8 rounded-lg bg-[#F5B027]/20 border border-[#F5B027]/40 flex items-center justify-center text-[#F5B027]">
             <TrendingUp size={16} />
@@ -152,7 +152,7 @@ export const Dashboard30DayTrendChart: React.FC<Dashboard30DayTrendChartProps> =
                       const mutualVal = Math.min(100, Math.round(score * 1.01));
 
                       return (
-                        <div className="bg-[#090C11]/95 backdrop-blur-xl border border-[#F5B027]/50 p-3 rounded-xl shadow-2xl text-[9px] font-mono text-[#F2EEE6] space-y-2 z-50 pointer-events-none min-w-[230px]">
+                        <div className="bg-[#12100C]/95 backdrop-blur-xl border border-[#F5B027]/50 p-3 rounded-xl shadow-2xl text-[9px] font-mono text-[#F2EEE6] space-y-2 z-50 pointer-events-none min-w-[230px]">
                           <div className="flex items-center justify-between border-b border-white/10 pb-1.5">
                             <span className="font-serif-editorial text-[12px] text-[#F2EEE6] font-bold">
                               Day {label} Trajectory
@@ -199,7 +199,7 @@ export const Dashboard30DayTrendChart: React.FC<Dashboard30DayTrendChartProps> =
                   strokeWidth={2}
                   fillOpacity={1}
                   fill="url(#dashboardTrendGradient)"
-                  activeDot={{ r: 5, fill: '#C78522', stroke: '#07090C', strokeWidth: 2 }}
+                  activeDot={{ r: 5, fill: '#C78522', stroke: '#12100C', strokeWidth: 2 }}
                 />
               </AreaChart>
             </ResponsiveContainer>

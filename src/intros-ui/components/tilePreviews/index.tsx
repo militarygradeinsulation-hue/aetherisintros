@@ -79,7 +79,7 @@ export const RelationshipNetworkPreview: React.FC<PreviewProps> = ({ summary }) 
       case 'followup':
         return 'bg-[#F5B027] shadow-[0_0_6px_rgba(242,169,59,0.7)]';
       case 'dormant':
-        return 'bg-[#64748B]';
+        return 'bg-[#C78522]';
       default:
         return 'bg-[#C78522] shadow-[0_0_6px_rgba(63,179,127,0.7)]';
     }
@@ -88,7 +88,7 @@ export const RelationshipNetworkPreview: React.FC<PreviewProps> = ({ summary }) 
   return (
     <div className="flex flex-col h-full w-full justify-between">
       {/* Dark inner card */}
-      <div className="bg-[#090C10] p-2 rounded-md border border-white/5 space-y-1.5 relative overflow-hidden">
+      <div className="bg-[#12100C] p-2 rounded-md border border-white/5 space-y-1.5 relative overflow-hidden">
         <div className="flex items-center gap-2 justify-between">
           <div className="flex items-center gap-2 min-w-0">
             <div className="relative shrink-0">
@@ -100,7 +100,7 @@ export const RelationshipNetworkPreview: React.FC<PreviewProps> = ({ summary }) 
               <span
                 className={`absolute -bottom-0.5 -right-0.5 w-2 h-2 rounded-full ${getStatusColor(
                   person.engagement
-                )} ring-1 ring-[#0E1116]`}
+                )} ring-1 ring-[#12100C]`}
                 title={`Engagement: ${person.engagement || 'Active'}`}
               />
             </div>
@@ -168,10 +168,10 @@ export const RelationshipNetworkPreview: React.FC<PreviewProps> = ({ summary }) 
             key={i}
             src={av}
             alt="Executive"
-            className="w-4.5 h-4.5 rounded-full object-cover border border-[#0E1116]"
+            className="w-4.5 h-4.5 rounded-full object-cover border border-[#12100C]"
           />
         ))}
-        <span className="w-4.5 h-4.5 rounded-full bg-[#151922] border border-white/10 text-[7.5px] font-mono text-[#F2EEE6]/80 flex items-center justify-center font-semibold">
+        <span className="w-4.5 h-4.5 rounded-full bg-[#12100c] border border-white/10 text-[7.5px] font-mono text-[#F2EEE6]/80 flex items-center justify-center font-semibold">
           {overflowCount}
         </span>
       </div>
@@ -207,7 +207,7 @@ export const IntrosCrmPreview: React.FC<PreviewProps> = ({ summary }) => {
               ? 'bg-[#C78522]'
               : status === 'followup'
               ? 'bg-[#F5B027]'
-              : 'bg-[#64748B]';
+              : 'bg-[#C78522]';
 
           return (
             <div
@@ -226,11 +226,11 @@ export const IntrosCrmPreview: React.FC<PreviewProps> = ({ summary }) => {
                 />
               </div>
               <div className="min-w-0 flex-1 truncate">
-                <div className="font-bold text-[#14161A] truncate flex items-center justify-between gap-1">
+                <div className="font-bold text-[#12100C] truncate flex items-center justify-between gap-1">
                   <span className="truncate">{c.name}</span>
                   <RelationshipTierBadge tier={i === 0 ? 'inner_circle' : i === 1 ? 'inner_circle' : 'strategic'} size="xs" showLabel={false} />
                 </div>
-                <div className="text-[7.5px] text-[#14161A]/70 truncate">{c.title}</div>
+                <div className="text-[7.5px] text-[#12100C]/70 truncate">{c.title}</div>
               </div>
             </div>
           );
@@ -285,15 +285,15 @@ export const AetherisGridPreview: React.FC<PreviewProps> = ({ summary }) => {
     <div className="flex flex-col justify-between h-full w-full font-mono text-[7.5px]">
       {/* Ivory Mini-sheet */}
       <div className="sys-card-ivory p-1 rounded shadow-sm">
-        <div className="grid grid-cols-6 border-b border-black/10 pb-0.5 font-bold text-[7px] text-[#14161A]/60">
+        <div className="grid grid-cols-6 border-b border-black/10 pb-0.5 font-bold text-[7px] text-[#12100C]/60">
           <span className="col-span-1">#</span>
           <span className="col-span-3">A</span>
           <span className="col-span-2 text-right">C</span>
         </div>
-        <div className="divide-y divide-black/5 text-[#14161A]">
+        <div className="divide-y divide-black/5 text-[#12100C]">
           {rows.map((r: any) => (
             <div key={r.row} className="grid grid-cols-6 py-0.5 items-center">
-              <span className="col-span-1 text-[#14161A]/50 font-bold">{r.row}</span>
+              <span className="col-span-1 text-[#12100C]/50 font-bold">{r.row}</span>
               <span className="col-span-3 truncate">{r.colA}</span>
               <span className="col-span-2 text-right font-medium truncate">{r.colC}</span>
             </div>
@@ -302,7 +302,7 @@ export const AetherisGridPreview: React.FC<PreviewProps> = ({ summary }) => {
       </div>
 
       {/* Formula Bar */}
-      <div className="bg-[#090C10] px-1.5 py-0.5 rounded border border-white/5 text-[7px] text-[#F2EEE6]/70 truncate mt-1">
+      <div className="bg-[#12100C] px-1.5 py-0.5 rounded border border-white/5 text-[7px] text-[#F2EEE6]/70 truncate mt-1">
         {formula}
       </div>
     </div>
@@ -374,7 +374,7 @@ export const MeetingsPreview: React.FC<PreviewProps> = ({ summary }) => {
   return (
     <div className="flex flex-col justify-between h-full w-full">
       {/* Top Card */}
-      <div className="bg-[#090C10] p-1.5 rounded border border-white/5 flex items-center gap-1.5">
+      <div className="bg-[#12100C] p-1.5 rounded border border-white/5 flex items-center gap-1.5">
         <img
           src={meeting.leadAvatar}
           alt={meeting.title}
@@ -473,11 +473,11 @@ export const InboxPreview: React.FC<PreviewProps> = ({ summary }) => {
             <div className="flex items-center gap-1.5 truncate">
               <img src={th.avatar} alt={th.name} className="w-3.5 h-3.5 rounded-full object-cover shrink-0" />
               <div className="truncate">
-                <span className="font-bold text-[#14161A] block truncate">{th.name}</span>
-                <span className="text-[#14161A]/60 block text-[6.5px] truncate">{th.sub}</span>
+                <span className="font-bold text-[#12100C] block truncate">{th.name}</span>
+                <span className="text-[#12100C]/60 block text-[6.5px] truncate">{th.sub}</span>
               </div>
             </div>
-            <span className="text-[6.5px] text-[#14161A]/50 font-mono shrink-0 ml-1">{th.time}</span>
+            <span className="text-[6.5px] text-[#12100C]/50 font-mono shrink-0 ml-1">{th.time}</span>
           </div>
         ))}
       </div>
@@ -546,7 +546,7 @@ export const RelationshipRadarPreview: React.FC<PreviewProps> = ({ summary }) =>
         </div>
         <div className="flex justify-between items-center">
           <span className="flex items-center gap-1 text-[#F2EEE6]/80">
-            <span className="w-1.5 h-1.5 rounded-full bg-[#64748B]" /> Dormant
+            <span className="w-1.5 h-1.5 rounded-full bg-[#C78522]" /> Dormant
           </span>
           <span className="text-[#F2EEE6] font-bold">{dormant}</span>
         </div>
@@ -622,7 +622,7 @@ export const IntrosIqPreview: React.FC<PreviewProps> = ({ summary }) => {
   return (
     <div className="flex flex-col justify-between h-full w-full">
       {/* Search Input Bar */}
-      <div className="bg-[#090C10] px-2 py-1 rounded border border-white/10 flex items-center justify-between text-[8px] text-[#F2EEE6]/50">
+      <div className="bg-[#12100C] px-2 py-1 rounded border border-white/10 flex items-center justify-between text-[8px] text-[#F2EEE6]/50">
         <span>{placeholder}</span>
         <span className="text-[#F5B027] font-bold">&gt;</span>
       </div>
@@ -713,7 +713,7 @@ export const AutomationsPreview: React.FC<PreviewProps> = ({ summary }) => {
     <div className="flex flex-col justify-between items-center h-full w-full text-[8px] font-mono py-0.5">
       {steps.map((st: string, i: number) => (
         <React.Fragment key={st}>
-          <div className="flex items-center gap-2 w-full px-2 py-0.5 bg-[#090C10] rounded border border-white/5 text-[#F2EEE6]">
+          <div className="flex items-center gap-2 w-full px-2 py-0.5 bg-[#12100C] rounded border border-white/5 text-[#F2EEE6]">
             <span className="w-3.5 h-3.5 rounded bg-[#F5B027] text-white flex items-center justify-center text-[7px] font-bold shrink-0">
               {i + 1}
             </span>
@@ -779,7 +779,7 @@ export const CompanyIntelligencePreview: React.FC<PreviewProps> = ({ summary }) 
   return (
     <div className="flex flex-col justify-between h-full w-full">
       {/* Top Company Card */}
-      <div className="bg-[#090C10] p-1.5 rounded border border-white/5 flex items-center gap-2">
+      <div className="bg-[#12100C] p-1.5 rounded border border-white/5 flex items-center gap-2">
         <div className="w-5 h-5 rounded bg-[#F5B027] flex items-center justify-center text-white shrink-0">
           <Building2 size={11} />
         </div>

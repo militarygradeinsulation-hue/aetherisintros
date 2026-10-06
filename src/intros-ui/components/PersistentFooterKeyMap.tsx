@@ -47,7 +47,7 @@ export const PersistentFooterKeyMap: React.FC<PersistentFooterKeyMapProps> = ({
     <div
       role="region"
       aria-label="Persistent Visual Keyboard Shortcut Map"
-      className="w-full border-t border-white/10 bg-[#07090C]/95 backdrop-blur-md py-3 px-3 sm:px-6 z-20 select-none shadow-[0_-10px_25px_rgba(0,0,0,0.5)]"
+      className="w-full border-t border-white/10 bg-[#12100C]/95 backdrop-blur-md py-3 px-3 sm:px-6 z-20 select-none shadow-[0_-10px_25px_rgba(0,0,0,0.5)]"
     >
       <div className="max-w-[1560px] mx-auto flex flex-col lg:flex-row items-center justify-between gap-3">
         {/* Left: Tile Navigation Feedback & Controls */}

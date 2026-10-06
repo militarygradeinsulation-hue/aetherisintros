@@ -28,7 +28,7 @@ export const ConstellationGraphic: React.FC<ConstellationGraphicProps> = ({
     ];
 
     return (
-      <div className={`relative w-full h-[180px] bg-[#0A0D13]/80 rounded-lg border border-white/10 p-3 overflow-hidden ${className}`}>
+      <div className={`relative w-full h-[180px] bg-[#12100C]/80 rounded-lg border border-white/10 p-3 overflow-hidden ${className}`}>
         <div className="absolute top-2 left-3 text-[10px] uppercase tracking-widest text-[#9CA3AF] font-mono">
           Global Nodes & Flows
         </div>
@@ -36,17 +36,17 @@ export const ConstellationGraphic: React.FC<ConstellationGraphicProps> = ({
           {/* Subtle continent background shapes */}
           <path
             d="M 60 70 Q 110 50 140 80 Q 130 130 80 140 Z"
-            fill="#1E293B"
+            fill="#12100C"
             opacity="0.2"
           />
           <path
             d="M 190 50 Q 250 45 260 85 Q 230 110 200 95 Z"
-            fill="#1E293B"
+            fill="#12100C"
             opacity="0.2"
           />
           <path
             d="M 270 70 Q 360 60 410 90 Q 380 145 320 130 Z"
-            fill="#1E293B"
+            fill="#12100C"
             opacity="0.2"
           />
 
@@ -95,14 +95,14 @@ export const ConstellationGraphic: React.FC<ConstellationGraphicProps> = ({
                       width="90"
                       height="20"
                       rx="4"
-                      fill="#0F172A"
+                      fill="#12100C"
                       stroke="#F5B027"
                       strokeWidth="1"
                     />
                     <text
                       x={city.x}
                       y={city.y - 14}
-                      fill="#F8FAFC"
+                      fill="#FFC85C"
                       fontSize="9"
                       fontWeight="600"
                       textAnchor="middle"
@@ -170,7 +170,7 @@ export const ConstellationGraphic: React.FC<ConstellationGraphicProps> = ({
     ];
 
     return (
-      <div className={`relative w-full h-[270px] bg-[#0E121A] rounded-xl border border-white/10 p-3 overflow-hidden ${className}`}>
+      <div className={`relative w-full h-[270px] bg-[#12100C] rounded-xl border border-white/10 p-3 overflow-hidden ${className}`}>
         {/* Legend */}
         <div className="flex items-center justify-between text-[11px] text-[#9CA3AF] mb-1 font-mono px-2">
           <div className="flex items-center gap-4">
@@ -212,7 +212,7 @@ export const ConstellationGraphic: React.FC<ConstellationGraphicProps> = ({
           </defs>
 
           {/* Connecting lines */}
-          <g stroke="rgba(61,107,242,0.4)" strokeWidth="1.2">
+          <g stroke="rgba(199, 133, 34,0.4)" strokeWidth="1.2">
             <line x1="190" y1="120" x2="260" y2="60" strokeDasharray="3 3" />
             <line x1="190" y1="120" x2="95" y2="80" />
             <line x1="190" y1="120" x2="290" y2="160" stroke="#F5B027" strokeWidth="2.5" />
@@ -256,7 +256,7 @@ export const ConstellationGraphic: React.FC<ConstellationGraphicProps> = ({
                 <text
                   x={n.x}
                   y={n.y + n.r + 12}
-                  fill="#E2E8F0"
+                  fill="#FFC85C"
                   fontSize="9.5"
                   fontWeight="600"
                   textAnchor="middle"
@@ -350,10 +350,10 @@ export const ConstellationGraphic: React.FC<ConstellationGraphicProps> = ({
 
         {/* Orbit Rings */}
         <circle cx="140" cy="105" r="75" fill="none" stroke="rgba(255,255,255,0.06)" strokeDasharray="4 4" />
-        <circle cx="140" cy="105" r="45" fill="none" stroke="rgba(61,107,242,0.15)" />
+        <circle cx="140" cy="105" r="45" fill="none" stroke="rgba(199, 133, 34,0.15)" />
 
         {/* Radiating Lines to Center */}
-        <g stroke="rgba(61,107,242,0.4)" strokeWidth="1.2">
+        <g stroke="rgba(199, 133, 34,0.4)" strokeWidth="1.2">
           {networkRoles.map((role, idx) => (
             <line
               key={idx}
@@ -379,7 +379,7 @@ export const ConstellationGraphic: React.FC<ConstellationGraphicProps> = ({
             fill="#F5B027"
             className="filter drop-shadow-[0_0_8px_#F5B027]"
           />
-          <polygon points="12,6 20,22 4,22" fill="#0A0D14" />
+          <polygon points="12,6 20,22 4,22" fill="#12100C" />
         </g>
 
         {/* Connection Bubbles with People Pictures */}
@@ -417,7 +417,7 @@ export const ConstellationGraphic: React.FC<ConstellationGraphicProps> = ({
               <text
                 x={role.x}
                 y={role.y + (role.y > 105 ? role.r + 12 : -role.r - 4)}
-                fill={isHovered ? '#FFFFFF' : '#CBD5E1'}
+                fill={isHovered ? '#FFFFFF' : '#FFC85C'}
                 fontSize="9"
                 fontWeight="600"
                 textAnchor="middle"

@@ -632,8 +632,8 @@ const Widget = memo(function Widget({
 					bounce: 0.12,
 					delay,
 				}}
-				className={`relative isolate flex h-full w-full flex-col overflow-hidden rounded-[var(--widget-radius)] bg-[#0E121A] text-[#F2EEE6] ring-inset transition-shadow duration-300 hover:shadow-[0_18px_40px_-18px_rgba(61,107,242,0.55)] hover:ring-[#3D6BF2]/60 [clip-path:inset(0_round_var(--widget-radius))] ${
-					landed ? 'ring-2 ring-[#3D6BF2]' : 'ring-1 ring-white/10'
+				className={`relative isolate flex h-full w-full flex-col overflow-hidden rounded-[var(--widget-radius)] bg-[#12100C] text-[#F2EEE6] ring-inset transition-shadow duration-300 hover:shadow-[0_18px_40px_-18px_rgba(199, 133, 34,0.55)] hover:ring-[#C78522]/60 [clip-path:inset(0_round_var(--widget-radius))] ${
+					landed ? 'ring-2 ring-[#C78522]' : 'ring-1 ring-white/10'
 				}`}>
 				{renderItem?.(item as never, sizeOf(w, h))}
 			</motion.div>

@@ -177,7 +177,7 @@ export const NetworkClusterHeatmapView: React.FC<NetworkClusterHeatmapViewProps>
     if (score >= 70) {
       return {
         bg: 'bg-gradient-to-br from-[#F5B027]/20 to-[#F5B027]/5',
-        border: 'border-[#F5B027]/35 shadow-[0_0_12px_rgba(61,107,242,0.15)]',
+        border: 'border-[#F5B027]/35 shadow-[0_0_12px_rgba(199, 133, 34,0.15)]',
         badge: 'bg-[#F5B027]/20 text-[#F5B027] border-[#F5B027]/40',
         text: 'text-[#F5B027]',
         label: 'Steady Cadence',
@@ -221,17 +221,17 @@ export const NetworkClusterHeatmapView: React.FC<NetworkClusterHeatmapViewProps>
 
         {/* Telemetry Stats */}
         <div className="grid grid-cols-3 gap-3 shrink-0">
-          <div className="p-3 rounded-xl bg-[#0E1116] border border-white/10 text-center min-w-[100px]">
+          <div className="p-3 rounded-xl bg-[#12100C] border border-white/10 text-center min-w-[100px]">
             <div className="text-[9px] font-mono uppercase text-[#F2EEE6]/60">Avg Density</div>
             <div className="text-xl sm:text-2xl font-bold font-mono text-[#F5B027]">{avgDensity}%</div>
             <div className="text-[8.5px] font-mono text-[#C78522]">+8.2% vs Q3</div>
           </div>
-          <div className="p-3 rounded-xl bg-[#0E1116] border border-white/10 text-center min-w-[100px]">
+          <div className="p-3 rounded-xl bg-[#12100C] border border-white/10 text-center min-w-[100px]">
             <div className="text-[9px] font-mono uppercase text-[#F2EEE6]/60">30d Touchpoints</div>
             <div className="text-xl sm:text-2xl font-bold font-mono text-[#F5B027]">{totalTouchpoints}</div>
             <div className="text-[8.5px] font-mono text-[#F2EEE6]/60">across 6 clusters</div>
           </div>
-          <div className="p-3 rounded-xl bg-[#0E1116] border border-[#C78522]/40 text-center min-w-[100px]">
+          <div className="p-3 rounded-xl bg-[#12100C] border border-[#C78522]/40 text-center min-w-[100px]">
             <div className="text-[9px] font-mono uppercase text-[#C78522]">Drift Leaks</div>
             <div className="text-xl sm:text-2xl font-bold font-mono text-[#C78522]">{driftCount}</div>
             <div className="text-[8.5px] font-mono text-[#C78522]/80">&gt;30d communication</div>
@@ -240,7 +240,7 @@ export const NetworkClusterHeatmapView: React.FC<NetworkClusterHeatmapViewProps>
       </div>
 
       {/* 2. Filter & Controls Bar */}
-      <div className="flex items-center justify-between flex-wrap gap-4 p-3 rounded-xl bg-[#0E1116] border border-white/10">
+      <div className="flex items-center justify-between flex-wrap gap-4 p-3 rounded-xl bg-[#12100C] border border-white/10">
         <div className="flex items-center gap-2 overflow-x-auto no-scrollbar">
           <span className="text-[10px] font-mono text-[#F2EEE6]/60 uppercase tracking-wider flex items-center gap-1.5 mr-1 shrink-0">
             <Filter size={11} className="text-[#F5B027]" />
@@ -380,7 +380,7 @@ export const NetworkClusterHeatmapView: React.FC<NetworkClusterHeatmapViewProps>
                           onSelectPerson(person);
                           if (onOpenSidebar) onOpenSidebar();
                         }}
-                        className="p-2 rounded-lg bg-black/30 hover:bg-[#151922] border border-white/5 hover:border-[#F5B027]/50 transition-all cursor-pointer flex items-center justify-between gap-2.5 group"
+                        className="p-2 rounded-lg bg-black/30 hover:bg-[#12100c] border border-white/5 hover:border-[#F5B027]/50 transition-all cursor-pointer flex items-center justify-between gap-2.5 group"
                       >
                         <div className="flex items-center gap-2.5 min-w-0">
                           <img

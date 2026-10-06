@@ -128,7 +128,7 @@ export const PeopleDirectoryView: React.FC<PeopleDirectoryViewProps> = ({
   return (
     <div className="w-full max-w-7xl mx-auto px-4 md:px-8 py-6 space-y-8 animate-fadeIn">
       {/* Top Editorial Hero Banner (Matching Image 5) */}
-      <section className="relative overflow-hidden rounded-2xl border border-white/10 bg-gradient-to-br from-[#0C1017] via-[#090C10] to-[#07090C] p-6 lg:p-8">
+      <section className="relative overflow-hidden rounded-2xl border border-white/10 bg-gradient-to-br from-[#12100C] via-[#12100C] to-[#12100C] p-6 lg:p-8">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
           {/* Hero Left: Large Editorial Headline */}
           <div className="lg:col-span-7 space-y-4">
@@ -181,13 +181,13 @@ export const PeopleDirectoryView: React.FC<PeopleDirectoryViewProps> = ({
       </section>
 
       {/* Featured Connectors Ribbon (Matching Image 5) */}
-      <section className="bg-[#0E121A] border border-white/10 rounded-xl p-4">
+      <section className="bg-[#12100C] border border-white/10 rounded-xl p-4">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div>
             <div className="text-[10px] font-mono tracking-widest uppercase text-[#9CA3AF] font-semibold mb-0.5">
               Featured Connectors
             </div>
-            <p className="text-xs text-[#CBD5E1]">
+            <p className="text-xs text-[#FFC85C]">
               Work with experienced members to find the right introductions.
             </p>
           </div>
@@ -219,7 +219,7 @@ export const PeopleDirectoryView: React.FC<PeopleDirectoryViewProps> = ({
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
         {/* Left Filter Sidebar */}
         <aside className="lg:col-span-3 space-y-4">
-          <div className="bg-[#0E121A] border border-white/10 rounded-xl p-4 space-y-5">
+          <div className="bg-[#12100C] border border-white/10 rounded-xl p-4 space-y-5">
             <div className="flex items-center justify-between">
               <span className="text-[11px] font-mono tracking-widest uppercase text-[#9CA3AF] font-semibold flex items-center gap-1.5">
                 <SlidersHorizontal className="w-3.5 h-3.5" />
@@ -241,7 +241,7 @@ export const PeopleDirectoryView: React.FC<PeopleDirectoryViewProps> = ({
                 value={searchKeyword}
                 onChange={(e) => setSearchKeyword(e.target.value)}
                 placeholder="Name or keyword..."
-                className="w-full bg-[#131722] text-xs text-white placeholder-[#6B7280] rounded-lg pl-8 pr-3 py-2 border border-white/10 focus:outline-none focus:border-[#F5B027]"
+                className="w-full bg-[#12100c] text-xs text-white placeholder-[#6B7280] rounded-lg pl-8 pr-3 py-2 border border-white/10 focus:outline-none focus:border-[#F5B027]"
               />
             </div>
 
@@ -274,7 +274,7 @@ export const PeopleDirectoryView: React.FC<PeopleDirectoryViewProps> = ({
                     className={`flex items-center justify-between px-2.5 py-1.5 rounded-lg text-xs font-mono transition-all cursor-pointer border ${
                       selectedTier === tierItem.id
                         ? 'bg-[#F5B027] text-white border-[#F5B027] font-semibold shadow-sm shadow-[#F5B027]/30'
-                        : 'bg-[#131722] hover:bg-[#1A202C] text-[#CBD5E1] border-white/5'
+                        : 'bg-[#12100c] hover:bg-[#12100C] text-[#FFC85C] border-white/5'
                     }`}
                   >
                     <span className="flex items-center gap-2">
@@ -304,7 +304,7 @@ export const PeopleDirectoryView: React.FC<PeopleDirectoryViewProps> = ({
               <select
                 value={selectedCity}
                 onChange={(e) => setSelectedCity(e.target.value)}
-                className="w-full bg-[#131722] text-xs text-white rounded-lg px-3 py-2 border border-white/10 focus:outline-none focus:border-[#F5B027]"
+                className="w-full bg-[#12100c] text-xs text-white rounded-lg px-3 py-2 border border-white/10 focus:outline-none focus:border-[#F5B027]"
               >
                 <option value="All">Any Location</option>
                 <option value="San Francisco">San Francisco, CA</option>
@@ -327,7 +327,7 @@ export const PeopleDirectoryView: React.FC<PeopleDirectoryViewProps> = ({
               <select
                 value={selectedIndustry}
                 onChange={(e) => setSelectedIndustry(e.target.value)}
-                className="w-full bg-[#131722] text-xs text-white rounded-lg px-3 py-2 border border-white/10 focus:outline-none focus:border-[#F5B027]"
+                className="w-full bg-[#12100c] text-xs text-white rounded-lg px-3 py-2 border border-white/10 focus:outline-none focus:border-[#F5B027]"
               >
                 <option value="All">All Industries</option>
                 <option value="AI">AI & Machine Learning</option>
@@ -350,13 +350,13 @@ export const PeopleDirectoryView: React.FC<PeopleDirectoryViewProps> = ({
               ].map((role) => (
                 <label
                   key={role.id}
-                  className="flex items-center gap-2.5 text-xs text-[#CBD5E1] cursor-pointer hover:text-white"
+                  className="flex items-center gap-2.5 text-xs text-[#FFC85C] cursor-pointer hover:text-white"
                 >
                   <input
                     type="checkbox"
                     checked={selectedRoleTypes.includes(role.id)}
                     onChange={() => toggleRoleCheckbox(role.id)}
-                    className="rounded bg-[#131722] border-white/20 text-[#F5B027] focus:ring-0 focus:ring-offset-0"
+                    className="rounded bg-[#12100c] border-white/20 text-[#F5B027] focus:ring-0 focus:ring-offset-0"
                   />
                   <span>{role.label}</span>
                 </label>
@@ -371,16 +371,16 @@ export const PeopleDirectoryView: React.FC<PeopleDirectoryViewProps> = ({
             </button>
           </div>
 
-          <div className="bg-[#0E121A] border border-white/10 rounded-xl p-4 space-y-3">
+          <div className="bg-[#12100C] border border-white/10 rounded-xl p-4 space-y-3">
             <div className="text-[11px] font-mono tracking-widest uppercase text-[#9CA3AF] font-semibold">Quick searches</div>
             <div className="flex flex-wrap gap-1.5">
               {['AI', 'Infrastructure', 'Fintech', 'Advisory', 'Climate', 'Go-to-Market'].map((t) => (
-                <button key={t} onClick={() => setSearchKeyword(t)} className={`text-[11px] px-2.5 py-1 rounded-full border cursor-pointer transition-colors ${searchKeyword === t ? 'border-[#F5B027] text-white bg-[#F5B027]/20' : 'border-white/10 text-[#CBD5E1] hover:border-[#F5B027]'}`}>{t}</button>
+                <button key={t} onClick={() => setSearchKeyword(t)} className={`text-[11px] px-2.5 py-1 rounded-full border cursor-pointer transition-colors ${searchKeyword === t ? 'border-[#F5B027] text-white bg-[#F5B027]/20' : 'border-white/10 text-[#FFC85C] hover:border-[#F5B027]'}`}>{t}</button>
               ))}
             </div>
           </div>
 
-          <div className="bg-[#0E121A] border border-white/10 rounded-xl p-4 space-y-2">
+          <div className="bg-[#12100C] border border-white/10 rounded-xl p-4 space-y-2">
             <div className="text-[11px] font-mono tracking-widest uppercase text-[#9CA3AF] font-semibold">Your connections</div>
             <div className="text-2xl font-serif-editorial text-white">{connectedMemberIds.size}</div>
             <p className="text-[11px] text-[#9CA3AF]">People you're connected with here. Connect with the people you want Intros to learn from.</p>
@@ -403,7 +403,7 @@ export const PeopleDirectoryView: React.FC<PeopleDirectoryViewProps> = ({
                 <select
                   value={sortBy}
                   onChange={(e) => setSortBy(e.target.value as any)}
-                  className="bg-[#0E121A] text-xs text-white rounded px-2 py-1 border border-white/10 focus:outline-none"
+                  className="bg-[#12100C] text-xs text-white rounded px-2 py-1 border border-white/10 focus:outline-none"
                 >
                   <option value="relevance">Relevance</option>
                   <option value="match">Highest Fit</option>
@@ -412,7 +412,7 @@ export const PeopleDirectoryView: React.FC<PeopleDirectoryViewProps> = ({
               </div>
 
               {/* View Toggle */}
-              <div className="flex items-center bg-[#0E121A] border border-white/10 rounded p-0.5">
+              <div className="flex items-center bg-[#12100C] border border-white/10 rounded p-0.5">
                 <button
                   onClick={() => setViewMode('grid')}
                   title="Grid View"
@@ -462,7 +462,7 @@ export const PeopleDirectoryView: React.FC<PeopleDirectoryViewProps> = ({
                 className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-mono transition-all cursor-pointer shrink-0 border ${
                   selectedTier === t.id
                     ? 'bg-[#F5B027] text-white border-[#F5B027] shadow-sm font-semibold'
-                    : 'bg-[#0E121A] text-[#9CA3AF] hover:text-white border-white/10 hover:border-white/25'
+                    : 'bg-[#12100C] text-[#9CA3AF] hover:text-white border-white/10 hover:border-white/25'
                 }`}
               >
                 <span>{t.label}</span>
@@ -479,7 +479,7 @@ export const PeopleDirectoryView: React.FC<PeopleDirectoryViewProps> = ({
 
           {/* Conditional View: Bubbles vs Grid vs List */}
           {viewMode === 'bubbles' ? (
-            <div className="bg-[#07090C] border border-white/10 rounded-2xl overflow-hidden p-1 shadow-2xl space-y-2">
+            <div className="bg-[#12100C] border border-white/10 rounded-2xl overflow-hidden p-1 shadow-2xl space-y-2">
               <div className="p-3 border-b border-white/10 bg-black/40 flex items-center justify-between text-xs">
                 <span className="font-mono text-[11px] text-[#F5B027] flex items-center gap-1.5 font-semibold">
                   <Orbit className="w-3.5 h-3.5 text-[#F5B027] animate-spin-slow" />
@@ -507,7 +507,7 @@ export const PeopleDirectoryView: React.FC<PeopleDirectoryViewProps> = ({
                 return (
                   <div
                     key={member.id}
-                    className="bg-[#0E121A] border border-white/10 hover:border-[#F5B027]/50 rounded-xl p-3 sm:p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 transition-all group shadow-sm"
+                    className="bg-[#12100C] border border-white/10 hover:border-[#F5B027]/50 rounded-xl p-3 sm:p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 transition-all group shadow-sm"
                   >
                     <div className="flex items-center gap-3">
                       <div
@@ -573,7 +573,7 @@ export const PeopleDirectoryView: React.FC<PeopleDirectoryViewProps> = ({
                 return (
                   <div
                     key={member.id}
-                    className="bg-[#0E121A] border border-white/10 hover:border-[#F5B027]/50 rounded-xl p-4 flex flex-col justify-between transition-all group shadow-sm hover:shadow-lg hover:shadow-[#F5B027]/5"
+                    className="bg-[#12100C] border border-white/10 hover:border-[#F5B027]/50 rounded-xl p-4 flex flex-col justify-between transition-all group shadow-sm hover:shadow-lg hover:shadow-[#F5B027]/5"
                   >
                     <div>
                       {/* Top Row: Avatar + Name + Fit Badge */}
@@ -625,7 +625,7 @@ export const PeopleDirectoryView: React.FC<PeopleDirectoryViewProps> = ({
                       </div>
 
                       {/* Bio Statement */}
-                      <p className="text-xs text-[#CBD5E1] line-clamp-2 italic mb-3 leading-relaxed">
+                      <p className="text-xs text-[#FFC85C] line-clamp-2 italic mb-3 leading-relaxed">
                         "{member.bioStatement}"
                       </p>
 
@@ -677,7 +677,7 @@ export const PeopleDirectoryView: React.FC<PeopleDirectoryViewProps> = ({
 
         {/* Right Sidebar: Network Insights (Matching Image 5) */}
         <aside className="lg:col-span-3 space-y-5">
-          <div className="bg-[#0E121A] border border-white/10 rounded-xl p-4 space-y-5">
+          <div className="bg-[#12100C] border border-white/10 rounded-xl p-4 space-y-5">
             <div className="flex items-center justify-between text-[11px] font-mono tracking-widest uppercase text-[#9CA3AF] font-semibold">
               <span>Network Insights</span>
               <span className="text-[#F5B027]">Global</span>
@@ -709,7 +709,7 @@ export const PeopleDirectoryView: React.FC<PeopleDirectoryViewProps> = ({
                   onClick={() => setSelectedCity(c.name)}
                   className="space-y-1 cursor-pointer group"
                 >
-                  <div className="flex items-center justify-between text-xs text-[#CBD5E1] group-hover:text-white">
+                  <div className="flex items-center justify-between text-xs text-[#FFC85C] group-hover:text-white">
                     <span>{c.name}</span>
                     <span className="font-mono text-[11px] text-[#9CA3AF]">{c.count}</span>
                   </div>
@@ -736,7 +736,7 @@ export const PeopleDirectoryView: React.FC<PeopleDirectoryViewProps> = ({
                 { name: 'Healthtech', percent: 8 },
               ].map((ind) => (
                 <div key={ind.name} className="space-y-1">
-                  <div className="flex items-center justify-between text-xs text-[#CBD5E1]">
+                  <div className="flex items-center justify-between text-xs text-[#FFC85C]">
                     <span>{ind.name}</span>
                     <span className="font-mono text-[11px] text-[#9CA3AF]">{ind.percent}%</span>
                   </div>
@@ -760,7 +760,7 @@ export const PeopleDirectoryView: React.FC<PeopleDirectoryViewProps> = ({
           </div>
 
           {/* Active asks — what people need right now */}
-          <div className="bg-[#0E121A] border border-white/10 rounded-xl p-4 space-y-3">
+          <div className="bg-[#12100C] border border-white/10 rounded-xl p-4 space-y-3">
             <div className="flex items-center justify-between text-[11px] font-mono tracking-widest uppercase text-[#9CA3AF] font-semibold">
               <span>Looking for now</span>
               <span className="text-[#F4A125]">Live</span>
@@ -774,7 +774,7 @@ export const PeopleDirectoryView: React.FC<PeopleDirectoryViewProps> = ({
           </div>
 
           {/* Warm paths */}
-          <div className="bg-[#0E121A] border border-white/10 rounded-xl p-4 space-y-3">
+          <div className="bg-[#12100C] border border-white/10 rounded-xl p-4 space-y-3">
             <div className="text-[11px] font-mono tracking-widest uppercase text-[#9CA3AF] font-semibold">Warm paths worth taking</div>
             {[...members].filter((m) => !connectedMemberIds.has(m.id)).sort((a, b) => b.matchScore - a.matchScore).slice(0, 3).map((m) => (
               <div key={m.id} className="flex items-center justify-between gap-2 min-w-0">
@@ -787,7 +787,7 @@ export const PeopleDirectoryView: React.FC<PeopleDirectoryViewProps> = ({
             ))}
           </div>
 
-          <div className="p-4 rounded-xl border border-[#F5B027]/30 bg-gradient-to-br from-[#121A2C] to-[#0A0D15]">
+          <div className="p-4 rounded-xl border border-[#F5B027]/30 bg-gradient-to-br from-[#12100C] to-[#12100C]">
             <p className="font-serif-editorial text-lg leading-snug text-[#F2EEE6]">Know who matters. Know why now.</p>
             <p className="text-[11px] text-[#9CA3AF] mt-1">Ask Intros who in your network can help with what you need this week.</p>
             <button onClick={() => onNavigate('workspace')} className="mt-3 w-full text-xs font-semibold py-2 rounded-md bg-[#F5B027] hover:bg-[#C78522] text-white cursor-pointer">Ask Intros</button>

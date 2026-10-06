@@ -1,13 +1,13 @@
 .ix-root {
-  --sys-bg: #07090C;
-  --sys-tile: #0E1116;
-  --sys-tile-inner: #151922;
+  --sys-bg: #12100C;
+  --sys-tile: #12100C;
+  --sys-tile-inner: #12100c;
   --sys-line: rgba(255, 255, 255, 0.08);
   --sys-ink: #F2EEE6;
   --sys-ink-dim: rgba(242, 238, 230, 0.62);
   --sys-card: #F4F1EA;
-  --sys-card-ink: #14161A;
-  --sys-accent: #3D6BF2;
+  --sys-card-ink: #12100C;
+  --sys-accent: #C78522;
   --sys-hot: #E5484D;
   --sys-warn: #F2A93B;
   --sys-ok: #3FB37F;
@@ -19,8 +19,8 @@
   --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   
   /* Added for new components */
-  --sys-bg-dark: #0B0D0F;
-  --sys-panel: #11151A;
+  --sys-bg-dark: #12100C;
+  --sys-panel: #12100C;
   --sys-panel-line: rgba(255, 255, 255, 0.08);
 }
 
@@ -99,7 +99,7 @@
   height: 6px;
 }
 .ix-root ::-webkit-scrollbar-track {
-  background: #07090C;
+  background: #12100C;
 }
 .ix-root ::-webkit-scrollbar-thumb {
   background: rgba(255, 255, 255, 0.15);
@@ -151,7 +151,7 @@
 
   html,
   body {
-    background-color: #07090C !important;
+    background-color: #12100C !important;
     color: #F2EEE6 !important;
     -webkit-print-color-adjust: exact !important;
     print-color-adjust: exact !important;
@@ -185,7 +185,7 @@
     max-width: 100% !important;
     margin: 0 auto !important;
     padding: 16px !important;
-    background-color: #07090C !important;
+    background-color: #12100C !important;
     color: #F2EEE6 !important;
     -webkit-print-color-adjust: exact !important;
     print-color-adjust: exact !important;
@@ -217,8 +217,8 @@
   --sys-gold-bright: #FFC85C;
   --sys-gold-wash: rgba(245, 176, 39, 0.12);
   --sys-gold-line: rgba(245, 176, 39, 0.34);
-  --sys-btn: #161A20;
-  --sys-btn-hover: #1F262F;
+  --sys-btn: #12100C;
+  --sys-btn-hover: #12100C;
   --sys-btn-ring: rgba(245, 176, 39, 0.22);
   --sys-btn-ring-hover: rgba(245, 176, 39, 0.5);
   --sys-accent: #F5B027;
@@ -231,19 +231,19 @@
 }
 
 /* blue glows and shadows read as warm signal light */
-.ix-root [class*="shadow-[#3D6BF2]"],
+.ix-root [class*="shadow-[#C78522]"],
 .ix-root [class*="shadow-blue-"],
 .ix-root [class*="shadow-sky-"] {
   box-shadow: 0 0 24px -6px rgba(245, 176, 39, 0.4) !important;
 }
 
 /* filled blue surfaces (buttons, active tabs, panels) → light black */
-.ix-root [class*="bg-[#3D6BF2]"],
-.ix-root [class*="bg-[#2563EB]"],
-.ix-root [class*="bg-[#0F5CCB]"],
-.ix-root [class*="bg-[#0B4DAE]"],
-.ix-root [class*="bg-[#1476FF]"],
-.ix-root [class*="bg-[#5B8DEF]"],
+.ix-root [class*="bg-[#C78522]"],
+.ix-root [class*="bg-[#C78522]"],
+.ix-root [class*="bg-[#C78522]"],
+.ix-root [class*="bg-[#8A5A12]"],
+.ix-root [class*="bg-[#C78522]"],
+.ix-root [class*="bg-[#FFC85C]"],
 .ix-root [class*="bg-blue-"],
 .ix-root [class*="bg-sky-"],
 .ix-root [class*="bg-indigo-"] {
@@ -253,10 +253,10 @@
 }
 
 /* hover feedback on those surfaces */
-.ix-root [class*="hover:bg-[#3D6BF2]"]:hover,
-.ix-root [class*="hover:bg-[#2563EB]"]:hover,
-.ix-root [class*="hover:bg-[#0F5CCB]"]:hover,
-.ix-root [class*="hover:bg-[#5B8DEF]"]:hover,
+.ix-root [class*="hover:bg-[#C78522]"]:hover,
+.ix-root [class*="hover:bg-[#C78522]"]:hover,
+.ix-root [class*="hover:bg-[#C78522]"]:hover,
+.ix-root [class*="hover:bg-[#FFC85C]"]:hover,
 .ix-root [class*="hover:bg-blue"]:hover,
 .ix-root [class*="hover:bg-sky"]:hover {
   background-color: var(--sys-btn-hover) !important;
@@ -264,10 +264,10 @@
 }
 
 /* translucent blue washes (soft chips, tinted fills) → gold wash */
-.ix-root [class*="bg-[#3D6BF2]/"],
-.ix-root [class*="bg-[#2563EB]/"],
-.ix-root [class*="bg-[#0F5CCB]/"],
-.ix-root [class*="bg-[#5B8DEF]/"],
+.ix-root [class*="bg-[#C78522]/"],
+.ix-root [class*="bg-[#C78522]/"],
+.ix-root [class*="bg-[#C78522]/"],
+.ix-root [class*="bg-[#FFC85C]/"],
 .ix-root [class*="bg-blue-600/"],
 .ix-root [class*="bg-blue-500/"],
 .ix-root [class*="bg-blue-400/"],
@@ -278,19 +278,19 @@
 }
 
 /* round blue things are indicators, pills and counts → logo yellow */
-.ix-root [class*="rounded-full"][class*="bg-[#3D6BF2]"],
-.ix-root [class*="rounded-full"][class*="bg-[#2563EB]"],
-.ix-root [class*="rounded-full"][class*="bg-[#0F5CCB]"],
-.ix-root [class*="rounded-full"][class*="bg-[#5B8DEF]"],
+.ix-root [class*="rounded-full"][class*="bg-[#C78522]"],
+.ix-root [class*="rounded-full"][class*="bg-[#C78522]"],
+.ix-root [class*="rounded-full"][class*="bg-[#C78522]"],
+.ix-root [class*="rounded-full"][class*="bg-[#FFC85C]"],
 .ix-root [class*="rounded-full"][class*="bg-blue-"],
 .ix-root [class*="rounded-full"][class*="bg-sky-"] {
   background-color: var(--sys-gold) !important;
-  color: #101216 !important;
+  color: #12100c !important;
   box-shadow: 0 0 14px -3px rgba(245, 176, 39, 0.6) !important;
 }
 
 /* soft round chips stay a gold wash rather than solid yellow */
-.ix-root [class*="rounded-full"][class*="bg-[#3D6BF2]/"],
+.ix-root [class*="rounded-full"][class*="bg-[#C78522]/"],
 .ix-root [class*="rounded-full"][class*="bg-blue-600/"],
 .ix-root [class*="rounded-full"][class*="bg-blue-500/"] {
   background-color: var(--sys-gold-wash) !important;
@@ -299,12 +299,12 @@
 }
 
 /* blue text, links and labels → logo yellow */
-.ix-root [class*="text-[#3D6BF2]"],
-.ix-root [class*="text-[#60A5FA]"],
-.ix-root [class*="text-[#5B8DEF]"],
-.ix-root [class*="text-[#1476FF]"],
-.ix-root [class*="text-[#0F5CCB]"],
-.ix-root [class*="text-[#2563EB]"],
+.ix-root [class*="text-[#C78522]"],
+.ix-root [class*="text-[#FFC85C]"],
+.ix-root [class*="text-[#FFC85C]"],
+.ix-root [class*="text-[#C78522]"],
+.ix-root [class*="text-[#C78522]"],
+.ix-root [class*="text-[#C78522]"],
 .ix-root [class*="text-blue-"],
 .ix-root [class*="text-sky-"],
 .ix-root [class*="text-indigo-"] {
@@ -312,29 +312,29 @@
 }
 
 /* hairlines and focus rings */
-.ix-root [class*="border-[#3D6BF2]"],
-.ix-root [class*="border-[#0F5CCB]"],
-.ix-root [class*="border-[#5B8DEF]"],
-.ix-root [class*="border-[#2563EB]"],
+.ix-root [class*="border-[#C78522]"],
+.ix-root [class*="border-[#C78522]"],
+.ix-root [class*="border-[#FFC85C]"],
+.ix-root [class*="border-[#C78522]"],
 .ix-root [class*="border-blue-"],
 .ix-root [class*="border-sky-"],
 .ix-root [class*="border-indigo-"],
-.ix-root [class*="divide-[#3D6BF2]"],
+.ix-root [class*="divide-[#C78522]"],
 .ix-root [class*="divide-blue-"],
-.ix-root [class*="outline-[#3D6BF2]"] {
+.ix-root [class*="outline-[#C78522]"] {
   border-color: var(--sys-gold-line) !important;
   outline-color: var(--sys-gold-line) !important;
 }
-.ix-root [class*="ring-[#3D6BF2]"],
+.ix-root [class*="ring-[#C78522]"],
 .ix-root [class*="ring-blue-"],
 .ix-root [class*="ring-sky-"] {
   --tw-ring-color: rgba(245, 176, 39, 0.45) !important;
 }
 
 /* gradients */
-.ix-root [class*="from-[#3D6BF2]"],
-.ix-root [class*="via-[#3D6BF2]"],
-.ix-root [class*="to-[#3D6BF2]"],
+.ix-root [class*="from-[#C78522]"],
+.ix-root [class*="via-[#C78522]"],
+.ix-root [class*="to-[#C78522]"],
 .ix-root [class*="from-blue-"],
 .ix-root [class*="via-blue-"],
 .ix-root [class*="to-blue-"],
@@ -346,8 +346,8 @@
 }
 
 /* chart strokes and fills */
-.ix-root [class*="fill-[#3D6BF2]"],
-.ix-root [class*="stroke-[#3D6BF2]"],
+.ix-root [class*="fill-[#C78522]"],
+.ix-root [class*="stroke-[#C78522]"],
 .ix-root [class*="fill-blue-"],
 .ix-root [class*="stroke-blue-"] {
   fill: var(--sys-gold) !important;
@@ -362,7 +362,7 @@
 .ix-root [class*="bg-[#E5484D]"],
 .ix-root [class*="bg-[#F97316]"] {
   background-color: var(--sys-gold) !important;
-  color: #101216 !important;
+  color: #12100c !important;
 }
 .ix-root [class*="border-[#3FB37F]"],
 .ix-root [class*="border-[#E5484D]"],

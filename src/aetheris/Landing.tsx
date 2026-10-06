@@ -132,7 +132,7 @@ function LandingPage({ signedIn }: { signedIn: boolean }) {
         <blockquote>You&rsquo;re defined by the people you surround yourself with.</blockquote>
       </section>
 
-      <section aria-label="Ask Intros film" style={{ background: '#0B0D0F', padding: 'clamp(32px, 6vw, 80px) clamp(16px, 4vw, 48px)' }}>
+      <section aria-label="Ask Intros film" style={{ background: '#12100C', padding: 'clamp(32px, 6vw, 80px) clamp(16px, 4vw, 48px)' }}>
         <div style={{ maxWidth: 1100, margin: '0 auto', border: '1px solid rgba(255,255,255,.10)', borderRadius: 10, overflow: 'hidden', aspectRatio: '16 / 9', background: '#000' }}>
           <iframe
             src="https://www.youtube-nocookie.com/embed/i6L7DUU-1WA?rel=0"

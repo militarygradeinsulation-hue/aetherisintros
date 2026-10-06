@@ -283,7 +283,7 @@ export const ConnectionBubblesView: React.FC<ConnectionBubblesViewProps> = ({
               value={searchFilter}
               onChange={(e) => setSearchFilter(e.target.value)}
               placeholder="Search people…"
-              className="pl-8 pr-3 py-1.5 text-xs bg-[#151923] border border-white/10 rounded-lg text-white placeholder-[#6B7280] focus:outline-none focus:border-[#C78522]"
+              className="pl-8 pr-3 py-1.5 text-xs bg-[#12100c] border border-white/10 rounded-lg text-white placeholder-[#6B7280] focus:outline-none focus:border-[#C78522]"
             />
           </div>
 
@@ -314,7 +314,7 @@ export const ConnectionBubblesView: React.FC<ConnectionBubblesViewProps> = ({
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
         {/* Filtering Sidebar: Allows segmenting bubbles by Industry, Company Size, or Mutual Connections Count */}
         {isSidebarOpen && (
-          <aside className="lg:col-span-3 bg-[#0E121A] border border-white/10 rounded-xl p-5 space-y-5 shadow-xl flex flex-col justify-between">
+          <aside className="lg:col-span-3 bg-[#12100C] border border-white/10 rounded-xl p-5 space-y-5 shadow-xl flex flex-col justify-between">
             <div className="space-y-5">
               {/* Sidebar Header */}
               <div className="flex items-center justify-between pb-3 border-b border-white/10">
@@ -346,7 +346,7 @@ export const ConnectionBubblesView: React.FC<ConnectionBubblesViewProps> = ({
               {/* 1. Industry Focus Segmentation */}
               <div className="space-y-2">
                 <div className="flex items-center justify-between text-xs font-medium">
-                  <span className="flex items-center gap-1.5 font-mono text-[11px] text-[#CBD5E1] uppercase tracking-wider font-semibold">
+                  <span className="flex items-center gap-1.5 font-mono text-[11px] text-[#FFC85C] uppercase tracking-wider font-semibold">
                     <Building2 className="w-3.5 h-3.5 text-[#C78522]" />
                     Industry Focus
                   </span>
@@ -370,7 +370,7 @@ export const ConnectionBubblesView: React.FC<ConnectionBubblesViewProps> = ({
                         className={`w-full flex items-center justify-between px-2.5 py-1.5 rounded-lg text-xs font-mono transition-all cursor-pointer border text-left ${
                           isSelected
                             ? 'bg-[#C78522] text-white border-[#C78522] font-semibold shadow-sm shadow-[#C78522]/30'
-                            : 'bg-[#131722] hover:bg-[#1A202C] text-[#CBD5E1] border-white/5 hover:border-white/10'
+                            : 'bg-[#12100c] hover:bg-[#12100C] text-[#FFC85C] border-white/5 hover:border-white/10'
                         }`}
                       >
                         <span className="truncate pr-2">{ind.label}</span>
@@ -392,7 +392,7 @@ export const ConnectionBubblesView: React.FC<ConnectionBubblesViewProps> = ({
               {/* 2. Company Size Segmentation */}
               <div className="space-y-2 pt-3 border-t border-white/5">
                 <div className="flex items-center justify-between text-xs font-medium">
-                  <span className="flex items-center gap-1.5 font-mono text-[11px] text-[#CBD5E1] uppercase tracking-wider font-semibold">
+                  <span className="flex items-center gap-1.5 font-mono text-[11px] text-[#FFC85C] uppercase tracking-wider font-semibold">
                     <Layers className="w-3.5 h-3.5 text-[#F5B027]" />
                     Company Size
                   </span>
@@ -416,7 +416,7 @@ export const ConnectionBubblesView: React.FC<ConnectionBubblesViewProps> = ({
                         className={`flex flex-col items-start px-2 py-1.5 rounded-lg text-xs font-mono transition-all cursor-pointer border ${
                           isSelected
                             ? 'bg-[#C78522]/20 text-[#F1EFE9] border-[#C78522] font-semibold'
-                            : 'bg-[#131722] hover:bg-[#1A202C] text-[#CBD5E1] border-white/5 hover:border-white/10'
+                            : 'bg-[#12100c] hover:bg-[#12100C] text-[#FFC85C] border-white/5 hover:border-white/10'
                         }`}
                       >
                         <div className="flex items-center justify-between w-full">
@@ -435,7 +435,7 @@ export const ConnectionBubblesView: React.FC<ConnectionBubblesViewProps> = ({
               {/* 3. Mutual Connections Count Segmentation */}
               <div className="space-y-2.5 pt-3 border-t border-white/5">
                 <div className="flex items-center justify-between text-xs font-medium">
-                  <span className="flex items-center gap-1.5 font-mono text-[11px] text-[#CBD5E1] uppercase tracking-wider font-semibold">
+                  <span className="flex items-center gap-1.5 font-mono text-[11px] text-[#FFC85C] uppercase tracking-wider font-semibold">
                     <Network className="w-3.5 h-3.5 text-[#C78522]" />
                     Mutual Connections
                   </span>
@@ -464,7 +464,7 @@ export const ConnectionBubblesView: React.FC<ConnectionBubblesViewProps> = ({
                       className={`flex-1 py-1 text-[10px] font-mono rounded transition-all cursor-pointer border ${
                         minMutuals === val
                           ? 'bg-[#C78522] text-black font-semibold border-[#C78522]'
-                          : 'bg-[#131722] text-[#9CA3AF] hover:text-white border-white/5'
+                          : 'bg-[#12100c] text-[#9CA3AF] hover:text-white border-white/5'
                       }`}
                     >
                       {val === 0 ? 'All' : `${val}+`}
@@ -476,7 +476,7 @@ export const ConnectionBubblesView: React.FC<ConnectionBubblesViewProps> = ({
               {/* 4. Relationship Tier Filter */}
               <div className="space-y-2 pt-3 border-t border-white/5">
                 <div className="flex items-center justify-between text-xs font-medium">
-                  <span className="flex items-center gap-1.5 font-mono text-[11px] text-[#CBD5E1] uppercase tracking-wider font-semibold">
+                  <span className="flex items-center gap-1.5 font-mono text-[11px] text-[#FFC85C] uppercase tracking-wider font-semibold">
                     <ShieldCheck className="w-3.5 h-3.5 text-[#F5B027]" />
                     Relationship Tier
                   </span>
@@ -502,7 +502,7 @@ export const ConnectionBubblesView: React.FC<ConnectionBubblesViewProps> = ({
                       className={`flex-1 flex items-center justify-center gap-1.5 py-1 px-1.5 text-[10px] font-mono rounded transition-all cursor-pointer border ${
                         selectedTier === t.id
                           ? 'bg-white/15 text-white font-bold border-white/30'
-                          : 'bg-[#131722] text-[#9CA3AF] hover:text-white border-white/5'
+                          : 'bg-[#12100c] text-[#9CA3AF] hover:text-white border-white/5'
                       }`}
                     >
                       <span className={`w-1.5 h-1.5 rounded-full ${t.dot}`} />
@@ -550,7 +550,7 @@ export const ConnectionBubblesView: React.FC<ConnectionBubblesViewProps> = ({
         <div
           className={`${
             isSidebarOpen ? 'lg:col-span-6' : 'lg:col-span-8'
-          } bg-gradient-to-b from-[#090C11] via-[#0E121A] to-[#07090C] border border-white/10 rounded-xl overflow-hidden relative  flex flex-col`}
+          } bg-gradient-to-b from-[#12100C] via-[#12100C] to-[#12100C] border border-white/10 rounded-xl overflow-hidden relative  flex flex-col`}
         >
           {/* Top Canvas Bar Indicator */}
           <div className="px-4 py-2.5 border-b border-white/10 bg-black/40 flex items-center justify-between text-xs text-[#9CA3AF]">
@@ -576,7 +576,7 @@ export const ConnectionBubblesView: React.FC<ConnectionBubblesViewProps> = ({
             </div>
 
             <div className="flex items-center gap-3">
-              <span className="text-[11px] font-mono text-[#CBD5E1] hidden md:inline">
+              <span className="text-[11px] font-mono text-[#FFC85C] hidden md:inline">
                 Drag to explore · Click to open
               </span>
             </div>
@@ -625,7 +625,7 @@ export const ConnectionBubblesView: React.FC<ConnectionBubblesViewProps> = ({
             isSidebarOpen ? 'lg:col-span-3' : 'lg:col-span-4'
           } space-y-4 flex flex-col justify-between`}
         >
-          <div className="bg-[#0E121A] border border-white/10 rounded-xl p-5 space-y-4 shadow-xl">
+          <div className="bg-[#12100C] border border-white/10 rounded-xl p-5 space-y-4 shadow-xl">
             <div className="flex items-center justify-between text-[10px] font-mono tracking-widest uppercase text-[#9CA3AF] font-semibold">
               <span className="flex items-center gap-1.5">
                 
@@ -643,7 +643,7 @@ export const ConnectionBubblesView: React.FC<ConnectionBubblesViewProps> = ({
                 alt={spotlightMember.name}
                 className="w-full h-full object-cover grayscale contrast-125 brightness-95"
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-[#0E121A] via-transparent to-transparent" />
+              <div className="absolute inset-0 bg-gradient-to-t from-[#12100C] via-transparent to-transparent" />
               <div className="absolute bottom-3 left-3 right-3 flex items-center justify-between">
                 <span className="text-xs font-mono font-bold text-white bg-black/60 px-2 py-1 rounded backdrop-blur-sm border border-white/10">
                   {spotlightMember.company}
@@ -675,7 +675,7 @@ export const ConnectionBubblesView: React.FC<ConnectionBubblesViewProps> = ({
             </div>
 
             {/* Editorial Quote */}
-            <blockquote className="text-xs text-[#CBD5E1] italic bg-white/[0.02] p-3 rounded-lg border border-white/5 leading-relaxed">
+            <blockquote className="text-xs text-[#FFC85C] italic bg-white/[0.02] p-3 rounded-lg border border-white/5 leading-relaxed">
               "{spotlightMember.quote || spotlightMember.bioStatement}"
             </blockquote>
 
@@ -688,7 +688,7 @@ export const ConnectionBubblesView: React.FC<ConnectionBubblesViewProps> = ({
                 {spotlightMember.focusAreas.slice(0, 4).map((area, idx) => (
                   <span
                     key={idx}
-                    className="text-[10px] text-[#CBD5E1] bg-white/5 border border-white/10 px-2 py-0.5 rounded"
+                    className="text-[10px] text-[#FFC85C] bg-white/5 border border-white/10 px-2 py-0.5 rounded"
                   >
                     {area}
                   </span>
@@ -714,7 +714,7 @@ export const ConnectionBubblesView: React.FC<ConnectionBubblesViewProps> = ({
           </div>
 
           {/* Quick Switcher Thumbnails Row */}
-          <div className="bg-[#0E121A] border border-white/10 rounded-xl p-4">
+          <div className="bg-[#12100C] border border-white/10 rounded-xl p-4">
             <div className="text-[10px] font-mono uppercase tracking-widest text-[#9CA3AF] font-semibold mb-2.5">
               Also in view
             </div>
@@ -730,7 +730,7 @@ export const ConnectionBubblesView: React.FC<ConnectionBubblesViewProps> = ({
                       : 'border-white/15 hover:border-white/40'
                   }`}
                 >
-                  <span className="w-9 h-9 rounded-full bg-[#1A1F25] text-[#F1EFE9] text-[11px] font-mono flex items-center justify-center">{m.name.split(' ').map((w) => w[0]).slice(0, 2).join('')}</span>
+                  <span className="w-9 h-9 rounded-full bg-[#12100C] text-[#F1EFE9] text-[11px] font-mono flex items-center justify-center">{m.name.split(' ').map((w) => w[0]).slice(0, 2).join('')}</span>
                 </button>
               ))}
             </div>

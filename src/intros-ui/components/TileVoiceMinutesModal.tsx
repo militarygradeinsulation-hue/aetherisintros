@@ -194,10 +194,10 @@ ${processedResult.decisions.map((d) => `- ${d}`).join('\n')}`;
         role="dialog"
         aria-modal="true"
         aria-labelledby="voice-modal-title"
-        className="w-full max-w-xl rounded-2xl bg-[#090C11] border border-white/20 shadow-2xl overflow-hidden flex flex-col max-h-[85vh] relative text-[#F2EEE6] select-none"
+        className="w-full max-w-xl rounded-2xl bg-[#12100C] border border-white/20 shadow-2xl overflow-hidden flex flex-col max-h-[85vh] relative text-[#F2EEE6] select-none"
       >
         {/* Top Header */}
-        <div className="p-4 sm:p-5 border-b border-white/10 bg-[#07090C] flex items-center justify-between">
+        <div className="p-4 sm:p-5 border-b border-white/10 bg-[#12100C] flex items-center justify-between">
           <div className="flex items-center gap-3">
             <div className="w-8 h-8 rounded-lg bg-[#F5B027]/20 border border-[#F5B027]/40 flex items-center justify-center text-[#F5B027]">
               <Mic size={16} />
@@ -228,7 +228,7 @@ ${processedResult.decisions.map((d) => `- ${d}`).join('\n')}`;
         {/* Modal Body */}
         <div className="p-4 sm:p-5 overflow-y-auto space-y-4 flex-1">
           {/* Recording & Dictation Controls */}
-          <div className="p-4 rounded-xl bg-[#0E1116] border border-white/10 space-y-3">
+          <div className="p-4 rounded-xl bg-[#12100C] border border-white/10 space-y-3">
             <div className="flex items-center justify-between">
               <span className="text-[10px] font-mono text-[#F2EEE6]/60 uppercase tracking-wider">
                 Dictate Notes via MediaRecorder API:
@@ -291,7 +291,7 @@ ${processedResult.decisions.map((d) => `- ${d}`).join('\n')}`;
                 value={currentDictation}
                 onChange={(e) => setManualText(e.target.value)}
                 placeholder="Spoken words transcribe here live. Or type your bulleted debrief..."
-                className="w-full bg-[#07090C] border border-white/10 rounded-lg p-2.5 text-xs text-[#F2EEE6] placeholder-[#F2EEE6]/30 focus:outline-none focus:border-[#F5B027] font-mono leading-relaxed"
+                className="w-full bg-[#12100C] border border-white/10 rounded-lg p-2.5 text-xs text-[#F2EEE6] placeholder-[#F2EEE6]/30 focus:outline-none focus:border-[#F5B027] font-mono leading-relaxed"
               />
             </div>
 
@@ -332,7 +332,7 @@ ${processedResult.decisions.map((d) => `- ${d}`).join('\n')}`;
 
           {/* Processed AI Output Display */}
           {processedResult && (
-            <div className="p-4 rounded-xl bg-[#0E1116] border border-[#F5B027]/40 shadow-xl space-y-3 animate-in fade-in duration-200">
+            <div className="p-4 rounded-xl bg-[#12100C] border border-[#F5B027]/40 shadow-xl space-y-3 animate-in fade-in duration-200">
               <div className="flex items-start justify-between gap-2 border-b border-white/10 pb-2">
                 <div>
                   <div className="text-[9px] font-mono text-[#F5B027] uppercase font-bold tracking-wider flex items-center gap-1.5">

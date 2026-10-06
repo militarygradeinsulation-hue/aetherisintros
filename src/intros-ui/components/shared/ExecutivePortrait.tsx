@@ -92,7 +92,7 @@ export const ExecutivePortrait: React.FC<ExecutivePortraitProps> = ({
   if (size === 'hero') {
     return (
       <div
-        className={`relative overflow-hidden rounded-xl border border-white/10 bg-[#0B0D12] select-none ${className}`}
+        className={`relative overflow-hidden rounded-xl border border-white/10 bg-[#12100C] select-none ${className}`}
       >
         {resolvedUrl && !imgError ? (
           <div className="relative w-full h-full min-h-[380px] overflow-hidden flex items-center justify-center">
@@ -105,12 +105,12 @@ export const ExecutivePortrait: React.FC<ExecutivePortraitProps> = ({
               className="w-full h-full object-cover grayscale contrast-125 brightness-90 filter transition-transform duration-700 hover:scale-105"
             />
             {/* Cinematic contrast scrim & gradient overlay matching editorial design */}
-            <div className="absolute inset-0 bg-gradient-to-t from-[#07090C] via-black/30 to-black/40 pointer-events-none" />
-            <div className="absolute inset-0 bg-radial from-transparent via-transparent to-[#07090C]/80 pointer-events-none" />
+            <div className="absolute inset-0 bg-gradient-to-t from-[#12100C] via-black/30 to-black/40 pointer-events-none" />
+            <div className="absolute inset-0 bg-radial from-transparent via-transparent to-[#12100C]/80 pointer-events-none" />
           </div>
         ) : (
           <div className="relative z-10 w-full h-full flex flex-col items-center justify-end p-6">
-            <div className="w-24 h-24 rounded-full bg-[#1E232F] border border-white/10 flex items-center justify-center text-white font-serif-editorial text-3xl font-bold">
+            <div className="w-24 h-24 rounded-full bg-[#12100C] border border-white/10 flex items-center justify-center text-white font-serif-editorial text-3xl font-bold">
               {initials}
             </div>
           </div>
@@ -129,7 +129,7 @@ export const ExecutivePortrait: React.FC<ExecutivePortraitProps> = ({
 
   return (
     <div
-      className={`relative shrink-0 overflow-hidden rounded-full border border-white/20 bg-gradient-to-br from-[#1C2230] to-[#0A0D14] flex items-center justify-center text-[#F2EEE6] font-semibold select-none shadow-sm ${dimensionClass} ${className}`}
+      className={`relative shrink-0 overflow-hidden rounded-full border border-white/20 bg-gradient-to-br from-[#12100C] to-[#12100C] flex items-center justify-center text-[#F2EEE6] font-semibold select-none shadow-sm ${dimensionClass} ${className}`}
     >
       {resolvedUrl && !imgError ? (
         <img

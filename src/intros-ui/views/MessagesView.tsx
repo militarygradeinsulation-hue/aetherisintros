@@ -83,7 +83,7 @@ export const MessagesView: React.FC<MessagesViewProps> = ({
   return (
     <div className="w-full max-w-7xl mx-auto px-4 md:px-8 py-6 space-y-6 animate-fadeIn">
       {/* Editorial Hero Banner (Matching Image 3) */}
-      <section className="relative overflow-hidden rounded-2xl border border-white/10 bg-gradient-to-br from-[#0C1017] via-[#090C10] to-[#07090C] p-6 lg:p-8">
+      <section className="relative overflow-hidden rounded-2xl border border-white/10 bg-gradient-to-br from-[#12100C] via-[#12100C] to-[#12100C] p-6 lg:p-8">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
           {/* Hero Left: Headline & Metrics */}
           <div className="lg:col-span-8 space-y-4">
@@ -130,7 +130,7 @@ export const MessagesView: React.FC<MessagesViewProps> = ({
             <div className="w-36 h-36 relative">
               <ConstellationGraphic variant="hero-nodes" />
             </div>
-            <p className="text-xs italic text-[#CBD5E1] max-w-xs">
+            <p className="text-xs italic text-[#FFC85C] max-w-xs">
               “The right people turn conversations into compound opportunity.”
             </p>
           </div>
@@ -139,7 +139,7 @@ export const MessagesView: React.FC<MessagesViewProps> = ({
 
       {/* Active Introduction Requests Bar (Matching Image 3) */}
       {introRequests.length > 0 && (
-        <section className="bg-[#0E121A] border border-white/10 rounded-xl p-4 space-y-3">
+        <section className="bg-[#12100C] border border-white/10 rounded-xl p-4 space-y-3">
           <div className="flex items-center justify-between text-[11px] font-mono tracking-widest uppercase text-[#9CA3AF] font-semibold">
             <span>Active Introduction Requests</span>
             <span className="text-[#F5B027]">{introRequests.length} Pending</span>
@@ -149,7 +149,7 @@ export const MessagesView: React.FC<MessagesViewProps> = ({
             {introRequests.map((req) => (
               <div
                 key={req.id}
-                className="bg-[#131722] border border-white/5 rounded-lg p-3.5 flex flex-col justify-between space-y-3 hover:border-white/20 transition-all"
+                className="bg-[#12100c] border border-white/5 rounded-lg p-3.5 flex flex-col justify-between space-y-3 hover:border-white/20 transition-all"
               >
                 <div>
                   <div className="flex items-start justify-between text-[10px] font-mono text-[#6B7280] mb-2">
@@ -199,7 +199,7 @@ export const MessagesView: React.FC<MessagesViewProps> = ({
       {/* Main 3-Column Messaging Suite (Matching Image 3) */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 min-h-[640px]">
         {/* Column 1: Conversations List & Folders */}
-        <aside className="lg:col-span-3 bg-[#0E121A] border border-white/10 rounded-xl p-4 flex flex-col justify-between space-y-4">
+        <aside className="lg:col-span-3 bg-[#12100C] border border-white/10 rounded-xl p-4 flex flex-col justify-between space-y-4">
           <div className="space-y-4">
             <div className="flex items-center justify-between">
               <h3 className="font-serif-editorial text-base font-bold text-white tracking-wide">
@@ -250,7 +250,7 @@ export const MessagesView: React.FC<MessagesViewProps> = ({
                 value={searchFilter}
                 onChange={(e) => setSearchFilter(e.target.value)}
                 placeholder="Search conversations..."
-                className="w-full bg-[#131722] text-xs text-white placeholder-[#6B7280] rounded-lg pl-8 pr-3 py-1.5 border border-white/10 focus:outline-none focus:border-[#F5B027]"
+                className="w-full bg-[#12100c] text-xs text-white placeholder-[#6B7280] rounded-lg pl-8 pr-3 py-1.5 border border-white/10 focus:outline-none focus:border-[#F5B027]"
               />
             </div>
 
@@ -264,7 +264,7 @@ export const MessagesView: React.FC<MessagesViewProps> = ({
                     onClick={() => setSelectedThreadId(thread.id)}
                     className={`p-2.5 rounded-lg cursor-pointer transition-all flex items-start gap-2.5 ${
                       isSelected
-                        ? 'bg-[#151D2C] border border-[#F5B027]/40 shadow-sm'
+                        ? 'bg-[#12100C] border border-[#F5B027]/40 shadow-sm'
                         : 'hover:bg-white/[0.04] border border-transparent'
                     }`}
                   >
@@ -290,10 +290,10 @@ export const MessagesView: React.FC<MessagesViewProps> = ({
         </aside>
 
         {/* Column 2: Active Chat Thread (Matching Image 3 Center) */}
-        <main className="lg:col-span-5 bg-[#0E121A] border border-white/10 rounded-xl flex flex-col justify-between overflow-hidden shadow-sm">
+        <main className="lg:col-span-5 bg-[#12100C] border border-white/10 rounded-xl flex flex-col justify-between overflow-hidden shadow-sm">
           {/* Active Chat Header */}
           {activeThread && (
-            <div className="p-4 border-b border-white/10 flex items-center justify-between bg-[#11151E]">
+            <div className="p-4 border-b border-white/10 flex items-center justify-between bg-[#12100C]">
               <div className="flex items-center gap-3">
                 <div
                   onClick={() => onNavigate('profile', activeThread.memberId)}
@@ -368,7 +368,7 @@ export const MessagesView: React.FC<MessagesViewProps> = ({
                     className={`rounded-2xl p-3.5 text-xs leading-relaxed ${
                       msg.isOwn
                         ? 'bg-[#F5B027] text-white rounded-br-xs'
-                        : 'bg-[#151923] text-[#E2E8F0] border border-white/10 rounded-bl-xs'
+                        : 'bg-[#12100c] text-[#FFC85C] border border-white/10 rounded-bl-xs'
                     }`}
                   >
                     {msg.text}
@@ -392,8 +392,8 @@ export const MessagesView: React.FC<MessagesViewProps> = ({
           </div>
 
           {/* Message Input Box (Matching Image 3) */}
-          <form onSubmit={handleSend} className="p-3 border-t border-white/10 bg-[#11151E]">
-            <div className="flex items-center gap-2 bg-[#151A24] border border-white/10 rounded-xl px-3 py-1.5">
+          <form onSubmit={handleSend} className="p-3 border-t border-white/10 bg-[#12100C]">
+            <div className="flex items-center gap-2 bg-[#12100C] border border-white/10 rounded-xl px-3 py-1.5">
               <button
                 type="button"
                 className="text-[#9CA3AF] hover:text-white p-1 cursor-pointer"
@@ -427,7 +427,7 @@ export const MessagesView: React.FC<MessagesViewProps> = ({
         </main>
 
         {/* Column 3: Shared Context & AI Brief Panel (Matching Image 3 Right) */}
-        <aside className="lg:col-span-4 bg-[#0E121A] border border-white/10 rounded-xl p-5 space-y-5 flex flex-col justify-between">
+        <aside className="lg:col-span-4 bg-[#12100C] border border-white/10 rounded-xl p-5 space-y-5 flex flex-col justify-between">
           <div className="space-y-5">
             {/* Shared Context */}
             <div>
@@ -435,7 +435,7 @@ export const MessagesView: React.FC<MessagesViewProps> = ({
                 <span>Shared Context</span>
                 <span className="text-[#F5B027] text-[10px]">Verified Fit</span>
               </div>
-              <p className="text-xs text-[#CBD5E1] leading-relaxed mb-3">
+              <p className="text-xs text-[#FFC85C] leading-relaxed mb-3">
                 {activeThread?.sharedContext.summary}
               </p>
 
@@ -444,7 +444,7 @@ export const MessagesView: React.FC<MessagesViewProps> = ({
                   <span className="text-[10px] font-mono uppercase text-[#9CA3AF] block">
                     Shared Interests:
                   </span>
-                  <span className="text-[#E2E8F0]">
+                  <span className="text-[#FFC85C]">
                     {activeThread?.sharedContext.sharedInterests.join(', ')}
                   </span>
                 </div>
@@ -452,7 +452,7 @@ export const MessagesView: React.FC<MessagesViewProps> = ({
                   <span className="text-[10px] font-mono uppercase text-[#9CA3AF] block">
                     Shared Goals:
                   </span>
-                  <span className="text-[#E2E8F0]">
+                  <span className="text-[#FFC85C]">
                     {activeThread?.sharedContext.sharedGoals.join(', ')}
                   </span>
                 </div>
@@ -460,7 +460,7 @@ export const MessagesView: React.FC<MessagesViewProps> = ({
                   <span className="text-[10px] font-mono uppercase text-[#9CA3AF] block">
                     Relevant Topics:
                   </span>
-                  <span className="text-[#E2E8F0]">
+                  <span className="text-[#FFC85C]">
                     {activeThread?.sharedContext.relevantTopics.join(', ')}
                   </span>
                 </div>
@@ -490,7 +490,7 @@ export const MessagesView: React.FC<MessagesViewProps> = ({
             </div>
 
             {/* Suggested Next Step (AI) */}
-            <div className="p-4 bg-[#111622] border border-[#F5B027]/30 rounded-xl space-y-3">
+            <div className="p-4 bg-[#12100c] border border-[#F5B027]/30 rounded-xl space-y-3">
               <div className="flex items-center justify-between">
                 <span className="text-[10px] font-mono uppercase tracking-widest text-[#F5B027] font-semibold flex items-center gap-1.5">
                   <Sparkles className="w-3.5 h-3.5" />
@@ -501,7 +501,7 @@ export const MessagesView: React.FC<MessagesViewProps> = ({
                 </span>
               </div>
 
-              <p className="text-xs text-[#CBD5E1] leading-relaxed">
+              <p className="text-xs text-[#FFC85C] leading-relaxed">
                 {activeThread?.suggestedNextStep.reasoning}
               </p>
 
@@ -525,7 +525,7 @@ export const MessagesView: React.FC<MessagesViewProps> = ({
                 <span className="text-[10px] font-mono uppercase tracking-widest text-[#9CA3AF] font-semibold">
                   AI Introduction Brief
                 </span>
-                <span className="text-[9px] font-mono px-1 py-0.2 rounded bg-white/5 text-[#CBD5E1]">
+                <span className="text-[9px] font-mono px-1 py-0.2 rounded bg-white/5 text-[#FFC85C]">
                   BETA
                 </span>
               </div>
@@ -546,9 +546,9 @@ export const MessagesView: React.FC<MessagesViewProps> = ({
       {/* Full Brief Modal */}
       {showBriefModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-fadeIn">
-          <div className="relative w-full max-w-md bg-[#0E1218] border border-white/10 rounded-2xl p-6 text-[#F2EEE6]">
+          <div className="relative w-full max-w-md bg-[#12100C] border border-white/10 rounded-2xl p-6 text-[#F2EEE6]">
             <h3 className="font-serif-editorial text-2xl font-bold mb-3">Executive Intro Brief</h3>
-            <p className="text-xs text-[#CBD5E1] leading-relaxed mb-6">
+            <p className="text-xs text-[#FFC85C] leading-relaxed mb-6">
               {activeThread?.aiIntroductionBrief}
             </p>
             <div className="flex justify-end">

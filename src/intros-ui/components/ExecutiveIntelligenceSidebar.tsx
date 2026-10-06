@@ -119,7 +119,7 @@ export const ExecutiveIntelligenceSidebar: React.FC<ExecutiveIntelligenceSidebar
       case 'followup':
         return 'bg-[#F5B027] shadow-[0_0_6px_rgba(242,169,59,0.7)]';
       case 'dormant':
-        return 'bg-[#64748B]';
+        return 'bg-[#C78522]';
       default:
         return 'bg-[#C78522]';
     }
@@ -166,7 +166,7 @@ export const ExecutiveIntelligenceSidebar: React.FC<ExecutiveIntelligenceSidebar
         >
           <button
             onClick={onToggle}
-            className="flex items-center gap-2 bg-[#0E1116] hover:bg-[#151922] text-[#F2EEE6] border-l border-y border-white/15 py-3.5 px-2 rounded-l-lg shadow-2xl transition-all hover:border-[#F5B027]/60 group"
+            className="flex items-center gap-2 bg-[#12100C] hover:bg-[#12100c] text-[#F2EEE6] border-l border-y border-white/15 py-3.5 px-2 rounded-l-lg shadow-2xl transition-all hover:border-[#F5B027]/60 group"
             title="Expand Executive Intelligence (Dossier & News)"
           >
             <ChevronLeft size={14} className="text-[#F5B027] group-hover:-translate-x-0.5 transition-transform" />
@@ -197,10 +197,10 @@ export const ExecutiveIntelligenceSidebar: React.FC<ExecutiveIntelligenceSidebar
       {isOpen && (
         <aside
           aria-label="Executive Intelligence Sidebar"
-          className="fixed top-0 right-0 bottom-0 z-50 w-full sm:w-[420px] bg-[#0A0D12] text-[#F2EEE6] border-l border-white/10 shadow-[0_0_50px_rgba(0,0,0,0.85)] flex flex-col backdrop-blur-xl animate-in slide-in-from-right-2 duration-200"
+          className="fixed top-0 right-0 bottom-0 z-50 w-full sm:w-[420px] bg-[#12100C] text-[#F2EEE6] border-l border-white/10 shadow-[0_0_50px_rgba(0,0,0,0.85)] flex flex-col backdrop-blur-xl animate-in slide-in-from-right-2 duration-200"
         >
           {/* Header */}
-          <div className="p-4 border-b border-white/10 flex items-center justify-between bg-[#07090C]/80">
+          <div className="p-4 border-b border-white/10 flex items-center justify-between bg-[#12100C]/80">
             <div>
               <div className="text-[9px] font-mono tracking-[0.28em] text-[#F5B027] uppercase font-semibold">
                 Relationship Dossier
@@ -263,7 +263,7 @@ export const ExecutiveIntelligenceSidebar: React.FC<ExecutiveIntelligenceSidebar
           </div>
 
           {/* Quick Relationship Switcher Bar */}
-          <div className="px-4 py-2 border-b border-white/5 bg-[#0E1116] flex items-center gap-2 overflow-x-auto no-scrollbar">
+          <div className="px-4 py-2 border-b border-white/5 bg-[#12100C] flex items-center gap-2 overflow-x-auto no-scrollbar">
             <span className="text-[9px] font-mono text-[#F2EEE6]/50 uppercase tracking-wider shrink-0">
               Focus:
             </span>
@@ -295,7 +295,7 @@ export const ExecutiveIntelligenceSidebar: React.FC<ExecutiveIntelligenceSidebar
             {dossier ? (
               <>
                 {/* 1. Executive Profile Card */}
-                <div className="p-3.5 rounded-lg bg-[#0E1116] border border-white/10 space-y-3">
+                <div className="p-3.5 rounded-lg bg-[#12100C] border border-white/10 space-y-3">
                   <div className="flex items-start gap-3">
                     <div className="relative shrink-0">
                       <img
@@ -306,7 +306,7 @@ export const ExecutiveIntelligenceSidebar: React.FC<ExecutiveIntelligenceSidebar
                       <span
                         className={`absolute -bottom-1 -right-1 w-2.5 h-2.5 rounded-full ${getStatusColor(
                           dossier.engagement
-                        )} ring-2 ring-[#0E1116]`}
+                        )} ring-2 ring-[#12100C]`}
                         title={`Status: ${dossier.engagement}`}
                       />
                     </div>
@@ -380,7 +380,7 @@ export const ExecutiveIntelligenceSidebar: React.FC<ExecutiveIntelligenceSidebar
                 </div>
 
                 {/* 2. Current Focus & Key Priorities */}
-                <div className="p-3.5 rounded-lg bg-[#0E1116] border border-white/10 space-y-2.5">
+                <div className="p-3.5 rounded-lg bg-[#12100C] border border-white/10 space-y-2.5">
                   <div className="flex items-center gap-1.5 text-[10px] font-mono text-[#F5B027] uppercase font-bold tracking-wider">
                     <Target size={12} />
                     <span>Current Strategic Mandate</span>
@@ -416,13 +416,13 @@ export const ExecutiveIntelligenceSidebar: React.FC<ExecutiveIntelligenceSidebar
                 </div>
 
                 {/* AI Predictive Blind Spot & Opportunity Analysis */}
-                <div className="p-3.5 rounded-lg bg-gradient-to-br from-[#120D1A] via-[#0E1116] to-[#0A0D12] border border-[#A855F7]/40 space-y-2.5 shadow-[0_0_20px_rgba(168,85,247,0.12)]">
+                <div className="p-3.5 rounded-lg bg-gradient-to-br from-[#12100C] via-[#12100C] to-[#12100C] border border-[#FFC85C]/40 space-y-2.5 shadow-[0_0_20px_rgba(255, 200, 92,0.12)]">
                   <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-1.5 text-[10px] font-mono text-[#C084FC] uppercase font-bold tracking-wider">
+                    <div className="flex items-center gap-1.5 text-[10px] font-mono text-[#FFC85C] uppercase font-bold tracking-wider">
                       <Sparkles size={12} />
                       <span>AI Predictive Blind Spot Analysis</span>
                     </div>
-                    <span className="text-[9px] font-mono px-1.5 py-0.2 rounded bg-[#A855F7]/20 text-[#C084FC] border border-[#A855F7]/30">
+                    <span className="text-[9px] font-mono px-1.5 py-0.2 rounded bg-[#FFC85C]/20 text-[#FFC85C] border border-[#FFC85C]/30">
                       LLM Grounded
                     </span>
                   </div>
@@ -448,7 +448,7 @@ export const ExecutiveIntelligenceSidebar: React.FC<ExecutiveIntelligenceSidebar
                 </div>
 
                 {/* 3. Priority Meetings (Upcoming Calendar Integration) */}
-                <div className="p-3.5 rounded-lg bg-[#0E1116] border border-white/10 space-y-3">
+                <div className="p-3.5 rounded-lg bg-[#12100C] border border-white/10 space-y-3">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-1.5 text-[10px] font-mono text-[#F5B027] uppercase font-bold tracking-wider">
                       <Calendar size={12} />
@@ -504,7 +504,7 @@ export const ExecutiveIntelligenceSidebar: React.FC<ExecutiveIntelligenceSidebar
                               {meeting.attendees?.map((att: { name: string; title: string; avatar?: string }, i: number) => (
                                 <span
                                   key={i}
-                                  className="w-4.5 h-4.5 rounded-full bg-[#151922] border border-white/10 text-[7px] font-mono text-[#F2EEE6] flex items-center justify-center font-bold"
+                                  className="w-4.5 h-4.5 rounded-full bg-[#12100c] border border-white/10 text-[7px] font-mono text-[#F2EEE6] flex items-center justify-center font-bold"
                                   title={`${att.name} (${att.title})`}
                                 >
                                   {att.name.charAt(0)}
@@ -557,7 +557,7 @@ export const ExecutiveIntelligenceSidebar: React.FC<ExecutiveIntelligenceSidebar
                     {filteredNews.map((news) => (
                       <article
                         key={news.id}
-                        className="p-3 rounded-lg bg-[#0E1116] hover:bg-[#12161E] border border-white/5 hover:border-white/15 transition-all space-y-1.5"
+                        className="p-3 rounded-lg bg-[#12100C] hover:bg-[#12100C] border border-white/5 hover:border-white/15 transition-all space-y-1.5"
                       >
                         <div className="flex items-center justify-between text-[9px] font-mono text-[#F2EEE6]/50 gap-2">
                           <span className="text-[#F5B027] uppercase font-semibold">{news.category}</span>
@@ -596,7 +596,7 @@ export const ExecutiveIntelligenceSidebar: React.FC<ExecutiveIntelligenceSidebar
           </div>
 
           {/* Footer Quick Actions */}
-          <div className="p-3 border-t border-white/10 bg-[#07090C] flex items-center justify-between gap-2">
+          <div className="p-3 border-t border-white/10 bg-[#12100C] flex items-center justify-between gap-2">
             {onOpenGraph && (
               <button
                 onClick={onOpenGraph}

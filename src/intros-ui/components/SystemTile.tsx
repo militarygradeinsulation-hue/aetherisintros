@@ -46,7 +46,7 @@ export const SystemTile: React.FC<SystemTileProps> = ({
     switch (status) {
       case 'active': return 'bg-[#C78522]';
       case 'followup': return 'bg-[#F5B027]';
-      case 'dormant': return 'bg-[#64748B]';
+      case 'dormant': return 'bg-[#C78522]';
       default: return 'bg-transparent';
     }
   };
@@ -68,15 +68,15 @@ export const SystemTile: React.FC<SystemTileProps> = ({
     }
     if (score >= 60) {
       return {
-        border: 'border-[#F5B027]/35 shadow-[0_0_12px_rgba(61,107,242,0.15)]',
+        border: 'border-[#F5B027]/35 shadow-[0_0_12px_rgba(199, 133, 34,0.15)]',
         bg: 'bg-gradient-to-b from-[#F5B027]/10 to-transparent',
         badgeColor: 'bg-[#F5B027]/20 text-[#F5B027] border-[#F5B027]/40',
       };
     }
     return {
-      border: 'border-[#64748B]/30',
-      bg: 'bg-gradient-to-b from-[#64748B]/10 to-transparent',
-      badgeColor: 'bg-[#64748B]/20 text-[#94A3B8] border-[#64748B]/40',
+      border: 'border-[#C78522]/30',
+      bg: 'bg-gradient-to-b from-[#C78522]/10 to-transparent',
+      badgeColor: 'bg-[#C78522]/20 text-[#FFC85C] border-[#C78522]/40',
     };
   };
 
@@ -104,9 +104,9 @@ export const SystemTile: React.FC<SystemTileProps> = ({
       style={{
         animationDelay: staggerDelay,
       }}
-      className={`sys-tile group w-full h-[276px] sm:h-[286px] p-2.5 sm:p-3 flex flex-col justify-between text-left cursor-pointer focus-visible:outline-none select-none transition-all duration-200 hover:shadow-[0_0_15px_rgba(61,107,242,0.3)] relative overflow-hidden ${
+      className={`sys-tile group w-full h-[276px] sm:h-[286px] p-2.5 sm:p-3 flex flex-col justify-between text-left cursor-pointer focus-visible:outline-none select-none transition-all duration-200 hover:shadow-[0_0_15px_rgba(199, 133, 34,0.3)] relative overflow-hidden ${
         isKeyboardFocused
-          ? 'ring-2 ring-[#F5B027] shadow-[0_0_24px_rgba(61,107,242,0.45)] z-20 scale-[1.01]'
+          ? 'ring-2 ring-[#F5B027] shadow-[0_0_24px_rgba(199, 133, 34,0.45)] z-20 scale-[1.01]'
           : ''
       } ${
         isInactivityAlerted
@@ -193,7 +193,7 @@ export const SystemTile: React.FC<SystemTileProps> = ({
       </div>
 
       {/* 2. Mini-preview, about 60% of tile height */}
-      <div className="sys-tile-inner w-full flex-1 my-2 p-2 sm:p-2.5 flex flex-col justify-center overflow-hidden relative bg-[#090C10] rounded-[8px] border border-white/[0.04] z-10">
+      <div className="sys-tile-inner w-full flex-1 my-2 p-2 sm:p-2.5 flex flex-col justify-center overflow-hidden relative bg-[#12100C] rounded-[8px] border border-white/[0.04] z-10">
         {children}
       </div>
 

@@ -339,9 +339,9 @@ export const FloatingConnectionField: React.FC<FloatingConnectionFieldProps> = (
       // Smooth, gentle Radar Sweep Beam (slow, serene rotation ~22s per cycle)
       const sweepAngle = (now * 0.00028) % (Math.PI * 2);
       const sweepGradient = ctx.createRadialGradient(cx, cy, 0, cx, cy, radarMaxRadius);
-      sweepGradient.addColorStop(0, 'rgba(61, 107, 242, 0.14)');
-      sweepGradient.addColorStop(0.7, 'rgba(96, 165, 250, 0.04)');
-      sweepGradient.addColorStop(1, 'rgba(61, 107, 242, 0)');
+      sweepGradient.addColorStop(0, 'rgba(199, 133, 34, 0.14)');
+      sweepGradient.addColorStop(0.7, 'rgba(255, 200, 92, 0.04)');
+      sweepGradient.addColorStop(1, 'rgba(199, 133, 34, 0)');
 
       ctx.save();
       ctx.beginPath();
@@ -358,7 +358,7 @@ export const FloatingConnectionField: React.FC<FloatingConnectionFieldProps> = (
         cx + Math.cos(sweepAngle) * radarMaxRadius,
         cy + Math.sin(sweepAngle) * radarMaxRadius
       );
-      ctx.strokeStyle = 'rgba(147, 197, 253, 0.28)';
+      ctx.strokeStyle = 'rgba(255, 200, 92, 0.28)';
       ctx.lineWidth = 1.2;
       ctx.stroke();
       ctx.restore();
@@ -740,7 +740,7 @@ export const FloatingConnectionField: React.FC<FloatingConnectionFieldProps> = (
         ctx.save();
         ctx.beginPath();
         ctx.arc(node.x, node.y, currentRadius, 0, Math.PI * 2);
-        ctx.fillStyle = '#0E121A';
+        ctx.fillStyle = '#12100C';
         ctx.fill();
 
         // D. Clip and Draw Photo
@@ -769,7 +769,7 @@ export const FloatingConnectionField: React.FC<FloatingConnectionFieldProps> = (
           ctx.fillStyle = innerGrad;
           ctx.fill();
         } else {
-          ctx.fillStyle = '#1E2536';
+          ctx.fillStyle = '#12100C';
           ctx.fill();
           ctx.fillStyle = '#FFFFFF';
           ctx.font = '600 12px Inter, sans-serif';
@@ -801,7 +801,7 @@ export const FloatingConnectionField: React.FC<FloatingConnectionFieldProps> = (
         ctx.arc(badgeX, badgeY, 9, 0, Math.PI * 2);
         ctx.fillStyle = '#F5B027';
         ctx.fill();
-        ctx.strokeStyle = '#07090C';
+        ctx.strokeStyle = '#12100C';
         ctx.lineWidth = 1.5;
         ctx.stroke();
         ctx.fillStyle = '#FFFFFF';
@@ -825,7 +825,7 @@ export const FloatingConnectionField: React.FC<FloatingConnectionFieldProps> = (
 
         ctx.beginPath();
         ctx.roundRect(node.x - pillW / 2, pillY - pillH / 2, pillW, pillH, 9);
-        ctx.fillStyle = isHovered ? 'rgba(61, 107, 242, 0.95)' : 'rgba(14, 18, 26, 0.88)';
+        ctx.fillStyle = isHovered ? 'rgba(199, 133, 34, 0.95)' : 'rgba(18, 16, 12, 0.88)';
         ctx.fill();
         ctx.strokeStyle = isHovered ? '#FFC85C' : 'rgba(255, 255, 255, 0.12)';
         ctx.lineWidth = 1;
@@ -836,7 +836,7 @@ export const FloatingConnectionField: React.FC<FloatingConnectionFieldProps> = (
 
         // Company label beneath name pill
         ctx.font = '400 9px Inter, sans-serif';
-        ctx.fillStyle = isHovered ? '#CBD5E1' : '#9CA3AF';
+        ctx.fillStyle = isHovered ? '#FFC85C' : '#9CA3AF';
         ctx.fillText(node.company, node.x, pillY + 13);
         ctx.restore();
       });
@@ -962,7 +962,7 @@ export const FloatingConnectionField: React.FC<FloatingConnectionFieldProps> = (
   return (
     <div
       ref={containerRef}
-      className={`relative w-full h-full min-h-[420px] overflow-hidden select-none bg-[#07090C] ${className}`}
+      className={`relative w-full h-full min-h-[420px] overflow-hidden select-none bg-[#12100C] ${className}`}
     >
       <canvas ref={canvasRef} className="w-full h-full block" />
 
@@ -991,7 +991,7 @@ export const FloatingConnectionField: React.FC<FloatingConnectionFieldProps> = (
           <linearGradient id="trail-grad-core" x1="0%" y1="0%" x2="100%" y2="100%">
             <stop offset="0%" stopColor="#F5B027" stopOpacity="0.05" />
             <stop offset="65%" stopColor="#FFC85C" stopOpacity="0.6" />
-            <stop offset="100%" stopColor="#93C5FD" stopOpacity="0.9" />
+            <stop offset="100%" stopColor="#FFC85C" stopOpacity="0.9" />
           </linearGradient>
           <linearGradient id="trail-grad-extended" x1="0%" y1="0%" x2="100%" y2="100%">
             <stop offset="0%" stopColor="#059669" stopOpacity="0.05" />
@@ -1013,9 +1013,9 @@ export const FloatingConnectionField: React.FC<FloatingConnectionFieldProps> = (
       </svg>
 
       {/* Top Left Live Radar Web HUD Indicator */}
-      <div className="absolute top-3 left-3 z-20 flex items-center gap-2 bg-[#0E121A]/85 border border-white/10 rounded-lg px-2.5 py-1 backdrop-blur-md">
+      <div className="absolute top-3 left-3 z-20 flex items-center gap-2 bg-[#12100C]/85 border border-white/10 rounded-lg px-2.5 py-1 backdrop-blur-md">
         <Radio className="w-3 h-3 text-[#F5B027] animate-pulse" />
-        <span className="text-[10px] font-mono uppercase tracking-widest text-[#CBD5E1]">
+        <span className="text-[10px] font-mono uppercase tracking-widest text-[#FFC85C]">
           Radar Web Active · {members.length} Nodes
         </span>
         <span className="hidden sm:inline-flex items-center gap-1 text-[9px] font-mono text-[#FFC85C] bg-[#F5B027]/15 border border-[#F5B027]/30 px-1.5 py-0.5 rounded">
@@ -1025,7 +1025,7 @@ export const FloatingConnectionField: React.FC<FloatingConnectionFieldProps> = (
       </div>
 
       {/* Bottom Center Interaction Guide */}
-      <div className="absolute bottom-3 left-1/2 -translate-x-1/2 z-20 flex items-center gap-3 bg-[#0A0D14]/90 border border-white/10 rounded-full px-4 py-1.5 backdrop-blur-md shadow-lg text-[11px] font-mono text-[#9CA3AF]">
+      <div className="absolute bottom-3 left-1/2 -translate-x-1/2 z-20 flex items-center gap-3 bg-[#12100C]/90 border border-white/10 rounded-full px-4 py-1.5 backdrop-blur-md shadow-lg text-[11px] font-mono text-[#9CA3AF]">
         <span className="flex items-center gap-1.5 text-white">
           <span className="w-1.5 h-1.5 rounded-full bg-[#F5B027]" />
           Click to open profile
@@ -1054,7 +1054,7 @@ export const FloatingConnectionField: React.FC<FloatingConnectionFieldProps> = (
               (containerRef.current?.clientHeight || 600) - 320
             ),
           }}
-          className="absolute z-40 bg-[#0E121A]/98 border border-[#F5B027]/60 rounded-2xl p-4 shadow-2xl shadow-[#F5B027]/20 backdrop-blur-xl w-72 animate-in zoom-in-95 duration-150 space-y-3"
+          className="absolute z-40 bg-[#12100C]/98 border border-[#F5B027]/60 rounded-2xl p-4 shadow-2xl shadow-[#F5B027]/20 backdrop-blur-xl w-72 animate-in zoom-in-95 duration-150 space-y-3"
         >
           {/* Card Header with Tier, Match Score and Close */}
           <div className="flex items-center justify-between border-b border-white/10 pb-2">
@@ -1099,7 +1099,7 @@ export const FloatingConnectionField: React.FC<FloatingConnectionFieldProps> = (
           </div>
 
           {/* Bio statement quote */}
-          <div className="text-[11px] text-[#CBD5E1] italic bg-white/[0.03] p-2.5 rounded-lg border border-white/5 leading-relaxed line-clamp-3">
+          <div className="text-[11px] text-[#FFC85C] italic bg-white/[0.03] p-2.5 rounded-lg border border-white/5 leading-relaxed line-clamp-3">
             "{activeDossier.member.bioStatement}"
           </div>
 
@@ -1121,7 +1121,7 @@ export const FloatingConnectionField: React.FC<FloatingConnectionFieldProps> = (
               {activeDossier.member.focusAreas.slice(0, 3).map((f, i) => (
                 <span
                   key={i}
-                  className="px-1.5 py-0.5 rounded bg-white/5 border border-white/10 text-[9px] text-[#CBD5E1]"
+                  className="px-1.5 py-0.5 rounded bg-white/5 border border-white/10 text-[9px] text-[#FFC85C]"
                 >
                   {f}
                 </span>

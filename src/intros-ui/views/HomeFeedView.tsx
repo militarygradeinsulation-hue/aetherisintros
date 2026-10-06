@@ -103,7 +103,7 @@ export const HomeFeedView: React.FC<HomeFeedViewProps> = ({
   const saveBoard = (next: WidgetItem[]) => { try { localStorage.setItem('intros.home.board.v2', JSON.stringify(next)); } catch {} };
   const widgets: Record<string, React.ReactNode> = {
     network: (
-          <div className="bg-[#0E121A] border border-white/10 rounded-xl p-4 space-y-4">
+          <div className="bg-[#12100C] border border-white/10 rounded-xl p-4 space-y-4">
             <div className="text-[11px] font-mono tracking-widest uppercase text-[#9CA3AF] font-semibold">
               Your Network
             </div>
@@ -154,7 +154,7 @@ export const HomeFeedView: React.FC<HomeFeedViewProps> = ({
           </div>
     ),
     explore: (
-          <div className="bg-[#0E121A] border border-white/10 rounded-xl p-4 space-y-3">
+          <div className="bg-[#12100C] border border-white/10 rounded-xl p-4 space-y-3">
             <div className="text-[11px] font-mono tracking-widest uppercase text-[#9CA3AF] font-semibold">
               Explore
             </div>
@@ -186,7 +186,7 @@ export const HomeFeedView: React.FC<HomeFeedViewProps> = ({
     introduce: (
           <div
             onClick={() => onNavigate('intros')}
-            className="p-4 rounded-xl border border-[#F5B027]/30 bg-gradient-to-br from-[#121A2C] to-[#0A0D15] cursor-pointer hover:border-[#F5B027] transition-colors group"
+            className="p-4 rounded-xl border border-[#F5B027]/30 bg-gradient-to-br from-[#12100C] to-[#12100C] cursor-pointer hover:border-[#F5B027] transition-colors group"
           >
             <div className="flex items-center justify-between text-xs font-semibold text-white mb-1">
               <span>Introduce a colleague</span>
@@ -198,7 +198,7 @@ export const HomeFeedView: React.FC<HomeFeedViewProps> = ({
           </div>
     ),
     need: (
-          <div className="bg-[#0E121A] border border-white/10 rounded-xl p-4 space-y-3">
+          <div className="bg-[#12100C] border border-white/10 rounded-xl p-4 space-y-3">
             <div className="text-[11px] font-mono tracking-widest uppercase text-[#9CA3AF] font-semibold">What do you need right now?</div>
             <p className="text-[11px] text-[#9CA3AF]">Post an ask — a hire, an investor, a customer. Intros finds the people who can help.</p>
             <div className="flex flex-wrap gap-1.5">
@@ -209,13 +209,13 @@ export const HomeFeedView: React.FC<HomeFeedViewProps> = ({
           </div>
     ),
     ask: (
-          <div onClick={() => onNavigate('workspace')} className="p-4 rounded-xl border border-white/10 bg-[#0B0D0F] cursor-pointer hover:border-[#F5B027] transition-colors">
+          <div onClick={() => onNavigate('workspace')} className="p-4 rounded-xl border border-white/10 bg-[#12100C] cursor-pointer hover:border-[#F5B027] transition-colors">
             <div className="text-[11px] font-mono tracking-widest uppercase text-[#F4A125] font-semibold mb-1">Ask Intros</div>
             <p className="text-xs text-[#F2EEE6]">"Who in my network can open a door at a Fortune 500 buyer?"</p>
           </div>
     ),
     sectors: (
-          <div className="bg-[#0E121A] border border-white/10 rounded-xl p-4 space-y-3">
+          <div className="bg-[#12100C] border border-white/10 rounded-xl p-4 space-y-3">
             <div className="flex items-center justify-between text-[11px] font-mono tracking-widest uppercase text-[#9CA3AF] font-semibold">
               <span>Trending Sectors</span>
               <button
@@ -230,7 +230,7 @@ export const HomeFeedView: React.FC<HomeFeedViewProps> = ({
                 <div
                   key={sector.id}
                   onClick={() => onNavigate('people')}
-                  className="flex items-center justify-between py-1 text-xs text-[#E2E8F0] hover:text-[#F5B027] transition-colors cursor-pointer"
+                  className="flex items-center justify-between py-1 text-xs text-[#FFC85C] hover:text-[#F5B027] transition-colors cursor-pointer"
                 >
                   <span className="flex items-center gap-2">
                     <span className="w-4 h-4 rounded-full bg-white/5 text-[10px] flex items-center justify-center font-mono text-[#9CA3AF]">
@@ -245,7 +245,7 @@ export const HomeFeedView: React.FC<HomeFeedViewProps> = ({
           </div>
     ),
     events: (
-          <div className="bg-[#0E121A] border border-white/10 rounded-xl p-4 space-y-3">
+          <div className="bg-[#12100C] border border-white/10 rounded-xl p-4 space-y-3">
             <div className="flex items-center justify-between text-[11px] font-mono tracking-widest uppercase text-[#9CA3AF] font-semibold">
               <span>Upcoming Business Events</span>
               <span className="text-[#F5B027] text-[10px]">Curated</span>
@@ -254,7 +254,7 @@ export const HomeFeedView: React.FC<HomeFeedViewProps> = ({
               {eventsList.map((evt) => (
                 <div key={evt.id} className="flex items-start justify-between gap-2 text-xs">
                   <div className="flex items-start gap-2.5">
-                    <div className="w-9 h-9 rounded bg-[#131722] border border-white/10 flex flex-col items-center justify-center font-mono shrink-0">
+                    <div className="w-9 h-9 rounded bg-[#12100c] border border-white/10 flex flex-col items-center justify-center font-mono shrink-0">
                       <span className="text-[8px] text-[#9CA3AF] leading-none">{evt.dateMonth}</span>
                       <span className="text-xs font-bold text-white leading-tight">{evt.dateDay}</span>
                     </div>
@@ -279,7 +279,7 @@ export const HomeFeedView: React.FC<HomeFeedViewProps> = ({
           </div>
     ),
     circles: (
-          <div className="bg-[#0E121A] border border-white/10 rounded-xl p-4 space-y-3">
+          <div className="bg-[#12100C] border border-white/10 rounded-xl p-4 space-y-3">
             <div className="flex items-center justify-between text-[11px] font-mono tracking-widest uppercase text-[#9CA3AF] font-semibold">
               <span>Suggested Circles</span>
             </div>
@@ -306,7 +306,7 @@ export const HomeFeedView: React.FC<HomeFeedViewProps> = ({
           </div>
     ),
     whynow: (
-          <div className="bg-[#0E121A] border border-white/10 rounded-xl p-4 space-y-3">
+          <div className="bg-[#12100C] border border-white/10 rounded-xl p-4 space-y-3">
             <div className="text-[11px] font-mono tracking-widest uppercase text-[#9CA3AF] font-semibold">Why now</div>
             <p className="font-serif text-lg leading-snug text-[#F2EEE6]">Know who matters. Know why now.</p>
             <p className="text-[11px] text-[#9CA3AF]">Intros watches role changes, open asks and cooling conversations so the right moment doesn't pass.</p>
@@ -318,7 +318,7 @@ export const HomeFeedView: React.FC<HomeFeedViewProps> = ({
   return (
     <div className="w-full max-w-7xl mx-auto px-4 md:px-8 py-6 space-y-8 animate-fadeIn">
       {/* Editorial Hero Banner */}
-      <section className="relative overflow-hidden rounded-2xl border border-white/10 bg-gradient-to-br from-[#0C1017] via-[#090C10] to-[#07090C] p-6 lg:p-8">
+      <section className="relative overflow-hidden rounded-2xl border border-white/10 bg-gradient-to-br from-[#12100C] via-[#12100C] to-[#12100C] p-6 lg:p-8">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
           {/* Hero Left: Editorial Headline & Value Proposition */}
           <div className="lg:col-span-7 space-y-5">
@@ -375,7 +375,7 @@ export const HomeFeedView: React.FC<HomeFeedViewProps> = ({
 
           {/* Hero Right: "Who to Meet This Week" Spotlight or Floating Connection Bubbles */}
           <div className="lg:col-span-5 flex flex-col items-center">
-            <div className="w-full bg-[#111622]/90 border border-white/10 rounded-xl p-5 relative overflow-hidden backdrop-blur-sm shadow-xl">
+            <div className="w-full bg-[#12100c]/90 border border-white/10 rounded-xl p-5 relative overflow-hidden backdrop-blur-sm shadow-xl">
               <div className="flex items-center justify-between mb-3">
                 <div className="flex items-center gap-1 bg-white/5 p-0.5 rounded-lg border border-white/10">
                   <button
@@ -406,7 +406,7 @@ export const HomeFeedView: React.FC<HomeFeedViewProps> = ({
 
               {heroVisualMode === 'bubbles' ? (
                 <div className="space-y-3">
-                  <div className="h-[270px] w-full rounded-lg border border-white/10 overflow-hidden bg-[#07090C]/80 relative">
+                  <div className="h-[270px] w-full rounded-lg border border-white/10 overflow-hidden bg-[#12100C]/80 relative">
                     <FloatingConnectionField
                       members={networkMembers}
                       onSelectMember={(id) => onNavigate('profile', id)}
@@ -452,7 +452,7 @@ export const HomeFeedView: React.FC<HomeFeedViewProps> = ({
                     </div>
                   </div>
 
-                  <p className="text-xs text-[#CBD5E1] line-clamp-2 italic mb-3">
+                  <p className="text-xs text-[#FFC85C] line-clamp-2 italic mb-3">
                     "{elena.bioStatement}"
                   </p>
 
@@ -512,7 +512,7 @@ export const HomeFeedView: React.FC<HomeFeedViewProps> = ({
         {/* Center Column: Feed Post Composer & Feed Stream */}
         <main className="space-y-6">
           {/* Post Composer */}
-          <div className="bg-[#0E121A] border border-white/10 rounded-xl p-4 shadow-sm">
+          <div className="bg-[#12100C] border border-white/10 rounded-xl p-4 shadow-sm">
             <form onSubmit={handleCreatePost}>
               <div className="flex items-start gap-3 mb-3">
                 <ExecutivePortrait name="Sarah Chen" size="sm" />
@@ -521,7 +521,7 @@ export const HomeFeedView: React.FC<HomeFeedViewProps> = ({
                   onChange={(e) => setComposerText(e.target.value)}
                   placeholder="Share an insight, milestone, or opportunity..."
                   rows={2}
-                  className="w-full bg-[#131722] text-xs text-white placeholder-[#6B7280] rounded-lg p-3 border border-white/10 focus:outline-none focus:border-[#F5B027] resize-none"
+                  className="w-full bg-[#12100c] text-xs text-white placeholder-[#6B7280] rounded-lg p-3 border border-white/10 focus:outline-none focus:border-[#F5B027] resize-none"
                 />
               </div>
 
@@ -578,7 +578,7 @@ export const HomeFeedView: React.FC<HomeFeedViewProps> = ({
               {attachments.length > 0 && (
                 <div className="flex flex-wrap gap-1.5 pt-2">
                   {attachments.map((f, i) => (
-                    <span key={i} className="flex items-center gap-1 max-w-[220px] text-[11px] text-[#CBD5E1] bg-white/5 border border-white/10 rounded px-2 py-0.5">
+                    <span key={i} className="flex items-center gap-1 max-w-[220px] text-[11px] text-[#FFC85C] bg-white/5 border border-white/10 rounded px-2 py-0.5">
                       <span className="truncate">{f.name}</span>
                       <button type="button" aria-label={`Remove ${f.name}`} onClick={() => setAttachments((p) => p.filter((_, j) => j !== i))} className="text-[#9CA3AF] hover:text-white cursor-pointer">×</button>
                     </span>
@@ -619,7 +619,7 @@ export const HomeFeedView: React.FC<HomeFeedViewProps> = ({
             {posts.map((post) => (
               <article
                 key={post.id}
-                className="bg-[#0E121A] border border-white/10 rounded-xl p-5 space-y-4 hover:border-white/20 transition-all shadow-sm"
+                className="bg-[#12100C] border border-white/10 rounded-xl p-5 space-y-4 hover:border-white/20 transition-all shadow-sm"
               >
                 {/* Author row */}
                 <div className="flex items-start justify-between">
@@ -649,20 +649,20 @@ export const HomeFeedView: React.FC<HomeFeedViewProps> = ({
                   </div>
 
                   {post.badge && (
-                    <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-white/5 border border-white/10 text-[#CBD5E1]">
+                    <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-white/5 border border-white/10 text-[#FFC85C]">
                       {post.badge}
                     </span>
                   )}
                 </div>
 
                 {/* Content */}
-                <p className="text-xs md:text-sm text-[#E2E8F0] leading-relaxed">
+                <p className="text-xs md:text-sm text-[#FFC85C] leading-relaxed">
                   {post.content}
                 </p>
 
                 {/* Link Preview (if present) */}
                 {post.linkPreview && (
-                  <div className="border border-white/10 rounded-lg p-3 bg-[#131722] hover:border-white/20 transition-colors cursor-pointer">
+                  <div className="border border-white/10 rounded-lg p-3 bg-[#12100c] hover:border-white/20 transition-colors cursor-pointer">
                     <div className="text-[10px] font-mono text-[#F5B027] uppercase mb-0.5">
                       {post.linkPreview.domain}
                     </div>

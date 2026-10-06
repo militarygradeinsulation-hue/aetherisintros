@@ -16,10 +16,10 @@ if (typeof window !== 'undefined') {
 const STYLES = `
 .cinematic-footer-wrapper {
   /* Ask Intros noir tokens, mapped onto the shadcn-style variable names the effect uses */
-  --background: #0B0D0F;
+  --background: #12100C;
   --foreground: #F1EFE9;
-  --primary: #0F5CCB;
-  --secondary: #1A1F25;
+  --primary: #C78522;
+  --secondary: #12100C;
   --destructive: #F4A125;
 
   --pill-bg-1: color-mix(in oklch, var(--foreground) 4%, transparent);

@@ -78,7 +78,7 @@ export const NetworkSnapshotPrintView: React.FC<NetworkSnapshotPrintViewProps> =
   }, [members, cx, cy]);
 
   return (
-    <div className="hidden print:block print-snapshot-container w-full bg-[#07090C] text-[#F2EEE6] p-6 space-y-6">
+    <div className="hidden print:block print-snapshot-container w-full bg-[#12100C] text-[#F2EEE6] p-6 space-y-6">
       {/* 1. Executive Letterhead & Document Metadata */}
       <header className="border-b-2 border-[#F5B027] pb-4 flex items-start justify-between">
         <div className="space-y-1">
@@ -102,7 +102,7 @@ export const NetworkSnapshotPrintView: React.FC<NetworkSnapshotPrintViewProps> =
       </header>
 
       {/* 2. Snapshot Filter & Scope Summary Bar */}
-      <div className="grid grid-cols-4 gap-3 bg-[#0E121A] border border-white/10 rounded-xl p-3.5 text-xs">
+      <div className="grid grid-cols-4 gap-3 bg-[#12100C] border border-white/10 rounded-xl p-3.5 text-xs">
         <div>
           <div className="text-[10px] font-mono text-[#9CA3AF] uppercase">Active Cluster</div>
           <div className="text-sm font-bold text-white mt-0.5 capitalize">{activeCluster} Cluster</div>
@@ -117,14 +117,14 @@ export const NetworkSnapshotPrintView: React.FC<NetworkSnapshotPrintViewProps> =
         </div>
         <div>
           <div className="text-[10px] font-mono text-[#9CA3AF] uppercase">Tier Breakdown</div>
-          <div className="text-xs font-mono text-[#CBD5E1] mt-0.5">
+          <div className="text-xs font-mono text-[#FFC85C] mt-0.5">
             {coreCount} Core · {extendedCount} Ext · {prospectCount} Prosp
           </div>
         </div>
       </div>
 
       {/* 3. High-Resolution Visual Vector Web / Radar Constellation */}
-      <div className="bg-[#090C11] border border-white/10 rounded-xl p-4 overflow-hidden relative shadow-lg print-break-inside-avoid">
+      <div className="bg-[#12100C] border border-white/10 rounded-xl p-4 overflow-hidden relative shadow-lg print-break-inside-avoid">
         <div className="flex items-center justify-between text-[10px] font-mono uppercase tracking-wider text-[#9CA3AF] mb-2 border-b border-white/5 pb-1.5">
           <span className="flex items-center gap-1.5 text-[#F5B027] font-semibold">
             <Compass className="w-3.5 h-3.5" />
@@ -133,14 +133,14 @@ export const NetworkSnapshotPrintView: React.FC<NetworkSnapshotPrintViewProps> =
           <span>Scale 1:1 · Infinite Vector Resolution</span>
         </div>
 
-        <div className="relative w-full h-[480px] bg-[#07090C] rounded-lg overflow-hidden border border-white/5">
+        <div className="relative w-full h-[480px] bg-[#12100C] rounded-lg overflow-hidden border border-white/5">
           {/* SVG Background Radar Rings & Primary Connection Strands */}
           <svg className="absolute inset-0 w-full h-full pointer-events-none" viewBox={`0 0 ${width} ${height}`}>
             <defs>
               <radialGradient id="printRadarGrad" cx="50%" cy="50%" r="50%">
                 <stop offset="0%" stopColor="#F5B027" stopOpacity="0.12" />
                 <stop offset="60%" stopColor="#F5B027" stopOpacity="0.03" />
-                <stop offset="100%" stopColor="#07090C" stopOpacity="0" />
+                <stop offset="100%" stopColor="#12100C" stopOpacity="0" />
               </radialGradient>
             </defs>
 
@@ -155,7 +155,7 @@ export const NetworkSnapshotPrintView: React.FC<NetworkSnapshotPrintViewProps> =
                 cy={cy}
                 r={r}
                 fill="none"
-                stroke="rgba(61, 107, 242, 0.18)"
+                stroke="rgba(199, 133, 34, 0.18)"
                 strokeWidth="1"
                 strokeDasharray={i % 2 === 0 ? '4 4' : undefined}
               />
@@ -171,7 +171,7 @@ export const NetworkSnapshotPrintView: React.FC<NetworkSnapshotPrintViewProps> =
                   y1={cy}
                   x2={cx + Math.cos(rad) * 220}
                   y2={cy + Math.sin(rad) * 220}
-                  stroke="rgba(61, 107, 242, 0.12)"
+                  stroke="rgba(199, 133, 34, 0.12)"
                   strokeWidth="0.8"
                 />
               );
@@ -189,7 +189,7 @@ export const NetworkSnapshotPrintView: React.FC<NetworkSnapshotPrintViewProps> =
                       y1={n1.y}
                       x2={n2.x}
                       y2={n2.y}
-                      stroke="rgba(96, 165, 250, 0.45)"
+                      stroke="rgba(255, 200, 92, 0.45)"
                       strokeWidth="1.2"
                     />
                   );
@@ -206,7 +206,7 @@ export const NetworkSnapshotPrintView: React.FC<NetworkSnapshotPrintViewProps> =
               { x: cx + 80, y: cy + 90, label: 'Enterprise GTM' },
             ].map((micro, idx) => (
               <g key={idx}>
-                <circle cx={micro.x} cy={micro.y} r={3} fill="#93C5FD" />
+                <circle cx={micro.x} cy={micro.y} r={3} fill="#FFC85C" />
                 <text
                   x={micro.x + 6}
                   y={micro.y + 3}
@@ -241,7 +241,7 @@ export const NetworkSnapshotPrintView: React.FC<NetworkSnapshotPrintViewProps> =
                     height: `${radius * 2}px`,
                     borderColor: ringColor,
                   }}
-                  className="relative rounded-full border-2 bg-[#0E121A] overflow-hidden shadow-lg shadow-black/80"
+                  className="relative rounded-full border-2 bg-[#12100C] overflow-hidden shadow-lg shadow-black/80"
                 >
                   <img
                     src={portraitUrl}
@@ -259,7 +259,7 @@ export const NetworkSnapshotPrintView: React.FC<NetworkSnapshotPrintViewProps> =
 
                 {/* Name & Title Label Pill */}
                 <div className="mt-1.5 flex flex-col items-center">
-                  <span className="bg-[#0E121A] border border-white/20 text-white font-semibold text-[9.5px] px-2 py-0.5 rounded-md whitespace-nowrap shadow-sm">
+                  <span className="bg-[#12100C] border border-white/20 text-white font-semibold text-[9.5px] px-2 py-0.5 rounded-md whitespace-nowrap shadow-sm">
                     {member.name}
                   </span>
                   <span className="text-[8px] text-[#9CA3AF] whitespace-nowrap mt-0.5">
@@ -279,10 +279,10 @@ export const NetworkSnapshotPrintView: React.FC<NetworkSnapshotPrintViewProps> =
           <span>{members.length} Documented Executives</span>
         </div>
 
-        <div className="border border-white/10 rounded-xl overflow-hidden bg-[#090C11]">
+        <div className="border border-white/10 rounded-xl overflow-hidden bg-[#12100C]">
           <table className="w-full text-left text-xs border-collapse">
             <thead>
-              <tr className="bg-[#0E121A] border-b border-white/10 text-[10px] font-mono text-[#9CA3AF] uppercase">
+              <tr className="bg-[#12100C] border-b border-white/10 text-[10px] font-mono text-[#9CA3AF] uppercase">
                 <th className="p-2.5">Member</th>
                 <th className="p-2.5">Title & Organization</th>
                 <th className="p-2.5">Tier</th>
@@ -331,7 +331,7 @@ export const NetworkSnapshotPrintView: React.FC<NetworkSnapshotPrintViewProps> =
                   <td className="p-2.5">
                     <div className="flex flex-wrap gap-1">
                       {m.focusAreas.slice(0, 2).map((fa, i) => (
-                        <span key={i} className="text-[9px] text-[#CBD5E1] bg-white/5 px-1.5 py-0.2 rounded border border-white/5">
+                        <span key={i} className="text-[9px] text-[#FFC85C] bg-white/5 px-1.5 py-0.2 rounded border border-white/5">
                           {fa}
                         </span>
                       ))}

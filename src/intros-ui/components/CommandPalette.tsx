@@ -425,7 +425,7 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({
       case 'followup':
         return 'bg-[#F5B027] shadow-[0_0_8px_rgba(242,169,59,0.7)]';
       case 'dormant':
-        return 'bg-[#64748B]';
+        return 'bg-[#C78522]';
       default:
         return 'bg-[#F5B027]';
     }
@@ -439,11 +439,11 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({
       onKeyDown={handleKeyDownInList}
     >
       <div
-        className="sys-tile w-full max-w-2xl shadow-2xl border border-[rgba(255,255,255,0.18)] bg-[#0A0D12] rounded-2xl overflow-hidden flex flex-col max-h-[80vh]"
+        className="sys-tile w-full max-w-2xl shadow-2xl border border-[rgba(255,255,255,0.18)] bg-[#12100C] rounded-2xl overflow-hidden flex flex-col max-h-[80vh]"
         role="dialog"
       >
         {/* Main Search Input */}
-        <div className="p-4 border-b border-white/10 flex items-center gap-3 bg-[#07090C]/80">
+        <div className="p-4 border-b border-white/10 flex items-center gap-3 bg-[#12100C]/80">
           <div className="relative shrink-0">
             <Search size={18} className="text-[#F5B027]" />
             <Sparkles size={8} className="absolute -top-1 -right-1 text-[#C78522] animate-pulse" />
@@ -482,7 +482,7 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({
         </div>
 
         {/* Toolbar Bar: Sort Dropdown & Quick Actions */}
-        <div className="px-4 py-2 border-b border-white/10 bg-[#0E1116] flex flex-wrap items-center justify-between gap-2 text-xs">
+        <div className="px-4 py-2 border-b border-white/10 bg-[#12100C] flex flex-wrap items-center justify-between gap-2 text-xs">
           {/* Predictive Banner State */}
           <div className="flex items-center gap-2">
             <div className="flex items-center gap-1.5 text-[10px] font-mono text-[#F5B027] uppercase font-bold tracking-wider">
@@ -497,9 +497,9 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({
                 onChange={(e) => onSortChange && onSortChange(e.target.value as SortMode)}
                 className="bg-transparent text-[#F2EEE6]/80 text-[10px] font-mono focus:outline-none cursor-pointer"
               >
-                <option value="last_engaged" className="bg-[#0E1116] text-[#F2EEE6]">Last Engaged</option>
-                <option value="name" className="bg-[#0E1116] text-[#F2EEE6]">Name (A–Z)</option>
-                <option value="urgency" className="bg-[#0E1116] text-[#F2EEE6]">Urgency Level</option>
+                <option value="last_engaged" className="bg-[#12100C] text-[#F2EEE6]">Last Engaged</option>
+                <option value="name" className="bg-[#12100C] text-[#F2EEE6]">Name (A–Z)</option>
+                <option value="urgency" className="bg-[#12100C] text-[#F2EEE6]">Urgency Level</option>
               </select>
             </div>
           </div>
@@ -557,7 +557,7 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({
                   onMouseEnter={() => setSelectedIndex(idx)}
                   className={`w-full p-2.5 rounded-xl text-left flex items-center justify-between gap-3 transition-all ${
                     isSelected
-                      ? 'bg-[#151922] border border-[#F5B027]/60 shadow-lg translate-x-0.5'
+                      ? 'bg-[#12100c] border border-[#F5B027]/60 shadow-lg translate-x-0.5'
                       : 'hover:bg-white/5 border border-transparent'
                   }`}
                 >
@@ -572,7 +572,7 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({
                         <span
                           className={`absolute -bottom-0.5 -right-0.5 w-2 h-2 rounded-full ${getStatusDot(
                             item.person.engagement
-                          )} ring-1 ring-[#0E1116]`}
+                          )} ring-1 ring-[#12100C]`}
                         />
                       </div>
                     ) : item.type === 'action' ? (
@@ -624,7 +624,7 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({
         </div>
 
         {/* Footer Navigation Hints */}
-        <div className="p-2.5 border-t border-white/10 bg-[#07090C] flex items-center justify-between text-[10px] font-mono text-[#F2EEE6]/50">
+        <div className="p-2.5 border-t border-white/10 bg-[#12100C] flex items-center justify-between text-[10px] font-mono text-[#F2EEE6]/50">
           <div className="flex items-center gap-3">
             <span>
               <kbd className="px-1 py-0.2 rounded bg-white/10 text-white font-bold">↑</kbd> <kbd className="px-1 py-0.2 rounded bg-white/10 text-white font-bold">↓</kbd> navigate

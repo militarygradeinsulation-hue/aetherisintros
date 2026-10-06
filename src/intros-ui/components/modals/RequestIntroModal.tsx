@@ -35,7 +35,7 @@ export const RequestIntroModal: React.FC<RequestIntroModalProps> = ({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-fadeIn">
-      <div className="relative w-full max-w-lg bg-[#0E1218] border border-white/10 rounded-2xl shadow-2xl p-6 text-[#F2EEE6] overflow-hidden">
+      <div className="relative w-full max-w-lg bg-[#12100C] border border-white/10 rounded-2xl shadow-2xl p-6 text-[#F2EEE6] overflow-hidden">
         {/* Close Button */}
         <button
           onClick={onClose}
@@ -93,7 +93,7 @@ export const RequestIntroModal: React.FC<RequestIntroModalProps> = ({
               <select
                 value={sharedGoal}
                 onChange={(e) => setSharedGoal(e.target.value)}
-                className="w-full bg-[#151A24] border border-white/10 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-[#F5B027]"
+                className="w-full bg-[#12100C] border border-white/10 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-[#F5B027]"
               >
                 <option value="Explore strategic partnership & infrastructure synergies">
                   Explore strategic partnership & infrastructure synergies
@@ -125,7 +125,7 @@ export const RequestIntroModal: React.FC<RequestIntroModalProps> = ({
                 onChange={(e) => setNote(e.target.value)}
                 rows={3}
                 placeholder={`Hi ${targetMember.firstName}, I'd love to connect regarding your focus on ${targetMember.focusAreas[0] || 'AI infrastructure'}...`}
-                className="w-full bg-[#151A24] border border-white/10 rounded-lg p-3 text-xs text-white placeholder-[#6B7280] focus:outline-none focus:border-[#F5B027]"
+                className="w-full bg-[#12100C] border border-white/10 rounded-lg p-3 text-xs text-white placeholder-[#6B7280] focus:outline-none focus:border-[#F5B027]"
               />
             </div>
 
