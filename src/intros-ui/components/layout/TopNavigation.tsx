@@ -73,23 +73,23 @@ export const TopNavigation: React.FC<TopNavigationProps> = ({
                   isActive
                     ? 'text-white font-semibold'
                     : item.isBubbles
-                      ? 'text-[#F5B027] hover:text-white'
+                      ? 'text-[var(--acc)] hover:text-white'
                       : 'text-[#9CA3AF] hover:text-[#F2EEE6]'
                 }`}
               >
                 <span className="flex items-center gap-1">
                   {item.isBubbles && (
-                    <Orbit className="w-3 h-3 text-[#F5B027] animate-spin-slow" />
+                    <Orbit className="w-3 h-3 text-[var(--acc)] animate-spin-slow" />
                   )}
                   {item.label}
                   {item.badge !== undefined && item.badge > 0 && (
-                    <span className="inline-flex items-center justify-center text-[9px] font-mono px-1 py-[1px] rounded-full bg-[#F5B027] text-[#101216] font-semibold">
+                    <span className="inline-flex items-center justify-center text-[9px] font-mono px-1 py-[1px] rounded-full bg-[var(--acc)] text-[var(--acc-deep)] font-semibold">
                       {item.badge}
                     </span>
                   )}
                 </span>
                 {isActive && (
-                  <span className="absolute bottom-[-6px] left-0 right-0 h-[2px] bg-[#F5B027] shadow-[0_0_8px_#F5B027]" />
+                  <span className="absolute bottom-[-6px] left-0 right-0 h-[2px] bg-[var(--acc)] shadow-[0_0_8px_var(--acc)]" />
                 )}
               </button>
             );
@@ -106,7 +106,7 @@ export const TopNavigation: React.FC<TopNavigationProps> = ({
               value={searchQuery}
               onChange={(e) => onSearchChange(e.target.value)}
               placeholder="Search..."
-              className="w-full bg-[#0F131A] text-xs text-[#F2EEE6] placeholder-[#6B7280] rounded-lg pl-8 pr-7 py-1.5 border border-white/10 focus:outline-none focus:border-[#F5B027] focus:ring-1 focus:ring-[#F5B027] transition-all"
+              className="w-full bg-[#0F131A] text-xs text-[#F2EEE6] placeholder-[#6B7280] rounded-lg pl-8 pr-7 py-1.5 border border-white/10 focus:outline-none focus:border-[var(--acc)] focus:ring-1 focus:ring-[var(--acc)] transition-all"
             />
             <kbd className="absolute right-2 top-1/2 -translate-y-1/2 text-[10px] font-mono text-[#6B7280] bg-white/5 border border-white/10 px-1 rounded hidden lg:block">
               /
@@ -120,7 +120,7 @@ export const TopNavigation: React.FC<TopNavigationProps> = ({
             className="relative p-1.5 md:p-2 text-[#9CA3AF] hover:text-[#F2EEE6] hover:bg-white/5 rounded-lg transition-colors cursor-pointer"
           >
             <Bell className="w-4 h-4" />
-            <span className="absolute top-1 right-1 w-2 h-2 rounded-full bg-[#F5B027] ring-2 ring-[#07090C]" />
+            <span className="absolute top-1 right-1 w-2 h-2 rounded-full bg-[var(--acc)] ring-2 ring-[#07090C]" />
           </button>
 
           {/* Current User Profile Pill */}
