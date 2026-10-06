@@ -102,7 +102,6 @@ function LandingPage({ signedIn }: { signedIn: boolean }) {
         </div>
       </section>
 
-      <Capabilities />
-    </main>
+    </section>
   )
 }
