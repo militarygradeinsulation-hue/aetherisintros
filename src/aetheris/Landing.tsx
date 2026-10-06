@@ -1,7 +1,9 @@
+import { useEffect, useState } from 'react'
 import { ArrowRight } from 'lucide-react'
 import { Link } from '@tanstack/react-router'
 import landingPortraitAsset from '@/assets/aetheris-home-portrait.jpg.asset.json'
 import showcaseAsset from '@/assets/one-connected-system.png.asset.json'
+import MetroHero from '@/components/ui/scroll-locked-video-hero'
 
 import { useAccess } from './access'
 
