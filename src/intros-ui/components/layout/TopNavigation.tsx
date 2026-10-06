@@ -1,4 +1,5 @@
 import React from 'react';
+import { AskIntrosLockup } from '@/aetheris/AskIntrosLockup';
 import { Search, Bell, Sparkles, Orbit } from 'lucide-react';
 import { ExecutivePortrait } from '../shared/ExecutivePortrait';
 
@@ -30,21 +31,7 @@ export const TopNavigation: React.FC<TopNavigationProps> = ({
             onClick={() => onNavigate('home')}
             className="flex items-center gap-2.5 text-left group cursor-pointer focus:outline-none"
           >
-            {/* Geometric Delta Logo */}
-            <div className="relative w-6 h-6 flex items-center justify-center">
-              <svg viewBox="0 0 24 24" className="w-5 h-5 filter drop-shadow-[0_0_8px_#3D6BF2]">
-                <polygon points="12,2 22,22 2,22" fill="#3D6BF2" />
-                <polygon points="12,8 18,20 6,20" fill="#07090C" />
-              </svg>
-            </div>
-            <div className="flex flex-col">
-              <span className="font-serif-editorial text-lg tracking-[0.16em] uppercase font-bold text-[#F2EEE6] group-hover:text-white transition-colors leading-none">
-                Aetheris
-              </span>
-              <span className="text-[9px] font-mono tracking-[0.25em] text-[#3D6BF2] uppercase leading-tight font-medium">
-                Intros
-              </span>
-            </div>
+            <AskIntrosLockup variant="compact" />
           </button>
         </div>
 

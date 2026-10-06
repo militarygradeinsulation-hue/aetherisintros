@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import './styles.css';
 import {
   NETWORK_MEMBERS,
   INITIAL_FEED_POSTS,
@@ -169,7 +170,7 @@ export default function App() {
     members.find((m) => m.id === selectedProfileId) || members[0];
 
   return (
-    <div className="min-h-screen bg-[#07090C] text-[#F2EEE6] flex flex-col font-sans selection:bg-[#3D6BF2]/30 selection:text-white">
+    <div className="ix-root min-h-screen bg-[#07090C] text-[#F2EEE6] flex flex-col font-sans selection:bg-[#3D6BF2]/30 selection:text-white">
       {/* Universal Top Navigation Contract */}
       <TopNavigation
         activePage={activePage}

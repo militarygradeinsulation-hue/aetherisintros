@@ -34,7 +34,7 @@ import { TileSummary } from '../../types';
 import { EngagementChart } from '../EngagementChart';
 import { RelationshipTierBadge } from '../RelationshipTierBadge';
 import { useVoiceRecorder } from '../../hooks/useVoiceRecorder';
-import emptyStateImg from '../../../assets/images/network_empty_state_1791252869482.jpg';
+import emptyStateImg from '../../assets/images/network_empty_state_1791252869482.jpg';
 
 interface PreviewProps {
   summary: TileSummary;
