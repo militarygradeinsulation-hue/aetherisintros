@@ -15,7 +15,7 @@ function useInView<T extends Element>(options?: IntersectionObserverInit) {
   useEffect(() => {
     const el = ref.current;
     if (!el || typeof IntersectionObserver === "undefined") return;
-    const io = new IntersectionObserver(([entry]) => setInView(entry.isIntersecting), options);
+    const io = new IntersectionObserver((entries) => setInView(entries[0]?.isIntersecting ?? true), options);
     io.observe(el);
     return () => io.disconnect();
     // eslint-disable-next-line react-hooks/exhaustive-deps
