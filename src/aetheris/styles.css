@@ -4978,3 +4978,4 @@ button.news-link{background:none;border:0;padding:0;cursor:pointer}
 .ix-classic [class*="editorial"],.ix-classic [class*="masthead"],.ix-classic [class*="-light"]{--ink:#F2EEE6;color:#F2EEE6!important}
 .ix-classic [class*="editorial"] :is(p,blockquote,dt,dd,span,strong,small,li,h1,h2,h3,h4),.ix-classic [class*="masthead"] :is(p,blockquote,dt,dd,span,strong,small,li,h1,h2,h3,h4){color:inherit}
 .ix-classic [class*="editorial"] :is(p,small,dd){color:#C9CDD3!important}
+.ix-classic .memory-cta,.ix-classic [class*="editorial"] button[class*="cta"],.ix-classic [class*="masthead"] button[class*="cta"]{background:#3D6BF2!important;border-color:#3D6BF2!important;color:#fff!important}
