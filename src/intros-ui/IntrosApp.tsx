@@ -188,7 +188,7 @@ export default function App({ mode = 'demo' }: { mode?: 'demo' | 'live' }) {
   // Find active profile
   const currentProfileMember =
     members.find((m) => m.id === selectedProfileId) || members[0];
-  const classicPages = ['news','workspace', ...(mode === 'live' ? ['messages','insights','intros'] : [])];
+  const classicPages = ['news','workspace','memory','work','insights', ...(mode === 'live' ? ['messages','intros'] : [])];
 
   return (
     <div className="ix-root min-h-screen bg-[#07090C] text-[#F2EEE6] flex flex-col font-sans selection:bg-[#3D6BF2]/30 selection:text-white relative isolate">
@@ -266,8 +266,8 @@ export default function App({ mode = 'demo' }: { mode?: 'demo' | 'live' }) {
           />
         )}
 
-        {mode === 'live' && activePage === 'insights' && <div className="ix-classic"><ClassicApp key="live-insights" mode={mode} startPage="insights" /></div>}
-        {mode !== 'live' && activePage === 'insights' && (
+        {activePage === 'insights' && <div className="ix-classic"><ClassicApp key="live-insights" mode={mode} startPage="insights" /></div>}
+        {false && (
           <InsightsDashboardView
             onNavigate={handleNavigate}
             onRequestIntro={(member) => setRequestIntroTarget(member)}
@@ -276,6 +276,8 @@ export default function App({ mode = 'demo' }: { mode?: 'demo' | 'live' }) {
         )}
 
         {activePage === 'news' && <div className="ix-classic"><ClassicApp key="news" mode={mode} startPage="news" /></div>}
+        {activePage === 'memory' && <div className="ix-classic"><ClassicApp key="memory" mode={mode} startPage="memory" /></div>}
+        {activePage === 'work' && <div className="ix-classic"><ClassicApp key="work" mode={mode} startPage="work" /></div>}
         {activePage === 'workspace' && <div className="ix-classic">
           <div className="ix-tools">
             {([['memory','Memory'],['crm','CRM'],['diagnostic','Company report'],['pocket','Pocket'],['needs','Needs'],['companies','Companies'],['opportunities','Opportunities'],['calendar','Calendar'],['grid','Grid'],['circles','Circles'],['events','Events'],['profile','My profile'],['preferences','Settings']] as const).map(([id, label]) =>
