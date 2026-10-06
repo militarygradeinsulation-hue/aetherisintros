@@ -12,6 +12,7 @@ import { useEffect, type ReactNode } from "react";
 
 import { Toaster } from "@/components/ui/sonner";
 import { CursorGlow } from "@/components/ui/cursor-glow";
+import { BrandFonts } from "@/aetheris/BrandFonts";
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 import { applyTextScale, readTextScale } from "../aetheris/textScale";
