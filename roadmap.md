@@ -295,3 +295,9 @@
 - [x] Publish latest build to intros.today (scheduled; user requested).
 - [x] Fresh security scan — same 5 warn/info items, no criticals.
 - [x] Design-system audit: route brand fonts through BrandFonts; skipped provider re-wrap, meta pins and token reconciliation after file inspection (diagnosis didn't hold or risked live regressions).
+
+## Accent shift: logo yellow over blue (Oct 6)
+- [ ] Header dots beside Ask Intros and Bubbles use the logo yellow.
+- [ ] Message/notification alerts use the logo yellow.
+- [ ] Blue buttons become light black or logo yellow across the shell.
+- [ ] Verify desktop and phone widths, then publish.
