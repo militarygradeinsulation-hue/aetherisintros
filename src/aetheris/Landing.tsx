@@ -34,11 +34,19 @@ function LandingPage({ signedIn }: { signedIn: boolean }) {
   const showDemo = !signedIn
   // The scroll-locked video intro plays first for signed-out visitors,
   // once per browser session, then hands off to the landing below.
-  const [introDone, setIntroDone] = useState(() => {
-    if (typeof window === 'undefined') return true
-    try { return signedIn || window.sessionStorage.getItem(INTRO_SEEN_KEY) === '1' } catch { return true }
-  })
-  const [introGone, setIntroGone] = useState(introDone)
+  // Decided after mount so server and first client render match.
+  const [introDone, setIntroDone] = useState(true)
+  const [introGone, setIntroGone] = useState(true)
+  const [introChecked, setIntroChecked] = useState(false)
+  useEffect(() => {
+    let seen = true
+    try { seen = signedIn || window.sessionStorage.getItem(INTRO_SEEN_KEY) === '1' } catch { /* private mode */ }
+    if (!seen) {
+      setIntroDone(false)
+      setIntroGone(false)
+    }
+    setIntroChecked(true)
+  }, [signedIn])
   useEffect(() => {
     if (!introDone || introGone) return
     try { window.sessionStorage.setItem(INTRO_SEEN_KEY, '1') } catch { /* private mode */ }
