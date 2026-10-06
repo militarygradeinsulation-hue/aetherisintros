@@ -37,7 +37,7 @@ export const RelationshipTierBadge: React.FC<RelationshipTierBadgeProps> = ({
           textColor: 'text-[#F5B027]',
           bgColor: 'bg-[#F5B027]/15',
           borderColor: 'border-[#F5B027]/40',
-          shadow: 'shadow-[0_0_8px_rgba(61,107,242,0.3)]',
+          shadow: 'shadow-[0_0_8px_rgba(199, 133, 34,0.3)]',
           symbol: '◆',
           tooltip: 'Tier 2 Strategic: Institutional allocators & key enterprise mandates',
         };

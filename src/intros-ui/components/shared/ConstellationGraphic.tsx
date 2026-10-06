@@ -212,7 +212,7 @@ export const ConstellationGraphic: React.FC<ConstellationGraphicProps> = ({
           </defs>
 
           {/* Connecting lines */}
-          <g stroke="rgba(61,107,242,0.4)" strokeWidth="1.2">
+          <g stroke="rgba(199, 133, 34,0.4)" strokeWidth="1.2">
             <line x1="190" y1="120" x2="260" y2="60" strokeDasharray="3 3" />
             <line x1="190" y1="120" x2="95" y2="80" />
             <line x1="190" y1="120" x2="290" y2="160" stroke="#F5B027" strokeWidth="2.5" />
@@ -350,10 +350,10 @@ export const ConstellationGraphic: React.FC<ConstellationGraphicProps> = ({
 
         {/* Orbit Rings */}
         <circle cx="140" cy="105" r="75" fill="none" stroke="rgba(255,255,255,0.06)" strokeDasharray="4 4" />
-        <circle cx="140" cy="105" r="45" fill="none" stroke="rgba(61,107,242,0.15)" />
+        <circle cx="140" cy="105" r="45" fill="none" stroke="rgba(199, 133, 34,0.15)" />
 
         {/* Radiating Lines to Center */}
-        <g stroke="rgba(61,107,242,0.4)" strokeWidth="1.2">
+        <g stroke="rgba(199, 133, 34,0.4)" strokeWidth="1.2">
           {networkRoles.map((role, idx) => (
             <line
               key={idx}

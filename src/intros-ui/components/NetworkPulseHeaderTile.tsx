@@ -20,7 +20,7 @@ export const NetworkPulseHeaderTile: React.FC<NetworkPulseHeaderTileProps> = ({
   const minVal = Math.min(...sparklineValues);
 
   return (
-    <div className="w-full mb-4 p-4 sm:p-5 rounded-2xl bg-gradient-to-r from-[#0E1116] via-[#121824] to-[#0E1116] border border-[#F5B027]/40 shadow-[0_0_30px_rgba(61,107,242,0.15)] flex flex-col lg:flex-row lg:items-center justify-between gap-4 select-none relative overflow-hidden">
+    <div className="w-full mb-4 p-4 sm:p-5 rounded-2xl bg-gradient-to-r from-[#0E1116] via-[#121824] to-[#0E1116] border border-[#F5B027]/40 shadow-[0_0_30px_rgba(199, 133, 34,0.15)] flex flex-col lg:flex-row lg:items-center justify-between gap-4 select-none relative overflow-hidden">
       {/* Background glow accent */}
       <div className="absolute -right-20 -top-20 w-60 h-60 bg-[#F5B027]/10 rounded-full blur-3xl pointer-events-none" aria-hidden="true" />
 
@@ -66,7 +66,7 @@ export const NetworkPulseHeaderTile: React.FC<NetworkPulseHeaderTileProps> = ({
                 style={{ height: `${heightPct}%` }}
                 className={`w-2.5 rounded-t transition-all ${
                   isLatest
-                    ? 'bg-[#F5B027] shadow-[0_0_10px_rgba(61,107,242,0.8)]'
+                    ? 'bg-[#F5B027] shadow-[0_0_10px_rgba(199, 133, 34,0.8)]'
                     : 'bg-white/25 hover:bg-white/40'
                 }`}
                 title={`Day ${idx + 1}: ${val} interactions`}

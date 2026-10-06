@@ -155,7 +155,7 @@ export const NetworkSnapshotPrintView: React.FC<NetworkSnapshotPrintViewProps> =
                 cy={cy}
                 r={r}
                 fill="none"
-                stroke="rgba(61, 107, 242, 0.18)"
+                stroke="rgba(199, 133, 34, 0.18)"
                 strokeWidth="1"
                 strokeDasharray={i % 2 === 0 ? '4 4' : undefined}
               />
@@ -171,7 +171,7 @@ export const NetworkSnapshotPrintView: React.FC<NetworkSnapshotPrintViewProps> =
                   y1={cy}
                   x2={cx + Math.cos(rad) * 220}
                   y2={cy + Math.sin(rad) * 220}
-                  stroke="rgba(61, 107, 242, 0.12)"
+                  stroke="rgba(199, 133, 34, 0.12)"
                   strokeWidth="0.8"
                 />
               );
@@ -189,7 +189,7 @@ export const NetworkSnapshotPrintView: React.FC<NetworkSnapshotPrintViewProps> =
                       y1={n1.y}
                       x2={n2.x}
                       y2={n2.y}
-                      stroke="rgba(96, 165, 250, 0.45)"
+                      stroke="rgba(255, 200, 92, 0.45)"
                       strokeWidth="1.2"
                     />
                   );
@@ -206,7 +206,7 @@ export const NetworkSnapshotPrintView: React.FC<NetworkSnapshotPrintViewProps> =
               { x: cx + 80, y: cy + 90, label: 'Enterprise GTM' },
             ].map((micro, idx) => (
               <g key={idx}>
-                <circle cx={micro.x} cy={micro.y} r={3} fill="#93C5FD" />
+                <circle cx={micro.x} cy={micro.y} r={3} fill="#FFC85C" />
                 <text
                   x={micro.x + 6}
                   y={micro.y + 3}

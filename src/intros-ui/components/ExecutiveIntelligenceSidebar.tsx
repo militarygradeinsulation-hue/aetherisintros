@@ -416,13 +416,13 @@ export const ExecutiveIntelligenceSidebar: React.FC<ExecutiveIntelligenceSidebar
                 </div>
 
                 {/* AI Predictive Blind Spot & Opportunity Analysis */}
-                <div className="p-3.5 rounded-lg bg-gradient-to-br from-[#120D1A] via-[#0E1116] to-[#0A0D12] border border-[#A855F7]/40 space-y-2.5 shadow-[0_0_20px_rgba(168,85,247,0.12)]">
+                <div className="p-3.5 rounded-lg bg-gradient-to-br from-[#120D1A] via-[#0E1116] to-[#0A0D12] border border-[#FFC85C]/40 space-y-2.5 shadow-[0_0_20px_rgba(255, 200, 92,0.12)]">
                   <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-1.5 text-[10px] font-mono text-[#C084FC] uppercase font-bold tracking-wider">
+                    <div className="flex items-center gap-1.5 text-[10px] font-mono text-[#FFC85C] uppercase font-bold tracking-wider">
                       <Sparkles size={12} />
                       <span>AI Predictive Blind Spot Analysis</span>
                     </div>
-                    <span className="text-[9px] font-mono px-1.5 py-0.2 rounded bg-[#A855F7]/20 text-[#C084FC] border border-[#A855F7]/30">
+                    <span className="text-[9px] font-mono px-1.5 py-0.2 rounded bg-[#FFC85C]/20 text-[#FFC85C] border border-[#FFC85C]/30">
                       LLM Grounded
                     </span>
                   </div>

@@ -322,7 +322,7 @@ export const PersistentGridCommandPalette: React.FC<PersistentGridCommandPalette
   return (
     <div ref={containerRef} className="relative w-full mb-4 z-30">
       {/* 1. Main Persistent Input Bar */}
-      <div className="w-full rounded-2xl bg-[#090C11]/90 backdrop-blur-xl border border-white/15 shadow-xl p-2 sm:p-2.5 flex flex-col md:flex-row md:items-center justify-between gap-2.5 transition-all focus-within:border-[#F5B027]/60 focus-within:shadow-[0_0_25px_rgba(61,107,242,0.2)]">
+      <div className="w-full rounded-2xl bg-[#090C11]/90 backdrop-blur-xl border border-white/15 shadow-xl p-2 sm:p-2.5 flex flex-col md:flex-row md:items-center justify-between gap-2.5 transition-all focus-within:border-[#F5B027]/60 focus-within:shadow-[0_0_25px_rgba(199, 133, 34,0.2)]">
         {/* Left: Search & Filter Input */}
         <div className="flex items-center gap-2 flex-1 min-w-0 px-2">
           <div className="text-[#F5B027] shrink-0">
@@ -511,7 +511,7 @@ export const PersistentGridCommandPalette: React.FC<PersistentGridCommandPalette
                 onClick={() => onSelectTag && onSelectTag(isSelected ? null : tag)}
                 className={`px-2 py-0.5 rounded text-[10px] font-mono transition-all flex items-center gap-1 ${
                   isSelected
-                    ? 'bg-[#F5B027] text-white font-bold shadow-[0_0_8px_rgba(61,107,242,0.5)]'
+                    ? 'bg-[#F5B027] text-white font-bold shadow-[0_0_8px_rgba(199, 133, 34,0.5)]'
                     : 'bg-white/5 text-[#F2EEE6]/75 hover:bg-white/10 hover:text-white'
                 }`}
               >

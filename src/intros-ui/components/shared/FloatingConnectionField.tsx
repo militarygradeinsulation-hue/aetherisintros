@@ -339,9 +339,9 @@ export const FloatingConnectionField: React.FC<FloatingConnectionFieldProps> = (
       // Smooth, gentle Radar Sweep Beam (slow, serene rotation ~22s per cycle)
       const sweepAngle = (now * 0.00028) % (Math.PI * 2);
       const sweepGradient = ctx.createRadialGradient(cx, cy, 0, cx, cy, radarMaxRadius);
-      sweepGradient.addColorStop(0, 'rgba(61, 107, 242, 0.14)');
-      sweepGradient.addColorStop(0.7, 'rgba(96, 165, 250, 0.04)');
-      sweepGradient.addColorStop(1, 'rgba(61, 107, 242, 0)');
+      sweepGradient.addColorStop(0, 'rgba(199, 133, 34, 0.14)');
+      sweepGradient.addColorStop(0.7, 'rgba(255, 200, 92, 0.04)');
+      sweepGradient.addColorStop(1, 'rgba(199, 133, 34, 0)');
 
       ctx.save();
       ctx.beginPath();
@@ -358,7 +358,7 @@ export const FloatingConnectionField: React.FC<FloatingConnectionFieldProps> = (
         cx + Math.cos(sweepAngle) * radarMaxRadius,
         cy + Math.sin(sweepAngle) * radarMaxRadius
       );
-      ctx.strokeStyle = 'rgba(147, 197, 253, 0.28)';
+      ctx.strokeStyle = 'rgba(255, 200, 92, 0.28)';
       ctx.lineWidth = 1.2;
       ctx.stroke();
       ctx.restore();
@@ -825,7 +825,7 @@ export const FloatingConnectionField: React.FC<FloatingConnectionFieldProps> = (
 
         ctx.beginPath();
         ctx.roundRect(node.x - pillW / 2, pillY - pillH / 2, pillW, pillH, 9);
-        ctx.fillStyle = isHovered ? 'rgba(61, 107, 242, 0.95)' : 'rgba(14, 18, 26, 0.88)';
+        ctx.fillStyle = isHovered ? 'rgba(199, 133, 34, 0.95)' : 'rgba(14, 18, 26, 0.88)';
         ctx.fill();
         ctx.strokeStyle = isHovered ? '#FFC85C' : 'rgba(255, 255, 255, 0.12)';
         ctx.lineWidth = 1;
@@ -991,7 +991,7 @@ export const FloatingConnectionField: React.FC<FloatingConnectionFieldProps> = (
           <linearGradient id="trail-grad-core" x1="0%" y1="0%" x2="100%" y2="100%">
             <stop offset="0%" stopColor="#F5B027" stopOpacity="0.05" />
             <stop offset="65%" stopColor="#FFC85C" stopOpacity="0.6" />
-            <stop offset="100%" stopColor="#93C5FD" stopOpacity="0.9" />
+            <stop offset="100%" stopColor="#FFC85C" stopOpacity="0.9" />
           </linearGradient>
           <linearGradient id="trail-grad-extended" x1="0%" y1="0%" x2="100%" y2="100%">
             <stop offset="0%" stopColor="#059669" stopOpacity="0.05" />

@@ -177,7 +177,7 @@ export const NetworkClusterHeatmapView: React.FC<NetworkClusterHeatmapViewProps>
     if (score >= 70) {
       return {
         bg: 'bg-gradient-to-br from-[#F5B027]/20 to-[#F5B027]/5',
-        border: 'border-[#F5B027]/35 shadow-[0_0_12px_rgba(61,107,242,0.15)]',
+        border: 'border-[#F5B027]/35 shadow-[0_0_12px_rgba(199, 133, 34,0.15)]',
         badge: 'bg-[#F5B027]/20 text-[#F5B027] border-[#F5B027]/40',
         text: 'text-[#F5B027]',
         label: 'Steady Cadence',

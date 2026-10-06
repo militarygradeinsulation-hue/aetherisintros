@@ -31,7 +31,7 @@ const CLUSTERS = [
   { id: 'capital', label: 'Capital & Syndicates', color: '#F5B027' },
   { id: 'aerospace', label: 'Deep Tech & Aerospace', color: '#C78522' },
   { id: 'sovereign', label: 'Sovereign Allocators', color: '#F5B027' },
-  { id: 'ai_deeptech', label: 'AI & Photonics', color: '#A855F7' },
+  { id: 'ai_deeptech', label: 'AI & Photonics', color: '#FFC85C' },
   { id: 'enterprise', label: 'Enterprise Strategy', color: '#D7C29A' },
 ];
 

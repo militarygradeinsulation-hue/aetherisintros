@@ -242,7 +242,7 @@ export const QuickAddContactModal: React.FC<QuickAddContactModalProps> = ({
             </button>
             <button
               type="submit"
-              className="px-5 py-2 rounded-lg bg-[#F5B027] hover:bg-[#F5B027]/90 text-white text-xs font-mono font-medium shadow-[0_0_15px_rgba(61,107,242,0.4)] transition-all"
+              className="px-5 py-2 rounded-lg bg-[#F5B027] hover:bg-[#F5B027]/90 text-white text-xs font-mono font-medium shadow-[0_0_15px_rgba(199, 133, 34,0.4)] transition-all"
             >
               Index Contact →
             </button>

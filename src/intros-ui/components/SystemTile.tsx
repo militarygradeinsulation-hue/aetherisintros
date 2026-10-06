@@ -68,7 +68,7 @@ export const SystemTile: React.FC<SystemTileProps> = ({
     }
     if (score >= 60) {
       return {
-        border: 'border-[#F5B027]/35 shadow-[0_0_12px_rgba(61,107,242,0.15)]',
+        border: 'border-[#F5B027]/35 shadow-[0_0_12px_rgba(199, 133, 34,0.15)]',
         bg: 'bg-gradient-to-b from-[#F5B027]/10 to-transparent',
         badgeColor: 'bg-[#F5B027]/20 text-[#F5B027] border-[#F5B027]/40',
       };
@@ -104,9 +104,9 @@ export const SystemTile: React.FC<SystemTileProps> = ({
       style={{
         animationDelay: staggerDelay,
       }}
-      className={`sys-tile group w-full h-[276px] sm:h-[286px] p-2.5 sm:p-3 flex flex-col justify-between text-left cursor-pointer focus-visible:outline-none select-none transition-all duration-200 hover:shadow-[0_0_15px_rgba(61,107,242,0.3)] relative overflow-hidden ${
+      className={`sys-tile group w-full h-[276px] sm:h-[286px] p-2.5 sm:p-3 flex flex-col justify-between text-left cursor-pointer focus-visible:outline-none select-none transition-all duration-200 hover:shadow-[0_0_15px_rgba(199, 133, 34,0.3)] relative overflow-hidden ${
         isKeyboardFocused
-          ? 'ring-2 ring-[#F5B027] shadow-[0_0_24px_rgba(61,107,242,0.45)] z-20 scale-[1.01]'
+          ? 'ring-2 ring-[#F5B027] shadow-[0_0_24px_rgba(199, 133, 34,0.45)] z-20 scale-[1.01]'
           : ''
       } ${
         isInactivityAlerted

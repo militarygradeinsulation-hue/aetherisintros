@@ -42,7 +42,7 @@ export const DailyDigestModal: React.FC<DailyDigestModalProps> = ({
         {/* Top Header Banner */}
         <div className="px-6 py-4 border-b border-white/10 bg-gradient-to-r from-[#0E1116] via-[#101726] to-[#0E1116] flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-[#F5B027]/20 border border-[#F5B027]/50 flex items-center justify-center text-[#F5B027] shadow-[0_0_15px_rgba(61,107,242,0.3)]">
+            <div className="w-10 h-10 rounded-xl bg-[#F5B027]/20 border border-[#F5B027]/50 flex items-center justify-center text-[#F5B027] shadow-[0_0_15px_rgba(199, 133, 34,0.3)]">
               <Sparkles size={20} />
             </div>
             <div>
@@ -227,7 +227,7 @@ export const DailyDigestModal: React.FC<DailyDigestModalProps> = ({
           </div>
           <button
             onClick={onClose}
-            className="px-6 py-2.5 rounded-xl bg-[#F5B027] hover:bg-[#F5B027]/90 text-white text-xs font-mono font-medium shadow-[0_0_20px_rgba(61,107,242,0.4)] transition-all flex items-center gap-2"
+            className="px-6 py-2.5 rounded-xl bg-[#F5B027] hover:bg-[#F5B027]/90 text-white text-xs font-mono font-medium shadow-[0_0_20px_rgba(199, 133, 34,0.4)] transition-all flex items-center gap-2"
           >
             <span>Enter Intelligence Grid</span>
             <ArrowRight size={14} />

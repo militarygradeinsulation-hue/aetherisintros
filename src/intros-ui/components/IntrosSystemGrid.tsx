@@ -1429,7 +1429,7 @@ export const IntrosSystemGrid: React.FC = () => {
       <div className="fixed bottom-20 right-6 z-40">
         <button
           onClick={() => setIsQuickAddOpen(true)}
-          className="px-4 py-3 rounded-2xl bg-[#F5B027] hover:bg-[#F5B027]/90 text-white font-mono text-xs font-medium shadow-[0_10px_30px_rgba(61,107,242,0.6)] flex items-center gap-2 transition-all active:scale-95 group"
+          className="px-4 py-3 rounded-2xl bg-[#F5B027] hover:bg-[#F5B027]/90 text-white font-mono text-xs font-medium shadow-[0_10px_30px_rgba(199, 133, 34,0.6)] flex items-center gap-2 transition-all active:scale-95 group"
           title="Quickly add a new executive contact (Quick Add)"
         >
           <span className="text-base font-bold">+</span>

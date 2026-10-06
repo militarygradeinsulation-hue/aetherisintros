@@ -174,9 +174,9 @@ export const ActivityHeatmap: React.FC<ActivityHeatmapProps> = ({
   // Color intensity helper
   const getCellColor = (count: number) => {
     if (count === 0) return 'bg-[#121620] border-white/[0.04] hover:border-white/20';
-    if (count === 1) return 'bg-[#1E3A8A]/80 border-[#F5B027]/40 hover:bg-[#C78522] text-white';
-    if (count === 2) return 'bg-[#C78522] border-[#FFC85C]/60 hover:bg-[#3B82F6] shadow-sm shadow-[#C78522]/40';
-    if (count === 3) return 'bg-[#F5B027] border-[#93C5FD] hover:bg-[#FFC85C] shadow-sm shadow-[#F5B027]/60';
+    if (count === 1) return 'bg-[#C78522]/80 border-[#F5B027]/40 hover:bg-[#C78522] text-white';
+    if (count === 2) return 'bg-[#C78522] border-[#FFC85C]/60 hover:bg-[#C78522] shadow-sm shadow-[#C78522]/40';
+    if (count === 3) return 'bg-[#F5B027] border-[#FFC85C] hover:bg-[#FFC85C] shadow-sm shadow-[#F5B027]/60';
     return 'bg-[#FFC85C] border-white hover:bg-white text-black shadow-md shadow-[#FFC85C]/70';
   };
 
@@ -409,9 +409,9 @@ export const ActivityHeatmap: React.FC<ActivityHeatmapProps> = ({
           <span className="text-[10px] text-[#6B7280]">0</span>
           <div className="flex items-center gap-1">
             <span className="w-3 h-3 rounded-xs bg-[#121620] border border-white/10" title="0 interactions" />
-            <span className="w-3 h-3 rounded-xs bg-[#1E3A8A] border border-[#F5B027]/40" title="1 interaction" />
+            <span className="w-3 h-3 rounded-xs bg-[#C78522] border border-[#F5B027]/40" title="1 interaction" />
             <span className="w-3 h-3 rounded-xs bg-[#C78522] border border-[#FFC85C]/60" title="2 interactions" />
-            <span className="w-3 h-3 rounded-xs bg-[#F5B027] border border-[#93C5FD]" title="3 interactions" />
+            <span className="w-3 h-3 rounded-xs bg-[#F5B027] border border-[#FFC85C]" title="3 interactions" />
             <span className="w-3 h-3 rounded-xs bg-[#FFC85C] border border-white" title="4+ interactions" />
           </div>
           <span className="text-[10px] text-[#6B7280]">4+ interactions</span>
