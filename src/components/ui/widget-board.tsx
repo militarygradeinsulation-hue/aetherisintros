@@ -625,13 +625,14 @@ const Widget = memo(function Widget({
 			<motion.div
 				initial={{ opacity: 0, y: 18, scale: 0.97 }}
 				animate={{ opacity: 1, y: 0, scale: 1 }}
+				{...(held ? {} : { whileHover: { y: -4, scale: 1.02, transition: { type: 'spring', stiffness: 320, damping: 24 } } })}
 				transition={{
 					type: 'spring',
 					visualDuration: 0.6,
 					bounce: 0.12,
 					delay,
 				}}
-				className={`relative isolate flex h-full w-full flex-col overflow-hidden rounded-[var(--widget-radius)] bg-[#0E121A] text-[#F2EEE6] ring-inset transition-shadow duration-300 [clip-path:inset(0_round_var(--widget-radius))] ${
+				className={`relative isolate flex h-full w-full flex-col overflow-hidden rounded-[var(--widget-radius)] bg-[#0E121A] text-[#F2EEE6] ring-inset transition-shadow duration-300 hover:shadow-[0_18px_40px_-18px_rgba(61,107,242,0.55)] hover:ring-[#3D6BF2]/60 [clip-path:inset(0_round_var(--widget-radius))] ${
 					landed ? 'ring-2 ring-[#3D6BF2]' : 'ring-1 ring-white/10'
 				}`}>
 				{renderItem?.(item as never, sizeOf(w, h))}
