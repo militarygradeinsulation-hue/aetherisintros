@@ -607,9 +607,6 @@
   .ix-accent button span { display: none; }
   .ix-accent button { padding: 4px 7px; }
 }
-@media (prefers-reduced-motion: reduce) {
-  .ix-backdrop-grain { opacity: 0.35; }
-}
 
 /* Blue is the house default; gold and mixed remain explicit choices. */
 :root {
