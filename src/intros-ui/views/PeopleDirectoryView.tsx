@@ -370,6 +370,22 @@ export const PeopleDirectoryView: React.FC<PeopleDirectoryViewProps> = ({
               Reset Filters
             </button>
           </div>
+
+          <div className="bg-[#0E121A] border border-white/10 rounded-xl p-4 space-y-3">
+            <div className="text-[11px] font-mono tracking-widest uppercase text-[#9CA3AF] font-semibold">Quick searches</div>
+            <div className="flex flex-wrap gap-1.5">
+              {['AI', 'Infrastructure', 'Fintech', 'Advisory', 'Climate', 'Go-to-Market'].map((t) => (
+                <button key={t} onClick={() => setSearchKeyword(t)} className={`text-[11px] px-2.5 py-1 rounded-full border cursor-pointer transition-colors ${searchKeyword === t ? 'border-[#3D6BF2] text-white bg-[#3D6BF2]/20' : 'border-white/10 text-[#CBD5E1] hover:border-[#3D6BF2]'}`}>{t}</button>
+              ))}
+            </div>
+          </div>
+
+          <div className="bg-[#0E121A] border border-white/10 rounded-xl p-4 space-y-2">
+            <div className="text-[11px] font-mono tracking-widest uppercase text-[#9CA3AF] font-semibold">Your connections</div>
+            <div className="text-2xl font-serif-editorial text-white">{connectedMemberIds.size}</div>
+            <p className="text-[11px] text-[#9CA3AF]">People you're connected with here. Connect with the people you want Intros to learn from.</p>
+            <button onClick={() => onNavigate('intros')} className="w-full text-xs py-2 rounded-md border border-white/15 hover:border-[#3D6BF2] text-white cursor-pointer">View intro requests</button>
+          </div>
         </aside>
 
         {/* Center: Directory Header & Member Cards */}
@@ -741,6 +757,40 @@ export const PeopleDirectoryView: React.FC<PeopleDirectoryViewProps> = ({
                 — Aetheris Member
               </div>
             </div>
+          </div>
+
+          {/* Active asks — what people need right now */}
+          <div className="bg-[#0E121A] border border-white/10 rounded-xl p-4 space-y-3">
+            <div className="flex items-center justify-between text-[11px] font-mono tracking-widest uppercase text-[#9CA3AF] font-semibold">
+              <span>Looking for now</span>
+              <span className="text-[#F4A125]">Live</span>
+            </div>
+            {members.slice(3, 6).map((m) => (
+              <button key={m.id} onClick={() => onNavigate('profile', m.id)} className="w-full text-left p-2.5 rounded-lg border border-white/5 hover:border-[#3D6BF2]/50 bg-white/[0.02] transition-colors cursor-pointer min-w-0">
+                <div className="text-xs font-semibold text-white truncate">{m.name}</div>
+                <div className="text-[11px] text-[#9CA3AF] line-clamp-2">Seeking people in {m.focusAreas?.[0] ?? 'their field'}{m.focusAreas?.[1] ? ` and ${m.focusAreas[1]}` : ''}.</div>
+              </button>
+            ))}
+          </div>
+
+          {/* Warm paths */}
+          <div className="bg-[#0E121A] border border-white/10 rounded-xl p-4 space-y-3">
+            <div className="text-[11px] font-mono tracking-widest uppercase text-[#9CA3AF] font-semibold">Warm paths worth taking</div>
+            {[...members].filter((m) => !connectedMemberIds.has(m.id)).sort((a, b) => b.matchScore - a.matchScore).slice(0, 3).map((m) => (
+              <div key={m.id} className="flex items-center justify-between gap-2 min-w-0">
+                <div className="min-w-0">
+                  <div className="text-xs text-white truncate">{m.name}</div>
+                  <div className="text-[10px] text-[#9CA3AF] truncate">{m.mutualConnectionsCount} mutuals · {m.matchScore}% fit</div>
+                </div>
+                <button onClick={() => onRequestIntro(m)} className="shrink-0 text-[11px] px-2.5 py-1 rounded-md border border-white/15 hover:border-[#3D6BF2] text-white cursor-pointer">Intro</button>
+              </div>
+            ))}
+          </div>
+
+          <div className="p-4 rounded-xl border border-[#3D6BF2]/30 bg-gradient-to-br from-[#121A2C] to-[#0A0D15]">
+            <p className="font-serif-editorial text-lg leading-snug text-[#F2EEE6]">Know who matters. Know why now.</p>
+            <p className="text-[11px] text-[#9CA3AF] mt-1">Ask Intros who in your network can help with what you need this week.</p>
+            <button onClick={() => onNavigate('workspace')} className="mt-3 w-full text-xs font-semibold py-2 rounded-md bg-[#3D6BF2] hover:bg-[#2563EB] text-white cursor-pointer">Ask Intros</button>
           </div>
         </aside>
       </div>
