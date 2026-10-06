@@ -1,7 +1,8 @@
 import logoAsset from '@/assets/aetheris-logo.jpg.asset.json'
 import { createFileRoute, Link, redirect, useNavigate } from '@tanstack/react-router'
 import { ArrowRight, LockKeyhole } from 'lucide-react'
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
+import gsap from 'gsap'
 
 import { supabase } from '@/integrations/supabase/client'
 import { lovable } from '@/integrations/lovable/index'
