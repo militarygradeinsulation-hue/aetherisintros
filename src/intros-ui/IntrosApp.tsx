@@ -25,7 +25,6 @@ import { ReviewIntroModal } from './components/modals/ReviewIntroModal';
 import { ScheduleMeetingModal } from './components/modals/ScheduleMeetingModal';
 import { FloatingConnectionField } from './components/shared/FloatingConnectionField';
 import { X, Orbit } from 'lucide-react';
-import { NewsPage } from '@/aetheris/pages/NewsPage';
 import ClassicApp from '@/aetheris/App';
 import '@/aetheris/styles.css';
 import { useAetherisNews } from '@/aetheris/news';
@@ -264,8 +263,8 @@ export default function App({ mode = 'demo' }: { mode?: 'demo' | 'live' }) {
           />
         )}
 
-        {activePage === 'news' && <div className="ix-classic"><NewsPage /></div>}
-        {activePage === 'workspace' && <div className="ix-classic"><ClassicApp mode={mode} /></div>}
+        {activePage === 'news' && <div className="ix-classic"><ClassicApp key="news" mode={mode} startPage="news" /></div>}
+        {activePage === 'workspace' && <div className="ix-classic"><ClassicApp key="ws" mode={mode} startPage="home" /></div>}
         {activePage === 'intros' && (
           <IntrosHubView
             introRequests={introRequests}
