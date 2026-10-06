@@ -403,7 +403,7 @@ export function NetworkProvider({ children, mode = 'live' }: { children: React.R
     if (!live || !userId) return
     const refresh = () => { void loadLiveDirectory(userId).then(({ directory }) => setDir(directory)) }
     const channel = supabase
-      .channel(`dm-${userId}`)
+      .channel(`dm-${userId}-${Math.random().toString(36).slice(2, 10)}`)
       .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'dm_messages' }, payload => {
         const m = payload.new as { id: string; thread_id: string; sender_id: string; text: string; created_at: string }
         if (m.sender_id === userId) return
