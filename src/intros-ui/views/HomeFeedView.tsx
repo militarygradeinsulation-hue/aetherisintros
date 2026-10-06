@@ -386,7 +386,7 @@ export const HomeFeedView: React.FC<HomeFeedViewProps> = ({
                         : 'text-[#9CA3AF] hover:text-white'
                     }`}
                   >
-                    ✦ Floating Bubbles
+                    ✦ Relationship Field
                   </button>
                   <button
                     onClick={() => setHeroVisualMode('spotlight')}
