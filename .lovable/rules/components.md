@@ -44,6 +44,26 @@ import GridPage from "@ws-gmhcx8w6bqvecbtkycud/c1248cd8-77de-4eaa-8d9d-e7da71e70
 import Landing from "@ws-gmhcx8w6bqvecbtkycud/c1248cd8-77de-4eaa-8d9d-e7da71e70ae9"
 ```
 
+### MetroHero
+
+```ts
+import MetroHero from "@ws-gmhcx8w6bqvecbtkycud/c1248cd8-77de-4eaa-8d9d-e7da71e70ae9"
+```
+
+**Props:**
+
+| Prop | Type | Default |
+|---|---|---|
+| `videoSrc` | string | `—` |
+| `title` | string | `THE CITY OPENS` |
+| `scrollHint` | string | `SCROLL` |
+| `tagline` | string | `Every door in the city is already open.` |
+| `signature` | object | `false` |
+| `scrubDistance` | number | `3200` |
+| `onComplete` | function | `—` |
+| `className` | string | `—` |
+| `style` | any | `—` |
+
 ### ParticleDrift
 
 ```ts

@@ -2,7 +2,7 @@
   "meta": {
     "name": "Ask Intros",
     "package": "@ws-gmhcx8w6bqvecbtkycud/c1248cd8-77de-4eaa-8d9d-e7da71e70ae9",
-    "version": "17.0.0",
+    "version": "18.0.0",
     "framework": "react",
     "css_framework": "tailwind",
     "starter_template": "custom_design_system_tailwind",
@@ -11,7 +11,7 @@
     ],
     "source_type": "local",
     "source_manifest": {
-      "#enrichment": "7bc0e6c57fb966ca7d877df60f9a7bdb5df16dfa8a4ba786e6911a1f9714da4e",
+      "#enrichment": "36b8cf4d5306ab1084abe523b6e521efe94c850182fda98181b480f0c92928b4",
       ".dsignore": "3ce14d364a617d7621aa8aff60f95fd0",
       ".gitignore": "6d9e901a692b46a83707c245fb03bc91",
       ".lovable/mcp/manifest.json": "ade9427a88b17f2d32b802a80d39e3d6",
@@ -122,7 +122,7 @@
       "src/aetheris/ExecutivePage.tsx": "e195bfa2e3ddf83ee67984ffc435451b",
       "src/aetheris/IntrosSystemGrid.tsx": "af0b46e45e6de57eb768df78b8146169",
       "src/aetheris/InviteCard.tsx": "5dd5535419315728f8f1f042e388d456",
-      "src/aetheris/Landing.tsx": "288ae35b143eb00bd2b1679bb0313386",
+      "src/aetheris/Landing.tsx": "928638f7754bf9308584f08a1c875406",
       "src/aetheris/MessageAttachments.tsx": "22e886077091b3bc2b43aecea03f0995",
       "src/aetheris/NetworkBubbles.tsx": "e37f7bc4403269e029d7440e8ccfa608",
       "src/aetheris/ParticleDrift.tsx": "120e2d28d7bb0722fc647d1b85c8bc8b",
@@ -380,6 +380,7 @@
       "src/components/ui/radio-group.tsx": "0e1ace237a5da3197e3eb1e6683faba9",
       "src/components/ui/resizable.tsx": "d9fcb9203c749fcab4e125a99bb12a86",
       "src/components/ui/scroll-area.tsx": "87b65d3eb26f2b02ff35a7acea585ba5",
+      "src/components/ui/scroll-locked-video-hero.tsx": "615d773e9865667e7320f20931ded820",
       "src/components/ui/select.tsx": "31ea1bbd6671833b010b2e852c8a55d0",
       "src/components/ui/separator.tsx": "433d163c4ffa00b59398a0c293198b5e",
       "src/components/ui/sheet.tsx": "0221fbf97b69611b47fcbc10bb27669a",
@@ -807,6 +808,55 @@
       "file": "src/aetheris/pages/SimpleViewPage",
       "import_path": "",
       "is_default": true
+    },
+    {
+      "name": "MetroHero",
+      "file": "src/components/ui/scroll-locked-video-hero",
+      "import_path": "",
+      "is_default": true,
+      "props": [
+        {
+          "name": "videoSrc",
+          "type": "string"
+        },
+        {
+          "name": "title",
+          "type": "string",
+          "default": "THE CITY OPENS"
+        },
+        {
+          "name": "scrollHint",
+          "type": "string",
+          "default": "SCROLL"
+        },
+        {
+          "name": "tagline",
+          "type": "string",
+          "default": "Every door in the city is already open."
+        },
+        {
+          "name": "signature",
+          "type": "object",
+          "default": "false"
+        },
+        {
+          "name": "scrubDistance",
+          "type": "number",
+          "default": "3200"
+        },
+        {
+          "name": "onComplete",
+          "type": "function"
+        },
+        {
+          "name": "className",
+          "type": "string"
+        },
+        {
+          "name": "style",
+          "type": "any"
+        }
+      ]
     }
   ],
   "assets": [
