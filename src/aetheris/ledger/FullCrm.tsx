@@ -45,7 +45,7 @@ const MODULES: Array<{ id: Module; label: string; icon: typeof Kanban; group: st
   { id: 'import', label: 'Import', icon: FileUp, group: 'Data' },
 ]
 
-const COBALT = '#0F5CCB'
+const COBALT = '#C78522'
 const AMBER = '#F4A125'
 const GOLD = '#C78522'
 const INK_LINE = 'rgba(255,255,255,.10)'
