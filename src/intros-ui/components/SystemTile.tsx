@@ -44,8 +44,8 @@ export const SystemTile: React.FC<SystemTileProps> = ({
 
   const getStatusColor = (status?: string) => {
     switch (status) {
-      case 'active': return 'bg-[#3FB37F]';
-      case 'followup': return 'bg-[#F2A93B]';
+      case 'active': return 'bg-[#C78522]';
+      case 'followup': return 'bg-[#F5B027]';
       case 'dormant': return 'bg-[#64748B]';
       default: return 'bg-transparent';
     }
@@ -54,23 +54,23 @@ export const SystemTile: React.FC<SystemTileProps> = ({
   const getHeatmapStyling = (score: number = 75) => {
     if (score >= 88) {
       return {
-        border: 'border-[#F97316]/50 shadow-[0_0_20px_rgba(249,115,22,0.25)]',
-        bg: 'bg-gradient-to-b from-[#F97316]/10 to-transparent',
-        badgeColor: 'bg-[#F97316]/20 text-[#F97316] border-[#F97316]/40',
+        border: 'border-[#F5B027]/50 shadow-[0_0_20px_rgba(249,115,22,0.25)]',
+        bg: 'bg-gradient-to-b from-[#F5B027]/10 to-transparent',
+        badgeColor: 'bg-[#F5B027]/20 text-[#F5B027] border-[#F5B027]/40',
       };
     }
     if (score >= 75) {
       return {
-        border: 'border-[#3FB37F]/40 shadow-[0_0_15px_rgba(63,179,127,0.2)]',
-        bg: 'bg-gradient-to-b from-[#3FB37F]/10 to-transparent',
-        badgeColor: 'bg-[#3FB37F]/20 text-[#3FB37F] border-[#3FB37F]/40',
+        border: 'border-[#C78522]/40 shadow-[0_0_15px_rgba(63,179,127,0.2)]',
+        bg: 'bg-gradient-to-b from-[#C78522]/10 to-transparent',
+        badgeColor: 'bg-[#C78522]/20 text-[#C78522] border-[#C78522]/40',
       };
     }
     if (score >= 60) {
       return {
-        border: 'border-[#3D6BF2]/35 shadow-[0_0_12px_rgba(61,107,242,0.15)]',
-        bg: 'bg-gradient-to-b from-[#3D6BF2]/10 to-transparent',
-        badgeColor: 'bg-[#3D6BF2]/20 text-[#3D6BF2] border-[#3D6BF2]/40',
+        border: 'border-[#F5B027]/35 shadow-[0_0_12px_rgba(199, 133, 34,0.15)]',
+        bg: 'bg-gradient-to-b from-[#F5B027]/10 to-transparent',
+        badgeColor: 'bg-[#F5B027]/20 text-[#F5B027] border-[#F5B027]/40',
       };
     }
     return {
@@ -104,13 +104,13 @@ export const SystemTile: React.FC<SystemTileProps> = ({
       style={{
         animationDelay: staggerDelay,
       }}
-      className={`sys-tile group w-full h-[276px] sm:h-[286px] p-2.5 sm:p-3 flex flex-col justify-between text-left cursor-pointer focus-visible:outline-none select-none transition-all duration-200 hover:shadow-[0_0_15px_rgba(61,107,242,0.3)] relative overflow-hidden ${
+      className={`sys-tile group w-full h-[276px] sm:h-[286px] p-2.5 sm:p-3 flex flex-col justify-between text-left cursor-pointer focus-visible:outline-none select-none transition-all duration-200 hover:shadow-[0_0_15px_rgba(199, 133, 34,0.3)] relative overflow-hidden ${
         isKeyboardFocused
-          ? 'ring-2 ring-[#3D6BF2] shadow-[0_0_24px_rgba(61,107,242,0.45)] z-20 scale-[1.01]'
+          ? 'ring-2 ring-[#F5B027] shadow-[0_0_24px_rgba(199, 133, 34,0.45)] z-20 scale-[1.01]'
           : ''
       } ${
         isInactivityAlerted
-          ? 'border-[#E5484D]/90 ring-1 ring-[#E5484D]/70 shadow-[0_0_22px_rgba(229,72,77,0.35)]'
+          ? 'border-[#C78522]/90 ring-1 ring-[#C78522]/70 shadow-[0_0_22px_rgba(229,72,77,0.35)]'
           : heatStyle
           ? heatStyle.border
           : ''
@@ -120,7 +120,7 @@ export const SystemTile: React.FC<SystemTileProps> = ({
       {/* Inactivity warning ambient glow */}
       {isInactivityAlerted && (
         <div
-          className="absolute inset-0 pointer-events-none bg-gradient-to-b from-[#E5484D]/15 via-transparent to-transparent opacity-80"
+          className="absolute inset-0 pointer-events-none bg-gradient-to-b from-[#C78522]/15 via-transparent to-transparent opacity-80"
           aria-hidden="true"
         />
       )}
@@ -143,7 +143,7 @@ export const SystemTile: React.FC<SystemTileProps> = ({
         <div className="flex items-center gap-1.5 flex-wrap justify-end">
           {isInactivityAlerted && (
             <span
-              className="text-[7.5px] font-mono font-bold uppercase px-1 py-0.2 rounded bg-[#E5484D]/25 text-[#FF6369] border border-[#E5484D]/50 flex items-center gap-0.5 animate-pulse shadow-sm"
+              className="text-[7.5px] font-mono font-bold uppercase px-1 py-0.2 rounded bg-[#C78522]/25 text-[#FF6369] border border-[#C78522]/50 flex items-center gap-0.5 animate-pulse shadow-sm"
               title={`Inactivity Alert: ${inactivityDays}d since last touch (exceeds ${inactivityThreshold}d SLA threshold)`}
             >
               <AlertTriangle size={7.5} />
@@ -161,7 +161,7 @@ export const SystemTile: React.FC<SystemTileProps> = ({
             </span>
           )}
           {isKeyboardFocused && (
-            <span className="text-[7px] font-mono uppercase px-1 py-0.2 rounded bg-[#3D6BF2] text-white font-bold tracking-wider">
+            <span className="text-[7px] font-mono uppercase px-1 py-0.2 rounded bg-[#F5B027] text-white font-bold tracking-wider">
               ↵ Focus
             </span>
           )}
@@ -172,7 +172,7 @@ export const SystemTile: React.FC<SystemTileProps> = ({
                 e.stopPropagation();
                 onAttachVoiceNote();
               }}
-              className="p-0.5 sm:p-1 rounded bg-white/5 hover:bg-[#3D6BF2]/25 text-[#F2EEE6]/60 hover:text-white transition-all shrink-0"
+              className="p-0.5 sm:p-1 rounded bg-white/5 hover:bg-[#F5B027]/25 text-[#F2EEE6]/60 hover:text-white transition-all shrink-0"
               title="Attach Voice Note & Generate AI Meeting Minutes"
               aria-label="Attach Voice Note to Tile"
             >
@@ -186,7 +186,7 @@ export const SystemTile: React.FC<SystemTileProps> = ({
             />
           )}
           <div
-            className="w-1.5 h-1.5 rounded-full bg-[#3D6BF2] opacity-0 group-hover:opacity-100 transition-opacity duration-200 shrink-0 mt-0.5"
+            className="w-1.5 h-1.5 rounded-full bg-[#F5B027] opacity-0 group-hover:opacity-100 transition-opacity duration-200 shrink-0 mt-0.5"
             aria-hidden="true"
           />
         </div>

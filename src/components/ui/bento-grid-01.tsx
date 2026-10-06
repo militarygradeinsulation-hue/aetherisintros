@@ -67,7 +67,7 @@ function SpeedIndicator() {
           initial={{ width: 0 }}
           animate={{ width: loading ? '30%' : '100%' }}
           transition={{ duration: 1 }}
-          className="h-full rounded-full bg-[#0F5CCB]"
+          className="h-full rounded-full bg-[#C78522]"
         />
       </div>
     </div>
@@ -176,7 +176,7 @@ export function BentoGrid() {
       <div className="mx-auto max-w-6xl">
         <p className="text-[13px] tracking-[0.22em] text-[#9EA4AC] uppercase">One connected system</p>
         <h2 className="mt-4 max-w-2xl font-serif text-4xl leading-tight text-[#F1EFE9] md:text-5xl">
-          Built around the way relationships <span className="text-[#0F5CCB]">actually move.</span>
+          Built around the way relationships <span className="text-[#C78522]">actually move.</span>
         </h2>
         <div className="mt-12 grid auto-rows-[minmax(0,auto)] grid-cols-1 gap-4 md:grid-cols-6">
           {tiles.map((tile) => (

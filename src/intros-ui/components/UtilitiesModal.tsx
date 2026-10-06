@@ -41,7 +41,7 @@ export const UtilitiesModal: React.FC<UtilitiesModalProps> = ({ isOpen, onClose 
       <div className="drawer-panel w-full max-w-[400px] flex flex-col">
         <div className="panel-head flex items-center justify-between">
           <div>
-            <span className="text-[10px] font-mono tracking-widest text-[#3D6BF2] uppercase font-bold">Account</span>
+            <span className="text-[10px] font-mono tracking-widest text-[#F5B027] uppercase font-bold">Account</span>
             <h2 className="text-xl font-serif-editorial text-[#F2EEE6]">Utilities</h2>
             <p className="text-xs text-[#F2EEE6]/60">The essentials, without a directory of features.</p>
           </div>
@@ -70,7 +70,7 @@ export const UtilitiesModal: React.FC<UtilitiesModalProps> = ({ isOpen, onClose 
           <div className="border-t border-sys-panel-line mt-2">
              <div className="panel-item text-[#F2EEE6]/80 text-sm"><HelpCircle size={18} /> Help</div>
              <div className="panel-item text-[#F2EEE6]/80 text-sm"><BookOpen size={18} /> Founder Story</div>
-             <div className="panel-item text-[#E5484D]/80 text-sm"><LogOut size={18} /> Sign Out</div>
+             <div className="panel-item text-[#C78522]/80 text-sm"><LogOut size={18} /> Sign Out</div>
           </div>
         </div>
       </div>

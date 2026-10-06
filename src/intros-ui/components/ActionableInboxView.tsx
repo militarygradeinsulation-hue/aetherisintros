@@ -116,12 +116,12 @@ export const ActionableInboxView: React.FC<ActionableInboxViewProps> = ({
   const getPriorityStyle = (priority: 'high' | 'medium' | 'low') => {
     switch (priority) {
       case 'high':
-        return 'text-[#E5484D] border-[#E5484D]/30 bg-[#E5484D]/10';
+        return 'text-[#C78522] border-[#C78522]/30 bg-[#C78522]/10';
       case 'medium':
-        return 'text-[#F2A93B] border-[#F2A93B]/30 bg-[#F2A93B]/10';
+        return 'text-[#F5B027] border-[#F5B027]/30 bg-[#F5B027]/10';
       case 'low':
       default:
-        return 'text-[#3D6BF2] border-[#3D6BF2]/30 bg-[#3D6BF2]/10';
+        return 'text-[#F5B027] border-[#F5B027]/30 bg-[#F5B027]/10';
     }
   };
 
@@ -130,7 +130,7 @@ export const ActionableInboxView: React.FC<ActionableInboxViewProps> = ({
       {/* Top Banner / Metrics Band */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 p-5 rounded-xl bg-[#0E1116] border border-white/10">
         <div>
-          <div className="text-[10px] font-mono tracking-[0.25em] text-[#3D6BF2] uppercase font-bold">
+          <div className="text-[10px] font-mono tracking-[0.25em] text-[#F5B027] uppercase font-bold">
             Executive Queue
           </div>
           <h2 className="font-serif-editorial text-2xl sm:text-3xl text-[#F2EEE6] mt-0.5">
@@ -150,20 +150,20 @@ export const ActionableInboxView: React.FC<ActionableInboxViewProps> = ({
             </div>
           </div>
           <div className="px-3 py-2 rounded-lg bg-black/40 border border-white/5 text-center min-w-[90px]">
-            <div className="text-[9px] font-mono text-[#E5484D] uppercase tracking-wider">High Urgency</div>
-            <div className="text-lg font-mono font-bold text-[#E5484D] tabular-nums mt-0.5">
+            <div className="text-[9px] font-mono text-[#C78522] uppercase tracking-wider">High Urgency</div>
+            <div className="text-lg font-mono font-bold text-[#C78522] tabular-nums mt-0.5">
               {highPriorityCount}
             </div>
           </div>
           <div className="px-3 py-2 rounded-lg bg-black/40 border border-white/5 text-center min-w-[90px]">
-            <div className="text-[9px] font-mono text-[#3D6BF2] uppercase tracking-wider">Approvals</div>
-            <div className="text-lg font-mono font-bold text-[#3D6BF2] tabular-nums mt-0.5">
+            <div className="text-[9px] font-mono text-[#F5B027] uppercase tracking-wider">Approvals</div>
+            <div className="text-lg font-mono font-bold text-[#F5B027] tabular-nums mt-0.5">
               {approvalsCount}
             </div>
           </div>
           <button
             onClick={() => setIsAdding((prev) => !prev)}
-            className="px-3.5 py-2 rounded-lg bg-[#3D6BF2] hover:bg-[#3D6BF2]/90 text-white text-xs font-mono font-semibold flex items-center gap-1.5 transition-all shadow-md"
+            className="px-3.5 py-2 rounded-lg bg-[#F5B027] hover:bg-[#F5B027]/90 text-white text-xs font-mono font-semibold flex items-center gap-1.5 transition-all shadow-md"
           >
             <Plus size={13} />
             <span>Add Task</span>
@@ -175,9 +175,9 @@ export const ActionableInboxView: React.FC<ActionableInboxViewProps> = ({
       {isAdding && (
         <form
           onSubmit={handleAddTask}
-          className="p-4 rounded-xl bg-[#12161F] border border-[#3D6BF2]/40 shadow-xl space-y-3 animate-in fade-in duration-150"
+          className="p-4 rounded-xl bg-[#12161F] border border-[#F5B027]/40 shadow-xl space-y-3 animate-in fade-in duration-150"
         >
-          <div className="text-xs font-mono text-[#3D6BF2] uppercase tracking-wider font-bold">
+          <div className="text-xs font-mono text-[#F5B027] uppercase tracking-wider font-bold">
             Create Priority Action Item
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
@@ -187,13 +187,13 @@ export const ActionableInboxView: React.FC<ActionableInboxViewProps> = ({
               placeholder="e.g., Deliver Series B capitalization model to Elena Rostova..."
               value={newTitle}
               onChange={(e) => setNewTitle(e.target.value)}
-              className="sm:col-span-2 bg-[#07090C] border border-white/15 rounded-lg px-3 py-2 text-xs text-[#F2EEE6] placeholder-[#F2EEE6]/30 focus:outline-none focus:border-[#3D6BF2]"
+              className="sm:col-span-2 bg-[#07090C] border border-white/15 rounded-lg px-3 py-2 text-xs text-[#F2EEE6] placeholder-[#F2EEE6]/30 focus:outline-none focus:border-[#F5B027]"
             />
             <div className="flex gap-2">
               <select
                 value={newPerson}
                 onChange={(e) => setNewPerson(e.target.value)}
-                className="flex-1 bg-[#07090C] border border-white/15 rounded-lg px-2.5 py-2 text-xs text-[#F2EEE6] focus:outline-none focus:border-[#3D6BF2]"
+                className="flex-1 bg-[#07090C] border border-white/15 rounded-lg px-2.5 py-2 text-xs text-[#F2EEE6] focus:outline-none focus:border-[#F5B027]"
               >
                 <option value="">Link Person (Optional)</option>
                 {people.map((p) => (
@@ -205,7 +205,7 @@ export const ActionableInboxView: React.FC<ActionableInboxViewProps> = ({
               <select
                 value={newPriority}
                 onChange={(e) => setNewPriority(e.target.value as any)}
-                className="bg-[#07090C] border border-white/15 rounded-lg px-2 py-2 text-xs text-[#F2EEE6] focus:outline-none focus:border-[#3D6BF2]"
+                className="bg-[#07090C] border border-white/15 rounded-lg px-2 py-2 text-xs text-[#F2EEE6] focus:outline-none focus:border-[#F5B027]"
               >
                 <option value="high">High</option>
                 <option value="medium">Medium</option>
@@ -223,7 +223,7 @@ export const ActionableInboxView: React.FC<ActionableInboxViewProps> = ({
             </button>
             <button
               type="submit"
-              className="px-4 py-1.5 rounded bg-[#3D6BF2] hover:bg-[#3D6BF2]/90 text-white text-xs font-mono font-semibold"
+              className="px-4 py-1.5 rounded bg-[#F5B027] hover:bg-[#F5B027]/90 text-white text-xs font-mono font-semibold"
             >
               Commit Task
             </button>
@@ -253,7 +253,7 @@ export const ActionableInboxView: React.FC<ActionableInboxViewProps> = ({
                 }`}
               >
                 <span>{f.label}</span>
-                <span className="text-[10px] text-[#3D6BF2] tabular-nums font-semibold">({f.count})</span>
+                <span className="text-[10px] text-[#F5B027] tabular-nums font-semibold">({f.count})</span>
               </button>
             );
           })}
@@ -261,7 +261,7 @@ export const ActionableInboxView: React.FC<ActionableInboxViewProps> = ({
 
         {/* Toast confirmation */}
         {completedToast && (
-          <div className="text-[11px] font-mono text-[#3FB37F] flex items-center gap-1.5 animate-in fade-in duration-200">
+          <div className="text-[11px] font-mono text-[#C78522] flex items-center gap-1.5 animate-in fade-in duration-200">
             <CheckCircle2 size={13} />
             <span>{completedToast}</span>
           </div>
@@ -292,12 +292,12 @@ export const ActionableInboxView: React.FC<ActionableInboxViewProps> = ({
                     e.stopPropagation();
                     toggleTask(task.id);
                   }}
-                  className="mt-0.5 text-[#3D6BF2] hover:text-white transition-colors shrink-0"
+                  className="mt-0.5 text-[#F5B027] hover:text-white transition-colors shrink-0"
                 >
                   {isCompleted ? (
-                    <CheckSquare size={17} className="text-[#3FB37F]" />
+                    <CheckSquare size={17} className="text-[#C78522]" />
                   ) : (
-                    <Square size={17} className="text-[#F2EEE6]/40 group-hover:text-[#3D6BF2]" />
+                    <Square size={17} className="text-[#F2EEE6]/40 group-hover:text-[#F5B027]" />
                   )}
                 </button>
 
@@ -318,7 +318,7 @@ export const ActionableInboxView: React.FC<ActionableInboxViewProps> = ({
                           e.stopPropagation();
                           if (onOpenTileWorkspace) onOpenTileWorkspace(task.sourceTile);
                         }}
-                        className="text-[9.5px] font-mono text-[#3D6BF2] hover:underline flex items-center gap-1"
+                        className="text-[9.5px] font-mono text-[#F5B027] hover:underline flex items-center gap-1"
                       >
                         <span>{task.sourceTileTitle}</span>
                         <ArrowRight size={9} />
@@ -358,9 +358,9 @@ export const ActionableInboxView: React.FC<ActionableInboxViewProps> = ({
                                 e.stopPropagation();
                                 if (found && onSelectPerson) onSelectPerson(found);
                               }}
-                              className="inline-flex items-center gap-1 text-[11px] font-mono text-[#F2EEE6]/80 hover:text-[#3D6BF2] transition-colors"
+                              className="inline-flex items-center gap-1 text-[11px] font-mono text-[#F2EEE6]/80 hover:text-[#F5B027] transition-colors"
                             >
-                              <User size={11} className="text-[#3D6BF2]" />
+                              <User size={11} className="text-[#F5B027]" />
                               <span>{task.linkedPerson}</span>
                               {task.linkedCompany && <span className="text-[#F2EEE6]/40">· {task.linkedCompany}</span>}
                             </button>
@@ -379,14 +379,14 @@ export const ActionableInboxView: React.FC<ActionableInboxViewProps> = ({
                   <div className="flex items-center gap-1.5 shrink-0 self-center">
                     <button
                       onClick={(e) => handleApprove(task.id, e)}
-                      className="px-2.5 py-1 rounded bg-[#3FB37F]/20 hover:bg-[#3FB37F]/30 border border-[#3FB37F]/40 text-[#3FB37F] text-xs font-mono font-medium flex items-center gap-1 transition-colors"
+                      className="px-2.5 py-1 rounded bg-[#C78522]/20 hover:bg-[#C78522]/30 border border-[#C78522]/40 text-[#C78522] text-xs font-mono font-medium flex items-center gap-1 transition-colors"
                     >
                       <Check size={12} />
                       <span>Approve</span>
                     </button>
                     <button
                       onClick={(e) => handleReject(task.id, e)}
-                      className="px-2 py-1 rounded bg-white/5 hover:bg-[#E5484D]/20 text-[#F2EEE6]/60 hover:text-[#E5484D] text-xs font-mono transition-colors"
+                      className="px-2 py-1 rounded bg-white/5 hover:bg-[#C78522]/20 text-[#F2EEE6]/60 hover:text-[#C78522] text-xs font-mono transition-colors"
                     >
                       <X size={12} />
                     </button>
@@ -397,7 +397,7 @@ export const ActionableInboxView: React.FC<ActionableInboxViewProps> = ({
           })
         ) : (
           <div className="p-12 text-center border border-dashed border-white/10 rounded-xl bg-[#0E1116]/40 space-y-2">
-            <CheckCircle2 size={24} className="mx-auto text-[#3FB37F]" />
+            <CheckCircle2 size={24} className="mx-auto text-[#C78522]" />
             <div className="font-serif-editorial text-lg text-[#F2EEE6]">Inbox Cleared</div>
             <p className="text-xs text-[#F2EEE6]/50 max-w-sm mx-auto">
               No outstanding action items match this filter. All commitments across your relationship network are synchronized.

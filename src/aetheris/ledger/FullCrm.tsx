@@ -45,12 +45,12 @@ const MODULES: Array<{ id: Module; label: string; icon: typeof Kanban; group: st
   { id: 'import', label: 'Import', icon: FileUp, group: 'Data' },
 ]
 
-const COBALT = '#0F5CCB'
+const COBALT = '#C78522'
 const AMBER = '#F4A125'
 const GOLD = '#C78522'
 const INK_LINE = 'rgba(255,255,255,.10)'
 const MUTED = '#9EA4AC'
-const PIE_COLORS = [COBALT, AMBER, '#4A7FD6', GOLD, '#7FA6E0', '#8C6A2B']
+const PIE_COLORS = [COBALT, AMBER, '#C78522', GOLD, '#FFC85C', '#8C6A2B']
 
 const axis = { stroke: MUTED, fontSize: 11, tickLine: false as const }
 const tooltipStyle = {

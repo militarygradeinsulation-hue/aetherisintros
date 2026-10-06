@@ -322,10 +322,10 @@ export const PersistentGridCommandPalette: React.FC<PersistentGridCommandPalette
   return (
     <div ref={containerRef} className="relative w-full mb-4 z-30">
       {/* 1. Main Persistent Input Bar */}
-      <div className="w-full rounded-2xl bg-[#090C11]/90 backdrop-blur-xl border border-white/15 shadow-xl p-2 sm:p-2.5 flex flex-col md:flex-row md:items-center justify-between gap-2.5 transition-all focus-within:border-[#3D6BF2]/60 focus-within:shadow-[0_0_25px_rgba(61,107,242,0.2)]">
+      <div className="w-full rounded-2xl bg-[#090C11]/90 backdrop-blur-xl border border-white/15 shadow-xl p-2 sm:p-2.5 flex flex-col md:flex-row md:items-center justify-between gap-2.5 transition-all focus-within:border-[#F5B027]/60 focus-within:shadow-[0_0_25px_rgba(199, 133, 34,0.2)]">
         {/* Left: Search & Filter Input */}
         <div className="flex items-center gap-2 flex-1 min-w-0 px-2">
-          <div className="text-[#3D6BF2] shrink-0">
+          <div className="text-[#F5B027] shrink-0">
             <Search size={15} />
           </div>
 
@@ -361,7 +361,7 @@ export const PersistentGridCommandPalette: React.FC<PersistentGridCommandPalette
               <button
                 type="button"
                 onClick={onOpenFullTextSearch}
-                className="px-1.5 py-0.5 rounded bg-white/5 hover:bg-[#3D6BF2]/20 border border-white/10 text-[9.5px] font-mono text-[#60A5FA] flex items-center gap-1 transition-all cursor-pointer"
+                className="px-1.5 py-0.5 rounded bg-white/5 hover:bg-[#F5B027]/20 border border-white/10 text-[9.5px] font-mono text-[#FFC85C] flex items-center gap-1 transition-all cursor-pointer"
                 title="Open Modal Full-Text Search Across All Profiles, Notes & Tags (⌘F)"
               >
                 <span>Full-Text</span>
@@ -412,7 +412,7 @@ export const PersistentGridCommandPalette: React.FC<PersistentGridCommandPalette
             onClick={() => setShowExtendedFilters((prev) => !prev)}
             className={`px-2.5 py-1 rounded-lg text-[10.5px] font-mono flex items-center gap-1 transition-all ${
               showExtendedFilters || selectedTag
-                ? 'bg-[#3D6BF2]/20 text-[#3D6BF2] border border-[#3D6BF2]/40 font-bold'
+                ? 'bg-[#F5B027]/20 text-[#F5B027] border border-[#F5B027]/40 font-bold'
                 : 'text-[#F2EEE6]/60 hover:text-white hover:bg-white/5 border border-transparent'
             }`}
             title="Toggle tag filtering drawer"
@@ -430,7 +430,7 @@ export const PersistentGridCommandPalette: React.FC<PersistentGridCommandPalette
               onClick={onToggleHeatmap}
               className={`px-2 py-1 rounded text-[10px] font-mono flex items-center gap-1 transition-all ${
                 heatmapActive
-                  ? 'bg-[#F97316]/25 border border-[#F97316]/60 text-[#F97316] font-bold shadow-[0_0_12px_rgba(249,115,22,0.3)]'
+                  ? 'bg-[#F5B027]/25 border border-[#F5B027]/60 text-[#F5B027] font-bold shadow-[0_0_12px_rgba(249,115,22,0.3)]'
                   : 'bg-white/5 border border-white/10 text-[#F2EEE6]/70 hover:text-white hover:bg-white/10'
               }`}
               title="Toggle Activity Density & Cadence Heatmap Overlay"
@@ -442,19 +442,19 @@ export const PersistentGridCommandPalette: React.FC<PersistentGridCommandPalette
 
           <button
             onClick={() => onSwitchView('heatmap')}
-            className="px-2 py-1 rounded bg-[#F97316]/15 hover:bg-[#F97316]/25 border border-[#F97316]/35 text-[#F2EEE6] text-[10px] font-mono flex items-center gap-1 transition-colors"
+            className="px-2 py-1 rounded bg-[#F5B027]/15 hover:bg-[#F5B027]/25 border border-[#F5B027]/35 text-[#F2EEE6] text-[10px] font-mono flex items-center gap-1 transition-colors"
             title="Open Network Cluster Heatmap View"
           >
-            <Activity size={11} className="text-[#F97316]" />
+            <Activity size={11} className="text-[#F5B027]" />
             <span>Clusters</span>
           </button>
 
           <button
             onClick={() => onSwitchView('graph')}
-            className="px-2 py-1 rounded bg-[#3D6BF2]/15 hover:bg-[#3D6BF2]/25 border border-[#3D6BF2]/40 text-[#F2EEE6] text-[10px] font-mono flex items-center gap-1 transition-colors"
+            className="px-2 py-1 rounded bg-[#F5B027]/15 hover:bg-[#F5B027]/25 border border-[#F5B027]/40 text-[#F2EEE6] text-[10px] font-mono flex items-center gap-1 transition-colors"
             title="Open D3 Network Graph Visualization"
           >
-            <Share2 size={11} className="text-[#3D6BF2]" />
+            <Share2 size={11} className="text-[#F5B027]" />
             <span>Graph</span>
           </button>
 
@@ -463,7 +463,7 @@ export const PersistentGridCommandPalette: React.FC<PersistentGridCommandPalette
             className="p-1.5 rounded bg-white/5 hover:bg-white/10 text-[#F2EEE6]/70 hover:text-white transition-colors"
             title="Scan calendar touchpoints"
           >
-            <Calendar size={12} className="text-[#3D6BF2]" />
+            <Calendar size={12} className="text-[#F5B027]" />
           </button>
 
           <button
@@ -471,7 +471,7 @@ export const PersistentGridCommandPalette: React.FC<PersistentGridCommandPalette
             className="p-1.5 rounded bg-white/5 hover:bg-white/10 text-[#F2EEE6]/70 hover:text-white transition-colors"
             title="Export Network Report CSV"
           >
-            <Download size={12} className="text-[#3D6BF2]" />
+            <Download size={12} className="text-[#F5B027]" />
           </button>
 
           <button
@@ -479,7 +479,7 @@ export const PersistentGridCommandPalette: React.FC<PersistentGridCommandPalette
             className="p-1.5 rounded bg-white/5 hover:bg-white/10 text-[#F2EEE6]/70 hover:text-white transition-colors"
             title="Keyboard Shortcuts Cheat Sheet (⌘/ or ?)"
           >
-            <Keyboard size={12} className="text-[#3D6BF2]" />
+            <Keyboard size={12} className="text-[#F5B027]" />
           </button>
         </div>
       </div>
@@ -488,7 +488,7 @@ export const PersistentGridCommandPalette: React.FC<PersistentGridCommandPalette
       {(showExtendedFilters || selectedTag) && (
         <div className="mt-2 p-2.5 rounded-xl bg-[#0B0E14] border border-white/10 shadow-md flex items-center gap-2 flex-wrap animate-in slide-in-from-top-1 duration-150">
           <span className="text-[10px] font-mono text-[#F2EEE6]/60 uppercase tracking-wider flex items-center gap-1 shrink-0">
-            <Tag size={10} className="text-[#3D6BF2]" />
+            <Tag size={10} className="text-[#F5B027]" />
             <span>Filter by Tag:</span>
           </span>
 
@@ -511,7 +511,7 @@ export const PersistentGridCommandPalette: React.FC<PersistentGridCommandPalette
                 onClick={() => onSelectTag && onSelectTag(isSelected ? null : tag)}
                 className={`px-2 py-0.5 rounded text-[10px] font-mono transition-all flex items-center gap-1 ${
                   isSelected
-                    ? 'bg-[#3D6BF2] text-white font-bold shadow-[0_0_8px_rgba(61,107,242,0.5)]'
+                    ? 'bg-[#F5B027] text-white font-bold shadow-[0_0_8px_rgba(199, 133, 34,0.5)]'
                     : 'bg-white/5 text-[#F2EEE6]/75 hover:bg-white/10 hover:text-white'
                 }`}
               >
@@ -527,7 +527,7 @@ export const PersistentGridCommandPalette: React.FC<PersistentGridCommandPalette
       {hasActiveFilters && (
         <div className="mt-2 px-3 py-1.5 rounded-lg bg-[#0E1116] border border-white/10 flex items-center justify-between gap-3 text-xs font-mono">
           <div className="flex items-center gap-2 flex-wrap">
-            <span className="text-[#3D6BF2] font-semibold">Active Palette Filters:</span>
+            <span className="text-[#F5B027] font-semibold">Active Palette Filters:</span>
             {tierFilter !== 'all' && (
               <span className="px-1.5 py-0.2 rounded bg-white/10 text-white flex items-center gap-1">
                 <span>Tier: {tierFilter.replace('_', ' ')}</span>
@@ -537,7 +537,7 @@ export const PersistentGridCommandPalette: React.FC<PersistentGridCommandPalette
               </span>
             )}
             {selectedTag && (
-              <span className="px-1.5 py-0.2 rounded bg-[#3D6BF2]/20 border border-[#3D6BF2]/40 text-[#3D6BF2] flex items-center gap-1">
+              <span className="px-1.5 py-0.2 rounded bg-[#F5B027]/20 border border-[#F5B027]/40 text-[#F5B027] flex items-center gap-1">
                 <span>#{selectedTag}</span>
                 <button onClick={() => onSelectTag && onSelectTag(null)}>
                   <X size={10} />
@@ -583,9 +583,9 @@ export const PersistentGridCommandPalette: React.FC<PersistentGridCommandPalette
       {/* 4. Real-time Predictive Dropdown Menu anchored beneath the persistent command palette */}
       {isFocused && (
         <div className="absolute top-full left-0 right-0 mt-2 rounded-2xl bg-[#090C11]/95 backdrop-blur-2xl border border-white/20 shadow-2xl p-2.5 space-y-1 animate-in fade-in duration-150 z-50 max-h-80 overflow-y-auto">
-          <div className="px-2 py-1 flex items-center justify-between text-[9px] font-mono uppercase tracking-wider text-[#3D6BF2] font-bold border-b border-white/5 pb-1.5">
+          <div className="px-2 py-1 flex items-center justify-between text-[9px] font-mono uppercase tracking-wider text-[#F5B027] font-bold border-b border-white/5 pb-1.5">
             <span className="flex items-center gap-1">
-              <Zap size={10} className="text-[#3FB37F]" />
+              <Zap size={10} className="text-[#C78522]" />
               <span>Predictive Search & Filter Matches ({predictiveMatches.length})</span>
             </span>
             <span className="text-[#F2EEE6]/40">Press ↵ to select · Esc to close</span>
@@ -608,7 +608,7 @@ export const PersistentGridCommandPalette: React.FC<PersistentGridCommandPalette
                   onMouseEnter={() => setHighlightedIndex(idx)}
                   className={`w-full p-2.5 rounded-xl text-left flex items-center justify-between gap-3 transition-all ${
                     isSelected
-                      ? 'bg-[#151922] border border-[#3D6BF2]/60 shadow-md translate-x-0.5'
+                      ? 'bg-[#151922] border border-[#F5B027]/60 shadow-md translate-x-0.5'
                       : 'hover:bg-white/5 border border-transparent'
                   }`}
                 >
@@ -627,7 +627,7 @@ export const PersistentGridCommandPalette: React.FC<PersistentGridCommandPalette
                         )}
                       </div>
                     ) : (
-                      <div className="w-7 h-7 rounded-lg bg-[#3D6BF2]/20 border border-[#3D6BF2]/40 flex items-center justify-center text-[#3D6BF2] shrink-0">
+                      <div className="w-7 h-7 rounded-lg bg-[#F5B027]/20 border border-[#F5B027]/40 flex items-center justify-center text-[#F5B027] shrink-0">
                         <Zap size={12} />
                       </div>
                     )}
@@ -636,7 +636,7 @@ export const PersistentGridCommandPalette: React.FC<PersistentGridCommandPalette
                         <span className="text-xs font-semibold text-[#F2EEE6] truncate">
                           {item.title}
                         </span>
-                        <span className="text-[8.5px] font-mono px-1.5 py-0.2 rounded bg-white/5 text-[#3D6BF2] border border-white/5 shrink-0">
+                        <span className="text-[8.5px] font-mono px-1.5 py-0.2 rounded bg-white/5 text-[#F5B027] border border-white/5 shrink-0">
                           {item.badge}
                         </span>
                       </div>
@@ -648,7 +648,7 @@ export const PersistentGridCommandPalette: React.FC<PersistentGridCommandPalette
 
                   <div className="text-[10px] font-mono text-[#F2EEE6]/40 flex items-center gap-1 shrink-0">
                     <span>Execute</span>
-                    <ArrowRight size={11} className="text-[#3D6BF2]" />
+                    <ArrowRight size={11} className="text-[#F5B027]" />
                   </div>
                 </button>
               );

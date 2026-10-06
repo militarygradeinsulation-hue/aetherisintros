@@ -34,10 +34,10 @@ export const RelationshipTierBadge: React.FC<RelationshipTierBadgeProps> = ({
         return {
           label: 'Strategic',
           icon: Diamond,
-          textColor: 'text-[#3D6BF2]',
-          bgColor: 'bg-[#3D6BF2]/15',
-          borderColor: 'border-[#3D6BF2]/40',
-          shadow: 'shadow-[0_0_8px_rgba(61,107,242,0.3)]',
+          textColor: 'text-[#F5B027]',
+          bgColor: 'bg-[#F5B027]/15',
+          borderColor: 'border-[#F5B027]/40',
+          shadow: 'shadow-[0_0_8px_rgba(199, 133, 34,0.3)]',
           symbol: '◆',
           tooltip: 'Tier 2 Strategic: Institutional allocators & key enterprise mandates',
         };

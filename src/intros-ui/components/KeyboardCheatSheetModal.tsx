@@ -212,11 +212,11 @@ export const KeyboardCheatSheetModal: React.FC<KeyboardCheatSheetModalProps> = (
         {/* Top Header */}
         <div className="p-4 sm:p-5 border-b border-white/10 bg-[#07090C] flex items-center justify-between relative z-10">
           <div className="flex items-center gap-3">
-            <div className="w-8 h-8 rounded-lg bg-[#3D6BF2]/20 border border-[#3D6BF2]/40 flex items-center justify-center text-[#3D6BF2]">
+            <div className="w-8 h-8 rounded-lg bg-[#F5B027]/20 border border-[#F5B027]/40 flex items-center justify-center text-[#F5B027]">
               <Keyboard size={18} />
             </div>
             <div>
-              <div className="text-[9.5px] font-mono tracking-[0.28em] text-[#3D6BF2] uppercase font-bold">
+              <div className="text-[9.5px] font-mono tracking-[0.28em] text-[#F5B027] uppercase font-bold">
                 Executive Cheat Sheet
               </div>
               <h2 id="shortcuts-title" className="font-serif-editorial text-xl sm:text-2xl text-[#F2EEE6] leading-tight">
@@ -227,7 +227,7 @@ export const KeyboardCheatSheetModal: React.FC<KeyboardCheatSheetModalProps> = (
 
           <div className="flex items-center gap-2">
             {pressedKey && (
-              <span className="px-2 py-0.5 rounded bg-[#3D6BF2]/30 border border-[#3D6BF2] text-[10px] font-mono text-white animate-pulse">
+              <span className="px-2 py-0.5 rounded bg-[#F5B027]/30 border border-[#F5B027] text-[10px] font-mono text-white animate-pulse">
                 Key: {pressedKey}
               </span>
             )}
@@ -249,7 +249,7 @@ export const KeyboardCheatSheetModal: React.FC<KeyboardCheatSheetModalProps> = (
               placeholder="Search shortcuts..."
               value={filterText}
               onChange={(e) => setFilterText(e.target.value)}
-              className="w-full bg-[#07090C] border border-white/10 rounded-lg pl-8 pr-3 py-1.5 text-xs text-[#F2EEE6] placeholder-[#F2EEE6]/30 focus:outline-none focus:border-[#3D6BF2]"
+              className="w-full bg-[#07090C] border border-white/10 rounded-lg pl-8 pr-3 py-1.5 text-xs text-[#F2EEE6] placeholder-[#F2EEE6]/30 focus:outline-none focus:border-[#F5B027]"
             />
           </div>
 
@@ -288,7 +288,7 @@ export const KeyboardCheatSheetModal: React.FC<KeyboardCheatSheetModalProps> = (
                   }`}
                 >
                   <div className="min-w-0">
-                    <div className="text-[9px] font-mono text-[#3D6BF2] uppercase font-semibold">
+                    <div className="text-[9px] font-mono text-[#F5B027] uppercase font-semibold">
                       {s.category}
                     </div>
                     <div className="text-xs sm:text-[13px] text-[#F2EEE6] font-medium mt-0.5">
@@ -329,7 +329,7 @@ export const KeyboardCheatSheetModal: React.FC<KeyboardCheatSheetModalProps> = (
         {/* Footer */}
         <div className="p-3 border-t border-white/10 bg-[#07090C] flex items-center justify-between text-[10px] font-mono text-[#F2EEE6]/60 relative z-10">
           <div className="flex items-center gap-1.5">
-            <Sparkles size={11} className="text-[#3D6BF2]" />
+            <Sparkles size={11} className="text-[#F5B027]" />
             <span>Power Tip: Press <kbd className="px-1 py-0.2 rounded bg-white/10 font-bold">?</kbd> anywhere in the dashboard to open this cheat sheet.</span>
           </div>
           <button

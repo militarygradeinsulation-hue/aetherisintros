@@ -58,15 +58,15 @@ export const Dashboard30DayTrendChart: React.FC<Dashboard30DayTrendChartProps> =
       {/* Header Metric Strip */}
       <div className="p-4 sm:px-6 sm:py-3.5 bg-[#07090C] border-b border-white/10 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div className="flex items-center gap-3">
-          <div className="w-8 h-8 rounded-lg bg-[#3D6BF2]/20 border border-[#3D6BF2]/40 flex items-center justify-center text-[#3D6BF2]">
+          <div className="w-8 h-8 rounded-lg bg-[#F5B027]/20 border border-[#F5B027]/40 flex items-center justify-center text-[#F5B027]">
             <TrendingUp size={16} />
           </div>
           <div>
             <div className="flex items-center gap-2">
-              <span className="text-[9.5px] font-mono tracking-[0.25em] text-[#3D6BF2] uppercase font-bold">
+              <span className="text-[9.5px] font-mono tracking-[0.25em] text-[#F5B027] uppercase font-bold">
                 Engagement Telemetry
               </span>
-              <span className="text-[9px] font-mono px-1.5 py-0.2 rounded bg-[#3FB37F]/15 text-[#3FB37F] border border-[#3FB37F]/30 font-semibold">
+              <span className="text-[9px] font-mono px-1.5 py-0.2 rounded bg-[#C78522]/15 text-[#C78522] border border-[#C78522]/30 font-semibold">
                 +14.2% MoM
               </span>
             </div>
@@ -81,20 +81,20 @@ export const Dashboard30DayTrendChart: React.FC<Dashboard30DayTrendChartProps> =
           <div className="text-right">
             <div className="text-[8.5px] font-mono text-[#F2EEE6]/50 uppercase">Network Index</div>
             <div className="text-sm font-mono font-bold text-[#F2EEE6] tabular-nums">
-              88.4 <span className="text-[10px] text-[#3D6BF2]">/100</span>
+              88.4 <span className="text-[10px] text-[#F5B027]">/100</span>
             </div>
           </div>
 
           <div className="text-right">
             <div className="text-[8.5px] font-mono text-[#F2EEE6]/50 uppercase">Touchpoint Interval</div>
-            <div className="text-sm font-mono font-bold text-[#3FB37F] tabular-nums">
+            <div className="text-sm font-mono font-bold text-[#C78522] tabular-nums">
               3.8d <span className="text-[9px] text-[#F2EEE6]/40">avg</span>
             </div>
           </div>
 
           <div className="text-right hidden md:block">
             <div className="text-[8.5px] font-mono text-[#F2EEE6]/50 uppercase">Drift Decay Half-life</div>
-            <div className="text-sm font-mono font-bold text-[#F2A93B] tabular-nums">
+            <div className="text-sm font-mono font-bold text-[#F5B027] tabular-nums">
               30.0d <span className="text-[9px] text-[#F2EEE6]/40">(λ=0.045)</span>
             </div>
           </div>
@@ -120,8 +120,8 @@ export const Dashboard30DayTrendChart: React.FC<Dashboard30DayTrendChartProps> =
               >
                 <defs>
                   <linearGradient id="dashboardTrendGradient" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#3D6BF2" stopOpacity={0.35} />
-                    <stop offset="95%" stopColor="#3D6BF2" stopOpacity={0.0} />
+                    <stop offset="5%" stopColor="#F5B027" stopOpacity={0.35} />
+                    <stop offset="95%" stopColor="#F5B027" stopOpacity={0.0} />
                   </linearGradient>
                 </defs>
                 <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.04)" vertical={false} />
@@ -152,18 +152,18 @@ export const Dashboard30DayTrendChart: React.FC<Dashboard30DayTrendChartProps> =
                       const mutualVal = Math.min(100, Math.round(score * 1.01));
 
                       return (
-                        <div className="bg-[#090C11]/95 backdrop-blur-xl border border-[#3D6BF2]/50 p-3 rounded-xl shadow-2xl text-[9px] font-mono text-[#F2EEE6] space-y-2 z-50 pointer-events-none min-w-[230px]">
+                        <div className="bg-[#090C11]/95 backdrop-blur-xl border border-[#F5B027]/50 p-3 rounded-xl shadow-2xl text-[9px] font-mono text-[#F2EEE6] space-y-2 z-50 pointer-events-none min-w-[230px]">
                           <div className="flex items-center justify-between border-b border-white/10 pb-1.5">
                             <span className="font-serif-editorial text-[12px] text-[#F2EEE6] font-bold">
                               Day {label} Trajectory
                             </span>
-                            <span className="text-[#3D6BF2] font-bold text-[11px] tabular-nums">
+                            <span className="text-[#F5B027] font-bold text-[11px] tabular-nums">
                               {score}/100 Index
                             </span>
                           </div>
 
                           <div className="text-[8.5px] text-[#F2EEE6]/60 font-serif-editorial italic flex items-center gap-1">
-                            <Calculator size={10} className="text-[#3D6BF2]" />
+                            <Calculator size={10} className="text-[#F5B027]" />
                             <span>Formula: 0.35R + 0.30F + 0.20ρ + 0.15M</span>
                           </div>
 
@@ -171,11 +171,11 @@ export const Dashboard30DayTrendChart: React.FC<Dashboard30DayTrendChartProps> =
                           <div className="space-y-1 pt-0.5 text-[8.5px]">
                             <div className="flex items-center justify-between">
                               <span className="text-[#F2EEE6]/70">Recency (R: 35%):</span>
-                              <span className="text-[#3FB37F] tabular-nums font-semibold">{recencyVal}%</span>
+                              <span className="text-[#C78522] tabular-nums font-semibold">{recencyVal}%</span>
                             </div>
                             <div className="flex items-center justify-between">
                               <span className="text-[#F2EEE6]/70">Frequency (F: 30%):</span>
-                              <span className="text-[#3D6BF2] tabular-nums font-semibold">{freqVal}%</span>
+                              <span className="text-[#F5B027] tabular-nums font-semibold">{freqVal}%</span>
                             </div>
                             <div className="flex items-center justify-between">
                               <span className="text-[#F2EEE6]/70">Reciprocity (ρ: 20%):</span>
@@ -183,7 +183,7 @@ export const Dashboard30DayTrendChart: React.FC<Dashboard30DayTrendChartProps> =
                             </div>
                             <div className="flex items-center justify-between">
                               <span className="text-[#F2EEE6]/70">Mutual Strength (M: 15%):</span>
-                              <span className="text-[#F2A93B] tabular-nums font-semibold">{mutualVal}%</span>
+                              <span className="text-[#F5B027] tabular-nums font-semibold">{mutualVal}%</span>
                             </div>
                           </div>
                         </div>
@@ -195,11 +195,11 @@ export const Dashboard30DayTrendChart: React.FC<Dashboard30DayTrendChartProps> =
                 <Area
                   type="monotone"
                   dataKey="score"
-                  stroke="#3D6BF2"
+                  stroke="#F5B027"
                   strokeWidth={2}
                   fillOpacity={1}
                   fill="url(#dashboardTrendGradient)"
-                  activeDot={{ r: 5, fill: '#3FB37F', stroke: '#07090C', strokeWidth: 2 }}
+                  activeDot={{ r: 5, fill: '#C78522', stroke: '#07090C', strokeWidth: 2 }}
                 />
               </AreaChart>
             </ResponsiveContainer>
@@ -208,15 +208,15 @@ export const Dashboard30DayTrendChart: React.FC<Dashboard30DayTrendChartProps> =
           {/* Sub-footer Formula & Calculation Transparency */}
           <div className="pt-2 border-t border-white/5 flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-[9.5px] font-mono text-[#F2EEE6]/60">
             <div className="flex items-center gap-2">
-              <span className="text-[#3D6BF2] font-semibold">Mathematical Transparency:</span>
+              <span className="text-[#F5B027] font-semibold">Mathematical Transparency:</span>
               <span>Exponential decay weighting calibrated over 30 days of touchpoint intervals.</span>
             </div>
             <div className="flex items-center gap-3">
               <span className="flex items-center gap-1">
-                <span className="w-2 h-2 rounded-full bg-[#3FB37F]" /> Active Cohort
+                <span className="w-2 h-2 rounded-full bg-[#C78522]" /> Active Cohort
               </span>
               <span className="flex items-center gap-1">
-                <span className="w-2 h-2 rounded-full bg-[#3D6BF2]" /> Recharts Spline
+                <span className="w-2 h-2 rounded-full bg-[#F5B027]" /> Recharts Spline
               </span>
             </div>
           </div>

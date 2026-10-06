@@ -421,13 +421,13 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({
   const getStatusDot = (status?: string) => {
     switch (status) {
       case 'active':
-        return 'bg-[#3FB37F] shadow-[0_0_8px_rgba(63,179,127,0.7)]';
+        return 'bg-[#C78522] shadow-[0_0_8px_rgba(63,179,127,0.7)]';
       case 'followup':
-        return 'bg-[#F2A93B] shadow-[0_0_8px_rgba(242,169,59,0.7)]';
+        return 'bg-[#F5B027] shadow-[0_0_8px_rgba(242,169,59,0.7)]';
       case 'dormant':
         return 'bg-[#64748B]';
       default:
-        return 'bg-[#3D6BF2]';
+        return 'bg-[#F5B027]';
     }
   };
 
@@ -445,8 +445,8 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({
         {/* Main Search Input */}
         <div className="p-4 border-b border-white/10 flex items-center gap-3 bg-[#07090C]/80">
           <div className="relative shrink-0">
-            <Search size={18} className="text-[#3D6BF2]" />
-            <Sparkles size={8} className="absolute -top-1 -right-1 text-[#3FB37F] animate-pulse" />
+            <Search size={18} className="text-[#F5B027]" />
+            <Sparkles size={8} className="absolute -top-1 -right-1 text-[#C78522] animate-pulse" />
           </div>
           <input
             type="text"
@@ -467,7 +467,7 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({
                 className="px-2 py-1 rounded bg-white/5 hover:bg-white/10 text-[10px] font-mono text-[#F2EEE6]/70 flex items-center gap-1 transition-colors border border-white/5"
                 title="View Keyboard Shortcuts Cheat Sheet (⌘/)"
               >
-                <Keyboard size={12} className="text-[#3D6BF2]" />
+                <Keyboard size={12} className="text-[#F5B027]" />
                 <span className="hidden sm:inline">Cheat Sheet</span>
                 <kbd className="text-[9px] opacity-60">⌘/</kbd>
               </button>
@@ -485,8 +485,8 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({
         <div className="px-4 py-2 border-b border-white/10 bg-[#0E1116] flex flex-wrap items-center justify-between gap-2 text-xs">
           {/* Predictive Banner State */}
           <div className="flex items-center gap-2">
-            <div className="flex items-center gap-1.5 text-[10px] font-mono text-[#3D6BF2] uppercase font-bold tracking-wider">
-              <Zap size={11} className="text-[#3FB37F]" />
+            <div className="flex items-center gap-1.5 text-[10px] font-mono text-[#F5B027] uppercase font-bold tracking-wider">
+              <Zap size={11} className="text-[#C78522]" />
               <span>Real-Time Predictive Engine</span>
             </div>
             <span className="text-white/20">|</span>
@@ -512,9 +512,9 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({
                   onScanCalendar();
                   onClose();
                 }}
-                className="px-2 py-0.5 rounded bg-white/5 hover:bg-[#3D6BF2]/20 border border-white/10 text-[10px] font-mono text-[#F2EEE6] flex items-center gap-1 transition-colors"
+                className="px-2 py-0.5 rounded bg-white/5 hover:bg-[#F5B027]/20 border border-white/10 text-[10px] font-mono text-[#F2EEE6] flex items-center gap-1 transition-colors"
               >
-                <Calendar size={10} className="text-[#3D6BF2]" />
+                <Calendar size={10} className="text-[#F5B027]" />
                 <span className="hidden sm:inline">Scan</span>
               </button>
             )}
@@ -524,9 +524,9 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({
                   onDownloadReport();
                   onClose();
                 }}
-                className="px-2 py-0.5 rounded bg-[#3D6BF2]/20 hover:bg-[#3D6BF2]/30 border border-[#3D6BF2]/40 text-[10px] font-mono text-[#F2EEE6] flex items-center gap-1 transition-colors"
+                className="px-2 py-0.5 rounded bg-[#F5B027]/20 hover:bg-[#F5B027]/30 border border-[#F5B027]/40 text-[10px] font-mono text-[#F2EEE6] flex items-center gap-1 transition-colors"
               >
-                <Download size={10} className="text-[#3D6BF2]" />
+                <Download size={10} className="text-[#F5B027]" />
                 <span className="hidden sm:inline">CSV</span>
               </button>
             )}
@@ -536,7 +536,7 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({
                   onClose();
                   onOpenPredictiveInsights();
                 }}
-                className="px-2 py-0.5 rounded bg-[#3FB37F]/15 hover:bg-[#3FB37F]/25 border border-[#3FB37F]/40 text-[#3FB37F] text-[10px] font-mono flex items-center gap-1 transition-colors"
+                className="px-2 py-0.5 rounded bg-[#C78522]/15 hover:bg-[#C78522]/25 border border-[#C78522]/40 text-[#C78522] text-[10px] font-mono flex items-center gap-1 transition-colors"
               >
                 <Sparkles size={10} />
                 <span className="hidden sm:inline">AI Blind Spots</span>
@@ -557,7 +557,7 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({
                   onMouseEnter={() => setSelectedIndex(idx)}
                   className={`w-full p-2.5 rounded-xl text-left flex items-center justify-between gap-3 transition-all ${
                     isSelected
-                      ? 'bg-[#151922] border border-[#3D6BF2]/60 shadow-lg translate-x-0.5'
+                      ? 'bg-[#151922] border border-[#F5B027]/60 shadow-lg translate-x-0.5'
                       : 'hover:bg-white/5 border border-transparent'
                   }`}
                 >
@@ -576,11 +576,11 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({
                         />
                       </div>
                     ) : item.type === 'action' ? (
-                      <div className="w-8 h-8 rounded-lg bg-[#3D6BF2]/20 border border-[#3D6BF2]/40 flex items-center justify-center text-[#3D6BF2] shrink-0">
+                      <div className="w-8 h-8 rounded-lg bg-[#F5B027]/20 border border-[#F5B027]/40 flex items-center justify-center text-[#F5B027] shrink-0">
                         <Zap size={15} />
                       </div>
                     ) : item.type === 'tool' ? (
-                      <div className="w-8 h-8 rounded-lg bg-[#3FB37F]/20 border border-[#3FB37F]/40 flex items-center justify-center text-[#3FB37F] shrink-0">
+                      <div className="w-8 h-8 rounded-lg bg-[#C78522]/20 border border-[#C78522]/40 flex items-center justify-center text-[#C78522] shrink-0">
                         <Sparkles size={15} />
                       </div>
                     ) : (
@@ -594,7 +594,7 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({
                         <span className="text-xs sm:text-[13px] font-semibold text-[#F2EEE6] truncate">
                           {item.title}
                         </span>
-                        <span className="text-[9px] font-mono px-1.5 py-0.2 rounded bg-white/5 text-[#3D6BF2] shrink-0 border border-white/5">
+                        <span className="text-[9px] font-mono px-1.5 py-0.2 rounded bg-white/5 text-[#F5B027] shrink-0 border border-white/5">
                           {item.badge}
                         </span>
                       </div>
@@ -610,7 +610,7 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({
                     </span>
                     <ArrowRight
                       size={13}
-                      className={isSelected ? 'text-[#3D6BF2]' : 'text-[#F2EEE6]/30'}
+                      className={isSelected ? 'text-[#F5B027]' : 'text-[#F2EEE6]/30'}
                     />
                   </div>
                 </button>
@@ -637,7 +637,7 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({
             </span>
           </div>
 
-          <div className="text-[9.5px] text-[#3D6BF2] flex items-center gap-1 font-semibold">
+          <div className="text-[9.5px] text-[#F5B027] flex items-center gap-1 font-semibold">
             <span>Powered by Aetheris Activity Graph</span>
           </div>
         </div>

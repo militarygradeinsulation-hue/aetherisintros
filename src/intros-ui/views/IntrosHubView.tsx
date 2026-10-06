@@ -59,12 +59,12 @@ export const IntrosHubView: React.FC<IntrosHubViewProps> = ({
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
           <div className="space-y-3">
             <div className="text-[10px] md:text-xs font-mono uppercase tracking-[0.25em] text-[#9CA3AF] font-semibold flex items-center gap-2">
-              <span className="w-2 h-2 rounded-full bg-[#3D6BF2]" />
+              <span className="w-2 h-2 rounded-full bg-[#F5B027]" />
               Double Opt-In Protocol
             </div>
             <h1 className="font-serif-editorial text-3xl sm:text-4xl md:text-5xl text-[#F2EEE6] leading-tight">
               Warm Introductions{' '}
-              <span className="text-[#3D6BF2]">Workspace</span>
+              <span className="text-[#F5B027]">Workspace</span>
             </h1>
             <p className="text-xs md:text-sm text-[#9CA3AF] max-w-xl">
               Facilitate high-signal relationships with confidential double-opt-in workflows.
@@ -74,7 +74,7 @@ export const IntrosHubView: React.FC<IntrosHubViewProps> = ({
 
           <button
             onClick={() => setShowMakeIntroModal(true)}
-            className="flex items-center gap-2 px-5 py-2.5 rounded-lg bg-[#3D6BF2] hover:bg-[#2563EB] text-white text-xs md:text-sm font-semibold transition-all shadow-md shadow-[#3D6BF2]/20 cursor-pointer self-start md:self-auto"
+            className="flex items-center gap-2 px-5 py-2.5 rounded-lg bg-[#F5B027] hover:bg-[#C78522] text-white text-xs md:text-sm font-semibold transition-all shadow-md shadow-[#F5B027]/20 cursor-pointer self-start md:self-auto"
           >
             <Plus className="w-4 h-4" />
             Facilitate New Introduction
@@ -95,7 +95,7 @@ export const IntrosHubView: React.FC<IntrosHubViewProps> = ({
             onClick={() => setActiveTab(tab.id as any)}
             className={`text-xs font-medium cursor-pointer transition-colors pb-1 flex items-center gap-1.5 ${
               activeTab === tab.id
-                ? 'text-white border-b-2 border-[#3D6BF2] font-semibold'
+                ? 'text-white border-b-2 border-[#F5B027] font-semibold'
                 : 'text-[#9CA3AF] hover:text-white'
             }`}
           >
@@ -151,7 +151,7 @@ export const IntrosHubView: React.FC<IntrosHubViewProps> = ({
                 <div className="flex items-center gap-2.5 self-end md:self-auto shrink-0">
                   <button
                     onClick={() => onReviewRequest(req)}
-                    className="px-4 py-2 text-xs font-semibold text-white bg-[#3D6BF2] hover:bg-[#2563EB] rounded-lg transition-colors cursor-pointer"
+                    className="px-4 py-2 text-xs font-semibold text-white bg-[#F5B027] hover:bg-[#C78522] rounded-lg transition-colors cursor-pointer"
                   >
                     Review & Facilitate
                   </button>
@@ -241,7 +241,7 @@ export const IntrosHubView: React.FC<IntrosHubViewProps> = ({
                   <ExecutivePortrait name={item.p1} size="sm" />
                   <span className="text-xs font-semibold text-white">{item.p1}</span>
                 </div>
-                <ArrowRight className="w-3.5 h-3.5 text-[#3D6BF2] shrink-0" />
+                <ArrowRight className="w-3.5 h-3.5 text-[#F5B027] shrink-0" />
                 <div className="flex items-center gap-2">
                   <ExecutivePortrait name={item.p2} size="sm" />
                   <span className="text-xs font-semibold text-white">{item.p2}</span>
@@ -273,7 +273,7 @@ export const IntrosHubView: React.FC<IntrosHubViewProps> = ({
                     <div className="text-[11px] text-[#9CA3AF]">{member.title}</div>
                   </div>
                 </div>
-                <span className="text-xs font-mono text-[#3D6BF2] font-bold">
+                <span className="text-xs font-mono text-[#F5B027] font-bold">
                   {member.matchScore}% Match
                 </span>
               </div>
@@ -282,7 +282,7 @@ export const IntrosHubView: React.FC<IntrosHubViewProps> = ({
               </p>
               <button
                 onClick={() => onRequestIntro(member)}
-                className="w-full py-2 text-xs font-semibold text-white bg-[#3D6BF2] hover:bg-[#2563EB] rounded-lg transition-colors cursor-pointer text-center"
+                className="w-full py-2 text-xs font-semibold text-white bg-[#F5B027] hover:bg-[#C78522] rounded-lg transition-colors cursor-pointer text-center"
               >
                 Request Warm Introduction
               </button>
@@ -355,7 +355,7 @@ export const IntrosHubView: React.FC<IntrosHubViewProps> = ({
                     onChange={(e) => setIntroContext(e.target.value)}
                     rows={3}
                     placeholder="Connecting both of you to explore AI infrastructure architectures..."
-                    className="w-full bg-[#151A24] border border-white/10 rounded-lg p-3 text-xs text-white placeholder-[#6B7280] focus:outline-none focus:border-[#3D6BF2]"
+                    className="w-full bg-[#151A24] border border-white/10 rounded-lg p-3 text-xs text-white placeholder-[#6B7280] focus:outline-none focus:border-[#F5B027]"
                   />
                 </div>
 
@@ -369,7 +369,7 @@ export const IntrosHubView: React.FC<IntrosHubViewProps> = ({
                   </button>
                   <button
                     type="submit"
-                    className="px-4 py-2 text-xs font-semibold text-white bg-[#3D6BF2] hover:bg-[#2563EB] rounded-lg cursor-pointer"
+                    className="px-4 py-2 text-xs font-semibold text-white bg-[#F5B027] hover:bg-[#C78522] rounded-lg cursor-pointer"
                   >
                     Send Double-Opt-In
                   </button>

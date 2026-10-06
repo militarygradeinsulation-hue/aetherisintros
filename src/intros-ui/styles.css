@@ -52,9 +52,9 @@
 }
 
 .sys-tile:hover {
-  border-color: rgba(61, 107, 242, 0.4);
+  border-color: rgba(245, 176, 39, 0.38);
   transform: translateY(-2px);
-  box-shadow: 0 12px 30px -10px rgba(0, 0, 0, 0.7), 0 0 20px -8px rgba(61, 107, 242, 0.2);
+  box-shadow: 0 12px 30px -10px rgba(0, 0, 0, 0.7), 0 0 20px -8px rgba(245, 176, 39, 0.28);
 }
 
 .sys-tile:focus-visible {
@@ -201,9 +201,440 @@
 .ix-classic { min-height: 70vh; }
 
 /* Brand recolor: replace green/red accents with cobalt/amber */
-.ix-root [class*="text-emerald"], .ix-root [class*="text-green"] { color: #5B8DEF !important; }
-.ix-root [class*="bg-emerald"], .ix-root [class*="bg-green"] { background-color: rgba(15,92,203,.14) !important; }
-.ix-root [class*="border-emerald"], .ix-root [class*="border-green"] { border-color: rgba(15,92,203,.35) !important; }
-.ix-root [class*="text-red"], .ix-root [class*="text-rose"] { color: #F4A125 !important; }
-.ix-root [class*="bg-red"], .ix-root [class*="bg-rose"] { background-color: rgba(244,161,37,.12) !important; }
-.ix-root [class*="border-red"], .ix-root [class*="border-rose"] { border-color: rgba(244,161,37,.3) !important; }
+.ix-root [class*="text-emerald"], .ix-root [class*="text-green"] { color: var(--acc) !important; }
+.ix-root [class*="bg-emerald"], .ix-root [class*="bg-green"] { background-color: var(--acc-wash) !important; }
+.ix-root [class*="border-emerald"], .ix-root [class*="border-green"] { border-color: var(--acc-btn-line) !important; }
+.ix-root [class*="text-red"], .ix-root [class*="text-rose"] { color: var(--acc) !important; }
+.ix-root [class*="bg-red"], .ix-root [class*="bg-rose"] { background-color: var(--acc-wash) !important; }
+.ix-root [class*="border-red"], .ix-root [class*="border-rose"] { border-color: var(--acc-btn-line) !important; }
+
+/* ══════════════════════════════════════════════════════════════════════
+   ACCENT SHIFT — cobalt out, light black + logo yellow in (Oct 6)
+   Palette anchored to the logo dot: var(--acc)
+   ══════════════════════════════════════════════════════════════════════ */
+.ix-root {
+  --sys-gold: var(--acc);
+  --sys-gold-bright: var(--acc-bright);
+  --sys-gold-wash: var(--acc-wash);
+  --sys-gold-line: var(--acc-btn-line);
+  --sys-btn: #161A20;
+  --sys-btn-hover: #1F262F;
+  --sys-btn-ring: var(--acc-btn-line);
+  --sys-btn-ring-hover: var(--acc-glow);
+  --sys-accent: var(--acc);
+  --sys-ok: var(--acc);
+  --sys-hot: var(--acc);
+  /* classic (aetheris) tokens, scoped to the shell only */
+  --cobalt: var(--acc);
+  --cobalt-bright: var(--acc-bright);
+  --cobalt-hover: var(--acc-strong);
+}
+
+/* blue glows and shadows read as warm signal light */
+.ix-root [class*="shadow-[#3D6BF2]"],
+.ix-root [class*="shadow-blue-"],
+.ix-root [class*="shadow-sky-"] {
+  box-shadow: 0 0 24px -6px rgba(245, 176, 39, 0.4) !important;
+}
+
+/* filled blue surfaces (buttons, active tabs, panels) → light black */
+.ix-root [class*="bg-[#3D6BF2]"],
+.ix-root [class*="bg-[#2563EB]"],
+.ix-root [class*="bg-[#0F5CCB]"],
+.ix-root [class*="bg-[#0B4DAE]"],
+.ix-root [class*="bg-[#1476FF]"],
+.ix-root [class*="bg-[#5B8DEF]"],
+.ix-root [class*="bg-blue-"],
+.ix-root [class*="bg-sky-"],
+.ix-root [class*="bg-indigo-"] {
+  background-color: var(--sys-btn) !important;
+  color: var(--sys-ink) !important;
+  box-shadow: inset 0 0 0 1px var(--sys-btn-ring) !important;
+}
+
+/* hover feedback on those surfaces */
+.ix-root [class*="hover:bg-[#3D6BF2]"]:hover,
+.ix-root [class*="hover:bg-[#2563EB]"]:hover,
+.ix-root [class*="hover:bg-[#0F5CCB]"]:hover,
+.ix-root [class*="hover:bg-[#5B8DEF]"]:hover,
+.ix-root [class*="hover:bg-blue"]:hover,
+.ix-root [class*="hover:bg-sky"]:hover {
+  background-color: var(--sys-btn-hover) !important;
+  box-shadow: inset 0 0 0 1px var(--sys-btn-ring-hover) !important;
+}
+
+/* translucent blue washes (soft chips, tinted fills) → gold wash */
+.ix-root [class*="bg-[#3D6BF2]/"],
+.ix-root [class*="bg-[#2563EB]/"],
+.ix-root [class*="bg-[#0F5CCB]/"],
+.ix-root [class*="bg-[#5B8DEF]/"],
+.ix-root [class*="bg-blue-600/"],
+.ix-root [class*="bg-blue-500/"],
+.ix-root [class*="bg-blue-400/"],
+.ix-root [class*="bg-sky-500/"],
+.ix-root [class*="bg-indigo-500/"] {
+  background-color: var(--acc-wash) !important;
+  box-shadow: inset 0 0 0 1px var(--acc-line) !important;
+}
+
+/* round blue things are indicators, pills and counts → logo yellow */
+.ix-root [class*="rounded-full"][class*="bg-[#3D6BF2]"],
+.ix-root [class*="rounded-full"][class*="bg-[#2563EB]"],
+.ix-root [class*="rounded-full"][class*="bg-[#0F5CCB]"],
+.ix-root [class*="rounded-full"][class*="bg-[#5B8DEF]"],
+.ix-root [class*="rounded-full"][class*="bg-blue-"],
+.ix-root [class*="rounded-full"][class*="bg-sky-"] {
+  background-color: var(--acc) !important;
+  color: #101216 !important;
+  box-shadow: 0 0 14px -3px var(--acc-glow) !important;
+}
+
+/* soft round chips stay a gold wash rather than solid yellow */
+.ix-root [class*="rounded-full"][class*="bg-[#3D6BF2]/"],
+.ix-root [class*="rounded-full"][class*="bg-blue-600/"],
+.ix-root [class*="rounded-full"][class*="bg-blue-500/"] {
+  background-color: var(--acc-wash) !important;
+  color: var(--acc) !important;
+  box-shadow: inset 0 0 0 1px var(--acc-line) !important;
+}
+
+/* blue text, links and labels → logo yellow */
+.ix-root [class*="text-[#3D6BF2]"],
+.ix-root [class*="text-[#60A5FA]"],
+.ix-root [class*="text-[#5B8DEF]"],
+.ix-root [class*="text-[#1476FF]"],
+.ix-root [class*="text-[#0F5CCB]"],
+.ix-root [class*="text-[#2563EB]"],
+.ix-root [class*="text-blue-"],
+.ix-root [class*="text-sky-"],
+.ix-root [class*="text-indigo-"] {
+  color: var(--acc) !important;
+}
+
+/* hairlines and focus rings */
+.ix-root [class*="border-[#3D6BF2]"],
+.ix-root [class*="border-[#0F5CCB]"],
+.ix-root [class*="border-[#5B8DEF]"],
+.ix-root [class*="border-[#2563EB]"],
+.ix-root [class*="border-blue-"],
+.ix-root [class*="border-sky-"],
+.ix-root [class*="border-indigo-"],
+.ix-root [class*="divide-[#3D6BF2]"],
+.ix-root [class*="divide-blue-"],
+.ix-root [class*="outline-[#3D6BF2]"] {
+  border-color: var(--acc-line) !important;
+  outline-color: var(--acc-line) !important;
+}
+.ix-root [class*="ring-[#3D6BF2]"],
+.ix-root [class*="ring-blue-"],
+.ix-root [class*="ring-sky-"] {
+  --tw-ring-color: var(--acc-btn-line) !important;
+}
+
+/* gradients */
+.ix-root [class*="from-[#3D6BF2]"],
+.ix-root [class*="via-[#3D6BF2]"],
+.ix-root [class*="to-[#3D6BF2]"],
+.ix-root [class*="from-blue-"],
+.ix-root [class*="via-blue-"],
+.ix-root [class*="to-blue-"],
+.ix-root [class*="from-sky-"],
+.ix-root [class*="to-sky-"] {
+  --tw-gradient-from: var(--acc-glow) !important;
+  --tw-gradient-via: rgba(245, 176, 39, 0.4) !important;
+  --tw-gradient-to: rgba(245, 176, 39, 0) !important;
+}
+
+/* chart strokes and fills */
+.ix-root [class*="fill-[#3D6BF2]"],
+.ix-root [class*="stroke-[#3D6BF2]"],
+.ix-root [class*="fill-blue-"],
+.ix-root [class*="stroke-blue-"] {
+  fill: var(--acc) !important;
+  stroke: var(--acc) !important;
+}
+
+/* leftover hard-coded green / red — retired in favour of the gold signal */
+.ix-root [class*="text-[#3FB37F]"],
+.ix-root [class*="text-[#E5484D]"],
+.ix-root [class*="text-[#F97316]"] { color: var(--acc) !important; }
+.ix-root [class*="bg-[#3FB37F]"],
+.ix-root [class*="bg-[#E5484D]"],
+.ix-root [class*="bg-[#F97316]"] {
+  background-color: var(--acc) !important;
+  color: #101216 !important;
+}
+.ix-root [class*="border-[#3FB37F]"],
+.ix-root [class*="border-[#E5484D]"],
+.ix-root [class*="border-[#F97316]"] { border-color: var(--acc-line) !important; }
+
+/* classic primary CTA: light black with a gold hairline, never solid blue */
+.ix-root .btn.primary {
+  background: var(--sys-btn) !important;
+  border-color: var(--sys-btn-ring) !important;
+  color: var(--sys-ink) !important;
+}
+.ix-root .btn.primary:hover {
+  background: var(--sys-btn-hover) !important;
+  border-color: var(--sys-btn-ring-hover) !important;
+}
+
+/* ============================================================
+   BUTTON TONE — dark gold, see-through
+   (user: solid gold reads too bright)
+   ============================================================ */
+.ix-root [class*="bg-[#F5B027]"],
+.ix-root [class*="bg-[#FFC85C]"],
+.ix-root [class*="bg-[#C78522]"],
+.ix-root [class*="bg-[#8A5A12]"] {
+  background-color: var(--acc-btn) !important;
+  color: var(--sys-ink) !important;
+  box-shadow: inset 0 0 0 1px var(--acc-btn-line) !important;
+}
+.ix-root [class*="bg-[#F5B027]/"],
+.ix-root [class*="bg-[#C78522]/"],
+.ix-root [class*="bg-[#FFC85C]/"],
+.ix-root [class*="bg-[#8A5A12]/"] {
+  background-color: var(--acc-wash) !important;
+  color: var(--sys-ink) !important;
+  box-shadow: inset 0 0 0 1px var(--acc-line) !important;
+}
+.ix-root .btn.primary,
+.ix-root .btn-primary,
+.ix-root button.primary,
+.ix-root .nb-cta,
+.ix-root .memory-cta,
+.ix-root .ask-primary,
+.ix-root .btn-primary-cta {
+  background-color: var(--acc-btn) !important;
+  border-color: var(--acc-btn-line) !important;
+  color: var(--sys-ink) !important;
+}
+/* hover: a touch warmer, still translucent */
+.ix-root [class*="hover:bg-[#F5B027]"]:hover,
+.ix-root [class*="hover:bg-[#FFC85C]"]:hover,
+.ix-root [class*="hover:bg-[#C78522]"]:hover,
+.ix-root [class*="hover:bg-[#8A5A12]"]:hover,
+.ix-root [class*="hover:bg-[#3D6BF2]"]:hover,
+.ix-root [class*="hover:bg-[#60A5FA]"]:hover,
+.ix-root [class*="hover:bg-[#5B8DEF]"]:hover,
+.ix-root .btn.primary:hover,
+.ix-root .btn-primary:hover,
+.ix-root button.primary:hover,
+.ix-root .nb-cta:hover,
+.ix-root .memory-cta:hover,
+.ix-root .ask-primary:hover,
+.ix-root .btn-primary-cta:hover {
+  background-color: var(--acc-btn-hover) !important;
+  color: var(--sys-ink) !important;
+  box-shadow: inset 0 0 0 1px var(--acc-btn-line) !important;
+}
+/* round indicators keep solid gold — dots and badges, not buttons */
+.ix-root [class*="rounded-full"][class*="bg-[#F5B027]"],
+.ix-root [class*="rounded-full"][class*="bg-[#C78522]"],
+.ix-root [class*="rounded-full"][class*="bg-[#FFC85C]"],
+.ix-root [class*="rounded-full"][class*="bg-[#8A5A12]"],
+.ix-root [class*="rounded-[999px]"][class*="bg-[#F5B027]"],
+.ix-root [class*="rounded-[999px]"][class*="bg-[#C78522]"],
+.ix-root [class*="rounded-[999px]"][class*="bg-[#FFC85C]"],
+.ix-root [class*="rounded-[999px]"][class*="bg-[#8A5A12]"] {
+  background-color: var(--acc) !important;
+  color: #101216 !important;
+  box-shadow: 0 0 14px -3px var(--acc-glow) !important;
+}
+.ix-root [class*="rounded-full"][class*="hover:bg-[#F5B027]"]:hover,
+.ix-root [class*="rounded-full"][class*="hover:bg-[#C78522]"]:hover,
+.ix-root [class*="rounded-full"][class*="hover:bg-[#FFC85C]"]:hover,
+.ix-root [class*="rounded-[999px]"][class*="hover:bg-[#F5B027]"]:hover,
+.ix-root [class*="rounded-[999px]"][class*="hover:bg-[#C78522]"]:hover {
+  background-color: var(--acc-bright) !important;
+  color: #101216 !important;
+  box-shadow: 0 0 16px -2px var(--acc-glow) !important;
+}
+
+/* ============================================================
+   ACCENT MODES — gold, blue, or the mixed pairing
+   ============================================================ */
+:root,
+:root[data-accent="gold"] {
+  --acc: #F5B027;
+  --acc-bright: #FFC85C;
+  --acc-strong: #C78522;
+  --acc-deep: #8A5A12;
+  --acc-wash: rgba(245, 176, 39, 0.10);
+  --acc-line: rgba(245, 176, 39, 0.32);
+  --acc-glow: rgba(245, 176, 39, 0.5);
+  --acc-btn: rgba(138, 90, 18, 0.22);
+  --acc-btn-hover: rgba(199, 133, 34, 0.34);
+  --acc-btn-line: rgba(245, 176, 39, 0.32);
+  --acc-spot: rgba(245, 176, 39, 0.10);
+  --acc-field-line: rgba(255, 255, 255, 0.055);
+  --acc-field-fill: rgba(245, 176, 39, 0.05);
+  --acc-field-stroke: rgba(245, 176, 39, 0.26);
+  --acc-field-glow: rgba(245, 176, 39, 0.45);
+}
+
+:root[data-accent="blue"] {
+  --acc: #4F82F7;
+  --acc-bright: #8FB6F2;
+  --acc-strong: #2C63E8;
+  --acc-deep: #12409E;
+  --acc-wash: rgba(61, 107, 242, 0.14);
+  --acc-line: rgba(96, 165, 250, 0.34);
+  --acc-glow: rgba(96, 165, 250, 0.5);
+  --acc-btn: rgba(23, 58, 140, 0.32);
+  --acc-btn-hover: rgba(30, 74, 175, 0.44);
+  --acc-btn-line: rgba(96, 165, 250, 0.36);
+  --acc-spot: rgba(37, 99, 235, 0.16);
+  --acc-field-line: rgba(120, 160, 255, 0.075);
+  --acc-field-fill: rgba(37, 99, 235, 0.08);
+  --acc-field-stroke: rgba(96, 165, 250, 0.30);
+  --acc-field-glow: rgba(59, 130, 246, 0.5);
+}
+
+/* Gold intelligence accents, blue actions. */
+:root[data-accent="mixed"] {
+  --acc: #F5B027;
+  --acc-bright: #FFC85C;
+  --acc-strong: #C78522;
+  --acc-deep: #8A5A12;
+  --acc-wash: rgba(245, 176, 39, 0.10);
+  --acc-line: rgba(245, 176, 39, 0.32);
+  --acc-glow: rgba(245, 176, 39, 0.5);
+  --acc-btn: rgba(23, 58, 140, 0.32);
+  --acc-btn-hover: rgba(30, 74, 175, 0.44);
+  --acc-btn-line: rgba(96, 165, 250, 0.36);
+  --acc-spot: rgba(37, 99, 235, 0.13);
+  --acc-field-line: rgba(255, 255, 255, 0.055);
+  --acc-field-fill: rgba(245, 176, 39, 0.05);
+  --acc-field-stroke: rgba(245, 176, 39, 0.26);
+  --acc-field-glow: rgba(96, 165, 250, 0.45);
+}
+
+.ix-root {
+  isolation: isolate;
+  --sys-gold: var(--acc);
+  --sys-gold-bright: var(--acc-bright);
+  --sys-gold-wash: var(--acc-wash);
+  --sys-gold-line: var(--acc-line);
+  --sys-btn: var(--acc-btn);
+  --sys-btn-hover: var(--acc-btn-hover);
+  --sys-btn-ring: var(--acc-btn-line);
+  --sys-btn-ring-hover: var(--acc-btn-line);
+}
+
+/* Inline SVG attributes follow the mode too. */
+.ix-root [stroke="#F5B027"] { stroke: var(--acc) !important; }
+.ix-root [stroke="#FFC85C"] { stroke: var(--acc-bright) !important; }
+.ix-root [stroke="#C78522"] { stroke: var(--acc-strong) !important; }
+.ix-root [fill="#F5B027"] { fill: var(--acc) !important; }
+.ix-root [fill="#FFC85C"] { fill: var(--acc-bright) !important; }
+.ix-root [fill="#C78522"] { fill: var(--acc-strong) !important; }
+.ix-root [style*="#F5B027"] { color: var(--acc); }
+
+/* ---------- reference backdrop: grid, pointer cell, grain ---------- */
+.ix-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  overflow: hidden;
+  background: radial-gradient(120% 90% at 50% 0%, rgba(18, 22, 28, 0.9) 0%, rgba(7, 9, 12, 1) 60%);
+}
+.ix-backdrop-spot {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(
+    50% 45% at 50% 40%,
+    color-mix(in srgb, var(--acc) 12%, transparent) 0%,
+    rgba(0, 0, 0, 0) 70%
+  );
+}
+.ix-backdrop-grid,
+.ix-backdrop-cell {
+  position: absolute;
+  inset: 0;
+  display: block;
+}
+.ix-backdrop-grain {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0.5;
+  image-rendering: pixelated;
+  mix-blend-mode: overlay;
+}
+.ix-backdrop-foot {
+  position: absolute;
+  inset: auto 0 0 0;
+  height: 26%;
+  background: linear-gradient(180deg, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, 0.55) 100%);
+}
+
+/* ---------- accent picker in the header ---------- */
+.ix-accent {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 999px;
+}
+.ix-accent button {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 9px;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  color: rgba(255, 255, 255, 0.55);
+  font: 600 10px "Space Grotesk", sans-serif;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: background 140ms ease, color 140ms ease;
+}
+.ix-accent button:hover { color: rgba(255, 255, 255, 0.85); }
+.ix-accent button i {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: currentColor;
+}
+.ix-accent button:nth-child(1) i { background: #F5B027; }
+.ix-accent button:nth-child(2) i { background: #4F82F7; }
+.ix-accent button:nth-child(3) i {
+  background: linear-gradient(90deg, #F5B027 0 50%, #4F82F7 50% 100%);
+}
+.ix-accent button.on {
+  background: rgba(255, 255, 255, 0.08);
+  color: rgba(255, 255, 255, 0.92);
+}
+@media (max-width: 900px) {
+  .ix-accent button span { display: none; }
+  .ix-accent button { padding: 4px 7px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .ix-backdrop-grain { opacity: 0.35; }
+}
+
+/* Blue is the house default; gold and mixed remain explicit choices. */
+:root {
+  --acc: #4F82F7;
+  --acc-bright: #8FB6F2;
+  --acc-strong: #2C63E8;
+  --acc-deep: #12409E;
+  --acc-wash: rgba(61, 107, 242, 0.14);
+  --acc-line: rgba(96, 165, 250, 0.34);
+  --acc-glow: rgba(96, 165, 250, 0.5);
+  --acc-btn: rgba(23, 58, 140, 0.32);
+  --acc-btn-hover: rgba(30, 74, 175, 0.44);
+  --acc-btn-line: rgba(96, 165, 250, 0.36);
+  --acc-spot: rgba(37, 99, 235, 0.16);
+  --acc-field-line: rgba(120, 160, 255, 0.075);
+  --acc-field-fill: rgba(37, 99, 235, 0.08);
+  --acc-field-stroke: rgba(96, 165, 250, 0.30);
+  --acc-field-glow: rgba(59, 130, 246, 0.5);
+}

@@ -31,7 +31,7 @@ export const EditorialFooter: React.FC<EditorialFooterProps> = ({ onNavigate }) 
           </button>
           <button
             onClick={() => onNavigate('bubbles')}
-            className="text-[#60A5FA] hover:text-white transition-colors cursor-pointer font-medium"
+            className="text-[#FFC85C] hover:text-white transition-colors cursor-pointer font-medium"
           >
             Connection Bubbles
           </button>

@@ -295,3 +295,18 @@
 - [x] Publish latest build to intros.today (scheduled; user requested).
 - [x] Fresh security scan — same 5 warn/info items, no criticals.
 - [x] Design-system audit: route brand fonts through BrandFonts; skipped provider re-wrap, meta pins and token reconciliation after file inspection (diagnosis didn't hold or risked live regressions).
+
+## Accent shift: logo yellow over blue (Oct 6)
+- [ ] Header dots beside Ask Intros and Bubbles use the logo yellow.
+- [ ] Message/notification alerts use the logo yellow.
+- [ ] Blue buttons become light black or logo yellow across the shell.
+- [ ] Verify desktop and phone widths, then publish.
+- [ ] Buttons: dark, see-through gold (not bright) — app shell CTAs, .btn.primary, hover states; round indicators keep solid gold
+- [ ] Background: moving-grid + film-grain field from uploaded reference, site-wide
+- [ ] Accent modes: Gold (current), Blue (original cobalt buttons), Mixed — switcher in header, remembered per device
+
+# Reader voice = my voice (Oct 6)
+- [x] Reader voice points at the member's own ElevenLabs clone ("Joseph — Ask Intros") for signed-in members; device voice remains the offline/demo fallback.
+- [ ] Verify playback in preview on desktop and phone widths.
+- [x] Default every member to the blue accent; keep gold and mixed selectable.
+- [x] Restore the drifting dots/lines + rising glyph animation and layer it with the new grid backdrop.

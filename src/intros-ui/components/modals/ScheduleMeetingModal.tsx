@@ -53,7 +53,7 @@ export const ScheduleMeetingModal: React.FC<ScheduleMeetingModalProps> = ({
           </div>
         ) : (
           <div>
-            <div className="text-[10px] font-mono tracking-widest text-[#3D6BF2] uppercase font-semibold mb-1">
+            <div className="text-[10px] font-mono tracking-widest text-[#F5B027] uppercase font-semibold mb-1">
               Direct Executive Sync
             </div>
             <h2 className="font-serif-editorial text-2xl font-bold text-white mb-4">
@@ -81,7 +81,7 @@ export const ScheduleMeetingModal: React.FC<ScheduleMeetingModalProps> = ({
                     onClick={() => setSelectedDuration(dur)}
                     className={`py-2 text-xs rounded-lg border font-medium cursor-pointer transition-colors ${
                       selectedDuration === dur
-                        ? 'border-[#3D6BF2] bg-[#3D6BF2]/20 text-white'
+                        ? 'border-[#F5B027] bg-[#F5B027]/20 text-white'
                         : 'border-white/10 bg-white/5 text-[#9CA3AF] hover:text-white'
                     }`}
                   >
@@ -99,7 +99,7 @@ export const ScheduleMeetingModal: React.FC<ScheduleMeetingModalProps> = ({
               <select
                 value={selectedDate}
                 onChange={(e) => setSelectedDate(e.target.value)}
-                className="w-full bg-[#151A24] border border-white/10 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-[#3D6BF2]"
+                className="w-full bg-[#151A24] border border-white/10 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-[#F5B027]"
               >
                 <option value="Tomorrow · 2:00 PM EST">Tomorrow · 2:00 PM EST (Recommended)</option>
                 <option value="Thursday · 10:30 AM EST">Thursday · 10:30 AM EST</option>
@@ -117,7 +117,7 @@ export const ScheduleMeetingModal: React.FC<ScheduleMeetingModalProps> = ({
                 type="text"
                 value={meetingTopic}
                 onChange={(e) => setMeetingTopic(e.target.value)}
-                className="w-full bg-[#151A24] border border-white/10 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-[#3D6BF2]"
+                className="w-full bg-[#151A24] border border-white/10 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-[#F5B027]"
               />
             </div>
 
@@ -133,7 +133,7 @@ export const ScheduleMeetingModal: React.FC<ScheduleMeetingModalProps> = ({
               <button
                 type="button"
                 onClick={handleConfirm}
-                className="flex items-center gap-1.5 px-4 py-2 text-xs font-semibold text-white bg-[#3D6BF2] hover:bg-[#2563EB] rounded-lg transition-colors cursor-pointer"
+                className="flex items-center gap-1.5 px-4 py-2 text-xs font-semibold text-white bg-[#F5B027] hover:bg-[#C78522] rounded-lg transition-colors cursor-pointer"
               >
                 <Calendar className="w-3.5 h-3.5" />
                 Dispatch Invite

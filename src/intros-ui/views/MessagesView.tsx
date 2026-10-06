@@ -88,13 +88,13 @@ export const MessagesView: React.FC<MessagesViewProps> = ({
           {/* Hero Left: Headline & Metrics */}
           <div className="lg:col-span-8 space-y-4">
             <div className="text-[10px] md:text-xs font-mono uppercase tracking-[0.25em] text-[#9CA3AF] font-semibold flex items-center gap-2">
-              <span className="w-2 h-2 rounded-full bg-[#3D6BF2]" />
+              <span className="w-2 h-2 rounded-full bg-[#F5B027]" />
               Messages / Introductions
             </div>
 
             <h1 className="font-serif-editorial text-3xl sm:text-4xl md:text-5xl lg:text-5xl text-[#F2EEE6] leading-[1.1] tracking-tight">
               Every conversation should move business{' '}
-              <span className="text-[#3D6BF2]">forward.</span>
+              <span className="text-[#F5B027]">forward.</span>
             </h1>
 
             <p className="text-sm md:text-base text-[#9CA3AF] max-w-xl">
@@ -142,7 +142,7 @@ export const MessagesView: React.FC<MessagesViewProps> = ({
         <section className="bg-[#0E121A] border border-white/10 rounded-xl p-4 space-y-3">
           <div className="flex items-center justify-between text-[11px] font-mono tracking-widest uppercase text-[#9CA3AF] font-semibold">
             <span>Active Introduction Requests</span>
-            <span className="text-[#3D6BF2]">{introRequests.length} Pending</span>
+            <span className="text-[#F5B027]">{introRequests.length} Pending</span>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
@@ -154,7 +154,7 @@ export const MessagesView: React.FC<MessagesViewProps> = ({
                 <div>
                   <div className="flex items-start justify-between text-[10px] font-mono text-[#6B7280] mb-2">
                     <span>{req.date}</span>
-                    <span className="text-[#3D6BF2]">Warm Request</span>
+                    <span className="text-[#F5B027]">Warm Request</span>
                   </div>
 
                   <div className="flex items-center gap-2 mb-2 p-1.5 bg-black/20 rounded-lg border border-white/5">
@@ -165,7 +165,7 @@ export const MessagesView: React.FC<MessagesViewProps> = ({
                         <div className="text-[10px] text-[#9CA3AF] truncate">{req.requesterCompany}</div>
                       </div>
                     </div>
-                    <ArrowRight className="w-3.5 h-3.5 text-[#3D6BF2] shrink-0" />
+                    <ArrowRight className="w-3.5 h-3.5 text-[#F5B027] shrink-0" />
                     <div className="flex items-center gap-2 min-w-0 flex-1">
                       <ExecutivePortrait name={req.targetName} size="sm" />
                       <div className="min-w-0">
@@ -179,7 +179,7 @@ export const MessagesView: React.FC<MessagesViewProps> = ({
                 <div className="flex items-center gap-2 pt-2 border-t border-white/5">
                   <button
                     onClick={() => onReviewIntroRequest(req)}
-                    className="flex-1 py-1 text-xs font-semibold text-white bg-[#3D6BF2] hover:bg-[#2563EB] rounded transition-colors cursor-pointer text-center"
+                    className="flex-1 py-1 text-xs font-semibold text-white bg-[#F5B027] hover:bg-[#C78522] rounded transition-colors cursor-pointer text-center"
                   >
                     Review
                   </button>
@@ -209,7 +209,7 @@ export const MessagesView: React.FC<MessagesViewProps> = ({
                 onClick={() => {
                   if (conversations[1]) setSelectedThreadId(conversations[1].id);
                 }}
-                className="flex items-center gap-1 px-2.5 py-1 text-xs font-semibold text-white bg-[#3D6BF2] hover:bg-[#2563EB] rounded-md transition-colors cursor-pointer"
+                className="flex items-center gap-1 px-2.5 py-1 text-xs font-semibold text-white bg-[#F5B027] hover:bg-[#C78522] rounded-md transition-colors cursor-pointer"
               >
                 <Plus className="w-3.5 h-3.5" />
                 New
@@ -230,7 +230,7 @@ export const MessagesView: React.FC<MessagesViewProps> = ({
                   onClick={() => setActiveFolder(f.id as any)}
                   className={`w-full flex items-center justify-between px-2.5 py-1.5 rounded-lg transition-colors cursor-pointer ${
                     activeFolder === f.id
-                      ? 'bg-[#3D6BF2]/20 text-[#60A5FA] font-medium'
+                      ? 'bg-[#F5B027]/20 text-[#FFC85C] font-medium'
                       : 'text-[#9CA3AF] hover:bg-white/5 hover:text-white'
                   }`}
                 >
@@ -250,7 +250,7 @@ export const MessagesView: React.FC<MessagesViewProps> = ({
                 value={searchFilter}
                 onChange={(e) => setSearchFilter(e.target.value)}
                 placeholder="Search conversations..."
-                className="w-full bg-[#131722] text-xs text-white placeholder-[#6B7280] rounded-lg pl-8 pr-3 py-1.5 border border-white/10 focus:outline-none focus:border-[#3D6BF2]"
+                className="w-full bg-[#131722] text-xs text-white placeholder-[#6B7280] rounded-lg pl-8 pr-3 py-1.5 border border-white/10 focus:outline-none focus:border-[#F5B027]"
               />
             </div>
 
@@ -264,7 +264,7 @@ export const MessagesView: React.FC<MessagesViewProps> = ({
                     onClick={() => setSelectedThreadId(thread.id)}
                     className={`p-2.5 rounded-lg cursor-pointer transition-all flex items-start gap-2.5 ${
                       isSelected
-                        ? 'bg-[#151D2C] border border-[#3D6BF2]/40 shadow-sm'
+                        ? 'bg-[#151D2C] border border-[#F5B027]/40 shadow-sm'
                         : 'hover:bg-white/[0.04] border border-transparent'
                     }`}
                   >
@@ -305,12 +305,12 @@ export const MessagesView: React.FC<MessagesViewProps> = ({
                   <div className="flex items-center gap-1.5">
                     <h3
                       onClick={() => onNavigate('profile', activeThread.memberId)}
-                      className="font-serif-editorial text-sm font-bold text-white hover:text-[#3D6BF2] transition-colors cursor-pointer"
+                      className="font-serif-editorial text-sm font-bold text-white hover:text-[#F5B027] transition-colors cursor-pointer"
                     >
                       {activeThread.memberName}
                     </h3>
                     {activeThread.verified && (
-                      <CheckCircle className="w-3.5 h-3.5 text-[#3D6BF2]" />
+                      <CheckCircle className="w-3.5 h-3.5 text-[#F5B027]" />
                     )}
                   </div>
                   <p className="text-xs text-[#9CA3AF]">
@@ -367,7 +367,7 @@ export const MessagesView: React.FC<MessagesViewProps> = ({
                   <div
                     className={`rounded-2xl p-3.5 text-xs leading-relaxed ${
                       msg.isOwn
-                        ? 'bg-[#3D6BF2] text-white rounded-br-xs'
+                        ? 'bg-[#F5B027] text-white rounded-br-xs'
                         : 'bg-[#151923] text-[#E2E8F0] border border-white/10 rounded-bl-xs'
                     }`}
                   >
@@ -418,7 +418,7 @@ export const MessagesView: React.FC<MessagesViewProps> = ({
               <button
                 type="submit"
                 disabled={!draftMessage.trim()}
-                className="p-1.5 text-white bg-[#3D6BF2] hover:bg-[#2563EB] disabled:opacity-40 disabled:cursor-not-allowed rounded-lg transition-colors cursor-pointer"
+                className="p-1.5 text-white bg-[#F5B027] hover:bg-[#C78522] disabled:opacity-40 disabled:cursor-not-allowed rounded-lg transition-colors cursor-pointer"
               >
                 <Send className="w-3.5 h-3.5" />
               </button>
@@ -433,7 +433,7 @@ export const MessagesView: React.FC<MessagesViewProps> = ({
             <div>
               <div className="flex items-center justify-between text-[11px] font-mono tracking-widest uppercase text-[#9CA3AF] font-semibold mb-2">
                 <span>Shared Context</span>
-                <span className="text-[#3D6BF2] text-[10px]">Verified Fit</span>
+                <span className="text-[#F5B027] text-[10px]">Verified Fit</span>
               </div>
               <p className="text-xs text-[#CBD5E1] leading-relaxed mb-3">
                 {activeThread?.sharedContext.summary}
@@ -473,7 +473,7 @@ export const MessagesView: React.FC<MessagesViewProps> = ({
                 <span>Mutual Connections (3)</span>
                 <button
                   onClick={() => onNavigate('people')}
-                  className="text-[#3D6BF2] hover:underline cursor-pointer"
+                  className="text-[#F5B027] hover:underline cursor-pointer"
                 >
                   View All →
                 </button>
@@ -490,13 +490,13 @@ export const MessagesView: React.FC<MessagesViewProps> = ({
             </div>
 
             {/* Suggested Next Step (AI) */}
-            <div className="p-4 bg-[#111622] border border-[#3D6BF2]/30 rounded-xl space-y-3">
+            <div className="p-4 bg-[#111622] border border-[#F5B027]/30 rounded-xl space-y-3">
               <div className="flex items-center justify-between">
-                <span className="text-[10px] font-mono uppercase tracking-widest text-[#3D6BF2] font-semibold flex items-center gap-1.5">
+                <span className="text-[10px] font-mono uppercase tracking-widest text-[#F5B027] font-semibold flex items-center gap-1.5">
                   <Sparkles className="w-3.5 h-3.5" />
                   Suggested Next Step
                 </span>
-                <span className="text-[9px] font-mono px-1.5 py-0.2 rounded bg-[#3D6BF2]/20 text-[#60A5FA]">
+                <span className="text-[9px] font-mono px-1.5 py-0.2 rounded bg-[#F5B027]/20 text-[#FFC85C]">
                   AI
                 </span>
               </div>
@@ -512,7 +512,7 @@ export const MessagesView: React.FC<MessagesViewProps> = ({
                     activeThread?.memberTitle || 'General Partner'
                   )
                 }
-                className="w-full flex items-center justify-center gap-2 py-2 text-xs font-semibold text-white bg-[#3D6BF2] hover:bg-[#2563EB] rounded-lg shadow-sm transition-colors cursor-pointer"
+                className="w-full flex items-center justify-center gap-2 py-2 text-xs font-semibold text-white bg-[#F5B027] hover:bg-[#C78522] rounded-lg shadow-sm transition-colors cursor-pointer"
               >
                 <Calendar className="w-3.5 h-3.5" />
                 Schedule Meeting
@@ -534,7 +534,7 @@ export const MessagesView: React.FC<MessagesViewProps> = ({
               </p>
               <button
                 onClick={() => setShowBriefModal(true)}
-                className="text-xs text-[#3D6BF2] hover:underline cursor-pointer flex items-center gap-1 font-medium pt-1"
+                className="text-xs text-[#F5B027] hover:underline cursor-pointer flex items-center gap-1 font-medium pt-1"
               >
                 View Full Brief →
               </button>
@@ -554,7 +554,7 @@ export const MessagesView: React.FC<MessagesViewProps> = ({
             <div className="flex justify-end">
               <button
                 onClick={() => setShowBriefModal(false)}
-                className="px-4 py-2 text-xs font-semibold text-white bg-[#3D6BF2] rounded-lg cursor-pointer"
+                className="px-4 py-2 text-xs font-semibold text-white bg-[#F5B027] rounded-lg cursor-pointer"
               >
                 Close
               </button>

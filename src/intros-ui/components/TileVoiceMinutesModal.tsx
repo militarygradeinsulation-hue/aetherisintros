@@ -199,20 +199,20 @@ ${processedResult.decisions.map((d) => `- ${d}`).join('\n')}`;
         {/* Top Header */}
         <div className="p-4 sm:p-5 border-b border-white/10 bg-[#07090C] flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="w-8 h-8 rounded-lg bg-[#3D6BF2]/20 border border-[#3D6BF2]/40 flex items-center justify-center text-[#3D6BF2]">
+            <div className="w-8 h-8 rounded-lg bg-[#F5B027]/20 border border-[#F5B027]/40 flex items-center justify-center text-[#F5B027]">
               <Mic size={16} />
             </div>
             <div>
               <div className="flex items-center gap-2">
-                <span className="text-[9.5px] font-mono tracking-[0.25em] text-[#3D6BF2] uppercase font-bold">
+                <span className="text-[9.5px] font-mono tracking-[0.25em] text-[#F5B027] uppercase font-bold">
                   Voice Note to Minutes
                 </span>
-                <span className="text-[9px] font-mono px-1.5 py-0.2 rounded bg-[#3FB37F]/15 text-[#3FB37F] font-semibold border border-[#3FB37F]/30">
+                <span className="text-[9px] font-mono px-1.5 py-0.2 rounded bg-[#C78522]/15 text-[#C78522] font-semibold border border-[#C78522]/30">
                   Gemini LLM
                 </span>
               </div>
               <h3 id="voice-modal-title" className="font-serif-editorial text-lg sm:text-xl text-[#F2EEE6] leading-tight">
-                Attach Meeting Minutes to <span className="text-[#3D6BF2]">{tileTitle}</span>
+                Attach Meeting Minutes to <span className="text-[#F5B027]">{tileTitle}</span>
               </h3>
             </div>
           </div>
@@ -234,7 +234,7 @@ ${processedResult.decisions.map((d) => `- ${d}`).join('\n')}`;
                 Dictate Notes via MediaRecorder API:
               </span>
               {linkedPerson && (
-                <span className="text-[10px] font-mono text-[#3D6BF2] flex items-center gap-1">
+                <span className="text-[10px] font-mono text-[#F5B027] flex items-center gap-1">
                   <span>Linked:</span>
                   <span className="font-bold text-[#F2EEE6]">{linkedPerson.name}</span>
                 </span>
@@ -248,8 +248,8 @@ ${processedResult.decisions.map((d) => `- ${d}`).join('\n')}`;
                 onClick={isRecording ? stopRecording : startRecording}
                 className={`px-4 py-2.5 rounded-xl font-mono text-xs font-semibold flex items-center gap-2 transition-all shadow-md shrink-0 ${
                   isRecording
-                    ? 'bg-[#E5484D] text-white animate-pulse shadow-[0_0_12px_rgba(229,72,77,0.7)]'
-                    : 'bg-[#3D6BF2] hover:bg-[#3D6BF2]/90 text-white'
+                    ? 'bg-[#C78522] text-white animate-pulse shadow-[0_0_12px_rgba(229,72,77,0.7)]'
+                    : 'bg-[#F5B027] hover:bg-[#F5B027]/90 text-white'
                 }`}
               >
                 {isRecording ? (
@@ -267,12 +267,12 @@ ${processedResult.decisions.map((d) => `- ${d}`).join('\n')}`;
 
               <div className="flex-1 min-w-0 text-xs font-mono">
                 {isRecording ? (
-                  <div className="flex items-center gap-2 text-[#E5484D]">
-                    <span className="w-2 h-2 rounded-full bg-[#E5484D] animate-ping" />
+                  <div className="flex items-center gap-2 text-[#C78522]">
+                    <span className="w-2 h-2 rounded-full bg-[#C78522] animate-ping" />
                     <span className="truncate">Recording live speech audio...</span>
                   </div>
                 ) : currentDictation ? (
-                  <div className="text-[#3FB37F] text-[11px] truncate flex items-center gap-1">
+                  <div className="text-[#C78522] text-[11px] truncate flex items-center gap-1">
                     <CheckCircle2 size={12} />
                     <span>Spoken note ready for processing</span>
                   </div>
@@ -291,7 +291,7 @@ ${processedResult.decisions.map((d) => `- ${d}`).join('\n')}`;
                 value={currentDictation}
                 onChange={(e) => setManualText(e.target.value)}
                 placeholder="Spoken words transcribe here live. Or type your bulleted debrief..."
-                className="w-full bg-[#07090C] border border-white/10 rounded-lg p-2.5 text-xs text-[#F2EEE6] placeholder-[#F2EEE6]/30 focus:outline-none focus:border-[#3D6BF2] font-mono leading-relaxed"
+                className="w-full bg-[#07090C] border border-white/10 rounded-lg p-2.5 text-xs text-[#F2EEE6] placeholder-[#F2EEE6]/30 focus:outline-none focus:border-[#F5B027] font-mono leading-relaxed"
               />
             </div>
 
@@ -313,7 +313,7 @@ ${processedResult.decisions.map((d) => `- ${d}`).join('\n')}`;
                 type="button"
                 onClick={handleProcessMinutes}
                 disabled={!currentDictation.trim() || isProcessing}
-                className="px-4 py-1.5 rounded-lg bg-[#3FB37F] hover:bg-[#3FB37F]/90 disabled:opacity-40 text-black text-xs font-mono font-bold flex items-center gap-1.5 transition-all shadow-md"
+                className="px-4 py-1.5 rounded-lg bg-[#C78522] hover:bg-[#C78522]/90 disabled:opacity-40 text-black text-xs font-mono font-bold flex items-center gap-1.5 transition-all shadow-md"
               >
                 {isProcessing ? (
                   <>
@@ -332,11 +332,11 @@ ${processedResult.decisions.map((d) => `- ${d}`).join('\n')}`;
 
           {/* Processed AI Output Display */}
           {processedResult && (
-            <div className="p-4 rounded-xl bg-[#0E1116] border border-[#3D6BF2]/40 shadow-xl space-y-3 animate-in fade-in duration-200">
+            <div className="p-4 rounded-xl bg-[#0E1116] border border-[#F5B027]/40 shadow-xl space-y-3 animate-in fade-in duration-200">
               <div className="flex items-start justify-between gap-2 border-b border-white/10 pb-2">
                 <div>
-                  <div className="text-[9px] font-mono text-[#3D6BF2] uppercase font-bold tracking-wider flex items-center gap-1.5">
-                    <Sparkles size={10} className="text-[#3FB37F]" />
+                  <div className="text-[9px] font-mono text-[#F5B027] uppercase font-bold tracking-wider flex items-center gap-1.5">
+                    <Sparkles size={10} className="text-[#C78522]" />
                     <span>Bulleted Minutes Structured by {processedResult.source || 'Gemini 3.8 Flash'}</span>
                   </div>
                   <h4 className="font-serif-editorial text-base text-[#F2EEE6] font-bold mt-0.5">
@@ -350,7 +350,7 @@ ${processedResult.decisions.map((d) => `- ${d}`).join('\n')}`;
                     className="p-1 rounded text-[#F2EEE6]/60 hover:text-white transition-colors"
                     title="Copy formatted text"
                   >
-                    {copied ? <Check size={12} className="text-[#3FB37F]" /> : <Copy size={12} />}
+                    {copied ? <Check size={12} className="text-[#C78522]" /> : <Copy size={12} />}
                   </button>
                 </div>
               </div>
@@ -362,12 +362,12 @@ ${processedResult.decisions.map((d) => `- ${d}`).join('\n')}`;
 
               {/* Bulleted Minutes */}
               <div className="space-y-1.5 pt-1">
-                <div className="text-[9.5px] font-mono uppercase tracking-wider text-[#3D6BF2] font-semibold">
+                <div className="text-[9.5px] font-mono uppercase tracking-wider text-[#F5B027] font-semibold">
                   Discussion Minutes
                 </div>
                 {processedResult.bulletedMinutes.map((item, idx) => (
                   <div key={idx} className="flex items-start gap-2 text-xs text-[#F2EEE6]/90 leading-snug">
-                    <span className="text-[#3FB37F] mt-0.5 font-bold">▪</span>
+                    <span className="text-[#C78522] mt-0.5 font-bold">▪</span>
                     <span>{item}</span>
                   </div>
                 ))}
@@ -376,12 +376,12 @@ ${processedResult.decisions.map((d) => `- ${d}`).join('\n')}`;
               {/* Action Items */}
               {processedResult.actionItems.length > 0 && (
                 <div className="space-y-1.5 pt-1 border-t border-white/5">
-                  <div className="text-[9.5px] font-mono uppercase tracking-wider text-[#F2A93B] font-semibold">
+                  <div className="text-[9.5px] font-mono uppercase tracking-wider text-[#F5B027] font-semibold">
                     Extracted Action Items
                   </div>
                   {processedResult.actionItems.map((act, idx) => (
                     <div key={idx} className="flex items-start gap-2 text-xs text-[#F2EEE6]/90 leading-snug">
-                      <span className="text-[#F2A93B] font-bold">☑</span>
+                      <span className="text-[#F5B027] font-bold">☑</span>
                       <span>{act}</span>
                     </div>
                   ))}
@@ -390,13 +390,13 @@ ${processedResult.decisions.map((d) => `- ${d}`).join('\n')}`;
 
               {/* Commit & Save Actions */}
               <div className="pt-2 border-t border-white/10 flex items-center justify-between gap-2">
-                <div className="text-[10px] font-mono text-[#3FB37F]">
+                <div className="text-[10px] font-mono text-[#C78522]">
                   {savedSuccess && '✓ Minutes committed to dossier & Actionable Inbox!'}
                 </div>
                 <button
                   type="button"
                   onClick={handleSaveAndCommit}
-                  className="px-4 py-2 rounded-lg bg-[#3D6BF2] hover:bg-[#3D6BF2]/90 text-white text-xs font-mono font-bold flex items-center gap-1.5 transition-all shadow-md"
+                  className="px-4 py-2 rounded-lg bg-[#F5B027] hover:bg-[#F5B027]/90 text-white text-xs font-mono font-bold flex items-center gap-1.5 transition-all shadow-md"
                 >
                   <Save size={13} />
                   <span>Commit Minutes to Tile Record</span>
