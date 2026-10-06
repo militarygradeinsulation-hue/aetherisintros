@@ -2,7 +2,7 @@
   "meta": {
     "name": "Ask Intros",
     "package": "@ws-gmhcx8w6bqvecbtkycud/c1248cd8-77de-4eaa-8d9d-e7da71e70ae9",
-    "version": "7.0.0",
+    "version": "8.0.0",
     "framework": "react",
     "css_framework": "tailwind",
     "starter_template": "custom_design_system_tailwind",
@@ -430,7 +430,7 @@
       "src/intros-ui/components/UtilitiesModal.tsx": "58098719e6019a0548c19fd2017aedc1",
       "src/intros-ui/components/insights/ActivityHeatmap.tsx": "f8b258b1af563c737d1082298d5f93c6",
       "src/intros-ui/components/layout/EditorialFooter.tsx": "f71c1afa9fb2f56a7a87cf1961a0153e",
-      "src/intros-ui/components/layout/TopNavigation.tsx": "1d6b867e38b08bb2791e23d42ee60cba",
+      "src/intros-ui/components/layout/TopNavigation.tsx": "32d12efc23b9a5ab67b2e6d275593504",
       "src/intros-ui/components/modals/RequestIntroModal.tsx": "29d9650ce8a5f829545cfdec03e644fd",
       "src/intros-ui/components/modals/ReviewIntroModal.tsx": "a19a3d38b1039fa96e3a0032038a24c4",
       "src/intros-ui/components/modals/ScheduleMeetingModal.tsx": "4d643d92daf56b8cb7858cb02f2cd0ca",
