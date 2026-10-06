@@ -4896,7 +4896,6 @@ button.news-link{background:none;border:0;padding:0;cursor:pointer}
 .social-shell :is(.btn-primary,.primary,button.primary,.button-primary){background:#3D6BF2;border-color:#3D6BF2;box-shadow:0 8px 20px -8px rgba(61,107,242,.45)}
 .social-shell :is(.btn-primary,.primary,button.primary,.button-primary):hover{background:#2563EB}
 .social-shell :is(.eyebrow,.folio,.kicker){font-family:ui-monospace,SFMono-Regular,monospace;letter-spacing:.25em;color:#9CA3AF}
-.social-shell :is(h1,h2){font-family:var(--serif);letter-spacing:-.01em;color:#F2EEE6}
 .social-shell ::-webkit-scrollbar{width:6px;height:6px}
 .social-shell ::-webkit-scrollbar-track{background:#07090C}
 .social-shell ::-webkit-scrollbar-thumb{background:rgba(255,255,255,.15);border-radius:3px}
