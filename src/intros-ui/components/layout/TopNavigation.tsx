@@ -52,7 +52,7 @@ export const TopNavigation: React.FC<TopNavigationProps> = ({
         </div>
 
         {/* Zone 2: Navigation Links — always fully visible, shrink text before ever clipping */}
-        <nav className="order-3 md:order-none w-full md:w-auto md:flex-1 flex flex-wrap xl:flex-nowrap items-center justify-start xl:justify-center gap-x-2.5 gap-y-1 md:gap-x-3 py-0.5">
+        <nav className="order-3 md:order-none w-full md:w-auto md:flex-1 flex flex-wrap xl:flex-nowrap items-center justify-start xl:justify-center gap-x-2.5 gap-y-1 md:gap-x-3 xl:gap-x-2 py-0.5">
             {[
             { id: 'workspace', label: 'Ask Intros', isBubbles: true },
             { id: 'bubbles', label: 'Bubbles', isBubbles: true },
@@ -100,7 +100,7 @@ export const TopNavigation: React.FC<TopNavigationProps> = ({
         {/* Zone 3: Search & account — pinned to the far right */}
         <div className="order-2 md:order-none ml-auto flex items-center gap-1.5 md:gap-2.5 shrink-0">
           {/* Compact search, far right next to logout */}
-          <div className="relative hidden xl:block w-28 xl:w-36 shrink-0">
+          <div className="relative hidden xl:block w-24 xl:w-28 shrink-0">
             <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-[#6B7280]" />
             <input
               type="text"
@@ -145,7 +145,7 @@ export const TopNavigation: React.FC<TopNavigationProps> = ({
             className="flex items-center gap-1.5 p-1.5 md:p-2 text-[#9CA3AF] hover:text-[#F2EEE6] hover:bg-white/5 rounded-lg transition-colors cursor-pointer"
           >
             <LogOut className="w-4 h-4" />
-            <span className="hidden xl:inline text-xs">Log out</span>
+            <span className="hidden 2xl:inline text-xs">Log out</span>
           </button>
         </div>
       </div>
