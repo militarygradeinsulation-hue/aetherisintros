@@ -243,38 +243,6 @@ export const HomeFeedView: React.FC<HomeFeedViewProps> = ({
         </div>
       </section>
 
-      {/* Living Relationship Constellation: Floating Connection Bubbles with People Photos */}
-      <section className="bg-gradient-to-b from-[#0E121A] to-[#0A0D14] border border-white/10 rounded-2xl p-5 shadow-xl overflow-hidden relative">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-3">
-          <div>
-            <div className="text-[10px] font-mono tracking-widest uppercase text-[#3D6BF2] font-semibold flex items-center gap-2">
-              <span className="w-2 h-2 rounded-full bg-[#3D6BF2] animate-pulse" />
-              Living Relationship Constellation
-            </div>
-            <h2 className="font-serif-editorial text-xl sm:text-2xl font-bold text-white">
-              Floating Connection Bubbles
-            </h2>
-            <p className="text-xs text-[#9CA3AF]">
-              Living radar web: Click to open profile, click and hold for dossier card, and watch dynamic micro-connections appear.
-            </p>
-          </div>
-          <button
-            onClick={() => onNavigate('bubbles')}
-            className="text-xs text-[#3D6BF2] hover:text-[#60A5FA] font-medium flex items-center gap-1 cursor-pointer self-start sm:self-auto"
-          >
-            <span>Open Dedicated Graph View</span>
-            <ArrowRight className="w-3.5 h-3.5" />
-          </button>
-        </div>
-
-        <FloatingConnectionField
-          members={networkMembers}
-          onSelectMember={(id) => onNavigate('profile', id)}
-          onRequestIntro={onRequestIntro}
-          speedMultiplier={0.16}
-          className="h-[340px] rounded-xl border border-white/5 bg-[#07090C]/80"
-        />
-      </section>
 
       {/* 3-Column Layout: Left (Network Nav), Center (Feed & Composer), Right (Sectors & Events) */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
