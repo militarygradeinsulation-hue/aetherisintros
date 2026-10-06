@@ -23,7 +23,7 @@ import {
 import { FeedPost, UPCOMING_EVENTS, SUGGESTED_CIRCLES, TRENDING_SECTORS, NetworkMember } from '../networkData';
 import { ExecutivePortrait } from '../components/shared/ExecutivePortrait';
 import { ConstellationGraphic } from '../components/shared/ConstellationGraphic';
-import { FloatingConnectionField } from '../components/shared/FloatingConnectionField';
+import { RelationshipFieldGraph } from '../components/shared/RelationshipFieldGraph';
 import { ActivePage } from '../components/layout/TopNavigation';
 import { DraggableWidgetGrid, type WidgetItem } from '@/components/ui/widget-board';
 
@@ -406,12 +406,10 @@ export const HomeFeedView: React.FC<HomeFeedViewProps> = ({
 
               {heroVisualMode === 'bubbles' ? (
                 <div className="space-y-3">
-                  <div className="h-[270px] w-full rounded-lg border border-white/10 overflow-hidden bg-[#07090C]/80 relative">
-                    <FloatingConnectionField
+                  <div className="ix-field-tile h-[270px] w-full rounded-lg border border-white/10 overflow-hidden bg-[#07090C]/80 relative">
+                    <RelationshipFieldGraph
                       members={networkMembers}
                       onSelectMember={(id) => onNavigate('profile', id)}
-                      onRequestIntro={onRequestIntro}
-                      speedMultiplier={0.16}
                       className="w-full h-full"
                     />
                   </div>
