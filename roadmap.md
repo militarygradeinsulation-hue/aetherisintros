@@ -302,3 +302,5 @@
 - [ ] Blue buttons become light black or logo yellow across the shell.
 - [ ] Verify desktop and phone widths, then publish.
 - [ ] Buttons: dark, see-through gold (not bright) — app shell CTAs, .btn.primary, hover states; round indicators keep solid gold
+- [ ] Background: moving-grid + film-grain field from uploaded reference, site-wide
+- [ ] Accent modes: Gold (current), Blue (original cobalt buttons), Mixed — switcher in header, remembered per device
