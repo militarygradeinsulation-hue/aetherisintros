@@ -290,3 +290,8 @@
 - [x] News in top bar + Ask Intros assistant and earlier tools (CRM, capabilities) reachable inside the new look.
 - [x] Adapted DigitalSerenity ambient (mouse glow, click ripples, word-stagger) onto landing in Aetheris colors.
 - [x] Adapted Spline spotlight card as pointer-tracking cobalt spotlight on capability cards (no Spline dep).
+
+## Release + security + library wiring (Oct 6)
+- [x] Publish latest build to intros.today (scheduled; user requested).
+- [x] Fresh security scan — same 5 warn/info items, no criticals.
+- [x] Design-system audit: route brand fonts through BrandFonts; skipped provider re-wrap, meta pins and token reconciliation after file inspection (diagnosis didn't hold or risked live regressions).
