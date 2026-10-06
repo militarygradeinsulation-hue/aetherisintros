@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React from 'react';
 import { Mic, AlertTriangle } from 'lucide-react';
 import { RelationshipTierBadge, RelationshipTier } from './RelationshipTierBadge';

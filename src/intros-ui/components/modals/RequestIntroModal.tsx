@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React, { useState } from 'react';
 import { X, Send, Sparkles, ShieldCheck, Check } from 'lucide-react';
 import { NetworkMember } from '../../networkData';

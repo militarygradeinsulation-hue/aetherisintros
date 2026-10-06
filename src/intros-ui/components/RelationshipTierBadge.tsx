@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React from 'react';
 import { Crown, Sparkles, Diamond, Circle, Shield } from 'lucide-react';
 

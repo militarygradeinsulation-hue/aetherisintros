@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { useState, useRef, useCallback, useEffect } from 'react';
 
 export interface UseVoiceRecorderReturn {

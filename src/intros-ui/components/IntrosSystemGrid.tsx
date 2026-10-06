@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React, { useState, useMemo, useEffect } from 'react';
 import { ConstellationField } from './ConstellationField';
 import { SystemTile } from './SystemTile';

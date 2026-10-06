@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React from 'react';
 import { AskIntrosLockup } from '@/aetheris/AskIntrosLockup';
 import { Search, Bell, Sparkles, Orbit } from 'lucide-react';

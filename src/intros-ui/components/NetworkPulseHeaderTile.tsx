@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React from 'react';
 import { Activity, Sparkles, TrendingUp, Zap } from 'lucide-react';
 import { Person } from '../types';

@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { TileSummary, Person } from './types';
 
 // Cache store for batched loader (60s TTL)

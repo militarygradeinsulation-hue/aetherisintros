@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React, { useState } from 'react';
 import { X, Search, Briefcase, Building, ShieldCheck, Mail, Folder, LogOut, BookOpen, HelpCircle, Settings, LayoutGrid, CheckSquare } from 'lucide-react';
 

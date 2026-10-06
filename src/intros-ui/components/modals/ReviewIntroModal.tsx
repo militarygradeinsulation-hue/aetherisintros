@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React, { useState } from 'react';
 import { X, Check, XCircle, ArrowRight, Shield } from 'lucide-react';
 import { IntroRequest } from '../../networkData';

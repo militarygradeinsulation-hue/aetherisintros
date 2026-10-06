@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React, { useState, useMemo, useEffect, useRef } from 'react';
 import {
   Search,

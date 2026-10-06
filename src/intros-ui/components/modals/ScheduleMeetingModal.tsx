@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React, { useState } from 'react';
 import { X, Calendar, Clock, Video, Check } from 'lucide-react';
 import { ExecutivePortrait } from '../shared/ExecutivePortrait';

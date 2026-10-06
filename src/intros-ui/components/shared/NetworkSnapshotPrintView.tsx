@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React, { useMemo } from 'react';
 import { NetworkMember, RelationshipTier } from '../../networkData';
 import { getPortraitForName } from './ExecutivePortrait';

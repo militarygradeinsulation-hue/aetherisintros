@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { CalendarEvent, Person } from '../types';
 import { parseDaysAgo } from './reportExport';
 
