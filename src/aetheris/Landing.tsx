@@ -54,6 +54,26 @@ function LandingPage({ signedIn }: { signedIn: boolean }) {
 
   return (
     <main className="lv">
+      {!introGone && (
+        <div
+          aria-hidden={introDone}
+          style={{
+            position: 'fixed',
+            inset: 0,
+            zIndex: 90,
+            opacity: introDone ? 0 : 1,
+            transition: 'opacity 0.8s ease',
+            pointerEvents: introDone ? 'none' : 'auto',
+          }}
+        >
+          <MetroHero
+            title="AETHERIS INTROS"
+            tagline="Know who matters. Know why now."
+            scrollHint="SCROLL TO ENTER"
+            onComplete={() => setIntroDone(true)}
+          />
+        </div>
+      )}
       <SerenityAmbient />
       {/* ── Manifesto band ── */}
       <div className="lv-manifesto" aria-label="Ask Intros manifesto">
