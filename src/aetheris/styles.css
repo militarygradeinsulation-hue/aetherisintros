@@ -4878,7 +4878,7 @@ button.news-link{background:none;border:0;padding:0;cursor:pointer}
 @media (max-width:1000px){.pk-grid{grid-template-columns:1fr}.pk-list{grid-auto-flow:column;grid-auto-columns:minmax(150px,1fr);overflow-x:auto}}
 
 /* ===== System skin (remix visual language) — tokens + surfaces, features unchanged ===== */
-.social-shell,.app-shell{--night:#07090C;--raised:#0E1116;--graphite:#151922;--soft:#F2EEE6;--cobalt-bright:#F5B027;--cobalt:#F5B027;--cobalt-hover:#C78522;--line-dark:rgba(255,255,255,.08);--muted:#9CA3AF;background:#07090C;color:#F2EEE6}
+.social-shell,.app-shell{--night:#07090C;--raised:#0E1116;--graphite:#151922;--ink:#F2EEE6;--ivory:#0E1116;--paper:#0B0E13;--soft:#F2EEE6;--cobalt-bright:#F5B027;--cobalt:#F5B027;--cobalt-hover:#C78522;--line-dark:rgba(255,255,255,.08);--muted:#9CA3AF;background:#07090C;color:#F2EEE6}
 .sys-wordmark{display:inline-flex;align-items:center;gap:10px}
 .sys-wordmark svg{filter:drop-shadow(0 0 8px #F5B027)}
 .sys-wordmark-text{display:flex;flex-direction:column;line-height:1;text-align:left}
@@ -4946,7 +4946,7 @@ button.news-link{background:none;border:0;padding:0;cursor:pointer}
 @media (max-width: 820px) { .ix-assistant .ask-dock-fab { bottom: 22px; } .ix-assistant .ask-dock { bottom: 82px; } }
 
 /* ---- Old-system features rendered inside the new obsidian shell ---- */
-.ix-classic .app-shell,.ix-classic .social-shell{--night:#07090C;--raised:#0E1116;--graphite:#151922;--ivory:#0E1116;--paper:#0B0E13;--soft:#F2EEE6;--muted:#9CA3AF;--cobalt:#F5B027;--cobalt-bright:#F5B027;--cobalt-hover:#C78522;--line-dark:rgba(255,255,255,.08);--line-light:rgba(255,255,255,.08);background:#07090C;color:#F2EEE6;min-height:calc(100vh - 110px)}
+.ix-classic .app-shell,.ix-classic .social-shell{--night:#07090C;--raised:#0E1116;--graphite:#151922;--ink:#F2EEE6;--ivory:#0E1116;--paper:#0B0E13;--soft:#F2EEE6;--muted:#9CA3AF;--cobalt:#F5B027;--cobalt-bright:#F5B027;--cobalt-hover:#C78522;--line-dark:rgba(255,255,255,.08);--line-light:rgba(255,255,255,.08);background:#07090C;color:#F2EEE6;min-height:calc(100vh - 110px)}
 .ix-classic .app-shell-ambient{display:none}
 .ix-classic .nav-rail{position:sticky;top:0;height:auto;min-height:calc(100vh - 110px);background:#07090C;border-right:1px solid rgba(255,255,255,.08);float:left}
 .ix-classic .rail-head{display:none}
