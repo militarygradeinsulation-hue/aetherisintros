@@ -116,7 +116,7 @@ export default function MetroHero({
         const t = pendingTime
         pendingTime = null
         isSeeking = true
-        video.currentTime = t
+        v.currentTime = t
       }
     }
     video.addEventListener("seeked", onSeeked)
@@ -127,7 +127,7 @@ export default function MetroHero({
         return
       }
       isSeeking = true
-      video.currentTime = t
+      v.currentTime = t
     }
 
     function engageLock() {
