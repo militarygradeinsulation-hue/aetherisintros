@@ -9,6 +9,7 @@ import { CinematicFooter } from './CinematicFooter'
 import ParticleDrift from './ParticleDrift'
 import ConstellationField from './ConstellationField'
 import { AskIntrosLockup } from './AskIntrosLockup'
+import SerenityAmbient from './SerenityAmbient'
 
 /** Public front page. The root URL always remains the public Aetheris page. */
 export default function Landing() {
@@ -84,6 +85,7 @@ function LandingPage({ signedIn }: { signedIn: boolean }) {
 
   return (
     <main className="lv">
+      <SerenityAmbient />
       {/* ── Manifesto band ── */}
       <div className="lv-manifesto" aria-label="Ask Intros manifesto">
         <p>Stop using LinkedIn, Facebook, HubSpot, Salesforce, and every other system that just creates chaos.</p>
@@ -107,7 +109,7 @@ function LandingPage({ signedIn }: { signedIn: boolean }) {
         <ParticleDrift className="lv-hero-drift" />
         <div className="lv-hero-copy">
           <AskIntrosLockup variant="hero" />
-          <h1><span>Join the </span><em>whitelist.</em></h1>
+          <h1 className="lv-hero-words"><span className="word-animate" data-delay="100">Join</span> <span className="word-animate" data-delay="260">the</span> <em className="word-animate" data-delay="420">whitelist.</em></h1>
           <ScarcityLine label="LAUNCHING SOON — FOUNDING PLACES ALMOST FILLED" tone="dark" />
           <div className="lv-hero-actions">
             {demoBtn('Demo the system', 'btn ghost')}
