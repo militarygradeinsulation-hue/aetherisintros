@@ -20,6 +20,7 @@ import { journalKindFor, journalUrl, uploadJournalMedia } from './live'
 import { supabase } from '@/integrations/supabase/client'
 import { useAccess } from './access'
 import { InviteCard } from './InviteCard'
+import { NetworkBubbles } from './NetworkBubbles'
 import { applyTextScale, readTextScale, setTextScale, textScales, type TextScale } from './textScale'
 import { applyCursorScale, readCursorScale, setCursorScale, cursorScales, type CursorScale } from './cursorScale'
 import { AskIntrosDock, type AskIntrosAction } from './AskIntrosDock'
@@ -2594,7 +2595,7 @@ function Shell({ startPage }: { startPage?: Page | undefined }) {
 
   const pageNode: Partial<Record<Page, ReactNode>> = {
        home: <PremiumHome people={people} select={setSelected} setPage={setPage} openNeed={() => setNeedOpen(true)} openThread={goToThread} />,
-      network: <Discover people={people} select={setSelected} />,
+      network: <><NetworkBubbles people={people} select={setSelected} /><Discover people={people} select={setSelected} /></>,
       discover: <Discover people={people} select={setSelected} />,
       systems: <SystemsPage openId={systemId} setOpenId={setSystemId} />,
       circles: <CirclesPage openId={circleId} setOpenId={setCircleId} />,

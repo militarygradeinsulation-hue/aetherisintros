@@ -278,3 +278,7 @@
 - [x] Lock public sign-in; only demo and whitelist paths open
 - [x] "Launching Soon" urgency strip, hero badge and whitelist badge
 - [x] Gold scarcity line with dot near the end (no numbers) showing the whitelist nearly full
+
+## Remix design merge (Oct 6)
+- [x] Bring the floating connection bubbles + network signals into Network using real members.
+- [ ] Port remaining remix screens (heatmap, voice minutes) onto live data.
