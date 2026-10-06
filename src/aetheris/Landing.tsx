@@ -28,8 +28,23 @@ function ScarcityLine({ label, tone = 'light' }: { label: string; tone?: 'light'
 }
 
 
+const INTRO_SEEN_KEY = 'aetheris-intro-seen'
+
 function LandingPage({ signedIn }: { signedIn: boolean }) {
   const showDemo = !signedIn
+  // The scroll-locked video intro plays first for signed-out visitors,
+  // once per browser session, then hands off to the landing below.
+  const [introDone, setIntroDone] = useState(() => {
+    if (typeof window === 'undefined') return true
+    try { return signedIn || window.sessionStorage.getItem(INTRO_SEEN_KEY) === '1' } catch { return true }
+  })
+  const [introGone, setIntroGone] = useState(introDone)
+  useEffect(() => {
+    if (!introDone || introGone) return
+    try { window.sessionStorage.setItem(INTRO_SEEN_KEY, '1') } catch { /* private mode */ }
+    const t = window.setTimeout(() => setIntroGone(true), 900)
+    return () => window.clearTimeout(t)
+  }, [introDone, introGone])
   const demoBtn = (label: string, cls: string) => showDemo
     ? <Link to="/demo" className={cls}>{label} <ArrowRight size={15} /></Link>
     : null
