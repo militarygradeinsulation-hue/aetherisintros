@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Archive, ArrowLeft, Plus } from 'lucide-react'
+import { Archive, ArrowLeft } from 'lucide-react'
 import { useNetwork } from '../store'
 import { usePlatform } from '../platform'
 import { useOS } from '../os-store'
@@ -10,7 +10,6 @@ import { roomStages, type OpportunityRoom, type RoomStage } from '../domain/os-m
 
 export function OpportunityRoomsPage({ openId, setOpenId }: { openId: string | null; setOpenId: (id: string | null) => void }) {
   const os = useOS()
-  const [creating, setCreating] = useState(false)
   const open = os.rooms.find(r => r.id === openId) ?? null
   if (open) return <RoomDetail room={open} onBack={() => setOpenId(null)} />
 
@@ -23,7 +22,6 @@ export function OpportunityRoomsPage({ openId, setOpenId }: { openId: string | n
       title="One place per opportunity that actually deserves one."
       copy="A room gathers the people, the company, the system, the circle, the intro state, the conversation, the open loops and the evidence behind a single opportunity — so nothing has to be reassembled from memory."
       proof={`${live.length} live rooms · ${os.rooms.reduce((n, r) => n + r.peopleIds.length, 0)} people involved`}
-      action={<Btn onClick={() => setCreating(true)}><Plus size={14} /> Open a room</Btn>}
     />
     <section className="room-list">
       {live.map(r => <RoomRow key={r.id} room={r} onOpen={() => setOpenId(r.id)} />)}
@@ -33,7 +31,6 @@ export function OpportunityRoomsPage({ openId, setOpenId }: { openId: string | n
       <header className="section-line"><Eyebrow>ARCHIVED</Eyebrow><small>{closed.length}</small></header>
       {closed.map(r => <RoomRow key={r.id} room={r} onOpen={() => setOpenId(r.id)} />)}
     </section>}
-    {creating && <CreateRoom onClose={() => setCreating(false)} onCreated={id => { setCreating(false); setOpenId(id) }} />}
   </>
 }
 
@@ -195,21 +192,4 @@ function RoomDetail({ room, onBack }: { room: OpportunityRoom; onBack: () => voi
       <Btn kind="quiet" onClick={() => { os.archiveRoom(room.id); onBack() }}><Archive size={14} /> Close room</Btn>
     </div>
   </>
-}
-
-function CreateRoom({ onClose, onCreated }: { onClose: () => void; onCreated: (id: string) => void }) {
-  const os = useOS()
-  const [name, setName] = useState('')
-  const [thesis, setThesis] = useState('')
-  return <div className="modal-veil" onClick={onClose}>
-    <div className="modal" onClick={e => e.stopPropagation()}>
-      <header className="modal-head"><div><Eyebrow>NEW ROOM</Eyebrow><h3>What is the opportunity?</h3></div></header>
-      <label>Name<input value={name} onChange={e => setName(e.target.value)} placeholder="Northline throughput diagnosis" /></label>
-      <label>Thesis<textarea value={thesis} onChange={e => setThesis(e.target.value)} rows={3} placeholder="Why this could become real, in one honest sentence." /></label>
-      <div className="modal-actions">
-        <Btn kind="quiet" onClick={onClose}>Cancel</Btn>
-        <Btn disabled={!name.trim() || !thesis.trim()} onClick={() => onCreated(os.createRoom({ name, thesis }).id)}>Open room</Btn>
-      </div>
-    </div>
-  </div>
 }
