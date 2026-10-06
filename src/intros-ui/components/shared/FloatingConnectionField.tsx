@@ -219,6 +219,7 @@ export const FloatingConnectionField: React.FC<FloatingConnectionFieldProps> = (
         radius: baseR,
         baseRadius: baseR,
         pulsePhase: Math.random() * Math.PI * 2,
+        _appearAt: idx < 2 ? 1 : 0,
         ringHue: m.tier === 'Core' ? '#3D6BF2' : m.tier === 'Extended' ? '#10B981' : '#F59E0B',
       };
     });
@@ -336,7 +337,10 @@ export const FloatingConnectionField: React.FC<FloatingConnectionFieldProps> = (
 
           // Cap speed to very slow, serene motion
           const currentSpeed = Math.sqrt(node.vx * node.vx + node.vy * node.vy);
-          const maxSpeed = 0.08 * spd;
+          const maxSpeed = 0.32;
+          // Gentle independent wander so each bubble floats on its own
+          node.vx += Math.cos(now * 0.00045 + node.pulsePhase * 3) * 0.006;
+          node.vy += Math.sin(now * 0.00038 + node.pulsePhase * 2) * 0.006;
           if (currentSpeed > maxSpeed && currentSpeed > 0) {
             node.vx = (node.vx / currentSpeed) * maxSpeed;
             node.vy = (node.vy / currentSpeed) * maxSpeed;
@@ -497,6 +501,7 @@ export const FloatingConnectionField: React.FC<FloatingConnectionFieldProps> = (
 
           const lastEcho = (node as any)._lastEchoTime || 0;
           if (diff < 0.05 && now - lastEcho > 3500) {
+            if (!(node as any)._appearAt) (node as any)._appearAt = now;
             (node as any)._lastEchoTime = now;
             radarEchoesRef.current.push({
               id: `${node.id}-${now}`,
@@ -576,6 +581,7 @@ export const FloatingConnectionField: React.FC<FloatingConnectionFieldProps> = (
       for (let i = 0; i < nodes.length; i++) {
         for (let j = i + 1; j < nodes.length; j++) {
           const n1 = nodes[i];
+          if (!(n1 as any)._appearAt) continue;
           const n2 = nodes[j];
           const dx = n1.x - n2.x;
           const dy = n1.y - n2.y;
@@ -645,10 +651,14 @@ export const FloatingConnectionField: React.FC<FloatingConnectionFieldProps> = (
 
       // 6. Draw Person Bubbles with Real Photos & Hold Indicators
       nodes.forEach((node) => {
+        const appearAt = (node as any)._appearAt;
+        if (!appearAt) return;
+        const appearT = appearAt === 1 ? 1 : Math.min(1, (now - appearAt) / 700);
+        const appearScale = 1 - Math.pow(1 - appearT, 3);
         const isHovered = hoveredNodeId === node.id;
         const isHeldTarget = interact.holdTargetNode === node && interact.isDown;
         const breathe = Math.sin(now / 2400 + node.pulsePhase) * 0.7;
-        const currentRadius = node.radius + breathe + (isHovered ? 3.5 : 0);
+        const currentRadius = Math.max(1, (node.radius + breathe + (isHovered ? 3.5 : 0)) * appearScale);
 
         // A. Hold-charging circular meter (when pressing & holding this bubble)
         if (isHeldTarget && interact.activeHoldProgress > 0) {
