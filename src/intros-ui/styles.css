@@ -378,3 +378,76 @@
   background: var(--sys-btn-hover) !important;
   border-color: var(--sys-btn-ring-hover) !important;
 }
+
+/* ============================================================
+   BUTTON TONE — dark gold, see-through
+   (user: solid gold reads too bright)
+   ============================================================ */
+.ix-root [class*="bg-[#F5B027]"],
+.ix-root [class*="bg-[#FFC85C]"],
+.ix-root [class*="bg-[#C78522]"],
+.ix-root [class*="bg-[#8A5A12]"] {
+  background-color: rgba(138, 90, 18, 0.22) !important;
+  color: var(--sys-ink) !important;
+  box-shadow: inset 0 0 0 1px rgba(245, 176, 39, 0.32) !important;
+}
+.ix-root [class*="bg-[#F5B027]/"],
+.ix-root [class*="bg-[#C78522]/"],
+.ix-root [class*="bg-[#FFC85C]/"],
+.ix-root [class*="bg-[#8A5A12]/"] {
+  background-color: rgba(245, 176, 39, 0.10) !important;
+  color: var(--sys-ink) !important;
+  box-shadow: inset 0 0 0 1px rgba(245, 176, 39, 0.16) !important;
+}
+.ix-root .btn.primary,
+.ix-root .btn-primary,
+.ix-root button.primary,
+.ix-root .nb-cta,
+.ix-root .memory-cta,
+.ix-root .ask-primary,
+.ix-root .btn-primary-cta {
+  background-color: rgba(138, 90, 18, 0.22) !important;
+  border-color: rgba(245, 176, 39, 0.32) !important;
+  color: var(--sys-ink) !important;
+}
+/* hover: a touch warmer, still translucent */
+.ix-root [class*="hover:bg-[#F5B027]"]:hover,
+.ix-root [class*="hover:bg-[#FFC85C]"]:hover,
+.ix-root [class*="hover:bg-[#C78522]"]:hover,
+.ix-root [class*="hover:bg-[#8A5A12]"]:hover,
+.ix-root [class*="hover:bg-[#3D6BF2]"]:hover,
+.ix-root [class*="hover:bg-[#60A5FA]"]:hover,
+.ix-root [class*="hover:bg-[#5B8DEF]"]:hover,
+.ix-root .btn.primary:hover,
+.ix-root .btn-primary:hover,
+.ix-root button.primary:hover,
+.ix-root .nb-cta:hover,
+.ix-root .memory-cta:hover,
+.ix-root .ask-primary:hover,
+.ix-root .btn-primary-cta:hover {
+  background-color: rgba(199, 133, 34, 0.34) !important;
+  color: var(--sys-ink) !important;
+  box-shadow: inset 0 0 0 1px rgba(245, 176, 39, 0.45) !important;
+}
+/* round indicators keep solid gold — dots and badges, not buttons */
+.ix-root [class*="rounded-full"][class*="bg-[#F5B027]"],
+.ix-root [class*="rounded-full"][class*="bg-[#C78522]"],
+.ix-root [class*="rounded-full"][class*="bg-[#FFC85C]"],
+.ix-root [class*="rounded-full"][class*="bg-[#8A5A12]"],
+.ix-root [class*="rounded-[999px]"][class*="bg-[#F5B027]"],
+.ix-root [class*="rounded-[999px]"][class*="bg-[#C78522]"],
+.ix-root [class*="rounded-[999px]"][class*="bg-[#FFC85C]"],
+.ix-root [class*="rounded-[999px]"][class*="bg-[#8A5A12]"] {
+  background-color: var(--sys-gold) !important;
+  color: #101216 !important;
+  box-shadow: 0 0 14px -3px rgba(245, 176, 39, 0.5) !important;
+}
+.ix-root [class*="rounded-full"][class*="hover:bg-[#F5B027]"]:hover,
+.ix-root [class*="rounded-full"][class*="hover:bg-[#C78522]"]:hover,
+.ix-root [class*="rounded-full"][class*="hover:bg-[#FFC85C]"]:hover,
+.ix-root [class*="rounded-[999px]"][class*="hover:bg-[#F5B027]"]:hover,
+.ix-root [class*="rounded-[999px]"][class*="hover:bg-[#C78522]"]:hover {
+  background-color: var(--sys-gold-bright) !important;
+  color: #101216 !important;
+  box-shadow: 0 0 16px -2px rgba(245, 176, 39, 0.6) !important;
+}

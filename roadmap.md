@@ -301,3 +301,4 @@
 - [ ] Message/notification alerts use the logo yellow.
 - [ ] Blue buttons become light black or logo yellow across the shell.
 - [ ] Verify desktop and phone widths, then publish.
+- [ ] Buttons: dark, see-through gold (not bright) — app shell CTAs, .btn.primary, hover states; round indicators keep solid gold
