@@ -638,3 +638,11 @@
   --acc-field-stroke: rgba(96, 165, 250, 0.30);
   --acc-field-glow: rgba(59, 130, 246, 0.5);
 }
+
+/* Keep the whole top row on one line: the accent picker shows dots only
+   until there is room for the words. */
+@media (max-width: 1535px) {
+  .ix-accent button span { display: none; }
+  .ix-accent button { padding: 4px 7px; }
+  .ix-accent { gap: 3px; padding: 2px; }
+}

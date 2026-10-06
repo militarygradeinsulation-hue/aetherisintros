@@ -39,7 +39,7 @@ export const TopNavigation: React.FC<TopNavigationProps> = ({
   const myName = me ? (me.name || 'My profile') : 'Sarah Chen';
   return (
     <header className="sticky top-0 z-50 w-full bg-[#07090C]/95 backdrop-blur-md border-b border-white/10 px-2 sm:px-4 md:px-6 py-2.5 transition-colors print:hidden">
-      <div className="max-w-[1600px] mx-auto flex flex-wrap items-center gap-x-2 gap-y-1">
+      <div className="max-w-[1600px] mx-auto flex flex-wrap xl:flex-nowrap items-center gap-x-2 gap-y-1">
 
         {/* Zone 1: Brand Wordmark */}
         <div className="shrink-0">
@@ -52,7 +52,7 @@ export const TopNavigation: React.FC<TopNavigationProps> = ({
         </div>
 
         {/* Zone 2: Navigation Links — always fully visible, shrink text before ever clipping */}
-        <nav className="order-3 md:order-none w-full md:w-auto md:flex-1 flex flex-wrap items-center justify-start md:justify-center gap-x-2.5 gap-y-1 md:gap-x-4 py-0.5">
+        <nav className="order-3 md:order-none w-full md:w-auto md:flex-1 flex flex-wrap xl:flex-nowrap items-center justify-start xl:justify-center gap-x-2.5 gap-y-1 md:gap-x-3 xl:gap-x-2 py-0.5">
             {[
             { id: 'workspace', label: 'Ask Intros', isBubbles: true },
             { id: 'bubbles', label: 'Bubbles', isBubbles: true },
@@ -100,14 +100,14 @@ export const TopNavigation: React.FC<TopNavigationProps> = ({
         {/* Zone 3: Search & account — pinned to the far right */}
         <div className="order-2 md:order-none ml-auto flex items-center gap-1.5 md:gap-2.5 shrink-0">
           {/* Compact search, far right next to logout */}
-          <div className="relative hidden md:block w-36 lg:w-48 xl:w-56 shrink-0">
+          <div className="relative hidden xl:block w-24 xl:w-28 shrink-0">
             <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-[#6B7280]" />
             <input
               type="text"
               value={searchQuery}
               onChange={(e) => onSearchChange(e.target.value)}
               placeholder="Search..."
-              className="w-full bg-[#0F131A] text-xs text-[#F2EEE6] placeholder-[#6B7280] rounded-lg pl-8 pr-7 py-1.5 border border-white/10 focus:outline-none focus:border-[var(--acc)] focus:ring-1 focus:ring-[var(--acc)] transition-all"
+              className="w-full bg-[#0F131A] text-xs text-[#F2EEE6] placeholder-[#6B7280] rounded-lg pl-7 pr-2 py-1 border border-white/10 focus:outline-none focus:border-[var(--acc)] focus:ring-1 focus:ring-[var(--acc)] transition-all"
             />
             <kbd className="absolute right-2 top-1/2 -translate-y-1/2 text-[10px] font-mono text-[#6B7280] bg-white/5 border border-white/10 px-1 rounded hidden lg:block">
               /
@@ -145,7 +145,7 @@ export const TopNavigation: React.FC<TopNavigationProps> = ({
             className="flex items-center gap-1.5 p-1.5 md:p-2 text-[#9CA3AF] hover:text-[#F2EEE6] hover:bg-white/5 rounded-lg transition-colors cursor-pointer"
           >
             <LogOut className="w-4 h-4" />
-            <span className="hidden xl:inline text-xs">Log out</span>
+            <span className="hidden 2xl:inline text-xs">Log out</span>
           </button>
         </div>
       </div>
