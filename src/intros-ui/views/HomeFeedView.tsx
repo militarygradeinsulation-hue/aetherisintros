@@ -415,7 +415,7 @@ export const HomeFeedView: React.FC<HomeFeedViewProps> = ({
                   </div>
                   <div className="flex items-center justify-between text-[11px] pt-1">
                     <span className="text-[#9CA3AF] italic">
-                      Click to open · Click & hold for dossier
+                      Click a node to open their profile
                     </span>
                     <button
                       onClick={() => onNavigate('bubbles')}
