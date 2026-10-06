@@ -5002,3 +5002,17 @@ button.news-link{background:none;border:0;padding:0;cursor:pointer}
 .lv-cap-grid article:before{content:'';position:absolute;inset:0;pointer-events:none;opacity:0;transition:opacity .35s ease;background:radial-gradient(320px circle at var(--spot-x,50%) var(--spot-y,0%),rgba(96,165,250,.14),transparent 65%)}
 .lv-cap-grid article:hover:before{opacity:1}
 @media (prefers-reduced-motion:reduce){.word-animate{animation:none;opacity:1}.serenity-glow,.serenity-ripple{display:none}}
+
+/* Readability pass: lift dark text/placeholders, keep tile text from cramping */
+.ceo-modal input::placeholder,.ceo-modal textarea::placeholder,
+.og-form input::placeholder,.og-form textarea::placeholder,
+[role="dialog"] input::placeholder,[role="dialog"] textarea::placeholder{color:#A3A9B1!important;opacity:1}
+[role="dialog"] input,[role="dialog"] textarea,[role="dialog"] select,.og-form input,.og-form textarea,.og-form select{color:#F1EFE9}
+.og-form label,.ceo-links,.ceo-links li{color:#E4E1DA}
+.ceo-note,.ceo-empty{color:#B4BAC2!important;opacity:1}
+.gapbox{color:#E4E1DA;overflow-wrap:normal;word-break:normal;hyphens:none}
+.gapbox small{color:#C9CED4;letter-spacing:.12em}
+.gapbox-cols{display:grid!important;grid-template-columns:1fr!important;gap:10px}
+.gapbox-cols ul{margin:4px 0 0;padding-left:16px;line-height:1.4;font-size:.8rem}
+.gapbox-cols li{margin:0 0 3px}
+.gapbox p{color:#C9CED4;font-size:.8rem;line-height:1.4}
