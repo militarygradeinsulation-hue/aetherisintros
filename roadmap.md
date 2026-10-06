@@ -287,3 +287,4 @@
 ## Repo visual takeover (Oct 6)
 - [x] Demo runs the GitHub repo's screens exactly, with the Ask Intros logo.
 - [ ] Wire the same screens to real member data on the signed-in app.
+- [ ] News in top bar + Ask Intros assistant and earlier tools (CRM, capabilities) reachable inside the new look.

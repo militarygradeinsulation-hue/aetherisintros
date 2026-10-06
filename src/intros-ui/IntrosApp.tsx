@@ -25,8 +25,24 @@ import { ReviewIntroModal } from './components/modals/ReviewIntroModal';
 import { ScheduleMeetingModal } from './components/modals/ScheduleMeetingModal';
 import { FloatingConnectionField } from './components/shared/FloatingConnectionField';
 import { X, Orbit } from 'lucide-react';
+import { NewsPage } from '@/aetheris/pages/NewsPage';
+import ClassicApp from '@/aetheris/App';
+import '@/aetheris/styles.css';
+import { useAetherisNews } from '@/aetheris/news';
 
-export default function App() {
+function NewsTicker({ onOpen }: { onOpen: () => void }) {
+  const { data } = useAetherisNews();
+  const items = (data?.items ?? []).slice(0, 8);
+  if (!items.length) return null;
+  return <button onClick={onOpen} className="w-full overflow-hidden border-b border-white/10 bg-[#0E1116] py-2 text-left">
+    <div className="flex gap-10 whitespace-nowrap px-4 text-xs text-[#9CA3AF] animate-[ixmarquee_60s_linear_infinite]">
+      <span className="font-mono tracking-[0.2em] text-[#F4A125]">LIVE NEWS</span>
+      {items.map((n: any) => <span key={n.id}><b className="text-[#F2EEE6] font-medium">{n.title}</b> · {n.source}</span>)}
+    </div>
+  </button>;
+}
+
+export default function App({ mode = 'demo' }: { mode?: 'demo' | 'live' }) {
   const [activePage, setActivePage] = useState<ActivePage>('home');
   const [selectedProfileId, setSelectedProfileId] = useState<string>('marcus-lee');
   const [members, setMembers] = useState<NetworkMember[]>(NETWORK_MEMBERS);
@@ -182,6 +198,7 @@ export default function App() {
         onToggleConstellationOverlay={() => handleNavigate('bubbles')}
       />
 
+      <NewsTicker onOpen={() => handleNavigate('news')} />
       {/* Primary Page Views */}
       <main className="flex-1">
         {activePage === 'home' && (
@@ -247,6 +264,8 @@ export default function App() {
           />
         )}
 
+        {activePage === 'news' && <div className="ix-classic"><NewsPage /></div>}
+        {activePage === 'workspace' && <div className="ix-classic"><ClassicApp mode={mode} /></div>}
         {activePage === 'intros' && (
           <IntrosHubView
             introRequests={introRequests}
