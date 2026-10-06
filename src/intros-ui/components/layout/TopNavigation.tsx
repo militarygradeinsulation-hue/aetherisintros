@@ -4,6 +4,7 @@ import { AskIntrosLockup } from '@/aetheris/AskIntrosLockup';
 import { Search, Bell, Orbit, LogOut } from 'lucide-react';
 import { ExecutivePortrait } from '../shared/ExecutivePortrait';
 import { supabase } from '@/integrations/supabase/client';
+import { AccentSwitch } from '../../AccentMode';
 
 async function signOut() {
   try { await supabase.auth.signOut(); } finally {
@@ -122,6 +123,8 @@ export const TopNavigation: React.FC<TopNavigationProps> = ({
             <Bell className="w-4 h-4" />
             <span className="absolute top-1 right-1 w-2 h-2 rounded-full bg-[var(--acc)] ring-2 ring-[#07090C]" />
           </button>
+
+          <AccentSwitch />
 
           {/* Current User Profile Pill */}
           <button
