@@ -207,3 +207,174 @@
 .ix-root [class*="text-red"], .ix-root [class*="text-rose"] { color: #F4A125 !important; }
 .ix-root [class*="bg-red"], .ix-root [class*="bg-rose"] { background-color: rgba(244,161,37,.12) !important; }
 .ix-root [class*="border-red"], .ix-root [class*="border-rose"] { border-color: rgba(244,161,37,.3) !important; }
+
+/* ══════════════════════════════════════════════════════════════════════
+   ACCENT SHIFT — cobalt out, light black + logo yellow in (Oct 6)
+   Palette anchored to the logo dot: #F5B027
+   ══════════════════════════════════════════════════════════════════════ */
+.ix-root {
+  --sys-gold: #F5B027;
+  --sys-gold-bright: #FFC85C;
+  --sys-gold-wash: rgba(245, 176, 39, 0.12);
+  --sys-gold-line: rgba(245, 176, 39, 0.34);
+  --sys-btn: #161A20;
+  --sys-btn-hover: #1F262F;
+  --sys-btn-ring: rgba(245, 176, 39, 0.22);
+  --sys-btn-ring-hover: rgba(245, 176, 39, 0.5);
+  --sys-accent: #F5B027;
+  --sys-ok: #F5B027;
+  --sys-hot: #F5B027;
+  /* classic (aetheris) tokens, scoped to the shell only */
+  --cobalt: #F5B027;
+  --cobalt-bright: #FFC85C;
+  --cobalt-hover: #C78522;
+}
+
+/* blue glows and shadows read as warm signal light */
+.ix-root [class*="shadow-[#3D6BF2]"],
+.ix-root [class*="shadow-blue-"],
+.ix-root [class*="shadow-sky-"] {
+  box-shadow: 0 0 24px -6px rgba(245, 176, 39, 0.4) !important;
+}
+
+/* filled blue surfaces (buttons, active tabs, panels) → light black */
+.ix-root [class*="bg-[#3D6BF2]"],
+.ix-root [class*="bg-[#2563EB]"],
+.ix-root [class*="bg-[#0F5CCB]"],
+.ix-root [class*="bg-[#0B4DAE]"],
+.ix-root [class*="bg-[#1476FF]"],
+.ix-root [class*="bg-[#5B8DEF]"],
+.ix-root [class*="bg-blue-"],
+.ix-root [class*="bg-sky-"],
+.ix-root [class*="bg-indigo-"] {
+  background-color: var(--sys-btn) !important;
+  color: var(--sys-ink) !important;
+  box-shadow: inset 0 0 0 1px var(--sys-btn-ring) !important;
+}
+
+/* hover feedback on those surfaces */
+.ix-root [class*="hover:bg-[#3D6BF2]"]:hover,
+.ix-root [class*="hover:bg-[#2563EB]"]:hover,
+.ix-root [class*="hover:bg-[#0F5CCB]"]:hover,
+.ix-root [class*="hover:bg-[#5B8DEF]"]:hover,
+.ix-root [class*="hover:bg-blue"]:hover,
+.ix-root [class*="hover:bg-sky"]:hover {
+  background-color: var(--sys-btn-hover) !important;
+  box-shadow: inset 0 0 0 1px var(--sys-btn-ring-hover) !important;
+}
+
+/* translucent blue washes (soft chips, tinted fills) → gold wash */
+.ix-root [class*="bg-[#3D6BF2]/"],
+.ix-root [class*="bg-[#2563EB]/"],
+.ix-root [class*="bg-[#0F5CCB]/"],
+.ix-root [class*="bg-[#5B8DEF]/"],
+.ix-root [class*="bg-blue-600/"],
+.ix-root [class*="bg-blue-500/"],
+.ix-root [class*="bg-blue-400/"],
+.ix-root [class*="bg-sky-500/"],
+.ix-root [class*="bg-indigo-500/"] {
+  background-color: var(--sys-gold-wash) !important;
+  box-shadow: inset 0 0 0 1px var(--sys-gold-line) !important;
+}
+
+/* round blue things are indicators, pills and counts → logo yellow */
+.ix-root [class*="rounded-full"][class*="bg-[#3D6BF2]"],
+.ix-root [class*="rounded-full"][class*="bg-[#2563EB]"],
+.ix-root [class*="rounded-full"][class*="bg-[#0F5CCB]"],
+.ix-root [class*="rounded-full"][class*="bg-[#5B8DEF]"],
+.ix-root [class*="rounded-full"][class*="bg-blue-"],
+.ix-root [class*="rounded-full"][class*="bg-sky-"] {
+  background-color: var(--sys-gold) !important;
+  color: #101216 !important;
+  box-shadow: 0 0 14px -3px rgba(245, 176, 39, 0.6) !important;
+}
+
+/* soft round chips stay a gold wash rather than solid yellow */
+.ix-root [class*="rounded-full"][class*="bg-[#3D6BF2]/"],
+.ix-root [class*="rounded-full"][class*="bg-blue-600/"],
+.ix-root [class*="rounded-full"][class*="bg-blue-500/"] {
+  background-color: var(--sys-gold-wash) !important;
+  color: var(--sys-gold) !important;
+  box-shadow: inset 0 0 0 1px var(--sys-gold-line) !important;
+}
+
+/* blue text, links and labels → logo yellow */
+.ix-root [class*="text-[#3D6BF2]"],
+.ix-root [class*="text-[#60A5FA]"],
+.ix-root [class*="text-[#5B8DEF]"],
+.ix-root [class*="text-[#1476FF]"],
+.ix-root [class*="text-[#0F5CCB]"],
+.ix-root [class*="text-[#2563EB]"],
+.ix-root [class*="text-blue-"],
+.ix-root [class*="text-sky-"],
+.ix-root [class*="text-indigo-"] {
+  color: var(--sys-gold) !important;
+}
+
+/* hairlines and focus rings */
+.ix-root [class*="border-[#3D6BF2]"],
+.ix-root [class*="border-[#0F5CCB]"],
+.ix-root [class*="border-[#5B8DEF]"],
+.ix-root [class*="border-[#2563EB]"],
+.ix-root [class*="border-blue-"],
+.ix-root [class*="border-sky-"],
+.ix-root [class*="border-indigo-"],
+.ix-root [class*="divide-[#3D6BF2]"],
+.ix-root [class*="divide-blue-"],
+.ix-root [class*="outline-[#3D6BF2]"] {
+  border-color: var(--sys-gold-line) !important;
+  outline-color: var(--sys-gold-line) !important;
+}
+.ix-root [class*="ring-[#3D6BF2]"],
+.ix-root [class*="ring-blue-"],
+.ix-root [class*="ring-sky-"] {
+  --tw-ring-color: rgba(245, 176, 39, 0.45) !important;
+}
+
+/* gradients */
+.ix-root [class*="from-[#3D6BF2]"],
+.ix-root [class*="via-[#3D6BF2]"],
+.ix-root [class*="to-[#3D6BF2]"],
+.ix-root [class*="from-blue-"],
+.ix-root [class*="via-blue-"],
+.ix-root [class*="to-blue-"],
+.ix-root [class*="from-sky-"],
+.ix-root [class*="to-sky-"] {
+  --tw-gradient-from: rgba(245, 176, 39, 0.6) !important;
+  --tw-gradient-via: rgba(245, 176, 39, 0.4) !important;
+  --tw-gradient-to: rgba(245, 176, 39, 0) !important;
+}
+
+/* chart strokes and fills */
+.ix-root [class*="fill-[#3D6BF2]"],
+.ix-root [class*="stroke-[#3D6BF2]"],
+.ix-root [class*="fill-blue-"],
+.ix-root [class*="stroke-blue-"] {
+  fill: var(--sys-gold) !important;
+  stroke: var(--sys-gold) !important;
+}
+
+/* leftover hard-coded green / red — retired in favour of the gold signal */
+.ix-root [class*="text-[#3FB37F]"],
+.ix-root [class*="text-[#E5484D]"],
+.ix-root [class*="text-[#F97316]"] { color: var(--sys-gold) !important; }
+.ix-root [class*="bg-[#3FB37F]"],
+.ix-root [class*="bg-[#E5484D]"],
+.ix-root [class*="bg-[#F97316]"] {
+  background-color: var(--sys-gold) !important;
+  color: #101216 !important;
+}
+.ix-root [class*="border-[#3FB37F]"],
+.ix-root [class*="border-[#E5484D]"],
+.ix-root [class*="border-[#F97316]"] { border-color: var(--sys-gold-line) !important; }
+
+/* classic primary CTA: light black with a gold hairline, never solid blue */
+.ix-root .btn.primary {
+  background: var(--sys-btn) !important;
+  border-color: var(--sys-btn-ring) !important;
+  color: var(--sys-ink) !important;
+}
+.ix-root .btn.primary:hover {
+  background: var(--sys-btn-hover) !important;
+  border-color: var(--sys-btn-ring-hover) !important;
+}
