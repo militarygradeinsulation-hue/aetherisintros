@@ -39,7 +39,7 @@ export const TopNavigation: React.FC<TopNavigationProps> = ({
   const myName = me ? (me.name || 'My profile') : 'Sarah Chen';
   return (
     <header className="sticky top-0 z-50 w-full bg-[#07090C]/95 backdrop-blur-md border-b border-white/10 px-2 sm:px-4 md:px-6 py-2.5 transition-colors print:hidden">
-      <div className="max-w-[1600px] mx-auto flex flex-wrap md:flex-nowrap items-center gap-x-2 gap-y-1">
+      <div className="max-w-[1600px] mx-auto flex flex-wrap xl:flex-nowrap items-center gap-x-2 gap-y-1">
 
         {/* Zone 1: Brand Wordmark */}
         <div className="shrink-0">
@@ -52,7 +52,7 @@ export const TopNavigation: React.FC<TopNavigationProps> = ({
         </div>
 
         {/* Zone 2: Navigation Links — always fully visible, shrink text before ever clipping */}
-        <nav className="order-3 md:order-none w-full md:w-auto md:flex-1 flex flex-wrap md:flex-nowrap items-center justify-start md:justify-center gap-x-2.5 gap-y-1 md:gap-x-3 py-0.5">
+        <nav className="order-3 md:order-none w-full md:w-auto md:flex-1 flex flex-wrap xl:flex-nowrap items-center justify-start xl:justify-center gap-x-2.5 gap-y-1 md:gap-x-3 py-0.5">
             {[
             { id: 'workspace', label: 'Ask Intros', isBubbles: true },
             { id: 'bubbles', label: 'Bubbles', isBubbles: true },
@@ -100,7 +100,7 @@ export const TopNavigation: React.FC<TopNavigationProps> = ({
         {/* Zone 3: Search & account — pinned to the far right */}
         <div className="order-2 md:order-none ml-auto flex items-center gap-1.5 md:gap-2.5 shrink-0">
           {/* Compact search, far right next to logout */}
-          <div className="relative hidden md:block w-24 lg:w-32 xl:w-40 shrink-0">
+          <div className="relative hidden xl:block w-28 xl:w-36 shrink-0">
             <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-[#6B7280]" />
             <input
               type="text"
