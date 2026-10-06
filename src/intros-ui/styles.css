@@ -197,3 +197,5 @@
   }
 }
 
+@keyframes ixmarquee { from { transform: translateX(0) } to { transform: translateX(-50%) } }
+.ix-classic { min-height: 70vh; }

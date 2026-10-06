@@ -4,7 +4,7 @@ import { AskIntrosLockup } from '@/aetheris/AskIntrosLockup';
 import { Search, Bell, Sparkles, Orbit } from 'lucide-react';
 import { ExecutivePortrait } from '../shared/ExecutivePortrait';
 
-export type ActivePage = 'home' | 'people' | 'bubbles' | 'intros' | 'messages' | 'insights' | 'profile';
+export type ActivePage = 'home' | 'people' | 'bubbles' | 'intros' | 'messages' | 'insights' | 'profile' | 'news' | 'workspace';
 
 interface TopNavigationProps {
   activePage: ActivePage;
@@ -44,7 +44,9 @@ export const TopNavigation: React.FC<TopNavigationProps> = ({
             { id: 'bubbles', label: 'Connection Bubbles', isBubbles: true },
             { id: 'intros', label: 'Intros' },
             { id: 'messages', label: 'Messages', badge: unreadCount },
+            { id: 'news', label: 'News' },
             { id: 'insights', label: 'Insights' },
+            { id: 'workspace', label: 'Ask Intros', isBubbles: true },
           ].map((item) => {
             const isActive = activePage === item.id;
             return (
