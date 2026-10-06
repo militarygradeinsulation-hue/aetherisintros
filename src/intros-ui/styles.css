@@ -1,0 +1,199 @@
+.ix-root {
+  --sys-bg: #07090C;
+  --sys-tile: #0E1116;
+  --sys-tile-inner: #151922;
+  --sys-line: rgba(255, 255, 255, 0.08);
+  --sys-ink: #F2EEE6;
+  --sys-ink-dim: rgba(242, 238, 230, 0.62);
+  --sys-card: #F4F1EA;
+  --sys-card-ink: #14161A;
+  --sys-accent: #3D6BF2;
+  --sys-hot: #E5484D;
+  --sys-warn: #F2A93B;
+  --sys-ok: #3FB37F;
+  --radius-tile: 10px;
+  --radius-inner: 8px;
+  --radius-chip: 6px;
+
+  --font-serif: 'Cormorant Garamond', Georgia, serif;
+  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  
+  /* Added for new components */
+  --sys-bg-dark: #0B0D0F;
+  --sys-panel: #11151A;
+  --sys-panel-line: rgba(255, 255, 255, 0.08);
+}
+
+.ix-root {
+  background-color: var(--sys-bg);
+  color: var(--sys-ink);
+  font-family: var(--font-sans);
+  overflow-x: hidden;
+}
+
+.font-serif-editorial {
+  font-family: var(--font-serif);
+}
+
+.font-sans-clean {
+  font-family: var(--font-sans);
+}
+
+/* System Tile Tokenized Styles */
+.sys-tile {
+  background-color: var(--sys-tile);
+  border: 1px solid var(--sys-line);
+  border-radius: var(--radius-tile);
+  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1),
+              border-color 0.2s cubic-bezier(0.16, 1, 0.3, 1),
+              box-shadow 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  position: relative;
+  overflow: hidden;
+}
+
+.sys-tile:hover {
+  border-color: rgba(61, 107, 242, 0.4);
+  transform: translateY(-2px);
+  box-shadow: 0 12px 30px -10px rgba(0, 0, 0, 0.7), 0 0 20px -8px rgba(61, 107, 242, 0.2);
+}
+
+.sys-tile:focus-visible {
+  outline: 2px solid var(--sys-accent);
+  outline-offset: 2px;
+}
+
+.sys-tile-title {
+  font-family: var(--font-serif);
+  font-size: 11.5px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--sys-ink);
+  font-weight: 600;
+  line-height: 1.25;
+}
+
+.sys-tile-caption {
+  font-family: var(--font-serif);
+  font-size: 11.5px;
+  line-height: 1.35;
+  color: var(--sys-ink-dim);
+  text-align: center;
+  font-style: italic;
+}
+
+.sys-tile-inner {
+  background-color: var(--sys-tile-inner);
+  border-radius: var(--radius-inner);
+  border: 1px solid rgba(255, 255, 255, 0.04);
+}
+
+.sys-card-ivory {
+  background-color: var(--sys-card);
+  color: var(--sys-card-ink);
+  border-radius: var(--radius-inner);
+}
+
+/* Custom Scrollbar for Near-black UI */
+.ix-root ::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+.ix-root ::-webkit-scrollbar-track {
+  background: #07090C;
+}
+.ix-root ::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 3px;
+}
+.ix-root ::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+/* Respect Reduced Motion */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* New UI Styles for CRM / Briefing / Utilities */
+.drawer-panel {
+  background: var(--sys-bg-dark);
+  border-left: 1px solid var(--sys-panel-line);
+}
+.panel-head {
+  padding: 1rem;
+  border-bottom: 1px solid var(--sys-panel-line);
+}
+.panel-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem 1rem;
+  cursor: pointer;
+  border-bottom: 1px solid var(--sys-panel-line);
+}
+.panel-item:hover {
+  background: rgba(255,255,255,0.03);
+}
+
+/* ==========================================================================
+   CSS Print Styles for High-Resolution Network Snapshot Export to PDF
+   ========================================================================== */
+@media print {
+  @page {
+    size: auto;
+    margin: 8mm 12mm;
+  }
+
+  html,
+  body {
+    background-color: #07090C !important;
+    color: #F2EEE6 !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
+  /* Hide screen-only interactive chrome */
+  header,
+  footer,
+  nav,
+  button,
+  input,
+  select,
+  .print\:hidden,
+  .no-print,
+  [role="dialog"],
+  .drawer-panel,
+  aside {
+    display: none !important;
+  }
+
+  /* Force display of print snapshot container */
+  .print\:block {
+    display: block !important;
+  }
+
+  .print-snapshot-container {
+    display: block !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    margin: 0 auto !important;
+    padding: 16px !important;
+    background-color: #07090C !important;
+    color: #F2EEE6 !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  .print-break-inside-avoid {
+    break-inside: avoid !important;
+    page-break-inside: avoid !important;
+  }
+}
+
