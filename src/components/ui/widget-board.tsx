@@ -182,13 +182,13 @@ function tile(items: WidgetItem[], columns: number): Placement[] | null {
 		const tried = new Set([] as string[])
 		for (let k = 0; k < items.length; k++) {
 			if (used[k]) continue
-			const { w, h } = spans[k]
+			const { w, h } = spans[k]!
 			const shape = `${w}x${h}`
 			if (tried.has(shape) || !fits(w, h, r, c)) continue
 			tried.add(shape)
 			used[k] = true
 			mark(w, h, r, c, true)
-			out.push({ id: items[k].id, col: c, row: r, w, h })
+			out.push({ id: items[k]!.id, col: c, row: r, w, h })
 			if (place(count + 1)) return true
 			out.pop()
 			mark(w, h, r, c, false)
@@ -284,12 +284,12 @@ function moveTo(items: WidgetItem[], id: string, index: number) {
 		return items
 	const next = [...items]
 	const [moved] = next.splice(from, 1)
-	next.splice(index, 0, moved)
+	next.splice(index, 0, moved!)
 	return next
 }
 
 const sameOrder = (a: WidgetItem[], b: WidgetItem[]) =>
-	a.length === b.length && a.every((item, i) => item.id === b[i].id)
+	a.length === b.length && a.every((item, i) => item.id === b[i]!.id)
 
 /* ------------------------------------------------------------------ *
  * Drop target selection
