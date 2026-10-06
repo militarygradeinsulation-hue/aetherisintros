@@ -59,7 +59,7 @@ function AuthPage() {
     const layers = Array.from(panel.querySelectorAll<HTMLElement>('[data-parallax-layer]'))
     if (!layers.length) return
     const setters = layers.map(el => ({
-      depth: Number(el.dataset.parallaxLayer) || 1,
+      depth: Number(el.dataset['parallaxLayer']) || 1,
       x: gsap.quickTo(el, 'x', { duration: 0.9, ease: 'power3.out' }),
       y: gsap.quickTo(el, 'y', { duration: 0.9, ease: 'power3.out' }),
     }))
