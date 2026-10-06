@@ -21,6 +21,8 @@ interface TopNavigationProps {
   onSearchChange: (q: string) => void;
   unreadCount?: number;
   onToggleConstellationOverlay?: () => void;
+  me?: { name: string; avatarUrl?: string } | null;
+  onOpenMyProfile?: () => void;
 }
 
 export const TopNavigation: React.FC<TopNavigationProps> = ({
@@ -30,7 +32,10 @@ export const TopNavigation: React.FC<TopNavigationProps> = ({
   onSearchChange,
   unreadCount = 12,
   onToggleConstellationOverlay,
+  me,
+  onOpenMyProfile,
 }) => {
+  const myName = me ? (me.name || 'My profile') : 'Sarah Chen';
   return (
     <header className="sticky top-0 z-50 w-full bg-[#07090C]/95 backdrop-blur-md border-b border-white/10 px-2 sm:px-4 md:px-6 py-2.5 transition-colors print:hidden">
       <div className="max-w-[1600px] mx-auto flex flex-wrap items-center gap-x-2 gap-y-1">
@@ -120,12 +125,13 @@ export const TopNavigation: React.FC<TopNavigationProps> = ({
 
           {/* Current User Profile Pill */}
           <button
-            onClick={() => onNavigate('profile', 'sarah-chen')}
+            onClick={() => (onOpenMyProfile ? onOpenMyProfile() : onNavigate('profile', 'sarah-chen'))}
+            title="My profile"
             className="flex items-center gap-2 p-0.5 pl-0.5 pr-1.5 rounded-full hover:bg-white/5 transition-colors cursor-pointer group"
           >
-            <ExecutivePortrait name="Sarah Chen" size="sm" />
+            {me?.avatarUrl ? <img src={me.avatarUrl} alt="" className="w-7 h-7 rounded-full object-cover" /> : <ExecutivePortrait name={myName} size="sm" />}
             <span className="hidden 2xl:inline text-xs font-medium text-[#F2EEE6] group-hover:text-white">
-              Sarah Chen
+              {myName}
             </span>
           </button>
 

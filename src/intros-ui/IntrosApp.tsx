@@ -1,5 +1,6 @@
 // @ts-nocheck
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { supabase } from '@/integrations/supabase/client';
 import './styles.css';
 import {
   NETWORK_MEMBERS,
@@ -67,6 +68,21 @@ export default function App({ mode = 'demo' }: { mode?: 'demo' | 'live' }) {
     name: string;
     title: string;
   } | null>(null);
+
+  const [me, setMe] = useState<{ name: string; avatarUrl?: string } | null>(null);
+  useEffect(() => {
+    if (mode !== 'live') return;
+    let off = false;
+    const loadMe = async () => {
+      const { data: u } = await supabase.auth.getUser();
+      if (!u.user || off) return;
+      const { data } = await supabase.from('profiles').select('name, avatar_url').eq('id', u.user.id).maybeSingle();
+      if (!off) setMe({ name: data?.name || u.user.email?.split('@')[0] || '', avatarUrl: data?.avatar_url || undefined });
+    };
+    void loadMe();
+    const t = setInterval(loadMe, 30000);
+    return () => { off = true; clearInterval(t); };
+  }, [mode]);
 
   // Navigation router
   const handleNavigate = (page: ActivePage, memberId?: string) => {
@@ -205,6 +221,8 @@ export default function App({ mode = 'demo' }: { mode?: 'demo' | 'live' }) {
         onSearchChange={setSearchQuery}
         unreadCount={mode === 'live' ? 0 : 12}
         onToggleConstellationOverlay={() => handleNavigate('bubbles')}
+        me={mode === 'live' ? me : undefined}
+        onOpenMyProfile={mode === 'live' ? () => { setClassicPage('profile'); handleNavigate('workspace'); } : undefined}
       />
 
       {mode === 'live' && <LiveMembers onMembers={setMembers} />}
