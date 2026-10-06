@@ -490,8 +490,9 @@ export const HomeFeedView: React.FC<HomeFeedViewProps> = ({
           <span className="text-[10px] text-[#6B7280]">Drag widgets to arrange · Alt + arrows on keyboard</span>
         </div>
         <DraggableWidgetGrid
-          items={boardItems}
-          onChange={saveBoard}
+          key={narrow ? 'narrow' : 'wide'}
+          items={narrow ? boardItems.map((i) => ({ ...i, size: 'sm' })) : boardItems}
+          onChange={(next) => saveBoard(narrow ? next.map((i) => ({ ...i, size: defaultBoard.find((d) => d.id === i.id)?.size ?? 'sm' })) : next)}
           maxColumns={narrow ? 1 : 4}
           cellSize={300}
           gap={16}
