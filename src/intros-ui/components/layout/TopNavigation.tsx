@@ -46,7 +46,7 @@ export const TopNavigation: React.FC<TopNavigationProps> = ({
         </div>
 
         {/* Zone 2: Navigation Links — always fully visible, shrink text before ever clipping */}
-        <nav className="flex-1 min-w-0 flex flex-wrap items-center justify-center gap-x-2.5 gap-y-1 md:gap-x-4 py-0.5">
+        <nav className="order-3 md:order-none w-full md:w-auto md:flex-1 flex flex-wrap items-center justify-start md:justify-center gap-x-2.5 gap-y-1 md:gap-x-4 py-0.5">
           {[
             { id: 'home', label: 'Home' },
             { id: 'news', label: 'News' },
@@ -92,7 +92,7 @@ export const TopNavigation: React.FC<TopNavigationProps> = ({
         </nav>
 
         {/* Zone 3: Search & account — pinned to the far right */}
-        <div className="flex items-center gap-1.5 md:gap-2.5 shrink-0 ml-auto">
+        <div className="order-2 md:order-none ml-auto flex items-center gap-1.5 md:gap-2.5 shrink-0">
           {/* Compact search, far right next to logout */}
           <div className="relative hidden md:block w-36 lg:w-48 xl:w-56 shrink-0">
             <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-[#6B7280]" />
