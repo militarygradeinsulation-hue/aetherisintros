@@ -631,8 +631,8 @@ const Widget = memo(function Widget({
 					bounce: 0.12,
 					delay,
 				}}
-				className={`relative isolate flex h-full w-full flex-col overflow-hidden rounded-[var(--widget-radius)] bg-card text-card-foreground ring-inset transition-shadow duration-300 [clip-path:inset(0_round_var(--widget-radius))] ${
-					landed ? 'ring-2 ring-foreground/40' : 'ring-1 ring-border'
+				className={`relative isolate flex h-full w-full flex-col overflow-hidden rounded-[var(--widget-radius)] bg-[#0E121A] text-[#F2EEE6] ring-inset transition-shadow duration-300 [clip-path:inset(0_round_var(--widget-radius))] ${
+					landed ? 'ring-2 ring-[#3D6BF2]' : 'ring-1 ring-white/10'
 				}`}>
 				{renderItem?.(item as never, sizeOf(w, h))}
 			</motion.div>

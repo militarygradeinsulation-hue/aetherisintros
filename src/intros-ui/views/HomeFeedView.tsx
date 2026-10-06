@@ -74,24 +74,24 @@ export const HomeFeedView: React.FC<HomeFeedViewProps> = ({
   };
 
   const defaultBoard: WidgetItem[] = [
-    { id: 'network', size: 'tall', label: 'Your Network card' },
+    { id: 'network', size: 'sm', label: 'Your Network card' },
     { id: 'explore', size: 'sm', label: 'Explore card' },
     { id: 'introduce', size: 'sm', label: 'Introduce a colleague callout' },
     { id: 'need', size: 'sm', label: 'What do you need right now' },
     { id: 'ask', size: 'sm', label: 'Ask Intros' },
-    { id: 'sectors', size: 'tall', label: 'Trending Sectors' },
+    { id: 'sectors', size: 'sm', label: 'Trending Sectors' },
     { id: 'events', size: 'wide', label: 'Upcoming Business Events' },
     { id: 'circles', size: 'sm', label: 'Suggested Circles' },
     { id: 'whynow', size: 'sm', label: 'Why now' }
   ];
   const [boardItems] = useState<WidgetItem[]>(() => {
     try {
-      const saved = JSON.parse(localStorage.getItem('intros.home.board') || 'null');
+      const saved = JSON.parse(localStorage.getItem('intros.home.board.v2') || 'null');
       if (Array.isArray(saved) && saved.length === defaultBoard.length && saved.every((x) => widgetIds.has(x.id))) return saved;
     } catch {}
     return defaultBoard;
   });
-  const saveBoard = (next: WidgetItem[]) => { try { localStorage.setItem('intros.home.board', JSON.stringify(next)); } catch {} };
+  const saveBoard = (next: WidgetItem[]) => { try { localStorage.setItem('intros.home.board.v2', JSON.stringify(next)); } catch {} };
   const widgets: Record<string, React.ReactNode> = {
     network: (
           <div className="bg-[#0E121A] border border-white/10 rounded-xl p-4 space-y-4">
@@ -491,7 +491,7 @@ export const HomeFeedView: React.FC<HomeFeedViewProps> = ({
           items={boardItems}
           onChange={saveBoard}
           maxColumns={4}
-          cellSize={280}
+          cellSize={300}
           gap={16}
           radius={12}
           renderItem={(item) => <div className="h-full w-full overflow-y-auto [&>*]:min-h-full">{widgets[item.id]}</div>}
