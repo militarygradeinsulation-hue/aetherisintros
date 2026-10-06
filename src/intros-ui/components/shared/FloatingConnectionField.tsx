@@ -201,7 +201,9 @@ export const FloatingConnectionField: React.FC<FloatingConnectionFieldProps> = (
       const angle = (idx / displayMembers.length) * Math.PI * 2 + 0.3;
       const spread = Math.min(width, height) * (density === 'fullscreen' ? 0.36 : 0.30);
       const isLead = idx === 0 || idx === 1;
-      const baseR = isLead ? 36 : idx < 5 ? 31 : 27;
+      // Scale bubbles to the window: small previews get smaller thumbnails
+      const scale = density === 'fullscreen' ? 1 : Math.max(0.55, Math.min(1, Math.min(width, height) / 480));
+      const baseR = Math.round((isLead ? 36 : idx < 5 ? 31 : 27) * scale);
 
       return {
         id: m.id,
