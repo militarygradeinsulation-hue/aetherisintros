@@ -58,14 +58,13 @@ export const TopNavigation: React.FC<TopNavigationProps> = ({
             { id: 'bubbles', label: 'Bubbles', isBubbles: true },
             { id: 'home', label: 'Home' },
             { id: 'insights', label: 'Insights' },
-            { id: 'intros', label: 'Intros' },
             { id: 'memory', label: 'Memory' },
             { id: 'messages', label: 'Messages', badge: unreadCount },
             { id: 'news', label: 'News' },
-            { id: 'people', label: 'People' },
+            { id: 'people', label: 'People & Intros' },
             { id: 'work', label: 'Work' },
           ].map((item) => {
-            const isActive = activePage === item.id;
+            const isActive = activePage === item.id || (item.id === 'people' && activePage === 'intros');
             return (
               <button
                 key={item.id}
