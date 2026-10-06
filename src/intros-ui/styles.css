@@ -634,3 +634,12 @@
   .ix-accent button { padding: 4px 7px; }
   .ix-accent { gap: 3px; padding: 2px; }
 }
+
+/* Home hero: the relationship field graph, sized to its compact tile. */
+.ix-field-tile .memory-graph {
+  min-height: 0;
+  height: 100%;
+}
+.ix-field-tile .graph-rings i { width: 130px; height: 130px; }
+.ix-field-tile .graph-rings i:nth-child(2) { width: 240px; height: 240px; }
+.ix-field-tile .memory-graph.compact:before { width: min(88%, 240px); }
