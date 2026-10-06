@@ -25,7 +25,7 @@ import { ReviewIntroModal } from './components/modals/ReviewIntroModal';
 import { ScheduleMeetingModal } from './components/modals/ScheduleMeetingModal';
 import { FloatingConnectionField } from './components/shared/FloatingConnectionField';
 import { X, Orbit } from 'lucide-react';
-import ClassicApp from '@/aetheris/App';
+import ClassicApp, { AetherisAssistant } from '@/aetheris/App';
 import '@/aetheris/styles.css';
 import { useAetherisNews } from '@/aetheris/news';
 
@@ -302,6 +302,9 @@ export default function App({ mode = 'demo' }: { mode?: 'demo' | 'live' }) {
         memberName={scheduleMeetingTarget?.name || ''}
         memberTitle={scheduleMeetingTarget?.title || ''}
       />
+      {activePage !== 'news' && activePage !== 'workspace' && (
+        <AetherisAssistant mode={mode} page={activePage} onNavigate={(p) => handleNavigate(p as ActivePage)} />
+      )}
     </div>
   );
 }
