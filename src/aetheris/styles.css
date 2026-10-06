@@ -4972,3 +4972,4 @@ button.news-link{background:none;border:0;padding:0;cursor:pointer}
 .ix-tools button:hover{color:#F2EEE6;border-color:rgba(61,107,242,.6)}
 .ix-tools button.on{color:#fff;background:rgba(61,107,242,.18);border-color:#3D6BF2}
 .ix-classic .topbar{display:none}.ix-classic .content{padding-top:28px}
+.ix-classic .nav-rail{display:none!important}
