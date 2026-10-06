@@ -4967,3 +4967,7 @@ button.news-link{background:none;border:0;padding:0;cursor:pointer}
 .ix-classic .ask-dock > header b{font-family:'Cormorant Garamond',Georgia,serif;font-size:19px}
 .ix-classic .ask-dock-input button{background:#3D6BF2}
 @media (max-width:820px){.ix-classic .nav-rail{display:none}}
+.ix-tools{position:sticky;top:0;z-index:45;display:flex;gap:6px;overflow-x:auto;padding:12px clamp(14px,4vw,32px);background:#07090C;border-bottom:1px solid rgba(255,255,255,.08)}
+.ix-tools button{flex:0 0 auto;padding:7px 13px;border-radius:6px;border:1px solid rgba(255,255,255,.10);background:#0E1116;color:#9CA3AF;font:500 12px/1 Inter,'Space Grotesk',sans-serif;cursor:pointer}
+.ix-tools button:hover{color:#F2EEE6;border-color:rgba(61,107,242,.6)}
+.ix-tools button.on{color:#fff;background:rgba(61,107,242,.18);border-color:#3D6BF2}
