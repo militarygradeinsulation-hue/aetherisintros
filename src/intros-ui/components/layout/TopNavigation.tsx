@@ -47,17 +47,17 @@ export const TopNavigation: React.FC<TopNavigationProps> = ({
 
         {/* Zone 2: Navigation Links — always fully visible, shrink text before ever clipping */}
         <nav className="order-3 md:order-none w-full md:w-auto md:flex-1 flex flex-wrap items-center justify-start md:justify-center gap-x-2.5 gap-y-1 md:gap-x-4 py-0.5">
-          {[
+            {[
+            { id: 'workspace', label: 'Ask Intros', isBubbles: true },
+            { id: 'bubbles', label: 'Bubbles', isBubbles: true },
             { id: 'home', label: 'Home' },
+            { id: 'insights', label: 'Insights' },
+            { id: 'intros', label: 'Intros' },
+            { id: 'memory', label: 'Memory' },
+            { id: 'messages', label: 'Messages', badge: unreadCount },
             { id: 'news', label: 'News' },
             { id: 'people', label: 'People' },
-            { id: 'intros', label: 'Intros' },
-            { id: 'messages', label: 'Messages', badge: unreadCount },
             { id: 'work', label: 'Work' },
-            { id: 'memory', label: 'Memory' },
-            { id: 'insights', label: 'Insights' },
-            { id: 'bubbles', label: 'Bubbles', isBubbles: true },
-            { id: 'workspace', label: 'Ask Intros', isBubbles: true },
           ].map((item) => {
             const isActive = activePage === item.id;
             return (

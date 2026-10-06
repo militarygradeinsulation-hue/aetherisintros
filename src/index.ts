@@ -1,3 +1,4 @@
+import "./styles.css"
 import "./aetheris/styles.css"
 export { BrandFonts } from "./aetheris/BrandFonts"
 export { default as App } from "./aetheris/App"
