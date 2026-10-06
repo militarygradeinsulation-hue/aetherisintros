@@ -1,7 +1,6 @@
 import { ClientOnly, createFileRoute } from '@tanstack/react-router'
 
-import App from '@/aetheris/App'
-import '@/aetheris/styles.css'
+import IntrosApp from '@/intros-ui/IntrosApp'
 
 export const Route = createFileRoute('/demo')({
   staticData: { sitemap: true },
@@ -26,6 +25,6 @@ export const Route = createFileRoute('/demo')({
 
 function DemoRoute() {
   return <ClientOnly fallback={null}>
-    <App mode="demo" />
+    <IntrosApp />
   </ClientOnly>
 }

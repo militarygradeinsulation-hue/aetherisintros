@@ -283,3 +283,7 @@
 - [x] Bring the floating connection bubbles + network signals into Network using real members.
 - [ ] Port remaining remix screens (heatmap, voice minutes) onto live data.
 - [x] Restore the Ask Intros logo in the top bar.
+
+## Repo visual takeover (Oct 6)
+- [x] Demo runs the GitHub repo's screens exactly, with the Ask Intros logo.
+- [ ] Wire the same screens to real member data on the signed-in app.
