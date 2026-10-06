@@ -50,6 +50,12 @@ import Landing from "@ws-gmhcx8w6bqvecbtkycud/c1248cd8-77de-4eaa-8d9d-e7da71e70a
 import ParticleDrift from "@ws-gmhcx8w6bqvecbtkycud/c1248cd8-77de-4eaa-8d9d-e7da71e70ae9"
 ```
 
+### SerenityAmbient
+
+```ts
+import SerenityAmbient from "@ws-gmhcx8w6bqvecbtkycud/c1248cd8-77de-4eaa-8d9d-e7da71e70ae9"
+```
+
 ### SheetImport
 
 ```ts
