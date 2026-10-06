@@ -2338,6 +2338,42 @@ export default function App({ startPage, mode = 'live' }: { startPage?: Page | u
   return <NetworkProvider mode={mode}><PlatformProvider><OSProvider><MoatProvider><ProProvider><OpsProvider><GraphProvider><CeoProvider><Shell startPage={startPage} /></CeoProvider></GraphProvider></OpsProvider></ProProvider></MoatProvider></OSProvider></PlatformProvider></NetworkProvider>
 }
 
+/** Ask Intros butler + capability workspace, mounted natively on the new shell. */
+export function AetherisAssistant({ mode = 'live', page, onNavigate }: { mode?: NetworkMode; page: string; onNavigate: (page: string) => void }) {
+  setShowcaseMode(mode === 'demo')
+  return <NetworkProvider mode={mode}><PlatformProvider><OSProvider><MoatProvider><ProProvider><OpsProvider><GraphProvider><CeoProvider>
+    <AssistantLayer page={page} onNavigate={onNavigate} />
+  </CeoProvider></GraphProvider></OpsProvider></ProProvider></MoatProvider></OSProvider></PlatformProvider></NetworkProvider>
+}
+
+function AssistantLayer({ page, onNavigate }: { page: string; onNavigate: (page: string) => void }) {
+  const net = useNetwork()
+  const people = net.members
+  const shellPages: Record<string, string> = { home: 'home', network: 'bubbles', people: 'people', discover: 'people', intros: 'intros', messages: 'messages', news: 'news', insights: 'insights' }
+  useEffect(() => {
+    const go = () => onNavigate('workspace')
+    window.addEventListener('aetheris:navigate', go)
+    return () => window.removeEventListener('aetheris:navigate', go)
+  }, [onNavigate])
+  const run = (action: AskIntrosAction): string | null => {
+    if (action.kind === 'navigate') {
+      const target = action.page ?? ''
+      onNavigate(shellPages[target] ?? 'workspace')
+      return `Opened ${metaById[target as Page]?.label ?? target}`
+    }
+    if (action.kind === 'text-size') { const v = action.value as TextScale | null; if (!v || !textScales.includes(v)) return null; setTextScale(v); return `Text size set to ${v}` }
+    if (action.kind === 'cursor-size') { const v = action.value as CursorScale | null; if (!v || !cursorScales.includes(v)) return null; setCursorScale(v); return `Pointer size set to ${v}` }
+    onNavigate('workspace')
+    return 'Opened the full Ask Intros workspace'
+  }
+  return <div className="ix-assistant">
+    <CapabilityWorkspaceHost />
+    <AskIntrosDock page={page} peopleNames={people.map(p => p.name)} memberName={net.profile.name}
+      briefing={false} contextPanel={false} run={run} />
+  </div>
+}
+
+
 
 /* --------------------------------------------------------------------- hubs */
 
