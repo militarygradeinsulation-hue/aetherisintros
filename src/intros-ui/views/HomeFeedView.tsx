@@ -91,6 +91,8 @@ export const HomeFeedView: React.FC<HomeFeedViewProps> = ({
     } catch {}
     return defaultBoard;
   });
+  const [narrow, setNarrow] = useState(false);
+  React.useEffect(() => { const q = window.matchMedia('(max-width: 640px)'); const f = () => setNarrow(q.matches); f(); q.addEventListener('change', f); return () => q.removeEventListener('change', f); }, []);
   const saveBoard = (next: WidgetItem[]) => { try { localStorage.setItem('intros.home.board.v2', JSON.stringify(next)); } catch {} };
   const widgets: Record<string, React.ReactNode> = {
     network: (
@@ -490,7 +492,7 @@ export const HomeFeedView: React.FC<HomeFeedViewProps> = ({
         <DraggableWidgetGrid
           items={boardItems}
           onChange={saveBoard}
-          maxColumns={4}
+          maxColumns={narrow ? 1 : 4}
           cellSize={300}
           gap={16}
           radius={12}
