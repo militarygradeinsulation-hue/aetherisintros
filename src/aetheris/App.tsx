@@ -2348,7 +2348,7 @@ export function AetherisAssistant({ mode = 'live', page, onNavigate }: { mode?: 
 
 function AssistantLayer({ page, onNavigate }: { page: string; onNavigate: (page: string) => void }) {
   const net = useNetwork()
-  const people = net.people
+  const people = net.members
   const shellPages: Record<string, string> = { home: 'home', network: 'bubbles', people: 'people', discover: 'people', intros: 'intros', messages: 'messages', news: 'news', insights: 'insights' }
   useEffect(() => {
     const go = () => onNavigate('workspace')
@@ -2368,7 +2368,7 @@ function AssistantLayer({ page, onNavigate }: { page: string; onNavigate: (page:
   }
   return <div className="ix-assistant">
     <CapabilityWorkspaceHost />
-    <AskIntrosDock page={page} peopleNames={people.map(p => p.name)} memberName={net.me?.name ?? 'member'}
+    <AskIntrosDock page={page} peopleNames={people.map(p => p.name)} memberName={net.profile.name}
       briefing={false} contextPanel={false} run={run} />
   </div>
 }
