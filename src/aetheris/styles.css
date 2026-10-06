@@ -4987,3 +4987,18 @@ button.news-link{background:none;border:0;padding:0;cursor:pointer}
 .auth-parallax-ring{position:absolute;left:50%;top:50%;width:min(72%,560px);aspect-ratio:1;transform:translate(-50%,-50%);border:1px solid var(--line-dark);border-radius:50%;pointer-events:none;will-change:transform}
 .auth-parallax-ring--inner{width:min(44%,340px);border-color:color-mix(in oklab,var(--cobalt) 45%,transparent)}
 .auth-visual [data-parallax-layer]{will-change:transform}
+
+/* Serenity ambient layer (landing) */
+.serenity-glow{position:fixed;z-index:60;width:520px;height:520px;border-radius:50%;pointer-events:none;opacity:0;transform:translate(-50%,-50%);background:radial-gradient(circle,rgba(15,92,203,.10),rgba(15,92,203,.05) 40%,transparent 70%);transition:left 70ms linear,top 70ms linear,opacity .3s ease-out;will-change:left,top,opacity}
+.serenity-ripple{position:fixed;z-index:60;width:6px;height:6px;border-radius:50%;pointer-events:none;transform:translate(-50%,-50%);background:rgba(244,161,37,.55);animation:serenity-pulse .9s ease-out forwards}
+@keyframes serenity-pulse{0%{opacity:.6;transform:translate(-50%,-50%) scale(1)}100%{opacity:0;transform:translate(-50%,-50%) scale(14)}}
+
+/* Staggered word reveal */
+.word-animate{display:inline-block;opacity:0;animation:word-appear .8s ease-out forwards}
+@keyframes word-appear{0%{opacity:0;transform:translateY(26px) scale(.92);filter:blur(8px)}60%{opacity:.85;filter:blur(2px)}100%{opacity:1;transform:translateY(0) scale(1);filter:blur(0)}}
+
+/* Spotlight hover on capability cards (Spline card concept, no Spline dep) */
+.lv-cap-grid article{position:relative;overflow:hidden}
+.lv-cap-grid article:before{content:'';position:absolute;inset:0;pointer-events:none;opacity:0;transition:opacity .35s ease;background:radial-gradient(320px circle at var(--spot-x,50%) var(--spot-y,0%),rgba(15,92,203,.14),transparent 65%)}
+.lv-cap-grid article:hover:before{opacity:1}
+@media (prefers-reduced-motion:reduce){.word-animate{animation:none;opacity:1}.serenity-glow,.serenity-ripple{display:none}}

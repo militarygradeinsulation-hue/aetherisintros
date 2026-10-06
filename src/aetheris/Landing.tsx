@@ -109,7 +109,7 @@ function LandingPage({ signedIn }: { signedIn: boolean }) {
         <ParticleDrift className="lv-hero-drift" />
         <div className="lv-hero-copy">
           <AskIntrosLockup variant="hero" />
-          <h1 className="lv-hero-words"><span className="word-animate" data-delay="100">Join</span> <span className="word-animate" data-delay="260">the</span> <em className="word-animate" data-delay="420">whitelist.</em></h1>
+          <h1 className="lv-hero-words"><span className="word-animate" style={{ animationDelay: '100ms' }}>Join</span> <span className="word-animate" style={{ animationDelay: '260ms' }}>the</span> <em className="word-animate" style={{ animationDelay: '420ms' }}>whitelist.</em></h1>
           <ScarcityLine label="LAUNCHING SOON — FOUNDING PLACES ALMOST FILLED" tone="dark" />
           <div className="lv-hero-actions">
             {demoBtn('Demo the system', 'btn ghost')}
