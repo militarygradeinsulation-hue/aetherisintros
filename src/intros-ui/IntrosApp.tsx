@@ -26,6 +26,7 @@ import { ScheduleMeetingModal } from './components/modals/ScheduleMeetingModal';
 import { FloatingConnectionField } from './components/shared/FloatingConnectionField';
 import { X, Orbit } from 'lucide-react';
 import ClassicApp, { AetherisAssistant } from '@/aetheris/App';
+import { LiveMessagesView } from './views/LiveMessagesView';
 import '@/aetheris/styles.css';
 import { useAetherisNews } from '@/aetheris/news';
 import { LiveMembers } from './liveMembers';
@@ -251,7 +252,7 @@ export default function App({ mode = 'demo' }: { mode?: 'demo' | 'live' }) {
           />
         )}
 
-        {mode === 'live' && activePage === 'messages' && <div className="ix-classic"><ClassicApp key="live-messages" mode={mode} startPage="messages" /></div>}
+        {mode === 'live' && activePage === 'messages' && <LiveMessagesView />}
         {mode !== 'live' && activePage === 'messages' && (
           <MessagesView
             conversations={conversations}

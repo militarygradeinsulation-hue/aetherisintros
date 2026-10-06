@@ -48,14 +48,14 @@ export const TopNavigation: React.FC<TopNavigationProps> = ({
         <nav className="flex-1 min-w-0 flex items-center gap-4 md:gap-6 overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden py-1">
           {[
             { id: 'home', label: 'Home' },
+            { id: 'news', label: 'News' },
             { id: 'people', label: 'People' },
-            { id: 'bubbles', label: 'Connection Bubbles', isBubbles: true },
             { id: 'intros', label: 'Intros' },
             { id: 'messages', label: 'Messages', badge: unreadCount },
+            { id: 'work', label: 'Work' },
             { id: 'memory', label: 'Memory' },
             { id: 'insights', label: 'Insights' },
-            { id: 'news', label: 'News' },
-            { id: 'work', label: 'Work' },
+            { id: 'bubbles', label: 'Bubbles', isBubbles: true },
             { id: 'workspace', label: 'Ask Intros', isBubbles: true },
           ].map((item) => {
             const isActive = activePage === item.id;

@@ -155,7 +155,7 @@ export const HomeFeedView: React.FC<HomeFeedViewProps> = ({
                   </button>
                 </div>
                 <span className="text-[11px] font-mono text-[#3D6BF2] bg-[#3D6BF2]/10 border border-[#3D6BF2]/20 px-2 py-0.5 rounded font-medium">
-                  {heroVisualMode === 'bubbles' ? 'Interactive Physics' : `${elena.matchScore}% Match`}
+                  {heroVisualMode === 'bubbles' ? 'Live Network' : `${elena.matchScore}% Match`}
                 </span>
               </div>
 
