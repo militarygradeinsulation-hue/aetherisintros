@@ -53,6 +53,7 @@ export default function MetroHero({
   const progressBarRef = useRef<HTMLDivElement>(null)
   const onCompleteRef = useRef(onComplete)
   onCompleteRef.current = onComplete
+  const finishRef = useRef<() => void>(() => {})
   const [ready, setReady] = useState(false)
 
   useEffect(() => {
@@ -82,6 +83,7 @@ export default function MetroHero({
       releaseLock()
       onCompleteRef.current?.()
     }
+    finishRef.current = finish
 
     const onLoadedData = () => {
       duration = video.duration || 0
