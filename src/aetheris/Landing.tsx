@@ -62,7 +62,7 @@ function LandingPage({ signedIn }: { signedIn: boolean }) {
 
   return (
     <main className="lv">
-      {!introGone && (
+      {introChecked && !introGone && (
         <div
           aria-hidden={introDone}
           style={{
