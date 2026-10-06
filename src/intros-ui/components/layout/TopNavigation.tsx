@@ -33,7 +33,8 @@ export const TopNavigation: React.FC<TopNavigationProps> = ({
 }) => {
   return (
     <header className="sticky top-0 z-50 w-full bg-[#07090C]/95 backdrop-blur-md border-b border-white/10 px-2 sm:px-4 md:px-6 py-2.5 transition-colors print:hidden">
-      <div className="max-w-[1600px] mx-auto flex items-center gap-2 md:gap-4">
+      <div className="max-w-[1600px] mx-auto flex flex-wrap items-center gap-x-2 gap-y-1">
+
         {/* Zone 1: Brand Wordmark */}
         <div className="shrink-0">
           <button
