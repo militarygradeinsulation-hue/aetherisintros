@@ -43,6 +43,7 @@ function NewsTicker({ onOpen }: { onOpen: () => void }) {
 
 export default function App({ mode = 'demo' }: { mode?: 'demo' | 'live' }) {
   const [activePage, setActivePage] = useState<ActivePage>('home');
+  const [classicPage, setClassicPage] = useState<string>('memory');
   const [selectedProfileId, setSelectedProfileId] = useState<string>('marcus-lee');
   const [members, setMembers] = useState<NetworkMember[]>(NETWORK_MEMBERS);
   const [feedPosts, setFeedPosts] = useState<FeedPost[]>(INITIAL_FEED_POSTS);
@@ -264,7 +265,13 @@ export default function App({ mode = 'demo' }: { mode?: 'demo' | 'live' }) {
         )}
 
         {activePage === 'news' && <div className="ix-classic"><ClassicApp key="news" mode={mode} startPage="news" /></div>}
-        {activePage === 'workspace' && <div className="ix-classic"><ClassicApp key="ws" mode={mode} startPage="home" /></div>}
+        {activePage === 'workspace' && <div className="ix-classic">
+          <div className="ix-tools">
+            {([['memory','Memory'],['crm','CRM'],['diagnostic','Company report'],['pocket','Pocket'],['needs','Needs'],['companies','Companies'],['opportunities','Opportunities'],['calendar','Calendar'],['grid','Grid'],['circles','Circles'],['events','Events'],['profile','My profile'],['preferences','Settings']] as const).map(([id, label]) =>
+              <button key={id} className={classicPage === id ? 'on' : ''} onClick={() => setClassicPage(id)}>{label}</button>)}
+          </div>
+          <ClassicApp key={classicPage} mode={mode} startPage={classicPage as any} />
+        </div>}
         {activePage === 'intros' && (
           <IntrosHubView
             introRequests={introRequests}
