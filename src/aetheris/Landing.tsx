@@ -66,6 +66,11 @@ function Capabilities() {
         key={id}
         className={`${featured ? 'featured' : ''} ${wide ? 'wide' : ''}`}
         style={{ '--cap-index': index } as React.CSSProperties}
+        onMouseMove={e => {
+          const r = e.currentTarget.getBoundingClientRect()
+          e.currentTarget.style.setProperty('--spot-x', `${e.clientX - r.left}px`)
+          e.currentTarget.style.setProperty('--spot-y', `${e.clientY - r.top}px`)
+        }}
       >
         <CapabilityVisual visual={visual} />
         <div className="lv-cap-copy"><h3><Icon size={18} />{title}</h3><p>{copy}</p></div>
