@@ -4900,3 +4900,4 @@ button.news-link{background:none;border:0;padding:0;cursor:pointer}
 .social-shell ::-webkit-scrollbar-track{background:#07090C}
 .social-shell ::-webkit-scrollbar-thumb{background:rgba(255,255,255,.15);border-radius:3px}
 @media (prefers-reduced-motion:reduce){.social-shell :is(.feed-card,.social-card,.ops-card):hover{transform:none}}
+.social-shell .premium-home-copy h1{color:var(--ink);opacity:1}
