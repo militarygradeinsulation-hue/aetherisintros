@@ -4902,3 +4902,4 @@ button.news-link{background:none;border:0;padding:0;cursor:pointer}
 @media (prefers-reduced-motion:reduce){.social-shell :is(.feed-card,.social-card,.ops-card):hover{transform:none}}
 .social-shell .premium-home-copy h1{color:var(--ink);opacity:1}
 @media (min-width:681px){.social-shell .premium-home-copy h1{font:500 clamp(56px,5.4vw,96px)/.9 var(--serif);max-width:9ch}}
+.social-shell .premium-home-copy h1 em{font-size:inherit;color:#3D6BF2}
