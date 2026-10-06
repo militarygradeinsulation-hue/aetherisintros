@@ -1,4 +1,4 @@
-import { ArrowRight, BrainCircuit, Globe2, LayoutGrid, LockKeyhole, ShieldCheck, Smartphone, Zap } from 'lucide-react'
+import { ArrowRight } from 'lucide-react'
 import { Link } from '@tanstack/react-router'
 import landingPortraitAsset from '@/assets/aetheris-home-portrait.jpg.asset.json'
 import showcaseAsset from '@/assets/one-connected-system.png.asset.json'
@@ -25,59 +25,6 @@ function ScarcityLine({ label, tone = 'light' }: { label: string; tone?: 'light'
   </div>
 }
 
-
-type CapabilityCard = {
-  id: string
-  icon: typeof BrainCircuit
-  title: string
-  copy: string
-  visual: 'memory' | 'layout' | 'network' | 'signal' | 'security' | 'mobile'
-  featured?: boolean
-  wide?: boolean
-}
-
-const capabilityCards: CapabilityCard[] = [
-  { id: 'context', icon: BrainCircuit, title: 'Active Memory', copy: 'Living context that remembers what matters across relationships, asks and conversations.', visual: 'memory', featured: true },
-  { id: 'adapt', icon: LayoutGrid, title: 'One adaptive workspace', copy: 'Social View, CRM, Grid and Calendar move as one connected system.', visual: 'layout' },
-  { id: 'network', icon: Globe2, title: 'Relationship network', copy: 'See the people, warm paths and mutual context already around you.', visual: 'network', featured: true },
-  { id: 'timing', icon: Zap, title: 'Why now', copy: 'Timely signals surface the conversations and opportunities ready for action.', visual: 'signal' },
-  { id: 'trust', icon: ShieldCheck, title: 'Trust by design', copy: 'Verified membership, private defaults and double opt-in introductions.', visual: 'security', wide: true },
-  { id: 'mobile', icon: Smartphone, title: 'Ready wherever you lead', copy: 'A focused operating view that stays useful on every screen.', visual: 'mobile', wide: true },
-] 
-
-function CapabilityVisual({ visual }: { visual: typeof capabilityCards[number]['visual'] }) {
-  if (visual === 'memory') return <div className="lv-cap-type" aria-hidden="true"><span>Who</span><em>Why</em><b>Now</b></div>
-  if (visual === 'layout') return <div className="lv-cap-layout" aria-hidden="true"><i /><i /><i /></div>
-  if (visual === 'network') return <div className="lv-cap-network" aria-hidden="true"><Globe2 /><i /><i /><i /><i /></div>
-  if (visual === 'signal') return <div className="lv-cap-speed" aria-hidden="true"><strong>NOW</strong><span><i /></span></div>
-  if (visual === 'security') return <div className="lv-cap-locks" aria-hidden="true"><span><LockKeyhole /></span><span><LockKeyhole /></span><span><LockKeyhole /></span></div>
-  return <div className="lv-cap-phone" aria-hidden="true"><Smartphone /><span /></div>
-}
-
-function Capabilities() {
-  return <section className="lv-capabilities" aria-labelledby="capabilities-title">
-    <header>
-      <span>ONE CONNECTED SYSTEM</span>
-      <h2 id="capabilities-title">Built around the way relationships <em>actually move.</em></h2>
-      <p>Not another wall of disconnected tools. Ask Intros keeps people, context, timing and action together.</p>
-    </header>
-    <div className="lv-cap-grid">
-      {capabilityCards.map(({ id, icon: Icon, title, copy, visual, featured, wide }, index) => <article
-        key={id}
-        className={`${featured ? 'featured' : ''} ${wide ? 'wide' : ''}`}
-        style={{ '--cap-index': index } as React.CSSProperties}
-        onMouseMove={e => {
-          const r = e.currentTarget.getBoundingClientRect()
-          e.currentTarget.style.setProperty('--spot-x', `${e.clientX - r.left}px`)
-          e.currentTarget.style.setProperty('--spot-y', `${e.clientY - r.top}px`)
-        }}
-      >
-        <CapabilityVisual visual={visual} />
-        <div className="lv-cap-copy"><h3><Icon size={18} />{title}</h3><p>{copy}</p></div>
-      </article>)}
-    </div>
-  </section>
-}
 
 function LandingPage({ signedIn }: { signedIn: boolean }) {
   const showDemo = !signedIn
@@ -155,7 +102,6 @@ function LandingPage({ signedIn }: { signedIn: boolean }) {
         </div>
       </section>
 
-      <Capabilities />
     </main>
   )
 }
