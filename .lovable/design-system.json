@@ -2,13 +2,16 @@
   "meta": {
     "name": "Ask Intros",
     "package": "@ws-gmhcx8w6bqvecbtkycud/c1248cd8-77de-4eaa-8d9d-e7da71e70ae9",
-    "version": "8.0.0",
+    "version": "9.0.0",
     "framework": "react",
     "css_framework": "tailwind",
     "starter_template": "custom_design_system_tailwind",
+    "theme_files": [
+      "src/styles.css"
+    ],
     "source_type": "local",
     "source_manifest": {
-      "#enrichment": "3485868929a8a9f8d76c87c2576b0cfc019b0b4dea19510e664335a980d41ecf",
+      "#enrichment": "0cf12071e1d2bb38a7c40333a67e641a4ca5978ac9f08c9a081ea1ba4ce23500",
       ".dsignore": "3ce14d364a617d7621aa8aff60f95fd0",
       ".gitignore": "6d9e901a692b46a83707c245fb03bc91",
       ".lovable/mcp/manifest.json": "ade9427a88b17f2d32b802a80d39e3d6",
@@ -393,7 +396,7 @@
       "src/components/ui/tooltip.tsx": "67d71db5a1ab935695d1def497f5b8a6",
       "src/components/ui/widget-board.tsx": "29c6852c44578b12f95ab23ee397b285",
       "src/hooks/use-mobile.tsx": "c0a0bdd4638c391a1dd06ac82074e60b",
-      "src/index.ts": "049d698492e59a2f98bb0d08d0a7635c",
+      "src/index.ts": "5d89b7a5f4d5782366189cb31fc572ad",
       "src/integrations/lovable/index.ts": "e9cf6e6968dd0392b2222ee0745ecece",
       "src/integrations/supabase/auth-attacher.ts": "dad043cda134d909e52de0346c16625e",
       "src/integrations/supabase/auth-middleware.ts": "eabaf8c8ba32205717921ce5f255185e",
@@ -430,7 +433,7 @@
       "src/intros-ui/components/UtilitiesModal.tsx": "58098719e6019a0548c19fd2017aedc1",
       "src/intros-ui/components/insights/ActivityHeatmap.tsx": "f8b258b1af563c737d1082298d5f93c6",
       "src/intros-ui/components/layout/EditorialFooter.tsx": "f71c1afa9fb2f56a7a87cf1961a0153e",
-      "src/intros-ui/components/layout/TopNavigation.tsx": "32d12efc23b9a5ab67b2e6d275593504",
+      "src/intros-ui/components/layout/TopNavigation.tsx": "4bded56d3bce6120a64dcf285e6105f6",
       "src/intros-ui/components/modals/RequestIntroModal.tsx": "29d9650ce8a5f829545cfdec03e644fd",
       "src/intros-ui/components/modals/ReviewIntroModal.tsx": "a19a3d38b1039fa96e3a0032038a24c4",
       "src/intros-ui/components/modals/ScheduleMeetingModal.tsx": "4d643d92daf56b8cb7858cb02f2cd0ca",
@@ -449,13 +452,13 @@
       "src/intros-ui/types.ts": "d683d7478b160463096c655ae6d4afa0",
       "src/intros-ui/utils/calendarScanner.ts": "daf7ceb12c426c0a30381864e90ca9fb",
       "src/intros-ui/utils/reportExport.ts": "b024b0625ee96069f9106afe24330c5f",
-      "src/intros-ui/views/ConnectionBubblesView.tsx": "123b19315c1d29bccfafe25b0bba86fe",
-      "src/intros-ui/views/HomeFeedView.tsx": "cb6f1502d5abfb20926d0de076285975",
+      "src/intros-ui/views/ConnectionBubblesView.tsx": "982fc107e530bee9deb9224c4c1fa08d",
+      "src/intros-ui/views/HomeFeedView.tsx": "c0f9ed0f59bd095f4cf84a655ccecd23",
       "src/intros-ui/views/InsightsDashboardView.tsx": "163014fd31ce363a140c11b0f843644d",
       "src/intros-ui/views/IntrosHubView.tsx": "6b451a4063de933ea77440992026d5ef",
       "src/intros-ui/views/LiveMessagesView.tsx": "ba47e9cf0df6bd544e561e317844eff0",
       "src/intros-ui/views/MessagesView.tsx": "5f072c6e9b39f6bf52599aa0505ae0ec",
-      "src/intros-ui/views/PeopleDirectoryView.tsx": "b72f21a9bbc4af1887e905e7fac687fa",
+      "src/intros-ui/views/PeopleDirectoryView.tsx": "665305b38fbe3b16c36593b266ec3e3a",
       "src/intros-ui/views/ProfileDetailView.tsx": "4b778c326696430e1677253f31e234be",
       "src/lib/askIntros.functions.ts": "f7d402ab776ec12e44da20926704abf4",
       "src/lib/auth-contract.ts": "90932e7eaa89ad3523bc0528bc4e9e8b",
@@ -517,7 +520,7 @@
       "src/routes/sitemap[.]xml.ts": "85504a5024597922e1b8ccdf7c496463",
       "src/server.ts": "c7bbc49bb70e318af618d92775ee0f27",
       "src/start.ts": "fbaa593787694302791ce8d5c4d1c963",
-      "src/styles.css": "76143548bd42108fa6b8007cf2f3a262",
+      "src/styles.css": "ace53bf071d48d8bf0458371b48ee999",
       "supabase/config.toml": "fcc7b6e985b6c429faf40b3f597453ca",
       "supabase/migrations/20260910113730_4c27fcc9-e697-4980-b6b5-ae8a6335698e.sql": "7c5c68e676fb93e2d9bffc326451d9ae",
       "supabase/migrations/20260910113752_7d30e7f1-9bf7-4ab1-b183-72e0cf707754.sql": "29f2302daaed34ad710a691312808c9b",
@@ -543,7 +546,197 @@
     },
     "pipeline_version": 8
   },
-  "tokens": {},
+  "tokens": {
+    "color": [
+      {
+        "name": "--card",
+        "raw": "oklch(1 0 0)",
+        "source": "src/styles.css"
+      },
+      {
+        "name": "--card-foreground",
+        "raw": "oklch(0.129 0.042 264.695)",
+        "source": "src/styles.css"
+      },
+      {
+        "name": "--popover",
+        "raw": "oklch(1 0 0)",
+        "source": "src/styles.css"
+      },
+      {
+        "name": "--popover-foreground",
+        "raw": "oklch(0.129 0.042 264.695)",
+        "source": "src/styles.css"
+      },
+      {
+        "name": "--primary",
+        "raw": "oklch(0.208 0.042 265.755)",
+        "source": "src/styles.css"
+      },
+      {
+        "name": "--primary-foreground",
+        "raw": "oklch(0.984 0.003 247.858)",
+        "source": "src/styles.css"
+      },
+      {
+        "name": "--secondary",
+        "raw": "oklch(0.968 0.007 247.896)",
+        "source": "src/styles.css"
+      },
+      {
+        "name": "--secondary-foreground",
+        "raw": "oklch(0.208 0.042 265.755)",
+        "source": "src/styles.css"
+      },
+      {
+        "name": "--muted",
+        "raw": "oklch(0.968 0.007 247.896)",
+        "source": "src/styles.css"
+      },
+      {
+        "name": "--muted-foreground",
+        "raw": "oklch(0.554 0.046 257.417)",
+        "source": "src/styles.css"
+      },
+      {
+        "name": "--accent",
+        "raw": "oklch(0.968 0.007 247.896)",
+        "source": "src/styles.css"
+      },
+      {
+        "name": "--accent-foreground",
+        "raw": "oklch(0.208 0.042 265.755)",
+        "source": "src/styles.css"
+      },
+      {
+        "name": "--destructive",
+        "raw": "oklch(0.577 0.245 27.325)",
+        "source": "src/styles.css"
+      },
+      {
+        "name": "--destructive-foreground",
+        "raw": "oklch(0.984 0.003 247.858)",
+        "source": "src/styles.css"
+      },
+      {
+        "name": "--border",
+        "raw": "oklch(0.929 0.013 255.508)",
+        "source": "src/styles.css"
+      },
+      {
+        "name": "--input",
+        "raw": "oklch(0.929 0.013 255.508)",
+        "source": "src/styles.css"
+      },
+      {
+        "name": "--ring",
+        "raw": "oklch(0.704 0.04 256.788)",
+        "source": "src/styles.css"
+      },
+      {
+        "name": "--chart-1",
+        "raw": "oklch(0.646 0.222 41.116)",
+        "source": "src/styles.css"
+      },
+      {
+        "name": "--chart-2",
+        "raw": "oklch(0.6 0.118 184.704)",
+        "source": "src/styles.css"
+      },
+      {
+        "name": "--chart-3",
+        "raw": "oklch(0.398 0.07 227.392)",
+        "source": "src/styles.css"
+      },
+      {
+        "name": "--chart-4",
+        "raw": "oklch(0.828 0.189 84.429)",
+        "source": "src/styles.css"
+      },
+      {
+        "name": "--chart-5",
+        "raw": "oklch(0.769 0.188 70.08)",
+        "source": "src/styles.css"
+      },
+      {
+        "name": "--sidebar",
+        "raw": "oklch(0.984 0.003 247.858)",
+        "source": "src/styles.css"
+      },
+      {
+        "name": "--sidebar-foreground",
+        "raw": "oklch(0.129 0.042 264.695)",
+        "source": "src/styles.css"
+      },
+      {
+        "name": "--sidebar-primary",
+        "raw": "oklch(0.208 0.042 265.755)",
+        "source": "src/styles.css"
+      },
+      {
+        "name": "--sidebar-primary-foreground",
+        "raw": "oklch(0.984 0.003 247.858)",
+        "source": "src/styles.css"
+      },
+      {
+        "name": "--sidebar-accent",
+        "raw": "oklch(0.968 0.007 247.896)",
+        "source": "src/styles.css"
+      },
+      {
+        "name": "--sidebar-accent-foreground",
+        "raw": "oklch(0.208 0.042 265.755)",
+        "source": "src/styles.css"
+      },
+      {
+        "name": "--sidebar-border",
+        "raw": "oklch(0.929 0.013 255.508)",
+        "source": "src/styles.css"
+      },
+      {
+        "name": "--sidebar-ring",
+        "raw": "oklch(0.704 0.04 256.788)",
+        "source": "src/styles.css"
+      }
+    ],
+    "radius": [
+      {
+        "name": "--radius-sm",
+        "raw": "calc(var(--radius) - 4px)",
+        "source": "src/styles.css"
+      },
+      {
+        "name": "--radius-md",
+        "raw": "calc(var(--radius) - 2px)",
+        "source": "src/styles.css"
+      },
+      {
+        "name": "--radius-xl",
+        "raw": "calc(var(--radius) + 4px)",
+        "source": "src/styles.css"
+      },
+      {
+        "name": "--radius-2xl",
+        "raw": "calc(var(--radius) + 8px)",
+        "source": "src/styles.css"
+      },
+      {
+        "name": "--radius-3xl",
+        "raw": "calc(var(--radius) + 12px)",
+        "source": "src/styles.css"
+      },
+      {
+        "name": "--radius-4xl",
+        "raw": "calc(var(--radius) + 16px)",
+        "source": "src/styles.css"
+      },
+      {
+        "name": "--radius",
+        "raw": "0.625rem",
+        "source": "src/styles.css"
+      }
+    ]
+  },
   "components": [
     {
       "name": "AetherisAssistant",
