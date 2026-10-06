@@ -21,6 +21,9 @@ import { ExecutivePortrait } from '../components/shared/ExecutivePortrait';
 import { ConstellationGraphic } from '../components/shared/ConstellationGraphic';
 import { FloatingConnectionField } from '../components/shared/FloatingConnectionField';
 import { ActivePage } from '../components/layout/TopNavigation';
+import { DraggableWidgetGrid, type WidgetItem } from '@/components/ui/widget-board';
+
+const widgetIds = new Set(['network','explore','introduce','need','ask','sectors','events','circles','whynow']);
 
 interface HomeFeedViewProps {
   posts: FeedPost[];
@@ -68,6 +71,239 @@ export const HomeFeedView: React.FC<HomeFeedViewProps> = ({
     setCirclesList((prev) =>
       prev.map((c) => (c.id === circleId ? { ...c, isJoined: !c.isJoined } : c))
     );
+  };
+
+  const defaultBoard: WidgetItem[] = [
+    { id: 'network', size: 'tall', label: 'Your Network card' },
+    { id: 'explore', size: 'sm', label: 'Explore card' },
+    { id: 'introduce', size: 'sm', label: 'Introduce a colleague callout' },
+    { id: 'need', size: 'sm', label: 'What do you need right now' },
+    { id: 'ask', size: 'sm', label: 'Ask Intros' },
+    { id: 'sectors', size: 'tall', label: 'Trending Sectors' },
+    { id: 'events', size: 'wide', label: 'Upcoming Business Events' },
+    { id: 'circles', size: 'sm', label: 'Suggested Circles' },
+    { id: 'whynow', size: 'sm', label: 'Why now' }
+  ];
+  const [boardItems] = useState<WidgetItem[]>(() => {
+    try {
+      const saved = JSON.parse(localStorage.getItem('intros.home.board') || 'null');
+      if (Array.isArray(saved) && saved.length === defaultBoard.length && saved.every((x) => widgetIds.has(x.id))) return saved;
+    } catch {}
+    return defaultBoard;
+  });
+  const saveBoard = (next: WidgetItem[]) => { try { localStorage.setItem('intros.home.board', JSON.stringify(next)); } catch {} };
+  const widgets: Record<string, React.ReactNode> = {
+    network: (
+          <div className="bg-[#0E121A] border border-white/10 rounded-xl p-4 space-y-4">
+            <div className="text-[11px] font-mono tracking-widest uppercase text-[#9CA3AF] font-semibold">
+              Your Network
+            </div>
+            <nav className="space-y-1 text-xs">
+              <button
+                onClick={() => setFeedFilter('forYou')}
+                className={`w-full flex items-center justify-between px-3 py-2 rounded-lg transition-colors cursor-pointer ${
+                  feedFilter === 'forYou' ? 'bg-[#3D6BF2]/20 text-[#60A5FA] font-semibold' : 'text-[#9CA3AF] hover:bg-white/5 hover:text-white'
+                }`}
+              >
+                <span className="flex items-center gap-2.5">
+                  <Users className="w-4 h-4" />
+                  Feed
+                </span>
+              </button>
+              <button
+                onClick={() => onNavigate('people')}
+                className="w-full flex items-center justify-between px-3 py-2 rounded-lg text-[#9CA3AF] hover:bg-white/5 hover:text-white transition-colors cursor-pointer"
+              >
+                <span className="flex items-center gap-2.5">
+                  <Globe className="w-4 h-4" />
+                  My Connections
+                </span>
+                <span className="text-[10px] font-mono text-[#6B7280]">1,246</span>
+              </button>
+              <button
+                onClick={() => onNavigate('intros')}
+                className="w-full flex items-center justify-between px-3 py-2 rounded-lg text-[#9CA3AF] hover:bg-white/5 hover:text-white transition-colors cursor-pointer"
+              >
+                <span className="flex items-center gap-2.5">
+                  <Sparkles className="w-4 h-4" />
+                  My Introduction Requests
+                </span>
+                <span className="text-[10px] font-mono px-1.5 py-0.5 rounded-full bg-[#3D6BF2] text-white font-semibold">
+                  3
+                </span>
+              </button>
+              <button
+                onClick={() => setFeedFilter('network')}
+                className="w-full flex items-center justify-between px-3 py-2 rounded-lg text-[#9CA3AF] hover:bg-white/5 hover:text-white transition-colors cursor-pointer"
+              >
+                <span className="flex items-center gap-2.5">
+                  <Bookmark className="w-4 h-4" />
+                  Saved
+                </span>
+              </button>
+            </nav>
+          </div>
+    ),
+    explore: (
+          <div className="bg-[#0E121A] border border-white/10 rounded-xl p-4 space-y-3">
+            <div className="text-[11px] font-mono tracking-widest uppercase text-[#9CA3AF] font-semibold">
+              Explore
+            </div>
+            <nav className="space-y-1 text-xs">
+              <button
+                onClick={() => onNavigate('people')}
+                className="w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-[#9CA3AF] hover:bg-white/5 hover:text-white transition-colors cursor-pointer"
+              >
+                <Users className="w-4 h-4" />
+                Discover People
+              </button>
+              <button
+                onClick={() => onNavigate('insights')}
+                className="w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-[#9CA3AF] hover:bg-white/5 hover:text-white transition-colors cursor-pointer"
+              >
+                <Layers className="w-4 h-4" />
+                Trending Sectors
+              </button>
+              <button
+                onClick={() => onNavigate('insights')}
+                className="w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-[#9CA3AF] hover:bg-white/5 hover:text-white transition-colors cursor-pointer"
+              >
+                <TrendingUp className="w-4 h-4" />
+                Content & Insights
+              </button>
+            </nav>
+          </div>
+    ),
+    introduce: (
+          <div
+            onClick={() => onNavigate('intros')}
+            className="p-4 rounded-xl border border-[#3D6BF2]/30 bg-gradient-to-br from-[#121A2C] to-[#0A0D15] cursor-pointer hover:border-[#3D6BF2] transition-colors group"
+          >
+            <div className="flex items-center justify-between text-xs font-semibold text-white mb-1">
+              <span>Introduce a colleague</span>
+              <ArrowRight className="w-3.5 h-3.5 text-[#3D6BF2] group-hover:translate-x-1 transition-transform" />
+            </div>
+            <p className="text-[11px] text-[#9CA3AF]">
+              Help your network grow stronger with high-value warm introductions.
+            </p>
+          </div>
+    ),
+    need: (
+          <div className="bg-[#0E121A] border border-white/10 rounded-xl p-4 space-y-3">
+            <div className="text-[11px] font-mono tracking-widest uppercase text-[#9CA3AF] font-semibold">What do you need right now?</div>
+            <p className="text-[11px] text-[#9CA3AF]">Post an ask — a hire, an investor, a customer. Intros finds the people who can help.</p>
+            <div className="flex flex-wrap gap-1.5">
+              {['Hiring', 'Fundraising', 'Customers', 'Advisors'].map((t) => (
+                <button key={t} onClick={() => onNavigate('people')} className="text-[11px] px-2.5 py-1 rounded-full border border-white/10 text-[#F2EEE6] hover:border-[#3D6BF2] cursor-pointer">{t}</button>
+              ))}
+            </div>
+          </div>
+    ),
+    ask: (
+          <div onClick={() => onNavigate('workspace')} className="p-4 rounded-xl border border-white/10 bg-[#0B0D0F] cursor-pointer hover:border-[#3D6BF2] transition-colors">
+            <div className="text-[11px] font-mono tracking-widest uppercase text-[#F4A125] font-semibold mb-1">Ask Intros</div>
+            <p className="text-xs text-[#F2EEE6]">"Who in my network can open a door at a Fortune 500 buyer?"</p>
+          </div>
+    ),
+    sectors: (
+          <div className="bg-[#0E121A] border border-white/10 rounded-xl p-4 space-y-3">
+            <div className="flex items-center justify-between text-[11px] font-mono tracking-widest uppercase text-[#9CA3AF] font-semibold">
+              <span>Trending Sectors</span>
+              <button
+                onClick={() => onNavigate('insights')}
+                className="text-[#3D6BF2] hover:underline cursor-pointer"
+              >
+                View All
+              </button>
+            </div>
+            <div className="space-y-2">
+              {TRENDING_SECTORS.map((sector) => (
+                <div
+                  key={sector.id}
+                  onClick={() => onNavigate('people')}
+                  className="flex items-center justify-between py-1 text-xs text-[#E2E8F0] hover:text-[#3D6BF2] transition-colors cursor-pointer"
+                >
+                  <span className="flex items-center gap-2">
+                    <span className="w-4 h-4 rounded-full bg-white/5 text-[10px] flex items-center justify-center font-mono text-[#9CA3AF]">
+                      {sector.rank}
+                    </span>
+                    <span>{sector.name}</span>
+                  </span>
+                  <TrendingUp className="w-3 h-3 text-[#10B981]" />
+                </div>
+              ))}
+            </div>
+          </div>
+    ),
+    events: (
+          <div className="bg-[#0E121A] border border-white/10 rounded-xl p-4 space-y-3">
+            <div className="flex items-center justify-between text-[11px] font-mono tracking-widest uppercase text-[#9CA3AF] font-semibold">
+              <span>Upcoming Business Events</span>
+              <span className="text-[#3D6BF2] text-[10px]">Curated</span>
+            </div>
+            <div className="space-y-3">
+              {eventsList.map((evt) => (
+                <div key={evt.id} className="flex items-start justify-between gap-2 text-xs">
+                  <div className="flex items-start gap-2.5">
+                    <div className="w-9 h-9 rounded bg-[#131722] border border-white/10 flex flex-col items-center justify-center font-mono shrink-0">
+                      <span className="text-[8px] text-[#9CA3AF] leading-none">{evt.dateMonth}</span>
+                      <span className="text-xs font-bold text-white leading-tight">{evt.dateDay}</span>
+                    </div>
+                    <div>
+                      <div className="font-semibold text-white leading-tight">{evt.title}</div>
+                      <div className="text-[11px] text-[#9CA3AF]">{evt.location}</div>
+                    </div>
+                  </div>
+                  <button
+                    onClick={() => toggleEventRegistration(evt.id)}
+                    className={`px-2.5 py-1 text-[11px] font-medium rounded transition-colors cursor-pointer shrink-0 ${
+                      evt.isRegistered
+                        ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30'
+                        : 'bg-[#3D6BF2] hover:bg-[#2563EB] text-white'
+                    }`}
+                  >
+                    {evt.isRegistered ? 'Registered' : 'Register'}
+                  </button>
+                </div>
+              ))}
+            </div>
+          </div>
+    ),
+    circles: (
+          <div className="bg-[#0E121A] border border-white/10 rounded-xl p-4 space-y-3">
+            <div className="flex items-center justify-between text-[11px] font-mono tracking-widest uppercase text-[#9CA3AF] font-semibold">
+              <span>Suggested Circles</span>
+            </div>
+            <div className="space-y-2.5">
+              {circlesList.map((circle) => (
+                <div key={circle.id} className="flex items-center justify-between text-xs">
+                  <div>
+                    <div className="font-medium text-white">{circle.name}</div>
+                    <div className="text-[10px] text-[#9CA3AF]">{circle.count}</div>
+                  </div>
+                  <button
+                    onClick={() => toggleCircleJoin(circle.id)}
+                    className={`px-2.5 py-1 text-[11px] font-medium rounded transition-colors cursor-pointer ${
+                      circle.isJoined
+                        ? 'bg-white/10 text-white'
+                        : 'border border-white/15 hover:border-white/30 text-white'
+                    }`}
+                  >
+                    {circle.isJoined ? 'Joined' : 'Join'}
+                  </button>
+                </div>
+              ))}
+            </div>
+          </div>
+    ),
+    whynow: (
+          <div className="bg-[#0E121A] border border-white/10 rounded-xl p-4 space-y-3">
+            <div className="text-[11px] font-mono tracking-widest uppercase text-[#9CA3AF] font-semibold">Why now</div>
+            <p className="font-serif text-lg leading-snug text-[#F2EEE6]">Know who matters. Know why now.</p>
+            <p className="text-[11px] text-[#9CA3AF]">Intros watches role changes, open asks and cooling conversations so the right moment doesn't pass.</p>
+            <button onClick={() => onNavigate('memory')} className="w-full text-xs font-medium px-3 py-2 rounded-md border border-white/15 hover:border-[#3D6BF2] text-white cursor-pointer">Open Memory</button>
+          </div>
+    )
   };
 
   return (
@@ -244,125 +480,27 @@ export const HomeFeedView: React.FC<HomeFeedViewProps> = ({
       </section>
 
 
-      {/* 3-Column Layout: Left (Network Nav), Center (Feed & Composer), Right (Sectors & Events) */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-        {/* Left Column: Network Hub */}
-        <aside className="lg:col-span-3 space-y-5">
-          {/* Your Network card */}
-          <div className="bg-[#0E121A] border border-white/10 rounded-xl p-4 space-y-4">
-            <div className="text-[11px] font-mono tracking-widest uppercase text-[#9CA3AF] font-semibold">
-              Your Network
-            </div>
-            <nav className="space-y-1 text-xs">
-              <button
-                onClick={() => setFeedFilter('forYou')}
-                className={`w-full flex items-center justify-between px-3 py-2 rounded-lg transition-colors cursor-pointer ${
-                  feedFilter === 'forYou' ? 'bg-[#3D6BF2]/20 text-[#60A5FA] font-semibold' : 'text-[#9CA3AF] hover:bg-white/5 hover:text-white'
-                }`}
-              >
-                <span className="flex items-center gap-2.5">
-                  <Users className="w-4 h-4" />
-                  Feed
-                </span>
-              </button>
-              <button
-                onClick={() => onNavigate('people')}
-                className="w-full flex items-center justify-between px-3 py-2 rounded-lg text-[#9CA3AF] hover:bg-white/5 hover:text-white transition-colors cursor-pointer"
-              >
-                <span className="flex items-center gap-2.5">
-                  <Globe className="w-4 h-4" />
-                  My Connections
-                </span>
-                <span className="text-[10px] font-mono text-[#6B7280]">1,246</span>
-              </button>
-              <button
-                onClick={() => onNavigate('intros')}
-                className="w-full flex items-center justify-between px-3 py-2 rounded-lg text-[#9CA3AF] hover:bg-white/5 hover:text-white transition-colors cursor-pointer"
-              >
-                <span className="flex items-center gap-2.5">
-                  <Sparkles className="w-4 h-4" />
-                  My Introduction Requests
-                </span>
-                <span className="text-[10px] font-mono px-1.5 py-0.5 rounded-full bg-[#3D6BF2] text-white font-semibold">
-                  3
-                </span>
-              </button>
-              <button
-                onClick={() => setFeedFilter('network')}
-                className="w-full flex items-center justify-between px-3 py-2 rounded-lg text-[#9CA3AF] hover:bg-white/5 hover:text-white transition-colors cursor-pointer"
-              >
-                <span className="flex items-center gap-2.5">
-                  <Bookmark className="w-4 h-4" />
-                  Saved
-                </span>
-              </button>
-            </nav>
-          </div>
 
-          {/* Explore card */}
-          <div className="bg-[#0E121A] border border-white/10 rounded-xl p-4 space-y-3">
-            <div className="text-[11px] font-mono tracking-widest uppercase text-[#9CA3AF] font-semibold">
-              Explore
-            </div>
-            <nav className="space-y-1 text-xs">
-              <button
-                onClick={() => onNavigate('people')}
-                className="w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-[#9CA3AF] hover:bg-white/5 hover:text-white transition-colors cursor-pointer"
-              >
-                <Users className="w-4 h-4" />
-                Discover People
-              </button>
-              <button
-                onClick={() => onNavigate('insights')}
-                className="w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-[#9CA3AF] hover:bg-white/5 hover:text-white transition-colors cursor-pointer"
-              >
-                <Layers className="w-4 h-4" />
-                Trending Sectors
-              </button>
-              <button
-                onClick={() => onNavigate('insights')}
-                className="w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-[#9CA3AF] hover:bg-white/5 hover:text-white transition-colors cursor-pointer"
-              >
-                <TrendingUp className="w-4 h-4" />
-                Content & Insights
-              </button>
-            </nav>
-          </div>
+      {/* Movable widget board — drag to rearrange (Alt + arrows on keyboard) */}
+      <section className="space-y-2">
+        <div className="flex items-center justify-between">
+          <div className="text-[11px] font-mono tracking-widest uppercase text-[#9CA3AF] font-semibold">Your board</div>
+          <span className="text-[10px] text-[#6B7280]">Drag widgets to arrange · Alt + arrows on keyboard</span>
+        </div>
+        <DraggableWidgetGrid
+          items={boardItems}
+          onChange={saveBoard}
+          maxColumns={4}
+          cellSize={280}
+          gap={16}
+          radius={12}
+          renderItem={(item) => <div className="h-full w-full overflow-y-auto [&>*]:min-h-full">{widgets[item.id]}</div>}
+        />
+      </section>
 
-          {/* Introduce a colleague callout */}
-          <div
-            onClick={() => onNavigate('intros')}
-            className="p-4 rounded-xl border border-[#3D6BF2]/30 bg-gradient-to-br from-[#121A2C] to-[#0A0D15] cursor-pointer hover:border-[#3D6BF2] transition-colors group"
-          >
-            <div className="flex items-center justify-between text-xs font-semibold text-white mb-1">
-              <span>Introduce a colleague</span>
-              <ArrowRight className="w-3.5 h-3.5 text-[#3D6BF2] group-hover:translate-x-1 transition-transform" />
-            </div>
-            <p className="text-[11px] text-[#9CA3AF]">
-              Help your network grow stronger with high-value warm introductions.
-            </p>
-          </div>
-
-          {/* What do you need right now */}
-          <div className="bg-[#0E121A] border border-white/10 rounded-xl p-4 space-y-3">
-            <div className="text-[11px] font-mono tracking-widest uppercase text-[#9CA3AF] font-semibold">What do you need right now?</div>
-            <p className="text-[11px] text-[#9CA3AF]">Post an ask — a hire, an investor, a customer. Intros finds the people who can help.</p>
-            <div className="flex flex-wrap gap-1.5">
-              {['Hiring', 'Fundraising', 'Customers', 'Advisors'].map((t) => (
-                <button key={t} onClick={() => onNavigate('people')} className="text-[11px] px-2.5 py-1 rounded-full border border-white/10 text-[#F2EEE6] hover:border-[#3D6BF2] cursor-pointer">{t}</button>
-              ))}
-            </div>
-          </div>
-
-          {/* Ask Intros */}
-          <div onClick={() => onNavigate('workspace')} className="p-4 rounded-xl border border-white/10 bg-[#0B0D0F] cursor-pointer hover:border-[#3D6BF2] transition-colors">
-            <div className="text-[11px] font-mono tracking-widest uppercase text-[#F4A125] font-semibold mb-1">Ask Intros</div>
-            <p className="text-xs text-[#F2EEE6]">"Who in my network can open a door at a Fortune 500 buyer?"</p>
-          </div>
-        </aside>
-
+      <div className="max-w-3xl mx-auto w-full">
         {/* Center Column: Feed Post Composer & Feed Stream */}
-        <main className="lg:col-span-6 space-y-6">
+        <main className="space-y-6">
           {/* Post Composer */}
           <div className="bg-[#0E121A] border border-white/10 rounded-xl p-4 shadow-sm">
             <form onSubmit={handleCreatePost}>
@@ -528,108 +666,6 @@ export const HomeFeedView: React.FC<HomeFeedViewProps> = ({
             ))}
           </div>
         </main>
-
-        {/* Right Column: Trending Sectors, Upcoming Events & Circles */}
-        <aside className="lg:col-span-3 space-y-6">
-          {/* Trending Sectors */}
-          <div className="bg-[#0E121A] border border-white/10 rounded-xl p-4 space-y-3">
-            <div className="flex items-center justify-between text-[11px] font-mono tracking-widest uppercase text-[#9CA3AF] font-semibold">
-              <span>Trending Sectors</span>
-              <button
-                onClick={() => onNavigate('insights')}
-                className="text-[#3D6BF2] hover:underline cursor-pointer"
-              >
-                View All
-              </button>
-            </div>
-            <div className="space-y-2">
-              {TRENDING_SECTORS.map((sector) => (
-                <div
-                  key={sector.id}
-                  onClick={() => onNavigate('people')}
-                  className="flex items-center justify-between py-1 text-xs text-[#E2E8F0] hover:text-[#3D6BF2] transition-colors cursor-pointer"
-                >
-                  <span className="flex items-center gap-2">
-                    <span className="w-4 h-4 rounded-full bg-white/5 text-[10px] flex items-center justify-center font-mono text-[#9CA3AF]">
-                      {sector.rank}
-                    </span>
-                    <span>{sector.name}</span>
-                  </span>
-                  <TrendingUp className="w-3 h-3 text-[#10B981]" />
-                </div>
-              ))}
-            </div>
-          </div>
-
-          {/* Upcoming Business Events */}
-          <div className="bg-[#0E121A] border border-white/10 rounded-xl p-4 space-y-3">
-            <div className="flex items-center justify-between text-[11px] font-mono tracking-widest uppercase text-[#9CA3AF] font-semibold">
-              <span>Upcoming Business Events</span>
-              <span className="text-[#3D6BF2] text-[10px]">Curated</span>
-            </div>
-            <div className="space-y-3">
-              {eventsList.map((evt) => (
-                <div key={evt.id} className="flex items-start justify-between gap-2 text-xs">
-                  <div className="flex items-start gap-2.5">
-                    <div className="w-9 h-9 rounded bg-[#131722] border border-white/10 flex flex-col items-center justify-center font-mono shrink-0">
-                      <span className="text-[8px] text-[#9CA3AF] leading-none">{evt.dateMonth}</span>
-                      <span className="text-xs font-bold text-white leading-tight">{evt.dateDay}</span>
-                    </div>
-                    <div>
-                      <div className="font-semibold text-white leading-tight">{evt.title}</div>
-                      <div className="text-[11px] text-[#9CA3AF]">{evt.location}</div>
-                    </div>
-                  </div>
-                  <button
-                    onClick={() => toggleEventRegistration(evt.id)}
-                    className={`px-2.5 py-1 text-[11px] font-medium rounded transition-colors cursor-pointer shrink-0 ${
-                      evt.isRegistered
-                        ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30'
-                        : 'bg-[#3D6BF2] hover:bg-[#2563EB] text-white'
-                    }`}
-                  >
-                    {evt.isRegistered ? 'Registered' : 'Register'}
-                  </button>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          {/* Suggested Circles */}
-          <div className="bg-[#0E121A] border border-white/10 rounded-xl p-4 space-y-3">
-            <div className="flex items-center justify-between text-[11px] font-mono tracking-widest uppercase text-[#9CA3AF] font-semibold">
-              <span>Suggested Circles</span>
-            </div>
-            <div className="space-y-2.5">
-              {circlesList.map((circle) => (
-                <div key={circle.id} className="flex items-center justify-between text-xs">
-                  <div>
-                    <div className="font-medium text-white">{circle.name}</div>
-                    <div className="text-[10px] text-[#9CA3AF]">{circle.count}</div>
-                  </div>
-                  <button
-                    onClick={() => toggleCircleJoin(circle.id)}
-                    className={`px-2.5 py-1 text-[11px] font-medium rounded transition-colors cursor-pointer ${
-                      circle.isJoined
-                        ? 'bg-white/10 text-white'
-                        : 'border border-white/15 hover:border-white/30 text-white'
-                    }`}
-                  >
-                    {circle.isJoined ? 'Joined' : 'Join'}
-                  </button>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          {/* Why now */}
-          <div className="bg-[#0E121A] border border-white/10 rounded-xl p-4 space-y-3">
-            <div className="text-[11px] font-mono tracking-widest uppercase text-[#9CA3AF] font-semibold">Why now</div>
-            <p className="font-serif text-lg leading-snug text-[#F2EEE6]">Know who matters. Know why now.</p>
-            <p className="text-[11px] text-[#9CA3AF]">Intros watches role changes, open asks and cooling conversations so the right moment doesn't pass.</p>
-            <button onClick={() => onNavigate('memory')} className="w-full text-xs font-medium px-3 py-2 rounded-md border border-white/15 hover:border-[#3D6BF2] text-white cursor-pointer">Open Memory</button>
-          </div>
-        </aside>
       </div>
     </div>
   );
