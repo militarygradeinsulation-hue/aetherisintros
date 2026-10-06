@@ -261,41 +261,80 @@ export const FloatingConnectionField: React.FC<FloatingConnectionFieldProps> = (
       const cx = width / 2;
       const cy = height / 2;
 
-      // 1. Radar background web grid & range rings
+      // 1. Dotted globe radar web (Fibonacci sphere, slow Y rotation, cobalt)
       const radarMaxRadius = Math.min(width, height) * 0.46;
 
       ctx.save();
-      // Concentric range rings
-      const ringSteps = [0.22, 0.45, 0.70, 0.95];
-      ringSteps.forEach((frac, idx) => {
-        const r = radarMaxRadius * frac;
+      {
+        const globeR = radarMaxRadius * 0.82;
+        const rotY = now * 0.00008; // slow serene spin
+        const tiltX = 0.4;
+        const tiltZ = 0.15;
+        const cosY = Math.cos(rotY), sinY = Math.sin(rotY);
+        const cosX = Math.cos(tiltX), sinX = Math.sin(tiltX);
+        const cosZ = Math.cos(tiltZ), sinZ = Math.sin(tiltZ);
+        const DOTS = 420;
+        const golden = Math.PI * (3 - Math.sqrt(5));
+        for (let i = 0; i < DOTS; i++) {
+          const fy = 1 - (i / (DOTS - 1)) * 2;
+          const fr = Math.sqrt(1 - fy * fy);
+          const theta = golden * i;
+          let px = Math.cos(theta) * fr;
+          let py = fy;
+          let pz = Math.sin(theta) * fr;
+          // rotate around Y (spin)
+          let x1 = px * cosY + pz * sinY;
+          let z1 = -px * sinY + pz * cosY;
+          // tilt around X
+          let y2 = py * cosX - z1 * sinX;
+          let z2 = py * sinX + z1 * cosX;
+          // tilt around Z
+          let x3 = x1 * cosZ - y2 * sinZ;
+          let y3 = x1 * sinZ + y2 * cosZ;
+          const depth = (z2 + 1) / 2; // 0 back, 1 front
+          const sx = cx + x3 * globeR;
+          const sy = cy + y3 * globeR;
+          const dotSize = 0.7 + depth * 1.3;
+          ctx.beginPath();
+          ctx.arc(sx, sy, dotSize, 0, Math.PI * 2);
+          ctx.fillStyle = `rgba(61, 107, 242, ${(0.06 + depth * 0.30).toFixed(3)})`;
+          ctx.fill();
+        }
+        // faint inner sphere for depth
         ctx.beginPath();
-        ctx.arc(cx, cy, r, 0, Math.PI * 2);
-        ctx.strokeStyle = idx === 3 ? 'rgba(61, 107, 242, 0.12)' : 'rgba(61, 107, 242, 0.05)';
-        ctx.lineWidth = 1;
-        ctx.setLineDash(idx % 2 === 0 ? [3, 4] : []);
-        ctx.stroke();
-
-        // Small range indicators
+        ctx.arc(cx, cy, globeR * 0.985, 0, Math.PI * 2);
+        ctx.fillStyle = 'rgba(158, 164, 172, 0.03)';
+        ctx.fill();
+        // orbit rings (two tilted ellipses, like the source globe)
+        const drawOrbit = (r: number, tilt: number, phase: number, color: string, alpha: number) => {
+          ctx.beginPath();
+          for (let a = 0; a <= Math.PI * 2 + 0.01; a += 0.08) {
+            let ox = Math.cos(a) * r;
+            let oy = 0;
+            let oz = Math.sin(a) * r;
+            const c1 = Math.cos(tilt), s1 = Math.sin(tilt);
+            let oy2 = oy * c1 - oz * s1;
+            let oz2 = oy * s1 + oz * c1;
+            const c2 = Math.cos(phase), s2 = Math.sin(phase);
+            let ox2 = ox * c2 + oz2 * s2;
+            let oz3 = -ox * s2 + oz2 * c2;
+            const px2 = cx + ox2;
+            const py2 = cy + oy2 * 0.92;
+            if (a === 0) ctx.moveTo(px2, py2);
+            else ctx.lineTo(px2, py2);
+          }
+          ctx.strokeStyle = color.replace('A', alpha.toFixed(3));
+          ctx.lineWidth = 0.8;
+          ctx.stroke();
+        };
+        drawOrbit(globeR * 1.18, Math.PI / 2, 0.0, 'rgba(61, 107, 242, A)', 0.22);
+        drawOrbit(globeR * 1.30, Math.PI / 2.4, 0.6, 'rgba(158, 164, 172, A)', 0.16);
+        // range label on outer ring
         ctx.fillStyle = 'rgba(156, 163, 175, 0.25)';
         ctx.font = '8px monospace';
-        ctx.fillText(`${Math.round(frac * 100)}m`, cx + r - 12, cy - 4);
-      });
-      ctx.setLineDash([]);
-
-      // Subtle Web / Crosshair Spokes (8 radial spiderweb spokes)
-      for (let s = 0; s < 8; s++) {
-        const spokeAngle = (s * Math.PI) / 4;
-        ctx.beginPath();
-        ctx.moveTo(cx, cy);
-        ctx.lineTo(
-          cx + Math.cos(spokeAngle) * radarMaxRadius,
-          cy + Math.sin(spokeAngle) * radarMaxRadius
-        );
-        ctx.strokeStyle = 'rgba(61, 107, 242, 0.04)';
-        ctx.lineWidth = 0.8;
-        ctx.stroke();
+        ctx.fillText('100m', cx + radarMaxRadius - 18, cy - 4);
       }
+      ctx.setLineDash([]);
 
       // Smooth, gentle Radar Sweep Beam (slow, serene rotation ~22s per cycle)
       const sweepAngle = (now * 0.00028) % (Math.PI * 2);
