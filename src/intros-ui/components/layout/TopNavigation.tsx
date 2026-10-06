@@ -1,7 +1,7 @@
 // @ts-nocheck
 import React from 'react';
 import { AskIntrosLockup } from '@/aetheris/AskIntrosLockup';
-import { Search, Bell, Sparkles, Orbit, LogOut } from 'lucide-react';
+import { Search, Bell, Orbit, LogOut } from 'lucide-react';
 import { ExecutivePortrait } from '../shared/ExecutivePortrait';
 import { supabase } from '@/integrations/supabase/client';
 
@@ -32,10 +32,10 @@ export const TopNavigation: React.FC<TopNavigationProps> = ({
   onToggleConstellationOverlay,
 }) => {
   return (
-    <header className="sticky top-0 z-50 w-full bg-[#07090C]/95 backdrop-blur-md border-b border-white/10 px-4 md:px-8 py-3.5 transition-colors print:hidden">
-      <div className="max-w-7xl mx-auto flex items-center justify-between gap-4">
+    <header className="sticky top-0 z-50 w-full bg-[#07090C]/95 backdrop-blur-md border-b border-white/10 px-2 sm:px-4 md:px-6 py-2.5 transition-colors print:hidden">
+      <div className="max-w-[1600px] mx-auto flex items-center gap-2 md:gap-4">
         {/* Zone 1: Brand Wordmark */}
-        <div className="flex items-center gap-6 shrink-0">
+        <div className="shrink-0">
           <button
             onClick={() => onNavigate('home')}
             className="flex items-center gap-2.5 text-left group cursor-pointer focus:outline-none"
@@ -44,8 +44,8 @@ export const TopNavigation: React.FC<TopNavigationProps> = ({
           </button>
         </div>
 
-        {/* Zone 2: Navigation Links (Text Links with subtle bottom active line) */}
-        <nav className="flex-1 min-w-0 flex items-center gap-4 md:gap-5 overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden py-1">
+        {/* Zone 2: Navigation Links — always fully visible, shrink text before ever clipping */}
+        <nav className="flex-1 min-w-0 flex flex-wrap items-center justify-center gap-x-2.5 gap-y-1 md:gap-x-4 py-0.5">
           {[
             { id: 'home', label: 'Home' },
             { id: 'news', label: 'News' },
@@ -63,74 +63,64 @@ export const TopNavigation: React.FC<TopNavigationProps> = ({
               <button
                 key={item.id}
                 onClick={() => onNavigate(item.id as ActivePage)}
-                className={`relative py-1 text-xs md:text-sm font-medium tracking-wide transition-colors whitespace-nowrap cursor-pointer ${
+                className={`relative py-0.5 text-[10px] sm:text-[11px] md:text-xs lg:text-[13px] font-medium tracking-wide transition-colors whitespace-nowrap cursor-pointer ${
                   isActive
                     ? 'text-white font-semibold'
                     : item.isBubbles
-                    ? 'text-[#60A5FA] hover:text-white'
-                    : 'text-[#9CA3AF] hover:text-[#F2EEE6]'
+                      ? 'text-[#60A5FA] hover:text-white'
+                      : 'text-[#9CA3AF] hover:text-[#F2EEE6]'
                 }`}
               >
-                <span className="flex items-center gap-1.5">
+                <span className="flex items-center gap-1">
                   {item.isBubbles && (
-                    <Orbit className="w-3.5 h-3.5 text-[#3D6BF2] animate-spin-slow" />
+                    <Orbit className="w-3 h-3 text-[#3D6BF2] animate-spin-slow" />
                   )}
                   {item.label}
                   {item.badge !== undefined && item.badge > 0 && (
-                    <span className="inline-flex items-center justify-center text-[10px] font-mono px-1.5 py-0.2 rounded-full bg-[#3D6BF2] text-white font-semibold">
+                    <span className="inline-flex items-center justify-center text-[9px] font-mono px-1 py-[1px] rounded-full bg-[#3D6BF2] text-white font-semibold">
                       {item.badge}
                     </span>
                   )}
                 </span>
                 {isActive && (
-                  <span className="absolute bottom-[-14px] left-0 right-0 h-[2px] bg-[#3D6BF2] shadow-[0_0_8px_#3D6BF2]" />
+                  <span className="absolute bottom-[-6px] left-0 right-0 h-[2px] bg-[#3D6BF2] shadow-[0_0_8px_#3D6BF2]" />
                 )}
               </button>
             );
           })}
         </nav>
 
-        {/* Zone 3: Search, Notifications & Profile Avatar */}
-        <div className="flex items-center gap-3 md:gap-4 shrink-0">
-          {/* Search bar input */}
-          <div className="relative hidden min-[1900px]:block w-64 shrink-0">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-[#6B7280]" />
+        {/* Zone 3: Search & account — pinned to the far right */}
+        <div className="flex items-center gap-1.5 md:gap-2.5 shrink-0 ml-auto">
+          {/* Compact search, far right next to logout */}
+          <div className="relative hidden md:block w-36 lg:w-48 xl:w-56 shrink-0">
+            <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-[#6B7280]" />
             <input
               type="text"
               value={searchQuery}
               onChange={(e) => onSearchChange(e.target.value)}
-              placeholder="Search people, companies, or topics..."
-              className="w-full bg-[#0F131A] text-xs text-[#F2EEE6] placeholder-[#6B7280] rounded-lg pl-8 pr-8 py-2 border border-white/10 focus:outline-none focus:border-[#3D6BF2] focus:ring-1 focus:ring-[#3D6BF2] transition-all"
+              placeholder="Search..."
+              className="w-full bg-[#0F131A] text-xs text-[#F2EEE6] placeholder-[#6B7280] rounded-lg pl-8 pr-7 py-1.5 border border-white/10 focus:outline-none focus:border-[#3D6BF2] focus:ring-1 focus:ring-[#3D6BF2] transition-all"
             />
-            <kbd className="absolute right-2.5 top-1/2 -translate-y-1/2 text-[10px] font-mono text-[#6B7280] bg-white/5 border border-white/10 px-1 py-0.5 rounded">
+            <kbd className="absolute right-2 top-1/2 -translate-y-1/2 text-[10px] font-mono text-[#6B7280] bg-white/5 border border-white/10 px-1 rounded hidden lg:block">
               /
             </kbd>
-          </div>
-
-          {/* Tagline text for desktop editorial balance */}
-          <div className="hidden min-[1900px]:flex flex-col text-right pr-2 border-r border-white/10">
-            <span className="text-[9px] font-mono tracking-widest text-[#9CA3AF] uppercase">
-              A smarter world is a
-            </span>
-            <span className="text-[9px] font-mono tracking-widest text-white/80 uppercase">
-              more connected one.
-            </span>
           </div>
 
           {/* Notification Bell */}
           <button
             onClick={() => onNavigate('intros')}
             title="Introduction Requests"
-            className="relative p-2 text-[#9CA3AF] hover:text-[#F2EEE6] hover:bg-white/5 rounded-lg transition-colors cursor-pointer"
+            className="relative p-1.5 md:p-2 text-[#9CA3AF] hover:text-[#F2EEE6] hover:bg-white/5 rounded-lg transition-colors cursor-pointer"
           >
             <Bell className="w-4 h-4" />
-            <span className="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-[#3D6BF2] ring-2 ring-[#07090C]" />
+            <span className="absolute top-1 right-1 w-2 h-2 rounded-full bg-[#3D6BF2] ring-2 ring-[#07090C]" />
           </button>
 
           {/* Current User Profile Pill */}
           <button
             onClick={() => onNavigate('profile', 'sarah-chen')}
-            className="flex items-center gap-2 p-1 pl-1.5 pr-2 rounded-full hover:bg-white/5 transition-colors cursor-pointer group"
+            className="flex items-center gap-2 p-0.5 pl-0.5 pr-1.5 rounded-full hover:bg-white/5 transition-colors cursor-pointer group"
           >
             <ExecutivePortrait name="Sarah Chen" size="sm" />
             <span className="hidden 2xl:inline text-xs font-medium text-[#F2EEE6] group-hover:text-white">
@@ -142,7 +132,7 @@ export const TopNavigation: React.FC<TopNavigationProps> = ({
             onClick={signOut}
             title="Log out"
             aria-label="Log out"
-            className="flex items-center gap-1.5 p-2 text-[#9CA3AF] hover:text-[#F2EEE6] hover:bg-white/5 rounded-lg transition-colors cursor-pointer"
+            className="flex items-center gap-1.5 p-1.5 md:p-2 text-[#9CA3AF] hover:text-[#F2EEE6] hover:bg-white/5 rounded-lg transition-colors cursor-pointer"
           >
             <LogOut className="w-4 h-4" />
             <span className="hidden xl:inline text-xs">Log out</span>
