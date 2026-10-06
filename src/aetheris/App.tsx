@@ -2367,6 +2367,8 @@ function AssistantLayer({ page, onNavigate }: { page: string; onNavigate: (page:
     return 'Opened the full Ask Intros workspace'
   }
   return <div className="ix-assistant">
+    <VoiceBar />
+    <SelectionReader />
     <CapabilityWorkspaceHost />
     <AskIntrosDock page={page} peopleNames={people.map(p => p.name)} memberName={net.profile.name}
       briefing={false} contextPanel={false} run={run} />
