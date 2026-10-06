@@ -245,14 +245,28 @@ export default function App({ mode = 'demo' }: { mode?: 'demo' | 'live' }) {
           />
         )}
 
-        {activePage === 'people' && (
-          <PeopleDirectoryView
-            members={members}
-            onNavigate={handleNavigate}
-            onRequestIntro={(member) => setRequestIntroTarget(member)}
-            connectedMemberIds={connectedMemberIds}
-            onToggleConnect={handleToggleConnect}
-          />
+        {(activePage === 'people' || activePage === 'intros') && (
+          <>
+            {mode === 'live'
+              ? <div className="ix-classic"><ClassicApp key="live-intros" mode={mode} startPage="intros" /></div>
+              : <IntrosHubView
+                  introRequests={introRequests}
+                  networkMembers={members}
+                  onNavigate={handleNavigate}
+                  onReviewRequest={(req) => setReviewIntroRequest(req)}
+                  onDismissRequest={handleDismissIntroRequest}
+                  onRequestIntro={(member) => setRequestIntroTarget(member)}
+                />}
+            <div className="border-t border-white/10">
+              <PeopleDirectoryView
+                members={members}
+                onNavigate={handleNavigate}
+                onRequestIntro={(member) => setRequestIntroTarget(member)}
+                connectedMemberIds={connectedMemberIds}
+                onToggleConnect={handleToggleConnect}
+              />
+            </div>
+          </>
         )}
 
         {activePage === 'bubbles' && (
@@ -308,17 +322,6 @@ export default function App({ mode = 'demo' }: { mode?: 'demo' | 'live' }) {
           </div>
           <ClassicApp key={classicPage} mode={mode} startPage={classicPage as any} />
         </div>}
-        {mode === 'live' && activePage === 'intros' && <div className="ix-classic"><ClassicApp key="live-intros" mode={mode} startPage="intros" /></div>}
-        {mode !== 'live' && activePage === 'intros' && (
-          <IntrosHubView
-            introRequests={introRequests}
-            networkMembers={members}
-            onNavigate={handleNavigate}
-            onReviewRequest={(req) => setReviewIntroRequest(req)}
-            onDismissRequest={handleDismissIntroRequest}
-            onRequestIntro={(member) => setRequestIntroTarget(member)}
-          />
-        )}
       </main>
 
       {/* Editorial Footer */}
