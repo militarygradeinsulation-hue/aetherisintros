@@ -246,13 +246,15 @@ function AuthPage() {
 
       <span className="auth-foot"><LockKeyhole size={12} /> Nothing is shared without your explicit opt-in.</span>
     </section>
-    <aside className="auth-visual auth-visual-type" aria-label="Ask Intros relationship principles">
-      <ConstellationField className="auth-constellation" />
-      <span className="auth-visual-mark" aria-hidden="true">+</span>
-      <div className="auth-visual-statement" aria-hidden="true">
+    <aside ref={visualRef} className="auth-visual auth-visual-type" aria-label="Ask Intros relationship principles">
+      <div className="auth-parallax-ring" data-parallax-layer="4" aria-hidden="true" />
+      <div className="auth-parallax-ring auth-parallax-ring--inner" data-parallax-layer="3" aria-hidden="true" />
+      <div data-parallax-layer="1" className="auth-parallax-layer"><ConstellationField className="auth-constellation" /></div>
+      <span className="auth-visual-mark" data-parallax-layer="2" aria-hidden="true">+</span>
+      <div className="auth-visual-statement" data-parallax-layer="3" aria-hidden="true">
         <span>PEOPLE</span><i>×</i><span>CONTEXT</span><i>×</i><span>OPPORTUNITY</span>
       </div>
-      <div className="portrait-caption">
+      <div className="portrait-caption" data-parallax-layer="2">
         <span>ACTIVE MEMORY / 01</span>
         <p>Signed in, every conversation makes the next introduction sharper.</p>
       </div>
