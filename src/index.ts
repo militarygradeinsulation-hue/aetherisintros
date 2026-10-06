@@ -1,4 +1,5 @@
 import "./aetheris/styles.css"
+export { BrandFonts } from "./aetheris/BrandFonts"
 export { default as App } from "./aetheris/App"
 export { AskIntrosDock } from "./aetheris/AskIntrosDock"
 export { AskIntrosLockup } from "./aetheris/AskIntrosLockup"

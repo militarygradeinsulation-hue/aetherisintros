@@ -83,7 +83,7 @@ export const TopNavigation: React.FC<TopNavigationProps> = ({
         {/* Zone 3: Search, Notifications & Profile Avatar */}
         <div className="flex items-center gap-3 md:gap-4 shrink-0">
           {/* Search bar input */}
-          <div className="relative hidden lg:block w-64 xl:w-72">
+          <div className="relative hidden 2xl:block w-64 shrink-0">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-[#6B7280]" />
             <input
               type="text"
@@ -106,18 +106,6 @@ export const TopNavigation: React.FC<TopNavigationProps> = ({
               more connected one.
             </span>
           </div>
-
-          {/* Living Connection Bubbles Modal Toggle Button */}
-          {onToggleConstellationOverlay && (
-            <button
-              onClick={onToggleConstellationOverlay}
-              className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg border border-[#3D6BF2]/40 hover:border-[#3D6BF2] bg-[#3D6BF2]/10 hover:bg-[#3D6BF2]/20 text-xs text-[#60A5FA] hover:text-white transition-all cursor-pointer font-medium"
-              title="Open Floating Connection Bubbles Graph"
-            >
-              <Orbit className="w-3.5 h-3.5 animate-spin-slow text-[#3D6BF2]" />
-              <span className="hidden sm:inline">Connection Bubbles</span>
-            </button>
-          )}
 
           {/* Notification Bell */}
           <button
