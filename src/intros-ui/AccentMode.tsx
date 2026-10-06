@@ -32,11 +32,9 @@ const AccentCtx = createContext<Value>({ mode: "gold", setMode: () => {} });
 
 /** Remembers the member's accent choice and exposes it as `data-accent` on <html>. */
 export function AccentProvider({ children }: { children: ReactNode }) {
-  const [mode, setMode] = useState<AccentMode>("gold");
-
-  useEffect(() => {
-    setMode(readStored());
-  }, []);
+  const [mode, setMode] = useState<AccentMode>(() =>
+    typeof window === "undefined" ? "gold" : readStored(),
+  );
 
   useEffect(() => {
     document.documentElement.dataset["accent"] = mode;
