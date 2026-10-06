@@ -81,9 +81,9 @@ export const TopNavigation: React.FC<TopNavigationProps> = ({
         </nav>
 
         {/* Zone 3: Search, Notifications & Profile Avatar */}
-        <div className="flex items-center gap-3 md:gap-4 shrink min-w-0">
+        <div className="flex items-center gap-3 md:gap-4 shrink-0">
           {/* Search bar input */}
-          <div className="relative hidden lg:block flex-1 min-w-0 max-w-72">
+          <div className="relative hidden 2xl:block w-64 shrink-0">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-[#6B7280]" />
             <input
               type="text"
