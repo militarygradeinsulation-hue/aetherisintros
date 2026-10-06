@@ -304,3 +304,7 @@
 - [ ] Buttons: dark, see-through gold (not bright) — app shell CTAs, .btn.primary, hover states; round indicators keep solid gold
 - [ ] Background: moving-grid + film-grain field from uploaded reference, site-wide
 - [ ] Accent modes: Gold (current), Blue (original cobalt buttons), Mixed — switcher in header, remembered per device
+
+# Reader voice = my voice (Oct 6)
+- [ ] Make the read-aloud voice the member's own voice everywhere it speaks (Ask Intros replies, selection reader, voice bar).
+- [ ] Verify playback in preview on desktop and phone widths.
