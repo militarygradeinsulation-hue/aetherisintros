@@ -93,7 +93,7 @@ export const TopNavigation: React.FC<TopNavigationProps> = ({
         {/* Zone 3: Search, Notifications & Profile Avatar */}
         <div className="flex items-center gap-3 md:gap-4 shrink-0">
           {/* Search bar input */}
-          <div className="relative hidden 2xl:block w-64 shrink-0">
+          <div className="relative hidden min-[1900px]:block w-64 shrink-0">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-[#6B7280]" />
             <input
               type="text"
@@ -108,7 +108,7 @@ export const TopNavigation: React.FC<TopNavigationProps> = ({
           </div>
 
           {/* Tagline text for desktop editorial balance */}
-          <div className="hidden 2xl:flex flex-col text-right pr-2 border-r border-white/10">
+          <div className="hidden min-[1900px]:flex flex-col text-right pr-2 border-r border-white/10">
             <span className="text-[9px] font-mono tracking-widest text-[#9CA3AF] uppercase">
               A smarter world is a
             </span>
