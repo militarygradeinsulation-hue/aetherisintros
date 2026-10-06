@@ -4971,3 +4971,4 @@ button.news-link{background:none;border:0;padding:0;cursor:pointer}
 .ix-tools button{flex:0 0 auto;padding:7px 13px;border-radius:6px;border:1px solid rgba(255,255,255,.10);background:#0E1116;color:#9CA3AF;font:500 12px/1 Inter,'Space Grotesk',sans-serif;cursor:pointer}
 .ix-tools button:hover{color:#F2EEE6;border-color:rgba(61,107,242,.6)}
 .ix-tools button.on{color:#fff;background:rgba(61,107,242,.18);border-color:#3D6BF2}
+.ix-classic .topbar{display:none}.ix-classic .content{padding-top:28px}
