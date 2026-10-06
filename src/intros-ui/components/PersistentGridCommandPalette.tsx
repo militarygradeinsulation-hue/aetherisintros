@@ -322,7 +322,7 @@ export const PersistentGridCommandPalette: React.FC<PersistentGridCommandPalette
   return (
     <div ref={containerRef} className="relative w-full mb-4 z-30">
       {/* 1. Main Persistent Input Bar */}
-      <div className="w-full rounded-2xl bg-[#12100C]/90 backdrop-blur-xl border border-white/15 shadow-xl p-2 sm:p-2.5 flex flex-col md:flex-row md:items-center justify-between gap-2.5 transition-all focus-within:border-[#F5B027]/60 focus-within:shadow-[0_0_25px_rgba(199, 133, 34,0.2)]">
+      <div className="w-full rounded-2xl bg-[#090C11]/90 backdrop-blur-xl border border-white/15 shadow-xl p-2 sm:p-2.5 flex flex-col md:flex-row md:items-center justify-between gap-2.5 transition-all focus-within:border-[#F5B027]/60 focus-within:shadow-[0_0_25px_rgba(61,107,242,0.2)]">
         {/* Left: Search & Filter Input */}
         <div className="flex items-center gap-2 flex-1 min-w-0 px-2">
           <div className="text-[#F5B027] shrink-0">
@@ -381,13 +381,13 @@ export const PersistentGridCommandPalette: React.FC<PersistentGridCommandPalette
             <select
               value={tierFilter}
               onChange={(e) => onTierFilterChange(e.target.value as any)}
-              className="bg-[#12100C] text-[#F2EEE6] border border-white/10 rounded-lg px-2 py-1 text-[10.5px] font-mono focus:outline-none cursor-pointer"
+              className="bg-[#0E1116] text-[#F2EEE6] border border-white/10 rounded-lg px-2 py-1 text-[10.5px] font-mono focus:outline-none cursor-pointer"
               title="Filter by Relationship Tier"
             >
-              <option value="all" className="bg-[#12100C]">All Tiers</option>
-              <option value="inner_circle" className="bg-[#12100C]">▲ Inner Circle</option>
-              <option value="strategic" className="bg-[#12100C]">◆ Strategic</option>
-              <option value="network" className="bg-[#12100C]">● Network</option>
+              <option value="all" className="bg-[#090C11]">All Tiers</option>
+              <option value="inner_circle" className="bg-[#090C11]">▲ Inner Circle</option>
+              <option value="strategic" className="bg-[#090C11]">◆ Strategic</option>
+              <option value="network" className="bg-[#090C11]">● Network</option>
             </select>
           )}
 
@@ -396,14 +396,14 @@ export const PersistentGridCommandPalette: React.FC<PersistentGridCommandPalette
             <select
               value={activityHistoryFilter}
               onChange={(e) => onActivityHistoryFilterChange(e.target.value as ActivityHistoryFilter)}
-              className="bg-[#12100C] text-[#F2EEE6] border border-white/10 rounded-lg px-2 py-1 text-[10.5px] font-mono focus:outline-none cursor-pointer"
+              className="bg-[#0E1116] text-[#F2EEE6] border border-white/10 rounded-lg px-2 py-1 text-[10.5px] font-mono focus:outline-none cursor-pointer"
               title="Filter by Recent Activity History"
             >
-              <option value="all" className="bg-[#12100C]">All Activity</option>
-              <option value="last_24h" className="bg-[#12100C]">⚡ Last 24h</option>
-              <option value="last_3d" className="bg-[#12100C]">3d Active</option>
-              <option value="this_week" className="bg-[#12100C]">7d Cadence</option>
-              <option value="drift_30d" className="bg-[#12100C]">⚠️ 30d+ Drift</option>
+              <option value="all" className="bg-[#090C11]">All Activity</option>
+              <option value="last_24h" className="bg-[#090C11]">⚡ Last 24h</option>
+              <option value="last_3d" className="bg-[#090C11]">3d Active</option>
+              <option value="this_week" className="bg-[#090C11]">7d Cadence</option>
+              <option value="drift_30d" className="bg-[#090C11]">⚠️ 30d+ Drift</option>
             </select>
           )}
 
@@ -486,7 +486,7 @@ export const PersistentGridCommandPalette: React.FC<PersistentGridCommandPalette
 
       {/* 2. Tag Filter Chips Drawer */}
       {(showExtendedFilters || selectedTag) && (
-        <div className="mt-2 p-2.5 rounded-xl bg-[#12100C] border border-white/10 shadow-md flex items-center gap-2 flex-wrap animate-in slide-in-from-top-1 duration-150">
+        <div className="mt-2 p-2.5 rounded-xl bg-[#0B0E14] border border-white/10 shadow-md flex items-center gap-2 flex-wrap animate-in slide-in-from-top-1 duration-150">
           <span className="text-[10px] font-mono text-[#F2EEE6]/60 uppercase tracking-wider flex items-center gap-1 shrink-0">
             <Tag size={10} className="text-[#F5B027]" />
             <span>Filter by Tag:</span>
@@ -511,7 +511,7 @@ export const PersistentGridCommandPalette: React.FC<PersistentGridCommandPalette
                 onClick={() => onSelectTag && onSelectTag(isSelected ? null : tag)}
                 className={`px-2 py-0.5 rounded text-[10px] font-mono transition-all flex items-center gap-1 ${
                   isSelected
-                    ? 'bg-[#F5B027] text-white font-bold shadow-[0_0_8px_rgba(199, 133, 34,0.5)]'
+                    ? 'bg-[#F5B027] text-white font-bold shadow-[0_0_8px_rgba(61,107,242,0.5)]'
                     : 'bg-white/5 text-[#F2EEE6]/75 hover:bg-white/10 hover:text-white'
                 }`}
               >
@@ -525,7 +525,7 @@ export const PersistentGridCommandPalette: React.FC<PersistentGridCommandPalette
 
       {/* 3. Active Filter Summary Indicator */}
       {hasActiveFilters && (
-        <div className="mt-2 px-3 py-1.5 rounded-lg bg-[#12100C] border border-white/10 flex items-center justify-between gap-3 text-xs font-mono">
+        <div className="mt-2 px-3 py-1.5 rounded-lg bg-[#0E1116] border border-white/10 flex items-center justify-between gap-3 text-xs font-mono">
           <div className="flex items-center gap-2 flex-wrap">
             <span className="text-[#F5B027] font-semibold">Active Palette Filters:</span>
             {tierFilter !== 'all' && (
@@ -582,7 +582,7 @@ export const PersistentGridCommandPalette: React.FC<PersistentGridCommandPalette
 
       {/* 4. Real-time Predictive Dropdown Menu anchored beneath the persistent command palette */}
       {isFocused && (
-        <div className="absolute top-full left-0 right-0 mt-2 rounded-2xl bg-[#12100C]/95 backdrop-blur-2xl border border-white/20 shadow-2xl p-2.5 space-y-1 animate-in fade-in duration-150 z-50 max-h-80 overflow-y-auto">
+        <div className="absolute top-full left-0 right-0 mt-2 rounded-2xl bg-[#090C11]/95 backdrop-blur-2xl border border-white/20 shadow-2xl p-2.5 space-y-1 animate-in fade-in duration-150 z-50 max-h-80 overflow-y-auto">
           <div className="px-2 py-1 flex items-center justify-between text-[9px] font-mono uppercase tracking-wider text-[#F5B027] font-bold border-b border-white/5 pb-1.5">
             <span className="flex items-center gap-1">
               <Zap size={10} className="text-[#C78522]" />
@@ -608,7 +608,7 @@ export const PersistentGridCommandPalette: React.FC<PersistentGridCommandPalette
                   onMouseEnter={() => setHighlightedIndex(idx)}
                   className={`w-full p-2.5 rounded-xl text-left flex items-center justify-between gap-3 transition-all ${
                     isSelected
-                      ? 'bg-[#12100c] border border-[#F5B027]/60 shadow-md translate-x-0.5'
+                      ? 'bg-[#151922] border border-[#F5B027]/60 shadow-md translate-x-0.5'
                       : 'hover:bg-white/5 border border-transparent'
                   }`}
                 >

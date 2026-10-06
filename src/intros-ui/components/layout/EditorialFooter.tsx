@@ -8,7 +8,7 @@ interface EditorialFooterProps {
 
 export const EditorialFooter: React.FC<EditorialFooterProps> = ({ onNavigate }) => {
   return (
-    <footer className="w-full border-t border-white/10 bg-[#12100C] py-8 px-4 md:px-8 mt-16 text-[#9CA3AF] print:hidden">
+    <footer className="w-full border-t border-white/10 bg-[#07090C] py-8 px-4 md:px-8 mt-16 text-[#9CA3AF] print:hidden">
       <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4 text-xs">
         <div className="flex items-center gap-4 text-[10px] font-mono tracking-widest uppercase">
           <span className="text-white font-semibold">People</span>

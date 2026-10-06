@@ -53,7 +53,7 @@ export const InsightsDashboardView: React.FC<InsightsDashboardViewProps> = ({
   return (
     <div className="w-full max-w-7xl mx-auto px-4 md:px-8 py-6 space-y-8 animate-fadeIn">
       {/* Top Editorial Hero Banner (Matching Image 7) */}
-      <section className="relative overflow-hidden rounded-2xl border border-white/10 bg-gradient-to-br from-[#12100C] via-[#12100C] to-[#12100C] p-6 lg:p-8">
+      <section className="relative overflow-hidden rounded-2xl border border-white/10 bg-gradient-to-br from-[#0C1017] via-[#090C10] to-[#07090C] p-6 lg:p-8">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
           {/* Hero Left: Headline & Description */}
           <div className="lg:col-span-7 space-y-4">
@@ -66,7 +66,7 @@ export const InsightsDashboardView: React.FC<InsightsDashboardViewProps> = ({
               Insights Dashboard
             </h1>
 
-            <h2 className="font-serif-editorial text-2xl sm:text-3xl text-[#FFC85C]">
+            <h2 className="font-serif-editorial text-2xl sm:text-3xl text-[#E2E8F0]">
               Deeper connections.{' '}
               <span className="text-[#F5B027]">Greater possibilities.</span>
             </h2>
@@ -119,7 +119,7 @@ export const InsightsDashboardView: React.FC<InsightsDashboardViewProps> = ({
               <select
                 value={timeRange}
                 onChange={(e) => setTimeRange(e.target.value)}
-                className="bg-[#12100c] border border-white/10 rounded px-2.5 py-1 text-xs text-white focus:outline-none"
+                className="bg-[#131722] border border-white/10 rounded px-2.5 py-1 text-xs text-white focus:outline-none"
               >
                 <option value="Last 30 Days">Last 30 Days</option>
                 <option value="Last 90 Days">Last 90 Days</option>
@@ -129,7 +129,7 @@ export const InsightsDashboardView: React.FC<InsightsDashboardViewProps> = ({
 
             {/* 4 Stat KPI Cards (Matching Image 7) */}
             <div className="grid grid-cols-2 gap-3">
-              <div className="bg-[#12100C] border border-white/10 rounded-xl p-4">
+              <div className="bg-[#0E121A] border border-white/10 rounded-xl p-4">
                 <div className="text-xs text-[#9CA3AF]">Total People</div>
                 <div className="text-2xl font-serif-editorial font-bold text-white mt-1">1,246</div>
                 <div className="text-[11px] font-mono text-emerald-400 mt-1 flex items-center gap-1">
@@ -137,7 +137,7 @@ export const InsightsDashboardView: React.FC<InsightsDashboardViewProps> = ({
                 </div>
               </div>
 
-              <div className="bg-[#12100C] border border-white/10 rounded-xl p-4">
+              <div className="bg-[#0E121A] border border-white/10 rounded-xl p-4">
                 <div className="text-xs text-[#9CA3AF]">Companies</div>
                 <div className="text-2xl font-serif-editorial font-bold text-white mt-1">312</div>
                 <div className="text-[11px] font-mono text-emerald-400 mt-1 flex items-center gap-1">
@@ -145,7 +145,7 @@ export const InsightsDashboardView: React.FC<InsightsDashboardViewProps> = ({
                 </div>
               </div>
 
-              <div className="bg-[#12100C] border border-white/10 rounded-xl p-4">
+              <div className="bg-[#0E121A] border border-white/10 rounded-xl p-4">
                 <div className="text-xs text-[#9CA3AF]">Active Opportunities</div>
                 <div className="text-2xl font-serif-editorial font-bold text-white mt-1">48</div>
                 <div className="text-[11px] font-mono text-emerald-400 mt-1 flex items-center gap-1">
@@ -153,7 +153,7 @@ export const InsightsDashboardView: React.FC<InsightsDashboardViewProps> = ({
                 </div>
               </div>
 
-              <div className="bg-[#12100C] border border-white/10 rounded-xl p-4">
+              <div className="bg-[#0E121A] border border-white/10 rounded-xl p-4">
                 <div className="text-xs text-[#9CA3AF]">Intro Acceptance Rate</div>
                 <div className="text-2xl font-serif-editorial font-bold text-white mt-1">87%</div>
                 <div className="text-[11px] font-mono text-emerald-400 mt-1 flex items-center gap-1">
@@ -168,7 +168,7 @@ export const InsightsDashboardView: React.FC<InsightsDashboardViewProps> = ({
       {/* Row 2: Relationship Intelligence Map & Opportunity Clusters */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
         {/* Relationship Intelligence Map (Col 8) */}
-        <div className="lg:col-span-8 bg-[#12100C] border border-white/10 rounded-xl p-5 space-y-4">
+        <div className="lg:col-span-8 bg-[#0E121A] border border-white/10 rounded-xl p-5 space-y-4">
           <div className="flex items-center justify-between text-[11px] font-mono tracking-widest uppercase text-[#9CA3AF] font-semibold">
             <span>Relationship Intelligence Map</span>
             <span className="text-[#F5B027]">People · Companies · Opportunities</span>
@@ -181,7 +181,7 @@ export const InsightsDashboardView: React.FC<InsightsDashboardViewProps> = ({
         </div>
 
         {/* Opportunity Clusters (Col 4) */}
-        <div className="lg:col-span-4 bg-[#12100C] border border-white/10 rounded-xl p-5 space-y-4">
+        <div className="lg:col-span-4 bg-[#0E121A] border border-white/10 rounded-xl p-5 space-y-4">
           <div className="flex items-center justify-between text-[11px] font-mono tracking-widest uppercase text-[#9CA3AF] font-semibold">
             <span>Opportunity Clusters</span>
           </div>
@@ -232,7 +232,7 @@ export const InsightsDashboardView: React.FC<InsightsDashboardViewProps> = ({
       {/* Row 4: Intro Conversion Funnel & Engagement Trends Chart */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
         {/* Intro Conversion Funnel (Col 6) */}
-        <div className="lg:col-span-6 bg-[#12100C] border border-white/10 rounded-xl p-5 space-y-4">
+        <div className="lg:col-span-6 bg-[#0E121A] border border-white/10 rounded-xl p-5 space-y-4">
           <div className="flex items-center justify-between text-[11px] font-mono tracking-widest uppercase text-[#9CA3AF] font-semibold">
             <span>Intro Conversion Funnel</span>
             <div className="text-right">
@@ -246,7 +246,7 @@ export const InsightsDashboardView: React.FC<InsightsDashboardViewProps> = ({
           <div className="space-y-3 pt-2">
             {INSIGHTS_FUNNEL_DATA.map((item) => (
               <div key={item.stage} className="space-y-1">
-                <div className="flex items-center justify-between text-xs text-[#FFC85C]">
+                <div className="flex items-center justify-between text-xs text-[#CBD5E1]">
                   <span>{item.stage}</span>
                   <span className="font-mono text-white font-bold">{item.count}</span>
                 </div>
@@ -262,7 +262,7 @@ export const InsightsDashboardView: React.FC<InsightsDashboardViewProps> = ({
         </div>
 
         {/* Engagement Trends Chart (Col 6) */}
-        <div className="lg:col-span-6 bg-[#12100C] border border-white/10 rounded-xl p-5 space-y-4">
+        <div className="lg:col-span-6 bg-[#0E121A] border border-white/10 rounded-xl p-5 space-y-4">
           <div className="flex items-center justify-between text-[11px] font-mono tracking-widest uppercase text-[#9CA3AF] font-semibold">
             <span>Engagement Trends</span>
             <div className="flex items-center gap-3 text-[10px]">
@@ -291,11 +291,11 @@ export const InsightsDashboardView: React.FC<InsightsDashboardViewProps> = ({
                     <stop offset="95%" stopColor="#F59E0B" stopOpacity={0} />
                   </linearGradient>
                 </defs>
-                <XAxis dataKey="month" stroke="#C78522" fontSize={11} />
-                <YAxis stroke="#C78522" fontSize={11} />
+                <XAxis dataKey="month" stroke="#64748B" fontSize={11} />
+                <YAxis stroke="#64748B" fontSize={11} />
                 <Tooltip
                   contentStyle={{
-                    backgroundColor: '#12100C',
+                    backgroundColor: '#0E121A',
                     borderColor: 'rgba(255,255,255,0.1)',
                     borderRadius: '8px',
                     color: '#F2EEE6',
@@ -329,7 +329,7 @@ export const InsightsDashboardView: React.FC<InsightsDashboardViewProps> = ({
       {/* Row 4: AI Insights Card, Top Opportunities & Memory Graph */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
         {/* AI Insights Card (Col 4) */}
-        <div className="lg:col-span-4 bg-gradient-to-br from-[#12100c] to-[#12100C] border border-[#F5B027]/30 rounded-xl p-5 space-y-4">
+        <div className="lg:col-span-4 bg-gradient-to-br from-[#121826] to-[#0A0D15] border border-[#F5B027]/30 rounded-xl p-5 space-y-4">
           <div className="flex items-center justify-between">
             <span className="text-[10px] font-mono uppercase tracking-widest text-[#F5B027] font-semibold flex items-center gap-1.5">
               <Sparkles className="w-3.5 h-3.5" />
@@ -363,7 +363,7 @@ export const InsightsDashboardView: React.FC<InsightsDashboardViewProps> = ({
         </div>
 
         {/* Top Opportunities For You (Col 4) */}
-        <div className="lg:col-span-4 bg-[#12100C] border border-white/10 rounded-xl p-5 space-y-3">
+        <div className="lg:col-span-4 bg-[#0E121A] border border-white/10 rounded-xl p-5 space-y-3">
           <div className="flex items-center justify-between text-[11px] font-mono tracking-widest uppercase text-[#9CA3AF] font-semibold">
             <span>Top Opportunities For You</span>
             <span className="text-[#F5B027] text-[10px]">Ranked</span>
@@ -422,13 +422,13 @@ export const InsightsDashboardView: React.FC<InsightsDashboardViewProps> = ({
         </div>
 
         {/* Memory Graph Insights (Col 4) */}
-        <div className="lg:col-span-4 bg-[#12100C] border border-white/10 rounded-xl p-5 space-y-3">
+        <div className="lg:col-span-4 bg-[#0E121A] border border-white/10 rounded-xl p-5 space-y-3">
           <div className="flex items-center justify-between text-[11px] font-mono tracking-widest uppercase text-[#9CA3AF] font-semibold">
             <span>Memory Graph Insights</span>
             <span className="text-[#F5B027] text-[10px]">Live Stream</span>
           </div>
 
-          <div className="space-y-3 text-xs text-[#FFC85C]">
+          <div className="space-y-3 text-xs text-[#CBD5E1]">
             <div className="p-2.5 bg-white/[0.02] rounded-lg border border-white/5 space-y-1">
               <div className="font-semibold text-white">Event Momentum</div>
               <p className="text-[11px] text-[#9CA3AF]">

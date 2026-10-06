@@ -34,11 +34,11 @@ function Inner() {
         <h1 className="font-serif-editorial text-2xl md:text-3xl text-[#F2EEE6]">Conversations with <em className="text-[#F5B027]">relationship context.</em></h1>
       </div>
       <div className="grid grid-cols-1 md:grid-cols-[300px_1fr] lg:grid-cols-[300px_1fr_260px] gap-3 h-[calc(100vh-210px)] min-h-[480px]">
-        <aside className={`rounded-xl border border-white/10 bg-[#12100C]/90 flex flex-col min-h-0 ${active ? 'hidden md:flex' : 'flex'}`}>
+        <aside className={`rounded-xl border border-white/10 bg-[#0D1117]/90 flex flex-col min-h-0 ${active ? 'hidden md:flex' : 'flex'}`}>
           <div className="p-3 border-b border-white/10 relative">
             <Search className="absolute left-5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-[#6B7280]" />
             <input value={query} onChange={e => setQuery(e.target.value)} placeholder="Search conversations"
-              className="w-full bg-[#12100C] text-xs text-[#F2EEE6] rounded-lg pl-8 pr-3 py-2 border border-white/10 focus:outline-none focus:border-[#F5B027]" />
+              className="w-full bg-[#0F131A] text-xs text-[#F2EEE6] rounded-lg pl-8 pr-3 py-2 border border-white/10 focus:outline-none focus:border-[#F5B027]" />
           </div>
           <div className="flex-1 overflow-y-auto">
             {threads.length === 0 && <p className="p-4 text-xs text-[#9CA3AF]">No conversations yet. Open a member's profile and choose Message to start one.</p>}
@@ -49,7 +49,7 @@ function Inner() {
               return (
                 <button key={t.id} onClick={() => setActiveId(t.id)}
                   className={`w-full text-left px-3 py-3 border-b border-white/5 flex gap-3 cursor-pointer ${on ? 'bg-[#F5B027]/10' : 'hover:bg-white/5'}`}>
-                  <div className="w-9 h-9 shrink-0 rounded-full bg-[#12100C] border border-white/10 flex items-center justify-center text-[11px] text-[#F2EEE6]">
+                  <div className="w-9 h-9 shrink-0 rounded-full bg-[#1A1F25] border border-white/10 flex items-center justify-center text-[11px] text-[#F2EEE6]">
                     {(m?.name ?? '?').split(' ').map(s => s[0]).slice(0, 2).join('')}
                   </div>
                   <div className="min-w-0 flex-1">
@@ -65,7 +65,7 @@ function Inner() {
           </div>
         </aside>
 
-        <section className={`rounded-xl border border-white/10 bg-[#12100C]/90 flex-col min-h-0 ${active ? 'flex' : 'hidden md:flex'}`}>
+        <section className={`rounded-xl border border-white/10 bg-[#0B0D0F]/90 flex-col min-h-0 ${active ? 'flex' : 'hidden md:flex'}`}>
           {!active ? (
             <div className="flex-1 flex flex-col items-center justify-center text-center p-6 text-[#9CA3AF]">
               <MessageSquare className="w-6 h-6 mb-2 text-[#F5B027]" />
@@ -83,7 +83,7 @@ function Inner() {
               {active.messages.length === 0 && <p className="text-xs text-[#9CA3AF] text-center">Say hello — this is the start of your conversation.</p>}
               {active.messages.map(msg => (
                 <div key={msg.id} className={`flex ${msg.from === 'me' ? 'justify-end' : 'justify-start'}`}>
-                  <div className={`max-w-[82%] rounded-xl px-3.5 py-2 text-sm break-words ${msg.from === 'me' ? 'bg-[#C78522] text-white' : 'bg-[#12100C] text-[#F1EFE9] border border-white/10'}`}>
+                  <div className={`max-w-[82%] rounded-xl px-3.5 py-2 text-sm break-words ${msg.from === 'me' ? 'bg-[#C78522] text-white' : 'bg-[#1A1F25] text-[#F1EFE9] border border-white/10'}`}>
                     <MessageBody text={msg.text} />
                     <div className={`text-[10px] mt-1 ${msg.from === 'me' ? 'text-white/70' : 'text-[#9CA3AF]'}`}>{msg.at}</div>
                   </div>
@@ -95,7 +95,7 @@ function Inner() {
               <AttachButton threadId={active.id} onSend={text => net.sendMessage(active.id, text)} />
               <textarea value={draft} onChange={e => setDraft(e.target.value)} rows={1} placeholder="Write a message…"
                 onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); send() } }}
-                className="flex-1 resize-none bg-[#12100C] text-sm text-[#F2EEE6] rounded-lg px-3 py-2 border border-white/10 focus:outline-none focus:border-[#F5B027] max-h-32" />
+                className="flex-1 resize-none bg-[#0F131A] text-sm text-[#F2EEE6] rounded-lg px-3 py-2 border border-white/10 focus:outline-none focus:border-[#F5B027] max-h-32" />
               <button onClick={send} disabled={!draft.trim()} aria-label="Send message"
                 className="p-2.5 rounded-lg bg-[#C78522] hover:bg-[#A96F1B] disabled:opacity-40 text-white cursor-pointer">
                 <Send className="w-4 h-4" />
@@ -104,15 +104,15 @@ function Inner() {
           </>)}
         </section>
 
-        <aside className="hidden lg:flex flex-col rounded-xl border border-white/10 bg-[#12100C]/90 p-4 gap-4 min-h-0 overflow-y-auto">
+        <aside className="hidden lg:flex flex-col rounded-xl border border-white/10 bg-[#0D1117]/90 p-4 gap-4 min-h-0 overflow-y-auto">
           <p className="text-[10px] font-mono tracking-[0.2em] uppercase text-[#9CA3AF]">Relationship context</p>
           {person ? (<>
             <div>
               <p className="font-serif-editorial text-xl text-[#F2EEE6]">{person.name}</p>
               <p className="text-xs text-[#9CA3AF]">{person.location}</p>
             </div>
-            {active?.introContext && <div><p className="text-[10px] uppercase tracking-widest text-[#9CA3AF] mb-1">How you met</p><p className="text-xs text-[#FFC85C]">{active.introContext}</p></div>}
-            {active?.commitment && <div><p className="text-[10px] uppercase tracking-widest text-[#9CA3AF] mb-1">Open loop</p><p className="text-xs text-[#FFC85C]">{active.commitment}</p></div>}
+            {active?.introContext && <div><p className="text-[10px] uppercase tracking-widest text-[#9CA3AF] mb-1">How you met</p><p className="text-xs text-[#CBD5E1]">{active.introContext}</p></div>}
+            {active?.commitment && <div><p className="text-[10px] uppercase tracking-widest text-[#9CA3AF] mb-1">Open loop</p><p className="text-xs text-[#CBD5E1]">{active.commitment}</p></div>}
             <p className="text-[11px] text-[#9CA3AF] mt-auto">Files up to 50 MB — images, video, PDFs. Only the two of you can open them.</p>
           </>) : <p className="text-xs text-[#9CA3AF]">Context appears here when you open a conversation.</p>}
         </aside>

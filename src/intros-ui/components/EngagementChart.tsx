@@ -54,7 +54,7 @@ export const EngagementChart: React.FC<EngagementChartProps> = ({
                 const mutualVal = Math.min(100, Math.round(score * 1.02));
 
                 return (
-                  <div className="bg-[#12100C] border border-[#F5B027]/40 p-2.5 rounded-lg shadow-2xl text-[9px] font-mono text-[#F2EEE6] space-y-1.5 z-50 pointer-events-none min-w-[210px]">
+                  <div className="bg-[#0B0E14] border border-[#F5B027]/40 p-2.5 rounded-lg shadow-2xl text-[9px] font-mono text-[#F2EEE6] space-y-1.5 z-50 pointer-events-none min-w-[210px]">
                     <div className="flex items-center justify-between border-b border-white/10 pb-1">
                       <span className="font-serif-editorial text-[11px] text-[#F2EEE6] font-semibold">
                         Day {label} Trajectory

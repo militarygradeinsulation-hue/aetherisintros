@@ -28,12 +28,12 @@ export const ApprovalQueueModal: React.FC<ApprovalQueueModalProps> = ({
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 bg-black/85 backdrop-blur-md animate-in fade-in duration-200">
       <div
-        className="sys-tile w-full max-w-3xl max-h-[85vh] flex flex-col shadow-2xl border border-[rgba(255,255,255,0.12)] bg-[#12100C] overflow-hidden"
+        className="sys-tile w-full max-w-3xl max-h-[85vh] flex flex-col shadow-2xl border border-[rgba(255,255,255,0.12)] bg-[#0E1116] overflow-hidden"
         role="dialog"
         aria-modal="true"
       >
         {/* Header */}
-        <div className="px-5 py-4 border-b border-[rgba(255,255,255,0.08)] flex items-center justify-between bg-[#12100C]/60">
+        <div className="px-5 py-4 border-b border-[rgba(255,255,255,0.08)] flex items-center justify-between bg-[#07090C]/60">
           <div className="flex items-center gap-2.5">
             <div className="w-8 h-8 rounded-full bg-[#F5B027]/10 border border-[#F5B027]/40 flex items-center justify-center text-[#F5B027]">
               <ShieldCheck size={18} />
@@ -70,7 +70,7 @@ export const ApprovalQueueModal: React.FC<ApprovalQueueModalProps> = ({
               {approvals.map((act) => (
                 <div
                   key={act.id}
-                  className="p-4 rounded-lg bg-[#12100c] border border-white/5 space-y-3"
+                  className="p-4 rounded-lg bg-[#151922] border border-white/5 space-y-3"
                 >
                   <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-white/5 pb-2">
                     <div className="flex items-center gap-2">

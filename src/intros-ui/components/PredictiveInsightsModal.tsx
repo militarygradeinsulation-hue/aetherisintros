@@ -172,7 +172,7 @@ export const PredictiveInsightsModal: React.FC<PredictiveInsightsModalProps> = (
         role="dialog"
         aria-modal="true"
         aria-labelledby="insights-title"
-        className="w-full max-w-3xl rounded-2xl bg-[#12100C] border border-white/15 p-6 shadow-2xl relative max-h-[88vh] flex flex-col select-none"
+        className="w-full max-w-3xl rounded-2xl bg-[#0E1116] border border-white/15 p-6 shadow-2xl relative max-h-[88vh] flex flex-col select-none"
       >
         {/* Header */}
         <div className="flex items-start justify-between pb-4 border-b border-white/10">
@@ -226,7 +226,7 @@ export const PredictiveInsightsModal: React.FC<PredictiveInsightsModalProps> = (
               return (
                 <article
                   key={insight.id}
-                  className="p-4 rounded-xl bg-[#12100C] border border-white/10 hover:border-white/20 transition-all space-y-2.5 shadow-sm"
+                  className="p-4 rounded-xl bg-[#090C10] border border-white/10 hover:border-white/20 transition-all space-y-2.5 shadow-sm"
                 >
                   {/* Top Meta Line */}
                   <div className="flex items-center justify-between gap-2 flex-wrap">

@@ -37,7 +37,7 @@ export const TopNavigation: React.FC<TopNavigationProps> = ({
 }) => {
   const myName = me ? (me.name || 'My profile') : 'Sarah Chen';
   return (
-    <header className="sticky top-0 z-50 w-full bg-[#12100C]/95 backdrop-blur-md border-b border-white/10 px-2 sm:px-4 md:px-6 py-2.5 transition-colors print:hidden">
+    <header className="sticky top-0 z-50 w-full bg-[#07090C]/95 backdrop-blur-md border-b border-white/10 px-2 sm:px-4 md:px-6 py-2.5 transition-colors print:hidden">
       <div className="max-w-[1600px] mx-auto flex flex-wrap items-center gap-x-2 gap-y-1">
 
         {/* Zone 1: Brand Wordmark */}
@@ -83,7 +83,7 @@ export const TopNavigation: React.FC<TopNavigationProps> = ({
                   )}
                   {item.label}
                   {item.badge !== undefined && item.badge > 0 && (
-                    <span className="inline-flex items-center justify-center text-[9px] font-mono px-1 py-[1px] rounded-full bg-[#F5B027] text-[#12100c] font-semibold">
+                    <span className="inline-flex items-center justify-center text-[9px] font-mono px-1 py-[1px] rounded-full bg-[#F5B027] text-[#101216] font-semibold">
                       {item.badge}
                     </span>
                   )}
@@ -106,7 +106,7 @@ export const TopNavigation: React.FC<TopNavigationProps> = ({
               value={searchQuery}
               onChange={(e) => onSearchChange(e.target.value)}
               placeholder="Search..."
-              className="w-full bg-[#12100C] text-xs text-[#F2EEE6] placeholder-[#6B7280] rounded-lg pl-8 pr-7 py-1.5 border border-white/10 focus:outline-none focus:border-[#F5B027] focus:ring-1 focus:ring-[#F5B027] transition-all"
+              className="w-full bg-[#0F131A] text-xs text-[#F2EEE6] placeholder-[#6B7280] rounded-lg pl-8 pr-7 py-1.5 border border-white/10 focus:outline-none focus:border-[#F5B027] focus:ring-1 focus:ring-[#F5B027] transition-all"
             />
             <kbd className="absolute right-2 top-1/2 -translate-y-1/2 text-[10px] font-mono text-[#6B7280] bg-white/5 border border-white/10 px-1 rounded hidden lg:block">
               /
@@ -120,7 +120,7 @@ export const TopNavigation: React.FC<TopNavigationProps> = ({
             className="relative p-1.5 md:p-2 text-[#9CA3AF] hover:text-[#F2EEE6] hover:bg-white/5 rounded-lg transition-colors cursor-pointer"
           >
             <Bell className="w-4 h-4" />
-            <span className="absolute top-1 right-1 w-2 h-2 rounded-full bg-[#F5B027] ring-2 ring-[#12100C]" />
+            <span className="absolute top-1 right-1 w-2 h-2 rounded-full bg-[#F5B027] ring-2 ring-[#07090C]" />
           </button>
 
           {/* Current User Profile Pill */}

@@ -98,7 +98,7 @@ export const BiometricGuardModal: React.FC<BiometricGuardModalProps> = ({
         role="dialog"
         aria-modal="true"
         aria-labelledby="biometric-title"
-        className="w-full max-w-sm rounded-2xl bg-[#12100C] border border-white/15 p-6 shadow-2xl relative overflow-hidden text-center select-none"
+        className="w-full max-w-sm rounded-2xl bg-[#0B0E14] border border-white/15 p-6 shadow-2xl relative overflow-hidden text-center select-none"
       >
         {/* Subtle grid pattern */}
         <div

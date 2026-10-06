@@ -63,7 +63,7 @@ export const ProfileDetailView: React.FC<ProfileDetailViewProps> = ({
       </div>
 
       {/* Hero Section: Editorial Typography, Portrait Silhouette & AI Match (Images 4 & 8) */}
-      <section className="relative overflow-hidden rounded-2xl border border-white/10 bg-gradient-to-br from-[#12100C] via-[#12100C] to-[#12100C] p-6 lg:p-10">
+      <section className="relative overflow-hidden rounded-2xl border border-white/10 bg-gradient-to-br from-[#0C1017] via-[#090C10] to-[#07090C] p-6 lg:p-10">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
           {/* Hero Left: Big Editorial Name & Bio statement */}
           <div className="lg:col-span-4 space-y-5">
@@ -107,7 +107,7 @@ export const ProfileDetailView: React.FC<ProfileDetailViewProps> = ({
             </div>
 
             {/* Editorial Bio Statement */}
-            <p className="text-sm md:text-base text-[#FFC85C] leading-relaxed">
+            <p className="text-sm md:text-base text-[#CBD5E1] leading-relaxed">
               {member.bioStatement}
             </p>
 
@@ -140,7 +140,7 @@ export const ProfileDetailView: React.FC<ProfileDetailViewProps> = ({
             </div>
 
             {/* Quote Callout */}
-            <div className="p-4 bg-white/[0.02] border-l-2 border-[#F5B027] rounded-r-lg text-xs italic text-[#FFC85C] leading-relaxed">
+            <div className="p-4 bg-white/[0.02] border-l-2 border-[#F5B027] rounded-r-lg text-xs italic text-[#E2E8F0] leading-relaxed">
               "{member.quote}"
               <div className="text-[10px] font-mono text-[#9CA3AF] not-italic mt-1.5 uppercase">
                 — {member.name}
@@ -194,7 +194,7 @@ export const ProfileDetailView: React.FC<ProfileDetailViewProps> = ({
 
             {/* AI Introduction Recommendation Card */}
             {aiRec && (
-              <div className="bg-[#12100c]/95 border border-[#F5B027]/30 rounded-xl p-5 shadow-lg relative overflow-hidden backdrop-blur-sm">
+              <div className="bg-[#111622]/95 border border-[#F5B027]/30 rounded-xl p-5 shadow-lg relative overflow-hidden backdrop-blur-sm">
                 <div className="flex items-center justify-between mb-3">
                   <span className="text-[10px] font-mono uppercase tracking-widest text-[#F5B027] font-semibold flex items-center gap-1.5">
                     <Sparkles className="w-3.5 h-3.5" />
@@ -205,7 +205,7 @@ export const ProfileDetailView: React.FC<ProfileDetailViewProps> = ({
                   </span>
                 </div>
 
-                <p className="text-xs text-[#FFC85C] mb-3">
+                <p className="text-xs text-[#CBD5E1] mb-3">
                   We found a strong match based on your mutual interests in AI infrastructure,
                   enterprise software, and climate tech.
                 </p>
@@ -239,7 +239,7 @@ export const ProfileDetailView: React.FC<ProfileDetailViewProps> = ({
                   ))}
                 </div>
 
-                <p className="text-xs text-[#FFC85C] italic mb-4">
+                <p className="text-xs text-[#CBD5E1] italic mb-4">
                   "{aiRec.reasoning}"
                 </p>
 
@@ -273,7 +273,7 @@ export const ProfileDetailView: React.FC<ProfileDetailViewProps> = ({
             )}
 
             {/* Network Influence Stats Card */}
-            <div className="bg-[#12100C] border border-white/10 rounded-xl p-5 space-y-4">
+            <div className="bg-[#0E121A] border border-white/10 rounded-xl p-5 space-y-4">
               <div className="text-[11px] font-mono tracking-widest uppercase text-[#9CA3AF] font-semibold">
                 Network Influence
               </div>
@@ -298,7 +298,7 @@ export const ProfileDetailView: React.FC<ProfileDetailViewProps> = ({
                 </div>
               </div>
 
-              <div className="grid grid-cols-2 gap-2 pt-3 border-t border-white/5 text-xs text-[#FFC85C]">
+              <div className="grid grid-cols-2 gap-2 pt-3 border-t border-white/5 text-xs text-[#CBD5E1]">
                 <div>
                   <span className="font-mono text-white font-bold">
                     {member.networkInfluence.peopleInNetwork}
@@ -332,11 +332,11 @@ export const ProfileDetailView: React.FC<ProfileDetailViewProps> = ({
       {/* Lower Details Grid (Matching Images 4 & 8) */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {/* Card 1: About */}
-        <div className="bg-[#12100C] border border-white/10 rounded-xl p-5 space-y-4">
+        <div className="bg-[#0E121A] border border-white/10 rounded-xl p-5 space-y-4">
           <div className="text-[11px] font-mono tracking-widest uppercase text-[#9CA3AF] font-semibold">
             About {member.firstName}
           </div>
-          <p className="text-xs text-[#FFC85C] leading-relaxed">
+          <p className="text-xs text-[#CBD5E1] leading-relaxed">
             {member.fullBio}
           </p>
           <div className="space-y-2 text-xs text-[#9CA3AF] pt-2 border-t border-white/5">
@@ -360,7 +360,7 @@ export const ProfileDetailView: React.FC<ProfileDetailViewProps> = ({
         </div>
 
         {/* Card 2: Focus Areas & Objectives */}
-        <div className="bg-[#12100C] border border-white/10 rounded-xl p-5 space-y-4">
+        <div className="bg-[#0E121A] border border-white/10 rounded-xl p-5 space-y-4">
           <div>
             <div className="text-[11px] font-mono tracking-widest uppercase text-[#9CA3AF] font-semibold mb-2">
               Focus Areas
@@ -369,7 +369,7 @@ export const ProfileDetailView: React.FC<ProfileDetailViewProps> = ({
               {member.focusAreas.map((area, idx) => (
                 <span
                   key={idx}
-                  className="text-xs text-[#FFC85C] bg-white/5 border border-white/10 px-2.5 py-1 rounded-md"
+                  className="text-xs text-[#CBD5E1] bg-white/5 border border-white/10 px-2.5 py-1 rounded-md"
                 >
                   {area}
                 </span>
@@ -381,7 +381,7 @@ export const ProfileDetailView: React.FC<ProfileDetailViewProps> = ({
             <div className="text-[11px] font-mono tracking-widest uppercase text-[#9CA3AF] font-semibold mb-2">
               Current Objectives
             </div>
-            <ul className="space-y-2 text-xs text-[#FFC85C]">
+            <ul className="space-y-2 text-xs text-[#CBD5E1]">
               {member.currentObjectives.map((obj, idx) => (
                 <li key={idx} className="flex items-start gap-2">
                   <span className="w-1.5 h-1.5 rounded-full bg-[#F5B027] mt-1.5 shrink-0" />
@@ -393,7 +393,7 @@ export const ProfileDetailView: React.FC<ProfileDetailViewProps> = ({
         </div>
 
         {/* Card 3: Compatibility Insights (3 Circular SVG Radial Gauges) */}
-        <div className="bg-[#12100C] border border-white/10 rounded-xl p-5 space-y-4">
+        <div className="bg-[#0E121A] border border-white/10 rounded-xl p-5 space-y-4">
           <div className="text-[11px] font-mono tracking-widest uppercase text-[#9CA3AF] font-semibold">
             Compatibility Insights
           </div>
@@ -406,7 +406,7 @@ export const ProfileDetailView: React.FC<ProfileDetailViewProps> = ({
                   <path
                     d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
                     fill="none"
-                    stroke="#12100C"
+                    stroke="#1E293B"
                     strokeWidth="3"
                   />
                   <path
@@ -431,7 +431,7 @@ export const ProfileDetailView: React.FC<ProfileDetailViewProps> = ({
                   <path
                     d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
                     fill="none"
-                    stroke="#12100C"
+                    stroke="#1E293B"
                     strokeWidth="3"
                   />
                   <path
@@ -456,13 +456,13 @@ export const ProfileDetailView: React.FC<ProfileDetailViewProps> = ({
                   <path
                     d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
                     fill="none"
-                    stroke="#12100C"
+                    stroke="#1E293B"
                     strokeWidth="3"
                   />
                   <path
                     d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
                     fill="none"
-                    stroke="#C78522"
+                    stroke="#38BDF8"
                     strokeWidth="3"
                     strokeDasharray={`${member.compatibility.networkValue}, 100`}
                   />
@@ -477,7 +477,7 @@ export const ProfileDetailView: React.FC<ProfileDetailViewProps> = ({
 
           <div className="p-3 bg-white/[0.02] border border-white/5 rounded-lg text-xs space-y-1">
             <div className="text-[10px] font-mono uppercase text-[#F5B027]">Availability Status</div>
-            <div className="text-[#FFC85C] flex items-center gap-1.5 font-medium">
+            <div className="text-[#CBD5E1] flex items-center gap-1.5 font-medium">
               <span className="w-2 h-2 rounded-full bg-emerald-400" />
               {member.introStatusText}
             </div>
@@ -485,7 +485,7 @@ export const ProfileDetailView: React.FC<ProfileDetailViewProps> = ({
         </div>
 
         {/* Card 4: Shared Connections */}
-        <div className="bg-[#12100C] border border-white/10 rounded-xl p-5 space-y-3">
+        <div className="bg-[#0E121A] border border-white/10 rounded-xl p-5 space-y-3">
           <div className="flex items-center justify-between text-[11px] font-mono tracking-widest uppercase text-[#9CA3AF] font-semibold">
             <span>Shared Connections ({member.mutualConnectionsCount})</span>
             <button
@@ -514,7 +514,7 @@ export const ProfileDetailView: React.FC<ProfileDetailViewProps> = ({
                     </div>
                   </div>
                 </div>
-                <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-white/5 border border-white/10 text-[#FFC85C]">
+                <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-white/5 border border-white/10 text-[#CBD5E1]">
                   {conn.degree}
                 </span>
               </div>
@@ -523,7 +523,7 @@ export const ProfileDetailView: React.FC<ProfileDetailViewProps> = ({
         </div>
 
         {/* Card 5: Recent Posts */}
-        <div className="bg-[#12100C] border border-white/10 rounded-xl p-5 space-y-3">
+        <div className="bg-[#0E121A] border border-white/10 rounded-xl p-5 space-y-3">
           <div className="text-[11px] font-mono tracking-widest uppercase text-[#9CA3AF] font-semibold">
             Recent Posts
           </div>
@@ -552,7 +552,7 @@ export const ProfileDetailView: React.FC<ProfileDetailViewProps> = ({
         </div>
 
         {/* Card 6: Recommendations */}
-        <div className="bg-[#12100C] border border-white/10 rounded-xl p-5 space-y-3">
+        <div className="bg-[#0E121A] border border-white/10 rounded-xl p-5 space-y-3">
           <div className="text-[11px] font-mono tracking-widest uppercase text-[#9CA3AF] font-semibold">
             Recommendations
           </div>
@@ -560,7 +560,7 @@ export const ProfileDetailView: React.FC<ProfileDetailViewProps> = ({
             <div className="space-y-3">
               {member.recommendations.map((rec) => (
                 <div key={rec.id} className="p-3 bg-white/[0.02] border border-white/5 rounded-lg space-y-2">
-                  <p className="text-xs text-[#FFC85C] italic leading-relaxed">
+                  <p className="text-xs text-[#CBD5E1] italic leading-relaxed">
                     "{rec.text}"
                   </p>
                   <div className="pt-2 border-t border-white/5 flex items-center gap-2.5">

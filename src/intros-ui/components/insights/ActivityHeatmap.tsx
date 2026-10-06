@@ -173,10 +173,10 @@ export const ActivityHeatmap: React.FC<ActivityHeatmapProps> = ({
 
   // Color intensity helper
   const getCellColor = (count: number) => {
-    if (count === 0) return 'bg-[#12100c] border-white/[0.04] hover:border-white/20';
-    if (count === 1) return 'bg-[#8A5A12]/80 border-[#F5B027]/40 hover:bg-[#C78522] text-white';
-    if (count === 2) return 'bg-[#C78522] border-[#FFC85C]/60 hover:bg-[#C78522] shadow-sm shadow-[#C78522]/40';
-    if (count === 3) return 'bg-[#F5B027] border-[#FFC85C] hover:bg-[#FFC85C] shadow-sm shadow-[#F5B027]/60';
+    if (count === 0) return 'bg-[#121620] border-white/[0.04] hover:border-white/20';
+    if (count === 1) return 'bg-[#1E3A8A]/80 border-[#F5B027]/40 hover:bg-[#C78522] text-white';
+    if (count === 2) return 'bg-[#C78522] border-[#FFC85C]/60 hover:bg-[#3B82F6] shadow-sm shadow-[#C78522]/40';
+    if (count === 3) return 'bg-[#F5B027] border-[#93C5FD] hover:bg-[#FFC85C] shadow-sm shadow-[#F5B027]/60';
     return 'bg-[#FFC85C] border-white hover:bg-white text-black shadow-md shadow-[#FFC85C]/70';
   };
 
@@ -209,7 +209,7 @@ export const ActivityHeatmap: React.FC<ActivityHeatmapProps> = ({
   const sampleDays = memberActivities[0]?.days || [];
 
   return (
-    <div className="bg-[#12100C] border border-white/10 rounded-xl p-5 md:p-6 space-y-6 relative">
+    <div className="bg-[#0E121A] border border-white/10 rounded-xl p-5 md:p-6 space-y-6 relative">
       {/* Header with Title and Tier Filter */}
       <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 pb-4 border-b border-white/10">
         <div className="space-y-1">
@@ -230,7 +230,7 @@ export const ActivityHeatmap: React.FC<ActivityHeatmapProps> = ({
         {/* Action Controls & Filters */}
         <div className="flex flex-wrap items-center gap-3">
           {/* Tier Pills */}
-          <div className="flex items-center bg-[#12100c] border border-white/10 rounded-lg p-1 text-xs">
+          <div className="flex items-center bg-[#131722] border border-white/10 rounded-lg p-1 text-xs">
             {(['All', 'Core', 'Extended', 'Prospect'] as const).map((tier) => (
               <button
                 key={tier}
@@ -252,7 +252,7 @@ export const ActivityHeatmap: React.FC<ActivityHeatmapProps> = ({
             <select
               value={sortBy}
               onChange={(e) => setSortBy(e.target.value as any)}
-              className="bg-[#12100c] text-xs text-white rounded px-2.5 py-1.5 border border-white/10 focus:outline-none focus:border-[#F5B027]"
+              className="bg-[#131722] text-xs text-white rounded px-2.5 py-1.5 border border-white/10 focus:outline-none focus:border-[#F5B027]"
             >
               <option value="touchpoints">Total Interactions</option>
               <option value="recent">Most Recently Active</option>
@@ -264,7 +264,7 @@ export const ActivityHeatmap: React.FC<ActivityHeatmapProps> = ({
 
       {/* 4 Summary Metric Counters */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-        <div className="bg-[#12100c] border border-white/5 rounded-lg p-3 space-y-1">
+        <div className="bg-[#121620] border border-white/5 rounded-lg p-3 space-y-1">
           <div className="text-[10px] font-mono uppercase tracking-wider text-[#9CA3AF]">30D Touchpoints</div>
           <div className="text-2xl font-serif-editorial font-bold text-white flex items-center gap-1.5">
             {totalNetworkTouchpoints}
@@ -273,7 +273,7 @@ export const ActivityHeatmap: React.FC<ActivityHeatmapProps> = ({
           <div className="text-[11px] text-[#9CA3AF]">Across all classified members</div>
         </div>
 
-        <div className="bg-[#12100c] border border-white/5 rounded-lg p-3 space-y-1">
+        <div className="bg-[#121620] border border-white/5 rounded-lg p-3 space-y-1">
           <div className="text-[10px] font-mono uppercase tracking-wider text-[#9CA3AF]">Active Cadence</div>
           <div className="text-2xl font-serif-editorial font-bold text-[#FFC85C]">
             {activeMemberCount} / {networkMembers.length}
@@ -281,7 +281,7 @@ export const ActivityHeatmap: React.FC<ActivityHeatmapProps> = ({
           <div className="text-[11px] text-[#9CA3AF]">Contacted within last 14 days</div>
         </div>
 
-        <div className="bg-[#12100c] border border-white/5 rounded-lg p-3 space-y-1">
+        <div className="bg-[#121620] border border-white/5 rounded-lg p-3 space-y-1">
           <div className="text-[10px] font-mono uppercase tracking-wider text-[#9CA3AF]">Top Member Cadence</div>
           <div className="text-lg font-serif-editorial font-bold text-white truncate">
             {memberActivities[0]?.member.name || 'Sarah Chen'}
@@ -291,7 +291,7 @@ export const ActivityHeatmap: React.FC<ActivityHeatmapProps> = ({
           </div>
         </div>
 
-        <div className="bg-[#12100c] border border-white/5 rounded-lg p-3 space-y-1">
+        <div className="bg-[#121620] border border-white/5 rounded-lg p-3 space-y-1">
           <div className="text-[10px] font-mono uppercase tracking-wider text-[#9CA3AF]">Cadence Health</div>
           <div className="text-2xl font-serif-editorial font-bold text-emerald-400">
             92%
@@ -408,10 +408,10 @@ export const ActivityHeatmap: React.FC<ActivityHeatmapProps> = ({
           <span className="text-[11px] font-mono">Intensity:</span>
           <span className="text-[10px] text-[#6B7280]">0</span>
           <div className="flex items-center gap-1">
-            <span className="w-3 h-3 rounded-xs bg-[#12100c] border border-white/10" title="0 interactions" />
-            <span className="w-3 h-3 rounded-xs bg-[#8A5A12] border border-[#F5B027]/40" title="1 interaction" />
+            <span className="w-3 h-3 rounded-xs bg-[#121620] border border-white/10" title="0 interactions" />
+            <span className="w-3 h-3 rounded-xs bg-[#1E3A8A] border border-[#F5B027]/40" title="1 interaction" />
             <span className="w-3 h-3 rounded-xs bg-[#C78522] border border-[#FFC85C]/60" title="2 interactions" />
-            <span className="w-3 h-3 rounded-xs bg-[#F5B027] border border-[#FFC85C]" title="3 interactions" />
+            <span className="w-3 h-3 rounded-xs bg-[#F5B027] border border-[#93C5FD]" title="3 interactions" />
             <span className="w-3 h-3 rounded-xs bg-[#FFC85C] border border-white" title="4+ interactions" />
           </div>
           <span className="text-[10px] text-[#6B7280]">4+ interactions</span>
@@ -419,7 +419,7 @@ export const ActivityHeatmap: React.FC<ActivityHeatmapProps> = ({
 
         {/* Insight Prompt */}
         <div className="flex items-center gap-2">
-          <span className="text-[11px] font-mono text-[#FFC85C]">
+          <span className="text-[11px] font-mono text-[#CBD5E1]">
             💡 Suggested: Reconnect with Carlos Mendes (last touchpoint 12d ago)
           </span>
           {onNavigateToIntros && (
@@ -436,7 +436,7 @@ export const ActivityHeatmap: React.FC<ActivityHeatmapProps> = ({
       {/* Interactive Tooltip Card on Hover */}
       {hoveredCell && (
         <div
-          className="fixed z-50 pointer-events-none transform -translate-x-1/2 -translate-y-full mb-2 bg-[#12100C]/95 border border-[#F5B027]/40 rounded-xl p-3 shadow-2xl backdrop-blur-md text-xs space-y-1.5 w-64 animate-in fade-in zoom-in-95 duration-100"
+          className="fixed z-50 pointer-events-none transform -translate-x-1/2 -translate-y-full mb-2 bg-[#0A0D14]/95 border border-[#F5B027]/40 rounded-xl p-3 shadow-2xl backdrop-blur-md text-xs space-y-1.5 w-64 animate-in fade-in zoom-in-95 duration-100"
           style={{
             left: `${hoveredCell.x}px`,
             top: `${hoveredCell.y - 8}px`,
@@ -466,7 +466,7 @@ export const ActivityHeatmap: React.FC<ActivityHeatmapProps> = ({
             <div className="space-y-1 pt-1 border-t border-white/5">
               <div className="text-[10px] font-mono uppercase tracking-wider text-[#9CA3AF]">Activity Log:</div>
               {hoveredCell.day.details.map((detail, idx) => (
-                <div key={idx} className="flex items-center gap-1.5 text-[11px] text-[#FFC85C]">
+                <div key={idx} className="flex items-center gap-1.5 text-[11px] text-[#CBD5E1]">
                   <span className="w-1 h-1 rounded-full bg-[#F5B027]" />
                   <span>{detail}</span>
                 </div>

@@ -55,7 +55,7 @@ export const IntrosHubView: React.FC<IntrosHubViewProps> = ({
   return (
     <div className="w-full max-w-7xl mx-auto px-4 md:px-8 py-6 space-y-8 animate-fadeIn">
       {/* Editorial Header */}
-      <section className="relative overflow-hidden rounded-2xl border border-white/10 bg-gradient-to-br from-[#12100C] via-[#12100C] to-[#12100C] p-6 lg:p-8">
+      <section className="relative overflow-hidden rounded-2xl border border-white/10 bg-gradient-to-br from-[#0C1017] via-[#090C10] to-[#07090C] p-6 lg:p-8">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
           <div className="space-y-3">
             <div className="text-[10px] md:text-xs font-mono uppercase tracking-[0.25em] text-[#9CA3AF] font-semibold flex items-center gap-2">
@@ -100,7 +100,7 @@ export const IntrosHubView: React.FC<IntrosHubViewProps> = ({
             }`}
           >
             <span>{tab.label}</span>
-            <span className="font-mono text-[10px] px-1.5 py-0.2 rounded-full bg-white/10 text-[#FFC85C]">
+            <span className="font-mono text-[10px] px-1.5 py-0.2 rounded-full bg-white/10 text-[#CBD5E1]">
               {tab.count}
             </span>
           </button>
@@ -111,14 +111,14 @@ export const IntrosHubView: React.FC<IntrosHubViewProps> = ({
       {activeTab === 'pending' && (
         <div className="space-y-4">
           {introRequests.length === 0 ? (
-            <div className="text-center py-16 bg-[#12100C] border border-white/10 rounded-xl text-[#9CA3AF]">
+            <div className="text-center py-16 bg-[#0E121A] border border-white/10 rounded-xl text-[#9CA3AF]">
               All introduction requests reviewed.
             </div>
           ) : (
             introRequests.map((req) => (
               <div
                 key={req.id}
-                className="bg-[#12100C] border border-white/10 rounded-xl p-5 flex flex-col md:flex-row md:items-center justify-between gap-5 hover:border-white/20 transition-all"
+                className="bg-[#0E121A] border border-white/10 rounded-xl p-5 flex flex-col md:flex-row md:items-center justify-between gap-5 hover:border-white/20 transition-all"
               >
                 <div className="flex items-start gap-4">
                   <ExecutivePortrait name={req.requesterName} size="md" />
@@ -131,7 +131,7 @@ export const IntrosHubView: React.FC<IntrosHubViewProps> = ({
                       <span className="text-[10px] font-mono text-[#6B7280]">· {req.date}</span>
                     </div>
 
-                    <div className="text-xs text-[#FFC85C] mb-2 flex items-center gap-2 flex-wrap">
+                    <div className="text-xs text-[#CBD5E1] mb-2 flex items-center gap-2 flex-wrap">
                       <span>Requests an introduction to</span>
                       <span className="inline-flex items-center gap-1.5 bg-white/5 border border-white/10 px-2 py-0.5 rounded-md text-white font-semibold">
                         <ExecutivePortrait name={req.targetName} size="sm" />
@@ -189,7 +189,7 @@ export const IntrosHubView: React.FC<IntrosHubViewProps> = ({
           ].map((item, idx) => (
             <div
               key={idx}
-              className="bg-[#12100C] border border-white/10 rounded-xl p-5 flex items-center justify-between"
+              className="bg-[#0E121A] border border-white/10 rounded-xl p-5 flex items-center justify-between"
             >
               <div className="flex items-center gap-3.5">
                 <ExecutivePortrait name={item.targetName} size="md" />
@@ -234,7 +234,7 @@ export const IntrosHubView: React.FC<IntrosHubViewProps> = ({
           ].map((item, idx) => (
             <div
               key={idx}
-              className="bg-[#12100C] border border-white/10 rounded-xl p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3"
+              className="bg-[#0E121A] border border-white/10 rounded-xl p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3"
             >
               <div className="flex items-center gap-3">
                 <div className="flex items-center gap-2">
@@ -263,7 +263,7 @@ export const IntrosHubView: React.FC<IntrosHubViewProps> = ({
           {networkMembers.slice(0, 4).map((member) => (
             <div
               key={member.id}
-              className="bg-[#12100C] border border-white/10 rounded-xl p-5 space-y-3"
+              className="bg-[#0E121A] border border-white/10 rounded-xl p-5 space-y-3"
             >
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
@@ -277,7 +277,7 @@ export const IntrosHubView: React.FC<IntrosHubViewProps> = ({
                   {member.matchScore}% Match
                 </span>
               </div>
-              <p className="text-xs text-[#FFC85C] italic">
+              <p className="text-xs text-[#CBD5E1] italic">
                 "{member.bioStatement}"
               </p>
               <button
@@ -294,7 +294,7 @@ export const IntrosHubView: React.FC<IntrosHubViewProps> = ({
       {/* Facilitate New Introduction Modal */}
       {showMakeIntroModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-fadeIn">
-          <div className="relative w-full max-w-lg bg-[#12100C] border border-white/10 rounded-2xl shadow-2xl p-6 text-[#F2EEE6]">
+          <div className="relative w-full max-w-lg bg-[#0E1218] border border-white/10 rounded-2xl shadow-2xl p-6 text-[#F2EEE6]">
             {introSuccessNotice ? (
               <div className="py-12 text-center space-y-2">
                 <div className="w-12 h-12 rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 flex items-center justify-center mx-auto mb-3">
@@ -320,7 +320,7 @@ export const IntrosHubView: React.FC<IntrosHubViewProps> = ({
                     <select
                       value={personA}
                       onChange={(e) => setPersonA(e.target.value)}
-                      className="w-full bg-[#12100C] border border-white/10 rounded-lg p-2 text-xs text-white"
+                      className="w-full bg-[#151A24] border border-white/10 rounded-lg p-2 text-xs text-white"
                     >
                       {networkMembers.map((m) => (
                         <option key={m.id} value={m.id}>
@@ -335,7 +335,7 @@ export const IntrosHubView: React.FC<IntrosHubViewProps> = ({
                     <select
                       value={personB}
                       onChange={(e) => setPersonB(e.target.value)}
-                      className="w-full bg-[#12100C] border border-white/10 rounded-lg p-2 text-xs text-white"
+                      className="w-full bg-[#151A24] border border-white/10 rounded-lg p-2 text-xs text-white"
                     >
                       {networkMembers.map((m) => (
                         <option key={m.id} value={m.id}>
@@ -355,7 +355,7 @@ export const IntrosHubView: React.FC<IntrosHubViewProps> = ({
                     onChange={(e) => setIntroContext(e.target.value)}
                     rows={3}
                     placeholder="Connecting both of you to explore AI infrastructure architectures..."
-                    className="w-full bg-[#12100C] border border-white/10 rounded-lg p-3 text-xs text-white placeholder-[#6B7280] focus:outline-none focus:border-[#F5B027]"
+                    className="w-full bg-[#151A24] border border-white/10 rounded-lg p-3 text-xs text-white placeholder-[#6B7280] focus:outline-none focus:border-[#F5B027]"
                   />
                 </div>
 

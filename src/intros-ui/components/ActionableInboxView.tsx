@@ -128,7 +128,7 @@ export const ActionableInboxView: React.FC<ActionableInboxViewProps> = ({
   return (
     <div className="w-full max-w-[1560px] mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
       {/* Top Banner / Metrics Band */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 p-5 rounded-xl bg-[#12100C] border border-white/10">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 p-5 rounded-xl bg-[#0E1116] border border-white/10">
         <div>
           <div className="text-[10px] font-mono tracking-[0.25em] text-[#F5B027] uppercase font-bold">
             Executive Queue
@@ -175,7 +175,7 @@ export const ActionableInboxView: React.FC<ActionableInboxViewProps> = ({
       {isAdding && (
         <form
           onSubmit={handleAddTask}
-          className="p-4 rounded-xl bg-[#12100C] border border-[#F5B027]/40 shadow-xl space-y-3 animate-in fade-in duration-150"
+          className="p-4 rounded-xl bg-[#12161F] border border-[#F5B027]/40 shadow-xl space-y-3 animate-in fade-in duration-150"
         >
           <div className="text-xs font-mono text-[#F5B027] uppercase tracking-wider font-bold">
             Create Priority Action Item
@@ -187,17 +187,17 @@ export const ActionableInboxView: React.FC<ActionableInboxViewProps> = ({
               placeholder="e.g., Deliver Series B capitalization model to Elena Rostova..."
               value={newTitle}
               onChange={(e) => setNewTitle(e.target.value)}
-              className="sm:col-span-2 bg-[#12100C] border border-white/15 rounded-lg px-3 py-2 text-xs text-[#F2EEE6] placeholder-[#F2EEE6]/30 focus:outline-none focus:border-[#F5B027]"
+              className="sm:col-span-2 bg-[#07090C] border border-white/15 rounded-lg px-3 py-2 text-xs text-[#F2EEE6] placeholder-[#F2EEE6]/30 focus:outline-none focus:border-[#F5B027]"
             />
             <div className="flex gap-2">
               <select
                 value={newPerson}
                 onChange={(e) => setNewPerson(e.target.value)}
-                className="flex-1 bg-[#12100C] border border-white/15 rounded-lg px-2.5 py-2 text-xs text-[#F2EEE6] focus:outline-none focus:border-[#F5B027]"
+                className="flex-1 bg-[#07090C] border border-white/15 rounded-lg px-2.5 py-2 text-xs text-[#F2EEE6] focus:outline-none focus:border-[#F5B027]"
               >
                 <option value="">Link Person (Optional)</option>
                 {people.map((p) => (
-                  <option key={p.id} value={p.name} className="bg-[#12100C] text-[#F2EEE6]">
+                  <option key={p.id} value={p.name} className="bg-[#0E1116] text-[#F2EEE6]">
                     {p.name}
                   </option>
                 ))}
@@ -205,7 +205,7 @@ export const ActionableInboxView: React.FC<ActionableInboxViewProps> = ({
               <select
                 value={newPriority}
                 onChange={(e) => setNewPriority(e.target.value as any)}
-                className="bg-[#12100C] border border-white/15 rounded-lg px-2 py-2 text-xs text-[#F2EEE6] focus:outline-none focus:border-[#F5B027]"
+                className="bg-[#07090C] border border-white/15 rounded-lg px-2 py-2 text-xs text-[#F2EEE6] focus:outline-none focus:border-[#F5B027]"
               >
                 <option value="high">High</option>
                 <option value="medium">Medium</option>
@@ -281,8 +281,8 @@ export const ActionableInboxView: React.FC<ActionableInboxViewProps> = ({
                 onClick={() => toggleTask(task.id)}
                 className={`group p-4 rounded-xl border transition-all cursor-pointer flex items-start gap-3.5 ${
                   isCompleted
-                    ? 'bg-[#12100C]/50 border-white/5 opacity-60'
-                    : 'bg-[#12100C] hover:bg-[#12100c] border-white/10 hover:border-white/20 shadow-md'
+                    ? 'bg-[#0E1116]/50 border-white/5 opacity-60'
+                    : 'bg-[#0E1116] hover:bg-[#131720] border-white/10 hover:border-white/20 shadow-md'
                 }`}
               >
                 {/* Checkbox */}
@@ -396,7 +396,7 @@ export const ActionableInboxView: React.FC<ActionableInboxViewProps> = ({
             );
           })
         ) : (
-          <div className="p-12 text-center border border-dashed border-white/10 rounded-xl bg-[#12100C]/40 space-y-2">
+          <div className="p-12 text-center border border-dashed border-white/10 rounded-xl bg-[#0E1116]/40 space-y-2">
             <CheckCircle2 size={24} className="mx-auto text-[#C78522]" />
             <div className="font-serif-editorial text-lg text-[#F2EEE6]">Inbox Cleared</div>
             <p className="text-xs text-[#F2EEE6]/50 max-w-sm mx-auto">

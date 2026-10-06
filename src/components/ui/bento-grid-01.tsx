@@ -6,7 +6,7 @@ import { Globe, Lock, Smartphone } from 'lucide-react'
    cobalt for action, amber only as an intelligence signal. */
 
 const CARD =
-  'group relative overflow-hidden rounded-[14px] border border-white/10 bg-[#12100C] p-7 transition-colors hover:border-white/20'
+  'group relative overflow-hidden rounded-[14px] border border-white/10 bg-[#11151A] p-7 transition-colors hover:border-white/20'
 
 function TypeTester() {
   const [big, setBig] = useState(false)
@@ -42,7 +42,7 @@ function LayoutAnimation() {
             key={i}
             layout
             transition={{ type: 'spring', stiffness: 220, damping: 26 }}
-            className="block h-10 rounded-md border border-white/10 bg-[#12100C]"
+            className="block h-10 rounded-md border border-white/10 bg-[#1A1F25]"
           />
         ))}
       </div>
@@ -67,7 +67,7 @@ function SpeedIndicator() {
           initial={{ width: 0 }}
           animate={{ width: loading ? '30%' : '100%' }}
           transition={{ duration: 1 }}
-          className="h-full rounded-full bg-[#C78522]"
+          className="h-full rounded-full bg-[#0F5CCB]"
         />
       </div>
     </div>
@@ -86,7 +86,7 @@ function SecurityBadge() {
         <motion.span
           key={i}
           animate={{ opacity: i < count ? 1 : 0.25 }}
-          className="grid h-11 w-11 place-items-center rounded-md border border-white/10 bg-[#12100C]"
+          className="grid h-11 w-11 place-items-center rounded-md border border-white/10 bg-[#1A1F25]"
         >
           <Lock size={16} className={i < count ? 'text-[#F4A125]' : 'text-[#9EA4AC]'} />
         </motion.span>
@@ -97,7 +97,7 @@ function SecurityBadge() {
 
 function GlobalNetwork() {
   return (
-    <div className="relative h-36 overflow-hidden rounded-md border border-white/10 bg-[#12100C]">
+    <div className="relative h-36 overflow-hidden rounded-md border border-white/10 bg-[#0B0D0F]">
       <Globe size={110} className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-white/10" />
       {[0, 1, 2, 3, 4].map((i) => (
         <motion.i
@@ -163,7 +163,7 @@ const tiles: Tile[] = [
     visual: (
       <div className="flex h-28 items-center gap-4 text-[#9EA4AC]">
         <Smartphone size={30} />
-        <div className="h-16 w-28 rounded-md border border-white/10 bg-[#12100C]" />
+        <div className="h-16 w-28 rounded-md border border-white/10 bg-[#1A1F25]" />
       </div>
     ),
     span: 'md:col-span-3',
@@ -172,11 +172,11 @@ const tiles: Tile[] = [
 
 export function BentoGrid() {
   return (
-    <section className="bg-[#12100C] px-6 py-20 md:px-10">
+    <section className="bg-[#0B0D0F] px-6 py-20 md:px-10">
       <div className="mx-auto max-w-6xl">
         <p className="text-[13px] tracking-[0.22em] text-[#9EA4AC] uppercase">One connected system</p>
         <h2 className="mt-4 max-w-2xl font-serif text-4xl leading-tight text-[#F1EFE9] md:text-5xl">
-          Built around the way relationships <span className="text-[#C78522]">actually move.</span>
+          Built around the way relationships <span className="text-[#0F5CCB]">actually move.</span>
         </h2>
         <div className="mt-12 grid auto-rows-[minmax(0,auto)] grid-cols-1 gap-4 md:grid-cols-6">
           {tiles.map((tile) => (

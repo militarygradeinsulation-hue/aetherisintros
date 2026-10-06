@@ -49,9 +49,9 @@ export const ConstellationField: React.FC = () => {
         height * 0.35,
         Math.max(width, height) * 0.7
       );
-      gradient.addColorStop(0, 'rgba(199, 133, 34, 0.035)');
-      gradient.addColorStop(0.6, 'rgba(18, 16, 12, 0.2)');
-      gradient.addColorStop(1, 'rgba(18, 16, 12, 0)');
+      gradient.addColorStop(0, 'rgba(61, 107, 242, 0.035)');
+      gradient.addColorStop(0.6, 'rgba(14, 17, 22, 0.2)');
+      gradient.addColorStop(1, 'rgba(7, 9, 12, 0)');
       ctx.fillStyle = gradient;
       ctx.fillRect(0, 0, width, height);
 
@@ -83,7 +83,7 @@ export const ConstellationField: React.FC = () => {
         if (node.radius > 1.8) {
           ctx.beginPath();
           ctx.arc(node.x, node.y, node.radius * 2, 0, Math.PI * 2);
-          ctx.fillStyle = `rgba(199, 133, 34, 0.15)`;
+          ctx.fillStyle = `rgba(61, 107, 242, 0.15)`;
           ctx.fill();
         }
       });
@@ -108,9 +108,9 @@ export const ConstellationField: React.FC = () => {
         height * 0.35,
         Math.max(width, height) * 0.7
       );
-      gradient.addColorStop(0, 'rgba(199, 133, 34, 0.03)');
-      gradient.addColorStop(0.6, 'rgba(18, 16, 12, 0.2)');
-      gradient.addColorStop(1, 'rgba(18, 16, 12, 0)');
+      gradient.addColorStop(0, 'rgba(61, 107, 242, 0.03)');
+      gradient.addColorStop(0.6, 'rgba(14, 17, 22, 0.2)');
+      gradient.addColorStop(1, 'rgba(7, 9, 12, 0)');
       ctx.fillStyle = gradient;
       ctx.fillRect(0, 0, width, height);
 

@@ -36,13 +36,13 @@ export const DailyDigestModal: React.FC<DailyDigestModalProps> = ({
       onClick={onClose}
     >
       <div
-        className="w-full max-w-4xl bg-[#12100C] border border-[#F5B027]/40 rounded-2xl shadow-[0_30px_90px_rgba(0,0,0,0.9)] overflow-hidden flex flex-col max-h-[90vh] select-none animate-in zoom-in-95 duration-200"
+        className="w-full max-w-4xl bg-[#090C10] border border-[#F5B027]/40 rounded-2xl shadow-[0_30px_90px_rgba(0,0,0,0.9)] overflow-hidden flex flex-col max-h-[90vh] select-none animate-in zoom-in-95 duration-200"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Top Header Banner */}
-        <div className="px-6 py-4 border-b border-white/10 bg-gradient-to-r from-[#12100C] via-[#12100c] to-[#12100C] flex items-center justify-between">
+        <div className="px-6 py-4 border-b border-white/10 bg-gradient-to-r from-[#0E1116] via-[#101726] to-[#0E1116] flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-[#F5B027]/20 border border-[#F5B027]/50 flex items-center justify-center text-[#F5B027] shadow-[0_0_15px_rgba(199, 133, 34,0.3)]">
+            <div className="w-10 h-10 rounded-xl bg-[#F5B027]/20 border border-[#F5B027]/50 flex items-center justify-center text-[#F5B027] shadow-[0_0_15px_rgba(61,107,242,0.3)]">
               <Sparkles size={20} />
             </div>
             <div>
@@ -72,7 +72,7 @@ export const DailyDigestModal: React.FC<DailyDigestModalProps> = ({
         <div className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-6 scrollbar-thin scrollbar-thumb-white/10">
           {/* Summary Metric Cards */}
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-            <div className="p-3.5 rounded-xl bg-[#12100C] border border-white/10 flex items-center gap-3">
+            <div className="p-3.5 rounded-xl bg-[#0E1116] border border-white/10 flex items-center gap-3">
               <div className="w-9 h-9 rounded-lg bg-[#F5B027]/15 text-[#F5B027] flex items-center justify-center shrink-0">
                 <Calendar size={18} />
               </div>
@@ -86,7 +86,7 @@ export const DailyDigestModal: React.FC<DailyDigestModalProps> = ({
               </div>
             </div>
 
-            <div className="p-3.5 rounded-xl bg-[#12100C] border border-white/10 flex items-center gap-3">
+            <div className="p-3.5 rounded-xl bg-[#0E1116] border border-white/10 flex items-center gap-3">
               <div className="w-9 h-9 rounded-lg bg-[#C78522]/15 text-[#FF6369] flex items-center justify-center shrink-0">
                 <AlertTriangle size={18} />
               </div>
@@ -100,7 +100,7 @@ export const DailyDigestModal: React.FC<DailyDigestModalProps> = ({
               </div>
             </div>
 
-            <div className="p-3.5 rounded-xl bg-[#12100C] border border-white/10 flex items-center gap-3">
+            <div className="p-3.5 rounded-xl bg-[#0E1116] border border-white/10 flex items-center gap-3">
               <div className="w-9 h-9 rounded-lg bg-[#C78522]/15 text-[#C78522] flex items-center justify-center shrink-0">
                 <CheckSquare size={18} />
               </div>
@@ -142,7 +142,7 @@ export const DailyDigestModal: React.FC<DailyDigestModalProps> = ({
                     onSelectPerson(p);
                     onClose();
                   }}
-                  className="p-3 rounded-xl bg-[#12100C] border border-[#C78522]/30 hover:border-[#C78522] transition-all cursor-pointer flex items-center justify-between gap-3 group"
+                  className="p-3 rounded-xl bg-[#0A0D12] border border-[#C78522]/30 hover:border-[#C78522] transition-all cursor-pointer flex items-center justify-between gap-3 group"
                 >
                   <div className="flex items-center gap-3 min-w-0">
                     <img
@@ -201,7 +201,7 @@ export const DailyDigestModal: React.FC<DailyDigestModalProps> = ({
                     onOpenTileWorkspace('tasks-work');
                     onClose();
                   }}
-                  className="p-3 rounded-xl bg-[#12100C] border border-white/10 hover:border-[#F5B027]/50 transition-all cursor-pointer flex items-center justify-between gap-3"
+                  className="p-3 rounded-xl bg-[#0E1116] border border-white/10 hover:border-[#F5B027]/50 transition-all cursor-pointer flex items-center justify-between gap-3"
                 >
                   <div className="min-w-0">
                     <div className="font-serif-editorial text-xs sm:text-sm text-[#F2EEE6] font-medium truncate">
@@ -221,13 +221,13 @@ export const DailyDigestModal: React.FC<DailyDigestModalProps> = ({
         </div>
 
         {/* Footer CTA */}
-        <div className="px-6 py-4 border-t border-white/10 bg-[#12100C] flex items-center justify-between">
+        <div className="px-6 py-4 border-t border-white/10 bg-[#07090C] flex items-center justify-between">
           <div className="text-xs font-mono text-[#F2EEE6]/60">
             All 24 system modules synchronized and ready for executive operation.
           </div>
           <button
             onClick={onClose}
-            className="px-6 py-2.5 rounded-xl bg-[#F5B027] hover:bg-[#F5B027]/90 text-white text-xs font-mono font-medium shadow-[0_0_20px_rgba(199, 133, 34,0.4)] transition-all flex items-center gap-2"
+            className="px-6 py-2.5 rounded-xl bg-[#F5B027] hover:bg-[#F5B027]/90 text-white text-xs font-mono font-medium shadow-[0_0_20px_rgba(61,107,242,0.4)] transition-all flex items-center gap-2"
           >
             <span>Enter Intelligence Grid</span>
             <ArrowRight size={14} />

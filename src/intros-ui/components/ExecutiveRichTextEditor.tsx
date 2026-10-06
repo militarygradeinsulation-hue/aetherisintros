@@ -333,9 +333,9 @@ export const ExecutiveRichTextEditor: React.FC<ExecutiveRichTextEditorProps> = (
   };
 
   return (
-    <div className="rounded-xl bg-[#12100C] border border-white/10 overflow-hidden shadow-lg">
+    <div className="rounded-xl bg-[#0E1116] border border-white/10 overflow-hidden shadow-lg">
       {/* Top Header / Mode Switcher */}
-      <div className="p-3 bg-[#12100C] border-b border-white/10 flex items-center justify-between gap-2">
+      <div className="p-3 bg-[#07090C] border-b border-white/10 flex items-center justify-between gap-2">
         <div className="flex items-center gap-2">
           <FileText size={13} className="text-[#F5B027]" />
           <span className="text-[10px] font-mono uppercase tracking-wider text-[#F2EEE6] font-bold">
@@ -538,7 +538,7 @@ export const ExecutiveRichTextEditor: React.FC<ExecutiveRichTextEditorProps> = (
           </div>
 
           {/* Rich-Text Editorial Formatting Toolbar */}
-          <div className="p-1.5 rounded-lg bg-[#12100C] border border-white/10 flex items-center justify-between gap-1 flex-wrap">
+          <div className="p-1.5 rounded-lg bg-[#07090C] border border-white/10 flex items-center justify-between gap-1 flex-wrap">
             <div className="flex items-center gap-1">
               <button
                 type="button"

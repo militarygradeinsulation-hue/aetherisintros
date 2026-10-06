@@ -33,7 +33,7 @@ export const ScheduleMeetingModal: React.FC<ScheduleMeetingModalProps> = ({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-fadeIn">
-      <div className="relative w-full max-w-md bg-[#12100C] border border-white/10 rounded-2xl shadow-2xl p-6 text-[#F2EEE6] overflow-hidden">
+      <div className="relative w-full max-w-md bg-[#0E1218] border border-white/10 rounded-2xl shadow-2xl p-6 text-[#F2EEE6] overflow-hidden">
         <button
           onClick={onClose}
           className="absolute top-4 right-4 p-1.5 text-[#9CA3AF] hover:text-white hover:bg-white/5 rounded-lg transition-colors cursor-pointer"
@@ -99,7 +99,7 @@ export const ScheduleMeetingModal: React.FC<ScheduleMeetingModalProps> = ({
               <select
                 value={selectedDate}
                 onChange={(e) => setSelectedDate(e.target.value)}
-                className="w-full bg-[#12100C] border border-white/10 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-[#F5B027]"
+                className="w-full bg-[#151A24] border border-white/10 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-[#F5B027]"
               >
                 <option value="Tomorrow · 2:00 PM EST">Tomorrow · 2:00 PM EST (Recommended)</option>
                 <option value="Thursday · 10:30 AM EST">Thursday · 10:30 AM EST</option>
@@ -117,7 +117,7 @@ export const ScheduleMeetingModal: React.FC<ScheduleMeetingModalProps> = ({
                 type="text"
                 value={meetingTopic}
                 onChange={(e) => setMeetingTopic(e.target.value)}
-                className="w-full bg-[#12100C] border border-white/10 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-[#F5B027]"
+                className="w-full bg-[#151A24] border border-white/10 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-[#F5B027]"
               />
             </div>
 

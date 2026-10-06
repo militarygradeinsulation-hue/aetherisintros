@@ -174,12 +174,12 @@ export const WorkspaceModal: React.FC<WorkspaceModalProps> = ({
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 bg-black/85 backdrop-blur-md animate-in fade-in duration-200">
       <div
-        className="sys-tile w-full max-w-4xl max-h-[90vh] flex flex-col shadow-2xl border border-[rgba(255,255,255,0.12)] bg-[#12100C] overflow-hidden"
+        className="sys-tile w-full max-w-4xl max-h-[90vh] flex flex-col shadow-2xl border border-[rgba(255,255,255,0.12)] bg-[#0E1116] overflow-hidden"
         role="dialog"
         aria-modal="true"
       >
         {/* Modal Header */}
-        <div className="px-5 py-4 border-b border-[rgba(255,255,255,0.08)] flex items-center justify-between bg-[#12100C]/60">
+        <div className="px-5 py-4 border-b border-[rgba(255,255,255,0.08)] flex items-center justify-between bg-[#07090C]/60">
           <div>
             <span className="text-[10px] font-mono tracking-widest text-[#F5B027] uppercase font-bold">
               CAPABILITY WORKSPACE
@@ -191,7 +191,7 @@ export const WorkspaceModal: React.FC<WorkspaceModalProps> = ({
           <div className="flex items-center gap-3">
             <button
               onClick={onOpenApprovalQueue}
-              className="text-[11px] font-mono px-2.5 py-1 rounded bg-[#12100c] border border-[#F5B027]/40 text-[#F2EEE6] hover:bg-[#F5B027]/20 flex items-center gap-1.5 transition-colors"
+              className="text-[11px] font-mono px-2.5 py-1 rounded bg-[#151922] border border-[#F5B027]/40 text-[#F2EEE6] hover:bg-[#F5B027]/20 flex items-center gap-1.5 transition-colors"
             >
               <ShieldCheck size={13} className="text-[#F5B027]" />
               <span>Approvals</span>
@@ -224,7 +224,7 @@ export const WorkspaceModal: React.FC<WorkspaceModalProps> = ({
               {/* 1. RELATIONSHIP NETWORK */}
           {activeTileId === 'relationship-network' && (
             <div className="space-y-6">
-              <div className="p-4 rounded-lg bg-[#12100c] border border-white/5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+              <div className="p-4 rounded-lg bg-[#151922] border border-white/5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
                 <div className="flex items-center gap-4">
                   <img
                     src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=160&auto=format&fit=crop&q=80"
@@ -262,19 +262,19 @@ export const WorkspaceModal: React.FC<WorkspaceModalProps> = ({
                   </span>
                 </div>
                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs font-mono">
-                  <div className="p-2.5 rounded bg-[#12100c] border border-white/5">
+                  <div className="p-2.5 rounded bg-[#151922] border border-white/5">
                     <div className="text-[#F2EEE6]/60 text-[10px]">RECENCY</div>
                     <div className="text-base font-bold text-[#F2EEE6]">94 / 100</div>
                   </div>
-                  <div className="p-2.5 rounded bg-[#12100c] border border-white/5">
+                  <div className="p-2.5 rounded bg-[#151922] border border-white/5">
                     <div className="text-[#F2EEE6]/60 text-[10px]">FREQUENCY</div>
                     <div className="text-base font-bold text-[#F2EEE6]">90 / 100</div>
                   </div>
-                  <div className="p-2.5 rounded bg-[#12100c] border border-white/5">
+                  <div className="p-2.5 rounded bg-[#151922] border border-white/5">
                     <div className="text-[#F2EEE6]/60 text-[10px]">RECIPROCITY</div>
                     <div className="text-base font-bold text-[#F2EEE6]">92 / 100</div>
                   </div>
-                  <div className="p-2.5 rounded bg-[#12100c] border border-white/5">
+                  <div className="p-2.5 rounded bg-[#151922] border border-white/5">
                     <div className="text-[#F2EEE6]/60 text-[10px]">MUTUALS</div>
                     <div className="text-base font-bold text-[#F2EEE6]">92 / 100</div>
                   </div>
@@ -307,7 +307,7 @@ export const WorkspaceModal: React.FC<WorkspaceModalProps> = ({
                     placeholder="Search records, domain, tags..."
                     value={crmSearch}
                     onChange={(e) => setCrmSearch(e.target.value)}
-                    className="w-full bg-[#12100c] border border-white/10 rounded-lg pl-9 pr-3 py-1.5 text-xs text-[#F2EEE6] placeholder-[#F2EEE6]/40 focus:outline-none focus:border-[#F5B027]"
+                    className="w-full bg-[#151922] border border-white/10 rounded-lg pl-9 pr-3 py-1.5 text-xs text-[#F2EEE6] placeholder-[#F2EEE6]/40 focus:outline-none focus:border-[#F5B027]"
                   />
                 </div>
               </div>
@@ -323,13 +323,13 @@ export const WorkspaceModal: React.FC<WorkspaceModalProps> = ({
                       <div className="flex items-start gap-3">
                         <img src={p.avatar} alt={p.name} className="w-10 h-10 rounded-full object-cover" />
                         <div>
-                          <div className="font-bold text-sm text-[#12100C]">{p.name}</div>
-                          <div className="text-xs text-[#12100C]/75">{p.title}</div>
-                          <div className="text-[11px] text-[#12100C]/60 mt-0.5">{p.company}</div>
+                          <div className="font-bold text-sm text-[#14161A]">{p.name}</div>
+                          <div className="text-xs text-[#14161A]/75">{p.title}</div>
+                          <div className="text-[11px] text-[#14161A]/60 mt-0.5">{p.company}</div>
                           <div className="text-[10px] text-[#F5B027] font-mono mt-1">{p.email}</div>
                         </div>
                       </div>
-                      <span className="text-[10px] font-mono font-bold bg-black/10 px-2 py-0.5 rounded text-[#12100C]">
+                      <span className="text-[10px] font-mono font-bold bg-black/10 px-2 py-0.5 rounded text-[#14161A]">
                         Score {p.connectionScore}
                       </span>
                     </div>
@@ -342,11 +342,11 @@ export const WorkspaceModal: React.FC<WorkspaceModalProps> = ({
                   {INITIAL_COMPANIES.map((c) => (
                     <div key={c.id} className="sys-card-ivory p-3.5 rounded-lg shadow-sm">
                       <div className="flex justify-between items-baseline">
-                        <span className="font-bold text-sm text-[#12100C]">{c.name}</span>
+                        <span className="font-bold text-sm text-[#14161A]">{c.name}</span>
                         <span className="text-xs font-mono font-semibold text-[#F5B027]">{c.valuation}</span>
                       </div>
-                      <div className="text-xs text-[#12100C]/70 mt-1">{c.sector} · {c.stage}</div>
-                      <p className="text-[11px] text-[#12100C]/80 mt-2 italic">{c.notes}</p>
+                      <div className="text-xs text-[#14161A]/70 mt-1">{c.sector} · {c.stage}</div>
+                      <p className="text-[11px] text-[#14161A]/80 mt-2 italic">{c.notes}</p>
                     </div>
                   ))}
                 </div>
@@ -357,11 +357,11 @@ export const WorkspaceModal: React.FC<WorkspaceModalProps> = ({
                   {opportunities.map((opp) => (
                     <div key={opp.id} className="sys-card-ivory p-3.5 rounded-lg flex items-center justify-between">
                       <div>
-                        <div className="font-bold text-sm text-[#12100C]">{opp.title}</div>
-                        <div className="text-xs text-[#12100C]/70">{opp.companyName} · Lead: {opp.leadPerson}</div>
+                        <div className="font-bold text-sm text-[#14161A]">{opp.title}</div>
+                        <div className="text-xs text-[#14161A]/70">{opp.companyName} · Lead: {opp.leadPerson}</div>
                       </div>
                       <div className="text-right">
-                        <div className="text-sm font-mono font-bold text-[#12100C]">
+                        <div className="text-sm font-mono font-bold text-[#14161A]">
                           ${(opp.value / 1000).toFixed(0)}K USD
                         </div>
                         <span className="text-[10px] font-mono uppercase bg-[#F5B027]/10 text-[#F5B027] px-2 py-0.5 rounded font-bold">
@@ -378,7 +378,7 @@ export const WorkspaceModal: React.FC<WorkspaceModalProps> = ({
           {/* 3. OPPORTUNITIES */}
           {activeTileId === 'opportunities' && (
             <div className="space-y-6">
-              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 p-4 rounded-lg bg-[#12100c] border border-white/5">
+              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 p-4 rounded-lg bg-[#151922] border border-white/5">
                 <div>
                   <span className="text-xs font-mono uppercase text-[#F2EEE6]/60">Total Active Pipeline</span>
                   <div className="text-2xl sm:text-3xl font-bold font-mono text-[#F2EEE6] mt-0.5">
@@ -426,7 +426,7 @@ export const WorkspaceModal: React.FC<WorkspaceModalProps> = ({
                   const stageOpps = opportunities.filter((o) => o.stage === stage);
                   const stageTotal = stageOpps.reduce((acc, o) => acc + o.value, 0);
                   return (
-                    <div key={stage} className="bg-[#12100c] p-3 rounded-lg border border-white/5 space-y-2.5">
+                    <div key={stage} className="bg-[#151922] p-3 rounded-lg border border-white/5 space-y-2.5">
                       <div className="flex items-center justify-between border-b border-white/5 pb-2">
                         <span className="text-xs font-mono font-bold uppercase text-[#F2EEE6]">{stage}</span>
                         <span className="text-xs font-mono text-[#F2EEE6]/60">
@@ -436,13 +436,13 @@ export const WorkspaceModal: React.FC<WorkspaceModalProps> = ({
                       <div className="space-y-2 min-h-[140px]">
                         {stageOpps.map((opp) => (
                           <div key={opp.id} className="sys-card-ivory p-2.5 rounded text-xs shadow-sm">
-                            <div className="font-bold text-[#12100C] truncate">{opp.title}</div>
-                            <div className="text-[11px] text-[#12100C]/70 truncate">{opp.companyName}</div>
+                            <div className="font-bold text-[#14161A] truncate">{opp.title}</div>
+                            <div className="text-[11px] text-[#14161A]/70 truncate">{opp.companyName}</div>
                             <div className="flex items-center justify-between mt-2 pt-1 border-t border-black/5">
                               <span className="font-mono font-bold text-[#F5B027]">
                                 ${(opp.value / 1000).toFixed(0)}K
                               </span>
-                              <span className="text-[10px] text-[#12100C]/60 font-mono">
+                              <span className="text-[10px] text-[#14161A]/60 font-mono">
                                 {opp.closeProbability}% Prob
                               </span>
                             </div>
@@ -472,7 +472,7 @@ export const WorkspaceModal: React.FC<WorkspaceModalProps> = ({
 
               {/* Full Interactive Table */}
               <div className="sys-card-ivory rounded-lg overflow-hidden shadow-lg font-mono text-xs">
-                <div className="grid grid-cols-6 bg-black/10 px-4 py-2 font-bold uppercase text-[10px] tracking-wider text-[#12100C]/80 border-b border-black/10">
+                <div className="grid grid-cols-6 bg-black/10 px-4 py-2 font-bold uppercase text-[10px] tracking-wider text-[#14161A]/80 border-b border-black/10">
                   <span>Founder</span>
                   <span>Firm</span>
                   <span>Stage</span>
@@ -480,7 +480,7 @@ export const WorkspaceModal: React.FC<WorkspaceModalProps> = ({
                   <span>Status</span>
                   <span className="text-right">Conviction</span>
                 </div>
-                <div className="divide-y divide-black/5 text-[#12100C]">
+                <div className="divide-y divide-black/5 text-[#14161A]">
                   {INITIAL_GRID_SHEET.map((row) => (
                     <div key={row.id} className="grid grid-cols-6 px-4 py-2.5 items-center hover:bg-black/5">
                       <span className="font-semibold truncate">{row.founder}</span>
@@ -488,7 +488,7 @@ export const WorkspaceModal: React.FC<WorkspaceModalProps> = ({
                       <span className="opacity-80">{row.stage}</span>
                       <span className="font-bold">{row.valuation}</span>
                       <span className="text-[#F5B027] font-semibold">{row.introStatus}</span>
-                      <span className="text-right font-bold text-[#12100C]">{row.conviction}</span>
+                      <span className="text-right font-bold text-[#14161A]">{row.conviction}</span>
                     </div>
                   ))}
                 </div>
@@ -504,7 +504,7 @@ export const WorkspaceModal: React.FC<WorkspaceModalProps> = ({
                 <button
                   onClick={() => setActiveSignalFilter('All')}
                   className={`px-3 py-1 rounded text-xs font-mono transition-colors ${
-                    activeSignalFilter === 'All' ? 'bg-[#F5B027] text-white font-bold' : 'bg-[#12100c] text-[#F2EEE6]/70'
+                    activeSignalFilter === 'All' ? 'bg-[#F5B027] text-white font-bold' : 'bg-[#151922] text-[#F2EEE6]/70'
                   }`}
                 >
                   All (8)
@@ -525,7 +525,7 @@ export const WorkspaceModal: React.FC<WorkspaceModalProps> = ({
                     key={sig}
                     onClick={() => setActiveSignalFilter(sig)}
                     className={`px-3 py-1 rounded text-xs font-mono transition-colors ${
-                      activeSignalFilter === sig ? 'bg-[#F5B027] text-white font-bold' : 'bg-[#12100c] text-[#F2EEE6]/70'
+                      activeSignalFilter === sig ? 'bg-[#F5B027] text-white font-bold' : 'bg-[#151922] text-[#F2EEE6]/70'
                     }`}
                   >
                     {sig}
@@ -538,7 +538,7 @@ export const WorkspaceModal: React.FC<WorkspaceModalProps> = ({
                 {INITIAL_SIGNALS.filter(
                   (s) => activeSignalFilter === 'All' || s.type === activeSignalFilter
                 ).map((sig) => (
-                  <div key={sig.id} className="p-4 rounded-lg bg-[#12100c] border border-white/5 flex items-start justify-between gap-4">
+                  <div key={sig.id} className="p-4 rounded-lg bg-[#151922] border border-white/5 flex items-start justify-between gap-4">
                     <div>
                       <div className="flex items-center gap-2 mb-1">
                         <span className="px-2 py-0.5 rounded bg-[#F5B027]/10 border border-[#F5B027]/30 text-[#F5B027] text-[10px] font-mono font-bold uppercase">
@@ -573,7 +573,7 @@ export const WorkspaceModal: React.FC<WorkspaceModalProps> = ({
               </div>
               <div className="space-y-3">
                 {INITIAL_CALENDAR.map((ev) => (
-                  <div key={ev.id} className="p-4 rounded-lg bg-[#12100c] border border-white/5 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                  <div key={ev.id} className="p-4 rounded-lg bg-[#151922] border border-white/5 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                     <div>
                       <div className="flex items-center gap-2 text-xs font-mono text-[#F2EEE6]/60">
                         <Clock size={12} className="text-[#F5B027]" />
@@ -601,7 +601,7 @@ export const WorkspaceModal: React.FC<WorkspaceModalProps> = ({
           {/* 7. MEETINGS */}
           {activeTileId === 'meetings' && (
             <div className="space-y-6">
-              <div className="p-5 rounded-lg bg-[#12100c] border border-[#F5B027]/30 space-y-4">
+              <div className="p-5 rounded-lg bg-[#151922] border border-[#F5B027]/30 space-y-4">
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
                   <div>
                     <span className="text-[10px] font-mono uppercase tracking-widest text-[#F5B027] font-bold">
@@ -680,7 +680,7 @@ export const WorkspaceModal: React.FC<WorkspaceModalProps> = ({
                   placeholder="Log high-stakes executive commitment..."
                   value={newTaskTitle}
                   onChange={(e) => setNewTaskTitle(e.target.value)}
-                  className="flex-1 bg-[#12100c] border border-white/10 rounded-lg px-3 py-2 text-xs text-[#F2EEE6] placeholder-[#F2EEE6]/40 focus:outline-none focus:border-[#F5B027]"
+                  className="flex-1 bg-[#151922] border border-white/10 rounded-lg px-3 py-2 text-xs text-[#F2EEE6] placeholder-[#F2EEE6]/40 focus:outline-none focus:border-[#F5B027]"
                 />
                 <button
                   type="submit"
@@ -696,7 +696,7 @@ export const WorkspaceModal: React.FC<WorkspaceModalProps> = ({
                   <div
                     key={task.id}
                     onClick={() => toggleTask(task.id)}
-                    className="p-3 rounded-lg bg-[#12100c] border border-white/5 flex items-start gap-3 hover:bg-white/5 cursor-pointer transition-colors"
+                    className="p-3 rounded-lg bg-[#151922] border border-white/5 flex items-start gap-3 hover:bg-white/5 cursor-pointer transition-colors"
                   >
                     {task.completed ? (
                       <CheckCircle2 size={16} className="text-[#C78522] shrink-0 mt-0.5" />
@@ -726,7 +726,7 @@ export const WorkspaceModal: React.FC<WorkspaceModalProps> = ({
           {/* 9. INBOX */}
           {activeTileId === 'inbox' && (
             <div className="space-y-4">
-              <div className="flex items-center justify-between p-3 rounded-lg bg-[#12100c] border border-white/5 text-xs font-mono">
+              <div className="flex items-center justify-between p-3 rounded-lg bg-[#151922] border border-white/5 text-xs font-mono">
                 <div className="flex items-center gap-2">
                   <span className="w-2 h-2 rounded-full bg-[#C78522]" />
                   <span>Executive Thread Model: Active</span>
@@ -741,14 +741,14 @@ export const WorkspaceModal: React.FC<WorkspaceModalProps> = ({
                       <div className="flex items-center gap-2">
                         <img src={th.avatar} alt={th.sender} className="w-7 h-7 rounded-full object-cover" />
                         <div>
-                          <span className="font-bold text-sm text-[#12100C]">{th.sender}</span>
-                          <span className="text-xs text-[#12100C]/60 ml-2">({th.company})</span>
+                          <span className="font-bold text-sm text-[#14161A]">{th.sender}</span>
+                          <span className="text-xs text-[#14161A]/60 ml-2">({th.company})</span>
                         </div>
                       </div>
-                      <span className="text-[11px] font-mono text-[#12100C]/60">{th.timestamp}</span>
+                      <span className="text-[11px] font-mono text-[#14161A]/60">{th.timestamp}</span>
                     </div>
-                    <div className="font-semibold text-xs text-[#12100C] mt-2">{th.subject}</div>
-                    <p className="text-xs text-[#12100C]/80 mt-1">{th.preview}</p>
+                    <div className="font-semibold text-xs text-[#14161A] mt-2">{th.subject}</div>
+                    <p className="text-xs text-[#14161A]/80 mt-1">{th.preview}</p>
                     <div className="mt-3 pt-2 border-t border-black/10 flex justify-end">
                       <button
                         onClick={() => handleSendToApprovalQueue(`Reply to ${th.sender} on ${th.subject}`, `Draft reply staged for ${th.sender}`)}
@@ -781,7 +781,7 @@ export const WorkspaceModal: React.FC<WorkspaceModalProps> = ({
                     className={`p-2 rounded text-center text-xs font-mono transition-colors ${
                       selectedFolder === f
                         ? 'bg-[#F5B027] text-white font-bold'
-                        : 'bg-[#12100c] text-[#F2EEE6]/70 hover:bg-white/5'
+                        : 'bg-[#151922] text-[#F2EEE6]/70 hover:bg-white/5'
                     }`}
                   >
                     <Folder size={14} className="mx-auto mb-1" />
@@ -794,7 +794,7 @@ export const WorkspaceModal: React.FC<WorkspaceModalProps> = ({
                 {INITIAL_KNOWLEDGE_DOCS.filter(
                   (d) => d.folder === selectedFolder || selectedFolder === 'Company Briefs'
                 ).map((doc) => (
-                  <div key={doc.id} className="p-4 rounded-lg bg-[#12100c] border border-white/5">
+                  <div key={doc.id} className="p-4 rounded-lg bg-[#151922] border border-white/5">
                     <div className="flex justify-between items-baseline">
                       <h3 className="text-sm font-bold text-[#F2EEE6]">{doc.title}</h3>
                       <span className="text-[10px] font-mono text-[#F2EEE6]/50">{doc.dateAdded} · {doc.size}</span>
@@ -809,7 +809,7 @@ export const WorkspaceModal: React.FC<WorkspaceModalProps> = ({
           {/* 11. RELATIONSHIP RADAR */}
           {activeTileId === 'relationship-radar' && (
             <div className="space-y-5">
-              <div className="p-4 rounded-lg bg-[#12100c] border border-white/5 flex items-center justify-between">
+              <div className="p-4 rounded-lg bg-[#151922] border border-white/5 flex items-center justify-between">
                 <div>
                   <span className="text-xs font-mono uppercase text-[#F2EEE6]/60">Standardized 5-Bucket Weather Model</span>
                   <div className="text-sm text-[#F2EEE6] font-semibold mt-0.5">
@@ -826,10 +826,10 @@ export const WorkspaceModal: React.FC<WorkspaceModalProps> = ({
                   { key: 'hot', name: 'Hot Now', count: 8, color: '#C78522', desc: '< 7d touchpoint' },
                   { key: 'emerging', name: 'Emerging', count: 14, color: '#F5B027', desc: 'Accelerating affinity' },
                   { key: 'strategic', name: 'Strategic', count: 29, color: '#F5B027', desc: 'Core institutional bridge' },
-                  { key: 'dormant', name: 'Dormant', count: 12, color: '#C78522', desc: '> 30d gap' },
+                  { key: 'dormant', name: 'Dormant', count: 12, color: '#64748B', desc: '> 30d gap' },
                   { key: 'at_risk', name: 'At Risk', count: 3, color: '#C78522', desc: 'Critical pending deal' },
                 ].map((b) => (
-                  <div key={b.key} className="bg-[#12100c] p-3 rounded-lg border border-white/5 space-y-2">
+                  <div key={b.key} className="bg-[#151922] p-3 rounded-lg border border-white/5 space-y-2">
                     <div className="flex justify-between items-center">
                       <span className="text-xs font-mono font-bold" style={{ color: b.color }}>
                         {b.name}
@@ -846,7 +846,7 @@ export const WorkspaceModal: React.FC<WorkspaceModalProps> = ({
           {/* 12. CONNECTION PATHS */}
           {activeTileId === 'connection-paths' && (
             <div className="space-y-5">
-              <div className="p-5 rounded-lg bg-[#12100c] border border-[#F5B027]/30 space-y-4">
+              <div className="p-5 rounded-lg bg-[#151922] border border-[#F5B027]/30 space-y-4">
                 <span className="text-[10px] font-mono uppercase tracking-widest text-[#F5B027] font-bold">
                   DISCOVERED SHORTEST WARM PATH
                 </span>
@@ -859,7 +859,7 @@ export const WorkspaceModal: React.FC<WorkspaceModalProps> = ({
                   </div>
                   <ArrowRight size={20} className="text-[#F5B027] rotate-90 sm:rotate-0" />
                   <div className="text-center">
-                    <div className="w-12 h-12 rounded-full bg-[#12100c] border-2 border-[#F5B027] text-[#F2EEE6] flex items-center justify-center font-bold text-xs mx-auto">
+                    <div className="w-12 h-12 rounded-full bg-[#151922] border-2 border-[#F5B027] text-[#F2EEE6] flex items-center justify-center font-bold text-xs mx-auto">
                       DS
                     </div>
                     <div className="text-xs font-semibold text-[#F2EEE6] mt-1">David Sterling</div>
@@ -867,7 +867,7 @@ export const WorkspaceModal: React.FC<WorkspaceModalProps> = ({
                   </div>
                   <ArrowRight size={20} className="text-[#F5B027] rotate-90 sm:rotate-0" />
                   <div className="text-center">
-                    <div className="w-12 h-12 rounded-full bg-[#F4F1EA] text-[#12100C] flex items-center justify-center font-bold text-sm mx-auto">
+                    <div className="w-12 h-12 rounded-full bg-[#F4F1EA] text-[#14161A] flex items-center justify-center font-bold text-sm mx-auto">
                       SN
                     </div>
                     <div className="text-xs font-semibold text-[#F2EEE6] mt-1">Satya Nadella</div>
@@ -900,7 +900,7 @@ export const WorkspaceModal: React.FC<WorkspaceModalProps> = ({
                   value={iqQuery}
                   onChange={(e) => setIqQuery(e.target.value)}
                   onKeyDown={(e) => e.key === 'Enter' && handleIqSubmit()}
-                  className="flex-1 bg-[#12100c] border border-white/10 rounded-lg px-4 py-2.5 text-xs text-[#F2EEE6] focus:outline-none focus:border-[#F5B027]"
+                  className="flex-1 bg-[#151922] border border-white/10 rounded-lg px-4 py-2.5 text-xs text-[#F2EEE6] focus:outline-none focus:border-[#F5B027]"
                 />
                 <button
                   onClick={() => handleIqSubmit()}
@@ -927,7 +927,7 @@ export const WorkspaceModal: React.FC<WorkspaceModalProps> = ({
                     <button
                       key={i}
                       onClick={() => handleIqSubmit(p)}
-                      className="px-3 py-1.5 rounded-lg bg-[#12100c] hover:bg-white/10 border border-white/5 text-xs text-[#F2EEE6]/80 text-left transition-colors"
+                      className="px-3 py-1.5 rounded-lg bg-[#151922] hover:bg-white/10 border border-white/5 text-xs text-[#F2EEE6]/80 text-left transition-colors"
                     >
                       “{p}”
                     </button>
@@ -938,7 +938,7 @@ export const WorkspaceModal: React.FC<WorkspaceModalProps> = ({
               {/* Answers */}
               <div className="space-y-3 pt-3">
                 {iqAnswers.map((item, i) => (
-                  <div key={i} className="p-4 rounded-lg bg-[#12100c] border border-white/5 space-y-2">
+                  <div key={i} className="p-4 rounded-lg bg-[#151922] border border-white/5 space-y-2">
                     <div className="text-xs font-mono text-[#F5B027] font-semibold">Q: {item.q}</div>
                     <div className="text-xs text-[#F2EEE6] leading-relaxed font-serif-editorial text-sm">
                       {item.a}
@@ -975,19 +975,19 @@ export const WorkspaceModal: React.FC<WorkspaceModalProps> = ({
               </div>
 
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs font-mono">
-                <div className="p-3 rounded-lg bg-[#12100c] border border-white/5">
+                <div className="p-3 rounded-lg bg-[#151922] border border-white/5">
                   <div className="text-[#F2EEE6]/60">DORMANT CONTACTS</div>
                   <div className="text-xl font-bold text-[#F5B027] mt-1">24 Executives</div>
                 </div>
-                <div className="p-3 rounded-lg bg-[#12100c] border border-white/5">
+                <div className="p-3 rounded-lg bg-[#151922] border border-white/5">
                   <div className="text-[#F2EEE6]/60">MISSED FOLLOW-UPS</div>
                   <div className="text-xl font-bold text-[#C78522] mt-1">5 Critical</div>
                 </div>
-                <div className="p-3 rounded-lg bg-[#12100c] border border-white/5">
+                <div className="p-3 rounded-lg bg-[#151922] border border-white/5">
                   <div className="text-[#F2EEE6]/60">UNFINISHED INTROS</div>
                   <div className="text-xl font-bold text-[#F5B027] mt-1">3 Stalled</div>
                 </div>
-                <div className="p-3 rounded-lg bg-[#12100c] border border-white/5">
+                <div className="p-3 rounded-lg bg-[#151922] border border-white/5">
                   <div className="text-[#F2EEE6]/60">AT-RISK OPPORTUNITIES</div>
                   <div className="text-xl font-bold text-[#C78522] mt-1">2 Deals</div>
                 </div>
@@ -998,7 +998,7 @@ export const WorkspaceModal: React.FC<WorkspaceModalProps> = ({
           {/* 15. DIGITAL YOU */}
           {activeTileId === 'digital-you' && (
             <div className="space-y-5">
-              <div className="p-4 rounded-lg bg-[#12100c] border border-white/5 flex items-center gap-4">
+              <div className="p-4 rounded-lg bg-[#151922] border border-white/5 flex items-center gap-4">
                 <img
                   src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=160&auto=format&fit=crop&q=80"
                   alt="CEO Twin"
@@ -1023,7 +1023,7 @@ export const WorkspaceModal: React.FC<WorkspaceModalProps> = ({
                   <button
                     key={i}
                     onClick={() => handleSendToApprovalQueue(`Digital You action: ${act}`, `Synthesized executive representation for ${act}`)}
-                    className="p-3.5 rounded-lg bg-[#12100c] hover:bg-white/5 border border-white/5 text-left flex items-center justify-between group"
+                    className="p-3.5 rounded-lg bg-[#151922] hover:bg-white/5 border border-white/5 text-left flex items-center justify-between group"
                   >
                     <span className="text-xs font-semibold text-[#F2EEE6] group-hover:text-[#F5B027]">
                       {act}
@@ -1040,7 +1040,7 @@ export const WorkspaceModal: React.FC<WorkspaceModalProps> = ({
           {/* 16. AUTOMATIONS */}
           {activeTileId === 'automations' && (
             <div className="space-y-5">
-              <div className="p-4 rounded-lg bg-[#12100c] border border-white/5">
+              <div className="p-4 rounded-lg bg-[#151922] border border-white/5">
                 <span className="text-[10px] font-mono uppercase tracking-widest text-[#F5B027] font-bold block mb-1">
                   4-STEP VISUAL RULE BUILDER
                 </span>
@@ -1070,7 +1070,7 @@ export const WorkspaceModal: React.FC<WorkspaceModalProps> = ({
                 </span>
                 <div className="space-y-2">
                   {INITIAL_AUTOMATIONS.map((r) => (
-                    <div key={r.id} className="p-3 rounded-lg bg-[#12100c] border border-white/5 flex items-center justify-between text-xs font-mono">
+                    <div key={r.id} className="p-3 rounded-lg bg-[#151922] border border-white/5 flex items-center justify-between text-xs font-mono">
                       <div>
                         <div className="font-bold text-[#F2EEE6]">{r.trigger}</div>
                         <div className="text-[11px] text-[#F2EEE6]/60 mt-0.5">
@@ -1090,7 +1090,7 @@ export const WorkspaceModal: React.FC<WorkspaceModalProps> = ({
           {/* 17. ANALYTICS */}
           {activeTileId === 'analytics' && (
             <div className="space-y-6">
-              <div className="p-5 rounded-lg bg-[#12100c] border border-white/5 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+              <div className="p-5 rounded-lg bg-[#151922] border border-white/5 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                 <div>
                   <span className="text-xs font-mono uppercase text-[#F2EEE6]/60">Relationship ROI</span>
                   <div className="text-3xl font-mono font-bold text-[#C78522]">+342%</div>
@@ -1132,7 +1132,7 @@ export const WorkspaceModal: React.FC<WorkspaceModalProps> = ({
           {/* 18. COMPANY INTELLIGENCE */}
           {activeTileId === 'company-intelligence' && (
             <div className="space-y-5">
-              <div className="p-4 rounded-lg bg-[#12100c] border border-white/5 flex items-center justify-between">
+              <div className="p-4 rounded-lg bg-[#151922] border border-white/5 flex items-center justify-between">
                 <div>
                   <h3 className="text-lg font-bold text-[#F2EEE6]">Stripe Global Network</h3>
                   <span className="text-xs text-[#F5B027] font-mono">Valuation: $70B · Pre-IPO</span>
@@ -1154,7 +1154,7 @@ export const WorkspaceModal: React.FC<WorkspaceModalProps> = ({
                   { title: 'Opportunities', text: '$750K open executive intelligence platform license.' },
                   { title: 'News & Insights', text: 'Preparing liquidity framework for late 2026/early 2027.' },
                 ].map((sec, i) => (
-                  <div key={i} className="p-3 rounded bg-[#12100c] border border-white/5 space-y-1">
+                  <div key={i} className="p-3 rounded bg-[#151922] border border-white/5 space-y-1">
                     <span className="text-[#F5B027] font-bold block">{sec.title}</span>
                     <p className="text-[11px] text-[#F2EEE6]/70 leading-relaxed font-sans">{sec.text}</p>
                   </div>
@@ -1166,7 +1166,7 @@ export const WorkspaceModal: React.FC<WorkspaceModalProps> = ({
           {/* 19. INTRODUCTIONS */}
           {activeTileId === 'introductions' && (
             <div className="space-y-5">
-              <div className="p-4 rounded-lg bg-[#12100c] border border-white/5">
+              <div className="p-4 rounded-lg bg-[#151922] border border-white/5">
                 <span className="text-xs font-mono uppercase text-[#F5B027] font-bold block mb-1">
                   4-STEP BILATERAL INTRO STATE MACHINE
                 </span>
@@ -1177,7 +1177,7 @@ export const WorkspaceModal: React.FC<WorkspaceModalProps> = ({
 
               <div className="space-y-3">
                 {introsList.map((intr) => (
-                  <div key={intr.id} className="p-4 rounded-lg bg-[#12100c] border border-white/5 space-y-3">
+                  <div key={intr.id} className="p-4 rounded-lg bg-[#151922] border border-white/5 space-y-3">
                     <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
                       <div className="flex items-center gap-3">
                         <img src={intr.partyA.avatar} alt={intr.partyA.name} className="w-8 h-8 rounded-full object-cover" />
@@ -1244,7 +1244,7 @@ export const WorkspaceModal: React.FC<WorkspaceModalProps> = ({
           {/* 21. TEAM GRAPH */}
           {activeTileId === 'team-graph' && (
             <div className="space-y-5">
-              <div className="p-4 rounded-lg bg-[#12100c] border border-white/5 flex items-center justify-between">
+              <div className="p-4 rounded-lg bg-[#151922] border border-white/5 flex items-center justify-between">
                 <div>
                   <span className="text-xs font-mono uppercase text-[#F2EEE6]/60">Multi-seat Firm Topology</span>
                   <div className="text-sm text-[#F2EEE6] font-bold mt-0.5">
@@ -1264,15 +1264,15 @@ export const WorkspaceModal: React.FC<WorkspaceModalProps> = ({
                   Zero-Conflict Partner Overlap Matrix
                 </span>
                 <div className="space-y-2 text-xs font-mono text-[#F2EEE6]">
-                  <div className="flex justify-between p-2 rounded bg-[#12100c]">
+                  <div className="flex justify-between p-2 rounded bg-[#151922]">
                     <span>Partner A (You) → Elena Rostova (Apex)</span>
                     <span className="text-[#C78522] font-bold">Primary Lead</span>
                   </div>
-                  <div className="flex justify-between p-2 rounded bg-[#12100c]">
+                  <div className="flex justify-between p-2 rounded bg-[#151922]">
                     <span>Partner B → Marcus Vance (Vance Aero)</span>
                     <span className="text-[#F5B027] font-bold">Active Co-Lead</span>
                   </div>
-                  <div className="flex justify-between p-2 rounded bg-[#12100c]">
+                  <div className="flex justify-between p-2 rounded bg-[#151922]">
                     <span>Partner C → Nordic Sovereign Tech</span>
                     <span className="text-[#F5B027] font-bold">Secondary Sync</span>
                   </div>
@@ -1284,7 +1284,7 @@ export const WorkspaceModal: React.FC<WorkspaceModalProps> = ({
           {/* 22. DIAGNOSTICS */}
           {activeTileId === 'diagnostics' && (
             <div className="space-y-5">
-              <div className="p-5 rounded-lg bg-[#12100c] border border-[#C78522]/30 space-y-3">
+              <div className="p-5 rounded-lg bg-[#151922] border border-[#C78522]/30 space-y-3">
                 <div className="flex items-center gap-2 text-[#C78522] font-bold text-sm">
                   <ShieldCheck size={18} />
                   <span>Forensic Scan Complete · Executive Golden Report Ready</span>
@@ -1324,15 +1324,15 @@ export const WorkspaceModal: React.FC<WorkspaceModalProps> = ({
 
               <div className="sys-card-ivory p-5 rounded-lg space-y-3">
                 <div className="flex justify-between items-baseline">
-                  <span className="text-xs font-mono uppercase tracking-wider text-[#12100C]/60">
+                  <span className="text-xs font-mono uppercase tracking-wider text-[#14161A]/60">
                     Draft Prepared from Relationship Records
                   </span>
                   <span className="text-[10px] font-mono uppercase bg-[#F5B027]/10 text-[#F5B027] px-2 py-0.5 rounded font-bold">
                     Pending Approval
                   </span>
                 </div>
-                <h3 className="text-base font-bold text-[#12100C]">Quarterly LP Letter v3</h3>
-                <p className="text-xs text-[#12100C]/85 leading-relaxed">
+                <h3 className="text-base font-bold text-[#14161A]">Quarterly LP Letter v3</h3>
+                <p className="text-xs text-[#14161A]/85 leading-relaxed">
                   Synthesized directly from Fund V mandate notes and the 18 allocator insights captured at Benchmark’s dinner. Focuses on private sovereign capital allocation to resilient deep tech assets.
                 </p>
                 <div className="flex justify-end pt-2">
@@ -1350,7 +1350,7 @@ export const WorkspaceModal: React.FC<WorkspaceModalProps> = ({
           {/* 24. EXECUTIVE BRIEF */}
           {activeTileId === 'executive-brief' && (
             <div className="space-y-5">
-              <div className="p-4 rounded-lg bg-[#12100c] border border-white/5 flex items-center justify-between">
+              <div className="p-4 rounded-lg bg-[#151922] border border-white/5 flex items-center justify-between">
                 <div>
                   <span className="text-[10px] font-mono uppercase tracking-widest text-[#F5B027] font-bold">
                     TODAY'S 07:30 SYNTHESIS

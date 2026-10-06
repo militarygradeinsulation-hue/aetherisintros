@@ -523,12 +523,12 @@ export const IntrosSystemGrid: React.FC = () => {
   };
 
   return (
-    <div className="relative min-h-screen w-full bg-[#12100C] text-[#F2EEE6] flex flex-col font-sans-clean select-none">
+    <div className="relative min-h-screen w-full bg-[#07090C] text-[#F2EEE6] flex flex-col font-sans-clean select-none">
       {/* Background Constellation Field */}
       <ConstellationField />
 
       {/* 1. TOP HEADER BAND */}
-      <header className="relative z-20 w-full border-b border-[rgba(255,255,255,0.06)] bg-[#12100C]/90 backdrop-blur-md">
+      <header className="relative z-20 w-full border-b border-[rgba(255,255,255,0.06)] bg-[#07090C]/90 backdrop-blur-md">
         <div className="max-w-[1560px] mx-auto px-4 sm:px-6 lg:px-8 py-3.5 flex flex-col md:flex-row md:items-center justify-between gap-4">
           {/* Left: A E T H E R I S / I N T R O S */}
           <div className="flex items-center gap-4 sm:gap-6">
@@ -550,7 +550,7 @@ export const IntrosSystemGrid: React.FC = () => {
           </div>
 
           {/* Center: View Switcher (Grid / Actionable Inbox / Network Graph) */}
-          <div className="flex items-center gap-1 p-1 rounded-lg bg-[#12100C] border border-white/10 self-center md:self-auto">
+          <div className="flex items-center gap-1 p-1 rounded-lg bg-[#0E1116] border border-white/10 self-center md:self-auto">
             <button
               onClick={() => setDashboardView('grid')}
               className={`px-3 py-1.5 rounded-md text-xs font-mono flex items-center gap-1.5 transition-all ${
@@ -668,7 +668,7 @@ export const IntrosSystemGrid: React.FC = () => {
             </button>
 
             {/* Sort Dropdown Menu in Header */}
-            <div className="flex items-center gap-1.5 px-2.5 py-1 rounded bg-[#12100C] border border-white/10 text-xs">
+            <div className="flex items-center gap-1.5 px-2.5 py-1 rounded bg-[#0E1116] border border-white/10 text-xs">
               <ArrowUpDown size={12} className="text-[#F5B027]" />
               <label htmlFor="header-sort" className="text-[10px] font-mono text-[#F2EEE6]/60 uppercase tracking-wider hidden sm:inline">
                 Sort:
@@ -680,9 +680,9 @@ export const IntrosSystemGrid: React.FC = () => {
                 className="bg-transparent text-[#F2EEE6] text-[11px] font-mono focus:outline-none cursor-pointer"
                 title="Sort network connections"
               >
-                <option value="last_engaged" className="bg-[#12100C] text-[#F2EEE6]">Last Engaged</option>
-                <option value="name" className="bg-[#12100C] text-[#F2EEE6]">Name (A–Z)</option>
-                <option value="urgency" className="bg-[#12100C] text-[#F2EEE6]">Urgency Level</option>
+                <option value="last_engaged" className="bg-[#0E1116] text-[#F2EEE6]">Last Engaged</option>
+                <option value="name" className="bg-[#0E1116] text-[#F2EEE6]">Name (A–Z)</option>
+                <option value="urgency" className="bg-[#0E1116] text-[#F2EEE6]">Urgency Level</option>
               </select>
             </div>
 
@@ -805,7 +805,7 @@ export const IntrosSystemGrid: React.FC = () => {
 
         {/* Real-time Notification Banner for Calendar Scan & Report Export */}
         {notification && (
-          <div className="w-full bg-[#12100C] border-t border-b border-[#F5B027]/30 px-4 py-2 flex items-center justify-between text-xs animate-in slide-in-from-top-1 duration-200">
+          <div className="w-full bg-[#0E1116] border-t border-b border-[#F5B027]/30 px-4 py-2 flex items-center justify-between text-xs animate-in slide-in-from-top-1 duration-200">
             <div className="max-w-[1560px] mx-auto w-full flex items-center justify-between gap-3">
               <div className="flex items-center gap-2">
                 <CheckCircle2 size={13} className="text-[#C78522] shrink-0" />
@@ -883,7 +883,7 @@ export const IntrosSystemGrid: React.FC = () => {
                 <span>Follow-up Needed ({people.filter((p) => p.engagement === 'followup').length})</span>
               </div>
               <div className="flex items-center gap-1.5">
-                <span className="w-2 h-2 rounded-full bg-[#C78522]" />
+                <span className="w-2 h-2 rounded-full bg-[#64748B]" />
                 <span>Dormant ({people.filter((p) => p.engagement === 'dormant').length})</span>
               </div>
               <span className="text-white/20 hidden sm:inline">|</span>
@@ -952,7 +952,7 @@ export const IntrosSystemGrid: React.FC = () => {
 
             {/* Visual Heatmap Overlay Controller & Editorial Legend */}
             {heatmapActive && (
-              <div className="mb-3.5 p-3 sm:p-3.5 rounded-xl bg-[#12100C] border border-[#F5B027]/40 shadow-[0_0_25px_rgba(249,115,22,0.15)] flex flex-col md:flex-row md:items-center justify-between gap-3 animate-in fade-in duration-200">
+              <div className="mb-3.5 p-3 sm:p-3.5 rounded-xl bg-[#0E1116] border border-[#F5B027]/40 shadow-[0_0_25px_rgba(249,115,22,0.15)] flex flex-col md:flex-row md:items-center justify-between gap-3 animate-in fade-in duration-200">
                 <div className="flex items-center gap-3 min-w-0">
                   <div className="w-8 h-8 rounded-lg bg-[#F5B027]/20 border border-[#F5B027]/40 flex items-center justify-center text-base shrink-0">
                     🔥
@@ -989,8 +989,8 @@ export const IntrosSystemGrid: React.FC = () => {
                       <span className="w-2 h-2 rounded-full bg-[#F5B027]" />
                       <span>60–74% Baseline</span>
                     </span>
-                    <span className="flex items-center gap-1 text-[#FFC85C]">
-                      <span className="w-2 h-2 rounded-full bg-[#C78522]" />
+                    <span className="flex items-center gap-1 text-[#94A3B8]">
+                      <span className="w-2 h-2 rounded-full bg-[#64748B]" />
                       <span>&lt;60% Drift Alert</span>
                     </span>
                   </div>
@@ -1082,7 +1082,7 @@ export const IntrosSystemGrid: React.FC = () => {
               gridSelectedTag !== null ||
               gridActivityHistoryFilter !== 'all' ||
               gridSearchQuery.trim()) && (
-              <div className="mb-3.5 px-3 py-1.5 rounded-lg bg-[#12100C] border border-white/10 flex items-center justify-between text-xs font-mono">
+              <div className="mb-3.5 px-3 py-1.5 rounded-lg bg-[#0E1116] border border-white/10 flex items-center justify-between text-xs font-mono">
                 <span className="text-[#F5B027]">
                   Showing {filteredGridPeople.length} of {people.length} executive connections
                   {gridFilterStatus !== 'all' && ` · Status: ${gridFilterStatus}`}
@@ -1164,7 +1164,7 @@ export const IntrosSystemGrid: React.FC = () => {
       )}
 
       {/* 3. FOOTER BAND OVER DARK MOUNTAIN HORIZON */}
-      <footer className="relative z-10 w-full border-t border-[rgba(255,255,255,0.06)] bg-[#12100c] overflow-hidden">
+      <footer className="relative z-10 w-full border-t border-[rgba(255,255,255,0.06)] bg-[#050709] overflow-hidden">
         {/* Persistent Visual Key-Map Dock */}
         <PersistentFooterKeyMap
           focusedTileIndex={focusedTileIndex}
@@ -1209,7 +1209,7 @@ export const IntrosSystemGrid: React.FC = () => {
           >
             <path
               d="M0,170 L90,145 L180,180 L290,135 L420,165 L550,110 L680,155 L790,95 L910,140 L1040,115 L1170,160 L1290,125 L1440,155 L1440,280 L0,280 Z"
-              fill="rgba(18, 16, 12, 0.9)"
+              fill="rgba(14, 17, 22, 0.9)"
             />
             <path
               d="M0,185 L110,165 L220,195 L340,150 L470,175 L590,130 L720,170 L830,120 L960,160 L1080,135 L1210,175 L1330,145 L1440,170"
@@ -1218,7 +1218,7 @@ export const IntrosSystemGrid: React.FC = () => {
             />
             <path
               d="M0,200 L130,180 L270,215 L390,175 L520,205 L660,160 L780,200 L900,155 L1020,190 L1150,165 L1280,205 L1440,180 L1440,280 L0,280 Z"
-              fill="#12100C"
+              fill="#07090C"
             />
           </svg>
         </div>
@@ -1429,7 +1429,7 @@ export const IntrosSystemGrid: React.FC = () => {
       <div className="fixed bottom-20 right-6 z-40">
         <button
           onClick={() => setIsQuickAddOpen(true)}
-          className="px-4 py-3 rounded-2xl bg-[#F5B027] hover:bg-[#F5B027]/90 text-white font-mono text-xs font-medium shadow-[0_10px_30px_rgba(199, 133, 34,0.6)] flex items-center gap-2 transition-all active:scale-95 group"
+          className="px-4 py-3 rounded-2xl bg-[#F5B027] hover:bg-[#F5B027]/90 text-white font-mono text-xs font-medium shadow-[0_10px_30px_rgba(61,107,242,0.6)] flex items-center gap-2 transition-all active:scale-95 group"
           title="Quickly add a new executive contact (Quick Add)"
         >
           <span className="text-base font-bold">+</span>

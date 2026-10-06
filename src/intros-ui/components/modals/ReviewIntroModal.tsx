@@ -44,7 +44,7 @@ export const ReviewIntroModal: React.FC<ReviewIntroModalProps> = ({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-fadeIn">
-      <div className="relative w-full max-w-lg bg-[#12100C] border border-white/10 rounded-2xl shadow-2xl p-6 text-[#F2EEE6] overflow-hidden">
+      <div className="relative w-full max-w-lg bg-[#0E1218] border border-white/10 rounded-2xl shadow-2xl p-6 text-[#F2EEE6] overflow-hidden">
         <button
           onClick={onClose}
           className="absolute top-4 right-4 p-1.5 text-[#9CA3AF] hover:text-white hover:bg-white/5 rounded-lg transition-colors cursor-pointer"
@@ -107,7 +107,7 @@ export const ReviewIntroModal: React.FC<ReviewIntroModalProps> = ({
               <label className="block text-xs font-medium text-[#9CA3AF] mb-1.5">
                 Note & Rationale from {request.requesterName}:
               </label>
-              <div className="p-3 bg-[#12100c] rounded-lg border border-white/5 text-xs text-[#FFC85C] italic">
+              <div className="p-3 bg-[#131722] rounded-lg border border-white/5 text-xs text-[#E2E8F0] italic">
                 "{request.note}"
               </div>
             </div>
@@ -122,7 +122,7 @@ export const ReviewIntroModal: React.FC<ReviewIntroModalProps> = ({
                 onChange={(e) => setFeedback(e.target.value)}
                 rows={2}
                 placeholder="e.g. Connecting two leaders whose work in applied AI infrastructure closely aligns..."
-                className="w-full bg-[#12100C] border border-white/10 rounded-lg p-2.5 text-xs text-white placeholder-[#6B7280] focus:outline-none focus:border-[#F5B027]"
+                className="w-full bg-[#151A24] border border-white/10 rounded-lg p-2.5 text-xs text-white placeholder-[#6B7280] focus:outline-none focus:border-[#F5B027]"
               />
             </div>
 

@@ -31,7 +31,7 @@ const CLUSTERS = [
   { id: 'capital', label: 'Capital & Syndicates', color: '#F5B027' },
   { id: 'aerospace', label: 'Deep Tech & Aerospace', color: '#C78522' },
   { id: 'sovereign', label: 'Sovereign Allocators', color: '#F5B027' },
-  { id: 'ai_deeptech', label: 'AI & Photonics', color: '#FFC85C' },
+  { id: 'ai_deeptech', label: 'AI & Photonics', color: '#A855F7' },
   { id: 'enterprise', label: 'Enterprise Strategy', color: '#D7C29A' },
 ];
 
@@ -166,7 +166,7 @@ export const NetworkGraphView: React.FC<NetworkGraphViewProps> = ({
     node
       .append('circle')
       .attr('r', (d) => d.val || 20)
-      .attr('fill', '#12100C')
+      .attr('fill', '#0E1116')
       .attr('stroke', (d) => getClusterColor(d.cluster))
       .attr('stroke-width', 2);
 
@@ -194,9 +194,9 @@ export const NetworkGraphView: React.FC<NetworkGraphViewProps> = ({
       .attr('fill', (d) => {
         if (d.engagement === 'active') return '#C78522';
         if (d.engagement === 'followup') return '#F5B027';
-        return '#C78522';
+        return '#64748B';
       })
-      .attr('stroke', '#12100C')
+      .attr('stroke', '#0E1116')
       .attr('stroke-width', 1);
 
     // Label under node
@@ -323,7 +323,7 @@ export const NetworkGraphView: React.FC<NetworkGraphViewProps> = ({
   return (
     <div className="w-full max-w-[1560px] mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-4">
       {/* Top Header & Cluster Navigation Bar */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 p-5 rounded-xl bg-[#12100C] border border-white/10">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 p-5 rounded-xl bg-[#0E1116] border border-white/10">
         <div>
           <div className="text-[10px] font-mono tracking-[0.25em] text-[#F5B027] uppercase font-bold">
             Interactive Topology
@@ -379,7 +379,7 @@ export const NetworkGraphView: React.FC<NetworkGraphViewProps> = ({
       {/* Main Canvas Viewport with Controls Overlay */}
       <div
         ref={containerRef}
-        className="relative w-full h-[620px] rounded-xl bg-[#12100C] border border-white/10 overflow-hidden shadow-2xl"
+        className="relative w-full h-[620px] rounded-xl bg-[#07090C] border border-white/10 overflow-hidden shadow-2xl"
       >
         {/* Subtle grid background lines */}
         <div
@@ -395,7 +395,7 @@ export const NetworkGraphView: React.FC<NetworkGraphViewProps> = ({
         <svg ref={svgRef} className="w-full h-full cursor-grab active:cursor-grabbing" />
 
         {/* Floating Controls (Top Left: Cluster Legend Stats) */}
-        <div className="absolute top-4 left-4 p-3 rounded-lg bg-[#12100C]/85 backdrop-blur-md border border-white/10 text-xs font-mono text-[#F2EEE6]/80 space-y-1 pointer-events-none">
+        <div className="absolute top-4 left-4 p-3 rounded-lg bg-[#0E1116]/85 backdrop-blur-md border border-white/10 text-xs font-mono text-[#F2EEE6]/80 space-y-1 pointer-events-none">
           <div className="text-[9px] uppercase tracking-wider text-[#F5B027] font-bold">
             Network Clusters
           </div>
@@ -409,7 +409,7 @@ export const NetworkGraphView: React.FC<NetworkGraphViewProps> = ({
         </div>
 
         {/* Floating Controls (Top Right: Zoom Controls) */}
-        <div className="absolute top-4 right-4 flex items-center gap-1 bg-[#12100C]/85 backdrop-blur-md p-1 rounded-lg border border-white/10 shadow-lg">
+        <div className="absolute top-4 right-4 flex items-center gap-1 bg-[#0E1116]/85 backdrop-blur-md p-1 rounded-lg border border-white/10 shadow-lg">
           <button
             onClick={() => handleZoom('in')}
             className="p-1.5 rounded hover:bg-white/10 text-[#F2EEE6] transition-colors"
@@ -435,7 +435,7 @@ export const NetworkGraphView: React.FC<NetworkGraphViewProps> = ({
 
         {/* Subtle, High-Editorial Tooltip on Hover explaining specific metric calculation */}
         {hoveredNode && (
-          <div className="absolute bottom-4 left-4 max-w-sm p-4 rounded-xl bg-[#12100C]/95 backdrop-blur-xl border border-[#F5B027]/40 shadow-2xl text-xs space-y-2 pointer-events-none animate-in fade-in duration-150 z-30">
+          <div className="absolute bottom-4 left-4 max-w-sm p-4 rounded-xl bg-[#090C11]/95 backdrop-blur-xl border border-[#F5B027]/40 shadow-2xl text-xs space-y-2 pointer-events-none animate-in fade-in duration-150 z-30">
             <div className="flex items-center justify-between gap-2 border-b border-white/10 pb-1.5">
               <span className="text-[9px] font-mono uppercase text-[#F5B027] font-semibold">
                 {hoveredNode.clusterLabel}

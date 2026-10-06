@@ -359,12 +359,12 @@ export const FullTextSearchModal: React.FC<FullTextSearchModalProps> = ({
       onClick={onClose}
     >
       <div
-        className="w-full max-w-3xl bg-[#12100C] border border-white/15 rounded-2xl shadow-[0_25px_70px_rgba(0,0,0,0.85)] overflow-hidden flex flex-col max-h-[85vh] animate-in zoom-in-95 duration-150 select-none"
+        className="w-full max-w-3xl bg-[#090C10] border border-white/15 rounded-2xl shadow-[0_25px_70px_rgba(0,0,0,0.85)] overflow-hidden flex flex-col max-h-[85vh] animate-in zoom-in-95 duration-150 select-none"
         onClick={(e) => e.stopPropagation()}
         onKeyDown={handleKeyDown}
       >
         {/* Top Search Input Bar */}
-        <div className="relative flex items-center px-4 sm:px-6 py-4 border-b border-white/10 bg-[#12100C]">
+        <div className="relative flex items-center px-4 sm:px-6 py-4 border-b border-white/10 bg-[#0E1116]">
           <Search size={18} className="text-[#F5B027] shrink-0 mr-3" />
           <input
             ref={inputRef}
@@ -393,7 +393,7 @@ export const FullTextSearchModal: React.FC<FullTextSearchModalProps> = ({
         </div>
 
         {/* Category Tabs & Quick Tag Recommendations */}
-        <div className="px-4 sm:px-6 py-2.5 border-b border-white/10 bg-[#12100C] flex items-center justify-between gap-2 overflow-x-auto">
+        <div className="px-4 sm:px-6 py-2.5 border-b border-white/10 bg-[#07090C] flex items-center justify-between gap-2 overflow-x-auto">
           <div className="flex items-center gap-1.5 shrink-0">
             <button
               onClick={() => setActiveTab('all')}
@@ -492,8 +492,8 @@ export const FullTextSearchModal: React.FC<FullTextSearchModalProps> = ({
                   onMouseEnter={() => setSelectedIndex(idx)}
                   className={`p-3 sm:p-3.5 rounded-xl border transition-all cursor-pointer flex flex-col gap-1.5 ${
                     isSelected
-                      ? 'bg-[#12100C] border-[#F5B027]/60 shadow-[0_0_15px_rgba(199, 133, 34,0.25)]'
-                      : 'bg-[#12100C] border-white/5 hover:border-white/15 hover:bg-white/[0.02]'
+                      ? 'bg-[#0E1524] border-[#F5B027]/60 shadow-[0_0_15px_rgba(61,107,242,0.25)]'
+                      : 'bg-[#0A0D12] border-white/5 hover:border-white/15 hover:bg-white/[0.02]'
                   }`}
                 >
                   <div className="flex items-start justify-between gap-3">
@@ -506,7 +506,7 @@ export const FullTextSearchModal: React.FC<FullTextSearchModalProps> = ({
                             : result.type === 'note'
                             ? 'bg-[#F5B027]/20 text-[#F5B027]'
                             : result.type === 'tag'
-                            ? 'bg-[#FFC85C]/20 text-[#FFC85C]'
+                            ? 'bg-[#A855F7]/20 text-[#C084FC]'
                             : 'bg-[#C78522]/20 text-[#C78522]'
                         }`}
                       >
@@ -583,7 +583,7 @@ export const FullTextSearchModal: React.FC<FullTextSearchModalProps> = ({
         </div>
 
         {/* Modal Footer with Shortcuts Navigation Guide */}
-        <div className="px-4 sm:px-6 py-3 border-t border-white/10 bg-[#12100C] flex items-center justify-between text-[11px] font-mono text-[#F2EEE6]/60">
+        <div className="px-4 sm:px-6 py-3 border-t border-white/10 bg-[#07090C] flex items-center justify-between text-[11px] font-mono text-[#F2EEE6]/60">
           <div className="flex items-center gap-3">
             <span className="flex items-center gap-1">
               <kbd className="px-1 py-0.2 bg-white/10 rounded text-[9px] border border-white/15">↑</kbd>
