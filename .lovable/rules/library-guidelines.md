@@ -2,7 +2,7 @@
 
 ## Components
 
-The design system exports these components — import them from `@ws-welvxikaqty7u9tjdi0k/c1248cd8-77de-4eaa-8d9d-e7da71e70ae9` and compose them before building anything from scratch:
+The design system exports these components — import them from `@ws-gmhcx8w6bqvecbtkycud/c1248cd8-77de-4eaa-8d9d-e7da71e70ae9` and compose them before building anything from scratch:
 
 `App`, `ConstellationField`, `CrmPage`, `FullCrm`, `GridPage`, `Landing`, `ParticleDrift`, `SheetImport`, `SimpleViewPage`
 
