@@ -279,14 +279,14 @@ export const ExecutiveRichTextEditor: React.FC<ExecutiveRichTextEditorProps> = (
       }
       if (line.startsWith('### ')) {
         return (
-          <h3 key={idx} className="font-mono text-xs uppercase tracking-wider text-[#3D6BF2] font-semibold mt-2.5 mb-1">
+          <h3 key={idx} className="font-mono text-xs uppercase tracking-wider text-[#F5B027] font-semibold mt-2.5 mb-1">
             {line.replace('### ', '')}
           </h3>
         );
       }
       if (line.startsWith('> ')) {
         return (
-          <blockquote key={idx} className="border-l-2 border-[#3D6BF2] pl-3 py-1 my-1.5 italic text-[11px] text-[#F2EEE6]/85 bg-white/5 rounded-r">
+          <blockquote key={idx} className="border-l-2 border-[#F5B027] pl-3 py-1 my-1.5 italic text-[11px] text-[#F2EEE6]/85 bg-white/5 rounded-r">
             {line.replace('> ', '')}
           </blockquote>
         );
@@ -296,7 +296,7 @@ export const ExecutiveRichTextEditor: React.FC<ExecutiveRichTextEditorProps> = (
         const itemText = line.replace(/^- \[[ xX]\] /, '');
         return (
           <div key={idx} className="flex items-start gap-2 py-0.5 text-xs text-[#F2EEE6]/90">
-            <span className={`mt-0.5 text-xs ${isChecked ? 'text-[#3FB37F]' : 'text-[#3D6BF2]'}`}>
+            <span className={`mt-0.5 text-xs ${isChecked ? 'text-[#C78522]' : 'text-[#F5B027]'}`}>
               {isChecked ? '☑' : '☐'}
             </span>
             <span className={isChecked ? 'line-through text-[#F2EEE6]/50' : ''}>{itemText}</span>
@@ -304,7 +304,7 @@ export const ExecutiveRichTextEditor: React.FC<ExecutiveRichTextEditorProps> = (
               <button
                 type="button"
                 onClick={() => onAddTaskToInbox(itemText, person.name)}
-                className="ml-auto text-[9px] font-mono text-[#3D6BF2] hover:underline px-1 py-0.5 rounded bg-[#3D6BF2]/10 shrink-0"
+                className="ml-auto text-[9px] font-mono text-[#F5B027] hover:underline px-1 py-0.5 rounded bg-[#F5B027]/10 shrink-0"
                 title="Send task to Actionable Inbox"
               >
                 + Inbox
@@ -316,7 +316,7 @@ export const ExecutiveRichTextEditor: React.FC<ExecutiveRichTextEditorProps> = (
       if (line.startsWith('- ')) {
         return (
           <div key={idx} className="flex items-start gap-2 py-0.5 text-xs text-[#F2EEE6]/80 pl-2">
-            <span className="text-[#3D6BF2] mt-1 text-[8px]">●</span>
+            <span className="text-[#F5B027] mt-1 text-[8px]">●</span>
             <span>{line.replace('- ', '')}</span>
           </div>
         );
@@ -337,11 +337,11 @@ export const ExecutiveRichTextEditor: React.FC<ExecutiveRichTextEditorProps> = (
       {/* Top Header / Mode Switcher */}
       <div className="p-3 bg-[#07090C] border-b border-white/10 flex items-center justify-between gap-2">
         <div className="flex items-center gap-2">
-          <FileText size={13} className="text-[#3D6BF2]" />
+          <FileText size={13} className="text-[#F5B027]" />
           <span className="text-[10px] font-mono uppercase tracking-wider text-[#F2EEE6] font-bold">
             Executive Minutes & Tactical Notes
           </span>
-          <span className="text-[9px] font-mono px-1.5 py-0.2 rounded-full bg-white/10 text-[#3D6BF2] font-semibold">
+          <span className="text-[9px] font-mono px-1.5 py-0.2 rounded-full bg-white/10 text-[#F5B027] font-semibold">
             {notes.length}
           </span>
         </div>
@@ -359,7 +359,7 @@ export const ExecutiveRichTextEditor: React.FC<ExecutiveRichTextEditorProps> = (
           </button>
           <button
             onClick={handleStartNewNote}
-            className="px-2.5 py-1 rounded bg-[#3D6BF2] hover:bg-[#3D6BF2]/90 text-white text-[10px] font-mono font-semibold flex items-center gap-1 transition-all shadow-sm"
+            className="px-2.5 py-1 rounded bg-[#F5B027] hover:bg-[#F5B027]/90 text-white text-[10px] font-mono font-semibold flex items-center gap-1 transition-all shadow-sm"
           >
             <Plus size={11} />
             <span>New Minutes</span>
@@ -382,7 +382,7 @@ export const ExecutiveRichTextEditor: React.FC<ExecutiveRichTextEditorProps> = (
                       onClick={() => setSelectedNoteId(note.id)}
                       className={`px-2.5 py-1 rounded text-[10px] font-mono flex items-center gap-1.5 shrink-0 transition-all ${
                         isSelected
-                          ? 'bg-[#3D6BF2]/20 border border-[#3D6BF2]/50 text-white font-semibold shadow-sm'
+                          ? 'bg-[#F5B027]/20 border border-[#F5B027]/50 text-white font-semibold shadow-sm'
                           : 'bg-white/5 border border-white/5 text-[#F2EEE6]/60 hover:text-white'
                       }`}
                     >
@@ -399,7 +399,7 @@ export const ExecutiveRichTextEditor: React.FC<ExecutiveRichTextEditorProps> = (
                 <div className="p-3.5 rounded-lg bg-black/40 border border-white/10 space-y-2.5">
                   <div className="flex items-start justify-between gap-2 border-b border-white/10 pb-2">
                     <div>
-                      <div className="flex items-center gap-1.5 text-[9px] font-mono text-[#3D6BF2] uppercase font-bold tracking-wider">
+                      <div className="flex items-center gap-1.5 text-[9px] font-mono text-[#F5B027] uppercase font-bold tracking-wider">
                         <span>{activeNote.category.replace('_', ' ')}</span>
                         <span>·</span>
                         <span className="text-[#F2EEE6]/50">{activeNote.createdAt}</span>
@@ -416,7 +416,7 @@ export const ExecutiveRichTextEditor: React.FC<ExecutiveRichTextEditorProps> = (
                         title="Copy structured minutes to clipboard"
                       >
                         {copiedNoteId === activeNote.id ? (
-                          <Check size={12} className="text-[#3FB37F]" />
+                          <Check size={12} className="text-[#C78522]" />
                         ) : (
                           <Copy size={12} />
                         )}
@@ -430,7 +430,7 @@ export const ExecutiveRichTextEditor: React.FC<ExecutiveRichTextEditorProps> = (
                       </button>
                       <button
                         onClick={() => handleDeleteNote(activeNote.id)}
-                        className="p-1 rounded text-[#F2EEE6]/50 hover:text-[#E5484D] hover:bg-white/10 transition-colors"
+                        className="p-1 rounded text-[#F2EEE6]/50 hover:text-[#C78522] hover:bg-white/10 transition-colors"
                         title="Delete note"
                       >
                         <Trash2 size={12} />
@@ -464,7 +464,7 @@ export const ExecutiveRichTextEditor: React.FC<ExecutiveRichTextEditorProps> = (
               <p>No meeting minutes or tactical notes recorded yet for {person.name}.</p>
               <button
                 onClick={handleStartNewNote}
-                className="px-3 py-1.5 rounded bg-[#3D6BF2]/20 hover:bg-[#3D6BF2]/30 text-[#3D6BF2] border border-[#3D6BF2]/40 text-xs font-mono"
+                className="px-3 py-1.5 rounded bg-[#F5B027]/20 hover:bg-[#F5B027]/30 text-[#F5B027] border border-[#F5B027]/40 text-xs font-mono"
               >
                 + Record First Meeting Minutes
               </button>
@@ -511,7 +511,7 @@ export const ExecutiveRichTextEditor: React.FC<ExecutiveRichTextEditorProps> = (
               placeholder="e.g. Series B Strategic Alignment Meeting..."
               value={title}
               onChange={(e) => setTitle(e.target.value)}
-              className="w-full bg-black/40 border border-white/15 rounded-lg px-3 py-1.5 text-xs text-[#F2EEE6] placeholder-[#F2EEE6]/30 focus:outline-none focus:border-[#3D6BF2] font-semibold"
+              className="w-full bg-black/40 border border-white/15 rounded-lg px-3 py-1.5 text-xs text-[#F2EEE6] placeholder-[#F2EEE6]/30 focus:outline-none focus:border-[#F5B027] font-semibold"
               required
             />
 
@@ -519,7 +519,7 @@ export const ExecutiveRichTextEditor: React.FC<ExecutiveRichTextEditorProps> = (
               <select
                 value={category}
                 onChange={(e) => setCategory(e.target.value as any)}
-                className="bg-black/40 border border-white/15 rounded-lg px-2 py-1 text-[11px] font-mono text-[#F2EEE6] focus:outline-none focus:border-[#3D6BF2]"
+                className="bg-black/40 border border-white/15 rounded-lg px-2 py-1 text-[11px] font-mono text-[#F2EEE6] focus:outline-none focus:border-[#F5B027]"
               >
                 <option value="meeting_minutes">Meeting Minutes</option>
                 <option value="tactical_note">Tactical Note</option>
@@ -532,7 +532,7 @@ export const ExecutiveRichTextEditor: React.FC<ExecutiveRichTextEditorProps> = (
                 placeholder="Tags (e.g. Series B, Governance, Apex)"
                 value={tagsInput}
                 onChange={(e) => setTagsInput(e.target.value)}
-                className="flex-1 bg-black/40 border border-white/15 rounded-lg px-2.5 py-1 text-xs text-[#F2EEE6] placeholder-[#F2EEE6]/30 focus:outline-none focus:border-[#3D6BF2]"
+                className="flex-1 bg-black/40 border border-white/15 rounded-lg px-2.5 py-1 text-xs text-[#F2EEE6] placeholder-[#F2EEE6]/30 focus:outline-none focus:border-[#F5B027]"
               />
             </div>
           </div>
@@ -588,7 +588,7 @@ export const ExecutiveRichTextEditor: React.FC<ExecutiveRichTextEditorProps> = (
                 className="p-1.5 rounded text-[#F2EEE6]/70 hover:text-white hover:bg-white/10 transition-colors"
                 title="Action Item Task"
               >
-                <CheckSquare size={12} className="text-[#3D6BF2]" />
+                <CheckSquare size={12} className="text-[#F5B027]" />
               </button>
               <button
                 type="button"
@@ -613,7 +613,7 @@ export const ExecutiveRichTextEditor: React.FC<ExecutiveRichTextEditorProps> = (
               type="button"
               onClick={() => setIsPreview(!isPreview)}
               className={`px-2 py-0.5 rounded text-[10px] font-mono flex items-center gap-1 transition-colors ${
-                isPreview ? 'bg-[#3D6BF2] text-white' : 'bg-white/5 text-[#F2EEE6]/70 hover:text-white'
+                isPreview ? 'bg-[#F5B027] text-white' : 'bg-white/5 text-[#F2EEE6]/70 hover:text-white'
               }`}
             >
               <Eye size={10} />
@@ -633,7 +633,7 @@ export const ExecutiveRichTextEditor: React.FC<ExecutiveRichTextEditorProps> = (
               value={content}
               onChange={(e) => setContent(e.target.value)}
               placeholder="Structured notes, strategic minutes, commitments, decisions..."
-              className="w-full bg-black/40 border border-white/15 rounded-lg p-3 text-xs text-[#F2EEE6] placeholder-[#F2EEE6]/30 focus:outline-none focus:border-[#3D6BF2] font-mono leading-relaxed resize-y"
+              className="w-full bg-black/40 border border-white/15 rounded-lg p-3 text-xs text-[#F2EEE6] placeholder-[#F2EEE6]/30 focus:outline-none focus:border-[#F5B027] font-mono leading-relaxed resize-y"
               required
             />
           )}
@@ -650,13 +650,13 @@ export const ExecutiveRichTextEditor: React.FC<ExecutiveRichTextEditorProps> = (
 
             <div className="flex items-center gap-2">
               {saveSuccess && (
-                <span className="text-[11px] font-mono text-[#3FB37F] flex items-center gap-1">
+                <span className="text-[11px] font-mono text-[#C78522] flex items-center gap-1">
                   <Check size={12} /> Saved!
                 </span>
               )}
               <button
                 type="submit"
-                className="px-3.5 py-1.5 rounded bg-[#3D6BF2] hover:bg-[#3D6BF2]/90 text-white text-xs font-mono font-semibold flex items-center gap-1.5 transition-all shadow-md"
+                className="px-3.5 py-1.5 rounded bg-[#F5B027] hover:bg-[#F5B027]/90 text-white text-xs font-mono font-semibold flex items-center gap-1.5 transition-all shadow-md"
               >
                 <Save size={12} />
                 <span>Save Minutes</span>

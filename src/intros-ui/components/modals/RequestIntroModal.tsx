@@ -46,7 +46,7 @@ export const RequestIntroModal: React.FC<RequestIntroModalProps> = ({
 
         {isSuccess ? (
           <div className="py-12 flex flex-col items-center justify-center text-center">
-            <div className="w-14 h-14 rounded-full bg-[#3D6BF2]/20 border border-[#3D6BF2] flex items-center justify-center text-[#3D6BF2] mb-4">
+            <div className="w-14 h-14 rounded-full bg-[#F5B027]/20 border border-[#F5B027] flex items-center justify-center text-[#F5B027] mb-4">
               <Check className="w-8 h-8" />
             </div>
             <h3 className="font-serif-editorial text-2xl font-bold mb-2">Introduction Requested</h3>
@@ -58,7 +58,7 @@ export const RequestIntroModal: React.FC<RequestIntroModalProps> = ({
           <div>
             {/* Header */}
             <div className="flex items-center gap-2 mb-1">
-              <span className="text-[10px] font-mono tracking-widest text-[#3D6BF2] uppercase font-semibold">
+              <span className="text-[10px] font-mono tracking-widest text-[#F5B027] uppercase font-semibold">
                 Double Opt-in Warm Introduction
               </span>
             </div>
@@ -72,7 +72,7 @@ export const RequestIntroModal: React.FC<RequestIntroModalProps> = ({
               <div>
                 <div className="text-sm font-semibold text-white flex items-center gap-1.5">
                   {targetMember.name}
-                  <span className="text-[10px] text-[#3D6BF2] font-mono font-medium">
+                  <span className="text-[10px] text-[#F5B027] font-mono font-medium">
                     {targetMember.matchScore}% Match
                   </span>
                 </div>
@@ -93,7 +93,7 @@ export const RequestIntroModal: React.FC<RequestIntroModalProps> = ({
               <select
                 value={sharedGoal}
                 onChange={(e) => setSharedGoal(e.target.value)}
-                className="w-full bg-[#151A24] border border-white/10 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-[#3D6BF2]"
+                className="w-full bg-[#151A24] border border-white/10 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-[#F5B027]"
               >
                 <option value="Explore strategic partnership & infrastructure synergies">
                   Explore strategic partnership & infrastructure synergies
@@ -125,14 +125,14 @@ export const RequestIntroModal: React.FC<RequestIntroModalProps> = ({
                 onChange={(e) => setNote(e.target.value)}
                 rows={3}
                 placeholder={`Hi ${targetMember.firstName}, I'd love to connect regarding your focus on ${targetMember.focusAreas[0] || 'AI infrastructure'}...`}
-                className="w-full bg-[#151A24] border border-white/10 rounded-lg p-3 text-xs text-white placeholder-[#6B7280] focus:outline-none focus:border-[#3D6BF2]"
+                className="w-full bg-[#151A24] border border-white/10 rounded-lg p-3 text-xs text-white placeholder-[#6B7280] focus:outline-none focus:border-[#F5B027]"
               />
             </div>
 
             {/* Urgency & Etiquette */}
             <div className="flex items-center justify-between text-xs text-[#9CA3AF] mb-6 pt-2 border-t border-white/5">
               <div className="flex items-center gap-1.5 text-[11px] text-[#6B7280]">
-                <ShieldCheck className="w-3.5 h-3.5 text-[#3D6BF2]" />
+                <ShieldCheck className="w-3.5 h-3.5 text-[#F5B027]" />
                 Strict double opt-in protocol ensures zero spam.
               </div>
               <div className="flex items-center gap-1">
@@ -143,7 +143,7 @@ export const RequestIntroModal: React.FC<RequestIntroModalProps> = ({
                     onClick={() => setUrgency(lvl)}
                     className={`px-2.5 py-1 rounded text-[11px] cursor-pointer transition-colors ${
                       urgency === lvl
-                        ? 'bg-[#3D6BF2] text-white font-medium'
+                        ? 'bg-[#F5B027] text-white font-medium'
                         : 'bg-white/5 text-[#9CA3AF] hover:text-white'
                     }`}
                   >
@@ -165,7 +165,7 @@ export const RequestIntroModal: React.FC<RequestIntroModalProps> = ({
               <button
                 type="button"
                 onClick={handleSend}
-                className="flex items-center gap-1.5 px-4 py-2 text-xs font-medium text-white bg-[#3D6BF2] hover:bg-[#2563EB] rounded-lg shadow-sm transition-colors cursor-pointer"
+                className="flex items-center gap-1.5 px-4 py-2 text-xs font-medium text-white bg-[#F5B027] hover:bg-[#C78522] rounded-lg shadow-sm transition-colors cursor-pointer"
               >
                 <Send className="w-3.5 h-3.5" />
                 Submit Request

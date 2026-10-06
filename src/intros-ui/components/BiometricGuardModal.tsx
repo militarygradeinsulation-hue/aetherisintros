@@ -120,7 +120,7 @@ export const BiometricGuardModal: React.FC<BiometricGuardModalProps> = ({
 
         {/* Header */}
         <div className="space-y-1 mt-1">
-          <div className="text-[9.5px] font-mono tracking-[0.28em] text-[#3D6BF2] uppercase font-bold">
+          <div className="text-[9.5px] font-mono tracking-[0.28em] text-[#F5B027] uppercase font-bold">
             Biometric Enclave
           </div>
           <h3 id="biometric-title" className="font-serif-editorial text-xl text-[#F2EEE6]">
@@ -137,27 +137,27 @@ export const BiometricGuardModal: React.FC<BiometricGuardModalProps> = ({
             {/* High-editorial FaceID Reticle Frame */}
             <div className="relative w-36 h-36 rounded-2xl border-2 border-white/20 bg-black/40 flex items-center justify-center overflow-hidden shadow-inner">
               {/* Corner brackets */}
-              <div className="absolute top-1.5 left-1.5 w-3 h-3 border-t-2 border-l-2 border-[#3D6BF2]" />
-              <div className="absolute top-1.5 right-1.5 w-3 h-3 border-t-2 border-r-2 border-[#3D6BF2]" />
-              <div className="absolute bottom-1.5 left-1.5 w-3 h-3 border-b-2 border-l-2 border-[#3D6BF2]" />
-              <div className="absolute bottom-1.5 right-1.5 w-3 h-3 border-b-2 border-r-2 border-[#3D6BF2]" />
+              <div className="absolute top-1.5 left-1.5 w-3 h-3 border-t-2 border-l-2 border-[#F5B027]" />
+              <div className="absolute top-1.5 right-1.5 w-3 h-3 border-t-2 border-r-2 border-[#F5B027]" />
+              <div className="absolute bottom-1.5 left-1.5 w-3 h-3 border-b-2 border-l-2 border-[#F5B027]" />
+              <div className="absolute bottom-1.5 right-1.5 w-3 h-3 border-b-2 border-r-2 border-[#F5B027]" />
 
               {/* Laser Scanning Line */}
               {scanState === 'scanning' && (
-                <div className="absolute inset-x-0 h-1 bg-gradient-to-r from-transparent via-[#3D6BF2] to-transparent shadow-[0_0_12px_#3D6BF2] animate-bounce" />
+                <div className="absolute inset-x-0 h-1 bg-gradient-to-r from-transparent via-[#F5B027] to-transparent shadow-[0_0_12px_#F5B027] animate-bounce" />
               )}
 
               {/* Central Glyph */}
               {scanState === 'success' ? (
                 <div className="flex flex-col items-center animate-in zoom-in-75 duration-300">
-                  <CheckCircle2 size={44} className="text-[#3FB37F]" />
-                  <span className="text-[10px] font-mono text-[#3FB37F] mt-2 font-bold tracking-wider">
+                  <CheckCircle2 size={44} className="text-[#C78522]" />
+                  <span className="text-[10px] font-mono text-[#C78522] mt-2 font-bold tracking-wider">
                     FACE ID VERIFIED
                   </span>
                 </div>
               ) : (
                 <div className="flex flex-col items-center">
-                  <Camera size={38} className="text-[#3D6BF2] animate-pulse" />
+                  <Camera size={38} className="text-[#F5B027] animate-pulse" />
                   <span className="text-[9px] font-mono text-[#F2EEE6]/60 mt-2 tracking-widest uppercase">
                     {scanState === 'scanning' ? 'Verifying...' : 'Ready'}
                   </span>
@@ -169,12 +169,12 @@ export const BiometricGuardModal: React.FC<BiometricGuardModalProps> = ({
             <div className="text-xs font-mono text-[#F2EEE6]/80 flex items-center gap-1.5">
               {scanState === 'scanning' && (
                 <>
-                  <RefreshCw size={12} className="animate-spin text-[#3D6BF2]" />
+                  <RefreshCw size={12} className="animate-spin text-[#F5B027]" />
                   <span>Aligning Facial Biometrics...</span>
                 </>
               )}
               {scanState === 'success' && (
-                <span className="text-[#3FB37F] font-bold">Enclave Decrypted Successfully</span>
+                <span className="text-[#C78522] font-bold">Enclave Decrypted Successfully</span>
               )}
             </div>
           </div>
@@ -186,14 +186,14 @@ export const BiometricGuardModal: React.FC<BiometricGuardModalProps> = ({
                 <div
                   key={i}
                   className={`w-3.5 h-3.5 rounded-full border border-white/30 transition-all ${
-                    passcode.length > i ? 'bg-[#3D6BF2] border-[#3D6BF2] shadow-[0_0_8px_#3D6BF2]' : 'bg-transparent'
+                    passcode.length > i ? 'bg-[#F5B027] border-[#F5B027] shadow-[0_0_8px_#F5B027]' : 'bg-transparent'
                   }`}
                 />
               ))}
             </div>
 
             {errorMessage && (
-              <div className="text-[10px] font-mono text-[#E5484D]">{errorMessage}</div>
+              <div className="text-[10px] font-mono text-[#C78522]">{errorMessage}</div>
             )}
 
             <div className="grid grid-cols-3 gap-2 max-w-[210px] mx-auto pt-1 font-mono">
@@ -228,7 +228,7 @@ export const BiometricGuardModal: React.FC<BiometricGuardModalProps> = ({
               </button>
               <button
                 onClick={retryScan}
-                className="text-[#3D6BF2] hover:underline flex items-center gap-1"
+                className="text-[#F5B027] hover:underline flex items-center gap-1"
               >
                 <RefreshCw size={10} />
                 <span>Rescan FaceID</span>
@@ -240,7 +240,7 @@ export const BiometricGuardModal: React.FC<BiometricGuardModalProps> = ({
                 setScanState('scanning');
                 retryScan();
               }}
-              className="text-[#3D6BF2] hover:underline flex items-center gap-1 mx-auto"
+              className="text-[#F5B027] hover:underline flex items-center gap-1 mx-auto"
             >
               <Camera size={11} />
               <span>Back to FaceID Scan</span>

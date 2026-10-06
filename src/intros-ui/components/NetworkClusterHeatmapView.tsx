@@ -158,36 +158,36 @@ export const NetworkClusterHeatmapView: React.FC<NetworkClusterHeatmapViewProps>
   const getHeatmapColor = (score: number) => {
     if (score >= 90) {
       return {
-        bg: 'bg-gradient-to-br from-[#F97316]/25 to-[#F97316]/5',
-        border: 'border-[#F97316]/50 shadow-[0_0_20px_rgba(249,115,22,0.2)]',
-        badge: 'bg-[#F97316]/20 text-[#F97316] border-[#F97316]/40',
-        text: 'text-[#F97316]',
+        bg: 'bg-gradient-to-br from-[#F5B027]/25 to-[#F5B027]/5',
+        border: 'border-[#F5B027]/50 shadow-[0_0_20px_rgba(249,115,22,0.2)]',
+        badge: 'bg-[#F5B027]/20 text-[#F5B027] border-[#F5B027]/40',
+        text: 'text-[#F5B027]',
         label: 'High Velocity',
       };
     }
     if (score >= 80) {
       return {
-        bg: 'bg-gradient-to-br from-[#3FB37F]/25 to-[#3FB37F]/5',
-        border: 'border-[#3FB37F]/40 shadow-[0_0_15px_rgba(63,179,127,0.18)]',
-        badge: 'bg-[#3FB37F]/20 text-[#3FB37F] border-[#3FB37F]/40',
-        text: 'text-[#3FB37F]',
+        bg: 'bg-gradient-to-br from-[#C78522]/25 to-[#C78522]/5',
+        border: 'border-[#C78522]/40 shadow-[0_0_15px_rgba(63,179,127,0.18)]',
+        badge: 'bg-[#C78522]/20 text-[#C78522] border-[#C78522]/40',
+        text: 'text-[#C78522]',
         label: 'Optimal Cadence',
       };
     }
     if (score >= 70) {
       return {
-        bg: 'bg-gradient-to-br from-[#3D6BF2]/20 to-[#3D6BF2]/5',
-        border: 'border-[#3D6BF2]/35 shadow-[0_0_12px_rgba(61,107,242,0.15)]',
-        badge: 'bg-[#3D6BF2]/20 text-[#3D6BF2] border-[#3D6BF2]/40',
-        text: 'text-[#3D6BF2]',
+        bg: 'bg-gradient-to-br from-[#F5B027]/20 to-[#F5B027]/5',
+        border: 'border-[#F5B027]/35 shadow-[0_0_12px_rgba(61,107,242,0.15)]',
+        badge: 'bg-[#F5B027]/20 text-[#F5B027] border-[#F5B027]/40',
+        text: 'text-[#F5B027]',
         label: 'Steady Cadence',
       };
     }
     return {
-      bg: 'bg-gradient-to-br from-[#E5484D]/25 to-[#E5484D]/5',
-      border: 'border-[#E5484D]/50 shadow-[0_0_15px_rgba(229,72,77,0.2)]',
-      badge: 'bg-[#E5484D]/20 text-[#E5484D] border-[#E5484D]/40',
-      text: 'text-[#E5484D]',
+      bg: 'bg-gradient-to-br from-[#C78522]/25 to-[#C78522]/5',
+      border: 'border-[#C78522]/50 shadow-[0_0_15px_rgba(229,72,77,0.2)]',
+      badge: 'bg-[#C78522]/20 text-[#C78522] border-[#C78522]/40',
+      text: 'text-[#C78522]',
       label: 'Drift Leak',
     };
   };
@@ -204,15 +204,15 @@ export const NetworkClusterHeatmapView: React.FC<NetworkClusterHeatmapViewProps>
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 border-b border-white/10 pb-6">
         <div>
           <div className="flex items-center gap-2">
-            <span className="text-[10px] font-mono tracking-[0.3em] uppercase text-[#F97316] font-bold">
+            <span className="text-[10px] font-mono tracking-[0.3em] uppercase text-[#F5B027] font-bold">
               Network Heatmap Visualization
             </span>
-            <span className="text-[9px] font-mono px-2 py-0.5 rounded-full bg-[#F97316]/15 text-[#F97316] border border-[#F97316]/30 font-semibold">
+            <span className="text-[9px] font-mono px-2 py-0.5 rounded-full bg-[#F5B027]/15 text-[#F5B027] border border-[#F5B027]/30 font-semibold">
               Live Density Matrix
             </span>
           </div>
           <h1 className="font-serif-editorial text-2xl sm:text-4xl text-[#F2EEE6] font-normal tracking-tight mt-1">
-            Cluster Engagement <span className="text-[#3D6BF2] font-semibold">Density Heatmap.</span>
+            Cluster Engagement <span className="text-[#F5B027] font-semibold">Density Heatmap.</span>
           </h1>
           <p className="text-xs sm:text-sm text-[#F2EEE6]/70 font-serif-editorial max-w-2xl mt-1.5 leading-relaxed">
             Color-coded matrix mapping professional sector clusters by interaction frequency, communication decay half-life, and aggregate syndicate value.
@@ -223,18 +223,18 @@ export const NetworkClusterHeatmapView: React.FC<NetworkClusterHeatmapViewProps>
         <div className="grid grid-cols-3 gap-3 shrink-0">
           <div className="p-3 rounded-xl bg-[#0E1116] border border-white/10 text-center min-w-[100px]">
             <div className="text-[9px] font-mono uppercase text-[#F2EEE6]/60">Avg Density</div>
-            <div className="text-xl sm:text-2xl font-bold font-mono text-[#F97316]">{avgDensity}%</div>
-            <div className="text-[8.5px] font-mono text-[#3FB37F]">+8.2% vs Q3</div>
+            <div className="text-xl sm:text-2xl font-bold font-mono text-[#F5B027]">{avgDensity}%</div>
+            <div className="text-[8.5px] font-mono text-[#C78522]">+8.2% vs Q3</div>
           </div>
           <div className="p-3 rounded-xl bg-[#0E1116] border border-white/10 text-center min-w-[100px]">
             <div className="text-[9px] font-mono uppercase text-[#F2EEE6]/60">30d Touchpoints</div>
-            <div className="text-xl sm:text-2xl font-bold font-mono text-[#3D6BF2]">{totalTouchpoints}</div>
+            <div className="text-xl sm:text-2xl font-bold font-mono text-[#F5B027]">{totalTouchpoints}</div>
             <div className="text-[8.5px] font-mono text-[#F2EEE6]/60">across 6 clusters</div>
           </div>
-          <div className="p-3 rounded-xl bg-[#0E1116] border border-[#E5484D]/40 text-center min-w-[100px]">
-            <div className="text-[9px] font-mono uppercase text-[#E5484D]">Drift Leaks</div>
-            <div className="text-xl sm:text-2xl font-bold font-mono text-[#E5484D]">{driftCount}</div>
-            <div className="text-[8.5px] font-mono text-[#E5484D]/80">&gt;30d communication</div>
+          <div className="p-3 rounded-xl bg-[#0E1116] border border-[#C78522]/40 text-center min-w-[100px]">
+            <div className="text-[9px] font-mono uppercase text-[#C78522]">Drift Leaks</div>
+            <div className="text-xl sm:text-2xl font-bold font-mono text-[#C78522]">{driftCount}</div>
+            <div className="text-[8.5px] font-mono text-[#C78522]/80">&gt;30d communication</div>
           </div>
         </div>
       </div>
@@ -243,7 +243,7 @@ export const NetworkClusterHeatmapView: React.FC<NetworkClusterHeatmapViewProps>
       <div className="flex items-center justify-between flex-wrap gap-4 p-3 rounded-xl bg-[#0E1116] border border-white/10">
         <div className="flex items-center gap-2 overflow-x-auto no-scrollbar">
           <span className="text-[10px] font-mono text-[#F2EEE6]/60 uppercase tracking-wider flex items-center gap-1.5 mr-1 shrink-0">
-            <Filter size={11} className="text-[#3D6BF2]" />
+            <Filter size={11} className="text-[#F5B027]" />
             <span>Cadence Lens:</span>
           </span>
           {[
@@ -268,20 +268,20 @@ export const NetworkClusterHeatmapView: React.FC<NetworkClusterHeatmapViewProps>
 
         {/* Legend */}
         <div className="flex items-center gap-3 text-[9.5px] font-mono shrink-0">
-          <div className="flex items-center gap-1.5 text-[#F97316]">
-            <span className="w-2.5 h-2.5 rounded bg-[#F97316] shadow-[0_0_8px_rgba(249,115,22,0.8)]" />
+          <div className="flex items-center gap-1.5 text-[#F5B027]">
+            <span className="w-2.5 h-2.5 rounded bg-[#F5B027] shadow-[0_0_8px_rgba(249,115,22,0.8)]" />
             <span>Daily / Lead</span>
           </div>
-          <div className="flex items-center gap-1.5 text-[#3FB37F]">
-            <span className="w-2.5 h-2.5 rounded bg-[#3FB37F]" />
+          <div className="flex items-center gap-1.5 text-[#C78522]">
+            <span className="w-2.5 h-2.5 rounded bg-[#C78522]" />
             <span>Active &lt;5d</span>
           </div>
-          <div className="flex items-center gap-1.5 text-[#3D6BF2]">
-            <span className="w-2.5 h-2.5 rounded bg-[#3D6BF2]" />
+          <div className="flex items-center gap-1.5 text-[#F5B027]">
+            <span className="w-2.5 h-2.5 rounded bg-[#F5B027]" />
             <span>Weekly</span>
           </div>
-          <div className="flex items-center gap-1.5 text-[#E5484D]">
-            <span className="w-2.5 h-2.5 rounded bg-[#E5484D] shadow-[0_0_8px_rgba(229,72,77,0.8)]" />
+          <div className="flex items-center gap-1.5 text-[#C78522]">
+            <span className="w-2.5 h-2.5 rounded bg-[#C78522] shadow-[0_0_8px_rgba(229,72,77,0.8)]" />
             <span>Drift Warning</span>
           </div>
         </div>
@@ -305,7 +305,7 @@ export const NetworkClusterHeatmapView: React.FC<NetworkClusterHeatmapViewProps>
               {/* Background Glow */}
               <div
                 className={`absolute -top-16 -right-16 w-36 h-36 rounded-full blur-3xl pointer-events-none opacity-20 ${
-                  cluster.driftWarning ? 'bg-[#E5484D]' : 'bg-[#F97316]'
+                  cluster.driftWarning ? 'bg-[#C78522]' : 'bg-[#F5B027]'
                 }`}
                 aria-hidden="true"
               />
@@ -344,12 +344,12 @@ export const NetworkClusterHeatmapView: React.FC<NetworkClusterHeatmapViewProps>
                     <div
                       className={`h-full rounded-full transition-all duration-500 ${
                         cluster.densityScore >= 90
-                          ? 'bg-gradient-to-r from-[#F97316] to-[#F5A623]'
+                          ? 'bg-gradient-to-r from-[#F5B027] to-[#F5A623]'
                           : cluster.densityScore >= 80
-                          ? 'bg-gradient-to-r from-[#3FB37F] to-[#34D399]'
+                          ? 'bg-gradient-to-r from-[#C78522] to-[#F5B027]'
                           : cluster.densityScore >= 70
-                          ? 'bg-gradient-to-r from-[#3D6BF2] to-[#60A5FA]'
-                          : 'bg-gradient-to-r from-[#E5484D] to-[#F87171]'
+                          ? 'bg-gradient-to-r from-[#F5B027] to-[#FFC85C]'
+                          : 'bg-gradient-to-r from-[#C78522] to-[#F87171]'
                       }`}
                       style={{ width: `${cluster.densityScore}%` }}
                     />
@@ -359,7 +359,7 @@ export const NetworkClusterHeatmapView: React.FC<NetworkClusterHeatmapViewProps>
                 {/* Strategic Mandate & Context */}
                 <div className="p-3 rounded-xl bg-black/40 border border-white/5 space-y-1">
                   <div className="flex items-center justify-between text-[9px] font-mono">
-                    <span className="text-[#3D6BF2] uppercase font-bold">Aggregate Syndicate Exposure</span>
+                    <span className="text-[#F5B027] uppercase font-bold">Aggregate Syndicate Exposure</span>
                     <span className="text-[#F2EEE6] font-semibold">{cluster.mandateValue}</span>
                   </div>
                   <p className="text-xs text-[#F2EEE6]/80 font-serif-editorial leading-relaxed">
@@ -380,7 +380,7 @@ export const NetworkClusterHeatmapView: React.FC<NetworkClusterHeatmapViewProps>
                           onSelectPerson(person);
                           if (onOpenSidebar) onOpenSidebar();
                         }}
-                        className="p-2 rounded-lg bg-black/30 hover:bg-[#151922] border border-white/5 hover:border-[#3D6BF2]/50 transition-all cursor-pointer flex items-center justify-between gap-2.5 group"
+                        className="p-2 rounded-lg bg-black/30 hover:bg-[#151922] border border-white/5 hover:border-[#F5B027]/50 transition-all cursor-pointer flex items-center justify-between gap-2.5 group"
                       >
                         <div className="flex items-center gap-2.5 min-w-0">
                           <img
@@ -389,7 +389,7 @@ export const NetworkClusterHeatmapView: React.FC<NetworkClusterHeatmapViewProps>
                             className="w-7 h-7 rounded-full object-cover border border-white/10 shrink-0"
                           />
                           <div className="min-w-0 truncate">
-                            <div className="text-xs font-bold text-[#F2EEE6] group-hover:text-[#3D6BF2] transition-colors truncate flex items-center gap-1.5">
+                            <div className="text-xs font-bold text-[#F2EEE6] group-hover:text-[#F5B027] transition-colors truncate flex items-center gap-1.5">
                               <span>{person.name}</span>
                               <span className="text-[9px] font-mono text-[#F2EEE6]/50">
                                 ({person.connectionScore})
@@ -405,7 +405,7 @@ export const NetworkClusterHeatmapView: React.FC<NetworkClusterHeatmapViewProps>
                           {person.tier && (
                             <RelationshipTierBadge tier={person.tier} size="xs" showLabel={false} />
                           )}
-                          <span className="text-[9px] font-mono text-[#3D6BF2] opacity-0 group-hover:opacity-100 transition-opacity">
+                          <span className="text-[9px] font-mono text-[#F5B027] opacity-0 group-hover:opacity-100 transition-opacity">
                             Dossier →
                           </span>
                         </div>
@@ -418,12 +418,12 @@ export const NetworkClusterHeatmapView: React.FC<NetworkClusterHeatmapViewProps>
               {/* Bottom Quick-Action */}
               <div className="pt-4 border-t border-white/10 mt-3 flex items-center justify-between text-xs font-mono">
                 {cluster.driftWarning ? (
-                  <span className="text-[#E5484D] text-[10.5px] flex items-center gap-1 font-semibold">
+                  <span className="text-[#C78522] text-[10.5px] flex items-center gap-1 font-semibold">
                     <AlertTriangle size={12} />
                     <span>Communication Decay Risk</span>
                   </span>
                 ) : (
-                  <span className="text-[#3FB37F] text-[10.5px] flex items-center gap-1 font-semibold">
+                  <span className="text-[#C78522] text-[10.5px] flex items-center gap-1 font-semibold">
                     <CheckCircle2 size={12} />
                     <span>Synchronized Cadence</span>
                   </span>
@@ -436,7 +436,7 @@ export const NetworkClusterHeatmapView: React.FC<NetworkClusterHeatmapViewProps>
                       if (onOpenSidebar) onOpenSidebar();
                     }
                   }}
-                  className="text-[#3D6BF2] hover:text-white flex items-center gap-1 transition-colors text-[11px] font-semibold"
+                  className="text-[#F5B027] hover:text-white flex items-center gap-1 transition-colors text-[11px] font-semibold"
                 >
                   <span>Inspect Cluster Dossier</span>
                   <ArrowRight size={11} />

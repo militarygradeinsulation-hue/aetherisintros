@@ -79,7 +79,7 @@ export const QuickAddContactModal: React.FC<QuickAddContactModalProps> = ({
         {/* Header */}
         <div className="px-5 py-4 border-b border-white/10 bg-[#0E1116] flex items-center justify-between">
           <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-lg bg-[#3D6BF2]/20 border border-[#3D6BF2]/40 flex items-center justify-center text-[#3D6BF2]">
+            <div className="w-8 h-8 rounded-lg bg-[#F5B027]/20 border border-[#F5B027]/40 flex items-center justify-center text-[#F5B027]">
               <UserPlus size={16} />
             </div>
             <div>
@@ -112,7 +112,7 @@ export const QuickAddContactModal: React.FC<QuickAddContactModalProps> = ({
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 placeholder="e.g. Sarah Jenkins"
-                className="w-full bg-[#0E1116] border border-white/10 rounded-lg px-3 py-2 text-xs font-sans-clean text-[#F2EEE6] placeholder-[#F2EEE6]/30 focus:outline-none focus:border-[#3D6BF2]"
+                className="w-full bg-[#0E1116] border border-white/10 rounded-lg px-3 py-2 text-xs font-sans-clean text-[#F2EEE6] placeholder-[#F2EEE6]/30 focus:outline-none focus:border-[#F5B027]"
               />
             </div>
             <div>
@@ -125,7 +125,7 @@ export const QuickAddContactModal: React.FC<QuickAddContactModalProps> = ({
                 value={company}
                 onChange={(e) => setCompany(e.target.value)}
                 placeholder="e.g. Vertex Ventures"
-                className="w-full bg-[#0E1116] border border-white/10 rounded-lg px-3 py-2 text-xs font-sans-clean text-[#F2EEE6] placeholder-[#F2EEE6]/30 focus:outline-none focus:border-[#3D6BF2]"
+                className="w-full bg-[#0E1116] border border-white/10 rounded-lg px-3 py-2 text-xs font-sans-clean text-[#F2EEE6] placeholder-[#F2EEE6]/30 focus:outline-none focus:border-[#F5B027]"
               />
             </div>
           </div>
@@ -140,7 +140,7 @@ export const QuickAddContactModal: React.FC<QuickAddContactModalProps> = ({
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
                 placeholder="e.g. General Partner"
-                className="w-full bg-[#0E1116] border border-white/10 rounded-lg px-3 py-2 text-xs font-sans-clean text-[#F2EEE6] placeholder-[#F2EEE6]/30 focus:outline-none focus:border-[#3D6BF2]"
+                className="w-full bg-[#0E1116] border border-white/10 rounded-lg px-3 py-2 text-xs font-sans-clean text-[#F2EEE6] placeholder-[#F2EEE6]/30 focus:outline-none focus:border-[#F5B027]"
               />
             </div>
             <div>
@@ -150,7 +150,7 @@ export const QuickAddContactModal: React.FC<QuickAddContactModalProps> = ({
               <select
                 value={sector}
                 onChange={(e) => setSector(e.target.value)}
-                className="w-full bg-[#0E1116] border border-white/10 rounded-lg px-3 py-2 text-xs font-mono text-[#F2EEE6] focus:outline-none focus:border-[#3D6BF2] cursor-pointer"
+                className="w-full bg-[#0E1116] border border-white/10 rounded-lg px-3 py-2 text-xs font-mono text-[#F2EEE6] focus:outline-none focus:border-[#F5B027] cursor-pointer"
               >
                 {SECTORS.map((s) => (
                   <option key={s} value={s} className="bg-[#0E1116]">
@@ -169,7 +169,7 @@ export const QuickAddContactModal: React.FC<QuickAddContactModalProps> = ({
               <select
                 value={tier}
                 onChange={(e) => setTier(e.target.value as RelationshipTier)}
-                className="w-full bg-[#0E1116] border border-white/10 rounded-lg px-3 py-2 text-xs font-mono text-[#F2EEE6] focus:outline-none focus:border-[#3D6BF2] cursor-pointer"
+                className="w-full bg-[#0E1116] border border-white/10 rounded-lg px-3 py-2 text-xs font-mono text-[#F2EEE6] focus:outline-none focus:border-[#F5B027] cursor-pointer"
               >
                 <option value="inner_circle" className="bg-[#0E1116]">▲ Inner Circle</option>
                 <option value="strategic" className="bg-[#0E1116]">◆ Strategic</option>
@@ -183,7 +183,7 @@ export const QuickAddContactModal: React.FC<QuickAddContactModalProps> = ({
               <select
                 value={engagement}
                 onChange={(e) => setEngagement(e.target.value as any)}
-                className="w-full bg-[#0E1116] border border-white/10 rounded-lg px-3 py-2 text-xs font-mono text-[#F2EEE6] focus:outline-none focus:border-[#3D6BF2] cursor-pointer"
+                className="w-full bg-[#0E1116] border border-white/10 rounded-lg px-3 py-2 text-xs font-mono text-[#F2EEE6] focus:outline-none focus:border-[#F5B027] cursor-pointer"
               >
                 <option value="active" className="bg-[#0E1116]">🟢 Active Touch</option>
                 <option value="followup" className="bg-[#0E1116]">🟡 Follow-up Needed</option>
@@ -202,7 +202,7 @@ export const QuickAddContactModal: React.FC<QuickAddContactModalProps> = ({
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="sarah@vertexventures.com"
-                className="w-full bg-[#0E1116] border border-white/10 rounded-lg px-3 py-2 text-xs font-sans-clean text-[#F2EEE6] placeholder-[#F2EEE6]/30 focus:outline-none focus:border-[#3D6BF2]"
+                className="w-full bg-[#0E1116] border border-white/10 rounded-lg px-3 py-2 text-xs font-sans-clean text-[#F2EEE6] placeholder-[#F2EEE6]/30 focus:outline-none focus:border-[#F5B027]"
               />
             </div>
             <div>
@@ -214,7 +214,7 @@ export const QuickAddContactModal: React.FC<QuickAddContactModalProps> = ({
                 value={phone}
                 onChange={(e) => setPhone(e.target.value)}
                 placeholder="+1 (415) 300-1192"
-                className="w-full bg-[#0E1116] border border-white/10 rounded-lg px-3 py-2 text-xs font-sans-clean text-[#F2EEE6] placeholder-[#F2EEE6]/30 focus:outline-none focus:border-[#3D6BF2]"
+                className="w-full bg-[#0E1116] border border-white/10 rounded-lg px-3 py-2 text-xs font-sans-clean text-[#F2EEE6] placeholder-[#F2EEE6]/30 focus:outline-none focus:border-[#F5B027]"
               />
             </div>
           </div>
@@ -228,7 +228,7 @@ export const QuickAddContactModal: React.FC<QuickAddContactModalProps> = ({
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
               placeholder="Strategic introduction context, investment criteria, or notes..."
-              className="w-full bg-[#0E1116] border border-white/10 rounded-lg px-3 py-2 text-xs font-sans-clean text-[#F2EEE6] placeholder-[#F2EEE6]/30 focus:outline-none focus:border-[#3D6BF2]"
+              className="w-full bg-[#0E1116] border border-white/10 rounded-lg px-3 py-2 text-xs font-sans-clean text-[#F2EEE6] placeholder-[#F2EEE6]/30 focus:outline-none focus:border-[#F5B027]"
             />
           </div>
 
@@ -242,7 +242,7 @@ export const QuickAddContactModal: React.FC<QuickAddContactModalProps> = ({
             </button>
             <button
               type="submit"
-              className="px-5 py-2 rounded-lg bg-[#3D6BF2] hover:bg-[#3D6BF2]/90 text-white text-xs font-mono font-medium shadow-[0_0_15px_rgba(61,107,242,0.4)] transition-all"
+              className="px-5 py-2 rounded-lg bg-[#F5B027] hover:bg-[#F5B027]/90 text-white text-xs font-mono font-medium shadow-[0_0_15px_rgba(61,107,242,0.4)] transition-all"
             >
               Index Contact →
             </button>

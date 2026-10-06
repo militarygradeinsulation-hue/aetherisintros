@@ -222,7 +222,7 @@ export const FloatingConnectionField: React.FC<FloatingConnectionFieldProps> = (
         baseRadius: baseR,
         pulsePhase: Math.random() * Math.PI * 2,
         _appearAt: idx < 2 ? 1 : 0,
-        ringHue: m.tier === 'Core' ? '#3D6BF2' : m.tier === 'Extended' ? '#10B981' : '#F59E0B',
+        ringHue: m.tier === 'Core' ? '#F5B027' : m.tier === 'Extended' ? '#C78522' : '#F59E0B',
       };
     });
 
@@ -524,7 +524,7 @@ export const FloatingConnectionField: React.FC<FloatingConnectionFieldProps> = (
           }
           if (trail.length >= 8) {
             const p2 = trail[Math.floor(trail.length * 0.7)];
-            svgTrailsHtml += `<circle cx="${p2.x.toFixed(1)}" cy="${p2.y.toFixed(1)}" r="1.8" fill="#60A5FA" opacity="${(baseOpacity * 0.8).toFixed(2)}"/>`;
+            svgTrailsHtml += `<circle cx="${p2.x.toFixed(1)}" cy="${p2.y.toFixed(1)}" r="1.8" fill="#FFC85C" opacity="${(baseOpacity * 0.8).toFixed(2)}"/>`;
           }
         });
 
@@ -605,7 +605,7 @@ export const FloatingConnectionField: React.FC<FloatingConnectionFieldProps> = (
         ctx.beginPath();
         ctx.arc(mn.x, mn.y, mn.radius + pulse * 1.2, 0, Math.PI * 2);
         ctx.fillStyle = `rgba(147, 197, 253, ${alpha * 0.9})`;
-        ctx.shadowColor = '#60A5FA';
+        ctx.shadowColor = '#FFC85C';
         ctx.shadowBlur = pulse * 8;
         ctx.fill();
 
@@ -648,7 +648,7 @@ export const FloatingConnectionField: React.FC<FloatingConnectionFieldProps> = (
               : `rgba(61, 107, 242, ${alpha * 0.85})`;
             ctx.lineWidth = isHighlighted ? 2.4 : 1.2;
             if (isHighlighted) {
-              ctx.shadowColor = '#3D6BF2';
+              ctx.shadowColor = '#F5B027';
               ctx.shadowBlur = 12;
             }
             ctx.stroke();
@@ -661,7 +661,7 @@ export const FloatingConnectionField: React.FC<FloatingConnectionFieldProps> = (
             ctx.beginPath();
             ctx.arc(px, py, 2, 0, Math.PI * 2);
             ctx.fillStyle = `rgba(191, 219, 254, ${alpha * 1.5})`;
-            ctx.shadowColor = '#60A5FA';
+            ctx.shadowColor = '#FFC85C';
             ctx.shadowBlur = 5;
             ctx.fill();
           }
@@ -708,16 +708,16 @@ export const FloatingConnectionField: React.FC<FloatingConnectionFieldProps> = (
           const meterRadius = currentRadius + 8;
           ctx.beginPath();
           ctx.arc(node.x, node.y, meterRadius, -Math.PI / 2, -Math.PI / 2 + Math.PI * 2 * interact.activeHoldProgress);
-          ctx.strokeStyle = '#60A5FA';
+          ctx.strokeStyle = '#FFC85C';
           ctx.lineWidth = 4;
           ctx.lineCap = 'round';
-          ctx.shadowColor = '#3D6BF2';
+          ctx.shadowColor = '#F5B027';
           ctx.shadowBlur = 14;
           ctx.stroke();
 
           // Charging glow text indicator
           ctx.font = '700 9px monospace';
-          ctx.fillStyle = '#60A5FA';
+          ctx.fillStyle = '#FFC85C';
           ctx.textAlign = 'center';
           ctx.fillText('HOLDING FOR DOSSIER...', node.x, node.y - currentRadius - 16);
           ctx.restore();
@@ -728,7 +728,7 @@ export const FloatingConnectionField: React.FC<FloatingConnectionFieldProps> = (
         ctx.beginPath();
         ctx.arc(node.x, node.y, currentRadius + (isHovered ? 5 : 2.5), 0, Math.PI * 2);
         ctx.strokeStyle = isHovered || isHeldTarget
-          ? '#60A5FA'
+          ? '#FFC85C'
           : `${node.ringHue}77`;
         ctx.lineWidth = isHovered || isHeldTarget ? 2.5 : 1.5;
         ctx.shadowColor = node.ringHue;
@@ -799,7 +799,7 @@ export const FloatingConnectionField: React.FC<FloatingConnectionFieldProps> = (
         const badgeY = node.y + Math.sin(badgeAngle) * currentRadius;
         ctx.beginPath();
         ctx.arc(badgeX, badgeY, 9, 0, Math.PI * 2);
-        ctx.fillStyle = '#3D6BF2';
+        ctx.fillStyle = '#F5B027';
         ctx.fill();
         ctx.strokeStyle = '#07090C';
         ctx.lineWidth = 1.5;
@@ -827,7 +827,7 @@ export const FloatingConnectionField: React.FC<FloatingConnectionFieldProps> = (
         ctx.roundRect(node.x - pillW / 2, pillY - pillH / 2, pillW, pillH, 9);
         ctx.fillStyle = isHovered ? 'rgba(61, 107, 242, 0.95)' : 'rgba(14, 18, 26, 0.88)';
         ctx.fill();
-        ctx.strokeStyle = isHovered ? '#60A5FA' : 'rgba(255, 255, 255, 0.12)';
+        ctx.strokeStyle = isHovered ? '#FFC85C' : 'rgba(255, 255, 255, 0.12)';
         ctx.lineWidth = 1;
         ctx.stroke();
 
@@ -989,13 +989,13 @@ export const FloatingConnectionField: React.FC<FloatingConnectionFieldProps> = (
           </filter>
 
           <linearGradient id="trail-grad-core" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" stopColor="#3D6BF2" stopOpacity="0.05" />
-            <stop offset="65%" stopColor="#60A5FA" stopOpacity="0.6" />
+            <stop offset="0%" stopColor="#F5B027" stopOpacity="0.05" />
+            <stop offset="65%" stopColor="#FFC85C" stopOpacity="0.6" />
             <stop offset="100%" stopColor="#93C5FD" stopOpacity="0.9" />
           </linearGradient>
           <linearGradient id="trail-grad-extended" x1="0%" y1="0%" x2="100%" y2="100%">
             <stop offset="0%" stopColor="#059669" stopOpacity="0.05" />
-            <stop offset="65%" stopColor="#10B981" stopOpacity="0.6" />
+            <stop offset="65%" stopColor="#C78522" stopOpacity="0.6" />
             <stop offset="100%" stopColor="#6EE7B7" stopOpacity="0.9" />
           </linearGradient>
           <linearGradient id="trail-grad-prospect" x1="0%" y1="0%" x2="100%" y2="100%">
@@ -1014,12 +1014,12 @@ export const FloatingConnectionField: React.FC<FloatingConnectionFieldProps> = (
 
       {/* Top Left Live Radar Web HUD Indicator */}
       <div className="absolute top-3 left-3 z-20 flex items-center gap-2 bg-[#0E121A]/85 border border-white/10 rounded-lg px-2.5 py-1 backdrop-blur-md">
-        <Radio className="w-3 h-3 text-[#3D6BF2] animate-pulse" />
+        <Radio className="w-3 h-3 text-[#F5B027] animate-pulse" />
         <span className="text-[10px] font-mono uppercase tracking-widest text-[#CBD5E1]">
           Radar Web Active · {members.length} Nodes
         </span>
-        <span className="hidden sm:inline-flex items-center gap-1 text-[9px] font-mono text-[#60A5FA] bg-[#3D6BF2]/15 border border-[#3D6BF2]/30 px-1.5 py-0.5 rounded">
-          <span className="w-1.5 h-1.5 rounded-full bg-[#3D6BF2] animate-ping" />
+        <span className="hidden sm:inline-flex items-center gap-1 text-[9px] font-mono text-[#FFC85C] bg-[#F5B027]/15 border border-[#F5B027]/30 px-1.5 py-0.5 rounded">
+          <span className="w-1.5 h-1.5 rounded-full bg-[#F5B027] animate-ping" />
           SVG Trails Active
         </span>
       </div>
@@ -1027,11 +1027,11 @@ export const FloatingConnectionField: React.FC<FloatingConnectionFieldProps> = (
       {/* Bottom Center Interaction Guide */}
       <div className="absolute bottom-3 left-1/2 -translate-x-1/2 z-20 flex items-center gap-3 bg-[#0A0D14]/90 border border-white/10 rounded-full px-4 py-1.5 backdrop-blur-md shadow-lg text-[11px] font-mono text-[#9CA3AF]">
         <span className="flex items-center gap-1.5 text-white">
-          <span className="w-1.5 h-1.5 rounded-full bg-[#3D6BF2]" />
+          <span className="w-1.5 h-1.5 rounded-full bg-[#F5B027]" />
           Click to open profile
         </span>
         <span className="text-white/20">|</span>
-        <span className="flex items-center gap-1.5 text-[#60A5FA]">
+        <span className="flex items-center gap-1.5 text-[#FFC85C]">
           <Sparkles className="w-3 h-3" />
           Click & hold for info dossier
         </span>
@@ -1054,18 +1054,18 @@ export const FloatingConnectionField: React.FC<FloatingConnectionFieldProps> = (
               (containerRef.current?.clientHeight || 600) - 320
             ),
           }}
-          className="absolute z-40 bg-[#0E121A]/98 border border-[#3D6BF2]/60 rounded-2xl p-4 shadow-2xl shadow-[#3D6BF2]/20 backdrop-blur-xl w-72 animate-in zoom-in-95 duration-150 space-y-3"
+          className="absolute z-40 bg-[#0E121A]/98 border border-[#F5B027]/60 rounded-2xl p-4 shadow-2xl shadow-[#F5B027]/20 backdrop-blur-xl w-72 animate-in zoom-in-95 duration-150 space-y-3"
         >
           {/* Card Header with Tier, Match Score and Close */}
           <div className="flex items-center justify-between border-b border-white/10 pb-2">
             <div className="flex items-center gap-1.5">
-              <ShieldCheck className="w-3.5 h-3.5 text-[#3D6BF2]" />
-              <span className="text-[10px] font-mono uppercase tracking-wider text-[#60A5FA] font-bold">
+              <ShieldCheck className="w-3.5 h-3.5 text-[#F5B027]" />
+              <span className="text-[10px] font-mono uppercase tracking-wider text-[#FFC85C] font-bold">
                 {activeDossier.member.tier ? `${activeDossier.member.tier} Tier` : 'Verified'}
               </span>
             </div>
             <div className="flex items-center gap-2">
-              <span className="px-2 py-0.5 rounded-full bg-[#3D6BF2]/20 text-[#60A5FA] font-mono text-[10px] font-bold">
+              <span className="px-2 py-0.5 rounded-full bg-[#F5B027]/20 text-[#FFC85C] font-mono text-[10px] font-bold">
                 {activeDossier.member.matchScore}% Match
               </span>
               <button
@@ -1083,7 +1083,7 @@ export const FloatingConnectionField: React.FC<FloatingConnectionFieldProps> = (
             <img
               src={getPortraitForName(activeDossier.member.name, activeDossier.member.avatarUrl)}
               alt={activeDossier.member.name}
-              className="w-12 h-12 rounded-xl object-cover border-2 border-[#3D6BF2]/60 shadow-md grayscale contrast-110 shrink-0"
+              className="w-12 h-12 rounded-xl object-cover border-2 border-[#F5B027]/60 shadow-md grayscale contrast-110 shrink-0"
             />
             <div className="min-w-0">
               <h4 className="font-serif-editorial text-base font-bold text-white truncate">
@@ -1092,7 +1092,7 @@ export const FloatingConnectionField: React.FC<FloatingConnectionFieldProps> = (
               <p className="text-xs text-[#9CA3AF] truncate">
                 {activeDossier.member.title}
               </p>
-              <p className="text-[11px] text-[#60A5FA] font-medium truncate">
+              <p className="text-[11px] text-[#FFC85C] font-medium truncate">
                 {activeDossier.member.company}
               </p>
             </div>
@@ -1136,7 +1136,7 @@ export const FloatingConnectionField: React.FC<FloatingConnectionFieldProps> = (
                 onSelectMember(activeDossier.member.id);
                 setActiveDossier(null);
               }}
-              className="flex-1 flex items-center justify-center gap-1.5 py-2 px-3 rounded-lg bg-[#3D6BF2] hover:bg-[#2563EB] text-white text-xs font-semibold shadow-md shadow-[#3D6BF2]/30 transition-all cursor-pointer"
+              className="flex-1 flex items-center justify-center gap-1.5 py-2 px-3 rounded-lg bg-[#F5B027] hover:bg-[#C78522] text-white text-xs font-semibold shadow-md shadow-[#F5B027]/30 transition-all cursor-pointer"
             >
               <span>Open Profile</span>
               <ArrowRight className="w-3.5 h-3.5" />

@@ -113,7 +113,7 @@ export const PeopleDirectoryView: React.FC<PeopleDirectoryViewProps> = ({
   const renderTierBadge = (tier?: RelationshipTier) => {
     if (!tier) return null;
     const styles = {
-      Core: 'bg-[#3D6BF2]/20 text-[#60A5FA] border-[#3D6BF2]/40',
+      Core: 'bg-[#F5B027]/20 text-[#FFC85C] border-[#F5B027]/40',
       Extended: 'bg-emerald-500/15 text-emerald-400 border-emerald-500/30',
       Prospect: 'bg-amber-500/15 text-amber-300 border-amber-500/30',
     }[tier];
@@ -133,13 +133,13 @@ export const PeopleDirectoryView: React.FC<PeopleDirectoryViewProps> = ({
           {/* Hero Left: Large Editorial Headline */}
           <div className="lg:col-span-7 space-y-4">
             <div className="text-[10px] md:text-xs font-mono uppercase tracking-[0.25em] text-[#9CA3AF] font-semibold flex items-center gap-2">
-              <span className="w-2 h-2 rounded-full bg-[#3D6BF2]" />
+              <span className="w-2 h-2 rounded-full bg-[#F5B027]" />
               People Search
             </div>
 
             <h1 className="font-serif-editorial text-3xl sm:text-4xl md:text-5xl lg:text-5xl xl:text-6xl text-[#F2EEE6] leading-[1.08] tracking-tight">
               Discover people{' '}
-              <span className="text-[#3D6BF2]">worth knowing.</span>
+              <span className="text-[#F5B027]">worth knowing.</span>
             </h1>
 
             <p className="text-sm md:text-base text-[#9CA3AF] max-w-xl leading-relaxed">
@@ -201,9 +201,9 @@ export const PeopleDirectoryView: React.FC<PeopleDirectoryViewProps> = ({
               >
                 <ExecutivePortrait name={connector.name} avatarUrl={connector.avatarUrl} size="sm" />
                 <div>
-                  <div className="flex items-center gap-1.5 text-xs font-semibold text-white group-hover:text-[#3D6BF2]">
+                  <div className="flex items-center gap-1.5 text-xs font-semibold text-white group-hover:text-[#F5B027]">
                     {connector.name}
-                    <CheckCircle className="w-3 h-3 text-[#3D6BF2]" />
+                    <CheckCircle className="w-3 h-3 text-[#F5B027]" />
                   </div>
                   <div className="text-[10px] text-[#9CA3AF]">
                     {connector.title} · {connector.company}
@@ -227,7 +227,7 @@ export const PeopleDirectoryView: React.FC<PeopleDirectoryViewProps> = ({
               </span>
               <button
                 onClick={handleClearFilters}
-                className="text-[11px] text-[#3D6BF2] hover:underline cursor-pointer"
+                className="text-[11px] text-[#F5B027] hover:underline cursor-pointer"
               >
                 Clear All
               </button>
@@ -241,7 +241,7 @@ export const PeopleDirectoryView: React.FC<PeopleDirectoryViewProps> = ({
                 value={searchKeyword}
                 onChange={(e) => setSearchKeyword(e.target.value)}
                 placeholder="Name or keyword..."
-                className="w-full bg-[#131722] text-xs text-white placeholder-[#6B7280] rounded-lg pl-8 pr-3 py-2 border border-white/10 focus:outline-none focus:border-[#3D6BF2]"
+                className="w-full bg-[#131722] text-xs text-white placeholder-[#6B7280] rounded-lg pl-8 pr-3 py-2 border border-white/10 focus:outline-none focus:border-[#F5B027]"
               />
             </div>
 
@@ -249,13 +249,13 @@ export const PeopleDirectoryView: React.FC<PeopleDirectoryViewProps> = ({
             <div className="space-y-1.5">
               <div className="flex items-center justify-between text-xs text-[#9CA3AF] font-medium">
                 <span className="flex items-center gap-1.5">
-                  <Sparkles className="w-3.5 h-3.5 text-[#3D6BF2]" />
+                  <Sparkles className="w-3.5 h-3.5 text-[#F5B027]" />
                   Relationship Tier
                 </span>
                 {selectedTier !== 'All' && (
                   <button
                     onClick={() => setSelectedTier('All')}
-                    className="text-[10px] text-[#3D6BF2] hover:underline cursor-pointer"
+                    className="text-[10px] text-[#F5B027] hover:underline cursor-pointer"
                   >
                     Reset
                   </button>
@@ -264,7 +264,7 @@ export const PeopleDirectoryView: React.FC<PeopleDirectoryViewProps> = ({
               <div className="grid grid-cols-1 gap-1">
                 {[
                   { id: 'All', label: 'All Members', count: members.length, dot: 'bg-white/40' },
-                  { id: 'Core', label: 'Core Circle', count: members.filter((m) => m.tier === 'Core').length, dot: 'bg-[#3D6BF2]' },
+                  { id: 'Core', label: 'Core Circle', count: members.filter((m) => m.tier === 'Core').length, dot: 'bg-[#F5B027]' },
                   { id: 'Extended', label: 'Extended Network', count: members.filter((m) => m.tier === 'Extended').length, dot: 'bg-emerald-400' },
                   { id: 'Prospect', label: 'Prospects & Target', count: members.filter((m) => m.tier === 'Prospect').length, dot: 'bg-amber-400' },
                 ].map((tierItem) => (
@@ -273,7 +273,7 @@ export const PeopleDirectoryView: React.FC<PeopleDirectoryViewProps> = ({
                     onClick={() => setSelectedTier(tierItem.id as any)}
                     className={`flex items-center justify-between px-2.5 py-1.5 rounded-lg text-xs font-mono transition-all cursor-pointer border ${
                       selectedTier === tierItem.id
-                        ? 'bg-[#3D6BF2] text-white border-[#3D6BF2] font-semibold shadow-sm shadow-[#3D6BF2]/30'
+                        ? 'bg-[#F5B027] text-white border-[#F5B027] font-semibold shadow-sm shadow-[#F5B027]/30'
                         : 'bg-[#131722] hover:bg-[#1A202C] text-[#CBD5E1] border-white/5'
                     }`}
                   >
@@ -304,7 +304,7 @@ export const PeopleDirectoryView: React.FC<PeopleDirectoryViewProps> = ({
               <select
                 value={selectedCity}
                 onChange={(e) => setSelectedCity(e.target.value)}
-                className="w-full bg-[#131722] text-xs text-white rounded-lg px-3 py-2 border border-white/10 focus:outline-none focus:border-[#3D6BF2]"
+                className="w-full bg-[#131722] text-xs text-white rounded-lg px-3 py-2 border border-white/10 focus:outline-none focus:border-[#F5B027]"
               >
                 <option value="All">Any Location</option>
                 <option value="San Francisco">San Francisco, CA</option>
@@ -327,7 +327,7 @@ export const PeopleDirectoryView: React.FC<PeopleDirectoryViewProps> = ({
               <select
                 value={selectedIndustry}
                 onChange={(e) => setSelectedIndustry(e.target.value)}
-                className="w-full bg-[#131722] text-xs text-white rounded-lg px-3 py-2 border border-white/10 focus:outline-none focus:border-[#3D6BF2]"
+                className="w-full bg-[#131722] text-xs text-white rounded-lg px-3 py-2 border border-white/10 focus:outline-none focus:border-[#F5B027]"
               >
                 <option value="All">All Industries</option>
                 <option value="AI">AI & Machine Learning</option>
@@ -356,7 +356,7 @@ export const PeopleDirectoryView: React.FC<PeopleDirectoryViewProps> = ({
                     type="checkbox"
                     checked={selectedRoleTypes.includes(role.id)}
                     onChange={() => toggleRoleCheckbox(role.id)}
-                    className="rounded bg-[#131722] border-white/20 text-[#3D6BF2] focus:ring-0 focus:ring-offset-0"
+                    className="rounded bg-[#131722] border-white/20 text-[#F5B027] focus:ring-0 focus:ring-offset-0"
                   />
                   <span>{role.label}</span>
                 </label>
@@ -365,7 +365,7 @@ export const PeopleDirectoryView: React.FC<PeopleDirectoryViewProps> = ({
 
             <button
               onClick={handleClearFilters}
-              className="w-full py-2 text-xs font-semibold text-white bg-[#3D6BF2] hover:bg-[#2563EB] rounded-lg transition-colors cursor-pointer"
+              className="w-full py-2 text-xs font-semibold text-white bg-[#F5B027] hover:bg-[#C78522] rounded-lg transition-colors cursor-pointer"
             >
               Reset Filters
             </button>
@@ -375,7 +375,7 @@ export const PeopleDirectoryView: React.FC<PeopleDirectoryViewProps> = ({
             <div className="text-[11px] font-mono tracking-widest uppercase text-[#9CA3AF] font-semibold">Quick searches</div>
             <div className="flex flex-wrap gap-1.5">
               {['AI', 'Infrastructure', 'Fintech', 'Advisory', 'Climate', 'Go-to-Market'].map((t) => (
-                <button key={t} onClick={() => setSearchKeyword(t)} className={`text-[11px] px-2.5 py-1 rounded-full border cursor-pointer transition-colors ${searchKeyword === t ? 'border-[#3D6BF2] text-white bg-[#3D6BF2]/20' : 'border-white/10 text-[#CBD5E1] hover:border-[#3D6BF2]'}`}>{t}</button>
+                <button key={t} onClick={() => setSearchKeyword(t)} className={`text-[11px] px-2.5 py-1 rounded-full border cursor-pointer transition-colors ${searchKeyword === t ? 'border-[#F5B027] text-white bg-[#F5B027]/20' : 'border-white/10 text-[#CBD5E1] hover:border-[#F5B027]'}`}>{t}</button>
               ))}
             </div>
           </div>
@@ -384,7 +384,7 @@ export const PeopleDirectoryView: React.FC<PeopleDirectoryViewProps> = ({
             <div className="text-[11px] font-mono tracking-widest uppercase text-[#9CA3AF] font-semibold">Your connections</div>
             <div className="text-2xl font-serif-editorial text-white">{connectedMemberIds.size}</div>
             <p className="text-[11px] text-[#9CA3AF]">People you're connected with here. Connect with the people you want Intros to learn from.</p>
-            <button onClick={() => onNavigate('intros')} className="w-full text-xs py-2 rounded-md border border-white/15 hover:border-[#3D6BF2] text-white cursor-pointer">View intro requests</button>
+            <button onClick={() => onNavigate('intros')} className="w-full text-xs py-2 rounded-md border border-white/15 hover:border-[#F5B027] text-white cursor-pointer">View intro requests</button>
           </div>
         </aside>
 
@@ -417,7 +417,7 @@ export const PeopleDirectoryView: React.FC<PeopleDirectoryViewProps> = ({
                   onClick={() => setViewMode('grid')}
                   title="Grid View"
                   className={`p-1 rounded cursor-pointer ${
-                    viewMode === 'grid' ? 'bg-[#3D6BF2] text-white' : 'text-[#9CA3AF]'
+                    viewMode === 'grid' ? 'bg-[#F5B027] text-white' : 'text-[#9CA3AF]'
                   }`}
                 >
                   <LayoutGrid className="w-3.5 h-3.5" />
@@ -426,7 +426,7 @@ export const PeopleDirectoryView: React.FC<PeopleDirectoryViewProps> = ({
                   onClick={() => setViewMode('list')}
                   title="List View"
                   className={`p-1 rounded cursor-pointer ${
-                    viewMode === 'list' ? 'bg-[#3D6BF2] text-white' : 'text-[#9CA3AF]'
+                    viewMode === 'list' ? 'bg-[#F5B027] text-white' : 'text-[#9CA3AF]'
                   }`}
                 >
                   <List className="w-3.5 h-3.5" />
@@ -435,10 +435,10 @@ export const PeopleDirectoryView: React.FC<PeopleDirectoryViewProps> = ({
                   onClick={() => setViewMode('bubbles')}
                   title="Living Floating Connection Bubbles"
                   className={`p-1 rounded cursor-pointer flex items-center gap-1 text-[11px] font-mono px-1.5 ${
-                    viewMode === 'bubbles' ? 'bg-[#3D6BF2] text-white' : 'text-[#9CA3AF] hover:text-white'
+                    viewMode === 'bubbles' ? 'bg-[#F5B027] text-white' : 'text-[#9CA3AF] hover:text-white'
                   }`}
                 >
-                  <Orbit className="w-3.5 h-3.5 text-[#60A5FA]" />
+                  <Orbit className="w-3.5 h-3.5 text-[#FFC85C]" />
                   <span className="hidden sm:inline">Bubbles</span>
                 </button>
               </div>
@@ -461,7 +461,7 @@ export const PeopleDirectoryView: React.FC<PeopleDirectoryViewProps> = ({
                 onClick={() => setSelectedTier(t.id as any)}
                 className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-mono transition-all cursor-pointer shrink-0 border ${
                   selectedTier === t.id
-                    ? 'bg-[#3D6BF2] text-white border-[#3D6BF2] shadow-sm font-semibold'
+                    ? 'bg-[#F5B027] text-white border-[#F5B027] shadow-sm font-semibold'
                     : 'bg-[#0E121A] text-[#9CA3AF] hover:text-white border-white/10 hover:border-white/25'
                 }`}
               >
@@ -481,8 +481,8 @@ export const PeopleDirectoryView: React.FC<PeopleDirectoryViewProps> = ({
           {viewMode === 'bubbles' ? (
             <div className="bg-[#07090C] border border-white/10 rounded-2xl overflow-hidden p-1 shadow-2xl space-y-2">
               <div className="p-3 border-b border-white/10 bg-black/40 flex items-center justify-between text-xs">
-                <span className="font-mono text-[11px] text-[#3D6BF2] flex items-center gap-1.5 font-semibold">
-                  <Orbit className="w-3.5 h-3.5 text-[#3D6BF2] animate-spin-slow" />
+                <span className="font-mono text-[11px] text-[#F5B027] flex items-center gap-1.5 font-semibold">
+                  <Orbit className="w-3.5 h-3.5 text-[#F5B027] animate-spin-slow" />
                   Living Radar Web Constellation · {filteredMembers.length} People Active
                 </span>
                 <span className="text-[11px] text-[#9CA3AF] hidden sm:inline">
@@ -507,7 +507,7 @@ export const PeopleDirectoryView: React.FC<PeopleDirectoryViewProps> = ({
                 return (
                   <div
                     key={member.id}
-                    className="bg-[#0E121A] border border-white/10 hover:border-[#3D6BF2]/50 rounded-xl p-3 sm:p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 transition-all group shadow-sm"
+                    className="bg-[#0E121A] border border-white/10 hover:border-[#F5B027]/50 rounded-xl p-3 sm:p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 transition-all group shadow-sm"
                   >
                     <div className="flex items-center gap-3">
                       <div
@@ -524,15 +524,15 @@ export const PeopleDirectoryView: React.FC<PeopleDirectoryViewProps> = ({
                         <div className="flex items-center gap-1.5 flex-wrap">
                           <h3
                             onClick={() => onNavigate('profile', member.id)}
-                            className="font-serif-editorial text-sm font-bold text-white group-hover:text-[#3D6BF2] transition-colors cursor-pointer truncate"
+                            className="font-serif-editorial text-sm font-bold text-white group-hover:text-[#F5B027] transition-colors cursor-pointer truncate"
                           >
                             {member.name}
                           </h3>
                           {member.verified && (
-                            <CheckCircle className="w-3.5 h-3.5 text-[#3D6BF2] shrink-0" />
+                            <CheckCircle className="w-3.5 h-3.5 text-[#F5B027] shrink-0" />
                           )}
                           {renderTierBadge(member.tier)}
-                          <span className="text-[10px] font-mono text-[#3D6BF2] bg-[#3D6BF2]/10 px-1.5 rounded">
+                          <span className="text-[10px] font-mono text-[#F5B027] bg-[#F5B027]/10 px-1.5 rounded">
                             {member.matchScore}%
                           </span>
                         </div>
@@ -546,7 +546,7 @@ export const PeopleDirectoryView: React.FC<PeopleDirectoryViewProps> = ({
                     <div className="flex items-center gap-2 self-end sm:self-auto shrink-0">
                       <button
                         onClick={() => onRequestIntro(member)}
-                        className="px-3 py-1.5 text-xs font-semibold text-white bg-[#3D6BF2] hover:bg-[#2563EB] rounded-lg transition-colors cursor-pointer"
+                        className="px-3 py-1.5 text-xs font-semibold text-white bg-[#F5B027] hover:bg-[#C78522] rounded-lg transition-colors cursor-pointer"
                       >
                         Request Intro
                       </button>
@@ -573,7 +573,7 @@ export const PeopleDirectoryView: React.FC<PeopleDirectoryViewProps> = ({
                 return (
                   <div
                     key={member.id}
-                    className="bg-[#0E121A] border border-white/10 hover:border-[#3D6BF2]/50 rounded-xl p-4 flex flex-col justify-between transition-all group shadow-sm hover:shadow-lg hover:shadow-[#3D6BF2]/5"
+                    className="bg-[#0E121A] border border-white/10 hover:border-[#F5B027]/50 rounded-xl p-4 flex flex-col justify-between transition-all group shadow-sm hover:shadow-lg hover:shadow-[#F5B027]/5"
                   >
                     <div>
                       {/* Top Row: Avatar + Name + Fit Badge */}
@@ -592,7 +592,7 @@ export const PeopleDirectoryView: React.FC<PeopleDirectoryViewProps> = ({
                         <div className="text-right flex flex-col items-end gap-1">
                           <div className="flex items-center gap-1.5">
                             {renderTierBadge(member.tier)}
-                            <span className="text-[11px] font-mono font-bold text-[#3D6BF2] block leading-none">
+                            <span className="text-[11px] font-mono font-bold text-[#F5B027] block leading-none">
                               {member.matchScore}%
                             </span>
                           </div>
@@ -607,12 +607,12 @@ export const PeopleDirectoryView: React.FC<PeopleDirectoryViewProps> = ({
                         <div className="flex items-center gap-1.5">
                           <h3
                             onClick={() => onNavigate('profile', member.id)}
-                            className="font-serif-editorial text-base font-bold text-white group-hover:text-[#3D6BF2] transition-colors cursor-pointer"
+                            className="font-serif-editorial text-base font-bold text-white group-hover:text-[#F5B027] transition-colors cursor-pointer"
                           >
                             {member.name}
                           </h3>
                           {member.verified && (
-                            <CheckCircle className="w-3.5 h-3.5 text-[#3D6BF2] shrink-0" />
+                            <CheckCircle className="w-3.5 h-3.5 text-[#F5B027] shrink-0" />
                           )}
                         </div>
                         <p className="text-xs text-[#9CA3AF]">
@@ -645,14 +645,14 @@ export const PeopleDirectoryView: React.FC<PeopleDirectoryViewProps> = ({
                     {/* Card Footer: Mutual Connections + Action Buttons */}
                     <div className="pt-3 border-t border-white/5 space-y-2">
                       <div className="flex items-center gap-1.5 text-[11px] text-[#9CA3AF]">
-                        <Users className="w-3.5 h-3.5 text-[#3D6BF2]" />
+                        <Users className="w-3.5 h-3.5 text-[#F5B027]" />
                         <span>{member.mutualConnectionsCount} mutual connections</span>
                       </div>
 
                       <div className="flex items-center gap-2">
                         <button
                           onClick={() => onRequestIntro(member)}
-                          className="flex-1 py-1.5 text-xs font-semibold text-white bg-[#3D6BF2] hover:bg-[#2563EB] rounded-lg transition-colors cursor-pointer text-center"
+                          className="flex-1 py-1.5 text-xs font-semibold text-white bg-[#F5B027] hover:bg-[#C78522] rounded-lg transition-colors cursor-pointer text-center"
                         >
                           Request Intro
                         </button>
@@ -680,7 +680,7 @@ export const PeopleDirectoryView: React.FC<PeopleDirectoryViewProps> = ({
           <div className="bg-[#0E121A] border border-white/10 rounded-xl p-4 space-y-5">
             <div className="flex items-center justify-between text-[11px] font-mono tracking-widest uppercase text-[#9CA3AF] font-semibold">
               <span>Network Insights</span>
-              <span className="text-[#3D6BF2]">Global</span>
+              <span className="text-[#F5B027]">Global</span>
             </div>
 
             <div>
@@ -715,7 +715,7 @@ export const PeopleDirectoryView: React.FC<PeopleDirectoryViewProps> = ({
                   </div>
                   <div className="h-1.5 w-full bg-white/5 rounded-full overflow-hidden">
                     <div
-                      className="h-full bg-[#3D6BF2] rounded-full transition-all"
+                      className="h-full bg-[#F5B027] rounded-full transition-all"
                       style={{ width: `${c.percent}%` }}
                     />
                   </div>
@@ -742,7 +742,7 @@ export const PeopleDirectoryView: React.FC<PeopleDirectoryViewProps> = ({
                   </div>
                   <div className="h-1.5 w-full bg-white/5 rounded-full overflow-hidden">
                     <div
-                      className="h-full bg-[#3D6BF2] rounded-full"
+                      className="h-full bg-[#F5B027] rounded-full"
                       style={{ width: `${ind.percent * 2.5}%` }}
                     />
                   </div>
@@ -766,7 +766,7 @@ export const PeopleDirectoryView: React.FC<PeopleDirectoryViewProps> = ({
               <span className="text-[#F4A125]">Live</span>
             </div>
             {members.slice(3, 6).map((m) => (
-              <button key={m.id} onClick={() => onNavigate('profile', m.id)} className="w-full text-left p-2.5 rounded-lg border border-white/5 hover:border-[#3D6BF2]/50 bg-white/[0.02] transition-colors cursor-pointer min-w-0">
+              <button key={m.id} onClick={() => onNavigate('profile', m.id)} className="w-full text-left p-2.5 rounded-lg border border-white/5 hover:border-[#F5B027]/50 bg-white/[0.02] transition-colors cursor-pointer min-w-0">
                 <div className="text-xs font-semibold text-white truncate">{m.name}</div>
                 <div className="text-[11px] text-[#9CA3AF] line-clamp-2">Seeking people in {m.focusAreas?.[0] ?? 'their field'}{m.focusAreas?.[1] ? ` and ${m.focusAreas[1]}` : ''}.</div>
               </button>
@@ -782,15 +782,15 @@ export const PeopleDirectoryView: React.FC<PeopleDirectoryViewProps> = ({
                   <div className="text-xs text-white truncate">{m.name}</div>
                   <div className="text-[10px] text-[#9CA3AF] truncate">{m.mutualConnectionsCount} mutuals · {m.matchScore}% fit</div>
                 </div>
-                <button onClick={() => onRequestIntro(m)} className="shrink-0 text-[11px] px-2.5 py-1 rounded-md border border-white/15 hover:border-[#3D6BF2] text-white cursor-pointer">Intro</button>
+                <button onClick={() => onRequestIntro(m)} className="shrink-0 text-[11px] px-2.5 py-1 rounded-md border border-white/15 hover:border-[#F5B027] text-white cursor-pointer">Intro</button>
               </div>
             ))}
           </div>
 
-          <div className="p-4 rounded-xl border border-[#3D6BF2]/30 bg-gradient-to-br from-[#121A2C] to-[#0A0D15]">
+          <div className="p-4 rounded-xl border border-[#F5B027]/30 bg-gradient-to-br from-[#121A2C] to-[#0A0D15]">
             <p className="font-serif-editorial text-lg leading-snug text-[#F2EEE6]">Know who matters. Know why now.</p>
             <p className="text-[11px] text-[#9CA3AF] mt-1">Ask Intros who in your network can help with what you need this week.</p>
-            <button onClick={() => onNavigate('workspace')} className="mt-3 w-full text-xs font-semibold py-2 rounded-md bg-[#3D6BF2] hover:bg-[#2563EB] text-white cursor-pointer">Ask Intros</button>
+            <button onClick={() => onNavigate('workspace')} className="mt-3 w-full text-xs font-semibold py-2 rounded-md bg-[#F5B027] hover:bg-[#C78522] text-white cursor-pointer">Ask Intros</button>
           </div>
         </aside>
       </div>

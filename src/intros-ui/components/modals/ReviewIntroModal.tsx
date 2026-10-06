@@ -70,7 +70,7 @@ export const ReviewIntroModal: React.FC<ReviewIntroModalProps> = ({
           </div>
         ) : (
           <div>
-            <div className="text-[10px] font-mono tracking-widest text-[#3D6BF2] uppercase font-semibold mb-1">
+            <div className="text-[10px] font-mono tracking-widest text-[#F5B027] uppercase font-semibold mb-1">
               Active Introduction Request · {request.date}
             </div>
             <h2 className="font-serif-editorial text-2xl font-bold text-white mb-5">
@@ -86,7 +86,7 @@ export const ReviewIntroModal: React.FC<ReviewIntroModalProps> = ({
                   <div className="text-xs text-[#9CA3AF]">Requested by</div>
                   <div className="text-sm font-semibold text-white">{request.requesterName}</div>
                   <div className="text-[11px] text-[#6B7280]">{request.requesterTitle}</div>
-                  <div className="text-[11px] text-[#3D6BF2]">{request.requesterCompany}</div>
+                  <div className="text-[11px] text-[#F5B027]">{request.requesterCompany}</div>
                 </div>
               </div>
 
@@ -97,7 +97,7 @@ export const ReviewIntroModal: React.FC<ReviewIntroModalProps> = ({
                   <div className="text-xs text-[#9CA3AF]">Target Person</div>
                   <div className="text-sm font-semibold text-white">{request.targetName}</div>
                   <div className="text-[11px] text-[#6B7280]">{request.targetTitle}</div>
-                  <div className="text-[11px] text-[#3D6BF2]">{request.targetCompany}</div>
+                  <div className="text-[11px] text-[#F5B027]">{request.targetCompany}</div>
                 </div>
               </div>
             </div>
@@ -122,7 +122,7 @@ export const ReviewIntroModal: React.FC<ReviewIntroModalProps> = ({
                 onChange={(e) => setFeedback(e.target.value)}
                 rows={2}
                 placeholder="e.g. Connecting two leaders whose work in applied AI infrastructure closely aligns..."
-                className="w-full bg-[#151A24] border border-white/10 rounded-lg p-2.5 text-xs text-white placeholder-[#6B7280] focus:outline-none focus:border-[#3D6BF2]"
+                className="w-full bg-[#151A24] border border-white/10 rounded-lg p-2.5 text-xs text-white placeholder-[#6B7280] focus:outline-none focus:border-[#F5B027]"
               />
             </div>
 
@@ -147,7 +147,7 @@ export const ReviewIntroModal: React.FC<ReviewIntroModalProps> = ({
                 <button
                   type="button"
                   onClick={handleAccept}
-                  className="flex items-center gap-1.5 px-4 py-2 text-xs font-semibold text-white bg-[#3D6BF2] hover:bg-[#2563EB] rounded-lg transition-colors cursor-pointer shadow-sm"
+                  className="flex items-center gap-1.5 px-4 py-2 text-xs font-semibold text-white bg-[#F5B027] hover:bg-[#C78522] rounded-lg transition-colors cursor-pointer shadow-sm"
                 >
                   <Check className="w-3.5 h-3.5" />
                   Accept & Make Intro
