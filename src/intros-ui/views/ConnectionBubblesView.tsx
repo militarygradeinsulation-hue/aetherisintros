@@ -638,11 +638,20 @@ export const ConnectionBubblesView: React.FC<ConnectionBubblesViewProps> = ({
 
             {/* Large Executive Portrait Artwork */}
             <div className="relative aspect-[4/3] rounded-xl overflow-hidden border border-white/10 bg-black/50">
-              <img
-                src={getPortraitForName(spotlightMember.name, spotlightMember.avatarUrl)}
-                alt={spotlightMember.name}
-                className="w-full h-full object-cover grayscale contrast-125 brightness-95"
-              />
+              {(() => {
+                const u = getPortraitForName(spotlightMember.name, spotlightMember.avatarUrl);
+                return u ? (
+                  <img
+                    src={u}
+                    alt={spotlightMember.name}
+                    className="w-full h-full object-cover grayscale contrast-125 brightness-95"
+                  />
+                ) : (
+                  <div className="w-full h-full flex items-center justify-center font-serif-editorial text-5xl text-white/40">
+                    {spotlightMember.name.split(' ').filter(Boolean).map((p) => p[0]).join('').slice(0, 2).toUpperCase()}
+                  </div>
+                );
+              })()}
               <div className="absolute inset-0 bg-gradient-to-t from-[#0E121A] via-transparent to-transparent" />
               <div className="absolute bottom-3 left-3 right-3 flex items-center justify-between">
                 <span className="text-xs font-mono font-bold text-white bg-black/60 px-2 py-1 rounded backdrop-blur-sm border border-white/10">

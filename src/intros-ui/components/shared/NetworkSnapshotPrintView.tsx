@@ -243,11 +243,17 @@ export const NetworkSnapshotPrintView: React.FC<NetworkSnapshotPrintViewProps> =
                   }}
                   className="relative rounded-full border-2 bg-[#0E121A] overflow-hidden shadow-lg shadow-black/80"
                 >
-                  <img
-                    src={portraitUrl}
-                    alt={member.name}
-                    className="w-full h-full object-cover grayscale contrast-110"
-                  />
+                  {portraitUrl ? (
+                    <img
+                      src={portraitUrl}
+                      alt={member.name}
+                      className="w-full h-full object-cover grayscale contrast-110"
+                    />
+                  ) : (
+                    <div className="w-full h-full flex items-center justify-center text-white font-semibold" style={{ fontSize: `${Math.max(10, radius * 0.5)}px` }}>
+                      {member.name.split(' ').filter(Boolean).map((p) => p[0]).join('').slice(0, 2).toUpperCase()}
+                    </div>
+                  )}
                   {/* Match Score Badge */}
                   <span
                     style={{ backgroundColor: ringColor }}
