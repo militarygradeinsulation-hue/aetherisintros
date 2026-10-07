@@ -37,6 +37,7 @@ export const TopNavigation: React.FC<TopNavigationProps> = ({
   onOpenMyProfile,
 }) => {
   const myName = me ? (me.name || 'My profile') : 'Sarah Chen';
+  const myInitials = (me?.name || 'Me').split(' ').filter(Boolean).map((p) => p[0]).join('').slice(0, 2).toUpperCase();
   return (
     <header className="sticky top-0 z-50 w-full bg-[#07090C]/95 backdrop-blur-md border-b border-white/10 px-2 sm:px-4 md:px-6 py-2.5 transition-colors print:hidden">
       <div className="max-w-[1600px] mx-auto flex flex-wrap xl:flex-nowrap items-center gap-x-2 gap-y-1">
@@ -131,7 +132,9 @@ export const TopNavigation: React.FC<TopNavigationProps> = ({
             title="My profile"
             className="flex items-center gap-2 p-0.5 pl-0.5 pr-1.5 rounded-full hover:bg-white/5 transition-colors cursor-pointer group"
           >
-            {me?.avatarUrl ? <img src={me.avatarUrl} alt="" className="w-7 h-7 rounded-full object-cover" /> : <ExecutivePortrait name={myName} size="sm" />}
+            {me?.avatarUrl
+              ? <AvatarImage source={me.avatarUrl} alt="" className="w-7 h-7 rounded-full object-cover" />
+              : <span className="w-7 h-7 rounded-full bg-white/10 border border-white/15 flex items-center justify-center text-[10px] font-semibold text-[#F2EEE6]">{myInitials}</span>}
             <span className="hidden 2xl:inline text-xs font-medium text-[#F2EEE6] group-hover:text-white">
               {myName}
             </span>
