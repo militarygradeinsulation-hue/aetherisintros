@@ -301,11 +301,20 @@ export const NetworkSnapshotPrintView: React.FC<NetworkSnapshotPrintViewProps> =
               {members.map((m) => (
                 <tr key={m.id} className="hover:bg-white/[0.02]">
                   <td className="p-2.5 flex items-center gap-2">
-                    <img
-                      src={getPortraitForName(m.name, m.avatarUrl)}
-                      alt={m.name}
-                      className="w-7 h-7 rounded-full object-cover border border-[#F5B027]/40 grayscale"
-                    />
+                    {(() => {
+                      const u = getPortraitForName(m.name, m.avatarUrl);
+                      return u ? (
+                        <img
+                          src={u}
+                          alt={m.name}
+                          className="w-7 h-7 rounded-full object-cover border border-[#F5B027]/40 grayscale"
+                        />
+                      ) : (
+                        <div className="w-7 h-7 rounded-full bg-[#1E232F] border border-[#F5B027]/40 flex items-center justify-center text-[9px] font-semibold text-white">
+                          {m.name.split(' ').filter(Boolean).map((p) => p[0]).join('').slice(0, 2).toUpperCase()}
+                        </div>
+                      );
+                    })()}
                     <div>
                       <div className="font-bold text-white">{m.name}</div>
                       <div className="text-[9px] text-[#9CA3AF]">{m.location}</div>
