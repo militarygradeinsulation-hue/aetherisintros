@@ -2719,7 +2719,7 @@ function Shell({ startPage, feedOnly = false }: { startPage?: Page | undefined; 
   return <NavCtx.Provider value={navApi}>
     <div className={`app-shell social-shell ${feedOnly ? 'home-social-only' : ''} ${contextOpen ? 'show-context' : ''}`}>
       <header className="social-topnav">
-        <button className="social-brand" onClick={() => setPage('home')} aria-label="Ask Intros Home"><Brand /></button>
+        <button className="social-brand" onClick={() => setPage('home')} aria-label={isShowcase() ? 'Ask Intros Home — Demo' : 'Ask Intros Home'}><Brand />{isShowcase() && <span className="demo-flag">Demo</span>}</button>
         <nav aria-label="Primary navigation">{nav.map(item => {
           const Icon = item.icon
           return <button key={item.id} className={page === item.id ? 'active' : ''} title={item.label} onClick={() => setPage(item.id)}>
@@ -2732,6 +2732,7 @@ function Shell({ startPage, feedOnly = false }: { startPage?: Page | undefined; 
         <header className="topbar">
           <span className="topbar-title">Ask Intros <i>/</i> {metaById[page]?.label ?? allNav.find(n => n.id === page)?.label}</span>
           <div className="topbar-actions">
+            {isShowcase() && <span className="demo-flag demo-flag-mobile">Demo</span>}
             <button className="topbar-search" aria-label="Search people, companies, topics, or ideas…" onClick={() => setGlobalSearchOpen(true)}><Search size={15} /><span>Search people, companies, topics, or ideas…</span><kbd>⌘K</kbd></button>
             <TopbarVoice />
             <div className="topbar-dropdown">
