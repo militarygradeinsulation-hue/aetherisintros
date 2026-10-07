@@ -29,6 +29,8 @@ import { ScheduleMeetingModal } from './components/modals/ScheduleMeetingModal';
 import { FloatingConnectionField } from './components/shared/FloatingConnectionField';
 import { X, Orbit } from 'lucide-react';
 import ClassicApp, { AetherisAssistant } from '@/aetheris/App';
+import { VoiceBar } from '@/aetheris/VoiceBar';
+import { SelectionReader } from '@/aetheris/SelectionReader';
 import { LiveMessagesView } from './views/LiveMessagesView';
 import '@/aetheris/styles.css';
 import { useAetherisNews } from '@/aetheris/news';
@@ -350,9 +352,11 @@ export default function App({ mode = 'demo' }: { mode?: 'demo' | 'live' }) {
         memberName={scheduleMeetingTarget?.name || ''}
         memberTitle={scheduleMeetingTarget?.title || ''}
       />
-      {!classicPages.includes(activePage) && (
+      {!classicPages.includes(activePage) && (<>
         <AetherisAssistant mode={mode} page={activePage} onNavigate={(p) => handleNavigate(p as ActivePage)} />
-      )}
+        <VoiceBar />
+        <SelectionReader />
+      </>)}
     </div>
     </AccentProvider>
   );
