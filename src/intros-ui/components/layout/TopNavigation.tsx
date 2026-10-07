@@ -91,7 +91,7 @@ export const TopNavigation: React.FC<TopNavigationProps> = ({
             { id: 'memory', label: 'Memory' },
             { id: 'messages', label: 'Messages', badge: unreadCount },
             { id: 'news', label: 'News' },
-            { id: 'people', label: 'People & Intros' },
+            { id: 'people', label: 'People' },
             { id: 'work', label: 'Work' },
           ].map((item) => {
             const isActive = activePage === item.id || (item.id === 'people' && activePage === 'intros');
@@ -185,7 +185,7 @@ export const TopNavigation: React.FC<TopNavigationProps> = ({
       {[
         { id: 'home', label: 'Home', icon: Home },
         { id: 'workspace', label: 'Ask Intros', icon: Orbit },
-        { id: 'people', label: 'People & Intros', icon: Users },
+        { id: 'people', label: 'People', icon: Users },
         { id: 'messages', label: 'Messages', icon: MessageSquare },
       ].map(({ id, label, icon: Icon }) => <Button key={id} variant="ghost" className="ix-mobile-nav-item" aria-current={activePage === id || (id === 'people' && activePage === 'intros') ? 'page' : undefined} onClick={() => { setMoreOpen(false); onNavigate(id as ActivePage); }}>
         <span className="relative"><Icon aria-hidden="true" />{id === 'messages' && unreadCount > 0 && <span className="ix-mobile-badge">{unreadCount > 99 ? '99+' : unreadCount}</span>}</span>
