@@ -89,6 +89,17 @@ export default function MetroHero({
       onCompleteRef.current?.()
     }
     finishRef.current = finish
+    // Natural end: keep the last frame and tagline fully visible so it can be read.
+    let holdTimer: number | null = null
+    const holdThenFinish = () => {
+      if (completed || holdTimer !== null) return
+      if (taglineRef.current) {
+        taglineRef.current.style.opacity = "1"
+        taglineRef.current.style.transform = "none"
+        taglineRef.current.style.filter = "none"
+      }
+      holdTimer = window.setTimeout(finish, 1600)
+    }
 
     const onLoadedData = () => {
       duration = video.duration || 0
@@ -259,11 +270,11 @@ export default function MetroHero({
 
       if (playbackMode) {
         if (v.ended || (duration > 0 && v.currentTime >= duration - 0.05)) {
-          finish()
+          holdThenFinish()
           return
         }
       } else if (targetProgress >= 1) {
-        finish()
+        holdThenFinish()
         return
       }
       rafId = requestAnimationFrame(frame)
@@ -274,6 +285,7 @@ export default function MetroHero({
     }
 
     return () => {
+      if (holdTimer !== null) window.clearTimeout(holdTimer)
       video.removeEventListener("loadeddata", onLoadedData)
       video.removeEventListener("seeked", onSeeked)
       window.removeEventListener("wheel", onWheel)
