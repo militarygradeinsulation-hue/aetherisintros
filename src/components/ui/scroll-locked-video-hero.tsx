@@ -5,9 +5,8 @@ import { useEffect, useRef, useState } from "react"
 // ─────────────────────────────────────────────────────────────
 // Scroll-locked video intro — the page is pinned with
 // position:fixed while active. Wheel/touch input drives
-// video.currentTime forward and backward. Once the video reaches
-// the end and the user keeps pushing forward, onComplete fires
-// and the intro hands off to the page beneath it.
+// video.currentTime through a quick transition after one forward
+// gesture. The intro then automatically hands off to the page.
 // ─────────────────────────────────────────────────────────────
 
 export interface MetroHeroProps {
@@ -16,9 +15,9 @@ export interface MetroHeroProps {
   scrollHint?: string
   tagline?: string
   signature?: { name: string; url: string } | false
-  /** Total input distance (px) needed to scrub the full video. Tune to taste. */
+  /** Legacy sensitivity: divided by 100 to set the initial gesture threshold. */
   scrubDistance?: number
-  /** Called once the video is fully scrubbed and the user pushes past the end. */
+  /** Called automatically when the single-gesture transition completes. */
   onComplete?: () => void
   className?: string
   style?: React.CSSProperties
@@ -69,6 +68,8 @@ export default function MetroHero({
     let rafId = 0
     let targetProgress = 0
     let currentProgress = 0
+    let gestureDistance = 0
+    let transitionStartedAt: number | null = null
     let hasStartedScrolling = false
     let isSeeking = false
     let pendingTime: number | null = null
@@ -162,18 +163,16 @@ export default function MetroHero({
     engageLock()
 
     function addDelta(deltaY: number) {
-      // Pushing forward past the end hands off to the page.
-      if (targetProgress >= 1 && deltaY > 0) {
-        finish()
-        return
-      }
-      const next = clamp(targetProgress + deltaY / scrubDistance, 0, 1)
-      targetProgress = next
-      if (targetProgress > 0.001) hasStartedScrolling = true
+      if (completed || transitionStartedAt !== null) return
+      gestureDistance = Math.max(0, gestureDistance + deltaY)
+      if (gestureDistance < clamp(scrubDistance / 100, 12, 40)) return
+      hasStartedScrolling = true
+      transitionStartedAt = performance.now()
     }
 
     const onWheel = (e: WheelEvent) => {
-      addDelta(e.deltaY)
+      if (completed) return
+      addDelta(e.deltaY * (e.deltaMode === 1 ? 16 : e.deltaMode === 2 ? window.innerHeight : 1))
       e.preventDefault()
     }
 
@@ -181,6 +180,7 @@ export default function MetroHero({
       touchStartY = e.touches[0]?.clientY ?? 0
     }
     const onTouchMove = (e: TouchEvent) => {
+      if (completed) return
       const y = e.touches[0]?.clientY ?? touchStartY
       const deltaY = touchStartY - y
       touchStartY = y
@@ -198,11 +198,13 @@ export default function MetroHero({
     window.addEventListener("touchstart", onTouchStart, { passive: true })
     window.addEventListener("touchmove", onTouchMove, { passive: false })
     window.addEventListener("keydown", onKeyDown)
-    section.addEventListener("touchstart", onTouchStart, { passive: true, capture: true })
-    section.addEventListener("touchmove", onTouchMove, { passive: false, capture: true })
 
     function frame() {
-      currentProgress += (targetProgress - currentProgress) * 0.18
+      if (completed) return
+      if (transitionStartedAt !== null) {
+        targetProgress = clamp((performance.now() - transitionStartedAt) / 1200, 0, 1)
+      }
+      currentProgress = targetProgress
 
       if (duration > 0) {
         seekTo(currentProgress * duration)
@@ -231,6 +233,10 @@ export default function MetroHero({
         progressBarRef.current.style.transform = `scaleX(${currentProgress})`
       }
 
+      if (targetProgress >= 1) {
+        finish()
+        return
+      }
       rafId = requestAnimationFrame(frame)
     }
 
@@ -245,8 +251,6 @@ export default function MetroHero({
       window.removeEventListener("touchstart", onTouchStart)
       window.removeEventListener("touchmove", onTouchMove)
       window.removeEventListener("keydown", onKeyDown)
-      section.removeEventListener("touchstart", onTouchStart, true)
-      section.removeEventListener("touchmove", onTouchMove, true)
       cancelAnimationFrame(rafId)
       releaseLock()
     }
