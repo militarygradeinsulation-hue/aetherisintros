@@ -315,5 +315,5 @@
 - [x] Default every member to the blue accent; keep gold and mixed selectable.
 - [x] Restore the drifting dots/lines + rising glyph animation and layer it with the new grid backdrop.
 
-- [ ] Intro: hold last frame ~1s before fading to Ask Intros
-- [ ] Verify highlight-to-read in shell (signed in)
+- [x] Intro: hold last frame ~1s before fading to Ask Intros
+- [x] Verify highlight-to-read in shell (signed in)
