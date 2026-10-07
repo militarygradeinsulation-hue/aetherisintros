@@ -2,7 +2,7 @@
   "meta": {
     "name": "Ask Intros",
     "package": "@ws-gmhcx8w6bqvecbtkycud/c1248cd8-77de-4eaa-8d9d-e7da71e70ae9",
-    "version": "22.0.0",
+    "version": "23.0.0",
     "framework": "react",
     "css_framework": "tailwind",
     "starter_template": "custom_design_system_tailwind",
@@ -380,7 +380,7 @@
       "src/components/ui/radio-group.tsx": "0e1ace237a5da3197e3eb1e6683faba9",
       "src/components/ui/resizable.tsx": "d9fcb9203c749fcab4e125a99bb12a86",
       "src/components/ui/scroll-area.tsx": "87b65d3eb26f2b02ff35a7acea585ba5",
-      "src/components/ui/scroll-locked-video-hero.tsx": "c29676b919adfa56146c4dd66a712697",
+      "src/components/ui/scroll-locked-video-hero.tsx": "b20412b361a39a0635082f25d40bec0e",
       "src/components/ui/select.tsx": "31ea1bbd6671833b010b2e852c8a55d0",
       "src/components/ui/separator.tsx": "433d163c4ffa00b59398a0c293198b5e",
       "src/components/ui/sheet.tsx": "0221fbf97b69611b47fcbc10bb27669a",
