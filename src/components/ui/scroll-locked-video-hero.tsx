@@ -285,6 +285,7 @@ export default function MetroHero({
     }
 
     return () => {
+      if (holdTimer !== null) window.clearTimeout(holdTimer)
       video.removeEventListener("loadeddata", onLoadedData)
       video.removeEventListener("seeked", onSeeked)
       window.removeEventListener("wheel", onWheel)
