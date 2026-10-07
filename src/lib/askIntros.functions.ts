@@ -1,8 +1,6 @@
 import { createServerFn } from '@tanstack/react-start'
-import { stepCountIs, streamText, tool } from 'ai'
-import { createOpenAI } from '@ai-sdk/openai'
-import { z } from 'zod'
 import { readPage, searchWeb } from './webSearch.server'
+import { gatewayChat, routeLlmChat, type ToolDef } from './aiGateway.server'
 import { requireAuthContract } from './auth-gate'
 
 export interface AskIntrosMessage { role: 'user' | 'assistant'; content: string }
@@ -103,6 +101,45 @@ Reply with ONE JSON object and nothing else:
 Use an empty actions array when no action is needed.`
 }
 
+const WEB_TOOLS: ToolDef[] = [
+  {
+    name: 'web_search',
+    description: 'Search the live web. Returns titles, URLs and snippets.',
+    parameters: {
+      type: 'object',
+      properties: { query: { type: 'string', description: 'The search query' } },
+      required: ['query'],
+      additionalProperties: false,
+    },
+    execute: async (args) => {
+      try {
+        const results = await searchWeb(String(args['query'] ?? ''))
+        return results.length ? { results } : { results: [], note: 'No results came back for that query.' }
+      } catch {
+        return { results: [], note: 'The web search could not be completed.' }
+      }
+    },
+  },
+  {
+    name: 'read_page',
+    description: 'Read the readable text of one web page, by URL, for detail a snippet does not give.',
+    parameters: {
+      type: 'object',
+      properties: { url: { type: 'string', description: 'The full https URL to read' } },
+      required: ['url'],
+      additionalProperties: false,
+    },
+    execute: async (args) => {
+      try {
+        const text = await readPage(String(args['url'] ?? ''))
+        return text ? { text } : { text: '', note: 'That page returned no readable text.' }
+      } catch {
+        return { text: '', note: 'That page could not be read.' }
+      }
+    },
+  },
+]
+
 export const askIntros = createServerFn({ method: 'POST' })
   .middleware([requireAuthContract])
   .inputValidator((data: AskIntrosInput) => data)
@@ -112,59 +149,16 @@ export const askIntros = createServerFn({ method: 'POST' })
     if (!routeKey && !apiKey) {
       return { reply: 'Ask Intros is not configured yet on this account.', actions: [], suggestions: [], error: 'missing-key' }
     }
-    // Prefer the member-supplied RouteLLM account so questions never draw on workspace AI credits.
-    const model = routeKey
-      ? createOpenAI({ baseURL: 'https://routellm.abacus.ai/v1', apiKey: routeKey }).chat('route-llm')
-      : createOpenAI({
-          baseURL: 'https://ai.gateway.lovable.dev/v1',
-          apiKey: apiKey!,
-          headers: { 'Lovable-API-Key': apiKey!, 'X-Lovable-AIG-SDK': 'vercel-ai-sdk' },
-        }).responses('openai/gpt-6-astra')
-
     try {
-      const result = streamText({
-        model,
+      const request = {
         system: buildPrompt(data.context),
         messages: data.messages.slice(-12),
-        stopWhen: stepCountIs(8),
-        tools: {
-          web_search: tool({
-            description: 'Search the live web. Returns titles, URLs and snippets.',
-            inputSchema: z.object({ query: z.string().describe('The search query') }),
-            execute: async ({ query }) => {
-              try {
-                const results = await searchWeb(query)
-                return results.length ? { results } : { results: [], note: 'No results came back for that query.' }
-              } catch {
-                return { results: [], note: 'The web search could not be completed.' }
-              }
-            },
-          }),
-          read_page: tool({
-            description: 'Read the readable text of one web page, by URL, for detail a snippet does not give.',
-            inputSchema: z.object({ url: z.string().describe('The full https URL to read') }),
-            execute: async ({ url }) => {
-              try {
-                const text = await readPage(url)
-                return text ? { text } : { text: '', note: 'That page returned no readable text.' }
-              } catch {
-                return { text: '', note: 'That page could not be read.' }
-              }
-            },
-          }),
-        },
-        providerOptions: routeKey ? {} : {
-          openai: {
-            store: false,
-            forceReasoning: true,
-            reasoningEffort: 'low',
-            reasoningSummary: 'auto',
-            include: ['reasoning.encrypted_content'],
-          },
-        },
-      })
-      const text = (await result.text).trim()
-      return parseAnswer(text)
+        tools: WEB_TOOLS,
+        maxSteps: 8,
+      }
+      // Prefer the member-supplied RouteLLM account so questions never draw on workspace AI credits.
+      const text = routeKey ? await routeLlmChat(request) : await gatewayChat(request)
+      return parseAnswer(text.trim())
     } catch (error) {
       const message = error instanceof Error ? error.message : 'Ask Intros could not answer just now.'
       return { reply: 'Ask Intros could not answer just now. Try again in a moment.', actions: [], suggestions: [], error: message }
