@@ -220,7 +220,7 @@ export default function MetroHero({
       if (completed) return
 
       if (playbackMode && duration > 0) {
-        const t = clamp(video.currentTime / duration, 0, 1)
+        const t = clamp(v.currentTime / duration, 0, 1)
         currentProgress = t
         targetProgress = t
       } else if (transitionStartedAt !== null) {
@@ -258,7 +258,7 @@ export default function MetroHero({
       }
 
       if (playbackMode) {
-        if (video.ended || (duration > 0 && video.currentTime >= duration - 0.05)) {
+        if (v.ended || (duration > 0 && v.currentTime >= duration - 0.05)) {
           finish()
           return
         }
