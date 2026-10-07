@@ -58,7 +58,27 @@ export interface AskIntrosDockProps {
 }
 
 /** Hovering butler: teaches the system, operates it, and talks with the member. */
-export function AskIntrosDock({ page, peopleNames, memberName, briefing, contextPanel, run }: AskIntrosDockProps) {
+const dockOwners: symbol[] = []
+const dockListeners = new Set<() => void>()
+/** Only the first mounted dock renders, so the butler never appears twice. */
+function useIsPrimaryDock() {
+  const [id] = useState(() => Symbol('dock'))
+  const [, bump] = useState(0)
+  useEffect(() => {
+    dockOwners.push(id)
+    const l = () => bump(n => n + 1)
+    dockListeners.add(l)
+    dockListeners.forEach(f => f())
+    return () => { dockOwners.splice(dockOwners.indexOf(id), 1); dockListeners.delete(l); dockListeners.forEach(f => f()) }
+  }, [id])
+  return dockOwners[0] === id
+}
+
+export function AskIntrosDock(props: AskIntrosDockProps) {
+  return useIsPrimaryDock() ? <AskIntrosDockInner {...props} /> : null
+}
+
+function AskIntrosDockInner({ page, peopleNames, memberName, briefing, contextPanel, run }: AskIntrosDockProps) {
   const [open, setOpen] = useState(false)
   const [input, setInput] = useState('')
   const [busy, setBusy] = useState(false)

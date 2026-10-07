@@ -4985,3 +4985,8 @@ button.news-link{background:none;border:0;padding:0;cursor:pointer}
 .gapbox-cols ul{margin:4px 0 0;padding-left:16px;line-height:1.4;font-size:.8rem}
 .gapbox-cols li{margin:0 0 3px}
 .gapbox p{color:#C9CED4;font-size:.8rem;line-height:1.4}
+/* Visible fields in the Signals exchange form */
+.og-form input:not([type="checkbox"]),.og-form select,.og-form textarea{background:#0B0D0F;border:1px solid rgba(255,255,255,.18);border-radius:7px;padding:.6rem .7rem;min-height:42px;font-size:16px;color:#F1EFE9}
+.og-form input:focus,.og-form select:focus,.og-form textarea:focus{outline:none;border-color:var(--cobalt,#0F5CCB);box-shadow:0 0 0 2px rgba(15,92,203,.3)}
+.og-form select option{background:#11151A;color:#F1EFE9}
+.og-form input::placeholder{color:#9EA4AC}
