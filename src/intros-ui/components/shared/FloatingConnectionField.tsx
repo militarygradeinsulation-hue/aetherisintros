@@ -1080,11 +1080,20 @@ export const FloatingConnectionField: React.FC<FloatingConnectionFieldProps> = (
 
           {/* Member Identity Details */}
           <div className="flex items-start gap-3">
-            <img
-              src={getPortraitForName(activeDossier.member.name, activeDossier.member.avatarUrl)}
-              alt={activeDossier.member.name}
-              className="w-12 h-12 rounded-xl object-cover border-2 border-[#F5B027]/60 shadow-md grayscale contrast-110 shrink-0"
-            />
+            {(() => {
+              const u = getPortraitForName(activeDossier.member.name, activeDossier.member.avatarUrl);
+              return u ? (
+                <img
+                  src={u}
+                  alt={activeDossier.member.name}
+                  className="w-12 h-12 rounded-xl object-cover border-2 border-[#F5B027]/60 shadow-md grayscale contrast-110 shrink-0"
+                />
+              ) : (
+                <div className="w-12 h-12 rounded-xl bg-[#1E2536] border-2 border-[#F5B027]/60 shadow-md flex items-center justify-center text-xs font-semibold text-white shrink-0">
+                  {activeDossier.member.name.split(' ').filter(Boolean).map((p) => p[0]).join('').slice(0, 2).toUpperCase()}
+                </div>
+              );
+            })()}
             <div className="min-w-0">
               <h4 className="font-serif-editorial text-base font-bold text-white truncate">
                 {activeDossier.member.name}
