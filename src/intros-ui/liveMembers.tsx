@@ -6,7 +6,9 @@ import type { NetworkMember } from './networkData';
 /** Maps real network members into the new shell's member shape. No invented values. */
 function toNetworkMember(m: any): NetworkMember {
   const [firstName = m.name, ...rest] = String(m.name ?? '').split(' ');
-  const avatar = m.avatarUrl && /^https?:|^\/|^data:/.test(m.avatarUrl) ? m.avatarUrl : '';
+  // Keep the raw value: a real member's photo may be a direct URL or a private
+  // storage object path — AvatarImage resolves both. Never substitute a stock photo.
+  const avatar = m.avatarUrl && String(m.avatarUrl).trim() ? String(m.avatarUrl) : '';
   const score = Math.round(m.scoreTotal ?? 0);
   return {
     id: m.id, name: m.name, firstName, lastName: rest.join(' '),

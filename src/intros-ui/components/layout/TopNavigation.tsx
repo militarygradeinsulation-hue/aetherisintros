@@ -2,7 +2,7 @@
 import React from 'react';
 import { AskIntrosLockup } from '@/aetheris/AskIntrosLockup';
 import { Search, Bell, Orbit, LogOut } from 'lucide-react';
-import { ExecutivePortrait } from '../shared/ExecutivePortrait';
+import { AvatarImage } from '@/aetheris/avatar';
 import { supabase } from '@/integrations/supabase/client';
 import { AccentSwitch } from '../../AccentMode';
 
