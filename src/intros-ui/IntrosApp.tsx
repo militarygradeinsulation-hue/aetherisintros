@@ -3,7 +3,6 @@ import React, { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import './styles.css';
 import { AccentProvider } from './AccentMode';
-import BackdropField from './BackdropField';
 import {
   NETWORK_MEMBERS,
   INITIAL_FEED_POSTS,
@@ -35,8 +34,6 @@ import { LiveMessagesView } from './views/LiveMessagesView';
 import '@/aetheris/styles.css';
 import { useAetherisNews } from '@/aetheris/news';
 import { LiveMembers } from './liveMembers';
-import ConstellationField from '@/aetheris/ConstellationField';
-import ParticleDrift from '@/aetheris/ParticleDrift';
 
 function NewsTicker({ onOpen }: { onOpen: () => void }) {
   const { data } = useAetherisNews();
@@ -214,11 +211,6 @@ export default function App({ mode = 'demo' }: { mode?: 'demo' | 'live' }) {
   return (
     <AccentProvider>
     <div className="ix-root min-h-screen bg-[#07090C] text-[#F2EEE6] flex flex-col font-sans selection:bg-[#F5B027]/30 selection:text-white relative isolate">
-      <BackdropField />
-      <div aria-hidden className="pointer-events-none fixed inset-0 -z-10">
-        <ParticleDrift className="absolute inset-0 h-full w-full opacity-30" />
-        <ConstellationField className="absolute inset-0 h-full w-full opacity-60" />
-      </div>
       {/* Universal Top Navigation Contract */}
       <TopNavigation
         activePage={activePage}

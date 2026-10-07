@@ -8,8 +8,6 @@ import MetroHero from '@/components/ui/scroll-locked-video-hero'
 import { useAccess } from './access'
 
 import { CinematicFooter } from './CinematicFooter'
-import ParticleDrift from './ParticleDrift'
-import ConstellationField from './ConstellationField'
 import { AskIntrosLockup } from './AskIntrosLockup'
 import SerenityAmbient from './SerenityAmbient'
 
@@ -103,7 +101,6 @@ function LandingPage({ signedIn }: { signedIn: boolean }) {
       <CinematicFooter />
 
       <section className="lv-hero">
-        <ParticleDrift className="lv-hero-drift" />
         <div className="lv-hero-copy">
           <AskIntrosLockup variant="hero" />
           <h1 className="lv-hero-words"><span className="word-animate" style={{ animationDelay: '100ms' }}>Join</span> <span className="word-animate" style={{ animationDelay: '260ms' }}>the</span> <em className="word-animate" style={{ animationDelay: '420ms' }}>whitelist.</em></h1>
@@ -120,7 +117,6 @@ function LandingPage({ signedIn }: { signedIn: boolean }) {
       </section>
 
       <section className="lv-quote" aria-label="Ask Intros principle">
-        <ConstellationField className="lv-quote-constellation" />
         <blockquote>You&rsquo;re defined by the people you surround yourself with.</blockquote>
       </section>
 

@@ -1,5 +1,8 @@
 # Aetheris specification completion
 
+## Shared moving background (Oct 7)
+- [ ] Combine numeric drift, connection lines, and the existing aurora across public and member pages; verify navigation, motion and reduced-motion behavior without publishing.
+
 ## Thumb-friendly mobile menu (Oct 7)
 - [x] Move mobile destinations to a fixed bottom bar with remaining destinations in a bottom menu; preserve desktop navigation.
 - [x] Verify demo navigation at 390px and 360px, safe-area spacing, and assistant clearance without publishing; signed-in checks not performed.

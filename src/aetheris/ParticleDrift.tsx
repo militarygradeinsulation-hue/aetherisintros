@@ -4,7 +4,7 @@ import { useEffect, useRef } from 'react'
 // rising cobalt beams, drifting ASCII glyph nodes, hairline proximity links,
 // cursor-connected nodes — rendered on a plain canvas in the Ask Intros
 // Editorial Noir palette (no iframe, no CDN scripts).
-const GLYPHS = '@#$%&*()'.split('')
+const GLYPHS = '0123456789'.split('')
 const COBALT = '96, 165, 250'      // cobalt-bright rgb
 const GRAPHITE = '158, 164, 172'   // muted-light rgb
 const AMBER = '244, 161, 37'       // signal amber rgb

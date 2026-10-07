@@ -16,3 +16,4 @@
 - LinkedIn results enter only through real hand-off (assistant lookup / manual paste) behind the `ProfessionalProfileProvider` seam; `direct_api` stays unavailable until a licensed provider exists. Why: never fabricate profiles.
 - The Intros shell owns mobile bottom navigation and its overflow menu; reserve safe-area space and lift the assistant above it. Why: thumb access must not obscure page actions or duplicate navigation.
 - The public intro runs a bounded automatic transition after one forward gesture and releases scrolling without another gesture. Why: entering the site must not require repeated swipes or depend on video buffering.
+- The root shell owns the shared aurora, numeric drift, and connection field; page shells must not mount duplicate background canvases. Why: every route keeps the same ambience without extra animation loops or intercepting input.
