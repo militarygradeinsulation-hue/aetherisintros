@@ -1,7 +1,7 @@
 # Aetheris specification completion
 
 ## Shared moving background (Oct 7)
-- [ ] Combine numeric drift, connection lines, and the existing aurora across public and member pages; verify navigation, motion and reduced-motion behavior without publishing.
+- [x] Combine numeric drift, connection lines, and the existing aurora across all routes; public pages and all demo menu destinations tested, including typing and reduced motion.
 - [ ] Publish the verified background and People label on request.
 
 ## Thumb-friendly mobile menu (Oct 7)
