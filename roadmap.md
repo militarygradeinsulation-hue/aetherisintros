@@ -321,3 +321,9 @@
 
 - [x] Intro: hold last frame ~1s before fading to Ask Intros
 - [x] Verify highlight-to-read in shell (signed in)
+
+## Architect credit in footers (Oct 7)
+- [x] Add "The Architect Joseph Toney — Aetheris.Technology" to the public landing footer and the app footer, linking to aetheris.technology.
+- [x] Move the public footer to the true end of the landing page (it was rendering mid-page, above the quote and video sections).
+- [x] Keep the credit line tidy when it wraps on phones: centered stack, dash bound to the domain, no clipping at 390px; single row at 1280px.
+- [ ] Publish so the credit line reaches the live site.
