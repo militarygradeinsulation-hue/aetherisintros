@@ -154,9 +154,14 @@ const STYLES = `
   color: var(--foreground);
   border-bottom-color: var(--primary);
 }
+.footer-credit-tail { white-space: nowrap; }
+.footer-legal > span:first-child { flex: 1 1 auto; }
+.footer-legal > span:last-child { flex: 1 1 auto; text-align: right; }
+
 
 @media (max-width: 720px) {
   .footer-legal { flex-direction: column; align-items: center; text-align: center; gap: 10px; }
+  .footer-legal > span:first-child, .footer-legal > span:last-child { flex: 0 1 auto; text-align: center; }
   .footer-credit { flex-wrap: wrap; justify-content: center; row-gap: 4px; }
 }
 
@@ -340,7 +345,8 @@ export function CinematicFooter() {
       <div className="footer-legal" style={{ position: 'relative', display: 'flex', flexWrap: 'wrap', gap: 12, justifyContent: 'space-between', alignItems: 'center', padding: '18px 24px', borderTop: '1px solid color-mix(in oklch, var(--foreground) 8%, transparent)', fontSize: 12, color: 'color-mix(in oklch, var(--foreground) 45%, transparent)' }}>
         <span>No spam. No selling your attention. Private by default.</span>
         <span className="footer-credit">
-          The Architect <strong>Joseph Toney</strong> — <a href="https://aetheris.technology" rel="noopener noreferrer">Aetheris.Technology</a>
+          <span>The Architect</span> <strong>Joseph Toney</strong>
+          <span className="footer-credit-tail">— <a href="https://aetheris.technology" rel="noopener noreferrer">Aetheris.Technology</a></span>
         </span>
         <span>© 2026 Aetheris</span>
       </div>
