@@ -20,6 +20,8 @@ import {
   Video,
   FileText,
   Paperclip,
+  Pin,
+  PinOff,
 } from 'lucide-react';
 import { FeedPost, UPCOMING_EVENTS, SUGGESTED_CIRCLES, TRENDING_SECTORS, NetworkMember } from '../networkData';
 import { ExecutivePortrait } from '../components/shared/ExecutivePortrait';
@@ -105,7 +107,9 @@ export const HomeFeedView: React.FC<HomeFeedViewProps> = ({
     ...['people','offers','conversations','saved','updates','profile'].map(id => ({ id, size: 'sm' as const, label: id }))
   ];
   const [boardItems, setBoardItems] = useState<WidgetItem[]>(defaultBoard);
+  const [boardPinned, setBoardPinned] = useState(false);
   React.useEffect(() => {
+    try { setBoardPinned(localStorage.getItem('intros.home.board.pinned') === 'true'); } catch {}
     const readBoard = () => {
     try {
       const saved = JSON.parse(localStorage.getItem('intros.home.board.v2') || 'null');
@@ -335,13 +339,21 @@ export const HomeFeedView: React.FC<HomeFeedViewProps> = ({
       <section className="home-board-section space-y-3">
         <div className="flex items-center justify-between">
           <div className="text-[11px] font-mono tracking-widest uppercase text-[#9CA3AF] font-semibold">Your board</div>
-          <span className="text-xs text-[var(--sys-ink-dim)]">People · Context · Opportunity</span>
+          <div className="flex items-center gap-2">
+            <span className="hidden sm:inline text-xs text-[var(--sys-ink-dim)]">People · Context · Opportunity</span>
+            <Button variant="ghost" size="sm" aria-label={boardPinned ? 'Unpin board' : 'Pin board'} aria-pressed={boardPinned} title={boardPinned ? 'Unpin board to rearrange tiles' : 'Pin board to keep tiles in place'} className="home-board-pin" onClick={() => {
+              const next = !boardPinned;
+              setBoardPinned(next);
+              try { localStorage.setItem('intros.home.board.pinned', String(next)); } catch {}
+            }}>{boardPinned ? <PinOff /> : <Pin />}{boardPinned ? 'Pinned' : 'Pin board'}</Button>
+          </div>
         </div>
         <DraggableWidgetGrid
           key={`${narrow ? 'narrow' : 'wide'}-${boardItems.map(item => item.id).join('-')}`}
           items={narrow ? boardItems.map((i) => ({ ...i, size: 'sm' })) : boardItems}
           onChange={(next) => saveBoard(narrow ? next.map((i) => ({ ...i, size: defaultBoard.find((d) => d.id === i.id)?.size ?? 'sm' })) : next)}
           maxColumns={narrow ? 1 : 4}
+          editable={!boardPinned}
           cellSize={280}
           gap={12}
           radius={8}
