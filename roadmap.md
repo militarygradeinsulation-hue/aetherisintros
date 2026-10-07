@@ -327,3 +327,9 @@
 - [x] Move the public footer to the true end of the landing page (it was rendering mid-page, above the quote and video sections).
 - [x] Keep the credit line tidy when it wraps on phones: centered stack, dash bound to the domain, no clipping at 390px; single row at 1280px.
 - [ ] Publish so the credit line reaches the live site.
+
+## Richer Home board and social experience
+- [x] Expand and enrich Home tiles while preserving saved arrangements.
+- [x] Present a people-first Social Board, reusing real member posting, comments and messaging.
+- [x] Verify demo posting, saves, replies, People navigation and phone layouts without overflow; build passed; preview-only.
+- [ ] Verify the real member Home feed while signed in; automatic test-session selection is unavailable for the requesting account.

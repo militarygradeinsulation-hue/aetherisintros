@@ -206,7 +206,7 @@ export default function App({ mode = 'demo' }: { mode?: 'demo' | 'live' }) {
   // Find active profile
   const currentProfileMember =
     members.find((m) => m.id === selectedProfileId) || members[0];
-  const classicPages = ['news','workspace','memory','work','insights', ...(mode === 'live' ? ['messages','intros','people'] : [])];
+  const classicPages = ['news','workspace','memory','work','insights', ...(mode === 'live' ? ['home','messages','intros','people'] : [])];
 
   return (
     <AccentProvider>
@@ -236,6 +236,8 @@ export default function App({ mode = 'demo' }: { mode?: 'demo' | 'live' }) {
             onSavePost={handleSavePost}
             onAddPost={handleAddPost}
             networkMembers={members}
+            isLive={mode === 'live'}
+            socialFeed={mode === 'live' ? <div className="ix-classic"><ClassicApp mode="live" feedOnly /></div> : undefined}
             me={mode === 'live' ? me : undefined}
           />
         )}

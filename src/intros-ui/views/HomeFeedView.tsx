@@ -1,5 +1,6 @@
 // @ts-nocheck
 import React, { useState } from 'react';
+import { Button } from '@/components/ui/button';
 import {
   Users,
   Bookmark,
@@ -27,10 +28,12 @@ import { RelationshipFieldGraph } from '../components/shared/RelationshipFieldGr
 import { ActivePage } from '../components/layout/TopNavigation';
 import { DraggableWidgetGrid, type WidgetItem } from '@/components/ui/widget-board';
 
-const widgetIds = new Set(['network','explore','introduce','need','ask','sectors','events','circles','whynow']);
+const widgetIds = new Set(['network','explore','introduce','need','ask','sectors','events','circles','whynow','people','offers','conversations','saved','updates','profile']);
 
 interface HomeFeedViewProps {
   posts: FeedPost[];
+  isLive?: boolean;
+  socialFeed?: React.ReactNode;
   onNavigate: (page: ActivePage, memberId?: string) => void;
   onRequestIntro: (member: NetworkMember) => void;
   onLikePost: (postId: string) => void;
@@ -49,6 +52,8 @@ export const HomeFeedView: React.FC<HomeFeedViewProps> = ({
   onAddPost,
   networkMembers,
   me,
+  isLive = false,
+  socialFeed,
 }) => {
   const [feedFilter, setFeedFilter] = useState<'forYou' | 'network' | 'following' | 'trending'>('forYou');
   const [composerText, setComposerText] = useState('');
@@ -60,6 +65,11 @@ export const HomeFeedView: React.FC<HomeFeedViewProps> = ({
   const elena = networkMembers.find((m) => m.id === 'elena-rossi') || networkMembers[2];
   const [heroVisualMode, setHeroVisualMode] = useState<'bubbles' | 'spotlight'>('bubbles');
 
+  const [comments, setComments] = useState<Record<string, string[]>>({});
+  const [commenting, setCommenting] = useState<string | null>(null);
+  const [reply, setReply] = useState('');
+  const visiblePosts = feedFilter === 'trending' ? [...posts].sort((a, b) => b.likes - a.likes) : feedFilter === 'network' ? posts.filter(post => networkMembers.some(member => member.id === post.authorId)) : feedFilter === 'following' ? posts.filter(post => post.isSaved) : posts;
+  const portraitIds = new Set<string>(['sarah-chen', ...(heroVisualMode === 'spotlight' && elena ? [elena.id] : [])]);
   const [attachments, setAttachments] = useState<File[]>([]);
   const handleCreatePost = (e: React.FormEvent) => {
     e.preventDefault();
@@ -91,230 +101,61 @@ export const HomeFeedView: React.FC<HomeFeedViewProps> = ({
     { id: 'sectors', size: 'sm', label: 'Trending Sectors' },
     { id: 'events', size: 'wide', label: 'Upcoming Business Events' },
     { id: 'circles', size: 'sm', label: 'Suggested Circles' },
-    { id: 'whynow', size: 'sm', label: 'Why now' }
+    { id: 'whynow', size: 'sm', label: 'Why now' },
+    ...['people','offers','conversations','saved','updates','profile'].map(id => ({ id, size: 'sm' as const, label: id }))
   ];
-  const [boardItems] = useState<WidgetItem[]>(() => {
+  const [boardItems, setBoardItems] = useState<WidgetItem[]>(defaultBoard);
+  React.useEffect(() => {
+    const readBoard = () => {
     try {
       const saved = JSON.parse(localStorage.getItem('intros.home.board.v2') || 'null');
-      if (Array.isArray(saved) && saved.length === defaultBoard.length && saved.every((x) => widgetIds.has(x.id))) return saved;
+      if (Array.isArray(saved)) {
+        const seen = new Set<string>();
+        const valid = saved.filter(item => widgetIds.has(item.id) && !seen.has(item.id) && seen.add(item.id)).map(item => defaultBoard.find(entry => entry.id === item.id));
+        return [...valid, ...defaultBoard.filter(item => !seen.has(item.id))];
+      }
     } catch {}
     return defaultBoard;
-  });
+    };
+    setBoardItems(readBoard());
+  }, []);
   const [narrow, setNarrow] = useState(false);
   React.useEffect(() => { const q = window.matchMedia('(max-width: 640px)'); const f = () => setNarrow(q.matches); f(); q.addEventListener('change', f); return () => q.removeEventListener('change', f); }, []);
   const saveBoard = (next: WidgetItem[]) => { try { localStorage.setItem('intros.home.board.v2', JSON.stringify(next)); } catch {} };
+  const boardPeople = networkMembers.filter(member => member.name !== me?.name);
+  const topics = [...new Set(boardPeople.flatMap(member => member.focusAreas || []))].slice(0, 5);
+  const goals = boardPeople.filter(member => member.currentObjectives?.length).slice(0, 3);
+  const savedPosts = posts.filter(post => post.isSaved);
+  const jumpToSocial = () => document.getElementById('home-social-board')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  const tile = (label: string, title: string, content: React.ReactNode, action: string, run: () => void) => (
+    <div className="home-board-tile">
+      <span className="home-board-label">{label}</span><h3>{title}</h3>
+      <div className="home-board-content">{content}</div>
+      <Button variant="ghost" size="sm" className="home-board-link" onClick={run}>{action}<ArrowRight /></Button>
+    </div>
+  );
+  const personRows = (people: NetworkMember[], detail: (member: NetworkMember) => string) => people.map(member => (
+    <Button key={member.id} variant="ghost" className="home-board-person" onClick={() => onNavigate('profile', member.id)}>
+      <span className="home-board-initials">{member.name.split(' ').map(part => part[0]).join('').slice(0, 2)}</span>
+      <span><b>{member.name}</b><small>{detail(member)}</small></span><ArrowRight />
+    </Button>
+  ));
   const widgets: Record<string, React.ReactNode> = {
-    network: (
-          <div className="bg-[#0E121A] border border-white/10 rounded-xl p-4 space-y-4">
-            <div className="text-[11px] font-mono tracking-widest uppercase text-[#9CA3AF] font-semibold">
-              Your Network
-            </div>
-            <nav className="space-y-1 text-xs">
-              <button
-                onClick={() => setFeedFilter('forYou')}
-                className={`w-full flex items-center justify-between px-3 py-2 rounded-lg transition-colors cursor-pointer ${
-                  feedFilter === 'forYou' ? 'bg-[#F5B027]/20 text-[#FFC85C] font-semibold' : 'text-[#9CA3AF] hover:bg-white/5 hover:text-white'
-                }`}
-              >
-                <span className="flex items-center gap-2.5">
-                  <Users className="w-4 h-4" />
-                  Feed
-                </span>
-              </button>
-              <button
-                onClick={() => onNavigate('people')}
-                className="w-full flex items-center justify-between px-3 py-2 rounded-lg text-[#9CA3AF] hover:bg-white/5 hover:text-white transition-colors cursor-pointer"
-              >
-                <span className="flex items-center gap-2.5">
-                  <Globe className="w-4 h-4" />
-                  My Connections
-                </span>
-                <span className="text-[10px] font-mono text-[#6B7280]">1,246</span>
-              </button>
-              <button
-                onClick={() => onNavigate('intros')}
-                className="w-full flex items-center justify-between px-3 py-2 rounded-lg text-[#9CA3AF] hover:bg-white/5 hover:text-white transition-colors cursor-pointer"
-              >
-                <span className="flex items-center gap-2.5">
-                  <Sparkles className="w-4 h-4" />
-                  My Introduction Requests
-                </span>
-                <span className="text-[10px] font-mono px-1.5 py-0.5 rounded-full bg-[#F5B027] text-white font-semibold">
-                  3
-                </span>
-              </button>
-              <button
-                onClick={() => setFeedFilter('network')}
-                className="w-full flex items-center justify-between px-3 py-2 rounded-lg text-[#9CA3AF] hover:bg-white/5 hover:text-white transition-colors cursor-pointer"
-              >
-                <span className="flex items-center gap-2.5">
-                  <Bookmark className="w-4 h-4" />
-                  Saved
-                </span>
-              </button>
-            </nav>
-          </div>
-    ),
-    explore: (
-          <div className="bg-[#0E121A] border border-white/10 rounded-xl p-4 space-y-3">
-            <div className="text-[11px] font-mono tracking-widest uppercase text-[#9CA3AF] font-semibold">
-              Explore
-            </div>
-            <nav className="space-y-1 text-xs">
-              <button
-                onClick={() => onNavigate('people')}
-                className="w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-[#9CA3AF] hover:bg-white/5 hover:text-white transition-colors cursor-pointer"
-              >
-                <Users className="w-4 h-4" />
-                Discover People
-              </button>
-              <button
-                onClick={() => onNavigate('insights')}
-                className="w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-[#9CA3AF] hover:bg-white/5 hover:text-white transition-colors cursor-pointer"
-              >
-                <Layers className="w-4 h-4" />
-                Trending Sectors
-              </button>
-              <button
-                onClick={() => onNavigate('insights')}
-                className="w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-[#9CA3AF] hover:bg-white/5 hover:text-white transition-colors cursor-pointer"
-              >
-                <TrendingUp className="w-4 h-4" />
-                Content & Insights
-              </button>
-            </nav>
-          </div>
-    ),
-    introduce: (
-          <div
-            onClick={() => onNavigate('intros')}
-            className="p-4 rounded-xl border border-[#F5B027]/30 bg-gradient-to-br from-[#121A2C] to-[#0A0D15] cursor-pointer hover:border-[#F5B027] transition-colors group"
-          >
-            <div className="flex items-center justify-between text-xs font-semibold text-white mb-1">
-              <span>Introduce a colleague</span>
-              <ArrowRight className="w-3.5 h-3.5 text-[#F5B027] group-hover:translate-x-1 transition-transform" />
-            </div>
-            <p className="text-[11px] text-[#9CA3AF]">
-              Help your network grow stronger with high-value warm introductions.
-            </p>
-          </div>
-    ),
-    need: (
-          <div className="bg-[#0E121A] border border-white/10 rounded-xl p-4 space-y-3">
-            <div className="text-[11px] font-mono tracking-widest uppercase text-[#9CA3AF] font-semibold">What do you need right now?</div>
-            <p className="text-[11px] text-[#9CA3AF]">Post an ask — a hire, an investor, a customer. Intros finds the people who can help.</p>
-            <div className="flex flex-wrap gap-1.5">
-              {['Hiring', 'Fundraising', 'Customers', 'Advisors'].map((t) => (
-                <button key={t} onClick={() => onNavigate('people')} className="text-[11px] px-2.5 py-1 rounded-full border border-white/10 text-[#F2EEE6] hover:border-[#F5B027] cursor-pointer">{t}</button>
-              ))}
-            </div>
-          </div>
-    ),
-    ask: (
-          <div onClick={() => onNavigate('workspace')} className="p-4 rounded-xl border border-white/10 bg-[#0B0D0F] cursor-pointer hover:border-[#F5B027] transition-colors">
-            <div className="text-[11px] font-mono tracking-widest uppercase text-[#F4A125] font-semibold mb-1">Ask Intros</div>
-            <p className="text-xs text-[#F2EEE6]">"Who in my network can open a door at a Fortune 500 buyer?"</p>
-          </div>
-    ),
-    sectors: (
-          <div className="bg-[#0E121A] border border-white/10 rounded-xl p-4 space-y-3">
-            <div className="flex items-center justify-between text-[11px] font-mono tracking-widest uppercase text-[#9CA3AF] font-semibold">
-              <span>Trending Sectors</span>
-              <button
-                onClick={() => onNavigate('insights')}
-                className="text-[#F5B027] hover:underline cursor-pointer"
-              >
-                View All
-              </button>
-            </div>
-            <div className="space-y-2">
-              {TRENDING_SECTORS.map((sector) => (
-                <div
-                  key={sector.id}
-                  onClick={() => onNavigate('people')}
-                  className="flex items-center justify-between py-1 text-xs text-[#E2E8F0] hover:text-[#F5B027] transition-colors cursor-pointer"
-                >
-                  <span className="flex items-center gap-2">
-                    <span className="w-4 h-4 rounded-full bg-white/5 text-[10px] flex items-center justify-center font-mono text-[#9CA3AF]">
-                      {sector.rank}
-                    </span>
-                    <span>{sector.name}</span>
-                  </span>
-                  <TrendingUp className="w-3 h-3 text-[#C78522]" />
-                </div>
-              ))}
-            </div>
-          </div>
-    ),
-    events: (
-          <div className="bg-[#0E121A] border border-white/10 rounded-xl p-4 space-y-3">
-            <div className="flex items-center justify-between text-[11px] font-mono tracking-widest uppercase text-[#9CA3AF] font-semibold">
-              <span>Upcoming Business Events</span>
-              <span className="text-[#F5B027] text-[10px]">Curated</span>
-            </div>
-            <div className="space-y-3">
-              {eventsList.map((evt) => (
-                <div key={evt.id} className="flex items-start justify-between gap-2 text-xs">
-                  <div className="flex items-start gap-2.5">
-                    <div className="w-9 h-9 rounded bg-[#131722] border border-white/10 flex flex-col items-center justify-center font-mono shrink-0">
-                      <span className="text-[8px] text-[#9CA3AF] leading-none">{evt.dateMonth}</span>
-                      <span className="text-xs font-bold text-white leading-tight">{evt.dateDay}</span>
-                    </div>
-                    <div>
-                      <div className="font-semibold text-white leading-tight">{evt.title}</div>
-                      <div className="text-[11px] text-[#9CA3AF]">{evt.location}</div>
-                    </div>
-                  </div>
-                  <button
-                    onClick={() => toggleEventRegistration(evt.id)}
-                    className={`px-2.5 py-1 text-[11px] font-medium rounded transition-colors cursor-pointer shrink-0 ${
-                      evt.isRegistered
-                        ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30'
-                        : 'bg-[#F5B027] hover:bg-[#C78522] text-white'
-                    }`}
-                  >
-                    {evt.isRegistered ? 'Registered' : 'Register'}
-                  </button>
-                </div>
-              ))}
-            </div>
-          </div>
-    ),
-    circles: (
-          <div className="bg-[#0E121A] border border-white/10 rounded-xl p-4 space-y-3">
-            <div className="flex items-center justify-between text-[11px] font-mono tracking-widest uppercase text-[#9CA3AF] font-semibold">
-              <span>Suggested Circles</span>
-            </div>
-            <div className="space-y-2.5">
-              {circlesList.map((circle) => (
-                <div key={circle.id} className="flex items-center justify-between text-xs">
-                  <div>
-                    <div className="font-medium text-white">{circle.name}</div>
-                    <div className="text-[10px] text-[#9CA3AF]">{circle.count}</div>
-                  </div>
-                  <button
-                    onClick={() => toggleCircleJoin(circle.id)}
-                    className={`px-2.5 py-1 text-[11px] font-medium rounded transition-colors cursor-pointer ${
-                      circle.isJoined
-                        ? 'bg-white/10 text-white'
-                        : 'border border-white/15 hover:border-white/30 text-white'
-                    }`}
-                  >
-                    {circle.isJoined ? 'Joined' : 'Join'}
-                  </button>
-                </div>
-              ))}
-            </div>
-          </div>
-    ),
-    whynow: (
-          <div className="bg-[#0E121A] border border-white/10 rounded-xl p-4 space-y-3">
-            <div className="text-[11px] font-mono tracking-widest uppercase text-[#9CA3AF] font-semibold">Why now</div>
-            <p className="font-serif text-lg leading-snug text-[#F2EEE6]">Know who matters. Know why now.</p>
-            <p className="text-[11px] text-[#9CA3AF]">Intros watches role changes, open asks and cooling conversations so the right moment doesn't pass.</p>
-            <button onClick={() => onNavigate('memory')} className="w-full text-xs font-medium px-3 py-2 rounded-md border border-white/15 hover:border-[#F5B027] text-white cursor-pointer">Open Memory</button>
-          </div>
-    )
+    network: tile('Your network', 'People, not contacts.', <><p>{boardPeople.length} people in this directory. Relationships begin with shared context.</p>{personRows(boardPeople.slice(0, 2), member => [member.title, member.company].filter(Boolean).join(' · '))}</>, 'Meet your network', () => onNavigate('people')),
+    explore: tile('Explore', 'Find common ground.', <><p>See who is building, investing or advising in your areas of interest.</p><div className="home-board-tags">{topics.slice(0, 4).map(topic => <span key={topic}>{topic}</span>)}</div><p>{new Set(boardPeople.map(member => member.location).filter(Boolean)).size} locations represented</p></>, 'Discover people', () => onNavigate('people')),
+    introduce: tile('Warm introductions', 'Make the right connection.', <><p>Bring two people together around a specific need, with context and consent on both sides.</p>{personRows(boardPeople.filter(member => member.openToIntros).slice(0, 2), member => member.introStatusText || 'Open to introductions')}</>, 'Review introductions', () => onNavigate('intros')),
+    need: tile('Looking for', 'What would move you forward?', <><p>A useful ask names the person, the problem and why now.</p><div className="home-board-tags">{['Hiring', 'Customers', 'Capital', 'Advisors'].map(topic => <span key={topic}>{topic}</span>)}</div><p>Give your network something specific to respond to.</p></>, 'Share an ask', jumpToSocial),
+    ask: tile('Ask Intros', 'Context before the next move.', <><p>Who can help with your current focus? Which relationship deserves attention?</p><blockquote>“Who in my network has experience with my next market?”</blockquote><p>Your people and recorded context, in one conversation.</p></>, 'Ask your butler', () => window.dispatchEvent(new CustomEvent('aetheris:open-assistant'))),
+    sectors: tile('Shared interests', 'Inside your network.', <><p>Areas members have included in their profiles.</p><div className="home-board-list">{topics.map(topic => <div key={topic}><span>{topic}</span><b>{boardPeople.filter(member => member.focusAreas?.includes(topic)).length}</b></div>)}</div>{!topics.length && <p>No focus areas shared yet.</p>}</>, 'Explore interests', () => onNavigate('people')),
+    events: tile('Events & conversations', 'Take the relationship beyond the feed.', isLive ? <><p>Upcoming gatherings belong here when they have been added to your account.</p><p>No event schedule is connected to this board yet.</p></> : <div className="home-board-list">{eventsList.map(event => <div key={event.id}><span><b>{event.title}</b><small>{event.dateMonth} {event.dateDay} · {event.location}</small></span><Button variant="outline" size="sm" aria-pressed={event.isRegistered} onClick={() => toggleEventRegistration(event.id)}>{event.isRegistered ? 'Registered' : 'Register'}</Button></div>)}</div>, isLive ? 'Open your workspace' : 'Meet the attendees', () => onNavigate(isLive ? 'workspace' : 'people')),
+    circles: tile('Shared circles', 'A smaller room. Better context.', isLive ? <><p>Gather people around a shared interest or a real decision.</p><p>No circle membership has been loaded into this board.</p></> : <div className="home-board-list">{circlesList.slice(0, 3).map(circle => <div key={circle.id}><span><b>{circle.name}</b><small>{circle.count}</small></span><Button size="sm" variant="outline" aria-pressed={circle.isJoined} onClick={() => toggleCircleJoin(circle.id)}>{circle.isJoined ? 'Joined' : 'Join'}</Button></div>)}</div>, 'Explore your workspace', () => onNavigate('workspace')),
+    whynow: tile('Active memory', 'Keep the context alive.', <><p>The last conversation. A current goal. The promise you made.</p><blockquote>Know who matters. Know why now.</blockquote><p>Return to the details that make your next message personal.</p></>, 'Open Memory', () => onNavigate('memory')),
+    people: tile('People to know', 'Start with a real person.', <>{personRows(boardPeople.slice(2, 5), member => [member.company, member.location].filter(Boolean).join(' · '))}{!boardPeople.length && <p>Member profiles appear here as people join.</p>}</>, 'See all people', () => onNavigate('people')),
+    offers: tile('Current focus', 'Where you could help.', <>{personRows(goals, member => member.currentObjectives[0])}{!goals.length && <p>No current objectives have been shared yet.</p>}</>, 'Find shared goals', () => onNavigate('people')),
+    conversations: tile('Messages', 'Pick up the conversation.', <><p>Private, person-to-person conversations with the context close by.</p>{personRows(boardPeople.slice(0, 2), member => member.bioStatement || [member.title, member.company].filter(Boolean).join(' · '))}</>, 'Open Messages', () => onNavigate('messages')),
+    saved: tile('Saved for later', 'Keep the useful things.', isLive ? <><p>Return to the updates you saved in your network.</p><p>Your saved member signals stay in your private account.</p></> : <><p>{savedPosts.length} saved {savedPosts.length === 1 ? 'post' : 'posts'} on this board.</p>{savedPosts.slice(0, 2).map(post => <blockquote key={post.id}>{post.authorName}: {post.content.slice(0, 100)}</blockquote>)}{!savedPosts.length && <p>Save a member update when you want to return with a thoughtful reply.</p>}</>, 'Read the Social Board', jumpToSocial),
+    updates: tile('Network dispatch', 'What people are sharing.', <>{posts.slice(0, 2).map(post => <div key={post.id} className="home-board-update"><b>{post.authorName}</b><small>{post.timeAgo} · {post.badge || 'Update'}</small><p>{post.content.slice(0, 130)}{post.content.length > 130 ? '…' : ''}</p></div>)}{!posts.length && <p>Member updates live on the Social Board below. Be the first to share what you are working on.</p>}</>, 'Join the conversation', jumpToSocial),
+    profile: tile('Your identity', me?.name || 'Make yourself known.', <><p>What you are building. Who you can help. What you need next.</p><div className="home-board-tags"><span>Current focus</span><span>Looking for</span><span>Can help with</span></div><p>Give people a reason to start a meaningful conversation.</p></>, isLive ? 'Open my profile' : 'Meet a member', () => onNavigate(isLive ? 'workspace' : 'profile', isLive ? undefined : boardPeople[0]?.id)),
   };
 
   return (
@@ -359,18 +200,18 @@ export const HomeFeedView: React.FC<HomeFeedViewProps> = ({
             {/* Key Stats Bar */}
             <div className="flex items-center gap-6 sm:gap-10 pt-4 border-t border-white/10 text-[#F2EEE6]">
               <div>
-                <div className="text-xl md:text-2xl font-serif-editorial font-bold text-white">10K+</div>
+                <div className="text-xl md:text-2xl font-serif-editorial font-bold text-white">{boardPeople.length}</div>
                 <div className="text-[11px] font-mono text-[#9CA3AF] tracking-wider uppercase">Professionals</div>
               </div>
               <div className="w-[1px] h-8 bg-white/10" />
               <div>
-                <div className="text-xl md:text-2xl font-serif-editorial font-bold text-white">3.2x</div>
-                <div className="text-[11px] font-mono text-[#9CA3AF] tracking-wider uppercase">Stronger Outcomes</div>
+                <div className="text-xl md:text-2xl font-serif-editorial font-bold text-white">{new Set(boardPeople.map(member => member.company).filter(Boolean)).size}</div>
+                <div className="text-[11px] font-mono text-[#9CA3AF] tracking-wider uppercase">Companies</div>
               </div>
               <div className="w-[1px] h-8 bg-white/10" />
               <div>
-                <div className="text-xl md:text-2xl font-serif-editorial font-bold text-white">92%</div>
-                <div className="text-[11px] font-mono text-[#9CA3AF] tracking-wider uppercase">Would Recommend</div>
+                <div className="text-xl md:text-2xl font-serif-editorial font-bold text-white">{topics.length}</div>
+                <div className="text-[11px] font-mono text-[#9CA3AF] tracking-wider uppercase">Shared interests</div>
               </div>
             </div>
           </div>
@@ -402,7 +243,7 @@ export const HomeFeedView: React.FC<HomeFeedViewProps> = ({
                   </button>
                 </div>
                 <span className="text-[11px] font-mono text-[#F5B027] bg-[#F5B027]/10 border border-[#F5B027]/20 px-2 py-0.5 rounded font-medium">
-                  {heroVisualMode === 'bubbles' ? 'Live Network' : `${elena.matchScore}% Match`}
+                  {heroVisualMode === 'bubbles' ? (isLive ? 'Your Network' : 'Demo Network') : elena ? `${elena.matchScore}% Match` : 'No match yet'}
                 </span>
               </div>
 
@@ -427,7 +268,7 @@ export const HomeFeedView: React.FC<HomeFeedViewProps> = ({
                     </button>
                   </div>
                 </div>
-              ) : (
+              ) : elena ? (
                 <>
                   {/* Spotlight Member Information */}
                   <div className="flex items-start gap-3.5 mb-3">
@@ -482,7 +323,7 @@ export const HomeFeedView: React.FC<HomeFeedViewProps> = ({
                     </button>
                   </div>
                 </>
-              )}
+              ) : <p>No member spotlight yet.</p>}
             </div>
           </div>
         </div>
@@ -491,24 +332,26 @@ export const HomeFeedView: React.FC<HomeFeedViewProps> = ({
 
 
       {/* Movable widget board — drag to rearrange (Alt + arrows on keyboard) */}
-      <section className="space-y-2">
+      <section className="home-board-section space-y-3">
         <div className="flex items-center justify-between">
           <div className="text-[11px] font-mono tracking-widest uppercase text-[#9CA3AF] font-semibold">Your board</div>
-          <span className="text-[10px] text-[#6B7280]">Drag widgets to arrange · Alt + arrows on keyboard</span>
+          <span className="text-xs text-[var(--sys-ink-dim)]">People · Context · Opportunity</span>
         </div>
         <DraggableWidgetGrid
-          key={narrow ? 'narrow' : 'wide'}
+          key={`${narrow ? 'narrow' : 'wide'}-${boardItems.map(item => item.id).join('-')}`}
           items={narrow ? boardItems.map((i) => ({ ...i, size: 'sm' })) : boardItems}
           onChange={(next) => saveBoard(narrow ? next.map((i) => ({ ...i, size: defaultBoard.find((d) => d.id === i.id)?.size ?? 'sm' })) : next)}
           maxColumns={narrow ? 1 : 4}
-          cellSize={300}
-          gap={16}
-          radius={12}
+          cellSize={280}
+          gap={12}
+          radius={8}
           renderItem={(item) => <div className="h-full w-full overflow-y-auto [&>*]:min-h-full">{widgets[item.id]}</div>}
         />
       </section>
 
-      <div className="max-w-3xl mx-auto w-full">
+      <section id="home-social-board" className="home-social-board scroll-mt-24">
+        <header className="home-social-heading"><div><span className="home-board-label">Social Board</span><h2>The people. The work. The conversation.</h2><p>Share what matters now, and make room for a useful reply.</p></div><Button variant="outline" onClick={() => onNavigate('people')}><Users />Find people</Button></header>
+        {socialFeed || <div className="max-w-3xl mx-auto w-full">
         {/* Center Column: Feed Post Composer & Feed Stream */}
         <main className="space-y-6">
           {/* Post Composer */}
@@ -616,7 +459,10 @@ export const HomeFeedView: React.FC<HomeFeedViewProps> = ({
 
           {/* Feed Stream Posts */}
           <div className="space-y-4">
-            {posts.map((post) => (
+            {visiblePosts.map((post) => {
+              const showPortrait = !portraitIds.has(post.authorId);
+              portraitIds.add(post.authorId);
+              return (
               <article
                 key={post.id}
                 className="bg-[#0E121A] border border-white/10 rounded-xl p-5 space-y-4 hover:border-white/20 transition-all shadow-sm"
@@ -628,11 +474,7 @@ export const HomeFeedView: React.FC<HomeFeedViewProps> = ({
                       onClick={() => onNavigate('profile', post.authorId)}
                       className="cursor-pointer"
                     >
-                      <ExecutivePortrait
-                        name={post.authorName}
-                        avatarUrl={networkMembers.find((m) => m.id === post.authorId)?.avatarUrl}
-                        size="md"
-                      />
+                      {showPortrait ? <ExecutivePortrait name={post.authorName} avatarUrl={networkMembers.find((m) => m.id === post.authorId)?.avatarUrl} size="md" /> : <span className="home-board-initials">{post.authorName.split(' ').map(part => part[0]).join('').slice(0, 2)}</span>}
                     </div>
                     <div>
                       <div className="flex items-center gap-2">
@@ -680,6 +522,8 @@ export const HomeFeedView: React.FC<HomeFeedViewProps> = ({
                 {/* Post Actions Bar */}
                 <div className="flex items-center justify-between text-xs text-[#9CA3AF] pt-2 border-t border-white/5">
                   <button
+                    aria-label={`Like ${post.authorName}'s post`}
+                    aria-pressed={post.isLiked || false}
                     onClick={() => onLikePost(post.id)}
                     className={`flex items-center gap-1.5 transition-colors cursor-pointer ${
                       post.isLiked ? 'text-[#F5B027]' : 'hover:text-white'
@@ -689,17 +533,13 @@ export const HomeFeedView: React.FC<HomeFeedViewProps> = ({
                     <span>{post.likes}</span>
                   </button>
 
-                  <button className="flex items-center gap-1.5 hover:text-white transition-colors cursor-pointer">
-                    <MessageSquare className="w-3.5 h-3.5" />
-                    <span>{post.comments}</span>
-                  </button>
+                  <Button variant="ghost" size="sm" aria-label={`Comment on ${post.authorName}'s post`} onClick={() => { setCommenting(commenting === post.id ? null : post.id); setReply(''); }}><MessageSquare /><span>{post.comments + (comments[post.id]?.length || 0)}</span></Button>
 
-                  <button className="flex items-center gap-1.5 hover:text-white transition-colors cursor-pointer">
-                    <Share2 className="w-3.5 h-3.5" />
-                    <span>{post.shares}</span>
-                  </button>
+                  <Button variant="ghost" size="sm" aria-label={`Message about ${post.authorName}'s post`} onClick={() => onNavigate('messages')}><MessageSquare />Message</Button>
 
                   <button
+                    aria-label={`Save ${post.authorName}'s post`}
+                    aria-pressed={post.isSaved || false}
                     onClick={() => onSavePost(post.id)}
                     className={`p-1 transition-colors cursor-pointer ${
                       post.isSaved ? 'text-[#F5B027]' : 'hover:text-white'
@@ -708,11 +548,14 @@ export const HomeFeedView: React.FC<HomeFeedViewProps> = ({
                     <Bookmark className="w-3.5 h-3.5" />
                   </button>
                 </div>
+                {(commenting === post.id || comments[post.id]?.length) && <div className="home-demo-comments">{comments[post.id]?.map((text, index) => <p key={index}><b>Sarah Chen</b> {text}</p>)}{commenting === post.id && <form onSubmit={event => { event.preventDefault(); if (!reply.trim()) return; setComments(current => ({ ...current, [post.id]: [...(current[post.id] || []), reply.trim()] })); setReply(''); }}><input aria-label="Your comment" placeholder="Add a thoughtful reply…" value={reply} onChange={event => setReply(event.target.value)} /><Button size="sm" type="submit" disabled={!reply.trim()}>Reply</Button></form>}</div>}
               </article>
-            ))}
+            ); })}
+            {!visiblePosts.length && <p className="text-sm text-[var(--sys-ink-dim)]">No updates in this view yet.</p>}
           </div>
         </main>
-      </div>
+      </div>}
+      </section>
     </div>
   );
 };
