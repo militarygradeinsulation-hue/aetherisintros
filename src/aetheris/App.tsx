@@ -2331,10 +2331,10 @@ function AccountControl() {
 
 /* ---------------------------------------------------------------------- app */
 
-export default function App({ startPage, mode = 'live' }: { startPage?: Page | undefined; mode?: NetworkMode }) {
+export default function App({ startPage, mode = 'live', feedOnly = false }: { startPage?: Page | undefined; mode?: NetworkMode; feedOnly?: boolean }) {
   // The live network may only ever render real member-created records.
   setShowcaseMode(mode === 'demo')
-  return <NetworkProvider mode={mode}><PlatformProvider><OSProvider><MoatProvider><ProProvider><OpsProvider><GraphProvider><CeoProvider><Shell startPage={startPage} /></CeoProvider></GraphProvider></OpsProvider></ProProvider></MoatProvider></OSProvider></PlatformProvider></NetworkProvider>
+  return <NetworkProvider mode={mode}><PlatformProvider><OSProvider><MoatProvider><ProProvider><OpsProvider><GraphProvider><CeoProvider><Shell startPage={startPage} feedOnly={feedOnly} /></CeoProvider></GraphProvider></OpsProvider></ProProvider></MoatProvider></OSProvider></PlatformProvider></NetworkProvider>
 }
 
 /** Ask Intros butler + capability workspace, mounted natively on the new shell. */
@@ -2485,7 +2485,7 @@ function TopbarVoice() {
   </button>
 }
 
-function Shell({ startPage }: { startPage?: Page | undefined }) {
+function Shell({ startPage, feedOnly = false }: { startPage?: Page | undefined; feedOnly?: boolean }) {
   const net = useNetwork()
   const stored = typeof window !== 'undefined' ? localStorage.getItem('aetheris-intros-page') : null
   const initial = startPage ?? (stored && allNav.some(n => n.id === stored) ? stored : legacyPage[stored ?? ''] ?? 'home') as Page
@@ -2717,7 +2717,7 @@ function Shell({ startPage }: { startPage?: Page | undefined }) {
   useEffect(() => { window.scrollTo({ top: 0, behavior: 'auto' }) }, [page, selected?.id])
 
   return <NavCtx.Provider value={navApi}>
-    <div className={`app-shell social-shell ${contextOpen ? 'show-context' : ''}`}>
+    <div className={`app-shell social-shell ${feedOnly ? 'home-social-only' : ''} ${contextOpen ? 'show-context' : ''}`}>
       <header className="social-topnav">
         <button className="social-brand" onClick={() => setPage('home')} aria-label="Ask Intros Home"><Brand /></button>
         <nav aria-label="Primary navigation">{nav.map(item => {
@@ -2761,7 +2761,7 @@ function Shell({ startPage }: { startPage?: Page | undefined }) {
         <div className="workspace-grid">
           <main className="content">
             {briefing.on && <BriefingPanel key={page} page={page} />}
-            {content}
+            {feedOnly ? <EditorialFeed /> : content}
           </main>
           {contextOpen && <ContextRail page={page} people={people} select={setSelected} onAsk={() => setAskOpen(true)} />}
         </div>
