@@ -52,14 +52,16 @@ export const EditorialFooter: React.FC<EditorialFooterProps> = ({ onNavigate }) 
         <div className="mt-8 flex w-full flex-wrap items-center justify-center gap-x-3 gap-y-1 border-t border-white/5 pt-6 text-[10px] font-mono tracking-[0.18em] uppercase">
           <span className="text-[#9CA3AF]">The Architect</span>
           <span className="text-white/85">Joseph Toney</span>
-          <span className="text-[#4B5563]">—</span>
-          <a
-            href="https://aetheris.technology"
-            rel="noopener noreferrer"
-            className="text-[#FFC85C] hover:text-white transition-colors"
-          >
-            Aetheris.Technology
-          </a>
+          <span className="whitespace-nowrap">
+            <span className="text-[#4B5563]">—</span>{' '}
+            <a
+              href="https://aetheris.technology"
+              rel="noopener noreferrer"
+              className="text-[#FFC85C] hover:text-white transition-colors"
+            >
+              Aetheris.Technology
+            </a>
+          </span>
         </div>
       </div>
     </footer>
