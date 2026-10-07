@@ -21,3 +21,4 @@
 - Live Home reuses the existing member feed through the feed-only classic host; demo social interactions stay local. Why: real posts, comments and messaging must use the established member store, not a second fake feed.
 - Home board migrations retain known widget IDs and append new defaults. Why: adding tiles must not erase a member’s saved arrangement.
 - Home board pinning disables the existing grid's editing rather than blocking tile actions, and persists on the device. Why: members can lock placement without losing navigation or social controls.
+- Home tile sizes persist with the arrangement; content and resize controls opt out of dragging. Why: resizing survives reloads and reading/scrolling must not rearrange tiles.
