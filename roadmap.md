@@ -1,6 +1,7 @@
 # Aetheris specification completion
 
 ## Home resizing and scrolling (Oct 7)
+- [x] Keep tile resizing in place; browser verified the selected size changes, every tile retains its original node, no tiles remount, scroll position stays unchanged, and no runtime errors occur.
 - [x] Add persistent tile size controls; preview verified resizing, reload persistence, content wheel scrolling and pinned resize lock with no runtime errors.
 
 ## Shared moving background (Oct 7)

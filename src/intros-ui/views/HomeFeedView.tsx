@@ -350,7 +350,6 @@ export const HomeFeedView: React.FC<HomeFeedViewProps> = ({
           </div>
         </div>
         <DraggableWidgetGrid
-          key={`${narrow ? 'narrow' : 'wide'}-${boardItems.map(item => `${item.id}:${item.size}`).sort().join('-')}`}
           items={boardItems}
           onChange={saveBoard}
           maxColumns={narrow ? 1 : 4}

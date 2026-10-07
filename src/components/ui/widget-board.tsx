@@ -46,7 +46,7 @@ export interface WidgetItem {
 }
 
 export interface DraggableWidgetGridProps {
-	/** Initial arrangement. The grid manages the order after mount. */
+	/** Arrangement; supplied updates sync in place without remounting widgets. */
 	items?: WidgetItem[]
 	/** Called with the new order after a drop or a keyboard move. */
 	onChange?: (items: WidgetItem[]) => void
@@ -658,6 +658,15 @@ export function DraggableWidgetGrid({
 	className = '',
 }: DraggableWidgetGridProps) {
 	const [items, setItems] = useState(() => initialItems ?? DEFAULT_ITEMS)
+	useIsoLayoutEffect(() => {
+		if (!initialItems) return
+		setItems(current =>
+			current.length === initialItems.length && current.every((item, index) => {
+				const next = initialItems[index]
+				return next?.id === item.id && next.size === item.size && next.label === item.label
+			}) ? current : initialItems,
+		)
+	}, [initialItems])
 	const grid = useRef(null as HTMLDivElement | null)
 	const hintId = useId()
 	const minColumns = Math.min(2, Math.max(1, maxColumns))
