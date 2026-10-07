@@ -207,7 +207,7 @@ export default function App({ mode = 'demo' }: { mode?: 'demo' | 'live' }) {
   // Find active profile
   const currentProfileMember =
     members.find((m) => m.id === selectedProfileId) || members[0];
-  const classicPages = ['news','workspace','memory','work','insights', ...(mode === 'live' ? ['messages','intros'] : [])];
+  const classicPages = ['news','workspace','memory','work','insights', ...(mode === 'live' ? ['messages','intros','people'] : [])];
 
   return (
     <AccentProvider>
