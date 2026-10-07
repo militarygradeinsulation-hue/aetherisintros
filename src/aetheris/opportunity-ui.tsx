@@ -440,8 +440,8 @@ export function IntentExchangePanel() {
     <div className="og-form">
       <label>Type<select value={form.category} onChange={e => setForm(f => ({ ...f, category: e.target.value as IntentCategory }))}>{INTENT_CATEGORIES.map(c => <option key={c}>{c}</option>)}</select></label>
       <label className="wide">Statement<input value={form.statement} onChange={e => setForm(f => ({ ...f, statement: e.target.value }))} placeholder="A COO who has run a plant consolidation in the Midwest" /></label>
-      <label>Industry<input value={form.industry} onChange={e => setForm(f => ({ ...f, industry: e.target.value }))} /></label>
-      <label>Geography<input value={form.location} onChange={e => setForm(f => ({ ...f, location: e.target.value }))} /></label>
+      <label>Industry<input placeholder="e.g. Manufacturing" value={form.industry} onChange={e => setForm(f => ({ ...f, industry: e.target.value }))} /></label>
+      <label>Geography<input placeholder="e.g. US Midwest" value={form.location} onChange={e => setForm(f => ({ ...f, location: e.target.value }))} /></label>
       <label>Privacy<select value={form.privacy} onChange={e => setForm(f => ({ ...f, privacy: e.target.value as IntentPrivacy }))}><option value="private">PRIVATE</option><option value="trusted">TRUSTED (held private)</option><option value="network">NETWORK</option><option value="shareable">SHAREABLE</option></select></label>
       <label>Expires in<select value={form.days} onChange={e => setForm(f => ({ ...f, days: e.target.value }))}>{['7', '14', '30', '60', '90'].map(d => <option key={d} value={d}>{d} days</option>)}</select></label>
       <label>Mission<select value={form.missionId} onChange={e => setForm(f => ({ ...f, missionId: e.target.value }))}><option value="">None</option>{graph.missions.filter(m => m.status !== 'completed').map(m => <option key={m.id} value={m.id}>{m.title}</option>)}</select></label>
