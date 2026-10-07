@@ -26,7 +26,6 @@ import { applyTextScale, readTextScale, setTextScale, textScales, type TextScale
 import { applyCursorScale, readCursorScale, setCursorScale, cursorScales, type CursorScale } from './cursorScale'
 import { AskIntrosDock, type AskIntrosAction } from './AskIntrosDock'
 import { CapabilityWorkspaceHost } from './capabilities/CapabilityWorkspace'
-import ConstellationField from './ConstellationField'
 import { VoiceBar } from './VoiceBar'
 import { SelectionReader } from './SelectionReader'
 import { currentPagePassages, readAloud, readPageOrSelection, setVoiceSettings, stopReading, readerSnapshot, useVoiceSettings, voiceOutputSupported } from './voice'
