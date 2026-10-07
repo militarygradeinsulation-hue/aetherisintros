@@ -131,6 +131,30 @@ const STYLES = `
   padding: 0 1.25rem;
 }
 
+.footer-credit {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  font-size: 11px;
+}
+.footer-credit strong {
+  color: color-mix(in oklch, var(--foreground) 85%, transparent);
+  font-weight: 600;
+}
+.footer-credit a {
+  color: color-mix(in oklch, var(--primary) 60%, var(--foreground));
+  text-decoration: none;
+  border-bottom: 1px solid color-mix(in oklch, var(--primary) 35%, transparent);
+  padding-bottom: 1px;
+  transition: color 0.3s ease, border-color 0.3s ease;
+}
+.footer-credit a:hover {
+  color: var(--foreground);
+  border-bottom-color: var(--primary);
+}
+
 @media (prefers-reduced-motion: reduce) {
   .animate-footer-breathe, .animate-footer-scroll-marquee, .animate-footer-heartbeat { animation: none; }
 }

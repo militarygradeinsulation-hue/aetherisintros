@@ -48,6 +48,19 @@ export const EditorialFooter: React.FC<EditorialFooterProps> = ({ onNavigate }) 
             Intelligence
           </button>
         </div>
+
+        <div className="mt-6 flex w-full flex-wrap items-center justify-center gap-x-3 gap-y-1 border-t border-white/5 pt-5 text-[10px] font-mono tracking-[0.18em] uppercase">
+          <span className="text-[#9CA3AF]">The Architect</span>
+          <span className="text-white/85">Joseph Toney</span>
+          <span className="text-[#4B5563]">—</span>
+          <a
+            href="https://aetheris.technology"
+            rel="noopener noreferrer"
+            className="text-[#FFC85C] hover:text-white transition-colors"
+          >
+            Aetheris.Technology
+          </a>
+        </div>
       </div>
     </footer>
   );
