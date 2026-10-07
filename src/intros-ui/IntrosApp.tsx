@@ -242,6 +242,7 @@ export default function App({ mode = 'demo' }: { mode?: 'demo' | 'live' }) {
             onSavePost={handleSavePost}
             onAddPost={handleAddPost}
             networkMembers={members}
+            me={mode === 'live' ? me : undefined}
           />
         )}
 

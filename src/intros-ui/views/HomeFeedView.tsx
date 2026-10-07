@@ -37,6 +37,7 @@ interface HomeFeedViewProps {
   onSavePost: (postId: string) => void;
   onAddPost: (content: string, badge?: FeedPost['badge']) => void;
   networkMembers: NetworkMember[];
+  me?: { name: string; avatarUrl?: string } | null;
 }
 
 export const HomeFeedView: React.FC<HomeFeedViewProps> = ({
@@ -47,6 +48,7 @@ export const HomeFeedView: React.FC<HomeFeedViewProps> = ({
   onSavePost,
   onAddPost,
   networkMembers,
+  me,
 }) => {
   const [feedFilter, setFeedFilter] = useState<'forYou' | 'network' | 'following' | 'trending'>('forYou');
   const [composerText, setComposerText] = useState('');
@@ -513,7 +515,7 @@ export const HomeFeedView: React.FC<HomeFeedViewProps> = ({
           <div className="bg-[#0E121A] border border-white/10 rounded-xl p-4 shadow-sm">
             <form onSubmit={handleCreatePost}>
               <div className="flex items-start gap-3 mb-3">
-                <ExecutivePortrait name="Sarah Chen" size="sm" />
+                <ExecutivePortrait name={me?.name || 'Sarah Chen'} avatarUrl={me?.avatarUrl} size="sm" />
                 <textarea
                   value={composerText}
                   onChange={(e) => setComposerText(e.target.value)}
