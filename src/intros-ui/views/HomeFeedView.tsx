@@ -65,6 +65,11 @@ export const HomeFeedView: React.FC<HomeFeedViewProps> = ({
   const elena = networkMembers.find((m) => m.id === 'elena-rossi') || networkMembers[2];
   const [heroVisualMode, setHeroVisualMode] = useState<'bubbles' | 'spotlight'>('bubbles');
 
+  const [comments, setComments] = useState<Record<string, string[]>>({});
+  const [commenting, setCommenting] = useState<string | null>(null);
+  const [reply, setReply] = useState('');
+  const visiblePosts = feedFilter === 'trending' ? [...posts].sort((a, b) => b.likes - a.likes) : feedFilter === 'network' ? posts.filter(post => networkMembers.some(member => member.id === post.authorId)) : feedFilter === 'following' ? posts.filter(post => post.isSaved) : posts;
+  const portraitIds = new Set<string>(['sarah-chen', ...(heroVisualMode === 'spotlight' && elena ? [elena.id] : [])]);
   const [attachments, setAttachments] = useState<File[]>([]);
   const handleCreatePost = (e: React.FormEvent) => {
     e.preventDefault();
@@ -99,7 +104,9 @@ export const HomeFeedView: React.FC<HomeFeedViewProps> = ({
     { id: 'whynow', size: 'sm', label: 'Why now' },
     ...['people','offers','conversations','saved','updates','profile'].map(id => ({ id, size: 'sm' as const, label: id }))
   ];
-  const [boardItems] = useState<WidgetItem[]>(() => {
+  const [boardItems, setBoardItems] = useState<WidgetItem[]>(defaultBoard);
+  React.useEffect(() => {
+    const readBoard = () => {
     try {
       const saved = JSON.parse(localStorage.getItem('intros.home.board.v2') || 'null');
       if (Array.isArray(saved)) {
@@ -109,7 +116,9 @@ export const HomeFeedView: React.FC<HomeFeedViewProps> = ({
       }
     } catch {}
     return defaultBoard;
-  });
+    };
+    setBoardItems(readBoard());
+  }, []);
   const [narrow, setNarrow] = useState(false);
   React.useEffect(() => { const q = window.matchMedia('(max-width: 640px)'); const f = () => setNarrow(q.matches); f(); q.addEventListener('change', f); return () => q.removeEventListener('change', f); }, []);
   const saveBoard = (next: WidgetItem[]) => { try { localStorage.setItem('intros.home.board.v2', JSON.stringify(next)); } catch {} };
@@ -144,7 +153,7 @@ export const HomeFeedView: React.FC<HomeFeedViewProps> = ({
     people: tile('People to know', 'Start with a real person.', <>{personRows(boardPeople.slice(2, 5), member => [member.company, member.location].filter(Boolean).join(' · '))}{!boardPeople.length && <p>Member profiles appear here as people join.</p>}</>, 'See all people', () => onNavigate('people')),
     offers: tile('Current focus', 'Where you could help.', <>{personRows(goals, member => member.currentObjectives[0])}{!goals.length && <p>No current objectives have been shared yet.</p>}</>, 'Find shared goals', () => onNavigate('people')),
     conversations: tile('Messages', 'Pick up the conversation.', <><p>Private, person-to-person conversations with the context close by.</p>{personRows(boardPeople.slice(0, 2), member => member.bioStatement || [member.title, member.company].filter(Boolean).join(' · '))}</>, 'Open Messages', () => onNavigate('messages')),
-    saved: tile('Saved for later', 'Keep the useful things.', <><p>{savedPosts.length} saved {savedPosts.length === 1 ? 'post' : 'posts'} on this board.</p>{savedPosts.slice(0, 2).map(post => <blockquote key={post.id}>{post.authorName}: {post.content.slice(0, 100)}</blockquote>)}{!savedPosts.length && <p>Save a member update when you want to return with a thoughtful reply.</p>}</>, 'Read the Social Board', jumpToSocial),
+    saved: tile('Saved for later', 'Keep the useful things.', isLive ? <><p>Return to the updates you saved in your network.</p><p>Your saved member signals stay in your private account.</p></> : <><p>{savedPosts.length} saved {savedPosts.length === 1 ? 'post' : 'posts'} on this board.</p>{savedPosts.slice(0, 2).map(post => <blockquote key={post.id}>{post.authorName}: {post.content.slice(0, 100)}</blockquote>)}{!savedPosts.length && <p>Save a member update when you want to return with a thoughtful reply.</p>}</>, 'Read the Social Board', jumpToSocial),
     updates: tile('Network dispatch', 'What people are sharing.', <>{posts.slice(0, 2).map(post => <div key={post.id} className="home-board-update"><b>{post.authorName}</b><small>{post.timeAgo} · {post.badge || 'Update'}</small><p>{post.content.slice(0, 130)}{post.content.length > 130 ? '…' : ''}</p></div>)}{!posts.length && <p>Member updates live on the Social Board below. Be the first to share what you are working on.</p>}</>, 'Join the conversation', jumpToSocial),
     profile: tile('Your identity', me?.name || 'Make yourself known.', <><p>What you are building. Who you can help. What you need next.</p><div className="home-board-tags"><span>Current focus</span><span>Looking for</span><span>Can help with</span></div><p>Give people a reason to start a meaningful conversation.</p></>, isLive ? 'Open my profile' : 'Meet a member', () => onNavigate(isLive ? 'workspace' : 'profile', isLive ? undefined : boardPeople[0]?.id)),
   };
@@ -329,7 +338,7 @@ export const HomeFeedView: React.FC<HomeFeedViewProps> = ({
           <span className="text-xs text-[var(--sys-ink-dim)]">People · Context · Opportunity</span>
         </div>
         <DraggableWidgetGrid
-          key={narrow ? 'narrow' : 'wide'}
+          key={`${narrow ? 'narrow' : 'wide'}-${boardItems.map(item => item.id).join('-')}`}
           items={narrow ? boardItems.map((i) => ({ ...i, size: 'sm' })) : boardItems}
           onChange={(next) => saveBoard(narrow ? next.map((i) => ({ ...i, size: defaultBoard.find((d) => d.id === i.id)?.size ?? 'sm' })) : next)}
           maxColumns={narrow ? 1 : 4}
@@ -450,7 +459,10 @@ export const HomeFeedView: React.FC<HomeFeedViewProps> = ({
 
           {/* Feed Stream Posts */}
           <div className="space-y-4">
-            {posts.map((post) => (
+            {visiblePosts.map((post) => {
+              const showPortrait = !portraitIds.has(post.authorId);
+              portraitIds.add(post.authorId);
+              return (
               <article
                 key={post.id}
                 className="bg-[#0E121A] border border-white/10 rounded-xl p-5 space-y-4 hover:border-white/20 transition-all shadow-sm"
@@ -462,11 +474,7 @@ export const HomeFeedView: React.FC<HomeFeedViewProps> = ({
                       onClick={() => onNavigate('profile', post.authorId)}
                       className="cursor-pointer"
                     >
-                      <ExecutivePortrait
-                        name={post.authorName}
-                        avatarUrl={networkMembers.find((m) => m.id === post.authorId)?.avatarUrl}
-                        size="md"
-                      />
+                      {showPortrait ? <ExecutivePortrait name={post.authorName} avatarUrl={networkMembers.find((m) => m.id === post.authorId)?.avatarUrl} size="md" /> : <span className="home-board-initials">{post.authorName.split(' ').map(part => part[0]).join('').slice(0, 2)}</span>}
                     </div>
                     <div>
                       <div className="flex items-center gap-2">
@@ -514,6 +522,8 @@ export const HomeFeedView: React.FC<HomeFeedViewProps> = ({
                 {/* Post Actions Bar */}
                 <div className="flex items-center justify-between text-xs text-[#9CA3AF] pt-2 border-t border-white/5">
                   <button
+                    aria-label={`Like ${post.authorName}'s post`}
+                    aria-pressed={post.isLiked || false}
                     onClick={() => onLikePost(post.id)}
                     className={`flex items-center gap-1.5 transition-colors cursor-pointer ${
                       post.isLiked ? 'text-[#F5B027]' : 'hover:text-white'
@@ -523,17 +533,13 @@ export const HomeFeedView: React.FC<HomeFeedViewProps> = ({
                     <span>{post.likes}</span>
                   </button>
 
-                  <button className="flex items-center gap-1.5 hover:text-white transition-colors cursor-pointer">
-                    <MessageSquare className="w-3.5 h-3.5" />
-                    <span>{post.comments}</span>
-                  </button>
+                  <Button variant="ghost" size="sm" aria-label={`Comment on ${post.authorName}'s post`} onClick={() => { setCommenting(commenting === post.id ? null : post.id); setReply(''); }}><MessageSquare /><span>{post.comments + (comments[post.id]?.length || 0)}</span></Button>
 
-                  <button className="flex items-center gap-1.5 hover:text-white transition-colors cursor-pointer">
-                    <Share2 className="w-3.5 h-3.5" />
-                    <span>{post.shares}</span>
-                  </button>
+                  <Button variant="ghost" size="sm" aria-label={`Message about ${post.authorName}'s post`} onClick={() => onNavigate('messages')}><MessageSquare />Message</Button>
 
                   <button
+                    aria-label={`Save ${post.authorName}'s post`}
+                    aria-pressed={post.isSaved || false}
                     onClick={() => onSavePost(post.id)}
                     className={`p-1 transition-colors cursor-pointer ${
                       post.isSaved ? 'text-[#F5B027]' : 'hover:text-white'
@@ -542,8 +548,10 @@ export const HomeFeedView: React.FC<HomeFeedViewProps> = ({
                     <Bookmark className="w-3.5 h-3.5" />
                   </button>
                 </div>
+                {(commenting === post.id || comments[post.id]?.length) && <div className="home-demo-comments">{comments[post.id]?.map((text, index) => <p key={index}><b>Sarah Chen</b> {text}</p>)}{commenting === post.id && <form onSubmit={event => { event.preventDefault(); if (!reply.trim()) return; setComments(current => ({ ...current, [post.id]: [...(current[post.id] || []), reply.trim()] })); setReply(''); }}><input aria-label="Your comment" placeholder="Add a thoughtful reply…" value={reply} onChange={event => setReply(event.target.value)} /><Button size="sm" type="submit" disabled={!reply.trim()}>Reply</Button></form>}</div>}
               </article>
-            ))}
+            ); })}
+            {!visiblePosts.length && <p className="text-sm text-[var(--sys-ink-dim)]">No updates in this view yet.</p>}
           </div>
         </main>
       </div>}

@@ -715,3 +715,11 @@
 .home-social-only .content { padding:0; }
 .home-social-only .feed-masthead, .home-social-only .feed-ticker { display:none; }
 @media(max-width:640px) { .home-social-heading { align-items:flex-start; flex-direction:column; } .home-social-board form > div:nth-child(2) > div:first-child { flex-wrap:wrap; } .home-social-board main > div:nth-child(2) > div { gap:1rem; flex-wrap:wrap; } }
+
+.home-board-tile { max-height:100%; overflow:hidden; }
+.home-board-content { min-height:0; overflow:auto; scrollbar-width:thin; }
+.home-board-tile > .home-board-label, .home-board-tile > h3, .home-board-tile > .home-board-link { flex-shrink:0; }
+.home-demo-comments { border-top:1px solid var(--sys-line); padding-top:0.75rem; font-size:0.75rem; color:var(--sys-ink-dim); }
+.home-demo-comments form { display:flex; gap:0.5rem; margin-top:0.75rem; }
+.home-demo-comments input { min-width:0; flex:1; background:var(--sys-tile-inner); border:1px solid var(--sys-line); color:var(--sys-ink); padding:0.5rem; border-radius:var(--radius-chip); }
+.home-demo-comments input:focus-visible { outline:2px solid var(--sys-accent); }
