@@ -1,7 +1,7 @@
 # Aetheris specification completion
 
 ## Home resizing and scrolling (Oct 7)
-- [ ] Add persistent tile size controls and verify tile/page scrolling without drag interference, including pinned state.
+- [x] Add persistent tile size controls; preview verified resizing, reload persistence, content wheel scrolling and pinned resize lock with no runtime errors.
 
 ## Shared moving background (Oct 7)
 - [x] Combine numeric drift, connection lines, and the existing aurora across all routes; public pages and all demo menu destinations tested, including typing and reduced motion.

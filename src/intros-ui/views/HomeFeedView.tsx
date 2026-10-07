@@ -359,7 +359,7 @@ export const HomeFeedView: React.FC<HomeFeedViewProps> = ({
           gap={12}
           radius={8}
           renderItem={(item) => <div className="flex h-full min-h-0 w-full flex-col">
-            <div className="flex shrink-0 justify-end border-b border-[var(--sys-line)] bg-[var(--sys-tile-inner)]" data-no-drag>
+            <div className="flex shrink-0 justify-end border-b border-[var(--sys-line)] bg-[var(--sys-tile-inner)]">
               <Button variant="ghost" size="sm" disabled={boardPinned} aria-label={`Resize ${item.label || item.id}`} title={`Resize tile · ${item.size === 'sm' ? 'Small' : item.size === 'lg' ? 'Large' : item.size === 'wide' ? 'Wide' : 'Tall'}`} onClick={() => {
                 const sizes = narrow ? ['sm', 'tall'] : ['sm', 'wide', 'tall', 'lg'];
                 const size = sizes[(sizes.indexOf(item.size) + 1) % sizes.length];
