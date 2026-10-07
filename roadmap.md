@@ -305,13 +305,13 @@
 - [x] Design-system audit: route brand fonts through BrandFonts; skipped provider re-wrap, meta pins and token reconciliation after file inspection (diagnosis didn't hold or risked live regressions).
 
 ## Accent shift: logo yellow over blue (Oct 6)
-- [ ] Header dots beside Ask Intros and Bubbles use the logo yellow.
-- [ ] Message/notification alerts use the logo yellow.
-- [ ] Blue buttons become light black or logo yellow across the shell.
-- [ ] Verify desktop and phone widths, then publish.
-- [ ] Buttons: dark, see-through gold (not bright) — app shell CTAs, .btn.primary, hover states; round indicators keep solid gold
-- [ ] Background: moving-grid + film-grain field from uploaded reference, site-wide
-- [ ] Accent modes: Gold (current), Blue (original cobalt buttons), Mixed — switcher in header, remembered per device
+- [x] Header dots beside Ask Intros and Bubbles use the logo yellow.
+- [x] Message/notification alerts use the logo yellow.
+- [x] Blue buttons become light black or logo yellow across the shell.
+- [x] Verify desktop and phone widths, then publish.
+- [x] Buttons: dark, see-through gold (not bright) — app shell CTAs, .btn.primary, hover states; round indicators keep solid gold
+- [x] Background: moving-grid + film-grain field from uploaded reference, site-wide
+- [x] Accent modes: Gold (current), Blue (original cobalt buttons), Mixed — switcher in header, remembered per device
 
 # Reader voice = my voice (Oct 6)
 - [x] Reader voice points at the member's own ElevenLabs clone ("Joseph — Ask Intros") for signed-in members; device voice remains the offline/demo fallback.
@@ -321,3 +321,9 @@
 
 - [x] Intro: hold last frame ~1s before fading to Ask Intros
 - [x] Verify highlight-to-read in shell (signed in)
+
+## Architect credit in footers (Oct 7)
+- [x] Add "The Architect Joseph Toney — Aetheris.Technology" to the public landing footer and the app footer, linking to aetheris.technology.
+- [x] Move the public footer to the true end of the landing page (it was rendering mid-page, above the quote and video sections).
+- [x] Keep the credit line tidy when it wraps on phones: centered stack, dash bound to the domain, no clipping at 390px; single row at 1280px.
+- [ ] Publish so the credit line reaches the live site.

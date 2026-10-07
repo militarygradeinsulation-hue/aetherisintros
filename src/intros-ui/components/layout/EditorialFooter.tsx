@@ -8,8 +8,8 @@ interface EditorialFooterProps {
 
 export const EditorialFooter: React.FC<EditorialFooterProps> = ({ onNavigate }) => {
   return (
-    <footer className="w-full border-t border-white/10 bg-[#07090C] py-8 px-4 md:px-8 mt-16 text-[#9CA3AF] print:hidden">
-      <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4 text-xs">
+    <footer className="w-full border-t border-white/10 bg-[#07090C] pt-8 pb-20 md:pb-24 px-4 md:px-8 mt-16 text-[#9CA3AF] print:hidden">
+      <div className="max-w-7xl mx-auto flex flex-wrap flex-col md:flex-row items-center justify-between gap-4 text-xs">
         <div className="flex items-center gap-4 text-[10px] font-mono tracking-widest uppercase">
           <span className="text-white font-semibold">People</span>
           <span>×</span>
@@ -47,6 +47,21 @@ export const EditorialFooter: React.FC<EditorialFooterProps> = ({ onNavigate }) 
           >
             Intelligence
           </button>
+        </div>
+
+        <div className="mt-8 flex w-full flex-wrap items-center justify-center gap-x-3 gap-y-1 border-t border-white/5 pt-6 text-[10px] font-mono tracking-[0.18em] uppercase">
+          <span className="text-[#9CA3AF]">The Architect</span>
+          <span className="text-white/85">Joseph Toney</span>
+          <span className="whitespace-nowrap">
+            <span className="text-[#4B5563]">—</span>{' '}
+            <a
+              href="https://aetheris.technology"
+              rel="noopener noreferrer"
+              className="text-[#FFC85C] hover:text-white transition-colors"
+            >
+              Aetheris.Technology
+            </a>
+          </span>
         </div>
       </div>
     </footer>

@@ -98,8 +98,6 @@ function LandingPage({ signedIn }: { signedIn: boolean }) {
 
       {/* ── Section 1: Black hero ── */}
 
-      <CinematicFooter />
-
       <section className="lv-hero">
         <div className="lv-hero-copy">
           <AskIntrosLockup variant="hero" />
@@ -143,6 +141,7 @@ function LandingPage({ signedIn }: { signedIn: boolean }) {
         </div>
       </section>
 
+      <CinematicFooter />
     </main>
   )
 }
