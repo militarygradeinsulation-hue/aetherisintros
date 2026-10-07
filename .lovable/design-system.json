@@ -2,7 +2,7 @@
   "meta": {
     "name": "Ask Intros",
     "package": "@ws-gmhcx8w6bqvecbtkycud/c1248cd8-77de-4eaa-8d9d-e7da71e70ae9",
-    "version": "18.0.0",
+    "version": "19.0.0",
     "framework": "react",
     "css_framework": "tailwind",
     "starter_template": "custom_design_system_tailwind",
@@ -410,7 +410,7 @@
       "src/intros-ui/AccentMode.tsx": "59cda7d93c9c06f7a54d1618c07a7b5f",
       "src/intros-ui/Aurora.tsx": "4777bc83e90c1351a19d2c5d8626d78c",
       "src/intros-ui/BackdropField.tsx": "bb490dc675061299f4c0158f6b636ea1",
-      "src/intros-ui/IntrosApp.tsx": "3fd295bfa7cd6afbece2a887f6014380",
+      "src/intros-ui/IntrosApp.tsx": "2a8362255a7df3f0205da288ee90b724",
       "src/intros-ui/assets/images/network_empty_state_1791252869482.jpg": "e3524fa6d332cce969d4dd4a51a0daed",
       "src/intros-ui/components/ActionableInboxView.tsx": "40c93db88f54d37d741ed4b96a1bbb9e",
       "src/intros-ui/components/ApprovalQueueModal.tsx": "f68853a73d6d66e3947f18e36e0b76cf",
