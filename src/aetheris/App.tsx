@@ -26,7 +26,6 @@ import { applyTextScale, readTextScale, setTextScale, textScales, type TextScale
 import { applyCursorScale, readCursorScale, setCursorScale, cursorScales, type CursorScale } from './cursorScale'
 import { AskIntrosDock, type AskIntrosAction } from './AskIntrosDock'
 import { CapabilityWorkspaceHost } from './capabilities/CapabilityWorkspace'
-import ConstellationField from './ConstellationField'
 import { VoiceBar } from './VoiceBar'
 import { SelectionReader } from './SelectionReader'
 import { currentPagePassages, readAloud, readPageOrSelection, setVoiceSettings, stopReading, readerSnapshot, useVoiceSettings, voiceOutputSupported } from './voice'
@@ -2719,7 +2718,6 @@ function Shell({ startPage }: { startPage?: Page | undefined }) {
 
   return <NavCtx.Provider value={navApi}>
     <div className={`app-shell social-shell ${contextOpen ? 'show-context' : ''}`}>
-      <ConstellationField className="app-shell-ambient" />
       <header className="social-topnav">
         <button className="social-brand" onClick={() => setPage('home')} aria-label="Ask Intros Home"><Brand /></button>
         <nav aria-label="Primary navigation">{nav.map(item => {

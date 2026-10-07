@@ -10,7 +10,6 @@ import { AUTH_REQUIRED } from '@/aetheris/config'
 import { claimAccess, clearInvite, previewInvite, rememberInvite, storedInvite } from '@/aetheris/access'
 import { logSecurityEvent, passwordProblem } from '@/aetheris/verification'
 import '@/aetheris/styles.css'
-import ConstellationField from '@/aetheris/ConstellationField'
 
 const safeNext = (value: unknown) => {
   if (typeof value !== 'string' || !value.startsWith('/') || value.startsWith('//')) return ''
@@ -249,7 +248,6 @@ function AuthPage() {
     <aside ref={visualRef} className="auth-visual auth-visual-type" aria-label="Ask Intros relationship principles">
       <div className="auth-parallax-ring" data-parallax-layer="4" aria-hidden="true" />
       <div className="auth-parallax-ring auth-parallax-ring--inner" data-parallax-layer="3" aria-hidden="true" />
-      <div data-parallax-layer="1" className="auth-parallax-layer"><ConstellationField className="auth-constellation" /></div>
       <span className="auth-visual-mark" data-parallax-layer="2" aria-hidden="true">+</span>
       <div className="auth-visual-statement" data-parallax-layer="3" aria-hidden="true">
         <span>PEOPLE</span><i>×</i><span>CONTEXT</span><i>×</i><span>OPPORTUNITY</span>
