@@ -1,5 +1,9 @@
 # Aetheris specification completion
 
+## Thumb-friendly mobile menu (Oct 7)
+- [ ] Move mobile destinations to a fixed bottom bar with remaining destinations in a bottom menu; preserve desktop navigation.
+- [ ] Verify navigation, safe-area spacing, and assistant clearance without publishing.
+
 ## Cross-screen box fit (Sep 27)
 - [x] Keep feed cards, headings, actions and working panels inside their mobile columns while preserving desktop editorial layout.
 - [x] Audit primary demo destinations and Full CRM at desktop, tablet and phone widths; do not publish.

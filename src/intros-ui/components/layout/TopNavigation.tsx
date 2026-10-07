@@ -1,7 +1,8 @@
 // @ts-nocheck
-import React from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { AskIntrosLockup } from '@/aetheris/AskIntrosLockup';
-import { Search, Bell, Orbit, LogOut } from 'lucide-react';
+import { Search, Bell, Orbit, LogOut, Home, Users, MessageSquare, MoreHorizontal, Network, Brain, Newspaper, Briefcase, X } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 import { AvatarImage } from '@/aetheris/avatar';
 import { supabase } from '@/integrations/supabase/client';
 import { AccentSwitch } from '../../AccentMode';
@@ -36,14 +37,42 @@ export const TopNavigation: React.FC<TopNavigationProps> = ({
   me,
   onOpenMyProfile,
 }) => {
+  const [moreOpen, setMoreOpen] = useState(false);
+  const moreRef = useRef<HTMLButtonElement>(null);
+  const sheetRef = useRef<HTMLDivElement>(null);
+  const closeMore = () => { setMoreOpen(false); moreRef.current?.focus(); };
+  useEffect(() => {
+    if (!moreOpen) return;
+    sheetRef.current?.querySelector<HTMLButtonElement>('button')?.focus();
+    const handleKey = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') { setMoreOpen(false); moreRef.current?.focus(); }
+      if (event.key === 'Tab') {
+        const buttons = sheetRef.current?.querySelectorAll<HTMLButtonElement>('button');
+        const first = buttons?.[0];
+        const last = buttons?.[buttons.length - 1];
+        if (event.shiftKey && document.activeElement === first) { event.preventDefault(); last?.focus(); }
+        else if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); first?.focus(); }
+      }
+    };
+    window.addEventListener('keydown', handleKey);
+    return () => window.removeEventListener('keydown', handleKey);
+  }, [moreOpen]);
+  const mobileExtra = [
+    { id: 'bubbles', label: 'Bubbles', icon: Orbit },
+    { id: 'insights', label: 'Insights', icon: Network },
+    { id: 'memory', label: 'Memory', icon: Brain },
+    { id: 'news', label: 'News', icon: Newspaper },
+    { id: 'work', label: 'Work', icon: Briefcase },
+  ] as const;
   const myName = me ? (me.name || 'My profile') : 'Sarah Chen';
   const myInitials = (me?.name || 'Me').split(' ').filter(Boolean).map((p) => p[0]).join('').slice(0, 2).toUpperCase();
   return (
+    <>
     <header className="sticky top-0 z-50 w-full bg-[#07090C]/95 backdrop-blur-md border-b border-white/10 px-2 sm:px-4 md:px-6 py-2.5 transition-colors print:hidden">
-      <div className="max-w-[1600px] mx-auto flex flex-wrap xl:flex-nowrap items-center gap-x-2 gap-y-1">
+      <div className="max-w-[1600px] mx-auto grid grid-cols-[minmax(0,1fr)_auto] md:flex md:flex-wrap xl:flex-nowrap items-center gap-x-2 gap-y-1">
 
         {/* Zone 1: Brand Wordmark */}
-        <div className="shrink-0">
+        <div className="min-w-0">
           <button
             onClick={() => onNavigate('home')}
             className="flex items-center gap-2.5 text-left group cursor-pointer focus:outline-none"
@@ -53,7 +82,7 @@ export const TopNavigation: React.FC<TopNavigationProps> = ({
         </div>
 
         {/* Zone 2: Navigation Links — always fully visible, shrink text before ever clipping */}
-        <nav className="order-3 md:order-none w-full md:w-auto md:flex-1 flex flex-wrap xl:flex-nowrap items-center justify-start xl:justify-center gap-x-2.5 gap-y-1 md:gap-x-3 xl:gap-x-2 py-0.5">
+        <nav aria-label="Desktop navigation" className="hidden md:flex md:w-auto md:flex-1 flex-wrap xl:flex-nowrap items-center justify-start xl:justify-center gap-x-2.5 gap-y-1 md:gap-x-3 xl:gap-x-2 py-0.5">
             {[
             { id: 'workspace', label: 'Ask Intros', isBubbles: true },
             { id: 'bubbles', label: 'Bubbles', isBubbles: true },
@@ -152,5 +181,25 @@ export const TopNavigation: React.FC<TopNavigationProps> = ({
         </div>
       </div>
     </header>
+    <nav className="ix-mobile-nav print:hidden" aria-label="Mobile navigation">
+      {[
+        { id: 'home', label: 'Home', icon: Home },
+        { id: 'workspace', label: 'Ask Intros', icon: Orbit },
+        { id: 'people', label: 'People & Intros', icon: Users },
+        { id: 'messages', label: 'Messages', icon: MessageSquare },
+      ].map(({ id, label, icon: Icon }) => <Button key={id} variant="ghost" className="ix-mobile-nav-item" aria-current={activePage === id || (id === 'people' && activePage === 'intros') ? 'page' : undefined} onClick={() => { setMoreOpen(false); onNavigate(id as ActivePage); }}>
+        <span className="relative"><Icon aria-hidden="true" />{id === 'messages' && unreadCount > 0 && <span className="ix-mobile-badge">{unreadCount > 99 ? '99+' : unreadCount}</span>}</span>
+        <span>{label}</span>
+      </Button>)}
+      <Button ref={moreRef} variant="ghost" className="ix-mobile-nav-item" aria-label="More menu" aria-expanded={moreOpen} aria-controls="mobile-more-menu" aria-current={mobileExtra.some(item => item.id === activePage) ? 'page' : undefined} onClick={() => setMoreOpen(value => !value)}><MoreHorizontal aria-hidden="true" /><span>More</span></Button>
+    </nav>
+    {moreOpen && <div className="ix-mobile-more print:hidden">
+      <Button variant="ghost" className="ix-mobile-scrim" aria-label="Close more menu" onClick={closeMore} />
+      <div ref={sheetRef} id="mobile-more-menu" className="ix-mobile-sheet" role="dialog" aria-modal="true" aria-label="More destinations">
+        <div className="ix-mobile-sheet-head"><span>More</span><Button variant="ghost" size="icon" aria-label="Close more menu" onClick={closeMore}><X /></Button></div>
+        {mobileExtra.map(({ id, label, icon: Icon }) => <Button key={id} variant="ghost" className="ix-mobile-sheet-item" aria-current={activePage === id ? 'page' : undefined} onClick={() => { closeMore(); onNavigate(id); }}><Icon aria-hidden="true" />{label}</Button>)}
+      </div>
+    </div>}
+    </>
   );
 };

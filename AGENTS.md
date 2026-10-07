@@ -14,3 +14,4 @@
 - Ask Intros phrase matching lives in `src/aetheris/capabilities/match.ts` (ceo-engine re-exports it). Why: one matcher, regression-tested.
 - Professional (LinkedIn) enrichment attaches to canonical `crm_people` via `person_external_profiles` + append-only `person_enrichment_snapshots`, written only by RPCs; CRM fields change only through approved `update_person_field` proposals. Why: no duplicate people, no silent overwrites, full history.
 - LinkedIn results enter only through real hand-off (assistant lookup / manual paste) behind the `ProfessionalProfileProvider` seam; `direct_api` stays unavailable until a licensed provider exists. Why: never fabricate profiles.
+- The Intros shell owns mobile bottom navigation and its overflow menu; reserve safe-area space and lift the assistant above it. Why: thumb access must not obscure page actions or duplicate navigation.
