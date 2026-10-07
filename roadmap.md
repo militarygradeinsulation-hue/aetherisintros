@@ -1,6 +1,7 @@
 # Aetheris specification completion
 
 ## Home resizing and scrolling (Oct 7)
+- [ ] Keep tile resizing in place without restarting the board; verify unchanged tile nodes and scroll position.
 - [x] Add persistent tile size controls; preview verified resizing, reload persistence, content wheel scrolling and pinned resize lock with no runtime errors.
 
 ## Shared moving background (Oct 7)
