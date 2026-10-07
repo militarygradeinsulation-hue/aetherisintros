@@ -4,9 +4,11 @@ import { useEffect, useRef, useState } from "react"
 
 // ─────────────────────────────────────────────────────────────
 // Scroll-locked video intro — the page is pinned with
-// position:fixed while active. Wheel/touch input drives
-// video.currentTime through a quick transition after one forward
-// gesture. The intro then automatically hands off to the page.
+// position:fixed while active. One forward gesture (a single
+// swipe up or wheel push) starts the video playing at normal
+// speed so the full sequence is visible; when it ends the page
+// unlocks and continues. A time-based scrub is kept only as a
+// fallback if the browser refuses to start playback.
 // ─────────────────────────────────────────────────────────────
 
 export interface MetroHeroProps {
@@ -17,7 +19,7 @@ export interface MetroHeroProps {
   signature?: { name: string; url: string } | false
   /** Legacy sensitivity: divided by 100 to set the initial gesture threshold. */
   scrubDistance?: number
-  /** Called automatically when the single-gesture transition completes. */
+  /** Called automatically when the video finishes (or is skipped). */
   onComplete?: () => void
   className?: string
   style?: React.CSSProperties
@@ -77,6 +79,8 @@ export default function MetroHero({
     let lockedScrollY = 0
     let touchStartY = 0
     let completed = false
+    let playbackStarted = false
+    let playbackMode = false
 
     const finish = () => {
       if (completed) return
@@ -162,12 +166,25 @@ export default function MetroHero({
 
     engageLock()
 
+    // One forward gesture is enough: start the video playing at its
+    // natural rate. If the browser refuses to play, fall back to the
+    // quick time-based scrub so nobody is trapped.
     function addDelta(deltaY: number) {
-      if (completed || transitionStartedAt !== null) return
+      if (completed || playbackStarted || transitionStartedAt !== null) return
       gestureDistance = Math.max(0, gestureDistance + deltaY)
       if (gestureDistance < clamp(scrubDistance / 100, 12, 40)) return
       hasStartedScrolling = true
-      transitionStartedAt = performance.now()
+      playbackStarted = true
+      const p = v.play()
+      if (p && typeof p.then === "function") {
+        p.then(() => {
+          playbackMode = true
+        }).catch(() => {
+          if (transitionStartedAt === null) transitionStartedAt = performance.now()
+        })
+      } else {
+        playbackMode = true
+      }
     }
 
     const onWheel = (e: WheelEvent) => {
@@ -201,12 +218,19 @@ export default function MetroHero({
 
     function frame() {
       if (completed) return
-      if (transitionStartedAt !== null) {
-        targetProgress = clamp((performance.now() - transitionStartedAt) / 1200, 0, 1)
-      }
-      currentProgress = targetProgress
 
-      if (duration > 0) {
+      if (playbackMode && duration > 0) {
+        const t = clamp(v.currentTime / duration, 0, 1)
+        currentProgress = t
+        targetProgress = t
+      } else if (transitionStartedAt !== null) {
+        targetProgress = clamp((performance.now() - transitionStartedAt) / 1200, 0, 1)
+        currentProgress = targetProgress
+      }
+
+      // While the video plays on its own we don't seek; only the
+      // held-at-start and fallback-scrub modes drive currentTime.
+      if (!playbackMode && duration > 0) {
         seekTo(currentProgress * duration)
       }
 
@@ -233,7 +257,12 @@ export default function MetroHero({
         progressBarRef.current.style.transform = `scaleX(${currentProgress})`
       }
 
-      if (targetProgress >= 1) {
+      if (playbackMode) {
+        if (v.ended || (duration > 0 && v.currentTime >= duration - 0.05)) {
+          finish()
+          return
+        }
+      } else if (targetProgress >= 1) {
         finish()
         return
       }
