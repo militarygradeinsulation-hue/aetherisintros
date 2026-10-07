@@ -2,7 +2,7 @@
 
 ## Shared moving background (Oct 7)
 - [x] Combine numeric drift, connection lines, and the existing aurora across all routes; public pages and all demo menu destinations tested, including typing and reduced motion.
-- [ ] Publish the verified background and People label on request.
+- [x] Publishing requested for intros.today with the verified background and People label; deployment scheduled, live completion not yet confirmed.
 
 ## Thumb-friendly mobile menu (Oct 7)
 - [x] Move mobile destinations to a fixed bottom bar with remaining destinations in a bottom menu; preserve desktop navigation.
