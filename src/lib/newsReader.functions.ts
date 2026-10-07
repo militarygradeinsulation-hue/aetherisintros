@@ -1,6 +1,5 @@
 import { createServerFn } from '@tanstack/react-start'
-import { streamText } from 'ai'
-import { createOpenAI } from '@ai-sdk/openai'
+import { gatewayChat } from './aiGateway.server'
 
 export interface ArticleRead {
   title: string
@@ -25,25 +24,15 @@ export interface PerspectiveResult {
 
 const MAX_TEXT = 14000
 
-function gateway() {
-  const apiKey = process.env['LOVABLE_API_KEY']
-  if (!apiKey) return null
-  return createOpenAI({
-    baseURL: 'https://ai.gateway.lovable.dev/v1',
-    apiKey,
-    headers: { 'Lovable-API-Key': apiKey, 'X-Lovable-AIG-SDK': 'vercel-ai-sdk' },
-  })
-}
-
 const decode = (value: string): string =>
   value
     .replace(/&nbsp;/gi, ' ')
     .replace(/&amp;/gi, '&')
     .replace(/&quot;/gi, '"')
-    .replace(/&#0?39;|&apos;|&#8217;/gi, '\u2019')
-    .replace(/&#8220;|&ldquo;/gi, '\u201C')
-    .replace(/&#8221;|&rdquo;/gi, '\u201D')
-    .replace(/&#8212;|&mdash;/gi, '\u2014')
+    .replace(/&#0?39;|&apos;|&#8217;/gi, '’')
+    .replace(/&#8220;|&ldquo;/gi, '“')
+    .replace(/&#8221;|&rdquo;/gi, '”')
+    .replace(/&#8212;|&mdash;/gi, '—')
     .replace(/&[a-z#0-9]+;/gi, ' ')
 
 function extractParagraphs(html: string): string[] {
@@ -117,14 +106,12 @@ export const readNewsArticle = createServerFn({ method: 'POST' })
       whyItMatters: '',
     }
 
-    const lovable = gateway()
-    if (!lovable || !basis.trim()) {
-      return { ...base, error: !lovable ? 'missing-key' : 'no-text' }
+    if (!process.env['LOVABLE_API_KEY'] || !basis.trim()) {
+      return { ...base, error: !process.env['LOVABLE_API_KEY'] ? 'missing-key' : 'no-text' }
     }
 
     try {
-      const result = streamText({
-        model: lovable.responses('openai/gpt-6-astra'),
+      const text = (await gatewayChat({
         system: `You summarize news for Ask Intros, a relationship network for CEOs. Use only the supplied text. Never add facts, numbers, names or outcomes that are not in it. If the text is thin, say what is unclear. Voice: direct, intelligent, observant. No markdown, no bullet characters, no words like "unlock", "supercharge", "revolutionize", "AI-powered".
 
 Reply with ONE JSON object and nothing else:
@@ -133,9 +120,7 @@ Reply with ONE JSON object and nothing else:
           role: 'user',
           content: `Headline: ${data.title}\nSource: ${data.source}\n\n${basis}`,
         }],
-        providerOptions: { openai: { store: false, reasoningEffort: 'low' } },
-      })
-      const text = (await result.text).trim()
+      })).trim()
       const start = text.indexOf('{')
       const end = text.lastIndexOf('}')
       if (start >= 0 && end > start) {
@@ -159,12 +144,10 @@ Reply with ONE JSON object and nothing else:
 export const askNewsPerspective = createServerFn({ method: 'POST' })
   .inputValidator((data: { title: string; source: string; text: string; question: string }) => data)
   .handler(async ({ data }): Promise<PerspectiveResult> => {
-    const lovable = gateway()
-    if (!lovable) return { answer: 'Ask Intros is not configured on this account yet.', error: 'missing-key' }
+    if (!process.env['LOVABLE_API_KEY']) return { answer: 'Ask Intros is not configured on this account yet.', error: 'missing-key' }
 
     try {
-      const result = streamText({
-        model: lovable.responses('openai/gpt-6-astra'),
+      const answer = await gatewayChat({
         system: `You are Ask Intros reading one news article with a CEO. Ground every claim in the supplied text. Separate what the article says from your reasoning, and say plainly when the article does not answer the question. Never invent facts, figures, companies or quotes.
 
 Voice: direct, intelligent, observant, human. Plain sentences, no markdown, no bullet characters. Under 160 words.`,
@@ -172,9 +155,8 @@ Voice: direct, intelligent, observant, human. Plain sentences, no markdown, no b
           role: 'user',
           content: `Article: ${data.title} (${data.source})\n\n${data.text.slice(0, MAX_TEXT)}\n\nQuestion: ${data.question}`,
         }],
-        providerOptions: { openai: { store: false, reasoningEffort: 'low' } },
       })
-      return { answer: (await result.text).trim() }
+      return { answer: answer.trim() }
     } catch (error) {
       return {
         answer: 'That view could not be generated just now. Try again in a moment.',
