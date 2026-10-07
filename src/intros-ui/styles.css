@@ -727,3 +727,8 @@
 .home-demo-comments form { display:flex; gap:0.5rem; margin-top:0.75rem; }
 .home-demo-comments input { min-width:0; flex:1; background:var(--sys-tile-inner); border:1px solid var(--sys-line); color:var(--sys-ink); padding:0.5rem; border-radius:var(--radius-chip); }
 .home-demo-comments input:focus-visible { outline:2px solid var(--sys-accent); }
+
+.home-widget-scroll { scrollbar-width:thin; }
+.home-widget-scroll > * { min-height:100%; height:auto; max-height:none; }
+.home-widget-scroll > .home-board-tile { overflow:visible; }
+.home-widget-scroll .home-board-content { overflow:visible; flex-shrink:0; }

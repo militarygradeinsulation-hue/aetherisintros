@@ -22,6 +22,7 @@ import {
   Paperclip,
   Pin,
   PinOff,
+  Maximize2,
 } from 'lucide-react';
 import { FeedPost, UPCOMING_EVENTS, SUGGESTED_CIRCLES, TRENDING_SECTORS, NetworkMember } from '../networkData';
 import { ExecutivePortrait } from '../components/shared/ExecutivePortrait';
@@ -115,7 +116,7 @@ export const HomeFeedView: React.FC<HomeFeedViewProps> = ({
       const saved = JSON.parse(localStorage.getItem('intros.home.board.v2') || 'null');
       if (Array.isArray(saved)) {
         const seen = new Set<string>();
-        const valid = saved.filter(item => widgetIds.has(item.id) && !seen.has(item.id) && seen.add(item.id)).map(item => defaultBoard.find(entry => entry.id === item.id));
+        const valid = saved.filter(item => widgetIds.has(item.id) && !seen.has(item.id) && seen.add(item.id)).map(item => ({ ...defaultBoard.find(entry => entry.id === item.id), size: ['sm', 'wide', 'tall', 'lg'].includes(item.size) ? item.size : 'sm' }));
         return [...valid, ...defaultBoard.filter(item => !seen.has(item.id))];
       }
     } catch {}
@@ -125,7 +126,7 @@ export const HomeFeedView: React.FC<HomeFeedViewProps> = ({
   }, []);
   const [narrow, setNarrow] = useState(false);
   React.useEffect(() => { const q = window.matchMedia('(max-width: 640px)'); const f = () => setNarrow(q.matches); f(); q.addEventListener('change', f); return () => q.removeEventListener('change', f); }, []);
-  const saveBoard = (next: WidgetItem[]) => { try { localStorage.setItem('intros.home.board.v2', JSON.stringify(next)); } catch {} };
+  const saveBoard = (next: WidgetItem[]) => { setBoardItems(next); try { localStorage.setItem('intros.home.board.v2', JSON.stringify(next)); } catch {} };
   const boardPeople = networkMembers.filter(member => member.name !== me?.name);
   const topics = [...new Set(boardPeople.flatMap(member => member.focusAreas || []))].slice(0, 5);
   const goals = boardPeople.filter(member => member.currentObjectives?.length).slice(0, 3);
@@ -349,15 +350,24 @@ export const HomeFeedView: React.FC<HomeFeedViewProps> = ({
           </div>
         </div>
         <DraggableWidgetGrid
-          key={`${narrow ? 'narrow' : 'wide'}-${boardItems.map(item => item.id).join('-')}`}
-          items={narrow ? boardItems.map((i) => ({ ...i, size: 'sm' })) : boardItems}
-          onChange={(next) => saveBoard(narrow ? next.map((i) => ({ ...i, size: defaultBoard.find((d) => d.id === i.id)?.size ?? 'sm' })) : next)}
+          key={`${narrow ? 'narrow' : 'wide'}-${boardItems.map(item => `${item.id}:${item.size}`).sort().join('-')}`}
+          items={boardItems}
+          onChange={saveBoard}
           maxColumns={narrow ? 1 : 4}
           editable={!boardPinned}
           cellSize={280}
           gap={12}
           radius={8}
-          renderItem={(item) => <div className="h-full w-full overflow-y-auto [&>*]:min-h-full">{widgets[item.id]}</div>}
+          renderItem={(item) => <div className="flex h-full min-h-0 w-full flex-col">
+            <div className="flex shrink-0 justify-end border-b border-[var(--sys-line)] bg-[var(--sys-tile-inner)]">
+              <Button variant="ghost" size="sm" disabled={boardPinned} aria-label={`Resize ${item.label || item.id}`} title={`Resize tile · ${item.size === 'sm' ? 'Small' : item.size === 'lg' ? 'Large' : item.size === 'wide' ? 'Wide' : 'Tall'}`} onClick={() => {
+                const sizes = narrow ? ['sm', 'tall'] : ['sm', 'wide', 'tall', 'lg'];
+                const size = sizes[(sizes.indexOf(item.size) + 1) % sizes.length];
+                saveBoard(boardItems.map(entry => entry.id === item.id ? { ...entry, size } : entry));
+              }}><Maximize2 /><span>{item.size === 'sm' ? 'Small' : item.size === 'lg' ? 'Large' : item.size === 'wide' ? 'Wide' : 'Tall'}</span></Button>
+            </div>
+            <div data-no-drag className="home-widget-scroll min-h-0 flex-1 overflow-y-auto touch-pan-y">{widgets[item.id]}</div>
+          </div>}
         />
       </section>
 

@@ -1,5 +1,8 @@
 # Aetheris specification completion
 
+## Home resizing and scrolling (Oct 7)
+- [x] Add persistent tile size controls; preview verified resizing, reload persistence, content wheel scrolling and pinned resize lock with no runtime errors.
+
 ## Shared moving background (Oct 7)
 - [x] Combine numeric drift, connection lines, and the existing aurora across all routes; public pages and all demo menu destinations tested, including typing and reduced motion.
 - [x] Publishing requested for intros.today with the verified background and People label; deployment scheduled, live completion not yet confirmed.
