@@ -4,12 +4,22 @@ import { createPortal } from 'react-dom'
 import { Volume2 } from 'lucide-react'
 import { readAloud, selectedText } from './voice'
 
+let owner: symbol | null = null
+
 interface Spot { text: string; top: number; left: number }
 
 export function SelectionReader() {
   const [spot, setSpot] = useState<Spot | null>(null)
+  const [id] = useState(() => Symbol('reader'))
+  const [active, setActive] = useState(false)
+  useEffect(() => {
+    if (owner) return
+    owner = id; setActive(true)
+    return () => { if (owner === id) owner = null }
+  }, [id])
 
   useEffect(() => {
+    if (!active) return
     const update = () => {
       const selection = window.getSelection()
       const text = selectedText()
@@ -40,9 +50,9 @@ export function SelectionReader() {
       document.removeEventListener('selectionchange', update)
       document.removeEventListener('mousedown', clear, true)
     }
-  }, [])
+  }, [active])
 
-  if (!spot || typeof document === 'undefined') return null
+  if (!active || !spot || typeof document === 'undefined') return null
 
   const read = () => {
     readAloud([spot.text], 'Reading what you highlighted')
