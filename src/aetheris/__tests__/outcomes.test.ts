@@ -2,7 +2,7 @@ import { describe, expect, it, vi } from 'vitest'
 
 vi.mock('@/integrations/supabase/client', () => ({ supabase: {} }))
 
-import { checkinPrompt, furthestStage, normaliseOutcome, rate, summariseOutcomes, type OutcomeEvent } from '../outcomes'
+import { bandLine, checkinPrompt, furthestStage, normaliseOutcome, rate, summariseOutcomes, type OutcomeEvent } from '../outcomes'
 
 const ev = (introRequestId: string, stage: OutcomeEvent['stage'], outcomeCategory: OutcomeEvent['outcomeCategory'] = null): OutcomeEvent => ({
   id: `${introRequestId}-${stage}-${Math.random()}`, introRequestId, authorId: 'a', stage, outcomeCategory, attribution: 'direct',
@@ -58,5 +58,14 @@ describe('rate', () => {
   it('returns null without a base instead of a fabricated 0%', () => {
     expect(rate(0, 0)).toBeNull()
     expect(rate(1, 3)).toBe(33)
+  })
+})
+
+describe('bandLine', () => {
+  it('reads as plain language and never shows a number', () => {
+    expect(bandLine('most', 'accepted introductions led to a meeting')).toBe('Most accepted introductions led to a meeting.')
+    expect(bandLine('none', 'introduction requests accepted')).toBe('No introduction requests accepted yet.')
+    expect(bandLine('insufficient', 'x')).toMatch(/^Too few introductions/)
+    expect(bandLine(undefined, 'x')).toMatch(/^Too few introductions/)
   })
 })

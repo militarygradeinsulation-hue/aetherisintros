@@ -19,6 +19,10 @@ export default defineTool({
     let request = supabase
       .from("asks")
       .select("id,member_id,ask,detail,why_now,offer,industry,location,urgency,posted,response_count,visibility,created_at")
+      // Live member asks only: showcase rows are /demo content, and closed asks are no longer true.
+      .eq("is_demo", false)
+      .not("author_id", "is", null)
+      .neq("status", "closed")
       .order("created_at", { ascending: false })
       .limit(limit ?? 15);
     if (industry) request = request.ilike("industry", `%${industry}%`);

@@ -200,3 +200,36 @@ export async function loadNetworkProof(days: number): Promise<{ data: NetworkPro
 
 /** Share of `part` in `whole`, as a whole percentage; null when there is no base. */
 export const rate = (part: number, whole: number): number | null => (whole > 0 ? Math.round((part / whole) * 100) : null)
+
+/* ───────────────────────── follow-through record ───────────────────────── */
+
+export type Band = 'most' | 'many' | 'some' | 'none' | 'insufficient'
+
+export interface TrackRecord {
+  visible: boolean
+  is_self?: boolean
+  shown_on_profile?: boolean
+  accepts_introductions?: Band
+  introductions_lead_to_meetings?: Band
+  introductions_lead_to_outcomes?: Band
+  sample?: string
+}
+
+const BAND_WORD: Record<'most' | 'many' | 'some', string> = { most: 'Most', many: 'Many', some: 'Some' }
+
+/** Plain-language line for a banded metric; never a number, never a fabricated rate. */
+export function bandLine(band: Band | undefined, subject: string): string {
+  if (!band || band === 'insufficient') return `Too few introductions yet to judge: ${subject}.`
+  if (band === 'none') return `No ${subject} yet.`
+  return `${BAND_WORD[band]} ${subject}.`
+}
+
+export async function loadTrackRecord(memberId: string): Promise<{ data: TrackRecord | null; error: string }> {
+  const r = await db.rpc('member_track_record', { p_member: memberId })
+  return r.error ? { data: null, error: r.error.message } : { data: r.data as TrackRecord, error: '' }
+}
+
+export async function setTrackRecordShown(show: boolean): Promise<{ error: string }> {
+  const r = await db.from('track_record_settings').upsert({ show_on_profile: show }, { onConflict: 'user_id' })
+  return { error: r.error?.message ?? '' }
+}

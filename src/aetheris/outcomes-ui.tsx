@@ -7,11 +7,11 @@ import { useCallback, useEffect, useState } from 'react'
 import { Check, Flag, Trash2 } from 'lucide-react'
 
 import {
-  OUTCOME_CATEGORIES, VALUE_BANDS, attributionLabel, categoryLabel, checkinPrompt, furthestStage, loadDueCheckins,
-  loadIntroOutcomes, loadMyVisibleOutcomes, loadNetworkProof, rate, recordOutcome, retractOutcome, stageLabel,
+  OUTCOME_CATEGORIES, VALUE_BANDS, attributionLabel, bandLine, categoryLabel, checkinPrompt, furthestStage, loadDueCheckins,
+  loadIntroOutcomes, loadMyVisibleOutcomes, loadNetworkProof, loadTrackRecord, setTrackRecordShown, rate, recordOutcome, retractOutcome, stageLabel,
   summariseOutcomes, valueBandLabel,
   type Attribution, type DueCheckin, type NetworkProof, type OutcomeCategory, type OutcomeEvent, type OutcomeStage,
-  type OutcomeSummary, type ValueBand,
+  type OutcomeSummary, type TrackRecord, type ValueBand,
 } from './outcomes'
 import { useGraph } from './graph-store'
 import { useNetwork } from './store'
@@ -158,4 +158,40 @@ export function NetworkProofPanel() {
       {!proof.intros_outcome && <p className="empty-note">No outcomes recorded in this window yet. Check-ins ask participants at 7, 30 and 90 days.</p>}
     </>}
   </section>
+}
+
+const isUuid = (v: string) => /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(v)
+
+/**
+ * Follow-through record on a member profile: banded evidence from real introduction
+ * outcomes. Others see it only when the member opts in; the member always sees their own.
+ */
+export function FollowThroughPanel({ memberId }: { memberId: string }) {
+  const { signedIn } = useGraph()
+  const [rec, setRec] = useState<TrackRecord | null>(null)
+  const [error, setError] = useState('')
+  const load = useCallback(async () => {
+    if (!signedIn || !isUuid(memberId)) return
+    const r = await loadTrackRecord(memberId)
+    setRec(r.data); setError(r.error)
+  }, [signedIn, memberId])
+  useEffect(() => { void load() }, [load])
+  if (!rec?.visible) return error ? <p className="og-note">{error}</p> : null
+
+  const toggle = async () => {
+    const r = await setTrackRecordShown(!rec.shown_on_profile)
+    if (r.error) setError(r.error); else void load()
+  }
+
+  return <div className="og-trust oc-record">
+    <Eyebrow><Check size={12} /> FOLLOW-THROUGH</Eyebrow>
+    <p className="og-note">From what actually happened after introductions, reported by both sides. Shown in bands, never exact numbers{rec.sample ? ` · ${rec.sample} accepted introductions` : ''}.</p>
+    <ul>
+      <li><span>{bandLine(rec.accepts_introductions, 'introduction requests accepted')}</span></li>
+      <li><span>{bandLine(rec.introductions_lead_to_meetings, 'accepted introductions led to a meeting')}</span></li>
+      <li><span>{bandLine(rec.introductions_lead_to_outcomes, 'accepted introductions produced an outcome')}</span></li>
+    </ul>
+    {rec.is_self && <label className="og-check"><input type="checkbox" checked={Boolean(rec.shown_on_profile)} onChange={() => void toggle()} /> Show my follow-through record to other members</label>}
+    {error && <p className="og-note">{error}</p>}
+  </div>
 }
