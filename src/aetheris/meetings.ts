@@ -63,6 +63,47 @@ export async function loadRoster(meetingId: string): Promise<Pick<Participant, '
   return ((r.data ?? []) as any[]).map(p => ({ userId: p.user_id, notesConsent: p.notes_consent }))
 }
 
+export interface RoomState {
+  roster: Pick<Participant, 'userId' | 'name' | 'notesConsent'>[]
+  recordingSince: string | null
+  recordingBy: string | null
+  endedAt: string | null
+}
+
+/** Who is in the meeting, who has notes on, and whether it is being recorded. Polled while in the room. */
+export async function loadRoomState(meetingId: string): Promise<RoomState | null> {
+  const [m, r] = await Promise.all([
+    db.from('meetings').select('recording_started_at, recording_started_by, ended_at').eq('id', meetingId).maybeSingle(),
+    db.from('meeting_participants').select('user_id, notes_consent').eq('meeting_id', meetingId),
+  ])
+  if (m.error && r.error) return null
+  const rows = (r.data ?? []) as any[]
+  const names = new Map<string, string>()
+  if (rows.length) {
+    const p = await db.from('profiles').select('id, name').in('id', rows.map(x => x.user_id))
+    for (const row of p.data ?? []) names.set(row.id, row.name || 'A member')
+  }
+  return {
+    roster: rows.map(x => ({ userId: x.user_id, name: names.get(x.user_id) ?? 'A member', notesConsent: x.notes_consent })),
+    // Before migration 0039 these columns do not exist: treat as not recording.
+    recordingSince: m.error ? null : m.data?.recording_started_at ?? null,
+    recordingBy: m.error ? null : m.data?.recording_started_by ?? null,
+    endedAt: m.data?.ended_at ?? null,
+  }
+}
+
+/** Start or stop recording for the meeting. Starting also turns your own notes on. */
+export async function setMeetingRecording(meetingId: string, on: boolean): Promise<string> {
+  const r = await db.rpc('set_meeting_recording', { p_meeting: meetingId, p_on: on })
+  return r.error?.message ?? ''
+}
+
+/** The host adds a member to the meeting; they are notified and can join straight away. */
+export async function inviteToMeeting(meetingId: string, userId: string): Promise<string> {
+  const r = await db.rpc('invite_to_meeting', { p_meeting: meetingId, p_user: userId })
+  return r.error?.message ?? ''
+}
+
 export async function createMeeting(title: string, invitees: string[], scheduledFor: string | null, extra: { agenda?: string; introId?: string | null } = {}): Promise<{ id: string | null; error: string }> {
   const r = await db.rpc('create_meeting', { p_title: title, p_invitees: invitees, p_scheduled_for: scheduledFor, p_agenda: extra.agenda ?? '', p_intro: extra.introId ?? null })
   return { id: (r.data as string | null) ?? null, error: r.error?.message ?? '' }

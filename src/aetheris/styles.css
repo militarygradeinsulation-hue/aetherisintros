@@ -5246,3 +5246,22 @@ button.news-link{background:none;border:0;padding:0;cursor:pointer}
 .executive-linkedin{display:inline-block;margin-top:6px;font:600 11px var(--sans);letter-spacing:.06em;color:var(--cobalt-bright);text-decoration:none}
 .executive-linkedin:hover{text-decoration:underline}
 @media (max-width:900px){.linkedin-import input,.linkedin-import textarea{font-size:16px}.linkedin-steps{grid-template-columns:1fr}.linkedin-import.closed{grid-template-columns:1fr}.linkedin-review{grid-template-columns:1fr}}
+/* Meetings: camera check, Record, consent and in-call invites (meetings-ui.tsx) */
+.meeting-lobby-body{display:grid;grid-template-columns:minmax(0,1.4fr) minmax(0,1fr);gap:20px;align-items:start}
+.meeting-lobby-side{display:grid;gap:14px;align-content:start}
+.meeting-lobby-side>p{margin:0;font:400 14px/1.6 var(--sans);color:var(--muted)}
+.meeting-pill{display:inline-flex;align-items:center;gap:7px;min-height:38px;padding:0 14px;border:1px solid var(--line-dark);border-radius:999px;background:var(--raised);color:var(--soft);font:500 12px var(--sans);cursor:pointer}
+.meeting-pill[aria-pressed="true"]{color:var(--muted);background:rgba(255,255,255,.06)}
+.meeting-pill:disabled{opacity:.45;cursor:default}
+.meeting-controls button.record .dot,.meeting-recording-badge .dot{width:10px;height:10px;border-radius:50%;background:#E5484D;display:inline-block;flex:none}
+.meeting-controls button.record.on{border-color:#E5484D;color:#FFB4B4;background:rgba(229,72,77,.12)}
+.meeting-controls button.record.on .dot,.meeting-recording-badge .dot{animation:meeting-rec 1.4s ease-in-out infinite}
+.meeting-controls button:disabled{opacity:.5;cursor:default}
+@keyframes meeting-rec{50%{opacity:.25}}
+@media (prefers-reduced-motion:reduce){.meeting-controls button.record.on .dot,.meeting-recording-badge .dot{animation:none}}
+.meeting-recording-badge{display:inline-flex;align-items:center;gap:8px;padding:6px 12px;border:1px solid rgba(229,72,77,.55);border-radius:999px;color:#FFB4B4;font-size:12px}
+.meeting-consent-ask{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:12px;padding:12px 14px;border:1px solid rgba(229,72,77,.45);border-radius:10px;background:rgba(229,72,77,.08)}
+.meeting-consent-ask p{margin:0;font-size:13px;line-height:1.5}
+.meeting-invite{display:grid;gap:10px;padding:12px;border:1px solid var(--line-dark);border-radius:10px}
+.meeting-invite>b{display:flex;align-items:center;gap:6px;font-size:13px}
+@media (max-width:820px){.meeting-lobby-body{grid-template-columns:1fr}}

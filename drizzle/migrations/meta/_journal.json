@@ -274,6 +274,13 @@
       "when": 1791462859383,
       "tag": "0038_profile_linkedin_url",
       "breakpoints": true
+    },
+    {
+      "idx": 39,
+      "version": "7",
+      "when": 1791463159383,
+      "tag": "0039_meeting_recording",
+      "breakpoints": true
     }
   ]
 }

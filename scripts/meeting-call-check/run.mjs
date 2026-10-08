@@ -58,6 +58,43 @@ const d = await context.newPage(); await d.goto(`${base}?user=user-d`)
 ok(await waitFor(d, connectedTo, 2) && await waitFor(a, connectedTo, 2), 'a late joiner connects to everyone already there')
 if (process.env.DEBUG) for (const [n, p] of [['a', a], ['b', b], ['d', d]]) console.log(n, JSON.stringify(await peersOf(p)), await p.evaluate(() => window.__status))
 
+// The note recorder, in a browser whose fake microphone plays speech-like sound
+// (syllable-length bursts of tone) instead of the default once-a-second beep.
+console.log('note recorder')
+const wav = join(out, 'speech.wav')
+{
+  const rate = 48000, seconds = 12, n = rate * seconds
+  const data = Buffer.alloc(44 + n * 2)
+  data.write('RIFF', 0); data.writeUInt32LE(36 + n * 2, 4); data.write('WAVEfmt ', 8); data.writeUInt32LE(16, 16)
+  data.writeUInt16LE(1, 20); data.writeUInt16LE(1, 22); data.writeUInt32LE(rate, 24); data.writeUInt32LE(rate * 2, 28)
+  data.writeUInt16LE(2, 32); data.writeUInt16LE(16, 34); data.write('data', 36); data.writeUInt32LE(n * 2, 40)
+  for (let i = 0; i < n; i++) {
+    const t = i / rate, syllable = (t % 0.35) < 0.25 ? 1 : 0
+    data.writeInt16LE(Math.round(syllable * 0.3 * Math.sin(2 * Math.PI * (180 + 40 * Math.sin(t * 3)) * t) * 32767), 44 + i * 2)
+  }
+  writeFileSync(wav, data)
+}
+const speaking = await chromium.launch({
+  executablePath: process.env.CHROMIUM ?? '/opt/pw-browsers/chromium',
+  args: ['--use-fake-ui-for-media-stream', '--use-fake-device-for-media-stream', `--use-file-for-fake-audio-capture=${wav}`],
+})
+const s = await (await speaking.newContext({ permissions: ['camera', 'microphone'] })).newPage()
+await s.goto(`${base}?user=user-s`)
+await waitFor(s, () => !!window.__local)
+await s.evaluate(() => { window.__stopRec = window.__record(2000) })
+ok(await waitFor(s, () => window.__clips.length >= 2, null, 15000), 'records the microphone in back-to-back clips while someone speaks')
+let clips = await s.evaluate(() => window.__clips)
+ok(clips.length > 0 && clips.every(c => c.size > 1000 && /^audio\/(webm|mp4|ogg)/.test(c.type)), `each clip is real audio (${clips.map(c => `${c.type.split(';')[0]} ${c.size}B, ${c.voicedMs}ms speech`).join('; ')})`)
+ok(clips.length > 0 && clips.every(c => c.head === '1a45dfa3' || c.type.startsWith('audio/mp4')), 'every clip is a complete file on its own, so each can be transcribed separately')
+await s.evaluate(() => { window.__local.getAudioTracks().forEach(t => { t.enabled = false }) })
+await s.waitForTimeout(2500)
+await s.evaluate(() => { window.__clips = [] })
+await s.waitForTimeout(4500)
+clips = await s.evaluate(() => window.__clips)
+ok(clips.length === 0, 'nothing is sent while muted: silent clips are dropped in the browser')
+await s.evaluate(() => { window.__stopRec() })
+await speaking.close()
+
 await browser.close()
 server.close()
 console.log(`\n${failed ? `${failed} failed` : 'all passed'}`)
