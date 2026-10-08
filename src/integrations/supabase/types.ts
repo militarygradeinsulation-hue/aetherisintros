@@ -2359,8 +2359,59 @@ export type Database = {
           },
         ]
       }
+      intro_outcomes: {
+        Row: {
+          attribution: string
+          author_id: string
+          created_at: string
+          id: string
+          intro_request_id: string
+          occurred_on: string
+          outcome_category: string | null
+          private_note: string
+          shareable: boolean
+          stage: string
+          value_band: string
+        }
+        Insert: {
+          attribution?: string
+          author_id?: string
+          created_at?: string
+          id?: string
+          intro_request_id: string
+          occurred_on?: string
+          outcome_category?: string | null
+          private_note?: string
+          shareable?: boolean
+          stage: string
+          value_band?: string
+        }
+        Update: {
+          attribution?: string
+          author_id?: string
+          created_at?: string
+          id?: string
+          intro_request_id?: string
+          occurred_on?: string
+          outcome_category?: string | null
+          private_note?: string
+          shareable?: boolean
+          stage?: string
+          value_band?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "intro_outcomes_intro_request_id_fkey"
+            columns: ["intro_request_id"]
+            isOneToOne: false
+            referencedRelation: "intro_requests"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       intro_requests: {
         Row: {
+          accepted_at: string | null
           created_at: string
           id: string
           member_id: string
@@ -2374,6 +2425,7 @@ export type Database = {
           user_id: string
         }
         Insert: {
+          accepted_at?: string | null
           created_at?: string
           id?: string
           member_id: string
@@ -2387,6 +2439,7 @@ export type Database = {
           user_id: string
         }
         Update: {
+          accepted_at?: string | null
           created_at?: string
           id?: string
           member_id?: string
@@ -3995,6 +4048,7 @@ export type Database = {
         }
         Returns: boolean
       }
+      intro_member_uuid: { Args: { p_member_id: string }; Returns: string }
       invite_preview: {
         Args: { p_code: string }
         Returns: {
@@ -4048,6 +4102,24 @@ export type Database = {
           status: string
         }[]
       }
+      my_due_outcome_checkins: {
+        Args: never
+        Returns: {
+          accepted_at: string
+          checkpoint: number
+          counterpart_id: string
+          days_since: number
+          intro_request_id: string
+          last_stage: string
+        }[]
+      }
+      my_intro_outcome_notes: {
+        Args: never
+        Returns: {
+          id: string
+          private_note: string
+        }[]
+      }
       my_invite_code: { Args: never; Returns: string }
       my_top_connections: {
         Args: never
@@ -4078,6 +4150,7 @@ export type Database = {
         Returns: Json
       }
       network_health: { Args: never; Returns: Json }
+      network_proof_metrics: { Args: { p_days?: number }; Returns: Json }
       nudge_incomplete_onboarding: { Args: never; Returns: number }
       owns_entity: { Args: { p_id: string; p_type: string }; Returns: boolean }
       purge_verification_proof: { Args: never; Returns: number }
