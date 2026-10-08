@@ -1,0 +1,26 @@
+# Emails membership cards still waiting to be sent, every 30 minutes. Cards normally go out
+# the moment an admin verifies someone or the member next opens the app; this catches the rest.
+# Uses the same repository secrets as the weekly digest: DIGEST_URL (its origin is used) and
+# CRON_SECRET. Without them it does nothing.
+name: Membership cards
+on:
+  schedule:
+    - cron: '*/30 * * * *'
+  workflow_dispatch:
+permissions: {}
+jobs:
+  send:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Send waiting membership cards
+        env:
+          DIGEST_URL: ${{ secrets.DIGEST_URL }}
+          CRON_SECRET: ${{ secrets.CRON_SECRET }}
+        run: |
+          if [ -z "$DIGEST_URL" ] || [ -z "$CRON_SECRET" ]; then
+            echo "::notice::DIGEST_URL or CRON_SECRET is not set; skipping."
+            exit 0
+          fi
+          ORIGIN=$(printf '%s' "$DIGEST_URL" | sed -E 's#^(https?://[^/]+).*#\1#')
+          curl -fsS -X POST -H "Authorization: Bearer $CRON_SECRET" "$ORIGIN/api/cron/membership-cards"

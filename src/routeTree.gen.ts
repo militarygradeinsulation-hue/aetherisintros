@@ -27,8 +27,10 @@ import { Route as PassportTokenRouteImport } from './routes/passport.$token'
 import { Route as DotlovableOauthConsentRouteImport } from './routes/[.]lovable.oauth.consent'
 import { Route as AuthenticatedAdminEarlyAccessRouteImport } from './routes/_authenticated/admin.early-access'
 import { Route as AuthenticatedAdminVerificationRouteImport } from './routes/_authenticated/admin.verification'
+import { Route as ApiCronMembershipCardsRouteImport } from './routes/api/cron/membership-cards'
 import { Route as ApiCronWeeklyDigestRouteImport } from './routes/api/cron/weekly-digest'
 import { Route as ApiPublicDigestUnsubscribeRouteImport } from './routes/api/public/digest-unsubscribe'
+import { Route as ApiPublicMembershipCardRouteImport } from './routes/api/public/membership-card'
 import { Route as ApiPublicNewsImageRouteImport } from './routes/api/public/news-image'
 import { Route as ApiPublicSeedNetworkRouteImport } from './routes/api/public/seed-network'
 
@@ -124,6 +126,11 @@ const AuthenticatedAdminVerificationRoute =
     path: '/admin/verification',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const ApiCronMembershipCardsRoute = ApiCronMembershipCardsRouteImport.update({
+  id: '/api/cron/membership-cards',
+  path: '/api/cron/membership-cards',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiCronWeeklyDigestRoute = ApiCronWeeklyDigestRouteImport.update({
   id: '/api/cron/weekly-digest',
   path: '/api/cron/weekly-digest',
@@ -135,6 +142,11 @@ const ApiPublicDigestUnsubscribeRoute =
     path: '/api/public/digest-unsubscribe',
     getParentRoute: () => rootRouteImport,
   } as any)
+const ApiPublicMembershipCardRoute = ApiPublicMembershipCardRouteImport.update({
+  id: '/api/public/membership-card',
+  path: '/api/public/membership-card',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiPublicNewsImageRoute = ApiPublicNewsImageRouteImport.update({
   id: '/api/public/news-image',
   path: '/api/public/news-image',
@@ -164,8 +176,10 @@ export interface FileRoutesByFullPath {
   '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
   '/admin/early-access': typeof AuthenticatedAdminEarlyAccessRoute
   '/admin/verification': typeof AuthenticatedAdminVerificationRoute
+  '/api/cron/membership-cards': typeof ApiCronMembershipCardsRoute
   '/api/cron/weekly-digest': typeof ApiCronWeeklyDigestRoute
   '/api/public/digest-unsubscribe': typeof ApiPublicDigestUnsubscribeRoute
+  '/api/public/membership-card': typeof ApiPublicMembershipCardRoute
   '/api/public/news-image': typeof ApiPublicNewsImageRoute
   '/api/public/seed-network': typeof ApiPublicSeedNetworkRoute
 }
@@ -187,8 +201,10 @@ export interface FileRoutesByTo {
   '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
   '/admin/early-access': typeof AuthenticatedAdminEarlyAccessRoute
   '/admin/verification': typeof AuthenticatedAdminVerificationRoute
+  '/api/cron/membership-cards': typeof ApiCronMembershipCardsRoute
   '/api/cron/weekly-digest': typeof ApiCronWeeklyDigestRoute
   '/api/public/digest-unsubscribe': typeof ApiPublicDigestUnsubscribeRoute
+  '/api/public/membership-card': typeof ApiPublicMembershipCardRoute
   '/api/public/news-image': typeof ApiPublicNewsImageRoute
   '/api/public/seed-network': typeof ApiPublicSeedNetworkRoute
 }
@@ -212,8 +228,10 @@ export interface FileRoutesById {
   '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
   '/_authenticated/admin/early-access': typeof AuthenticatedAdminEarlyAccessRoute
   '/_authenticated/admin/verification': typeof AuthenticatedAdminVerificationRoute
+  '/api/cron/membership-cards': typeof ApiCronMembershipCardsRoute
   '/api/cron/weekly-digest': typeof ApiCronWeeklyDigestRoute
   '/api/public/digest-unsubscribe': typeof ApiPublicDigestUnsubscribeRoute
+  '/api/public/membership-card': typeof ApiPublicMembershipCardRoute
   '/api/public/news-image': typeof ApiPublicNewsImageRoute
   '/api/public/seed-network': typeof ApiPublicSeedNetworkRoute
 }
@@ -237,8 +255,10 @@ export interface FileRouteTypes {
     | '/.lovable/oauth/consent'
     | '/admin/early-access'
     | '/admin/verification'
+    | '/api/cron/membership-cards'
     | '/api/cron/weekly-digest'
     | '/api/public/digest-unsubscribe'
+    | '/api/public/membership-card'
     | '/api/public/news-image'
     | '/api/public/seed-network'
   fileRoutesByTo: FileRoutesByTo
@@ -260,8 +280,10 @@ export interface FileRouteTypes {
     | '/.lovable/oauth/consent'
     | '/admin/early-access'
     | '/admin/verification'
+    | '/api/cron/membership-cards'
     | '/api/cron/weekly-digest'
     | '/api/public/digest-unsubscribe'
+    | '/api/public/membership-card'
     | '/api/public/news-image'
     | '/api/public/seed-network'
   id:
@@ -284,8 +306,10 @@ export interface FileRouteTypes {
     | '/.lovable/oauth/consent'
     | '/_authenticated/admin/early-access'
     | '/_authenticated/admin/verification'
+    | '/api/cron/membership-cards'
     | '/api/cron/weekly-digest'
     | '/api/public/digest-unsubscribe'
+    | '/api/public/membership-card'
     | '/api/public/news-image'
     | '/api/public/seed-network'
   fileRoutesById: FileRoutesById
@@ -303,8 +327,10 @@ export interface RootRouteChildren {
   InviteCodeRoute: typeof InviteCodeRoute
   PassportTokenRoute: typeof PassportTokenRoute
   DotlovableOauthConsentRoute: typeof DotlovableOauthConsentRoute
+  ApiCronMembershipCardsRoute: typeof ApiCronMembershipCardsRoute
   ApiCronWeeklyDigestRoute: typeof ApiCronWeeklyDigestRoute
   ApiPublicDigestUnsubscribeRoute: typeof ApiPublicDigestUnsubscribeRoute
+  ApiPublicMembershipCardRoute: typeof ApiPublicMembershipCardRoute
   ApiPublicNewsImageRoute: typeof ApiPublicNewsImageRoute
   ApiPublicSeedNetworkRoute: typeof ApiPublicSeedNetworkRoute
 }
@@ -437,6 +463,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminVerificationRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/api/cron/membership-cards': {
+      id: '/api/cron/membership-cards'
+      path: '/api/cron/membership-cards'
+      fullPath: '/api/cron/membership-cards'
+      preLoaderRoute: typeof ApiCronMembershipCardsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/cron/weekly-digest': {
       id: '/api/cron/weekly-digest'
       path: '/api/cron/weekly-digest'
@@ -449,6 +482,13 @@ declare module '@tanstack/react-router' {
       path: '/api/public/digest-unsubscribe'
       fullPath: '/api/public/digest-unsubscribe'
       preLoaderRoute: typeof ApiPublicDigestUnsubscribeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/public/membership-card': {
+      id: '/api/public/membership-card'
+      path: '/api/public/membership-card'
+      fullPath: '/api/public/membership-card'
+      preLoaderRoute: typeof ApiPublicMembershipCardRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/api/public/news-image': {
@@ -503,8 +543,10 @@ const rootRouteChildren: RootRouteChildren = {
   InviteCodeRoute: InviteCodeRoute,
   PassportTokenRoute: PassportTokenRoute,
   DotlovableOauthConsentRoute: DotlovableOauthConsentRoute,
+  ApiCronMembershipCardsRoute: ApiCronMembershipCardsRoute,
   ApiCronWeeklyDigestRoute: ApiCronWeeklyDigestRoute,
   ApiPublicDigestUnsubscribeRoute: ApiPublicDigestUnsubscribeRoute,
+  ApiPublicMembershipCardRoute: ApiPublicMembershipCardRoute,
   ApiPublicNewsImageRoute: ApiPublicNewsImageRoute,
   ApiPublicSeedNetworkRoute: ApiPublicSeedNetworkRoute,
 }

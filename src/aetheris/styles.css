@@ -5191,3 +5191,16 @@ button.news-link{background:none;border:0;padding:0;cursor:pointer}
 .leak-rank{display:grid;place-items:center;width:26px;height:26px;border-radius:50%;border:1px solid rgba(245,176,39,.6);color:#F5B027;font-size:12px}
 .leak-finding > div > button,.leak-finding .capws-route li button{display:inline-flex;align-items:center;gap:6px;width:auto;border:1px solid rgba(245,176,39,.5);background:transparent;color:#F5B027;border-radius:7px;padding:6px 11px;font-size:13px;cursor:pointer}
 .leak-finding .capws-route li button{border-color:var(--line-dark);color:var(--soft);padding:4px 9px;font-size:12px;justify-self:start}
+/* Membership card on a member profile (membership-card-ui.tsx) */
+.membership-card-panel{display:grid;grid-template-columns:minmax(0,520px) minmax(0,1fr);gap:28px;align-items:center;margin:28px 0 8px}
+.membership-card-meta{display:grid;gap:14px;align-content:center;min-width:0}
+.membership-card-meta>p{margin:0;display:grid;grid-template-columns:auto 1fr;column-gap:8px;row-gap:4px;align-items:center}
+.membership-card-meta>p svg{color:var(--cobalt-bright)}
+.membership-card-meta>p b{font:500 22px/1.1 var(--serif);color:var(--soft)}
+.membership-card-meta>p span{grid-column:1/-1;font:400 12px/1.55 var(--sans);color:var(--muted)}
+.membership-card-meta>p.revoked b{color:var(--danger)}
+.membership-card-meta .membership-card-code{display:flex;flex-direction:column;gap:4px}
+.membership-card-meta .membership-card-code span{font:700 9px var(--sans);letter-spacing:.2em;color:var(--muted);text-transform:uppercase}
+.membership-card-meta .membership-card-code b{font:500 20px var(--serif);letter-spacing:.12em;color:var(--soft)}
+.membership-card-meta .chip{justify-self:start;display:inline-flex;align-items:center;gap:6px}
+@media (max-width:760px){.membership-card-panel{grid-template-columns:1fr;gap:18px}}

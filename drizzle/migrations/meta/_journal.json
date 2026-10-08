@@ -260,6 +260,13 @@
       "when": 1791462259383,
       "tag": "0036_leak_checks",
       "breakpoints": true
+    },
+    {
+      "idx": 37,
+      "version": "7",
+      "when": 1791462559383,
+      "tag": "0037_membership_cards",
+      "breakpoints": true
     }
   ]
 }

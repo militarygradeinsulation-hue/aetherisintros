@@ -16,6 +16,7 @@ import { CeoActions, HealthBadge, TrustPassportSummary } from './ceo-ui'
 import { MarkButtons } from './ceo-insights-ui'
 import { IntroWorkflow, MeetingBriefPanel, ReverseDiscoveryPanel, RoutingPanel, TrustPanel, WeatherPanel } from './opportunity-ui'
 import { FollowThroughPanel } from './outcomes-ui'
+import { MembershipCardPanel } from './membership-card-ui'
 
 export const OPEN_TO_OPTIONS = [
   'Customer conversations', 'Strategic partnerships', 'Investment conversations',
@@ -174,6 +175,8 @@ export function ExecutivePage({ person, onClose, onIntro, onMessage }: {
           {canSchedule && <Btn kind="secondary" onClick={() => setScheduleOpen(true)}><CalendarDays size={15} /> Find a time</Btn>}</div>
       </div>
     </header>
+
+    <MembershipCardPanel memberId={person.id} />
 
     <section className="executive-why" aria-label="Relationship intelligence">
       <article><Eyebrow>WHY THEM</Eyebrow><p>{match?.components[0]?.evidence || person.whyThem || 'No evidence-backed relevance recorded yet.'}</p></article>
