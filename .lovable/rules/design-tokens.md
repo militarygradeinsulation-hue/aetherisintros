@@ -53,3 +53,13 @@ Border-radius classes:
 | `rounded-4xl` | `--radius-4xl` |
 | `rounded` | `--radius` |
 
+## Other
+
+Reference via `var(--name)` in inline styles or CSS.
+
+| CSS variable |
+|---|
+| `--ambient-opacity` |
+| `--ambient-number-opacity` |
+| `--ambient-link-opacity` |
+
