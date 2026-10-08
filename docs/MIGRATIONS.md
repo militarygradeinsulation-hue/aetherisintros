@@ -6,3 +6,5 @@
 - Every new public table ships in the same migration with: explicit GRANTs (minimum needed), RLS enabled, owner-scoped policies, no authenticated TRUNCATE/REFERENCES/TRIGGER, and immutable identity columns (`freeze_columns`).
 - Data fixes go through data queries, not migrations (except backfills belonging to an additive schema change).
 - Every new migration ships with a suite in `scripts/migration-checks/` that exercises its RLS, grants, triggers and RPCs as `authenticated` and `anon`; run it before pushing.
+- No schema change is made by running SQL directly against the live database. Objects created that way (found on 2026-10-08: 19 functions, 25 triggers, `events`, `members_base`, the `members` view) were invisible to review and shipped with public access; they are now recorded in `0029` and locked down in `0030`. If an emergency fix is ever applied directly, record it as a migration the same day.
+- Every `SECURITY DEFINER` function either checks the caller (`auth.uid()` or `is_admin()`) or has EXECUTE revoked from `PUBLIC`, `anon` and `authenticated`. Supabase grants EXECUTE to everyone by default.

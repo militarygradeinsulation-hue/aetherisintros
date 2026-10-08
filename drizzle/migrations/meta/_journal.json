@@ -204,6 +204,20 @@
       "when": 1791459859383,
       "tag": "0028_stale_intro_requests",
       "breakpoints": true
+    },
+    {
+      "idx": 29,
+      "version": "7",
+      "when": 1791460159383,
+      "tag": "0029_record_live_database_objects",
+      "breakpoints": true
+    },
+    {
+      "idx": 30,
+      "version": "7",
+      "when": 1791460459383,
+      "tag": "0030_lock_down_live_only_objects",
+      "breakpoints": true
     }
   ]
 }

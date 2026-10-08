@@ -11,7 +11,7 @@ schema dump is needed.
     node <repo>/scripts/migration-checks/run.mjs            # every suite
     node <repo>/scripts/migration-checks/run.mjs cohorts    # one suite by name prefix
 
-`BASE` also carries objects that exist only in production (created outside these migrations), copied from the live schema: `set_intro_target`, `notify_intro_activity`, `relationships`, `follows`, `dm_threads`, `dm_messages` and the live notification insert policy. Re-check them against production when it changes.
+`BASE` also carries objects that exist only in production (created outside these migrations), copied from the live schema: `set_intro_target`, `notify_intro_activity`, `relationships`, `follows`, `dm_threads`, `dm_messages` and the live notification insert policy. Since 0029 the remaining live-only functions, triggers, `events`, `members_base` and the `members` view are recorded as a migration; `BASE` holds just the tables they touch, and grants new tables to `anon` and `authenticated` the way Supabase's default privileges do. Re-check against production when it changes.
 
 Pin PGlite 0.2.x: the 0.3.x builds tested here crash on `RAISE` inside PL/pgSQL.
 
@@ -24,6 +24,7 @@ Pin PGlite 0.2.x: the 0.3.x builds tested here crash on `RAISE` inside PL/pgSQL.
 | `notifications` | 0026 | production intro trigger kept (notice + connection on acceptance), message and follow notices, no client-written notifications, mark-read scope |
 | `ask-responses` | 0027 | backfill of stale counts, count follows replies added and withdrawn, no tampering via others' replies or by editing the ask |
 | `stale-intros` | 0028 | pending list scoped to the requester, one reminder after five days (requester only, private ledger), withdrawal of unanswered requests, accepted introductions and their outcomes cannot be deleted |
+| `live-objects` | 0029, 0030 | operator functions closed to anon and members, match reasoning only for the viewer, directory writable by the service role only, events private to their owner, recorded live triggers (directory sync, fact supersede, ask stamping, demo-intro block) still work |
 
 Run after any change to these migrations, and add a suite with each new one. The live-schema
 harness in `scripts/security-harness` remains the check against the real dumped schema.

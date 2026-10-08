@@ -24,19 +24,26 @@ const ADMIN = '00000000-0000-4000-8000-0000000000ad'
 const BASE = `
 create role anon nologin; create role authenticated nologin; create role service_role nologin bypassrls;
 create schema auth;
-create table auth.users (id uuid primary key);
+create table auth.users (id uuid primary key, email text, email_confirmed_at timestamptz, last_sign_in_at timestamptz, raw_user_meta_data jsonb not null default '{}');
 create function auth.uid() returns uuid language sql stable as $$ select nullif(current_setting('request.jwt.claim.sub', true), '')::uuid $$;
 grant usage on schema auth to authenticated, anon, service_role;
 grant execute on function auth.uid() to authenticated, anon, service_role;
 grant usage on schema public to authenticated, anon, service_role;
+-- Supabase's defaults: every new public table is granted to anon and authenticated, so a
+-- migration that forgets to revoke is tested with the access it would really have.
+alter default privileges in schema public grant all on tables to anon, authenticated, service_role;
 
 create function public.touch_updated_at() returns trigger language plpgsql as $$ begin new.updated_at := now(); return new; end $$;
 create function public.freeze_columns() returns trigger language plpgsql set search_path = public as $$
 declare c text; begin if auth.uid() is null then return new; end if;
 foreach c in array tg_argv loop if (to_jsonb(new) -> c) is distinct from (to_jsonb(old) -> c) then raise exception 'Column % cannot be changed after creation', c using errcode = '42501'; end if; end loop; return new; end $$;
 
-create table public.profiles (id uuid primary key references auth.users on delete cascade, name text not null default '', onboarded boolean not null default false);
-create table public.asks (id text primary key, author_id uuid references auth.users, ask text not null, is_demo boolean not null default false, response_count int not null default 0, created_at timestamptz not null default now());
+create table public.profiles (id uuid primary key references auth.users on delete cascade, name text not null default '', onboarded boolean not null default false,
+  email text, initials text, title text, company text, location text, focus text, thesis text, bio text, looking_for text, can_help_with text,
+  availability text, industries text[], expertise text[], what_i_do text, created_at timestamptz not null default now(), updated_at timestamptz not null default now());
+create table public.asks (id text primary key, author_id uuid references auth.users, ask text not null, is_demo boolean not null default false, response_count int not null default 0, created_at timestamptz not null default now(),
+  member_id text, posted text not null default '', urgency text not null default 'medium', industry text not null default '', visibility text not null default 'network');
+revoke all on public.asks from anon, authenticated;
 grant select, insert, update on public.asks to authenticated;
 alter table public.asks enable row level security;
 create policy "asks readable" on public.asks for select to authenticated using (true);
@@ -135,6 +142,31 @@ begin
   return new;
 end $$;
 create trigger intro_requests_notify after insert or update on public.intro_requests for each row execute function notify_intro_activity();
+
+-- Tables the live-only objects recorded in 0029 read and write (columns they use).
+create type public.verification_status as enum ('pending','scanning','manual_review','needs_more_proof','verified','rejected','suspended');
+create table public.member_verifications (id uuid primary key default gen_random_uuid(), user_id uuid not null unique, status public.verification_status not null default 'pending',
+  verification_level int not null default 0, legal_name text, display_name text, business_name text, work_email text, business_domain text, professional_url text,
+  decision_reason text, risk_flags jsonb not null default '[]', submitted_at timestamptz, scanned_at timestamptz, verified_at timestamptz, updated_at timestamptz not null default now());
+create table public.memories (id uuid primary key default gen_random_uuid(), user_id uuid not null, member_id text, kind text not null default 'learning', category text not null default '',
+  text text not null, source text not null default '', confidence int not null default 100, scope text not null default 'private', when_label text not null default '', created_at timestamptz not null default now());
+create table public.posts (id text primary key, member_id text, author_id uuid, kind text not null default 'Insight', text text not null, when_label text not null default '', created_at timestamptz not null default now(), is_demo boolean not null default false);
+create table public.members (id text primary key, name text not null, initials text not null, title text not null, company text not null, location text not null, role text not null, industry text not null,
+  bio text not null default '', tags text[] not null default '{}', expertise text[] not null default '{}', needs text[] not null default '{}', offers text[] not null default '{}',
+  focus text not null default '', thesis text not null default '', availability text not null default '', mutuals text[] not null default '{}', last_interaction_days int not null default 0,
+  relationship_status text not null default 'new', score jsonb not null default '{}', score_total int not null default 0, radar text not null default 'unknown_path',
+  why_them text not null default '', why_you text not null default '', why_now text not null default '', best_path text[] not null default '{}', next_action text not null default '',
+  dont_do text not null default '', confidence int not null default 0, opportunity_low int, opportunity_high int, intro_state text not null default 'recommended',
+  joined text not null default '2025', created_at timestamptz not null default now(), is_demo boolean not null default true);
+create table public.crm_activities (id uuid primary key default gen_random_uuid(), owner_id uuid);
+create table public.crm_companies (id uuid primary key default gen_random_uuid(), owner_id uuid);
+create table public.crm_notes (id uuid primary key default gen_random_uuid(), owner_id uuid);
+create table public.crm_opportunities (id uuid primary key default gen_random_uuid(), owner_id uuid);
+create table public.crm_people (id uuid primary key default gen_random_uuid(), owner_id uuid);
+create table public.crm_tasks (id uuid primary key default gen_random_uuid(), owner_id uuid);
+create function public.is_live_member() returns boolean language sql stable security definer set search_path = public as $$ select exists (select 1 from public.profiles where id = auth.uid()) $$;
+revoke all on function public.is_live_member() from public, anon;
+grant execute on function public.is_live_member() to authenticated;
 
 create table public.invitations (id uuid primary key default gen_random_uuid(), code text not null unique, email text, max_uses integer not null default 1, uses integer not null default 0, expires_at timestamptz, revoked boolean not null default false, created_by uuid, created_at timestamptz not null default now());
 create table public.early_access_members (id uuid primary key default gen_random_uuid(), user_id uuid not null unique, email text not null, status text not null default 'pending', invite_id uuid);
