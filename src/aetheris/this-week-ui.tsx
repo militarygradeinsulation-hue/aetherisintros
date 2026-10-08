@@ -3,6 +3,8 @@
  * member, each with one button. Renders nothing for signed-out or demo visitors.
  */
 import { useEffect, useState } from 'react'
+
+import { supabase } from '@/integrations/supabase/client'
 import { ArrowRight, Building2, CheckCircle2, Clock, HandHelping, Hourglass, MessageSquareReply } from 'lucide-react'
 
 import { buildWeek, loadWeekInputs, type WeekItem, type WeekKind, type WeekTarget } from './this-week'
@@ -40,5 +42,37 @@ export function ThisWeekPanel({ onOpen }: { onOpen: (target: WeekTarget) => void
       </li>
     })}</ol>}
     {error && <p className="tw-error">Some items could not load: {error}</p>}
+    <DigestToggle />
   </section>
+}
+
+/** Opt in to receiving this list by email every Monday (off by default). */
+function DigestToggle() {
+  const [uid, setUid] = useState<string | null>(null)
+  const [on, setOn] = useState<boolean | null>(null)
+  const [busy, setBusy] = useState(false)
+  useEffect(() => {
+    let stale = false
+    void (async () => {
+      const { data } = await supabase.auth.getSession()
+      const id = data.session?.user.id ?? null
+      if (stale || !id) return
+      setUid(id)
+      const r = await (supabase as any).from('email_preferences').select('weekly_digest').eq('user_id', id).maybeSingle() // eslint-disable-line @typescript-eslint/no-explicit-any
+      if (!stale) setOn(!!r.data?.weekly_digest)
+    })()
+    return () => { stale = true }
+  }, [])
+  if (!uid || on === null) return null
+  const toggle = async () => {
+    setBusy(true)
+    const db = supabase as any // eslint-disable-line @typescript-eslint/no-explicit-any
+    const existing = await db.from('email_preferences').select('user_id').eq('user_id', uid).maybeSingle()
+    const r = existing.data
+      ? await db.from('email_preferences').update({ weekly_digest: !on }).eq('user_id', uid)
+      : await db.from('email_preferences').insert({ user_id: uid, weekly_digest: !on })
+    if (!r.error) setOn(!on)
+    setBusy(false)
+  }
+  return <label className="tw-digest"><input type="checkbox" checked={on} disabled={busy} onChange={() => void toggle()} /> Email me this every Monday morning</label>
 }

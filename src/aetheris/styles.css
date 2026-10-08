@@ -5163,3 +5163,5 @@ button.news-link{background:none;border:0;padding:0;cursor:pointer}
 .meeting-reminder button{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line-dark,rgba(255,255,255,.12));background:transparent;color:inherit;border-radius:8px;padding:6px 10px;cursor:pointer}
 .meeting-reminder button.join{background:#F5B027;border-color:#F5B027;color:#0B0E13;font-weight:600}
 .cal-join{margin:4px 0 0 18px;border:1px solid rgba(245,176,39,.6);background:transparent;color:#F5B027;border-radius:7px;padding:4px 10px;font-size:12px;cursor:pointer}
+.tw-digest{display:flex;align-items:center;gap:8px;margin-top:12px;font-size:12px;color:var(--muted);cursor:pointer}
+.tw-digest input{accent-color:#F5B027}

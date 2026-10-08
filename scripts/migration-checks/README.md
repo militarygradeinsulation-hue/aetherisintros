@@ -28,6 +28,7 @@ Pin PGlite 0.2.x: the 0.3.x builds tested here crash on `RAISE` inside PL/pgSQL.
 | `meetings` | 0031 | meetings created only through `create_meeting` (max four people, real members), roster and transcript visible to participants only, transcript lines only from consenting speakers as themselves, not backdated, stopped by opting out or ending, own-line deletion, notes private to their owner, private `meeting:<id>` Realtime channel limited to participants |
 | `meeting-outcomes` | 0032 | meetings from introductions only for accepted intros and their two people, agenda stored (trimmed), "met" recorded for both only once both join, never duplicated or overwriting later progress, nothing recorded for ordinary meetings |
 | `meeting-calendar` | 0033 | scheduled meetings create one entry in each participant's own calendar (45 minutes, with agenda), none for meetings started now, entries private to their owner, movable and removable but never relinkable to another meeting |
+| `weekly-digest` | 0034 | digest off unless chosen, members switch only their own setting, unsubscribe token and send log server-owned and unreadable, others' settings invisible |
 
 Run after any change to these migrations, and add a suite with each new one. The live-schema
 harness in `scripts/security-harness` remains the check against the real dumped schema.
