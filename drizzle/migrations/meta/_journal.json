@@ -176,6 +176,13 @@
       "when": 1791457108663,
       "tag": "0024_company_continuity",
       "breakpoints": true
+    },
+    {
+      "idx": 25,
+      "version": "7",
+      "when": 1791457713297,
+      "tag": "0025_founding_cohorts",
+      "breakpoints": true
     }
   ]
 }

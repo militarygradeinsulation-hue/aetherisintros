@@ -5039,3 +5039,8 @@ button.news-link{background:none;border:0;padding:0;cursor:pointer}
 .cw-pre{white-space:pre-wrap}
 .cw-code{font-family:ui-monospace,monospace;font-size:.9rem;letter-spacing:.08em;padding:4px 8px;border:1px dashed var(--line,rgba(255,255,255,.2));border-radius:6px}
 @media (max-width:560px){.cw-list li{grid-template-columns:minmax(0,1fr)}.cw-list li>button,.cw-actions{grid-column:1;grid-row:auto;justify-content:flex-start}}
+
+/* Founding cohorts (admin) */
+.cohort-new{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px;align-items:end}
+.cohort textarea{width:100%;box-sizing:border-box;background:var(--graphite);border:1px solid var(--line-dark);color:var(--soft);padding:8px;font-size:16px}
+.cohort .admin-list li>span:first-child small{text-transform:none;letter-spacing:0;font-weight:400}
