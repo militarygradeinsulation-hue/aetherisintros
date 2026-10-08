@@ -208,7 +208,7 @@ export default function App({ mode = 'demo' }: { mode?: 'demo' | 'live' }) {
   // Find active profile
   const currentProfileMember =
     members.find((m) => m.id === selectedProfileId) || members[0];
-  const classicPages = ['news','workspace','memory','work','insights', ...(mode === 'live' ? ['home','messages','intros','people'] : [])];
+  const classicPages = ['news','workspace','memory','work','insights','meetings', ...(mode === 'live' ? ['home','messages','intros','people'] : [])];
 
   return (
     <AccentProvider>
@@ -319,6 +319,7 @@ export default function App({ mode = 'demo' }: { mode?: 'demo' | 'live' }) {
 
         {activePage === 'news' && <div className="ix-classic"><ClassicApp key="news" mode={mode} startPage="news" /></div>}
         {activePage === 'memory' && <div className="ix-classic"><ClassicApp key="memory" mode={mode} startPage="memory" /></div>}
+        {activePage === 'meetings' && <div className="ix-classic"><ClassicApp key="meetings" mode={mode} startPage="meetings" /></div>}
         {activePage === 'work' && <div className="ix-classic"><ClassicApp key="work" mode={mode} startPage="work" /></div>}
         {activePage === 'workspace' && <div className="ix-classic">
           <div className="ix-tools">

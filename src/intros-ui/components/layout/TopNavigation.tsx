@@ -1,7 +1,7 @@
 // @ts-nocheck
 import React, { useEffect, useRef, useState } from 'react';
 import { AskIntrosLockup } from '@/aetheris/AskIntrosLockup';
-import { Search, Bell, Orbit, LogOut, Home, Users, MessageSquare, MoreHorizontal, Network, Brain, Newspaper, Briefcase, X } from 'lucide-react';
+import { Search, Bell, Orbit, LogOut, Home, Users, MessageSquare, MoreHorizontal, Network, Brain, Newspaper, Briefcase, X, Video } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { AvatarImage } from '@/aetheris/avatar';
 import { supabase } from '@/integrations/supabase/client';
@@ -14,7 +14,7 @@ async function signOut() {
   }
 }
 
-export type ActivePage = 'home' | 'people' | 'bubbles' | 'intros' | 'messages' | 'insights' | 'profile' | 'news' | 'workspace' | 'memory' | 'work';
+export type ActivePage = 'home' | 'people' | 'bubbles' | 'intros' | 'messages' | 'insights' | 'profile' | 'news' | 'workspace' | 'memory' | 'work' | 'meetings';
 
 interface TopNavigationProps {
   activePage: ActivePage;
@@ -63,6 +63,7 @@ export const TopNavigation: React.FC<TopNavigationProps> = ({
     { id: 'bubbles', label: 'Bubbles', icon: Orbit },
     { id: 'insights', label: 'Insights', icon: Network },
     { id: 'memory', label: 'Memory', icon: Brain },
+    { id: 'meetings', label: 'Meetings', icon: Video },
     { id: 'news', label: 'News', icon: Newspaper },
     { id: 'work', label: 'Work', icon: Briefcase },
   ] as const;
@@ -92,6 +93,7 @@ export const TopNavigation: React.FC<TopNavigationProps> = ({
             { id: 'insights', label: 'Insights' },
             { id: 'memory', label: 'Memory' },
             { id: 'messages', label: 'Messages', badge: unreadCount },
+            { id: 'meetings', label: 'Meetings' },
             { id: 'news', label: 'News' },
             { id: 'people', label: 'People' },
             { id: 'work', label: 'Work' },

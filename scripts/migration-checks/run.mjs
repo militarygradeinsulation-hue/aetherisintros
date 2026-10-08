@@ -168,6 +168,16 @@ create function public.is_live_member() returns boolean language sql stable secu
 revoke all on function public.is_live_member() from public, anon;
 grant execute on function public.is_live_member() to authenticated;
 
+-- Supabase Realtime's authorization surface: private channels check RLS on realtime.messages,
+-- with the channel name available as realtime.topic().
+create schema realtime;
+create table realtime.messages (id uuid primary key default gen_random_uuid(), topic text not null, extension text not null, payload jsonb, inserted_at timestamptz not null default now());
+create function realtime.topic() returns text language sql stable as $$ select nullif(current_setting('realtime.topic', true), '') $$;
+alter table realtime.messages enable row level security;
+grant usage on schema realtime to authenticated, anon;
+grant select, insert on realtime.messages to authenticated;
+grant execute on function realtime.topic() to authenticated, anon;
+
 create table public.invitations (id uuid primary key default gen_random_uuid(), code text not null unique, email text, max_uses integer not null default 1, uses integer not null default 0, expires_at timestamptz, revoked boolean not null default false, created_by uuid, created_at timestamptz not null default now());
 create table public.early_access_members (id uuid primary key default gen_random_uuid(), user_id uuid not null unique, email text not null, status text not null default 'pending', invite_id uuid);
 `

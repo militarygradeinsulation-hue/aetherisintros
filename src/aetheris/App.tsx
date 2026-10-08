@@ -125,6 +125,7 @@ import { ExecutiveIdentityEditor, ExecutivePage } from './ExecutivePage'
 import { GraphProvider, useGraph } from './graph-store'
 import { OutcomeCheckins } from './outcomes-ui'
 import { IntroRequestInbox } from './intro-inbox'
+import { MeetingsPage } from './meetings-ui'
 import { SentIntroRequests } from './sent-requests-ui'
 import { CompanyWorkspacePanel } from './company-ui'
 import { CeoProvider } from './ceo-store'
@@ -148,7 +149,7 @@ const nav: Array<{ id: Page; label: string; icon: typeof HomeIcon }> = primaryPa
 const allNav: Array<{ id: Page; label: string; icon: typeof HomeIcon }> = pageMeta.map(p => ({ id: p.id, label: p.label, icon: p.icon }))
 const legacyPage: Record<string, Page> = {
   command: 'home', people: 'network', forensics: 'insights', simple: 'home',
-  meetings: 'messages', 'digital-you': 'me', roi: 'insights', settings: 'me',
+  'digital-you': 'me', roi: 'insights', settings: 'me',
 }
 const scopeLabel: Record<PrivacyScope, string> = { private: 'Private', team: 'Team', organization: 'Organization', shareable: 'Shareable', public: 'Public' }
 const scopeText: Record<PrivacyScope, string> = {
@@ -2647,6 +2648,7 @@ function Shell({ startPage, feedOnly = false }: { startPage?: Page | undefined; 
       organization: <><OrganizationPage /><div className="og-stack"><CompanyWorkspacePanel /><OrganizationRelationshipView /><DelegatesPanel /></div></>,
       intros: <Intros people={people} select={setSelected} draft={setDraft} />,
       messages: <MessageHub people={people} select={setSelected} activeId={threadId} setActiveId={setThreadId} />,
+      meetings: <MeetingsPage />,
       needs: <><IntentExchangePanel /><Needs onNew={() => setNeedOpen(true)} people={people} select={setSelected} setPage={setPage} /><IntentBoard /></>,
       memory: <Memory people={people} select={setSelected} />,
       events: <EventsPage />,

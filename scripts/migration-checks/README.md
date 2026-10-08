@@ -25,6 +25,7 @@ Pin PGlite 0.2.x: the 0.3.x builds tested here crash on `RAISE` inside PL/pgSQL.
 | `ask-responses` | 0027 | backfill of stale counts, count follows replies added and withdrawn, no tampering via others' replies or by editing the ask |
 | `stale-intros` | 0028 | pending list scoped to the requester, one reminder after five days (requester only, private ledger), withdrawal of unanswered requests, accepted introductions and their outcomes cannot be deleted |
 | `live-objects` | 0029, 0030 | operator functions closed to anon and members, match reasoning only for the viewer, directory writable by the service role only, events private to their owner, recorded live triggers (directory sync, fact supersede, ask stamping, demo-intro block) still work |
+| `meetings` | 0031 | meetings created only through `create_meeting` (max four people, real members), roster and transcript visible to participants only, transcript lines only from consenting speakers as themselves, not backdated, stopped by opting out or ending, own-line deletion, notes private to their owner, private `meeting:<id>` Realtime channel limited to participants |
 
 Run after any change to these migrations, and add a suite with each new one. The live-schema
 harness in `scripts/security-harness` remains the check against the real dumped schema.

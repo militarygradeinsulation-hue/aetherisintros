@@ -4,7 +4,7 @@ import {
   History, Home as HomeIcon, Inbox, Landmark, Layers, Lock, Map as MapIcon, MessageSquareText, Network,
   Newspaper, PlaneTakeoff, Puzzle, Radar, ScrollText, Settings2, ShieldAlert, ShieldCheck, Sparkle, Target,
   TrendingUp, UserRound, Users, UsersRound,
-  Lightbulb, Stethoscope,
+  Lightbulb, Stethoscope, Video,
 } from 'lucide-react'
 import type { Page } from './nav'
 
@@ -99,6 +99,13 @@ const basePages: BaseMeta[] = [
     changes: 'Captured context and outcomes from conversations feed Memory.',
     next: 'Reply to the thread where you owe the answer.',
   }, ['chat', 'inbox', 'threads']),
+  m('meetings', 'Meetings', Video, 'PRIMARY', 'Video meetings with members, and AI notes kept in your own account.', {
+    does: 'Runs browser video meetings for up to four people, with an opt-in AI note taker.',
+    look: 'Live and upcoming meetings, who is invited, and the notes from past ones.',
+    changes: 'Notes are written from what consenting attendees said and saved only to your account.',
+    next: 'Start a meeting with the person you most need to talk to this week.',
+    why: 'Nobody is transcribed unless they turn notes on themselves, and everyone sees who has.',
+  }, ['video', 'call', 'meeting', 'zoom', 'notes', 'transcript', 'note taker']),
   m('needs', 'Needs', Target, 'OPPORTUNITY & EXECUTION', 'What members are trying to move right now, and who can help.', {
     does: 'Runs the asks marketplace: what members need now and who can help.',
     look: 'Fresh asks, responses you can give and warm paths worth requesting.',
@@ -474,7 +481,7 @@ export const metaById: Record<string, PageMeta> = Object.fromEntries(pageMeta.ma
 export function pageLabel(id: Page) { return metaById[id]?.label ?? id }
 
 /** The permanent editorial navigation. Mobile uses its own focused five-item set. */
-export const primaryPages: Page[] = ['home', 'network', 'intros', 'messages', 'memory', 'insights', 'news', 'work']
+export const primaryPages: Page[] = ['home', 'network', 'intros', 'messages', 'meetings', 'memory', 'insights', 'news', 'work']
 
 /** Tabs consolidated inside the Network and Opportunities hubs. */
 export const networkTabs: Page[] = ['discover', 'intros', 'companies', 'circles', 'events']
