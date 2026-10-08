@@ -123,6 +123,7 @@ import { HubIntro, RadarMini, SignalPath, TileShell } from './hub-ui'
 import { badgeLabel, useVerification } from './verification'
 import { ExecutiveIdentityEditor, ExecutivePage } from './ExecutivePage'
 import { GraphProvider, useGraph } from './graph-store'
+import { OutcomeCheckins } from './outcomes-ui'
 import { CeoProvider } from './ceo-store'
 import { InsightBar } from './ceo-insights-ui'
 import { ApprovalQueuePanel, CalendarMeetingBar, CeoActions, CeoHost, ForecastConfidencePanel, NetworkRoiPanel, TrustPassportSummary, WorkCeoBar } from './ceo-ui'
@@ -1183,6 +1184,7 @@ function Intros({ people, select, draft }: { people: Member[]; select: (p: Membe
     <PageHead label="CURATED INTRODUCTIONS" title="People worth knowing now."
       copy="Every introduction carries mutual value, timing and a credible path. Nothing is sent until both sides agree."
       proof={`${ranked.length} evidence-ranked people · ${ranked.filter(p => ['accepted', 'introduced', 'conversing', 'closed'].includes(p.introState)).length} progressed introductions`} />
+    <OutcomeCheckins />
     <div className="state-filters">
       {(['all', 'recommended', 'requested', 'waiting', 'accepted', 'introduced', 'conversing', 'closed'] as const).map(s =>
         <button key={s} className={state === s ? 'active' : ''} onClick={() => setState(s)}>

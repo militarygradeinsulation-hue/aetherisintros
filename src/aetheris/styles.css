@@ -4990,3 +4990,32 @@ button.news-link{background:none;border:0;padding:0;cursor:pointer}
 .og-form input:focus,.og-form select:focus,.og-form textarea:focus{outline:none;border-color:var(--cobalt,#0F5CCB);box-shadow:0 0 0 2px rgba(15,92,203,.3)}
 .og-form select option{background:#11151A;color:#F1EFE9}
 .og-form input::placeholder{color:#9EA4AC}
+
+/* Introduction outcome spine */
+.oc-checkins h2{margin:6px 0 4px}
+.oc-funnel{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:1px;margin:12px 0;background:var(--line,rgba(255,255,255,.14));border:1px solid var(--line,rgba(255,255,255,.14))}
+.oc-funnel>div{background:var(--graphite,#111418);padding:10px 12px;min-width:0}
+.oc-funnel dt{font-size:.68rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted,#9ea4ac)}
+.oc-funnel dd{margin:4px 0 0;font-size:1.4rem;line-height:1.1}
+.oc-funnel dd small{font-size:.75rem;color:var(--amber,#F5B027);margin-left:4px}
+.oc-card{border:1px solid var(--line,rgba(255,255,255,.14));border-radius:8px;padding:12px;margin:10px 0;min-width:0}
+.oc-card p{margin:0 0 2px;overflow-wrap:anywhere}
+.oc-form .og-yn button:disabled{opacity:.5;cursor:default}
+.oc-timeline ol{list-style:none;margin:8px 0;padding:0;display:grid;gap:6px}
+.oc-timeline li{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:2px 10px;align-items:baseline;font-size:.82rem}
+.oc-timeline li>span{color:var(--muted,#9ea4ac);font-size:.72rem}
+.oc-timeline li>small{grid-column:2;color:var(--muted,#9ea4ac)}
+.oc-timeline li>button{grid-column:3;grid-row:1;border:0;background:transparent;color:var(--muted,#9ea4ac);cursor:pointer;padding:2px}
+
+/* Diagnose → Route */
+.capws-route { flex-basis: 100%; display: grid; gap: 10px; border-top: 1px solid var(--line-dark, rgba(255,255,255,.12)); padding-top: 12px; min-width: 0; }
+.capws-route > small { font: 600 10px var(--sans); letter-spacing: .12em; color: var(--muted); }
+.capws-route ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+.capws-route li { display: grid; gap: 3px; min-width: 0; }
+.capws-route li em { font-style: normal; color: var(--muted); font-size: 12px; overflow-wrap: anywhere; }
+.capws-route li button { justify-self: start; }
+.capws-route label { display: grid; gap: 6px; font-size: 12px; color: var(--muted); }
+.capws-route textarea { width: 100%; box-sizing: border-box; font-size: 16px; }
+.capws-route-vis { display: flex; flex-wrap: wrap; gap: 8px; }
+.capws-route-vis button.on { color: var(--soft, #F1EFE9); text-decoration: underline; text-underline-offset: 4px; }
+.capws-route .btn { justify-self: start; }

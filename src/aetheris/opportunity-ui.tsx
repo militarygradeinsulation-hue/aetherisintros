@@ -9,6 +9,7 @@ import { supabase } from '@/integrations/supabase/client'
 import { useOps } from './crm/store'
 import { useGraph, useGraphInputs } from './graph-store'
 import { useNav } from './nav'
+import { IntroOutcomeTimeline } from './outcomes-ui'
 import {
   INTENT_CATEGORIES, MISSION_TYPES, RULE_KINDS, activeMission, evaluateRules, graphInsights, meetingBrief, missionTypeLabel,
   parseDebrief, relationshipWeather, reverseDiscovery, routeTo, trustDimensions,
@@ -335,6 +336,7 @@ export function IntroWorkflow({ member }: { member: Member }) {
     {bothIn && <Btn kind="secondary" onClick={() => void openRoom()}><DoorOpen size={14} /> Open Relationship Room</Btn>}
     {intro && !bothIn && <small className="og-note">Relationship Room opens after both sides opt in.</small>}
     {msg && <p className="executive-form-note">{msg}</p>}
+    {bothIn && intro && <IntroOutcomeTimeline introRequestId={intro.id} myId={graph.userId} />}
     {bothIn && <IntroFeedbackForm member={member} introRequestId={intro?.id ?? null} connectorName={route.best?.hops[0]?.name ?? ''} />}
     {roomOpen && room && capsule && <RelationshipRoom room={room} capsule={capsule} member={member} onClose={() => setRoomOpen(false)} onChange={setRoom} onMessage={() => nav.messageMember(member.id)} />}
   </section>

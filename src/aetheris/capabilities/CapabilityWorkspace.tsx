@@ -13,6 +13,7 @@ import {
 import { CAPABILITIES, describe } from './registry'
 import { formatMoney, normalizeExposure } from './finance'
 import { EnrichPanel } from './EnrichPanel'
+import { RouteToNetwork } from './RouteToNetwork'
 import { ENRICH_CAPABILITY_ID } from './enrichment'
 import { findingsChanged, getActiveSubject, type OpenRequest } from './store'
 import type { EntityRef, FindingRow, ProposalRow, ProviderReport, RunDetail, RunStatus, RunSummary } from './types'
@@ -272,6 +273,7 @@ function FindingCard({ f, proposals, onResolve, onDecide, onVerify, onWhy, onRem
       {f.status !== 'open' && <button onClick={() => onResolve('open')}>Reopen</button>}
       {applied && !f.verified_at && <button onClick={onVerify}>Check outcome</button>}
       <button onClick={onRemember}><Link2 size={12} /> Save to memory</button>
+      {f.status === 'open' && f.kind !== 'pattern' && f.kind !== 'competitive' && <RouteToNetwork f={f} />}
     </div>
   </article>
 }
