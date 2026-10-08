@@ -40,12 +40,19 @@ BEGIN
     IF TG_OP = 'INSERT' THEN
       -- A request is created by its requester; the target has not consented yet.
       NEW.member_opt_in := false;
+      IF NEW.status IN ('accepted','connected','declined') THEN NEW.status := 'requested'; END IF;
     ELSE
       NEW.user_id := OLD.user_id;
       NEW.member_id := OLD.member_id;
       NEW.target_user_id := coalesce(OLD.target_user_id, public.intro_member_uuid(OLD.member_id));
       IF v_uid IS DISTINCT FROM OLD.target_user_id THEN
         NEW.member_opt_in := OLD.member_opt_in;
+        -- Only the target answers a request. In production, notify_intro_activity creates the
+        -- two-way connection when status becomes accepted/connected, so a requester setting
+        -- status would be self-acceptance by another route.
+        IF NEW.status IN ('accepted','connected','declined') AND NEW.status IS DISTINCT FROM OLD.status THEN
+          NEW.status := OLD.status;
+        END IF;
       END IF;
       IF v_uid IS DISTINCT FROM OLD.user_id THEN
         NEW.requester_opt_in := OLD.requester_opt_in;
