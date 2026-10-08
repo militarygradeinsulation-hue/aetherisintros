@@ -160,6 +160,8 @@ BEGIN
    WHERE code = upper(trim(p_code)) AND NOT revoked AND uses < max_uses AND expires_at > now()
    FOR UPDATE;
   IF v_inv.code IS NULL THEN RAISE EXCEPTION 'That invitation is not valid' USING errcode = '22023'; END IF;
+  -- Already an active member: keep their role (never demote an admin) and do not use up the code.
+  IF public.is_org_member(v_inv.org_id) THEN RETURN v_inv.org_id; END IF;
   -- A departed member rejoining starts fresh as a member; their old shares stayed with the company.
   INSERT INTO public.org_members (org_id, user_id, role, status) VALUES (v_inv.org_id, v_uid, 'member', 'active')
   ON CONFLICT (org_id, user_id) DO UPDATE SET status = 'active', role = 'member', joined_at = now(), departed_at = NULL;
@@ -176,6 +178,8 @@ BEGIN
   IF v_uid IS NULL OR NOT (v_uid = p_user AND public.is_org_member(p_org) OR public.is_org_admin(p_org)) THEN
     RAISE EXCEPTION 'Not authorised' USING errcode = '42501';
   END IF;
+  -- Lock the roster so concurrent departures or demotions cannot both pass the last-admin check.
+  PERFORM 1 FROM public.org_members WHERE org_id = p_org FOR UPDATE;
   IF (SELECT count(*) FROM public.org_members WHERE org_id = p_org AND role = 'admin' AND status = 'active' AND user_id <> p_user) = 0
      AND EXISTS (SELECT 1 FROM public.org_members WHERE org_id = p_org AND user_id = p_user AND role = 'admin' AND status = 'active') THEN
     RAISE EXCEPTION 'Make another member an admin before the last admin leaves' USING errcode = '22023';
@@ -189,8 +193,10 @@ RETURNS void LANGUAGE plpgsql SECURITY DEFINER SET search_path = public AS $$
 BEGIN
   IF NOT public.is_org_admin(p_org) THEN RAISE EXCEPTION 'Not authorised' USING errcode = '42501'; END IF;
   IF p_role NOT IN ('admin','member') THEN RAISE EXCEPTION 'Unknown role' USING errcode = '22023'; END IF;
-  IF p_role = 'member' AND p_user = auth.uid()
-     AND (SELECT count(*) FROM public.org_members WHERE org_id = p_org AND role = 'admin' AND status = 'active') <= 1 THEN
+  -- Lock the roster so concurrent departures or demotions cannot both pass the last-admin check.
+  PERFORM 1 FROM public.org_members WHERE org_id = p_org FOR UPDATE;
+  IF p_role = 'member'
+     AND (SELECT count(*) FROM public.org_members WHERE org_id = p_org AND role = 'admin' AND status = 'active' AND user_id <> p_user) = 0 THEN
     RAISE EXCEPTION 'An organization needs at least one admin' USING errcode = '22023';
   END IF;
   UPDATE public.org_members SET role = p_role WHERE org_id = p_org AND user_id = p_user AND status = 'active';
@@ -204,18 +210,19 @@ RETURNS TABLE(contact_key text, contact_name text, contact_company text, contact
 LANGUAGE sql STABLE SECURITY DEFINER SET search_path = public AS $$
   WITH rows AS (
     SELECT coalesce(s.contact_member_id::text, lower(trim(s.contact_name)) || '|' || lower(trim(s.contact_company))) AS k,
-           s.contact_name, s.contact_company, s.contact_member_id, m.status
+           s.contact_name, s.contact_company, s.contact_member_id, s.owner_id, m.status
       FROM public.org_shared_relationships s
       JOIN public.org_members m ON m.org_id = s.org_id AND m.user_id = s.owner_id
      WHERE s.org_id = p_org AND public.is_org_member(p_org)
   )
   SELECT k, min(contact_name), min(contact_company), (array_agg(contact_member_id) FILTER (WHERE contact_member_id IS NOT NULL))[1],
-         count(*) FILTER (WHERE status = 'active')::int, count(*) FILTER (WHERE status = 'departed')::int,
-         CASE WHEN count(*) FILTER (WHERE status = 'active') = 0 THEN 'at_risk'
-              WHEN count(*) FILTER (WHERE status = 'active') = 1 THEN 'single_owner'
+         -- Distinct people, not share rows: one person sharing a contact twice is still one holder.
+         count(DISTINCT owner_id) FILTER (WHERE status = 'active')::int, count(DISTINCT owner_id) FILTER (WHERE status = 'departed')::int,
+         CASE WHEN count(DISTINCT owner_id) FILTER (WHERE status = 'active') = 0 THEN 'at_risk'
+              WHEN count(DISTINCT owner_id) FILTER (WHERE status = 'active') = 1 THEN 'single_owner'
               ELSE 'covered' END
     FROM rows GROUP BY k
-   ORDER BY CASE WHEN count(*) FILTER (WHERE status = 'active') = 0 THEN 0 WHEN count(*) FILTER (WHERE status = 'active') = 1 THEN 1 ELSE 2 END, min(contact_name)
+   ORDER BY CASE WHEN count(DISTINCT owner_id) FILTER (WHERE status = 'active') = 0 THEN 0 WHEN count(DISTINCT owner_id) FILTER (WHERE status = 'active') = 1 THEN 1 ELSE 2 END, min(contact_name)
 $$;
 
 REVOKE ALL ON FUNCTION public.create_organization(text, text), public.create_org_invite(uuid, integer), public.join_organization(text),

@@ -125,7 +125,12 @@ export function CompanyWorkspacePanel() {
           <label>Relationship<select value={draft.strength} onChange={e => setDraft(d => ({ ...d, strength: e.target.value as Strength }))}>
             {(Object.keys(strengthLabel) as Strength[]).map(s => <option key={s} value={s}>{strengthLabel[s]}</option>)}</select></label>
           <label className="wide">What the company should know (shared with your team)<textarea rows={2} maxLength={1000} value={draft.context} onChange={e => setDraft(d => ({ ...d, context: e.target.value }))} placeholder="Role, what they care about, open work with us" /></label>
-          <Btn kind="secondary" disabled={!draft.contactName.trim()} onClick={() => void act(shareRelationship(orgId, { ...draft, contactMemberId: draft.contactMemberId || null }), 'Shared with the company.').then(() => setDraft(blankShare))}><Check size={14} /> Share</Btn>
+          <Btn kind="secondary" disabled={!draft.contactName.trim()} onClick={() => void (async () => {
+            const r = await shareRelationship(orgId, { ...draft, contactMemberId: draft.contactMemberId || null })
+            setMsg(r.error || 'Shared with the company.')
+            if (!r.error) setDraft(blankShare)
+            await load()
+          })()}><Check size={14} /> Share</Btn>
         </div>
       </details>
 
