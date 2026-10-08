@@ -5044,3 +5044,19 @@ button.news-link{background:none;border:0;padding:0;cursor:pointer}
 .cohort-new{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px;align-items:end}
 .cohort textarea{width:100%;box-sizing:border-box;background:var(--graphite);border:1px solid var(--line-dark);color:var(--soft);padding:8px;font-size:16px}
 .cohort .admin-list li>span:first-child small{text-transform:none;letter-spacing:0;font-weight:400}
+
+/* This week: actions waiting on the member (live Home) */
+.this-week{border:1px solid var(--sys-line,rgba(255,255,255,.1));background:var(--sys-panel,#0E121A);border-radius:14px;padding:18px;display:grid;gap:12px;min-width:0}
+.this-week header h2{font:500 clamp(20px,2.4vw,28px)/1.15 var(--font-serif,Georgia,serif);color:var(--sys-ink,#F2EEE6);margin:6px 0 0}
+.this-week header p{display:flex;gap:6px;align-items:center;color:var(--sys-ink-dim,#9CA3AF);font-size:13px;margin:6px 0 0}
+.this-week ol{list-style:none;margin:0;padding:0;display:grid;gap:8px}
+.this-week li{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:10px 12px;align-items:center;padding:12px;border:1px solid var(--sys-panel-line,rgba(255,255,255,.08));border-radius:10px;background:rgba(255,255,255,.02)}
+.this-week li>svg{color:#F5B027}
+.this-week li.tw-company_risk>svg,.this-week li.tw-quiet_ask>svg{color:var(--sys-ink-dim,#9CA3AF)}
+.this-week li>div{display:grid;gap:2px;min-width:0}
+.this-week li b{color:var(--sys-ink,#F2EEE6);font-weight:600;font-size:14px;overflow-wrap:anywhere}
+.this-week li span{color:var(--sys-ink-dim,#9CA3AF);font-size:12.5px;overflow-wrap:anywhere}
+.this-week li button{display:inline-flex;gap:6px;align-items:center;border:1px solid rgba(245,176,39,.4);background:transparent;color:var(--sys-ink,#F2EEE6);border-radius:8px;padding:7px 11px;font-size:12.5px;cursor:pointer;white-space:nowrap}
+.this-week li button:hover{border-color:#F5B027}
+.this-week .tw-error{color:var(--sys-ink-dim,#9CA3AF);font-size:12px;margin:0}
+@media (max-width:560px){.this-week li{grid-template-columns:auto minmax(0,1fr)}.this-week li button{grid-column:2;justify-self:start}}

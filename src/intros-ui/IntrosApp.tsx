@@ -34,6 +34,7 @@ import { LiveMessagesView } from './views/LiveMessagesView';
 import '@/aetheris/styles.css';
 import { useAetherisNews } from '@/aetheris/news';
 import { LiveMembers } from './liveMembers';
+import { ThisWeekPanel } from '@/aetheris/this-week-ui';
 
 function NewsTicker({ onOpen }: { onOpen: () => void }) {
   const { data } = useAetherisNews();
@@ -238,6 +239,11 @@ export default function App({ mode = 'demo' }: { mode?: 'demo' | 'live' }) {
             networkMembers={members}
             isLive={mode === 'live'}
             socialFeed={mode === 'live' ? <div className="ix-classic"><ClassicApp mode="live" feedOnly /></div> : undefined}
+            actionQueue={mode === 'live' ? <ThisWeekPanel onOpen={(target) => {
+              if (target === 'intros') { handleNavigate('intros'); return; }
+              setClassicPage(target);
+              handleNavigate('workspace');
+            }} /> : undefined}
             me={mode === 'live' ? me : undefined}
           />
         )}

@@ -37,6 +37,7 @@ interface HomeFeedViewProps {
   posts: FeedPost[];
   isLive?: boolean;
   socialFeed?: React.ReactNode;
+  actionQueue?: React.ReactNode;
   onNavigate: (page: ActivePage, memberId?: string) => void;
   onRequestIntro: (member: NetworkMember) => void;
   onLikePost: (postId: string) => void;
@@ -57,6 +58,7 @@ export const HomeFeedView: React.FC<HomeFeedViewProps> = ({
   me,
   isLive = false,
   socialFeed,
+  actionQueue,
 }) => {
   const [feedFilter, setFeedFilter] = useState<'forYou' | 'network' | 'following' | 'trending'>('forYou');
   const [composerText, setComposerText] = useState('');
@@ -337,6 +339,8 @@ export const HomeFeedView: React.FC<HomeFeedViewProps> = ({
 
 
       {/* Movable widget board — drag to rearrange (Alt + arrows on keyboard) */}
+      {actionQueue}
+
       <section className="home-board-section space-y-3">
         <div className="flex items-center justify-between">
           <div className="text-[11px] font-mono tracking-widest uppercase text-[#9CA3AF] font-semibold">Your board</div>
