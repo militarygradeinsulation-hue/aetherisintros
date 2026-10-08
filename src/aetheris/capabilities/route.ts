@@ -27,7 +27,7 @@ export const PROBLEM_AREAS: Record<ProviderId, ProblemArea> = {
   vendor: { id: 'vendor', label: 'Vendor spend', seeking: 'someone who has renegotiated vendor contracts and cut operating spend', vocabulary: ['procurement', 'vendor', 'sourcing', 'purchasing', 'contracts', 'cost', 'spend', 'negotiation', 'operations'] },
   supply: { id: 'supply', label: 'Supply chain', seeking: 'an operator who has stabilised a supply chain and reduced fulfilment delays', vocabulary: ['supply', 'chain', 'logistics', 'manufacturing', 'operations', 'coo', 'fulfilment', 'fulfillment', 'inventory', 'distribution', 'plant'] },
   compliance: { id: 'compliance', label: 'Compliance and risk', seeking: 'someone who has closed compliance gaps without slowing the business', vocabulary: ['compliance', 'risk', 'legal', 'regulatory', 'audit', 'governance', 'security', 'privacy', 'counsel'] },
-  access: { id: 'access', label: 'Systems and access', seeking: 'a technology leader who has cleaned up systems access and internal tooling', vocabulary: ['technology', 'cto', 'cio', 'systems', 'security', 'it', 'infrastructure', 'automation', 'software', 'data'] },
+  access: { id: 'access', label: 'Systems and access', seeking: 'a technology leader who has cleaned up systems access and internal tooling', vocabulary: ['technology', 'cto', 'cio', 'systems', 'security', 'infrastructure', 'automation', 'software', 'data'] },
   strategic: { id: 'strategic', label: 'Strategy and positioning', seeking: 'an executive who has repositioned a company through a strategic shift', vocabulary: ['strategy', 'positioning', 'ceo', 'founder', 'board', 'transformation', 'growth', 'market', 'brand', 'expansion'] },
   decision: { id: 'decision', label: 'Decision velocity', seeking: 'a leader who has sped up executive decision-making and accountability', vocabulary: ['operations', 'coo', 'chief', 'staff', 'execution', 'management', 'leadership', 'okrs', 'cadence', 'ceo'] },
   workforce: { id: 'workforce', label: 'Team and hiring', seeking: 'a people leader who has fixed hiring gaps and key-person risk', vocabulary: ['talent', 'hiring', 'recruiting', 'people', 'hr', 'chro', 'workforce', 'culture', 'leadership', 'team'] },
@@ -57,7 +57,8 @@ const profileFields = (m: Member): Array<[string, string]> => [
 /** Rank members whose own stated experience matches the problem area. Never invents a fit. */
 export function routeFinding(finding: Pick<FindingRow, 'provider'>, members: Member[], opts: { excludeIds?: string[]; limit?: number } = {}): RoutedMember[] {
   const area = areaFor(finding)
-  const vocab = new Set(area.vocabulary)
+  // Run the vocabulary through the same tokenizer as profiles so entries like 'go-to-market' can't silently never match.
+  const vocab = new Set(area.vocabulary.flatMap(tokens))
   const exclude = new Set(opts.excludeIds ?? [])
   const out: RoutedMember[] = []
   for (const member of members) {

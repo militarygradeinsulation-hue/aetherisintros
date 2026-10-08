@@ -115,7 +115,7 @@ export function IntroOutcomeTimeline({ introRequestId, myId }: { introRequestId:
       <b>{stageLabel[e.stage]}{e.outcomeCategory ? ` — ${categoryLabel[e.outcomeCategory]}` : ''}</b>
       <small>{e.authorId === myId ? `You${e.shareable ? ' · shared' : ' · private'}` : 'Shared by the other participant'}
         {e.stage === 'outcome' ? ` · ${attributionLabel[e.attribution]}${e.valueBand !== 'undisclosed' ? ` · ${valueBandLabel[e.valueBand]}` : ''}` : ''}</small>
-      {e.authorId === myId && <button aria-label="Retract this update" onClick={() => void retractOutcome(e.id).then(load)}><Trash2 size={12} /></button>}
+      {e.authorId === myId && <button aria-label="Retract this update" onClick={() => void retractOutcome(e.id).then(r => { if (r.error) setError(r.error); else void load() })}><Trash2 size={12} /></button>}
     </li>)}</ol>}
     {!closed && <OutcomeForm introRequestId={introRequestId} onSaved={() => void load()} />}
     {error && <p className="og-note">{error}</p>}
@@ -129,7 +129,11 @@ export function NetworkProofPanel() {
   const [days, setDays] = useState(90)
   const [proof, setProof] = useState<NetworkProof | null>(null)
   const [error, setError] = useState('')
-  useEffect(() => { void loadNetworkProof(days).then(r => { setProof(r.data); setError(r.error) }) }, [days])
+  useEffect(() => {
+    let stale = false
+    void loadNetworkProof(days).then(r => { if (!stale) { setProof(r.data); setError(r.error) } })
+    return () => { stale = true }
+  }, [days])
 
   return <section className="admin-panel oc-proof">
     <h2>Network proof</h2>

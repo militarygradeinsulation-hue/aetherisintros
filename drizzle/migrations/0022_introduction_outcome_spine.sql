@@ -179,7 +179,8 @@ BEGIN
   v_since := now() - make_interval(days => greatest(1, least(coalesce(p_days, 90), 730)));
 
   WITH intros AS (
-    SELECT r.id, r.accepted_at FROM public.intro_requests r WHERE r.created_at >= v_since
+    -- Only requests to real members: demo-member requests have no target and can never be accepted.
+    SELECT r.id, r.accepted_at FROM public.intro_requests r WHERE r.created_at >= v_since AND r.target_user_id IS NOT NULL
   ), reached AS (
     SELECT o.intro_request_id,
            bool_or(o.stage IN ('met','next_step','outcome')) AS met,

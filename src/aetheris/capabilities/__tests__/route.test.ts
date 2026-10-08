@@ -28,6 +28,10 @@ describe('routeFinding', () => {
     expect(r.map(x => x.member.id)).not.toContain('blank')
     expect(r.map(x => x.member.id)).not.toContain('cfo')
   })
+  it('matches hyphenated vocabulary like go-to-market through the shared tokenizer', () => {
+    const gtm = member('gtm', { expertise: ['Go-to-market'] })
+    expect(routeFinding({ provider: 'revenue' }, [gtm]).map(x => x.member.id)).toEqual(['gtm'])
+  })
   it('falls back to a general operating area for unknown providers', () => {
     expect(areaFor({ provider: 'web' as never }).id).toBe('general')
   })
