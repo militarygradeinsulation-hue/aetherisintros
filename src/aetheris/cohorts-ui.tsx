@@ -19,7 +19,8 @@ function download(name: string, text: string) {
   const url = URL.createObjectURL(new Blob([text], { type: 'text/csv' }))
   const a = document.createElement('a')
   a.href = url; a.download = name; a.click()
-  URL.revokeObjectURL(url)
+  // Revoke after the browser has started the download (some browsers cancel an immediate revoke).
+  setTimeout(() => URL.revokeObjectURL(url), 1000)
 }
 
 export function FoundingCohortsPanel() {
@@ -106,7 +107,11 @@ export function FoundingCohortsPanel() {
           <small>{stageLabel[r.stage]}</small>
           <span className="admin-actions">
             {(r.stage === 'invited' || r.stage === 'expired') && <>
-              <button type="button" className="chip" onClick={() => { void navigator.clipboard?.writeText(inviteLink(origin, r.code)); setNotice(`Link for ${r.email} copied.`) }}>Copy link</button>
+              <button type="button" className="chip" onClick={() => {
+                const link = inviteLink(origin, r.code)
+                void (navigator.clipboard?.writeText(link) ?? Promise.reject(new Error('no clipboard')))
+                  .then(() => setNotice(`Link for ${r.email} copied.`), () => setNotice(`Copy this link for ${r.email}: ${link}`))
+              }}>Copy link</button>
               <button type="button" className="chip" onClick={() => void revokeCohortInvite(r.inviteId).then(x => { setNotice(x.error || 'Invite revoked.'); void reload() })}>Revoke</button>
             </>}
           </span>

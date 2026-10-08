@@ -63,7 +63,11 @@ export function cohortFunnel(rows: Pick<ActivationRow, 'stage'>[]): Array<{ stag
 
 export const inviteLink = (origin: string, code: string) => `${origin.replace(/\/$/, '')}/invite/${encodeURIComponent(code)}`
 
-const csvCell = (v: string) => (/[",\n]/.test(v) ? `"${v.replace(/"/g, '""')}"` : v)
+/** Escape for CSV, and neutralise spreadsheet formulas (names often come from CRM exports). */
+export const csvCell = (raw: string) => {
+  const v = /^[=+\-@\t\r]/.test(raw) ? `'${raw}` : raw
+  return /[",\n]/.test(v) ? `"${v.replace(/"/g, '""')}"` : v
+}
 
 /** CSV for a mail merge the admin sends personally: name, company, email, link, stage. */
 export function linksCsv(origin: string, rows: ActivationRow[]): string {

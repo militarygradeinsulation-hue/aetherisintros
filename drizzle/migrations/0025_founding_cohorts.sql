@@ -54,6 +54,12 @@ BEGIN
      WHERE lower(i.email) = v_email AND NOT i.revoked AND i.uses < i.max_uses AND (i.expires_at IS NULL OR i.expires_at > now())
      LIMIT 1;
     IF v_code IS NOT NULL THEN
+      -- An existing invite with no cohort joins this one, so the person shows in its funnel.
+      -- Columns are table-qualified: `code` is also an output parameter of this function.
+      UPDATE public.invitations i SET cohort_id = p_cohort,
+             invitee_name = CASE WHEN i.invitee_name = '' THEN left(trim(coalesce(v_row->>'name', '')), 160) ELSE i.invitee_name END,
+             invitee_company = CASE WHEN i.invitee_company = '' THEN left(trim(coalesce(v_row->>'company', '')), 160) ELSE i.invitee_company END
+       WHERE lower(i.code) = lower(v_code) AND i.cohort_id IS NULL;
       email := v_email; code := v_code; outcome := 'already_invited'; RETURN NEXT; CONTINUE;
     END IF;
     LOOP

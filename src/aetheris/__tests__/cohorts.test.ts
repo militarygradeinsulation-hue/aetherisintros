@@ -40,3 +40,13 @@ describe('linksCsv', () => {
     expect(inviteLink('https://a.b', 'x y')).toBe('https://a.b/invite/x%20y')
   })
 })
+
+describe('csvCell', () => {
+  it('neutralises spreadsheet formulas from imported names', async () => {
+    const { csvCell } = await import('../cohorts')
+    expect(csvCell('=HYPERLINK("http://x","y")')).toBe(`"'=HYPERLINK(""http://x"",""y"")"`)
+    expect(csvCell('+1 555')).toBe("'+1 555")
+    expect(csvCell('@sum')).toBe("'@sum")
+    expect(csvCell('Dana Ortiz')).toBe('Dana Ortiz')
+  })
+})
