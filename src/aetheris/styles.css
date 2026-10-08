@@ -4990,3 +4990,14 @@ button.news-link{background:none;border:0;padding:0;cursor:pointer}
 .og-form input:focus,.og-form select:focus,.og-form textarea:focus{outline:none;border-color:var(--cobalt,#0F5CCB);box-shadow:0 0 0 2px rgba(15,92,203,.3)}
 .og-form select option{background:#11151A;color:#F1EFE9}
 .og-form input::placeholder{color:#9EA4AC}
+
+/* Tiles highlight in yellow on hover, like the People bubbles. */
+:root{--tile-hover:#F5B027}
+.feature-tile,.intros-system-bento>*,.intros-feature-bento>div,.people-social-grid>article,.member-tile,.premium-home-deck>article{transition:border-color .2s ease,box-shadow .2s ease,transform .2s ease,background .2s ease}
+.feature-tile:hover,.intros-system-bento>*:hover,.intros-feature-bento>div:hover,.people-social-grid>article:hover,.member-tile:hover,.premium-home-deck>article:hover{border-color:var(--tile-hover);box-shadow:0 0 22px -4px var(--tile-hover)}
+/* Home board tiles: the tile clips its contents and the shell's box-shadow is set inline by its
+   animation, so the edge is an overlay on the tile and the glow a pseudo-element on the shell. */
+.board-tile-shell::before{content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;box-shadow:0 0 22px -4px var(--tile-hover);opacity:0;transition:opacity .2s ease}
+.board-tile-shell:hover::before{opacity:1}
+.board-tile::after{content:"";position:absolute;inset:0;z-index:5;border:1px solid transparent;border-radius:inherit;pointer-events:none;transition:border-color .2s ease}
+.board-tile-shell:hover .board-tile::after{border-color:var(--tile-hover)}
