@@ -8,6 +8,7 @@ export default async ({ db, ok, as, svc, A, B, C, ADMIN }) => {
   for (let i = 0; i < 6; i++) {
     const u = `00000000-0000-4000-8000-0000000001${String(i).padStart(2, '0')}`
     await svc(`insert into auth.users values ('${u}')`)
+    await svc(`insert into public.profiles(id) values ('${u}')`) // every account has a profile, as in production
     const r = await svc(`insert into public.intro_requests (user_id, member_id, member_opt_in, created_at) values ('${u}', '${D}', ${i < 5}, now() - interval '30 days') returning id`)
     ids.push([u, r[0].id])
   }

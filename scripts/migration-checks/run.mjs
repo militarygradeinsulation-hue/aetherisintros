@@ -63,10 +63,68 @@ create policy "target reads intro requests" on public.intro_requests for select 
 create policy "target responds to intro requests" on public.intro_requests for update to authenticated using (auth.uid() = target_user_id) with check (auth.uid() = target_user_id);
 
 create table public.notifications (id uuid primary key default gen_random_uuid(), user_id uuid not null, kind text not null, text text not null, actor_id uuid, link text not null default '', read boolean not null default false, created_at timestamptz not null default now());
-grant select, update on public.notifications to authenticated;
+grant select, insert, update on public.notifications to authenticated;
+-- Live policy (as in production): any live member may insert a notification for anyone.
+create policy "members create notifications" on public.notifications for insert to authenticated
+  with check (actor_id is null or actor_id = auth.uid());
 alter table public.notifications enable row level security;
 create policy "own notifications read" on public.notifications for select to authenticated using (auth.uid() = user_id);
 create policy "own notifications update" on public.notifications for update to authenticated using (auth.uid() = user_id) with check (auth.uid() = user_id);
+
+-- Production-only objects (created outside supabase/ and drizzle/ migrations), copied from the
+-- live database so these checks exercise the triggers that actually run there.
+create table public.relationships (id uuid primary key default gen_random_uuid(), user_id uuid not null, member_id text not null, kind text not null, created_at timestamptz not null default now(), unique (user_id, member_id, kind));
+create table public.follows (id uuid primary key default gen_random_uuid(), follower_id uuid not null, followee_id uuid not null, kind text not null, created_at timestamptz not null default now(), unique (follower_id, followee_id, kind));
+grant select, insert, delete on public.follows to authenticated;
+alter table public.follows enable row level security;
+create policy "follows readable" on public.follows for select to authenticated using (kind <> 'saved' or auth.uid() = follower_id);
+create policy "own follows write" on public.follows for insert to authenticated with check (auth.uid() = follower_id);
+create table public.dm_threads (id uuid primary key default gen_random_uuid(), member_a uuid not null, member_b uuid not null, intro_context text not null default '', created_by uuid not null, created_at timestamptz not null default now(), updated_at timestamptz not null default now(), unique (member_a, member_b));
+grant select, insert, update on public.dm_threads to authenticated;
+alter table public.dm_threads enable row level security;
+create policy "participants read threads" on public.dm_threads for select to authenticated using (auth.uid() = member_a or auth.uid() = member_b);
+create policy "participants create threads" on public.dm_threads for insert to authenticated with check (auth.uid() = created_by and (auth.uid() = member_a or auth.uid() = member_b));
+create table public.dm_messages (id uuid primary key default gen_random_uuid(), thread_id uuid not null references public.dm_threads(id) on delete cascade, sender_id uuid not null, text text not null, created_at timestamptz not null default now());
+grant select, insert on public.dm_messages to authenticated;
+alter table public.dm_messages enable row level security;
+create policy "participants read messages" on public.dm_messages for select to authenticated using (exists (select 1 from public.dm_threads t where t.id = thread_id and (auth.uid() = t.member_a or auth.uid() = t.member_b)));
+create policy "participants send messages" on public.dm_messages for insert to authenticated with check (auth.uid() = sender_id and exists (select 1 from public.dm_threads t where t.id = thread_id and (auth.uid() = t.member_a or auth.uid() = t.member_b)));
+
+create function public.set_intro_target() returns trigger language plpgsql security definer set search_path to 'public' as $$
+begin
+  if new.target_user_id is null and new.member_id ~* '^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$' then
+    select p.id into new.target_user_id from public.profiles p where p.id = new.member_id::uuid;
+  end if;
+  return new;
+end $$;
+create trigger intro_requests_set_target before insert or update on public.intro_requests for each row execute function set_intro_target();
+create trigger intro_requests_touch before update on public.intro_requests for each row execute function touch_updated_at();
+
+create function public.notify_intro_activity() returns trigger language plpgsql security definer set search_path to 'public' as $$
+declare v_requester text; v_target text;
+begin
+  select coalesce(nullif(btrim(name),''),'A member') into v_requester from profiles where id = new.user_id;
+  select coalesce(nullif(btrim(name),''),'A member') into v_target   from profiles where id = new.target_user_id;
+  if TG_OP = 'INSERT' and new.target_user_id is not null then
+    insert into notifications (user_id, kind, text, actor_id, link)
+    values (new.target_user_id, 'intro_request', v_requester || ' asked to be introduced: ' || new.reason, new.user_id, '/app/introductions');
+    return new;
+  end if;
+  if TG_OP = 'UPDATE' and new.status is distinct from old.status then
+    insert into notifications (user_id, kind, text, actor_id, link)
+    values (new.user_id, 'intro_' || new.status,
+            v_target || ' ' || case new.status when 'accepted' then 'accepted your introduction request'
+              when 'declined' then 'declined your introduction request' when 'connected' then 'is now connected with you'
+              else 'updated your introduction request' end,
+            new.target_user_id, '/app/introductions');
+    if new.status in ('accepted','connected') and new.target_user_id is not null then
+      insert into relationships (user_id, member_id, kind) values (new.user_id, new.target_user_id::text, 'connection') on conflict (user_id, member_id, kind) do nothing;
+      insert into relationships (user_id, member_id, kind) values (new.target_user_id, new.user_id::text, 'connection') on conflict (user_id, member_id, kind) do nothing;
+    end if;
+  end if;
+  return new;
+end $$;
+create trigger intro_requests_notify after insert or update on public.intro_requests for each row execute function notify_intro_activity();
 
 create table public.invitations (id uuid primary key default gen_random_uuid(), code text not null unique, email text, max_uses integer not null default 1, uses integer not null default 0, expires_at timestamptz, revoked boolean not null default false, created_by uuid, created_at timestamptz not null default now());
 create table public.early_access_members (id uuid primary key default gen_random_uuid(), user_id uuid not null unique, email text not null, status text not null default 'pending', invite_id uuid);
