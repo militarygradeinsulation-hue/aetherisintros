@@ -304,11 +304,6 @@ export function mirrorFollow(userId: string, peerId: string, kind: 'follow' | 'c
     : supabase.from('follows').delete().eq('follower_id', userId).eq('followee_id', peerId).eq('kind', kind))
 }
 
-export function notify(userId: string, actorId: string, kind: string, text: string) {
-  if (!/^[0-9a-f-]{36}$/i.test(userId)) return
-  fire(supabase.from('notifications').insert({ user_id: userId, actor_id: actorId, kind, text }))
-}
-
 export function saveComment(postId: string, authorId: string, text: string) {
   fire(supabase.from('post_comments').insert({ post_id: postId, author_id: authorId, text }))
 }

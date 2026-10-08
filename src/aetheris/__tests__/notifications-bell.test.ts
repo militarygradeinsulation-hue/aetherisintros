@@ -20,5 +20,7 @@ describe('destinationFor', () => {
     expect(destinationFor({ kind: 'intro_accepted' })).toBe('intros')
     expect(destinationFor({ kind: 'message' })).toBe('messages')
     expect(destinationFor({ kind: 'connection' })).toBe('people')
+    expect(destinationFor({ kind: 'intro_declined' })).toBe('intros')
+    expect(destinationFor({ kind: 'onboarding_incomplete' })).toBe('home')
   })
 })
