@@ -1,7 +1,8 @@
 // 0022 introduction outcomes, consent guard, check-ins, proof metrics
 export default async ({ db, ok, as, svc, A, B, C, ADMIN }) => {
   console.log('backfill')
-  let r = await svc(`select id, accepted_at, target_user_id from public.intro_requests order by id`)
+  // Look the seed rows up by id: the demo-member request has a random id that can sort anywhere.
+  let r = await svc(`select id, accepted_at, target_user_id from public.intro_requests where id in ('11111111-1111-4111-8111-111111111111', '22222222-2222-4222-8222-222222222222') order by id`)
   ok(r[0].accepted_at !== null, 'existing accepted intro gets accepted_at backfilled')
   ok(r[1].target_user_id === A, 'MCP-style request without target gets target_user_id backfilled from member_id')
 

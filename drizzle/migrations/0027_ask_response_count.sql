@@ -1,7 +1,7 @@
 -- asks.response_count was never maintained: every live ask showed "0 responses" even
 -- after members replied. The database now keeps it equal to the real number of rows in
 -- ask_responses (recounted, not incremented, so it cannot drift), and existing asks are
--- corrected once. Authors can still update their own asks, so a guard recomputes the count
+-- corrected once (demo asks keep their illustrative counts). Authors can still update their own asks, so a guard recomputes the count
 -- on every insert and update made by a signed-in member: a client-supplied value is never
 -- stored. Service-role writes (the demo seed's illustrative counts) are left alone.
 
@@ -37,4 +37,4 @@ CREATE TRIGGER ask_responses_sync_count AFTER INSERT OR DELETE ON public.ask_res
 UPDATE public.asks a
    SET response_count = c.n
   FROM (SELECT a2.id, (SELECT count(*)::int FROM public.ask_responses r WHERE r.ask_id = a2.id) AS n FROM public.asks a2) c
- WHERE c.id = a.id AND a.response_count IS DISTINCT FROM c.n;
+ WHERE c.id = a.id AND NOT a.is_demo AND a.response_count IS DISTINCT FROM c.n;
