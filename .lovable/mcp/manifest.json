@@ -35,7 +35,7 @@
       {
         "name": "search_members",
         "title": "Search members",
-        "description": "Search the Ask Intros network for members by name, role, industry, expertise, needs or offers. Returns match reasoning fields (why them, why you, why now) when present.",
+        "description": "Search verified Ask Intros members by name, role, company, focus, what they are looking for or what they can help with. Returns only what members state on their own profiles; never infer more.",
         "annotations": {
           "readOnlyHint": true,
           "idempotentHint": true,
@@ -46,12 +46,12 @@
           "type": "object",
           "properties": {
             "query": {
-              "description": "Free text to match against name, title, company, industry or bio.",
+              "description": "Free text to match against name, title, company, focus, bio, what they want or what they offer.",
               "type": "string",
               "minLength": 1
             },
             "industry": {
-              "description": "Restrict results to one industry.",
+              "description": "Restrict results to members who list this industry.",
               "type": "string",
               "minLength": 1
             },
@@ -69,7 +69,7 @@
       {
         "name": "get_member",
         "title": "Get member",
-        "description": "Read one Ask Intros member in full, including focus, thesis, availability, trust path, next action and the reasoning behind a possible introduction.",
+        "description": "Read one verified Ask Intros member's own stated profile: focus, what they are looking for, what they can help with, availability and what they are open to.",
         "annotations": {
           "readOnlyHint": true,
           "idempotentHint": true,
@@ -81,7 +81,8 @@
           "properties": {
             "member_id": {
               "type": "string",
-              "minLength": 1,
+              "format": "uuid",
+              "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$",
               "description": "The member id returned by search_members."
             }
           },
@@ -192,7 +193,7 @@
       {
         "name": "request_intro",
         "title": "Request an introduction",
-        "description": "Request a double opt-in introduction to a member for the signed-in member. The request is recorded as 'requested' — the other side still has to opt in, so this never sends a pitch.",
+        "description": "Request a double opt-in introduction to a member for the signed-in member. Every request carries a context capsule — why this introduction exists, why the member may care, why the other person may care, and why now — written from what the member actually told you. The other side reviews that capsule before opting in, so this never sends a pitch. Do not invent reasons; ask the member if any answer is missing.",
         "annotations": {
           "readOnlyHint": false,
           "destructiveHint": false,
@@ -204,22 +205,47 @@
           "properties": {
             "member_id": {
               "type": "string",
-              "minLength": 1,
-              "description": "The member to be introduced to."
+              "format": "uuid",
+              "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$",
+              "description": "The live member to be introduced to (their member id from search_members)."
             },
-            "reason": {
+            "why_exists": {
               "type": "string",
-              "minLength": 4,
-              "description": "Why this relationship makes sense."
+              "minLength": 12,
+              "maxLength": 600,
+              "description": "Why this introduction should exist at all."
             },
-            "mutual_value": {
-              "description": "What the other person gets out of it.",
-              "type": "string"
+            "why_requester": {
+              "type": "string",
+              "minLength": 12,
+              "maxLength": 600,
+              "description": "Why the signed-in member may care."
+            },
+            "why_target": {
+              "type": "string",
+              "minLength": 12,
+              "maxLength": 600,
+              "description": "Why the other person may care — what is in it for them."
+            },
+            "why_now": {
+              "type": "string",
+              "minLength": 12,
+              "maxLength": 600,
+              "description": "Why the timing is right now."
+            },
+            "first_goal": {
+              "default": "",
+              "description": "Goal for the first conversation, if the member stated one.",
+              "type": "string",
+              "maxLength": 400
             }
           },
           "required": [
             "member_id",
-            "reason"
+            "why_exists",
+            "why_requester",
+            "why_target",
+            "why_now"
           ]
         },
         "outputSchema": null
@@ -339,6 +365,105 @@
           },
           "required": [
             "text"
+          ]
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "list_outcome_checkins",
+        "title": "List introductions due for a follow-up",
+        "description": "List the signed-in member's accepted introductions that are due an outcome check-in (7, 30 or 90 days after acceptance). Ask the member what happened, then record it with record_intro_outcome.",
+        "annotations": {
+          "readOnlyHint": true,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "$schema": "https://json-schema.org/draft/2020-12/schema",
+          "type": "object",
+          "properties": {}
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "record_intro_outcome",
+        "title": "Record what an introduction led to",
+        "description": "Append what happened after an accepted introduction, as the signed-in member said it. Only record what the member actually told you — never infer an outcome. Private unless the member explicitly asks to share it with the other participant.",
+        "annotations": {
+          "readOnlyHint": false,
+          "destructiveHint": false,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "$schema": "https://json-schema.org/draft/2020-12/schema",
+          "type": "object",
+          "properties": {
+            "intro_request_id": {
+              "type": "string",
+              "format": "uuid",
+              "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$",
+              "description": "The accepted introduction."
+            },
+            "stage": {
+              "type": "string",
+              "enum": [
+                "too_early",
+                "met",
+                "next_step",
+                "outcome",
+                "no_outcome"
+              ]
+            },
+            "outcome_category": {
+              "description": "Required when stage is 'outcome'.",
+              "type": "string",
+              "enum": [
+                "customer",
+                "partnership",
+                "hire",
+                "investor",
+                "advisor",
+                "board",
+                "vendor",
+                "acquisition",
+                "knowledge",
+                "other"
+              ]
+            },
+            "attribution": {
+              "default": "direct",
+              "type": "string",
+              "enum": [
+                "direct",
+                "influenced",
+                "contextual"
+              ]
+            },
+            "value_band": {
+              "default": "undisclosed",
+              "description": "Only if the member volunteered it; otherwise undisclosed.",
+              "type": "string",
+              "enum": [
+                "undisclosed",
+                "under_10k",
+                "10k_100k",
+                "100k_1m",
+                "over_1m"
+              ]
+            },
+            "private_note": {
+              "default": "",
+              "type": "string",
+              "maxLength": 1000
+            },
+            "shareable": {
+              "default": false,
+              "type": "boolean"
+            }
+          },
+          "required": [
+            "intro_request_id",
+            "stage"
           ]
         },
         "outputSchema": null
