@@ -7,6 +7,12 @@ import { supabaseForUser } from "../supabase";
 export const MEMBER_COLUMNS =
   "id,name,title,company,location,focus,bio,looking_for,can_help_with,want_to_meet,availability,industries,expertise,what_i_do,building,open_to";
 
+/** Case-insensitive, partial match against the industries a member lists. */
+export function filterByIndustry<T extends { industries?: string[] | null }>(rows: T[], industry: string): T[] {
+  const needle = industry.trim().toLowerCase();
+  return rows.filter(r => (r.industries ?? []).some(i => i.toLowerCase().includes(needle)));
+}
+
 export default defineTool({
   name: "search_members",
   title: "Search members",
@@ -28,8 +34,9 @@ export default defineTool({
       .eq("onboarded", true)
       .neq("id", ctx.getUserId())
       .order("created_at", { ascending: false })
-      .limit(limit ?? 10);
-    if (industry) request = request.contains("industries", [industry]);
+      // Over-fetch when filtering by industry: the array match below is done here so it
+      // can be case-insensitive and partial, which PostgREST array filters cannot do.
+      .limit(industry ? 100 : (limit ?? 10));
     if (query) {
       const q = query.replace(/[,%()]/g, " ").trim();
       request = request.or(
@@ -38,9 +45,10 @@ export default defineTool({
     }
     const { data, error } = await request;
     if (error) return { content: [{ type: "text", text: error.message }], isError: true };
+    const members = industry ? filterByIndustry(data ?? [], industry).slice(0, limit ?? 10) : (data ?? []);
     return {
-      content: [{ type: "text", text: JSON.stringify(data ?? []) }],
-      structuredContent: { members: data ?? [] },
+      content: [{ type: "text", text: JSON.stringify(members) }],
+      structuredContent: { members },
     };
   },
 });

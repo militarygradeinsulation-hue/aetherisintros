@@ -1,6 +1,6 @@
 -- Follow-through record: evidence-based reputation built from introduction outcomes.
--- Answers "does this person follow through?" from what actually happened, not from what
--- they claim. Opt-in to show on a profile, banded (never exact counts or rates), and
+-- Answers "does this person follow through?" from what the other side of each introduction
+-- reported, never from the member's own claims. Opt-in to show on a profile, banded (never exact counts or rates), and
 -- withheld below a minimum sample so no single counterpart's private answer can be inferred.
 
 CREATE TABLE public.track_record_settings (
@@ -61,9 +61,11 @@ BEGIN
     SELECT r.id FROM public.intro_requests r
      WHERE r.accepted_at IS NOT NULL AND (r.user_id = p_member OR r.target_user_id = p_member)
   )
+  -- Only the other side's reports count: a member cannot raise their own record by
+  -- reporting their own meetings or outcomes.
   SELECT count(*),
-         count(*) FILTER (WHERE EXISTS (SELECT 1 FROM public.intro_outcomes o WHERE o.intro_request_id = a.id AND o.stage IN ('met','next_step','outcome'))),
-         count(*) FILTER (WHERE EXISTS (SELECT 1 FROM public.intro_outcomes o WHERE o.intro_request_id = a.id AND o.stage = 'outcome'))
+         count(*) FILTER (WHERE EXISTS (SELECT 1 FROM public.intro_outcomes o WHERE o.intro_request_id = a.id AND o.author_id <> p_member AND o.stage IN ('met','next_step','outcome'))),
+         count(*) FILTER (WHERE EXISTS (SELECT 1 FROM public.intro_outcomes o WHERE o.intro_request_id = a.id AND o.author_id <> p_member AND o.stage = 'outcome'))
     INTO v_accepted, v_met, v_outcomes
     FROM accepted a;
 

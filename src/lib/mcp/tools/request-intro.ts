@@ -26,6 +26,11 @@ export default defineTool({
       return { content: [{ type: "text", text: "A member cannot request an introduction to themselves." }], isError: true };
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const supabase = supabaseForUser(ctx) as any;
+    // Same definition of a real member as search_members: a verified, onboarded profile.
+    const target = await supabase.from("profiles").select("id").eq("id", member_id).eq("onboarded", true).maybeSingle();
+    if (target.error) return { content: [{ type: "text", text: target.error.message }], isError: true };
+    if (!target.data)
+      return { content: [{ type: "text", text: `No verified member found with id ${member_id}. Use search_members to find a real member.` }], isError: true };
     const { data, error } = await supabase
       .from("intro_requests")
       .upsert(
