@@ -31,13 +31,15 @@ CREATE OR REPLACE FUNCTION public.intro_requests_consent_guard()
 RETURNS trigger LANGUAGE plpgsql SET search_path = public AS $$
 DECLARE v_uid uuid := auth.uid();
 BEGIN
+  -- The target is always the member the request names, for every writer (covers MCP-created
+  -- requests that never set target_user_id, which left the target unable to see them).
+  IF TG_OP = 'INSERT' THEN
+    NEW.target_user_id := public.intro_member_uuid(NEW.member_id);
+  END IF;
   IF v_uid IS NOT NULL THEN
     IF TG_OP = 'INSERT' THEN
       -- A request is created by its requester; the target has not consented yet.
-      -- The target is always the member the request names (covers MCP-created requests
-      -- that never set target_user_id, which left the target unable to see them).
       NEW.member_opt_in := false;
-      NEW.target_user_id := public.intro_member_uuid(NEW.member_id);
     ELSE
       NEW.user_id := OLD.user_id;
       NEW.member_id := OLD.member_id;
