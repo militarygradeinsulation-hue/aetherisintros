@@ -36,7 +36,17 @@ declare c text; begin if auth.uid() is null then return new; end if;
 foreach c in array tg_argv loop if (to_jsonb(new) -> c) is distinct from (to_jsonb(old) -> c) then raise exception 'Column % cannot be changed after creation', c using errcode = '42501'; end if; end loop; return new; end $$;
 
 create table public.profiles (id uuid primary key references auth.users on delete cascade, name text not null default '', onboarded boolean not null default false);
-create table public.asks (id text primary key, author_id uuid references auth.users, ask text not null, is_demo boolean not null default false, created_at timestamptz not null default now());
+create table public.asks (id text primary key, author_id uuid references auth.users, ask text not null, is_demo boolean not null default false, response_count int not null default 0, created_at timestamptz not null default now());
+grant select, insert, update on public.asks to authenticated;
+alter table public.asks enable row level security;
+create policy "asks readable" on public.asks for select to authenticated using (true);
+create policy "own asks" on public.asks for all to authenticated using (auth.uid() = author_id) with check (auth.uid() = author_id);
+create table public.ask_responses (id uuid primary key default gen_random_uuid(), ask_id text not null, user_id uuid not null references auth.users on delete cascade, text text not null, created_at timestamptz not null default now());
+grant select, insert, delete on public.ask_responses to authenticated;
+alter table public.ask_responses enable row level security;
+create policy "own ask responses" on public.ask_responses for all to authenticated using (auth.uid() = user_id) with check (auth.uid() = user_id);
+create policy "ask author reads responses" on public.ask_responses for select to authenticated
+  using (exists (select 1 from public.asks a where a.id = ask_responses.ask_id and a.author_id = auth.uid()));
 create table public.user_roles (user_id uuid, role text);
 create function public.has_role(u uuid, r text) returns boolean language sql stable security definer set search_path = public as $$ select exists(select 1 from public.user_roles where user_id = u and role = r) $$;
 create function public.is_admin() returns boolean language sql stable security definer set search_path = public as $$ select public.has_role(auth.uid(), 'admin') $$;
@@ -77,6 +87,9 @@ const SEED = `
 insert into auth.users values ('${A}'),('${B}'),('${C}'),('${ADMIN}');
 insert into public.profiles(id) values ('${A}'),('${B}'),('${C}'),('${ADMIN}');
 insert into public.user_roles values ('${ADMIN}','admin');
+-- An ask that already has two replies but a stale count of 0, from before 0027.
+insert into public.asks (id, author_id, ask) values ('ask-old', '${A}', 'Looking for a CFO');
+insert into public.ask_responses (ask_id, user_id, text) values ('ask-old', '${B}', 'Happy to help'), ('ask-old', '${C}', 'Me too');
 -- An accepted introduction from before 0022, and an assistant-style request with no target.
 insert into public.intro_requests (id,user_id,member_id,target_user_id,member_opt_in,updated_at) values
   ('11111111-1111-4111-8111-111111111111','${C}','${B}','${B}',true, now() - interval '40 days');
