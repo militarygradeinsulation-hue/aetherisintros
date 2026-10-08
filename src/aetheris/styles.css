@@ -5060,3 +5060,9 @@ button.news-link{background:none;border:0;padding:0;cursor:pointer}
 .this-week li button:hover{border-color:#F5B027}
 .this-week .tw-error{color:var(--sys-ink-dim,#9CA3AF);font-size:12px;margin:0}
 @media (max-width:560px){.this-week li{grid-template-columns:auto minmax(0,1fr)}.this-week li button{grid-column:2;justify-self:start}}
+
+/* Introduction requests waiting on the member */
+.intro-inbox h2{margin:6px 0 4px}
+.intro-inbox-why{display:grid;gap:8px;margin:10px 0}
+.intro-inbox-why dt{font-size:.66rem;letter-spacing:.1em;color:var(--muted,#9ea4ac)}
+.intro-inbox-why dd{margin:2px 0 0;overflow-wrap:anywhere}

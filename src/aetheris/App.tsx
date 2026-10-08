@@ -124,6 +124,7 @@ import { badgeLabel, useVerification } from './verification'
 import { ExecutiveIdentityEditor, ExecutivePage } from './ExecutivePage'
 import { GraphProvider, useGraph } from './graph-store'
 import { OutcomeCheckins } from './outcomes-ui'
+import { IntroRequestInbox } from './intro-inbox'
 import { CompanyWorkspacePanel } from './company-ui'
 import { CeoProvider } from './ceo-store'
 import { InsightBar } from './ceo-insights-ui'
@@ -1185,6 +1186,7 @@ function Intros({ people, select, draft }: { people: Member[]; select: (p: Membe
     <PageHead label="CURATED INTRODUCTIONS" title="People worth knowing now."
       copy="Every introduction carries mutual value, timing and a credible path. Nothing is sent until both sides agree."
       proof={`${ranked.length} evidence-ranked people · ${ranked.filter(p => ['accepted', 'introduced', 'conversing', 'closed'].includes(p.introState)).length} progressed introductions`} />
+    <IntroRequestInbox />
     <OutcomeCheckins />
     <div className="state-filters">
       {(['all', 'recommended', 'requested', 'waiting', 'accepted', 'introduced', 'conversing', 'closed'] as const).map(s =>

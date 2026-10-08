@@ -109,8 +109,9 @@ export async function loadWeekInputs(): Promise<{ data: WeekInputs | null; error
     db.from('profiles').select('can_help_with, expertise, what_i_do').eq('id', me).maybeSingle(),
     db.from('asks').select('id, ask, author_id, created_at').eq('is_demo', false).eq('visibility', 'network').neq('status', 'closed')
       .neq('author_id', me).gte('created_at', since).order('created_at', { ascending: false }).limit(60),
-    db.from('asks').select('id, ask, created_at, response_count').eq('author_id', me).neq('status', 'closed')
-      .eq('response_count', 0).lte('created_at', new Date(Date.now() - 7 * DAY).toISOString()).order('created_at', { ascending: true }).limit(3),
+    // asks.response_count is never maintained, so replies are counted from ask_responses below.
+    db.from('asks').select('id, ask, created_at').eq('author_id', me).neq('status', 'closed')
+      .lte('created_at', new Date(Date.now() - 7 * DAY).toISOString()).order('created_at', { ascending: true }).limit(10),
     db.from('org_members').select('org_id, organizations(name)').eq('user_id', me).eq('status', 'active'),
   ])
   const firstError = [pending, due, profile, asks, mine, orgs].find((r: any) => r.error)?.error?.message ?? ''
@@ -125,6 +126,13 @@ export async function loadWeekInputs(): Promise<{ data: WeekInputs | null; error
     for (const row of p.data ?? []) names.set(row.id, row.name || 'A member')
   }
 
+  const myAskIds = (mine.data ?? []).map((a: any) => a.id)
+  const answered = new Set<string>()
+  if (myAskIds.length) {
+    const replies = await db.from('ask_responses').select('ask_id').in('ask_id', myAskIds)
+    for (const row of replies.data ?? []) answered.add(row.ask_id)
+  }
+
   const companyRisk: WeekInputs['companyRisk'] = []
   for (const o of orgs.data ?? []) {
     const cov = await db.rpc('org_relationship_coverage', { p_org: o.org_id })
@@ -137,7 +145,7 @@ export async function loadWeekInputs(): Promise<{ data: WeekInputs | null; error
       pendingRequests: (pending.data ?? []).map((r: any) => ({ id: r.id, requesterName: names.get(r.user_id) ?? 'A member', reason: r.reason ?? '', createdAt: r.created_at })),
       dueCheckins: (due.data ?? []).length,
       helpableAsks: helpable.map((a: any) => ({ id: a.id, ask: a.ask, authorName: names.get(a.author_id) ?? 'A member', matched: a.matched })),
-      quietAsks: (mine.data ?? []).map((a: any) => ({ id: a.id, ask: a.ask, daysOld: Math.floor((Date.now() - new Date(a.created_at).getTime()) / DAY) })),
+      quietAsks: (mine.data ?? []).filter((a: any) => !answered.has(a.id)).map((a: any) => ({ id: a.id, ask: a.ask, daysOld: Math.floor((Date.now() - new Date(a.created_at).getTime()) / DAY) })),
       companyRisk,
     },
     error: firstError,
