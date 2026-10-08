@@ -6,12 +6,13 @@
  */
 import { supabase } from '@/integrations/supabase/client'
 import { tokens } from './opportunity-graph'
+import { STALE_AFTER_DAYS } from './sent-requests'
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 const db = supabase as any
 
 export type WeekTarget = 'intros' | 'needs' | 'organization'
-export type WeekKind = 'respond' | 'checkin' | 'help' | 'quiet_ask' | 'company_risk'
+export type WeekKind = 'respond' | 'checkin' | 'unanswered' | 'help' | 'quiet_ask' | 'company_risk'
 
 export interface WeekItem {
   key: string
@@ -25,6 +26,8 @@ export interface WeekItem {
 export interface WeekInputs {
   pendingRequests: Array<{ id: string; requesterName: string; reason: string; createdAt: string }>
   dueCheckins: number
+  /** The member's own requests that are ready for a reminder or have gone stale. */
+  unansweredSent: Array<{ id: string; targetName: string; daysWaiting: number; canNudge: boolean }>
   helpableAsks: Array<{ id: string; ask: string; authorName: string; matched: string[] }>
   quietAsks: Array<{ id: string; ask: string; daysOld: number }>
   companyRisk: Array<{ orgName: string; atRisk: number; singleOwner: number }>
@@ -65,6 +68,14 @@ export function buildWeek(input: WeekInputs, limit = 6): WeekItem[] {
       action: 'Record what happened',
     })
   }
+  for (const s of input.unansweredSent.slice(0, 2)) {
+    items.push({
+      key: `unanswered-${s.id}`, kind: 'unanswered', target: 'intros',
+      title: `${s.targetName} hasn't answered in ${s.daysWaiting} days`,
+      detail: s.canNudge ? 'Send one reminder, or withdraw and try another path.' : 'A reminder was sent. Consider withdrawing and routing it elsewhere.',
+      action: s.canNudge ? 'Send a reminder' : 'Review request',
+    })
+  }
   for (const a of input.helpableAsks.slice(0, 2)) {
     items.push({
       key: `help-${a.id}`, kind: 'help', target: 'needs',
@@ -102,7 +113,7 @@ export async function loadWeekInputs(): Promise<{ data: WeekInputs | null; error
   if (!me) return { data: null, error: '' }
 
   const since = new Date(Date.now() - 30 * DAY).toISOString()
-  const [pending, due, profile, asks, mine, orgs] = await Promise.all([
+  const [pending, due, profile, asks, mine, orgs, sent] = await Promise.all([
     db.from('intro_requests').select('id, user_id, reason, created_at, status').eq('target_user_id', me).eq('member_opt_in', false)
       .neq('status', 'declined').order('created_at', { ascending: true }).limit(20),
     db.rpc('my_due_outcome_checkins'),
@@ -113,8 +124,9 @@ export async function loadWeekInputs(): Promise<{ data: WeekInputs | null; error
     db.from('asks').select('id, ask, created_at').eq('author_id', me).neq('status', 'closed')
       .lte('created_at', new Date(Date.now() - 7 * DAY).toISOString()).order('created_at', { ascending: true }).limit(10),
     db.from('org_members').select('org_id, organizations(name)').eq('user_id', me).eq('status', 'active'),
+    db.rpc('my_pending_intro_requests'),
   ])
-  const firstError = [pending, due, profile, asks, mine, orgs].find((r: any) => r.error)?.error?.message ?? ''
+  const firstError = [pending, due, profile, asks, mine, orgs, sent].find((r: any) => r.error)?.error?.message ?? ''
 
   const vocab = helpVocabulary(profile.data ?? {})
   const helpable = (asks.data ?? []).map((a: any) => ({ ...a, matched: askMatch(a.ask, vocab) })).filter((a: any) => a.matched.length)
@@ -144,6 +156,8 @@ export async function loadWeekInputs(): Promise<{ data: WeekInputs | null; error
     data: {
       pendingRequests: (pending.data ?? []).map((r: any) => ({ id: r.id, requesterName: names.get(r.user_id) ?? 'A member', reason: r.reason ?? '', createdAt: r.created_at })),
       dueCheckins: (due.data ?? []).length,
+      unansweredSent: (sent.data ?? []).filter((r: any) => r.can_nudge || Number(r.days_waiting) >= STALE_AFTER_DAYS)
+        .map((r: any) => ({ id: r.id, targetName: r.target_name || 'A member', daysWaiting: Number(r.days_waiting), canNudge: !!r.can_nudge })),
       helpableAsks: helpable.map((a: any) => ({ id: a.id, ask: a.ask, authorName: names.get(a.author_id) ?? 'A member', matched: a.matched })),
       quietAsks: (mine.data ?? []).filter((a: any) => !answered.has(a.id)).map((a: any) => ({ id: a.id, ask: a.ask, daysOld: Math.floor((Date.now() - new Date(a.created_at).getTime()) / DAY) })),
       companyRisk,

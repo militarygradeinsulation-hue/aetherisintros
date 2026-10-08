@@ -3,12 +3,12 @@
  * member, each with one button. Renders nothing for signed-out or demo visitors.
  */
 import { useEffect, useState } from 'react'
-import { ArrowRight, Building2, CheckCircle2, Clock, HandHelping, MessageSquareReply } from 'lucide-react'
+import { ArrowRight, Building2, CheckCircle2, Clock, HandHelping, Hourglass, MessageSquareReply } from 'lucide-react'
 
 import { buildWeek, loadWeekInputs, type WeekItem, type WeekKind, type WeekTarget } from './this-week'
 
 const icon: Record<WeekKind, typeof Clock> = {
-  respond: MessageSquareReply, checkin: Clock, help: HandHelping, quiet_ask: Clock, company_risk: Building2,
+  respond: MessageSquareReply, checkin: Clock, unanswered: Hourglass, help: HandHelping, quiet_ask: Clock, company_risk: Building2,
 }
 
 export function ThisWeekPanel({ onOpen }: { onOpen: (target: WeekTarget) => void }) {

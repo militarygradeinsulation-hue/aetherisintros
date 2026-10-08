@@ -5081,3 +5081,8 @@ button.news-link{background:none;border:0;padding:0;cursor:pointer}
 .live-bell-panel li button:hover{background:rgba(255,255,255,.06)}
 .live-bell-panel li small{flex-shrink:0;font-size:11px;color:var(--sys-ink-dim,#9CA3AF)}
 .live-bell-panel p{margin:8px;color:var(--sys-ink-dim,#9CA3AF);font-size:13px}
+
+/* Sent introduction requests (0028) */
+.sent-requests h2{margin:6px 0 4px}
+.sent-requests .sent-nudge{border-left:3px solid var(--signal,#c9a45c)}
+.sent-requests .sent-stale{opacity:.92;border-left:3px solid var(--muted,#9ea4ac)}

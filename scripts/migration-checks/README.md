@@ -22,7 +22,8 @@ Pin PGlite 0.2.x: the 0.3.x builds tested here crash on `RAISE` inside PL/pgSQL.
 | `company` | 0024 | RPC-only membership, sharing and withdrawal, approved-only handovers, departure, last-admin guard, coverage |
 | `cohorts` | 0025 | admin-only invites, per-row outcomes, email lock and expiry, activation stages, revocation |
 | `notifications` | 0026 | production intro trigger kept (notice + connection on acceptance), message and follow notices, no client-written notifications, mark-read scope |
-| `ask-responses` | 0027 | backfill of stale counts, count follows replies added and withdrawn, no tampering via others' replies |
+| `ask-responses` | 0027 | backfill of stale counts, count follows replies added and withdrawn, no tampering via others' replies or by editing the ask |
+| `stale-intros` | 0028 | pending list scoped to the requester, one reminder after five days (requester only, private ledger), withdrawal of unanswered requests, accepted introductions and their outcomes cannot be deleted |
 
 Run after any change to these migrations, and add a suite with each new one. The live-schema
 harness in `scripts/security-harness` remains the check against the real dumped schema.

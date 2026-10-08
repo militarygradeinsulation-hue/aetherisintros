@@ -4,7 +4,7 @@ vi.mock('@/integrations/supabase/client', () => ({ supabase: {} }))
 
 import { askMatch, buildWeek, helpVocabulary, type WeekInputs } from '../this-week'
 
-const empty: WeekInputs = { pendingRequests: [], dueCheckins: 0, helpableAsks: [], quietAsks: [], companyRisk: [] }
+const empty: WeekInputs = { pendingRequests: [], dueCheckins: 0, unansweredSent: [], helpableAsks: [], quietAsks: [], companyRisk: [] }
 
 describe('buildWeek', () => {
   it('is empty when nothing is waiting — never padded', () => {
@@ -15,14 +15,16 @@ describe('buildWeek', () => {
     const items = buildWeek({
       pendingRequests: [{ id: 'r1', requesterName: 'Dana', reason: 'Renewal at Northwind', createdAt: '' }],
       dueCheckins: 2,
+      unansweredSent: [{ id: 's1', targetName: 'Lee', daysWaiting: 6, canNudge: true }],
       helpableAsks: [{ id: 'a1', ask: 'Need a fractional CFO for a PE-backed plant', authorName: 'Sam', matched: ['cfo', 'finance'] }],
       quietAsks: [{ id: 'q1', ask: 'Looking for a COO', daysOld: 9 }],
       companyRisk: [{ orgName: 'Acme', atRisk: 1, singleOwner: 3 }],
     })
-    expect(items.map(i => i.kind)).toEqual(['respond', 'checkin', 'help', 'quiet_ask', 'company_risk'])
+    expect(items.map(i => i.kind)).toEqual(['respond', 'checkin', 'unanswered', 'help', 'quiet_ask', 'company_risk'])
     expect(items[0]).toMatchObject({ title: 'Dana is waiting on your answer', target: 'intros' })
     expect(items[1]!.title).toBe('2 introductions to follow up')
-    expect(items[4]!.title).toBe('Acme: 1 relationship no one here holds now')
+    expect(items[2]).toMatchObject({ title: "Lee hasn't answered in 6 days", action: 'Send a reminder', target: 'intros' })
+    expect(items[5]!.title).toBe('Acme: 1 relationship no one here holds now')
   })
   it('collapses a backlog of requests and respects the limit', () => {
     const pendingRequests = Array.from({ length: 5 }, (_, i) => ({ id: `r${i}`, requesterName: `P${i}`, reason: '', createdAt: '' }))

@@ -264,6 +264,8 @@ interface NetworkApi {
   requestIntro: (id: string) => void
   authorizeIntro: (id: string) => void
   declineIntro: (id: string) => void
+  /** Forget a withdrawn request locally; the row itself is deleted by the caller. */
+  withdrawIntro: (id: string) => void
   addPost: (text: string, detail?: string, media?: JournalAttachment[], visibility?: 'network' | 'private', kind?: Post['kind']) => void
   respondToPost: (postId: string, memberId: string) => string | null
   togglePostLike: (postId: string) => void
@@ -642,6 +644,14 @@ export function NetworkProvider({ children, mode = 'live' }: { children: React.R
         introStates: { ...prev.introStates, [id]: 'closed' },
         learned: remember(prev, { category: 'Decisions', text: `You set the ${nameOf(id)} introduction to “not now”.`, source: 'Your action', confidence: 100, scope: 'private' }),
       })),
+
+      withdrawIntro: (id) => patch(prev => {
+        const { [id]: _withdrawn, ...introStates } = prev.introStates
+        return {
+          introStates,
+          learned: remember(prev, { category: 'Decisions', text: `You withdrew your introduction request to ${nameOf(id)}.`, source: 'Your action', confidence: 100, scope: 'private' }),
+        }
+      }),
 
       addPost: (text, detail, media, visibility, kind = 'Insight') => patch(prev => ({
         ownPosts: [{ id: uid('post'), memberId: 'me', kind, text, detail: detail ?? 'Shared with your network.', when: 'Just now', responses: 0, media: media ?? [], visibility: visibility ?? 'network' }, ...prev.ownPosts],

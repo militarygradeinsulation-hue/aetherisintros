@@ -10,6 +10,7 @@ import { Check, Inbox, X } from 'lucide-react'
 import { supabase } from '@/integrations/supabase/client'
 import { useGraph } from './graph-store'
 import { useNav } from './nav'
+import { waitingLabel } from './sent-requests'
 import { useNetwork } from './store'
 import { Btn, Eyebrow } from './ui'
 
@@ -66,9 +67,10 @@ export function IntroRequestInbox() {
       const c = await db.from('intro_context_capsules').update({ target_approved: true }).eq('id', row.capsuleId)
       if (c.error) { setMsg(c.error.message); setBusy(''); return }
     }
-    const u = await db.from('intro_requests').update(accept ? { member_opt_in: true, status: 'accepted' } : { status: 'declined' }).eq('id', row.id)
+    const u = await db.from('intro_requests').update(accept ? { member_opt_in: true, status: 'accepted' } : { status: 'declined' }).eq('id', row.id).select('id')
     setBusy('')
     if (u.error) { setMsg(u.error.message); return }
+    if (!(u.data ?? []).length) { setMsg(`${row.requesterName} withdrew this request.`); await load(); return }
     await graph.logEvent('intro_request', row.id, accept ? 'accepted' : 'declined', `Introduction ${accept ? 'accepted' : 'declined'} with ${row.requesterName}`)
     setMsg(accept ? `Accepted. You and ${row.requesterName} can now open a Relationship Room.` : `Declined. ${row.requesterName} is not told why.`)
     await load()
@@ -83,7 +85,7 @@ export function IntroRequestInbox() {
     {rows.map(r => {
       const member = net.members.find(m => m.id === r.requesterId)
       return <article key={r.id} className="oc-card">
-        <p><b>{r.requesterName}</b> · {new Date(r.createdAt).toLocaleDateString()}</p>
+        <p><b>{r.requesterName}</b> · {waitingLabel(r.createdAt)}</p>
         <dl className="intro-inbox-why">
           {r.whyExists && <div><dt>WHY THIS INTRODUCTION</dt><dd>{r.whyExists}</dd></div>}
           {r.whyTarget && <div><dt>WHY YOU MAY CARE</dt><dd>{r.whyTarget}</dd></div>}
