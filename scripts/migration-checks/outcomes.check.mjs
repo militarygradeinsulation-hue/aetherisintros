@@ -23,6 +23,11 @@ export default async ({ db, ok, as, svc, A, B, C, ADMIN }) => {
 
   r = await as(A, `insert into public.intro_outcomes (intro_request_id, stage) values ($1, 'met') returning id`, [intro])
   ok(!!r.error, 'outcome cannot be recorded before both sides opt in')
+  r = await as(A, `update public.intro_requests set status = 'accepted' where id = $1 returning status`, [intro])
+  ok(r.rows[0].status !== 'accepted', 'requester cannot accept by setting status (production connects on status)')
+  r = await as(A, `insert into public.intro_requests (user_id, member_id, status) values ($1, $2, 'connected') returning status`, [A, C])
+  ok(r.rows?.[0]?.status === 'requested', 'a new request always starts as requested')
+  await svc(`delete from public.intro_requests where user_id = '${A}' and member_id = '${C}'`)
 
   r = await as(B, `update public.intro_requests set member_opt_in = true, status = 'accepted' where id = $1 returning member_opt_in, accepted_at`, [intro])
   ok(r.rows[0].member_opt_in === true && r.rows[0].accepted_at !== null, 'target accepts; accepted_at stamped by server')

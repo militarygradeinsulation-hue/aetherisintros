@@ -23,10 +23,11 @@ export function ageLabel(iso: string, now = Date.now()): string {
 }
 
 /** Where a notification should take the member. */
-export function destinationFor(n: Pick<LiveNotification, 'kind'>): 'intros' | 'messages' | 'people' {
+export function destinationFor(n: Pick<LiveNotification, 'kind'>): 'intros' | 'messages' | 'people' | 'home' {
   if (n.kind === 'message') return 'messages'
   if (n.kind === 'connection' || n.kind === 'follow') return 'people'
-  return 'intros'
+  if (n.kind.startsWith('intro')) return 'intros' // intro_request, intro_accepted, intro_declined, intro_connected
+  return 'home' // e.g. onboarding_incomplete nudges
 }
 
 export function LiveNotificationsBell({ onOpen }: { onOpen: (destination: ReturnType<typeof destinationFor>) => void }) {

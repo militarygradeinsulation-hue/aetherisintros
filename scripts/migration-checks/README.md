@@ -11,6 +11,8 @@ schema dump is needed.
     node <repo>/scripts/migration-checks/run.mjs            # every suite
     node <repo>/scripts/migration-checks/run.mjs cohorts    # one suite by name prefix
 
+`BASE` also carries objects that exist only in production (created outside these migrations), copied from the live schema: `set_intro_target`, `notify_intro_activity`, `relationships`, `follows`, `dm_threads`, `dm_messages` and the live notification insert policy. Re-check them against production when it changes.
+
 Pin PGlite 0.2.x: the 0.3.x builds tested here crash on `RAISE` inside PL/pgSQL.
 
 | Suite | Migration | Covers |
@@ -19,7 +21,7 @@ Pin PGlite 0.2.x: the 0.3.x builds tested here crash on `RAISE` inside PL/pgSQL.
 | `track-record` | 0023 | opt-in visibility, banding without numbers, minimum sample, counterpart-only evidence |
 | `company` | 0024 | RPC-only membership, sharing and withdrawal, approved-only handovers, departure, last-admin guard, coverage |
 | `cohorts` | 0025 | admin-only invites, per-row outcomes, email lock and expiry, activation stages, revocation |
-| `notifications` | 0026 | one notification per request from any path, acceptance notice, no private context, mark-read scope |
+| `notifications` | 0026 | production intro trigger kept (notice + connection on acceptance), message and follow notices, no client-written notifications, mark-read scope |
 | `ask-responses` | 0027 | backfill of stale counts, count follows replies added and withdrawn, no tampering via others' replies |
 
 Run after any change to these migrations, and add a suite with each new one. The live-schema
