@@ -193,6 +193,7 @@ export type Database = {
           id: string
           kind: string
           location: string
+          meeting_id: string | null
           member_id: string | null
           notes: string
           starts_at: string
@@ -207,6 +208,7 @@ export type Database = {
           id?: string
           kind?: string
           location?: string
+          meeting_id?: string | null
           member_id?: string | null
           notes?: string
           starts_at: string
@@ -221,6 +223,7 @@ export type Database = {
           id?: string
           kind?: string
           location?: string
+          meeting_id?: string | null
           member_id?: string | null
           notes?: string
           starts_at?: string
@@ -228,7 +231,15 @@ export type Database = {
           updated_at?: string
           user_id?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "calendar_events_meeting_id_fkey"
+            columns: ["meeting_id"]
+            isOneToOne: false
+            referencedRelation: "meetings"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       capability_dismissals: {
         Row: {
@@ -1783,6 +1794,30 @@ export type Database = {
         }
         Relationships: []
       }
+      email_preferences: {
+        Row: {
+          last_digest_at: string | null
+          unsubscribe_token: string
+          updated_at: string
+          user_id: string
+          weekly_digest: boolean
+        }
+        Insert: {
+          last_digest_at?: string | null
+          unsubscribe_token?: string
+          updated_at?: string
+          user_id: string
+          weekly_digest?: boolean
+        }
+        Update: {
+          last_digest_at?: string | null
+          unsubscribe_token?: string
+          updated_at?: string
+          user_id?: string
+          weekly_digest?: boolean
+        }
+        Relationships: []
+      }
       entity_events: {
         Row: {
           created_at: string
@@ -2409,6 +2444,29 @@ export type Database = {
           },
         ]
       }
+      intro_request_nudges: {
+        Row: {
+          intro_request_id: string
+          nudged_at: string
+        }
+        Insert: {
+          intro_request_id: string
+          nudged_at?: string
+        }
+        Update: {
+          intro_request_id?: string
+          nudged_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "intro_request_nudges_intro_request_id_fkey"
+            columns: ["intro_request_id"]
+            isOneToOne: true
+            referencedRelation: "intro_requests"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       intro_requests: {
         Row: {
           accepted_at: string | null
@@ -2457,11 +2515,14 @@ export type Database = {
       invitations: {
         Row: {
           code: string
+          cohort_id: string | null
           created_at: string
           created_by: string | null
           email: string | null
           expires_at: string | null
           id: string
+          invitee_company: string
+          invitee_name: string
           max_uses: number
           personal: boolean
           revoked: boolean
@@ -2469,11 +2530,14 @@ export type Database = {
         }
         Insert: {
           code: string
+          cohort_id?: string | null
           created_at?: string
           created_by?: string | null
           email?: string | null
           expires_at?: string | null
           id?: string
+          invitee_company?: string
+          invitee_name?: string
           max_uses?: number
           personal?: boolean
           revoked?: boolean
@@ -2481,15 +2545,50 @@ export type Database = {
         }
         Update: {
           code?: string
+          cohort_id?: string | null
           created_at?: string
           created_by?: string | null
           email?: string | null
           expires_at?: string | null
           id?: string
+          invitee_company?: string
+          invitee_name?: string
           max_uses?: number
           personal?: boolean
           revoked?: boolean
           uses?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "invitations_cohort_id_fkey"
+            columns: ["cohort_id"]
+            isOneToOne: false
+            referencedRelation: "invite_cohorts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      invite_cohorts: {
+        Row: {
+          created_at: string
+          created_by: string
+          id: string
+          name: string
+          source_label: string
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string
+          id?: string
+          name: string
+          source_label?: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string
+          id?: string
+          name?: string
+          source_label?: string
         }
         Relationships: []
       }
@@ -2519,6 +2618,188 @@ export type Database = {
           updated_by?: string | null
         }
         Relationships: []
+      }
+      leak_checks: {
+        Row: {
+          answers: Json
+          company_name: string
+          created_at: string
+          id: string
+          leak_index: number
+          owner_id: string
+        }
+        Insert: {
+          answers: Json
+          company_name?: string
+          created_at?: string
+          id?: string
+          leak_index: number
+          owner_id?: string
+        }
+        Update: {
+          answers?: Json
+          company_name?: string
+          created_at?: string
+          id?: string
+          leak_index?: number
+          owner_id?: string
+        }
+        Relationships: []
+      }
+      meeting_notes: {
+        Row: {
+          action_items: Json
+          decisions: Json
+          generated_at: string | null
+          id: string
+          meeting_id: string
+          owner_id: string
+          private_note: string
+          summary: string
+          updated_at: string
+        }
+        Insert: {
+          action_items?: Json
+          decisions?: Json
+          generated_at?: string | null
+          id?: string
+          meeting_id: string
+          owner_id?: string
+          private_note?: string
+          summary?: string
+          updated_at?: string
+        }
+        Update: {
+          action_items?: Json
+          decisions?: Json
+          generated_at?: string | null
+          id?: string
+          meeting_id?: string
+          owner_id?: string
+          private_note?: string
+          summary?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "meeting_notes_meeting_id_fkey"
+            columns: ["meeting_id"]
+            isOneToOne: false
+            referencedRelation: "meetings"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      meeting_participants: {
+        Row: {
+          consented_at: string | null
+          joined_at: string | null
+          meeting_id: string
+          notes_consent: boolean
+          role: string
+          user_id: string
+        }
+        Insert: {
+          consented_at?: string | null
+          joined_at?: string | null
+          meeting_id: string
+          notes_consent?: boolean
+          role?: string
+          user_id: string
+        }
+        Update: {
+          consented_at?: string | null
+          joined_at?: string | null
+          meeting_id?: string
+          notes_consent?: boolean
+          role?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "meeting_participants_meeting_id_fkey"
+            columns: ["meeting_id"]
+            isOneToOne: false
+            referencedRelation: "meetings"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      meeting_transcript_lines: {
+        Row: {
+          id: string
+          meeting_id: string
+          speaker_id: string
+          spoken_at: string
+          text: string
+        }
+        Insert: {
+          id?: string
+          meeting_id: string
+          speaker_id?: string
+          spoken_at?: string
+          text: string
+        }
+        Update: {
+          id?: string
+          meeting_id?: string
+          speaker_id?: string
+          spoken_at?: string
+          text?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "meeting_transcript_lines_meeting_id_fkey"
+            columns: ["meeting_id"]
+            isOneToOne: false
+            referencedRelation: "meetings"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      meetings: {
+        Row: {
+          agenda: string
+          created_at: string
+          ended_at: string | null
+          host_id: string
+          id: string
+          intro_request_id: string | null
+          scheduled_for: string | null
+          started_at: string | null
+          title: string
+        }
+        Insert: {
+          agenda?: string
+          created_at?: string
+          ended_at?: string | null
+          host_id: string
+          id?: string
+          intro_request_id?: string | null
+          scheduled_for?: string | null
+          started_at?: string | null
+          title: string
+        }
+        Update: {
+          agenda?: string
+          created_at?: string
+          ended_at?: string | null
+          host_id?: string
+          id?: string
+          intro_request_id?: string | null
+          scheduled_for?: string | null
+          started_at?: string | null
+          title?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "meetings_intro_request_id_fkey"
+            columns: ["intro_request_id"]
+            isOneToOne: false
+            referencedRelation: "intro_requests"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       member_verifications: {
         Row: {
@@ -3022,6 +3303,197 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      org_handovers: {
+        Row: {
+          approved: boolean
+          approved_at: string | null
+          author_id: string
+          created_at: string
+          id: string
+          note: string
+          open_loops: string
+          org_id: string
+          updated_at: string
+        }
+        Insert: {
+          approved?: boolean
+          approved_at?: string | null
+          author_id?: string
+          created_at?: string
+          id?: string
+          note?: string
+          open_loops?: string
+          org_id: string
+          updated_at?: string
+        }
+        Update: {
+          approved?: boolean
+          approved_at?: string | null
+          author_id?: string
+          created_at?: string
+          id?: string
+          note?: string
+          open_loops?: string
+          org_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "org_handovers_org_id_fkey"
+            columns: ["org_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      org_invites: {
+        Row: {
+          code: string
+          created_at: string
+          created_by: string
+          expires_at: string
+          max_uses: number
+          org_id: string
+          revoked: boolean
+          uses: number
+        }
+        Insert: {
+          code: string
+          created_at?: string
+          created_by: string
+          expires_at?: string
+          max_uses?: number
+          org_id: string
+          revoked?: boolean
+          uses?: number
+        }
+        Update: {
+          code?: string
+          created_at?: string
+          created_by?: string
+          expires_at?: string
+          max_uses?: number
+          org_id?: string
+          revoked?: boolean
+          uses?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "org_invites_org_id_fkey"
+            columns: ["org_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      org_members: {
+        Row: {
+          departed_at: string | null
+          joined_at: string
+          org_id: string
+          role: string
+          status: string
+          user_id: string
+        }
+        Insert: {
+          departed_at?: string | null
+          joined_at?: string
+          org_id: string
+          role?: string
+          status?: string
+          user_id: string
+        }
+        Update: {
+          departed_at?: string | null
+          joined_at?: string
+          org_id?: string
+          role?: string
+          status?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "org_members_org_id_fkey"
+            columns: ["org_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      org_shared_relationships: {
+        Row: {
+          contact_company: string
+          contact_member_id: string | null
+          contact_name: string
+          context: string
+          created_at: string
+          id: string
+          org_id: string
+          owner_id: string
+          strength: string
+          updated_at: string
+        }
+        Insert: {
+          contact_company?: string
+          contact_member_id?: string | null
+          contact_name: string
+          context?: string
+          created_at?: string
+          id?: string
+          org_id: string
+          owner_id?: string
+          strength?: string
+          updated_at?: string
+        }
+        Update: {
+          contact_company?: string
+          contact_member_id?: string | null
+          contact_name?: string
+          context?: string
+          created_at?: string
+          id?: string
+          org_id?: string
+          owner_id?: string
+          strength?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "org_shared_relationships_org_id_fkey"
+            columns: ["org_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      organizations: {
+        Row: {
+          created_at: string
+          created_by: string
+          domain: string
+          id: string
+          name: string
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string
+          domain?: string
+          id?: string
+          name: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string
+          domain?: string
+          id?: string
+          name?: string
+        }
+        Relationships: []
       }
       passports: {
         Row: {
@@ -3656,6 +4128,24 @@ export type Database = {
         }
         Relationships: []
       }
+      track_record_settings: {
+        Row: {
+          show_on_profile: boolean
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          show_on_profile?: boolean
+          updated_at?: string
+          user_id?: string
+        }
+        Update: {
+          show_on_profile?: boolean
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       user_roles: {
         Row: {
           created_at: string
@@ -3954,6 +4444,7 @@ export type Database = {
         }
         Returns: string
       }
+      admin_network_health: { Args: never; Returns: Json }
       append_capability_event: {
         Args: {
           p_detail?: Json
@@ -4005,6 +4496,19 @@ export type Database = {
           status: string
         }[]
       }
+      cohort_activation: {
+        Args: { p_cohort: string }
+        Returns: {
+          code: string
+          email: string
+          expires_at: string
+          invite_id: string
+          invitee_company: string
+          invitee_name: string
+          stage: string
+          user_id: string
+        }[]
+      }
       confirm_professional_profile: {
         Args: {
           p_candidate: Json
@@ -4017,11 +4521,38 @@ export type Database = {
         }
         Returns: Json
       }
+      create_cohort_invites: {
+        Args: { p_cohort: string; p_days?: number; p_rows: Json }
+        Returns: {
+          code: string
+          email: string
+          outcome: string
+        }[]
+      }
+      create_meeting: {
+        Args: {
+          p_agenda?: string
+          p_intro?: string
+          p_invitees: string[]
+          p_scheduled_for?: string
+          p_title: string
+        }
+        Returns: string
+      }
+      create_org_invite: {
+        Args: { p_max_uses?: number; p_org: string }
+        Returns: string
+      }
+      create_organization: {
+        Args: { p_domain?: string; p_name: string }
+        Returns: string
+      }
       decide_capability_proposal: {
         Args: { p_decision: string; p_id: string }
         Returns: string
       }
       decline_delegate_invite: { Args: { p_id: string }; Returns: undefined }
+      end_meeting: { Args: { p_meeting: string }; Returns: undefined }
       enrichment_clean: { Args: { p: Json }; Returns: Json }
       ensure_default_pipeline: { Args: never; Returns: string }
       entity_owned_by: {
@@ -4060,8 +4591,12 @@ export type Database = {
       is_approved_member: { Args: { p_user: string }; Returns: boolean }
       is_circle_member: { Args: { p_circle: string }; Returns: boolean }
       is_live_member: { Args: never; Returns: boolean }
+      is_meeting_participant: { Args: { p_meeting: string }; Returns: boolean }
+      is_org_admin: { Args: { p_org: string }; Returns: boolean }
+      is_org_member: { Args: { p_org: string }; Returns: boolean }
       is_uuid_text: { Args: { p: string }; Returns: boolean }
       is_verified_member: { Args: never; Returns: boolean }
+      join_organization: { Args: { p_code: string }; Returns: string }
       join_waitlist: {
         Args: { p_email: string; p_name?: string }
         Returns: undefined
@@ -4078,11 +4613,15 @@ export type Database = {
       }
       linkedin_handle: { Args: { p_url: string }; Returns: string }
       mark_approval_executed: { Args: { p_id: string }; Returns: undefined }
+      mark_meeting_joined: { Args: { p_meeting: string }; Returns: undefined }
+      mark_notifications_read: { Args: { p_ids?: string[] }; Returns: number }
       match_reasoning: {
         Args: { p_target: string; p_viewer: string }
         Returns: Json
       }
+      meeting_topic_id: { Args: { p_topic: string }; Returns: string }
       member_profile_strength: { Args: { p_user: string }; Returns: number }
+      member_track_record: { Args: { p_member: string }; Returns: Json }
       my_capability_usage_today: {
         Args: never
         Returns: {
@@ -4121,6 +4660,19 @@ export type Database = {
         }[]
       }
       my_invite_code: { Args: never; Returns: string }
+      my_pending_intro_requests: {
+        Args: never
+        Returns: {
+          can_nudge: boolean
+          created_at: string
+          days_waiting: number
+          id: string
+          nudged_at: string
+          reason: string
+          target_name: string
+          target_user_id: string
+        }[]
+      }
       my_top_connections: {
         Args: never
         Returns: {
@@ -4152,6 +4704,19 @@ export type Database = {
       network_health: { Args: never; Returns: Json }
       network_proof_metrics: { Args: { p_days?: number }; Returns: Json }
       nudge_incomplete_onboarding: { Args: never; Returns: number }
+      nudge_intro_request: { Args: { p_id: string }; Returns: string }
+      org_relationship_coverage: {
+        Args: { p_org: string }
+        Returns: {
+          active_owners: number
+          contact_company: string
+          contact_key: string
+          contact_member_id: string
+          contact_name: string
+          coverage: string
+          departed_owners: number
+        }[]
+      }
       owns_entity: { Args: { p_id: string; p_type: string }; Returns: boolean }
       purge_verification_proof: { Args: never; Returns: number }
       record_capability_web_domain: {
@@ -4165,6 +4730,10 @@ export type Database = {
           p_id: string
           p_recovered: number
         }
+        Returns: undefined
+      }
+      record_org_departure: {
+        Args: { p_org: string; p_user: string }
         Returns: undefined
       }
       reject_professional_candidate: {
@@ -4187,6 +4756,7 @@ export type Database = {
         }
         Returns: undefined
       }
+      revoke_cohort_invite: { Args: { p_invite: string }; Returns: undefined }
       run_verification_scan: { Args: { p_user: string }; Returns: string }
       set_capability_run_status: {
         Args: {
@@ -4207,6 +4777,14 @@ export type Database = {
       }
       set_finding_baseline: {
         Args: { p_baseline: Json; p_id: string; p_target: Json }
+        Returns: undefined
+      }
+      set_meeting_notes_consent: {
+        Args: { p_meeting: string; p_on: boolean }
+        Returns: undefined
+      }
+      set_org_role: {
+        Args: { p_org: string; p_role: string; p_user: string }
         Returns: undefined
       }
       show_limit: { Args: never; Returns: number }
@@ -4239,6 +4817,10 @@ export type Database = {
           p_registration_number?: string
           p_work_email: string
         }
+        Returns: string
+      }
+      track_record_band: {
+        Args: { p_part: number; p_whole: number }
         Returns: string
       }
       update_my_executive_recommendation: {
