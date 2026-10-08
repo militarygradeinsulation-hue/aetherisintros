@@ -1,7 +1,7 @@
 // @ts-nocheck
 import React, { useEffect, useRef, useState } from 'react';
 import { AskIntrosLockup } from '@/aetheris/AskIntrosLockup';
-import { Search, Bell, Orbit, LogOut, Home, Users, MessageSquare, MoreHorizontal, Network, Brain, Newspaper, Briefcase, X } from 'lucide-react';
+import { Search, Bell, Orbit, LogOut, Home, Users, MessageSquare, MoreHorizontal, Network, Brain, Newspaper, Briefcase, X, Video } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { AvatarImage } from '@/aetheris/avatar';
 import { supabase } from '@/integrations/supabase/client';
@@ -14,7 +14,7 @@ async function signOut() {
   }
 }
 
-export type ActivePage = 'home' | 'people' | 'bubbles' | 'intros' | 'messages' | 'insights' | 'profile' | 'news' | 'workspace' | 'memory' | 'work';
+export type ActivePage = 'home' | 'people' | 'bubbles' | 'intros' | 'messages' | 'insights' | 'profile' | 'news' | 'workspace' | 'memory' | 'work' | 'meetings';
 
 interface TopNavigationProps {
   activePage: ActivePage;
@@ -25,6 +25,7 @@ interface TopNavigationProps {
   onToggleConstellationOverlay?: () => void;
   me?: { name: string; avatarUrl?: string } | null;
   onOpenMyProfile?: () => void;
+  bell?: React.ReactNode;
 }
 
 export const TopNavigation: React.FC<TopNavigationProps> = ({
@@ -36,6 +37,7 @@ export const TopNavigation: React.FC<TopNavigationProps> = ({
   onToggleConstellationOverlay,
   me,
   onOpenMyProfile,
+  bell,
 }) => {
   const [moreOpen, setMoreOpen] = useState(false);
   const moreRef = useRef<HTMLButtonElement>(null);
@@ -61,6 +63,7 @@ export const TopNavigation: React.FC<TopNavigationProps> = ({
     { id: 'bubbles', label: 'Bubbles', icon: Orbit },
     { id: 'insights', label: 'Insights', icon: Network },
     { id: 'memory', label: 'Memory', icon: Brain },
+    { id: 'meetings', label: 'Meetings', icon: Video },
     { id: 'news', label: 'News', icon: Newspaper },
     { id: 'work', label: 'Work', icon: Briefcase },
   ] as const;
@@ -90,6 +93,7 @@ export const TopNavigation: React.FC<TopNavigationProps> = ({
             { id: 'insights', label: 'Insights' },
             { id: 'memory', label: 'Memory' },
             { id: 'messages', label: 'Messages', badge: unreadCount },
+            { id: 'meetings', label: 'Meetings' },
             { id: 'news', label: 'News' },
             { id: 'people', label: 'People' },
             { id: 'work', label: 'Work' },
@@ -143,15 +147,15 @@ export const TopNavigation: React.FC<TopNavigationProps> = ({
             </kbd>
           </div>
 
-          {/* Notification Bell */}
-          <button
+          {/* Notification Bell (live members get the real unread count) */}
+          {bell ?? <button
             onClick={() => onNavigate('intros')}
             title="Introduction Requests"
             className="relative p-1.5 md:p-2 text-[#9CA3AF] hover:text-[#F2EEE6] hover:bg-white/5 rounded-lg transition-colors cursor-pointer"
           >
             <Bell className="w-4 h-4" />
             <span className="absolute top-1 right-1 w-2 h-2 rounded-full bg-[var(--acc)] ring-2 ring-[#07090C]" />
-          </button>
+          </button>}
 
           <AccentSwitch />
 

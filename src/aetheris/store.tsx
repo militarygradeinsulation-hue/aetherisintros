@@ -13,7 +13,7 @@ import {
   type Directory, type MemoryNote,
 } from './db'
 import {
-  createLiveThread, emptyDirectory, loadLiveDirectory, mirrorFollow, notify, saveComment,
+  createLiveThread, emptyDirectory, loadLiveDirectory, mirrorFollow, saveComment,
   saveReaction, sendLiveMessage, uploadProfileAvatar, type LiveProfileRow,
 } from './live'
 import { supabase } from '@/integrations/supabase/client'
@@ -264,6 +264,8 @@ interface NetworkApi {
   requestIntro: (id: string) => void
   authorizeIntro: (id: string) => void
   declineIntro: (id: string) => void
+  /** Forget a withdrawn request locally; the row itself is deleted by the caller. */
+  withdrawIntro: (id: string) => void
   addPost: (text: string, detail?: string, media?: JournalAttachment[], visibility?: 'network' | 'private', kind?: Post['kind']) => void
   respondToPost: (postId: string, memberId: string) => string | null
   togglePostLike: (postId: string) => void
@@ -442,8 +444,8 @@ export function NetworkProvider({ children, mode = 'live' }: { children: React.R
       for (const id of s[group]) if (!prev[group].includes(id)) {
         saveRelationship(userId, group, id, true)
         if (live) {
+          // The follows_notify trigger (0026) tells the other member; clients cannot write notifications.
           mirrorFollow(userId, id, relayKind[group], true)
-          if (group !== 'saved') notify(id, userId, group === 'connections' ? 'connection' : 'follow', `${s.profile.name || 'A member'} ${group === 'connections' ? 'connected with you' : 'is following your work'}.`)
         }
       }
       for (const id of prev[group]) if (!s[group].includes(id)) {
@@ -453,10 +455,8 @@ export function NetworkProvider({ children, mode = 'live' }: { children: React.R
     }
     for (const [memberId, status] of Object.entries(s.introStates)) {
       if (prev.introStates[memberId] !== status) {
+        // The intro_requests_notify trigger (0026) notifies the target once, for every request path.
         saveIntro(userId, memberId, status)
-        if (live && status === 'requested') {
-          notify(memberId, userId, 'intro_request', `${s.profile.name || 'A member'} asked for an introduction — both sides must opt in.`)
-        }
       }
     }
     for (const learning of s.learned) {
@@ -484,9 +484,8 @@ export function NetworkProvider({ children, mode = 'live' }: { children: React.R
       const before = prev.sentMessages[threadId] ?? []
       messages.slice(before.length).forEach(message => {
         if (live) {
+          // The dm_messages_notify trigger (0026) notifies the other participant.
           sendLiveMessage(threadId, userId, message.text)
-          const peer = [...s.ownThreads, ...dir.threads].find(t => t.id === threadId)?.memberId
-          if (peer) notify(peer, userId, 'message', `${s.profile.name || 'A member'} sent you a message.`)
         } else saveMessage(userId, threadId, message)
       })
     }
@@ -645,6 +644,14 @@ export function NetworkProvider({ children, mode = 'live' }: { children: React.R
         introStates: { ...prev.introStates, [id]: 'closed' },
         learned: remember(prev, { category: 'Decisions', text: `You set the ${nameOf(id)} introduction to “not now”.`, source: 'Your action', confidence: 100, scope: 'private' }),
       })),
+
+      withdrawIntro: (id) => patch(prev => {
+        const { [id]: _withdrawn, ...introStates } = prev.introStates
+        return {
+          introStates,
+          learned: remember(prev, { category: 'Decisions', text: `You withdrew your introduction request to ${nameOf(id)}.`, source: 'Your action', confidence: 100, scope: 'private' }),
+        }
+      }),
 
       addPost: (text, detail, media, visibility, kind = 'Insight') => patch(prev => ({
         ownPosts: [{ id: uid('post'), memberId: 'me', kind, text, detail: detail ?? 'Shared with your network.', when: 'Just now', responses: 0, media: media ?? [], visibility: visibility ?? 'network' }, ...prev.ownPosts],

@@ -123,6 +123,12 @@ import { HubIntro, RadarMini, SignalPath, TileShell } from './hub-ui'
 import { badgeLabel, useVerification } from './verification'
 import { ExecutiveIdentityEditor, ExecutivePage } from './ExecutivePage'
 import { GraphProvider, useGraph } from './graph-store'
+import { OutcomeCheckins } from './outcomes-ui'
+import { IntroRequestInbox } from './intro-inbox'
+import { MeetingsPage } from './meetings-ui'
+import { LeakCheckPanel } from './leak-check-ui'
+import { SentIntroRequests } from './sent-requests-ui'
+import { CompanyWorkspacePanel } from './company-ui'
 import { CeoProvider } from './ceo-store'
 import { InsightBar } from './ceo-insights-ui'
 import { ApprovalQueuePanel, CalendarMeetingBar, CeoActions, CeoHost, ForecastConfidencePanel, NetworkRoiPanel, TrustPassportSummary, WorkCeoBar } from './ceo-ui'
@@ -144,7 +150,7 @@ const nav: Array<{ id: Page; label: string; icon: typeof HomeIcon }> = primaryPa
 const allNav: Array<{ id: Page; label: string; icon: typeof HomeIcon }> = pageMeta.map(p => ({ id: p.id, label: p.label, icon: p.icon }))
 const legacyPage: Record<string, Page> = {
   command: 'home', people: 'network', forensics: 'insights', simple: 'home',
-  meetings: 'messages', 'digital-you': 'me', roi: 'insights', settings: 'me',
+  'digital-you': 'me', roi: 'insights', settings: 'me',
 }
 const scopeLabel: Record<PrivacyScope, string> = { private: 'Private', team: 'Team', organization: 'Organization', shareable: 'Shareable', public: 'Public' }
 const scopeText: Record<PrivacyScope, string> = {
@@ -1183,6 +1189,9 @@ function Intros({ people, select, draft }: { people: Member[]; select: (p: Membe
     <PageHead label="CURATED INTRODUCTIONS" title="People worth knowing now."
       copy="Every introduction carries mutual value, timing and a credible path. Nothing is sent until both sides agree."
       proof={`${ranked.length} evidence-ranked people · ${ranked.filter(p => ['accepted', 'introduced', 'conversing', 'closed'].includes(p.introState)).length} progressed introductions`} />
+    <IntroRequestInbox />
+    <SentIntroRequests />
+    <OutcomeCheckins />
     <div className="state-filters">
       {(['all', 'recommended', 'requested', 'waiting', 'accepted', 'introduced', 'conversing', 'closed'] as const).map(s =>
         <button key={s} className={state === s ? 'active' : ''} onClick={() => setState(s)}>
@@ -2637,9 +2646,10 @@ function Shell({ startPage, feedOnly = false }: { startPage?: Page | undefined; 
       companies: <CompaniesPage openId={companyId} setOpenId={setCompanyId} />,
       outcomes: <><div className="og-stack"><ForecastConfidencePanel /><NetworkRoiPanel /></div><OutcomesPage /></>,
       loops: <LoopsPage />,
-      organization: <><OrganizationPage /><div className="og-stack"><OrganizationRelationshipView /><DelegatesPanel /></div></>,
+      organization: <><OrganizationPage /><div className="og-stack"><LeakCheckPanel /><CompanyWorkspacePanel /><OrganizationRelationshipView /><DelegatesPanel /></div></>,
       intros: <Intros people={people} select={setSelected} draft={setDraft} />,
       messages: <MessageHub people={people} select={setSelected} activeId={threadId} setActiveId={setThreadId} />,
+      meetings: <MeetingsPage />,
       needs: <><IntentExchangePanel /><Needs onNew={() => setNeedOpen(true)} people={people} select={setSelected} setPage={setPage} /><IntentBoard /></>,
       memory: <Memory people={people} select={setSelected} />,
       events: <EventsPage />,
@@ -2682,7 +2692,7 @@ function Shell({ startPage, feedOnly = false }: { startPage?: Page | undefined; 
       simple: <SimpleViewPage />,
       crm: <CrmPage />,
       pocket: <PocketWorkspace />,
-      diagnostic: <CompanyDiagnosticReport />,
+      diagnostic: <><LeakCheckPanel /><CompanyDiagnosticReport /></>,
       grid: <GridPage />,
       news: <NewsPage />,
     }

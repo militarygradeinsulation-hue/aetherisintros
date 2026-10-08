@@ -27,6 +27,8 @@ import { Route as PassportTokenRouteImport } from './routes/passport.$token'
 import { Route as DotlovableOauthConsentRouteImport } from './routes/[.]lovable.oauth.consent'
 import { Route as AuthenticatedAdminEarlyAccessRouteImport } from './routes/_authenticated/admin.early-access'
 import { Route as AuthenticatedAdminVerificationRouteImport } from './routes/_authenticated/admin.verification'
+import { Route as ApiCronWeeklyDigestRouteImport } from './routes/api/cron/weekly-digest'
+import { Route as ApiPublicDigestUnsubscribeRouteImport } from './routes/api/public/digest-unsubscribe'
 import { Route as ApiPublicNewsImageRouteImport } from './routes/api/public/news-image'
 import { Route as ApiPublicSeedNetworkRouteImport } from './routes/api/public/seed-network'
 
@@ -122,6 +124,17 @@ const AuthenticatedAdminVerificationRoute =
     path: '/admin/verification',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const ApiCronWeeklyDigestRoute = ApiCronWeeklyDigestRouteImport.update({
+  id: '/api/cron/weekly-digest',
+  path: '/api/cron/weekly-digest',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiPublicDigestUnsubscribeRoute =
+  ApiPublicDigestUnsubscribeRouteImport.update({
+    id: '/api/public/digest-unsubscribe',
+    path: '/api/public/digest-unsubscribe',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const ApiPublicNewsImageRoute = ApiPublicNewsImageRouteImport.update({
   id: '/api/public/news-image',
   path: '/api/public/news-image',
@@ -151,6 +164,8 @@ export interface FileRoutesByFullPath {
   '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
   '/admin/early-access': typeof AuthenticatedAdminEarlyAccessRoute
   '/admin/verification': typeof AuthenticatedAdminVerificationRoute
+  '/api/cron/weekly-digest': typeof ApiCronWeeklyDigestRoute
+  '/api/public/digest-unsubscribe': typeof ApiPublicDigestUnsubscribeRoute
   '/api/public/news-image': typeof ApiPublicNewsImageRoute
   '/api/public/seed-network': typeof ApiPublicSeedNetworkRoute
 }
@@ -172,6 +187,8 @@ export interface FileRoutesByTo {
   '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
   '/admin/early-access': typeof AuthenticatedAdminEarlyAccessRoute
   '/admin/verification': typeof AuthenticatedAdminVerificationRoute
+  '/api/cron/weekly-digest': typeof ApiCronWeeklyDigestRoute
+  '/api/public/digest-unsubscribe': typeof ApiPublicDigestUnsubscribeRoute
   '/api/public/news-image': typeof ApiPublicNewsImageRoute
   '/api/public/seed-network': typeof ApiPublicSeedNetworkRoute
 }
@@ -195,6 +212,8 @@ export interface FileRoutesById {
   '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
   '/_authenticated/admin/early-access': typeof AuthenticatedAdminEarlyAccessRoute
   '/_authenticated/admin/verification': typeof AuthenticatedAdminVerificationRoute
+  '/api/cron/weekly-digest': typeof ApiCronWeeklyDigestRoute
+  '/api/public/digest-unsubscribe': typeof ApiPublicDigestUnsubscribeRoute
   '/api/public/news-image': typeof ApiPublicNewsImageRoute
   '/api/public/seed-network': typeof ApiPublicSeedNetworkRoute
 }
@@ -218,6 +237,8 @@ export interface FileRouteTypes {
     | '/.lovable/oauth/consent'
     | '/admin/early-access'
     | '/admin/verification'
+    | '/api/cron/weekly-digest'
+    | '/api/public/digest-unsubscribe'
     | '/api/public/news-image'
     | '/api/public/seed-network'
   fileRoutesByTo: FileRoutesByTo
@@ -239,6 +260,8 @@ export interface FileRouteTypes {
     | '/.lovable/oauth/consent'
     | '/admin/early-access'
     | '/admin/verification'
+    | '/api/cron/weekly-digest'
+    | '/api/public/digest-unsubscribe'
     | '/api/public/news-image'
     | '/api/public/seed-network'
   id:
@@ -261,6 +284,8 @@ export interface FileRouteTypes {
     | '/.lovable/oauth/consent'
     | '/_authenticated/admin/early-access'
     | '/_authenticated/admin/verification'
+    | '/api/cron/weekly-digest'
+    | '/api/public/digest-unsubscribe'
     | '/api/public/news-image'
     | '/api/public/seed-network'
   fileRoutesById: FileRoutesById
@@ -278,6 +303,8 @@ export interface RootRouteChildren {
   InviteCodeRoute: typeof InviteCodeRoute
   PassportTokenRoute: typeof PassportTokenRoute
   DotlovableOauthConsentRoute: typeof DotlovableOauthConsentRoute
+  ApiCronWeeklyDigestRoute: typeof ApiCronWeeklyDigestRoute
+  ApiPublicDigestUnsubscribeRoute: typeof ApiPublicDigestUnsubscribeRoute
   ApiPublicNewsImageRoute: typeof ApiPublicNewsImageRoute
   ApiPublicSeedNetworkRoute: typeof ApiPublicSeedNetworkRoute
 }
@@ -410,6 +437,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminVerificationRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/api/cron/weekly-digest': {
+      id: '/api/cron/weekly-digest'
+      path: '/api/cron/weekly-digest'
+      fullPath: '/api/cron/weekly-digest'
+      preLoaderRoute: typeof ApiCronWeeklyDigestRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/public/digest-unsubscribe': {
+      id: '/api/public/digest-unsubscribe'
+      path: '/api/public/digest-unsubscribe'
+      fullPath: '/api/public/digest-unsubscribe'
+      preLoaderRoute: typeof ApiPublicDigestUnsubscribeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/public/news-image': {
       id: '/api/public/news-image'
       path: '/api/public/news-image'
@@ -462,6 +503,8 @@ const rootRouteChildren: RootRouteChildren = {
   InviteCodeRoute: InviteCodeRoute,
   PassportTokenRoute: PassportTokenRoute,
   DotlovableOauthConsentRoute: DotlovableOauthConsentRoute,
+  ApiCronWeeklyDigestRoute: ApiCronWeeklyDigestRoute,
+  ApiPublicDigestUnsubscribeRoute: ApiPublicDigestUnsubscribeRoute,
   ApiPublicNewsImageRoute: ApiPublicNewsImageRoute,
   ApiPublicSeedNetworkRoute: ApiPublicSeedNetworkRoute,
 }

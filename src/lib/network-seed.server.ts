@@ -44,7 +44,8 @@ export async function seedNetworkDirectory(): Promise<{ seeded: boolean; members
     }
   })
 
-  await supabaseAdmin.from('members').upsert(memberRows as never)
+  // `members` is a view over members_base (0029); upserts need the table itself.
+  await supabaseAdmin.from('members_base' as never).upsert(memberRows.map(r => ({ ...r, is_demo: true })) as never)
   await supabaseAdmin.from('companies').upsert(companyRows)
   await supabaseAdmin.from('posts').upsert(posts.map(p => ({
     id: p.id, member_id: p.memberId, kind: p.kind, text: p.text, detail: p.detail,

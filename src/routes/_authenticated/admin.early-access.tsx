@@ -2,6 +2,9 @@ import { createFileRoute, useNavigate } from '@tanstack/react-router'
 import { useCallback, useEffect, useState } from 'react'
 
 import { useAccess, type LaunchMode } from '@/aetheris/access'
+import { NetworkProofPanel } from '@/aetheris/outcomes-ui'
+import { AdminNetworkHealthPanel } from '@/aetheris/admin-health-ui'
+import { FoundingCohortsPanel } from '@/aetheris/cohorts-ui'
 import { supabase } from '@/integrations/supabase/client'
 import '@/aetheris/styles.css'
 
@@ -90,6 +93,11 @@ function AdminRoute() {
       <p>{approved.toLocaleString()} of {capacity.toLocaleString()} founding places claimed.</p>
       {notice && <p className="auth-notice">{notice}</p>}
     </header>
+
+    <NetworkProofPanel />
+    <AdminNetworkHealthPanel />
+
+    <FoundingCohortsPanel />
 
     <section className="admin-panel">
       <h2>Launch mode</h2>

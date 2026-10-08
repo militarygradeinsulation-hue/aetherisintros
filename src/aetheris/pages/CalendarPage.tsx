@@ -4,12 +4,14 @@
  * views. Events are stored per signed-in member in the database, and fall back
  * to this browser when there is no session (showcase / demo).
  */
-import { useEffect, useMemo, useState , useRef} from 'react'
+import { useContext, useEffect, useMemo, useState , useRef} from 'react'
 import {
   CalendarDays, ChevronLeft, ChevronRight, Clock, MapPin, Plus, Trash2, X,
 } from 'lucide-react'
 import { supabase } from '@/integrations/supabase/client'
 import { Btn, Head } from '../ui'
+import { queueMeetingToOpen } from '../meetings'
+import { NavCtx } from '../nav'
 
 export type CalKind = 'meeting' | 'intro' | 'followup' | 'event' | 'personal'
 
@@ -22,6 +24,8 @@ export interface CalEvent {
   startsAt: string
   endsAt: string
   allDay: boolean
+  /** Set when the entry is a scheduled Ask Intros video meeting. */
+  meetingId?: string | null
 }
 
 const kindLabel: Record<CalKind, string> = {
@@ -60,12 +64,12 @@ const overlapsDay = (event: CalEvent, day: Date) => {
 
 type Row = {
   id: string; title: string; notes: string; location: string; kind: string
-  starts_at: string; ends_at: string; all_day: boolean
+  starts_at: string; ends_at: string; all_day: boolean; meeting_id?: string | null
 }
 
 const fromRow = (row: Row): CalEvent => ({
   id: row.id, title: row.title, notes: row.notes ?? '', location: row.location ?? '',
-  kind: (row.kind as CalKind) ?? 'meeting', startsAt: row.starts_at, endsAt: row.ends_at, allDay: row.all_day,
+  kind: (row.kind as CalKind) ?? 'meeting', startsAt: row.starts_at, endsAt: row.ends_at, allDay: row.all_day, meetingId: row.meeting_id ?? null,
 })
 
 function readLocal(): CalEvent[] {
@@ -89,10 +93,10 @@ function useCalendar() {
       setUserId(uid)
       if (!uid) { setEvents(readLocal()); setLoading(false); return }
       const res = await supabase.from('calendar_events')
-        .select('id, title, notes, location, kind, starts_at, ends_at, all_day')
+        .select('id, title, notes, location, kind, starts_at, ends_at, all_day, meeting_id')
         .order('starts_at', { ascending: true })
       if (!live) return
-      setEvents((res.data ?? []).map(row => fromRow(row as Row)))
+      setEvents((res.data ?? []).map(row => fromRow(row as unknown as Row)))
       setLoading(false)
     })()
     return () => { live = false }
@@ -405,7 +409,8 @@ export function CalendarPage() {
                   <em><Clock size={12} /> {event.allDay ? 'All day' : `${timeLabel(event.startsAt)} – ${timeLabel(event.endsAt)}`}</em>
                   {event.location && <small><MapPin size={12} /> {event.location}</small>}
                   <i>{kindLabel[event.kind]}</i>
-                </button></li>)}</ul>
+                </button>
+                {event.meetingId && <JoinMeeting meetingId={event.meetingId} />}</li>)}</ul>
             </article>
           })}
           {!agendaDays.some(day => eventsOn(day).length) &&
@@ -425,4 +430,11 @@ export function CalendarPage() {
         onDelete={editing.id ? () => { const id = editing.id; if (id) void cal.remove(id); setEditing(null) } : undefined} />}
     </div>
   </div>
+}
+
+/** "Join" for a calendar entry that is an Ask Intros video meeting. */
+function JoinMeeting({ meetingId }: { meetingId: string }) {
+  const nav = useContext(NavCtx)
+  if (!nav) return null
+  return <button type="button" className="cal-join" onClick={() => { queueMeetingToOpen(meetingId); nav.setPage('meetings') }}>Join video meeting</button>
 }

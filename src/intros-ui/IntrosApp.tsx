@@ -34,6 +34,9 @@ import { LiveMessagesView } from './views/LiveMessagesView';
 import '@/aetheris/styles.css';
 import { useAetherisNews } from '@/aetheris/news';
 import { LiveMembers } from './liveMembers';
+import { ThisWeekPanel } from '@/aetheris/this-week-ui';
+import { LiveNotificationsBell } from '@/aetheris/notifications-bell';
+import { MeetingReminderBanner } from '@/aetheris/meetings-ui';
 
 function NewsTicker({ onOpen }: { onOpen: () => void }) {
   const { data } = useAetherisNews();
@@ -206,7 +209,7 @@ export default function App({ mode = 'demo' }: { mode?: 'demo' | 'live' }) {
   // Find active profile
   const currentProfileMember =
     members.find((m) => m.id === selectedProfileId) || members[0];
-  const classicPages = ['news','workspace','memory','work','insights', ...(mode === 'live' ? ['home','messages','intros','people'] : [])];
+  const classicPages = ['news','workspace','memory','work','insights','meetings', ...(mode === 'live' ? ['home','messages','intros','people'] : [])];
 
   return (
     <AccentProvider>
@@ -221,9 +224,11 @@ export default function App({ mode = 'demo' }: { mode?: 'demo' | 'live' }) {
         onToggleConstellationOverlay={() => handleNavigate('bubbles')}
         me={mode === 'live' ? me : undefined}
         onOpenMyProfile={mode === 'live' ? () => { setClassicPage('profile'); handleNavigate('workspace'); } : undefined}
+        bell={mode === 'live' ? <LiveNotificationsBell onOpen={(destination) => handleNavigate(destination)} /> : undefined}
       />
 
       {mode === 'live' && <LiveMembers onMembers={setMembers} />}
+      {mode === 'live' && <MeetingReminderBanner onJoin={() => handleNavigate('meetings')} />}
       <NewsTicker onOpen={() => handleNavigate('news')} />
       {/* Primary Page Views */}
       <main className="flex-1">
@@ -238,6 +243,11 @@ export default function App({ mode = 'demo' }: { mode?: 'demo' | 'live' }) {
             networkMembers={members}
             isLive={mode === 'live'}
             socialFeed={mode === 'live' ? <div className="ix-classic"><ClassicApp mode="live" feedOnly /></div> : undefined}
+            actionQueue={mode === 'live' ? <ThisWeekPanel onOpen={(target) => {
+              if (target === 'intros') { handleNavigate('intros'); return; }
+              setClassicPage(target);
+              handleNavigate('workspace');
+            }} /> : undefined}
             me={mode === 'live' ? me : undefined}
           />
         )}
@@ -311,6 +321,7 @@ export default function App({ mode = 'demo' }: { mode?: 'demo' | 'live' }) {
 
         {activePage === 'news' && <div className="ix-classic"><ClassicApp key="news" mode={mode} startPage="news" /></div>}
         {activePage === 'memory' && <div className="ix-classic"><ClassicApp key="memory" mode={mode} startPage="memory" /></div>}
+        {activePage === 'meetings' && <div className="ix-classic"><ClassicApp key="meetings" mode={mode} startPage="meetings" /></div>}
         {activePage === 'work' && <div className="ix-classic"><ClassicApp key="work" mode={mode} startPage="work" /></div>}
         {activePage === 'workspace' && <div className="ix-classic">
           <div className="ix-tools">

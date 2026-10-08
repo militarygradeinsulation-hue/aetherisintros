@@ -9,6 +9,8 @@ import listIntroRequests from "./tools/list-intro-requests";
 import listMemories from "./tools/list-memories";
 import addMemory from "./tools/add-memory";
 import getMyProfile from "./tools/get-my-profile";
+import listOutcomeCheckins from "./tools/list-outcome-checkins";
+import recordIntroOutcome from "./tools/record-intro-outcome";
 
 // The OAuth issuer must be the direct Supabase host; the project ref is the only
 // value that survives publish unchanged and Vite inlines it at build time.
@@ -19,7 +21,7 @@ export default defineMcp({
   title: "Ask Intros",
   version: "0.1.0",
   instructions:
-    "Tools for Ask Intros, a high-trust business network. Read the signed-in member's profile and Active Memory, search the network with match reasoning, read and post professional asks, and request double opt-in introductions. Never use these tools for mass outreach, pitching or spam: an introduction only happens when both sides opt in.",
+    "Tools for Ask Intros, a high-trust business network. Read the signed-in member's profile and Active Memory, search the network with match reasoning, read and post professional asks, request double opt-in introductions, and record what accepted introductions led to. Never use these tools for mass outreach, pitching or spam: an introduction only happens when both sides opt in.",
   auth: auth.oauth.issuer({
     issuer: `https://${projectRef}.supabase.co/auth/v1`,
     acceptedAudiences: "authenticated",
@@ -34,5 +36,7 @@ export default defineMcp({
     listIntroRequests,
     listMemories,
     addMemory,
+    listOutcomeCheckins,
+    recordIntroOutcome,
   ],
 });

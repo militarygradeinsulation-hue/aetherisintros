@@ -9,6 +9,8 @@ import { supabase } from '@/integrations/supabase/client'
 import { useOps } from './crm/store'
 import { useGraph, useGraphInputs } from './graph-store'
 import { useNav } from './nav'
+import { IntroOutcomeTimeline } from './outcomes-ui'
+import { MeetNowButton } from './meetings-ui'
 import {
   INTENT_CATEGORIES, MISSION_TYPES, RULE_KINDS, activeMission, evaluateRules, graphInsights, meetingBrief, missionTypeLabel,
   parseDebrief, relationshipWeather, reverseDiscovery, routeTo, trustDimensions,
@@ -332,9 +334,10 @@ export function IntroWorkflow({ member }: { member: Member }) {
       <label>Linked mission (only if not private)<input value={draft.mission_title} onChange={e => setDraft(d => ({ ...d, mission_title: e.target.value }))} /></label>
       <Btn onClick={() => void submit()}><Plus size={14} /> {capsule ? 'Update capsule' : 'Request introduction with capsule'}</Btn>
     </div></details>}
-    {bothIn && <Btn kind="secondary" onClick={() => void openRoom()}><DoorOpen size={14} /> Open Relationship Room</Btn>}
+    {bothIn && <div className="og-inline"><Btn kind="secondary" onClick={() => void openRoom()}><DoorOpen size={14} /> Open Relationship Room</Btn>{intro && <MeetNowButton introId={intro.id} title={`Introduction: ${member.name}`} capsule={capsule} />}</div>}
     {intro && !bothIn && <small className="og-note">Relationship Room opens after both sides opt in.</small>}
     {msg && <p className="executive-form-note">{msg}</p>}
+    {bothIn && intro && <IntroOutcomeTimeline introRequestId={intro.id} myId={graph.userId} />}
     {bothIn && <IntroFeedbackForm member={member} introRequestId={intro?.id ?? null} connectorName={route.best?.hops[0]?.name ?? ''} />}
     {roomOpen && room && capsule && <RelationshipRoom room={room} capsule={capsule} member={member} onClose={() => setRoomOpen(false)} onChange={setRoom} onMessage={() => nav.messageMember(member.id)} />}
   </section>

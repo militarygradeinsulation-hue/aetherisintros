@@ -1,0 +1,24 @@
+# Sends the weekly "This week" email to members who opted in, every Monday at 12:07 UTC.
+# Needs two repository secrets: DIGEST_URL (https://<your-domain>/api/cron/weekly-digest)
+# and CRON_SECRET (the same value as the app's CRON_SECRET). Without them it does nothing.
+name: Weekly digest
+on:
+  schedule:
+    - cron: '7 12 * * 1'
+  workflow_dispatch:
+permissions: {}
+jobs:
+  send:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Trigger the digest run
+        env:
+          DIGEST_URL: ${{ secrets.DIGEST_URL }}
+          CRON_SECRET: ${{ secrets.CRON_SECRET }}
+        run: |
+          if [ -z "$DIGEST_URL" ] || [ -z "$CRON_SECRET" ]; then
+            echo "::notice::DIGEST_URL or CRON_SECRET is not set; skipping."
+            exit 0
+          fi
+          curl -fsS -X POST -H "Authorization: Bearer $CRON_SECRET" "$DIGEST_URL"
