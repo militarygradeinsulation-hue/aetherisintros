@@ -267,6 +267,13 @@
       "when": 1791462559383,
       "tag": "0037_membership_cards",
       "breakpoints": true
+    },
+    {
+      "idx": 38,
+      "version": "7",
+      "when": 1791462859383,
+      "tag": "0038_profile_linkedin_url",
+      "breakpoints": true
     }
   ]
 }
