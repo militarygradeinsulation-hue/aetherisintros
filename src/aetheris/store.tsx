@@ -13,7 +13,7 @@ import {
   type Directory, type MemoryNote,
 } from './db'
 import {
-  createLiveThread, emptyDirectory, loadLiveDirectory, mirrorFollow, notify, saveComment,
+  createLiveThread, emptyDirectory, loadLiveDirectory, mirrorFollow, saveComment,
   saveReaction, sendLiveMessage, uploadProfileAvatar, type LiveProfileRow,
 } from './live'
 import { supabase } from '@/integrations/supabase/client'
@@ -442,8 +442,8 @@ export function NetworkProvider({ children, mode = 'live' }: { children: React.R
       for (const id of s[group]) if (!prev[group].includes(id)) {
         saveRelationship(userId, group, id, true)
         if (live) {
+          // The follows_notify trigger (0026) tells the other member; clients cannot write notifications.
           mirrorFollow(userId, id, relayKind[group], true)
-          if (group !== 'saved') notify(id, userId, group === 'connections' ? 'connection' : 'follow', `${s.profile.name || 'A member'} ${group === 'connections' ? 'connected with you' : 'is following your work'}.`)
         }
       }
       for (const id of prev[group]) if (!s[group].includes(id)) {
@@ -482,9 +482,8 @@ export function NetworkProvider({ children, mode = 'live' }: { children: React.R
       const before = prev.sentMessages[threadId] ?? []
       messages.slice(before.length).forEach(message => {
         if (live) {
+          // The dm_messages_notify trigger (0026) notifies the other participant.
           sendLiveMessage(threadId, userId, message.text)
-          const peer = [...s.ownThreads, ...dir.threads].find(t => t.id === threadId)?.memberId
-          if (peer) notify(peer, userId, 'message', `${s.profile.name || 'A member'} sent you a message.`)
         } else saveMessage(userId, threadId, message)
       })
     }
