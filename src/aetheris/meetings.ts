@@ -176,3 +176,13 @@ export async function saveDecisionsToLog(decisions: string[], meetingTitle: stri
   const r = await db.from('decisions').insert(rows)
   return { added: r.error ? 0 : rows.length, error: r.error?.message ?? '' }
 }
+
+/** Open meetings the member is in, with whether they have joined, for reminders. */
+export async function loadReminderMeetings(myId: string): Promise<import('./meeting-reminders').ReminderMeeting[]> {
+  const m = await db.from('meetings').select('id, title, host_id, scheduled_for, started_at, ended_at').is('ended_at', null).order('created_at', { ascending: false }).limit(30)
+  const rows = (m.data ?? []) as any[]
+  if (!rows.length) return []
+  const mine = await db.from('meeting_participants').select('meeting_id, joined_at').eq('user_id', myId).in('meeting_id', rows.map(r => r.id))
+  const joined = new Map(((mine.data ?? []) as any[]).map(p => [p.meeting_id, p.joined_at]))
+  return rows.map(r => ({ id: r.id, title: r.title, hostId: r.host_id, scheduledFor: r.scheduled_for, startedAt: r.started_at, endedAt: r.ended_at, myJoinedAt: joined.get(r.id) ?? null }))
+}

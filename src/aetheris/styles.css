@@ -5157,3 +5157,9 @@ button.news-link{background:none;border:0;padding:0;cursor:pointer}
 .meeting-agenda-text{white-space:pre-line;font-size:13px;color:var(--soft);margin:0 0 10px}
 .meeting-actions{display:grid;gap:6px;padding-left:18px}
 .meeting-actions li span{margin-right:8px}
+.meeting-reminder{position:fixed;left:50%;top:76px;transform:translateX(-50%);z-index:60;display:flex;align-items:center;gap:10px;max-width:min(560px,calc(100vw - 32px));padding:10px 12px 10px 14px;border:1px solid rgba(245,176,39,.6);border-radius:12px;background:#0E121A;color:#F2EEE6;box-shadow:0 12px 40px -12px rgba(0,0,0,.6),0 0 22px -6px rgba(245,176,39,.6);font-size:14px}
+.meeting-reminder svg{color:#F5B027;flex:none}
+.meeting-reminder span{flex:1}
+.meeting-reminder button{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line-dark,rgba(255,255,255,.12));background:transparent;color:inherit;border-radius:8px;padding:6px 10px;cursor:pointer}
+.meeting-reminder button.join{background:#F5B027;border-color:#F5B027;color:#0B0E13;font-weight:600}
+.cal-join{margin:4px 0 0 18px;border:1px solid rgba(245,176,39,.6);background:transparent;color:#F5B027;border-radius:7px;padding:4px 10px;font-size:12px;cursor:pointer}

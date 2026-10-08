@@ -8,15 +8,17 @@
  * consenting speakers said.
  */
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import { CheckSquare, CircleDot, Compass, FileText, ListChecks, Mic, MicOff, PhoneOff, Plus, Sparkles, Users, Video, VideoOff, X } from 'lucide-react'
+import { BellRing, CalendarPlus, CheckSquare, CircleDot, Compass, FileText, ListChecks, Mic, MicOff, PhoneOff, Plus, Sparkles, Users, Video, VideoOff, X } from 'lucide-react'
 
+import { supabase } from '@/integrations/supabase/client'
 import { generateMeetingNotes } from '@/lib/meetingNotes.functions'
 import { useGraph } from './graph-store'
 import { loadBrief, type Brief } from './meeting-brief'
+import { downloadIcs, dueReminders, icsForMeeting, reminderText, type Reminder } from './meeting-reminders'
 import { MeetingCall, type Caption, type RemotePeer } from './meeting-call'
 import { MAX_MEETING_PEOPLE, meetingStatus } from './meeting-notes-format'
 import {
-  addActionItemsToTasks, addTranscriptLine, agendaFromCapsule, createMeeting, endMeeting, loadMeetings, loadMyNotes, loadRoster, loadTranscript,
+  addActionItemsToTasks, addTranscriptLine, agendaFromCapsule, createMeeting, endMeeting, loadMeetings, loadMyNotes, loadReminderMeetings, loadRoster, loadTranscript,
   markJoined, queueMeetingToOpen, saveDecisionsToLog, savePrivateNote, setNotesConsent, startIntroMeeting, takeQueuedMeeting,
   type Meeting, type SavedNotes,
 } from './meetings'
@@ -101,6 +103,8 @@ function MeetingCard({ meeting, userId, onJoin, onNotes, onBrief }: { meeting: M
     <div className="og-inline">
       {status !== 'ended' && <Btn onClick={onJoin}><Video size={14} /> Join</Btn>}
       {status !== 'ended' && others.length > 0 && <Btn kind="quiet" onClick={onBrief}><Compass size={14} /> Brief</Btn>}
+      {status === 'scheduled' && meeting.scheduledFor && <Btn kind="quiet" onClick={() => downloadIcs(`${meeting.title.replace(/[^a-z0-9]+/gi, '-').toLowerCase() || 'meeting'}.ics`,
+        icsForMeeting({ id: meeting.id, title: meeting.title, startsAt: meeting.scheduledFor!, agenda: meeting.agenda, url: `${location.origin}/app/meetings` }))}><CalendarPlus size={14} /> Add to calendar</Btn>}
       <Btn kind="quiet" onClick={onNotes}><FileText size={14} /> {meeting.hasNotes ? 'My notes' : 'Notes'}</Btn>
     </div>
   </article>
@@ -417,4 +421,48 @@ export function MeetNowButton({ introId, title, capsule }: { introId: string; ti
     <Btn kind="secondary" disabled={busy} onClick={() => void start()}><Video size={14} /> {busy ? 'Starting…' : 'Meet now'}</Btn>
     {msg && <small className="og-note">{msg}</small>}
   </>
+}
+
+const DISMISSED = 'aetheris:dismissed-meeting-reminders'
+
+/**
+ * Banner for a meeting about to start (scheduled, within 10 minutes) or already started by
+ * someone else without you. Checks once a minute; dismissing hides it for this session.
+ */
+export function MeetingReminderBanner({ onJoin }: { onJoin: () => void }) {
+  // Mounted in the outer shell, outside the graph provider, so it reads the session itself.
+  const [myId, setMyId] = useState<string | null>(null)
+  useEffect(() => {
+    void supabase.auth.getSession().then(({ data }) => setMyId(data.session?.user.id ?? null))
+    const { data } = supabase.auth.onAuthStateChange((_e, session) => setMyId(session?.user.id ?? null))
+    return () => data.subscription.unsubscribe()
+  }, [])
+  const [reminders, setReminders] = useState<Reminder[]>([])
+  const dismissed = useRef<Set<string>>(new Set((() => { try { return JSON.parse(sessionStorage.getItem(DISMISSED) ?? '[]') as string[] } catch { return [] } })()))
+
+  useEffect(() => {
+    if (!myId) return
+    let stale = false
+    const check = async () => {
+      const meetings = await loadReminderMeetings(myId)
+      if (!stale) setReminders(dueReminders(meetings, myId, Date.now(), dismissed.current))
+    }
+    void check()
+    const t = setInterval(() => void check(), 60000)
+    return () => { stale = true; clearInterval(t) }
+  }, [myId])
+
+  const r = reminders[0]
+  if (!r) return null
+  const dismiss = () => {
+    dismissed.current.add(r.meetingId)
+    try { sessionStorage.setItem(DISMISSED, JSON.stringify([...dismissed.current])) } catch { /* storage blocked */ }
+    setReminders(list => list.filter(x => x.meetingId !== r.meetingId))
+  }
+  return <div className="meeting-reminder" role="status">
+    <BellRing size={16} aria-hidden />
+    <span>{reminderText(r)}</span>
+    <button type="button" className="join" onClick={() => { queueMeetingToOpen(r.meetingId); dismiss(); onJoin() }}><Video size={14} /> Join</button>
+    <button type="button" aria-label="Dismiss" onClick={dismiss}><X size={14} /></button>
+  </div>
 }

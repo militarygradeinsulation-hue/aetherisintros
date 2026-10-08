@@ -36,6 +36,7 @@ import { useAetherisNews } from '@/aetheris/news';
 import { LiveMembers } from './liveMembers';
 import { ThisWeekPanel } from '@/aetheris/this-week-ui';
 import { LiveNotificationsBell } from '@/aetheris/notifications-bell';
+import { MeetingReminderBanner } from '@/aetheris/meetings-ui';
 
 function NewsTicker({ onOpen }: { onOpen: () => void }) {
   const { data } = useAetherisNews();
@@ -227,6 +228,7 @@ export default function App({ mode = 'demo' }: { mode?: 'demo' | 'live' }) {
       />
 
       {mode === 'live' && <LiveMembers onMembers={setMembers} />}
+      {mode === 'live' && <MeetingReminderBanner onJoin={() => handleNavigate('meetings')} />}
       <NewsTicker onOpen={() => handleNavigate('news')} />
       {/* Primary Page Views */}
       <main className="flex-1">

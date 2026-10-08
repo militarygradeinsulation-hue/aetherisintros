@@ -178,6 +178,15 @@ grant usage on schema realtime to authenticated, anon;
 grant select, insert on realtime.messages to authenticated;
 grant execute on function realtime.topic() to authenticated, anon;
 
+create table public.calendar_events (id uuid primary key default gen_random_uuid(), user_id uuid not null references auth.users on delete cascade, title text not null, notes text not null default '', location text not null default '',
+  kind text not null default 'meeting', member_id text, starts_at timestamptz not null, ends_at timestamptz not null, all_day boolean not null default false, created_at timestamptz not null default now(), updated_at timestamptz not null default now());
+grant select, insert, update, delete on public.calendar_events to authenticated;
+alter table public.calendar_events enable row level security;
+create policy "Members read their own events" on public.calendar_events for select to authenticated using (auth.uid() = user_id);
+create policy "Members create their own events" on public.calendar_events for insert to authenticated with check (auth.uid() = user_id);
+create policy "Members update their own events" on public.calendar_events for update to authenticated using (auth.uid() = user_id) with check (auth.uid() = user_id);
+create policy "Members delete their own events" on public.calendar_events for delete to authenticated using (auth.uid() = user_id);
+
 create table public.invitations (id uuid primary key default gen_random_uuid(), code text not null unique, email text, max_uses integer not null default 1, uses integer not null default 0, expires_at timestamptz, revoked boolean not null default false, created_by uuid, created_at timestamptz not null default now());
 create table public.early_access_members (id uuid primary key default gen_random_uuid(), user_id uuid not null unique, email text not null, status text not null default 'pending', invite_id uuid);
 `
