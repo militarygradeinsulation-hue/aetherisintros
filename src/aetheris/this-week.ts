@@ -109,7 +109,7 @@ export async function loadWeekInputs(): Promise<{ data: WeekInputs | null; error
     db.from('profiles').select('can_help_with, expertise, what_i_do').eq('id', me).maybeSingle(),
     db.from('asks').select('id, ask, author_id, created_at').eq('is_demo', false).eq('visibility', 'network').neq('status', 'closed')
       .neq('author_id', me).gte('created_at', since).order('created_at', { ascending: false }).limit(60),
-    // asks.response_count is never maintained, so replies are counted from ask_responses below.
+    // Replies are counted from ask_responses directly, so this is right even before 0027 is applied.
     db.from('asks').select('id, ask, created_at').eq('author_id', me).neq('status', 'closed')
       .lte('created_at', new Date(Date.now() - 7 * DAY).toISOString()).order('created_at', { ascending: true }).limit(10),
     db.from('org_members').select('org_id, organizations(name)').eq('user_id', me).eq('status', 'active'),
