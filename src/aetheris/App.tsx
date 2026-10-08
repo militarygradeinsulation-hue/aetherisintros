@@ -124,6 +124,7 @@ import { badgeLabel, useVerification } from './verification'
 import { ExecutiveIdentityEditor, ExecutivePage } from './ExecutivePage'
 import { GraphProvider, useGraph } from './graph-store'
 import { OutcomeCheckins } from './outcomes-ui'
+import { CompanyWorkspacePanel } from './company-ui'
 import { CeoProvider } from './ceo-store'
 import { InsightBar } from './ceo-insights-ui'
 import { ApprovalQueuePanel, CalendarMeetingBar, CeoActions, CeoHost, ForecastConfidencePanel, NetworkRoiPanel, TrustPassportSummary, WorkCeoBar } from './ceo-ui'
@@ -2639,7 +2640,7 @@ function Shell({ startPage, feedOnly = false }: { startPage?: Page | undefined; 
       companies: <CompaniesPage openId={companyId} setOpenId={setCompanyId} />,
       outcomes: <><div className="og-stack"><ForecastConfidencePanel /><NetworkRoiPanel /></div><OutcomesPage /></>,
       loops: <LoopsPage />,
-      organization: <><OrganizationPage /><div className="og-stack"><OrganizationRelationshipView /><DelegatesPanel /></div></>,
+      organization: <><OrganizationPage /><div className="og-stack"><CompanyWorkspacePanel /><OrganizationRelationshipView /><DelegatesPanel /></div></>,
       intros: <Intros people={people} select={setSelected} draft={setDraft} />,
       messages: <MessageHub people={people} select={setSelected} activeId={threadId} setActiveId={setThreadId} />,
       needs: <><IntentExchangePanel /><Needs onNew={() => setNeedOpen(true)} people={people} select={setSelected} setPage={setPage} /><IntentBoard /></>,

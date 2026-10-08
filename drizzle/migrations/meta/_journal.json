@@ -169,6 +169,13 @@
       "when": 1791456158103,
       "tag": "0023_follow_through_record",
       "breakpoints": true
+    },
+    {
+      "idx": 24,
+      "version": "7",
+      "when": 1791457108663,
+      "tag": "0024_company_continuity",
+      "breakpoints": true
     }
   ]
 }
