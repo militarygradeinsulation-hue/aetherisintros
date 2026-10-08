@@ -18,6 +18,8 @@ export interface Meeting {
   startedAt: string | null
   endedAt: string | null
   createdAt: string
+  agenda: string
+  introRequestId: string | null
   participants: Participant[]
   hasNotes: boolean
 }
@@ -27,7 +29,7 @@ export interface TranscriptLine { id: string; speakerId: string; text: string; s
 export interface SavedNotes extends NotesContent { privateNote: string; generatedAt: string | null }
 
 export async function loadMeetings(): Promise<{ data: Meeting[]; error: string }> {
-  const m = await db.from('meetings').select('id, host_id, title, scheduled_for, started_at, ended_at, created_at').order('created_at', { ascending: false }).limit(50)
+  const m = await db.from('meetings').select('id, host_id, title, scheduled_for, started_at, ended_at, created_at, agenda, intro_request_id').order('created_at', { ascending: false }).limit(50)
   if (m.error) return { data: [], error: m.error.message }
   const rows = (m.data ?? []) as any[]
   const ids = rows.map(r => r.id)
@@ -46,6 +48,7 @@ export async function loadMeetings(): Promise<{ data: Meeting[]; error: string }
   return {
     data: rows.map(r => ({
       id: r.id, hostId: r.host_id, title: r.title, scheduledFor: r.scheduled_for, startedAt: r.started_at, endedAt: r.ended_at, createdAt: r.created_at,
+      agenda: r.agenda ?? '', introRequestId: r.intro_request_id ?? null,
       hasNotes: withNotes.has(r.id),
       participants: ((parts.data ?? []) as any[]).filter(p => p.meeting_id === r.id)
         .map(p => ({ userId: p.user_id, name: names.get(p.user_id) ?? 'A member', role: p.role, notesConsent: p.notes_consent, joinedAt: p.joined_at }))
@@ -60,8 +63,8 @@ export async function loadRoster(meetingId: string): Promise<Pick<Participant, '
   return ((r.data ?? []) as any[]).map(p => ({ userId: p.user_id, notesConsent: p.notes_consent }))
 }
 
-export async function createMeeting(title: string, invitees: string[], scheduledFor: string | null): Promise<{ id: string | null; error: string }> {
-  const r = await db.rpc('create_meeting', { p_title: title, p_invitees: invitees, p_scheduled_for: scheduledFor })
+export async function createMeeting(title: string, invitees: string[], scheduledFor: string | null, extra: { agenda?: string; introId?: string | null } = {}): Promise<{ id: string | null; error: string }> {
+  const r = await db.rpc('create_meeting', { p_title: title, p_invitees: invitees, p_scheduled_for: scheduledFor, p_agenda: extra.agenda ?? '', p_intro: extra.introId ?? null })
   return { id: (r.data as string | null) ?? null, error: r.error?.message ?? '' }
 }
 
@@ -102,4 +105,74 @@ export async function savePrivateNote(meetingId: string, privateNote: string): P
     ? await db.from('meeting_notes').update({ private_note: privateNote.slice(0, 4000) }).eq('id', existing.data.id)
     : await db.from('meeting_notes').insert({ meeting_id: meetingId, private_note: privateNote.slice(0, 4000) })
   return r.error?.message ?? ''
+}
+
+/* ── Meetings feed the rest of the system ───────────────────────────────────────────── */
+
+const PENDING_ROOM = 'aetheris:open-meeting'
+
+/** Remember a meeting to open when the Meetings page next loads (e.g. after "Meet now"). */
+export function queueMeetingToOpen(id: string) {
+  try { sessionStorage.setItem(PENDING_ROOM, id) } catch { /* storage blocked: the list still shows it */ }
+}
+
+export function takeQueuedMeeting(): string | null {
+  try { const id = sessionStorage.getItem(PENDING_ROOM); sessionStorage.removeItem(PENDING_ROOM); return id } catch { return null }
+}
+
+/** Agenda for a meeting started from an introduction, from its context capsule. */
+export function agendaFromCapsule(c: { whyExists?: string; whyNow?: string; firstGoal?: string }): string {
+  return [
+    c.whyExists?.trim() && `Why this introduction: ${c.whyExists.trim()}`,
+    c.whyNow?.trim() && `Why now: ${c.whyNow.trim()}`,
+    c.firstGoal?.trim() && `First goal: ${c.firstGoal.trim()}`,
+  ].filter(Boolean).join('\n')
+}
+
+export async function startIntroMeeting(introId: string, title: string, agenda: string): Promise<{ id: string | null; error: string }> {
+  return createMeeting(title, [], null, { agenda, introId })
+}
+
+/** A due date the model gave as an ISO date, or null for "Friday", "soon" and the like. */
+export function parseDue(due: string): string | null {
+  const t = due.trim()
+  if (!/^\d{4}-\d{2}-\d{2}/.test(t)) return null
+  const d = new Date(t)
+  return Number.isNaN(d.getTime()) ? null : d.toISOString()
+}
+
+/** Is this action item mine? Owner names are free text from the transcript. */
+export function ownedBy(owner: string, myName: string): boolean {
+  const o = owner.trim().toLowerCase()
+  if (!o) return true
+  if (['me', 'you', 'i'].includes(o)) return true
+  const first = myName.trim().toLowerCase().split(/\s+/)[0] ?? ''
+  return !!first && (o === myName.trim().toLowerCase() || o.split(/\s+/)[0] === first)
+}
+
+/** Add action items to the CRM: mine as tasks, other people's as commitments I am waiting on. */
+export async function addActionItemsToTasks(items: Array<{ task: string; owner: string; due: string }>, meetingTitle: string, myId: string, myName: string): Promise<{ added: number; error: string }> {
+  const rows = items.map(i => {
+    const mine = ownedBy(i.owner, myName)
+    return {
+      owner_id: myId,
+      title: i.task.slice(0, 200),
+      detail: [`From the meeting “${meetingTitle}”.`, i.owner && !mine ? `Owner: ${i.owner}.` : '', i.due ? `Due: ${i.due}.` : ''].filter(Boolean).join(' ').slice(0, 1000),
+      due_at: parseDue(i.due),
+      kind: mine ? 'task' : 'commitment',
+      waiting_on: mine ? 'me' : 'them',
+      owed_to: mine ? '' : i.owner.slice(0, 120),
+    }
+  })
+  if (!rows.length) return { added: 0, error: '' }
+  const r = await db.from('crm_tasks').insert(rows)
+  return { added: r.error ? 0 : rows.length, error: r.error?.message ?? '' }
+}
+
+/** Save agreed decisions to the member's decision log. */
+export async function saveDecisionsToLog(decisions: string[], meetingTitle: string): Promise<{ added: number; error: string }> {
+  const rows = decisions.map(d => ({ title: d.slice(0, 300), status: 'decided', context: `Agreed in the meeting “${meetingTitle}”.`, decided_at: new Date().toISOString() }))
+  if (!rows.length) return { added: 0, error: '' }
+  const r = await db.from('decisions').insert(rows)
+  return { added: r.error ? 0 : rows.length, error: r.error?.message ?? '' }
 }

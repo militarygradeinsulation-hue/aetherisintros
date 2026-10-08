@@ -8,16 +8,19 @@
  * consenting speakers said.
  */
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import { CircleDot, FileText, Mic, MicOff, PhoneOff, Plus, Sparkles, Users, Video, VideoOff, X } from 'lucide-react'
+import { CheckSquare, CircleDot, Compass, FileText, ListChecks, Mic, MicOff, PhoneOff, Plus, Sparkles, Users, Video, VideoOff, X } from 'lucide-react'
 
 import { generateMeetingNotes } from '@/lib/meetingNotes.functions'
 import { useGraph } from './graph-store'
+import { loadBrief, type Brief } from './meeting-brief'
 import { MeetingCall, type Caption, type RemotePeer } from './meeting-call'
 import { MAX_MEETING_PEOPLE, meetingStatus } from './meeting-notes-format'
 import {
-  addTranscriptLine, createMeeting, endMeeting, loadMeetings, loadMyNotes, loadRoster, loadTranscript, markJoined, savePrivateNote, setNotesConsent,
+  addActionItemsToTasks, addTranscriptLine, agendaFromCapsule, createMeeting, endMeeting, loadMeetings, loadMyNotes, loadRoster, loadTranscript,
+  markJoined, queueMeetingToOpen, saveDecisionsToLog, savePrivateNote, setNotesConsent, startIntroMeeting, takeQueuedMeeting,
   type Meeting, type SavedNotes,
 } from './meetings'
+import { useNav } from './nav'
 import { useNetwork } from './store'
 import { Btn, Eyebrow } from './ui'
 import { dictationSupported, useDictation } from './voice'
@@ -32,11 +35,15 @@ export function MeetingsPage() {
   const [creating, setCreating] = useState(false)
   const [roomId, setRoomId] = useState<string | null>(null)
   const [notesId, setNotesId] = useState<string | null>(null)
+  const [briefId, setBriefId] = useState<string | null>(null)
 
   const refresh = useCallback(async () => {
     const r = await loadMeetings()
     setMeetings(r.data)
     setError(r.error)
+    // A meeting started elsewhere ("Meet now" on an introduction) opens straight away.
+    const queued = takeQueuedMeeting()
+    if (queued && r.data.some(m => m.id === queued)) setRoomId(queued)
   }, [])
   useEffect(() => { if (graph.signedIn) void refresh() }, [graph.signedIn, refresh])
 
@@ -65,19 +72,23 @@ export function MeetingsPage() {
     {error && <p className="og-note">{error}</p>}
 
     <h2 className="meetings-sub">Upcoming and live</h2>
-    {open.length ? <div className="meetings-list">{open.map(m => <MeetingCard key={m.id} meeting={m} userId={graph.userId!} onJoin={() => setRoomId(m.id)} onNotes={() => setNotesId(m.id)} />)}</div>
+    {open.length ? <div className="meetings-list">{open.map(m => <MeetingCard key={m.id} meeting={m} userId={graph.userId!} onJoin={() => setRoomId(m.id)} onNotes={() => setNotesId(m.id)} onBrief={() => setBriefId(briefId === m.id ? null : m.id)} />)}</div>
       : <p className="og-note">No meetings yet. Start one and invite the people you want to talk to.</p>}
 
     {past.length > 0 && <>
       <h2 className="meetings-sub">Past meetings</h2>
-      <div className="meetings-list">{past.map(m => <MeetingCard key={m.id} meeting={m} userId={graph.userId!} onJoin={() => setRoomId(m.id)} onNotes={() => setNotesId(notesId === m.id ? null : m.id)} />)}</div>
+      <div className="meetings-list">{past.map(m => <MeetingCard key={m.id} meeting={m} userId={graph.userId!} onJoin={() => setRoomId(m.id)} onNotes={() => setNotesId(notesId === m.id ? null : m.id)} onBrief={() => setBriefId(briefId === m.id ? null : m.id)} />)}</div>
     </>}
 
-    {notesId && <MeetingNotesPanel meeting={meetings.find(m => m.id === notesId) ?? null} onClose={() => setNotesId(null)} onSaved={refresh} />}
+    {briefId && meetings.some(m => m.id === briefId) && <section className="executive-section meeting-brief-panel">
+      <header><div><Eyebrow><Compass size={12} /> BEFORE YOU MEET</Eyebrow><h2>{meetings.find(m => m.id === briefId)!.title}</h2></div><button type="button" className="text-link" onClick={() => setBriefId(null)}>Close</button></header>
+      <MeetingBrief meeting={meetings.find(m => m.id === briefId)!} userId={graph.userId} />
+    </section>}
+    {notesId && <MeetingNotesPanel meeting={meetings.find(m => m.id === notesId) ?? null} userId={graph.userId} onClose={() => setNotesId(null)} onSaved={refresh} />}
   </section>
 }
 
-function MeetingCard({ meeting, userId, onJoin, onNotes }: { meeting: Meeting; userId: string; onJoin: () => void; onNotes: () => void }) {
+function MeetingCard({ meeting, userId, onJoin, onNotes, onBrief }: { meeting: Meeting; userId: string; onJoin: () => void; onNotes: () => void; onBrief: () => void }) {
   const status = meetingStatus(meeting)
   const others = meeting.participants.filter(p => p.userId !== userId)
   return <article className={`meetings-card meetings-${status}`}>
@@ -85,9 +96,11 @@ function MeetingCard({ meeting, userId, onJoin, onNotes }: { meeting: Meeting; u
       <span className={`meetings-status meetings-status-${status}`}>{status === 'live' ? <><CircleDot size={11} /> Live</> : status === 'ended' ? 'Ended' : meeting.scheduledFor ? when(meeting.scheduledFor) : 'Not started'}</span>
       <h3>{meeting.title}</h3>
       <p className="og-note"><Users size={12} /> {others.length ? `With ${others.map(p => p.name).join(', ')}` : 'Just you so far'}{meeting.hostId === userId ? ' · you host' : ''}</p>
+      {meeting.agenda && <p className="meetings-agenda">{meeting.agenda.split('\n')[0]}</p>}
     </div>
     <div className="og-inline">
       {status !== 'ended' && <Btn onClick={onJoin}><Video size={14} /> Join</Btn>}
+      {status !== 'ended' && others.length > 0 && <Btn kind="quiet" onClick={onBrief}><Compass size={14} /> Brief</Btn>}
       <Btn kind="quiet" onClick={onNotes}><FileText size={14} /> {meeting.hasNotes ? 'My notes' : 'Notes'}</Btn>
     </div>
   </article>
@@ -253,6 +266,11 @@ function MeetingRoom({ meeting, userId, onLeave }: { meeting: Meeting; userId: s
       </div>
 
       <aside className="meeting-notes">
+        {(meeting.agenda || meeting.participants.length > 1) && <details className="meeting-brief-inline">
+          <summary><Compass size={14} /> Brief{meeting.agenda ? ' and agenda' : ''}</summary>
+          {meeting.agenda && <p className="meeting-agenda-text">{meeting.agenda}</p>}
+          <MeetingBrief meeting={meeting} userId={userId} compact />
+        </details>}
         <div className={`meeting-consent ${myConsent ? 'on' : ''}`}>
           <b><Sparkles size={14} /> AI note taker</b>
           {!dictationSupported()
@@ -280,7 +298,8 @@ function MeetingRoom({ meeting, userId, onLeave }: { meeting: Meeting; userId: s
   </section>
 }
 
-function MeetingNotesPanel({ meeting, onClose, onSaved }: { meeting: Meeting | null; onClose: () => void; onSaved: () => void }) {
+function MeetingNotesPanel({ meeting, userId, onClose, onSaved }: { meeting: Meeting | null; userId: string; onClose: () => void; onSaved: () => void }) {
+  const net = useNetwork()
   const [notes, setNotes] = useState<SavedNotes | null>(null)
   const [loading, setLoading] = useState(true)
   const [busy, setBusy] = useState(false)
@@ -310,6 +329,15 @@ function MeetingNotesPanel({ meeting, onClose, onSaved }: { meeting: Meeting | n
     setBusy(false)
   }
 
+  const toTasks = async (items: SavedNotes['actionItems']) => {
+    const r = await addActionItemsToTasks(items, meeting.title, userId, net.profile.name ?? '')
+    setMsg(r.error || `Added ${r.added} to your tasks. Yours are tasks; other people's are commitments you are waiting on.`)
+  }
+  const toDecisions = async () => {
+    const r = await saveDecisionsToLog(notes?.decisions ?? [], meeting.title)
+    setMsg(r.error || `Saved ${r.added} decision${r.added === 1 ? '' : 's'} to your decision log.`)
+  }
+
   const saveNote = async () => {
     const err = await savePrivateNote(meeting.id, draft)
     setMsg(err || 'Saved to your notes.')
@@ -321,8 +349,13 @@ function MeetingNotesPanel({ meeting, onClose, onSaved }: { meeting: Meeting | n
     {loading ? <p className="og-note">Loading…</p> : <>
       {notes?.summary || notes?.decisions.length || notes?.actionItems.length ? <>
         {notes.summary && <p>{notes.summary}</p>}
-        {notes.decisions.length > 0 && <><h3>Decisions</h3><ul>{notes.decisions.map((d, i) => <li key={i}>{d}</li>)}</ul></>}
-        {notes.actionItems.length > 0 && <><h3>Action items</h3><ul>{notes.actionItems.map((a, i) => <li key={i}>{a.task}{a.owner ? <> · <b>{a.owner}</b></> : null}{a.due ? <> · {a.due}</> : null}</li>)}</ul></>}
+        {notes.decisions.length > 0 && <><h3>Decisions</h3><ul>{notes.decisions.map((d, i) => <li key={i}>{d}</li>)}</ul>
+          <Btn kind="quiet" onClick={() => void toDecisions()}><CheckSquare size={14} /> Save to my decision log</Btn></>}
+        {notes.actionItems.length > 0 && <><h3>Action items</h3><ul className="meeting-actions">{notes.actionItems.map((a, i) => <li key={i}>
+          <span>{a.task}{a.owner ? <> · <b>{a.owner}</b></> : null}{a.due ? <> · {a.due}</> : null}</span>
+          <button type="button" className="text-link" onClick={() => void toTasks([a])}>Add to tasks</button>
+        </li>)}</ul>
+          <Btn kind="quiet" onClick={() => void toTasks(notes.actionItems)}><ListChecks size={14} /> Add all to my tasks</Btn></>}
         {notes.generatedAt && <p className="og-note">Generated {when(notes.generatedAt)} from what consenting attendees said.</p>}
       </> : <p className="og-note">No AI notes yet. They are written from the transcript of people who turned notes on.</p>}
       <div className="og-inline"><Btn disabled={busy} onClick={() => void generate()}><Sparkles size={14} /> {busy ? 'Writing notes…' : notes?.generatedAt ? 'Regenerate my notes' : 'Generate my notes'}</Btn></div>
@@ -333,4 +366,55 @@ function MeetingNotesPanel({ meeting, onClose, onSaved }: { meeting: Meeting | n
       {msg && <p className="og-note">{msg}</p>}
     </>}
   </section>
+}
+
+/** The pre-meeting brief for everyone else in the meeting. */
+function MeetingBrief({ meeting, userId, compact = false }: { meeting: Meeting; userId: string; compact?: boolean }) {
+  const [brief, setBrief] = useState<Brief | null>(null)
+  useEffect(() => {
+    let stale = false
+    void loadBrief(meeting, userId).then(b => { if (!stale) setBrief(b) })
+    return () => { stale = true }
+  }, [meeting, userId])
+  if (!brief) return <p className="og-note">Preparing your brief…</p>
+  return <div className={`meeting-brief ${compact ? 'compact' : ''}`}>
+    <p className="meeting-brief-goal"><b>Goal for this call:</b> {brief.goal}</p>
+    {brief.introContext && !compact && <dl className="intro-inbox-why">
+      {brief.introContext.why && <div><dt>WHY THIS INTRODUCTION</dt><dd>{brief.introContext.why}</dd></div>}
+      {brief.introContext.whyNow && <div><dt>WHY NOW</dt><dd>{brief.introContext.whyNow}</dd></div>}
+    </dl>}
+    {brief.people.map(p => <article key={p.userId} className="meeting-brief-person">
+      <h3>{p.name}{p.role && <small> · {p.role}</small>}</h3>
+      {p.whyTheyMatter && <p><b>Why they matter:</b> {p.whyTheyMatter}</p>}
+      {p.common && <p><b>In common:</b> {p.common}</p>}
+      {p.lookingFor && <p><b>Looking for:</b> {p.lookingFor}</p>}
+      {p.canHelpWith && <p><b>Can help with:</b> {p.canHelpWith}</p>}
+      {p.theirAsks.length > 0 && <p><b>Open asks:</b> {p.theirAsks.join(' · ')}</p>}
+      {p.lastMeetingSummary && <p><b>Last time you met:</b> {p.lastMeetingSummary}</p>}
+      {p.lastConversation.length > 0 && <div className="meeting-brief-thread"><b>Where you left off</b>
+        {p.lastConversation.map((m, i) => <p key={i}><span>{m.fromMe ? 'You' : p.name.split(' ')[0]}:</span> {m.text}</p>)}</div>}
+      {p.yourNotes.length > 0 && <div className="meeting-brief-thread"><b>Your private notes</b>{p.yourNotes.map((n, i) => <p key={i}>{n}</p>)}</div>}
+      {!p.whyTheyMatter && !p.lookingFor && !p.lastConversation.length && !p.theirAsks.length && <p className="og-note">Little is on record yet. Ask what they are working on and what would help most.</p>}
+    </article>)}
+  </div>
+}
+
+/** "Meet now" for an accepted introduction: creates the meeting with the capsule as its agenda and opens it. */
+export function MeetNowButton({ introId, title, capsule }: { introId: string; title: string; capsule?: { why_exists?: string | null; why_now?: string | null; first_goal?: string | null } | null }) {
+  const nav = useNav()
+  const [busy, setBusy] = useState(false)
+  const [msg, setMsg] = useState('')
+  const start = async () => {
+    setBusy(true); setMsg('')
+    const agenda = capsule ? agendaFromCapsule({ whyExists: capsule.why_exists ?? '', whyNow: capsule.why_now ?? '', firstGoal: capsule.first_goal ?? '' }) : ''
+    const r = await startIntroMeeting(introId, title, agenda)
+    setBusy(false)
+    if (r.error || !r.id) { setMsg(r.error || 'The meeting could not be started.'); return }
+    queueMeetingToOpen(r.id)
+    nav.setPage('meetings')
+  }
+  return <>
+    <Btn kind="secondary" disabled={busy} onClick={() => void start()}><Video size={14} /> {busy ? 'Starting…' : 'Meet now'}</Btn>
+    {msg && <small className="og-note">{msg}</small>}
+  </>
 }

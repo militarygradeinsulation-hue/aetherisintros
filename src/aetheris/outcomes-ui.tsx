@@ -14,6 +14,7 @@ import {
   type OutcomeSummary, type TrackRecord, type ValueBand,
 } from './outcomes'
 import { useGraph } from './graph-store'
+import { MeetNowButton } from './meetings-ui'
 import { useNetwork } from './store'
 import { Btn, Eyebrow } from './ui'
 
@@ -90,6 +91,7 @@ export function OutcomeCheckins() {
     {due.map(c => <article key={`${c.introRequestId}-${c.checkpoint}`} className="oc-card">
       <p><b>{checkinPrompt(c, nameOf(c.counterpartId))}</b></p>
       <small className="og-note">Accepted {c.daysSince} days ago{c.lastStage ? ` · last update: ${stageLabel[c.lastStage]}` : ''}</small>
+      {(!c.lastStage || c.lastStage === 'too_early') && <div className="og-inline"><MeetNowButton introId={c.introRequestId} title={`Introduction: ${nameOf(c.counterpartId)}`} /></div>}
       <OutcomeForm introRequestId={c.introRequestId} onSaved={() => void load()} />
     </article>)}
     {error && <p className="og-note">{error}</p>}
