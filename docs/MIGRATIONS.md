@@ -5,3 +5,4 @@
 - Never squash or rewrite either history. Both journals must stay exactly as applied.
 - Every new public table ships in the same migration with: explicit GRANTs (minimum needed), RLS enabled, owner-scoped policies, no authenticated TRUNCATE/REFERENCES/TRIGGER, and immutable identity columns (`freeze_columns`).
 - Data fixes go through data queries, not migrations (except backfills belonging to an additive schema change).
+- Every new migration ships with a suite in `scripts/migration-checks/` that exercises its RLS, grants, triggers and RPCs as `authenticated` and `anon`; run it before pushing.
