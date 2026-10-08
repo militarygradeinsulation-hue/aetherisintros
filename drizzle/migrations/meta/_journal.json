@@ -246,6 +246,13 @@
       "when": 1791461659383,
       "tag": "0034_weekly_digest",
       "breakpoints": true
+    },
+    {
+      "idx": 35,
+      "version": "7",
+      "when": 1791461959383,
+      "tag": "0035_admin_network_health",
+      "breakpoints": true
     }
   ]
 }

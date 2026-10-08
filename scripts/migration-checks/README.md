@@ -29,6 +29,7 @@ Pin PGlite 0.2.x: the 0.3.x builds tested here crash on `RAISE` inside PL/pgSQL.
 | `meeting-outcomes` | 0032 | meetings from introductions only for accepted intros and their two people, agenda stored (trimmed), "met" recorded for both only once both join, never duplicated or overwriting later progress, nothing recorded for ordinary meetings |
 | `meeting-calendar` | 0033 | scheduled meetings create one entry in each participant's own calendar (45 minutes, with agenda), none for meetings started now, entries private to their owner, movable and removable but never relinkable to another meeting |
 | `weekly-digest` | 0034 | digest off unless chosen, members switch only their own setting, unsubscribe token and send log server-owned and unreadable, others' settings invisible |
+| `admin-health` | 0035 | network health readable by admins only, through the wrapper; the underlying function stays service-role only |
 
 Run after any change to these migrations, and add a suite with each new one. The live-schema
 harness in `scripts/security-harness` remains the check against the real dumped schema.

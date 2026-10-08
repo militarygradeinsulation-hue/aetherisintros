@@ -5,8 +5,8 @@
  *
  * In each pair only one side makes offers (the lower user id) and the other only answers,
  * so offers never collide whatever order people join in; each peer's signals are applied
- * strictly in order. Direct connections use public STUN only; some strict corporate
- * networks need a TURN relay, which can be added to ICE_SERVERS later.
+ * strictly in order. Direct connections use public STUN; a TURN relay is used too when the
+ * server provides one (src/lib/iceServers.functions.ts), for strict corporate networks.
  */
 import type { RealtimeChannel } from '@supabase/supabase-js'
 
@@ -48,6 +48,8 @@ const supabaseTransport: CallTransport = {
 
 export interface MeetingCallOptions {
   transport?: CallTransport
+  /** STUN/TURN servers; defaults to public STUN only. */
+  iceServers?: RTCIceServer[] | undefined
   meetingId: string
   userId: string
   localStream: MediaStream
@@ -125,7 +127,7 @@ export class MeetingCall {
   }
 
   private addPeer(peerId: string): PeerSlot {
-    const pc = new RTCPeerConnection({ iceServers: ICE_SERVERS })
+    const pc = new RTCPeerConnection({ iceServers: this.opts.iceServers?.length ? this.opts.iceServers : ICE_SERVERS })
     const slot: PeerSlot = { pc, offerer: this.opts.userId < peerId, stream: null, queue: Promise.resolve() }
     this.peers.set(peerId, slot)
     for (const track of this.opts.localStream.getTracks()) pc.addTrack(track, this.opts.localStream)

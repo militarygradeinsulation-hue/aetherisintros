@@ -11,6 +11,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { BellRing, CalendarPlus, CheckSquare, CircleDot, Compass, FileText, ListChecks, Mic, MicOff, PhoneOff, Plus, Sparkles, Users, Video, VideoOff, X } from 'lucide-react'
 
 import { supabase } from '@/integrations/supabase/client'
+import { getIceServers } from '@/lib/iceServers.functions'
 import { generateMeetingNotes } from '@/lib/meetingNotes.functions'
 import { useGraph } from './graph-store'
 import { loadBrief, type Brief } from './meeting-brief'
@@ -199,8 +200,11 @@ function MeetingRoom({ meeting, userId, onLeave }: { meeting: Meeting; userId: s
       }
       if (cancelled) { stream.getTracks().forEach(t => t.stop()); return }
       setLocal(stream)
+      // A relay server when configured, so calls also work behind strict company firewalls.
+      const ice = await getIceServers().catch(() => null)
+      if (cancelled) { stream.getTracks().forEach(t => t.stop()); return }
       const c = new MeetingCall({
-        meetingId: meeting.id, userId, localStream: stream,
+        meetingId: meeting.id, userId, localStream: stream, iceServers: ice?.iceServers,
         onPeers: setPeers,
         onCaption: (cap: Caption) => addLine({ key: `${cap.from}-${cap.at}`, speakerId: cap.from, text: cap.text, at: cap.at }),
         onStatus: (s, detail) => { setStatus(s); if (detail) setProblem(detail) },
