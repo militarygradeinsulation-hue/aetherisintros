@@ -260,6 +260,27 @@
       "when": 1791462259383,
       "tag": "0036_leak_checks",
       "breakpoints": true
+    },
+    {
+      "idx": 37,
+      "version": "7",
+      "when": 1791462559383,
+      "tag": "0037_membership_cards",
+      "breakpoints": true
+    },
+    {
+      "idx": 38,
+      "version": "7",
+      "when": 1791462859383,
+      "tag": "0038_profile_linkedin_url",
+      "breakpoints": true
+    },
+    {
+      "idx": 39,
+      "version": "7",
+      "when": 1791463159383,
+      "tag": "0039_meeting_recording",
+      "breakpoints": true
     }
   ]
 }

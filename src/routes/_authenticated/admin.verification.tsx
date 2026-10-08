@@ -5,6 +5,7 @@ import { useCallback, useEffect, useState } from 'react'
 import { useAccess } from '@/aetheris/access'
 import { claimableRoles, signedProofUrl } from '@/aetheris/verification'
 import { supabase } from '@/integrations/supabase/client'
+import { sendMembershipCardAsAdmin } from '@/lib/membershipCard.functions'
 import '@/aetheris/styles.css'
 
 export const Route = createFileRoute('/_authenticated/admin/verification')({
@@ -45,6 +46,7 @@ function ReviewConsole() {
   const [reason, setReason] = useState('')
   const [notes, setNotes] = useState('')
   const [notice, setNotice] = useState('')
+  const [cards, setCards] = useState<Map<string, string>>(new Map())
 
   const reload = useCallback(async () => {
     // Identity review only — no CRM, Grid or business data is loaded here.
@@ -52,7 +54,27 @@ function ReviewConsole() {
       .select('id, user_id, legal_name, display_name, claimed_role, verified_role, business_name, business_domain, work_email, business_location, professional_url, registration_number, registration_jurisdiction, status, risk_flags, reviewer_notes, submitted_at, scanned_at')
       .order('created_at', { ascending: false }).limit(200)
     setClaims((data ?? []) as Claim[])
+    const ids = (data ?? []).filter(c => c.status === 'verified').map(c => c.user_id)
+    const cardRows = ids.length
+      ? ((await (supabase as any).from('membership_cards').select('user_id, code').in('user_id', ids)).data ?? []) as Array<{ user_id: string; code: string }> // eslint-disable-line @typescript-eslint/no-explicit-any
+      : []
+    setCards(new Map(cardRows.map(r => [r.user_id, r.code])))
   }, [])
+
+  const cardMessage: Record<string, string> = {
+    sent: 'Membership card emailed.',
+    not_due: 'The membership card was already emailed.',
+    no_card: 'No membership card yet: it is issued once the member has a name on their profile.',
+    not_configured: 'Membership card queued. Email sending is not set up yet (RESEND_API_KEY and a sender address); it goes out once it is.',
+    no_email: 'The member has no email address on their account.',
+    failed: 'The membership card email could not be sent. It will be retried.',
+  }
+  const sendCard = async (userId: string, resend: boolean) => {
+    try {
+      const { result } = await sendMembershipCardAsAdmin({ data: { userId, resend } })
+      return cardMessage[result] ?? ''
+    } catch { return 'The membership card email could not be sent. It will be retried.' }
+  }
 
   useEffect(() => {
     if (access.loading) return
@@ -90,7 +112,8 @@ function ReviewConsole() {
     if (status === 'verified') args.p_public_summary = `${claim.claimed_role}, ${claim.business_name}`
     const { error } = await supabase.rpc('review_member_verification', args)
     if (error) { setNotice(error.message); return }
-    setNotice(`Membership set to ${status.replace(/_/g, ' ')}.`)
+    const card = status === 'verified' ? ` ${await sendCard(claim.user_id, false)}` : ''
+    setNotice(`Membership set to ${status.replace(/_/g, ' ')}.${card}`)
     setOpenId(null)
     void reload()
   }
@@ -113,8 +136,10 @@ function ReviewConsole() {
         <div>
           <h2>{claim.display_name || claim.legal_name || claim.user_id}</h2>
           <p>{claim.claimed_role} · {claim.business_name} · {claim.business_domain || 'no domain'}</p>
-          <small className="folio">{claim.status.replace(/_/g, ' ').toUpperCase()}{claim.scanned_at ? ` · CHECKED ${new Date(claim.scanned_at).toLocaleDateString()}` : ''}</small>
+          <small className="folio">{claim.status.replace(/_/g, ' ').toUpperCase()}{claim.scanned_at ? ` · CHECKED ${new Date(claim.scanned_at).toLocaleDateString()}` : ''}{cards.get(claim.user_id) ? ` · CARD ${cards.get(claim.user_id)}` : ''}</small>
         </div>
+        {claim.status === 'verified' && cards.has(claim.user_id) && <button className="chip" type="button"
+          onClick={() => void sendCard(claim.user_id, true).then(setNotice)}>Email card</button>}
         <button className="chip" type="button" onClick={() => void (openId === claim.id ? setOpenId(null) : open(claim))}>
           {openId === claim.id ? 'Close' : 'Review'}
         </button>

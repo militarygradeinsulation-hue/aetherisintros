@@ -189,6 +189,8 @@ create policy "Members delete their own events" on public.calendar_events for de
 
 create table public.invitations (id uuid primary key default gen_random_uuid(), code text not null unique, email text, max_uses integer not null default 1, uses integer not null default 0, expires_at timestamptz, revoked boolean not null default false, created_by uuid, created_at timestamptz not null default now());
 create table public.early_access_members (id uuid primary key default gen_random_uuid(), user_id uuid not null unique, email text not null, status text not null default 'pending', invite_id uuid);
+create function public.is_approved_member(p_user uuid) returns boolean language sql stable security definer set search_path = public as $$
+  select exists (select 1 from public.early_access_members e where e.user_id = p_user and e.status = 'approved') $$;
 `
 
 // Rows that exist before the new migrations run, so backfills are exercised.
@@ -203,6 +205,9 @@ insert into public.ask_responses (ask_id, user_id, text) values ('ask-old', '${B
 insert into public.intro_requests (id,user_id,member_id,target_user_id,member_opt_in,updated_at) values
   ('11111111-1111-4111-8111-111111111111','${C}','${B}','${B}',true, now() - interval '40 days');
 insert into public.intro_requests (id,user_id,member_id) values ('22222222-2222-4222-8222-222222222222','${C}','${A}');
+-- A member verified before membership cards existed (0037 backfills a card without emailing).
+update public.profiles set name = 'Bea Bramwell' where id = '${B}';
+insert into public.member_verifications (user_id, status, verified_at) values ('${B}', 'verified', '2026-03-02T10:00:00Z');
 -- A request to a demo member (non-uuid id): never targetable, must not skew metrics.
 insert into public.intro_requests (user_id,member_id) values ('${A}','demo-marcus-lee');
 `

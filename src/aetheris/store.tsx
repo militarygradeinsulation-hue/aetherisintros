@@ -280,7 +280,7 @@ interface NetworkApi {
   setDigitalYou: (x: DigitalYouProfile) => void
   setAutonomy: (x: AutonomyLevel) => void
   updateIdentity: (fields: { name: string; photo?: File | null }) => Promise<void>
-  updateExecutiveProfile: (fields: Partial<Pick<MeProfile, 'title' | 'company' | 'location' | 'whatIDo' | 'building' | 'focus' | 'lookingFor' | 'canHelpWith' | 'openTo' | 'schedulingEnabled' | 'availability'>>) => Promise<void>
+  updateExecutiveProfile: (fields: Partial<Pick<MeProfile, 'title' | 'company' | 'location' | 'whatIDo' | 'building' | 'focus' | 'thesis' | 'lookingFor' | 'canHelpWith' | 'expertise' | 'industries' | 'openTo' | 'schedulingEnabled' | 'availability'>>) => Promise<void>
   completeOnboarding: (answers: Record<string, string>) => void
   setPreferences: (settings: PreferenceSettings) => void
   setHomeLayout: (layout: HomeWidgetConfig[]) => void

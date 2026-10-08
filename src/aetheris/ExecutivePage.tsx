@@ -16,6 +16,8 @@ import { CeoActions, HealthBadge, TrustPassportSummary } from './ceo-ui'
 import { MarkButtons } from './ceo-insights-ui'
 import { IntroWorkflow, MeetingBriefPanel, ReverseDiscoveryPanel, RoutingPanel, TrustPanel, WeatherPanel } from './opportunity-ui'
 import { FollowThroughPanel } from './outcomes-ui'
+import { LinkedInImportPanel } from './linkedin-import-ui'
+import { MembershipCardPanel } from './membership-card-ui'
 
 export const OPEN_TO_OPTIONS = [
   'Customer conversations', 'Strategic partnerships', 'Investment conversations',
@@ -170,10 +172,13 @@ export function ExecutivePage({ person, onClose, onIntro, onMessage }: {
         <p className="executive-role">{person.title}{person.company ? ` · ${person.company}` : ''}</p>
         <p className="executive-statement">“{person.whatIDo || person.thesis || person.focus || 'No executive statement recorded yet.'}”</p>
         <p className="executive-meta">{[person.location, person.industry, ...person.expertise.slice(0, 2)].filter(Boolean).join(' · ')}</p>
+        <LinkedInLink memberId={person.id} />
         <div className="executive-actions"><Btn onClick={primary.run}>{primary.icon}{primary.label}</Btn>
           {canSchedule && <Btn kind="secondary" onClick={() => setScheduleOpen(true)}><CalendarDays size={15} /> Find a time</Btn>}</div>
       </div>
     </header>
+
+    <MembershipCardPanel memberId={person.id} />
 
     <section className="executive-why" aria-label="Relationship intelligence">
       <article><Eyebrow>WHY THEM</Eyebrow><p>{match?.components[0]?.evidence || person.whyThem || 'No evidence-backed relevance recorded yet.'}</p></article>
@@ -286,6 +291,15 @@ export function ExecutiveIdentityEditor({ openPhotoEditor }: { openPhotoEditor: 
   }
   return <div className="executive-editor-page">
     <header className="executive-editor-head"><div><Eyebrow>ME / EXECUTIVE IDENTITY</Eyebrow><h1>One identity. Every relationship.</h1><p>Edit the same concise profile verified members see. Verification remains controlled by the review system.</p></div><span className="executive-unverified">Verification status is not editable</span></header>
+    <LinkedInImportPanel onApplied={fields => setDraft(current => ({
+      ...current,
+      ...(fields.title !== undefined && { title: fields.title }),
+      ...(fields.company !== undefined && { company: fields.company }),
+      ...(fields.location !== undefined && { location: fields.location }),
+      ...(fields.whatIDo !== undefined && { whatIDo: fields.whatIDo }),
+      ...(fields.building !== undefined && { building: fields.building }),
+      ...(fields.canHelpWith !== undefined && { canHelpWith: fields.canHelpWith }),
+    }))} />
     <div className="executive-editor-grid">
       <section className="executive-edit-form">
         <Btn kind="secondary" onClick={openPhotoEditor}>Change name or photo</Btn>
@@ -306,4 +320,17 @@ export function ExecutiveIdentityEditor({ openPhotoEditor }: { openPhotoEditor: 
       <aside className="executive-live-preview"><Eyebrow>LIVE PROFILE PREVIEW</Eyebrow><Face person={preview} large portrait /><h2>{preview.name}</h2><p>{preview.title}{preview.company ? ` · ${preview.company}` : ''}</p><blockquote>“{preview.whatIDo || 'Add the clearest statement of what you actually do.'}”</blockquote><small>{[preview.location, preview.industry].filter(Boolean).join(' · ')}</small><div className="executive-preview-open">{previewOpenTo.map(item => <span key={item}>{item}</span>)}</div></aside>
     </div>
   </div>
+}
+/** The member's LinkedIn link, when they have added one. Read on its own so the profile never depends on it. */
+function LinkedInLink({ memberId }: { memberId: string }) {
+  const [url, setUrl] = useState('')
+  useEffect(() => {
+    if (!/^[0-9a-f-]{36}$/i.test(memberId)) return
+    let live = true
+    void (supabase.from('profiles') as any).select('linkedin_url').eq('id', memberId).maybeSingle() // eslint-disable-line @typescript-eslint/no-explicit-any
+      .then(({ data }: { data: { linkedin_url?: string } | null }) => { if (live) setUrl(data?.linkedin_url ?? '') })
+    return () => { live = false }
+  }, [memberId])
+  if (!/^https:\/\/www\.linkedin\.com\/in\//.test(url)) return null
+  return <a className="executive-linkedin" href={url} target="_blank" rel="noopener noreferrer">LinkedIn profile ↗</a>
 }

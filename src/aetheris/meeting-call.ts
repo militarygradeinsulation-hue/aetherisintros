@@ -55,6 +55,8 @@ export interface MeetingCallOptions {
   localStream: MediaStream
   onPeers: (peers: RemotePeer[]) => void
   onCaption: (caption: Caption) => void
+  /** Someone changed the room (recording, consent, invites): reload its state now. */
+  onRoomChange?: () => void
   onStatus: (status: 'connecting' | 'joined' | 'full' | 'error', detail?: string) => void
 }
 
@@ -84,6 +86,7 @@ export class MeetingCall {
         const c = payload as Caption
         if (c && typeof c.text === 'string' && typeof c.from === 'string') this.opts.onCaption(c)
       })
+      .on('broadcast', { event: 'room' }, () => this.opts.onRoomChange?.())
       .subscribe(async (status, err) => {
         if (this.closed) return
         if (status === 'SUBSCRIBED') {
@@ -98,6 +101,11 @@ export class MeetingCall {
   /** Share a finished phrase of your own speech with everyone in the room. */
   sendCaption(text: string) {
     void this.channel?.send({ type: 'broadcast', event: 'caption', payload: { from: this.opts.userId, text, at: new Date().toISOString() } satisfies Caption })
+  }
+
+  /** Tell everyone in the room to reload its state (recording started, consent changed, someone invited). */
+  announceRoomChange() {
+    void this.channel?.send({ type: 'broadcast', event: 'room', payload: { from: this.opts.userId } })
   }
 
   setTrackEnabled(kind: 'audio' | 'video', enabled: boolean) {
