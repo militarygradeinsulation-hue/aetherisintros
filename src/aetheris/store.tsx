@@ -453,10 +453,8 @@ export function NetworkProvider({ children, mode = 'live' }: { children: React.R
     }
     for (const [memberId, status] of Object.entries(s.introStates)) {
       if (prev.introStates[memberId] !== status) {
+        // The intro_requests_notify trigger (0026) notifies the target once, for every request path.
         saveIntro(userId, memberId, status)
-        if (live && status === 'requested') {
-          notify(memberId, userId, 'intro_request', `${s.profile.name || 'A member'} asked for an introduction — both sides must opt in.`)
-        }
       }
     }
     for (const learning of s.learned) {

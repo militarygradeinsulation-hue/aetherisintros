@@ -35,6 +35,7 @@ import '@/aetheris/styles.css';
 import { useAetherisNews } from '@/aetheris/news';
 import { LiveMembers } from './liveMembers';
 import { ThisWeekPanel } from '@/aetheris/this-week-ui';
+import { LiveNotificationsBell } from '@/aetheris/notifications-bell';
 
 function NewsTicker({ onOpen }: { onOpen: () => void }) {
   const { data } = useAetherisNews();
@@ -222,6 +223,7 @@ export default function App({ mode = 'demo' }: { mode?: 'demo' | 'live' }) {
         onToggleConstellationOverlay={() => handleNavigate('bubbles')}
         me={mode === 'live' ? me : undefined}
         onOpenMyProfile={mode === 'live' ? () => { setClassicPage('profile'); handleNavigate('workspace'); } : undefined}
+        bell={mode === 'live' ? <LiveNotificationsBell onOpen={(destination) => handleNavigate(destination)} /> : undefined}
       />
 
       {mode === 'live' && <LiveMembers onMembers={setMembers} />}

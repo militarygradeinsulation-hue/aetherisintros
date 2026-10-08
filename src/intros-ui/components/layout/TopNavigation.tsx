@@ -25,6 +25,7 @@ interface TopNavigationProps {
   onToggleConstellationOverlay?: () => void;
   me?: { name: string; avatarUrl?: string } | null;
   onOpenMyProfile?: () => void;
+  bell?: React.ReactNode;
 }
 
 export const TopNavigation: React.FC<TopNavigationProps> = ({
@@ -36,6 +37,7 @@ export const TopNavigation: React.FC<TopNavigationProps> = ({
   onToggleConstellationOverlay,
   me,
   onOpenMyProfile,
+  bell,
 }) => {
   const [moreOpen, setMoreOpen] = useState(false);
   const moreRef = useRef<HTMLButtonElement>(null);
@@ -143,15 +145,15 @@ export const TopNavigation: React.FC<TopNavigationProps> = ({
             </kbd>
           </div>
 
-          {/* Notification Bell */}
-          <button
+          {/* Notification Bell (live members get the real unread count) */}
+          {bell ?? <button
             onClick={() => onNavigate('intros')}
             title="Introduction Requests"
             className="relative p-1.5 md:p-2 text-[#9CA3AF] hover:text-[#F2EEE6] hover:bg-white/5 rounded-lg transition-colors cursor-pointer"
           >
             <Bell className="w-4 h-4" />
             <span className="absolute top-1 right-1 w-2 h-2 rounded-full bg-[var(--acc)] ring-2 ring-[#07090C]" />
-          </button>
+          </button>}
 
           <AccentSwitch />
 

@@ -5066,3 +5066,18 @@ button.news-link{background:none;border:0;padding:0;cursor:pointer}
 .intro-inbox-why{display:grid;gap:8px;margin:10px 0}
 .intro-inbox-why dt{font-size:.66rem;letter-spacing:.1em;color:var(--muted,#9ea4ac)}
 .intro-inbox-why dd{margin:2px 0 0;overflow-wrap:anywhere}
+
+/* Live notification bell */
+.live-bell{position:relative}
+.live-bell-btn{position:relative;display:inline-flex;align-items:center;justify-content:center;padding:8px;border:0;border-radius:8px;background:transparent;color:var(--sys-ink-dim,#9CA3AF);cursor:pointer}
+.live-bell-btn:hover{color:var(--sys-ink,#F2EEE6);background:rgba(255,255,255,.05)}
+.live-bell-count{position:absolute;top:2px;right:0;min-width:16px;height:16px;padding:0 4px;border-radius:999px;background:var(--acc,#F5B027);color:#07090C;font:700 10px/16px var(--font-sans,system-ui);text-align:center}
+.live-bell-panel{position:absolute;right:0;top:calc(100% + 8px);width:min(340px,calc(100vw - 32px));max-height:min(70vh,460px);overflow:auto;z-index:60;border:1px solid var(--sys-line,rgba(255,255,255,.1));border-radius:12px;background:var(--sys-panel,#11151A);box-shadow:0 18px 40px rgba(0,0,0,.45);padding:8px}
+.live-bell-panel header{display:flex;justify-content:space-between;align-items:center;padding:6px 8px;color:var(--sys-ink,#F2EEE6)}
+.live-bell-panel header button{border:0;background:transparent;color:var(--sys-ink-dim,#9CA3AF);font-size:12px;cursor:pointer}
+.live-bell-panel ul{list-style:none;margin:0;padding:0}
+.live-bell-panel li button{display:flex;gap:10px;justify-content:space-between;width:100%;text-align:left;padding:10px 8px;border:0;border-radius:8px;background:transparent;color:var(--sys-ink-dim,#9CA3AF);font-size:13px;cursor:pointer}
+.live-bell-panel li button.unread{color:var(--sys-ink,#F2EEE6);background:rgba(255,255,255,.03)}
+.live-bell-panel li button:hover{background:rgba(255,255,255,.06)}
+.live-bell-panel li small{flex-shrink:0;font-size:11px;color:var(--sys-ink-dim,#9CA3AF)}
+.live-bell-panel p{margin:8px;color:var(--sys-ink-dim,#9CA3AF);font-size:13px}
