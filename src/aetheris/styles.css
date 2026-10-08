@@ -5169,3 +5169,25 @@ button.news-link{background:none;border:0;padding:0;cursor:pointer}
 .admin-health-table{width:100%;border-collapse:collapse;font-size:13px}
 .admin-health-table th,.admin-health-table td{text-align:left;padding:7px 8px;border-bottom:1px solid var(--line-dark)}
 .admin-health-table td small{display:block;color:var(--muted)}
+.leak-company{display:grid;gap:6px;max-width:420px;margin:10px 0;font-size:12px;color:var(--muted)}
+.leak-company input{background:var(--night,#07090C);border:1px solid var(--line-dark);border-radius:7px;padding:9px 11px;color:var(--soft);font:inherit;font-size:14px}
+.leak-questions{display:grid;gap:12px;margin:12px 0;padding-left:20px}
+.leak-questions fieldset{border:0;margin:0;padding:0}
+.leak-questions legend{font-size:14px;margin-bottom:8px;line-height:1.45}
+.leak-options{display:flex;flex-wrap:wrap;gap:8px}
+.leak-options label{display:inline-flex;align-items:center;gap:6px;padding:7px 11px;border:1px solid var(--line-dark);border-radius:8px;font-size:13px;cursor:pointer;transition:border-color .15s ease,background .15s ease}
+.leak-options label.on{border-color:#F5B027;background:rgba(245,176,39,.1)}
+.leak-options input{accent-color:#F5B027}
+.leak-result{display:grid;gap:12px;margin-top:10px}
+.leak-index{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
+.leak-check .leak-index b{font-family:Georgia,'Times New Roman',serif;font-size:44px!important;font-weight:600;line-height:1;color:#F5B027}
+.leak-index small{color:var(--muted)}
+.leak-finding{display:grid;grid-template-columns:28px 1fr;gap:12px}
+.leak-finding h3{margin:0 0 4px;font-size:16px}
+.leak-finding h3 small{margin-left:6px;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.leak-finding.sev-high h3 small{color:#F5B027}
+.leak-finding p{margin:0 0 6px;font-size:14px;line-height:1.5}
+.leak-fix{color:var(--soft)}
+.leak-rank{display:grid;place-items:center;width:26px;height:26px;border-radius:50%;border:1px solid rgba(245,176,39,.6);color:#F5B027;font-size:12px}
+.leak-finding > div > button,.leak-finding .capws-route li button{display:inline-flex;align-items:center;gap:6px;width:auto;border:1px solid rgba(245,176,39,.5);background:transparent;color:#F5B027;border-radius:7px;padding:6px 11px;font-size:13px;cursor:pointer}
+.leak-finding .capws-route li button{border-color:var(--line-dark);color:var(--soft);padding:4px 9px;font-size:12px;justify-self:start}

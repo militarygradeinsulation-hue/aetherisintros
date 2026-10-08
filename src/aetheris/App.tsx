@@ -126,6 +126,7 @@ import { GraphProvider, useGraph } from './graph-store'
 import { OutcomeCheckins } from './outcomes-ui'
 import { IntroRequestInbox } from './intro-inbox'
 import { MeetingsPage } from './meetings-ui'
+import { LeakCheckPanel } from './leak-check-ui'
 import { SentIntroRequests } from './sent-requests-ui'
 import { CompanyWorkspacePanel } from './company-ui'
 import { CeoProvider } from './ceo-store'
@@ -2645,7 +2646,7 @@ function Shell({ startPage, feedOnly = false }: { startPage?: Page | undefined; 
       companies: <CompaniesPage openId={companyId} setOpenId={setCompanyId} />,
       outcomes: <><div className="og-stack"><ForecastConfidencePanel /><NetworkRoiPanel /></div><OutcomesPage /></>,
       loops: <LoopsPage />,
-      organization: <><OrganizationPage /><div className="og-stack"><CompanyWorkspacePanel /><OrganizationRelationshipView /><DelegatesPanel /></div></>,
+      organization: <><OrganizationPage /><div className="og-stack"><LeakCheckPanel /><CompanyWorkspacePanel /><OrganizationRelationshipView /><DelegatesPanel /></div></>,
       intros: <Intros people={people} select={setSelected} draft={setDraft} />,
       messages: <MessageHub people={people} select={setSelected} activeId={threadId} setActiveId={setThreadId} />,
       meetings: <MeetingsPage />,
@@ -2691,7 +2692,7 @@ function Shell({ startPage, feedOnly = false }: { startPage?: Page | undefined; 
       simple: <SimpleViewPage />,
       crm: <CrmPage />,
       pocket: <PocketWorkspace />,
-      diagnostic: <CompanyDiagnosticReport />,
+      diagnostic: <><LeakCheckPanel /><CompanyDiagnosticReport /></>,
       grid: <GridPage />,
       news: <NewsPage />,
     }

@@ -17,7 +17,7 @@ import type { FindingRow } from './types'
 /* eslint-disable @typescript-eslint/no-explicit-any */
 const db = supabase as any
 
-export function RouteToNetwork({ f }: { f: FindingRow }) {
+export function RouteToNetwork({ f }: { f: Pick<FindingRow, 'id' | 'severity' | 'provider'> }) {
   const net = useNetwork()
   const graph = useGraph()
   const nav = useContext(NavCtx)

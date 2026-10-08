@@ -253,6 +253,13 @@
       "when": 1791461959383,
       "tag": "0035_admin_network_health",
       "breakpoints": true
+    },
+    {
+      "idx": 36,
+      "version": "7",
+      "when": 1791462259383,
+      "tag": "0036_leak_checks",
+      "breakpoints": true
     }
   ]
 }
