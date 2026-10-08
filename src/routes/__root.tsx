@@ -18,6 +18,7 @@ import ParticleDrift from "@/aetheris/ParticleDrift";
 import ConstellationField from "@/aetheris/ConstellationField";
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
+import { installClientErrorReporting, reportClientError } from "../lib/error-report";
 import { applyTextScale, readTextScale } from "../aetheris/textScale";
 
 function NotFoundComponent() {
@@ -47,6 +48,7 @@ function ErrorComponent({ error, reset }: ErrorComponentProps) {
   const router = useRouter();
   useEffect(() => {
     reportLovableError(error, { boundary: "tanstack_root_error_component" });
+    reportClientError(error, "page");
   }, [error]);
 
   return (
@@ -136,6 +138,7 @@ function RootComponent() {
 
   useEffect(() => {
     applyTextScale(readTextScale());
+    installClientErrorReporting();
   }, []);
 
   return (

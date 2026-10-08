@@ -3,6 +3,7 @@
 // cope with someone leaving. Run: node scripts/meeting-call-check/run.mjs
 import { build } from 'esbuild'
 import { createServer } from 'node:http'
+import { existsSync } from 'node:fs'
 import { mkdtempSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { dirname, join, resolve } from 'node:path'
@@ -26,9 +27,11 @@ await new Promise(r => server.once('listening', r))
 const base = `http://127.0.0.1:${server.address().port}/`
 
 const pw = process.env.PLAYWRIGHT_MODULE ?? '/opt/node22/lib/node_modules/playwright/index.mjs'
+// Chromium: $CHROMIUM, this sandbox's copy, or Playwright's own download (CI).
+const chromiumPath = () => { const p = process.env.CHROMIUM ?? '/opt/pw-browsers/chromium'; return existsSync(p) ? { executablePath: p } : {} }
 const { chromium } = await import(pw)
 const browser = await chromium.launch({
-  executablePath: process.env.CHROMIUM ?? '/opt/pw-browsers/chromium',
+  ...chromiumPath(),
   args: ['--use-fake-ui-for-media-stream', '--use-fake-device-for-media-stream'],
 }).catch(() => chromium.launch({ args: ['--use-fake-ui-for-media-stream', '--use-fake-device-for-media-stream'] }))
 const context = await browser.newContext({ permissions: ['camera', 'microphone'] })
@@ -75,7 +78,7 @@ const wav = join(out, 'speech.wav')
   writeFileSync(wav, data)
 }
 const speaking = await chromium.launch({
-  executablePath: process.env.CHROMIUM ?? '/opt/pw-browsers/chromium',
+  ...chromiumPath(),
   args: ['--use-fake-ui-for-media-stream', '--use-fake-device-for-media-stream', `--use-file-for-fake-audio-capture=${wav}`],
 })
 const s = await (await speaking.newContext({ permissions: ['camera', 'microphone'] })).newPage()

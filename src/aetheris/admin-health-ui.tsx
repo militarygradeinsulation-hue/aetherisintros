@@ -48,3 +48,34 @@ export function AdminNetworkHealthPanel() {
     <p className="og-note">Checked {h.checked_at ? new Date(h.checked_at).toLocaleString() : 'just now'}. Admins only; it includes member emails.</p>
   </section>
 }
+
+interface AppError { id: string; created_at: string; source: 'client' | 'server'; message: string; stack: string; url: string; user_agent: string }
+
+/** Errors members and the server hit in the last two weeks, grouped by message (newest first). */
+export function AdminErrorsPanel() {
+  const [rows, setRows] = useState<AppError[] | null>(null)
+  const [open, setOpen] = useState<string | null>(null)
+  useEffect(() => {
+    void (supabase as any).from('app_errors').select('id, created_at, source, message, stack, url, user_agent')
+      .order('created_at', { ascending: false }).limit(300)
+      .then((r: any) => setRows(r.error ? [] : r.data ?? []))
+  }, [])
+  if (!rows) return null
+  const groups = new Map<string, { latest: AppError; count: number; pages: Set<string> }>()
+  for (const e of rows) {
+    const g = groups.get(e.message)
+    if (g) { g.count++; g.pages.add(e.url) } else groups.set(e.message, { latest: e, count: 1, pages: new Set([e.url]) })
+  }
+  return <section className="executive-section admin-health">
+    <Eyebrow><Activity size={12} /> ERRORS · LAST 14 DAYS</Eyebrow>
+    <h2>{rows.length ? `${groups.size} distinct error${groups.size === 1 ? '' : 's'}, ${rows.length} reports.` : 'No errors reported.'}</h2>
+    <ul className="admin-list">
+      {[...groups.values()].slice(0, 30).map(({ latest, count, pages }) => <li key={latest.id}>
+        <span><b>{latest.source === 'server' ? 'Server' : 'Browser'}</b> · {latest.message}</span>
+        <small>{count}× · last {new Date(latest.created_at).toLocaleString()} · {[...pages].filter(Boolean).slice(0, 3).join(', ') || 'no page'}
+          {latest.stack && <> · <button type="button" className="text-link" onClick={() => setOpen(open === latest.id ? null : latest.id)}>{open === latest.id ? 'hide' : 'stack'}</button></>}</small>
+        {open === latest.id && <pre className="admin-error-stack">{latest.stack}</pre>}
+      </li>)}
+    </ul>
+  </section>
+}

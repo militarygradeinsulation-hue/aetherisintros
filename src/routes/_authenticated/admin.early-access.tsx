@@ -3,7 +3,7 @@ import { useCallback, useEffect, useState } from 'react'
 
 import { useAccess, type LaunchMode } from '@/aetheris/access'
 import { NetworkProofPanel } from '@/aetheris/outcomes-ui'
-import { AdminNetworkHealthPanel } from '@/aetheris/admin-health-ui'
+import { AdminErrorsPanel, AdminNetworkHealthPanel } from '@/aetheris/admin-health-ui'
 import { FoundingCohortsPanel } from '@/aetheris/cohorts-ui'
 import { supabase } from '@/integrations/supabase/client'
 import '@/aetheris/styles.css'
@@ -96,6 +96,7 @@ function AdminRoute() {
 
     <NetworkProofPanel />
     <AdminNetworkHealthPanel />
+    <AdminErrorsPanel />
 
     <FoundingCohortsPanel />
 
