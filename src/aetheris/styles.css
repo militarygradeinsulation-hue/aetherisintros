@@ -5494,3 +5494,26 @@ button.news-link{background:none;border:0;padding:0;cursor:pointer}
 .growth-bar.new i{background:var(--muted,#9ea4ac)}
 .growth-table td small{display:inline;margin-left:8px}
 .growth-scroll{overflow-x:auto;max-width:100%}
+/* Member events (0050) */
+.mev-privacy{display:flex;gap:6px;align-items:center;font:400 12px/1.5 var(--sans);color:var(--muted);margin:0 0 14px}
+.mev-list{display:grid;gap:12px}
+.mev-card{display:grid;gap:12px;padding:22px;border:1px solid var(--line-dark);border-radius:10px;background:var(--raised)}
+.mev-card.cancelled{opacity:.6}
+.mev-head h2{font:500 clamp(24px,3vw,34px)/1.05 var(--serif);margin:10px 0 8px}
+.mev-when,.mev-meta,.mev-private p{display:flex;gap:6px;align-items:center;flex-wrap:wrap;margin:0;font:400 12.5px/1.5 var(--sans);color:var(--muted)}
+.mev-meta{gap:14px;margin-top:6px}.mev-meta span{display:inline-flex;gap:5px;align-items:center}
+.mev-desc{margin:0;font:400 13px/1.65 var(--sans);color:var(--soft);white-space:pre-line;max-width:70ch}
+.mev-private{display:grid;gap:6px;padding:10px 12px;border:1px solid var(--line-dark);border-radius:8px;background:rgba(255,255,255,.03)}
+.mev-private b{color:var(--soft);font-weight:600}.mev-private a{color:var(--soft)}
+.mev-actions{display:flex;gap:7px;flex-wrap:wrap;align-items:center}
+.mev-status{font:700 9px var(--sans);letter-spacing:.12em;text-transform:uppercase;color:var(--amber);padding-right:6px}
+.mev-edit{display:grid;gap:8px}
+.mev-edit textarea,.mev-people-admin input{background:rgba(0,0,0,.28);border:1px solid var(--line-dark);border-radius:6px;color:var(--soft);font:400 13px var(--sans);padding:7px 9px}
+.mev-people ul,.mev-people-admin ul{list-style:none;margin:0;padding:0;display:grid;gap:1px}
+.mev-people li{display:flex;justify-content:space-between;gap:10px;align-items:center;padding:9px 0;border-top:1px solid var(--line-dark);font:400 13px var(--sans)}
+.mev-people li small{display:block;color:var(--muted);font-size:11px}
+.mev-people-admin li{font:400 12px var(--sans);padding:3px 0}.mev-people-admin li small{color:var(--muted);margin-left:6px}
+.mev-admin-list{max-height:none}
+.mev-admin-list li>.mev-people-admin{grid-column:1/-1}
+.mev-form{grid-template-columns:repeat(3,minmax(0,1fr));margin:10px 0}
+@media (max-width:760px){.mev-card{padding:16px}.mev-form{grid-template-columns:1fr}.mev-admin-list li{grid-template-columns:1fr}}

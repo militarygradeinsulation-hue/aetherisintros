@@ -24,9 +24,10 @@ export function ageLabel(iso: string, now = Date.now()): string {
 }
 
 /** Where a notification should take the member. */
-export function destinationFor(n: Pick<LiveNotification, 'kind'>): 'intros' | 'messages' | 'people' | 'meetings' | 'peergroups' | 'home' {
+export function destinationFor(n: Pick<LiveNotification, 'kind'>): 'intros' | 'messages' | 'people' | 'meetings' | 'peergroups' | 'events' | 'home' {
   if (n.kind.startsWith('meeting')) return 'meetings'
   if (n.kind.startsWith('peer_group')) return 'peergroups'
+  if (n.kind.startsWith('event_')) return 'events' // event_invite, event_promoted, event_cancelled, event_reminder
   if (n.kind === 'message') return 'messages'
   if (n.kind === 'connection' || n.kind === 'follow') return 'people'
   if (n.kind.startsWith('intro')) return 'intros' // intro_request, intro_accepted, intro_declined, intro_connected

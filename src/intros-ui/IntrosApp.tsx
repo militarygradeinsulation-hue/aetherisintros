@@ -231,7 +231,7 @@ export default function App({ mode = 'demo' }: { mode?: 'demo' | 'live' }) {
         me={mode === 'live' ? me : undefined}
         onOpenMyProfile={mode === 'live' ? () => { setClassicPage('profile'); handleNavigate('workspace'); } : undefined}
         bell={mode === 'live' ? <LiveNotificationsBell onOpen={(destination) => {
-          if (destination === 'peergroups') { setClassicPage('peergroups'); handleNavigate('workspace'); return; }
+          if (destination === 'peergroups' || destination === 'events') { setClassicPage(destination); handleNavigate('workspace'); return; }
           handleNavigate(destination);
         }} /> : undefined}
       />
