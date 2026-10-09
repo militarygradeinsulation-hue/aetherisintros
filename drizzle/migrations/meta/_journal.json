@@ -337,6 +337,20 @@
       "when": 1791465559383,
       "tag": "0047_workspace_sync",
       "breakpoints": true
+    },
+    {
+      "idx": 48,
+      "version": "7",
+      "when": 1791465859383,
+      "tag": "0048_gmail_signals",
+      "breakpoints": true
+    },
+    {
+      "idx": 49,
+      "version": "7",
+      "when": 1791466159383,
+      "tag": "0049_sms_alerts",
+      "breakpoints": true
     }
   ]
 }
