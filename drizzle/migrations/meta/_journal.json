@@ -281,6 +281,13 @@
       "when": 1791463159383,
       "tag": "0039_meeting_recording",
       "breakpoints": true
+    },
+    {
+      "idx": 40,
+      "version": "7",
+      "when": 1791463459383,
+      "tag": "0040_foundation",
+      "breakpoints": true
     }
   ]
 }

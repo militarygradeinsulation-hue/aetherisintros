@@ -1,0 +1,47 @@
+# Checks on every pull request and push to main: typecheck, unit tests, the database migration
+# checks (PGlite, no live data) and the browser checks for meetings (Chromium with fake media).
+name: Checks
+on:
+  pull_request:
+  push:
+    branches: [main]
+permissions:
+  contents: read
+concurrency:
+  group: checks-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  checks:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - uses: oven-sh/setup-bun@v2
+      # bun.lock points at the Lovable sandbox's package cache, which runners cannot reach, so
+      # dependencies resolve from the public registry here.
+      - name: Install dependencies
+        run: |
+          rm -f bun.lock
+          bun install
+          bun add --no-save @electric-sql/pglite@0.2.17 playwright@1.56.1
+      - name: Typecheck
+        run: npx tsc --noEmit -p .
+      - name: Unit tests
+        run: npx vitest run
+      - name: Database migration checks
+        run: node scripts/migration-checks/run.mjs
+      - name: Install Chromium
+        run: npx playwright install --with-deps chromium
+      - name: Meeting call engine (browser)
+        env:
+          PLAYWRIGHT_MODULE: ${{ github.workspace }}/node_modules/playwright/index.mjs
+        run: node scripts/meeting-call-check/run.mjs
+      - name: Meeting room (browser)
+        env:
+          PLAYWRIGHT_MODULE: ${{ github.workspace }}/node_modules/playwright/index.mjs
+        run: node scripts/meeting-room-check/run.mjs
+      - name: Build
+        run: npx vite build

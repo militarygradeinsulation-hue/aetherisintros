@@ -7,6 +7,7 @@ import { useCallback, useEffect, useState } from 'react'
 import { BadgeCheck, Download, FileMinus, KeyRound, LogOut, ShieldCheck, Trash2 } from 'lucide-react'
 
 import { supabase } from '@/integrations/supabase/client'
+import { deleteMyAccount } from '@/lib/account.functions'
 import { Btn, Eyebrow } from '../ui'
 import {
   badgeLabel, fetchSecurityEvents, logSecurityEvent, purgeProof, statusCopy,
@@ -56,15 +57,23 @@ export function SecurityPage() {
     reload(); setBusy(false)
   }
 
+  /** Tables where members may read only some columns (server-held tokens are left out). */
+  const COLUMNS: Record<string, string> = {
+    membership_cards: 'code, holder_name, verified_at, issued_at, status',
+    email_preferences: 'weekly_digest, last_digest_at',
+  }
+
   /** Everything the account owns, in one file, from the member's own permissions. */
   const exportData = async () => {
     setBusy(true); setMessage('')
-    const tables = ['profiles', 'memories', 'posts', 'asks', 'intro_requests', 'calendar_events',
+    const tables = ['profiles', 'memories', 'posts', 'asks', 'intro_requests', 'intro_outcomes', 'calendar_events',
       'crm_people', 'crm_companies', 'crm_opportunities', 'crm_tasks', 'crm_notes',
-      'grid_workbooks', 'grid_sheets', 'grid_rows', 'account_security_events'] as const
+      'grid_workbooks', 'grid_sheets', 'grid_rows', 'meetings', 'meeting_notes', 'leak_checks',
+      'membership_cards', 'email_preferences', 'account_security_events'] as const
     const payload: Record<string, unknown> = { exported_at: new Date().toISOString(), excluded: NEVER_EXPORTED }
     for (const table of tables) {
-      const { data } = await supabase.from(table).select('*').limit(5000)
+      const columns = COLUMNS[table] ?? '*'
+      const { data } = await (supabase as any).from(table).select(columns).limit(5000) // eslint-disable-line @typescript-eslint/no-explicit-any
       payload[table] = data ?? []
     }
     const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' })
@@ -86,11 +95,19 @@ export function SecurityPage() {
   }
 
   const requestDeletion = async () => {
-    if (!window.confirm('Delete your Ask Intros account and its data? This cannot be undone.')) return
+    const typed = window.prompt('This permanently deletes your Ask Intros account, profile, messages, notes and files. It cannot be undone.\n\nType DELETE to confirm.')
+    if (typed !== 'DELETE') { if (typed !== null) setMessage('Nothing was deleted. Type DELETE exactly to confirm.'); return }
     setBusy(true); setMessage('')
-    await logSecurityEvent('deletion_requested', 'Member requested account and data deletion.')
-    setMessage('Deletion requested. Your account is queued for removal and a confirmation will be emailed. Only a minimal verification record is retained for security and legal reasons.')
-    reload(); setBusy(false)
+    await logSecurityEvent('deletion_requested', 'Member confirmed account and data deletion.')
+    try {
+      const r = await deleteMyAccount({ data: { confirm: 'DELETE' } })
+      if (!r.deleted) { setMessage(r.error ?? 'Your account could not be deleted.'); setBusy(false); return }
+      await supabase.auth.signOut().catch(() => undefined)
+      window.location.assign('/')
+    } catch (e) {
+      setMessage(e instanceof Error ? e.message : 'Your account could not be deleted.')
+      setBusy(false)
+    }
   }
 
   const status = loading ? 'Checking…' : statusCopy[verification.status].title

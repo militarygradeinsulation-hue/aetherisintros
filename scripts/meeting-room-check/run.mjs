@@ -53,9 +53,11 @@ const wav = join(out, 'speech.wav')
   for (let i = 0; i < n; i++) { const t = i / rate; data.writeInt16LE(Math.round(((t % 0.35) < 0.25 ? 0.3 : 0) * Math.sin(2 * Math.PI * 200 * t) * 32767), 44 + i * 2) }
   writeFileSync(wav, data)
 }
+// Chromium: $CHROMIUM, this sandbox's copy, or Playwright's own download (CI).
+const chromiumPath = () => { const p = process.env.CHROMIUM ?? '/opt/pw-browsers/chromium'; return existsSync(p) ? { executablePath: p } : {} }
 const { chromium } = await import(process.env.PLAYWRIGHT_MODULE ?? '/opt/node22/lib/node_modules/playwright/index.mjs')
 const browser = await chromium.launch({
-  executablePath: process.env.CHROMIUM ?? '/opt/pw-browsers/chromium',
+  ...chromiumPath(),
   args: ['--use-fake-ui-for-media-stream', '--use-fake-device-for-media-stream', `--use-file-for-fake-audio-capture=${wav}`, '--autoplay-policy=no-user-gesture-required'],
 })
 const context = await browser.newContext({ permissions: ['camera', 'microphone'], viewport: { width: 1280, height: 860 } })
