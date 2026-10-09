@@ -5428,3 +5428,42 @@ button.news-link{background:none;border:0;padding:0;cursor:pointer}
 .admin-deal{display:flex!important;flex-wrap:wrap;align-items:end}
 .admin-deal label{display:grid;gap:4px;font:600 9px var(--sans);letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
 @media (max-width:760px){.providers-form-grid{grid-template-columns:1fr}.admin-providers .admin-list li{grid-template-columns:1fr}.providers-grid{grid-template-columns:1fr}}
+/* Network Impact Report */
+.impact-body{display:grid;gap:22px;min-width:0}
+.impact-hero{display:grid;gap:6px;padding:22px 0;border-top:1px solid var(--line-dark);border-bottom:1px solid var(--line-dark)}
+.impact-hero strong{font:500 clamp(48px,9vw,96px)/.95 var(--serif);color:var(--soft);overflow-wrap:anywhere}
+.impact-hero span{font:600 11px var(--sans);letter-spacing:.14em;text-transform:uppercase;color:var(--amber)}
+.impact-hero p{font:500 clamp(20px,2.6vw,28px)/1.25 var(--serif);margin:10px 0 0;color:var(--soft);max-width:720px}
+.impact-body h3{font:700 9px var(--sans);letter-spacing:.2em;text-transform:uppercase;color:var(--muted);margin:0 0 8px}
+.impact-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:1px;margin:0;background:var(--line-dark);border:1px solid var(--line-dark)}
+.impact-grid>div{background:var(--raised);padding:14px 16px;min-width:0}
+.impact-grid dt{font:600 10px var(--sans);letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.impact-grid dd{margin:6px 0 0;font:500 30px/1.05 var(--serif);color:var(--soft)}
+.impact-grid dd small{display:block;margin-top:4px;font:400 11px var(--sans);color:var(--muted)}
+.impact-cats{list-style:none;margin:10px 0 0;padding:0;display:grid;gap:1px;background:var(--line-dark);border:1px solid var(--line-dark)}
+.impact-cats li{display:flex;justify-content:space-between;gap:12px;padding:9px 14px;background:var(--graphite);font:400 13px var(--sans)}
+.impact-cats b{font-weight:600;color:var(--gold)}
+.impact-public{min-height:100vh;background:var(--night);color:var(--soft);padding:28px 16px 64px;max-width:960px;margin:0 auto;display:grid;gap:28px;align-content:start;box-sizing:border-box}
+.impact-public-head{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap}
+.impact-public-head svg{width:132px;height:auto;display:block}
+.impact-public-title h1{font:500 clamp(44px,8vw,84px)/.95 var(--serif);margin:0}
+.impact-public-title p{margin:8px 0 0;color:var(--muted);font:400 13px var(--sans)}
+.impact-public-missing{display:grid;gap:12px;justify-items:start}
+.impact-public-missing h1{font:500 clamp(34px,6vw,56px)/1 var(--serif);margin:0}
+.impact-public-missing p,.impact-public-wait{color:var(--muted);margin:0}
+.impact-public-foot{border-top:1px solid var(--line-dark);padding-top:16px;display:grid;gap:8px}
+.impact-public-foot p{margin:0;font:400 12px/1.6 var(--sans);color:var(--muted);max-width:720px}
+.impact-public-foot a{color:var(--amber)}
+.impact-admin-controls{display:grid;grid-template-columns:minmax(140px,200px) minmax(0,1fr);gap:12px;align-items:end;margin:10px 0}
+.impact-admin-controls label{display:grid;gap:4px;font:600 11px var(--sans);color:var(--muted)}
+.impact-admin-controls select,.impact-admin-controls textarea{background:var(--graphite);border:1px solid var(--line-dark);color:var(--soft);border-radius:6px;padding:8px;font:400 13px var(--sans);width:100%;box-sizing:border-box}
+.impact-admin-controls .btn{justify-self:start}
+.impact-raw summary{cursor:pointer;color:var(--muted);font-size:12px;margin:6px 0}
+.impact-preview{border:1px dashed var(--line-dark);padding:16px;margin:12px 0;display:grid;gap:12px}
+.impact-actions{display:flex;flex-wrap:wrap;gap:12px;align-items:center}
+.impact-actions .text-link{display:inline-flex;align-items:center;gap:4px}
+.impact-card{border:1px solid var(--line-dark);border-radius:8px;padding:16px;margin-top:18px;display:grid;gap:8px}
+.impact-card header{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
+.impact-card header b{display:inline-flex;align-items:center;gap:6px}
+.impact-card header small{color:var(--muted)}
+@media (max-width:640px){.impact-admin-controls{grid-template-columns:1fr}.impact-grid dd{font-size:26px}}
