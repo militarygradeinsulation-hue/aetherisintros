@@ -1013,7 +1013,7 @@ export const FloatingConnectionField: React.FC<FloatingConnectionFieldProps> = (
       </svg>
 
       {/* Top Left Live Radar Web HUD Indicator */}
-      <div className="absolute top-3 left-3 z-20 flex items-center gap-2 bg-[#0E121A]/85 border border-white/10 rounded-lg px-2.5 py-1 backdrop-blur-md">
+      <div className="absolute top-3 left-3 z-20 flex items-center gap-2 bg-[#0E121A]/95 border border-white/10 rounded-lg px-2.5 py-1 backdrop-blur-md">
         <Radio className="w-3 h-3 text-[#F5B027] animate-pulse" />
         <span className="text-[10px] font-mono uppercase tracking-widest text-[#CBD5E1]">
           Radar Web Active · {members.length} Nodes
