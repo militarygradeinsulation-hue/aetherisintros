@@ -11,6 +11,7 @@ import { calculateConnectionScore, determineRadarState } from './lib/engine'
 import type { Directory } from './db'
 import type { Member, NetworkAsk, Post, Thread } from './social'
 import type { ScoreBreakdown } from './types'
+import type { GiverBand } from './reciprocity-core'
 
 export interface LiveProfileRow {
   id: string
@@ -154,6 +155,13 @@ export async function loadLiveDirectory(userId: string): Promise<{ directory: Di
     const me = profiles.find(p => p.id === userId) ?? null
     const others = profiles.filter(p => p.id !== userId)
     const members = others.map(row => profileToMember(row, me))
+    // Bands of members who chose to show them, for the small matching boost. Optional: an
+    // error (e.g. before migration 0055 is applied) just means no boost.
+    if (others.length) {
+      const bands = await (supabase as any).rpc('giver_bands', { p_members: others.slice(0, 100).map(p => p.id) }) // eslint-disable-line @typescript-eslint/no-explicit-any
+      const byId = new Map<string, GiverBand>(((bands?.data ?? []) as Array<{ member_id: string; band: GiverBand }>).map(b => [b.member_id, b.band]))
+      for (const m of members) m.giverBand = byId.get(m.id) ?? null
+    }
 
     const threadIds = (threadRows.data ?? []).map(t => t.id)
     const messageRows = threadIds.length

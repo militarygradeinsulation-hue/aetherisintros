@@ -5320,3 +5320,23 @@ button.news-link{background:none;border:0;padding:0;cursor:pointer}
 .connected-app header small,.connected-app-meta{font:400 12px/1.5 var(--sans);color:var(--muted)}
 .connected-app p{margin:0;font:400 13px/1.55 var(--sans)}
 .connected-app-actions{display:flex;flex-wrap:wrap;gap:8px}
+
+/* Give & get, Keep warm (0055) */
+.rc-stack{display:grid;gap:12px;min-width:0}
+.rc-card header h2{display:flex;align-items:center;gap:8px}
+.rc-card header h2 svg{color:#F5B027}
+.rc-table{width:100%;border-collapse:collapse;font-size:13px;color:var(--sys-ink,#F2EEE6)}
+.rc-table th{text-align:left;font-weight:500;color:var(--sys-ink-dim,#9CA3AF);font-size:11.5px;padding:4px 6px;border-bottom:1px solid var(--sys-panel-line,rgba(255,255,255,.08))}
+.rc-table td{padding:6px;border-bottom:1px solid var(--sys-panel-line,rgba(255,255,255,.06))}
+.rc-table td+td,.rc-table th+th{text-align:right;width:76px}
+.rc-people{display:grid;gap:6px;font-size:13px}
+.rc-people div{display:grid;gap:2px}
+.rc-people b{color:var(--sys-ink,#F2EEE6);font-weight:600}
+.rc-people span{color:var(--sys-ink-dim,#9CA3AF);overflow-wrap:anywhere}
+.rc-note{color:var(--sys-ink-dim,#9CA3AF);font-size:12px;margin:0}
+.rc-warm li>svg{color:#8EC5FF}
+.rc-actions{display:flex;flex-wrap:wrap;gap:6px;justify-content:flex-end}
+.rc-badge{display:inline-flex;align-items:center;gap:6px;font-size:12.5px;color:var(--muted,#9CA3AF);margin:8px 0 0}
+.rc-badge b{color:var(--sys-ink,#F2EEE6);font-weight:600}
+.rc-badge svg{color:#F5B027}
+@media (max-width:560px){.rc-actions{grid-column:2;justify-content:flex-start}}

@@ -1,6 +1,7 @@
 import { people as seedPeople } from './data'
 import { calculateConnectionScore, determineRadarState } from './lib/engine'
 import type { Person, PrivacyScope, ScoreBreakdown } from './types'
+import type { GiverBand } from './reciprocity-core'
 
 export type MemberRole = 'Founder' | 'Investor' | 'Operator' | 'Executive' | 'Advisor' | 'Specialist' | 'Connector'
 export type IntroState =
@@ -22,6 +23,8 @@ export interface Member extends Person {
   building?: string
   openTo?: string[]
   schedulingEnabled?: boolean
+  /** Giver band, present only when the member chose to show it (0055). */
+  giverBand?: GiverBand | null
 }
 
 const base: ScoreBreakdown = {

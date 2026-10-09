@@ -9,6 +9,7 @@ import { SecurityPage } from './SecurityPage'
 import { PushSettings } from '../push-ui'
 import { MembershipBilling } from '../revenue-ui'
 import { GoogleCalendarConnect } from '../google-ui'
+import { CoolingNudgeSetting } from '../reciprocity-ui'
 
 import { readTextScale, setTextScale, textScaleLabels, textScales, type TextScale } from '../textScale'
 
@@ -218,7 +219,7 @@ export function PreferencesPage() {
           <Eyebrow>ATTENTION POLICY</Eyebrow><h2>Only notify you when context changes.</h2>
           <PushSettings />
           <label><span>Summary frequency</span><select value={draft.notificationFrequency} onChange={event => update('notificationFrequency', event.target.value)}><option>Daily intelligence brief</option><option>Weekly relationship review</option><option>Important signals only</option><option>Off</option></select></label>
-          <Toggle checked={draft.coolingAlerts} onChange={value => update('coolingAlerts', value)} label="Cooling relationship alerts" />
+          <CoolingNudgeSetting />
           <Toggle checked={draft.introAlerts} onChange={value => update('introAlerts', value)} label="Introduction and warm-path updates" />
         </section>}
         {tab === 'Privacy' && <section>
