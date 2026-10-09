@@ -41,3 +41,24 @@ describe('google calendar', () => {
     expect(signals).toEqual([{ email: 'bo@example.test', last_at: new Date(now - 5 * 86_400_000).toISOString(), next_at: new Date(now + 7 * 86_400_000).toISOString(), count_90d: 2 }])
   })
 })
+
+describe('gmail headers', () => {
+  it('finds addresses in header values', async () => {
+    const { addressesIn } = await import('../google.server')
+    expect(addressesIn('Ana Diaz <Ana@Example.test>, "Bo, Jr" <bo@x.test>')).toEqual(['ana@example.test', 'bo@x.test'])
+  })
+
+  it('summarizes recent correspondence per person, skipping bulk mail and old mail', async () => {
+    const { summarizeEmails } = await import('../google.server')
+    const now = Date.UTC(2026, 9, 9, 12)
+    const day = 86_400_000
+    const msg = (daysAgo: number, from: string, to: string, cc = '') => ({ internalDate: String(now - daysAgo * day), payload: { headers: [{ name: 'From', value: from }, { name: 'To', value: to }, { name: 'Cc', value: cc }] } })
+    const signals = summarizeEmails([
+      msg(2, 'me@example.test', 'bo@example.test'),
+      msg(10, 'Bo <BO@example.test>', 'me@example.test'),
+      msg(100, 'bo@example.test', 'me@example.test'),
+      msg(1, 'news@list.test', Array.from({ length: 13 }, (_, i) => `p${i}@x.test`).join(', ')),
+    ], ['me@example.test'], now)
+    expect(signals).toEqual([{ email: 'bo@example.test', last_at: new Date(now - 2 * day).toISOString(), next_at: null, count_90d: 2 }])
+  })
+})

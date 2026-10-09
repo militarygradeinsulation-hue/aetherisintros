@@ -5320,3 +5320,8 @@ button.news-link{background:none;border:0;padding:0;cursor:pointer}
 .connected-app header small,.connected-app-meta{font:400 12px/1.5 var(--sans);color:var(--muted)}
 .connected-app p{margin:0;font:400 13px/1.55 var(--sans)}
 .connected-app-actions{display:flex;flex-wrap:wrap;gap:8px}
+.connected-app-gmail{display:grid;gap:8px;padding-top:10px;border-top:1px solid var(--line-dark)}
+.text-alerts-row{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.text-alerts-row input{flex:1 1 180px;min-width:0;padding:8px 10px;border:1px solid var(--line-dark);border-radius:8px;background:rgba(255,255,255,.03);color:inherit;font:400 13px/1.4 var(--sans)}
+.text-alerts-kinds{display:flex;flex-wrap:wrap;gap:6px 16px;font:400 12.5px/1.5 var(--sans)}
+.text-alerts-kinds label{display:flex;gap:6px;align-items:center}
