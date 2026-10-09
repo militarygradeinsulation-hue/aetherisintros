@@ -249,6 +249,12 @@ const basePages: BaseMeta[] = [
     changes: 'New needs and intents create and retire collisions.',
     next: 'Act on a collision while the timing holds.',
   }, ['overlap', 'timing']),
+  m('agentinbox', 'Agent Inbox', Inbox, 'RELATIONSHIP INTELLIGENCE', 'Requests from outside AI agents, screened by your Agent policy.', {
+    does: 'Shows requests from outside AI agents that passed your Agent policy.',
+    look: 'Who the request is for, why you, and what you get.',
+    changes: 'Your Agent policy in Settings decides what is delivered, held or rejected.',
+    next: 'Accept the one worth a reply; block domains that waste your time.',
+  }, ['agents', 'ai', 'requests', 'inbound', 'screening']),
   m('evidence', 'Evidence', FileSearch, 'RELATIONSHIP INTELLIGENCE', 'The record behind every claim and recommendation.', {
     does: 'Shows the record behind every claim and recommendation.',
     look: 'What was observed, when, and how strong the source is.',
@@ -477,7 +483,7 @@ const hubOf: Partial<Record<Page, Hub>> = {
   systems: 'OPPORTUNITIES & WORK', strategy: 'OPPORTUNITIES & WORK', crm: 'OPPORTUNITIES & WORK', pocket: 'OPPORTUNITIES & WORK', providers: 'OPPORTUNITIES & WORK', diagnostic: 'INTELLIGENCE & MEMORY',
   grid: 'OPPORTUNITIES & WORK', knowledgeassets: 'OPPORTUNITIES & WORK', vault: 'OPPORTUNITIES & WORK',
 
-  memory: 'INTELLIGENCE & MEMORY', insights: 'INTELLIGENCE & MEMORY', evidence: 'INTELLIGENCE & MEMORY',
+  memory: 'INTELLIGENCE & MEMORY', insights: 'INTELLIGENCE & MEMORY', evidence: 'INTELLIGENCE & MEMORY', agentinbox: 'INTELLIGENCE & MEMORY',
   gaps: 'INTELLIGENCE & MEMORY', loops: 'INTELLIGENCE & MEMORY', collisions: 'INTELLIGENCE & MEMORY',
   simulation: 'INTELLIGENCE & MEMORY', attribution: 'INTELLIGENCE & MEMORY',
   timemachine: 'INTELLIGENCE & MEMORY', autopilot: 'INTELLIGENCE & MEMORY',

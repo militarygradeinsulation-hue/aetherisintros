@@ -130,6 +130,7 @@ import { MeetingsPage } from './meetings-ui'
 import { PeerGroupsPage } from './peer-groups-ui'
 import { ProvidersPage } from './providers-ui'
 import { WarmPathsPage } from './warm-paths-ui'
+import { AgentInboxPage } from './agent-ui'
 import { LeakCheckPanel } from './leak-check-ui'
 import { SentIntroRequests } from './sent-requests-ui'
 import { CompanyWorkspacePanel } from './company-ui'
@@ -2663,6 +2664,7 @@ function Shell({ startPage, feedOnly = false }: { startPage?: Page | undefined; 
       simulation: <SimulationPage />,
       strategy: <StrategyPage />,
       evidence: <EvidenceLedgerPage />,
+      agentinbox: <AgentInboxPage />,
       autopilot: <><div className="og-stack"><section className="og-tile"><h3>Approval queue</h3><ApprovalQueuePanel /></section><DigitalYouRulesPanel /></div><AutopilotPage /></>,
       ask: <AskNetworkPage />,
       constitution: <ConstitutionPage />,

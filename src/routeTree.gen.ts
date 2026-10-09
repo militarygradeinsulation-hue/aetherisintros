@@ -28,6 +28,12 @@ import { Route as PassportTokenRouteImport } from './routes/passport.$token'
 import { Route as DotlovableOauthConsentRouteImport } from './routes/[.]lovable.oauth.consent'
 import { Route as AuthenticatedAdminEarlyAccessRouteImport } from './routes/_authenticated/admin.early-access'
 import { Route as AuthenticatedAdminVerificationRouteImport } from './routes/_authenticated/admin.verification'
+import { Route as ApiAgentAsksRouteImport } from './routes/api/agent/asks'
+import { Route as ApiAgentInboundRouteImport } from './routes/api/agent/inbound'
+import { Route as ApiAgentIntrosRouteImport } from './routes/api/agent/intros'
+import { Route as ApiAgentManifestRouteImport } from './routes/api/agent/manifest'
+import { Route as ApiAgentMembersRouteImport } from './routes/api/agent/members'
+import { Route as ApiAgentProfileRouteImport } from './routes/api/agent/profile'
 import { Route as ApiCronGoogleSyncRouteImport } from './routes/api/cron/google-sync'
 import { Route as ApiCronMembershipCardsRouteImport } from './routes/api/cron/membership-cards'
 import { Route as ApiCronWeeklyDigestRouteImport } from './routes/api/cron/weekly-digest'
@@ -136,6 +142,36 @@ const AuthenticatedAdminVerificationRoute =
     path: '/admin/verification',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const ApiAgentAsksRoute = ApiAgentAsksRouteImport.update({
+  id: '/api/agent/asks',
+  path: '/api/agent/asks',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiAgentInboundRoute = ApiAgentInboundRouteImport.update({
+  id: '/api/agent/inbound',
+  path: '/api/agent/inbound',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiAgentIntrosRoute = ApiAgentIntrosRouteImport.update({
+  id: '/api/agent/intros',
+  path: '/api/agent/intros',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiAgentManifestRoute = ApiAgentManifestRouteImport.update({
+  id: '/api/agent/manifest',
+  path: '/api/agent/manifest',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiAgentMembersRoute = ApiAgentMembersRouteImport.update({
+  id: '/api/agent/members',
+  path: '/api/agent/members',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiAgentProfileRoute = ApiAgentProfileRouteImport.update({
+  id: '/api/agent/profile',
+  path: '/api/agent/profile',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiCronGoogleSyncRoute = ApiCronGoogleSyncRouteImport.update({
   id: '/api/cron/google-sync',
   path: '/api/cron/google-sync',
@@ -207,6 +243,12 @@ export interface FileRoutesByFullPath {
   '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
   '/admin/early-access': typeof AuthenticatedAdminEarlyAccessRoute
   '/admin/verification': typeof AuthenticatedAdminVerificationRoute
+  '/api/agent/asks': typeof ApiAgentAsksRoute
+  '/api/agent/inbound': typeof ApiAgentInboundRoute
+  '/api/agent/intros': typeof ApiAgentIntrosRoute
+  '/api/agent/manifest': typeof ApiAgentManifestRoute
+  '/api/agent/members': typeof ApiAgentMembersRoute
+  '/api/agent/profile': typeof ApiAgentProfileRoute
   '/api/cron/google-sync': typeof ApiCronGoogleSyncRoute
   '/api/cron/membership-cards': typeof ApiCronMembershipCardsRoute
   '/api/cron/weekly-digest': typeof ApiCronWeeklyDigestRoute
@@ -237,6 +279,12 @@ export interface FileRoutesByTo {
   '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
   '/admin/early-access': typeof AuthenticatedAdminEarlyAccessRoute
   '/admin/verification': typeof AuthenticatedAdminVerificationRoute
+  '/api/agent/asks': typeof ApiAgentAsksRoute
+  '/api/agent/inbound': typeof ApiAgentInboundRoute
+  '/api/agent/intros': typeof ApiAgentIntrosRoute
+  '/api/agent/manifest': typeof ApiAgentManifestRoute
+  '/api/agent/members': typeof ApiAgentMembersRoute
+  '/api/agent/profile': typeof ApiAgentProfileRoute
   '/api/cron/google-sync': typeof ApiCronGoogleSyncRoute
   '/api/cron/membership-cards': typeof ApiCronMembershipCardsRoute
   '/api/cron/weekly-digest': typeof ApiCronWeeklyDigestRoute
@@ -269,6 +317,12 @@ export interface FileRoutesById {
   '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
   '/_authenticated/admin/early-access': typeof AuthenticatedAdminEarlyAccessRoute
   '/_authenticated/admin/verification': typeof AuthenticatedAdminVerificationRoute
+  '/api/agent/asks': typeof ApiAgentAsksRoute
+  '/api/agent/inbound': typeof ApiAgentInboundRoute
+  '/api/agent/intros': typeof ApiAgentIntrosRoute
+  '/api/agent/manifest': typeof ApiAgentManifestRoute
+  '/api/agent/members': typeof ApiAgentMembersRoute
+  '/api/agent/profile': typeof ApiAgentProfileRoute
   '/api/cron/google-sync': typeof ApiCronGoogleSyncRoute
   '/api/cron/membership-cards': typeof ApiCronMembershipCardsRoute
   '/api/cron/weekly-digest': typeof ApiCronWeeklyDigestRoute
@@ -301,6 +355,12 @@ export interface FileRouteTypes {
     | '/.lovable/oauth/consent'
     | '/admin/early-access'
     | '/admin/verification'
+    | '/api/agent/asks'
+    | '/api/agent/inbound'
+    | '/api/agent/intros'
+    | '/api/agent/manifest'
+    | '/api/agent/members'
+    | '/api/agent/profile'
     | '/api/cron/google-sync'
     | '/api/cron/membership-cards'
     | '/api/cron/weekly-digest'
@@ -331,6 +391,12 @@ export interface FileRouteTypes {
     | '/.lovable/oauth/consent'
     | '/admin/early-access'
     | '/admin/verification'
+    | '/api/agent/asks'
+    | '/api/agent/inbound'
+    | '/api/agent/intros'
+    | '/api/agent/manifest'
+    | '/api/agent/members'
+    | '/api/agent/profile'
     | '/api/cron/google-sync'
     | '/api/cron/membership-cards'
     | '/api/cron/weekly-digest'
@@ -362,6 +428,12 @@ export interface FileRouteTypes {
     | '/.lovable/oauth/consent'
     | '/_authenticated/admin/early-access'
     | '/_authenticated/admin/verification'
+    | '/api/agent/asks'
+    | '/api/agent/inbound'
+    | '/api/agent/intros'
+    | '/api/agent/manifest'
+    | '/api/agent/members'
+    | '/api/agent/profile'
     | '/api/cron/google-sync'
     | '/api/cron/membership-cards'
     | '/api/cron/weekly-digest'
@@ -388,6 +460,12 @@ export interface RootRouteChildren {
   InviteCodeRoute: typeof InviteCodeRoute
   PassportTokenRoute: typeof PassportTokenRoute
   DotlovableOauthConsentRoute: typeof DotlovableOauthConsentRoute
+  ApiAgentAsksRoute: typeof ApiAgentAsksRoute
+  ApiAgentInboundRoute: typeof ApiAgentInboundRoute
+  ApiAgentIntrosRoute: typeof ApiAgentIntrosRoute
+  ApiAgentManifestRoute: typeof ApiAgentManifestRoute
+  ApiAgentMembersRoute: typeof ApiAgentMembersRoute
+  ApiAgentProfileRoute: typeof ApiAgentProfileRoute
   ApiCronGoogleSyncRoute: typeof ApiCronGoogleSyncRoute
   ApiCronMembershipCardsRoute: typeof ApiCronMembershipCardsRoute
   ApiCronWeeklyDigestRoute: typeof ApiCronWeeklyDigestRoute
@@ -535,6 +613,48 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminVerificationRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/api/agent/asks': {
+      id: '/api/agent/asks'
+      path: '/api/agent/asks'
+      fullPath: '/api/agent/asks'
+      preLoaderRoute: typeof ApiAgentAsksRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/agent/inbound': {
+      id: '/api/agent/inbound'
+      path: '/api/agent/inbound'
+      fullPath: '/api/agent/inbound'
+      preLoaderRoute: typeof ApiAgentInboundRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/agent/intros': {
+      id: '/api/agent/intros'
+      path: '/api/agent/intros'
+      fullPath: '/api/agent/intros'
+      preLoaderRoute: typeof ApiAgentIntrosRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/agent/manifest': {
+      id: '/api/agent/manifest'
+      path: '/api/agent/manifest'
+      fullPath: '/api/agent/manifest'
+      preLoaderRoute: typeof ApiAgentManifestRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/agent/members': {
+      id: '/api/agent/members'
+      path: '/api/agent/members'
+      fullPath: '/api/agent/members'
+      preLoaderRoute: typeof ApiAgentMembersRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/agent/profile': {
+      id: '/api/agent/profile'
+      path: '/api/agent/profile'
+      fullPath: '/api/agent/profile'
+      preLoaderRoute: typeof ApiAgentProfileRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/cron/google-sync': {
       id: '/api/cron/google-sync'
       path: '/api/cron/google-sync'
@@ -644,6 +764,12 @@ const rootRouteChildren: RootRouteChildren = {
   InviteCodeRoute: InviteCodeRoute,
   PassportTokenRoute: PassportTokenRoute,
   DotlovableOauthConsentRoute: DotlovableOauthConsentRoute,
+  ApiAgentAsksRoute: ApiAgentAsksRoute,
+  ApiAgentInboundRoute: ApiAgentInboundRoute,
+  ApiAgentIntrosRoute: ApiAgentIntrosRoute,
+  ApiAgentManifestRoute: ApiAgentManifestRoute,
+  ApiAgentMembersRoute: ApiAgentMembersRoute,
+  ApiAgentProfileRoute: ApiAgentProfileRoute,
   ApiCronGoogleSyncRoute: ApiCronGoogleSyncRoute,
   ApiCronMembershipCardsRoute: ApiCronMembershipCardsRoute,
   ApiCronWeeklyDigestRoute: ApiCronWeeklyDigestRoute,
