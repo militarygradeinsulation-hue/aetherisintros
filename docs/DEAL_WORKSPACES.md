@@ -13,7 +13,7 @@ introduction (`intro_requests`, both opt-ins). Migration: `drizzle/migrations/00
 ## Model
 `deal_workspaces` (title, scope, next_action, optional budget + currency, optional due date, status), `deal_workspace_members` (owner/collaborator; invited/active/declined/removed), `deal_workspace_steps`, `deal_workspace_confirmations`, `deal_workspace_events` (append-only).
 
-Lifecycle: `qualified → proposal → agreed → in_progress → delivered → accepted → closed`, `cancelled` from any stage before `accepted`; `proposal → qualified` and `delivered → in_progress` (rework) are allowed. Terminal: `closed`, `cancelled`. The graph lives in `deal_workspace_transition_allowed()` (enforced by a trigger for every writer, including the service role) and is mirrored in `src/aetheris/workspaces/lifecycle.ts`.
+Lifecycle: `qualified → proposal → agreed → in_progress → delivered → accepted → closed`, `cancelled` from any stage before `accepted`; `proposal → qualified` and `delivered → in_progress` (rework) are allowed. Terminal: `closed`, `cancelled`. The graph lives in `deal_workspace_transition_allowed()` (enforced by a trigger for every writer, including the service role; the trigger also requires every active participant's confirmation for `agreed`/`accepted`) and is mirrored in `src/aetheris/workspaces/lifecycle.ts`.
 
 ## Authorization
 - Tables are SELECT-only for `authenticated`; **every write is a SECURITY DEFINER RPC that takes the actor from `auth.uid()`** (no actor parameter, so IDs cannot be forged).
@@ -32,8 +32,8 @@ Migration `0057` + journal entry; `scripts/migration-checks/deal-workspaces.chec
 | Command | Result |
 | --- | --- |
 | `npx tsc --noEmit -p .` | pass |
-| `npx vitest run` | 39 files, 300 tests pass (15 new in `workspace-lifecycle.test.ts`) |
-| `node scripts/migration-checks/run.mjs` (PGlite 0.2.17, in-memory) | 999 passed, 0 failed (84 new, three distinct users + visitor + service role) |
+| `npx vitest run` | 39 files, 301 tests pass (16 new in `workspace-lifecycle.test.ts`) |
+| `node scripts/migration-checks/run.mjs` (PGlite 0.2.17, in-memory) | 1000 passed, 0 failed (85 new, three distinct users + visitor + service role) |
 | `npx eslint .` | 54,394 problems vs 53,869 before: the +525 are all `prettier/prettier` formatting in the new/edited files (the repository is not prettier-formatted: 53k pre-existing); non-formatting errors (156) and warnings (77) are unchanged |
 | `npx vite build` | pass |
 
