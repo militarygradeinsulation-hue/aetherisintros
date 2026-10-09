@@ -30,6 +30,7 @@ import { CapabilityWorkspaceHost } from './capabilities/CapabilityWorkspace'
 import { VoiceBar } from './VoiceBar'
 import { SelectionReader } from './SelectionReader'
 import { currentPagePassages, readAloud, readPageOrSelection, setVoiceSettings, stopReading, readerSnapshot, useVoiceSettings, voiceOutputSupported } from './voice'
+import { VOICE_PAGES } from './voice-commands'
 
 import discoverEditorialAsset from '@/assets/editorial-discover.jpg.asset.json'
 import introsEditorialAsset from '@/assets/editorial-intros.jpg.asset.json'
@@ -2345,16 +2346,31 @@ export default function App({ startPage, mode = 'live', feedOnly = false }: { st
 }
 
 /** Ask Intros butler + capability workspace, mounted natively on the new shell. */
-export function AetherisAssistant({ mode = 'live', page, onNavigate }: { mode?: NetworkMode; page: string; onNavigate: (page: string) => void }) {
+/** What the live shell lets the assistant (and voice mode) do. */
+export interface AssistantShellApi {
+  /** Go to a shell page (home, people, intros…) or any workspace tool (events, crm, settings…). */
+  onNavigate: (page: string) => void
+  onOpenMember?: (id: string) => void
+  onMessageMember?: (id: string) => void
+  onRequestIntro?: (id: string) => void
+  onSearch?: (text: string) => void
+}
+
+export function AetherisAssistant({ mode = 'live', page, ...api }: { mode?: NetworkMode; page: string } & AssistantShellApi) {
   setShowcaseMode(mode === 'demo')
   return <NetworkProvider mode={mode}><PlatformProvider><OSProvider><MoatProvider><ProProvider><OpsProvider><GraphProvider><CeoProvider>
-    <AssistantLayer page={page} onNavigate={onNavigate} />
+    <AssistantLayer page={page} {...api} />
   </CeoProvider></GraphProvider></OpsProvider></ProProvider></MoatProvider></OSProvider></PlatformProvider></NetworkProvider>
 }
 
-function AssistantLayer({ page, onNavigate }: { page: string; onNavigate: (page: string) => void }) {
+function AssistantLayer({ page, onNavigate, onOpenMember, onMessageMember, onRequestIntro, onSearch }: { page: string } & AssistantShellApi) {
   const net = useNetwork()
   const people = net.members
+  const find = (name: string | null) => {
+    if (!name) return null
+    const needle = name.toLowerCase()
+    return people.find(p => p.name.toLowerCase() === needle) ?? people.find(p => p.name.toLowerCase().includes(needle)) ?? null
+  }
   const shellPages: Record<string, string> = { home: 'home', network: 'bubbles', people: 'people', discover: 'people', intros: 'intros', messages: 'messages', news: 'news', insights: 'insights' }
   useEffect(() => {
     const go = () => onNavigate('workspace')
@@ -2362,15 +2378,43 @@ function AssistantLayer({ page, onNavigate }: { page: string; onNavigate: (page:
     return () => window.removeEventListener('aetheris:navigate', go)
   }, [onNavigate])
   const run = (action: AskIntrosAction): string | null => {
-    if (action.kind === 'navigate') {
-      const target = action.page ?? ''
-      onNavigate(shellPages[target] ?? 'workspace')
-      return `Opened ${metaById[target as Page]?.label ?? target}`
+    switch (action.kind) {
+      case 'navigate': {
+        const target = action.page ?? ''
+        if (!target) return null
+        onNavigate(shellPages[target] ?? target)
+        const label = VOICE_PAGES.find(v => v.page === target)?.label ?? metaById[target as Page]?.label ?? target
+        return `Opened ${label}`
+      }
+      case 'open-member': case 'message-member': case 'request-intro': {
+        const person = find(action.value)
+        if (!person) return null
+        if (action.kind === 'open-member') { if (onOpenMember) onOpenMember(person.id); else onNavigate('people'); return `Opened ${person.name}` }
+        if (action.kind === 'message-member') { if (onMessageMember) onMessageMember(person.id); else onNavigate('messages'); return `Opened messages for ${person.name}` }
+        if (onRequestIntro) { onRequestIntro(person.id); return `Started an introduction request to ${person.name}` }
+        onNavigate('intros'); return 'Opened introductions'
+      }
+      case 'open-search': case 'open-tools': {
+        if (onSearch) { onSearch(action.value ?? ''); return action.value ? `Searched members for “${action.value}”` : 'Opened member search' }
+        onNavigate('people'); return 'Opened people'
+      }
+      case 'post-need': onNavigate('needs'); return action.value ? `Opened the ask composer — describe “${action.value}”` : 'Opened asks'
+      case 'open-profile': onNavigate('profile'); return 'Opened your profile'
+      case 'open-preferences': onNavigate('preferences'); return 'Opened settings'
+      case 'capture-conversation': onNavigate('memory'); return 'Opened Memory'
+      case 'read-page': {
+        const passages = currentPagePassages()
+        if (!passages.length) return null
+        readAloud(passages, 'Reading this page')
+        return 'Reading this page to you'
+      }
+      case 'stop-reading': stopReading(); return 'Stopped reading'
+      case 'voice-off': setVoiceSettings({ speakReplies: false, conversation: false }); stopReading(); return 'Spoken replies off'
+      case 'voice-on': setVoiceSettings({ speakReplies: true }); return 'Spoken replies on'
+      case 'text-size': { const v = action.value as TextScale | null; if (!v || !textScales.includes(v)) return null; setTextScale(v); return `Text size set to ${v}` }
+      case 'cursor-size': { const v = action.value as CursorScale | null; if (!v || !cursorScales.includes(v)) return null; setCursorScale(v); return `Pointer size set to ${v}` }
+      default: return null
     }
-    if (action.kind === 'text-size') { const v = action.value as TextScale | null; if (!v || !textScales.includes(v)) return null; setTextScale(v); return `Text size set to ${v}` }
-    if (action.kind === 'cursor-size') { const v = action.value as CursorScale | null; if (!v || !cursorScales.includes(v)) return null; setCursorScale(v); return `Pointer size set to ${v}` }
-    onNavigate('workspace')
-    return 'Opened the full Ask Intros workspace'
   }
   return <div className="ix-assistant">
     <VoiceBar />
@@ -2583,7 +2627,8 @@ function Shell({ startPage, feedOnly = false }: { startPage?: Page | undefined; 
     }
     switch (action.kind) {
       case 'navigate': {
-        const target = action.page as Page | null
+        const aliases: Record<string, Page> = { people: 'discover' as Page }
+        const target = (aliases[action.page ?? ''] ?? action.page) as Page | null
         if (!target || !allNav.some(n => n.id === target)) return null
         setPage(target)
         return `Opened ${metaById[target]?.label ?? target}`
@@ -2620,6 +2665,12 @@ function Shell({ startPage, feedOnly = false }: { startPage?: Page | undefined; 
         if (!person) return null
         messageMember(person.id)
         return `Opened your conversation with ${person.name}`
+      }
+      case 'request-intro': {
+        const person = find(action.value)
+        if (!person) return null
+        setSelected(person)
+        return `Opened ${person.name} — press Request intro to send it`
       }
       case 'read-page': {
         const passages = currentPagePassages()

@@ -6,7 +6,7 @@
  */
 import {
   ArrowDown, ArrowUp, Bot, Briefcase, CalendarDays, Copy, ExternalLink, HandHelping, Home, Lightbulb,
-  Link2, MessageSquareText, Newspaper, Route, Search, Settings2, Sparkles, UserRound, UsersRound, Video, X,
+  Link2, MessageSquareText, Mic, Newspaper, NotebookPen, Route, Search, Settings2, Sparkles, UserRound, UsersRound, Video, X,
 } from 'lucide-react'
 import { useCallback, useEffect, useLayoutEffect, useRef, useState, type ReactNode } from 'react'
 
@@ -15,6 +15,7 @@ import {
   DEFAULT_QUICK_ITEMS, MAX_QUICK_ITEMS, QUICK_ACTIONS, cleanItems, moveItem, placeMenu, quickAction, toggleItem, wantsNativeMenu,
   type QuickTarget,
 } from './quick-menu'
+import { openQuickNote } from './quick-note-ui'
 
 const db = supabase as any // eslint-disable-line @typescript-eslint/no-explicit-any
 
@@ -23,9 +24,11 @@ function AssistantGlyph({ size = 14 }: { size?: number }) {
   return <span className="aetheris-glyph qm-glyph" style={{ width: size, height: size }} aria-hidden="true"><i /><b /></span>
 }
 
-/** Opens the Ask Intros assistant (AskIntrosDock), optionally with a question typed in. */
-export function openAssistant(question?: string) {
-  window.dispatchEvent(new CustomEvent('aetheris:open-assistant', question ? { detail: question } : undefined))
+/** Opens the Ask Intros assistant (AskIntrosDock): optionally with a question typed in, at a point
+ * on screen (where the member right-clicked), or listening straight away (voice mode). */
+export function openAssistant(request?: string | { question?: string; x?: number; y?: number; voice?: boolean }) {
+  const detail = typeof request === 'string' ? { question: request } : request
+  window.dispatchEvent(new CustomEvent('aetheris:open-assistant', detail ? { detail } : undefined))
 }
 
 const short = (text: string, n = 28) => (text.length > n ? `${text.slice(0, n - 1)}…` : text)
@@ -125,8 +128,12 @@ export function QuickMenuHost(props: Props) {
         key: 'assistant',
         label: selected ? `Ask Intros about “${short(selected, 24)}”` : member ? `Ask Intros about ${member.name}` : 'Ask Intros…',
         icon: AssistantGlyph as unknown as typeof Home,
-        run: () => openAssistant(question || undefined),
+        run: () => openAssistant({ ...(question ? { question } : {}), x: e.clientX, y: e.clientY }),
       })
+      context.push({ key: 'voice', label: 'Talk to Ask Intros', icon: Mic, run: () => openAssistant({ x: e.clientX, y: e.clientY, voice: true }) })
+      context.push(selected
+        ? { key: 'note', label: 'Save as note', icon: NotebookPen, run: () => openQuickNote({ x: e.clientX, y: e.clientY, text: selected }) }
+        : { key: 'note', label: 'Quick note', icon: NotebookPen, run: () => openQuickNote({ x: e.clientX, y: e.clientY }) })
       if (selected) {
         context.push({ key: 'copy', label: 'Copy', icon: Copy, run: () => void navigator.clipboard?.writeText(selected) })
         if (onSearch) context.push({ key: 'search', label: `Search members for “${short(selected)}”`, icon: Search, run: () => onSearch(selected) })
