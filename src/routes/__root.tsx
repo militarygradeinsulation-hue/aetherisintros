@@ -19,6 +19,7 @@ import ConstellationField from "@/aetheris/ConstellationField";
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 import { installClientErrorReporting, reportClientError } from "../lib/error-report";
+import { registerServiceWorker } from "../aetheris/push-client";
 import { applyTextScale, readTextScale } from "../aetheris/textScale";
 
 function NotFoundComponent() {
@@ -95,6 +96,10 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { property: "og:description", content: "Who matters. Why they matter. Why now." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
+      { name: "theme-color", content: "#07090C" },
+      { name: "apple-mobile-web-app-capable", content: "yes" },
+      { name: "apple-mobile-web-app-title", content: "Ask Intros" },
+      { name: "apple-mobile-web-app-status-bar-style", content: "black-translucent" },
           ],
     links: [
       {
@@ -103,6 +108,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       },
       { rel: "icon", href: "/favicon.svg", type: "image/svg+xml" },
       { rel: "apple-touch-icon", href: "/apple-touch-icon.png", sizes: "180x180" },
+      { rel: "manifest", href: "/manifest.webmanifest" },
     ],
   }),
   shellComponent: RootShell,
@@ -139,6 +145,7 @@ function RootComponent() {
   useEffect(() => {
     applyTextScale(readTextScale());
     installClientErrorReporting();
+    registerServiceWorker();
   }, []);
 
   return (

@@ -33,6 +33,7 @@ import { Route as ApiPublicDigestUnsubscribeRouteImport } from './routes/api/pub
 import { Route as ApiPublicMembershipCardRouteImport } from './routes/api/public/membership-card'
 import { Route as ApiPublicNewsImageRouteImport } from './routes/api/public/news-image'
 import { Route as ApiPublicSeedNetworkRouteImport } from './routes/api/public/seed-network'
+import { Route as ApiPushDispatchRouteImport } from './routes/api/push/dispatch'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -157,6 +158,11 @@ const ApiPublicSeedNetworkRoute = ApiPublicSeedNetworkRouteImport.update({
   path: '/api/public/seed-network',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiPushDispatchRoute = ApiPushDispatchRouteImport.update({
+  id: '/api/push/dispatch',
+  path: '/api/push/dispatch',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -182,6 +188,7 @@ export interface FileRoutesByFullPath {
   '/api/public/membership-card': typeof ApiPublicMembershipCardRoute
   '/api/public/news-image': typeof ApiPublicNewsImageRoute
   '/api/public/seed-network': typeof ApiPublicSeedNetworkRoute
+  '/api/push/dispatch': typeof ApiPushDispatchRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -207,6 +214,7 @@ export interface FileRoutesByTo {
   '/api/public/membership-card': typeof ApiPublicMembershipCardRoute
   '/api/public/news-image': typeof ApiPublicNewsImageRoute
   '/api/public/seed-network': typeof ApiPublicSeedNetworkRoute
+  '/api/push/dispatch': typeof ApiPushDispatchRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -234,6 +242,7 @@ export interface FileRoutesById {
   '/api/public/membership-card': typeof ApiPublicMembershipCardRoute
   '/api/public/news-image': typeof ApiPublicNewsImageRoute
   '/api/public/seed-network': typeof ApiPublicSeedNetworkRoute
+  '/api/push/dispatch': typeof ApiPushDispatchRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -261,6 +270,7 @@ export interface FileRouteTypes {
     | '/api/public/membership-card'
     | '/api/public/news-image'
     | '/api/public/seed-network'
+    | '/api/push/dispatch'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -286,6 +296,7 @@ export interface FileRouteTypes {
     | '/api/public/membership-card'
     | '/api/public/news-image'
     | '/api/public/seed-network'
+    | '/api/push/dispatch'
   id:
     | '__root__'
     | '/'
@@ -312,6 +323,7 @@ export interface FileRouteTypes {
     | '/api/public/membership-card'
     | '/api/public/news-image'
     | '/api/public/seed-network'
+    | '/api/push/dispatch'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -333,6 +345,7 @@ export interface RootRouteChildren {
   ApiPublicMembershipCardRoute: typeof ApiPublicMembershipCardRoute
   ApiPublicNewsImageRoute: typeof ApiPublicNewsImageRoute
   ApiPublicSeedNetworkRoute: typeof ApiPublicSeedNetworkRoute
+  ApiPushDispatchRoute: typeof ApiPushDispatchRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -505,6 +518,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPublicSeedNetworkRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/push/dispatch': {
+      id: '/api/push/dispatch'
+      path: '/api/push/dispatch'
+      fullPath: '/api/push/dispatch'
+      preLoaderRoute: typeof ApiPushDispatchRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -549,6 +569,7 @@ const rootRouteChildren: RootRouteChildren = {
   ApiPublicMembershipCardRoute: ApiPublicMembershipCardRoute,
   ApiPublicNewsImageRoute: ApiPublicNewsImageRoute,
   ApiPublicSeedNetworkRoute: ApiPublicSeedNetworkRoute,
+  ApiPushDispatchRoute: ApiPushDispatchRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

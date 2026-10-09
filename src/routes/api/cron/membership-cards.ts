@@ -1,6 +1,6 @@
 import { createFileRoute } from '@tanstack/react-router'
 
-import { secretMatches } from '@/lib/digest.server'
+import { isTrustedCaller } from '@/lib/app-settings.server'
 import { deliverDueMembershipCards } from '@/lib/membership-card.server'
 
 /**
@@ -13,10 +13,8 @@ export const Route = createFileRoute('/api/cron/membership-cards')({
   server: {
     handlers: {
       POST: async ({ request }) => {
-        const secret = process.env['CRON_SECRET'] ?? ''
-        if (!secret) return Response.json({ error: 'Card sending is not configured.' }, { status: 503 })
-        const given = (request.headers.get('authorization') ?? '').replace(/^Bearer\s+/i, '')
-        if (!secretMatches(given, secret)) return Response.json({ error: 'Unauthorized' }, { status: 401 })
+        // The database's scheduler (pg_cron, 0041) or an outside scheduler holding CRON_SECRET.
+        if (!(await isTrustedCaller(request))) return Response.json({ error: 'Unauthorized' }, { status: 401 })
         const appUrl = process.env['APP_URL']?.replace(/\/$/, '') || new URL(request.url).origin
         try {
           return Response.json(await deliverDueMembershipCards({ appUrl }))

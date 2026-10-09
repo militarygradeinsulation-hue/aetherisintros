@@ -1,0 +1,15 @@
+{
+  "name": "Ask Intros",
+  "short_name": "Ask Intros",
+  "description": "The private network for owners and chief executives: who matters, why now.",
+  "start_url": "/app",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#07090C",
+  "theme_color": "#07090C",
+  "icons": [
+    { "src": "/icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "/icon-512.png", "sizes": "512x512", "type": "image/png" },
+    { "src": "/icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}

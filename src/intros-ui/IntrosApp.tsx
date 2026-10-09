@@ -38,6 +38,7 @@ import { ThisWeekPanel } from '@/aetheris/this-week-ui';
 import { LiveNotificationsBell } from '@/aetheris/notifications-bell';
 import { MeetingReminderBanner } from '@/aetheris/meetings-ui';
 import { MembershipCardMailer } from '@/aetheris/membership-card-ui';
+import { InviteCard } from '@/aetheris/InviteCard';
 
 function NewsTicker({ onOpen }: { onOpen: () => void }) {
   const { data } = useAetherisNews();
@@ -257,7 +258,7 @@ export default function App({ mode = 'demo' }: { mode?: 'demo' | 'live' }) {
         {(activePage === 'people' || activePage === 'intros') && (
           <>
             {mode === 'live'
-              ? <div className="ix-classic"><ClassicApp key="live-intros" mode={mode} startPage="intros" /></div>
+              ? <div className="ix-classic"><InviteCard /><ClassicApp key="live-intros" mode={mode} startPage="intros" /></div>
               : <IntrosHubView
                   introRequests={introRequests}
                   networkMembers={members}

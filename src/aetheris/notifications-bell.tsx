@@ -7,6 +7,7 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 import { Bell } from 'lucide-react'
 
 import { supabase } from '@/integrations/supabase/client'
+import { PushSettings } from './push-ui'
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 const db = supabase as any
@@ -88,6 +89,7 @@ export function LiveNotificationsBell({ onOpen }: { onOpen: (destination: Return
           <span>{n.text}</span><small>{ageLabel(n.createdAt)}</small>
         </button></li>)}</ul>
         : <p>You're caught up. Introduction requests and acceptances will appear here.</p>}
+      <footer className="live-bell-push"><PushSettings compact /></footer>
     </div>}
   </div>
 }
