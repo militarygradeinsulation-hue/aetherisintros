@@ -8,10 +8,11 @@ import { cursorScaleLabels, cursorScales, readCursorScale, setCursorScale, type 
 import { SecurityPage } from './SecurityPage'
 import { PushSettings } from '../push-ui'
 import { MembershipBilling } from '../revenue-ui'
+import { GoogleCalendarConnect } from '../google-ui'
 
 import { readTextScale, setTextScale, textScaleLabels, textScales, type TextScale } from '../textScale'
 
-const tabs = ['Profile', 'Membership', 'Display', 'Security & Privacy', 'Availability', 'Preferences', 'Notifications', 'Privacy', 'Memory Controls'] as const
+const tabs = ['Profile', 'Membership', 'Display', 'Security & Privacy', 'Availability', 'Preferences', 'Notifications', 'Connected apps', 'Privacy', 'Memory Controls'] as const
 
 type Tab = typeof tabs[number]
 
@@ -186,6 +187,10 @@ export function PreferencesPage() {
         {tab === 'Membership' && <section>
           <Eyebrow>MEMBERSHIP</Eyebrow><h2>Your Ask Intros membership.</h2>
           <MembershipBilling />
+        </section>}
+        {tab === 'Connected apps' && <section>
+          <Eyebrow>CONNECTED APPS</Eyebrow><h2>Bring your real relationships in.</h2>
+          <GoogleCalendarConnect />
         </section>}
         {tab === 'Display' && <section>
           <Eyebrow>READABILITY</Eyebrow><h2>Set a text size that reads comfortably.</h2>
