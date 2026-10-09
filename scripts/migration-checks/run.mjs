@@ -40,7 +40,7 @@ foreach c in array tg_argv loop if (to_jsonb(new) -> c) is distinct from (to_jso
 
 create table public.profiles (id uuid primary key references auth.users on delete cascade, name text not null default '', onboarded boolean not null default false,
   email text, initials text, title text, company text, location text, focus text, thesis text, bio text, looking_for text, can_help_with text,
-  availability text, industries text[], expertise text[], what_i_do text, avatar_url text, verified_at timestamptz, created_at timestamptz not null default now(), updated_at timestamptz not null default now());
+  availability text, industries text[], expertise text[], what_i_do text, want_to_meet text, avatar_url text, visibility text not null default 'network', verified_at timestamptz, created_at timestamptz not null default now(), updated_at timestamptz not null default now());
 create table public.asks (id text primary key, author_id uuid references auth.users, ask text not null, is_demo boolean not null default false, response_count int not null default 0, created_at timestamptz not null default now(),
   member_id text, posted text not null default '', urgency text not null default 'medium', industry text not null default '', visibility text not null default 'network', status text not null default 'open');
 revoke all on public.asks from anon, authenticated;

@@ -499,7 +499,7 @@ export function NetworkProvider({ children, mode = 'live' }: { children: React.R
       messages.slice(before.length).forEach(message => {
         if (live) {
           // The dm_messages_notify trigger (0026) notifies the other participant.
-          sendLiveMessage(threadId, userId, message.text)
+          sendLiveMessage(threadId, userId, message.text, message.id)
         } else saveMessage(userId, threadId, message)
       })
     }
@@ -579,7 +579,7 @@ export function NetworkProvider({ children, mode = 'live' }: { children: React.R
       })),
       threads: byId([...dir.threads, ...s.ownThreads]).map(t => ({
         ...t,
-        messages: [...t.messages, ...(s.sentMessages[t.id] ?? []).map(m => ({ id: m.id, from: 'me' as const, text: m.text, at: m.at }))],
+        messages: byId([...t.messages, ...(s.sentMessages[t.id] ?? []).map(m => ({ id: m.id, from: 'me' as const, text: m.text, at: m.at }))]),
       })),
       learnings: [...s.learned, ...dir.learnings],
       activity: [...s.activity, ...dir.signals],

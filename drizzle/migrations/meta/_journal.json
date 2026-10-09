@@ -365,6 +365,13 @@
       "when": 1791466759383,
       "tag": "0051_activation_analytics",
       "breakpoints": true
+    },
+    {
+      "idx": 52,
+      "version": "7",
+      "when": 1791467059383,
+      "tag": "0052_messaging_directory",
+      "breakpoints": true
     }
   ]
 }
