@@ -309,6 +309,13 @@
       "when": 1791464359383,
       "tag": "0043_google_calendar",
       "breakpoints": true
+    },
+    {
+      "idx": 50,
+      "version": "7",
+      "when": 1791466459383,
+      "tag": "0050_member_events",
+      "breakpoints": true
     }
   ]
 }

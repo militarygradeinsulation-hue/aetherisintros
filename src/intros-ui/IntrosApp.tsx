@@ -226,7 +226,7 @@ export default function App({ mode = 'demo' }: { mode?: 'demo' | 'live' }) {
         onToggleConstellationOverlay={() => handleNavigate('bubbles')}
         me={mode === 'live' ? me : undefined}
         onOpenMyProfile={mode === 'live' ? () => { setClassicPage('profile'); handleNavigate('workspace'); } : undefined}
-        bell={mode === 'live' ? <LiveNotificationsBell onOpen={(destination) => handleNavigate(destination)} /> : undefined}
+        bell={mode === 'live' ? <LiveNotificationsBell onOpen={(destination) => { if (destination === 'events') { setClassicPage('events'); handleNavigate('workspace'); } else handleNavigate(destination); }} /> : undefined}
       />
 
       {mode === 'live' && <LiveMembers onMembers={setMembers} />}

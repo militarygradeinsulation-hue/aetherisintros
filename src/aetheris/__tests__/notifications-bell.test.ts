@@ -22,5 +22,7 @@ describe('destinationFor', () => {
     expect(destinationFor({ kind: 'connection' })).toBe('people')
     expect(destinationFor({ kind: 'intro_declined' })).toBe('intros')
     expect(destinationFor({ kind: 'onboarding_incomplete' })).toBe('home')
+    expect(destinationFor({ kind: 'event_promoted' })).toBe('events')
+    expect(destinationFor({ kind: 'event_reminder' })).toBe('events')
   })
 })
