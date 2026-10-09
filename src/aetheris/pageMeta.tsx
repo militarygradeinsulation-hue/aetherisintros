@@ -4,7 +4,7 @@ import {
   History, Home as HomeIcon, Inbox, Landmark, Layers, Lock, Map as MapIcon, MessageSquareText, Network,
   Newspaper, PlaneTakeoff, Puzzle, Radar, ScrollText, Settings2, ShieldAlert, ShieldCheck, Sparkle, Target,
   TrendingUp, UserRound, Users, UsersRound,
-  Lightbulb, Stethoscope, Video, HandHelping,
+  Lightbulb, Route, Stethoscope, Video, HandHelping,
 } from 'lucide-react'
 import type { Page } from './nav'
 
@@ -255,6 +255,12 @@ const basePages: BaseMeta[] = [
     changes: 'Approved notes, messages and outcomes add entries.',
     next: 'Check the evidence before trusting a score.',
   }, ['ledger', 'proof', 'audit']),
+  m('warmpaths', 'Warm Paths', Route, 'RELATIONSHIP INTELLIGENCE', 'Who can get you to a person or company, and how warm each path is.', {
+    does: 'Ranks the people who can introduce you to a member or company, with the reasons.',
+    look: 'Hot, Warm or Cool paths, who the connector is, and why the path is warm.',
+    changes: 'Meetings, introductions, connections and your own calendar change the ranking.',
+    next: 'Ask the warmest connector for an introduction.',
+  }, ['warm path', 'path', 'who knows', 'introduction', 'reach', 'get to']),
   m('gaps', 'Gap Map', MapIcon, 'RELATIONSHIP INTELLIGENCE', 'Where your network is missing something.', {
     does: 'Maps where your network is thin relative to what you are trying to move.',
     look: 'Missing roles, sectors and geographies.',

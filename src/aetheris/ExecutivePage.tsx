@@ -19,6 +19,7 @@ import { FollowThroughPanel } from './outcomes-ui'
 import { LinkedInImportPanel } from './linkedin-import-ui'
 import { MembershipCardPanel } from './membership-card-ui'
 import { CalendarSignalRows } from './google-ui'
+import { WarmPathPanel } from './warm-paths-ui'
 
 export const OPEN_TO_OPTIONS = [
   'Customer conversations', 'Strategic partnerships', 'Investment conversations',
@@ -220,6 +221,7 @@ export function ExecutivePage({ person, onClose, onIntro, onMessage }: {
         {profileTab === 'relationship' && <>
         <RoutingPanel target={person} />
         <ReverseDiscoveryPanel memberId={person.id} limit={1} />
+        <WarmPathPanel target={person} />
         <IntroWorkflow member={person} />
         <section className="executive-section"><Eyebrow>RELATIONSHIP PROOF</Eyebrow>
           <div className="executive-proof">
