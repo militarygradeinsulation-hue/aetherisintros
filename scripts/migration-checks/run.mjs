@@ -162,7 +162,7 @@ create table public.crm_activities (id uuid primary key default gen_random_uuid(
 create table public.crm_companies (id uuid primary key default gen_random_uuid(), owner_id uuid);
 create table public.crm_notes (id uuid primary key default gen_random_uuid(), owner_id uuid);
 create table public.crm_opportunities (id uuid primary key default gen_random_uuid(), owner_id uuid);
-create table public.crm_people (id uuid primary key default gen_random_uuid(), owner_id uuid);
+create table public.crm_people (id uuid primary key default gen_random_uuid(), owner_id uuid, full_name text not null default '', email text not null default '', company_name text not null default '', source text not null default '', notes text not null default '');
 create table public.crm_tasks (id uuid primary key default gen_random_uuid(), owner_id uuid);
 create function public.is_live_member() returns boolean language sql stable security definer set search_path = public as $$ select exists (select 1 from public.profiles where id = auth.uid()) $$;
 revoke all on function public.is_live_member() from public, anon;

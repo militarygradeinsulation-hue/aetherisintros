@@ -5320,3 +5320,36 @@ button.news-link{background:none;border:0;padding:0;cursor:pointer}
 .connected-app header small,.connected-app-meta{font:400 12px/1.5 var(--sans);color:var(--muted)}
 .connected-app p{margin:0;font:400 13px/1.55 var(--sans)}
 .connected-app-actions{display:flex;flex-wrap:wrap;gap:8px}
+
+/* Agent Trust Gateway (agent-ui.tsx) */
+.agent-app code{font:500 11.5px/1.4 ui-monospace,monospace;word-break:break-all}
+.agent-keys{list-style:none;margin:0;padding:0;display:grid;gap:8px}
+.agent-keys li{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:10px 12px;border:1px solid var(--line-dark);border-radius:8px}
+.agent-keys li.revoked{opacity:.55}
+.agent-keys li div{display:grid;gap:3px;min-width:0}
+.agent-keys small{font:400 12px/1.45 var(--sans);color:var(--muted)}
+.agent-form{display:grid;gap:10px;margin:0;padding:0;border:0;min-width:0}
+.agent-form label{display:grid;gap:4px;font:400 12.5px/1.4 var(--sans)}
+.agent-form input:not([type=checkbox]),.agent-form select{min-height:34px;padding:0 10px;border-radius:6px;border:1px solid var(--line-dark);background:transparent;color:inherit;font:400 13px var(--sans);max-width:100%}
+.agent-scopes{display:flex;flex-wrap:wrap;gap:6px 16px}
+.agent-scopes label{display:flex;align-items:center;gap:6px}
+.agent-fresh{display:grid;gap:8px;padding:12px;border:1px solid var(--cobalt);border-radius:8px}
+.agent-fresh button{justify-self:start}
+.agent-log summary{cursor:pointer;font:600 12.5px var(--sans)}
+.agent-log ul{list-style:none;margin:8px 0 0;padding:0;display:grid;gap:6px}
+.agent-log li{display:grid;grid-template-columns:auto 1fr;gap:2px 8px;font:400 12.5px/1.45 var(--sans)}
+.agent-log li small{grid-column:2;color:var(--muted)}
+.agent-result{font:600 10.5px var(--sans);text-transform:uppercase;letter-spacing:.04em;color:var(--muted)}
+.agent-result.ok{color:#5fbf8f}
+.agent-result.denied,.agent-result.rate_limited,.agent-result.error{color:#e08a7a}
+.agent-tabs{display:flex;gap:6px;flex-wrap:wrap;margin:0 0 14px}
+.agent-tabs button{min-height:32px;padding:0 12px;border-radius:999px;border:1px solid var(--line-dark);background:transparent;color:inherit;font:500 12px var(--sans);cursor:pointer}
+.agent-tabs button.active{border-color:var(--cobalt);background:var(--cobalt);color:var(--soft)}
+.agent-inbox{display:grid;gap:12px}
+.agent-request{display:grid;gap:8px}
+.agent-request h3{margin:2px 0}
+.agent-request small{color:var(--muted);font:400 12px/1.45 var(--sans)}
+.agent-request p{margin:0;font:400 13.5px/1.55 var(--sans);overflow-wrap:anywhere}
+.agent-links{display:flex;flex-wrap:wrap;gap:8px}
+.agent-empty{display:flex;gap:10px;align-items:center}
+.utility-count{margin-left:8px;padding:0 7px;border-radius:999px;background:var(--cobalt);color:var(--soft);font:600 10.5px/18px var(--sans);font-style:normal;display:inline-block}

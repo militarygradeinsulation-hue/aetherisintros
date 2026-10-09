@@ -9,6 +9,7 @@ import { SecurityPage } from './SecurityPage'
 import { PushSettings } from '../push-ui'
 import { MembershipBilling } from '../revenue-ui'
 import { GoogleCalendarConnect } from '../google-ui'
+import { AgentAssistantsSettings, AgentPolicySettings } from '../agent-ui'
 
 import { readTextScale, setTextScale, textScaleLabels, textScales, type TextScale } from '../textScale'
 
@@ -191,6 +192,8 @@ export function PreferencesPage() {
         {tab === 'Connected apps' && <section>
           <Eyebrow>CONNECTED APPS</Eyebrow><h2>Bring your real relationships in.</h2>
           <GoogleCalendarConnect />
+          <AgentAssistantsSettings />
+          <AgentPolicySettings />
         </section>}
         {tab === 'Display' && <section>
           <Eyebrow>READABILITY</Eyebrow><h2>Set a text size that reads comfortably.</h2>
