@@ -5694,3 +5694,25 @@ body:has([role=menu],[role=listbox],.ix-mobile-sheet,.topbar-dropmenu,.notificat
 .qn-msg{margin:0;color:#9FE3B4;font-size:12px}
 .qn .qm-primary{display:inline-flex;align-items:center;gap:6px}
 .qn .qm-primary:disabled{opacity:.45;cursor:default}
+
+/* Business posts: Need, Offer, Proof of work */
+.biz-composer{padding:12px 16px}
+.biz-composer .signal-type-row{margin-top:0;padding-top:0;border-top:0}
+.biz-composer .signal-type-row button{min-height:40px}
+.biz-form{margin-top:12px}
+.biz-form .biz-field{display:grid;gap:5px;min-width:0}
+.biz-form .biz-field label{color:var(--muted);font:700 11px var(--sans);text-transform:uppercase}
+.biz-form input,.biz-form textarea,.biz-form select{width:100%;min-height:40px;border:1px solid var(--line-dark);border-radius:5px;background:var(--night);color:var(--soft);padding:9px 11px;font:500 15px var(--sans)}
+.biz-form [aria-invalid="true"]{border-color:var(--amber)}
+.biz-form .biz-row{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.biz-error{color:var(--amber)}
+.biz-badge.biz-need{border-color:color-mix(in srgb,var(--amber) 45%,var(--line-dark));color:var(--amber)}
+.biz-details{display:grid;gap:8px;padding:0 0 4px}
+.biz-details dl{display:flex;flex-wrap:wrap;gap:8px 18px;margin:0}
+.biz-details dt{color:var(--muted);font:700 10px var(--sans);text-transform:uppercase}
+.biz-details dd{margin:2px 0 0;color:var(--soft)}
+.biz-links{list-style:none;margin:0;padding:0;display:grid;gap:4px}
+.biz-links a{color:var(--cobalt-bright);overflow-wrap:anywhere}
+.social-feed-card>footer>button.biz-action{background:var(--cobalt);color:var(--soft);border-radius:5px;margin-left:auto}
+.biz-form button:focus-visible,.biz-form input:focus-visible,.biz-form select:focus-visible,.biz-form textarea:focus-visible,.biz-action:focus-visible{outline:2px solid var(--cobalt-bright);outline-offset:2px}
+@media(max-width:620px){.biz-form .biz-row{grid-template-columns:1fr}.social-feed-card>footer>button.biz-action{grid-column:1/-1;margin-left:0}}

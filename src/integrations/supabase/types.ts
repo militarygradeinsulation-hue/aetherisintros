@@ -4031,6 +4031,7 @@ export type Database = {
       posts: {
         Row: {
           author_id: string | null
+          business: Json | null
           created_at: string
           detail: string
           id: string
@@ -4045,6 +4046,7 @@ export type Database = {
         }
         Insert: {
           author_id?: string | null
+          business?: Json | null
           created_at?: string
           detail?: string
           id: string
@@ -4059,6 +4061,7 @@ export type Database = {
         }
         Update: {
           author_id?: string | null
+          business?: Json | null
           created_at?: string
           detail?: string
           id?: string
