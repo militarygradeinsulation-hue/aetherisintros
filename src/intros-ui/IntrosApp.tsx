@@ -223,7 +223,7 @@ export default function App({ mode = 'demo' }: { mode?: 'demo' | 'live' }) {
 
   return (
     <AccentProvider>
-    <div className="ix-root min-h-screen bg-[#07090C] text-[#F2EEE6] flex flex-col font-sans selection:bg-[#F5B027]/30 selection:text-white relative isolate">
+    <div className="ix-root min-h-screen bg-[#07090C] text-[#F2EEE6] flex flex-col font-sans selection:bg-[#F5B027]/30 selection:text-white relative">
       {/* Right-click quick menu (each member chooses its items) */}
       <QuickMenuHost
         live={mode === 'live'}
