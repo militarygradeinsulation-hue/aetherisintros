@@ -27,8 +27,10 @@ import { Route as PassportTokenRouteImport } from './routes/passport.$token'
 import { Route as DotlovableOauthConsentRouteImport } from './routes/[.]lovable.oauth.consent'
 import { Route as AuthenticatedAdminEarlyAccessRouteImport } from './routes/_authenticated/admin.early-access'
 import { Route as AuthenticatedAdminVerificationRouteImport } from './routes/_authenticated/admin.verification'
+import { Route as ApiCronGoogleSyncRouteImport } from './routes/api/cron/google-sync'
 import { Route as ApiCronMembershipCardsRouteImport } from './routes/api/cron/membership-cards'
 import { Route as ApiCronWeeklyDigestRouteImport } from './routes/api/cron/weekly-digest'
+import { Route as ApiGoogleCallbackRouteImport } from './routes/api/google/callback'
 import { Route as ApiPublicDigestUnsubscribeRouteImport } from './routes/api/public/digest-unsubscribe'
 import { Route as ApiPublicMembershipCardRouteImport } from './routes/api/public/membership-card'
 import { Route as ApiPublicNewsImageRouteImport } from './routes/api/public/news-image'
@@ -128,6 +130,11 @@ const AuthenticatedAdminVerificationRoute =
     path: '/admin/verification',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const ApiCronGoogleSyncRoute = ApiCronGoogleSyncRouteImport.update({
+  id: '/api/cron/google-sync',
+  path: '/api/cron/google-sync',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiCronMembershipCardsRoute = ApiCronMembershipCardsRouteImport.update({
   id: '/api/cron/membership-cards',
   path: '/api/cron/membership-cards',
@@ -136,6 +143,11 @@ const ApiCronMembershipCardsRoute = ApiCronMembershipCardsRouteImport.update({
 const ApiCronWeeklyDigestRoute = ApiCronWeeklyDigestRouteImport.update({
   id: '/api/cron/weekly-digest',
   path: '/api/cron/weekly-digest',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiGoogleCallbackRoute = ApiGoogleCallbackRouteImport.update({
+  id: '/api/google/callback',
+  path: '/api/google/callback',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ApiPublicDigestUnsubscribeRoute =
@@ -188,8 +200,10 @@ export interface FileRoutesByFullPath {
   '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
   '/admin/early-access': typeof AuthenticatedAdminEarlyAccessRoute
   '/admin/verification': typeof AuthenticatedAdminVerificationRoute
+  '/api/cron/google-sync': typeof ApiCronGoogleSyncRoute
   '/api/cron/membership-cards': typeof ApiCronMembershipCardsRoute
   '/api/cron/weekly-digest': typeof ApiCronWeeklyDigestRoute
+  '/api/google/callback': typeof ApiGoogleCallbackRoute
   '/api/public/digest-unsubscribe': typeof ApiPublicDigestUnsubscribeRoute
   '/api/public/membership-card': typeof ApiPublicMembershipCardRoute
   '/api/public/news-image': typeof ApiPublicNewsImageRoute
@@ -215,8 +229,10 @@ export interface FileRoutesByTo {
   '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
   '/admin/early-access': typeof AuthenticatedAdminEarlyAccessRoute
   '/admin/verification': typeof AuthenticatedAdminVerificationRoute
+  '/api/cron/google-sync': typeof ApiCronGoogleSyncRoute
   '/api/cron/membership-cards': typeof ApiCronMembershipCardsRoute
   '/api/cron/weekly-digest': typeof ApiCronWeeklyDigestRoute
+  '/api/google/callback': typeof ApiGoogleCallbackRoute
   '/api/public/digest-unsubscribe': typeof ApiPublicDigestUnsubscribeRoute
   '/api/public/membership-card': typeof ApiPublicMembershipCardRoute
   '/api/public/news-image': typeof ApiPublicNewsImageRoute
@@ -244,8 +260,10 @@ export interface FileRoutesById {
   '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
   '/_authenticated/admin/early-access': typeof AuthenticatedAdminEarlyAccessRoute
   '/_authenticated/admin/verification': typeof AuthenticatedAdminVerificationRoute
+  '/api/cron/google-sync': typeof ApiCronGoogleSyncRoute
   '/api/cron/membership-cards': typeof ApiCronMembershipCardsRoute
   '/api/cron/weekly-digest': typeof ApiCronWeeklyDigestRoute
+  '/api/google/callback': typeof ApiGoogleCallbackRoute
   '/api/public/digest-unsubscribe': typeof ApiPublicDigestUnsubscribeRoute
   '/api/public/membership-card': typeof ApiPublicMembershipCardRoute
   '/api/public/news-image': typeof ApiPublicNewsImageRoute
@@ -273,8 +291,10 @@ export interface FileRouteTypes {
     | '/.lovable/oauth/consent'
     | '/admin/early-access'
     | '/admin/verification'
+    | '/api/cron/google-sync'
     | '/api/cron/membership-cards'
     | '/api/cron/weekly-digest'
+    | '/api/google/callback'
     | '/api/public/digest-unsubscribe'
     | '/api/public/membership-card'
     | '/api/public/news-image'
@@ -300,8 +320,10 @@ export interface FileRouteTypes {
     | '/.lovable/oauth/consent'
     | '/admin/early-access'
     | '/admin/verification'
+    | '/api/cron/google-sync'
     | '/api/cron/membership-cards'
     | '/api/cron/weekly-digest'
+    | '/api/google/callback'
     | '/api/public/digest-unsubscribe'
     | '/api/public/membership-card'
     | '/api/public/news-image'
@@ -328,8 +350,10 @@ export interface FileRouteTypes {
     | '/.lovable/oauth/consent'
     | '/_authenticated/admin/early-access'
     | '/_authenticated/admin/verification'
+    | '/api/cron/google-sync'
     | '/api/cron/membership-cards'
     | '/api/cron/weekly-digest'
+    | '/api/google/callback'
     | '/api/public/digest-unsubscribe'
     | '/api/public/membership-card'
     | '/api/public/news-image'
@@ -351,8 +375,10 @@ export interface RootRouteChildren {
   InviteCodeRoute: typeof InviteCodeRoute
   PassportTokenRoute: typeof PassportTokenRoute
   DotlovableOauthConsentRoute: typeof DotlovableOauthConsentRoute
+  ApiCronGoogleSyncRoute: typeof ApiCronGoogleSyncRoute
   ApiCronMembershipCardsRoute: typeof ApiCronMembershipCardsRoute
   ApiCronWeeklyDigestRoute: typeof ApiCronWeeklyDigestRoute
+  ApiGoogleCallbackRoute: typeof ApiGoogleCallbackRoute
   ApiPublicDigestUnsubscribeRoute: typeof ApiPublicDigestUnsubscribeRoute
   ApiPublicMembershipCardRoute: typeof ApiPublicMembershipCardRoute
   ApiPublicNewsImageRoute: typeof ApiPublicNewsImageRoute
@@ -489,6 +515,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminVerificationRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/api/cron/google-sync': {
+      id: '/api/cron/google-sync'
+      path: '/api/cron/google-sync'
+      fullPath: '/api/cron/google-sync'
+      preLoaderRoute: typeof ApiCronGoogleSyncRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/cron/membership-cards': {
       id: '/api/cron/membership-cards'
       path: '/api/cron/membership-cards'
@@ -501,6 +534,13 @@ declare module '@tanstack/react-router' {
       path: '/api/cron/weekly-digest'
       fullPath: '/api/cron/weekly-digest'
       preLoaderRoute: typeof ApiCronWeeklyDigestRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/google/callback': {
+      id: '/api/google/callback'
+      path: '/api/google/callback'
+      fullPath: '/api/google/callback'
+      preLoaderRoute: typeof ApiGoogleCallbackRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/api/public/digest-unsubscribe': {
@@ -583,8 +623,10 @@ const rootRouteChildren: RootRouteChildren = {
   InviteCodeRoute: InviteCodeRoute,
   PassportTokenRoute: PassportTokenRoute,
   DotlovableOauthConsentRoute: DotlovableOauthConsentRoute,
+  ApiCronGoogleSyncRoute: ApiCronGoogleSyncRoute,
   ApiCronMembershipCardsRoute: ApiCronMembershipCardsRoute,
   ApiCronWeeklyDigestRoute: ApiCronWeeklyDigestRoute,
+  ApiGoogleCallbackRoute: ApiGoogleCallbackRoute,
   ApiPublicDigestUnsubscribeRoute: ApiPublicDigestUnsubscribeRoute,
   ApiPublicMembershipCardRoute: ApiPublicMembershipCardRoute,
   ApiPublicNewsImageRoute: ApiPublicNewsImageRoute,

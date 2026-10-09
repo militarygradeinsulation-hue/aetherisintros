@@ -18,6 +18,7 @@ import { IntroWorkflow, MeetingBriefPanel, ReverseDiscoveryPanel, RoutingPanel, 
 import { FollowThroughPanel } from './outcomes-ui'
 import { LinkedInImportPanel } from './linkedin-import-ui'
 import { MembershipCardPanel } from './membership-card-ui'
+import { CalendarSignalRows } from './google-ui'
 
 export const OPEN_TO_OPTIONS = [
   'Customer conversations', 'Strategic partnerships', 'Investment conversations',
@@ -246,6 +247,7 @@ export function ExecutivePage({ person, onClose, onIntro, onMessage }: {
           <dl>
             <div><dt>Status</dt><dd>{connected ? 'Connected' : person.relationshipStatus}</dd></div>
             <div><dt>Last interaction</dt><dd>{crmPerson?.lastActivityAt ? new Date(crmPerson.lastActivityAt).toLocaleDateString() : person.lastInteractionDays ? `${person.lastInteractionDays} days ago` : 'Not recorded'}</dd></div>
+            <CalendarSignalRows memberId={person.id} />
             <div><dt>CRM lifecycle</dt><dd>{crmPerson?.lifecycle ?? 'Not in CRM'}</dd></div>
             <div><dt>Company</dt><dd>{company?.name ?? person.company ?? 'Not recorded'}</dd></div>
             <div><dt>Open opportunities</dt><dd>{opportunities.length || 'None'}</dd></div>

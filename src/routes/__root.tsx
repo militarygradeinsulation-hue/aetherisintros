@@ -20,6 +20,7 @@ import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 import { installClientErrorReporting, reportClientError } from "../lib/error-report";
 import { registerServiceWorker } from "../aetheris/push-client";
+import { announceGoogleReturn } from "../aetheris/google-ui";
 import { applyTextScale, readTextScale } from "../aetheris/textScale";
 
 function NotFoundComponent() {
@@ -146,6 +147,7 @@ function RootComponent() {
     applyTextScale(readTextScale());
     installClientErrorReporting();
     registerServiceWorker();
+    setTimeout(announceGoogleReturn, 400);
   }, []);
 
   return (
