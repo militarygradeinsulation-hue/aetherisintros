@@ -17,6 +17,18 @@ import {
 } from './quick-menu'
 
 const db = supabase as any // eslint-disable-line @typescript-eslint/no-explicit-any
+
+/** The Ask Intros assistant's mark, sized like the menu's other icons. */
+function AssistantGlyph({ size = 14 }: { size?: number }) {
+  return <span className="aetheris-glyph qm-glyph" style={{ width: size, height: size }} aria-hidden="true"><i /><b /></span>
+}
+
+/** Opens the Ask Intros assistant (AskIntrosDock), optionally with a question typed in. */
+export function openAssistant(question?: string) {
+  window.dispatchEvent(new CustomEvent('aetheris:open-assistant', question ? { detail: question } : undefined))
+}
+
+const short = (text: string, n = 28) => (text.length > n ? `${text.slice(0, n - 1)}…` : text)
 const CACHE_KEY = 'aetheris.quickmenu.v1'
 
 const ICONS: Record<string, typeof Home> = {
@@ -103,12 +115,22 @@ export function QuickMenuHost(props: Props) {
       e.preventDefault()
       const context: MenuEntry[] = []
       const selected = String(window.getSelection?.() ?? '').trim()
-      if (selected) {
-        context.push({ key: 'copy', label: 'Copy', icon: Copy, run: () => void navigator.clipboard?.writeText(selected) })
-        if (onSearch) context.push({ key: 'search', label: `Search members for “${selected.length > 28 ? `${selected.slice(0, 27)}…` : selected}”`, icon: Search, run: () => onSearch(selected) })
-      }
       const portrait = el?.closest('[data-person-portrait]')?.getAttribute('data-person-portrait')
       const member = portrait && portrait !== 'me' && findMember ? findMember(portrait) : null
+      // The Ask Intros assistant is always first, primed with what was clicked when that helps.
+      const question = selected
+        ? `What should I know about “${selected.slice(0, 300)}”, and who in my network can help?`
+        : member ? `What should I know about ${member.name}, and how can we help each other?` : ''
+      context.push({
+        key: 'assistant',
+        label: selected ? `Ask Intros about “${short(selected, 24)}”` : member ? `Ask Intros about ${member.name}` : 'Ask Intros…',
+        icon: AssistantGlyph as unknown as typeof Home,
+        run: () => openAssistant(question || undefined),
+      })
+      if (selected) {
+        context.push({ key: 'copy', label: 'Copy', icon: Copy, run: () => void navigator.clipboard?.writeText(selected) })
+        if (onSearch) context.push({ key: 'search', label: `Search members for “${short(selected)}”`, icon: Search, run: () => onSearch(selected) })
+      }
       if (member) {
         if (onOpenMember) context.push({ key: 'open-member', label: `Open ${member.name}`, icon: UserRound, run: () => onOpenMember(member.id) })
         if (onRequestIntro) context.push({ key: 'intro-member', label: `Request intro to ${member.name}`, icon: Sparkles, run: () => onRequestIntro(member.id) })

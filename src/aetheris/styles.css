@@ -5639,3 +5639,5 @@ button.news-link{background:none;border:0;padding:0;cursor:pointer}
 .qm-primary{border:0;background:#F5B027;color:#07090C}
 .qm-secondary{border:1px solid rgba(255,255,255,.14);background:none;color:inherit}
 .qm-msg{margin:0;color:#F87171}
+.qm-glyph{color:#F5B027}
+.qm-item:first-child{font-weight:600}

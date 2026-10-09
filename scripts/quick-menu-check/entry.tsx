@@ -1,5 +1,5 @@
 import { createRoot } from 'react-dom/client'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 
 import '../../src/aetheris/styles.css'
 import { QuickMenuHost } from '../../src/aetheris/quick-menu-ui'
@@ -7,6 +7,11 @@ import { QuickMenuHost } from '../../src/aetheris/quick-menu-ui'
 function Page() {
   const [log, setLog] = useState<string[]>([])
   const add = (s: string) => setLog(l => [...l, s])
+  useEffect(() => {
+    const on = (e: Event) => add(`assistant:${(e as CustomEvent<string | undefined>).detail ?? ''}`)
+    window.addEventListener('aetheris:open-assistant', on)
+    return () => window.removeEventListener('aetheris:open-assistant', on)
+  }, [])
   return <div style={{ padding: 40, minHeight: '100vh', background: '#07090C', color: '#F2EEE6' }}>
     <QuickMenuHost live
       onGo={t => add(`go:${t.kind}:${t.page}`)}
