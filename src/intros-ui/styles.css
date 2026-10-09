@@ -514,7 +514,8 @@
 }
 
 .ix-root {
-  isolation: isolate;
+  /* No isolation here: menus, sheets and dialogs (z-index >= 2) must stack above the
+     site-wide ambient field (.site-ambient, z-index 1) so it never paints over their text. */
   --sys-gold: var(--acc);
   --sys-gold-bright: var(--acc-bright);
   --sys-gold-wash: var(--acc-wash);
@@ -680,7 +681,7 @@
   .ix-mobile-badge { position: absolute; inset: -6px auto auto 10px; padding: 0 3px; background: var(--acc); color: var(--sys-bg); border-radius: var(--radius-chip); font-size: var(--mobile-nav-label); }
   .ix-root .ask-dock-fab { bottom: calc(var(--mobile-nav-height) + env(safe-area-inset-bottom, 0px) + var(--mobile-nav-gap)); }
   .ix-root .ask-dock { bottom: calc(var(--mobile-nav-height) + env(safe-area-inset-bottom, 0px) + 76px); max-height: calc(100dvh - var(--mobile-nav-height) - env(safe-area-inset-bottom, 0px) - 150px); }
-  .ix-mobile-more { display: block; position: fixed; inset: 0; z-index: 90; }
+  .ix-mobile-more { display: block; position: fixed; inset: 0; z-index: 95; } /* above the Ask Intros button (92) and dock (93) */
   .ix-mobile-scrim { position: absolute; inset: 0; width: 100%; height: 100%; border-radius: 0; background: var(--sys-bg); opacity: .8; }
   .ix-mobile-sheet { position: absolute; inset: auto 0 0; padding: var(--mobile-nav-gap); padding-bottom: calc(var(--mobile-nav-gap) + env(safe-area-inset-bottom, 0px)); background: var(--sys-panel); color: var(--sys-ink); border-top: 1px solid var(--sys-line); max-height: 85dvh; overflow-y: auto; }
   .ix-mobile-sheet-head { display: flex; align-items: center; justify-content: space-between; padding-left: var(--mobile-nav-gap); }

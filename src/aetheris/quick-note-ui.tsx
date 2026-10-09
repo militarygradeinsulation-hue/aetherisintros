@@ -4,7 +4,7 @@
  * (public.memories, kind 'note', source 'Quick note'). In the showcase they stay on the device.
  */
 import { Check, Mic, MicOff, NotebookPen, X } from 'lucide-react'
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useLayoutEffect, useRef, useState } from 'react'
 
 import { supabase } from '@/integrations/supabase/client'
 import { placeMenu } from './quick-menu'
@@ -63,14 +63,16 @@ export function QuickNoteHost() {
     return () => window.removeEventListener('aetheris:quick-note', open)
   }, [])
 
-  useEffect(() => {
+  // Place the card before it is painted, so it never flashes somewhere else.
+  useLayoutEffect(() => {
     if (!req || !ref.current) return
     const r = ref.current.getBoundingClientRect()
     const x = req.x ?? window.innerWidth / 2 - r.width / 2
     const y = req.y ?? window.innerHeight / 3
     setPos(placeMenu(x, y, r.width, r.height, window.innerWidth, window.innerHeight))
-    area.current?.focus()
   }, [req])
+
+  useEffect(() => { if (pos) area.current?.focus() }, [pos])
 
   const close = () => { dictation.stop(); setReq(null) }
 
@@ -95,7 +97,7 @@ export function QuickNoteHost() {
   }
 
   return <div ref={ref} className="qn" role="dialog" aria-label="Quick note" data-voice-skip="true"
-    style={pos ? { left: pos.left, top: pos.top } : { left: -9999, top: -9999 }} onContextMenu={e => e.stopPropagation()}>
+    style={pos ? { left: pos.left, top: pos.top } : { left: 0, top: 0, visibility: 'hidden' }} onContextMenu={e => e.stopPropagation()}>
     <header><NotebookPen size={14} aria-hidden /><b>Quick note</b><small>Private · saved to Memory</small>
       <button type="button" aria-label="Close" onClick={close}><X size={14} /></button></header>
     <textarea ref={area} value={text} maxLength={MAX_NOTE} rows={5} placeholder={dictation.supported ? 'Type, or press the microphone and speak…' : 'Type your note…'}
