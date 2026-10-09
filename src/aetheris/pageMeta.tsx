@@ -267,6 +267,12 @@ const basePages: BaseMeta[] = [
     changes: 'Meetings, introductions, connections and your own calendar change the ranking.',
     next: 'Ask the warmest connector for an introduction.',
   }, ['warm path', 'path', 'who knows', 'introduction', 'reach', 'get to']),
+  m('workspaces', 'Workspaces', Briefcase, 'OPPORTUNITY & EXECUTION', 'Private business workspaces opened from a conversation or an accepted introduction.', {
+    does: 'Turns a conversation or an accepted introduction into a private workspace with scope, shared next steps and a clear stage.',
+    look: 'The stage, who has accepted the invitation, who has confirmed, and the next step.',
+    changes: 'Each participant\'s own actions: accepting, confirming a stage, ticking steps. Nothing moves on its own.',
+    next: 'Open the workspace that has an unanswered invitation or an overdue next step.',
+  }, ['workspaces', 'engagement', 'next steps']),
   m('gaps', 'Gap Map', MapIcon, 'RELATIONSHIP INTELLIGENCE', 'Where your network is missing something.', {
     does: 'Maps where your network is thin relative to what you are trying to move.',
     look: 'Missing roles, sectors and geographies.',
@@ -478,7 +484,7 @@ const hubOf: Partial<Record<Page, Hub>> = {
   organization: 'PEOPLE & NETWORK', profile: 'PEOPLE & NETWORK', passport: 'PEOPLE & NETWORK',
   presence: 'PEOPLE & NETWORK', ask: 'PEOPLE & NETWORK', serendipity: 'PEOPLE & NETWORK',
 
-  work: 'OPPORTUNITIES & WORK', needs: 'OPPORTUNITIES & WORK', opportunities: 'OPPORTUNITIES & WORK', rooms: 'OPPORTUNITIES & WORK',
+  work: 'OPPORTUNITIES & WORK', workspaces: 'OPPORTUNITIES & WORK', needs: 'OPPORTUNITIES & WORK', opportunities: 'OPPORTUNITIES & WORK', rooms: 'OPPORTUNITIES & WORK',
   dealrooms: 'OPPORTUNITIES & WORK', outcomes: 'OPPORTUNITIES & WORK', capital: 'OPPORTUNITIES & WORK',
   systems: 'OPPORTUNITIES & WORK', strategy: 'OPPORTUNITIES & WORK', crm: 'OPPORTUNITIES & WORK', pocket: 'OPPORTUNITIES & WORK', providers: 'OPPORTUNITIES & WORK', diagnostic: 'INTELLIGENCE & MEMORY',
   grid: 'OPPORTUNITIES & WORK', knowledgeassets: 'OPPORTUNITIES & WORK', vault: 'OPPORTUNITIES & WORK',
