@@ -22,6 +22,7 @@ import { Route as AuthenticatedAppRouteImport } from './routes/_authenticated/ap
 import { Route as AuthenticatedDelegateRouteImport } from './routes/_authenticated/delegate'
 import { Route as AuthenticatedOnboardingRouteImport } from './routes/_authenticated/onboarding'
 import { Route as AuthenticatedVerifyRouteImport } from './routes/_authenticated/verify'
+import { Route as ImpactSlugRouteImport } from './routes/impact.$slug'
 import { Route as InviteCodeRouteImport } from './routes/invite.$code'
 import { Route as PassportTokenRouteImport } from './routes/passport.$token'
 import { Route as DotlovableOauthConsentRouteImport } from './routes/[.]lovable.oauth.consent'
@@ -102,6 +103,11 @@ const AuthenticatedVerifyRoute = AuthenticatedVerifyRouteImport.update({
   id: '/verify',
   path: '/verify',
   getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const ImpactSlugRoute = ImpactSlugRouteImport.update({
+  id: '/impact/$slug',
+  path: '/impact/$slug',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const InviteCodeRoute = InviteCodeRouteImport.update({
   id: '/invite/$code',
@@ -195,6 +201,7 @@ export interface FileRoutesByFullPath {
   '/delegate': typeof AuthenticatedDelegateRoute
   '/onboarding': typeof AuthenticatedOnboardingRoute
   '/verify': typeof AuthenticatedVerifyRoute
+  '/impact/$slug': typeof ImpactSlugRoute
   '/invite/$code': typeof InviteCodeRoute
   '/passport/$token': typeof PassportTokenRoute
   '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
@@ -224,6 +231,7 @@ export interface FileRoutesByTo {
   '/delegate': typeof AuthenticatedDelegateRoute
   '/onboarding': typeof AuthenticatedOnboardingRoute
   '/verify': typeof AuthenticatedVerifyRoute
+  '/impact/$slug': typeof ImpactSlugRoute
   '/invite/$code': typeof InviteCodeRoute
   '/passport/$token': typeof PassportTokenRoute
   '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
@@ -255,6 +263,7 @@ export interface FileRoutesById {
   '/_authenticated/delegate': typeof AuthenticatedDelegateRoute
   '/_authenticated/onboarding': typeof AuthenticatedOnboardingRoute
   '/_authenticated/verify': typeof AuthenticatedVerifyRoute
+  '/impact/$slug': typeof ImpactSlugRoute
   '/invite/$code': typeof InviteCodeRoute
   '/passport/$token': typeof PassportTokenRoute
   '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
@@ -286,6 +295,7 @@ export interface FileRouteTypes {
     | '/delegate'
     | '/onboarding'
     | '/verify'
+    | '/impact/$slug'
     | '/invite/$code'
     | '/passport/$token'
     | '/.lovable/oauth/consent'
@@ -315,6 +325,7 @@ export interface FileRouteTypes {
     | '/delegate'
     | '/onboarding'
     | '/verify'
+    | '/impact/$slug'
     | '/invite/$code'
     | '/passport/$token'
     | '/.lovable/oauth/consent'
@@ -345,6 +356,7 @@ export interface FileRouteTypes {
     | '/_authenticated/delegate'
     | '/_authenticated/onboarding'
     | '/_authenticated/verify'
+    | '/impact/$slug'
     | '/invite/$code'
     | '/passport/$token'
     | '/.lovable/oauth/consent'
@@ -372,6 +384,7 @@ export interface RootRouteChildren {
   McpRoute: typeof McpRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   Char91DotwellKnownChar93OauthProtectedResourceRoute: typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
+  ImpactSlugRoute: typeof ImpactSlugRoute
   InviteCodeRoute: typeof InviteCodeRoute
   PassportTokenRoute: typeof PassportTokenRoute
   DotlovableOauthConsentRoute: typeof DotlovableOauthConsentRoute
@@ -479,6 +492,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/verify'
       preLoaderRoute: typeof AuthenticatedVerifyRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/impact/$slug': {
+      id: '/impact/$slug'
+      path: '/impact/$slug'
+      fullPath: '/impact/$slug'
+      preLoaderRoute: typeof ImpactSlugRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/invite/$code': {
       id: '/invite/$code'
@@ -620,6 +640,7 @@ const rootRouteChildren: RootRouteChildren = {
   SitemapDotxmlRoute: SitemapDotxmlRoute,
   Char91DotwellKnownChar93OauthProtectedResourceRoute:
     Char91DotwellKnownChar93OauthProtectedResourceRoute,
+  ImpactSlugRoute: ImpactSlugRoute,
   InviteCodeRoute: InviteCodeRoute,
   PassportTokenRoute: PassportTokenRoute,
   DotlovableOauthConsentRoute: DotlovableOauthConsentRoute,

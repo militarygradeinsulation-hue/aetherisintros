@@ -8,6 +8,7 @@ import { cursorScaleLabels, cursorScales, readCursorScale, setCursorScale, type 
 import { SecurityPage } from './SecurityPage'
 import { PushSettings } from '../push-ui'
 import { MembershipBilling } from '../revenue-ui'
+import { MyImpactCard } from '../impact-ui'
 import { GoogleCalendarConnect } from '../google-ui'
 
 import { readTextScale, setTextScale, textScaleLabels, textScales, type TextScale } from '../textScale'
@@ -187,6 +188,7 @@ export function PreferencesPage() {
         {tab === 'Membership' && <section>
           <Eyebrow>MEMBERSHIP</Eyebrow><h2>Your Ask Intros membership.</h2>
           <MembershipBilling />
+          <MyImpactCard />
         </section>}
         {tab === 'Connected apps' && <section>
           <Eyebrow>CONNECTED APPS</Eyebrow><h2>Bring your real relationships in.</h2>
