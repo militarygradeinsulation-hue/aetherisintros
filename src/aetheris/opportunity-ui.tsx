@@ -10,6 +10,7 @@ import { useOps } from './crm/store'
 import { useGraph, useGraphInputs } from './graph-store'
 import { useNav } from './nav'
 import { IntroOutcomeTimeline } from './outcomes-ui'
+import { IntroDeals } from './revenue-ui'
 import { MeetNowButton } from './meetings-ui'
 import {
   INTENT_CATEGORIES, MISSION_TYPES, RULE_KINDS, activeMission, evaluateRules, graphInsights, meetingBrief, missionTypeLabel,
@@ -338,6 +339,7 @@ export function IntroWorkflow({ member }: { member: Member }) {
     {intro && !bothIn && <small className="og-note">Relationship Room opens after both sides opt in.</small>}
     {msg && <p className="executive-form-note">{msg}</p>}
     {bothIn && intro && <IntroOutcomeTimeline introRequestId={intro.id} myId={graph.userId} />}
+    {bothIn && intro && <IntroDeals introRequestId={intro.id} myId={graph.userId} />}
     {bothIn && <IntroFeedbackForm member={member} introRequestId={intro?.id ?? null} connectorName={route.best?.hops[0]?.name ?? ''} />}
     {roomOpen && room && capsule && <RelationshipRoom room={room} capsule={capsule} member={member} onClose={() => setRoomOpen(false)} onChange={setRoom} onMessage={() => nav.messageMember(member.id)} />}
   </section>

@@ -7,10 +7,11 @@ import { Btn, Eyebrow, Head } from '../ui'
 import { cursorScaleLabels, cursorScales, readCursorScale, setCursorScale, type CursorScale } from '../cursorScale'
 import { SecurityPage } from './SecurityPage'
 import { PushSettings } from '../push-ui'
+import { MembershipBilling } from '../revenue-ui'
 
 import { readTextScale, setTextScale, textScaleLabels, textScales, type TextScale } from '../textScale'
 
-const tabs = ['Profile', 'Display', 'Security & Privacy', 'Availability', 'Preferences', 'Notifications', 'Privacy', 'Memory Controls'] as const
+const tabs = ['Profile', 'Membership', 'Display', 'Security & Privacy', 'Availability', 'Preferences', 'Notifications', 'Privacy', 'Memory Controls'] as const
 
 type Tab = typeof tabs[number]
 
@@ -181,6 +182,10 @@ export function PreferencesPage() {
           <label><span>Professional title</span><input value={draft.title} onChange={event => update('title', event.target.value)} /></label>
           <label><span>Current focus</span><textarea rows={3} value={draft.focus} onChange={event => update('focus', event.target.value)} /></label>
           <label><span>Profile visibility</span><select value={draft.profileVisibility} onChange={event => update('profileVisibility', event.target.value as PreferenceSettings['profileVisibility'])}><option value="network">Aetheris network</option><option value="connections">Connections only</option><option value="private">Private</option></select></label>
+        </section>}
+        {tab === 'Membership' && <section>
+          <Eyebrow>MEMBERSHIP</Eyebrow><h2>Your Ask Intros membership.</h2>
+          <MembershipBilling />
         </section>}
         {tab === 'Display' && <section>
           <Eyebrow>READABILITY</Eyebrow><h2>Set a text size that reads comfortably.</h2>

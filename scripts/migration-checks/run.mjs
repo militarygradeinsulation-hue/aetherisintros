@@ -42,7 +42,7 @@ create table public.profiles (id uuid primary key references auth.users on delet
   email text, initials text, title text, company text, location text, focus text, thesis text, bio text, looking_for text, can_help_with text,
   availability text, industries text[], expertise text[], what_i_do text, created_at timestamptz not null default now(), updated_at timestamptz not null default now());
 create table public.asks (id text primary key, author_id uuid references auth.users, ask text not null, is_demo boolean not null default false, response_count int not null default 0, created_at timestamptz not null default now(),
-  member_id text, posted text not null default '', urgency text not null default 'medium', industry text not null default '', visibility text not null default 'network');
+  member_id text, posted text not null default '', urgency text not null default 'medium', industry text not null default '', visibility text not null default 'network', status text not null default 'open');
 revoke all on public.asks from anon, authenticated;
 grant select, insert, update on public.asks to authenticated;
 alter table public.asks enable row level security;
