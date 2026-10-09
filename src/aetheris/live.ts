@@ -11,6 +11,7 @@ import { calculateConnectionScore, determineRadarState } from './lib/engine'
 import type { Directory } from './db'
 import type { Member, NetworkAsk, Post, Thread } from './social'
 import type { ScoreBreakdown } from './types'
+import type { GiverBand } from './reciprocity-core'
 
 export interface LiveProfileRow {
   id: string
@@ -154,6 +155,13 @@ export async function loadLiveDirectory(userId: string): Promise<{ directory: Di
     const me = profiles.find(p => p.id === userId) ?? null
     const others = profiles.filter(p => p.id !== userId)
     const members = others.map(row => profileToMember(row, me))
+    // Bands of members who chose to show them, for the small matching boost. Optional: an
+    // error (e.g. before migration 0055 is applied) just means no boost.
+    if (others.length) {
+      const bands = await (supabase as any).rpc('giver_bands', { p_members: others.slice(0, 100).map(p => p.id) }) // eslint-disable-line @typescript-eslint/no-explicit-any
+      const byId = new Map<string, GiverBand>(((bands?.data ?? []) as Array<{ member_id: string; band: GiverBand }>).map(b => [b.member_id, b.band]))
+      for (const m of members) m.giverBand = byId.get(m.id) ?? null
+    }
 
     const threadIds = (threadRows.data ?? []).map(t => t.id)
     const messageRows = threadIds.length
@@ -292,8 +300,11 @@ export async function ensureThread(userId: string, peerId: string, context = '')
   return created.data?.id ?? null
 }
 
-export function sendLiveMessage(threadId: string, senderId: string, text: string) {
-  fire(supabase.from('dm_messages').insert({ thread_id: threadId, sender_id: senderId, text }))
+const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
+
+/** `id` (when a uuid) keeps the sent row's id equal to the local message, so read receipts line up. */
+export function sendLiveMessage(threadId: string, senderId: string, text: string, id?: string) {
+  fire(supabase.from('dm_messages').insert({ ...(id && UUID.test(id) ? { id } : {}), thread_id: threadId, sender_id: senderId, text }))
   fire(supabase.from('dm_threads').update({ updated_at: new Date().toISOString() }).eq('id', threadId))
 }
 

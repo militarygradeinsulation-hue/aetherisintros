@@ -1,7 +1,8 @@
 import { useMemo, useState } from 'react'
 import { ArrowRight, Bookmark, CalendarDays, Check, MapPin, Users } from 'lucide-react'
 import { events } from '../social'
-import { showcaseOnly } from '../showcase'
+import { isShowcase, showcaseOnly } from '../showcase'
+import { LiveEventsPage } from '../member-events-ui'
 import { useNetwork } from '../store'
 import { useNav } from '../nav'
 import { Btn, Eyebrow, Face, Head, Why } from '../ui'
@@ -12,7 +13,12 @@ const eventDetails = [
   { type: 'Private roundtable', focus: 'Portfolio operations · private capital', capacity: 32, attendeeIds: ['p2', 'p8', 'p11', 'p21'], note: 'A closed working session for operating partners, investors and trusted specialists.' },
 ]
 
+/** Live members see real member events; the labelled showcase keeps its illustrative rooms. */
 export function EventsPage() {
+  return isShowcase() ? <DemoEventsPage /> : <LiveEventsPage />
+}
+
+function DemoEventsPage() {
   const net = useNetwork()
   const nav = useNav()
   const [filter, setFilter] = useState('All')

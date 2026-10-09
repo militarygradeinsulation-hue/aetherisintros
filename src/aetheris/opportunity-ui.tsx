@@ -244,7 +244,9 @@ type Capsule = { id: string; intro_request_id: string; why_exists: string; why_r
 type IntroRow = { id: string; user_id: string; target_user_id: string | null; requester_opt_in: boolean; member_opt_in: boolean; status: string }
 type Room = { id: string; intro_request_id: string; participant_a: string; participant_b: string; status: string; outcome: string; next_steps: string[]; commitments: string[]; meeting_at: string | null }
 
-export function IntroWorkflow({ member }: { member: Member }) {
+export type IntroPrefill = Partial<Record<'why_exists' | 'why_requester' | 'why_target' | 'why_now' | 'first_goal' | 'shared_context', string>>
+
+export function IntroWorkflow({ member, prefill }: { member: Member; prefill?: IntroPrefill }) {
   const g = useGraphInputs()
   const graph = useGraph()
   const net = useNetwork()
@@ -263,6 +265,7 @@ export function IntroWorkflow({ member }: { member: Member }) {
     why_requester: g.me.whatIDo || '', why_target: member.needs[0] ? `Relevant to their stated need: ${member.needs[0]}` : '',
     why_now: ask ? `Their active Signal: ${ask.ask}` : member.whyNow || '', first_goal: '', shared_context: route.safeContext.join('\n'),
     excluded_context: route.excluded.join(', '), mission_title: mission && mission.privacy !== 'private' ? mission.title : '', signal_text: ask?.ask ?? '',
+    ...prefill,
   })
 
   const load = async () => {

@@ -5,7 +5,12 @@ import { useAccess, type LaunchMode } from '@/aetheris/access'
 import { NetworkProofPanel } from '@/aetheris/outcomes-ui'
 import { AdminErrorsPanel, AdminNetworkHealthPanel } from '@/aetheris/admin-health-ui'
 import { AdminConciergePanel, AdminRevenuePanel } from '@/aetheris/revenue-ui'
+import { AdminEventsPanel } from '@/aetheris/member-events-ui'
 import { FoundingCohortsPanel } from '@/aetheris/cohorts-ui'
+import { AdminPeerGroupsPanel } from '@/aetheris/peer-groups-ui'
+import { AdminProvidersPanel } from '@/aetheris/providers-ui'
+import { AdminImpactPanel } from '@/aetheris/impact-ui'
+import { AdminGrowthPanel } from '@/aetheris/growth-ui'
 import { supabase } from '@/integrations/supabase/client'
 import '@/aetheris/styles.css'
 
@@ -96,8 +101,13 @@ function AdminRoute() {
     </header>
 
     <NetworkProofPanel />
+    <AdminGrowthPanel />
     <AdminRevenuePanel />
+    <AdminImpactPanel />
     <AdminConciergePanel />
+    <AdminPeerGroupsPanel />
+    <AdminProvidersPanel />
+    <AdminEventsPanel />
     <AdminNetworkHealthPanel />
     <AdminErrorsPanel />
 

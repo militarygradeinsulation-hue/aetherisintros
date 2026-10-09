@@ -7,6 +7,7 @@
  * implementing `TableGateway`. Tables are declared in ./schema.sql.
  */
 import { isShowcase } from '../showcase'
+import { notifyWorkspaceChange, registerSyncedStore } from '../sync/workspace-sync'
 import type { ID } from './models'
 import type { Repository, TableGateway } from './repository'
 import type {
@@ -134,18 +135,22 @@ const storeKey = () => `${KEY}-${isShowcase() ? 'demo' : 'live'}`
 
 export function createLocalProLayer(): ProDataLayer {
   const seeded = isShowcase() ? seedProCollections() : emptyProCollections()
+  const isLive = !isShowcase()
+  const fromStored = (parsed: Partial<ProCollections> | null): ProCollections => {
+    const merged = { ...seeded } as ProCollections
+    if (!parsed || typeof parsed !== 'object') return merged
+    for (const key of Object.keys(seeded) as ProCollectionName[]) {
+      const stored = parsed[key]
+      if (Array.isArray(stored)) (merged[key] as unknown[]) = stored
+    }
+    return merged
+  }
   let state: ProCollections = (() => {
     if (typeof window === 'undefined') return seeded
     try {
       const raw = localStorage.getItem(storeKey())
       if (!raw) return seeded
-      const parsed = JSON.parse(raw) as Partial<ProCollections>
-      const merged = { ...seeded } as ProCollections
-      for (const key of Object.keys(seeded) as ProCollectionName[]) {
-        const stored = parsed[key]
-        if (Array.isArray(stored)) (merged[key] as unknown[]) = stored
-      }
-      return merged
+      return fromStored(JSON.parse(raw) as Partial<ProCollections>)
     } catch {
       return seeded
     }
@@ -157,7 +162,21 @@ export function createLocalProLayer(): ProDataLayer {
     if (typeof window !== 'undefined') {
       try { localStorage.setItem(storeKey(), JSON.stringify(state)) } catch { /* storage full */ }
     }
+    if (isLive) notifyWorkspaceChange('aetheris-pro-v1-live')
     listeners.forEach(l => l(state))
+  }
+
+  // A member's live data is also saved to their account (never demo data).
+  if (isLive) {
+    const localKey = storeKey()
+    registerSyncedStore({
+      key: 'aetheris-pro-v1-live', localKey,
+      apply: data => {
+        state = fromStored(data as Partial<ProCollections> | null)
+        try { localStorage.setItem(localKey, JSON.stringify(state)) } catch { /* storage full */ }
+        listeners.forEach(l => l(state))
+      },
+    })
   }
 
   return {

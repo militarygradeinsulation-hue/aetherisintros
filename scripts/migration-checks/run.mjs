@@ -40,7 +40,7 @@ foreach c in array tg_argv loop if (to_jsonb(new) -> c) is distinct from (to_jso
 
 create table public.profiles (id uuid primary key references auth.users on delete cascade, name text not null default '', onboarded boolean not null default false,
   email text, initials text, title text, company text, location text, focus text, thesis text, bio text, looking_for text, can_help_with text,
-  availability text, industries text[], expertise text[], what_i_do text, created_at timestamptz not null default now(), updated_at timestamptz not null default now());
+  availability text, industries text[], expertise text[], what_i_do text, want_to_meet text, avatar_url text, visibility text not null default 'network', verified_at timestamptz, created_at timestamptz not null default now(), updated_at timestamptz not null default now());
 create table public.asks (id text primary key, author_id uuid references auth.users, ask text not null, is_demo boolean not null default false, response_count int not null default 0, created_at timestamptz not null default now(),
   member_id text, posted text not null default '', urgency text not null default 'medium', industry text not null default '', visibility text not null default 'network', status text not null default 'open');
 revoke all on public.asks from anon, authenticated;
@@ -158,11 +158,17 @@ create table public.members (id text primary key, name text not null, initials t
   why_them text not null default '', why_you text not null default '', why_now text not null default '', best_path text[] not null default '{}', next_action text not null default '',
   dont_do text not null default '', confidence int not null default 0, opportunity_low int, opportunity_high int, intro_state text not null default 'recommended',
   joined text not null default '2025', created_at timestamptz not null default now(), is_demo boolean not null default true);
-create table public.crm_activities (id uuid primary key default gen_random_uuid(), owner_id uuid);
-create table public.crm_companies (id uuid primary key default gen_random_uuid(), owner_id uuid);
+create table public.crm_activities (id uuid primary key default gen_random_uuid(), owner_id uuid, person_id uuid, kind text not null default 'note', subject text not null default '', occurred_at timestamptz not null default now());
+create table public.crm_companies (id uuid primary key default gen_random_uuid(), owner_id uuid, name text not null default '', archived boolean not null default false);
 create table public.crm_notes (id uuid primary key default gen_random_uuid(), owner_id uuid);
 create table public.crm_opportunities (id uuid primary key default gen_random_uuid(), owner_id uuid);
-create table public.crm_people (id uuid primary key default gen_random_uuid(), owner_id uuid);
+create table public.crm_people (id uuid primary key default gen_random_uuid(), owner_id uuid, full_name text not null default '', title text not null default '', company_id uuid, company_name text not null default '', email text not null default '', source text not null default '', notes text not null default '',
+  profile_id uuid, last_activity_at timestamptz, archived boolean not null default false);
+create table public.directory_contacts (id uuid primary key default gen_random_uuid(), user_id uuid, full_name text not null, title text not null default '', company_name text not null default '');
+grant select on public.directory_contacts to authenticated;
+alter table public.directory_contacts enable row level security;
+create policy "Members can search contacts" on public.directory_contacts for select to authenticated using (true);
+create table public.circle_memberships (id uuid primary key default gen_random_uuid(), circle_id text not null, user_id uuid not null references auth.users on delete cascade, role text not null default 'member', created_at timestamptz not null default now(), unique (circle_id, user_id));
 create table public.crm_tasks (id uuid primary key default gen_random_uuid(), owner_id uuid);
 create function public.is_live_member() returns boolean language sql stable security definer set search_path = public as $$ select exists (select 1 from public.profiles where id = auth.uid()) $$;
 revoke all on function public.is_live_member() from public, anon;
