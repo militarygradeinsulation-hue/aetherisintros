@@ -9,6 +9,7 @@ import { FoundingCohortsPanel } from '@/aetheris/cohorts-ui'
 import { AdminPeerGroupsPanel } from '@/aetheris/peer-groups-ui'
 import { AdminProvidersPanel } from '@/aetheris/providers-ui'
 import { AdminImpactPanel } from '@/aetheris/impact-ui'
+import { AdminGrowthPanel } from '@/aetheris/growth-ui'
 import { supabase } from '@/integrations/supabase/client'
 import '@/aetheris/styles.css'
 
@@ -99,6 +100,7 @@ function AdminRoute() {
     </header>
 
     <NetworkProofPanel />
+    <AdminGrowthPanel />
     <AdminRevenuePanel />
     <AdminImpactPanel />
     <AdminConciergePanel />
