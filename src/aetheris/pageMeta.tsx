@@ -4,7 +4,7 @@ import {
   History, Home as HomeIcon, Inbox, Landmark, Layers, Lock, Map as MapIcon, MessageSquareText, Network,
   Newspaper, PlaneTakeoff, Puzzle, Radar, ScrollText, Settings2, ShieldAlert, ShieldCheck, Sparkle, Target,
   TrendingUp, UserRound, Users, UsersRound,
-  Lightbulb, Stethoscope, Video,
+  Lightbulb, Route, Stethoscope, Video, HandHelping,
 } from 'lucide-react'
 import type { Page } from './nav'
 
@@ -106,6 +106,13 @@ const basePages: BaseMeta[] = [
     next: 'Start a meeting with the person you most need to talk to this week.',
     why: 'Nobody is transcribed unless they turn notes on themselves, and everyone sees who has.',
   }, ['video', 'call', 'meeting', 'zoom', 'notes', 'transcript', 'note taker']),
+  m('peergroups', 'Peer Groups', UsersRound, 'OPPORTUNITY & EXECUTION', 'Small confidential groups of peers who meet monthly.', {
+    does: 'Holds your peer groups: sessions, a private discussion board and issue processing with six to twelve peers.',
+    look: 'The next session, issues the group is working on, and what members have shared.',
+    changes: 'Only members who accepted the group’s confidentiality agreement can see anything inside it.',
+    next: 'Bring one issue to your next session.',
+    why: 'Nobody outside the group can see it exists, what is posted, or who brought which issue.',
+  }, ['peer group', 'forum', 'ypo', 'vistage', 'mastermind', 'confidential', 'issue processing']),
   m('needs', 'Needs', Target, 'OPPORTUNITY & EXECUTION', 'What members are trying to move right now, and who can help.', {
     does: 'Runs the asks marketplace: what members need now and who can help.',
     look: 'Fresh asks, responses you can give and warm paths worth requesting.',
@@ -242,12 +249,24 @@ const basePages: BaseMeta[] = [
     changes: 'New needs and intents create and retire collisions.',
     next: 'Act on a collision while the timing holds.',
   }, ['overlap', 'timing']),
+  m('agentinbox', 'Agent Inbox', Inbox, 'RELATIONSHIP INTELLIGENCE', 'Requests from outside AI agents, screened by your Agent policy.', {
+    does: 'Shows requests from outside AI agents that passed your Agent policy.',
+    look: 'Who the request is for, why you, and what you get.',
+    changes: 'Your Agent policy in Settings decides what is delivered, held or rejected.',
+    next: 'Accept the one worth a reply; block domains that waste your time.',
+  }, ['agents', 'ai', 'requests', 'inbound', 'screening']),
   m('evidence', 'Evidence', FileSearch, 'RELATIONSHIP INTELLIGENCE', 'The record behind every claim and recommendation.', {
     does: 'Shows the record behind every claim and recommendation.',
     look: 'What was observed, when, and how strong the source is.',
     changes: 'Approved notes, messages and outcomes add entries.',
     next: 'Check the evidence before trusting a score.',
   }, ['ledger', 'proof', 'audit']),
+  m('warmpaths', 'Warm Paths', Route, 'RELATIONSHIP INTELLIGENCE', 'Who can get you to a person or company, and how warm each path is.', {
+    does: 'Ranks the people who can introduce you to a member or company, with the reasons.',
+    look: 'Hot, Warm or Cool paths, who the connector is, and why the path is warm.',
+    changes: 'Meetings, introductions, connections and your own calendar change the ranking.',
+    next: 'Ask the warmest connector for an introduction.',
+  }, ['warm path', 'path', 'who knows', 'introduction', 'reach', 'get to']),
   m('gaps', 'Gap Map', MapIcon, 'RELATIONSHIP INTELLIGENCE', 'Where your network is missing something.', {
     does: 'Maps where your network is thin relative to what you are trying to move.',
     look: 'Missing roles, sectors and geographies.',
@@ -418,6 +437,13 @@ const basePages: BaseMeta[] = [
     changes: 'Ideas stay private to your account on this device until you export them.',
     next: 'Start from a shape and ask for a review.',
   }, ['pocket', 'idea room', 'test an idea', 'sandbox', 'prototype']),
+  m('providers', 'Trusted Providers', HandHelping, 'OPPORTUNITY & EXECUTION', 'Service firms members have worked with and vouch for, and help finding the right one.', {
+    does: 'Lists accountants, advisors, lawyers, agencies and fractional executives that members nominated and the team approved, with member endorsements.',
+    look: 'How many members endorse a firm, and who they are.',
+    changes: 'Requests you send go to the Ask Intros team, who match you with up to three approved providers.',
+    next: 'Request help with the thing you have been putting off, or endorse a firm you trust.',
+    why: 'Matched providers see what you need, not your private notes; your name only once you choose them.',
+  }, ['providers', 'vendors', 'accountant', 'lawyer', 'advisor', 'agency', 'fractional', 'referral', 'recommend a firm']),
   m('diagnostic', 'Diagnostic', Stethoscope, 'PRIMARY', 'Where your company needs attention, from your own records.', {
     does: 'Reads your deals, people and tasks and shows what is stalled, quiet, single-threaded or late.',
     look: 'The high-severity issues first, with the evidence and cause chain behind each one.',
@@ -454,10 +480,10 @@ const hubOf: Partial<Record<Page, Hub>> = {
 
   work: 'OPPORTUNITIES & WORK', needs: 'OPPORTUNITIES & WORK', opportunities: 'OPPORTUNITIES & WORK', rooms: 'OPPORTUNITIES & WORK',
   dealrooms: 'OPPORTUNITIES & WORK', outcomes: 'OPPORTUNITIES & WORK', capital: 'OPPORTUNITIES & WORK',
-  systems: 'OPPORTUNITIES & WORK', strategy: 'OPPORTUNITIES & WORK', crm: 'OPPORTUNITIES & WORK', pocket: 'OPPORTUNITIES & WORK', diagnostic: 'INTELLIGENCE & MEMORY',
+  systems: 'OPPORTUNITIES & WORK', strategy: 'OPPORTUNITIES & WORK', crm: 'OPPORTUNITIES & WORK', pocket: 'OPPORTUNITIES & WORK', providers: 'OPPORTUNITIES & WORK', diagnostic: 'INTELLIGENCE & MEMORY',
   grid: 'OPPORTUNITIES & WORK', knowledgeassets: 'OPPORTUNITIES & WORK', vault: 'OPPORTUNITIES & WORK',
 
-  memory: 'INTELLIGENCE & MEMORY', insights: 'INTELLIGENCE & MEMORY', evidence: 'INTELLIGENCE & MEMORY',
+  memory: 'INTELLIGENCE & MEMORY', insights: 'INTELLIGENCE & MEMORY', evidence: 'INTELLIGENCE & MEMORY', agentinbox: 'INTELLIGENCE & MEMORY',
   gaps: 'INTELLIGENCE & MEMORY', loops: 'INTELLIGENCE & MEMORY', collisions: 'INTELLIGENCE & MEMORY',
   simulation: 'INTELLIGENCE & MEMORY', attribution: 'INTELLIGENCE & MEMORY',
   timemachine: 'INTELLIGENCE & MEMORY', autopilot: 'INTELLIGENCE & MEMORY',

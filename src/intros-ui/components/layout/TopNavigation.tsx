@@ -4,14 +4,11 @@ import { AskIntrosLockup } from '@/aetheris/AskIntrosLockup';
 import { Search, Bell, Orbit, LogOut, Home, Users, MessageSquare, MoreHorizontal, Network, Brain, Newspaper, Briefcase, X, Video, ChevronDown } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { AvatarImage } from '@/aetheris/avatar';
-import { supabase } from '@/integrations/supabase/client';
+import { signOutMember } from '@/aetheris/sync/workspace-sync';
 import { AccentSwitch } from '../../AccentMode';
 
 async function signOut() {
-  try { await supabase.auth.signOut(); } finally {
-    try { Object.keys(localStorage).filter(k => k.startsWith('aetheris.')).forEach(k => localStorage.removeItem(k)); } catch { /* ignore */ }
-    window.location.replace('/auth');
-  }
+  await signOutMember('/auth');
 }
 
 export type ActivePage = 'home' | 'people' | 'bubbles' | 'intros' | 'messages' | 'insights' | 'profile' | 'news' | 'workspace' | 'memory' | 'work' | 'meetings';
@@ -132,7 +129,7 @@ export const TopNavigation: React.FC<TopNavigationProps> = ({
                   {item.label}
                   {item.badge !== undefined && item.badge > 0 && (
                     <span className="inline-flex items-center justify-center text-[9px] font-mono px-1 py-[1px] rounded-full bg-[var(--acc)] text-[#0B0D0F] font-semibold">
-                      {item.badge}
+                      {item.badge > 99 ? '99+' : item.badge}
                     </span>
                   )}
                 </span>

@@ -7,8 +7,12 @@ import { Btn, Eyebrow, Head } from '../ui'
 import { cursorScaleLabels, cursorScales, readCursorScale, setCursorScale, type CursorScale } from '../cursorScale'
 import { SecurityPage } from './SecurityPage'
 import { PushSettings } from '../push-ui'
+import { TextAlerts } from '../sms-ui'
 import { MembershipBilling } from '../revenue-ui'
+import { MyImpactCard } from '../impact-ui'
 import { GoogleCalendarConnect } from '../google-ui'
+import { CoolingNudgeSetting } from '../reciprocity-ui'
+import { AgentAssistantsSettings, AgentPolicySettings } from '../agent-ui'
 
 import { readTextScale, setTextScale, textScaleLabels, textScales, type TextScale } from '../textScale'
 
@@ -187,10 +191,13 @@ export function PreferencesPage() {
         {tab === 'Membership' && <section>
           <Eyebrow>MEMBERSHIP</Eyebrow><h2>Your Ask Intros membership.</h2>
           <MembershipBilling />
+          <MyImpactCard />
         </section>}
         {tab === 'Connected apps' && <section>
           <Eyebrow>CONNECTED APPS</Eyebrow><h2>Bring your real relationships in.</h2>
           <GoogleCalendarConnect />
+          <AgentAssistantsSettings />
+          <AgentPolicySettings />
         </section>}
         {tab === 'Display' && <section>
           <Eyebrow>READABILITY</Eyebrow><h2>Set a text size that reads comfortably.</h2>
@@ -217,8 +224,9 @@ export function PreferencesPage() {
         {tab === 'Notifications' && <section>
           <Eyebrow>ATTENTION POLICY</Eyebrow><h2>Only notify you when context changes.</h2>
           <PushSettings />
+          <TextAlerts />
           <label><span>Summary frequency</span><select value={draft.notificationFrequency} onChange={event => update('notificationFrequency', event.target.value)}><option>Daily intelligence brief</option><option>Weekly relationship review</option><option>Important signals only</option><option>Off</option></select></label>
-          <Toggle checked={draft.coolingAlerts} onChange={value => update('coolingAlerts', value)} label="Cooling relationship alerts" />
+          <CoolingNudgeSetting />
           <Toggle checked={draft.introAlerts} onChange={value => update('introAlerts', value)} label="Introduction and warm-path updates" />
         </section>}
         {tab === 'Privacy' && <section>

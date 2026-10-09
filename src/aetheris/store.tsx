@@ -17,6 +17,7 @@ import {
   saveReaction, sendLiveMessage, uploadProfileAvatar, type LiveProfileRow,
 } from './live'
 import { supabase } from '@/integrations/supabase/client'
+import { quarterStart } from './activation'
 
 /** 'live' = real members only (the network). 'demo' = the labelled showcase. */
 export type NetworkMode = 'live' | 'demo'
@@ -32,6 +33,8 @@ export type MeProfile = typeof seedMe & {
   building?: string
   openTo?: string[]
   schedulingEnabled?: boolean
+  /** This quarter's goals (member_goals, 0051). Read-only here; feeds matching, never saved with the profile. */
+  goals?: string[]
 }
 
 export interface PreferenceSettings {
@@ -303,6 +306,14 @@ const blankMe: MeProfile = {
   whatIDo: '', building: '', openTo: [], schedulingEnabled: false,
 }
 
+/** This quarter's goals for the signed-in member (own rows only by RLS). Empty on any error. */
+async function loadOwnGoals(): Promise<string[]> {
+  try {
+    const r = await (supabase as any).from('member_goals').select('goal').eq('quarter', quarterStart(new Date())).order('position') // eslint-disable-line @typescript-eslint/no-explicit-any
+    return (r.data ?? []).map((g: { goal: string }) => g.goal)
+  } catch { return [] }
+}
+
 /** The signed-in member's own identity, read from their real profile row. */
 function profileFromRow(prev: MeProfile, row: LiveProfileRow): MeProfile {
   return {
@@ -353,10 +364,12 @@ export function NetworkProvider({ children, mode = 'live' }: { children: React.R
       if (!id) { setSynced(true); return }
       setUserId(id)
       let meRow: LiveProfileRow | null = null
+      let myGoals: string[] = []
       if (live) {
-        const { directory, me } = await loadLiveDirectory(id)
+        const [{ directory, me }, goals] = await Promise.all([loadLiveDirectory(id), loadOwnGoals()])
         if (cancelled) return
         meRow = me
+        myGoals = goals
         setDir(directory)
       }
       const remote = await loadUserGraph(id)
@@ -372,6 +385,7 @@ export function NetworkProvider({ children, mode = 'live' }: { children: React.R
         // your own record — never from anything left behind by the demo showcase.
         if (live) {
           next.profile = profileFromRow(blankMe, meRow ?? ({ industries: [], expertise: [] } as unknown as LiveProfileRow))
+          if (myGoals.length) next.profile = { ...next.profile, goals: myGoals }
           if (doc['objectives'] === undefined) next.objectives = []
           if (doc['activity'] === undefined) next.activity = []
           if (doc['preferences'] === undefined) {
@@ -485,7 +499,7 @@ export function NetworkProvider({ children, mode = 'live' }: { children: React.R
       messages.slice(before.length).forEach(message => {
         if (live) {
           // The dm_messages_notify trigger (0026) notifies the other participant.
-          sendLiveMessage(threadId, userId, message.text)
+          sendLiveMessage(threadId, userId, message.text, message.id)
         } else saveMessage(userId, threadId, message)
       })
     }
@@ -502,6 +516,8 @@ export function NetworkProvider({ children, mode = 'live' }: { children: React.R
     if (DOC_KEYS.some(key => prev[key] !== s[key])) {
       const doc: Record<string, unknown> = {}
       for (const key of DOC_KEYS) doc[key] = s[key]
+      // Goals live in member_goals; keep the private copy out of the saved document.
+      if (s.profile.goals) { const { goals: _goals, ...profile } = s.profile; doc['profile'] = profile }
       saveDoc(userId, doc)
       if (prev.profile !== s.profile) {
         saveProfileFields(userId, {
@@ -563,7 +579,7 @@ export function NetworkProvider({ children, mode = 'live' }: { children: React.R
       })),
       threads: byId([...dir.threads, ...s.ownThreads]).map(t => ({
         ...t,
-        messages: [...t.messages, ...(s.sentMessages[t.id] ?? []).map(m => ({ id: m.id, from: 'me' as const, text: m.text, at: m.at }))],
+        messages: byId([...t.messages, ...(s.sentMessages[t.id] ?? []).map(m => ({ id: m.id, from: 'me' as const, text: m.text, at: m.at }))]),
       })),
       learnings: [...s.learned, ...dir.learnings],
       activity: [...s.activity, ...dir.signals],

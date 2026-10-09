@@ -1,7 +1,8 @@
 import { useEffect } from 'react'
-import { BookOpen, Briefcase, CircleHelp, Fingerprint, LogOut, Network, PlugZap, Settings2, ShieldCheck, X } from 'lucide-react'
-import { supabase } from '@/integrations/supabase/client'
+import { Bot, BookOpen, Briefcase, CircleHelp, Fingerprint, HandHelping, LogOut, Network, PlugZap, Route, Settings2, ShieldCheck, UsersRound, X } from 'lucide-react'
+import { signOutMember } from '../sync/workspace-sync'
 import type { Page } from '../nav'
+import { useAgentInboxCount } from '../agent-ui'
 
 const RECENT_KEY = 'aetheris.more.recent'
 
@@ -23,10 +24,14 @@ const utilities: Array<{ id: Page; label: string; note: string; icon: typeof Shi
 const groups: Array<{ label: string; items: Array<{ id: Page; label: string; note: string; icon: typeof ShieldCheck }> }> = [
   { label: 'Relationship intelligence', items: [
     { id: 'inbox', label: 'Relationship Inbox', note: 'Signals, commitments, and changes that need attention.', icon: Network },
+    { id: 'warmpaths', label: 'Warm Paths', note: 'Who can introduce you to a person or company, and how warm each path is.', icon: Route },
+    { id: 'agentinbox', label: 'Agent Inbox', note: 'Requests from AI agents that passed your Agent policy.', icon: Bot },
     { id: 'evidence', label: 'Evidence Ledger', note: 'The source and confidence behind recommendations.', icon: Fingerprint },
   ] },
   { label: 'Executive work', items: [
+    { id: 'peergroups', label: 'Peer Groups', note: 'Your confidential group of peers, its sessions and issues.', icon: UsersRound },
     { id: 'rooms', label: 'Opportunity Rooms', note: 'Move live opportunities with people and context attached.', icon: Briefcase },
+    { id: 'providers', label: 'Trusted Providers', note: 'Firms members vouch for, and help finding the right one.', icon: HandHelping },
     { id: 'autopilot', label: 'Approvals', note: 'Review prepared actions before anything leaves your account.', icon: ShieldCheck },
   ] },
   { label: 'Account', items: utilities },
@@ -36,6 +41,7 @@ const groups: Array<{ label: string; items: Array<{ id: Page; label: string; not
 export function MoreDrawer({ open, onClose, onNavigate }: {
   open: boolean; page: Page; onClose: () => void; onNavigate: (page: Page) => void
 }) {
+  const agentCount = useAgentInboxCount(open)
   useEffect(() => {
     if (!open) return
     const onKey = (event: KeyboardEvent) => { if (event.key === 'Escape') onClose() }
@@ -45,11 +51,7 @@ export function MoreDrawer({ open, onClose, onNavigate }: {
 
   if (!open) return null
   const go = (page: Page) => { onNavigate(page); onClose() }
-  const signOut = async () => {
-    await supabase.auth.signOut()
-    try { Object.keys(localStorage).filter(key => key.startsWith('aetheris.')).forEach(key => localStorage.removeItem(key)) } catch { /* unavailable */ }
-    window.location.replace('/auth')
-  }
+  const signOut = () => signOutMember('/auth')
 
   return <div className="more-wrap utility-wrap" role="dialog" aria-label="Utilities">
     <button className="more-scrim" aria-label="Close menu" onClick={onClose} />
@@ -57,7 +59,7 @@ export function MoreDrawer({ open, onClose, onNavigate }: {
       <header className="more-head"><div><span className="more-eyebrow">ACCOUNT</span><h2>Utilities</h2><p>The essentials, without a directory of features.</p></div>
         <button className="icon-btn" onClick={onClose} aria-label="Close"><X size={17} /></button></header>
       <nav className="utility-list">
-        {groups.map(group => <section key={group.label}><span className="utility-group-label">{group.label}</span>{group.items.map((item, index) => { const Icon = item.icon; return <button key={`${item.label}-${index}`} onClick={() => go(item.id)}><Icon size={18} /><span><b>{item.label}</b><small>{item.note}</small></span></button> })}</section>)}
+        {groups.map(group => <section key={group.label}><span className="utility-group-label">{group.label}</span>{group.items.map((item, index) => { const Icon = item.icon; return <button key={`${item.label}-${index}`} onClick={() => go(item.id)}><Icon size={18} /><span><b>{item.label}{item.id === 'agentinbox' && agentCount > 0 ? <em className="utility-count">{agentCount}</em> : null}</b><small>{item.note}</small></span></button> })}</section>)}
         <button onClick={() => { onClose(); window.dispatchEvent(new CustomEvent('aetheris:open-assistant')) }}><CircleHelp size={18} /><span><b>Help</b><small>Ask Intros about any page, action or decision.</small></span></button>
         <a href="/founder-story"><BookOpen size={18} /><span><b>Founder Story</b><small>Read the complete Architect Behind the Operator.</small></span></a>
         <button className="utility-signout" onClick={() => { void signOut() }}><LogOut size={18} /><span><b>Sign Out</b><small>End this private session.</small></span></button>

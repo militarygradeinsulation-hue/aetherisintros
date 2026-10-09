@@ -18,6 +18,7 @@ import { rankMatches, type MatchResult } from '@/aetheris/matching'
 import { AvatarImage } from './avatar'
 import { journalKindFor, journalUrl, uploadJournalMedia } from './live'
 import { supabase } from '@/integrations/supabase/client'
+import { signOutMember } from './sync/workspace-sync'
 import { useAccess } from './access'
 import { InviteCard } from './InviteCard'
 import { AskIntrosLockup } from './AskIntrosLockup'
@@ -126,6 +127,10 @@ import { GraphProvider, useGraph } from './graph-store'
 import { OutcomeCheckins } from './outcomes-ui'
 import { IntroRequestInbox } from './intro-inbox'
 import { MeetingsPage } from './meetings-ui'
+import { PeerGroupsPage } from './peer-groups-ui'
+import { ProvidersPage } from './providers-ui'
+import { WarmPathsPage } from './warm-paths-ui'
+import { AgentInboxPage } from './agent-ui'
 import { LeakCheckPanel } from './leak-check-ui'
 import { SentIntroRequests } from './sent-requests-ui'
 import { CompanyWorkspacePanel } from './company-ui'
@@ -2323,14 +2328,7 @@ function AccountControl() {
 
   const signOut = async () => {
     setBusy(true)
-    try {
-      await supabase.auth.signOut()
-    } finally {
-      try {
-        Object.keys(localStorage).filter(k => k.startsWith('aetheris.')).forEach(k => localStorage.removeItem(k))
-      } catch { /* storage unavailable */ }
-      window.location.replace('/auth')
-    }
+    await signOutMember('/auth')
   }
 
   return <button className="topbar-auth" disabled={busy} title={access.email ? `Signed in as ${access.email}` : 'Sign out'}
@@ -2650,6 +2648,9 @@ function Shell({ startPage, feedOnly = false }: { startPage?: Page | undefined; 
       intros: <Intros people={people} select={setSelected} draft={setDraft} />,
       messages: <MessageHub people={people} select={setSelected} activeId={threadId} setActiveId={setThreadId} />,
       meetings: <MeetingsPage />,
+      peergroups: <PeerGroupsPage />,
+      providers: <ProvidersPage />,
+      warmpaths: <WarmPathsPage />,
       needs: <><IntentExchangePanel /><Needs onNew={() => setNeedOpen(true)} people={people} select={setSelected} setPage={setPage} /><IntentBoard /></>,
       memory: <Memory people={people} select={setSelected} />,
       events: <EventsPage />,
@@ -2663,6 +2664,7 @@ function Shell({ startPage, feedOnly = false }: { startPage?: Page | undefined; 
       simulation: <SimulationPage />,
       strategy: <StrategyPage />,
       evidence: <EvidenceLedgerPage />,
+      agentinbox: <AgentInboxPage />,
       autopilot: <><div className="og-stack"><section className="og-tile"><h3>Approval queue</h3><ApprovalQueuePanel /></section><DigitalYouRulesPanel /></div><AutopilotPage /></>,
       ask: <AskNetworkPage />,
       constitution: <ConstitutionPage />,
