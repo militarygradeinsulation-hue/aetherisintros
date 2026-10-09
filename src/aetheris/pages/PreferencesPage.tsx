@@ -8,6 +8,7 @@ import { cursorScaleLabels, cursorScales, readCursorScale, setCursorScale, type 
 import { SecurityPage } from './SecurityPage'
 import { PushSettings } from '../push-ui'
 import { TextAlerts } from '../sms-ui'
+import { QuickMenuSettings } from '../quick-menu-ui'
 import { MembershipBilling } from '../revenue-ui'
 import { MyImpactCard } from '../impact-ui'
 import { GoogleCalendarConnect } from '../google-ui'
@@ -215,6 +216,7 @@ export function PreferencesPage() {
         </section>}
         {tab === 'Preferences' && <section>
           <Eyebrow>RECOMMENDATION SETTINGS</Eyebrow><h2>Shape what rises to your attention.</h2>
+          <QuickMenuSettings live />
           <Toggle checked={draft.useRecommendations} onChange={value => update('useRecommendations', value)} label="Use relationship intelligence for introductions" />
           <Toggle checked={draft.prioritizeMutual} onChange={value => update('prioritizeMutual', value)} label="Prioritize mutual interests and trusted paths" />
           <Toggle checked={draft.crossIndustry} onChange={value => update('crossIndustry', value)} label="Surface cross-industry opportunities" />
