@@ -42,6 +42,7 @@ export function StartWorkspaceButton({ source, sourceId, withName, onOpen, label
     lock.current = true; setBusy(true)
     try {
       const r = await createWorkspace(source, sourceId, v.value)
+      if (!r.created) { setFailure('A workspace already exists for this source, so nothing new was created. Open it from Workspaces if you are on it.'); return }
       go(r.id)
       setOpen(false)
     } catch (e) {

@@ -43,12 +43,12 @@ export type StageAction =
  * "agreed" and "accepted" are confirmations any active participant gives for themselves
  * (and have already given, when listed in `confirmed`).
  */
-export function stageActions(status: WorkspaceStatus, role: WorkspaceRole | null, confirmed: readonly Milestone[] = []): StageAction[] {
+export function stageActions(status: WorkspaceStatus, role: WorkspaceRole | null, confirmed: readonly Milestone[] = [], hasScope = true): StageAction[] {
   if (!role) return []
   const out: StageAction[] = []
   if (status === 'proposal' && !confirmed.includes('agreed')) out.push({ kind: 'confirm', milestone: 'agreed' })
   if (status === 'delivered' && !confirmed.includes('accepted')) out.push({ kind: 'confirm', milestone: 'accepted' })
-  if (role === 'owner') for (const to of NEXT[status]) if (!milestoneFor(to)) out.push({ kind: 'move', to })
+  if (role === 'owner') for (const to of NEXT[status]) if (!milestoneFor(to) && !(status === 'qualified' && to === 'proposal' && !hasScope)) out.push({ kind: 'move', to })
   return out
 }
 

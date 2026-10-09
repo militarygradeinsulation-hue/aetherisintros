@@ -135,7 +135,7 @@ CREATE POLICY "active members read events" ON public.deal_workspace_events FOR S
 CREATE POLICY "own crm link" ON public.deal_workspace_crm_links FOR SELECT TO authenticated
   USING (user_id = auth.uid());
 
--- Identity and source never change; the lifecycle only follows the graph; terms are frozen once
+-- Identity and source never change; the lifecycle only follows the graph (and agreed/accepted need every confirmation); terms are frozen once
 -- the workspace is closed or cancelled. Applies to every writer, including the service role.
 CREATE TRIGGER deal_workspaces_freeze BEFORE UPDATE ON public.deal_workspaces
   FOR EACH ROW EXECUTE FUNCTION public.freeze_columns('id', 'created_by', 'source_type', 'source_id', 'created_at');
@@ -146,6 +146,15 @@ BEGIN
   IF NEW.status IS DISTINCT FROM OLD.status AND NOT public.deal_workspace_transition_allowed(OLD.status, NEW.status) THEN
     RAISE EXCEPTION 'A % workspace cannot move to %', OLD.status, NEW.status USING errcode = '22023';
   END IF;
+  -- agreed / accepted only with every active participant's confirmation, whoever writes the row.
+  IF NEW.status IS DISTINCT FROM OLD.status AND NEW.status IN ('agreed', 'accepted') THEN
+    IF (SELECT count(*) FROM public.deal_workspace_members WHERE workspace_id = NEW.id AND status = 'active') < 2
+       OR EXISTS (SELECT 1 FROM public.deal_workspace_members m WHERE m.workspace_id = NEW.id AND m.status = 'active'
+                    AND NOT EXISTS (SELECT 1 FROM public.deal_workspace_confirmations c
+                                     WHERE c.workspace_id = NEW.id AND c.user_id = m.user_id AND c.milestone = NEW.status)) THEN
+      RAISE EXCEPTION 'Every participant must confirm "%" first', NEW.status USING errcode = '22023';
+    END IF;
+  END IF;
   IF OLD.status IN ('closed', 'cancelled') THEN
     RAISE EXCEPTION 'This workspace is % and can no longer change', OLD.status USING errcode = '22023';
   END IF;
@@ -155,7 +164,7 @@ END $$;
 CREATE TRIGGER deal_workspaces_guard BEFORE UPDATE ON public.deal_workspaces
   FOR EACH ROW EXECUTE FUNCTION public.deal_workspaces_guard();
 
--- Rows that are history cannot be rewritten or removed by anyone but the cascade from the workspace.
+-- History rows cannot be rewritten by anyone; members have no DELETE grant, rows go only with their workspace.
 CREATE OR REPLACE FUNCTION public.deal_workspace_events_immutable() RETURNS trigger
 LANGUAGE plpgsql AS $$
 BEGIN RAISE EXCEPTION 'Workspace history cannot be changed' USING errcode = '42501'; END $$;

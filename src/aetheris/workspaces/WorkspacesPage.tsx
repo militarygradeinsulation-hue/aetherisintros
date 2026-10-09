@@ -90,7 +90,7 @@ function WorkspaceDetailView({ id, onChanged }: { id: string; onChanged: () => v
   const role = me?.status === 'active' ? me.role : null
   const finished = isFinished(w.status)
   const myConfirmed = confirmations.filter(c => c.userId === uid).map(c => c.milestone)
-  const actions = finished ? [] : stageActions(w.status, role, myConfirmed)
+  const actions = finished ? [] : stageActions(w.status, role, myConfirmed, w.scope.trim() !== '')
   const others = members.filter(m => m.userId !== uid)
 
   if (me?.status === 'invited') {
@@ -175,6 +175,7 @@ function WorkspaceDetailView({ id, onChanged }: { id: string; onChanged: () => v
     <div className="og-inline">{actions.map(a => a.kind === 'confirm'
       ? <Btn key={a.milestone} disabled={busy} onClick={() => void act(() => confirmMilestone(id, a.milestone))}>{a.milestone === 'agreed' ? 'Confirm we are agreed' : 'Confirm delivery accepted'}</Btn>
       : <Btn key={a.to} kind={a.to === 'cancelled' ? 'quiet' : 'secondary'} disabled={busy} onClick={() => void act(() => moveStage(id, a.to))}>{a.to === 'cancelled' ? 'Cancel workspace' : `Move to ${STATUS_LABEL[a.to]}`}</Btn>)}</div>
+    {role === 'owner' && w.status === 'qualified' && !w.scope.trim() && <p className="og-note">Write the scope in the terms before moving to Proposal.</p>}
     {(w.status === 'proposal' || w.status === 'delivered') && <p className="og-note">Each participant confirms for themselves. The stage changes only when everyone has.</p>}
 
     <details><summary>Activity</summary>

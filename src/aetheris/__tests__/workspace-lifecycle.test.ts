@@ -40,6 +40,9 @@ describe('workspace lifecycle', () => {
     expect(stageActions('in_progress', 'collaborator')).toEqual([])
     expect(stageActions('proposal', null)).toEqual([])
   })
+  it('holds back Proposal until a scope is written', () => {
+    expect(stageActions('qualified', 'owner', [], false)).toEqual([{ kind: 'move', to: 'cancelled' }])
+  })
   it('stops offering a confirmation already given', () => {
     expect(stageActions('proposal', 'collaborator', ['agreed'])).toEqual([])
   })

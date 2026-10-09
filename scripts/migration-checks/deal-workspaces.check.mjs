@@ -91,6 +91,11 @@ export default async ({ ok, as, svc, A, B, C, ADMIN }) => {
   ok(!!(await as(A, `delete from public.deal_workspace_events`)).error, 'or deletable')
   ok(await svc(`update public.deal_workspaces set status = 'qualified' where id = '${WS}'`).then(() => false, () => true), 'even the service role cannot walk the lifecycle backwards')
 
+  // (Guard against a service-role shortcut to the milestones.)
+  const [{ id: WS3 }] = await svc(`insert into public.deal_workspaces (created_by, source_type, source_id, title, status) values ('${A}', 'dm_thread', gen_random_uuid(), 'Direct', 'proposal') returning id`)
+  await svc(`insert into public.deal_workspace_members (workspace_id, user_id, role, status) values ('${WS3}', '${A}', 'owner', 'active'), ('${WS3}', '${B}', 'collaborator', 'active')`)
+  ok(await svc(`update public.deal_workspaces set status = 'agreed' where id = '${WS3}'`).then(() => false, () => true), 'even the service role cannot reach agreed without every confirmation')
+
   // Introduction source, membership changes, private CRM link.
   r = await create(C, 'intro_request', INTRO, 'Fractional CFO engagement')
   const WS2 = r.rows?.[0]?.r?.id
