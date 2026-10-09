@@ -106,6 +106,13 @@ const basePages: BaseMeta[] = [
     next: 'Start a meeting with the person you most need to talk to this week.',
     why: 'Nobody is transcribed unless they turn notes on themselves, and everyone sees who has.',
   }, ['video', 'call', 'meeting', 'zoom', 'notes', 'transcript', 'note taker']),
+  m('peergroups', 'Peer Groups', UsersRound, 'OPPORTUNITY & EXECUTION', 'Small confidential groups of peers who meet monthly.', {
+    does: 'Holds your peer groups: sessions, a private discussion board and issue processing with six to twelve peers.',
+    look: 'The next session, issues the group is working on, and what members have shared.',
+    changes: 'Only members who accepted the group’s confidentiality agreement can see anything inside it.',
+    next: 'Bring one issue to your next session.',
+    why: 'Nobody outside the group can see it exists, what is posted, or who brought which issue.',
+  }, ['peer group', 'forum', 'ypo', 'vistage', 'mastermind', 'confidential', 'issue processing']),
   m('needs', 'Needs', Target, 'OPPORTUNITY & EXECUTION', 'What members are trying to move right now, and who can help.', {
     does: 'Runs the asks marketplace: what members need now and who can help.',
     look: 'Fresh asks, responses you can give and warm paths worth requesting.',

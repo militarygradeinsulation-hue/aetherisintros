@@ -1,5 +1,5 @@
 import { useEffect } from 'react'
-import { BookOpen, Briefcase, CircleHelp, Fingerprint, LogOut, Network, PlugZap, Settings2, ShieldCheck, X } from 'lucide-react'
+import { BookOpen, Briefcase, CircleHelp, Fingerprint, LogOut, Network, PlugZap, Settings2, ShieldCheck, UsersRound, X } from 'lucide-react'
 import { supabase } from '@/integrations/supabase/client'
 import type { Page } from '../nav'
 
@@ -26,6 +26,7 @@ const groups: Array<{ label: string; items: Array<{ id: Page; label: string; not
     { id: 'evidence', label: 'Evidence Ledger', note: 'The source and confidence behind recommendations.', icon: Fingerprint },
   ] },
   { label: 'Executive work', items: [
+    { id: 'peergroups', label: 'Peer Groups', note: 'Your confidential group of peers, its sessions and issues.', icon: UsersRound },
     { id: 'rooms', label: 'Opportunity Rooms', note: 'Move live opportunities with people and context attached.', icon: Briefcase },
     { id: 'autopilot', label: 'Approvals', note: 'Review prepared actions before anything leaves your account.', icon: ShieldCheck },
   ] },

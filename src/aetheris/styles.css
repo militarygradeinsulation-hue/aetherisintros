@@ -5320,3 +5320,39 @@ button.news-link{background:none;border:0;padding:0;cursor:pointer}
 .connected-app header small,.connected-app-meta{font:400 12px/1.5 var(--sans);color:var(--muted)}
 .connected-app p{margin:0;font:400 13px/1.55 var(--sans)}
 .connected-app-actions{display:flex;flex-wrap:wrap;gap:8px}
+
+/* Peer groups */
+.peer-tabs{display:flex;flex-wrap:wrap;gap:6px;border-bottom:1px solid var(--line-dark);padding-bottom:8px}
+.peer-tabs button{background:none;border:1px solid transparent;border-radius:999px;padding:6px 14px;color:var(--muted);font:600 12px var(--sans);cursor:pointer}
+.peer-tabs button.on{border-color:var(--line-dark);color:var(--soft);background:rgba(255,255,255,.04)}
+.peer-pane{display:grid;gap:12px}
+.peer-form label{display:grid;gap:4px;font:600 10px var(--sans);letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+.peer-form input,.peer-form textarea,.peer-request textarea,.peer-outcome-input,.peer-admin-requests select,.peer-group-editor select{background:rgba(0,0,0,.28);border:1px solid var(--line-dark);border-radius:6px;color:var(--soft);font:400 13px var(--sans);padding:7px 9px;width:100%;box-sizing:border-box}
+.peer-request{display:grid;gap:8px}
+.peer-agreement{display:grid;gap:10px}
+.peer-agreement ol{margin:0;padding-left:20px;display:grid;gap:6px;font:400 14px/1.55 var(--sans)}
+.peer-sessions,.peer-board,.peer-replies,.peer-issues,.peer-admin-roster{list-style:none;margin:0;padding:0;display:grid;gap:10px}
+.peer-sessions li{display:grid;gap:4px;padding:12px 14px;border:1px solid var(--line-dark);border-radius:8px}
+.peer-sessions b{display:flex;align-items:center;gap:6px;font:600 13px var(--sans)}
+.peer-board>li{display:grid;gap:8px;padding:12px 14px;border:1px solid var(--line-dark);border-radius:8px}
+.peer-replies{padding-left:16px;border-left:2px solid var(--line-dark)}
+.peer-post{display:grid;gap:4px}
+.peer-post header{display:flex;gap:8px;align-items:baseline}
+.peer-post header b{font:600 13px var(--sans)}
+.peer-post header small{font:400 11px var(--sans);color:var(--muted)}
+.peer-post p,.peer-issue-body p{margin:0;font:400 14px/1.55 var(--sans);white-space:pre-wrap;overflow-wrap:anywhere}
+.peer-issue{border:1px solid var(--line-dark);border-radius:8px}
+.peer-issue.resolved{opacity:.85}
+.peer-issue-head{display:grid;gap:3px;width:100%;text-align:left;background:none;border:0;padding:12px 14px;color:var(--soft);cursor:pointer}
+.peer-issue-head b{font:600 15px var(--sans)}
+.peer-issue-head small{font:400 11px var(--sans);color:var(--muted)}
+.peer-issue-body{display:grid;gap:10px;padding:0 14px 14px}
+.peer-outcome{padding:8px 10px;border-radius:6px;background:rgba(245,176,39,.08)}
+.peer-outcome-input{flex:1;min-width:200px}
+.peer-admin-groups,.peer-admin-requests{max-height:none}
+.peer-admin-group{grid-column:1/-1;display:grid;gap:10px;padding-top:6px}
+.peer-admin-roster li{display:flex;justify-content:space-between;gap:10px;font:500 12px var(--sans)}
+.peer-admin-requests li{grid-template-columns:minmax(0,1fr) auto}
+.peer-admin-requests .admin-actions{grid-column:1/-1;flex-wrap:wrap}
+.peer-admin-requests select{width:auto;max-width:100%}
+@media (max-width:760px){.peer-admin-groups li{grid-template-columns:1fr}.peer-replies{padding-left:10px}}

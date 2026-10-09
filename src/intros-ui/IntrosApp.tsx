@@ -226,7 +226,10 @@ export default function App({ mode = 'demo' }: { mode?: 'demo' | 'live' }) {
         onToggleConstellationOverlay={() => handleNavigate('bubbles')}
         me={mode === 'live' ? me : undefined}
         onOpenMyProfile={mode === 'live' ? () => { setClassicPage('profile'); handleNavigate('workspace'); } : undefined}
-        bell={mode === 'live' ? <LiveNotificationsBell onOpen={(destination) => handleNavigate(destination)} /> : undefined}
+        bell={mode === 'live' ? <LiveNotificationsBell onOpen={(destination) => {
+          if (destination === 'peergroups') { setClassicPage('peergroups'); handleNavigate('workspace'); return; }
+          handleNavigate(destination);
+        }} /> : undefined}
       />
 
       {mode === 'live' && <LiveMembers onMembers={setMembers} />}
@@ -328,7 +331,7 @@ export default function App({ mode = 'demo' }: { mode?: 'demo' | 'live' }) {
         {activePage === 'work' && <div className="ix-classic"><ClassicApp key="work" mode={mode} startPage="work" /></div>}
         {activePage === 'workspace' && <div className="ix-classic">
           <div className="ix-tools">
-            {([['memory','Memory'],['crm','CRM'],['diagnostic','Company report'],['pocket','Pocket'],['needs','Needs'],['companies','Companies'],['opportunities','Opportunities'],['calendar','Calendar'],['grid','Grid'],['circles','Circles'],['events','Events'],['profile','My profile'],['preferences','Settings']] as const).map(([id, label]) =>
+            {([['memory','Memory'],['crm','CRM'],['diagnostic','Company report'],['pocket','Pocket'],['needs','Needs'],['companies','Companies'],['opportunities','Opportunities'],['calendar','Calendar'],['grid','Grid'],['circles','Circles'],['peergroups','Peer groups'],['events','Events'],['profile','My profile'],['preferences','Settings']] as const).map(([id, label]) =>
               <button key={id} className={classicPage === id ? 'on' : ''} onClick={() => setClassicPage(id)}>{label}</button>)}
           </div>
           <ClassicApp key={classicPage} mode={mode} startPage={classicPage as any} />
