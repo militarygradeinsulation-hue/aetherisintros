@@ -34,6 +34,7 @@ import { Route as ApiPublicMembershipCardRouteImport } from './routes/api/public
 import { Route as ApiPublicNewsImageRouteImport } from './routes/api/public/news-image'
 import { Route as ApiPublicSeedNetworkRouteImport } from './routes/api/public/seed-network'
 import { Route as ApiPushDispatchRouteImport } from './routes/api/push/dispatch'
+import { Route as ApiStripeWebhookRouteImport } from './routes/api/stripe/webhook'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -163,6 +164,11 @@ const ApiPushDispatchRoute = ApiPushDispatchRouteImport.update({
   path: '/api/push/dispatch',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiStripeWebhookRoute = ApiStripeWebhookRouteImport.update({
+  id: '/api/stripe/webhook',
+  path: '/api/stripe/webhook',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -189,6 +195,7 @@ export interface FileRoutesByFullPath {
   '/api/public/news-image': typeof ApiPublicNewsImageRoute
   '/api/public/seed-network': typeof ApiPublicSeedNetworkRoute
   '/api/push/dispatch': typeof ApiPushDispatchRoute
+  '/api/stripe/webhook': typeof ApiStripeWebhookRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -215,6 +222,7 @@ export interface FileRoutesByTo {
   '/api/public/news-image': typeof ApiPublicNewsImageRoute
   '/api/public/seed-network': typeof ApiPublicSeedNetworkRoute
   '/api/push/dispatch': typeof ApiPushDispatchRoute
+  '/api/stripe/webhook': typeof ApiStripeWebhookRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -243,6 +251,7 @@ export interface FileRoutesById {
   '/api/public/news-image': typeof ApiPublicNewsImageRoute
   '/api/public/seed-network': typeof ApiPublicSeedNetworkRoute
   '/api/push/dispatch': typeof ApiPushDispatchRoute
+  '/api/stripe/webhook': typeof ApiStripeWebhookRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -271,6 +280,7 @@ export interface FileRouteTypes {
     | '/api/public/news-image'
     | '/api/public/seed-network'
     | '/api/push/dispatch'
+    | '/api/stripe/webhook'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -297,6 +307,7 @@ export interface FileRouteTypes {
     | '/api/public/news-image'
     | '/api/public/seed-network'
     | '/api/push/dispatch'
+    | '/api/stripe/webhook'
   id:
     | '__root__'
     | '/'
@@ -324,6 +335,7 @@ export interface FileRouteTypes {
     | '/api/public/news-image'
     | '/api/public/seed-network'
     | '/api/push/dispatch'
+    | '/api/stripe/webhook'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -346,6 +358,7 @@ export interface RootRouteChildren {
   ApiPublicNewsImageRoute: typeof ApiPublicNewsImageRoute
   ApiPublicSeedNetworkRoute: typeof ApiPublicSeedNetworkRoute
   ApiPushDispatchRoute: typeof ApiPushDispatchRoute
+  ApiStripeWebhookRoute: typeof ApiStripeWebhookRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -525,6 +538,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPushDispatchRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/stripe/webhook': {
+      id: '/api/stripe/webhook'
+      path: '/api/stripe/webhook'
+      fullPath: '/api/stripe/webhook'
+      preLoaderRoute: typeof ApiStripeWebhookRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -570,6 +590,7 @@ const rootRouteChildren: RootRouteChildren = {
   ApiPublicNewsImageRoute: ApiPublicNewsImageRoute,
   ApiPublicSeedNetworkRoute: ApiPublicSeedNetworkRoute,
   ApiPushDispatchRoute: ApiPushDispatchRoute,
+  ApiStripeWebhookRoute: ApiStripeWebhookRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
