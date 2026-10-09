@@ -1,10 +1,12 @@
 // In-browser stand-in for the Supabase client: one signed-in member and the quick-menu table.
-const w = window as unknown as { __saved: { items: string[] } | null; __writes: number }
+const w = window as unknown as { __saved: { items: string[] } | null; __writes: number; __notes: Array<Record<string, unknown>> }
 w.__saved = null
+w.__notes = []
 w.__writes = 0
 const table = {
   select: () => ({ maybeSingle: async () => ({ data: w.__saved, error: null }) }),
   upsert: async (row: { items: string[] }) => { w.__saved = { items: row.items }; w.__writes++; return { error: null } },
+  insert: async (row: Record<string, unknown>) => { w.__notes.push(row); return { error: null } },
   delete: () => ({ eq: async () => { w.__saved = null; w.__writes++; return { error: null } } }),
 }
 export const supabase = {

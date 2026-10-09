@@ -5667,3 +5667,30 @@ select option:checked{background-color:#2A2416;color:#fff}
 :is([role=dialog],[role=menu],.fixed.inset-0) .text-\[\#6B7280\]{color:#8E96A3}
 /* The cursor glow tints whatever it passes over; keep it off while a menu or sheet is open. */
 body:has([role=menu],[role=listbox],.ix-mobile-sheet,.topbar-dropmenu,.notifications-panel,.live-bell-panel,.more-panel) .cursor-glow{opacity:0!important}
+
+/* Movable Ask Intros: drag the header (or the floating button) anywhere */
+.ask-dock-drag{cursor:move;touch-action:none;user-select:none}
+.ask-dock-drag button{cursor:pointer}
+.ask-dock-fab[data-dragged="true"]{cursor:grabbing}
+
+/* Quick note card (right-click → Quick note, or "take a note…") */
+.qn{position:fixed;z-index:1002;width:min(360px,calc(100vw - 24px));display:grid;gap:10px;padding:14px;border:1px solid rgba(255,255,255,.14);border-radius:12px;background:#0E1116;box-shadow:0 22px 60px rgba(0,0,0,.6);color:#F2EEE6;font:400 13px/1.4 var(--sans,system-ui)}
+.qn header{display:flex;align-items:center;gap:8px}
+.qn header b{font:600 13px var(--sans,system-ui)}
+.qn header small{flex:1;color:#B7BDC6;font-size:11px}
+.qn header button{border:0;background:none;color:inherit;cursor:pointer;padding:4px;border-radius:6px}
+.qn header button:hover{background:rgba(255,255,255,.08)}
+.qn textarea{width:100%;resize:vertical;min-height:96px;padding:10px;border:1px solid rgba(255,255,255,.14);border-radius:9px;background:#07090C;color:#F2EEE6;font:inherit}
+.qn textarea::placeholder{color:#8A919B}
+.qn textarea:focus{outline:2px solid rgba(245,176,39,.55);outline-offset:1px}
+.qn footer{display:flex;align-items:center;gap:8px}
+.qn footer span{flex:1}
+.qn footer small{color:#B7BDC6;font-size:11px}
+.qn-mic{display:inline-flex;align-items:center;gap:6px;padding:7px 12px;border:1px solid rgba(255,255,255,.16);border-radius:999px;background:#151A21;color:#F2EEE6;font:600 12px var(--sans,system-ui);cursor:pointer}
+.qn-mic.on{border-color:#E5484D;background:rgba(229,72,77,.18);color:#FFD9DA}
+.qn-live{display:flex;align-items:center;gap:8px;margin:0;color:#F5B027;font-size:12px}
+.qn-live i{width:8px;height:8px;border-radius:50%;background:#E5484D;animation:qn-pulse 1s ease-in-out infinite}
+@keyframes qn-pulse{50%{opacity:.3}}
+.qn-msg{margin:0;color:#9FE3B4;font-size:12px}
+.qn .qm-primary{display:inline-flex;align-items:center;gap:6px}
+.qn .qm-primary:disabled{opacity:.45;cursor:default}

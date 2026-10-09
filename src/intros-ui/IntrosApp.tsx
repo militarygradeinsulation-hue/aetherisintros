@@ -43,6 +43,9 @@ import { MeetingReminderBanner } from '@/aetheris/meetings-ui';
 import { MembershipCardMailer } from '@/aetheris/membership-card-ui';
 import { InviteCard } from '@/aetheris/InviteCard';
 import { QuickMenuHost } from '@/aetheris/quick-menu-ui';
+import { QuickNoteHost } from '@/aetheris/quick-note-ui';
+
+const SHELL_PAGES: ActivePage[] = ['home', 'people', 'bubbles', 'intros', 'messages', 'insights', 'news', 'workspace', 'memory', 'work', 'meetings'];
 
 function NewsTicker({ onOpen }: { onOpen: () => void }) {
   const { data } = useAetherisNews();
@@ -237,6 +240,8 @@ export default function App({ mode = 'demo' }: { mode?: 'demo' | 'live' }) {
         onSearch={(text) => { setSearchQuery(text); handleNavigate('people'); }}
       />
 
+      <QuickNoteHost />
+
       {/* Universal Top Navigation Contract */}
       <TopNavigation
         activePage={activePage}
@@ -394,7 +399,18 @@ export default function App({ mode = 'demo' }: { mode?: 'demo' | 'live' }) {
         memberTitle={scheduleMeetingTarget?.title || ''}
       />
       {!classicPages.includes(activePage) && (<>
-        <AetherisAssistant mode={mode} page={activePage} onNavigate={(p) => handleNavigate(p as ActivePage)} />
+        <AetherisAssistant
+          mode={mode}
+          page={activePage}
+          onNavigate={(p) => {
+            if ((SHELL_PAGES as string[]).includes(p)) handleNavigate(p as ActivePage);
+            else { setClassicPage(p); handleNavigate('workspace'); }
+          }}
+          onOpenMember={(id) => handleNavigate('people', id)}
+          onMessageMember={() => handleNavigate('messages')}
+          onRequestIntro={(id) => { const m = members.find((x) => x.id === id); if (m) setRequestIntroTarget(m); }}
+          onSearch={(text) => { setSearchQuery(text); handleNavigate('people'); }}
+        />
         <VoiceBar />
         <SelectionReader />
       </>)}
