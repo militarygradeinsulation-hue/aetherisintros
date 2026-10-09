@@ -42,6 +42,7 @@ import { LiveNotificationsBell } from '@/aetheris/notifications-bell';
 import { MeetingReminderBanner } from '@/aetheris/meetings-ui';
 import { MembershipCardMailer } from '@/aetheris/membership-card-ui';
 import { InviteCard } from '@/aetheris/InviteCard';
+import { QuickMenuHost } from '@/aetheris/quick-menu-ui';
 
 function NewsTicker({ onOpen }: { onOpen: () => void }) {
   const { data } = useAetherisNews();
@@ -223,6 +224,19 @@ export default function App({ mode = 'demo' }: { mode?: 'demo' | 'live' }) {
   return (
     <AccentProvider>
     <div className="ix-root min-h-screen bg-[#07090C] text-[#F2EEE6] flex flex-col font-sans selection:bg-[#F5B027]/30 selection:text-white relative isolate">
+      {/* Right-click quick menu (each member chooses its items) */}
+      <QuickMenuHost
+        live={mode === 'live'}
+        onGo={(t) => {
+          if (t.kind === 'workspace') { setClassicPage(t.page); handleNavigate('workspace'); }
+          else handleNavigate(t.page);
+        }}
+        findMember={(id) => { const m = members.find((x) => x.id === id); return m ? { id: m.id, name: m.name } : null; }}
+        onOpenMember={(id) => handleNavigate('people', id)}
+        onRequestIntro={(id) => { const m = members.find((x) => x.id === id); if (m) setRequestIntroTarget(m); }}
+        onSearch={(text) => { setSearchQuery(text); handleNavigate('people'); }}
+      />
+
       {/* Universal Top Navigation Contract */}
       <TopNavigation
         activePage={activePage}
