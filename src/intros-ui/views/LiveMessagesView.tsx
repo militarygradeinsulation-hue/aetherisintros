@@ -2,6 +2,10 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import { Send, Search, MessageSquare } from 'lucide-react'
 import { NetworkProvider, useNetwork } from '@/aetheris/store'
 import { AttachButton, MessageBody, attachmentPreview } from '@/aetheris/MessageAttachments'
+import { loadReadReceiptsSetting, markThreadRead, saveReadReceiptsSetting, useUnreadCounts } from '@/aetheris/read-receipts'
+import { badgeLabel, seenUnderMessageId, shouldMarkRead } from '@/aetheris/messaging-state'
+
+const pageVisible = () => typeof document === 'undefined' || document.visibilityState === 'visible'
 
 /** Native editorial-noir messaging, wired to the live member threads and file attachments. */
 function Inner() {
@@ -19,6 +23,34 @@ function Inner() {
   const person = active ? byId.get(active.memberId) : undefined
   useEffect(() => { if (active) localStorage.setItem('aetheris-intros-thread', active.id) }, [active?.id])
   useEffect(() => { endRef.current?.scrollIntoView({ block: 'end' }) }, [active?.id, active?.messages.length])
+
+  const reads = useUnreadCounts()
+  const activeState = active ? reads.threads[active.id] : undefined
+  const activeUnread = activeState?.unread ?? 0
+  const lastMessageId = active?.messages[active.messages.length - 1]?.id
+  // Mark the open conversation read while it is on screen, and again when you come back to the tab.
+  useEffect(() => {
+    if (!active) return
+    const check = () => {
+      if (shouldMarkRead({ threadId: active.id, pageVisible: pageVisible(), unread: activeUnread, fallbackUnread: !reads.loaded && active.unread })) void markThreadRead(active.id)
+    }
+    check()
+    document.addEventListener('visibilitychange', check)
+    window.addEventListener('focus', check)
+    return () => { document.removeEventListener('visibilitychange', check); window.removeEventListener('focus', check) }
+  }, [active?.id, activeUnread, lastMessageId, reads.loaded])
+  const seenId = active ? seenUnderMessageId(active.messages, activeState?.seenMessageId) : null
+
+  const [receipts, setReceipts] = useState<boolean | null>(null)
+  const [receiptsNote, setReceiptsNote] = useState('')
+  useEffect(() => { void loadReadReceiptsSetting().then(setReceipts) }, [])
+  const toggleReceipts = async () => {
+    if (receipts === null) return
+    const next = !receipts
+    setReceipts(next)
+    try { await saveReadReceiptsSetting(next); setReceiptsNote('') }
+    catch { setReceipts(!next); setReceiptsNote('Could not save that. Try again.') }
+  }
 
   const send = () => {
     const text = draft.trim()
@@ -46,6 +78,8 @@ function Inner() {
               const m = byId.get(t.memberId)
               const last = t.messages[t.messages.length - 1]
               const on = active?.id === t.id
+              const count = reads.loaded ? (reads.threads[t.id]?.unread ?? 0) : (t.unread ? 1 : 0)
+              const label = reads.loaded ? badgeLabel(count) : ''
               return (
                 <button key={t.id} onClick={() => setActiveId(t.id)}
                   className={`w-full text-left px-3 py-3 border-b border-white/5 flex gap-3 cursor-pointer ${on ? 'bg-[#F5B027]/10' : 'hover:bg-white/5'}`}>
@@ -54,14 +88,26 @@ function Inner() {
                   </div>
                   <div className="min-w-0 flex-1">
                     <div className="flex items-center justify-between gap-2">
-                      <span className="text-sm text-[#F2EEE6] truncate">{m?.name ?? 'Member'}</span>
-                      {t.unread && <span className="w-2 h-2 rounded-full bg-[#F5B027] shrink-0" />}
+                      <span className={`text-sm truncate ${count > 0 ? 'text-white font-semibold' : 'text-[#F2EEE6]'}`}>{m?.name ?? 'Member'}</span>
+                      {count > 0 && (label
+                        ? <span className="min-w-[18px] h-[18px] px-1 rounded-full bg-[#F5B027] text-[10px] font-semibold text-[#07090C] flex items-center justify-center shrink-0" aria-label={`${count} unread`}>{label}</span>
+                        : <span className="w-2 h-2 rounded-full bg-[#F5B027] shrink-0" aria-label="Unread" />)}
                     </div>
                     <p className="text-[11px] text-[#9CA3AF] truncate">{last ? attachmentPreview(last.text) : t.introContext}</p>
                   </div>
                 </button>
               )
             })}
+          </div>
+          <div className="p-3 border-t border-white/10 space-y-1">
+            <label className="flex items-center justify-between gap-2 text-xs text-[#CBD5E1] cursor-pointer">
+              <span>Read receipts</span>
+              <input type="checkbox" checked={receipts ?? true} disabled={receipts === null} onChange={() => void toggleReceipts()} className="accent-[#F5B027]" />
+            </label>
+            <p className="text-[11px] text-[#9CA3AF]">{receipts === false
+              ? 'Off: nobody sees when you have read their messages, and you do not see when they read yours.'
+              : 'On: the people you message see "Seen" once you have read their message. Turn off to hide it both ways.'}</p>
+            {receiptsNote && <p className="text-[11px] text-[#F5B027]" role="alert">{receiptsNote}</p>}
           </div>
         </aside>
 
@@ -82,11 +128,12 @@ function Inner() {
             <div className="flex-1 overflow-y-auto px-4 py-4 space-y-2.5">
               {active.messages.length === 0 && <p className="text-xs text-[#9CA3AF] text-center">Say hello — this is the start of your conversation.</p>}
               {active.messages.map(msg => (
-                <div key={msg.id} className={`flex ${msg.from === 'me' ? 'justify-end' : 'justify-start'}`}>
+                <div key={msg.id} className={`flex flex-col ${msg.from === 'me' ? 'items-end' : 'items-start'}`}>
                   <div className={`max-w-[82%] rounded-xl px-3.5 py-2 text-sm break-words ${msg.from === 'me' ? 'bg-[#C78522] text-white' : 'bg-[#1A1F25] text-[#F1EFE9] border border-white/10'}`}>
                     <MessageBody text={msg.text} />
                     <div className={`text-[10px] mt-1 ${msg.from === 'me' ? 'text-white/70' : 'text-[#9CA3AF]'}`}>{msg.at}</div>
                   </div>
+                  {msg.id === seenId && <span className="text-[10px] text-[#9CA3AF] mt-0.5 mr-1">Seen</span>}
                 </div>
               ))}
               <div ref={endRef} />

@@ -132,7 +132,7 @@ export const TopNavigation: React.FC<TopNavigationProps> = ({
                   {item.label}
                   {item.badge !== undefined && item.badge > 0 && (
                     <span className="inline-flex items-center justify-center text-[9px] font-mono px-1 py-[1px] rounded-full bg-[var(--acc)] text-[#0B0D0F] font-semibold">
-                      {item.badge}
+                      {item.badge > 99 ? '99+' : item.badge}
                     </span>
                   )}
                 </span>

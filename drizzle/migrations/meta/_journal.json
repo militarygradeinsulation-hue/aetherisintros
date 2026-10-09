@@ -309,6 +309,13 @@
       "when": 1791464359383,
       "tag": "0043_google_calendar",
       "breakpoints": true
+    },
+    {
+      "idx": 52,
+      "version": "7",
+      "when": 1791467059383,
+      "tag": "0052_messaging_directory",
+      "breakpoints": true
     }
   ]
 }

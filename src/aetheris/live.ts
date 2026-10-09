@@ -292,8 +292,11 @@ export async function ensureThread(userId: string, peerId: string, context = '')
   return created.data?.id ?? null
 }
 
-export function sendLiveMessage(threadId: string, senderId: string, text: string) {
-  fire(supabase.from('dm_messages').insert({ thread_id: threadId, sender_id: senderId, text }))
+const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
+
+/** `id` (when a uuid) keeps the sent row's id equal to the local message, so read receipts line up. */
+export function sendLiveMessage(threadId: string, senderId: string, text: string, id?: string) {
+  fire(supabase.from('dm_messages').insert({ ...(id && UUID.test(id) ? { id } : {}), thread_id: threadId, sender_id: senderId, text }))
   fire(supabase.from('dm_threads').update({ updated_at: new Date().toISOString() }).eq('id', threadId))
 }
 

@@ -31,6 +31,7 @@ import ClassicApp, { AetherisAssistant } from '@/aetheris/App';
 import { VoiceBar } from '@/aetheris/VoiceBar';
 import { SelectionReader } from '@/aetheris/SelectionReader';
 import { LiveMessagesView } from './views/LiveMessagesView';
+import { useUnreadCounts } from '@/aetheris/read-receipts';
 import '@/aetheris/styles.css';
 import { useAetherisNews } from '@/aetheris/news';
 import { LiveMembers } from './liveMembers';
@@ -211,6 +212,7 @@ export default function App({ mode = 'demo' }: { mode?: 'demo' | 'live' }) {
   // Find active profile
   const currentProfileMember =
     members.find((m) => m.id === selectedProfileId) || members[0];
+  const liveUnread = useUnreadCounts(mode === 'live');
   const classicPages = ['news','workspace','memory','work','insights','meetings', ...(mode === 'live' ? ['home','messages','intros','people'] : [])];
 
   return (
@@ -222,7 +224,7 @@ export default function App({ mode = 'demo' }: { mode?: 'demo' | 'live' }) {
         onNavigate={handleNavigate}
         searchQuery={searchQuery}
         onSearchChange={setSearchQuery}
-        unreadCount={mode === 'live' ? 0 : 12}
+        unreadCount={mode === 'live' ? liveUnread.total : 12}
         onToggleConstellationOverlay={() => handleNavigate('bubbles')}
         me={mode === 'live' ? me : undefined}
         onOpenMyProfile={mode === 'live' ? () => { setClassicPage('profile'); handleNavigate('workspace'); } : undefined}
