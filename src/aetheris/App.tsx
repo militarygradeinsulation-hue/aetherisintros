@@ -18,6 +18,7 @@ import { rankMatches, type MatchResult } from '@/aetheris/matching'
 import { AvatarImage } from './avatar'
 import { journalKindFor, journalUrl, uploadJournalMedia } from './live'
 import { supabase } from '@/integrations/supabase/client'
+import { signOutMember } from './sync/workspace-sync'
 import { useAccess } from './access'
 import { InviteCard } from './InviteCard'
 import { AskIntrosLockup } from './AskIntrosLockup'
@@ -2325,14 +2326,7 @@ function AccountControl() {
 
   const signOut = async () => {
     setBusy(true)
-    try {
-      await supabase.auth.signOut()
-    } finally {
-      try {
-        Object.keys(localStorage).filter(k => k.startsWith('aetheris.')).forEach(k => localStorage.removeItem(k))
-      } catch { /* storage unavailable */ }
-      window.location.replace('/auth')
-    }
+    await signOutMember('/auth')
   }
 
   return <button className="topbar-auth" disabled={busy} title={access.email ? `Signed in as ${access.email}` : 'Sign out'}

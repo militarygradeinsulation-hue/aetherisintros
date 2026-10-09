@@ -1,6 +1,8 @@
 import { useEffect } from 'react'
 import { BookOpen, Briefcase, CircleHelp, Fingerprint, HandHelping, LogOut, Network, PlugZap, Settings2, ShieldCheck, UsersRound, X } from 'lucide-react'
 import { supabase } from '@/integrations/supabase/client'
+import { BookOpen, Briefcase, CircleHelp, Fingerprint, LogOut, Network, PlugZap, Settings2, ShieldCheck, X } from 'lucide-react'
+import { signOutMember } from '../sync/workspace-sync'
 import type { Page } from '../nav'
 
 const RECENT_KEY = 'aetheris.more.recent'
@@ -47,11 +49,7 @@ export function MoreDrawer({ open, onClose, onNavigate }: {
 
   if (!open) return null
   const go = (page: Page) => { onNavigate(page); onClose() }
-  const signOut = async () => {
-    await supabase.auth.signOut()
-    try { Object.keys(localStorage).filter(key => key.startsWith('aetheris.')).forEach(key => localStorage.removeItem(key)) } catch { /* unavailable */ }
-    window.location.replace('/auth')
-  }
+  const signOut = () => signOutMember('/auth')
 
   return <div className="more-wrap utility-wrap" role="dialog" aria-label="Utilities">
     <button className="more-scrim" aria-label="Close menu" onClick={onClose} />

@@ -330,6 +330,13 @@
       "when": 1791465259383,
       "tag": "0046_impact_report",
       "breakpoints": true
+    },
+    {
+      "idx": 47,
+      "version": "7",
+      "when": 1791465559383,
+      "tag": "0047_workspace_sync",
+      "breakpoints": true
     }
   ]
 }
