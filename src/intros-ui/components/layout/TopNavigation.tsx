@@ -1,7 +1,7 @@
 // @ts-nocheck
 import React, { useEffect, useRef, useState } from 'react';
 import { AskIntrosLockup } from '@/aetheris/AskIntrosLockup';
-import { Search, Bell, Orbit, LogOut, Home, Users, MessageSquare, MoreHorizontal, Network, Brain, Newspaper, Briefcase, X, Video } from 'lucide-react';
+import { Search, Bell, Orbit, LogOut, Home, Users, MessageSquare, MoreHorizontal, Network, Brain, Newspaper, Briefcase, X, Video, ChevronDown } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { AvatarImage } from '@/aetheris/avatar';
 import { supabase } from '@/integrations/supabase/client';
@@ -59,6 +59,25 @@ export const TopNavigation: React.FC<TopNavigationProps> = ({
     window.addEventListener('keydown', handleKey);
     return () => window.removeEventListener('keydown', handleKey);
   }, [moreOpen]);
+  // Desktop: five core destinations in the bar, the rest under More.
+  const [deskMoreOpen, setDeskMoreOpen] = useState(false);
+  const deskMoreRef = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    if (!deskMoreOpen) return;
+    const close = (event: MouseEvent | KeyboardEvent) => {
+      if (event instanceof KeyboardEvent ? event.key === 'Escape' : !deskMoreRef.current?.contains(event.target as Node)) setDeskMoreOpen(false);
+    };
+    window.addEventListener('mousedown', close);
+    window.addEventListener('keydown', close);
+    return () => { window.removeEventListener('mousedown', close); window.removeEventListener('keydown', close); };
+  }, [deskMoreOpen]);
+  const deskExtra = [
+    { id: 'bubbles', label: 'Bubbles', icon: Orbit },
+    { id: 'insights', label: 'Insights', icon: Network },
+    { id: 'memory', label: 'Memory', icon: Brain },
+    { id: 'news', label: 'News', icon: Newspaper },
+    { id: 'work', label: 'Work', icon: Briefcase },
+  ] as const;
   const mobileExtra = [
     { id: 'bubbles', label: 'Bubbles', icon: Orbit },
     { id: 'insights', label: 'Insights', icon: Network },
@@ -87,16 +106,11 @@ export const TopNavigation: React.FC<TopNavigationProps> = ({
         {/* Zone 2: Navigation Links — always fully visible, shrink text before ever clipping */}
         <nav aria-label="Desktop navigation" className="hidden md:flex md:w-auto md:flex-1 flex-wrap xl:flex-nowrap items-center justify-start xl:justify-center gap-x-2.5 gap-y-1 md:gap-x-3 xl:gap-x-2 py-0.5">
             {[
-            { id: 'workspace', label: 'Ask Intros', isBubbles: true },
-            { id: 'bubbles', label: 'Bubbles', isBubbles: true },
             { id: 'home', label: 'Home' },
-            { id: 'insights', label: 'Insights' },
-            { id: 'memory', label: 'Memory' },
-            { id: 'messages', label: 'Messages', badge: unreadCount },
-            { id: 'meetings', label: 'Meetings' },
-            { id: 'news', label: 'News' },
             { id: 'people', label: 'People' },
-            { id: 'work', label: 'Work' },
+            { id: 'workspace', label: 'Ask Intros', isBubbles: true },
+            { id: 'meetings', label: 'Meetings' },
+            { id: 'messages', label: 'Messages', badge: unreadCount },
           ].map((item) => {
             const isActive = activePage === item.id || (item.id === 'people' && activePage === 'intros');
             return (
@@ -128,6 +142,30 @@ export const TopNavigation: React.FC<TopNavigationProps> = ({
               </button>
             );
           })}
+          {/* Everything else, one click away. */}
+          <div className="relative" ref={deskMoreRef}>
+            <button
+              type="button"
+              aria-haspopup="menu"
+              aria-expanded={deskMoreOpen}
+              onClick={() => setDeskMoreOpen(v => !v)}
+              className={`relative py-0.5 text-[10px] sm:text-[11px] md:text-xs lg:text-[13px] font-medium tracking-wide whitespace-nowrap cursor-pointer flex items-center gap-1 ${deskExtra.some(i => i.id === activePage) ? 'text-white font-semibold' : 'text-[#9CA3AF] hover:text-[#F2EEE6]'}`}
+            >
+              {deskExtra.find(i => i.id === activePage)?.label ?? 'More'} <ChevronDown className="w-3 h-3" aria-hidden="true" />
+              {deskExtra.some(i => i.id === activePage) && <span className="absolute bottom-[-6px] left-0 right-0 h-[2px] bg-[var(--acc)] shadow-[0_0_8px_var(--acc)]" />}
+            </button>
+            {deskMoreOpen && (
+              <div role="menu" className="absolute left-1/2 -translate-x-1/2 top-[calc(100%+12px)] z-50 min-w-[180px] rounded-lg border border-white/10 bg-[#0B0E13] p-1 shadow-2xl">
+                {deskExtra.map(({ id, label, icon: Icon }) => (
+                  <button key={id} role="menuitem" type="button"
+                    onClick={() => { setDeskMoreOpen(false); onNavigate(id as ActivePage); }}
+                    className={`w-full flex items-center gap-2 rounded-md px-3 py-2 text-left text-[13px] cursor-pointer ${activePage === id ? 'text-white bg-white/10' : 'text-[#C7CCD3] hover:bg-white/5 hover:text-white'}`}>
+                    <Icon className="w-4 h-4" aria-hidden="true" />{label}
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
         </nav>
 
         {/* Zone 3: Search & account — pinned to the far right */}
