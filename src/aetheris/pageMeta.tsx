@@ -4,7 +4,7 @@ import {
   History, Home as HomeIcon, Inbox, Landmark, Layers, Lock, Map as MapIcon, MessageSquareText, Network,
   Newspaper, PlaneTakeoff, Puzzle, Radar, ScrollText, Settings2, ShieldAlert, ShieldCheck, Sparkle, Target,
   TrendingUp, UserRound, Users, UsersRound,
-  Lightbulb, Stethoscope, Video,
+  Lightbulb, Stethoscope, Video, HandHelping,
 } from 'lucide-react'
 import type { Page } from './nav'
 
@@ -418,6 +418,13 @@ const basePages: BaseMeta[] = [
     changes: 'Ideas stay private to your account on this device until you export them.',
     next: 'Start from a shape and ask for a review.',
   }, ['pocket', 'idea room', 'test an idea', 'sandbox', 'prototype']),
+  m('providers', 'Trusted Providers', HandHelping, 'OPPORTUNITY & EXECUTION', 'Service firms members have worked with and vouch for, and help finding the right one.', {
+    does: 'Lists accountants, advisors, lawyers, agencies and fractional executives that members nominated and the team approved, with member endorsements.',
+    look: 'How many members endorse a firm, and who they are.',
+    changes: 'Requests you send go to the Ask Intros team, who match you with up to three approved providers.',
+    next: 'Request help with the thing you have been putting off, or endorse a firm you trust.',
+    why: 'Matched providers see what you need, not your private notes; your name only once you choose them.',
+  }, ['providers', 'vendors', 'accountant', 'lawyer', 'advisor', 'agency', 'fractional', 'referral', 'recommend a firm']),
   m('diagnostic', 'Diagnostic', Stethoscope, 'PRIMARY', 'Where your company needs attention, from your own records.', {
     does: 'Reads your deals, people and tasks and shows what is stalled, quiet, single-threaded or late.',
     look: 'The high-severity issues first, with the evidence and cause chain behind each one.',
@@ -454,7 +461,7 @@ const hubOf: Partial<Record<Page, Hub>> = {
 
   work: 'OPPORTUNITIES & WORK', needs: 'OPPORTUNITIES & WORK', opportunities: 'OPPORTUNITIES & WORK', rooms: 'OPPORTUNITIES & WORK',
   dealrooms: 'OPPORTUNITIES & WORK', outcomes: 'OPPORTUNITIES & WORK', capital: 'OPPORTUNITIES & WORK',
-  systems: 'OPPORTUNITIES & WORK', strategy: 'OPPORTUNITIES & WORK', crm: 'OPPORTUNITIES & WORK', pocket: 'OPPORTUNITIES & WORK', diagnostic: 'INTELLIGENCE & MEMORY',
+  systems: 'OPPORTUNITIES & WORK', strategy: 'OPPORTUNITIES & WORK', crm: 'OPPORTUNITIES & WORK', pocket: 'OPPORTUNITIES & WORK', providers: 'OPPORTUNITIES & WORK', diagnostic: 'INTELLIGENCE & MEMORY',
   grid: 'OPPORTUNITIES & WORK', knowledgeassets: 'OPPORTUNITIES & WORK', vault: 'OPPORTUNITIES & WORK',
 
   memory: 'INTELLIGENCE & MEMORY', insights: 'INTELLIGENCE & MEMORY', evidence: 'INTELLIGENCE & MEMORY',
