@@ -35,6 +35,7 @@ import '@/aetheris/styles.css';
 import { useAetherisNews } from '@/aetheris/news';
 import { LiveMembers } from './liveMembers';
 import { ThisWeekPanel } from '@/aetheris/this-week-ui';
+import { ActivationChecklist, recordVisit } from '@/aetheris/activation-ui';
 import { LiveNotificationsBell } from '@/aetheris/notifications-bell';
 import { MeetingReminderBanner } from '@/aetheris/meetings-ui';
 import { MembershipCardMailer } from '@/aetheris/membership-card-ui';
@@ -89,6 +90,9 @@ export default function App({ mode = 'demo' }: { mode?: 'demo' | 'live' }) {
     const t = setInterval(loadMe, 30000);
     return () => { off = true; clearInterval(t); };
   }, [mode]);
+
+  // Count today's visit once per device for the admin growth report.
+  useEffect(() => { if (mode === 'live') void recordVisit(); }, [mode]);
 
   // Navigation router
   const handleNavigate = (page: ActivePage, memberId?: string) => {
@@ -246,11 +250,18 @@ export default function App({ mode = 'demo' }: { mode?: 'demo' | 'live' }) {
             networkMembers={members}
             isLive={mode === 'live'}
             socialFeed={mode === 'live' ? <div className="ix-classic"><ClassicApp mode="live" feedOnly /></div> : undefined}
-            actionQueue={mode === 'live' ? <ThisWeekPanel onOpen={(target) => {
-              if (target === 'intros') { handleNavigate('intros'); return; }
-              setClassicPage(target);
-              handleNavigate('workspace');
-            }} /> : undefined}
+            actionQueue={mode === 'live' ? <>
+              <ActivationChecklist onOpen={(target) => {
+                if (target === 'intros') { handleNavigate('intros'); return; }
+                setClassicPage(target);
+                handleNavigate('workspace');
+              }} />
+              <ThisWeekPanel onOpen={(target) => {
+                if (target === 'intros') { handleNavigate('intros'); return; }
+                setClassicPage(target);
+                handleNavigate('workspace');
+              }} />
+            </> : undefined}
             me={mode === 'live' ? me : undefined}
           />
         )}

@@ -45,7 +45,7 @@ export function scoreMatch(
 ): MatchResult {
   const myIndustries = me.industries ?? []
   const myExpertise = me.expertise ?? []
-  const myNeed = `${me.lookingFor ?? ''} ${me.wantToMeet ?? ''} ${me.focus ?? ''}`
+  const myNeed = `${me.lookingFor ?? ''} ${me.wantToMeet ?? ''} ${me.focus ?? ''} ${(me.goals ?? []).join(' ')}`
   const myOffer = `${me.canHelpWith ?? ''} ${myExpertise.join(' ')}`
 
   const industryHit = myIndustries.some(i => words(i).size && overlapCount(words(i), words(member.industry)) > 0)

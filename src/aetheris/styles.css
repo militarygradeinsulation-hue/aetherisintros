@@ -5320,3 +5320,26 @@ button.news-link{background:none;border:0;padding:0;cursor:pointer}
 .connected-app header small,.connected-app-meta{font:400 12px/1.5 var(--sans);color:var(--muted)}
 .connected-app p{margin:0;font:400 13px/1.55 var(--sans)}
 .connected-app-actions{display:flex;flex-wrap:wrap;gap:8px}
+
+/* First-week activation checklist (Home) */
+.activation header{position:relative;padding-right:72px}
+.activation-bar{height:4px;border-radius:4px;background:rgba(255,255,255,.08);margin-top:10px;overflow:hidden}
+.activation-bar i{display:block;height:100%;background:#F5B027;border-radius:4px}
+.activation .activation-dismiss{position:absolute;top:0;right:0;display:inline-flex;gap:4px;align-items:center;background:transparent;border:0;color:var(--sys-ink-dim,#9CA3AF);font-size:12px;cursor:pointer;padding:4px}
+.activation .activation-dismiss:hover{color:var(--sys-ink,#F2EEE6)}
+.activation li.activation-done{opacity:.6}
+.activation li.activation-done>svg{color:#5FBF8F}
+.activation li>svg{color:var(--sys-ink-dim,#9CA3AF)}
+.activation-goals{grid-column:1/-1;display:grid;gap:8px}
+.activation-goals input{width:100%;min-width:0;background:rgba(255,255,255,.03);border:1px solid var(--sys-panel-line,rgba(255,255,255,.12));border-radius:8px;color:var(--sys-ink,#F2EEE6);padding:8px 10px;font-size:13px}
+.activation-goals small{color:var(--sys-ink-dim,#9CA3AF);font-size:12px}
+.activation-goals>div{display:flex;gap:10px;align-items:center}
+.this-week .activation-goals span{font-size:12px}
+
+/* Admin growth panel */
+.growth-table td{white-space:nowrap}
+.growth-bar{display:inline-block;vertical-align:middle;width:min(160px,40vw);height:8px;margin-right:8px;background:rgba(255,255,255,.06);border-radius:4px;overflow:hidden}
+.growth-bar i{display:block;height:100%;background:var(--amber,#F5B027)}
+.growth-bar.new i{background:var(--muted,#9ea4ac)}
+.growth-table td small{display:inline;margin-left:8px}
+.growth-scroll{overflow-x:auto;max-width:100%}
