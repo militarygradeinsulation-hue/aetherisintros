@@ -11,6 +11,7 @@ import { TextAlerts } from '../sms-ui'
 import { MembershipBilling } from '../revenue-ui'
 import { MyImpactCard } from '../impact-ui'
 import { GoogleCalendarConnect } from '../google-ui'
+import { CoolingNudgeSetting } from '../reciprocity-ui'
 
 import { readTextScale, setTextScale, textScaleLabels, textScales, type TextScale } from '../textScale'
 
@@ -222,7 +223,7 @@ export function PreferencesPage() {
           <PushSettings />
           <TextAlerts />
           <label><span>Summary frequency</span><select value={draft.notificationFrequency} onChange={event => update('notificationFrequency', event.target.value)}><option>Daily intelligence brief</option><option>Weekly relationship review</option><option>Important signals only</option><option>Off</option></select></label>
-          <Toggle checked={draft.coolingAlerts} onChange={value => update('coolingAlerts', value)} label="Cooling relationship alerts" />
+          <CoolingNudgeSetting />
           <Toggle checked={draft.introAlerts} onChange={value => update('introAlerts', value)} label="Introduction and warm-path updates" />
         </section>}
         {tab === 'Privacy' && <section>

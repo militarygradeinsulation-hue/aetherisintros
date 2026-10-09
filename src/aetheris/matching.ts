@@ -7,6 +7,7 @@
  */
 import type { Member } from './social'
 import type { MeProfile } from './store'
+import { giverBoost } from './reciprocity-core'
 
 export interface MatchComponent {
   label: string
@@ -93,7 +94,10 @@ export function scoreMatch(
     },
   ]
 
-  const total = Math.round(components.reduce((sum, c) => sum + c.score * c.weight, 0))
+  // Reciprocity hook (0055): members who chose to show their giver band get a small, capped
+  // boost (Contributor +1.5, Pillar +3 out of 100) so generosity breaks ties without
+  // outranking relevance. Hidden bands never reach the client, so they never count.
+  const total = Math.min(100, Math.round(components.reduce((sum, c) => sum + c.score * c.weight, 0) + giverBoost(member.giverBand)))
   const strongest = [...components].sort((a, b) => b.score * b.weight - a.score * a.weight)[0]!
 
   return {

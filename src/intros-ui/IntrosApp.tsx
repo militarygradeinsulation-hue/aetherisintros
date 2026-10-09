@@ -37,6 +37,7 @@ import { useAetherisNews } from '@/aetheris/news';
 import { LiveMembers } from './liveMembers';
 import { ThisWeekPanel } from '@/aetheris/this-week-ui';
 import { ActivationChecklist, recordVisit } from '@/aetheris/activation-ui';
+import { GiveGetCard, KeepWarmPanel } from '@/aetheris/reciprocity-ui';
 import { LiveNotificationsBell } from '@/aetheris/notifications-bell';
 import { MeetingReminderBanner } from '@/aetheris/meetings-ui';
 import { MembershipCardMailer } from '@/aetheris/membership-card-ui';
@@ -255,7 +256,7 @@ export default function App({ mode = 'demo' }: { mode?: 'demo' | 'live' }) {
             networkMembers={members}
             isLive={mode === 'live'}
             socialFeed={mode === 'live' ? <div className="ix-classic"><ClassicApp mode="live" feedOnly /></div> : undefined}
-            actionQueue={mode === 'live' ? <>
+            actionQueue={mode === 'live' ? <div className="rc-stack">
               <ActivationChecklist onOpen={(target) => {
                 if (target === 'intros') { handleNavigate('intros'); return; }
                 setClassicPage(target);
@@ -266,7 +267,9 @@ export default function App({ mode = 'demo' }: { mode?: 'demo' | 'live' }) {
                 setClassicPage(target);
                 handleNavigate('workspace');
               }} />
-            </> : undefined}
+              <KeepWarmPanel onMessage={() => handleNavigate('messages')} />
+              <GiveGetCard onOpenAsks={() => { setClassicPage('needs'); handleNavigate('workspace'); }} />
+            </div> : undefined}
             me={mode === 'live' ? me : undefined}
           />
         )}
