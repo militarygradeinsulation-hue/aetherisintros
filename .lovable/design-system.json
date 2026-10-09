@@ -2,7 +2,7 @@
   "meta": {
     "name": "Ask Intros",
     "package": "@ws-gmhcx8w6bqvecbtkycud/c1248cd8-77de-4eaa-8d9d-e7da71e70ae9",
-    "version": "27.0.0",
+    "version": "28.0.0",
     "framework": "react",
     "css_framework": "tailwind",
     "starter_template": "custom_design_system_tailwind",
@@ -547,7 +547,7 @@
       "src/integrations/supabase/client.ts": "8af43e12f1332b440278c7ea7e4cb1e8",
       "src/integrations/supabase/cron-auth.ts": "6c04781ff98ada5977945fae55d39385",
       "src/integrations/supabase/previewAuthStorage.ts": "0a2d63e049bc63135b19c8e21cc0b1aa",
-      "src/integrations/supabase/types.ts": "184cb6fceb878ba9d3bd83351335a28f",
+      "src/integrations/supabase/types.ts": "8b4a70cae12c09d06497678c91118780",
       "src/intros-ui/AccentMode.tsx": "59cda7d93c9c06f7a54d1618c07a7b5f",
       "src/intros-ui/Aurora.tsx": "4777bc83e90c1351a19d2c5d8626d78c",
       "src/intros-ui/BackdropField.tsx": "bb490dc675061299f4c0158f6b636ea1",
