@@ -127,6 +127,7 @@ import { OutcomeCheckins } from './outcomes-ui'
 import { IntroRequestInbox } from './intro-inbox'
 import { MeetingsPage } from './meetings-ui'
 import { PeerGroupsPage } from './peer-groups-ui'
+import { ProvidersPage } from './providers-ui'
 import { LeakCheckPanel } from './leak-check-ui'
 import { SentIntroRequests } from './sent-requests-ui'
 import { CompanyWorkspacePanel } from './company-ui'
@@ -2652,6 +2653,7 @@ function Shell({ startPage, feedOnly = false }: { startPage?: Page | undefined; 
       messages: <MessageHub people={people} select={setSelected} activeId={threadId} setActiveId={setThreadId} />,
       meetings: <MeetingsPage />,
       peergroups: <PeerGroupsPage />,
+      providers: <ProvidersPage />,
       needs: <><IntentExchangePanel /><Needs onNew={() => setNeedOpen(true)} people={people} select={setSelected} setPage={setPage} /><IntentBoard /></>,
       memory: <Memory people={people} select={setSelected} />,
       events: <EventsPage />,
