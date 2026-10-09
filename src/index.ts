@@ -29,7 +29,7 @@ export { ProvBadge, Why, GapBox, BlindSpotPanel, MissingTile, RedTeamPanel, Futu
 export { CustomerRiskPanel, RiskTile, CapitalMapPanel, BoardNetworkPanel, AdvisorPanel, DelegationPanel, DependenciesPanel, NegotiationPanel, ScenarioPanel, DealMemoryPanel, TrustProfilePanel, OfficeHoursPanel, LeverageTile, PrivateAskPanel } from "./aetheris/ceo-leverage-ui"
 export { CeoProvider, useCeo } from "./aetheris/ceo-store"
 export { WhatChangedTile, CompanyPulseTile, ChiefOfStaffTile, ApprovalsTile, WhoCanChangePanel, DecisionRoom, CommitmentForm, CommitmentsView, HealthBadge, PrepareBrief, CloseMeeting, ForecastConfidencePanel, NetworkRoiPanel, BriefPanel, ApprovalQueuePanel, TrustPassportSummary, CeoActions, WorkCeoBar, CeoHost, CalendarMeetingBar } from "./aetheris/ceo-ui"
-export { OpsProvider, useOps } from "./aetheris/crm/store"
+export { OpsProvider, useOps, type OpsApi } from "./aetheris/crm/store"
 export { GraphProvider, useGraph } from "./aetheris/graph-store"
 export { HubIntro, TileShell, SignalPath, RadarMini } from "./aetheris/hub-ui"
 export { default as FullCrm } from "./aetheris/ledger/FullCrm"
