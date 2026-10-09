@@ -183,7 +183,7 @@ export const HomeFeedView: React.FC<HomeFeedViewProps> = ({
             </h1>
 
             <p className="text-sm md:text-base text-[#9CA3AF] max-w-xl leading-relaxed">
-              Aetheris Intros is the exclusive professional network for ambitious people who
+              Ask Intros is the exclusive professional network for ambitious people who
               build, invest, and create what's next.
             </p>
 
