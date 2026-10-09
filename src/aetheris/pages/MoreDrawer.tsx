@@ -1,7 +1,5 @@
 import { useEffect } from 'react'
 import { BookOpen, Briefcase, CircleHelp, Fingerprint, HandHelping, LogOut, Network, PlugZap, Settings2, ShieldCheck, UsersRound, X } from 'lucide-react'
-import { supabase } from '@/integrations/supabase/client'
-import { BookOpen, Briefcase, CircleHelp, Fingerprint, LogOut, Network, PlugZap, Settings2, ShieldCheck, X } from 'lucide-react'
 import { signOutMember } from '../sync/workspace-sync'
 import type { Page } from '../nav'
 
