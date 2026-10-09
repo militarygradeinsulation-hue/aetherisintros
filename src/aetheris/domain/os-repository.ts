@@ -7,6 +7,7 @@
  * Table names and columns are declared in ./schema.sql.
  */
 import { isShowcase } from '../showcase'
+import { notifyWorkspaceChange, registerSyncedStore } from '../sync/workspace-sync'
 import type { ID } from './models'
 import type { Repository, TableGateway } from './repository'
 import type {
@@ -74,18 +75,22 @@ const storeKey = () => `${KEY}-${isShowcase() ? 'demo' : 'live'}`
 
 export function createLocalOSLayer(): OSDataLayer {
   const seeded = isShowcase() ? seedOSCollections() : emptyOSCollections()
+  const isLive = !isShowcase()
+  const fromStored = (parsed: Partial<OSCollections> | null): OSCollections => {
+    const merged = { ...seeded } as OSCollections
+    if (!parsed || typeof parsed !== 'object') return merged
+    for (const key of Object.keys(seeded) as OSCollectionName[]) {
+      const stored = parsed[key]
+      if (Array.isArray(stored)) (merged[key] as unknown[]) = stored
+    }
+    return merged
+  }
   let state: OSCollections = (() => {
     if (typeof window === 'undefined') return seeded
     try {
       const raw = localStorage.getItem(storeKey())
       if (!raw) return seeded
-      const parsed = JSON.parse(raw) as Partial<OSCollections>
-      const merged = { ...seeded } as OSCollections
-      for (const key of Object.keys(seeded) as OSCollectionName[]) {
-        const stored = parsed[key]
-        if (Array.isArray(stored)) (merged[key] as unknown[]) = stored
-      }
-      return merged
+      return fromStored(JSON.parse(raw) as Partial<OSCollections>)
     } catch {
       return seeded
     }
@@ -97,7 +102,21 @@ export function createLocalOSLayer(): OSDataLayer {
     if (typeof window !== 'undefined') {
       try { localStorage.setItem(storeKey(), JSON.stringify(state)) } catch { /* storage full */ }
     }
+    if (isLive) notifyWorkspaceChange('aetheris-relationship-os-v1-live')
     listeners.forEach(l => l(state))
+  }
+
+  // A member's live data is also saved to their account (never demo data).
+  if (isLive) {
+    const localKey = storeKey()
+    registerSyncedStore({
+      key: 'aetheris-relationship-os-v1-live', localKey,
+      apply: data => {
+        state = fromStored(data as Partial<OSCollections> | null)
+        try { localStorage.setItem(localKey, JSON.stringify(state)) } catch { /* storage full */ }
+        listeners.forEach(l => l(state))
+      },
+    })
   }
 
   return {

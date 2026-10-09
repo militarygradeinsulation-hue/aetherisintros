@@ -5,7 +5,8 @@
  * deterministic starter set derived from the member's identity. Edits made inside
  * the workspace (stage moves, activity completion, new rows) are kept as a patch
  * layer saved per account in this browser, so they survive a reload without
- * touching the shared CRM records.
+ * touching the shared CRM records. The patch is also saved to the member's account
+ * (see ../sync/workspace-sync) so it follows them to other devices.
  */
 import { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react'
 import type { ReactNode } from 'react'
@@ -15,6 +16,7 @@ import { useNetwork } from '../store'
 import { buildLedger, type LedgerSource } from './build'
 import type { DealStage, Ledger, LedgerActivity, LedgerDeal, LedgerLead } from './types'
 import { STAGE_PROBABILITY } from './types'
+import { notifyWorkspaceChange, registerSyncedStore } from '../sync/workspace-sync'
 
 interface Patch {
   deals: Record<string, Partial<LedgerDeal>>
@@ -89,6 +91,16 @@ export function LedgerProvider({ children }: { children: ReactNode }) {
       setAccountId(owner)
       setPatch(readPatch(owner))
       setLoaded(true)
+      if (owner) {
+        registerSyncedStore({
+          key: 'aetheris.ledger.patch', localKey: keyFor(owner),
+          apply: data => {
+            const next = data && typeof data === 'object' ? { ...emptyPatch, ...(data as Partial<Patch>) } : emptyPatch
+            writePatch(owner, next)
+            if (live) setPatch(next)
+          },
+        })
+      }
     })()
     return () => { live = false }
   }, [])
@@ -96,6 +108,7 @@ export function LedgerProvider({ children }: { children: ReactNode }) {
   const savePatch = useCallback((next: Patch) => {
     setPatch(next)
     writePatch(accountId, next)
+    if (accountId) notifyWorkspaceChange('aetheris.ledger.patch')
   }, [accountId])
 
   const base = useMemo<Ledger>(() => {
