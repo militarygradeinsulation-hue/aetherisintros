@@ -73,7 +73,7 @@ function LandingPage({ signedIn }: { signedIn: boolean }) {
           }}
         >
           <MetroHero
-            title="AETHERIS INTROS"
+            title="ASK INTROS"
             tagline="Know who matters. Know why now."
             scrollHint="SCROLL TO ENTER"
             onComplete={() => setIntroDone(true)}

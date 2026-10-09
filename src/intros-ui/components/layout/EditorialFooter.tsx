@@ -19,7 +19,7 @@ export const EditorialFooter: React.FC<EditorialFooterProps> = ({ onNavigate }) 
         </div>
 
         <div className="text-[10px] font-mono tracking-[0.2em] text-[#6B7280] uppercase text-center">
-          The intelligence layer for meaningful connections · Aetheris Intros
+          The intelligence layer for meaningful connections · Ask Intros
         </div>
 
         <div className="flex items-center gap-6 text-xs">
