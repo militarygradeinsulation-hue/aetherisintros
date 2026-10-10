@@ -8,7 +8,7 @@
 import { useEffect, useState } from 'react'
 import {
   ArrowRight, Building2, CheckCircle2, ChevronLeft, ClipboardList, Compass, Grid3x3,
-  Handshake, LayoutGrid, Plus, Target, UserRound,
+  Handshake, LayoutGrid, Plus, ScanLine, Target, UserRound,
 } from 'lucide-react'
 
 import { Btn, Eyebrow, Head } from '../ui'
@@ -22,6 +22,9 @@ import { CompanyIntelligence } from '../capabilities/CompanyIntelligence'
 import { ProfessionalInfo } from '../capabilities/ProfessionalInfo'
 import { setActiveSubject } from '../capabilities/store'
 import { LedgerProvider } from '../ledger/store'
+import { normalizeLinkedInUrl } from '../linkedin-import'
+import { CONTACT_KEYS, splitList } from '../linkedin-scan'
+import { LinkedInScanPanel } from '../linkedin-scan-ui'
 import FullCrm from '../ledger/FullCrm'
 import type { CrmCompany, CrmOpportunity, CrmPerson, CrmTask, Lifecycle } from '../crm/types'
 
@@ -450,11 +453,28 @@ function CreateForm({ kind, onClose }: { kind: 'person' | 'company' | 'opportuni
   const [second, setSecond] = useState('')
   const [amount, setAmount] = useState('')
   const [lifecycle, setLifecycle] = useState<Lifecycle>('Lead')
+  // Person details a LinkedIn scan can fill (all editable before saving).
+  const [title, setTitle] = useState('')
+  const [location, setLocation] = useState('')
+  const [linkedinUrl, setLinkedinUrl] = useState('')
+  const [notes, setNotes] = useState('')
+  const [tags, setTags] = useState('')
+  const [scanning, setScanning] = useState(false)
+  const [saveError, setSaveError] = useState('')
 
   const submit = async () => {
     const value = name.trim()
     if (!value) return
-    if (kind === 'person') await ops.createPerson({ fullName: value, companyName: second.trim(), lifecycle } as Partial<CrmPerson>)
+    setSaveError('')
+    if (kind === 'person') {
+      const link = linkedinUrl.trim() ? normalizeLinkedInUrl(linkedinUrl) : ''
+      if (link === null) { setSaveError('That LinkedIn link is not a profile link. It looks like linkedin.com/in/name.'); return }
+      const created = await ops.createPerson({
+        fullName: value, companyName: second.trim(), lifecycle, title: title.trim(), location: location.trim(),
+        linkedinUrl: link, notes: notes.trim(), tags: splitList(tags), ...(link && { source: 'LinkedIn profile (pasted)' }),
+      } as Partial<CrmPerson>)
+      if (!created) { setSaveError(ops.lastError() || 'This contact was not saved.'); return }
+    }
     if (kind === 'company') await ops.createCompany({ name: value, industry: second.trim() } as Partial<CrmCompany>)
     if (kind === 'opportunity') await ops.createOpportunity({ name: value, nextAction: second.trim(), amount: Number(amount) || 0 } as Partial<CrmOpportunity>)
     if (kind === 'task') await ops.createTask({ title: value, detail: second.trim() } as Partial<CrmTask>)
@@ -463,10 +483,29 @@ function CreateForm({ kind, onClose }: { kind: 'person' | 'company' | 'opportuni
 
   return <section className="ops-create">
     <Eyebrow>NEW {kind.toUpperCase()}</Eyebrow>
+    {kind === 'person' && !scanning && <Btn kind="secondary" className="ops-create-scan" onClick={() => setScanning(true)}><ScanLine size={14} /> Scan LinkedIn profile</Btn>}
+    {kind === 'person' && scanning && <LinkedInScanPanel
+      keys={CONTACT_KEYS}
+      labels={{ about: 'Notes (About)', expertise: 'Tags (Expertise)' }}
+      current={{ name, company: second, title, location, linkedin_url: linkedinUrl, about: notes, expertise: tags }}
+      heading="Fill this contact from LinkedIn"
+      intro="Paste the person’s LinkedIn profile or add its PDF. Contacts are private to your account."
+      applyLabel="Fill the form"
+      onClose={() => setScanning(false)}
+      onApply={async patch => {
+        if (patch.name !== undefined) setName(patch.name)
+        if (patch.company !== undefined) setSecond(patch.company)
+        if (patch.title !== undefined) setTitle(patch.title)
+        if (patch.location !== undefined) setLocation(patch.location)
+        if (patch.linkedin_url !== undefined) setLinkedinUrl(patch.linkedin_url)
+        if (patch.about !== undefined) setNotes(patch.about)
+        if (patch.expertise !== undefined) setTags(splitList(patch.expertise).join(', '))
+        return { status: 'filled', message: 'Filled in the form below. Not saved yet: check it, then click Save to add this contact.' }
+      }} />}
     <div className="ops-create-row">
-      <input autoFocus value={name} onChange={e => setName(e.target.value)}
+      <input autoFocus value={name} onChange={e => setName(e.target.value)} aria-label={kind === 'person' ? 'Full name' : undefined}
         placeholder={kind === 'person' ? 'Full name' : kind === 'company' ? 'Company name' : kind === 'opportunity' ? 'Opportunity name' : 'Task title'} />
-      <input value={second} onChange={e => setSecond(e.target.value)}
+      <input value={second} onChange={e => setSecond(e.target.value)} aria-label={kind === 'person' ? 'Company' : undefined}
         placeholder={kind === 'person' ? 'Company (optional)' : kind === 'company' ? 'Industry (optional)' : kind === 'opportunity' ? 'Next action (optional)' : 'Detail (optional)'} />
       {kind === 'opportunity' && <input type="number" value={amount} onChange={e => setAmount(e.target.value)} placeholder="Value (USD)" />}
       {kind === 'person' && <select value={lifecycle} onChange={e => setLifecycle(e.target.value as Lifecycle)} aria-label="Lifecycle">
@@ -475,6 +514,14 @@ function CreateForm({ kind, onClose }: { kind: 'person' | 'company' | 'opportuni
       <Btn onClick={() => void submit()}><CheckCircle2 size={14} /> Save</Btn>
       <Btn kind="quiet" onClick={onClose}>Cancel</Btn>
     </div>
+    {kind === 'person' && <div className="ops-create-row">
+      <input value={title} onChange={e => setTitle(e.target.value)} placeholder="Title (optional)" aria-label="Title" />
+      <input value={location} onChange={e => setLocation(e.target.value)} placeholder="Location (optional)" aria-label="Location" />
+      <input value={linkedinUrl} onChange={e => setLinkedinUrl(e.target.value)} placeholder="LinkedIn link (optional)" aria-label="LinkedIn link" inputMode="url" />
+      {(tags || scanning) && <input value={tags} onChange={e => setTags(e.target.value)} placeholder="Tags, comma-separated" aria-label="Tags" />}
+      {(notes || scanning) && <textarea className="ops-create-notes" rows={3} value={notes} onChange={e => setNotes(e.target.value)} placeholder="Notes (private)" aria-label="Notes" />}
+    </div>}
+    {saveError && <p className="li-scan-error" role="alert">{saveError}</p>}
     <small>Saved once, available in CRM, Grid and every linked view.</small>
   </section>
 }

@@ -6,6 +6,10 @@ import {
   isLinkedInPhotoUrl, LINKEDIN_EXTRACT_PROMPT, mergeProfiles, normalizeLinkedInUrl, parseAiProfile, parseLinkedInText,
   profileFieldsFrom, type ImportedFields, type LinkedInProfile,
 } from '@/aetheris/linkedin-import'
+import {
+  cleanProfileText, groundScan, LINKEDIN_SCAN_PROMPT, MAX_RAW_INPUT, mergeScans, MIN_SCAN_TEXT, parseScanJson, parseScanText,
+  validateScan, type ScannedProfile, type ScanResult,
+} from '@/aetheris/linkedin-scan'
 
 export interface LinkedInExtraction {
   linkedinUrl: string | null
@@ -52,6 +56,43 @@ export const extractLinkedInProfile = createServerFn({ method: 'POST' })
     }
     const profile = mergeProfiles(ai, parsed)
     return { linkedinUrl: normalizeLinkedInUrl(data.url), profile, fields: profileFieldsFrom(profile), source: ai ? 'ai' : 'parser' }
+  })
+
+/**
+ * "Scan LinkedIn profile": reads profile text the member pasted (or the text of LinkedIn's PDF
+ * export, read in their browser) into one strict shape for review. Nothing is fetched from
+ * LinkedIn and nothing is saved here. AI values the text does not state are dropped.
+ */
+export const scanLinkedInProfile = createServerFn({ method: 'POST' })
+  .middleware([requireAuthContract])
+  .inputValidator((data: { text: string; url?: string; nameHint?: string }) => {
+    const text = typeof data?.text === 'string' ? data.text.slice(0, MAX_RAW_INPUT) : ''
+    if (text.trim().length < MIN_SCAN_TEXT) throw new Error('Paste the profile text or add the LinkedIn PDF first.')
+    const url = typeof data.url === 'string' ? data.url.trim().slice(0, 300) : ''
+    if (url && !normalizeLinkedInUrl(url)) throw new Error('That is not a LinkedIn profile link. It looks like linkedin.com/in/name.')
+    return { text, url, nameHint: typeof data.nameHint === 'string' ? data.nameHint.slice(0, 120) : '' }
+  })
+  .handler(async ({ data }): Promise<ScanResult> => {
+    const parsed = parseScanText(data.text, { nameHint: data.nameHint, url: data.url })
+    const cleaned = cleanProfileText(data.text)
+    let ai: ScannedProfile | null = null
+    const routeKey = process.env['ROUTELLM_API_KEY']
+    const apiKey = process.env['LOVABLE_API_KEY']
+    if (routeKey || apiKey) {
+      try {
+        const request = {
+          system: LINKEDIN_SCAN_PROMPT,
+          messages: [{ role: 'user' as const, content: `${data.nameHint ? `The largest text in the document (likely the name): ${data.nameHint}\n\n` : ''}Profile text:\n${cleaned.text}` }],
+          maxSteps: 1,
+        }
+        const answer = parseScanJson(routeKey ? await routeLlmChat(request) : await gatewayChat(request))
+        if (answer) ai = groundScan(answer, cleaned.text)
+      } catch (error) {
+        console.error('linkedin scan AI failed; using the built-in reader', error)
+      }
+    }
+    const scan = validateScan(mergeScans(ai, parsed.scan)) ?? parsed.scan
+    return { scan, source: ai ? 'ai' : 'parser', truncated: cleaned.truncated }
   })
 
 const MAX_PHOTO = 5 * 1024 * 1024
