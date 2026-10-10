@@ -4,6 +4,8 @@ import { NetworkProvider, useNetwork } from '@/aetheris/store'
 import { AttachButton, MessageBody, attachmentPreview } from '@/aetheris/MessageAttachments'
 import { loadReadReceiptsSetting, markThreadRead, saveReadReceiptsSetting, useUnreadCounts } from '@/aetheris/read-receipts'
 import { badgeLabel, seenUnderMessageId, shouldMarkRead } from '@/aetheris/messaging-state'
+import { OpenDealRoomButton } from '@/aetheris/deals-ui'
+import { draftTitle } from '@/aetheris/deals-core'
 
 const pageVisible = () => typeof document === 'undefined' || document.visibilityState === 'visible'
 
@@ -124,6 +126,9 @@ function Inner() {
                 <p className="text-sm font-semibold text-[#F2EEE6] truncate">{person?.name ?? 'Member'}</p>
                 <p className="text-[11px] text-[#9CA3AF] truncate">{[person?.title, person?.company].filter(Boolean).join(' · ')}</p>
               </div>
+              {person && <div className="ml-auto shrink-0">
+                <OpenDealRoomButton kind="quiet" label="Deal room" draft={{ sourceKind: 'thread', sourceId: active.id, title: draftTitle('thread', person.name), need: active.introContext ?? '', counterpartId: person.id, counterpartName: person.name }} />
+              </div>}
             </header>
             <div className="flex-1 overflow-y-auto px-4 py-4 space-y-2.5">
               {active.messages.length === 0 && <p className="text-xs text-[#9CA3AF] text-center">Say hello — this is the start of your conversation.</p>}

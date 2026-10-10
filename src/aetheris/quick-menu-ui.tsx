@@ -5,7 +5,7 @@
  * Shift + right-click, and right-clicks in typing fields, keep the browser's own menu.
  */
 import {
-  ArrowDown, ArrowUp, Bot, Briefcase, CalendarDays, Copy, ExternalLink, HandHelping, Home, Lightbulb,
+  ArrowDown, ArrowUp, Bot, Briefcase, CalendarDays, Copy, ExternalLink, HandHelping, Handshake, Home, Lightbulb,
   Link2, MessageSquareText, Mic, Newspaper, NotebookPen, Route, Search, Settings2, Sparkles, UserRound, UsersRound, Video, X,
 } from 'lucide-react'
 import { useCallback, useEffect, useLayoutEffect, useRef, useState, type ReactNode } from 'react'
@@ -37,7 +37,7 @@ const CACHE_KEY = 'aetheris.quickmenu.v1'
 const ICONS: Record<string, typeof Home> = {
   'new-ask': Lightbulb, people: Search, intros: Sparkles, messages: MessageSquareText, meetings: Video,
   warmpaths: Route, events: CalendarDays, peergroups: UsersRound, providers: HandHelping, calendar: CalendarDays,
-  crm: Briefcase, agentinbox: Bot, home: Home, news: Newspaper, insights: Lightbulb, profile: UserRound, settings: Settings2,
+  crm: Briefcase, deals: Handshake, agentinbox: Bot, home: Home, news: Newspaper, insights: Lightbulb, profile: UserRound, settings: Settings2,
 }
 
 function readCache(): string[] | null {

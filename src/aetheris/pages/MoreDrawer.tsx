@@ -1,5 +1,5 @@
 import { useEffect } from 'react'
-import { Bot, BookOpen, Briefcase, CircleHelp, Fingerprint, HandHelping, LogOut, Network, PlugZap, Route, Settings2, ShieldCheck, UsersRound, X } from 'lucide-react'
+import { Bot, BookOpen, Briefcase, CircleHelp, Fingerprint, HandHelping, Handshake, LogOut, Network, PlugZap, Route, Settings2, ShieldCheck, UsersRound, X } from 'lucide-react'
 import { signOutMember } from '../sync/workspace-sync'
 import type { Page } from '../nav'
 import { useAgentInboxCount } from '../agent-ui'
@@ -29,6 +29,7 @@ const groups: Array<{ label: string; items: Array<{ id: Page; label: string; not
     { id: 'evidence', label: 'Evidence Ledger', note: 'The source and confidence behind recommendations.', icon: Fingerprint },
   ] },
   { label: 'Executive work', items: [
+    { id: 'deals', label: 'Deals', note: 'Private rooms for the business after an introduction.', icon: Handshake },
     { id: 'peergroups', label: 'Peer Groups', note: 'Your confidential group of peers, its sessions and issues.', icon: UsersRound },
     { id: 'rooms', label: 'Opportunity Rooms', note: 'Move live opportunities with people and context attached.', icon: Briefcase },
     { id: 'providers', label: 'Trusted Providers', note: 'Firms members vouch for, and help finding the right one.', icon: HandHelping },
