@@ -22,7 +22,8 @@ export const VOICE_PAGES: Array<{ page: string; label: string; words: string[] }
   { page: 'providers', label: 'Trusted providers', words: ['providers', 'trusted providers', 'vendors', 'marketplace of providers'] },
   { page: 'warmpaths', label: 'Warm paths', words: ['warm paths', 'warm path', 'paths'] },
   { page: 'calendar', label: 'Calendar', words: ['calendar', 'schedule', 'agenda'] },
-  { page: 'crm', label: 'CRM', words: ['crm', 'pipeline', 'deals', 'contacts'] },
+  { page: 'crm', label: 'CRM', words: ['crm', 'pipeline', 'contacts'] },
+  { page: 'deals', label: 'Deals', words: ['deals', 'deal rooms', 'deal room', 'my deals', 'engagements'] },
   { page: 'companies', label: 'Companies', words: ['companies', 'company list'] },
   { page: 'opportunities', label: 'Opportunities', words: ['opportunities'] },
   { page: 'agentinbox', label: 'Agent inbox', words: ['agent inbox', 'agent requests', 'ai inbox'] },
@@ -73,6 +74,11 @@ export function parseVoiceCommand(input: string, people: string[] = []): AskIntr
   if ((m = raw.match(/^(?:introduce me to|request (?:an )?intro(?:duction)? (?:to|with)|get me (?:an )?intro(?:duction)? to)\s+(.+)$/i))) {
     const person = matchPerson(m[1]!, people)
     return person ? act('request-intro', person) : act('open-search', m[1]!.trim())
+  }
+  // Deal rooms: "start a deal with Ana" opens the create form prefilled; nothing is created until confirmed.
+  if ((m = raw.match(/^(?:start|open|create) (?:a )?(?:new )?deal(?: room)? with\s+(.+)$/i))) {
+    const person = matchPerson(m[1]!, people)
+    if (person) return act('start-deal', person)
   }
   // Post an ask: "post an ask about hiring a CFO", "ask the network for a lawyer"
   if ((m = raw.match(/^(?:post (?:an? )?(?:ask|need)|ask the network)(?:\s+(?:about|for|to find))?\s*(.*)$/i))) {

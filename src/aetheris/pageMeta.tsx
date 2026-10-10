@@ -320,12 +320,13 @@ const basePages: BaseMeta[] = [
     changes: 'Recorded conversations and outcomes update readiness.',
     next: 'Qualify the mandate before the meeting.',
   }, ['investors', 'acquisition', 'funding']),
-  m('dealrooms', 'Deal Rooms', FolderLock, 'OPPORTUNITY & EXECUTION', 'Permissioned rooms where real business gets done.', {
-    does: 'Runs permissioned rooms where real transactions get worked.',
-    look: 'Who has access, what is shared and what is outstanding.',
-    changes: 'Documents, participants and decisions move the deal.',
-    next: 'Resolve the item blocking the room.',
-  }, ['transactions', 'diligence']),
+  m('deals', 'Deals', FolderLock, 'OPPORTUNITY & EXECUTION', 'Private rooms where the business after an introduction gets done.', {
+    does: 'Gives each engagement a private room: the original need, terms, proposals, milestones and a permanent timeline.',
+    look: 'Invitations to answer, then your rooms by stage — what is waiting on you.',
+    changes: 'Accepted proposals agree terms, accepted milestones record delivery, and closing records the outcome.',
+    next: 'Open a room from an accepted introduction, a reply to your ask or a conversation.',
+    why: 'Only people who accept an invitation see a room. Nothing is shared with the wider network.',
+  }, ['deals', 'deal rooms', 'my deals', 'engagements', 'proposals', 'milestones', 'transactions']),
   m('rooms', 'Opportunity Rooms', DoorOpen, 'OPPORTUNITY & EXECUTION', 'Small working rooms around a single opportunity.', {
     does: 'Creates small working rooms around one opportunity.',
     look: 'Stage, participants and the next concrete action.',
@@ -479,7 +480,7 @@ const hubOf: Partial<Record<Page, Hub>> = {
   presence: 'PEOPLE & NETWORK', ask: 'PEOPLE & NETWORK', serendipity: 'PEOPLE & NETWORK',
 
   work: 'OPPORTUNITIES & WORK', needs: 'OPPORTUNITIES & WORK', opportunities: 'OPPORTUNITIES & WORK', rooms: 'OPPORTUNITIES & WORK',
-  dealrooms: 'OPPORTUNITIES & WORK', outcomes: 'OPPORTUNITIES & WORK', capital: 'OPPORTUNITIES & WORK',
+  deals: 'OPPORTUNITIES & WORK', outcomes: 'OPPORTUNITIES & WORK', capital: 'OPPORTUNITIES & WORK',
   systems: 'OPPORTUNITIES & WORK', strategy: 'OPPORTUNITIES & WORK', crm: 'OPPORTUNITIES & WORK', pocket: 'OPPORTUNITIES & WORK', providers: 'OPPORTUNITIES & WORK', diagnostic: 'INTELLIGENCE & MEMORY',
   grid: 'OPPORTUNITIES & WORK', knowledgeassets: 'OPPORTUNITIES & WORK', vault: 'OPPORTUNITIES & WORK',
 
@@ -513,7 +514,7 @@ export const primaryPages: Page[] = ['home', 'network', 'intros', 'messages', 'm
 export const networkTabs: Page[] = ['discover', 'intros', 'companies', 'circles', 'events']
 export const networkAdvanced: Page[] = ['directory', 'expertise', 'serendipity', 'gaps', 'identity', 'organization', 'talent', 'knowledge', 'boards', 'intelrooms', 'passport', 'ask']
 export const workTabs: Page[] = ['crm', 'diagnostic', 'pocket', 'opportunities', 'grid', 'calendar', 'outcomes']
-export const workAdvanced: Page[] = ['needs', 'rooms', 'dealrooms', 'systems', 'strategy', 'simulation', 'collisions', 'capital', 'attribution', 'loops', 'knowledgeassets', 'timemachine']
+export const workAdvanced: Page[] = ['needs', 'rooms', 'deals', 'systems', 'strategy', 'simulation', 'collisions', 'capital', 'attribution', 'loops', 'knowledgeassets', 'timemachine']
 export const meTabs: Page[] = ['profile', 'passport', 'permission', 'preferences', 'integrations']
 export const meAdvanced: Page[] = ['identity', 'consent', 'constitution', 'presence', 'vault', 'autopilot']
 
@@ -544,7 +545,7 @@ export function groupedSecondary(hub: Hub): PageMeta[] {
 
 /** Local "related tools" rows so members are not forced to learn the whole map. */
 export const relatedPages: Partial<Record<Page, { label: string; pages: Page[] }>> = {
-  opportunities: { label: 'Opportunity tools', pages: ['rooms', 'dealrooms', 'outcomes', 'capital', 'systems'] },
+  opportunities: { label: 'Opportunity tools', pages: ['rooms', 'deals', 'outcomes', 'capital', 'systems'] },
   memory: { label: 'Memory tools', pages: ['evidence', 'loops', 'timemachine', 'attribution'] },
   discover: { label: 'Explore more', pages: ['circles', 'companies', 'expertise', 'talent', 'serendipity', 'gaps'] },
   profile: { label: 'Identity tools', pages: ['passport', 'identity', 'permission', 'consent', 'preferences', 'presence'] },

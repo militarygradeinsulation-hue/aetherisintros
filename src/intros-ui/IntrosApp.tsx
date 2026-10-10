@@ -222,6 +222,12 @@ export default function App({ mode = 'demo' }: { mode?: 'demo' | 'live' }) {
   const currentProfileMember =
     members.find((m) => m.id === selectedProfileId) || members[0];
   const liveUnread = useUnreadCounts(mode === 'live');
+  // "Open deal room" anywhere in the product lands on the Deals workspace page.
+  useEffect(() => {
+    const open = (e: Event) => { e.preventDefault(); setClassicPage('deals'); handleNavigate('workspace'); };
+    window.addEventListener('aetheris:open-deals', open);
+    return () => window.removeEventListener('aetheris:open-deals', open);
+  }, []);
   const classicPages = ['news','workspace','memory','work','insights','meetings', ...(mode === 'live' ? ['home','messages','intros','people'] : [])];
 
   return (
@@ -253,7 +259,7 @@ export default function App({ mode = 'demo' }: { mode?: 'demo' | 'live' }) {
         me={mode === 'live' ? me : undefined}
         onOpenMyProfile={mode === 'live' ? () => { setClassicPage('profile'); handleNavigate('workspace'); } : undefined}
         bell={mode === 'live' ? <LiveNotificationsBell onOpen={(destination) => {
-          if (destination === 'peergroups' || destination === 'events') { setClassicPage(destination); handleNavigate('workspace'); return; }
+          if (destination === 'peergroups' || destination === 'events' || destination === 'deals') { setClassicPage(destination); handleNavigate('workspace'); return; }
           handleNavigate(destination);
         }} /> : undefined}
       />
@@ -366,7 +372,7 @@ export default function App({ mode = 'demo' }: { mode?: 'demo' | 'live' }) {
         {activePage === 'work' && <div className="ix-classic"><ClassicApp key="work" mode={mode} startPage="work" /></div>}
         {activePage === 'workspace' && <div className="ix-classic">
           <div className="ix-tools">
-            {([['memory','Memory'],['crm','CRM'],['diagnostic','Company report'],['pocket','Pocket'],['providers','Trusted Providers'],['needs','Needs'],['companies','Companies'],['opportunities','Opportunities'],['calendar','Calendar'],['grid','Grid'],['circles','Circles'],['peergroups','Peer groups'],['events','Events'],['profile','My profile'],['preferences','Settings']] as const).map(([id, label]) =>
+            {([['memory','Memory'],['crm','CRM'],['diagnostic','Company report'],['pocket','Pocket'],['providers','Trusted Providers'],['needs','Needs'],['companies','Companies'],['opportunities','Opportunities'],['deals','Deals'],['calendar','Calendar'],['grid','Grid'],['circles','Circles'],['peergroups','Peer groups'],['events','Events'],['profile','My profile'],['preferences','Settings']] as const).map(([id, label]) =>
               <button key={id} className={classicPage === id ? 'on' : ''} onClick={() => setClassicPage(id)}>{label}</button>)}
           </div>
           <ClassicApp key={classicPage} mode={mode} startPage={classicPage as any} />

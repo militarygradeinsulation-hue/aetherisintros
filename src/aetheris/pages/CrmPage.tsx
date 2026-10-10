@@ -26,6 +26,7 @@ import { normalizeLinkedInUrl } from '../linkedin-import'
 import { CONTACT_KEYS, splitList } from '../linkedin-scan'
 import { LinkedInScanPanel } from '../linkedin-scan-ui'
 import FullCrm from '../ledger/FullCrm'
+import { OpenDealRoomButton } from '../deals-ui'
 import type { CrmCompany, CrmOpportunity, CrmPerson, CrmTask, Lifecycle } from '../crm/types'
 
 
@@ -313,6 +314,9 @@ function CrmDetail({ selection, onClose, onOpen }: {
   const activities = ops.activities.filter(a =>
     a.personId === record.id || a.companyId === record.id || a.opportunityId === record.id)
   const member = person?.memberId ? net.members.find(m => m.id === person.memberId) : undefined
+  // The opportunity's linked person, when they are a network member, is offered as the counterpart.
+  const oppPerson = opportunity?.personId ? ops.people.find(p => p.id === opportunity.personId) : undefined
+  const dealCounterpart = oppPerson?.memberId ? { memberId: oppPerson.memberId, name: oppPerson.fullName } : null
   const stages = ops.stages.filter(s => s.pipelineId === (opportunity?.pipelineId ?? ops.pipelines[0]?.id ?? '')).sort((a, b) => a.position - b.position)
   const sheetsWith = ops.sheets.filter(s => s.mode === 'linked' && s.entityType === `crm_${selection.type === 'opportunity' ? 'opportunities' : selection.type === 'company' ? 'companies' : 'people'}`)
 
@@ -337,6 +341,11 @@ function CrmDetail({ selection, onClose, onOpen }: {
           {stages.map(s => <option key={s.id} value={s.id}>{s.name}</option>)}
         </select>}
         {opportunity && <Btn kind="secondary" onClick={() => nav.setPage('discover')}><Compass size={14} /> Find help in my network</Btn>}
+        {opportunity && <OpenDealRoomButton draft={{
+          sourceKind: 'opportunity', sourceId: opportunity.id, title: opportunity.name,
+          need: [opportunity.detail, opportunity.nextAction && `Next action: ${opportunity.nextAction}`].filter(Boolean).join('\n'),
+          counterpartId: dealCounterpart?.memberId ?? null, ...(dealCounterpart ? { counterpartName: dealCounterpart.name } : {}),
+        }} />}
         {member && <Btn kind="secondary" onClick={() => nav.openMember(member)}><Handshake size={14} /> Open network profile</Btn>}
         <Btn kind="quiet" onClick={() => nav.setPage('grid')}><Grid3x3 size={14} /> Open in Grid</Btn>
         <DoMore subject={{ type: selection.type, id: record.id }} label={title} />

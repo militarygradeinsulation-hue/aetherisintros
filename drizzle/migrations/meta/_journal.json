@@ -400,6 +400,13 @@
       "when": 1791468259383,
       "tag": "0056_quick_menu",
       "breakpoints": true
+    },
+    {
+      "idx": 58,
+      "version": "7",
+      "when": 1791468859383,
+      "tag": "0058_deal_rooms",
+      "breakpoints": true
     }
   ]
 }
