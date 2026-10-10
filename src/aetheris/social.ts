@@ -570,7 +570,14 @@ export const signals: Signal[] = [
   { id: 's11', memberId: 'p24', kind: 'New project', text: 'Gabriel Soto started financing two mixed-use developments in San Mateo.', when: '1 week ago' },
 ]
 
-export interface ThreadMessage { id: string; from: 'me' | 'them'; text: string; at: string }
+export interface ThreadMessage {
+  id: string
+  from: 'me' | 'them'
+  text: string
+  at: string
+  /** Live only: 'pending' while sending, 'unsaved' when delivery failed. Absent = delivered. */
+  status?: 'pending' | 'unsaved'
+}
 export interface Thread {
   id: string
   memberId: string

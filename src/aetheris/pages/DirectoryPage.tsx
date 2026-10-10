@@ -219,7 +219,8 @@ export function DirectoryPage() {
           </div>
         </article>
       })}
-      {!loading && found.length === 0 && <p className="empty-state">{filterCount || query.trim()
+      {/* A failed read shows its own error; "no members yet" is only for a clean, empty result. */}
+      {!loading && !loadError && found.length === 0 && <p className="empty-state">{filterCount || query.trim()
         ? 'No members match those filters. Remove one or try a broader location.'
         : 'No members are listed yet. Invite someone you trust from Introductions.'}</p>}
       {found.length < foundTotal && <Btn kind="secondary" onClick={() => setPage(p => p + 1)}>{loading ? 'Loading…' : `Show ${Math.min(PAGE_SIZE, foundTotal - found.length)} more`}</Btn>}

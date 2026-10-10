@@ -625,7 +625,7 @@ function PostCard({ post, member, onOpen }: { post: Post; member: Member | undef
       </div>
     </footer>
     {(commenting || comments.length > 0) && <section className="post-discussion">
-      {comments.map(item => <div key={item.id}><SelfAvatar /><p><strong>{net.profile.name || 'You'}</strong>{item.text}<small>{item.when}</small></p></div>)}
+      {comments.map(item => <div key={item.id}><SelfAvatar /><p><strong>{net.profile.name || 'You'}</strong>{item.text}<small>{item.status === 'pending' ? 'Saving…' : item.status === 'unsaved' ? <><span role="alert">Not saved</span> <button type="button" className="link-btn" onClick={() => void net.retryWrite(`comment:${item.id}`)}>Retry</button></> : item.when}</small></p></div>)}
       {commenting && <div className="comment-composer"><SelfAvatar /><input value={comment} onChange={event => setComment(event.target.value)} onKeyDown={event => { if (event.key === 'Enter') submitComment() }} placeholder="Add useful context to the discussion…" /><Button disabled={!comment.trim()} onClick={submitComment}><Send size={13} /></Button></div>}
     </section>}
   </article>
@@ -1287,7 +1287,7 @@ function Messages({ people, select, activeId, setActiveId }: { people: Member[];
         <div className="intro-context"><Label>INTRODUCTION CONTEXT</Label><p>{thread.introContext}</p></div>
         <div className="message-actions"><CeoActions member={person} threadId={thread.id} /></div>
         <div className="messages">
-          {thread.messages.map(m => <div key={m.id} className={`message ${m.from === 'me' ? 'outgoing' : 'incoming'}`}><MessageBody text={m.text} /><small>{m.at}</small></div>)}
+          {thread.messages.map(m => <div key={m.id} className={`message ${m.from === 'me' ? 'outgoing' : 'incoming'}${m.status ? ` is-${m.status}` : ''}`}><MessageBody text={m.text} /><small>{m.at}{m.status === 'pending' && ' · Sending…'}{m.status === 'unsaved' && <> · <span role="alert">Not sent</span> <button type="button" className="link-btn" onClick={() => void net.retryWrite(`msg:${m.id}`)}>Retry</button></>}</small></div>)}
           {!thread.messages.length && <p className="empty-state">New conversation. Open with the reason this matters to both sides.</p>}
            <div className="shared-context"><AetherisGlyph size={12} /><span>Shared context: {person.needs[0]} · {person.offers[0]}</span></div>
         </div>

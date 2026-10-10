@@ -262,7 +262,7 @@ function ThreadSheet({ threadId, openMember }: { threadId: string; openMember: (
     <button className="sv-link" onClick={() => openMember(thread.memberId)}>Open {name}’s profile</button>
     <p className="sv-empty">{thread.introContext}</p>
     <ul className="sv-chat">
-      {thread.messages.map(message => <li key={message.id} className={message.from === 'me' ? 'mine' : ''}><p>{message.text}</p><small>{message.at}</small></li>)}
+      {thread.messages.map(message => <li key={message.id} className={message.from === 'me' ? 'mine' : ''}><p>{message.text}</p><small>{message.at}{message.status === 'pending' && ' · Sending…'}{message.status === 'unsaved' && <> · <span role="alert">Not sent</span> <button type="button" onClick={() => void net.retryWrite(`msg:${message.id}`)}>Retry</button></>}</small></li>)}
     </ul>
     <div className="sv-sheet-compose">
       <textarea value={text} onChange={event => setText(event.target.value)} placeholder={`Write to ${name}…`} rows={3} aria-label="Message" />

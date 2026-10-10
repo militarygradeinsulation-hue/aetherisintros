@@ -133,16 +133,31 @@ const emptyDirectory: Directory = { members: [], posts: [], asks: [], signals: [
 export { emptyDirectory }
 
 export async function loadMyProfile(userId: string): Promise<LiveProfileRow | null> {
-  const { data } = await supabase.from('profiles').select(PROFILE_COLUMNS).eq('id', userId).maybeSingle()
+  const { data, error } = await supabase.from('profiles').select(PROFILE_COLUMNS).eq('id', userId).maybeSingle()
+  // Callers treat null as "no profile"; a failed read must not silently look like that.
+  if (error) throw new Error(`Couldn't load your profile: ${error.message}`)
   return (data ?? null) as LiveProfileRow | null
 }
+
+/** Sources read by `loadLiveDirectory`. */
+export type LiveSource = 'members' | 'posts' | 'asks' | 'threads' | 'messages'
+
+/**
+ * Per-source read failures. A source listed here could not be loaded, so its empty array
+ * means "couldn't load", never "nothing yet". Null when every source read cleanly.
+ */
+export type LiveQueryError = Partial<Record<LiveSource, string>> | null
 
 /**
  * The live network as the signed-in approved member sees it.
  * Members = other approved profiles (RLS already restricts this to approved
  * accounts). Posts/asks = real authored rows. Threads = real conversations.
  */
-export async function loadLiveDirectory(userId: string): Promise<{ directory: Directory; me: LiveProfileRow | null; failed?: boolean }> {
+export async function loadLiveDirectory(userId: string): Promise<{ directory: Directory; me: LiveProfileRow | null; failed?: boolean; queryError: LiveQueryError }> {
+  const errors: Partial<Record<LiveSource, string>> = {}
+  const note = (source: LiveSource, error: { message: string } | null) => {
+    if (error) { errors[source] = error.message; console.error(`live read failed: ${source}`, error) }
+  }
   try {
     const [profileRows, postRows, askRows, threadRows] = await Promise.all([
       supabase.from('profiles').select(PROFILE_COLUMNS),
@@ -150,6 +165,11 @@ export async function loadLiveDirectory(userId: string): Promise<{ directory: Di
       supabase.from('asks').select('*').eq('is_demo', false).not('author_id', 'is', null).order('created_at', { ascending: false }),
       supabase.from('dm_threads').select('*').order('updated_at', { ascending: false }),
     ])
+
+    note('members', profileRows.error)
+    note('posts', postRows.error)
+    note('asks', askRows.error)
+    note('threads', threadRows.error)
 
     const profiles = (profileRows.data ?? []) as unknown as LiveProfileRow[]
     const me = profiles.find(p => p.id === userId) ?? null
@@ -164,9 +184,12 @@ export async function loadLiveDirectory(userId: string): Promise<{ directory: Di
     }
 
     const threadIds = (threadRows.data ?? []).map(t => t.id)
-    const messageRows = threadIds.length
-      ? (await supabase.from('dm_messages').select('*').in('thread_id', threadIds).order('created_at')).data ?? []
-      : []
+    let messageRows: Array<{ id: string; thread_id: string; sender_id: string; text: string; created_at: string }> = []
+    if (threadIds.length) {
+      const read = await supabase.from('dm_messages').select('*').in('thread_id', threadIds).order('created_at')
+      note('messages', read.error)
+      messageRows = read.data ?? []
+    }
 
     const threads: Thread[] = (threadRows.data ?? []).map(t => {
       const peer = t.member_a === userId ? t.member_b : t.member_a
@@ -217,10 +240,12 @@ export async function loadLiveDirectory(userId: string): Promise<{ directory: Di
       ...(r.author_id === userId ? { mine: true } : {}),
     }))
 
-    return { directory: { members, posts, asks, signals: [], threads, learnings: [] }, me, ...(postRows.error || profileRows.error ? { failed: true } : {}) }
+    const queryError: LiveQueryError = Object.keys(errors).length ? errors : null
+    return { directory: { members, posts, asks, signals: [], threads, learnings: [] }, me, queryError, ...(queryError ? { failed: true } : {}) }
   } catch (error) {
     console.error('live network read failed', error)
-    return { directory: emptyDirectory, me: null, failed: true }
+    const message = error instanceof Error ? error.message : 'Network error'
+    return { directory: emptyDirectory, me: null, failed: true, queryError: { members: message, posts: message, asks: message, threads: message, messages: message } }
   }
 }
 
@@ -279,14 +304,36 @@ export async function journalUrl(path: string): Promise<string | null> {
   return data.signedUrl
 }
 
-const fire = (work: PromiseLike<unknown>) => {
-  void Promise.resolve(work).catch(error => console.error('live write failed', error))
+/* ------------------------------------------------------------------ write results */
+
+/**
+ * Every live write resolves to a typed result instead of being fired and forgotten, so the
+ * UI can undo optimistic state, mark the item unsaved and offer a retry.
+ */
+export type WriteResult = { ok: true } | { ok: false; error: string; code?: string }
+
+interface DbError { message: string; code?: string }
+const UNIQUE_VIOLATION = '23505'
+
+async function settle(label: string, work: PromiseLike<{ error: DbError | null }>, opts: { duplicateIsSuccess?: boolean } = {}): Promise<WriteResult> {
+  try {
+    const { error } = await work
+    if (!error) return { ok: true }
+    // A retried insert that carries the same client id already landed the first time.
+    if (opts.duplicateIsSuccess && error.code === UNIQUE_VIOLATION) return { ok: true }
+    console.error(`live write failed: ${label}`, error)
+    return { ok: false, error: error.message || 'The change could not be saved.', ...(error.code ? { code: error.code } : {}) }
+  } catch (error) {
+    console.error(`live write failed: ${label}`, error)
+    return { ok: false, error: error instanceof Error ? error.message : 'Network error — the change was not saved.' }
+  }
 }
 
 /** Find or create the single conversation between two approved members. */
 export async function ensureThread(userId: string, peerId: string, context = ''): Promise<string | null> {
   const [a, b] = [userId, peerId].sort()
   const existing = await supabase.from('dm_threads').select('id').eq('member_a', a!).eq('member_b', b!).maybeSingle()
+  if (existing.error) console.error('thread lookup failed', existing.error)
   if (existing.data?.id) return existing.data.id
   const created = await supabase
     .from('dm_threads')
@@ -296,43 +343,56 @@ export async function ensureThread(userId: string, peerId: string, context = '')
   if (created.error) {
     console.error('thread create failed', created.error)
     const retry = await supabase.from('dm_threads').select('id').eq('member_a', a!).eq('member_b', b!).maybeSingle()
+    if (retry.error) console.error('thread lookup failed', retry.error)
     return retry.data?.id ?? null
   }
   return created.data?.id ?? null
 }
 
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
+const withId = (id?: string) => (id && UUID.test(id) ? { id } : {})
 
-/** `id` (when a uuid) keeps the sent row's id equal to the local message, so read receipts line up. */
-export function sendLiveMessage(threadId: string, senderId: string, text: string, id?: string) {
-  fire(supabase.from('dm_messages').insert({ ...(id && UUID.test(id) ? { id } : {}), thread_id: threadId, sender_id: senderId, text }))
-  fire(supabase.from('dm_threads').update({ updated_at: new Date().toISOString() }).eq('id', threadId))
+/**
+ * `id` (when a uuid) keeps the sent row's id equal to the local message, so read receipts
+ * line up and a retry can never deliver the same message twice.
+ */
+export async function sendLiveMessage(threadId: string, senderId: string, text: string, id?: string): Promise<WriteResult> {
+  const sent = await settle('message', supabase.from('dm_messages').insert({ ...withId(id), thread_id: threadId, sender_id: senderId, text }), { duplicateIsSuccess: Boolean(withId(id).id) })
+  if (!sent.ok) return sent
+  // Ordering hint only: the message itself is delivered, so a failure here is logged, not surfaced.
+  await settle('thread touch', supabase.from('dm_threads').update({ updated_at: new Date().toISOString() }).eq('id', threadId))
+  return sent
 }
 
-export function mirrorFollow(userId: string, peerId: string, kind: 'follow' | 'connection' | 'saved', on: boolean) {
-  if (!/^[0-9a-f-]{36}$/i.test(peerId)) return
-  fire(on
+export async function mirrorFollow(userId: string, peerId: string, kind: 'follow' | 'connection' | 'saved', on: boolean): Promise<WriteResult> {
+  if (!UUID.test(peerId)) return { ok: true }
+  return settle(`follow ${kind}`, on
     ? supabase.from('follows').upsert({ follower_id: userId, followee_id: peerId, kind }, { onConflict: 'follower_id,followee_id,kind' })
     : supabase.from('follows').delete().eq('follower_id', userId).eq('followee_id', peerId).eq('kind', kind))
 }
 
-export function saveComment(postId: string, authorId: string, text: string) {
-  fire(supabase.from('post_comments').insert({ post_id: postId, author_id: authorId, text }))
+export async function saveComment(postId: string, authorId: string, text: string, id?: string): Promise<WriteResult> {
+  return settle('comment', supabase.from('post_comments').insert({ ...withId(id), post_id: postId, author_id: authorId, text }), { duplicateIsSuccess: Boolean(withId(id).id) })
 }
 
-export function saveReaction(postId: string, userId: string, kind: 'like' | 'save' | 'repost', on: boolean) {
-  fire(on
+export async function saveReaction(postId: string, userId: string, kind: 'like' | 'save' | 'repost', on: boolean): Promise<WriteResult> {
+  return settle(`reaction ${kind}`, on
     ? supabase.from('post_reactions').upsert({ post_id: postId, user_id: userId, kind }, { onConflict: 'post_id,user_id,kind' })
     : supabase.from('post_reactions').delete().eq('post_id', postId).eq('user_id', userId).eq('kind', kind))
 }
 
 /** Create the conversation row with a caller-supplied id (optimistic UI). */
-export function createLiveThread(id: string, userId: string, peerId: string, context: string) {
-  if (!/^[0-9a-f-]{36}$/i.test(peerId)) return
+export async function createLiveThread(id: string, userId: string, peerId: string, context: string): Promise<WriteResult> {
+  if (!UUID.test(peerId)) return { ok: true }
   const [a, b] = [userId, peerId].sort()
-  fire(supabase.from('dm_threads').insert({ id, member_a: a!, member_b: b!, created_by: userId, intro_context: context }))
+  const created = await settle('thread', supabase.from('dm_threads').insert({ id, member_a: a!, member_b: b!, created_by: userId, intro_context: context }))
+  if (created.ok || created.code !== UNIQUE_VIOLATION) return created
+  // A retry of a create that already landed is fine; a different conversation for the pair is not.
+  const same = await supabase.from('dm_threads').select('id').eq('id', id).maybeSingle()
+  if (same.data?.id) return { ok: true }
+  return { ok: false, error: 'A conversation with this member already exists. Reload to continue it.', code: UNIQUE_VIOLATION }
 }
 
-export function saveLiveAskResponse(askId: string, userId: string, text: string) {
-  fire(supabase.from('ask_responses').insert({ ask_id: askId, user_id: userId, text }))
+export async function saveLiveAskResponse(askId: string, userId: string, text: string, id?: string): Promise<WriteResult> {
+  return settle('ask response', supabase.from('ask_responses').insert({ ...withId(id), ask_id: askId, user_id: userId, text }), { duplicateIsSuccess: Boolean(withId(id).id) })
 }

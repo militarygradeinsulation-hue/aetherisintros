@@ -15,7 +15,7 @@ import {
 } from './db'
 import {
   createLiveThread, emptyDirectory, loadLiveDirectory, mirrorFollow, saveComment,
-  saveReaction, sendLiveMessage, uploadProfileAvatar, type LiveProfileRow,
+  saveReaction, sendLiveMessage, uploadProfileAvatar, type LiveProfileRow, type LiveQueryError, type WriteResult,
 } from './live'
 import { supabase } from '@/integrations/supabase/client'
 import { quarterStart } from './activation'
@@ -102,6 +102,17 @@ export interface PostComment {
   id: string
   text: string
   when: string
+  /** Live only: 'pending' while saving, 'unsaved' when the save failed (retry offered). */
+  status?: 'pending' | 'unsaved'
+}
+
+/** A live write that is in flight or failed. Failed writes are never shown as delivered. */
+export interface UnsavedWrite {
+  key: string
+  kind: 'message' | 'comment' | 'thread' | 'reaction' | 'follow'
+  state: 'pending' | 'failed'
+  label: string
+  error?: string
 }
 
 interface Persisted {
@@ -261,6 +272,12 @@ interface NetworkApi {
   synced: boolean
   /** True when the last read of the live network failed, so the feed can say so. */
   feedError: boolean
+  /** Which live sources failed to load; their empty lists mean "couldn't load", not "none yet". */
+  queryError: LiveQueryError
+  /** Live writes still saving or that failed. */
+  unsavedWrites: UnsavedWrite[]
+  /** Retry a failed write without duplicating it. Resolves true when it saved. */
+  retryWrite: (key: string) => Promise<boolean>
   /* graph actions */
   connect: (id: string) => void
   follow: (id: string) => void
@@ -351,7 +368,48 @@ export function NetworkProvider({ children, mode = 'live' }: { children: React.R
   const [userId, setUserId] = useState<string | null>(null)
   const [synced, setSynced] = useState(false)
   const [feedError, setFeedError] = useState(false)
+  const [queryError, setQueryError] = useState<LiveQueryError>(null)
   const lastSynced = useRef<Persisted | null>(null)
+  const [writes, setWrites] = useState<Record<string, UnsavedWrite>>({})
+  const retries = useRef(new Map<string, () => Promise<WriteResult>>())
+  /** Write keys whose next reverse diff comes from a rollback, so it must not be re-sent. */
+  const suppressed = useRef(new Set<string>())
+  /** Thread creation in flight, so messages wait for their conversation row to exist. */
+  const threadWrites = useRef(new Map<string, Promise<WriteResult>>())
+  /** Message ids confirmed saved this session (the server copy may not have refreshed yet). */
+  const delivered = useRef(new Set<string>())
+
+  /**
+   * Runs one live write and records its state. On failure `rollback` undoes the optimistic
+   * update (toggles) and the write stays listed as failed with a retry; on success it clears.
+   */
+  const track = (entry: Omit<UnsavedWrite, 'state' | 'error'>, work: () => Promise<WriteResult>, rollback?: () => void, onRetrySaved?: () => void) => {
+    const run = async (): Promise<WriteResult> => {
+      setWrites(prev => ({ ...prev, [entry.key]: { ...entry, state: 'pending' } }))
+      const result = await work()
+      if (result.ok) {
+        retries.current.delete(entry.key)
+        setWrites(prev => { const { [entry.key]: _done, ...rest } = prev; return rest })
+      } else {
+        setWrites(prev => ({ ...prev, [entry.key]: { ...entry, state: 'failed', error: result.error } }))
+      }
+      return result
+    }
+    retries.current.set(entry.key, async () => {
+      const result = await run()
+      if (result.ok) onRetrySaved?.()
+      return result
+    })
+    return run().then(result => { if (!result.ok) rollback?.(); return result })
+  }
+
+  /** Undo an optimistic list toggle without the write-through effect sending the reverse write. */
+  const revertToggle = (key: string, list: 'likedPosts' | 'repostedPosts' | 'connections' | 'follows' | 'saved', id: string, wasOn: boolean) => {
+    suppressed.current.add(key)
+    setS(prev => ({ ...prev, [list]: wasOn ? prev[list].filter(x => x !== id) : prev[list].includes(id) ? prev[list] : [...prev[list], id] }))
+  }
+  const reapplyToggle = (key: string, list: 'likedPosts' | 'repostedPosts' | 'connections' | 'follows' | 'saved', id: string, on: boolean) =>
+    revertToggle(key, list, id, !on)
 
   useEffect(() => { if (live) return; try { localStorage.setItem(KEY, JSON.stringify(s)) } catch { /* storage full */ } }, [s, live])
 
@@ -370,9 +428,10 @@ export function NetworkProvider({ children, mode = 'live' }: { children: React.R
       let meRow: LiveProfileRow | null = null
       let myGoals: string[] = []
       if (live) {
-        const [{ directory, me, failed }, goals] = await Promise.all([loadLiveDirectory(id), loadOwnGoals()])
+        const [{ directory, me, failed, queryError: readErrors }, goals] = await Promise.all([loadLiveDirectory(id), loadOwnGoals()])
         if (cancelled) return
         setFeedError(Boolean(failed))
+        setQueryError(readErrors)
         meRow = me
         myGoals = goals
         setDir(directory)
@@ -422,7 +481,7 @@ export function NetworkProvider({ children, mode = 'live' }: { children: React.R
   /* live messaging: new messages and conversations from other members arrive instantly */
   useEffect(() => {
     if (!live || !userId) return
-    const refresh = () => { void loadLiveDirectory(userId).then(({ directory, failed }) => { if (!failed) { setFeedError(false); setDir(directory) } }) }
+    const refresh = () => { void loadLiveDirectory(userId).then(({ directory, failed, queryError: readErrors }) => { setQueryError(readErrors); if (!failed) { setFeedError(false); setDir(directory) } }) }
     const channel = supabase
       .channel(`dm-${userId}-${Math.random().toString(36).slice(2, 10)}`)
       .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'dm_messages' }, payload => {
@@ -459,17 +518,24 @@ export function NetworkProvider({ children, mode = 'live' }: { children: React.R
 
     const relayKind = { connections: 'connection', follows: 'follow', saved: 'saved' } as const
     const groups = ['connections', 'follows', 'saved'] as const
+    const follow = (group: typeof groups[number], id: string, on: boolean) => {
+      const key = `follow:${relayKind[group]}:${id}`
+      // A rollback already restored the private graph's previous state; nothing to mirror.
+      if (suppressed.current.delete(key)) return
+      // The follows_notify trigger (0026) tells the other member; clients cannot write notifications.
+      void track({ key, kind: 'follow', label: `${on ? 'Saving' : 'Removing'} ${relayKind[group]}` },
+        () => mirrorFollow(userId, id, relayKind[group], on),
+        () => revertToggle(key, group, id, on),
+        () => reapplyToggle(key, group, id, on))
+    }
     for (const group of groups) {
       for (const id of s[group]) if (!prev[group].includes(id)) {
         saveRelationship(userId, group, id, true)
-        if (live) {
-          // The follows_notify trigger (0026) tells the other member; clients cannot write notifications.
-          mirrorFollow(userId, id, relayKind[group], true)
-        }
+        if (live) follow(group, id, true)
       }
       for (const id of prev[group]) if (!s[group].includes(id)) {
         saveRelationship(userId, group, id, false)
-        if (live) mirrorFollow(userId, id, relayKind[group], false)
+        if (live) follow(group, id, false)
       }
     }
     for (const [memberId, status] of Object.entries(s.introStates)) {
@@ -496,26 +562,52 @@ export function NetworkProvider({ children, mode = 'live' }: { children: React.R
     }
     for (const thread of s.ownThreads) {
       if (prev.ownThreads.some(t => t.id === thread.id)) continue
-      if (live) createLiveThread(thread.id, userId, thread.memberId, thread.introContext)
-      else saveThread(userId, thread)
+      if (live) {
+        const created = track({ key: `thread:${thread.id}`, kind: 'thread', label: 'Starting conversation' },
+          () => createLiveThread(thread.id, userId, thread.memberId, thread.introContext))
+        threadWrites.current.set(thread.id, created)
+      } else saveThread(userId, thread)
     }
     for (const [threadId, messages] of Object.entries(s.sentMessages)) {
       const before = prev.sentMessages[threadId] ?? []
       messages.slice(before.length).forEach(message => {
         if (live) {
           // The dm_messages_notify trigger (0026) notifies the other participant.
-          sendLiveMessage(threadId, userId, message.text, message.id)
+          const send = async (): Promise<WriteResult> => {
+            // The conversation row must exist first; a retry re-attempts a failed creation.
+            const thread = threadWrites.current.get(threadId)
+            if (thread && !(await thread).ok) {
+              const retryThread = retries.current.get(`thread:${threadId}`)
+              const again = retryThread ? retryThread() : thread
+              threadWrites.current.set(threadId, again)
+              const result = await again
+              if (!result.ok) return { ok: false, error: `Conversation not created: ${result.error}` }
+            }
+            return sendLiveMessage(threadId, userId, message.text, message.id)
+          }
+          void track({ key: `msg:${message.id}`, kind: 'message', label: 'Message' }, send)
+            .then(result => { if (result.ok) delivered.current.add(message.id) })
         } else saveMessage(userId, threadId, message)
       })
     }
     if (live) {
-      for (const id of s.likedPosts) if (!prev.likedPosts.includes(id)) saveReaction(id, userId, 'like', true)
-      for (const id of prev.likedPosts) if (!s.likedPosts.includes(id)) saveReaction(id, userId, 'like', false)
-      for (const id of s.repostedPosts) if (!prev.repostedPosts.includes(id)) saveReaction(id, userId, 'repost', true)
-      for (const id of prev.repostedPosts) if (!s.repostedPosts.includes(id)) saveReaction(id, userId, 'repost', false)
+      const react = (list: 'likedPosts' | 'repostedPosts', kind: 'like' | 'repost', id: string, on: boolean) => {
+        const key = `react:${kind}:${id}`
+        if (suppressed.current.delete(key)) return
+        void track({ key, kind: 'reaction', label: kind === 'like' ? 'Like' : 'Repost' },
+          () => saveReaction(id, userId, kind, on),
+          () => revertToggle(key, list, id, on),
+          () => reapplyToggle(key, list, id, on))
+      }
+      for (const id of s.likedPosts) if (!prev.likedPosts.includes(id)) react('likedPosts', 'like', id, true)
+      for (const id of prev.likedPosts) if (!s.likedPosts.includes(id)) react('likedPosts', 'like', id, false)
+      for (const id of s.repostedPosts) if (!prev.repostedPosts.includes(id)) react('repostedPosts', 'repost', id, true)
+      for (const id of prev.repostedPosts) if (!s.repostedPosts.includes(id)) react('repostedPosts', 'repost', id, false)
       for (const [postId, comments] of Object.entries(s.postComments)) {
         const before = prev.postComments[postId] ?? []
-        comments.slice(before.length).forEach(comment => saveComment(postId, userId, comment.text))
+        comments.slice(before.length).forEach(comment => {
+          void track({ key: `comment:${comment.id}`, kind: 'comment', label: 'Comment' }, () => saveComment(postId, userId, comment.text, comment.id))
+        })
       }
     }
     if (DOC_KEYS.some(key => prev[key] !== s[key])) {
@@ -570,9 +662,39 @@ export function NetworkProvider({ children, mode = 'live' }: { children: React.R
       }
     }
 
+    const statusOf = (key: string): 'pending' | 'unsaved' | undefined => {
+      const w = writes[key]
+      return w ? (w.state === 'failed' ? 'unsaved' : 'pending') : undefined
+    }
+    /**
+     * A message kept from an earlier session that the server copy does not contain and that
+     * was not confirmed this session was never delivered — show it as unsaved, not sent.
+     */
+    const messageStatus = (thread: Thread, id: string) => {
+      const tracked = statusOf(`msg:${id}`)
+      if (tracked || !live || !userId) return tracked
+      if (delivered.current.has(id) || thread.messages.some(m => m.id === id)) return undefined
+      return synced ? 'unsaved' as const : undefined
+    }
     return {
       synced,
       feedError,
+      queryError,
+      unsavedWrites: Object.values(writes),
+      retryWrite: async key => {
+        const retry = retries.current.get(key)
+        if (retry) return (await retry()).ok
+        // An unsaved message carried over from an earlier session: send it with its own id.
+        if (key.startsWith('msg:') && live && userId) {
+          const id = key.slice(4)
+          const found = Object.entries(s.sentMessages).flatMap(([threadId, list]) => list.filter(m => m.id === id).map(m => ({ threadId, m })))[0]
+          if (!found) return false
+          const result = await track({ key, kind: 'message', label: 'Message' }, () => sendLiveMessage(found.threadId, userId, found.m.text, found.m.id))
+          if (result.ok) delivered.current.add(id)
+          return result.ok
+        }
+        return false
+      },
       members: baseMembers.map(m => ({
         ...m,
         introState: s.introStates[m.id] ?? m.introState,
@@ -585,7 +707,10 @@ export function NetworkProvider({ children, mode = 'live' }: { children: React.R
       })),
       threads: byId([...dir.threads, ...s.ownThreads]).map(t => ({
         ...t,
-        messages: byId([...t.messages, ...(s.sentMessages[t.id] ?? []).map(m => ({ id: m.id, from: 'me' as const, text: m.text, at: m.at }))]),
+        messages: byId([...t.messages, ...(s.sentMessages[t.id] ?? []).map(m => {
+          const status = messageStatus(t, m.id)
+          return { id: m.id, from: 'me' as const, text: m.text, at: m.at, ...(status ? { status } : {}) }
+        })]),
       })),
       learnings: [...s.learned, ...dir.learnings],
       activity: [...s.activity, ...dir.signals],
@@ -604,7 +729,12 @@ export function NetworkProvider({ children, mode = 'live' }: { children: React.R
       postResponses: s.postResponses,
       likedPosts: s.likedPosts,
       repostedPosts: s.repostedPosts,
-      postComments: s.postComments,
+      postComments: Object.keys(writes).some(k => k.startsWith('comment:'))
+        ? Object.fromEntries(Object.entries(s.postComments).map(([postId, list]) => [postId, list.map(c => {
+          const status = statusOf(`comment:${c.id}`)
+          return status ? { ...c, status } : c
+        })]))
+        : s.postComments,
       feedPreferences: s.feedPreferences,
       askResponses: s.askResponses,
       warmPaths: s.warmPaths,
@@ -854,7 +984,7 @@ export function NetworkProvider({ children, mode = 'live' }: { children: React.R
         }
       }),
     }
-  }, [s, dir, synced, feedError, live, userId])
+  }, [s, dir, synced, feedError, queryError, writes, live, userId])
 
   return <Ctx.Provider value={api}>{children}</Ctx.Provider>
 }
