@@ -26,6 +26,7 @@ export const QUICK_ACTIONS: QuickAction[] = [
   { id: 'peergroups', label: 'Peer groups', hint: 'Your confidential group', target: { kind: 'workspace', page: 'peergroups' } },
   { id: 'providers', label: 'Trusted providers', hint: 'Firms members vouch for', target: { kind: 'workspace', page: 'providers' } },
   { id: 'calendar', label: 'Calendar', hint: 'Your schedule', target: { kind: 'workspace', page: 'calendar' } },
+  { id: 'deals', label: 'Deals', hint: 'Your private deal rooms', target: { kind: 'workspace', page: 'deals' } },
   { id: 'crm', label: 'CRM', hint: 'People, companies, deals', target: { kind: 'workspace', page: 'crm' } },
   { id: 'agentinbox', label: 'Agent inbox', hint: 'Requests from AI agents', target: { kind: 'workspace', page: 'agentinbox' } },
   { id: 'home', label: 'Home', hint: 'This week', target: { kind: 'page', page: 'home' } },

@@ -50,6 +50,8 @@ open-preferences    open settings and preferences
 open-member         value = the exact full name of a member in the list
 message-member      value = the exact full name of a member in the list
 request-intro       value = the exact full name of a member in the list (opens the double opt-in intro request)
+open-deals          open Deals, the member's private deal rooms
+start-deal          value = the exact full name of a member in the list (opens a new deal room form prefilled with them; the member must press Create — never say a room was created)
 take-note           value = the note text, saved privately to the member's Memory
 read-page           read the page the member is on out loud
 stop-reading        stop reading out loud

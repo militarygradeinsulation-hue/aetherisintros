@@ -106,7 +106,8 @@ import { IntegrationsPage } from './pages/IntegrationsPage'
 import { ProProvider, usePro } from './pro-store'
 import { PassportPage } from './pages/PassportPage'
 import { OpportunitiesPage } from './pages/OpportunitiesPage'
-import { DealRoomsPage } from './pages/DealRoomsPage'
+import { AskReplies, DealsPage, OpenDealRoomButton } from './deals-ui'
+import { draftTitle, queueDealDraft } from './deals-core'
 import { DirectoryPage } from './pages/DirectoryPage'
 import { ExpertisePage } from './pages/ExpertisePage'
 import { TalentPage } from './pages/TalentPage'
@@ -156,7 +157,7 @@ const nav: Array<{ id: Page; label: string; icon: typeof HomeIcon }> = primaryPa
 const allNav: Array<{ id: Page; label: string; icon: typeof HomeIcon }> = pageMeta.map(p => ({ id: p.id, label: p.label, icon: p.icon }))
 const legacyPage: Record<string, Page> = {
   command: 'home', people: 'network', forensics: 'insights', simple: 'home',
-  'digital-you': 'me', roi: 'insights', settings: 'me',
+  'digital-you': 'me', roi: 'insights', settings: 'me', dealrooms: 'deals',
 }
 const scopeLabel: Record<PrivacyScope, string> = { private: 'Private', team: 'Team', organization: 'Organization', shareable: 'Shareable', public: 'Public' }
 const scopeText: Record<PrivacyScope, string> = {
@@ -1283,6 +1284,7 @@ function Messages({ people, select, activeId, setActiveId }: { people: Member[];
             <AetherisGlyph size={13} /> {contextOpen ? 'Hide context' : 'Context'}
           </button>
           <button className="icon-btn" onClick={() => select(person)} aria-label="Open this person's profile"><UserRound size={17} /></button>
+          <OpenDealRoomButton kind="quiet" label="Deal room" draft={{ sourceKind: 'thread', sourceId: thread.id, title: draftTitle('thread', person.name), need: thread.introContext, counterpartId: person.id, counterpartName: person.name }} />
         </header>
         <div className="intro-context"><Label>INTRODUCTION CONTEXT</Label><p>{thread.introContext}</p></div>
         <div className="message-actions"><CeoActions member={person} threadId={thread.id} /></div>
@@ -1364,7 +1366,7 @@ function Needs({ onNew, people, select, setPage }: {
         <button key={id} className={tab === id ? 'active' : ''} onClick={() => setTab(id)}>{label}</button>)}
     </div>
     {tab === 'yours' ? <div className="feed">
-      {mine.map(a => <AskCard key={a.id} ask={a} member={undefined} onOpen={() => setPage('intros')} />)}
+      {mine.map(a => <div key={a.id}><AskCard ask={a} member={undefined} onOpen={() => setPage('intros')} /><AskReplies askId={a.id} askText={a.ask} /></div>)}
       {objectives.map((o, i) => <article className="need-case" key={o.id}>
         <header><Label signal>ACTIVE · {o.priority}</Label><span>CASE {String(i + 1).padStart(2, '0')} / {new Date().getFullYear()}</span></header>
         <h2>{o.title}</h2>
@@ -2560,7 +2562,7 @@ function Shell({ startPage, feedOnly = false }: { startPage?: Page | undefined; 
   const [globalSearchOpen, setGlobalSearchOpen] = useState(false)
   const [roomId, setRoomId] = useState<string | null>(null)
   const [captureOpen, setCaptureOpen] = useState(false)
-  const setPage = (p: Page) => { setSelected(null); setPageState(p) }
+  const setPage = (p: Page) => { setSelected(null); setPageState(p === 'dealrooms' ? 'deals' : p) }
   const [threadId, setThreadIdState] = useState(() => (typeof window === 'undefined' ? '' : localStorage.getItem('aetheris-intros-thread') ?? ''))
   const setThreadId = (id: string) => { setThreadIdState(id); localStorage.setItem('aetheris-intros-thread', id) }
   const people = net.members
@@ -2644,6 +2646,15 @@ function Shell({ startPage, feedOnly = false }: { startPage?: Page | undefined; 
         if (!value || !cursorScales.includes(value)) return null
         setCursorScale(value)
         return `Pointer size set to ${value}`
+      }
+      case 'open-deals': setPage('deals'); return 'Opened Deals'
+      case 'start-deal': {
+        // Prefills the form only; the member checks it and presses Create.
+        const person = find(action.value)
+        if (!person) return null
+        queueDealDraft({ sourceKind: 'manual', sourceId: null, title: draftTitle('manual', person.name), need: '', counterpartId: person.id, counterpartName: person.name })
+        setPage('deals')
+        return `Opened a new deal room with ${person.name} — check it and press Create deal room to open it`
       }
       case 'open-tools': setGlobalSearchOpen(true); return 'Opened capability search'
       case 'open-search': setGlobalSearchOpen(true); return 'Opened search'
@@ -2731,7 +2742,8 @@ function Shell({ startPage, feedOnly = false }: { startPage?: Page | undefined; 
       integrations: <IntegrationsPage />,
       passport: <><div className="og-stack"><PassportManager /></div><PassportPage /></>,
       opportunities: <OpportunitiesPage />,
-      dealrooms: <DealRoomsPage />,
+      deals: <DealsPage />,
+      dealrooms: <DealsPage />,
       directory: <DirectoryPage />,
       expertise: <ExpertisePage />,
       talent: <TalentPage />,
@@ -2750,7 +2762,7 @@ function Shell({ startPage, feedOnly = false }: { startPage?: Page | undefined; 
       news: <NewsPage />,
     }
   const hubLabel: Partial<Record<Page, string>> = {
-    discover: 'People', opportunities: 'Pipeline', outcomes: 'Forecast', rooms: 'Rooms', dealrooms: 'Deal rooms',
+    discover: 'People', opportunities: 'Pipeline', outcomes: 'Forecast', rooms: 'Rooms', deals: 'Deals',
     profile: 'Identity', passport: 'Passport', permission: 'Privacy', preferences: 'Controls', integrations: 'Apps',
   }
   const hubTabs = (ids: Page[]) => ids.flatMap(id => {
