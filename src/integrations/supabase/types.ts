@@ -4911,6 +4911,7 @@ export type Database = {
       posts: {
         Row: {
           author_id: string | null
+          business: Json | null
           created_at: string
           detail: string
           id: string
@@ -4925,6 +4926,7 @@ export type Database = {
         }
         Insert: {
           author_id?: string | null
+          business?: Json | null
           created_at?: string
           detail?: string
           id: string
@@ -4939,6 +4941,7 @@ export type Database = {
         }
         Update: {
           author_id?: string | null
+          business?: Json | null
           created_at?: string
           detail?: string
           id?: string
@@ -6063,6 +6066,15 @@ export type Database = {
       auto_verify_invited: {
         Args: { p_email: string; p_uid: string }
         Returns: undefined
+      }
+      business_post_valid: {
+        Args: {
+          p_business: Json
+          p_detail: string
+          p_kind: string
+          p_title: string
+        }
+        Returns: boolean
       }
       call_app: { Args: { p_body?: Json; p_path: string }; Returns: undefined }
       can_delegate: {

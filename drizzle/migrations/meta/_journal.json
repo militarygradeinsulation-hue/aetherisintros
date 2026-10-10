@@ -407,6 +407,13 @@
       "when": 1791468559383,
       "tag": "0057_business_posts",
       "breakpoints": true
+    },
+    {
+      "idx": 58,
+      "version": "7",
+      "when": 1791654449924,
+      "tag": "0058_business_posts_column",
+      "breakpoints": true
     }
   ]
 }
