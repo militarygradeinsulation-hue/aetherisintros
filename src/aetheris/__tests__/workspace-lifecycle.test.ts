@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import {
-  WORKSPACE_STATUSES, canTransition, formatBudget, isFinished, milestoneFor, parseBudget, stageActions, validateWorkspaceInput,
+  WORKSPACE_STATUSES, canDecideProposal, canEditDraft, canSubmitProposal, canTransition, formatBudget, isFinished, parseBudget, roleMay, stageActions, validateWorkspaceInput,
   type WorkspaceInput, type WorkspaceStatus,
 } from '../workspaces/lifecycle'
 
@@ -26,25 +26,41 @@ describe('workspace lifecycle', () => {
   it('never lets a stage move to itself', () => {
     for (const s of WORKSPACE_STATUSES) expect(canTransition(s, s)).toBe(false)
   })
-  it('flags the milestones that need every participant', () => {
-    expect(milestoneFor('agreed')).toBe('agreed')
-    expect(milestoneFor('accepted')).toBe('accepted')
-    expect(milestoneFor('delivered')).toBeNull()
+  it('keeps proposal, agreed and accepted out of plain moves', () => {
+    for (const st of WORKSPACE_STATUSES) for (const role of ['owner', 'counterparty'] as const)
+      for (const a of stageActions(st, role)) if (a.kind === 'move') expect(['proposal', 'agreed', 'accepted']).not.toContain(a.to)
   })
-  it('offers owners moves but not agreed/accepted, and everyone a confirmation', () => {
-    expect(stageActions('qualified', 'owner')).toEqual([{ kind: 'move', to: 'proposal' }, { kind: 'move', to: 'cancelled' }])
-    expect(stageActions('proposal', 'owner')).toContainEqual({ kind: 'confirm', milestone: 'agreed' })
-    expect(stageActions('proposal', 'owner')).not.toContainEqual({ kind: 'move', to: 'agreed' })
-    expect(stageActions('proposal', 'collaborator')).toEqual([{ kind: 'confirm', milestone: 'agreed' }])
-    expect(stageActions('delivered', 'collaborator')).toEqual([{ kind: 'confirm', milestone: 'accepted' }])
-    expect(stageActions('in_progress', 'collaborator')).toEqual([])
+  it('lets the owner move work forward but never accept delivery', () => {
+    expect(stageActions('qualified', 'owner')).toEqual([{ kind: 'move', to: 'cancelled' }])
+    expect(stageActions('agreed', 'owner')).toContainEqual({ kind: 'move', to: 'in_progress' })
+    expect(stageActions('in_progress', 'owner')).toContainEqual({ kind: 'move', to: 'delivered' })
+    expect(stageActions('delivered', 'owner')).not.toContainEqual({ kind: 'accept_delivery' })
+    expect(stageActions('accepted', 'owner')).toEqual([{ kind: 'move', to: 'closed' }])
+  })
+  it('lets only the counterparty accept delivery, and nothing else at other stages', () => {
+    expect(stageActions('delivered', 'counterparty')).toEqual([{ kind: 'accept_delivery' }])
+    expect(stageActions('in_progress', 'counterparty')).toEqual([])
     expect(stageActions('proposal', null)).toEqual([])
   })
-  it('holds back Proposal until a scope is written', () => {
-    expect(stageActions('qualified', 'owner', [], false)).toEqual([{ kind: 'move', to: 'cancelled' }])
+  it('encodes the role matrix', () => {
+    expect(roleMay('owner', 'approve_proposal')).toBe(false)
+    expect(roleMay('owner', 'accept_delivery')).toBe(false)
+    expect(roleMay('counterparty', 'approve_proposal')).toBe(true)
+    expect(roleMay('counterparty', 'submit_proposal')).toBe(false)
+    expect(roleMay('counterparty', 'manage_roster')).toBe(false)
+    expect(roleMay('counterparty', 'step') && roleMay('owner', 'step')).toBe(true)
+    expect(roleMay(null, 'step')).toBe(false)
   })
-  it('stops offering a confirmation already given', () => {
-    expect(stageActions('proposal', 'collaborator', ['agreed'])).toEqual([])
+  it('gates proposals and draft edits', () => {
+    expect(canSubmitProposal('qualified', 'owner')).toBe(true)
+    expect(canSubmitProposal('in_progress', 'owner')).toBe(true)
+    expect(canSubmitProposal('accepted', 'owner')).toBe(false)
+    expect(canSubmitProposal('qualified', 'counterparty')).toBe(false)
+    expect(canEditDraft('qualified', 'owner')).toBe(true)
+    expect(canEditDraft('agreed', 'owner')).toBe(false)
+    expect(canDecideProposal('counterparty', true)).toBe(true)
+    expect(canDecideProposal('counterparty', false)).toBe(false)
+    expect(canDecideProposal('owner', true)).toBe(false)
   })
   it('offers nothing once finished', () => {
     for (const s of ['closed', 'cancelled'] as WorkspaceStatus[]) expect(stageActions(s, 'owner')).toEqual([])

@@ -65,22 +65,31 @@ try {
   await owner.reload(); await openWorkspaces(owner); await owner.getByRole('listitem').filter({ hasText: title }).click()
   ok(await owner.getByText('Send NDA').isVisible() && (await owner.getByLabel('Next action').inputValue()) === 'Share dispatch export', 'steps and next action survive a reload')
 
-  // Guest sees an invitation; the outsider sees nothing.
+  // Guest sees an invitation with no terms; the outsider sees nothing.
   const guest = await signIn('WORKSPACE_E2E_GUEST'); await openWorkspaces(guest)
-  await guest.getByRole('listitem').filter({ hasText: title }).click()
+  ok(await guest.getByText(title).first().isVisible() && !(await guest.getByText('Send NDA').count()), 'the invited person sees the title only, not steps or terms')
   await guest.getByRole('button', { name: 'Accept invitation' }).click()
-  ok(await guest.getByText('Send NDA').isVisible(), 'the invited person accepts and then sees the steps')
+  await guest.getByRole('listitem').filter({ hasText: title }).click()
+  ok(await guest.getByText('Send NDA').isVisible(), 'after accepting they see the steps')
   const outsider = await signIn('WORKSPACE_E2E_OUTSIDER'); await openWorkspaces(outsider)
   ok((await outsider.getByRole('listitem').filter({ hasText: title }).count()) === 0, 'an outsider does not see the workspace')
 
-  // Lifecycle: only valid moves, and agreement needs both people.
-  await owner.getByRole('button', { name: 'Move to Proposal' }).click()
-  await owner.getByRole('button', { name: 'Confirm we are agreed' }).click()
-  ok(!(await owner.getByText('Agreed', { exact: true }).count()), 'one confirmation does not make it agreed')
+  // Proposal, approval by the counterparty, delivery, acceptance by the recipient.
+  await owner.getByRole('button', { name: 'Submit proposal' }).first().click()
+  await owner.getByLabel('Scope').fill('Audit the dispatch process'); await owner.getByRole('form', { name: 'Submit proposal' }).getByRole('button', { name: 'Submit proposal' }).click()
+  await owner.getByText('Waiting for the counterparty to approve or decline.').waitFor()
+  ok(!(await owner.getByRole('button', { name: /Approve proposal/ }).count()), 'the owner cannot approve their own proposal')
   await guest.reload(); await openWorkspaces(guest); await guest.getByRole('listitem').filter({ hasText: title }).click()
-  ok(!(await guest.getByRole('button', { name: /Move to/ }).count()), 'the other person is not offered owner stage moves')
-  await guest.getByRole('button', { name: 'Confirm we are agreed' }).click()
-  ok(await guest.getByText('Every participant confirmed the terms here. This is not a signed contract.').isVisible(), 'agreed only after both confirm, with honest wording')
+  ok(!(await guest.getByRole('button', { name: /Move to/ }).count()), 'the counterparty is not offered owner stage moves')
+  await guest.getByRole('button', { name: /Approve proposal/ }).click()
+  ok(await guest.getByText('The counterparty approved the proposal here. This is not a signed contract.').isVisible(), 'agreed only after the counterparty approves, with honest wording')
+  await owner.reload(); await openWorkspaces(owner); await owner.getByRole('listitem').filter({ hasText: title }).click()
+  await owner.getByRole('button', { name: 'Move to In progress' }).click()
+  await owner.getByRole('button', { name: 'Move to Delivered' }).click()
+  ok(!(await owner.getByRole('button', { name: 'Accept delivery' }).count()), 'the owner cannot accept their own delivery')
+  await guest.reload(); await openWorkspaces(guest); await guest.getByRole('listitem').filter({ hasText: title }).click()
+  await guest.getByRole('button', { name: 'Accept delivery' }).click()
+  ok(await guest.getByText('The recipient recorded acceptance of the delivery here. No payment is recorded.').isVisible(), 'the recipient accepts, with honest wording')
 } catch (e) { fail++; console.log('  ✗ crashed:', e.message) }
 await browser.close()
 console.log(`\n${pass} passed, ${fail} failed`)

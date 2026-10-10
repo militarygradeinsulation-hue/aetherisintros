@@ -6,10 +6,18 @@
 
 export const WORKSPACE_STATUSES = ['qualified', 'proposal', 'agreed', 'in_progress', 'delivered', 'accepted', 'closed', 'cancelled'] as const
 export type WorkspaceStatus = (typeof WORKSPACE_STATUSES)[number]
-export type WorkspaceRole = 'owner' | 'collaborator'
+export type WorkspaceRole = 'owner' | 'counterparty'
 export type WorkspaceSource = 'dm_thread' | 'intro_request'
-/** Milestones every participant has to confirm for themselves. */
-export type Milestone = 'agreed' | 'accepted'
+export type WorkspaceAction =
+  | 'edit_draft' | 'submit_proposal' | 'move_stage' | 'manage_roster' | 'step' | 'next_action'
+  | 'approve_proposal' | 'decline_proposal' | 'accept_delivery' | 'leave'
+
+/** Role matrix, mirrored from deal_workspace_role_may(). Nobody approves their own proposal or accepts their own delivery. */
+const MAY: Record<WorkspaceRole, readonly WorkspaceAction[]> = {
+  owner: ['edit_draft', 'submit_proposal', 'move_stage', 'manage_roster', 'step', 'next_action'],
+  counterparty: ['approve_proposal', 'decline_proposal', 'accept_delivery', 'step', 'next_action', 'leave'],
+}
+export const roleMay = (role: WorkspaceRole | null, action: WorkspaceAction) => !!role && MAY[role].includes(action)
 
 export const STATUS_LABEL: Record<WorkspaceStatus, string> = {
   qualified: 'Qualified', proposal: 'Proposal', agreed: 'Agreed', in_progress: 'In progress',
@@ -31,26 +39,32 @@ export const isWorkspaceStatus = (v: unknown): v is WorkspaceStatus => typeof v 
 export const canTransition = (from: WorkspaceStatus, to: WorkspaceStatus) => NEXT[from].includes(to)
 export const isFinished = (s: WorkspaceStatus) => s === 'closed' || s === 'cancelled'
 
-/** The milestone a status move needs every participant to confirm, if any. */
-export const milestoneFor = (to: WorkspaceStatus): Milestone | null => (to === 'agreed' || to === 'accepted' ? to : null)
+/** Stages reached only through a proposal, its approval or the recipient's acceptance, never by a plain move. */
+export const GUARDED_STAGES: readonly WorkspaceStatus[] = ['proposal', 'agreed', 'accepted']
 
 export type StageAction =
   | { kind: 'move'; to: WorkspaceStatus }
-  | { kind: 'confirm'; milestone: Milestone }
+  | { kind: 'accept_delivery' }
 
 /**
- * What the signed-in participant may do from the current stage. Owners move the stage;
- * "agreed" and "accepted" are confirmations any active participant gives for themselves
- * (and have already given, when listed in `confirmed`).
+ * Plain stage moves and the delivery acceptance the signed-in participant may make. The owner
+ * moves work forward; only the counterparty accepts delivery. Proposals and their approval are
+ * separate actions (see canSubmitProposal and canDecideProposal).
  */
-export function stageActions(status: WorkspaceStatus, role: WorkspaceRole | null, confirmed: readonly Milestone[] = [], hasScope = true): StageAction[] {
+export function stageActions(status: WorkspaceStatus, role: WorkspaceRole | null): StageAction[] {
   if (!role) return []
   const out: StageAction[] = []
-  if (status === 'proposal' && !confirmed.includes('agreed')) out.push({ kind: 'confirm', milestone: 'agreed' })
-  if (status === 'delivered' && !confirmed.includes('accepted')) out.push({ kind: 'confirm', milestone: 'accepted' })
-  if (role === 'owner') for (const to of NEXT[status]) if (!milestoneFor(to) && !(status === 'qualified' && to === 'proposal' && !hasScope)) out.push({ kind: 'move', to })
+  if (status === 'delivered' && roleMay(role, 'accept_delivery')) out.push({ kind: 'accept_delivery' })
+  if (roleMay(role, 'move_stage')) for (const to of NEXT[status]) if (!GUARDED_STAGES.includes(to)) out.push({ kind: 'move', to })
   return out
 }
+
+/** The owner proposes terms before work starts, and may propose a versioned change until delivery is accepted. */
+export const canSubmitProposal = (status: WorkspaceStatus, role: WorkspaceRole | null) =>
+  roleMay(role, 'submit_proposal') && !['accepted', 'closed', 'cancelled'].includes(status)
+/** Terms are edited in place only while the workspace is still a draft. */
+export const canEditDraft = (status: WorkspaceStatus, role: WorkspaceRole | null) => roleMay(role, 'edit_draft') && status === 'qualified'
+export const canDecideProposal = (role: WorkspaceRole | null, hasOpenProposal: boolean) => hasOpenProposal && roleMay(role, 'approve_proposal')
 
 export const CURRENCIES = ['usd', 'eur', 'gbp', 'cad', 'aud', 'chf', 'jpy'] as const
 
@@ -90,8 +104,8 @@ export function formatBudget(cents: number | null | undefined, currency: string 
 /** Honest wording for what a stage does and does not mean. Nothing here records money moving. */
 export function stageNote(s: WorkspaceStatus): string {
   switch (s) {
-    case 'agreed': return 'Every participant confirmed the terms here. This is not a signed contract.'
-    case 'accepted': return 'Every participant confirmed the delivery here. No payment is recorded.'
+    case 'agreed': return 'The counterparty approved the proposal here. This is not a signed contract.'
+    case 'accepted': return 'The recipient recorded acceptance of the delivery here. No payment is recorded.'
     case 'closed': return 'Closed. Payment is not tracked in this workspace.'
     case 'cancelled': return 'Cancelled by the owner.'
     default: return ''
