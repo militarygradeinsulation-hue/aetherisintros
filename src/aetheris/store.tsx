@@ -1,3 +1,4 @@
+import { ghostLogActivity, ghostUpsertContact } from './crm/ghost-sync'
 import { createContext, useContext, useEffect, useMemo, useRef, useState } from 'react'
 import type { BusinessDetails } from './business-posts'
 import type { AutonomyLevel, DigitalYouProfile, Objective, PrivacyScope } from './types'
@@ -613,6 +614,14 @@ export function NetworkProvider({ children, mode = 'live' }: { children: React.R
         const before = prev.postComments[postId] ?? []
         comments.slice(before.length).forEach(comment => {
           void track({ key: `comment:${comment.id}`, kind: 'comment', label: 'Comment' }, () => saveComment(postId, userId, comment.text, comment.id))
+            .then(result => {
+              // Ghost CRM: a comment on someone else's post is a touchpoint (once per post per day). Never blocks.
+              const authorId = [...s.ownPosts, ...dir.posts].find(p => p.id === postId)?.memberId
+              if (!result.ok || !authorId || authorId === userId) return
+              const author = dir.members.find(m => m.id === authorId)
+              void ghostUpsertContact({ id: authorId, name: author?.name ?? '', title: author?.title ?? '', company: author?.company ?? '', location: author?.location ?? '' })
+                .then(pid => pid ? ghostLogActivity({ memberUserId: authorId, kind: 'note', subject: `Commented on ${author?.name ?? 'their'}${author ? "'s" : ''} post`, threadId: `post:${postId}` }) : undefined)
+            })
         })
       }
     }

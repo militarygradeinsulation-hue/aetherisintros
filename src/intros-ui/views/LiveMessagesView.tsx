@@ -52,6 +52,19 @@ function Inner() {
     catch { setReceipts(!next); setReceiptsNote('Could not save that. Try again.') }
   }
 
+  // Delivery failures come from the store's write tracker, which already sends each message exactly once.
+  const [dismissed, setDismissed] = useState<Set<string>>(() => new Set())
+  const [retrying, setRetrying] = useState(false)
+  const failedSend = active
+    ? net.unsavedWrites.find(w => w.kind === 'message' && w.state === 'failed' && !dismissed.has(w.key) && active.messages.some(m => w.key === `msg:${m.id}`))
+    : undefined
+  useEffect(() => { setDismissed(new Set()) }, [active?.id])
+  const retrySend = async () => {
+    if (!failedSend) return
+    setRetrying(true)
+    try { await net.retryWrite(failedSend.key) } finally { setRetrying(false) }
+  }
+
   const send = () => {
     const text = draft.trim()
     if (!text || !active) return
@@ -138,6 +151,15 @@ function Inner() {
               ))}
               <div ref={endRef} />
             </div>
+            {failedSend && (
+              <div role="alert" className="mx-4 mb-2 px-3 py-2 rounded-lg bg-[#F5B027]/15 border border-[#F5B027]/30 text-xs text-[#F5B027] flex items-center justify-between gap-2">
+                <span>Message may not have sent{failedSend.error ? ` — ${failedSend.error}` : '.'}</span>
+                <div className="flex gap-2 shrink-0">
+                  <button disabled={retrying} onClick={() => void retrySend()} className="underline">{retrying ? 'Retrying…' : 'Retry'}</button>
+                  <button onClick={() => setDismissed(d => new Set(d).add(failedSend.key))} aria-label="Dismiss">✕</button>
+                </div>
+              </div>
+            )}
             <footer className="p-3 border-t border-white/10 flex items-end gap-2">
               <AttachButton threadId={active.id} onSend={text => net.sendMessage(active.id, text)} />
               <textarea value={draft} onChange={e => setDraft(e.target.value)} rows={1} placeholder="Write a message…"

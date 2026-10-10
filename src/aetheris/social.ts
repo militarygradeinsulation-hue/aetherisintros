@@ -55,6 +55,8 @@ export interface RelationshipEvidence {
   mutualConnections: number | null
   /** Introductions between you and this member, newest first; null when they couldn't be read. */
   intros: IntroEvidence[] | null
+  /** Meetings logged in your CRM with this member (calendar/ghost sync); null when unknown. */
+  calendarMeetings?: number | null
   /** 0–100 strength proven by the evidence above; null when there is none. */
   provenStrength: number | null
 }

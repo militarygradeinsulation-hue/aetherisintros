@@ -54,7 +54,7 @@ const overlap = (a: string[], b: string[]) => {
 /** No evidence at all: nothing below may imply a recent or strong relationship. */
 const NO_EVIDENCE: RelationshipEvidence = {
   lastInteractionAt: null, lastInteractionDays: null, messageCount: 0,
-  directConnection: null, mutualConnections: null, intros: null, provenStrength: null,
+  directConnection: null, mutualConnections: null, intros: null, calendarMeetings: null, provenStrength: null,
 }
 
 const ACCEPTED_INTRO = new Set(['accepted', 'connected'])
@@ -74,6 +74,7 @@ export function provenStrengthOf(e: Omit<RelationshipEvidence, 'provenStrength'>
     intros.some(i => ACCEPTED_INTRO.has(i.status)) ? 20 : 0,
     intros.some(i => i.outcome && MET_OUTCOME.has(i.outcome.stage)) ? 10 : 0,
     Math.min(16, (e.mutualConnections ?? 0) * 4),
+    Math.min(20, (e.calendarMeetings ?? 0) * 5), // calendar/ghost-logged meetings, up to 20 pts
   ]
   const total = parts.reduce((a, b) => a + b, 0)
   return total > 0 ? Math.min(100, total) : null
@@ -292,6 +293,26 @@ export async function loadLiveDirectory(userId: string): Promise<{ directory: Di
       peerMessages.set(peerOf(t), { count: prev.count + rows.length, lastAt: !prev.lastAt || (lastAt && lastAt > prev.lastAt) ? lastAt : prev.lastAt })
     }
 
+    // Meetings logged in your CRM per member (RLS: your rows only). Optional evidence: a failed read leaves it unknown.
+    const meetingsByMember = new Map<string, number>()
+    let meetingsKnown = false
+    const peopleRead = others.length
+      ? await supabase.from('crm_people').select('id, member_id').in('member_id', others.map(o => o.id))
+      : null
+    if (peopleRead && !peopleRead.error) {
+      const memberOfPerson = new Map((peopleRead.data ?? []).filter(p => p.member_id).map(p => [p.id, p.member_id as string]))
+      const meetingRead = memberOfPerson.size
+        ? await supabase.from('crm_activities').select('person_id').eq('kind', 'meeting').in('person_id', [...memberOfPerson.keys()])
+        : null
+      if (!meetingRead?.error) {
+        meetingsKnown = true
+        for (const a of meetingRead?.data ?? []) {
+          const member = a.person_id ? memberOfPerson.get(a.person_id) : undefined
+          if (member) meetingsByMember.set(member, (meetingsByMember.get(member) ?? 0) + 1)
+        }
+      }
+    }
+
     const members = others.map(row => {
       const msgs = peerMessages.get(row.id) ?? { count: 0, lastAt: null }
       const theirs = connectionsOf.get(row.id) ?? new Set<string>()
@@ -303,6 +324,7 @@ export async function loadLiveDirectory(userId: string): Promise<{ directory: Di
         directConnection: edgeRead.error ? null : mine.has(row.id),
         mutualConnections: edgeRead.error ? null : mutualIds.length,
         intros: introRead.error ? null : (introsByPeer.get(row.id) ?? []),
+        calendarMeetings: meetingsKnown ? (meetingsByMember.get(row.id) ?? 0) : null,
       }
       return profileToMember(row, me, { ...base, provenStrength: provenStrengthOf(base) }, mutualIds.map(id => nameOf.get(id) ?? 'Member'))
     })

@@ -131,14 +131,33 @@ const STAGE_TEXT: Record<string, string> = {
   met: 'Met', next_step: 'Agreed a next step', too_early: 'Too early to tell', no_outcome: 'No outcome', outcome: 'Outcome recorded',
 }
 
+/** A deal or partnership outcome opens a CRM opportunity once per introduction (intro id is kept in `detail`). */
+async function maybeAutoOpportunity(theirProfile: GhostProfile, introId: string, category: string, personId: string): Promise<void> {
+  try {
+    if (category !== 'deal' && category !== 'partnership') return
+    if (!UUID.test(introId)) return
+    const { data: existing, error } = await supabase.from('crm_opportunities').select('id').ilike('detail', `%${introId}%`).limit(1)
+    if (error) { warn('opportunity lookup failed', error.message); return }
+    if (existing?.length) return
+    const label = category === 'deal' ? 'Deal' : 'Partnership'
+    const ins = await supabase.from('crm_opportunities').insert({
+      name: `${nameOf(theirProfile)} — ${label} opportunity`, person_id: personId, status: 'open', probability: 50, amount: 0,
+      source: 'ghost_sync', detail: `Auto-created from introduction outcome. Intro ID: ${introId}`,
+    })
+    if (ins.error) warn('opportunity create failed', ins.error.message)
+  } catch (e) { warn('auto opportunity', e) }
+}
+
 export async function ghostSyncOutcome(opts: { theirProfile: GhostProfile; introId: string; stage: string; category?: string }): Promise<void> {
-  if (!(await ghostUpsertContact(opts.theirProfile))) return
+  const personId = await ghostUpsertContact(opts.theirProfile)
+  if (!personId) return
   const label = STAGE_TEXT[opts.stage] ?? opts.stage.replace(/_/g, ' ')
   await ghostLogActivity({
     memberUserId: opts.theirProfile.id, kind: opts.stage === 'met' ? 'meeting' : 'note', introRequestId: opts.introId,
     subject: `${label}${opts.category ? ` (${opts.category})` : ''} with ${nameOf(opts.theirProfile)}`,
     detail: 'Logged automatically from the introduction outcome.',
   })
+  if (opts.stage === 'outcome' && opts.category) await maybeAutoOpportunity(opts.theirProfile, opts.introId, opts.category, personId)
 }
 
 export async function ghostSyncMeeting(opts: { theirProfile: GhostProfile; eventTitle: string; startAt: string; calendarEventId?: string }): Promise<void> {
