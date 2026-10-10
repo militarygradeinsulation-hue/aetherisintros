@@ -32,6 +32,7 @@ Pin PGlite 0.2.x: the 0.3.x builds tested here crash on `RAISE` inside PL/pgSQL.
 | `admin-health` | 0035 | network health readable by admins only, through the wrapper; the underlying function stays service-role only |
 | `leak-checks` | 0036 | leak check results saved only as yourself, index within 0-100, answers an object, private to their owner, not rewritable, deletable by the owner |
 | `member-events` | 0050 | admins only create, publish, cancel and delete drafts; capacity turns new "going" replies into waitlist; dropping out or more places promotes the earliest waitlisted member (who alone is told); replies only through `rsvp_event`; invite-only events hidden from non-invitees and invites told on publish; venue and join link only for people going, the host and admins; attendee names for people going, full list for host and admins (emails admins only); hosts edit only their own event's description; reminders sent once; cancellation tells everyone replying; past events take no replies |
+| `business-posts` | 0057 | Need / Offer / Proof of work stored as validated `posts.business` (inverted or negative budgets, missing or unsupported currency, bad deadline, unknown keys, non-https or credentialed links, ordinary posts carrying business data all rejected); existing posts untouched; private posts hidden from other members; no posting, editing or deleting as someone else |
 
 Run after any change to these migrations, and add a suite with each new one. The live-schema
 harness in `scripts/security-harness` remains the check against the real dumped schema.
