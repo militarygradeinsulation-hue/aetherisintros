@@ -7,8 +7,8 @@ import { Check, FileText, ImageUp, Link2, Loader2, Sparkles, X } from 'lucide-re
 import { useEffect, useRef, useState } from 'react'
 
 import { supabase } from '@/integrations/supabase/client'
-import { extractLinkedInProfile, fetchLinkedInPhoto, type LinkedInExtraction } from '@/lib/linkedinImport.functions'
-import { IMPORT_FIELD_LABELS, isLinkedInPhotoUrl, normalizeLinkedInUrl, type ImportedFields } from './linkedin-import'
+import { extractLinkedInProfile, fetchLinkedInPhoto, scanLinkedInProfileUrl, type LinkedInExtraction } from '@/lib/linkedinImport.functions'
+import { IMPORT_FIELD_LABELS, isLinkedInPhotoUrl, mergeScanIntoDraft, normalizeLinkedInUrl, type ImportedFields } from './linkedin-import'
 import { readPdfText } from './pdf-text'
 import { useNetwork } from './store'
 import { Btn, Eyebrow } from './ui'
@@ -21,6 +21,11 @@ const asText = (v: string | string[]) => (Array.isArray(v) ? v.join(', ') : v)
 const asList = (v: string) => v.split(/[,;\n]+/).map(s => s.trim()).filter(Boolean).slice(0, 15)
 
 /** Saves the LinkedIn link on its own, so a missing column never blocks the rest of the profile. */
+async function currentUserId() {
+  const { data } = await supabase.auth.getSession()
+  return data.session?.user.id ?? ''
+}
+
 async function saveLinkedInUrl(url: string) {
   const { data } = await supabase.auth.getSession()
   const id = data.session?.user.id
@@ -44,6 +49,13 @@ export function LinkedInImportPanel({ onApplied, defaultOpen = false }: { onAppl
   const [values, setValues] = useState<Record<FieldKey, string>>({} as Record<FieldKey, string>)
   const [chosen, setChosen] = useState<Set<FieldKey>>(new Set())
   const [done, setDone] = useState('')
+  const [notice, setNotice] = useState('')
+  const [conflicts, setConflicts] = useState<Partial<Record<FieldKey, string>>>({})
+  const [edited, setEdited] = useState<Set<FieldKey>>(new Set())
+  const scanSeq = useRef(0)
+  const scanOwner = useRef('')
+  const applying = useRef(false)
+  const scanning = useRef(false)
   const pdfInput = useRef<HTMLInputElement>(null)
   const photoInput = useRef<HTMLInputElement>(null)
 
@@ -69,35 +81,55 @@ export function LinkedInImportPanel({ onApplied, defaultOpen = false }: { onAppl
     } finally { setBusy('') }
   }
 
+  const hasContent = mode === 'pdf' ? !!pdf : text.trim().length >= 40
+
   const scan = async () => {
-    setError(''); setDone('')
+    if (scanning.current) return
+    scanning.current = true
+    const seq = ++scanSeq.current
+    setError(''); setDone(''); setNotice('')
     const linkedinUrl = url.trim() ? normalizeLinkedInUrl(url) : null
-    if (url.trim() && !linkedinUrl) { setError('That is not a LinkedIn profile link. It looks like linkedin.com/in/your-name.'); return }
+    if (url.trim() && !linkedinUrl) { setError('That is not a LinkedIn personal profile link. It looks like linkedin.com/in/your-name.'); scanning.current = false; return }
+    if (!linkedinUrl && !hasContent) { setError('Paste your LinkedIn link or your profile text, then press Scan.'); scanning.current = false; return }
     setBusy('scan')
     try {
+      const owner = await currentUserId()
+      if (!owner) throw new Error('Sign in to import your profile.')
+      scanOwner.current = owner
+      if (!hasContent && linkedinUrl) {
+        const urlScan = await scanLinkedInProfileUrl({ data: { url: linkedinUrl } })
+        if (seq !== scanSeq.current) return
+        if (urlScan.status !== 'ok') { setNotice(urlScan.reason); return }
+        // Unreachable until a licensed provider is connected; its profile would then feed the same review draft.
+        throw new Error('Scanning from a link is not available yet. Paste your profile text instead.')
+      }
       let profileText = text
       let nameHint = ''
       if (mode === 'pdf') {
-        if (!pdf) throw new Error('Add the PDF of your LinkedIn profile first.')
-        const read = await readPdfText(pdf)
+        const read = await readPdfText(pdf!)
         profileText = read.text
         nameHint = read.largest
       }
       const extraction = await extractLinkedInProfile({ data: { text: profileText, url: linkedinUrl ?? '', nameHint } })
+      if (seq !== scanSeq.current) return
       const next = {} as Record<FieldKey, string>
       for (const key of FIELD_ORDER) next[key] = asText(extraction.fields[key])
-      setValues(next)
-      setChosen(new Set(FIELD_ORDER.filter(k => next[k].trim())))
+      const merged = mergeScanIntoDraft(values, edited, next)
+      setValues(merged.values)
+      setConflicts(merged.conflicts)
+      setChosen(new Set(FIELD_ORDER.filter(k => merged.values[k].trim())))
       setResult(extraction)
     } catch (e) {
-      setError(e instanceof Error ? e.message : 'Your profile could not be read. Try pasting the text instead.')
-    } finally { setBusy('') }
+      if (seq === scanSeq.current) setError(e instanceof Error ? e.message : 'Your profile could not be read. Try pasting the text instead.')
+    } finally { scanning.current = false; if (seq === scanSeq.current) setBusy('') }
   }
 
   const apply = async () => {
-    if (!result) return
+    if (!result || applying.current) return
+    applying.current = true
     setBusy('apply'); setError('')
     try {
+      if ((await currentUserId()) !== scanOwner.current) throw new Error('Your session changed. Scan your profile again before applying.')
       const pick = (k: FieldKey) => (chosen.has(k) ? values[k].trim() : undefined)
       const name = pick('name') || net.profile.name
       if (pick('name') !== undefined || photo) await net.updateIdentity({ name, photo })
@@ -113,18 +145,18 @@ export function LinkedInImportPanel({ onApplied, defaultOpen = false }: { onAppl
       if (result.linkedinUrl) await saveLinkedInUrl(result.linkedinUrl).catch(() => undefined)
       onApplied?.(Object.fromEntries(FIELD_ORDER.filter(k => chosen.has(k)).map(k => [k, k === 'expertise' || k === 'industries' ? asList(values[k]) : values[k].trim()])))
       setDone(`Your profile is filled in from LinkedIn${photo ? ', with your photo' : ''}. Review it below and adjust anything.`)
-      setResult(null); setPdf(null); setText(''); setPhoto(null); setPhotoLink('')
+      setResult(null); setValues({} as Record<FieldKey, string>); setConflicts({}); setEdited(new Set()); setPdf(null); setText(''); setPhoto(null); setPhotoLink('')
       setPhotoPreview(old => { if (old) URL.revokeObjectURL(old); return null })
       setOpen(false)
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Your profile could not be saved.')
-    } finally { setBusy('') }
+    } finally { applying.current = false; setBusy('') }
   }
 
   if (!open) {
     return <section className="linkedin-import closed">
       <div><Eyebrow>FASTEST WAY TO A COMPLETE PROFILE</Eyebrow><h2>Fill your profile from LinkedIn</h2>
-        <p>Paste your LinkedIn link, add your LinkedIn PDF and photo, and we fill everything in for you to review.</p>
+        <p>Paste your LinkedIn profile text or PDF and press Scan. We fill what we can find for you to review; nothing is saved until you approve it.</p>
         {done && <p className="linkedin-import-done"><Check size={14} /> {done}</p>}</div>
       <Btn onClick={() => { setOpen(true); setDone('') }}><Sparkles size={15} /> Fill from LinkedIn</Btn>
     </section>
@@ -139,10 +171,10 @@ export function LinkedInImportPanel({ onApplied, defaultOpen = false }: { onAppl
         <li>
           <b><Link2 size={14} /> Your LinkedIn link</b>
           <input value={url} onChange={e => setUrl(e.target.value)} placeholder="linkedin.com/in/your-name" inputMode="url" autoComplete="url" />
-          <small>Shown on your profile so members can find you.</small>
+          <small>Optional. Saved on your profile if you apply. A link alone cannot be scanned yet: LinkedIn data access is not connected, so add your profile text or PDF below.</small>
         </li>
         <li>
-          <b><FileText size={14} /> Your profile</b>
+          <b><FileText size={14} /> Your profile text or PDF</b>
           <div className="linkedin-mode" role="tablist">
             <button type="button" role="tab" aria-selected={mode === 'pdf'} className={mode === 'pdf' ? 'active' : ''} onClick={() => setMode('pdf')}>LinkedIn PDF</button>
             <button type="button" role="tab" aria-selected={mode === 'text'} className={mode === 'text' ? 'active' : ''} onClick={() => setMode('text')}>Paste text</button>
@@ -175,18 +207,20 @@ export function LinkedInImportPanel({ onApplied, defaultOpen = false }: { onAppl
           </div>
         </li>
       </ol>
+      {notice && <p className="linkedin-review-note" role="status">{notice}</p>}
       {error && <p className="linkedin-error" role="alert">{error}</p>}
       <div className="linkedin-actions">
-        <Btn disabled={busy === 'scan' || (mode === 'pdf' ? !pdf : text.trim().length < 40)} onClick={() => void scan()}>
-          {busy === 'scan' ? <><Loader2 size={15} className="spin" /> Reading your profile…</> : <><Sparkles size={15} /> Scan my profile</>}
+        <Btn disabled={busy === 'scan' || (!hasContent && !url.trim())} onClick={() => void scan()}>
+          {busy === 'scan' ? <><Loader2 size={15} className="spin" aria-hidden="true" /> Reading your profile…</> : <><Sparkles size={15} /> Scan</>}
         </Btn>
         <small>We read only what you add here. Nothing is saved until you approve it.</small>
       </div>
     </>}
 
     {result && <>
-      <p className="linkedin-review-note">
+      <p className="linkedin-review-note" role="status">
         {result.source === 'ai' ? 'Here is what we found.' : 'Here is what we could read.'} Untick anything you don’t want, edit any field, then apply.
+        {FIELD_ORDER.some(k => !values[k]?.trim()) && ' Some fields were not found and are left blank for you to fill in.'}
         {result.profile.experience.length > 0 && ` ${result.profile.experience.length} role${result.profile.experience.length === 1 ? '' : 's'} and ${result.profile.skills.length} skill${result.profile.skills.length === 1 ? '' : 's'} found.`}
       </p>
       <div className="linkedin-review">
@@ -195,8 +229,10 @@ export function LinkedInImportPanel({ onApplied, defaultOpen = false }: { onAppl
           <span><input type="checkbox" checked={chosen.has(key)} onChange={() => setChosen(c => { const n = new Set(c); if (n.has(key)) n.delete(key); else n.add(key); return n })} />
             {IMPORT_FIELD_LABELS[key]}</span>
           {LONG.includes(key)
-            ? <textarea rows={3} value={values[key]} onChange={e => setValues(v => ({ ...v, [key]: e.target.value }))} />
-            : <input value={values[key]} onChange={e => setValues(v => ({ ...v, [key]: e.target.value }))} placeholder={key === 'industries' ? 'Not on your LinkedIn: add yours' : 'Not found'} />}
+            ? <textarea rows={3} value={values[key]} onChange={e => { setEdited(ed => new Set(ed).add(key)); setValues(v => ({ ...v, [key]: e.target.value })) }} />
+            : <input value={values[key]} onChange={e => { setEdited(ed => new Set(ed).add(key)); setValues(v => ({ ...v, [key]: e.target.value })) }} placeholder={key === 'industries' ? 'Not on your LinkedIn: add yours' : 'Not found'} />}
+          {result.provenance[key] && <small>Read by {result.provenance[key] === 'ai' ? 'AI from your text' : 'the built-in reader'}</small>}
+          {conflicts[key] !== undefined && <small>Newer scan: “{conflicts[key]}” <button type="button" className="linkedin-use" onClick={() => { setValues(v => ({ ...v, [key]: conflicts[key]! })); setConflicts(c => { const n = { ...c }; delete n[key]; return n }) }}>Use scanned value</button></small>}
         </label>)}
         {result.linkedinUrl && <p className="linkedin-field wide"><span><Link2 size={13} /> LinkedIn link</span><a href={result.linkedinUrl} target="_blank" rel="noopener noreferrer">{result.linkedinUrl}</a></p>}
       </div>
