@@ -30,6 +30,7 @@ const groups: Array<{ label: string; items: Array<{ id: Page; label: string; not
   ] },
   { label: 'Executive work', items: [
     { id: 'peergroups', label: 'Peer Groups', note: 'Your confidential group of peers, its sessions and issues.', icon: UsersRound },
+    { id: 'workspaces', label: 'Workspaces', note: 'Private business workspaces from your conversations and accepted introductions.', icon: Briefcase },
     { id: 'rooms', label: 'Opportunity Rooms', note: 'Move live opportunities with people and context attached.', icon: Briefcase },
     { id: 'providers', label: 'Trusted Providers', note: 'Firms members vouch for, and help finding the right one.', icon: HandHelping },
     { id: 'autopilot', label: 'Approvals', note: 'Review prepared actions before anything leaves your account.', icon: ShieldCheck },

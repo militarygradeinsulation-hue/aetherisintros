@@ -407,6 +407,20 @@
       "when": 1791468559383,
       "tag": "0057_business_posts",
       "breakpoints": true
+    },
+    {
+      "idx": 58,
+      "version": "7",
+      "when": 1791468859383,
+      "tag": "0058_deal_workspaces",
+      "breakpoints": true
+    },
+    {
+      "idx": 59,
+      "version": "7",
+      "when": 1791469159383,
+      "tag": "0059_deal_workspace_business_roles",
+      "breakpoints": true
     }
   ]
 }
