@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import { Plus, Trash2, Download, Monitor, Tablet, Smartphone, Volume2 } from 'lucide-react'
 import { readAloud, unlockAudio } from '../voice'
+import { PrivateLibrary } from '../library/PrivateLibrary'
 
 type Kind = 'portal' | 'briefing' | 'concept' | 'calculator' | 'opportunity'
 interface Idea { id: string; kind: Kind; title: string; headline: string; body: string; points: string[]; price: number; units: number; updatedAt: string }
@@ -59,6 +60,7 @@ export function PocketWorkspace() {
   }
 
   return <section className="pk">
+    <PrivateLibrary />
     <header className="pk-head">
       <span className="eyebrow">YOUR POCKET · PRIVATE TO YOU</span>
       <h1>Build an idea <em>before you pitch it.</em></h1>

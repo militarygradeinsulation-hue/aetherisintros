@@ -421,6 +421,20 @@
       "when": 1791469159383,
       "tag": "0059_deal_workspace_business_roles",
       "breakpoints": true
+    },
+    {
+      "idx": 60,
+      "version": "7",
+      "when": 1791592750066,
+      "tag": "0060_private_contact_library",
+      "breakpoints": true
+    },
+    {
+      "idx": 61,
+      "version": "7",
+      "when": 1791595509221,
+      "tag": "0061_contact_export_denial",
+      "breakpoints": true
     }
   ]
 }

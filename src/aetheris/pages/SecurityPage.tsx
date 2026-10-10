@@ -9,14 +9,13 @@ import { BadgeCheck, Download, FileMinus, KeyRound, LogOut, ShieldCheck, Trash2 
 import { supabase } from '@/integrations/supabase/client'
 import { deleteMyAccount } from '@/lib/account.functions'
 import { Btn, Eyebrow } from '../ui'
-import { flushWorkspaceSync, useWorkspaceSyncStatus } from '../sync/workspace-sync'
+import { useWorkspaceSyncStatus } from '../sync/workspace-sync'
 import { keysToClearOnSignOut } from '../sync/sync-logic'
+import { contactExportIsDenied } from '@/lib/contact-export'
 import {
   badgeLabel, fetchSecurityEvents, logSecurityEvent, purgeProof, statusCopy,
   passwordProblem, useVerification, type SecurityEvent,
 } from '../verification'
-
-const NEVER_EXPORTED = ['reviewer notes', 'internal risk flags']
 
 export function SecurityPage() {
   const { verification, loading, refresh } = useVerification()
@@ -60,34 +59,11 @@ export function SecurityPage() {
     reload(); setBusy(false)
   }
 
-  /** Tables where members may read only some columns (server-held tokens are left out). */
-  const COLUMNS: Record<string, string> = {
-    membership_cards: 'code, holder_name, verified_at, issued_at, status',
-    email_preferences: 'weekly_digest, last_digest_at',
-    member_workspace_state: 'store_key, data, version, updated_at',
-  }
-
-  /** Everything the account owns, in one file, from the member's own permissions. */
   const exportData = async () => {
-    setBusy(true); setMessage('')
-    await flushWorkspaceSync().catch(() => undefined)
-    const tables = ['profiles', 'memories', 'posts', 'asks', 'intro_requests', 'intro_outcomes', 'calendar_events',
-      'crm_people', 'crm_companies', 'crm_opportunities', 'crm_tasks', 'crm_notes',
-      'grid_workbooks', 'grid_sheets', 'grid_rows', 'meetings', 'meeting_notes', 'leak_checks',
-      'membership_cards', 'email_preferences', 'account_security_events', 'member_workspace_state'] as const
-    const payload: Record<string, unknown> = { exported_at: new Date().toISOString(), excluded: NEVER_EXPORTED }
-    for (const table of tables) {
-      const columns = COLUMNS[table] ?? '*'
-      const { data } = await (supabase as any).from(table).select(columns).limit(5000) // eslint-disable-line @typescript-eslint/no-explicit-any
-      payload[table] = data ?? []
-    }
-    const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' })
-    const url = URL.createObjectURL(blob)
-    const link = document.createElement('a')
-    link.href = url; link.download = 'aetheris-intros-export.json'; link.click()
-    URL.revokeObjectURL(url)
-    await logSecurityEvent('data_exported', 'Account data exported to a file.')
-    setMessage('Your export has been downloaded.'); reload(); setBusy(false)
+    setBusy(true)
+    await contactExportIsDenied()
+    setMessage('Account exports containing contact data are disabled by policy.')
+    setBusy(false)
   }
 
   const purge = async () => {
@@ -153,7 +129,7 @@ export function SecurityPage() {
 
     <section className="security-panel">
       <Eyebrow>YOUR DATA</Eyebrow>
-      <h2>Export, retention and deletion.</h2>
+      <h2>Contact export is disabled; retention and deletion remain available.</h2>
       <p>
         Your CRM records, Grid workbooks, notes, meetings, relationship memory and private drafts are
         yours alone. They are never shown to the network, to reviewers, or to another account.
@@ -161,7 +137,7 @@ export function SecurityPage() {
         to other devices; only you can see it, and signing out clears it from this browser.
       </p>
       <div className="security-actions">
-        <Btn onClick={() => void exportData()} disabled={busy}><Download size={14} /> Export my data</Btn>
+        <Btn onClick={() => void exportData()} disabled={busy}><Download size={14} /> Check export policy</Btn>
         {verification.proofRetention !== 'purged' && verification.evidenceCount > 0 &&
           <Btn onClick={() => void purge()} disabled={busy}><FileMinus size={14} /> Remove my proof documents</Btn>}
         <Btn onClick={() => void requestDeletion()} disabled={busy}><Trash2 size={14} /> Delete my account and data</Btn>
