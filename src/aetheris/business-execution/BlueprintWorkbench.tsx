@@ -3,6 +3,7 @@ import { Plus, Trash2 } from "lucide-react";
 import { Btn, Eyebrow } from "../ui";
 import { currentAccountId } from "../crm/repo";
 import { isShowcase } from "../showcase";
+import { supabase } from "@/integrations/supabase/client";
 import {
   notifyWorkspaceChange,
   registerSyncedStore,
@@ -14,6 +15,7 @@ import {
   createProposalComparison,
   EMPTY_BUSINESS_EXECUTION_STATE,
   parseBusinessExecutionState,
+  readBusinessExecutionCopy,
   validateBudgetAssumption,
   validateEvidenceLink,
   type BusinessExecutionState,
@@ -72,51 +74,75 @@ export function BlueprintWorkbench() {
 
   useEffect(() => {
     let alive = true;
-    let waitingForInitialSync = false;
-    void (async () => {
-      if (isShowcase()) {
+    let activated = false;
+    let activeAccountId: string | null = null;
+    let activationId = 0;
+    const activateAccount = async (id: string | null) => {
+      if (activated && id === activeAccountId) return;
+      activated = true;
+      activeAccountId = id;
+      const activation = ++activationId;
+      setReady(false);
+      setAccountId(id);
+      setError(null);
+      setSaveMessage("");
+      setActiveId(null);
+      setActiveProposalId(null);
+      setState(id ? readLocal(id) : EMPTY_BUSINESS_EXECUTION_STATE);
+      if (!id) {
         setReady(true);
         return;
       }
       try {
-        const id = await currentAccountId();
-        if (!alive) return;
-        if (!id) {
-          setReady(true);
-          return;
-        }
-        setAccountId(id);
-        setState(readLocal(id));
         registerSyncedStore({
           key: STORE_KEY,
           localKey: localKeyFor(id),
           apply: (data) => {
-            const next = parseBusinessExecutionState(data);
+            if (!alive || activeAccountId !== id) return;
+            const next = readBusinessExecutionCopy(data);
             if (!next) {
-              if (alive)
-                setError("The account copy could not be read because its structure is invalid.");
+              setError("The account copy could not be read because its structure is invalid.");
               return;
             }
             try {
               localStorage.setItem(localKeyFor(id), JSON.stringify(next));
-              if (alive) setState(next);
+              setState(next);
             } catch {
-              if (alive) setError("The account copy could not be saved on this device.");
+              setError("The account copy could not be saved on this device.");
             }
           },
         });
-        waitingForInitialSync = true;
         await waitForWorkspaceStoreReady(STORE_KEY);
-        if (alive) setReady(true);
+        if (alive && activationId === activation) setReady(true);
       } catch {
-        if (alive)
+        if (alive && activationId === activation) {
           setError("Your account could not be checked. Sign in again before opening project data.");
-      } finally {
-        if (alive && !waitingForInitialSync) setReady(true);
+          setReady(true);
+        }
       }
-    })();
+    };
+    if (isShowcase()) {
+      setReady(true);
+      return () => {
+        alive = false;
+      };
+    }
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((_event, session) => {
+      void activateAccount(session?.user?.id ?? null);
+    });
+    void currentAccountId()
+      .then((id) => activateAccount(id))
+      .catch(() => {
+        if (alive) {
+          setError("Your account could not be checked. Sign in again before opening project data.");
+          setReady(true);
+        }
+      });
     return () => {
       alive = false;
+      subscription.unsubscribe();
     };
   }, []);
 

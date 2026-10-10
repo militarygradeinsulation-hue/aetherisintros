@@ -6,6 +6,7 @@ import {
   createPlaygroundBlueprint,
   createProposalComparison,
   parseBusinessExecutionState,
+  readBusinessExecutionCopy,
   validateBudgetAssumption,
   validateEvidenceLink,
 } from "../business-execution/model";
@@ -73,6 +74,11 @@ describe("business execution blueprint model", () => {
         blueprints: [{ ...createPlaygroundBlueprint("plan-1"), proposals: [proposal] }],
       }),
     ).not.toBeNull();
+  });
+
+  it("clears account data when a newly authenticated owner has no remote workspace", () => {
+    expect(readBusinessExecutionCopy(null)).toEqual({ blueprints: [] });
+    expect(readBusinessExecutionCopy({ invalid: true })).toBeNull();
   });
 
   it("requires an explicit supported currency with a budget and only accepts credential-free HTTPS evidence links", () => {

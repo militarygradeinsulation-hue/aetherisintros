@@ -234,6 +234,10 @@ export function parseBusinessExecutionState(value: unknown): BusinessExecutionSt
     : null;
 }
 
+export function readBusinessExecutionCopy(value: unknown): BusinessExecutionState | null {
+  return value === null ? EMPTY_BUSINESS_EXECUTION_STATE : parseBusinessExecutionState(value);
+}
+
 export function createProposalComparison(id: string): ProposalComparison {
   return {
     id,
