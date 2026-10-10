@@ -400,6 +400,20 @@
       "when": 1791468259383,
       "tag": "0056_quick_menu",
       "breakpoints": true
+    },
+    {
+      "idx": 58,
+      "version": "7",
+      "when": 1791592750066,
+      "tag": "0058_private_contact_library",
+      "breakpoints": true
+    },
+    {
+      "idx": 59,
+      "version": "7",
+      "when": 1791595509221,
+      "tag": "0059_contact_export_denial",
+      "breakpoints": true
     }
   ]
 }

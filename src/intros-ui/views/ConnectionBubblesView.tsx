@@ -29,6 +29,7 @@ import { NetworkMember, RelationshipTier } from '../networkData';
 import { FloatingConnectionField } from '../components/shared/FloatingConnectionField';
 import { ExecutivePortrait, getPortraitForName } from '../components/shared/ExecutivePortrait';
 import { NetworkSnapshotPrintView } from '../components/shared/NetworkSnapshotPrintView';
+import { contactExportIsDenied } from '../../lib/contact-export';
 import { ActivePage } from '../components/layout/TopNavigation';
 
 interface ConnectionBubblesViewProps {
@@ -75,8 +76,12 @@ export const ConnectionBubblesView: React.FC<ConnectionBubblesViewProps> = ({
   const [isExporting, setIsExporting] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
-  const handleExportSnapshot = () => {
+  const handleExportSnapshot = async () => {
     setIsExporting(true);
+    if (await contactExportIsDenied()) {
+      setIsExporting(false);
+      return;
+    }
     setTimeout(() => {
       window.print();
       setIsExporting(false);

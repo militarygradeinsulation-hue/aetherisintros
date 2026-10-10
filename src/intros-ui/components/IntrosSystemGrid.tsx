@@ -489,11 +489,11 @@ export const IntrosSystemGrid: React.FC = () => {
   };
 
   // Download Report feature: export connection data as CSV
-  const handleDownloadReport = () => {
-    downloadNetworkReport(sortedPeople, INITIAL_OPPORTUNITIES);
+  const handleDownloadReport = async () => {
+    await downloadNetworkReport(sortedPeople, INITIAL_OPPORTUNITIES);
     setNotification({
-      message: `Executive Network Report (CSV) exported successfully (${sortedPeople.length} records).`,
-      type: 'info',
+      message: 'Contact exports are disabled by policy.',
+      type: 'warning',
     });
   };
 

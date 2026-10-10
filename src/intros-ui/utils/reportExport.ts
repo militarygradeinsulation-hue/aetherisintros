@@ -1,5 +1,6 @@
 // @ts-nocheck
 import { Person, Opportunity } from '../types';
+import { contactExportIsDenied } from '../../lib/contact-export';
 
 export type SortMode = 'last_engaged' | 'name' | 'urgency';
 
@@ -50,7 +51,7 @@ export function sortConnections(people: Person[], mode: SortMode): Person[] {
   }
 }
 
-export function generateNetworkCsv(people: Person[], opportunities: Opportunity[] = []): string {
+function generateNetworkCsv(people: Person[], opportunities: Opportunity[] = []): string {
   const headers = [
     'Connection Name',
     'Executive Title',
@@ -108,7 +109,8 @@ export function generateNetworkCsv(people: Person[], opportunities: Opportunity[
   return [headers.join(','), ...rows].join('\r\n');
 }
 
-export function downloadNetworkReport(people: Person[], opportunities: Opportunity[] = []) {
+export async function downloadNetworkReport(people: Person[], opportunities: Opportunity[] = []) {
+  if (await contactExportIsDenied()) return;
   const csvContent = generateNetworkCsv(people, opportunities);
   const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
   const url = URL.createObjectURL(blob);

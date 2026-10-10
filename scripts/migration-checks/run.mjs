@@ -24,6 +24,15 @@ const ADMIN = '00000000-0000-4000-8000-0000000000ad'
 const BASE = `
 create role anon nologin; create role authenticated nologin; create role service_role nologin bypassrls;
 create schema auth;
+create schema storage;
+create table storage.objects (id uuid primary key default gen_random_uuid(), bucket_id text not null, name text not null, owner uuid);
+alter table storage.objects enable row level security;
+grant usage on schema storage to authenticated;
+grant select, insert on storage.objects to authenticated;
+create function storage.foldername(p_name text) returns text[] language sql immutable as $$
+  select array[split_part(p_name, '/', 1)]
+$$;
+grant execute on function storage.foldername(text) to authenticated;
 create table auth.users (id uuid primary key, email text, email_confirmed_at timestamptz, last_sign_in_at timestamptz, raw_user_meta_data jsonb not null default '{}');
 create function auth.uid() returns uuid language sql stable as $$ select nullif(current_setting('request.jwt.claim.sub', true), '')::uuid $$;
 grant usage on schema auth to authenticated, anon, service_role;
@@ -34,6 +43,9 @@ grant usage on schema public to authenticated, anon, service_role;
 alter default privileges in schema public grant all on tables to anon, authenticated, service_role;
 
 create function public.touch_updated_at() returns trigger language plpgsql as $$ begin new.updated_at := now(); return new; end $$;
+create function public.is_uuid_text(p text) returns boolean language sql immutable as $$
+  select p ~* '^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$'
+$$;
 create function public.freeze_columns() returns trigger language plpgsql set search_path = public as $$
 declare c text; begin if auth.uid() is null then return new; end if;
 foreach c in array tg_argv loop if (to_jsonb(new) -> c) is distinct from (to_jsonb(old) -> c) then raise exception 'Column % cannot be changed after creation', c using errcode = '42501'; end if; end loop; return new; end $$;
