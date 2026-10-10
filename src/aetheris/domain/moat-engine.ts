@@ -3,6 +3,7 @@
  * Every recommendation returns its reasoning so a surface can show it.
  */
 import type { Member } from '../social'
+import { knownInteractionDays } from '../lib/engine'
 import type { ID } from './models'
 import type {
   AudienceScope, ConsentLedgerEntry, DigitalRepresentativePolicy, IntroductionAvailability,
@@ -236,10 +237,12 @@ export function decayFor(risks: RelationshipDecayRisk[], memberId: ID) {
 
 export function deriveDecay(member: Member, ownerId = 'me'): RelationshipDecayRisk {
   const causes: RelationshipDecayRisk['causes'] = []
-  if (member.lastInteractionDays > 60) causes.push({ cause: 'no natural cadence', explanation: `${member.lastInteractionDays} days without a reason to talk.` })
+  // No recorded interaction is "unknown", not decay: there is no relationship to decay yet.
+  const days = knownInteractionDays(member)
+  if (days !== null && days > 60) causes.push({ cause: 'no natural cadence', explanation: `${days} days without a reason to talk.` })
   if (member.introState === 'waiting') causes.push({ cause: 'unanswered message', explanation: 'An introduction is waiting on a response.' })
   if (!member.nextAction) causes.push({ cause: 'no next reason', explanation: 'Nothing scheduled or promised creates the next conversation.' })
-  const risk = Math.min(92, causes.length * 26 + Math.min(40, member.lastInteractionDays / 3))
+  const risk = Math.min(92, causes.length * 26 + Math.min(40, (days ?? 0) / 3))
   const quiet = risk < 30
   return {
     id: uid('dr'), ownerId, memberId: member.id, risk,

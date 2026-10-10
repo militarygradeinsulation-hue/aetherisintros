@@ -7,6 +7,7 @@
  * and nothing here invents a score, outcome or relationship.
  */
 import type { Member, NetworkAsk, Thread } from './social'
+import { knownInteractionDays } from './lib/engine'
 import type { CrmActivity, CrmOpportunity, CrmPerson, CrmTask } from './crm/types'
 
 /* ───────────────────────── shared types ───────────────────────── */
@@ -137,7 +138,7 @@ export function relationshipWeather(member: Member, g: GraphInputs): Weather {
   const openOpps = crm ? g.crm.opportunities.filter(item => item.personId === crm.id && !item.archived && item.status === 'open') : []
   const theirAsk = g.asks.find(ask => ask.memberId === member.id)
   const fit = missionFit(member, activeMission(g.missions))
-  const lastDays = crm?.lastActivityAt ? daysSince(crm.lastActivityAt) : (member.lastInteractionDays || null)
+  const lastDays = crm?.lastActivityAt ? daysSince(crm.lastActivityAt) : (knownInteractionDays(member) || null)
   const connected = g.connections.includes(member.id)
 
   if (lastDays !== null) evidence.push(`Last recorded interaction ${lastDays === 0 ? 'today' : `${lastDays} days ago`}`)

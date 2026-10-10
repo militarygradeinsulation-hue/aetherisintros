@@ -7,6 +7,7 @@
  *  - private inference never crosses a permission boundary
  */
 import type { Member } from '../social'
+import { knownInteractionDays } from '../lib/engine'
 import type { OpenLoop, TriggerMemory } from './models'
 import type {
   AutopilotAction, Band, CaptureProposal, EvidenceItem, IntroQualityReview, IntroVerdict,
@@ -219,7 +220,8 @@ export function strategyProgress(strategy: NetworkStrategy, people: Member[]) {
 export function deriveTwin(person: Member, ctx: { loops: OpenLoop[]; triggers: TriggerMemory[] }): RelationshipTwin {
   const loops = ctx.loops.filter(l => l.memberId === person.id && l.status === 'open')
   const triggers = ctx.triggers.filter(t => t.memberId === person.id)
-  const cooling = person.lastInteractionDays > 30
+  const days = knownInteractionDays(person)
+  const cooling = days !== null && days > 30
   return {
     id: `twin-${person.id}`, memberId: person.id, ownerId: 'me',
     communicationStyle: `${person.role === 'Investor' ? 'Analytical; wants the model before the story.' : 'Direct; prefers a written reason before a call.'}`,
@@ -233,7 +235,7 @@ export function deriveTwin(person: Member, ctx: { loops: OpenLoop[]; triggers: T
     meetingStyle: '30 minutes, no slides, a decision at the end.',
     timingWindows: [person.whyNow].filter(Boolean),
     openLoopIds: loops.map(l => l.id), sharedSystemIds: [], sharedCircleIds: [],
-    outcomeHistory: [], lastMeaningfulInteraction: `${person.lastInteractionDays} days ago`,
+    outcomeHistory: [], lastMeaningfulInteraction: days === null ? 'Not recorded' : `${days} days ago`,
     whatWorks: ['Lead with the reason, not the request', `Speak to ${person.needs[0] ?? 'their stated need'}`, 'One ask per message'],
     whatToAvoid: [person.dontDo || 'Stacking two requests into one message'],
     bestNextMove: person.nextAction,

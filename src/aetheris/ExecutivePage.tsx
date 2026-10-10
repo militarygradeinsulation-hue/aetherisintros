@@ -8,6 +8,7 @@ import { supabase } from '@/integrations/supabase/client'
 import { usePublicBadge, VerifiedBadge } from './badge'
 import { useOps } from './crm/store'
 import { rankMatches } from './matching'
+import { NO_INTERACTION_EVIDENCE } from './lib/engine'
 import { useNav } from './nav'
 import type { Member } from './social'
 import { useNetwork } from './store'
@@ -250,7 +251,7 @@ export function ExecutivePage({ person, onClose, onIntro, onMessage }: {
           {(profileTab === 'activity' || profileTab === 'business') && <CeoActions member={person} {...(thread ? { threadId: thread.id } : {})} />}
           <dl>
             <div><dt>Status</dt><dd>{connected ? 'Connected' : person.relationshipStatus}</dd></div>
-            <div><dt>Last interaction</dt><dd>{crmPerson?.lastActivityAt ? new Date(crmPerson.lastActivityAt).toLocaleDateString() : person.lastInteractionDays ? `${person.lastInteractionDays} days ago` : 'Not recorded'}</dd></div>
+            <div><dt>Last interaction</dt><dd>{crmPerson?.lastActivityAt ? new Date(crmPerson.lastActivityAt).toLocaleDateString() : person.lastInteractionDays && person.lastInteractionDays < NO_INTERACTION_EVIDENCE ? `${person.lastInteractionDays} days ago` : 'Not recorded'}</dd></div>
             <CalendarSignalRows memberId={person.id} />
             <div><dt>CRM lifecycle</dt><dd>{crmPerson?.lifecycle ?? 'Not in CRM'}</dd></div>
             <div><dt>Company</dt><dd>{company?.name ?? person.company ?? 'Not recorded'}</dd></div>

@@ -23,6 +23,18 @@ export function classifyConnection(score: number) {
   return 'Do Not Prioritize'
 }
 
+/**
+ * Value of the legacy numeric `lastInteractionDays` when no interaction has ever been recorded.
+ * It sorts as "longest ago" but must never be displayed as a day count — use `knownInteractionDays`.
+ */
+export const NO_INTERACTION_EVIDENCE = 9999
+
+/** Days since the last recorded interaction, or null when there is no evidence of one. */
+export function knownInteractionDays(p: Pick<Person, 'lastInteractionDays'>): number | null {
+  const days = p.lastInteractionDays
+  return Number.isFinite(days) && days >= 0 && days < NO_INTERACTION_EVIDENCE ? days : null
+}
+
 export function determineRadarState(p: Pick<Person, 'scoreTotal' | 'lastInteractionDays' | 'score'>): RadarState {
   if (p.scoreTotal >= 80 && p.score.timing >= 75) return 'hot_now'
   if (p.scoreTotal >= 70 && p.score.timing >= 50) return 'emerging'

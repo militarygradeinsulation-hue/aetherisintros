@@ -6,6 +6,7 @@
  */
 import type { CrmCompany, CrmOpportunity, CrmTask, EntityEvent } from './crm/types'
 import type { Member } from './social'
+import { knownInteractionDays } from './lib/engine'
 import type { Outcome } from './domain/models'
 import { relationshipWeather, routeTo, type GraphInputs } from './opportunity-graph'
 
@@ -72,7 +73,7 @@ export interface Health { state: HealthState; reasons: string[] }
 export function relationshipHealth(member: Member, g: GraphInputs): Health {
   const w = relationshipWeather(member, g)
   const crm = g.crm.personForMember(member.id)
-  const lastDays = crm?.lastActivityAt ? ago(crm.lastActivityAt) : (member.lastInteractionDays || null)
+  const lastDays = crm?.lastActivityAt ? ago(crm.lastActivityAt) : (knownInteractionDays(member) || null)
   const reasons = [...w.evidence]
   if (['introduced', 'conversing', 'accepted'].includes(member.introState)) reasons.push(`Introduction state: ${member.introState}`)
   if (member.mutuals.length) reasons.push(`${member.mutuals.length} mutual ${member.mutuals.length === 1 ? 'connection' : 'connections'} recorded`)

@@ -26,6 +26,37 @@ export interface Member extends Person {
   schedulingEnabled?: boolean
   /** Giver band, present only when the member chose to show it (0055). */
   giverBand?: GiverBand | null
+  /**
+   * Proven relationship evidence from live rows (messages, read receipts, connections,
+   * introductions). Absent for catalogue members. Null fields mean "no evidence / couldn't
+   * read", never "recent" or "strong". `score` (except trust/relationshipStrength) is only
+   * profile compatibility.
+   */
+  relationshipEvidence?: RelationshipEvidence
+}
+
+export interface IntroEvidence {
+  id: string
+  direction: 'sent' | 'received'
+  status: string
+  createdAt: string
+  acceptedAt: string | null
+  outcome: { stage: string; category: string | null; occurredOn: string } | null
+}
+
+export interface RelationshipEvidence {
+  lastInteractionAt: string | null
+  /** Days since the last message either way; null when no message exists. */
+  lastInteractionDays: number | null
+  messageCount: number
+  /** Null when connections couldn't be read. */
+  directConnection: boolean | null
+  /** Shared connections; null when connections couldn't be read. */
+  mutualConnections: number | null
+  /** Introductions between you and this member, newest first; null when they couldn't be read. */
+  intros: IntroEvidence[] | null
+  /** 0–100 strength proven by the evidence above; null when there is none. */
+  provenStrength: number | null
 }
 
 const base: ScoreBreakdown = {

@@ -7,9 +7,9 @@
  * member what to do next instead of showing invented activity.
  */
 import { supabase } from '@/integrations/supabase/client'
-import { calculateConnectionScore, determineRadarState } from './lib/engine'
+import { calculateConnectionScore, determineRadarState, NO_INTERACTION_EVIDENCE } from './lib/engine'
 import { businessOf, type Directory } from './db'
-import type { Member, NetworkAsk, Post, Thread } from './social'
+import type { IntroEvidence, Member, NetworkAsk, Post, RelationshipEvidence, Thread } from './social'
 import type { ScoreBreakdown } from './types'
 import type { GiverBand } from './reciprocity-core'
 
@@ -50,8 +50,50 @@ const overlap = (a: string[], b: string[]) => {
   return a.filter(x => lower.has(x.toLowerCase())).length
 }
 
-/** Honest, evidence-only scoring: derived from stated fields, never invented. */
-function scoreAgainst(row: LiveProfileRow, me: LiveProfileRow | null): ScoreBreakdown {
+/** No evidence at all: nothing below may imply a recent or strong relationship. */
+const NO_EVIDENCE: RelationshipEvidence = {
+  lastInteractionAt: null, lastInteractionDays: null, messageCount: 0,
+  directConnection: null, mutualConnections: null, intros: null, provenStrength: null,
+}
+
+const ACCEPTED_INTRO = new Set(['accepted', 'connected'])
+const MET_OUTCOME = new Set(['met', 'next_step', 'outcome'])
+
+/**
+ * Proven relationship strength (0–100) from real rows only, or null when there is none.
+ * Without any message it tops out at 61, so it can never mark a member dormant/at-risk on
+ * the strength of an introduction alone.
+ */
+export function provenStrengthOf(e: Omit<RelationshipEvidence, 'provenStrength'>): number | null {
+  const intros = e.intros ?? []
+  const parts = [
+    Math.min(30, e.messageCount * 3),
+    e.lastInteractionDays !== null && e.lastInteractionDays <= 30 ? 10 : 0,
+    e.directConnection ? 15 : 0,
+    intros.some(i => ACCEPTED_INTRO.has(i.status)) ? 20 : 0,
+    intros.some(i => i.outcome && MET_OUTCOME.has(i.outcome.stage)) ? 10 : 0,
+    Math.min(16, (e.mutualConnections ?? 0) * 4),
+  ]
+  const total = parts.reduce((a, b) => a + b, 0)
+  return total > 0 ? Math.min(100, total) : null
+}
+
+/** Trust is earned only through accepted introductions, outcomes and connections. */
+function provenTrustOf(e: RelationshipEvidence): number {
+  const intros = e.intros ?? []
+  return Math.min(100,
+    (intros.some(i => ACCEPTED_INTRO.has(i.status)) ? 30 : 0)
+    + (intros.some(i => i.outcome && MET_OUTCOME.has(i.outcome.stage)) ? 20 : 0)
+    + (e.directConnection ? 20 : 0)
+    + Math.min(20, (e.mutualConnections ?? 0) * 5))
+}
+
+/**
+ * Profile compatibility: derived from stated profile fields only, never invented. It says
+ * nothing about an actual relationship — `trust` and `relationshipStrength` are the only
+ * fields set from proven evidence, and they are 0 without it.
+ */
+function scoreAgainst(row: LiveProfileRow, me: LiveProfileRow | null, evidence: RelationshipEvidence = NO_EVIDENCE): ScoreBreakdown {
   const myIndustries = me?.industries ?? []
   const myExpertise = me?.expertise ?? []
   const myNeeds = me ? list(me.looking_for) : []
@@ -69,16 +111,34 @@ function scoreAgainst(row: LiveProfileRow, me: LiveProfileRow | null): ScoreBrea
     strategicFit: cap(24 + industryFit * 18 + skillFit * 8),
     mutualValue: cap(20 + theyHelpMe * 22 + iHelpThem * 22),
     timing: cap(row.availability ? 46 : 24),
-    trust: 20,
-    relationshipStrength: 10,
+    trust: provenTrustOf(evidence),
+    relationshipStrength: evidence.provenStrength ?? 0,
     decisionInfluence: cap(row.title ? 46 : 20),
     opportunityValue: cap(20 + (theyHelpMe + iHelpThem) * 14),
     friction: cap(58 - industryFit * 8 - theyHelpMe * 6),
   }
 }
 
-export function profileToMember(row: LiveProfileRow, me: LiveProfileRow | null): Member {
-  const score = scoreAgainst(row, me)
+function statusFrom(e: RelationshipEvidence): Member['relationshipStatus'] {
+  if (e.provenStrength === null) return 'unknown'
+  if (e.lastInteractionDays !== null && e.lastInteractionDays > 90) return 'dormant'
+  if (e.provenStrength >= 60) return 'strong'
+  if (e.lastInteractionDays !== null && e.lastInteractionDays <= 30) return 'active'
+  return 'new'
+}
+
+function introStateFrom(e: RelationshipEvidence): Member['introState'] {
+  const latest = e.intros?.[0]
+  if (latest?.status === 'connected') return e.messageCount ? 'conversing' : 'introduced'
+  if (latest?.status === 'accepted') return 'accepted'
+  if (latest?.status === 'requested') return 'requested'
+  if (latest?.status === 'declined') return 'closed'
+  return e.messageCount ? 'conversing' : 'recommended'
+}
+
+export function profileToMember(row: LiveProfileRow, me: LiveProfileRow | null, evidence: RelationshipEvidence = NO_EVIDENCE, mutualNames: string[] = []): Member {
+  const score = scoreAgainst(row, me, evidence)
+  const proven = evidence.provenStrength !== null
   const partial = {
     id: row.id,
     name: row.name || 'Member',
@@ -90,16 +150,18 @@ export function profileToMember(row: LiveProfileRow, me: LiveProfileRow | null):
     needs: list(row.looking_for),
     offers: list(row.can_help_with),
     bio: row.bio,
-    lastInteractionDays: 0,
-    relationshipStatus: 'new' as const,
+    // Legacy numeric field: real days since the last message, or the "no evidence" sentinel
+    // (never 0, which would read as "spoke today"). The nullable value is on relationshipEvidence.
+    lastInteractionDays: evidence.lastInteractionDays ?? NO_INTERACTION_EVIDENCE,
+    relationshipStatus: statusFrom(evidence),
     score,
     scoreTotal: calculateConnectionScore(score),
     whyThem: row.looking_for ? `They are looking for ${row.looking_for}` : row.focus || 'No stated focus yet.',
     whyYou: row.can_help_with ? `They can help with ${row.can_help_with}` : '',
     whyNow: row.availability ? `Availability they set: ${row.availability}` : '',
-    bestPath: [],
+    bestPath: mutualNames.length ? ['You', mutualNames[0]!, row.name || 'Member'] : [],
     nextAction: 'Open with the specific reason this relationship makes sense for both sides.',
-    dontDo: 'No relationship history yet — do not assume context you have not earned.',
+    dontDo: proven ? 'Build on the history you actually have — do not overstate it.' : 'No relationship history yet — do not assume context you have not earned.',
     confidence: row.onboarded ? 60 : 30,
     role: 'Operator' as const,
     industry: row.industries[0] ?? '',
@@ -107,8 +169,9 @@ export function profileToMember(row: LiveProfileRow, me: LiveProfileRow | null):
     focus: row.focus,
     thesis: row.thesis,
     availability: row.availability,
-    mutuals: [],
-    introState: 'recommended' as const,
+    mutuals: mutualNames,
+    introState: introStateFrom(evidence),
+    relationshipEvidence: evidence,
     joined: new Date(row.created_at).getFullYear().toString(),
     avatarUrl: row.avatar_url ?? undefined,
     whatIDo: row.what_i_do,
@@ -140,7 +203,7 @@ export async function loadMyProfile(userId: string): Promise<LiveProfileRow | nu
 }
 
 /** Sources read by `loadLiveDirectory`. */
-export type LiveSource = 'members' | 'posts' | 'asks' | 'threads' | 'messages'
+export type LiveSource = 'members' | 'posts' | 'asks' | 'threads' | 'messages' | 'reads' | 'connections' | 'intros' | 'outcomes'
 
 /**
  * Per-source read failures. A source listed here could not be loaded, so its empty array
@@ -174,7 +237,74 @@ export async function loadLiveDirectory(userId: string): Promise<{ directory: Di
     const profiles = (profileRows.data ?? []) as unknown as LiveProfileRow[]
     const me = profiles.find(p => p.id === userId) ?? null
     const others = profiles.filter(p => p.id !== userId)
-    const members = others.map(row => profileToMember(row, me))
+
+    const threadIds = (threadRows.data ?? []).map(t => t.id)
+    const peerOf = (t: { member_a: string; member_b: string }) => (t.member_a === userId ? t.member_b : t.member_a)
+    // Relationship evidence, read in parallel. Each source fails on its own: a failed read
+    // leaves its evidence null ("unknown"), never zero or a default that implies strength.
+    const [messageRead, unreadRead, edgeRead, introRead] = await Promise.all([
+      threadIds.length ? supabase.from('dm_messages').select('*').in('thread_id', threadIds).order('created_at') : null,
+      threadIds.length ? supabase.rpc('my_unread_counts') : null,
+      supabase.from('follows').select('follower_id, followee_id').eq('kind', 'connection'),
+      // RLS returns only introductions you requested or received.
+      supabase.from('intro_requests').select('id, user_id, member_id, target_user_id, status, accepted_at, created_at').order('created_at', { ascending: false }),
+    ])
+    let messageRows: Array<{ id: string; thread_id: string; sender_id: string; text: string; created_at: string }> = []
+    if (messageRead) { note('messages', messageRead.error); messageRows = messageRead.data ?? [] }
+    if (unreadRead) note('reads', unreadRead.error)
+    note('connections', edgeRead.error)
+    note('intros', introRead.error)
+
+    const introRows = introRead.data ?? []
+    const outcomeRead = introRows.length
+      ? await supabase.from('intro_outcomes').select('intro_request_id, stage, outcome_category, occurred_on').in('intro_request_id', introRows.map(r => r.id)).order('occurred_on', { ascending: false })
+      : null
+    if (outcomeRead) note('outcomes', outcomeRead.error)
+    const latestOutcome = new Map<string, IntroEvidence['outcome']>()
+    for (const o of outcomeRead?.data ?? []) {
+      if (!latestOutcome.has(o.intro_request_id)) latestOutcome.set(o.intro_request_id, { stage: o.stage, category: o.outcome_category, occurredOn: o.occurred_on })
+    }
+    const introsByPeer = new Map<string, IntroEvidence[]>()
+    for (const r of introRows) {
+      const sent = r.user_id === userId
+      const peer = sent ? (r.target_user_id ?? r.member_id) : r.user_id
+      const entry: IntroEvidence = { id: r.id, direction: sent ? 'sent' : 'received', status: r.status, createdAt: r.created_at, acceptedAt: r.accepted_at, outcome: latestOutcome.get(r.id) ?? null }
+      introsByPeer.set(peer, [...(introsByPeer.get(peer) ?? []), entry])
+    }
+
+    // Undirected connection graph: a `connection` row either way links two members.
+    const connectionsOf = new Map<string, Set<string>>()
+    for (const e of edgeRead.data ?? []) {
+      for (const [a, b] of [[e.follower_id, e.followee_id], [e.followee_id, e.follower_id]] as const) {
+        if (!connectionsOf.has(a)) connectionsOf.set(a, new Set())
+        connectionsOf.get(a)!.add(b)
+      }
+    }
+    const mine = connectionsOf.get(userId) ?? new Set<string>()
+    const nameOf = new Map(profiles.map(p => [p.id, p.name || 'Member']))
+
+    const peerMessages = new Map<string, { count: number; lastAt: string | null }>()
+    for (const t of threadRows.data ?? []) {
+      const rows = messageRows.filter(m => m.thread_id === t.id)
+      const prev = peerMessages.get(peerOf(t)) ?? { count: 0, lastAt: null }
+      const lastAt = rows.length ? rows[rows.length - 1]!.created_at : null
+      peerMessages.set(peerOf(t), { count: prev.count + rows.length, lastAt: !prev.lastAt || (lastAt && lastAt > prev.lastAt) ? lastAt : prev.lastAt })
+    }
+
+    const members = others.map(row => {
+      const msgs = peerMessages.get(row.id) ?? { count: 0, lastAt: null }
+      const theirs = connectionsOf.get(row.id) ?? new Set<string>()
+      const mutualIds = edgeRead.error ? [] : [...mine].filter(id => id !== row.id && id !== userId && theirs.has(id))
+      const base: Omit<RelationshipEvidence, 'provenStrength'> = {
+        lastInteractionAt: msgs.lastAt,
+        lastInteractionDays: msgs.lastAt ? Math.max(0, Math.floor((Date.now() - new Date(msgs.lastAt).getTime()) / 86400000)) : null,
+        messageCount: msgs.count,
+        directConnection: edgeRead.error ? null : mine.has(row.id),
+        mutualConnections: edgeRead.error ? null : mutualIds.length,
+        intros: introRead.error ? null : (introsByPeer.get(row.id) ?? []),
+      }
+      return profileToMember(row, me, { ...base, provenStrength: provenStrengthOf(base) }, mutualIds.map(id => nameOf.get(id) ?? 'Member'))
+    })
     // Bands of members who chose to show them, for the small matching boost. Optional: an
     // error (e.g. before migration 0055 is applied) just means no boost.
     if (others.length) {
@@ -183,20 +313,13 @@ export async function loadLiveDirectory(userId: string): Promise<{ directory: Di
       for (const m of members) m.giverBand = byId.get(m.id) ?? null
     }
 
-    const threadIds = (threadRows.data ?? []).map(t => t.id)
-    let messageRows: Array<{ id: string; thread_id: string; sender_id: string; text: string; created_at: string }> = []
-    if (threadIds.length) {
-      const read = await supabase.from('dm_messages').select('*').in('thread_id', threadIds).order('created_at')
-      note('messages', read.error)
-      messageRows = read.data ?? []
-    }
-
+    // Persisted read receipts: a thread is unread only when the server says so.
+    const unreadById = new Map((unreadRead?.data ?? []).map(r => [r.thread_id, Number(r.unread) || 0]))
     const threads: Thread[] = (threadRows.data ?? []).map(t => {
-      const peer = t.member_a === userId ? t.member_b : t.member_a
       return {
         id: t.id,
-        memberId: peer,
-        unread: false,
+        memberId: peerOf(t),
+        unread: (unreadById.get(t.id) ?? 0) > 0,
         introContext: t.intro_context ?? '',
         commitment: '',
         suggested: '',
@@ -241,11 +364,14 @@ export async function loadLiveDirectory(userId: string): Promise<{ directory: Di
     }))
 
     const queryError: LiveQueryError = Object.keys(errors).length ? errors : null
-    return { directory: { members, posts, asks, signals: [], threads, learnings: [] }, me, queryError, ...(queryError ? { failed: true } : {}) }
+    // Evidence sources (reads/connections/intros/outcomes) degrade to "unknown" and are reported
+    // in queryError, but don't fail the whole directory.
+    const coreFailed = (['members', 'posts', 'asks', 'threads', 'messages'] as const).some(s => errors[s])
+    return { directory: { members, posts, asks, signals: [], threads, learnings: [] }, me, queryError, ...(coreFailed ? { failed: true } : {}) }
   } catch (error) {
     console.error('live network read failed', error)
     const message = error instanceof Error ? error.message : 'Network error'
-    return { directory: emptyDirectory, me: null, failed: true, queryError: { members: message, posts: message, asks: message, threads: message, messages: message } }
+    return { directory: emptyDirectory, me: null, failed: true, queryError: { members: message, posts: message, asks: message, threads: message, messages: message, reads: message, connections: message, intros: message, outcomes: message } }
   }
 }
 

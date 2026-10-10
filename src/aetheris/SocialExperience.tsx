@@ -2,6 +2,7 @@ import { useMemo, useState } from 'react'
 import { ArrowRight, Bell, Bookmark, CalendarDays, Check, CircleDot, Handshake, Heart, Image, Lightbulb, MessageCircle, MessageSquareText, Paperclip, Plus, Search, Send, ShieldCheck, Target, Upload, Users, X } from 'lucide-react'
 
 import { journalKindFor, uploadJournalMedia } from './live'
+import { knownInteractionDays } from './lib/engine'
 import { activeMission } from './opportunity-graph'
 import { useCeo, openCeo } from './ceo-store'
 import { useGraph } from './graph-store'
@@ -106,7 +107,7 @@ function IntelligenceCards() {
   const net = useNetwork(); const ops = useOps(); const ceo = useCeo(); const nav = useNav()
   const due = ops.tasks.find(task => task.status !== 'done' && task.status !== 'cancelled' && task.dueAt)
   const meeting = ceo.inputs.meetings.find(item => new Date(item.startsAt).getTime() > Date.now())
-  const cooling = [...net.members].sort((a, b) => b.lastInteractionDays - a.lastInteractionDays)[0]
+  const cooling = net.members.filter(m => knownInteractionDays(m) !== null).sort((a, b) => b.lastInteractionDays - a.lastInteractionDays)[0]
   const approval = ceo.inputs.approvals.find(item => item.status === 'pending')
   const cards = [
     cooling && cooling.lastInteractionDays > 30 ? { id: `cool-${cooling.id}`, label: 'Relationship alert', title: `${cooling.name} has no recorded interaction for ${cooling.lastInteractionDays} days.`, detail: cooling.nextAction, action: 'Follow up', run: () => nav.messageMember(cooling.id) } : null,

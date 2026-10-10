@@ -51,7 +51,7 @@ import {
 } from './social'
 import { NetworkProvider, useNetwork, type MemoryNote, type MeProfile, type NetworkMode } from './store'
 import { isShowcase, setShowcaseMode, showcaseOnly } from './showcase'
-import { classifyConnection, composeWarmIntro, radarLabel } from './lib/engine'
+import { classifyConnection, composeWarmIntro, knownInteractionDays, radarLabel } from './lib/engine'
 import { useGrabScroll } from './lib/dragScroll'
 import { metaById, primaryPages, pageMeta, networkTabs, networkAdvanced, workTabs, workAdvanced, meTabs, meAdvanced } from './pageMeta'
 import { MoreDrawer, rememberRecent } from './pages/MoreDrawer'
@@ -1483,7 +1483,7 @@ function Memory({ people, select }: { people: Member[]; select: (p: Member) => v
       </section>
       <section className="mod">
         <header><span>RECONNECT OPPORTUNITIES</span><button className="mod-link">View all <ArrowRight size={12} /></button></header>
-        <ul className="reconnect-list">{[...people].sort((a, b) => b.lastInteractionDays - a.lastInteractionDays).slice(0, 3).map(p =>
+        <ul className="reconnect-list">{people.filter(p => knownInteractionDays(p) !== null).sort((a, b) => b.lastInteractionDays - a.lastInteractionDays).slice(0, 3).map(p =>
           <li key={p.id}><button onClick={() => select(p)}><Avatar person={p} portrait />
             <div><strong>{p.name}</strong><small>Last conversation {Math.max(1, Math.round(p.lastInteractionDays / 30))} months ago</small>
               <small>{p.whyNow}</small></div></button></li>)}</ul>
@@ -1492,7 +1492,7 @@ function Memory({ people, select }: { people: Member[]; select: (p: Member) => v
         <header><span>COOLING CONVERSATIONS</span><button className="mod-link">View all <ArrowRight size={12} /></button></header>
         <ul className="reconnect-list">{people.filter(p => p.score.timing < 70).slice(0, 3).map(p =>
           <li key={p.id}><button onClick={() => select(p)}><Avatar person={p} portrait />
-            <div><strong>{p.name}</strong><small>Last message {Math.max(1, Math.round(p.lastInteractionDays / 7))} weeks ago</small>
+            <div><strong>{p.name}</strong><small>{knownInteractionDays(p) === null ? 'No messages yet' : `Last message ${Math.max(1, Math.round(p.lastInteractionDays / 7))} weeks ago`}</small>
               <small>{p.nextAction}</small></div></button></li>)}</ul>
       </section>
     </div>
@@ -1835,7 +1835,7 @@ function MemberProfile({ person, people, onClose, onDraft, onMessage }: {
     { text: `You both engaged with ${person.industry.toLowerCase()} conversations on Intros`, when: `Joined ${person.joined}` },
     ...(person.bestPath.length > 2 ? [{ text: `Warm path opened through ${person.bestPath[1]}`, when: 'Trust path active' }] : []),
     { text: person.mutuals.length ? `Shared connections: ${person.mutuals.join(', ')}` : 'No shared connections yet', when: `${person.mutuals.length} mutual` },
-    { text: `${person.name.split(' ')[0]} last interacted with your network`, when: `${person.lastInteractionDays} days ago` },
+    { text: `${person.name.split(' ')[0]} last interacted with your network`, when: knownInteractionDays(person) === null ? 'Not recorded' : `${person.lastInteractionDays} days ago` },
   ]
   return <article className="member-page">
     <button className="member-back" onClick={onClose}><ChevronLeft size={16} /> Back to the network</button>
@@ -2238,7 +2238,7 @@ function ContextRail({ page, people, select, onAsk }: {
   const objectives = net.objectives
   const ranked = [...people].sort((a, b) => b.scoreTotal - a.scoreTotal)
   const p = ranked[0]
-  const cool = [...people].sort((a, b) => b.lastInteractionDays - a.lastInteractionDays)[0]
+  const cool = people.filter(x => knownInteractionDays(x) !== null).sort((a, b) => b.lastInteractionDays - a.lastInteractionDays)[0]
   const warm = people.filter(x => x.bestPath.length > 2).slice(0, 2)
   if (!p) return null
   return <aside className="context-rail">
