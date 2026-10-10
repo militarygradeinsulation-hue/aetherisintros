@@ -72,11 +72,12 @@ describe('sign-out cleanup', () => {
   it('clears member keys and live stores but keeps demo copies', () => {
     const keys = [
       'aetheris.sync.meta', 'aetheris.ledger.patch.u1', 'aetheris-moat-v1-live', 'aetheris-relationship-os-v1-live',
-      'aetheris-pro-v1-live', 'aetheris-platform-v1-live', 'aetheris-moat-v1-demo', 'aetheris-pro-v1-demo', 'theme', 'aetherisx',
+      'aetheris-pro-v1-live', 'aetheris-platform-v1-live', 'aetheris.business-execution-v1-live.u1',
+      'aetheris-moat-v1-demo', 'aetheris-pro-v1-demo', 'theme', 'aetherisx',
     ]
     expect(keysToClearOnSignOut(keys).sort()).toEqual([
       'aetheris-moat-v1-live', 'aetheris-platform-v1-live', 'aetheris-pro-v1-live', 'aetheris-relationship-os-v1-live',
-      'aetheris.ledger.patch.u1', 'aetheris.sync.meta',
+      'aetheris.business-execution-v1-live.u1', 'aetheris.ledger.patch.u1', 'aetheris.sync.meta',
     ])
   })
 })
@@ -88,7 +89,10 @@ describe('retries and allowlist', () => {
     expect(retryDelayMs(20)).toBe(60000)
   })
   it('matches the database allowlist and never includes demo stores', () => {
-    const sql = readFileSync(new URL('../../../../drizzle/migrations/0047_workspace_sync.sql', import.meta.url), 'utf8')
+    const sql = [
+      readFileSync(new URL('../../../../drizzle/migrations/0047_workspace_sync.sql', import.meta.url), 'utf8'),
+      readFileSync(new URL('../../../../drizzle/migrations/0059_business_execution_workbench.sql', import.meta.url), 'utf8'),
+    ].join('\n')
     for (const key of SYNCED_STORE_KEYS) expect(sql).toContain(`'${key}'`)
     expect(SYNCED_STORE_KEYS.some(k => k.endsWith('-demo'))).toBe(false)
   })

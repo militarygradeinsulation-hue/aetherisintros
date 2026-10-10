@@ -13,6 +13,7 @@ export const SYNCED_STORE_KEYS = [
   'aetheris-pro-v1-live',
   'aetheris-platform-v1-live',
   'aetheris.ledger.patch',
+  'aetheris.business-execution-v1-live',
 ] as const
 export type SyncedStoreKey = typeof SYNCED_STORE_KEYS[number]
 
