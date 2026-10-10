@@ -2,7 +2,7 @@ import { readFileSync } from 'node:fs'
 import { describe, expect, it } from 'vitest'
 
 import {
-  createStoreReadiness, shouldRetryInitialSync, SYNCED_STORE_KEYS, keysToClearOnSignOut, mergeStoreData, planInitialSync, retryDelayMs, type LocalCopy,
+  createStoreReadiness, shouldRetryInitialSync, SYNCED_STORE_KEYS, keysToClearOnSignOut, mergeStoreData, planInitialSync, retryDelayMs, syncSkeleton, type LocalCopy,
 } from '../sync-logic'
 
 const local = (over: Partial<LocalCopy> = {}): LocalCopy => ({ present: true, baseVersion: 0, dirty: false, foreign: false, ...over })
@@ -101,6 +101,27 @@ describe('mergeStoreData', () => {
   })
   it('returns local data when the server has none', () => {
     expect(mergeStoreData({ a: 1 }, undefined)).toEqual({ a: 1 })
+  })
+  it('does not resurrect records deleted on another device (tombstone via base)', () => {
+    const base = syncSkeleton({ rooms: [{ id: 'a' }, { id: 'gone' }], deals: { d1: {}, d2: {} } })
+    const merged = mergeStoreData(
+      { rooms: [{ id: 'new' }, { id: 'a' }, { id: 'gone' }], deals: { d1: { v: 1 }, d2: { v: 2 } } },
+      { rooms: [{ id: 'a' }], deals: { d1: { v: 3 } } },
+      base,
+    )
+    expect(merged).toEqual({ rooms: [{ id: 'new' }, { id: 'a' }], deals: { d1: { v: 3 } } })
+  })
+  it('keeps deletions made on this device while it was offline', () => {
+    const base = syncSkeleton({ rooms: [{ id: 'a' }, { id: 'b' }], deals: { d1: {}, d2: {} } })
+    const merged = mergeStoreData(
+      { rooms: [{ id: 'a' }], deals: { d1: { v: 1 } } },
+      { rooms: [{ id: 'c' }, { id: 'a' }, { id: 'b' }], deals: { d1: { v: 1 }, d2: { v: 2 }, d3: { v: 3 } } },
+      base,
+    )
+    expect(merged).toEqual({ rooms: [{ id: 'c' }, { id: 'a' }], deals: { d1: { v: 1 }, d3: { v: 3 } } })
+  })
+  it('keeps only keys and ids in the base skeleton', () => {
+    expect(syncSkeleton({ rooms: [{ id: 'a', note: 'long text' }, 'x'], n: 5 })).toEqual({ rooms: [{ id: 'a' }], n: 0 })
   })
 })
 

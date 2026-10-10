@@ -10,7 +10,7 @@
 import { useSyncExternalStore } from 'react'
 import {
   createStoreReadiness, FAILURES_BEFORE_NOTICE, MAX_STORE_BYTES, keysToClearOnSignOut, mergeStoreData, planInitialSync,
-  retryDelayMs, shouldRetryInitialSync, type RemoteCopy, type SyncedStoreKey,
+  retryDelayMs, shouldRetryInitialSync, syncSkeleton, SYNCED_STORE_KEYS, type RemoteCopy, type SyncedStoreKey,
 } from './sync-logic'
 
 export interface SyncedStore {
@@ -49,6 +49,25 @@ function setEntry(key: SyncedStoreKey, entry: MetaEntry) {
   const meta = readMeta()
   meta.entries[key] = entry
   writeMeta(meta)
+  refreshPending()
+}
+
+/*
+ * Base skeleton per store: the keys/ids of the last copy this device and the server agreed
+ * on. Merges use it so a record deleted on either side is not brought back by the next sync.
+ */
+const baseKey = (key: SyncedStoreKey) => `aetheris.sync.base.${key}`
+function readBase(key: SyncedStoreKey): unknown {
+  try {
+    const raw = localStorage.getItem(baseKey(key))
+    return raw == null ? undefined : JSON.parse(raw) as unknown
+  } catch { return undefined }
+}
+function writeBase(key: SyncedStoreKey, data: unknown | null) {
+  try {
+    if (data == null) localStorage.removeItem(baseKey(key))
+    else localStorage.setItem(baseKey(key), JSON.stringify(syncSkeleton(data)))
+  } catch { /* storage full: merges fall back to keeping everything */ }
 }
 
 function readLocal(localKey: string): { present: boolean; data: unknown } {
@@ -68,14 +87,30 @@ export interface WorkspaceSyncStatus {
   lastSavedAt: string | null
   /** Saving has failed several times in a row. */
   failing: boolean
+  /** Stores with changes not yet saved to the account. */
+  pending: SyncedStoreKey[]
+  /** Stores whose last save attempt failed (retrying). */
+  failed: SyncedStoreKey[]
+  /** Stores too large to save. Not retried until they change; the member must trim them. */
+  oversized: SyncedStoreKey[]
+  /** Most recent save error, for display. */
+  lastError: string | null
 }
-let status: WorkspaceSyncStatus = { signedIn: false, lastSavedAt: null, failing: false }
+const idleStatus: WorkspaceSyncStatus = { signedIn: false, lastSavedAt: null, failing: false, pending: [], failed: [], oversized: [], lastError: null }
+let status: WorkspaceSyncStatus = idleStatus
 const statusListeners = new Set<() => void>()
 function setStatus(patch: Partial<WorkspaceSyncStatus>) {
   status = { ...status, ...patch }
   statusListeners.forEach(l => l())
 }
-const serverStatus: WorkspaceSyncStatus = { signedIn: false, lastSavedAt: null, failing: false }
+const serverStatus: WorkspaceSyncStatus = idleStatus
+const withKey = (list: SyncedStoreKey[], key: SyncedStoreKey, on: boolean) =>
+  on ? (list.includes(key) ? list : [...list, key]) : list.filter(k => k !== key)
+function refreshPending() {
+  const entries = readMeta().entries
+  const pending = SYNCED_STORE_KEYS.filter(k => stores.has(k) && entries[k]?.dirty)
+  if (pending.join() !== status.pending.join()) setStatus({ pending })
+}
 export function useWorkspaceSyncStatus(): WorkspaceSyncStatus {
   return useSyncExternalStore(
     l => { statusListeners.add(l); return () => statusListeners.delete(l) },
@@ -100,14 +135,22 @@ async function client() {
   return supabase as any // eslint-disable-line @typescript-eslint/no-explicit-any
 }
 
-function noteFailure(key: SyncedStoreKey) {
+function noteFailure(key: SyncedStoreKey, error?: unknown) {
   failures += 1
-  setStatus({ failing: failures >= FAILURES_BEFORE_NOTICE })
+  const message = error instanceof Error ? error.message : (error as { message?: string } | undefined)?.message
+  setStatus({ failing: failures >= FAILURES_BEFORE_NOTICE, failed: withKey(status.failed, key, true), lastError: message ?? status.lastError })
   schedule(key, retryDelayMs(failures))
 }
-function noteSaved(at: string | null) {
+function noteSaved(key: SyncedStoreKey, at: string | null) {
   failures = 0
-  setStatus({ failing: false, lastSavedAt: at ?? new Date().toISOString() })
+  const failed = withKey(status.failed, key, false)
+  setStatus({ failing: false, failed, oversized: withKey(status.oversized, key, false), lastSavedAt: at ?? new Date().toISOString(), ...(failed.length ? {} : { lastError: null }) })
+}
+/** Too big to save: a retry can never succeed, so report it and wait for the store to change. */
+function noteOversized(key: SyncedStoreKey, bytes: number) {
+  const message = `${key} is ${(bytes / 1024 / 1024).toFixed(1)} MB, over the ${MAX_STORE_BYTES / 1024 / 1024} MB account limit. Remove some items to resume saving.`
+  console.error(`workspace sync: ${message}`)
+  setStatus({ oversized: withKey(status.oversized, key, true), failed: withKey(status.failed, key, false), lastError: message })
 }
 
 async function fetchRemote(key: SyncedStoreKey): Promise<RemoteCopy | null> {
@@ -147,9 +190,9 @@ async function loadFromAccount(store: SyncedStore) {
   let remote: RemoteCopy | null
   try {
     remote = await fetchRemote(store.key)
-  } catch {
+  } catch (error) {
     // Offline or not set up yet: keep working locally, try again later.
-    noteFailure(store.key)
+    if (userId === uid) noteFailure(store.key, error)
     return
   }
   if (userId !== uid || stores.get(store.key) !== store) return
@@ -160,21 +203,24 @@ async function loadFromAccount(store: SyncedStore) {
   }, remote)
   switch (plan.action) {
     case 'noop':
-      if (remote) setEntry(store.key, { version: remote.version, dirty: false })
+      if (remote) { setEntry(store.key, { version: remote.version, dirty: false }); writeBase(store.key, remote.data) }
       break
     case 'apply-remote':
       store.apply(remote!.data)
       setEntry(store.key, { version: remote!.version, dirty: false })
+      writeBase(store.key, remote!.data)
       break
     case 'reset':
       store.apply(null)
       setEntry(store.key, { version: 0, dirty: false })
+      writeBase(store.key, null)
       break
     case 'upload':
       setEntry(store.key, { version: plan.baseVersion, dirty: true })
       break
     case 'merge-upload':
-      store.apply(mergeStoreData(local.data, remote!.data))
+      // A foreign copy never merges (planInitialSync), so the base is this member's.
+      store.apply(mergeStoreData(local.data, remote!.data, readBase(store.key)))
       setEntry(store.key, { version: plan.baseVersion, dirty: true })
       break
   }
@@ -184,35 +230,40 @@ async function loadFromAccount(store: SyncedStore) {
 
 async function saveOnce(key: SyncedStoreKey) {
   const store = stores.get(key)
-  if (!store || !userId || !storeReadiness.isReady(key)) return
+  const uid = userId
+  if (!store || !uid || !storeReadiness.isReady(key)) return
   const entry = readMeta().entries[key]
   if (!entry?.dirty) return
   const local = readLocal(store.localKey)
   if (!local.present) return
-  const body = JSON.stringify(local.data)
-  if (new TextEncoder().encode(body).length > MAX_STORE_BYTES) { noteFailure(key); return }
+  const bytes = new TextEncoder().encode(JSON.stringify(local.data)).length
+  if (bytes > MAX_STORE_BYTES) { noteOversized(key, bytes); return }
   const sentAt = changeCounter.get(key) ?? 0
   let result: { saved: boolean; current_version: number | string; current_data: unknown; saved_at: string | null } | undefined
+  let failure: unknown
   try {
     const db = await client()
     const { data, error } = await db.rpc('save_workspace_state', { p_key: key, p_data: local.data, p_base_version: entry.version })
     if (error) throw error
     result = Array.isArray(data) ? data[0] : data
-  } catch {
-    noteFailure(key)
-    return
+  } catch (error) {
+    failure = error
   }
-  if (!result) { noteFailure(key); return }
+  // The member signed out or switched accounts (or the store was replaced) while saving:
+  // this result belongs to someone else's session, so it must not touch meta or local data.
+  if (userId !== uid || stores.get(key) !== store) return
+  if (failure !== undefined || !result) { noteFailure(key, failure ?? new Error('Empty save response')); return }
   const version = Number(result.current_version)
   if (result.saved) {
     const changedSince = (changeCounter.get(key) ?? 0) !== sentAt
     setEntry(key, { version, dirty: changedSince })
-    noteSaved(result.saved_at)
+    writeBase(key, local.data)
+    noteSaved(key, result.saved_at)
     if (changedSince) schedule(key)
     return
   }
   // Another device saved first: fold our unsaved work into theirs and try again.
-  const merged = mergeStoreData(readLocal(store.localKey).data, result.current_data)
+  const merged = mergeStoreData(readLocal(store.localKey).data, result.current_data, readBase(key))
   store.apply(merged)
   setEntry(key, { version, dirty: true })
   schedule(key, 0)
@@ -250,7 +301,8 @@ function onUser(next: string | null) {
   userId = next
   storeReadiness.clear()
   failures = 0
-  setStatus({ signedIn: !!next, failing: false, lastSavedAt: null })
+  setStatus({ ...idleStatus, signedIn: !!next })
+  refreshPending()
   if (next) for (const store of stores.values()) void initialSync(store)
 }
 
@@ -273,6 +325,10 @@ function ensureStarted() {
 /** Called by a live store when it is created. Re-registering a key replaces the old one. */
 export function registerSyncedStore(store: SyncedStore) {
   if (!hasWindow()) return
+  // The server CHECK rejects any other key; fail loudly here instead of retrying forever.
+  if (!(SYNCED_STORE_KEYS as readonly string[]).includes(store.key)) { console.error(`workspace sync: ${store.key} is not an allowed store key`); return }
+  const clash = [...stores.values()].find(s => s.key !== store.key && s.localKey === store.localKey)
+  if (clash) { console.error(`workspace sync: ${store.localKey} is already synced as ${clash.key}`); return }
   stores.set(store.key, store)
   storeReadiness.clear(store.key)
   ensureStarted()
@@ -290,6 +346,8 @@ export function notifyWorkspaceChange(key: SyncedStoreKey) {
   changeCounter.set(key, (changeCounter.get(key) ?? 0) + 1)
   const entry = readMeta().entries[key]
   setEntry(key, { version: entry?.version ?? 0, dirty: true })
+  // A change may have brought an oversized store back under the limit; try again.
+  if (status.oversized.includes(key)) setStatus({ oversized: withKey(status.oversized, key, false) })
   if (userId && storeReadiness.isReady(key)) schedule(key)
 }
 

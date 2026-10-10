@@ -111,13 +111,25 @@ const idOf = (v: unknown): string | null => {
  * value; records only this device has (by `id` in lists, by key in objects) are kept, so
  * nothing created offline is lost. Lists keep the server order with local-only records first
  * (the stores list newest first).
+ *
+ * `base` is the skeleton (see `syncSkeleton`) of the last copy both sides agreed on. With it,
+ * deletions are honoured instead of resurrected: a record missing on one side that was in the
+ * base was deleted there, so it is dropped rather than copied back. Without a base (never
+ * synced here) nothing is dropped.
  */
-export function mergeStoreData(local: unknown, remote: unknown): unknown {
+export function mergeStoreData(local: unknown, remote: unknown, base?: unknown): unknown {
   if (remote === undefined) return local
   if (isPlainObject(local) && isPlainObject(remote)) {
-    const out: Record<string, unknown> = { ...remote }
+    const b = isPlainObject(base) ? base : null
+    const out: Record<string, unknown> = {}
+    for (const [key, value] of Object.entries(remote)) {
+      // In the base but gone locally: deleted on this device.
+      if (!(key in local) && b && key in b) continue
+      out[key] = key in local ? mergeStoreData(local[key], value, b?.[key]) : value
+    }
     for (const [key, value] of Object.entries(local)) {
-      out[key] = key in remote ? mergeStoreData(value, remote[key]) : value
+      // In the base but gone from the server: deleted on another device.
+      if (!(key in remote) && !(b && key in b)) out[key] = value
     }
     return out
   }
@@ -125,10 +137,22 @@ export function mergeStoreData(local: unknown, remote: unknown): unknown {
     const remoteIds = new Set(remote.map(idOf).filter((id): id is string => id !== null))
     const keyed = remote.length === 0 || remoteIds.size > 0
     if (!keyed || local.some(r => idOf(r) === null)) return remote
-    const localOnly = local.filter(r => !remoteIds.has(idOf(r)!))
-    return [...localOnly, ...remote]
+    const baseIds = new Set(Array.isArray(base) ? base.map(idOf).filter((id): id is string => id !== null) : [])
+    const localIds = new Set(local.map(idOf))
+    const localOnly = local.filter(r => !remoteIds.has(idOf(r)!) && !baseIds.has(idOf(r)!))
+    return [...localOnly, ...remote.filter(r => { const id = idOf(r); return id === null || localIds.has(id) || !baseIds.has(id) })]
   }
   return remote
+}
+
+/**
+ * The part of a synced copy `mergeStoreData` needs as a base: object keys and list record ids,
+ * without the (much larger) values, so it is cheap to keep next to the local copy.
+ */
+export function syncSkeleton(data: unknown): unknown {
+  if (isPlainObject(data)) return Object.fromEntries(Object.entries(data).map(([k, v]) => [k, syncSkeleton(v)]))
+  if (Array.isArray(data)) return data.flatMap(r => { const id = idOf(r); return id === null ? [] : [{ id }] })
+  return 0
 }
 
 /** Retry delay after consecutive failures: 2s, 4s, 8s … capped at 60s. */
