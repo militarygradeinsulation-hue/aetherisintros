@@ -65,6 +65,9 @@ export default function CrmPage() {
 
 
   const people = ops.people.filter(p => !p.archived)
+  const recentlyActive = people.filter(p => p.lastActivityAt).sort((a, b) => (b.lastActivityAt ?? '').localeCompare(a.lastActivityAt ?? '')).slice(0, 6)
+  const latestSubject = new Map<string, string>()
+  for (const a of ops.activities) if (a.personId && !latestSubject.has(a.personId)) latestSubject.set(a.personId, a.subject) // activities are newest-first
   const companies = ops.companies.filter(c => !c.archived)
   const opportunities = ops.opportunities.filter(o => !o.archived)
   const openOpps = opportunities.filter(o => o.status === 'open')
@@ -134,6 +137,15 @@ export default function CrmPage() {
             <em>No activity logged</em><ArrowRight size={14} />
           </button>)}
           {!people.length && <p className="ops-note">Add a person, or link one from the network with “Add to CRM” on their profile.</p>}
+        </article>
+
+        <article className="ops-panel">
+          <Eyebrow>RECENT GHOST ACTIVITY</Eyebrow>
+          {recentlyActive.map(p => <button key={p.id} className="ops-row" onClick={() => setSelected({ type: 'person', id: p.id })}>
+            <span><b>{p.fullName}</b><small>{latestSubject.get(p.id) ?? (p.title || p.lifecycle)}</small></span>
+            <em>{day(p.lastActivityAt)}</em><ArrowRight size={14} />
+          </button>)}
+          {!recentlyActive.length && <p className="ops-note">Messages, accepted introductions and outcomes add contacts and touchpoints here automatically.</p>}
         </article>
 
         <article className="ops-panel">

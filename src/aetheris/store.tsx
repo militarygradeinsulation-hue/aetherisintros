@@ -15,7 +15,7 @@ import {
 } from './db'
 import {
   createLiveThread, emptyDirectory, loadLiveDirectory, mirrorFollow, saveComment,
-  saveReaction, sendLiveMessage, uploadProfileAvatar, type LiveProfileRow, type LiveQueryError, type WriteResult,
+  saveReaction, sendLiveMessage, ghostMessageSent, uploadProfileAvatar, type LiveProfileRow, type LiveQueryError, type WriteResult,
 } from './live'
 import { supabase } from '@/integrations/supabase/client'
 import { quarterStart } from './activation'
@@ -586,7 +586,13 @@ export function NetworkProvider({ children, mode = 'live' }: { children: React.R
             return sendLiveMessage(threadId, userId, message.text, message.id)
           }
           void track({ key: `msg:${message.id}`, kind: 'message', label: 'Message' }, send)
-            .then(result => { if (result.ok) delivered.current.add(message.id) })
+            .then(result => {
+              if (!result.ok) return
+              delivered.current.add(message.id)
+              const peerId = [...dir.threads, ...s.ownThreads].find(t => t.id === threadId)?.memberId
+              const peer = peerId ? dir.members.find(m => m.id === peerId) : undefined
+              if (peerId) void ghostMessageSent(threadId, peerId, { name: peer?.name ?? '', title: peer?.title ?? '', company: peer?.company ?? '' })
+            })
         } else saveMessage(userId, threadId, message)
       })
     }

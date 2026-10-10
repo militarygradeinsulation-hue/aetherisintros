@@ -8,6 +8,7 @@ import { useCallback, useEffect, useState } from 'react'
 import { Check, Inbox, X } from 'lucide-react'
 
 import { supabase } from '@/integrations/supabase/client'
+import { ghostSyncIntroAccepted } from './crm/ghost-sync'
 import { useGraph } from './graph-store'
 import { useNav } from './nav'
 import { waitingLabel } from './sent-requests'
@@ -74,6 +75,11 @@ export function IntroRequestInbox() {
       setMsg(gone ? `This request from ${row.requesterName} was withdrawn or already answered.` : `Your response was not saved: ${u.error.message}`)
       if (gone) await load()
       return
+    }
+    if (accept) {
+      // Ghost CRM: the requester becomes (or refreshes) a contact with an intro on their timeline. Never blocks.
+      const m = net.members.find(x => x.id === row.requesterId)
+      void ghostSyncIntroAccepted({ theirProfile: { id: row.requesterId, name: row.requesterName, title: m?.title ?? '', company: m?.company ?? '', location: m?.location ?? '' }, introId: row.id })
     }
     await graph.logEvent('intro_request', row.id, accept ? 'accepted' : 'declined', `Introduction ${accept ? 'accepted' : 'declined'} with ${row.requesterName}`)
     setMsg(accept ? `Accepted. You and ${row.requesterName} can now open a Relationship Room.` : `Declined. ${row.requesterName} is not told why.`)

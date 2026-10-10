@@ -13,6 +13,7 @@ import {
   type Attribution, type DueCheckin, type NetworkProof, type OutcomeCategory, type OutcomeEvent, type OutcomeStage,
   type OutcomeSummary, type TrackRecord, type ValueBand,
 } from './outcomes'
+import { ghostOutcomeRecorded } from './crm/ghost-sync'
 import { useGraph } from './graph-store'
 import { MeetNowButton } from './meetings-ui'
 import { useNetwork } from './store'
@@ -34,6 +35,7 @@ function OutcomeForm({ introRequestId, onSaved, quick = QUICK }: { introRequestI
     })
     setBusy(false)
     if (res.error) { setMsg(res.error); return }
+    void ghostOutcomeRecorded(introRequestId, stage, stage === 'outcome' ? f.category : undefined)
     setDetail(false)
     onSaved()
   }

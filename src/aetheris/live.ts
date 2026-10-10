@@ -6,6 +6,7 @@
  * `social.ts` — an empty network returns empty arrays so the UI can teach the
  * member what to do next instead of showing invented activity.
  */
+import { ghostSyncMessage } from './crm/ghost-sync'
 import { supabase } from '@/integrations/supabase/client'
 import { calculateConnectionScore, determineRadarState, NO_INTERACTION_EVIDENCE } from './lib/engine'
 import { businessOf, type Directory } from './db'
@@ -490,6 +491,11 @@ export async function sendLiveMessage(threadId: string, senderId: string, text: 
   // Ordering hint only: the message itself is delivered, so a failure here is logged, not surfaced.
   await settle('thread touch', supabase.from('dm_threads').update({ updated_at: new Date().toISOString() }).eq('id', threadId))
   return sent
+}
+
+/** Ghost CRM: after a message is delivered, keep the peer's contact and timeline current (never throws). */
+export async function ghostMessageSent(threadId: string, peerId: string, peerProfile: { name: string; title: string; company: string }): Promise<void> {
+  await ghostSyncMessage({ theirProfile: { id: peerId, ...peerProfile, location: '' }, threadId })
 }
 
 export async function mirrorFollow(userId: string, peerId: string, kind: 'follow' | 'connection' | 'saved', on: boolean): Promise<WriteResult> {
