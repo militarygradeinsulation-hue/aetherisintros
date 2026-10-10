@@ -16,6 +16,7 @@ import { getIceServers } from '@/lib/iceServers.functions'
 import { generateMeetingNotes } from '@/lib/meetingNotes.functions'
 import { transcribeMeetingAudio } from '@/lib/meetingTranscribe.functions'
 import { useGraph } from './graph-store'
+import { ghostSyncMeeting } from './crm/ghost-sync'
 import { loadBrief, type Brief } from './meeting-brief'
 import { downloadIcs, dueReminders, icsForMeeting, reminderText, type Reminder } from './meeting-reminders'
 import { MeetingCall, type Caption, type RemotePeer } from './meeting-call'
@@ -592,6 +593,20 @@ export function MeetNowButton({ introId, title, capsule }: { introId: string; ti
     setBusy(false)
     if (r.error || !r.id) { setMsg(r.error || 'The meeting could not be started.'); return }
     queueMeetingToOpen(r.id)
+    // Ghost CRM: log this as a meeting with the other side of the introduction (non-blocking).
+    void (async () => {
+      try {
+        const [{ data: auth }, { data: intro }] = await Promise.all([
+          supabase.auth.getUser(),
+          supabase.from('intro_requests').select('user_id, target_user_id').eq('id', introId).maybeSingle(),
+        ])
+        const me = auth.user?.id
+        if (!intro || !me) return
+        const theirId = intro.user_id === me ? intro.target_user_id : intro.user_id
+        if (!theirId) return
+        await ghostSyncMeeting({ theirProfile: { id: theirId, name: '', title: '', company: '', location: '' }, eventTitle: title, startAt: new Date().toISOString() })
+      } catch { /* swallow */ }
+    })()
     nav.setPage('meetings')
   }
   return <>

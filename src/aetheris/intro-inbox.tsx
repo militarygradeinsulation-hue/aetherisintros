@@ -83,6 +83,22 @@ export function IntroRequestInbox() {
       // Ghost CRM: the requester becomes (or refreshes) a contact with an intro on their timeline. Never blocks.
       const m = net.members.find(x => x.id === row.requesterId)
       void ghostSyncIntroAccepted({ theirProfile: { id: row.requesterId, name: row.requesterName, title: m?.title ?? '', company: m?.company ?? '', location: m?.location ?? '' }, introId: row.id })
+      // Notify the requester that their introduction was accepted. Never blocks.
+      const myId = graph.userId
+      void (async () => {
+        if (!myId) return
+        try {
+          const myName = net.members.find(mm => mm.id === myId)?.name ?? 'A member'
+          await db.from('notifications').insert({
+            user_id: row.requesterId,
+            actor_id: myId,
+            kind: 'intro_accepted',
+            text: `${myName} accepted your introduction request.`,
+            link: '',
+            read: false,
+          })
+        } catch { /* swallow — notification failure never blocks the accept flow */ }
+      })()
     }
     await graph.logEvent('intro_request', row.id, accept ? 'accepted' : 'declined', `Introduction ${accept ? 'accepted' : 'declined'} with ${row.requesterName}`)
     setMsg(accept ? `Accepted. You and ${row.requesterName} can now open a Relationship Room.` : `Declined. ${row.requesterName} is not told why.`)

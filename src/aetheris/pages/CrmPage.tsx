@@ -44,6 +44,21 @@ const tabs: Array<{ id: Tab; label: string }> = [
 const money = (n: number) => n.toLocaleString('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 })
 const day = (iso: string | null) => (iso ? new Date(iso).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : '—')
 
+const LIFECYCLE_BADGE: Record<string, { background: string; color: string }> = {
+  Lead:     { background: '#e5e7eb', color: '#374151' },
+  Prospect: { background: '#dbeafe', color: '#1e40af' },
+  Customer: { background: '#d1fae5', color: '#065f46' },
+  Partner:  { background: '#fef3c7', color: '#92400e' },
+  Investor: { background: '#ede9fe', color: '#5b21b6' },
+  Advisor:  { background: '#fce7f3', color: '#9d174d' },
+  Talent:   { background: '#e0f2fe', color: '#0369a1' },
+  Vendor:   { background: '#f3f4f6', color: '#4b5563' },
+  Other:    { background: '#f9fafb', color: '#6b7280' },
+}
+function LifecycleBadge({ lc }: { lc: string }) {
+  return <span className="ops-chip" style={LIFECYCLE_BADGE[lc] ?? LIFECYCLE_BADGE['Other']}>{lc}</span>
+}
+
 export default function CrmPage() {
   const ops = useOps()
   const net = useNetwork()
@@ -180,9 +195,12 @@ export default function CrmPage() {
             const member = memberFor(p)
             return <tr key={p.id} onClick={() => setSelected({ type: 'person', id: p.id })}>
               <td><b>{p.fullName}</b></td>
-              <td><span className="ops-chip">{p.lifecycle}</span></td>
+              <td><LifecycleBadge lc={p.lifecycle} /></td>
               <td>{p.companyName || '—'}</td><td>{p.title || '—'}</td>
-              <td>{member ? <em className="ops-signal">{member.scoreTotal} · {member.relationshipStatus}</em> : '—'}</td>
+              <td>{member ? <span className="ops-signal" style={{ display: 'inline-flex', alignItems: 'center', gap: 5 }}>
+                <span style={{ display: 'inline-block', width: 40, height: 4, background: '#e5e7eb', borderRadius: 2, overflow: 'hidden', flexShrink: 0 }}>
+                  <span style={{ display: 'block', height: '100%', width: `${Math.min(100, Math.max(0, member.scoreTotal))}%`, background: '#6366f1', borderRadius: 2 }} />
+                </span>{member.scoreTotal} · {member.relationshipStatus}</span> : '—'}</td>
               <td>{day(p.lastActivityAt)}</td>
             </tr>
           })}
@@ -336,7 +354,7 @@ function CrmDetail({ selection, onClose, onOpen }: {
       <div>
         <Eyebrow>{selection.type === 'person' ? 'CRM PERSON' : selection.type === 'company' ? 'CRM COMPANY' : 'CRM OPPORTUNITY'}</Eyebrow>
         <h1>{title}</h1>
-        {person && <p>{person.title || '—'}{person.companyName ? ` · ${person.companyName}` : ''}{person.location ? ` · ${person.location}` : ''}</p>}
+        {person && <p><LifecycleBadge lc={person.lifecycle} />{person.title ? ` · ${person.title}` : ''}{person.companyName ? ` · ${person.companyName}` : ''}{person.location ? ` · ${person.location}` : ''}</p>}
         {company && <p>{company.industry || '—'}{company.location ? ` · ${company.location}` : ''}</p>}
         {opportunity && <p>{money(opportunity.amount)} · {opportunity.stageName || 'no stage'} · {opportunity.probability}%</p>}
       </div>
