@@ -19,6 +19,7 @@ import {
   currentUserId,
   ensureDefaultWorkspace,
   finishImport,
+  getLibraryRecord,
   grantWorkspaceAccess,
   importLibraryRows,
   librarySuggestions,
@@ -30,12 +31,14 @@ import {
   workspacePermission,
   workspaceShares,
   type LibraryRecord,
+  type LibrarySearchResult,
   type LibrarySuggestion,
   type LibraryWorkspace,
 } from "./repo";
 
 type DuplicateChoice = "keep" | "skip" | null;
 type FieldSuggestion = "business" | "title" | "location" | "website" | "industry";
+const SEARCH_PAGE_SIZE = 50;
 
 const SUGGESTION_FIELDS: Array<{ key: FieldSuggestion; label: string }> = [
   { key: "business", label: "Business" },
@@ -287,9 +290,11 @@ export function PrivateLibrary() {
   const [shares, setShares] = useState<Array<{ member_id: string; permission: "read" | "edit" }>>(
     [],
   );
-  const [records, setRecords] = useState<LibraryRecord[]>([]);
+  const [records, setRecords] = useState<LibrarySearchResult[]>([]);
   const [activeRecordId, setActiveRecordId] = useState("");
+  const [activeRecord, setActiveRecord] = useState<LibraryRecord | null>(null);
   const [query, setQuery] = useState("");
+  const [searchPage, setSearchPage] = useState(0);
   const [loading, setLoading] = useState(true);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
@@ -307,7 +312,6 @@ export function PrivateLibrary() {
     Array<{ source_sheet: string; source_row: number; messages: string[] }>
   >([]);
 
-  const activeRecord = records.find((record) => record.id === activeRecordId) ?? null;
   const canWrite = permission === "owner" || permission === "edit";
   const canManageShares = permission === "owner";
 
@@ -369,7 +373,7 @@ export function PrivateLibrary() {
     if (!workspaceId) return;
     let live = true;
     const timer = window.setTimeout(() => {
-      void searchLibrary(query, workspaceId)
+      void searchLibrary(query, workspaceId, searchPage * SEARCH_PAGE_SIZE)
         .then((next) => {
           if (!live) return;
           setRecords(next);
@@ -385,9 +389,32 @@ export function PrivateLibrary() {
       live = false;
       window.clearTimeout(timer);
     };
-  }, [query, workspaceId, refreshVersion]);
+  }, [query, workspaceId, refreshVersion, searchPage]);
+
+  useEffect(() => {
+    if (!activeRecordId) {
+      setActiveRecord(null);
+      return;
+    }
+    let live = true;
+    setActiveRecord(null);
+    void getLibraryRecord(activeRecordId)
+      .then((record) => {
+        if (live) setActiveRecord(record);
+      })
+      .catch((e) => {
+        if (live) setError(displayError(e, "This private record could not be opened."));
+      });
+    return () => {
+      live = false;
+    };
+  }, [activeRecordId, refreshVersion]);
 
   const refresh = () => setRefreshVersion((value) => value + 1);
+  const updateSearch = (value: string) => {
+    setQuery(value);
+    setSearchPage(0);
+  };
 
   const upload = async (selectedFile: File) => {
     setError("");
@@ -605,6 +632,7 @@ export function PrivateLibrary() {
             onChange={(e) => {
               setWorkspaceId(e.target.value);
               setActiveRecordId("");
+              setSearchPage(0);
             }}
           >
             {workspaces.map((workspace) => (
@@ -619,7 +647,7 @@ export function PrivateLibrary() {
           <Search size={16} />
           <input
             value={query}
-            onChange={(e) => setQuery(e.target.value)}
+            onChange={(e) => updateSearch(e.target.value)}
             placeholder="Search name, phone, email, business, title or location"
             aria-label="Search private Library"
           />
@@ -828,7 +856,7 @@ export function PrivateLibrary() {
             <Eyebrow>PRIVATE RECORDS</Eyebrow>
             <span>
               {records.length}
-              {records.length === 100 ? "+" : ""}
+              {records.length === SEARCH_PAGE_SIZE ? "+" : ""}
             </span>
           </div>
           {!records.length ? (
@@ -857,6 +885,23 @@ export function PrivateLibrary() {
               </button>
             ))
           )}
+          <div className="pl-actions" aria-label="Search result pages">
+            <Btn
+              kind="quiet"
+              disabled={searchPage === 0}
+              onClick={() => setSearchPage((page) => Math.max(0, page - 1))}
+            >
+              Previous
+            </Btn>
+            <span>Page {searchPage + 1}</span>
+            <Btn
+              kind="quiet"
+              disabled={records.length < SEARCH_PAGE_SIZE}
+              onClick={() => setSearchPage((page) => page + 1)}
+            >
+              Next
+            </Btn>
+          </div>
         </aside>
         {activeRecord && (
           <article className="pl-card">

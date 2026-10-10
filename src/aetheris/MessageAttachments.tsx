@@ -22,6 +22,10 @@ export function AttachButton({ threadId, onSend }: { threadId: string; onSend: (
     try {
       for (const file of Array.from(files)) {
         if (file.size > MAX) { setError(`${file.name} is over 50 MB.`); continue }
+        if (/\.(csv|tsv|xls|xlsx|xlsm|ods)$/i.test(file.name)) {
+          setError(`${file.name}: spreadsheet attachments are disabled to prevent contact-list exports.`)
+          continue
+        }
         const safe = file.name.replace(/[|\]\[]/g, '_')
         const { data } = await supabase.auth.getUser()
         let ref: string

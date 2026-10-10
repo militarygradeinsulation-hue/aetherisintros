@@ -17,6 +17,14 @@ export interface LibraryRecord extends LibraryImportRecord {
   updated_at: string;
 }
 
+export interface LibrarySearchResult {
+  id: string;
+  record_type: "person" | "organization";
+  name: string;
+  business: string;
+  title: string;
+}
+
 export interface LibrarySuggestion {
   id: string;
   record_id: string;
@@ -86,13 +94,30 @@ export async function workspacePermission(
   return data.permission as "read" | "edit";
 }
 
-export async function searchLibrary(query: string, workspaceId: string): Promise<LibraryRecord[]> {
+export async function searchLibrary(
+  query: string,
+  workspaceId: string,
+  offset: number,
+): Promise<LibrarySearchResult[]> {
   const { data, error } = await db.rpc("search_private_library_records", {
     p_query: query,
-    p_limit: 100,
+    p_limit: 50,
     p_workspace_id: workspaceId,
+    p_offset: offset,
   });
-  return checked((data ?? []) as LibraryRecord[], error, "Private Library search is unavailable.");
+  return checked(
+    (data ?? []) as LibrarySearchResult[],
+    error,
+    "Private Library search is unavailable.",
+  );
+}
+
+export async function getLibraryRecord(recordId: string): Promise<LibraryRecord | null> {
+  const { data, error } = await db.rpc("get_private_library_record", {
+    p_record_id: recordId,
+  });
+  if (error) throw new Error("This private Library record is not available.");
+  return ((data ?? []) as LibraryRecord[])[0] ?? null;
 }
 
 export async function startImportBatch(input: {
@@ -183,13 +208,10 @@ export async function revokeWorkspaceAccess(workspaceId: string, memberId: strin
 }
 
 export async function librarySuggestions(recordId: string): Promise<LibrarySuggestion[]> {
-  const { data, error } = await db
-    .from("private_library_enrichment_suggestions")
-    .select(
-      "id,record_id,candidate_key,candidate_name,confidence,source_url,source_channel,sourced_at,fields,field_evidence,status,accepted_fields",
-    )
-    .eq("record_id", recordId)
-    .order("created_at", { ascending: false });
+  const { data, error } = await db.rpc("get_private_library_suggestions", {
+    p_record_id: recordId,
+    p_limit: 50,
+  });
   return checked(
     (data ?? []) as LibrarySuggestion[],
     error,
