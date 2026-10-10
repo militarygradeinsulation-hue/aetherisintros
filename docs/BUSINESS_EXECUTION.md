@@ -4,7 +4,7 @@
 
 | Upgrade | Status | Gate or dependency |
 |---|---|---|
-| 1. Project blueprints | Implemented as a private editable playground/site-improvement template | Authenticated account, migration `0059`; no company/room sharing |
+| 1. Project blueprints | Implemented as a private editable playground/site-improvement template | Authenticated account, migration `0062`; no company/room sharing |
 | 2. Proposal comparison | Implemented in the same private workbench | User-entered fields only; missing terms remain unknown; no provider score |
 | 3. Engagement portal and approvals | Not implemented | Requires an accepted, resource-scoped engagement and immutable terms/delivery versions with designated parties |
 | 4. Capability-team profiles | Not implemented | Requires self-confirmed roles/availability; no multi-party approval authority is inferred |
@@ -20,12 +20,12 @@ The CRM is the current integration host. CRM opportunities remain canonical; thi
 - A member can create and edit a playground/site-improvement blueprint with questions, requirements, work packages, deliverables, dependencies, milestones and required documents.
 - Template dates and the budget start unknown. Any amount is labeled **User-entered budget assumption** and requires a paired currency code.
 - Proposal comparisons are private to the account owner. Scope, price/currency, timeline, exclusions, HTTPS evidence links and clarification questions are entered by the member. Missing fields stay unknown; the UI does not rank or identify a “best” provider. Evidence links are recorded, not independently verified.
-- Live authenticated accounts use the existing versioned `member_workspace_state` store. Migration `0059` adds one live-only allowlisted key; the existing account-owner RLS and optimistic-version RPC remain the persistence boundary. Showcase/demo data is not accepted.
+- Live authenticated accounts use the existing versioned `member_workspace_state` store. Migration `0062` adds one live-only allowlisted key; the existing account-owner RLS and optimistic-version RPC remain the persistence boundary. Showcase/demo data is not accepted.
 - No contact dataset is imported, exported, attached to reports, sent to AI, or transferred to providers.
 
 ## Setup and validation
 
-Apply `drizzle/migrations/0059_business_execution_workbench.sql` through the project's reviewed Drizzle migration process after confirming the required preceding migrations are installed. Do not apply it directly to production. The workbench remains unavailable for persistence until the migration is installed.
+Apply `drizzle/migrations/0062_business_execution_workbench.sql` through the project's reviewed Drizzle migration process after confirming the required preceding migrations are installed. Do not apply it directly to production. The workbench remains unavailable for persistence until the migration is installed.
 
 Focused checks:
 
