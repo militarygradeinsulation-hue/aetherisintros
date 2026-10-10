@@ -56,11 +56,17 @@ export function BlueprintWorkbench() {
   const [activeProposalId, setActiveProposalId] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [saveMessage, setSaveMessage] = useState("");
-  const [budgetAmount, setBudgetAmount] = useState("");
-  const [budgetCurrency, setBudgetCurrency] = useState("");
-  const [proposalPrice, setProposalPrice] = useState("");
-  const [proposalCurrency, setProposalCurrency] = useState("");
-  const [evidenceDraft, setEvidenceDraft] = useState("");
+  const [budgetDraft, setBudgetDraft] = useState<{
+    blueprintId: string;
+    amount: string;
+    currency: string;
+  } | null>(null);
+  const [proposalDraft, setProposalDraft] = useState<{
+    key: string;
+    price: string;
+    currency: string;
+  } | null>(null);
+  const [evidenceDraft, setEvidenceDraft] = useState<{ key: string; value: string } | null>(null);
   const sync = useWorkspaceSyncStatus();
 
   useEffect(() => {
@@ -118,20 +124,29 @@ export function BlueprintWorkbench() {
   );
   const proposal =
     active?.proposals.find((item) => item.id === activeProposalId) ?? active?.proposals[0] ?? null;
-
-  useEffect(() => {
-    setBudgetAmount(
-      active?.budgetAssumption.amount == null ? "" : String(active.budgetAssumption.amount),
-    );
-    setBudgetCurrency(active?.budgetAssumption.currency ?? "");
-    setActiveProposalId(active?.proposals[0]?.id ?? null);
-  }, [active?.id]);
-
-  useEffect(() => {
-    setProposalPrice(proposal?.price == null ? "" : String(proposal.price));
-    setProposalCurrency(proposal?.currency ?? "");
-    setEvidenceDraft(proposal?.evidenceLinks.join("\n") ?? "");
-  }, [active?.id, proposal?.id]);
+  const proposalKey = active && proposal ? `${active.id}:${proposal.id}` : "";
+  const budgetAmount =
+    budgetDraft && budgetDraft.blueprintId === active?.id
+      ? budgetDraft.amount
+      : active?.budgetAssumption.amount == null
+        ? ""
+        : String(active.budgetAssumption.amount);
+  const budgetCurrency =
+    budgetDraft && budgetDraft.blueprintId === active?.id
+      ? budgetDraft.currency
+      : (active?.budgetAssumption.currency ?? "");
+  const proposalPrice =
+    proposalDraft?.key === proposalKey
+      ? proposalDraft.price
+      : proposal?.price == null
+        ? ""
+        : String(proposal.price);
+  const proposalCurrency =
+    proposalDraft?.key === proposalKey ? proposalDraft.currency : (proposal?.currency ?? "");
+  const evidenceValue =
+    evidenceDraft?.key === proposalKey
+      ? evidenceDraft.value
+      : (proposal?.evidenceLinks.join("\n") ?? "");
 
   const persist = (next: BusinessExecutionState) => {
     if (!parseBusinessExecutionState(next)) {
@@ -246,7 +261,10 @@ export function BlueprintWorkbench() {
                 type="button"
                 aria-pressed={active?.id === blueprint.id}
                 className={active?.id === blueprint.id ? "active" : ""}
-                onClick={() => setActiveId(blueprint.id)}
+                onClick={() => {
+                  setActiveId(blueprint.id);
+                  setActiveProposalId(blueprint.proposals[0]?.id ?? null);
+                }}
               >
                 {blueprint.title || "Untitled blueprint"}
               </button>
@@ -312,7 +330,13 @@ export function BlueprintWorkbench() {
                   step="0.01"
                   inputMode="decimal"
                   value={budgetAmount}
-                  onChange={(event) => setBudgetAmount(event.target.value)}
+                  onChange={(event) =>
+                    setBudgetDraft({
+                      blueprintId: active.id,
+                      amount: event.target.value,
+                      currency: budgetCurrency,
+                    })
+                  }
                 />
               </label>
               <label>
@@ -322,7 +346,13 @@ export function BlueprintWorkbench() {
                   maxLength={3}
                   autoCapitalize="characters"
                   placeholder="Enter ISO code; leave blank if unknown"
-                  onChange={(event) => setBudgetCurrency(event.target.value.toUpperCase())}
+                  onChange={(event) =>
+                    setBudgetDraft({
+                      blueprintId: active.id,
+                      amount: budgetAmount,
+                      currency: event.target.value.toUpperCase(),
+                    })
+                  }
                 />
               </label>
               <label>
@@ -745,7 +775,13 @@ export function BlueprintWorkbench() {
                     step="0.01"
                     inputMode="decimal"
                     value={proposalPrice}
-                    onChange={(event) => setProposalPrice(event.target.value)}
+                    onChange={(event) =>
+                      setProposalDraft({
+                        key: proposalKey,
+                        price: event.target.value,
+                        currency: proposalCurrency,
+                      })
+                    }
                   />
                 </label>
                 <label>
@@ -754,7 +790,13 @@ export function BlueprintWorkbench() {
                     value={proposalCurrency}
                     maxLength={3}
                     placeholder="Unknown unless supplied"
-                    onChange={(event) => setProposalCurrency(event.target.value.toUpperCase())}
+                    onChange={(event) =>
+                      setProposalDraft({
+                        key: proposalKey,
+                        price: proposalPrice,
+                        currency: event.target.value.toUpperCase(),
+                      })
+                    }
                   />
                 </label>
                 <Btn
@@ -805,14 +847,16 @@ export function BlueprintWorkbench() {
                 <label>
                   Evidence links (one HTTPS URL per line)
                   <textarea
-                    value={evidenceDraft}
-                    onChange={(event) => setEvidenceDraft(event.target.value)}
+                    value={evidenceValue}
+                    onChange={(event) =>
+                      setEvidenceDraft({ key: proposalKey, value: event.target.value })
+                    }
                   />
                 </label>
                 <Btn
                   kind="secondary"
                   onClick={() => {
-                    const values = lines(evidenceDraft);
+                    const values = lines(evidenceValue);
                     if (!values.every(validateEvidenceLink)) {
                       setError(
                         "Evidence links must be HTTPS URLs without embedded credentials; the last saved links are unchanged.",

@@ -1,4 +1,7 @@
+import { createElement } from "react";
+import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, it } from "vitest";
+import { BlueprintWorkbench } from "../business-execution/BlueprintWorkbench";
 import {
   createPlaygroundBlueprint,
   createProposalComparison,
@@ -8,6 +11,12 @@ import {
 } from "../business-execution/model";
 
 describe("business execution blueprint model", () => {
+  it("announces the private workspace loading state to assistive technology", () => {
+    const markup = renderToStaticMarkup(createElement(BlueprintWorkbench));
+    expect(markup).toContain('role="status"');
+    expect(markup).toContain("Checking your private account workspace");
+  });
+
   it("creates the editable playground template without inventing dates or a budget", () => {
     const blueprint = createPlaygroundBlueprint("plan-1");
     expect(blueprint.budgetAssumption).toEqual({ amount: null, currency: null, note: "" });
