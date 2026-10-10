@@ -71,19 +71,19 @@ BEGIN
     EXECUTE 'DROP POLICY IF EXISTS "dm participants read files" ON storage.objects';
     EXECUTE 'DROP POLICY IF EXISTS "dm participants upload files" ON storage.objects';
     EXECUTE 'CREATE POLICY "dm participants read non-tabular files" ON storage.objects FOR SELECT TO authenticated
-      USING (bucket_id = ''dm-files'' AND name !~* ''\.(csv|tsv|xls|xlsx|xlsm|ods)$''
+      USING (bucket_id = ''dm-files'' AND name !~* ''\.(csv|tsv|txt|xls|xlsx|xlsm|ods)$''
         AND public.is_uuid_text((storage.foldername(name))[1]) AND EXISTS (
           SELECT 1 FROM public.dm_threads t
           WHERE t.id::text = (storage.foldername(name))[1] AND auth.uid() IN (t.member_a, t.member_b)))';
     EXECUTE 'CREATE POLICY "dm participants upload non-tabular files" ON storage.objects FOR INSERT TO authenticated
-      WITH CHECK (bucket_id = ''dm-files'' AND name !~* ''\.(csv|tsv|xls|xlsx|xlsm|ods)$''
+      WITH CHECK (bucket_id = ''dm-files'' AND name !~* ''\.(csv|tsv|txt|xls|xlsx|xlsm|ods)$''
         AND owner = auth.uid() AND public.is_live_member()
         AND public.is_uuid_text((storage.foldername(name))[1]) AND EXISTS (
           SELECT 1 FROM public.dm_threads t
           WHERE t.id::text = (storage.foldername(name))[1] AND auth.uid() IN (t.member_a, t.member_b)))';
     EXECUTE 'CREATE POLICY "dm contact spreadsheets denied" ON storage.objects AS RESTRICTIVE FOR SELECT TO authenticated
-      USING (bucket_id <> ''dm-files'' OR name !~* ''\.(csv|tsv|xls|xlsx|xlsm|ods)$'')';
+      USING (bucket_id <> ''dm-files'' OR name !~* ''\.(csv|tsv|txt|xls|xlsx|xlsm|ods)$'')';
     EXECUTE 'CREATE POLICY "dm contact spreadsheets upload denied" ON storage.objects AS RESTRICTIVE FOR INSERT TO authenticated
-      WITH CHECK (bucket_id <> ''dm-files'' OR name !~* ''\.(csv|tsv|xls|xlsx|xlsm|ods)$'')';
+      WITH CHECK (bucket_id <> ''dm-files'' OR name !~* ''\.(csv|tsv|txt|xls|xlsx|xlsm|ods)$'')';
   END IF;
 END $$;

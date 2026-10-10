@@ -338,6 +338,7 @@ export default async ({ ok, as, svc, A, B, C, ADMIN }) => {
     values ('${threadId}','${A}','${B}','${A}')`);
   await svc(`insert into storage.objects(bucket_id,name,owner) values
     ('dm-files','${threadId}/legacy.xlsx','${A}'),
+    ('dm-files','${threadId}/legacy.txt','${A}'),
     ('dm-files','${threadId}/project.pdf','${A}')`);
   await svc(`create policy "legacy broad attachment read" on storage.objects for select
     to authenticated using (true)`);
@@ -354,6 +355,11 @@ export default async ({ ok, as, svc, A, B, C, ADMIN }) => {
     "restrictive backend rules reject XLSX imports despite broad grants",
   );
   ok(
+    !!(await as(A, `insert into storage.objects(bucket_id,name,owner)
+      values ('dm-files',$1,$2)`, [`${threadId}/contacts.txt`, A])).error,
+    "restrictive backend rules reject TXT contact-list uploads despite broad grants",
+  );
+  ok(
     !(await as(A, `insert into storage.objects(bucket_id,name,owner)
       values ('dm-files',$1,$2)`, [`${threadId}/project.pdf`, A])).error,
     "direct-message storage accepts non-contact project file uploads",
@@ -362,6 +368,11 @@ export default async ({ ok, as, svc, A, B, C, ADMIN }) => {
     (await as(B, `select id from storage.objects where bucket_id='dm-files' and name=$1`,
       [`${threadId}/legacy.xlsx`])).rows?.length === 0,
     "existing spreadsheet attachments cannot be downloaded through participant storage access",
+  );
+  ok(
+    (await as(B, `select id from storage.objects where bucket_id='dm-files' and name=$1`,
+      [`${threadId}/legacy.txt`])).rows?.length === 0,
+    "existing text contact lists cannot be downloaded through participant storage access",
   );
   const projectAttachmentRead = await as(B, `select id from storage.objects where bucket_id='dm-files' and name=$1`,
       [`${threadId}/project.pdf`]);

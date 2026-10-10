@@ -68,9 +68,10 @@ Original upload bytes are parsed in the browser and are not retained in Library 
 there is no Library original-file download endpoint. A repository audit found no Library export
 endpoint, contact-list attachment generator, scheduled Library export job, or configured bulk
 CRM/provider transfer path. The existing direct-message file channel did support spreadsheet
-attachments; migration `0059` now rejects CSV/TSV/XLS/XLSX/XLSM/ODS storage uploads and denies
-downloads of those already stored extensions for all DM participants. Other authorized document
-attachments still work. This extension-based block does not inspect arbitrary file contents.
+attachments; migration `0059` now rejects CSV/TSV/TXT/XLS/XLSX/XLSM/ODS storage uploads and
+denies downloads of those already stored extensions for all DM participants. Other authorized
+document attachments still work. This extension-based block does not inspect arbitrary file
+contents.
 Pocket idea JSON and membership-card image downloads remain unrelated individual deliverables,
 not Library contact exports.
 

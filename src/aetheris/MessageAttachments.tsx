@@ -22,8 +22,8 @@ export function AttachButton({ threadId, onSend }: { threadId: string; onSend: (
     try {
       for (const file of Array.from(files)) {
         if (file.size > MAX) { setError(`${file.name} is over 50 MB.`); continue }
-        if (/\.(csv|tsv|xls|xlsx|xlsm|ods)$/i.test(file.name)) {
-          setError(`${file.name}: spreadsheet attachments are disabled to prevent contact-list exports.`)
+        if (/\.(csv|tsv|txt|xls|xlsx|xlsm|ods)$/i.test(file.name)) {
+          setError(`${file.name}: contact-list file attachments are disabled by policy.`)
           continue
         }
         const safe = file.name.replace(/[|\]\[]/g, '_')
