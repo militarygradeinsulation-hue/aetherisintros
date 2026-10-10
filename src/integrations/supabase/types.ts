@@ -6067,6 +6067,15 @@ export type Database = {
         Args: { p_email: string; p_uid: string }
         Returns: undefined
       }
+      business_post_valid: {
+        Args: {
+          p_business: Json
+          p_detail: string
+          p_kind: string
+          p_title: string
+        }
+        Returns: boolean
+      }
       call_app: { Args: { p_body?: Json; p_path: string }; Returns: undefined }
       can_delegate: {
         Args: {
