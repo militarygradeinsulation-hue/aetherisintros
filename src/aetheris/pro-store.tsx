@@ -18,6 +18,7 @@ import {
   type BoundaryVerdict, type SearchCorpusItem,
 } from './domain/pro-engine'
 import type { Member } from './social'
+import { contactExportIsDenied } from '@/lib/contact-export'
 
 const uid = (p: string) => `${p}-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 6)}`
 const today = () => new Date().toISOString().slice(0, 10)
@@ -108,7 +109,7 @@ export interface ProApi extends ProCollections {
   setProposalAccepted(id: ID, accepted: boolean): void
   commitImport(batchId: ID): { accepted: number; skipped: number }
   removeImportSource(batchId: ID): void
-  exportVault(input: { scope: RelationshipVaultExport['scope']; format: 'json' | 'csv'; includes: string[]; rows: Array<Record<string, unknown>> }): { record: RelationshipVaultExport; content: string }
+  exportVault(input: { scope: RelationshipVaultExport['scope']; format: 'json' | 'csv'; includes: string[]; rows: Array<Record<string, unknown>> }): Promise<{ record: RelationshipVaultExport; content: string } | null>
 
   /* inbox + briefing */
   setDecisionState(id: ID, state: ProfessionalInboxDecision['state']): void
@@ -436,7 +437,8 @@ export function ProProvider({ children }: { children: ReactNode }) {
         note: 'Source removed. Every record that arrived with it has been withdrawn from your graph.',
       })
     },
-    exportVault({ scope, format, includes, rows }) {
+    async exportVault({ scope, format, includes, rows }) {
+      if (['everything', 'relationships', 'opportunities'].includes(scope) && await contactExportIsDenied()) return null
       const record: RelationshipVaultExport = {
         id: uid('vx'), requestedAt: today(), scope, format, includes,
         rowCount: rows.length, fileName: `aetheris-${scope}-${today()}.${format}`, state: 'previewed',

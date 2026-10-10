@@ -2,7 +2,7 @@ import { readFileSync } from 'node:fs'
 import { describe, expect, it } from 'vitest'
 
 import {
-  SYNCED_STORE_KEYS, keysToClearOnSignOut, mergeStoreData, planInitialSync, retryDelayMs, type LocalCopy,
+  createStoreReadiness, shouldRetryInitialSync, SYNCED_STORE_KEYS, keysToClearOnSignOut, mergeStoreData, planInitialSync, retryDelayMs, type LocalCopy,
 } from '../sync-logic'
 
 const local = (over: Partial<LocalCopy> = {}): LocalCopy => ({ present: true, baseVersion: 0, dirty: false, foreign: false, ...over })
@@ -35,6 +35,42 @@ describe('planInitialSync', () => {
   it("never uploads another member's leftover data", () => {
     expect(planInitialSync(local({ foreign: true, dirty: true }), null)).toEqual({ action: 'reset' })
     expect(planInitialSync(local({ foreign: true, dirty: true }), { version: 1, data: {} })).toEqual({ action: 'apply-remote' })
+  })
+})
+
+describe('account store readiness', () => {
+  it('keeps a store unready until initial hydration completes', async () => {
+    const readiness = createStoreReadiness()
+    let resolved = false
+    const loaded = readiness.waitFor('private-blueprints').then(() => { resolved = true })
+    expect(readiness.isReady('private-blueprints')).toBe(false)
+    expect(resolved).toBe(false)
+
+    readiness.markReady('private-blueprints')
+    await loaded
+    expect(readiness.isReady('private-blueprints')).toBe(true)
+    expect(resolved).toBe(true)
+  })
+
+  it('resets account readiness after the active member changes', () => {
+    const readiness = createStoreReadiness()
+    readiness.markReady('private-blueprints')
+    readiness.markReady('crm-ledger')
+    readiness.clear('private-blueprints')
+    expect(readiness.isReady('crm-ledger')).toBe(true)
+    expect(readiness.isReady('private-blueprints')).toBe(false)
+    readiness.markReady('private-blueprints')
+    readiness.clear()
+    expect(readiness.isReady('private-blueprints')).toBe(false)
+    expect(readiness.isReady('crm-ledger')).toBe(false)
+  })
+
+  it('retries a stale initial load only when the same store is still waiting for the current account', () => {
+    expect(shouldRetryInitialSync('a', 'b', true, false)).toBe(true)
+    expect(shouldRetryInitialSync('a', 'a', true, false)).toBe(false)
+    expect(shouldRetryInitialSync('a', 'b', false, false)).toBe(false)
+    expect(shouldRetryInitialSync('a', 'b', true, true)).toBe(false)
+    expect(shouldRetryInitialSync('a', null, true, false)).toBe(false)
   })
 })
 
@@ -72,11 +108,12 @@ describe('sign-out cleanup', () => {
   it('clears member keys and live stores but keeps demo copies', () => {
     const keys = [
       'aetheris.sync.meta', 'aetheris.ledger.patch.u1', 'aetheris-moat-v1-live', 'aetheris-relationship-os-v1-live',
-      'aetheris-pro-v1-live', 'aetheris-platform-v1-live', 'aetheris-moat-v1-demo', 'aetheris-pro-v1-demo', 'theme', 'aetherisx',
+      'aetheris-pro-v1-live', 'aetheris-platform-v1-live', 'aetheris.business-execution-v1-live.u1',
+      'aetheris-moat-v1-demo', 'aetheris-pro-v1-demo', 'theme', 'aetherisx',
     ]
     expect(keysToClearOnSignOut(keys).sort()).toEqual([
       'aetheris-moat-v1-live', 'aetheris-platform-v1-live', 'aetheris-pro-v1-live', 'aetheris-relationship-os-v1-live',
-      'aetheris.ledger.patch.u1', 'aetheris.sync.meta',
+      'aetheris.business-execution-v1-live.u1', 'aetheris.ledger.patch.u1', 'aetheris.sync.meta',
     ])
   })
 })
@@ -88,7 +125,10 @@ describe('retries and allowlist', () => {
     expect(retryDelayMs(20)).toBe(60000)
   })
   it('matches the database allowlist and never includes demo stores', () => {
-    const sql = readFileSync(new URL('../../../../drizzle/migrations/0047_workspace_sync.sql', import.meta.url), 'utf8')
+    const sql = [
+      readFileSync(new URL('../../../../drizzle/migrations/0047_workspace_sync.sql', import.meta.url), 'utf8'),
+      readFileSync(new URL('../../../../drizzle/migrations/0062_business_execution_workbench.sql', import.meta.url), 'utf8'),
+    ].join('\n')
     for (const key of SYNCED_STORE_KEYS) expect(sql).toContain(`'${key}'`)
     expect(SYNCED_STORE_KEYS.some(k => k.endsWith('-demo'))).toBe(false)
   })

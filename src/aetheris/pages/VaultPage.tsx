@@ -6,6 +6,7 @@ import { useNav } from '../nav'
 import { Btn, Eyebrow, Head, memberById } from '../ui'
 import type { SearchCorpusItem } from '../domain/pro-engine'
 import type { Page } from '../nav'
+import { contactExportIsDenied } from '@/lib/contact-export'
 
 const routable = new Set<string>(['opportunities', 'dealrooms', 'expertise', 'talent', 'capital', 'intelrooms', 'presence', 'permission', 'knowledgeassets', 'discover', 'companies', 'systems', 'circles'])
 
@@ -96,7 +97,7 @@ export function VaultPage() {
       label="SEARCH, IMPORT AND YOUR VAULT"
       title="One search across everything you are permissioned to see."
       copy="People, companies, systems, opportunities, proof of work, expertise, board seats, knowledge and rooms — one query, ranked by relevance and relationship path, with the reason attached. Where something is withheld, Aetheris says that it exists and why you cannot see it."
-      proof={`${corpus.length} permissioned objects searchable · ${pro.imports.filter(i => i.connected).length} sources connected · export is always available`}
+      proof={`${corpus.length} permissioned objects searchable · ${pro.imports.filter(i => i.connected).length} sources connected · contact export is disabled`}
       action={<Btn kind="secondary" onClick={() => nav.setPage('consent')}>Consent ledger <ArrowRight size={13} /></Btn>}
     />
 
@@ -122,7 +123,7 @@ export function VaultPage() {
     <section className="vault-grid">
       <article className="module import-block">
         <Eyebrow>IMPORT WITHOUT LOCK-IN</Eyebrow>
-        <h3>Bring your relationships in. Take them out whenever you like.</h3>
+        <h3>Bring your relationships in and manage them privately.</h3>
         <p className="availability-copy">Nothing is imported silently. Every source produces proposals you review one by one, with a default privacy scope and where the information came from. Only what you approve is committed, and removing a source withdraws everything that arrived with it.</p>
         {pro.imports.map(b => {
           const proposals = pro.importProposals.filter(p => p.batchId === b.id)
@@ -175,14 +176,20 @@ export function VaultPage() {
               <option value="json">JSON</option><option value="csv">CSV</option>
             </select>
           </label>
-          <Btn kind="secondary" onClick={() => {
+          <Btn kind="secondary" onClick={async () => {
+            if (['everything', 'relationships', 'opportunities'].includes(scope) && await contactExportIsDenied()) return
             const rows = rowsFor(scope)
-            const { content } = pro.exportVault({ scope, format, includes: [scope], rows })
+            const result = await pro.exportVault({ scope, format, includes: [scope], rows })
+            if (!result) return
+            const { content } = result
             setPreview(content.slice(0, 4000))
           }}>Preview export</Btn>
-          <Btn onClick={() => {
+          <Btn onClick={async () => {
+            if (['everything', 'relationships', 'opportunities'].includes(scope) && await contactExportIsDenied()) return
             const rows = rowsFor(scope)
-            const { record, content } = pro.exportVault({ scope, format, includes: [scope], rows })
+            const result = await pro.exportVault({ scope, format, includes: [scope], rows })
+            if (!result) return
+            const { record, content } = result
             setPreview(content.slice(0, 4000))
             download(record.fileName, content, format)
           }}>Download {format.toUpperCase()}</Btn>
@@ -198,7 +205,7 @@ export function VaultPage() {
     <section className="teach-block">
       <div><Eyebrow>WHY LOCK-IN WOULD BREAK THE PROMISE</Eyebrow>
         <h2>A network you cannot leave is not a network you can trust.</h2>
-        <p>Search only ever returns what you are permissioned to see, and says plainly when something exists but is withheld. Imports are reviewed, not absorbed. Export is one click and includes the memory and reasoning you contributed — because that work belongs to you.</p>
+        <p>Search returns only what you are permissioned to see. Imports are reviewed, not absorbed. Contact-containing exports are disabled by policy; unrelated private project materials remain separately governed.</p>
         <button className="text-action" onClick={() => nav.setPage('identity')}>Portable professional identity <ArrowRight size={14} /></button></div>
     </section>
   </>

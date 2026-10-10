@@ -24,6 +24,15 @@ const ADMIN = '00000000-0000-4000-8000-0000000000ad'
 const BASE = `
 create role anon nologin; create role authenticated nologin; create role service_role nologin bypassrls;
 create schema auth;
+create schema storage;
+create table storage.objects (id uuid primary key default gen_random_uuid(), bucket_id text not null, name text not null, owner uuid);
+alter table storage.objects enable row level security;
+grant usage on schema storage to authenticated;
+grant select, insert on storage.objects to authenticated;
+create function storage.foldername(p_name text) returns text[] language sql immutable as $$
+  select array[split_part(p_name, '/', 1)]
+$$;
+grant execute on function storage.foldername(text) to authenticated;
 create table auth.users (id uuid primary key, email text, email_confirmed_at timestamptz, last_sign_in_at timestamptz, raw_user_meta_data jsonb not null default '{}');
 create function auth.uid() returns uuid language sql stable as $$ select nullif(current_setting('request.jwt.claim.sub', true), '')::uuid $$;
 grant usage on schema auth to authenticated, anon, service_role;
@@ -34,6 +43,9 @@ grant usage on schema public to authenticated, anon, service_role;
 alter default privileges in schema public grant all on tables to anon, authenticated, service_role;
 
 create function public.touch_updated_at() returns trigger language plpgsql as $$ begin new.updated_at := now(); return new; end $$;
+create function public.is_uuid_text(p text) returns boolean language sql immutable as $$
+  select p ~* '^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$'
+$$;
 create function public.freeze_columns() returns trigger language plpgsql set search_path = public as $$
 declare c text; begin if auth.uid() is null then return new; end if;
 foreach c in array tg_argv loop if (to_jsonb(new) -> c) is distinct from (to_jsonb(old) -> c) then raise exception 'Column % cannot be changed after creation', c using errcode = '42501'; end if; end loop; return new; end $$;
@@ -150,7 +162,14 @@ create table public.member_verifications (id uuid primary key default gen_random
   decision_reason text, risk_flags jsonb not null default '[]', submitted_at timestamptz, scanned_at timestamptz, verified_at timestamptz, updated_at timestamptz not null default now());
 create table public.memories (id uuid primary key default gen_random_uuid(), user_id uuid not null, member_id text, kind text not null default 'learning', category text not null default '',
   text text not null, source text not null default '', confidence int not null default 100, scope text not null default 'private', when_label text not null default '', created_at timestamptz not null default now());
-create table public.posts (id text primary key, member_id text, author_id uuid, kind text not null default 'Insight', text text not null, when_label text not null default '', created_at timestamptz not null default now(), is_demo boolean not null default false);
+create table public.posts (id text primary key, member_id text, author_id uuid, kind text not null default 'Insight', text text not null, detail text not null default '', when_label text not null default '', created_at timestamptz not null default now(), is_demo boolean not null default false, visibility text not null default 'network');
+revoke all on public.posts from anon, authenticated;
+grant select, insert, update, delete on public.posts to authenticated;
+alter table public.posts enable row level security;
+create policy "Members read network posts" on public.posts for select to authenticated using (author_id = auth.uid() or (visibility = 'network' and (is_demo = true or author_id is null or exists (select 1 from public.profiles where id = auth.uid()))));
+create policy "live posts insert" on public.posts for insert to authenticated with check (auth.uid() = author_id and is_demo = false);
+create policy "own posts update" on public.posts for update to authenticated using (auth.uid() = author_id) with check (auth.uid() = author_id);
+create policy "own posts delete" on public.posts for delete to authenticated using (auth.uid() = author_id);
 create table public.members (id text primary key, name text not null, initials text not null, title text not null, company text not null, location text not null, role text not null, industry text not null,
   bio text not null default '', tags text[] not null default '{}', expertise text[] not null default '{}', needs text[] not null default '{}', offers text[] not null default '{}',
   focus text not null default '', thesis text not null default '', availability text not null default '', mutuals text[] not null default '{}', last_interaction_days int not null default 0,

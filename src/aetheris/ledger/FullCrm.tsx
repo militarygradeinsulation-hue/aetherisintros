@@ -17,7 +17,7 @@ import {
 import { Btn, Eyebrow } from '../ui'
 import { useLedger } from './store'
 import SheetImport from './SheetImport'
-import { count, downloadCsv, money, pct, shortDate } from './format'
+import { count, downloadContactCsv, downloadCsv, money, pct, shortDate } from './format'
 import {
   inventoryByLocation, inventoryHealth, kpis, leadsBySource, marginTotals, ordersByMonth,
   ownerLeaderboard, pipelineByStage, receivablesAging, revenueByCategory, revenueByMonth,
@@ -204,7 +204,7 @@ export default function FullCrm({ onBack }: { onBack: () => void }) {
           return <>
             <div className="ops-toolbar">
               <input value={query} onChange={e => setQuery(e.target.value)} placeholder="Search leads…" aria-label="Search leads" />
-              <Btn kind="quiet" onClick={() => downloadCsv('leads.csv', rows)}><Download size={14} /> Export</Btn>
+              <Btn kind="quiet" onClick={() => void downloadContactCsv('leads.csv', rows)}><Download size={14} /> Export</Btn>
             </div>
             <div className="ops-cols">
               <Panel title="LEADS BY SOURCE">
@@ -247,7 +247,7 @@ export default function FullCrm({ onBack }: { onBack: () => void }) {
           return <>
             <div className="ops-toolbar">
               <input value={query} onChange={e => setQuery(e.target.value)} placeholder="Search contacts…" aria-label="Search contacts" />
-              <Btn kind="quiet" onClick={() => downloadCsv('contacts.csv', rows)}><Download size={14} /> Export</Btn>
+              <Btn kind="quiet" onClick={() => void downloadContactCsv('contacts.csv', rows)}><Download size={14} /> Export</Btn>
             </div>
             <div className="ops-table-scroll" tabIndex={0} aria-label="Contacts">
               <table className="ops-table">
@@ -268,7 +268,7 @@ export default function FullCrm({ onBack }: { onBack: () => void }) {
           return <>
             <div className="ops-toolbar">
               <input value={query} onChange={e => setQuery(e.target.value)} placeholder="Search accounts…" aria-label="Search accounts" />
-              <Btn kind="quiet" onClick={() => downloadCsv('accounts.csv', rows)}><Download size={14} /> Export</Btn>
+              <Btn kind="quiet" onClick={() => void downloadContactCsv('accounts.csv', rows)}><Download size={14} /> Export</Btn>
             </div>
             <div className="ops-cols">
               <Panel title="COHORTS BY TIER">
@@ -316,7 +316,7 @@ export default function FullCrm({ onBack }: { onBack: () => void }) {
           return <>
             <div className="ops-toolbar">
               <input value={query} onChange={e => setQuery(e.target.value)} placeholder="Search opportunities…" aria-label="Search opportunities" />
-              <Btn kind="quiet" onClick={() => downloadCsv('pipeline.csv', rows)}><Download size={14} /> Export</Btn>
+              <Btn kind="quiet" onClick={() => void downloadContactCsv('pipeline.csv', rows)}><Download size={14} /> Export</Btn>
             </div>
             <div className="fcrm-board">
               {DEAL_STAGES.map(stage => {
@@ -347,7 +347,7 @@ export default function FullCrm({ onBack }: { onBack: () => void }) {
           return <>
             <div className="ops-toolbar">
               <input value={query} onChange={e => setQuery(e.target.value)} placeholder="Search activities…" aria-label="Search activities" />
-              <Btn kind="quiet" onClick={() => downloadCsv('activities.csv', rows)}><Download size={14} /> Export</Btn>
+              <Btn kind="quiet" onClick={() => void downloadContactCsv('activities.csv', rows)}><Download size={14} /> Export</Btn>
             </div>
             <div className="ops-stats">
               <Stat label="OPEN" value={count(open.length)} note="Not yet completed" />
@@ -434,7 +434,7 @@ export default function FullCrm({ onBack }: { onBack: () => void }) {
           return <>
             <div className="ops-toolbar">
               <input value={query} onChange={e => setQuery(e.target.value)} placeholder="Search orders…" aria-label="Search orders" />
-              <Btn kind="quiet" onClick={() => downloadCsv('orders.csv', rows.map(o => ({
+              <Btn kind="quiet" onClick={() => void downloadContactCsv('orders.csv', rows.map(o => ({
                 number: o.number, account: api.companyName(o.companyId), status: o.status,
                 created: o.createdAt, total: orderTotal(o),
               })))}><Download size={14} /> Export</Btn>
@@ -467,7 +467,7 @@ export default function FullCrm({ onBack }: { onBack: () => void }) {
           return <>
             <div className="ops-toolbar">
               <input value={query} onChange={e => setQuery(e.target.value)} placeholder="Search invoices…" aria-label="Search invoices" />
-              <Btn kind="quiet" onClick={() => downloadCsv('invoices.csv', rows)}><Download size={14} /> Export</Btn>
+              <Btn kind="quiet" onClick={() => void downloadContactCsv('invoices.csv', rows)}><Download size={14} /> Export</Btn>
             </div>
             <div className="ops-stats">
               <Stat label="OVERDUE" value={money(k.overdueValue, true)} note={`${k.overdueCount} invoices past due`} />
@@ -501,7 +501,7 @@ export default function FullCrm({ onBack }: { onBack: () => void }) {
           return <>
             <div className="ops-toolbar">
               <input value={query} onChange={e => setQuery(e.target.value)} placeholder="Search suppliers…" aria-label="Search suppliers" />
-              <Btn kind="quiet" onClick={() => downloadCsv('suppliers.csv', rows)}><Download size={14} /> Export</Btn>
+              <Btn kind="quiet" onClick={() => void downloadContactCsv('suppliers.csv', rows)}><Download size={14} /> Export</Btn>
             </div>
             <div className="ops-table-scroll" tabIndex={0} aria-label="Suppliers">
               <table className="ops-table">
@@ -541,9 +541,9 @@ export default function FullCrm({ onBack }: { onBack: () => void }) {
           </div>
           <Panel title="EXPORTS" action={<Btn kind="quiet" onClick={api.resetWorkspace}><RotateCcw size={14} /> Reset workspace edits</Btn>}>
             <div className="fcrm-exports">
-              <Btn kind="secondary" onClick={() => downloadCsv('pipeline.csv', l.deals)}><Users size={14} /> Pipeline</Btn>
-              <Btn kind="secondary" onClick={() => downloadCsv('accounts.csv', l.companies)}><Building2 size={14} /> Accounts</Btn>
-              <Btn kind="secondary" onClick={() => downloadCsv('invoices.csv', l.invoices)}><Receipt size={14} /> Invoices</Btn>
+              <Btn kind="secondary" onClick={() => void downloadContactCsv('pipeline.csv', l.deals)}><Users size={14} /> Pipeline</Btn>
+              <Btn kind="secondary" onClick={() => void downloadContactCsv('accounts.csv', l.companies)}><Building2 size={14} /> Accounts</Btn>
+              <Btn kind="secondary" onClick={() => void downloadContactCsv('invoices.csv', l.invoices)}><Receipt size={14} /> Invoices</Btn>
               <Btn kind="secondary" onClick={() => downloadCsv('inventory.csv', inventoryHealth(l))}><Boxes size={14} /> Inventory</Btn>
             </div>
           </Panel>

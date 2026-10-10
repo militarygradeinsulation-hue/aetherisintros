@@ -131,6 +131,7 @@ import { MeetingsPage } from './meetings-ui'
 import { PeerGroupsPage } from './peer-groups-ui'
 import { ProvidersPage } from './providers-ui'
 import { WarmPathsPage } from './warm-paths-ui'
+import { WorkspacesPage } from './workspaces/WorkspacesPage'
 import { AgentInboxPage } from './agent-ui'
 import { LeakCheckPanel } from './leak-check-ui'
 import { SentIntroRequests } from './sent-requests-ui'
@@ -2702,6 +2703,7 @@ function Shell({ startPage, feedOnly = false }: { startPage?: Page | undefined; 
       peergroups: <PeerGroupsPage />,
       providers: <ProvidersPage />,
       warmpaths: <WarmPathsPage />,
+      workspaces: <WorkspacesPage />,
       needs: <><IntentExchangePanel /><Needs onNew={() => setNeedOpen(true)} people={people} select={setSelected} setPage={setPage} /><IntentBoard /></>,
       memory: <Memory people={people} select={setSelected} />,
       events: <EventsPage />,

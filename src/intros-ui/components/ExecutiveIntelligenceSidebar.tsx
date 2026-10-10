@@ -32,6 +32,7 @@ import { Person, ExecutiveIntelligenceDossier, ExecutiveNewsItem, CalendarEvent 
 import { EXECUTIVE_INTELLIGENCE_DOSSIERS, INITIAL_CALENDAR } from '../dataStore';
 import { ExecutiveRichTextEditor } from './ExecutiveRichTextEditor';
 import { RelationshipTierBadge } from './RelationshipTierBadge';
+import { contactExportIsDenied } from '../../lib/contact-export';
 
 interface ExecutiveIntelligenceSidebarProps {
   isOpen: boolean;
@@ -245,7 +246,10 @@ export const ExecutiveIntelligenceSidebar: React.FC<ExecutiveIntelligenceSidebar
 
               <button
                 type="button"
-                onClick={() => window.print()}
+                onClick={async () => {
+                  if (await contactExportIsDenied()) return;
+                  window.print();
+                }}
                 className="px-2.5 py-1 rounded bg-[#F5B027]/20 hover:bg-[#F5B027]/30 border border-[#F5B027]/40 text-white text-[10px] font-mono flex items-center gap-1 transition-all cursor-pointer"
                 title="Print Executive Summary to PDF"
               >

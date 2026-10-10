@@ -8,10 +8,8 @@ import { useEffect, useLayoutEffect, useRef, useState } from 'react'
 
 import { supabase } from '@/integrations/supabase/client'
 import { placeMenu } from './quick-menu'
+import { MAX_NOTE, noteSavedMessage, saveQuickNoteWith, type NoteDestination } from './quick-note'
 import { useDictation } from './voice'
-
-const DEMO_KEY = 'aetheris-demo-quick-notes'
-const MAX_NOTE = 4000
 
 export interface QuickNoteRequest { x?: number; y?: number; text?: string }
 
@@ -20,24 +18,20 @@ export function openQuickNote(request: QuickNoteRequest = {}) {
   window.dispatchEvent(new CustomEvent<QuickNoteRequest>('aetheris:quick-note', { detail: request }))
 }
 
-/** Saves a private note to the member's Memory. Returns where it went. */
-export async function saveQuickNote(text: string): Promise<'account' | 'device'> {
-  const body = text.trim().slice(0, MAX_NOTE)
-  if (!body) throw new Error('Write something first.')
-  const { data } = await supabase.auth.getUser()
-  if (!data.user) {
-    try {
-      const list = JSON.parse(localStorage.getItem(DEMO_KEY) ?? '[]') as Array<{ text: string; at: string }>
-      localStorage.setItem(DEMO_KEY, JSON.stringify([{ text: body, at: new Date().toISOString() }, ...list].slice(0, 50)))
-    } catch { /* storage unavailable */ }
-    return 'device'
-  }
-  const { error } = await supabase.from('memories').insert({
-    user_id: data.user.id, kind: 'note', category: 'Quick note', member_id: null, text: body,
-    scope: 'private', source: 'Quick note', when_label: new Date().toLocaleString(undefined, { dateStyle: 'medium', timeStyle: 'short' }),
-  } as never)
-  if (error) throw new Error('Could not save the note. Please try again.')
-  return 'account'
+/** Saves a private note to the member's Memory. Returns where it went; throws if it went nowhere. */
+export function saveQuickNote(text: string): Promise<NoteDestination> {
+  return saveQuickNoteWith(text, {
+    getUserId: async () => (await supabase.auth.getUser()).data.user?.id ?? null,
+    insertMemory: async ({ userId, text: body, when }) => {
+      const { error } = await supabase.from('memories').insert({
+        user_id: userId, kind: 'note', category: 'Quick note', member_id: null, text: body,
+        scope: 'private', source: 'Quick note', when_label: when,
+      } as never)
+      return error ? error.message : null
+    },
+    storage: () => { try { return typeof localStorage === 'undefined' ? null : localStorage } catch { return null } },
+    now: () => new Date(),
+  })
 }
 
 export function QuickNoteHost() {
@@ -90,7 +84,7 @@ export function QuickNoteHost() {
     try {
       dictation.stop()
       const where = await saveQuickNote(text)
-      setMsg(where === 'account' ? 'Saved to your Memory.' : 'Saved on this device.')
+      setMsg(noteSavedMessage(where))
       setTimeout(() => setReq(null), 900)
     } catch (e) { setMsg(e instanceof Error ? e.message : 'Could not save the note.') }
     setBusy(false)
