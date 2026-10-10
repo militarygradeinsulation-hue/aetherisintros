@@ -13,7 +13,7 @@
 | 7. Aftercare and renewals | Not implemented | Requires completed-work linkage and opt-in scheduling |
 | 8. Field-work capture | Not implemented | Requires bounded media upload and sync-state handling; offline media is deferred |
 
-The CRM is the current integration host. CRM opportunities remain canonical; this workbench creates neither a duplicate opportunity nor a project/deal-room entity. No confirmed write interface exists here for Needs, accepted invitations, the deal-room demo, or another member's workspace. Linking is therefore blocked and no such link is created. Open PRs #43–#45 were inspected but are unfinished work, not available dependencies; this implementation neither merges nor copies them. The new migration is numbered `0059` to avoid their proposed `0057`/`0058` paths.
+The CRM is the current integration host. CRM opportunities remain canonical; this workbench creates neither a duplicate opportunity nor a project/deal-room entity. No confirmed write interface exists here for Needs, accepted invitations, the deal-room demo, or another member's workspace. Linking is therefore blocked and no such link is created. After integration, deal workspaces (migrations `0058`–`0059`) are present, but no confirmed write interface was verified for linking; the link remains blocked. The migration is numbered `0062`, after the deal-workspace and private-library migrations.
 
 ## Implemented slice
 

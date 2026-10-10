@@ -100,7 +100,7 @@ PGlite checks are **not equivalent to Supabase runtime verification**. PGlite is
 Two-party workspaces only; no documents, contracts or payments; the existing Relationship Room and `intro_deals` are not merged with workspaces. Phase 3 is a new migration (`0060` or later) that alters 0058's objects, so it is safe whether or not 0058 was applied. Two parties only; there is no UI to change roles after agreement (by design) and no dispute process.
 
 ## Integration contract with PR #43 and the release gate
-PR #43 (structured business feed posts, quick-note fixes) is unfinished. Nothing from it was merged, cherry-picked or modified; none of its feed/composer/quick-note files are touched here.
+PR #43 (structured business feed posts, quick-note fixes) is now merged into the same integration branch (migration `0057`), ahead of deal workspaces (`0058`–`0059`). The post→workspace handoff is still not wired in the UI: workspaces start only from an existing conversation or accepted introduction.
 
 Intended chain: **business post → response → conversation → invitation → accepted room → proposal → delivery → acceptance.**
 

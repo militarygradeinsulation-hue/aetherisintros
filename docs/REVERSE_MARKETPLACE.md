@@ -13,16 +13,16 @@ These TypeScript helpers are not persistence or authorization. In particular, th
 
 ## Integration gates and migration coordination
 
-This checkout is based on the branch through Drizzle migration `0056_quick_menu.sql`. It does not contain the unmerged work from active PRs #43–#46. Their currently advertised migration paths conflict:
+This integration branch contains the work from PRs #43–#49. The migrations that were advertised with conflicting numbers by their PRs have been renumbered into one sequence (see `docs/integration-status.md`):
 
-| PR  | Related existing work                                            | Migration advertised by that PR                                      |
-| --- | ---------------------------------------------------------------- | -------------------------------------------------------------------- |
-| #43 | Need/Offer/Proof-of-work feed posts                              | `0057_business_posts.sql`                                            |
-| #44 | Authenticated deal workspaces and buyer/provider role amendments | `0057_deal_workspaces.sql`, `0058_deal_workspace_business_roles.sql` |
-| #45 | Private Library/Rolodex                                          | `0058_private_contact_library.sql`                                   |
-| #46 | Project blueprint/proposal workbench                             | `0059_business_execution_workbench.sql`                              |
+| PR  | Related existing work                                            | Migration in the integration branch                                      |
+| --- | ---------------------------------------------------------------- | ------------------------------------------------------------------------ |
+| #43 | Need/Offer/Proof-of-work feed posts                              | `0057_business_posts.sql`                                                |
+| #44 | Authenticated deal workspaces and buyer/provider role amendments | `0058_deal_workspaces.sql`, `0059_deal_workspace_business_roles.sql`     |
+| #45 | Private Library/Rolodex                                          | `0060_private_contact_library.sql`, `0061_contact_export_denial.sql`     |
+| #46 | Project blueprint/proposal workbench                             | `0062_business_execution_workbench.sql`                                  |
 
-Do not apply or copy these migrations from the other PRs. Resolve the migration sequence and dependencies when those branches are reviewed together; only then choose a new, unique migration number and add its required isolated-database migration suite. Supabase migrations are frozen history. No migration or live database write is included here.
+The reverse marketplace itself has no migration, no persistence and no UI; it remains **blocked**. Any future marketplace migration must take a new unique number after `0062` and add its isolated-database migration suite. Supabase migrations are frozen history. No migration or live database write is included here.
 
 The base already has private DMs and a generic `asks` feed. The `ProfessionalOpportunity`, `MarketplaceListing`, and `DealRoom` surfaces in `src/aetheris/domain/` are part of the local Pro layer; `createLocalProLayer()` seeds demo collections in showcase mode and otherwise uses member-local state with generic workspace sync. They are not the authenticated, procurement-scoped request/response/deal APIs required by this feature. The current `DealRoomsPage` also reads the Pro store. Reusing those as a production procurement backend would grant no verified access model.
 

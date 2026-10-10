@@ -127,7 +127,7 @@ describe('retries and allowlist', () => {
   it('matches the database allowlist and never includes demo stores', () => {
     const sql = [
       readFileSync(new URL('../../../../drizzle/migrations/0047_workspace_sync.sql', import.meta.url), 'utf8'),
-      readFileSync(new URL('../../../../drizzle/migrations/0059_business_execution_workbench.sql', import.meta.url), 'utf8'),
+      readFileSync(new URL('../../../../drizzle/migrations/0062_business_execution_workbench.sql', import.meta.url), 'utf8'),
     ].join('\n')
     for (const key of SYNCED_STORE_KEYS) expect(sql).toContain(`'${key}'`)
     expect(SYNCED_STORE_KEYS.some(k => k.endsWith('-demo'))).toBe(false)

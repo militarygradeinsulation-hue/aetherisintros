@@ -1,6 +1,6 @@
 # Marketplace pilot-interest form
 
-Status: component + tests only. **Production persistence is blocked** — no authorized submission interface or table exists for pilot interest, and no migration was added (needs separate approval). The form is not mounted in any route; marketplace work in PR #47 is untouched.
+Status: component + tests only; **blocked, not mounted in the integration branch**. **Production persistence is blocked** — no authorized submission interface or table exists for pilot interest, and no migration was added (needs separate approval). The form is not mounted in any route; marketplace work in PR #47 is untouched.
 
 ## Files (`src/aetheris/marketplace-pilot/`)
 - `pilot-interest.ts` — typed values/payload, validation, `buildPayload` (drops inactive conditional sections and empty optional fields), `runSubmit` (single-flight guard).
