@@ -418,15 +418,17 @@ export async function uploadJournalMedia(userId: string, file: File) {
   return { path, kind, name: file.name, mime: file.type, size: file.size }
 }
 
-const journalUrls = new Map<string, string>()
+const journalUrls = new Map<string, { url: string; expiresAt: number }>()
+const SIGNED_URL_TTL = 60 * 60 // 1 hour, matches createSignedUrl
+const SIGNED_URL_REFRESH_BUFFER = 5 * 60 // refresh 5 min before expiry
 
-/** Short-lived signed URL for a private Journal file, cached in memory. */
+/** Short-lived signed URL for a private Journal file, cached with expiry awareness. */
 export async function journalUrl(path: string): Promise<string | null> {
   const cached = journalUrls.get(path)
-  if (cached) return cached
-  const { data, error } = await supabase.storage.from('journal').createSignedUrl(path, 60 * 60)
+  if (cached && Date.now() < cached.expiresAt - SIGNED_URL_REFRESH_BUFFER * 1000) return cached.url
+  const { data, error } = await supabase.storage.from('journal').createSignedUrl(path, SIGNED_URL_TTL)
   if (error || !data?.signedUrl) return null
-  journalUrls.set(path, data.signedUrl)
+  journalUrls.set(path, { url: data.signedUrl, expiresAt: Date.now() + SIGNED_URL_TTL * 1000 })
   return data.signedUrl
 }
 

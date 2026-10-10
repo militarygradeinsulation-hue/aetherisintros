@@ -20,6 +20,8 @@ export interface DiagnoseCtx {
   activities: Row[]
   decisions: Row[]
   events: Row[]
+  /** Table → error message for every source that could not be read (vs. read and empty). Optional so hand-built contexts stay valid. */
+  sourceErrors?: Record<string, string>
 }
 
 const ref = (table: string, id: string, label: string): EvidenceRef => ({ kind: 'record', ref: `${table}:${id}`, label })
@@ -29,8 +31,19 @@ const days = (from: string | null | undefined, now: number) => (from ? Math.floo
 /* ───────────── evidence gathering (RLS client only) ───────────── */
 
 export async function gatherContext(db: SupabaseClient, subject: EntityRef, limit = 100): Promise<DiagnoseCtx> {
-  const ctx: DiagnoseCtx = { subject, company: null, opps: [], people: [], tasks: [], activities: [], decisions: [], events: [] }
-  const one = async (table: string, id: string) => (await db.from(table).select('*').eq('id', id).maybeSingle()).data as Row | null
+  const sourceErrors: Record<string, string> = {}
+  const ctx: DiagnoseCtx = { subject, company: null, opps: [], people: [], tasks: [], activities: [], decisions: [], events: [], sourceErrors }
+  /** Records a source failure so "unavailable" is never confused with "zero records". Returns true when one occurred. */
+  const capErr = (table: string, error: { message?: string } | null | undefined): boolean => {
+    if (!error) return false
+    sourceErrors[table] = sourceErrors[table] ? `${sourceErrors[table]}; ${error.message ?? 'read failed'}` : (error.message ?? 'read failed')
+    return true
+  }
+  const many = (table: string, res: { data: unknown; error: { message?: string } | null }): Row[] => (capErr(table, res.error) ? [] : ((res.data ?? []) as Row[]))
+  const one = async (table: string, id: string) => {
+    const { data, error } = await db.from(table).select('*').eq('id', id).maybeSingle()
+    return capErr(table, error) ? null : (data as Row | null)
+  }
   let companyId: string | null = null
   if (subject.type === 'company') companyId = subject.id
   if (subject.type === 'opportunity') {
@@ -40,7 +53,7 @@ export async function gatherContext(db: SupabaseClient, subject: EntityRef, limi
   if (subject.type === 'person') {
     const p = await one('crm_people', subject.id)
     if (p) { ctx.people = [p]; companyId = p.company_id }
-    ctx.opps = ((await db.from('crm_opportunities').select('*').eq('person_id', subject.id).eq('archived', false).limit(limit)).data ?? []) as Row[]
+    ctx.opps = many('crm_opportunities', await db.from('crm_opportunities').select('*').eq('person_id', subject.id).eq('archived', false).order('updated_at', { ascending: false }).order('id').limit(limit))
   }
   if (subject.type === 'decision') {
     const d = await one('decisions', subject.id)
@@ -50,18 +63,18 @@ export async function gatherContext(db: SupabaseClient, subject: EntityRef, limi
   if (companyId) {
     ctx.company = await one('crm_companies', companyId)
     if (subject.type === 'company') {
-      ctx.opps = ((await db.from('crm_opportunities').select('*').eq('company_id', companyId).eq('archived', false).limit(limit)).data ?? []) as Row[]
+      ctx.opps = many('crm_opportunities', await db.from('crm_opportunities').select('*').eq('company_id', companyId).eq('archived', false).order('updated_at', { ascending: false }).order('id').limit(limit))
     }
-    if (subject.type !== 'person') ctx.people = ((await db.from('crm_people').select('*').eq('company_id', companyId).eq('archived', false).limit(limit)).data ?? []) as Row[]
-    ctx.decisions = ((await db.from('decisions').select('*').contains('linked_company_ids', [companyId]).limit(25)).data ?? []) as Row[]
+    if (subject.type !== 'person') ctx.people = many('crm_people', await db.from('crm_people').select('*').eq('company_id', companyId).eq('archived', false).order('created_at', { ascending: false }).order('id').limit(limit))
+    ctx.decisions = many('decisions', await db.from('decisions').select('*').contains('linked_company_ids', [companyId]).order('created_at', { ascending: false }).order('id').limit(25))
   }
   const oppIds = ctx.opps.map(o => o.id)
   const ors = [companyId && `company_id.eq.${companyId}`, oppIds.length && `opportunity_id.in.(${oppIds.join(',')})`, subject.type === 'person' && `person_id.eq.${subject.id}`].filter(Boolean).join(',')
   if (ors) {
-    ctx.tasks = ((await db.from('crm_tasks').select('*').or(ors).limit(limit)).data ?? []) as Row[]
-    ctx.activities = ((await db.from('crm_activities').select('*').or(ors).order('occurred_at', { ascending: false }).limit(limit)).data ?? []) as Row[]
+    ctx.tasks = many('crm_tasks', await db.from('crm_tasks').select('*').or(ors).order('created_at', { ascending: false }).order('id').limit(limit))
+    ctx.activities = many('crm_activities', await db.from('crm_activities').select('*').or(ors).order('occurred_at', { ascending: false }).order('id').limit(limit))
   }
-  ctx.events = ((await db.from('entity_events').select('event,summary,created_at,entity_type,entity_id').eq('entity_type', subject.type).eq('entity_id', subject.id).order('created_at', { ascending: false }).limit(30)).data ?? []) as Row[]
+  ctx.events = many('entity_events', await db.from('entity_events').select('event,summary,created_at,entity_type,entity_id').eq('entity_type', subject.type).eq('entity_id', subject.id).order('created_at', { ascending: false }).limit(30))
   return ctx
 }
 
@@ -102,7 +115,7 @@ const revenue: Provider = (ctx, now) => {
         { step: 'Revenue exposure', detail: hasMoney ? `${o.name} is open at ${o.probability}% probability.` : `${o.name} is open with no recorded value.`, evidence: [oppRef], hypothesis: false },
         { step: 'Momentum change', detail: `No recorded touch for ${quiet} days.`, evidence: last ? [evidence[1]!] : [], hypothesis: !last },
         { step: 'Process gap', detail: overdue.length ? `${overdue.length} follow-up task${overdue.length > 1 ? 's are' : ' is'} overdue.` : o.next_action ? `Next action “${String(o.next_action).slice(0, 60)}” has no recorded completion.` : 'No next action is recorded.', evidence: overdue.slice(0, 2).map(t => ref('crm_tasks', t.id, String(t.title).slice(0, 60))), hypothesis: !overdue.length },
-        { step: 'Likely root cause', detail: 'Ownership of the next step is unclear or not being worked.', evidence: [], hypothesis: true },
+        { step: 'Possible cause (unverified)', detail: 'Ownership of the next step may be unclear or not being worked.', evidence: [], hypothesis: true },
       ]
       const key = `stale-${o.id}`
       findings.push(enforceEvidenceRule({
@@ -111,7 +124,7 @@ const revenue: Provider = (ctx, now) => {
         severity: quiet >= 45 || amount >= 50_000 ? 'high' : 'medium', confidence: Math.min(80, 40 + evidence.length * 12),
         evidence, unknowns: ['Whether contact happened outside recorded channels', 'Whether the buyer’s priorities changed'],
         ...(hasMoney ? { financial_classification: 'estimated_exposure' as const, financial_low: Math.round(amount * (Number(o.probability) || 0) / 100), financial_high: amount, currency } : {}),
-        root_cause: 'The next step on this opportunity is not being worked.', cause_chain: chain, overlap_group: group,
+        root_cause: 'Possibly: the next step on this opportunity is not being worked (hypothesis, not verified).', cause_chain: chain, overlap_group: group,
         baseline_metric: { metric: 'days_since_touch', value: quiet, unit: 'days' }, target_metric: { metric: 'days_since_touch', value: 7, unit: 'days' },
       }))
       const person = ctx.people.find(p => p.id === o.person_id)
@@ -124,7 +137,7 @@ const revenue: Provider = (ctx, now) => {
       const evidence: EvidenceRef[] = [ref('crm_opportunities', o.id, `Expected close ${o.expected_close} has passed while still open`)]
       findings.push(enforceEvidenceRule({
         key: `close-${o.id}`, kind: 'risk', provider: 'revenue', layer: 'fact',
-        claim: `${o.name} is past its expected close date and still open — the forecast is overstated until it is re-dated.`,
+        claim: `${o.name} is past its expected close date and still open — this is a forecast risk until the close date is updated or the stage changes.`,
         severity: 'medium', confidence: 70, evidence, unknowns: ['The buyer’s actual decision date'],
         ...(hasMoney ? { financial_classification: 'risk_exposure' as const, financial_low: Math.round(amount * (Number(o.probability) || 0) / 100), financial_high: amount, currency } : {}),
         overlap_group: group,
@@ -136,7 +149,9 @@ const revenue: Provider = (ctx, now) => {
         evidence: [oppRef], unknowns: [], overlap_group: group })
     }
   }
-  return { report: { id: 'revenue', status: ctx.opps.length ? 'ok' : 'insufficient', note: ctx.opps.length ? `${open.length} open opportunities read.` : 'No opportunities recorded for this subject.', evidenceCount: ctx.opps.length + ctx.activities.length }, findings, proposals }
+  const oppErr = ctx.sourceErrors?.['crm_opportunities']
+  const note = oppErr ? `Source unavailable: ${oppErr}` : ctx.opps.length ? `${open.length} open opportunities read.` : 'No opportunities recorded for this subject.'
+  return { report: { id: 'revenue', status: ctx.opps.length && !oppErr ? 'ok' : 'insufficient', note, evidenceCount: ctx.opps.length + ctx.activities.length }, findings, proposals }
 }
 
 const customer: Provider = ctx => {
@@ -190,6 +205,28 @@ const PROVIDERS: Record<ProviderId, Provider> = {
   access: () => ({ report: { id: 'access', status: 'not_connected', note: NOT_CONNECTED['access']!, evidenceCount: 0 }, findings: [], proposals: [] }),
 }
 
+/** What evidence the run could and could not read. `complete` is false when any source errored. */
+export interface DataQuality {
+  complete: boolean
+  sourceErrors: Record<string, string>
+  unavailableSources: string[]
+  recordsRead: Record<string, number>
+}
+
+function dataQualityOf(ctx: DiagnoseCtx): DataQuality {
+  const sourceErrors = { ...(ctx.sourceErrors ?? {}) }
+  const unavailableSources = Object.keys(sourceErrors).sort()
+  return {
+    complete: unavailableSources.length === 0,
+    sourceErrors,
+    unavailableSources,
+    recordsRead: {
+      crm_companies: ctx.company ? 1 : 0, crm_opportunities: ctx.opps.length, crm_people: ctx.people.length, crm_tasks: ctx.tasks.length,
+      crm_activities: ctx.activities.length, decisions: ctx.decisions.length, entity_events: ctx.events.length,
+    },
+  }
+}
+
 export function evaluateProviders(ctx: DiagnoseCtx, now = Date.now()) {
   const reports: ProviderReport[] = []
   const findings: FindingDraft[] = []
@@ -202,7 +239,7 @@ export function evaluateProviders(ctx: DiagnoseCtx, now = Date.now()) {
   findings.sort((a, b) => sevRank[b.severity] - sevRank[a.severity] || (b.financial_high ?? 0) - (a.financial_high ?? 0))
   // Proposals only for findings that survived the evidence rule as actionable.
   const actionable = new Set(findings.filter(f => f.kind !== 'unknown').map(f => f.key))
-  return { reports, findings, proposals: proposals.filter(p => actionable.has(p.findingKey)) }
+  return { reports, findings, proposals: proposals.filter(p => actionable.has(p.findingKey)), dataQuality: dataQualityOf(ctx) }
 }
 
 /** Public domain only: host of the recorded website/domain. Never CRM notes or people. */
