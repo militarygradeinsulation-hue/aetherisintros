@@ -63,14 +63,18 @@ export function IntroRequestInbox() {
 
   const respond = async (row: Incoming, accept: boolean) => {
     setBusy(row.id); setMsg('')
-    if (accept && row.capsuleId) {
-      const c = await db.from('intro_context_capsules').update({ target_approved: true }).eq('id', row.capsuleId)
-      if (c.error) { setMsg(c.error.message); setBusy(''); return }
-    }
-    const u = await db.from('intro_requests').update(accept ? { member_opt_in: true, status: 'accepted' } : { status: 'declined' }).eq('id', row.id).select('id')
+    // One server transaction: checks you are the target and the request is still pending,
+    // then updates the request and approves the context capsule together (or neither).
+    let u: { error: { message: string; code?: string } | null }
+    try { u = await db.rpc('respond_to_intro_request', { p_intro_request_id: row.id, p_accept: accept }) }
+    catch (e) { u = { error: { message: e instanceof Error ? e.message : 'Network error' } } }
     setBusy('')
-    if (u.error) { setMsg(u.error.message); return }
-    if (!(u.data ?? []).length) { setMsg(`${row.requesterName} withdrew this request.`); await load(); return }
+    if (u.error) {
+      const gone = u.error.code === 'P0002' || u.error.code === '55000'
+      setMsg(gone ? `This request from ${row.requesterName} was withdrawn or already answered.` : `Your response was not saved: ${u.error.message}`)
+      if (gone) await load()
+      return
+    }
     await graph.logEvent('intro_request', row.id, accept ? 'accepted' : 'declined', `Introduction ${accept ? 'accepted' : 'declined'} with ${row.requesterName}`)
     setMsg(accept ? `Accepted. You and ${row.requesterName} can now open a Relationship Room.` : `Declined. ${row.requesterName} is not told why.`)
     await load()
