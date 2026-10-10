@@ -7,6 +7,7 @@ import {
   notifyWorkspaceChange,
   registerSyncedStore,
   useWorkspaceSyncStatus,
+  waitForWorkspaceStoreReady,
 } from "../sync/workspace-sync";
 import {
   createPlaygroundBlueprint,
@@ -71,6 +72,7 @@ export function BlueprintWorkbench() {
 
   useEffect(() => {
     let alive = true;
+    let waitingForInitialSync = false;
     void (async () => {
       if (isShowcase()) {
         setReady(true);
@@ -103,11 +105,14 @@ export function BlueprintWorkbench() {
             }
           },
         });
+        waitingForInitialSync = true;
+        await waitForWorkspaceStoreReady(STORE_KEY);
+        if (alive) setReady(true);
       } catch {
         if (alive)
           setError("Your account could not be checked. Sign in again before opening project data.");
       } finally {
-        if (alive) setReady(true);
+        if (alive && !waitingForInitialSync) setReady(true);
       }
     })();
     return () => {
@@ -202,8 +207,10 @@ export function BlueprintWorkbench() {
 
   if (!ready)
     return (
-      <p className="ops-note" role="status">
-        Checking your private account workspace…
+      <p className="ops-note" role={sync.failing ? "alert" : "status"}>
+        {sync.failing
+          ? "Account sync has failed in this session. Editing stays paused until the account copy is confirmed; automatic retries continue."
+          : "Checking your private account workspace…"}
       </p>
     );
   if (isShowcase())

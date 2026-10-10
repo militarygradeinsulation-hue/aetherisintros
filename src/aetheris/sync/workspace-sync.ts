@@ -9,7 +9,7 @@
  */
 import { useSyncExternalStore } from 'react'
 import {
-  FAILURES_BEFORE_NOTICE, MAX_STORE_BYTES, keysToClearOnSignOut, mergeStoreData, planInitialSync,
+  createStoreReadiness, FAILURES_BEFORE_NOTICE, MAX_STORE_BYTES, keysToClearOnSignOut, mergeStoreData, planInitialSync,
   retryDelayMs, type RemoteCopy, type SyncedStoreKey,
 } from './sync-logic'
 
@@ -87,7 +87,7 @@ export function useWorkspaceSyncStatus(): WorkspaceSyncStatus {
 const stores = new Map<SyncedStoreKey, SyncedStore>()
 const timers = new Map<SyncedStoreKey, ReturnType<typeof setTimeout>>()
 const inFlight = new Map<SyncedStoreKey, Promise<void>>()
-const ready = new Set<SyncedStoreKey>() // initial sync finished for the current member
+const storeReadiness = createStoreReadiness()
 const changeCounter = new Map<SyncedStoreKey, number>()
 let userId: string | null = null
 let failures = 0
@@ -127,7 +127,7 @@ async function initialSync(store: SyncedStore) {
 
 async function loadFromAccount(store: SyncedStore) {
   const uid = userId
-  if (!uid || stores.get(store.key) !== store || ready.has(store.key)) return
+  if (!uid || stores.get(store.key) !== store || storeReadiness.isReady(store.key)) return
   const meta = readMeta()
   const entry = meta.entries[store.key]
   const local = readLocal(store.localKey)
@@ -166,13 +166,13 @@ async function loadFromAccount(store: SyncedStore) {
       setEntry(store.key, { version: plan.baseVersion, dirty: true })
       break
   }
-  ready.add(store.key)
+  storeReadiness.markReady(store.key)
   if (plan.action === 'upload' || plan.action === 'merge-upload') await save(store.key)
 }
 
 async function saveOnce(key: SyncedStoreKey) {
   const store = stores.get(key)
-  if (!store || !userId || !ready.has(key)) return
+  if (!store || !userId || !storeReadiness.isReady(key)) return
   const entry = readMeta().entries[key]
   if (!entry?.dirty) return
   const local = readLocal(store.localKey)
@@ -222,7 +222,7 @@ function schedule(key: SyncedStoreKey, delay = DEBOUNCE_MS) {
     timers.delete(key)
     const store = stores.get(key)
     // Not loaded from the account yet (offline at start): retry the load, not a save.
-    if (store && !ready.has(key)) void initialSync(store)
+    if (store && !storeReadiness.isReady(key)) void initialSync(store)
     else void save(key)
   }, delay))
 }
@@ -236,7 +236,7 @@ export async function flushWorkspaceSync(): Promise<void> {
 function onUser(next: string | null) {
   if (next === userId) return
   userId = next
-  ready.clear()
+  storeReadiness.clear()
   failures = 0
   setStatus({ signedIn: !!next, failing: false, lastSavedAt: null })
   if (next) for (const store of stores.values()) void initialSync(store)
@@ -262,9 +262,14 @@ function ensureStarted() {
 export function registerSyncedStore(store: SyncedStore) {
   if (!hasWindow()) return
   stores.set(store.key, store)
-  ready.delete(store.key)
+  storeReadiness.clear(store.key)
   ensureStarted()
   if (userId) void initialSync(store)
+}
+
+/** Resolves after the current member's initial account copy has been loaded. */
+export function waitForWorkspaceStoreReady(key: SyncedStoreKey): Promise<void> {
+  return storeReadiness.waitFor(key)
 }
 
 /** Called by a live store after it writes its local copy. */
@@ -273,7 +278,7 @@ export function notifyWorkspaceChange(key: SyncedStoreKey) {
   changeCounter.set(key, (changeCounter.get(key) ?? 0) + 1)
   const entry = readMeta().entries[key]
   setEntry(key, { version: entry?.version ?? 0, dirty: true })
-  if (userId && ready.has(key)) schedule(key)
+  if (userId && storeReadiness.isReady(key)) schedule(key)
 }
 
 /**

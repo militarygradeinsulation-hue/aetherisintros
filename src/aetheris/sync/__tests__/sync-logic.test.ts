@@ -2,7 +2,7 @@ import { readFileSync } from 'node:fs'
 import { describe, expect, it } from 'vitest'
 
 import {
-  SYNCED_STORE_KEYS, keysToClearOnSignOut, mergeStoreData, planInitialSync, retryDelayMs, type LocalCopy,
+  createStoreReadiness, SYNCED_STORE_KEYS, keysToClearOnSignOut, mergeStoreData, planInitialSync, retryDelayMs, type LocalCopy,
 } from '../sync-logic'
 
 const local = (over: Partial<LocalCopy> = {}): LocalCopy => ({ present: true, baseVersion: 0, dirty: false, foreign: false, ...over })
@@ -35,6 +35,34 @@ describe('planInitialSync', () => {
   it("never uploads another member's leftover data", () => {
     expect(planInitialSync(local({ foreign: true, dirty: true }), null)).toEqual({ action: 'reset' })
     expect(planInitialSync(local({ foreign: true, dirty: true }), { version: 1, data: {} })).toEqual({ action: 'apply-remote' })
+  })
+})
+
+describe('account store readiness', () => {
+  it('keeps a store unready until initial hydration completes', async () => {
+    const readiness = createStoreReadiness()
+    let resolved = false
+    const loaded = readiness.waitFor('private-blueprints').then(() => { resolved = true })
+    expect(readiness.isReady('private-blueprints')).toBe(false)
+    expect(resolved).toBe(false)
+
+    readiness.markReady('private-blueprints')
+    await loaded
+    expect(readiness.isReady('private-blueprints')).toBe(true)
+    expect(resolved).toBe(true)
+  })
+
+  it('resets account readiness after the active member changes', () => {
+    const readiness = createStoreReadiness()
+    readiness.markReady('private-blueprints')
+    readiness.markReady('crm-ledger')
+    readiness.clear('private-blueprints')
+    expect(readiness.isReady('crm-ledger')).toBe(true)
+    expect(readiness.isReady('private-blueprints')).toBe(false)
+    readiness.markReady('private-blueprints')
+    readiness.clear()
+    expect(readiness.isReady('private-blueprints')).toBe(false)
+    expect(readiness.isReady('crm-ledger')).toBe(false)
   })
 })
 
