@@ -23,10 +23,11 @@ import { ProfessionalInfo } from '../capabilities/ProfessionalInfo'
 import { setActiveSubject } from '../capabilities/store'
 import { LedgerProvider } from '../ledger/store'
 import FullCrm from '../ledger/FullCrm'
+import { BlueprintWorkbench } from '../business-execution/BlueprintWorkbench'
 import type { CrmCompany, CrmOpportunity, CrmPerson, CrmTask, Lifecycle } from '../crm/types'
 
 
-type Tab = 'overview' | 'people' | 'companies' | 'opportunities' | 'activities' | 'tasks' | 'analytics'
+type Tab = 'overview' | 'people' | 'companies' | 'opportunities' | 'blueprints' | 'activities' | 'tasks' | 'analytics'
 type Selection = { type: 'person' | 'company' | 'opportunity'; id: string } | null
 
 const tabs: Array<{ id: Tab; label: string }> = [
@@ -34,6 +35,7 @@ const tabs: Array<{ id: Tab; label: string }> = [
   { id: 'people', label: 'People' },
   { id: 'companies', label: 'Companies' },
   { id: 'opportunities', label: 'Opportunities' },
+  { id: 'blueprints', label: 'Project Blueprints' },
   { id: 'activities', label: 'Activity' },
   { id: 'tasks', label: 'Tasks' },
   { id: 'analytics', label: 'Analytics' },
@@ -114,7 +116,7 @@ export default function CrmPage() {
 
     {creating && <CreateForm kind={creating} onClose={() => setCreating(null)} />}
 
-    {empty && tab !== 'overview' && <p className="ops-note">Nothing here yet. Add your first record from Overview.</p>}
+    {empty && tab !== 'overview' && tab !== 'blueprints' && <p className="ops-note">Nothing here yet. Add your first record from Overview.</p>}
 
     {tab === 'overview' && <section className="ops-overview">
       <div className="ops-stats">
@@ -227,6 +229,8 @@ export default function CrmPage() {
       </table>
       </div>
     </section>}
+
+    {tab === 'blueprints' && <BlueprintWorkbench />}
 
     {tab === 'activities' && <section className="ops-panel">
       <Eyebrow>EVERY TOUCHPOINT</Eyebrow>
