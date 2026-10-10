@@ -2,7 +2,7 @@ import { readFileSync } from 'node:fs'
 import { describe, expect, it } from 'vitest'
 
 import {
-  createStoreReadiness, SYNCED_STORE_KEYS, keysToClearOnSignOut, mergeStoreData, planInitialSync, retryDelayMs, type LocalCopy,
+  createStoreReadiness, shouldRetryInitialSync, SYNCED_STORE_KEYS, keysToClearOnSignOut, mergeStoreData, planInitialSync, retryDelayMs, type LocalCopy,
 } from '../sync-logic'
 
 const local = (over: Partial<LocalCopy> = {}): LocalCopy => ({ present: true, baseVersion: 0, dirty: false, foreign: false, ...over })
@@ -63,6 +63,14 @@ describe('account store readiness', () => {
     readiness.clear()
     expect(readiness.isReady('private-blueprints')).toBe(false)
     expect(readiness.isReady('crm-ledger')).toBe(false)
+  })
+
+  it('retries a stale initial load only when the same store is still waiting for the current account', () => {
+    expect(shouldRetryInitialSync('a', 'b', true, false)).toBe(true)
+    expect(shouldRetryInitialSync('a', 'a', true, false)).toBe(false)
+    expect(shouldRetryInitialSync('a', 'b', false, false)).toBe(false)
+    expect(shouldRetryInitialSync('a', 'b', true, true)).toBe(false)
+    expect(shouldRetryInitialSync('a', null, true, false)).toBe(false)
   })
 })
 

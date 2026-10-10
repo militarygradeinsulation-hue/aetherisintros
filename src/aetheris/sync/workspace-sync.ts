@@ -10,7 +10,7 @@
 import { useSyncExternalStore } from 'react'
 import {
   createStoreReadiness, FAILURES_BEFORE_NOTICE, MAX_STORE_BYTES, keysToClearOnSignOut, mergeStoreData, planInitialSync,
-  retryDelayMs, type RemoteCopy, type SyncedStoreKey,
+  retryDelayMs, shouldRetryInitialSync, type RemoteCopy, type SyncedStoreKey,
 } from './sync-logic'
 
 export interface SyncedStore {
@@ -18,6 +18,8 @@ export interface SyncedStore {
   key: SyncedStoreKey
   /** Where the local copy lives in localStorage. */
   localKey: string
+  /** Retry an initial fetch if auth changes while it is in flight. */
+  retryOnAccountChange?: boolean
   /** Replace the store's state (and its local copy) with this data; null = empty. */
   apply: (data: unknown | null) => void
 }
@@ -121,8 +123,18 @@ async function fetchRemote(key: SyncedStoreKey): Promise<RemoteCopy | null> {
 const loading = new Set<SyncedStore>()
 async function initialSync(store: SyncedStore) {
   if (loading.has(store)) return
+  const requestedUserId = userId
   loading.add(store)
-  try { await loadFromAccount(store) } finally { loading.delete(store) }
+  try { await loadFromAccount(store) } finally {
+    loading.delete(store)
+    const currentStore = stores.get(store.key)
+    if (store.retryOnAccountChange && currentStore && shouldRetryInitialSync(
+      requestedUserId,
+      userId,
+      currentStore === store,
+      storeReadiness.isReady(store.key),
+    )) void initialSync(currentStore)
+  }
 }
 
 async function loadFromAccount(store: SyncedStore) {

@@ -97,6 +97,7 @@ export function BlueprintWorkbench() {
         registerSyncedStore({
           key: STORE_KEY,
           localKey: localKeyFor(id),
+          retryOnAccountChange: true,
           apply: (data) => {
             if (!alive || activeAccountId !== id) return;
             const next = readBusinessExecutionCopy(data);

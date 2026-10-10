@@ -46,6 +46,18 @@ export function createStoreReadiness(): StoreReadiness {
   }
 }
 
+export function shouldRetryInitialSync(
+  previousUserId: string | null,
+  currentUserId: string | null,
+  storeIsCurrent: boolean,
+  storeIsReady: boolean,
+): boolean {
+  return currentUserId !== null
+    && previousUserId !== currentUserId
+    && storeIsCurrent
+    && !storeIsReady
+}
+
 /** Server limit on one store (octet_length of the JSON text). */
 export const MAX_STORE_BYTES = 2 * 1024 * 1024
 
