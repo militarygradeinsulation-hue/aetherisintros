@@ -5822,3 +5822,9 @@ body:has([role=menu],[role=listbox],.ix-mobile-sheet,.topbar-dropmenu,.notificat
 .ops-create .li-scan{margin:.7rem 0}
 .ops-create-notes{flex:1 1 100%;min-height:70px}
 .ops-create-notes{box-sizing:border-box;background:#0A0D11;border:1px solid rgba(255,255,255,.18);color:#F2EEE6;border-radius:6px;padding:8px 10px;font:400 13px/1.5 var(--sans)}
+
+.meeting-brief { padding: 1.25rem; border-top: 1px solid var(--border); }
+.brief-section { margin-bottom: 1.25rem; }
+.brief-section h4 { font-size: .7rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--text-2, #888); margin-bottom: .5rem; }
+.brief-talking-point { display: flex; gap: .75rem; margin-bottom: .5rem; align-items: flex-start; }
+.brief-num { flex-shrink: 0; min-width: 1.25rem; height: 1.25rem; border-radius: 50%; background: var(--accent); color: #fff; font-size: .65rem; font-weight: 700; display: flex; align-items: center; justify-content: center; }

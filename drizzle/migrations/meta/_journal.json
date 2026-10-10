@@ -407,6 +407,13 @@
       "when": 1791468859383,
       "tag": "0058_deal_rooms",
       "breakpoints": true
+    },
+    {
+      "idx": 65,
+      "version": "7",
+      "when": 1791470959383,
+      "tag": "meeting_briefs",
+      "breakpoints": true
     }
   ]
 }
