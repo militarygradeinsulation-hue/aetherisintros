@@ -150,7 +150,14 @@ create table public.member_verifications (id uuid primary key default gen_random
   decision_reason text, risk_flags jsonb not null default '[]', submitted_at timestamptz, scanned_at timestamptz, verified_at timestamptz, updated_at timestamptz not null default now());
 create table public.memories (id uuid primary key default gen_random_uuid(), user_id uuid not null, member_id text, kind text not null default 'learning', category text not null default '',
   text text not null, source text not null default '', confidence int not null default 100, scope text not null default 'private', when_label text not null default '', created_at timestamptz not null default now());
-create table public.posts (id text primary key, member_id text, author_id uuid, kind text not null default 'Insight', text text not null, when_label text not null default '', created_at timestamptz not null default now(), is_demo boolean not null default false);
+create table public.posts (id text primary key, member_id text, author_id uuid, kind text not null default 'Insight', text text not null, detail text not null default '', when_label text not null default '', created_at timestamptz not null default now(), is_demo boolean not null default false, visibility text not null default 'network');
+revoke all on public.posts from anon, authenticated;
+grant select, insert, update, delete on public.posts to authenticated;
+alter table public.posts enable row level security;
+create policy "Members read network posts" on public.posts for select to authenticated using (author_id = auth.uid() or (visibility = 'network' and (is_demo = true or author_id is null or exists (select 1 from public.profiles where id = auth.uid()))));
+create policy "live posts insert" on public.posts for insert to authenticated with check (auth.uid() = author_id and is_demo = false);
+create policy "own posts update" on public.posts for update to authenticated using (auth.uid() = author_id) with check (auth.uid() = author_id);
+create policy "own posts delete" on public.posts for delete to authenticated using (auth.uid() = author_id);
 create table public.members (id text primary key, name text not null, initials text not null, title text not null, company text not null, location text not null, role text not null, industry text not null,
   bio text not null default '', tags text[] not null default '{}', expertise text[] not null default '{}', needs text[] not null default '{}', offers text[] not null default '{}',
   focus text not null default '', thesis text not null default '', availability text not null default '', mutuals text[] not null default '{}', last_interaction_days int not null default 0,
