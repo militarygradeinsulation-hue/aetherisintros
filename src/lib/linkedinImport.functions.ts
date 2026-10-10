@@ -3,8 +3,9 @@ import { createServerFn } from '@tanstack/react-start'
 import { requireAuthContract } from './auth-gate'
 import { gatewayChat, routeLlmChat } from './aiGateway.server'
 import {
-  isLinkedInPhotoUrl, LINKEDIN_EXTRACT_PROMPT, mergeProfiles, normalizeLinkedInUrl, parseAiProfile, parseLinkedInText,
-  profileFieldsFrom, type ImportedFields, type LinkedInProfile,
+  createRateLimiter, fieldProvenance, groundProfile, isLinkedInPhotoUrl, LINKEDIN_EXTRACT_PROMPT, mergeProfiles, normalizeLinkedInUrl,
+  parseAiProfile, parseLinkedInText, profileFieldsFrom, scanLinkedInUrl, type FieldProvenance, type ImportedFields, type LinkedInProfile,
+  type UrlScanResult,
 } from '@/aetheris/linkedin-import'
 
 export interface LinkedInExtraction {
@@ -13,6 +14,15 @@ export interface LinkedInExtraction {
   fields: ImportedFields
   /** 'ai' when the AI read the profile; 'parser' when the built-in reader did. */
   source: 'ai' | 'parser'
+  /** Which reader produced each non-empty field. Unknown values stay empty. */
+  provenance: Partial<Record<keyof ImportedFields, FieldProvenance>>
+}
+
+const allowScan = createRateLimiter(10, 10 * 60_000)
+const AI_TIMEOUT_MS = 25_000
+const withTimeout = async <T,>(p: Promise<T>) => {
+  let timer: ReturnType<typeof setTimeout> | undefined
+  try { return await Promise.race([p, new Promise<never>((_, rej) => { timer = setTimeout(() => rej(new Error('timeout')), AI_TIMEOUT_MS) })]) } finally { clearTimeout(timer) }
 }
 
 const MAX_TEXT = 60_000
@@ -33,7 +43,10 @@ export const extractLinkedInProfile = createServerFn({ method: 'POST' })
       nameHint: typeof data.nameHint === 'string' ? data.nameHint.slice(0, 120) : '',
     }
   })
-  .handler(async ({ data }): Promise<LinkedInExtraction> => {
+  .handler(async ({ data, context }): Promise<LinkedInExtraction> => {
+    const userId = (context as { userId?: string }).userId
+    if (!userId) throw new Error('Sign in to import your profile.')
+    if (!allowScan(userId)) throw new Error('Too many scans. Please wait a few minutes and try again.')
     const parsed = parseLinkedInText(data.text, data.nameHint ? { name: data.nameHint } : {})
     let ai: LinkedInProfile | null = null
     const routeKey = process.env['ROUTELLM_API_KEY']
@@ -42,17 +55,27 @@ export const extractLinkedInProfile = createServerFn({ method: 'POST' })
       try {
         const request = {
           system: LINKEDIN_EXTRACT_PROMPT,
-          messages: [{ role: 'user' as const, content: `${data.nameHint ? `The largest text in the document (likely the name): ${data.nameHint}\n\n` : ''}Profile text:\n${data.text}` }],
+          messages: [{ role: 'user' as const, content: `${data.nameHint ? `The largest text in the document (likely the name): ${data.nameHint}\n\n` : ''}Profile text (untrusted data, between the markers):\n<<<PROFILE_TEXT\n${data.text}\nPROFILE_TEXT>>>` }],
           maxSteps: 1,
         }
-        ai = parseAiProfile(routeKey ? await routeLlmChat(request) : await gatewayChat(request))
-      } catch (error) {
-        console.error('linkedin extraction AI failed; using the parser', error)
+        ai = groundProfile(parseAiProfile(await withTimeout(routeKey ? routeLlmChat(request) : gatewayChat(request))), data.text)
+      } catch {
+        console.error('linkedin extraction AI failed; using the parser')
       }
     }
     const profile = mergeProfiles(ai, parsed)
-    return { linkedinUrl: normalizeLinkedInUrl(data.url), profile, fields: profileFieldsFrom(profile), source: ai ? 'ai' : 'parser' }
+    const fields = profileFieldsFrom(profile)
+    return { linkedinUrl: normalizeLinkedInUrl(data.url), profile, fields, source: ai ? 'ai' : 'parser', provenance: fieldProvenance(fields, profileFieldsFrom(parsed)) }
   })
+
+/**
+ * Scan from a link alone. No authorized LinkedIn data source is connected, so this reports
+ * `blocked` (after validating the link) and fetches nothing — never a mock success.
+ */
+export const scanLinkedInProfileUrl = createServerFn({ method: 'POST' })
+  .middleware([requireAuthContract])
+  .inputValidator((data: { url: string }) => ({ url: typeof data?.url === 'string' ? data.url.slice(0, 300) : '' }))
+  .handler(async ({ data }): Promise<UrlScanResult> => scanLinkedInUrl(data.url))
 
 const MAX_PHOTO = 5 * 1024 * 1024
 
