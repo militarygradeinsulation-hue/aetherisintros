@@ -8,6 +8,7 @@ import { toast } from 'sonner'
 
 import { supabase } from '@/integrations/supabase/client'
 import { disconnectGoogle, googleStatus, startGoogleConnect, syncGoogleNow, type GoogleStatus } from '@/lib/google.functions'
+import { ghostSyncMeeting } from './crm/ghost-sync'
 
 const db = supabase as any // eslint-disable-line @typescript-eslint/no-explicit-any
 
@@ -43,6 +44,18 @@ export function GoogleCalendarConnect() {
     const parts = [matched ? `meetings with ${matched} member${matched === 1 ? '' : 's'}` : '', emailMatched ? `email with ${emailMatched} member${emailMatched === 1 ? '' : 's'}` : ''].filter(Boolean)
     setMsg(parts.length ? `Found ${parts.join(' and ')}.` : 'Synced. Nothing with members found yet.')
     await load()
+    // Ghost-CRM: for each member whose calendar signals just updated, log a meeting activity so
+    // the contact timeline reflects real face-time. Non-blocking — never throws.
+    if (matched > 0) {
+      void (async () => {
+        try {
+          const { data } = await db.from('relationship_signals').select('member_id, last_at').eq('source', 'calendar').gt('count_90d', 0)
+          for (const row of data ?? []) {
+            void ghostSyncMeeting({ theirProfile: { id: row.member_id, name: '', title: '', company: '', location: '' }, eventTitle: 'Calendar meeting', startAt: row.last_at ?? new Date().toISOString() })
+          }
+        } catch { /* non-blocking */ }
+      })()
+    }
   })
   const remove = () => run('disconnect', async () => { await disconnectGoogle(); setMsg('Disconnected. Your calendar data was removed.'); await load() })
 

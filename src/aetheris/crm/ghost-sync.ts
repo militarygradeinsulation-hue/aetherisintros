@@ -53,7 +53,7 @@ export async function ghostUpsertContact(profile: GhostProfile): Promise<string 
     }
     const { data: created, error: insertError } = await supabase.from('crm_people').insert({
       full_name: p.name || 'Network member', title: p.title, company_name: p.company, location: p.location,
-      member_id: p.id, source: 'ghost_sync', lifecycle: 'Other',
+      member_id: p.id, source: 'ghost_sync',
     }).select('id').single()
     if (insertError) {
       // A concurrent sync may have created it first; reuse that row.
@@ -111,12 +111,38 @@ export async function ghostLogActivity(opts: {
 
 const nameOf = (p: GhostProfile) => p.name || 'a network member'
 
+/**
+ * After a key social event (accepted intro, calendar meeting), try to advance the contact's
+ * lifecycle stage. Lead → Prospect after any intro; Prospect → Partner after 2+ meetings.
+ * Ghost-created contacts start as 'Lead' (DB default), so this progression fires naturally.
+ */
+async function ghostMaybeAdvanceLifecycle(personId: string): Promise<void> {
+  try {
+    const { data, error } = await supabase.from('crm_people').select('lifecycle').eq('id', personId).maybeSingle()
+    if (error || !data) return
+    const current = data.lifecycle as string
+    let next: string | null = null
+    if (current === 'Lead') {
+      next = 'Prospect'
+    } else if (current === 'Prospect') {
+      const { count: meetingCount, error: cErr } = await supabase.from('crm_activities')
+        .select('id', { count: 'exact', head: true }).eq('person_id', personId).eq('kind', 'meeting')
+      if (!cErr && (meetingCount ?? 0) >= 2) next = 'Partner'
+    }
+    if (!next) return
+    const u = await supabase.from('crm_people').update({ lifecycle: next, updated_at: new Date().toISOString() }).eq('id', personId)
+    if (u.error) warn('lifecycle advance failed', u.error.message)
+  } catch (e) { warn('advance lifecycle', e) }
+}
+
 export async function ghostSyncIntroAccepted(opts: { theirProfile: GhostProfile; introId: string }): Promise<void> {
-  if (!(await ghostUpsertContact(opts.theirProfile))) return
+  const personId = await ghostUpsertContact(opts.theirProfile)
+  if (!personId) return
   await ghostLogActivity({
     memberUserId: opts.theirProfile.id, kind: 'intro', introRequestId: opts.introId,
     subject: `Introduction accepted with ${nameOf(opts.theirProfile)}`, detail: 'Logged automatically when the introduction was accepted.',
   })
+  await ghostMaybeAdvanceLifecycle(personId)
 }
 
 export async function ghostSyncMessage(opts: { theirProfile: GhostProfile; threadId: string }): Promise<void> {
@@ -144,7 +170,17 @@ async function maybeAutoOpportunity(theirProfile: GhostProfile, introId: string,
       name: `${nameOf(theirProfile)} — ${label} opportunity`, person_id: personId, status: 'open', probability: 50, amount: 0,
       source: 'ghost_sync', detail: `Auto-created from introduction outcome. Intro ID: ${introId}`,
     })
-    if (ins.error) warn('opportunity create failed', ins.error.message)
+    if (ins.error) { warn('opportunity create failed', ins.error.message); return }
+    // Notify the user so the auto-created opportunity surfaces in the bell.
+    const { data: authData } = await supabase.auth.getUser()
+    const uid = authData?.user?.id
+    if (uid) {
+      const notif = await supabase.from('notifications').insert({
+        user_id: uid, kind: 'crm_opportunity', link: '/crm',
+        text: `${label} opportunity created from your introduction with ${nameOf(theirProfile)}.`,
+      })
+      if (notif.error) warn('opportunity notification failed', notif.error.message)
+    }
   } catch (e) { warn('auto opportunity', e) }
 }
 
@@ -161,11 +197,13 @@ export async function ghostSyncOutcome(opts: { theirProfile: GhostProfile; intro
 }
 
 export async function ghostSyncMeeting(opts: { theirProfile: GhostProfile; eventTitle: string; startAt: string; calendarEventId?: string }): Promise<void> {
-  if (!(await ghostUpsertContact(opts.theirProfile))) return
+  const personId = await ghostUpsertContact(opts.theirProfile)
+  if (!personId) return
   await ghostLogActivity({
     memberUserId: opts.theirProfile.id, kind: 'meeting', occurredAt: opts.startAt, ...(opts.calendarEventId ? { calendarEventId: opts.calendarEventId } : {}),
     subject: opts.eventTitle || `Meeting with ${nameOf(opts.theirProfile)}`, detail: 'Logged automatically from the calendar.',
   })
+  await ghostMaybeAdvanceLifecycle(personId)
 }
 
 /** Outcome UIs only know the intro id: resolve the counterparty (the side that is not me) and sync. */

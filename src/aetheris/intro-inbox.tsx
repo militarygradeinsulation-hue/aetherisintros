@@ -37,6 +37,7 @@ export function IntroRequestInbox() {
   const [rows, setRows] = useState<Incoming[]>([])
   const [busy, setBusy] = useState('')
   const [msg, setMsg] = useState('')
+  const [retry, setRetry] = useState<{ row: Incoming; accept: boolean } | null>(null)
 
   const load = useCallback(async () => {
     if (!graph.signedIn || !graph.userId) return
@@ -73,9 +74,11 @@ export function IntroRequestInbox() {
     if (u.error) {
       const gone = u.error.code === 'P0002' || u.error.code === '55000'
       setMsg(gone ? `This request from ${row.requesterName} was withdrawn or already answered.` : `Your response was not saved: ${u.error.message}`)
-      if (gone) await load()
+      if (!gone) setRetry({ row, accept })
+      else { setRetry(null); await load() }
       return
     }
+    setRetry(null)
     if (accept) {
       // Ghost CRM: the requester becomes (or refreshes) a contact with an intro on their timeline. Never blocks.
       const m = net.members.find(x => x.id === row.requesterId)
@@ -109,6 +112,9 @@ export function IntroRequestInbox() {
         </div>
       </article>
     })}
-    {msg && <p className="og-note">{msg}</p>}
+    {msg && <div className="og-note">
+      <p>{msg}</p>
+      {retry && <Btn kind="quiet" disabled={!!busy} onClick={() => { const r = retry; setRetry(null); void respond(r.row, r.accept) }}>Retry</Btn>}
+    </div>}
   </section>
 }

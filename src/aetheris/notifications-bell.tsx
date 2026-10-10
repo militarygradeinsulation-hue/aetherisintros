@@ -31,6 +31,7 @@ export function destinationFor(n: Pick<LiveNotification, 'kind'>): 'intros' | 'm
   if (n.kind === 'message') return 'messages'
   if (n.kind === 'connection' || n.kind === 'follow') return 'people'
   if (n.kind.startsWith('intro')) return 'intros' // intro_request, intro_accepted, intro_declined, intro_connected
+  if (n.kind === 'crm_opportunity') return 'people' // auto-created deal opportunity → CRM tab is on the people section
   return 'home' // e.g. onboarding_incomplete nudges
 }
 

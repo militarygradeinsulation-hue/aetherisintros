@@ -312,6 +312,18 @@ export async function loadLiveDirectory(userId: string): Promise<{ directory: Di
         }
       }
     }
+    // Google-Calendar-synced meeting counts: populated by the daily sync, more reliable for
+    // calendar meetings than the ghost-synced crm_activities count. We take the max of the two.
+    const sigByMember = new Map<string, number>()
+    let sigKnown = false
+    const sigRead = others.length
+      ? await (supabase as any).from('relationship_signals').select('member_id, count_90d') // eslint-disable-line @typescript-eslint/no-explicit-any
+          .in('member_id', others.map(o => o.id)).eq('source', 'calendar')
+      : null
+    if (sigRead && !sigRead.error) {
+      sigKnown = true
+      for (const r of sigRead.data ?? []) if (r.member_id) sigByMember.set(r.member_id, r.count_90d ?? 0)
+    }
 
     const members = others.map(row => {
       const msgs = peerMessages.get(row.id) ?? { count: 0, lastAt: null }
@@ -324,7 +336,7 @@ export async function loadLiveDirectory(userId: string): Promise<{ directory: Di
         directConnection: edgeRead.error ? null : mine.has(row.id),
         mutualConnections: edgeRead.error ? null : mutualIds.length,
         intros: introRead.error ? null : (introsByPeer.get(row.id) ?? []),
-        calendarMeetings: meetingsKnown ? (meetingsByMember.get(row.id) ?? 0) : null,
+        calendarMeetings: (meetingsKnown || sigKnown) ? Math.max(meetingsByMember.get(row.id) ?? 0, sigByMember.get(row.id) ?? 0) : null,
       }
       return profileToMember(row, me, { ...base, provenStrength: provenStrengthOf(base) }, mutualIds.map(id => nameOf.get(id) ?? 'Member'))
     })

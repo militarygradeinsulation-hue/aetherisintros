@@ -4,6 +4,11 @@ import { NetworkProvider, useNetwork } from '@/aetheris/store'
 import { AttachButton, MessageBody, attachmentPreview } from '@/aetheris/MessageAttachments'
 import { loadReadReceiptsSetting, markThreadRead, saveReadReceiptsSetting, useUnreadCounts } from '@/aetheris/read-receipts'
 import { badgeLabel, seenUnderMessageId, shouldMarkRead } from '@/aetheris/messaging-state'
+import { supabase } from '@/integrations/supabase/client'
+import { ageLabel } from '@/aetheris/notifications-bell'
+
+/* eslint-disable @typescript-eslint/no-explicit-any */
+const db = supabase as any
 
 const pageVisible = () => typeof document === 'undefined' || document.visibilityState === 'visible'
 
@@ -51,6 +56,18 @@ function Inner() {
     try { await saveReadReceiptsSetting(next); setReceiptsNote('') }
     catch { setReceipts(!next); setReceiptsNote('Could not save that. Try again.') }
   }
+
+  // CRM snapshot for the right-panel — load whenever the active person changes.
+  const [crmSnap, setCrmSnap] = useState<{ lifecycle: string; lastActivityAt: string | null } | null>(null)
+  useEffect(() => {
+    if (!person) { setCrmSnap(null); return }
+    let live = true
+    void db.from('crm_people').select('lifecycle, last_activity_at').eq('member_id', person.id).order('created_at').limit(1).maybeSingle()
+      .then((r: { data: { lifecycle: string; last_activity_at: string | null } | null }) => {
+        if (live) setCrmSnap(r.data ? { lifecycle: r.data.lifecycle, lastActivityAt: r.data.last_activity_at } : null)
+      })
+    return () => { live = false }
+  }, [person?.id])
 
   // Delivery failures come from the store's write tracker, which already sends each message exactly once.
   const [dismissed, setDismissed] = useState<Set<string>>(() => new Set())
@@ -182,6 +199,11 @@ function Inner() {
             </div>
             {active?.introContext && <div><p className="text-[10px] uppercase tracking-widest text-[#9CA3AF] mb-1">How you met</p><p className="text-xs text-[#CBD5E1]">{active.introContext}</p></div>}
             {active?.commitment && <div><p className="text-[10px] uppercase tracking-widest text-[#9CA3AF] mb-1">Open loop</p><p className="text-xs text-[#CBD5E1]">{active.commitment}</p></div>}
+            {crmSnap && <div>
+              <p className="text-[10px] uppercase tracking-widest text-[#9CA3AF] mb-1">CRM</p>
+              <p className="text-xs text-[#CBD5E1]">{crmSnap.lifecycle}{crmSnap.lastActivityAt ? ` · last activity ${ageLabel(crmSnap.lastActivityAt)}` : ''}</p>
+              <a href="/crm" className="text-[11px] text-[#F5B027] underline hover:opacity-80">Open CRM record ↗</a>
+            </div>}
             <p className="text-[11px] text-[#9CA3AF] mt-auto">Files up to 50 MB — images, video, PDFs. Only the two of you can open them.</p>
           </>) : <p className="text-xs text-[#9CA3AF]">Context appears here when you open a conversation.</p>}
         </aside>
