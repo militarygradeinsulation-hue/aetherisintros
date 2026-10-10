@@ -302,9 +302,9 @@ export function ExecutiveIdentityEditor({ openPhotoEditor }: { openPhotoEditor: 
       ...(fields.title !== undefined && { title: fields.title }),
       ...(fields.company !== undefined && { company: fields.company }),
       ...(fields.location !== undefined && { location: fields.location }),
-      ...(fields.whatIDo !== undefined && { whatIDo: fields.whatIDo }),
-      ...(fields.building !== undefined && { building: fields.building }),
-      ...(fields.canHelpWith !== undefined && { canHelpWith: fields.canHelpWith }),
+      ...(fields.about !== undefined && { whatIDo: fields.about }),
+      ...(fields.can_help_with !== undefined && { canHelpWith: fields.can_help_with }),
+      ...(fields.looking_for !== undefined && { lookingFor: fields.looking_for }),
     }))} />
     <div className="executive-editor-grid">
       <section className="executive-edit-form">

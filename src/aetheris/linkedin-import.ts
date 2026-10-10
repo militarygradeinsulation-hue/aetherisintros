@@ -87,6 +87,9 @@ export function isLinkedInPhotoUrl(input: string): boolean {
 const SECTION = /^(contact|top skills|skills|languages|certifications|honors-awards|honors & awards|publications|patents|summary|about|experience|education|volunteer experience|projects|recommendations|interests|activity|licenses & certifications)$/i
 const DATE_LINE = /^((jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)[a-z]*\.?\s+)?\d{4}\s*[-–—]\s*(present|((jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)[a-z]*\.?\s+)?\d{4})(\s*[(·].*)?$/i
 const PAGE_FOOTER = /^page \d+ of \d+$/i
+const EMPLOYMENT = 'full-time|part-time|self-employed|freelance|contract|internship|apprenticeship|seasonal'
+const EMPLOYER_LINE = new RegExp(`^(.{1,100}?)\\s+·\\s+(${EMPLOYMENT})$`, 'i')
+const TENURE_LINE = new RegExp(`^((${EMPLOYMENT})\\s+·\\s+)?\\d+\\s+yrs?\\b.*$|^(${EMPLOYMENT})\\s+·\\s+\\d+\\s+mos?\\b.*$`, 'i')
 const NOISE = /(www\.linkedin\.com\/in\/|^\(linkedin\)$|@|^\+?\d[\d\s().-]{6,}$|\(mobile\)|\(work\)|\(home\)|\(personal\)|\(company\))/i
 
 const clean = (s: string) => s.replace(/\s+/g, ' ').trim()
@@ -143,8 +146,13 @@ function parseExperience(lines: string[]): LinkedInRole[] {
   const roles: LinkedInRole[] = []
   for (let i = 0; i < lines.length; i++) {
     if (!DATE_LINE.test(lines[i]!)) continue
-    const title = lines[i - 1] ?? ''
-    const above = lines[i - 2] ?? ''
+    let title = lines[i - 1] ?? ''
+    let above = lines[i - 2] ?? ''
+    // A copied profile page reads "Title" then "Company · Full-time" (the PDF reads company, then title).
+    const typed = title.match(EMPLOYER_LINE)
+    if (typed) { title = above; above = typed[1]! }
+    // Several roles at one company: "Company" then "Full-time · 6 yrs" above the first title.
+    else if (TENURE_LINE.test(above)) above = lines[i - 3] ?? ''
     // "Company" sits above the title unless the line above is another role's text.
     const company = above && !DATE_LINE.test(above) && above.length < 80 ? above : (roles[roles.length - 1]?.company ?? '')
     const rest: string[] = []
@@ -152,6 +160,7 @@ function parseExperience(lines: string[]): LinkedInRole[] {
     for (; j < lines.length; j++) {
       if (lines[j + 1] !== undefined && DATE_LINE.test(lines[j + 1]!)) break
       if (lines[j + 2] !== undefined && DATE_LINE.test(lines[j + 2]!) && lines[j]!.length < 80) break
+      if (lines[j + 3] !== undefined && DATE_LINE.test(lines[j + 3]!) && TENURE_LINE.test(lines[j + 1] ?? '')) break
       rest.push(lines[j]!)
     }
     const location = rest[0] && rest[0].length < 70 && /,|remote|area|united|kingdom|states/i.test(rest[0]) ? rest.shift()! : ''
