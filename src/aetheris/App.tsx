@@ -151,7 +151,6 @@ import BusinessAnalystPanel from './BusinessAnalystPanel'
 import { StorefrontPanel } from './StorefrontPanel'
 import { SyndicationRoomsPanel } from './SyndicationRoomsPanel'
 import { WarmReferralPanel } from './WarmReferralPanel'
-import { PeerGroupsPanel } from './PeerGroupsPanel'
 import { CurrentUserTrackRecord } from './CurrentUserTrackRecord'
 
 
@@ -2721,7 +2720,7 @@ function Shell({ startPage, feedOnly = false }: { startPage?: Page | undefined; 
       intros: <Intros people={people} select={setSelected} draft={setDraft} />,
       messages: <MessageHub people={people} select={setSelected} activeId={threadId} setActiveId={setThreadId} />,
       meetings: <MeetingsPage />,
-      peergroups: <><PeerGroupsPage /><div className="og-stack"><PeerGroupsPanel /></div></>,
+      peergroups: <PeerGroupsPage />,
       providers: <ProvidersPage />,
       warmpaths: <><WarmPathsPage /><div className="og-stack"><WarmReferralPanel /></div></>,
       needs: <><IntentExchangePanel /><Needs onNew={() => setNeedOpen(true)} people={people} select={setSelected} setPage={setPage} /><IntentBoard /></>,
