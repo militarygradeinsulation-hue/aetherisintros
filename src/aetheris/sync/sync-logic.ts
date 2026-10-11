@@ -99,9 +99,9 @@ export const FAILURES_BEFORE_NOTICE = 3
 
 /**
  * localStorage keys to clear when a member signs out of a shared computer: everything under
- * `aetheris.` plus the hyphenated live stores. Demo/showcase copies hold no member data and
- * are kept.
+ * `aetheris.` plus the hyphenated live stores and private note/thread keys used by the
+ * editorial shell. Demo/showcase copies hold no member data and are kept.
  */
 export function keysToClearOnSignOut(keys: readonly string[]): string[] {
-  return keys.filter(k => k.startsWith('aetheris.') || (k.startsWith('aetheris-') && k.endsWith('-live')))
+  return keys.filter(k => k.startsWith('aetheris.') || k.startsWith('aetheris_notes_') || k === 'aetheris-intros-thread' || (k.startsWith('aetheris-') && k.endsWith('-live')))
 }
