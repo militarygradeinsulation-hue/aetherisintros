@@ -1,4 +1,5 @@
 import { createFileRoute } from '@tanstack/react-router'
+import { logServerError } from '@/lib/server-error-log'
 
 import { isTrustedCaller } from '@/lib/app-settings.server'
 import { deliverDueMembershipCards } from '@/lib/membership-card.server'
@@ -19,7 +20,7 @@ export const Route = createFileRoute('/api/cron/membership-cards')({
         try {
           return Response.json(await deliverDueMembershipCards({ appUrl }))
         } catch (error) {
-          console.error('membership-cards failed', error)
+          await logServerError(error, request)
           return Response.json({ error: 'Card run failed' }, { status: 500 })
         }
       },
