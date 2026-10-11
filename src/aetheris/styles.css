@@ -5822,3 +5822,38 @@ body:has([role=menu],[role=listbox],.ix-mobile-sheet,.topbar-dropmenu,.notificat
 .ops-create .li-scan{margin:.7rem 0}
 .ops-create-notes{flex:1 1 100%;min-height:70px}
 .ops-create-notes{box-sizing:border-box;background:#0A0D11;border:1px solid rgba(255,255,255,.18);color:#F2EEE6;border-radius:6px;padding:8px 10px;font:400 13px/1.5 var(--sans)}
+
+/* ------------------------------------------------------------ Record outcome modal: explicit high-contrast form colours (WCAG AA) */
+.app-shell .need-modal.outcome-modal {
+  --oc-bg: #F4F1EA; --oc-field-bg: #FFFFFF; --oc-text: #101216; --oc-label: #2B2F35;
+  --oc-intro: #33373D; --oc-placeholder: #565B62; --oc-disabled: #4A4F56; --oc-hint: #3A3E44;
+  --oc-eyebrow: #0B4DAE; --oc-border: #6B7078;
+  background: var(--oc-bg); color: var(--oc-text); color-scheme: light;
+}
+.need-modal.outcome-modal > header p { color: var(--oc-intro); }
+.need-modal.outcome-modal .eyebrow { color: var(--oc-eyebrow); }
+.need-modal.outcome-modal .need-form label > span { color: var(--oc-label); font-weight: 700; }
+.need-modal.outcome-modal .need-form :is(select, textarea, input) {
+  box-sizing: border-box; width: 100%; color-scheme: light; background-color: var(--oc-field-bg);
+  color: var(--oc-text); -webkit-text-fill-color: var(--oc-text); opacity: 1;
+  border: 1px solid var(--oc-border); border-radius: 6px;
+}
+.need-modal.outcome-modal .need-form select {
+  -webkit-appearance: none; appearance: none; padding-right: 32px;
+  background-image: linear-gradient(45deg, transparent 50%, var(--oc-text) 50%), linear-gradient(135deg, var(--oc-text) 50%, transparent 50%);
+  background-position: calc(100% - 15px) calc(50% - 2px), calc(100% - 10px) calc(50% - 2px);
+  background-size: 5px 5px, 5px 5px; background-repeat: no-repeat;
+}
+.need-modal.outcome-modal .need-form select option { background-color: var(--oc-field-bg); color: var(--oc-text); -webkit-text-fill-color: var(--oc-text); }
+.need-modal.outcome-modal .need-form :is(textarea, input)::placeholder { color: var(--oc-placeholder); -webkit-text-fill-color: var(--oc-placeholder); opacity: 1; }
+.need-modal.outcome-modal .need-form :is(select, textarea, input):disabled { color: var(--oc-disabled); -webkit-text-fill-color: var(--oc-disabled); opacity: 1; }
+.need-modal.outcome-modal .outcome-field { display: grid; gap: 8px; min-width: 0; }
+.need-modal.outcome-modal .outcome-hint { display: block; color: var(--oc-hint); font: 500 12px/1.5 var(--sans); white-space: normal; overflow-wrap: anywhere; overflow: visible; }
+.need-modal.outcome-modal > footer { background: linear-gradient(transparent, var(--oc-bg) 28%); }
+.need-modal.outcome-modal .btn.quiet { color: var(--oc-label); border-color: var(--oc-border); }
+.need-modal.outcome-modal .btn.primary { background: #0B4DAE; border-color: #0B4DAE; color: #FFFFFF; }
+.need-modal.outcome-modal .btn.primary:disabled { background: #4A4F56; border-color: #4A4F56; color: #FFFFFF; opacity: 1; }
+@media (max-width: 680px) {
+  .need-modal.outcome-modal .need-form label { grid-template-columns: minmax(0, 1fr); gap: 8px; }
+  .need-modal.outcome-modal .need-form :is(select, textarea, input) { font-size: 16px; }
+}
