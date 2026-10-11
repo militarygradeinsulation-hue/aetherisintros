@@ -428,6 +428,48 @@
       "when": 1791469759383,
       "tag": "0061_member_directory_stats",
       "breakpoints": true
+    },
+    {
+      "idx": 62,
+      "version": "7",
+      "when": 1791469759384,
+      "tag": "0062_business_posts",
+      "breakpoints": true
+    },
+    {
+      "idx": 63,
+      "version": "7",
+      "when": 1791469759385,
+      "tag": "0063_deal_workspaces",
+      "breakpoints": true
+    },
+    {
+      "idx": 64,
+      "version": "7",
+      "when": 1791469759386,
+      "tag": "0064_deal_workspace_business_roles",
+      "breakpoints": true
+    },
+    {
+      "idx": 65,
+      "version": "7",
+      "when": 1791469759387,
+      "tag": "0065_private_contact_library",
+      "breakpoints": true
+    },
+    {
+      "idx": 66,
+      "version": "7",
+      "when": 1791469759388,
+      "tag": "0066_contact_export_denial",
+      "breakpoints": true
+    },
+    {
+      "idx": 67,
+      "version": "7",
+      "when": 1791469759389,
+      "tag": "0067_business_execution_workbench",
+      "breakpoints": true
     }
   ]
 }
