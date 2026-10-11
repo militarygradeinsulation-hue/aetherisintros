@@ -6,6 +6,7 @@ import { loadReadReceiptsSetting, markThreadRead, saveReadReceiptsSetting, useUn
 import { badgeLabel, seenUnderMessageId, shouldMarkRead } from '@/aetheris/messaging-state'
 import { OpenDealRoomButton } from '@/aetheris/deals-ui'
 import { draftTitle } from '@/aetheris/deals-core'
+import { MeetingBriefPanel } from '@/aetheris/meeting-brief-ui'
 
 const pageVisible = () => typeof document === 'undefined' || document.visibilityState === 'visible'
 
@@ -15,6 +16,7 @@ function Inner() {
   const [activeId, setActiveId] = useState<string>(() => (typeof window === 'undefined' ? '' : localStorage.getItem('aetheris-intros-thread') ?? ''))
   const [query, setQuery] = useState('')
   const [draft, setDraft] = useState('')
+  const [showBrief, setShowBrief] = useState(false)
   const endRef = useRef<HTMLDivElement>(null)
   const byId = useMemo(() => new Map(net.members.map(m => [m.id, m])), [net.members])
   const threads = net.threads.filter(t => {
@@ -126,10 +128,19 @@ function Inner() {
                 <p className="text-sm font-semibold text-[#F2EEE6] truncate">{person?.name ?? 'Member'}</p>
                 <p className="text-[11px] text-[#9CA3AF] truncate">{[person?.title, person?.company].filter(Boolean).join(' · ')}</p>
               </div>
-              {person && <div className="ml-auto shrink-0">
+              {person && <div className="ml-auto shrink-0 flex items-center gap-2">
+                <button
+                  onClick={() => setShowBrief(v => !v)}
+                  className="text-[11px] px-2 py-1 rounded-md border border-white/20 text-[#9CA3AF] hover:text-[#F2EEE6] hover:border-white/40 transition-colors cursor-pointer"
+                >
+                  {showBrief ? 'Hide brief' : 'Pre-meeting brief'}
+                </button>
                 <OpenDealRoomButton kind="quiet" label="Deal room" draft={{ sourceKind: 'thread', sourceId: active.id, title: draftTitle('thread', person.name), need: active.introContext ?? '', counterpartId: person.id, counterpartName: person.name }} />
               </div>}
             </header>
+            {showBrief && person && (
+              <MeetingBriefPanel otherUserId={person.id} otherName={person.name} />
+            )}
             <div className="flex-1 overflow-y-auto px-4 py-4 space-y-2.5">
               {active.messages.length === 0 && <p className="text-xs text-[#9CA3AF] text-center">Say hello — this is the start of your conversation.</p>}
               {active.messages.map(msg => (
