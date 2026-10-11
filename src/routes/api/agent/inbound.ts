@@ -1,4 +1,5 @@
 import { createFileRoute } from '@tanstack/react-router'
+import { logServerError } from '@/lib/server-error-log'
 
 /** Public: an outside agent asks to reach a member by handle, screened against their Agent Policy. */
 export const Route = createFileRoute('/api/agent/inbound')({
@@ -10,7 +11,7 @@ export const Route = createFileRoute('/api/agent/inbound')({
           const { handleInbound } = await import('@/lib/agent-gateway/gateway.server')
           return await handleInbound(request)
         } catch (error) {
-          console.error('agent gateway inbound failed', error)
+          await logServerError(error, request)
           return Response.json({ error: 'unavailable' }, { status: 500 })
         }
       },

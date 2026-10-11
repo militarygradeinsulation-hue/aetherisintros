@@ -1,4 +1,5 @@
 import { createFileRoute } from '@tanstack/react-router'
+import { logServerError } from '@/lib/server-error-log'
 
 import { isTrustedCaller } from '@/lib/app-settings.server'
 import { sendWeeklyDigests } from '@/lib/digest.server'
@@ -21,7 +22,7 @@ export const Route = createFileRoute('/api/cron/weekly-digest')({
           const result = await sendWeeklyDigests({ appUrl, dryRun: url.searchParams.get('dry') === '1' })
           return Response.json(result)
         } catch (error) {
-          console.error('weekly-digest failed', error)
+          await logServerError(error, request)
           return Response.json({ error: 'Digest run failed' }, { status: 500 })
         }
       },
