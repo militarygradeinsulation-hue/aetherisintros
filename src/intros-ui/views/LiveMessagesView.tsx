@@ -6,11 +6,12 @@ import { loadReadReceiptsSetting, markThreadRead, saveReadReceiptsSetting, useUn
 import { badgeLabel, seenUnderMessageId, shouldMarkRead } from '@/aetheris/messaging-state'
 import { OpenDealRoomButton } from '@/aetheris/deals-ui'
 import { draftTitle } from '@/aetheris/deals-core'
+import { StartWorkspaceButton } from '@/aetheris/workspaces/StartWorkspace'
 
 const pageVisible = () => typeof document === 'undefined' || document.visibilityState === 'visible'
 
 /** Native editorial-noir messaging, wired to the live member threads and file attachments. */
-function Inner() {
+function Inner({ onOpenWorkspace }: { onOpenWorkspace?: () => void }) {
   const net = useNetwork()
   const [activeId, setActiveId] = useState<string>(() => (typeof window === 'undefined' ? '' : localStorage.getItem('aetheris-intros-thread') ?? ''))
   const [query, setQuery] = useState('')
@@ -130,6 +131,15 @@ function Inner() {
                 <OpenDealRoomButton kind="quiet" label="Deal room" draft={{ sourceKind: 'thread', sourceId: active.id, title: draftTitle('thread', person.name), need: active.introContext ?? '', counterpartId: person.id, counterpartName: person.name }} />
               </div>}
             </header>
+            {person && <div className="px-4 py-2 border-b border-white/10 bg-[#0D1117]/70">
+              <StartWorkspaceButton
+                source="dm_thread"
+                sourceId={active.id}
+                withName={person.name}
+                label="Open deal workspace"
+                onOpen={() => onOpenWorkspace?.()}
+              />
+            </div>}
             <div className="flex-1 overflow-y-auto px-4 py-4 space-y-2.5">
               {active.messages.length === 0 && <p className="text-xs text-[#9CA3AF] text-center">Say hello — this is the start of your conversation.</p>}
               {active.messages.map(msg => (
@@ -173,6 +183,6 @@ function Inner() {
   )
 }
 
-export function LiveMessagesView() {
-  return <Inner />
+export function LiveMessagesView({ onOpenWorkspace }: { onOpenWorkspace?: () => void } = {}) {
+  return <Inner onOpenWorkspace={onOpenWorkspace} />
 }
