@@ -74,6 +74,8 @@ function dayBounds(iso: string): { start: string; end: string } {
 /**
  * Log one activity against the member's contact. Skips it when the same kind was already logged for
  * the same thread (or intro) on the same UTC day, so chatty threads don't flood the timeline.
+ * Returns true when the activity was actually inserted, false when deduped or on any error.
+ * Callers use the return value to decide whether to run downstream work (e.g. lifecycle advance).
  */
 export async function ghostLogActivity(opts: {
   memberUserId: string
@@ -84,10 +86,10 @@ export async function ghostLogActivity(opts: {
   introRequestId?: string
   threadId?: string
   calendarEventId?: string
-}): Promise<void> {
+}): Promise<boolean> {
   try {
     const personId = await personIdFor(opts.memberUserId)
-    if (!personId) return
+    if (!personId) return false
     const occurredAt = opts.occurredAt ?? new Date().toISOString()
     const introRequestId = opts.introRequestId && UUID.test(opts.introRequestId) ? opts.introRequestId : null
     const calendarEventId = opts.calendarEventId && UUID.test(opts.calendarEventId) ? opts.calendarEventId : null
@@ -96,17 +98,18 @@ export async function ghostLogActivity(opts: {
       let q = supabase.from('crm_activities').select('id').eq('kind', opts.kind).gte('occurred_at', start).lt('occurred_at', end)
       q = opts.threadId ? q.eq('thread_id', opts.threadId) : q.eq('intro_request_id', introRequestId as string)
       const { data, error } = await q.limit(1)
-      if (error) { warn('dedup check failed', error.message); return }
-      if (data?.length) return
+      if (error) { warn('dedup check failed', error.message); return false }
+      if (data?.length) return false // already logged today — skip
     }
     const ins = await supabase.from('crm_activities').insert({
       kind: opts.kind, subject: opts.subject, detail: opts.detail ?? '', occurred_at: occurredAt, person_id: personId,
       intro_request_id: introRequestId, thread_id: opts.threadId ?? null, calendar_event_id: calendarEventId,
     })
-    if (ins.error) { warn('activity insert failed', ins.error.message); return }
+    if (ins.error) { warn('activity insert failed', ins.error.message); return false }
     const touch = await supabase.from('crm_people').update({ last_activity_at: new Date().toISOString() }).eq('id', personId)
     if (touch.error) warn('last activity update failed', touch.error.message)
-  } catch (e) { warn('log activity', e) }
+    return true
+  } catch (e) { warn('log activity', e); return false }
 }
 
 const nameOf = (p: GhostProfile) => p.name || 'a network member'
@@ -148,30 +151,39 @@ export async function ghostSyncIntroAccepted(opts: { theirProfile: GhostProfile;
 export async function ghostSyncMessage(opts: { theirProfile: GhostProfile; threadId: string }): Promise<void> {
   const personId = await ghostUpsertContact(opts.theirProfile)
   if (!personId) return
-  await ghostLogActivity({
+  const logged = await ghostLogActivity({
     memberUserId: opts.theirProfile.id, kind: 'message', threadId: opts.threadId,
     subject: `Messaged ${nameOf(opts.theirProfile)}`, detail: 'Logged automatically (once per conversation per day).',
   })
-  // Active messaging is a meaningful engagement signal — advance the lifecycle if milestones are met.
-  await ghostMaybeAdvanceLifecycle(personId)
+  // Only advance lifecycle when a fresh activity was logged — not on dedup (already ran today).
+  if (logged) await ghostMaybeAdvanceLifecycle(personId)
 }
 
 const STAGE_TEXT: Record<string, string> = {
   met: 'Met', next_step: 'Agreed a next step', too_early: 'Too early to tell', no_outcome: 'No outcome', outcome: 'Outcome recorded',
 }
 
-/** A deal or partnership outcome opens a CRM opportunity once per introduction (intro id is kept in `detail`). */
+/**
+ * A deal or partnership outcome opens a CRM opportunity once per introduction.
+ * Uses the intro_request_id column on crm_opportunities (added by migration
+ * 20261011100000_crm_opportunity_intro_id.sql) for a precise, indexed dedup
+ * rather than a fragile text search.
+ */
 async function maybeAutoOpportunity(theirProfile: GhostProfile, introId: string, category: string, personId: string): Promise<void> {
   try {
     if (category !== 'deal' && category !== 'partnership') return
     if (!UUID.test(introId)) return
-    const { data: existing, error } = await supabase.from('crm_opportunities').select('id').ilike('detail', `%${introId}%`).limit(1)
+    // Precise dedup on the dedicated FK column — no text scan needed.
+    // Cast to `any` because the generated types predate the intro_request_id migration.
+    const opps = supabase.from('crm_opportunities') as any
+    const { data: existing, error } = await opps.select('id').eq('intro_request_id', introId).limit(1)
     if (error) { warn('opportunity lookup failed', error.message); return }
     if (existing?.length) return
     const label = category === 'deal' ? 'Deal' : 'Partnership'
-    const ins = await supabase.from('crm_opportunities').insert({
+    const ins = await opps.insert({
       name: `${nameOf(theirProfile)} — ${label} opportunity`, person_id: personId, status: 'open', probability: 50, amount: 0,
-      source: 'ghost_sync', detail: `Auto-created from introduction outcome. Intro ID: ${introId}`,
+      source: 'ghost_sync', intro_request_id: introId,
+      detail: `Auto-created from introduction outcome (${category}).`,
     })
     if (ins.error) { warn('opportunity create failed', ins.error.message); return }
     // Notify the user so the auto-created opportunity surfaces in the bell.
@@ -191,14 +203,14 @@ export async function ghostSyncOutcome(opts: { theirProfile: GhostProfile; intro
   const personId = await ghostUpsertContact(opts.theirProfile)
   if (!personId) return
   const label = STAGE_TEXT[opts.stage] ?? opts.stage.replace(/_/g, ' ')
-  await ghostLogActivity({
+  const logged = await ghostLogActivity({
     memberUserId: opts.theirProfile.id, kind: opts.stage === 'met' ? 'meeting' : 'note', introRequestId: opts.introId,
     subject: `${label}${opts.category ? ` (${opts.category})` : ''} with ${nameOf(opts.theirProfile)}`,
     detail: 'Logged automatically from the introduction outcome.',
   })
   if (opts.stage === 'outcome' && opts.category) await maybeAutoOpportunity(opts.theirProfile, opts.introId, opts.category, personId)
-  // Recording a concrete outcome (met, next step, deal) is high-signal — try to advance the lifecycle.
-  await ghostMaybeAdvanceLifecycle(personId)
+  // Only advance lifecycle when the activity was freshly written (not a repeated submit).
+  if (logged) await ghostMaybeAdvanceLifecycle(personId)
 }
 
 export async function ghostSyncMeeting(opts: { theirProfile: GhostProfile; eventTitle: string; startAt: string; calendarEventId?: string }): Promise<void> {
@@ -211,7 +223,10 @@ export async function ghostSyncMeeting(opts: { theirProfile: GhostProfile; event
   await ghostMaybeAdvanceLifecycle(personId)
 }
 
-/** Outcome UIs only know the intro id: resolve the counterparty (the side that is not me) and sync. */
+/**
+ * Outcome UIs only know the intro id: resolve the counterparty (the side that is not me),
+ * fetch their full profile so the CRM contact gets a real name, then sync.
+ */
 export async function ghostOutcomeRecorded(introId: string, stage: string, category?: string): Promise<void> {
   try {
     const [{ data: auth }, { data: intro, error }] = await Promise.all([
@@ -222,6 +237,9 @@ export async function ghostOutcomeRecorded(introId: string, stage: string, categ
     if (error || !intro || !me) { if (error) warn('intro lookup failed', error.message); return }
     const theirId = intro.user_id === me ? intro.target_user_id : intro.user_id
     if (!theirId) return
-    await ghostSyncOutcome({ theirProfile: { id: theirId, name: '', title: '', company: '', location: '' }, introId, stage, ...(category ? { category } : {}) })
+    // Resolve the counterparty's public profile so the ghost contact carries a real name and role.
+    // completeProfile fills any blank fields from the profiles table; falls back to empty strings on error.
+    const theirProfile = await completeProfile({ id: theirId, name: '', title: '', company: '', location: '' })
+    await ghostSyncOutcome({ theirProfile, introId, stage, ...(category ? { category } : {}) })
   } catch (e) { warn('outcome', e) }
 }

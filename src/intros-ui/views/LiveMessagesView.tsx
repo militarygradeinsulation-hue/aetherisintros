@@ -13,7 +13,7 @@ const db = supabase as any
 const pageVisible = () => typeof document === 'undefined' || document.visibilityState === 'visible'
 
 /** Native editorial-noir messaging, wired to the live member threads and file attachments. */
-function Inner() {
+function Inner({ onOpenCrm }: { onOpenCrm?: () => void }) {
   const net = useNetwork()
   const [activeId, setActiveId] = useState<string>(() => (typeof window === 'undefined' ? '' : localStorage.getItem('aetheris-intros-thread') ?? ''))
   const [query, setQuery] = useState('')
@@ -202,7 +202,9 @@ function Inner() {
             {crmSnap && <div>
               <p className="text-[10px] uppercase tracking-widest text-[#9CA3AF] mb-1">CRM</p>
               <p className="text-xs text-[#CBD5E1]">{crmSnap.lifecycle}{crmSnap.lastActivityAt ? ` · last activity ${ageLabel(crmSnap.lastActivityAt)}` : ''}</p>
-              <a href="/crm" className="text-[11px] text-[#F5B027] underline hover:opacity-80">Open CRM record ↗</a>
+              {onOpenCrm
+                ? <button onClick={onOpenCrm} className="text-[11px] text-[#F5B027] underline hover:opacity-80 cursor-pointer text-left">Open CRM record ↗</button>
+                : <a href="/crm" className="text-[11px] text-[#F5B027] underline hover:opacity-80">Open CRM record ↗</a>}
             </div>}
             <p className="text-[11px] text-[#9CA3AF] mt-auto">Files up to 50 MB — images, video, PDFs. Only the two of you can open them.</p>
           </>) : <p className="text-xs text-[#9CA3AF]">Context appears here when you open a conversation.</p>}
@@ -212,6 +214,7 @@ function Inner() {
   )
 }
 
-export function LiveMessagesView() {
-  return <NetworkProvider mode="live"><Inner /></NetworkProvider>
+export function LiveMessagesView(props: { onOpenCrm?: () => void }) {
+  // Conditional spread satisfies exactOptionalPropertyTypes: omit the key entirely when undefined.
+  return <NetworkProvider mode="live"><Inner {...(props.onOpenCrm ? { onOpenCrm: props.onOpenCrm } : {})} /></NetworkProvider>
 }
