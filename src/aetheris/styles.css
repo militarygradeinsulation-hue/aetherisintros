@@ -5822,3 +5822,19 @@ body:has([role=menu],[role=listbox],.ix-mobile-sheet,.topbar-dropmenu,.notificat
 .ops-create .li-scan{margin:.7rem 0}
 .ops-create-notes{flex:1 1 100%;min-height:70px}
 .ops-create-notes{box-sizing:border-box;background:#0A0D11;border:1px solid rgba(255,255,255,.18);color:#F2EEE6;border-radius:6px;padding:8px 10px;font:400 13px/1.5 var(--sans)}
+/* Track Record Dashboard (TrackRecordDashboard.tsx) */
+.reputation-dashboard{display:grid;gap:0;padding:20px;border:1px solid rgba(255,255,255,.12);border-radius:10px;background:#0E1116}
+.reputation-badge{position:relative;width:80px;height:80px;flex-shrink:0;display:grid;place-items:center}
+.reputation-ring{position:absolute;inset:0;width:100%;height:100%}
+.reputation-score{font:700 26px/1 var(--sans);position:relative;z-index:1}
+.track-stats-row{display:flex;flex-wrap:wrap;gap:10px}
+.track-stat{flex:1 1 100px;display:flex;flex-direction:column;align-items:center;gap:4px;padding:12px 8px;border:1px solid rgba(255,255,255,.1);border-radius:8px;background:#12161C;text-align:center}
+.track-stat-icon{color:var(--muted);display:flex}
+.track-stat-value{font:700 18px/1 var(--sans);color:var(--soft)}
+.track-stat-label{font:600 10px var(--sans);letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+@keyframes spin{to{transform:rotate(360deg)}}
+.spin{animation:spin .8s linear infinite}
+.track-record { margin-top: 2rem; }
+.track-record-card { background: var(--bg-2); border: 1px solid var(--border); border-radius: 8px; padding: 1rem; margin-bottom: .75rem; }
+.track-record-kind { font-size: .7rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--accent); margin-bottom: .25rem; }
+.track-record-verified { display: inline-flex; align-items: center; gap: .25rem; font-size: .7rem; color: var(--success, #22c55e); margin-left: .5rem; }

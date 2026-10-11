@@ -407,6 +407,20 @@
       "when": 1791468859383,
       "tag": "0058_deal_rooms",
       "breakpoints": true
+    },
+    {
+      "idx": 59,
+      "version": "7",
+      "when": 1791469159383,
+      "tag": "track_record",
+      "breakpoints": true
+    },
+    {
+      "idx": 60,
+      "version": "7",
+      "when": 1791500000000,
+      "tag": "0060_track_record_dashboard",
+      "breakpoints": true
     }
   ]
 }
