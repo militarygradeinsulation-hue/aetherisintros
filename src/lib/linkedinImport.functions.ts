@@ -4,19 +4,11 @@ import { requireAuthContract } from './auth-gate'
 import { gatewayChat, routeLlmChat } from './aiGateway.server'
 import {
   createRateLimiter, fieldProvenance, groundProfile, isLinkedInPhotoUrl, LINKEDIN_EXTRACT_PROMPT, mergeProfiles, normalizeLinkedInUrl,
-  parseAiProfile, parseLinkedInText, profileFieldsFrom, scanLinkedInUrl, type FieldProvenance, type ImportedFields, type LinkedInProfile,
+  parseAiProfile, parseLinkedInText, profileFieldsFrom, scanLinkedInUrl, type LinkedInExtraction, type LinkedInProfile,
   type UrlScanResult,
 } from '@/aetheris/linkedin-import'
 
-export interface LinkedInExtraction {
-  linkedinUrl: string | null
-  profile: LinkedInProfile
-  fields: ImportedFields
-  /** 'ai' when the AI read the profile; 'parser' when the built-in reader did. */
-  source: 'ai' | 'parser'
-  /** Which reader produced each non-empty field. Unknown values stay empty. */
-  provenance: Partial<Record<keyof ImportedFields, FieldProvenance>>
-}
+export type { LinkedInExtraction }
 
 const allowScan = createRateLimiter(10, 10 * 60_000)
 const AI_TIMEOUT_MS = 25_000

@@ -6,6 +6,7 @@ import gsap from 'gsap'
 
 import { supabase } from '@/integrations/supabase/client'
 import { lovable } from '@/integrations/lovable/index'
+import { LINKEDIN_OIDC_PROVIDER, LINKEDIN_OIDC_SCOPES } from '@/aetheris/linkedin-oidc'
 import { AUTH_REQUIRED } from '@/aetheris/config'
 import { claimAccess, clearInvite, previewInvite, rememberInvite, storedInvite } from '@/aetheris/access'
 import { logSecurityEvent, passwordProblem } from '@/aetheris/verification'
@@ -172,6 +173,16 @@ function AuthPage() {
     void land()
   }
 
+  const linkedin = async () => {
+    setBusy(true); setError('')
+    rememberInvite(invite)
+    const { error: oauthError } = await supabase.auth.signInWithOAuth({
+      provider: LINKEDIN_OIDC_PROVIDER,
+      options: { scopes: LINKEDIN_OIDC_SCOPES, redirectTo: `${window.location.origin}${next || '/verify'}` },
+    })
+    if (oauthError) { setError('LinkedIn sign-in could not start. Try email instead.'); setBusy(false) }
+  }
+
   return <main className="auth-page">
     <section className="auth-panel">
       <Link to="/" className="auth-brand">
@@ -208,6 +219,9 @@ function AuthPage() {
 
       <button className="btn google" type="button" onClick={() => void google()} disabled={busy}>
         Continue with Google
+      </button>
+      <button className="btn google" type="button" onClick={() => void linkedin()} disabled={busy}>
+        Continue with LinkedIn
       </button>
       <div className="auth-divider"><span>or use email</span></div>
 

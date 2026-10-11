@@ -289,7 +289,46 @@ export function groundProfile(ai: LinkedInProfile | null, sourceText: string): L
   }
 }
 
-export type FieldProvenance = 'ai' | 'parser'
+export type FieldProvenance = 'ai' | 'parser' | 'public'
+
+export interface LinkedInExtraction {
+  linkedinUrl: string | null
+  profile: LinkedInProfile
+  fields: ImportedFields
+  /** 'ai' when the AI read the profile; 'parser' when the built-in reader did. */
+  source: 'ai' | 'parser'
+  /** Which reader produced each non-empty field. Unknown values stay empty. */
+  provenance: Partial<Record<keyof ImportedFields, FieldProvenance>>
+}
+
+export const emptyImportedFields = (): ImportedFields => ({
+  name: '', title: '', company: '', location: '', thesis: '', whatIDo: '', building: '', canHelpWith: '', expertise: [], industries: [],
+})
+
+/** Wraps a profile obtained outside a pasted text (a licensed URL provider) so it feeds the same review draft. */
+export function extractionFromProfile(profile: LinkedInProfile, linkedinUrl: string | null): LinkedInExtraction {
+  const fields = profileFieldsFrom(profile)
+  return { linkedinUrl, profile, fields, source: 'parser', provenance: fieldProvenance(fields, fields) }
+}
+
+/** An empty review draft, for suggestions that arrive before any profile text was scanned. */
+export const emptyExtraction = (): LinkedInExtraction => extractionFromProfile(emptyLinkedInProfile(), null)
+
+export type LinkHandling =
+  | { kind: 'none' }
+  | { kind: 'invalid'; message: string }
+  | { kind: 'needs-document'; url: string; message: string }
+
+/** What to tell a member who pasted a link. A valid link is never an error: it just cannot be read directly. */
+export function describeLinkHandling(input: string): LinkHandling {
+  if (!input.trim()) return { kind: 'none' }
+  const url = normalizeLinkedInUrl(input)
+  if (!url) return { kind: 'invalid', message: 'That is not a LinkedIn personal profile link. It looks like linkedin.com/in/your-name.' }
+  return {
+    kind: 'needs-document', url,
+    message: 'Link saved for your profile. We can’t read a profile from a link alone, because LinkedIn doesn’t allow it. Upload your LinkedIn PDF or paste your profile text to fill in the rest.',
+  }
+}
 
 /** Which reader produced each field value: the built-in parser when it matches, otherwise the AI. */
 export function fieldProvenance(merged: ImportedFields, parsed: ImportedFields): Partial<Record<keyof ImportedFields, FieldProvenance>> {
