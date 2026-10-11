@@ -30,7 +30,7 @@ CREATE OR REPLACE FUNCTION public.create_peer_group(
   p_name text,p_description text,p_cadence text,p_max_size integer,p_stage_label text,p_industry_focus text
 )
 RETURNS public.peer_groups
-LANGUAGE plpgsql SECURITY DEFINER SET search_path=public AS $
+LANGUAGE plpgsql SECURITY DEFINER SET search_path=public AS $$
 DECLARE g public.peer_groups;
 BEGIN
   IF auth.uid() IS NULL OR NOT public.is_live_member() THEN RAISE EXCEPTION 'Not authorised' USING errcode='42501'; END IF;
@@ -43,13 +43,13 @@ BEGIN
   )
   RETURNING * INTO g;
   RETURN g;
-END $;
+END $$;
 
 CREATE OR REPLACE FUNCTION public.create_peer_group(p_name text,p_description text,p_stage_label text,p_industry_focus text)
 RETURNS public.peer_groups
-LANGUAGE sql SECURITY DEFINER SET search_path=public AS $
+LANGUAGE sql SECURITY DEFINER SET search_path=public AS $$
   SELECT public.create_peer_group(p_name,p_description,'',8,p_stage_label,p_industry_focus)
-$;
+$$;
 
 CREATE OR REPLACE FUNCTION public.post_to_peer_group(p_group_id uuid,p_kind text,p_body text)
 RETURNS public.peer_group_posts
