@@ -375,7 +375,7 @@ export const HomeFeedView: React.FC<HomeFeedViewProps> = ({
             <div className="flex shrink-0 justify-end border-b border-[var(--sys-line)] bg-[var(--sys-tile-inner)]">
               <Button variant="ghost" size="sm" disabled={boardPinned} aria-label={`Resize ${item.label || item.id}`} title={`Resize tile · ${item.size === 'sm' ? 'Small' : item.size === 'lg' ? 'Large' : item.size === 'wide' ? 'Wide' : 'Tall'}`} onClick={() => {
                 const sizes: WidgetSize[] = narrow ? ['sm', 'tall'] : ['sm', 'wide', 'tall', 'lg'];
-                const size = sizes[(sizes.indexOf(item.size) + 1) % sizes.length];
+                const size = sizes[(sizes.indexOf(item.size) + 1) % sizes.length] ?? 'sm';
                 saveBoard(boardItems.map(entry => entry.id === item.id ? { ...entry, size } : entry));
               }}><Maximize2 /><span>{item.size === 'sm' ? 'Small' : item.size === 'lg' ? 'Large' : item.size === 'wide' ? 'Wide' : 'Tall'}</span></Button>
             </div>
