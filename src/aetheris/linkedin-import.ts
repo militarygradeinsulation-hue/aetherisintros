@@ -65,8 +65,10 @@ export function normalizeLinkedInUrl(input: string): string | null {
   if (!value) return null
   if (!/^https?:\/\//i.test(value)) value = `https://${value}`
   let url: URL
+  if (value.length > 300 || /[\s\\]/.test(value)) return null
   try { url = new URL(value) } catch { return null }
-  if (!/(^|\.)linkedin\.com$/i.test(url.hostname)) return null
+  if (url.username || url.password || url.port) return null
+  if (!/^(www|[a-z]{2})\.linkedin\.com$|^linkedin\.com$/i.test(url.hostname)) return null
   const match = url.pathname.match(/^\/in\/([^/?#]+)\/?/i)
   if (!match) return null
   let handle: string
@@ -248,3 +250,103 @@ Rules:
 
 Shape:
 {"name":"","headline":"","location":"","about":"","experience":[{"title":"","company":"","dates":"","location":"","description":""}],"education":[""],"skills":[""],"languages":[""],"certifications":[""]}`
+
+
+/* ------------------------------------------------------------------ reviewed URL/public-info bridge */
+
+/** What a licensed LinkedIn URL provider may return. No provider is connected by default. */
+export type UrlScanResult =
+  | { status: 'blocked'; reason: string }
+  | { status: 'ok'; profile: LinkedInProfile }
+
+export interface LinkedInUrlProvider {
+  id: string
+  available: boolean
+  unavailableReason: string
+  fetchProfile: (canonicalUrl: string) => Promise<LinkedInProfile>
+}
+
+export const URL_SCAN_BLOCKED_REASON =
+  'Scanning from a link is not available yet: no authorized LinkedIn data source is connected. Paste your profile text or add your LinkedIn PDF instead.'
+
+export const NO_URL_PROVIDER: LinkedInUrlProvider = {
+  id: 'none',
+  available: false,
+  unavailableReason: URL_SCAN_BLOCKED_REASON,
+  fetchProfile: async () => { throw new Error(URL_SCAN_BLOCKED_REASON) },
+}
+
+export async function scanLinkedInUrl(input: string, provider: LinkedInUrlProvider = NO_URL_PROVIDER): Promise<UrlScanResult> {
+  const url = normalizeLinkedInUrl(input)
+  if (!url) return { status: 'blocked', reason: 'That is not a LinkedIn personal profile link. It looks like linkedin.com/in/your-name.' }
+  if (!provider.available) return { status: 'blocked', reason: provider.unavailableReason }
+  try {
+    return { status: 'ok', profile: await provider.fetchProfile(url) }
+  } catch {
+    return { status: 'blocked', reason: provider.unavailableReason }
+  }
+}
+
+export type FieldProvenance = 'ai' | 'parser' | 'public'
+
+export interface LinkedInExtraction {
+  linkedinUrl: string | null
+  profile: LinkedInProfile
+  fields: ImportedFields
+  source: 'ai' | 'parser'
+  provenance: Partial<Record<keyof ImportedFields, FieldProvenance>>
+}
+
+export const emptyImportedFields = (): ImportedFields => ({
+  name: '', title: '', company: '', location: '', thesis: '', whatIDo: '', building: '',
+  canHelpWith: '', expertise: [], industries: [],
+})
+
+export function fieldProvenance(merged: ImportedFields, parsed: ImportedFields): Partial<Record<keyof ImportedFields, FieldProvenance>> {
+  const out: Partial<Record<keyof ImportedFields, FieldProvenance>> = {}
+  for (const key of Object.keys(merged) as (keyof ImportedFields)[]) {
+    const mergedValue = merged[key]
+    const parsedValue = parsed[key]
+    const empty = Array.isArray(mergedValue) ? mergedValue.length === 0 : !mergedValue
+    if (!empty) out[key] = JSON.stringify(mergedValue) === JSON.stringify(parsedValue) ? 'parser' : 'ai'
+  }
+  return out
+}
+
+export function extractionFromProfile(profile: LinkedInProfile, linkedinUrl: string | null): LinkedInExtraction {
+  const fields = profileFieldsFrom(profile)
+  return { linkedinUrl, profile, fields, source: 'parser', provenance: fieldProvenance(fields, fields) }
+}
+
+export const emptyExtraction = (): LinkedInExtraction => extractionFromProfile(emptyLinkedInProfile(), null)
+
+export type LinkHandling =
+  | { kind: 'none' }
+  | { kind: 'invalid'; message: string }
+  | { kind: 'needs-document'; url: string; message: string }
+
+export function describeLinkHandling(input: string): LinkHandling {
+  if (!input.trim()) return { kind: 'none' }
+  const url = normalizeLinkedInUrl(input)
+  if (!url) return { kind: 'invalid', message: 'That is not a LinkedIn personal profile link. It looks like linkedin.com/in/your-name.' }
+  return {
+    kind: 'needs-document',
+    url,
+    message: 'Link saved for your profile. We can’t read a profile from a link alone, because LinkedIn doesn’t allow it. Upload your LinkedIn PDF or paste your profile text to fill in the rest.',
+  }
+}
+
+export function createRateLimiter(max: number, windowMs: number, now: () => number = Date.now) {
+  const hits = new Map<string, number[]>()
+  return (key: string): boolean => {
+    const t = now()
+    const recent = (hits.get(key) ?? []).filter(x => t - x < windowMs)
+    if (recent.length >= max) { hits.set(key, recent); return false }
+    recent.push(t)
+    hits.set(key, recent)
+    if (hits.size > 5000) {
+      for (const [storedKey, values] of hits) if (!values.some(x => t - x < windowMs)) hits.delete(storedKey)
+    }
+    return true
+  }
+}
