@@ -170,7 +170,7 @@ alter table public.directory_contacts enable row level security;
 create policy "Members can search contacts" on public.directory_contacts for select to authenticated using (true);
 create table public.circle_memberships (id uuid primary key default gen_random_uuid(), circle_id text not null, user_id uuid not null references auth.users on delete cascade, role text not null default 'member', created_at timestamptz not null default now(), unique (circle_id, user_id));
 create table public.crm_tasks (id uuid primary key default gen_random_uuid(), owner_id uuid);
-create function public.is_live_member() returns boolean language sql stable security definer set search_path = public as $ select exists (select 1 from public.profiles where id = auth.uid()) $;
+create function public.is_live_member() returns boolean language sql stable security definer set search_path = public as $$ select exists (select 1 from public.profiles where id = auth.uid()) $$;
 revoke all on function public.is_live_member() from public, anon;
 grant execute on function public.is_live_member() to authenticated;
 
