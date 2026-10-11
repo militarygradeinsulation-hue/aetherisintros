@@ -17,7 +17,7 @@ const roleType = (role: MemberRole): NetworkMember['roleType'] => {
 }
 
 /** Maps real network members into the new shell's member shape. No invented values. */
-function toNetworkMember(m: Member): NetworkMember {
+export function toNetworkMember(m: Member): NetworkMember {
   const [firstName = m.name, ...rest] = String(m.name ?? '').split(' ')
   // Keep the raw value: a real member's photo may be a direct URL or a private
   // storage object path — AvatarImage resolves both. Never substitute a stock photo.
