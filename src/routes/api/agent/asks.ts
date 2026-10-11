@@ -1,4 +1,5 @@
 import { createFileRoute } from '@tanstack/react-router'
+import { logServerError } from '@/lib/server-error-log'
 
 /** Assistant key (create_ask): post an ask for the key owner. */
 export const Route = createFileRoute('/api/agent/asks')({
@@ -10,7 +11,7 @@ export const Route = createFileRoute('/api/agent/asks')({
           const { handleCreateAsk } = await import('@/lib/agent-gateway/gateway.server')
           return await handleCreateAsk(request)
         } catch (error) {
-          console.error('agent gateway asks failed', error)
+          await logServerError(error, request)
           return Response.json({ error: 'unavailable' }, { status: 500 })
         }
       },
