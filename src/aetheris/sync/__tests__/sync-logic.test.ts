@@ -78,7 +78,7 @@ describe('sign-out cleanup', () => {
     expect(keysToClearOnSignOut(keys).sort()).toEqual([
       'aetheris-moat-v1-live', 'aetheris-platform-v1-live', 'aetheris-pro-v1-live', 'aetheris-relationship-os-v1-live',
       'aetheris-intros-thread', 'aetheris_notes_member-1', 'aetheris.ledger.patch.u1', 'aetheris.sync.meta',
-    ])
+    ].sort())
   })
 })
 
