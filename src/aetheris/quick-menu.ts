@@ -27,6 +27,8 @@ export const QUICK_ACTIONS: QuickAction[] = [
   { id: 'providers', label: 'Trusted providers', hint: 'Firms members vouch for', target: { kind: 'workspace', page: 'providers' } },
   { id: 'calendar', label: 'Calendar', hint: 'Your schedule', target: { kind: 'workspace', page: 'calendar' } },
   { id: 'deals', label: 'Deals', hint: 'Your private deal rooms', target: { kind: 'workspace', page: 'deals' } },
+  { id: 'workspaces', label: 'Deal workspaces', hint: 'Scope, proposals and delivery', target: { kind: 'workspace', page: 'workspaces' } },
+  { id: 'storefront', label: 'Storefront & proposals', hint: 'Offers and member proposals', target: { kind: 'workspace', page: 'storefront' } },
   { id: 'crm', label: 'CRM', hint: 'People, companies, deals', target: { kind: 'workspace', page: 'crm' } },
   { id: 'agentinbox', label: 'Agent inbox', hint: 'Requests from AI agents', target: { kind: 'workspace', page: 'agentinbox' } },
   { id: 'home', label: 'Home', hint: 'This week', target: { kind: 'page', page: 'home' } },
