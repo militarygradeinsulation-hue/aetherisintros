@@ -428,6 +428,118 @@
       "when": 1791469759383,
       "tag": "0061_member_directory_stats",
       "breakpoints": true
+    },
+    {
+      "idx": 62,
+      "version": "7",
+      "when": 1791469759384,
+      "tag": "0062_business_posts",
+      "breakpoints": true
+    },
+    {
+      "idx": 63,
+      "version": "7",
+      "when": 1791469759385,
+      "tag": "0063_deal_workspaces",
+      "breakpoints": true
+    },
+    {
+      "idx": 64,
+      "version": "7",
+      "when": 1791469759386,
+      "tag": "0064_deal_workspace_business_roles",
+      "breakpoints": true
+    },
+    {
+      "idx": 65,
+      "version": "7",
+      "when": 1791469759387,
+      "tag": "0065_private_contact_library",
+      "breakpoints": true
+    },
+    {
+      "idx": 66,
+      "version": "7",
+      "when": 1791469759388,
+      "tag": "0066_contact_export_denial",
+      "breakpoints": true
+    },
+    {
+      "idx": 67,
+      "version": "7",
+      "when": 1791469759389,
+      "tag": "0067_business_execution_workbench",
+      "breakpoints": true
+    },
+    {
+      "idx": 68,
+      "version": "7",
+      "when": 1791469759390,
+      "tag": "0068_meeting_briefs",
+      "breakpoints": true
+    },
+    {
+      "idx": 69,
+      "version": "7",
+      "when": 1791469759391,
+      "tag": "0069_track_record",
+      "breakpoints": true
+    },
+    {
+      "idx": 70,
+      "version": "7",
+      "when": 1791469759392,
+      "tag": "0070_reputation_scores",
+      "breakpoints": true
+    },
+    {
+      "idx": 71,
+      "version": "7",
+      "when": 1791469759393,
+      "tag": "0071_referrals",
+      "breakpoints": true
+    },
+    {
+      "idx": 72,
+      "version": "7",
+      "when": 1791469759394,
+      "tag": "0072_warm_referral_engine",
+      "breakpoints": true
+    },
+    {
+      "idx": 73,
+      "version": "7",
+      "when": 1791469759395,
+      "tag": "0073_business_analyst",
+      "breakpoints": true
+    },
+    {
+      "idx": 74,
+      "version": "7",
+      "when": 1791469759396,
+      "tag": "0074_storefront_proposals",
+      "breakpoints": true
+    },
+    {
+      "idx": 75,
+      "version": "7",
+      "when": 1791469759397,
+      "tag": "0075_syndication_rooms",
+      "breakpoints": true
+    },
+    {
+      "idx": 76,
+      "version": "7",
+      "when": 1791469759398,
+      "tag": "0076_peer_group_feed",
+      "breakpoints": true
+    },
+    {
+      "idx": 77,
+      "version": "7",
+      "when": 1791469759399,
+      "tag": "0077_peer_group_agendas",
+      "breakpoints": true
     }
   ]
 }
