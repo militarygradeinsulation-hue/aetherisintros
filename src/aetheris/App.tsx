@@ -1602,6 +1602,7 @@ function Profile({ people, setPage, openOnboarding }: {
   const setProfile = net.setDigitalYou
   const autonomy: AutonomyLevel = net.autonomy
   const setAutonomy = net.setAutonomy
+  const [authUserId, setAuthUserId] = useState('')
   const [copied, setCopied] = useState(false)
   const [identityEditing, setIdentityEditing] = useState(false)
   const [nameDraft, setNameDraft] = useState(me.name)
@@ -1619,6 +1620,7 @@ function Profile({ people, setPage, openOnboarding }: {
 
   useEffect(() => { setNameDraft(me.name) }, [me.name])
   useEffect(() => () => { if (photoPreview) URL.revokeObjectURL(photoPreview) }, [photoPreview])
+  useEffect(() => { supabase.auth.getUser().then(({ data }) => { if (data.user) setAuthUserId(data.user.id) }) }, [])
 
   const choosePhoto = (file: File | null) => {
     setIdentityMessage('')
@@ -1715,7 +1717,7 @@ function Profile({ people, setPage, openOnboarding }: {
 
     {me.name.trim().toLowerCase() === 'joseph toney' && <FounderContext />}
 
-    <TrackRecordPanel userId={me.id ?? 'me'} editable />
+    {authUserId && <TrackRecordPanel userId={authUserId} editable />}
 
     <JournalComposer />
     <JournalFeed name={me.name || 'You'} />

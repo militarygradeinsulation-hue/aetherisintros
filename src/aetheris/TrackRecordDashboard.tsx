@@ -73,7 +73,7 @@ export function TrackRecordDashboard({ userId }: { userId: string }) {
     <div className="reputation-dashboard">
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1.25rem' }}>
         <Eyebrow>REPUTATION SCORE</Eyebrow>
-        <Btn kind="quiet" disabled={refreshing} onClick={() => void refresh()} style={{ gap: '6px', fontSize: '12px' }}>
+        <Btn kind="quiet" disabled={refreshing} onClick={() => void refresh()} className="gap-1.5 text-[12px] flex items-center">
           <RefreshCw size={12} className={refreshing ? 'spin' : ''} />
           {refreshing ? 'Computing…' : 'Refresh Score'}
         </Btn>

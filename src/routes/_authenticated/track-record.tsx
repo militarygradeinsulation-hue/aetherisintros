@@ -1,17 +1,11 @@
-import { ClientOnly, createFileRoute, redirect } from '@tanstack/react-router'
+import { ClientOnly, createFileRoute } from '@tanstack/react-router'
 
-import { supabase } from '@/integrations/supabase/client'
 import { TrackRecordDashboard } from '@/aetheris/TrackRecordDashboard'
 import '@/aetheris/styles.css'
 
-export const Route = createFileRoute('/track-record')({
+export const Route = createFileRoute('/_authenticated/track-record')({
   staticData: { sitemap: false },
   ssr: false,
-  beforeLoad: async () => {
-    const { data, error } = await supabase.auth.getUser()
-    if (error || !data.user) throw redirect({ to: '/auth' })
-    return { user: data.user }
-  },
   head: () => ({
     meta: [
       { title: 'Track Record — Ask Intros' },
