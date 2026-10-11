@@ -10,6 +10,7 @@ import {
   revokeCohortInvite, stageLabel, type ActivationRow, type Cohort, type CreateResult,
 } from './cohorts'
 import { rate } from './outcomes'
+import { contactExportIsDenied } from '@/lib/contact-export'
 
 const outcomeLabel: Record<CreateResult['outcome'], string> = {
   created: 'Invite created', already_member: 'Already a member', already_invited: 'Already invited (existing link kept)', invalid_email: 'Invalid email',
@@ -101,7 +102,10 @@ export function FoundingCohortsPanel() {
       {results.length > 0 && <ul className="admin-list">{results.filter(r => r.outcome !== 'created').map(r => <li key={r.email}><span>{r.email}</span><small>{outcomeLabel[r.outcome]}</small></li>)}</ul>}
 
       {rows.length > 0 && <>
-        <button className="btn ghost" type="button" onClick={() => download(`${cohort.name.replace(/[^a-z0-9]+/gi, '-').toLowerCase()}-invites.csv`, linksCsv(origin, rows))}>Download links (CSV)</button>
+        <button className="btn ghost" type="button" onClick={async () => {
+          if (await contactExportIsDenied()) return
+          download(`${cohort.name.replace(/[^a-z0-9]+/gi, '-').toLowerCase()}-invites.csv`, linksCsv(origin, rows))
+        }}>Download links (CSV)</button>
         <ul className="admin-list">{rows.map(r => <li key={r.inviteId}>
           <span>{r.name || r.email}{r.company ? ` · ${r.company}` : ''}<br /><small>{r.email}</small></span>
           <small>{stageLabel[r.stage]}</small>

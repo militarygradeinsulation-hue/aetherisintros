@@ -7,6 +7,7 @@ import { CalendarDays, CalendarPlus, Download, Globe, Lock, MapPin, Pencil, User
 import { useCallback, useEffect, useMemo, useState } from 'react'
 
 import { supabase } from '@/integrations/supabase/client'
+import { contactExportIsDenied } from '@/lib/contact-export'
 import {
   buildEventIcs, eventWhen, icsFileName, isValidTimeZone, toCsv, utcToZonedLocal, zonedLocalToUtc,
 } from './event-format'
@@ -324,15 +325,18 @@ function EventPeople({ event: e, profiles, onChange }: { event: MemberEvent; pro
     const r = await db.from('event_invites').delete().eq('event_id', e.id).eq('user_id', userId)
     setMsg(r.error ? r.error.message : 'Invite withdrawn.'); await load(); await onChange()
   }
-  const exportCsv = () => download(`${icsFileName(e.title).replace(/\.ics$/, '')}-attendees.csv`, 'text/csv;charset=utf-8',
-    toCsv(['Name', 'Company', 'Email', 'Status', 'Replied'], people.map(p => [p.name, p.company ?? '', p.email ?? '', p.status ?? '', p.replied_at ?? ''])))
+  const exportCsv = async () => {
+    if (await contactExportIsDenied()) return
+    download(`${icsFileName(e.title).replace(/\.ics$/, '')}-attendees.csv`, 'text/csv;charset=utf-8',
+      toCsv(['Name', 'Company', 'Email', 'Status', 'Replied'], people.map(p => [p.name, p.company ?? '', p.email ?? '', p.status ?? '', p.replied_at ?? ''])))
+  }
   const matches = query.trim()
     ? profiles.filter(p => !invites.includes(p.id) && `${p.name} ${p.company ?? ''}`.toLowerCase().includes(query.trim().toLowerCase())).slice(0, 6)
     : []
   return <div className="concierge-form mev-people-admin">
     <b>{people.filter(p => p.status === 'going').length} going · {people.filter(p => p.status === 'waitlist').length} waitlisted</b>
     <ul>{people.map(p => <li key={p.user_id}>{p.name}{p.company ? ` · ${p.company}` : ''} <small>{p.status}</small></li>)}</ul>
-    <div className="mev-actions"><Btn kind="secondary" disabled={!people.length} onClick={exportCsv}><Download size={14} /> Export CSV</Btn></div>
+    <div className="mev-actions"><Btn kind="secondary" disabled={!people.length} onClick={() => void exportCsv()}><Download size={14} /> Export CSV</Btn></div>
     {e.visibility === 'invite_only' && <>
       <b>Invited ({invites.length})</b>
       <ul>{invites.map(id => <li key={id}>{nameOf(id)} <button type="button" className="text-link" onClick={() => void uninvite(id)}>Withdraw</button></li>)}</ul>

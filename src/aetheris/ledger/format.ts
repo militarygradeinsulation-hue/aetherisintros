@@ -35,3 +35,9 @@ export function downloadCsv(filename: string, rows: Array<Record<string, unknown
   link.click()
   URL.revokeObjectURL(url)
 }
+
+export async function downloadContactCsv(filename: string, rows: Array<Record<string, unknown>>) {
+  if (await contactExportIsDenied()) return
+  downloadCsv(filename, rows)
+}
+import { contactExportIsDenied } from '@/lib/contact-export'

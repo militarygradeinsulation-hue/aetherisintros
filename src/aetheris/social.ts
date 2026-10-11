@@ -1,3 +1,4 @@
+import type { BusinessDetails } from './business-posts'
 import { people as seedPeople } from './data'
 import { calculateConnectionScore, determineRadarState } from './lib/engine'
 import type { Person, PrivacyScope, ScoreBreakdown } from './types'
@@ -696,13 +697,15 @@ export interface JournalAttachment {
 export interface Post {
   id: string
   memberId: string
-  kind: 'Insight' | 'Milestone' | 'Hiring' | 'Raising capital' | 'Partnership' | 'Event takeaway' | 'Strategic ask'
+  kind: 'Insight' | 'Milestone' | 'Hiring' | 'Raising capital' | 'Partnership' | 'Event takeaway' | 'Strategic ask' | 'Need' | 'Offer' | 'Proof of work'
   text: string
   detail: string
   when: string
   responses: number
   media?: JournalAttachment[] | undefined
   visibility?: 'network' | 'private' | undefined
+  /** Structured fields of a Need, Offer or Proof of work post. */
+  business?: BusinessDetails | undefined
 }
 
 export const posts: Post[] = [

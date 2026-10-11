@@ -21,6 +21,7 @@ export const VOICE_PAGES: Array<{ page: string; label: string; words: string[] }
   { page: 'peergroups', label: 'Peer groups', words: ['peer groups', 'peer group', 'forum', 'my group'] },
   { page: 'providers', label: 'Trusted providers', words: ['providers', 'trusted providers', 'vendors', 'marketplace of providers'] },
   { page: 'warmpaths', label: 'Warm paths', words: ['warm paths', 'warm path', 'paths'] },
+  { page: 'workspaces', label: 'Workspaces', words: ['workspaces', 'business workspace'] },
   { page: 'calendar', label: 'Calendar', words: ['calendar', 'schedule', 'agenda'] },
   { page: 'crm', label: 'CRM', words: ['crm', 'pipeline', 'contacts'] },
   { page: 'deals', label: 'Deals', words: ['deals', 'deal rooms', 'deal room', 'my deals', 'engagements'] },
