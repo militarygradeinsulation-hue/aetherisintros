@@ -421,6 +421,13 @@
       "when": 1791469459383,
       "tag": "0060_app_error_rate_limit_index",
       "breakpoints": true
+    },
+    {
+      "idx": 61,
+      "version": "7",
+      "when": 1791469759383,
+      "tag": "0061_member_directory_stats",
+      "breakpoints": true
     }
   ]
 }
