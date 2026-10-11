@@ -78,6 +78,7 @@ import { OpportunityRoomsPage } from './pages/OpportunityRoomsPage'
 import { RelationshipInboxPage, InboxRow } from './pages/RelationshipInboxPage'
 import { CollisionsPage, CollisionCard } from './pages/CollisionsPage'
 import { SimulationPage } from './pages/SimulationPage'
+import { TrackRecordPanel } from './track-record-ui'
 import { StrategyPage, StrategyCard } from './pages/StrategyPage'
 import { EvidenceLedgerPage } from './pages/EvidenceLedgerPage'
 import { AutopilotPage } from './pages/AutopilotPage'
@@ -1713,6 +1714,8 @@ function Profile({ people, setPage, openOnboarding }: {
     </div>
 
     {me.name.trim().toLowerCase() === 'joseph toney' && <FounderContext />}
+
+    <TrackRecordPanel userId={me.id ?? 'me'} editable />
 
     <JournalComposer />
     <JournalFeed name={me.name || 'You'} />
