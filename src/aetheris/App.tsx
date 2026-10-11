@@ -49,7 +49,7 @@ import {
   onboardingQuestions, trendingSectors,
   type JournalAttachment, type Learning, type Member, type MemberRole, type NetworkAsk, type Post, type Thread,
 } from './social'
-import { NetworkProvider, useNetwork, type MemoryNote, type MeProfile, type NetworkMode } from './store'
+import { useNetwork, type MemoryNote, type MeProfile, type NetworkMode } from './store'
 import { isShowcase, setShowcaseMode, showcaseOnly } from './showcase'
 import { classifyConnection, composeWarmIntro, radarLabel } from './lib/engine'
 import { useGrabScroll } from './lib/dragScroll'
@@ -57,13 +57,13 @@ import { metaById, primaryPages, pageMeta, networkTabs, networkAdvanced, workTab
 import { MoreDrawer, rememberRecent } from './pages/MoreDrawer'
 import { BriefingPanel, useBriefingMode } from './BriefingMode'
 import { NavCtx, useNav, type NavApi, type Page } from './nav'
-import { OpsProvider, useOps } from './crm/store'
+import { useOps } from './crm/store'
 import { PocketWorkspace } from './pocket/PocketWorkspace'
 import { CompanyDiagnosticReport } from './capabilities/CompanyDiagnosticReport'
 import { VerifiedBadge } from './badge'
 import CrmPage from './pages/CrmPage'
 import GridPage from './pages/GridPage'
-import { PlatformProvider, usePlatform } from './platform'
+import { usePlatform } from './platform'
 import { SystemsPage } from './pages/SystemsPage'
 import { CirclesPage, CreateCircleModal } from './pages/CirclesPage'
 import { CompaniesPage } from './pages/CompaniesPage'
@@ -81,7 +81,7 @@ import { SimulationPage } from './pages/SimulationPage'
 import { StrategyPage, StrategyCard } from './pages/StrategyPage'
 import { EvidenceLedgerPage } from './pages/EvidenceLedgerPage'
 import { AutopilotPage } from './pages/AutopilotPage'
-import { OSProvider, useOS } from './os-store'
+import { useOS } from './os-store'
 import {
   AutopilotCard, EvidenceLink, IntroQualityReviewPanel, LatentPathList, PathToggle,
   TrustBudgetNote, TwinPanel, VoiceCaptureModal,
@@ -89,7 +89,6 @@ import {
 import { homeStrips, trustAdvice as trustAdviceFor } from './domain/os-engine'
 import type { IntroQualityReview, PathKind } from './domain/os-models'
 import { PreferencesPage } from './pages/PreferencesPage'
-import { MoatProvider } from './moat-store'
 import { AvailabilityWindows, ConnectorAskGuard, DecayPrevention, PassportModule, ReciprocityNote, RepresentativeAsk, useOutreachGate } from './moat-ui'
 import { AskNetworkPage } from './pages/AskNetworkPage'
 import { ConstitutionPage } from './pages/ConstitutionPage'
@@ -103,7 +102,7 @@ import { AttributionPage } from './pages/AttributionPage'
 import { KnowledgePage } from './pages/KnowledgePage'
 import { AdvisoryBoardsPage } from './pages/AdvisoryBoardsPage'
 import { IntegrationsPage } from './pages/IntegrationsPage'
-import { ProProvider, usePro } from './pro-store'
+import { usePro } from './pro-store'
 import { PassportPage } from './pages/PassportPage'
 import { OpportunitiesPage } from './pages/OpportunitiesPage'
 import { AskReplies, DealsPage, OpenDealRoomButton } from './deals-ui'
@@ -125,7 +124,7 @@ import { ExecutiveHome } from './pages/ExecutiveHome'
 import { HubIntro, RadarMini, SignalPath, TileShell } from './hub-ui'
 import { badgeLabel, useVerification } from './verification'
 import { ExecutiveIdentityEditor, ExecutivePage } from './ExecutivePage'
-import { GraphProvider, useGraph } from './graph-store'
+import { useGraph } from './graph-store'
 import { OutcomeCheckins } from './outcomes-ui'
 import { IntroRequestInbox } from './intro-inbox'
 import { MeetingsPage } from './meetings-ui'
@@ -136,7 +135,7 @@ import { AgentInboxPage } from './agent-ui'
 import { LeakCheckPanel } from './leak-check-ui'
 import { SentIntroRequests } from './sent-requests-ui'
 import { CompanyWorkspacePanel } from './company-ui'
-import { CeoProvider } from './ceo-store'
+import { AetherisProviderRoot } from './AetherisProviderRoot'
 import { InsightBar } from './ceo-insights-ui'
 import { ApprovalQueuePanel, CalendarMeetingBar, CeoActions, CeoHost, ForecastConfidencePanel, NetworkRoiPanel, TrustPassportSummary, WorkCeoBar } from './ceo-ui'
 import { openCeo } from './ceo-store'
@@ -2341,10 +2340,12 @@ function AccountControl() {
 
 /* ---------------------------------------------------------------------- app */
 
+export function AetherisAppSurface({ startPage, feedOnly = false }: { startPage?: Page | undefined; feedOnly?: boolean }) {
+  return <Shell startPage={startPage} feedOnly={feedOnly} />
+}
+
 export default function App({ startPage, mode = 'live', feedOnly = false }: { startPage?: Page | undefined; mode?: NetworkMode; feedOnly?: boolean }) {
-  // The live network may only ever render real member-created records.
-  setShowcaseMode(mode === 'demo')
-  return <NetworkProvider mode={mode}><PlatformProvider><OSProvider><MoatProvider><ProProvider><OpsProvider><GraphProvider><CeoProvider><Shell startPage={startPage} feedOnly={feedOnly} /></CeoProvider></GraphProvider></OpsProvider></ProProvider></MoatProvider></OSProvider></PlatformProvider></NetworkProvider>
+  return <AetherisProviderRoot mode={mode}><AetherisAppSurface startPage={startPage} feedOnly={feedOnly} /></AetherisProviderRoot>
 }
 
 /** Ask Intros butler + capability workspace, mounted natively on the new shell. */
@@ -2358,11 +2359,12 @@ export interface AssistantShellApi {
   onSearch?: (text: string) => void
 }
 
+export function AetherisAssistantSurface({ page, ...api }: { page: string } & AssistantShellApi) {
+  return <AssistantLayer page={page} {...api} />
+}
+
 export function AetherisAssistant({ mode = 'live', page, ...api }: { mode?: NetworkMode; page: string } & AssistantShellApi) {
-  setShowcaseMode(mode === 'demo')
-  return <NetworkProvider mode={mode}><PlatformProvider><OSProvider><MoatProvider><ProProvider><OpsProvider><GraphProvider><CeoProvider>
-    <AssistantLayer page={page} {...api} />
-  </CeoProvider></GraphProvider></OpsProvider></ProProvider></MoatProvider></OSProvider></PlatformProvider></NetworkProvider>
+  return <AetherisProviderRoot mode={mode}><AetherisAssistantSurface page={page} {...api} /></AetherisProviderRoot>
 }
 
 function AssistantLayer({ page, onNavigate, onOpenMember, onMessageMember, onRequestIntro, onSearch }: { page: string } & AssistantShellApi) {
