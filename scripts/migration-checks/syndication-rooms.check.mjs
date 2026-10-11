@@ -6,7 +6,7 @@ export default async ({ ok, as, svc, A, B, C, ADMIN }) => {
 
   // A creates a room and invites B.
   let r = await as(A, `insert into public.syndication_rooms (created_by, title, room_type, description, opportunity_size) values ('${A}', 'Series B co-invest', 'co-invest', 'Fintech SaaS, $8M round at $40M post', '$500k each') returning id`)
-  ok(!r.error && r.rows?.length === 1, 'a member creates a room')
+  ok(!r.error && r.rows?.length === 1, `a member creates a room${r.error ? ` — ${r.error}` : ''}`)
   const RID = r.rows?.[0]?.id
 
   // Creator is also added as a member so they can vote.
