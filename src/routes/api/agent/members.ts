@@ -1,4 +1,5 @@
 import { createFileRoute } from '@tanstack/react-router'
+import { logServerError } from '@/lib/server-error-log'
 
 /** Assistant key (search_members): search verified members, ?q=&limit=. */
 export const Route = createFileRoute('/api/agent/members')({
@@ -10,7 +11,7 @@ export const Route = createFileRoute('/api/agent/members')({
           const { handleSearch } = await import('@/lib/agent-gateway/gateway.server')
           return await handleSearch(request)
         } catch (error) {
-          console.error('agent gateway members failed', error)
+          await logServerError(error, request)
           return Response.json({ error: 'unavailable' }, { status: 500 })
         }
       },
