@@ -1,4 +1,4 @@
-import { describe, expect, it, vi } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 
 const { rpc } = vi.hoisted(() => ({
   rpc: vi.fn().mockResolvedValue({
@@ -16,6 +16,7 @@ import { contactExportIsDenied } from "../contact-export";
 import { downloadNetworkReport } from "@/intros-ui/utils/reportExport";
 
 describe("contact export denial", () => {
+  beforeEach(() => rpc.mockClear());
   it("fails closed through the backend policy RPC", async () => {
     await expect(contactExportIsDenied()).resolves.toBe(true);
     expect(rpc).toHaveBeenCalledWith("deny_contact_data_export");
