@@ -104,7 +104,7 @@ export function ReferralComposer({
           referredId: referredName.trim(),
           referredToId: referredToName.trim(),
           personalNote: note.trim(),
-          sourceDealRoomId,
+          ...(sourceDealRoomId ? { sourceDealRoomId } : {}),
         }
       })
       setSent(true)
@@ -203,7 +203,6 @@ export function PostDealReferralPrompt({
         </div>
         <ReferralComposer
           sourceDealRoomId={dealRoomId}
-          promptText={undefined}
           onDone={onClose}
         />
         <button
@@ -259,7 +258,7 @@ export function ReferralsPage() {
       )}
       {loaded && referrals.length > 0 && (
         <div>
-          <Eyebrow style={{ marginBottom: '.75rem' }}>YOUR REFERRALS · {referrals.length}</Eyebrow>
+          <div style={{ marginBottom: '.75rem' }}><Eyebrow>YOUR REFERRALS · {referrals.length}</Eyebrow></div>
           {referrals.map(r => (
             <ReferralCard key={r.id} referral={r} onMarkConnected={handleMarkConnected} />
           ))}
