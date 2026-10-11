@@ -2,12 +2,17 @@
  * Peer groups: small confidential groups that meet monthly. Members see the groups they are in;
  * inside, a confidentiality agreement comes first, then sessions, a private board and issue
  * processing. Admins create groups, manage membership and handle requests to join.
- * Access is enforced in the database (0044_peer_groups.sql); this file only renders it.
+ * Access is enforced in the database (0044_peer_groups.sql + 0045_peer_group_feed.sql).
+ *
+ * Feed components (PeerGroupCard, PeerGroupFeed, PostComposer, PeerPost, CreatePeerGroupModal)
+ * are at the bottom of this file and back the async board-of-advisors view.
  */
 import { ArrowLeft, CalendarDays, Check, LifeBuoy, Lock, MessageSquare, Plus, ShieldCheck, Trash2, UserMinus, Users } from 'lucide-react'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 
 import { supabase } from '@/integrations/supabase/client'
+import type { PeerGroupSummary, PeerFeedPost } from '@/lib/peerGroups.functions'
+import { listMyPeerGroups, createPeerGroup, getPeerGroupFeed, postToPeerGroup } from '@/lib/peerGroups.functions'
 import {
   AGREEMENT_POINTS, MAX_GROUP_SIZE, cleanMeetingUrl, localInputToIso, seatsLeft, splitSessions, threadPosts, validateIssue,
   type PeerPost, type PeerSession,
@@ -578,4 +583,284 @@ function GroupAdmin({ group, roster, people, nameOf, onChanged }: { group: Group
       </div>}
     {msg && <p className="og-note">{msg}</p>}
   </div>
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Feed components — async board-of-advisors view (0045_peer_group_feed.sql)
+// ─────────────────────────────────────────────────────────────────────────────
+
+const KIND_LABELS: Record<string, string> = {
+  update: 'Update', ask: 'Ask', win: 'Win', block: 'Block', insight: 'Insight',
+}
+
+function timeAgo(iso: string) {
+  const diff = Date.now() - new Date(iso).getTime()
+  if (diff < 60_000) return 'just now'
+  if (diff < 3_600_000) return `${Math.floor(diff / 60_000)}m ago`
+  if (diff < 86_400_000) return `${Math.floor(diff / 3_600_000)}h ago`
+  return new Date(iso).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })
+}
+
+/** Clickable card summarising a single peer group. */
+export function PeerGroupCard({
+  id, name, description, stageLabel, memberCount, role, onClick,
+}: {
+  id: string; name: string; description?: string | null; stageLabel?: string | null
+  memberCount: number; role: string; onClick: (id: string) => void
+}) {
+  return (
+    <div className="peer-group-card" onClick={() => onClick(id)} role="button" tabIndex={0}
+      onKeyDown={e => e.key === 'Enter' && onClick(id)}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: '.5rem', flexWrap: 'wrap' }}>
+        <strong style={{ flex: 1, minWidth: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{name}</strong>
+        {stageLabel && <span className="badge badge-secondary" style={{ fontSize: '.65rem' }}>{stageLabel}</span>}
+        <span className="badge" style={{ fontSize: '.65rem' }}>{memberCount} member{memberCount !== 1 ? 's' : ''}</span>
+        <span className="badge badge-secondary" style={{ fontSize: '.65rem', textTransform: 'capitalize' }}>{role}</span>
+      </div>
+      {description && <p style={{ marginTop: '.4rem', fontSize: '.85rem', opacity: .7, overflow: 'hidden', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical' } as React.CSSProperties}>{description}</p>}
+    </div>
+  )
+}
+
+/** A single feed post card with kind badge and author initials. */
+export function PeerPost({
+  kind, body, authorName, authorInitials, createdAt,
+}: {
+  kind: string; body: string; authorName: string; authorInitials: string; createdAt: string
+}) {
+  return (
+    <div className="peer-post">
+      <span className={`peer-post-kind ${kind}`}>{KIND_LABELS[kind] ?? kind}</span>
+      <p style={{ margin: '0 0 .75rem', lineHeight: 1.55 }}>{body}</p>
+      <div style={{ display: 'flex', alignItems: 'center', gap: '.5rem' }}>
+        <span style={{
+          width: 28, height: 28, borderRadius: '50%', background: 'var(--accent)', color: '#fff',
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+          fontSize: '.7rem', fontWeight: 700, flexShrink: 0,
+        }}>{authorInitials}</span>
+        <span style={{ fontSize: '.8rem', opacity: .75 }}>{authorName}</span>
+        <span style={{ fontSize: '.75rem', opacity: .5, marginLeft: 'auto' }}>{timeAgo(createdAt)}</span>
+      </div>
+    </div>
+  )
+}
+
+/** Compose box: kind radio strip + textarea + Post button. */
+export function PostComposer({
+  groupId, onPost,
+}: {
+  groupId: string; onPost: () => void
+}) {
+  const [kind, setKind] = useState<'update'|'ask'|'win'|'block'|'insight'>('update')
+  const [body, setBody] = useState('')
+  const [busy, setBusy] = useState(false)
+  const [err, setErr] = useState('')
+
+  async function submit() {
+    if (!body.trim()) return
+    setBusy(true); setErr('')
+    try {
+      await postToPeerGroup({ data: { groupId, kind, body: body.trim() } })
+      setBody(''); onPost()
+    } catch (e) {
+      setErr(e instanceof Error ? e.message : 'Post failed')
+    } finally {
+      setBusy(false)
+    }
+  }
+
+  return (
+    <div className="peer-post" style={{ marginBottom: '1.25rem' }}>
+      <div style={{ display: 'flex', gap: '.35rem', flexWrap: 'wrap', marginBottom: '.625rem' }}>
+        {(['update','ask','win','block','insight'] as const).map(k => (
+          <label key={k} style={{ display: 'flex', alignItems: 'center', gap: '.3rem', cursor: 'pointer', userSelect: 'none' }}>
+            <input type="radio" name={`kind-${groupId}`} checked={kind === k} onChange={() => setKind(k)} />
+            <span className={`peer-post-kind ${k}`} style={{ marginBottom: 0 }}>{KIND_LABELS[k]}</span>
+          </label>
+        ))}
+      </div>
+      <textarea
+        value={body}
+        onChange={e => setBody(e.target.value)}
+        placeholder={`Share a ${kind} with the group…`}
+        rows={3}
+        style={{ width: '100%', resize: 'vertical', marginBottom: '.5rem' }}
+        onKeyDown={e => { if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) void submit() }}
+      />
+      {err && <p style={{ color: 'var(--error, #ef4444)', fontSize: '.8rem', margin: '0 0 .5rem' }}>{err}</p>}
+      <Btn kind="primary" onClick={() => void submit()} disabled={busy || !body.trim()}>
+        {busy ? 'Posting…' : 'Post'}
+      </Btn>
+    </div>
+  )
+}
+
+/** Feed view for one group: composer on top, posts below. */
+export function PeerGroupFeed({ groupId, onBack }: { groupId: string; onBack: () => void }) {
+  const [posts, setPosts] = useState<PeerFeedPost[]>([])
+  const [loading, setLoading] = useState(true)
+  const [err, setErr] = useState('')
+
+  async function load() {
+    setLoading(true); setErr('')
+    try {
+      const data = await getPeerGroupFeed({ data: { groupId } })
+      setPosts(data)
+    } catch (e) {
+      setErr(e instanceof Error ? e.message : 'Could not load feed')
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  useEffect(() => { void load() }, [groupId])
+
+  return (
+    <div>
+      <div style={{ display: 'flex', alignItems: 'center', gap: '.75rem', marginBottom: '1rem' }}>
+        <button type="button" className="icon-btn" onClick={onBack} aria-label="Back">
+          <ArrowLeft size={18} />
+        </button>
+        <h3 style={{ margin: 0 }}>Group feed</h3>
+      </div>
+      <PostComposer groupId={groupId} onPost={() => void load()} />
+      {loading && <p style={{ opacity: .5 }}>Loading…</p>}
+      {err && <p style={{ color: 'var(--error, #ef4444)' }}>{err}</p>}
+      {!loading && !err && posts.length === 0 && (
+        <p style={{ opacity: .5, textAlign: 'center', padding: '2rem 0' }}>
+          No posts yet. Share a win, ask, or update to get things started.
+        </p>
+      )}
+      {posts.map(p => (
+        <PeerPost
+          key={p.id}
+          kind={p.kind}
+          body={p.body}
+          authorName={p.author_name}
+          authorInitials={p.author_initials}
+          createdAt={p.created_at}
+        />
+      ))}
+    </div>
+  )
+}
+
+/** Modal to create a new peer group. */
+export function CreatePeerGroupModal({ onCreated, onClose }: { onCreated: () => void; onClose: () => void }) {
+  const [name, setName] = useState('')
+  const [description, setDescription] = useState('')
+  const [stageLabel, setStageLabel] = useState('')
+  const [industryFocus, setIndustryFocus] = useState('')
+  const [busy, setBusy] = useState(false)
+  const [err, setErr] = useState('')
+
+  async function submit(e: React.FormEvent) {
+    e.preventDefault()
+    if (!name.trim()) { setErr('Name is required'); return }
+    setBusy(true); setErr('')
+    try {
+      await createPeerGroup({ data: { name: name.trim(), description, stageLabel, industryFocus } })
+      onCreated()
+    } catch (ex) {
+      setErr(ex instanceof Error ? ex.message : 'Could not create group')
+    } finally {
+      setBusy(false)
+    }
+  }
+
+  return (
+    <div className="modal-backdrop" onClick={e => { if (e.target === e.currentTarget) onClose() }}>
+      <div className="modal-card" style={{ maxWidth: 480 }}>
+        <h3 style={{ marginTop: 0 }}>Create a peer group</h3>
+        <form onSubmit={e => void submit(e)}>
+          <label className="form-label">
+            Name *
+            <input value={name} onChange={e => setName(e.target.value)} placeholder="e.g. SaaS Founders Pod" required />
+          </label>
+          <label className="form-label" style={{ marginTop: '.75rem' }}>
+            Description
+            <textarea value={description} onChange={e => setDescription(e.target.value)} rows={2} placeholder="What this group is for…" style={{ resize: 'vertical' }} />
+          </label>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '.75rem', marginTop: '.75rem' }}>
+            <label className="form-label">
+              Stage
+              <input value={stageLabel} onChange={e => setStageLabel(e.target.value)} placeholder="e.g. Series A" />
+            </label>
+            <label className="form-label">
+              Industry
+              <input value={industryFocus} onChange={e => setIndustryFocus(e.target.value)} placeholder="e.g. B2B SaaS" />
+            </label>
+          </div>
+          {err && <p style={{ color: 'var(--error, #ef4444)', fontSize: '.85rem', margin: '.5rem 0 0' }}>{err}</p>}
+          <div style={{ display: 'flex', gap: '.5rem', justifyContent: 'flex-end', marginTop: '1.25rem' }}>
+            <Btn kind="secondary" onClick={onClose} disabled={busy}>Cancel</Btn>
+            <Btn kind="primary" disabled={busy}>{busy ? 'Creating…' : 'Create group'}</Btn>
+          </div>
+        </form>
+      </div>
+    </div>
+  )
+}
+
+/** Main peer groups page — list view with Create button, drills into feed. */
+export function PeerGroupsFeedPage() {
+  const [groups, setGroups] = useState<PeerGroupSummary[]>([])
+  const [loading, setLoading] = useState(true)
+  const [err, setErr] = useState('')
+  const [creating, setCreating] = useState(false)
+  const [activeGroupId, setActiveGroupId] = useState<string | null>(null)
+
+  async function load() {
+    setLoading(true); setErr('')
+    try {
+      const data = await listMyPeerGroups()
+      setGroups(data)
+    } catch (e) {
+      setErr(e instanceof Error ? e.message : 'Could not load groups')
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  useEffect(() => { void load() }, [])
+
+  if (activeGroupId) {
+    return <PeerGroupFeed groupId={activeGroupId} onBack={() => setActiveGroupId(null)} />
+  }
+
+  return (
+    <section>
+      <div style={{ display: 'flex', alignItems: 'center', gap: '.75rem', marginBottom: '1.25rem' }}>
+        <h2 style={{ margin: 0, flex: 1 }}>Peer Groups</h2>
+        <Btn kind="primary" onClick={() => setCreating(true)}>
+          <Plus size={15} /> New group
+        </Btn>
+      </div>
+      {loading && <p style={{ opacity: .5 }}>Loading…</p>}
+      {err && <p style={{ color: 'var(--error, #ef4444)' }}>{err}</p>}
+      {!loading && !err && groups.length === 0 && (
+        <p style={{ opacity: .5, textAlign: 'center', padding: '3rem 0' }}>
+          You are not in any peer groups yet. Create one to invite trusted operators.
+        </p>
+      )}
+      {groups.map(g => (
+        <PeerGroupCard
+          key={g.id}
+          id={g.id}
+          name={g.name}
+          description={g.description}
+          stageLabel={g.stage_label}
+          memberCount={g.member_count}
+          role={g.role}
+          onClick={setActiveGroupId}
+        />
+      ))}
+      {creating && (
+        <CreatePeerGroupModal
+          onCreated={() => { setCreating(false); void load() }}
+          onClose={() => setCreating(false)}
+        />
+      )}
+    </section>
+  )
 }

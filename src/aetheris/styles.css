@@ -5356,3 +5356,14 @@ button.news-link{background:none;border:0;padding:0;cursor:pointer}
 .peer-admin-requests .admin-actions{grid-column:1/-1;flex-wrap:wrap}
 .peer-admin-requests select{width:auto;max-width:100%}
 @media (max-width:760px){.peer-admin-groups li{grid-template-columns:1fr}.peer-replies{padding-left:10px}}
+
+/* ── Peer group feed (0045_peer_group_feed.sql) ─────────────────────────────── */
+.peer-group-card { background: var(--bg-2); border: 1px solid var(--border); border-radius: 10px; padding: 1.25rem; cursor: pointer; margin-bottom: .75rem; }
+.peer-group-card:hover { border-color: var(--accent, #6366f1); }
+.peer-post { background: var(--bg-2); border: 1px solid var(--border); border-radius: 8px; padding: 1rem; margin-bottom: .625rem; }
+.peer-post-kind { display: inline-block; padding: .15rem .5rem; border-radius: 4px; font-size: .65rem; font-weight: 700; text-transform: uppercase; letter-spacing: .06em; margin-bottom: .5rem; }
+.peer-post-kind.update  { background: #3b82f620; color: #3b82f6; }
+.peer-post-kind.ask     { background: #f59e0b20; color: #f59e0b; }
+.peer-post-kind.win     { background: #22c55e20; color: #22c55e; }
+.peer-post-kind.block   { background: #ef444420; color: #ef4444; }
+.peer-post-kind.insight { background: #a855f720; color: #a855f7; }
