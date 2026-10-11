@@ -43,7 +43,7 @@ function IntroDialog({ suggestion, onClose, onSend, isSending }: IntroDialogProp
           placeholder="Your message to the connector…"
         />
         <div className="wr-dialog-actions">
-          <Btn kind="ghost" onClick={onClose} disabled={isSending}>Cancel</Btn>
+          <Btn kind="quiet" onClick={onClose} disabled={isSending}>Cancel</Btn>
           <Btn kind="primary" onClick={() => onSend(message)} disabled={isSending || !message.trim()}>
             {isSending ? <><Loader2 size={13} className="spin" /> Sending…</> : 'Send request'}
           </Btn>

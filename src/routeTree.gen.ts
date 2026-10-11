@@ -26,6 +26,8 @@ import { Route as ImpactSlugRouteImport } from './routes/impact.$slug'
 import { Route as InviteCodeRouteImport } from './routes/invite.$code'
 import { Route as PassportTokenRouteImport } from './routes/passport.$token'
 import { Route as DotlovableOauthConsentRouteImport } from './routes/[.]lovable.oauth.consent'
+import { Route as AuthenticatedWarmReferralsRouteImport } from './routes/_authenticated/warm-referrals'
+import { Route as AuthenticatedWarmReferralsRouteImport } from './routes/_authenticated/warm-referrals'
 import { Route as AuthenticatedAdminEarlyAccessRouteImport } from './routes/_authenticated/admin.early-access'
 import { Route as AuthenticatedAdminVerificationRouteImport } from './routes/_authenticated/admin.verification'
 import { Route as ApiAgentAsksRouteImport } from './routes/api/agent/asks'
@@ -129,6 +131,16 @@ const DotlovableOauthConsentRoute = DotlovableOauthConsentRouteImport.update({
   id: '/.lovable/oauth/consent',
   path: '/.lovable/oauth/consent',
   getParentRoute: () => rootRouteImport,
+} as any)
+const AuthenticatedWarmReferralsRoute = AuthenticatedWarmReferralsRouteImport.update({
+  id: '/warm-referrals',
+  path: '/warm-referrals',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedWarmReferralsRoute = AuthenticatedWarmReferralsRouteImport.update({
+  id: '/warm-referrals',
+  path: '/warm-referrals',
+  getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const AuthenticatedAdminEarlyAccessRoute =
   AuthenticatedAdminEarlyAccessRouteImport.update({
@@ -241,6 +253,10 @@ export interface FileRoutesByFullPath {
   '/invite/$code': typeof InviteCodeRoute
   '/passport/$token': typeof PassportTokenRoute
   '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
+  '/warm-referrals': typeof AuthenticatedWarmReferralsRoute
+  '/warm-referrals': typeof AuthenticatedWarmReferralsRoute
+  '/admin/early-access': typeof AuthenticatedAdminEarlyAccessRoute  '/warm-referrals': typeof AuthenticatedWarmReferralsRoute
+  '/warm-referrals': typeof AuthenticatedWarmReferralsRoute
   '/admin/early-access': typeof AuthenticatedAdminEarlyAccessRoute
   '/admin/verification': typeof AuthenticatedAdminVerificationRoute
   '/api/agent/asks': typeof ApiAgentAsksRoute
@@ -277,6 +293,8 @@ export interface FileRoutesByTo {
   '/invite/$code': typeof InviteCodeRoute
   '/passport/$token': typeof PassportTokenRoute
   '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
+  '/warm-referrals': typeof AuthenticatedWarmReferralsRoute
+  '/warm-referrals': typeof AuthenticatedWarmReferralsRoute
   '/admin/early-access': typeof AuthenticatedAdminEarlyAccessRoute
   '/admin/verification': typeof AuthenticatedAdminVerificationRoute
   '/api/agent/asks': typeof ApiAgentAsksRoute
@@ -315,6 +333,7 @@ export interface FileRoutesById {
   '/invite/$code': typeof InviteCodeRoute
   '/passport/$token': typeof PassportTokenRoute
   '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
+  '/_authenticated/warm-referrals': typeof AuthenticatedWarmReferralsRoute
   '/_authenticated/admin/early-access': typeof AuthenticatedAdminEarlyAccessRoute
   '/_authenticated/admin/verification': typeof AuthenticatedAdminVerificationRoute
   '/api/agent/asks': typeof ApiAgentAsksRoute
@@ -353,6 +372,7 @@ export interface FileRouteTypes {
     | '/invite/$code'
     | '/passport/$token'
     | '/.lovable/oauth/consent'
+    | '/warm-referrals'
     | '/admin/early-access'
     | '/admin/verification'
     | '/api/agent/asks'
@@ -389,6 +409,7 @@ export interface FileRouteTypes {
     | '/invite/$code'
     | '/passport/$token'
     | '/.lovable/oauth/consent'
+    | '/warm-referrals'
     | '/admin/early-access'
     | '/admin/verification'
     | '/api/agent/asks'
@@ -426,6 +447,7 @@ export interface FileRouteTypes {
     | '/invite/$code'
     | '/passport/$token'
     | '/.lovable/oauth/consent'
+    | '/_authenticated/warm-referrals'
     | '/_authenticated/admin/early-access'
     | '/_authenticated/admin/verification'
     | '/api/agent/asks'
@@ -599,6 +621,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DotlovableOauthConsentRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_authenticated/warm-referrals': {
+      id: '/_authenticated/warm-referrals'
+      path: '/warm-referrals'
+      fullPath: '/warm-referrals'
+      preLoaderRoute: typeof AuthenticatedWarmReferralsRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/admin/early-access': {
       id: '/_authenticated/admin/early-access'
       path: '/admin/early-access'
@@ -733,6 +762,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedDelegateRoute: typeof AuthenticatedDelegateRoute
   AuthenticatedOnboardingRoute: typeof AuthenticatedOnboardingRoute
   AuthenticatedVerifyRoute: typeof AuthenticatedVerifyRoute
+  AuthenticatedWarmReferralsRoute: typeof AuthenticatedWarmReferralsRoute
   AuthenticatedAdminEarlyAccessRoute: typeof AuthenticatedAdminEarlyAccessRoute
   AuthenticatedAdminVerificationRoute: typeof AuthenticatedAdminVerificationRoute
 }
@@ -742,6 +772,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedDelegateRoute: AuthenticatedDelegateRoute,
   AuthenticatedOnboardingRoute: AuthenticatedOnboardingRoute,
   AuthenticatedVerifyRoute: AuthenticatedVerifyRoute,
+  AuthenticatedWarmReferralsRoute: AuthenticatedWarmReferralsRoute,
   AuthenticatedAdminEarlyAccessRoute: AuthenticatedAdminEarlyAccessRoute,
   AuthenticatedAdminVerificationRoute: AuthenticatedAdminVerificationRoute,
 }

@@ -1,7 +1,11 @@
-import { createFileRoute } from '@tanstack/react-router'
-import { WarmReferralPanel } from '@/aetheris/WarmReferralPanel'
+import { ClientOnly, createFileRoute } from '@tanstack/react-router'
 
-export const Route = createFileRoute('/warm-referrals')({
+import { WarmReferralPanel } from '@/aetheris/WarmReferralPanel'
+import '@/aetheris/styles.css'
+
+export const Route = createFileRoute('/_authenticated/warm-referrals')({
+  staticData: { sitemap: false },
+  ssr: false,
   head: () => ({
     meta: [
       { title: 'Warm Referral Paths — Ask Intros' },
@@ -15,5 +19,9 @@ export const Route = createFileRoute('/warm-referrals')({
 })
 
 function WarmReferralsRoute() {
-  return <WarmReferralPanel />
+  return (
+    <ClientOnly fallback={null}>
+      <WarmReferralPanel />
+    </ClientOnly>
+  )
 }
