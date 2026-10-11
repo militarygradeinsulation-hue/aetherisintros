@@ -1,6 +1,7 @@
 import { ClientOnly, createFileRoute } from '@tanstack/react-router'
 
 import IntrosApp from '@/intros-ui/IntrosApp'
+import { AetherisProviderRoot } from '@/aetheris/AetherisProviderRoot'
 
 export const Route = createFileRoute('/demo')({
   staticData: { sitemap: true },
@@ -25,6 +26,6 @@ export const Route = createFileRoute('/demo')({
 
 function DemoRoute() {
   return <ClientOnly fallback={null}>
-    <IntrosApp />
+    <AetherisProviderRoot mode="demo"><IntrosApp /></AetherisProviderRoot>
   </ClientOnly>
 }
