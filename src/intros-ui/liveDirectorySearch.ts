@@ -24,6 +24,13 @@ interface DirectoryPage {
   page: number
 }
 
+export interface LiveDirectoryStats {
+  members: number
+  companies: number
+  locations: number
+  industries: number
+}
+
 const db = supabase as any // RPCs are forward-migrated ahead of generated client types.
 
 const normalized = (value: string) => value.trim().toLowerCase()
@@ -109,6 +116,23 @@ async function loadFacets(): Promise<FacetGroups> {
   }
 }
 
+async function loadStats(): Promise<LiveDirectoryStats> {
+  try {
+    const result = await db.rpc('member_directory_stats')
+    if (result.error) throw result.error
+    const row = Array.isArray(result.data) ? result.data[0] : result.data
+    return {
+      members: Number(row?.members) || 0,
+      companies: Number(row?.companies) || 0,
+      locations: Number(row?.locations) || 0,
+      industries: Number(row?.industries) || 0,
+    }
+  } catch (error) {
+    reportClientError(error, 'live-directory-stats')
+    throw error
+  }
+}
+
 export function useLiveMemberDirectory(enabled: boolean, filters: LiveDirectoryFilters) {
   const pages = useInfiniteQuery({
     queryKey: ['live-member-directory', filters.query.trim(), filters.industry, filters.location],
@@ -127,6 +151,13 @@ export function useLiveMemberDirectory(enabled: boolean, filters: LiveDirectoryF
     queryFn: loadFacets,
   })
 
+  const stats = useQuery({
+    queryKey: ['live-member-directory-stats'],
+    enabled,
+    staleTime: 60_000,
+    queryFn: loadStats,
+  })
+
   const allPages = pages.data?.pages ?? []
   const members = allPages.flatMap(page => page.members)
   const total = allPages[0]?.total ?? 0
@@ -135,6 +166,7 @@ export function useLiveMemberDirectory(enabled: boolean, filters: LiveDirectoryF
     members,
     total,
     facets: facets.data ?? { industry: [], location: [], expertise: [] },
+    stats: stats.data ?? { members: 0, companies: 0, locations: 0, industries: 0 },
     loading: pages.isLoading,
     fetchingMore: pages.isFetchingNextPage,
     hasMore: Boolean(pages.hasNextPage),
