@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { Send, Search, MessageSquare } from 'lucide-react'
-import { NetworkProvider, useNetwork } from '@/aetheris/store'
+import { useNetwork } from '@/aetheris/store'
 import { AttachButton, MessageBody, attachmentPreview } from '@/aetheris/MessageAttachments'
 import { loadReadReceiptsSetting, markThreadRead, saveReadReceiptsSetting, useUnreadCounts } from '@/aetheris/read-receipts'
 import { badgeLabel, seenUnderMessageId, shouldMarkRead } from '@/aetheris/messaging-state'
@@ -174,5 +174,5 @@ function Inner() {
 }
 
 export function LiveMessagesView() {
-  return <NetworkProvider mode="live"><Inner /></NetworkProvider>
+  return <Inner />
 }
