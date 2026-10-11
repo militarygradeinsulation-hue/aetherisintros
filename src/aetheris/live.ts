@@ -7,6 +7,7 @@
  * member what to do next instead of showing invented activity.
  */
 import { supabase } from '@/integrations/supabase/client'
+import { reportClientError } from '@/lib/error-report'
 import { calculateConnectionScore, determineRadarState } from './lib/engine'
 import type { Directory } from './db'
 import type { Member, NetworkAsk, Post, Thread } from './social'
@@ -218,7 +219,7 @@ export async function loadLiveDirectory(userId: string): Promise<{ directory: Di
 
     return { directory: { members, posts, asks, signals: [], threads, learnings: [] }, me }
   } catch (error) {
-    console.error('live network read failed', error)
+    reportClientError(error, 'live-directory-read')
     return { directory: emptyDirectory, me: null }
   }
 }
@@ -278,8 +279,8 @@ export async function journalUrl(path: string): Promise<string | null> {
   return data.signedUrl
 }
 
-const fire = (work: PromiseLike<unknown>) => {
-  void Promise.resolve(work).catch(error => console.error('live write failed', error))
+const fire = (work: PromiseLike<unknown>, where = 'live-write') => {
+  void Promise.resolve(work).catch(error => reportClientError(error, where))
 }
 
 /** Find or create the single conversation between two approved members. */
@@ -293,7 +294,7 @@ export async function ensureThread(userId: string, peerId: string, context = '')
     .select('id')
     .maybeSingle()
   if (created.error) {
-    console.error('thread create failed', created.error)
+    reportClientError(created.error, 'thread-create')
     const retry = await supabase.from('dm_threads').select('id').eq('member_a', a!).eq('member_b', b!).maybeSingle()
     return retry.data?.id ?? null
   }
@@ -304,34 +305,34 @@ const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
 
 /** `id` (when a uuid) keeps the sent row's id equal to the local message, so read receipts line up. */
 export function sendLiveMessage(threadId: string, senderId: string, text: string, id?: string) {
-  fire(supabase.from('dm_messages').insert({ ...(id && UUID.test(id) ? { id } : {}), thread_id: threadId, sender_id: senderId, text }))
-  fire(supabase.from('dm_threads').update({ updated_at: new Date().toISOString() }).eq('id', threadId))
+  fire(supabase.from('dm_messages').insert({ ...(id && UUID.test(id) ? { id } : {}), thread_id: threadId, sender_id: senderId, text }), 'message-send')
+  fire(supabase.from('dm_threads').update({ updated_at: new Date().toISOString() }).eq('id', threadId), 'thread-touch')
 }
 
 export function mirrorFollow(userId: string, peerId: string, kind: 'follow' | 'connection' | 'saved', on: boolean) {
   if (!/^[0-9a-f-]{36}$/i.test(peerId)) return
   fire(on
     ? supabase.from('follows').upsert({ follower_id: userId, followee_id: peerId, kind }, { onConflict: 'follower_id,followee_id,kind' })
-    : supabase.from('follows').delete().eq('follower_id', userId).eq('followee_id', peerId).eq('kind', kind))
+    : supabase.from('follows').delete().eq('follower_id', userId).eq('followee_id', peerId).eq('kind', kind), 'relationship-write')
 }
 
 export function saveComment(postId: string, authorId: string, text: string) {
-  fire(supabase.from('post_comments').insert({ post_id: postId, author_id: authorId, text }))
+  fire(supabase.from('post_comments').insert({ post_id: postId, author_id: authorId, text }), 'comment-write')
 }
 
 export function saveReaction(postId: string, userId: string, kind: 'like' | 'save' | 'repost', on: boolean) {
   fire(on
     ? supabase.from('post_reactions').upsert({ post_id: postId, user_id: userId, kind }, { onConflict: 'post_id,user_id,kind' })
-    : supabase.from('post_reactions').delete().eq('post_id', postId).eq('user_id', userId).eq('kind', kind))
+    : supabase.from('post_reactions').delete().eq('post_id', postId).eq('user_id', userId).eq('kind', kind), 'reaction-write')
 }
 
 /** Create the conversation row with a caller-supplied id (optimistic UI). */
 export function createLiveThread(id: string, userId: string, peerId: string, context: string) {
   if (!/^[0-9a-f-]{36}$/i.test(peerId)) return
   const [a, b] = [userId, peerId].sort()
-  fire(supabase.from('dm_threads').insert({ id, member_a: a!, member_b: b!, created_by: userId, intro_context: context }))
+  fire(supabase.from('dm_threads').insert({ id, member_a: a!, member_b: b!, created_by: userId, intro_context: context }), 'thread-create')
 }
 
 export function saveLiveAskResponse(askId: string, userId: string, text: string) {
-  fire(supabase.from('ask_responses').insert({ ask_id: askId, user_id: userId, text }))
+  fire(supabase.from('ask_responses').insert({ ask_id: askId, user_id: userId, text }), 'ask-response-write')
 }
