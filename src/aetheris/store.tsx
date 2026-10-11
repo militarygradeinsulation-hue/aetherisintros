@@ -1,4 +1,5 @@
 import { createContext, useContext, useEffect, useMemo, useRef, useState } from 'react'
+import type { BusinessDetails } from './business-posts'
 import type { AutonomyLevel, DigitalYouProfile, Objective, PrivacyScope } from './types'
 import { defaultDigitalYou, objectives as seedObjectives } from './data'
 import {
@@ -258,6 +259,8 @@ interface NetworkApi {
   warmPaths: string[]
   /** True once this member's own graph has been read from the database. */
   synced: boolean
+  /** True when the last read of the live network failed, so the feed can say so. */
+  feedError: boolean
   /* graph actions */
   connect: (id: string) => void
   follow: (id: string) => void
@@ -269,7 +272,7 @@ interface NetworkApi {
   declineIntro: (id: string) => void
   /** Forget a withdrawn request locally; the row itself is deleted by the caller. */
   withdrawIntro: (id: string) => void
-  addPost: (text: string, detail?: string, media?: JournalAttachment[], visibility?: 'network' | 'private', kind?: Post['kind']) => void
+  addPost: (text: string, detail?: string, media?: JournalAttachment[], visibility?: 'network' | 'private', kind?: Post['kind'], business?: BusinessDetails) => void
   respondToPost: (postId: string, memberId: string) => string | null
   togglePostLike: (postId: string) => void
   togglePostRepost: (postId: string, memberId: string) => void
@@ -347,6 +350,7 @@ export function NetworkProvider({ children, mode = 'live' }: { children: React.R
   const [dir, setDir] = useState<Directory>(live ? emptyDirectory : catalogue)
   const [userId, setUserId] = useState<string | null>(null)
   const [synced, setSynced] = useState(false)
+  const [feedError, setFeedError] = useState(false)
   const lastSynced = useRef<Persisted | null>(null)
 
   useEffect(() => { if (live) return; try { localStorage.setItem(KEY, JSON.stringify(s)) } catch { /* storage full */ } }, [s, live])
@@ -366,8 +370,9 @@ export function NetworkProvider({ children, mode = 'live' }: { children: React.R
       let meRow: LiveProfileRow | null = null
       let myGoals: string[] = []
       if (live) {
-        const [{ directory, me }, goals] = await Promise.all([loadLiveDirectory(id), loadOwnGoals()])
+        const [{ directory, me, failed }, goals] = await Promise.all([loadLiveDirectory(id), loadOwnGoals()])
         if (cancelled) return
+        setFeedError(Boolean(failed))
         meRow = me
         myGoals = goals
         setDir(directory)
@@ -417,7 +422,7 @@ export function NetworkProvider({ children, mode = 'live' }: { children: React.R
   /* live messaging: new messages and conversations from other members arrive instantly */
   useEffect(() => {
     if (!live || !userId) return
-    const refresh = () => { void loadLiveDirectory(userId).then(({ directory }) => setDir(directory)) }
+    const refresh = () => { void loadLiveDirectory(userId).then(({ directory, failed }) => { if (!failed) { setFeedError(false); setDir(directory) } }) }
     const channel = supabase
       .channel(`dm-${userId}-${Math.random().toString(36).slice(2, 10)}`)
       .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'dm_messages' }, payload => {
@@ -567,6 +572,7 @@ export function NetworkProvider({ children, mode = 'live' }: { children: React.R
 
     return {
       synced,
+      feedError,
       members: baseMembers.map(m => ({
         ...m,
         introState: s.introStates[m.id] ?? m.introState,
@@ -669,10 +675,10 @@ export function NetworkProvider({ children, mode = 'live' }: { children: React.R
         }
       }),
 
-      addPost: (text, detail, media, visibility, kind = 'Insight') => patch(prev => ({
-        ownPosts: [{ id: uid('post'), memberId: 'me', kind, text, detail: detail ?? 'Shared with your network.', when: 'Just now', responses: 0, media: media ?? [], visibility: visibility ?? 'network' }, ...prev.ownPosts],
-        learned: remember(prev, { category: 'Interests', text: `You wrote in your Journal: “${text.slice(0, 80)}${text.length > 80 ? '…' : ''}”`, source: 'Your Journal', confidence: 100, scope: visibility === 'private' ? 'private' : 'public' }),
-        activity: log(prev, { memberId: 'me', kind: 'New project', text: `You added a Journal entry.` }),
+      addPost: (text, detail, media, visibility, kind = 'Insight', business) => patch(prev => ({
+        ownPosts: [{ id: uid('post'), memberId: 'me', kind, text, detail: detail ?? 'Shared with your network.', when: 'Just now', responses: 0, media: media ?? [], visibility: visibility ?? 'network', ...(business ? { business } : {}) }, ...prev.ownPosts],
+        learned: remember(prev, { category: 'Interests', text: business ? `You posted a ${kind}: “${text.slice(0, 80)}${text.length > 80 ? '…' : ''}”` : `You wrote in your Journal: “${text.slice(0, 80)}${text.length > 80 ? '…' : ''}”`, source: business ? 'Network feed' : 'Your Journal', confidence: 100, scope: visibility === 'private' ? 'private' : 'public' }),
+        activity: log(prev, { memberId: 'me', kind: 'New project', text: business ? `You posted a ${kind} to the network.` : `You added a Journal entry.` }),
       })),
 
       respondToPost: (postId, memberId) => {
@@ -848,7 +854,7 @@ export function NetworkProvider({ children, mode = 'live' }: { children: React.R
         }
       }),
     }
-  }, [s, dir, synced, live, userId])
+  }, [s, dir, synced, feedError, live, userId])
 
   return <Ctx.Provider value={api}>{children}</Ctx.Provider>
 }

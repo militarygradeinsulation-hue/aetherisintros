@@ -3,14 +3,16 @@ import { Send, Search, MessageSquare } from 'lucide-react'
 import { NetworkProvider, useNetwork } from '@/aetheris/store'
 import { AttachButton, MessageBody, attachmentPreview } from '@/aetheris/MessageAttachments'
 import { loadReadReceiptsSetting, markThreadRead, saveReadReceiptsSetting, useUnreadCounts } from '@/aetheris/read-receipts'
+import { StartWorkspaceButton } from '@/aetheris/workspaces/StartWorkspace'
 import { badgeLabel, seenUnderMessageId, shouldMarkRead } from '@/aetheris/messaging-state'
 import { OpenDealRoomButton } from '@/aetheris/deals-ui'
 import { draftTitle } from '@/aetheris/deals-core'
 
+const isUuid = (v: string) => /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(v)
 const pageVisible = () => typeof document === 'undefined' || document.visibilityState === 'visible'
 
 /** Native editorial-noir messaging, wired to the live member threads and file attachments. */
-function Inner() {
+function Inner({ onOpenWorkspaces }: { onOpenWorkspaces?: () => void }) {
   const net = useNetwork()
   const [activeId, setActiveId] = useState<string>(() => (typeof window === 'undefined' ? '' : localStorage.getItem('aetheris-intros-thread') ?? ''))
   const [query, setQuery] = useState('')
@@ -126,9 +128,10 @@ function Inner() {
                 <p className="text-sm font-semibold text-[#F2EEE6] truncate">{person?.name ?? 'Member'}</p>
                 <p className="text-[11px] text-[#9CA3AF] truncate">{[person?.title, person?.company].filter(Boolean).join(' · ')}</p>
               </div>
-              {person && <div className="ml-auto shrink-0">
-                <OpenDealRoomButton kind="quiet" label="Deal room" draft={{ sourceKind: 'thread', sourceId: active.id, title: draftTitle('thread', person.name), need: active.introContext ?? '', counterpartId: person.id, counterpartName: person.name }} />
-              </div>}
+              <div className="ml-auto shrink-0 flex items-center gap-2">
+                {person && <OpenDealRoomButton kind="quiet" label="Deal room" draft={{ sourceKind: 'thread', sourceId: active.id, title: draftTitle('thread', person.name), need: active.introContext ?? '', counterpartId: person.id, counterpartName: person.name }} />}
+                {onOpenWorkspaces && isUuid(active.id) && <StartWorkspaceButton source="dm_thread" sourceId={active.id} withName={person?.name ?? 'this member'} onOpen={onOpenWorkspaces} label="Open workspace" />}
+              </div>
             </header>
             <div className="flex-1 overflow-y-auto px-4 py-4 space-y-2.5">
               {active.messages.length === 0 && <p className="text-xs text-[#9CA3AF] text-center">Say hello — this is the start of your conversation.</p>}
@@ -173,6 +176,6 @@ function Inner() {
   )
 }
 
-export function LiveMessagesView() {
-  return <NetworkProvider mode="live"><Inner /></NetworkProvider>
+export function LiveMessagesView({ onOpenWorkspaces }: { onOpenWorkspaces?: () => void } = {}) {
+  return <NetworkProvider mode="live"><Inner {...(onOpenWorkspaces ? { onOpenWorkspaces } : {})} /></NetworkProvider>
 }

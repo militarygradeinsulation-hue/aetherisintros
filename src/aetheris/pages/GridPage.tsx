@@ -18,6 +18,7 @@ import { linkedTemplates } from '../crm/linked'
 import { colLetters, evaluateFormula } from '../crm/formula'
 import { projectRows, type NetworkIndex, type ProjectedRow } from '../crm/project'
 import type { GridColumn, GridColumnType, LinkedEntity } from '../crm/types'
+import { contactExportIsDenied } from '@/lib/contact-export'
 
 const columnTypes: GridColumnType[] = ['text', 'number', 'currency', 'percent', 'date', 'checkbox', 'select', 'relation', 'formula']
 
@@ -216,8 +217,14 @@ export default function GridPage() {
     }
   }
 
-  const exportCsv = () => {
+  const exportCsv = async () => {
     if (!sheet) return
+    const contactColumns = columns.map(c => c.name.toLowerCase())
+    const contactData = sheet.mode === 'linked' ||
+      contactColumns.some(name => /email|phone|contact|person/.test(name)) ||
+      (contactColumns.some(name => /name/.test(name)) &&
+        contactColumns.some(name => /title|company|business/.test(name)))
+    if (contactData && await contactExportIsDenied()) return
     const header = columns.map(c => csvCell(c.name)).join(',')
     const body = rows.map(r => columns.map(c => csvCell(r.values[c.key])).join(',')).join('\n')
     const blob = new Blob([`${header}\n${body}`], { type: 'text/csv;charset=utf-8' })
@@ -301,7 +308,7 @@ export default function GridPage() {
           <input className="grid-filter" value={filter} onChange={e => setFilter(e.target.value)} placeholder="Filter rows…" aria-label="Filter rows" />
           {sheet && <button onClick={() => void ops.updateSheetConfig(sheet.id, { ...sheet.config, frozenRow: !sheet.config?.frozenRow })}
             className={sheet.config?.frozenRow ? 'on' : ''} title="Freeze first row"><Snowflake size={14} /></button>}
-          <button onClick={exportCsv} title="Export CSV"><Download size={14} /></button>
+          <button onClick={() => void exportCsv()} title="Export CSV"><Download size={14} /></button>
           <button onClick={() => fileRef.current?.click()} title="Import CSV"><Upload size={14} /></button>
           {sheet && <button onClick={() => void ops.duplicateSheet(sheet.id)} title="Duplicate sheet"><Copy size={14} /></button>}
           {sheet && <button onClick={() => void ops.archiveSheet(sheet.id)} title="Archive sheet"><Trash2 size={14} /></button>}

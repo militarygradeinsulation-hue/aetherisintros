@@ -15,6 +15,7 @@ import { getActiveSubject, openCapability } from './capabilities/store'
 import { openCeo } from './ceo-store'
 import { VOICE_PAGES, confirmation, parseVoiceCommand } from './voice-commands'
 import { saveQuickNote } from './quick-note-ui'
+import { noteFailedResult, noteSavedResult } from './quick-note'
 import { placeMenu } from './quick-menu'
 import {
   isStopPhrase, readAloud, readerSnapshot, stopReading, useDictation, useReader, useVoiceSettings, voiceOutputSupported,
@@ -185,8 +186,8 @@ function AskIntrosDockInner({ page, peopleNames, memberName, briefing, contextPa
     if (command) {
       let result: string | null
       if (command.kind === 'take-note') {
-        try { result = (await saveQuickNote(command.value ?? '')) === 'account' ? 'Saved that note to your Memory' : 'Saved that note on this device' }
-        catch (e) { result = e instanceof Error ? e.message.replace(/\.$/, '') : 'Could not save the note' }
+        try { result = noteSavedResult(await saveQuickNote(command.value ?? '')) }
+        catch (e) { result = noteFailedResult(e) }
       } else result = run(command)
       const reply = confirmation(command, result)
       const answer: Turn = { role: 'assistant', content: reply, ...(result ? { did: [result] } : {}) }
@@ -265,7 +266,7 @@ function AskIntrosDockInner({ page, peopleNames, memberName, briefing, contextPa
       const did: string[] = []
       for (const action of answer.actions) {
         if (action.kind === 'take-note') {
-          try { await saveQuickNote(action.value ?? ''); did.push('Saved a note to your Memory') } catch { /* reported in the reply */ }
+          try { did.push(noteSavedResult(await saveQuickNote(action.value ?? ''))) } catch (e) { did.push(noteFailedResult(e)) }
           continue
         }
         const note = run(action)

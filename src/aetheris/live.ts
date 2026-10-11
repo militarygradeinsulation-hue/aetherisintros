@@ -8,7 +8,7 @@
  */
 import { supabase } from '@/integrations/supabase/client'
 import { calculateConnectionScore, determineRadarState } from './lib/engine'
-import type { Directory } from './db'
+import { businessOf, type Directory } from './db'
 import type { Member, NetworkAsk, Post, Thread } from './social'
 import type { ScoreBreakdown } from './types'
 import type { GiverBand } from './reciprocity-core'
@@ -142,7 +142,7 @@ export async function loadMyProfile(userId: string): Promise<LiveProfileRow | nu
  * Members = other approved profiles (RLS already restricts this to approved
  * accounts). Posts/asks = real authored rows. Threads = real conversations.
  */
-export async function loadLiveDirectory(userId: string): Promise<{ directory: Directory; me: LiveProfileRow | null }> {
+export async function loadLiveDirectory(userId: string): Promise<{ directory: Directory; me: LiveProfileRow | null; failed?: boolean }> {
   try {
     const [profileRows, postRows, askRows, threadRows] = await Promise.all([
       supabase.from('profiles').select(PROFILE_COLUMNS),
@@ -198,6 +198,7 @@ export async function loadLiveDirectory(userId: string): Promise<{ directory: Di
       responses: r.response_count ?? 0,
       media: (r.media ?? []) as unknown as Post['media'],
       visibility: (r.visibility ?? 'network') as Post['visibility'],
+      ...businessOf(r.kind, r.business),
     }))
 
     const asks: NetworkAsk[] = (askRows.data ?? []).map(r => ({
@@ -216,10 +217,10 @@ export async function loadLiveDirectory(userId: string): Promise<{ directory: Di
       ...(r.author_id === userId ? { mine: true } : {}),
     }))
 
-    return { directory: { members, posts, asks, signals: [], threads, learnings: [] }, me }
+    return { directory: { members, posts, asks, signals: [], threads, learnings: [] }, me, ...(postRows.error || profileRows.error ? { failed: true } : {}) }
   } catch (error) {
     console.error('live network read failed', error)
-    return { directory: emptyDirectory, me: null }
+    return { directory: emptyDirectory, me: null, failed: true }
   }
 }
 

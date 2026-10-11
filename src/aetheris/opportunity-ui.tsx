@@ -22,6 +22,7 @@ import {
 import type { Member } from './social'
 import { useNetwork } from './store'
 import { Btn, Eyebrow } from './ui'
+import { StartWorkspaceButton } from './workspaces/StartWorkspace'
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 const db = supabase as any
@@ -340,6 +341,7 @@ export function IntroWorkflow({ member, prefill }: { member: Member; prefill?: I
       <label>Linked mission (only if not private)<input value={draft.mission_title} onChange={e => setDraft(d => ({ ...d, mission_title: e.target.value }))} /></label>
       <Btn onClick={() => void submit()}><Plus size={14} /> {capsule ? 'Update capsule' : 'Request introduction with capsule'}</Btn>
     </div></details>}
+    {bothIn && intro && <StartWorkspaceButton source="intro_request" sourceId={intro.id} withName={member.name} onOpen={() => nav.setPage('workspaces')} />}
     {bothIn && <div className="og-inline"><Btn kind="secondary" onClick={() => void openRoom()}><DoorOpen size={14} /> Open Relationship Room</Btn>{intro && <MeetNowButton introId={intro.id} title={`Introduction: ${member.name}`} capsule={capsule} />}{intro && <OpenDealRoomButton draft={{ sourceKind: 'intro', sourceId: intro.id, title: draftTitle('intro', member.name), need: [capsule?.why_exists, capsule?.first_goal].filter(Boolean).join('\n'), counterpartId: member.id, counterpartName: member.name }} />}</div>}
     {intro && !bothIn && <small className="og-note">Relationship Room opens after both sides opt in.</small>}
     {msg && <p className="executive-form-note">{msg}</p>}
