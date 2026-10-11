@@ -1,19 +1,32 @@
-// @ts-nocheck
-import { useEffect } from 'react';
-import { NetworkProvider, useNetwork } from '@/aetheris/store';
-import type { NetworkMember } from './networkData';
+import { useEffect } from 'react'
+import { NetworkProvider, useNetwork } from '@/aetheris/store'
+import type { Member, MemberRole } from '@/aetheris/social'
+import type { NetworkMember } from './networkData'
+
+const roleType = (role: MemberRole): NetworkMember['roleType'] => {
+  switch (role) {
+    case 'Investor': return 'investor'
+    case 'Advisor': return 'advisor'
+    case 'Specialist': return 'expert'
+    case 'Operator':
+    case 'Executive': return 'operator'
+    case 'Connector':
+    case 'Founder':
+    default: return 'founder'
+  }
+}
 
 /** Maps real network members into the new shell's member shape. No invented values. */
-function toNetworkMember(m: any): NetworkMember {
-  const [firstName = m.name, ...rest] = String(m.name ?? '').split(' ');
+function toNetworkMember(m: Member): NetworkMember {
+  const [firstName = m.name, ...rest] = String(m.name ?? '').split(' ')
   // Keep the raw value: a real member's photo may be a direct URL or a private
   // storage object path — AvatarImage resolves both. Never substitute a stock photo.
-  const avatar = m.avatarUrl && String(m.avatarUrl).trim() ? String(m.avatarUrl) : '';
-  const score = Math.round(m.scoreTotal ?? 0);
+  const avatar = m.avatarUrl && String(m.avatarUrl).trim() ? String(m.avatarUrl) : ''
+  const score = Math.round(m.scoreTotal ?? 0)
   return {
     id: m.id, name: m.name, firstName, lastName: rest.join(' '),
     title: m.title ?? '', company: m.company ?? '', industry: m.industry ?? '',
-    roleType: 'founder', location: m.location ?? '', avatarUrl: avatar, verified: true,
+    roleType: roleType(m.role), location: m.location ?? '', avatarUrl: avatar, verified: true,
     matchScore: score,
     matchTier: score >= 85 ? 'EXCELLENT FIT' : score >= 75 ? 'STRONG FIT' : score >= 65 ? 'GOOD FIT' : 'POTENTIAL',
     bioStatement: m.whatIDo || m.focus || m.thesis || '', fullBio: m.thesis || m.whatIDo || '',
@@ -23,16 +36,16 @@ function toNetworkMember(m: any): NetworkMember {
     mutualConnectionsCount: m.mutuals?.length ?? 0, mutualConnections: [],
     openToIntros: true, introStatusText: m.availability || '',
     recentPosts: [], recommendations: [],
-    networkInfluence: { strongerReplies: '—', introSuccessRate: '—', fasterConversations: '—', peopleInNetwork: 0, companiesCount: 0, keyThemes: 0 },
-  } as NetworkMember;
+    networkInfluence: { strongerReplies: '—', introSuccessRate: '—', fasterConversations: '—', peopleInNetwork: 0, companiesCount: 0, keyThemes: 0, sharedInvestors: 0 },
+  }
 }
 
 function Bridge({ onMembers }: { onMembers: (m: NetworkMember[]) => void }) {
-  const net = useNetwork();
-  useEffect(() => { onMembers(net.members.map(toNetworkMember)); }, [net.members]);
-  return null;
+  const net = useNetwork()
+  useEffect(() => { onMembers(net.members.map(toNetworkMember)) }, [net.members, onMembers])
+  return null
 }
 
 export function LiveMembers({ onMembers }: { onMembers: (m: NetworkMember[]) => void }) {
-  return <NetworkProvider mode="live"><Bridge onMembers={onMembers} /></NetworkProvider>;
+  return <NetworkProvider mode="live"><Bridge onMembers={onMembers} /></NetworkProvider>
 }
