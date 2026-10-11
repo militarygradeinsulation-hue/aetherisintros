@@ -407,6 +407,20 @@
       "when": 1791468859383,
       "tag": "0058_deal_rooms",
       "breakpoints": true
+    },
+    {
+      "idx": 59,
+      "version": "7",
+      "when": 1791469159383,
+      "tag": "0059_deal_room_idempotency",
+      "breakpoints": true
+    },
+    {
+      "idx": 60,
+      "version": "7",
+      "when": 1791469459383,
+      "tag": "0060_app_error_rate_limit_index",
+      "breakpoints": true
     }
   ]
 }

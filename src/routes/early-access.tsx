@@ -2,6 +2,7 @@ import logoAsset from '@/assets/aetheris-logo.jpg.asset.json'
 import { createFileRoute, Link, useNavigate } from '@tanstack/react-router'
 import { ArrowRight, Check, Clock, LockKeyhole, ShieldAlert } from 'lucide-react'
 import { useCallback, useEffect, useState } from 'react'
+import { signOutMember } from '@/aetheris/sync/workspace-sync'
 
 import { storedInvite, claimAccess, foundingLabel, foundingStats, joinWaitlist, useAccess, type FoundingStats } from '@/aetheris/access'
 import { supabase } from '@/integrations/supabase/client'
@@ -127,7 +128,7 @@ function EarlyAccessPage() {
         </>}
         {error && <p className="auth-error">{error}</p>}
         {notice && <p className="auth-notice">{notice}</p>}
-        <button className="auth-switch" type="button" onClick={() => void supabase.auth.signOut().then(refresh)}>
+        <button className="auth-switch" type="button" onClick={() => { void signOutMember('/auth') }}>
           Use a different account
         </button>
       </>}

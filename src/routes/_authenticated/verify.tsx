@@ -2,6 +2,7 @@ import logoAsset from '@/assets/aetheris-logo.jpg.asset.json'
 import { ClientOnly, createFileRoute, Link, useNavigate } from '@tanstack/react-router'
 import { ArrowRight, BadgeCheck, Building2, FileUp, Globe, LockKeyhole, ScanSearch, ShieldAlert } from 'lucide-react'
 import { useCallback, useEffect, useState } from 'react'
+import { signOutMember } from '@/aetheris/sync/workspace-sync'
 
 import { useAccess } from '@/aetheris/access'
 import {
@@ -240,7 +241,7 @@ function VerifyPortal() {
 
       <div className="verify-foot">
         <span><LockHint /> Verified members carry a badge — never their proof documents.</span>
-        <button className="auth-switch" type="button" onClick={() => void supabase.auth.signOut().then(() => navigate({ to: '/auth', replace: true }))}>
+        <button className="auth-switch" type="button" onClick={() => { void signOutMember('/auth') }}>
           Sign out
         </button>
       </div>

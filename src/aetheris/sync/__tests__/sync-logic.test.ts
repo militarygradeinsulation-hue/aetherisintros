@@ -72,12 +72,13 @@ describe('sign-out cleanup', () => {
   it('clears member keys and live stores but keeps demo copies', () => {
     const keys = [
       'aetheris.sync.meta', 'aetheris.ledger.patch.u1', 'aetheris-moat-v1-live', 'aetheris-relationship-os-v1-live',
-      'aetheris-pro-v1-live', 'aetheris-platform-v1-live', 'aetheris-moat-v1-demo', 'aetheris-pro-v1-demo', 'theme', 'aetherisx',
+      'aetheris-pro-v1-live', 'aetheris-platform-v1-live', 'aetheris_notes_member-1', 'aetheris-intros-thread',
+      'aetheris-moat-v1-demo', 'aetheris-pro-v1-demo', 'aetheris-demo-quick-notes', 'theme', 'aetherisx',
     ]
     expect(keysToClearOnSignOut(keys).sort()).toEqual([
       'aetheris-moat-v1-live', 'aetheris-platform-v1-live', 'aetheris-pro-v1-live', 'aetheris-relationship-os-v1-live',
-      'aetheris.ledger.patch.u1', 'aetheris.sync.meta',
-    ])
+      'aetheris-intros-thread', 'aetheris_notes_member-1', 'aetheris.ledger.patch.u1', 'aetheris.sync.meta',
+    ].sort())
   })
 })
 
