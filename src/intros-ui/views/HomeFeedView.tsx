@@ -1,4 +1,3 @@
-// @ts-nocheck
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import {
@@ -29,9 +28,11 @@ import { ExecutivePortrait } from '../components/shared/ExecutivePortrait';
 import { ConstellationGraphic } from '../components/shared/ConstellationGraphic';
 import { RelationshipFieldGraph } from '../components/shared/RelationshipFieldGraph';
 import { ActivePage } from '../components/layout/TopNavigation';
-import { DraggableWidgetGrid, type WidgetItem } from '@/components/ui/widget-board';
+import { DraggableWidgetGrid, type WidgetItem, type WidgetSize } from '@/components/ui/widget-board';
 
 const widgetIds = new Set(['network','explore','introduce','need','ask','sectors','events','circles','whynow','people','offers','conversations','saved','updates','profile']);
+const widgetSizes: readonly WidgetSize[] = ['sm', 'wide', 'tall', 'lg'];
+const isWidgetSize = (value: unknown): value is WidgetSize => typeof value === 'string' && widgetSizes.includes(value as WidgetSize);
 
 interface HomeFeedViewProps {
   posts: FeedPost[];
@@ -113,16 +114,25 @@ export const HomeFeedView: React.FC<HomeFeedViewProps> = ({
   const [boardPinned, setBoardPinned] = useState(false);
   React.useEffect(() => {
     try { setBoardPinned(localStorage.getItem('intros.home.board.pinned') === 'true'); } catch {}
-    const readBoard = () => {
-    try {
-      const saved = JSON.parse(localStorage.getItem('intros.home.board.v2') || 'null');
-      if (Array.isArray(saved)) {
-        const seen = new Set<string>();
-        const valid = saved.filter(item => widgetIds.has(item.id) && !seen.has(item.id) && seen.add(item.id)).map(item => ({ ...defaultBoard.find(entry => entry.id === item.id), size: ['sm', 'wide', 'tall', 'lg'].includes(item.size) ? item.size : 'sm' }));
-        return [...valid, ...defaultBoard.filter(item => !seen.has(item.id))];
-      }
-    } catch {}
-    return defaultBoard;
+    const readBoard = (): WidgetItem[] => {
+      try {
+        const saved: unknown = JSON.parse(localStorage.getItem('intros.home.board.v2') || 'null');
+        if (Array.isArray(saved)) {
+          const seen = new Set<string>();
+          const valid: WidgetItem[] = [];
+          for (const raw of saved) {
+            if (!raw || typeof raw !== 'object') continue;
+            const item = raw as { id?: unknown; size?: unknown };
+            if (typeof item.id !== 'string' || !widgetIds.has(item.id) || seen.has(item.id)) continue;
+            const base = defaultBoard.find(entry => entry.id === item.id);
+            if (!base) continue;
+            seen.add(item.id);
+            valid.push({ ...base, size: isWidgetSize(item.size) ? item.size : 'sm' });
+          }
+          return [...valid, ...defaultBoard.filter(item => !seen.has(item.id))];
+        }
+      } catch {}
+      return defaultBoard;
     };
     setBoardItems(readBoard());
   }, []);
@@ -158,7 +168,7 @@ export const HomeFeedView: React.FC<HomeFeedViewProps> = ({
     circles: tile('Shared circles', 'A smaller room. Better context.', isLive ? <><p>Gather people around a shared interest or a real decision.</p><p>No circle membership has been loaded into this board.</p></> : <div className="home-board-list">{circlesList.slice(0, 3).map(circle => <div key={circle.id}><span><b>{circle.name}</b><small>{circle.count}</small></span><Button size="sm" variant="outline" aria-pressed={circle.isJoined} onClick={() => toggleCircleJoin(circle.id)}>{circle.isJoined ? 'Joined' : 'Join'}</Button></div>)}</div>, 'Explore your workspace', () => onNavigate('workspace')),
     whynow: tile('Active memory', 'Keep the context alive.', <><p>The last conversation. A current goal. The promise you made.</p><blockquote>Know who matters. Know why now.</blockquote><p>Return to the details that make your next message personal.</p></>, 'Open Memory', () => onNavigate('memory')),
     people: tile('People to know', 'Start with a real person.', <>{personRows(boardPeople.slice(2, 5), member => [member.company, member.location].filter(Boolean).join(' · '))}{!boardPeople.length && <p>Member profiles appear here as people join.</p>}</>, 'See all people', () => onNavigate('people')),
-    offers: tile('Current focus', 'Where you could help.', <>{personRows(goals, member => member.currentObjectives[0])}{!goals.length && <p>No current objectives have been shared yet.</p>}</>, 'Find shared goals', () => onNavigate('people')),
+    offers: tile('Current focus', 'Where you could help.', <>{personRows(goals, member => member.currentObjectives[0] ?? '')}{!goals.length && <p>No current objectives have been shared yet.</p>}</>, 'Find shared goals', () => onNavigate('people')),
     conversations: tile('Messages', 'Pick up the conversation.', <><p>Private, person-to-person conversations with the context close by.</p>{personRows(boardPeople.slice(0, 2), member => member.bioStatement || [member.title, member.company].filter(Boolean).join(' · '))}</>, 'Open Messages', () => onNavigate('messages')),
     saved: tile('Saved for later', 'Keep the useful things.', isLive ? <><p>Return to the updates you saved in your network.</p><p>Your saved member signals stay in your private account.</p></> : <><p>{savedPosts.length} saved {savedPosts.length === 1 ? 'post' : 'posts'} on this board.</p>{savedPosts.slice(0, 2).map(post => <blockquote key={post.id}>{post.authorName}: {post.content.slice(0, 100)}</blockquote>)}{!savedPosts.length && <p>Save a member update when you want to return with a thoughtful reply.</p>}</>, 'Read the Social Board', jumpToSocial),
     updates: tile('Network dispatch', 'What people are sharing.', <>{posts.slice(0, 2).map(post => <div key={post.id} className="home-board-update"><b>{post.authorName}</b><small>{post.timeAgo} · {post.badge || 'Update'}</small><p>{post.content.slice(0, 130)}{post.content.length > 130 ? '…' : ''}</p></div>)}{!posts.length && <p>Member updates live on the Social Board below. Be the first to share what you are working on.</p>}</>, 'Join the conversation', jumpToSocial),
@@ -364,8 +374,8 @@ export const HomeFeedView: React.FC<HomeFeedViewProps> = ({
           renderItem={(item) => <div className="flex h-full min-h-0 w-full flex-col">
             <div className="flex shrink-0 justify-end border-b border-[var(--sys-line)] bg-[var(--sys-tile-inner)]">
               <Button variant="ghost" size="sm" disabled={boardPinned} aria-label={`Resize ${item.label || item.id}`} title={`Resize tile · ${item.size === 'sm' ? 'Small' : item.size === 'lg' ? 'Large' : item.size === 'wide' ? 'Wide' : 'Tall'}`} onClick={() => {
-                const sizes = narrow ? ['sm', 'tall'] : ['sm', 'wide', 'tall', 'lg'];
-                const size = sizes[(sizes.indexOf(item.size) + 1) % sizes.length];
+                const sizes: WidgetSize[] = narrow ? ['sm', 'tall'] : ['sm', 'wide', 'tall', 'lg'];
+                const size = sizes[(sizes.indexOf(item.size) + 1) % sizes.length] ?? 'sm';
                 saveBoard(boardItems.map(entry => entry.id === item.id ? { ...entry, size } : entry));
               }}><Maximize2 /><span>{item.size === 'sm' ? 'Small' : item.size === 'lg' ? 'Large' : item.size === 'wide' ? 'Wide' : 'Tall'}</span></Button>
             </div>
@@ -383,7 +393,7 @@ export const HomeFeedView: React.FC<HomeFeedViewProps> = ({
           <div className="bg-[#0E121A] border border-white/10 rounded-xl p-4 shadow-sm">
             <form onSubmit={handleCreatePost}>
               <div className="flex items-start gap-3 mb-3">
-                <ExecutivePortrait name={me?.name || 'Sarah Chen'} avatarUrl={me?.avatarUrl} size="sm" />
+                <ExecutivePortrait name={me?.name || 'Sarah Chen'} {...(me?.avatarUrl ? { avatarUrl: me.avatarUrl } : {})} size="sm" />
                 <textarea
                   value={composerText}
                   onChange={(e) => setComposerText(e.target.value)}
@@ -499,7 +509,7 @@ export const HomeFeedView: React.FC<HomeFeedViewProps> = ({
                       onClick={() => onNavigate('profile', post.authorId)}
                       className="cursor-pointer"
                     >
-                      {showPortrait ? <ExecutivePortrait name={post.authorName} avatarUrl={networkMembers.find((m) => m.id === post.authorId)?.avatarUrl} size="md" /> : <span className="home-board-initials">{post.authorName.split(' ').map(part => part[0]).join('').slice(0, 2)}</span>}
+                      {showPortrait ? (() => { const avatarUrl = networkMembers.find((m) => m.id === post.authorId)?.avatarUrl; return <ExecutivePortrait name={post.authorName} {...(avatarUrl ? { avatarUrl } : {})} size="md" />; })() : <span className="home-board-initials">{post.authorName.split(' ').map(part => part[0]).join('').slice(0, 2)}</span>}
                     </div>
                     <div>
                       <div className="flex items-center gap-2">
