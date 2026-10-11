@@ -20,7 +20,7 @@ export const generateMeetingBrief = createServerFn({ method: 'POST' })
     const answer = await gatewayChat({ system: PROMPT, messages: [{ role: 'user', content: ctx }], maxSteps: 1 })
     let parsed: any = {}
     try { parsed = JSON.parse(answer) } catch { parsed = { their_background: answer, their_current_focus: '', open_needs: [], talking_points: [], summary: '' } }
-    const { data: row, error } = await (supabase.from('meeting_briefs') as any).insert({ user_id: userId, other_user_id: data.otherUserId, ...parsed }).select().single()
+    const { data: row, error } = await (supabase as any).from('meeting_briefs').insert({ user_id: userId, other_user_id: data.otherUserId, ...parsed }).select().single()
     if (error) throw new Error(error.message)
     return row
   })
@@ -29,6 +29,6 @@ export const getLatestBrief = createServerFn({ method: 'GET' })
   .middleware([requireAuthContract])
   .validator((data: { otherUserId: string }) => data)
   .handler(async ({ data, context }) => {
-    const { data: row } = await (supabase.from('meeting_briefs') as any).select('*').eq('user_id', (context as any).userId).eq('other_user_id', data.otherUserId).order('generated_at', { ascending: false }).limit(1).maybeSingle()
+    const { data: row } = await (supabase as any).from('meeting_briefs').select('*').eq('user_id', (context as any).userId).eq('other_user_id', data.otherUserId).order('generated_at', { ascending: false }).limit(1).maybeSingle()
     return row
   })
