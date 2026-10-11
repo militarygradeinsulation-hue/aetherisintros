@@ -386,7 +386,7 @@ function AgendaTab({
   const generate = async () => {
     setGenerating(true); setErr('')
     try {
-      const a = await generateGroupAgenda({ data: { groupId, focusHint: focusHint.trim() || undefined } })
+      const a = await generateGroupAgenda({ data: { groupId, ...(focusHint.trim() ? { focusHint: focusHint.trim() } : {}) } })
       setAgenda(a)
       setFocusHint('')
     } catch (e) {
@@ -491,7 +491,7 @@ function CommitmentsTab({ groupId, userId }: { groupId: string; userId: string }
     if (!newText.trim()) return
     setBusy(true); setErr('')
     try {
-      await addCommitment({ data: { groupId, commitment: newText.trim(), dueDate: dueDate || undefined } })
+      await addCommitment({ data: { groupId, commitment: newText.trim(), ...(dueDate ? { dueDate } : {}) } })
       setNewText(''); setDueDate(''); setAdding(false)
       await load()
     } catch (e) {
