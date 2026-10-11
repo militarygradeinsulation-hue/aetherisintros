@@ -414,6 +414,13 @@
       "when": 1791469159383,
       "tag": "0059_deal_room_idempotency",
       "breakpoints": true
+    },
+    {
+      "idx": 60,
+      "version": "7",
+      "when": 1791469459383,
+      "tag": "0060_app_error_rate_limit_index",
+      "breakpoints": true
     }
   ]
 }
