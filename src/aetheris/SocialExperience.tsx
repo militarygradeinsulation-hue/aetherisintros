@@ -13,6 +13,8 @@ import { VerifiedBadge } from './badge'
 import { Btn, Face } from './ui'
 import type { JournalAttachment, Member, NetworkAsk, Post } from './social'
 import { ExecutiveHome } from './pages/ExecutiveHome'
+import { FEED_LANES, matchesLane, type FeedLane } from './business-posts'
+import { BusinessActionButton, BusinessBadge, BusinessComposer, BusinessDetailsView, FeedEmpty } from './business-posts-ui'
 
 type SignalLabel = 'INSIGHT' | 'LOOKING FOR' | 'OFFERING' | 'HIRING' | 'CAPITAL' | 'PARTNERSHIP' | 'OPPORTUNITY' | 'ACQUISITION'
 const signalTypes: SignalLabel[] = ['INSIGHT', 'LOOKING FOR', 'OFFERING', 'HIRING', 'CAPITAL', 'PARTNERSHIP', 'OPPORTUNITY', 'ACQUISITION']
@@ -77,10 +79,11 @@ function FeedPost({ post, member, lead = false }: { post: Post; member?: Member;
   const author = member?.name ?? net.profile.name ?? 'You'
   const sendComment = () => { if (!comment.trim()) return; net.addPostComment(post.id, comment.trim(), post.memberId); setComment('') }
   return <article className={lead ? 'social-feed-card is-lead' : 'social-feed-card'}>
-    <header>{member ? <button onClick={() => nav.openMember(member)}><Face person={member} portrait /><span><b>{member.name} <VerifiedBadge memberId={member.id} /></b><small>{[member.title, member.company].filter(Boolean).join(' · ')}</small><em>{post.when}</em></span></button> : <div><SelfFace /><span><b>{author}</b><small>{[net.profile.title, net.profile.company].filter(Boolean).join(' · ')}</small><em>{post.when}</em></span></div>}<span className="signal-badge">{post.kind}</span></header>
+    <header>{member ? <button onClick={() => nav.openMember(member)}><Face person={member} portrait /><span><b>{member.name} <VerifiedBadge memberId={member.id} /></b><small>{[member.title, member.company].filter(Boolean).join(' · ')}</small><em>{post.when}</em></span></button> : <div><SelfFace /><span><b>{author}</b><small>{[net.profile.title, net.profile.company].filter(Boolean).join(' · ')}</small><em>{post.when}</em></span></div>}{post.business ? <BusinessBadge kind={post.kind} /> : <span className="signal-badge">{post.kind}</span>}</header>
     <div className="social-feed-copy"><h2>{post.text}</h2><p>{post.detail}</p></div>
+    <BusinessDetailsView post={post} />
     {post.media?.length ? <div className="social-media-note"><Image size={16} /><span>{post.media.length} attached {post.media.length === 1 ? 'file' : 'files'} · open this Signal on the member profile to view</span></div> : null}
-    <footer><button className={liked ? 'active' : ''} onClick={() => net.togglePostLike(post.id)}><Heart size={16} fill={liked ? 'currentColor' : 'none'} />{liked ? 'Liked' : 'Like'}</button><button onClick={() => setCommenting(value => !value)}><MessageCircle size={16} />Comment</button><button onClick={() => net.toggleSave(post.id, 'this Signal')}><Bookmark size={16} />Save</button>{!mine && member && <button onClick={() => { const id = net.respondToPost(post.id, member.id); if (id) nav.goToThread(id) }}><MessageSquareText size={16} />Message</button>}</footer>
+    <footer><button className={liked ? 'active' : ''} onClick={() => net.togglePostLike(post.id)}><Heart size={16} fill={liked ? 'currentColor' : 'none'} />{liked ? 'Liked' : 'Like'}</button><button onClick={() => setCommenting(value => !value)}><MessageCircle size={16} />Comment</button><button onClick={() => net.toggleSave(post.id, 'this Signal')}><Bookmark size={16} />Save</button>{!mine && member && <button onClick={() => { const id = net.respondToPost(post.id, member.id); if (id) nav.goToThread(id) }}><MessageSquareText size={16} />Message</button>}<BusinessActionButton post={post} member={member} /></footer>
     {(commenting || comments.length > 0) && <div className="social-comments">{comments.map(item => <p key={item.id}><b>{net.profile.name || 'You'}</b>{item.text}<small>{item.when}</small></p>)}{commenting && <div><input value={comment} onChange={event => setComment(event.target.value)} onKeyDown={event => { if (event.key === 'Enter') sendComment() }} placeholder="Add useful context…" /><button disabled={!comment.trim()} onClick={sendComment}><Send size={14} /></button></div>}</div>}
   </article>
 }
@@ -140,9 +143,6 @@ function SocialRails() {
   </>
 }
 
-const feedLanes = ['ALL SIGNALS', 'ASKS', 'INSIGHTS', 'CAPITAL', 'HIRING', 'PARTNERSHIPS'] as const
-type FeedLane = typeof feedLanes[number]
-
 function FeedMasthead({ count, onCompose, onBrief }: { count: number; onCompose: () => void; onBrief?: () => void }) {
   const net = useNetwork()
   const first = (net.profile.name || 'you').split(' ')[0]
@@ -177,27 +177,23 @@ export function SocialHome() {
     net.asks.filter(ask => ask.visibility !== 'private' && ask.memberId !== 'me').forEach(ask => { const member = net.members.find(item => item.id === ask.memberId); if (member) rows.push({ id: `a-${ask.id}`, type: 'ask', ask, member }) })
     return rows.slice(0, 12)
   }, [net.posts, net.asks, net.members])
-  const shown = useMemo(() => feed.filter(row => {
-    if (lane === 'ALL SIGNALS') return true
-    if (lane === 'ASKS') return row.type === 'ask' || row.post?.kind === 'Strategic ask'
-    const kind = row.post?.kind
-    if (lane === 'INSIGHTS') return kind === 'Insight'
-    if (lane === 'CAPITAL') return kind === 'Raising capital'
-    if (lane === 'HIRING') return kind === 'Hiring'
-    return kind === 'Partnership'
-  }), [feed, lane])
+  const shown = useMemo(() => feed.filter(row => matchesLane(lane, {
+    type: row.type,
+    ...(row.post?.kind ? { kind: row.post.kind } : {}),
+  })), [feed, lane])
   return <div className="social-home"><nav className="home-view-switch" aria-label="Home view"><button className={mode === 'feed' ? 'active' : ''} onClick={() => setMode('feed')}>Feed</button><button className={mode === 'brief' ? 'active' : ''} onClick={() => setMode('brief')}>Executive Brief</button></nav>{mode === 'brief' ? <ExecutiveHome embedded /> : <div className="social-editorial">
     <FeedMasthead count={feed.length} onCompose={() => setComposerOpen(true)} onBrief={() => setMode('brief')} />
     <FeedTicker />
     <div className="social-home-grid"><SocialRails /><main className="social-feed">
       <SignalComposer open={composerOpen} setOpen={setComposerOpen} />
-      <nav className="feed-lanes" aria-label="Signal categories">{feedLanes.map(item => <button key={item} className={lane === item ? 'active' : ''} onClick={() => setLane(item)}>{item}</button>)}</nav>
+      <BusinessComposer />
+      <nav className="feed-lanes" aria-label="Signal categories">{FEED_LANES.map(item => <button key={item} className={lane === item ? 'active' : ''} onClick={() => setLane(item)}>{item}</button>)}</nav>
       <IntelligenceCards />
       {shown.map((row, index) => {
         if (row.type === 'post' && row.post) return row.member ? <FeedPost key={row.id} post={row.post} member={row.member} lead={index === 0} /> : <FeedPost key={row.id} post={row.post} lead={index === 0} />
         return row.ask && row.member ? <FeedAsk key={row.id} ask={row.ask} member={row.member} lead={index === 0} /> : null
       })}
-      {!shown.length && <section className="social-empty"><CircleDot size={22} /><h2>{feed.length ? 'Nothing in this category yet.' : 'Your Signal Feed is ready.'}</h2><p>{feed.length ? 'Switch back to all Signals, or share one of your own in this category.' : 'Share what you are building, looking for, or able to help with. Relevant member Signals will appear here as the network grows.'}</p></section>}
+      {!shown.length && <FeedEmpty lane={lane} hasAny={feed.length > 0} />}
     </main></div>
   </div>}</div>
 }
@@ -232,7 +228,8 @@ export function EditorialFeed({ onBrief }: { onBrief?: () => void }) {
       <div className="feed-editorial-main">
         <header className="feed-section-head"><h2 id="editorial-feed-title">Latest from your network</h2><span>{feed.length} live {feed.length === 1 ? 'Signal' : 'Signals'}</span></header>
         <SignalComposer open={composerOpen} setOpen={setComposerOpen} />
-        <nav className="feed-lanes" aria-label="Signal categories">{feedLanes.map(item => <button key={item} className={lane === item ? 'active' : ''} onClick={() => setLane(item)}>{item}</button>)}</nav>
+        <BusinessComposer />
+        <nav className="feed-lanes" aria-label="Signal categories">{FEED_LANES.map(item => <button key={item} className={lane === item ? 'active' : ''} onClick={() => setLane(item)}>{item}</button>)}</nav>
         <IntelligenceCards />
         <div className="feed-grid">
           {shown.map((row, index) => {
@@ -240,7 +237,7 @@ export function EditorialFeed({ onBrief }: { onBrief?: () => void }) {
             return row.ask && row.member ? <FeedAsk key={row.id} ask={row.ask} member={row.member} lead={index === 0} /> : null
           })}
         </div>
-        {!shown.length && <section className="social-empty"><CircleDot size={22} /><h2>{feed.length ? 'Nothing in this category yet.' : 'Your Signal Feed is ready.'}</h2><p>{feed.length ? 'Switch back to all Signals, or share one of your own in this category.' : 'Share what you are building, looking for, or able to help with. Relevant member Signals will appear here as the network grows.'}</p></section>}
+        {!shown.length && <FeedEmpty lane={lane} hasAny={feed.length > 0} />}
       </div>
       <aside className="feed-editorial-rail"><MovingNow /></aside>
     </div>
