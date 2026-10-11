@@ -321,6 +321,7 @@ export default function App({ mode = 'demo' }: { mode?: 'demo' | 'live' }) {
                 onRequestIntro={(member) => setRequestIntroTarget(member)}
                 connectedMemberIds={connectedMemberIds}
                 onToggleConnect={handleToggleConnect}
+                isLive={mode === 'live'}
               />
             </div>
           </>
