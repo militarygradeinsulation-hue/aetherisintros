@@ -86,7 +86,7 @@ function RecordOutcome({ onClose }: { onClose: () => void }) {
     influencedState: 'unquantified' as ValueState, influencedNote: '', evidence: '', confidence: '80',
   })
   return <div className="modal-wrap light-modal-wrap" onMouseDown={onClose}>
-    <div className="modal need-modal" onMouseDown={e => e.stopPropagation()}>
+    <div className="modal need-modal outcome-modal" onMouseDown={e => e.stopPropagation()}>
       <header><div><Eyebrow>RECORD OUTCOME</Eyebrow><h2>What actually happened?</h2>
         <p>Record the evidence. If the value is not known, say so.</p></div>
         <button className="icon-btn" onClick={onClose} aria-label="Close"><X size={17} /></button></header>
@@ -108,15 +108,19 @@ function RecordOutcome({ onClose }: { onClose: () => void }) {
           </select></label>
         <label><span>05 / Company</span><textarea rows={1} value={form.company} onChange={e => setForm({ ...form, company: e.target.value })} placeholder="Optional" /></label>
         <label><span>06 / Direct value</span>
+          <div className="outcome-field">
           <select value={form.directState} onChange={e => setForm({ ...form, directState: e.target.value as ValueState })}>
             <option value="known">known</option><option value="modeled">modelled</option><option value="unquantified">unquantified</option>
           </select>
-          <textarea rows={2} value={form.directNote} onChange={e => setForm({ ...form, directNote: e.target.value })} placeholder="State the number and where it came from, or why it is not measurable." /></label>
+          <textarea rows={2} value={form.directNote} onChange={e => setForm({ ...form, directNote: e.target.value })} placeholder="Number and source" aria-describedby="outcome-direct-hint" />
+          <small id="outcome-direct-hint" className="outcome-hint">State the number and where it came from, or why it is not measurable.</small></div></label>
         <label><span>07 / Influenced value</span>
+          <div className="outcome-field">
           <select value={form.influencedState} onChange={e => setForm({ ...form, influencedState: e.target.value as ValueState })}>
             <option value="known">known</option><option value="modeled">modelled</option><option value="unquantified">unquantified</option>
           </select>
-          <textarea rows={2} value={form.influencedNote} onChange={e => setForm({ ...form, influencedNote: e.target.value })} placeholder="Second-order effect, if any." /></label>
+          <textarea rows={2} value={form.influencedNote} onChange={e => setForm({ ...form, influencedNote: e.target.value })} placeholder="Second-order effect" aria-describedby="outcome-influenced-hint" />
+          <small id="outcome-influenced-hint" className="outcome-hint">Second-order effect, if any.</small></div></label>
         <label><span>08 / Evidence</span><textarea rows={2} value={form.evidence} onChange={e => setForm({ ...form, evidence: e.target.value })} placeholder="What proves this happened?" /></label>
       </div>
       <footer><Btn kind="quiet" onClick={onClose}>Cancel</Btn>
