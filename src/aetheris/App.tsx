@@ -50,7 +50,7 @@ import {
   type JournalAttachment, type Learning, type Member, type MemberRole, type NetworkAsk, type Post, type Thread,
 } from './social'
 import { useNetwork, type MemoryNote, type MeProfile, type NetworkMode } from './store'
-import { isShowcase, setShowcaseMode, showcaseOnly } from './showcase'
+import { isShowcase, showcaseOnly } from './showcase'
 import { classifyConnection, composeWarmIntro, radarLabel } from './lib/engine'
 import { useGrabScroll } from './lib/dragScroll'
 import { metaById, primaryPages, pageMeta, networkTabs, networkAdvanced, workTabs, workAdvanced, meTabs, meAdvanced } from './pageMeta'
