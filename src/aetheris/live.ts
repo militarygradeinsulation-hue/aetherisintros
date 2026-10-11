@@ -37,10 +37,11 @@ export interface LiveProfileRow {
   building: string
   open_to: string[]
   scheduling_enabled: boolean
+  verified_role: 'ceo' | 'founder' | 'owner' | 'managing_partner' | 'principal' | 'other' | null
 }
 
-const PROFILE_COLUMNS =
-  'id, name, initials, title, company, location, focus, thesis, bio, looking_for, can_help_with, want_to_meet, availability, industries, expertise, avatar_url, onboarded, created_at, what_i_do, building, open_to, scheduling_enabled'
+export const PROFILE_COLUMNS =
+  'id, name, initials, title, company, location, focus, thesis, bio, looking_for, can_help_with, want_to_meet, availability, industries, expertise, avatar_url, onboarded, created_at, what_i_do, building, open_to, scheduling_enabled, verified_role'
 
 const initialsOf = (name: string) =>
   name.trim().split(/\s+/).slice(0, 2).map(part => part[0] ?? '').join('').toUpperCase() || 'M'
@@ -49,6 +50,17 @@ const list = (value: string) => value.split(/[,·;/]+/).map(x => x.trim()).filte
 const overlap = (a: string[], b: string[]) => {
   const lower = new Set(b.map(x => x.toLowerCase()))
   return a.filter(x => lower.has(x.toLowerCase())).length
+}
+
+const memberRole = (role: LiveProfileRow['verified_role']): Member['role'] => {
+  switch (role) {
+    case 'ceo': return 'Executive'
+    case 'founder':
+    case 'owner': return 'Founder'
+    case 'managing_partner':
+    case 'principal': return 'Executive'
+    default: return 'Operator'
+  }
 }
 
 /** Honest, evidence-only scoring: derived from stated fields, never invented. */
@@ -102,7 +114,7 @@ export function profileToMember(row: LiveProfileRow, me: LiveProfileRow | null):
     nextAction: 'Open with the specific reason this relationship makes sense for both sides.',
     dontDo: 'No relationship history yet — do not assume context you have not earned.',
     confidence: row.onboarded ? 60 : 30,
-    role: 'Operator' as const,
+    role: memberRole(row.verified_role),
     industry: row.industries[0] ?? '',
     expertise: row.expertise,
     focus: row.focus,

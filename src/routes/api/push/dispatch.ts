@@ -1,4 +1,5 @@
 import { createFileRoute } from '@tanstack/react-router'
+import { logServerError } from '@/lib/server-error-log'
 
 import { isTrustedCaller } from '@/lib/app-settings.server'
 import { dispatchNotification } from '@/lib/push.server'
@@ -15,7 +16,7 @@ export const Route = createFileRoute('/api/push/dispatch')({
         try {
           return Response.json(await dispatchNotification(body.notification_id!))
         } catch (error) {
-          console.error('push dispatch failed', error)
+          await logServerError(error, request)
           return Response.json({ error: 'Dispatch failed' }, { status: 500 })
         }
       },
