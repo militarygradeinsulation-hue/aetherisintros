@@ -146,11 +146,14 @@ export async function ghostSyncIntroAccepted(opts: { theirProfile: GhostProfile;
 }
 
 export async function ghostSyncMessage(opts: { theirProfile: GhostProfile; threadId: string }): Promise<void> {
-  if (!(await ghostUpsertContact(opts.theirProfile))) return
+  const personId = await ghostUpsertContact(opts.theirProfile)
+  if (!personId) return
   await ghostLogActivity({
     memberUserId: opts.theirProfile.id, kind: 'message', threadId: opts.threadId,
     subject: `Messaged ${nameOf(opts.theirProfile)}`, detail: 'Logged automatically (once per conversation per day).',
   })
+  // Active messaging is a meaningful engagement signal — advance the lifecycle if milestones are met.
+  await ghostMaybeAdvanceLifecycle(personId)
 }
 
 const STAGE_TEXT: Record<string, string> = {
@@ -194,6 +197,8 @@ export async function ghostSyncOutcome(opts: { theirProfile: GhostProfile; intro
     detail: 'Logged automatically from the introduction outcome.',
   })
   if (opts.stage === 'outcome' && opts.category) await maybeAutoOpportunity(opts.theirProfile, opts.introId, opts.category, personId)
+  // Recording a concrete outcome (met, next step, deal) is high-signal — try to advance the lifecycle.
+  await ghostMaybeAdvanceLifecycle(personId)
 }
 
 export async function ghostSyncMeeting(opts: { theirProfile: GhostProfile; eventTitle: string; startAt: string; calendarEventId?: string }): Promise<void> {

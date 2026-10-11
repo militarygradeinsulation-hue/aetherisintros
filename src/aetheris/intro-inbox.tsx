@@ -99,6 +99,20 @@ export function IntroRequestInbox() {
           })
         } catch { /* swallow — notification failure never blocks the accept flow */ }
       })()
+    } else {
+      // Politely notify the requester their intro was not accepted — no reason is included, keeping the interaction graceful.
+      const requesterId = row.requesterId
+      void (async () => {
+        try {
+          await db.from('notifications').insert({
+            user_id: requesterId,
+            kind: 'intro_declined',
+            text: 'Your introduction request was not accepted at this time.',
+            link: '',
+            read: false,
+          })
+        } catch { /* swallow — notification failure never blocks the decline flow */ }
+      })()
     }
     await graph.logEvent('intro_request', row.id, accept ? 'accepted' : 'declined', `Introduction ${accept ? 'accepted' : 'declined'} with ${row.requesterName}`)
     setMsg(accept ? `Accepted. You and ${row.requesterName} can now open a Relationship Room.` : `Declined. ${row.requesterName} is not told why.`)
