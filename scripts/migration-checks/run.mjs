@@ -192,6 +192,9 @@ create table storage.objects (
   owner uuid,
   created_at timestamptz not null default now()
 );
+create function storage.foldername(p_name text) returns text[]
+language sql immutable as $ select string_to_array(trim(both '/' from coalesce(p_name,'')), '/') $;
+grant execute on function storage.foldername(text) to authenticated, anon, service_role;
 grant usage on schema storage to authenticated, anon, service_role;
 grant select, insert, update, delete on storage.objects to authenticated;
 grant all on storage.objects to service_role;
