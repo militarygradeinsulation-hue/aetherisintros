@@ -1,14 +1,11 @@
-import { ClientOnly, createFileRoute, redirect } from '@tanstack/react-router'
+import { ClientOnly, createFileRoute } from '@tanstack/react-router'
 
 import { SyndicationRoomsPanel } from '@/aetheris/SyndicationRoomsPanel'
+import '@/aetheris/styles.css'
 
-export const Route = createFileRoute('/syndication')({
+export const Route = createFileRoute('/_authenticated/syndication')({
   staticData: { sitemap: false },
-  beforeLoad: async ({ context }) => {
-    const { supabase } = context as { supabase: { auth: { getUser: () => Promise<{ data: { user: unknown } }> } } }
-    const { data } = await supabase.auth.getUser()
-    if (!data?.user) throw redirect({ to: '/auth' })
-  },
+  ssr: false,
   head: () => ({
     meta: [
       { title: 'Syndication Rooms — Ask Intros' },

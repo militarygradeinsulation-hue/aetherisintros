@@ -122,14 +122,14 @@ function CreateRoomForm({ onCreated, onCancel }: CreateFormProps) {
         inviteUserIds = (profiles ?? []).map((p: { id: string }) => p.id)
       }
 
-      const room = await createSyndicationRoom({
+      const room = await createSyndicationRoom({ data: {
         title,
         roomType,
         description: description || undefined,
         opportunitySize: opportunitySize || undefined,
         deadline: deadline || undefined,
         inviteUserIds,
-      })
+      } })
       onCreated(room)
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to create room.')
@@ -247,7 +247,7 @@ function RoomDetailView({ roomId, myUserId, onBack }: RoomDetailProps) {
 
   const load = async () => {
     try {
-      const d = await getRoomDetails({ roomId })
+      const d = await getRoomDetails({ data: { roomId } })
       setDetails(d)
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to load room.')
@@ -267,7 +267,7 @@ function RoomDetailView({ roomId, myUserId, onBack }: RoomDetailProps) {
   const handleVote = async (vote: Vote) => {
     setVoting(true)
     try {
-      await castVote({ roomId, vote })
+      await castVote({ data: { roomId, vote } })
       await load()
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to cast vote.')
@@ -281,7 +281,7 @@ function RoomDetailView({ roomId, myUserId, onBack }: RoomDetailProps) {
     if (!message.trim()) return
     setPosting(true)
     try {
-      await postSyndicationMessage({ roomId, body: message.trim() })
+      await postSyndicationMessage({ data: { roomId, body: message.trim() } })
       setMessage('')
       await load()
     } catch (err) {
