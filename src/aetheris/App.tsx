@@ -152,6 +152,7 @@ import { StorefrontPanel } from './StorefrontPanel'
 import { SyndicationRoomsPanel } from './SyndicationRoomsPanel'
 import { WarmReferralPanel } from './WarmReferralPanel'
 import { CurrentUserTrackRecord } from './CurrentUserTrackRecord'
+import { AcceptedIntroWorkspaces } from './AcceptedIntroWorkspaces'
 
 
 
@@ -1206,6 +1207,7 @@ function Intros({ people, select, draft }: { people: Member[]; select: (p: Membe
     <IntroRequestInbox />
     <SentIntroRequests />
     <OutcomeCheckins />
+    <AcceptedIntroWorkspaces />
     <div className="state-filters">
       {(['all', 'recommended', 'requested', 'waiting', 'accepted', 'introduced', 'conversing', 'closed'] as const).map(s =>
         <button key={s} className={state === s ? 'active' : ''} onClick={() => setState(s)}>
