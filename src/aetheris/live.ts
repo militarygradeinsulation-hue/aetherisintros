@@ -39,7 +39,7 @@ export interface LiveProfileRow {
   scheduling_enabled: boolean
 }
 
-const PROFILE_COLUMNS =
+export const PROFILE_COLUMNS =
   'id, name, initials, title, company, location, focus, thesis, bio, looking_for, can_help_with, want_to_meet, availability, industries, expertise, avatar_url, onboarded, created_at, what_i_do, building, open_to, scheduling_enabled'
 
 const initialsOf = (name: string) =>
