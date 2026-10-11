@@ -1,4 +1,3 @@
-// @ts-nocheck
 import React, { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import './styles.css';
@@ -90,7 +89,11 @@ export default function App({ mode = 'demo' }: { mode?: 'demo' | 'live' }) {
       const { data: u } = await supabase.auth.getUser();
       if (!u.user || off) return;
       const { data } = await supabase.from('profiles').select('name, avatar_url').eq('id', u.user.id).maybeSingle();
-      if (!off) setMe({ name: data?.name || u.user.email?.split('@')[0] || '', avatarUrl: data?.avatar_url || undefined });
+      if (!off) {
+        const name = data?.name || u.user.email?.split('@')[0] || '';
+        const avatarUrl = data?.avatar_url || '';
+        setMe({ name, ...(avatarUrl ? { avatarUrl } : {}) });
+      }
     };
     void loadMe();
     const t = setInterval(loadMe, 30000);
@@ -256,8 +259,8 @@ export default function App({ mode = 'demo' }: { mode?: 'demo' | 'live' }) {
         onSearchChange={setSearchQuery}
         unreadCount={mode === 'live' ? liveUnread.total : 12}
         onToggleConstellationOverlay={() => handleNavigate('bubbles')}
-        me={mode === 'live' ? me : undefined}
-        onOpenMyProfile={mode === 'live' ? () => { setClassicPage('profile'); handleNavigate('workspace'); } : undefined}
+        me={mode === 'live' ? me : null}
+        {...(mode === 'live' ? { onOpenMyProfile: () => { setClassicPage('profile'); handleNavigate('workspace'); } } : {})}
         bell={mode === 'live' ? <LiveNotificationsBell onOpen={(destination) => {
           if (destination === 'peergroups' || destination === 'events' || destination === 'deals') { setClassicPage(destination); handleNavigate('workspace'); return; }
           handleNavigate(destination);
@@ -295,7 +298,7 @@ export default function App({ mode = 'demo' }: { mode?: 'demo' | 'live' }) {
               <KeepWarmPanel onMessage={() => handleNavigate('messages')} />
               <GiveGetCard onOpenAsks={() => { setClassicPage('needs'); handleNavigate('workspace'); }} />
             </div> : undefined}
-            me={mode === 'live' ? me : undefined}
+            me={mode === 'live' ? me : null}
           />
         )}
 
