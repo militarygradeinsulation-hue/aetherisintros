@@ -13,6 +13,7 @@
  * database is unreachable, so the preview never hard-fails.
  */
 import { supabase } from '@/integrations/supabase/client'
+import { reportClientError } from '@/lib/error-report'
 import type { PrivacyScope } from './types'
 import {
   learnings as catalogueLearnings, members as catalogueMembers, networkAsks as catalogueAsks,
@@ -200,13 +201,13 @@ export async function loadUserGraph(userId: string): Promise<Partial<RemoteGraph
 
 /* ------------------------------------------------------------------ writes */
 
-const fire = (work: Promise<unknown> | PromiseLike<unknown>) => { void Promise.resolve(work).catch(error => console.error('persist failed', error)) }
+const fire = (work: Promise<unknown> | PromiseLike<unknown>, where = 'persist-write') => { void Promise.resolve(work).catch(error => reportClientError(error, where)) }
 
 export function saveRelationship(userId: string, group: RelGroup, memberId: string, on: boolean) {
   const kind = relKind[group]
   fire(on
     ? supabase.from('relationships').upsert({ user_id: userId, member_id: memberId, kind }, { onConflict: 'user_id,member_id,kind' })
-    : supabase.from('relationships').delete().eq('user_id', userId).eq('member_id', memberId).eq('kind', kind))
+    : supabase.from('relationships').delete().eq('user_id', userId).eq('member_id', memberId).eq('kind', kind), 'relationship-persist')
 }
 
 export function saveIntro(userId: string, memberId: string, status: IntroState, extra?: { reason?: string; mutualValue?: string }) {
@@ -217,7 +218,7 @@ export function saveIntro(userId: string, memberId: string, status: IntroState, 
     requester_opt_in: true, member_opt_in: status === 'introduced',
     ...(extra?.reason ? { reason: extra.reason } : {}),
     ...(extra?.mutualValue ? { mutual_value: extra.mutualValue } : {}),
-  }, { onConflict: 'user_id,member_id' }))
+  }, { onConflict: 'user_id,member_id' }), 'intro-persist')
 }
 
 export function saveLearning(userId: string, learning: Learning, memberId?: string) {
@@ -225,14 +226,14 @@ export function saveLearning(userId: string, learning: Learning, memberId?: stri
     id: learning.id, user_id: userId, kind: 'learning', category: learning.category,
     member_id: memberId ?? null, text: learning.text, source: learning.source,
     confidence: learning.confidence, scope: learning.scope, when_label: learning.when,
-  }))
+  }), 'memory-learning-persist')
 }
 
 export function saveNote(userId: string, note: MemoryNote) {
   fire(supabase.from('memories').insert({
     id: note.id, user_id: userId, kind: 'note', category: 'People', member_id: note.personId,
     text: note.text, scope: note.scope, when_label: note.createdAt, source: 'Private note',
-  }))
+  }), 'memory-note-persist')
 }
 
 export function savePost(userId: string, post: Post) {
@@ -240,7 +241,7 @@ export function savePost(userId: string, post: Post) {
     id: post.id, author_id: userId, kind: post.kind, text: post.text,
     detail: post.detail, when_label: post.when, response_count: 0,
     media: (post.media ?? []) as never, visibility: post.visibility ?? 'network',
-  }))
+  }), 'post-persist')
 }
 
 export function saveAsk(userId: string, ask: NetworkAsk) {
@@ -248,32 +249,32 @@ export function saveAsk(userId: string, ask: NetworkAsk) {
     id: ask.id, author_id: userId, ask: ask.ask, detail: ask.detail, why_now: ask.whyNow,
     offer: ask.offer, industry: ask.industry, location: ask.location, urgency: ask.urgency,
     posted: ask.posted, response_count: 0, visibility: ask.visibility,
-  }))
+  }), 'ask-persist')
 }
 
 export function saveAskResponse(userId: string, askId: string, text: string) {
-  fire(supabase.from('ask_responses').insert({ user_id: userId, ask_id: askId, text }))
+  fire(supabase.from('ask_responses').insert({ user_id: userId, ask_id: askId, text }), 'ask-response-persist')
 }
 
 export function saveThread(userId: string, thread: Thread) {
   fire(supabase.from('threads').insert({
     id: thread.id, user_id: userId, member_id: thread.memberId,
     intro_context: thread.introContext, commitment: thread.commitment, suggested: thread.suggested,
-  }))
+  }), 'thread-persist')
 }
 
 export function saveMessage(userId: string, threadId: string, message: { id: string; text: string; at: string }) {
   fire(supabase.from('messages').insert({
     id: message.id, user_id: userId, thread_id: threadId, sender: 'me',
     text: message.text, at_label: message.at,
-  }))
+  }), 'message-persist')
 }
 
 /** Remaining member-owned settings (profile answers, autonomy, needs, events). */
 export function saveDoc(userId: string, doc: Record<string, unknown>) {
-  fire(supabase.from('preferences').upsert({ user_id: userId, data: doc as never }, { onConflict: 'user_id' }))
+  fire(supabase.from('preferences').upsert({ user_id: userId, data: doc as never }, { onConflict: 'user_id' }), 'preferences-persist')
 }
 
 export function saveProfileFields(userId: string, fields: Record<string, unknown>) {
-  fire(supabase.from('profiles').update(fields as never).eq('id', userId))
+  fire(supabase.from('profiles').update(fields as never).eq('id', userId), 'profile-persist')
 }
