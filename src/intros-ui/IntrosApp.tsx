@@ -27,7 +27,7 @@ import { ReviewIntroModal } from './components/modals/ReviewIntroModal';
 import { ScheduleMeetingModal } from './components/modals/ScheduleMeetingModal';
 import { FloatingConnectionField } from './components/shared/FloatingConnectionField';
 import { X, Orbit } from 'lucide-react';
-import ClassicApp, { AetherisAssistant } from '@/aetheris/App';
+import { AetherisAppSurface, AetherisAssistantSurface } from '@/aetheris/App';
 import { VoiceBar } from '@/aetheris/VoiceBar';
 import { SelectionReader } from '@/aetheris/SelectionReader';
 import { LiveMessagesView } from './views/LiveMessagesView';
@@ -280,7 +280,7 @@ export default function App({ mode = 'demo' }: { mode?: 'demo' | 'live' }) {
             onAddPost={handleAddPost}
             networkMembers={members}
             isLive={mode === 'live'}
-            socialFeed={mode === 'live' ? <div className="ix-classic"><ClassicApp mode="live" feedOnly /></div> : undefined}
+            socialFeed={mode === 'live' ? <div className="ix-classic"><AetherisAppSurface  feedOnly  /></div> : undefined}
             actionQueue={mode === 'live' ? <div className="rc-stack">
               <ActivationChecklist onOpen={(target) => {
                 if (target === 'intros') { handleNavigate('intros'); return; }
@@ -302,7 +302,7 @@ export default function App({ mode = 'demo' }: { mode?: 'demo' | 'live' }) {
         {(activePage === 'people' || activePage === 'intros') && (
           <>
             {mode === 'live'
-              ? <div className="ix-classic"><InviteCard /><ClassicApp key="live-intros" mode={mode} startPage="intros" /></div>
+              ? <div className="ix-classic"><InviteCard /><AetherisAppSurface key="live-intros"  startPage="intros"  /></div>
               : <IntrosHubView
                   introRequests={introRequests}
                   networkMembers={members}
@@ -357,7 +357,7 @@ export default function App({ mode = 'demo' }: { mode?: 'demo' | 'live' }) {
           />
         )}
 
-        {activePage === 'insights' && <div className="ix-classic"><ClassicApp key="live-insights" mode={mode} startPage="insights" /></div>}
+        {activePage === 'insights' && <div className="ix-classic"><AetherisAppSurface key="live-insights"  startPage="insights"  /></div>}
         {false && (
           <InsightsDashboardView
             onNavigate={handleNavigate}
@@ -366,16 +366,16 @@ export default function App({ mode = 'demo' }: { mode?: 'demo' | 'live' }) {
           />
         )}
 
-        {activePage === 'news' && <div className="ix-classic"><ClassicApp key="news" mode={mode} startPage="news" /></div>}
-        {activePage === 'memory' && <div className="ix-classic"><ClassicApp key="memory" mode={mode} startPage="memory" /></div>}
-        {activePage === 'meetings' && <div className="ix-classic"><ClassicApp key="meetings" mode={mode} startPage="meetings" /></div>}
-        {activePage === 'work' && <div className="ix-classic"><ClassicApp key="work" mode={mode} startPage="work" /></div>}
+        {activePage === 'news' && <div className="ix-classic"><AetherisAppSurface key="news"  startPage="news"  /></div>}
+        {activePage === 'memory' && <div className="ix-classic"><AetherisAppSurface key="memory"  startPage="memory"  /></div>}
+        {activePage === 'meetings' && <div className="ix-classic"><AetherisAppSurface key="meetings"  startPage="meetings"  /></div>}
+        {activePage === 'work' && <div className="ix-classic"><AetherisAppSurface key="work"  startPage="work"  /></div>}
         {activePage === 'workspace' && <div className="ix-classic">
           <div className="ix-tools">
             {([['memory','Memory'],['crm','CRM'],['diagnostic','Company report'],['pocket','Pocket'],['providers','Trusted Providers'],['needs','Needs'],['companies','Companies'],['opportunities','Opportunities'],['deals','Deals'],['calendar','Calendar'],['grid','Grid'],['circles','Circles'],['peergroups','Peer groups'],['events','Events'],['profile','My profile'],['preferences','Settings']] as const).map(([id, label]) =>
               <button key={id} className={classicPage === id ? 'on' : ''} onClick={() => setClassicPage(id)}>{label}</button>)}
           </div>
-          <ClassicApp key={classicPage} mode={mode} startPage={classicPage as any} />
+          <AetherisAppSurface key={classicPage}  startPage={classicPage as any}  />
         </div>}
       </main>
 
@@ -405,8 +405,7 @@ export default function App({ mode = 'demo' }: { mode?: 'demo' | 'live' }) {
         memberTitle={scheduleMeetingTarget?.title || ''}
       />
       {!classicPages.includes(activePage) && (<>
-        <AetherisAssistant
-          mode={mode}
+        <AetherisAssistantSurface
           page={activePage}
           onNavigate={(p) => {
             if ((SHELL_PAGES as string[]).includes(p)) handleNavigate(p as ActivePage);
