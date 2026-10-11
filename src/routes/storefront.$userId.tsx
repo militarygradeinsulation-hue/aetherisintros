@@ -8,7 +8,7 @@ export const Route = createFileRoute('/storefront/$userId')({
   head: () => ({
     meta: [
       { title: 'Member Storefront — Ask Intros' },
-      { name: 'description', content: 'View a member's services, what they seek, and send a structured proposal.' },
+      { name: 'description', content: "View a member's services, what they seek, and send a structured proposal." },
       { property: 'og:title', content: 'Member Storefront — Ask Intros' },
       { property: 'og:description', content: 'Services, partnership interests and proposal intake for an Ask Intros member.' },
       { property: 'og:type', content: 'website' },
