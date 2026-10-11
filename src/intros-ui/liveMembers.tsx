@@ -1,5 +1,5 @@
 import { useEffect } from 'react'
-import { NetworkProvider, useNetwork } from '@/aetheris/store'
+import { useNetwork } from '@/aetheris/store'
 import type { Member, MemberRole } from '@/aetheris/social'
 import type { NetworkMember } from './networkData'
 
@@ -47,5 +47,5 @@ function Bridge({ onMembers }: { onMembers: (m: NetworkMember[]) => void }) {
 }
 
 export function LiveMembers({ onMembers }: { onMembers: (m: NetworkMember[]) => void }) {
-  return <NetworkProvider mode="live"><Bridge onMembers={onMembers} /></NetworkProvider>
+  return <Bridge onMembers={onMembers} />
 }
