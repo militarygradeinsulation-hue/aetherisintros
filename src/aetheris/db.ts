@@ -13,6 +13,7 @@
  * database is unreachable, so the preview never hard-fails.
  */
 import { supabase } from '@/integrations/supabase/client'
+import { parseBusinessDetails } from './business-posts'
 import { reportClientError } from '@/lib/error-report'
 import type { PrivacyScope } from './types'
 import {
@@ -49,6 +50,11 @@ export interface RemoteGraph {
 
 const relKind = { connections: 'connection', follows: 'follow', saved: 'saved' } as const
 type RelGroup = keyof typeof relKind
+
+function businessOf(kind: string, raw: unknown) {
+  const business = parseBusinessDetails(kind, raw)
+  return business ? { business } : {}
+}
 
 const demoAliases: Record<string, string> = {
   'Gary Frey': 'Adrian Vale', 'Maya Chen': 'Mina Park', 'Scott Kelley': 'Nolan Pierce',
@@ -184,7 +190,7 @@ export async function loadUserGraph(userId: string): Promise<Partial<RemoteGraph
         id: m.id, personId: m.member_id ?? 'me', text: m.text,
         scope: m.scope as PrivacyScope, createdAt: m.when_label ?? '',
       })),
-      ownPosts: (ownPosts.data ?? []).map(r => ({ id: r.id, memberId: 'me', kind: r.kind as Post['kind'], text: r.text, detail: r.detail ?? '', when: r.when_label, responses: r.response_count, media: (r.media ?? []) as unknown as Post['media'], visibility: (r.visibility ?? 'network') as Post['visibility'] })),
+      ownPosts: (ownPosts.data ?? []).map(r => ({ id: r.id, memberId: 'me', kind: r.kind as Post['kind'], text: r.text, detail: r.detail ?? '', when: r.when_label, responses: r.response_count, media: (r.media ?? []) as unknown as Post['media'], visibility: (r.visibility ?? 'network') as Post['visibility'], ...businessOf(r.kind, r.business) })),
       ownAsks: (ownAsks.data ?? []).map(r => ({ id: r.id, memberId: 'me', ask: r.ask, detail: r.detail, whyNow: r.why_now, offer: r.offer, industry: r.industry, location: r.location, urgency: r.urgency as NetworkAsk['urgency'], posted: r.posted, responses: r.response_count, visibility: r.visibility as NetworkAsk['visibility'], mine: true })),
       askResponses,
       ownThreads: (threadRows.data ?? []).map(r => ({
@@ -241,6 +247,7 @@ export function savePost(userId: string, post: Post) {
     id: post.id, author_id: userId, kind: post.kind, text: post.text,
     detail: post.detail, when_label: post.when, response_count: 0,
     media: (post.media ?? []) as never, visibility: post.visibility ?? 'network',
+    ...(post.business ? { business: post.business as never } : {}),
   }), 'post-persist')
 }
 
