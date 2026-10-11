@@ -8,6 +8,7 @@
  */
 import { supabase } from '@/integrations/supabase/client'
 import { reportClientError } from '@/lib/error-report'
+import { parseBusinessDetails } from './business-posts'
 import { calculateConnectionScore, determineRadarState } from './lib/engine'
 import type { Directory } from './db'
 import type { Member, NetworkAsk, Post, Thread } from './social'
@@ -155,7 +156,7 @@ export async function loadMyProfile(userId: string): Promise<LiveProfileRow | nu
  * Members = other approved profiles (RLS already restricts this to approved
  * accounts). Posts/asks = real authored rows. Threads = real conversations.
  */
-export async function loadLiveDirectory(userId: string): Promise<{ directory: Directory; me: LiveProfileRow | null }> {
+export async function loadLiveDirectory(userId: string): Promise<{ directory: Directory; me: LiveProfileRow | null; failed: boolean }> {
   try {
     const [profileRows, postRows, askRows, threadRows] = await Promise.all([
       supabase.from('profiles').select(PROFILE_COLUMNS),
@@ -211,6 +212,7 @@ export async function loadLiveDirectory(userId: string): Promise<{ directory: Di
       responses: r.response_count ?? 0,
       media: (r.media ?? []) as unknown as Post['media'],
       visibility: (r.visibility ?? 'network') as Post['visibility'],
+      ...(parseBusinessDetails(r.kind, r.business) ? { business: parseBusinessDetails(r.kind, r.business)! } : {}),
     }))
 
     const asks: NetworkAsk[] = (askRows.data ?? []).map(r => ({
@@ -229,10 +231,10 @@ export async function loadLiveDirectory(userId: string): Promise<{ directory: Di
       ...(r.author_id === userId ? { mine: true } : {}),
     }))
 
-    return { directory: { members, posts, asks, signals: [], threads, learnings: [] }, me }
+    return { directory: { members, posts, asks, signals: [], threads, learnings: [] }, me, failed: false }
   } catch (error) {
     reportClientError(error, 'live-directory-read')
-    return { directory: emptyDirectory, me: null }
+    return { directory: emptyDirectory, me: null, failed: true }
   }
 }
 
