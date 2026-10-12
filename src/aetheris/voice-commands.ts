@@ -24,6 +24,7 @@ export const VOICE_PAGES: Array<{ page: string; label: string; words: string[] }
   { page: 'calendar', label: 'Calendar', words: ['calendar', 'schedule', 'agenda'] },
   { page: 'crm', label: 'CRM', words: ['crm', 'pipeline', 'contacts'] },
   { page: 'deals', label: 'Deals', words: ['deals', 'deal rooms', 'deal room', 'my deals', 'engagements'] },
+  { page: 'workspaces', label: 'Workspaces', words: ['workspaces', 'workspace', 'business workspace', 'private workspace'] },
   { page: 'companies', label: 'Companies', words: ['companies', 'company list'] },
   { page: 'opportunities', label: 'Opportunities', words: ['opportunities'] },
   { page: 'agentinbox', label: 'Agent inbox', words: ['agent inbox', 'agent requests', 'ai inbox'] },
