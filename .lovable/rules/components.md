@@ -2,16 +2,34 @@
 
 Component catalog for **Ask Intros**. Import all components from `@ws-gmhcx8w6bqvecbtkycud/c1248cd8-77de-4eaa-8d9d-e7da71e70ae9`.
 
+### AetherisAppSurface
+
+```ts
+import { AetherisAppSurface } from "@ws-gmhcx8w6bqvecbtkycud/c1248cd8-77de-4eaa-8d9d-e7da71e70ae9"
+```
+
 ### AetherisAssistant
 
 ```ts
 import { AetherisAssistant } from "@ws-gmhcx8w6bqvecbtkycud/c1248cd8-77de-4eaa-8d9d-e7da71e70ae9"
 ```
 
+### AetherisAssistantSurface
+
+```ts
+import { AetherisAssistantSurface } from "@ws-gmhcx8w6bqvecbtkycud/c1248cd8-77de-4eaa-8d9d-e7da71e70ae9"
+```
+
 ### App
 
 ```ts
 import App from "@ws-gmhcx8w6bqvecbtkycud/c1248cd8-77de-4eaa-8d9d-e7da71e70ae9"
+```
+
+### BusinessAnalystPanel
+
+```ts
+import BusinessAnalystPanel from "@ws-gmhcx8w6bqvecbtkycud/c1248cd8-77de-4eaa-8d9d-e7da71e70ae9"
 ```
 
 ### ConstellationField
