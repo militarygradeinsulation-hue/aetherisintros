@@ -67,6 +67,26 @@ BEGIN
   END IF;
 END $$;
 
+-- Direct table access to profiles is deliberately disabled in production.
+-- An authenticated storage policy therefore cannot SELECT profiles itself.
+-- Expose only the boolean visibility decision through a fixed-path definer.
+CREATE OR REPLACE FUNCTION public.is_network_avatar_visible(p_owner_path text)
+RETURNS boolean
+LANGUAGE sql
+STABLE
+SECURITY DEFINER
+SET search_path = ''
+AS $avatar_visibility$
+  SELECT EXISTS (
+    SELECT 1 FROM public.profiles p
+    WHERE p.id::text = p_owner_path
+      AND p.visibility IN ('network', 'public')
+      AND public.is_approved_member(p.id)
+  );
+$avatar_visibility$;
+REVOKE ALL ON FUNCTION public.is_network_avatar_visible(text) FROM PUBLIC, anon;
+GRANT EXECUTE ON FUNCTION public.is_network_avatar_visible(text) TO authenticated;
+
 -- Buckets remain private. Owners may read their own avatars even before
 -- approval. Everyone else must be an approved member viewing an approved,
 -- network-visible member; pending/suspended accounts gain no blanket access.
@@ -83,13 +103,7 @@ BEGIN
         split_part(name, '/', 1) = auth.uid()::text
         OR (
           public.is_approved_member(auth.uid())
-          AND EXISTS (
-            SELECT 1
-            FROM public.profiles p
-            WHERE p.id::text = split_part(storage.objects.name, '/', 1)
-              AND p.visibility IN ('network', 'public')
-              AND public.is_approved_member(p.id)
-          )
+          AND public.is_network_avatar_visible(split_part(name, '/', 1))
         )
       )
     );
