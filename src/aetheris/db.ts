@@ -242,21 +242,29 @@ export function saveNote(userId: string, note: MemoryNote) {
   }), 'memory-note-persist')
 }
 
-export function savePost(userId: string, post: Post) {
-  fire(supabase.from('posts').insert({
+export async function savePost(userId: string, post: Post): Promise<void> {
+  const { error } = await supabase.from('posts').insert({
     id: post.id, author_id: userId, kind: post.kind, text: post.text,
     detail: post.detail, when_label: post.when, response_count: 0,
     media: (post.media ?? []) as never, visibility: post.visibility ?? 'network',
     ...(post.business ? { business: post.business as never } : {}),
-  }), 'post-persist')
+  })
+  if (error) {
+    reportClientError(error, 'post-persist')
+    throw new Error('Your post could not be saved. Check your connection and try again.')
+  }
 }
 
-export function saveAsk(userId: string, ask: NetworkAsk) {
-  fire(supabase.from('asks').insert({
+export async function saveAsk(userId: string, ask: NetworkAsk): Promise<void> {
+  const { error } = await supabase.from('asks').insert({
     id: ask.id, author_id: userId, ask: ask.ask, detail: ask.detail, why_now: ask.whyNow,
     offer: ask.offer, industry: ask.industry, location: ask.location, urgency: ask.urgency,
     posted: ask.posted, response_count: 0, visibility: ask.visibility,
-  }), 'ask-persist')
+  })
+  if (error) {
+    reportClientError(error, 'ask-persist')
+    throw new Error('Your need could not be saved. Check your connection and try again.')
+  }
 }
 
 export function saveAskResponse(userId: string, askId: string, text: string) {
