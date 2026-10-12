@@ -554,6 +554,13 @@
       "when": 1791800000000,
       "tag": "0079_lovable_scan_access_hardening",
       "breakpoints": true
+    },
+    {
+      "idx": 80,
+      "version": "7",
+      "when": 1791810100000,
+      "tag": "0080_member_intro_read_contract",
+      "breakpoints": true
     }
   ]
 }

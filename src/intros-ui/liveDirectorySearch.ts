@@ -6,7 +6,7 @@ import {
   EMPTY_FILTERS, PAGE_SIZE, groupFacets, searchArgs, totalOf,
   type FacetGroups, type MemberSearchRow,
 } from '@/aetheris/directory-filters'
-import { loadMyProfile, PROFILE_COLUMNS, profileToMember, type LiveProfileRow } from '@/aetheris/live'
+import { loadMyProfile, loadVisibleMemberProfiles, profileToMember, type LiveProfileRow } from '@/aetheris/live'
 import { toNetworkMember } from './liveMembers'
 import type { NetworkMember } from './networkData'
 
@@ -81,11 +81,8 @@ async function loadPage(filters: LiveDirectoryFilters, page: number): Promise<Di
       }
     }
 
-    const profiles = await supabase.from('profiles').select(PROFILE_COLUMNS).in('id', ids)
-    if (profiles.error) throw profiles.error
-    const byId = new Map(
-      ((profiles.data ?? []) as unknown as LiveProfileRow[]).map(profile => [profile.id, profile]),
-    )
+    const profiles = await loadVisibleMemberProfiles(ids, PAGE_SIZE)
+    const byId = new Map<string, LiveProfileRow>(profiles.map(profile => [profile.id, profile]))
 
     const members = rows.flatMap(row => {
       const profile = byId.get(String(row.id))
