@@ -16,14 +16,14 @@ Ask Intros wins when every meaningful interaction is real, permissioned, durable
 
 ### 1. Professional / executive layer persists locally
 
-`src/aetheris/domain/pro-repository.ts` always selects `createLocalProLayer()`. The professional layer contains Passport, proof of work, capital, marketplace, private vault, intelligence rooms and concierge records. Its schema exists only as `src/aetheris/domain/schema.sql`; it is not represented by an applied migration family or a production Supabase gateway.
+`src/aetheris/domain/pro-repository.ts` always selects `createLocalProLayer()`. The professional layer is account-durable through the `member_workspace_state` sync blob, but it is not normalized into product tables or served through a production Supabase gateway. It contains Passport, proof of work, capital, marketplace, private vault, intelligence rooms and concierge records. Its schema exists only as `src/aetheris/domain/schema.sql`; it is not represented by an applied migration family.
 
-Risk: a member can create work that survives only on their device while the interface resembles an enterprise network system.
+Risk: a member can retain work in their account, but it cannot safely become shared, queryable, permissioned network infrastructure while the interface resembles an enterprise system.
 
 Required completion:
 1. Create versioned migrations for the required normalized tables and owner/member scopes.
 2. Add RLS, append-only audit events and RPC-only writes for consequential actions.
-3. Implement the Supabase TableGateway and choose it for authenticated live members.
+3. Implement the Supabase TableGateway and choose it for authenticated live members; migrate existing workspace-state records through a member-reviewed import.
 4. Migrate existing device state through a member-reviewed import and add browser persistence/authorization tests.
 
 ### 2. Two social surfaces are not one feed
