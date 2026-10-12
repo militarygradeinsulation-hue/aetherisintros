@@ -53,7 +53,8 @@ export default async ({ ok, as, svc, A, B, C, ADMIN }) => {
   ok((await as(B, `select id from public.syndication_messages where room_id = '${RID}'`)).rows?.length === 2, 'all members read all messages')
 
   // Message authorship: user_id must match auth.uid().
-  ok(!!(await as(A, `insert into public.syndication_messages (room_id, user_id, body) values ('${RID}', '${B}', 'Forged')`)).error, 'cannot post as another user')
+  r = await as(A, `insert into public.syndication_messages (room_id, user_id, body) values ('${RID}', '${B}', 'Forged') returning user_id`)
+  ok(!r.error && r.rows?.[0]?.user_id === A, 'forged message authorship is normalized to the caller')
 
   // Room status transitions.
   r = await as(A, `update public.syndication_rooms set status = 'decided', decision = 'Going in — all committed $500k' where id = '${RID}' returning status`)
