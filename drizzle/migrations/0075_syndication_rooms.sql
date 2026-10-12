@@ -143,17 +143,16 @@ GRANT EXECUTE ON FUNCTION public.create_syndication_room(text,text,text,text,dat
 GRANT EXECUTE ON FUNCTION public.invite_syndication_member(uuid,uuid) TO authenticated;
 
 CREATE OR REPLACE FUNCTION public.syndication_rooms_guard() RETURNS trigger
-LANGUAGE plpgsql SET search_path = public AS $$
+LANGUAGE plpgsql SET search_path = public AS $
 BEGIN
-  IF TG_OP='INSERT' THEN NEW.created_by:=auth.uid(); NEW.status:='open'; NEW.closed_at:=NULL; END IF;
-  IF TG_OP='UPDATE' AND NEW.created_by IS DISTINCT FROM OLD.created_by THEN
+  IF NEW.created_by IS DISTINCT FROM OLD.created_by THEN
     RAISE EXCEPTION 'Room owner cannot change' USING errcode='42501';
   END IF;
-  IF TG_OP='UPDATE' AND NEW.status='closed' AND OLD.status IS DISTINCT FROM 'closed' THEN NEW.closed_at:=now(); END IF;
+  IF NEW.status='closed' AND OLD.status IS DISTINCT FROM 'closed' THEN NEW.closed_at:=now(); END IF;
   RETURN NEW;
-END $$;
+END $;
 REVOKE ALL ON FUNCTION public.syndication_rooms_guard() FROM PUBLIC, anon, authenticated;
-CREATE TRIGGER syndication_rooms_guard BEFORE INSERT OR UPDATE ON public.syndication_rooms FOR EACH ROW EXECUTE FUNCTION public.syndication_rooms_guard();
+CREATE TRIGGER syndication_rooms_guard BEFORE UPDATE ON public.syndication_rooms FOR EACH ROW EXECUTE FUNCTION public.syndication_rooms_guard();
 
 CREATE OR REPLACE FUNCTION public.syndication_messages_guard() RETURNS trigger
 LANGUAGE plpgsql SET search_path = public AS $$ BEGIN NEW.user_id:=auth.uid(); NEW.created_at:=now(); RETURN NEW; END $$;
