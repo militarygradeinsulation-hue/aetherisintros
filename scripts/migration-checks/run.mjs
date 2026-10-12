@@ -189,9 +189,19 @@ alter table public.directory_contacts enable row level security;
 create policy "Members can search contacts" on public.directory_contacts for select to authenticated using (true);
 create table public.circle_memberships (id uuid primary key default gen_random_uuid(), circle_id text not null, user_id uuid not null references auth.users on delete cascade, role text not null default 'member', created_at timestamptz not null default now(), unique (circle_id, user_id));
 create table public.crm_tasks (id uuid primary key default gen_random_uuid(), owner_id uuid);
-create function public.is_live_member() returns boolean language sql stable security definer set search_path = public as $$ select exists (select 1 from public.profiles where id = auth.uid()) $$;
+create function public.is_live_member() returns boolean language sql stable security definer set search_path = public as $ select exists (select 1 from public.profiles where id = auth.uid()) $;
 revoke all on function public.is_live_member() from public, anon;
 grant execute on function public.is_live_member() to authenticated;
+
+grant select, insert, update, delete on public.posts to authenticated;
+alter table public.posts enable row level security;
+create policy "Members read network posts" on public.posts for select to authenticated
+  using (author_id = auth.uid() or (visibility = 'network' and (is_demo = true or author_id is null or public.is_live_member())));
+create policy "live posts insert" on public.posts for insert to authenticated
+  with check (auth.uid() = author_id and is_demo = false and public.is_live_member());
+create policy "own posts update" on public.posts for update to authenticated
+  using (auth.uid() = author_id) with check (auth.uid() = author_id);
+create policy "own posts delete" on public.posts for delete to authenticated using (auth.uid() = author_id);
 
 -- Supabase Realtime's authorization surface: private channels check RLS on realtime.messages,
 -- with the channel name available as realtime.topic().
