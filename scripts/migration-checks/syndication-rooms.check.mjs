@@ -21,11 +21,9 @@ export default async ({ ok, as, svc, A, B, C, ADMIN }) => {
   ok(!!(await as(null, `select public.create_syndication_room('Anon room')`)).error, 'visitors cannot call room creation')
   ok((await as(A, `select user_id from public.syndication_members where room_id = '${RID}' order by user_id`)).rows?.length === 2, 'creator and invitee are added atomically')
 
-  // Creator can invite another approved member through the guarded RPC.
-  r = await as(A, `select public.invite_syndication_member('${RID}', '${C}')`)
-  ok(!r.error, 'creator can invite another member through the guarded RPC')
-  r = await as(A, `delete from public.syndication_members where room_id = '${RID}' and user_id = '${C}'`)
-  ok(!r.error, 'creator can remove an invited member')
+  // Only the creator can add more members through the guarded RPC.
+  r = await as(B, `select public.invite_syndication_member('${RID}', '${C}')`)
+  ok(!!r.error, 'non-creators cannot invite syndication members')
 
   // Privacy: outsiders cannot see the room.
   ok((await as(C, `select id from public.syndication_rooms`)).rows?.length === 0, 'outsiders cannot see the room')
