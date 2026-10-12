@@ -1,10 +1,9 @@
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { BarChart3, Handshake, Network, Store, UsersRound } from 'lucide-react'
 
-import { supabase } from '@/integrations/supabase/client'
 import BusinessAnalystPanel from '../BusinessAnalystPanel'
 import { WarmReferralPanel } from '../WarmReferralPanel'
-import { TrackRecordDashboard } from '../TrackRecordDashboard'
+import { CurrentUserTrackRecord } from '../CurrentUserTrackRecord'
 import { StorefrontPanel } from '../StorefrontPanel'
 import { SyndicationRoomsPanel } from '../SyndicationRoomsPanel'
 import { Eyebrow } from '../ui'
@@ -21,16 +20,6 @@ const tabs: Array<{ id: WorkbenchTab; label: string; icon: typeof BarChart3; cop
 
 export function ExecutiveWorkPage() {
   const [tab, setTab] = useState<WorkbenchTab>('analyst')
-  const [userId, setUserId] = useState<string | null>(null)
-
-  useEffect(() => {
-    let live = true
-    void supabase.auth.getUser().then(({ data }) => {
-      if (live) setUserId(data.user?.id ?? null)
-    })
-    return () => { live = false }
-  }, [])
-
   const current = tabs.find(item => item.id === tab) ?? tabs[0]!
 
   return <section className="executive-workbench">
@@ -54,7 +43,7 @@ export function ExecutiveWorkPage() {
     <div className="executive-workbench-body">
       {tab === 'analyst' && <BusinessAnalystPanel />}
       {tab === 'referrals' && <WarmReferralPanel />}
-      {tab === 'track' && (userId ? <TrackRecordDashboard userId={userId} /> : <p className="ops-note">Sign in to view your Track Record.</p>)}
+      {tab === 'track' && <CurrentUserTrackRecord />}
       {tab === 'storefront' && <StorefrontPanel />}
       {tab === 'syndication' && <SyndicationRoomsPanel />}
     </div>
