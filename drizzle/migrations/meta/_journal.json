@@ -540,6 +540,13 @@
       "when": 1791469759399,
       "tag": "0077_peer_group_agendas",
       "breakpoints": true
+    },
+    {
+      "idx": 78,
+      "version": "7",
+      "when": 1791469759400,
+      "tag": "0078_syndication_creator_insert_visibility",
+      "breakpoints": true
     }
   ]
 }
