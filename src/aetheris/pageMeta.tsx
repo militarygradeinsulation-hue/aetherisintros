@@ -327,6 +327,13 @@ const basePages: BaseMeta[] = [
     next: 'Open a room from an accepted introduction, a reply to your ask or a conversation.',
     why: 'Only people who accept an invitation see a room. Nothing is shared with the wider network.',
   }, ['deals', 'deal rooms', 'my deals', 'engagements', 'proposals', 'milestones', 'transactions']),
+  m('workspaces', 'Workspaces', Briefcase, 'OPPORTUNITY & EXECUTION', 'Private two-party spaces for shaping scope, approvals, delivery and next actions before or alongside a deal.', {
+    does: 'Turns an accepted introduction or active conversation into a private working space without copying the conversation itself.',
+    look: 'Invitations, scope, roles, approvals, next actions, delivery status and anything waiting on you.',
+    changes: 'Both parties approve the business roles and progression; delivery and rework remain explicit.',
+    next: 'Open the workspace attached to the conversation you are actively moving.',
+    why: 'A Workspace is collaborative working context. A Deal Room is the transaction record. They stay separate on purpose.',
+  }, ['workspace', 'business workspace', 'private work', 'scope', 'delivery', 'collaboration']),
   m('rooms', 'Opportunity Rooms', DoorOpen, 'OPPORTUNITY & EXECUTION', 'Small working rooms around a single opportunity.', {
     does: 'Creates small working rooms around one opportunity.',
     look: 'Stage, participants and the next concrete action.',
