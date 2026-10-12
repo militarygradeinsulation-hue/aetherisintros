@@ -50,6 +50,7 @@ BEGIN
       p.id = auth.uid()
       OR (
         public.is_live_member()
+        AND public.is_approved_member(auth.uid())
         AND public.is_approved_member(p.id)
         AND p.onboarded
         AND coalesce(p.visibility, 'network') IN ('network', 'public')
@@ -75,7 +76,7 @@ CREATE OR REPLACE FUNCTION public.my_intro_participant_names(
 LANGUAGE plpgsql STABLE SECURITY DEFINER SET search_path = ''
 AS $function$
 BEGIN
-  IF auth.uid() IS NULL OR NOT public.is_live_member() THEN
+  IF auth.uid() IS NULL OR NOT public.is_live_member() OR NOT public.is_approved_member(auth.uid()) THEN
     RAISE EXCEPTION 'Verified membership required' USING ERRCODE = '42501';
   END IF;
   IF coalesce(cardinality(p_intro_ids), 0) > 100 THEN
