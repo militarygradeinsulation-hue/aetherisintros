@@ -10,7 +10,7 @@ export type Database = {
   // Allows to automatically instantiate createClient with right options
   // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
   __InternalSupabase: {
-    PostgrestVersion: "14.5"
+    PostgrestVersion: "14.17"
   }
   public: {
     Tables: {
@@ -6290,6 +6290,10 @@ export type Database = {
       is_meeting_participant: { Args: { p_meeting: string }; Returns: boolean }
       is_member_event_host: { Args: { p_event: string }; Returns: boolean }
       is_member_event_invitee: { Args: { p_event: string }; Returns: boolean }
+      is_network_avatar_visible: {
+        Args: { p_owner_path: string }
+        Returns: boolean
+      }
       is_org_admin: { Args: { p_org: string }; Returns: boolean }
       is_org_member: { Args: { p_org: string }; Returns: boolean }
       is_peer_group_facilitator: { Args: { p_group: string }; Returns: boolean }
