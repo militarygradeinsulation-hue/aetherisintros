@@ -47,12 +47,16 @@ export function BusinessComposer() {
   }
   const attrs = (key: keyof BusinessDraft) => ({ id: `${id}-${key}`, 'aria-invalid': errors[key] ? true : undefined, 'aria-describedby': errors[key] ? `${id}-${key}-err` : undefined })
 
-  const submit = () => {
+  const submit = async () => {
     const result = validateBusinessDraft(kind, draft)
     if (!result.ok) { setErrors(result.errors); setNote({ tone: 'error', text: 'Fix the highlighted fields and try again.' }); return }
     setErrors({})
-    net.addPost(result.title, result.description, [], 'network', kind, result.details)
-    setDraft(emptyDraft); setOpen(false); setNote({ tone: 'ok', text: `${kind} posted to your network.` })
+    try {
+      await net.addPost(result.title, result.description, [], 'network', kind, result.details)
+      setDraft(emptyDraft); setOpen(false); setNote({ tone: 'ok', text: `${kind} posted to your network.` })
+    } catch (error) {
+      setNote({ tone: 'error', text: error instanceof Error ? error.message : 'Your post could not be saved to the network. Try again.' })
+    }
   }
 
   return <section className="biz-composer social-composer" aria-label="Post a Need, Offer or Proof of work">
@@ -60,7 +64,7 @@ export function BusinessComposer() {
       {BUSINESS_KINDS.map(item => <button key={item} type="button" aria-pressed={open && kind === item} className={open && kind === item ? 'active' : ''}
         onClick={() => { setKind(item); setErrors({}); setNote(null); setOpen(true) }}>{item === 'Proof of work' ? 'Share proof of work' : `Post a ${item}`}</button>)}
     </div>
-    {open && <form className="social-composer-body biz-form" noValidate onSubmit={event => { event.preventDefault(); submit() }}>
+    {open && <form className="social-composer-body biz-form" noValidate onSubmit={event => { event.preventDefault(); void submit() }}>
       {field('title', 'Title', <input {...attrs('title')} value={draft.title} maxLength={LIMITS.titleMax} onChange={set('title')} placeholder={kind === 'Need' ? 'What do you need?' : kind === 'Offer' ? 'What are you offering?' : 'What did you deliver?'} />)}
       {field('description', 'Description', <textarea {...attrs('description')} rows={4} value={draft.description} maxLength={LIMITS.descriptionMax} onChange={set('description')} placeholder="Context, scope and what a useful response looks like. Do not include private information." />)}
       {field('category', 'Category', <select {...attrs('category')} value={draft.category} onChange={set('category')}><option value="">Choose a category</option>{BUSINESS_CATEGORIES.map(c => <option key={c} value={c}>{c}</option>)}</select>)}
