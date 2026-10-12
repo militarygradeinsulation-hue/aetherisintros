@@ -334,6 +334,13 @@ const basePages: BaseMeta[] = [
     next: 'Open the workspace attached to the conversation you are actively moving.',
     why: 'A Workspace is collaborative working context. A Deal Room is the transaction record. They stay separate on purpose.',
   }, ['workspace', 'business workspace', 'private work', 'scope', 'delivery', 'collaboration']),
+  m('executivework', 'Executive Workbench', Briefcase, 'OPPORTUNITY & EXECUTION', 'Business analysis, warm referrals, reputation, proposals and private group decisions in one workbench.', {
+    does: 'Brings recovered executive tools into one place without creating five more primary destinations.',
+    look: 'Strategic analysis, warm referral paths, Track Record, your storefront and proposals, and private syndication rooms.',
+    changes: 'Each tab writes only through its own permissioned workflow; verified reputation remains server-owned.',
+    next: 'Open the tab tied to the decision or relationship you are moving right now.',
+    why: 'These tools share the same business graph but stay separate where consent, privacy, and verification rules differ.',
+  }, ['business analyst', 'warm referrals', 'track record', 'reputation', 'storefront', 'proposals', 'syndication']),
   m('rooms', 'Opportunity Rooms', DoorOpen, 'OPPORTUNITY & EXECUTION', 'Small working rooms around a single opportunity.', {
     does: 'Creates small working rooms around one opportunity.',
     look: 'Stage, participants and the next concrete action.',
