@@ -37,16 +37,21 @@ export function AcceptedIntroWorkspaces({ onOpen }: { onOpen: () => void }) {
     if (intro.error) { setError(intro.error.message); setLoaded(true); return }
 
     const source = (intro.data ?? []) as IntroRow[]
-    const otherIds = [...new Set(source.map(r => r.user_id === me ? r.target_user_id : r.user_id).filter(Boolean))] as string[]
-    const profile = otherIds.length
-      ? await db.from('profiles').select('id,name').in('id', otherIds)
+    // A signed-in member cannot SELECT public.profiles directly. This RPC
+    // reveals only their accepted-introduction counterparts, never third parties.
+    const counterparts = source.length
+      ? await db.rpc('my_intro_participant_names', { p_intro_ids: source.map(r => r.id) })
       : { data: [], error: null }
-    if (profile.error) { setError(profile.error.message); setLoaded(true); return }
-    const names = new Map<string,string>((profile.data ?? []).map((p: { id: string; name: string | null }) => [p.id, p.name?.trim() || 'Member']))
+    if (counterparts.error) { setError(counterparts.error.message); setLoaded(true); return }
+    const names = new Map<string, string>(
+      (counterparts.data ?? []).map((p: { intro_request_id: string; other_name: string }) => [
+        p.intro_request_id, p.other_name?.trim() || 'Member',
+      ]),
+    )
 
     setRows(source.flatMap(r => {
       const otherId = r.user_id === me ? r.target_user_id : r.user_id
-      return otherId ? [{ ...r, otherId, otherName: names.get(otherId) ?? 'Member' }] : []
+      return otherId ? [{ ...r, otherId, otherName: names.get(r.id) ?? 'Member' }] : []
     }))
     setLoaded(true)
   }, [])
