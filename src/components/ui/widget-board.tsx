@@ -613,7 +613,7 @@ const Widget = memo(function Widget({
 				transition: LIFT,
 			}}
 			transition={SPRING}
-			className={`relative min-w-0 rounded-[var(--widget-radius)] outline-none focus-visible:ring-2 focus-visible:ring-ring [&_a]:[-webkit-user-drag:none] [&_img]:[-webkit-user-drag:none] ${
+			className={`board-tile-shell relative min-w-0 rounded-[var(--widget-radius)] outline-none focus-visible:ring-2 focus-visible:ring-ring [&_a]:[-webkit-user-drag:none] [&_img]:[-webkit-user-drag:none] ${
 				editable
 					? 'cursor-grab touch-pan-y touch-pinch-zoom select-none [-webkit-touch-callout:none] active:cursor-grabbing'
 					: ''
@@ -633,7 +633,7 @@ const Widget = memo(function Widget({
 					bounce: 0.12,
 					delay,
 				}}
-				className={`relative isolate flex h-full w-full flex-col overflow-hidden rounded-[var(--widget-radius)] bg-[#0E121A] text-[#F2EEE6] ring-inset transition-shadow duration-300 hover:shadow-[0_18px_40px_-18px_rgba(199, 133, 34,0.55)] hover:ring-[#C78522]/60 [clip-path:inset(0_round_var(--widget-radius))] ${
+				className={`board-tile relative isolate flex h-full w-full flex-col overflow-hidden rounded-[var(--widget-radius)] bg-[#0E121A] text-[#F2EEE6] ring-inset transition-shadow duration-300 [clip-path:inset(0_round_var(--widget-radius))] ${
 					landed ? 'ring-2 ring-[#C78522]' : 'ring-1 ring-white/10'
 				}`}>
 				{renderItem?.(item as never, sizeOf(w, h))}
