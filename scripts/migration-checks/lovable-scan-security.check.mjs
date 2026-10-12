@@ -1,18 +1,16 @@
 // 0079: Lovable scan regression. Each query runs as the actual JWT role under RLS.
 // The demo page reads the in-code fictional catalogue, not these protected tables.
 export default async ({ ok, as, svc, A, B, C }) => {
-  await svc(`
-    insert into public.early_access_members(user_id,email,status) values
-      ('${A}','security-a@example.test','approved'),
-      ('${B}','security-b@example.test','approved'),
-      ('${C}','security-c@example.test','pending')
-    on conflict (user_id) do update set status=excluded.status;
-    update public.profiles set visibility='network' where id in ('${A}','${B}','${C}');
-    insert into storage.objects(bucket_id,name,owner) values
-      ('avatars','${A}/headshot-a.jpg','${A}'),
-      ('avatars','${B}/headshot-b.jpg','${B}'),
-      ('avatars','${C}/headshot-c.jpg','${C}');
-  `)
+  await svc(`insert into public.early_access_members(user_id,email,status) values
+    ('${A}','security-a@example.test','approved'),
+    ('${B}','security-b@example.test','approved'),
+    ('${C}','security-c@example.test','pending')
+    on conflict (user_id) do update set status=excluded.status`)
+  await svc(`update public.profiles set visibility='network' where id in ('${A}','${B}','${C}')`)
+  await svc(`insert into storage.objects(bucket_id,name,owner) values
+    ('avatars','${A}/headshot-a.jpg','${A}'),
+    ('avatars','${B}/headshot-b.jpg','${B}'),
+    ('avatars','${C}/headshot-c.jpg','${C}')`)
   const names = async (who) => {
     const result = await as(who,`select name from storage.objects where bucket_id='avatars' order by name`)
     return result.error ? [] : result.rows.map(row => row.name)
