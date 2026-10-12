@@ -75,8 +75,8 @@ BEGIN
      OR jsonb_typeof(v_opt->'realPilotProject') IS DISTINCT FROM 'boolean' THEN
     RAISE EXCEPTION 'Explicit research preferences are required' USING ERRCODE = '22023';
   END IF;
-  IF (v_intent IN ('buy','both')) <> (jsonb_typeof(p_response->'buyer') = 'object')
-     OR (v_intent IN ('offer','both')) <> (jsonb_typeof(p_response->'provider') = 'object') THEN
+  IF (v_intent IN ('buy','both')) <> coalesce(jsonb_typeof(p_response->'buyer') = 'object',false)
+     OR (v_intent IN ('offer','both')) <> coalesce(jsonb_typeof(p_response->'provider') = 'object',false) THEN
     RAISE EXCEPTION 'Only relevant buyer/provider sections are accepted' USING ERRCODE = '22023';
   END IF;
   IF jsonb_typeof(p_response->'preferences') IS NOT NULL
