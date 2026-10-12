@@ -123,7 +123,8 @@ export function profileToMember(row: LiveProfileRow, me: LiveProfileRow | null):
     availability: row.availability,
     mutuals: [],
     introState: 'recommended' as const,
-    joined: new Date(row.created_at).getFullYear().toString(),
+    joined: row.created_at && Number.isFinite(Date.parse(row.created_at))
+      ? new Date(row.created_at).getFullYear().toString() : '',
     avatarUrl: row.avatar_url ?? undefined,
     whatIDo: row.what_i_do,
     building: row.building,
@@ -146,9 +147,25 @@ const emptyDirectory: Directory = { members: [], posts: [], asks: [], signals: [
 
 export { emptyDirectory }
 
+/** The database exposes only approved, visible public profile fields and the caller's own profile. */
+export async function loadVisibleMemberProfiles(ids: string[] | null = null, limit = 100, offset = 0): Promise<LiveProfileRow[]> {
+  // The permission-checked RPC is installed by migration 0080.
+  // The generated Supabase type is updated on the next schema refresh.
+  const { data, error } = await (supabase as any).rpc('visible_member_profiles', {
+    p_member_ids: ids, p_limit: limit, p_offset: offset,
+  }) // eslint-disable-line @typescript-eslint/no-explicit-any
+  if (error) throw new Error(error.message)
+  return ((data ?? []) as Array<{ profile: LiveProfileRow }>).map(row => row.profile)
+}
+
 export async function loadMyProfile(userId: string): Promise<LiveProfileRow | null> {
-  const { data } = await supabase.from('profiles').select(PROFILE_COLUMNS).eq('id', userId).maybeSingle()
-  return (data ?? null) as LiveProfileRow | null
+  try {
+    const rows = await loadVisibleMemberProfiles([userId], 1)
+    return rows.find(row => row.id === userId) ?? null
+  } catch (error) {
+    reportClientError(error, 'live-self-profile-read')
+    return null
+  }
 }
 
 /**
@@ -159,13 +176,14 @@ export async function loadMyProfile(userId: string): Promise<LiveProfileRow | nu
 export async function loadLiveDirectory(userId: string): Promise<{ directory: Directory; me: LiveProfileRow | null; failed: boolean }> {
   try {
     const [profileRows, postRows, askRows, threadRows] = await Promise.all([
-      supabase.from('profiles').select(PROFILE_COLUMNS),
+      loadVisibleMemberProfiles(null, 100),
       supabase.from('posts').select('*').eq('is_demo', false).not('author_id', 'is', null).order('created_at', { ascending: false }),
       supabase.from('asks').select('*').eq('is_demo', false).not('author_id', 'is', null).order('created_at', { ascending: false }),
       supabase.from('dm_threads').select('*').order('updated_at', { ascending: false }),
     ])
 
-    const profiles = (profileRows.data ?? []) as unknown as LiveProfileRow[]
+    // The overview is intentionally capped; the full directory uses paginated server search.
+    const profiles = profileRows
     const me = profiles.find(p => p.id === userId) ?? null
     const others = profiles.filter(p => p.id !== userId)
     const members = others.map(row => profileToMember(row, me))
