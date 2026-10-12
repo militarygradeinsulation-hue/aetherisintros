@@ -280,10 +280,11 @@ function NeedSheet({ done }: { done: () => void }) {
   const [industry, setIndustry] = useState('')
   const [location, setLocation] = useState('')
   const [urgency, setUrgency] = useState<'low' | 'medium' | 'high'>('medium')
-  function post() {
+  const [error, setError] = useState('')
+  async function post() {
     if (!ask.trim()) return
-    net.addAsk({ ask: ask.trim(), detail: detail.trim(), whyNow: whyNow.trim(), offer: offer.trim(), industry: industry.trim(), location: location.trim(), urgency, visibility: 'network' })
-    done()
+    try { await net.addAsk({ ask: ask.trim(), detail: detail.trim(), whyNow: whyNow.trim(), offer: offer.trim(), industry: industry.trim(), location: location.trim(), urgency, visibility: 'network' }); done() }
+    catch (caught) { setError(caught instanceof Error ? caught.message : 'Your need could not be saved.') }
   }
   return <div className="sv-sheet-stack">
     <p className="sv-empty">State the outcome you need. Your network sees the need, not a pitch.</p>
@@ -296,7 +297,7 @@ function NeedSheet({ done }: { done: () => void }) {
       <label className="sv-field"><span>Location</span><input value={location} onChange={e => setLocation(e.target.value)} /></label>
       <label className="sv-field"><span>Urgency</span><select value={urgency} onChange={e => setUrgency(e.target.value as 'low' | 'medium' | 'high')}><option value="low">Low</option><option value="medium">Medium</option><option value="high">High</option></select></label>
     </div>
-    <div className="sv-sheet-actions"><button className="sv-primary" onClick={post}>Post the need</button><button className="sv-ghost" onClick={done}>Cancel</button></div>
+    {error && <small role="alert">{error}</small>}<div className="sv-sheet-actions"><button className="sv-primary" onClick={() => void post()}>Post the need</button><button className="sv-ghost" onClick={done}>Cancel</button></div>
   </div>
 }
 
@@ -305,17 +306,18 @@ function JournalSheet({ done }: { done: () => void }) {
   const [headline, setHeadline] = useState('')
   const [note, setNote] = useState('')
   const [visibility, setVisibility] = useState<'network' | 'private'>('network')
-  function post() {
+  const [error, setError] = useState('')
+  async function post() {
     if (!headline.trim()) return
-    net.addPost(headline.trim(), note.trim(), [], visibility)
-    done()
+    try { await net.addPost(headline.trim(), note.trim(), [], visibility); done() }
+    catch (caught) { setError(caught instanceof Error ? caught.message : 'Your journal entry could not be saved.') }
   }
   return <div className="sv-sheet-stack">
     <p className="sv-empty">Journal entries attach to your profile so the right people understand what you are working on.</p>
     <label className="sv-field"><span>Headline</span><textarea value={headline} onChange={e => setHeadline(e.target.value)} rows={2} /></label>
     <label className="sv-field"><span>The note</span><textarea value={note} onChange={e => setNote(e.target.value)} rows={5} /></label>
     <label className="sv-field"><span>Who sees it</span><select value={visibility} onChange={e => setVisibility(e.target.value as 'network' | 'private')}><option value="network">My network</option><option value="private">Private</option></select></label>
-    <div className="sv-sheet-actions"><button className="sv-primary" onClick={post}>Publish entry</button><button className="sv-ghost" onClick={done}>Cancel</button></div>
+    {error && <small role="alert">{error}</small>}<div className="sv-sheet-actions"><button className="sv-primary" onClick={() => void post()}>Publish entry</button><button className="sv-ghost" onClick={done}>Cancel</button></div>
   </div>
 }
 
