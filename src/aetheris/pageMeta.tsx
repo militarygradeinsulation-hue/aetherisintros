@@ -528,7 +528,7 @@ export const primaryPages: Page[] = ['home', 'network', 'intros', 'messages', 'm
 export const networkTabs: Page[] = ['discover', 'intros', 'companies', 'circles', 'events']
 export const networkAdvanced: Page[] = ['directory', 'expertise', 'serendipity', 'gaps', 'identity', 'organization', 'talent', 'knowledge', 'boards', 'intelrooms', 'passport', 'ask']
 export const workTabs: Page[] = ['crm', 'diagnostic', 'pocket', 'opportunities', 'grid', 'calendar', 'outcomes']
-export const workAdvanced: Page[] = ['needs', 'rooms', 'deals', 'systems', 'strategy', 'simulation', 'collisions', 'capital', 'attribution', 'loops', 'knowledgeassets', 'timemachine']
+export const workAdvanced: Page[] = ['needs', 'rooms', 'deals', 'workspaces', 'executivework', 'systems', 'strategy', 'simulation', 'collisions', 'capital', 'attribution', 'loops', 'knowledgeassets', 'timemachine']
 export const meTabs: Page[] = ['profile', 'passport', 'permission', 'preferences', 'integrations']
 export const meAdvanced: Page[] = ['identity', 'consent', 'constitution', 'presence', 'vault', 'autopilot']
 
