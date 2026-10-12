@@ -327,6 +327,20 @@ const basePages: BaseMeta[] = [
     next: 'Open a room from an accepted introduction, a reply to your ask or a conversation.',
     why: 'Only people who accept an invitation see a room. Nothing is shared with the wider network.',
   }, ['deals', 'deal rooms', 'my deals', 'engagements', 'proposals', 'milestones', 'transactions']),
+  m('workspaces', 'Deal Workspaces', Briefcase, 'OPPORTUNITY & EXECUTION', 'Private collaboration around scope, roles, proposals and delivery.', {
+    does: 'Turns a conversation or accepted introduction into a private working space for the people actually doing the work.',
+    look: 'Scope, buyer and provider roles, versioned proposals, next steps, delivery records and the linked CRM opportunity.',
+    changes: 'Both parties approve roles and the same terms version before consequential stages can advance.',
+    next: 'Open the workspace waiting on your approval or next action.',
+    why: 'A Deal Workspace is collaborative execution. A Deal Room remains the transactional engagement record and outcome timeline.',
+  }, ['workspace', 'deal workspace', 'collaboration', 'scope', 'delivery', 'proposal comparison']),
+  m('storefront', 'Storefront & Proposals', Handshake, 'OPPORTUNITY & EXECUTION', 'Your member-facing offers and structured proposals.', {
+    does: 'Shows what you can provide, what you are seeking and the proposals exchanged with other members.',
+    look: 'Your storefront, intake questions, sent proposals and proposals waiting on you.',
+    changes: 'Accepted proposals can become live execution work rather than disappearing into messages.',
+    next: 'Clarify one offer or answer the proposal waiting on you.',
+    why: 'A storefront is a structured way to understand fit, not a public marketplace or pay-to-pitch directory.',
+  }, ['storefront', 'services', 'proposal', 'offer', 'request for proposal']),
   m('rooms', 'Opportunity Rooms', DoorOpen, 'OPPORTUNITY & EXECUTION', 'Small working rooms around a single opportunity.', {
     does: 'Creates small working rooms around one opportunity.',
     look: 'Stage, participants and the next concrete action.',

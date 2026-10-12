@@ -346,7 +346,7 @@ export default function App({ mode = 'demo' }: { mode?: 'demo' | 'live' }) {
           />
         )}
 
-        {mode === 'live' && activePage === 'messages' && <LiveMessagesView />}
+        {mode === 'live' && activePage === 'messages' && <LiveMessagesView onOpenWorkspace={() => { setClassicPage('workspaces'); handleNavigate('workspace'); }} />}
         {mode !== 'live' && activePage === 'messages' && (
           <MessagesView
             conversations={conversations}

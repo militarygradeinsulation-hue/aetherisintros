@@ -144,6 +144,15 @@ import { activeMission, missionFit, missionTypeLabel } from './opportunity-graph
 import { EditorialFeed, NotificationsDrawer } from './SocialExperience'
 import { newsAge, useAetherisNews } from './news'
 import { IntrosSystemBento, BentoGridItem } from './IntrosSystemGrid'
+import { WorkspacesPage } from './workspaces/WorkspacesPage'
+import { BlueprintWorkbench } from './business-execution/BlueprintWorkbench'
+import { PrivateLibrary } from './library/PrivateLibrary'
+import BusinessAnalystPanel from './BusinessAnalystPanel'
+import { StorefrontPanel } from './StorefrontPanel'
+import { SyndicationRoomsPanel } from './SyndicationRoomsPanel'
+import { WarmReferralPanel } from './WarmReferralPanel'
+import { CurrentUserTrackRecord } from './CurrentUserTrackRecord'
+import { AcceptedIntroWorkspaces } from './AcceptedIntroWorkspaces'
 
 
 
@@ -1198,6 +1207,7 @@ function Intros({ people, select, draft }: { people: Member[]; select: (p: Membe
     <IntroRequestInbox />
     <SentIntroRequests />
     <OutcomeCheckins />
+    <AcceptedIntroWorkspaces />
     <div className="state-filters">
       {(['all', 'recommended', 'requested', 'waiting', 'accepted', 'introduced', 'conversing', 'closed'] as const).map(s =>
         <button key={s} className={state === s ? 'active' : ''} onClick={() => setState(s)}>
@@ -2714,7 +2724,7 @@ function Shell({ startPage, feedOnly = false }: { startPage?: Page | undefined; 
       meetings: <MeetingsPage />,
       peergroups: <PeerGroupsPage />,
       providers: <ProvidersPage />,
-      warmpaths: <WarmPathsPage />,
+      warmpaths: <><WarmPathsPage /><div className="og-stack"><WarmReferralPanel /></div></>,
       needs: <><IntentExchangePanel /><Needs onNew={() => setNeedOpen(true)} people={people} select={setSelected} setPage={setPage} /><IntentBoard /></>,
       memory: <Memory people={people} select={setSelected} />,
       events: <EventsPage />,
@@ -2742,24 +2752,26 @@ function Shell({ startPage, feedOnly = false }: { startPage?: Page | undefined; 
       knowledge: <KnowledgePage />,
       boards: <AdvisoryBoardsPage />,
       integrations: <IntegrationsPage />,
-      passport: <><div className="og-stack"><PassportManager /></div><PassportPage /></>,
+      passport: <><div className="og-stack"><PassportManager /></div><PassportPage /><CurrentUserTrackRecord /></>,
       opportunities: <OpportunitiesPage />,
       deals: <DealsPage />,
       dealrooms: <DealsPage />,
+      workspaces: <><WorkspacesPage /><div className="og-stack"><BlueprintWorkbench /></div></>,
+      storefront: <StorefrontPanel />,
       directory: <DirectoryPage />,
       expertise: <ExpertisePage />,
       talent: <TalentPage />,
-      capital: <CapitalPage />,
+      capital: <><CapitalPage /><div className="og-stack"><SyndicationRoomsPanel /></div></>,
       intelrooms: <IntelligenceRoomsPage />,
       presence: <PresencePage />,
       permission: <PermissionPage />,
       briefing: <BriefingPage />,
-      vault: <VaultPage />,
+      vault: <><VaultPage /><div className="og-stack"><PrivateLibrary /></div></>,
       knowledgeassets: <KnowledgeAssetsPage />,
       simple: <SimpleViewPage />,
       crm: <CrmPage />,
       pocket: <PocketWorkspace />,
-      diagnostic: <><LeakCheckPanel /><CompanyDiagnosticReport /></>,
+      diagnostic: <><LeakCheckPanel /><CompanyDiagnosticReport /><div className="og-stack"><BusinessAnalystPanel /></div></>,
       grid: <GridPage />,
       news: <NewsPage />,
     }

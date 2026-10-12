@@ -325,6 +325,18 @@ function GroupDetail({ group, userId, isFacilitator, accepted, onBack }: GroupDe
   )
 }
 
+export function PeerGroupAccountability({ groupId, userId, isFacilitator, groupDescription = '' }: {
+  groupId: string
+  userId: string
+  isFacilitator: boolean
+  groupDescription?: string
+}) {
+  return <div className="og-stack" aria-label="Peer group agenda and commitments">
+    <section className="executive-section"><AgendaTab groupId={groupId} isFacilitator={isFacilitator} groupDescription={groupDescription} /></section>
+    <section className="executive-section"><CommitmentsTab groupId={groupId} userId={userId} /></section>
+  </div>
+}
+
 // ── Agreement gate ────────────────────────────────────────────────────────────
 
 function AgreementGate({ groupId, onAccepted }: { groupId: string; onAccepted: () => void }) {
