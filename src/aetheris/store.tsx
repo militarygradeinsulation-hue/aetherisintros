@@ -271,13 +271,13 @@ interface NetworkApi {
   declineIntro: (id: string) => void
   /** Forget a withdrawn request locally; the row itself is deleted by the caller. */
   withdrawIntro: (id: string) => void
-  addPost: (text: string, detail?: string, media?: JournalAttachment[], visibility?: 'network' | 'private', kind?: Post['kind'], business?: BusinessDetails) => void
+  addPost: (text: string, detail?: string, media?: JournalAttachment[], visibility?: 'network' | 'private', kind?: Post['kind'], business?: BusinessDetails) => Promise<void>
   respondToPost: (postId: string, memberId: string) => string | null
   togglePostLike: (postId: string) => void
   togglePostRepost: (postId: string, memberId: string) => void
   addPostComment: (postId: string, text: string, memberId: string) => void
   setFeedPreferences: (settings: FeedPreferences) => void
-  addAsk: (ask: Omit<NetworkAsk, 'id' | 'posted' | 'responses' | 'memberId' | 'mine'>) => void
+  addAsk: (ask: Omit<NetworkAsk, 'id' | 'posted' | 'responses' | 'memberId' | 'mine'>) => Promise<void>
   respondToAsk: (askId: string, text: string) => string | null
   requestWarmPath: (askId: string) => void
   addObjective: (o: Objective) => void
@@ -483,12 +483,6 @@ export function NetworkProvider({ children, mode = 'live' }: { children: React.R
     for (const note of s.notes) {
       if (!prev.notes.some(n => n.id === note.id)) saveNote(userId, note)
     }
-    for (const post of s.ownPosts) {
-      if (!prev.ownPosts.some(p => p.id === post.id)) savePost(userId, post)
-    }
-    for (const ask of s.ownAsks) {
-      if (!prev.ownAsks.some(a => a.id === ask.id)) saveAsk(userId, ask)
-    }
     for (const [askId, texts] of Object.entries(s.askResponses)) {
       const before = prev.askResponses[askId] ?? []
       texts.slice(before.length).forEach(text => saveAskResponse(userId, askId, text))
@@ -674,11 +668,22 @@ export function NetworkProvider({ children, mode = 'live' }: { children: React.R
         }
       }),
 
-      addPost: (text, detail, media, visibility, kind = 'Insight', business) => patch(prev => ({
-        ownPosts: [{ id: uid('post'), memberId: 'me', kind, text, detail: detail ?? 'Shared with your network.', when: 'Just now', responses: 0, media: media ?? [], visibility: visibility ?? 'network', ...(business ? { business } : {}) }, ...prev.ownPosts],
-        learned: remember(prev, { category: 'Interests', text: business ? `You posted a ${kind}: “${text.slice(0, 80)}${text.length > 80 ? '…' : ''}”` : `You wrote in your Journal: “${text.slice(0, 80)}${text.length > 80 ? '…' : ''}”`, source: business ? 'Network feed' : 'Your Journal', confidence: 100, scope: visibility === 'private' ? 'private' : 'public' }),
-        activity: log(prev, { memberId: 'me', kind: 'New project', text: business ? `You posted a ${kind} to the network.` : `You added a Journal entry.` }),
-      })),
+      addPost: async (text, detail, media, visibility, kind = 'Insight', business) => {
+        const post: Post = { id: uid('post'), memberId: 'me', kind, text, detail: detail ?? 'Shared with your network.', when: 'Just now', responses: 0, media: media ?? [], visibility: visibility ?? 'network', ...(business ? { business } : {}) }
+        try {
+          // The demo remains usable signed out. A live member must receive a database confirmation.
+          if (userId) await savePost(userId, post)
+          else if (live) throw new Error('Sign in again before posting to the network.')
+        } catch (error) {
+          window.dispatchEvent(new CustomEvent('aetheris:post-failed', { detail: { kind } }))
+          throw error
+        }
+        patch(prev => ({
+          ownPosts: [post, ...prev.ownPosts],
+          learned: remember(prev, { category: 'Interests', text: business ? `You posted a ${kind}: “${text.slice(0, 80)}${text.length > 80 ? '…' : ''}”` : `You wrote in your Journal: “${text.slice(0, 80)}${text.length > 80 ? '…' : ''}”`, source: business ? 'Network feed' : 'Your Journal', confidence: 100, scope: visibility === 'private' ? 'private' : 'public' }),
+          activity: log(prev, { memberId: 'me', kind: 'New project', text: business ? `You posted a ${kind} to the network.` : `You added a Journal entry.` }),
+        }))
+      },
 
       respondToPost: (postId, memberId) => {
         if (memberId === 'me') return null
@@ -720,11 +725,16 @@ export function NetworkProvider({ children, mode = 'live' }: { children: React.R
 
       setFeedPreferences: (feedPreferences) => patch(() => ({ feedPreferences })),
 
-      addAsk: (ask) => patch(prev => ({
-        ownAsks: [{ ...ask, id: uid('ask'), memberId: 'me', posted: 'Just now', responses: 0, mine: true }, ...prev.ownAsks],
-        learned: remember(prev, { category: 'Needs', text: `You posted a need: ${ask.ask}`, source: 'Needs marketplace', confidence: 100, scope: ask.visibility === 'private' ? 'private' : 'public' }),
-        activity: log(prev, { memberId: 'me', kind: 'New need', text: `You posted a need to the network: ${ask.ask}` }),
-      })),
+      addAsk: async (ask) => {
+        const ownAsk: NetworkAsk = { ...ask, id: uid('ask'), memberId: 'me', posted: 'Just now', responses: 0, mine: true }
+        if (userId) await saveAsk(userId, ownAsk)
+        else if (live) throw new Error('Sign in again before posting a need to the network.')
+        patch(prev => ({
+          ownAsks: [ownAsk, ...prev.ownAsks],
+          learned: remember(prev, { category: 'Needs', text: `You posted a need: ${ask.ask}`, source: 'Needs marketplace', confidence: 100, scope: ask.visibility === 'private' ? 'private' : 'public' }),
+          activity: log(prev, { memberId: 'me', kind: 'New need', text: `You posted a need to the network: ${ask.ask}` }),
+        }))
+      },
 
       respondToAsk: (askId, text) => {
         const ask = [...s.ownAsks, ...dir.asks].find(a => a.id === askId)
