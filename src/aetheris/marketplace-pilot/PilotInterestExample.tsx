@@ -1,19 +1,12 @@
 import { PilotInterestForm } from "./PilotInterestForm";
-import {
-  PilotPersistenceBlockedError,
-  type PilotInterestSubmit,
-  type PilotProfilePrefill,
-} from "./pilot-interest";
+import { saveMarketplacePilotInterest } from "./persistence";
+import type { PilotProfilePrefill } from "./pilot-interest";
 
 /**
- * Integration example. No authorized persistence exists for pilot interest yet (no table/RPC, and the
- * marketplace work in PR #47 is separate), so this fixture always rejects: it never reports a saved
- * submission. Replace `onSubmit` with an authorized, verified endpoint when one exists.
+ * Integration example for the private, account-scoped marketplace research pilot.
+ * The approved-member RPC stores only the reviewed response; it never creates a
+ * public listing, authorizes outreach, or contacts another member.
  */
-const blockedSubmit: PilotInterestSubmit = async () => {
-  throw new PilotPersistenceBlockedError();
-};
-
 export function PilotInterestExample({ profile }: { profile?: PilotProfilePrefill }) {
-  return <PilotInterestForm onSubmit={blockedSubmit} {...(profile ? { profile } : {})} />;
+  return <PilotInterestForm onSubmit={saveMarketplacePilotInterest} {...(profile ? { profile } : {})} />;
 }
