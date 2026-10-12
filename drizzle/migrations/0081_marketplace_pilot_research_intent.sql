@@ -57,7 +57,8 @@ BEGIN
   END IF;
   FOREACH v_key IN ARRAY ARRAY['organization','role','industry','difficulty'] LOOP
     IF length(btrim(coalesce(p_response->>v_key,''))) = 0
-       OR length(p_response->>v_key) > CASE WHEN v_key='difficulty' THEN 1000 ELSE 120 END THEN
+       OR (v_key = 'difficulty' AND length(p_response->>v_key) > 1000)
+       OR (v_key <> 'difficulty' AND length(p_response->>v_key) > 120) THEN
       RAISE EXCEPTION 'Required pilot details are missing or too long' USING ERRCODE = '22023';
     END IF;
   END LOOP;
