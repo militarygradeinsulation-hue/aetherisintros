@@ -184,5 +184,5 @@ function Inner({ onOpenWorkspace }: { onOpenWorkspace?: () => void }) {
 }
 
 export function LiveMessagesView({ onOpenWorkspace }: { onOpenWorkspace?: () => void } = {}) {
-  return <Inner onOpenWorkspace={onOpenWorkspace} />
+  return <Inner {...(onOpenWorkspace ? { onOpenWorkspace } : {})} />
 }
