@@ -11,6 +11,12 @@ export default async ({ ok, as, svc, A, B, C }) => {
     ('avatars','${A}/headshot-a.jpg','${A}'),
     ('avatars','${B}/headshot-b.jpg','${B}'),
     ('avatars','${C}/headshot-c.jpg','${C}')`)
+  // Mirror live production: profiles are intentionally not directly readable
+  // by authenticated clients. The avatar policy must still work safely.
+  await svc('revoke select on public.profiles from authenticated')
+  const directProfiles = await as(A, `select id from public.profiles where id='${B}'`)
+  ok(!!directProfiles.error, 'live-style profiles SELECT grant is absent')
+
   const names = async (who) => {
     const result = await as(who,`select name from storage.objects where bucket_id='avatars' order by name`)
     return result.error ? [] : result.rows.map(row => row.name)
