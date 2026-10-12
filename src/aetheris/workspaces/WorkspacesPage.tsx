@@ -56,6 +56,7 @@ import {
   type WorkspaceRow,
 } from "./repo";
 import { OPEN_WORKSPACE_KEY } from "./StartWorkspace";
+import { AcceptedIntroWorkspaces } from "../AcceptedIntroWorkspaces";
 
 type ListRow = WorkspaceRow & { myStatus: string | null };
 const msg = (e: unknown) => (e instanceof Error ? e.message : "Something went wrong. Try again.");
@@ -99,6 +100,15 @@ export function WorkspacesPage() {
     } catch {
       /* private mode */
     }
+  };
+  const openFromIntroduction = () => {
+    try {
+      const id = sessionStorage.getItem(OPEN_WORKSPACE_KEY);
+      if (id) open(id);
+    } catch {
+      /* private browsing: refresh will still reveal persisted workspaces */
+    }
+    void refresh();
   };
   const answer = async (id: string, accept: boolean) => {
     if (busyInvite) return;
@@ -172,6 +182,7 @@ export function WorkspacesPage() {
           </ul>
         </section>
       )}
+      <AcceptedIntroWorkspaces onOpen={openFromIntroduction} />
       {rows && !rows.length && !invites.length && !error && (
         <p className="empty-state">
           No workspaces yet. Open one from a conversation in Messages, or from an accepted
