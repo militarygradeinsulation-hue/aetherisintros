@@ -9,7 +9,7 @@ DO $$
 DECLARE t text;
 BEGIN
   FOREACH t IN ARRAY ARRAY[
-    'members_base', 'companies', 'signals', 'seed_threads',
+    'companies', 'signals', 'seed_threads',
     'seed_learnings', 'posts', 'asks'
   ] LOOP
     IF to_regclass(format('public.%I', t)) IS NOT NULL THEN
@@ -25,9 +25,8 @@ BEGIN
     END IF;
   END LOOP;
 
-  IF to_regclass('public.members_base') IS NOT NULL THEN
-    DROP POLICY IF EXISTS "demo members readable" ON public.members_base;
-  END IF;
+  -- Leave the member demo-card view intact: its RLS returns only is_demo
+  -- fictional profiles, and the public demo depends on that contract.
   IF to_regclass('public.companies') IS NOT NULL THEN
     DROP POLICY IF EXISTS "demo companies readable" ON public.companies;
   END IF;
