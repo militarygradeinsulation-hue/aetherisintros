@@ -17,6 +17,7 @@ import { generateMeetingNotes } from '@/lib/meetingNotes.functions'
 import { transcribeMeetingAudio } from '@/lib/meetingTranscribe.functions'
 import { useGraph } from './graph-store'
 import { loadBrief, type Brief } from './meeting-brief'
+import { MeetingBriefPanel as AiMeetingBriefPanel } from './meeting-brief-ui'
 import { downloadIcs, dueReminders, icsForMeeting, reminderText, type Reminder } from './meeting-reminders'
 import { MeetingCall, type Caption, type RemotePeer } from './meeting-call'
 import { blobToBase64, ClipRecorder, recordingSupported } from './meeting-recorder'
@@ -576,6 +577,7 @@ function MeetingBrief({ meeting, userId, compact = false }: { meeting: Meeting; 
         {p.lastConversation.map((m, i) => <p key={i}><span>{m.fromMe ? 'You' : p.name.split(' ')[0]}:</span> {m.text}</p>)}</div>}
       {p.yourNotes.length > 0 && <div className="meeting-brief-thread"><b>Your private notes</b>{p.yourNotes.map((n, i) => <p key={i}>{n}</p>)}</div>}
       {!p.whyTheyMatter && !p.lookingFor && !p.lastConversation.length && !p.theirAsks.length && <p className="og-note">Little is on record yet. Ask what they are working on and what would help most.</p>}
+      {!compact && isLiveId(p.userId) && <div className="meeting-brief-ai"><AiMeetingBriefPanel otherUserId={p.userId} otherName={p.name} /></div>}
     </article>)}
   </div>
 }
