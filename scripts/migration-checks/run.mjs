@@ -156,7 +156,20 @@ create table public.member_verifications (id uuid primary key default gen_random
   decision_reason text, risk_flags jsonb not null default '[]', submitted_at timestamptz, scanned_at timestamptz, verified_at timestamptz, updated_at timestamptz not null default now());
 create table public.memories (id uuid primary key default gen_random_uuid(), user_id uuid not null, member_id text, kind text not null default 'learning', category text not null default '',
   text text not null, source text not null default '', confidence int not null default 100, scope text not null default 'private', when_label text not null default '', created_at timestamptz not null default now());
-create table public.posts (id text primary key, member_id text, author_id uuid, kind text not null default 'Insight', text text not null, when_label text not null default '', created_at timestamptz not null default now(), is_demo boolean not null default false);
+create table public.posts (
+  id text primary key,
+  member_id text,
+  author_id uuid,
+  kind text not null default 'Insight',
+  text text not null,
+  detail text not null default '',
+  when_label text not null default '',
+  response_count int not null default 0,
+  media jsonb not null default '[]'::jsonb,
+  visibility text not null default 'network',
+  created_at timestamptz not null default now(),
+  is_demo boolean not null default false
+);
 create table public.members (id text primary key, name text not null, initials text not null, title text not null, company text not null, location text not null, role text not null, industry text not null,
   bio text not null default '', tags text[] not null default '{}', expertise text[] not null default '{}', needs text[] not null default '{}', offers text[] not null default '{}',
   focus text not null default '', thesis text not null default '', availability text not null default '', mutuals text[] not null default '{}', last_interaction_days int not null default 0,
