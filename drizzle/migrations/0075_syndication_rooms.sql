@@ -83,7 +83,7 @@ CREATE OR REPLACE FUNCTION public.create_syndication_room(
   p_deadline date DEFAULT NULL,
   p_invite_user_ids uuid[] DEFAULT '{}'::uuid[]
 ) RETURNS public.syndication_rooms
-LANGUAGE plpgsql SECURITY DEFINER SET search_path = public AS $
+LANGUAGE plpgsql SECURITY DEFINER SET search_path = public AS $$
 DECLARE
   v_room public.syndication_rooms;
   v_invitee uuid;
@@ -120,11 +120,11 @@ BEGIN
   END LOOP;
 
   RETURN v_room;
-END $;
+END $$;
 
 CREATE OR REPLACE FUNCTION public.invite_syndication_member(p_room_id uuid,p_user_id uuid)
 RETURNS void
-LANGUAGE plpgsql SECURITY DEFINER SET search_path = public AS $
+LANGUAGE plpgsql SECURITY DEFINER SET search_path = public AS $$
 BEGIN
   IF NOT public.is_syndication_creator(p_room_id) THEN
     RAISE EXCEPTION 'Not authorised' USING errcode='42501';
@@ -135,7 +135,7 @@ BEGIN
   INSERT INTO public.syndication_members(room_id,user_id)
   VALUES(p_room_id,p_user_id)
   ON CONFLICT (room_id,user_id) DO NOTHING;
-END $;
+END $$;
 
 REVOKE ALL ON FUNCTION public.create_syndication_room(text,text,text,text,date,uuid[]) FROM PUBLIC, anon;
 REVOKE ALL ON FUNCTION public.invite_syndication_member(uuid,uuid) FROM PUBLIC, anon;
@@ -143,14 +143,14 @@ GRANT EXECUTE ON FUNCTION public.create_syndication_room(text,text,text,text,dat
 GRANT EXECUTE ON FUNCTION public.invite_syndication_member(uuid,uuid) TO authenticated;
 
 CREATE OR REPLACE FUNCTION public.syndication_rooms_guard() RETURNS trigger
-LANGUAGE plpgsql SET search_path = public AS $
+LANGUAGE plpgsql SET search_path = public AS $$
 BEGIN
   IF NEW.created_by IS DISTINCT FROM OLD.created_by THEN
     RAISE EXCEPTION 'Room owner cannot change' USING errcode='42501';
   END IF;
   IF NEW.status='closed' AND OLD.status IS DISTINCT FROM 'closed' THEN NEW.closed_at:=now(); END IF;
   RETURN NEW;
-END $;
+END $$;
 REVOKE ALL ON FUNCTION public.syndication_rooms_guard() FROM PUBLIC, anon, authenticated;
 CREATE TRIGGER syndication_rooms_guard BEFORE UPDATE ON public.syndication_rooms FOR EACH ROW EXECUTE FUNCTION public.syndication_rooms_guard();
 
