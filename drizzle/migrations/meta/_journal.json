@@ -561,6 +561,13 @@
       "when": 1791810100000,
       "tag": "0080_member_intro_read_contract",
       "breakpoints": true
+    },
+    {
+      "idx": 81,
+      "version": "7",
+      "when": 1791810100001,
+      "tag": "0081_marketplace_pilot_research_intent",
+      "breakpoints": true
     }
   ]
 }
