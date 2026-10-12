@@ -203,6 +203,22 @@ create policy "own posts update" on public.posts for update to authenticated
   using (auth.uid() = author_id) with check (auth.uid() = author_id);
 create policy "own posts delete" on public.posts for delete to authenticated using (auth.uid() = author_id);
 
+create schema storage;
+create table storage.objects (
+  id uuid primary key default gen_random_uuid(),
+  bucket_id text not null,
+  name text not null,
+  owner uuid,
+  created_at timestamptz not null default now()
+);
+create function storage.foldername(p_name text) returns text[]
+language sql immutable as $$ select string_to_array(trim(both '/' from coalesce(p_name,'')), '/') $$;
+grant execute on function storage.foldername(text) to authenticated, anon, service_role;
+grant usage on schema storage to authenticated, anon, service_role;
+grant select, insert, update, delete on storage.objects to authenticated;
+grant all on storage.objects to service_role;
+alter table storage.objects enable row level security;
+
 -- Supabase Realtime's authorization surface: private channels check RLS on realtime.messages,
 -- with the channel name available as realtime.topic().
 create schema realtime;
