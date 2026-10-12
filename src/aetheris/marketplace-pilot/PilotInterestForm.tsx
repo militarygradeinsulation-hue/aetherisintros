@@ -176,7 +176,7 @@ export function PilotInterestForm({
           It is used for pilot planning only. Nothing was published and no one was contacted.
         </p>
         <Button variant="outline" onClick={() => setStep("edit")}>
-          Submit another response
+          Update your response
         </Button>
       </div>
     );
