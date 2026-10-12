@@ -429,8 +429,11 @@ export function IntentExchangePanel() {
     if (!statement) return
     const privacy = form.privacy === 'trusted' ? 'private' : form.privacy
     if (!graph.signedIn) {
-      net.addAsk({ ask: statement, detail: `${form.category}`, whyNow: '', offer: '', industry: form.industry, location: form.location, urgency: 'medium', visibility: privacy === 'private' ? 'private' : 'network' })
-      setMsg('Posted in preview only. Sign in with a verified account to publish.'); setForm(f => ({ ...f, statement: '' })); return
+      try {
+        await net.addAsk({ ask: statement, detail: `${form.category}`, whyNow: '', offer: '', industry: form.industry, location: form.location, urgency: 'medium', visibility: privacy === 'private' ? 'private' : 'network' })
+        setMsg('Posted in preview only. Sign in with a verified account to publish.'); setForm(f => ({ ...f, statement: '' }))
+      } catch (error) { setMsg(error instanceof Error ? error.message : 'Your ask could not be saved.') }
+      return
     }
     const expires = new Date(Date.now() + Number(form.days) * 86400000).toISOString()
     const res = await db.from('asks').insert({
