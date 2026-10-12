@@ -107,7 +107,7 @@ BEGIN
     intent=excluded.intent, response=excluded.response, updated_at=now()
   RETURNING id INTO v_id;
   RETURN v_id;
-END
+END;
 $function$;
 REVOKE ALL ON FUNCTION public.submit_marketplace_pilot_interest(jsonb)
   FROM PUBLIC, anon, authenticated;
