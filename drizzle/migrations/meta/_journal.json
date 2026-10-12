@@ -547,6 +547,13 @@
       "when": 1791469759400,
       "tag": "0078_syndication_creator_insert_visibility",
       "breakpoints": true
+    },
+    {
+      "idx": 79,
+      "version": "7",
+      "when": 1791800000000,
+      "tag": "0079_lovable_scan_access_hardening",
+      "breakpoints": true
     }
   ]
 }
