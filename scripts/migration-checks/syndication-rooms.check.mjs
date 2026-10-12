@@ -1,6 +1,8 @@
 // 0063 syndication rooms: private group rooms for co-invest, co-sponsor, co-refer decisions;
 // members vote In/Out/Need More Info with notes, discuss in a thread, and see a decision summary.
 export default async ({ ok, as, svc, A, B, C, ADMIN }) => {
+  // Syndication rooms only admit approved live members; make the invitee's fixture explicit.
+  await svc(`insert into public.early_access_members (user_id,email,status) values ('${B}','b@syndication.test','approved') on conflict (user_id) do update set status='approved'`)
   // Only authenticated users can create a room.
   ok(!!(await as(null, `insert into public.syndication_rooms (created_by, title) values ('${A}', 'Anon room')`)).error, 'visitors cannot create a room')
 
