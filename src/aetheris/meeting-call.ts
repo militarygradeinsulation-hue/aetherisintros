@@ -112,6 +112,14 @@ export class MeetingCall {
     for (const track of this.opts.localStream.getTracks()) if (track.kind === kind) track.enabled = enabled
   }
 
+  /** Replace the camera without making everyone leave and rejoin the meeting. */
+  async replaceVideoTrack(track: MediaStreamTrack) {
+    await Promise.all([...this.peers.values()].map(async ({ pc }) => {
+      const sender = pc.getSenders().find(item => item.track?.kind === 'video')
+      if (sender) await sender.replaceTrack(track)
+    }))
+  }
+
   async leave() {
     this.closed = true
     for (const id of [...this.peers.keys()]) this.dropPeer(id)
