@@ -32,14 +32,14 @@ BEGIN
     'can_help_with', coalesce(p.can_help_with, ''),
     'want_to_meet', coalesce(p.want_to_meet, ''),
     'availability', coalesce(p.availability, ''),
-    'industries', coalesce(to_jsonb(p)->'industries', '[]'::jsonb),
-    'expertise', coalesce(to_jsonb(p)->'expertise', '[]'::jsonb),
+    'industries', coalesce(to_jsonb(p.industries), '[]'::jsonb),
+    'expertise', coalesce(to_jsonb(p.expertise), '[]'::jsonb),
     'avatar_url', p.avatar_url,
     'onboarded', p.onboarded,
     'created_at', p.created_at,
     'what_i_do', coalesce(p.what_i_do, ''),
     'building', coalesce(to_jsonb(p)->>'building', ''),
-    'open_to', coalesce(to_jsonb(p)->'open_to', '[]'::jsonb),
+    'open_to', CASE WHEN jsonb_typeof(to_jsonb(p)->'open_to') = 'array' THEN to_jsonb(p)->'open_to' ELSE '[]'::jsonb END,
     'scheduling_enabled', coalesce((to_jsonb(p)->>'scheduling_enabled')::boolean, false),
     'verified_role', to_jsonb(p)->>'verified_role'
   )
