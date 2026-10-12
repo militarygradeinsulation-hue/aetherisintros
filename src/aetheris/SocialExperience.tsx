@@ -52,7 +52,7 @@ function SignalComposer({ open, setOpen }: { open: boolean; setOpen: (value: boo
         if (!data.user) throw new Error('Sign in again to attach files.')
         media = await Promise.all(files.map(file => uploadJournalMedia(data.user.id, file)))
       }
-      net.addPost(text.trim(), detail.trim() || `${type[0]}${type.slice(1).toLowerCase()} Signal`, media, privacy, postKind[type])
+      await net.addPost(text.trim(), detail.trim() || `${type[0]}${type.slice(1).toLowerCase()} Signal`, media, privacy, postKind[type])
       setText(''); setDetail(''); setFiles([]); setOpen(false); setNote('Signal shared.')
     } catch (error) { setNote(error instanceof Error ? error.message : 'The Signal could not be shared.') }
     finally { setBusy(false) }
