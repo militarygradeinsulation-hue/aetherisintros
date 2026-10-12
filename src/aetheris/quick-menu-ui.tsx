@@ -37,7 +37,7 @@ const CACHE_KEY = 'aetheris.quickmenu.v1'
 const ICONS: Record<string, typeof Home> = {
   'new-ask': Lightbulb, people: Search, intros: Sparkles, messages: MessageSquareText, meetings: Video,
   warmpaths: Route, events: CalendarDays, peergroups: UsersRound, providers: HandHelping, calendar: CalendarDays,
-  crm: Briefcase, deals: Handshake, agentinbox: Bot, home: Home, news: Newspaper, insights: Lightbulb, profile: UserRound, settings: Settings2,
+  crm: Briefcase, deals: Handshake, workspaces: Briefcase, storefront: Handshake, agentinbox: Bot, home: Home, news: Newspaper, insights: Lightbulb, profile: UserRound, settings: Settings2,
 }
 
 function readCache(): string[] | null {
