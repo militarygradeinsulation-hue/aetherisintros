@@ -267,7 +267,10 @@ async function boot() {
   const db = new PGlite()
   await db.exec(BASE)
   await db.exec(SEED)
-  for (const m of migrations) await db.exec(readFileSync(join(migrationsDir, m), 'utf8'))
+  for (const m of migrations) {
+    try { await db.exec(readFileSync(join(migrationsDir, m), 'utf8')) }
+    catch (error) { throw new Error(`Migration ${m} failed: ${error.message}`, { cause: error }) }
+  }
   const as = async (uid, sql, params = []) => {
     await db.exec(`reset role; select set_config('request.jwt.claim.sub', '${uid ?? ''}', false); set role ${uid ? 'authenticated' : 'anon'};`)
     try { return { rows: (await db.query(sql, params)).rows } } catch (e) { return { error: e.message } } finally { await db.exec('reset role') }
