@@ -9,7 +9,7 @@
  * are attributed to the right speaker. Each attendee generates their own notes afterwards.
  */
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import { BellRing, CalendarPlus, CheckSquare, CircleDot, Compass, FileText, ListChecks, Mic, MicOff, PhoneOff, Plus, Sparkles, UserPlus, Users, Video, VideoOff, X } from 'lucide-react'
+import { BellRing, CalendarPlus, CheckSquare, CircleDot, Compass, FileText, ListChecks, Mic, MicOff, PhoneOff, Plus, Sparkles, SwitchCamera, UserPlus, Users, Video, VideoOff, X } from 'lucide-react'
 
 import { supabase } from '@/integrations/supabase/client'
 import { getIceServers } from '@/lib/iceServers.functions'
@@ -184,6 +184,8 @@ interface LiveLine { key: string; speakerId: string; text: string; at: string }
 
 /** Pages shown inside another site's frame (such as an editor preview) usually cannot use the camera. */
 const inFrame = () => { try { return window.self !== window.top } catch { return true } }
+type CameraFacing = 'user' | 'environment'
+const videoConstraints = (facing: CameraFacing): MediaTrackConstraints => ({ facingMode: { ideal: facing }, width: { ideal: 1280 }, height: { ideal: 720 } })
 
 type Phase = 'lobby' | 'room'
 
@@ -194,6 +196,8 @@ export function MeetingRoom({ meeting, userId, onLeave, onBack }: { meeting: Mee
   const [deviceProblem, setDeviceProblem] = useState('')
   const [micOn, setMicOn] = useState(true)
   const [camOn, setCamOn] = useState(true)
+  const [facing, setFacing] = useState<CameraFacing>('user')
+  const [switchingCamera, setSwitchingCamera] = useState(false)
 
   // Camera and microphone first, in the lobby, so problems show before joining.
   useEffect(() => {
@@ -207,7 +211,8 @@ export function MeetingRoom({ meeting, userId, onLeave, onBack }: { meeting: Mee
         return
       }
       try {
-        stream = await navigator.mediaDevices.getUserMedia({ video: { width: { ideal: 1280 }, height: { ideal: 720 } }, audio: { echoCancellation: true, noiseSuppression: true } })
+        // Mobile meetings should feel like FaceTime: start with the front/selfie camera.
+        stream = await navigator.mediaDevices.getUserMedia({ video: videoConstraints(facing), audio: { echoCancellation: true, noiseSuppression: true } })
       } catch (e) {
         try { stream = await navigator.mediaDevices.getUserMedia({ audio: true }); setCamOn(false) } catch {
           const denied = e instanceof Error && (e.name === 'NotAllowedError' || e.name === 'SecurityError')
@@ -227,6 +232,7 @@ export function MeetingRoom({ meeting, userId, onLeave, onBack }: { meeting: Mee
   }, [attempt])
 
   const retry = () => { setDeviceProblem(''); setLocal(null); setAttempt(n => n + 1) }
+  const switchCamera = async () => { if (!local || !navigator.mediaDevices?.getUserMedia || switchingCamera) return; const next: CameraFacing = facing === 'user' ? 'environment' : 'user'; setSwitchingCamera(true); try { const replacement = await navigator.mediaDevices.getUserMedia({ video: videoConstraints(next), audio: false }); const track = replacement.getVideoTracks()[0]; if (!track) { replacement.getTracks().forEach(item => item.stop()); return }; const previous = local.getVideoTracks(); previous.forEach(item => local.removeTrack(item)); local.addTrack(track); previous.forEach(item => item.stop()); setFacing(next) } catch { setDeviceProblem('Could not switch cameras. Your current camera is still on.') } finally { setSwitchingCamera(false) } }
 
   if (phase === 'lobby' || !local) {
     return <section className="meeting-room meeting-lobby">
@@ -259,16 +265,18 @@ export function MeetingRoom({ meeting, userId, onLeave, onBack }: { meeting: Mee
     </section>
   }
 
-  return <LiveRoom meeting={meeting} userId={userId} local={local} initialMic={micOn} initialCam={camOn} onLeave={onLeave} />
+  return <LiveRoom meeting={meeting} userId={userId} local={local} initialMic={micOn} initialCam={camOn} initialFacing={facing} onLeave={onLeave} />
 }
 
-function LiveRoom({ meeting, userId, local, initialMic, initialCam, onLeave }: { meeting: Meeting; userId: string; local: MediaStream; initialMic: boolean; initialCam: boolean; onLeave: () => void }) {
+function LiveRoom({ meeting, userId, local, initialMic, initialCam, initialFacing, onLeave }: { meeting: Meeting; userId: string; local: MediaStream; initialMic: boolean; initialCam: boolean; initialFacing: CameraFacing; onLeave: () => void }) {
   const net = useNetwork()
   const [peers, setPeers] = useState<RemotePeer[]>([])
   const [status, setStatus] = useState<'starting' | 'connecting' | 'joined' | 'full' | 'error'>('starting')
   const [problem, setProblem] = useState('')
   const [micOn, setMicOn] = useState(initialMic)
   const [camOn, setCamOn] = useState(initialCam)
+  const [facing, setFacing] = useState<CameraFacing>(initialFacing)
+  const [switchingCamera, setSwitchingCamera] = useState(false)
   const [room, setRoom] = useState<RoomState>(() => ({
     roster: meeting.participants.map(p => ({ userId: p.userId, name: p.name, notesConsent: p.notesConsent })),
     recordingSince: null, recordingBy: null, endedAt: meeting.endedAt,
@@ -290,6 +298,7 @@ function LiveRoom({ meeting, userId, local, initialMic, initialCam, onLeave }: {
   const addLine = useCallback((line: LiveLine) => setLines(prev => (prev.some(l => l.key === line.key) ? prev : [...prev, line].slice(-400))), [])
   const reloadRoom = useCallback(async () => { const r = await loadRoomState(meeting.id); if (r) setRoom(r) }, [meeting.id])
   const announce = () => call.current?.announceRoomChange()
+  const switchCamera = async () => { if (!navigator.mediaDevices?.getUserMedia || switchingCamera) return; const next: CameraFacing = facing === 'user' ? 'environment' : 'user'; setSwitchingCamera(true); try { const replacement = await navigator.mediaDevices.getUserMedia({ video: videoConstraints(next), audio: false }); const track = replacement.getVideoTracks()[0]; if (!track) { replacement.getTracks().forEach(item => item.stop()); return }; await call.current?.replaceVideoTrack(track); const previous = local.getVideoTracks(); previous.forEach(item => local.removeTrack(item)); local.addTrack(track); previous.forEach(item => item.stop()); track.enabled = camOn; setFacing(next) } catch { setProblem('Could not switch cameras. Your current camera is still on.') } finally { setSwitchingCamera(false) } }
 
   // The call itself.
   useEffect(() => {
@@ -468,6 +477,7 @@ function LiveRoom({ meeting, userId, local, initialMic, initialCam, onLeave }: {
     <footer className="meeting-controls">
       <button type="button" onClick={toggleMic} aria-pressed={!micOn} aria-label={micOn ? 'Mute' : 'Unmute'}>{micOn ? <Mic size={18} /> : <MicOff size={18} />}</button>
       <button type="button" onClick={toggleCam} aria-pressed={!camOn} aria-label={camOn ? 'Turn camera off' : 'Turn camera on'} disabled={!local.getVideoTracks().length}>{camOn ? <Video size={18} /> : <VideoOff size={18} />}</button>
+      <button type="button" onClick={() => void switchCamera()} aria-label="Flip camera" title="Flip camera" disabled={!local.getVideoTracks().length || switchingCamera}><SwitchCamera size={18} /></button>
       <button type="button" className={`record${recording ? ' on' : ''}`} aria-pressed={recording}
         disabled={sttMode === 'none' || (recording && !canStopRecording)}
         title={recording && !canStopRecording ? `${startedBy} or the host can stop recording` : undefined}
