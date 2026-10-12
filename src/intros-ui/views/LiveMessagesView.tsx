@@ -6,11 +6,13 @@ import { loadReadReceiptsSetting, markThreadRead, saveReadReceiptsSetting, useUn
 import { badgeLabel, seenUnderMessageId, shouldMarkRead } from '@/aetheris/messaging-state'
 import { OpenDealRoomButton } from '@/aetheris/deals-ui'
 import { draftTitle } from '@/aetheris/deals-core'
+import { StartWorkspaceButton } from '@/aetheris/workspaces/StartWorkspace'
 
+const isUuid = (v: string) => /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(v)
 const pageVisible = () => typeof document === 'undefined' || document.visibilityState === 'visible'
 
 /** Native editorial-noir messaging, wired to the live member threads and file attachments. */
-function Inner() {
+function Inner({ onOpenWorkspaces }: { onOpenWorkspaces?: () => void }) {
   const net = useNetwork()
   const [activeId, setActiveId] = useState<string>(() => (typeof window === 'undefined' ? '' : localStorage.getItem('aetheris-intros-thread') ?? ''))
   const [query, setQuery] = useState('')
@@ -126,7 +128,8 @@ function Inner() {
                 <p className="text-sm font-semibold text-[#F2EEE6] truncate">{person?.name ?? 'Member'}</p>
                 <p className="text-[11px] text-[#9CA3AF] truncate">{[person?.title, person?.company].filter(Boolean).join(' · ')}</p>
               </div>
-              {person && <div className="ml-auto shrink-0">
+              {person && <div className="ml-auto shrink-0 flex flex-wrap items-center justify-end gap-2">
+                {onOpenWorkspaces && isUuid(active.id) && <StartWorkspaceButton source="dm_thread" sourceId={active.id} withName={person.name} onOpen={onOpenWorkspaces} label="Workspace" />}
                 <OpenDealRoomButton kind="quiet" label="Deal room" draft={{ sourceKind: 'thread', sourceId: active.id, title: draftTitle('thread', person.name), need: active.introContext ?? '', counterpartId: person.id, counterpartName: person.name }} />
               </div>}
             </header>
@@ -173,6 +176,6 @@ function Inner() {
   )
 }
 
-export function LiveMessagesView() {
-  return <Inner />
+export function LiveMessagesView({ onOpenWorkspaces }: { onOpenWorkspaces?: () => void } = {}) {
+  return <Inner {...(onOpenWorkspaces ? { onOpenWorkspaces } : {})} />
 }
