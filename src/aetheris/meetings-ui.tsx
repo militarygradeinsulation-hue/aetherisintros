@@ -16,6 +16,7 @@ import { getIceServers } from '@/lib/iceServers.functions'
 import { generateMeetingNotes } from '@/lib/meetingNotes.functions'
 import { transcribeMeetingAudio } from '@/lib/meetingTranscribe.functions'
 import { useGraph } from './graph-store'
+import { BusinessLobby } from './BusinessLobby'
 import { loadBrief, type Brief } from './meeting-brief'
 import { MeetingBriefPanel as AiMeetingBriefPanel } from './meeting-brief-ui'
 import { downloadIcs, dueReminders, icsForMeeting, reminderText, type Reminder } from './meeting-reminders'
@@ -90,7 +91,12 @@ export function MeetingsPage() {
       </div>
     </header>
     {creating && <NewMeetingForm userId={graph.userId} onCreated={async (id, now) => { setCreating(false); await refresh(); if (now) setRoomId(id) }} />}
-    {error && <p className="og-note">{error}</p>}
+    {error && <p className="og-note" role="alert">{error}</p>}
+
+    <BusinessLobby userId={graph.userId} onJoin={async meetingId => {
+      await refresh()
+      setRoomId(meetingId)
+    }} />
 
     <h2 className="meetings-sub">Upcoming and live</h2>
     {open.length ? <div className="meetings-list">{open.map(m => <MeetingCard key={m.id} meeting={m} userId={graph.userId!} onJoin={() => setRoomId(m.id)} onNotes={() => setNotesId(m.id)} onBrief={() => setBriefId(briefId === m.id ? null : m.id)} />)}</div>
