@@ -14,7 +14,7 @@ import {
   type Directory, type MemoryNote,
 } from './db'
 import {
-  createLiveThread, emptyDirectory, loadLiveDirectory, mirrorFollow, saveComment,
+  createLiveThread, emptyDirectory, ensureThread, loadLiveDirectory, mirrorFollow, saveComment,
   saveReaction, sendLiveMessage, uploadProfileAvatar, type LiveProfileRow,
 } from './live'
 import { supabase } from '@/integrations/supabase/client'
@@ -265,7 +265,7 @@ interface NetworkApi {
   follow: (id: string) => void
   toggleSave: (id: string, label?: string) => void
   openThreadWith: (id: string) => string
-  sendMessage: (threadId: string, text: string) => void
+  sendMessage: (threadId: string, text: string, messageId?: string) => Promise<void>
   requestIntro: (id: string) => void
   authorizeIntro: (id: string) => void
   declineIntro: (id: string) => void
@@ -492,15 +492,15 @@ export function NetworkProvider({ children, mode = 'live' }: { children: React.R
       if (live) createLiveThread(thread.id, userId, thread.memberId, thread.introContext)
       else saveThread(userId, thread)
     }
-    for (const [threadId, messages] of Object.entries(s.sentMessages)) {
-      const before = prev.sentMessages[threadId] ?? []
-      messages.slice(before.length).forEach(message => {
-        if (live) {
-          // The dm_messages_notify trigger (0026) notifies the other participant.
-          sendLiveMessage(threadId, userId, message.text, message.id)
-        } else saveMessage(userId, threadId, message)
-      })
+    if (!live) {
+      for (const [threadId, messages] of Object.entries(s.sentMessages)) {
+        const before = prev.sentMessages[threadId] ?? []
+        messages.slice(before.length).forEach(message => saveMessage(userId, threadId, message))
+      }
     }
+    // In live mode, messages are persisted in the action and displayed only after
+    // the server acknowledges the exact message UUID. Replaying state here caused
+    // phantom deliveries on failure and duplicate sends on graph refresh.
     if (live) {
       for (const id of s.likedPosts) if (!prev.likedPosts.includes(id)) saveReaction(id, userId, 'like', true)
       for (const id of prev.likedPosts) if (!s.likedPosts.includes(id)) saveReaction(id, userId, 'like', false)
@@ -578,7 +578,7 @@ export function NetworkProvider({ children, mode = 'live' }: { children: React.R
       })),
       threads: byId([...dir.threads, ...s.ownThreads]).map(t => ({
         ...t,
-        messages: byId([...t.messages, ...(s.sentMessages[t.id] ?? []).map(m => ({ id: m.id, from: 'me' as const, text: m.text, at: m.at }))]),
+        messages: live ? t.messages : byId([...t.messages, ...(s.sentMessages[t.id] ?? []).map(m => ({ id: m.id, from: 'me' as const, text: m.text, at: m.at }))]),
       })),
       learnings: [...s.learned, ...dir.learnings],
       activity: [...s.activity, ...dir.signals],
@@ -634,14 +634,33 @@ export function NetworkProvider({ children, mode = 'live' }: { children: React.R
         return threadId
       },
 
-      sendMessage: (threadId, text) => patch(prev => {
-        const thread = [...prev.ownThreads, ...dir.threads].find(t => t.id === threadId)
-        const who = thread ? nameOf(thread.memberId) : 'a member'
-        return {
-          sentMessages: { ...prev.sentMessages, [threadId]: [...(prev.sentMessages[threadId] ?? []), { id: rowId(), text, at: clock() }] },
-          learned: remember(prev, { category: 'Messages', text: `You sent ${who} a message: “${text.slice(0, 70)}${text.length > 70 ? '…' : ''}”`, source: 'Conversation', confidence: 99, scope: 'private' }),
+      sendMessage: async (threadId, text, messageId) => {
+        if (!text.trim()) return
+        const thread = [...s.ownThreads, ...dir.threads].find(t => t.id === threadId)
+        if (live) {
+          if (!userId || !thread) throw new Error('Not sent. This conversation is unavailable. Retry.')
+          const actualThread = await ensureThread(userId, thread.memberId, thread.introContext)
+          if (!actualThread) throw new Error('Not sent. This conversation could not be saved. Retry.')
+          const id = await sendLiveMessage(actualThread, userId, text, messageId)
+          const at = clock()
+          setDir(prev => ({
+            ...prev,
+            threads: prev.threads.some(t => t.id === actualThread)
+              ? prev.threads.map(t => t.id === actualThread && !t.messages.some(m => m.id === id)
+                ? { ...t, messages: [...t.messages, { id, from: 'me' as const, text, at }] } : t)
+              : [{ ...thread, id: actualThread, messages: [{ id, from: 'me' as const, text, at }] }, ...prev.threads],
+          }))
+          if (actualThread !== threadId) setS(prev => ({
+            ...prev, ownThreads: prev.ownThreads.filter(t => t.id !== threadId),
+          }))
+          return
         }
-      }),
+        const who = thread ? nameOf(thread.memberId) : 'a member'
+        patch(prev => ({
+          sentMessages: { ...prev.sentMessages, [threadId]: [...(prev.sentMessages[threadId] ?? []), { id: messageId ?? rowId(), text, at: clock() }] },
+          learned: remember(prev, { category: 'Messages', text: `You sent ${who} a message: “${text.slice(0, 70)}${text.length > 70 ? '…' : ''}”`, source: 'Conversation', confidence: 99, scope: 'private' }),
+        }))
+      },
 
       requestIntro: (id) => patch(prev => ({
         introStates: { ...prev.introStates, [id]: 'requested' },
