@@ -161,7 +161,7 @@ export function rankPlacements(
       const circleRelevance = clamp(
         40 + circles.filter(c => c.memberIds.includes(m.id) && overlap(c.sharedIntents, system.industries.concat([system.name])) > 0).length * 18 + m.score.mutualValue / 6,
       )
-      const timing = clamp(m.score.timing + (memberIntents.some(i => i.urgency === 'high') ? 18 : 0) - Math.min(30, m.lastInteractionDays / 4))
+      const timing = clamp(m.score.timing + (memberIntents.some(i => i.urgency === 'high') ? 18 : 0) - Math.min(30, (m.lastInteractionDays ?? 0) / 4))
       const path = m.bestPath.length > 2 ? m.bestPath : ['You', m.name]
       const topIntent = memberIntents[0]
       return {
@@ -487,7 +487,7 @@ export function answerQuery(query: string, ctx: QueryContext): QueryAnswer {
     .map(p => {
       const text = `${p.name} ${p.title} ${p.company} ${p.industry} ${p.role} ${p.focus} ${p.needs.join(' ')} ${p.offers.join(' ')} ${p.location}`.toLowerCase()
       const match = terms.filter(t => text.includes(t)).length * 14
-      const timing = cooling ? Math.min(p.lastInteractionDays, 120) : p.score.timing / 4
+      const timing = cooling ? Math.min(p.lastInteractionDays ?? 0, 120) : p.score.timing / 4
       return { p, rank: p.scoreTotal + match + timing }
     })
     .sort((a, b) => b.rank - a.rank).slice(0, 3).map(x => x.p)
