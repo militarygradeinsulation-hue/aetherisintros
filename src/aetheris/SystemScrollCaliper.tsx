@@ -100,7 +100,7 @@ export function SystemScrollCaliper() {
       const visibleHeight = isPage ? window.innerHeight : tracked.clientHeight
       const amount = isPage ? window.scrollY : tracked.scrollTop
       const max = tracked.scrollHeight - visibleHeight
-      rail.dataset.scrollable = max > 2 && visibleHeight > 120 ? 'true' : 'false'
+      rail.dataset['scrollable'] = max > 2 && visibleHeight > 120 ? 'true' : 'false'
       scrollPos = amount
       needle.t = scrollPercent(amount, tracked.scrollHeight, visibleHeight)
 
