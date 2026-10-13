@@ -17,6 +17,8 @@ function Inner({ onOpenWorkspaces }: { onOpenWorkspaces?: () => void }) {
   const [activeId, setActiveId] = useState<string>(() => (typeof window === 'undefined' ? '' : localStorage.getItem('aetheris-intros-thread') ?? ''))
   const [query, setQuery] = useState('')
   const [draft, setDraft] = useState('')
+  const [sending, setSending] = useState(false)
+  const [failed, setFailed] = useState<{ id: string; threadId: string; text: string; reason: string } | null>(null)
   const endRef = useRef<HTMLDivElement>(null)
   const byId = useMemo(() => new Map(net.members.map(m => [m.id, m])), [net.members])
   const threads = net.threads.filter(t => {
@@ -56,12 +58,22 @@ function Inner({ onOpenWorkspaces }: { onOpenWorkspaces?: () => void }) {
     catch { setReceipts(!next); setReceiptsNote('Could not save that. Try again.') }
   }
 
-  const send = () => {
-    const text = draft.trim()
-    if (!text || !active) return
-    net.sendMessage(active.id, text)
-    setDraft('')
+  const sendText = async (threadId: string, text: string, messageId?: string) => {
+    if (!text.trim() || sending) return
+    const id = messageId ?? crypto.randomUUID()
+    setSending(true)
+    setFailed(null)
+    try {
+      await net.sendMessage(threadId, text, id)
+      if (active?.id === threadId) setDraft(current => current.trim() === text.trim() ? '' : current)
+    } catch (cause) {
+      setFailed({ id, threadId, text, reason: cause instanceof Error ? cause.message : 'Not sent. Retry this message.' })
+      setDraft(current => current.trim() ? current : text)
+    } finally {
+      setSending(false)
+    }
   }
+  const send = () => { if (active && draft.trim()) void sendText(active.id, draft.trim(), failed?.threadId === active.id && failed.text === draft.trim() ? failed.id : undefined) }
 
   return (
     <div className="max-w-[1400px] mx-auto px-3 md:px-6 py-4">
@@ -146,12 +158,16 @@ function Inner({ onOpenWorkspaces }: { onOpenWorkspaces?: () => void }) {
               ))}
               <div ref={endRef} />
             </div>
+            {failed && failed.threadId === active.id && <div role="alert" className="mx-3 mt-2 p-3 rounded-lg border border-red-400/50 bg-red-950/60 text-[#FFD8D8] text-xs flex items-center justify-between gap-3">
+              <span>{failed.reason} This message has not been delivered.</span>
+              <button type="button" className="underline font-semibold shrink-0" disabled={sending} onClick={() => void sendText(failed.threadId, failed.text, failed.id)}>Retry</button>
+            </div>}
             <footer className="p-3 border-t border-white/10 flex items-end gap-2">
-              <AttachButton threadId={active.id} onSend={text => net.sendMessage(active.id, text)} />
+              <AttachButton threadId={active.id} onSend={text => sendText(active.id, text)} />
               <textarea value={draft} onChange={e => setDraft(e.target.value)} rows={1} placeholder="Write a message…"
                 onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); send() } }}
                 className="flex-1 resize-none bg-[#0F131A] text-sm text-[#F2EEE6] rounded-lg px-3 py-2 border border-white/10 focus:outline-none focus:border-[#F5B027] max-h-32" />
-              <button onClick={send} disabled={!draft.trim()} aria-label="Send message"
+              <button onClick={send} disabled={!draft.trim() || sending} aria-label="Send message"
                 className="p-2.5 rounded-lg bg-[#C78522] hover:bg-[#A96F1B] disabled:opacity-40 text-white cursor-pointer">
                 <Send className="w-4 h-4" />
               </button>
