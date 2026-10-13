@@ -18,6 +18,7 @@ import {
   saveReaction, sendLiveMessage, uploadProfileAvatar, type LiveProfileRow,
 } from './live'
 import { supabase } from '@/integrations/supabase/client'
+import { reportWriteFailure } from './write-failures'
 import { quarterStart } from './activation'
 
 /** 'live' = real members only (the network). 'demo' = the labelled showcase. */
@@ -461,14 +462,11 @@ export function NetworkProvider({ children, mode = 'live' }: { children: React.R
     for (const group of groups) {
       for (const id of s[group]) if (!prev[group].includes(id)) {
         saveRelationship(userId, group, id, true)
-        if (live) {
-          // The follows_notify trigger (0026) tells the other member; clients cannot write notifications.
-          mirrorFollow(userId, id, relayKind[group], true)
-        }
+        // The live follow/connection was acknowledged before local state changed.
       }
       for (const id of prev[group]) if (!s[group].includes(id)) {
         saveRelationship(userId, group, id, false)
-        if (live) mirrorFollow(userId, id, relayKind[group], false)
+        // The live unfollow was acknowledged before local state changed.
       }
     }
     for (const [memberId, status] of Object.entries(s.introStates)) {
@@ -501,16 +499,8 @@ export function NetworkProvider({ children, mode = 'live' }: { children: React.R
     // In live mode, messages are persisted in the action and displayed only after
     // the server acknowledges the exact message UUID. Replaying state here caused
     // phantom deliveries on failure and duplicate sends on graph refresh.
-    if (live) {
-      for (const id of s.likedPosts) if (!prev.likedPosts.includes(id)) saveReaction(id, userId, 'like', true)
-      for (const id of prev.likedPosts) if (!s.likedPosts.includes(id)) saveReaction(id, userId, 'like', false)
-      for (const id of s.repostedPosts) if (!prev.repostedPosts.includes(id)) saveReaction(id, userId, 'repost', true)
-      for (const id of prev.repostedPosts) if (!s.repostedPosts.includes(id)) saveReaction(id, userId, 'repost', false)
-      for (const [postId, comments] of Object.entries(s.postComments)) {
-        const before = prev.postComments[postId] ?? []
-        comments.slice(before.length).forEach(comment => saveComment(postId, userId, comment.text))
-      }
-    }
+    // Live reactions and comments persist inside their individual confirmed actions.
+    // Never replay local state into the server without an acknowledgement.
     if (DOC_KEYS.some(key => prev[key] !== s[key])) {
       const doc: Record<string, unknown> = {}
       for (const key of DOC_KEYS) doc[key] = s[key]
@@ -543,6 +533,21 @@ export function NetworkProvider({ children, mode = 'live' }: { children: React.R
       [{ ...l, id: rowId(), when: 'Just now' }, ...prev.learned]
     const log = (prev: Persisted, a: Omit<Signal, 'id' | 'when'>): Signal[] =>
       [{ ...a, id: uid('act'), when: 'Just now' }, ...prev.activity]
+
+    /** Confirmation-first action with a shared warning that retains a real Retry. */
+    const verifiedWrite = (title: string, write: () => Promise<void>, commit: () => void): Promise<void> => {
+      const attempt = async (): Promise<void> => {
+        try { await write(); commit() }
+        catch (error) {
+          reportWriteFailure({
+            title: `${title} not saved`,
+            message: error instanceof Error ? error.message : 'The server did not confirm this update.',
+            retry: attempt,
+          })
+        }
+      }
+      return attempt()
+    }
 
     const threadFor = (prev: Persisted, memberId: string) => {
       const existing = [...dir.threads, ...prev.ownThreads].find(t => t.memberId === memberId)
@@ -602,20 +607,26 @@ export function NetworkProvider({ children, mode = 'live' }: { children: React.R
       askResponses: s.askResponses,
       warmPaths: s.warmPaths,
 
-      connect: (id) => patch(prev => prev.connections.includes(id) ? {
-        connections: prev.connections.filter(x => x !== id),
-      } : {
-        connections: [...prev.connections, id],
-        learned: remember(prev, { category: 'People', text: `You connected with ${nameOf(id)}.`, source: 'Your action · Discover', confidence: 100, scope: 'shareable' }),
-        activity: log(prev, { memberId: id, kind: 'New project', text: `${nameOf(id)} is now a direct connection in your graph.` }),
-      }),
+      connect: (id) => {
+        const on = !s.connections.includes(id)
+        const commit = () => patch(prev => ({
+          connections: on ? [...new Set([...prev.connections, id])] : prev.connections.filter(x => x !== id),
+          ...(on ? { learned: remember(prev, { category: 'People', text: `You saved a connection to ${nameOf(id)}.`, source: 'Confirmed network action', confidence: 100, scope: 'private' }) } : {}),
+        }))
+        return live ? verifiedWrite('Connection', () => {
+          if (!userId) throw new Error('Sign in to save this connection.')
+          return mirrorFollow(userId, id, 'connection', on)
+        }, commit) : Promise.resolve(commit())
+      },
 
-      follow: (id) => patch(prev => prev.follows.includes(id) ? {
-        follows: prev.follows.filter(x => x !== id),
-      } : {
-        follows: [...prev.follows, id],
-        learned: remember(prev, { category: 'Interests', text: `You are following ${nameOf(id)}'s professional activity.`, source: 'Your action', confidence: 100, scope: 'private' }),
-      }),
+      follow: (id) => {
+        const on = !s.follows.includes(id)
+        const commit = () => patch(prev => ({ follows: on ? [...new Set([...prev.follows, id])] : prev.follows.filter(x => x !== id) }))
+        return live ? verifiedWrite('Follow', () => {
+          if (!userId) throw new Error('Sign in to follow this member.')
+          return mirrorFollow(userId, id, 'follow', on)
+        }, commit) : Promise.resolve(commit())
+      },
 
       toggleSave: (id, label) => patch(prev => prev.saved.includes(id) ? { saved: prev.saved.filter(x => x !== id) } : {
         saved: [...prev.saved, id],
@@ -717,30 +728,41 @@ export function NetworkProvider({ children, mode = 'live' }: { children: React.R
         return threadId
       },
 
-      togglePostLike: (postId) => patch(prev => ({
-        likedPosts: prev.likedPosts.includes(postId)
-          ? prev.likedPosts.filter(id => id !== postId)
-          : [...prev.likedPosts, postId],
-      })),
+      togglePostLike: (postId) => {
+        const on = !s.likedPosts.includes(postId)
+        const commit = () => patch(prev => ({
+          likedPosts: on ? [...new Set([...prev.likedPosts, postId])] : prev.likedPosts.filter(id => id !== postId),
+        }))
+        return live ? verifiedWrite('Like', () => {
+          if (!userId) throw new Error('Sign in before liking a post.')
+          return saveReaction(postId, userId, 'like', on)
+        }, commit) : Promise.resolve(commit())
+      },
 
-      togglePostRepost: (postId, memberId) => patch(prev => {
-        const reposted = prev.repostedPosts.includes(postId)
-        return {
-          repostedPosts: reposted ? prev.repostedPosts.filter(id => id !== postId) : [...prev.repostedPosts, postId],
-          ...(!reposted ? {
-            learned: remember(prev, { category: 'Interests', text: `You reposted ${nameOf(memberId)}'s professional update.`, source: 'Network feed', confidence: 100, scope: 'public' }),
-            activity: log(prev, { memberId, kind: 'New project', text: `You shared ${nameOf(memberId)}'s update with your network.` }),
-          } : {}),
-        }
-      }),
+      togglePostRepost: (postId, memberId) => {
+        const on = !s.repostedPosts.includes(postId)
+        const commit = () => patch(prev => ({
+          repostedPosts: on ? [...new Set([...prev.repostedPosts, postId])] : prev.repostedPosts.filter(id => id !== postId),
+          ...(on ? { learned: remember(prev, { category: 'Interests', text: `You shared ${nameOf(memberId)}'s post.`, source: 'Confirmed network action', confidence: 100, scope: 'public' }) } : {}),
+        }))
+        return live ? verifiedWrite('Repost', () => {
+          if (!userId) throw new Error('Sign in to repost.')
+          return saveReaction(postId, userId, 'repost', on)
+        }, commit) : Promise.resolve(commit())
+      },
 
-      addPostComment: (postId, text, memberId) => patch(prev => ({
-        postComments: {
-          ...prev.postComments,
-          [postId]: [...(prev.postComments[postId] ?? []), { id: rowId(), text, when: 'Just now' }],
-        },
-        learned: remember(prev, { category: 'Interests', text: `You joined the discussion on ${nameOf(memberId)}'s post.`, source: 'Network feed', confidence: 100, scope: 'public' }),
-      })),
+      addPostComment: (postId, text, memberId) => {
+        const commit = () => patch(prev => ({
+          postComments: { ...prev.postComments,
+            [postId]: [...(prev.postComments[postId] ?? []), { id: rowId(), text, when: 'Just now' }],
+          },
+          learned: remember(prev, { category: 'Interests', text: `You commented on ${nameOf(memberId)}'s post.`, source: 'Confirmed network action', confidence: 100, scope: 'public' }),
+        }))
+        return live ? verifiedWrite('Comment', () => {
+          if (!userId) throw new Error('Sign in before commenting.')
+          return saveComment(postId, userId, text)
+        }, commit) : Promise.resolve(commit())
+      },
 
       setFeedPreferences: (feedPreferences) => patch(() => ({ feedPreferences })),
 
