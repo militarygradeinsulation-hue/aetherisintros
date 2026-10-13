@@ -18,6 +18,7 @@ function Inner({ onOpenWorkspaces }: { onOpenWorkspaces?: () => void }) {
   const [query, setQuery] = useState('')
   const [draft, setDraft] = useState('')
   const [sending, setSending] = useState(false)
+  const [readError, setReadError] = useState('')
   const [failed, setFailed] = useState<{ id: string; threadId: string; text: string; reason: string } | null>(null)
   const endRef = useRef<HTMLDivElement>(null)
   const byId = useMemo(() => new Map(net.members.map(m => [m.id, m])), [net.members])
@@ -38,7 +39,7 @@ function Inner({ onOpenWorkspaces }: { onOpenWorkspaces?: () => void }) {
   useEffect(() => {
     if (!active) return
     const check = () => {
-      if (shouldMarkRead({ threadId: active.id, pageVisible: pageVisible(), unread: activeUnread, fallbackUnread: !reads.loaded && active.unread })) void markThreadRead(active.id)
+      if (shouldMarkRead({ threadId: active.id, pageVisible: pageVisible(), unread: activeUnread, fallbackUnread: !reads.loaded && active.unread })) void markThreadRead(active.id).then(() => setReadError('')).catch(error => setReadError(error instanceof Error ? error.message : 'Unread state could not be saved.'))
     }
     check()
     document.addEventListener('visibilitychange', check)
@@ -81,6 +82,7 @@ function Inner({ onOpenWorkspaces }: { onOpenWorkspaces?: () => void }) {
         <p className="text-[10px] font-mono tracking-[0.2em] uppercase text-[#9CA3AF]">Private communication</p>
         <h1 className="font-serif-editorial text-2xl md:text-3xl text-[#F2EEE6]">Conversations with <em className="text-[#F5B027]">relationship context.</em></h1>
       </div>
+      {readError && <div role="alert" className="mb-2 p-2 border border-red-400/40 text-xs text-[#FFD1D1] rounded">{readError} <button type="button" className="underline font-semibold" onClick={() => { if (active) void markThreadRead(active.id).then(() => setReadError('')).catch(() => {}) }}>Retry</button></div>}
       <div className="grid grid-cols-1 md:grid-cols-[300px_1fr] lg:grid-cols-[300px_1fr_260px] gap-3 h-[calc(100vh-210px)] min-h-[480px]">
         <aside className={`rounded-xl border border-white/10 bg-[#0D1117]/90 flex flex-col min-h-0 ${active ? 'hidden md:flex' : 'flex'}`}>
           <div className="p-3 border-b border-white/10 relative">
