@@ -17,7 +17,7 @@ import { HubIntro, RadarMini, SignalPath, TileShell } from '../hub-ui'
 import { IntrosSystemFeatures } from '@/components/blocks/intros-system-features'
 import { IntrosWidgetGrid } from '../IntrosSystemGrid'
 import { BusinessPulse } from '../capabilities/BusinessPulse'
-import type { WidgetItem, WidgetSize } from '@/components/ui/draggable-widget-grid'
+import type { WidgetItem, WidgetSize } from '@/components/ui/widget-board'
 
 const dueLabel = (value: string | null) => value ? new Date(value).toLocaleDateString(undefined, { month: 'short', day: 'numeric' }) : 'No date'
 
