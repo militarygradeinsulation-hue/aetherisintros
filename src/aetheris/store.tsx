@@ -293,7 +293,8 @@ interface NetworkApi {
   toggleEventSave: (id: string) => void
 }
 
-const Ctx = createContext<NetworkApi | null>(null)
+const ctxHolder = globalThis as unknown as { __aetherisNetworkCtx?: React.Context<NetworkApi | null> }
+const Ctx = (ctxHolder.__aetherisNetworkCtx ??= createContext<NetworkApi | null>(null))
 
 const catalogue: Directory = {
   members: catalogueMembers, posts: cataloguePosts, asks: catalogueAsks,
