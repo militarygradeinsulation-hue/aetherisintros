@@ -5,6 +5,7 @@
 import { useEffect, useSyncExternalStore } from 'react'
 import { supabase } from '@/integrations/supabase/client'
 import { EMPTY_UNREAD, toSnapshot, withThreadRead, type UnreadRow, type UnreadSnapshot } from './messaging-state'
+import { reportClientError } from '@/lib/error-report'
 
 const db = supabase as any // eslint-disable-line @typescript-eslint/no-explicit-any
 
@@ -18,7 +19,12 @@ const emit = (next: UnreadSnapshot) => { snapshot = next; listeners.forEach(fn =
 
 export async function refreshUnread(): Promise<void> {
   const { data, error } = await db.rpc('my_unread_counts')
-  if (error) return
+  if (error) {
+    reportClientError(error, 'unread-counts')
+    // Keep last known unread state rather than falsely reporting everything read.
+    if (typeof window !== 'undefined') window.dispatchEvent(new Event('aetheris:unread-unavailable'))
+    return
+  }
   emit(toSnapshot(data as UnreadRow[]))
 }
 
@@ -67,9 +73,12 @@ export function useUnreadCounts(enabled = true): UnreadSnapshot {
 
 /** Record that you have read a conversation up to now. */
 export async function markThreadRead(threadId: string): Promise<void> {
-  emit(withThreadRead(snapshot, threadId))
   const { error } = await db.rpc('mark_thread_read', { p_thread_id: threadId })
-  if (error) console.warn('mark read failed', error.message)
+  if (error) {
+    reportClientError(error, 'mark-thread-read')
+    throw new Error('Could not mark the conversation as read. Retry when connected.')
+  }
+  emit(withThreadRead(snapshot, threadId))
   scheduleRefresh()
 }
 
