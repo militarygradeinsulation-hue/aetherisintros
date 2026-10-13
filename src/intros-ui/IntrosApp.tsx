@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
+import { submitIntroRequest } from './liveIntroRequest';
+import { loadMyProfile } from '@/aetheris/live';
 import './styles.css';
 import { AccentProvider } from './AccentMode';
 import {
@@ -88,10 +90,10 @@ export default function App({ mode = 'demo' }: { mode?: 'demo' | 'live' }) {
     const loadMe = async () => {
       const { data: u } = await supabase.auth.getUser();
       if (!u.user || off) return;
-      const { data } = await supabase.from('profiles').select('name, avatar_url').eq('id', u.user.id).maybeSingle();
+      const profile = await loadMyProfile(u.user.id);
       if (!off) {
-        const name = data?.name || u.user.email?.split('@')[0] || '';
-        const avatarUrl = data?.avatar_url || '';
+        const name = profile?.name || u.user.email?.split('@')[0] || '';
+        const avatarUrl = profile?.avatar_url || '';
         setMe({ name, ...(avatarUrl ? { avatarUrl } : {}) });
       }
     };
@@ -209,8 +211,11 @@ export default function App({ mode = 'demo' }: { mode?: 'demo' | 'live' }) {
     );
   };
 
-  const handleSendIntroRequest = (targetId: string, note: string) => {
-    // Successfully handled
+  const handleSendIntroRequest = async (targetId: string, note: string): Promise<'created' | 'existing'> => {
+    if (mode === 'live') return submitIntroRequest(targetId, note);
+    // The labelled /demo showcase is not the live member network.
+    setIntroRequests(previous => [{ id: `demo-intro-${Date.now()}`, targetId, note } as unknown as IntroRequest, ...previous]);
+    return 'created';
   };
 
   const handleAcceptIntroRequest = (reqId: string) => {
