@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { submitIntroRequest } from './liveIntroRequest';
 import { loadMyProfile } from '@/aetheris/live';
+import { WriteFailureNotice } from '@/aetheris/WriteFailureNotice';
+import { reportWriteFailure } from '@/aetheris/write-failures';
 import './styles.css';
 import { AccentProvider } from './AccentMode';
 import {
@@ -118,15 +120,30 @@ export default function App({ mode = 'demo' }: { mode?: 'demo' | 'live' }) {
 
   // Interactions
   const handleToggleConnect = (memberId: string) => {
-    setConnectedMemberIds((prev) => {
-      const next = new Set(prev);
-      if (next.has(memberId)) {
-        next.delete(memberId);
-      } else {
-        next.add(memberId);
+    const on = !connectedMemberIds.has(memberId);
+    const persist = async () => {
+      if (mode === 'live') {
+        const { data: identity, error: authError } = await supabase.auth.getUser();
+        if (authError || !identity.user) throw new Error('Sign in to save a connection.');
+        const query = on
+          ? supabase.from('follows').upsert({ follower_id: identity.user.id, followee_id: memberId, kind: 'connection' }, { onConflict: 'follower_id,followee_id,kind' })
+          : supabase.from('follows').delete().eq('follower_id', identity.user.id).eq('followee_id', memberId).eq('kind', 'connection');
+        const { error } = await query;
+        if (error) throw new Error('The server did not confirm this connection change.');
       }
-      return next;
-    });
+      setConnectedMemberIds(prev => {
+        const next = new Set(prev);
+        if (on) next.add(memberId); else next.delete(memberId);
+        return next;
+      });
+    };
+    const attempt = async () => {
+      try { await persist(); }
+      catch (error) {
+        reportWriteFailure({ title: 'Connection not saved', message: error instanceof Error ? error.message : 'No confirmation received.', retry: attempt });
+      }
+    };
+    void attempt();
   };
 
   const handleToggleSaveMember = (memberId: string) => {
@@ -241,6 +258,7 @@ export default function App({ mode = 'demo' }: { mode?: 'demo' | 'live' }) {
   return (
     <AccentProvider>
     <div className="ix-root min-h-screen bg-[#07090C] text-[#F2EEE6] flex flex-col font-sans selection:bg-[#F5B027]/30 selection:text-white relative">
+      <WriteFailureNotice />
       {/* Right-click quick menu (each member chooses its items) */}
       <QuickMenuHost
         live={mode === 'live'}
