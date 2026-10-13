@@ -484,6 +484,81 @@ export type Database = {
         }
         Relationships: []
       }
+      business_lobby_knocks: {
+        Row: {
+          created_at: string
+          decided_at: string | null
+          expires_at: string
+          id: string
+          intro_request_id: string
+          meeting_id: string | null
+          note: string
+          recipient_id: string
+          requester_id: string
+          status: string
+        }
+        Insert: {
+          created_at?: string
+          decided_at?: string | null
+          expires_at?: string
+          id?: string
+          intro_request_id: string
+          meeting_id?: string | null
+          note?: string
+          recipient_id: string
+          requester_id: string
+          status?: string
+        }
+        Update: {
+          created_at?: string
+          decided_at?: string | null
+          expires_at?: string
+          id?: string
+          intro_request_id?: string
+          meeting_id?: string | null
+          note?: string
+          recipient_id?: string
+          requester_id?: string
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "business_lobby_knocks_intro_request_id_fkey"
+            columns: ["intro_request_id"]
+            isOneToOne: false
+            referencedRelation: "intro_requests"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "business_lobby_knocks_meeting_id_fkey"
+            columns: ["meeting_id"]
+            isOneToOne: false
+            referencedRelation: "meetings"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      business_lobby_windows: {
+        Row: {
+          available_until: string
+          headline: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          available_until: string
+          headline?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          available_until?: string
+          headline?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       calendar_events: {
         Row: {
           all_day: boolean
@@ -3193,6 +3268,33 @@ export type Database = {
           id?: string
           leak_index?: number
           owner_id?: string
+        }
+        Relationships: []
+      }
+      marketplace_pilot_interests: {
+        Row: {
+          created_at: string
+          id: string
+          intent: string
+          response: Json
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          intent: string
+          response: Json
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          intent?: string
+          response?: Json
+          updated_at?: string
+          user_id?: string
         }
         Relationships: []
       }
@@ -6050,6 +6152,10 @@ export type Database = {
       }
       agent_request_contact: { Args: { p_id: string }; Returns: string }
       agent_topics_ok: { Args: { p: string[] }; Returns: boolean }
+      answer_business_lobby: {
+        Args: { p_accept: boolean; p_knock: string }
+        Returns: string
+      }
       append_capability_event: {
         Args: {
           p_detail?: Json
@@ -6309,6 +6415,10 @@ export type Database = {
         Args: { p_email: string; p_name?: string }
         Returns: undefined
       }
+      knock_business_lobby: {
+        Args: { p_intro: string; p_note?: string }
+        Returns: string
+      }
       link_entities: {
         Args: {
           p_from_id: string
@@ -6368,6 +6478,16 @@ export type Database = {
       member_track_record: { Args: { p_member: string }; Returns: Json }
       membership_card_name: { Args: { p_user: string }; Returns: string }
       my_activation: { Args: never; Returns: Json }
+      my_business_lobby_contacts: {
+        Args: never
+        Returns: {
+          available_until: string
+          headline: string
+          intro_request_id: string
+          other_id: string
+          other_name: string
+        }[]
+      }
       my_capability_usage_today: {
         Args: never
         Returns: {
@@ -6407,6 +6527,14 @@ export type Database = {
           private_note: string
         }[]
       }
+      my_intro_participant_names: {
+        Args: { p_intro_ids?: string[] }
+        Returns: {
+          intro_request_id: string
+          other_id: string
+          other_name: string
+        }[]
+      }
       my_invite_code: { Args: never; Returns: string }
       my_pending_intro_requests: {
         Args: never
@@ -6431,6 +6559,19 @@ export type Database = {
           member_id: string
           name: string
           verified: boolean
+        }[]
+      }
+      my_relationship_evidence: {
+        Args: { p_members?: string[] }
+        Returns: {
+          accepted_intro_count: number
+          connection_saved: boolean
+          introduction_count: number
+          joined_meetings: number
+          last_meeting_at: string
+          last_message_at: string
+          member_id: string
+          message_count: number
         }[]
       }
       my_top_connections: {
@@ -6605,6 +6746,10 @@ export type Database = {
       }
       send_cooling_nudges: { Args: never; Returns: number }
       send_event_reminders: { Args: never; Returns: number }
+      set_business_lobby: {
+        Args: { p_headline?: string; p_minutes: number }
+        Returns: string
+      }
       set_capability_run_status: {
         Args: {
           p_engine?: string
@@ -6665,6 +6810,10 @@ export type Database = {
         }
         Returns: string
       }
+      submit_marketplace_pilot_interest: {
+        Args: { p_response: Json }
+        Returns: string
+      }
       submit_member_verification: {
         Args: {
           p_business_dba: string
@@ -6695,6 +6844,12 @@ export type Database = {
           p_who_should_meet?: string
         }
         Returns: undefined
+      }
+      visible_member_profiles: {
+        Args: { p_limit?: number; p_member_ids?: string[]; p_offset?: number }
+        Returns: {
+          profile: Json
+        }[]
       }
       ways_to_give: { Args: never; Returns: Json }
       wp_connected: { Args: { p_a: string; p_b: string }; Returns: boolean }
