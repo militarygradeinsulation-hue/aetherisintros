@@ -106,10 +106,10 @@ function IntelligenceCards() {
   const net = useNetwork(); const ops = useOps(); const ceo = useCeo(); const nav = useNav()
   const due = ops.tasks.find(task => task.status !== 'done' && task.status !== 'cancelled' && task.dueAt)
   const meeting = ceo.inputs.meetings.find(item => new Date(item.startsAt).getTime() > Date.now())
-  const cooling = [...net.members].filter(m => m.lastInteractionDays !== null && m.lastInteractionDays > 30).sort((a, b) => (b.lastInteractionDays ?? 0) - (a.lastInteractionDays ?? 0))[0]
+  const cooling = [...net.members].sort((a, b) => b.lastInteractionDays - a.lastInteractionDays)[0]
   const approval = ceo.inputs.approvals.find(item => item.status === 'pending')
   const cards = [
-    cooling && cooling.lastInteractionDays !== null && cooling.lastInteractionDays > 30 ? { id: `cool-${cooling.id}`, label: 'Relationship alert', title: `${cooling.name} has no recorded interaction for ${cooling.lastInteractionDays} days.`, detail: cooling.nextAction, action: 'Follow up', run: () => nav.messageMember(cooling.id) } : null,
+    cooling && cooling.lastInteractionDays > 30 ? { id: `cool-${cooling.id}`, label: 'Relationship alert', title: `${cooling.name} has no recorded interaction for ${cooling.lastInteractionDays} days.`, detail: cooling.nextAction, action: 'Follow up', run: () => nav.messageMember(cooling.id) } : null,
     due ? { id: `due-${due.id}`, label: 'Commitment due', title: due.title, detail: due.dueAt ? `Due ${new Date(due.dueAt).toLocaleDateString()}. ${due.detail}` : due.detail, action: 'Open Work', run: () => nav.setPage('work') } : null,
     meeting ? { id: `meet-${meeting.id}`, label: 'Meeting ahead', title: meeting.title, detail: new Date(meeting.startsAt).toLocaleString(undefined, { weekday: 'short', month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' }), action: 'Prepare me', run: () => meeting.memberId ? openCeo({ view: 'prepare', memberId: meeting.memberId }) : nav.setPage('calendar') } : null,
     approval ? { id: `approve-${approval.id}`, label: 'Decision review', title: approval.summary, detail: 'Waiting in your private approval queue. Nothing happens without you.', action: 'Review', run: () => openCeo({ view: 'approvals' }) } : null,
