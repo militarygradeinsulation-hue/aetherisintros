@@ -3,6 +3,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { submitIntroRequest } from './liveIntroRequest';
 import { loadMyProfile } from '@/aetheris/live';
 import { WriteFailureNotice } from '@/aetheris/WriteFailureNotice';
+import { refreshUnread } from '@/aetheris/read-receipts';
 import { reportWriteFailure } from '@/aetheris/write-failures';
 import './styles.css';
 import { AccentProvider } from './AccentMode';
@@ -102,6 +103,34 @@ export default function App({ mode = 'demo' }: { mode?: 'demo' | 'live' }) {
     void loadMe();
     const t = setInterval(loadMe, 30000);
     return () => { off = true; clearInterval(t); };
+  }, [mode]);
+
+  const [unreadUnavailable, setUnreadUnavailable] = useState(false);
+  useEffect(() => {
+    if (mode !== 'live') return;
+    const fail = () => setUnreadUnavailable(true);
+    const success = () => setUnreadUnavailable(false);
+    window.addEventListener('aetheris:unread-unavailable', fail);
+    window.addEventListener('aetheris:unread-loaded', success);
+    return () => {
+      window.removeEventListener('aetheris:unread-unavailable', fail);
+      window.removeEventListener('aetheris:unread-loaded', success);
+    };
+  }, [mode]);
+
+  // Restore saved connections on reload instead of presenting them as absent.
+  useEffect(() => {
+    if (mode !== 'live') return;
+    let cancelled = false;
+    const loadConnections = async () => {
+      const { data: identity } = await supabase.auth.getUser();
+      if (!identity.user) return;
+      const { data, error } = await supabase.from('follows').select('followee_id')
+        .eq('follower_id', identity.user.id).eq('kind', 'connection');
+      if (!cancelled && !error) setConnectedMemberIds(new Set((data ?? []).map(row => row.followee_id)));
+    };
+    void loadConnections();
+    return () => { cancelled = true };
   }, [mode]);
 
   // Count today's visit once per device for the admin growth report.
@@ -275,6 +304,10 @@ export default function App({ mode = 'demo' }: { mode?: 'demo' | 'live' }) {
       <QuickNoteHost />
 
       {/* Universal Top Navigation Contract */}
+      {mode === 'live' && unreadUnavailable && <div role="alert" className="mx-4 mt-2 rounded-lg border border-red-400/40 px-3 py-2 text-xs text-[#FFD6D6]">
+        Unread counts could not be loaded. Do not assume your inbox is clear.
+        <button type="button" className="ml-2 underline font-semibold" onClick={() => void refreshUnread()}>Retry</button>
+      </div>}
       <TopNavigation
         activePage={activePage}
         onNavigate={handleNavigate}
