@@ -13,6 +13,7 @@ import { useEffect, type ReactNode } from "react";
 import { Toaster } from "@/components/ui/sonner";
 import { CursorGlow } from "@/components/ui/cursor-glow";
 import { BrandFonts } from "@/aetheris/BrandFonts";
+import { SystemScrollCaliper } from "@/aetheris/SystemScrollCaliper";
 import Aurora from "@/intros-ui/Aurora";
 import ParticleDrift from "@/aetheris/ParticleDrift";
 import ConstellationField from "@/aetheris/ConstellationField";
@@ -127,6 +128,7 @@ function RootShell({ children }: { children: ReactNode }) {
       </head>
       <body>
         {children}
+        <SystemScrollCaliper />
         <div className="site-ambient" aria-hidden="true">
           <Aurora className="site-ambient-lights" colors={["var(--acc, var(--cobalt))", "var(--acc-bright, var(--cobalt-bright))", "var(--acc-glow, var(--cobalt))"]} duration={22} intensity={0.34} />
           <ParticleDrift className="site-ambient-numbers" />
