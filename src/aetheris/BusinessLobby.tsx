@@ -129,7 +129,7 @@ export function BusinessLobby({ userId, onJoin }: { userId: string; onJoin: (mee
       {incoming.map(k => <div key={k.id} className="business-lobby-request">
         <div><strong>{k.counterpartName} is asking to meet</strong>
           {k.note && <p>{k.note}</p>}
-          <small>Expires ${new Date(k.expiresAt).toLocaleTimeString(undefined, { hour:'numeric', minute:'2-digit' })}</small>
+          <small>Expires {new Date(k.expiresAt).toLocaleTimeString(undefined, { hour:'numeric', minute:'2-digit' })}</small>
         </div>
         <div className="og-inline">
           <Btn disabled={busy} onClick={() => void perform(async () => {
