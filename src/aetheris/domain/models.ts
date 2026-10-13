@@ -203,7 +203,7 @@ export interface RelationshipWeather {
   formation: number
   momentum: number
   depth: number
-  recencyDays: number
+  recencyDays: number | null
   reciprocity: number
   trust: number
   openLoops: number

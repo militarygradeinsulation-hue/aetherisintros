@@ -161,7 +161,7 @@ export function rankPlacements(
       const circleRelevance = clamp(
         40 + circles.filter(c => c.memberIds.includes(m.id) && overlap(c.sharedIntents, system.industries.concat([system.name])) > 0).length * 18 + m.score.mutualValue / 6,
       )
-      const timing = clamp(m.score.timing + (memberIntents.some(i => i.urgency === 'high') ? 18 : 0) - Math.min(30, m.lastInteractionDays / 4))
+      const timing = clamp(m.score.timing + (memberIntents.some(i => i.urgency === 'high') ? 18 : 0) - Math.min(30, (m.lastInteractionDays ?? 0) / 4))
       const path = m.bestPath.length > 2 ? m.bestPath : ['You', m.name]
       const topIntent = memberIntents[0]
       return {
@@ -244,6 +244,17 @@ export function deriveWeather(member: Member, loops: OpenLoop[], stored?: Relati
   if (stored) return stored
   const open = loops.filter(l => l.memberId === member.id && l.status === 'open')
   const days = member.lastInteractionDays
+  // Never label a person dormant when there has never been a recorded exchange.
+  if (days === null || !Number.isFinite(days) || days < 0) return {
+    id: `w-${member.id}`, memberId: member.id,
+    state: open.some(l => l.owner === 'them') ? 'Waiting' : 'Building',
+    why: 'No direct message or completed meeting has been recorded yet.',
+    formation: member.score.relationshipStrength, momentum: 0,
+    depth: member.score.trust, recencyDays: null, reciprocity: clamp(member.score.mutualValue),
+    trust: member.score.trust, openLoops: open.length,
+    contextAccumulated: member.tags.length + member.expertise.length,
+    updatedAt: new Date().toISOString().slice(0, 10),
+  }
   const state: WeatherState =
     days > 90 ? 'Dormant'
       : open.some(l => l.owner === 'me' && l.priority === 'high') && days > 30 ? 'At Risk'
@@ -476,7 +487,7 @@ export function answerQuery(query: string, ctx: QueryContext): QueryAnswer {
     .map(p => {
       const text = `${p.name} ${p.title} ${p.company} ${p.industry} ${p.role} ${p.focus} ${p.needs.join(' ')} ${p.offers.join(' ')} ${p.location}`.toLowerCase()
       const match = terms.filter(t => text.includes(t)).length * 14
-      const timing = cooling ? Math.min(p.lastInteractionDays, 120) : p.score.timing / 4
+      const timing = cooling ? Math.min(p.lastInteractionDays ?? 0, 120) : p.score.timing / 4
       return { p, rank: p.scoreTotal + match + timing }
     })
     .sort((a, b) => b.rank - a.rank).slice(0, 3).map(x => x.p)

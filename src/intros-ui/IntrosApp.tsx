@@ -1,5 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
+import { submitIntroRequest } from './liveIntroRequest';
+import { loadMyProfile } from '@/aetheris/live';
+import { WriteFailureNotice } from '@/aetheris/WriteFailureNotice';
+import { refreshUnread } from '@/aetheris/read-receipts';
+import { reportWriteFailure } from '@/aetheris/write-failures';
 import './styles.css';
 import { AccentProvider } from './AccentMode';
 import {
@@ -88,16 +93,44 @@ export default function App({ mode = 'demo' }: { mode?: 'demo' | 'live' }) {
     const loadMe = async () => {
       const { data: u } = await supabase.auth.getUser();
       if (!u.user || off) return;
-      const { data } = await supabase.from('profiles').select('name, avatar_url').eq('id', u.user.id).maybeSingle();
+      const profile = await loadMyProfile(u.user.id);
       if (!off) {
-        const name = data?.name || u.user.email?.split('@')[0] || '';
-        const avatarUrl = data?.avatar_url || '';
+        const name = profile?.name || u.user.email?.split('@')[0] || '';
+        const avatarUrl = profile?.avatar_url || '';
         setMe({ name, ...(avatarUrl ? { avatarUrl } : {}) });
       }
     };
     void loadMe();
     const t = setInterval(loadMe, 30000);
     return () => { off = true; clearInterval(t); };
+  }, [mode]);
+
+  const [unreadUnavailable, setUnreadUnavailable] = useState(false);
+  useEffect(() => {
+    if (mode !== 'live') return;
+    const fail = () => setUnreadUnavailable(true);
+    const success = () => setUnreadUnavailable(false);
+    window.addEventListener('aetheris:unread-unavailable', fail);
+    window.addEventListener('aetheris:unread-loaded', success);
+    return () => {
+      window.removeEventListener('aetheris:unread-unavailable', fail);
+      window.removeEventListener('aetheris:unread-loaded', success);
+    };
+  }, [mode]);
+
+  // Restore saved connections on reload instead of presenting them as absent.
+  useEffect(() => {
+    if (mode !== 'live') return;
+    let cancelled = false;
+    const loadConnections = async () => {
+      const { data: identity } = await supabase.auth.getUser();
+      if (!identity.user) return;
+      const { data, error } = await supabase.from('follows').select('followee_id')
+        .eq('follower_id', identity.user.id).eq('kind', 'connection');
+      if (!cancelled && !error) setConnectedMemberIds(new Set((data ?? []).map(row => row.followee_id)));
+    };
+    void loadConnections();
+    return () => { cancelled = true };
   }, [mode]);
 
   // Count today's visit once per device for the admin growth report.
@@ -116,15 +149,30 @@ export default function App({ mode = 'demo' }: { mode?: 'demo' | 'live' }) {
 
   // Interactions
   const handleToggleConnect = (memberId: string) => {
-    setConnectedMemberIds((prev) => {
-      const next = new Set(prev);
-      if (next.has(memberId)) {
-        next.delete(memberId);
-      } else {
-        next.add(memberId);
+    const on = !connectedMemberIds.has(memberId);
+    const persist = async () => {
+      if (mode === 'live') {
+        const { data: identity, error: authError } = await supabase.auth.getUser();
+        if (authError || !identity.user) throw new Error('Sign in to save a connection.');
+        const query = on
+          ? supabase.from('follows').upsert({ follower_id: identity.user.id, followee_id: memberId, kind: 'connection' }, { onConflict: 'follower_id,followee_id,kind' })
+          : supabase.from('follows').delete().eq('follower_id', identity.user.id).eq('followee_id', memberId).eq('kind', 'connection');
+        const { error } = await query;
+        if (error) throw new Error('The server did not confirm this connection change.');
       }
-      return next;
-    });
+      setConnectedMemberIds(prev => {
+        const next = new Set(prev);
+        if (on) next.add(memberId); else next.delete(memberId);
+        return next;
+      });
+    };
+    const attempt = async () => {
+      try { await persist(); }
+      catch (error) {
+        reportWriteFailure({ title: 'Connection not saved', message: error instanceof Error ? error.message : 'No confirmation received.', retry: attempt });
+      }
+    };
+    void attempt();
   };
 
   const handleToggleSaveMember = (memberId: string) => {
@@ -209,8 +257,11 @@ export default function App({ mode = 'demo' }: { mode?: 'demo' | 'live' }) {
     );
   };
 
-  const handleSendIntroRequest = (targetId: string, note: string) => {
-    // Successfully handled
+  const handleSendIntroRequest = async (targetId: string, note: string): Promise<'created' | 'existing'> => {
+    if (mode === 'live') return submitIntroRequest(targetId, note);
+    // The labelled /demo showcase is not the live member network.
+    setIntroRequests(previous => [{ id: `demo-intro-${Date.now()}`, targetId, note } as unknown as IntroRequest, ...previous]);
+    return 'created';
   };
 
   const handleAcceptIntroRequest = (reqId: string) => {
@@ -236,6 +287,7 @@ export default function App({ mode = 'demo' }: { mode?: 'demo' | 'live' }) {
   return (
     <AccentProvider>
     <div className="ix-root min-h-screen bg-[#07090C] text-[#F2EEE6] flex flex-col font-sans selection:bg-[#F5B027]/30 selection:text-white relative">
+      <WriteFailureNotice />
       {/* Right-click quick menu (each member chooses its items) */}
       <QuickMenuHost
         live={mode === 'live'}
@@ -252,6 +304,10 @@ export default function App({ mode = 'demo' }: { mode?: 'demo' | 'live' }) {
       <QuickNoteHost />
 
       {/* Universal Top Navigation Contract */}
+      {mode === 'live' && unreadUnavailable && <div role="alert" className="mx-4 mt-2 rounded-lg border border-red-400/40 px-3 py-2 text-xs text-[#FFD6D6]">
+        Unread counts could not be loaded. Do not assume your inbox is clear.
+        <button type="button" className="ml-2 underline font-semibold" onClick={() => void refreshUnread()}>Retry</button>
+      </div>}
       <TopNavigation
         activePage={activePage}
         onNavigate={handleNavigate}
