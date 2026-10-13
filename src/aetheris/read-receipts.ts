@@ -14,6 +14,8 @@ const listeners = new Set<() => void>()
 let subscribers = 0
 let channel: ReturnType<typeof supabase.channel> | null = null
 let timer: ReturnType<typeof setTimeout> | null = null
+let polling: ReturnType<typeof setInterval> | null = null
+const onVisible = () => { if (typeof document === 'undefined' || !document.hidden) scheduleRefresh() }
 
 const emit = (next: UnreadSnapshot) => { snapshot = next; listeners.forEach(fn => fn()) }
 
@@ -37,6 +39,9 @@ const scheduleRefresh = () => {
 function start() {
   void refreshUnread()
   if (channel) return
+  document.addEventListener('visibilitychange', onVisible)
+  window.addEventListener('focus', onVisible)
+  polling = setInterval(() => { if (!document.hidden) scheduleRefresh() }, 20000)
   channel = supabase
     .channel(`dm-unread-${Math.random().toString(36).slice(2, 10)}`)
     .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'dm_messages' }, scheduleRefresh)
@@ -49,6 +54,11 @@ function stop() {
   channel = null
   if (timer) clearTimeout(timer)
   timer = null
+  if (polling) clearInterval(polling)
+  polling = null
+  if (typeof document !== 'undefined') document.removeEventListener('visibilitychange', onVisible)
+  if (typeof window !== 'undefined') window.removeEventListener('focus', onVisible)
+  emit(EMPTY_UNREAD)
 }
 
 function subscribe(fn: () => void) {
