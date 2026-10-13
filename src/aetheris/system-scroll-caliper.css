@@ -1,0 +1,65 @@
+/* Ask Intros kinetic vernier — non-interactive scrolling reference, not a
+   custom scrollbar. Existing wheel/touch/keyboard scroll remains untouched. */
+.ask-scroll-caliper {
+  --caliper-ink: rgba(236, 231, 218, .72);
+  --caliper-accent: #f5b027;
+  position: fixed;
+  top: max(102px, env(safe-area-inset-top));
+  bottom: 24px;
+  right: 7px;
+  width: 48px;
+  z-index: 48;
+  pointer-events: none;
+  color: var(--caliper-ink);
+  opacity: .82;
+  user-select: none;
+  transition: opacity .18s ease;
+  contain: layout;
+}
+.ask-scroll-caliper[data-scrollable="false"] { opacity: 0; }
+.ask-scroll-caliper-svg { display: block; width: 100%; height: 100%; overflow: visible; }
+.ask-scroll-caliper-ticks { opacity: .65; }
+.ask-scroll-caliper-jaw { color: #f0eadf; }
+.ask-scroll-caliper-indicator { color: var(--caliper-accent); }
+.ask-scroll-caliper-chip {
+  position: absolute;
+  right: 57px;
+  bottom: 8px;
+  min-width: 91px;
+  background: rgba(14, 17, 23, .94);
+  border: 1px solid rgba(245, 176, 39, .26);
+  color: #f5f0e9;
+  border-radius: 5px;
+  padding: 6px 8px;
+  font-family: 'Space Mono', 'Roboto Mono', ui-monospace, monospace;
+  font-size: 10px;
+  line-height: 1.4;
+  font-variant-numeric: tabular-nums;
+  box-shadow: 0 8px 22px rgba(0, 0, 0, .32);
+  white-space: nowrap;
+}
+.ask-scroll-caliper-label {
+  display: block;
+  color: var(--caliper-accent);
+  font-size: 9px;
+  letter-spacing: .13em;
+  font-weight: 700;
+}
+.ask-scroll-caliper-dim { color: rgba(242, 238, 230, .62); }
+@media (max-width: 767px) {
+  .ask-scroll-caliper {
+    width: 25px;
+    top: calc(84px + env(safe-area-inset-top));
+    bottom: calc(94px + env(safe-area-inset-bottom));
+    right: 1px;
+    opacity: .46;
+  }
+  .ask-scroll-caliper-chip { display: none; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .ask-scroll-caliper { transition: none; }
+  .ask-scroll-caliper-ticks { filter: none !important; }
+}
+/* Hide the purely decorative overlay over accessible dialogs or video calls. */
+body:has([aria-modal="true"]) .ask-scroll-caliper,
+body:has([data-meeting-active="true"]) .ask-scroll-caliper { opacity: 0; }
