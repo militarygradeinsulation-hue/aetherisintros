@@ -362,21 +362,24 @@ export async function sendLiveMessage(threadId: string, senderId: string, text: 
   return data.id
 }
 
-export function mirrorFollow(userId: string, peerId: string, kind: 'follow' | 'connection' | 'saved', on: boolean) {
-  if (!/^[0-9a-f-]{36}$/i.test(peerId)) return
-  fire(on
+export async function mirrorFollow(userId: string, peerId: string, kind: 'follow' | 'connection' | 'saved', on: boolean): Promise<void> {
+  if (!UUID.test(peerId) || !UUID.test(userId)) throw new Error('This connection is not a live member.')
+  const result = await (on
     ? supabase.from('follows').upsert({ follower_id: userId, followee_id: peerId, kind }, { onConflict: 'follower_id,followee_id,kind' })
-    : supabase.from('follows').delete().eq('follower_id', userId).eq('followee_id', peerId).eq('kind', kind), 'relationship-write')
+    : supabase.from('follows').delete().eq('follower_id', userId).eq('followee_id', peerId).eq('kind', kind))
+  if (result.error) { reportClientError(result.error, 'relationship-write'); throw new Error('Connection was not saved.') }
 }
 
-export function saveComment(postId: string, authorId: string, text: string) {
-  fire(supabase.from('post_comments').insert({ post_id: postId, author_id: authorId, text }), 'comment-write')
+export async function saveComment(postId: string, authorId: string, text: string): Promise<void> {
+  const result = await supabase.from('post_comments').insert({ post_id: postId, author_id: authorId, text })
+  if (result.error) { reportClientError(result.error, 'comment-write'); throw new Error('Comment was not saved.') }
 }
 
-export function saveReaction(postId: string, userId: string, kind: 'like' | 'save' | 'repost', on: boolean) {
-  fire(on
+export async function saveReaction(postId: string, userId: string, kind: 'like' | 'save' | 'repost', on: boolean): Promise<void> {
+  const result = await (on
     ? supabase.from('post_reactions').upsert({ post_id: postId, user_id: userId, kind }, { onConflict: 'post_id,user_id,kind' })
-    : supabase.from('post_reactions').delete().eq('post_id', postId).eq('user_id', userId).eq('kind', kind), 'reaction-write')
+    : supabase.from('post_reactions').delete().eq('post_id', postId).eq('user_id', userId).eq('kind', kind))
+  if (result.error) { reportClientError(result.error, 'reaction-write'); throw new Error('Reaction was not saved.') }
 }
 
 /** Create the conversation row with a caller-supplied id (optimistic UI). */
