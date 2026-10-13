@@ -244,6 +244,17 @@ export function deriveWeather(member: Member, loops: OpenLoop[], stored?: Relati
   if (stored) return stored
   const open = loops.filter(l => l.memberId === member.id && l.status === 'open')
   const days = member.lastInteractionDays
+  // Never label a person dormant when there has never been a recorded exchange.
+  if (days === null || !Number.isFinite(days) || days < 0) return {
+    id: `w-${member.id}`, memberId: member.id,
+    state: open.some(l => l.owner === 'them') ? 'Waiting' : 'Building',
+    why: 'No direct message or completed meeting has been recorded yet.',
+    formation: member.score.relationshipStrength, momentum: 0,
+    depth: member.score.trust, recencyDays: null, reciprocity: clamp(member.score.mutualValue),
+    trust: member.score.trust, openLoops: open.length,
+    contextAccumulated: member.tags.length + member.expertise.length,
+    updatedAt: new Date().toISOString().slice(0, 10),
+  }
   const state: WeatherState =
     days > 90 ? 'Dormant'
       : open.some(l => l.owner === 'me' && l.priority === 'high') && days > 30 ? 'At Risk'
