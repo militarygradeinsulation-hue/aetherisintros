@@ -26,6 +26,7 @@ export async function refreshUnread(): Promise<void> {
     return
   }
   emit(toSnapshot(data as UnreadRow[]))
+  if (typeof window !== 'undefined') window.dispatchEvent(new Event('aetheris:unread-loaded'))
 }
 
 const scheduleRefresh = () => {
