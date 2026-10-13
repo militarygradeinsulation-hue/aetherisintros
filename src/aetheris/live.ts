@@ -336,9 +336,30 @@ export async function ensureThread(userId: string, peerId: string, context = '')
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
 
 /** `id` (when a uuid) keeps the sent row's id equal to the local message, so read receipts line up. */
-export function sendLiveMessage(threadId: string, senderId: string, text: string, id?: string) {
-  fire(supabase.from('dm_messages').insert({ ...(id && UUID.test(id) ? { id } : {}), thread_id: threadId, sender_id: senderId, text }), 'message-send')
-  fire(supabase.from('dm_threads').update({ updated_at: new Date().toISOString() }).eq('id', threadId), 'thread-touch')
+/** Durable message acknowledgement. Retrying with the same UUID cannot deliver twice. */
+export async function sendLiveMessage(threadId: string, senderId: string, text: string, id?: string): Promise<string> {
+  if (!UUID.test(threadId) || (id && !UUID.test(id)) || !text.trim()) {
+    throw new Error('Not sent. Choose a valid conversation and write a message.')
+  }
+  const messageId = id ?? crypto.randomUUID()
+  const { data, error } = await supabase.from('dm_messages')
+    .insert({ id: messageId, thread_id: threadId, sender_id: senderId, text: text.trim() })
+    .select('id').maybeSingle()
+  if (error) {
+    if (error.code === '23505') {
+      const prior = await supabase.from('dm_messages')
+        .select('id').eq('id', messageId).eq('thread_id', threadId).eq('sender_id', senderId).maybeSingle()
+      if (!prior.error && prior.data?.id === messageId) return messageId
+    }
+    reportClientError(error, 'message-send')
+    throw new Error('Not sent. The server did not confirm this message. Retry.')
+  }
+  if (!data?.id) throw new Error('Not sent. The server did not confirm this message. Retry.')
+  // The message is already durable; a nonessential thread timestamp failure must
+  // not mislabel an actual delivered message as failed.
+  const touched = await supabase.from('dm_threads').update({ updated_at: new Date().toISOString() }).eq('id', threadId)
+  if (touched.error) reportClientError(touched.error, 'thread-touch')
+  return data.id
 }
 
 export function mirrorFollow(userId: string, peerId: string, kind: 'follow' | 'connection' | 'saved', on: boolean) {
