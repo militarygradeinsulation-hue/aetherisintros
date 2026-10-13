@@ -4,7 +4,6 @@ import { Link } from '@tanstack/react-router'
 import landingPortraitAsset from '@/assets/aetheris-home-portrait.jpg.asset.json'
 import showcaseAsset from '@/assets/one-connected-system.png.asset.json'
 import MetroHero from '@/components/ui/scroll-locked-video-hero'
-import { RelationshipOrbitHero } from '@/components/blocks/relationship-orbit-hero'
 
 import { useAccess } from './access'
 
@@ -58,7 +57,6 @@ function LandingPage({ signedIn }: { signedIn: boolean }) {
   const accountBtn = (cls: string) => signedIn
     ? <Link to="/app" className={cls}>Enter your network</Link>
     : <><Link to="/auth" className="btn ghost">Member log in</Link><Link to="/early-access" className={cls}>Request whitelist access</Link></>
-  const openAccess = () => { window.location.assign(signedIn ? '/app' : '/early-access') }
 
   return (
     <main className="lv">
@@ -142,21 +140,6 @@ function LandingPage({ signedIn }: { signedIn: boolean }) {
           <p>Instead of paying for disconnected tools, Intros gives you <b>one native system.</b></p>
         </div>
       </section>
-
-      <RelationshipOrbitHero
-        titleTop="The relationship network for"
-        accents={['earned access.', 'better timing.', 'useful introductions.']}
-        description="Ask Intros connects the context already earned across people, work, signals, and commitments so the next move is understandable before anyone is asked for access."
-        primaryLabel={signedIn ? 'Enter your network' : 'Request access'}
-        onPrimary={openAccess}
-        steps={[
-          { label: 'Name the objective', detail: 'Start with a real need, opportunity, or relationship decision.' },
-          { label: 'Review the evidence', detail: 'See the credible fit, the context, and why timing matters.' },
-          { label: 'Choose the warm path', detail: 'A direct connection is never assumed when trust has not been earned.' },
-          { label: 'Get both approvals', detail: 'Introductions proceed only after both people have a clear choice.' },
-          { label: 'Record the outcome', detail: 'Follow-through and useful context remain connected to the relationship.' },
-        ]}
-      />
 
       <CinematicFooter />
     </main>
