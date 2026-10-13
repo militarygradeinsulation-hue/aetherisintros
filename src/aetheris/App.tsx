@@ -823,10 +823,10 @@ function Home({ people, select, setPage, openNeed, openThread }: {
   }).sort((a, b) => {
     if (sort === 'timing') return b.score.timing - a.score.timing
     if (sort === 'relationship') return b.score.relationshipStrength - a.score.relationshipStrength
-    if (sort === 'contact') return (a.lastInteractionDays ?? Number.POSITIVE_INFINITY) - (b.lastInteractionDays ?? Number.POSITIVE_INFINITY)
+    if (sort === 'contact') return a.lastInteractionDays - b.lastInteractionDays
     return b.scoreTotal - a.scoreTotal
   }), [filter, people, query, ranked, sort])
-  const needingAttention = people.filter(person => person.relationshipStatus === 'at-risk' || (person.lastInteractionDays !== null && person.lastInteractionDays > 60)).length
+  const needingAttention = people.filter(person => person.relationshipStatus === 'at-risk' || person.lastInteractionDays > 60).length
   const highValuePaths = people.filter(person => person.scoreTotal >= 75).length
   const activeOpportunities = os.rooms.filter(room => !room.archived && room.stage !== 'Lost/Not Now').length + platform.placements.filter(placement => !['Adopted', 'Referred', 'Not Now'].includes(placement.stage)).length
   const coldConversations = net.threads.filter(thread => thread.unread).length
@@ -1486,16 +1486,16 @@ function Memory({ people, select }: { people: Member[]; select: (p: Member) => v
       </section>
       <section className="mod">
         <header><span>RECONNECT OPPORTUNITIES</span><button className="mod-link">View all <ArrowRight size={12} /></button></header>
-        <ul className="reconnect-list">{[...people].filter(p => p.lastInteractionDays !== null && p.lastInteractionDays > 30).sort((a, b) => (b.lastInteractionDays ?? 0) - (a.lastInteractionDays ?? 0)).slice(0, 3).map(p =>
+        <ul className="reconnect-list">{[...people].sort((a, b) => b.lastInteractionDays - a.lastInteractionDays).slice(0, 3).map(p =>
           <li key={p.id}><button onClick={() => select(p)}><Avatar person={p} portrait />
-            <div><strong>{p.name}</strong><small>Last conversation {Math.max(1, Math.round((p.lastInteractionDays ?? 0) / 30))} months ago</small>
+            <div><strong>{p.name}</strong><small>Last conversation {Math.max(1, Math.round(p.lastInteractionDays / 30))} months ago</small>
               <small>{p.whyNow}</small></div></button></li>)}</ul>
       </section>
       <section className="mod">
         <header><span>COOLING CONVERSATIONS</span><button className="mod-link">View all <ArrowRight size={12} /></button></header>
-        <ul className="reconnect-list">{people.filter(p => p.score.timing < 70 && p.lastInteractionDays !== null).slice(0, 3).map(p =>
+        <ul className="reconnect-list">{people.filter(p => p.score.timing < 70).slice(0, 3).map(p =>
           <li key={p.id}><button onClick={() => select(p)}><Avatar person={p} portrait />
-            <div><strong>{p.name}</strong><small>Last message {Math.max(1, Math.round((p.lastInteractionDays ?? 0) / 7))} weeks ago</small>
+            <div><strong>{p.name}</strong><small>Last message {Math.max(1, Math.round(p.lastInteractionDays / 7))} weeks ago</small>
               <small>{p.nextAction}</small></div></button></li>)}</ul>
       </section>
     </div>
@@ -2120,7 +2120,7 @@ function AskModal({ open, onClose, people, select }: { open: boolean; onClose: (
     .map(p => {
       const text = `${p.name} ${p.title} ${p.company} ${p.industry} ${p.role} ${p.focus} ${p.needs.join(' ')} ${p.offers.join(' ')} ${p.location}`.toLowerCase()
       const match = terms.filter(t => text.includes(t)).length * 14
-      const timing = cooling ? Math.min(p.lastInteractionDays ?? 0, 120) : p.score.timing / 4
+      const timing = cooling ? Math.min(p.lastInteractionDays, 120) : p.score.timing / 4
       return { p, rank: p.scoreTotal + match + timing }
     })
     .sort((a, b) => b.rank - a.rank).slice(0, 3).map(x => x.p)
@@ -2247,7 +2247,7 @@ function ContextRail({ page, people, select, onAsk }: {
   const objectives = net.objectives
   const ranked = [...people].sort((a, b) => b.scoreTotal - a.scoreTotal)
   const p = ranked[0]
-  const cool = [...people].filter(p => p.lastInteractionDays !== null && p.lastInteractionDays > 30).sort((a, b) => (b.lastInteractionDays ?? 0) - (a.lastInteractionDays ?? 0))[0]
+  const cool = [...people].sort((a, b) => b.lastInteractionDays - a.lastInteractionDays)[0]
   const warm = people.filter(x => x.bestPath.length > 2).slice(0, 2)
   if (!p) return null
   return <aside className="context-rail">
