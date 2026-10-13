@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useMemo, useRef, useState } from 'react'
+import { createContext, useContext, useEffect, useMemo, useRef, useState, type Context } from 'react'
 import type { BusinessDetails } from './business-posts'
 import type { AutonomyLevel, DigitalYouProfile, Objective, PrivacyScope } from './types'
 import { defaultDigitalYou, objectives as seedObjectives } from './data'
@@ -293,7 +293,7 @@ interface NetworkApi {
   toggleEventSave: (id: string) => void
 }
 
-const ctxHolder = globalThis as unknown as { __aetherisNetworkCtx?: React.Context<NetworkApi | null> }
+const ctxHolder = globalThis as unknown as { __aetherisNetworkCtx?: Context<NetworkApi | null> }
 const Ctx = (ctxHolder.__aetherisNetworkCtx ??= createContext<NetworkApi | null>(null))
 
 const catalogue: Directory = {
