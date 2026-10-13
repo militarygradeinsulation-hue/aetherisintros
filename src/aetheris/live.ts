@@ -64,8 +64,29 @@ const memberRole = (role: LiveProfileRow['verified_role']): Member['role'] => {
   }
 }
 
+/** Member-specific, private relational evidence provided by the guarded 0083 RPC.
+ * Absence of evidence means "unknown", never "just spoke today".
+ */
+export type RelationshipEvidence = {
+  member_id: string
+  message_count: number
+  last_message_at: string | null
+  introduction_count: number
+  accepted_intro_count: number
+  joined_meetings: number
+  last_meeting_at: string | null
+  connection_saved: boolean
+}
+
+const knownRecency = (e?: RelationshipEvidence): number | null => {
+  const dates = [e?.last_message_at, e?.last_meeting_at]
+    .map(value => value ? Date.parse(value) : NaN)
+    .filter(Number.isFinite)
+  return dates.length ? Math.max(0, Math.floor((Date.now() - Math.max(...dates)) / 86400000)) : null
+}
+
 /** Honest, evidence-only scoring: derived from stated fields, never invented. */
-function scoreAgainst(row: LiveProfileRow, me: LiveProfileRow | null): ScoreBreakdown {
+function scoreAgainst(row: LiveProfileRow, me: LiveProfileRow | null, evidence?: RelationshipEvidence): ScoreBreakdown {
   const myIndustries = me?.industries ?? []
   const myExpertise = me?.expertise ?? []
   const myNeeds = me ? list(me.looking_for) : []
@@ -83,16 +104,17 @@ function scoreAgainst(row: LiveProfileRow, me: LiveProfileRow | null): ScoreBrea
     strategicFit: cap(24 + industryFit * 18 + skillFit * 8),
     mutualValue: cap(20 + theyHelpMe * 22 + iHelpThem * 22),
     timing: cap(row.availability ? 46 : 24),
-    trust: 20,
-    relationshipStrength: 10,
+    trust: cap((evidence?.accepted_intro_count ?? 0) * 25 + (evidence?.joined_meetings ?? 0) * 15 + Math.min(evidence?.message_count ?? 0, 10) * 3),
+    relationshipStrength: cap((evidence?.message_count ?? 0) * 8 + (evidence?.joined_meetings ?? 0) * 15 + (evidence?.accepted_intro_count ?? 0) * 10),
     decisionInfluence: cap(row.title ? 46 : 20),
     opportunityValue: cap(20 + (theyHelpMe + iHelpThem) * 14),
     friction: cap(58 - industryFit * 8 - theyHelpMe * 6),
   }
 }
 
-export function profileToMember(row: LiveProfileRow, me: LiveProfileRow | null): Member {
-  const score = scoreAgainst(row, me)
+export function profileToMember(row: LiveProfileRow, me: LiveProfileRow | null, evidence?: RelationshipEvidence): Member {
+  const score = scoreAgainst(row, me, evidence)
+  const lastInteractionDays = knownRecency(evidence)
   const partial = {
     id: row.id,
     name: row.name || 'Member',
@@ -104,8 +126,8 @@ export function profileToMember(row: LiveProfileRow, me: LiveProfileRow | null):
     needs: list(row.looking_for),
     offers: list(row.can_help_with),
     bio: row.bio,
-    lastInteractionDays: 0,
-    relationshipStatus: 'new' as const,
+    lastInteractionDays,
+    relationshipStatus: ((evidence?.joined_meetings ?? 0) > 1 || (evidence?.message_count ?? 0) > 8 ? 'strong' : (evidence?.message_count ?? 0) > 0 || (evidence?.accepted_intro_count ?? 0) > 0 ? 'active' : 'new') as Member['relationshipStatus'],
     score,
     scoreTotal: calculateConnectionScore(score),
     whyThem: row.looking_for ? `They are looking for ${row.looking_for}` : row.focus || 'No stated focus yet.',
@@ -122,7 +144,7 @@ export function profileToMember(row: LiveProfileRow, me: LiveProfileRow | null):
     thesis: row.thesis,
     availability: row.availability,
     mutuals: [],
-    introState: 'recommended' as const,
+    introState: (evidence?.accepted_intro_count ? 'introduced' : evidence?.introduction_count ? 'requested' : 'recommended') as Member['introState'],
     joined: row.created_at && Number.isFinite(Date.parse(row.created_at))
       ? new Date(row.created_at).getFullYear().toString() : '',
     avatarUrl: row.avatar_url ?? undefined,
@@ -186,7 +208,14 @@ export async function loadLiveDirectory(userId: string): Promise<{ directory: Di
     const profiles = profileRows
     const me = profiles.find(p => p.id === userId) ?? null
     const others = profiles.filter(p => p.id !== userId)
-    const members = others.map(row => profileToMember(row, me))
+    let relationRows: RelationshipEvidence[] = []
+    if (others.length) {
+      const relation = await (supabase as any).rpc('my_relationship_evidence', { p_members: others.map(x => x.id) }) // eslint-disable-line @typescript-eslint/no-explicit-any
+      if (relation.error) reportClientError(relation.error, 'relationship-evidence')
+      else relationRows = relation.data ?? []
+    }
+    const relationById = new Map(relationRows.map(x => [x.member_id, x]))
+    const members = others.map(row => profileToMember(row, me, relationById.get(row.id)))
     // Bands of members who chose to show them, for the small matching boost. Optional: an
     // error (e.g. before migration 0055 is applied) just means no boost.
     if (others.length) {
@@ -196,6 +225,11 @@ export async function loadLiveDirectory(userId: string): Promise<{ directory: Di
     }
 
     const threadIds = (threadRows.data ?? []).map(t => t.id)
+    const unreadResponse = threadIds.length
+      ? await (supabase as any).rpc('my_unread_counts') // eslint-disable-line @typescript-eslint/no-explicit-any
+      : { data: [], error: null }
+    if (unreadResponse.error) reportClientError(unreadResponse.error, 'thread-unread-load')
+    const unreadByThread = new Map<string, number>(((unreadResponse.data ?? []) as Array<{ thread_id: string; unread: number }>).map(r => [r.thread_id, r.unread]))
     const messageRows = threadIds.length
       ? (await supabase.from('dm_messages').select('*').in('thread_id', threadIds).order('created_at')).data ?? []
       : []
@@ -205,7 +239,7 @@ export async function loadLiveDirectory(userId: string): Promise<{ directory: Di
       return {
         id: t.id,
         memberId: peer,
-        unread: false,
+        unread: (unreadByThread.get(t.id) ?? 0) > 0,
         introContext: t.intro_context ?? '',
         commitment: '',
         suggested: '',
