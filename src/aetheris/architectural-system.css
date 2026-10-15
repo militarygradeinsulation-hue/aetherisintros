@@ -6,7 +6,7 @@
  --arch-paper:#f3f0e9; --arch-gallery:#fdfbf7; --arch-stone:#ddd7cc;
  --arch-ink:#202420; --arch-muted:#656b66; --arch-copper:#a36b43;
  --arch-bronze:#b59a74; --arch-deep:#111719; --arch-elevated:#1a2223;
- --arch-grid:url('./blueprint-grid.svg');
+ --arch-grid-scale:960px 640px;
 }
 :where(.ix-root,.app-shell,.ask-os,.auth-page,.editorial-home) {
  --serif:'Cormorant Garamond',Georgia,serif;
@@ -156,7 +156,7 @@
 }
 .ael .ael-hero::after,.ael .ael-cinematic-break::after {
  content:'';position:absolute;inset:90px 0 0;z-index:0;pointer-events:none;
- background-image:var(--arch-grid);background-repeat:repeat;
+ background-image:url('./blueprint-grid.svg');background-repeat:repeat;
  background-position:50% 0;background-size:960px 640px;opacity:.52;
 }
 .ael .ael-hero-content {z-index:2;max-width:min(760px,70vw);}
@@ -195,7 +195,7 @@
 .ael .ael-scene-photo img {filter:saturate(.60) sepia(.1);}
 .ael .ael-scene-photo::after,.ael .ael-system-visual::after {
  content:'';position:absolute;inset:0;pointer-events:none;
- background:var(--arch-grid) center center/860px 574px repeat;opacity:.53;
+ background:url('./blueprint-grid.svg') center center/860px 574px repeat;opacity:.53;
 }
 .ael .ael-scene-index {z-index:2;}
 .ael .ael-scene-description :is(h3,p) {color:#202420;}
