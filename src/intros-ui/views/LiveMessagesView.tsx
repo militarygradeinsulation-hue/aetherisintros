@@ -147,11 +147,11 @@ function Inner({ onOpenWorkspaces }: { onOpenWorkspaces?: () => void }) {
                 <OpenDealRoomButton kind="quiet" label="Deal room" draft={{ sourceKind: 'thread', sourceId: active.id, title: draftTitle('thread', person.name), need: active.introContext ?? '', counterpartId: person.id, counterpartName: person.name }} />
               </div>}
             </header>
-            <div className="flex-1 overflow-y-auto px-4 py-4 space-y-2.5">
+            <div className="msg-live-chat-body flex-1 overflow-y-auto px-4 py-4 space-y-2.5">
               {active.messages.length === 0 && <p className="text-xs text-[var(--msg-muted)] text-center">Say hello — this is the start of your conversation.</p>}
               {active.messages.map(msg => (
                 <div key={msg.id} className={`flex flex-col ${msg.from === 'me' ? 'items-end' : 'items-start'}`}>
-                  <div className={`max-w-[82%] rounded-xl px-3.5 py-2 text-sm break-words ${msg.from === 'me' ? 'bg-[var(--msg-outgoing)] text-[var(--msg-ink)]' : 'bg-[var(--msg-incoming)] text-[var(--msg-ink)] border border-[var(--msg-border)]'}`}>
+                  <div className={`max-w-[82%] rounded-xl px-3.5 py-2 text-sm break-words ${msg.from === 'me' ? 'msg-outgoing bg-[var(--msg-outgoing)] text-[var(--msg-ink)]' : 'msg-incoming bg-[var(--msg-incoming)] text-[var(--msg-ink)] border border-[var(--msg-border)]'}`}>
                     <MessageBody text={msg.text} />
                     <div className={`text-[10px] mt-1 ${msg.from === 'me' ? 'text-[var(--msg-muted)]' : 'text-[var(--msg-muted)]'}`}>{msg.at}</div>
                   </div>
@@ -168,9 +168,9 @@ function Inner({ onOpenWorkspaces }: { onOpenWorkspaces?: () => void }) {
               <AttachButton threadId={active.id} onSend={text => sendText(active.id, text)} />
               <textarea value={draft} onChange={e => setDraft(e.target.value)} rows={1} placeholder="Write a message…"
                 onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); send() } }}
-                className="flex-1 resize-none bg-[var(--msg-panel-inset)] text-sm text-[var(--msg-ink)] rounded-lg px-3 py-2 border border-[var(--msg-border)] focus:outline-none focus:border-[var(--msg-accent)] max-h-32" />
+                className="flex-1 resize-none bg-[var(--msg-panel-inset)] text-sm text-[var(--msg-ink)] placeholder:text-[var(--msg-muted)] rounded-lg px-3 py-2 border border-[var(--msg-border)] focus:outline-none focus:border-[var(--msg-accent)] max-h-32" />
               <button onClick={send} disabled={!draft.trim() || sending} aria-label="Send message"
-                className="p-2.5 rounded-lg bg-[var(--msg-accent)] hover:bg-[var(--msg-accent-hover)] disabled:opacity-40 text-[var(--msg-ink)] cursor-pointer">
+                className="p-2.5 rounded-lg bg-[var(--msg-accent)] hover:bg-[var(--msg-accent-hover)] disabled:opacity-40 text-[var(--msg-accent-ink)] cursor-pointer">
                 <Send className="w-4 h-4" />
               </button>
             </footer>
