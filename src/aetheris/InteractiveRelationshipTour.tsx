@@ -25,7 +25,7 @@ export function InteractiveRelationshipTour() {
   return <aside className="journey-shell" aria-label="Ask Intros guided product walkthrough">
     {!open && <button ref={launcher} type="button" className="journey-launcher"
       aria-controls={id} aria-expanded={false} onClick={() => setOpen(true)}>
-      <Compass size={17} aria-hidden="true" /> Explore the business journey <Play size={13} aria-hidden="true" />
+      <span className="journey-launcher-label"><Compass size={17} aria-hidden="true" /> <span>Explore the business journey</span></span><span className="journey-launcher-cue">7-step walkthrough <Play size={13} aria-hidden="true" /></span>
     </button>}
     {open && <section id={id} className="journey-panel" aria-label="Interactive fictional Ask Intros walkthrough">
       <header className="journey-head">
