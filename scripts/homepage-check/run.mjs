@@ -102,6 +102,7 @@ try {
           heroTitle: rect('#ael-hero-title'),
           heroActions: rect('.ael-hero-actions'),
           headerActions: rect('.ael-header-actions'),
+          logo: rect('.ael-header .ask-intros-lockup'),
           signup: rect('.ael-header .ael-nav-cta'),
           membership: rect('#membership'),
           footer: rect('.ael-compact-footer'),
@@ -134,7 +135,9 @@ try {
         'every navigation anchor has a real destination')
       assert(Object.values(m.ctas).every(Boolean), 'demo, join, sign-in and founder-story links remain')
       const onScreen = r => Boolean(r && r.width > 0 && r.right <= viewport.width + 3 && r.x >= -3)
-      assert([m.heroTitle, m.heroActions, m.headerActions, m.signup, m.membership].every(onScreen),
+      assert(m.logo && m.logo.width >= (viewport.width <= 420 ? 150 : viewport.width <= 750 ? 175 : 220),
+        'approved Ask Intros wordmark is prominent at this breakpoint')
+      assert([m.heroTitle, m.heroActions, m.headerActions, m.logo, m.signup, m.membership].every(onScreen),
         'headlines and important actions remain within phone/desktop width')
 
       if (viewport.name === 'desktop') {
