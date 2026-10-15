@@ -262,6 +262,7 @@ interface NetworkApi {
   /** True once this member's own graph has been read from the database. */
   synced: boolean
   feedError: boolean
+  networkLoadError: string
   /* graph actions */
   connect: (id: string) => void
   follow: (id: string) => void
@@ -353,6 +354,7 @@ export function NetworkProvider({ children, mode = 'live' }: { children: React.R
   const [userId, setUserId] = useState<string | null>(null)
   const [synced, setSynced] = useState(false)
   const [feedError, setFeedError] = useState(false)
+  const [networkLoadError, setNetworkLoadError] = useState('')
   const lastSynced = useRef<Persisted | null>(null)
 
   useEffect(() => { if (live) return; try { localStorage.setItem(KEY, JSON.stringify(s)) } catch { /* storage full */ } }, [s, live])
@@ -372,14 +374,21 @@ export function NetworkProvider({ children, mode = 'live' }: { children: React.R
       let meRow: LiveProfileRow | null = null
       let myGoals: string[] = []
       if (live) {
-        const [{ directory, me, failed }, goals] = await Promise.all([loadLiveDirectory(id), loadOwnGoals()])
+        const [{ directory, me, failed, reason }, goals] = await Promise.all([loadLiveDirectory(id), loadOwnGoals()])
         if (cancelled) return
         setFeedError(failed)
+        setNetworkLoadError(failed ? (reason ?? 'Live directory unavailable.') : '')
         meRow = me
         myGoals = goals
         setDir(directory)
       }
-      const remote = await loadUserGraph(id)
+      const remote = await loadUserGraph(id, live).catch(error => {
+        if (live && !cancelled) {
+          setFeedError(true)
+          setNetworkLoadError(error instanceof Error ? error.message : 'Could not read your saved network activity.')
+        }
+        return {}
+      })
       if (cancelled) return
       setS(prev => {
         const doc = (remote.doc ?? {}) as Partial<Persisted>
@@ -424,7 +433,7 @@ export function NetworkProvider({ children, mode = 'live' }: { children: React.R
   /* live messaging: new messages and conversations from other members arrive instantly */
   useEffect(() => {
     if (!live || !userId) return
-    const refresh = () => { void loadLiveDirectory(userId).then(({ directory, failed }) => { setFeedError(failed); if (!failed) setDir(directory) }) }
+    const refresh = () => { void loadLiveDirectory(userId).then(({ directory, failed, reason }) => { setFeedError(failed); setNetworkLoadError(failed ? (reason ?? 'Live directory unavailable.') : ''); if (!failed) setDir(directory) }) }
     const channel = supabase
       .channel(`dm-${userId}-${Math.random().toString(36).slice(2, 10)}`)
       .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'dm_messages' }, payload => {
@@ -572,6 +581,7 @@ export function NetworkProvider({ children, mode = 'live' }: { children: React.R
     return {
       synced,
       feedError,
+      networkLoadError,
       members: baseMembers.map(m => ({
         ...m,
         introState: s.introStates[m.id] ?? m.introState,
@@ -943,7 +953,7 @@ export function NetworkProvider({ children, mode = 'live' }: { children: React.R
         }
       }),
     }
-  }, [s, dir, synced, feedError, live, userId])
+  }, [s, dir, synced, feedError, networkLoadError, live, userId])
 
   return <Ctx.Provider value={api}>{children}</Ctx.Provider>
 }
