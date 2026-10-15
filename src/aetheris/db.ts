@@ -85,64 +85,21 @@ export async function currentUserId(): Promise<string | null> {
   return data.user?.id ?? null
 }
 
-/** Shared catalogue. Falls back to the in-code cast when the table is empty. */
+/**
+ * Public /demo uses a packaged fictional catalogue only.
+ * Do not query production members, posts, asks, signals or seeded conversations
+ * here. Those tables have intentional access boundaries and must never be
+ * silently replaced by demo records in the signed-in network.
+ */
 export async function loadDirectory(): Promise<Directory> {
-  const fallback: Directory = {
-    members: catalogueMembers, posts: cataloguePosts, asks: catalogueAsks,
-    signals: catalogueSignals, threads: catalogueThreads, learnings: catalogueLearnings,
-  }
-  try {
-    const [memberRows, postRows, askRows, signalRows, threadRows, learningRows] = await Promise.all([
-      supabase.from('members').select('*'),
-      supabase.from('posts').select('*').is('author_id', null),
-      supabase.from('asks').select('*').is('author_id', null),
-      supabase.from('signals').select('*'),
-      supabase.from('seed_threads').select('*'),
-      supabase.from('seed_learnings').select('*'),
-    ])
-    if (!memberRows.data?.length) return fallback
-
-    const byId = new Map(catalogueMembers.map(m => [m.id, m]))
-    const members = memberRows.data.map(row => {
-      const base = byId.get(row.id ?? "")
-      return {
-        ...(base ?? {}),
-        id: row.id, name: base?.name ?? row.name, initials: base?.initials ?? row.initials, title: row.title,
-        company: row.company, location: row.location, role: row.role, industry: row.industry,
-        tags: row.tags ?? [], expertise: row.expertise ?? [], needs: row.needs ?? [],
-        offers: row.offers ?? [], focus: row.focus, thesis: row.thesis,
-        availability: row.availability, mutuals: row.mutuals ?? [],
-        lastInteractionDays: row.last_interaction_days,
-        relationshipStatus: row.relationship_status, score: row.score, scoreTotal: row.score_total,
-        radar: row.radar, whyThem: row.why_them, whyYou: row.why_you, whyNow: row.why_now,
-        bestPath: row.best_path ?? [], nextAction: row.next_action, dontDo: row.dont_do,
-        confidence: row.confidence, introState: row.intro_state, joined: row.joined,
-        ...(row.opportunity_low != null ? { opportunityLow: row.opportunity_low } : {}),
-        ...(row.opportunity_high != null ? { opportunityHigh: row.opportunity_high } : {}),
-      } as unknown as Member
-    })
-
-    return fictionalize({
-      members,
-      posts: postRows.data?.length
-        ? postRows.data.map(r => ({ id: r.id, memberId: r.member_id ?? 'me', kind: r.kind, text: r.text, detail: r.detail, when: r.when_label, responses: r.response_count } as Post))
-        : cataloguePosts,
-      asks: askRows.data?.length
-        ? askRows.data.map(r => ({ id: r.id, memberId: r.member_id ?? 'me', ask: r.ask, detail: r.detail, whyNow: r.why_now, offer: r.offer, industry: r.industry, location: r.location, urgency: r.urgency, posted: r.posted, responses: r.response_count, visibility: r.visibility } as NetworkAsk))
-        : catalogueAsks,
-      signals: signalRows.data?.length
-        ? signalRows.data.map(r => ({ id: r.id, memberId: r.member_id, kind: r.kind, text: r.text, when: r.when_label } as Signal))
-        : catalogueSignals,
-      threads: threadRows.data?.length
-        ? threadRows.data.map(r => ({ id: r.id, memberId: r.member_id, introContext: r.intro_context, unread: r.unread, commitment: r.commitment, suggested: r.suggested, messages: (r.messages ?? []) as unknown as Thread['messages'] }))
-        : catalogueThreads,
-      learnings: learningRows.data?.length
-        ? learningRows.data.map(r => ({ id: r.id, category: r.category, text: r.text, source: r.source, confidence: r.confidence, scope: r.scope, when: r.when_label } as Learning))
-        : catalogueLearnings,
-    })
-  } catch {
-    return fallback
-  }
+  return fictionalize({
+    members: catalogueMembers,
+    posts: cataloguePosts,
+    asks: catalogueAsks,
+    signals: catalogueSignals,
+    threads: catalogueThreads,
+    learnings: catalogueLearnings,
+  })
 }
 
 /** The signed-in member's own graph. */
