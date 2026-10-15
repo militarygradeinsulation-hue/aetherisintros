@@ -772,3 +772,19 @@
 @media (prefers-reduced-motion: reduce) {
   .ix-root .sys-tile:hover { transform:none; }
 }
+
+
+/* Editorial footer: navigation stays live while the wordmark animates below. */
+.ix-editorial-signoff { background:#0c0c0b; border-top:1px solid rgba(233,228,218,.2); }
+.ix-editorial-signoff-nav {
+  padding:24px clamp(18px,4vw,60px); display:flex; flex-wrap:wrap; align-items:center;
+  justify-content:space-between; gap:18px; color:#e9e4da; background:#0c0c0b;
+  font:500 10px/1.8 "JetBrains Mono",ui-monospace,monospace; letter-spacing:.13em;
+}
+.ix-editorial-signoff-nav>span { color:#aaa398; }
+.ix-editorial-signoff-nav>div { display:flex; flex-wrap:wrap; gap:12px 24px; }
+.ix-editorial-signoff-nav button { background:transparent; border:0; padding:5px 0; color:#e9e4da; cursor:pointer; font:inherit; letter-spacing:inherit; }
+.ix-editorial-signoff-nav button:hover { color:#e9762b; }
+.ix-editorial-signoff-nav button:focus-visible { outline:2px solid #e9762b; outline-offset:3px; }
+.ix-halftone-footer .hwf-col a:hover { color:#e9762b; }
+@media (max-width:720px) { .ix-editorial-signoff-nav>div { gap:8px 16px; } }
