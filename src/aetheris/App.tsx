@@ -849,7 +849,7 @@ function Home({ people, select, setPage, openNeed, openThread }: {
         <span>ASK INTROS</span>
         <h1>The Relationship Network<br /><em>for CEOs.</em></h1>
         <p>Who matters. Why they matter. Why now.</p>
-        <div><button className="eh-primary" onClick={openNeed}>GET STARTED <ArrowRight size={15} /></button><button className="eh-secondary" onClick={() => setPage('intros')}><Play size={13} /> SEE HOW IT WORKS</button></div>
+        <div><button className="eh-primary ai-gradient-button" onClick={openNeed}>GET STARTED <ArrowRight size={15} /></button><button className="eh-secondary" onClick={() => setPage('intros')}><Play size={13} /> SEE HOW IT WORKS</button></div>
       </div>
       <div className="eh-hero-art">
         <img src={homeEditorialAsset.url} alt="A professional in quiet thought beside hard window light" width={597} height={804} />
@@ -1433,7 +1433,7 @@ function Memory({ people, select }: { people: Member[]; select: (p: Member) => v
           <div><dt>Relationships</dt><dd>{net.connections.length}</dd></div><div><dt>People mapped</dt><dd>{people.length}</dd></div>
           <div><dt>Context items</dt><dd>{items.length}</dd></div><div><dt>Private notes</dt><dd>{net.notes.length}</dd></div>
         </dl>
-        <button className="memory-cta">Your Network Remembers <ArrowRight size={15} /></button>
+        <button className="memory-cta ai-gradient-button">Your Network Remembers <ArrowRight size={15} /></button>
       </div>
       <figure><img src={memoryEditorialAsset.url} alt="Thoughtful professional in architectural window light" width={1024} height={1280} /><figcaption>ACTIVE MEMORY / CONTEXT HELD WITH INTENT</figcaption></figure>
     </section>
@@ -2481,9 +2481,9 @@ function HubPrelude({ kind, onNavigate }: { kind: 'network' | 'work' | 'me'; onN
         <p>{lead?.whyNow ?? 'Discover verified members through context, not vanity metrics.'}</p>
       </TileShell>
       <TileShell label="WARM PATHS" title={`${net.connections.length} trusted connections`} variant="graph"><SignalPath points={5} active={Math.min(4, net.connections.length)} /></TileShell>
-      <TileShell label="INTRODUCTIONS" title="Why me. Why them. Why now." variant="action"><p>Every request stays double opt-in and carries the evidence for timing.</p><button className="tile-cta" onClick={() => onNavigate('intros')}>Review introductions <ArrowRight size={14} /></button></TileShell>
-      <TileShell label="WHO CAN CHANGE THIS?" title="Name the problem. See who can move it." variant="action"><p>Ranked from people actually available to you, with the evidence, the warmest path and one next move.</p><button className="tile-cta" onClick={() => openCeo({ view: 'who' })}>Who can change this? <ArrowRight size={14} /></button></TileShell>
-      <TileShell label="NETWORK ROI" title="What intros produced." variant="data"><p>Accepted intros, meetings, linked and won deals — value only when it is recorded.</p><button className="tile-cta" onClick={() => openCeo({ view: 'roi' })}>Open Network ROI <ArrowRight size={14} /></button></TileShell>
+      <TileShell label="INTRODUCTIONS" title="Why me. Why them. Why now." variant="action"><p>Every request stays double opt-in and carries the evidence for timing.</p><button className="tile-cta ai-gradient-button" onClick={() => onNavigate('intros')}>Review introductions <ArrowRight size={14} /></button></TileShell>
+      <TileShell label="WHO CAN CHANGE THIS?" title="Name the problem. See who can move it." variant="action"><p>Ranked from people actually available to you, with the evidence, the warmest path and one next move.</p><button className="tile-cta ai-gradient-button" onClick={() => openCeo({ view: 'who' })}>Who can change this? <ArrowRight size={14} /></button></TileShell>
+      <TileShell label="NETWORK ROI" title="What intros produced." variant="data"><p>Accepted intros, meetings, linked and won deals — value only when it is recorded.</p><button className="tile-cta ai-gradient-button" onClick={() => openCeo({ view: 'roi' })}>Open Network ROI <ArrowRight size={14} /></button></TileShell>
       <InsightBar where="network" />
     </section>
   }
@@ -2502,8 +2502,8 @@ function HubPrelude({ kind, onNavigate }: { kind: 'network' | 'work' | 'me'; onN
   return <section className="hub-prelude me-prelude">
     <TileShell label="MY EXECUTIVE IDENTITY" title={net.profile.name || 'Complete your identity'} variant="hero"><p>{net.profile.title || 'Add your role'}{net.profile.company ? ` · ${net.profile.company}` : ''}</p><div className={`verification-mark ${verified ? 'verified' : ''}`}><ShieldCheck size={18} /> {verified ? badgeLabel(verification.verifiedRole) : 'Verification required'}</div></TileShell>
     <TileShell label="VISIBILITY" title="You control the context." variant="data"><div className="lock-stack" aria-hidden="true"><i /><i /><i /></div><p>Privacy, permissions and double opt-in remain enforced underneath every view.</p></TileShell>
-    <TileShell label="CONNECTED SYSTEMS" title="Bring context, not chaos." variant="action"><p>Review the services connected to your private relationship system.</p><button className="tile-cta" onClick={() => onNavigate('integrations')}>Connected apps <ArrowRight size={14} /></button></TileShell>
-    <TileShell label="TRUST + APPROVALS" title="Your passport and your queue." variant="data"><MyTrustPassport /><button className="tile-cta" onClick={() => openCeo({ view: 'approvals' })}>Approval queue <ArrowRight size={14} /></button></TileShell>
+    <TileShell label="CONNECTED SYSTEMS" title="Bring context, not chaos." variant="action"><p>Review the services connected to your private relationship system.</p><button className="tile-cta ai-gradient-button" onClick={() => onNavigate('integrations')}>Connected apps <ArrowRight size={14} /></button></TileShell>
+    <TileShell label="TRUST + APPROVALS" title="Your passport and your queue." variant="data"><MyTrustPassport /><button className="tile-cta ai-gradient-button" onClick={() => openCeo({ view: 'approvals' })}>Approval queue <ArrowRight size={14} /></button></TileShell>
   </section>
 }
 
