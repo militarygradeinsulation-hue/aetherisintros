@@ -5,6 +5,7 @@ import showcaseAsset from '@/assets/one-connected-system.png.asset.json'
 import { useAccess } from './access'
 import { AskIntrosLockup } from './AskIntrosLockup'
 import { AppearanceToggle } from './AppearanceToggle'
+import { useAppearance } from './AppearanceMode'
 import HalftoneWordmarkFooter from './HalftoneWordmarkFooter'
 import './editorial-landing.css'
 
@@ -43,6 +44,7 @@ function JoinAction({ signedIn, className = '' }: { signedIn: boolean; className
 
 export default function Landing() {
   const { access } = useAccess()
+  const { theme } = useAppearance()
   const signedIn = access.signedIn
 
   return <main className="ael">
@@ -177,7 +179,7 @@ export default function Landing() {
       dotGap={6}
       radius={88}
       grain={0.35}
-      palette={{ background: '#0c0c0b', ink: '#e9e4da', warm: '#e9762b' }}
+      palette={theme === 'dark' ? { background: '#0c0c0b', ink: '#e9e4da', warm: '#e9762b' } : { background: '#efebe3', ink: '#17150f', warm: '#c2361c' }}
     />
   </main>
 }
