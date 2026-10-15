@@ -21,7 +21,7 @@ function readAppearance(): AppearanceMode {
 
 function applyAppearance(theme: AppearanceMode) {
   const root = document.documentElement;
-  root.dataset.theme = theme;
+  root.dataset['theme'] = theme;
   root.classList.toggle('dark', theme === 'dark');
   root.classList.toggle('light', theme === 'light');
   root.style.colorScheme = theme;
