@@ -6106,3 +6106,15 @@ body:has([role=menu],[role=listbox],.ix-mobile-sheet,.topbar-dropmenu,.notificat
 :root[data-theme="light"] .ask-intros-lockup__intros,
 :root[data-theme="light"] .ask-intros-lockup__tagline { fill:#17150f; }
 :root[data-theme="light"] .ask-intros-lockup__rule { stroke:#c2361c; }
+
+
+/* Appearance control on standalone access routes. */
+.auth-panel .auth-appearance {
+  position:absolute; z-index:3; top:29px; right:clamp(24px,4vw,72px);
+  color:var(--soft); 
+}
+:root[data-theme="light"] .auth-panel .auth-appearance { color:#17150f; }
+@media (max-width:620px) {
+  .auth-panel .auth-appearance { top:25px; right:20px; }
+  .auth-panel .auth-appearance>svg { display:none; }
+}
