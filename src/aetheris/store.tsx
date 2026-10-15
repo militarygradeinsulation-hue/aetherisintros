@@ -356,6 +356,8 @@ export function NetworkProvider({ children, mode = 'live' }: { children: React.R
   const [feedError, setFeedError] = useState(false)
   const [networkLoadError, setNetworkLoadError] = useState('')
   const lastSynced = useRef<Persisted | null>(null)
+  // Never overwrite private records after a failed live graph read.
+  const privateGraphReady = useRef(!live)
 
   useEffect(() => { if (live) return; try { localStorage.setItem(KEY, JSON.stringify(s)) } catch { /* storage full */ } }, [s, live])
 
@@ -382,7 +384,11 @@ export function NetworkProvider({ children, mode = 'live' }: { children: React.R
         myGoals = goals
         setDir(directory)
       }
-      const remote = await loadUserGraph(id, live).catch((error): Partial<RemoteGraph> => {
+      privateGraphReady.current = false
+      const remote = await loadUserGraph(id, live).then((data): Partial<RemoteGraph> => {
+        privateGraphReady.current = true
+        return data
+      }).catch((error): Partial<RemoteGraph> => {
         if (live && !cancelled) {
           setFeedError(true)
           setNetworkLoadError(error instanceof Error ? error.message : 'Could not read your saved network activity.')
@@ -463,7 +469,7 @@ export function NetworkProvider({ children, mode = 'live' }: { children: React.R
 
   /* write-through: persist only what changed since the last database read */
   useEffect(() => {
-    if (!userId || !synced) return
+    if (!userId || !synced || (live && !privateGraphReady.current)) return
     const prev = lastSynced.current
     lastSynced.current = s
     if (!prev) return
