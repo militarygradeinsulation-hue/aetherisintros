@@ -149,8 +149,6 @@ import { IntrosSystemBento, BentoGridItem } from './IntrosSystemGrid'
 
 
 
-type OptIn = 'pending' | 'yes' | 'no'
-
 const nav: Array<{ id: Page; label: string; icon: typeof HomeIcon }> = primaryPages.map(id => {
   const meta = metaById[id]!
   return { id, label: meta.label, icon: meta.icon }
@@ -2052,47 +2050,98 @@ function ProfileRooms({ personId }: { personId: string }) {
 function IntroModal({ person, onClose, onMessage }: { person: Member | null; onClose: () => void; onMessage: (id: string) => void }) {
   const net = useNetwork()
   const [text, setText] = useState('')
-  const [you, setYou] = useState<OptIn>('pending')
-  const [them, setThem] = useState<OptIn>('pending')
   const [review, setReview] = useState<IntroQualityReview | null>(null)
+  const [requesting, setRequesting] = useState(false)
+  const [sending, setSending] = useState(false)
+  const [locallyRequested, setLocallyRequested] = useState(false)
+  const [failure, setFailure] = useState('')
+  const [retryMessageId, setRetryMessageId] = useState<string | null>(null)
   useEffect(() => {
-    if (person) {
-      setText(composeWarmIntro(person))
-      setYou(person.introState === 'requested' || person.introState === 'introduced' ? 'yes' : 'pending')
-      setThem(person.introState === 'introduced' ? 'yes' : 'pending')
-      if (person.introState === 'recommended') net.requestIntro(person.id)
-    }
+    if (!person) return
+    setText(composeWarmIntro(person))
+    setReview(null)
+    setRequesting(false)
+    setSending(false)
+    setLocallyRequested(false)
+    setRetryMessageId(null)
+    setFailure('')
+    // Opening an introduction MUST NOT automatically submit a request.
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [person])
+  }, [person?.id])
   if (!person) return null
-  const ok = you === 'yes' && them === 'yes'
+  const authorized = person.introState === 'introduced'
+  const requested = locallyRequested || person.introState === 'requested' || person.introState === 'waiting'
   const blocked = review?.verdict === 'Do Not Send Yet'
-  const rows: Array<{ label: string; value: OptIn; set: (v: OptIn) => void }> = [
-    { label: 'You', value: you, set: setYou }, { label: person.name, value: them, set: setThem },
-  ]
+
+  const requestIntroduction = async () => {
+    if (requesting || requested || authorized || blocked) return
+    setRequesting(true)
+    setFailure('')
+    try {
+      const saved = await net.requestIntro(person.id, text.trim())
+      if (saved) setLocallyRequested(true)
+      else setFailure('The request has not been confirmed. Check your connection and retry.')
+    } catch (error) {
+      setFailure(error instanceof Error ? error.message : 'Request not saved. Retry.')
+    } finally {
+      setRequesting(false)
+    }
+  }
+
+  const sendConfirmed = async () => {
+    if (!authorized || sending || !text.trim() || blocked) return
+    setSending(true)
+    setFailure('')
+    const id = retryMessageId ?? crypto.randomUUID()
+    try {
+      const threadId = net.openThreadWith(person.id)
+      await net.sendMessage(threadId, text.trim(), id)
+      setRetryMessageId(null)
+      onClose()
+      onMessage(person.id)
+    } catch (error) {
+      setRetryMessageId(id)
+      setFailure(error instanceof Error ? error.message : 'Message not delivered. Retry using the same message ID.')
+    } finally {
+      setSending(false)
+    }
+  }
+
   return <div className="modal-wrap" onMouseDown={onClose}>
     <div className="modal editorial-modal" onMouseDown={e => e.stopPropagation()}>
-      <header><div><Label>DOUBLE OPT-IN</Label><h2>A considered introduction.</h2><p>Both sides protect the connector’s credibility.</p></div>
+      <header><div><Label>DOUBLE OPT-IN</Label><h2>A considered introduction.</h2><p>Consent comes from each person, not a toggle controlled by one member.</p></div>
         <button className="icon-btn" onClick={onClose} aria-label="Close"><X size={17} /></button></header>
       <div className="intro-person"><Avatar person={person} /><span><strong>{person.name}</strong><small>{person.title} · {person.company}</small></span></div>
-      <textarea rows={8} value={text} onChange={e => setText(e.target.value)} />
-      <IntroQualityReviewPanel person={person} mutualValueText={`${person.whyThem} ${person.whyYou}`} contextText={text} onVerdict={setReview} />
+      <textarea rows={8} value={text} onChange={e => { setText(e.target.value); setRetryMessageId(null) }} aria-label="Introduction note" />
+      <IntroQualityReviewPanel person={person} mutualValueText={person.whyThem + ' ' + person.whyYou} contextText={text} onVerdict={setReview} />
       <TrustBudgetNote candidateIds={person.bestPath.length > 1 ? [person.id] : []} />
-      {blocked && <p className="intro-blocked">This introduction is not ready. Fix the missing context above before sending — an unearned intro costs the connector, not you.</p>}
-      {rows.map(r => <div className="opt-row" key={r.label}>
-        <span><strong>{r.label}</strong><small>Confirm this conversation is worth making.</small></span>
-        <div><button className={r.value === 'yes' ? 'active' : ''} onClick={() => { r.set('yes'); if (r.value !== 'yes') net.requestIntro(person.id) }}>Interested</button>
-          <button className={r.value === 'no' ? 'declined' : ''} onClick={() => { r.set('no'); net.declineIntro(person.id) }}>Not now</button></div>
-      </div>)}
-      <div className={`authorization ${ok ? 'ready' : ''}`}>{ok ? <CheckCircle2 size={17} /> : <LockKeyhole size={17} />}
-        <span>{ok ? 'Introduction authorized. Both parties agreed.' : 'Waiting for both parties before anything is sent.'}</span></div>
-      <footer><Button kind="quiet" onClick={onClose}>Cancel</Button>
-        <Button disabled={!ok || blocked} onClick={() => {
-          net.authorizeIntro(person.id)
-          net.sendMessage(net.openThreadWith(person.id), text)
-          void navigator.clipboard?.writeText(text).catch(() => {})
-          onClose(); onMessage(person.id)
-        }}><Send size={15} />Send authorized intro</Button></footer>
+      {blocked && <p className="intro-blocked">Improve the context before sending. A weak introduction can damage the connector’s trust.</p>}
+      <div className="opt-row">
+        <span><strong>Your interest</strong><small>You can request an introduction once. The recipient independently decides whether to accept.</small></span>
+        <div>
+          <button type="button" className={requested || authorized ? 'active' : ''} disabled={requesting || requested || authorized || blocked}
+            onClick={() => void requestIntroduction()}>
+            {authorized ? 'Confirmed' : requested ? 'Request saved' : requesting ? 'Requesting…' : 'Request introduction'}
+          </button>
+          <button type="button" onClick={onClose}>Not now</button>
+        </div>
+      </div>
+      <div className="opt-row">
+        <span><strong>{person.name}'s consent</strong><small>Only a server-confirmed acceptance can authorize direct introduction delivery.</small></span>
+        <div><span role="status">{authorized ? 'Accepted' : 'Awaiting independent opt-in'}</span></div>
+      </div>
+      <div className={'authorization ' + (authorized ? 'ready' : '')}>
+        {authorized ? <CheckCircle2 size={17} /> : <LockKeyhole size={17} />}
+        <span>{authorized ? 'Both participants opted in. You may send the introduction note.' : requested ? 'Request saved. Waiting for the other person’s consent.' : 'Not authorized. Submit a request first; no message is sent automatically.'}</span>
+      </div>
+      {failure && <div role="alert" className="intro-blocked">{failure}
+        {authorized && retryMessageId && <button type="button" disabled={sending} onClick={() => void sendConfirmed()}>Retry message</button>}
+        {!authorized && !requested && <button type="button" disabled={requesting} onClick={() => void requestIntroduction()}>Retry request</button>}
+      </div>}
+      <footer><Button kind="quiet" onClick={onClose}>Close</Button>
+        <Button disabled={!authorized || blocked || !text.trim() || sending} onClick={() => void sendConfirmed()}>
+          <Send size={15} />{sending ? 'Sending…' : retryMessageId ? 'Retry confirmed message' : 'Send authorized intro'}
+        </Button></footer>
     </div>
   </div>
 }
