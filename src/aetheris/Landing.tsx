@@ -73,7 +73,7 @@ export default function Landing() {
       <div className="ael-architecture-meta" aria-hidden="true"><span>RELATIONSHIPS / BY DESIGN</span><span>ASK INTROS — STUDY 001</span><span>EST. TO CONNECT WHAT MATTERS</span></div>
       <div className="ael-hero-content">
         <p className="ael-kicker ael-kicker-light"><span className="ael-dash" /> A different kind of professional circle</p>
-        <h1 id="ael-hero-title">The right connection <em>changes everything.</em></h1>
+        <h1 id="ael-hero-title">The right room <em>changes everything.</em></h1>
         <p className="ael-hero-lede">Great things are never built by accident. Neither are the relationships that make them possible.</p>
         <div className="ael-hero-actions">
           <JoinAction signedIn={signedIn} className="ael-btn ael-btn-gold ai-gradient-button" />
