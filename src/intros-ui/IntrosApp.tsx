@@ -36,7 +36,6 @@ import { VoiceBar } from '@/aetheris/VoiceBar';
 import { SelectionReader } from '@/aetheris/SelectionReader';
 import { LiveMessagesView } from './views/LiveMessagesView';
 import { InteractiveRelationshipTour } from '@/aetheris/InteractiveRelationshipTour';
-import './mobile-refinements.css';
 import { useUnreadCounts } from '@/aetheris/read-receipts';
 import '@/aetheris/styles.css';
 import '@/aetheris/architectural-system.css';
