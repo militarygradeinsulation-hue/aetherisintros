@@ -83,7 +83,7 @@ function Bridge({ onMembers, onError }: {
       alive = false
       document.removeEventListener('visibilitychange', onVisible)
     }
-  }, [onMembers, onError])
+  }, [onMembers, onError, net.synced])
   return null
 }
 
@@ -94,5 +94,5 @@ export function LiveMembers({ onMembers, onError }: {
   onMembers: (m: NetworkMember[]) => void
   onError?: (error: string) => void
 }) {
-  return <Bridge onMembers={onMembers} onError={onError} />
+  return <Bridge onMembers={onMembers} {...(onError ? { onError } : {})} />
 }
