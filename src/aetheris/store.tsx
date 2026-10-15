@@ -11,7 +11,7 @@ import {
 import {
   currentUserId, loadDirectory, loadUserGraph, saveAsk, saveAskResponse, saveDoc, saveIntro,
   saveLearning, saveMessage, saveNote, savePost, saveProfileFields, saveRelationship, saveThread,
-  type Directory, type MemoryNote,
+  type Directory, type MemoryNote, type RemoteGraph,
 } from './db'
 import {
   emptyDirectory, ensureThread, loadLiveDirectory, mirrorFollow, saveComment,
@@ -382,7 +382,7 @@ export function NetworkProvider({ children, mode = 'live' }: { children: React.R
         myGoals = goals
         setDir(directory)
       }
-      const remote = await loadUserGraph(id, live).catch(error => {
+      const remote = await loadUserGraph(id, live).catch((error): Partial<RemoteGraph> => {
         if (live && !cancelled) {
           setFeedError(true)
           setNetworkLoadError(error instanceof Error ? error.message : 'Could not read your saved network activity.')
