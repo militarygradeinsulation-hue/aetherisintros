@@ -1,0 +1,140 @@
+/*
+ * Ask Intros / accessible messaging surfaces.
+ * Designed from the user's screenshot: readable editorial light panels even when the
+ * surrounding member chrome uses the dark architectural appearance.
+ * Explicitly scoped to both demo and live messaging; no feed or dashboard changes.
+ */
+.ix-root :is(.ix-messages,.ix-live-messages) {
+  --msg-page: #edf2f2;
+  --msg-panel: #fffdfa;
+  --msg-panel-inset: #f3f6f5;
+  --msg-border: #cbd7da;
+  --msg-ink: #203139;
+  --msg-body: #304650;
+  --msg-muted: #506169;
+  --msg-copper: #77502e;
+  --msg-accent: #28587d;
+  --msg-accent-hover: #1f4769;
+  --msg-accent-ink: #ffffff;
+  --msg-selected: #e1edf5;
+  --msg-hover: #e8f1f5;
+  --msg-outgoing: #d9e9f8;
+  --msg-incoming: #edf1f2;
+  --msg-note: #fff3dd;
+  color: var(--msg-ink);
+  background: var(--msg-page);
+  border: 1px solid var(--msg-border);
+  border-radius: 16px;
+  box-shadow: 0 12px 38px rgba(8,23,27,.07);
+  font-family: Inter, system-ui, sans-serif;
+}
+/* Both appearance modes intentionally use readable light cards (dark shell remains optional). */
+:root[data-theme="light"] .ix-root :is(.ix-messages,.ix-live-messages) {
+  --msg-page: #f3f3ef;
+  --msg-panel: #fffefa;
+  --msg-panel-inset: #f6f7f4;
+  --msg-selected: #e3eff8;
+}
+.ix-root .ix-messages .msg-hero {
+  background:
+    linear-gradient(112deg,rgba(248,247,241,.98),rgba(224,235,238,.90)),
+    linear-gradient(90deg,rgba(54,70,75,.07) 1px,transparent 1px);
+  border-color:var(--msg-border);
+  color:var(--msg-ink);
+}
+/* Reinforce form focus and contrast: no pale text on a dark input or vice versa. */
+.ix-root :is(.ix-messages,.ix-live-messages) :is(input,textarea) {
+  color: var(--msg-ink);
+  caret-color: var(--msg-ink);
+}
+.ix-root :is(.ix-messages,.ix-live-messages) :is(input,textarea)::placeholder {
+  color: var(--msg-muted);
+  opacity: 1;
+}
+.ix-root :is(.ix-messages,.ix-live-messages) :is(button,input,textarea,a):focus-visible {
+  outline: 2px solid var(--msg-accent)!important;
+  outline-offset: 2px;
+}
+.ix-root :is(.ix-messages,.ix-live-messages) button:disabled {
+  cursor: not-allowed;
+}
+.ix-root :is(.ix-messages,.ix-live-messages) .msg-body-text {
+  font-size: 13px;
+  line-height: 1.65;
+  font-weight: 450;
+}
+.ix-root :is(.ix-messages,.ix-live-messages) .msg-body-text p {
+  line-height: 1.65;
+}
+.ix-root .ix-messages .msg-chat-body {
+  background:linear-gradient(180deg,rgba(248,250,248,.65),rgba(244,248,249,.95));
+}
+.ix-root .ix-live-messages .msg-live-chat-body {
+  background:linear-gradient(180deg,rgba(252,253,251,.78),rgba(244,247,248,.92));
+}
+.ix-root :is(.ix-messages,.ix-live-messages) .msg-outgoing {
+  color: var(--msg-ink);
+  background: var(--msg-outgoing);
+  border: 1px solid #b6d0e3;
+  box-shadow:0 2px 9px rgba(28,58,74,.04);
+}
+.ix-root :is(.ix-messages,.ix-live-messages) .msg-incoming {
+  color: var(--msg-ink);
+  background: var(--msg-incoming);
+  border: 1px solid #d4ddde;
+}
+.ix-root :is(.ix-messages,.ix-live-messages) :is(.msg-outgoing,.msg-incoming) * {
+  color:inherit;
+}
+.ix-root :is(.ix-messages,.ix-live-messages) .msg-next-step {
+  background: var(--msg-note);
+  border: 1px solid #dec9a4;
+}
+.ix-root .ix-messages .msg-brief-panel {
+  background: #e8f1f6;
+  border-color: #c2d6e1;
+}
+/* Real attachment/file error banners must stay legible on the light surface. */
+.ix-root .ix-live-messages [role="alert"] {
+  color:#84302a;
+  background:#fff0ed;
+}
+.ix-root :is(.ix-messages,.ix-live-messages) :is(.msg-outgoing,.msg-incoming) a {
+  color:#164f78;
+  text-decoration:underline;
+}
+@media (max-width: 767px) {
+  .ix-root :is(.ix-messages,.ix-live-messages) {
+    border-radius:10px;
+  }
+  .ix-root .ix-messages .msg-body-text {
+    font-size:13px;
+  }
+}
+@media (prefers-contrast: more) {
+  .ix-root :is(.ix-messages,.ix-live-messages) {
+    --msg-ink:#14232b;
+    --msg-muted:#33444b;
+    --msg-border:#758b96;
+    --msg-accent:#174467;
+    --msg-copper:#5c361d;
+  }
+}
+@media print {
+  .ix-root :is(.ix-messages,.ix-live-messages) {
+    background:#fff!important;
+    color:#172630!important;
+    box-shadow:none;
+  }
+}
+/* Primary message buttons must override inherited member-shell color rules. */
+.ix-root :is(.ix-messages,.ix-live-messages) .msg-primary-action {
+ color:var(--msg-accent-ink)!important;
+ background:var(--msg-accent)!important;
+ border-color:var(--msg-accent)!important;
+}
+.ix-root :is(.ix-messages,.ix-live-messages) .msg-primary-action:not(:disabled):hover {
+ background:var(--msg-accent-hover)!important;
+ border-color:var(--msg-accent-hover)!important;
+}
+.ix-root :is(.ix-messages,.ix-live-messages) .msg-primary-action svg {color:inherit;}
