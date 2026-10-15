@@ -32,10 +32,10 @@ function Photo({ src, alt, className = '', eager = false }: { src: string; alt: 
   />
 }
 
-function JoinAction({ signedIn, className = '' }: { signedIn: boolean; className?: string }) {
+function JoinAction({ signedIn, className = '', id }: { signedIn: boolean; className?: string; id?: string }) {
   return signedIn
-    ? <Link className={className} to="/app">Enter your network <ArrowUpRight aria-hidden="true" size={16} /></Link>
-    : <Link className={className} to="/early-access">Apply for access <ArrowUpRight aria-hidden="true" size={16} /></Link>
+    ? <Link id={id} className={className} to="/app">Enter your network <ArrowUpRight aria-hidden="true" size={16} /></Link>
+    : <Link id={id} className={className} to="/early-access">Apply for access <ArrowUpRight aria-hidden="true" size={16} /></Link>
 }
 
 export default function Landing() {
@@ -57,7 +57,7 @@ export default function Landing() {
       <div className="ael-header-actions">
         <AppearanceToggle className="ael-appearance" />
         {signedIn ? <Link to="/app" className="ael-signin">My network</Link> : <Link to="/auth" className="ael-signin">Member sign in</Link>}
-        <JoinAction signedIn={signedIn} className="ael-nav-cta ai-gradient-button" />
+        <JoinAction signedIn={signedIn} id="ask-intros-header-access" className="ael-nav-cta ai-gradient-button" />
       </div>
     </header>
 

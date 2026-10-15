@@ -61,7 +61,7 @@ try {
   let m=await read();
   check(m.page==='home','Home uses the shared product layout');
   check(m.panel.length>0 && m.ink.length>0,'Design tokens load in '+theme);
-  check(m.background=== (theme==='dark'?'rgb(17, 23, 25)':'rgb(243, 240, 233)'),'Canvas follows appearance mode');
+  check(m.background=== (theme==='dark'?'rgb(17, 23, 25)':'rgb(237, 242, 242)'),'Canvas follows appearance mode');
   check(m.mainWidth<=m.viewport+2,'Home stays within viewport');
   const nav=page.locator('nav[aria-label="Desktop navigation"]');
   await nav.locator('> button',{hasText:'People'}).click();
