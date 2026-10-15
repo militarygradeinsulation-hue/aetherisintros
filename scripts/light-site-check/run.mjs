@@ -97,6 +97,7 @@ try {
        const style=getComputedStyle(el)
        return {fg:style.color,bg:style.getPropertyValue('--ai-button-surface').trim(),text:el.textContent?.trim()||''}
      })
+     console.log('    ACCESS DEBUG '+JSON.stringify({width,mode,id:await cta.getAttribute('id'),...color,contrast:ratio(color.fg,color.bg)}))
      const contrast=ratio(color.fg,color.bg)
      check(contrast>=7,width+'px '+mode+' access CTA contrast '+contrast.toFixed(2)+':1')
      check(color.text.toLowerCase().includes('apply for access'),width+'px '+mode+' label exists')
