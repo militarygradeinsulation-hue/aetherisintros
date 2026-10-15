@@ -220,3 +220,78 @@
 @media print{
  .ael.ael-compact .ael-compact-story-photo::after{display:none!important}
 }
+
+/*
+ * Phone-scale refinements: prevent header controls from crowding the
+ * architectural hero and bring the first useful action higher in view.
+ */
+.ael.ael-compact #experience,
+.ael.ael-compact #membership {scroll-margin-top:12px}
+.ael.ael-compact :is(.ael-nav a,.ael-header-actions a):focus-visible {
+ outline:2px solid #a36b43;outline-offset:3px;
+}
+@media (max-width:750px) {
+ .ael.ael-compact .ael-hero {
+  padding-top:138px;
+  padding-bottom:73px;
+ }
+ .ael.ael-compact .ael-hero-actions {
+  margin-top:18px;
+ }
+ .ael.ael-compact .ael-compact-story {
+  padding-top:32px;
+  padding-bottom:31px;
+ }
+ .ael.ael-compact .ael-compact-method {
+  margin-top:24px;
+  padding-top:21px;
+ }
+ .ael.ael-compact .ael-compact-story-photo {
+  max-height:210px;
+ }
+}
+@media (max-width:420px) {
+ .ael.ael-compact .ael-header {
+  gap:8px;
+  padding:8px 13px;
+  min-height:68px;
+ }
+ .ael.ael-compact .ael-header .ask-intros-lockup {
+  width:clamp(102px,31vw,130px);
+ }
+ .ael.ael-compact .ael-header-actions {gap:6px;min-width:0}
+ .ael.ael-compact .ael-header .ael-signin {display:none}
+ .ael.ael-compact .ael-header .ael-nav-cta {
+  padding:0 9px;
+  min-height:42px;
+  font-size:9px;
+  letter-spacing:.015em;
+ }
+ .ael.ael-compact .ael-hero {
+  padding:122px 19px 69px;
+ }
+ :root .ael.ael-compact .ael-hero h1,
+ :root[data-theme='light'] .ael.ael-compact .ael-hero h1 {
+  font-size:clamp(49px,12.4vw,62px);
+  max-width:100%;
+  overflow-wrap:normal;
+ }
+ .ael.ael-compact .ael-hero-lede {
+  line-height:1.55;
+ }
+ .ael.ael-compact .ael-hero .ael-kicker {
+  font-size:9px;
+  letter-spacing:.08em;
+ }
+ .ael.ael-compact .ael-compact-story {
+  padding:30px 18px 26px;
+ }
+ .ael.ael-compact .ael-compact-story-photo {max-height:188px}
+ .ael.ael-compact .ael-compact-method-heading h3 {
+  font-size:39px;
+ }
+ .ael.ael-compact .ael-compact-membership {
+  padding:30px 19px 34px;
+ }
+ .ael.ael-compact .ael-compact-footer {padding:16px 19px}
+}
