@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
-import { submitIntroRequest } from '@/aetheris/lib/intro-request';
+import { isIntroTargetId, submitIntroRequest } from '@/aetheris/lib/intro-request';
 import { useNetwork } from '@/aetheris/store';
 import { loadMyProfile } from '@/aetheris/live';
 import { WriteFailureNotice } from '@/aetheris/WriteFailureNotice';
@@ -71,7 +71,7 @@ export default function App({ mode = 'demo' }: { mode?: 'demo' | 'live' }) {
   const network = useNetwork();
   const [activePage, setActivePage] = useState<ActivePage>('home');
   const [classicPage, setClassicPage] = useState<string>('memory');
-  const [selectedProfileId, setSelectedProfileId] = useState<string>('marcus-lee');
+  const [selectedProfileId, setSelectedProfileId] = useState<string>(mode === 'live' ? '' : 'marcus-lee');
   const [members, setMembers] = useState<NetworkMember[]>(mode === 'live' ? [] : NETWORK_MEMBERS);
   const [liveDirectoryError, setLiveDirectoryError] = useState('');
   const [feedPosts, setFeedPosts] = useState<FeedPost[]>(mode === 'live' ? [] : INITIAL_FEED_POSTS);
@@ -264,7 +264,12 @@ export default function App({ mode = 'demo' }: { mode?: 'demo' | 'live' }) {
   };
 
   const handleSendIntroRequest = async (targetId: string, note: string): Promise<'created' | 'existing'> => {
-    if (mode === 'live') return submitIntroRequest(targetId, note);
+    if (mode === 'live') {
+      if (!isIntroTargetId(targetId) || !members.some(member => member.id === targetId)) {
+        throw new Error('This person is not in the verified live directory. Reload People before requesting an introduction.')
+      }
+      return submitIntroRequest(targetId, note);
+    }
     // The labelled /demo showcase is not the live member network.
     setIntroRequests(previous => [{ id: `demo-intro-${Date.now()}`, targetId, note } as unknown as IntroRequest, ...previous]);
     return 'created';
@@ -280,7 +285,7 @@ export default function App({ mode = 'demo' }: { mode?: 'demo' | 'live' }) {
 
   // Find active profile
   const currentProfileMember =
-    members.find((m) => m.id === selectedProfileId) || members[0];
+    mode === 'live' ? members.find((m) => m.id === selectedProfileId) : (members.find((m) => m.id === selectedProfileId) || members[0]);
   const liveUnread = useUnreadCounts(mode === 'live');
   // "Open deal room" anywhere in the product lands on the Deals workspace page.
   useEffect(() => {
@@ -408,6 +413,11 @@ export default function App({ mode = 'demo' }: { mode?: 'demo' | 'live' }) {
           />
         )}
 
+        {mode === 'live' && activePage === 'profile' && !currentProfileMember && <div role="alert" className="mx-auto my-6 max-w-xl rounded-xl border border-[#cbd7da] bg-[#fffdfa] p-5 text-[#203139]">
+          <h2 className="text-lg font-semibold">Select a verified live member.</h2>
+          <p className="mt-2 text-sm">This profile is not in the current approved member directory. No sample account or another member was substituted.</p>
+          <button className="mt-4 rounded-md bg-[#28587d] px-4 py-2 text-sm font-semibold text-white" onClick={() => handleNavigate('people')}>Back to People</button>
+        </div>}
         {activePage === 'profile' && currentProfileMember && (
           <ProfileDetailView
             member={currentProfileMember}
