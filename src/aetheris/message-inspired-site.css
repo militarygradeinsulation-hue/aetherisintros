@@ -361,3 +361,12 @@
   color:#fff!important;
   background:#28587d!important;
 }
+
+/* When appearances change, snap the CTA's text color immediately.
+   Interpolating dark ink into light ink creates an inaccessible gray frame. */
+.ael.ael-compact #ask-intros-header-access {
+  transition:filter .16s ease, box-shadow .16s ease!important;
+}
+@media(prefers-reduced-motion:reduce) {
+  .ael.ael-compact #ask-intros-header-access { transition:none!important; }
+}
