@@ -179,7 +179,7 @@ export const MessagesView: React.FC<MessagesViewProps> = ({
                 <div className="flex items-center gap-2 pt-2 border-t border-[var(--msg-border)]">
                   <button
                     onClick={() => onReviewIntroRequest(req)}
-                    className="flex-1 py-1 text-xs font-semibold text-[var(--msg-accent-ink)] bg-[var(--msg-accent)] hover:bg-[var(--msg-accent-hover)] rounded transition-colors cursor-pointer text-center"
+                    className="msg-primary-action flex-1 py-1 text-xs font-semibold text-[var(--msg-accent-ink)] bg-[var(--msg-accent)] hover:bg-[var(--msg-accent-hover)] rounded transition-colors cursor-pointer text-center"
                   >
                     Review
                   </button>
@@ -209,7 +209,7 @@ export const MessagesView: React.FC<MessagesViewProps> = ({
                 onClick={() => {
                   if (conversations[1]) setSelectedThreadId(conversations[1].id);
                 }}
-                className="flex items-center gap-1 px-2.5 py-1 text-xs font-semibold text-[var(--msg-accent-ink)] bg-[var(--msg-accent)] hover:bg-[var(--msg-accent-hover)] rounded-md transition-colors cursor-pointer"
+                className="msg-primary-action flex items-center gap-1 px-2.5 py-1 text-xs font-semibold text-[var(--msg-accent-ink)] bg-[var(--msg-accent)] hover:bg-[var(--msg-accent-hover)] rounded-md transition-colors cursor-pointer"
               >
                 <Plus className="w-3.5 h-3.5" />
                 New
@@ -418,7 +418,7 @@ export const MessagesView: React.FC<MessagesViewProps> = ({
               <button
                 type="submit"
                 disabled={!draftMessage.trim()}
-                className="p-1.5 text-[var(--msg-accent-ink)] bg-[var(--msg-accent)] hover:bg-[var(--msg-accent-hover)] disabled:opacity-40 disabled:cursor-not-allowed rounded-lg transition-colors cursor-pointer"
+                className="msg-primary-action p-1.5 text-[var(--msg-accent-ink)] bg-[var(--msg-accent)] hover:bg-[var(--msg-accent-hover)] disabled:opacity-40 disabled:cursor-not-allowed rounded-lg transition-colors cursor-pointer"
               >
                 <Send className="w-3.5 h-3.5" />
               </button>
@@ -512,7 +512,7 @@ export const MessagesView: React.FC<MessagesViewProps> = ({
                     activeThread?.memberTitle || 'General Partner'
                   )
                 }
-                className="w-full flex items-center justify-center gap-2 py-2 text-xs font-semibold text-[var(--msg-accent-ink)] bg-[var(--msg-accent)] hover:bg-[var(--msg-accent-hover)] rounded-lg shadow-sm transition-colors cursor-pointer"
+                className="msg-primary-action w-full flex items-center justify-center gap-2 py-2 text-xs font-semibold text-[var(--msg-accent-ink)] bg-[var(--msg-accent)] hover:bg-[var(--msg-accent-hover)] rounded-lg shadow-sm transition-colors cursor-pointer"
               >
                 <Calendar className="w-3.5 h-3.5" />
                 Schedule Meeting
@@ -554,7 +554,7 @@ export const MessagesView: React.FC<MessagesViewProps> = ({
             <div className="flex justify-end">
               <button
                 onClick={() => setShowBriefModal(false)}
-                className="px-4 py-2 text-xs font-semibold text-[var(--msg-accent-ink)] bg-[var(--msg-accent)] rounded-lg cursor-pointer"
+                className="msg-primary-action px-4 py-2 text-xs font-semibold text-[var(--msg-accent-ink)] bg-[var(--msg-accent)] rounded-lg cursor-pointer"
               >
                 Close
               </button>
