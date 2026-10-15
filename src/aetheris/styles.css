@@ -6010,3 +6010,26 @@ body:has([role=menu],[role=listbox],.ix-mobile-sheet,.topbar-dropmenu,.notificat
 .board-tile-shell:hover::before{opacity:1}
 .board-tile::after{content:"";position:absolute;inset:0;z-index:5;border:1px solid transparent;border-radius:inherit;pointer-events:none;transition:border-color .2s ease}
 .board-tile-shell:hover .board-tile::after{border-color:var(--tile-hover)}
+
+/* Sitewide brand continuity: match the editorial homepage without changing feature layouts. */
+:root {
+  --night:#07090c;
+  --raised:#101419;
+  --graphite:#11161b;
+  --amber:#f4a125;
+  --gold:#c78522;
+  --symbol-line:#d7c29a;
+  --soft:#f2eee6;
+  --ivory:#f4f1ea;
+  --cobalt-bright:#2685ff;
+}
+.ask-intros-lockup--compact { width:clamp(188px,17vw,248px); max-height:none; }
+.ask-intros-lockup__rule { stroke:#2685ff; }
+.ask-intros-lockup__node--top,.ask-intros-lockup__rule-dot { fill:#f4a125; }
+:where(.lv-nav,.ix-root header,.auth-page,.early-access-page) .ask-intros-lockup--compact { width:clamp(164px,17vw,226px); }
+:where(.lv-nav,.ix-root header) { border-color:rgba(215,194,154,.22); }
+:where(.lv-nav,.ix-root,.auth-page,.early-access-page) :where(button,a,input,textarea,select):focus-visible { outline-color:#f4a125; outline-offset:2px; }
+@media(max-width:680px) {
+  .ask-intros-lockup--compact,
+  :where(.lv-nav,.ix-root header) .ask-intros-lockup--compact { width:154px; max-height:none; }
+}
