@@ -1,4 +1,5 @@
 import { createFileRoute } from '@tanstack/react-router'
+import { logServerError } from '@/lib/server-error-log'
 
 import { isTrustedCaller } from '@/lib/app-settings.server'
 
@@ -14,7 +15,7 @@ export const Route = createFileRoute('/api/cron/google-sync')({
           if (!googleConfigured()) return Response.json({ synced: 0, failed: 0, skipped: 'not configured' })
           return Response.json(await syncAll())
         } catch (error) {
-          console.error('google-sync failed', error)
+          await logServerError(error, request)
           return Response.json({ error: 'Sync failed' }, { status: 500 })
         }
       },

@@ -1,4 +1,5 @@
 import { createFileRoute } from '@tanstack/react-router'
+import { logServerError } from '@/lib/server-error-log'
 
 import { membershipCardImage } from '@/lib/membership-card.server'
 
@@ -18,7 +19,7 @@ export const Route = createFileRoute('/api/public/membership-card')({
             headers: { 'content-type': 'image/png', 'cache-control': 'public, max-age=86400', 'x-robots-tag': 'noindex' },
           })
         } catch (error) {
-          console.error('membership-card image failed', error)
+          await logServerError(error, request)
           return new Response('Unavailable', { status: 500 })
         }
       },

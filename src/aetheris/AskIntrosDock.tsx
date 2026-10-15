@@ -13,6 +13,9 @@ import { recognizeCommand, recognizeCapabilityIntent, recognizeDestination } fro
 import { describe as describeCapability } from './capabilities/registry'
 import { getActiveSubject, openCapability } from './capabilities/store'
 import { openCeo } from './ceo-store'
+import { VOICE_PAGES, confirmation, parseVoiceCommand } from './voice-commands'
+import { saveQuickNote } from './quick-note-ui'
+import { placeMenu } from './quick-menu'
 import {
   isStopPhrase, readAloud, readerSnapshot, stopReading, useDictation, useReader, useVoiceSettings, voiceOutputSupported,
   unlockAudio,
@@ -22,6 +25,44 @@ function AetherisGlyph({ size = 18 }: { size?: number }) {
 }
 
 export type { AskIntrosAction }
+
+/** What can open the assistant: a question, a spot on screen (right-click), and/or voice mode. */
+export interface OpenAssistantDetail { question?: string; x?: number; y?: number; voice?: boolean }
+
+const POS_KEY = 'aetheris-dock-pos'
+const FAB_KEY = 'aetheris-dock-fab-pos'
+type Point = { left: number; top: number }
+const readPoint = (key: string): Point | null => {
+  try { const v = JSON.parse(localStorage.getItem(key) ?? 'null'); return v && typeof v.left === 'number' && typeof v.top === 'number' ? v : null } catch { return null }
+}
+const writePoint = (key: string, p: Point | null) => { try { if (p) localStorage.setItem(key, JSON.stringify(p)); else localStorage.removeItem(key) } catch { /* unavailable */ } }
+const clampPoint = (p: Point, w: number, h: number): Point => ({
+  left: Math.min(Math.max(8, p.left), Math.max(8, window.innerWidth - w - 8)),
+  top: Math.min(Math.max(8, p.top), Math.max(8, window.innerHeight - h - 8)),
+})
+
+/** Pointer-drag for a fixed element; reports whether the pointer actually moved (so clicks still work). */
+function useDrag(onMove: (p: Point) => void, onEnd: (p: Point) => void) {
+  return (event: React.PointerEvent<HTMLElement>, el: HTMLElement | null) => {
+    if (!el || event.button !== 0) return
+    const r = el.getBoundingClientRect()
+    const dx = event.clientX - r.left, dy = event.clientY - r.top
+    const sx = event.clientX, sy = event.clientY
+    let moved = false
+    let last: Point = { left: r.left, top: r.top }
+    const move = (e: PointerEvent) => {
+      if (!moved && Math.hypot(e.clientX - sx, e.clientY - sy) < 5) return
+      moved = true
+      last = clampPoint({ left: e.clientX - dx, top: e.clientY - dy }, r.width, r.height)
+      onMove(last)
+    }
+    const up = () => {
+      window.removeEventListener('pointermove', move); window.removeEventListener('pointerup', up)
+      if (moved) { onEnd(last); el.dataset['dragged'] = '1'; setTimeout(() => { delete el.dataset['dragged'] }, 0) }
+    }
+    window.addEventListener('pointermove', move); window.addEventListener('pointerup', up)
+  }
+}
 
 interface Turn { role: 'user' | 'assistant'; content: string; did?: string[] }
 
@@ -78,11 +119,17 @@ export function AskIntrosDock(props: AskIntrosDockProps) {
   return useIsPrimaryDock() ? <AskIntrosDockInner {...props} /> : null
 }
 
+/** When a command moves to another part of the app the dock remounts; this carries the open
+ * conversation across so voice control keeps going on the new page. */
+let handoff: { turns: Turn[]; at: number } | null = null
+const takeHandoff = () => { const h = handoff && Date.now() - handoff.at < 5000 ? handoff : null; handoff = null; return h }
+
 function AskIntrosDockInner({ page, peopleNames, memberName, briefing, contextPanel, run }: AskIntrosDockProps) {
-  const [open, setOpen] = useState(false)
+  const [carried] = useState(takeHandoff)
+  const [open, setOpen] = useState(!!carried)
   const [input, setInput] = useState('')
   const [busy, setBusy] = useState(false)
-  const [turns, setTurns] = useState<Turn[]>([{
+  const [turns, setTurns] = useState<Turn[]>(() => carried?.turns ?? [{
     role: 'assistant',
     content: `I am Ask Intros. Ask me how anything here works, or tell me to do it — read this page to you, change your text size, open a page, post a need, find who matters this week.`,
   }])
@@ -94,11 +141,31 @@ function AskIntrosDockInner({ page, peopleNames, memberName, briefing, contextPa
   const graphInputs = useGraphInputs()
 
   useEffect(() => { listRef.current?.scrollTo({ top: listRef.current.scrollHeight }) }, [turns, open])
+  // Where the panel and the floating button sit; members can drag both anywhere.
+  const [pos, setPos] = useState<Point | null>(() => readPoint(POS_KEY))
+  const [fabPos, setFabPos] = useState<Point | null>(() => readPoint(FAB_KEY))
+  const dockRef = useRef<HTMLElement>(null)
+  const fabRef = useRef<HTMLButtonElement>(null)
+  const dragDock = useDrag(setPos, p => writePoint(POS_KEY, p))
+  const dragFab = useDrag(setFabPos, p => writePoint(FAB_KEY, p))
+  const pendingVoice = useRef(false)
+  const [voiceAsk, setVoiceAsk] = useState(0)
+  const live = useRef({ open, turns })
+  live.current = { open, turns }
+  useEffect(() => () => { if (live.current.open) handoff = { turns: live.current.turns, at: Date.now() } }, [])
+
   useEffect(() => {
     const show = (event: Event) => {
       setOpen(true)
-      const prompt = (event as CustomEvent<string>).detail
-      if (typeof prompt === 'string') setInput(prompt)
+      const detail = (event as CustomEvent<string | OpenAssistantDetail | undefined>).detail
+      const req: OpenAssistantDetail = typeof detail === 'string' ? { question: detail } : detail ?? {}
+      if (req.question) setInput(req.question)
+      if (typeof req.x === 'number' && typeof req.y === 'number') {
+        // Open right where the member asked for it, kept on screen.
+        const at = placeMenu(req.x, req.y, Math.min(390, window.innerWidth - 32), Math.min(window.innerHeight * 0.72, 600), window.innerWidth, window.innerHeight)
+        setPos(at)
+      }
+      if (req.voice) { pendingVoice.current = true; setVoiceAsk(n => n + 1) }
     }
     window.addEventListener('aetheris:open-assistant', show)
     return () => window.removeEventListener('aetheris:open-assistant', show)
@@ -112,6 +179,25 @@ function AskIntrosDockInner({ page, peopleNames, memberName, briefing, contextPa
     setInput('')
     const history = [...turns, { role: 'user' as const, content: question }]
     setTurns(history)
+    const say = (text: string) => { if ((voice.speakReplies || voice.conversation) && voiceOutputSupported()) readAloud([text], 'Ask Intros') }
+    // Commands that run instantly: go somewhere, find someone, message, intro, note, post an ask.
+    const command = parseVoiceCommand(question, peopleNames)
+    if (command) {
+      let result: string | null
+      if (command.kind === 'take-note') {
+        try { result = (await saveQuickNote(command.value ?? '')) === 'account' ? 'Saved that note to your Memory' : 'Saved that note on this device' }
+        catch (e) { result = e instanceof Error ? e.message.replace(/\.$/, '') : 'Could not save the note' }
+      } else result = run(command)
+      const reply = confirmation(command, result)
+      const answer: Turn = { role: 'assistant', content: reply, ...(result ? { did: [result] } : {}) }
+      // If the command moved to another part of the app this dock unmounts before it re-renders;
+      // keep the reply for the dock that takes over.
+      live.current = { open: true, turns: [...history, answer] }
+      setTurns(current => [...current, answer])
+      say(reply)
+      sending.current = false
+      return
+    }
     const destination = recognizeDestination(question)
     if (destination) {
       window.dispatchEvent(new CustomEvent('aetheris:navigate', { detail: destination }))
@@ -130,10 +216,10 @@ function AskIntrosDockInner({ page, peopleNames, memberName, briefing, contextPa
       sending.current = false
       return
     }
-    const command = recognizeCommand(question)
-    if (command?.view) {
-      openCeo(command)
-      setTurns(current => [...current, { role: 'assistant', content: `Opening ${ceoViewLabel[command.view!]}${command.arg && command.view === 'who' ? ` for “${command.arg}”` : ''}. Everything in it comes from your recorded data — no AI needed.`, did: [ceoViewLabel[command.view!]] }])
+    const ceoCommand = recognizeCommand(question)
+    if (ceoCommand?.view) {
+      openCeo(ceoCommand)
+      setTurns(current => [...current, { role: 'assistant', content: `Opening ${ceoViewLabel[ceoCommand.view!]}${ceoCommand.arg && ceoCommand.view === 'who' ? ` for “${ceoCommand.arg}”` : ''}. Everything in it comes from your recorded data — no AI needed.`, did: [ceoViewLabel[ceoCommand.view!]] }])
       sending.current = false
       return
     }
@@ -168,15 +254,23 @@ function AskIntrosDockInner({ page, peopleNames, memberName, briefing, contextPa
             contextPanel,
             memberName,
             voice: { speaking: readerSnapshot().state !== 'idle', conversation: voice.conversation, speakReplies: voice.speakReplies },
-            pages: pageMeta.map(m => ({ id: m.id, label: m.label, blurb: m.blurb })),
+            pages: [
+              ...pageMeta.map(m => ({ id: m.id, label: m.label, blurb: m.blurb })),
+              ...VOICE_PAGES.filter(v => !pageMeta.some(m => m.id === v.page)).map(v => ({ id: v.page, label: v.label, blurb: `Open ${v.label}` })),
+            ],
             people: peopleNames.slice(0, 60),
           },
         },
       })
-      const did = answer.actions.flatMap(action => {
+      const did: string[] = []
+      for (const action of answer.actions) {
+        if (action.kind === 'take-note') {
+          try { await saveQuickNote(action.value ?? ''); did.push('Saved a note to your Memory') } catch { /* reported in the reply */ }
+          continue
+        }
         const note = run(action)
-        return note ? [note] : []
-      })
+        if (note) did.push(note)
+      }
       setTurns(current => [...current, { role: 'assistant', content: answer.reply, did }])
       const next = answer.suggestions.filter(item => item.toLowerCase() !== question.toLowerCase())
       if (next.length) setOpeners(next.slice(0, 4))
@@ -220,16 +314,33 @@ function AskIntrosDockInner({ page, peopleNames, memberName, briefing, contextPa
 
   useEffect(() => { if (!open) dictation.stop() }, [open])
 
+  // Voice mode from the right-click menu: start a spoken conversation straight away.
+  useEffect(() => {
+    if (!open || !pendingVoice.current) return
+    pendingVoice.current = false
+    unlockAudio()
+    if (dictation.supported) {
+      setVoice({ conversation: true, speakReplies: true })
+      setTurns(current => [...current, { role: 'assistant', content: 'Listening. Say what you want: “go to events”, “find Acme”, “message Ana”, “take a note…”, or ask me anything. Say “stop” to end.' }])
+    } else {
+      setTurns(current => [...current, { role: 'assistant', content: 'Voice needs Chrome, Edge or Safari. You can type here instead.' }])
+    }
+  }, [open, voiceAsk]) // eslint-disable-line react-hooks/exhaustive-deps
+
   const status = busy ? 'Thinking' : reader.state !== 'idle' ? 'Speaking' : dictation.listening ? 'Listening' : ''
 
   return <>
-    <button className={`ask-dock-fab ${open ? 'active' : ''}`} aria-label="Ask Intros" onClick={() => setOpen(value => !value)}>
+    <button ref={fabRef} className={`ask-dock-fab ${open ? 'active' : ''}`} aria-label="Ask Intros" title="Drag to move"
+      style={fabPos ? { left: fabPos.left, top: fabPos.top, right: 'auto', bottom: 'auto' } : undefined}
+      onPointerDown={e => dragFab(e, fabRef.current)}
+      onClick={() => { if (fabRef.current?.dataset['dragged']) return; setOpen(value => !value) }}>
       {open ? <X size={18} /> : <AetherisGlyph size={18} />}
       {!open && <span>Ask Intros</span>}
     </button>
 
-    {open && <aside className="ask-dock" role="dialog" aria-label="Ask Intros" data-voice-skip="true">
-      <header>
+    {open && <aside ref={dockRef} className="ask-dock" role="dialog" aria-label="Ask Intros" data-voice-skip="true"
+      style={pos ? { ...clampPoint(pos, Math.min(390, window.innerWidth - 32), dockRef.current?.offsetHeight ?? 420), right: 'auto', bottom: 'auto' } : undefined}>
+      <header className="ask-dock-drag" title="Drag to move" onPointerDown={e => { if ((e.target as HTMLElement).closest('button')) return; dragDock(e, dockRef.current) }}>
         <span className="ask-dock-mark"><AetherisGlyph size={14} /></span>
         <div><b>Ask Intros</b><small>Your butler for the whole system</small></div>
         {voiceOutputSupported() && <button className={`icon-btn ${voice.speakReplies ? 'active' : ''}`}
@@ -237,6 +348,7 @@ function AskIntrosDockInner({ page, peopleNames, memberName, briefing, contextPa
           title={voice.speakReplies ? 'Speaking replies out loud' : 'Replies are silent'}
           onClick={() => { setVoice({ speakReplies: !voice.speakReplies }); if (voice.speakReplies) stopReading() }}>
           {voice.speakReplies ? <Volume2 size={15} /> : <VolumeX size={15} />}</button>}
+        {pos && <button className="icon-btn" aria-label="Move Ask Intros back to the corner" title="Back to the corner" onClick={() => { setPos(null); writePoint(POS_KEY, null) }}>↘</button>}
         <button className="icon-btn" aria-label="Close Ask Intros" onClick={() => setOpen(false)}><X size={16} /></button>
       </header>
 

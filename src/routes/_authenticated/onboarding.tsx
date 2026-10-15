@@ -3,6 +3,8 @@ import { ArrowRight } from 'lucide-react'
 import { useEffect, useState } from 'react'
 
 import { useAccess } from '@/aetheris/access'
+import { ONBOARDING_KEYS, splitList } from '@/aetheris/linkedin-scan'
+import { LinkedInScanPanel, type ScanPatch } from '@/aetheris/linkedin-scan-ui'
 import { supabase } from '@/integrations/supabase/client'
 import '@/aetheris/styles.css'
 
@@ -51,6 +53,7 @@ function OnboardingRoute() {
   const [answers, setAnswers] = useState<Record<string, string>>({})
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState('')
+  const [linkedinUrl, setLinkedinUrl] = useState('')
 
   useEffect(() => {
     if (access.loading) return
@@ -67,13 +70,15 @@ function OnboardingRoute() {
     if (!get('name')) { setError('Your name is needed — members meet real people.'); return }
     setBusy(true); setError('')
     const initials = get('name').split(/\s+/).slice(0, 2).map(p => p[0] ?? '').join('').toUpperCase()
-    const { error: saveError } = await supabase.from('profiles').update({
+    const { error: saveError } = await (supabase.from('profiles') as any).update({ // eslint-disable-line @typescript-eslint/no-explicit-any
       name: get('name'), initials: initials || 'M', title: get('title'), company: get('company'),
       location: get('location'), focus: get('focus'), looking_for: get('looking_for'),
       can_help_with: get('can_help_with'), industries: list(get('industries')),
       expertise: list(get('expertise')), availability: get('availability'), onboarded: true,
     }).eq('id', access.userId)
     if (saveError) { setError(saveError.message); setBusy(false); return }
+    // The LinkedIn link (0038) is saved on its own so it can never block the profile itself.
+    if (linkedinUrl) await (supabase.from('profiles') as any).update({ linkedin_url: linkedinUrl }).eq('id', access.userId) // eslint-disable-line @typescript-eslint/no-explicit-any
 
     const memories = [
       get('focus') && { category: 'Companies', text: `Your current focus: ${get('focus')}`, scope: 'public' as const },
@@ -100,6 +105,19 @@ function OnboardingRoute() {
       </p>
     </header>
     <section className="onboarding-form">
+      <LinkedInScanPanel
+        keys={ONBOARDING_KEYS} demo={false}
+        current={{ ...answers, linkedin_url: linkedinUrl }}
+        heading="Start from your LinkedIn profile"
+        intro="Fills the answers below for you to check. Nothing is saved until you click Enter the network."
+        applyLabel="Fill my answers"
+        onApply={async (patch: ScanPatch) => {
+          const { linkedin_url: url, ...rest } = patch
+          if (url) setLinkedinUrl(url)
+          const filled = Object.fromEntries(Object.entries(rest).map(([k, v]) => [k, k === 'industries' || k === 'expertise' ? splitList(v ?? '').join(', ') : v ?? '']))
+          setAnswers(prev => ({ ...prev, ...filled }))
+          return { status: 'filled', message: 'Filled in below. Not saved yet: check your answers, then click Enter the network.' }
+        }} />
       {questions.map(q => <label key={q.key}>
         <span>{q.label}</span>
         <input value={answers[q.key] ?? ''} onChange={e => set(q.key, e.target.value)} placeholder={q.placeholder} />

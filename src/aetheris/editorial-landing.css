@@ -1,0 +1,387 @@
+/* Ask Intros / the editorial circle. Original visual treatment, independent from
+   the retail reference: architecture, consequence, consent and human possibility. */
+.ael{--ael-ink:#101215;--ael-night:#080a0d;--ael-gold:#c7a477;--ael-cream:#eee9df;--ael-paper:#f1ede5;background:var(--ael-night);color:var(--ael-cream);font-family:'Space Grotesk',Inter,system-ui,sans-serif;overflow:hidden}
+.ael *, .ael *::before,.ael *::after{box-sizing:border-box}
+.ael h1,.ael h2,.ael h3,.ael p{margin-top:0}
+.ael a{color:inherit;text-decoration:none}
+.ael img{display:block;max-width:100%}
+.ael a:focus-visible,.ael button:focus-visible{outline:3px solid var(--ael-gold);outline-offset:4px}
+.ael-skip{position:absolute;top:-150px;left:20px;z-index:1000;padding:12px 18px;background:var(--ael-cream);color:var(--ael-night)!important}
+.ael-skip:focus{top:12px}
+.ael-header{position:absolute;z-index:8;top:0;left:0;right:0;min-height:99px;padding:26px clamp(22px,5vw,96px);display:flex;align-items:center;justify-content:space-between;gap:26px;border-bottom:1px solid rgba(255,255,255,.22);background:linear-gradient(180deg,rgba(5,7,10,.56),transparent);color:#fff}
+.ael-logo{display:inline-flex;align-items:center;gap:15px;white-space:nowrap;font-size:17px;font-weight:500;letter-spacing:.24em}
+.ael-logo em,.ael-footer-wordmark em{font-style:normal;font-weight:300}
+.ael-logo-mark{width:42px;height:42px;display:grid;place-items:center;border:1px solid rgba(236,228,217,.72);border-radius:50%;font:italic 25px Georgia,serif;letter-spacing:-.11em;text-transform:lowercase;color:var(--ael-cream)}
+.ael-logo-mark span{color:var(--ael-gold);padding:0 1px}
+.ael-nav{display:flex;align-items:center;gap:clamp(18px,2.6vw,48px)}
+.ael-nav a,.ael-header-actions a{font-size:10px;text-transform:uppercase;letter-spacing:.15em;font-weight:650;white-space:nowrap}
+.ael-nav a,.ael-signin{color:rgba(255,255,255,.78)!important;transition:color .25s}
+.ael-nav a:hover,.ael-signin:hover{color:#fff!important}
+.ael-header-actions{display:flex;align-items:center;gap:20px}
+.ael-nav-cta{display:inline-flex;align-items:center;gap:9px;white-space:nowrap;min-height:43px;padding:0 15px;border:1px solid rgba(237,220,194,.65);color:#fff!important;transition:background .2s,color .2s}
+.ael-nav-cta:hover{background:var(--ael-cream);color:var(--ael-ink)!important}
+.ael-hero{position:relative;min-height:800px;height:100svh;display:flex;align-items:flex-end;padding:160px clamp(24px,8.2vw,148px) clamp(110px,10vh,145px);isolation:isolate;background:#191816}
+.ael-hero-image,.ael-hero-shade{position:absolute;inset:0;width:100%;height:100%;z-index:-2}
+.ael-hero-image{object-fit:cover;object-position:center 52%;filter:brightness(.75) saturate(.76) contrast(1.05)}
+.ael-hero-shade{z-index:-1;background:linear-gradient(90deg,rgba(5,7,10,.85) 0%,rgba(5,7,10,.56) 43%,rgba(5,7,10,.06) 100%),linear-gradient(0deg,rgba(5,7,10,.76),transparent 42%,rgba(5,7,10,.2))}
+.ael-hero-content{position:relative;max-width:940px}
+.ael-kicker{display:flex;align-items:center;gap:18px;margin-bottom:30px;font-size:10px;font-weight:650;text-transform:uppercase;letter-spacing:.24em}
+.ael-kicker-light{color:#e9dac4}
+.ael-dash{width:37px;height:1px;background:var(--ael-gold)}
+.ael-hero h1{max-width:920px;margin:0 0 30px;font:400 clamp(75px,9.1vw,174px)/.84 'Cormorant Garamond',Georgia,serif;letter-spacing:-.047em;text-wrap:balance}
+.ael-hero h1 em{font-style:italic;font-weight:400;color:#e2c7a4}
+.ael-hero-lede{max-width:600px;color:#e0ddd7;font-size:clamp(15px,1.25vw,18px);line-height:1.72;font-weight:400}
+.ael-hero-actions,.ael-membership-actions{margin-top:32px;display:flex;align-items:center;gap:30px;flex-wrap:wrap}
+.ael-btn{display:inline-flex;min-height:58px;align-items:center;justify-content:center;gap:20px;padding:0 27px;font-size:10.5px;font-weight:750;letter-spacing:.13em;text-transform:uppercase;transition:background .25s,transform .25s}
+.ael-btn:hover{transform:translateY(-2px)}
+.ael-btn-gold{background:#cfb08a!important;color:#171511!important}
+.ael-btn-gold:hover{background:#edcfaa!important}
+.ael-text-link{display:inline-flex;align-items:center;gap:11px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.13em;border-bottom:1px solid rgba(255,255,255,.65);padding-bottom:8px;color:#fff!important}
+.ael-text-link:hover{color:#e6cda7!important}
+.ael-hero-bottom{position:absolute;bottom:27px;left:clamp(24px,5vw,96px);right:clamp(24px,5vw,96px);display:flex;justify-content:space-between;align-items:center;gap:12px;border-top:1px solid rgba(255,255,255,.35);padding-top:20px;color:#e7e5e0;font-size:9px;font-weight:650;letter-spacing:.22em}
+.ael-hero-bottom a{display:inline-flex;gap:11px;align-items:center}
+.ael-editorial-meta{display:flex;justify-content:space-between;gap:20px;letter-spacing:.2em;font-size:10px;font-weight:700;color:#7d6a53;border-bottom:1px solid rgba(12,14,18,.25);padding-bottom:18px}
+.ael-introduction{background:var(--ael-paper);color:var(--ael-ink);padding:clamp(55px,7vw,120px) clamp(25px,8vw,145px) clamp(70px,8vw,140px)}
+.ael-editorial-lead{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(240px,.65fr);gap:clamp(40px,7vw,130px);align-items:end;margin-top:clamp(52px,7vw,130px)}
+.ael-editorial-lead h2,.ael-approach h2,.ael-system h2,.ael-membership h2{font:400 clamp(59px,6.8vw,116px)/.95 'Cormorant Garamond',Georgia,serif;letter-spacing:-.042em}
+.ael-editorial-lead h2 em,.ael-approach h2 em,.ael-system h2 em,.ael-membership h2 em{font-weight:400;font-style:italic}
+.ael-editorial-lead h2{margin-bottom:0}
+.ael-editorial-lead p,.ael-system-head p{color:#53504a;font-size:15px;line-height:1.8;max-width:450px}
+.ael-underlink{display:inline-flex;align-items:center;gap:12px;margin-top:24px;border-bottom:1px solid #211d1a;padding:0 0 8px;font-size:10px;font-weight:750;letter-spacing:.16em;text-transform:uppercase;color:#1d1d1c!important}
+.ael-scenes{background:#111315;padding:clamp(45px,5vw,90px) clamp(22px,5.5vw,110px);display:grid;gap:clamp(60px,10vw,150px)}
+.ael-scene{display:grid;grid-template-columns:1.2fr .8fr;gap:clamp(50px,8vw,150px);align-items:center}
+.ael-scene-second{grid-template-columns:.85fr 1.15fr}
+.ael-scene-photo{position:relative;min-height:550px;aspect-ratio:6 / 5;background:#29292a;overflow:hidden}
+.ael-scene-photo img{width:100%;height:100%;position:absolute;inset:0;object-fit:cover;filter:saturate(.7) contrast(1.08);transition:transform .9s}
+.ael-scene-photo:hover img{transform:scale(1.045)}
+.ael-scene-photo:after{content:'';pointer-events:none;position:absolute;inset:30% 0 0;background:linear-gradient(0deg,rgba(0,0,0,.57),transparent)}
+.ael-scene-index{position:absolute;bottom:20px;left:26px;z-index:2;color:#fff;font-size:9px;font-weight:700;letter-spacing:.22em}
+.ael-fine-label{font-size:10px;letter-spacing:.2em;color:var(--ael-gold);font-weight:700}
+.ael-scene h3{font:400 clamp(48px,5.1vw,93px)/.98 'Cormorant Garamond',Georgia,serif;letter-spacing:-.033em;margin:24px 0 30px}
+.ael-scene h3 em{font-style:italic;color:#e1c19a}
+.ael-scene p{font-size:14px;color:#aaa7a0;max-width:390px;line-height:1.9}
+.ael-approach{background:#ede8dd;color:#141616;padding:clamp(72px,8vw,130px) clamp(24px,8vw,150px)}
+.ael-approach-grid{display:grid;grid-template-columns:1fr 1fr;gap:clamp(60px,10vw,175px);padding-top:clamp(60px,6vw,110px)}
+.ael-approach h2{margin:0 0 30px;font-size:clamp(60px,6vw,110px)}
+.ael-approach h2 em{color:#8f745a}
+.ael-approach-grid>div>p{max-width:500px;line-height:1.85;color:#65615b;font-size:15px}
+.ael-steps{list-style:none;margin:0;padding:0}
+.ael-steps li{padding:20px 0 25px;border-bottom:1px solid #bcb4a8;display:grid;grid-template-columns:55px 1fr;gap:20px}
+.ael-steps li:first-child{border-top:1px solid #bcb4a8}
+.ael-steps li>span{font:italic 23px Georgia,serif;color:#95795b}
+.ael-steps strong{font:400 36px/1 'Cormorant Garamond',Georgia,serif}
+.ael-steps p{font-size:13px;color:#69655f;margin:11px 0 0;line-height:1.5}
+.ael-cinematic-break{height:clamp(530px,72vh,900px);background:#15181e;position:relative;isolation:isolate;display:flex;align-items:center;justify-content:center;text-align:center;overflow:hidden}
+.ael-cinematic-break>img,.ael-cinematic-shade{position:absolute;inset:0;width:100%;height:100%;z-index:-2}
+.ael-cinematic-break>img{object-fit:cover;object-position:center 65%;filter:grayscale(.14) brightness(.72)}
+.ael-cinematic-shade{z-index:-1;background:linear-gradient(0deg,rgba(6,8,12,.72),rgba(6,8,12,.22) 60%,rgba(6,8,12,.3))}
+.ael-cinematic-message{padding:35px;max-width:950px}
+.ael-cinematic-message .ael-kicker{justify-content:center}
+.ael-cinematic-message>p:last-child{font:400 clamp(59px,7vw,125px)/.91 'Cormorant Garamond',Georgia,serif;letter-spacing:-.032em;margin:0}
+.ael-cinematic-message>p:last-child em{font-style:italic;color:#e6caaa}
+.ael-cinematic-caption{position:absolute;bottom:30px;left:5%;font-size:10px;letter-spacing:.22em;color:#e9e8e6}
+.ael-system{background:#f0ece4;color:#131515;padding:clamp(70px,8vw,135px) clamp(24px,8vw,150px) clamp(85px,8vw,135px)}
+.ael-system-head{padding:clamp(70px,7vw,120px) 0 40px;display:grid;grid-template-columns:1.3fr .7fr;gap:clamp(40px,7vw,130px);align-items:end}
+.ael-system h2{font-size:clamp(58px,6.3vw,106px);margin:0}
+.ael-system h2 em{color:#947558}
+.ael-system-visual{padding:clamp(18px,3vw,55px);background:#151719;position:relative;margin:20px 0 25px;border:1px solid #655a49}
+.ael-system-visual img{display:block;width:100%;height:auto;max-height:740px;object-fit:contain}
+.ael-system-visual span{position:absolute;bottom:12px;left:20px;color:#e3d6c5;letter-spacing:.19em;font-size:9px}
+.ael-membership{padding:clamp(95px,12vw,210px) 24px;background:#121315;text-align:center;display:flex;flex-direction:column;align-items:center}
+.ael-membership h2{max-width:950px;margin:35px auto 25px;font-size:clamp(78px,9vw,155px)}
+.ael-membership h2 em{color:#d9ba94}
+.ael-membership>p{color:#b7b3ad;font-size:15px;line-height:1.75;max-width:510px}
+.ael-membership-actions{justify-content:center}
+.ael-footer{display:grid;grid-template-columns:1fr auto;gap:22px 40px;padding:35px clamp(24px,5vw,90px);border-top:1px solid #383630;background:#111315;font-size:10px;letter-spacing:.17em;color:#bfb9b0}
+.ael-footer-wordmark{font-size:22px;color:#f5f1e9!important;font-weight:700}
+.ael-footer>span{align-self:center}
+.ael-footer>div{display:flex;gap:30px;align-items:center}
+.ael-footer small{font-size:10px;max-width:450px;color:#a49d95;letter-spacing:0;line-height:1.5;justify-self:end}
+@media(max-width:1100px){
+.ael-nav{display:none}
+.ael-editorial-lead{gap:60px}
+.ael-scene{gap:60px}
+.ael-hero h1{font-size:clamp(74px,11vw,150px)}
+}
+@media(max-width:720px){
+.ael-header{padding:14px 21px;min-height:75px}
+.ael-logo{gap:9px;font-size:12px;letter-spacing:.13em}
+.ael-logo-mark{height:32px;width:32px;font-size:21px}
+.ael-header-actions{gap:10px}
+.ael-header-actions a{font-size:9px;letter-spacing:.03em}
+.ael-nav-cta{padding:0 10px;min-height:35px}
+.ael-nav-cta svg{display:none}
+.ael-hero{height:auto;min-height:750px;min-height:100svh;padding:150px 25px 115px;align-items:flex-end}
+.ael-hero-image{object-position:58% center}
+.ael-hero-shade{background:linear-gradient(90deg,rgba(6,8,9,.85),rgba(6,8,9,.36)),linear-gradient(0deg,rgba(6,8,9,.9),transparent 70%)}
+.ael-hero h1{font-size:clamp(66px,13vw,107px);line-height:.9;letter-spacing:-.04em}
+.ael-hero-lede{font-size:14px}
+.ael-hero-actions{gap:20px}
+.ael-hero-bottom{left:24px;right:24px;bottom:20px;font-size:8px}
+.ael-hero-bottom>a{display:none}
+.ael-hero-bottom span:last-child{display:none}
+.ael-editorial-meta{font-size:8px;letter-spacing:.12em}
+.ael-editorial-meta span:last-child{display:none}
+.ael-introduction{padding:65px 24px 85px}
+.ael-editorial-lead{grid-template-columns:1fr;gap:35px;margin-top:55px}
+.ael-editorial-lead h2{font-size:clamp(57px,12vw,90px)}
+.ael-scenes{padding:48px 20px 85px;gap:68px}
+.ael-scene,.ael-scene-second{grid-template-columns:1fr;gap:20px}
+.ael-scene-second .ael-scene-description{order:2}
+.ael-scene-second .ael-scene-photo{order:1}
+.ael-scene-photo{min-height:0;aspect-ratio:5 / 4}
+.ael-scene-description{padding:15px 6px}
+.ael-scene h3{font-size:clamp(54px,11vw,80px);margin:15px 0 20px}
+.ael-approach{padding:74px 23px 83px}
+.ael-approach-grid{grid-template-columns:1fr;gap:38px;padding-top:58px}
+.ael-approach h2{font-size:clamp(57px,12vw,89px)}
+.ael-cinematic-break{height:600px}
+.ael-cinematic-message>p:last-child{font-size:clamp(60px,12vw,89px)}
+.ael-system{padding:65px 24px 90px}
+.ael-system-head{display:block;padding-top:70px}
+.ael-system h2{font-size:clamp(59px,11.8vw,85px)}
+.ael-system-head p{margin-top:25px}
+.ael-membership{padding:120px 24px}
+.ael-membership h2{font-size:clamp(69px,13vw,100px)}
+.ael-footer{grid-template-columns:1fr;gap:23px}
+.ael-footer small{justify-self:start}
+}
+@media(max-width:400px){
+.ael-signin{display:none}
+.ael-hero{min-height:760px}
+.ael-hero h1{font-size:65px}
+.ael-btn{padding:0 19px;min-height:52px}
+.ael-scene-photo{aspect-ratio:4 / 5}
+.ael-footer>div{gap:20px}
+}
+@media(prefers-reduced-motion:reduce){.ael *{scroll-behavior:auto!important;animation:none!important;transition:none!important}}
+
+
+/* The approved Ask Intros relationship lockup is shared by the public landing and member experience. */
+.ael-logo .ask-intros-lockup {
+  display: block;
+  flex: 0 0 auto;
+  width: clamp(124px, 13vw, 174px);
+  height: auto;
+  max-height: 70px;
+  overflow: visible;
+}
+.ael-logo .ask-intros-lockup__symbol line { stroke: #e6d6ad; stroke-width: 2; }
+.ael-logo .ask-intros-lockup__node--left,
+.ael-logo .ask-intros-lockup__node--lower { fill: #dfa039; }
+.ael-logo .ask-intros-lockup__node--top,
+.ael-logo .ask-intros-lockup__rule-dot,
+.ael-logo .ask-intros-lockup__separator { fill: #f5a623; }
+.ael-logo .ask-intros-lockup__ask,
+.ael-logo .ask-intros-lockup__intros,
+.ael-logo .ask-intros-lockup__tagline { fill: #f2eee6; font-family: 'Cormorant Garamond', Georgia, serif; }
+.ael-logo .ask-intros-lockup__ask { font-size: 91px; font-weight: 600; }
+.ael-logo .ask-intros-lockup__intros { font-size: 65px; font-weight: 400; letter-spacing: 13px; }
+.ael-logo .ask-intros-lockup__rule { stroke: #2685ff; stroke-width: 2; }
+.ael-logo .ask-intros-lockup__tagline { font-size: 15px; font-weight: 500; letter-spacing: 6px; }
+@media (max-width: 680px) {
+  .ael-logo .ask-intros-lockup { width: 118px; }
+}
+
+/* Shared premium brand: larger approved lockup, consistent with the full product. */
+.ael { --ael-night:#07090c; --ael-gold:#e2ac52; --ael-cream:#f2eee6; --ael-paper:#f1ede5; }
+.ael-header { min-height:124px; padding-top:18px; padding-bottom:18px; background:linear-gradient(180deg,rgba(5,7,10,.94),rgba(5,7,10,.55)); border-bottom-color:rgba(226,172,82,.24); }
+.ael-logo .ask-intros-lockup { width:clamp(210px,21vw,290px); max-height:none; }
+.ael a:focus-visible,.ael button:focus-visible { outline-color:#f4a125; }
+@media (max-width:960px) { .ael-header { min-height:110px; } .ael-logo .ask-intros-lockup { width:clamp(170px,23vw,225px); } }
+@media (max-width:680px) { .ael-header { min-height:92px; padding-top:12px; padding-bottom:12px; } .ael-logo .ask-intros-lockup { width:164px; } }
+
+
+/* THE HALFTONE EDITORIAL CHAPTER — all public page sections share one dark palette. */
+.ael { --ael-night:#0c0c0b; --ael-ink:#e9e4da; --ael-cream:#e9e4da; --ael-gold:#e9762b; --ael-paper:#181715; background:#0c0c0b; color:#e9e4da; }
+.ael-header { background:linear-gradient(180deg,rgba(12,12,11,.98),rgba(12,12,11,.64)); border-bottom-color:rgba(233,228,218,.16); }
+.ael-hero { background:#0c0c0b; }
+.ael-hero-image { filter:brightness(.57) saturate(.58) contrast(1.13); }
+.ael-hero-shade { background:linear-gradient(90deg,rgba(12,12,11,.91),rgba(12,12,11,.46) 65%,rgba(12,12,11,.20)),linear-gradient(0deg,#0c0c0b,transparent 45%); }
+.ael-hero h1 em,.ael-scene h3 em,.ael-membership h2 em { color:#e9762b; }
+.ael-introduction,.ael-approach,.ael-system { background:#181715; color:#e9e4da; }
+.ael-scenes,.ael-membership { background:#0c0c0b; color:#e9e4da; }
+.ael-introduction,.ael-approach,.ael-system,.ael-scenes,.ael-membership {
+  background-image:radial-gradient(circle at 1px 1px,rgba(233,228,218,.043) .7px,transparent 1px);
+  background-size:9px 9px;
+}
+.ael-introduction :is(h2,h3),.ael-approach :is(h2,h3),.ael-system :is(h2,h3) { color:#e9e4da; }
+.ael-approach-grid>div>p,.ael-steps p,.ael-system-head p,.ael-introduction p { color:#c5beb3; }
+.ael-approach h2 em,.ael-system h2 em { color:#e9762b; }
+.ael-editorial-meta { color:#c9a080; border-bottom:1px solid rgba(233,228,218,.22); }
+.ael-steps li,.ael-steps li:first-child { border-color:rgba(233,228,218,.2); }
+.ael-steps li>span,.ael-fine-label,.ael-scene-index { color:#e9762b; }
+.ael-underlink-dark { color:#e9e4da !important; border-color:rgba(233,228,218,.38); }
+.ael-system-visual { background:#0c0c0b; border-color:rgba(233,118,43,.32); }
+.ael-btn-gold { background:#e9762b!important; color:#0c0c0b!important; }
+.ael-btn-gold:hover { background:#f49b62!important; }
+.ael :is(a,button):focus-visible { outline-color:#e9762b; }
+.ael .ael-halftone-footer { min-height:390px; margin:0; border-top:1px solid rgba(233,228,218,.2); }
+.ael .ael-halftone-footer .hwf-top { color:#e9e4da; }
+@media (max-width:720px) { .ael .ael-halftone-footer { min-height:390px; } }
+
+/* Keep the photographic disclosure readable in the new editorial treatment. */
+.ael-imagery-note { margin:0; padding:16px clamp(20px,3.4vw,44px); background:#0c0c0b; color:#a99f92; font:400 10px/1.6 "JetBrains Mono",ui-monospace,monospace; letter-spacing:.035em; border-top:1px solid rgba(233,228,218,.12); }
+
+
+/* One light/dark switch, not multiple color themes. */
+.ael-header .ael-appearance { flex-shrink:0; }
+:root[data-theme="light"] .ael {
+  --ael-night:#efebe3; --ael-ink:#17150f; --ael-cream:#17150f;
+  --ael-gold:#c2361c; --ael-paper:#fffdf9;
+  background:#efebe3; color:#17150f;
+}
+:root[data-theme="light"] .ael-header {
+  background:linear-gradient(180deg,rgba(239,235,227,.97),rgba(239,235,227,.93));
+  color:#17150f; border-bottom-color:rgba(23,21,15,.2);
+}
+:root[data-theme="light"] .ael-header :is(.ael-nav a,.ael-signin) { color:#17150f!important; }
+:root[data-theme="light"] .ael-nav-cta {
+  color:#17150f!important; border-color:rgba(23,21,15,.38);
+}
+:root[data-theme="light"] .ael-nav-cta:hover { background:#17150f; color:#fffaf1!important; }
+:root[data-theme="light"] .ael-logo .ask-intros-lockup__ask,
+:root[data-theme="light"] .ael-logo .ask-intros-lockup__intros,
+:root[data-theme="light"] .ael-logo .ask-intros-lockup__tagline { fill:#17150f; }
+:root[data-theme="light"] .ael-introduction,
+:root[data-theme="light"] .ael-system,
+:root[data-theme="light"] .ael-membership { background:#efebe3; color:#17150f; }
+:root[data-theme="light"] .ael-scenes,
+:root[data-theme="light"] .ael-approach { background:#fffdf9; color:#17150f; }
+:root[data-theme="light"] .ael :is(.ael-introduction,.ael-system,.ael-approach,.ael-scenes,.ael-membership) {
+  background-image:radial-gradient(circle at 1px 1px,rgba(23,21,15,.075) .55px,transparent 1px);
+}
+:root[data-theme="light"] .ael :is(.ael-introduction,.ael-approach,.ael-system) :is(h2,h3),
+:root[data-theme="light"] .ael-scenes h3,
+:root[data-theme="light"] .ael-membership h2 { color:#17150f; }
+:root[data-theme="light"] .ael :is(.ael-introduction,.ael-approach,.ael-system,.ael-scenes,.ael-membership) p { color:#514a41; }
+:root[data-theme="light"] .ael :is(.ael-introduction,.ael-approach,.ael-system,.ael-scenes,.ael-membership) em { color:#c2361c; }
+:root[data-theme="light"] .ael-editorial-meta { color:#6d5a4b; border-bottom-color:rgba(23,21,15,.2); }
+:root[data-theme="light"] .ael-steps li { border-color:rgba(23,21,15,.2); }
+:root[data-theme="light"] .ael-underlink-dark { color:#17150f!important; border-color:rgba(23,21,15,.3); }
+:root[data-theme="light"] .ael-imagery-note { background:#efebe3; color:#5f5950; border-color:rgba(23,21,15,.14); }
+:root[data-theme="light"] .ael-halftone-footer .hwf-top { color:#17150f; }
+:root[data-theme="light"] .ael-halftone-footer { border-top-color:rgba(23,21,15,.18); }
+@media(max-width:720px) {
+  .ael-header .ael-appearance>svg,.ael-header .appearance-switcher__label { display:none; }
+  .ael-header-actions { gap:8px; }
+}
+@media(max-width:400px) {
+  .ael-logo .ask-intros-lockup { width:135px; }
+}
+
+
+/* PHOTO-SURFACE CONTRAST CONTRACT
+ * Both appearances keep hero/cinematic photographs DARK and all text on them LIGHT.
+ * Paper-mode inheritance must never turn white photo headlines charcoal.
+ * Specific surface rules avoid broad overrides to dialogs, cards and badges.
+ */
+.ael .ael-hero,
+:root[data-theme="light"] .ael .ael-hero {
+  color:#faf5eb;
+  background:#11100f;
+}
+.ael .ael-hero h1,
+:root[data-theme="light"] .ael .ael-hero h1 {
+  color:#faf5eb;
+  font-size:clamp(66px,8.8vw,132px);
+  line-height:.92;
+  max-width:925px;
+  text-shadow:0 3px 26px rgba(0,0,0,.25);
+}
+.ael .ael-hero h1 em,
+:root[data-theme="light"] .ael .ael-hero h1 em {
+  color:#f08a44;
+  text-shadow:0 3px 24px rgba(0,0,0,.26);
+}
+.ael .ael-hero .ael-hero-lede,
+:root[data-theme="light"] .ael .ael-hero .ael-hero-lede {
+  color:#f1ece5;
+  text-shadow:0 2px 16px rgba(0,0,0,.35);
+}
+.ael .ael-hero .ael-kicker,
+:root[data-theme="light"] .ael .ael-hero .ael-kicker {
+  color:#f6e9d8;
+}
+.ael .ael-hero .ael-hero-bottom,
+:root[data-theme="light"] .ael .ael-hero .ael-hero-bottom {
+  color:#f4ece1;
+  border-top-color:rgba(250,245,235,.32);
+}
+.ael .ael-hero-shade {
+  background:
+    linear-gradient(90deg,rgba(8,9,10,.93) 0%,rgba(8,9,10,.81) 32%,rgba(8,9,10,.48) 64%,rgba(8,9,10,.18) 100%),
+    linear-gradient(0deg,rgba(8,9,10,.83),transparent 54%,rgba(8,9,10,.14));
+}
+.ael .ael-hero-image {
+  object-position:center 45%;
+  filter:brightness(.82) saturate(.71) contrast(1.06);
+}
+/* This is a dark photo chapter even when the rest of the site is light. */
+.ael .ael-cinematic-break,
+:root[data-theme="light"] .ael .ael-cinematic-break {
+  background:#131313;
+  color:#faf5eb;
+}
+.ael .ael-cinematic-break .ael-cinematic-message>p,
+:root[data-theme="light"] .ael .ael-cinematic-break .ael-cinematic-message>p {
+  color:#faf5eb;
+  text-shadow:0 3px 22px rgba(0,0,0,.47);
+}
+.ael .ael-cinematic-break .ael-cinematic-message em,
+:root[data-theme="light"] .ael .ael-cinematic-break .ael-cinematic-message em {
+  color:#f3a067;
+}
+.ael .ael-cinematic-break .ael-cinematic-caption,
+:root[data-theme="light"] .ael .ael-cinematic-break .ael-cinematic-caption,
+.ael .ael-scene-photo .ael-scene-index,
+:root[data-theme="light"] .ael .ael-scene-photo .ael-scene-index {
+  color:#fff8ee;
+  text-shadow:0 2px 13px rgba(0,0,0,.55);
+}
+.ael .ael-scene-photo img {
+  filter:saturate(.75) contrast(1.04);
+  object-position:center 38%;
+}
+.ael .ael-scene-photo:after {
+  background:linear-gradient(0deg,rgba(6,7,8,.62),rgba(6,7,8,.03) 48%,transparent);
+}
+@media(max-width:720px) {
+  .ael .ael-hero h1,
+  :root[data-theme="light"] .ael .ael-hero h1 {
+    font-size:clamp(58px,11.8vw,88px);
+    line-height:.95;
+    overflow-wrap:normal;
+  }
+  .ael .ael-hero-shade {
+    background:linear-gradient(90deg,rgba(8,9,10,.91),rgba(8,9,10,.56)),
+      linear-gradient(0deg,rgba(8,9,10,.9),transparent 72%);
+  }
+  .ael .ael-hero-image { object-position:61% center; }
+}
+
+
+/* Signature rotating-gradient links: professional, intentional, and still real navigation. */
+.ael .ai-gradient-button {
+  --ai-border-angle:0deg;
+  min-height:46px;
+  border:2px solid transparent !important;
+  border-radius:999px !important;
+  background:
+    linear-gradient(135deg,var(--ai-button-surface),var(--ai-button-surface)) padding-box,
+    conic-gradient(from var(--ai-border-angle),#c35c28,#f6b66e 22%,#e7d7ba 39%,#347fd5 52%,#f2a85a 77%,#c35c28) border-box !important;
+  color:var(--ai-button-text) !important;
+  box-shadow:0 3px 16px -8px var(--ai-button-shadow);
+  animation:ai-gradient-turn 7s linear infinite;
+}
+.ael .ael-nav-cta.ai-gradient-button { min-height:42px; padding:0 18px; }
+.ael .ael-btn.ai-gradient-button { min-height:55px; padding:0 27px; }
+.ael .ai-gradient-button:hover {
+  background:
+    linear-gradient(135deg,var(--ai-button-surface),var(--ai-button-surface)) padding-box,
+    conic-gradient(from var(--ai-border-angle),#c35c28,#f6b66e 22%,#e7d7ba 39%,#347fd5 52%,#f2a85a 77%,#c35c28) border-box !important;
+  color:var(--ai-button-text) !important;
+}
+:root[data-theme="light"] .ael .ai-gradient-button { color:var(--ai-button-text)!important; }
+@media(max-width:720px) { .ael .ael-nav-cta.ai-gradient-button { min-height:36px; padding:0 11px; } }
+@media(prefers-reduced-motion:reduce) { .ael .ai-gradient-button { animation:none; } }

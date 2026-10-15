@@ -9,6 +9,7 @@ import { lovable } from '@/integrations/lovable/index'
 import { AUTH_REQUIRED } from '@/aetheris/config'
 import { claimAccess, clearInvite, previewInvite, rememberInvite, storedInvite } from '@/aetheris/access'
 import { logSecurityEvent, passwordProblem } from '@/aetheris/verification'
+import { AppearanceToggle } from '@/aetheris/AppearanceToggle'
 import '@/aetheris/styles.css'
 
 const safeNext = (value: unknown) => {
@@ -174,6 +175,7 @@ function AuthPage() {
 
   return <main className="auth-page">
     <section className="auth-panel">
+      <AppearanceToggle className="auth-appearance" />
       <Link to="/" className="auth-brand">
         <img className="brand-logo" src={logoAsset.url} alt="Ask Intros logo" />
         <span className="brand-name">Ask<em>Intros</em></span>

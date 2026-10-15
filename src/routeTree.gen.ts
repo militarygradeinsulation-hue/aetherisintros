@@ -22,12 +22,19 @@ import { Route as AuthenticatedAppRouteImport } from './routes/_authenticated/ap
 import { Route as AuthenticatedDelegateRouteImport } from './routes/_authenticated/delegate'
 import { Route as AuthenticatedOnboardingRouteImport } from './routes/_authenticated/onboarding'
 import { Route as AuthenticatedVerifyRouteImport } from './routes/_authenticated/verify'
+import { Route as ImpactSlugRouteImport } from './routes/impact.$slug'
 import { Route as InviteCodeRouteImport } from './routes/invite.$code'
 import { Route as PassportTokenRouteImport } from './routes/passport.$token'
 import { Route as DotlovableOauthConsentRouteImport } from './routes/[.]lovable.oauth.consent'
 import { Route as AuthenticatedPeerGroupsRouteImport } from './routes/_authenticated/peer-groups'
 import { Route as AuthenticatedAdminEarlyAccessRouteImport } from './routes/_authenticated/admin.early-access'
 import { Route as AuthenticatedAdminVerificationRouteImport } from './routes/_authenticated/admin.verification'
+import { Route as ApiAgentAsksRouteImport } from './routes/api/agent/asks'
+import { Route as ApiAgentInboundRouteImport } from './routes/api/agent/inbound'
+import { Route as ApiAgentIntrosRouteImport } from './routes/api/agent/intros'
+import { Route as ApiAgentManifestRouteImport } from './routes/api/agent/manifest'
+import { Route as ApiAgentMembersRouteImport } from './routes/api/agent/members'
+import { Route as ApiAgentProfileRouteImport } from './routes/api/agent/profile'
 import { Route as ApiCronGoogleSyncRouteImport } from './routes/api/cron/google-sync'
 import { Route as ApiCronMembershipCardsRouteImport } from './routes/api/cron/membership-cards'
 import { Route as ApiCronWeeklyDigestRouteImport } from './routes/api/cron/weekly-digest'
@@ -104,6 +111,11 @@ const AuthenticatedVerifyRoute = AuthenticatedVerifyRouteImport.update({
   path: '/verify',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const ImpactSlugRoute = ImpactSlugRouteImport.update({
+  id: '/impact/$slug',
+  path: '/impact/$slug',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const InviteCodeRoute = InviteCodeRouteImport.update({
   id: '/invite/$code',
   path: '/invite/$code',
@@ -136,6 +148,36 @@ const AuthenticatedAdminVerificationRoute =
     path: '/admin/verification',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const ApiAgentAsksRoute = ApiAgentAsksRouteImport.update({
+  id: '/api/agent/asks',
+  path: '/api/agent/asks',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiAgentInboundRoute = ApiAgentInboundRouteImport.update({
+  id: '/api/agent/inbound',
+  path: '/api/agent/inbound',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiAgentIntrosRoute = ApiAgentIntrosRouteImport.update({
+  id: '/api/agent/intros',
+  path: '/api/agent/intros',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiAgentManifestRoute = ApiAgentManifestRouteImport.update({
+  id: '/api/agent/manifest',
+  path: '/api/agent/manifest',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiAgentMembersRoute = ApiAgentMembersRouteImport.update({
+  id: '/api/agent/members',
+  path: '/api/agent/members',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiAgentProfileRoute = ApiAgentProfileRouteImport.update({
+  id: '/api/agent/profile',
+  path: '/api/agent/profile',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiCronGoogleSyncRoute = ApiCronGoogleSyncRouteImport.update({
   id: '/api/cron/google-sync',
   path: '/api/cron/google-sync',
@@ -201,12 +243,19 @@ export interface FileRoutesByFullPath {
   '/delegate': typeof AuthenticatedDelegateRoute
   '/onboarding': typeof AuthenticatedOnboardingRoute
   '/verify': typeof AuthenticatedVerifyRoute
+  '/impact/$slug': typeof ImpactSlugRoute
   '/invite/$code': typeof InviteCodeRoute
   '/passport/$token': typeof PassportTokenRoute
   '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
   '/peer-groups': typeof AuthenticatedPeerGroupsRoute
   '/admin/early-access': typeof AuthenticatedAdminEarlyAccessRoute
   '/admin/verification': typeof AuthenticatedAdminVerificationRoute
+  '/api/agent/asks': typeof ApiAgentAsksRoute
+  '/api/agent/inbound': typeof ApiAgentInboundRoute
+  '/api/agent/intros': typeof ApiAgentIntrosRoute
+  '/api/agent/manifest': typeof ApiAgentManifestRoute
+  '/api/agent/members': typeof ApiAgentMembersRoute
+  '/api/agent/profile': typeof ApiAgentProfileRoute
   '/api/cron/google-sync': typeof ApiCronGoogleSyncRoute
   '/api/cron/membership-cards': typeof ApiCronMembershipCardsRoute
   '/api/cron/weekly-digest': typeof ApiCronWeeklyDigestRoute
@@ -231,12 +280,19 @@ export interface FileRoutesByTo {
   '/delegate': typeof AuthenticatedDelegateRoute
   '/onboarding': typeof AuthenticatedOnboardingRoute
   '/verify': typeof AuthenticatedVerifyRoute
+  '/impact/$slug': typeof ImpactSlugRoute
   '/invite/$code': typeof InviteCodeRoute
   '/passport/$token': typeof PassportTokenRoute
   '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
   '/peer-groups': typeof AuthenticatedPeerGroupsRoute
   '/admin/early-access': typeof AuthenticatedAdminEarlyAccessRoute
   '/admin/verification': typeof AuthenticatedAdminVerificationRoute
+  '/api/agent/asks': typeof ApiAgentAsksRoute
+  '/api/agent/inbound': typeof ApiAgentInboundRoute
+  '/api/agent/intros': typeof ApiAgentIntrosRoute
+  '/api/agent/manifest': typeof ApiAgentManifestRoute
+  '/api/agent/members': typeof ApiAgentMembersRoute
+  '/api/agent/profile': typeof ApiAgentProfileRoute
   '/api/cron/google-sync': typeof ApiCronGoogleSyncRoute
   '/api/cron/membership-cards': typeof ApiCronMembershipCardsRoute
   '/api/cron/weekly-digest': typeof ApiCronWeeklyDigestRoute
@@ -263,12 +319,19 @@ export interface FileRoutesById {
   '/_authenticated/delegate': typeof AuthenticatedDelegateRoute
   '/_authenticated/onboarding': typeof AuthenticatedOnboardingRoute
   '/_authenticated/verify': typeof AuthenticatedVerifyRoute
+  '/impact/$slug': typeof ImpactSlugRoute
   '/invite/$code': typeof InviteCodeRoute
   '/passport/$token': typeof PassportTokenRoute
   '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
   '/_authenticated/peer-groups': typeof AuthenticatedPeerGroupsRoute
   '/_authenticated/admin/early-access': typeof AuthenticatedAdminEarlyAccessRoute
   '/_authenticated/admin/verification': typeof AuthenticatedAdminVerificationRoute
+  '/api/agent/asks': typeof ApiAgentAsksRoute
+  '/api/agent/inbound': typeof ApiAgentInboundRoute
+  '/api/agent/intros': typeof ApiAgentIntrosRoute
+  '/api/agent/manifest': typeof ApiAgentManifestRoute
+  '/api/agent/members': typeof ApiAgentMembersRoute
+  '/api/agent/profile': typeof ApiAgentProfileRoute
   '/api/cron/google-sync': typeof ApiCronGoogleSyncRoute
   '/api/cron/membership-cards': typeof ApiCronMembershipCardsRoute
   '/api/cron/weekly-digest': typeof ApiCronWeeklyDigestRoute
@@ -295,12 +358,19 @@ export interface FileRouteTypes {
     | '/delegate'
     | '/onboarding'
     | '/verify'
+    | '/impact/$slug'
     | '/invite/$code'
     | '/passport/$token'
     | '/.lovable/oauth/consent'
     | '/peer-groups'
     | '/admin/early-access'
     | '/admin/verification'
+    | '/api/agent/asks'
+    | '/api/agent/inbound'
+    | '/api/agent/intros'
+    | '/api/agent/manifest'
+    | '/api/agent/members'
+    | '/api/agent/profile'
     | '/api/cron/google-sync'
     | '/api/cron/membership-cards'
     | '/api/cron/weekly-digest'
@@ -325,12 +395,19 @@ export interface FileRouteTypes {
     | '/delegate'
     | '/onboarding'
     | '/verify'
+    | '/impact/$slug'
     | '/invite/$code'
     | '/passport/$token'
     | '/.lovable/oauth/consent'
     | '/peer-groups'
     | '/admin/early-access'
     | '/admin/verification'
+    | '/api/agent/asks'
+    | '/api/agent/inbound'
+    | '/api/agent/intros'
+    | '/api/agent/manifest'
+    | '/api/agent/members'
+    | '/api/agent/profile'
     | '/api/cron/google-sync'
     | '/api/cron/membership-cards'
     | '/api/cron/weekly-digest'
@@ -356,12 +433,19 @@ export interface FileRouteTypes {
     | '/_authenticated/delegate'
     | '/_authenticated/onboarding'
     | '/_authenticated/verify'
+    | '/impact/$slug'
     | '/invite/$code'
     | '/passport/$token'
     | '/.lovable/oauth/consent'
     | '/_authenticated/peer-groups'
     | '/_authenticated/admin/early-access'
     | '/_authenticated/admin/verification'
+    | '/api/agent/asks'
+    | '/api/agent/inbound'
+    | '/api/agent/intros'
+    | '/api/agent/manifest'
+    | '/api/agent/members'
+    | '/api/agent/profile'
     | '/api/cron/google-sync'
     | '/api/cron/membership-cards'
     | '/api/cron/weekly-digest'
@@ -384,9 +468,16 @@ export interface RootRouteChildren {
   McpRoute: typeof McpRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   Char91DotwellKnownChar93OauthProtectedResourceRoute: typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
+  ImpactSlugRoute: typeof ImpactSlugRoute
   InviteCodeRoute: typeof InviteCodeRoute
   PassportTokenRoute: typeof PassportTokenRoute
   DotlovableOauthConsentRoute: typeof DotlovableOauthConsentRoute
+  ApiAgentAsksRoute: typeof ApiAgentAsksRoute
+  ApiAgentInboundRoute: typeof ApiAgentInboundRoute
+  ApiAgentIntrosRoute: typeof ApiAgentIntrosRoute
+  ApiAgentManifestRoute: typeof ApiAgentManifestRoute
+  ApiAgentMembersRoute: typeof ApiAgentMembersRoute
+  ApiAgentProfileRoute: typeof ApiAgentProfileRoute
   ApiCronGoogleSyncRoute: typeof ApiCronGoogleSyncRoute
   ApiCronMembershipCardsRoute: typeof ApiCronMembershipCardsRoute
   ApiCronWeeklyDigestRoute: typeof ApiCronWeeklyDigestRoute
@@ -492,6 +583,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedVerifyRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/impact/$slug': {
+      id: '/impact/$slug'
+      path: '/impact/$slug'
+      fullPath: '/impact/$slug'
+      preLoaderRoute: typeof ImpactSlugRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/invite/$code': {
       id: '/invite/$code'
       path: '/invite/$code'
@@ -533,6 +631,48 @@ declare module '@tanstack/react-router' {
       fullPath: '/admin/verification'
       preLoaderRoute: typeof AuthenticatedAdminVerificationRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/api/agent/asks': {
+      id: '/api/agent/asks'
+      path: '/api/agent/asks'
+      fullPath: '/api/agent/asks'
+      preLoaderRoute: typeof ApiAgentAsksRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/agent/inbound': {
+      id: '/api/agent/inbound'
+      path: '/api/agent/inbound'
+      fullPath: '/api/agent/inbound'
+      preLoaderRoute: typeof ApiAgentInboundRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/agent/intros': {
+      id: '/api/agent/intros'
+      path: '/api/agent/intros'
+      fullPath: '/api/agent/intros'
+      preLoaderRoute: typeof ApiAgentIntrosRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/agent/manifest': {
+      id: '/api/agent/manifest'
+      path: '/api/agent/manifest'
+      fullPath: '/api/agent/manifest'
+      preLoaderRoute: typeof ApiAgentManifestRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/agent/members': {
+      id: '/api/agent/members'
+      path: '/api/agent/members'
+      fullPath: '/api/agent/members'
+      preLoaderRoute: typeof ApiAgentMembersRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/agent/profile': {
+      id: '/api/agent/profile'
+      path: '/api/agent/profile'
+      fullPath: '/api/agent/profile'
+      preLoaderRoute: typeof ApiAgentProfileRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/api/cron/google-sync': {
       id: '/api/cron/google-sync'
@@ -641,9 +781,16 @@ const rootRouteChildren: RootRouteChildren = {
   SitemapDotxmlRoute: SitemapDotxmlRoute,
   Char91DotwellKnownChar93OauthProtectedResourceRoute:
     Char91DotwellKnownChar93OauthProtectedResourceRoute,
+  ImpactSlugRoute: ImpactSlugRoute,
   InviteCodeRoute: InviteCodeRoute,
   PassportTokenRoute: PassportTokenRoute,
   DotlovableOauthConsentRoute: DotlovableOauthConsentRoute,
+  ApiAgentAsksRoute: ApiAgentAsksRoute,
+  ApiAgentInboundRoute: ApiAgentInboundRoute,
+  ApiAgentIntrosRoute: ApiAgentIntrosRoute,
+  ApiAgentManifestRoute: ApiAgentManifestRoute,
+  ApiAgentMembersRoute: ApiAgentMembersRoute,
+  ApiAgentProfileRoute: ApiAgentProfileRoute,
   ApiCronGoogleSyncRoute: ApiCronGoogleSyncRoute,
   ApiCronMembershipCardsRoute: ApiCronMembershipCardsRoute,
   ApiCronWeeklyDigestRoute: ApiCronWeeklyDigestRoute,

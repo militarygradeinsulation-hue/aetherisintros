@@ -38,9 +38,15 @@ create function public.freeze_columns() returns trigger language plpgsql set sea
 declare c text; begin if auth.uid() is null then return new; end if;
 foreach c in array tg_argv loop if (to_jsonb(new) -> c) is distinct from (to_jsonb(old) -> c) then raise exception 'Column % cannot be changed after creation', c using errcode = '42501'; end if; end loop; return new; end $$;
 
+-- From 0011_capability_security_spine.sql. Later storage policies depend on this helper.
+create function public.is_uuid_text(p text) returns boolean
+language sql immutable set search_path = public as $$
+  select p ~* '^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$'
+$$;
+
 create table public.profiles (id uuid primary key references auth.users on delete cascade, name text not null default '', onboarded boolean not null default false,
   email text, initials text, title text, company text, location text, focus text, thesis text, bio text, looking_for text, can_help_with text,
-  availability text, industries text[], expertise text[], what_i_do text, created_at timestamptz not null default now(), updated_at timestamptz not null default now());
+  availability text, industries text[], expertise text[], what_i_do text, want_to_meet text, avatar_url text, visibility text not null default 'network', verified_at timestamptz, created_at timestamptz not null default now(), updated_at timestamptz not null default now());
 create table public.asks (id text primary key, author_id uuid references auth.users, ask text not null, is_demo boolean not null default false, response_count int not null default 0, created_at timestamptz not null default now(),
   member_id text, posted text not null default '', urgency text not null default 'medium', industry text not null default '', visibility text not null default 'network', status text not null default 'open');
 revoke all on public.asks from anon, authenticated;
@@ -150,7 +156,20 @@ create table public.member_verifications (id uuid primary key default gen_random
   decision_reason text, risk_flags jsonb not null default '[]', submitted_at timestamptz, scanned_at timestamptz, verified_at timestamptz, updated_at timestamptz not null default now());
 create table public.memories (id uuid primary key default gen_random_uuid(), user_id uuid not null, member_id text, kind text not null default 'learning', category text not null default '',
   text text not null, source text not null default '', confidence int not null default 100, scope text not null default 'private', when_label text not null default '', created_at timestamptz not null default now());
-create table public.posts (id text primary key, member_id text, author_id uuid, kind text not null default 'Insight', text text not null, when_label text not null default '', created_at timestamptz not null default now(), is_demo boolean not null default false);
+create table public.posts (
+  id text primary key,
+  member_id text,
+  author_id uuid,
+  kind text not null default 'Insight',
+  text text not null,
+  detail text not null default '',
+  when_label text not null default '',
+  response_count int not null default 0,
+  media jsonb not null default '[]'::jsonb,
+  visibility text not null default 'network',
+  created_at timestamptz not null default now(),
+  is_demo boolean not null default false
+);
 create table public.members (id text primary key, name text not null, initials text not null, title text not null, company text not null, location text not null, role text not null, industry text not null,
   bio text not null default '', tags text[] not null default '{}', expertise text[] not null default '{}', needs text[] not null default '{}', offers text[] not null default '{}',
   focus text not null default '', thesis text not null default '', availability text not null default '', mutuals text[] not null default '{}', last_interaction_days int not null default 0,
@@ -158,15 +177,47 @@ create table public.members (id text primary key, name text not null, initials t
   why_them text not null default '', why_you text not null default '', why_now text not null default '', best_path text[] not null default '{}', next_action text not null default '',
   dont_do text not null default '', confidence int not null default 0, opportunity_low int, opportunity_high int, intro_state text not null default 'recommended',
   joined text not null default '2025', created_at timestamptz not null default now(), is_demo boolean not null default true);
-create table public.crm_activities (id uuid primary key default gen_random_uuid(), owner_id uuid);
-create table public.crm_companies (id uuid primary key default gen_random_uuid(), owner_id uuid);
+create table public.crm_activities (id uuid primary key default gen_random_uuid(), owner_id uuid, person_id uuid, kind text not null default 'note', subject text not null default '', occurred_at timestamptz not null default now());
+create table public.crm_companies (id uuid primary key default gen_random_uuid(), owner_id uuid, name text not null default '', archived boolean not null default false);
 create table public.crm_notes (id uuid primary key default gen_random_uuid(), owner_id uuid);
 create table public.crm_opportunities (id uuid primary key default gen_random_uuid(), owner_id uuid);
-create table public.crm_people (id uuid primary key default gen_random_uuid(), owner_id uuid);
+create table public.crm_people (id uuid primary key default gen_random_uuid(), owner_id uuid, full_name text not null default '', title text not null default '', company_id uuid, company_name text not null default '', email text not null default '', source text not null default '', notes text not null default '',
+  profile_id uuid, last_activity_at timestamptz, archived boolean not null default false);
+create table public.directory_contacts (id uuid primary key default gen_random_uuid(), user_id uuid, full_name text not null, title text not null default '', company_name text not null default '');
+grant select on public.directory_contacts to authenticated;
+alter table public.directory_contacts enable row level security;
+create policy "Members can search contacts" on public.directory_contacts for select to authenticated using (true);
+create table public.circle_memberships (id uuid primary key default gen_random_uuid(), circle_id text not null, user_id uuid not null references auth.users on delete cascade, role text not null default 'member', created_at timestamptz not null default now(), unique (circle_id, user_id));
 create table public.crm_tasks (id uuid primary key default gen_random_uuid(), owner_id uuid);
 create function public.is_live_member() returns boolean language sql stable security definer set search_path = public as $$ select exists (select 1 from public.profiles where id = auth.uid()) $$;
 revoke all on function public.is_live_member() from public, anon;
 grant execute on function public.is_live_member() to authenticated;
+
+grant select, insert, update, delete on public.posts to authenticated;
+alter table public.posts enable row level security;
+create policy "Members read network posts" on public.posts for select to authenticated
+  using (author_id = auth.uid() or (visibility = 'network' and (is_demo = true or author_id is null or public.is_live_member())));
+create policy "live posts insert" on public.posts for insert to authenticated
+  with check (auth.uid() = author_id and is_demo = false and public.is_live_member());
+create policy "own posts update" on public.posts for update to authenticated
+  using (auth.uid() = author_id) with check (auth.uid() = author_id);
+create policy "own posts delete" on public.posts for delete to authenticated using (auth.uid() = author_id);
+
+create schema storage;
+create table storage.objects (
+  id uuid primary key default gen_random_uuid(),
+  bucket_id text not null,
+  name text not null,
+  owner uuid,
+  created_at timestamptz not null default now()
+);
+create function storage.foldername(p_name text) returns text[]
+language sql immutable as $$ select string_to_array(trim(both '/' from coalesce(p_name,'')), '/') $$;
+grant execute on function storage.foldername(text) to authenticated, anon, service_role;
+grant usage on schema storage to authenticated, anon, service_role;
+grant select, insert, update, delete on storage.objects to authenticated;
+grant all on storage.objects to service_role;
+alter table storage.objects enable row level security;
 
 -- Supabase Realtime's authorization surface: private channels check RLS on realtime.messages,
 -- with the channel name available as realtime.topic().
@@ -216,7 +267,10 @@ async function boot() {
   const db = new PGlite()
   await db.exec(BASE)
   await db.exec(SEED)
-  for (const m of migrations) await db.exec(readFileSync(join(migrationsDir, m), 'utf8'))
+  for (const m of migrations) {
+    try { await db.exec(readFileSync(join(migrationsDir, m), 'utf8')) }
+    catch (error) { throw new Error(`Migration ${m} failed: ${error.message}`, { cause: error }) }
+  }
   const as = async (uid, sql, params = []) => {
     await db.exec(`reset role; select set_config('request.jwt.claim.sub', '${uid ?? ''}', false); set role ${uid ? 'authenticated' : 'anon'};`)
     try { return { rows: (await db.query(sql, params)).rows } } catch (e) { return { error: e.message } } finally { await db.exec('reset role') }

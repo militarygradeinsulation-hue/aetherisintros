@@ -7,6 +7,7 @@
  * ownership/visibility columns are declared in ./schema.sql.
  */
 import { isShowcase } from '../showcase'
+import { notifyWorkspaceChange, registerSyncedStore } from '../sync/workspace-sync'
 import type {
   AvailabilityWindow, Circle, CompanyProfile, ConnectionChain, ConnectorReputation, ContextCapsule,
   DigitalHandshake, ID, IntentCard, MeetingContinuity, OpenLoop, OrganizationRelationship, Outcome,
@@ -94,18 +95,22 @@ const storeKey = () => `${KEY}-${isShowcase() ? 'demo' : 'live'}`
 /** Local adapter: synchronous snapshot for render, async repositories for parity. */
 export function createLocalDataLayer(): DataLayer {
   const seeded = isShowcase() ? seedCollections() : emptyCollections()
+  const isLive = !isShowcase()
+  const fromStored = (parsed: Partial<Collections> | null): Collections => {
+    const merged = { ...seeded } as Collections
+    if (!parsed || typeof parsed !== 'object') return merged
+    for (const key of Object.keys(seeded) as CollectionName[]) {
+      const stored = parsed[key]
+      if (Array.isArray(stored)) (merged[key] as unknown[]) = stored
+    }
+    return merged
+  }
   let state: Collections = (() => {
     if (typeof window === 'undefined') return seeded
     try {
       const raw = localStorage.getItem(storeKey())
       if (!raw) return seeded
-      const parsed = JSON.parse(raw) as Partial<Collections>
-      const merged = { ...seeded } as Collections
-      for (const key of Object.keys(seeded) as CollectionName[]) {
-        const stored = parsed[key]
-        if (Array.isArray(stored)) (merged[key] as unknown[]) = stored
-      }
-      return merged
+      return fromStored(JSON.parse(raw) as Partial<Collections>)
     } catch {
       return seeded
     }
@@ -117,7 +122,21 @@ export function createLocalDataLayer(): DataLayer {
     if (typeof window !== 'undefined') {
       try { localStorage.setItem(storeKey(), JSON.stringify(state)) } catch { /* storage full */ }
     }
+    if (isLive) notifyWorkspaceChange('aetheris-platform-v1-live')
     listeners.forEach(l => l(state))
+  }
+
+  // A member's live data is also saved to their account (never demo data).
+  if (isLive) {
+    const localKey = storeKey()
+    registerSyncedStore({
+      key: 'aetheris-platform-v1-live', localKey,
+      apply: data => {
+        state = fromStored(data as Partial<Collections> | null)
+        try { localStorage.setItem(localKey, JSON.stringify(state)) } catch { /* storage full */ }
+        listeners.forEach(l => l(state))
+      },
+    })
   }
 
   return {

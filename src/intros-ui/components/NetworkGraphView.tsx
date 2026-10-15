@@ -395,7 +395,7 @@ export const NetworkGraphView: React.FC<NetworkGraphViewProps> = ({
         <svg ref={svgRef} className="w-full h-full cursor-grab active:cursor-grabbing" />
 
         {/* Floating Controls (Top Left: Cluster Legend Stats) */}
-        <div className="absolute top-4 left-4 p-3 rounded-lg bg-[#0E1116]/85 backdrop-blur-md border border-white/10 text-xs font-mono text-[#F2EEE6]/80 space-y-1 pointer-events-none">
+        <div className="absolute top-4 left-4 p-3 rounded-lg bg-[#0E1116]/95 backdrop-blur-md border border-white/10 text-xs font-mono text-[#F2EEE6]/80 space-y-1 pointer-events-none">
           <div className="text-[9px] uppercase tracking-wider text-[#F5B027] font-bold">
             Network Clusters
           </div>
@@ -409,7 +409,7 @@ export const NetworkGraphView: React.FC<NetworkGraphViewProps> = ({
         </div>
 
         {/* Floating Controls (Top Right: Zoom Controls) */}
-        <div className="absolute top-4 right-4 flex items-center gap-1 bg-[#0E1116]/85 backdrop-blur-md p-1 rounded-lg border border-white/10 shadow-lg">
+        <div className="absolute top-4 right-4 flex items-center gap-1 bg-[#0E1116]/95 backdrop-blur-md p-1 rounded-lg border border-white/10 shadow-lg">
           <button
             onClick={() => handleZoom('in')}
             className="p-1.5 rounded hover:bg-white/10 text-[#F2EEE6] transition-colors"

@@ -13,18 +13,23 @@ export function pushUrl(link: string): string {
   return '/app'
 }
 
-export async function dispatchNotification(notificationId: string): Promise<{ sent: number; removed: number; failed: number }> {
+export async function dispatchNotification(notificationId: string): Promise<{ sent: number; removed: number; failed: number; texted?: boolean }> {
   const { supabaseAdmin } = await import('@/integrations/supabase/client.server')
   const db = supabaseAdmin as any
-  const result = { sent: 0, removed: 0, failed: 0 }
+  const result: { sent: number; removed: number; failed: number; texted?: boolean } = { sent: 0, removed: 0, failed: 0 }
   const { data: n } = await db.from('notifications').select('id, user_id, kind, text, link, created_at').eq('id', notificationId).maybeSingle()
   // Only fresh notifications: a delayed retry should not buzz someone's phone hours later.
   if (!n || Date.now() - new Date(n.created_at).getTime() > 15 * 60_000) return result
+  const appUrl = (await getSetting('app_url')) || process.env['APP_URL'] || 'https://aetherisintros.lovable.app'
+
+  // Text alerts (staged until Twilio is set up), for the alert groups the member chose.
+  const { textNotification } = await import('./sms.server')
+  if ((await textNotification(n, appUrl)) === 'sent') result.texted = true
+
   const { data: subs } = await db.from('push_subscriptions').select('id, endpoint, p256dh, auth').eq('user_id', n.user_id)
   if (!subs?.length) return result
 
   const keys = await getVapidKeys()
-  const appUrl = (await getSetting('app_url')) || process.env['APP_URL'] || 'https://aetherisintros.lovable.app'
   const subject = process.env['PUSH_CONTACT'] ? `mailto:${process.env['PUSH_CONTACT']}` : appUrl
   const message = { title: 'Ask Intros', body: String(n.text).slice(0, 240), url: pushUrl(n.link ?? ''), tag: `${n.kind}-${n.id}` }
 

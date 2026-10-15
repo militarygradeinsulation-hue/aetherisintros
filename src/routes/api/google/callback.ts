@@ -1,4 +1,5 @@
 import { createFileRoute } from '@tanstack/react-router'
+import { logServerError } from '@/lib/server-error-log'
 
 /** Where Google sends the member back after they approve (or decline) calendar access. */
 export const Route = createFileRoute('/api/google/callback')({
@@ -23,7 +24,7 @@ export const Route = createFileRoute('/api/google/callback')({
           await completeConnection(code, state, nonce, origin)
           return back('connected')
         } catch (error) {
-          console.error('google connect failed', error)
+          await logServerError(error, request)
           return back('failed')
         }
       },

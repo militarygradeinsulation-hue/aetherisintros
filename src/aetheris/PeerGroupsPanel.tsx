@@ -17,6 +17,7 @@ import { useCallback, useEffect, useState } from 'react'
 import { supabase } from '@/integrations/supabase/client'
 import {
   addCommitment,
+  createPeerGroup,
   generateGroupAgenda,
   getGroupAgenda,
   getGroupCommitments,
@@ -182,18 +183,21 @@ function CreateGroupForm({ onCreated, onCancel }: { onCreated: () => void; onCan
   const submit = async () => {
     if (name.trim().length < 2) { setErr('Give the group a name of at least 2 characters.'); return }
     setBusy(true); setErr('')
-    const uid = await currentUserId()
-    if (!uid) { setErr('Sign in first.'); setBusy(false); return }
-    const { error } = await db.from('peer_groups').insert({
-      name: name.trim(),
-      description: description.trim(),
-      cadence: cadence.trim(),
-      facilitator_id: uid,
-      max_size: maxSize,
-    })
-    setBusy(false)
-    if (error) { setErr(error.message); return }
-    onCreated()
+    try {
+      await createPeerGroup({ data: {
+        name: name.trim(),
+        description: description.trim(),
+        cadence: cadence.trim(),
+        maxSize,
+        stageLabel: '',
+        industryFocus: '',
+      } })
+      onCreated()
+    } catch (error) {
+      setErr(error instanceof Error ? error.message : 'Could not create the group.')
+    } finally {
+      setBusy(false)
+    }
   }
 
   return (
@@ -321,6 +325,19 @@ function GroupDetail({ group, userId, isFacilitator, accepted, onBack }: GroupDe
   )
 }
 
+/** Shared accountability view for the canonical peer-group experience. */
+export function PeerGroupAccountability({ groupId, userId, isFacilitator, groupDescription = '' }: {
+  groupId: string
+  userId: string
+  isFacilitator: boolean
+  groupDescription?: string
+}) {
+  return <div className="og-stack" aria-label="Peer group agenda and commitments">
+    <section className="executive-section"><AgendaTab groupId={groupId} isFacilitator={isFacilitator} groupDescription={groupDescription} /></section>
+    <section className="executive-section"><CommitmentsTab groupId={groupId} userId={userId} /></section>
+  </div>
+}
+
 // ── Agreement gate ────────────────────────────────────────────────────────────
 
 function AgreementGate({ groupId, onAccepted }: { groupId: string; onAccepted: () => void }) {
@@ -382,7 +399,7 @@ function AgendaTab({
   const generate = async () => {
     setGenerating(true); setErr('')
     try {
-      const a = await generateGroupAgenda({ data: { groupId, focusHint: focusHint.trim() || undefined } })
+      const a = await generateGroupAgenda({ data: { groupId, ...(focusHint.trim() ? { focusHint: focusHint.trim() } : {}) } })
       setAgenda(a)
       setFocusHint('')
     } catch (e) {
@@ -487,7 +504,7 @@ function CommitmentsTab({ groupId, userId }: { groupId: string; userId: string }
     if (!newText.trim()) return
     setBusy(true); setErr('')
     try {
-      await addCommitment({ data: { groupId, commitment: newText.trim(), dueDate: dueDate || undefined } })
+      await addCommitment({ data: { groupId, commitment: newText.trim(), ...(dueDate ? { dueDate } : {}) } })
       setNewText(''); setDueDate(''); setAdding(false)
       await load()
     } catch (e) {

@@ -1,0 +1,89 @@
+// 0063 syndication rooms: private group rooms for co-invest, co-sponsor, co-refer decisions;
+// members vote In/Out/Need More Info with notes, discuss in a thread, and see a decision summary.
+export default async ({ ok, as, svc, A, B, C, ADMIN }) => {
+  // Syndication rooms only admit approved live members; make the invitee's fixture explicit.
+  await svc(`insert into public.early_access_members (user_id,email,status) values ('${B}','b@syndication.test','approved') on conflict (user_id) do update set status='approved'`)
+  // Only authenticated users can create a room.
+  ok(!!(await as(null, `insert into public.syndication_rooms (created_by, title) values ('${A}', 'Anon room')`)).error, 'visitors cannot create a room')
+
+  const who = await as(A, `select auth.uid()::text uid`)
+  ok(who.rows?.[0]?.uid === A, 'authenticated syndication check sees caller id')
+
+  // Creation is atomic and guarded: clients cannot insert rooms/members directly.
+  ok(!!(await as(A, `insert into public.syndication_rooms (created_by, title) values ('${A}', 'Direct room')`)).error, 'members cannot bypass guarded room creation')
+  ok(!!(await as(A, `insert into public.syndication_members (room_id, user_id) values ('00000000-0000-4000-8000-000000000099', '${A}')`)).error, 'members cannot bypass guarded invitations')
+
+  // A creates a room and invites B in one transaction.
+  let r = await as(A, `select (public.create_syndication_room(
+    'Series B co-invest','co-invest','Fintech SaaS, $8M round at $40M post','$500k each',null,array['${B}'::uuid]
+  )).id as id`)
+  ok(!r.error && r.rows?.length === 1, `a member creates a room${r.error ? ` — ${r.error}` : ''}`)
+  const RID = r.rows?.[0]?.id
+  ok(!!RID, 'room creation returns an id')
+  ok(!!(await as(null, `select public.create_syndication_room('Anon room')`)).error, 'visitors cannot call room creation')
+  ok((await as(A, `select user_id from public.syndication_members where room_id = '${RID}' order by user_id`)).rows?.length === 2, 'creator and invitee are added atomically')
+
+  // Only the creator can add more members through the guarded RPC.
+  r = await as(B, `select public.invite_syndication_member('${RID}', '${C}')`)
+  ok(!!r.error, 'non-creators cannot invite syndication members')
+
+  // Privacy: outsiders cannot see the room.
+  ok((await as(C, `select id from public.syndication_rooms`)).rows?.length === 0, 'outsiders cannot see the room')
+  ok((await as(C, `select id from public.syndication_members`)).rows?.length === 0, 'outsiders cannot see members')
+  ok((await as(null, `select id from public.syndication_rooms`)).error !== undefined, 'visitors see nothing')
+
+  // Members see the room.
+  ok((await as(A, `select id from public.syndication_rooms`)).rows?.length === 1, 'creator sees the room')
+  ok((await as(B, `select id from public.syndication_rooms`)).rows?.length === 1, 'invited member sees the room')
+  ok((await as(A, `select user_id from public.syndication_members where room_id = '${RID}'`)).rows?.length === 2, 'creator sees the member list')
+
+  // Voting: each member casts their vote.
+  r = await as(A, `update public.syndication_members set vote = 'in', vote_note = 'Strong team', voted_at = now() where room_id = '${RID}' and user_id = '${A}' returning vote`)
+  ok(!r.error && r.rows?.[0]?.vote === 'in', 'a member votes in')
+  r = await as(B, `update public.syndication_members set vote = 'need_more_info', vote_note = 'Need cap table', voted_at = now() where room_id = '${RID}' and user_id = '${B}' returning vote`)
+  ok(!r.error && r.rows?.[0]?.vote === 'need_more_info', 'another member votes need more info')
+
+  // Members cannot change each other's votes.
+  ok((await as(A, `update public.syndication_members set vote = 'out' where room_id = '${RID}' and user_id = '${B}' returning id`)).rows?.length === 0, 'a member cannot change another member\'s vote')
+
+  // Vote constraint: invalid vote value is rejected.
+  ok(!!(await as(A, `update public.syndication_members set vote = 'maybe' where room_id = '${RID}' and user_id = '${A}'`)).error, 'invalid vote values are rejected')
+
+  // Discussion thread.
+  r = await as(A, `insert into public.syndication_messages (room_id, user_id, body) values ('${RID}', '${A}', 'I reviewed the deck — team is excellent.') returning id`)
+  ok(!r.error, 'a member posts a message')
+  r = await as(B, `insert into public.syndication_messages (room_id, user_id, body) values ('${RID}', '${B}', 'Can we get the cap table before deciding?') returning id`)
+  ok(!r.error, 'another member replies')
+
+  // Outsiders cannot post or read messages.
+  ok(!!(await as(C, `insert into public.syndication_messages (room_id, user_id, body) values ('${RID}', '${C}', 'Sneaky message')`)).error, 'outsiders cannot post messages')
+  ok((await as(C, `select id from public.syndication_messages`)).rows?.length === 0, 'outsiders cannot read messages')
+  ok((await as(null, `select id from public.syndication_messages`)).error !== undefined, 'visitors see no messages')
+
+  // Members can read all messages in their room.
+  ok((await as(A, `select id from public.syndication_messages where room_id = '${RID}'`)).rows?.length === 2, 'members read all messages')
+  ok((await as(B, `select id from public.syndication_messages where room_id = '${RID}'`)).rows?.length === 2, 'all members read all messages')
+
+  // Message authorship: the guard overwrites any supplied user_id with auth.uid().
+  r = await as(A, `insert into public.syndication_messages (room_id, user_id, body) values ('${RID}', '${B}', 'Forged') returning user_id`)
+  ok(!r.error && r.rows?.[0]?.user_id === A, 'forged message authorship is normalized to the caller')
+
+  // Room status transitions.
+  r = await as(A, `update public.syndication_rooms set status = 'decided', decision = 'Going in — all committed $500k' where id = '${RID}' returning status`)
+  ok(!r.error && r.rows?.[0]?.status === 'decided', 'creator updates room to decided with a decision summary')
+
+  // Room type constraint.
+  ok(!!(await as(A, `insert into public.syndication_rooms (created_by, title, room_type) values ('${A}', 'Bad type', 'invalid_type')`)).error, 'invalid room types are rejected')
+
+  // Status constraint.
+  ok(!!(await as(A, `update public.syndication_rooms set status = 'unknown' where id = '${RID}'`)).error, 'invalid status values are rejected')
+
+  // Re-inviting the same member is idempotent through the guarded RPC.
+  r = await as(A, `select public.invite_syndication_member('${RID}', '${B}')`)
+  ok(!r.error && (await as(A, `select count(*)::int n from public.syndication_members where room_id = '${RID}' and user_id = '${B}'`)).rows?.[0]?.n === 1, 'duplicate invitations stay idempotent')
+
+  // Cascading deletes: deleting the room removes members and messages.
+  ok(!(await as(A, `delete from public.syndication_rooms where id = '${RID}' and created_by = '${A}'`)).error, 'creator can delete the room')
+  ok((await svc(`select count(*)::int n from public.syndication_members where room_id = '${RID}'`))[0].n === 0, 'members are removed on room delete')
+  ok((await svc(`select count(*)::int n from public.syndication_messages where room_id = '${RID}'`))[0].n === 0, 'messages are removed on room delete')
+}

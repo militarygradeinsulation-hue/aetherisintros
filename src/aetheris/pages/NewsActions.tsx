@@ -9,18 +9,20 @@ export function NewsActions({ item, compact }: { item: NewsItem; compact?: boole
   const shelf = useNewsShelf()
   const net = useNetwork()
   const [sent, setSent] = useState(false)
+  const [sendError, setSendError] = useState('')
 
   const later = shelf.has('later', item.id)
   const saved = shelf.has('library', item.id)
 
-  function send() {
+  async function send() {
     if (sent) return
     const detail = [
       item.summary,
       `Reported by ${item.source} — read it inside Intros under News.`,
     ].filter(Boolean).join('\n\n')
-    net.addPost(item.title, detail, [], 'network')
-    setSent(true)
+    setSendError('')
+    try { await net.addPost(item.title, detail, [], 'network'); setSent(true) }
+    catch (error) { setSendError(error instanceof Error ? error.message : 'This could not be shared. Try again.') }
   }
 
   return <div className={`news-acts${compact ? ' compact' : ''}`}>
@@ -30,9 +32,10 @@ export function NewsActions({ item, compact }: { item: NewsItem; compact?: boole
     <button className={saved ? 'on' : ''} onClick={() => shelf.toggle('library', item)} title="Save to library">
       {saved ? <Check size={12} /> : <BookmarkPlus size={12} />} {saved ? 'In your library' : 'Save to library'}
     </button>
-    <button className={sent ? 'on' : ''} onClick={send} title="Share this with your network">
+    <button className={sent ? 'on' : ''} onClick={() => void send()} title="Share this with your network">
       {sent ? <Check size={12} /> : <Send size={12} />} {sent ? 'Sent to your network' : 'Send to network'}
     </button>
+    {sendError && <small role="alert">{sendError}</small>}
   </div>
 }
 

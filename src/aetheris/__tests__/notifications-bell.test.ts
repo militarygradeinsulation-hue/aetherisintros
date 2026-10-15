@@ -24,5 +24,7 @@ describe('destinationFor', () => {
     expect(destinationFor({ kind: 'onboarding_incomplete' })).toBe('home')
     expect(destinationFor({ kind: 'peer_group_added' })).toBe('peergroups')
     expect(destinationFor({ kind: 'peer_group_issue' })).toBe('peergroups')
+    expect(destinationFor({ kind: 'event_promoted' })).toBe('events')
+    expect(destinationFor({ kind: 'event_reminder' })).toBe('events')
   })
 })

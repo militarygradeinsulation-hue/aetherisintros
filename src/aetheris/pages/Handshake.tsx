@@ -16,6 +16,8 @@ export function HandshakeModal({ memberId, onClose }: { memberId: string; onClos
   const nav = useNav()
   const member = net.members.find(m => m.id === memberId)
   const [step, setStep] = useState<'handshake' | 'capsule'>('handshake')
+  const [requesting, setRequesting] = useState(false)
+  const [requestError, setRequestError] = useState('')
 
   const weather = useMemo(() => member ? deriveWeather(member, platform.loops, platform.weather.find(w => w.memberId === memberId)) : null, [member, platform.loops, platform.weather, memberId])
   const handshake = useMemo(() => {
@@ -126,13 +128,20 @@ export function HandshakeModal({ memberId, onClose }: { memberId: string; onClos
         <div className="row-actions">
           <Btn kind="quiet" onClick={onClose}>Not now</Btn>
           <Btn kind="secondary" onClick={() => { platform.saveHandshake(handshake); platform.saveCapsule(live); setStep('capsule') }}>Save capsule</Btn>
-          <Btn disabled={handshake.justified === 'Not Yet'} onClick={() => {
-            platform.saveHandshake({ ...handshake, aApproved: true })
-            platform.saveCapsule(live)
-            net.requestIntro(member.id)
-            onClose()
-            nav.setPage('intros')
-          }}><Send size={15} /> Agree and request introduction</Btn>
+          {requestError && <p role="alert" className="intro-blocked">{requestError}</p>}
+          <Btn disabled={handshake.justified === 'Not Yet' || requesting} onClick={() => {
+            if (requesting) return
+            setRequesting(true)
+            setRequestError('')
+            void net.requestIntro(member.id, live.whyMeeting).then(saved => {
+              if (!saved) { setRequestError('Not sent. The introduction request was not confirmed. Retry.'); return }
+              platform.saveHandshake({ ...handshake, aApproved: true })
+              platform.saveCapsule(live)
+              onClose()
+              nav.setPage('intros')
+            }).catch(() => setRequestError('Not sent. Check your connection and retry.'))
+              .finally(() => setRequesting(false))
+          }}><Send size={15} />{requesting ? 'Saving request…' : 'Agree and request introduction'}</Btn>
         </div>
       </footer>
     </div>

@@ -1,8 +1,12 @@
-// @ts-nocheck
 import React, { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
+import { submitIntroRequest } from '@/aetheris/lib/intro-request';
+import { loadMyProfile } from '@/aetheris/live';
+import { WriteFailureNotice } from '@/aetheris/WriteFailureNotice';
+import { refreshUnread } from '@/aetheris/read-receipts';
+import { reportWriteFailure } from '@/aetheris/write-failures';
 import './styles.css';
-import { AccentProvider } from './AccentMode';
+
 import {
   NETWORK_MEMBERS,
   INITIAL_FEED_POSTS,
@@ -27,18 +31,26 @@ import { ReviewIntroModal } from './components/modals/ReviewIntroModal';
 import { ScheduleMeetingModal } from './components/modals/ScheduleMeetingModal';
 import { FloatingConnectionField } from './components/shared/FloatingConnectionField';
 import { X, Orbit } from 'lucide-react';
-import ClassicApp, { AetherisAssistant } from '@/aetheris/App';
+import { AetherisAppSurface, AetherisAssistantSurface } from '@/aetheris/App';
 import { VoiceBar } from '@/aetheris/VoiceBar';
 import { SelectionReader } from '@/aetheris/SelectionReader';
 import { LiveMessagesView } from './views/LiveMessagesView';
+import { useUnreadCounts } from '@/aetheris/read-receipts';
 import '@/aetheris/styles.css';
+import '@/aetheris/architectural-system.css';
 import { useAetherisNews } from '@/aetheris/news';
 import { LiveMembers } from './liveMembers';
 import { ThisWeekPanel } from '@/aetheris/this-week-ui';
+import { ActivationChecklist, recordVisit } from '@/aetheris/activation-ui';
+import { GiveGetCard, KeepWarmPanel } from '@/aetheris/reciprocity-ui';
 import { LiveNotificationsBell } from '@/aetheris/notifications-bell';
 import { MeetingReminderBanner } from '@/aetheris/meetings-ui';
 import { MembershipCardMailer } from '@/aetheris/membership-card-ui';
 import { InviteCard } from '@/aetheris/InviteCard';
+import { QuickMenuHost } from '@/aetheris/quick-menu-ui';
+import { QuickNoteHost } from '@/aetheris/quick-note-ui';
+
+const SHELL_PAGES: ActivePage[] = ['home', 'people', 'bubbles', 'intros', 'messages', 'insights', 'news', 'workspace', 'memory', 'work', 'meetings'];
 
 function NewsTicker({ onOpen }: { onOpen: () => void }) {
   const { data } = useAetherisNews();
@@ -57,6 +69,7 @@ export default function App({ mode = 'demo' }: { mode?: 'demo' | 'live' }) {
   const [classicPage, setClassicPage] = useState<string>('memory');
   const [selectedProfileId, setSelectedProfileId] = useState<string>('marcus-lee');
   const [members, setMembers] = useState<NetworkMember[]>(mode === 'live' ? [] : NETWORK_MEMBERS);
+  const [liveDirectoryError, setLiveDirectoryError] = useState('');
   const [feedPosts, setFeedPosts] = useState<FeedPost[]>(mode === 'live' ? [] : INITIAL_FEED_POSTS);
   const [conversations, setConversations] = useState<ConversationThread[]>(mode === 'live' ? [] : INITIAL_CONVERSATIONS);
   const [introRequests, setIntroRequests] = useState<IntroRequest[]>(mode === 'live' ? [] : INITIAL_INTRO_REQUESTS);
@@ -82,13 +95,48 @@ export default function App({ mode = 'demo' }: { mode?: 'demo' | 'live' }) {
     const loadMe = async () => {
       const { data: u } = await supabase.auth.getUser();
       if (!u.user || off) return;
-      const { data } = await supabase.from('profiles').select('name, avatar_url').eq('id', u.user.id).maybeSingle();
-      if (!off) setMe({ name: data?.name || u.user.email?.split('@')[0] || '', avatarUrl: data?.avatar_url || undefined });
+      const profile = await loadMyProfile(u.user.id);
+      if (!off) {
+        const name = profile?.name || u.user.email?.split('@')[0] || '';
+        const avatarUrl = profile?.avatar_url || '';
+        setMe({ name, ...(avatarUrl ? { avatarUrl } : {}) });
+      }
     };
     void loadMe();
     const t = setInterval(loadMe, 30000);
     return () => { off = true; clearInterval(t); };
   }, [mode]);
+
+  const [unreadUnavailable, setUnreadUnavailable] = useState(false);
+  useEffect(() => {
+    if (mode !== 'live') return;
+    const fail = () => setUnreadUnavailable(true);
+    const success = () => setUnreadUnavailable(false);
+    window.addEventListener('aetheris:unread-unavailable', fail);
+    window.addEventListener('aetheris:unread-loaded', success);
+    return () => {
+      window.removeEventListener('aetheris:unread-unavailable', fail);
+      window.removeEventListener('aetheris:unread-loaded', success);
+    };
+  }, [mode]);
+
+  // Restore saved connections on reload instead of presenting them as absent.
+  useEffect(() => {
+    if (mode !== 'live') return;
+    let cancelled = false;
+    const loadConnections = async () => {
+      const { data: identity } = await supabase.auth.getUser();
+      if (!identity.user) return;
+      const { data, error } = await supabase.from('follows').select('followee_id')
+        .eq('follower_id', identity.user.id).eq('kind', 'connection');
+      if (!cancelled && !error) setConnectedMemberIds(new Set((data ?? []).map(row => row.followee_id)));
+    };
+    void loadConnections();
+    return () => { cancelled = true };
+  }, [mode]);
+
+  // Count today's visit once per device for the admin growth report.
+  useEffect(() => { if (mode === 'live') void recordVisit(); }, [mode]);
 
   // Navigation router
   const handleNavigate = (page: ActivePage, memberId?: string) => {
@@ -103,15 +151,30 @@ export default function App({ mode = 'demo' }: { mode?: 'demo' | 'live' }) {
 
   // Interactions
   const handleToggleConnect = (memberId: string) => {
-    setConnectedMemberIds((prev) => {
-      const next = new Set(prev);
-      if (next.has(memberId)) {
-        next.delete(memberId);
-      } else {
-        next.add(memberId);
+    const on = !connectedMemberIds.has(memberId);
+    const persist = async () => {
+      if (mode === 'live') {
+        const { data: identity, error: authError } = await supabase.auth.getUser();
+        if (authError || !identity.user) throw new Error('Sign in to save a connection.');
+        const query = on
+          ? supabase.from('follows').upsert({ follower_id: identity.user.id, followee_id: memberId, kind: 'connection' }, { onConflict: 'follower_id,followee_id,kind' })
+          : supabase.from('follows').delete().eq('follower_id', identity.user.id).eq('followee_id', memberId).eq('kind', 'connection');
+        const { error } = await query;
+        if (error) throw new Error('The server did not confirm this connection change.');
       }
-      return next;
-    });
+      setConnectedMemberIds(prev => {
+        const next = new Set(prev);
+        if (on) next.add(memberId); else next.delete(memberId);
+        return next;
+      });
+    };
+    const attempt = async () => {
+      try { await persist(); }
+      catch (error) {
+        reportWriteFailure({ title: 'Connection not saved', message: error instanceof Error ? error.message : 'No confirmation received.', retry: attempt });
+      }
+    };
+    void attempt();
   };
 
   const handleToggleSaveMember = (memberId: string) => {
@@ -196,8 +259,11 @@ export default function App({ mode = 'demo' }: { mode?: 'demo' | 'live' }) {
     );
   };
 
-  const handleSendIntroRequest = (targetId: string, note: string) => {
-    // Successfully handled
+  const handleSendIntroRequest = async (targetId: string, note: string): Promise<'created' | 'existing'> => {
+    if (mode === 'live') return submitIntroRequest(targetId, note);
+    // The labelled /demo showcase is not the live member network.
+    setIntroRequests(previous => [{ id: `demo-intro-${Date.now()}`, targetId, note } as unknown as IntroRequest, ...previous]);
+    return 'created';
   };
 
   const handleAcceptIntroRequest = (reqId: string) => {
@@ -211,33 +277,59 @@ export default function App({ mode = 'demo' }: { mode?: 'demo' | 'live' }) {
   // Find active profile
   const currentProfileMember =
     members.find((m) => m.id === selectedProfileId) || members[0];
+  const liveUnread = useUnreadCounts(mode === 'live');
+  // "Open deal room" anywhere in the product lands on the Deals workspace page.
+  useEffect(() => {
+    const open = (e: Event) => { e.preventDefault(); setClassicPage('deals'); handleNavigate('workspace'); };
+    window.addEventListener('aetheris:open-deals', open);
+    return () => window.removeEventListener('aetheris:open-deals', open);
+  }, []);
   const classicPages = ['news','workspace','memory','work','insights','meetings', ...(mode === 'live' ? ['home','messages','intros','people'] : [])];
 
   return (
-    <AccentProvider>
-    <div className="ix-root min-h-screen bg-[#07090C] text-[#F2EEE6] flex flex-col font-sans selection:bg-[#F5B027]/30 selection:text-white relative isolate">
+    <div className="ix-root min-h-screen bg-[#07090C] text-[#F2EEE6] flex flex-col font-sans selection:bg-[#F5B027]/30 selection:text-white relative">
+      <WriteFailureNotice />
+      {/* Right-click quick menu (each member chooses its items) */}
+      <QuickMenuHost
+        live={mode === 'live'}
+        onGo={(t) => {
+          if (t.kind === 'workspace') { setClassicPage(t.page); handleNavigate('workspace'); }
+          else handleNavigate(t.page);
+        }}
+        findMember={(id) => { const m = members.find((x) => x.id === id); return m ? { id: m.id, name: m.name } : null; }}
+        onOpenMember={(id) => handleNavigate('people', id)}
+        onRequestIntro={(id) => { const m = members.find((x) => x.id === id); if (m) setRequestIntroTarget(m); }}
+        onSearch={(text) => { setSearchQuery(text); handleNavigate('people'); }}
+      />
+
+      <QuickNoteHost />
+
       {/* Universal Top Navigation Contract */}
+      {mode === 'live' && unreadUnavailable && <div role="alert" className="mx-4 mt-2 rounded-lg border border-red-400/40 px-3 py-2 text-xs text-[#FFD6D6]">
+        Unread counts could not be loaded. Do not assume your inbox is clear.
+        <button type="button" className="ml-2 underline font-semibold" onClick={() => void refreshUnread()}>Retry</button>
+      </div>}
       <TopNavigation
         activePage={activePage}
         onNavigate={handleNavigate}
         searchQuery={searchQuery}
         onSearchChange={setSearchQuery}
-        unreadCount={mode === 'live' ? 0 : 12}
+        unreadCount={mode === 'live' ? liveUnread.total : 12}
         onToggleConstellationOverlay={() => handleNavigate('bubbles')}
-        me={mode === 'live' ? me : undefined}
-        onOpenMyProfile={mode === 'live' ? () => { setClassicPage('profile'); handleNavigate('workspace'); } : undefined}
+        me={mode === 'live' ? me : null}
+        {...(mode === 'live' ? { onOpenMyProfile: () => { setClassicPage('profile'); handleNavigate('workspace'); } } : {})}
         bell={mode === 'live' ? <LiveNotificationsBell onOpen={(destination) => {
-          if (destination === 'peergroups') { setClassicPage('peergroups'); handleNavigate('workspace'); return; }
+          if (destination === 'peergroups' || destination === 'events' || destination === 'deals') { setClassicPage(destination); handleNavigate('workspace'); return; }
           handleNavigate(destination);
         }} /> : undefined}
       />
 
-      {mode === 'live' && <LiveMembers onMembers={setMembers} />}
+      {mode === 'live' && <LiveMembers onMembers={setMembers} onError={setLiveDirectoryError} />}
       {mode === 'live' && <MeetingReminderBanner onJoin={() => handleNavigate('meetings')} />}
       {mode === 'live' && <MembershipCardMailer />}
       <NewsTicker onOpen={() => handleNavigate('news')} />
       {/* Primary Page Views */}
-      <main className="flex-1">
+      <main className="flex-1 arch-product-main" data-arch-page={activePage}>
         {activePage === 'home' && (
           <HomeFeedView
             posts={feedPosts}
@@ -248,20 +340,29 @@ export default function App({ mode = 'demo' }: { mode?: 'demo' | 'live' }) {
             onAddPost={handleAddPost}
             networkMembers={members}
             isLive={mode === 'live'}
-            socialFeed={mode === 'live' ? <div className="ix-classic"><ClassicApp mode="live" feedOnly /></div> : undefined}
-            actionQueue={mode === 'live' ? <ThisWeekPanel onOpen={(target) => {
-              if (target === 'intros') { handleNavigate('intros'); return; }
-              setClassicPage(target);
-              handleNavigate('workspace');
-            }} /> : undefined}
-            me={mode === 'live' ? me : undefined}
+            socialFeed={mode === 'live' ? <div className="ix-classic"><AetherisAppSurface  feedOnly  /></div> : undefined}
+            actionQueue={mode === 'live' ? <div className="rc-stack">
+              <ActivationChecklist onOpen={(target) => {
+                if (target === 'intros') { handleNavigate('intros'); return; }
+                setClassicPage(target);
+                handleNavigate('workspace');
+              }} />
+              <ThisWeekPanel onOpen={(target) => {
+                if (target === 'intros') { handleNavigate('intros'); return; }
+                setClassicPage(target);
+                handleNavigate('workspace');
+              }} />
+              <KeepWarmPanel onMessage={() => handleNavigate('messages')} />
+              <GiveGetCard onOpenAsks={() => { setClassicPage('needs'); handleNavigate('workspace'); }} />
+            </div> : undefined}
+            me={mode === 'live' ? me : null}
           />
         )}
 
         {(activePage === 'people' || activePage === 'intros') && (
           <>
             {mode === 'live'
-              ? <div className="ix-classic"><InviteCard /><ClassicApp key="live-intros" mode={mode} startPage="intros" /></div>
+              ? <div className="ix-classic"><InviteCard /><AetherisAppSurface key="live-intros"  startPage="intros"  /></div>
               : <IntrosHubView
                   introRequests={introRequests}
                   networkMembers={members}
@@ -271,12 +372,14 @@ export default function App({ mode = 'demo' }: { mode?: 'demo' | 'live' }) {
                   onRequestIntro={(member) => setRequestIntroTarget(member)}
                 />}
             <div className="border-t border-white/10">
+              {mode === 'live' && liveDirectoryError && <div role="alert" className="mx-4 my-3 rounded-xl border border-red-400/40 p-3 text-sm text-red-200">The verified member directory did not load: {liveDirectoryError} Reopen this screen to retry. Demo profiles are never substituted.</div>}
               <PeopleDirectoryView
                 members={members}
                 onNavigate={handleNavigate}
                 onRequestIntro={(member) => setRequestIntroTarget(member)}
                 connectedMemberIds={connectedMemberIds}
                 onToggleConnect={handleToggleConnect}
+                isLive={mode === 'live'}
               />
             </div>
           </>
@@ -301,7 +404,7 @@ export default function App({ mode = 'demo' }: { mode?: 'demo' | 'live' }) {
           />
         )}
 
-        {mode === 'live' && activePage === 'messages' && <LiveMessagesView />}
+        {mode === 'live' && activePage === 'messages' && <LiveMessagesView onOpenWorkspaces={() => { setClassicPage('workspaces'); handleNavigate('workspace'); }} />}
         {mode !== 'live' && activePage === 'messages' && (
           <MessagesView
             conversations={conversations}
@@ -316,7 +419,7 @@ export default function App({ mode = 'demo' }: { mode?: 'demo' | 'live' }) {
           />
         )}
 
-        {activePage === 'insights' && <div className="ix-classic"><ClassicApp key="live-insights" mode={mode} startPage="insights" /></div>}
+        {activePage === 'insights' && <div className="ix-classic"><AetherisAppSurface key="live-insights"  startPage="insights"  /></div>}
         {false && (
           <InsightsDashboardView
             onNavigate={handleNavigate}
@@ -325,16 +428,16 @@ export default function App({ mode = 'demo' }: { mode?: 'demo' | 'live' }) {
           />
         )}
 
-        {activePage === 'news' && <div className="ix-classic"><ClassicApp key="news" mode={mode} startPage="news" /></div>}
-        {activePage === 'memory' && <div className="ix-classic"><ClassicApp key="memory" mode={mode} startPage="memory" /></div>}
-        {activePage === 'meetings' && <div className="ix-classic"><ClassicApp key="meetings" mode={mode} startPage="meetings" /></div>}
-        {activePage === 'work' && <div className="ix-classic"><ClassicApp key="work" mode={mode} startPage="work" /></div>}
+        {activePage === 'news' && <div className="ix-classic"><AetherisAppSurface key="news"  startPage="news"  /></div>}
+        {activePage === 'memory' && <div className="ix-classic"><AetherisAppSurface key="memory"  startPage="memory"  /></div>}
+        {activePage === 'meetings' && <div className="ix-classic"><AetherisAppSurface key="meetings"  startPage="meetings"  /></div>}
+        {activePage === 'work' && <div className="ix-classic"><AetherisAppSurface key="work"  startPage="work"  /></div>}
         {activePage === 'workspace' && <div className="ix-classic">
           <div className="ix-tools">
-            {([['memory','Memory'],['crm','CRM'],['diagnostic','Company report'],['pocket','Pocket'],['needs','Needs'],['companies','Companies'],['opportunities','Opportunities'],['calendar','Calendar'],['grid','Grid'],['circles','Circles'],['peergroups','Peer groups'],['events','Events'],['profile','My profile'],['preferences','Settings']] as const).map(([id, label]) =>
+            {([['memory','Memory'],['crm','CRM'],['diagnostic','Company report'],['pocket','Private Library & Blueprints'],['executivework','Executive Workbench'],['providers','Trusted Providers'],['needs','Needs'],['companies','Companies'],['opportunities','Opportunities'],['deals','Deals'],['workspaces','Workspaces'],['calendar','Calendar'],['grid','Grid'],['circles','Circles'],['peergroups','Peer groups'],['events','Events'],['profile','My profile'],['preferences','Settings']] as const).map(([id, label]) =>
               <button key={id} className={classicPage === id ? 'on' : ''} onClick={() => setClassicPage(id)}>{label}</button>)}
           </div>
-          <ClassicApp key={classicPage} mode={mode} startPage={classicPage as any} />
+          <AetherisAppSurface key={classicPage}  startPage={classicPage as any}  />
         </div>}
       </main>
 
@@ -364,11 +467,20 @@ export default function App({ mode = 'demo' }: { mode?: 'demo' | 'live' }) {
         memberTitle={scheduleMeetingTarget?.title || ''}
       />
       {!classicPages.includes(activePage) && (<>
-        <AetherisAssistant mode={mode} page={activePage} onNavigate={(p) => handleNavigate(p as ActivePage)} />
+        <AetherisAssistantSurface
+          page={activePage}
+          onNavigate={(p) => {
+            if ((SHELL_PAGES as string[]).includes(p)) handleNavigate(p as ActivePage);
+            else { setClassicPage(p); handleNavigate('workspace'); }
+          }}
+          onOpenMember={(id) => handleNavigate('people', id)}
+          onMessageMember={() => handleNavigate('messages')}
+          onRequestIntro={(id) => { const m = members.find((x) => x.id === id); if (m) setRequestIntroTarget(m); }}
+          onSearch={(text) => { setSearchQuery(text); handleNavigate('people'); }}
+        />
         <VoiceBar />
         <SelectionReader />
       </>)}
     </div>
-    </AccentProvider>
   );
 }
