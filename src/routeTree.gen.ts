@@ -27,7 +27,6 @@ import { Route as InviteCodeRouteImport } from './routes/invite.$code'
 import { Route as PassportTokenRouteImport } from './routes/passport.$token'
 import { Route as DotlovableOauthConsentRouteImport } from './routes/[.]lovable.oauth.consent'
 import { Route as AuthenticatedWarmReferralsRouteImport } from './routes/_authenticated/warm-referrals'
-import { Route as AuthenticatedWarmReferralsRouteImport } from './routes/_authenticated/warm-referrals'
 import { Route as AuthenticatedAdminEarlyAccessRouteImport } from './routes/_authenticated/admin.early-access'
 import { Route as AuthenticatedAdminVerificationRouteImport } from './routes/_authenticated/admin.verification'
 import { Route as ApiAgentAsksRouteImport } from './routes/api/agent/asks'
@@ -131,11 +130,6 @@ const DotlovableOauthConsentRoute = DotlovableOauthConsentRouteImport.update({
   id: '/.lovable/oauth/consent',
   path: '/.lovable/oauth/consent',
   getParentRoute: () => rootRouteImport,
-} as any)
-const AuthenticatedWarmReferralsRoute = AuthenticatedWarmReferralsRouteImport.update({
-  id: '/warm-referrals',
-  path: '/warm-referrals',
-  getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const AuthenticatedWarmReferralsRoute = AuthenticatedWarmReferralsRouteImport.update({
   id: '/warm-referrals',
@@ -254,9 +248,6 @@ export interface FileRoutesByFullPath {
   '/passport/$token': typeof PassportTokenRoute
   '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
   '/warm-referrals': typeof AuthenticatedWarmReferralsRoute
-  '/warm-referrals': typeof AuthenticatedWarmReferralsRoute
-  '/admin/early-access': typeof AuthenticatedAdminEarlyAccessRoute  '/warm-referrals': typeof AuthenticatedWarmReferralsRoute
-  '/warm-referrals': typeof AuthenticatedWarmReferralsRoute
   '/admin/early-access': typeof AuthenticatedAdminEarlyAccessRoute
   '/admin/verification': typeof AuthenticatedAdminVerificationRoute
   '/api/agent/asks': typeof ApiAgentAsksRoute
@@ -293,7 +284,6 @@ export interface FileRoutesByTo {
   '/invite/$code': typeof InviteCodeRoute
   '/passport/$token': typeof PassportTokenRoute
   '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
-  '/warm-referrals': typeof AuthenticatedWarmReferralsRoute
   '/warm-referrals': typeof AuthenticatedWarmReferralsRoute
   '/admin/early-access': typeof AuthenticatedAdminEarlyAccessRoute
   '/admin/verification': typeof AuthenticatedAdminVerificationRoute
