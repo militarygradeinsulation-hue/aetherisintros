@@ -204,6 +204,16 @@ export async function loadLiveDirectory(userId: string): Promise<{ directory: Di
       supabase.from('dm_threads').select('*').order('updated_at', { ascending: false }),
     ])
 
+    for (const [source, response] of [
+      ['network posts', postRows], ['network asks', askRows],
+      ['private conversations', threadRows],
+    ] as const) {
+      if (response.error) {
+        reportClientError(response.error, `live-${source.replaceAll(' ', '-')}-read`)
+        throw new Error(`Could not load ${source}: ${response.error.message}`)
+      }
+    }
+
     // The overview is intentionally capped; the full directory uses paginated server search.
     const profiles = profileRows
     const me = profiles.find(p => p.id === userId) ?? null
