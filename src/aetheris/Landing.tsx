@@ -62,7 +62,7 @@ export default function Landing() {
       <div className="ael-header-actions">
         <AppearanceToggle className="ael-appearance" />
         {signedIn ? <Link to="/app" className="ael-signin">My network</Link> : <Link to="/auth" className="ael-signin">Member sign in</Link>}
-        <JoinAction signedIn={signedIn} className="ael-nav-cta" />
+        <JoinAction signedIn={signedIn} className="ael-nav-cta ai-gradient-button" />
       </div>
     </header>
 
@@ -74,7 +74,7 @@ export default function Landing() {
         <h1 id="ael-hero-title">The right room <em>changes everything.</em></h1>
         <p className="ael-hero-lede">The introductions that matter aren't measured in connections. They're measured in what becomes possible afterward.</p>
         <div className="ael-hero-actions">
-          <JoinAction signedIn={signedIn} className="ael-btn ael-btn-gold" />
+          <JoinAction signedIn={signedIn} className="ael-btn ael-btn-gold ai-gradient-button" />
           <Link to="/demo" className="ael-text-link">Explore Ask Intros <ArrowRight size={16} aria-hidden="true" /></Link>
         </div>
       </div>
@@ -166,7 +166,7 @@ export default function Landing() {
       <h2 id="ael-membership-title">The next room is <em>yours to enter.</em></h2>
       <p>Bring a clear purpose. Meet people with reasons to connect. Do more with the relationships worth building.</p>
       <div className="ael-membership-actions">
-        <JoinAction signedIn={signedIn} className="ael-btn ael-btn-gold" />
+        <JoinAction signedIn={signedIn} className="ael-btn ael-btn-gold ai-gradient-button" />
         {!signedIn && <Link to="/auth" className="ael-text-link">Already a member? Sign in <ArrowRight size={16} aria-hidden="true" /></Link>}
       </div>
     </section>
