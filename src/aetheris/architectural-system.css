@@ -282,3 +282,55 @@
  .ael .ael-system-visual::after,.ael .ael-cinematic-break::after {display:none!important;}
  .ix-root,:root[data-theme='light'] .ix-root {background-image:none!important;}
 }
+
+/* Priority bridge over prior dark-photography contrast contract. */
+:root .ael {--ai-button-surface:#f8f6f1;--ai-button-text:#202420;}
+:root .ael .ael-nav-cta {color:#202420!important;}
+:root .ael .ael-header :is(.ask-intros-lockup__ask,.ask-intros-lockup__intros,.ask-intros-lockup__tagline) {
+ fill:#202420!important;
+}
+:root .ael .ael-header .ask-intros-lockup__rule {stroke:#a36b43!important;}
+:root .ael .ael-hero,
+:root[data-theme='light'] .ael .ael-hero {background:#f3f0e9;color:#202420;}
+:root .ael .ael-hero h1,
+:root[data-theme='light'] .ael .ael-hero h1 {
+ color:#202420!important;text-shadow:none!important;
+ font-size:clamp(69px,8.2vw,137px);line-height:.86;
+}
+:root .ael .ael-hero h1 em,
+:root[data-theme='light'] .ael .ael-hero h1 em {
+ color:#9d6b48!important;text-shadow:none!important;
+}
+:root .ael .ael-hero .ael-hero-lede,
+:root[data-theme='light'] .ael .ael-hero .ael-hero-lede {
+ color:#4d5550!important;text-shadow:none!important;
+}
+:root .ael .ael-hero .ael-kicker,
+:root[data-theme='light'] .ael .ael-hero .ael-kicker {color:#a36b43;}
+:root .ael .ael-hero .ael-hero-bottom,
+:root[data-theme='light'] .ael .ael-hero .ael-hero-bottom {
+ color:#3f4943;border-top-color:rgba(39,44,41,.25);
+}
+:root .ael .ael-hero .ael-hero-bottom a {color:#3f4943;}
+:root .ael .ael-hero .ael-hero-shade,
+:root[data-theme='light'] .ael .ael-hero .ael-hero-shade {
+ background:
+ linear-gradient(90deg,#f3f0e9 0%,#f3f0e9 22%,rgba(243,240,233,.95) 36%,rgba(243,240,233,.61) 54%,rgba(243,240,233,.1) 80%),
+ linear-gradient(0deg,rgba(243,240,233,.87),transparent 24%,rgba(243,240,233,.26));
+}
+:root .ael .ael-hero .ael-hero-image {object-position:50% 52%;filter:saturate(.56) sepia(.11) contrast(1.025);}
+:root .ael .ael-membership :is(h2,p) {color:#f2eee6;}
+@media(max-width:900px){
+ :root .ael .ael-hero .ael-hero-shade,
+ :root[data-theme='light'] .ael .ael-hero .ael-hero-shade {
+  background:linear-gradient(90deg,rgba(243,240,233,.97),rgba(243,240,233,.85) 55%,rgba(243,240,233,.47));
+ }
+}
+@media(max-width:600px){
+ :root .ael .ael-hero h1,
+ :root[data-theme='light'] .ael .ael-hero h1 {font-size:clamp(62px,13.8vw,92px);line-height:.89;}
+ :root .ael .ael-hero .ael-hero-shade,
+ :root[data-theme='light'] .ael .ael-hero .ael-hero-shade {
+  background:linear-gradient(0deg,rgba(243,240,233,.98),rgba(243,240,233,.75) 75%,rgba(243,240,233,.55));
+ }
+}
