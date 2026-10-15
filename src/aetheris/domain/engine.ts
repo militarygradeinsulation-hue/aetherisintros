@@ -248,9 +248,9 @@ export function deriveWeather(member: Member, loops: OpenLoop[], stored?: Relati
   // Persisted demo/weather summaries are not a source of truth for live
   // recency. Never reuse stale "9999 days" for someone we have not met.
   if (stored && days !== null && Number.isFinite(days)
-      && stored.recencyDays === days && days >= 0) return stored
+      && stored.recencyDays === days && days >= 0 && days !== 9999) return stored
   // Never label a person dormant when there has never been a recorded exchange.
-  if (days === null || !Number.isFinite(days) || days < 0) return {
+  if (days === null || !Number.isFinite(days) || days < 0 || days === 9999) return {
     id: `w-${member.id}`, memberId: member.id,
     state: open.some(l => l.owner === 'them') ? 'Waiting' : 'Building',
     why: 'No direct message or completed meeting has been recorded yet.',
