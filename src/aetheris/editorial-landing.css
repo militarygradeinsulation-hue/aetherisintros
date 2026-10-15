@@ -222,3 +222,50 @@
 
 /* Keep the photographic disclosure readable in the new editorial treatment. */
 .ael-imagery-note { margin:0; padding:16px clamp(20px,3.4vw,44px); background:#0c0c0b; color:#a99f92; font:400 10px/1.6 "JetBrains Mono",ui-monospace,monospace; letter-spacing:.035em; border-top:1px solid rgba(233,228,218,.12); }
+
+
+/* One light/dark switch, not multiple color themes. */
+.ael-header .ael-appearance { flex-shrink:0; }
+:root[data-theme="light"] .ael {
+  --ael-night:#efebe3; --ael-ink:#17150f; --ael-cream:#17150f;
+  --ael-gold:#c2361c; --ael-paper:#fffdf9;
+  background:#efebe3; color:#17150f;
+}
+:root[data-theme="light"] .ael-header {
+  background:linear-gradient(180deg,rgba(239,235,227,.97),rgba(239,235,227,.93));
+  color:#17150f; border-bottom-color:rgba(23,21,15,.2);
+}
+:root[data-theme="light"] .ael-header :is(.ael-nav a,.ael-signin) { color:#17150f!important; }
+:root[data-theme="light"] .ael-nav-cta {
+  color:#17150f!important; border-color:rgba(23,21,15,.38);
+}
+:root[data-theme="light"] .ael-nav-cta:hover { background:#17150f; color:#fffaf1!important; }
+:root[data-theme="light"] .ael-logo .ask-intros-lockup__ask,
+:root[data-theme="light"] .ael-logo .ask-intros-lockup__intros,
+:root[data-theme="light"] .ael-logo .ask-intros-lockup__tagline { fill:#17150f; }
+:root[data-theme="light"] .ael-introduction,
+:root[data-theme="light"] .ael-system,
+:root[data-theme="light"] .ael-membership { background:#efebe3; color:#17150f; }
+:root[data-theme="light"] .ael-scenes,
+:root[data-theme="light"] .ael-approach { background:#fffdf9; color:#17150f; }
+:root[data-theme="light"] .ael :is(.ael-introduction,.ael-system,.ael-approach,.ael-scenes,.ael-membership) {
+  background-image:radial-gradient(circle at 1px 1px,rgba(23,21,15,.075) .55px,transparent 1px);
+}
+:root[data-theme="light"] .ael :is(.ael-introduction,.ael-approach,.ael-system) :is(h2,h3),
+:root[data-theme="light"] .ael-scenes h3,
+:root[data-theme="light"] .ael-membership h2 { color:#17150f; }
+:root[data-theme="light"] .ael :is(.ael-introduction,.ael-approach,.ael-system,.ael-scenes,.ael-membership) p { color:#514a41; }
+:root[data-theme="light"] .ael :is(.ael-introduction,.ael-approach,.ael-system,.ael-scenes,.ael-membership) em { color:#c2361c; }
+:root[data-theme="light"] .ael-editorial-meta { color:#6d5a4b; border-bottom-color:rgba(23,21,15,.2); }
+:root[data-theme="light"] .ael-steps li { border-color:rgba(23,21,15,.2); }
+:root[data-theme="light"] .ael-underlink-dark { color:#17150f!important; border-color:rgba(23,21,15,.3); }
+:root[data-theme="light"] .ael-imagery-note { background:#efebe3; color:#5f5950; border-color:rgba(23,21,15,.14); }
+:root[data-theme="light"] .ael-halftone-footer .hwf-top { color:#17150f; }
+:root[data-theme="light"] .ael-halftone-footer { border-top-color:rgba(23,21,15,.18); }
+@media(max-width:720px) {
+  .ael-header .ael-appearance>svg,.ael-header .appearance-switcher__label { display:none; }
+  .ael-header-actions { gap:8px; }
+}
+@media(max-width:400px) {
+  .ael-logo .ask-intros-lockup { width:135px; }
+}
