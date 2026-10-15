@@ -15,11 +15,14 @@ describe('recovered demo and tile polish', () => {
     expect(app).toContain("Ask Intros Home — Demo")
   })
 
-  it('keeps member login before whitelist request on the landing CTA', () => {
-    const login = landing.indexOf('Member log in')
-    const whitelist = landing.indexOf('Request whitelist access')
-    expect(login).toBeGreaterThanOrEqual(0)
-    expect(whitelist).toBeGreaterThan(login)
+  it('keeps member login ahead of the access CTA with real navigation destinations', () => {
+    const header = landing.split('<div className="ael-header-actions">')[1]?.split('</div>')[0] ?? ''
+    expect(header).toContain('to="/auth"')
+    expect(header).toContain('<JoinAction')
+    expect(header.indexOf('to="/auth"')).toBeLessThan(header.indexOf('<JoinAction'))
+    expect(landing).toContain('to="/early-access"')
+    expect(landing).toContain('Apply for access')
+    expect(landing).toContain('to="/demo"')
   })
 
   it('keeps the yellow tile hover treatment on board and feature tiles', () => {
