@@ -181,7 +181,7 @@ export default function Landing() {
       dotGap={6}
       radius={88}
       grain={0.35}
-      palette={theme === 'dark' ? { background: '#0c0c0b', ink: '#e9e4da', warm: '#e9762b' } : { background: '#efebe3', ink: '#17150f', warm: '#c2361c' }}
+      palette={theme === 'dark' ? { background: '#111719', ink: '#f2eee6', warm: '#b59a74' } : { background: '#f3f0e9', ink: '#202420', warm: '#a36b43' }}
     />
   </main>
 }
