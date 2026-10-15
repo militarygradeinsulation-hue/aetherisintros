@@ -242,7 +242,9 @@ export function funnel(system: SystemRecord, placements: Placement[]) {
 
 export function deriveWeather(member: Member, loops: OpenLoop[], stored?: RelationshipWeather): RelationshipWeather {
   const open = loops.filter(l => l.memberId === member.id && l.status === 'open')
-  const days = member.lastInteractionDays
+  // Legacy persisted network snapshots used 9999 as a fake "never spoken"
+  // timestamp. Never treat that sentinel as a genuine dormant relationship.
+  const days = member.lastInteractionDays === 9999 ? null : member.lastInteractionDays
   // Persisted demo/weather summaries are not a source of truth for live
   // recency. Never reuse stale "9999 days" for someone we have not met.
   if (stored && days !== null && Number.isFinite(days)
