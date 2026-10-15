@@ -249,24 +249,50 @@ function MemberSheet({ memberId, openThread }: { memberId: string; openThread: (
 function ThreadSheet({ threadId, openMember }: { threadId: string; openMember: (id: string) => void }) {
   const net = useNetwork()
   const [text, setText] = useState('')
+  const [sending, setSending] = useState(false)
+  const [failed, setFailed] = useState<{ text: string; id: string; reason: string } | null>(null)
   const thread = net.threads.find(item => item.id === threadId)
   if (!thread) return <p className="sv-empty">This conversation is no longer available.</p>
   const name = net.members.find(member => member.id === thread.memberId)?.name ?? 'A member'
-  function send() {
+
+  async function send(body: string, previousId?: string) {
+    if (!body.trim() || sending) return
+    const id = previousId ?? crypto.randomUUID()
+    setSending(true)
+    setFailed(null)
+    try {
+      await net.sendMessage(threadId, body, id)
+      setText(current => current.trim() === body.trim() ? '' : current)
+    } catch (error) {
+      setFailed({ text: body, id, reason: error instanceof Error ? error.message : 'Message was not confirmed by the server.' })
+      setText(current => current.trim() ? current : body)
+    } finally {
+      setSending(false)
+    }
+  }
+
+  const submit = () => {
     const body = text.trim()
     if (!body) return
-    net.sendMessage(thread!.id, body)
-    setText('')
+    void send(body, failed?.text === body ? failed.id : undefined)
   }
+
   return <div className="sv-sheet-stack">
     <button className="sv-link" onClick={() => openMember(thread.memberId)}>Open {name}’s profile</button>
     <p className="sv-empty">{thread.introContext}</p>
     <ul className="sv-chat">
       {thread.messages.map(message => <li key={message.id} className={message.from === 'me' ? 'mine' : ''}><p>{message.text}</p><small>{message.at}</small></li>)}
     </ul>
+    {failed && <div role="alert" className="sv-empty" style={{ border: '1px solid #b76666', padding: 10 }}>
+      {failed.reason} This message has not been delivered.
+      <button type="button" disabled={sending} className="sv-link" onClick={() => void send(failed.text, failed.id)}>Retry</button>
+    </div>}
     <div className="sv-sheet-compose">
-      <textarea value={text} onChange={event => setText(event.target.value)} placeholder={`Write to ${name}…`} rows={3} aria-label="Message" />
-      <button className="sv-primary" onClick={send}><Send size={12} /> Send</button>
+      <textarea value={text} onChange={event => { setText(event.target.value); if (event.target.value.trim() !== failed?.text.trim()) setFailed(null) }}
+        placeholder={'Write to ' + name + '…'} rows={3} aria-label="Message" />
+      <button type="button" className="sv-primary" disabled={sending || !text.trim()} onClick={submit}>
+        <Send size={12} /> {sending ? 'Sending…' : 'Send'}
+      </button>
     </div>
   </div>
 }
