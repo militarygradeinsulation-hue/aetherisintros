@@ -38,6 +38,49 @@ Apply with any color utility: `bg-<name>`, `text-<name>`, `border-<name>`, `ring
 | `sidebar-accent-foreground` | `--sidebar-accent-foreground` |
 | `sidebar-border` | `--sidebar-border` |
 | `sidebar-ring` | `--sidebar-ring` |
+| `background` | `--background` |
+| `foreground` | `--foreground` |
+| `halftone-night` | `--halftone-night` |
+| `halftone-ink` | `--halftone-ink` |
+| `halftone-warm` | `--halftone-warm` |
+| `acc` | `--acc` |
+| `acc-bright` | `--acc-bright` |
+| `acc-strong` | `--acc-strong` |
+| `acc-deep` | `--acc-deep` |
+| `acc-wash` | `--acc-wash` |
+| `acc-glow` | `--acc-glow` |
+| `acc-btn` | `--acc-btn` |
+| `acc-btn-hover` | `--acc-btn-hover` |
+| `acc-spot` | `--acc-spot` |
+| `acc-field-fill` | `--acc-field-fill` |
+| `acc-field-stroke` | `--acc-field-stroke` |
+| `acc-field-glow` | `--acc-field-glow` |
+| `night` | `--night` |
+| `raised` | `--raised` |
+| `graphite` | `--graphite` |
+| `soft` | `--soft` |
+| `ivory` | `--ivory` |
+| `paper` | `--paper` |
+| `ink` | `--ink` |
+| `liquid-rail` | `--liquid-rail` |
+| `liquid-knob` | `--liquid-knob` |
+| `ai-border-angle` | `--ai-border-angle` |
+| `ai-button-surface` | `--ai-button-surface` |
+| `ai-button-edge` | `--ai-button-edge` |
+
+## Typography
+
+Typography classes (`font-*` for families, `text-*` for sizes):
+
+| Class | CSS variable |
+|---|---|
+| — | `--halftone-line` |
+| — | `--acc-line` |
+| — | `--acc-btn-line` |
+| — | `--acc-field-line` |
+| — | `--line-dark` |
+| — | `--line-light` |
+| — | `--ai-button-text` |
 
 ## Border Radius
 
@@ -53,6 +96,14 @@ Border-radius classes:
 | `rounded-4xl` | `--radius-4xl` |
 | `rounded` | `--radius` |
 
+## Shadows
+
+Box-shadow classes:
+
+| Class | CSS variable |
+|---|---|
+| — | `--ai-button-shadow` |
+
 ## Other
 
 Reference via `var(--name)` in inline styles or CSS.
@@ -62,4 +113,5 @@ Reference via `var(--name)` in inline styles or CSS.
 | `--ambient-opacity` |
 | `--ambient-number-opacity` |
 | `--ambient-link-opacity` |
+| `--halftone-mono` |
 

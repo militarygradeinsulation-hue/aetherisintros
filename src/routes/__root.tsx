@@ -13,10 +13,14 @@ import { useEffect, type ReactNode } from "react";
 import { Toaster } from "@/components/ui/sonner";
 import { CursorGlow } from "@/components/ui/cursor-glow";
 import { BrandFonts } from "@/aetheris/BrandFonts";
+import { AppearanceProvider } from "@/aetheris/AppearanceMode";
+import { SystemScrollCaliper } from "@/aetheris/SystemScrollCaliper";
 import Aurora from "@/intros-ui/Aurora";
 import ParticleDrift from "@/aetheris/ParticleDrift";
 import ConstellationField from "@/aetheris/ConstellationField";
 import appCss from "../styles.css?url";
+import architecturalCss from "../aetheris/architectural-system.css?url";
+import architectEverywhereCss from "../aetheris/architect-everywhere.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 import { installClientErrorReporting, reportClientError } from "../lib/error-report";
 import { registerServiceWorker } from "../aetheris/push-client";
@@ -107,6 +111,8 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
         rel: "stylesheet",
         href: appCss,
       },
+      { rel: "stylesheet", href: architecturalCss },
+      { rel: "stylesheet", href: architectEverywhereCss },
       { rel: "icon", href: "/favicon.svg", type: "image/svg+xml" },
       { rel: "apple-touch-icon", href: "/apple-touch-icon.png", sizes: "180x180" },
       { rel: "manifest", href: "/manifest.webmanifest" },
@@ -127,6 +133,7 @@ function RootShell({ children }: { children: ReactNode }) {
       </head>
       <body>
         {children}
+        <SystemScrollCaliper />
         <div className="site-ambient" aria-hidden="true">
           <Aurora className="site-ambient-lights" colors={["var(--acc, var(--cobalt))", "var(--acc-bright, var(--cobalt-bright))", "var(--acc-glow, var(--cobalt))"]} duration={22} intensity={0.34} />
           <ParticleDrift className="site-ambient-numbers" />
@@ -152,8 +159,10 @@ function RootComponent() {
 
   return (
     <QueryClientProvider client={queryClient}>
-      {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
-      <Outlet />
+      <AppearanceProvider>
+        {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
+        <Outlet />
+      </AppearanceProvider>
     </QueryClientProvider>
   );
 }

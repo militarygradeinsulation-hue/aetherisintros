@@ -10,6 +10,21 @@ type ServerEntry = {
 
 let serverEntryPromise: Promise<ServerEntry> | undefined;
 
+/**
+ * Baseline browser protections for every dynamic response.  Keep camera and microphone
+ * available to the first-party meeting and voice experiences, while denying unrelated
+ * device capabilities. OAuth and other API responses are explicitly non-cacheable.
+ */
+function hardenResponse(response: Response, request: Request): Response {
+  const headers = new Headers(response.headers)
+  headers.set('X-Content-Type-Options', 'nosniff')
+  headers.set('Referrer-Policy', 'strict-origin-when-cross-origin')
+  headers.set('Permissions-Policy', 'camera=(self), microphone=(self), display-capture=(self), geolocation=(), payment=(), usb=()')
+  headers.set('X-Permitted-Cross-Domain-Policies', 'none')
+  if (new URL(request.url).pathname.startsWith('/api/')) headers.set('Cache-Control', 'no-store')
+  return new Response(response.body, { status: response.status, statusText: response.statusText, headers })
+}
+
 async function getServerEntry(): Promise<ServerEntry> {
   if (!serverEntryPromise) {
     serverEntryPromise = import("@tanstack/react-start/server-entry").then(
@@ -52,14 +67,14 @@ export default {
     try {
       const handler = await getServerEntry();
       const response = await handler.fetch(request, env, ctx);
-      return await normalizeCatastrophicSsrResponse(response, request);
+      return hardenResponse(await normalizeCatastrophicSsrResponse(response, request), request);
     } catch (error) {
       console.error(error);
       await logServerError(error, request);
-      return new Response(renderErrorPage(), {
+      return hardenResponse(new Response(renderErrorPage(), {
         status: 500,
         headers: { "content-type": "text/html; charset=utf-8" },
-      });
+      }), request);
     }
   },
 };

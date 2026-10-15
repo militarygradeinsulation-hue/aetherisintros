@@ -12,3 +12,10 @@ export const transcribeMeetingAudio = async ({ data }: { data: { meetingId: stri
   return { text }
 }
 export const speakWithIntrosVoice = async () => ({ audio: null })
+
+// The meeting-room browser check does not exercise AI-generated briefs.
+// Keep the server-function shape available without inventing meeting data.
+export const getLatestBrief = async (_args: { data: { otherUserId: string } }) => null
+export const generateMeetingBrief = async (_args: { data: { otherUserId: string } }): Promise<never> => {
+  throw new Error('Meeting brief generation is not available in the meeting-room browser stub')
+}

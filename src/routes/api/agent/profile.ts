@@ -1,4 +1,5 @@
 import { createFileRoute } from '@tanstack/react-router'
+import { logServerError } from '@/lib/server-error-log'
 
 /** Assistant key (read_profile_public): the key owner's public profile. */
 export const Route = createFileRoute('/api/agent/profile')({
@@ -10,7 +11,7 @@ export const Route = createFileRoute('/api/agent/profile')({
           const { handleProfile } = await import('@/lib/agent-gateway/gateway.server')
           return await handleProfile(request)
         } catch (error) {
-          console.error('agent gateway profile failed', error)
+          await logServerError(error, request)
           return Response.json({ error: 'unavailable' }, { status: 500 })
         }
       },

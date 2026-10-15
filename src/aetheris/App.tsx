@@ -1,5 +1,6 @@
 import { AttachButton, MessageBody, attachmentPreview } from './MessageAttachments'
 import { useEffect, useMemo, useState, type ReactNode } from 'react'
+import { useAppearance } from './AppearanceMode'
 import { Link } from '@tanstack/react-router'
 import {
   AlertTriangle, ArrowLeftRight, ArrowRight, Bell, Bookmark, BookmarkCheck, Building2, CalendarDays, Camera, Check, CheckCircle2, ChevronLeft, ChevronRight,
@@ -49,21 +50,21 @@ import {
   onboardingQuestions, trendingSectors,
   type JournalAttachment, type Learning, type Member, type MemberRole, type NetworkAsk, type Post, type Thread,
 } from './social'
-import { NetworkProvider, useNetwork, type MemoryNote, type MeProfile, type NetworkMode } from './store'
-import { isShowcase, setShowcaseMode, showcaseOnly } from './showcase'
+import { useNetwork, type MemoryNote, type MeProfile, type NetworkMode } from './store'
+import { isShowcase, showcaseOnly } from './showcase'
 import { classifyConnection, composeWarmIntro, radarLabel } from './lib/engine'
 import { useGrabScroll } from './lib/dragScroll'
 import { metaById, primaryPages, pageMeta, networkTabs, networkAdvanced, workTabs, workAdvanced, meTabs, meAdvanced } from './pageMeta'
 import { MoreDrawer, rememberRecent } from './pages/MoreDrawer'
 import { BriefingPanel, useBriefingMode } from './BriefingMode'
 import { NavCtx, useNav, type NavApi, type Page } from './nav'
-import { OpsProvider, useOps } from './crm/store'
+import { useOps } from './crm/store'
 import { PocketWorkspace } from './pocket/PocketWorkspace'
 import { CompanyDiagnosticReport } from './capabilities/CompanyDiagnosticReport'
 import { VerifiedBadge } from './badge'
 import CrmPage from './pages/CrmPage'
 import GridPage from './pages/GridPage'
-import { PlatformProvider, usePlatform } from './platform'
+import { usePlatform } from './platform'
 import { SystemsPage } from './pages/SystemsPage'
 import { CirclesPage, CreateCircleModal } from './pages/CirclesPage'
 import { CompaniesPage } from './pages/CompaniesPage'
@@ -82,7 +83,7 @@ import { TrackRecordPanel } from './track-record-ui'
 import { StrategyPage, StrategyCard } from './pages/StrategyPage'
 import { EvidenceLedgerPage } from './pages/EvidenceLedgerPage'
 import { AutopilotPage } from './pages/AutopilotPage'
-import { OSProvider, useOS } from './os-store'
+import { useOS } from './os-store'
 import {
   AutopilotCard, EvidenceLink, IntroQualityReviewPanel, LatentPathList, PathToggle,
   TrustBudgetNote, TwinPanel, VoiceCaptureModal,
@@ -90,7 +91,6 @@ import {
 import { homeStrips, trustAdvice as trustAdviceFor } from './domain/os-engine'
 import type { IntroQualityReview, PathKind } from './domain/os-models'
 import { PreferencesPage } from './pages/PreferencesPage'
-import { MoatProvider } from './moat-store'
 import { AvailabilityWindows, ConnectorAskGuard, DecayPrevention, PassportModule, ReciprocityNote, RepresentativeAsk, useOutreachGate } from './moat-ui'
 import { AskNetworkPage } from './pages/AskNetworkPage'
 import { ConstitutionPage } from './pages/ConstitutionPage'
@@ -104,7 +104,7 @@ import { AttributionPage } from './pages/AttributionPage'
 import { KnowledgePage } from './pages/KnowledgePage'
 import { AdvisoryBoardsPage } from './pages/AdvisoryBoardsPage'
 import { IntegrationsPage } from './pages/IntegrationsPage'
-import { ProProvider, usePro } from './pro-store'
+import { usePro } from './pro-store'
 import { PassportPage } from './pages/PassportPage'
 import { OpportunitiesPage } from './pages/OpportunitiesPage'
 import { AskReplies, DealsPage, OpenDealRoomButton } from './deals-ui'
@@ -126,18 +126,20 @@ import { ExecutiveHome } from './pages/ExecutiveHome'
 import { HubIntro, RadarMini, SignalPath, TileShell } from './hub-ui'
 import { badgeLabel, useVerification } from './verification'
 import { ExecutiveIdentityEditor, ExecutivePage } from './ExecutivePage'
-import { GraphProvider, useGraph } from './graph-store'
+import { useGraph } from './graph-store'
 import { OutcomeCheckins } from './outcomes-ui'
 import { IntroRequestInbox } from './intro-inbox'
 import { MeetingsPage } from './meetings-ui'
 import { PeerGroupsPage } from './peer-groups-ui'
 import { ProvidersPage } from './providers-ui'
 import { WarmPathsPage } from './warm-paths-ui'
+import { WorkspacesPage } from './workspaces/WorkspacesPage'
+import { ExecutiveWorkPage } from './pages/ExecutiveWorkPage'
 import { AgentInboxPage } from './agent-ui'
 import { LeakCheckPanel } from './leak-check-ui'
 import { SentIntroRequests } from './sent-requests-ui'
 import { CompanyWorkspacePanel } from './company-ui'
-import { CeoProvider } from './ceo-store'
+import { AetherisProviderRoot } from './AetherisProviderRoot'
 import { InsightBar } from './ceo-insights-ui'
 import { ApprovalQueuePanel, CalendarMeetingBar, CeoActions, CeoHost, ForecastConfidencePanel, NetworkRoiPanel, TrustPassportSummary, WorkCeoBar } from './ceo-ui'
 import { openCeo } from './ceo-store'
@@ -536,7 +538,7 @@ function JournalComposer({ compact = false }: { compact?: boolean }) {
         if (!userId) throw new Error('Sign in again to attach files.')
         media = await Promise.all(files.map(file => uploadJournalMedia(userId, file)))
       }
-      net.addPost(text.trim(), detail.trim() || (visibility === 'private' ? 'Private to you.' : 'Shared with your network.'), media, visibility)
+      await net.addPost(text.trim(), detail.trim() || (visibility === 'private' ? 'Private to you.' : 'Shared with your network.'), media, visibility)
       setText(''); setDetail(''); setFiles([]); setMessage('Journal entry added.')
     } catch (error) {
       setMessage(error instanceof Error ? error.message : 'Could not save this entry.')
@@ -803,16 +805,8 @@ function Home({ people, select, setPage, openNeed, openThread }: {
   const [filter, setFilter] = useState<HomeConnectionFilter>('all')
   const [sort, setSort] = useState<HomeConnectionSort>('score')
   const [query, setQuery] = useState('')
-  const [darkHome, setDarkHome] = useState(true)
-  useEffect(() => {
-    const saved = window.localStorage.getItem('aetheris.home.theme')
-    if (saved === 'light') setDarkHome(false)
-  }, [])
-  const toggleHomeTheme = () => setDarkHome(current => {
-    const next = !current
-    window.localStorage.setItem('aetheris.home.theme', next ? 'dark' : 'light')
-    return next
-  })
+  const { theme, toggleTheme: toggleHomeTheme } = useAppearance()
+  const darkHome = theme === 'dark'
   const ranked = useMemo(() => [...people].sort((a, b) => b.scoreTotal - a.scoreTotal), [people])
   const connections = useMemo(() => ranked.filter(person => {
     const text = `${person.name} ${person.title} ${person.company} ${person.whyYou} ${person.whyThem} ${person.whyNow}`.toLowerCase()
@@ -823,10 +817,10 @@ function Home({ people, select, setPage, openNeed, openThread }: {
   }).sort((a, b) => {
     if (sort === 'timing') return b.score.timing - a.score.timing
     if (sort === 'relationship') return b.score.relationshipStrength - a.score.relationshipStrength
-    if (sort === 'contact') return a.lastInteractionDays - b.lastInteractionDays
+    if (sort === 'contact') return (a.lastInteractionDays ?? 0) - (b.lastInteractionDays ?? 0)
     return b.scoreTotal - a.scoreTotal
   }), [filter, people, query, ranked, sort])
-  const needingAttention = people.filter(person => person.relationshipStatus === 'at-risk' || person.lastInteractionDays > 60).length
+  const needingAttention = people.filter(person => person.relationshipStatus === 'at-risk' || (person.lastInteractionDays ?? 0) > 60).length
   const highValuePaths = people.filter(person => person.scoreTotal >= 75).length
   const activeOpportunities = os.rooms.filter(room => !room.archived && room.stage !== 'Lost/Not Now').length + platform.placements.filter(placement => !['Adopted', 'Referred', 'Not Now'].includes(placement.stage)).length
   const coldConversations = net.threads.filter(thread => thread.unread).length
@@ -856,7 +850,7 @@ function Home({ people, select, setPage, openNeed, openThread }: {
         <span>ASK INTROS</span>
         <h1>The Relationship Network<br /><em>for CEOs.</em></h1>
         <p>Who matters. Why they matter. Why now.</p>
-        <div><button className="eh-primary" onClick={openNeed}>GET STARTED <ArrowRight size={15} /></button><button className="eh-secondary" onClick={() => setPage('intros')}><Play size={13} /> SEE HOW IT WORKS</button></div>
+        <div><button className="eh-primary ai-gradient-button" onClick={openNeed}>GET STARTED <ArrowRight size={15} /></button><button className="eh-secondary" onClick={() => setPage('intros')}><Play size={13} /> SEE HOW IT WORKS</button></div>
       </div>
       <div className="eh-hero-art">
         <img src={homeEditorialAsset.url} alt="A professional in quiet thought beside hard window light" width={597} height={804} />
@@ -1225,10 +1219,28 @@ function Messages({ people, select, activeId, setActiveId }: { people: Member[];
   const pro = usePro()
   const [text, setText] = useState('')
   const [blocked, setBlocked] = useState<{ explanation: string; rerouteTo?: string } | null>(null)
+  const [messageSaving, setMessageSaving] = useState(false)
+  const [failedSend, setFailedSend] = useState<{ threadId: string; text: string; id: string; reason: string } | null>(null)
   const [contextOpen, setContextOpen] = useState(false)
   const [messageCategory, setMessageCategory] = useState<'all' | 'unread' | 'intros'>('all')
   const nav = useNav()
   const { gate, modal: outreachModal } = useOutreachGate()
+  const sendConfirmed = async (threadId: string, message: string, previousId?: string) => {
+    if (messageSaving) return
+    const id = previousId ?? crypto.randomUUID()
+    setMessageSaving(true)
+    setFailedSend(null)
+    try {
+      await net.sendMessage(threadId, message, id)
+      setText(current => current === message ? '' : current)
+    } catch (error) {
+      const reason = error instanceof Error ? error.message : 'The server did not confirm your message.'
+      setFailedSend({ threadId, text: message, id, reason })
+      setText(current => current.trim() ? current : message)
+    } finally {
+      setMessageSaving(false)
+    }
+  }
   const threads = net.threads.filter(t => people.some(p => p.id === t.memberId))
   const visibleThreads = threads.filter(item => messageCategory === 'all' || (messageCategory === 'unread' ? item.unread : Boolean(item.introContext)))
   const thread: Thread | undefined = threads.find(t => t.id === activeId) ?? threads[0]
@@ -1297,7 +1309,7 @@ function Messages({ people, select, activeId, setActiveId }: { people: Member[];
         <div className="composer-wrap">
            <button className="suggested" onClick={() => setText(thread.suggested)}><AetherisGlyph size={13} /> Use contextual draft</button>
           <div className="composer">
-            <AttachButton threadId={thread.id} onSend={file => net.sendMessage(thread.id, file)} />
+            <AttachButton threadId={thread.id} onSend={file => sendConfirmed(thread.id, file)} />
             <textarea value={text} onChange={e => setText(e.target.value)} placeholder="Write with the relationship in mind…" />
             <button onClick={() => {
               const t = text.trim()
@@ -1311,9 +1323,13 @@ function Messages({ people, select, activeId, setActiveId }: { people: Member[];
                 return
               }
               setBlocked(null)
-              gate(t, { channel: 'message', authorId: 'me', recipient: person }, final => { net.sendMessage(thread.id, final); setText('') })
-            }} disabled={!text.trim()} aria-label="Send"><Send size={17} /></button>
+              gate(t, { channel: 'message', authorId: 'me', recipient: person }, final => { void sendConfirmed(thread.id, final) })
+            }} disabled={!text.trim() || messageSaving} aria-label="Send"><Send size={17} /></button>
           </div>
+          {failedSend && failedSend.threadId === thread.id && <p role="alert" className="composer-blocked">
+            <b>Not sent.</b> {failedSend.reason} This message has not been delivered.
+            <button type="button" disabled={messageSaving} className="text-action" onClick={() => { void sendConfirmed(failedSend.threadId, failedSend.text, failedSend.id) }}>Retry</button>
+          </p>}
           {blocked && <p className="composer-blocked"><b>Held.</b> {blocked.explanation}{blocked.rerouteTo ? ` Referred elsewhere: ${blocked.rerouteTo}.` : ''} <button className="text-action" onClick={() => nav.setPage('permission')}>Request permission properly</button></p>}
         </div>
       </section>
@@ -1418,7 +1434,7 @@ function Memory({ people, select }: { people: Member[]; select: (p: Member) => v
           <div><dt>Relationships</dt><dd>{net.connections.length}</dd></div><div><dt>People mapped</dt><dd>{people.length}</dd></div>
           <div><dt>Context items</dt><dd>{items.length}</dd></div><div><dt>Private notes</dt><dd>{net.notes.length}</dd></div>
         </dl>
-        <button className="memory-cta">Your Network Remembers <ArrowRight size={15} /></button>
+        <button className="memory-cta ai-gradient-button">Your Network Remembers <ArrowRight size={15} /></button>
       </div>
       <figure><img src={memoryEditorialAsset.url} alt="Thoughtful professional in architectural window light" width={1024} height={1280} /><figcaption>ACTIVE MEMORY / CONTEXT HELD WITH INTENT</figcaption></figure>
     </section>
@@ -1486,16 +1502,16 @@ function Memory({ people, select }: { people: Member[]; select: (p: Member) => v
       </section>
       <section className="mod">
         <header><span>RECONNECT OPPORTUNITIES</span><button className="mod-link">View all <ArrowRight size={12} /></button></header>
-        <ul className="reconnect-list">{[...people].sort((a, b) => b.lastInteractionDays - a.lastInteractionDays).slice(0, 3).map(p =>
+        <ul className="reconnect-list">{[...people].sort((a, b) => (b.lastInteractionDays ?? 0) - (a.lastInteractionDays ?? 0)).slice(0, 3).map(p =>
           <li key={p.id}><button onClick={() => select(p)}><Avatar person={p} portrait />
-            <div><strong>{p.name}</strong><small>Last conversation {Math.max(1, Math.round(p.lastInteractionDays / 30))} months ago</small>
+            <div><strong>{p.name}</strong><small>Last conversation {Math.max(1, Math.round((p.lastInteractionDays ?? 0) / 30))} months ago</small>
               <small>{p.whyNow}</small></div></button></li>)}</ul>
       </section>
       <section className="mod">
         <header><span>COOLING CONVERSATIONS</span><button className="mod-link">View all <ArrowRight size={12} /></button></header>
         <ul className="reconnect-list">{people.filter(p => p.score.timing < 70).slice(0, 3).map(p =>
           <li key={p.id}><button onClick={() => select(p)}><Avatar person={p} portrait />
-            <div><strong>{p.name}</strong><small>Last message {Math.max(1, Math.round(p.lastInteractionDays / 7))} weeks ago</small>
+            <div><strong>{p.name}</strong><small>Last message {Math.max(1, Math.round((p.lastInteractionDays ?? 0) / 7))} weeks ago</small>
               <small>{p.nextAction}</small></div></button></li>)}</ul>
       </section>
     </div>
@@ -1842,7 +1858,7 @@ function MemberProfile({ person, people, onClose, onDraft, onMessage }: {
     { text: `You both engaged with ${person.industry.toLowerCase()} conversations on Intros`, when: `Joined ${person.joined}` },
     ...(person.bestPath.length > 2 ? [{ text: `Warm path opened through ${person.bestPath[1]}`, when: 'Trust path active' }] : []),
     { text: person.mutuals.length ? `Shared connections: ${person.mutuals.join(', ')}` : 'No shared connections yet', when: `${person.mutuals.length} mutual` },
-    { text: `${person.name.split(' ')[0]} last interacted with your network`, when: `${person.lastInteractionDays} days ago` },
+    { text: `${person.name.split(' ')[0]} last interacted with your network`, when: `${(person.lastInteractionDays ?? 0)} days ago` },
   ]
   return <article className="member-page">
     <button className="member-back" onClick={onClose}><ChevronLeft size={16} /> Back to the network</button>
@@ -2031,57 +2047,67 @@ function ProfileRooms({ personId }: { personId: string }) {
   </section>
 }
 
-function IntroModal({ person, onClose, onMessage }: { person: Member | null; onClose: () => void; onMessage: (id: string) => void }) {
+function IntroModal({ person, onClose }: { person: Member | null; onClose: () => void; onMessage: (id: string) => void }) {
   const net = useNetwork()
   const [text, setText] = useState('')
   const [you, setYou] = useState<OptIn>('pending')
-  const [them, setThem] = useState<OptIn>('pending')
+  const [saving, setSaving] = useState(false)
+  const [error, setError] = useState('')
   const [review, setReview] = useState<IntroQualityReview | null>(null)
   useEffect(() => {
-    if (person) {
-      setText(composeWarmIntro(person))
-      setYou(person.introState === 'requested' || person.introState === 'introduced' ? 'yes' : 'pending')
-      setThem(person.introState === 'introduced' ? 'yes' : 'pending')
-      if (person.introState === 'recommended') net.requestIntro(person.id)
-    }
+    setText(person ? composeWarmIntro(person) : '')
+    setYou(person?.introState === 'requested' || person?.introState === 'introduced' ? 'yes' : 'pending')
+    setError('')
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [person])
+  }, [person?.id])
   if (!person) return null
-  const ok = you === 'yes' && them === 'yes'
   const blocked = review?.verdict === 'Do Not Send Yet'
-  const rows: Array<{ label: string; value: OptIn; set: (v: OptIn) => void }> = [
-    { label: 'You', value: you, set: setYou }, { label: person.name, value: them, set: setThem },
-  ]
+  const requested = you === 'yes' || person.introState === 'requested'
+  const accepted = person.introState === 'introduced'
+  const submit = async () => {
+    if (saving || blocked || !text.trim()) return
+    setSaving(true); setError('')
+    try {
+      const saved = await net.requestIntro(person.id, text.trim())
+      if (saved) setYou('yes')
+      else setError('Not sent. The database did not confirm your request. Retry.')
+    } catch (cause) {
+      setError(cause instanceof Error ? cause.message : 'Not sent. Retry your introduction request.')
+    } finally { setSaving(false) }
+  }
   return <div className="modal-wrap" onMouseDown={onClose}>
     <div className="modal editorial-modal" onMouseDown={e => e.stopPropagation()}>
-      <header><div><Label>DOUBLE OPT-IN</Label><h2>A considered introduction.</h2><p>Both sides protect the connector’s credibility.</p></div>
+      <header><div><Label>DOUBLE OPT-IN</Label><h2>A considered introduction.</h2><p>Only you can request it. Only the other member can grant their consent.</p></div>
         <button className="icon-btn" onClick={onClose} aria-label="Close"><X size={17} /></button></header>
       <div className="intro-person"><Avatar person={person} /><span><strong>{person.name}</strong><small>{person.title} · {person.company}</small></span></div>
-      <textarea rows={8} value={text} onChange={e => setText(e.target.value)} />
+      <textarea rows={8} value={text} onChange={e => setText(e.target.value)} aria-label="Forwardable introduction request note" />
       <IntroQualityReviewPanel person={person} mutualValueText={`${person.whyThem} ${person.whyYou}`} contextText={text} onVerdict={setReview} />
       <TrustBudgetNote candidateIds={person.bestPath.length > 1 ? [person.id] : []} />
-      {blocked && <p className="intro-blocked">This introduction is not ready. Fix the missing context above before sending — an unearned intro costs the connector, not you.</p>}
-      {rows.map(r => <div className="opt-row" key={r.label}>
-        <span><strong>{r.label}</strong><small>Confirm this conversation is worth making.</small></span>
-        <div><button className={r.value === 'yes' ? 'active' : ''} onClick={() => { r.set('yes'); if (r.value !== 'yes') net.requestIntro(person.id) }}>Interested</button>
-          <button className={r.value === 'no' ? 'declined' : ''} onClick={() => { r.set('no'); net.declineIntro(person.id) }}>Not now</button></div>
-      </div>)}
-      <div className={`authorization ${ok ? 'ready' : ''}`}>{ok ? <CheckCircle2 size={17} /> : <LockKeyhole size={17} />}
-        <span>{ok ? 'Introduction authorized. Both parties agreed.' : 'Waiting for both parties before anything is sent.'}</span></div>
-      <footer><Button kind="quiet" onClick={onClose}>Cancel</Button>
-        <Button disabled={!ok || blocked} onClick={() => {
-          net.authorizeIntro(person.id)
-          net.sendMessage(net.openThreadWith(person.id), text)
-          void navigator.clipboard?.writeText(text).catch(() => {})
-          onClose(); onMessage(person.id)
-        }}><Send size={15} />Send authorized intro</Button></footer>
+      {blocked && <p className="intro-blocked">This introduction is not ready. Improve the context before asking — an unearned intro costs the connector, not you.</p>}
+      <div className="opt-row"><span><strong>You</strong><small>{requested ? 'Your request is saved.' : 'Your interest has not yet been sent.'}</small></span>
+        <strong>{requested ? 'Requested' : 'Not submitted'}</strong>
+      </div>
+      <div className="opt-row"><span><strong>{person.name}</strong><small>The other member must respond from their own account.</small></span>
+        <strong>{accepted ? 'Accepted' : 'Awaiting consent'}</strong>
+      </div>
+      <div className={`authorization ${accepted ? 'ready' : ''}`}>{accepted ? <CheckCircle2 size={17} /> : <LockKeyhole size={17} />}
+        <span>{accepted ? 'Both participants accepted this introduction.' : requested ? 'Your request is saved, not yet accepted or sent to mutual connections.' : 'Nothing is sent until you explicitly submit the request.'}</span>
+      </div>
+      {error && <p className="intro-blocked" role="alert">{error} <button type="button" className="text-action" disabled={saving} onClick={() => void submit()}>Retry</button></p>}
+      <footer><Button kind="quiet" onClick={onClose}>{requested ? 'Done' : 'Cancel'}</Button>
+        <Button disabled={saving || blocked || !text.trim() || accepted || requested} onClick={() => void submit()}>
+          <Send size={15} />{saving ? 'Saving…' : requested ? 'Request saved' : 'Request introduction'}
+        </Button>
+      </footer>
     </div>
   </div>
 }
 
 const blank = { goal: '', who: '', outcome: '', whyNow: '', valueOffer: '', success: '' }
-function NeedModal({ open, onClose, onCreate }: { open: boolean; onClose: () => void; onCreate: (o: Objective) => void }) {
+function NeedModal({ open, onClose, onCreate }: { open: boolean; onClose: () => void; onCreate: (o: Objective) => Promise<void> }) {
   const [form, setForm] = useState(blank)
+  const [saving, setSaving] = useState(false)
+  const [error, setError] = useState('')
   if (!open) return null
   const ready = form.goal && form.who && form.whyNow && form.valueOffer
   return <div className="modal-wrap light-modal-wrap" onMouseDown={onClose}>
@@ -2097,10 +2123,14 @@ function NeedModal({ open, onClose, onCreate }: { open: boolean; onClose: () => 
         <label key={key}><span>0{i + 1} / {label}</span>
           <textarea rows={i === 0 ? 2 : 1} value={form[key]} onChange={e => setForm({ ...form, [key]: e.target.value })} placeholder={placeholder} /></label>)}</div>
       <footer><Button kind="quiet" onClick={onClose}>Cancel</Button>
-        <Button disabled={!ready} onClick={() => {
-          onCreate({ id: `o${Date.now()}`, title: form.goal, outcome: form.outcome || form.goal, target: form.who, whyNow: form.whyNow, valueOffer: form.valueOffer, success: form.success || 'A qualified next conversation', priority: 'high' })
-          setForm(blank); onClose()
-        }}>Post to the network <ArrowRight size={15} /></Button></footer>
+        {error && <small role="alert">{error}</small>}<Button disabled={!ready || saving} onClick={() => void (async () => {
+          setSaving(true); setError('')
+          try {
+            await onCreate({ id: `o${Date.now()}`, title: form.goal, outcome: form.outcome || form.goal, target: form.who, whyNow: form.whyNow, valueOffer: form.valueOffer, success: form.success || 'A qualified next conversation', priority: 'high' })
+            setForm(blank); onClose()
+          } catch (caught) { setError(caught instanceof Error ? caught.message : 'Your need could not be posted.') }
+          finally { setSaving(false) }
+        })()}>{saving ? 'Posting…' : 'Post to the network'} <ArrowRight size={15} /></Button></footer>
     </div>
   </div>
 }
@@ -2118,7 +2148,7 @@ function AskModal({ open, onClose, people, select }: { open: boolean; onClose: (
     .map(p => {
       const text = `${p.name} ${p.title} ${p.company} ${p.industry} ${p.role} ${p.focus} ${p.needs.join(' ')} ${p.offers.join(' ')} ${p.location}`.toLowerCase()
       const match = terms.filter(t => text.includes(t)).length * 14
-      const timing = cooling ? Math.min(p.lastInteractionDays, 120) : p.score.timing / 4
+      const timing = cooling ? Math.min((p.lastInteractionDays ?? 0), 120) : p.score.timing / 4
       return { p, rank: p.scoreTotal + match + timing }
     })
     .sort((a, b) => b.rank - a.rank).slice(0, 3).map(x => x.p)
@@ -2245,7 +2275,7 @@ function ContextRail({ page, people, select, onAsk }: {
   const objectives = net.objectives
   const ranked = [...people].sort((a, b) => b.scoreTotal - a.scoreTotal)
   const p = ranked[0]
-  const cool = [...people].sort((a, b) => b.lastInteractionDays - a.lastInteractionDays)[0]
+  const cool = [...people].sort((a, b) => (b.lastInteractionDays ?? 0) - (a.lastInteractionDays ?? 0))[0]
   const warm = people.filter(x => x.bestPath.length > 2).slice(0, 2)
   if (!p) return null
   return <aside className="context-rail">
@@ -2346,10 +2376,12 @@ function AccountControl() {
 
 /* ---------------------------------------------------------------------- app */
 
+export function AetherisAppSurface({ startPage, feedOnly = false }: { startPage?: Page | undefined; feedOnly?: boolean }) {
+  return <Shell startPage={startPage} feedOnly={feedOnly} />
+}
+
 export default function App({ startPage, mode = 'live', feedOnly = false }: { startPage?: Page | undefined; mode?: NetworkMode; feedOnly?: boolean }) {
-  // The live network may only ever render real member-created records.
-  setShowcaseMode(mode === 'demo')
-  return <NetworkProvider mode={mode}><PlatformProvider><OSProvider><MoatProvider><ProProvider><OpsProvider><GraphProvider><CeoProvider><Shell startPage={startPage} feedOnly={feedOnly} /></CeoProvider></GraphProvider></OpsProvider></ProProvider></MoatProvider></OSProvider></PlatformProvider></NetworkProvider>
+  return <AetherisProviderRoot mode={mode}><AetherisAppSurface startPage={startPage} feedOnly={feedOnly} /></AetherisProviderRoot>
 }
 
 /** Ask Intros butler + capability workspace, mounted natively on the new shell. */
@@ -2363,11 +2395,12 @@ export interface AssistantShellApi {
   onSearch?: (text: string) => void
 }
 
+export function AetherisAssistantSurface({ page, ...api }: { page: string } & AssistantShellApi) {
+  return <AssistantLayer page={page} {...api} />
+}
+
 export function AetherisAssistant({ mode = 'live', page, ...api }: { mode?: NetworkMode; page: string } & AssistantShellApi) {
-  setShowcaseMode(mode === 'demo')
-  return <NetworkProvider mode={mode}><PlatformProvider><OSProvider><MoatProvider><ProProvider><OpsProvider><GraphProvider><CeoProvider>
-    <AssistantLayer page={page} {...api} />
-  </CeoProvider></GraphProvider></OpsProvider></ProProvider></MoatProvider></OSProvider></PlatformProvider></NetworkProvider>
+  return <AetherisProviderRoot mode={mode}><AetherisAssistantSurface page={page} {...api} /></AetherisProviderRoot>
 }
 
 function AssistantLayer({ page, onNavigate, onOpenMember, onMessageMember, onRequestIntro, onSearch }: { page: string } & AssistantShellApi) {
@@ -2453,9 +2486,9 @@ function HubPrelude({ kind, onNavigate }: { kind: 'network' | 'work' | 'me'; onN
         <p>{lead?.whyNow ?? 'Discover verified members through context, not vanity metrics.'}</p>
       </TileShell>
       <TileShell label="WARM PATHS" title={`${net.connections.length} trusted connections`} variant="graph"><SignalPath points={5} active={Math.min(4, net.connections.length)} /></TileShell>
-      <TileShell label="INTRODUCTIONS" title="Why me. Why them. Why now." variant="action"><p>Every request stays double opt-in and carries the evidence for timing.</p><button className="tile-cta" onClick={() => onNavigate('intros')}>Review introductions <ArrowRight size={14} /></button></TileShell>
-      <TileShell label="WHO CAN CHANGE THIS?" title="Name the problem. See who can move it." variant="action"><p>Ranked from people actually available to you, with the evidence, the warmest path and one next move.</p><button className="tile-cta" onClick={() => openCeo({ view: 'who' })}>Who can change this? <ArrowRight size={14} /></button></TileShell>
-      <TileShell label="NETWORK ROI" title="What intros produced." variant="data"><p>Accepted intros, meetings, linked and won deals — value only when it is recorded.</p><button className="tile-cta" onClick={() => openCeo({ view: 'roi' })}>Open Network ROI <ArrowRight size={14} /></button></TileShell>
+      <TileShell label="INTRODUCTIONS" title="Why me. Why them. Why now." variant="action"><p>Every request stays double opt-in and carries the evidence for timing.</p><button className="tile-cta ai-gradient-button" onClick={() => onNavigate('intros')}>Review introductions <ArrowRight size={14} /></button></TileShell>
+      <TileShell label="WHO CAN CHANGE THIS?" title="Name the problem. See who can move it." variant="action"><p>Ranked from people actually available to you, with the evidence, the warmest path and one next move.</p><button className="tile-cta ai-gradient-button" onClick={() => openCeo({ view: 'who' })}>Who can change this? <ArrowRight size={14} /></button></TileShell>
+      <TileShell label="NETWORK ROI" title="What intros produced." variant="data"><p>Accepted intros, meetings, linked and won deals — value only when it is recorded.</p><button className="tile-cta ai-gradient-button" onClick={() => openCeo({ view: 'roi' })}>Open Network ROI <ArrowRight size={14} /></button></TileShell>
       <InsightBar where="network" />
     </section>
   }
@@ -2474,8 +2507,8 @@ function HubPrelude({ kind, onNavigate }: { kind: 'network' | 'work' | 'me'; onN
   return <section className="hub-prelude me-prelude">
     <TileShell label="MY EXECUTIVE IDENTITY" title={net.profile.name || 'Complete your identity'} variant="hero"><p>{net.profile.title || 'Add your role'}{net.profile.company ? ` · ${net.profile.company}` : ''}</p><div className={`verification-mark ${verified ? 'verified' : ''}`}><ShieldCheck size={18} /> {verified ? badgeLabel(verification.verifiedRole) : 'Verification required'}</div></TileShell>
     <TileShell label="VISIBILITY" title="You control the context." variant="data"><div className="lock-stack" aria-hidden="true"><i /><i /><i /></div><p>Privacy, permissions and double opt-in remain enforced underneath every view.</p></TileShell>
-    <TileShell label="CONNECTED SYSTEMS" title="Bring context, not chaos." variant="action"><p>Review the services connected to your private relationship system.</p><button className="tile-cta" onClick={() => onNavigate('integrations')}>Connected apps <ArrowRight size={14} /></button></TileShell>
-    <TileShell label="TRUST + APPROVALS" title="Your passport and your queue." variant="data"><MyTrustPassport /><button className="tile-cta" onClick={() => openCeo({ view: 'approvals' })}>Approval queue <ArrowRight size={14} /></button></TileShell>
+    <TileShell label="CONNECTED SYSTEMS" title="Bring context, not chaos." variant="action"><p>Review the services connected to your private relationship system.</p><button className="tile-cta ai-gradient-button" onClick={() => onNavigate('integrations')}>Connected apps <ArrowRight size={14} /></button></TileShell>
+    <TileShell label="TRUST + APPROVALS" title="Your passport and your queue." variant="data"><MyTrustPassport /><button className="tile-cta ai-gradient-button" onClick={() => openCeo({ view: 'approvals' })}>Approval queue <ArrowRight size={14} /></button></TileShell>
   </section>
 }
 
@@ -2602,9 +2635,9 @@ function Shell({ startPage, feedOnly = false }: { startPage?: Page | undefined; 
     return () => observer.disconnect()
   }, [page, selected, draft, askOpen, needOpen, onboardOpen, threadId])
 
-  const addNeed = (o: Objective) => {
+  const addNeed = async (o: Objective) => {
+    await net.addAsk({ ask: o.title, detail: o.outcome, whyNow: o.whyNow, offer: o.valueOffer, industry: 'Cross-industry', location: me.location, urgency: 'high', visibility: 'network' })
     net.addObjective(o)
-    net.addAsk({ ask: o.title, detail: o.outcome, whyNow: o.whyNow, offer: o.valueOffer, industry: 'Cross-industry', location: me.location, urgency: 'high', visibility: 'network' })
     setPage('needs')
   }
   const goToThread = (id: string) => { setThreadId(id); setPage('messages') }
@@ -2718,6 +2751,8 @@ function Shell({ startPage, feedOnly = false }: { startPage?: Page | undefined; 
       peergroups: <PeerGroupsPage />,
       providers: <ProvidersPage />,
       warmpaths: <WarmPathsPage />,
+      workspaces: <WorkspacesPage />,
+      executivework: <ExecutiveWorkPage />,
       needs: <><IntentExchangePanel /><Needs onNew={() => setNeedOpen(true)} people={people} select={setSelected} setPage={setPage} /><IntentBoard /></>,
       memory: <Memory people={people} select={setSelected} />,
       events: <EventsPage />,
@@ -2799,7 +2834,7 @@ function Shell({ startPage, feedOnly = false }: { startPage?: Page | undefined; 
   return <NavCtx.Provider value={navApi}>
     <div className={`app-shell social-shell ${feedOnly ? 'home-social-only' : ''} ${contextOpen ? 'show-context' : ''}`}>
       <header className="social-topnav">
-        <button className="social-brand" onClick={() => setPage('home')} aria-label="Ask Intros Home"><Brand /></button>
+        <button className="social-brand" onClick={() => setPage('home')} aria-label={isShowcase() ? 'Ask Intros Home — Demo' : 'Ask Intros Home'}><Brand />{isShowcase() && <span className="demo-flag">Demo</span>}</button>
         <nav aria-label="Primary navigation">{nav.map(item => {
           const Icon = item.icon
           return <button key={item.id} className={page === item.id ? 'active' : ''} title={item.label} onClick={() => setPage(item.id)}>
@@ -2812,6 +2847,7 @@ function Shell({ startPage, feedOnly = false }: { startPage?: Page | undefined; 
         <header className="topbar">
           <span className="topbar-title">Ask Intros <i>/</i> {metaById[page]?.label ?? allNav.find(n => n.id === page)?.label}</span>
           <div className="topbar-actions">
+            {isShowcase() && <span className="demo-flag demo-flag-mobile">Demo</span>}
             <button className="topbar-search" aria-label="Search people, companies, topics, or ideas…" onClick={() => setGlobalSearchOpen(true)}><Search size={15} /><span>Search people, companies, topics, or ideas…</span><kbd>⌘K</kbd></button>
             <TopbarVoice />
             <div className="topbar-dropdown">

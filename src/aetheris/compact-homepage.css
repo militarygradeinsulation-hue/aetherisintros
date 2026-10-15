@@ -1,0 +1,297 @@
+/*
+ * Compact Ask Intros homepage. Applies only to public .ael-compact.
+ * Follows the architectural design layer; never touches member app behavior.
+ */
+.ael.ael-compact{overflow:hidden}
+.ael.ael-compact .ael-header{min-height:78px;padding:10px clamp(20px,4.5vw,72px)}
+.ael.ael-compact .ael-header .ask-intros-lockup{width:clamp(142px,13vw,185px);max-height:58px}
+.ael.ael-compact .ael-header-actions{gap:clamp(8px,1.6vw,20px)}
+.ael.ael-compact .ael-hero{
+ min-height:530px;height:clamp(530px,75svh,720px);
+ padding:116px clamp(27px,7vw,116px) 76px;align-items:center;
+}
+.ael.ael-compact .ael-hero-content{max-width:min(695px,70vw)}
+:root .ael.ael-compact .ael-hero h1,
+:root[data-theme='light'] .ael.ael-compact .ael-hero h1{
+ font-size:clamp(66px,7.1vw,112px);line-height:.89;max-width:700px;margin:22px 0 23px;
+}
+.ael.ael-compact .ael-hero .ael-kicker{margin-bottom:15px}
+.ael.ael-compact .ael-hero-lede{max-width:400px;line-height:1.65}
+.ael.ael-compact .ael-hero-actions{margin-top:23px;gap:18px}
+.ael.ael-compact .ael-architecture-meta{top:110px}
+.ael.ael-compact .ael-hero-bottom{bottom:17px;padding-top:12px}
+.ael.ael-compact .ael-hero::after{inset:78px 0 0}
+
+/* Editorial introduction, one image, and three process steps share one chapter. */
+.ael.ael-compact .ael-compact-story{
+ background:#fdfbf7;color:#202420;
+ padding:clamp(45px,5vw,72px) clamp(23px,6vw,96px) 46px;
+ background-image:linear-gradient(90deg,rgba(46,53,49,.034) 1px,transparent 1px);
+ background-size:128px 128px;
+}
+.ael.ael-compact .ael-compact-story-main{
+ display:grid;grid-template-columns:minmax(0,1.14fr) minmax(320px,.86fr);
+ gap:clamp(32px,5.5vw,86px);align-items:center;
+}
+.ael.ael-compact .ael-compact-story-copy{min-width:0}
+.ael.ael-compact .ael-compact-story-copy .ael-editorial-meta{
+ padding-bottom:11px;font-size:9px;letter-spacing:.14em;
+}
+.ael.ael-compact .ael-compact-story-copy h2{
+ max-width:690px;margin:23px 0 16px;
+ font:400 clamp(50px,5.2vw,83px)/.94 'Cormorant Garamond',Georgia,serif;
+ letter-spacing:-.045em;
+}
+.ael.ael-compact .ael-compact-story-copy h2 em{
+ font-style:italic;color:#a36b43;font-weight:400;
+}
+.ael.ael-compact .ael-compact-story-copy p{
+ max-width:515px;margin:0 0 18px;
+ font:400 clamp(14px,1.14vw,16px)/1.7 Inter,system-ui,sans-serif;color:#48514a;
+}
+.ael.ael-compact .ael-compact-story-copy .ael-underlink{margin-top:5px}
+.ael.ael-compact .ael-compact-story-photo{
+ margin:0;min-height:0;position:relative;aspect-ratio:1.42;max-height:360px;
+ overflow:hidden;border:1px solid rgba(41,46,43,.19);
+ box-shadow:0 19px 48px rgba(16,22,21,.12);background:#d9d4ca;
+}
+.ael.ael-compact .ael-compact-story-photo img{
+ width:100%;height:100%;display:block;object-fit:cover;filter:saturate(.62) sepia(.10);
+}
+.ael.ael-compact .ael-compact-story-photo::after{
+ content:'';position:absolute;inset:0;pointer-events:none;
+ background:url('./blueprint-grid.svg') center center/820px 547px repeat;opacity:.42;
+}
+.ael.ael-compact .ael-compact-story-photo figcaption{
+ position:absolute;z-index:2;left:14px;bottom:12px;padding:7px 9px;
+ background:rgba(249,247,241,.9);
+ font:650 9px/1.2 'Space Grotesk',monospace;letter-spacing:.14em;color:#29332e;
+}
+.ael.ael-compact .ael-compact-method{
+ scroll-margin-top:16px;border-top:1px solid rgba(35,42,38,.19);
+ margin-top:clamp(30px,3.4vw,45px);padding-top:clamp(25px,3vw,39px);
+ display:grid;grid-template-columns:minmax(150px,.74fr) minmax(0,2.3fr) auto;
+ align-items:start;gap:clamp(16px,2vw,34px);
+}
+.ael.ael-compact .ael-compact-method-heading .ael-fine-label{
+ font-size:9px;letter-spacing:.14em;
+}
+.ael.ael-compact .ael-compact-method-heading h3{
+ font:400 clamp(33px,3vw,47px)/.95 'Cormorant Garamond',Georgia,serif;
+ letter-spacing:-.035em;margin:10px 0 0;
+}
+.ael.ael-compact .ael-compact-method-heading h3 em{
+ font-style:italic;color:#a36b43;
+}
+.ael.ael-compact .ael-compact-steps{
+ display:grid;grid-template-columns:repeat(3,minmax(0,1fr));
+ padding:0;margin:0;list-style:none;gap:16px;
+}
+.ael.ael-compact .ael-compact-steps li{
+ display:flex;gap:10px;align-items:flex-start;
+ border-left:1px solid rgba(41,46,43,.21);padding-left:15px;min-width:0;
+}
+.ael.ael-compact .ael-compact-steps li>span{
+ color:#93633e;font:650 11px/1.35 'Space Grotesk',monospace;
+}
+.ael.ael-compact .ael-compact-steps strong{
+ color:#202420;display:block;font:650 12px/1.35 Inter,system-ui,sans-serif;
+}
+.ael.ael-compact .ael-compact-steps p{
+ color:#555e57;margin:6px 0 0;font:400 12px/1.55 Inter,system-ui,sans-serif;
+}
+.ael.ael-compact .ael-compact-method>.ael-underlink{
+ white-space:nowrap;margin-top:26px;font-size:11px;
+}
+
+/* CTA is cinematic, but no longer another full-page interlude. */
+.ael.ael-compact .ael-compact-membership{
+ position:relative;isolation:isolate;min-height:270px;
+ padding:46px clamp(24px,6vw,95px);background:#171e1e;overflow:hidden;
+}
+.ael.ael-compact .ael-compact-membership-image{
+ position:absolute;z-index:-2;inset:0;width:100%;height:100%;
+ object-fit:cover;object-position:75% 55%;opacity:.43;
+ filter:grayscale(.33) sepia(.16) saturate(.62);
+}
+.ael.ael-compact .ael-compact-membership::before{
+ content:'';position:absolute;z-index:-1;inset:0;pointer-events:none;
+ background:linear-gradient(90deg,rgba(14,21,21,.97),rgba(14,21,21,.80) 54%,rgba(14,21,21,.19));
+}
+.ael.ael-compact .ael-compact-membership-content{
+ display:flex;align-items:center;justify-content:space-between;gap:35px;width:100%;
+}
+.ael.ael-compact .ael-compact-membership .ael-fine-label{
+ color:#d0b08c;font-size:10px;letter-spacing:.16em;
+}
+.ael.ael-compact .ael-compact-membership h2{
+ margin:13px 0 9px;max-width:620px;
+ font:400 clamp(47px,5.1vw,77px)/.92 'Cormorant Garamond',Georgia,serif;
+ letter-spacing:-.04em;color:#f2eee6;
+}
+.ael.ael-compact .ael-compact-membership h2 em{font-style:italic;color:#e2c7a4}
+.ael.ael-compact .ael-compact-membership p{
+ max-width:515px;margin:0;font:400 14px/1.55 Inter,system-ui,sans-serif;color:#e9e5dc;
+}
+.ael.ael-compact .ael-compact-membership .ael-membership-actions{
+ flex:0 0 auto;display:flex;flex-direction:column;align-items:flex-start;gap:15px;margin:0;
+}
+.ael.ael-compact .ael-compact-membership .ael-text-link{color:#f2eee6!important}
+.ael.ael-compact .ael-compact-footer{
+ background:#171e1e;border-top:1px solid rgba(246,241,229,.17);
+ color:#c9c7be;padding:21px clamp(24px,6vw,95px);
+ display:flex;align-items:center;justify-content:space-between;
+ gap:10px 22px;min-height:72px;
+}
+.ael.ael-compact .ael-compact-footer-brand{
+ font:600 17px 'Cormorant Garamond',Georgia,serif;letter-spacing:.10em;color:#f2eee6;
+}
+.ael.ael-compact .ael-compact-footer>span{
+ font:600 9px/1.5 Inter,system-ui,sans-serif;letter-spacing:.19em;
+}
+.ael.ael-compact .ael-compact-footer small{
+ max-width:350px;font:400 10px/1.45 Inter,system-ui,sans-serif;color:#b3b5ae;
+}
+@media(max-width:1050px){
+ .ael.ael-compact .ael-compact-method{
+  grid-template-columns:minmax(165px,.85fr) minmax(0,2fr);
+ }
+ .ael.ael-compact .ael-compact-method>.ael-underlink{grid-column:2;margin:0}
+}
+@media(max-width:750px){
+ .ael.ael-compact .ael-header{min-height:74px;padding:10px 18px}
+ .ael.ael-compact .ael-header .ask-intros-lockup{width:142px}
+ .ael.ael-compact .ael-hero{
+  min-height:0;height:auto;padding:158px 23px 85px;align-items:center;
+ }
+ .ael.ael-compact .ael-hero-content{max-width:95%}
+ :root .ael.ael-compact .ael-hero h1,
+ :root[data-theme='light'] .ael.ael-compact .ael-hero h1{
+  font-size:clamp(56px,11.7vw,84px);margin:17px 0 18px;line-height:.91;
+ }
+ .ael.ael-compact .ael-hero-lede{font-size:14px}
+ .ael.ael-compact .ael-hero-actions{gap:14px;flex-wrap:wrap}
+ .ael.ael-compact .ael-hero-bottom{bottom:13px}
+ .ael.ael-compact .ael-architecture-meta{display:none}
+ .ael.ael-compact .ael-hero::after{inset:73px 0 0}
+ .ael.ael-compact .ael-compact-story{padding:39px 22px 35px}
+ .ael.ael-compact .ael-compact-story-main{grid-template-columns:1fr;gap:23px}
+ .ael.ael-compact .ael-compact-story-copy h2{
+  font-size:clamp(48px,9.7vw,72px);margin:16px 0 12px;
+ }
+ .ael.ael-compact .ael-compact-story-photo{aspect-ratio:1.8;max-height:235px}
+ .ael.ael-compact .ael-compact-method{
+  margin-top:30px;padding-top:24px;grid-template-columns:1fr;gap:20px;
+ }
+ .ael.ael-compact .ael-compact-method-heading h3{font-size:43px;margin-top:8px}
+ .ael.ael-compact .ael-compact-steps{gap:13px}
+ .ael.ael-compact .ael-compact-steps li{
+  flex-direction:column;padding-left:11px;gap:6px;
+ }
+ .ael.ael-compact .ael-compact-method>.ael-underlink{grid-column:1}
+ .ael.ael-compact .ael-compact-membership{padding:37px 23px 39px;min-height:0}
+ .ael.ael-compact .ael-compact-membership-content{display:block}
+ .ael.ael-compact .ael-compact-membership h2{
+  font-size:clamp(47px,9.5vw,68px);
+ }
+ .ael.ael-compact .ael-compact-membership .ael-membership-actions{
+  margin-top:22px;gap:12px;
+ }
+ .ael.ael-compact .ael-compact-footer{padding:20px 23px;flex-wrap:wrap}
+ .ael.ael-compact .ael-compact-footer small{
+  flex-basis:100%;max-width:100%;
+ }
+}
+@media(max-width:440px){
+ .ael.ael-compact .ael-hero{padding-top:158px;padding-bottom:76px}
+ .ael.ael-compact .ael-hero-actions .ael-text-link{font-size:11px}
+ .ael.ael-compact .ael-compact-steps{grid-template-columns:1fr;gap:10px}
+ .ael.ael-compact .ael-compact-steps li{
+  flex-direction:row;align-items:flex-start;gap:10px;
+ }
+ .ael.ael-compact .ael-compact-steps p{margin-top:3px}
+ .ael.ael-compact .ael-compact-story-photo{aspect-ratio:1.75}
+}
+@media(prefers-reduced-motion:reduce){
+ .ael.ael-compact :is(a,button,img){
+  transition:none!important;animation:none!important;
+ }
+}
+@media print{
+ .ael.ael-compact .ael-compact-story-photo::after{display:none!important}
+}
+
+/*
+ * Phone-scale refinements: prevent header controls from crowding the
+ * architectural hero and bring the first useful action higher in view.
+ */
+.ael.ael-compact #experience,
+.ael.ael-compact #membership {scroll-margin-top:12px}
+.ael.ael-compact :is(.ael-nav a,.ael-header-actions a):focus-visible {
+ outline:2px solid #a36b43;outline-offset:3px;
+}
+@media (max-width:750px) {
+ .ael.ael-compact .ael-hero {
+  padding-top:138px;
+  padding-bottom:73px;
+ }
+ .ael.ael-compact .ael-hero-actions {
+  margin-top:18px;
+ }
+ .ael.ael-compact .ael-compact-story {
+  padding-top:32px;
+  padding-bottom:31px;
+ }
+ .ael.ael-compact .ael-compact-method {
+  margin-top:24px;
+  padding-top:21px;
+ }
+ .ael.ael-compact .ael-compact-story-photo {
+  max-height:210px;
+ }
+}
+@media (max-width:420px) {
+ .ael.ael-compact .ael-header {
+  gap:8px;
+  padding:8px 13px;
+  min-height:68px;
+ }
+ .ael.ael-compact .ael-header .ask-intros-lockup {
+  width:clamp(102px,31vw,130px);
+ }
+ .ael.ael-compact .ael-header-actions {gap:6px;min-width:0}
+ .ael.ael-compact .ael-header .ael-signin {display:none}
+ .ael.ael-compact .ael-header .ael-nav-cta {
+  padding:0 9px;
+  min-height:42px;
+  font-size:9px;
+  letter-spacing:.015em;
+ }
+ .ael.ael-compact .ael-hero {
+  padding:122px 19px 69px;
+ }
+ :root .ael.ael-compact .ael-hero h1,
+ :root[data-theme='light'] .ael.ael-compact .ael-hero h1 {
+  font-size:clamp(49px,12.4vw,62px);
+  max-width:100%;
+  overflow-wrap:normal;
+ }
+ .ael.ael-compact .ael-hero-lede {
+  line-height:1.55;
+ }
+ .ael.ael-compact .ael-hero .ael-kicker {
+  font-size:9px;
+  letter-spacing:.08em;
+ }
+ .ael.ael-compact .ael-compact-story {
+  padding:30px 18px 26px;
+ }
+ .ael.ael-compact .ael-compact-story-photo {max-height:188px}
+ .ael.ael-compact .ael-compact-method-heading h3 {
+  font-size:39px;
+ }
+ .ael.ael-compact .ael-compact-membership {
+  padding:30px 19px 34px;
+ }
+ .ael.ael-compact .ael-compact-footer {padding:16px 19px}
+}

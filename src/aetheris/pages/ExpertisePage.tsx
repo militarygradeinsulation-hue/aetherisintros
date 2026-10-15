@@ -1,6 +1,9 @@
 import { useState } from 'react'
 import { ArrowRight } from 'lucide-react'
 import { useNetwork } from '../store'
+import { useGraph } from '../graph-store'
+import { PilotInterestForm } from '../marketplace-pilot/PilotInterestForm'
+import { saveMarketplacePilotInterest } from '../marketplace-pilot/persistence'
 import { usePro } from '../pro-store'
 import { useNav } from '../nav'
 import { Btn, Eyebrow, Face, Head, Head as _H, memberById } from '../ui'
@@ -9,6 +12,8 @@ type Tab = 'expertise' | 'marketplace' | 'referrals' | 'introducers'
 
 export function ExpertisePage() {
   const net = useNetwork()
+  const graph = useGraph()
+  const [pilotOpen, setPilotOpen] = useState(false)
   const pro = usePro()
   const nav = useNav()
   const [tab, setTab] = useState<Tab>('expertise')
@@ -92,6 +97,14 @@ export function ExpertisePage() {
           industries: net.profile.industries ?? [],
         })}>Publish a bounded offer from your profile</Btn>
       </article>
+    </section>}
+
+    {tab === 'marketplace' && graph.signedIn && <section className="executive-section">
+      <Eyebrow signal>MARKETPLACE RESEARCH PILOT</Eyebrow>
+      <h2>Help build a marketplace that starts with qualified needs, not unsolicited pitches.</h2>
+      <p className="og-note">Privately share whether you need providers, offer services, or both. This is research only: no listings are published, no buyer is contacted, and separate approval is required for introductions.</p>
+      <Btn kind="secondary" onClick={() => setPilotOpen(open => !open)}>{pilotOpen ? 'Close pilot form' : 'Share marketplace interest'}</Btn>
+      {pilotOpen && <PilotInterestForm onSubmit={saveMarketplacePilotInterest} />}
     </section>}
 
     {tab === 'marketplace' && <section className="expertise-list">

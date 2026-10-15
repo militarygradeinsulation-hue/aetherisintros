@@ -1,4 +1,5 @@
 import { createFileRoute } from '@tanstack/react-router'
+import { logServerError } from '@/lib/server-error-log'
 
 import { applyStripeEvent } from '@/lib/billing.server'
 import { verifyStripeSignature } from '@/lib/stripe.server'
@@ -19,7 +20,7 @@ export const Route = createFileRoute('/api/stripe/webhook')({
         try {
           return Response.json({ received: true, result: await applyStripeEvent(JSON.parse(payload)) })
         } catch (error) {
-          console.error('stripe webhook failed', error)
+          await logServerError(error, request)
           // Stripe retries on 5xx.
           return Response.json({ error: 'Webhook failed' }, { status: 500 })
         }
