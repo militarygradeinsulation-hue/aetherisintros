@@ -1225,10 +1225,28 @@ function Messages({ people, select, activeId, setActiveId }: { people: Member[];
   const pro = usePro()
   const [text, setText] = useState('')
   const [blocked, setBlocked] = useState<{ explanation: string; rerouteTo?: string } | null>(null)
+  const [messageSaving, setMessageSaving] = useState(false)
+  const [failedSend, setFailedSend] = useState<{ threadId: string; text: string; id: string; reason: string } | null>(null)
   const [contextOpen, setContextOpen] = useState(false)
   const [messageCategory, setMessageCategory] = useState<'all' | 'unread' | 'intros'>('all')
   const nav = useNav()
   const { gate, modal: outreachModal } = useOutreachGate()
+  const sendConfirmed = async (threadId: string, message: string, previousId?: string) => {
+    if (messageSaving) return
+    const id = previousId ?? crypto.randomUUID()
+    setMessageSaving(true)
+    setFailedSend(null)
+    try {
+      await net.sendMessage(threadId, message, id)
+      setText(current => current === message ? '' : current)
+    } catch (error) {
+      const reason = error instanceof Error ? error.message : 'The server did not confirm your message.'
+      setFailedSend({ threadId, text: message, id, reason })
+      setText(current => current.trim() ? current : message)
+    } finally {
+      setMessageSaving(false)
+    }
+  }
   const threads = net.threads.filter(t => people.some(p => p.id === t.memberId))
   const visibleThreads = threads.filter(item => messageCategory === 'all' || (messageCategory === 'unread' ? item.unread : Boolean(item.introContext)))
   const thread: Thread | undefined = threads.find(t => t.id === activeId) ?? threads[0]
@@ -1297,7 +1315,7 @@ function Messages({ people, select, activeId, setActiveId }: { people: Member[];
         <div className="composer-wrap">
            <button className="suggested" onClick={() => setText(thread.suggested)}><AetherisGlyph size={13} /> Use contextual draft</button>
           <div className="composer">
-            <AttachButton threadId={thread.id} onSend={file => net.sendMessage(thread.id, file)} />
+            <AttachButton threadId={thread.id} onSend={file => sendConfirmed(thread.id, file)} />
             <textarea value={text} onChange={e => setText(e.target.value)} placeholder="Write with the relationship in mind…" />
             <button onClick={() => {
               const t = text.trim()
@@ -1311,9 +1329,13 @@ function Messages({ people, select, activeId, setActiveId }: { people: Member[];
                 return
               }
               setBlocked(null)
-              gate(t, { channel: 'message', authorId: 'me', recipient: person }, final => { net.sendMessage(thread.id, final); setText('') })
-            }} disabled={!text.trim()} aria-label="Send"><Send size={17} /></button>
+              gate(t, { channel: 'message', authorId: 'me', recipient: person }, final => { void sendConfirmed(thread.id, final) })
+            }} disabled={!text.trim() || messageSaving} aria-label="Send"><Send size={17} /></button>
           </div>
+          {failedSend && failedSend.threadId === thread.id && <p role="alert" className="composer-blocked">
+            <b>Not sent.</b> {failedSend.reason} This message has not been delivered.
+            <button type="button" disabled={messageSaving} className="text-action" onClick={() => { void sendConfirmed(failedSend.threadId, failedSend.text, failedSend.id) }}>Retry</button>
+          </p>}
           {blocked && <p className="composer-blocked"><b>Held.</b> {blocked.explanation}{blocked.rerouteTo ? ` Referred elsewhere: ${blocked.rerouteTo}.` : ''} <button className="text-action" onClick={() => nav.setPage('permission')}>Request permission properly</button></p>}
         </div>
       </section>
