@@ -14,11 +14,12 @@ import {
   type Directory, type MemoryNote,
 } from './db'
 import {
-  createLiveThread, emptyDirectory, ensureThread, loadLiveDirectory, mirrorFollow, saveComment,
+  emptyDirectory, ensureThread, loadLiveDirectory, mirrorFollow, saveComment,
   saveReaction, sendLiveMessage, uploadProfileAvatar, type LiveProfileRow,
 } from './live'
 import { supabase } from '@/integrations/supabase/client'
 import { reportWriteFailure } from './write-failures'
+import { submitIntroRequest } from '@/intros-ui/liveIntroRequest'
 import { quarterStart } from './activation'
 
 /** 'live' = real members only (the network). 'demo' = the labelled showcase. */
@@ -470,12 +471,11 @@ export function NetworkProvider({ children, mode = 'live' }: { children: React.R
         // The live unfollow was acknowledged before local state changed.
       }
     }
-    for (const [memberId, status] of Object.entries(s.introStates)) {
-      if (prev.introStates[memberId] !== status) {
-        // The intro_requests_notify trigger (0026) notifies the target once, for every request path.
-        saveIntro(userId, memberId, status)
-      }
+    if (!live) for (const [memberId, status] of Object.entries(s.introStates)) {
+      if (prev.introStates[memberId] !== status) saveIntro(userId, memberId, status)
     }
+    // Live introduction transitions are persisted by guarded actions before
+    // local state changes. Never replay guessed consent from optimistic UI state.
     for (const learning of s.learned) {
       if (!prev.learned.some(l => l.id === learning.id)) saveLearning(userId, learning)
     }
@@ -673,22 +673,47 @@ export function NetworkProvider({ children, mode = 'live' }: { children: React.R
         }))
       },
 
-      requestIntro: (id) => patch(prev => ({
-        introStates: { ...prev.introStates, [id]: 'requested' },
-        learned: remember(prev, { category: 'Introductions', text: `You requested an introduction to ${nameOf(id)}. Waiting on their opt-in.`, source: 'Double opt-in request', confidence: 100, scope: 'shareable' }),
-        activity: log(prev, { memberId: id, kind: 'Intro requested', text: `Introduction to ${nameOf(id)} requested — both sides must agree.` }),
-      })),
+      requestIntro: (id) => {
+        const commit = () => patch(prev => ({
+          introStates: { ...prev.introStates, [id]: 'requested' },
+          learned: remember(prev, { category: 'Introductions', text: `You requested an introduction to ${nameOf(id)}. Waiting on their opt-in.`, source: 'Confirmed double opt-in request', confidence: 100, scope: 'shareable' }),
+          activity: log(prev, { memberId: id, kind: 'Intro requested', text: `Request saved for ${nameOf(id)} — both sides must agree.` }),
+        }))
+        if (live) return verifiedWrite('Introduction request', async () => { await submitIntroRequest(id, `I would like to request an introduction to ${nameOf(id)}.`) }, commit)
+        commit()
+      },
 
-      authorizeIntro: (id) => patch(prev => ({
-        introStates: { ...prev.introStates, [id]: 'introduced' },
-        learned: remember(prev, { category: 'Introductions', text: `${nameOf(id)} and you both opted in. The introduction is authorized.`, source: 'Double opt-in', confidence: 100, scope: 'shareable' }),
-        activity: log(prev, { memberId: id, kind: 'Waiting on you', text: `Introduction to ${nameOf(id)} authorized — open the conversation.` }),
-      })),
+      authorizeIntro: (id) => {
+        const commit = () => patch(prev => ({
+          introStates: { ...prev.introStates, [id]: 'introduced' },
+          learned: remember(prev, { category: 'Introductions', text: `${nameOf(id)} and you both opted in. The introduction is authorized.`, source: 'Confirmed double opt-in', confidence: 100, scope: 'shareable' }),
+        }))
+        if (live) return verifiedWrite('Introduction acceptance', async () => {
+          if (!userId) throw new Error('Sign in to accept an introduction.')
+          const { data, error } = await supabase.from('intro_requests')
+            .update({ member_opt_in: true, status: 'accepted' })
+            .eq('target_user_id', userId).eq('user_id', id).eq('member_opt_in', false)
+            .select('id')
+          if (error || !data?.length) throw new Error('Acceptance was not confirmed. This request may already have changed.')
+        }, commit)
+        commit()
+      },
 
-      declineIntro: (id) => patch(prev => ({
-        introStates: { ...prev.introStates, [id]: 'closed' },
-        learned: remember(prev, { category: 'Decisions', text: `You set the ${nameOf(id)} introduction to “not now”.`, source: 'Your action', confidence: 100, scope: 'private' }),
-      })),
+      declineIntro: (id) => {
+        const commit = () => patch(prev => ({
+          introStates: { ...prev.introStates, [id]: 'closed' },
+          learned: remember(prev, { category: 'Decisions', text: `You declined the introduction to ${nameOf(id)}.`, source: 'Confirmed network action', confidence: 100, scope: 'private' }),
+        }))
+        if (live) return verifiedWrite('Introduction decline', async () => {
+          if (!userId) throw new Error('Sign in to decline an introduction.')
+          const { data, error } = await supabase.from('intro_requests')
+            .update({ status: 'declined' })
+            .eq('target_user_id', userId).eq('user_id', id).eq('member_opt_in', false)
+            .select('id')
+          if (error || !data?.length) throw new Error('Decline was not confirmed. This request may already have changed.')
+        }, commit)
+        commit()
+      },
 
       withdrawIntro: (id) => patch(prev => {
         const { [id]: _withdrawn, ...introStates } = prev.introStates
