@@ -2049,50 +2049,58 @@ function ProfileRooms({ personId }: { personId: string }) {
   </section>
 }
 
-function IntroModal({ person, onClose, onMessage }: { person: Member | null; onClose: () => void; onMessage: (id: string) => void }) {
+function IntroModal({ person, onClose }: { person: Member | null; onClose: () => void; onMessage: (id: string) => void }) {
   const net = useNetwork()
   const [text, setText] = useState('')
   const [you, setYou] = useState<OptIn>('pending')
-  const [them, setThem] = useState<OptIn>('pending')
+  const [saving, setSaving] = useState(false)
+  const [error, setError] = useState('')
   const [review, setReview] = useState<IntroQualityReview | null>(null)
   useEffect(() => {
-    if (person) {
-      setText(composeWarmIntro(person))
-      setYou(person.introState === 'requested' || person.introState === 'introduced' ? 'yes' : 'pending')
-      setThem(person.introState === 'introduced' ? 'yes' : 'pending')
-      if (person.introState === 'recommended') net.requestIntro(person.id)
-    }
+    setText(person ? composeWarmIntro(person) : '')
+    setYou(person?.introState === 'requested' || person?.introState === 'introduced' ? 'yes' : 'pending')
+    setError('')
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [person])
+  }, [person?.id])
   if (!person) return null
-  const ok = you === 'yes' && them === 'yes'
   const blocked = review?.verdict === 'Do Not Send Yet'
-  const rows: Array<{ label: string; value: OptIn; set: (v: OptIn) => void }> = [
-    { label: 'You', value: you, set: setYou }, { label: person.name, value: them, set: setThem },
-  ]
+  const requested = you === 'yes' || person.introState === 'requested'
+  const accepted = person.introState === 'introduced'
+  const submit = async () => {
+    if (saving || blocked || !text.trim()) return
+    setSaving(true); setError('')
+    try {
+      const saved = await net.requestIntro(person.id, text.trim())
+      if (saved) setYou('yes')
+      else setError('Not sent. The database did not confirm your request. Retry.')
+    } catch (cause) {
+      setError(cause instanceof Error ? cause.message : 'Not sent. Retry your introduction request.')
+    } finally { setSaving(false) }
+  }
   return <div className="modal-wrap" onMouseDown={onClose}>
     <div className="modal editorial-modal" onMouseDown={e => e.stopPropagation()}>
-      <header><div><Label>DOUBLE OPT-IN</Label><h2>A considered introduction.</h2><p>Both sides protect the connector’s credibility.</p></div>
+      <header><div><Label>DOUBLE OPT-IN</Label><h2>A considered introduction.</h2><p>Only you can request it. Only the other member can grant their consent.</p></div>
         <button className="icon-btn" onClick={onClose} aria-label="Close"><X size={17} /></button></header>
       <div className="intro-person"><Avatar person={person} /><span><strong>{person.name}</strong><small>{person.title} · {person.company}</small></span></div>
-      <textarea rows={8} value={text} onChange={e => setText(e.target.value)} />
+      <textarea rows={8} value={text} onChange={e => setText(e.target.value)} aria-label="Forwardable introduction request note" />
       <IntroQualityReviewPanel person={person} mutualValueText={`${person.whyThem} ${person.whyYou}`} contextText={text} onVerdict={setReview} />
       <TrustBudgetNote candidateIds={person.bestPath.length > 1 ? [person.id] : []} />
-      {blocked && <p className="intro-blocked">This introduction is not ready. Fix the missing context above before sending — an unearned intro costs the connector, not you.</p>}
-      {rows.map(r => <div className="opt-row" key={r.label}>
-        <span><strong>{r.label}</strong><small>Confirm this conversation is worth making.</small></span>
-        <div><button className={r.value === 'yes' ? 'active' : ''} onClick={() => { r.set('yes'); if (r.value !== 'yes') net.requestIntro(person.id) }}>Interested</button>
-          <button className={r.value === 'no' ? 'declined' : ''} onClick={() => { r.set('no'); net.declineIntro(person.id) }}>Not now</button></div>
-      </div>)}
-      <div className={`authorization ${ok ? 'ready' : ''}`}>{ok ? <CheckCircle2 size={17} /> : <LockKeyhole size={17} />}
-        <span>{ok ? 'Introduction authorized. Both parties agreed.' : 'Waiting for both parties before anything is sent.'}</span></div>
-      <footer><Button kind="quiet" onClick={onClose}>Cancel</Button>
-        <Button disabled={!ok || blocked} onClick={() => {
-          net.authorizeIntro(person.id)
-          net.sendMessage(net.openThreadWith(person.id), text)
-          void navigator.clipboard?.writeText(text).catch(() => {})
-          onClose(); onMessage(person.id)
-        }}><Send size={15} />Send authorized intro</Button></footer>
+      {blocked && <p className="intro-blocked">This introduction is not ready. Improve the context before asking — an unearned intro costs the connector, not you.</p>}
+      <div className="opt-row"><span><strong>You</strong><small>{requested ? 'Your request is saved.' : 'Your interest has not yet been sent.'}</small></span>
+        <strong>{requested ? 'Requested' : 'Not submitted'}</strong>
+      </div>
+      <div className="opt-row"><span><strong>{person.name}</strong><small>The other member must respond from their own account.</small></span>
+        <strong>{accepted ? 'Accepted' : 'Awaiting consent'}</strong>
+      </div>
+      <div className={`authorization ${accepted ? 'ready' : ''}`}>{accepted ? <CheckCircle2 size={17} /> : <LockKeyhole size={17} />}
+        <span>{accepted ? 'Both participants accepted this introduction.' : requested ? 'Your request is saved, not yet accepted or sent to mutual connections.' : 'Nothing is sent until you explicitly submit the request.'}</span>
+      </div>
+      {error && <p className="intro-blocked" role="alert">{error} <button type="button" className="text-action" disabled={saving} onClick={() => void submit()}>Retry</button></p>}
+      <footer><Button kind="quiet" onClick={onClose}>{requested ? 'Done' : 'Cancel'}</Button>
+        <Button disabled={saving || blocked || !text.trim() || accepted || requested} onClick={() => void submit()}>
+          <Send size={15} />{saving ? 'Saving…' : requested ? 'Request saved' : 'Request introduction'}
+        </Button>
+      </footer>
     </div>
   </div>
 }
