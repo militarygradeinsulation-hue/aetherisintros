@@ -4,7 +4,7 @@ import { Search, Bell, Orbit, LogOut, Home, Users, MessageSquare, MoreHorizontal
 import { Button } from '@/components/ui/button';
 import { AvatarImage } from '@/aetheris/avatar';
 import { signOutMember } from '@/aetheris/sync/workspace-sync';
-import { AccentSwitch } from '../../AccentMode';
+import { AppearanceToggle } from '@/aetheris/AppearanceToggle';
 
 async function signOut() {
   await signOutMember('/auth');
@@ -191,7 +191,7 @@ export const TopNavigation: React.FC<TopNavigationProps> = ({
             <span className="absolute top-1 right-1 w-2 h-2 rounded-full bg-[var(--acc)] ring-2 ring-[#07090C]" />
           </button>}
 
-          <AccentSwitch />
+          <AppearanceToggle className="ix-header-appearance" />
 
           {/* Current User Profile Pill */}
           <button
