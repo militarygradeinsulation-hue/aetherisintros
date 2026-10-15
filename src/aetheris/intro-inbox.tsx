@@ -44,17 +44,18 @@ export function IntroRequestInbox() {
     if (r.error) { setMsg(r.error.message); return }
     const reqs = r.data ?? []
     const ids = reqs.map((x: any) => x.id)
-    const userIds = [...new Set(reqs.map((x: any) => x.user_id))]
     const [caps, names] = await Promise.all([
       ids.length ? db.from('intro_context_capsules').select('id, intro_request_id, why_exists, why_target, why_now, first_goal').in('intro_request_id', ids) : { data: [] },
-      userIds.length ? db.from('profiles').select('id, name').in('id', userIds) : { data: [] },
+      // Return names only for introductions the caller is actually part of.
+      ids.length ? db.rpc('my_intro_participant_names', { p_intro_ids: ids }) : { data: [] },
     ])
+    if (names.error) { setMsg('Could not load introduction names. Retry shortly.'); return }
     const capBy = new Map<string, any>((caps.data ?? []).map((c: any) => [c.intro_request_id, c]))
-    const nameBy = new Map<string, string>((names.data ?? []).map((p: any) => [p.id, p.name as string]))
+    const nameBy = new Map<string, string>((names.data ?? []).map((p: any) => [p.intro_request_id, p.other_name as string]))
     setRows(reqs.map((x: any): Incoming => {
       const c: any = capBy.get(x.id)
       return {
-        id: x.id, requesterId: x.user_id, requesterName: nameBy.get(x.user_id) || 'A member', createdAt: x.created_at, capsuleId: c?.id ?? null,
+        id: x.id, requesterId: x.user_id, requesterName: nameBy.get(x.id) || 'A member', createdAt: x.created_at, capsuleId: c?.id ?? null,
         whyExists: c?.why_exists || x.reason || '', whyTarget: c?.why_target || x.mutual_value || '', whyNow: c?.why_now || '', firstGoal: c?.first_goal || '',
       }
     }))

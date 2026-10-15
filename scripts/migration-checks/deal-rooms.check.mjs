@@ -20,6 +20,11 @@ export default async ({ ok, as, svc, A, B, C }) => {
   ok((await svc(`select role, accepted_at from public.deal_room_members where room_id = '${R}' and user_id = '${B}'`))[0]?.accepted_at === null, 'the counterpart is invited, pending')
   ok((await svc(`select count(*)::int n from public.notifications where user_id = '${B}' and kind = 'deal_invite'`))[0].n === 1, 'the invitee is told')
   ok((await one(C, `select public.create_deal_room('intro', $1, 'Again', '', 'buyer', null) as id`, [INTRO]))?.id === R, 'opening the same source again returns the existing room')
+  let duplicateBlocked = false
+  try {
+    await svc(`insert into public.deal_rooms (created_by, title, source_kind, source_id) values ('${C}', 'Duplicate', 'intro', '${INTRO}')`)
+  } catch { duplicateBlocked = true }
+  ok(duplicateBlocked, 'the database prevents a second active room for the same source even outside the RPC')
 
   // Privacy.
   ok((await as(A, `select id from public.deal_rooms`)).rows?.length === 0, 'non-members cannot read the room')

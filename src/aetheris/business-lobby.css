@@ -1,0 +1,20 @@
+/* Ask Intros business lobby: editorial, permission-forward, touch-first. */
+.business-lobby { margin-block: 1.4rem 2rem; }
+.business-lobby-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 1.25rem; flex-wrap: wrap; }
+.business-lobby-head h2 { margin: .35rem 0 .4rem; font-size: clamp(1.2rem, 2vw, 1.55rem); }
+.business-lobby-head .og-note { max-width: 65ch; }
+.business-lobby-grid { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 1rem; margin-top: 1rem; }
+.business-lobby-card { min-width: 0; display: flex; flex-direction: column; gap: .7rem; }
+.business-lobby-card h3 { margin: .1rem 0; }
+.business-lobby-card label, .business-lobby-note { display: grid; gap: .3rem; font-size: .82rem; font-weight: 600; }
+.business-lobby-card input, .business-lobby-card select, .business-lobby-note input { width: 100%; min-width: 0; border: 1px solid var(--border, #343a47); border-radius: .65rem; padding: .65rem .8rem; color: inherit; background: var(--card, transparent); font: inherit; }
+.business-lobby-card :is(input,select):focus-visible, .business-lobby-note input:focus-visible { outline: 2px solid #5269d4; outline-offset: 2px; }
+.business-lobby-list { display: grid; gap: .75rem; }
+.business-lobby-person { display: grid; gap: .65rem; padding-block: .6rem; border-top: 1px solid var(--border, #343a47); }
+.business-lobby-person strong, .business-lobby-request strong { display: block; }
+.business-lobby-person small, .business-lobby-request small { display: flex; align-items: center; gap: .35rem; margin-top: .2rem; opacity: .8; }
+.business-lobby-request { display: flex; justify-content: space-between; flex-wrap: wrap; align-items: center; gap: .8rem; padding: .8rem 0; border-top: 1px solid var(--border, #343a47); }
+.business-lobby-request p { max-width: 62ch; margin: .3rem 0; }
+.business-lobby-requests { margin-top: .8rem; }
+.business-lobby-error { color: var(--destructive, #b43535); }
+@media (max-width: 760px) { .business-lobby-grid { grid-template-columns: minmax(0,1fr); } .business-lobby-request .og-inline { width: 100%; } }

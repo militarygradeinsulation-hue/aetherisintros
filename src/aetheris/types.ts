@@ -27,7 +27,8 @@ export interface Person {
   tags: string[]
   needs: string[]
   offers: string[]
-  lastInteractionDays: number
+  /** null means no recorded direct exchange, not a fabricated zero-day contact. */
+  lastInteractionDays: number | null
   relationshipStatus: 'unknown' | 'new' | 'active' | 'strong' | 'dormant' | 'at-risk'
   score: ScoreBreakdown
   scoreTotal: number

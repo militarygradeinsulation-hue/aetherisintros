@@ -13,6 +13,7 @@ import {
   type PeerPost, type PeerSession,
 } from './peer-groups'
 import { Btn, Eyebrow } from './ui'
+import { PeerGroupAccountability } from './PeerGroupsPanel'
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 const db = supabase as any
@@ -147,7 +148,7 @@ function JoinRequest({ userId }: { userId: string }) {
 
 /* ── Inside a group ───────────────────────────────────────────────────────────────────── */
 
-type Tab = 'sessions' | 'board' | 'issues' | 'members'
+type Tab = 'sessions' | 'board' | 'issues' | 'accountability' | 'members'
 
 function GroupRoom({ group, userId, accepted, onBack, onChanged, onLeft }: {
   group: Group; userId: string; accepted: boolean; onBack: () => void; onChanged: () => Promise<void> | void; onLeft: () => void
@@ -199,12 +200,13 @@ function GroupRoom({ group, userId, accepted, onBack, onChanged, onLeft }: {
       </section>
       : <>
         <nav className="peer-tabs" role="tablist">
-          {([['sessions', 'Sessions'], ['board', 'Discussion'], ['issues', 'Issues'], ['members', 'Members']] as const).map(([id, label]) =>
+          {([['sessions', 'Sessions'], ['board', 'Discussion'], ['issues', 'Issues'], ['accountability', 'Accountability'], ['members', 'Members']] as const).map(([id, label]) =>
             <button key={id} role="tab" aria-selected={tab === id} className={tab === id ? 'on' : ''} onClick={() => setTab(id)}>{label}</button>)}
         </nav>
         {tab === 'sessions' && <Sessions groupId={group.id} canSchedule={facilitator} />}
         {tab === 'board' && <Board groupId={group.id} userId={userId} names={names} />}
         {tab === 'issues' && <Issues groupId={group.id} userId={userId} names={names} />}
+        {tab === 'accountability' && <PeerGroupAccountability groupId={group.id} userId={userId} isFacilitator={facilitator} groupDescription={group.description} />}
         {tab === 'members' && <ul className="admin-list peer-roster">{roster.map(m => <li key={m.user_id}>
           <span><b>{m.user_id === userId ? 'You' : names[m.user_id] ?? 'A member'}</b>{group.facilitator_id === m.user_id ? ' · facilitator' : ''}</span>
           <small>{m.agreement_accepted_at ? `Agreed ${day(m.agreement_accepted_at)}` : 'Has not accepted the agreement yet'}</small>

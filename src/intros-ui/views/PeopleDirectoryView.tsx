@@ -1,4 +1,3 @@
-// @ts-nocheck
 import React, { useState, useMemo } from 'react';
 import {
   Search,
@@ -17,11 +16,11 @@ import {
   X,
   Orbit,
 } from 'lucide-react';
-import { NetworkMember, RelationshipTier } from '../networkData';
+import type { NetworkMember, RelationshipTier } from '../networkData';
 import { ExecutivePortrait } from '../components/shared/ExecutivePortrait';
 import { ConstellationGraphic } from '../components/shared/ConstellationGraphic';
 import { FloatingConnectionField } from '../components/shared/FloatingConnectionField';
-import { ActivePage } from '../components/layout/TopNavigation';
+import type { ActivePage } from '../components/layout/TopNavigation';
 
 interface PeopleDirectoryViewProps {
   members: NetworkMember[];
@@ -29,6 +28,7 @@ interface PeopleDirectoryViewProps {
   onRequestIntro: (member: NetworkMember) => void;
   connectedMemberIds: Set<string>;
   onToggleConnect: (memberId: string) => void;
+  isLive?: boolean;
 }
 
 export const PeopleDirectoryView: React.FC<PeopleDirectoryViewProps> = ({
@@ -37,6 +37,7 @@ export const PeopleDirectoryView: React.FC<PeopleDirectoryViewProps> = ({
   onRequestIntro,
   connectedMemberIds,
   onToggleConnect,
+  isLive = false,
 }) => {
   const [searchKeyword, setSearchKeyword] = useState('');
   const [selectedRoleTypes, setSelectedRoleTypes] = useState<string[]>([]);
@@ -76,9 +77,9 @@ export const PeopleDirectoryView: React.FC<PeopleDirectoryViewProps> = ({
         }
         // Industry match
         if (selectedIndustry !== 'All') {
-          const hasIndustry = m.focusAreas.some((f) =>
-            f.toLowerCase().includes(selectedIndustry.toLowerCase())
-          );
+          const needle = selectedIndustry.toLowerCase();
+          const hasIndustry = (m.industry ?? '').toLowerCase().includes(needle)
+            || m.focusAreas.some((f) => f.toLowerCase().includes(needle));
           if (!hasIndustry) return false;
         }
         return true;
@@ -105,10 +106,16 @@ export const PeopleDirectoryView: React.FC<PeopleDirectoryViewProps> = ({
     setSortBy('relevance');
   };
 
-  // Featured connectors bar (Marcus Lee, Priya Desai, James Okafor)
-  const featuredConnectors = members.filter((m) =>
-    ['marcus-lee', 'priya-desai', 'james-okafor'].includes(m.id)
-  );
+  const companiesCount = useMemo(() => new Set(members.map(m => m.company.trim()).filter(Boolean)).size, [members]);
+  const locationsCount = useMemo(() => new Set(members.map(m => m.location.trim()).filter(Boolean)).size, [members]);
+  const averageMatch = useMemo(() => members.length ? Math.round(members.reduce((sum, m) => sum + m.matchScore, 0) / members.length) : 0, [members]);
+  const liveLocations = useMemo(() => [...new Set(members.map(m => m.location.trim()).filter(Boolean))].sort(), [members]);
+  const liveIndustries = useMemo(() => [...new Set(members.map(m => (m.industry ?? '').trim()).filter(Boolean))].sort(), [members]);
+
+  // Demo keeps its curated connectors; live uses actual members who opted into introductions.
+  const featuredConnectors = isLive
+    ? [...members].filter(m => m.openToIntros).sort((a, b) => b.matchScore - a.matchScore).slice(0, 3)
+    : members.filter((m) => ['marcus-lee', 'priya-desai', 'james-okafor'].includes(m.id));
 
   const renderTierBadge = (tier?: RelationshipTier) => {
     if (!tier) return null;
@@ -160,20 +167,20 @@ export const PeopleDirectoryView: React.FC<PeopleDirectoryViewProps> = ({
 
             <div className="grid grid-cols-4 gap-2 pt-2 border-t border-white/10 text-center font-mono">
               <div>
-                <div className="text-base font-bold text-white">10K+</div>
-                <div className="text-[9px] text-[#9CA3AF] uppercase">Professionals</div>
+                <div className="text-base font-bold text-white">{isLive ? members.length : '10K+'}</div>
+                <div className="text-[9px] text-[#9CA3AF] uppercase">{isLive ? 'Members' : 'Professionals'}</div>
               </div>
               <div>
-                <div className="text-base font-bold text-white">312</div>
+                <div className="text-base font-bold text-white">{isLive ? companiesCount : 312}</div>
                 <div className="text-[9px] text-[#9CA3AF] uppercase">Companies</div>
               </div>
               <div>
-                <div className="text-base font-bold text-white">28</div>
-                <div className="text-[9px] text-[#9CA3AF] uppercase">Countries</div>
+                <div className="text-base font-bold text-white">{isLive ? locationsCount : 28}</div>
+                <div className="text-[9px] text-[#9CA3AF] uppercase">{isLive ? 'Locations' : 'Countries'}</div>
               </div>
               <div>
-                <div className="text-base font-bold text-white">92%</div>
-                <div className="text-[9px] text-[#9CA3AF] uppercase">Matches</div>
+                <div className="text-base font-bold text-white">{isLive ? `${averageMatch}%` : '92%'}</div>
+                <div className="text-[9px] text-[#9CA3AF] uppercase">{isLive ? 'Avg fit' : 'Matches'}</div>
               </div>
             </div>
           </div>
@@ -307,14 +314,18 @@ export const PeopleDirectoryView: React.FC<PeopleDirectoryViewProps> = ({
                 className="w-full bg-[#131722] text-xs text-white rounded-lg px-3 py-2 border border-white/10 focus:outline-none focus:border-[#F5B027]"
               >
                 <option value="All">Any Location</option>
-                <option value="San Francisco">San Francisco, CA</option>
-                <option value="New York">New York, NY</option>
-                <option value="London">London, UK</option>
-                <option value="Seattle">Seattle, WA</option>
-                <option value="Singapore">Singapore</option>
-                <option value="Berlin">Berlin, Germany</option>
-                <option value="Dubai">Dubai, UAE</option>
-                <option value="Boston">Boston, MA</option>
+                {isLive
+                  ? liveLocations.map(location => <option key={location} value={location}>{location}</option>)
+                  : <>
+                    <option value="San Francisco">San Francisco, CA</option>
+                    <option value="New York">New York, NY</option>
+                    <option value="London">London, UK</option>
+                    <option value="Seattle">Seattle, WA</option>
+                    <option value="Singapore">Singapore</option>
+                    <option value="Berlin">Berlin, Germany</option>
+                    <option value="Dubai">Dubai, UAE</option>
+                    <option value="Boston">Boston, MA</option>
+                  </>}
               </select>
             </div>
 
@@ -330,11 +341,15 @@ export const PeopleDirectoryView: React.FC<PeopleDirectoryViewProps> = ({
                 className="w-full bg-[#131722] text-xs text-white rounded-lg px-3 py-2 border border-white/10 focus:outline-none focus:border-[#F5B027]"
               >
                 <option value="All">All Industries</option>
-                <option value="AI">AI & Machine Learning</option>
-                <option value="Infrastructure">Infrastructure & Cloud</option>
-                <option value="Enterprise">Enterprise Software</option>
-                <option value="Climate">Climate Tech</option>
-                <option value="Fintech">Fintech</option>
+                {isLive
+                  ? liveIndustries.map(industry => <option key={industry} value={industry}>{industry}</option>)
+                  : <>
+                    <option value="AI">AI & Machine Learning</option>
+                    <option value="Infrastructure">Infrastructure & Cloud</option>
+                    <option value="Enterprise">Enterprise Software</option>
+                    <option value="Climate">Climate Tech</option>
+                    <option value="Fintech">Fintech</option>
+                  </>}
               </select>
             </div>
 

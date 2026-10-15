@@ -128,7 +128,7 @@ function CreateRoomForm({ onCreated, onCancel }: CreateFormProps) {
         ...(description ? { description } : {}),
         ...(opportunitySize ? { opportunitySize } : {}),
         ...(deadline ? { deadline } : {}),
-        inviteUserIds,
+        ...(inviteUserIds.length ? { inviteUserIds } : {}),
       } })
       onCreated(room)
     } catch (err) {

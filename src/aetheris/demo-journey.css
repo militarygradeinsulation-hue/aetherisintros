@@ -1,0 +1,44 @@
+/* Ask Intros editorial identity. The tour never impersonates live network data. */
+.journey-shell { position: fixed; z-index: 85; right: clamp(12px, 3vw, 35px); bottom: max(16px, env(safe-area-inset-bottom)); width: min(590px, calc(100vw - 28px)); pointer-events: none; font-family: Inter, system-ui, sans-serif; }
+.journey-shell button { cursor: pointer; font: inherit; }
+.journey-shell button:focus-visible { outline: 3px solid #6987ff; outline-offset: 3px; }
+.journey-launcher { pointer-events: auto; margin-left: auto; display: flex; align-items: center; gap: .65rem; background: #171c26; border: 1px solid #7889ad; box-shadow: 0 12px 36px #0006; color: #f6f0e6; border-radius: 999px; padding: .84rem 1.15rem; font-size: .86rem; font-weight: 650; }
+.journey-launcher svg:first-child { color: #d5a455; }
+.journey-panel { pointer-events: auto; max-height: min(82vh, 700px); overflow: auto; overscroll-behavior: contain; background: #121722; color: #f6f0e6; border: 1px solid #465577; border-radius: 18px; box-shadow: 0 20px 70px #0009; }
+.journey-head { display: flex; justify-content: space-between; align-items: flex-start; padding: 1.15rem 1.3rem .55rem; gap: 1rem; }
+.journey-head div { display: grid; gap: .3rem; }
+.journey-head span, .journey-eyebrow, .journey-evidence small, .journey-result small { letter-spacing: .12em; color: #ddb67e; font-size: .63rem; font-weight: 750; }
+.journey-head strong { font-family: Georgia, 'Times New Roman', serif; font-size: clamp(1.25rem, 2.5vw, 1.65rem); font-weight: 600; }
+.journey-close { padding: .35rem; border: 1px solid #536080; background: #1e2637; color: #fff; border-radius: 9px; }
+.journey-disclaimer { margin: 0 1.3rem 1rem; font-size: .72rem; color: #c7c8d0; line-height: 1.45; }
+.journey-stages { display: grid; grid-template-columns: repeat(7, minmax(0,1fr)); gap: 4px; padding: 0 1rem; }
+.journey-stages button { min-width: 0; display: grid; justify-items: center; gap: .35rem; padding: .6rem 2px; background: #20283a; border: 1px solid transparent; color: #cbd2e2; border-radius: 6px; }
+.journey-stages button.active { background: #344d86; color: #fff; border-color: #9aaee6; }
+.journey-stages button.visited { border-color: #7c715f; }
+.journey-stages button span { font-size: .8rem; font-weight: 750; }
+.journey-stages button small { font-size: .55rem; line-height: 1.15; max-width: 56px; }
+.journey-body { padding: 1.25rem 1.4rem .6rem; }
+.journey-body h2 { margin: .45rem 0 .65rem; font-family: Georgia, 'Times New Roman', serif; font-size: clamp(1.3rem, 3vw, 1.85rem); font-weight: 600; }
+.journey-body > p { font-size: .88rem; color: #e1e2e6; line-height: 1.56; margin-bottom: 1rem; }
+.journey-evidence, .journey-result { padding: .88rem .95rem; margin: .7rem 0; border: 1px solid #56647a; border-radius: 10px; background: #1b2435; }
+.journey-result { background: #182e31; border-color: #346f67; }
+.journey-evidence p, .journey-result p { margin: .4rem 0 0; font-size: .82rem; line-height: 1.5; }
+.journey-footer { display: flex; justify-content: space-between; align-items: center; padding: .45rem 1.35rem 0; gap: 1rem; }
+.journey-count { color: #bec6d2; font-size: .78rem; }
+.journey-footer > div { display: flex; gap: .55rem; }
+.journey-footer button { display: inline-flex; align-items: center; gap: .4rem; border-radius: 8px; border: 1px solid #64718a; padding: .55rem .85rem; color: #f5f5f7; background: #1e2839; font-size: .83rem; }
+.journey-footer .journey-next { background: #4263b3; border-color: #7997e8; color: white; font-weight: 700; }
+.journey-footer button:disabled { opacity: .48; cursor: not-allowed; }
+.journey-footnote { margin: .75rem 1.35rem 1rem; font-size: .65rem; color: #c4c8d3; }
+@media(max-width:680px) {
+ .journey-shell { left: 10px; right: 10px; width: auto; bottom: calc(96px + env(safe-area-inset-bottom)); }
+ .journey-panel { max-height: min(68dvh, 600px); }
+ .journey-stages { grid-template-columns: repeat(7,minmax(0,1fr)); padding-inline: .65rem; }
+ .journey-stages button small { font-size: .49rem; overflow-wrap: anywhere; }
+ .journey-head { padding: .9rem 1rem .45rem; }
+ .journey-disclaimer { margin-inline: 1rem; }
+ .journey-body { padding: .85rem 1rem .5rem; }
+ .journey-footer { padding-inline: 1rem; }
+ .journey-footnote { margin-inline: 1rem; }
+}
+@media (prefers-reduced-motion: reduce) { .journey-shell * { scroll-behavior: auto; transition: none; } }

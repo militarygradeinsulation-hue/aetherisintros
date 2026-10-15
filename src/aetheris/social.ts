@@ -1,3 +1,4 @@
+import type { BusinessDetails } from './business-posts'
 import { people as seedPeople } from './data'
 import { calculateConnectionScore, determineRadarState } from './lib/engine'
 import type { Person, PrivacyScope, ScoreBreakdown } from './types'
@@ -439,8 +440,8 @@ export const members: Member[] = [
 ]
 
 export const me = {
-  name: 'Jordan Ellery', initials: 'JT', title: 'Founder · Relationship systems strategist',
-  company: 'Aetheris', location: 'Charlotte, NC',
+  name: 'Demo Account', initials: 'DA', title: 'Founder · Relationship systems strategist',
+  company: 'Meridian Advisory', location: 'Charlotte, NC',
   thesis: 'I build systems that turn relationship context into better business decisions.',
   focus: 'Placing Ask Intros with founders, operating partners and trusted connectors.',
   lookingFor: 'PE operating partners and founder-led design partners.',
@@ -696,13 +697,14 @@ export interface JournalAttachment {
 export interface Post {
   id: string
   memberId: string
-  kind: 'Insight' | 'Milestone' | 'Hiring' | 'Raising capital' | 'Partnership' | 'Event takeaway' | 'Strategic ask'
+  kind: 'Insight' | 'Milestone' | 'Hiring' | 'Raising capital' | 'Partnership' | 'Event takeaway' | 'Strategic ask' | 'Need' | 'Offer' | 'Proof of work'
   text: string
   detail: string
   when: string
   responses: number
   media?: JournalAttachment[] | undefined
   visibility?: 'network' | 'private' | undefined
+  business?: BusinessDetails | undefined
 }
 
 export const posts: Post[] = [

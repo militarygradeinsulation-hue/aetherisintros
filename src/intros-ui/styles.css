@@ -454,65 +454,6 @@
   box-shadow: 0 0 16px -2px var(--acc-glow) !important;
 }
 
-/* ============================================================
-   ACCENT MODES — gold, blue, or the mixed pairing
-   ============================================================ */
-:root,
-:root[data-accent="gold"] {
-  --acc: #F5B027;
-  --acc-bright: #FFC85C;
-  --acc-strong: #C78522;
-  --acc-deep: #8A5A12;
-  --acc-wash: rgba(245, 176, 39, 0.10);
-  --acc-line: rgba(245, 176, 39, 0.32);
-  --acc-glow: rgba(245, 176, 39, 0.5);
-  --acc-btn: rgba(138, 90, 18, 0.22);
-  --acc-btn-hover: rgba(199, 133, 34, 0.34);
-  --acc-btn-line: rgba(245, 176, 39, 0.32);
-  --acc-spot: rgba(245, 176, 39, 0.10);
-  --acc-field-line: rgba(255, 255, 255, 0.055);
-  --acc-field-fill: rgba(245, 176, 39, 0.05);
-  --acc-field-stroke: rgba(245, 176, 39, 0.26);
-  --acc-field-glow: rgba(245, 176, 39, 0.45);
-}
-
-:root[data-accent="blue"] {
-  --acc: #4F82F7;
-  --acc-bright: #8FB6F2;
-  --acc-strong: #2C63E8;
-  --acc-deep: #12409E;
-  --acc-wash: rgba(61, 107, 242, 0.14);
-  --acc-line: rgba(96, 165, 250, 0.34);
-  --acc-glow: rgba(96, 165, 250, 0.5);
-  --acc-btn: rgba(23, 58, 140, 0.32);
-  --acc-btn-hover: rgba(30, 74, 175, 0.44);
-  --acc-btn-line: rgba(96, 165, 250, 0.36);
-  --acc-spot: rgba(37, 99, 235, 0.16);
-  --acc-field-line: rgba(120, 160, 255, 0.075);
-  --acc-field-fill: rgba(37, 99, 235, 0.08);
-  --acc-field-stroke: rgba(96, 165, 250, 0.30);
-  --acc-field-glow: rgba(59, 130, 246, 0.5);
-}
-
-/* Gold intelligence accents, blue actions. */
-:root[data-accent="mixed"] {
-  --acc: #F5B027;
-  --acc-bright: #FFC85C;
-  --acc-strong: #C78522;
-  --acc-deep: #8A5A12;
-  --acc-wash: rgba(245, 176, 39, 0.10);
-  --acc-line: rgba(245, 176, 39, 0.32);
-  --acc-glow: rgba(245, 176, 39, 0.5);
-  --acc-btn: rgba(23, 58, 140, 0.32);
-  --acc-btn-hover: rgba(30, 74, 175, 0.44);
-  --acc-btn-line: rgba(96, 165, 250, 0.36);
-  --acc-spot: rgba(37, 99, 235, 0.13);
-  --acc-field-line: rgba(255, 255, 255, 0.055);
-  --acc-field-fill: rgba(245, 176, 39, 0.05);
-  --acc-field-stroke: rgba(245, 176, 39, 0.26);
-  --acc-field-glow: rgba(96, 165, 250, 0.45);
-}
-
 .ix-root {
   /* No isolation here: menus, sheets and dialogs (z-index >= 2) must stack above the
      site-wide ambient field (.site-ambient, z-index 1) so it never paints over their text. */
@@ -567,77 +508,6 @@
 }
 
 /* ---------- accent picker in the header ---------- */
-.ix-accent {
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  padding: 3px;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 999px;
-}
-.ix-accent button {
-  display: flex;
-  align-items: center;
-  gap: 5px;
-  padding: 4px 9px;
-  border: 0;
-  border-radius: 999px;
-  background: transparent;
-  color: rgba(255, 255, 255, 0.55);
-  font: 600 10px "Space Grotesk", sans-serif;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  cursor: pointer;
-  transition: background 140ms ease, color 140ms ease;
-}
-.ix-accent button:hover { color: rgba(255, 255, 255, 0.85); }
-.ix-accent button i {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background: currentColor;
-}
-.ix-accent button:nth-child(1) i { background: #F5B027; }
-.ix-accent button:nth-child(2) i { background: #4F82F7; }
-.ix-accent button:nth-child(3) i {
-  background: linear-gradient(90deg, #F5B027 0 50%, #4F82F7 50% 100%);
-}
-.ix-accent button.on {
-  background: rgba(255, 255, 255, 0.08);
-  color: rgba(255, 255, 255, 0.92);
-}
-@media (max-width: 900px) {
-  .ix-accent button span { display: none; }
-  .ix-accent button { padding: 4px 7px; }
-}
-
-/* Blue is the house default; gold and mixed remain explicit choices. */
-:root {
-  --acc: #4F82F7;
-  --acc-bright: #8FB6F2;
-  --acc-strong: #2C63E8;
-  --acc-deep: #12409E;
-  --acc-wash: rgba(61, 107, 242, 0.14);
-  --acc-line: rgba(96, 165, 250, 0.34);
-  --acc-glow: rgba(96, 165, 250, 0.5);
-  --acc-btn: rgba(23, 58, 140, 0.32);
-  --acc-btn-hover: rgba(30, 74, 175, 0.44);
-  --acc-btn-line: rgba(96, 165, 250, 0.36);
-  --acc-spot: rgba(37, 99, 235, 0.16);
-  --acc-field-line: rgba(120, 160, 255, 0.075);
-  --acc-field-fill: rgba(37, 99, 235, 0.08);
-  --acc-field-stroke: rgba(96, 165, 250, 0.30);
-  --acc-field-glow: rgba(59, 130, 246, 0.5);
-}
-
-/* Keep the whole top row on one line: the accent picker shows dots only
-   until there is room for the words. */
-@media (max-width: 1535px) {
-  .ix-accent button span { display: none; }
-  .ix-accent button { padding: 4px 7px; }
-  .ix-accent { gap: 3px; padding: 2px; }
-}
-
 /* Home hero: the relationship field graph, sized to its compact tile. */
 .ix-field-tile .memory-graph {
   min-height: 0;
@@ -655,7 +525,7 @@
   --mobile-nav-target: 48px;
 }
 .ix-mobile-nav, .ix-mobile-more { display: none; }
-@media (max-width: 767px) {
+@media (max-width: 1023px) {
   .ix-root { padding-bottom: calc(var(--mobile-nav-height) + env(safe-area-inset-bottom, 0px)); }
   .ix-mobile-nav {
     display: grid;
@@ -733,3 +603,251 @@
 .home-widget-scroll > * { min-height:100%; height:auto; max-height:none; }
 .home-widget-scroll > .home-board-tile { overflow:visible; }
 .home-widget-scroll .home-board-content { overflow:visible; flex-shrink:0; }
+
+/* Premium editorial identity follows members from the public homepage into the app. */
+.ix-root {
+  --sys-bg:#07090c;
+  --sys-bg-dark:#07090c;
+  --sys-tile:#101419;
+  --sys-tile-inner:#151922;
+  --sys-panel:#11161b;
+  --sys-ink:#f2eee6;
+  --sys-card:#f4f1ea;
+  --sys-warn:#f4a125;
+  --sys-gold:#f4a125;
+  --sys-accent:#f4a125;
+}
+.ix-root header { border-bottom-color:rgba(215,194,154,.22); }
+.ix-root .sys-tile { border-color:rgba(215,194,154,.12); }
+.ix-root .sys-tile:hover { border-color:rgba(244,161,37,.44); }
+.ix-root :is(input,textarea,select):focus-visible { outline:2px solid #f4a125; outline-offset:2px; }
+.ix-root .ask-intros-lockup--compact { width:clamp(175px,16vw,235px); max-height:none; }
+@media(max-width:680px) { .ix-root .ask-intros-lockup--compact { width:150px; } }
+
+
+/* HALFTONE NIGHT / member network. Scoped so charts and statuses retain meaning. */
+.ix-root {
+  --sys-bg:#0c0c0b; --sys-bg-dark:#0c0c0b;
+  --sys-tile:#181715; --sys-tile-inner:#201d1a; --sys-panel:#191815;
+  --sys-ink:#e9e4da; --sys-ink-dim:#aaa398; --sys-line:rgba(233,228,218,.15);
+  --sys-card:#eee9e1; --sys-card-ink:#181512;
+  --sys-accent:#e9762b; --sys-warn:#e9762b;
+}
+.ix-root :is(header,aside,.drawer-panel) { border-color:rgba(233,228,218,.17); }
+.ix-root .sys-tile { background:#181715; border-color:rgba(233,228,218,.15); }
+.ix-root .sys-tile:hover { border-color:rgba(233,118,43,.50); box-shadow:0 10px 28px rgba(0,0,0,.25); }
+.ix-root :is(.sys-tile-title,.panel-head) { letter-spacing:.08em; }
+.ix-root :is(input,textarea,select) { accent-color:#e9762b; }
+.ix-root :is(input,textarea,select):focus-visible { outline:2px solid #e9762b; outline-offset:2px; }
+@media (prefers-reduced-motion: reduce) {
+  .ix-root .sys-tile:hover { transform:none; }
+}
+
+
+/* Editorial footer: navigation stays live while the wordmark animates below. */
+.ix-editorial-signoff { background:#0c0c0b; border-top:1px solid rgba(233,228,218,.2); }
+.ix-editorial-signoff-nav {
+  padding:24px clamp(18px,4vw,60px); display:flex; flex-wrap:wrap; align-items:center;
+  justify-content:space-between; gap:18px; color:#e9e4da; background:#0c0c0b;
+  font:500 10px/1.8 "JetBrains Mono",ui-monospace,monospace; letter-spacing:.13em;
+}
+.ix-editorial-signoff-nav>span { color:#aaa398; }
+.ix-editorial-signoff-nav>div { display:flex; flex-wrap:wrap; gap:12px 24px; }
+.ix-editorial-signoff-nav button { background:transparent; border:0; padding:5px 0; color:#e9e4da; cursor:pointer; font:inherit; letter-spacing:inherit; }
+.ix-editorial-signoff-nav button:hover { color:#e9762b; }
+.ix-editorial-signoff-nav button:focus-visible { outline:2px solid #e9762b; outline-offset:3px; }
+.ix-halftone-footer .hwf-col a:hover { color:#e9762b; }
+@media (max-width:720px) { .ix-editorial-signoff-nav>div { gap:8px 16px; } }
+
+
+/* LIGHT APPEARANCE: paper-and-ink counterpart to the existing halftone night. */
+:root[data-theme="light"] .ix-root {
+  --sys-bg:#efebe3; --sys-bg-dark:#efebe3;
+  --sys-tile:#fffdf9; --sys-tile-inner:#f1ece3;
+  --sys-panel:#fffdf9; --sys-panel-line:rgba(23,21,15,.18);
+  --sys-line:rgba(23,21,15,.18); --sys-ink:#17150f;
+  --sys-ink-dim:#5f5950; --sys-card:#fffdf9; --sys-card-ink:#17150f;
+  --sys-btn:#f1e7dc; --sys-btn-hover:#e6d9c8;
+  --sys-accent:#c2361c; --sys-warn:#bc681b;
+  background-color:#efebe3 !important; color:#17150f !important;
+}
+:root[data-theme="light"] .ix-root > header,
+:root[data-theme="light"] .ix-root .ix-backdrop,
+:root[data-theme="light"] .ix-root .ix-mobile-nav {
+  background:#efebe3!important; color:#17150f!important;
+  border-color:rgba(23,21,15,.18)!important;
+}
+:root[data-theme="light"] .ix-root header :is(button,a,input,kbd),
+:root[data-theme="light"] .ix-root header nav button,
+:root[data-theme="light"] .ix-root header .appearance-switcher { color:#17150f; }
+:root[data-theme="light"] .ix-root header input { background:#fffdf9!important; border-color:rgba(23,21,15,.23)!important; }
+:root[data-theme="light"] .ix-root header input::placeholder { color:#666057; }
+:root[data-theme="light"] .ix-root :is(.sys-tile,.sys-tile-inner,.drawer-panel,.ix-mobile-sheet) {
+  background-color:#fffdf9; color:#17150f; border-color:rgba(23,21,15,.18);
+}
+:root[data-theme="light"] .ix-root .sys-tile-caption,
+:root[data-theme="light"] .ix-root .home-demo-comments,
+:root[data-theme="light"] .ix-root .ix-mobile-nav-item { color:#5f5950; }
+:root[data-theme="light"] .ix-root .sys-tile-title { color:#17150f; }
+:root[data-theme="light"] .ix-root .sys-tile:hover { border-color:#c2361c; box-shadow:0 8px 26px rgba(23,21,15,.08); }
+:root[data-theme="light"] .ix-root :is(.ix-editorial-signoff,.ix-editorial-signoff-nav) {
+  background:#efebe3; color:#17150f; border-color:rgba(23,21,15,.2);
+}
+:root[data-theme="light"] .ix-editorial-signoff-nav button { color:#17150f; }
+:root[data-theme="light"] .ix-editorial-signoff-nav>span { color:#5f5950; }
+:root[data-theme="light"] .ix-root [class*="bg-[#07090C]"],
+:root[data-theme="light"] .ix-root [class*="bg-[#0B0E13]"],
+:root[data-theme="light"] .ix-root [class*="bg-[#0F131A]"] { background-color:#efebe3!important; }
+:root[data-theme="light"] .ix-root header [class*="text-[#F2EEE6]"],
+:root[data-theme="light"] .ix-root header [class*="text-[#9CA3AF]"] { color:#17150f!important; }
+@media(max-width:767px) {
+  .ix-header-appearance>svg,.ix-header-appearance .appearance-switcher__label { display:none; }
+  :root[data-theme="light"] .ix-root .ix-mobile-sheet { background:#fffdf9; }
+}
+
+
+/* Keep the native member actions on the same signature rotating-gradient system. */
+.ix-root .btn.primary,
+.ix-root .ai-gradient-button {
+  border:2px solid transparent !important;
+  border-radius:999px !important;
+  background:
+    linear-gradient(135deg,var(--ai-button-surface),var(--ai-button-surface)) padding-box,
+    conic-gradient(from var(--ai-border-angle),#c35c28,#f6b66e 22%,#e7d7ba 39%,#347fd5 52%,#f2a85a 77%,#c35c28) border-box !important;
+  color:var(--ai-button-text) !important;
+  animation:ai-gradient-turn 7s linear infinite;
+}
+.ix-root .btn.primary:hover,
+.ix-root .ai-gradient-button:hover {
+  border-color:transparent !important;
+  background:
+    linear-gradient(135deg,var(--ai-button-surface),var(--ai-button-surface)) padding-box,
+    conic-gradient(from var(--ai-border-angle),#c35c28,#f6b66e 22%,#e7d7ba 39%,#347fd5 52%,#f2a85a 77%,#c35c28) border-box !important;
+  color:var(--ai-button-text) !important;
+}
+.ix-root .ai-gradient-button:disabled { animation:none; }
+@media(prefers-reduced-motion:reduce) {
+  .ix-root .btn.primary, .ix-root .ai-gradient-button { animation:none; }
+}
+
+
+/* MEMBER TOP NAVIGATION — restrained gradient buttons instead of crowded text links.
+   Sections retain their original destinations; only presentation/breakpoints change. */
+.ix-root .ix-global-header {
+  background:color-mix(in srgb,var(--sys-bg) 96%,transparent) !important;
+  border-bottom:1px solid var(--sys-line) !important;
+  color:var(--sys-ink);
+}
+.ix-global-header-inner {
+  display:grid;
+  grid-template-columns:minmax(0,1fr) auto;
+  align-items:center;
+  gap:10px 22px;
+  padding:10px 0;
+}
+.ix-global-brand { min-width:0; flex:none; }
+.ix-global-brand button { border-radius:8px; }
+.ix-global-brand button:focus-visible { outline:2px solid var(--acc); outline-offset:4px; }
+.ix-global-account-actions { min-width:0; justify-self:end; }
+.ix-desktop-main-nav { display:none; min-width:0; align-items:center; justify-content:center; gap:clamp(9px,1vw,18px); }
+.ix-desktop-nav-link {
+  --ai-border-angle:0deg;
+  position:relative;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  min-height:40px;
+  flex:0 0 auto;
+  padding:0 15px;
+  border:1px solid var(--sys-line);
+  border-radius:999px;
+  background:color-mix(in srgb,var(--sys-tile) 37%,transparent);
+  color:var(--sys-ink-dim);
+  font:600 13px/1.1 "Space Grotesk",Inter,system-ui,sans-serif;
+  letter-spacing:.015em;
+  white-space:nowrap;
+  cursor:pointer;
+  transition:color .2s ease,border-color .2s ease,box-shadow .2s ease;
+}
+.ix-desktop-nav-label { display:inline-flex;align-items:center;justify-content:center;gap:8px;white-space:nowrap; }
+.ix-desktop-nav-link:hover {
+  color:var(--sys-ink);
+  border-color:var(--acc-line);
+  box-shadow:0 2px 16px rgba(0,0,0,.08);
+}
+.ix-desktop-nav-link.is-brand-destination:not(.is-active) { color:var(--acc); }
+.ix-desktop-nav-link.is-active {
+  border:1px solid transparent;
+  color:var(--sys-ink);
+  background:
+    linear-gradient(var(--sys-tile),var(--sys-tile)) padding-box,
+    conic-gradient(from var(--ai-border-angle),#c35c28,#f6b66e 24%,#e7d7ba 41%,#347fd5 56%,#f6b66e 79%,#c35c28) border-box;
+  box-shadow:0 0 15px -12px var(--acc);
+  animation:ai-gradient-turn 10s linear infinite;
+}
+.ix-desktop-nav-link.is-active:hover { color:var(--sys-ink); }
+.ix-desktop-nav-link:focus-visible {
+  outline:2px solid var(--acc);
+  outline-offset:3px;
+}
+.ix-desktop-more-trigger { gap:6px; }
+.ix-desktop-more-trigger svg { opacity:.68; }
+.ix-desktop-unread-count {
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  min-width:21px;
+  height:21px;
+  padding:0 5px;
+  margin-left:2px;
+  border-radius:999px;
+  background:var(--acc);
+  color:#151210;
+  font:700 10px/1 ui-monospace,"SFMono-Regular",Consolas,monospace;
+  letter-spacing:0;
+}
+.ix-desktop-more-menu {
+  background:var(--sys-panel) !important;
+  color:var(--sys-ink);
+  border-color:var(--sys-line) !important;
+  box-shadow:0 15px 35px rgba(0,0,0,.23);
+}
+.ix-desktop-more-item {
+  color:var(--sys-ink-dim);
+  transition:background-color .17s ease,color .17s ease;
+}
+.ix-desktop-more-item:hover,.ix-desktop-more-item.is-active,.ix-desktop-more-item:focus-visible {
+  background:var(--acc-wash);
+  color:var(--sys-ink);
+}
+.ix-desktop-more-item:focus-visible { outline:2px solid var(--acc); outline-offset:-2px; }
+:root[data-theme="light"] .ix-root .ix-desktop-nav-link { color:#50483e; }
+:root[data-theme="light"] .ix-root .ix-desktop-nav-link:is(:hover,.is-active) { color:#17150f; }
+:root[data-theme="light"] .ix-root .ix-desktop-nav-link.is-brand-destination:not(.is-active) { color:#a8321b; }
+:root[data-theme="light"] .ix-root .ix-desktop-more-menu { background:#fffdf9!important; }
+:root[data-theme="light"] .ix-root .ix-desktop-more-item { color:#51493f; }
+:root[data-theme="light"] .ix-root .ix-desktop-more-item:is(:hover,.is-active) { color:#17150f; }
+@media(min-width:1024px) {
+  .ix-desktop-main-nav { display:flex; grid-column:1 / -1; grid-row:2; padding:3px 0 6px; }
+}
+@media(min-width:1400px) {
+  .ix-global-header-inner { display:flex; flex-wrap:nowrap; justify-content:space-between; gap:clamp(14px,1.3vw,30px); padding:16px 0; }
+  .ix-global-brand { flex:0 0 auto; }
+  .ix-desktop-main-nav { flex:1 1 auto; grid-column:auto; grid-row:auto; padding:0; gap:clamp(8px,.85vw,18px); }
+  .ix-desktop-nav-link { padding:0 clamp(10px,.9vw,15px); }
+  .ix-global-account-actions { flex:0 0 auto; }
+}
+@media(max-width:1023px) {
+  .ix-desktop-main-nav { display:none !important; }
+  .ix-global-header-inner { padding:8px 0; }
+  .ix-root .ix-global-header { z-index:50; }
+}
+@media(max-width:550px) {
+  .ix-global-header-inner { gap:8px; }
+  .ix-global-brand .ask-intros-lockup--compact { width:clamp(105px,30vw,150px); }
+  .ix-global-account-actions { gap:5px; }
+}
+@media(prefers-reduced-motion:reduce) {
+  .ix-desktop-nav-link.is-active { animation:none; }
+  .ix-desktop-nav-link { transition:none; }
+}

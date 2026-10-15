@@ -1,4 +1,5 @@
 import { createFileRoute } from '@tanstack/react-router'
+import { logServerError } from '@/lib/server-error-log'
 
 import { seedNetworkDirectory } from '@/lib/network-seed.server'
 
@@ -11,12 +12,12 @@ export const Route = createFileRoute('/api/public/seed-network')({
   staticData: { sitemap: false },
   server: {
     handlers: {
-      POST: async () => {
+      POST: async ({ request }) => {
         try {
           const result = await seedNetworkDirectory()
           return Response.json(result)
         } catch (error) {
-          console.error('seed-network failed', error)
+          await logServerError(error, request)
           return Response.json({ error: 'Seeding failed' }, { status: 500 })
         }
       },
