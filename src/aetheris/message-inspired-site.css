@@ -337,3 +337,27 @@
     font-size:11px!important;letter-spacing:.015em;min-height:44px;padding-inline:10px;
   }
 }
+
+/* ID-level isolation defeats legacy important nav CTA rules even when route
+ * stylesheet chunks are loaded after the global stylesheet on navigation. */
+:root[data-theme="light"] .ael.ael-compact #ask-intros-header-access {
+  --ai-button-surface:#243139!important;
+  --ai-button-text:#fff9ef!important;
+  color:#fff9ef!important;
+  -webkit-text-fill-color:#fff9ef;
+}
+:root[data-theme="dark"] .ael.ael-compact #ask-intros-header-access {
+  --ai-button-surface:#ead5af!important;
+  --ai-button-text:#1a2427!important;
+  color:#1a2427!important;
+  -webkit-text-fill-color:#1a2427;
+}
+:root[data-theme="light"] .ael.ael-compact #ask-intros-header-access:is(:hover,:focus-visible),
+:root[data-theme="dark"] .ael.ael-compact #ask-intros-header-access:is(:hover,:focus-visible) {
+  color:var(--ai-button-text)!important;
+  -webkit-text-fill-color:var(--ai-button-text);
+}
+:root[data-theme="light"] .ix-root .ix-desktop-unread-count {
+  color:#fff!important;
+  background:#28587d!important;
+}
