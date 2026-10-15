@@ -68,6 +68,7 @@ export default function App({ mode = 'demo' }: { mode?: 'demo' | 'live' }) {
   const [classicPage, setClassicPage] = useState<string>('memory');
   const [selectedProfileId, setSelectedProfileId] = useState<string>('marcus-lee');
   const [members, setMembers] = useState<NetworkMember[]>(mode === 'live' ? [] : NETWORK_MEMBERS);
+  const [liveDirectoryError, setLiveDirectoryError] = useState('');
   const [feedPosts, setFeedPosts] = useState<FeedPost[]>(mode === 'live' ? [] : INITIAL_FEED_POSTS);
   const [conversations, setConversations] = useState<ConversationThread[]>(mode === 'live' ? [] : INITIAL_CONVERSATIONS);
   const [introRequests, setIntroRequests] = useState<IntroRequest[]>(mode === 'live' ? [] : INITIAL_INTRO_REQUESTS);
@@ -323,7 +324,7 @@ export default function App({ mode = 'demo' }: { mode?: 'demo' | 'live' }) {
         }} /> : undefined}
       />
 
-      {mode === 'live' && <LiveMembers onMembers={setMembers} />}
+      {mode === 'live' && <LiveMembers onMembers={setMembers} onError={setLiveDirectoryError} />}
       {mode === 'live' && <MeetingReminderBanner onJoin={() => handleNavigate('meetings')} />}
       {mode === 'live' && <MembershipCardMailer />}
       <NewsTicker onOpen={() => handleNavigate('news')} />
@@ -371,6 +372,7 @@ export default function App({ mode = 'demo' }: { mode?: 'demo' | 'live' }) {
                   onRequestIntro={(member) => setRequestIntroTarget(member)}
                 />}
             <div className="border-t border-white/10">
+              {mode === 'live' && liveDirectoryError && <div role="alert" className="mx-4 my-3 rounded-xl border border-red-400/40 p-3 text-sm text-red-200">The verified member directory did not load: {liveDirectoryError} Reopen this screen to retry. Demo profiles are never substituted.</div>}
               <PeopleDirectoryView
                 members={members}
                 onNavigate={handleNavigate}
