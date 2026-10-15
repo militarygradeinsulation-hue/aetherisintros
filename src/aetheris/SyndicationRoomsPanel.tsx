@@ -125,9 +125,9 @@ function CreateRoomForm({ onCreated, onCancel }: CreateFormProps) {
       const room = await createSyndicationRoom({ data: {
         title,
         roomType,
-        description: description || undefined,
-        opportunitySize: opportunitySize || undefined,
-        deadline: deadline || undefined,
+        ...(description ? { description } : {}),
+        ...(opportunitySize ? { opportunitySize } : {}),
+        ...(deadline ? { deadline } : {}),
         inviteUserIds,
       } })
       onCreated(room)
