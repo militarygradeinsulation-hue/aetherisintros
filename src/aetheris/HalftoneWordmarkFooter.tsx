@@ -92,10 +92,11 @@ const MONO_STACK = '"JetBrains Mono", "SF Mono", ui-monospace, Menlo, Consolas, 
 // Pure helpers, lifted out and executed by tests/halftone-wordmark-footer.test.mjs.
 
 /** Hex → [r, g, b] in 0–255, or null for anything that isn't #rgb / #rrggbb. */
-export function hwfHex(hex: string) {
+export function hwfHex(hex: string): [number, number, number] | null {
   const m = /^#?([0-9a-f]{3}|[0-9a-f]{6})$/i.exec((hex || "").trim())
-  if (!m) return null
-  const h = m[1].length === 3 ? m[1].split("").map((c) => c + c).join("") : m[1]
+  const raw = m?.[1]
+  if (!raw) return null
+  const h = raw.length === 3 ? raw.split("").map((c) => c + c).join("") : raw
   return [parseInt(h.slice(0, 2), 16), parseInt(h.slice(2, 4), 16), parseInt(h.slice(4, 6), 16)]
 }
 
@@ -113,7 +114,7 @@ export function hwfRadius(coverage: number, gap: number) {
 export function hwfStep(
   x: number, y: number, vx: number, vy: number,
   hx: number, hy: number, px: number, py: number, r: number,
-) {
+): [number, number, number, number] {
   const dx = x - px
   const dy = y - py
   const d2 = dx * dx + dy * dy
@@ -269,7 +270,7 @@ export default function HalftoneWordmarkFooter({
             for (let sx = 0; sx < 3; sx++) {
               const x = Math.min(w - 1, Math.floor(gx * gap + ((sx + 0.5) * gap) / 3))
               const y = Math.min(h - 1, Math.floor(gy * gap + ((sy + 0.5) * gap) / 3))
-              sum += img[(y * w + x) * 4 + 3]
+              sum += img[(y * w + x) * 4 + 3] ?? 0
             }
           }
           const cov = sum / (9 * 255)
@@ -311,12 +312,12 @@ export default function HalftoneWordmarkFooter({
       let moving = false
       for (let i = 0; i < count; i++) {
         const j = i * 7
-        let x = dots[j]
-        let y = dots[j + 1]
-        let vx = dots[j + 2]
-        let vy = dots[j + 3]
-        const hx = dots[j + 4]
-        const hy = dots[j + 5]
+        let x = dots[j]!
+        let y = dots[j + 1]!
+        let vx = dots[j + 2]!
+        let vy = dots[j + 3]!
+        const hx = dots[j + 4]!
+        const hy = dots[j + 5]!
         if (!reduced) {
           if (ringAge < 900) {
             const dx = hx - ring.x
@@ -355,7 +356,7 @@ export default function HalftoneWordmarkFooter({
               Math.round(ink[2] + (warm[2] - ink[2]) * k) + ")"
             : o.colors.ink
         ctx.beginPath()
-        ctx.arc(x, y, dots[j + 6], 0, 6.2832)
+        ctx.arc(x, y, dots[j + 6]!, 0, 6.2832)
         ctx.fill()
       }
 
@@ -385,7 +386,7 @@ export default function HalftoneWordmarkFooter({
       if (!raf && visible) raf = requestAnimationFrame(loop)
     }
 
-    const toLocal = (e: PointerEv) => {
+    const toLocal = (e: PointerEv): [number, number] => {
       const b = canvas.getBoundingClientRect()
       return [e.clientX - b.left, e.clientY - b.top]
     }
@@ -449,7 +450,7 @@ export default function HalftoneWordmarkFooter({
 
   const toTop = () => {
     const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches
-    window.scrollTo({ top: 0, behavior: reduce ? "instant" : "smooth" })
+    window.scrollTo({ top: 0, behavior: reduce ? "auto" : "smooth" })
   }
 
   return (
