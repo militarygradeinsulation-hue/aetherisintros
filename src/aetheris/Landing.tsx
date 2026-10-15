@@ -18,9 +18,9 @@ import './editorial-landing.css'
  * confident whitespace. The aesthetic is original, not a retailer's copy.
  */
 const photo = {
-  room: 'https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?auto=format&fit=crop&w=2400&q=82',
-  gathering: 'https://images.unsplash.com/photo-1519167758481-83f550bb49b3?auto=format&fit=crop&w=1500&q=82',
-  conversation: 'https://images.unsplash.com/photo-1528605248644-14dd04022da1?auto=format&fit=crop&w=1550&q=82',
+  room: 'https://images.unsplash.com/photo-1758518727077-ffb66ffccced?auto=format&fit=crop&w=2400&q=85',
+  gathering: 'https://images.unsplash.com/photo-1739298061707-cefee19941b7?auto=format&fit=crop&w=1600&q=85',
+  conversation: 'https://images.unsplash.com/photo-1758518726775-70e538b0d46e?auto=format&fit=crop&w=1600&q=85',
   city: 'https://images.unsplash.com/photo-1519501025264-65ba15a82390?auto=format&fit=crop&w=1900&q=82',
 }
 
@@ -67,7 +67,7 @@ export default function Landing() {
     </header>
 
     <section className="ael-hero" id="ael-main" aria-labelledby="ael-hero-title">
-      <Photo src={photo.room} alt="An intimate, warmly illuminated setting with room for meaningful conversation" className="ael-hero-image" eager />
+      <Photo src={photo.room} alt="Three business leaders engaged in a private, attentive conversation in a refined meeting lounge" className="ael-hero-image" eager />
       <div className="ael-hero-shade" aria-hidden="true" />
       <div className="ael-hero-content">
         <p className="ael-kicker ael-kicker-light"><span className="ael-dash" /> A different kind of professional circle</p>
@@ -99,7 +99,7 @@ export default function Landing() {
     <section className="ael-scenes" aria-label="The professional experience">
       <article className="ael-scene ael-scene-first">
         <div className="ael-scene-photo">
-          <Photo src={photo.gathering} alt="An elegant event space prepared for personal conversations and a gathering of people" />
+          <Photo src={photo.gathering} alt="Executive team gathered around a boardroom table for a thoughtful strategic discussion" />
           <span className="ael-scene-index">I / THE SETTING</span>
         </div>
         <div className="ael-scene-description">
@@ -115,7 +115,7 @@ export default function Landing() {
           <p>Discover expertise, shared priorities and credible introductions without turning professional relationships into a public popularity contest.</p>
         </div>
         <div className="ael-scene-photo">
-          <Photo src={photo.conversation} alt="Professionals in an engaged roundtable discussion" />
+          <Photo src={photo.conversation} alt="Three business professionals discussing a potential partnership in a quiet executive lounge" />
           <span className="ael-scene-index">II / THE CONVERSATION</span>
         </div>
       </article>
