@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { submitIntroRequest } from '@/aetheris/lib/intro-request';
+import { useNetwork } from '@/aetheris/store';
 import { loadMyProfile } from '@/aetheris/live';
 import { WriteFailureNotice } from '@/aetheris/WriteFailureNotice';
 import { refreshUnread } from '@/aetheris/read-receipts';
@@ -67,6 +68,7 @@ function NewsTicker({ onOpen }: { onOpen: () => void }) {
 }
 
 export default function App({ mode = 'demo' }: { mode?: 'demo' | 'live' }) {
+  const network = useNetwork();
   const [activePage, setActivePage] = useState<ActivePage>('home');
   const [classicPage, setClassicPage] = useState<string>('memory');
   const [selectedProfileId, setSelectedProfileId] = useState<string>('marcus-lee');
@@ -326,6 +328,16 @@ export default function App({ mode = 'demo' }: { mode?: 'demo' | 'live' }) {
         }} /> : undefined}
       />
 
+      {mode === 'live' && network.networkLoadError && <section role="alert" aria-live="polite"
+        className="mx-3 sm:mx-6 my-3 rounded-xl border border-[#c9a673] bg-[#fff5e4] px-4 py-3 text-[#27343a] shadow-sm">
+        <p className="text-sm font-semibold">Live network data is unavailable.</p>
+        <p className="mt-1 text-sm">Posts, asks, relationships or messages may not have loaded. No sample profiles are being substituted for real members; do not assume an empty network or a sent request.</p>
+        <details className="mt-2 text-xs"><summary className="cursor-pointer font-semibold">Technical details</summary>
+          <p className="mt-1 break-words">{network.networkLoadError}</p></details>
+        <button type="button" className="mt-2 rounded-md bg-[#28587d] px-3 py-2 text-sm font-semibold text-white" onClick={() => window.location.reload()}>
+          Retry network connection
+        </button>
+      </section>}
       {mode !== 'live' && <InteractiveRelationshipTour />}
       {mode === 'live' && <LiveMembers onMembers={setMembers} onError={setLiveDirectoryError} />}
       {mode === 'live' && <MeetingReminderBanner onJoin={() => handleNavigate('meetings')} />}
