@@ -57,7 +57,8 @@ try {
       ['incoming bubble','.ix-messages .msg-incoming'],
       ['AI next step','.ix-messages .msg-next-step .msg-body-text'],
       ['AI brief','.ix-messages .msg-brief-panel .msg-body-text'],
-      ['conversation name','.ix-messages aside .text-xs.font-semibold'],
+      ['conversation name','.ix-messages aside .text-xs.font-semibold.truncate'],
+      ['primary action','.ix-messages aside .msg-primary-action'],
     ]){
       const computed=await page.locator(selector).first().evaluate(el=>{
         const ink=getComputedStyle(el).color
