@@ -189,7 +189,7 @@ export const TopNavigation: React.FC<TopNavigationProps> = ({
           <button
             onClick={() => (onOpenMyProfile ? onOpenMyProfile() : onNavigate('profile', 'sarah-chen'))}
             title="My profile"
-            className="flex items-center gap-2 p-0.5 pl-0.5 pr-1.5 rounded-full hover:bg-white/5 transition-colors cursor-pointer group"
+            className="ix-header-profile-action flex items-center gap-2 p-0.5 pl-0.5 pr-1.5 rounded-full hover:bg-white/5 transition-colors cursor-pointer group"
           >
             {me?.avatarUrl
               ? <AvatarImage source={me.avatarUrl} alt="" className="w-7 h-7 rounded-full object-cover" />
@@ -203,7 +203,7 @@ export const TopNavigation: React.FC<TopNavigationProps> = ({
             onClick={signOut}
             title="Log out"
             aria-label="Log out"
-            className="flex items-center gap-1.5 p-1.5 md:p-2 text-[#9CA3AF] hover:text-[#F2EEE6] hover:bg-white/5 rounded-lg transition-colors cursor-pointer"
+            className="ix-header-logout-action flex items-center gap-1.5 p-1.5 md:p-2 text-[#9CA3AF] hover:text-[#F2EEE6] hover:bg-white/5 rounded-lg transition-colors cursor-pointer"
           >
             <LogOut className="w-4 h-4" />
             <span className="hidden 2xl:inline text-xs">Log out</span>
@@ -228,6 +228,8 @@ export const TopNavigation: React.FC<TopNavigationProps> = ({
       <div ref={sheetRef} id="mobile-more-menu" className="ix-mobile-sheet" role="dialog" aria-modal="true" aria-label="More destinations">
         <div className="ix-mobile-sheet-head"><span>More</span><Button variant="ghost" size="icon" aria-label="Close more menu" onClick={closeMore}><X /></Button></div>
         {mobileExtra.map(({ id, label, icon: Icon }) => <Button key={id} variant="ghost" className="ix-mobile-sheet-item" aria-current={activePage === id ? 'page' : undefined} onClick={() => { closeMore(); onNavigate(id); }}><Icon aria-hidden="true" />{label}</Button>)}
+        <Button variant="ghost" className="ix-mobile-sheet-item" onClick={() => { closeMore(); if (onOpenMyProfile) onOpenMyProfile(); else onNavigate('profile', 'sarah-chen'); }}><Users aria-hidden="true" />My profile</Button>
+        <Button variant="ghost" className="ix-mobile-sheet-item" onClick={() => { closeMore(); void signOut(); }}><LogOut aria-hidden="true" />Log out</Button>
       </div>
     </div>}
     </>
