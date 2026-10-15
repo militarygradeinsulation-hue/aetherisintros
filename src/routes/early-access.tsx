@@ -6,6 +6,7 @@ import { signOutMember } from '@/aetheris/sync/workspace-sync'
 
 import { storedInvite, claimAccess, foundingLabel, foundingStats, joinWaitlist, useAccess, type FoundingStats } from '@/aetheris/access'
 import { supabase } from '@/integrations/supabase/client'
+import { AppearanceToggle } from '@/aetheris/AppearanceToggle'
 import '@/aetheris/styles.css'
 
 export const Route = createFileRoute('/early-access')({
@@ -85,6 +86,7 @@ function EarlyAccessPage() {
 
   return <main className="auth-page">
     <section className="auth-panel">
+      <AppearanceToggle className="auth-appearance" />
       <Link to="/" className="auth-brand">
         <img className="brand-logo" src={logoAsset.url} alt="Ask Intros logo" />
         <span className="brand-name">Ask<em>Intros</em></span>
