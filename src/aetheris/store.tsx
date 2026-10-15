@@ -681,6 +681,7 @@ export function NetworkProvider({ children, mode = 'live' }: { children: React.R
         }))
         if (live) return verifiedWrite('Introduction request', async () => { await submitIntroRequest(id, `I would like to request an introduction to ${nameOf(id)}.`) }, commit)
         commit()
+        return Promise.resolve()
       },
 
       authorizeIntro: (id) => {
@@ -697,6 +698,7 @@ export function NetworkProvider({ children, mode = 'live' }: { children: React.R
           if (error || !data?.length) throw new Error('Acceptance was not confirmed. This request may already have changed.')
         }, commit)
         commit()
+        return Promise.resolve()
       },
 
       declineIntro: (id) => {
@@ -713,15 +715,26 @@ export function NetworkProvider({ children, mode = 'live' }: { children: React.R
           if (error || !data?.length) throw new Error('Decline was not confirmed. This request may already have changed.')
         }, commit)
         commit()
+        return Promise.resolve()
       },
 
-      withdrawIntro: (id) => patch(prev => {
-        const { [id]: _withdrawn, ...introStates } = prev.introStates
-        return {
-          introStates,
-          learned: remember(prev, { category: 'Decisions', text: `You withdrew your introduction request to ${nameOf(id)}.`, source: 'Your action', confidence: 100, scope: 'private' }),
-        }
-      }),
+      withdrawIntro: (id) => {
+        const commit = () => patch(prev => {
+          const { [id]: _withdrawn, ...introStates } = prev.introStates
+          return {
+            introStates,
+            learned: remember(prev, { category: 'Decisions', text: `You withdrew your introduction request to ${nameOf(id)}.`, source: 'Confirmed withdrawal', confidence: 100, scope: 'private' }),
+          }
+        })
+        if (live) return verifiedWrite('Introduction withdrawal', async () => {
+          if (!userId) throw new Error('Sign in to withdraw an introduction.')
+          const { data, error } = await supabase.from('intro_requests')
+            .delete().eq('user_id', userId).eq('member_id', id).eq('status', 'requested').select('id')
+          if (error || !data?.length) throw new Error('The server could not confirm withdrawal. Reload and retry.')
+        }, commit)
+        commit()
+        return Promise.resolve()
+      },
 
       addPost: async (text, detail, media, visibility, kind = 'Insight', business) => {
         const post: Post = { id: uid('post'), memberId: 'me', kind, text, detail: detail ?? 'Shared with your network.', when: 'Just now', responses: 0, media: media ?? [], visibility: visibility ?? 'network', ...(business ? { business } : {}) }
