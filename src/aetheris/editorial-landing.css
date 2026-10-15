@@ -182,3 +182,11 @@
 @media (max-width: 680px) {
   .ael-logo .ask-intros-lockup { width: 118px; }
 }
+
+/* Shared premium brand: larger approved lockup, consistent with the full product. */
+.ael { --ael-night:#07090c; --ael-gold:#e2ac52; --ael-cream:#f2eee6; --ael-paper:#f1ede5; }
+.ael-header { min-height:124px; padding-top:18px; padding-bottom:18px; background:linear-gradient(180deg,rgba(5,7,10,.94),rgba(5,7,10,.55)); border-bottom-color:rgba(226,172,82,.24); }
+.ael-logo .ask-intros-lockup { width:clamp(210px,21vw,290px); max-height:none; }
+.ael a:focus-visible,.ael button:focus-visible { outline-color:#f4a125; }
+@media (max-width:960px) { .ael-header { min-height:110px; } .ael-logo .ask-intros-lockup { width:clamp(170px,23vw,225px); } }
+@media (max-width:680px) { .ael-header { min-height:92px; padding-top:12px; padding-bottom:12px; } .ael-logo .ask-intros-lockup { width:164px; } }
