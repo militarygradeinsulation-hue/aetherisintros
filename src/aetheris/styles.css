@@ -6049,7 +6049,12 @@ body:has([role=menu],[role=listbox],.ix-mobile-sheet,.topbar-dropmenu,.notificat
 :where(.module,.feed-card,.discover-tile,.member-tile,.sys-tile,.feature-tile):hover {
   border-color:rgba(233,118,43,.35);
 }
-.auth-page { background:#0c0c0b; color:#e9e4da; }
+.auth-page {
+  --ink:#e9e4da; --ivory:#0c0c0b; --paper:#191815;
+  --line-light:rgba(233,228,218,.19);
+  --cobalt:#e9762b; --cobalt-bright:#f49b62;
+  background:#0c0c0b; color:#e9e4da;
+}
 .auth-panel { background-color:#0c0c0b; background-image:linear-gradient(rgba(233,228,218,.035) 1px,transparent 1px),linear-gradient(90deg,rgba(233,228,218,.035) 1px,transparent 1px); }
 .auth-panel :is(h1,h2) { color:#e9e4da; }
 .auth-panel :is(.auth-lede,.auth-index,.auth-proof,.auth-switch) { color:#bdb4a7; }
