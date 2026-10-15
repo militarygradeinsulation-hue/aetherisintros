@@ -1,5 +1,5 @@
 // @ts-nocheck
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { X, Send, Sparkles, ShieldCheck, Check } from 'lucide-react';
 import { NetworkMember } from '../../networkData';
 import { ExecutivePortrait } from '../shared/ExecutivePortrait';
@@ -24,21 +24,36 @@ export const RequestIntroModal: React.FC<RequestIntroModalProps> = ({
   const [requestState, setRequestState] = useState<'created' | 'existing'>('created');
   const [sending, setSending] = useState(false);
   const [sendError, setSendError] = useState('');
+  // Prevent an earlier member's successful request from being displayed as a
+  // confirmation for a different member (or a later reopen of the same modal).
+  const attemptEpoch = useRef(0);
+  useEffect(() => {
+    attemptEpoch.current += 1;
+    setIsSuccess(false);
+    setRequestState('created');
+    setSendError('');
+    setNote('');
+    setSending(false);
+  }, [isOpen, targetMember?.id]);
 
   if (!isOpen || !targetMember) return null;
 
   const handleSend = async () => {
     if (sending) return;
+    const epoch = attemptEpoch.current;
+    const requestedMemberId = targetMember.id;
     setSending(true);
     setSendError('');
     try {
-      const result = await onSendRequest(targetMember.id, note.trim() || sharedGoal);
+      const result = await onSendRequest(requestedMemberId, note.trim() || sharedGoal);
+      if (epoch !== attemptEpoch.current) return;
       setRequestState(result);
       setIsSuccess(true);
     } catch (error) {
+      if (epoch !== attemptEpoch.current) return;
       setSendError(error instanceof Error ? error.message : 'Not sent. Retry your introduction request.');
     } finally {
-      setSending(false);
+      if (epoch === attemptEpoch.current) setSending(false);
     }
   };
 
