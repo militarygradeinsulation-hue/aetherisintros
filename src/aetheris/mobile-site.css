@@ -127,3 +127,53 @@
   .ix-root .ix-mobile-more *,
   .ix-root .ix-mobile-sheet * { animation: none !important; transition-duration: 0s !important; }
 }
+
+
+/* Public header primary action: make the actual invitation unmistakable.
+ * Prior global .ael-nav-cta rules forced dark lettering on the dark mode
+ * architectural surface. Set a deliberately contrasting pair in each mode,
+ * including hover/focus, without removing the rotating metallic border.
+ */
+:root[data-theme="dark"] .ael.ael-compact .ael-header .ael-nav-cta.ai-gradient-button {
+  --ai-button-surface: #ead5af;
+  --ai-button-text: #1a2427;
+}
+:root[data-theme="light"] .ael.ael-compact .ael-header .ael-nav-cta.ai-gradient-button {
+  --ai-button-surface: #243139;
+  --ai-button-text: #fff9ef;
+}
+:root[data-theme="dark"] .ael.ael-compact .ael-header .ael-nav-cta.ai-gradient-button,
+:root[data-theme="light"] .ael.ael-compact .ael-header .ael-nav-cta.ai-gradient-button {
+  color: var(--ai-button-text) !important;
+  background:
+    linear-gradient(135deg, var(--ai-button-surface), var(--ai-button-surface)) padding-box,
+    conic-gradient(from var(--ai-border-angle, 0deg), #a36b43 0%, #e9c994 22%, #f4e9d5 42%, #7d9497 60%, #c99467 81%, #a36b43 100%) border-box !important;
+  text-shadow: none !important;
+  font-size: clamp(11px, 1.05vw, 13px) !important;
+  font-weight: 750;
+  letter-spacing: .055em;
+  line-height: 1.15;
+  min-height: 46px;
+  max-width: 100%;
+  padding: 0 clamp(10px, 1.7vw, 19px);
+  justify-content: center;
+  box-shadow: 0 6px 20px rgba(4, 9, 12, .20);
+}
+:root[data-theme="dark"] .ael.ael-compact .ael-header .ael-nav-cta.ai-gradient-button:hover,
+:root[data-theme="light"] .ael.ael-compact .ael-header .ael-nav-cta.ai-gradient-button:hover {
+  color: var(--ai-button-text) !important;
+  filter: brightness(1.06);
+}
+:root .ael.ael-compact .ael-header .ael-nav-cta.ai-gradient-button:focus-visible {
+  outline: 3px solid #bb8757 !important;
+  outline-offset: 3px;
+}
+@media(max-width: 420px) {
+  :root[data-theme="dark"] .ael.ael-compact .ael-header .ael-nav-cta.ai-gradient-button,
+  :root[data-theme="light"] .ael.ael-compact .ael-header .ael-nav-cta.ai-gradient-button {
+    font-size: 11px !important;
+    min-height: 44px;
+    padding-inline: 10px;
+    letter-spacing: .015em;
+  }
+}
