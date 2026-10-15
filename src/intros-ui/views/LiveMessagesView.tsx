@@ -77,21 +77,21 @@ function Inner({ onOpenWorkspaces }: { onOpenWorkspaces?: () => void }) {
   const send = () => { if (active && draft.trim()) void sendText(active.id, draft.trim(), failed?.threadId === active.id && failed.text === draft.trim() ? failed.id : undefined) }
 
   return (
-    <div className="max-w-[1400px] mx-auto px-3 md:px-6 py-4">
+    <div className="max-w-[1400px] mx-auto px-3 md:px-6 py-4 ix-live-messages">
       <div className="mb-3">
-        <p className="text-[10px] font-mono tracking-[0.2em] uppercase text-[#9CA3AF]">Private communication</p>
-        <h1 className="font-serif-editorial text-2xl md:text-3xl text-[#F2EEE6]">Conversations with <em className="text-[#F5B027]">relationship context.</em></h1>
+        <p className="text-[10px] font-mono tracking-[0.2em] uppercase text-[var(--msg-muted)]">Private communication</p>
+        <h1 className="font-serif-editorial text-2xl md:text-3xl text-[var(--msg-ink)]">Conversations with <em className="text-[var(--msg-copper)]">relationship context.</em></h1>
       </div>
-      {readError && <div role="alert" className="mb-2 p-2 border border-red-400/40 text-xs text-[#FFD1D1] rounded">{readError} <button type="button" className="underline font-semibold" onClick={() => { if (active) void markThreadRead(active.id).then(() => setReadError('')).catch(() => {}) }}>Retry</button></div>}
+      {readError && <div role="alert" className="mb-2 p-2 border border-red-400/40 bg-[#fff0ed] text-xs text-[#8e302b] rounded">{readError} <button type="button" className="underline font-semibold" onClick={() => { if (active) void markThreadRead(active.id).then(() => setReadError('')).catch(() => {}) }}>Retry</button></div>}
       <div className="grid grid-cols-1 md:grid-cols-[300px_1fr] lg:grid-cols-[300px_1fr_260px] gap-3 h-[calc(100vh-210px)] min-h-[480px]">
-        <aside className={`rounded-xl border border-white/10 bg-[#0D1117]/90 flex flex-col min-h-0 ${active ? 'hidden md:flex' : 'flex'}`}>
-          <div className="p-3 border-b border-white/10 relative">
-            <Search className="absolute left-5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-[#6B7280]" />
+        <aside className={`rounded-xl border border-[var(--msg-border)] bg-[var(--msg-panel)] flex flex-col min-h-0 ${active ? 'hidden md:flex' : 'flex'}`}>
+          <div className="p-3 border-b border-[var(--msg-border)] relative">
+            <Search className="absolute left-5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-[var(--msg-muted)]" />
             <input value={query} onChange={e => setQuery(e.target.value)} placeholder="Search conversations"
-              className="w-full bg-[#0F131A] text-xs text-[#F2EEE6] rounded-lg pl-8 pr-3 py-2 border border-white/10 focus:outline-none focus:border-[#F5B027]" />
+              className="w-full bg-[var(--msg-panel-inset)] text-xs text-[var(--msg-ink)] rounded-lg pl-8 pr-3 py-2 border border-[var(--msg-border)] focus:outline-none focus:border-[var(--msg-accent)]" />
           </div>
           <div className="flex-1 overflow-y-auto">
-            {threads.length === 0 && <p className="p-4 text-xs text-[#9CA3AF]">No conversations yet. Open a member's profile and choose Message to start one.</p>}
+            {threads.length === 0 && <p className="p-4 text-xs text-[var(--msg-muted)]">No conversations yet. Open a member's profile and choose Message to start one.</p>}
             {threads.map(t => {
               const m = byId.get(t.memberId)
               const last = t.messages[t.messages.length - 1]
@@ -100,47 +100,47 @@ function Inner({ onOpenWorkspaces }: { onOpenWorkspaces?: () => void }) {
               const label = reads.loaded ? badgeLabel(count) : ''
               return (
                 <button key={t.id} onClick={() => setActiveId(t.id)}
-                  className={`w-full text-left px-3 py-3 border-b border-white/5 flex gap-3 cursor-pointer ${on ? 'bg-[#F5B027]/10' : 'hover:bg-white/5'}`}>
-                  <div className="w-9 h-9 shrink-0 rounded-full bg-[#1A1F25] border border-white/10 flex items-center justify-center text-[11px] text-[#F2EEE6]">
+                  className={`w-full text-left px-3 py-3 border-b border-[var(--msg-border)] flex gap-3 cursor-pointer ${on ? 'bg-[var(--msg-selected)]' : 'hover:bg-[var(--msg-selected)]'}`}>
+                  <div className="w-9 h-9 shrink-0 rounded-full bg-[var(--msg-incoming)] border border-[var(--msg-border)] flex items-center justify-center text-[11px] text-[var(--msg-ink)]">
                     {(m?.name ?? '?').split(' ').map(s => s[0]).slice(0, 2).join('')}
                   </div>
                   <div className="min-w-0 flex-1">
                     <div className="flex items-center justify-between gap-2">
-                      <span className={`text-sm truncate ${count > 0 ? 'text-white font-semibold' : 'text-[#F2EEE6]'}`}>{m?.name ?? 'Member'}</span>
+                      <span className={`text-sm truncate ${count > 0 ? 'text-[var(--msg-ink)] font-semibold' : 'text-[var(--msg-ink)]'}`}>{m?.name ?? 'Member'}</span>
                       {count > 0 && (label
-                        ? <span className="min-w-[18px] h-[18px] px-1 rounded-full bg-[#F5B027] text-[10px] font-semibold text-[#07090C] flex items-center justify-center shrink-0" aria-label={`${count} unread`}>{label}</span>
-                        : <span className="w-2 h-2 rounded-full bg-[#F5B027] shrink-0" aria-label="Unread" />)}
+                        ? <span className="min-w-[18px] h-[18px] px-1 rounded-full bg-[var(--msg-accent)] text-[10px] font-semibold text-[var(--msg-accent-ink)] flex items-center justify-center shrink-0" aria-label={`${count} unread`}>{label}</span>
+                        : <span className="w-2 h-2 rounded-full bg-[var(--msg-accent)] shrink-0" aria-label="Unread" />)}
                     </div>
-                    <p className="text-[11px] text-[#9CA3AF] truncate">{last ? attachmentPreview(last.text) : t.introContext}</p>
+                    <p className="text-[11px] text-[var(--msg-muted)] truncate">{last ? attachmentPreview(last.text) : t.introContext}</p>
                   </div>
                 </button>
               )
             })}
           </div>
-          <div className="p-3 border-t border-white/10 space-y-1">
-            <label className="flex items-center justify-between gap-2 text-xs text-[#CBD5E1] cursor-pointer">
+          <div className="p-3 border-t border-[var(--msg-border)] space-y-1">
+            <label className="flex items-center justify-between gap-2 text-xs text-[var(--msg-body)] cursor-pointer">
               <span>Read receipts</span>
               <input type="checkbox" checked={receipts ?? true} disabled={receipts === null} onChange={() => void toggleReceipts()} className="accent-[#F5B027]" />
             </label>
-            <p className="text-[11px] text-[#9CA3AF]">{receipts === false
+            <p className="text-[11px] text-[var(--msg-muted)]">{receipts === false
               ? 'Off: nobody sees when you have read their messages, and you do not see when they read yours.'
               : 'On: the people you message see "Seen" once you have read their message. Turn off to hide it both ways.'}</p>
-            {receiptsNote && <p className="text-[11px] text-[#F5B027]" role="alert">{receiptsNote}</p>}
+            {receiptsNote && <p className="text-[11px] text-[var(--msg-copper)]" role="alert">{receiptsNote}</p>}
           </div>
         </aside>
 
-        <section className={`rounded-xl border border-white/10 bg-[#0B0D0F]/90 flex-col min-h-0 ${active ? 'flex' : 'hidden md:flex'}`}>
+        <section className={`rounded-xl border border-[var(--msg-border)] bg-[var(--msg-panel)] flex-col min-h-0 ${active ? 'flex' : 'hidden md:flex'}`}>
           {!active ? (
-            <div className="flex-1 flex flex-col items-center justify-center text-center p-6 text-[#9CA3AF]">
-              <MessageSquare className="w-6 h-6 mb-2 text-[#F5B027]" />
+            <div className="flex-1 flex flex-col items-center justify-center text-center p-6 text-[var(--msg-muted)]">
+              <MessageSquare className="w-6 h-6 mb-2 text-[var(--msg-copper)]" />
               <p className="text-sm">Select a conversation.</p>
             </div>
           ) : (<>
-            <header className="px-4 py-3 border-b border-white/10 flex items-center gap-3">
-              <button onClick={() => setActiveId('')} className="md:hidden text-xs text-[#FFC85C] cursor-pointer">← Back</button>
+            <header className="px-4 py-3 border-b border-[var(--msg-border)] flex items-center gap-3">
+              <button onClick={() => setActiveId('')} className="md:hidden text-xs text-[var(--msg-copper)] cursor-pointer">← Back</button>
               <div className="min-w-0">
-                <p className="text-sm font-semibold text-[#F2EEE6] truncate">{person?.name ?? 'Member'}</p>
-                <p className="text-[11px] text-[#9CA3AF] truncate">{[person?.title, person?.company].filter(Boolean).join(' · ')}</p>
+                <p className="text-sm font-semibold text-[var(--msg-ink)] truncate">{person?.name ?? 'Member'}</p>
+                <p className="text-[11px] text-[var(--msg-muted)] truncate">{[person?.title, person?.company].filter(Boolean).join(' · ')}</p>
               </div>
               {person && <div className="ml-auto shrink-0 flex flex-wrap items-center justify-end gap-2">
                 {onOpenWorkspaces && isUuid(active.id) && <StartWorkspaceButton source="dm_thread" sourceId={active.id} withName={person.name} onOpen={onOpenWorkspaces} label="Workspace" />}
@@ -148,46 +148,46 @@ function Inner({ onOpenWorkspaces }: { onOpenWorkspaces?: () => void }) {
               </div>}
             </header>
             <div className="flex-1 overflow-y-auto px-4 py-4 space-y-2.5">
-              {active.messages.length === 0 && <p className="text-xs text-[#9CA3AF] text-center">Say hello — this is the start of your conversation.</p>}
+              {active.messages.length === 0 && <p className="text-xs text-[var(--msg-muted)] text-center">Say hello — this is the start of your conversation.</p>}
               {active.messages.map(msg => (
                 <div key={msg.id} className={`flex flex-col ${msg.from === 'me' ? 'items-end' : 'items-start'}`}>
-                  <div className={`max-w-[82%] rounded-xl px-3.5 py-2 text-sm break-words ${msg.from === 'me' ? 'bg-[#C78522] text-white' : 'bg-[#1A1F25] text-[#F1EFE9] border border-white/10'}`}>
+                  <div className={`max-w-[82%] rounded-xl px-3.5 py-2 text-sm break-words ${msg.from === 'me' ? 'bg-[var(--msg-outgoing)] text-[var(--msg-ink)]' : 'bg-[var(--msg-incoming)] text-[var(--msg-ink)] border border-[var(--msg-border)]'}`}>
                     <MessageBody text={msg.text} />
-                    <div className={`text-[10px] mt-1 ${msg.from === 'me' ? 'text-white/70' : 'text-[#9CA3AF]'}`}>{msg.at}</div>
+                    <div className={`text-[10px] mt-1 ${msg.from === 'me' ? 'text-[var(--msg-muted)]' : 'text-[var(--msg-muted)]'}`}>{msg.at}</div>
                   </div>
-                  {msg.id === seenId && <span className="text-[10px] text-[#9CA3AF] mt-0.5 mr-1">Seen</span>}
+                  {msg.id === seenId && <span className="text-[10px] text-[var(--msg-muted)] mt-0.5 mr-1">Seen</span>}
                 </div>
               ))}
               <div ref={endRef} />
             </div>
-            {failed && failed.threadId === active.id && <div role="alert" className="mx-3 mt-2 p-3 rounded-lg border border-red-400/50 bg-red-950/60 text-[#FFD8D8] text-xs flex items-center justify-between gap-3">
+            {failed && failed.threadId === active.id && <div role="alert" className="mx-3 mt-2 p-3 rounded-lg border border-red-400/50 bg-[#fff0ed] text-[#8e302b] text-xs flex items-center justify-between gap-3">
               <span>{failed.reason} This message has not been delivered.</span>
               <button type="button" className="underline font-semibold shrink-0" disabled={sending} onClick={() => void sendText(failed.threadId, failed.text, failed.id)}>Retry</button>
             </div>}
-            <footer className="p-3 border-t border-white/10 flex items-end gap-2">
+            <footer className="p-3 border-t border-[var(--msg-border)] flex items-end gap-2">
               <AttachButton threadId={active.id} onSend={text => sendText(active.id, text)} />
               <textarea value={draft} onChange={e => setDraft(e.target.value)} rows={1} placeholder="Write a message…"
                 onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); send() } }}
-                className="flex-1 resize-none bg-[#0F131A] text-sm text-[#F2EEE6] rounded-lg px-3 py-2 border border-white/10 focus:outline-none focus:border-[#F5B027] max-h-32" />
+                className="flex-1 resize-none bg-[var(--msg-panel-inset)] text-sm text-[var(--msg-ink)] rounded-lg px-3 py-2 border border-[var(--msg-border)] focus:outline-none focus:border-[var(--msg-accent)] max-h-32" />
               <button onClick={send} disabled={!draft.trim() || sending} aria-label="Send message"
-                className="p-2.5 rounded-lg bg-[#C78522] hover:bg-[#A96F1B] disabled:opacity-40 text-white cursor-pointer">
+                className="p-2.5 rounded-lg bg-[var(--msg-accent)] hover:bg-[var(--msg-accent-hover)] disabled:opacity-40 text-[var(--msg-ink)] cursor-pointer">
                 <Send className="w-4 h-4" />
               </button>
             </footer>
           </>)}
         </section>
 
-        <aside className="hidden lg:flex flex-col rounded-xl border border-white/10 bg-[#0D1117]/90 p-4 gap-4 min-h-0 overflow-y-auto">
-          <p className="text-[10px] font-mono tracking-[0.2em] uppercase text-[#9CA3AF]">Relationship context</p>
+        <aside className="hidden lg:flex flex-col rounded-xl border border-[var(--msg-border)] bg-[var(--msg-panel)] p-4 gap-4 min-h-0 overflow-y-auto">
+          <p className="text-[10px] font-mono tracking-[0.2em] uppercase text-[var(--msg-muted)]">Relationship context</p>
           {person ? (<>
             <div>
-              <p className="font-serif-editorial text-xl text-[#F2EEE6]">{person.name}</p>
-              <p className="text-xs text-[#9CA3AF]">{person.location}</p>
+              <p className="font-serif-editorial text-xl text-[var(--msg-ink)]">{person.name}</p>
+              <p className="text-xs text-[var(--msg-muted)]">{person.location}</p>
             </div>
-            {active?.introContext && <div><p className="text-[10px] uppercase tracking-widest text-[#9CA3AF] mb-1">How you met</p><p className="text-xs text-[#CBD5E1]">{active.introContext}</p></div>}
-            {active?.commitment && <div><p className="text-[10px] uppercase tracking-widest text-[#9CA3AF] mb-1">Open loop</p><p className="text-xs text-[#CBD5E1]">{active.commitment}</p></div>}
-            <p className="text-[11px] text-[#9CA3AF] mt-auto">Files up to 50 MB — images, video, PDFs. Only the two of you can open them.</p>
-          </>) : <p className="text-xs text-[#9CA3AF]">Context appears here when you open a conversation.</p>}
+            {active?.introContext && <div><p className="text-[10px] uppercase tracking-widest text-[var(--msg-muted)] mb-1">How you met</p><p className="text-xs text-[var(--msg-body)]">{active.introContext}</p></div>}
+            {active?.commitment && <div><p className="text-[10px] uppercase tracking-widest text-[var(--msg-muted)] mb-1">Open loop</p><p className="text-xs text-[var(--msg-body)]">{active.commitment}</p></div>}
+            <p className="text-[11px] text-[var(--msg-muted)] mt-auto">Files up to 50 MB — images, video, PDFs. Only the two of you can open them.</p>
+          </>) : <p className="text-xs text-[var(--msg-muted)]">Context appears here when you open a conversation.</p>}
         </aside>
       </div>
     </div>
