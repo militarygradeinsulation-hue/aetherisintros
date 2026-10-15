@@ -3,6 +3,7 @@ import { Link } from '@tanstack/react-router'
 import originalPortrait from '@/assets/aetheris-home-portrait.jpg.asset.json'
 import showcaseAsset from '@/assets/one-connected-system.png.asset.json'
 import { useAccess } from './access'
+import { AskIntrosLockup } from './AskIntrosLockup'
 import './editorial-landing.css'
 
 /**
@@ -47,8 +48,7 @@ export default function Landing() {
 
     <header className="ael-header" aria-label="Ask Intros public navigation">
       <Link to="/" className="ael-logo" aria-label="Ask Intros home">
-        <span className="ael-logo-mark" aria-hidden="true">a<span>·</span>i</span>
-        <span>ASK <em>INTROS</em></span>
+        <AskIntrosLockup variant="compact" />
       </Link>
       <nav className="ael-nav" aria-label="Primary navigation">
         <a href="#experience">The experience</a>
