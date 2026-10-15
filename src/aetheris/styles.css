@@ -6063,3 +6063,46 @@ body:has([role=menu],[role=listbox],.ix-mobile-sheet,.topbar-dropmenu,.notificat
 .auth-panel :is(input,textarea,select):focus-visible { outline:2px solid #e9762b; outline-offset:2px; }
 .auth-panel .btn.primary { background:#e9762b; color:#0c0c0b; border-color:#e9762b; }
 .auth-panel .btn.primary:hover { background:#f49b62; }
+
+
+/* Global paper-mode overrides for classic Ask Intros pages and account screens. */
+:root[data-theme="light"] .auth-page {
+  --ivory:#efebe3; --paper:#fffdf9; --ink:#17150f;
+  --soft:#17150f; --muted:#5f5950; --night:#efebe3;
+  --cobalt:#c2361c; --cobalt-bright:#ac2b16;
+  --line-light:rgba(23,21,15,.18);
+  background:#efebe3; color:#17150f;
+}
+:root[data-theme="light"] .auth-panel {
+  background-color:#efebe3;
+  background-image:linear-gradient(rgba(23,21,15,.035) 1px,transparent 1px),linear-gradient(90deg,rgba(23,21,15,.035) 1px,transparent 1px);
+}
+:root[data-theme="light"] .auth-panel :is(h1,h2) { color:#17150f; }
+:root[data-theme="light"] .auth-panel :is(.auth-lede,.auth-index,.auth-proof,.auth-switch) { color:#595248; }
+:root[data-theme="light"] .auth-panel :is(input,textarea,select) {
+  background:#fffdf9; color:#17150f; border-color:rgba(23,21,15,.24);
+}
+:root[data-theme="light"] .auth-panel :is(input,textarea,select)::placeholder { color:#696259; }
+:root[data-theme="light"] .auth-panel .btn.primary { background:#c2361c; color:#fffdf9; border-color:#c2361c; }
+:root[data-theme="light"] .auth-panel .btn.primary:hover { background:#9b2a18; }
+:root[data-theme="light"] .auth-page .auth-soon,
+:root[data-theme="light"] .auth-page .auth-invited { background:#fffdf9; color:#17150f; }
+:root[data-theme="dark"] .auth-page .auth-soon,
+:root[data-theme="dark"] .auth-page .auth-invited { background:#1d1a16; color:#e9e4da; }
+:root[data-theme="light"] .auth-page .auth-soon p,
+:root[data-theme="light"] .auth-page .auth-invited { color:#4f473e; }
+:root[data-theme="dark"] .auth-page .auth-soon p,
+:root[data-theme="dark"] .auth-page .auth-invited { color:#e9e4da; }
+:root[data-theme="light"] :is(.app-shell,.ask-os,.core-hub,.module,.topbar,.editorial-home.home-theme-light) {
+  --night:#efebe3; --raised:#fffdf9; --graphite:#f0e9dd;
+  --soft:#17150f; --muted:#5f5950; --line-dark:rgba(23,21,15,.2);
+}
+:root[data-theme="light"] .app-shell,
+:root[data-theme="light"] .ask-os { background:#efebe3; color:#17150f; }
+:root[data-theme="light"] :is(.module,.topbar,.core-hub) {
+  border-color:rgba(23,21,15,.17);
+}
+:root[data-theme="light"] .ask-intros-lockup__ask,
+:root[data-theme="light"] .ask-intros-lockup__intros,
+:root[data-theme="light"] .ask-intros-lockup__tagline { fill:#17150f; }
+:root[data-theme="light"] .ask-intros-lockup__rule { stroke:#c2361c; }
