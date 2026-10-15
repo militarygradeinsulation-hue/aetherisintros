@@ -269,3 +269,93 @@
 @media(max-width:400px) {
   .ael-logo .ask-intros-lockup { width:135px; }
 }
+
+
+/* PHOTO-SURFACE CONTRAST CONTRACT
+ * Both appearances keep hero/cinematic photographs DARK and all text on them LIGHT.
+ * Paper-mode inheritance must never turn white photo headlines charcoal.
+ * Specific surface rules avoid broad overrides to dialogs, cards and badges.
+ */
+.ael .ael-hero,
+:root[data-theme="light"] .ael .ael-hero {
+  color:#faf5eb;
+  background:#11100f;
+}
+.ael .ael-hero h1,
+:root[data-theme="light"] .ael .ael-hero h1 {
+  color:#faf5eb;
+  font-size:clamp(66px,8.8vw,132px);
+  line-height:.92;
+  max-width:925px;
+  text-shadow:0 3px 26px rgba(0,0,0,.25);
+}
+.ael .ael-hero h1 em,
+:root[data-theme="light"] .ael .ael-hero h1 em {
+  color:#f08a44;
+  text-shadow:0 3px 24px rgba(0,0,0,.26);
+}
+.ael .ael-hero .ael-hero-lede,
+:root[data-theme="light"] .ael .ael-hero .ael-hero-lede {
+  color:#f1ece5;
+  text-shadow:0 2px 16px rgba(0,0,0,.35);
+}
+.ael .ael-hero .ael-kicker,
+:root[data-theme="light"] .ael .ael-hero .ael-kicker {
+  color:#f6e9d8;
+}
+.ael .ael-hero .ael-hero-bottom,
+:root[data-theme="light"] .ael .ael-hero .ael-hero-bottom {
+  color:#f4ece1;
+  border-top-color:rgba(250,245,235,.32);
+}
+.ael .ael-hero-shade {
+  background:
+    linear-gradient(90deg,rgba(8,9,10,.93) 0%,rgba(8,9,10,.81) 32%,rgba(8,9,10,.48) 64%,rgba(8,9,10,.18) 100%),
+    linear-gradient(0deg,rgba(8,9,10,.83),transparent 54%,rgba(8,9,10,.14));
+}
+.ael .ael-hero-image {
+  object-position:center 45%;
+  filter:brightness(.82) saturate(.71) contrast(1.06);
+}
+/* This is a dark photo chapter even when the rest of the site is light. */
+.ael .ael-cinematic-break,
+:root[data-theme="light"] .ael .ael-cinematic-break {
+  background:#131313;
+  color:#faf5eb;
+}
+.ael .ael-cinematic-break .ael-cinematic-message>p,
+:root[data-theme="light"] .ael .ael-cinematic-break .ael-cinematic-message>p {
+  color:#faf5eb;
+  text-shadow:0 3px 22px rgba(0,0,0,.47);
+}
+.ael .ael-cinematic-break .ael-cinematic-message em,
+:root[data-theme="light"] .ael .ael-cinematic-break .ael-cinematic-message em {
+  color:#f3a067;
+}
+.ael .ael-cinematic-break .ael-cinematic-caption,
+:root[data-theme="light"] .ael .ael-cinematic-break .ael-cinematic-caption,
+.ael .ael-scene-photo .ael-scene-index,
+:root[data-theme="light"] .ael .ael-scene-photo .ael-scene-index {
+  color:#fff8ee;
+  text-shadow:0 2px 13px rgba(0,0,0,.55);
+}
+.ael .ael-scene-photo img {
+  filter:saturate(.75) contrast(1.04);
+  object-position:center 38%;
+}
+.ael .ael-scene-photo:after {
+  background:linear-gradient(0deg,rgba(6,7,8,.62),rgba(6,7,8,.03) 48%,transparent);
+}
+@media(max-width:720px) {
+  .ael .ael-hero h1,
+  :root[data-theme="light"] .ael .ael-hero h1 {
+    font-size:clamp(58px,11.8vw,88px);
+    line-height:.95;
+    overflow-wrap:normal;
+  }
+  .ael .ael-hero-shade {
+    background:linear-gradient(90deg,rgba(8,9,10,.91),rgba(8,9,10,.56)),
+      linear-gradient(0deg,rgba(8,9,10,.9),transparent 72%);
+  }
+  .ael .ael-hero-image { object-position:61% center; }
+}
