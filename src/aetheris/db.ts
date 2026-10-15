@@ -103,7 +103,7 @@ export async function loadDirectory(): Promise<Directory> {
 }
 
 /** The signed-in member's own graph. */
-export async function loadUserGraph(userId: string): Promise<Partial<RemoteGraph>> {
+export async function loadUserGraph(userId: string, strict = false): Promise<Partial<RemoteGraph>> {
   try {
     const [rels, intros, memories, ownPosts, ownAsks, responses, threadRows, messageRows, prefs] = await Promise.all([
       supabase.from('relationships').select('member_id, kind').eq('user_id', userId),
@@ -116,6 +116,19 @@ export async function loadUserGraph(userId: string): Promise<Partial<RemoteGraph
       supabase.from('messages').select('*').eq('user_id', userId).order('created_at'),
       supabase.from('preferences').select('data').eq('user_id', userId).maybeSingle(),
     ])
+    // In live mode, any denied private-graph query is a failed load, not an
+    // empty or successfully synchronized account. The demo can remain offline.
+    const failedReads = [
+      ['relationships', rels.error], ['introductions', intros.error],
+      ['memories', memories.error], ['posts', ownPosts.error],
+      ['asks', ownAsks.error], ['ask responses', responses.error],
+      ['threads', threadRows.error], ['messages', messageRows.error],
+      ['preferences', prefs.error],
+    ].filter((entry): entry is [string, NonNullable<typeof rels.error>] => Boolean(entry[1]));
+    if (strict && failedReads.length) {
+      throw new Error('Member network read failed: ' +
+        failedReads.map(([table, error]) => table + ': ' + error.message).join(' · '));
+    }
     // Inviter first, then the founder, then everyone else.
     const top = await supabase.rpc('my_top_connections').then(r => (r.data ?? []).map(t => String(t.member_id)), () => [] as string[])
 
@@ -157,7 +170,8 @@ export async function loadUserGraph(userId: string): Promise<Partial<RemoteGraph
       sentMessages,
       doc: (prefs.data?.data ?? {}) as Record<string, unknown>,
     }
-  } catch {
+  } catch (error) {
+    if (strict) throw error;
     return {}
   }
 }
