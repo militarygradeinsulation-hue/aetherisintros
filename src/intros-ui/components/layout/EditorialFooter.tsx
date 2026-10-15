@@ -1,5 +1,6 @@
 import React from 'react';
 import HalftoneWordmarkFooter from '@/aetheris/HalftoneWordmarkFooter';
+import { useAppearance } from '@/aetheris/AppearanceMode';
 import type { ActivePage } from './TopNavigation';
 
 interface EditorialFooterProps {
@@ -13,7 +14,9 @@ const FOOTER_DESTINATIONS: { label: string; page: ActivePage }[] = [
   { label: 'Intelligence', page: 'insights' },
 ];
 
-export const EditorialFooter: React.FC<EditorialFooterProps> = ({ onNavigate }) => (
+export const EditorialFooter: React.FC<EditorialFooterProps> = ({ onNavigate }) => {
+  const { theme } = useAppearance();
+  return (
   <div className="ix-editorial-signoff mt-14 print:hidden">
     <nav className="ix-editorial-signoff-nav" aria-label="Explore Ask Intros">
       <span>PEOPLE × CONTEXT × OPPORTUNITY</span>
@@ -34,7 +37,8 @@ export const EditorialFooter: React.FC<EditorialFooterProps> = ({ onNavigate }) 
       dotGap={7}
       radius={82}
       grain={0.28}
-      palette={{ background: '#0c0c0b', ink: '#e9e4da', warm: '#e9762b' }}
+      palette={theme === 'dark' ? { background: '#0c0c0b', ink: '#e9e4da', warm: '#e9762b' } : { background: '#efebe3', ink: '#17150f', warm: '#c2361c' }}
     />
   </div>
-);
+  );
+};
