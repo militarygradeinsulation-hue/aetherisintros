@@ -227,8 +227,8 @@ export default function HalftoneWordmarkFooter({
     let dots = new Float32Array(0)
     let count = 0
     let grainTile = null as HTMLCanvasElement | null
-    const ink = hwfHex(opts.current.colors.ink) || [233, 228, 218]
-    const warm = hwfHex(opts.current.colors.warm) || [233, 118, 43]
+    const ink: [number, number, number] = hwfHex(opts.current.colors.ink) ?? [233, 228, 218]
+    const warm: [number, number, number] = hwfHex(opts.current.colors.warm) ?? [233, 118, 43]
 
     const layout = () => {
       const o = opts.current
