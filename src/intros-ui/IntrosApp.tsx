@@ -37,6 +37,7 @@ import { SelectionReader } from '@/aetheris/SelectionReader';
 import { LiveMessagesView } from './views/LiveMessagesView';
 import { useUnreadCounts } from '@/aetheris/read-receipts';
 import '@/aetheris/styles.css';
+import '@/aetheris/architectural-system.css';
 import { useAetherisNews } from '@/aetheris/news';
 import { LiveMembers } from './liveMembers';
 import { ThisWeekPanel } from '@/aetheris/this-week-ui';

@@ -8,6 +8,7 @@ import { AppearanceToggle } from './AppearanceToggle'
 import { useAppearance } from './AppearanceMode'
 import HalftoneWordmarkFooter from './HalftoneWordmarkFooter'
 import './editorial-landing.css'
+import './architectural-system.css'
 
 /**
  * ASK INTROS / EDITORIAL PRIVATE-CIRCLE EXPERIENCE
@@ -18,10 +19,10 @@ import './editorial-landing.css'
  * confident whitespace. The aesthetic is original, not a retailer's copy.
  */
 const photo = {
-  room: 'https://images.pexels.com/photos/3861571/pexels-photo-3861571.jpeg?auto=compress&cs=tinysrgb&w=2400',
-  gathering: 'https://images.unsplash.com/photo-1556761175-5973dc0f32e7?auto=format&fit=crop&w=1600&q=85',
-  conversation: 'https://images.unsplash.com/photo-1542744173-8e7e53415bb0?auto=format&fit=crop&w=1600&q=85',
-  city: 'https://images.unsplash.com/photo-1519501025264-65ba15a82390?auto=format&fit=crop&w=1900&q=82',
+  room: 'https://images.unsplash.com/photo-1772012454181-6eedf371b8ee?auto=format&fit=crop&w=2400&q=84',
+  gathering: 'https://images.unsplash.com/photo-1761489798175-e2076856a9f7?auto=format&fit=crop&w=1600&q=82',
+  conversation: 'https://images.unsplash.com/photo-1767652497594-4ca3daf36c8b?auto=format&fit=crop&w=1600&q=82',
+  city: 'https://images.unsplash.com/photo-1757940809566-70aaf9501138?auto=format&fit=crop&w=1900&q=82',
 }
 
 function Photo({ src, alt, className = '', eager = false }: { src: string; alt: string; className?: string; eager?: boolean }) {
@@ -67,12 +68,13 @@ export default function Landing() {
     </header>
 
     <section className="ael-hero" id="ael-main" aria-labelledby="ael-hero-title">
-      <Photo src={photo.room} alt="A senior executive leading a focused discussion with colleagues in a modern boardroom" className="ael-hero-image" eager />
+      <Photo src={photo.room} alt="Contemporary architecture with crafted timber detail and measured proportions" className="ael-hero-image" eager />
       <div className="ael-hero-shade" aria-hidden="true" />
+      <div className="ael-architecture-meta" aria-hidden="true"><span>RELATIONSHIPS / BY DESIGN</span><span>ASK INTROS — STUDY 001</span><span>EST. TO CONNECT WHAT MATTERS</span></div>
       <div className="ael-hero-content">
         <p className="ael-kicker ael-kicker-light"><span className="ael-dash" /> A different kind of professional circle</p>
         <h1 id="ael-hero-title">The right room <em>changes everything.</em></h1>
-        <p className="ael-hero-lede">The introductions that matter aren't measured in connections. They're measured in what becomes possible afterward.</p>
+        <p className="ael-hero-lede">Great things are never built by accident. Neither are the relationships that make them possible.</p>
         <div className="ael-hero-actions">
           <JoinAction signedIn={signedIn} className="ael-btn ael-btn-gold ai-gradient-button" />
           <Link to="/demo" className="ael-text-link">Explore Ask Intros <ArrowRight size={16} aria-hidden="true" /></Link>
@@ -88,7 +90,7 @@ export default function Landing() {
     <section className="ael-introduction" id="experience" aria-labelledby="ael-experience-title">
       <div className="ael-editorial-meta"><span>THE PHILOSOPHY</span><span>001 — THE VALUE OF ACCESS</span></div>
       <div className="ael-editorial-lead">
-        <h2 id="ael-experience-title">The people you meet should <em>change where you're going.</em></h2>
+        <h2 id="ael-experience-title">The strongest networks are <em>built with intention.</em></h2>
         <div>
           <p>Most networks help you collect names. Ask Intros is designed to connect people through a real reason to meet, permission to be introduced, and a place to turn the conversation into action.</p>
           <Link className="ael-underlink" to="/founder-story">Why we built it <ArrowUpRight size={16} aria-hidden="true" /></Link>
@@ -99,23 +101,23 @@ export default function Landing() {
     <section className="ael-scenes" aria-label="The professional experience">
       <article className="ael-scene ael-scene-first">
         <div className="ael-scene-photo">
-          <Photo src={photo.gathering} alt="A business leader presenting an idea to a seated group of professionals" />
+          <Photo src={photo.gathering} alt="Sculptural contemporary building with a sweeping curved roof" />
           <span className="ael-scene-index">I / THE SETTING</span>
         </div>
         <div className="ael-scene-description">
           <span className="ael-fine-label">BEYOND THE CONNECTION REQUEST</span>
-          <h3>Be where the <em>right conversations</em> begin.</h3>
+          <h3>An introduction is an <em>opening, not an outcome.</em></h3>
           <p>Opportunity often starts with being in the right conversation, at the right time, with enough shared context to make it count.</p>
         </div>
       </article>
       <article className="ael-scene ael-scene-second">
         <div className="ael-scene-description">
           <span className="ael-fine-label">THE VALUE OF RELEVANCE</span>
-          <h3>People who see <em>what you see.</em></h3>
+          <h3>Find people who <em>move things forward.</em></h3>
           <p>Discover expertise, shared priorities and credible introductions without turning professional relationships into a public popularity contest.</p>
         </div>
         <div className="ael-scene-photo">
-          <Photo src={photo.conversation} alt="Business professionals reviewing documents together during a strategy meeting" />
+          <Photo src={photo.conversation} alt="Refined European stone facade with carefully detailed architectural proportions" />
           <span className="ael-scene-index">II / THE CONVERSATION</span>
         </div>
       </article>
@@ -139,7 +141,7 @@ export default function Landing() {
     </section>
 
     <section className="ael-cinematic-break" aria-label="A new perspective on professional relationships">
-      <Photo src={photo.city} alt="An illuminated city at dusk, suggesting a world of possibilities beyond the horizon" />
+      <Photo src={photo.city} alt="Warmly illuminated modern timber-and-glass architecture set in a natural landscape" />
       <div className="ael-cinematic-shade" aria-hidden="true" />
       <div className="ael-cinematic-message">
         <p className="ael-kicker ael-kicker-light"><span className="ael-dash" /> ACCESS IS ONLY THE START</p>
@@ -151,7 +153,7 @@ export default function Landing() {
     <section className="ael-system" aria-labelledby="ael-system-title">
       <div className="ael-editorial-meta ael-editorial-meta-dark"><span>THE INTELLIGENCE BEHIND THE EXPERIENCE</span><span>004 — ONE CONNECTED SYSTEM</span></div>
       <div className="ael-system-head">
-        <h2 id="ael-system-title">Beautifully simple outside. <em>Purposefully connected inside.</em></h2>
+        <h2 id="ael-system-title">Beautiful by design. <em>Connected by intention.</em></h2>
         <p>People, introductions, conversations, meetings and business follow-through are designed to work together—not live as unrelated activity across separate apps.</p>
       </div>
       <div className="ael-system-visual">
@@ -179,7 +181,7 @@ export default function Landing() {
       dotGap={6}
       radius={88}
       grain={0.35}
-      palette={theme === 'dark' ? { background: '#0c0c0b', ink: '#e9e4da', warm: '#e9762b' } : { background: '#efebe3', ink: '#17150f', warm: '#c2361c' }}
+      palette={theme === 'dark' ? { background: '#111719', ink: '#f2eee6', warm: '#b59a74' } : { background: '#f3f0e9', ink: '#202420', warm: '#a36b43' }}
     />
   </main>
 }
