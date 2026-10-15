@@ -4,6 +4,7 @@ import originalPortrait from '@/assets/aetheris-home-portrait.jpg.asset.json'
 import showcaseAsset from '@/assets/one-connected-system.png.asset.json'
 import { useAccess } from './access'
 import { AskIntrosLockup } from './AskIntrosLockup'
+import { AppearanceToggle } from './AppearanceToggle'
 import HalftoneWordmarkFooter from './HalftoneWordmarkFooter'
 import './editorial-landing.css'
 
@@ -57,6 +58,7 @@ export default function Landing() {
         <a href="#membership">Membership</a>
       </nav>
       <div className="ael-header-actions">
+        <AppearanceToggle className="ael-appearance" />
         {signedIn ? <Link to="/app" className="ael-signin">My network</Link> : <Link to="/auth" className="ael-signin">Member sign in</Link>}
         <JoinAction signedIn={signedIn} className="ael-nav-cta" />
       </div>
