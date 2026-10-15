@@ -1,16 +1,14 @@
 /**
  * Database access for the network.
  *
- * Two halves:
- *  - `loadDirectory()` reads the shared, non-personal catalogue (members,
- *    companies, feed posts, asks, signals, demo conversations, seeded learned
- *    context) that every signed-in member sees.
+ * Two explicitly separated paths:
+ *  - `loadDirectory()` returns only packaged fictional data for /demo.
+ *    Production member pages must never query or fall back to the demo tables.
  *  - `loadUserGraph()` / the `save*` helpers read and write the signed-in
- *    member's own graph: relationships, introduction requests, memories,
- *    conversations, posts, asks and preferences.
+ *    member's private relationships, introduction requests, notes and activity.
  *
- * Everything degrades to the in-code catalogue and localStorage when the
- * database is unreachable, so the preview never hard-fails.
+ * Live callers opt into strict reads: a denied table read surfaces an error
+ * instead of silently suggesting no posts, asks or introduction requests exist.
  */
 import { supabase } from '@/integrations/supabase/client'
 import { parseBusinessDetails } from './business-posts'
