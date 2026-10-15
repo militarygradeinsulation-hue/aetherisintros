@@ -210,3 +210,77 @@ body::before {
   html { scroll-behavior:auto; }
 }
 @media print { body::before { display:none; } }
+
+/* One user-facing appearance setting; accent colors are brand-defined, not selectable. */
+:root {
+  --acc:#e9762b; --acc-bright:#f49b62; --acc-strong:#c85c20; --acc-deep:#893c18;
+  --acc-wash:rgba(233,118,43,.12); --acc-line:rgba(233,118,43,.34);
+  --acc-glow:rgba(233,118,43,.38); --acc-btn:rgba(233,118,43,.16);
+  --acc-btn-hover:rgba(233,118,43,.25); --acc-btn-line:rgba(233,118,43,.42);
+  --acc-spot:rgba(233,118,43,.1); --acc-field-line:rgba(233,228,218,.06);
+  --acc-field-fill:rgba(233,118,43,.05); --acc-field-stroke:rgba(233,118,43,.28);
+  --acc-field-glow:rgba(233,118,43,.42);
+}
+
+:root[data-theme="light"] {
+  --background:oklch(0.938 0.013 84);
+  --foreground:oklch(0.19 0.013 75);
+  --card:oklch(0.975 0.008 84);
+  --card-foreground:oklch(0.19 0.013 75);
+  --popover:oklch(0.975 0.008 84);
+  --popover-foreground:oklch(0.19 0.013 75);
+  --primary:oklch(0.49 0.15 37);
+  --primary-foreground:oklch(0.985 0.008 84);
+  --secondary:oklch(0.90 0.013 84);
+  --secondary-foreground:oklch(0.19 0.013 75);
+  --muted:oklch(0.91 0.012 84);
+  --muted-foreground:oklch(0.43 0.018 76);
+  --accent:oklch(0.89 0.028 56);
+  --accent-foreground:oklch(0.19 0.013 75);
+  --border:oklch(0.70 0.02 80 / 47%);
+  --input:oklch(0.72 0.022 80 / 47%);
+  --ring:oklch(0.55 0.14 35);
+  --sidebar:oklch(0.96 0.01 84);
+  --sidebar-foreground:oklch(0.19 0.013 75);
+  --sidebar-primary:oklch(0.49 0.15 37);
+  --sidebar-primary-foreground:oklch(0.985 0.008 84);
+  --sidebar-accent:oklch(0.90 0.015 84);
+  --sidebar-accent-foreground:oklch(0.19 0.013 75);
+  --sidebar-border:oklch(0.70 0.02 80 / 47%);
+  --sidebar-ring:oklch(0.55 0.14 35);
+  --night:#efebe3; --raised:#fffdf9; --graphite:#e7e1d6;
+  --soft:#17150f; --muted:#5e5850; --ivory:#efebe3; --paper:#fffdf9;
+  --ink:#17150f; --line-dark:rgba(23,21,15,.2); --line-light:rgba(23,21,15,.2);
+  --halftone-night:#efebe3; --halftone-ink:#17150f; --halftone-warm:#c2361c;
+  --halftone-line:rgba(23,21,15,.17);
+  --acc:#c2361c; --acc-bright:#b53118; --acc-strong:#a02e18; --acc-deep:#7e2817;
+  --acc-wash:rgba(194,54,28,.10); --acc-line:rgba(194,54,28,.32);
+  --acc-glow:rgba(194,54,28,.22); --acc-btn:rgba(194,54,28,.13);
+  --acc-btn-hover:rgba(194,54,28,.20); --acc-btn-line:rgba(194,54,28,.35);
+  --acc-spot:rgba(194,54,28,.07); --acc-field-line:rgba(23,21,15,.06);
+  --acc-field-fill:rgba(194,54,28,.035); --acc-field-stroke:rgba(194,54,28,.23);
+  --acc-field-glow:rgba(194,54,28,.3);
+}
+:root[data-theme="light"], :root[data-theme="light"] body { background:#efebe3; color:#17150f; }
+:root[data-theme="light"] body::before { background-image:radial-gradient(rgba(23,21,15,.35) .45px,transparent .7px); }
+:root[data-theme="light"] .site-ambient { opacity:.09; mix-blend-mode:multiply; }
+:root[data-theme="light"] .site-ambient-numbers { opacity:.16; }
+:root[data-theme="light"] .site-ambient-connections { opacity:.16; }
+
+/* Controlled gooey light/dark switch, adapted from the supplied design. */
+.appearance-switcher { display:inline-flex; align-items:center; gap:6px; flex:none; color:var(--halftone-ink,#e9e4da); font-family:Inter,system-ui,sans-serif; }
+.appearance-switcher__label { font-size:10px; min-width:32px; letter-spacing:.07em; }
+.appearance-liquid-toggle { --liquid-rail:#d2cabb; --liquid-knob:#f8f3e9; display:inline-block; width:52px; height:32px; position:relative; cursor:pointer; flex-shrink:0; border-radius:999px; background:var(--liquid-rail); box-shadow:inset 0 0 0 1px rgba(23,21,15,.17); transition:background .45s ease; }
+.appearance-liquid-toggle:has(input:checked) { --liquid-rail:#a64329; --liquid-knob:#fff7ed; }
+.appearance-liquid-toggle input { position:absolute; inset:0; width:100%; height:100%; opacity:0; cursor:pointer; margin:0; z-index:1; }
+.appearance-liquid-toggle svg { width:100%; height:100%; display:block; pointer-events:none; fill:var(--liquid-knob); }
+.appearance-liquid-toggle__first,.appearance-liquid-toggle__second { transition:transform .5s cubic-bezier(.2,.75,.22,1); transform-box:fill-box; transform-origin:center; }
+.appearance-liquid-toggle__drop { transition:r .35s ease; }
+.appearance-liquid-toggle:has(input:focus-visible) { outline:2px solid var(--halftone-warm); outline-offset:3px; }
+.appearance-liquid-toggle:has(input:disabled) { opacity:.5; cursor:not-allowed; }
+:root[data-theme="light"] .appearance-liquid-toggle { --liquid-rail:#d2cabb; --liquid-knob:#fffaf1; }
+:root[data-theme="light"] .appearance-switcher { color:#17150f; }
+@media(prefers-reduced-motion:reduce) {
+  .appearance-liquid-toggle,.appearance-liquid-toggle circle { transition:none !important; }
+}
+@media (max-width:680px) { .appearance-switcher__label { display:none; } }
