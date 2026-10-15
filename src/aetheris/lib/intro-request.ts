@@ -2,6 +2,7 @@
  * A server-confirmed request is pending, NOT accepted or routed to mutuals.
  */
 import { supabase } from '@/integrations/supabase/client'
+
 export const isIntroTargetId = (id: string): boolean =>
   /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id)
 
@@ -22,7 +23,7 @@ export async function submitIntroRequest(targetId: string, note: string): Promis
   if (error) {
     throw new Error(error.message || 'Not sent. No introduction request was confirmed. Retry.')
   }
-  if (!data?.id || !['created','existing'].includes(data?.state)) {
+  if (!data?.id || !['created', 'existing'].includes(data?.state)) {
     throw new Error('Not sent. The server did not confirm an introduction. Retry.')
   }
   return data.state as 'created' | 'existing'

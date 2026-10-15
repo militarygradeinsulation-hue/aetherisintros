@@ -6,7 +6,7 @@ import { useEffect, useMemo, useState } from 'react'
 import { ArrowRight, Check, CircleDot, Compass, DoorOpen, Link2, LockKeyhole, Pause, Play, Plus, Route as RouteIcon, ShieldCheck, Trash2, X } from 'lucide-react'
 
 import { supabase } from '@/integrations/supabase/client'
-import { submitIntroRequest } from '@/intros-ui/liveIntroRequest'
+import { submitIntroRequest } from './lib/intro-request'
 import { useOps } from './crm/store'
 import { useGraph, useGraphInputs } from './graph-store'
 import { useNav } from './nav'

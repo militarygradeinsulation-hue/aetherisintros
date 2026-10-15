@@ -19,7 +19,7 @@ import {
 } from './live'
 import { supabase } from '@/integrations/supabase/client'
 import { reportWriteFailure } from './write-failures'
-import { submitIntroRequest } from '@/intros-ui/liveIntroRequest'
+import { submitIntroRequest } from './lib/intro-request'
 import { quarterStart } from './activation'
 
 /** 'live' = real members only (the network). 'demo' = the labelled showcase. */

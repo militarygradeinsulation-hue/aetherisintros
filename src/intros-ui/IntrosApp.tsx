@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
-import { submitIntroRequest } from './liveIntroRequest';
+import { submitIntroRequest } from '@/aetheris/lib/intro-request';
 import { loadMyProfile } from '@/aetheris/live';
 import { WriteFailureNotice } from '@/aetheris/WriteFailureNotice';
 import { refreshUnread } from '@/aetheris/read-receipts';
