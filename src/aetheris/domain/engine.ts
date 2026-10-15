@@ -241,9 +241,12 @@ export function funnel(system: SystemRecord, placements: Placement[]) {
 /* --------------------------------------------------------- relationship weather */
 
 export function deriveWeather(member: Member, loops: OpenLoop[], stored?: RelationshipWeather): RelationshipWeather {
-  if (stored) return stored
   const open = loops.filter(l => l.memberId === member.id && l.status === 'open')
   const days = member.lastInteractionDays
+  // Persisted demo/weather summaries are not a source of truth for live
+  // recency. Never reuse stale "9999 days" for someone we have not met.
+  if (stored && days !== null && Number.isFinite(days)
+      && stored.recencyDays === days && days >= 0) return stored
   // Never label a person dormant when there has never been a recorded exchange.
   if (days === null || !Number.isFinite(days) || days < 0) return {
     id: `w-${member.id}`, memberId: member.id,
