@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { isIntroTargetId } from '@/intros-ui/liveIntroRequest'
+import { isIntroTargetId } from '@/aetheris/lib/intro-request'
 import { profileToMember, type LiveProfileRow } from '../live'
 import { deriveWeather } from '../domain/engine'
 import type { RelationshipWeather } from '../domain/models'
