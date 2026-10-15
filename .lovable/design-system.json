@@ -2,7 +2,7 @@
   "meta": {
     "name": "Ask Intros",
     "package": "@ws-gmhcx8w6bqvecbtkycud/c1248cd8-77de-4eaa-8d9d-e7da71e70ae9",
-    "version": "26.5.0",
+    "version": "26.6.0",
     "framework": "react",
     "css_framework": "tailwind",
     "starter_template": "custom_design_system_tailwind",
@@ -11,7 +11,7 @@
     ],
     "source_type": "local",
     "source_manifest": {
-      "#enrichment": "38673039f21fdddb291eef592730c19cdfa46246938b5d7e671977141b863867",
+      "#enrichment": "bf7809bfa71512833ebf26e0af157b2bd8c45711311083c7893bf0218d4e2090",
       ".dsignore": "3ce14d364a617d7621aa8aff60f95fd0",
       ".github/workflows/checks.yml": "a0d73e00b01c946c7eeb840acb96a50c",
       ".github/workflows/codeql.yml": "d0aa382b264fc585acc769b3fafee7e1",
@@ -143,6 +143,7 @@
       "drizzle/migrations/0081_marketplace_pilot_research_intent.sql": "ceb23bf257a3a46f97b5b5d2ce35cf60",
       "drizzle/migrations/0082_business_lobby.sql": "3d772bee33ed57528310581318e7aa3c",
       "drizzle/migrations/0083_providers_relationship_evidence.sql": "e52c4477b32105599b414b7183ebf517",
+      "drizzle/migrations/0084_live_intro_secure_read_grants.sql": "2685798d2e7484020ea49811c6bb7fb6",
       "drizzle/migrations/meta/0000_snapshot.json": "b41b4ea4ad6234fbb08edf2088d6afca",
       "drizzle/migrations/meta/0001_snapshot.json": "2fa25fb418b65900d06954109ef6c0d3",
       "drizzle/migrations/meta/0002_snapshot.json": "0b0b616ccf9aa6a9d1162385f484005f",
@@ -180,10 +181,10 @@
       "drizzle/migrations/meta/0034_snapshot.json": "ab374f46dd99b55aac55d198b3afd97e",
       "drizzle/migrations/meta/0035_snapshot.json": "990f8f29b0e295752c55b48d52d93a98",
       "drizzle/migrations/meta/0036_snapshot.json": "7c804ad3946dfe4137eb07221c23db50",
-      "drizzle/migrations/meta/_journal.json": "7201da6f300b9043cf518b4221a0c80a",
+      "drizzle/migrations/meta/_journal.json": "d6f8b4c82e64ff406f9028ec8cf1dd5d",
       "drizzle/schema.ts": "a60267d05d7dd11572f02686241f37c6",
       "eslint.config.js": "345bdd57e188e0e4525edcd00e5003f5",
-      "package.json": "bd0ac3090d0e3dbe78fbab784c998826",
+      "package.json": "eb5d6bb26cbab7eb430099cc318bd2e0",
       "public/aetheris-social.png": "876511571171e110b88f7ae18831cc15",
       "public/apple-touch-icon.png": "af7fb3256680480c2b5b0774dec7324f",
       "public/cursor-aetheris-action-large.png": "99a24ff9691d126d275e87571a42ca17",
@@ -251,6 +252,7 @@
       "scripts/migration-checks/growth.check.mjs": "c116009ad2651818d1a87051426f2a59",
       "scripts/migration-checks/impact-report.check.mjs": "f50a921c0c8a0b3a2bdaa6e97c97ca19",
       "scripts/migration-checks/leak-checks.check.mjs": "baf7c16b18527c8cf76168675fb45e6b",
+      "scripts/migration-checks/live-intro-network-access.check.mjs": "3d475e21a6b6583c820f641a14f6d1b6",
       "scripts/migration-checks/live-objects.check.mjs": "3b3945c60b280fbcec792950bd25b07d",
       "scripts/migration-checks/lovable-scan-security.check.mjs": "d6fd2e68cdf143cac78c817d139b0cc7",
       "scripts/migration-checks/marketplace-pilot-research.check.mjs": "ce5e192b3cb92e1ec9b07ee34c33a7db",
@@ -294,7 +296,9 @@
       "scripts/workspace-check/run.mjs": "05267c0d32b4632296690cfd1ddf89e2",
       "src/aetheris/AcceptedIntroWorkspaces.tsx": "e72d1d79bfd06964573134e0f80e8504",
       "src/aetheris/AetherisProviderRoot.tsx": "fcd5e0613f558271b722b3a5e1bf9681",
-      "src/aetheris/App.tsx": "ca0e8494acccea8784da2da644c8e4ac",
+      "src/aetheris/App.tsx": "9de04c8f17410a6c617c2385cadfac5d",
+      "src/aetheris/AppearanceMode.tsx": "866d89764592fe0ae7bc7e54aa08d4fe",
+      "src/aetheris/AppearanceToggle.tsx": "fc8d78d7014466bfb3434857df74efa9",
       "src/aetheris/AskIntrosDock.tsx": "637e384869565f85fcba945e90d9ab36",
       "src/aetheris/AskIntrosLockup.tsx": "16bfec2034cc42cbfab011f37ef1402f",
       "src/aetheris/BrandFonts.tsx": "cd5064fcb0f76fd157487cf7c00656e1",
@@ -305,10 +309,11 @@
       "src/aetheris/ConstellationField.tsx": "3710d08580fde049abdc9ee30be55ec7",
       "src/aetheris/CurrentUserTrackRecord.tsx": "d63d22fd0bf9ef1ef098182298c9b46d",
       "src/aetheris/ExecutivePage.tsx": "81980761df88597475435d1a1574b552",
+      "src/aetheris/HalftoneWordmarkFooter.tsx": "130341076162aa646bceea595a4fef8a",
       "src/aetheris/InteractiveRelationshipTour.tsx": "88508601b779ca0a8cbd1ddb4d154a08",
       "src/aetheris/IntrosSystemGrid.tsx": "6d60f0fafaac76c9fb0ae82f86b89c4b",
       "src/aetheris/InviteCard.tsx": "5f084d33df7f12e8a7674b36ad6300d9",
-      "src/aetheris/Landing.tsx": "5620a80f8aa15b4e9fb1f1f99c083afc",
+      "src/aetheris/Landing.tsx": "bec1c8d96e67251209f2a0d2f04ee8b8",
       "src/aetheris/MessageAttachments.tsx": "22e886077091b3bc2b43aecea03f0995",
       "src/aetheris/NetworkBubbles.tsx": "e37f7bc4403269e029d7440e8ccfa608",
       "src/aetheris/ParticleDrift.tsx": "543b149d6aa4165e51819e533451ec45",
@@ -340,6 +345,7 @@
       "src/aetheris/__tests__/linkedin-import.test.ts": "923831ba6feccff6f44707a2909732b4",
       "src/aetheris/__tests__/linkedin-oidc.test.ts": "c9e3fde570715bc23ea1a7ee57f98daa",
       "src/aetheris/__tests__/linkedin-scan.test.ts": "30b392b7708a33a389d943d452ef21da",
+      "src/aetheris/__tests__/live-write-contract.test.ts": "564ee762f5c6e156e528a5ef9235593d",
       "src/aetheris/__tests__/meeting-notes-format.test.ts": "11b3c5637199760f38b358ddc9ed3069",
       "src/aetheris/__tests__/meeting-outcomes.test.ts": "249e0ddea87ba6af0a03225fcfdf52f5",
       "src/aetheris/__tests__/meeting-recorder.test.ts": "9faa792f5d961e1e79068ef77815de8d",
@@ -355,11 +361,13 @@
       "src/aetheris/__tests__/public-info.test.ts": "f3e8c33928e89fae5e12d1f9aec1aa58",
       "src/aetheris/__tests__/quick-menu.test.ts": "77f448600c71e99ef46f6898d4f1b61f",
       "src/aetheris/__tests__/reciprocity.test.ts": "5d03ebedf26e54583b1e3fe8797cb8bc",
-      "src/aetheris/__tests__/recovered-ui-polish.test.ts": "32f29c3965e721c1ed4eddc259ae512f",
+      "src/aetheris/__tests__/recovered-ui-polish.test.ts": "1393d417ca8a4b4ee459471177068cbe",
       "src/aetheris/__tests__/recovered-work-wiring.test.ts": "479796752a5c2732ad5fca02fe672836",
       "src/aetheris/__tests__/scroll-caliper.test.tsx": "ccc1a7e198b5116e0aa2571946ed4032",
+      "src/aetheris/__tests__/secondary-write-acknowledgement.test.ts": "2f66d33aacf9b056da9cb671179d9096",
       "src/aetheris/__tests__/sent-requests.test.ts": "0a3e2e2b3808020a23485933997deafb",
       "src/aetheris/__tests__/this-week.test.ts": "39c39ead59de006c0f7086fbcc93c06a",
+      "src/aetheris/__tests__/verified-live-intro.test.ts": "5f3e3c049fdcebe0f00a811995e45e19",
       "src/aetheris/__tests__/voice-commands.test.ts": "50be51f9567dd63b581c5d447d15a43a",
       "src/aetheris/__tests__/warm-paths.test.ts": "e3cebc4164db3d5b2d9b3ed28cae1400",
       "src/aetheris/__tests__/workspace-lifecycle.test.ts": "4aaf6d8076de82a2c2f0ec53ed03f483",
@@ -417,7 +425,7 @@
       "src/aetheris/crm/types.ts": "8348ed3cb2e3684ac527d3d7f11dfdd3",
       "src/aetheris/cursorScale.ts": "9a8e989f453d28830a9064acc1d77f28",
       "src/aetheris/data.ts": "19fb52ab19d76db655aa256ea015a6b8",
-      "src/aetheris/db.ts": "52a9d7e85681fc3918f0ef5a18e6c626",
+      "src/aetheris/db.ts": "d4c1baf43f10b8cdb8069b223f7a24c6",
       "src/aetheris/deals-core.ts": "8f7dd3205a1aac7a913c90a4a456fb30",
       "src/aetheris/deals-engine.ts": "6d0872ea6d55d9cadff8891761cb3ba1",
       "src/aetheris/deals-ui.tsx": "dede6b820f1bde24248d3df79bce3711",
@@ -426,7 +434,7 @@
       "src/aetheris/demo-journey.ts": "8cc40623d8849e7f826d3a2b0d9666c6",
       "src/aetheris/digest-format.ts": "b206e01bd7db37065bd4397c21a93262",
       "src/aetheris/directory-filters.ts": "50a6c8b238df4baa6bd7533b583da474",
-      "src/aetheris/domain/engine.ts": "9507313fc9cd31eb0ba786c3af467717",
+      "src/aetheris/domain/engine.ts": "51ca1964d42b7594fca1160f5c972927",
       "src/aetheris/domain/moat-engine.ts": "b8cfdb3d0a9be071bf94ad471c6dc32f",
       "src/aetheris/domain/moat-models.ts": "fcafc676afc7998402cffc08040c5827",
       "src/aetheris/domain/moat-repository.ts": "fef8b9ae90b7378e84852a674002ac42",
@@ -443,6 +451,7 @@
       "src/aetheris/domain/repository.ts": "9f36127467849f104ad30aef42f86dd8",
       "src/aetheris/domain/schema.sql": "fcf94b086d57415aa176275ea59145b4",
       "src/aetheris/domain/seed.ts": "5ff370146e2f0f0e1befc57d1ce20629",
+      "src/aetheris/editorial-landing.css": "14b7e1fa3783bb0ce51ee4e06cb2236b",
       "src/aetheris/event-format.ts": "20e46223bc3b3bdfae5cb6fda0dde7a5",
       "src/aetheris/founder-story-content.ts": "d897ac5143790e96ce3a4c4133181448",
       "src/aetheris/google-ui.tsx": "7d3a81635341217f0efa052fb8f3e9be",
@@ -463,6 +472,7 @@
       "src/aetheris/ledger/types.ts": "e7b35dbd2b17a8473e00db78277d4158",
       "src/aetheris/lib/dragScroll.ts": "00041cecc9398a50ba4936425a50572a",
       "src/aetheris/lib/engine.ts": "a86ac6b2beb5cf7a6b8f227041aebad8",
+      "src/aetheris/lib/intro-request.ts": "412a9736ea4400d4bfcc66f8ed119270",
       "src/aetheris/library/PrivateLibrary.tsx": "9ec6adb1af4986eacc78e1efe6288ecc",
       "src/aetheris/library/__tests__/import.test.ts": "2168da91107879398c858a4b4e7cbf36",
       "src/aetheris/library/import.ts": "61361c122686482f953ef802efc88015",
@@ -472,7 +482,7 @@
       "src/aetheris/linkedin-oidc.ts": "57251aea00469bd1726fa1346949c305",
       "src/aetheris/linkedin-scan-ui.tsx": "9a2c4cd125fb17a33855d04a2517d48b",
       "src/aetheris/linkedin-scan.ts": "fd5a09cc315e0ae674383dbdb46a9cd7",
-      "src/aetheris/live.ts": "4a346a56034a2b49cd0d016e86ea5552",
+      "src/aetheris/live.ts": "34cb1994efe0a1493aec4b4de8d0bb40",
       "src/aetheris/marketplace-pilot/PilotInterestExample.tsx": "7964741da55c05e398930c6640abcc0c",
       "src/aetheris/marketplace-pilot/PilotInterestForm.tsx": "c7b88add91cf3c695724ec62a031e3b0",
       "src/aetheris/marketplace-pilot/__tests__/pilot-interest.test.tsx": "e98d8f3dad30b37bf05e8be1dd1b1dce",
@@ -482,7 +492,7 @@
       "src/aetheris/marketplace/contract.ts": "5eb649c3d7fedbced059e504133e6e62",
       "src/aetheris/matching.ts": "447ea2b12df06c1c99d55d8519d5cade",
       "src/aetheris/meeting-brief-ui.tsx": "cfd429c139949544db94bf480959af6f",
-      "src/aetheris/meeting-brief.ts": "f58ea224d5536a3c23e1a7a6287bccde",
+      "src/aetheris/meeting-brief.ts": "144f6dfa5710612f933ed057bbd9535f",
       "src/aetheris/meeting-call.ts": "856333ff96b61ccdc200340f02942013",
       "src/aetheris/meeting-notes-format.ts": "d179f2976934adbb1b6a7e99d10036fd",
       "src/aetheris/meeting-recorder.ts": "cec180ca2960e15620f9da79d9f1fca8",
@@ -501,7 +511,7 @@
       "src/aetheris/newsShelf.ts": "31ef98d360b29cde6dd8ba77fc4921a3",
       "src/aetheris/notifications-bell.tsx": "8da196c76834f98866f99cd9ecd0dd2f",
       "src/aetheris/opportunity-graph.ts": "65cbbe5d84baa2de28730ec362701124",
-      "src/aetheris/opportunity-ui.tsx": "899f41e08fdc6c403f698b4e3f651a18",
+      "src/aetheris/opportunity-ui.tsx": "2f74ab729418e4964f7f7817cb5a507c",
       "src/aetheris/os-store.tsx": "65b149c75f4f199e986354c011c9f0e4",
       "src/aetheris/os-ui.tsx": "5abd462de10fc47ad78dcdb8fda9efc4",
       "src/aetheris/outcomes-ui.tsx": "9cdfbf59f9e6fa4f555aa1c5d3924f7e",
@@ -530,7 +540,7 @@
       "src/aetheris/pages/ExpertisePage.tsx": "880bd8542f684de0c72896d83775b0df",
       "src/aetheris/pages/GapMapPage.tsx": "f5a23d190001cf688079133cc2abe688",
       "src/aetheris/pages/GridPage.tsx": "b667e7fe967979a50ba0bd087b942e15",
-      "src/aetheris/pages/Handshake.tsx": "a9c088b9e83b3e354254ce5e1b6b1305",
+      "src/aetheris/pages/Handshake.tsx": "4e5463dd7816fa46101b94d0cf0ed0b3",
       "src/aetheris/pages/IdentityPage.tsx": "7567d04495a435096c78087d313ed9d6",
       "src/aetheris/pages/IntegrationsPage.tsx": "1d497c35e50f29bfff4037ca0977e159",
       "src/aetheris/pages/IntelligenceRoomsPage.tsx": "972ebb8926e0a228a66a1192b804e707",
@@ -554,7 +564,7 @@
       "src/aetheris/pages/RelationshipInboxPage.tsx": "c59e402d3d07e0540e9a46613f872d32",
       "src/aetheris/pages/SecurityPage.tsx": "41d8329840d4c4006b0597beaae83d8c",
       "src/aetheris/pages/SerendipityPage.tsx": "e9f77331bd69d5e7d3b3eacc55531096",
-      "src/aetheris/pages/SimpleViewPage.tsx": "cb90b3715eeaffa99bf446e31fe00900",
+      "src/aetheris/pages/SimpleViewPage.tsx": "897357ab699907f22ebbbd0b37ed3fe2",
       "src/aetheris/pages/SimulationPage.tsx": "db6525c532369bc194516c75d95c6481",
       "src/aetheris/pages/StrategyPage.tsx": "a3234adb92efd453878d0b82aef4ad90",
       "src/aetheris/pages/SystemsPage.tsx": "aeec17866cb38b8325fbc6865d18013f",
@@ -588,8 +598,8 @@
       "src/aetheris/showcase.ts": "645a3466f701d06292d611cdb5edea3b",
       "src/aetheris/sms-ui.tsx": "3b75315694ca4badfc945ce4173de239",
       "src/aetheris/social.ts": "5c32ceb1322de3667b01a47c2b8e875d",
-      "src/aetheris/store.tsx": "6767b7720a7d3269d1167d02bdf40635",
-      "src/aetheris/styles.css": "32c0a7ed9408f2a80b1bdd77c19e9d86",
+      "src/aetheris/store.tsx": "011266bb93d144c95747e70135f0b473",
+      "src/aetheris/styles.css": "7527278c43ce26579ab4b95ba55ffc6d",
       "src/aetheris/sync/__tests__/sync-logic.test.ts": "1404713133936dee6813980166f34510",
       "src/aetheris/sync/sync-logic.ts": "81424906e946e7f8ac936c1957ccc1e5",
       "src/aetheris/sync/workspace-sync.ts": "e5b241d93d4d1c261ed0563529713f6f",
@@ -689,7 +699,7 @@
       "src/components/ui/bento-grid-01.tsx": "4f4c09b4a22b0672ca7e9a165e8bcc7e",
       "src/components/ui/bento-grid.tsx": "e6ed9b1c6dad194bfa40719162517659",
       "src/components/ui/breadcrumb.tsx": "bb9ac254f12662b20d5d50b84308bf3a",
-      "src/components/ui/button.tsx": "7d07d520f486b12bd47373d694ecd2ee",
+      "src/components/ui/button.tsx": "28ad2275529bee7e8432ad1916bfd0db",
       "src/components/ui/calendar.tsx": "d849cc610e2683271f3f1c47d093cf30",
       "src/components/ui/card.tsx": "d6c48ea36221b9cdc3576d305d12d5d5",
       "src/components/ui/carousel.tsx": "e324c68ae00cd5aed49317638abd429a",
@@ -704,10 +714,12 @@
       "src/components/ui/drawer.tsx": "8be333e8fd8e42576b1b5f72f07f4337",
       "src/components/ui/dropdown-menu.tsx": "28d6e98d3c7811fc0514bfa69416f087",
       "src/components/ui/form.tsx": "1b0aa6302b9017ea2a1307c22a1d2983",
+      "src/components/ui/gradient-button.tsx": "953ec8a1675c739eccf53c5958af721a",
       "src/components/ui/hover-card.tsx": "1442794c5ca2a78d69e4e613b315ed3d",
       "src/components/ui/input-otp.tsx": "65625f2f1c4d731a760aeed7b54459d1",
       "src/components/ui/input.tsx": "1d4cc52a4cd8afb3e18e45bda942bb8a",
       "src/components/ui/label.tsx": "7e35df4ca8edd0835efd97ca7937ef92",
+      "src/components/ui/liquid-toggle.tsx": "03ce9115780b9efd5adffae9b11f160a",
       "src/components/ui/menubar.tsx": "3c4121a1e78d3f424a7295381a8997d3",
       "src/components/ui/navigation-menu.tsx": "e85351147a02b29577ff83d188b63c24",
       "src/components/ui/pagination.tsx": "fac6cdbb4bbf78b273d85cd36d6cbb49",
@@ -741,12 +753,11 @@
       "src/integrations/supabase/client.server.ts": "23f838ab7633e0a97e695f3c500d91aa",
       "src/integrations/supabase/client.ts": "8af43e12f1332b440278c7ea7e4cb1e8",
       "src/integrations/supabase/cron-auth.ts": "6c04781ff98ada5977945fae55d39385",
-      "src/integrations/supabase/previewAuthStorage.ts": "0a2d63e049bc63135b19c8e21cc0b1aa",
-      "src/integrations/supabase/types.ts": "89391ac701594b0f6d7f588c69c9881c",
-      "src/intros-ui/AccentMode.tsx": "59cda7d93c9c06f7a54d1618c07a7b5f",
+      "src/integrations/supabase/previewAuthStorage.ts": "bb74f08a89d367e3a4a18880dad1050f",
+      "src/integrations/supabase/types.ts": "7732aacfe9bb4f287266e63c3ebcddfe",
       "src/intros-ui/Aurora.tsx": "4777bc83e90c1351a19d2c5d8626d78c",
       "src/intros-ui/BackdropField.tsx": "bb490dc675061299f4c0158f6b636ea1",
-      "src/intros-ui/IntrosApp.tsx": "cf97bdb6285311b971d8d871dfd6272b",
+      "src/intros-ui/IntrosApp.tsx": "0bdfcd3ebf7c07b5e151af8c22ef1ac6",
       "src/intros-ui/assets/images/network_empty_state_1791252869482.jpg": "e3524fa6d332cce969d4dd4a51a0daed",
       "src/intros-ui/components/ActionableInboxView.tsx": "40c93db88f54d37d741ed4b96a1bbb9e",
       "src/intros-ui/components/ApprovalQueueModal.tsx": "f68853a73d6d66e3947f18e36e0b76cf",
@@ -773,8 +784,8 @@
       "src/intros-ui/components/TileVoiceMinutesModal.tsx": "6da75969e22d8951c8ea4450ad442c99",
       "src/intros-ui/components/UtilitiesModal.tsx": "33574305d212f0d8767d1d99ea695f78",
       "src/intros-ui/components/insights/ActivityHeatmap.tsx": "2a3913ae02e82a5337666f59bfd5caad",
-      "src/intros-ui/components/layout/EditorialFooter.tsx": "b41faaa34985cfd20ecd5d33f58f4b10",
-      "src/intros-ui/components/layout/TopNavigation.tsx": "cb298c8164aa62c4ceb757ec2019f2ae",
+      "src/intros-ui/components/layout/EditorialFooter.tsx": "579eb917023a0eab10bf66fb8440a6e0",
+      "src/intros-ui/components/layout/TopNavigation.tsx": "f5e9dd799a555cae22cec38aa78a2e23",
       "src/intros-ui/components/modals/RequestIntroModal.tsx": "dfc0bfe36e8a9adc7e8d690315b823ce",
       "src/intros-ui/components/modals/ReviewIntroModal.tsx": "bf5659fb9aae0ff4e0ed5f789d7d5238",
       "src/intros-ui/components/modals/ScheduleMeetingModal.tsx": "1c301f851c4b365bb598759701aefe9e",
@@ -788,10 +799,9 @@
       "src/intros-ui/dataStore.ts": "7e576cec4d73ae38a7cf089e84eee7c8",
       "src/intros-ui/hooks/useVoiceRecorder.ts": "062bb8eaf73dd2906f81e7b90c31feac",
       "src/intros-ui/liveDirectorySearch.ts": "618dfdc18bb3317c04900eb76065c171",
-      "src/intros-ui/liveIntroRequest.ts": "1de4bdc0c5d970bbe83c895f0a5994d3",
-      "src/intros-ui/liveMembers.tsx": "78a5bd7ce3e67f796c008dfad36455f5",
+      "src/intros-ui/liveMembers.tsx": "af6225c9bb028220018f855e010b408c",
       "src/intros-ui/networkData.ts": "55968146648f079a82e707acbe61bd27",
-      "src/intros-ui/styles.css": "822fcef17e4c07830e62b09b39b41964",
+      "src/intros-ui/styles.css": "58f8f3b7f091636f459f294ec7ffa8b6",
       "src/intros-ui/tileSummaries.ts": "9e7faa27124194aefd64f4d4fa979be5",
       "src/intros-ui/types.ts": "6ca952de05a9e0690db97a5401297e1b",
       "src/intros-ui/utils/calendarScanner.ts": "daf7ceb12c426c0a30381864e90ca9fb",
@@ -894,7 +904,7 @@
       "src/routes/README.md": "b3a2f259b66fd1a11f54b6d5ac83bf57",
       "src/routes/[.]lovable.oauth.consent.tsx": "2d1e6260c9acb0c81f70bc31b2a9cb2d",
       "src/routes/[.well-known]/oauth-protected-resource.ts": "f1bdeaa94cebab17710daeb8358c814c",
-      "src/routes/__root.tsx": "0b7687ab358dba6dc6aa51a056fa10a1",
+      "src/routes/__root.tsx": "ae2a82166db3f7ccf31163d701c89d67",
       "src/routes/_authenticated/admin.early-access.tsx": "e3515afdcc18c99649b35907ec7bb2b1",
       "src/routes/_authenticated/admin.verification.tsx": "4da36643ca96277b99e0113caf127f3f",
       "src/routes/_authenticated/app.tsx": "dfe6d37fe86fe4cd6c42f4026bf5b57d",
@@ -918,9 +928,9 @@
       "src/routes/api/public/seed-network.ts": "f49ef22776e68a558ec246f6c1e89c25",
       "src/routes/api/push/dispatch.ts": "15f5b64c0afcb7f8595f76f2b6134368",
       "src/routes/api/stripe/webhook.ts": "c9214e03d7d052f5150f5169a3afe9e8",
-      "src/routes/auth.tsx": "5527e3e83193e7ff1360be72283f1f12",
+      "src/routes/auth.tsx": "89fccaf457a2af77dbace208f93cc605",
       "src/routes/demo.tsx": "b7abf94f4f9f9f5036d4ee54021f84d9",
-      "src/routes/early-access.tsx": "aec47df1b84667d3052263a4e9d25748",
+      "src/routes/early-access.tsx": "ddb73d024ef32da65239d8c9394f7958",
       "src/routes/founder-story.tsx": "a8f2f97485024acdcb9df1dd286dbb4a",
       "src/routes/impact.$slug.tsx": "9509c89816d3b05a3248752b325df56c",
       "src/routes/index.tsx": "c958c451bcf61032caed945cc812b0dd",
@@ -930,7 +940,7 @@
       "src/routes/sitemap[.]xml.ts": "85504a5024597922e1b8ccdf7c496463",
       "src/server.ts": "46adc2ed489c4aea57e703176bc81f2d",
       "src/start.ts": "fbaa593787694302791ce8d5c4d1c963",
-      "src/styles.css": "519a98925eabb7b4f5ebbc68abd09c59",
+      "src/styles.css": "b7e5ab978a0e7ac6ee2376aede018a80",
       "supabase/config.toml": "fcc7b6e985b6c429faf40b3f597453ca",
       "supabase/migrations/20260910113730_4c27fcc9-e697-4980-b6b5-ae8a6335698e.sql": "7c5c68e676fb93e2d9bffc326451d9ae",
       "supabase/migrations/20260910113752_7d30e7f1-9bf7-4ab1-b183-72e0cf707754.sql": "29f2302daaed34ad710a691312808c9b",
@@ -1108,6 +1118,188 @@
         "name": "--sidebar-ring",
         "raw": "oklch(0.704 0.04 256.788)",
         "source": "src/styles.css"
+      },
+      {
+        "name": "--background",
+        "raw": "oklch(0.145 0.006 80)",
+        "source": "src/styles.css"
+      },
+      {
+        "name": "--foreground",
+        "raw": "oklch(0.91 0.015 85)",
+        "source": "src/styles.css"
+      },
+      {
+        "name": "--halftone-night",
+        "raw": "#0c0c0b",
+        "source": "src/styles.css"
+      },
+      {
+        "name": "--halftone-ink",
+        "raw": "#e9e4da",
+        "source": "src/styles.css"
+      },
+      {
+        "name": "--halftone-warm",
+        "raw": "#e9762b",
+        "source": "src/styles.css"
+      },
+      {
+        "name": "--acc",
+        "raw": "#e9762b",
+        "source": "src/styles.css"
+      },
+      {
+        "name": "--acc-bright",
+        "raw": "#f49b62",
+        "source": "src/styles.css"
+      },
+      {
+        "name": "--acc-strong",
+        "raw": "#c85c20",
+        "source": "src/styles.css"
+      },
+      {
+        "name": "--acc-deep",
+        "raw": "#893c18",
+        "source": "src/styles.css"
+      },
+      {
+        "name": "--acc-wash",
+        "raw": "rgba(233,118,43,.12)",
+        "source": "src/styles.css"
+      },
+      {
+        "name": "--acc-glow",
+        "raw": "rgba(233,118,43,.38)",
+        "source": "src/styles.css"
+      },
+      {
+        "name": "--acc-btn",
+        "raw": "rgba(233,118,43,.16)",
+        "source": "src/styles.css"
+      },
+      {
+        "name": "--acc-btn-hover",
+        "raw": "rgba(233,118,43,.25)",
+        "source": "src/styles.css"
+      },
+      {
+        "name": "--acc-spot",
+        "raw": "rgba(233,118,43,.1)",
+        "source": "src/styles.css"
+      },
+      {
+        "name": "--acc-field-fill",
+        "raw": "rgba(233,118,43,.05)",
+        "source": "src/styles.css"
+      },
+      {
+        "name": "--acc-field-stroke",
+        "raw": "rgba(233,118,43,.28)",
+        "source": "src/styles.css"
+      },
+      {
+        "name": "--acc-field-glow",
+        "raw": "rgba(233,118,43,.42)",
+        "source": "src/styles.css"
+      },
+      {
+        "name": "--night",
+        "raw": "#efebe3",
+        "source": "src/styles.css"
+      },
+      {
+        "name": "--raised",
+        "raw": "#fffdf9",
+        "source": "src/styles.css"
+      },
+      {
+        "name": "--graphite",
+        "raw": "#e7e1d6",
+        "source": "src/styles.css"
+      },
+      {
+        "name": "--soft",
+        "raw": "#17150f",
+        "source": "src/styles.css"
+      },
+      {
+        "name": "--ivory",
+        "raw": "#efebe3",
+        "source": "src/styles.css"
+      },
+      {
+        "name": "--paper",
+        "raw": "#fffdf9",
+        "source": "src/styles.css"
+      },
+      {
+        "name": "--ink",
+        "raw": "#17150f",
+        "source": "src/styles.css"
+      },
+      {
+        "name": "--liquid-rail",
+        "raw": "#d2cabb",
+        "source": "src/styles.css"
+      },
+      {
+        "name": "--liquid-knob",
+        "raw": "#f8f3e9",
+        "source": "src/styles.css"
+      },
+      {
+        "name": "--ai-border-angle",
+        "raw": "360deg",
+        "source": "src/styles.css"
+      },
+      {
+        "name": "--ai-button-surface",
+        "raw": "#161514",
+        "source": "src/styles.css"
+      },
+      {
+        "name": "--ai-button-edge",
+        "raw": "#f3b258",
+        "source": "src/styles.css"
+      }
+    ],
+    "typography": [
+      {
+        "name": "--halftone-line",
+        "raw": "rgba(233,228,218,.18)",
+        "source": "src/styles.css"
+      },
+      {
+        "name": "--acc-line",
+        "raw": "rgba(233,118,43,.34)",
+        "source": "src/styles.css"
+      },
+      {
+        "name": "--acc-btn-line",
+        "raw": "rgba(233,118,43,.42)",
+        "source": "src/styles.css"
+      },
+      {
+        "name": "--acc-field-line",
+        "raw": "rgba(233,228,218,.06)",
+        "source": "src/styles.css"
+      },
+      {
+        "name": "--line-dark",
+        "raw": "rgba(23,21,15,.2)",
+        "source": "src/styles.css"
+      },
+      {
+        "name": "--line-light",
+        "raw": "rgba(23,21,15,.2)",
+        "source": "src/styles.css"
+      },
+      {
+        "name": "--ai-button-text",
+        "raw": "#fff9ef",
+        "source": "src/styles.css"
       }
     ],
     "radius": [
@@ -1147,6 +1339,13 @@
         "source": "src/styles.css"
       }
     ],
+    "shadow": [
+      {
+        "name": "--ai-button-shadow",
+        "raw": "rgba(0,0,0,.28)",
+        "source": "src/styles.css"
+      }
+    ],
     "other": [
       {
         "name": "--ambient-opacity",
@@ -1161,6 +1360,11 @@
       {
         "name": "--ambient-link-opacity",
         "raw": "0.75",
+        "source": "src/styles.css"
+      },
+      {
+        "name": "--halftone-mono",
+        "raw": "\"JetBrains Mono\",\"SF Mono\",ui-monospace,monospace",
         "source": "src/styles.css"
       }
     ]
@@ -1198,6 +1402,100 @@
       "file": "src/aetheris/ConstellationField",
       "import_path": "",
       "is_default": true
+    },
+    {
+      "name": "HalftoneWordmarkFooter",
+      "file": "src/aetheris/HalftoneWordmarkFooter",
+      "import_path": "",
+      "is_default": true,
+      "props": [
+        {
+          "name": "wordmark",
+          "type": "string",
+          "default": "ask intros"
+        },
+        {
+          "name": "label",
+          "type": "string",
+          "default": "ASK INTROS / RELATIONSHIP INTELLIGENCE"
+        },
+        {
+          "name": "meta",
+          "type": "string",
+          "default": "WHY ME · WHY THEM · WHY NOW"
+        },
+        {
+          "name": "columns",
+          "type": "any"
+        },
+        {
+          "name": "backToTop",
+          "type": "boolean",
+          "default": "true"
+        },
+        {
+          "name": "preset",
+          "type": "enum",
+          "values": [
+            "night",
+            "paper",
+            "ember",
+            "cobalt"
+          ],
+          "default": "night"
+        },
+        {
+          "name": "palette",
+          "type": "object"
+        },
+        {
+          "name": "dotGap",
+          "type": "number",
+          "default": "6"
+        },
+        {
+          "name": "radius",
+          "type": "number",
+          "default": "80"
+        },
+        {
+          "name": "crop",
+          "type": "number",
+          "default": "0.2"
+        },
+        {
+          "name": "grain",
+          "type": "number",
+          "default": "0.32"
+        },
+        {
+          "name": "interactive",
+          "type": "boolean",
+          "default": "true"
+        },
+        {
+          "name": "fontFamily",
+          "type": "string"
+        },
+        {
+          "name": "fontWeight",
+          "type": "number",
+          "default": "800"
+        },
+        {
+          "name": "monoFamily",
+          "type": "string"
+        },
+        {
+          "name": "height",
+          "type": "string",
+          "default": "560px"
+        },
+        {
+          "name": "className",
+          "type": "string"
+        }
+      ]
     },
     {
       "name": "Landing",
