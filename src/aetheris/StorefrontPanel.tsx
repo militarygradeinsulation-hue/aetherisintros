@@ -93,7 +93,7 @@ function StorefrontEditor({ userId, readOnly }: StorefrontEditorProps) {
   }, [headline, idealClient, services, seeking, questions, isPublic])
 
   // service helpers
-  const addService = () => setServices((s) => [...s, { title: '', price: undefined, scope: '' }])
+  const addService = () => setServices((s) => [...s, { title: '', scope: '' } as StorefrontService])
   const updateService = (i: number, field: keyof StorefrontService, value: string | number) =>
     setServices((s) => s.map((svc, idx) => (idx === i ? { ...svc, [field]: value } : svc)))
   const removeService = (i: number) => setServices((s) => s.filter((_, idx) => idx !== i))
