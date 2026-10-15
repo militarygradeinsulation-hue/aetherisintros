@@ -1,5 +1,6 @@
 import { AttachButton, MessageBody, attachmentPreview } from './MessageAttachments'
 import { useEffect, useMemo, useState, type ReactNode } from 'react'
+import { useAppearance } from './AppearanceMode'
 import { Link } from '@tanstack/react-router'
 import {
   AlertTriangle, ArrowLeftRight, ArrowRight, Bell, Bookmark, BookmarkCheck, Building2, CalendarDays, Camera, Check, CheckCircle2, ChevronLeft, ChevronRight,
@@ -803,16 +804,8 @@ function Home({ people, select, setPage, openNeed, openThread }: {
   const [filter, setFilter] = useState<HomeConnectionFilter>('all')
   const [sort, setSort] = useState<HomeConnectionSort>('score')
   const [query, setQuery] = useState('')
-  const [darkHome, setDarkHome] = useState(true)
-  useEffect(() => {
-    const saved = window.localStorage.getItem('aetheris.home.theme')
-    if (saved === 'light') setDarkHome(false)
-  }, [])
-  const toggleHomeTheme = () => setDarkHome(current => {
-    const next = !current
-    window.localStorage.setItem('aetheris.home.theme', next ? 'dark' : 'light')
-    return next
-  })
+  const { theme, toggleTheme: toggleHomeTheme } = useAppearance()
+  const darkHome = theme === 'dark'
   const ranked = useMemo(() => [...people].sort((a, b) => b.scoreTotal - a.scoreTotal), [people])
   const connections = useMemo(() => ranked.filter(person => {
     const text = `${person.name} ${person.title} ${person.company} ${person.whyYou} ${person.whyThem} ${person.whyNow}`.toLowerCase()
