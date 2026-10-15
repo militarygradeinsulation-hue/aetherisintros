@@ -219,3 +219,6 @@
 .ael .ael-halftone-footer { min-height:390px; margin:0; border-top:1px solid rgba(233,228,218,.2); }
 .ael .ael-halftone-footer .hwf-top { color:#e9e4da; }
 @media (max-width:720px) { .ael .ael-halftone-footer { min-height:390px; } }
+
+/* Keep the photographic disclosure readable in the new editorial treatment. */
+.ael-imagery-note { margin:0; padding:16px clamp(20px,3.4vw,44px); background:#0c0c0b; color:#a99f92; font:400 10px/1.6 "JetBrains Mono",ui-monospace,monospace; letter-spacing:.035em; border-top:1px solid rgba(233,228,218,.12); }
