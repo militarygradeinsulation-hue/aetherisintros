@@ -5,6 +5,7 @@ const app = readFileSync(new URL('../App.tsx', import.meta.url), 'utf8')
 const social = readFileSync(new URL('../social.ts', import.meta.url), 'utf8')
 const landing = readFileSync(new URL('../Landing.tsx', import.meta.url), 'utf8')
 const css = readFileSync(new URL('../styles.css', import.meta.url), 'utf8')
+const editorialCss = readFileSync(new URL('../editorial-landing.css', import.meta.url), 'utf8')
 const widgets = readFileSync(new URL('../../components/ui/widget-board.tsx', import.meta.url), 'utf8')
 
 describe('recovered demo and tile polish', () => {
@@ -15,11 +16,29 @@ describe('recovered demo and tile polish', () => {
     expect(app).toContain("Ask Intros Home — Demo")
   })
 
-  it('keeps member login before whitelist request on the landing CTA', () => {
-    const login = landing.indexOf('Member log in')
-    const whitelist = landing.indexOf('Request whitelist access')
-    expect(login).toBeGreaterThanOrEqual(0)
-    expect(whitelist).toBeGreaterThan(login)
+  it('keeps member login ahead of the access CTA with real navigation destinations', () => {
+    const header = landing.split('<div className="ael-header-actions">')[1]?.split('</div>')[0] ?? ''
+    expect(header).toContain('to="/auth"')
+    expect(header).toContain('<JoinAction')
+    expect(header.indexOf('to="/auth"')).toBeLessThan(header.indexOf('<JoinAction'))
+    expect(landing).toContain('to="/early-access"')
+    expect(landing).toContain('Apply for access')
+    expect(landing).toContain('to="/demo"')
+  })
+
+  it('keeps the editorial photographic experience and usable fallbacks in the public landing', () => {
+    expect(landing).toContain("import './editorial-landing.css'")
+    expect(landing).toContain('The right room')
+    expect(landing).toContain('Editorial imagery is illustrative')
+    expect(landing).toContain('onError={event =>')
+    expect(editorialCss).toContain('.ael-hero')
+    expect(editorialCss).toContain('prefers-reduced-motion')
+  })
+
+  it('never embeds tool truncation warnings in executable source or styles', () => {
+    for (const source of [app, css, editorialCss, landing]) {
+      expect(source).not.toMatch(/Warning: truncated output|Total output lines:|[0-9]+ tokens truncated/)
+    }
   })
 
   it('keeps the yellow tile hover treatment on board and feature tiles', () => {
