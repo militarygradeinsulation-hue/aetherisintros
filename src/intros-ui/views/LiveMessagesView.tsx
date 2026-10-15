@@ -1,22 +1,27 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { Send, Search, MessageSquare } from 'lucide-react'
-import { NetworkProvider, useNetwork } from '@/aetheris/store'
+import { useNetwork } from '@/aetheris/store'
 import { AttachButton, MessageBody, attachmentPreview } from '@/aetheris/MessageAttachments'
 import { loadReadReceiptsSetting, markThreadRead, saveReadReceiptsSetting, useUnreadCounts } from '@/aetheris/read-receipts'
 import { badgeLabel, seenUnderMessageId, shouldMarkRead } from '@/aetheris/messaging-state'
 import { OpenDealRoomButton } from '@/aetheris/deals-ui'
 import { draftTitle } from '@/aetheris/deals-core'
 import { MeetingBriefPanel } from '@/aetheris/meeting-brief-ui'
+import { StartWorkspaceButton } from '@/aetheris/workspaces/StartWorkspace'
 
+const isUuid = (v: string) => /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(v)
 const pageVisible = () => typeof document === 'undefined' || document.visibilityState === 'visible'
 
 /** Native editorial-noir messaging, wired to the live member threads and file attachments. */
-function Inner() {
+function Inner({ onOpenWorkspaces }: { onOpenWorkspaces?: () => void }) {
   const net = useNetwork()
   const [activeId, setActiveId] = useState<string>(() => (typeof window === 'undefined' ? '' : localStorage.getItem('aetheris-intros-thread') ?? ''))
   const [query, setQuery] = useState('')
   const [draft, setDraft] = useState('')
   const [showBrief, setShowBrief] = useState(false)
+  const [sending, setSending] = useState(false)
+  const [readError, setReadError] = useState('')
+  const [failed, setFailed] = useState<{ id: string; threadId: string; text: string; reason: string } | null>(null)
   const endRef = useRef<HTMLDivElement>(null)
   const byId = useMemo(() => new Map(net.members.map(m => [m.id, m])), [net.members])
   const threads = net.threads.filter(t => {
@@ -36,7 +41,7 @@ function Inner() {
   useEffect(() => {
     if (!active) return
     const check = () => {
-      if (shouldMarkRead({ threadId: active.id, pageVisible: pageVisible(), unread: activeUnread, fallbackUnread: !reads.loaded && active.unread })) void markThreadRead(active.id)
+      if (shouldMarkRead({ threadId: active.id, pageVisible: pageVisible(), unread: activeUnread, fallbackUnread: !reads.loaded && active.unread })) void markThreadRead(active.id).then(() => setReadError('')).catch(error => setReadError(error instanceof Error ? error.message : 'Unread state could not be saved.'))
     }
     check()
     document.addEventListener('visibilitychange', check)
@@ -56,12 +61,22 @@ function Inner() {
     catch { setReceipts(!next); setReceiptsNote('Could not save that. Try again.') }
   }
 
-  const send = () => {
-    const text = draft.trim()
-    if (!text || !active) return
-    net.sendMessage(active.id, text)
-    setDraft('')
+  const sendText = async (threadId: string, text: string, messageId?: string) => {
+    if (!text.trim() || sending) return
+    const id = messageId ?? crypto.randomUUID()
+    setSending(true)
+    setFailed(null)
+    try {
+      await net.sendMessage(threadId, text)
+      if (active?.id === threadId) setDraft(current => current.trim() === text.trim() ? '' : current)
+    } catch (cause) {
+      setFailed({ id, threadId, text, reason: cause instanceof Error ? cause.message : 'Not sent. Retry this message.' })
+      setDraft(current => current.trim() ? current : text)
+    } finally {
+      setSending(false)
+    }
   }
+  const send = () => { if (active && draft.trim()) void sendText(active.id, draft.trim(), failed?.threadId === active.id && failed.text === draft.trim() ? failed.id : undefined) }
 
   return (
     <div className="max-w-[1400px] mx-auto px-3 md:px-6 py-4">
@@ -69,6 +84,7 @@ function Inner() {
         <p className="text-[10px] font-mono tracking-[0.2em] uppercase text-[#9CA3AF]">Private communication</p>
         <h1 className="font-serif-editorial text-2xl md:text-3xl text-[#F2EEE6]">Conversations with <em className="text-[#F5B027]">relationship context.</em></h1>
       </div>
+      {readError && <div role="alert" className="mb-2 p-2 border border-red-400/40 text-xs text-[#FFD1D1] rounded">{readError} <button type="button" className="underline font-semibold" onClick={() => { if (active) void markThreadRead(active.id).then(() => setReadError('')).catch(() => {}) }}>Retry</button></div>}
       <div className="grid grid-cols-1 md:grid-cols-[300px_1fr] lg:grid-cols-[300px_1fr_260px] gap-3 h-[calc(100vh-210px)] min-h-[480px]">
         <aside className={`rounded-xl border border-white/10 bg-[#0D1117]/90 flex flex-col min-h-0 ${active ? 'hidden md:flex' : 'flex'}`}>
           <div className="p-3 border-b border-white/10 relative">
@@ -128,13 +144,14 @@ function Inner() {
                 <p className="text-sm font-semibold text-[#F2EEE6] truncate">{person?.name ?? 'Member'}</p>
                 <p className="text-[11px] text-[#9CA3AF] truncate">{[person?.title, person?.company].filter(Boolean).join(' · ')}</p>
               </div>
-              {person && <div className="ml-auto shrink-0 flex items-center gap-2">
+              {person && <div className="ml-auto shrink-0 flex flex-wrap items-center justify-end gap-2">
                 <button
                   onClick={() => setShowBrief(v => !v)}
                   className="text-[11px] px-2 py-1 rounded-md border border-white/20 text-[#9CA3AF] hover:text-[#F2EEE6] hover:border-white/40 transition-colors cursor-pointer"
                 >
                   {showBrief ? 'Hide brief' : 'Pre-meeting brief'}
                 </button>
+                {onOpenWorkspaces && isUuid(active.id) && <StartWorkspaceButton source="dm_thread" sourceId={active.id} withName={person.name} onOpen={onOpenWorkspaces} label="Workspace" />}
                 <OpenDealRoomButton kind="quiet" label="Deal room" draft={{ sourceKind: 'thread', sourceId: active.id, title: draftTitle('thread', person.name), need: active.introContext ?? '', counterpartId: person.id, counterpartName: person.name }} />
               </div>}
             </header>
@@ -154,12 +171,16 @@ function Inner() {
               ))}
               <div ref={endRef} />
             </div>
+            {failed && failed.threadId === active.id && <div role="alert" className="mx-3 mt-2 p-3 rounded-lg border border-red-400/50 bg-red-950/60 text-[#FFD8D8] text-xs flex items-center justify-between gap-3">
+              <span>{failed.reason} This message has not been delivered.</span>
+              <button type="button" className="underline font-semibold shrink-0" disabled={sending} onClick={() => void sendText(failed.threadId, failed.text, failed.id)}>Retry</button>
+            </div>}
             <footer className="p-3 border-t border-white/10 flex items-end gap-2">
-              <AttachButton threadId={active.id} onSend={text => net.sendMessage(active.id, text)} />
+              <AttachButton threadId={active.id} onSend={text => sendText(active.id, text)} />
               <textarea value={draft} onChange={e => setDraft(e.target.value)} rows={1} placeholder="Write a message…"
                 onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); send() } }}
                 className="flex-1 resize-none bg-[#0F131A] text-sm text-[#F2EEE6] rounded-lg px-3 py-2 border border-white/10 focus:outline-none focus:border-[#F5B027] max-h-32" />
-              <button onClick={send} disabled={!draft.trim()} aria-label="Send message"
+              <button onClick={send} disabled={!draft.trim() || sending} aria-label="Send message"
                 className="p-2.5 rounded-lg bg-[#C78522] hover:bg-[#A96F1B] disabled:opacity-40 text-white cursor-pointer">
                 <Send className="w-4 h-4" />
               </button>
@@ -184,6 +205,6 @@ function Inner() {
   )
 }
 
-export function LiveMessagesView() {
-  return <NetworkProvider mode="live"><Inner /></NetworkProvider>
+export function LiveMessagesView({ onOpenWorkspaces }: { onOpenWorkspaces?: () => void } = {}) {
+  return <Inner {...(onOpenWorkspaces ? { onOpenWorkspaces } : {})} />
 }

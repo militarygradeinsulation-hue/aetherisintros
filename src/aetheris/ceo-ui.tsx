@@ -24,12 +24,132 @@ import { AdvisorPanel, BoardNetworkPanel, CapitalMapPanel, CustomerRiskPanel, De
 import {
   ceoViewLabel, chiefOfStaff, companyPulse, dealHealth, dealHealthRule, detectKind, executiveBrief, forecastDelta, needingAttention,
   networkRoi, relationshipHealth, sinceDecided, whatChanged, whoCanChange,
-  type BriefVariant, type CeoItem, type CeoRoute, type ChangeKind, type Decision, type DecisionStatus,
+  type BriefVariant, type CeoItem, type CeoRoute, type CeoView, type ChangeKind, type Decision, type DecisionStatus,
 } from './ceo-engine'
 
 const DAY = 86_400_000
 const fmt = (v: string | null | undefined) => (v ? new Date(v).toLocaleDateString(undefined, { month: 'short', day: 'numeric' }) : '')
 const isOpen = (t: CrmTask) => t.status !== 'done' && t.status !== 'cancelled'
+
+type CeoCommandAction = { label: string; route: CeoRoute }
+type CeoCommandMeta = { purpose: string; actions: CeoCommandAction[] }
+
+const ceoCommandMeta: Record<CeoView, CeoCommandMeta> = {
+  missing: { purpose: 'Surface blind spots, missing evidence and unanswered questions before they become expensive.', actions: [
+    { label: 'Challenge this', route: { view: 'redteam' } }, { label: 'Coverage', route: { view: 'coverage' } }, { label: 'Single-thread risk', route: { view: 'singles' } },
+  ] },
+  redteam: { purpose: 'Stress-test a decision against assumptions, weak evidence and downside cases before you commit.', actions: [
+    { label: 'Decision Room', route: { view: 'decisions' } }, { label: 'Scenario Room', route: { view: 'scenario' } }, { label: 'What am I missing?', route: { view: 'missing' } },
+  ] },
+  help: { purpose: 'Find where your experience, network or operating leverage can help someone now.', actions: [
+    { label: 'Private Ask', route: { view: 'privateAsk' } }, { label: 'Who can change this?', route: { view: 'who' } }, { label: 'Strategic relationships', route: { view: 'strategic' } },
+  ] },
+  coverage: { purpose: 'See where a company or opportunity has enough relationship depth—and where it depends on too few people.', actions: [
+    { label: 'Single-thread risk', route: { view: 'singles' } }, { label: 'Who can change this?', route: { view: 'who' } }, { label: 'Strategic relationships', route: { view: 'strategic' } },
+  ] },
+  strategic: { purpose: 'Prioritize the relationships with the strongest combination of timing, influence and mutual value.', actions: [
+    { label: 'Who can change this?', route: { view: 'who' } }, { label: 'Coverage', route: { view: 'coverage' } }, { label: 'Advisor on Demand', route: { view: 'advisor' } },
+  ] },
+  time: { purpose: 'Compare CEO meeting time with recorded decisions, commitments and deal movement.', actions: [
+    { label: 'Delegation', route: { view: 'delegation' } }, { label: 'Commitments', route: { view: 'commitments' } }, { label: 'Replay', route: { view: 'replay' } },
+  ] },
+  promises: { purpose: 'Find open commitments and follow-through gaps that can damage trust if they stay unresolved.', actions: [
+    { label: 'Commitments', route: { view: 'commitments' } }, { label: 'Customer risk', route: { view: 'customerRisk' } }, { label: 'Replay', route: { view: 'replay' } },
+  ] },
+  collisions: { purpose: 'Expose overlapping opportunities, timing conflicts and competing asks before they collide.', actions: [
+    { label: 'Scenario Room', route: { view: 'scenario' } }, { label: 'Decision Room', route: { view: 'decisions' } }, { label: 'Forecast confidence', route: { view: 'forecast' } },
+  ] },
+  companies: { purpose: 'Find company-to-company alignment based on recorded needs, offers, timing and relationship paths.', actions: [
+    { label: 'Strategic relationships', route: { view: 'strategic' } }, { label: 'Who can change this?', route: { view: 'who' } }, { label: 'Private Ask', route: { view: 'privateAsk' } },
+  ] },
+  bench: { purpose: 'See the executives, advisors and operators who strengthen the bench around a decision or company.', actions: [
+    { label: 'Advisor on Demand', route: { view: 'advisor' } }, { label: 'Board Network', route: { view: 'boardNetwork' } }, { label: 'Delegation', route: { view: 'delegation' } },
+  ] },
+  replay: { purpose: 'Reconstruct how a relationship, deal or decision reached its current state from recorded history.', actions: [
+    { label: 'Patterns', route: { view: 'patterns' } }, { label: 'Deal memory', route: { view: 'dealMemory' } }, { label: 'Decision Room', route: { view: 'decisions' } },
+  ] },
+  patterns: { purpose: 'Look across recorded outcomes for repeated behaviors, conditions and decision patterns.', actions: [
+    { label: 'Replay', route: { view: 'replay' } }, { label: 'Scenario Room', route: { view: 'scenario' } }, { label: 'What am I missing?', route: { view: 'missing' } },
+  ] },
+  singles: { purpose: 'Find accounts and opportunities that rely too heavily on one relationship or one path.', actions: [
+    { label: 'Coverage', route: { view: 'coverage' } }, { label: 'Customer risk', route: { view: 'customerRisk' } }, { label: 'Who can change this?', route: { view: 'who' } },
+  ] },
+  changed: { purpose: 'Review meaningful changes since your last look across deals, relationships, meetings and commitments.', actions: [
+    { label: 'What am I forgetting?', route: { view: 'forgetting' } }, { label: 'Executive brief', route: { view: 'brief', arg: 'weekly' } }, { label: 'Decision Room', route: { view: 'decisions' } },
+  ] },
+  forgetting: { purpose: 'Surface open loops, unanswered messages, stale deals, due decisions and promises that may be slipping.', actions: [
+    { label: 'Commitments', route: { view: 'commitments' } }, { label: 'Executive brief', route: { view: 'brief', arg: 'weekly' } }, { label: 'What am I missing?', route: { view: 'missing' } },
+  ] },
+  who: { purpose: 'Describe the business problem and find people with the role, access, expertise or timing to change it.', actions: [
+    { label: 'Strategic relationships', route: { view: 'strategic' } }, { label: 'Private Ask', route: { view: 'privateAsk' } }, { label: 'Coverage', route: { view: 'coverage' } },
+  ] },
+  decisions: { purpose: 'Compare options, record rationale, link the people and opportunities involved, and set a review point.', actions: [
+    { label: 'Challenge a decision', route: { view: 'redteam' } }, { label: 'Run a scenario', route: { view: 'scenario' } }, { label: 'Commitments', route: { view: 'commitments' } },
+  ] },
+  commitments: { purpose: 'Create, review and close commitments so ownership and follow-through stay explicit.', actions: [
+    { label: 'Trust at risk', route: { view: 'promises' } }, { label: 'Delegation', route: { view: 'delegation' } }, { label: 'Decision Room', route: { view: 'decisions' } },
+  ] },
+  health: { purpose: 'Find relationships that need attention based on recorded activity, open loops and recent movement.', actions: [
+    { label: 'Coverage', route: { view: 'coverage' } }, { label: 'Customer risk', route: { view: 'customerRisk' } }, { label: 'Who can change this?', route: { view: 'who' } },
+  ] },
+  forecast: { purpose: 'See how much confidence the recorded pipeline deserves and which factors are strengthening or weakening it.', actions: [
+    { label: 'Customer risk', route: { view: 'customerRisk' } }, { label: 'Scenario Room', route: { view: 'scenario' } }, { label: 'Single-thread risk', route: { view: 'singles' } },
+  ] },
+  brief: { purpose: 'Generate an executive, weekly, board or investor-ready brief from the evidence already in the system.', actions: [
+    { label: 'What changed', route: { view: 'changed' } }, { label: 'Forecast confidence', route: { view: 'forecast' } }, { label: 'Commitments', route: { view: 'commitments' } },
+  ] },
+  approvals: { purpose: 'Review actions prepared by the system before anything leaves your account or changes a record.', actions: [
+    { label: 'Delegation', route: { view: 'delegation' } }, { label: 'Private Ask', route: { view: 'privateAsk' } }, { label: 'Commitments', route: { view: 'commitments' } },
+  ] },
+  prepare: { purpose: 'Build a concise meeting brief from the relationship, recent activity, open needs and relevant history.', actions: [
+    { label: 'Trust profile', route: { view: 'trustProfile' } }, { label: 'Deal memory', route: { view: 'dealMemory' } }, { label: 'Close the meeting', route: { view: 'close' } },
+  ] },
+  close: { purpose: 'Capture the outcome, decisions, commitments and next step immediately after the meeting.', actions: [
+    { label: 'Create commitment', route: { view: 'commit' } }, { label: 'Replay', route: { view: 'replay' } }, { label: 'Decision Room', route: { view: 'decisions' } },
+  ] },
+  roi: { purpose: 'Measure whether the network is producing useful introductions, meetings, opportunities and outcomes.', actions: [
+    { label: 'CEO time ROI', route: { view: 'time' } }, { label: 'Patterns', route: { view: 'patterns' } }, { label: 'Who can change this?', route: { view: 'who' } },
+  ] },
+  commit: { purpose: 'Create a clear owner, due date and outcome expectation for the next commitment.', actions: [
+    { label: 'Commitments', route: { view: 'commitments' } }, { label: 'Decision Room', route: { view: 'decisions' } }, { label: 'Trust at risk', route: { view: 'promises' } },
+  ] },
+  customerRisk: { purpose: 'Identify customers showing evidence of risk and see the factors behind each warning.', actions: [
+    { label: 'Forecast confidence', route: { view: 'forecast' } }, { label: 'Single-thread risk', route: { view: 'singles' } }, { label: 'Coverage', route: { view: 'coverage' } },
+  ] },
+  capitalMap: { purpose: 'Map capital relationships, mandates and possible paths without exposing private investor identities broadly.', actions: [
+    { label: 'Private Ask', route: { view: 'privateAsk' } }, { label: 'Who can change this?', route: { view: 'who' } }, { label: 'Strategic relationships', route: { view: 'strategic' } },
+  ] },
+  negotiation: { purpose: 'Record priorities, leverage, BATNA, concessions and the next move before or during a negotiation.', actions: [
+    { label: 'Scenario Room', route: { view: 'scenario' } }, { label: 'Deal memory', route: { view: 'dealMemory' } }, { label: 'Decision Room', route: { view: 'decisions' } },
+  ] },
+  scenario: { purpose: 'Compare what-if cases against the current deal, timing and assumptions before choosing a path.', actions: [
+    { label: 'Forecast confidence', route: { view: 'forecast' } }, { label: 'Negotiation Room', route: { view: 'negotiation' } }, { label: 'Decision Room', route: { view: 'decisions' } },
+  ] },
+  delegation: { purpose: 'Find recurring CEO work and open operational follow-up that should be reviewed for delegation.', actions: [
+    { label: 'CEO time ROI', route: { view: 'time' } }, { label: 'Commitments', route: { view: 'commitments' } }, { label: 'Approvals', route: { view: 'approvals' } },
+  ] },
+  boardNetwork: { purpose: 'Find people in the network who can add relevant board-level judgment, context or introductions.', actions: [
+    { label: 'Advisor on Demand', route: { view: 'advisor' } }, { label: 'Strategic relationships', route: { view: 'strategic' } }, { label: 'Who can change this?', route: { view: 'who' } },
+  ] },
+  advisor: { purpose: 'Find relevant advisors from authorized network records based on the question you need answered.', actions: [
+    { label: 'Board Network', route: { view: 'boardNetwork' } }, { label: 'Strategic relationships', route: { view: 'strategic' } }, { label: 'Private Ask', route: { view: 'privateAsk' } },
+  ] },
+  trustProfile: { purpose: 'Review factual trust signals, relationship history and follow-through without inventing a personality score.', actions: [
+    { label: 'Replay', route: { view: 'replay' } }, { label: 'Deal memory', route: { view: 'dealMemory' } }, { label: 'Coverage', route: { view: 'coverage' } },
+  ] },
+  dealMemory: { purpose: 'See why a deal or relationship is here, what remains unresolved and the chronology behind it.', actions: [
+    { label: 'Replay', route: { view: 'replay' } }, { label: 'Negotiation Room', route: { view: 'negotiation' } }, { label: 'Decision Room', route: { view: 'decisions' } },
+  ] },
+  dependencies: { purpose: 'Find relationships and opportunities where too much depends on one person, role or point of failure.', actions: [
+    { label: 'Single-thread risk', route: { view: 'singles' } }, { label: 'Coverage', route: { view: 'coverage' } }, { label: 'Customer risk', route: { view: 'customerRisk' } },
+  ] },
+  officeHours: { purpose: 'Manage limited executive availability and requests without exposing a public booking free-for-all.', actions: [
+    { label: 'Private Ask', route: { view: 'privateAsk' } }, { label: 'Advisor on Demand', route: { view: 'advisor' } }, { label: 'Who can change this?', route: { view: 'who' } },
+  ] },
+  privateAsk: { purpose: 'Send a targeted, consent-safe need to the right part of the network without broadcasting it publicly.', actions: [
+    { label: 'Who can change this?', route: { view: 'who' } }, { label: 'Strategic relationships', route: { view: 'strategic' } }, { label: 'Approvals', route: { view: 'approvals' } },
+  ] },
+}
 
 function useGo() {
   const nav = useNav()
@@ -572,11 +692,16 @@ export function CeoHost() {
     case 'prepare': body = member ? <PrepareBrief member={member} /> : <MemberPicker onPick={setPicked} />; break
     case 'close': body = member ? <CloseMeeting member={member} threadId={r.threadId} /> : <MemberPicker onPick={setPicked} />; break
   }
-  return <div className="modal-wrap" onMouseDown={ceo.close}>
-    <section className="modal og-drawer ceo-drawer" onMouseDown={e => e.stopPropagation()} aria-label={ceoViewLabel[r.view]}>
-      <header><div><Eyebrow signal>CEO OS</Eyebrow><h2>{ceoViewLabel[r.view]}{member && (r.view === 'prepare' || r.view === 'close' || r.view === 'commit') ? ` — ${member.name}` : ''}</h2></div>
+  const meta = ceoCommandMeta[r.view]
+  const titleId = `ceo-command-${r.view}-title`
+  return <div className="modal-wrap ceo-modal-wrap" onMouseDown={ceo.close}>
+    <section className="modal og-drawer ceo-drawer" onMouseDown={e => e.stopPropagation()} role="dialog" aria-modal="true" aria-labelledby={titleId}>
+      <header><div><Eyebrow signal>CEO OS</Eyebrow><h2 id={titleId}>{ceoViewLabel[r.view]}{member && (r.view === 'prepare' || r.view === 'close' || r.view === 'commit') ? ` — ${member.name}` : ''}</h2><p className="ceo-command-purpose">{meta.purpose}</p></div>
         <button className="icon-btn" onClick={ceo.close} aria-label="Close"><X size={16} /></button></header>
-      {body}
+      <nav className="ceo-command-actions" aria-label={`${ceoViewLabel[r.view]} related actions`}>
+        {meta.actions.map(action => <button type="button" key={action.label} onClick={() => go(action.route)}>{action.label}<ArrowRight size={13} /></button>)}
+      </nav>
+      <div className="ceo-drawer-body">{body}</div>
     </section>
   </div>
 }

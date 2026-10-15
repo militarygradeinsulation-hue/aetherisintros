@@ -2,7 +2,10 @@ import type { ReactNode } from 'react'
 
 import { IntrosSystemFeatures } from '@/components/blocks/intros-system-features'
 import { BentoGrid, BentoGridItem } from '@/components/ui/bento-grid'
-import { DraggableWidgetGrid, type WidgetItem } from '@/components/ui/draggable-widget-grid'
+// The board keeps a stable layout across desktop and mobile, including
+// long-press and keyboard reordering. It is the same grid used by the live
+// member home, rather than a second, simplified dashboard implementation.
+import { DraggableWidgetGrid, type WidgetItem, type WidgetSize } from '@/components/ui/widget-board'
 
 export function IntrosSystemBento({ children, className = '' }: { children: ReactNode; className?: string }) {
   return <BentoGrid className={`intros-system-bento ${className}`}>{children}</BentoGrid>
@@ -14,7 +17,7 @@ export function IntrosWidgetGrid({ items, editable, onChange, renderItem, classN
   items: WidgetItem[]
   editable: boolean
   onChange: (items: WidgetItem[]) => void
-  renderItem: (item: WidgetItem, index: number) => ReactNode
+  renderItem: (item: WidgetItem, size: WidgetSize) => ReactNode
   className?: string
   maxColumns?: number
   cellSize?: number
@@ -28,7 +31,7 @@ export function IntrosSystemGrid({ items, editable, onChange, renderItem, showFe
   items: WidgetItem[]
   editable: boolean
   onChange: (items: WidgetItem[]) => void
-  renderItem: (item: WidgetItem, index: number) => ReactNode
+  renderItem: (item: WidgetItem, size: WidgetSize) => ReactNode
   showFeatures?: boolean
 }) {
   return <div className="intros-system-grid">

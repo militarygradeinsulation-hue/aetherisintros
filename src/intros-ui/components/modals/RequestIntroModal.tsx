@@ -8,7 +8,7 @@ interface RequestIntroModalProps {
   isOpen: boolean;
   onClose: () => void;
   targetMember: NetworkMember | null;
-  onSendRequest: (targetId: string, note: string) => void;
+  onSendRequest: (targetId: string, note: string) => Promise<'created' | 'existing'>;
 }
 
 export const RequestIntroModal: React.FC<RequestIntroModalProps> = ({
@@ -21,16 +21,25 @@ export const RequestIntroModal: React.FC<RequestIntroModalProps> = ({
   const [sharedGoal, setSharedGoal] = useState('Explore strategic partnership & infrastructure synergies');
   const [urgency, setUrgency] = useState<'Standard' | 'Time-Sensitive'>('Standard');
   const [isSuccess, setIsSuccess] = useState(false);
+  const [requestState, setRequestState] = useState<'created' | 'existing'>('created');
+  const [sending, setSending] = useState(false);
+  const [sendError, setSendError] = useState('');
 
   if (!isOpen || !targetMember) return null;
 
-  const handleSend = () => {
-    onSendRequest(targetMember.id, note || sharedGoal);
-    setIsSuccess(true);
-    setTimeout(() => {
-      setIsSuccess(false);
-      onClose();
-    }, 1500);
+  const handleSend = async () => {
+    if (sending) return;
+    setSending(true);
+    setSendError('');
+    try {
+      const result = await onSendRequest(targetMember.id, note.trim() || sharedGoal);
+      setRequestState(result);
+      setIsSuccess(true);
+    } catch (error) {
+      setSendError(error instanceof Error ? error.message : 'Not sent. Retry your introduction request.');
+    } finally {
+      setSending(false);
+    }
   };
 
   return (
@@ -49,10 +58,11 @@ export const RequestIntroModal: React.FC<RequestIntroModalProps> = ({
             <div className="w-14 h-14 rounded-full bg-[#F5B027]/20 border border-[#F5B027] flex items-center justify-center text-[#F5B027] mb-4">
               <Check className="w-8 h-8" />
             </div>
-            <h3 className="font-serif-editorial text-2xl font-bold mb-2">Introduction Requested</h3>
+            <h3 className="font-serif-editorial text-2xl font-bold mb-2">{requestState === 'existing' ? 'Request Already Saved' : 'Request Saved'}</h3>
             <p className="text-sm text-[#9CA3AF] max-w-xs">
-              A double-opt-in forwardable note has been routed to mutual connections for {targetMember.name}.
+              {requestState === 'existing' ? 'Your earlier introduction request is already saved.' : 'Your request is saved for the other member to consider.'} It is not an accepted introduction until both parties opt in.
             </p>
+            <button type="button" className="mt-5 px-4 py-2 rounded bg-[#C78522] text-white" onClick={() => { setIsSuccess(false); setNote(''); onClose(); }}>Close</button>
           </div>
         ) : (
           <div>
@@ -153,6 +163,8 @@ export const RequestIntroModal: React.FC<RequestIntroModalProps> = ({
               </div>
             </div>
 
+            {sendError && <p role="alert" className="mb-3 text-sm text-[#FFD1D1] border border-red-400/40 rounded-lg p-3">{sendError} <button type="button" disabled={sending} onClick={() => void handleSend()} className="underline font-semibold">Retry</button></p>}
+
             {/* Actions */}
             <div className="flex items-center justify-end gap-3">
               <button
@@ -164,11 +176,12 @@ export const RequestIntroModal: React.FC<RequestIntroModalProps> = ({
               </button>
               <button
                 type="button"
-                onClick={handleSend}
+                onClick={() => void handleSend()}
+                disabled={sending}
                 className="flex items-center gap-1.5 px-4 py-2 text-xs font-medium text-white bg-[#F5B027] hover:bg-[#C78522] rounded-lg shadow-sm transition-colors cursor-pointer"
               >
                 <Send className="w-3.5 h-3.5" />
-                Submit Request
+                {sending ? 'Sending…' : sendError ? 'Retry Request' : 'Submit Request'}
               </button>
             </div>
           </div>

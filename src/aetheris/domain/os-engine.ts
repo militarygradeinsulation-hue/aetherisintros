@@ -219,7 +219,7 @@ export function strategyProgress(strategy: NetworkStrategy, people: Member[]) {
 export function deriveTwin(person: Member, ctx: { loops: OpenLoop[]; triggers: TriggerMemory[] }): RelationshipTwin {
   const loops = ctx.loops.filter(l => l.memberId === person.id && l.status === 'open')
   const triggers = ctx.triggers.filter(t => t.memberId === person.id)
-  const cooling = person.lastInteractionDays > 30
+  const cooling = (person.lastInteractionDays !== null && person.lastInteractionDays > 30)
   return {
     id: `twin-${person.id}`, memberId: person.id, ownerId: 'me',
     communicationStyle: `${person.role === 'Investor' ? 'Analytical; wants the model before the story.' : 'Direct; prefers a written reason before a call.'}`,

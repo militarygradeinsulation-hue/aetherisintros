@@ -105,10 +105,22 @@ export const liveDeals: DealsApi = {
     return open?.id ?? null
   },
   async create(d) {
-    return rpc('create_deal_room', {
+    const r = await db.rpc('create_deal_room', {
       p_source_kind: d.sourceKind, p_source_id: d.sourceId, p_title: d.title, p_need: d.need, p_side: d.side,
       p_counterpart: d.invite ? d.counterpartId : null,
     })
+    if (!r.error) return { error: '', data: r.data }
+    // 0059 enforces one active room per source. If two clients race, the loser
+    // receives 23505 after the winner commits; resolve that race to the room
+    // that now exists instead of surfacing a database error to the member.
+    if (r.error.code === '23505' && d.sourceKind !== 'manual' && d.sourceId) {
+      const existing = await db.from('deal_rooms').select('id')
+        .eq('source_kind', d.sourceKind).eq('source_id', d.sourceId)
+        .neq('stage', 'closed').neq('stage', 'cancelled')
+        .order('created_at', { ascending: true }).limit(1).maybeSingle()
+      if (existing.data?.id) return { error: '', data: existing.data.id as string }
+    }
+    return { error: msg(r.error) }
   },
   respond: (room, accept) => rpc('respond_deal_invite', { p_room: room, p_accept: accept }),
   invite: (room, user, role) => rpc('invite_deal_member', { p_room: room, p_user: user, p_role: role }),

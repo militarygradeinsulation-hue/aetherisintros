@@ -13,8 +13,61 @@ export const SYNCED_STORE_KEYS = [
   'aetheris-pro-v1-live',
   'aetheris-platform-v1-live',
   'aetheris.ledger.patch',
+  'aetheris.business-execution-v1-live',
 ] as const
 export type SyncedStoreKey = typeof SYNCED_STORE_KEYS[number]
+
+export interface StoreReadiness {
+  isReady: (key: string) => boolean
+  waitFor: (key: string) => Promise<void>
+  markReady: (key: string) => void
+  clear: (key?: string) => void
+}
+
+export function createStoreReadiness(): StoreReadiness {
+  const ready = new Set<string>()
+  const waiters = new Map<string, Set<() => void>>()
+  return {
+    isReady: key => ready.has(key),
+    waitFor: key => {
+      if (ready.has(key)) return Promise.resolve()
+      return new Promise(resolve => {
+        const pending = waiters.get(key) ?? new Set<() => void>()
+        pending.add(resolve)
+        waiters.set(key, pending)
+      })
+    },
+    markReady: key => {
+      ready.add(key)
+      waiters.get(key)?.forEach(resolve => resolve())
+      waiters.delete(key)
+    },
+    clear: key => {
+      if (key === undefined) {
+        ready.clear()
+        for (const pending of waiters.values()) pending.forEach(resolve => resolve())
+        waiters.clear()
+      } else {
+        ready.delete(key)
+        const pending = waiters.get(key)
+        pending?.forEach(resolve => resolve())
+        waiters.delete(key)
+      }
+    },
+  }
+}
+
+export function shouldRetryInitialSync(
+  previousUserId: string | null,
+  currentUserId: string | null,
+  storeIsCurrent: boolean,
+  storeIsReady: boolean,
+): boolean {
+  return currentUserId !== null
+    && previousUserId !== currentUserId
+    && storeIsCurrent
+    && !storeIsReady
+}
 
 /** Server limit on one store (octet_length of the JSON text). */
 export const MAX_STORE_BYTES = 2 * 1024 * 1024
@@ -99,9 +152,9 @@ export const FAILURES_BEFORE_NOTICE = 3
 
 /**
  * localStorage keys to clear when a member signs out of a shared computer: everything under
- * `aetheris.` plus the hyphenated live stores. Demo/showcase copies hold no member data and
- * are kept.
+ * `aetheris.` plus the hyphenated live stores and private note/thread keys used by the
+ * editorial shell. Demo/showcase copies hold no member data and are kept.
  */
 export function keysToClearOnSignOut(keys: readonly string[]): string[] {
-  return keys.filter(k => k.startsWith('aetheris.') || (k.startsWith('aetheris-') && k.endsWith('-live')))
+  return keys.filter(k => k.startsWith('aetheris.') || k.startsWith('aetheris_notes_') || k === 'aetheris-intros-thread' || (k.startsWith('aetheris-') && k.endsWith('-live')))
 }

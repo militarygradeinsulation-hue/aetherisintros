@@ -1,3 +1,4 @@
+import { contactExportIsDenied } from '@/lib/contact-export'
 export const money = (n: number, compact = false) =>
   new Intl.NumberFormat('en-US', {
     style: 'currency',
@@ -34,4 +35,10 @@ export function downloadCsv(filename: string, rows: Array<Record<string, unknown
   link.download = filename
   link.click()
   URL.revokeObjectURL(url)
+}
+
+
+export async function downloadContactCsv(filename: string, rows: Array<Record<string, unknown>>) {
+  if (await contactExportIsDenied()) return
+  downloadCsv(filename, rows)
 }

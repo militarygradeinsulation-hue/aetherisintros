@@ -30,6 +30,9 @@ const groups: Array<{ label: string; items: Array<{ id: Page; label: string; not
   ] },
   { label: 'Executive work', items: [
     { id: 'deals', label: 'Deals', note: 'Private rooms for the business after an introduction.', icon: Handshake },
+    { id: 'workspaces', label: 'Workspaces', note: 'Private working spaces from conversations and accepted introductions.', icon: Briefcase },
+    { id: 'pocket', label: 'Private Library & Blueprints', note: 'Your private Rolodex, reviewed imports, project blueprints and proposal comparisons.', icon: BookOpen },
+    { id: 'executivework', label: 'Executive Workbench', note: 'Business Analyst, warm referrals, Track Record, proposals and syndication in one place.', icon: Briefcase },
     { id: 'peergroups', label: 'Peer Groups', note: 'Your confidential group of peers, its sessions and issues.', icon: UsersRound },
     { id: 'rooms', label: 'Opportunity Rooms', note: 'Move live opportunities with people and context attached.', icon: Briefcase },
     { id: 'providers', label: 'Trusted Providers', note: 'Firms members vouch for, and help finding the right one.', icon: HandHelping },

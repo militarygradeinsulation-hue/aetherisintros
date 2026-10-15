@@ -1,5 +1,5 @@
-# Checks on every pull request and push to main: typecheck, unit tests, the database migration
-# checks (PGlite, no live data) and the browser checks for meetings (Chromium with fake media).
+# Checks on every pull request and push to main: typecheck, unit tests, database migration
+# checks (PGlite, no live data), critical browser flows and a production build.
 name: Checks
 on:
   pull_request:
@@ -13,7 +13,7 @@ concurrency:
 jobs:
   checks:
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 30
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -31,10 +31,17 @@ jobs:
         run: npx tsc --noEmit -p .
       - name: Unit tests
         run: npx vitest run
+      # Catch bundling failures before slow browser smoke tests.
+      - name: Build
+        run: npx vite build
       - name: Database migration checks
         run: node scripts/migration-checks/run.mjs
       - name: Install Chromium
         run: npx playwright install --with-deps chromium
+      - name: Compact homepage layout (browser)
+        env:
+          PLAYWRIGHT_MODULE: ${{ github.workspace }}/node_modules/playwright/index.mjs
+        run: node scripts/homepage-check/run.mjs
       - name: Meeting call engine (browser)
         env:
           PLAYWRIGHT_MODULE: ${{ github.workspace }}/node_modules/playwright/index.mjs
@@ -43,5 +50,23 @@ jobs:
         env:
           PLAYWRIGHT_MODULE: ${{ github.workspace }}/node_modules/playwright/index.mjs
         run: node scripts/meeting-room-check/run.mjs
-      - name: Build
-        run: npx vite build
+      - name: Deal rooms (browser)
+        env:
+          PLAYWRIGHT_MODULE: ${{ github.workspace }}/node_modules/playwright/index.mjs
+        run: node scripts/deal-room-check/run.mjs
+      - name: LinkedIn scan (browser)
+        env:
+          PLAYWRIGHT_MODULE: ${{ github.workspace }}/node_modules/playwright/index.mjs
+        run: node scripts/linkedin-scan-check/run.mjs
+      - name: Quick menu (browser)
+        env:
+          PLAYWRIGHT_MODULE: ${{ github.workspace }}/node_modules/playwright/index.mjs
+        run: node scripts/quick-menu-check/run.mjs
+      - name: Architect across member pages (light and dark browser)
+        env:
+          PLAYWRIGHT_MODULE: ${{ github.workspace }}/node_modules/playwright/index.mjs
+        run: node scripts/architect-check/run.mjs
+      - name: Contrast and overlay safety (browser)
+        env:
+          PLAYWRIGHT_MODULE: ${{ github.workspace }}/node_modules/playwright/index.mjs
+        run: node scripts/contrast-check/run.mjs
