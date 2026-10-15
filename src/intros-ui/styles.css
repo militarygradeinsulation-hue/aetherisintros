@@ -704,3 +704,28 @@
   .ix-header-appearance>svg,.ix-header-appearance .appearance-switcher__label { display:none; }
   :root[data-theme="light"] .ix-root .ix-mobile-sheet { background:#fffdf9; }
 }
+
+
+/* Keep the native member actions on the same signature rotating-gradient system. */
+.ix-root .btn.primary,
+.ix-root .ai-gradient-button {
+  border:2px solid transparent !important;
+  border-radius:999px !important;
+  background:
+    linear-gradient(135deg,var(--ai-button-surface),var(--ai-button-surface)) padding-box,
+    conic-gradient(from var(--ai-border-angle),#c35c28,#f6b66e 22%,#e7d7ba 39%,#347fd5 52%,#f2a85a 77%,#c35c28) border-box !important;
+  color:var(--ai-button-text) !important;
+  animation:ai-gradient-turn 7s linear infinite;
+}
+.ix-root .btn.primary:hover,
+.ix-root .ai-gradient-button:hover {
+  border-color:transparent !important;
+  background:
+    linear-gradient(135deg,var(--ai-button-surface),var(--ai-button-surface)) padding-box,
+    conic-gradient(from var(--ai-border-angle),#c35c28,#f6b66e 22%,#e7d7ba 39%,#347fd5 52%,#f2a85a 77%,#c35c28) border-box !important;
+  color:var(--ai-button-text) !important;
+}
+.ix-root .ai-gradient-button:disabled { animation:none; }
+@media(prefers-reduced-motion:reduce) {
+  .ix-root .btn.primary, .ix-root .ai-gradient-button { animation:none; }
+}
