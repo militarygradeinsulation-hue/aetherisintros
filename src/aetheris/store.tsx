@@ -268,7 +268,7 @@ interface NetworkApi {
   toggleSave: (id: string, label?: string) => void
   openThreadWith: (id: string) => string
   sendMessage: (threadId: string, text: string, messageId?: string) => Promise<void>
-  requestIntro: (id: string) => void
+  requestIntro: (id: string, note?: string) => Promise<boolean>
   authorizeIntro: (id: string) => void
   declineIntro: (id: string) => void
   /** Forget a withdrawn request locally; the row itself is deleted by the caller. */
@@ -535,15 +535,16 @@ export function NetworkProvider({ children, mode = 'live' }: { children: React.R
       [{ ...a, id: uid('act'), when: 'Just now' }, ...prev.activity]
 
     /** Confirmation-first action with a shared warning that retains a real Retry. */
-    const verifiedWrite = (title: string, write: () => Promise<void>, commit: () => void): Promise<void> => {
-      const attempt = async (): Promise<void> => {
-        try { await write(); commit() }
+    const verifiedWrite = (title: string, write: () => Promise<void>, commit: () => void): Promise<boolean> => {
+      const attempt = async (): Promise<boolean> => {
+        try { await write(); commit(); return true }
         catch (error) {
           reportWriteFailure({
             title: `${title} not saved`,
             message: error instanceof Error ? error.message : 'The server did not confirm this update.',
-            retry: attempt,
+            retry: async () => { await attempt() },
           })
+          return false
         }
       }
       return attempt()
@@ -673,15 +674,15 @@ export function NetworkProvider({ children, mode = 'live' }: { children: React.R
         }))
       },
 
-      requestIntro: (id) => {
+      requestIntro: (id, note) => {
         const commit = () => patch(prev => ({
           introStates: { ...prev.introStates, [id]: 'requested' },
           learned: remember(prev, { category: 'Introductions', text: `You requested an introduction to ${nameOf(id)}. Waiting on their opt-in.`, source: 'Confirmed double opt-in request', confidence: 100, scope: 'shareable' }),
           activity: log(prev, { memberId: id, kind: 'Intro requested', text: `Request saved for ${nameOf(id)} — both sides must agree.` }),
         }))
-        if (live) return verifiedWrite('Introduction request', async () => { await submitIntroRequest(id, `I would like to request an introduction to ${nameOf(id)}.`) }, commit)
+        if (live) return verifiedWrite('Introduction request', async () => { await submitIntroRequest(id, note?.trim() || `I would like to request an introduction to ${nameOf(id)}.`) }, commit)
         commit()
-        return Promise.resolve()
+        return Promise.resolve(true)
       },
 
       authorizeIntro: (id) => {
