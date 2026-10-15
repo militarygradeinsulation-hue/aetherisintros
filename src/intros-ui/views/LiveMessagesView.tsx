@@ -170,7 +170,7 @@ function Inner({ onOpenWorkspaces }: { onOpenWorkspaces?: () => void }) {
                 onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); send() } }}
                 className="flex-1 resize-none bg-[var(--msg-panel-inset)] text-sm text-[var(--msg-ink)] placeholder:text-[var(--msg-muted)] rounded-lg px-3 py-2 border border-[var(--msg-border)] focus:outline-none focus:border-[var(--msg-accent)] max-h-32" />
               <button onClick={send} disabled={!draft.trim() || sending} aria-label="Send message"
-                className="p-2.5 rounded-lg bg-[var(--msg-accent)] hover:bg-[var(--msg-accent-hover)] disabled:opacity-40 text-[var(--msg-accent-ink)] cursor-pointer">
+                className="msg-primary-action p-2.5 rounded-lg bg-[var(--msg-accent)] hover:bg-[var(--msg-accent-hover)] disabled:opacity-40 text-[var(--msg-accent-ink)] cursor-pointer">
                 <Send className="w-4 h-4" />
               </button>
             </footer>
