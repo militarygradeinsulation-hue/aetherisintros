@@ -1,0 +1,34 @@
+import { useEffect, useState } from 'react'
+
+import { supabase } from '@/integrations/supabase/client'
+import { TrackRecordDashboard } from './TrackRecordDashboard'
+import { TrackRecordPanel } from './track-record-ui'
+import { Eyebrow } from './ui'
+
+/** Current-member wrapper so reputation and proof live inside the canonical Passport page. */
+export function CurrentUserTrackRecord() {
+  const [userId, setUserId] = useState<string | null>(null)
+  const [resolved, setResolved] = useState(false)
+
+  useEffect(() => {
+    let live = true
+    void supabase.auth.getUser().then(({ data }) => {
+      if (!live) return
+      setUserId(data.user?.id ?? null)
+      setResolved(true)
+    })
+    return () => { live = false }
+  }, [])
+
+  if (!resolved) return <section className="executive-section"><p className="og-note">Loading track record…</p></section>
+  if (!userId) return <section className="executive-section"><p className="og-note">Sign in to see your track record.</p></section>
+
+  return <section className="executive-section" aria-label="Your verified track record">
+    <Eyebrow>PROOF & REPUTATION</Eyebrow>
+    <p className="og-note">Self-stated outcomes stay visibly separate from server-verified outcomes. Reputation is calculated from recorded activity and cannot be edited directly.</p>
+    <div className="og-stack">
+      <TrackRecordDashboard userId={userId} />
+      <TrackRecordPanel userId={userId} editable />
+    </div>
+  </section>
+}

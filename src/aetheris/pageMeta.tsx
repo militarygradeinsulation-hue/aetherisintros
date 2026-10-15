@@ -327,6 +327,20 @@ const basePages: BaseMeta[] = [
     next: 'Open a room from an accepted introduction, a reply to your ask or a conversation.',
     why: 'Only people who accept an invitation see a room. Nothing is shared with the wider network.',
   }, ['deals', 'deal rooms', 'my deals', 'engagements', 'proposals', 'milestones', 'transactions']),
+  m('workspaces', 'Workspaces', Briefcase, 'OPPORTUNITY & EXECUTION', 'Private two-party spaces for shaping scope, approvals, delivery and next actions before or alongside a deal.', {
+    does: 'Turns an accepted introduction or active conversation into a private working space without copying the conversation itself.',
+    look: 'Invitations, scope, roles, approvals, next actions, delivery status and anything waiting on you.',
+    changes: 'Both parties approve the business roles and progression; delivery and rework remain explicit.',
+    next: 'Open the workspace attached to the conversation you are actively moving.',
+    why: 'A Workspace is collaborative working context. A Deal Room is the transaction record. They stay separate on purpose.',
+  }, ['workspace', 'business workspace', 'private work', 'scope', 'delivery', 'collaboration']),
+  m('executivework', 'Executive Workbench', Briefcase, 'OPPORTUNITY & EXECUTION', 'Business analysis, warm referrals, reputation, proposals and private group decisions in one workbench.', {
+    does: 'Brings recovered executive tools into one place without creating five more primary destinations.',
+    look: 'Strategic analysis, warm referral paths, Track Record, your storefront and proposals, and private syndication rooms.',
+    changes: 'Each tab writes only through its own permissioned workflow; verified reputation remains server-owned.',
+    next: 'Open the tab tied to the decision or relationship you are moving right now.',
+    why: 'These tools share the same business graph but stay separate where consent, privacy, and verification rules differ.',
+  }, ['business analyst', 'warm referrals', 'track record', 'reputation', 'storefront', 'proposals', 'syndication']),
   m('rooms', 'Opportunity Rooms', DoorOpen, 'OPPORTUNITY & EXECUTION', 'Small working rooms around a single opportunity.', {
     does: 'Creates small working rooms around one opportunity.',
     look: 'Stage, participants and the next concrete action.',
@@ -514,7 +528,7 @@ export const primaryPages: Page[] = ['home', 'network', 'intros', 'messages', 'm
 export const networkTabs: Page[] = ['discover', 'intros', 'companies', 'circles', 'events']
 export const networkAdvanced: Page[] = ['directory', 'expertise', 'serendipity', 'gaps', 'identity', 'organization', 'talent', 'knowledge', 'boards', 'intelrooms', 'passport', 'ask']
 export const workTabs: Page[] = ['crm', 'diagnostic', 'pocket', 'opportunities', 'grid', 'calendar', 'outcomes']
-export const workAdvanced: Page[] = ['needs', 'rooms', 'deals', 'systems', 'strategy', 'simulation', 'collisions', 'capital', 'attribution', 'loops', 'knowledgeassets', 'timemachine']
+export const workAdvanced: Page[] = ['needs', 'rooms', 'deals', 'workspaces', 'executivework', 'systems', 'strategy', 'simulation', 'collisions', 'capital', 'attribution', 'loops', 'knowledgeassets', 'timemachine']
 export const meTabs: Page[] = ['profile', 'passport', 'permission', 'preferences', 'integrations']
 export const meAdvanced: Page[] = ['identity', 'consent', 'constitution', 'presence', 'vault', 'autopilot']
 

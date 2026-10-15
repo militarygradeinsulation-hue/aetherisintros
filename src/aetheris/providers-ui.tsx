@@ -47,12 +47,25 @@ export function ProvidersPage() {
   const [query, setQuery] = useState('')
   const [error, setError] = useState('')
 
+  const [loading, setLoading] = useState(false)
   const load = useCallback(async () => {
-    const [d, r, i] = await Promise.all([db.rpc('provider_directory'), db.rpc('my_provider_requests'), db.rpc('provider_inbox')])
-    if (d.error) setError(errText(d.error))
-    setProviders(d.data ?? [])
-    setRequests(r.data ?? [])
-    setInbox(i.data ?? [])
+    setLoading(true)
+    setError('')
+    try {
+      const [d, r, i] = await Promise.all([db.rpc('provider_directory'), db.rpc('my_provider_requests'), db.rpc('provider_inbox')])
+      const failures = [
+        d.error ? `Provider directory: ${errText(d.error)}` : '',
+        r.error ? `Your requests: ${errText(r.error)}` : '',
+        i.error ? `Provider inbox: ${errText(i.error)}` : '',
+      ].filter(Boolean)
+      if (failures.length) setError(`Could not load all Trusted Providers data. ${failures.join(' · ')}`)
+      // Failed queries must not impersonate an empty, successfully loaded list.
+      if (!d.error) setProviders(d.data ?? [])
+      if (!r.error) setRequests(r.data ?? [])
+      if (!i.error) setInbox(i.data ?? [])
+    } catch (cause) {
+      setError(cause instanceof Error ? cause.message : 'Could not load providers. Retry.')
+    } finally { setLoading(false) }
   }, [])
   useEffect(() => { void load() }, [load])
 
@@ -73,7 +86,9 @@ export function ProvidersPage() {
       <button role="tab" aria-selected={tab === 'requests'} className={tab === 'requests' ? 'on' : ''} onClick={() => setTab('requests')}>My requests{requests.length ? ` · ${requests.length}` : ''}</button>
       {inbox.length > 0 && <button role="tab" aria-selected={tab === 'inbox'} className={tab === 'inbox' ? 'on' : ''} onClick={() => setTab('inbox')}><Inbox size={13} /> Routed to my firm · {inbox.length}</button>}
     </nav>
-    {error && <p className="og-note">{error}</p>}
+    {error && <div role="alert" className="og-note" style={{border:'1px solid #aa6565',padding:'12px',borderRadius:8}}>
+      {error} <button type="button" className="underline" disabled={loading} onClick={() => void load()}>Retry all three loads</button>
+    </div>}
 
     {tab === 'browse' && (open
       ? <ProviderDetail provider={open} onBack={() => setOpenId(null)} onRequest={() => askFor(open.category)} onChanged={() => void load()} />

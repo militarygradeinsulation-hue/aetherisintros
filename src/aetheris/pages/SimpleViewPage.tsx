@@ -249,24 +249,50 @@ function MemberSheet({ memberId, openThread }: { memberId: string; openThread: (
 function ThreadSheet({ threadId, openMember }: { threadId: string; openMember: (id: string) => void }) {
   const net = useNetwork()
   const [text, setText] = useState('')
+  const [sending, setSending] = useState(false)
+  const [failed, setFailed] = useState<{ text: string; id: string; reason: string } | null>(null)
   const thread = net.threads.find(item => item.id === threadId)
   if (!thread) return <p className="sv-empty">This conversation is no longer available.</p>
   const name = net.members.find(member => member.id === thread.memberId)?.name ?? 'A member'
-  function send() {
+
+  async function send(body: string, previousId?: string) {
+    if (!body.trim() || sending) return
+    const id = previousId ?? crypto.randomUUID()
+    setSending(true)
+    setFailed(null)
+    try {
+      await net.sendMessage(threadId, body, id)
+      setText(current => current.trim() === body.trim() ? '' : current)
+    } catch (error) {
+      setFailed({ text: body, id, reason: error instanceof Error ? error.message : 'Message was not confirmed by the server.' })
+      setText(current => current.trim() ? current : body)
+    } finally {
+      setSending(false)
+    }
+  }
+
+  const submit = () => {
     const body = text.trim()
     if (!body) return
-    net.sendMessage(thread!.id, body)
-    setText('')
+    void send(body, failed?.text === body ? failed.id : undefined)
   }
+
   return <div className="sv-sheet-stack">
     <button className="sv-link" onClick={() => openMember(thread.memberId)}>Open {name}’s profile</button>
     <p className="sv-empty">{thread.introContext}</p>
     <ul className="sv-chat">
       {thread.messages.map(message => <li key={message.id} className={message.from === 'me' ? 'mine' : ''}><p>{message.text}</p><small>{message.at}</small></li>)}
     </ul>
+    {failed && <div role="alert" className="sv-empty" style={{ border: '1px solid #b76666', padding: 10 }}>
+      {failed.reason} This message has not been delivered.
+      <button type="button" disabled={sending} className="sv-link" onClick={() => void send(failed.text, failed.id)}>Retry</button>
+    </div>}
     <div className="sv-sheet-compose">
-      <textarea value={text} onChange={event => setText(event.target.value)} placeholder={`Write to ${name}…`} rows={3} aria-label="Message" />
-      <button className="sv-primary" onClick={send}><Send size={12} /> Send</button>
+      <textarea value={text} onChange={event => { setText(event.target.value); if (event.target.value.trim() !== failed?.text.trim()) setFailed(null) }}
+        placeholder={'Write to ' + name + '…'} rows={3} aria-label="Message" />
+      <button type="button" className="sv-primary" disabled={sending || !text.trim()} onClick={submit}>
+        <Send size={12} /> {sending ? 'Sending…' : 'Send'}
+      </button>
     </div>
   </div>
 }
@@ -280,10 +306,11 @@ function NeedSheet({ done }: { done: () => void }) {
   const [industry, setIndustry] = useState('')
   const [location, setLocation] = useState('')
   const [urgency, setUrgency] = useState<'low' | 'medium' | 'high'>('medium')
-  function post() {
+  const [error, setError] = useState('')
+  async function post() {
     if (!ask.trim()) return
-    net.addAsk({ ask: ask.trim(), detail: detail.trim(), whyNow: whyNow.trim(), offer: offer.trim(), industry: industry.trim(), location: location.trim(), urgency, visibility: 'network' })
-    done()
+    try { await net.addAsk({ ask: ask.trim(), detail: detail.trim(), whyNow: whyNow.trim(), offer: offer.trim(), industry: industry.trim(), location: location.trim(), urgency, visibility: 'network' }); done() }
+    catch (caught) { setError(caught instanceof Error ? caught.message : 'Your need could not be saved.') }
   }
   return <div className="sv-sheet-stack">
     <p className="sv-empty">State the outcome you need. Your network sees the need, not a pitch.</p>
@@ -296,7 +323,7 @@ function NeedSheet({ done }: { done: () => void }) {
       <label className="sv-field"><span>Location</span><input value={location} onChange={e => setLocation(e.target.value)} /></label>
       <label className="sv-field"><span>Urgency</span><select value={urgency} onChange={e => setUrgency(e.target.value as 'low' | 'medium' | 'high')}><option value="low">Low</option><option value="medium">Medium</option><option value="high">High</option></select></label>
     </div>
-    <div className="sv-sheet-actions"><button className="sv-primary" onClick={post}>Post the need</button><button className="sv-ghost" onClick={done}>Cancel</button></div>
+    {error && <small role="alert">{error}</small>}<div className="sv-sheet-actions"><button className="sv-primary" onClick={() => void post()}>Post the need</button><button className="sv-ghost" onClick={done}>Cancel</button></div>
   </div>
 }
 
@@ -305,17 +332,18 @@ function JournalSheet({ done }: { done: () => void }) {
   const [headline, setHeadline] = useState('')
   const [note, setNote] = useState('')
   const [visibility, setVisibility] = useState<'network' | 'private'>('network')
-  function post() {
+  const [error, setError] = useState('')
+  async function post() {
     if (!headline.trim()) return
-    net.addPost(headline.trim(), note.trim(), [], visibility)
-    done()
+    try { await net.addPost(headline.trim(), note.trim(), [], visibility); done() }
+    catch (caught) { setError(caught instanceof Error ? caught.message : 'Your journal entry could not be saved.') }
   }
   return <div className="sv-sheet-stack">
     <p className="sv-empty">Journal entries attach to your profile so the right people understand what you are working on.</p>
     <label className="sv-field"><span>Headline</span><textarea value={headline} onChange={e => setHeadline(e.target.value)} rows={2} /></label>
     <label className="sv-field"><span>The note</span><textarea value={note} onChange={e => setNote(e.target.value)} rows={5} /></label>
     <label className="sv-field"><span>Who sees it</span><select value={visibility} onChange={e => setVisibility(e.target.value as 'network' | 'private')}><option value="network">My network</option><option value="private">Private</option></select></label>
-    <div className="sv-sheet-actions"><button className="sv-primary" onClick={post}>Publish entry</button><button className="sv-ghost" onClick={done}>Cancel</button></div>
+    {error && <small role="alert">{error}</small>}<div className="sv-sheet-actions"><button className="sv-primary" onClick={() => void post()}>Publish entry</button><button className="sv-ghost" onClick={done}>Cancel</button></div>
   </div>
 }
 
