@@ -1,4 +1,6 @@
-import { useEffect } from 'react'
+import { useEffect, useRef } from 'react'
+import { supabase } from '@/integrations/supabase/client'
+import { loadVisibleMemberProfiles, profileToMember } from '@/aetheris/live'
 import { useNetwork } from '@/aetheris/store'
 import type { Member, MemberRole } from '@/aetheris/social'
 import type { NetworkMember } from './networkData'
@@ -40,12 +42,57 @@ export function toNetworkMember(m: Member): NetworkMember {
   }
 }
 
-function Bridge({ onMembers }: { onMembers: (m: NetworkMember[]) => void }) {
+/**
+ * The live People, profile, and bubble screens must derive identity from the
+ * approved member registry. Never let a demo catalogue row become an intro
+ * target even if a legacy network/store snapshot contains one.
+ */
+function Bridge({ onMembers, onError }: {
+  onMembers: (m: NetworkMember[]) => void
+  onError?: (error: string) => void
+}) {
   const net = useNetwork()
-  useEffect(() => { onMembers(net.members.map(toNetworkMember)) }, [net.members, onMembers])
+  const latest = useRef(net.members)
+  latest.current = net.members
+
+  useEffect(() => {
+    let alive = true
+    const load = async () => {
+      try {
+        const { data: session, error } = await supabase.auth.getUser()
+        if (error || !session.user) throw new Error('Sign in to see verified live members.')
+        const canonical = await loadVisibleMemberProfiles(null, 100)
+        if (!alive) return
+        const storeMembers = new Map(latest.current.filter(m => isLiveMemberId(m.id)).map(m => [m.id, m]))
+        const next = canonical
+          .filter(p => isLiveMemberId(p.id) && p.id !== session.user!.id)
+          .map(p => toNetworkMember(storeMembers.get(p.id) ?? profileToMember(p, null)))
+        onMembers(next)
+        onError?.('')
+      } catch (error) {
+        if (!alive) return
+        // An errored registry is NOT permission to show the fictional catalogue.
+        onMembers([])
+        onError?.(error instanceof Error ? error.message : 'Live member directory is unavailable.')
+      }
+    }
+    void load()
+    const onVisible = () => { if (!document.hidden) void load() }
+    document.addEventListener('visibilitychange', onVisible)
+    return () => {
+      alive = false
+      document.removeEventListener('visibilitychange', onVisible)
+    }
+  }, [onMembers, onError, net.synced])
   return null
 }
 
-export function LiveMembers({ onMembers }: { onMembers: (m: NetworkMember[]) => void }) {
-  return <Bridge onMembers={onMembers} />
+export const isLiveMemberId = (id: string): boolean =>
+  /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id)
+
+export function LiveMembers({ onMembers, onError }: {
+  onMembers: (m: NetworkMember[]) => void
+  onError?: (error: string) => void
+}) {
+  return <Bridge onMembers={onMembers} {...(onError ? { onError } : {})} />
 }

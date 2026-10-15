@@ -5,6 +5,7 @@
  * read, so it is instant and free; nothing is generated or sent anywhere.
  */
 import { supabase } from '@/integrations/supabase/client'
+import { loadVisibleMemberProfiles } from './live'
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 const db = supabase as any
@@ -77,9 +78,10 @@ export function suggestGoal(input: Pick<BriefInputs, 'agenda' | 'intro'>, people
 
 export async function loadBrief(meeting: { id: string; agenda: string; introRequestId: string | null; participants: Array<{ userId: string }> }, myId: string): Promise<Brief> {
   const others = meeting.participants.map(p => p.userId).filter(id => id !== myId)
-  const [profiles, reasoning, threads, asks, notes, capsule, pastMeetings] = await Promise.all([
-    db.from('profiles').select('id, name, title, company, looking_for, can_help_with, focus').in('id', others),
-    db.from('members').select('id, why_them, why_you, why_now').in('id', others),
+  const [visibleProfiles, threads, asks, notes, capsule, pastMeetings] = await Promise.all([
+    // Regular members cannot read profiles or the historical demo members
+    // view directly. Only purpose-limited approved fields are available.
+    others.length ? loadVisibleMemberProfiles(others, 100) : Promise.resolve([]),
     db.from('dm_threads').select('id, member_a, member_b').or(others.map(o => `and(member_a.eq.${myId},member_b.eq.${o}),and(member_a.eq.${o},member_b.eq.${myId})`).join(',') || 'id.is.null'),
     db.from('asks').select('author_id, ask, created_at').in('author_id', others).neq('status', 'closed').order('created_at', { ascending: false }).limit(12),
     db.from('memories').select('member_id, text, created_at').eq('user_id', myId).in('member_id', others).order('created_at', { ascending: false }).limit(12),
@@ -89,6 +91,8 @@ export async function loadBrief(meeting: { id: string; agenda: string; introRequ
     db.from('meeting_notes').select('meeting_id, summary, updated_at').neq('meeting_id', meeting.id).order('updated_at', { ascending: false }).limit(20),
   ])
 
+  const profiles = { data: visibleProfiles }
+  const reasoning = { data: [] as Array<{ id: string; why_them: string | null; why_you: string | null; why_now: string | null }> }
   const threadOf = new Map<string, string>()
   for (const t of threads.data ?? []) threadOf.set(t.member_a === myId ? t.member_b : t.member_a, t.id)
   const threadIds = [...threadOf.values()]
