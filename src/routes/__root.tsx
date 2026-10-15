@@ -20,6 +20,7 @@ import ParticleDrift from "@/aetheris/ParticleDrift";
 import ConstellationField from "@/aetheris/ConstellationField";
 import appCss from "../styles.css?url";
 import architecturalCss from "../aetheris/architectural-system.css?url";
+import architectEverywhereCss from "../aetheris/architect-everywhere.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 import { installClientErrorReporting, reportClientError } from "../lib/error-report";
 import { registerServiceWorker } from "../aetheris/push-client";
@@ -111,6 +112,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
         href: appCss,
       },
       { rel: "stylesheet", href: architecturalCss },
+      { rel: "stylesheet", href: architectEverywhereCss },
       { rel: "icon", href: "/favicon.svg", type: "image/svg+xml" },
       { rel: "apple-touch-icon", href: "/apple-touch-icon.png", sizes: "180x180" },
       { rel: "manifest", href: "/manifest.webmanifest" },
