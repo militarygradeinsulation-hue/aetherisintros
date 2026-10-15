@@ -155,3 +155,30 @@
 .ael-footer>div{gap:20px}
 }
 @media(prefers-reduced-motion:reduce){.ael *{scroll-behavior:auto!important;animation:none!important;transition:none!important}}
+
+
+/* The approved Ask Intros relationship lockup is shared by the public landing and member experience. */
+.ael-logo .ask-intros-lockup {
+  display: block;
+  flex: 0 0 auto;
+  width: clamp(124px, 13vw, 174px);
+  height: auto;
+  max-height: 70px;
+  overflow: visible;
+}
+.ael-logo .ask-intros-lockup__symbol line { stroke: #e6d6ad; stroke-width: 2; }
+.ael-logo .ask-intros-lockup__node--left,
+.ael-logo .ask-intros-lockup__node--lower { fill: #dfa039; }
+.ael-logo .ask-intros-lockup__node--top,
+.ael-logo .ask-intros-lockup__rule-dot,
+.ael-logo .ask-intros-lockup__separator { fill: #f5a623; }
+.ael-logo .ask-intros-lockup__ask,
+.ael-logo .ask-intros-lockup__intros,
+.ael-logo .ask-intros-lockup__tagline { fill: #f2eee6; font-family: 'Cormorant Garamond', Georgia, serif; }
+.ael-logo .ask-intros-lockup__ask { font-size: 91px; font-weight: 600; }
+.ael-logo .ask-intros-lockup__intros { font-size: 65px; font-weight: 400; letter-spacing: 13px; }
+.ael-logo .ask-intros-lockup__rule { stroke: #2685ff; stroke-width: 2; }
+.ael-logo .ask-intros-lockup__tagline { font-size: 15px; font-weight: 500; letter-spacing: 6px; }
+@media (max-width: 680px) {
+  .ael-logo .ask-intros-lockup { width: 118px; }
+}
