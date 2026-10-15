@@ -41,6 +41,22 @@ export default async ({ ok, as, svc, A, B, C }) => {
     r = await as(A,`select id from public.${name} limit 1`)
     ok(!r.error, `authenticated network ${name} reads are authorized`)
   }
+  // A deployed 0085 must restore privileges needed by real member posts and
+  // asks, not only the reads exercised by the initial 0084 test.
+  for (const table of ['posts', 'asks']) {
+    for (const ability of ['SELECT', 'INSERT', 'UPDATE', 'DELETE']) {
+      const privilege = (await svc(`select has_table_privilege('authenticated','public.${table}','${ability}') as allowed`))[0]
+      ok(privilege.allowed === true, `authenticated can ${ability} ${table} subject to existing RLS`)
+    }
+  }
+  for (const signature of [
+    'request_verified_intro(uuid,text)', 'visible_member_profiles(uuid[],integer,integer)',
+    'my_intro_participant_names(uuid[])', 'my_relationship_evidence(uuid[])',
+    'provider_directory()', 'my_provider_requests()', 'provider_inbox()',
+  ]) {
+    const permission = (await svc(`select has_function_privilege('authenticated','public.${signature}','EXECUTE') as allowed`))[0]
+    ok(permission.allowed === true, `authenticated may invoke ${signature} with server-side authorization`)
+  }
   for (const name of ['seed_learnings','seed_threads','signals']) {
     r = await as(A,`select id from public.${name} limit 1`)
     ok(!!r.error, `private demo ${name} remains closed to authenticated members`)
