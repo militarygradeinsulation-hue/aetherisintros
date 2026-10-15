@@ -6,7 +6,7 @@ import { WriteFailureNotice } from '@/aetheris/WriteFailureNotice';
 import { refreshUnread } from '@/aetheris/read-receipts';
 import { reportWriteFailure } from '@/aetheris/write-failures';
 import './styles.css';
-import { AccentProvider } from './AccentMode';
+
 import {
   NETWORK_MEMBERS,
   INITIAL_FEED_POSTS,
@@ -286,7 +286,6 @@ export default function App({ mode = 'demo' }: { mode?: 'demo' | 'live' }) {
   const classicPages = ['news','workspace','memory','work','insights','meetings', ...(mode === 'live' ? ['home','messages','intros','people'] : [])];
 
   return (
-    <AccentProvider>
     <div className="ix-root min-h-screen bg-[#07090C] text-[#F2EEE6] flex flex-col font-sans selection:bg-[#F5B027]/30 selection:text-white relative">
       <WriteFailureNotice />
       {/* Right-click quick menu (each member chooses its items) */}
@@ -482,6 +481,5 @@ export default function App({ mode = 'demo' }: { mode?: 'demo' | 'live' }) {
         <SelectionReader />
       </>)}
     </div>
-    </AccentProvider>
   );
 }
