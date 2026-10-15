@@ -4,6 +4,7 @@ import originalPortrait from '@/assets/aetheris-home-portrait.jpg.asset.json'
 import showcaseAsset from '@/assets/one-connected-system.png.asset.json'
 import { useAccess } from './access'
 import { AskIntrosLockup } from './AskIntrosLockup'
+import HalftoneWordmarkFooter from './HalftoneWordmarkFooter'
 import './editorial-landing.css'
 
 /**
@@ -166,11 +167,14 @@ export default function Landing() {
       </div>
     </section>
 
-    <footer className="ael-footer">
-      <Link to="/" className="ael-footer-wordmark">ASK <em>INTROS</em></Link>
-      <span>WHY ME · WHY THEM · WHY NOW</span>
-      <div><Link to="/founder-story">Our story</Link><Link to="/demo">Experience</Link><Link to="/auth">Member sign in</Link></div>
-      <small>Editorial imagery is illustrative. Subjects pictured are not represented as Ask Intros members or endorsers.</small>
-    </footer>
+    <HalftoneWordmarkFooter
+      className="ael-halftone-footer"
+      wordmark="ask intros"
+      height="clamp(390px, 43vw, 590px)"
+      dotGap={6}
+      radius={88}
+      grain={0.35}
+      palette={{ background: '#0c0c0b', ink: '#e9e4da', warm: '#e9762b' }}
+    />
   </main>
 }
