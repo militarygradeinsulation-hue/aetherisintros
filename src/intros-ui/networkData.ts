@@ -1,4 +1,3 @@
-// @ts-nocheck
 export type RelationshipTier = 'Core' | 'Extended' | 'Prospect';
 export type CompanySizeCategory = '1-10' | '11-50' | '51-250' | '250+';
 

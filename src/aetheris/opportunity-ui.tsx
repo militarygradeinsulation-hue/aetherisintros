@@ -6,6 +6,7 @@ import { useEffect, useMemo, useState } from 'react'
 import { ArrowRight, Check, CircleDot, Compass, DoorOpen, Link2, LockKeyhole, Pause, Play, Plus, Route as RouteIcon, ShieldCheck, Trash2, X } from 'lucide-react'
 
 import { supabase } from '@/integrations/supabase/client'
+import { submitIntroRequest } from './lib/intro-request'
 import { useOps } from './crm/store'
 import { useGraph, useGraphInputs } from './graph-store'
 import { useNav } from './nav'
@@ -13,6 +14,7 @@ import { IntroOutcomeTimeline } from './outcomes-ui'
 import { IntroDeals } from './revenue-ui'
 import { OpenDealRoomButton } from './deals-ui'
 import { draftTitle } from './deals-core'
+import { StartWorkspaceButton } from './workspaces/StartWorkspace'
 import { MeetNowButton } from './meetings-ui'
 import {
   INTENT_CATEGORIES, MISSION_TYPES, RULE_KINDS, activeMission, evaluateRules, graphInsights, meetingBrief, missionTypeLabel,
@@ -288,30 +290,69 @@ export function IntroWorkflow({ member, prefill }: { member: Member; prefill?: I
 
   const submit = async () => {
     if (!blockedByRule.allowed) { setMsg(blockedByRule.reason); return }
-    if (!graph.signedIn || !isUuid(member.id)) { net.requestIntro(member.id); setMsg('Introduction requested in preview. Sign in with a verified account to persist the shared capsule.'); return }
+    if (!graph.signedIn || !isUuid(member.id)) {
+      setMsg('Preview only. No introduction has been sent. Sign in with a verified account to share a capsule.')
+      return
+    }
     let row = intro
     if (!row) {
-      const ins = await db.from('intro_requests').insert({ user_id: graph.userId, member_id: member.id, target_user_id: member.id, reason: draft.why_exists, mutual_value: draft.why_target }).select('id,user_id,target_user_id,requester_opt_in,member_opt_in,status').single()
-      if (ins.error) { setMsg(ins.error.message); return }
-      row = ins.data as IntroRow
+      try {
+        // 0084 validates and saves the request atomically. A retry can reuse
+        // its existing row; the caller cannot impersonate the other party.
+        await submitIntroRequest(member.id, draft.why_exists)
+      } catch (error) {
+        setMsg(error instanceof Error ? error.message : 'Introduction not saved. Retry.')
+        return
+      }
+      const saved = await db.from('intro_requests')
+        .select('id,user_id,target_user_id,requester_opt_in,member_opt_in,status')
+        .eq('user_id', graph.userId).eq('member_id', member.id).maybeSingle()
+      if (saved.error || !saved.data?.id) {
+        setMsg('The request may have been saved, but its record could not be confirmed. Refresh before retrying.')
+        return
+      }
+      row = saved.data as IntroRow
     }
     const payload = { intro_request_id: row.id, ...draft }
-    const res = capsule ? await db.from('intro_context_capsules').update(draft).eq('id', capsule.id) : await db.from('intro_context_capsules').insert(payload)
-    if (res.error) { setMsg(res.error.message); return }
-    net.requestIntro(member.id)
-    const person = ops.personForMember(member.id)
-    if (person) await ops.logActivity({ kind: 'intro', subject: `Introduction requested: ${member.name}`, personId: person.id, introRequestId: row.id })
-    await graph.logEvent('intro_request', row.id, 'capsule_shared', `Context capsule prepared for ${member.name}`)
-    setMsg('Capsule saved. They review exactly this shared context before opting in.')
+    const res = capsule
+      ? await db.from('intro_context_capsules').update(draft).eq('id', capsule.id).select('id').maybeSingle()
+      : await db.from('intro_context_capsules').insert(payload).select('id').maybeSingle()
+    if (res.error || !res.data?.id) {
+      setMsg('Your introduction request is saved, but the context capsule was not confirmed. Retry saving the capsule.')
+      return
+    }
+    setMsg('Introduction request and shared context saved. The recipient must independently opt in.')
+    try {
+      const person = ops.personForMember(member.id)
+      if (person) await ops.logActivity({ kind: 'intro', subject: 'Introduction requested: ' + member.name, personId: person.id, introRequestId: row.id })
+      await graph.logEvent('intro_request', row.id, 'capsule_shared', 'Context capsule prepared for ' + member.name)
+    } catch { /* Secondary analytics must not invalidate a confirmed server write. */ }
     await load()
   }
   const approveAsTarget = async () => {
-    if (!intro || !capsule) return
-    await db.from('intro_context_capsules').update({ target_approved: true }).eq('id', capsule.id)
-    await db.from('intro_requests').update({ member_opt_in: true, status: 'accepted' }).eq('id', intro.id)
-    await graph.logEvent('intro_request', intro.id, 'accepted', `Introduction accepted with ${member.name}`)
-    const person = ops.personForMember(member.id)
-    if (person) await ops.logActivity({ kind: 'intro', subject: `Introduction accepted: ${member.name}`, personId: person.id, introRequestId: intro.id })
+    if (!intro || !capsule || intro.target_user_id !== graph.userId) return
+    if (!capsule.target_approved) {
+      const context = await db.from('intro_context_capsules')
+        .update({ target_approved: true }).eq('id', capsule.id).select('id').maybeSingle()
+      if (context.error || !context.data?.id) {
+        setMsg('Context approval was not saved. No introduction was accepted. Retry.')
+        return
+      }
+    }
+    const accepted = await db.from('intro_requests')
+      .update({ member_opt_in: true, status: 'accepted' })
+      .eq('id', intro.id).eq('target_user_id', graph.userId).eq('member_opt_in', false)
+      .select('id,member_opt_in').maybeSingle()
+    if (accepted.error || !accepted.data?.member_opt_in) {
+      setMsg('Context approval saved, but your introduction acceptance was not confirmed. Retry.')
+      return
+    }
+    setMsg('You accepted this introduction. The request is now confirmed.')
+    try {
+      await graph.logEvent('intro_request', intro.id, 'accepted', 'Introduction accepted with ' + member.name)
+      const person = ops.personForMember(member.id)
+      if (person) await ops.logActivity({ kind: 'intro', subject: 'Introduction accepted: ' + member.name, personId: person.id, introRequestId: intro.id })
+    } catch { /* Optional audit summary errors do not undo the accepted request. */ }
     await load()
   }
   const openRoom = async () => {
@@ -340,7 +381,7 @@ export function IntroWorkflow({ member, prefill }: { member: Member; prefill?: I
       <label>Linked mission (only if not private)<input value={draft.mission_title} onChange={e => setDraft(d => ({ ...d, mission_title: e.target.value }))} /></label>
       <Btn onClick={() => void submit()}><Plus size={14} /> {capsule ? 'Update capsule' : 'Request introduction with capsule'}</Btn>
     </div></details>}
-    {bothIn && <div className="og-inline"><Btn kind="secondary" onClick={() => void openRoom()}><DoorOpen size={14} /> Open Relationship Room</Btn>{intro && <MeetNowButton introId={intro.id} title={`Introduction: ${member.name}`} capsule={capsule} />}{intro && <OpenDealRoomButton draft={{ sourceKind: 'intro', sourceId: intro.id, title: draftTitle('intro', member.name), need: [capsule?.why_exists, capsule?.first_goal].filter(Boolean).join('\n'), counterpartId: member.id, counterpartName: member.name }} />}</div>}
+    {bothIn && <div className="og-inline"><Btn kind="secondary" onClick={() => void openRoom()}><DoorOpen size={14} /> Open Relationship Room</Btn>{intro && <MeetNowButton introId={intro.id} title={`Introduction: ${member.name}`} capsule={capsule} />}{intro && <StartWorkspaceButton source="intro_request" sourceId={intro.id} withName={member.name} onOpen={() => nav.setPage('workspaces')} label="Workspace" />}{intro && <OpenDealRoomButton draft={{ sourceKind: 'intro', sourceId: intro.id, title: draftTitle('intro', member.name), need: [capsule?.why_exists, capsule?.first_goal].filter(Boolean).join('\n'), counterpartId: member.id, counterpartName: member.name }} />}</div>}
     {intro && !bothIn && <small className="og-note">Relationship Room opens after both sides opt in.</small>}
     {msg && <p className="executive-form-note">{msg}</p>}
     {bothIn && intro && <IntroOutcomeTimeline introRequestId={intro.id} myId={graph.userId} />}
@@ -428,8 +469,11 @@ export function IntentExchangePanel() {
     if (!statement) return
     const privacy = form.privacy === 'trusted' ? 'private' : form.privacy
     if (!graph.signedIn) {
-      net.addAsk({ ask: statement, detail: `${form.category}`, whyNow: '', offer: '', industry: form.industry, location: form.location, urgency: 'medium', visibility: privacy === 'private' ? 'private' : 'network' })
-      setMsg('Posted in preview only. Sign in with a verified account to publish.'); setForm(f => ({ ...f, statement: '' })); return
+      try {
+        await net.addAsk({ ask: statement, detail: `${form.category}`, whyNow: '', offer: '', industry: form.industry, location: form.location, urgency: 'medium', visibility: privacy === 'private' ? 'private' : 'network' })
+        setMsg('Posted in preview only. Sign in with a verified account to publish.'); setForm(f => ({ ...f, statement: '' }))
+      } catch (error) { setMsg(error instanceof Error ? error.message : 'Your ask could not be saved.') }
+      return
     }
     const expires = new Date(Date.now() + Number(form.days) * 86400000).toISOString()
     const res = await db.from('asks').insert({

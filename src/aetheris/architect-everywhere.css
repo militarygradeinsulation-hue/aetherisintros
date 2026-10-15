@@ -1,0 +1,481 @@
+/*
+ * ASK INTROS / THE ARCHITECT — PRODUCT-WIDE APPLICATION
+ *
+ * One common language for every authenticated destination and the classic
+ * operational workspaces nested within it. Public editorial pages keep their
+ * own compositions but share these tokens. Do not recolor functional status
+ * values, illustrations, photographs, chart data, or intentional inverse surfaces.
+ */
+:root {
+  --architect-canvas:#111719;
+  --architect-panel:#1a2223;
+  --architect-raised:#20292a;
+  --architect-ink:#f4f0e7;
+  --architect-subtle:#bec0b9;
+  --architect-label:#d0ac87;
+  --architect-rule:rgba(231,222,204,.18);
+  --architect-wash:rgba(231,222,204,.035);
+  --architect-copper:#c9a075;
+  --architect-copper-text:#edbc91;
+  --architect-inverse:#171e1d;
+  --architect-input:#182122;
+  --architect-shadow:0 18px 48px rgba(0,0,0,.16);
+  --architect-grid:linear-gradient(90deg,rgba(236,228,211,.028) 1px,transparent 1px),
+                   linear-gradient(rgba(236,228,211,.028) 1px,transparent 1px);
+}
+:root[data-theme="light"] {
+  --architect-canvas:#f3f0e9;
+  --architect-panel:#fdfbf7;
+  --architect-raised:#ede8df;
+  --architect-ink:#202420;
+  --architect-subtle:#565c55;
+  --architect-label:#805534;
+  --architect-rule:rgba(38,45,40,.18);
+  --architect-wash:rgba(48,56,48,.035);
+  --architect-copper:#93633e;
+  --architect-copper-text:#805534;
+  --architect-inverse:#fefcf8;
+  --architect-input:#fffefa;
+  --architect-shadow:0 15px 48px rgba(46,37,28,.055);
+  --architect-grid:linear-gradient(90deg,rgba(48,56,48,.035) 1px,transparent 1px),
+                   linear-gradient(rgba(48,56,48,.035) 1px,transparent 1px);
+}
+
+/* Shared typographic and layout contract for Home, People, Introductions,
+   Messages, Meetings, Profiles, Intelligence and every classic workspace. */
+.ix-root .arch-product-main {
+  min-width:0;
+  background:var(--architect-canvas);
+  color:var(--architect-ink);
+  background-image:var(--architect-grid);
+  background-size:104px 104px;
+  font-family:Inter,"Space Grotesk",system-ui,sans-serif;
+}
+.ix-root .arch-product-main :is(h1,h2,h3) {
+  color:var(--architect-ink);
+  text-wrap:balance;
+}
+.ix-root .arch-product-main :is(h1,h2,.page-title h1,.section-heading h2) {
+  font-family:"Cormorant Garamond",Georgia,serif;
+  font-weight:500;
+  letter-spacing:-.026em;
+}
+.ix-root .arch-product-main :is(.folio,.eyebrow,.home-board-label,.ael-fine-label,.sys-tile-title) {
+  font-family:"Space Grotesk",Inter,system-ui,sans-serif;
+  font-weight:650;
+  letter-spacing:.115em;
+}
+.ix-root .arch-product-main :is(.sys-tile-caption,.home-board-content,.page-title p) {
+  color:var(--architect-subtle);
+}
+.ix-root .arch-product-main :is(.home-board-tile,.sys-tile,.module,.mod,.feed-card,.post-card,
+  .match-report,.need-case,.intro-recommendation,.home-widget,.attention-panel,
+  .profile-hero,.profile-settings,.messages-layout,.home-matches,.home-education) {
+  border:1px solid var(--architect-rule);
+  background-color:var(--architect-panel);
+  color:var(--architect-ink);
+  box-shadow:var(--architect-shadow);
+  border-radius:9px;
+}
+.ix-root .arch-product-main :is(.sys-tile-inner,.home-board-initials,.home-board-tags span) {
+  border-color:var(--architect-rule);
+  background-color:var(--architect-raised);
+  color:var(--architect-ink);
+}
+.ix-root .arch-product-main :is(.sys-tile,.home-board-tile,.module,.home-widget):hover {
+  border-color:color-mix(in srgb,var(--architect-copper) 58%,var(--architect-rule));
+}
+.ix-root .arch-product-main :is(.sys-tile,.module,.home-board-tile,.home-widget) {
+  transition:border-color .2s ease, box-shadow .2s ease;
+}
+
+/* Full-page editorial mastheads: Home, People, Intros, Profiles.
+   Replace the outdated blue/black gradient without altering data or layout. */
+.ix-root .arch-product-main :is(section,header)[class*="from-[#0C1017]"],
+.ix-root .arch-product-main :is(section,header)[class*="from-[#090C10]"] {
+  background:linear-gradient(126deg,var(--architect-panel),var(--architect-canvas)) !important;
+  border-color:var(--architect-rule) !important;
+  color:var(--architect-ink) !important;
+  box-shadow:var(--architect-shadow);
+  border-radius:8px !important;
+}
+.ix-root .arch-product-main :is(section,header)[class*="from-[#0C1017]"]::before {
+  content:"";
+  position:absolute;
+  inset:0;
+  background-image:var(--architect-grid);
+  background-size:74px 74px;
+  opacity:.5;
+  pointer-events:none;
+}
+.ix-root .arch-product-main :is(section,header)[class*="from-[#0C1017]"] > * {
+  position:relative;
+  z-index:1;
+}
+/* The repetitive navy containers are the other major visual break between pages. */
+.ix-root .arch-product-main :is(section,div,article)[class*="bg-[#0E121A]"],
+.ix-root .arch-product-main :is(section,div,article)[class*="bg-[#0C1017]"],
+.ix-root .arch-product-main :is(section,div,article)[class*="bg-[#090C10]"],
+.ix-root .arch-product-main :is(section,div,article)[class*="bg-[#0B0D0F]"],
+.ix-root .arch-product-main :is(section,div,article)[class*="bg-[#0B0E13]"],
+.ix-root .arch-product-main :is(section,div,article)[class*="bg-[#151922]"] {
+  background-color:var(--architect-panel) !important;
+  border-color:var(--architect-rule) !important;
+  color:var(--architect-ink);
+}
+.ix-root .arch-product-main :is(section,div,article)[class*="bg-[#1A1F25]"] {
+  background-color:var(--architect-raised) !important;
+  border-color:var(--architect-rule) !important;
+}
+
+/* Interactive elements remain calm. Actions keep their gradient treatment. */
+.ix-root .arch-product-main :is(input:not([type="checkbox"]):not([type="radio"]),select,textarea) {
+  background-color:var(--architect-input);
+  border:1px solid var(--architect-rule);
+  color:var(--architect-ink);
+  min-height:40px;
+  border-radius:7px;
+}
+.ix-root .arch-product-main :is(input,textarea)::placeholder {color:var(--architect-subtle);}
+.ix-root .arch-product-main :is(input,select,textarea,button,a):focus-visible {
+  outline:2px solid var(--architect-copper);
+  outline-offset:3px;
+}
+.ix-root .arch-product-main button:not(:disabled) {cursor:pointer;}
+.ix-root .arch-product-main :is(.ix-tools,.state-filters,.feed-tabs,.home-board-tags) {
+  scrollbar-width:thin;
+  scrollbar-color:var(--architect-rule) transparent;
+}
+.ix-root .arch-product-main .ix-tools {
+  display:flex;
+  flex-wrap:nowrap;
+  align-items:center;
+  gap:8px;
+  padding:16px clamp(16px,3vw,38px);
+  overflow-x:auto;
+  border-bottom:1px solid var(--architect-rule);
+  background:var(--architect-panel);
+}
+.ix-root .arch-product-main .ix-tools button {
+  flex:0 0 auto;
+  min-height:36px;
+  padding:8px 13px;
+  border:1px solid var(--architect-rule);
+  border-radius:6px;
+  color:var(--architect-subtle);
+  background:transparent;
+  font:600 11px/1.2 Inter,system-ui,sans-serif;
+  white-space:nowrap;
+}
+.ix-root .arch-product-main .ix-tools button:is(:hover,.on) {
+  color:var(--architect-ink);
+  background:color-mix(in srgb,var(--architect-copper) 12%,var(--architect-panel));
+  border-color:var(--architect-copper);
+}
+
+/* Classic feature engine: shared pages behind Workspaces, Intelligence,
+   Meetings, Library, CRM, Calendar, Deal Rooms and Settings. */
+.ix-root .ix-classic :is(.app-shell,.workspace,.workspace-grid,.content,.social-shell) {
+  --night:var(--architect-canvas);
+  --raised:var(--architect-panel);
+  --graphite:var(--architect-raised);
+  --soft:var(--architect-ink);
+  --muted:var(--architect-subtle);
+  --line-dark:var(--architect-rule);
+  --cobalt:var(--architect-copper);
+  --cobalt-bright:var(--architect-copper);
+  color:var(--architect-ink);
+}
+.ix-root .ix-classic .app-shell,
+.ix-root .ix-classic .workspace-grid {background:var(--architect-canvas);}
+.ix-root .ix-classic :is(.nav-rail,.context-rail,.topbar,.topbar-dropmenu,.global-search-panel,
+  .more-panel,.intel-drawer,.modal) {
+  background-color:var(--architect-panel);
+  color:var(--architect-ink);
+  border-color:var(--architect-rule);
+}
+.ix-root .ix-classic .content :is(.module,.mod,.feed-card,.post-card,.match-report,
+  .need-case,.org-passport,.pro-credibility,.opportunity-clusters article,
+  .profile-settings,.profile-hero) {
+  border-radius:9px;
+  border-color:var(--architect-rule);
+  background:var(--architect-panel);
+  color:var(--architect-ink);
+  box-shadow:var(--architect-shadow);
+}
+.ix-root .ix-classic :is(.nav-rail nav button,.topbar-dropmenu button,.context-person,
+  .module-people button,.global-results section>button) {color:var(--architect-subtle);}
+.ix-root .ix-classic :is(.nav-rail nav button,.topbar-dropmenu button,.context-person,
+  .module-people button,.global-results section>button):hover {
+  color:var(--architect-ink);
+  background:color-mix(in srgb,var(--architect-copper) 8%,transparent);
+}
+.ix-root .ix-classic .nav-rail nav button.active {
+  background:color-mix(in srgb,var(--architect-copper) 14%,var(--architect-panel));
+  border-left-color:var(--architect-copper);
+  color:var(--architect-ink);
+}
+
+/* Unified dialogs, search surfaces, member menus and sheets. Keep scrims dark. */
+.ix-root :is([role="dialog"],[role="menu"],.ix-desktop-more-menu,.ix-mobile-sheet) {
+  color:var(--architect-ink);
+  border-color:var(--architect-rule);
+}
+.ix-root :is([role="dialog"],[role="menu"],.ix-mobile-sheet) :is(input,textarea,select) {
+  background:var(--architect-input);
+  color:var(--architect-ink);
+  border:1px solid var(--architect-rule);
+  border-radius:7px;
+}
+.ix-root :is([role="dialog"],[role="menu"],.ix-mobile-sheet) :is(input,textarea)::placeholder {
+  color:var(--architect-subtle);
+}
+/* Pure decorative treatments must not obscure user-supplied content. */
+.ix-root .site-ambient {opacity:.12;}
+body:has(.ix-root) .site-ambient {opacity:.11!important;mix-blend-mode:normal;}
+body:has(.ix-root) .site-ambient-numbers {opacity:.22;}
+body:has(.ix-root) .site-ambient-connections {opacity:.26;}
+
+/* Protect semantic meaning of error/success states. Earlier generic accent
+   remapping mistakenly rendered red and green as identical copper. */
+.ix-root :is([class*="text-red-"],[class*="text-rose-"],[class*="text-[#E5484D]"]) {
+  color:#f0807b !important;
+}
+.ix-root :is([class*="text-green-"],[class*="text-emerald-"],[class*="text-[#3FB37F]"]) {
+  color:#72c9a0 !important;
+}
+:root[data-theme="light"] .ix-root :is([class*="text-red-"],[class*="text-rose-"],[class*="text-[#E5484D]"]) {color:#aa2d26!important;}
+:root[data-theme="light"] .ix-root :is([class*="text-green-"],[class*="text-emerald-"],[class*="text-[#3FB37F]"]) {color:#236b46!important;}
+
+/* Light-mode repair: where a former dark background has become a light
+   architectural panel, use dark ink for old white utility text. */
+:root[data-theme="light"] .ix-root .arch-product-main
+  :is([class*="from-[#0C1017]"],[class*="bg-[#0E121A]"],[class*="bg-[#090C10]"],
+      [class*="bg-[#0B0D0F]"],[class*="bg-[#0B0E13]"],[class*="bg-[#151922]"])
+  :is([class*="text-[#F2EEE6]"],[class*="text-[#CBD5E1]"],[class~="text-white"],
+      [class*="text-[#9CA3AF]"],[class*="text-[#6B7280]"]) {
+  color:var(--architect-ink)!important;
+}
+:root[data-theme="light"] .ix-root .arch-product-main
+  :is([class*="from-[#0C1017]"],[class*="bg-[#0E121A]"],[class*="bg-[#090C10]"],
+      [class*="bg-[#0B0D0F]"],[class*="bg-[#0B0E13]"],[class*="bg-[#151922]"])
+  :is(.text-xs,.text-sm,.text-base)[class*="text-[#9CA3AF]"] {
+  color:var(--architect-subtle)!important;
+}
+:root[data-theme="light"] .ix-root .arch-product-main
+  :is(.home-board-tile,.sys-tile,.module,.mod,.feed-card,.post-card,.match-report,
+      .need-case,.home-widget,.profile-hero,.profile-settings)
+  :is([class*="text-[#F2EEE6]"],[class~="text-white"]) {
+  color:var(--architect-ink)!important;
+}
+:root[data-theme="light"] .ix-root .arch-product-main
+  :is(.home-board-tile,.sys-tile,.module,.mod,.feed-card,.post-card,.match-report,
+      .need-case,.home-widget,.profile-hero,.profile-settings)
+  :is([class*="text-[#9CA3AF]"],[class*="text-[#CBD5E1]"]) {
+  color:var(--architect-subtle)!important;
+}
+/* Intentionally dark cover photos, media overlays, and status-colored indicators
+   keep their inverse typography regardless of appearance preference. */
+:root[data-theme="light"] .ix-root
+  :is(.photo-overlay,.editorial-photo,.portrait-caption,.sys-card-ivory)
+  :is(.on-photo,[data-on-photo]) {color:inherit;}
+
+/* Standalone sign-in, onboarding, verification, admin and invitation routes. */
+:where(.auth-page,.onboarding-page,.verify-page,.admin-page,.founder-book,
+  .access-waiting,.invite-page,.passport-page) {
+  --night:var(--architect-canvas);
+  --raised:var(--architect-panel);
+  --soft:var(--architect-ink);
+  --ink:var(--architect-ink);
+  --muted:var(--architect-subtle);
+  --line-dark:var(--architect-rule);
+  --cobalt:var(--architect-copper);
+  --cobalt-bright:var(--architect-copper);
+  font-family:Inter,"Space Grotesk",system-ui,sans-serif;
+}
+:where(.auth-page,.onboarding-page,.verify-page,.admin-page,.founder-book,
+  .access-waiting) :is(.auth-panel,.onboarding-form,.verify-panel,.admin-panel) {
+  border-color:var(--architect-rule);
+}
+:where(.auth-page,.onboarding-page,.verify-page,.admin-page,.founder-book)
+  :is(input:not([type="checkbox"]),textarea,select) {
+  border-color:var(--architect-rule);
+}
+:where(.auth-page,.onboarding-page,.verify-page,.admin-page,.founder-book)
+  :is(h1,h2) {font-family:"Cormorant Garamond",Georgia,serif;letter-spacing:-.03em;}
+
+/* Desktop-to-mobile continuity; do not overflow tabs, forms or private workspaces. */
+@media(max-width:900px) {
+ .ix-root .arch-product-main :is(section,header)[class*="from-[#0C1017]"] {
+   padding:clamp(22px,4vw,35px);
+ }
+ .ix-root .arch-product-main .ix-tools {padding:12px 16px;}
+}
+@media(max-width:600px) {
+ .ix-root .arch-product-main {background-size:76px 76px;}
+ .ix-root .arch-product-main :is(.home-board-tile,.module,.sys-tile,.feed-card,.post-card) {
+   box-shadow:none;
+ }
+ .ix-root .arch-product-main :is(section,header)[class*="from-[#0C1017]"] {
+   padding:24px 18px;
+ }
+}
+@media(prefers-reduced-motion:reduce) {
+ .ix-root .arch-product-main :is(.sys-tile,.home-widget,.module,.home-board-tile) {transition:none!important;transform:none!important;}
+}
+@media print {
+ .ix-root .arch-product-main {background-image:none!important;}
+ .ix-root .arch-product-main :is(.home-board-tile,.sys-tile,.module,.mod,.feed-card) {box-shadow:none!important;}
+}
+
+
+/* Compact public site participates in BOTH appearances, not a hardcoded
+   ivory homepage with unrelated dark member pages. */
+:root[data-theme="dark"] .ael.ael-compact {
+ --ael-night:var(--architect-canvas);--ael-paper:var(--architect-panel);
+ --ael-cream:var(--architect-ink);--ael-ink:var(--architect-ink);
+ --ai-button-surface:var(--architect-panel);--ai-button-text:var(--architect-ink);
+ background:var(--architect-canvas);color:var(--architect-ink);
+}
+:root[data-theme="dark"] .ael.ael-compact .ael-header {
+ background:rgba(17,23,25,.96);
+ color:var(--architect-ink);
+ border-bottom-color:var(--architect-rule);
+}
+:root[data-theme="dark"] .ael.ael-compact .ael-header :is(.ael-nav a,.ael-signin) {
+ color:var(--architect-ink)!important;
+}
+:root[data-theme="dark"] .ael.ael-compact .ael-header .ask-intros-lockup
+ :is(.ask-intros-lockup__ask,.ask-intros-lockup__intros,.ask-intros-lockup__tagline) {
+ fill:var(--architect-ink)!important;
+}
+:root[data-theme="dark"] .ael.ael-compact .ael-hero {
+ background:var(--architect-canvas);color:var(--architect-ink);
+}
+:root[data-theme="dark"] .ael.ael-compact .ael-hero .ael-hero-shade {
+ background:linear-gradient(90deg,#111719 0%,#111719 21%,rgba(17,23,25,.94) 40%,rgba(17,23,25,.60) 66%,rgba(17,23,25,.22) 100%);
+}
+:root[data-theme="dark"] .ael.ael-compact .ael-hero h1 {
+ color:var(--architect-ink)!important;
+}
+:root[data-theme="dark"] .ael.ael-compact .ael-hero h1 em {
+ color:#d9b58e!important;
+}
+:root[data-theme="dark"] .ael.ael-compact .ael-hero :is(.ael-hero-lede,.ael-hero-bottom,.ael-hero-bottom a,.ael-text-link) {
+ color:var(--architect-ink)!important;
+}
+:root[data-theme="dark"] .ael.ael-compact .ael-hero .ael-architecture-meta {
+ background:rgba(17,23,25,.75);
+ color:var(--architect-subtle);
+ border-color:var(--architect-rule);
+}
+:root[data-theme="dark"] .ael.ael-compact .ael-compact-story {
+ background:var(--architect-panel);
+ color:var(--architect-ink);
+ background-image:var(--architect-grid);
+ background-size:104px 104px;
+}
+:root[data-theme="dark"] .ael.ael-compact .ael-compact-story-copy :is(h2,p),
+:root[data-theme="dark"] .ael.ael-compact .ael-compact-steps :is(h3,strong,p),
+:root[data-theme="dark"] .ael.ael-compact .ael-compact-method-heading h3 {
+ color:var(--architect-ink);
+}
+:root[data-theme="dark"] .ael.ael-compact .ael-compact-story-copy :is(h2,h3) em,
+:root[data-theme="dark"] .ael.ael-compact .ael-compact-method-heading h3 em {
+ color:var(--architect-copper);
+}
+:root[data-theme="dark"] .ael.ael-compact .ael-compact-steps li,
+:root[data-theme="dark"] .ael.ael-compact .ael-compact-method,
+:root[data-theme="dark"] .ael.ael-compact .ael-compact-story-photo {
+ border-color:var(--architect-rule);
+}
+:root[data-theme="dark"] .ael.ael-compact .ael-compact-story-photo figcaption {
+ background:rgba(17,23,25,.91);
+ color:var(--architect-ink);
+}
+:root[data-theme="light"] .ael.ael-compact {
+ --ai-button-surface:#fdfbf7;--ai-button-text:#202420;
+}
+
+/* Founder story and high-trust member access follow the same restrained
+   editorial system while preserving forms, approvals and security messaging. */
+:root[data-theme="light"] :is(.auth-page,.onboarding-page,.verify-page,.admin-page,.founder-book) {
+ --paper:var(--architect-panel);
+ --ivory:var(--architect-canvas);
+ --ink:var(--architect-ink);
+ --soft:var(--architect-ink);
+ --line-light:var(--architect-rule);
+ --line-dark:var(--architect-rule);
+ --raised:var(--architect-panel);
+ --muted:var(--architect-subtle);
+ background-color:var(--architect-canvas);
+ color:var(--architect-ink);
+}
+:root[data-theme="dark"] :is(.auth-page,.onboarding-page,.verify-page,.admin-page,.founder-book) {
+ --paper:var(--architect-panel);
+ --ivory:var(--architect-canvas);
+ --ink:var(--architect-ink);
+ --soft:var(--architect-ink);
+ --line-light:var(--architect-rule);
+ --line-dark:var(--architect-rule);
+ --raised:var(--architect-panel);
+ --muted:var(--architect-subtle);
+ background-color:var(--architect-canvas);
+ color:var(--architect-ink);
+}
+:where(.auth-page,.onboarding-page,.verify-page,.admin-page,.founder-book)
+ :is(.auth-panel,.onboarding-form,.verify-panel,.admin-panel,.founder-cover-copy) {
+ background-image:var(--architect-grid);
+ background-size:88px 88px;
+}
+:where(.auth-page,.onboarding-page,.verify-page,.admin-page,.founder-book)
+ :is(input:not([type="checkbox"]):not([type="radio"]),textarea,select) {
+ background:var(--architect-input);color:var(--architect-ink);
+ border-color:var(--architect-rule);border-radius:7px;
+}
+:where(.auth-page,.onboarding-page,.verify-page,.admin-page,.founder-book)
+ :is(button,a,input,select,textarea):focus-visible {
+ outline:2px solid var(--architect-copper);
+ outline-offset:3px;
+}
+:root[data-theme="dark"] .founder-book .founder-book-bar {
+ background:var(--architect-panel);
+ color:var(--architect-ink);
+ border-color:var(--architect-rule);
+}
+:root[data-theme="light"] .founder-book .founder-book-bar {
+ background:var(--architect-panel);
+ border-color:var(--architect-rule);
+}
+
+/* Forms and modal interfaces that are rendered into portals, outside the
+   main page wrapper, still take their border and focus from the same system. */
+:where([data-radix-popper-content-wrapper],[data-state][role="dialog"])
+ :is(input:not([type="checkbox"]),textarea,select) {
+ border-color:var(--architect-rule);
+ background:var(--architect-input);
+ color:var(--architect-ink);
+}
+:where([data-radix-popper-content-wrapper],[data-state][role="dialog"])
+ :is(button,a,input,select,textarea):focus-visible {
+ outline:2px solid var(--architect-copper);
+ outline-offset:2px;
+}
+/* Status feedback MUST stay distinguishable, especially errors and approvals. */
+.ix-root :is([class*="bg-red-"],[class*="bg-rose-"],[class*="bg-[#E5484D]"]) {
+ background-color:rgba(215,65,59,.14)!important;
+}
+.ix-root :is([class*="bg-green-"],[class*="bg-emerald-"],[class*="bg-[#3FB37F]"]) {
+ background-color:rgba(42,137,88,.14)!important;
+}
+.ix-root :is([class*="border-red-"],[class*="border-rose-"],[class*="border-[#E5484D]"]) {
+ border-color:rgba(215,65,59,.5)!important;
+}
+.ix-root :is([class*="border-green-"],[class*="border-emerald-"],[class*="border-[#3FB37F]"]) {
+ border-color:rgba(42,137,88,.5)!important;
+}
+@media(max-width:750px) {
+ :root[data-theme="dark"] .ael.ael-compact .ael-hero .ael-hero-shade {
+   background:linear-gradient(0deg,rgba(17,23,25,.99),rgba(17,23,25,.87) 70%,rgba(17,23,25,.56));
+ }
+}

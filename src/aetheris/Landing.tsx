@@ -1,147 +1,132 @@
-import { useEffect, useState } from 'react'
-import { ArrowRight } from 'lucide-react'
+import { ArrowDownRight, ArrowRight, ArrowUpRight } from 'lucide-react'
 import { Link } from '@tanstack/react-router'
-import landingPortraitAsset from '@/assets/aetheris-home-portrait.jpg.asset.json'
-import showcaseAsset from '@/assets/one-connected-system.png.asset.json'
-import MetroHero from '@/components/ui/scroll-locked-video-hero'
-
+import originalPortrait from '@/assets/aetheris-home-portrait.jpg.asset.json'
 import { useAccess } from './access'
-
-import { CinematicFooter } from './CinematicFooter'
 import { AskIntrosLockup } from './AskIntrosLockup'
-import SerenityAmbient from './SerenityAmbient'
+import { AppearanceToggle } from './AppearanceToggle'
+import './editorial-landing.css'
+import './architectural-system.css'
+import './compact-homepage.css'
 
-/** Public front page. The root URL always remains the public Aetheris page. */
+/**
+ * A compact architectural editorial homepage.
+ * Photos are illustrative, not member portraits, endorsements or outcomes.
+ * Three chapters: hero, experience + process, membership.
+ * Navigation and access destinations are unchanged.
+ */
+const photo = {
+  room: 'https://images.unsplash.com/photo-1556761175-5973dc0f32e7?auto=format&fit=crop&w=2400&q=85',
+  gathering: 'https://images.unsplash.com/photo-1542744173-8e7e53415bb0?auto=format&fit=crop&w=1400&q=85',
+  membership: 'https://images.unsplash.com/photo-1552664730-d307ca884978?auto=format&fit=crop&w=1700&q=85',
+}
+
+function Photo({ src, alt, className = '', eager = false }: { src: string; alt: string; className?: string; eager?: boolean }) {
+  return <img
+    src={src}
+    alt={alt}
+    className={className}
+    loading={eager ? 'eager' : 'lazy'}
+    fetchPriority={eager ? 'high' : 'auto'}
+    decoding="async"
+    onError={event => { if (event.currentTarget.dataset['fallback'] !== 'true') { event.currentTarget.dataset['fallback'] = 'true'; event.currentTarget.src = originalPortrait.url } }}
+  />
+}
+
+function JoinAction({ signedIn, className = '' }: { signedIn: boolean; className?: string }) {
+  return signedIn
+    ? <Link className={className} to="/app">Enter your network <ArrowUpRight aria-hidden="true" size={16} /></Link>
+    : <Link className={className} to="/early-access">Apply for access <ArrowUpRight aria-hidden="true" size={16} /></Link>
+}
+
 export default function Landing() {
   const { access } = useAccess()
-  return <LandingPage signedIn={access.signedIn} />
-}
+  const signedIn = access.signedIn
 
-/** Gold Ask Intros rule: a thin line with the node dot almost at the end. No counts shown. */
-function ScarcityLine({ label, tone = 'light' }: { label: string; tone?: 'light' | 'dark' }) {
-  return <div className={`lv-scarcity lv-scarcity-${tone}`} role="img" aria-label={label}>
-    <span className="lv-scarcity-rule" aria-hidden="true"><i /><b /></span>
-    <span className="lv-scarcity-label">{label}</span>
-  </div>
-}
+  return <main className="ael ael-compact">
+    <a className="ael-skip" href="#ael-main">Skip to content</a>
 
-
-const INTRO_SEEN_KEY = 'aetheris-intro-seen'
-
-function LandingPage({ signedIn }: { signedIn: boolean }) {
-  const showDemo = !signedIn
-  // The scroll-locked video intro plays first for signed-out visitors,
-  // once per browser session, then hands off to the landing below.
-  // Decided after mount so server and first client render match.
-  const [introDone, setIntroDone] = useState(true)
-  const [introGone, setIntroGone] = useState(true)
-  const [introChecked, setIntroChecked] = useState(false)
-  useEffect(() => {
-    let seen = true
-    try { seen = signedIn || window.sessionStorage.getItem(INTRO_SEEN_KEY) === '1' } catch { /* private mode */ }
-    if (!seen) {
-      setIntroDone(false)
-      setIntroGone(false)
-    }
-    setIntroChecked(true)
-  }, [signedIn])
-  useEffect(() => {
-    if (!introDone || introGone) return
-    try { window.sessionStorage.setItem(INTRO_SEEN_KEY, '1') } catch { /* private mode */ }
-    const t = window.setTimeout(() => setIntroGone(true), 900)
-    return () => window.clearTimeout(t)
-  }, [introDone, introGone])
-  const demoBtn = (label: string, cls: string) => showDemo
-    ? <Link to="/demo" className={cls}>{label} <ArrowRight size={15} /></Link>
-    : null
-  const accountBtn = (cls: string) => signedIn
-    ? <Link to="/app" className={cls}>Enter your network</Link>
-    : <><Link to="/early-access" className={cls}>Request whitelist access</Link><Link to="/auth" className="btn ghost">Member log in</Link></>
-
-  return (
-    <main className="lv">
-      {introChecked && !introGone && (
-        <div
-          aria-hidden={introDone}
-          style={{
-            position: 'fixed',
-            inset: 0,
-            zIndex: 90,
-            opacity: introDone ? 0 : 1,
-            transition: 'opacity 0.8s ease',
-            pointerEvents: introDone ? 'none' : 'auto',
-          }}
-        >
-          <MetroHero
-            title="ASK INTROS"
-            tagline="Know who matters. Know why now."
-            scrollHint="SCROLL TO ENTER"
-            onComplete={() => setIntroDone(true)}
-          />
-        </div>
-      )}
-      <SerenityAmbient />
-      {/* ── Manifesto band ── */}
-      <div className="lv-manifesto" aria-label="Ask Intros manifesto">
-        <p>Stop using LinkedIn, Facebook, HubSpot, Salesforce, and every other system that just creates chaos.</p>
+    <header className="ael-header" aria-label="Ask Intros public navigation">
+      <Link to="/" className="ael-logo" aria-label="Ask Intros home">
+        <AskIntrosLockup variant="compact" />
+      </Link>
+      <nav className="ael-nav" aria-label="Primary navigation">
+        <a href="#experience">The experience</a>
+        <a href="#approach">How it works</a>
+        <a href="#membership">Membership</a>
+      </nav>
+      <div className="ael-header-actions">
+        <AppearanceToggle className="ael-appearance" />
+        {signedIn ? <Link to="/app" className="ael-signin">My network</Link> : <Link to="/auth" className="ael-signin">Member sign in</Link>}
+        <JoinAction signedIn={signedIn} className="ael-nav-cta ai-gradient-button" />
       </div>
+    </header>
 
-
-      {/* ── Top strip: WHY ME · WHY THEM · WHY NOW ── */}
-      <div className="lv-topstrip" aria-hidden="true">
-        <span className="t-orange">WHY ME</span>
-        <i>·</i>
-        <span className="t-blue">WHY THEM</span>
-        <i>·</i>
-        <span className="t-orange">WHY NOW</span>
+    <section className="ael-hero" id="ael-main" aria-labelledby="ael-hero-title">
+      <Photo src={photo.room} alt="Professionals exchanging ideas during a focused executive meeting" className="ael-hero-image" eager />
+      <div className="ael-hero-shade" aria-hidden="true" />
+      <div className="ael-architecture-meta" aria-hidden="true"><span>RELATIONSHIPS / BY DESIGN</span><span>ASK INTROS — CONNECTION 001</span></div>
+      <div className="ael-hero-content">
+        <p className="ael-kicker ael-kicker-light"><span className="ael-dash" /> Relationships by design</p>
+        <h1 id="ael-hero-title">The right room <em>changes everything.</em></h1>
+        <p className="ael-hero-lede">The people who matter. A reason to meet. A place to make something happen.</p>
+        <div className="ael-hero-actions">
+          <JoinAction signedIn={signedIn} className="ael-btn ael-btn-gold ai-gradient-button" />
+          <Link to="/demo" className="ael-text-link">Explore Ask Intros <ArrowRight aria-hidden="true" size={16} /></Link>
+        </div>
       </div>
+      <div className="ael-hero-bottom">
+        <span>WHY ME. WHY THEM. WHY NOW.</span>
+        <a href="#experience">THE EXPERIENCE <ArrowDownRight aria-hidden="true" size={16} /></a>
+        <span>01 / 03</span>
+      </div>
+    </section>
 
-      {/* ── Section 1: Black hero ── */}
-
-      <section className="lv-hero">
-        <div className="lv-hero-copy">
-          <AskIntrosLockup variant="hero" />
-          <h1 className="lv-hero-words"><span className="word-animate" style={{ animationDelay: '100ms' }}>Join</span> <span className="word-animate" style={{ animationDelay: '260ms' }}>the</span> <em className="word-animate" style={{ animationDelay: '420ms' }}>whitelist.</em></h1>
-          <ScarcityLine label="LAUNCHING SOON — FOUNDING PLACES ALMOST FILLED" tone="dark" />
-          <div className="lv-hero-actions">
-            {demoBtn('Demo the system', 'btn ghost')}
-            {accountBtn('btn primary')}
-          </div>
-          <Link to="/founder-story" className="lv-founder-link">Read My Story <ArrowRight size={14} /></Link>
+    <section className="ael-compact-story" id="experience" aria-labelledby="ael-experience-title">
+      <div className="ael-compact-story-main">
+        <div className="ael-compact-story-copy">
+          <div className="ael-editorial-meta"><span>THE PHILOSOPHY</span><span>001 — RELATIONSHIPS WITH PURPOSE</span></div>
+          <h2 id="ael-experience-title">Not more contacts. <em>Better connections.</em></h2>
+          <p>Most networks stop at the introduction. Ask Intros gives each connection a clear purpose, mutual consent and a path to meaningful business.</p>
+          <Link className="ael-underlink" to="/founder-story">Why we built it <ArrowUpRight aria-hidden="true" size={16} /></Link>
         </div>
-        <div className="lv-hero-visual">
-          <img src={landingPortraitAsset.url} alt="A professional in quiet thought beside hard window light" />
+        <figure className="ael-compact-story-photo">
+          <Photo src={photo.gathering} alt="A small leadership group collaborating around a meeting table" />
+          <figcaption>FIG 02 / CONVERSATIONS WITH PURPOSE</figcaption>
+        </figure>
+      </div>
+      <div className="ael-compact-method" id="approach" aria-labelledby="ael-approach-title">
+        <div className="ael-compact-method-heading">
+          <span className="ael-fine-label">HOW IT WORKS / THREE MOVES</span>
+          <h3 id="ael-approach-title">From introduction <em>to impact.</em></h3>
         </div>
-      </section>
+        <ol className="ael-compact-steps">
+          <li><span>01</span><div><strong>Show your intent</strong><p>What you need, offer or want to build.</p></div></li>
+          <li><span>02</span><div><strong>Find the right path</strong><p>Relevant people and introductions by consent.</p></div></li>
+          <li><span>03</span><div><strong>Make progress</strong><p>Conversations, meetings and private follow-through.</p></div></li>
+        </ol>
+        <Link to="/demo" className="ael-underlink ael-underlink-dark">See the experience <ArrowUpRight aria-hidden="true" size={16} /></Link>
+      </div>
+    </section>
 
-      <section className="lv-quote" aria-label="Ask Intros principle">
-        <blockquote>You&rsquo;re defined by the people you surround yourself with.</blockquote>
-      </section>
-
-      <section aria-label="Ask Intros film" style={{ background: '#0B0D0F', padding: 'clamp(32px, 6vw, 80px) clamp(16px, 4vw, 48px)' }}>
-        <div style={{ maxWidth: 1100, margin: '0 auto', border: '1px solid rgba(255,255,255,.10)', borderRadius: 10, overflow: 'hidden', aspectRatio: '16 / 9', background: '#000' }}>
-          <iframe
-            src="https://www.youtube-nocookie.com/embed/i6L7DUU-1WA?rel=0"
-            title="Ask Intros video"
-            loading="lazy"
-            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-            allowFullScreen
-            style={{ width: '100%', height: '100%', border: 0, display: 'block' }}
-          />
+    <section className="ael-membership ael-compact-membership" id="membership" aria-labelledby="ael-membership-title">
+      <Photo src={photo.membership} alt="Business leaders discussing ideas and potential partnerships at a private meeting" className="ael-compact-membership-image" />
+      <div className="ael-compact-membership-content">
+        <div>
+          <span className="ael-fine-label">MEMBERSHIP / ASK INTROS</span>
+          <h2 id="ael-membership-title">Your next room is <em>waiting.</em></h2>
+          <p>Bring a purpose. Meet the right people. Make the connection count.</p>
         </div>
-      </section>
-
-      {/* ── Showcase: One Connected System for CEOs ── */}
-      <section className="lv-showcase">
-        <div className="lv-showcase-plate">
-          <img src={showcaseAsset.url} alt="One Connected System for CEOs — the tools companies pay for separately, now native inside Ask Intros" />
+        <div className="ael-membership-actions">
+          <JoinAction signedIn={signedIn} className="ael-btn ael-btn-gold ai-gradient-button" />
+          {!signedIn && <Link to="/auth" className="ael-text-link">Already a member? Sign in <ArrowRight aria-hidden="true" size={16} /></Link>}
         </div>
-        <div className="lv-showcase-foot">
-          <p>Instead of paying for disconnected tools, Intros gives you <b>one native system.</b></p>
-        </div>
-      </section>
+      </div>
+    </section>
 
-      <CinematicFooter />
-    </main>
-  )
+    <footer className="ael-compact-footer">
+      <Link to="/" className="ael-compact-footer-brand" aria-label="Ask Intros home">ASK INTROS</Link>
+      <span>WHY ME · WHY THEM · WHY NOW</span>
+      <small>Editorial imagery is illustrative. Pictured subjects are not Ask Intros members or endorsers.</small>
+    </footer>
+  </main>
 }
