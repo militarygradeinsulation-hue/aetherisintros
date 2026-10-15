@@ -733,3 +733,23 @@
 .home-widget-scroll > * { min-height:100%; height:auto; max-height:none; }
 .home-widget-scroll > .home-board-tile { overflow:visible; }
 .home-widget-scroll .home-board-content { overflow:visible; flex-shrink:0; }
+
+/* Premium editorial identity follows members from the public homepage into the app. */
+.ix-root {
+  --sys-bg:#07090c;
+  --sys-bg-dark:#07090c;
+  --sys-tile:#101419;
+  --sys-tile-inner:#151922;
+  --sys-panel:#11161b;
+  --sys-ink:#f2eee6;
+  --sys-card:#f4f1ea;
+  --sys-warn:#f4a125;
+  --sys-gold:#f4a125;
+  --sys-accent:#f4a125;
+}
+.ix-root header { border-bottom-color:rgba(215,194,154,.22); }
+.ix-root .sys-tile { border-color:rgba(215,194,154,.12); }
+.ix-root .sys-tile:hover { border-color:rgba(244,161,37,.44); }
+.ix-root :is(input,textarea,select):focus-visible { outline:2px solid #f4a125; outline-offset:2px; }
+.ix-root .ask-intros-lockup--compact { width:clamp(175px,16vw,235px); max-height:none; }
+@media(max-width:680px) { .ix-root .ask-intros-lockup--compact { width:150px; } }
