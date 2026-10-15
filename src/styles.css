@@ -158,3 +158,55 @@
 .site-ambient .ix-aurora-light { animation-name: site-aurora-drift; animation-timing-function: ease-in-out; animation-iteration-count: infinite; }
 @media (prefers-reduced-motion: reduce) { .site-ambient .ix-aurora-light { animation: none; } }
 @media print { .site-ambient { display: none; } }
+
+
+/* HALFTONE EDITORIAL DESIGN SYSTEM — shared by public and member routes.
+   Keep functional status colors and user-selectable signal accents intact. */
+:root, .dark {
+  --background:oklch(0.145 0.006 80);
+  --foreground:oklch(0.91 0.015 85);
+  --card:oklch(0.19 0.008 80);
+  --card-foreground:oklch(0.91 0.015 85);
+  --popover:oklch(0.19 0.008 80);
+  --popover-foreground:oklch(0.91 0.015 85);
+  --primary:oklch(0.68 0.152 49);
+  --primary-foreground:oklch(0.145 0.006 80);
+  --secondary:oklch(0.23 0.01 80);
+  --secondary-foreground:oklch(0.91 0.015 85);
+  --muted:oklch(0.23 0.01 80);
+  --muted-foreground:oklch(0.70 0.015 84);
+  --accent:oklch(0.28 0.038 52);
+  --accent-foreground:oklch(0.95 0.012 85);
+  --border:oklch(0.40 0.018 70 / 42%);
+  --input:oklch(0.34 0.018 70 / 60%);
+  --ring:oklch(0.70 0.148 52);
+  --sidebar:oklch(0.16 0.009 80);
+  --sidebar-foreground:oklch(0.91 0.015 85);
+  --sidebar-primary:oklch(0.68 0.152 49);
+  --sidebar-primary-foreground:oklch(0.145 0.006 80);
+  --sidebar-accent:oklch(0.23 0.01 80);
+  --sidebar-accent-foreground:oklch(0.91 0.015 85);
+  --sidebar-border:oklch(0.40 0.018 70 / 42%);
+  --sidebar-ring:oklch(0.70 0.148 52);
+  --halftone-night:#0c0c0b;
+  --halftone-ink:#e9e4da;
+  --halftone-warm:#e9762b;
+  --halftone-line:rgba(233,228,218,.18);
+  --halftone-mono:"JetBrains Mono","SF Mono",ui-monospace,monospace;
+}
+html { background:var(--halftone-night); }
+body { background:var(--halftone-night); color:var(--halftone-ink); }
+body::before {
+  content:""; position:fixed; inset:0; pointer-events:none; z-index:9998;
+  background-image:radial-gradient(rgba(233,228,218,.35) .45px,transparent .7px);
+  background-size:7px 7px; opacity:.045;
+}
+:where(.auth-page,.ix-root,.ask-os) :is(h1,h2,h3) { text-wrap:balance; }
+:where(.auth-page,.ix-root,.ask-os) :is(input,textarea,select):focus-visible {
+  outline:2px solid var(--halftone-warm); outline-offset:2px;
+}
+.site-ambient { --ambient-opacity:.22; --ambient-number-opacity:.3; --ambient-link-opacity:.35; }
+@media (prefers-reduced-motion:reduce) {
+  html { scroll-behavior:auto; }
+}
+@media print { body::before { display:none; } }
