@@ -190,3 +190,32 @@
 .ael a:focus-visible,.ael button:focus-visible { outline-color:#f4a125; }
 @media (max-width:960px) { .ael-header { min-height:110px; } .ael-logo .ask-intros-lockup { width:clamp(170px,23vw,225px); } }
 @media (max-width:680px) { .ael-header { min-height:92px; padding-top:12px; padding-bottom:12px; } .ael-logo .ask-intros-lockup { width:164px; } }
+
+
+/* THE HALFTONE EDITORIAL CHAPTER — all public page sections share one dark palette. */
+.ael { --ael-night:#0c0c0b; --ael-ink:#e9e4da; --ael-cream:#e9e4da; --ael-gold:#e9762b; --ael-paper:#181715; background:#0c0c0b; color:#e9e4da; }
+.ael-header { background:linear-gradient(180deg,rgba(12,12,11,.98),rgba(12,12,11,.64)); border-bottom-color:rgba(233,228,218,.16); }
+.ael-hero { background:#0c0c0b; }
+.ael-hero-image { filter:brightness(.57) saturate(.58) contrast(1.13); }
+.ael-hero-shade { background:linear-gradient(90deg,rgba(12,12,11,.91),rgba(12,12,11,.46) 65%,rgba(12,12,11,.20)),linear-gradient(0deg,#0c0c0b,transparent 45%); }
+.ael-hero h1 em,.ael-scene h3 em,.ael-membership h2 em { color:#e9762b; }
+.ael-introduction,.ael-approach,.ael-system { background:#181715; color:#e9e4da; }
+.ael-scenes,.ael-membership { background:#0c0c0b; color:#e9e4da; }
+.ael-introduction,.ael-approach,.ael-system,.ael-scenes,.ael-membership {
+  background-image:radial-gradient(circle at 1px 1px,rgba(233,228,218,.043) .7px,transparent 1px);
+  background-size:9px 9px;
+}
+.ael-introduction :is(h2,h3),.ael-approach :is(h2,h3),.ael-system :is(h2,h3) { color:#e9e4da; }
+.ael-approach-grid>div>p,.ael-steps p,.ael-system-head p,.ael-introduction p { color:#c5beb3; }
+.ael-approach h2 em,.ael-system h2 em { color:#e9762b; }
+.ael-editorial-meta { color:#c9a080; border-bottom:1px solid rgba(233,228,218,.22); }
+.ael-steps li,.ael-steps li:first-child { border-color:rgba(233,228,218,.2); }
+.ael-steps li>span,.ael-fine-label,.ael-scene-index { color:#e9762b; }
+.ael-underlink-dark { color:#e9e4da !important; border-color:rgba(233,228,218,.38); }
+.ael-system-visual { background:#0c0c0b; border-color:rgba(233,118,43,.32); }
+.ael-btn-gold { background:#e9762b!important; color:#0c0c0b!important; }
+.ael-btn-gold:hover { background:#f49b62!important; }
+.ael :is(a,button):focus-visible { outline-color:#e9762b; }
+.ael .ael-halftone-footer { min-height:390px; margin:0; border-top:1px solid rgba(233,228,218,.2); }
+.ael .ael-halftone-footer .hwf-top { color:#e9e4da; }
+@media (max-width:720px) { .ael .ael-halftone-footer { min-height:390px; } }
