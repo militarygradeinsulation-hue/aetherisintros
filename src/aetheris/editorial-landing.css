@@ -359,3 +359,29 @@
   }
   .ael .ael-hero-image { object-position:61% center; }
 }
+
+
+/* Signature rotating-gradient links: professional, intentional, and still real navigation. */
+.ael .ai-gradient-button {
+  --ai-border-angle:0deg;
+  min-height:46px;
+  border:2px solid transparent !important;
+  border-radius:999px !important;
+  background:
+    linear-gradient(135deg,var(--ai-button-surface),var(--ai-button-surface)) padding-box,
+    conic-gradient(from var(--ai-border-angle),#c35c28,#f6b66e 22%,#e7d7ba 39%,#347fd5 52%,#f2a85a 77%,#c35c28) border-box !important;
+  color:var(--ai-button-text) !important;
+  box-shadow:0 3px 16px -8px var(--ai-button-shadow);
+  animation:ai-gradient-turn 7s linear infinite;
+}
+.ael .ael-nav-cta.ai-gradient-button { min-height:42px; padding:0 18px; }
+.ael .ael-btn.ai-gradient-button { min-height:55px; padding:0 27px; }
+.ael .ai-gradient-button:hover {
+  background:
+    linear-gradient(135deg,var(--ai-button-surface),var(--ai-button-surface)) padding-box,
+    conic-gradient(from var(--ai-border-angle),#c35c28,#f6b66e 22%,#e7d7ba 39%,#347fd5 52%,#f2a85a 77%,#c35c28) border-box !important;
+  color:var(--ai-button-text) !important;
+}
+:root[data-theme="light"] .ael .ai-gradient-button { color:var(--ai-button-text)!important; }
+@media(max-width:720px) { .ael .ael-nav-cta.ai-gradient-button { min-height:36px; padding:0 11px; } }
+@media(prefers-reduced-motion:reduce) { .ael .ai-gradient-button { animation:none; } }
