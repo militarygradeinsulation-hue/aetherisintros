@@ -179,7 +179,7 @@ export const MessagesView: React.FC<MessagesViewProps> = ({
                 <div className="flex items-center gap-2 pt-2 border-t border-[var(--msg-border)]">
                   <button
                     onClick={() => onReviewIntroRequest(req)}
-                    className="flex-1 py-1 text-xs font-semibold text-[var(--msg-accent-ink)] bg-[var(--msg-accent)] hover:bg-[var(--msg-accent)] rounded transition-colors cursor-pointer text-center"
+                    className="flex-1 py-1 text-xs font-semibold text-[var(--msg-accent-ink)] bg-[var(--msg-accent)] hover:bg-[var(--msg-accent-hover)] rounded transition-colors cursor-pointer text-center"
                   >
                     Review
                   </button>
@@ -209,7 +209,7 @@ export const MessagesView: React.FC<MessagesViewProps> = ({
                 onClick={() => {
                   if (conversations[1]) setSelectedThreadId(conversations[1].id);
                 }}
-                className="flex items-center gap-1 px-2.5 py-1 text-xs font-semibold text-[var(--msg-accent-ink)] bg-[var(--msg-accent)] hover:bg-[var(--msg-accent)] rounded-md transition-colors cursor-pointer"
+                className="flex items-center gap-1 px-2.5 py-1 text-xs font-semibold text-[var(--msg-accent-ink)] bg-[var(--msg-accent)] hover:bg-[var(--msg-accent-hover)] rounded-md transition-colors cursor-pointer"
               >
                 <Plus className="w-3.5 h-3.5" />
                 New
@@ -347,7 +347,7 @@ export const MessagesView: React.FC<MessagesViewProps> = ({
           )}
 
           {/* Chat Messages History */}
-          <div className="flex-1 p-5 space-y-4 overflow-y-auto max-h-[460px]">
+          <div className="msg-chat-body flex-1 p-5 space-y-4 overflow-y-auto max-h-[460px]">
             <div className="text-center">
               <span className="text-[10px] font-mono text-[var(--msg-muted)] uppercase tracking-wider">
                 Direct Thread · End-to-End Verified
@@ -365,10 +365,10 @@ export const MessagesView: React.FC<MessagesViewProps> = ({
 
                 <div className={`max-w-[80%] space-y-1 ${msg.isOwn ? 'items-end' : 'items-start'}`}>
                   <div
-                    className={`rounded-2xl p-3.5 text-xs leading-relaxed ${
+                    className={`msg-body-text rounded-2xl p-3.5 leading-relaxed ${
                       msg.isOwn
-                        ? 'bg-[var(--msg-outgoing)] text-[var(--msg-ink)] rounded-br-xs'
-                        : 'bg-[var(--msg-incoming)] text-[var(--msg-ink)] border border-[var(--msg-border)] rounded-bl-xs'
+                        ? 'msg-outgoing bg-[var(--msg-outgoing)] text-[var(--msg-ink)] rounded-br-xs'
+                        : 'msg-incoming bg-[var(--msg-incoming)] text-[var(--msg-ink)] border border-[var(--msg-border)] rounded-bl-xs'
                     }`}
                   >
                     {msg.text}
@@ -418,7 +418,7 @@ export const MessagesView: React.FC<MessagesViewProps> = ({
               <button
                 type="submit"
                 disabled={!draftMessage.trim()}
-                className="p-1.5 text-[var(--msg-accent-ink)] bg-[var(--msg-accent)] hover:bg-[var(--msg-accent)] disabled:opacity-40 disabled:cursor-not-allowed rounded-lg transition-colors cursor-pointer"
+                className="p-1.5 text-[var(--msg-accent-ink)] bg-[var(--msg-accent)] hover:bg-[var(--msg-accent-hover)] disabled:opacity-40 disabled:cursor-not-allowed rounded-lg transition-colors cursor-pointer"
               >
                 <Send className="w-3.5 h-3.5" />
               </button>
@@ -435,7 +435,7 @@ export const MessagesView: React.FC<MessagesViewProps> = ({
                 <span>Shared Context</span>
                 <span className="text-[var(--msg-copper)] text-[10px]">Verified Fit</span>
               </div>
-              <p className="text-xs text-[var(--msg-body)] leading-relaxed mb-3">
+              <p className="msg-body-text text-[var(--msg-body)] leading-relaxed mb-3">
                 {activeThread?.sharedContext.summary}
               </p>
 
@@ -490,7 +490,7 @@ export const MessagesView: React.FC<MessagesViewProps> = ({
             </div>
 
             {/* Suggested Next Step (AI) */}
-            <div className="p-4 bg-[var(--msg-note)] border border-[var(--msg-copper)] rounded-xl space-y-3">
+            <div className="msg-next-step p-4 bg-[var(--msg-note)] border border-[var(--msg-copper)] rounded-xl space-y-3">
               <div className="flex items-center justify-between">
                 <span className="text-[10px] font-mono uppercase tracking-widest text-[var(--msg-copper)] font-semibold flex items-center gap-1.5">
                   <Sparkles className="w-3.5 h-3.5" />
@@ -501,7 +501,7 @@ export const MessagesView: React.FC<MessagesViewProps> = ({
                 </span>
               </div>
 
-              <p className="text-xs text-[var(--msg-body)] leading-relaxed">
+              <p className="msg-body-text text-[var(--msg-body)] leading-relaxed">
                 {activeThread?.suggestedNextStep.reasoning}
               </p>
 
@@ -512,7 +512,7 @@ export const MessagesView: React.FC<MessagesViewProps> = ({
                     activeThread?.memberTitle || 'General Partner'
                   )
                 }
-                className="w-full flex items-center justify-center gap-2 py-2 text-xs font-semibold text-[var(--msg-accent-ink)] bg-[var(--msg-accent)] hover:bg-[var(--msg-accent)] rounded-lg shadow-sm transition-colors cursor-pointer"
+                className="w-full flex items-center justify-center gap-2 py-2 text-xs font-semibold text-[var(--msg-accent-ink)] bg-[var(--msg-accent)] hover:bg-[var(--msg-accent-hover)] rounded-lg shadow-sm transition-colors cursor-pointer"
               >
                 <Calendar className="w-3.5 h-3.5" />
                 Schedule Meeting
@@ -520,7 +520,7 @@ export const MessagesView: React.FC<MessagesViewProps> = ({
             </div>
 
             {/* AI Introduction Brief (BETA) */}
-            <div className="p-4 bg-[var(--msg-panel-inset)] border border-[var(--msg-border)] rounded-xl space-y-2">
+            <div className="msg-brief-panel p-4 bg-[var(--msg-panel-inset)] border border-[var(--msg-border)] rounded-xl space-y-2">
               <div className="flex items-center justify-between">
                 <span className="text-[10px] font-mono uppercase tracking-widest text-[var(--msg-muted)] font-semibold">
                   AI Introduction Brief
@@ -529,7 +529,7 @@ export const MessagesView: React.FC<MessagesViewProps> = ({
                   BETA
                 </span>
               </div>
-              <p className="text-xs text-[var(--msg-muted)] line-clamp-3 leading-relaxed">
+              <p className="msg-body-text text-[var(--msg-muted)] line-clamp-3 leading-relaxed">
                 {activeThread?.aiIntroductionBrief}
               </p>
               <button
@@ -548,7 +548,7 @@ export const MessagesView: React.FC<MessagesViewProps> = ({
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-fadeIn">
           <div className="relative w-full max-w-md bg-[var(--msg-panel)] border border-[var(--msg-border)] rounded-2xl p-6 text-[var(--msg-ink)]">
             <h3 className="font-serif-editorial text-2xl font-bold mb-3">Executive Intro Brief</h3>
-            <p className="text-xs text-[var(--msg-body)] leading-relaxed mb-6">
+            <p className="msg-body-text text-[var(--msg-body)] leading-relaxed mb-6">
               {activeThread?.aiIntroductionBrief}
             </p>
             <div className="flex justify-end">
