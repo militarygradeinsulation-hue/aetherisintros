@@ -28,7 +28,7 @@ function Photo({ src, alt, className = '', eager = false }: { src: string; alt: 
     loading={eager ? 'eager' : 'lazy'}
     fetchPriority={eager ? 'high' : 'auto'}
     decoding="async"
-    onError={event => { if (event.currentTarget.dataset.fallback !== 'true') { event.currentTarget.dataset.fallback = 'true'; event.currentTarget.src = originalPortrait.url } }}
+    onError={event => { if (event.currentTarget.dataset['fallback'] !== 'true') { event.currentTarget.dataset['fallback'] = 'true'; event.currentTarget.src = originalPortrait.url } }}
   />
 }
 
