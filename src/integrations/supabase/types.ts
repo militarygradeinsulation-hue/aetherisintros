@@ -6686,6 +6686,10 @@ export type Database = {
         Returns: undefined
       }
       relative_label: { Args: { ts: string }; Returns: string }
+      request_verified_intro: {
+        Args: { p_note?: string; p_target: string }
+        Returns: Json
+      }
       resolve_capability_finding: {
         Args: { p_id: string; p_note?: string; p_status: string }
         Returns: undefined
