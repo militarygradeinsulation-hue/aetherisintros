@@ -13,6 +13,7 @@ import { useEffect, type ReactNode } from "react";
 import { Toaster } from "@/components/ui/sonner";
 import { CursorGlow } from "@/components/ui/cursor-glow";
 import { BrandFonts } from "@/aetheris/BrandFonts";
+import { AppearanceProvider } from "@/aetheris/AppearanceMode";
 import { SystemScrollCaliper } from "@/aetheris/SystemScrollCaliper";
 import Aurora from "@/intros-ui/Aurora";
 import ParticleDrift from "@/aetheris/ParticleDrift";
@@ -154,8 +155,10 @@ function RootComponent() {
 
   return (
     <QueryClientProvider client={queryClient}>
-      {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
-      <Outlet />
+      <AppearanceProvider>
+        {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
+        <Outlet />
+      </AppearanceProvider>
     </QueryClientProvider>
   );
 }
