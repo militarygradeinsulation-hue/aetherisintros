@@ -20,7 +20,7 @@ import './editorial-landing.css'
 const photo = {
   room: 'https://images.unsplash.com/photo-1758518727077-ffb66ffccced?auto=format&fit=crop&w=2400&q=85',
   gathering: 'https://images.unsplash.com/photo-1739298061707-cefee19941b7?auto=format&fit=crop&w=1600&q=85',
-  conversation: 'https://images.unsplash.com/photo-1758518726775-70e538b0d46e?auto=format&fit=crop&w=1600&q=85',
+  conversation: 'https://images.unsplash.com/photo-1758519289022-5f9dea0d8cdc?auto=format&fit=crop&w=1600&q=85',
   city: 'https://images.unsplash.com/photo-1519501025264-65ba15a82390?auto=format&fit=crop&w=1900&q=82',
 }
 
@@ -115,7 +115,7 @@ export default function Landing() {
           <p>Discover expertise, shared priorities and credible introductions without turning professional relationships into a public popularity contest.</p>
         </div>
         <div className="ael-scene-photo">
-          <Photo src={photo.conversation} alt="Three business professionals discussing a potential partnership in a quiet executive lounge" />
+          <Photo src={photo.conversation} alt="Two business leaders reviewing a shared strategy and financial documents during a private meeting" />
           <span className="ael-scene-index">II / THE CONVERSATION</span>
         </div>
       </article>
