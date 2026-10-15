@@ -334,3 +334,25 @@
   background:linear-gradient(0deg,rgba(243,240,233,.98),rgba(243,240,233,.75) 75%,rgba(243,240,233,.55));
  }
 }
+
+/* All original accent-driven components share the architectural copper signature. */
+:root {
+ --acc:#c69b71;--acc-bright:#d9b58e;--acc-strong:#a8734b;--acc-deep:#755137;
+ --acc-wash:rgba(198,155,113,.12);--acc-line:rgba(198,155,113,.34);
+ --acc-glow:rgba(198,155,113,.3);--acc-btn:rgba(198,155,113,.16);
+ --acc-btn-hover:rgba(198,155,113,.24);--acc-btn-line:rgba(198,155,113,.44);
+ --acc-spot:rgba(198,155,113,.1);
+ --acc-field-fill:rgba(198,155,113,.05);
+ --acc-field-stroke:rgba(198,155,113,.3);
+ --acc-field-glow:rgba(198,155,113,.39);
+}
+:root[data-theme='light'] {
+ --acc:#93633e;--acc-bright:#7e542f;--acc-strong:#80512e;--acc-deep:#5c3c27;
+ --acc-wash:rgba(147,99,62,.10);--acc-line:rgba(147,99,62,.30);
+ --acc-glow:rgba(147,99,62,.16);--acc-btn:rgba(147,99,62,.10);
+ --acc-btn-hover:rgba(147,99,62,.19);--acc-btn-line:rgba(147,99,62,.43);
+ --acc-spot:rgba(147,99,62,.08);
+ --acc-field-fill:rgba(147,99,62,.035);
+ --acc-field-stroke:rgba(147,99,62,.23);
+ --acc-field-glow:rgba(147,99,62,.29);
+}
