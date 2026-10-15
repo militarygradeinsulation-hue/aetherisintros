@@ -167,6 +167,7 @@ export default function Landing() {
       </div>
     </section>
 
+    <p className="ael-imagery-note">Editorial imagery is illustrative. Subjects pictured are not represented as Ask Intros members or endorsers.</p>
     <HalftoneWordmarkFooter
       className="ael-halftone-footer"
       wordmark="ask intros"
