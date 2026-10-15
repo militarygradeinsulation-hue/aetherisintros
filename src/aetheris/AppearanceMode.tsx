@@ -16,7 +16,7 @@ function readAppearance(): AppearanceMode {
     // Preserve an existing user's home preference when migrating to one setting.
     if (window.localStorage.getItem('aetheris.home.theme') === 'light') return 'light';
   } catch { /* Browser may block storage. */ }
-  return 'dark';
+  return 'light';
 }
 
 function applyAppearance(theme: AppearanceMode) {
@@ -28,8 +28,8 @@ function applyAppearance(theme: AppearanceMode) {
 }
 
 export function AppearanceProvider({ children }: { children: ReactNode }) {
-  // Start in the existing dark theme for SSR, then restore the saved selection.
-  const [theme, setThemeState] = useState<AppearanceMode>('dark');
+  // New visitors see the Messages-inspired light UI; saved choices still win.
+  const [theme, setThemeState] = useState<AppearanceMode>('light');
   useEffect(() => {
     const restored = readAppearance();
     setThemeState(restored);
