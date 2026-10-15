@@ -6033,3 +6033,27 @@ body:has([role=menu],[role=listbox],.ix-mobile-sheet,.topbar-dropmenu,.notificat
   .ask-intros-lockup--compact,
   :where(.lv-nav,.ix-root header) .ask-intros-lockup--compact { width:154px; max-height:none; }
 }
+
+
+/* HALFTONE NIGHT / classic app and public auth surfaces. Preserve original logo. */
+:root {
+  --night:#0c0c0b; --raised:#181715; --graphite:#201d1a; --soft:#e9e4da;
+  --muted:#aaa398; --line-dark:rgba(233,228,218,.18);
+  --amber:#e9762b; --gold:#e1a049; --tile-hover:#e9762b;
+  --halftone-night:#0c0c0b; --halftone-ink:#e9e4da; --halftone-warm:#e9762b;
+}
+.lv-nav,.topbar,.masthead,.core-hub { border-color:rgba(233,228,218,.15); }
+:where(.module,.feed-card,.discover-tile,.member-tile,.sys-tile,.feature-tile) {
+  transition:border-color .25s ease,box-shadow .25s ease,background-color .25s ease;
+}
+:where(.module,.feed-card,.discover-tile,.member-tile,.sys-tile,.feature-tile):hover {
+  border-color:rgba(233,118,43,.35);
+}
+.auth-page { background:#0c0c0b; color:#e9e4da; }
+.auth-panel { background-color:#0c0c0b; background-image:linear-gradient(rgba(233,228,218,.035) 1px,transparent 1px),linear-gradient(90deg,rgba(233,228,218,.035) 1px,transparent 1px); }
+.auth-panel :is(h1,h2,p,label,small,span) { color:inherit; }
+.auth-panel :is(input,textarea,select) { background:#191815; color:#e9e4da; border:1px solid rgba(233,228,218,.23); }
+.auth-panel :is(input,textarea,select)::placeholder { color:#aaa398; }
+.auth-panel :is(input,textarea,select):focus-visible { outline:2px solid #e9762b; outline-offset:2px; }
+.auth-panel .btn.primary { background:#e9762b; color:#0c0c0b; border-color:#e9762b; }
+.auth-panel .btn.primary:hover { background:#f49b62; }
