@@ -284,3 +284,73 @@ body::before {
   .appearance-liquid-toggle,.appearance-liquid-toggle circle { transition:none !important; }
 }
 @media (max-width:680px) { .appearance-switcher__label { display:none; } }
+
+
+/* THE ASK INTROS SIGNATURE ACTION
+ * User-supplied rotating gradient treatment, rebuilt for existing native buttons
+ * and links. Neutral interior with a warm/cobalt light ring; never changes behavior.
+ */
+@property --ai-border-angle {
+  syntax:"<angle>";
+  inherits:false;
+  initial-value:0deg;
+}
+@keyframes ai-gradient-turn { to { --ai-border-angle:360deg; } }
+:root {
+  --ai-button-surface:#161514;
+  --ai-button-text:#fff9ef;
+  --ai-button-edge:#f3b258;
+  --ai-button-shadow:rgba(0,0,0,.28);
+}
+:root[data-theme="light"] {
+  --ai-button-surface:#fffdf9;
+  --ai-button-text:#221b16;
+  --ai-button-edge:#b94a20;
+  --ai-button-shadow:rgba(45,29,15,.10);
+}
+:where(.ai-gradient-button,.btn.primary,.eh-primary,.tile-cta,.memory-cta) {
+  --ai-border-angle:0deg;
+  position:relative;
+  isolation:isolate;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  vertical-align:middle;
+  gap:9px;
+  min-height:42px;
+  max-width:100%;
+  border:2px solid transparent !important;
+  border-radius:999px !important;
+  background:
+    linear-gradient(135deg,var(--ai-button-surface),var(--ai-button-surface)) padding-box,
+    conic-gradient(from var(--ai-border-angle),#c35c28 0%,#f6b66e 22%,#e7d7ba 39%,#347fd5 52%,#f2a85a 77%,#c35c28 100%) border-box !important;
+  color:var(--ai-button-text) !important;
+  box-shadow:0 3px 16px -8px var(--ai-button-shadow);
+  font-weight:650;
+  letter-spacing:.035em;
+  text-align:center;
+  text-decoration:none;
+  cursor:pointer;
+  transition:box-shadow .25s ease,transform .25s ease;
+  animation:ai-gradient-turn 7s linear infinite;
+}
+:where(.ai-gradient-button,.btn.primary,.eh-primary,.tile-cta,.memory-cta):hover:not(:disabled):not([aria-disabled="true"]) {
+  box-shadow:0 8px 26px -7px var(--ai-button-shadow),0 0 17px -11px var(--ai-button-edge);
+  transform:translateY(-1px);
+}
+:where(.ai-gradient-button,.btn.primary,.eh-primary,.tile-cta,.memory-cta):focus-visible {
+  outline:3px solid var(--ai-button-edge);
+  outline-offset:3px;
+}
+:where(.ai-gradient-button,.btn.primary,.eh-primary,.tile-cta,.memory-cta):disabled,
+:where(.ai-gradient-button,.btn.primary,.eh-primary,.tile-cta,.memory-cta)[aria-disabled="true"] {
+  opacity:.50;
+  cursor:not-allowed;
+  box-shadow:none;
+  animation:none;
+}
+.ai-gradient-button__content { position:relative; display:inline-flex; align-items:center; justify-content:center; gap:8px; }
+@media (prefers-reduced-motion:reduce) {
+  :where(.ai-gradient-button,.btn.primary,.eh-primary,.tile-cta,.memory-cta) { animation:none; transition:none; }
+  :where(.ai-gradient-button,.btn.primary,.eh-primary,.tile-cta,.memory-cta):hover { transform:none; }
+}
