@@ -103,6 +103,43 @@ try {
    await page.goto(base+'/',{waitUntil:'domcontentloaded',timeout:120000})
    await page.waitForSelector('.ael-compact',{timeout:60000})
    await clearLayout(page,'homepage '+vp.width)
+   // The access invitation once had a visible border but invisible lettering.
+   // Test the *rendered* foreground against the actual button's inner surface,
+   // not against the colorful 2px border or the unrelated header background.
+   const headerJoin=page.locator('.ael-header .ael-nav-cta.ai-gradient-button')
+   check(await headerJoin.count()===1,'one clear header access button')
+   check((await headerJoin.getAttribute('href'))==='/early-access','access button keeps its destination')
+   for(const appearance of ['dark','light']){
+     await page.evaluate(mode=>document.documentElement.setAttribute('data-theme',mode),appearance)
+     for(const interaction of ['idle','hover']){
+       if(interaction==='hover')await headerJoin.hover()
+       else await page.mouse.move(1,vp.height-1)
+       const color=await headerJoin.evaluate(el=>{
+         const css=getComputedStyle(el)
+         return {fg:css.color, surface:css.getPropertyValue('--ai-button-surface').trim(),
+           bgImage:css.backgroundImage,text:el.textContent?.trim()||''}
+       })
+       const rgb=input=>{
+         const s=input.trim()
+         if(/^#[0-9a-f]{6}$/i.test(s))return [1,3,5].map(i=>parseInt(s.slice(i,i+2),16))
+         const match=s.match(/rgba?\((\d+)[ ,]+(\d+)[ ,]+(\d+)/i)
+         if(match)return match.slice(1,4).map(Number)
+         throw new Error('Unrecognized computed button color: '+s)
+       }
+       const luminance=values=>values.map(v=>{
+         const c=v/255
+         return c<=.04045 ? c/12.92 : ((c+.055)/1.055)**2.4
+       }).reduce((sum,value,i)=>sum+value*[.2126,.7152,.0722][i],0)
+       const a=luminance(rgb(color.fg)),b=luminance(rgb(color.surface))
+       const ratio=(Math.max(a,b)+.05)/(Math.min(a,b)+.05)
+       check(ratio>=4.5,appearance+' '+interaction+' access label contrast '+ratio.toFixed(2)+':1')
+       check(color.bgImage.includes('gradient')&&color.text.includes('Apply for access'),
+         'access label remains visible inside the metallic button')
+     }
+   }
+   const accessPos=await pos(headerJoin)
+   check(accessPos.x>=-2&&accessPos.right<=vp.width+2&&accessPos.height>=44,
+     'header access action fits the screen and has a 44px touch target')
    const cta=page.locator('.ael-hero-actions').first()
    const rect=await pos(cta)
    check(rect.x>=-2&&rect.right<=vp.width+2,'hero actions fit viewport')
