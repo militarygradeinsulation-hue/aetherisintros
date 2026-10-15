@@ -409,10 +409,185 @@
       "breakpoints": true
     },
     {
+      "idx": 59,
+      "version": "7",
+      "when": 1791469159383,
+      "tag": "0059_deal_room_idempotency",
+      "breakpoints": true
+    },
+    {
+      "idx": 60,
+      "version": "7",
+      "when": 1791469459383,
+      "tag": "0060_app_error_rate_limit_index",
+      "breakpoints": true
+    },
+    {
+      "idx": 61,
+      "version": "7",
+      "when": 1791469759383,
+      "tag": "0061_member_directory_stats",
+      "breakpoints": true
+    },
+    {
       "idx": 62,
       "version": "7",
-      "when": 1791470059383,
-      "tag": "business_analyst",
+      "when": 1791469759384,
+      "tag": "0062_business_posts",
+      "breakpoints": true
+    },
+    {
+      "idx": 63,
+      "version": "7",
+      "when": 1791469759385,
+      "tag": "0063_deal_workspaces",
+      "breakpoints": true
+    },
+    {
+      "idx": 64,
+      "version": "7",
+      "when": 1791469759386,
+      "tag": "0064_deal_workspace_business_roles",
+      "breakpoints": true
+    },
+    {
+      "idx": 65,
+      "version": "7",
+      "when": 1791469759387,
+      "tag": "0065_private_contact_library",
+      "breakpoints": true
+    },
+    {
+      "idx": 66,
+      "version": "7",
+      "when": 1791469759388,
+      "tag": "0066_contact_export_denial",
+      "breakpoints": true
+    },
+    {
+      "idx": 67,
+      "version": "7",
+      "when": 1791469759389,
+      "tag": "0067_business_execution_workbench",
+      "breakpoints": true
+    },
+    {
+      "idx": 68,
+      "version": "7",
+      "when": 1791469759390,
+      "tag": "0068_meeting_briefs",
+      "breakpoints": true
+    },
+    {
+      "idx": 69,
+      "version": "7",
+      "when": 1791469759391,
+      "tag": "0069_track_record",
+      "breakpoints": true
+    },
+    {
+      "idx": 70,
+      "version": "7",
+      "when": 1791469759392,
+      "tag": "0070_reputation_scores",
+      "breakpoints": true
+    },
+    {
+      "idx": 71,
+      "version": "7",
+      "when": 1791469759393,
+      "tag": "0071_referrals",
+      "breakpoints": true
+    },
+    {
+      "idx": 72,
+      "version": "7",
+      "when": 1791469759394,
+      "tag": "0072_warm_referral_engine",
+      "breakpoints": true
+    },
+    {
+      "idx": 73,
+      "version": "7",
+      "when": 1791469759395,
+      "tag": "0073_business_analyst",
+      "breakpoints": true
+    },
+    {
+      "idx": 74,
+      "version": "7",
+      "when": 1791469759396,
+      "tag": "0074_storefront_proposals",
+      "breakpoints": true
+    },
+    {
+      "idx": 75,
+      "version": "7",
+      "when": 1791469759397,
+      "tag": "0075_syndication_rooms",
+      "breakpoints": true
+    },
+    {
+      "idx": 76,
+      "version": "7",
+      "when": 1791469759398,
+      "tag": "0076_peer_group_feed",
+      "breakpoints": true
+    },
+    {
+      "idx": 77,
+      "version": "7",
+      "when": 1791469759399,
+      "tag": "0077_peer_group_agendas",
+      "breakpoints": true
+    },
+    {
+      "idx": 78,
+      "version": "7",
+      "when": 1791469759400,
+      "tag": "0078_syndication_creator_insert_visibility",
+      "breakpoints": true
+    },
+    {
+      "idx": 79,
+      "version": "7",
+      "when": 1791800000000,
+      "tag": "0079_lovable_scan_access_hardening",
+      "breakpoints": true
+    },
+    {
+      "idx": 80,
+      "version": "7",
+      "when": 1791810100000,
+      "tag": "0080_member_intro_read_contract",
+      "breakpoints": true
+    },
+    {
+      "idx": 81,
+      "version": "7",
+      "when": 1791810100001,
+      "tag": "0081_marketplace_pilot_research_intent",
+      "breakpoints": true
+    },
+    {
+      "idx": 82,
+      "version": "7",
+      "when": 1791895000000,
+      "tag": "0082_business_lobby",
+      "breakpoints": true
+    },
+    {
+      "idx": 83,
+      "version": "7",
+      "when": 1791908600000,
+      "tag": "0083_providers_relationship_evidence",
+      "breakpoints": true
+    },
+    {
+      "idx": 84,
+      "version": "7",
+      "when": 1792072000000,
+      "tag": "0084_live_intro_secure_read_grants",
       "breakpoints": true
     }
   ]

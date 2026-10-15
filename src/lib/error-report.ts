@@ -29,7 +29,7 @@ export function reportClientError(error: unknown, where = '') {
     p_stack: stack,
     p_url: location.pathname + location.search,
     p_user_agent: navigator.userAgent,
-  }).catch(() => undefined)
+  }).then(undefined, () => undefined)
 }
 
 /** Report uncaught errors and unhandled promise rejections from this page. */

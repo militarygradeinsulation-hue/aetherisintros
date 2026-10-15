@@ -21,6 +21,7 @@ export const QUICK_ACTIONS: QuickAction[] = [
   { id: 'intros', label: 'Introductions', hint: 'Requests and accepted intros', target: { kind: 'page', page: 'intros' } },
   { id: 'messages', label: 'Messages', hint: 'Your conversations', target: { kind: 'page', page: 'messages' } },
   { id: 'meetings', label: 'Meetings', hint: 'Start or join a call', target: { kind: 'page', page: 'meetings' } },
+  { id: 'business-lobby', label: 'Business Lobby', hint: 'Consent-based live drop-ins', target: { kind: 'page', page: 'meetings' } },
   { id: 'warmpaths', label: 'Warm paths', hint: 'Who can introduce you', target: { kind: 'workspace', page: 'warmpaths' } },
   { id: 'events', label: 'Events', hint: 'Dinners and roundtables', target: { kind: 'workspace', page: 'events' } },
   { id: 'peergroups', label: 'Peer groups', hint: 'Your confidential group', target: { kind: 'workspace', page: 'peergroups' } },

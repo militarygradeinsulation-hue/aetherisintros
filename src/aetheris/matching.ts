@@ -59,7 +59,7 @@ export function scoreMatch(
   const mutualConnections = member.mutuals.filter(name =>
     context.connections.some(id => context.members.find(m => m.id === id)?.name === name))
   const trustDepth = Math.min(100, member.mutuals.length * 18 + mutualConnections.length * 22 + (member.bestPath.length > 2 ? 24 : 0))
-  const timing = Math.max(0, 100 - Math.min(member.lastInteractionDays, 180) / 1.8)
+  const timing = Math.max(0, 100 - Math.min(member.lastInteractionDays ?? 180, 180) / 1.8)
   const relevance = Math.min(100, sharedInterests.length * 16 + (industryHit ? 30 : 0))
   const availability = /open|actively|welcomes|available/i.test(member.availability) ? 90 : 55
 

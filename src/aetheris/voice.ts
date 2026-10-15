@@ -114,8 +114,20 @@ export function unlockAudio() {
   if (typeof window === 'undefined') return
   if (!sharedAudio) sharedAudio = new Audio()
   try {
+    // Keep this completely inaudible. Some mobile browsers make a tiny click when a data
+    // source begins playing, which made opening Ask Intros sound like a broken reply.
+    sharedAudio.volume = 0
     sharedAudio.src = SILENCE
-    void sharedAudio.play().catch(() => { /* still allowed to try later */ })
+    void sharedAudio.play().then(() => {
+      // The element remains user-gesture unlocked after it is reset, without leaving an
+      // actual silent file playing underneath the next response.
+      sharedAudio?.pause()
+      if (sharedAudio) {
+        sharedAudio.removeAttribute('src')
+        sharedAudio.load()
+        sharedAudio.volume = 1
+      }
+    }).catch(() => { /* still allowed to try later */ })
   } catch { /* ignore */ }
   /* Wake the device voice too, so the fallback can speak after a wait. */
   if (speechSupported()) {
@@ -267,6 +279,8 @@ async function speakCurrent(run: number) {
     stopActiveAudio()
     activeAudioUrl = URL.createObjectURL(base64Audio(result.audio, result.contentType))
     const audio = sharedAudio ?? new Audio()
+    // Never reuse the muted priming volume for the actual spoken answer.
+    audio.volume = 1
     audio.src = activeAudioUrl
     activeAudio = audio
     audio.playbackRate = rateOf[readVoiceSettings().speed]
@@ -277,7 +291,14 @@ async function speakCurrent(run: number) {
       problem = 'The Intros voice could not play, so your device voice is being used.'
       speakWithDevice(text, run)
     }
-    await audio.play()
+    try {
+      await audio.play()
+    } catch (playError) {
+      // A delayed server response can lose a mobile browser's gesture activation. Do not
+      // leave the member with a click and no answer: speak with the device voice instead.
+      stopActiveAudio()
+      throw playError
+    }
   } catch (error) {
     if (run !== token) return
     problem = error instanceof Error ? `${error.message} Using your device voice instead.` : 'The Intros voice is unavailable. Using your device voice instead.'

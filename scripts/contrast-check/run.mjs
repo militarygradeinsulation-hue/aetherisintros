@@ -121,9 +121,18 @@ async function check(page, name, selector, prefix, { inline = false, field = fal
 
 async function open(viewport) {
   const page = await browser.newPage({ viewport })
-  page.on('pageerror', e => console.log('  ! page error:', e.message.slice(0, 160)))
+  page.on('pageerror', e => console.log('  ! page error:', e.message.slice(0, 400)))
+  page.on('console', message => { if (message.type() === 'error') console.log('  ! browser console:', message.text().slice(0, 500)) })
+  page.on('response', response => { if (response.status() >= 400 && response.url().startsWith(base)) console.log('  ! local HTTP:', response.status(), response.url().slice(0, 230)) })
   await page.goto(`${base}/demo`, { waitUntil: 'networkidle', timeout: 120_000 })
-  await page.waitForSelector('.ix-root', { timeout: 60_000 })
+  try {
+    await page.waitForSelector('.ix-root', { timeout: 60_000 })
+  } catch (error) {
+    console.log('  ! actual page:', page.url())
+    console.log('  ! body snapshot:', (await page.locator('body').innerText({ timeout: 5000 }).catch(() => '[unavailable]')).slice(0, 1400))
+    console.log('  ! HTML head:', (await page.locator('head').innerHTML({ timeout: 5000 }).catch(() => '[unavailable]')).slice(-1800))
+    throw error
+  }
   return page
 }
 

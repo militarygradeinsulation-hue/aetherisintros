@@ -7,6 +7,8 @@
  * member what to do next instead of showing invented activity.
  */
 import { supabase } from '@/integrations/supabase/client'
+import { reportClientError } from '@/lib/error-report'
+import { parseBusinessDetails } from './business-posts'
 import { calculateConnectionScore, determineRadarState } from './lib/engine'
 import type { Directory } from './db'
 import type { Member, NetworkAsk, Post, Thread } from './social'
@@ -36,10 +38,11 @@ export interface LiveProfileRow {
   building: string
   open_to: string[]
   scheduling_enabled: boolean
+  verified_role: 'ceo' | 'founder' | 'owner' | 'managing_partner' | 'principal' | 'other' | null
 }
 
-const PROFILE_COLUMNS =
-  'id, name, initials, title, company, location, focus, thesis, bio, looking_for, can_help_with, want_to_meet, availability, industries, expertise, avatar_url, onboarded, created_at, what_i_do, building, open_to, scheduling_enabled'
+export const PROFILE_COLUMNS =
+  'id, name, initials, title, company, location, focus, thesis, bio, looking_for, can_help_with, want_to_meet, availability, industries, expertise, avatar_url, onboarded, created_at, what_i_do, building, open_to, scheduling_enabled, verified_role'
 
 const initialsOf = (name: string) =>
   name.trim().split(/\s+/).slice(0, 2).map(part => part[0] ?? '').join('').toUpperCase() || 'M'
@@ -50,8 +53,40 @@ const overlap = (a: string[], b: string[]) => {
   return a.filter(x => lower.has(x.toLowerCase())).length
 }
 
+const memberRole = (role: LiveProfileRow['verified_role']): Member['role'] => {
+  switch (role) {
+    case 'ceo': return 'Executive'
+    case 'founder':
+    case 'owner': return 'Founder'
+    case 'managing_partner':
+    case 'principal': return 'Executive'
+    default: return 'Operator'
+  }
+}
+
+/** Member-specific, private relational evidence provided by the guarded 0083 RPC.
+ * Absence of evidence means "unknown", never "just spoke today".
+ */
+export type RelationshipEvidence = {
+  member_id: string
+  message_count: number
+  last_message_at: string | null
+  introduction_count: number
+  accepted_intro_count: number
+  joined_meetings: number
+  last_meeting_at: string | null
+  connection_saved: boolean
+}
+
+const knownRecency = (e?: RelationshipEvidence): number | null => {
+  const dates = [e?.last_message_at, e?.last_meeting_at]
+    .map(value => value ? Date.parse(value) : NaN)
+    .filter(Number.isFinite)
+  return dates.length ? Math.max(0, Math.floor((Date.now() - Math.max(...dates)) / 86400000)) : null
+}
+
 /** Honest, evidence-only scoring: derived from stated fields, never invented. */
-function scoreAgainst(row: LiveProfileRow, me: LiveProfileRow | null): ScoreBreakdown {
+function scoreAgainst(row: LiveProfileRow, me: LiveProfileRow | null, evidence?: RelationshipEvidence): ScoreBreakdown {
   const myIndustries = me?.industries ?? []
   const myExpertise = me?.expertise ?? []
   const myNeeds = me ? list(me.looking_for) : []
@@ -69,16 +104,17 @@ function scoreAgainst(row: LiveProfileRow, me: LiveProfileRow | null): ScoreBrea
     strategicFit: cap(24 + industryFit * 18 + skillFit * 8),
     mutualValue: cap(20 + theyHelpMe * 22 + iHelpThem * 22),
     timing: cap(row.availability ? 46 : 24),
-    trust: 20,
-    relationshipStrength: 10,
+    trust: cap((evidence?.accepted_intro_count ?? 0) * 25 + (evidence?.joined_meetings ?? 0) * 15 + Math.min(evidence?.message_count ?? 0, 10) * 3),
+    relationshipStrength: cap((evidence?.message_count ?? 0) * 8 + (evidence?.joined_meetings ?? 0) * 15 + (evidence?.accepted_intro_count ?? 0) * 10),
     decisionInfluence: cap(row.title ? 46 : 20),
     opportunityValue: cap(20 + (theyHelpMe + iHelpThem) * 14),
     friction: cap(58 - industryFit * 8 - theyHelpMe * 6),
   }
 }
 
-export function profileToMember(row: LiveProfileRow, me: LiveProfileRow | null): Member {
-  const score = scoreAgainst(row, me)
+export function profileToMember(row: LiveProfileRow, me: LiveProfileRow | null, evidence?: RelationshipEvidence): Member {
+  const score = scoreAgainst(row, me, evidence)
+  const lastInteractionDays = knownRecency(evidence)
   const partial = {
     id: row.id,
     name: row.name || 'Member',
@@ -90,8 +126,8 @@ export function profileToMember(row: LiveProfileRow, me: LiveProfileRow | null):
     needs: list(row.looking_for),
     offers: list(row.can_help_with),
     bio: row.bio,
-    lastInteractionDays: 0,
-    relationshipStatus: 'new' as const,
+    lastInteractionDays,
+    relationshipStatus: ((evidence?.joined_meetings ?? 0) > 1 || (evidence?.message_count ?? 0) > 8 ? 'strong' : (evidence?.message_count ?? 0) > 0 || (evidence?.accepted_intro_count ?? 0) > 0 ? 'active' : 'new') as Member['relationshipStatus'],
     score,
     scoreTotal: calculateConnectionScore(score),
     whyThem: row.looking_for ? `They are looking for ${row.looking_for}` : row.focus || 'No stated focus yet.',
@@ -101,15 +137,16 @@ export function profileToMember(row: LiveProfileRow, me: LiveProfileRow | null):
     nextAction: 'Open with the specific reason this relationship makes sense for both sides.',
     dontDo: 'No relationship history yet — do not assume context you have not earned.',
     confidence: row.onboarded ? 60 : 30,
-    role: 'Operator' as const,
+    role: memberRole(row.verified_role),
     industry: row.industries[0] ?? '',
     expertise: row.expertise,
     focus: row.focus,
     thesis: row.thesis,
     availability: row.availability,
     mutuals: [],
-    introState: 'recommended' as const,
-    joined: new Date(row.created_at).getFullYear().toString(),
+    introState: (evidence?.accepted_intro_count ? 'introduced' : evidence?.introduction_count ? 'requested' : 'recommended') as Member['introState'],
+    joined: row.created_at && Number.isFinite(Date.parse(row.created_at))
+      ? new Date(row.created_at).getFullYear().toString() : '',
     avatarUrl: row.avatar_url ?? undefined,
     whatIDo: row.what_i_do,
     building: row.building,
@@ -132,9 +169,25 @@ const emptyDirectory: Directory = { members: [], posts: [], asks: [], signals: [
 
 export { emptyDirectory }
 
+/** The database exposes only approved, visible public profile fields and the caller's own profile. */
+export async function loadVisibleMemberProfiles(ids: string[] | null = null, limit = 100, offset = 0): Promise<LiveProfileRow[]> {
+  // The permission-checked RPC is installed by migration 0080.
+  // The generated Supabase type is updated on the next schema refresh.
+  const { data, error } = await (supabase as any).rpc('visible_member_profiles', {
+    p_member_ids: ids, p_limit: limit, p_offset: offset,
+  }) // eslint-disable-line @typescript-eslint/no-explicit-any
+  if (error) throw new Error(error.message)
+  return ((data ?? []) as Array<{ profile: LiveProfileRow }>).map(row => row.profile)
+}
+
 export async function loadMyProfile(userId: string): Promise<LiveProfileRow | null> {
-  const { data } = await supabase.from('profiles').select(PROFILE_COLUMNS).eq('id', userId).maybeSingle()
-  return (data ?? null) as LiveProfileRow | null
+  try {
+    const rows = await loadVisibleMemberProfiles([userId], 1)
+    return rows.find(row => row.id === userId) ?? null
+  } catch (error) {
+    reportClientError(error, 'live-self-profile-read')
+    return null
+  }
 }
 
 /**
@@ -142,19 +195,37 @@ export async function loadMyProfile(userId: string): Promise<LiveProfileRow | nu
  * Members = other approved profiles (RLS already restricts this to approved
  * accounts). Posts/asks = real authored rows. Threads = real conversations.
  */
-export async function loadLiveDirectory(userId: string): Promise<{ directory: Directory; me: LiveProfileRow | null }> {
+export async function loadLiveDirectory(userId: string): Promise<{ directory: Directory; me: LiveProfileRow | null; failed: boolean }> {
   try {
     const [profileRows, postRows, askRows, threadRows] = await Promise.all([
-      supabase.from('profiles').select(PROFILE_COLUMNS),
+      loadVisibleMemberProfiles(null, 100),
       supabase.from('posts').select('*').eq('is_demo', false).not('author_id', 'is', null).order('created_at', { ascending: false }),
       supabase.from('asks').select('*').eq('is_demo', false).not('author_id', 'is', null).order('created_at', { ascending: false }),
       supabase.from('dm_threads').select('*').order('updated_at', { ascending: false }),
     ])
 
-    const profiles = (profileRows.data ?? []) as unknown as LiveProfileRow[]
+    for (const [source, response] of [
+      ['network posts', postRows], ['network asks', askRows],
+      ['private conversations', threadRows],
+    ] as const) {
+      if (response.error) {
+        reportClientError(response.error, `live-${source.replaceAll(' ', '-')}-read`)
+        throw new Error(`Could not load ${source}: ${response.error.message}`)
+      }
+    }
+
+    // The overview is intentionally capped; the full directory uses paginated server search.
+    const profiles = profileRows
     const me = profiles.find(p => p.id === userId) ?? null
     const others = profiles.filter(p => p.id !== userId)
-    const members = others.map(row => profileToMember(row, me))
+    let relationRows: RelationshipEvidence[] = []
+    if (others.length) {
+      const relation = await (supabase as any).rpc('my_relationship_evidence', { p_members: others.map(x => x.id) }) // eslint-disable-line @typescript-eslint/no-explicit-any
+      if (relation.error) reportClientError(relation.error, 'relationship-evidence')
+      else relationRows = relation.data ?? []
+    }
+    const relationById = new Map(relationRows.map(x => [x.member_id, x]))
+    const members = others.map(row => profileToMember(row, me, relationById.get(row.id)))
     // Bands of members who chose to show them, for the small matching boost. Optional: an
     // error (e.g. before migration 0055 is applied) just means no boost.
     if (others.length) {
@@ -164,6 +235,11 @@ export async function loadLiveDirectory(userId: string): Promise<{ directory: Di
     }
 
     const threadIds = (threadRows.data ?? []).map(t => t.id)
+    const unreadResponse = threadIds.length
+      ? await (supabase as any).rpc('my_unread_counts') // eslint-disable-line @typescript-eslint/no-explicit-any
+      : { data: [], error: null }
+    if (unreadResponse.error) reportClientError(unreadResponse.error, 'thread-unread-load')
+    const unreadByThread = new Map<string, number>(((unreadResponse.data ?? []) as Array<{ thread_id: string; unread: number }>).map(r => [r.thread_id, r.unread]))
     const messageRows = threadIds.length
       ? (await supabase.from('dm_messages').select('*').in('thread_id', threadIds).order('created_at')).data ?? []
       : []
@@ -173,7 +249,7 @@ export async function loadLiveDirectory(userId: string): Promise<{ directory: Di
       return {
         id: t.id,
         memberId: peer,
-        unread: false,
+        unread: (unreadByThread.get(t.id) ?? 0) > 0,
         introContext: t.intro_context ?? '',
         commitment: '',
         suggested: '',
@@ -198,6 +274,7 @@ export async function loadLiveDirectory(userId: string): Promise<{ directory: Di
       responses: r.response_count ?? 0,
       media: (r.media ?? []) as unknown as Post['media'],
       visibility: (r.visibility ?? 'network') as Post['visibility'],
+      ...(parseBusinessDetails(r.kind, r.business) ? { business: parseBusinessDetails(r.kind, r.business)! } : {}),
     }))
 
     const asks: NetworkAsk[] = (askRows.data ?? []).map(r => ({
@@ -216,10 +293,10 @@ export async function loadLiveDirectory(userId: string): Promise<{ directory: Di
       ...(r.author_id === userId ? { mine: true } : {}),
     }))
 
-    return { directory: { members, posts, asks, signals: [], threads, learnings: [] }, me }
+    return { directory: { members, posts, asks, signals: [], threads, learnings: [] }, me, failed: false }
   } catch (error) {
-    console.error('live network read failed', error)
-    return { directory: emptyDirectory, me: null }
+    reportClientError(error, 'live-directory-read')
+    return { directory: emptyDirectory, me: null, failed: true }
   }
 }
 
@@ -278,8 +355,8 @@ export async function journalUrl(path: string): Promise<string | null> {
   return data.signedUrl
 }
 
-const fire = (work: PromiseLike<unknown>) => {
-  void Promise.resolve(work).catch(error => console.error('live write failed', error))
+const fire = (work: PromiseLike<unknown>, where = 'live-write') => {
+  void Promise.resolve(work).catch(error => reportClientError(error, where))
 }
 
 /** Find or create the single conversation between two approved members. */
@@ -293,7 +370,7 @@ export async function ensureThread(userId: string, peerId: string, context = '')
     .select('id')
     .maybeSingle()
   if (created.error) {
-    console.error('thread create failed', created.error)
+    reportClientError(created.error, 'thread-create')
     const retry = await supabase.from('dm_threads').select('id').eq('member_a', a!).eq('member_b', b!).maybeSingle()
     return retry.data?.id ?? null
   }
@@ -303,35 +380,59 @@ export async function ensureThread(userId: string, peerId: string, context = '')
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
 
 /** `id` (when a uuid) keeps the sent row's id equal to the local message, so read receipts line up. */
-export function sendLiveMessage(threadId: string, senderId: string, text: string, id?: string) {
-  fire(supabase.from('dm_messages').insert({ ...(id && UUID.test(id) ? { id } : {}), thread_id: threadId, sender_id: senderId, text }))
-  fire(supabase.from('dm_threads').update({ updated_at: new Date().toISOString() }).eq('id', threadId))
+/** Durable message acknowledgement. Retrying with the same UUID cannot deliver twice. */
+export async function sendLiveMessage(threadId: string, senderId: string, text: string, id?: string): Promise<string> {
+  if (!UUID.test(threadId) || (id && !UUID.test(id)) || !text.trim()) {
+    throw new Error('Not sent. Choose a valid conversation and write a message.')
+  }
+  const messageId = id ?? crypto.randomUUID()
+  const { data, error } = await supabase.from('dm_messages')
+    .insert({ id: messageId, thread_id: threadId, sender_id: senderId, text: text.trim() })
+    .select('id').maybeSingle()
+  if (error) {
+    if (error.code === '23505') {
+      const prior = await supabase.from('dm_messages')
+        .select('id').eq('id', messageId).eq('thread_id', threadId).eq('sender_id', senderId).maybeSingle()
+      if (!prior.error && prior.data?.id === messageId) return messageId
+    }
+    reportClientError(error, 'message-send')
+    throw new Error('Not sent. The server did not confirm this message. Retry.')
+  }
+  if (!data?.id) throw new Error('Not sent. The server did not confirm this message. Retry.')
+  // The message is already durable; a nonessential thread timestamp failure must
+  // not mislabel an actual delivered message as failed.
+  const touched = await supabase.from('dm_threads').update({ updated_at: new Date().toISOString() }).eq('id', threadId)
+  if (touched.error) reportClientError(touched.error, 'thread-touch')
+  return data.id
 }
 
-export function mirrorFollow(userId: string, peerId: string, kind: 'follow' | 'connection' | 'saved', on: boolean) {
-  if (!/^[0-9a-f-]{36}$/i.test(peerId)) return
-  fire(on
+export async function mirrorFollow(userId: string, peerId: string, kind: 'follow' | 'connection' | 'saved', on: boolean): Promise<void> {
+  if (!UUID.test(peerId) || !UUID.test(userId)) throw new Error('This connection is not a live member.')
+  const result = await (on
     ? supabase.from('follows').upsert({ follower_id: userId, followee_id: peerId, kind }, { onConflict: 'follower_id,followee_id,kind' })
     : supabase.from('follows').delete().eq('follower_id', userId).eq('followee_id', peerId).eq('kind', kind))
+  if (result.error) { reportClientError(result.error, 'relationship-write'); throw new Error('Connection was not saved.') }
 }
 
-export function saveComment(postId: string, authorId: string, text: string) {
-  fire(supabase.from('post_comments').insert({ post_id: postId, author_id: authorId, text }))
+export async function saveComment(postId: string, authorId: string, text: string): Promise<void> {
+  const result = await supabase.from('post_comments').insert({ post_id: postId, author_id: authorId, text })
+  if (result.error) { reportClientError(result.error, 'comment-write'); throw new Error('Comment was not saved.') }
 }
 
-export function saveReaction(postId: string, userId: string, kind: 'like' | 'save' | 'repost', on: boolean) {
-  fire(on
+export async function saveReaction(postId: string, userId: string, kind: 'like' | 'save' | 'repost', on: boolean): Promise<void> {
+  const result = await (on
     ? supabase.from('post_reactions').upsert({ post_id: postId, user_id: userId, kind }, { onConflict: 'post_id,user_id,kind' })
     : supabase.from('post_reactions').delete().eq('post_id', postId).eq('user_id', userId).eq('kind', kind))
+  if (result.error) { reportClientError(result.error, 'reaction-write'); throw new Error('Reaction was not saved.') }
 }
 
 /** Create the conversation row with a caller-supplied id (optimistic UI). */
 export function createLiveThread(id: string, userId: string, peerId: string, context: string) {
   if (!/^[0-9a-f-]{36}$/i.test(peerId)) return
   const [a, b] = [userId, peerId].sort()
-  fire(supabase.from('dm_threads').insert({ id, member_a: a!, member_b: b!, created_by: userId, intro_context: context }))
+  fire(supabase.from('dm_threads').insert({ id, member_a: a!, member_b: b!, created_by: userId, intro_context: context }), 'thread-create')
 }
 
 export function saveLiveAskResponse(askId: string, userId: string, text: string) {
-  fire(supabase.from('ask_responses').insert({ ask_id: askId, user_id: userId, text }))
+  fire(supabase.from('ask_responses').insert({ ask_id: askId, user_id: userId, text }), 'ask-response-write')
 }

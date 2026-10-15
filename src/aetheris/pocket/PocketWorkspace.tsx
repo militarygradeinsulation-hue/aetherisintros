@@ -1,6 +1,8 @@
 import { useEffect, useMemo, useState } from 'react'
 import { Plus, Trash2, Download, Monitor, Tablet, Smartphone, Volume2 } from 'lucide-react'
 import { readAloud, unlockAudio } from '../voice'
+import { PrivateLibrary } from '../library/PrivateLibrary'
+import { BlueprintWorkbench } from '../business-execution/BlueprintWorkbench'
 
 type Kind = 'portal' | 'briefing' | 'concept' | 'calculator' | 'opportunity'
 interface Idea { id: string; kind: Kind; title: string; headline: string; body: string; points: string[]; price: number; units: number; updatedAt: string }
@@ -39,6 +41,7 @@ function coach(idea: Idea): string {
 }
 
 export function PocketWorkspace() {
+  const [section, setSection] = useState<'ideas' | 'library' | 'blueprints'>('ideas')
   const key = useOwnerKey()
   const [ideas, setIdeas] = useState<Idea[]>([])
   const [activeId, setActiveId] = useState<string | null>(null)
@@ -61,12 +64,19 @@ export function PocketWorkspace() {
   return <section className="pk">
     <header className="pk-head">
       <span className="eyebrow">YOUR POCKET · PRIVATE TO YOU</span>
-      <h1>Build an idea <em>before you pitch it.</em></h1>
-      <p>Start from a shape, edit it in place, and see it on desktop, tablet and phone. Saved on this device under your account.</p>
-      <div className="pk-starters">{(Object.keys(kinds) as Kind[]).map(k => <button key={k} className="btn secondary" onClick={() => add(k)}><Plus size={13} />{kinds[k].label}</button>)}</div>
+      <h1>Your private <em>working space.</em></h1>
+      <p>Shape ideas, keep a private Rolodex, and build project blueprints before anything becomes public, shared, or transactional.</p>
+      <nav className="ops-tabs" aria-label="Pocket sections">
+        <button type="button" className={section === 'ideas' ? 'active' : ''} onClick={() => setSection('ideas')}>Ideas</button>
+        <button type="button" className={section === 'library' ? 'active' : ''} onClick={() => setSection('library')}>Library & Rolodex</button>
+        <button type="button" className={section === 'blueprints' ? 'active' : ''} onClick={() => setSection('blueprints')}>Blueprints</button>
+      </nav>
+      {section === 'ideas' && <div className="pk-starters">{(Object.keys(kinds) as Kind[]).map(k => <button key={k} className="btn secondary" onClick={() => add(k)}><Plus size={13} />{kinds[k].label}</button>)}</div>}
     </header>
 
-    {!ideas.length ? <p className="dx-empty">Your pocket is empty. Pick a starting shape above.</p> : <div className="pk-grid">
+    {section === 'library' && <PrivateLibrary />}
+    {section === 'blueprints' && <BlueprintWorkbench />}
+    {section === 'ideas' && (!ideas.length ? <p className="dx-empty">Your pocket is empty. Pick a starting shape above.</p> : <div className="pk-grid">
       <aside className="pk-list">{ideas.map(i => <button key={i.id} className={i.id === activeId ? 'active' : ''} onClick={() => setActiveId(i.id)}>
         <span className="eyebrow">{kinds[i.kind].label.toUpperCase()}</span><strong>{i.title}</strong></button>)}</aside>
       {active && <>
@@ -98,6 +108,6 @@ export function PocketWorkspace() {
           </div>
         </div>
       </>}
-    </div>}
+    </div>)}
   </section>
 }
