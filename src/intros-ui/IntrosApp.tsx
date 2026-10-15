@@ -329,7 +329,7 @@ export default function App({ mode = 'demo' }: { mode?: 'demo' | 'live' }) {
       {mode === 'live' && <MembershipCardMailer />}
       <NewsTicker onOpen={() => handleNavigate('news')} />
       {/* Primary Page Views */}
-      <main className="flex-1">
+      <main className="flex-1 arch-product-main" data-arch-page={activePage}>
         {activePage === 'home' && (
           <HomeFeedView
             posts={feedPosts}
