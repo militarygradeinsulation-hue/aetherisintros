@@ -5,7 +5,7 @@
 GRANT USAGE ON SCHEMA public TO authenticated;
 GRANT SELECT, INSERT, UPDATE, DELETE ON TABLE public.posts, public.asks TO authenticated;
 GRANT SELECT, INSERT ON TABLE public.ask_responses TO authenticated;
-GRANT SELECT, INSERT, UPDATE, DELETE ON TABLE public.post_comments, public.post_reactions TO authenticated;
+-- Comments and reactions retain their existing grants/policies from the live schema.
 
 -- Read/write RPC permissions. These functions independently check auth.uid(),
 -- approved membership and ownership/counterpart visibility. If any are missing
