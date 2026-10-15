@@ -1,0 +1,339 @@
+/*
+ * ASK INTROS — THE MESSAGE STANDARD
+ *
+ * A single calm, readable, light-first visual system inspired by Messages:
+ * mist canvas, warm white surfaces, slate typography, blue interactions,
+ * copper editorial details, clearly differentiated status colors.
+ *
+ * Applied to the entire app: Home, People, Intros, Messages, Profiles,
+ * Insights, Connections, member workspaces/CRM/tools, menus, dialogs and
+ * public access controls. Preserve intentional inverse artwork/chart surfaces.
+ */
+:root[data-theme="light"] {
+  --architect-canvas:#edf2f2;
+  --architect-panel:#fffdfa;
+  --architect-raised:#f3f6f5;
+  --architect-ink:#203139;
+  --architect-subtle:#506169;
+  --architect-label:#77502e;
+  --architect-rule:#cbd7da;
+  --architect-wash:rgba(40,88,125,.035);
+  --architect-copper:#77502e;
+  --architect-copper-text:#77502e;
+  --architect-inverse:#fffdfa;
+  --architect-input:#fffefa;
+  --architect-shadow:0 10px 32px rgba(8,23,27,.065);
+  --architect-grid:
+    linear-gradient(90deg,rgba(61,81,82,.028) 1px,transparent 1px),
+    linear-gradient(rgba(61,81,82,.028) 1px,transparent 1px);
+}
+.ix-root {
+  --ui-page:#edf2f2;
+  --ui-panel:#fffdfa;
+  --ui-inset:#f3f6f5;
+  --ui-raised:#e8f1f5;
+  --ui-selected:#e1edf5;
+  --ui-hover:#e8f1f5;
+  --ui-border:#cbd7da;
+  --ui-ink:#203139;
+  --ui-body:#304650;
+  --ui-muted:#506169;
+  --ui-accent:#77502e;
+  --ui-primary:#28587d;
+  --ui-primary-hover:#1f4769;
+  --ui-primary-ink:#fff;
+  --ui-note:#fff3dd;
+  --ui-shadow:0 10px 32px rgba(8,23,27,.065);
+}
+:root[data-theme="dark"] .ix-root {
+  --ui-page:#111719;
+  --ui-panel:#1b2526;
+  --ui-inset:#202c2e;
+  --ui-raised:#263338;
+  --ui-selected:#2b414b;
+  --ui-hover:#304147;
+  --ui-border:rgba(225,221,210,.20);
+  --ui-ink:#f3f4ef;
+  --ui-body:#e0e5e2;
+  --ui-muted:#c2ccc9;
+  --ui-accent:#d9b58e;
+  --ui-primary:#477fa5;
+  --ui-primary-hover:#376e94;
+  --ui-primary-ink:#fff;
+  --ui-note:#443a2c;
+  --ui-shadow:0 10px 32px rgba(0,0,0,.13);
+}
+:root[data-theme="light"] .ix-root {
+  --sys-bg:var(--ui-page);
+  --sys-bg-dark:var(--ui-page);
+  --sys-panel:var(--ui-panel);
+  --sys-tile:var(--ui-panel);
+  --sys-tile-inner:var(--ui-inset);
+  --sys-line:var(--ui-border);
+  --sys-panel-line:var(--ui-border);
+  --sys-ink:var(--ui-ink);
+  --sys-ink-dim:var(--ui-muted);
+  --sys-card:var(--ui-panel);
+  --sys-card-ink:var(--ui-ink);
+  --sys-accent:var(--ui-primary);
+  --acc:var(--ui-primary);
+  --acc-bright:#396d91;
+  --acc-strong:#204d70;
+  --acc-deep:#1d3d53;
+  --acc-wash:rgba(40,88,125,.10);
+  --acc-line:rgba(40,88,125,.29);
+  --acc-glow:rgba(40,88,125,.14);
+  --acc-btn:rgba(40,88,125,.10);
+  --acc-btn-hover:rgba(40,88,125,.20);
+  --acc-btn-line:rgba(40,88,125,.38);
+  background-color:var(--ui-page)!important;
+  color:var(--ui-ink)!important;
+}
+:root[data-theme="light"] .ix-root .ix-global-header,
+:root[data-theme="light"] .ix-root .ix-mobile-nav,
+:root[data-theme="light"] .ix-root .ix-desktop-more-menu,
+:root[data-theme="light"] .ix-root .ix-mobile-sheet {
+  background:var(--ui-panel)!important;
+  color:var(--ui-ink)!important;
+  border-color:var(--ui-border)!important;
+}
+:root[data-theme="light"] .ix-root .ix-global-header
+  :is(button,a,nav button,span) {
+  color:var(--ui-ink);
+}
+:root[data-theme="light"] .ix-root .ix-desktop-nav-link {
+  color:var(--ui-body)!important;
+  background:var(--ui-panel);
+  border-color:var(--ui-border);
+}
+:root[data-theme="light"] .ix-root .ix-desktop-nav-link:is(.is-active,:hover) {
+  color:var(--ui-primary)!important;
+  border-color:var(--ui-primary);
+  background:var(--ui-selected);
+}
+:root[data-theme="light"] .ix-root .ix-mobile-nav-item:is([aria-current="page"],.is-active) {
+  color:var(--ui-primary)!important;
+}
+:root[data-theme="light"] .ix-root .arch-product-main {
+  background-color:var(--ui-page);
+  color:var(--ui-ink);
+}
+.ix-root .arch-product-main :is(.ix-messages,.ix-live-messages) {
+  /* Messages remains the reference palette, with no extra outer card shadow. */
+  box-shadow:var(--ui-shadow);
+}
+.ix-root .arch-product-main :is(.ix-view-surface,.ix-directory-panel,.ix-feed-panel,.ix-intros-panel,.ix-insights-panel) {
+  background:var(--ui-panel);
+  color:var(--ui-ink);
+  border-color:var(--ui-border);
+}
+.ix-root .arch-product-main :is(.home-board-tile,.sys-tile,.module,.mod,
+  .feed-card,.post-card,.match-report,.need-case,.intro-recommendation,.home-widget,
+  .attention-panel,.profile-hero,.profile-settings,.messages-layout,.home-matches,
+  .home-education) {
+  border-color:var(--ui-border);
+  background-color:var(--ui-panel);
+  color:var(--ui-ink);
+  box-shadow:var(--ui-shadow);
+}
+:root[data-theme="light"] .ix-root .arch-product-main
+  :is([class~="bg-[#0E121A]"],[class~="bg-[#131722]"],
+      [class~="bg-[#151923]"],[class~="bg-[#151A24]"],
+      [class~="bg-[#111622]"],[class~="bg-[#111622]/95"],
+      [class~="bg-[#151D2C]"],[class~="bg-[#11151E]"],
+      [class~="bg-[#0D1117]"],[class~="bg-[#0E1218]"],
+      [class~="bg-[#0C1017]"],[class~="bg-[#0B0E13]"],
+      [class~="bg-[#090C10]"],[class~="bg-[#0B0D0F]"]) {
+  background-color:var(--ui-panel)!important;
+  color:var(--ui-ink);
+  border-color:var(--ui-border);
+}
+:root[data-theme="light"] .ix-root .arch-product-main
+  :is([class~="bg-white/[0.02]"],[class~="bg-white/[0.03]"],
+      [class~="bg-white/5"],[class~="bg-white/10"],
+      [class~="bg-black/20"]) {
+  background-color:var(--ui-inset)!important;
+}
+:root[data-theme="light"] .ix-root .arch-product-main
+  :is([class~="text-white"],[class~="text-[#F2EEE6]"],
+      [class~="text-[#F1EFE9]"],[class~="text-[#E2E8F0]"]) {
+  color:var(--ui-ink)!important;
+}
+:root[data-theme="light"] .ix-root .arch-product-main
+  :is([class~="text-[#CBD5E1]"]) {color:var(--ui-body)!important;}
+:root[data-theme="light"] .ix-root .arch-product-main
+  :is([class~="text-[#9CA3AF]"],[class~="text-[#6B7280]"],
+      [class~="text-[#9EA4AC]"]) {color:var(--ui-muted)!important;}
+:root[data-theme="light"] .ix-root .arch-product-main
+  :is([class~="text-[#F5B027]"],[class~="text-[#FFC85C]"],
+      [class~="text-[#C78522]"]) {color:var(--ui-accent)!important;}
+:root[data-theme="light"] .ix-root .arch-product-main
+  :is([class~="border-white/10"],[class~="border-white/15"],
+      [class~="border-white/5"]) {border-color:var(--ui-border)!important;}
+:root[data-theme="light"] .ix-root .arch-product-main
+  :is([class~="bg-[#F5B027]"],[class~="bg-[#C78522]"],
+      [class~="bg-[#A96F1B]"]) {
+  background-color:var(--ui-primary)!important;
+  border-color:var(--ui-primary)!important;
+  color:var(--ui-primary-ink)!important;
+}
+:root[data-theme="light"] .ix-root .arch-product-main
+  :is(button,a)[class~="bg-[#F5B027]"]:hover,
+:root[data-theme="light"] .ix-root .arch-product-main
+  :is(button,a)[class~="bg-[#C78522]"]:hover {
+  background-color:var(--ui-primary-hover)!important;
+  color:var(--ui-primary-ink)!important;
+}
+:root[data-theme="light"] .ix-root .arch-product-main
+  :is(button,a)[class*="bg-[var(--ui-primary)]"] {
+  background-color:var(--ui-primary)!important;
+  color:var(--ui-primary-ink)!important;
+}
+:root[data-theme="light"] .ix-root .arch-product-main
+  :is(button,a)[class*="bg-[var(--ui-primary)]"]:hover {
+  background-color:var(--ui-primary-hover)!important;
+}
+:root[data-theme="light"] .ix-root .arch-product-main
+  :is(input:not([type="checkbox"]):not([type="radio"]),textarea,select) {
+  color:var(--ui-ink);
+  background-color:var(--ui-panel);
+  border-color:var(--ui-border);
+}
+:root[data-theme="light"] .ix-root .arch-product-main
+  :is(input,textarea)::placeholder {color:var(--ui-muted);opacity:1;}
+:root[data-theme="light"] .ix-root .arch-product-main
+  :is(button,a,input,textarea,select):focus-visible {
+  outline:2px solid var(--ui-primary)!important;outline-offset:2px;
+}
+:root[data-theme="light"] .ix-root .ix-classic
+  :is(.app-shell,.workspace,.workspace-grid,.content,.social-shell) {
+  --night:var(--ui-page);
+  --raised:var(--ui-panel);
+  --graphite:var(--ui-inset);
+  --soft:var(--ui-ink);
+  --muted:var(--ui-muted);
+  --line-dark:var(--ui-border);
+  --cobalt:var(--ui-primary);
+  --cobalt-bright:#396d91;
+  --amber:var(--ui-accent);
+  --gold:var(--ui-accent);
+  background-color:var(--ui-page);
+  color:var(--ui-ink);
+}
+:root[data-theme="light"] .ix-root .ix-classic
+  :is(.module,.mod,.post-card,.feed-card,.home-widget,.topbar,.nav-rail,
+      .context-rail,.more-panel,.intel-drawer,.modal,.opportunity-clusters article,
+      .profile-settings,.profile-hero,.match-report,.need-case,.pro-credibility) {
+  background-color:var(--ui-panel);
+  color:var(--ui-ink);
+  border-color:var(--ui-border);
+}
+:root[data-theme="light"] .ix-root .ix-classic
+  :is(.nav-rail nav button,.topbar-dropmenu button,.context-person,.module-people button) {
+  color:var(--ui-body);
+}
+:root[data-theme="light"] .ix-root .ix-classic
+  :is(.nav-rail nav button,.topbar-dropmenu button,.context-person,.module-people button):hover {
+  background-color:var(--ui-selected);
+  color:var(--ui-ink);
+}
+:root[data-theme="light"] .ix-root
+  :is([role="dialog"],[role="menu"],.ix-desktop-more-menu,.ix-mobile-sheet) {
+  background-color:var(--ui-panel);
+  color:var(--ui-ink);
+  border-color:var(--ui-border);
+}
+:root[data-theme="light"] .ix-root
+  :is(.ix-mobile-sheet,.ix-desktop-more-menu)
+  :is(button,a) { color:var(--ui-ink); }
+:root[data-theme="light"] .ix-root .ix-mobile-sheet-item:hover {
+  background:var(--ui-selected);
+}
+/* A truly subtle drafting texture, not a grid that competes with text. */
+:root[data-theme="light"] .ix-root .arch-product-main {
+  background-image:
+    linear-gradient(90deg,rgba(61,81,82,.023) 1px,transparent 1px),
+    linear-gradient(rgba(61,81,82,.023) 1px,transparent 1px);
+  background-size:104px 104px;
+}
+/* Preserve error/success semantics and imagery / charts. */
+:root[data-theme="light"] .ix-root .arch-product-main
+  :is([class*="text-red-"],[class*="text-rose-"],[class*="text-[#E5484D]"]) {
+  color:#aa2d26!important;
+}
+:root[data-theme="light"] .ix-root .arch-product-main
+  :is([class*="text-green-"],[class*="text-emerald-"],[class*="text-[#3FB37F]"]) {
+  color:#236b46!important;
+}
+:root[data-theme="light"] .ix-root .arch-product-main
+  :is([class*="bg-red-"],[class*="bg-rose-"],[class*="bg-[#E5484D]"]) {
+  background-color:rgba(215,65,59,.12)!important;
+}
+:root[data-theme="light"] .ix-root .arch-product-main
+  :is([class*="bg-green-"],[class*="bg-emerald-"],[class*="bg-[#3FB37F]"]) {
+  background-color:rgba(42,137,88,.12)!important;
+}
+/* Portrait names/captions and immersive graphics must remain legible on media. */
+:root[data-theme="light"] .ix-root .arch-product-main
+  :is(.photo-overlay,.portrait-caption,.editorial-photo,[data-on-photo]) {
+  color:#f9f8f4!important;
+}
+:root[data-theme="light"] .ix-root .ix-editorial-signoff,
+:root[data-theme="light"] .ix-root .ix-editorial-signoff-nav {
+  background:var(--ui-panel);
+  border-color:var(--ui-border);
+  color:var(--ui-ink);
+}
+:root[data-theme="light"] .ix-root .ix-editorial-signoff-nav
+  :is(button,span) {color:var(--ui-muted);}
+:root[data-theme="light"] .ix-root .ix-editorial-signoff-nav button:hover {
+  color:var(--ui-primary);
+}
+@media(max-width:767px) {
+  :root[data-theme="light"] .ix-root .arch-product-main
+    :is(.sys-tile,.home-board-tile,.module,.mod,.feed-card,.post-card) {
+    box-shadow:none;
+  }
+  :root[data-theme="light"] .ix-root .arch-product-main :is(input,textarea,select) {
+    font-size:max(16px,1em);
+  }
+}
+@media print {
+  :root[data-theme="light"] .ix-root .arch-product-main {
+    background-image:none!important;
+  }
+}
+/* The public header's Apply for Access label must never disappear again. */
+:root[data-theme="dark"] .ael.ael-compact .ael-header .ael-nav-cta.ai-gradient-button {
+  --ai-button-surface:#ead5af;--ai-button-text:#1a2427;
+}
+:root[data-theme="light"] .ael.ael-compact .ael-header .ael-nav-cta.ai-gradient-button {
+  --ai-button-surface:#243139;--ai-button-text:#fff9ef;
+}
+:root[data-theme="dark"] .ael.ael-compact .ael-header .ael-nav-cta.ai-gradient-button,
+:root[data-theme="light"] .ael.ael-compact .ael-header .ael-nav-cta.ai-gradient-button {
+  color:var(--ai-button-text)!important;
+  background:
+    linear-gradient(135deg,var(--ai-button-surface),var(--ai-button-surface)) padding-box,
+    conic-gradient(from var(--ai-border-angle,0deg),#a36b43 0%,#e9c994 22%,#f4e9d5 42%,#7d9497 60%,#c99467 81%,#a36b43 100%) border-box!important;
+  text-shadow:none!important;
+  font-weight:750;
+  font-size:clamp(11px,1.05vw,13px)!important;
+  letter-spacing:.055em;
+  line-height:1.15;
+  min-height:46px;
+  max-width:100%;
+  padding:0 clamp(10px,1.7vw,19px);
+  justify-content:center;
+}
+:root[data-theme="dark"] .ael.ael-compact .ael-header .ael-nav-cta.ai-gradient-button:hover,
+:root[data-theme="light"] .ael.ael-compact .ael-header .ael-nav-cta.ai-gradient-button:hover {
+  color:var(--ai-button-text)!important;
+  filter:brightness(1.06);
+}
+@media(max-width:420px) {
+  :root[data-theme="dark"] .ael.ael-compact .ael-header .ael-nav-cta.ai-gradient-button,
+  :root[data-theme="light"] .ael.ael-compact .ael-header .ael-nav-cta.ai-gradient-button {
+    font-size:11px!important;letter-spacing:.015em;min-height:44px;padding-inline:10px;
+  }
+}
