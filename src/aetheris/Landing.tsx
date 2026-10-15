@@ -15,9 +15,9 @@ import './compact-homepage.css'
  * Navigation and access destinations are unchanged.
  */
 const photo = {
-  room: 'https://images.unsplash.com/photo-1772012454181-6eedf371b8ee?auto=format&fit=crop&w=2400&q=84',
-  gathering: 'https://images.unsplash.com/photo-1761489798175-e2076856a9f7?auto=format&fit=crop&w=1400&q=82',
-  membership: 'https://images.unsplash.com/photo-1757940809566-70aaf9501138?auto=format&fit=crop&w=1700&q=80',
+  room: 'https://images.unsplash.com/photo-1556761175-5973dc0f32e7?auto=format&fit=crop&w=2400&q=85',
+  gathering: 'https://images.unsplash.com/photo-1542744173-8e7e53415bb0?auto=format&fit=crop&w=1400&q=85',
+  membership: 'https://images.unsplash.com/photo-1552664730-d307ca884978?auto=format&fit=crop&w=1700&q=85',
 }
 
 function Photo({ src, alt, className = '', eager = false }: { src: string; alt: string; className?: string; eager?: boolean }) {
@@ -62,9 +62,9 @@ export default function Landing() {
     </header>
 
     <section className="ael-hero" id="ael-main" aria-labelledby="ael-hero-title">
-      <Photo src={photo.room} alt="Contemporary timber architecture with measured proportions" className="ael-hero-image" eager />
+      <Photo src={photo.room} alt="Professionals exchanging ideas during a focused executive meeting" className="ael-hero-image" eager />
       <div className="ael-hero-shade" aria-hidden="true" />
-      <div className="ael-architecture-meta" aria-hidden="true"><span>RELATIONSHIPS / BY DESIGN</span><span>ASK INTROS — STUDY 001</span></div>
+      <div className="ael-architecture-meta" aria-hidden="true"><span>RELATIONSHIPS / BY DESIGN</span><span>ASK INTROS — CONNECTION 001</span></div>
       <div className="ael-hero-content">
         <p className="ael-kicker ael-kicker-light"><span className="ael-dash" /> Relationships by design</p>
         <h1 id="ael-hero-title">The right room <em>changes everything.</em></h1>
@@ -90,8 +90,8 @@ export default function Landing() {
           <Link className="ael-underlink" to="/founder-story">Why we built it <ArrowUpRight aria-hidden="true" size={16} /></Link>
         </div>
         <figure className="ael-compact-story-photo">
-          <Photo src={photo.gathering} alt="Sculptural modern architecture with a flowing wooden roof" />
-          <figcaption>FIG 02 / BUILT WITH INTENTION</figcaption>
+          <Photo src={photo.gathering} alt="A small leadership group collaborating around a meeting table" />
+          <figcaption>FIG 02 / CONVERSATIONS WITH PURPOSE</figcaption>
         </figure>
       </div>
       <div className="ael-compact-method" id="approach" aria-labelledby="ael-approach-title">
@@ -109,7 +109,7 @@ export default function Landing() {
     </section>
 
     <section className="ael-membership ael-compact-membership" id="membership" aria-labelledby="ael-membership-title">
-      <Photo src={photo.membership} alt="Warmly illuminated contemporary wood-and-glass architecture" className="ael-compact-membership-image" />
+      <Photo src={photo.membership} alt="Business leaders discussing ideas and potential partnerships at a private meeting" className="ael-compact-membership-image" />
       <div className="ael-compact-membership-content">
         <div>
           <span className="ael-fine-label">MEMBERSHIP / ASK INTROS</span>
