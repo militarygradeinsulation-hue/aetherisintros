@@ -35,6 +35,8 @@ import { AetherisAppSurface, AetherisAssistantSurface } from '@/aetheris/App';
 import { VoiceBar } from '@/aetheris/VoiceBar';
 import { SelectionReader } from '@/aetheris/SelectionReader';
 import { LiveMessagesView } from './views/LiveMessagesView';
+import { InteractiveRelationshipTour } from '@/aetheris/InteractiveRelationshipTour';
+import './mobile-refinements.css';
 import { useUnreadCounts } from '@/aetheris/read-receipts';
 import '@/aetheris/styles.css';
 import '@/aetheris/architectural-system.css';
@@ -325,6 +327,7 @@ export default function App({ mode = 'demo' }: { mode?: 'demo' | 'live' }) {
         }} /> : undefined}
       />
 
+      {mode !== 'live' && <InteractiveRelationshipTour />}
       {mode === 'live' && <LiveMembers onMembers={setMembers} onError={setLiveDirectoryError} />}
       {mode === 'live' && <MeetingReminderBanner onJoin={() => handleNavigate('meetings')} />}
       {mode === 'live' && <MembershipCardMailer />}
