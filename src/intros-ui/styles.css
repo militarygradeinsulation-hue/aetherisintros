@@ -753,3 +753,22 @@
 .ix-root :is(input,textarea,select):focus-visible { outline:2px solid #f4a125; outline-offset:2px; }
 .ix-root .ask-intros-lockup--compact { width:clamp(175px,16vw,235px); max-height:none; }
 @media(max-width:680px) { .ix-root .ask-intros-lockup--compact { width:150px; } }
+
+
+/* HALFTONE NIGHT / member network. Scoped so charts and statuses retain meaning. */
+.ix-root {
+  --sys-bg:#0c0c0b; --sys-bg-dark:#0c0c0b;
+  --sys-tile:#181715; --sys-tile-inner:#201d1a; --sys-panel:#191815;
+  --sys-ink:#e9e4da; --sys-ink-dim:#aaa398; --sys-line:rgba(233,228,218,.15);
+  --sys-card:#eee9e1; --sys-card-ink:#181512;
+  --sys-accent:#e9762b; --sys-warn:#e9762b;
+}
+.ix-root :is(header,aside,.drawer-panel) { border-color:rgba(233,228,218,.17); }
+.ix-root .sys-tile { background:#181715; border-color:rgba(233,228,218,.15); }
+.ix-root .sys-tile:hover { border-color:rgba(233,118,43,.50); box-shadow:0 10px 28px rgba(0,0,0,.25); }
+.ix-root :is(.sys-tile-title,.panel-head) { letter-spacing:.08em; }
+.ix-root :is(input,textarea,select) { accent-color:#e9762b; }
+.ix-root :is(input,textarea,select):focus-visible { outline:2px solid #e9762b; outline-offset:2px; }
+@media (prefers-reduced-motion: reduce) {
+  .ix-root .sys-tile:hover { transform:none; }
+}
