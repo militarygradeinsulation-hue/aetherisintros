@@ -31,6 +31,9 @@ jobs:
         run: npx tsc --noEmit -p .
       - name: Unit tests
         run: npx vitest run
+      # Catch bundling failures before slow browser smoke tests.
+      - name: Build
+        run: npx vite build
       - name: Database migration checks
         run: node scripts/migration-checks/run.mjs
       - name: Install Chromium
@@ -59,5 +62,3 @@ jobs:
         env:
           PLAYWRIGHT_MODULE: ${{ github.workspace }}/node_modules/playwright/index.mjs
         run: node scripts/contrast-check/run.mjs
-      - name: Build
-        run: npx vite build
