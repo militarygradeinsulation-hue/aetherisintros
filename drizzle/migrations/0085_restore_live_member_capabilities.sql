@@ -23,8 +23,7 @@ BEGIN
     'public.my_provider_requests()',
     'public.provider_inbox()',
     'public.is_live_member()',
-    'public.is_approved_member(uuid)',
-    'public.my_top_connections()'
+    'public.is_approved_member(uuid)'
   ] LOOP
     IF to_regprocedure(signature) IS NULL THEN
       RAISE EXCEPTION 'Live Ask Intros RPC is missing: %. Apply the earlier schema migrations first.', signature
@@ -34,6 +33,23 @@ BEGIN
   END LOOP;
 END
 $repair$;
+
+-- Older environments may not have every optional personalized ranking helper.
+-- Grant them only when present; unlike the core intro/provider RPCs, their
+-- absence must not block the network permission repair.
+DO $optional$
+DECLARE signature text;
+BEGIN
+  FOREACH signature IN ARRAY ARRAY[
+    'public.my_top_connections()',
+    'public.giver_bands(uuid[])'
+  ] LOOP
+    IF to_regprocedure(signature) IS NOT NULL THEN
+      EXECUTE format('GRANT EXECUTE ON FUNCTION %s TO authenticated', signature);
+    END IF;
+  END LOOP;
+END
+$optional$;
 
 -- Never grant authenticated direct access to members/companies/signals or
 -- seed_threads/seed_learnings. Demo is served from packaged fictional data;
