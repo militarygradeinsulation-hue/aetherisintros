@@ -1554,11 +1554,11 @@ function Insights({ people, select, setPage }: { people: Member[]; select: (p: M
       copy="No vanity metrics. Only relationship changes that could alter an outcome, each with an action attached."
       proof={`${people.length} members in your network · ${net.connections.length} connections`} />
     <InsightCollisions />
-    <div className="insight-numbers">
+    <div className="insight-numbers ai-insight-numbers">
       {insightCounts(net, people).map(([n, c]) =>
         <div key={c}><strong>{n}</strong><small>{c}</small></div>)}
     </div>
-    <div className="insight-list">
+    <div className="insight-list ai-insight-list">
       {showcaseOnly(leaks).filter(l => !dismissed.includes(l.id)).map((leak, i) => {
         const p = people.find(x => x.id === leak.personId)
         if (!p) return null
