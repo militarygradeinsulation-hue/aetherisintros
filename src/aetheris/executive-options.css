@@ -483,3 +483,24 @@
   --msg-outgoing:#DCE8F3;
   --msg-incoming:#EEF1F1;
 }
+
+
+/* Priority accessibility guarantee for the actual message buttons.
+   Older light-mode text utilities must not cancel the white-on-slate action. */
+:root[data-theme="light"] .ix-root .arch-product-main :is(.ix-messages,.ix-live-messages) button.msg-primary-action,
+:root[data-theme="dark"] .ix-root .arch-product-main :is(.ix-messages,.ix-live-messages) button.msg-primary-action {
+  background-color:#2F5F87!important;
+  background-image:none!important;
+  color:#FFFFFF!important;
+  -webkit-text-fill-color:#FFFFFF!important;
+  border:1px solid #2F5F87!important;
+  box-shadow:none;
+}
+:root[data-theme="light"] .ix-root .arch-product-main :is(.ix-messages,.ix-live-messages) button.msg-primary-action:hover:not(:disabled),
+:root[data-theme="dark"] .ix-root .arch-product-main :is(.ix-messages,.ix-live-messages) button.msg-primary-action:hover:not(:disabled) {
+  background-color:#244B6B!important;
+  background-image:none!important;
+  color:#FFFFFF!important;
+  -webkit-text-fill-color:#FFFFFF!important;
+  border-color:#244B6B!important;
+}
