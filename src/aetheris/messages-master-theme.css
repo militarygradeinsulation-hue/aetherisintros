@@ -332,3 +332,48 @@
  :is(a,button,input,textarea,select):focus-visible {
  outline:2px solid #2F5F87!important;outline-offset:3px;
 }
+
+
+/* Keep the only product accent BLUE. Legacy pages still reference --acc
+   directly, so remap it locally without altering the gold dots in the logo. */
+.ix-root {
+ --acc:var(--ai-ui-blue);
+ --acc-bright:var(--ai-ui-blue-hover);
+ --acc-strong:var(--ai-ui-blue-hover);
+ --acc-deep:var(--ai-ui-blue);
+ --acc-wash:color-mix(in srgb,var(--ai-ui-blue) 11%,transparent);
+ --acc-line:var(--ai-ui-selected-border);
+ --acc-glow:color-mix(in srgb,var(--ai-ui-blue) 25%,transparent);
+ --acc-btn:var(--ai-ui-selected);
+ --acc-btn-hover:var(--ai-ui-selected);
+ --acc-btn-line:var(--ai-ui-selected-border);
+ --acc-spot:color-mix(in srgb,var(--ai-ui-blue) 9%,transparent);
+}
+.ix-root .ix-desktop-unread-count,
+.ix-root .ix-unread-badge {
+ background:var(--ai-ui-blue)!important;
+ color:var(--ai-ui-blue-ink)!important;
+}
+.ix-root .ix-desktop-nav-link.is-brand-destination:not(.is-active) {
+ color:var(--ai-ui-blue)!important;
+}
+:root[data-theme="light"] .ix-root .ix-desktop-nav-link.is-active {
+ color:#233E53!important;background:#DCE8F3!important;
+ border:1px solid #B9CBDD!important;
+ box-shadow:inset 0 -2px 0 #2F5F87!important;
+ animation:none!important;
+}
+.ix-root .ix-desktop-nav-link:focus-visible {
+ outline:2px solid var(--ai-ui-blue)!important;
+}
+/* The original style used a gold underline on selected tabs. Keep selection
+   and focus in the same blue family as the Messages navigation. */
+.ix-root .arch-product-main :is(.ix-option-tab,.ix-option-tile,
+ .ix-tools button,.ops-tabs button,.insight-tabs button):focus-visible {
+ outline:2px solid var(--ai-ui-blue)!important;outline-offset:2px;
+}
+:root[data-theme="light"] .ix-root .arch-product-main
+ :is(.ix-option-tab,.ix-option-tile,.ix-tools button,.ops-tabs button,.insight-tabs button)
+ :is(.text-amber-400,.text-yellow-500) {
+ color:#233E53;
+}
