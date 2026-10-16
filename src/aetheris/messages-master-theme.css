@@ -267,3 +267,68 @@
 @media(prefers-reduced-motion:reduce) {
  .ix-root .arch-product-main :is(.sys-tile,.module,.feed-card,.home-widget) {transition:none;}
 }
+
+
+/* Public account, access, verification, onboarding and admin option pages.
+   Editorial imagery and the official Ask Intros identity remain untouched. */
+:root[data-theme="light"] :is(.auth-page,.onboarding-page,.verify-page,.admin-page,
+ .access-waiting,.founder-book) {
+ --paper:#FBF9F4;--ivory:#F5F2EC;--ink:#2E3438;--soft:#2E3438;
+ --muted:#56626A;--line-light:#D7D3CB;--line-dark:#D7D3CB;
+ --cobalt:#2F5F87;--cobalt-bright:#244B6B;
+ background-color:#F5F2EC;
+ color:#2E3438;
+}
+:root[data-theme="dark"] :is(.auth-page,.onboarding-page,.verify-page,.admin-page,
+ .access-waiting,.founder-book) {
+ --paper:#1A2223;--ivory:#111719;--ink:#F1F1EE;--soft:#F1F1EE;
+ --muted:#BAC5C9;--line-light:#46585E;--line-dark:#46585E;
+ --cobalt:#80B2D6;--cobalt-bright:#A7CBE6;
+}
+:root[data-theme="light"] :is(.auth-page,.onboarding-page,.verify-page,.admin-page)
+ :is(.auth-panel,.onboarding-form,.verify-panel,.admin-panel,.auth-soon,.auth-invited) {
+ background-color:#FBF9F4;
+ border-color:#D7D3CB;
+ color:#2E3438;
+}
+:root[data-theme="light"] :is(.auth-page,.onboarding-page,.verify-page,.admin-page)
+ :is(input:not([type="checkbox"]),textarea,select) {
+ background:#FFFEFB!important;
+ border:1px solid #D7D3CB!important;
+ color:#2E3438!important;
+}
+:root[data-theme="light"] :is(.auth-page,.onboarding-page,.verify-page,.admin-page)
+ :is(input,textarea)::placeholder {color:#667078!important;}
+:root[data-theme="light"] :is(.auth-page,.onboarding-page,.verify-page,.admin-page)
+ :is(.btn.primary,button[data-ui="primary"]) {
+ background:#2F5F87!important;background-image:none!important;
+ border:1px solid #2F5F87!important;color:#fff!important;
+ border-radius:8px;animation:none!important;
+}
+:root[data-theme="light"] :is(.auth-page,.onboarding-page,.verify-page,.admin-page)
+ :is(.btn.primary,button[data-ui="primary"]):hover:not(:disabled) {
+ background:#244B6B!important;
+}
+/* The signature public CTA may keep its gradient edge while using the
+   reference blue for its interior rather than introducing another UI palette. */
+.ael .ael-btn.ai-gradient-button,
+.ael .ael-nav-cta.ai-gradient-button {
+ --ai-button-surface:#2F5F87;
+ --ai-button-text:#FFFFFF;
+ color:#FFFFFF!important;
+}
+:root[data-theme="light"] .ael :is(.ael-btn.ai-gradient-button,.ael-nav-cta.ai-gradient-button),
+:root[data-theme="dark"] .ael :is(.ael-btn.ai-gradient-button,.ael-nav-cta.ai-gradient-button) {
+ background:
+  linear-gradient(#2F5F87,#2F5F87) padding-box,
+  conic-gradient(from var(--ai-border-angle),#244B6B,#78A2C3 24%,#DCE8F3 50%,#78A2C3 76%,#244B6B) border-box!important;
+ border:2px solid transparent!important;
+ color:#FFFFFF!important;
+}
+/* Utility menu options on the marketing header follow the same blue; large
+   photographic sections keep their own legibility rules. */
+.ael :is(.ael-signin,.ael-text-link):focus-visible,
+:where(.auth-page,.onboarding-page,.verify-page,.admin-page)
+ :is(a,button,input,textarea,select):focus-visible {
+ outline:2px solid #2F5F87!important;outline-offset:3px;
+}
