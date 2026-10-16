@@ -1,6 +1,5 @@
 "use client";
 
-import type { CSSProperties } from "react";
 import { motion } from "motion/react";
 
 type MarkerProps = { src: string; top: number; offset: number; delay: number };
@@ -13,8 +12,8 @@ function Marker({ src, top, offset, delay }: MarkerProps) {
         active: { y: [-16, 0, 3, 0], scale: [0.9, 1.08, 1], opacity: 1 },
       }}
       transition={{ duration: 0.45, delay, ease: "easeOut" }}
-      style={{ "--offset": `${offset}px`, top } as CSSProperties}
-      className="absolute left-[calc(50%+var(--offset))] size-[38px] drop-shadow-[0_3px_3px_rgba(0,0,0,.5)]"
+      style={{ top, left: `calc(50% + ${offset}px)` }}
+      className="absolute size-[38px] drop-shadow-[0_3px_3px_rgba(0,0,0,.5)]"
     >
       <svg fill="none" viewBox="0 0 38 38" className="absolute size-full">
         <path
