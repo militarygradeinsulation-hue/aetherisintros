@@ -535,7 +535,7 @@ export const HomeFeedView: React.FC<HomeFeedViewProps> = ({
                 </div>
 
                 {/* Content */}
-                <p className="text-xs md:text-sm text-[#24343D] leading-relaxed font-medium">
+                <p className="text-xs md:text-sm text-[var(--ai-ui-ink)] leading-relaxed font-medium">
                   {post.content}
                 </p>
 
