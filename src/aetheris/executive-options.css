@@ -514,3 +514,128 @@
   color:#2E3438!important;
   border-color:#D7D3CB!important;
 }
+
+
+/*
+ * INSIGHTS / SIGNALS — intentional light paper surface in BOTH appearances.
+ * The old .insight-list>article rule uses #0d1115 even when the surrounding
+ * page is ivory. It also inherits dark-mode muted foreground colors, producing
+ * the almost invisible names, evidence and confidence shown in feedback.
+ * This local surface contract fixes the actual article, not just the canvas.
+ */
+.ix-root .ix-classic .app-shell .content .ai-insight-numbers,
+.ix-root .ix-classic .app-shell .content .ai-insight-list {
+  --insight-paper:#FBF9F4;
+  --insight-ink:#263640;
+  --insight-muted:#52616c;
+  --insight-rule:#D7D3CB;
+  --insight-blue:#2F5F87;
+  background:var(--insight-paper)!important;
+  color:var(--insight-ink)!important;
+  border:1px solid var(--insight-rule)!important;
+  border-radius:12px;
+  box-shadow:0 6px 18px rgba(26,33,39,.05);
+  overflow:hidden;
+}
+.ix-root .ix-classic .app-shell .content .ai-insight-list>article,
+.ix-root .ix-classic .app-shell .content .ai-insight-numbers>div {
+  background:var(--insight-paper)!important;
+  color:var(--insight-ink)!important;
+  border-color:var(--insight-rule)!important;
+}
+.ix-root .ix-classic .app-shell .content .ai-insight-list>article {
+  padding:clamp(18px,2.25vw,30px);
+  row-gap:14px;
+}
+.ix-root .ix-classic .app-shell .content .ai-insight-list>article + article {
+  border-top:1px solid var(--insight-rule)!important;
+}
+.ix-root .ix-classic .app-shell .content .ai-insight-list .insight-main h3 {
+  color:var(--insight-ink)!important;
+  font-size:clamp(24px,2.1vw,32px);
+  line-height:1.15;
+  font-weight:600;
+  margin:7px 0 12px;
+}
+.ix-root .ix-classic .app-shell .content .ai-insight-list .insight-main p {
+  color:#40515c!important;
+  font-size:clamp(14px,1.15vw,16px)!important;
+  line-height:1.55;
+}
+.ix-root .ix-classic .app-shell .content .ai-insight-list .insight-main small {
+  color:var(--insight-muted)!important;
+  display:block;
+  margin-top:8px;
+  font-size:13px!important;
+  line-height:1.45;
+}
+.ix-root .ix-classic .app-shell .content .ai-insight-list .insight-index {
+  color:var(--insight-muted)!important;
+  font-size:13px!important;
+}
+.ix-root .ix-classic .app-shell .content .ai-insight-list .insight-main :is(.eyebrow,.signal-label,.tag) {
+  color:var(--insight-blue)!important;
+  letter-spacing:.075em;
+  font-size:12px!important;
+  font-weight:650;
+}
+.ix-root .ix-classic .app-shell .content .ai-insight-list .insight-confidence strong {
+  color:var(--insight-blue)!important;
+  font-size:32px!important;
+  line-height:1;
+}
+.ix-root .ix-classic .app-shell .content .ai-insight-list .insight-confidence small {
+  color:var(--insight-muted)!important;
+  font-size:11px!important;
+  letter-spacing:.055em;
+}
+.ix-root .ix-classic .app-shell .content .ai-insight-list .insight-actions .dismiss {
+  color:#40515c!important;
+  text-decoration:underline;
+  text-underline-offset:3px;
+}
+.ix-root .ix-classic .app-shell .content .ai-insight-list .insight-actions .dismiss:hover {
+  color:var(--insight-blue)!important;
+}
+.ix-root .ix-classic .app-shell .content .ai-insight-numbers strong {
+  color:var(--insight-ink)!important;
+}
+.ix-root .ix-classic .app-shell .content .ai-insight-numbers :is(span,small) {
+  color:var(--insight-muted)!important;
+  font-size:13px!important;
+  line-height:1.5;
+  letter-spacing:0;
+}
+/* Buttons are visually secondary to relationship evidence, but fully readable. */
+.ix-root .ix-classic .app-shell .content .ai-insight-list .insight-actions .btn:not(.primary) {
+  background:#FFFEFB!important;
+  color:#263640!important;
+  border:1px solid #C8CAC8!important;
+  border-radius:9px;
+  animation:none;
+}
+.ix-root .ix-classic .app-shell .content .ai-insight-list .insight-actions .btn:not(.primary):hover {
+  background:#DCE8F3!important;
+  color:#233E53!important;
+  border-color:#B9CBDD!important;
+}
+.ix-root .ix-classic .app-shell .content .ai-insight-list .insight-actions .btn.primary,
+.ix-root .ix-classic .app-shell .content .ai-insight-list .insight-actions .btn:not([class*="quiet"]):not([class*="secondary"]):first-of-type {
+  border-radius:9px;
+}
+.ix-root .ix-classic .app-shell .content .ai-insight-list :is(a,button):focus-visible {
+  outline:2px solid #2F5F87!important;
+  outline-offset:3px;
+}
+@media(max-width:720px) {
+  .ix-root .ix-classic .app-shell .content .ai-insight-list>article {
+    grid-template-columns:minmax(0,1fr);
+    padding:18px;
+  }
+  .ix-root .ix-classic .app-shell .content .ai-insight-list .insight-actions {
+    grid-column:1;
+  }
+  .ix-root .ix-classic .app-shell .content .ai-insight-list .insight-main h3 {
+    font-size:25px;
+  }
+}
