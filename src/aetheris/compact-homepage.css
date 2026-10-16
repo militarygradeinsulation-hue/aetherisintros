@@ -337,3 +337,31 @@
   .ael.ael-compact .ael-header .ask-intros-lockup { width:clamp(153px,43vw,181px); }
   .ael.ael-compact .ael-hero { padding-top:164px; }
 }
+
+/* Public story chapter: preserve the dark editorial palette on both themes,
+   including the copy, methods, photograph caption and action links. */
+:root .ael.ael-compact .ael-compact-story,
+:root[data-theme="light"] .ael.ael-compact .ael-compact-story {
+  background:#080909!important;color:#F5F4F2!important;
+  background-image:linear-gradient(90deg,rgba(255,255,255,.045) 1px,transparent 1px);
+  border-block:1px solid rgba(255,255,255,.16);
+}
+:root .ael.ael-compact .ael-compact-story-copy h2,
+:root .ael.ael-compact .ael-compact-method-heading h3,
+:root .ael.ael-compact .ael-compact-steps strong {
+  color:#F5F4F2!important;
+}
+:root .ael.ael-compact .ael-compact-story-copy p,
+:root .ael.ael-compact .ael-compact-steps p,
+:root .ael.ael-compact .ael-compact-story :is(.ael-editorial-meta,.ael-fine-label) {
+  color:#D5D6D6!important;
+}
+:root .ael.ael-compact .ael-compact-story :is(h2,h3) em,
+:root .ael.ael-compact .ael-compact-steps li>span { color:#E99463!important; }
+:root .ael.ael-compact .ael-compact-method,
+:root .ael.ael-compact .ael-compact-steps li { border-color:rgba(255,255,255,.26)!important; }
+:root .ael.ael-compact .ael-compact-story-photo {background:#111!important;border-color:rgba(255,255,255,.35)!important;}
+:root .ael.ael-compact .ael-compact-story-photo figcaption {color:#fff!important;background:rgba(0,0,0,.87)!important;}
+:root .ael.ael-compact .ael-compact-story :is(.ael-underlink,.ael-underlink-dark) {
+  color:#F5F4F2!important;border-color:#B5541F!important;
+}
