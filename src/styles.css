@@ -354,3 +354,34 @@ body::before {
   :where(.ai-gradient-button,.btn.primary,.eh-primary,.tile-cta,.memory-cta) { animation:none; transition:none; }
   :where(.ai-gradient-button,.btn.primary,.eh-primary,.tile-cta,.memory-cta):hover { transform:none; }
 }
+
+
+/* ASK INTROS MESSAGING BASELINE — shared outside the signed-in shell. */
+:root,:root[data-theme="light"] {
+  --background:oklch(0.966 0.008 85); --foreground:oklch(0.275 0.025 235);
+  --card:oklch(0.993 0.003 85); --card-foreground:oklch(0.275 0.025 235);
+  --popover:oklch(0.993 0.003 85); --popover-foreground:oklch(0.275 0.025 235);
+  --primary:oklch(0.46 0.085 239); --primary-foreground:oklch(0.985 0.004 85);
+  --secondary:oklch(0.942 0.014 231); --secondary-foreground:oklch(0.275 0.025 235);
+  --muted:oklch(0.955 0.008 85); --muted-foreground:oklch(0.52 0.025 235);
+  --accent:oklch(0.916 0.035 234); --accent-foreground:oklch(0.275 0.025 235);
+  --border:oklch(0.84 0.018 231); --input:oklch(0.84 0.018 231); --ring:oklch(0.54 0.09 239);
+  --sidebar:oklch(0.985 0.004 85); --sidebar-foreground:oklch(0.275 0.025 235);
+  --sidebar-primary:oklch(0.46 0.085 239); --sidebar-primary-foreground:oklch(0.985 0.004 85);
+  --sidebar-accent:oklch(0.916 0.035 234); --sidebar-accent-foreground:oklch(0.275 0.025 235);
+  --sidebar-border:oklch(0.84 0.018 231); --sidebar-ring:oklch(0.54 0.09 239);
+  --night:#f5f3ee; --raised:#fffefa; --graphite:#e7ebec; --soft:#24343d; --muted:#64717a;
+  --ivory:#f5f3ee; --paper:#fffefa; --ink:#24343d; --line-dark:rgba(40,61,71,.18); --line-light:rgba(40,61,71,.13);
+  --halftone-night:#f5f3ee; --halftone-ink:#24343d; --halftone-warm:#2f668d; --halftone-line:rgba(40,61,71,.16);
+  --acc:#2f668d; --acc-bright:#4e84aa; --acc-strong:#245776; --acc-deep:#1c455e;
+  --acc-wash:rgba(171,207,232,.34); --acc-line:rgba(47,102,141,.34); --acc-glow:rgba(47,102,141,.24);
+  --acc-btn:rgba(47,102,141,.10); --acc-btn-hover:rgba(47,102,141,.18); --acc-btn-line:rgba(47,102,141,.42);
+  --acc-spot:rgba(47,102,141,.07); --acc-field-line:rgba(47,102,141,.11); --acc-field-fill:rgba(171,207,232,.24);
+  --acc-field-stroke:rgba(47,102,141,.27); --acc-field-glow:rgba(47,102,141,.29);
+  --ai-button-surface:#2f668d; --ai-button-text:#fffefa; --ai-button-edge:#2f668d; --ai-button-shadow:rgba(36,87,118,.24);
+}
+html,body { background:#f5f3ee; color:#24343d; }
+body::before { background-image:radial-gradient(rgba(40,61,71,.28) .45px,transparent .7px); }
+:where(.ai-gradient-button,.btn.primary,.eh-primary,.tile-cta,.memory-cta) { background:#2f668d !important; border-color:#2f668d !important; color:#fffefa !important; animation:none; }
+:where(.ai-gradient-button,.btn.primary,.eh-primary,.tile-cta,.memory-cta):hover:not(:disabled):not([aria-disabled="true"]) { background:#245776 !important; }
+.dark { --background:oklch(0.22 0.02 239); --foreground:oklch(0.94 0.012 85); --card:oklch(0.26 0.02 239); --card-foreground:oklch(0.94 0.012 85); --popover:oklch(0.26 0.02 239); --popover-foreground:oklch(0.94 0.012 85); --primary:oklch(0.66 0.085 239); --primary-foreground:oklch(0.22 0.02 239); --secondary:oklch(0.31 0.02 239); --secondary-foreground:oklch(0.94 0.012 85); --muted:oklch(0.31 0.02 239); --muted-foreground:oklch(0.74 0.018 239); --accent:oklch(0.35 0.04 239); --accent-foreground:oklch(0.94 0.012 85); --border:oklch(0.53 0.025 239 / 60%); --input:oklch(0.53 0.025 239 / 60%); --ring:oklch(0.66 0.085 239); }
