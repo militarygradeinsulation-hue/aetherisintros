@@ -461,3 +461,25 @@
 @media(prefers-reduced-motion:reduce) {
   .ix-root .arch-product-main :is(.ix-option-tile,.ix-option-tab) {transition:none;}
 }
+
+
+/* Override the earlier light-only messaging token block at equal-or-higher
+   specificity so both modes reproduce the approved screenshot palette. */
+:root[data-theme="light"] .ix-root :is(.ix-messages,.ix-live-messages),
+:root[data-theme="dark"] .ix-root :is(.ix-messages,.ix-live-messages) {
+  --msg-page:#F5F2EC;
+  --msg-panel:#FBF9F4;
+  --msg-panel-inset:#F2EEE8;
+  --msg-border:#D7D3CB;
+  --msg-ink:#2E3438;
+  --msg-body:#3A454A;
+  --msg-muted:#56626A;
+  --msg-copper:#80634a;
+  --msg-accent:#2F5F87;
+  --msg-accent-hover:#244B6B;
+  --msg-accent-ink:#FFFFFF;
+  --msg-selected:#DCE8F3;
+  --msg-hover:#E9F1F6;
+  --msg-outgoing:#DCE8F3;
+  --msg-incoming:#EEF1F1;
+}
