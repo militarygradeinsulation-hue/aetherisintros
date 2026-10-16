@@ -240,7 +240,8 @@ export const HomeFeedView: React.FC<HomeFeedViewProps> = ({
                 <div className="flex items-center gap-1 bg-white/5 p-0.5 rounded-lg border border-white/10">
                   <button
                     onClick={() => setHeroVisualMode('bubbles')}
-                    className={`px-2.5 py-1 text-[10px] font-mono rounded transition-colors cursor-pointer ${
+                    aria-pressed={heroVisualMode === 'bubbles'}
+                    className={`ix-option-tab px-2.5 py-1 text-[10px] font-mono rounded transition-colors cursor-pointer ${
                       heroVisualMode === 'bubbles'
                         ? 'bg-[#F5B027] text-white font-semibold'
                         : 'text-[#9CA3AF] hover:text-white'
@@ -250,7 +251,8 @@ export const HomeFeedView: React.FC<HomeFeedViewProps> = ({
                   </button>
                   <button
                     onClick={() => setHeroVisualMode('spotlight')}
-                    className={`px-2.5 py-1 text-[10px] font-mono rounded transition-colors cursor-pointer ${
+                    aria-pressed={heroVisualMode === 'spotlight'}
+                    className={`ix-option-tab px-2.5 py-1 text-[10px] font-mono rounded transition-colors cursor-pointer ${
                       heroVisualMode === 'spotlight'
                         ? 'bg-[#F5B027] text-white font-semibold'
                         : 'text-[#9CA3AF] hover:text-white'
