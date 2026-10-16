@@ -2,7 +2,7 @@
   "meta": {
     "name": "Ask Intros",
     "package": "@ws-gmhcx8w6bqvecbtkycud/c1248cd8-77de-4eaa-8d9d-e7da71e70ae9",
-    "version": "27.3.0",
+    "version": "27.4.0",
     "framework": "react",
     "css_framework": "tailwind",
     "starter_template": "custom_design_system_tailwind",
@@ -818,7 +818,7 @@
       "src/intros-ui/liveMembers.tsx": "af6225c9bb028220018f855e010b408c",
       "src/intros-ui/messages-readability.css": "b29d1e5a28229ad62e578218369e37ff",
       "src/intros-ui/networkData.ts": "55968146648f079a82e707acbe61bd27",
-      "src/intros-ui/styles.css": "dbe014522edd3c9b7f10fb5604ed3699",
+      "src/intros-ui/styles.css": "04286fb1d36ea5c9101e43ce09dbd683",
       "src/intros-ui/tileSummaries.ts": "9e7faa27124194aefd64f4d4fa979be5",
       "src/intros-ui/types.ts": "6ca952de05a9e0690db97a5401297e1b",
       "src/intros-ui/utils/calendarScanner.ts": "daf7ceb12c426c0a30381864e90ca9fb",
