@@ -101,6 +101,36 @@ try {
   });
   check(messaging.background==='rgb(245, 242, 236)','Messaging panels retain screenshot-inspired ivory even in dark mode');
   check(!messaging.action || messaging.action==='rgb(47, 95, 135)','Routine message actions are muted slate blue');
+  // Previously dark-on-dark relationship signal cards must remain readable.
+  await nav.locator('[aria-haspopup=menu]').click();
+  await page.getByRole('menuitem',{name:'Insights'}).click();
+  await page.waitForFunction(()=>document.querySelector('.arch-product-main')?.dataset.archPage==='insights');
+  await page.waitForSelector('.ai-insight-list>article',{timeout:30000});
+  const signals=await page.evaluate(() => {
+    const card=document.querySelector('.ai-insight-list>article');
+    const group=document.querySelector('.ai-insight-numbers');
+    const styles=el=>el?getComputedStyle(el):null;
+    const color=s=>{const m=s?.match(/[\\d.]+/g);return m?m.slice(0,3).map(Number):null};
+    const luminosity=channels=>channels.reduce((a,v,i)=>{
+      const x=v/255,linear=x<=.04045?x/12.92:((x+.055)/1.055)**2.4;
+      return a+linear*[.2126,.7152,.0722][i];
+    },0);
+    const contrast=(fg,bg)=>{const f=color(fg),b=color(bg);
+      if(!f||!b)return 0;
+      const a=luminosity(f),z=luminosity(b);
+      return (Math.max(a,z)+.05)/(Math.min(a,z)+.05);
+    };
+    const surface=styles(card)?.backgroundColor;
+    return {surface,metrics:styles(group)?.backgroundColor,
+      heading:contrast(styles(card?.querySelector('.insight-main h3'))?.color,surface),
+      description:contrast(styles(card?.querySelector('.insight-main p'))?.color,surface),
+      evidence:contrast(styles(card?.querySelector('.insight-main small'))?.color,surface),
+      confidence:contrast(styles(card?.querySelector('.insight-confidence strong'))?.color,surface)};
+  });
+  check(signals.surface==='rgb(251, 249, 244)' && signals.metrics==='rgb(251, 249, 244)',
+    'Insights and relationship signals use cream panels, not near-black cards');
+  check(['heading','description','evidence','confidence'].every(k=>signals[k]>=4.5),
+    'Insight names, descriptions, evidence and confidence all meet 4.5:1 text contrast ('+JSON.stringify(signals)+')');
   await nav.locator('> button',{hasText:'Meetings'}).click();
   await page.waitForFunction(()=>document.querySelector('.arch-product-main')?.dataset.archPage==='meetings');
   check((await read()).page==='meetings','Meeting workspace shares the design shell');
