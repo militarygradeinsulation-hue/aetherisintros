@@ -267,23 +267,18 @@ body::before {
 :root[data-theme="light"] .site-ambient-numbers { opacity:.16; }
 :root[data-theme="light"] .site-ambient-connections { opacity:.16; }
 
-/* Controlled gooey light/dark switch, adapted from the supplied design. */
-.appearance-switcher { display:inline-flex; align-items:center; gap:6px; flex:none; color:var(--halftone-ink,#e9e4da); font-family:Inter,system-ui,sans-serif; }
-.appearance-switcher__label { font-size:10px; min-width:32px; letter-spacing:.07em; }
-.appearance-liquid-toggle { --liquid-rail:#d2cabb; --liquid-knob:#f8f3e9; display:inline-block; width:52px; height:32px; position:relative; cursor:pointer; flex-shrink:0; border-radius:999px; background:var(--liquid-rail); box-shadow:inset 0 0 0 1px rgba(23,21,15,.17); transition:background .45s ease; }
-.appearance-liquid-toggle:has(input:checked) { --liquid-rail:#a64329; --liquid-knob:#fff7ed; }
-.appearance-liquid-toggle input { position:absolute; inset:0; width:100%; height:100%; opacity:0; cursor:pointer; margin:0; z-index:1; }
-.appearance-liquid-toggle svg { width:100%; height:100%; display:block; pointer-events:none; fill:var(--liquid-knob); }
-.appearance-liquid-toggle__first,.appearance-liquid-toggle__second { transition:transform .5s cubic-bezier(.2,.75,.22,1); transform-box:fill-box; transform-origin:center; }
-.appearance-liquid-toggle__drop { transition:r .35s ease; }
-.appearance-liquid-toggle:has(input:focus-visible) { outline:2px solid var(--halftone-warm); outline-offset:3px; }
-.appearance-liquid-toggle:has(input:disabled) { opacity:.5; cursor:not-allowed; }
-:root[data-theme="light"] .appearance-liquid-toggle { --liquid-rail:#d2cabb; --liquid-knob:#fffaf1; }
-:root[data-theme="light"] .appearance-switcher { color:#17150f; }
-@media(prefers-reduced-motion:reduce) {
-  .appearance-liquid-toggle,.appearance-liquid-toggle circle { transition:none !important; }
-}
-@media (max-width:680px) { .appearance-switcher__label { display:none; } }
+/* Stable theme switch — no SVG blur/filter or native checkmark rendered. */
+.appearance-switcher {display:inline-flex;align-items:center;gap:10px;flex:none;color:var(--halftone-ink,#e9e4da);font-family:Inter,system-ui,sans-serif;white-space:nowrap;}
+.appearance-switcher__label {font-size:11px;min-width:33px;letter-spacing:.05em;}
+.appearance-liquid-toggle {appearance:none;-webkit-appearance:none;position:relative;display:inline-flex;align-items:center;flex:0 0 auto;width:58px;height:32px;min-width:58px;margin:0;padding:3px;border:1px solid #b5541f;border-radius:999px;background:#e8e3dd;color:inherit;cursor:pointer;box-shadow:inset 0 1px 2px rgba(0,0,0,.16);transition:background-color .18s,border-color .18s;}
+.appearance-liquid-toggle[data-state="checked"] {background:#b5541f;border-color:#dc8350;}
+.appearance-liquid-toggle__thumb {display:block;width:24px;height:24px;flex:0 0 24px;border-radius:50%;background:#b5541f;box-shadow:0 1px 3px rgba(0,0,0,.3);transform:translateX(0);transition:transform .2s,background-color .2s;}
+.appearance-liquid-toggle[data-state="checked"] .appearance-liquid-toggle__thumb {transform:translateX(26px);background:#fff;}
+.appearance-liquid-toggle:focus-visible {outline:3px solid #e98b58;outline-offset:3px;}
+.appearance-liquid-toggle:disabled {opacity:.5;cursor:not-allowed;}
+:root[data-theme="light"] .appearance-switcher {color:#17150f;}
+@media(prefers-reduced-motion:reduce){.appearance-liquid-toggle,.appearance-liquid-toggle__thumb{transition:none!important;}}
+@media(max-width:680px){.appearance-switcher__label{display:none;}}
 
 
 /* THE ASK INTROS SIGNATURE ACTION

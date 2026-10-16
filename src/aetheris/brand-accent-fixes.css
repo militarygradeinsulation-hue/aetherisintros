@@ -1,0 +1,115 @@
+/*
+ * ASK INTROS — accessible burnt-orange UI, preserved yellow brand mark.
+ * Loaded at the end of root CSS imports so older high-specificity rules do
+ * not turn the new hero or assistant back to cream, gold or blue.
+ */
+:root {
+  --ask-orange:#B5541F;
+  --ask-orange-hover:#C96831;
+  --ask-orange-text:#E99463;
+  --ask-logo-yellow:#F4A125;
+  --amber:var(--ask-orange);
+  --gold:var(--ask-orange);
+  --tile-hover:var(--ask-orange);
+  --halftone-warm:var(--ask-orange);
+}
+:root[data-theme="light"] {--amber:#B5541F;--gold:#B5541F;--tile-hover:#B5541F;}
+:root .ael {--ael-gold:var(--ask-orange);}
+
+/* Exact Ask Intros mark: the top dots, connector line and wordmark rule stay yellow. */
+:root .ask-intros-lockup__symbol line,
+:root .ael .ael-header .ask-intros-lockup__symbol line {
+  stroke:var(--ask-logo-yellow)!important;
+}
+:root .ask-intros-lockup__rule,
+:root .ael .ael-header .ask-intros-lockup__rule {
+  stroke:var(--ask-logo-yellow)!important;stroke-width:2.8!important;
+}
+:root .ask-intros-lockup__node,
+:root .ask-intros-lockup__rule-dot,
+:root .ask-intros-lockup__separator {
+  fill:var(--ask-logo-yellow)!important;
+}
+
+/* Fixed Ask Intros butler bubble: warm orange, readable dark ink. */
+:root .ask-dock-fab,
+:root .ix-root .ask-dock-fab,
+:root .ix-assistant .ask-dock-fab,
+:root .ix-classic .ask-dock-fab {
+  background:var(--ask-orange)!important;
+  border:1px solid #E18F5C!important;
+  color:#FFF9F3!important;
+  box-shadow:0 16px 36px rgba(0,0,0,.36),0 0 0 3px rgba(181,84,31,.14)!important;
+}
+:root .ask-dock-fab:hover,
+:root .ix-assistant .ask-dock-fab:hover {
+  background:var(--ask-orange-hover)!important;border-color:#FFB47B!important;
+}
+:root .ask-dock-fab.active {background:#813613!important;}
+:root .ask-dock-fab :is(svg,span),:root .ix-assistant .ask-dock-fab .aetheris-glyph {
+  color:#FFF9F3!important;
+}
+
+/* Orange only where legacy layouts use yellow. Do not recolor status errors or
+ * the Messages product's intentionally blue controls. */
+:root .ix-root :is([class*="text-[#F5B027]"],[class*="text-[#F4A125]"],[class*="text-yellow-"],[class*="text-amber-"]) {
+  color:var(--ask-orange-text)!important;
+}
+:root .ix-root :is([class*="bg-[#F5B027]"],[class*="bg-[#F4A125]"],[class*="bg-yellow-"],[class*="bg-amber-"]) {
+  background-color:var(--ask-orange)!important;
+}
+:root .ix-root :is([class*="border-[#F5B027]"],[class*="border-[#F4A125]"],[class*="border-yellow-"],[class*="border-amber-"]) {
+  border-color:var(--ask-orange)!important;
+}
+:root .ix-root [class*="hover:bg-[#F5B027]"]:hover,
+:root .ix-root [class*="hover:bg-yellow-"]:hover {
+  background-color:var(--ask-orange-hover)!important;
+}
+:root .ix-root :is([class*="bg-[#F5B027]"],[class*="bg-[#F4A125]"]) {
+  color:#FFF9F3!important;
+}
+:root .ix-root :is([class*="focus:border-[#F5B027]"],[class*="focus:border-yellow-"]):focus {
+  border-color:var(--ask-orange-hover)!important;
+}
+:root .ix-root [class*="accent-yellow-"] {accent-color:var(--ask-orange)!important;}
+
+/* Public story chapter in the same black palette as the rest of the site. */
+:root .ael.ael-compact .ael-compact-story,
+:root[data-theme="light"] .ael.ael-compact .ael-compact-story {
+  background-color:#080909!important;color:#F6F4F0!important;
+}
+:root .ael.ael-compact .ael-compact-story :is(h2,h3,strong) {
+  color:#F6F4F0!important;
+}
+:root .ael.ael-compact .ael-compact-story :is(p,small) {
+  color:#D7D9D9!important;
+}
+:root .ael.ael-compact .ael-compact-story :is(h2,h3) em {color:#E99463!important;}
+:root .ael.ael-compact .ael-compact-story .ael-underlink {
+  color:#F6F4F0!important;border-color:var(--ask-orange)!important;
+}
+
+/* Safe, high-contrast directory hero and section cards. */
+:root .ix-root .people-directory-map,
+:root .ix-root .people-directory-hero {background-color:#080909!important;color:#F6F4F0!important;}
+:root .ix-root .people-directory-hero :is(h1,h2) {color:#FFF!important;}
+:root .ix-root .people-directory-hero p {color:#DEE2E3!important;}
+
+/* Appearance toggle thumb remains isolated from legacy global button rules. */
+:root .appearance-liquid-toggle, :root .ix-root .appearance-liquid-toggle {
+  background:#E8E3DD!important;border:1px solid #B5541F!important;
+  padding:3px!important;width:58px!important;height:32px!important;min-width:58px!important;
+  border-radius:999px!important;box-shadow:inset 0 1px 2px rgba(0,0,0,.16)!important;
+  animation:none!important;overflow:visible;
+}
+:root .appearance-liquid-toggle[data-state="checked"],
+:root .ix-root .appearance-liquid-toggle[data-state="checked"] {
+  background:#B5541F!important;border-color:#DC8350!important;
+}
+:root .appearance-liquid-toggle__thumb {
+  background:#B5541F!important;width:24px!important;height:24px!important;
+  border-radius:50%!important;transform:translateX(0);
+}
+:root .appearance-liquid-toggle[data-state="checked"] .appearance-liquid-toggle__thumb {
+  background:#fff!important;transform:translateX(26px)!important;
+}
