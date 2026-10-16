@@ -72,6 +72,17 @@ try {
   await page.waitForFunction(()=>document.querySelector('.arch-product-main')?.dataset.archPage==='workspace');
   check((await read()).page==='workspace','All workspace tools share the design shell');
   check(await page.locator('.ix-tools button').count()>=10,'Real workspace module tabs remain available');
+  const workspaceSkin=await page.evaluate(() => {
+    const app=document.querySelector('.ix-classic .app-shell');
+    const get=(selector)=>{const el=document.querySelector(selector);return el?getComputedStyle(el).backgroundColor:null;};
+    return {app:app?getComputedStyle(app).backgroundColor:null,
+      toolstrip:get('.ix-tools'),main:get('.arch-product-main')};
+  });
+  check(workspaceSkin.app=== (theme==='light'?'rgb(245, 242, 236)':'rgb(17, 23, 25)'),
+    'Classic workspace actual background matches Messages-derived theme ('+JSON.stringify(workspaceSkin)+')');
+  check(workspaceSkin.toolstrip=== (theme==='light'?'rgb(251, 249, 244)':'rgb(26, 34, 35)'),
+    'Workspace option strip uses cream or charcoal shared surface');
+
   // Option pages share the pale-blue selection system, regardless of view.
   const options = await page.evaluate(() => {
     const chosen=document.querySelector('.arch-product-main .ix-tools button.on');
