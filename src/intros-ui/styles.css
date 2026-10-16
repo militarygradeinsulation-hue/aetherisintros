@@ -863,3 +863,39 @@
   /* Profile and logout remain available via the existing mobile More sheet. */
   .ix-header-profile-action,.ix-header-logout-action { display:none!important; }
 }
+
+
+/* MESSAGING THEME CONTRACT — the active Ask Intros product baseline.
+   Apply after legacy editorial rules so real buttons, tiles, selectors, menu
+   options, modals and utility panels all keep the blue message treatment. */
+.ix-root {
+  --sys-bg:#f5f3ee; --sys-bg-dark:#f5f3ee; --sys-tile:#fffefa; --sys-tile-inner:#f3f7f8;
+  --sys-panel:#fffefa; --sys-panel-line:rgba(55,83,96,.17); --sys-line:rgba(55,83,96,.17);
+  --sys-ink:#24343d; --sys-ink-dim:#64717a; --sys-card:#fffefa; --sys-card-ink:#24343d;
+  --sys-btn:#2f668d; --sys-btn-hover:#245776; --sys-btn-ring:#2f668d; --sys-btn-ring-hover:#245776;
+  --sys-accent:#2f668d; --sys-warn:#b77c23; --sys-gold:#2f668d; --sys-gold-bright:#4e84aa;
+  --sys-gold-wash:rgba(171,207,232,.34); --sys-gold-line:rgba(47,102,141,.34);
+  --cobalt:#2f668d; --cobalt-bright:#4e84aa; --cobalt-hover:#245776;
+  background:#f5f3ee !important; color:#24343d !important;
+}
+.ix-root :is(header,aside,.drawer-panel,.ix-mobile-nav,.ix-mobile-sheet,.ix-desktop-more-menu) { background-color:#fffefa !important; color:#24343d !important; border-color:rgba(55,83,96,.17) !important; }
+.ix-root :is(.sys-tile,.sys-tile-inner,.home-board-tile,.panel-item) { background-color:#fffefa !important; color:#24343d !important; border-color:rgba(55,83,96,.17) !important; }
+.ix-root .sys-tile:hover { border-color:rgba(47,102,141,.55) !important; box-shadow:0 10px 28px rgba(36,87,118,.12) !important; }
+.ix-root :is(.sys-tile-title,.panel-head) { color:#24343d !important; }
+.ix-root :is(.sys-tile-caption,.home-demo-comments,.ix-mobile-nav-item,.ix-desktop-more-item) { color:#64717a !important; }
+.ix-root :is(input,textarea,select) { accent-color:#2f668d !important; background:#fffefa; color:#24343d; border-color:rgba(55,83,96,.25); }
+.ix-root :is(input,textarea,select):focus-visible { outline:2px solid #2f668d !important; outline-offset:2px; }
+.ix-root [class*="bg-blue-"],.ix-root [class*="bg-sky-"],.ix-root [class*="bg-indigo-"],.ix-root [class*="bg-[#3D6BF2]"],.ix-root [class*="bg-[#2563EB]"],.ix-root [class*="bg-[#0F5CCB]"] { background-color:#2f668d !important; color:#fffefa !important; box-shadow:none !important; }
+.ix-root [class*="bg-blue-"][class*="/"],.ix-root [class*="bg-sky-"][class*="/"],.ix-root [class*="bg-indigo-"][class*="/"],.ix-root [class*="bg-[#3D6BF2]/"],.ix-root [class*="bg-[#2563EB]/"] { background-color:#dcecf7 !important; color:#24343d !important; box-shadow:inset 0 0 0 1px rgba(47,102,141,.20) !important; }
+.ix-root [class*="text-blue-"],.ix-root [class*="text-sky-"],.ix-root [class*="text-indigo-"],.ix-root [class*="text-[#3D6BF2]"],.ix-root [class*="text-[#60A5FA]"],.ix-root [class*="text-[#5B8DEF]"] { color:#2f668d !important; }
+.ix-root [class*="border-blue-"],.ix-root [class*="border-sky-"],.ix-root [class*="border-indigo-"],.ix-root [class*="border-[#3D6BF2]"],.ix-root [class*="border-[#2563EB]"] { border-color:rgba(47,102,141,.34) !important; }
+.ix-root .btn.primary,.ix-root .ai-gradient-button { background:#2f668d !important; border-color:#2f668d !important; color:#fffefa !important; animation:none !important; }
+.ix-root .btn.primary:hover,.ix-root .ai-gradient-button:hover { background:#245776 !important; }
+.ix-root .ix-desktop-nav-link { background:#fffefa; color:#52616a; border-color:rgba(55,83,96,.17); }
+.ix-root .ix-desktop-nav-link:hover,.ix-root .ix-desktop-nav-link.is-active { background:#dcecf7; color:#24343d; border-color:#2f668d; box-shadow:0 4px 14px rgba(36,87,118,.10); animation:none; }
+.ix-root .ix-desktop-more-item:hover,.ix-root .ix-desktop-more-item.is-active { background:#dcecf7; color:#24343d !important; }
+.ix-root .ix-desktop-unread-count { background:#2f668d; color:#fffefa; }
+.ix-root ::-webkit-scrollbar-track { background:#f5f3ee; }
+.ix-root ::-webkit-scrollbar-thumb { background:#b6c5cc; }
+.ix-root ::-webkit-scrollbar-thumb:hover { background:#859aa5; }
+:root[data-theme="light"] .ix-root { background:#f5f3ee !important; color:#24343d !important; }
