@@ -1,0 +1,269 @@
+/* Ask Intros — Messages-first design baseline, 2026
+ * Canonical visual reference: the executive Messages workspace.
+ * Functional surfaces use ivory / cream, steel blue and powder blue.
+ * Editorial photo treatments, dashboards with actual charts, and warning/success
+ * semantics are deliberately excluded from broad paint overrides.
+ */
+:root {
+ --ai-workspace-blue:#2F5F87;
+ --ai-workspace-blue-hover:#244B6B;
+ --ai-workspace-blue-soft:#DCE8F3;
+ --ai-workspace-blue-border:#B9CBDD;
+}
+:root[data-theme="light"] {
+ --ai-ui-canvas:#F5F2EC;--ai-ui-surface:#FBF9F4;
+ --ai-ui-raised:#F2EEE8;--ai-ui-input:#FFFEFB;
+ --ai-ui-ink:#2E3438;--ai-ui-muted:#56626A;--ai-ui-border:#D7D3CB;
+ --ai-ui-blue:#2F5F87;--ai-ui-blue-hover:#244B6B;--ai-ui-blue-ink:#fff;
+ --ai-ui-selected:#DCE8F3;--ai-ui-selected-ink:#233E53;
+ --ai-ui-selected-border:#B9CBDD;
+ --ai-ui-shadow:0 6px 18px rgba(26,33,39,.05);
+ --sys-bg:var(--ai-ui-canvas);--sys-tile:var(--ai-ui-surface);
+ --sys-panel:var(--ai-ui-surface);--sys-ink:var(--ai-ui-ink);
+ --architect-canvas:var(--ai-ui-canvas);--architect-panel:var(--ai-ui-surface);
+ --architect-ink:var(--ai-ui-ink);--architect-subtle:var(--ai-ui-muted);
+ --architect-rule:var(--ai-ui-border);
+}
+:root[data-theme="dark"] {
+ --ai-ui-canvas:#111719;--ai-ui-surface:#1A2223;
+ --ai-ui-raised:#243137;--ai-ui-input:#182328;
+ --ai-ui-ink:#F1F1EE;--ai-ui-muted:#BAC5C9;--ai-ui-border:#46585E;
+ --ai-ui-blue:#80B2D6;--ai-ui-blue-hover:#A7CBE6;--ai-ui-blue-ink:#12232D;
+ --ai-ui-selected:#284356;--ai-ui-selected-ink:#F0F7FC;
+ --ai-ui-selected-border:#7096B0;
+ --ai-ui-shadow:0 8px 24px rgba(0,0,0,.14);
+ --sys-accent:var(--ai-ui-blue);
+ --architect-canvas:var(--ai-ui-canvas);--architect-panel:var(--ai-ui-surface);
+ --architect-ink:var(--ai-ui-ink);--architect-subtle:var(--ai-ui-muted);
+ --architect-rule:var(--ai-ui-border);
+}
+
+/* Global product canvas is ivory when Light is selected, not an ivory body
+   surrounding dark content. Workspaces share the same drafting-grid canvas. */
+:root[data-theme="light"] .ix-root,
+:root[data-theme="light"] .ix-root .arch-product-main {
+  background-color:var(--ai-ui-canvas)!important;
+  color:var(--ai-ui-ink)!important;
+}
+.ix-root .arch-product-main {
+  background-image:
+   linear-gradient(to right,rgba(120,120,120,.055) 1px,transparent 1px),
+   linear-gradient(to bottom,rgba(120,120,120,.055) 1px,transparent 1px);
+  background-size:90px 90px;
+}
+:root[data-theme="dark"] .ix-root .arch-product-main {
+  background-image:
+   linear-gradient(to right,rgba(205,216,218,.035) 1px,transparent 1px),
+   linear-gradient(to bottom,rgba(205,216,218,.035) 1px,transparent 1px);
+}
+.ix-root .arch-product-main :is(.sys-tile,.home-board-tile,.home-widget,
+ .module,.mod,.feed-card,.post-card,.need-case,.match-report,
+ .intro-recommendation,.profile-hero,.profile-settings,.opportunity-clusters article,
+ .attention-panel,.messages-layout,.home-matches,.home-education) {
+  background-color:var(--ai-ui-surface);
+  border:1px solid var(--ai-ui-border);
+  color:var(--ai-ui-ink);
+  border-radius:12px;
+  box-shadow:var(--ai-ui-shadow);
+}
+
+/* Entire classic engine: Home, CRM, People, Needs, Intros, Meetings, Reports,
+   Insights, Deal Rooms, Library, Settings and standalone workspace tools.
+   These explicit surfaces avoid touching photography and graphs. */
+:root[data-theme="light"] .ix-root .ix-classic :is(.app-shell,.social-shell,
+ .workspace,.workspace-grid,.content) {
+ --night:#F5F2EC;--raised:#FBF9F4;--graphite:#F2EEE8;
+ --paper:#FBF9F4;--ivory:#F5F2EC;
+ --ink:#2E3438;--soft:#2E3438;--muted:#56626A;
+ --line-dark:#D7D3CB;--line-light:#D7D3CB;
+ --cobalt:#2F5F87;--cobalt-bright:#2F5F87;--cobalt-hover:#244B6B;
+ --sys-bg:#F5F2EC;--sys-panel:#FBF9F4;--sys-ink:#2E3438;
+ color:#2E3438;
+}
+:root[data-theme="dark"] .ix-root .ix-classic :is(.app-shell,.social-shell,
+ .workspace,.workspace-grid,.content) {
+ --night:#111719;--raised:#1A2223;--graphite:#243137;
+ --paper:#1A2223;--ivory:#111719;
+ --ink:#F1F1EE;--soft:#F1F1EE;--muted:#BAC5C9;
+ --line-dark:#46585E;--line-light:#46585E;
+ --cobalt:#80B2D6;--cobalt-bright:#80B2D6;--cobalt-hover:#A7CBE6;
+ color:#F1F1EE;
+}
+.ix-root .ix-classic .app-shell,
+.ix-root .ix-classic .social-shell,
+.ix-root .ix-classic :is(.workspace,.workspace-grid,.content) {
+ background-color:var(--ai-ui-canvas)!important;
+ color:var(--ai-ui-ink);
+}
+.ix-root .ix-classic :is(.nav-rail,.context-rail,.topbar,.social-topnav,
+ .social-left-rail,.social-right-rail,.notifications-panel,.intel-drawer,
+ .topbar-dropmenu,.global-search-panel,.more-panel,.ix-tools) {
+ background-color:var(--ai-ui-surface)!important;
+ color:var(--ai-ui-ink)!important;
+ border-color:var(--ai-ui-border)!important;
+}
+.ix-root .ix-classic .app-shell .content :is(
+ .module,.mod,.feed-card,.post-card,.social-feed-card,.social-composer,
+ .social-card,.social-intelligence-card,.hub-panel,.home-matches,
+ .attention-panel,.person-card,.member-tile,.match-report,.need-case,
+ .profile-settings,.profile-facts,.insight-list,.insight-numbers,
+ .insight-collisions,.opportunity-clusters article,.case-grid,.intelligence-map,
+ .evidence-line,.messages-layout,.conversation,.thread-list,
+ .ops-card,.ops-panel,.fcrm-panel,.dashboard-tile,.executive-workbench-body,
+ .profile-hero,.page-module,.home-widget,.opportunity-card
+) {
+ background-color:var(--ai-ui-surface)!important;
+ color:var(--ai-ui-ink)!important;
+ border-color:var(--ai-ui-border)!important;
+ border-radius:12px;
+ box-shadow:var(--ai-ui-shadow);
+}
+.ix-root .ix-classic .app-shell .content :is(
+ .insight-list>article,.social-feed-card,.social-composer,
+ .thread-list button,.messages-layout section,.social-intelligence-card
+) {
+ background-color:var(--ai-ui-surface)!important;
+ border-color:var(--ai-ui-border)!important;
+}
+/* Signals and messages contain independent light surfaces in both modes.
+   Their own text colors MUST follow their surfaces, not the parent page theme. */
+.ix-root .ix-classic .app-shell .content .ai-insight-list,
+.ix-root .ix-classic .app-shell .content .ai-insight-list>article,
+.ix-root .ix-classic .app-shell .content .ai-insight-numbers,
+.ix-root .ix-classic .app-shell .content .ai-insight-numbers>div {
+ background-color:#FBF9F4!important;
+ color:#2E3438!important;
+ border-color:#D7D3CB!important;
+}
+.ix-root .ix-classic .app-shell .content .ai-insight-list
+ :is(.insight-main h3,.insight-confidence strong) {color:#263640!important;}
+.ix-root .ix-classic .app-shell .content .ai-insight-list
+ :is(.insight-main p,.insight-main small,.insight-index,.insight-confidence small) {
+ color:#52616C!important;
+}
+.ix-root .ix-classic .app-shell .content .ai-insight-numbers
+ :is(strong,span,small) {color:#33434C!important;}
+
+/* Solid, screenshot-matched functional actions across both appearances;
+   deliberately NOT applying to image cards or signature marketing links. */
+.ix-root .arch-product-main :is(.btn.primary,.msg-primary-action,.ai-functional-action,
+ button[data-ui="primary"],button.btn-primary),
+.ix-root .ix-classic .app-shell :is(.btn.primary,.ask-button.primary) {
+ background:#2F5F87!important;
+ background-image:none!important;
+ color:#FFFFFF!important;
+ -webkit-text-fill-color:#FFFFFF!important;
+ border:1px solid #2F5F87!important;
+ border-radius:8px!important;
+ box-shadow:none;
+ animation:none!important;
+}
+.ix-root .arch-product-main :is(.btn.primary,.msg-primary-action,.ai-functional-action,
+ button[data-ui="primary"],button.btn-primary):hover:not(:disabled),
+.ix-root .ix-classic .app-shell .btn.primary:hover:not(:disabled) {
+ background:#244B6B!important;
+ border-color:#244B6B!important;
+ color:#fff!important;
+}
+.ix-root .arch-product-main :is(.btn.secondary,.btn.quiet,.ai-option-secondary),
+.ix-root .ix-classic .app-shell :is(.btn.secondary,.btn.quiet) {
+ background:var(--ai-ui-surface)!important;
+ background-image:none!important;
+ color:var(--ai-ui-ink)!important;
+ -webkit-text-fill-color:var(--ai-ui-ink)!important;
+ border:1px solid var(--ai-ui-border)!important;
+ border-radius:8px!important;
+ animation:none!important;
+}
+.ix-root .arch-product-main :is(.btn.secondary,.btn.quiet,.ai-option-secondary):hover,
+.ix-root .ix-classic .app-shell :is(.btn.secondary,.btn.quiet):hover {
+ background:var(--ai-ui-selected)!important;
+ color:var(--ai-ui-selected-ink)!important;
+ border-color:var(--ai-ui-selected-border)!important;
+}
+/* The legacy social feed and insights previously used dark hardcoded copy.
+   Limit inverse-text correction to known paper UI surfaces, not hero images. */
+:root[data-theme="light"] .ix-root .ix-classic .app-shell .content
+ :is(.module,.mod,.social-feed-card,.feed-card,.post-card,.need-case,
+ .match-report,.profile-settings,.profile-facts,.home-matches,.attention-panel,
+ .people-card,.member-tile,.ops-card,.social-composer,.insight-numbers,.insight-list,
+ .opportunity-clusters article,.social-intelligence-card,.executive-workbench-body)
+ :is(h1,h2,h3,h4,strong,[class~="text-white"],[class*="text-[#F2EEE6]"]) {
+ color:#2E3438!important;
+}
+:root[data-theme="light"] .ix-root .ix-classic .app-shell .content
+ :is(.module,.mod,.social-feed-card,.feed-card,.post-card,.need-case,
+ .match-report,.profile-settings,.profile-facts,.home-matches,.attention-panel,
+ .member-tile,.ops-card,.social-composer,.insight-numbers,.insight-list)
+ :is(p,small,dd,dt,[class*="text-[#9CA3AF]"],[class*="text-[#6B7280]"]) {
+ color:#56626A!important;
+}
+/* Card selection, filter choice, inbox rows and option buttons always use the
+   same pale-blue state as Messages. */
+.ix-root .arch-product-main :is(
+ [role="tab"][aria-selected="true"],[role="tab"][data-state="active"],
+ [role="option"][aria-selected="true"],[role="option"][data-state="checked"],
+ [role="menuitemcheckbox"][data-state="checked"],[aria-pressed="true"].ix-option-tab,
+ [aria-pressed="true"].ix-option-tile,.ix-tools button.on,
+ .filter-chip[aria-pressed="true"],.ops-tabs button.active,
+ .insight-tabs button.active,.thread-list button.active
+) {
+ background-color:var(--ai-ui-selected)!important;
+ color:var(--ai-ui-selected-ink)!important;
+ border-color:var(--ai-ui-selected-border)!important;
+}
+:root[data-theme="light"] .ix-root .ix-classic :is(.thread-list button.active,
+ .ops-tabs button.active,.insight-tabs button.active) {
+ background-color:#DCE8F3!important;
+ color:#233E53!important;
+ border-color:#B9CBDD!important;
+}
+/* Legacy form surfaces/menus, not the image-backed sections. */
+.ix-root .arch-product-main :is(
+ input:not([type="checkbox"]):not([type="radio"]):not([type="range"]),
+ textarea,select,[role="combobox"]
+) {
+ color:var(--ai-ui-ink)!important;
+ background-color:var(--ai-ui-input)!important;
+ border-color:var(--ai-ui-border)!important;
+ border-radius:8px;
+}
+.ix-root .arch-product-main :is(input,textarea)::placeholder {
+ color:var(--ai-ui-muted)!important;
+ opacity:1;
+}
+.ix-root .arch-product-main :is(input,select,textarea,button,a,[role="combobox"]):focus-visible {
+ outline:2px solid var(--ai-ui-blue)!important;
+ outline-offset:3px;
+}
+.ix-root :is(.ix-desktop-more-menu,.ix-mobile-sheet,.topbar-dropmenu,.more-panel,
+ [role="menu"],[role="listbox"]) {
+ background-color:var(--ai-ui-surface)!important;
+ color:var(--ai-ui-ink)!important;
+ border-color:var(--ai-ui-border)!important;
+}
+:root[data-theme="light"] .ix-root :is(.ix-desktop-more-item,.ix-mobile-sheet-item,
+ [role="menuitem"],[role="option"]):is(:hover,[data-highlighted],[aria-current="page"]) {
+ background-color:#DCE8F3!important;color:#233E53!important;
+}
+/* Shared Radix menus rendered to body portals, using the same theme tokens. */
+:root[data-theme="light"] :is(.ai-option-menu,.ai-option-list) {
+ background:#FBF9F4!important;
+ color:#2E3438!important;
+ border-color:#D7D3CB!important;
+}
+:root[data-theme="dark"] :is(.ai-option-menu,.ai-option-list) {
+ background:#1A2223!important;
+ color:#F1F1EE!important;
+ border-color:#46585E!important;
+}
+:root[data-theme="light"] :is(.ai-option-menu,.ai-option-list)
+ :is([role="menuitem"],[role="option"],.ai-option-item):is([data-highlighted],:hover,[aria-selected="true"]) {
+ background:#DCE8F3!important;color:#233E53!important;
+}
+@media(max-width:720px) {
+ .ix-root .arch-product-main :is(.sys-tile,.module,.feed-card,.post-card,.match-report) {box-shadow:none;}
+}
+@media(prefers-reduced-motion:reduce) {
+ .ix-root .arch-product-main :is(.sys-tile,.module,.feed-card,.home-widget) {transition:none;}
+}
