@@ -2,7 +2,7 @@
   "meta": {
     "name": "Ask Intros",
     "package": "@ws-gmhcx8w6bqvecbtkycud/c1248cd8-77de-4eaa-8d9d-e7da71e70ae9",
-    "version": "27.1.0",
+    "version": "27.2.0",
     "framework": "react",
     "css_framework": "tailwind",
     "starter_template": "custom_design_system_tailwind",
@@ -383,7 +383,7 @@
       "src/aetheris/activation.ts": "116384bc400deb0d471fc32d44cdc75b",
       "src/aetheris/admin-health-ui.tsx": "627b9a0ad84f0873ae4108cefdd289b5",
       "src/aetheris/agent-ui.tsx": "aaad32d89664f3589dc896854da07678",
-      "src/aetheris/architect-everywhere.css": "fc5d325fef090882cfe9229f567a6ee4",
+      "src/aetheris/architect-everywhere.css": "c645e33f4e3ce7a2dc8cc7331a998a20",
       "src/aetheris/architectural-system.css": "e7de334107fb1a78f95a93c6d5b81ee7",
       "src/aetheris/avatar.tsx": "b40b8ccbf7e194bbf94ec6f63e5c815a",
       "src/aetheris/badge.tsx": "2ec524434c677621d568e2ae733fecbc",
