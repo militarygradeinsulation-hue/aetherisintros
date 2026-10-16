@@ -92,8 +92,9 @@ export const IntrosHubView: React.FC<IntrosHubViewProps> = ({
         ].map((tab) => (
           <button
             key={tab.id}
+            aria-pressed={activeTab === tab.id}
             onClick={() => setActiveTab(tab.id as any)}
-            className={`text-xs font-medium cursor-pointer transition-colors pb-1 flex items-center gap-1.5 ${
+            className={`ix-option-tab text-xs font-medium cursor-pointer transition-colors pb-1 flex items-center gap-1.5 ${
               activeTab === tab.id
                 ? 'text-white border-b-2 border-[#F5B027] font-semibold'
                 : 'text-[#9CA3AF] hover:text-white'
