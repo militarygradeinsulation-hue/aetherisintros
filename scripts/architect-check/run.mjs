@@ -62,7 +62,7 @@ try {
   check(m.page==='home','Home uses the shared product layout');
   check(m.panel.length>0 && m.ink.length>0,'Design tokens load in '+theme);
   check(m.background=== (theme==='dark'?'rgb(17, 23, 25)':'rgb(245, 242, 236)'),'Canvas follows appearance mode');
-  check(m.panel===(theme==='light'?'#FBF9F4':'#1a2223'),'Paper or charcoal panel tokens follow appearance mode');
+  check(m.panel.toLowerCase()===(theme==='light'?'#fbf9f4':'#1a2223'),`Paper or charcoal panel token matches appearance mode (received ${m.panel})`);
   check(m.mainWidth<=m.viewport+2,'Home stays within viewport');
   const nav=page.locator('nav[aria-label="Desktop navigation"]');
   await nav.locator('> button',{hasText:'People'}).click();
