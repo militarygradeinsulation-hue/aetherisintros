@@ -51,7 +51,7 @@ try {
     return {
       page:main?.getAttribute('data-arch-page'),
       background:styles.backgroundColor,
-      panel:root.getPropertyValue('--architect-panel').trim(),
+      panel:root.getPropertyValue('--ai-ui-surface').trim(),
       ink:root.getPropertyValue('--architect-ink').trim(),
       mainWidth:main?.getBoundingClientRect().width,
       viewport:innerWidth,
