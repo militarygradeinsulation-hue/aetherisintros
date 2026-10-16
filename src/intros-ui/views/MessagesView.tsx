@@ -227,6 +227,7 @@ export const MessagesView: React.FC<MessagesViewProps> = ({
               ].map((f) => (
                 <button
                   key={f.id}
+                  aria-pressed={activeFolder === f.id}
                   onClick={() => setActiveFolder(f.id as any)}
                   className={`w-full flex items-center justify-between px-2.5 py-1.5 rounded-lg transition-colors cursor-pointer ${
                     activeFolder === f.id
