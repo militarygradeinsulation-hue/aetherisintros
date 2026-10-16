@@ -415,3 +415,49 @@
   .ix-root .arch-product-main {background-image:none!important;}
   .ix-root .arch-product-main :is(.module,.sys-tile,.home-board-tile,.home-widget,.panel) {box-shadow:none!important;}
 }
+
+
+/* Reusable controls wired to actual People, Intros and Home option buttons. */
+.ix-root .arch-product-main :is(.ix-option-tile,.ix-option-tab) {
+  border:1px solid var(--ai-ui-border);
+  border-radius:8px;
+  background:var(--ai-ui-surface);
+  color:var(--ai-ui-ink);
+  box-shadow:none;
+  font-weight:550;
+  transition:border-color .16s ease,background-color .16s ease,color .16s ease;
+}
+.ix-root .arch-product-main .ix-option-tab {padding:7px 11px;min-height:34px;}
+.ix-root .arch-product-main :is(.ix-option-tile,.ix-option-tab)[aria-pressed="true"] {
+  color:var(--ai-ui-selected-ink)!important;
+  background:var(--ai-ui-selected)!important;
+  border-color:var(--ai-ui-selected-border)!important;
+  box-shadow:inset 0 -1px 0 var(--ai-ui-blue);
+}
+.ix-root .arch-product-main :is(.ix-option-tile,.ix-option-tab):hover:not(:disabled) {
+  background:var(--ai-ui-selected)!important;
+  color:var(--ai-ui-selected-ink)!important;
+  border-color:var(--ai-ui-selected-border)!important;
+}
+.ix-root .arch-product-main :is(.ix-option-tile,.ix-option-tab)[aria-pressed="true"] :is(span,strong,small) {
+  color:var(--ai-ui-selected-ink)!important;
+}
+.ix-root .arch-product-main :is(.ix-option-tile,.ix-option-tab):focus-visible {
+  outline:2px solid var(--ai-ui-blue)!important;
+  outline-offset:3px;
+}
+.ix-root .ix-messages nav button[aria-pressed="true"] {
+  background:var(--msg-selected)!important;
+  color:#233E53!important;
+  border-color:#B9CBDD!important;
+}
+.ix-root .ix-messages nav button:hover {background:var(--msg-hover);}
+.ix-root .ix-messages nav button[aria-pressed="true"] span {color:inherit;}
+/* Rich visualizations intentionally have their own dark plots; do not give
+   canvas, video, pictures or graph node charts a paper background. */
+.ix-root .arch-product-main :is(canvas,video,svg,img,.ix-field-tile,.network-field,.constellation-graph) {
+  border-color:inherit;
+}
+@media(prefers-reduced-motion:reduce) {
+  .ix-root .arch-product-main :is(.ix-option-tile,.ix-option-tab) {transition:none;}
+}
