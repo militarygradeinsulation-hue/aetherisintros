@@ -504,3 +504,13 @@
   -webkit-text-fill-color:#FFFFFF!important;
   border-color:#244B6B!important;
 }
+
+
+/* Light More menus previously inherited a stronger legacy #fffdf9 rule.
+   Match the same cream panel token used by every other dropdown. */
+:root[data-theme="light"] .ix-root .ix-desktop-more-menu,
+:root[data-theme="light"] .ix-root .ix-mobile-sheet {
+  background:#FBF9F4!important;
+  color:#2E3438!important;
+  border-color:#D7D3CB!important;
+}
