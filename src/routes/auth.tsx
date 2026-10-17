@@ -112,7 +112,7 @@ function AuthPage() {
       try { await claimAccess(code); clearInvite() } catch { /* the founding page can retry */ }
     }
     if (next) { window.location.replace(next); return }
-    void navigate({ to: '/verify', replace: true })
+    void navigate({ to: '/app', replace: true })
   }, [navigate, next])
 
   useEffect(() => {
@@ -146,7 +146,7 @@ function AuthPage() {
           email,
           password,
           options: {
-            emailRedirectTo: `${window.location.origin}${next || '/verify'}`,
+            emailRedirectTo: `${window.location.origin}${next || '/app'}`,
             data: { name: name || email.split('@')[0], invite_code: invite.trim() },
           },
         })
@@ -171,7 +171,7 @@ function AuthPage() {
     rememberInvite(invite)
     try {
       const result = await lovable.auth.signInWithOAuth('google', {
-        redirect_uri: `${window.location.origin}${next || '/verify'}`,
+        redirect_uri: `${window.location.origin}${next || '/app'}`,
       })
       if (result.error) throw new Error('Google sign-in could not start. Try email instead.')
       if (result.redirected) return
@@ -199,7 +199,7 @@ function AuthPage() {
           </p>
         : <div className="auth-soon" role="status">
             <span><i aria-hidden="true" />MEMBER SIGNUP</span>
-            <p>{inviteRequired ? 'An invitation or whitelist approval is required for network access.' : 'Create your account, confirm your email, and complete membership verification to join the network.'}</p>
+            <p>{inviteRequired ? 'An invitation or whitelist approval is required for network access.' : 'Create your account, confirm your email and set up your professional profile. Earn an optional verified-business badge after presenting proof.'}</p>
             <div className="auth-soon-actions">
               <Link to="/demo">Explore the demo <ArrowRight size={13} /></Link>
               <Link to="/early-access">Join the whitelist <ArrowRight size={13} /></Link>
@@ -207,8 +207,8 @@ function AuthPage() {
           </div>}
       <h1>{mode === 'signin' ? <>Welcome<br /><em>back.</em></> : <>Join the<br /><em>network.</em></>}</h1>
       <p className="auth-lede">
-        A network built for people who actually run companies. Every member is verified, so every
-        relationship starts with a real person — and your context stays private and permissioned.
+        Build a real professional network with mutual-consent introductions and meaningful context.
+        Only business roles supported by evidence earn a verified badge. Your private information stays under your control.
       </p>
 
       <div className="auth-proof" aria-label="Member access principles">
