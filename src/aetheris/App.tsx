@@ -129,7 +129,7 @@ import { useGraph } from './graph-store'
 import { OutcomeCheckins } from './outcomes-ui'
 import { IntroRequestInbox } from './intro-inbox'
 import { MeetingsPage } from './meetings-ui'
-import { PeerGroupsPage } from './peer-groups-ui'
+import { PeerGroupsPage, PeerGroupsFeedPage } from './peer-groups-ui'
 import { ProvidersPage } from './providers-ui'
 import { WarmPathsPage } from './warm-paths-ui'
 import { WorkspacesPage } from './workspaces/WorkspacesPage'
@@ -2744,7 +2744,7 @@ function Shell({ startPage, feedOnly = false }: { startPage?: Page | undefined; 
       intros: <Intros people={people} select={setSelected} draft={setDraft} />,
       messages: <MessageHub people={people} select={setSelected} activeId={threadId} setActiveId={setThreadId} />,
       meetings: <MeetingsPage />,
-      peergroups: <PeerGroupsPage />,
+      peergroups: <PeerGroupsFeedPage />,
       providers: <ProvidersPage />,
       warmpaths: <WarmPathsPage />,
       workspaces: <WorkspacesPage />,
