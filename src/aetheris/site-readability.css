@@ -181,3 +181,24 @@ html:root[data-theme] body .ix-root
   color:#dedede!important;
   -webkit-text-fill-color:#dedede!important;
 }
+
+/* Live/demo Messages: thread names must follow the panel's actual appearance.
+ * Legacy inverted stencil rules used a fixed white text fill on these spans.
+ * Keep names black on light tiles, white on dark tiles, without touching the
+ * white label of the orange primary action beside them. */
+html:root[data-theme="light"] body .ix-root .arch-product-main .ix-messages aside
+  :is(span,div).text-xs.font-semibold.truncate,
+html:root[data-theme="light"] body .ix-root .arch-product-main .ix-live-messages aside
+  :is(span,div).text-sm.truncate {
+  color:#111111!important;
+  -webkit-text-fill-color:#111111!important;
+  opacity:1!important;
+}
+html:root[data-theme="dark"] body .ix-root .arch-product-main .ix-messages aside
+  :is(span,div).text-xs.font-semibold.truncate,
+html:root[data-theme="dark"] body .ix-root .arch-product-main .ix-live-messages aside
+  :is(span,div).text-sm.truncate {
+  color:#ffffff!important;
+  -webkit-text-fill-color:#ffffff!important;
+  opacity:1!important;
+}
