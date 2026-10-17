@@ -66,7 +66,7 @@ try {
     // The modern Ask Intros /demo shell has an integrated VoiceBar rather
     // than a legacy .read-btn; use its real Read-on-tap integration.
     await page.locator('.voice-bar').first().waitFor({state:'visible',timeout:30000})
-    const text = page.locator('.ix-root p:visible').filter({hasText:/[A-Za-z]{3,}/}).first()
+    const text = page.locator('.home-social-heading p').first()
     await text.waitFor({state:'visible',timeout:30000})
     await text.click()
     if (scenario.voice === 'intros-managed') {
