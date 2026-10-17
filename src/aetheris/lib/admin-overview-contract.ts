@@ -20,8 +20,8 @@ export function parseAdminOverview(value: unknown): AdminStats {
     if (typeof count !== 'number' || !Number.isSafeInteger(count) || count < 0) throw invalid()
     totals[key] = count
   }
-  if (typeof payload.generated_at !== 'string' || Number.isNaN(Date.parse(payload.generated_at))) {
+  if (typeof payload['generated_at'] !== 'string' || Number.isNaN(Date.parse(payload['generated_at']))) {
     throw invalid()
   }
-  return { ...totals, generated_at: payload.generated_at }
+  return { ...totals, generated_at: payload['generated_at'] }
 }
