@@ -278,7 +278,7 @@ async function boot({ legacyMemberFixture = false } = {}) {
   if (legacyMemberFixture) await db.exec(`
     create or replace function public.is_live_member() returns boolean
     language sql stable security definer set search_path to 'public'
-    as $ select exists(select 1 from public.profiles where id=auth.uid()) $;
+    as $fixture$ select exists(select 1 from public.profiles where id=auth.uid()) $fixture$;
   `)
   const as = async (uid, sql, params = []) => {
     await db.exec(`reset role; select set_config('request.jwt.claim.sub', '${uid ?? ''}', false); set role ${uid ? 'authenticated' : 'anon'};`)
