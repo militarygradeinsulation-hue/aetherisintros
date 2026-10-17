@@ -819,7 +819,7 @@ function Home({ people, select, setPage, openNeed, openThread }: {
     if (sort === 'contact') return (a.lastInteractionDays ?? 0) - (b.lastInteractionDays ?? 0)
     return b.scoreTotal - a.scoreTotal
   }), [filter, people, query, ranked, sort])
-  const needingAttention = people.filter(person => person.relationshipStatus === 'at-risk' || (person.lastInteractionDays ?? 0) > 60).length
+  const needingAttention = people.filter(person => person.relationshipStatus === 'at-risk' || (person.lastInteractionDays != null && person.lastInteractionDays < 9000 && person.lastInteractionDays > 60)).length
   const highValuePaths = people.filter(person => person.scoreTotal >= 75).length
   const activeOpportunities = os.rooms.filter(room => !room.archived && room.stage !== 'Lost/Not Now').length + platform.placements.filter(placement => !['Adopted', 'Referred', 'Not Now'].includes(placement.stage)).length
   const coldConversations = net.threads.filter(thread => thread.unread).length
@@ -1230,7 +1230,10 @@ function Messages({ people, select, activeId, setActiveId }: { people: Member[];
     setMessageSaving(true)
     setFailedSend(null)
     try {
-      await net.sendMessage(threadId, message, id)
+      const savedThreadId = await net.sendMessage(threadId, message, id)
+      // A new chat starts under a temporary local ID. Use the actual
+      // server-confirmed thread ID after the first successful delivery.
+      if (savedThreadId && savedThreadId !== threadId) setActiveId(savedThreadId)
       setText(current => current === message ? '' : current)
     } catch (error) {
       const reason = error instanceof Error ? error.message : 'The server did not confirm your message.'
@@ -1501,14 +1504,14 @@ function Memory({ people, select }: { people: Member[]; select: (p: Member) => v
       </section>
       <section className="mod">
         <header><span>RECONNECT OPPORTUNITIES</span><button className="mod-link">View all <ArrowRight size={12} /></button></header>
-        <ul className="reconnect-list">{[...people].sort((a, b) => (b.lastInteractionDays ?? 0) - (a.lastInteractionDays ?? 0)).slice(0, 3).map(p =>
+        <ul className="reconnect-list">{[...people].filter(p => p.lastInteractionDays != null && p.lastInteractionDays < 9000).sort((a, b) => (b.lastInteractionDays ?? 0) - (a.lastInteractionDays ?? 0)).slice(0, 3).map(p =>
           <li key={p.id}><button onClick={() => select(p)}><Avatar person={p} portrait />
             <div><strong>{p.name}</strong><small>Last conversation {Math.max(1, Math.round((p.lastInteractionDays ?? 0) / 30))} months ago</small>
               <small>{p.whyNow}</small></div></button></li>)}</ul>
       </section>
       <section className="mod">
         <header><span>COOLING CONVERSATIONS</span><button className="mod-link">View all <ArrowRight size={12} /></button></header>
-        <ul className="reconnect-list">{people.filter(p => p.score.timing < 70).slice(0, 3).map(p =>
+        <ul className="reconnect-list">{people.filter(p => p.score.timing < 70 && p.lastInteractionDays != null && p.lastInteractionDays < 9000).slice(0, 3).map(p =>
           <li key={p.id}><button onClick={() => select(p)}><Avatar person={p} portrait />
             <div><strong>{p.name}</strong><small>Last message {Math.max(1, Math.round((p.lastInteractionDays ?? 0) / 7))} weeks ago</small>
               <small>{p.nextAction}</small></div></button></li>)}</ul>
@@ -1853,7 +1856,7 @@ function MemberProfile({ person, people, onClose, onDraft, onMessage }: {
     { text: `You both engaged with ${person.industry.toLowerCase()} conversations on Intros`, when: `Joined ${person.joined}` },
     ...(person.bestPath.length > 2 ? [{ text: `Warm path opened through ${person.bestPath[1]}`, when: 'Trust path active' }] : []),
     { text: person.mutuals.length ? `Shared connections: ${person.mutuals.join(', ')}` : 'No shared connections yet', when: `${person.mutuals.length} mutual` },
-    { text: `${person.name.split(' ')[0]} last interacted with your network`, when: `${(person.lastInteractionDays ?? 0)} days ago` },
+    ...(person.lastInteractionDays != null && person.lastInteractionDays < 9000 ? [{ text: `${person.name.split(' ')[0]} last interacted with your network`, when: `${person.lastInteractionDays} days ago` }] : []),
   ]
   return <article className="member-page">
     <button className="member-back" onClick={onClose}><ChevronLeft size={16} /> Back to the network</button>
@@ -2270,7 +2273,7 @@ function ContextRail({ page, people, select, onAsk }: {
   const objectives = net.objectives
   const ranked = [...people].sort((a, b) => b.scoreTotal - a.scoreTotal)
   const p = ranked[0]
-  const cool = [...people].sort((a, b) => (b.lastInteractionDays ?? 0) - (a.lastInteractionDays ?? 0))[0]
+  const cool = [...people].filter(p => p.lastInteractionDays != null && p.lastInteractionDays < 9000).sort((a, b) => (b.lastInteractionDays ?? 0) - (a.lastInteractionDays ?? 0))[0]
   const warm = people.filter(x => x.bestPath.length > 2).slice(0, 2)
   if (!p) return null
   return <aside className="context-rail">
