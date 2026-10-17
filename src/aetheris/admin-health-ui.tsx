@@ -15,10 +15,25 @@ type Health = any
 export function AdminNetworkHealthPanel() {
   const [h, setH] = useState<Health | null>(null)
   const [error, setError] = useState('')
-  useEffect(() => {
-    void (supabase as any).rpc('admin_network_health').then((r: any) => { if (r.error) setError(r.error.message); else setH(r.data) })
-  }, [])
-  if (error) return <section className="executive-section"><Eyebrow><Activity size={12} /> NETWORK HEALTH</Eyebrow><p className="og-note">{error}</p></section>
+  const [loading, setLoading] = useState(true)
+  const reload = async () => {
+    setLoading(true)
+    setError('')
+    try {
+      const r = await (supabase as any).rpc('admin_network_health')
+      if (r.error) { setH(null); setError(r.error.message || 'Unable to load network health.') }
+      else if (!r.data) { setH(null); setError('Network health returned no data.') }
+      else setH(r.data)
+    } catch {
+      setH(null)
+      setError('Unable to reach network health reporting.')
+    } finally {
+      setLoading(false)
+    }
+  }
+  useEffect(() => { void reload() }, [])
+  if (error) return <section className="executive-section" role="alert"><Eyebrow><Activity size={12} /> NETWORK HEALTH</Eyebrow><p className="og-note">{error}</p><button type="button" onClick={() => void reload()}>Retry</button></section>
+  if (loading && !h) return <section className="executive-section" aria-busy="true"><Eyebrow><Activity size={12} /> NETWORK HEALTH</Eyebrow><p>Loading network health…</p></section>
   if (!h) return null
   const m = h.members ?? {}
   return <section className="executive-section admin-health">
