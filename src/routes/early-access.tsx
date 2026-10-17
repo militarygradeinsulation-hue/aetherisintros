@@ -46,9 +46,10 @@ function EarlyAccessPage() {
 
   useEffect(() => {
     if (access.loading || !access.signedIn) return
-    // A founding place is only half of membership: the business role must be verified too.
-    if (access.verification !== 'verified') { void navigate({ to: '/verify', replace: true }); return }
-    if (access.status === 'approved') {
+    if (access.status !== 'approved' || !access.emailConfirmed) return
+    if (access.verification === 'rejected' || access.verification === 'suspended') {
+      void navigate({ to: '/verify', replace: true })
+    } else {
       void navigate({ to: access.onboarded ? '/app' : '/onboarding', replace: true })
     }
   }, [access, navigate])
@@ -59,9 +60,9 @@ function EarlyAccessPage() {
       const result = await claimAccess(code)
       await refresh()
       reloadStats()
-      if (result.status === 'approved') void navigate({ to: '/verify', replace: true })
+      if (result.status === 'approved') setNotice('Your membership is confirmed. Opening your profile or workspace…')
       else if (result.status === 'waitlisted') setNotice('The founding places are taken. You are on the waitlist and we will write when a place opens.')
-      else setError('This account is not approved yet. An invitation or admin approval is needed.')
+      else setError('Your registration is pending. Check email confirmation, your invitation, or the current launch mode.')
     } catch (caught) {
       setError(caught instanceof Error ? caught.message : 'Something went wrong. Try again.')
     } finally { setBusy(false) }
@@ -104,6 +105,8 @@ function EarlyAccessPage() {
       </div>
 
       {access.loading && <p className="auth-notice">Checking your place…</p>}
+
+      {!access.loading && access.signedIn && access.status === 'approved' && !access.emailConfirmed && <p className="auth-notice" role="status">Check your email to confirm your address, then sign in again.</p>}
 
       {!access.loading && !access.signedIn && <>
         <p className="auth-lede">Explore the complete showcase without an account. Create one only when you are ready to build your real professional network.</p>

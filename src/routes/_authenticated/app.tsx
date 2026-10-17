@@ -3,7 +3,7 @@ import { useEffect } from 'react'
 
 import IntrosApp from '@/intros-ui/IntrosApp'
 import { AetherisProviderRoot } from '@/aetheris/AetherisProviderRoot'
-import { useAccess } from '@/aetheris/access'
+import { isLiveMember, useAccess } from '@/aetheris/access'
 import '@/aetheris/styles.css'
 
 export const Route = createFileRoute('/_authenticated/app')({
@@ -36,13 +36,14 @@ function AppRoute() {
 function Gate() {
   const { access } = useAccess()
   const navigate = useNavigate()
-  const ready = access.status === 'approved' && access.verification === 'verified' && access.onboarded
+  const ready = isLiveMember(access)
 
   useEffect(() => {
     if (access.loading) return
-    // Verification decides network access; the database enforces the same rule.
-    if (access.verification !== 'verified') void navigate({ to: '/verify', replace: true })
-    else if (access.status !== 'approved') void navigate({ to: '/early-access', replace: true })
+    // Business-role review is optional. A rejected or suspended account,
+    // however, cannot enter the network even after email confirmation.
+    if (access.status !== 'approved' || !access.emailConfirmed) void navigate({ to: '/early-access', replace: true })
+    else if (access.verification === 'rejected' || access.verification === 'suspended') void navigate({ to: '/verify', replace: true })
     else if (!access.onboarded) void navigate({ to: '/onboarding', replace: true })
   }, [access, navigate])
 
