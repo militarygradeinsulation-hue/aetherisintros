@@ -26,7 +26,7 @@ export interface ActivationStepView extends ActivationStepState {
 
 const COPY: Record<ActivationStepId, { title: string; detail: string; action: string; target: ActivationTarget }> = {
   profile: { title: 'Add your photo and headline', detail: 'Members reply faster to a face and a title.', action: 'Edit profile', target: 'profile' },
-  verified: { title: 'Get verified', detail: 'Verified owners and CEOs can request and accept introductions.', action: 'Verify', target: 'verify' },
+  verified: { title: 'Verify your business role (optional)', detail: 'Earn an evidence-based professional badge. Normal member networking does not require this badge.', action: 'Verify role', target: 'verify' },
   goals: { title: 'Set your 3 goals for this quarter', detail: 'Only you see them. They shape who we suggest you meet.', action: 'Set goals', target: 'goals' },
   ask: { title: 'Post your first ask', detail: 'Say what you need. Members who can help will reply.', action: 'Post an ask', target: 'needs' },
   intro: { title: 'Request or accept your first introduction', detail: 'One warm introduction is the fastest way in.', action: 'Open introductions', target: 'intros' },
@@ -50,7 +50,7 @@ export function activationView(steps: ActivationStepState[], opts: { calendarAva
         ? s.photo === false && s.headline === false ? 'Add a photo in Settings and your title in My profile.'
           : s.photo === false ? 'Add a profile photo in Settings.' : 'Add your title in My profile.'
         : copy.detail
-      return { ...s, ...copy, target, detail, optional: id === 'calendar' || !!s.optional }
+      return { ...s, ...copy, target, detail, optional: id === 'calendar' || id === 'verified' || !!s.optional }
     })
 }
 
