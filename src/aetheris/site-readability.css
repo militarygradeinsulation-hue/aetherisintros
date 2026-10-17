@@ -204,3 +204,91 @@ html:root[data-theme="dark"] .auth-panel .auth-error {
   color: #ffb4b4 !important;
   -webkit-text-fill-color: #ffb4b4 !important;
 }
+
+/* October 17 responsive/type audit. Inbox names are plain Tailwind spans,
+ * not msg-heading classes; pair them with the inverse panel token. */
+html:root[data-theme] body .ix-root
+  :is(.ix-messages,.ix-live-messages) aside
+  .text-xs.font-semibold.truncate {
+  color:var(--msg-ink)!important;
+  -webkit-text-fill-color:var(--msg-ink)!important;
+  opacity:1!important;
+}
+
+/* No tile, tab, control, or content column may grow wider than its available
+ * grid/flex track because of an email, URL, name, or unbroken business term. */
+html:root[data-theme] body .ix-root
+  :is(.arch-product-main,.ix-classic,.ix-tools,.ix-mobile-sheet,.ix-desktop-more-menu,
+      .home-feed-layout,.home-feed-center,.home-feed-rail,.home-feed-widget,
+      .home-board-tile,.home-feed-customize,.home-feed-customize-row,
+      .sys-tile,.arch-card,.arch-panel,.msg-thread-tile,
+      .msg-chat-body,.msg-live-chat-body,.msg-brief-panel) {
+  min-width:0;
+  max-width:100%;
+}
+html:root[data-theme] body .ix-root
+  :is(.sys-tile,.arch-card,.arch-panel,.home-board-tile,.home-feed-widget,
+      .home-feed-customize-row,.msg-thread-tile,.msg-brief-panel)
+  :is(h1,h2,h3,h4,p,small,label,strong,span,li) {
+  overflow-wrap:anywhere;
+}
+html:root[data-theme] body .ix-root
+  :is(.ix-tools,.home-feed-controls-actions,.home-feed-customize > footer) {
+  flex-wrap:wrap;
+}
+html:root[data-theme] body .ix-root
+  :is(.ix-tools,.home-feed-controls-actions,.home-feed-customize)
+  :is(button,select,input,textarea) {
+  min-width:0;
+  max-width:100%;
+}
+
+/* Long choices remain legible instead of clipping behind a popover edge.
+ * Excludes photographic/illustrated components and functional status badges. */
+html:root[data-theme] body
+  :is(.ix-root,.app-shell,.ask-os)
+  :is([role="menu"],[role="listbox"],.ix-desktop-more-menu,.ix-mobile-sheet)
+  :is([role="menuitem"],[role="option"],button,a,small,label) {
+  overflow-wrap:anywhere;
+  white-space:normal;
+  min-width:0;
+}
+html:root[data-theme] body
+  :is(.ix-root,.app-shell,.ask-os) :is([role="menu"],[role="listbox"])
+  :is([role="menuitem"],[role="option"]):focus-visible {
+  outline:2px solid var(--read-brand)!important;
+  outline-offset:-2px;
+}
+
+/* Prevent off-screen forms and modal contents on compact phones while
+ * preserving Radix positioning, controlled scrolling, and keyboard focus. */
+@media (max-width:767px) {
+  html:root[data-theme] body .ix-root
+    :is(.home-feed-customize,.ix-mobile-sheet,.msg-brief-panel) {
+    box-sizing:border-box;
+    width:min(100%,calc(100vw - 20px));
+    max-width:calc(100vw - 20px)!important;
+    max-height:calc(100dvh - 30px);
+    overflow-y:auto;
+    overscroll-behavior:contain;
+  }
+  html:root[data-theme] body .ix-root .home-feed-customize-row {
+    min-width:0;
+    max-width:100%;
+  }
+  html:root[data-theme] body
+    :is(.ix-root,.app-shell,.ask-os) [role="dialog"],
+  html:root[data-theme] body [data-radix-portal] [role="dialog"] {
+    box-sizing:border-box;
+    max-width:calc(100vw - 24px)!important;
+    max-height:calc(100dvh - 32px)!important;
+    overflow-y:auto;
+    overflow-x:hidden;
+    overscroll-behavior:contain;
+  }
+  html:root[data-theme] body
+    :is(.ix-root,.app-shell,.ask-os) :is(input:not([type="checkbox"]):not([type="radio"]),select,textarea),
+  html:root[data-theme] body [data-radix-portal] :is(input,select,textarea) {
+    font-size:max(16px,1em);
+  }
+}
