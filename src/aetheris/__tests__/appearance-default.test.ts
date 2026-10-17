@@ -26,7 +26,7 @@ const initialize = (saved: string | null, legacy: string | null, storageAvailabl
     },
     document: { documentElement: root },
   });
-  return { theme: root.dataset.theme, colorScheme: root.style.colorScheme, classes };
+  return { theme: root.dataset['theme'], colorScheme: root.style['colorScheme'], classes };
 };
 
 describe('Ask Intros initial appearance', () => {
