@@ -165,7 +165,7 @@ function AuthPage() {
     setBusy(true); setError('')
     rememberInvite(invite)
     const result = await lovable.auth.signInWithOAuth('google', {
-      redirect_uri: `${window.location.origin}${next || '/verify'}`,
+      redirect_uri: `${window.location.origin}${next || '/app'}`,
     })
     if (result.error) {
       setError('Google sign-in could not start. Try email instead.')
