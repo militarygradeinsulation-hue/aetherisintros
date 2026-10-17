@@ -110,8 +110,8 @@ try {
     return { background:root?getComputedStyle(root).backgroundColor:null,
       action:action?getComputedStyle(action).backgroundColor:null };
   });
-  check(messaging.background==='rgb(245, 242, 236)','Messaging panels retain screenshot-inspired ivory even in dark mode');
-  check(!messaging.action || messaging.action==='rgb(47, 95, 135)','Routine message actions are muted slate blue');
+  check(messaging.background===(theme==='dark'?'rgb(0, 0, 0)':'rgb(255, 255, 255)'), 'Messages tiles invert to black/white with appearance mode');
+  check(!messaging.action || messaging.action==='rgb(181, 84, 31)', 'Messages primary actions remain high-contrast copper');
   // Previously dark-on-dark relationship signal cards must remain readable.
   await nav.locator('[aria-haspopup=menu]').click();
   await page.getByRole('menuitem',{name:'Insights'}).click();
