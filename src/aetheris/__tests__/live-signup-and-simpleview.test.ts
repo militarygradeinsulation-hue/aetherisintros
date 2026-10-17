@@ -21,9 +21,17 @@ describe('Ask Intros signup link', () => {
     expect(auth).not.toContain("if (!invite.trim()) throw new Error(")
     expect(auth).toContain("Membership RPCs enforce launch mode")
     expect(access).toContain("supabase.rpc('claim_early_access', args)")
-    expect(access).toContain("access.status === 'approved' && access.verification === 'verified'")
+    expect(access).toContain("access.status === 'approved' && access.onboarded")
   })
 })
+
+
+  it('never fabricates a verified business badge for a new registrant', () => {
+    const liveMembers = source('../../intros-ui/liveMembers.tsx')
+    expect(liveMembers).toContain('verified: businessRoleVerified')
+    expect(liveMembers).toContain('Boolean(p.verified_role)')
+    expect(liveMembers).not.toContain('avatarUrl: avatar, verified: true')
+  })
 
 describe('Simple View live messaging', () => {
   it('replaces the draft thread ID with the confirmed server ID after first send', () => {
