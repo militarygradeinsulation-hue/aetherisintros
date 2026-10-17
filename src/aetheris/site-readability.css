@@ -292,3 +292,20 @@ html:root[data-theme] body
     font-size:max(16px,1em);
   }
 }
+
+
+/* Higher-specificity inbox identity ink. Legacy light-only Tailwind rules
+ * otherwise repaint this span white after the row itself becomes white.
+ * Exercise with scripts/messages-contrast-check/run.mjs in BOTH modes. */
+html:root[data-theme="light"] body .ix-root .arch-product-main .ix-messages aside :is(span,div).text-xs.font-semibold.truncate,
+html:root[data-theme="light"] body .ix-root .arch-product-main .ix-live-messages aside :is(span,div).text-sm.truncate {
+  color:#090909!important;
+  -webkit-text-fill-color:#090909!important;
+  opacity:1!important;
+}
+html:root[data-theme="dark"] body .ix-root .arch-product-main .ix-messages aside :is(span,div).text-xs.font-semibold.truncate,
+html:root[data-theme="dark"] body .ix-root .arch-product-main .ix-live-messages aside :is(span,div).text-sm.truncate {
+  color:#ffffff!important;
+  -webkit-text-fill-color:#ffffff!important;
+  opacity:1!important;
+}
