@@ -61,8 +61,8 @@ try {
   let m=await read();
   check(m.page==='home','Home uses the shared product layout');
   check(m.panel.length>0 && m.ink.length>0,'Design tokens load in '+theme);
-  check(m.background=== (theme==='dark'?'rgb(17, 23, 25)':'rgb(245, 242, 236)'),'Canvas follows appearance mode');
-  check(m.panel.toLowerCase()===(theme==='light'?'#fbf9f4':'#1a2223'),`Paper or charcoal panel token matches appearance mode (received ${m.panel})`);
+  check(m.background=== (theme==='dark'?'rgb(0, 0, 0)':'rgb(255, 255, 255)'),'Canvas follows appearance mode');
+  check(m.panel.toLowerCase()===(theme==='light'?'#fff':'#0c0c0c'),`Black/white stencil panel token matches appearance mode (received ${m.panel})`);
   check(m.mainWidth<=m.viewport+2,'Home stays within viewport');
   const nav=page.locator('nav[aria-label="Desktop navigation"]');
   await nav.locator('> button',{hasText:'People'}).click();
@@ -78,9 +78,9 @@ try {
     return {app:app?getComputedStyle(app).backgroundColor:null,
       toolstrip:get('.ix-tools'),main:get('.arch-product-main')};
   });
-  check(workspaceSkin.app=== (theme==='light'?'rgb(245, 242, 236)':'rgb(17, 23, 25)'),
+  check(workspaceSkin.app=== (theme==='light'?'rgb(255, 255, 255)':'rgb(0, 0, 0)'),
     'Classic workspace actual background matches Messages-derived theme ('+JSON.stringify(workspaceSkin)+')');
-  check(workspaceSkin.toolstrip=== (theme==='light'?'rgb(251, 249, 244)':'rgb(26, 34, 35)'),
+  check(workspaceSkin.toolstrip=== (theme==='light'?'rgb(255, 255, 255)':'rgb(12, 12, 12)'),
     'Workspace option strip uses cream or charcoal shared surface');
 
   // Option pages share the pale-blue selection system, regardless of view.
@@ -96,10 +96,10 @@ try {
     };
   });
   check(Boolean(options.optionBg && options.optionInk && options.canvas),'Executive option tokens available in '+theme);
-  check(theme!=='light' || options.selectedColor==='rgb(220, 232, 243)','Selected workspace option uses powder-blue on light theme');
+  check(theme!=='light' || options.selectedColor==='rgb(0, 0, 0)','Selected workspace option inverts cleanly on light theme');
   await nav.locator('[aria-haspopup=menu]').click();
   const menuSurface=await page.locator('.ix-desktop-more-menu').evaluate(el=>getComputedStyle(el).backgroundColor);
-  check(menuSurface=== (theme==='light'?'rgb(251, 249, 244)':'rgb(26, 34, 35)'),'More dropdown uses the same panel surface');
+  check(menuSurface=== (theme==='light'?'rgb(255, 255, 255)':'rgb(12, 12, 12)'),'More dropdown uses the same panel surface');
   await page.keyboard.press('Escape');
   await nav.locator('> button',{hasText:'Messages'}).click();
   await page.waitForFunction(()=>document.querySelector('.arch-product-main')?.dataset.archPage==='messages');
@@ -121,7 +121,7 @@ try {
     const card=document.querySelector('.ai-insight-list>article');
     const group=document.querySelector('.ai-insight-numbers');
     const styles=el=>el?getComputedStyle(el):null;
-    const color=s=>{const m=s?.match(/[\\d.]+/g);return m?m.slice(0,3).map(Number):null};
+    const color=s=>{const m=s?.match(/-?\d+(?:\.\d+)?/g);return m?m.slice(0,3).map(Number):null};
     const luminosity=channels=>channels.reduce((a,v,i)=>{
       const x=v/255,linear=x<=.04045?x/12.92:((x+.055)/1.055)**2.4;
       return a+linear*[.2126,.7152,.0722][i];
@@ -138,8 +138,8 @@ try {
       evidence:contrast(styles(card?.querySelector('.insight-main small'))?.color,surface),
       confidence:contrast(styles(card?.querySelector('.insight-confidence strong'))?.color,surface)};
   });
-  check(signals.surface==='rgb(251, 249, 244)' && signals.metrics==='rgb(251, 249, 244)',
-    'Insights and relationship signals use cream panels, not near-black cards');
+  check(signals.surface===(theme==='light'?'rgb(255, 255, 255)':'rgb(12, 12, 12)') && signals.metrics===signals.surface,
+    'Insights and relationship signals use appearance-matched stencil panels');
   check(['heading','description','evidence','confidence'].every(k=>signals[k]>=4.5),
     'Insight names, descriptions, evidence and confidence all meet 4.5:1 text contrast ('+JSON.stringify(signals)+')');
   await nav.locator('> button',{hasText:'Meetings'}).click();
