@@ -62,7 +62,7 @@ export default async ({ ok, as, svc, A, B, C, ADMIN }) => {
   // ---------------------------------------------------------------- directory search
   const D = '00000000-0000-4000-8000-00000000000d'
   await svc(`insert into auth.users (id) values ('${D}')`)
-  await svc(`insert into public.early_access_members (user_id, email, status) values ('${A}', 'a@x.test', 'approved'), ('${B}', 'b@x.test', 'approved'), ('${C}', 'c@x.test', 'approved'), ('${ADMIN}', 'ad@x.test', 'approved')`)
+  await svc(`insert into public.early_access_members (user_id, email, status) values ('${A}', 'a@x.test', 'approved'), ('${B}', 'b@x.test', 'approved'), ('${C}', 'c@x.test', 'approved'), ('${ADMIN}', 'ad@x.test', 'approved') on conflict (user_id) do update set email=excluded.email, status=excluded.status`)
   await svc(`update public.profiles set onboarded = true, email = 'secret-' || left(id::text, 8) || '@mail.test' where id in ('${A}', '${B}', '${C}', '${ADMIN}')`)
   await svc(`update public.profiles set name = 'Ana Ames', company = 'Harbor Freight Co', location = 'Austin, TX', industries = '{Logistics}', expertise = '{Pricing}', can_help_with = 'Fleet financing', looking_for = 'A CFO' where id = '${A}'`)
   await svc(`update public.profiles set location = 'Austin, TX', industries = '{logistics,SaaS}', expertise = '{Hiring}', looking_for = 'Distribution partners', verified_at = now() where id = '${B}'`)
