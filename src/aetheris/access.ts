@@ -31,7 +31,7 @@ export interface AccessState {
 
 export const noAccess: AccessState = {
   loading: true, signedIn: false, userId: null, email: '', name: '',
-  status: 'none', foundingNumber: null, mode: 'first_1000', isAdmin: false, onboarded: false,
+  status: 'none', foundingNumber: null, mode: 'invite_only', isAdmin: false, onboarded: false,
   verification: 'none',
 }
 
@@ -45,14 +45,14 @@ export async function foundingStats(): Promise<FoundingStats> {
   try {
     const { data } = await supabase.rpc('founding_stats')
     const row = Array.isArray(data) ? data[0] : data
-    if (!row) return { approved: 0, capacity: 1000, mode: 'first_1000' }
+    if (!row) return { approved: 0, capacity: 1000, mode: 'invite_only' }
     return {
       approved: Number(row.approved ?? 0),
       capacity: Number(row.capacity ?? 1000),
-      mode: (row.mode ?? 'first_1000') as LaunchMode,
+      mode: (row.mode ?? 'invite_only') as LaunchMode,
     }
   } catch {
-    return { approved: 0, capacity: 1000, mode: 'first_1000' }
+    return { approved: 0, capacity: 1000, mode: 'invite_only' }
   }
 }
 
