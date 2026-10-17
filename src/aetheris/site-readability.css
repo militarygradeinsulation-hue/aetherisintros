@@ -280,3 +280,13 @@ html:root[data-theme] body :is(.ix-root,.app-shell,.ask-os)
     text-align:start;
   }
 }
+
+
+/* Inverse Messages headings: legacy dark utilities must not leave white text
+   on a white conversation tile when the member selects Light appearance. */
+html:root[data-theme] body .ix-root :is(.ix-messages,.ix-live-messages) aside
+  .text-xs.font-semibold.truncate {
+  color:var(--msg-ink)!important;
+  -webkit-text-fill-color:var(--msg-ink)!important;
+  opacity:1!important;
+}
