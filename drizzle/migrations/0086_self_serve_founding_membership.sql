@@ -103,7 +103,7 @@ begin
 
   return query select e.status, e.founding_member_number, v_mode
   from public.early_access_members e where e.user_id = v_uid;
-end $function$
+end $function$;
 
 -- Live access is account + founding approval, not an unearned VERIFIED badge.
 -- The verification record remains separate, and only a reviewed business
