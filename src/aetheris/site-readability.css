@@ -181,3 +181,15 @@ html:root[data-theme] body .ix-root
   color:#dedede!important;
   -webkit-text-fill-color:#dedede!important;
 }
+
+
+/* The Messages inbox's conversation titles are plain Tailwind text nodes, not
+   semantic msg-* labels. Legacy light-on-dark text utilities can override their
+   ink after the list surface has become white in Light appearance. Pin the
+   visible name to the same inverse palette as the row, in both demo and live. */
+html:root[data-theme] body .ix-root :is(.ix-messages,.ix-live-messages) aside
+  .text-xs.font-semibold.truncate {
+  color:var(--msg-ink)!important;
+  -webkit-text-fill-color:var(--msg-ink)!important;
+  opacity:1!important;
+}
