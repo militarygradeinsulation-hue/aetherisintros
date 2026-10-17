@@ -151,8 +151,9 @@ create trigger intro_requests_notify after insert or update on public.intro_requ
 
 -- Tables the live-only objects recorded in 0029 read and write (columns they use).
 create type public.verification_status as enum ('pending','scanning','manual_review','needs_more_proof','verified','rejected','suspended');
+create type public.verified_role as enum ('ceo','founder','owner','managing_partner','principal','other');
 create table public.member_verifications (id uuid primary key default gen_random_uuid(), user_id uuid not null unique, status public.verification_status not null default 'pending',
-  verification_level int not null default 0, legal_name text, display_name text, business_name text, work_email text, business_domain text, professional_url text,
+  verification_level int not null default 0, verified_role public.verified_role, public_summary text not null default '', claimed_role text, legal_name text, display_name text, business_name text, work_email text, business_domain text, professional_url text,
   decision_reason text, risk_flags jsonb not null default '[]', submitted_at timestamptz, scanned_at timestamptz, verified_at timestamptz, updated_at timestamptz not null default now());
 create table public.memories (id uuid primary key default gen_random_uuid(), user_id uuid not null, member_id text, kind text not null default 'learning', category text not null default '',
   text text not null, source text not null default '', confidence int not null default 100, scope text not null default 'private', when_label text not null default '', created_at timestamptz not null default now());
@@ -239,7 +240,14 @@ create policy "Members update their own events" on public.calendar_events for up
 create policy "Members delete their own events" on public.calendar_events for delete to authenticated using (auth.uid() = user_id);
 
 create table public.invitations (id uuid primary key default gen_random_uuid(), code text not null unique, email text, max_uses integer not null default 1, uses integer not null default 0, expires_at timestamptz, revoked boolean not null default false, created_by uuid, created_at timestamptz not null default now());
-create table public.early_access_members (id uuid primary key default gen_random_uuid(), user_id uuid not null unique, email text not null, status text not null default 'pending', invite_id uuid, created_at timestamptz not null default now());
+create table public.early_access_members (id uuid primary key default gen_random_uuid(), user_id uuid not null unique, email text not null,
+  status text not null default 'pending', source text not null default '', founding_member_number integer unique, approved_at timestamptz,
+  invite_id uuid, created_at timestamptz not null default now(), updated_at timestamptz not null default now());
+create table public.launch_settings (id integer primary key default 1, mode text not null default 'first_1000', capacity integer not null default 1000);
+insert into public.launch_settings(id,mode,capacity) values (1,'first_1000',1000);
+create table public.waitlist_entries (id uuid primary key default gen_random_uuid(), email text not null unique, user_id uuid, source text not null default '', created_at timestamptz not null default now());
+revoke all on public.waitlist_entries, public.early_access_members, public.launch_settings from PUBLIC, anon;
+grant select on public.launch_settings to authenticated;
 create function public.is_approved_member(p_user uuid) returns boolean language sql stable security definer set search_path = public as $$
   select exists (select 1 from public.early_access_members e where e.user_id = p_user and e.status = 'approved') $$;
 `
