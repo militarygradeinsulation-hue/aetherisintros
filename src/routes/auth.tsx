@@ -112,7 +112,7 @@ function AuthPage() {
       try { await claimAccess(code); clearInvite() } catch { /* the founding page can retry */ }
     }
     if (next) { window.location.replace(next); return }
-    void navigate({ to: '/verify', replace: true })
+    void navigate({ to: '/app', replace: true })
   }, [navigate, next])
 
   useEffect(() => {
@@ -146,7 +146,7 @@ function AuthPage() {
           email,
           password,
           options: {
-            emailRedirectTo: `${window.location.origin}${next || '/verify'}`,
+            emailRedirectTo: `${window.location.origin}${next || '/app'}`,
             data: { name: name || email.split('@')[0], invite_code: invite.trim() },
           },
         })
@@ -171,7 +171,7 @@ function AuthPage() {
     rememberInvite(invite)
     try {
       const result = await lovable.auth.signInWithOAuth('google', {
-        redirect_uri: `${window.location.origin}${next || '/verify'}`,
+        redirect_uri: `${window.location.origin}${next || '/app'}`,
       })
       if (result.error) throw new Error('Google sign-in could not start. Try email instead.')
       if (result.redirected) return
