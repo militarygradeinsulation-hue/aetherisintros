@@ -290,3 +290,19 @@ html:root[data-theme] body .ix-root :is(.ix-messages,.ix-live-messages) aside
   -webkit-text-fill-color:var(--msg-ink)!important;
   opacity:1!important;
 }
+
+/* Verified by the browser contrast probe: conversation names in the light
+   inbox were still rendered white on white by legacy high-specificity rules.
+   Mode-scoped ink must win even for selected/unread rows. */
+html:root[data-theme="light"] body .ix-root .arch-product-main
+  :is(.ix-messages,.ix-live-messages) aside :is(.text-xs.font-semibold.truncate,.text-sm.truncate) {
+  color:#090909!important;
+  -webkit-text-fill-color:#090909!important;
+  opacity:1!important;
+}
+html:root[data-theme="dark"] body .ix-root .arch-product-main
+  :is(.ix-messages,.ix-live-messages) aside :is(.text-xs.font-semibold.truncate,.text-sm.truncate) {
+  color:#fff!important;
+  -webkit-text-fill-color:#fff!important;
+  opacity:1!important;
+}
