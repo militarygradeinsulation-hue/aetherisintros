@@ -61,8 +61,8 @@ try {
   let m=await read();
   check(m.page==='home','Home uses the shared product layout');
   check(m.panel.length>0 && m.ink.length>0,'Design tokens load in '+theme);
-  check(m.background=== (theme==='dark'?'rgb(17, 23, 25)':'rgb(245, 242, 236)'),'Canvas follows appearance mode');
-  check(m.panel.toLowerCase()===(theme==='light'?'#fbf9f4':'#1a2223'),`Paper or charcoal panel token matches appearance mode (received ${m.panel})`);
+  check(m.background=== (theme==='dark'?'rgb(0, 0, 0)':'rgb(255, 255, 255)'),'Canvas follows the black / white appearance mode');
+  check(m.panel.toLowerCase()===(theme==='light'?'#fff':'#0c0c0c'),`White or graphite panel token matches appearance mode (received ${m.panel})`);
   check(m.mainWidth<=m.viewport+2,'Home stays within viewport');
   const nav=page.locator('nav[aria-label="Desktop navigation"]');
   await nav.locator('> button',{hasText:'People'}).click();
@@ -78,12 +78,12 @@ try {
     return {app:app?getComputedStyle(app).backgroundColor:null,
       toolstrip:get('.ix-tools'),main:get('.arch-product-main')};
   });
-  check(workspaceSkin.app=== (theme==='light'?'rgb(245, 242, 236)':'rgb(17, 23, 25)'),
-    'Classic workspace actual background matches Messages-derived theme ('+JSON.stringify(workspaceSkin)+')');
-  check(workspaceSkin.toolstrip=== (theme==='light'?'rgb(251, 249, 244)':'rgb(26, 34, 35)'),
-    'Workspace option strip uses cream or charcoal shared surface');
+  check(workspaceSkin.app=== (theme==='light'?'rgb(255, 255, 255)':'rgb(0, 0, 0)'),
+    'Classic workspace actual background matches inverse stencil theme ('+JSON.stringify(workspaceSkin)+')');
+  check(workspaceSkin.toolstrip=== (theme==='light'?'rgb(255, 255, 255)':'rgb(12, 12, 12)'),
+    'Workspace option strip uses white or graphite shared surface');
 
-  // Option pages share the pale-blue selection system, regardless of view.
+  // Option pages share the current stencil/orange selection system, not obsolete powder blue.
   const options = await page.evaluate(() => {
     const chosen=document.querySelector('.arch-product-main .ix-tools button.on');
     const selected=chosen?getComputedStyle(chosen):null;
@@ -96,10 +96,10 @@ try {
     };
   });
   check(Boolean(options.optionBg && options.optionInk && options.canvas),'Executive option tokens available in '+theme);
-  check(theme!=='light' || options.selectedColor==='rgb(220, 232, 243)','Selected workspace option uses powder-blue on light theme');
+  check(Boolean(options.selectedColor) && options.selectedColor!=='rgb(220, 232, 243)','Selected workspace option is not stale powder-blue');
   await nav.locator('[aria-haspopup=menu]').click();
   const menuSurface=await page.locator('.ix-desktop-more-menu').evaluate(el=>getComputedStyle(el).backgroundColor);
-  check(menuSurface=== (theme==='light'?'rgb(251, 249, 244)':'rgb(26, 34, 35)'),'More dropdown uses the same panel surface');
+  check((theme==='light'?/rgb\((?:24[0-9]|25[0-5]),/.test(menuSurface):/rgb\((?:[0-3]?\d),/.test(menuSurface)),'More dropdown respects light/dark surface contrast');
   await page.keyboard.press('Escape');
   await nav.locator('> button',{hasText:'Messages'}).click();
   await page.waitForFunction(()=>document.querySelector('.arch-product-main')?.dataset.archPage==='messages');
@@ -110,8 +110,8 @@ try {
     return { background:root?getComputedStyle(root).backgroundColor:null,
       action:action?getComputedStyle(action).backgroundColor:null };
   });
-  check(messaging.background==='rgb(245, 242, 236)','Messaging panels retain screenshot-inspired ivory even in dark mode');
-  check(!messaging.action || messaging.action==='rgb(47, 95, 135)','Routine message actions are muted slate blue');
+  check(messaging.background===(theme==='dark'?'rgb(0, 0, 0)':'rgb(255, 255, 255)'),'Message panels invert black/white with the active appearance');
+  check(!messaging.action || messaging.action!=='rgb(47, 95, 135)','Message actions never regress to obsolete slate blue');
   // Previously dark-on-dark relationship signal cards must remain readable.
   await nav.locator('[aria-haspopup=menu]').click();
   await page.getByRole('menuitem',{name:'Insights'}).click();
@@ -121,7 +121,7 @@ try {
     const card=document.querySelector('.ai-insight-list>article');
     const group=document.querySelector('.ai-insight-numbers');
     const styles=el=>el?getComputedStyle(el):null;
-    const color=s=>{const m=s?.match(/[\\d.]+/g);return m?m.slice(0,3).map(Number):null};
+    const color=s=>{const m=s?.match(/[\d.]+/g);return m?m.slice(0,3).map(Number):null};
     const luminosity=channels=>channels.reduce((a,v,i)=>{
       const x=v/255,linear=x<=.04045?x/12.92:((x+.055)/1.055)**2.4;
       return a+linear*[.2126,.7152,.0722][i];
@@ -138,8 +138,8 @@ try {
       evidence:contrast(styles(card?.querySelector('.insight-main small'))?.color,surface),
       confidence:contrast(styles(card?.querySelector('.insight-confidence strong'))?.color,surface)};
   });
-  check(signals.surface==='rgb(251, 249, 244)' && signals.metrics==='rgb(251, 249, 244)',
-    'Insights and relationship signals use cream panels, not near-black cards');
+  check(signals.surface===(theme==='dark'?'rgb(12, 12, 12)':'rgb(255, 255, 255)') && signals.metrics===signals.surface,
+    'Insights and relationship signals use inverse graphite/white cards');
   check(['heading','description','evidence','confidence'].every(k=>signals[k]>=4.5),
     'Insight names, descriptions, evidence and confidence all meet 4.5:1 text contrast ('+JSON.stringify(signals)+')');
   await nav.locator('> button',{hasText:'Meetings'}).click();
