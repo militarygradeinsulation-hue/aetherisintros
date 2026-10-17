@@ -7,7 +7,7 @@ import gsap from 'gsap'
 import { supabase } from '@/integrations/supabase/client'
 import { lovable } from '@/integrations/lovable/index'
 import { AUTH_REQUIRED } from '@/aetheris/config'
-import { claimAccess, clearInvite, previewInvite, rememberInvite, storedInvite } from '@/aetheris/access'
+import { claimAccess, clearInvite, previewInvite, rememberInvite, storedInvite, type LaunchMode } from '@/aetheris/access'
 import { logSecurityEvent, passwordProblem } from '@/aetheris/verification'
 import { AppearanceToggle } from '@/aetheris/AppearanceToggle'
 import '@/aetheris/styles.css'
@@ -94,7 +94,17 @@ function AuthPage() {
     const t = setTimeout(() => { void previewInvite(c).then(setInviter) }, 300)
     return () => clearTimeout(t)
   }, [invite])
-  const hasInvite = Boolean(inviteParam) || (mode === 'signup' && Boolean(inviter?.valid))
+  const [launchMode, setLaunchMode] = useState<LaunchMode | null>(null)
+  useEffect(() => {
+    let active = true
+    void supabase.rpc('founding_stats').then(({ data, error }) => {
+      if (!active) return
+      const row = Array.isArray(data) ? data[0] : data
+      setLaunchMode(!error && row && ['first_1000', 'invite_only', 'closed'].includes(row.mode) ? row.mode as LaunchMode : null)
+    })
+    return () => { active = false }
+  }, [])
+  const hasInvite = Boolean(invite.trim()) && inviter?.valid === true
   const [name, setName] = useState('')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
@@ -130,8 +140,15 @@ function AuthPage() {
     try {
       rememberInvite(invite)
       if (mode === 'signup') {
-        if (!invite.trim()) throw new Error('Sign-up is invite-only right now. Enter the invite code a member sent you.')
-        if (inviter && !inviter.valid) throw new Error('That invite code is not valid. Check it with the person who sent it.')
+        // Open founding registration doesn't require a referral. The server still
+        // assigns membership and separately enforces identity verification.
+        if (invite.trim()) {
+          const checked = await previewInvite(invite.trim())
+          if (!checked.valid) throw new Error('That invite code is not valid. Check it with the person who sent it.')
+        } else if (launchMode !== 'first_1000') {
+          throw new Error(launchMode === null ? 'Membership availability could not be checked. Please retry.' :
+            launchMode === 'closed' ? 'Registration is temporarily closed.' : 'An invitation is currently required.')
+        }
         const weak = passwordProblem(password)
         if (weak) throw new Error(weak)
         const { data, error: signUpError } = await supabase.auth.signUp({
@@ -139,7 +156,7 @@ function AuthPage() {
           password,
           options: {
             emailRedirectTo: `${window.location.origin}${next || '/verify'}`,
-            data: { name: name || email.split('@')[0], invite_code: invite.trim() },
+            data: { name: name || email.split('@')[0], ...(invite.trim() ? { invite_code: invite.trim() } : {}) },
           },
         })
         if (signUpError) throw signUpError
@@ -182,19 +199,17 @@ function AuthPage() {
       </Link>
       <div className="auth-index"><span className="folio">MEMBER ACCESS / 2026</span><span>01 / PRIVATE NETWORK</span></div>
       {hasInvite
-        ? <p className="auth-invited" role="status">
-            {inviter?.valid
-              ? `You were invited by ${inviter.inviter || 'a member'}. Create your account below.`
-              : 'You were invited by a member. Create your account below.'}
-          </p>
-        : <div className="auth-soon" role="status">
-            <span><i aria-hidden="true" />LAUNCHING SOON</span>
-            <p>Ask Intros is in private pre-launch. Open sign-up is closed — only whitelisted founding members can sign in right now.</p>
-            <div className="auth-soon-actions">
-              <Link to="/demo">Explore the demo <ArrowRight size={13} /></Link>
-              <Link to="/early-access">Join the whitelist <ArrowRight size={13} /></Link>
-            </div>
-          </div>}
+        ? <p className="auth-invited" role="status">You were invited by {inviter?.inviter || 'a member'}. Create your account below.</p>
+        : launchMode === 'first_1000'
+          ? <p className="auth-invited" role="status">Founding registration is open. No invitation is needed. Confirm your email, verify your business identity, and complete your profile to start networking.</p>
+          : <div className="auth-soon" role="status">
+              <span><i aria-hidden="true" />{launchMode === 'closed' ? 'REGISTRATION PAUSED' : 'PRIVATE ACCESS'}</span>
+              <p>{launchMode === null ? 'Checking membership availability…' : 'You can sign in to an existing account. New membership currently requires a valid invitation.'}</p>
+              <div className="auth-soon-actions">
+                <Link to="/demo">Explore the demo <ArrowRight size={13} /></Link>
+                <Link to="/early-access">Request access <ArrowRight size={13} /></Link>
+              </div>
+            </div>}
       <h1>{mode === 'signin' ? <>Welcome<br /><em>back.</em></> : <>Join the<br /><em>network.</em></>}</h1>
       <p className="auth-lede">
         A network built for people who actually run companies. Every member is verified, so every
@@ -214,9 +229,9 @@ function AuthPage() {
       <div className="auth-divider"><span>or use email</span></div>
 
       {mode === 'signup' && <label className="auth-invite">
-        <span>INVITE CODE</span>
+        <span>INVITE CODE {launchMode === 'first_1000' ? '· OPTIONAL' : ''}</span>
         <input value={invite} onChange={e => setInvite(e.target.value)} placeholder="e.g. joseph-3f9a2c" autoComplete="off" />
-        <small>{inviter?.valid ? `Invited by ${inviter.inviter || 'a member'} — you will join each other’s network.` : inviter && !inviter.valid ? 'That code is not valid.' : 'Enter the code from the member who invited you.'}</small>
+        <small>{inviter?.valid ? `Invited by ${inviter.inviter || 'a member'} — you will join each other’s network.` : inviter && !inviter.valid ? 'That code is not valid.' : launchMode === 'first_1000' ? 'Optional: use a member’s code to connect with them.' : 'Enter the code from the member who invited you.'}</small>
       </label>}
 
       <form className="auth-form" onSubmit={event => void submit(event)}>
@@ -240,9 +255,9 @@ function AuthPage() {
       </form>
 
       <button type="button" className="auth-switch" onClick={() => { setMode(mode === 'signin' ? 'signup' : 'signin'); setError(''); setNotice('') }}>
-        {mode === 'signin' ? 'Have an invite code? Create your account.' : 'Already a member? Sign in.'}
+        {mode === 'signin' ? 'New here? Create your account.' : 'Already a member? Sign in.'}
       </button>
-      <Link to="/early-access" className="auth-switch">No invite yet? Request whitelist access.</Link>
+      <Link to="/early-access" className="auth-switch">{launchMode === 'first_1000' ? 'Learn about founding membership.' : 'No invite yet? Request access.'}</Link>
       <Link to="/demo" className="auth-switch">Not ready to join? Open the demo.</Link>
 
       <span className="auth-foot"><LockKeyhole size={12} /> Nothing is shared without your explicit opt-in.</span>
