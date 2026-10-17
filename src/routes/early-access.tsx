@@ -109,7 +109,7 @@ function EarlyAccessPage() {
         <p className="auth-lede">Explore the complete showcase without an account. Create one only when you are ready to build your real professional network.</p>
         <div className="access-entry-actions">
           <Link to="/demo" className="btn primary">Demo the system <ArrowRight size={15} /></Link>
-          <Link to="/auth" search={{ next: '/early-access' }} className="btn access-account">Create your account</Link>
+          <Link to="/auth" search={{ next: '/early-access', mode: 'signup' }} className="btn access-account">Create your account</Link>
         </div>
       </>}
 
