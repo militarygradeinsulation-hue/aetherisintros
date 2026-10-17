@@ -17,8 +17,10 @@ describe('Ask Intros signup link', () => {
     expect(auth).toContain("requestedMode === 'signup' ? 'signup' : 'signin'")
   })
 
-  it('preserves invite enforcement rather than granting membership client-side', () => {
-    expect(auth).toContain("if (!invite.trim()) throw new Error(")
+  it('uses database membership claims, preserving invite-only restrictions', () => {
+    expect(auth).toContain("if (!publicSignup && !invite.trim()) throw new Error(")
+    expect(auth).toContain("const publicSignup = launchMode === 'first_1000'")
+    expect(auth).toContain("foundingStats().then(stats => setLaunchMode(stats.mode))")
     expect(access).toContain("supabase.rpc('claim_early_access', args)")
     expect(access).toContain("access.status === 'approved' && access.verification === 'verified'")
   })
