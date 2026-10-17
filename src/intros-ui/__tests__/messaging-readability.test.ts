@@ -19,7 +19,7 @@ function paletteFor(theme: typeof themes[number]): Record<string, string> {
   const close = inverse.indexOf('}', open)
   const block = inverse.slice(open + 1, close)
   return Object.fromEntries(
-    [...block.matchAll(/--(msg-[\\w-]+):\\s*(#[0-9a-fA-F]{6})\\s*!important\\s*;/g)]
+    [...block.matchAll(/--(msg-[\w-]+):\s*(#[0-9a-fA-F]{6})\s*!important\s*;/g)]
       .map(([, token, color]) => [token, color]),
   )
 }
@@ -50,7 +50,7 @@ describe('readable messaging surfaces in demo and live', () => {
       expect(source).toContain('msg-incoming')
       expect(source).toContain('var(--msg-ink)')
       expect(source).toContain('var(--msg-muted)')
-      expect(source).not.toMatch(/bg-\\[#(?:07090C|0E121A|0B0D0F|0D1117|151923|1A1F25)\\]/i)
+      expect(source).not.toMatch(/bg-\[#(?:07090C|0E121A|0B0D0F|0D1117|151923|1A1F25)\]/i)
     }
     expect(live).toContain('onSend={text => sendText(active.id, text)}')
     expect(demo).toContain('onSubmit={handleSend}')
