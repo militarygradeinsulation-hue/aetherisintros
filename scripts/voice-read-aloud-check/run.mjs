@@ -30,7 +30,7 @@ try {
   const { chromium } = await import(process.env.PLAYWRIGHT_MODULE ?? resolve(root, 'node_modules/playwright/index.mjs'))
   browser = await chromium.launch()
   for (const scenario of [
-    { name: 'iPhone managed-voice fallback', userAgent: 'Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X) AppleWebKit/605.1.15 Mobile/15E148 Safari/604.1', voice: 'intros-managed', width: 390 },
+    { name: 'iPhone retains managed ElevenLabs voice', userAgent: 'Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X) AppleWebKit/605.1.15 Mobile/15E148 Safari/604.1', voice: 'intros-managed', width: 390 },
     { name: 'desktop device voice', userAgent: 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 Chrome/127.0.0.0 Safari/537.36', voice: 'device-default', width: 1280 },
   ]) {
     const context = await browser.newContext({ userAgent: scenario.userAgent, viewport: { width: scenario.width, height: 850 } })
@@ -40,6 +40,13 @@ try {
         voiceName:voice, speed:'normal',
       }))
       window.__readAloudUtterances = []
+      window.__audioContextUnblocks = 0
+      class MockAudioContext {
+        constructor() { this.state = 'suspended' }
+        resume() { window.__audioContextUnblocks++; this.state = 'running'; return Promise.resolve() }
+        get destination() { return {} }
+      }
+      Object.defineProperty(window, 'AudioContext', { configurable:true, value:MockAudioContext })
       class MockUtterance {
         constructor(text) { this.text=text; this.lang='en-US'; this.rate=1; this.pitch=1; this.volume=1 }
       }
@@ -59,12 +66,22 @@ try {
     const buttons = page.locator('button.read-btn:visible')
     await buttons.first().waitFor({ state:'visible',timeout:30000 })
     await buttons.first().click()
-    await page.waitForFunction(() => window.__readAloudUtterances.length > 0, { timeout: 6000 })
-    const recorded = await page.evaluate(() => window.__readAloudUtterances)
-    if (!recorded.some(text => text.length > 1)) throw Error(scenario.name + ': speaker produced no readable text')
-    if (recorded.some(text => text.length > 240)) throw Error(scenario.name + ': long native speech segment')
+    if (scenario.voice === 'intros-managed') {
+      await page.waitForFunction(() => window.__audioContextUnblocks > 0, {timeout:5000})
+      // A managed voice MUST NOT silently switch to generic browser speech,
+      // even on Safari when private ElevenLabs synthesis is unavailable.
+      await page.waitForTimeout(1000)
+      const recorded = await page.evaluate(() => window.__readAloudUtterances)
+      if (recorded.length) throw Error('Selected ElevenLabs voice was replaced with a device voice')
+      console.log('PASS '+scenario.name+': Web Audio unlocked synchronously; no generic voice')
+    } else {
+      await page.waitForFunction(() => window.__readAloudUtterances.length > 0, {timeout:6000})
+      const recorded = await page.evaluate(() => window.__readAloudUtterances)
+      if (!recorded.some(text => text.length > 1)) throw Error(scenario.name+': no readable text')
+      if (recorded.some(text => text.length > 240)) throw Error(scenario.name+': long native speech segment')
+      console.log('PASS '+scenario.name+': '+recorded.length+' spoken segments; first '+recorded[0].slice(0,80))
+    }
     if (errors.length) throw Error(scenario.name + ': page error ' + errors.join(', '))
-    console.log('PASS ' + scenario.name + ': ' + recorded.length + ' spoken segments; first: ' + recorded[0].slice(0,80))
     await context.close()
   }
 } finally {
