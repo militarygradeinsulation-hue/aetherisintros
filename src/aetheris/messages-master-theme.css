@@ -377,3 +377,18 @@
  :is(.text-amber-400,.text-yellow-500) {
  color:#233E53;
 }
+
+/* Selected inbox entries must not inherit a dark stencil panel in light mode.
+ * Pair the background and text explicitly, using the real Tailwind class token. */
+html:root[data-theme="light"] body .ix-root .arch-product-main
+ :is(.ix-messages,.ix-live-messages) aside [class~="bg-[var(--msg-selected)]"] {
+ background:#eeeeee!important;
+ background-color:#eeeeee!important;
+ color:#090909!important;
+}
+html:root[data-theme="dark"] body .ix-root .arch-product-main
+ :is(.ix-messages,.ix-live-messages) aside [class~="bg-[var(--msg-selected)]"] {
+ background:#202020!important;
+ background-color:#202020!important;
+ color:#ffffff!important;
+}
