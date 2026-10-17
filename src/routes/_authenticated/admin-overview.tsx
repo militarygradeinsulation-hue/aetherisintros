@@ -27,7 +27,7 @@ function AdminOverview() {
   const [busy, setBusy] = useState(false)
   const refresh = async () => {
     setBusy(true); setError('')
-    const { data, error: fault } = await supabase.rpc('admin_platform_overview')
+    const { data, error: fault } = await (supabase as unknown as { rpc: (name: string) => Promise<{ data: unknown; error: { message: string } | null }> }).rpc('admin_platform_overview')
     if (fault) { setError(fault.message); setStats(null) }
     else setStats(data as unknown as Stats)
     setBusy(false)
