@@ -4,6 +4,7 @@ import originalPortrait from '@/assets/aetheris-home-portrait.jpg.asset.json'
 import { useAccess } from './access'
 import { AskIntrosLockup } from './AskIntrosLockup'
 import { AppearanceToggle } from './AppearanceToggle'
+import { StencilHeadline } from './StencilHeadline'
 import './editorial-landing.css'
 import './architectural-system.css'
 import './compact-homepage.css'
@@ -67,7 +68,7 @@ export default function Landing() {
       <div className="ael-architecture-meta" aria-hidden="true"><span>RELATIONSHIPS / BY DESIGN</span><span>ASK INTROS — CONNECTION 001</span></div>
       <div className="ael-hero-content">
         <p className="ael-kicker ael-kicker-light"><span className="ael-dash" /> Relationships by design</p>
-        <h1 id="ael-hero-title">The right room <em>changes everything.</em></h1>
+        <h1 id="ael-hero-title" className="stencil-display"><span className="sr-only">The right room changes everything.</span><StencilHeadline lines={['THE RIGHT ROOM', 'CHANGES', 'EVERYTHING']} className="stencil-headline--hero" /></h1>
         <p className="ael-hero-lede">The people who matter. A reason to meet. A place to make something happen.</p>
         <div className="ael-hero-actions">
           <JoinAction signedIn={signedIn} className="ael-btn ael-btn-gold ai-gradient-button" />
@@ -85,7 +86,7 @@ export default function Landing() {
       <div className="ael-compact-story-main">
         <div className="ael-compact-story-copy">
           <div className="ael-editorial-meta"><span>THE PHILOSOPHY</span><span>001 — RELATIONSHIPS WITH PURPOSE</span></div>
-          <h2 id="ael-experience-title">Not more contacts. <em>Better connections.</em></h2>
+          <h2 id="ael-experience-title" className="stencil-display"><span className="sr-only">Not more contacts. Better connections.</span><StencilHeadline lines={['NOT MORE CONTACTS', 'BETTER CONNECTIONS']} /></h2>
           <p>Most networks stop at the introduction. Ask Intros gives each connection a clear purpose, mutual consent and a path to meaningful business.</p>
           <Link className="ael-underlink" to="/founder-story">Why we built it <ArrowUpRight aria-hidden="true" size={16} /></Link>
         </div>
@@ -97,7 +98,7 @@ export default function Landing() {
       <div className="ael-compact-method" id="approach" aria-labelledby="ael-approach-title">
         <div className="ael-compact-method-heading">
           <span className="ael-fine-label">HOW IT WORKS / THREE MOVES</span>
-          <h3 id="ael-approach-title">From introduction <em>to impact.</em></h3>
+          <h3 id="ael-approach-title" className="stencil-display"><span className="sr-only">From introduction to impact.</span><StencilHeadline lines={['FROM INTRODUCTION', 'TO IMPACT']} /></h3>
         </div>
         <ol className="ael-compact-steps">
           <li><span>01</span><div><strong>Show your intent</strong><p>What you need, offer or want to build.</p></div></li>
@@ -113,7 +114,7 @@ export default function Landing() {
       <div className="ael-compact-membership-content">
         <div>
           <span className="ael-fine-label">MEMBERSHIP / ASK INTROS</span>
-          <h2 id="ael-membership-title">Your next room is <em>waiting.</em></h2>
+          <h2 id="ael-membership-title" className="stencil-display"><span className="sr-only">Your next room is waiting.</span><StencilHeadline lines={['YOUR NEXT ROOM', 'IS WAITING']} /></h2>
           <p>Bring a purpose. Meet the right people. Make the connection count.</p>
         </div>
         <div className="ael-membership-actions">
@@ -124,7 +125,7 @@ export default function Landing() {
     </section>
 
     <footer className="ael-compact-footer">
-      <Link to="/" className="ael-compact-footer-brand" aria-label="Ask Intros home">ASK INTROS</Link>
+      <Link to="/" className="ael-compact-footer-brand" aria-label="Ask Intros home"><span className="stencil-footer-wordmark" style={{ color: "var(--st-ink)", backgroundColor: "var(--st-bg)" }}>ASK INTROS</span></Link>
       <span>WHY ME · WHY THEM · WHY NOW</span>
       <small>Editorial imagery is illustrative. Pictured subjects are not Ask Intros members or endorsers.</small>
     </footer>
