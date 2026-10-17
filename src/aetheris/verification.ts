@@ -1,9 +1,9 @@
 /**
  * Membership verification — client layer.
  *
- * Ask Intros is a private network for people who actually run companies.
- * Creating an account does not grant network access: the member must claim a
- * business identity and have a controlling business role verified.
+ * An email-confirmed, approved and onboarded account may use the network.
+ * Separately, an optional business-role check protects the authenticity of
+ * CEO/founder/owner verified badges. Never mislabel a self-stated role.
  */
 import { useCallback, useEffect, useState } from 'react'
 
@@ -57,9 +57,9 @@ export const statusCopy: Record<VerificationStatus, { title: string; note: strin
   none: { title: 'Claim your business identity', note: 'Tell us who you are and what you run. Verification protects every member from impersonation.' },
   pending: { title: 'Ready for the consistency check', note: 'Add your evidence, then run the check on your public business sources.' },
   scanning: { title: 'Checking your public business sources', note: 'This takes a moment. Nothing personal or sensitive is examined.' },
-  manual_review: { title: 'With the Aetheris review team', note: 'Your evidence is consistent. A reviewer confirms the role before you enter the network.' },
+  manual_review: { title: 'With the Aetheris review team', note: 'A reviewer is checking the business role you claimed. You can still use your member account during review.' },
   needs_more_proof: { title: 'More proof needed', note: 'Something did not line up, or a source could not be read. Add another piece of evidence and run the check again.' },
-  verified: { title: 'Verified member', note: 'Your badge is live and the network is open to you.' },
+  verified: { title: 'Business role verified', note: 'Your independently reviewed business-role badge is now available.' },
   rejected: { title: 'Not approved', note: 'This claim was not approved. You can reply to the decision to appeal.' },
   suspended: { title: 'Membership suspended', note: 'Network access is paused on this account.' },
 }
