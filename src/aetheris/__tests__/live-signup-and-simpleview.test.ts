@@ -95,7 +95,8 @@ describe('Email-confirmed first-use security contract', () => {
 
   it('waits for the profile update receipt instead of silently entering on denied writes', () => {
     expect(onboarding).toContain(".select('id').maybeSingle()")
-    expect(onboarding).toContain('savedProfile?.id !== access.userId')
+    expect(onboarding).toContain('await requireConfirmedProfileSave(access.userId')
+    expect(source('../lib/onboarding-save.ts')).toContain('receipt.data?.id !== userId')
   })
 
   it('does not auto-award the evidence-based business role badge', () => {
