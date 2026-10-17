@@ -20,10 +20,10 @@ export const Route = createFileRoute('/_authenticated/verify')({
       { title: 'Membership verification — Ask Intros' },
       {
         name: 'description',
-        content: 'A network built for people who actually run companies. Every Ask Intros member is verified before they reach the network.',
+        content: 'Verify your leadership role with public business evidence to earn a trusted Ask Intros badge.',
       },
       { property: 'og:title', content: 'Membership verification — Ask Intros' },
-      { property: 'og:description', content: 'Every member is verified. Every relationship starts with a real person.' },
+      { property: 'og:description', content: 'Verified business roles receive a badge after the evidence is checked.' },
       { property: 'og:type', content: 'website' },
       { name: 'twitter:card', content: 'summary_large_image' },
     ],
@@ -145,10 +145,10 @@ function VerifyPortal() {
       </Link>
       <div className="auth-index"><span className="folio">MEMBERSHIP VERIFICATION / 2026</span><span>01 / REAL OPERATORS ONLY</span></div>
       <p className="auth-lede">Invited as someone’s assistant or operator? <Link to="/delegate">Open the delegate workspace</Link>.</p>
-      <h1>A network built for people who<br /><em>actually run companies.</em></h1>
+      <h1>Verify the role<br /><em>you actually hold.</em></h1>
       <p className="auth-lede">
-        Every member is verified. Every relationship starts with a real person. Verification protects
-        executive attention, prevents impersonation, and keeps the network worth the time it asks for.
+        Your account can join the network after onboarding. Business-role verification is a separate,
+        evidence-based trust badge that helps prevent impersonation and protects executive attention.
       </p>
 
       <div className={`verify-status verify-${verification.status}`}>
