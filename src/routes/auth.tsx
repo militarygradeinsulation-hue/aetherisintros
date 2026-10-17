@@ -107,12 +107,10 @@ function AuthPage() {
 
   const land = useCallback(async () => {
     const code = storedInvite()
-    if (code) {
-      // Joining through a member's invite connects both of you once the place is claimed.
-      try { await claimAccess(code); clearInvite() } catch { /* the founding page can retry */ }
-    }
+    // Newly confirmed public members must claim their place too, even without an invite.
+    try { await claimAccess(code || undefined); if (code) clearInvite() } catch { /* the membership page handles retry */ }
     if (next) { window.location.replace(next); return }
-    void navigate({ to: '/verify', replace: true })
+    void navigate({ to: '/early-access', replace: true })
   }, [navigate, next])
 
   useEffect(() => {
@@ -146,7 +144,7 @@ function AuthPage() {
           email,
           password,
           options: {
-            emailRedirectTo: `${window.location.origin}${next || '/verify'}`,
+            emailRedirectTo: `${window.location.origin}${next || '/early-access'}`,
             data: { name: name || email.split('@')[0], invite_code: invite.trim() },
           },
         })
@@ -171,7 +169,7 @@ function AuthPage() {
     rememberInvite(invite)
     try {
       const result = await lovable.auth.signInWithOAuth('google', {
-        redirect_uri: `${window.location.origin}${next || '/verify'}`,
+        redirect_uri: `${window.location.origin}${next || '/early-access'}`,
       })
       if (result.error) throw new Error('Google sign-in could not start. Try email instead.')
       if (result.redirected) return
@@ -199,7 +197,7 @@ function AuthPage() {
           </p>
         : <div className="auth-soon" role="status">
             <span><i aria-hidden="true" />MEMBER SIGNUP</span>
-            <p>{inviteRequired ? 'An invitation or whitelist approval is required for network access.' : 'Create your account, confirm your email, and complete membership verification to join the network.'}</p>
+            <p>{inviteRequired ? 'An invitation or whitelist approval is required for network access.' : 'Create your account and confirm your email to start using the network. Business-role badges require separate verification.'}</p>
             <div className="auth-soon-actions">
               <Link to="/demo">Explore the demo <ArrowRight size={13} /></Link>
               <Link to="/early-access">Join the whitelist <ArrowRight size={13} /></Link>
@@ -207,8 +205,8 @@ function AuthPage() {
           </div>}
       <h1>{mode === 'signin' ? <>Welcome<br /><em>back.</em></> : <>Join the<br /><em>network.</em></>}</h1>
       <p className="auth-lede">
-        A network built for people who actually run companies. Every member is verified, so every
-        relationship starts with a real person — and your context stays private and permissioned.
+        Join with a confirmed email. An executive-role badge requires independent proof, while every
+        introduction needs both sides to agree and your context remains permissioned.
       </p>
 
       <div className="auth-proof" aria-label="Member access principles">

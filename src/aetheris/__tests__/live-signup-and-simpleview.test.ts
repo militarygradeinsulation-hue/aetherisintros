@@ -7,6 +7,8 @@ const landing = source('../Landing.tsx')
 const access = source('../access.ts')
 const store = source('../store.tsx')
 const simple = source('../pages/SimpleViewPage.tsx')
+const messages = source('../../intros-ui/views/LiveMessagesView.tsx')
+const app = source('../App.tsx')
 const early = source('../../routes/early-access.tsx')
 
 describe('Ask Intros signup link', () => {
@@ -42,5 +44,17 @@ describe('Simple View verified introduction requests', () => {
     expect(simple).toContain('const confirmed = await net.requestIntro(member.id)')
     expect(simple).toContain("if (!confirmed) setRequestError(")
     expect(simple).toContain('disabled={requesting || requested}')
+  })
+})
+
+
+describe('Live conversation and relationship-history safeguards', () => {
+  it('uses the confirmed server thread for first message delivery', () => {
+    expect(messages).toContain('if (confirmedThreadId && confirmedThreadId !== threadId) setActiveId(confirmedThreadId)')
+    expect(app).toContain('if (savedThreadId && savedThreadId !== threadId) setActiveId(savedThreadId)')
+  })
+  it('does not present absent history as an ancient exchange', () => {
+    expect(app).toContain('p.lastInteractionDays != null && p.lastInteractionDays < 9000')
+    expect(app).not.toContain('${(person.lastInteractionDays ?? 0)} days ago')
   })
 })
