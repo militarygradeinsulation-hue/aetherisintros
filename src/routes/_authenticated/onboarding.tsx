@@ -62,7 +62,12 @@ function OnboardingRoute() {
     if (access.loading) return
     if (access.status !== 'approved') void navigate({ to: '/early-access', replace: true })
     else if (access.name && !answers['name']) setAnswers(prev => ({ ...prev, name: access.name }))
-  }, [acces  const save = async () => {
+  }, [access, answers, navigate])
+
+  const set = (key: string, value: string) => setAnswers(prev => ({ ...prev, [key]: value }))
+  const get = (key: string) => answers[key]?.trim() ?? ''
+
+  const save = async () => {
     // Two rapid taps must never insert duplicate onboarding memories.
     if (savingRef.current) return
     if (profileSaved) { void navigate({ to: '/app', replace: true }); return }
@@ -119,12 +124,6 @@ function OnboardingRoute() {
       savingRef.current = false
       setBusy(false)
     }
-  }
-xt: m.text,
-        source: 'Profile onboarding', confidence: 100, scope: m.scope, when_label: 'Just now',
-      })))
-    }
-    void navigate({ to: '/app', replace: true })
   }
 
   return <main className="onboarding-page">
