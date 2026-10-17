@@ -21,8 +21,8 @@ describe('recovered demo and tile polish', () => {
     expect(header).toContain('to="/auth"')
     expect(header).toContain('<JoinAction')
     expect(header.indexOf('to="/auth"')).toBeLessThan(header.indexOf('<JoinAction'))
-    expect(landing).toContain('to="/early-access"')
-    expect(landing).toContain('Apply for access')
+    expect(landing).toContain('search={{ mode: \'signup\' }}')
+    expect(landing).toContain('Create your account')
     expect(landing).toContain('to="/demo"')
   })
 
