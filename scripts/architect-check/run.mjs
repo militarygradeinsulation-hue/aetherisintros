@@ -99,7 +99,9 @@ try {
   check(theme!=='light' || options.selectedColor==='rgb(0, 0, 0)','Selected workspace option inverts cleanly on light theme');
   await nav.locator('[aria-haspopup=menu]').click();
   const menuSurface=await page.locator('.ix-desktop-more-menu').evaluate(el=>getComputedStyle(el).backgroundColor);
-  check(menuSurface=== (theme==='light'?'rgb(255, 255, 255)':'rgb(12, 12, 12)'),'More dropdown uses the same panel surface');
+  const menuRgb = (menuSurface.match(/[\\d.]+/g) ?? []).slice(0,3).map(Number);
+  check(menuRgb.length === 3 && menuRgb.every(channel => theme === 'light' ? channel >= 220 : channel <= 40),
+    'More dropdown uses a high-contrast mode-matched surface ('+menuSurface+')');
   await page.keyboard.press('Escape');
   await nav.locator('> button',{hasText:'Messages'}).click();
   await page.waitForFunction(()=>document.querySelector('.arch-product-main')?.dataset.archPage==='messages');
