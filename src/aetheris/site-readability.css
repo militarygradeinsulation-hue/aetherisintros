@@ -197,3 +197,71 @@ html:root[data-theme="dark"] body .ix-root .arch-product-main .ix-live-messages 
   -webkit-text-fill-color:#ffffff!important;
   opacity:1!important;
 }
+
+
+/*
+ * Fit and legibility guard for compact phones. Keep the layout responsive
+ * rather than shrinking fonts or clipping action labels. These rules apply to
+ * both appearances and do not recolor branded art, charts or status badges.
+ */
+.ix-root .arch-product-main :is(.sys-tile,.home-board-tile,.arch-card,.arch-panel,
+  .module,.mod,.feed-card,.need-case,.profile-settings,.messages-layout) {
+  box-sizing:border-box;
+  min-width:0;
+  max-width:100%;
+}
+.ix-root .arch-product-main :is(.sys-tile,.home-board-tile,.arch-card,.arch-panel,
+  .module,.mod,.feed-card,.need-case) :is(h1,h2,h3,h4,p,small,label) {
+  overflow-wrap:break-word;
+}
+html:root[data-theme] body .ix-root :is(.ix-mobile-sheet,.ix-desktop-more-menu)
+  :is(button,[role="menuitem"],[role="option"]) {
+  min-height:44px;
+  max-width:100%;
+  overflow-wrap:break-word;
+}
+html:root[data-theme] body :is(.ix-root,.app-shell,.ask-os)
+  [role="dialog"] :is(input,textarea,select,[role="combobox"]) {
+  min-width:0;
+  max-width:100%;
+  box-sizing:border-box;
+}
+html:root[data-theme] body :is(.ix-root,.app-shell,.ask-os)
+  [role="dialog"] :is(label,legend,h1,h2,h3,p,small) {
+  overflow-wrap:break-word;
+}
+@media (max-width:640px) {
+  .ix-root .arch-product-main,
+  .ix-root .arch-product-main > * {
+    min-width:0;
+    max-width:100%;
+  }
+  .ix-root .arch-product-main :is(.ix-tools,[role="tablist"]) {
+    max-width:100%;
+    min-width:0;
+    overflow-x:auto;
+    overscroll-behavior-x:contain;
+    -webkit-overflow-scrolling:touch;
+  }
+  .ix-root .arch-product-main :is(.sys-tile,.home-board-tile,.arch-card,.arch-panel,
+    .module,.mod,.feed-card,.need-case,.messages-layout) {
+    min-width:0;
+    max-width:100%;
+  }
+  .ix-root .arch-product-main :is(.sys-tile,.home-board-tile,.arch-card,.arch-panel,
+    .module,.mod,.feed-card,.need-case) :is(button,a) {
+    max-width:100%;
+  }
+  html:root[data-theme] body :is(.ix-root,.app-shell,.ask-os) [role="dialog"] {
+    max-width:min(100%,calc(100vw - 24px));
+    max-height:calc(100dvh - 32px - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px));
+    overflow-y:auto;
+    overscroll-behavior:contain;
+    box-sizing:border-box;
+  }
+  html:root[data-theme] body .ix-root :is(.ix-mobile-sheet,[role="dialog"])
+    :is(button,[role="menuitem"],[role="option"]) {
+    white-space:normal;
+    text-align:start;
+  }
+}
