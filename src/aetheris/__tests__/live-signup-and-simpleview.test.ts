@@ -8,6 +8,8 @@ const access = source('../access.ts')
 const store = source('../store.tsx')
 const simple = source('../pages/SimpleViewPage.tsx')
 const early = source('../../routes/early-access.tsx')
+const liveMessages = source('../../intros-ui/views/LiveMessagesView.tsx')
+const app = source('../App.tsx')
 
 describe('Ask Intros signup link', () => {
   it('takes new people straight to the signup form, not sign-in', () => {
@@ -42,5 +44,17 @@ describe('Simple View verified introduction requests', () => {
     expect(simple).toContain('const confirmed = await net.requestIntro(member.id)')
     expect(simple).toContain("if (!confirmed) setRequestError(")
     expect(simple).toContain('disabled={requesting || requested}')
+  })
+})
+
+describe('Durable member conversation and relationship history', () => {
+  it('keeps the real thread selected after its first persisted message', () => {
+    expect(liveMessages).toContain('if (confirmedThreadId && confirmedThreadId !== threadId) setActiveId(confirmedThreadId)')
+    expect(liveMessages).toContain('net.sendMessage(threadId, text, id)')
+    expect(app).toContain('if (savedThreadId && savedThreadId !== threadId) setActiveId(savedThreadId)')
+  })
+  it('does not present never-contacted members as stale exchanges', () => {
+    expect(app).toContain('p.lastInteractionDays != null && p.lastInteractionDays < 9000')
+    expect(app).not.toContain('${(person.lastInteractionDays ?? 0)} days ago')
   })
 })
