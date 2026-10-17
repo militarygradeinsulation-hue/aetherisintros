@@ -20,11 +20,19 @@ export function AdminOverview() {
   const [error, setError] = useState('')
   const [busy, setBusy] = useState(false)
   const refresh = async () => {
-    setBusy(true); setError('')
-    const { data, error: fault } = await (supabase as unknown as { rpc: (name: string) => Promise<{ data: unknown; error: { message: string } | null }> }).rpc('admin_platform_overview')
-    if (fault) { setError(fault.message); setStats(null) }
-    else setStats(data as unknown as Stats)
-    setBusy(false)
+    setBusy(true)
+    setError('')
+    try {
+      const { data, error: fault } = await (supabase as unknown as { rpc: (name: string) => Promise<{ data: unknown; error: { message: string } | null }> }).rpc('admin_platform_overview')
+      if (fault) throw new Error(fault.message)
+      if (!data || typeof data !== 'object' || Array.isArray(data) || !('registered_accounts' in data)) throw new Error('The analytics service returned an invalid response.')
+      setStats(data as Stats)
+    } catch (cause) {
+      setError(cause instanceof Error ? cause.message : 'Could not load administrator analytics. Try again.')
+      setStats(null)
+    } finally {
+      setBusy(false)
+    }
   }
   useEffect(() => { if (!access.loading && access.isAdmin && access.emailConfirmed) void refresh() }, [access.loading, access.isAdmin, access.emailConfirmed])
   if (access.loading) return <main style={{ padding: 32 }}>Checking permissions…</main>
