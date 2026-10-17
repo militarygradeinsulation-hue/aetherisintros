@@ -36,7 +36,7 @@ function Photo({ src, alt, className = '', eager = false }: { src: string; alt: 
 function JoinAction({ signedIn, className = '' }: { signedIn: boolean; className?: string }) {
   return signedIn
     ? <Link className={className} to="/app">Enter your network <ArrowUpRight aria-hidden="true" size={16} /></Link>
-    : <Link className={className} to="/early-access">Apply for access <ArrowUpRight aria-hidden="true" size={16} /></Link>
+    : <Link className={className} to="/auth" search={{ mode: 'signup' }}>Create your account <ArrowUpRight aria-hidden="true" size={16} /></Link>
 }
 
 export default function Landing() {
