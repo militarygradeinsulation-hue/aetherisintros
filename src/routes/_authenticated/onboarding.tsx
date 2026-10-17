@@ -70,13 +70,13 @@ function OnboardingRoute() {
     if (!get('name')) { setError('Your name is needed — members meet real people.'); return }
     setBusy(true); setError('')
     const initials = get('name').split(/\s+/).slice(0, 2).map(p => p[0] ?? '').join('').toUpperCase()
-    const { error: saveError } = await (supabase.from('profiles') as any).update({ // eslint-disable-line @typescript-eslint/no-explicit-any
-      name: get('name'), initials: initials || 'M', title: get('title'), company: get('company'),
+    const { data: savedProfile, error: saveError } = await (supabase.from('profiles') as any).upsert({ // eslint-disable-line @typescript-eslint/no-explicit-any
+      id: access.userId, name: get('name'), initials: initials || 'M', title: get('title'), company: get('company'),
       location: get('location'), focus: get('focus'), looking_for: get('looking_for'),
       can_help_with: get('can_help_with'), industries: list(get('industries')),
       expertise: list(get('expertise')), availability: get('availability'), onboarded: true,
-    }).eq('id', access.userId)
-    if (saveError) { setError(saveError.message); setBusy(false); return }
+    }, { onConflict: 'id' }).select('id').single()
+    if (saveError || !savedProfile?.id) { setError(saveError?.message || 'The profile was not saved. Please retry.'); setBusy(false); return }
     // The LinkedIn link (0038) is saved on its own so it can never block the profile itself.
     if (linkedinUrl) await (supabase.from('profiles') as any).update({ linkedin_url: linkedinUrl }).eq('id', access.userId) // eslint-disable-line @typescript-eslint/no-explicit-any
 
