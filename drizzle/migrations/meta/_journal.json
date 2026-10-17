@@ -610,6 +610,13 @@
       "when": 1792273000001,
       "tag": "0087_confirmed_member_onboarding",
       "breakpoints": true
+    },
+    {
+      "idx": 88,
+      "version": "7",
+      "when": 1792273000002,
+      "tag": "0088_admin_platform_overview",
+      "breakpoints": true
     }
   ]
 }
