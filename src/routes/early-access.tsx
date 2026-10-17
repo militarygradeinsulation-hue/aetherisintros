@@ -59,7 +59,11 @@ function EarlyAccessPage() {
       const result = await claimAccess(code)
       await refresh()
       reloadStats()
-      if (result.status === 'approved') void navigate({ to: '/verify', replace: true })
+      if (result.status === 'approved') {
+        // Let the refreshed access state choose onboarding vs live app.
+        // It also ensures the verification row was actually committed.
+        setNotice('Membership confirmed. Opening your workspace…')
+      }
       else if (result.status === 'waitlisted') setNotice('The founding places are taken. You are on the waitlist and we will write when a place opens.')
       else setError('Your membership has not been approved. Confirm your email and check the current registration mode.')
     } catch (caught) {
