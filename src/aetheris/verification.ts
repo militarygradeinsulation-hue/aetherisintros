@@ -2,8 +2,9 @@
  * Membership verification — client layer.
  *
  * Ask Intros is a private network for people who actually run companies.
- * Creating an account does not grant network access: the member must claim a
- * business identity and have a controlling business role verified.
+ * Joining the network and verifying a claimed business role are separate steps.
+ * A verification badge is earned through evidence; open registration never
+ * invents professional credentials or grants a verified role.
  */
 import { useCallback, useEffect, useState } from 'react'
 
