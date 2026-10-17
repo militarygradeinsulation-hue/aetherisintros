@@ -24,7 +24,8 @@ export default async ({ ok, as, svc }) => {
   ok(r.rows?.[0]?.allowed===true,'confirmed approved onboarded user can enter without a false business badge')
 
   await svc(`insert into public.member_verifications(user_id,status)
-    values ('${D}','manual_review')`)
+    values ('${D}','manual_review')
+    on conflict (user_id) do update set status='manual_review'`)
   r=await as(D,'select public.is_live_member() as allowed')
   ok(r.rows?.[0]?.allowed===true,'optional business review can proceed while ordinary member works')
 
