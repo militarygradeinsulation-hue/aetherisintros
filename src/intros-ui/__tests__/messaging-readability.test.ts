@@ -59,8 +59,8 @@ describe('readable messaging surfaces in demo and live', () => {
     const palette = paletteFor(theme)
     expect(palette['msg-panel']).toBeTruthy()
     expect(palette['msg-ink']).toBeTruthy()
-    expect(theme === 'dark' ? luminance(palette['msg-panel']) : luminance(palette['msg-ink'])).toBeLessThan(0.03)
-    expect(theme === 'light' ? luminance(palette['msg-panel']) : luminance(palette['msg-ink'])).toBeGreaterThan(0.95)
+    expect(theme === 'dark' ? luminance(palette['msg-panel']!) : luminance(palette['msg-ink']!)).toBeLessThan(0.03)
+    expect(theme === 'light' ? luminance(palette['msg-panel']!) : luminance(palette['msg-ink']!)).toBeGreaterThan(0.95)
   })
   describe.each(themes)('%s mode WCAG AA contrast', theme => {
     const palette = paletteFor(theme)
