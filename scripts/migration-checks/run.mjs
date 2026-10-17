@@ -263,7 +263,7 @@ insert into public.member_verifications (user_id, status, verified_at) values ('
 insert into public.intro_requests (user_id,member_id) values ('${A}','demo-marcus-lee');
 `
 
-async function boot() {
+async function boot({ actualMembershipGate = false } = {}) {
   const db = new PGlite()
   await db.exec(BASE)
   await db.exec(SEED)
@@ -271,6 +271,17 @@ async function boot() {
     try { await db.exec(readFileSync(join(migrationsDir, m), 'utf8')) }
     catch (error) { throw new Error(`Migration ${m} failed: ${error.message}`, { cause: error }) }
   }
+  // Historical tests model active identities with only a seeded profile.
+  // Keep that existing fixture for unrelated business modules. The isolated
+  // confirmed-onboarding suite exercises the *actual migrated* security gate.
+  // This override is strictly test-local and is never part of a migration.
+  if (!actualMembershipGate) await db.exec(`
+    CREATE OR REPLACE FUNCTION public.is_live_member() RETURNS boolean
+    LANGUAGE sql STABLE SECURITY DEFINER SET search_path='public'
+    AS $fixture$ SELECT EXISTS (
+      SELECT 1 FROM public.profiles WHERE id=auth.uid()
+    ) $fixture$;
+  `)
   const as = async (uid, sql, params = []) => {
     await db.exec(`reset role; select set_config('request.jwt.claim.sub', '${uid ?? ''}', false); set role ${uid ? 'authenticated' : 'anon'};`)
     try { return { rows: (await db.query(sql, params)).rows } } catch (e) { return { error: e.message } } finally { await db.exec('reset role') }
@@ -287,7 +298,7 @@ console.log(`Migrations: ${migrations.join(', ')}`)
 for (const file of suites) {
   console.log(`\n${file.replace('.check.mjs', '')}`)
   const ok = (cond, msg) => { if (cond) { pass++; console.log('  ✓', msg) } else { fail++; console.log('  ✗', msg) } }
-  const ctx = { ...(await boot()), ok, A, B, C, ADMIN }
+  const ctx = { ...(await boot({ actualMembershipGate: file === 'zz-confirmed-onboarding.check.mjs' })), ok, A, B, C, ADMIN }
   try { await (await import(join(here, file))).default(ctx) } catch (e) { fail++; console.log('  ✗ suite crashed:', e.message) }
   await ctx.db.close()
 }
