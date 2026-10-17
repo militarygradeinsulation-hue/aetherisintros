@@ -181,3 +181,26 @@ html:root[data-theme] body .ix-root
   color:#dedede!important;
   -webkit-text-fill-color:#dedede!important;
 }
+
+
+/* Conversation names are headings inside dark/white inbox rows, not muted text.
+   Stencil's legacy text-fill rules could override their semantic text token.
+   Put both the ink and the WebKit fill on the same high-specificity selector. */
+html:root[data-theme="dark"] body .ix-root .arch-product-main
+  :is(.ix-messages,.ix-live-messages) aside
+  :is(.text-xs.font-semibold.truncate,
+      [class*="text-[var(--msg-ink)]"].font-semibold,
+      [class*="text-[var(--msg-ink)]"].truncate) {
+  color:#ffffff!important;
+  -webkit-text-fill-color:#ffffff!important;
+  opacity:1!important;
+}
+html:root[data-theme="light"] body .ix-root .arch-product-main
+  :is(.ix-messages,.ix-live-messages) aside
+  :is(.text-xs.font-semibold.truncate,
+      [class*="text-[var(--msg-ink)]"].font-semibold,
+      [class*="text-[var(--msg-ink)]"].truncate) {
+  color:#090909!important;
+  -webkit-text-fill-color:#090909!important;
+  opacity:1!important;
+}
