@@ -72,7 +72,10 @@ try {
           }
           parent=parent.parentElement
         }
-        return {ink,surface}
+        return {ink,surface,theme:document.documentElement.getAttribute('data-theme'),
+          surfaceTag:parent?.tagName,surfaceClass:parent?.className,
+          selectedToken:getComputedStyle(el).getPropertyValue('--msg-selected'),
+          panelToken:getComputedStyle(el).getPropertyValue('--msg-panel')}
       })
       const value=contrast(computed.ink,computed.surface)
       if(value<4.5)throw new Error(theme+' '+name+' contrast '+value.toFixed(2)+':1 under 4.5:1 | '+JSON.stringify(computed))
