@@ -107,12 +107,14 @@ function AuthPage() {
 
   const land = useCallback(async () => {
     const code = storedInvite()
-    if (code) {
-      // Joining through a member's invite connects both of you once the place is claimed.
-      try { await claimAccess(code); clearInvite() } catch { /* the founding page can retry */ }
-    }
+    // Public founding registrations can claim without a referral code. The
+    // server, never the browser, decides membership eligibility.
+    try {
+      const result = await claimAccess(code || undefined)
+      if (code && result.status === 'approved') clearInvite()
+    } catch { /* /early-access will explain pending confirmation/access. */ }
     if (next) { window.location.replace(next); return }
-    void navigate({ to: '/verify', replace: true })
+    void navigate({ to: '/early-access', replace: true })
   }, [navigate, next])
 
   useEffect(() => {
@@ -146,7 +148,7 @@ function AuthPage() {
           email,
           password,
           options: {
-            emailRedirectTo: `${window.location.origin}${next || '/verify'}`,
+            emailRedirectTo: `${window.location.origin}${next || '/early-access'}`,
             data: { name: name || email.split('@')[0], invite_code: invite.trim() },
           },
         })
@@ -171,7 +173,7 @@ function AuthPage() {
     rememberInvite(invite)
     try {
       const result = await lovable.auth.signInWithOAuth('google', {
-        redirect_uri: `${window.location.origin}${next || '/verify'}`,
+        redirect_uri: `${window.location.origin}${next || '/early-access'}`,
       })
       if (result.error) throw new Error('Google sign-in could not start. Try email instead.')
       if (result.redirected) return
@@ -199,7 +201,7 @@ function AuthPage() {
           </p>
         : <div className="auth-soon" role="status">
             <span><i aria-hidden="true" />MEMBER SIGNUP</span>
-            <p>{inviteRequired ? 'An invitation or whitelist approval is required for network access.' : 'Create your account, confirm your email, and complete membership verification to join the network.'}</p>
+            <p>{inviteRequired ? 'An invitation or whitelist approval is required for network access.' : 'Create an account, confirm your email, and complete your member profile. Business-role verification is optional.'}</p>
             <div className="auth-soon-actions">
               <Link to="/demo">Explore the demo <ArrowRight size={13} /></Link>
               <Link to="/early-access">Join the whitelist <ArrowRight size={13} /></Link>
@@ -207,8 +209,8 @@ function AuthPage() {
           </div>}
       <h1>{mode === 'signin' ? <>Welcome<br /><em>back.</em></> : <>Join the<br /><em>network.</em></>}</h1>
       <p className="auth-lede">
-        A network built for people who actually run companies. Every member is verified, so every
-        relationship starts with a real person — and your context stays private and permissioned.
+        Join the network with a confirmed email and completed profile. Business-role
+        badges require separate review. Every introduction requires mutual consent.
       </p>
 
       <div className="auth-proof" aria-label="Member access principles">
