@@ -98,8 +98,21 @@ try {
   check(Boolean(options.optionBg && options.optionInk && options.canvas),'Executive option tokens available in '+theme);
   check(theme!=='light' || options.selectedColor==='rgb(0, 0, 0)','Selected workspace option inverts cleanly on light theme');
   await nav.locator('[aria-haspopup=menu]').click();
-  const menuSurface=await page.locator('.ix-desktop-more-menu').evaluate(el=>getComputedStyle(el).backgroundColor);
-  check(menuSurface=== (theme==='light'?'rgb(255, 255, 255)':'rgb(12, 12, 12)'),'More dropdown uses the same panel surface');
+  const menu=await page.locator('.ix-desktop-more-menu').evaluate(el => {
+    const surface=getComputedStyle(el);
+    const parse=value=>{const m=value.match(/\\d+(?:\\.\\d+)?/g); return m?m.slice(0,3).map(Number):null};
+    const luminance=rgb=>rgb.reduce((sum,v,i)=>{
+      const x=v/255;return sum+(x<=0.04045?x/12.92:((x+0.055)/1.055)**2.4)*[0.2126,0.7152,0.0722][i];
+    },0);
+    const background=parse(surface.backgroundColor),ink=parse(surface.color);
+    if(!background||!ink)return {background:surface.backgroundColor,ink:surface.color,ratio:0,brightness:-1};
+    const a=luminance(background),b=luminance(ink);
+    return {background:surface.backgroundColor,ink:surface.color,
+      ratio:(Math.max(a,b)+0.05)/(Math.min(a,b)+0.05),
+      brightness:background.reduce((sum,x)=>sum+x,0)/3};
+  });
+  check(menu.ratio>=4.5 && (theme==='light'?menu.brightness>=225:menu.brightness<=45),
+    'More dropdown has theme-matched surface and readable ink ('+JSON.stringify(menu)+')');
   await page.keyboard.press('Escape');
   await nav.locator('> button',{hasText:'Messages'}).click();
   await page.waitForFunction(()=>document.querySelector('.arch-product-main')?.dataset.archPage==='messages');
