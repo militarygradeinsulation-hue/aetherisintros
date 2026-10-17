@@ -100,7 +100,7 @@ try {
   await nav.locator('[aria-haspopup=menu]').click();
   const menu=await page.locator('.ix-desktop-more-menu').evaluate(el => {
     const surface=getComputedStyle(el);
-    const parse=value=>{const m=value.match(/\\d+(?:\\.\\d+)?/g); return m?m.slice(0,3).map(Number):null};
+    const parse=value=>{const m=value.match(/\d+(?:\.\d+)?/g); return m?m.slice(0,3).map(Number):null};
     const luminance=rgb=>rgb.reduce((sum,v,i)=>{
       const x=v/255;return sum+(x<=0.04045?x/12.92:((x+0.055)/1.055)**2.4)*[0.2126,0.7152,0.0722][i];
     },0);
