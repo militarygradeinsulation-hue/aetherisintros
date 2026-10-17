@@ -361,13 +361,19 @@ export function readAloud(passages: string[], readingLabel = 'Reading') {
 }
 
 export function stopReading() {
+  const hadPlayback = state !== 'idle'
   token += 1
   segments = []
   index = 0
   state = 'idle'
   label = ''
   stopActiveAudio()
-  if (speechSupported()) window.speechSynthesis.cancel()
+  // A no-op cancel on the first tap can prevent immediately queued speech
+  // from starting on Safari. Only cancel if audio was actually in progress.
+  if (speechSupported()
+      && (hadPlayback || window.speechSynthesis.speaking || window.speechSynthesis.pending)) {
+    window.speechSynthesis.cancel()
+  }
   announce()
 }
 
