@@ -181,3 +181,82 @@ html:root[data-theme] body .ix-root
   color:#dedede!important;
   -webkit-text-fill-color:#dedede!important;
 }
+
+
+/* Conversation names are headings inside dark/white inbox rows, not muted text.
+   Stencil's legacy text-fill rules could override their semantic text token.
+   Put both the ink and the WebKit fill on the same high-specificity selector. */
+html:root[data-theme="dark"] body .ix-root
+  :is(.ix-messages,.ix-live-messages) aside
+  :is(.text-xs.font-semibold.truncate,
+      [class*="text-[var(--msg-ink)]"].font-semibold,
+      [class*="text-[var(--msg-ink)]"].truncate) {
+  color:#ffffff!important;
+  -webkit-text-fill-color:#ffffff!important;
+  opacity:1!important;
+}
+html:root[data-theme="light"] body .ix-root
+  :is(.ix-messages,.ix-live-messages) aside
+  :is(.text-xs.font-semibold.truncate,
+      [class*="text-[var(--msg-ink)]"].font-semibold,
+      [class*="text-[var(--msg-ink)]"].truncate) {
+  color:#090909!important;
+  -webkit-text-fill-color:#090909!important;
+  opacity:1!important;
+}
+
+
+/* Inbox rows are intentionally opaque. Some legacy light-stencil rules left
+   selected rows #f6f6f6 even when names were white in dark mode. */
+html:root[data-theme="dark"] body .ix-root
+  :is(.ix-messages,.ix-live-messages) aside {
+  background-color:#080808!important;
+  color:#ffffff!important;
+}
+html:root[data-theme="light"] body .ix-root
+  :is(.ix-messages,.ix-live-messages) aside {
+  background-color:#ffffff!important;
+  color:#090909!important;
+}
+html:root[data-theme="dark"] body .ix-root
+  :is(.ix-messages,.ix-live-messages) aside .msg-thread-tile {
+  background:#111111!important;
+  color:#ffffff!important;
+  -webkit-text-fill-color:#ffffff!important;
+}
+html:root[data-theme="dark"] body .ix-root
+  :is(.ix-messages,.ix-live-messages) aside
+  .msg-thread-tile:is([data-selected="true"],:hover) {
+  background:#252525!important;
+}
+html:root[data-theme="light"] body .ix-root
+  :is(.ix-messages,.ix-live-messages) aside .msg-thread-tile {
+  background:#ffffff!important;
+  color:#090909!important;
+  -webkit-text-fill-color:#090909!important;
+}
+html:root[data-theme="light"] body .ix-root
+  :is(.ix-messages,.ix-live-messages) aside
+  .msg-thread-tile:is([data-selected="true"],:hover) {
+  background:#e9e9e9!important;
+}
+html:root[data-theme] body .ix-root
+  :is(.ix-messages,.ix-live-messages) aside .msg-thread-tile
+  :is(span,p,small,time):not([class*="text-[var(--msg-accent-ink)]"]) {
+  color:var(--msg-ink)!important;
+  -webkit-text-fill-color:var(--msg-ink)!important;
+  opacity:1!important;
+}
+html:root[data-theme] body .ix-root
+  :is(.ix-messages,.ix-live-messages) aside .msg-thread-tile
+  [class*="text-[var(--msg-muted)]"] {
+  color:var(--msg-muted)!important;
+  -webkit-text-fill-color:var(--msg-muted)!important;
+}
+/* The live unread-count badge preserves its orange fill and white text. */
+html:root[data-theme] body .ix-root .ix-live-messages aside
+  .msg-thread-tile [class*="bg-[var(--msg-accent)]"] {
+  background:var(--msg-accent)!important;
+  color:#ffffff!important;
+  -webkit-text-fill-color:#ffffff!important;
+}
