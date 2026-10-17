@@ -46,10 +46,10 @@ function EarlyAccessPage() {
 
   useEffect(() => {
     if (access.loading || !access.signedIn) return
-    // A founding place is only half of membership: the business role must be verified too.
-    if (access.verification !== 'verified') { void navigate({ to: '/verify', replace: true }); return }
     if (access.status === 'approved') {
-      void navigate({ to: access.onboarded ? '/app' : '/onboarding', replace: true })
+      // Never route a pending or waitlisted account into business-role verification.
+      if (access.verification !== 'verified') void navigate({ to: '/verify', replace: true })
+      else void navigate({ to: access.onboarded ? '/app' : '/onboarding', replace: true })
     }
   }, [access, navigate])
 
@@ -61,7 +61,7 @@ function EarlyAccessPage() {
       reloadStats()
       if (result.status === 'approved') void navigate({ to: '/verify', replace: true })
       else if (result.status === 'waitlisted') setNotice('The founding places are taken. You are on the waitlist and we will write when a place opens.')
-      else setError('This account is not approved yet. An invitation or admin approval is needed.')
+      else setError('Your membership has not been approved. Confirm your email and check the current registration mode.')
     } catch (caught) {
       setError(caught instanceof Error ? caught.message : 'Something went wrong. Try again.')
     } finally { setBusy(false) }
@@ -118,7 +118,7 @@ function EarlyAccessPage() {
         {access.status === 'suspended' && <p className="auth-error"><ShieldAlert size={13} /> This account is suspended. Reply to your welcome email and we will look at it.</p>}
         {access.status === 'denied' && <p className="auth-error"><ShieldAlert size={13} /> This account was not approved for early access.</p>}
         {(access.status === 'none' || access.status === 'pending') && <>
-          <p className="auth-notice"><Clock size={13} /> You are on the whitelist. Explore the demo now — full access opens with a member’s access code.</p>
+          <p className="auth-notice"><Clock size={13} /> Registration is waiting for approval. If founding registration is open, confirm your email and try again. Otherwise use a member's invitation.</p>
           <Link to="/demo" className="btn primary">Explore the demo <ArrowRight size={15} /></Link>
           <label className="access-field">
             <span>MEMBER ACCESS CODE</span>
