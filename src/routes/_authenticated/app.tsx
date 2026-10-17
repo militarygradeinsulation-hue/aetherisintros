@@ -36,13 +36,12 @@ function AppRoute() {
 function Gate() {
   const { access } = useAccess()
   const navigate = useNavigate()
-  const ready = access.status === 'approved' && access.verification === 'verified' && access.onboarded
+  const ready = access.status === 'approved' && access.onboarded
 
   useEffect(() => {
     if (access.loading) return
-    // Verification decides network access; the database enforces the same rule.
-    if (access.verification !== 'verified') void navigate({ to: '/verify', replace: true })
-    else if (access.status !== 'approved') void navigate({ to: '/early-access', replace: true })
+    // Approval and onboarding grant network access; business-role badges are separate.
+    if (access.status !== 'approved') void navigate({ to: '/early-access', replace: true })
     else if (!access.onboarded) void navigate({ to: '/onboarding', replace: true })
   }, [access, navigate])
 
