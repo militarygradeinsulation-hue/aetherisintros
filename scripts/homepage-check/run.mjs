@@ -111,6 +111,7 @@ try {
               return [id, Boolean(root.querySelector('a[href="#' + id + '"]') && document.getElementById(id))]
             }),
           ),
+          ctaHrefs: [...root.querySelectorAll('.ael-hero-actions a')].map(a => a.getAttribute('href')),
           ctas: {
             demo: Boolean(root.querySelector('.ael-hero-actions a[href="/demo"]')),
             join: Boolean(root.querySelector('.ael-hero-actions a[href^="/auth?"][href*="mode=signup"]')),
@@ -133,6 +134,7 @@ try {
         'hero fits near the first viewport')
       assert(['experience', 'approach', 'membership'].every(id => m.links[id]),
         'every navigation anchor has a real destination')
+      console.log('  CTA audit: ' + JSON.stringify({ flags: m.ctas, hrefs: m.ctaHrefs }))
       assert(Object.values(m.ctas).every(Boolean), 'demo, join, sign-in and founder-story links remain')
       const onScreen = r => Boolean(r && r.width > 0 && r.right <= viewport.width + 3 && r.x >= -3)
       assert(m.logo && m.logo.width >= (viewport.width <= 420 ? 150 : viewport.width <= 750 ? 175 : 220),
