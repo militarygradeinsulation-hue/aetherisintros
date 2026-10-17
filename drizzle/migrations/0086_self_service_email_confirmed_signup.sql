@@ -114,12 +114,17 @@ BEGIN
                ELSE 'Vouched by member invite ' || v_invite.code END)
   ON CONFLICT (user_id) DO UPDATE SET
     status='verified',
-    verification_level=CASE WHEN mv.verification_level > 0 THEN mv.verification_level
-                            WHEN v_invite.id IS NOT NULL THEN 1 ELSE 0 END,
+    verification_level=greatest(mv.verification_level,excluded.verification_level),
     verified_at=coalesce(mv.verified_at,now()),
     submitted_at=coalesce(mv.submitted_at,now()),
-    decision_reason=excluded.decision_reason
-  WHERE mv.status NOT IN ('rejected','suspended');
+    decision_reason=CASE WHEN mv.verification_level > 0
+      THEN mv.decision_reason ELSE excluded.decision_reason END
+  -- A pending executive-role investigation is not auto-approved as a
+  -- side effect of signing up. Only a fresh, unsubmitted membership row
+  -- may receive ordinary email-confirmed access.
+  WHERE mv.status='verified' OR
+    (mv.status='pending' AND mv.submitted_at IS NULL
+      AND nullif(trim(coalesce(mv.claimed_role,'')), '') IS NULL);
 
   RETURN QUERY SELECT m.status,m.founding_member_number,v_mode
     FROM public.early_access_members m WHERE m.user_id=v_uid;
