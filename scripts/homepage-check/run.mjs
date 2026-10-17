@@ -113,7 +113,7 @@ try {
           ),
           ctas: {
             demo: Boolean(root.querySelector('.ael-hero-actions a[href="/demo"]')),
-            join: Boolean(root.querySelector('.ael-hero-actions a[href="/early-access"]')),
+            join: Boolean(root.querySelector('.ael-hero-actions a[href^="/auth?"][href*="mode=signup"]')),
             story: Boolean(root.querySelector('a[href="/founder-story"]')),
             auth: Boolean(root.querySelector('.ael-header-actions a[href="/auth"]')),
           },

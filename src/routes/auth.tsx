@@ -19,14 +19,14 @@ const safeNext = (value: unknown) => {
 
 export const Route = createFileRoute('/auth')({
   staticData: { sitemap: false },
-  validateSearch: (search: Record<string, unknown>): { next?: string; invite?: string } => {
+  validateSearch: (search: Record<string, unknown>): { next?: string; invite?: string; mode?: 'signup' } => {
     const next = safeNext(search['next'])
     const invite = typeof search['invite'] === 'string' ? search['invite'].slice(0, 64) : ''
-    return { ...(next ? { next } : {}), ...(invite ? { invite } : {}) }
+    return { ...(next ? { next } : {}), ...(invite ? { invite } : {}), ...(search['mode'] === 'signup' ? { mode: 'signup' as const } : {}) }
   },
   beforeLoad: ({ search }) => {
     // A pending agent-integration consent flow always needs the sign-in screen.
-    if (!AUTH_REQUIRED && !search.next && !search.invite) throw redirect({ to: '/app' })
+    if (!AUTH_REQUIRED && !search.next && !search.invite && !search.mode) throw redirect({ to: '/app' })
   },
   head: () => ({
     meta: [
@@ -83,8 +83,8 @@ function AuthPage() {
   }, [])
 
   const navigate = useNavigate()
-  const { next, invite: inviteParam } = Route.useSearch()
-  const [mode, setMode] = useState<'signin' | 'signup'>(inviteParam ? 'signup' : 'signin')
+  const { next, invite: inviteParam, mode: requestedMode } = Route.useSearch()
+  const [mode, setMode] = useState<'signin' | 'signup'>(inviteParam || requestedMode === 'signup' ? 'signup' : 'signin')
   const [invite, setInvite] = useState(inviteParam ?? '')
   const [inviter, setInviter] = useState<{ valid: boolean; inviter: string } | null>(null)
   useEffect(() => { if (!inviteParam) { const s = storedInvite(); if (s) setInvite(s) } }, [inviteParam])
