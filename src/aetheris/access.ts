@@ -1,10 +1,9 @@
 /**
  * Early-access gate for the Founding 1,000.
  *
- * A signed-in account is only a *member* of the live network once it holds an
- * approved `early_access_members` row. Everything network-facing in the app
- * goes through `isLiveMember()` so a new page cannot accidentally admit an
- * unapproved account or read quarantined demo data.
+ * A signed-in account becomes an active member only after claiming an
+ * approved founding place. Business role verification is a SEPARATE badge:
+ * self-serve registration never claims a CEO/owner identity without proof.
  */
 import { useCallback, useEffect, useState } from 'react'
 
@@ -25,7 +24,7 @@ export interface AccessState {
   mode: LaunchMode
   isAdmin: boolean
   onboarded: boolean
-  /** Membership verification decides network access; the database enforces it too. */
+  /** Independent business-role verification, never inferred from signup. */
   verification: VerificationStatus
 }
 
@@ -37,7 +36,7 @@ export const noAccess: AccessState = {
 
 /** The single guard every network-facing surface must respect. */
 export const isLiveMember = (access: AccessState) =>
-  access.signedIn && access.status === 'approved' && access.verification === 'verified'
+  access.signedIn && access.status === 'approved' && access.onboarded
 
 export interface FoundingStats { approved: number; capacity: number; mode: LaunchMode }
 
