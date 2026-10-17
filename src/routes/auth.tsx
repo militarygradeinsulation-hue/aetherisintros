@@ -200,8 +200,8 @@ function AuthPage() {
           </div>}
       <h1>{mode === 'signin' ? <>Welcome<br /><em>back.</em></> : <>Join the<br /><em>network.</em></>}</h1>
       <p className="auth-lede">
-        A network built for people who actually run companies. Every member is verified, so every
-        relationship starts with a real person — and your context stays private and permissioned.
+        A purpose-built business network. Confirm your email to join, then build your professional profile.
+        Verified business-role badges are awarded only after separate evidence review; private context stays permissioned.
       </p>
 
       <div className="auth-proof" aria-label="Member access principles">
