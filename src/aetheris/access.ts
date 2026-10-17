@@ -31,7 +31,7 @@ export interface AccessState {
 
 export const noAccess: AccessState = {
   loading: true, signedIn: false, userId: null, email: '', name: '',
-  status: 'none', foundingNumber: null, mode: 'first_1000', isAdmin: false, onboarded: false,
+  status: 'none', foundingNumber: null, mode: 'invite_only', isAdmin: false, onboarded: false,
   verification: 'none',
 }
 
@@ -49,10 +49,10 @@ export async function foundingStats(): Promise<FoundingStats> {
     return {
       approved: Number(row.approved ?? 0),
       capacity: Number(row.capacity ?? 1000),
-      mode: (row.mode ?? 'first_1000') as LaunchMode,
+      mode: (row.mode ?? 'invite_only') as LaunchMode,
     }
   } catch {
-    return { approved: 0, capacity: 1000, mode: 'first_1000' }
+    return { approved: 0, capacity: 1000, mode: 'invite_only' }
   }
 }
 
@@ -88,11 +88,14 @@ export async function fetchAccess(): Promise<AccessState> {
     .eq('user_id', user.id)
     .maybeSingle()
   // Retry with the remembered invite (email-confirm and Google return paths skip /auth).
-  if (!existing.data || existing.data.status === 'pending') {
+  if (!existing.data || existing.data.status === 'pending' || existing.data.status === 'waitlisted') {
+    // A pending account can become eligible when launch mode changes from
+    // invite-only to open. Never require a referral code for that retry.
     const code = storedInvite()
-    if (!existing.data || code) {
-      try { await claimAccess(code || undefined); if (code) clearInvite() } catch { /* the page surfaces the state below */ }
-    }
+    try {
+      const result = await claimAccess(code || undefined)
+      if (code && result.status === 'approved') clearInvite()
+    } catch { /* The access page will surface the result; never fake approval. */ }
   }
 
   const [membership, roles, profile, stats, verification] = await Promise.all([
