@@ -25,7 +25,7 @@ export interface AccessState {
   mode: LaunchMode
   isAdmin: boolean
   onboarded: boolean
-  /** Membership verification decides network access; the database enforces it too. */
+  /** Separately earned business-role verification; approval and onboarding grant membership. */
   verification: VerificationStatus
 }
 
@@ -37,7 +37,7 @@ export const noAccess: AccessState = {
 
 /** The single guard every network-facing surface must respect. */
 export const isLiveMember = (access: AccessState) =>
-  access.signedIn && access.status === 'approved' && access.verification === 'verified'
+  access.signedIn && access.status === 'approved' && access.onboarded
 
 export interface FoundingStats { approved: number; capacity: number; mode: LaunchMode }
 
