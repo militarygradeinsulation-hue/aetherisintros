@@ -19,7 +19,7 @@ const roleType = (role: MemberRole): NetworkMember['roleType'] => {
 }
 
 /** Maps real network members into the new shell's member shape. No invented values. */
-export function toNetworkMember(m: Member): NetworkMember {
+export function toNetworkMember(m: Member, businessRoleVerified = false): NetworkMember {
   const [firstName = m.name, ...rest] = String(m.name ?? '').split(' ')
   // Keep the raw value: a real member's photo may be a direct URL or a private
   // storage object path — AvatarImage resolves both. Never substitute a stock photo.
@@ -28,7 +28,7 @@ export function toNetworkMember(m: Member): NetworkMember {
   return {
     id: m.id, name: m.name, firstName, lastName: rest.join(' '),
     title: m.title ?? '', company: m.company ?? '', industry: m.industry ?? '',
-    roleType: roleType(m.role), location: m.location ?? '', avatarUrl: avatar, verified: true,
+    roleType: roleType(m.role), location: m.location ?? '', avatarUrl: avatar, verified: businessRoleVerified,
     matchScore: score,
     matchTier: score >= 85 ? 'EXCELLENT FIT' : score >= 75 ? 'STRONG FIT' : score >= 65 ? 'GOOD FIT' : 'POTENTIAL',
     bioStatement: m.whatIDo || m.focus || m.thesis || '', fullBio: m.thesis || m.whatIDo || '',
@@ -60,13 +60,13 @@ function Bridge({ onMembers, onError }: {
     const load = async () => {
       try {
         const { data: session, error } = await supabase.auth.getUser()
-        if (error || !session.user) throw new Error('Sign in to see verified live members.')
+        if (error || !session.user) throw new Error('Sign in to see live network members.')
         const canonical = await loadVisibleMemberProfiles(null, 100)
         if (!alive) return
         const storeMembers = new Map(latest.current.filter(m => isLiveMemberId(m.id)).map(m => [m.id, m]))
         const next = canonical
           .filter(p => isLiveMemberId(p.id) && p.id !== session.user!.id)
-          .map(p => toNetworkMember(storeMembers.get(p.id) ?? profileToMember(p, null)))
+          .map(p => toNetworkMember(storeMembers.get(p.id) ?? profileToMember(p, null), Boolean(p.verified_role)))
         onMembers(next)
         onError?.('')
       } catch (error) {

@@ -9,7 +9,7 @@ export default async ({ db, ok, as, svc, A, B, C, ADMIN }) => {
   const cohort = r.rows[0].id
   ok(!!cohort, 'admin creates a cohort')
   // B is already an approved member; one row has a bad email; two rows repeat the same person.
-  await svc(`insert into public.early_access_members (user_id, email, status) values ('${B}', 'b@member.com', 'approved')`)
+  await svc(`insert into public.early_access_members (user_id, email, status) values ('${B}', 'b@member.com', 'approved') on conflict (user_id) do update set email=excluded.email, status=excluded.status`)
   const rows = [
     { email: 'Dana@Northwind.com ', name: 'Dana Ortiz', company: 'Northwind' },
     { email: 'sam@contoso.com', name: 'Sam Lee', company: 'Contoso' },
