@@ -28,7 +28,7 @@ export const Route = createFileRoute('/_authenticated/app')({
   component: AppRoute,
 })
 
-/** Only an approved, onboarded Founding Member reaches the live network. */
+/** Only an approved, onboarded member reaches the live network. */
 function AppRoute() {
   return <ClientOnly fallback={null}><Gate /></ClientOnly>
 }
@@ -36,13 +36,12 @@ function AppRoute() {
 function Gate() {
   const { access } = useAccess()
   const navigate = useNavigate()
-  const ready = access.status === 'approved' && access.verification === 'verified' && access.onboarded
+  const ready = access.status === 'approved' && access.onboarded
 
   useEffect(() => {
     if (access.loading) return
-    // Verification decides network access; the database enforces the same rule.
-    if (access.verification !== 'verified') void navigate({ to: '/verify', replace: true })
-    else if (access.status !== 'approved') void navigate({ to: '/early-access', replace: true })
+    // Business-role verification is available later; membership and onboarding are the access gates.
+    if (access.status !== 'approved') void navigate({ to: '/early-access', replace: true })
     else if (!access.onboarded) void navigate({ to: '/onboarding', replace: true })
   }, [access, navigate])
 
