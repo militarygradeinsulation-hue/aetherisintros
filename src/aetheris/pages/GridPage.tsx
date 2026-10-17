@@ -79,6 +79,7 @@ export default function GridPage() {
 
   const [busy, setBusy] = useState(false)
   const [notice, setNotice] = useState('')
+  const [cellError, setCellError] = useState('')
 
   const makeWorkbook = async (name: string, description = '') => {
     setNotice('')
@@ -160,16 +161,24 @@ export default function GridPage() {
     return fmt(value, column.type)
   }
 
-  const commit = async (rowIndex: number, colIndex: number, value: string) => {
+  const commit = async (rowIndex: number, colIndex: number, value: string): Promise<boolean> => {
     const column = columns[colIndex]
     const row = rows[rowIndex]
-    setEditing(null)
-    if (!column || !row || !sheet) return
-    if (sheet.mode === 'linked' && sheet.entityType) {
-      if (!column.writable) return
-      await ops.writeLinkedField(sheet.entityType as LinkedEntity, row.id, column.key, value)
-    } else {
-      await ops.setCell(row.id, column.key, value)
+    if (!column || !row || !sheet || (sheet.mode === 'linked' && !column.writable)) return false
+    setCellError('')
+    try {
+      if (sheet.mode === 'linked' && sheet.entityType) {
+        await ops.writeLinkedField(sheet.entityType as LinkedEntity, row.id, column.key, value)
+      } else {
+        await ops.setCell(row.id, column.key, value)
+      }
+      setEditing(null)
+      return true
+    } catch {
+      setCell({ r: rowIndex, c: colIndex })
+      setEditing(value)
+      setCellError('Your edit was not saved. The value is still in the editor. Check your connection or permissions and retry.')
+      return false
     }
   }
 
@@ -211,7 +220,7 @@ export default function GridPage() {
         const target = rows[cell.r + r]
         const column = columns[cell.c + c]
         if (!target || !column) continue
-        await commit(cell.r + r, cell.c + c, line[c] ?? '')
+        if (!(await commit(cell.r + r, cell.c + c, line[c] ?? ''))) return
       }
     }
   }
@@ -285,6 +294,7 @@ export default function GridPage() {
       proof="Edit a linked cell and the CRM record changes with it."
       action={<Btn kind="secondary" disabled={busy} onClick={() => { void makeWorkbook(`Workbook ${workbooks.length + 1}`) }}><FilePlus2 size={14} /> {busy ? 'Creating…' : 'New workbook'}</Btn>} />
 
+    {cellError && <p role="alert" className="ops-note">{cellError}</p>}
     <div className="grid-shell">
       <div className="grid-bar">
         <select aria-label="Workbook" value={activeWorkbook.id} onChange={e => { setWorkbookId(e.target.value); setSheetId('') }}>
