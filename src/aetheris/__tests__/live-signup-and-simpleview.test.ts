@@ -17,10 +17,13 @@ describe('Ask Intros signup link', () => {
     expect(auth).toContain("requestedMode === 'signup' ? 'signup' : 'signin'")
   })
 
-  it('preserves invite enforcement rather than granting membership client-side', () => {
-    expect(auth).toContain("if (!invite.trim()) throw new Error(")
+  it('permits open founding signups without bypassing server membership or verified badges', () => {
+    expect(auth).toContain("const openSignup = launch?.mode === 'first_1000'")
+    expect(auth).toContain("if (!invite.trim() && !openSignup)")
     expect(access).toContain("supabase.rpc('claim_early_access', args)")
-    expect(access).toContain("access.status === 'approved' && access.verification === 'verified'")
+    expect(access).toContain("access.status === 'approved' && access.onboarded")
+    expect(access).not.toContain("access.verification === 'verified'")
+    expect(auth).toContain("Business-role verification is earned separately")
   })
 })
 
