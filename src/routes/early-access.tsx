@@ -46,10 +46,9 @@ function EarlyAccessPage() {
 
   useEffect(() => {
     if (access.loading || !access.signedIn) return
-    // A founding place is only half of membership: the business role must be verified too.
-    if (access.verification !== 'verified') { void navigate({ to: '/verify', replace: true }); return }
     if (access.status === 'approved') {
-      void navigate({ to: access.onboarded ? '/app' : '/onboarding', replace: true })
+      if (access.verification !== 'verified') void navigate({ to: '/verify', replace: true })
+      else void navigate({ to: access.onboarded ? '/app' : '/onboarding', replace: true })
     }
   }, [access, navigate])
 
