@@ -37,8 +37,8 @@ export default async ({ ok, as, svc }) => {
   r=await as(D,'select public.is_live_member() as allowed')
   ok(r.rows?.[0]?.allowed===false,'suspended member verification removes network access')
 
-  await svc(`delete from public.member_verifications where user_id='${D}';
-    update public.early_access_members set status='suspended' where user_id='${D}'`)
+  await svc(`delete from public.member_verifications where user_id='${D}'`)
+  await svc(`update public.early_access_members set status='suspended' where user_id='${D}'`)
   r=await as(D,'select public.is_live_member() as allowed')
   ok(r.rows?.[0]?.allowed===false,'suspended membership cannot reenter with an old login')
 
