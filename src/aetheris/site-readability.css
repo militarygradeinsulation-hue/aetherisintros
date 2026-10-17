@@ -1,0 +1,183 @@
+/*
+ * ASK INTROS / READABILITY GUARD — loaded after every other site stylesheet.
+ *
+ * Existing legacy styles use !important text colors intended for dark cards,
+ * even when an inverted light surface is rendered. Keep background, ink,
+ * helper copy and field options paired inside a semantic UI surface.
+ * Do not globally recolor SVG marks, button contents, status notices,
+ * charts, or content on photographic overlays.
+ */
+html:root[data-theme="light"] body {
+  --read-panel:#ffffff;
+  --read-inset:#f6f6f6;
+  --read-ink:#111111;
+  --read-secondary:#353535;
+  --read-muted:#505050;
+  --read-border:#888888;
+  --read-highlight:#efefef;
+  --read-brand:#984116;
+  --read-accent:#b5541f;
+  --read-accent-ink:#ffffff;
+}
+html:root[data-theme="dark"] body {
+  --read-panel:#090909;
+  --read-inset:#151515;
+  --read-ink:#ffffff;
+  --read-secondary:#e1e1e1;
+  --read-muted:#cecece;
+  --read-border:#858585;
+  --read-highlight:#242424;
+  --read-brand:#ef9a69;
+  --read-accent:#b5541f;
+  --read-accent-ink:#ffffff;
+}
+
+/* THE SPECIFIC BROKEN VIEW from the screenshot:
+   paint the modal, labels and selects as one connected visual system. */
+html:root[data-theme] body .ix-root .home-feed-customize {
+  background:var(--read-panel)!important;
+  background-image:none!important;
+  color:var(--read-ink)!important;
+  -webkit-text-fill-color:var(--read-ink)!important;
+  border:1px solid var(--read-border)!important;
+  box-shadow:0 24px 70px rgba(0,0,0,.5)!important;
+  color-scheme:normal;
+}
+html:root[data-theme="light"] body .ix-root .home-feed-customize {color-scheme:light;}
+html:root[data-theme="dark"] body .ix-root .home-feed-customize {color-scheme:dark;}
+
+html:root[data-theme] body .ix-root .home-feed-customize
+  :is(header h2,.home-board-label,.home-feed-customize-show,.home-feed-customize-show strong,
+      .home-feed-customize-row label,.home-feed-customize-row label strong) {
+  color:var(--read-ink)!important;
+  -webkit-text-fill-color:var(--read-ink)!important;
+  opacity:1!important;
+}
+html:root[data-theme] body .ix-root .home-feed-customize > p,
+html:root[data-theme] body .ix-root .home-feed-customize .home-feed-customize-row
+  :is(small,.home-feed-customize-show > span) {
+  color:var(--read-secondary)!important;
+  -webkit-text-fill-color:var(--read-secondary)!important;
+  opacity:1!important;
+}
+html:root[data-theme] body .ix-root .home-feed-customize-row {
+  background:var(--read-panel)!important;
+  border:1px solid var(--read-border)!important;
+  color:var(--read-ink)!important;
+  -webkit-text-fill-color:var(--read-ink)!important;
+}
+html:root[data-theme] body .ix-root .home-feed-customize-row:hover {
+  background:var(--read-highlight)!important;
+}
+html:root[data-theme] body .ix-root .home-feed-customize :is(select,option) {
+  background:var(--read-inset)!important;
+  color:var(--read-ink)!important;
+  -webkit-text-fill-color:var(--read-ink)!important;
+  border:1px solid var(--read-border)!important;
+  opacity:1!important;
+  color-scheme:inherit!important;
+}
+html:root[data-theme] body .ix-root .home-feed-customize :is(select,option):disabled {
+  color:var(--read-muted)!important;
+  -webkit-text-fill-color:var(--read-muted)!important;
+}
+html:root[data-theme] body .ix-root .home-feed-customize input[type="checkbox"] {
+  accent-color:var(--read-accent)!important;
+  border:1px solid var(--read-border)!important;
+  opacity:1!important;
+}
+html:root[data-theme] body .ix-root .home-feed-customize :is(header,footer) button:not(.home-feed-customize-done) {
+  background:var(--read-ink)!important;
+  color:var(--read-panel)!important;
+  -webkit-text-fill-color:var(--read-panel)!important;
+  border:1px solid var(--read-border)!important;
+  opacity:1!important;
+}
+html:root[data-theme] body .ix-root .home-feed-customize :is(header,footer) button:not(.home-feed-customize-done) svg {
+  stroke:currentColor!important;
+}
+html:root[data-theme] body .ix-root .home-feed-customize button.home-feed-customize-done,
+html:root[data-theme] body .ix-root .home-feed-customize button.home-feed-customize-done:hover {
+  background:var(--read-accent)!important;
+  color:var(--read-accent-ink)!important;
+  -webkit-text-fill-color:var(--read-accent-ink)!important;
+  border:1px solid var(--read-accent)!important;
+  opacity:1!important;
+}
+html:root[data-theme] body .ix-root .home-feed-customize :is(button,select,input):focus-visible {
+  outline:3px solid var(--read-brand)!important;
+  outline-offset:2px!important;
+}
+
+/* Other shared menus, drawers and portal dialogs: theme-aware surfaces.
+   Scoped to actual overlay roots; avoid recoloring independently designed
+   inline panels, charts, branded CTAs or error/success statuses. */
+html:root[data-theme] body
+  :is(.ix-root,.app-shell,.ask-os)
+  :is(.ix-mobile-sheet,.ix-desktop-more-menu,[role="menu"],[role="listbox"],
+      [role="dialog"]:not(.home-feed-customize)),
+html:root[data-theme] body [data-radix-portal]
+  :is([role="dialog"],[role="menu"],[role="listbox"]),
+html:root[data-theme] body [data-radix-popper-content-wrapper] > * {
+  --ui-overlay-ink:var(--read-ink);
+  --ui-overlay-muted:var(--read-secondary);
+  background-color:var(--read-panel)!important;
+  color:var(--ui-overlay-ink)!important;
+  -webkit-text-fill-color:var(--ui-overlay-ink)!important;
+  border-color:var(--read-border)!important;
+  color-scheme:inherit;
+}
+html:root[data-theme] body
+  :is(.ix-root,.app-shell,.ask-os)
+  :is(.ix-mobile-sheet,.ix-desktop-more-menu,[role="menu"],[role="listbox"],
+      [role="dialog"]:not(.home-feed-customize))
+  :is(h1,h2,h3,h4,p,label,strong,small),
+html:root[data-theme] body [data-radix-portal]
+  :is([role="dialog"],[role="menu"],[role="listbox"])
+  :is(h1,h2,h3,h4,p,label,strong,small) {
+  color:var(--read-ink)!important;
+  -webkit-text-fill-color:var(--read-ink)!important;
+  opacity:1!important;
+}
+html:root[data-theme] body
+  :is(.ix-root,.app-shell,.ask-os)
+  :is(.ix-mobile-sheet,.ix-desktop-more-menu,[role="menu"],[role="listbox"],
+      [role="dialog"]:not(.home-feed-customize))
+  :is(input:not([type="checkbox"]):not([type="radio"]),textarea,select,[role="combobox"]),
+html:root[data-theme] body [data-radix-portal] [role="dialog"]
+  :is(input:not([type="checkbox"]):not([type="radio"]),textarea,select,[role="combobox"]) {
+  background:var(--read-inset)!important;
+  color:var(--read-ink)!important;
+  -webkit-text-fill-color:var(--read-ink)!important;
+  border:1px solid var(--read-border)!important;
+  caret-color:var(--read-ink)!important;
+}
+html:root[data-theme] body
+  :is(.ix-root,.app-shell,.ask-os)
+  :is(.ix-mobile-sheet,.ix-desktop-more-menu,[role="menu"],[role="listbox"],
+      [role="dialog"]:not(.home-feed-customize))
+  :is(input,textarea)::placeholder,
+html:root[data-theme] body [data-radix-portal] [role="dialog"]
+  :is(input,textarea)::placeholder {
+  color:var(--read-muted)!important;
+  -webkit-text-fill-color:var(--read-muted)!important;
+  opacity:1!important;
+}
+
+/* Some legacy helper and subtitle utilities hardcode a pale ink intended only
+   for dark pages; repair these on ordinary INVERTIBLE dashboard surfaces. */
+html:root[data-theme] body .ix-root
+  :is(.sys-tile,.arch-card,.arch-panel,.home-feed-widget,.home-board-tile)
+  :is(.sys-tile-caption,.home-board-label,.home-board-person small,.home-board-content small) {
+  color:var(--read-muted)!important;
+  -webkit-text-fill-color:var(--read-muted)!important;
+  opacity:1!important;
+}
+/* Dark-only widget rails are intentionally dark even when the app's light
+   mode is selected, so they must not inherit the light panel's dark ink. */
+html:root[data-theme] body .ix-root
+  :is(.home-feed-widget,.home-feed-widget .home-board-tile)
+  :is(.home-board-label,.home-board-person small,.home-board-content small) {
+  color:#dedede!important;
+  -webkit-text-fill-color:#dedede!important;
+}
