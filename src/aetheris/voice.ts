@@ -113,6 +113,12 @@ let sharedAudio: HTMLAudioElement | null = null
 const SILENCE = 'data:audio/mp3;base64,SUQzBAAAAAAAI1RTU0UAAAAPAAADTGF2ZjU4Ljc2LjEwMAAAAAAAAAAAAAAA//tQxAADB8AhSmxhIIEVCSiJrDCQBTcu3UrAIwUdkRgQbFAZC1CQEwTJ9mjRvBA4UOLD8nKVOWfh+UlK3z/177OXrfOdKl7pyn3Xf//WreyTRUoAWgBgkOAGbZHBgG1OF6zM82DWbZaUmMBptgQhGjsyYqc9ae9XFz280948NMBWInljyzsNRFLPWdnZGWrddDsjK1unuSrVN9jJsK8KuQtQCtMBjCEtImISdNKJOopIpBFpNSMbIHCSRpRR5iakjTiyzLhchUUBwCgyKiweBv/7UsQbg8isVNoMPMjAAAA0gAAABEVFGmgqK////9bP/6XCykxBTUUzLjEwMKqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq'
 export function unlockAudio() {
   if (typeof window === 'undefined') return
+  // Mobile Read Aloud uses device speech directly. Priming a silent MP3 here
+  // can create a pop and steal the click's audio activation.
+  if (needsGestureBoundPlayback() && speechSupported()) {
+    try { window.speechSynthesis.resume() } catch { /* no-op */ }
+    return
+  }
   if (!sharedAudio) sharedAudio = new Audio()
   try {
     // Keep this completely inaudible. Some mobile browsers make a tiny click when a data
@@ -281,8 +287,8 @@ async function speakCurrent(run: number) {
   // activation before playback. Start the device voice immediately instead.
   if (!managed || (speechSupported() && needsGestureBoundPlayback())) {
     if (managed && needsGestureBoundPlayback()) {
-      problem = 'Using your device voice for reliable mobile playback.'
-      announce()
+      // Show the fallback while speaking, not as a misleading error after it ends.
+      label = label + ' · device voice'
     }
     speakWithDevice(text, run)
     return
