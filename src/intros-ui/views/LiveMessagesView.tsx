@@ -65,7 +65,10 @@ function Inner({ onOpenWorkspaces }: { onOpenWorkspaces?: () => void }) {
     setSending(true)
     setFailed(null)
     try {
-      await net.sendMessage(threadId, text)
+      const confirmedThreadId = await net.sendMessage(threadId, text, id)
+      // A newly opened live thread begins with a local placeholder ID. Once
+      // the first message is durably saved, select the canonical DB thread.
+      if (confirmedThreadId !== threadId) setActiveId(confirmedThreadId)
       if (active?.id === threadId) setDraft(current => current.trim() === text.trim() ? '' : current)
     } catch (cause) {
       setFailed({ id, threadId, text, reason: cause instanceof Error ? cause.message : 'Not sent. Retry this message.' })
