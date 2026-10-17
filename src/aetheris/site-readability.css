@@ -309,3 +309,20 @@ html:root[data-theme="dark"] body .ix-root .arch-product-main .ix-live-messages 
   -webkit-text-fill-color:#ffffff!important;
   opacity:1!important;
 }
+
+
+/* Verified in the real Messages browser check: legacy high-specificity rules
+ * can leave inbox titles white on white in Light mode. Scope the fix to the
+ * actual thread title nodes and pin the paint values in each appearance. */
+html:root[data-theme="light"] body .ix-root .arch-product-main .ix-messages aside :is(span,div).text-xs.font-semibold.truncate,
+html:root[data-theme="light"] body .ix-root .arch-product-main .ix-live-messages aside :is(span,div).text-sm.truncate {
+  color:#090909!important;
+  -webkit-text-fill-color:#090909!important;
+  opacity:1!important;
+}
+html:root[data-theme="dark"] body .ix-root .arch-product-main .ix-messages aside :is(span,div).text-xs.font-semibold.truncate,
+html:root[data-theme="dark"] body .ix-root .arch-product-main .ix-live-messages aside :is(span,div).text-sm.truncate {
+  color:#ffffff!important;
+  -webkit-text-fill-color:#ffffff!important;
+  opacity:1!important;
+}
