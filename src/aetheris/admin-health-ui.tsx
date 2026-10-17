@@ -15,10 +15,25 @@ type Health = any
 export function AdminNetworkHealthPanel() {
   const [h, setH] = useState<Health | null>(null)
   const [error, setError] = useState('')
-  useEffect(() => {
-    void (supabase as any).rpc('admin_network_health').then((r: any) => { if (r.error) setError(r.error.message); else setH(r.data) })
-  }, [])
-  if (error) return <section className="executive-section"><Eyebrow><Activity size={12} /> NETWORK HEALTH</Eyebrow><p className="og-note">{error}</p></section>
+  const [loading, setLoading] = useState(true)
+  const reload = async () => {
+    setLoading(true)
+    setError('')
+    try {
+      const r = await (supabase as any).rpc('admin_network_health')
+      if (r.error) { setH(null); setError(r.error.message || 'Unable to load network health.') }
+      else if (!r.data) { setH(null); setError('Network health returned no data.') }
+      else setH(r.data)
+    } catch {
+      setH(null)
+      setError('Unable to reach network health reporting.')
+    } finally {
+      setLoading(false)
+    }
+  }
+  useEffect(() => { void reload() }, [])
+  if (error) return <section className="executive-section" role="alert"><Eyebrow><Activity size={12} /> NETWORK HEALTH</Eyebrow><p className="og-note">{error}</p><button type="button" onClick={() => void reload()}>Retry</button></section>
+  if (loading && !h) return <section className="executive-section" aria-busy="true"><Eyebrow><Activity size={12} /> NETWORK HEALTH</Eyebrow><p>Loading network health…</p></section>
   if (!h) return null
   const m = h.members ?? {}
   return <section className="executive-section admin-health">
@@ -55,11 +70,30 @@ interface AppError { id: string; created_at: string; source: 'client' | 'server'
 export function AdminErrorsPanel() {
   const [rows, setRows] = useState<AppError[] | null>(null)
   const [open, setOpen] = useState<string | null>(null)
-  useEffect(() => {
-    void (supabase as any).from('app_errors').select('id, created_at, source, message, stack, url, user_agent')
-      .order('created_at', { ascending: false }).limit(300)
-      .then((r: any) => setRows(r.error ? [] : r.data ?? []))
-  }, [])
+  const [error, setError] = useState('')
+  const [loading, setLoading] = useState(true)
+  const reload = async () => {
+    setLoading(true)
+    setError('')
+    // Keep the time window aligned with the panel title, and cap expensive reads.
+    const since = new Date(Date.now() - 14 * 24 * 60 * 60 * 1000).toISOString()
+    try {
+      const r = await (supabase as any).from('app_errors')
+        .select('id, created_at, source, message, stack, url, user_agent')
+        .gte('created_at', since)
+        .order('created_at', { ascending: false }).limit(300)
+      if (r.error) { setRows(null); setError(r.error.message || 'Unable to load error reports.') }
+      else setRows(r.data ?? [])
+    } catch {
+      setRows(null)
+      setError('Unable to reach the error reporting service.')
+    } finally {
+      setLoading(false)
+    }
+  }
+  useEffect(() => { void reload() }, [])
+  if (loading && !rows) return <section className="executive-section admin-health" aria-busy="true"><h2>Loading error reports…</h2></section>
+  if (error) return <section className="executive-section admin-health" role="alert"><h2>Error reporting unavailable</h2><p className="og-note">{error}</p><button type="button" onClick={() => void reload()}>Retry</button></section>
   if (!rows) return null
   const groups = new Map<string, { latest: AppError; count: number; pages: Set<string> }>()
   for (const e of rows) {
