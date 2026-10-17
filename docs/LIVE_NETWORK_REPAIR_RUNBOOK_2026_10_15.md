@@ -44,3 +44,25 @@ ORDER BY tablename, policyname;
 
 ## Deployment status
 The GitHub branch contains source and migration changes. **Production database execution, the published frontend rollout, and verification with real member accounts require an authorized deployment session and cannot be claimed complete from GitHub CI alone.**
+
+
+## October 17 production database inspection and registration correction
+
+The linked Lovable project **Ask Intros** was inspected with read-only database queries before modifying registration configuration. Results, without customer records:
+
+- Prior launch mode: `invite_only`, capacity 1,000.
+- Live `request_verified_intro`, `visible_member_profiles`, `provider_directory`, `my_provider_requests` and `provider_inbox` functions exist and authenticated EXECUTE was granted.
+- Authenticated read/write table grants for `posts` and `asks` exist, with RLS policies visible. This is a schema/privilege check, **not** a signed-in end-to-end demonstration.
+- 9 approved member records and 9 verified member records were counted before the registration change.
+- The deployed `claim_early_access` function was an older code-required implementation, inconsistent with GitHub's reviewed `0086_restore_launch_mode_signup.sql`.
+
+**Action completed:** The reviewed main-branch `0086_restore_launch_mode_signup.sql` function replacement was applied to the linked project database. The `launch_settings` row was changed from `invite_only` to `first_1000`; capacity remains 1,000. Verification after the write showed `first_1000`, the new whitelist/capacity/legacy-invite rules in the function, authenticated EXECUTE, and unchanged approved/verified member totals.
+
+**Still required to claim complete:**
+
+1. Use a **new email account** in the published frontend, verify email, confirm no invite is required and that the membership is approved without bypassing the business verification gate.
+2. Complete the required verification and onboarding, then check a real People list, saved ask/post, durable DM, and introduction to a different opted-in verified member.
+3. Confirm the published frontend commit and runtime Supabase project both match the GitHub code; production migrations run separately from GitHub CI.
+4. Monitor errors and unexpected signups; if emergency closure is necessary, an authorized admin may set `launch_settings.mode` to `invite_only` while preserving existing memberships.
+
+Do not confuse existence/permissions of backend functions with confirmed user flow. No test accounts were created, no existing member private records were inspected, and no RLS policies were disabled during this database correction.
