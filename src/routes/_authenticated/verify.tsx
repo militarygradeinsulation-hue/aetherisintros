@@ -17,10 +17,10 @@ export const Route = createFileRoute('/_authenticated/verify')({
   staticData: { sitemap: false },
   head: () => ({
     meta: [
-      { title: 'Membership verification — Ask Intros' },
+      { title: 'Business-role verification — Ask Intros' },
       {
         name: 'description',
-        content: 'A network built for people who actually run companies. Every Ask Intros member is verified before they reach the network.',
+        content: 'Optional business-role verification helps a member qualify for a reviewed executive badge.',
       },
       { property: 'og:title', content: 'Membership verification — Ask Intros' },
       { property: 'og:description', content: 'Every member is verified. Every relationship starts with a real person.' },
@@ -147,8 +147,8 @@ function VerifyPortal() {
       <p className="auth-lede">Invited as someone’s assistant or operator? <Link to="/delegate">Open the delegate workspace</Link>.</p>
       <h1>A network built for people who<br /><em>actually run companies.</em></h1>
       <p className="auth-lede">
-        Every member is verified. Every relationship starts with a real person. Verification protects
-        executive attention, prevents impersonation, and keeps the network worth the time it asks for.
+        Your network access comes from your confirmed account and completed profile. This optional
+        process verifies executive roles before a CEO, founder or owner badge is displayed.
       </p>
 
       <div className={`verify-status verify-${verification.status}`}>
@@ -240,7 +240,12 @@ function VerifyPortal() {
       </section>}
 
       <div className="verify-foot">
-        <span><LockHint /> Verified members carry a badge — never their proof documents.</span>
+        <span><LockHint /> Reviewed business roles can earn a badge. Evidence stays private.</span>
+        {access.status === 'approved' && access.emailConfirmed && access.verification !== 'rejected' && access.verification !== 'suspended' && (
+          <Link to={access.onboarded ? '/app' : '/onboarding'} className="btn ghost">
+            {access.onboarded ? 'Continue to Ask Intros' : 'Finish member profile'} <ArrowRight size={14} />
+          </Link>
+        )}
         <button className="auth-switch" type="button" onClick={() => { void signOutMember('/auth') }}>
           Sign out
         </button>
@@ -254,7 +259,7 @@ function VerifyPortal() {
       </div>
       <div className="portrait-caption">
         <span><BadgeCheck size={13} /> CEO VERIFIED · FOUNDER VERIFIED · OWNER VERIFIED</span>
-        <p>Every member is verified. Every relationship starts with a real person.</p>
+        <p>Business-role badges are reviewed. Ordinary members do not display unverified executive badges.</p>
       </div>
     </aside>
   </main>
