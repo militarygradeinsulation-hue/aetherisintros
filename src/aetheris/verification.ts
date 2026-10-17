@@ -2,8 +2,8 @@
  * Membership verification — client layer.
  *
  * Ask Intros is a private network for people who actually run companies.
- * Creating an account does not grant network access: the member must claim a
- * business identity and have a controlling business role verified.
+ * Confirmed-email founding registration may grant ordinary network membership.
+ * A business-role badge still requires separate evidence review.
  */
 import { useCallback, useEffect, useState } from 'react'
 
@@ -59,7 +59,7 @@ export const statusCopy: Record<VerificationStatus, { title: string; note: strin
   scanning: { title: 'Checking your public business sources', note: 'This takes a moment. Nothing personal or sensitive is examined.' },
   manual_review: { title: 'With the Aetheris review team', note: 'Your evidence is consistent. A reviewer confirms the role before you enter the network.' },
   needs_more_proof: { title: 'More proof needed', note: 'Something did not line up, or a source could not be read. Add another piece of evidence and run the check again.' },
-  verified: { title: 'Verified member', note: 'Your badge is live and the network is open to you.' },
+  verified: { title: 'Member access confirmed', note: 'You can use the network. An executive-role badge requires separate business verification.' },
   rejected: { title: 'Not approved', note: 'This claim was not approved. You can reply to the decision to appeal.' },
   suspended: { title: 'Membership suspended', note: 'Network access is paused on this account.' },
 }
