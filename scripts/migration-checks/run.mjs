@@ -248,6 +248,15 @@ create function public.is_approved_member(p_user uuid) returns boolean language 
 const SEED = `
 insert into auth.users values ('${A}'),('${B}'),('${C}'),('${ADMIN}');
 insert into public.profiles(id) values ('${A}'),('${B}'),('${C}'),('${ADMIN}');
+-- Historic suites modeled each seeded person as an active member by merely
+-- giving them a profile. With 0087's production-accurate approval predicate,
+-- fixtures must hold real founding approvals instead of silently bypassing it.
+-- Suites testing pending/suspended accounts override a given row explicitly.
+insert into public.early_access_members(user_id,email,status) values
+  ('${A}','a@test.invalid','approved'),
+  ('${B}','b@test.invalid','approved'),
+  ('${C}','c@test.invalid','approved'),
+  ('${ADMIN}','admin@test.invalid','approved');
 insert into public.user_roles values ('${ADMIN}','admin');
 -- An ask that already has two replies but a stale count of 0, from before 0027.
 insert into public.asks (id, author_id, ask) values ('ask-old', '${A}', 'Looking for a CFO');
