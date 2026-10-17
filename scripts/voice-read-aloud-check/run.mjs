@@ -36,7 +36,7 @@ try {
     const context = await browser.newContext({ userAgent: scenario.userAgent, viewport: { width: scenario.width, height: 850 } })
     await context.addInitScript(voice => {
       localStorage.setItem('aetheris.voice.settings', JSON.stringify({
-        readAloud:true, speakReplies:true, conversation:false, tapToRead:false,
+        readAloud:true, speakReplies:true, conversation:false, tapToRead:true,
         voiceName:voice, speed:'normal',
       }))
       window.__readAloudUtterances = []
@@ -63,9 +63,12 @@ try {
     page.on('pageerror', error => errors.push(error.message))
     await page.goto('http://127.0.0.1:' + port + '/demo', { waitUntil: 'domcontentloaded', timeout:120000 })
     await page.waitForSelector('.ix-root', { timeout:60000 })
-    const buttons = page.locator('button.read-btn:visible')
-    await buttons.first().waitFor({ state:'visible',timeout:30000 })
-    await buttons.first().click()
+    // The modern Ask Intros /demo shell has an integrated VoiceBar rather
+    // than a legacy .read-btn; use its real Read-on-tap integration.
+    await page.locator('.voice-bar').waitFor({state:'visible',timeout:30000})
+    const text = page.locator('.ix-root p:visible').filter({hasText:/[A-Za-z]{3,}/}).first()
+    await text.waitFor({state:'visible',timeout:30000})
+    await text.click()
     if (scenario.voice === 'intros-managed') {
       await page.waitForFunction(() => window.__audioContextUnblocks > 0, {timeout:5000})
       // A managed voice MUST NOT silently switch to generic browser speech,
