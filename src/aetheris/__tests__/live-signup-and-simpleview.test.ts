@@ -32,6 +32,7 @@ describe('Ask Intros signup link', () => {
     expect(liveMembers).toContain('Boolean(p.verified_role)')
     expect(liveMembers).not.toContain('avatarUrl: avatar, verified: true')
   })
+})
 
 describe('Simple View live messaging', () => {
   it('replaces the draft thread ID with the confirmed server ID after first send', () => {
