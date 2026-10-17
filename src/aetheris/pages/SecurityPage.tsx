@@ -127,6 +127,7 @@ export function SecurityPage() {
         <small>{verification.businessName}{verification.verifiedAt ? ` · Verified ${new Date(verification.verifiedAt).toLocaleDateString()}` : ''}</small>
       </span>}
       <p>{loading ? '' : statusCopy[verification.status].note}</p>
+      {verification.status !== 'verified' && <a className="security-verify-link" href="/verify">Request a verified business-role badge</a>}
       <ul className="security-list">
         <li><span>Multi-factor</span><small>{mfa === 'enrolled' ? 'Enrolled' : mfa === 'none' ? 'Not enrolled' : 'Unknown'}</small></li>
         <li><span>This session started</span><small>{sessionSince || '—'}</small></li>
