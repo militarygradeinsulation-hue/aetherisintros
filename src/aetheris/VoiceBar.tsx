@@ -2,31 +2,39 @@
 import { useEffect } from 'react'
 import { Pause, Play, Rabbit, SkipForward, Square, Volume2 } from 'lucide-react'
 import {
-  passagesIn, pauseReading, readAloud, resumeReading, skipSegment, speechSupported, stopReading,
+  passagesIn, pauseReading, readAloud, resumeReading, skipSegment, stopReading,
   useReader, useVoiceSettings, voiceSpeedLabels, voiceSpeeds,
 } from './voice'
+
+// The modern member shell can nest an additional classic app shell that also
+// mounts a VoiceBar. Keep a single document click listener to avoid double
+// reads (and duplicate ElevenLabs synthesis charges) on one tap.
+let readOnTapSubscribers = 0
+function readTappedSection(event: MouseEvent) {
+  const target = event.target as HTMLElement | null
+  if (!target) return
+  if (target.closest('button, a, input, textarea, select, [role="button"], .voice-bar')) return
+  const block = target.closest<HTMLElement>('article, li, section, p, h1, h2, h3, h4, blockquote')
+  if (!block) return
+  const passages = passagesIn(block)
+  const text = passages.length ? passages : [(block.textContent ?? '').trim()]
+  event.preventDefault()
+  readAloud(text, 'Reading what you tapped')
+}
 
 export function VoiceBar() {
   const reader = useReader()
   const [voice, setVoice] = useVoiceSettings()
   const reading = reader.state !== 'idle'
 
-  /* Read-on-tap: one click reads the piece the member pointed at. */
   useEffect(() => {
-    if (!voice.tapToRead || !speechSupported()) return
-    const onClick = (event: MouseEvent) => {
-      const target = event.target as HTMLElement | null
-      if (!target) return
-      if (target.closest('button, a, input, textarea, select, [role="button"], .voice-bar')) return
-      const block = target.closest<HTMLElement>('article, li, section, p, h1, h2, h3, h4, blockquote')
-      if (!block) return
-      const passages = passagesIn(block)
-      const text = passages.length ? passages : [(block.textContent ?? '').trim()]
-      event.preventDefault()
-      readAloud(text, 'Reading what you tapped')
+    if (!voice.tapToRead) return
+    readOnTapSubscribers++
+    if (readOnTapSubscribers === 1) document.addEventListener('click', readTappedSection, true)
+    return () => {
+      readOnTapSubscribers = Math.max(0, readOnTapSubscribers - 1)
+      if (!readOnTapSubscribers) document.removeEventListener('click', readTappedSection, true)
     }
-    document.addEventListener('click', onClick, true)
-    return () => document.removeEventListener('click', onClick, true)
   }, [voice.tapToRead])
 
   if (!reading && !voice.tapToRead && !reader.problem) return null
