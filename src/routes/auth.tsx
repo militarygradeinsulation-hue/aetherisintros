@@ -112,7 +112,7 @@ function AuthPage() {
       try { await claimAccess(code); clearInvite() } catch { /* the founding page can retry */ }
     }
     if (next) { window.location.replace(next); return }
-    void navigate({ to: '/verify', replace: true })
+    void navigate({ to: '/app', replace: true })
   }, [navigate, next])
 
   useEffect(() => {
@@ -200,8 +200,8 @@ function AuthPage() {
           </div>}
       <h1>{mode === 'signin' ? <>Welcome<br /><em>back.</em></> : <>Join the<br /><em>network.</em></>}</h1>
       <p className="auth-lede">
-        A network built for people who actually run companies. Every member is verified, so every
-        relationship starts with a real person — and your context stays private and permissioned.
+        Build a real professional network with intentional introductions and double opt-in consent.
+        Business-role verification is earned separately — your context stays private and permissioned.
       </p>
 
       <div className="auth-proof" aria-label="Member access principles">
