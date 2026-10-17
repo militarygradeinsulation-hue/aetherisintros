@@ -127,3 +127,38 @@
   .ix-root .ix-mobile-more *,
   .ix-root .ix-mobile-sheet * { animation: none !important; transition-duration: 0s !important; }
 }
+
+/* Keep long member names, translated labels and enlarged text inside their
+   actual cards. Let navigation scroll instead of clipping its final action. */
+:is(.ix-root,.auth-page,.verify-page,.onboarding-page)
+  :is(.provider-card,.providers-search,.home-feed-customize-row,.auth-form label) {
+  min-width: 0;
+  max-width: 100%;
+}
+:is(.ix-root,.auth-page,.verify-page,.onboarding-page)
+  :is(.provider-card h3,.provider-card p,.provider-card small,.auth-error,.auth-notice) {
+  overflow-wrap: anywhere;
+}
+.ix-root :is(.providers-tabs,.providers-chips) {
+  max-width: 100%;
+  overflow-x: auto;
+  scrollbar-width: thin;
+}
+.ix-root :is(.providers-tabs,.providers-chips) > button {
+  flex-shrink: 0;
+}
+@media (max-width: 750px) {
+  .auth-page :is(.auth-proof,.auth-index,.auth-soon-actions) {
+    flex-wrap: wrap;
+    height: auto;
+    gap: 12px;
+  }
+  .auth-page :is(.auth-switch,.auth-foot,.btn) {
+    max-width: 100%;
+    white-space: normal;
+    overflow-wrap: anywhere;
+    height: auto;
+  }
+  .auth-page .auth-foot { flex-wrap: wrap; }
+  .ix-root .providers-empty > div { display: flex; flex-wrap: wrap; gap: 10px; }
+}

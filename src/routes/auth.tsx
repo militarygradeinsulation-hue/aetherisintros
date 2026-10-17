@@ -7,7 +7,7 @@ import gsap from 'gsap'
 import { supabase } from '@/integrations/supabase/client'
 import { lovable } from '@/integrations/lovable/index'
 import { AUTH_REQUIRED } from '@/aetheris/config'
-import { claimAccess, clearInvite, previewInvite, rememberInvite, storedInvite } from '@/aetheris/access'
+import { claimAccess, clearInvite, foundingStats, previewInvite, rememberInvite, storedInvite } from '@/aetheris/access'
 import { logSecurityEvent, passwordProblem } from '@/aetheris/verification'
 import { AppearanceToggle } from '@/aetheris/AppearanceToggle'
 import '@/aetheris/styles.css'
@@ -95,6 +95,9 @@ function AuthPage() {
     return () => clearTimeout(t)
   }, [invite])
   const hasInvite = Boolean(inviteParam) || (mode === 'signup' && Boolean(inviter?.valid))
+  const [launchMode, setLaunchMode] = useState<string | null>(null)
+  useEffect(() => { void foundingStats().then(stats => setLaunchMode(stats.mode)) }, [])
+  const inviteRequired = launchMode === 'invite_only' || launchMode === 'closed'
   const [name, setName] = useState('')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
@@ -118,8 +121,13 @@ function AuthPage() {
       if (!cancelled && data.session) void land()
     })
     const { data: sub } = supabase.auth.onAuthStateChange((event, session) => {
-      if (session && event === 'SIGNED_IN') void logSecurityEvent('signed_in', 'Signed in to Ask Intros.')
-      if (session && (event === 'SIGNED_IN' || event === 'INITIAL_SESSION')) void land()
+      if (session && (event === 'SIGNED_IN' || event === 'INITIAL_SESSION')) {
+        setTimeout(() => {
+          if (cancelled) return
+          if (event === 'SIGNED_IN') void logSecurityEvent('signed_in', 'Signed in to Ask Intros.')
+          void land()
+        }, 0)
+      }
     })
     return () => { cancelled = true; sub.subscription.unsubscribe() }
   }, [land])
@@ -130,8 +138,8 @@ function AuthPage() {
     try {
       rememberInvite(invite)
       if (mode === 'signup') {
-        if (!invite.trim()) throw new Error('Sign-up is invite-only right now. Enter the invite code a member sent you.')
-        if (inviter && !inviter.valid) throw new Error('That invite code is not valid. Check it with the person who sent it.')
+        // Membership RPCs enforce launch mode and whitelist eligibility after sign-in.
+        if (invite.trim() && inviter && !inviter.valid) throw new Error('That invite code is not valid. Check it with the person who sent it.')
         const weak = passwordProblem(password)
         if (weak) throw new Error(weak)
         const { data, error: signUpError } = await supabase.auth.signUp({
@@ -161,16 +169,18 @@ function AuthPage() {
   const google = async () => {
     setBusy(true); setError('')
     rememberInvite(invite)
-    const result = await lovable.auth.signInWithOAuth('google', {
-      redirect_uri: `${window.location.origin}${next || '/verify'}`,
-    })
-    if (result.error) {
-      setError('Google sign-in could not start. Try email instead.')
+    try {
+      const result = await lovable.auth.signInWithOAuth('google', {
+        redirect_uri: `${window.location.origin}${next || '/verify'}`,
+      })
+      if (result.error) throw new Error('Google sign-in could not start. Try email instead.')
+      if (result.redirected) return
+      await land()
+    } catch (caught) {
+      setError(caught instanceof Error ? caught.message : 'Google sign-in could not start. Try email instead.')
+    } finally {
       setBusy(false)
-      return
     }
-    if (result.redirected) return
-    void land()
   }
 
   return <main className="auth-page">
@@ -188,8 +198,8 @@ function AuthPage() {
               : 'You were invited by a member. Create your account below.'}
           </p>
         : <div className="auth-soon" role="status">
-            <span><i aria-hidden="true" />LAUNCHING SOON</span>
-            <p>Ask Intros is in private pre-launch. Open sign-up is closed — only whitelisted founding members can sign in right now.</p>
+            <span><i aria-hidden="true" />MEMBER SIGNUP</span>
+            <p>{inviteRequired ? 'An invitation or whitelist approval is required for network access.' : 'Create your account, confirm your email, and complete membership verification to join the network.'}</p>
             <div className="auth-soon-actions">
               <Link to="/demo">Explore the demo <ArrowRight size={13} /></Link>
               <Link to="/early-access">Join the whitelist <ArrowRight size={13} /></Link>
@@ -214,9 +224,9 @@ function AuthPage() {
       <div className="auth-divider"><span>or use email</span></div>
 
       {mode === 'signup' && <label className="auth-invite">
-        <span>INVITE CODE</span>
+        <span>INVITE CODE (IF YOU HAVE ONE)</span>
         <input value={invite} onChange={e => setInvite(e.target.value)} placeholder="e.g. joseph-3f9a2c" autoComplete="off" />
-        <small>{inviter?.valid ? `Invited by ${inviter.inviter || 'a member'} — you will join each other’s network.` : inviter && !inviter.valid ? 'That code is not valid.' : 'Enter the code from the member who invited you.'}</small>
+        <small>{inviter?.valid ? `Invited by ${inviter.inviter || 'a member'} — you will join each other’s network.` : inviter && !inviter.valid ? 'That code is not valid.' : 'Have an invitation? Enter it to connect with the member who invited you.'}</small>
       </label>}
 
       <form className="auth-form" onSubmit={event => void submit(event)}>
@@ -240,7 +250,7 @@ function AuthPage() {
       </form>
 
       <button type="button" className="auth-switch" onClick={() => { setMode(mode === 'signin' ? 'signup' : 'signin'); setError(''); setNotice('') }}>
-        {mode === 'signin' ? 'Have an invite code? Create your account.' : 'Already a member? Sign in.'}
+        {mode === 'signin' ? 'New to Ask Intros? Create your account.' : 'Already a member? Sign in.'}
       </button>
       <Link to="/early-access" className="auth-switch">No invite yet? Request whitelist access.</Link>
       <Link to="/demo" className="auth-switch">Not ready to join? Open the demo.</Link>

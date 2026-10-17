@@ -44,7 +44,7 @@ try {
    child.once('exit',code=>{clearTimeout(timeout);fail(new Error('Server exited '+code))})
  })
  const {chromium}=await import(process.env.PLAYWRIGHT_MODULE??resolve(root,'node_modules/playwright/index.mjs'))
- browser=await chromium.launch()
+ browser=await chromium.launch(process.env.CHROMIUM ? { executablePath: process.env.CHROMIUM } : {})
  for (const vp of [{width:320,height:700},{width:375,height:812},{width:390,height:844},{width:430,height:932},{width:768,height:1024},{width:1024,height:768},{width:1440,height:900}]) {
   console.log('Mobile site / '+vp.width+' × '+vp.height)
   const page=await browser.newPage({viewport:vp})

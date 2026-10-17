@@ -181,3 +181,26 @@ html:root[data-theme] body .ix-root
   color:#dedede!important;
   -webkit-text-fill-color:#dedede!important;
 }
+
+/* Pair the signup status surface with explicit ink in either appearance. */
+html:root[data-theme] .auth-panel :is(.auth-soon,.auth-invited) {
+  background: var(--read-panel) !important;
+  color: var(--read-ink) !important;
+  -webkit-text-fill-color: var(--read-ink) !important;
+}
+html:root[data-theme] .auth-panel :is(.auth-soon p,.auth-invited small) {
+  color: var(--read-secondary) !important;
+  -webkit-text-fill-color: var(--read-secondary) !important;
+}
+html:root[data-theme] .auth-panel .auth-error {
+  background: #fff1f1 !important;
+  padding: 12px;
+  color: #a21b1b !important;
+  -webkit-text-fill-color: #a21b1b !important;
+}
+
+html:root[data-theme="dark"] .auth-panel .auth-error {
+  background: #301515 !important;
+  color: #ffb4b4 !important;
+  -webkit-text-fill-color: #ffb4b4 !important;
+}

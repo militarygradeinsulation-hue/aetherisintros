@@ -17,8 +17,9 @@ describe('Ask Intros signup link', () => {
     expect(auth).toContain("requestedMode === 'signup' ? 'signup' : 'signin'")
   })
 
-  it('preserves invite enforcement rather than granting membership client-side', () => {
-    expect(auth).toContain("if (!invite.trim()) throw new Error(")
+  it('uses the launch mode for invitations and keeps membership enforcement server-side', () => {
+    expect(auth).not.toContain("if (!invite.trim()) throw new Error(")
+    expect(auth).toContain("Membership RPCs enforce launch mode")
     expect(access).toContain("supabase.rpc('claim_early_access', args)")
     expect(access).toContain("access.status === 'approved' && access.verification === 'verified'")
   })

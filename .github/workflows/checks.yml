@@ -35,7 +35,9 @@ jobs:
       - name: Build
         run: npx vite build
       - name: Database migration checks
-        run: node scripts/migration-checks/run.mjs
+        run: |
+          node scripts/migration-checks/run.mjs
+          node scripts/migration-checks/launch-signup.standalone.mjs
       - name: Install Chromium
         run: npx playwright install --with-deps chromium
       - name: Mobile site and business journey (browser)

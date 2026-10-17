@@ -88,11 +88,11 @@ export async function fetchAccess(): Promise<AccessState> {
     .eq('user_id', user.id)
     .maybeSingle()
   // Retry with the remembered invite (email-confirm and Google return paths skip /auth).
-  if (!existing.data || existing.data.status === 'pending') {
+  if (!existing.data || existing.data.status === 'pending' || existing.data.status === 'waitlisted') {
     const code = storedInvite()
-    if (!existing.data || code) {
-      try { await claimAccess(code || undefined); if (code) clearInvite() } catch { /* the page surfaces the state below */ }
-    }
+    // Retry pending accounts after launch settings change, including accounts
+    // created before public signup was restored. The RPC enforces eligibility.
+    try { await claimAccess(code || undefined); if (code) clearInvite() } catch { /* the page surfaces the state below */ }
   }
 
   const [membership, roles, profile, stats, verification] = await Promise.all([
@@ -130,7 +130,10 @@ export function useAccess() {
     void fetchAccess().then(next => { if (!cancelled) setAccess(next) })
     const { data: sub } = supabase.auth.onAuthStateChange(event => {
       if (event !== 'SIGNED_IN' && event !== 'SIGNED_OUT' && event !== 'USER_UPDATED') return
-      void fetchAccess().then(next => { if (!cancelled) setAccess(next) })
+      // Auth callbacks run under the client session lock; read after it is released.
+      setTimeout(() => {
+        if (!cancelled) void fetchAccess().then(next => { if (!cancelled) setAccess(next) })
+      }, 0)
     })
     return () => { cancelled = true; sub.subscription.unsubscribe() }
   }, [])
