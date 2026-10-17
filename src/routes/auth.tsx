@@ -190,6 +190,8 @@ function AuthPage() {
               ? `You were invited by ${inviter.inviter || 'a member'}. Create your account below.`
               : 'You were invited by a member. Create your account below.'}
           </p>
+        : openSignup
+          ? <p className="auth-invited" role="status">Open founding registration is available. Create your account without an invite code.</p>
         : <div className="auth-soon" role="status">
             <span><i aria-hidden="true" />LAUNCHING SOON</span>
             <p>{launch?.mode === 'first_1000' ? 'Create an account to claim your place. No invite code is required.' : launch?.mode === 'closed' ? 'Registration is paused. Existing members can still sign in.' : 'Founding membership is currently invitation-only. A member code is needed to join.'}</p>
