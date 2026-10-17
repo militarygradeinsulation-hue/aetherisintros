@@ -263,7 +263,7 @@ insert into public.member_verifications (user_id, status, verified_at) values ('
 insert into public.intro_requests (user_id,member_id) values ('${A}','demo-marcus-lee');
 `
 
-async function boot() {
+async function boot({ legacyMemberFixture = false } = {}) {
   const db = new PGlite()
   await db.exec(BASE)
   await db.exec(SEED)
@@ -271,6 +271,15 @@ async function boot() {
     try { await db.exec(readFileSync(join(migrationsDir, m), 'utf8')) }
     catch (error) { throw new Error(`Migration ${m} failed: ${error.message}`, { cause: error }) }
   }
+  // Legacy feature suites deliberately use the pre-existing permissive profile
+  // fixture. The new self-serve-membership suite exercises the real production
+  // is_live_member guard instead, with email/approval/onboarding combinations.
+  // Never copy this legacy fixture into a production migration.
+  if (legacyMemberFixture) await db.exec(`
+    create or replace function public.is_live_member() returns boolean
+    language sql stable security definer set search_path to 'public'
+    as $ select exists(select 1 from public.profiles where id=auth.uid()) $;
+  `)
   const as = async (uid, sql, params = []) => {
     await db.exec(`reset role; select set_config('request.jwt.claim.sub', '${uid ?? ''}', false); set role ${uid ? 'authenticated' : 'anon'};`)
     try { return { rows: (await db.query(sql, params)).rows } } catch (e) { return { error: e.message } } finally { await db.exec('reset role') }
@@ -287,7 +296,7 @@ console.log(`Migrations: ${migrations.join(', ')}`)
 for (const file of suites) {
   console.log(`\n${file.replace('.check.mjs', '')}`)
   const ok = (cond, msg) => { if (cond) { pass++; console.log('  ✓', msg) } else { fail++; console.log('  ✗', msg) } }
-  const ctx = { ...(await boot()), ok, A, B, C, ADMIN }
+  const ctx = { ...(await boot({ legacyMemberFixture: file !== 'self-serve-signup.check.mjs' })), ok, A, B, C, ADMIN }
   try { await (await import(join(here, file))).default(ctx) } catch (e) { fail++; console.log('  ✗ suite crashed:', e.message) }
   await ctx.db.close()
 }
