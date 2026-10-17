@@ -30,7 +30,7 @@ export interface AccessState {
 
 export const noAccess: AccessState = {
   loading: true, signedIn: false, userId: null, email: '', name: '',
-  status: 'none', foundingNumber: null, mode: 'first_1000', isAdmin: false, onboarded: false,
+  status: 'none', foundingNumber: null, mode: 'invite_only', isAdmin: false, onboarded: false,
   verification: 'none',
 }
 
@@ -44,14 +44,14 @@ export async function foundingStats(): Promise<FoundingStats> {
   try {
     const { data } = await supabase.rpc('founding_stats')
     const row = Array.isArray(data) ? data[0] : data
-    if (!row) return { approved: 0, capacity: 1000, mode: 'first_1000' }
+    if (!row) return { approved: 0, capacity: 1000, mode: 'invite_only' }
     return {
       approved: Number(row.approved ?? 0),
       capacity: Number(row.capacity ?? 1000),
       mode: (row.mode ?? 'first_1000') as LaunchMode,
     }
   } catch {
-    return { approved: 0, capacity: 1000, mode: 'first_1000' }
+    return { approved: 0, capacity: 1000, mode: 'invite_only' }
   }
 }
 
@@ -87,10 +87,13 @@ export async function fetchAccess(): Promise<AccessState> {
     .eq('user_id', user.id)
     .maybeSingle()
   // Retry with the remembered invite (email-confirm and Google return paths skip /auth).
-  if (!existing.data || existing.data.status === 'pending') {
+  if (!existing.data || ['pending', 'waitlisted'].includes(existing.data.status)) {
     const code = storedInvite()
-    if (!existing.data || code) {
-      try { await claimAccess(code || undefined); if (code) clearInvite() } catch { /* the page surfaces the state below */ }
+    // Previously pending invite-only accounts may now join when founding
+    // registration opens. Reclaim is atomic and capacity-checked server-side.
+    const openNow = !existing.data || (await foundingStats()).mode === 'first_1000'
+    if (openNow || code) {
+      try { await claimAccess(code || undefined); if (code) clearInvite() } catch { /* membership page surfaces the state */ }
     }
   }
 
