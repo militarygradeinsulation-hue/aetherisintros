@@ -224,13 +224,13 @@ function SocialSheet({ panel, close, openMember, openThread, onThreadConfirmed }
 
 function MemberSheet({ memberId, openThread }: { memberId: string; openThread: (id: string) => void }) {
   const net = useNetwork()
+  const [requesting, setRequesting] = useState(false)
+  const [requestError, setRequestError] = useState('')
   const member = net.members.find(item => item.id === memberId)
   if (!member) return <p className="sv-empty">This member is no longer in view.</p>
   const connected = net.connections.includes(member.id)
   const saved = net.saved.includes(member.id)
   const requested = member.introState !== 'recommended'
-  const [requesting, setRequesting] = useState(false)
-  const [requestError, setRequestError] = useState('')
   const request = async () => {
     if (requesting || requested) return
     setRequesting(true)
