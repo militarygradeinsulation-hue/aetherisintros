@@ -72,10 +72,10 @@ try {
           }
           parent=parent.parentElement
         }
-        return {ink,surface}
+        return {ink,surface,tag:el.tagName,classes:el.className,ancestors:[...function*(n){while(n){yield {tag:n.tagName,classes:String(n.className).slice(0,110),background:getComputedStyle(n).backgroundColor};n=n.parentElement}}(el)].slice(0,7),webKitInk:getComputedStyle(el).webkitTextFillColor}
       })
       const value=contrast(computed.ink,computed.surface)
-      if(value<4.5)throw new Error(theme+' '+name+' contrast '+value.toFixed(2)+':1 under 4.5:1')
+      if(value<4.5)throw new Error(theme+' '+name+' contrast '+value.toFixed(2)+':1 under 4.5:1 '+JSON.stringify(computed))
       checks++
       console.log('  ✓ '+theme+' '+name+' '+value.toFixed(2)+':1')
     }

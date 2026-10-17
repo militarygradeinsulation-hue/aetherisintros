@@ -20,10 +20,10 @@ export const Route = createFileRoute('/_authenticated/verify')({
       { title: 'Membership verification — Ask Intros' },
       {
         name: 'description',
-        content: 'A network built for people who actually run companies. Every Ask Intros member is verified before they reach the network.',
+        content: 'Earn a verified professional role badge by supplying supporting business evidence.',
       },
       { property: 'og:title', content: 'Membership verification — Ask Intros' },
-      { property: 'og:description', content: 'Every member is verified. Every relationship starts with a real person.' },
+      { property: 'og:description', content: 'Business role verification is evidence-based and distinct from membership approval.' },
       { property: 'og:type', content: 'website' },
       { name: 'twitter:card', content: 'summary_large_image' },
     ],
@@ -145,11 +145,13 @@ function VerifyPortal() {
       </Link>
       <div className="auth-index"><span className="folio">MEMBERSHIP VERIFICATION / 2026</span><span>01 / REAL OPERATORS ONLY</span></div>
       <p className="auth-lede">Invited as someone’s assistant or operator? <Link to="/delegate">Open the delegate workspace</Link>.</p>
-      <h1>A network built for people who<br /><em>actually run companies.</em></h1>
+      <h1>Verify the role<br /><em>you actually hold.</em></h1>
       <p className="auth-lede">
-        Every member is verified. Every relationship starts with a real person. Verification protects
-        executive attention, prevents impersonation, and keeps the network worth the time it asks for.
+        Your approved account can use Ask Intros after onboarding. Evidence-based business-role
+        verification is a separate trust badge that helps prevent impersonation.
       </p>
+
+      {access.status === 'approved' && <Link to={access.onboarded ? '/app' : '/onboarding'} className="btn ghost">Continue to your network <ArrowRight size={14} /></Link>}
 
       <div className={`verify-status verify-${verification.status}`}>
         <span className="folio">{verification.status === 'none' ? 'NOT STARTED' : verification.status.replace(/_/g, ' ').toUpperCase()}</span>

@@ -8,6 +8,8 @@ const access = source('../access.ts')
 const store = source('../store.tsx')
 const simple = source('../pages/SimpleViewPage.tsx')
 const early = source('../../routes/early-access.tsx')
+const liveMessages = source('../../intros-ui/views/LiveMessagesView.tsx')
+const app = source('../App.tsx')
 
 describe('Ask Intros signup link', () => {
   it('takes new people straight to the signup form, not sign-in', () => {
@@ -21,7 +23,8 @@ describe('Ask Intros signup link', () => {
     expect(auth).not.toContain("if (!invite.trim()) throw new Error(")
     expect(auth).toContain("Membership RPCs enforce launch mode")
     expect(access).toContain("supabase.rpc('claim_early_access', args)")
-    expect(access).toContain("access.status === 'approved' && access.verification === 'verified'")
+    expect(access).toContain("access.status === 'approved' && access.onboarded")
+    expect(access).not.toContain("access.verification === 'verified'")
   })
 })
 
@@ -42,5 +45,35 @@ describe('Simple View verified introduction requests', () => {
     expect(simple).toContain('const confirmed = await net.requestIntro(member.id)')
     expect(simple).toContain("if (!confirmed) setRequestError(")
     expect(simple).toContain('disabled={requesting || requested}')
+  })
+})
+
+describe('Durable member conversation and relationship history', () => {
+  it('keeps the real thread selected after its first persisted message', () => {
+    expect(liveMessages).toContain('if (confirmedThreadId && confirmedThreadId !== threadId) setActiveId(confirmedThreadId)')
+    expect(liveMessages).toContain('net.sendMessage(threadId, text, id)')
+    expect(app).toContain('if (savedThreadId && savedThreadId !== threadId) setActiveId(savedThreadId)')
+  })
+  it('does not present never-contacted members as stale exchanges', () => {
+    expect(app).toContain('p.lastInteractionDays != null && p.lastInteractionDays < 9000')
+    expect(app).not.toContain('${(person.lastInteractionDays ?? 0)} days ago')
+  })
+})
+
+describe('Open-member activation without unearned role verification', () => {
+  const gate = source('../../routes/_authenticated/app.tsx')
+  const onboarding = source('../../routes/_authenticated/onboarding.tsx')
+  const early = source('../../routes/early-access.tsx')
+  const bridge = source('../../intros-ui/liveMembers.tsx')
+  it('routes approved members to onboarding then their real network', () => {
+    expect(gate).toContain("access.status === 'approved' && access.onboarded")
+    expect(gate).not.toContain("access.verification === 'verified'")
+    expect(onboarding).not.toContain("access.verification !== 'verified'")
+    expect(early).toContain("access.onboarded ? '/app' : '/onboarding'")
+  })
+  it('never claims that every approved profile has a verified business role', () => {
+    expect(bridge).toContain("verified: businessRoleVerified")
+    expect(bridge).toContain("Boolean(p.verified_role)")
+    expect(bridge).not.toContain("verified: true")
   })
 })
