@@ -377,3 +377,21 @@
  :is(.text-amber-400,.text-yellow-500) {
  color:#233E53;
 }
+
+
+/* Ensure selected conversation tiles follow the active appearance even when
+ * legacy stencil selectors set a hard dark background in light mode. */
+html:root[data-theme="light"] body .ix-root .arch-product-main
+  :is(.ix-messages,.ix-live-messages) aside
+  [class~="bg-[var(--msg-selected)]"] {
+  background:#eaeaea!important;
+  background-color:#eaeaea!important;
+  color:#090909!important;
+}
+html:root[data-theme="dark"] body .ix-root .arch-product-main
+  :is(.ix-messages,.ix-live-messages) aside
+  [class~="bg-[var(--msg-selected)]"] {
+  background:#202020!important;
+  background-color:#202020!important;
+  color:#ffffff!important;
+}
