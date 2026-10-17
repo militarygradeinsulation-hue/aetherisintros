@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { Camera, Check, LockKeyhole, MousePointer2, ShieldCheck, Type, Volume2 } from 'lucide-react'
 import { naturalVoices, readAloud, speechSupported, stopReading, useVoiceSettings, voiceSpeedLabels, voiceSpeeds } from '../voice'
+import { getIntrosVoiceStatus } from '@/lib/voice.functions'
 import { useNetwork, type PreferenceSettings } from '../store'
 import { AvatarImage } from '../avatar'
 import { Btn, Eyebrow, Head } from '../ui'
@@ -85,6 +86,22 @@ function IdentityCard() {
 function VoiceCard() {
   const [voice, setVoice] = useVoiceSettings()
   const [voices, setVoices] = useState<{ name: string; lang: string; label: string }[]>([])
+  const [provider, setProvider] = useState<{
+    status: 'checking' | 'ready' | 'not_configured' | 'unavailable'
+    message: string
+    voiceName?: string
+  }>({ status: 'checking', message: 'Checking your private ElevenLabs voice…' })
+  useEffect(() => {
+    if (voice.voiceName !== 'intros-managed') return
+    let active = true
+    setProvider({ status: 'checking', message: 'Checking your private ElevenLabs voice…' })
+    void getIntrosVoiceStatus()
+      .then(result => { if (active) setProvider(result) })
+      .catch(() => {
+        if (active) setProvider({ status: 'unavailable', message: 'Sign in to verify your ElevenLabs voice, or check the server connection.' })
+      })
+    return () => { active = false }
+  }, [voice.voiceName])
   useEffect(() => {
     const load = () => setVoices(naturalVoices())
     load()
@@ -113,12 +130,15 @@ function VoiceCard() {
     <label className="voice-picker">
       <span>Reading voice</span>
       <select value={voice.voiceName} onChange={event => setVoice({ voiceName: event.target.value })}>
-        <option value="intros-managed">Joseph — Ask Intros</option>
+        <option value="intros-managed">My ElevenLabs voice — Ask Intros</option>
         {speechSupported() && <option value="device-default">Most natural on this device</option>}
         {voices.map(item => <option key={item.name} value={item.name}>{item.label} — {item.lang}</option>)}
       </select>
     </label>
-    {!speechSupported() && <p className="settings-identity-note"><Volume2 size={13} /> This browser has no device voice, but the private Ask Intros voice remains available while online.</p>}
+    {voice.voiceName === 'intros-managed' && <p className="settings-identity-note" role="status" aria-live="polite">
+      <Volume2 size={13} /> {provider.status === 'ready' && provider.voiceName ? 'ElevenLabs voice: ' + provider.voiceName + '. ' : ''}{provider.message}
+    </p>}
+    {!speechSupported() && voice.voiceName !== 'intros-managed' && <p className="settings-identity-note"><Volume2 size={13} /> This device does not support browser voices. Choose your ElevenLabs voice while signed in.</p>}
     <p className="settings-identity-note"><Volume2 size={13} /> Press the speaker in the top bar to hear the page you are on, or highlight a passage first to hear only that.</p>
     <Btn kind="secondary" onClick={() => readAloud(['This is how Ask Intros will read to you, at the speed and voice you chose.'], 'Voice test')}><Volume2 size={14} /> Hear a sample</Btn>
   </>

@@ -19,6 +19,46 @@ function safeProviderMessage(body: string, status: number): string {
   return body.trim().slice(0, 240) || `Voice service returned ${status}.`
 }
 
+/** Verify the selected private voice without exposing credentials or the ID. */
+export const getIntrosVoiceStatus = createServerFn({ method: 'GET' })
+  .middleware([requireAuthContract])
+  .handler(async (): Promise<{
+    status: 'ready' | 'not_configured' | 'unavailable'
+    voiceName?: string
+    message: string
+  }> => {
+    const key = process.env['ELEVENLABS_API_KEY']
+    const id = process.env['ELEVENLABS_VOICE_ID']
+    if (!key || !id) {
+      return { status: 'not_configured', message: 'ElevenLabs needs a private API key and your personal voice ID in server settings.' }
+    }
+    try {
+      const response = await fetch('https://api.elevenlabs.io/v1/voices/' + encodeURIComponent(id), {
+        headers: { 'xi-api-key': key, 'Accept': 'application/json' },
+        signal: AbortSignal.timeout(8000),
+      })
+      if (!response.ok) {
+        return {
+          status: 'unavailable',
+          message: response.status === 401 || response.status === 403
+            ? 'ElevenLabs rejected this API key. Check the private connection.'
+            : response.status === 404
+              ? 'This ElevenLabs voice ID is not accessible with the configured account.'
+              : 'ElevenLabs could not verify the voice right now. Try again later.',
+        }
+      }
+      const body = (await response.json()) as { name?: unknown }
+      const voiceName = typeof body.name === 'string' ? body.name.trim().slice(0, 80) : ''
+      return {
+        status: 'ready',
+        ...(voiceName ? { voiceName } : {}),
+        message: 'Voice found in ElevenLabs. Use Hear a sample to confirm it is your own cloned voice.',
+      }
+    } catch {
+      return { status: 'unavailable', message: 'The ElevenLabs connection could not be reached. Please retry.' }
+    }
+  })
+
 /** Creates one private spoken passage for the signed-in member. */
 export const speakWithIntrosVoice = createServerFn({ method: 'POST' })
   .middleware([requireAuthContract])
@@ -34,6 +74,7 @@ export const speakWithIntrosVoice = createServerFn({ method: 'POST' })
     for (let attempt = 0; attempt < 3; attempt += 1) {
       const response = await fetch(url, {
         method: 'POST',
+        signal: AbortSignal.timeout(30000),
         headers: { 'xi-api-key': apiKey, 'Content-Type': 'application/json' },
         body: JSON.stringify({
           text: data.text,
