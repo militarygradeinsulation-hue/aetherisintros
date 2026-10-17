@@ -26,7 +26,7 @@ export interface ActivationStepView extends ActivationStepState {
 
 const COPY: Record<ActivationStepId, { title: string; detail: string; action: string; target: ActivationTarget }> = {
   profile: { title: 'Add your photo and headline', detail: 'Members reply faster to a face and a title.', action: 'Edit profile', target: 'profile' },
-  verified: { title: 'Get verified', detail: 'Verified owners and CEOs can request and accept introductions.', action: 'Verify', target: 'verify' },
+  verified: { title: 'Activate your member access', detail: 'Confirm your email and membership before making real introductions.', action: 'Confirm membership', target: 'verify' },
   goals: { title: 'Set your 3 goals for this quarter', detail: 'Only you see them. They shape who we suggest you meet.', action: 'Set goals', target: 'goals' },
   ask: { title: 'Post your first ask', detail: 'Say what you need. Members who can help will reply.', action: 'Post an ask', target: 'needs' },
   intro: { title: 'Request or accept your first introduction', detail: 'One warm introduction is the fastest way in.', action: 'Open introductions', target: 'intros' },
