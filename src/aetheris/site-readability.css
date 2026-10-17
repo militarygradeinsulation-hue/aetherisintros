@@ -209,7 +209,7 @@ html:root[data-theme="dark"] .auth-panel .auth-error {
  * not msg-heading classes; pair them with the inverse panel token. */
 html:root[data-theme] body .ix-root
   :is(.ix-messages,.ix-live-messages) aside
-  .text-xs.font-semibold.truncate {
+  :is(.text-xs.font-semibold.truncate,.text-sm.truncate) {
   color:var(--msg-ink)!important;
   -webkit-text-fill-color:var(--msg-ink)!important;
   opacity:1!important;
