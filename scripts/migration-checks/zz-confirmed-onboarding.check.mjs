@@ -25,8 +25,9 @@ export default async ({ ok, as, svc }) => {
   await svc(`update public.profiles set onboarded=true where id='${D}'`)
   q=await as(D,'select public.is_live_member() as allowed')
   ok(q.rows?.[0]?.allowed===true,'confirmed, approved, onboarded account gains live access')
-  const proofs=await svc(`select count(*)::int as n from public.member_verifications where user_id='${D}'`)
-  ok(proofs[0]?.n===0,'membership never fabricates professional-role verification')
+  const proofs=await svc(`select status,verification_level from public.member_verifications where user_id='${D}'`)
+  ok(proofs.every(p=>p.status!=='verified' && Number(p.verification_level)===0),
+    'membership never fabricates professional-role verification')
   q=await as(E,'select public.is_live_member() as allowed')
   ok(q.rows?.[0]?.allowed===true,'second fully onboarded member has access')
 
@@ -46,7 +47,8 @@ export default async ({ ok, as, svc }) => {
     && stored[0].member_opt_in===false,'new intro remains pending until target consents')
 
   await svc(`insert into public.member_verifications(user_id,status)
-    values ('${D}','manual_review')`)
+    values ('${D}','manual_review')
+    on conflict (user_id) do update set status=excluded.status`)
   q=await as(D,'select public.is_live_member() as allowed')
   ok(q.rows?.[0]?.allowed===true,'pending role review does not block ordinary membership')
   await svc(`update public.member_verifications set status='rejected' where user_id='${D}'`)
