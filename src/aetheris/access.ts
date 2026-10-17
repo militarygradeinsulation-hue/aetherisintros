@@ -1,10 +1,9 @@
 /**
  * Early-access gate for the Founding 1,000.
  *
- * A signed-in account is only a *member* of the live network once it holds an
- * approved `early_access_members` row. Everything network-facing in the app
- * goes through `isLiveMember()` so a new page cannot accidentally admit an
- * unapproved account or read quarantined demo data.
+ * Live membership requires a server-approved founding place and a completed
+ * profile. A role-VERIFIED badge requires independent supporting evidence,
+ * never granted simply because a member signs up.
  */
 import { useCallback, useEffect, useState } from 'react'
 
@@ -25,19 +24,19 @@ export interface AccessState {
   mode: LaunchMode
   isAdmin: boolean
   onboarded: boolean
-  /** Membership verification decides network access; the database enforces it too. */
+  /** Independent business-role verification; not a prerequisite for basic membership. */
   verification: VerificationStatus
 }
 
 export const noAccess: AccessState = {
   loading: true, signedIn: false, userId: null, email: '', name: '',
-  status: 'none', foundingNumber: null, mode: 'first_1000', isAdmin: false, onboarded: false,
+  status: 'none', foundingNumber: null, mode: 'invite_only', isAdmin: false, onboarded: false,
   verification: 'none',
 }
 
 /** The single guard every network-facing surface must respect. */
 export const isLiveMember = (access: AccessState) =>
-  access.signedIn && access.status === 'approved' && access.verification === 'verified'
+  access.signedIn && access.status === 'approved' && access.onboarded
 
 export interface FoundingStats { approved: number; capacity: number; mode: LaunchMode }
 
@@ -45,14 +44,14 @@ export async function foundingStats(): Promise<FoundingStats> {
   try {
     const { data } = await supabase.rpc('founding_stats')
     const row = Array.isArray(data) ? data[0] : data
-    if (!row) return { approved: 0, capacity: 1000, mode: 'first_1000' }
+    if (!row) return { approved: 0, capacity: 1000, mode: 'invite_only' }
     return {
       approved: Number(row.approved ?? 0),
       capacity: Number(row.capacity ?? 1000),
       mode: (row.mode ?? 'first_1000') as LaunchMode,
     }
   } catch {
-    return { approved: 0, capacity: 1000, mode: 'first_1000' }
+    return { approved: 0, capacity: 1000, mode: 'invite_only' }
   }
 }
 
