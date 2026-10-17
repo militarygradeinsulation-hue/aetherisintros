@@ -617,6 +617,13 @@
       "when": 1792273000002,
       "tag": "0088_admin_platform_overview",
       "breakpoints": true
+    },
+    {
+      "idx": 89,
+      "version": "7",
+      "when": 1792273000003,
+      "tag": "0089_verified_owner_admin_provision",
+      "breakpoints": true
     }
   ]
 }
