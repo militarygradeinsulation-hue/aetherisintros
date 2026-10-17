@@ -23,7 +23,9 @@ describe('Ask Intros signup link', () => {
     expect(auth).not.toContain("if (!invite.trim()) throw new Error(")
     expect(auth).toContain("Membership RPCs enforce launch mode")
     expect(access).toContain("supabase.rpc('claim_early_access', args)")
-    expect(access).toContain("access.status === 'approved' && access.onboarded")
+    expect(access).toContain("access.emailConfirmed && access.status === 'approved' && access.onboarded")
+    expect(access).toContain("access.verification !== 'rejected'")
+    expect(access).toContain("access.verification !== 'suspended'")
     expect(access).not.toContain("access.verification === 'verified'")
   })
 })
@@ -66,7 +68,7 @@ describe('Open-member activation without unearned role verification', () => {
   const early = source('../../routes/early-access.tsx')
   const bridge = source('../../intros-ui/liveMembers.tsx')
   it('routes approved members to onboarding then their real network', () => {
-    expect(gate).toContain("access.status === 'approved' && access.onboarded")
+    expect(gate).toContain("isLiveMember(access)")
     expect(gate).not.toContain("access.verification === 'verified'")
     expect(onboarding).not.toContain("access.verification !== 'verified'")
     expect(early).toContain("access.onboarded ? '/app' : '/onboarding'")
@@ -75,5 +77,30 @@ describe('Open-member activation without unearned role verification', () => {
     expect(bridge).toContain("verified: businessRoleVerified")
     expect(bridge).toContain("Boolean(p.verified_role)")
     expect(bridge).not.toContain("verified: true")
+  })
+})
+
+describe('Email-confirmed first-use security contract', () => {
+  const accessSql = source('../../../drizzle/migrations/0087_confirmed_member_onboarding.sql')
+  const onboarding = source('../../routes/_authenticated/onboarding.tsx')
+
+  it('requires approval, confirmed email, completed onboarding and no rejected review', () => {
+    expect(accessSql).toContain("e.status = 'approved'")
+    expect(accessSql).toContain("u.email_confirmed_at IS NOT NULL")
+    expect(accessSql).toContain("p.onboarded IS TRUE")
+    expect(accessSql).toContain("v.status IN ('rejected', 'suspended')")
+    expect(accessSql).not.toContain("v.status = 'verified'")
+    expect(accessSql).not.toContain('GRANT SELECT ON public.members')
+  })
+
+  it('waits for the profile update receipt instead of silently entering on denied writes', () => {
+    expect(onboarding).toContain(".select('id').maybeSingle()")
+    expect(onboarding).toContain('savedProfile?.id !== access.userId')
+  })
+
+  it('does not auto-award the evidence-based business role badge', () => {
+    const bridge = source('../../intros-ui/liveMembers.tsx')
+    expect(bridge).toContain('verified: businessRoleVerified')
+    expect(bridge).toContain('Boolean(p.verified_role)')
   })
 })
