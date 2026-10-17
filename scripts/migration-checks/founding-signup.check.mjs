@@ -2,22 +2,17 @@
 export default async ({ ok, as, svc, A, B, C }) => {
   // The fixture reproduces the live pre-0022 access schema and adds the
   // pre-existing columns/tables needed by the latest membership procedure.
-  await svc(`
-    alter table public.early_access_members add column if not exists source text;
-    alter table public.early_access_members add column if not exists founding_member_number integer;
-    alter table public.early_access_members add column if not exists approved_at timestamptz;
-    alter table public.early_access_members add column if not exists updated_at timestamptz default now();
-    create table if not exists public.launch_settings
-      (id integer primary key, mode text not null, capacity integer not null);
-    create table if not exists public.waitlist_entries
-      (email text, user_id uuid);
-    insert into public.launch_settings(id,mode,capacity) values (1,'first_1000',2)
-      on conflict(id) do update set mode='first_1000', capacity=2;
-    update auth.users set email = 'founding-' || right(id::text, 2) || '@test.invalid'
-      where id in ('${A}','${B}','${C}');
-    delete from public.early_access_members
-      where user_id in ('${A}','${B}','${C}');
-  `);
+  for (const statement of [
+    "alter table public.early_access_members add column if not exists source text",
+    "alter table public.early_access_members add column if not exists founding_member_number integer",
+    "alter table public.early_access_members add column if not exists approved_at timestamptz",
+    "alter table public.early_access_members add column if not exists updated_at timestamptz default now()",
+    "create table if not exists public.launch_settings (id integer primary key, mode text not null, capacity integer not null)",
+    "create table if not exists public.waitlist_entries (email text, user_id uuid)",
+    "insert into public.launch_settings(id,mode,capacity) values (1,'first_1000',2) on conflict(id) do update set mode='first_1000', capacity=2",
+    `update auth.users set email = 'founding-' || right(id::text, 2) || '@test.invalid' where id in ('${A}','${B}','${C}')`,
+    `delete from public.early_access_members where user_id in ('${A}','${B}','${C}')`,
+  ]) await svc(statement);
   let r=await as(null,'select * from public.claim_early_access()');
   ok(!!r.error,'anonymous signup cannot claim an active membership');
   r=await as(A,'select * from public.claim_early_access()');
