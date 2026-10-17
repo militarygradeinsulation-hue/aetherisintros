@@ -669,7 +669,7 @@ export function NetworkProvider({ children, mode = 'live' }: { children: React.R
       },
 
       sendMessage: async (threadId, text, messageId) => {
-        if (!text.trim()) return
+        if (!text.trim()) throw new Error('Write a message before sending.')
         const thread = [...s.ownThreads, ...dir.threads].find(t => t.id === threadId)
         if (live) {
           if (!userId || !thread) throw new Error('Not sent. This conversation is unavailable. Retry.')
