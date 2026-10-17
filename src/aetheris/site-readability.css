@@ -306,3 +306,15 @@ html:root[data-theme="dark"] body .ix-root .arch-product-main
   -webkit-text-fill-color:#fff!important;
   opacity:1!important;
 }
+
+/* The desktop More menu is part of the same stencil workspace as its tabs.
+   Keep its surface on --st-card instead of the generic --read-panel (#090909)
+   so dark and light menus match neighboring cards exactly. */
+html:root[data-theme="dark"] body .ix-root .ix-desktop-more-menu,
+html:root[data-theme="light"] body .ix-root .ix-desktop-more-menu {
+  background:var(--st-card)!important;
+  background-color:var(--st-card)!important;
+  color:var(--st-ink)!important;
+  -webkit-text-fill-color:var(--st-ink)!important;
+  border-color:var(--st-rule)!important;
+}
