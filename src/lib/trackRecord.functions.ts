@@ -1,6 +1,5 @@
 import { createServerFn } from '@tanstack/react-start'
 import { requireAuthContract } from './auth-gate'
-import { supabaseAdmin } from '@/integrations/supabase/client.server'
 
 // ---------------------------------------------------------------------------
 // Reputation Score
@@ -45,7 +44,7 @@ export const computeAndSaveScore = createServerFn({ method: 'POST' })
     const { data: myRequests } = await db
       .from('intro_requests')
       .select('id')
-      .or(`user_id.eq.${userId},target_user_id.eq.${userId}`)
+      .or(`user_id.eq.${userId},member_id.eq.${userId}`)
     const myRequestIds = new Set(((myRequests ?? []) as Array<{ id: string }>).map(r => r.id))
     const relevant = peerOutcomes.filter(o => myRequestIds.has(o.intro_request_id))
     const total = myRequestIds.size
@@ -57,7 +56,7 @@ export const computeAndSaveScore = createServerFn({ method: 'POST' })
     const score = total > 0
       ? Math.min(100, Math.round((intro_success_rate * 0.5) + (follow_through_rate * 0.5)))
       : 50
-    await (supabaseAdmin as any).from('reputation_scores').upsert(
+    await db.from('reputation_scores').upsert(
       {
         user_id: userId,
         score,
