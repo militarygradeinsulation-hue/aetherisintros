@@ -2,7 +2,7 @@
   "meta": {
     "name": "Ask Intros",
     "package": "@ws-gmhcx8w6bqvecbtkycud/c1248cd8-77de-4eaa-8d9d-e7da71e70ae9",
-    "version": "28.0.0",
+    "version": "29.0.0",
     "framework": "react",
     "css_framework": "tailwind",
     "starter_template": "custom_design_system_tailwind",
@@ -20,7 +20,7 @@
       ".github/workflows/weekly-digest.yml": "e602576a745fc760441dba42e41526bd",
       ".gitignore": "6d9e901a692b46a83707c245fb03bc91",
       ".lovable/mcp/manifest.json": "14506f566b19203eeaf10e66a9359f87",
-      ".lovable/meta.yaml": "954a981e8847ec1692669dbb04ae9ae9",
+      ".lovable/meta.yaml": "2c5b9c53d91d5e5e4a4c66638d6fa5e5",
       ".lovable/plan.md": "593798e465b529a2037e26c832e32435",
       ".lovable/plan/align-simple-mode-with-the-main-aetheris-interface-2026-09-14.md": "cefc1ac9aedd63ece85f9f3f7ef40d80",
       ".lovable/plan/combine-the-supplied-interaction-style-with-ask-intros-2026-09-22.md": "32b104ebdf7dbcae5912039a55c88585",
