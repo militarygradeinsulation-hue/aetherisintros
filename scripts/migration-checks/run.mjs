@@ -239,7 +239,12 @@ create policy "Members update their own events" on public.calendar_events for up
 create policy "Members delete their own events" on public.calendar_events for delete to authenticated using (auth.uid() = user_id);
 
 create table public.invitations (id uuid primary key default gen_random_uuid(), code text not null unique, email text, max_uses integer not null default 1, uses integer not null default 0, expires_at timestamptz, revoked boolean not null default false, created_by uuid, created_at timestamptz not null default now());
-create table public.early_access_members (id uuid primary key default gen_random_uuid(), user_id uuid not null unique, email text not null, status text not null default 'pending', invite_id uuid, created_at timestamptz not null default now());
+create table public.launch_settings (id integer primary key default 1, mode text not null default 'invite_only', capacity integer not null default 1000, updated_at timestamptz default now());
+insert into public.launch_settings (id,mode,capacity) values (1,'invite_only',1000);
+create table public.waitlist_entries (id uuid primary key default gen_random_uuid(), email text not null unique, user_id uuid, source text not null default 'signup');
+create table public.early_access_members (id uuid primary key default gen_random_uuid(), user_id uuid not null unique, email text not null, status text not null default 'pending',
+  source text not null default 'first_1000', founding_member_number integer unique, approved_at timestamptz, invite_id uuid,
+  created_at timestamptz not null default now(), updated_at timestamptz not null default now());
 create function public.is_approved_member(p_user uuid) returns boolean language sql stable security definer set search_path = public as $$
   select exists (select 1 from public.early_access_members e where e.user_id = p_user and e.status = 'approved') $$;
 `
