@@ -6,6 +6,7 @@ on:
       - 'src/**'
       - 'scripts/customize-contrast-check/**'
       - 'scripts/editorial-copy-contrast-check/**'
+      - 'scripts/voice-read-aloud-check/**'
       - '.github/workflows/ask-intros-design-parity.yml'
   push:
     branches: [main]
@@ -45,3 +46,7 @@ jobs:
         env:
           PLAYWRIGHT_MODULE: ${{ github.workspace }}/node_modules/playwright/index.mjs
         run: node scripts/editorial-copy-contrast-check/run.mjs
+      - name: Read Aloud page and mobile fallback (browser)
+        env:
+          PLAYWRIGHT_MODULE: ${{ github.workspace }}/node_modules/playwright/index.mjs
+        run: node scripts/voice-read-aloud-check/run.mjs
