@@ -108,38 +108,22 @@ let problem = ''
 let token = 0
 let activeAudio: HTMLAudioElement | null = null
 let activeAudioUrl = ''
-/** One audio element unlocked during the member's tap, so later playback is not blocked. */
-let sharedAudio: HTMLAudioElement | null = null
-const SILENCE = 'data:audio/mp3;base64,SUQzBAAAAAAAI1RTU0UAAAAPAAADTGF2ZjU4Ljc2LjEwMAAAAAAAAAAAAAAA//tQxAADB8AhSmxhIIEVCSiJrDCQBTcu3UrAIwUdkRgQbFAZC1CQEwTJ9mjRvBA4UOLD8nKVOWfh+UlK3z/177OXrfOdKl7pyn3Xf//WreyTRUoAWgBgkOAGbZHBgG1OF6zM82DWbZaUmMBptgQhGjsyYqc9ae9XFz280948NMBWInljyzsNRFLPWdnZGWrddDsjK1unuSrVN9jJsK8KuQtQCtMBjCEtImISdNKJOopIpBFpNSMbIHCSRpRR5iakjTiyzLhchUUBwCgyKiweBv/7UsQbg8isVNoMPMjAAAA0gAAABEVFGmgqK////9bP/6XCykxBTUUzLjEwMKqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq'
+/** A single Web Audio context resumed during the member's actual tap.
+ * iOS can play synthesized audio after an async ElevenLabs response because
+ * this context was unlocked while the click was still active. */
+let managedAudioContext: AudioContext | null = null
+let managedAudioSource: AudioBufferSourceNode | null = null
+
 export function unlockAudio() {
-  if (typeof window === 'undefined') return
-  // Mobile Read Aloud uses device speech directly. Priming a silent MP3 here
-  // can create a pop and steal the click's audio activation.
-  if (needsGestureBoundPlayback() && speechSupported()) {
-    try { window.speechSynthesis.resume() } catch { /* no-op */ }
-    return
-  }
-  if (!sharedAudio) sharedAudio = new Audio()
+  if (typeof window === 'undefined' || readVoiceSettings().voiceName !== 'intros-managed') return
   try {
-    // Keep this completely inaudible. Some mobile browsers make a tiny click when a data
-    // source begins playing, which made opening Ask Intros sound like a broken reply.
-    sharedAudio.volume = 0
-    sharedAudio.src = SILENCE
-    void sharedAudio.play().then(() => {
-      // The element remains user-gesture unlocked after it is reset, without leaving an
-      // actual silent file playing underneath the next response.
-      sharedAudio?.pause()
-      if (sharedAudio) {
-        sharedAudio.removeAttribute('src')
-        sharedAudio.load()
-        sharedAudio.volume = 1
-      }
-    }).catch(() => { /* still allowed to try later */ })
-  } catch { /* ignore */ }
-  /* Wake the device voice too, so the fallback can speak after a wait. */
-  if (speechSupported()) {
-    try { window.speechSynthesis.resume() } catch { /* ignore */ }
-  }
+    const AudioCtor = window.AudioContext
+      ?? (window as Window & { webkitAudioContext?: typeof AudioContext }).webkitAudioContext
+    if (!AudioCtor) return
+    if (!managedAudioContext || managedAudioContext.state === 'closed') managedAudioContext = new AudioCtor()
+    // Do not await here: resume must be *called* in the user-gesture stack.
+    if (managedAudioContext.state !== 'running') void managedAudioContext.resume().catch(() => {})
+  } catch { /* Browser <audio> fallback will show an error if gesture is blocked. */ }
 }
 const readerListeners = new Set<() => void>()
 
@@ -151,12 +135,6 @@ export function speechSupported() {
     && typeof SpeechSynthesisUtterance !== 'undefined'
 }
 
-/** Gesture-gated browsers can reject voices started after a network request. */
-function needsGestureBoundPlayback() {
-  if (typeof navigator === 'undefined') return false
-  return /iPhone|iPad|iPod|Android/i.test(navigator.userAgent)
-    || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1)
-}
 
 /** Managed Intros speech works online; device speech remains the offline fallback. */
 export function voiceOutputSupported() {
@@ -211,6 +189,12 @@ function restartCurrent() {
 }
 
 function stopActiveAudio() {
+  if (managedAudioSource) {
+    managedAudioSource.onended = null
+    try { managedAudioSource.stop() } catch { /* already ended */ }
+    managedAudioSource.disconnect()
+    managedAudioSource = null
+  }
   if (activeAudio) {
     activeAudio.onended = null
     activeAudio.onerror = null
@@ -282,14 +266,7 @@ async function speakCurrent(run: number) {
   state = 'speaking'
   announce()
 
-  const managed = readVoiceSettings().voiceName === 'intros-managed'
-  // On mobile, waiting for authentication and server audio loses the user's
-  // activation before playback. Start the device voice immediately instead.
-  if (!managed || (speechSupported() && needsGestureBoundPlayback())) {
-    if (managed && needsGestureBoundPlayback()) {
-      // Show the fallback while speaking, not as a misleading error after it ends.
-      label = label + ' · device voice'
-    }
+  if (readVoiceSettings().voiceName !== 'intros-managed') {
     speakWithDevice(text, run)
     return
   }
@@ -298,47 +275,62 @@ async function speakCurrent(run: number) {
     const { supabase } = await import('@/integrations/supabase/client')
     const { data: sessionData } = await supabase.auth.getSession()
     if (run !== token) return
-    if (!sessionData.session) { speakWithDevice(text, run); return }
-  } catch { speakWithDevice(text, run); return }
-
-  try {
+    if (!sessionData.session) throw new Error('Sign in to hear the private Ask Intros ElevenLabs voice.')
     const result = await speakWithIntrosVoice({ data: { text: text.slice(0, 1800) } })
     if (run !== token) return
     stopActiveAudio()
-    activeAudioUrl = URL.createObjectURL(base64Audio(result.audio, result.contentType))
-    const audio = sharedAudio ?? new Audio()
-    // Never reuse the muted priming volume for the actual spoken answer.
-    audio.volume = 1
-    audio.src = activeAudioUrl
-    activeAudio = audio
-    audio.playbackRate = rateOf[readVoiceSettings().speed]
-    audio.onended = () => { stopActiveAudio(); finishSegment(run) }
-    audio.onerror = () => {
+    const blob = base64Audio(result.audio, result.contentType)
+    if (managedAudioContext) {
+      // Web Audio is unlocked synchronously on tap and remains eligible to
+      // start the generated voice after authentication / synthesis completes.
+      const ctx = managedAudioContext
+      if (ctx.state !== 'running') await ctx.resume()
       if (run !== token) return
-      stopActiveAudio()
-      problem = 'The Intros voice could not play, so your device voice is being used.'
-      speakWithDevice(text, run)
-    }
-    try {
+      const buffer = await ctx.decodeAudioData(await blob.arrayBuffer())
+      if (run !== token) return
+      const source = ctx.createBufferSource()
+      source.buffer = buffer
+      source.playbackRate.value = rateOf[readVoiceSettings().speed]
+      source.connect(ctx.destination)
+      managedAudioSource = source
+      source.onended = () => {
+        if (run !== token) return
+        stopActiveAudio()
+        finishSegment(run)
+      }
+      source.start()
+    } else {
+      // Older browsers without Web Audio can still play through HTMLAudioElement.
+      activeAudioUrl = URL.createObjectURL(blob)
+      const audio = new Audio()
+      audio.volume = 1
+      audio.src = activeAudioUrl
+      audio.playbackRate = rateOf[readVoiceSettings().speed]
+      activeAudio = audio
+      audio.onended = () => { stopActiveAudio(); finishSegment(run) }
+      audio.onerror = () => {
+        if (run !== token) return
+        failManagedReading('Your ElevenLabs voice could not play in this browser. Try another browser or switch voices in Settings.')
+      }
       await audio.play()
-    } catch (playError) {
-      // A delayed server response can lose a mobile browser's gesture activation. Do not
-      // leave the member with a click and no answer: speak with the device voice instead.
-      stopActiveAudio()
-      throw playError
     }
   } catch (error) {
     if (run !== token) return
-    problem = error instanceof Error ? `${error.message} Using your device voice instead.` : 'The Intros voice is unavailable. Using your device voice instead.'
-    announce()
-    speakWithDevice(text, run)
+    failManagedReading(error instanceof Error
+      ? 'ElevenLabs voice unavailable: ' + error.message
+      : 'Your ElevenLabs voice is unavailable. Try again shortly.')
   }
+}
+
+function failManagedReading(message: string) {
+  stopReading()
+  problem = message
+  announce()
 }
 
 /** Read an ordered list of passages aloud, replacing anything being read now. */
 export function readAloud(passages: string[], readingLabel = 'Reading') {
   const nativePlayback = readVoiceSettings().voiceName !== 'intros-managed'
-    || (speechSupported() && needsGestureBoundPlayback())
   // Short fragments protect native engines; managed speech can synthesize
   // longer fragments without many extra paid provider requests.
   const clean = splitReadingPassages(passages, nativePlayback ? 240 : 1400)
@@ -358,9 +350,9 @@ export function readAloud(passages: string[], readingLabel = 'Reading') {
   index = 0
   label = readingLabel
   token += 1
-  // Only prime generated audio when it will actually be used; doing this
-  // before native iOS speech can consume gesture activation.
-  if (readVoiceSettings().voiceName === 'intros-managed' && !needsGestureBoundPlayback()) unlockAudio()
+  // Unlock the managed ElevenLabs playback context during this user gesture,
+  // including on iPhone Safari. Never silently replace their selected voice.
+  if (!nativePlayback) unlockAudio()
   void speakCurrent(token)
 }
 
@@ -383,7 +375,8 @@ export function stopReading() {
 
 export function pauseReading() {
   if (state !== 'speaking') return
-  if (activeAudio) activeAudio.pause()
+  if (managedAudioSource && managedAudioContext) void managedAudioContext.suspend()
+  else if (activeAudio) activeAudio.pause()
   else if (speechSupported()) window.speechSynthesis.pause()
   state = 'paused'
   announce()
@@ -391,7 +384,8 @@ export function pauseReading() {
 
 export function resumeReading() {
   if (state !== 'paused') return
-  if (activeAudio) void activeAudio.play()
+  if (managedAudioSource && managedAudioContext) void managedAudioContext.resume()
+  else if (activeAudio) void activeAudio.play()
   else if (speechSupported()) window.speechSynthesis.resume()
   state = 'speaking'
   announce()
