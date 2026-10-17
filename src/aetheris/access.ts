@@ -17,6 +17,7 @@ export type LaunchMode = 'first_1000' | 'invite_only' | 'closed'
 export interface AccessState {
   loading: boolean
   signedIn: boolean
+  emailConfirmed: boolean
   userId: string | null
   email: string
   name: string
@@ -30,14 +31,15 @@ export interface AccessState {
 }
 
 export const noAccess: AccessState = {
-  loading: true, signedIn: false, userId: null, email: '', name: '',
+  loading: true, signedIn: false, emailConfirmed: false, userId: null, email: '', name: '',
   status: 'none', foundingNumber: null, mode: 'invite_only', isAdmin: false, onboarded: false,
   verification: 'none',
 }
 
 /** The single guard every network-facing surface must respect. */
 export const isLiveMember = (access: AccessState) =>
-  access.signedIn && access.status === 'approved' && access.onboarded
+  access.signedIn && access.emailConfirmed && access.status === 'approved' && access.onboarded
+    && access.verification !== 'rejected' && access.verification !== 'suspended'
 
 export interface FoundingStats { approved: number; capacity: number; mode: LaunchMode }
 
@@ -92,7 +94,7 @@ export async function fetchAccess(): Promise<AccessState> {
     const code = storedInvite()
     // Retry pending accounts after launch settings change, including accounts
     // created before public signup was restored. The RPC enforces eligibility.
-    try { await claimAccess(code || undefined); if (code) clearInvite() } catch { /* the page surfaces the state below */ }
+    try { const result = await claimAccess(code || undefined); if (code && result.status === 'approved') clearInvite() } catch { /* the page surfaces the state below */ }
   }
 
   const [membership, roles, profile, stats, verification] = await Promise.all([
@@ -106,6 +108,7 @@ export async function fetchAccess(): Promise<AccessState> {
   return {
     loading: false,
     signedIn: true,
+    emailConfirmed: Boolean(user.email_confirmed_at),
     userId: user.id,
     email: user.email ?? '',
     name: profile.data?.name ?? (user.user_metadata?.['name'] as string | undefined) ?? '',

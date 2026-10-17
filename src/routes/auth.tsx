@@ -107,12 +107,12 @@ function AuthPage() {
 
   const land = useCallback(async () => {
     const code = storedInvite()
-    if (code) {
-      // Joining through a member's invite connects both of you once the place is claimed.
-      try { await claimAccess(code); clearInvite() } catch { /* the founding page can retry */ }
-    }
+    try {
+      const result = await claimAccess(code || undefined)
+      if (code && result.status === 'approved') clearInvite()
+    } catch { /* Access page shows eligibility after email confirmation. */ }
     if (next) { window.location.replace(next); return }
-    void navigate({ to: '/app', replace: true })
+    void navigate({ to: '/early-access', replace: true })
   }, [navigate, next])
 
   useEffect(() => {
@@ -146,7 +146,7 @@ function AuthPage() {
           email,
           password,
           options: {
-            emailRedirectTo: `${window.location.origin}${next || '/app'}`,
+            emailRedirectTo: `${window.location.origin}${next || '/early-access'}`,
             data: { name: name || email.split('@')[0], invite_code: invite.trim() },
           },
         })
@@ -171,7 +171,7 @@ function AuthPage() {
     rememberInvite(invite)
     try {
       const result = await lovable.auth.signInWithOAuth('google', {
-        redirect_uri: `${window.location.origin}${next || '/app'}`,
+        redirect_uri: `${window.location.origin}${next || '/early-access'}`,
       })
       if (result.error) throw new Error('Google sign-in could not start. Try email instead.')
       if (result.redirected) return

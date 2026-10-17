@@ -248,6 +248,11 @@ create function public.is_approved_member(p_user uuid) returns boolean language 
 const SEED = `
 insert into auth.users values ('${A}'),('${B}'),('${C}'),('${ADMIN}');
 insert into public.profiles(id) values ('${A}'),('${B}'),('${C}'),('${ADMIN}');
+-- Existing migration suites exercise already-onboarded members. The new 0087
+-- gate requires both confirmation and onboarding; individual signup suites
+-- explicitly create new accounts to test the incomplete path.
+update auth.users set email_confirmed_at=now();
+update public.profiles set onboarded=true;
 insert into public.user_roles values ('${ADMIN}','admin');
 -- An ask that already has two replies but a stale count of 0, from before 0027.
 insert into public.asks (id, author_id, ask) values ('ask-old', '${A}', 'Looking for a CFO');
@@ -263,13 +268,25 @@ insert into public.member_verifications (user_id, status, verified_at) values ('
 insert into public.intro_requests (user_id,member_id) values ('${A}','demo-marcus-lee');
 `
 
-async function boot() {
+async function boot(suiteName = '') {
   const db = new PGlite()
   await db.exec(BASE)
   await db.exec(SEED)
   for (const m of migrations) {
     try { await db.exec(readFileSync(join(migrationsDir, m), 'utf8')) }
     catch (error) { throw new Error(`Migration ${m} failed: ${error.message}`, { cause: error }) }
+  }
+  // Keep pre-existing synthetic suite actors live without weakening the
+  // actual production gate. Suites that test first enrollment seed their own
+  // memberships and are deliberately excluded from this setup.
+  if (suiteName === 'cohorts.check.mjs') {
+    await db.exec(`insert into public.early_access_members(user_id,email,status)
+      values ('${A}','a@fixture.test','approved')
+      on conflict (user_id) do update set status='approved'`)
+  } else if (suiteName !== 'messaging-directory.check.mjs' && suiteName !== 'zz-live-member.check.mjs') {
+    await db.exec(`insert into public.early_access_members(user_id,email,status)
+      values ('${A}','a@fixture.test','approved'),('${B}','b@fixture.test','approved')
+      on conflict (user_id) do update set status='approved'`)
   }
   const as = async (uid, sql, params = []) => {
     await db.exec(`reset role; select set_config('request.jwt.claim.sub', '${uid ?? ''}', false); set role ${uid ? 'authenticated' : 'anon'};`)
@@ -287,7 +304,7 @@ console.log(`Migrations: ${migrations.join(', ')}`)
 for (const file of suites) {
   console.log(`\n${file.replace('.check.mjs', '')}`)
   const ok = (cond, msg) => { if (cond) { pass++; console.log('  ✓', msg) } else { fail++; console.log('  ✗', msg) } }
-  const ctx = { ...(await boot()), ok, A, B, C, ADMIN }
+  const ctx = { ...(await boot(file)), ok, A, B, C, ADMIN }
   try { await (await import(join(here, file))).default(ctx) } catch (e) { fail++; console.log('  ✗ suite crashed:', e.message) }
   await ctx.db.close()
 }
