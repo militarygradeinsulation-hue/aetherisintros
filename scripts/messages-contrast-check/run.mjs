@@ -75,7 +75,7 @@ try {
         return {ink,surface}
       })
       const value=contrast(computed.ink,computed.surface)
-      if(value<4.5)throw new Error(theme+' '+name+' contrast '+value.toFixed(2)+':1 under 4.5:1')
+      if(value<4.5)throw new Error(theme+' '+name+' contrast '+value.toFixed(2)+':1 under 4.5:1; foreground '+computed.ink+'; surface '+computed.surface+'; selector '+selector)
       checks++
       console.log('  ✓ '+theme+' '+name+' '+value.toFixed(2)+':1')
     }
