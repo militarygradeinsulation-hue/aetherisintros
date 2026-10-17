@@ -182,25 +182,58 @@ html:root[data-theme] body .ix-root
   -webkit-text-fill-color:#dedede!important;
 }
 
-/* Pair the signup status surface with explicit ink in either appearance. */
-html:root[data-theme] .auth-panel :is(.auth-soon,.auth-invited) {
-  background: var(--read-panel) !important;
-  color: var(--read-ink) !important;
-  -webkit-text-fill-color: var(--read-ink) !important;
-}
-html:root[data-theme] .auth-panel :is(.auth-soon p,.auth-invited small) {
-  color: var(--read-secondary) !important;
-  -webkit-text-fill-color: var(--read-secondary) !important;
-}
-html:root[data-theme] .auth-panel .auth-error {
-  background: #fff1f1 !important;
-  padding: 12px;
-  color: #a21b1b !important;
-  -webkit-text-fill-color: #a21b1b !important;
+
+/* The Messages inbox's conversation titles are plain Tailwind text nodes, not
+   semantic msg-* labels. Legacy light-on-dark text utilities can override their
+   ink after the list surface has become white in Light appearance. Pin the
+   visible name to the same inverse palette as the row, in both demo and live. */
+html:root[data-theme] body .ix-root :is(.ix-messages,.ix-live-messages) aside
+  .text-xs.font-semibold.truncate {
+  color:var(--msg-ink)!important;
+  -webkit-text-fill-color:var(--msg-ink)!important;
+  opacity:1!important;
 }
 
-html:root[data-theme="dark"] .auth-panel .auth-error {
-  background: #301515 !important;
-  color: #ffb4b4 !important;
-  -webkit-text-fill-color: #ffb4b4 !important;
+
+/* Site-wide fit/readability contract. Keep words and controls INSIDE their
+   cards at 320–1440px, without clipping, shrinking text or repainting art. */
+html:root[data-theme] body .ix-root .arch-product-main
+  :is(.sys-tile,.home-board-tile,.home-widget,.module,.mod,.feed-card,
+      .post-card,.member-tile,.opportunity-card,.ix-tools,
+      .ix-desktop-more-menu,.msg-request-section,.msg-brief-panel,
+      .msg-next-step,.home-feed-customize) {
+  min-width:0;
+  max-width:100%;
+}
+html:root[data-theme] body .ix-root .arch-product-main
+  :is(.sys-tile,.home-board-tile,.home-widget,.module,.mod,
+      .feed-card,.post-card,.member-tile,.opportunity-card,
+      .home-feed-customize,.ix-desktop-more-menu)
+  :is(h1,h2,h3,h4,p,span,strong,small,label,button,a,dd,dt) {
+  min-width:0;
+  overflow-wrap:break-word;
+}
+html:root[data-theme] body .ix-root
+  :is(.ix-messages,.ix-live-messages,.home-feed-customize)
+  :is(button,input,textarea,select,[role="combobox"]) {
+  max-width:100%;
+  min-width:0;
+}
+html:root[data-theme] body .ix-root
+  :is(.ix-messages,.ix-live-messages,.home-feed-customize)
+  :is(.text-xs.font-semibold.truncate, .msg-body-text, .msg-next-step p,
+      .msg-brief-panel p, .home-feed-customize-row label) {
+  overflow-wrap:anywhere;
+}
+@media(max-width:640px) {
+  html:root[data-theme] body .ix-root
+    :is(.ix-desktop-more-menu,.home-feed-customize,[role="dialog"]) {
+    max-width:min(100%,calc(100vw - 24px));
+    box-sizing:border-box;
+  }
+  html:root[data-theme] body .ix-root .arch-product-main
+    :is(.sys-tile,.home-board-tile,.home-widget,.module,.mod,
+        .feed-card,.post-card,.member-tile,.opportunity-card) {
+    min-width:0;
+  }
 }

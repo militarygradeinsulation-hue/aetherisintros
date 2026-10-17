@@ -1,0 +1,94 @@
+/*
+ * ASK INTROS / RESPONSIVE CONTENT GUARD
+ * Keeps meaningful text and controls within the available viewport in both
+ * stencil appearances. Does not hide overflow globally, change color meaning,
+ * alter photo overlays, or mutate data/behavior.
+ */
+:root[data-theme] body .ix-root :is(
+  .arch-product-main,.ix-classic .app-shell,.ix-classic .content
+) {
+  min-width:0;
+  max-width:100%;
+}
+:root[data-theme] body .ix-root .arch-product-main :is(
+  .module,.mod,.sys-tile,.home-widget,.home-board-tile,.panel,
+  .feed-card,.post-card,.match-report,.person-card,.member-tile,
+  .profile-settings,.profile-hero,.executive-workbench-body,
+  .messages-layout,.ix-messages,.ix-live-messages,
+  .ops-card,.ops-panel,.provider-card,.ai-insight-list>article
+) {
+  box-sizing:border-box;
+  min-width:0;
+  max-width:100%;
+}
+:root[data-theme] body .ix-root .arch-product-main :is(
+  .module,.mod,.sys-tile,.home-widget,.home-board-tile,.panel,
+  .feed-card,.post-card,.match-report,.person-card,.member-tile,
+  .ops-card,.ops-panel,.ai-insight-list>article
+) :is(h1,h2,h3,h4,p,small,label,span,strong,dd,dt) {
+  overflow-wrap:anywhere;
+}
+:root[data-theme] body .ix-root :is(
+  .arch-product-main,.home-feed-customize,.ix-mobile-sheet,.ix-desktop-more-menu
+) :is(input:not([type="checkbox"]):not([type="radio"]),textarea,select,[role="combobox"]) {
+  box-sizing:border-box;
+  min-width:0;
+  max-width:100%;
+}
+:root[data-theme] body .ix-root :is(
+  .arch-product-main,.home-feed-customize,.ix-mobile-sheet
+) :is(pre,code) {
+  max-width:100%;
+  overflow-x:auto;
+}
+:root[data-theme] body .ix-root :is(
+  .ix-tools,.providers-tabs,.ops-tabs,.insight-tabs,
+  [role="tablist"],.filter-chips
+) {
+  max-width:100%;
+  min-width:0;
+  overscroll-behavior-x:contain;
+}
+:root[data-theme] body .ix-root :is(
+  .home-feed-customize,.ix-mobile-sheet,.ix-desktop-more-menu,.sv-sheet
+) {
+  box-sizing:border-box;
+  max-width:calc(100vw - 20px);
+  max-height:calc(100dvh - 20px);
+  overflow-y:auto;
+}
+@media (max-width:768px) {
+  :root[data-theme] body .ix-root .arch-product-main :is(
+    .ix-tools,.providers-tabs,.ops-tabs,.insight-tabs,[role="tablist"]
+  ) {
+    overflow-x:auto;
+    scroll-padding-inline:12px;
+    -webkit-overflow-scrolling:touch;
+  }
+  :root[data-theme] body .ix-root .arch-product-main :is(
+    .module,.mod,.sys-tile,.home-widget,.home-board-tile,.panel
+  ) {
+    min-width:0;
+    max-width:100%;
+  }
+  :root[data-theme] body .ix-root :is(
+    .home-feed-customize,.ix-mobile-sheet,.sv-sheet
+  ) {
+    width:min(100%,calc(100vw - 20px));
+  }
+}
+@media (max-width:380px) {
+  :root[data-theme] body .ix-root .arch-product-main :is(
+    .filter-chips,.module-actions,.panel-actions,.sv-sheet-actions
+  ) {
+    max-width:100%;
+    flex-wrap:wrap;
+  }
+}
+
+:root[data-theme] body .ix-root a.security-verify-link {
+  display:inline-flex;align-items:center;max-width:100%;min-height:44px;
+  padding:8px 12px;border:1px solid var(--st-rule);
+  background:var(--st-card);color:var(--st-ink);
+  overflow-wrap:anywhere;text-decoration:underline;
+}

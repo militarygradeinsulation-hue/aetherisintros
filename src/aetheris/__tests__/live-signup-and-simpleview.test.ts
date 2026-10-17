@@ -17,11 +17,16 @@ describe('Ask Intros signup link', () => {
     expect(auth).toContain("requestedMode === 'signup' ? 'signup' : 'signin'")
   })
 
-  it('uses the launch mode for invitations and keeps membership enforcement server-side', () => {
-    expect(auth).not.toContain("if (!invite.trim()) throw new Error(")
-    expect(auth).toContain("Membership RPCs enforce launch mode")
+  it('allows open signup without an invite while server approval remains mandatory', () => {
+    const migration = source('../../../drizzle/migrations/0087_open_member_onboarding.sql')
+    expect(auth).toContain("launchMode === 'invite_only' && !invite.trim()")
+    expect(auth).toContain("launchMode === 'closed'")
     expect(access).toContain("supabase.rpc('claim_early_access', args)")
-    expect(access).toContain("access.status === 'approved' && access.verification === 'verified'")
+    expect(access).toContain("access.status === 'approved' && access.onboarded")
+    expect(migration).toContain("u.email_confirmed_at is not null")
+    expect(migration).toContain("v_mode = 'first_1000' and v_invite.id is null")
+    expect(migration).toContain("e.user_id=auth.uid() AND e.status='approved'")
+    expect(migration).not.toContain("GRANT SELECT ON public.members")
   })
 })
 
