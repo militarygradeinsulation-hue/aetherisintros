@@ -4,6 +4,7 @@
  */
 import { useEffect, useRef, useState } from 'react'
 import { speakWithIntrosVoice } from '@/lib/voice.functions'
+import { splitReadingPassages } from './reading-utils'
 
 export const voiceSpeeds = ['slowest', 'slow', 'normal', 'fast', 'faster', 'fastest'] as const
 export type VoiceSpeed = typeof voiceSpeeds[number]
@@ -139,7 +140,16 @@ const readerListeners = new Set<() => void>()
 function announce() { readerListeners.forEach(listener => listener()) }
 
 export function speechSupported() {
-  return typeof window !== 'undefined' && 'speechSynthesis' in window
+  return typeof window !== 'undefined'
+    && 'speechSynthesis' in window
+    && typeof SpeechSynthesisUtterance !== 'undefined'
+}
+
+/** Gesture-gated browsers can reject voices started after a network request. */
+function needsGestureBoundPlayback() {
+  if (typeof navigator === 'undefined') return false
+  return /iPhone|iPad|iPod|Android/i.test(navigator.userAgent)
+    || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1)
 }
 
 /** Managed Intros speech works online; device speech remains the offline fallback. */
@@ -221,8 +231,8 @@ function finishSegment(run: number) {
 
 function speakWithDevice(text: string, run: number) {
   if (!speechSupported() || run !== token) {
-    problem = 'This device has no fallback reading voice installed.'
     stopReading()
+    problem = 'This device has no fallback reading voice installed.'
     announce()
     return
   }
@@ -246,12 +256,17 @@ function speakWithDevice(text: string, run: number) {
   }
   state = 'speaking'
   announce()
-  /* Chrome drops a sentence spoken straight after cancel, so give it a beat. */
-  window.setTimeout(() => {
-    if (run !== token) return
+  /* Run speech synchronously inside the user's tap. Scheduling this even
+   * 60ms later loses audio activation on some mobile WebKit browsers. */
+  try {
     window.speechSynthesis.resume()
     window.speechSynthesis.speak(utterance)
-  }, 60)
+  } catch {
+    if (run !== token) return
+    stopReading()
+    problem = 'This device could not start its reading voice. Check audio settings and try again.'
+    announce()
+  }
 }
 
 async function speakCurrent(run: number) {
@@ -261,7 +276,14 @@ async function speakCurrent(run: number) {
   state = 'speaking'
   announce()
 
-  if (readVoiceSettings().voiceName !== 'intros-managed') {
+  const managed = readVoiceSettings().voiceName === 'intros-managed'
+  // On mobile, waiting for authentication and server audio loses the user's
+  // activation before playback. Start the device voice immediately instead.
+  if (!managed || (speechSupported() && needsGestureBoundPlayback())) {
+    if (managed && needsGestureBoundPlayback()) {
+      problem = 'Using your device voice for reliable mobile playback.'
+      announce()
+    }
     speakWithDevice(text, run)
     return
   }
@@ -309,21 +331,26 @@ async function speakCurrent(run: number) {
 
 /** Read an ordered list of passages aloud, replacing anything being read now. */
 export function readAloud(passages: string[], readingLabel = 'Reading') {
+  const clean = splitReadingPassages(passages)
+  stopReading()
+  if (!clean.length) {
+    problem = 'No readable text was found here. Highlight a passage and select Read aloud.'
+    announce()
+    return
+  }
   if (!speechSupported() && readVoiceSettings().voiceName !== 'intros-managed') {
     problem = 'This browser cannot read aloud. Try Chrome, Edge or Safari.'
     announce()
     return
   }
   problem = ''
-  unlockAudio()
-  const clean = passages.map(item => item.replace(/\s+/g, ' ').trim()).filter(item => item.length > 1)
-  stopReading()
-  if (!clean.length) return
   segments = clean
   index = 0
   label = readingLabel
   token += 1
-  if (speechSupported()) window.speechSynthesis.cancel()
+  // Only prime generated audio when it will actually be used; doing this
+  // before native iOS speech can consume gesture activation.
+  if (readVoiceSettings().voiceName === 'intros-managed' && !needsGestureBoundPlayback()) unlockAudio()
   void speakCurrent(token)
 }
 
@@ -419,10 +446,23 @@ export function passagesIn(root: HTMLElement | null): string[] {
 /** Everything on the page the member is looking at. */
 export function currentPagePassages(): string[] {
   if (typeof document === 'undefined') return []
-  const sheet = document.querySelector<HTMLElement>('.sv-sheet, [role="dialog"]')
-  const main = document.querySelector<HTMLElement>('main.content')
-  const region = sheet && visible(sheet) ? sheet : main
-  return passagesIn(region)
+  // "main.content" belonged to the old shell. The current app uses
+  // .arch-product-main, while public/editorial routes often use .ael.
+  const sheet = Array.from(document.querySelectorAll<HTMLElement>('.sv-sheet, [role="dialog"]'))
+    .find(visible)
+  if (sheet) {
+    const content = passagesIn(sheet)
+    if (content.length) return content
+  }
+  const candidates = document.querySelectorAll<HTMLElement>(
+    'main.content, .arch-product-main, .ix-root main, .ael main, #main-content, [role="main"], main, .ael, .ix-root',
+  )
+  for (const region of candidates) {
+    if (!visible(region)) continue
+    const content = passagesIn(region)
+    if (content.length) return content
+  }
+  return []
 }
 
 /** Text the member has highlighted, if any. */
