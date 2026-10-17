@@ -1,8 +1,9 @@
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
 import { ArrowRight } from 'lucide-react'
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 
 import { useAccess } from '@/aetheris/access'
+import { requireConfirmedProfileSave } from '@/aetheris/lib/onboarding-save'
 import { ONBOARDING_KEYS, splitList } from '@/aetheris/linkedin-scan'
 import { LinkedInScanPanel, type ScanPatch } from '@/aetheris/linkedin-scan-ui'
 import { supabase } from '@/integrations/supabase/client'
@@ -52,6 +53,8 @@ function OnboardingRoute() {
   const { access } = useAccess()
   const [answers, setAnswers] = useState<Record<string, string>>({})
   const [busy, setBusy] = useState(false)
+  const [profileSaved, setProfileSaved] = useState(false)
+  const savingRef = useRef(false)
   const [error, setError] = useState('')
   const [linkedinUrl, setLinkedinUrl] = useState('')
 
@@ -59,39 +62,65 @@ function OnboardingRoute() {
     if (access.loading) return
     if (access.status !== 'approved') void navigate({ to: '/early-access', replace: true })
     else if (access.name && !answers['name']) setAnswers(prev => ({ ...prev, name: access.name }))
-  }, [access, answers, navigate])
-
-  const set = (key: string, value: string) => setAnswers(prev => ({ ...prev, [key]: value }))
-  const get = (key: string) => answers[key]?.trim() ?? ''
-
-  const save = async () => {
-    if (!access.userId) return
+  }, [acces  const save = async () => {
+    // Two rapid taps must never insert duplicate onboarding memories.
+    if (savingRef.current) return
+    if (profileSaved) { void navigate({ to: '/app', replace: true }); return }
+    if (!access.userId) { setError('Your session is not ready. Please sign in again.'); return }
     if (!get('name')) { setError('Your name is needed — members meet real people.'); return }
-    setBusy(true); setError('')
+    savingRef.current = true
+    setBusy(true)
+    setError('')
     const initials = get('name').split(/\s+/).slice(0, 2).map(p => p[0] ?? '').join('').toUpperCase()
-    const { data: savedProfile, error: saveError } = await (supabase.from('profiles') as any).update({ // eslint-disable-line @typescript-eslint/no-explicit-any
-      name: get('name'), initials: initials || 'M', title: get('title'), company: get('company'),
-      location: get('location'), focus: get('focus'), looking_for: get('looking_for'),
-      can_help_with: get('can_help_with'), industries: list(get('industries')),
-      expertise: list(get('expertise')), availability: get('availability'), onboarded: true,
-    }).eq('id', access.userId).select('id').maybeSingle()
-    if (saveError || savedProfile?.id !== access.userId) {
-      setError(saveError?.message ?? 'Your profile changes were not confirmed. Please retry before entering the network.')
+    try {
+      await requireConfirmedProfileSave(access.userId, async () => {
+        const { data, error } = await (supabase.from('profiles') as any).update({ // eslint-disable-line @typescript-eslint/no-explicit-any
+          name: get('name'), initials: initials || 'M', title: get('title'), company: get('company'),
+          location: get('location'), focus: get('focus'), looking_for: get('looking_for'),
+          can_help_with: get('can_help_with'), industries: list(get('industries')),
+          expertise: list(get('expertise')), availability: get('availability'), onboarded: true,
+        }).eq('id', access.userId).select('id').maybeSingle()
+        return { data, error }
+      })
+      // Membership activation is based on the confirmed profile write, not
+      // optional LinkedIn metadata or the member's generated memory entries.
+      setProfileSaved(true)
+      const optionalFailures: string[] = []
+      if (linkedinUrl) {
+        try {
+          const { error: linkError } = await (supabase.from('profiles') as any) // eslint-disable-line @typescript-eslint/no-explicit-any
+            .update({ linkedin_url: linkedinUrl }).eq('id', access.userId)
+          if (linkError) optionalFailures.push('LinkedIn link')
+        } catch { optionalFailures.push('LinkedIn link') }
+      }
+      const memories = [
+        get('focus') && { category: 'Companies', text: `Your current focus: ${get('focus')}`, scope: 'public' as const },
+        get('looking_for') && { category: 'Needs', text: `Active need: ${get('looking_for')}`, scope: 'shareable' as const },
+        get('can_help_with') && { category: 'Interests', text: `You can help others with: ${get('can_help_with')}`, scope: 'public' as const },
+        get('availability') && { category: 'Commitments', text: `Availability you set: ${get('availability')}`, scope: 'private' as const },
+      ].filter(Boolean) as Array<{ category: string; text: string; scope: 'public' | 'shareable' | 'private' }>
+      if (memories.length) {
+        try {
+          const { error: memoryError } = await supabase.from('memories').insert(memories.map(m => ({
+            user_id: access.userId!, kind: 'learning', category: m.category, text: m.text,
+            source: 'Profile onboarding', confidence: 100, scope: m.scope, when_label: 'Just now',
+          })))
+          if (memoryError) optionalFailures.push('profile memories')
+        } catch { optionalFailures.push('profile memories') }
+      }
+      if (optionalFailures.length) {
+        setError(`Your profile was saved, but ${optionalFailures.join(' and ')} could not be saved. You can update them from your profile. Select Continue to the network.`)
+        return
+      }
+      void navigate({ to: '/app', replace: true })
+    } catch (cause) {
+      setError(cause instanceof Error ? cause.message : 'Your profile was not confirmed. Please retry.')
+    } finally {
+      savingRef.current = false
       setBusy(false)
-      return
     }
-    // The LinkedIn link (0038) is saved on its own so it can never block the profile itself.
-    if (linkedinUrl) await (supabase.from('profiles') as any).update({ linkedin_url: linkedinUrl }).eq('id', access.userId) // eslint-disable-line @typescript-eslint/no-explicit-any
-
-    const memories = [
-      get('focus') && { category: 'Companies', text: `Your current focus: ${get('focus')}`, scope: 'public' as const },
-      get('looking_for') && { category: 'Needs', text: `Active need: ${get('looking_for')}`, scope: 'shareable' as const },
-      get('can_help_with') && { category: 'Interests', text: `You can help others with: ${get('can_help_with')}`, scope: 'public' as const },
-      get('availability') && { category: 'Commitments', text: `Availability you set: ${get('availability')}`, scope: 'private' as const },
-    ].filter(Boolean) as Array<{ category: string; text: string; scope: 'public' | 'shareable' | 'private' }>
-    if (memories.length) {
-      await supabase.from('memories').insert(memories.map(m => ({
-        user_id: access.userId!, kind: 'learning', category: m.category, text: m.text,
+  }
+xt: m.text,
         source: 'Profile onboarding', confidence: 100, scope: m.scope, when_label: 'Just now',
       })))
     }
@@ -126,9 +155,9 @@ function OnboardingRoute() {
         <input value={answers[q.key] ?? ''} onChange={e => set(q.key, e.target.value)} placeholder={q.placeholder} />
         <small>{q.hint}</small>
       </label>)}
-      {error && <p className="auth-error">{error}</p>}
+      {error && <p className="auth-error" role="alert">{error}</p>}
       <button className="btn primary" type="button" onClick={() => void save()} disabled={busy}>
-        {busy ? 'Building your profile…' : 'Enter the network'} <ArrowRight size={15} />
+        {busy ? 'Building your profile…' : profileSaved ? 'Continue to the network' : 'Enter the network'} <ArrowRight size={15} />
       </button>
     </section>
   </main>
