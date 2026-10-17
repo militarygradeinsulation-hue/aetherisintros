@@ -135,6 +135,7 @@ import { WarmPathsPage } from './warm-paths-ui'
 import { WorkspacesPage } from './workspaces/WorkspacesPage'
 import { ExecutiveWorkPage } from './pages/ExecutiveWorkPage'
 import { AgentInboxPage } from './agent-ui'
+import { ReferralsPage } from './referrals-ui'
 import { LeakCheckPanel } from './leak-check-ui'
 import { SentIntroRequests } from './sent-requests-ui'
 import { CompanyWorkspacePanel } from './company-ui'
@@ -2763,6 +2764,7 @@ function Shell({ startPage, feedOnly = false }: { startPage?: Page | undefined; 
       strategy: <StrategyPage />,
       evidence: <EvidenceLedgerPage />,
       agentinbox: <AgentInboxPage />,
+      referrals: <ReferralsPage />,
       autopilot: <><div className="og-stack"><section className="og-tile"><h3>Approval queue</h3><ApprovalQueuePanel /></section><DigitalYouRulesPanel /></div><AutopilotPage /></>,
       ask: <AskNetworkPage />,
       constitution: <ConstitutionPage />,
