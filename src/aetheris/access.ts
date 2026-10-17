@@ -45,7 +45,7 @@ export async function foundingStats(): Promise<FoundingStats> {
   try {
     const { data } = await supabase.rpc('founding_stats')
     const row = Array.isArray(data) ? data[0] : data
-    if (!row) return { approved: 0, capacity: 1000, mode: 'first_1000' }
+    if (!row) return { approved: 0, capacity: 1000, mode: 'invite_only' }
     return {
       approved: Number(row.approved ?? 0),
       capacity: Number(row.capacity ?? 1000),
