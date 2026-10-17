@@ -288,6 +288,14 @@ async function boot(suiteName = '') {
       values ('${A}','a@fixture.test','approved'),('${B}','b@fixture.test','approved')
       on conflict (user_id) do update set status='approved'`)
   }
+  // Business-post visibility and member-event waitlists involve a third
+  // eligible signed-in participant. Keep that actor pending in authorization
+  // suites that intentionally test unapproved accounts.
+  if (suiteName === 'business-posts.check.mjs' || suiteName === 'member-events.check.mjs') {
+    await db.exec(`insert into public.early_access_members(user_id,email,status)
+      values ('${C}','c@fixture.test','approved')
+      on conflict (user_id) do update set status='approved'`)
+  }
   const as = async (uid, sql, params = []) => {
     await db.exec(`reset role; select set_config('request.jwt.claim.sub', '${uid ?? ''}', false); set role ${uid ? 'authenticated' : 'anon'};`)
     try { return { rows: (await db.query(sql, params)).rows } } catch (e) { return { error: e.message } } finally { await db.exec('reset role') }
