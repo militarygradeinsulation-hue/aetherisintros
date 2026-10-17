@@ -21,7 +21,17 @@ describe('Ask Intros signup link', () => {
     expect(auth).not.toContain("if (!invite.trim()) throw new Error(")
     expect(auth).toContain("Membership RPCs enforce launch mode")
     expect(access).toContain("supabase.rpc('claim_early_access', args)")
-    expect(access).toContain("access.status === 'approved' && access.verification === 'verified'")
+    expect(access).toContain("access.emailConfirmed && access.status === 'approved' && access.onboarded")
+    expect(access).toContain("access.verification !== 'rejected'")
+    expect(auth).toContain("next || '/early-access'")
+  })
+})
+
+describe('Signed-in onboarding contract', () => {
+  it('confirms the profile write before admitting the member', () => {
+    const onboarding = source('../../routes/_authenticated/onboarding.tsx')
+    expect(onboarding).toContain(".select('id').maybeSingle()")
+    expect(onboarding).toContain("savedProfile?.id !== access.userId")
   })
 })
 
