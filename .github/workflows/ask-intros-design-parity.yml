@@ -1,0 +1,47 @@
+name: Ask Intros Bridge Design Parity
+
+on:
+  pull_request:
+    paths:
+      - 'src/**'
+      - 'scripts/customize-contrast-check/**'
+      - 'scripts/editorial-copy-contrast-check/**'
+      - '.github/workflows/ask-intros-design-parity.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'src/**'
+      - '.github/workflows/ask-intros-design-parity.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  ui:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - uses: oven-sh/setup-bun@v2
+      - name: Install dependencies from public registry
+        run: |
+          rm -f bun.lock
+          bun install
+          bun add --no-save playwright@1.56.1
+      - name: Typecheck
+        run: npx tsc --noEmit -p .
+      - name: Build production bundle
+        run: npx vite build
+      - name: Install Chromium
+        run: npx playwright install --with-deps chromium
+      - name: Check real Customize modal readability
+        env:
+          PLAYWRIGHT_MODULE: ${{ github.workspace }}/node_modules/playwright/index.mjs
+        run: node scripts/customize-contrast-check/run.mjs
+      - name: Check homepage and editorial text readability
+        env:
+          PLAYWRIGHT_MODULE: ${{ github.workspace }}/node_modules/playwright/index.mjs
+        run: node scripts/editorial-copy-contrast-check/run.mjs

@@ -230,7 +230,7 @@ export function SystemScrollCaliper() {
     }
   }, [])
 
-  return <div ref={rootRef} className="ask-scroll-caliper" aria-hidden="true" data-scrollable="false">
+  return <><div ref={rootRef} className="ask-scroll-caliper" aria-hidden="true" data-scrollable="false">
     <svg ref={svgRef} className="ask-scroll-caliper-svg" viewBox={`0 0 ${W} 100`} preserveAspectRatio="none" fill="none">
       <g ref={echoRef} opacity="0" className="ask-scroll-caliper-ticks">
         <path ref={echoMinorRef} stroke="currentColor" strokeWidth="1" />
@@ -261,6 +261,8 @@ export function SystemScrollCaliper() {
       <div><span ref={pxRef}>0</span><span className="ask-scroll-caliper-dim"> PX · </span><span ref={percentRef}>0</span><span className="ask-scroll-caliper-dim">%</span></div>
     </div>
   </div>
+  <div className="ask-scroll-caliper-bottom-scale" aria-hidden="true" />
+  </>
 }
 
 export default SystemScrollCaliper

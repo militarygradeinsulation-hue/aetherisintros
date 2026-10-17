@@ -1,0 +1,172 @@
+/*
+ * AETHERIS BRIDGE / ASK INTROS — scoped visual repairs.
+ * Loaded after the stencil layer and contrast-orange.css.
+ * Every filled control gets an explicit background + text pair, so light-mode
+ * inverted surfaces cannot turn primary actions into unreadable black boxes.
+ * These selectors do not modify behavior, requests or member data.
+ */
+:root {
+  --bridge-burnt:#b5541f;
+  --bridge-burnt-hover:#983f17;
+  --bridge-burnt-on-dark:#e99463;
+  --ask-intros-logo-yellow:#f4a125;
+}
+
+/* Primary intro actions in People Directory and Introduction Workspace. */
+:root[data-theme] body .ix-root button.bridge-primary-action,
+:root[data-theme] body .ix-root .bridge-primary-action,
+:root[data-theme] body button.bridge-primary-action {
+  display:inline-flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  gap:7px;
+  min-height:38px;
+  white-space:normal;
+  opacity:1!important;
+  visibility:visible!important;
+  background:var(--bridge-burnt)!important;
+  background-image:none!important;
+  border:1px solid var(--bridge-burnt)!important;
+  color:#fff!important;
+  -webkit-text-fill-color:#fff!important;
+  text-shadow:none!important;
+  font-family:"JetBrains Mono",ui-monospace,monospace;
+  font-weight:700!important;
+  letter-spacing:.015em;
+  line-height:1.3;
+  border-radius:3px!important;
+}
+:root[data-theme] body .ix-root button.bridge-primary-action:hover,
+:root[data-theme] body button.bridge-primary-action:hover {
+  background:var(--bridge-burnt)!important;
+  border-color:#f6a16e!important;
+  color:#fff!important;
+  -webkit-text-fill-color:#fff!important;
+}
+:root[data-theme] body .ix-root button.bridge-primary-action :is(span,svg,strong),
+:root[data-theme] body button.bridge-primary-action :is(span,svg,strong) {
+  color:#fff!important;
+  -webkit-text-fill-color:#fff!important;
+  stroke:currentColor;
+  opacity:1!important;
+}
+
+/* Keep Pass, Connect and other neutral secondary actions readable on either
+   dark surfaces or white inverted document cards. */
+:root[data-theme] body .ix-root button.bridge-secondary-action {
+  background:var(--st-card)!important;
+  color:var(--st-ink)!important;
+  -webkit-text-fill-color:var(--st-ink)!important;
+  border-color:var(--st-line)!important;
+  border-radius:3px!important;
+  opacity:1!important;
+}
+:root[data-theme] body .ix-root button.bridge-secondary-action:hover {
+  background:var(--st-card)!important;
+  border-color:#e99463!important;
+}
+
+/* Catch other legacy yellow-background action buttons without changing
+   badges, markers or text containers; no black-on-black filled controls. */
+:root[data-theme] body .ix-root button[class~="bg-[#F5B027]"],
+:root[data-theme] body .ix-root button[class~="bg-[#C78522]"],
+:root[data-theme] body .ix-root button[class~="bg-[#F4A125]"] {
+  background:var(--bridge-burnt)!important;
+  border-color:var(--bridge-burnt)!important;
+  color:#fff!important;
+  -webkit-text-fill-color:#fff!important;
+}
+:root[data-theme] body .ix-root button[class~="bg-[#F5B027]"] :is(span,small,strong,svg),
+:root[data-theme] body .ix-root button[class~="bg-[#F4A125]"] :is(span,small,strong,svg) {
+  color:inherit!important;-webkit-text-fill-color:inherit!important;
+}
+
+/* Apply burnt orange to yellow labels but never repaint the logo. On white
+   panels, use a deeper accessible text shade. */
+:root[data-theme="light"] body .ix-root [class~="text-[#F5B027]"] {color:#923d15!important;-webkit-text-fill-color:#923d15!important;}
+:root[data-theme="dark"] body .ix-root [class~="text-[#F5B027]"] {color:#e99463!important;-webkit-text-fill-color:#e99463!important;}
+:root[data-theme] body .ix-root [class~="bg-[#F5B027]"]:not(button) {background:#b5541f!important;}
+:root[data-theme] body .ix-root [class~="border-[#F5B027]"] {border-color:#b5541f!important;}
+
+/* Brand exception: yellow detail AND connecting rule of the Ask Intros logo. */
+:root[data-theme] body .ask-intros-lockup__symbol line,
+:root[data-theme] body .ask-intros-lockup__rule {
+  stroke:var(--ask-intros-logo-yellow)!important;
+  stroke-width:2.6!important;
+}
+:root[data-theme] body .ask-intros-lockup :is(.ask-intros-lockup__node,.ask-intros-lockup__rule-dot,.ask-intros-lockup__separator) {
+  fill:var(--ask-intros-logo-yellow)!important;
+}
+
+/* Distinct orange assistant launcher rather than dark or stencil-white. */
+:root[data-theme] body .ask-dock-fab {
+  background:#b5541f!important;
+  color:#fff!important;
+  -webkit-text-fill-color:#fff!important;
+  border:1px solid #e99463!important;
+  box-shadow:0 12px 35px rgba(0,0,0,.4)!important;
+  border-radius:9px!important;
+}
+:root[data-theme] body .ask-dock-fab:hover {background:#983f17!important;}
+:root[data-theme] body .ask-dock-fab.active {background:#813613!important;}
+:root[data-theme] body .ask-dock-fab :is(svg,span) {color:#fff!important;stroke:currentColor;}
+
+/* Clean, native-feeling thumb; never render a checkbox/checkmark or an SVG gooey filter. */
+:root[data-theme] body .appearance-liquid-toggle {
+  box-sizing:border-box;
+  appearance:none;
+  position:relative;
+  display:inline-flex!important;
+  align-items:center!important;
+  width:58px!important;
+  min-width:58px!important;
+  height:32px!important;
+  padding:3px!important;
+  border:1px solid #b5541f!important;
+  border-radius:999px!important;
+  background:#e6e4e1!important;
+  background-image:none!important;
+  color:#151515;
+  cursor:pointer;
+  overflow:visible;
+  transform:none;
+}
+:root[data-theme] body .appearance-liquid-toggle[data-state="checked"] {
+  background:#b5541f!important;
+}
+:root[data-theme] body .appearance-liquid-toggle__thumb {
+  display:block;
+  box-sizing:border-box;
+  width:24px!important;height:24px!important;
+  flex:none;
+  border-radius:50%!important;
+  background:#b5541f!important;
+  transform:translateX(0);
+  transition:transform .2s,background-color .2s;
+  box-shadow:0 1px 3px rgba(0,0,0,.35);
+}
+:root[data-theme] body .appearance-liquid-toggle[data-state="checked"] .appearance-liquid-toggle__thumb {
+  background:#fff!important;transform:translateX(26px)!important;
+}
+:root[data-theme] body .appearance-liquid-toggle:focus-visible,
+:root[data-theme] body .ix-root button.bridge-primary-action:focus-visible {
+  outline:3px solid #e99463!important;
+  outline-offset:3px!important;
+}
+@media (prefers-reduced-motion:reduce) {
+  .appearance-liquid-toggle__thumb {transition:none!important;}
+}
+
+/* Directory graphic fits to the right of the heading and is labelled honestly. */
+:root[data-theme] body .ix-root .bridge-discover-hero {
+  background:#080808!important;
+  color:#fff!important;
+  border-color:rgba(255,255,255,.46)!important;
+}
+:root[data-theme] body .ix-root .bridge-discover-hero :is(h1,p) {
+  color:#f5f5f5!important;
+}
+:root[data-theme] body .ix-root .bridge-discover-hero .bridge-discover-map {
+  background:#080808!important;
+  border-color:rgba(255,255,255,.5)!important;
+}

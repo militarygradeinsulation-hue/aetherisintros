@@ -74,7 +74,7 @@ export const IntrosHubView: React.FC<IntrosHubViewProps> = ({
 
           <button
             onClick={() => setShowMakeIntroModal(true)}
-            className="flex items-center gap-2 px-5 py-2.5 rounded-lg bg-[#F5B027] hover:bg-[#C78522] text-white text-xs md:text-sm font-semibold transition-all shadow-md shadow-[#F5B027]/20 cursor-pointer self-start md:self-auto"
+            className="bridge-primary-action flex items-center gap-2 px-5 py-2.5 text-xs md:text-sm font-semibold transition-all cursor-pointer self-start md:self-auto"
           >
             <Plus className="w-4 h-4" />
             Facilitate New Introduction
@@ -152,13 +152,13 @@ export const IntrosHubView: React.FC<IntrosHubViewProps> = ({
                 <div className="flex items-center gap-2.5 self-end md:self-auto shrink-0">
                   <button
                     onClick={() => onReviewRequest(req)}
-                    className="px-4 py-2 text-xs font-semibold text-white bg-[#F5B027] hover:bg-[#C78522] rounded-lg transition-colors cursor-pointer"
+                    className="bridge-primary-action px-4 py-2 text-xs font-semibold transition-colors cursor-pointer"
                   >
                     Review & Facilitate
                   </button>
                   <button
                     onClick={() => onDismissRequest(req.id)}
-                    className="px-3 py-2 text-xs text-[#9CA3AF] hover:text-white border border-white/10 rounded-lg transition-colors cursor-pointer"
+                    className="bridge-secondary-action px-3 py-2 text-xs border transition-colors cursor-pointer"
                   >
                     Pass
                   </button>
@@ -283,7 +283,7 @@ export const IntrosHubView: React.FC<IntrosHubViewProps> = ({
               </p>
               <button
                 onClick={() => onRequestIntro(member)}
-                className="w-full py-2 text-xs font-semibold text-white bg-[#F5B027] hover:bg-[#C78522] rounded-lg transition-colors cursor-pointer text-center"
+                className="bridge-primary-action w-full py-2 px-3 text-xs font-semibold transition-colors cursor-pointer text-center"
               >
                 Request Warm Introduction
               </button>
@@ -370,7 +370,7 @@ export const IntrosHubView: React.FC<IntrosHubViewProps> = ({
                   </button>
                   <button
                     type="submit"
-                    className="px-4 py-2 text-xs font-semibold text-white bg-[#F5B027] hover:bg-[#C78522] rounded-lg cursor-pointer"
+                    className="bridge-primary-action px-4 py-2 text-xs font-semibold cursor-pointer"
                   >
                     Send Double-Opt-In
                   </button>

@@ -24,6 +24,14 @@ import architectEverywhereCss from "../aetheris/architect-everywhere.css?url";
 import executiveOptionsCss from "../aetheris/executive-options.css?url";
 import messagesMasterThemeCss from "../aetheris/messages-master-theme.css?url";
 import brandAccentFixesCss from "../aetheris/brand-accent-fixes.css?url";
+import stencilSystemCss from "../aetheris/stencil-system.css?url";
+import contrastOrangeCss from "../aetheris/contrast-orange.css?url";
+import bridgeInterfaceFixesCss from "../aetheris/bridge-interface-fixes.css?url";
+import homeFeedLayoutCss from "../intros-ui/home-feed-layout.css?url";
+import bridgeExperienceCss from "../aetheris/bridge-experience.css?url";
+import messagesInverseThemeCss from "../aetheris/messages-inverse-theme.css?url";
+import editorialCopyContrastCss from "../aetheris/editorial-copy-contrast.css?url";
+import siteReadabilityCss from "../aetheris/site-readability.css?url";
 import mobileSiteCss from "../aetheris/mobile-site.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 import { installClientErrorReporting, reportClientError } from "../lib/error-report";
@@ -121,6 +129,16 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { rel: "stylesheet", href: executiveOptionsCss },
       { rel: "stylesheet", href: messagesMasterThemeCss },
       { rel: "stylesheet", href: brandAccentFixesCss },
+      // Ask Intros official interface parity with Bridge; only shared design assets.
+      { rel: "stylesheet", href: stencilSystemCss },
+      { rel: "stylesheet", href: contrastOrangeCss },
+      { rel: "stylesheet", href: bridgeInterfaceFixesCss },
+      { rel: "stylesheet", href: homeFeedLayoutCss },
+      { rel: "stylesheet", href: bridgeExperienceCss },
+      { rel: "stylesheet", href: messagesInverseThemeCss },
+      { rel: "stylesheet", href: editorialCopyContrastCss },
+      // Final: restore visible labels/field options on white and black surfaces.
+      { rel: "stylesheet", href: siteReadabilityCss },
       { rel: "icon", href: "/favicon.svg", type: "image/svg+xml" },
       { rel: "apple-touch-icon", href: "/apple-touch-icon.png", sizes: "180x180" },
       { rel: "manifest", href: "/manifest.webmanifest" },

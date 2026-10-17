@@ -1,0 +1,82 @@
+/*
+ * ASK INTROS — BLACK MESSAGE SYSTEM + ORANGE-OUTLINE INTERACTIONS
+ * LAST loaded: wins over legacy cream Messages baseline and stencil hover
+ * inversions. Do not apply to the rest of the app's cards or status dialogs.
+ */
+:root {
+  --bridge-outline:#ef915b;
+  --bridge-glow:rgba(181,84,31,.26);
+}
+/* 01. Preserve the button's resting ink and fill while hovering. The orange
+   perimeter is the feedback: not a black/white reversal. */
+html:root[data-theme] body :is(.ix-root,.app-shell,.ask-os,.ael,.auth-page)
+  :is(button:not(:disabled),a[role="button"],a.btn,.btn):hover {
+  border-color:var(--bridge-outline)!important;
+  box-shadow:inset 0 0 0 1px var(--bridge-outline),0 0 0 1px var(--bridge-glow)!important;
+}
+html:root[data-theme] body .ix-root
+  :is(.btn.primary,.ai-gradient-button,.eh-primary,.tile-cta,.memory-cta,
+      [data-variant="default"]):hover:not(:disabled),
+html:root[data-theme] body .app-shell
+  :is(.btn.primary,.ai-gradient-button,.eh-primary,.tile-cta,.memory-cta):hover:not(:disabled),
+html:root[data-theme] body .ael
+  :is(.ael-btn-gold,.ael-nav-cta,.ai-gradient-button):hover {
+  background:var(--st-ink)!important;
+  color:var(--st-bg)!important;
+  -webkit-text-fill-color:var(--st-bg)!important;
+  border-color:var(--bridge-outline)!important;
+}
+html:root[data-theme] body .ix-root
+  :is(.btn.secondary,.btn.quiet,[data-variant="outline"],.ai-option-secondary):hover:not(:disabled),
+html:root[data-theme] body .app-shell
+  :is(.btn.secondary,.btn.quiet):hover:not(:disabled) {
+  background:transparent!important;
+  color:var(--st-ink)!important;
+  -webkit-text-fill-color:var(--st-ink)!important;
+  border-color:var(--bridge-outline)!important;
+}
+/* Primary orange retains its original fill/white ink even while hovering. */
+html:root[data-theme] body .ix-root button.bridge-primary-action:hover:not(:disabled) {
+  background:#b5541f!important;color:#fff!important;
+  -webkit-text-fill-color:#fff!important;border-color:var(--bridge-outline)!important;
+}
+html:root[data-theme] body .ix-root button.bridge-secondary-action:hover:not(:disabled) {
+  background:var(--st-card)!important;color:var(--st-ink)!important;
+  -webkit-text-fill-color:var(--st-ink)!important;border-color:var(--bridge-outline)!important;
+}
+/* Keep active tabs distinguishable by a slim rule, without flipping their
+   backgrounds when the pointer enters. */
+html:root[data-theme] body .ix-root :is(.ix-option-tab,.ix-option-tile,[role="tab"],[role="option"]):hover {
+  border-color:var(--bridge-outline)!important;
+  box-shadow:inset 0 -2px 0 var(--bridge-outline)!important;
+}
+
+/* 02. Messages are now styled exclusively by messages-inverse-theme.css.
+   Do not reintroduce hardcoded surfaces in this global interaction layer. */
+
+/* 03. Meetings — a useful preview when signed out and quick actions when
+   signed in. The cards have real sign-in, start, and schedule interactions. */
+.bridge-meetings-hub {max-width:1200px;min-height:0;padding:clamp(18px,3vw,42px);margin:0 auto;color:var(--st-ink);}
+.bridge-meeting-intro {max-width:830px;padding-block:10px 26px;}
+.bridge-meeting-intro h1 {max-width:23ch;font-family:"Saira Stencil One",var(--st-mono),monospace;font-size:clamp(28px,3.8vw,52px);line-height:1.15;margin:12px 0 18px;}
+.bridge-meeting-intro .og-note {max-width:66ch;font-size:14px;line-height:1.75;color:var(--st-quiet);}
+.bridge-meeting-cta {display:inline-flex;gap:12px;align-items:center;justify-content:center;min-height:46px;margin-top:18px;padding:10px 18px;background:#b5541f!important;color:#fff!important;border:1px solid #b5541f;text-decoration:none;font-size:13px;font-weight:700;letter-spacing:.02em;}
+.bridge-meeting-cta:hover {background:#b5541f!important;color:#fff!important;border-color:#ef915b!important;box-shadow:inset 0 0 0 1px #ef915b!important;}
+.bridge-meeting-options {display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-top:20px;margin-bottom:28px;}
+.bridge-meeting-option {box-sizing:border-box;display:flex;flex-direction:column;align-items:flex-start;gap:12px;text-align:left;min-width:0;min-height:235px;padding:22px;border:1px solid var(--st-rule)!important;background:var(--st-card)!important;color:var(--st-ink)!important;box-shadow:none!important;}
+.bridge-meeting-option :is(h2,p,a,span,svg){color:inherit;}
+.bridge-meeting-option svg {color:#ef915b;stroke-width:1.5;}
+.bridge-meeting-option h2 {font-family:var(--st-mono);font-size:16px;font-weight:800;line-height:1.25;margin:8px 0 0;}
+.bridge-meeting-option p {color:var(--st-quiet)!important;font-size:12px;line-height:1.7;max-width:46ch;margin:0;}
+.bridge-meeting-index {font-family:var(--st-mono);font-size:10px;letter-spacing:.15em;color:#ef915b!important;}
+.bridge-meeting-option a,.bridge-meeting-link {display:inline-flex;align-items:center;gap:5px;margin-top:auto;padding-top:6px;font-size:12px;text-decoration:none;color:#f6ae85!important;}
+.bridge-meeting-option:is(a,button):hover, .bridge-meeting-option:has(>a:hover) {
+  border-color:#ef915b!important;background:var(--st-card)!important;box-shadow:inset 0 0 0 1px #ef915b!important;color:var(--st-ink)!important;
+}
+.bridge-meeting-option:focus-visible,.bridge-meeting-option a:focus-visible {outline:2px solid #ef915b!important;outline-offset:3px!important;}
+.bridge-meeting-footnote {font-size:11px;color:var(--st-quiet);line-height:1.6;}
+.bridge-meeting-options--signed-in {margin-top:10px;}
+.bridge-meeting-options--signed-in .bridge-meeting-option {min-height:195px;cursor:pointer;}
+.bridge-meeting-options--signed-in div.bridge-meeting-option {cursor:default;}
+.bridge-meeting-options--signed-in .bridge-meeting-option:disabled {opacity:.55;cursor:wait;}
+@media(max-width:760px){.bridge-meeting-options{grid-template-columns:1fr;gap:10px;}.bridge-meeting-option{min-height:180px!important;padding:18px;}.bridge-meeting-intro h1{font-size:clamp(28px,8vw,40px);}}

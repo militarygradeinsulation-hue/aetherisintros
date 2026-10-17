@@ -1,20 +1,33 @@
-# Ask Intros — Permanent Messages Theme Baseline
+# Ask Intros — Messages Theme Requirement (Owner-approved October 2026)
 
-This is the **authoritative design requirement for the full website and member product**, established by the owner. The Messages page screenshot is the visual reference. Do not create a different color language on any newly generated page.
+This rule supersedes the historic "Messages-first blue/cream" baseline.
+It governs **both demo and signed-in Messages** and must match the rest of
+Ask Intros' black/white stencil system.
 
-## Light baseline
-- Background / canvas: `#F5F2EC`
-- Cards and dropdowns: `#FBF9F4`
-- Inset tile and neutral options: `#F2EEE8`
-- Main text: `#2E3438`
-- Supporting text: `#56626A`
-- Borders and dividers: `#D7D3CB`
-- Functional blue buttons: `#2F5F87` (hover `#244B6B`)
-- Selected filter / tile / menu item: `#DCE8F3`, blue border `#B9CBDD`, text `#233E53`
+## Appearance modes
+- **Dark:** black/near-black page, inbox tiles, conversation panels, message
+  bubbles, context/AI cards, menus and composer. White primary text and clear
+  gray supporting copy. No cream, white, or pale cards.
+- **Light:** white/near-white versions of the same surfaces, including inbox
+  rows, message bubbles, context panels, inputs and brief. Black primary text
+  and dark gray secondary text. No black cards except explicit intentional
+  brand contrast on action buttons.
+- **Accent:** burnt orange (#B5541F) for primary actions; lighter orange
+  (#EF9A69) on dark for emphasized labels, deeper orange (#934016) on light.
+  Primary button text is white in both modes.
+- Both modes must retain readable selections, hover, focus, placeholders and
+  alert contrast. The Ask Intros logo's existing yellow details remain a
+  separate brand exception, not a Messages background color.
 
-## Scope and behavior
-Apply this to Home, People, Introductions, Meetings, Messages, CRM, Deal Rooms, Insights, Workspaces, Profile, Settings, forms, admin, dialogs, dropdowns, tiles, panels and onboarding. User-facing primary actions use muted blue, secondary actions use neutral paper. The site offers only the existing Light/Dark switch; Light is the default for new visitors and saved Dark is respected. Dark keeps the **same blue family** with readable inverse colors.
+## Source of truth
+The only Messages palette definition is
+`src/aetheris/messages-inverse-theme.css`, loaded **after**
+`src/aetheris/bridge-experience.css` in `src/routes/__root.tsx`.
+`src/intros-ui/messages-readability.css` is typography/interaction-only.
+Do not restore the discarded cream-in-both-modes overrides in
+`src/aetheris/contrast-orange.css`, or the dark-in-both-modes overrides in
+`src/aetheris/bridge-experience.css`.
 
-The implemented master tokens and shared surfaces are in `src/aetheris/messages-master-theme.css`, loaded after `src/aetheris/executive-options.css`. Details in `docs/EXECUTIVE_WORKSPACE_STYLE.md`. Don't add new competing CSS palettes or hardcode old navy / copper / amber onto functional UI. Preserve brand logo, intentional photography, charts and red/green status colors.
-
-Critically: do not force white text based on an old CSS class that *used* to indicate a dark panel. Cards may now be cream. Style each surface and its text together, and test 4.5:1 contrast for ordinary text. The product-wide browser check is `scripts/architect-check/run.mjs`; validate both modes and actual cards, not just the existence of CSS variables.
+When editing Messages, validate live and demo routes, the actual computed
+background AND text colors in both modes, and mobile scrolling/layout.
+`scripts/messages-contrast-check/run.mjs` checks the app's appearance modes.
