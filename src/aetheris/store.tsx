@@ -268,7 +268,7 @@ interface NetworkApi {
   follow: (id: string) => void
   toggleSave: (id: string, label?: string) => void
   openThreadWith: (id: string) => string
-  sendMessage: (threadId: string, text: string, messageId?: string) => Promise<void>
+  sendMessage: (threadId: string, text: string, messageId?: string) => Promise<string | undefined>
   requestIntro: (id: string, note?: string) => Promise<boolean>
   authorizeIntro: (id: string) => void
   declineIntro: (id: string) => void
@@ -681,13 +681,16 @@ export function NetworkProvider({ children, mode = 'live' }: { children: React.R
           if (actualThread !== threadId) setS(prev => ({
             ...prev, ownThreads: prev.ownThreads.filter(t => t.id !== threadId),
           }))
-          return
+          // Give callers the server's canonical thread ID so a newly opened
+          // Simple View panel does not point at an obsolete local draft ID.
+          return actualThread
         }
         const who = thread ? nameOf(thread.memberId) : 'a member'
         patch(prev => ({
           sentMessages: { ...prev.sentMessages, [threadId]: [...(prev.sentMessages[threadId] ?? []), { id: messageId ?? rowId(), text, at: clock() }] },
           learned: remember(prev, { category: 'Messages', text: `You sent ${who} a message: “${text.slice(0, 70)}${text.length > 70 ? '…' : ''}”`, source: 'Conversation', confidence: 99, scope: 'private' }),
         }))
+        return threadId
       },
 
       requestIntro: (id, note) => {
