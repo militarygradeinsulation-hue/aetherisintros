@@ -1,8 +1,9 @@
 import { useEffect, useState } from 'react'
 import { useAccess } from '@/aetheris/access'
+import { parseAdminOverview, type AdminStats } from '@/aetheris/lib/admin-overview-contract'
 import { supabase } from '@/integrations/supabase/client'
 
-type Stats = Record<'registered_accounts' | 'confirmed_accounts' | 'approved_members' | 'pending_members' | 'onboarded_profiles' | 'posts' | 'asks' | 'messages' | 'introduction_requests', number> & { generated_at: string }
+type Stats = AdminStats
 const metrics: { key: keyof Omit<Stats, 'generated_at'>; label: string }[] = [
   { key: 'registered_accounts', label: 'Registered accounts' },
   { key: 'confirmed_accounts', label: 'Confirmed emails' },
@@ -25,8 +26,7 @@ export function AdminOverview() {
     try {
       const { data, error: fault } = await (supabase as unknown as { rpc: (name: string) => Promise<{ data: unknown; error: { message: string } | null }> }).rpc('admin_platform_overview')
       if (fault) throw new Error(fault.message)
-      if (!data || typeof data !== 'object' || Array.isArray(data) || !('registered_accounts' in data)) throw new Error('The analytics service returned an invalid response.')
-      setStats(data as Stats)
+      setStats(parseAdminOverview(data))
     } catch (cause) {
       setError(cause instanceof Error ? cause.message : 'Could not load administrator analytics. Try again.')
       setStats(null)
@@ -49,7 +49,7 @@ export function AdminOverview() {
       {stats && <section aria-label="Platform statistics" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(min(100%,220px),1fr))', gap: 16 }}>
         {metrics.map(m => <article key={m.key} style={{ background: '#1c2938', border: '1px solid #52718b', borderRadius: 14, padding: 22, minWidth: 0 }}>
           <p style={{ color: '#d1dce7', fontSize: 14 }}>{m.label}</p>
-          <strong style={{ color: 'white', fontSize: 35, fontVariantNumeric: 'tabular-nums' }}>{Number(stats[m.key] ?? 0).toLocaleString()}</strong>
+          <strong style={{ color: 'white', fontSize: 35, fontVariantNumeric: 'tabular-nums' }}>{stats[m.key].toLocaleString()}</strong>
         </article>)}
       </section>}
       {stats && <p style={{ color: '#bdcbd8', marginTop: 20, fontSize: 13 }}>Updated {new Date(stats.generated_at).toLocaleString()}</p>}
