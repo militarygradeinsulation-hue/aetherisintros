@@ -65,7 +65,8 @@ function Inner({ onOpenWorkspaces }: { onOpenWorkspaces?: () => void }) {
     setSending(true)
     setFailed(null)
     try {
-      await net.sendMessage(threadId, text)
+      const confirmedThreadId = await net.sendMessage(threadId, text, id)
+      if (confirmedThreadId && confirmedThreadId !== threadId) setActiveId(confirmedThreadId)
       if (active?.id === threadId) setDraft(current => current.trim() === text.trim() ? '' : current)
     } catch (cause) {
       setFailed({ id, threadId, text, reason: cause instanceof Error ? cause.message : 'Not sent. Retry this message.' })
