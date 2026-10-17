@@ -7,7 +7,7 @@ import gsap from 'gsap'
 import { supabase } from '@/integrations/supabase/client'
 import { lovable } from '@/integrations/lovable/index'
 import { AUTH_REQUIRED } from '@/aetheris/config'
-import { claimAccess, clearInvite, previewInvite, rememberInvite, storedInvite } from '@/aetheris/access'
+import { claimAccess, clearInvite, foundingStats, previewInvite, rememberInvite, storedInvite, type LaunchMode } from '@/aetheris/access'
 import { logSecurityEvent, passwordProblem } from '@/aetheris/verification'
 import { AppearanceToggle } from '@/aetheris/AppearanceToggle'
 import '@/aetheris/styles.css'
@@ -101,6 +101,9 @@ function AuthPage() {
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState('')
   const [notice, setNotice] = useState('')
+  const [launch, setLaunch] = useState<{ mode: LaunchMode; capacity: number; approved: number } | null>(null)
+  useEffect(() => { void foundingStats().then(setLaunch) }, [])
+  const openSignup = launch?.mode === 'first_1000' && launch.approved < launch.capacity
 
   const land = useCallback(async () => {
     const code = storedInvite()
@@ -130,7 +133,7 @@ function AuthPage() {
     try {
       rememberInvite(invite)
       if (mode === 'signup') {
-        if (!invite.trim()) throw new Error('Sign-up is invite-only right now. Enter the invite code a member sent you.')
+        if (!invite.trim() && !openSignup) throw new Error(launch?.mode === 'closed' ? 'Registration is closed right now.' : 'A member invitation is currently needed to join.')
         if (inviter && !inviter.valid) throw new Error('That invite code is not valid. Check it with the person who sent it.')
         const weak = passwordProblem(password)
         if (weak) throw new Error(weak)
@@ -139,7 +142,7 @@ function AuthPage() {
           password,
           options: {
             emailRedirectTo: `${window.location.origin}${next || '/verify'}`,
-            data: { name: name || email.split('@')[0], invite_code: invite.trim() },
+            data: { name: name || email.split('@')[0], ...(invite.trim() ? { invite_code: invite.trim() } : {}) },
           },
         })
         if (signUpError) throw signUpError
@@ -189,7 +192,7 @@ function AuthPage() {
           </p>
         : <div className="auth-soon" role="status">
             <span><i aria-hidden="true" />LAUNCHING SOON</span>
-            <p>Ask Intros is in private pre-launch. Open sign-up is closed — only whitelisted founding members can sign in right now.</p>
+            <p>{launch?.mode === 'first_1000' ? 'Create an account to claim your place. No invite code is required.' : launch?.mode === 'closed' ? 'Registration is paused. Existing members can still sign in.' : 'Founding membership is currently invitation-only. A member code is needed to join.'}</p>
             <div className="auth-soon-actions">
               <Link to="/demo">Explore the demo <ArrowRight size={13} /></Link>
               <Link to="/early-access">Join the whitelist <ArrowRight size={13} /></Link>
@@ -214,9 +217,9 @@ function AuthPage() {
       <div className="auth-divider"><span>or use email</span></div>
 
       {mode === 'signup' && <label className="auth-invite">
-        <span>INVITE CODE</span>
+        <span>INVITE CODE {openSignup ? '(OPTIONAL)' : '(REQUIRED)'}</span>
         <input value={invite} onChange={e => setInvite(e.target.value)} placeholder="e.g. joseph-3f9a2c" autoComplete="off" />
-        <small>{inviter?.valid ? `Invited by ${inviter.inviter || 'a member'} — you will join each other’s network.` : inviter && !inviter.valid ? 'That code is not valid.' : 'Enter the code from the member who invited you.'}</small>
+        <small>{inviter?.valid ? `Invited by ${inviter.inviter || 'a member'} — you will join each other’s network.` : inviter && !inviter.valid ? 'That code is not valid.' : openSignup ? 'Open registration is available. Only enter a code if someone invited you.' : 'Enter the code from the member who invited you.'}</small>
       </label>}
 
       <form className="auth-form" onSubmit={event => void submit(event)}>
