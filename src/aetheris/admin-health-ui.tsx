@@ -55,11 +55,30 @@ interface AppError { id: string; created_at: string; source: 'client' | 'server'
 export function AdminErrorsPanel() {
   const [rows, setRows] = useState<AppError[] | null>(null)
   const [open, setOpen] = useState<string | null>(null)
-  useEffect(() => {
-    void (supabase as any).from('app_errors').select('id, created_at, source, message, stack, url, user_agent')
-      .order('created_at', { ascending: false }).limit(300)
-      .then((r: any) => setRows(r.error ? [] : r.data ?? []))
-  }, [])
+  const [error, setError] = useState('')
+  const [loading, setLoading] = useState(true)
+  const reload = async () => {
+    setLoading(true)
+    setError('')
+    // Keep the time window aligned with the panel title, and cap expensive reads.
+    const since = new Date(Date.now() - 14 * 24 * 60 * 60 * 1000).toISOString()
+    try {
+      const r = await (supabase as any).from('app_errors')
+        .select('id, created_at, source, message, stack, url, user_agent')
+        .gte('created_at', since)
+        .order('created_at', { ascending: false }).limit(300)
+      if (r.error) { setRows(null); setError(r.error.message || 'Unable to load error reports.') }
+      else setRows(r.data ?? [])
+    } catch {
+      setRows(null)
+      setError('Unable to reach the error reporting service.')
+    } finally {
+      setLoading(false)
+    }
+  }
+  useEffect(() => { void reload() }, [])
+  if (loading && !rows) return <section className="executive-section admin-health" aria-busy="true"><h2>Loading error reports…</h2></section>
+  if (error) return <section className="executive-section admin-health" role="alert"><h2>Error reporting unavailable</h2><p className="og-note">{error}</p><button type="button" onClick={() => void reload()}>Retry</button></section>
   if (!rows) return null
   const groups = new Map<string, { latest: AppError; count: number; pages: Set<string> }>()
   for (const e of rows) {
