@@ -57,8 +57,9 @@ function OnboardingRoute() {
 
   useEffect(() => {
     if (access.loading) return
-    if (access.verification !== 'verified') void navigate({ to: '/verify', replace: true })
-    else if (access.status !== 'approved') void navigate({ to: '/early-access', replace: true })
+    if (access.status !== 'approved' || !access.emailConfirmed) void navigate({ to: '/early-access', replace: true })
+    else if (access.verification === 'rejected' || access.verification === 'suspended') void navigate({ to: '/verify', replace: true })
+    else if (access.onboarded) void navigate({ to: '/app', replace: true })
     else if (access.name && !answers['name']) setAnswers(prev => ({ ...prev, name: access.name }))
   }, [access, answers, navigate])
 
@@ -70,13 +71,17 @@ function OnboardingRoute() {
     if (!get('name')) { setError('Your name is needed — members meet real people.'); return }
     setBusy(true); setError('')
     const initials = get('name').split(/\s+/).slice(0, 2).map(p => p[0] ?? '').join('').toUpperCase()
-    const { error: saveError } = await (supabase.from('profiles') as any).update({ // eslint-disable-line @typescript-eslint/no-explicit-any
+    const { data: savedProfile, error: saveError } = await (supabase.from('profiles') as any).update({ // eslint-disable-line @typescript-eslint/no-explicit-any
       name: get('name'), initials: initials || 'M', title: get('title'), company: get('company'),
       location: get('location'), focus: get('focus'), looking_for: get('looking_for'),
       can_help_with: get('can_help_with'), industries: list(get('industries')),
       expertise: list(get('expertise')), availability: get('availability'), onboarded: true,
-    }).eq('id', access.userId)
-    if (saveError) { setError(saveError.message); setBusy(false); return }
+    }).eq('id', access.userId).select('id').maybeSingle()
+    if (saveError || savedProfile?.id !== access.userId) {
+      setError('We could not confirm that your profile was saved. Please retry.')
+      setBusy(false)
+      return
+    }
     // The LinkedIn link (0038) is saved on its own so it can never block the profile itself.
     if (linkedinUrl) await (supabase.from('profiles') as any).update({ linkedin_url: linkedinUrl }).eq('id', access.userId) // eslint-disable-line @typescript-eslint/no-explicit-any
 
