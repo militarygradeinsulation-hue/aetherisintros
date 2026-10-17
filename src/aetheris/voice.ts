@@ -1,6 +1,7 @@
 /**
  * Voice layer: read anything aloud, and talk to Ask Intros.
- * Uses the browser's own speech engine, so it works immediately and offline.
+ * Managed voice uses the owner's private ElevenLabs voice; device speech is
+ * available only when explicitly selected in Preferences.
  */
 import { useEffect, useRef, useState } from 'react'
 import { speakWithIntrosVoice } from '@/lib/voice.functions'
@@ -136,7 +137,7 @@ export function speechSupported() {
 }
 
 
-/** Managed Intros speech works online; device speech remains the offline fallback. */
+/** ElevenLabs is the managed default; another voice requires explicit selection. */
 export function voiceOutputSupported() {
   return readVoiceSettings().voiceName === 'intros-managed' || speechSupported()
 }
