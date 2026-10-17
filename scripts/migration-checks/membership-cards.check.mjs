@@ -51,6 +51,8 @@ export default async ({ ok, as, svc, A, B, C, ADMIN }) => {
   ok(!!(await as(A, `select image_token from public.membership_cards`)).error, 'the image token is not readable')
   ok(!!(await as(A, `select email_due, emailed_at from public.membership_cards`)).error, 'delivery bookkeeping is not readable')
   ok(!!(await as(null, `select code from public.membership_cards`)).error, 'visitors see nothing')
+  // C has a valid proof card but is not an approved live-network member.
+  await svc(`update public.early_access_members set status='pending' where user_id='${C}'`)
   r = await as(B, `select code from public.membership_cards where user_id = '${C}'`)
   ok(r.rows?.length === 0, 'cards of members who are not approved stay hidden')
 
