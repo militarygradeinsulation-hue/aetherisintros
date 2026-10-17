@@ -33,10 +33,12 @@ export default async ({ ok, as, svc, A, B, C }) => {
   ok(!!(await as(B, `insert into public.agent_actions (user_id, action, result) values ($1, 'create_ask', 'ok')`, [B])).error, 'the log is written by the server only')
 
   console.log('rate limits')
-  const w = `'2026-10-09T10:00:00Z'`
+  // Use a fresh window: the migration deliberately prunes counters older than
+  // two days at random, making an old fixed-date test intermittently fail.
+  const w = "date_trunc('hour', now())"
   const hit = async () => (await svc(`select public.agent_rate_hit('ip:x', ${w}, 2) as ok`))[0].ok
   ok(await hit() === true && await hit() === true && await hit() === false, 'a window allows exactly its limit')
-  ok((await svc(`select public.agent_rate_hit('ip:x', '2026-10-09T11:00:00Z', 2) as ok`))[0].ok === true, 'the next window starts fresh')
+  ok((await svc(`select public.agent_rate_hit('ip:x', ${w} + interval '1 hour', 2) as ok`))[0].ok === true, 'the next window starts fresh')
   ok(!!(await as(B, `select public.agent_rate_hit('ip:x', now(), 1000)`)).error, 'members cannot touch counters')
 
   console.log('agent policy')
