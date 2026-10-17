@@ -337,7 +337,11 @@ async function speakCurrent(run: number) {
 
 /** Read an ordered list of passages aloud, replacing anything being read now. */
 export function readAloud(passages: string[], readingLabel = 'Reading') {
-  const clean = splitReadingPassages(passages)
+  const nativePlayback = readVoiceSettings().voiceName !== 'intros-managed'
+    || (speechSupported() && needsGestureBoundPlayback())
+  // Short fragments protect native engines; managed speech can synthesize
+  // longer fragments without many extra paid provider requests.
+  const clean = splitReadingPassages(passages, nativePlayback ? 240 : 1400)
   stopReading()
   if (!clean.length) {
     problem = 'No readable text was found here. Highlight a passage and select Read aloud.'
