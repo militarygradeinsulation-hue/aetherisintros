@@ -318,3 +318,23 @@ html:root[data-theme="light"] body .ix-root .ix-desktop-more-menu {
   -webkit-text-fill-color:var(--st-ink)!important;
   border-color:var(--st-rule)!important;
 }
+
+/* This also covers Messages when reached through the demo shell, where
+   .arch-product-main is not an ancestor of the inbox. Both mode rules must
+   target the rendered Messages container, not an optional wrapper. */
+html:root[data-theme="light"] body .ix-root .ix-messages aside .text-xs.font-semibold.truncate,
+html:root[data-theme="light"] body .ix-root .ix-messages aside .text-sm.truncate,
+html:root[data-theme="light"] body .ix-root .ix-live-messages aside .text-xs.font-semibold.truncate,
+html:root[data-theme="light"] body .ix-root .ix-live-messages aside .text-sm.truncate {
+  color:#090909!important;
+  -webkit-text-fill-color:#090909!important;
+  opacity:1!important;
+}
+html:root[data-theme="dark"] body .ix-root .ix-messages aside .text-xs.font-semibold.truncate,
+html:root[data-theme="dark"] body .ix-root .ix-messages aside .text-sm.truncate,
+html:root[data-theme="dark"] body .ix-root .ix-live-messages aside .text-xs.font-semibold.truncate,
+html:root[data-theme="dark"] body .ix-root .ix-live-messages aside .text-sm.truncate {
+  color:#ffffff!important;
+  -webkit-text-fill-color:#ffffff!important;
+  opacity:1!important;
+}
