@@ -110,18 +110,30 @@ export const createSyndicationRoom = createServerFn({ method: 'POST' })
     const db = context.supabase as any // eslint-disable-line @typescript-eslint/no-explicit-any
     const userId = context.userId
 
-    const inviteUserIds = [...new Set((data.inviteUserIds ?? []).filter(id => id && id !== userId))]
-    const { data: created, error } = await db.rpc('create_syndication_room', {
-      p_title: data.title.trim(),
-      p_room_type: data.roomType,
-      p_description: data.description?.trim() || null,
-      p_opportunity_size: data.opportunitySize?.trim() || null,
-      p_deadline: data.deadline || null,
-      p_invite_user_ids: inviteUserIds,
-    })
-    if (error) throw new Error(error.message)
-    const room = Array.isArray(created) ? created[0] : created
-    if (!room?.id) throw new Error('The syndication room could not be created.')
+    const { data: room, error: roomErr } = await db
+      .from('syndication_rooms')
+      .insert({
+        created_by: userId,
+        title: data.title.trim(),
+        room_type: data.roomType,
+        description: data.description?.trim() ?? null,
+        opportunity_size: data.opportunitySize?.trim() ?? null,
+        deadline: data.deadline ?? null,
+      })
+      .select()
+      .single()
+    if (roomErr) throw new Error(roomErr.message)
+
+    // Add creator as a member so they can vote
+    const membersToInsert = [
+      { room_id: room.id, user_id: userId },
+      ...(data.inviteUserIds ?? [])
+        .filter(id => id !== userId)
+        .map(id => ({ room_id: room.id, user_id: id })),
+    ]
+    const { error: membersErr } = await db.from('syndication_members').insert(membersToInsert)
+    if (membersErr) throw new Error(membersErr.message)
+
     return room as SyndicationRoom
   })
 
