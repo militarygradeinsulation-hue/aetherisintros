@@ -326,3 +326,23 @@ html:root[data-theme="dark"] body .ix-root .arch-product-main .ix-live-messages 
   -webkit-text-fill-color:#ffffff!important;
   opacity:1!important;
 }
+
+
+/* Pair the selected Messages row's surface with its text. The old stencil
+ * layer can still force #111 background in Light mode even while the row
+ * label is correctly black. Override only elements whose CLASS TOKEN is the
+ * active selection utility, without touching photographs or action badges. */
+html:root[data-theme="light"] body .ix-root
+  :is(.ix-messages,.ix-live-messages)
+  [class~="bg-[var(--msg-selected)]"] {
+  background:#eaeaea!important;
+  background-color:#eaeaea!important;
+  color:#090909!important;
+}
+html:root[data-theme="dark"] body .ix-root
+  :is(.ix-messages,.ix-live-messages)
+  [class~="bg-[var(--msg-selected)]"] {
+  background:#202020!important;
+  background-color:#202020!important;
+  color:#ffffff!important;
+}
