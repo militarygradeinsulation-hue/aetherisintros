@@ -1,0 +1,124 @@
+/*
+ * ASK INTROS / EDITORIAL COPY CONTRAST
+ * The compact philosophy/method panel and News masthead previously mixed
+ * dark-mode pale type with light-mode white paper. Every surface below owns
+ * its foreground as well as its background. No opacity-driven microcopy.
+ *
+ * Keep this after stencil-system.css and the route-level legacy styles.
+ * Color contrast: #242424 on #fff = >15:1, #ededed on #080808 = >16:1.
+ */
+
+/* Light-mode cutout: white paper with real black copy. */
+html:root[data-theme="light"] body .ael.ael-compact
+  :is(.ael-compact-story,.ael-compact-story-main,
+      .ael-compact-story-copy,.ael-compact-method,
+      .ael-compact-method-heading) {
+  background-color:#ffffff!important;
+  color:#101010!important;
+  -webkit-text-fill-color:#101010!important;
+}
+html:root[data-theme="light"] body .ael.ael-compact .ael-compact-story
+  :is(.ael-compact-story-copy,.ael-compact-method,.ael-compact-method-heading,
+      .ael-compact-steps) :is(p,strong,small,li,div:not(.stencil-headline)) {
+  color:#242424!important;
+  -webkit-text-fill-color:#242424!important;
+  opacity:1!important;
+}
+html:root[data-theme="light"] body .ael.ael-compact .ael-compact-story
+  :is(.ael-editorial-meta,.ael-fine-label,.ael-compact-steps strong) {
+  color:#242424!important;
+  -webkit-text-fill-color:#242424!important;
+  opacity:1!important;
+}
+html:root[data-theme="light"] body .ael.ael-compact .ael-compact-story
+  :is(.ael-underlink,.ael-underlink-dark) {
+  color:#111111!important;
+  -webkit-text-fill-color:#111111!important;
+  border-color:#99421c!important;
+  opacity:1!important;
+}
+html:root[data-theme="light"] body .ael.ael-compact .ael-compact-story
+  .ael-compact-steps li > span {
+  color:#ffffff!important;
+  -webkit-text-fill-color:#ffffff!important;
+  background:#733513!important;
+  opacity:1!important;
+}
+html:root[data-theme="light"] body .ael.ael-compact .ael-compact-story
+  :is(.ael-compact-steps li,.ael-compact-method) {
+  border-color:rgba(0,0,0,.45)!important;
+}
+
+/* Dark mode stays black, not white type on inherited white cards. */
+html:root[data-theme="dark"] body .ael.ael-compact
+  :is(.ael-compact-story,.ael-compact-story-main,
+      .ael-compact-story-copy,.ael-compact-method,
+      .ael-compact-method-heading) {
+  background-color:#080808!important;
+  color:#ffffff!important;
+  -webkit-text-fill-color:#ffffff!important;
+}
+html:root[data-theme="dark"] body .ael.ael-compact .ael-compact-story
+  :is(.ael-compact-story-copy,.ael-compact-method,.ael-compact-method-heading,
+      .ael-compact-steps) :is(p,strong,small,li,div:not(.stencil-headline)),
+html:root[data-theme="dark"] body .ael.ael-compact .ael-compact-story
+  :is(.ael-editorial-meta,.ael-fine-label,.ael-compact-steps strong) {
+  color:#ededed!important;
+  -webkit-text-fill-color:#ededed!important;
+  opacity:1!important;
+}
+html:root[data-theme="dark"] body .ael.ael-compact .ael-compact-story
+  :is(.ael-underlink,.ael-underlink-dark) {
+  color:#ffffff!important;
+  -webkit-text-fill-color:#ffffff!important;
+  border-color:#e99463!important;
+  opacity:1!important;
+}
+html:root[data-theme="dark"] body .ael.ael-compact .ael-compact-story
+  .ael-compact-steps li > span {
+  color:#ffffff!important;
+  -webkit-text-fill-color:#ffffff!important;
+  background:#b5541f!important;
+  opacity:1!important;
+}
+
+/* News masthead. The refresh button is already legible; do not invert it. */
+html:root[data-theme="light"] body .news-editorial-head {
+  background-color:#faf9f6!important;
+  color:#101010!important;
+  -webkit-text-fill-color:#101010!important;
+}
+html:root[data-theme="light"] body .news-editorial-head
+  :is(h1,p,.eyebrow,small,span) {
+  color:#242424!important;
+  -webkit-text-fill-color:#242424!important;
+  opacity:1!important;
+}
+html:root[data-theme="light"] body .news-editorial-head h1 em {
+  color:#934016!important;
+  -webkit-text-fill-color:#934016!important;
+  opacity:1!important;
+}
+html:root[data-theme="dark"] body .news-editorial-head {
+  background-color:#080808!important;
+  color:#ffffff!important;
+  -webkit-text-fill-color:#ffffff!important;
+}
+html:root[data-theme="dark"] body .news-editorial-head
+  :is(h1,p,.eyebrow,small,span) {
+  color:#ededed!important;
+  -webkit-text-fill-color:#ededed!important;
+  opacity:1!important;
+}
+html:root[data-theme="dark"] body .news-editorial-head h1 em {
+  color:#e99463!important;
+  -webkit-text-fill-color:#e99463!important;
+  opacity:1!important;
+}
+
+/* Keep architectural labels readable without changing lettering or geometry. */
+html:root[data-theme] body
+  :is(.news-editorial-head,.ael.ael-compact .ael-compact-story)
+  :is(p,.eyebrow,.ael-editorial-meta,.ael-fine-label) {
+  text-shadow:none!important;
+}
