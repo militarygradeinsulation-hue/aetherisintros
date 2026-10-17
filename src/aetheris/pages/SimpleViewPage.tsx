@@ -122,7 +122,7 @@ export default function SimpleViewPage() {
             {lead ? <>
               <div className="sv-story-person"><Face person={lead.member} large portrait /><div><h2>{lead.member.name} is your strongest current path.</h2><p>{lead.member.title} at {lead.member.company} · {lead.member.location}</p></div></div>
               <p>{lead.match.headline} {lead.member.focus}</p>
-              <div className="sv-story-actions"><button className="sv-primary" onClick={() => { net.requestIntro(lead.member.id); setPanel({ kind: 'member', memberId: lead.member.id }) }}>Request introduction</button><button className="sv-ghost" onClick={() => openConversation(lead.member.id)}>Message</button><button className="sv-text-action" onClick={() => openMember(lead.member)}>Full profile <ArrowUpRight size={13} /></button></div>
+              <div className="sv-story-actions"><button className="sv-primary" onClick={() => setPanel({ kind: 'member', memberId: lead.member.id })}>Request introduction</button><button className="sv-ghost" onClick={() => openConversation(lead.member.id)}>Message</button><button className="sv-text-action" onClick={() => openMember(lead.member)}>Full profile <ArrowUpRight size={13} /></button></div>
             </> : <><h2>Your first strong introduction will appear here.</h2><p>Complete your profile and connect with members to build an explainable match.</p><button className="sv-primary" onClick={() => nav.setPage('profile')}>Complete profile</button></>}
           </article>
 
@@ -182,16 +182,17 @@ export default function SimpleViewPage() {
       </main>
     </div>
 
-    {panel && <SocialSheet panel={panel} close={() => setPanel(null)} openMember={id => setPanel({ kind: 'member', memberId: id })} openThread={id => setPanel({ kind: 'thread', threadId: id })} />}
+    {panel && <SocialSheet panel={panel} close={() => setPanel(null)} openMember={id => setPanel({ kind: 'member', memberId: id })} openThread={id => setPanel({ kind: 'thread', threadId: id })} onThreadConfirmed={id => setPanel({ kind: 'thread', threadId: id })} />}
   </div></NewsImagesProvider>
 }
 
 /** One in-page sheet: profiles, conversations, needs, journal, memory, signals and news all stay here. */
-function SocialSheet({ panel, close, openMember, openThread }: {
+function SocialSheet({ panel, close, openMember, openThread, onThreadConfirmed }: {
   panel: Exclude<Panel, null>
   close: () => void
   openMember: (id: string) => void
   openThread: (id: string) => void
+  onThreadConfirmed: (id: string) => void
 }) {
   const net = useNetwork()
   const nameOf = (id: string) => net.members.find(member => member.id === id)?.name ?? 'A member'
@@ -209,7 +210,7 @@ function SocialSheet({ panel, close, openMember, openThread }: {
       <header><span className="sv-kicker">Stays on this page</span><strong>{title}</strong><button className="sv-sheet-close" onClick={close} aria-label="Close"><X size={15} /></button></header>
       <div className="sv-sheet-body">
         {panel.kind === 'member' && <MemberSheet memberId={panel.memberId} openThread={openThread} />}
-        {panel.kind === 'thread' && <ThreadSheet threadId={panel.threadId} openMember={openMember} />}
+        {panel.kind === 'thread' && <ThreadSheet threadId={panel.threadId} openMember={openMember} onThreadConfirmed={onThreadConfirmed} />}
         {panel.kind === 'need' && <NeedSheet done={close} />}
         {panel.kind === 'journal' && <JournalSheet done={close} />}
         {panel.kind === 'memory' && <MemorySheet />}
@@ -228,6 +229,21 @@ function MemberSheet({ memberId, openThread }: { memberId: string; openThread: (
   const connected = net.connections.includes(member.id)
   const saved = net.saved.includes(member.id)
   const requested = member.introState !== 'recommended'
+  const [requesting, setRequesting] = useState(false)
+  const [requestError, setRequestError] = useState('')
+  const request = async () => {
+    if (requesting || requested) return
+    setRequesting(true)
+    setRequestError('')
+    try {
+      const confirmed = await net.requestIntro(member.id)
+      if (!confirmed) setRequestError('Not sent. The server did not confirm the request. Please retry.')
+    } catch (error) {
+      setRequestError(error instanceof Error ? error.message : 'Not sent. Please retry.')
+    } finally {
+      setRequesting(false)
+    }
+  }
   return <div className="sv-sheet-stack">
     <div className="sv-sheet-person"><Face person={member} large portrait /><div><strong>{member.name}</strong><small>{member.title} · {member.company}</small><small>{member.location}</small></div></div>
     <p>{member.thesis}</p>
@@ -240,13 +256,15 @@ function MemberSheet({ memberId, openThread }: { memberId: string; openThread: (
     <div className="sv-sheet-actions">
       <button className="sv-primary" onClick={() => openThread(net.openThreadWith(member.id))}>Message</button>
       <button className="sv-ghost" onClick={() => net.connect(member.id)}>{connected ? 'Connected' : 'Connect'}</button>
-      <button className="sv-ghost" onClick={() => net.requestIntro(member.id)}>{requested ? 'Intro requested' : 'Request intro'}</button>
+      <button className="sv-ghost" disabled={requesting || requested} onClick={() => void request()}>{requested ? 'Intro requested' : requesting ? 'Sending…' : 'Request intro'}</button>
       <button className="sv-ghost" onClick={() => net.toggleSave(member.id, member.name)}>{saved ? 'Saved' : 'Save'}</button>
     </div>
+    {requestError && <p className="sv-empty" role="alert">{requestError}</p>}
+    {requested && <p className="sv-empty" role="status">Your introduction request is saved and awaits the other member’s consent.</p>}
   </div>
 }
 
-function ThreadSheet({ threadId, openMember }: { threadId: string; openMember: (id: string) => void }) {
+function ThreadSheet({ threadId, openMember, onThreadConfirmed }: { threadId: string; openMember: (id: string) => void; onThreadConfirmed: (id: string) => void }) {
   const net = useNetwork()
   const [text, setText] = useState('')
   const [sending, setSending] = useState(false)
@@ -261,7 +279,8 @@ function ThreadSheet({ threadId, openMember }: { threadId: string; openMember: (
     setSending(true)
     setFailed(null)
     try {
-      await net.sendMessage(threadId, body, id)
+      const confirmedThreadId = await net.sendMessage(threadId, body, id)
+      if (confirmedThreadId && confirmedThreadId !== threadId) onThreadConfirmed(confirmedThreadId)
       setText(current => current.trim() === body.trim() ? '' : current)
     } catch (error) {
       setFailed({ text: body, id, reason: error instanceof Error ? error.message : 'Message was not confirmed by the server.' })
