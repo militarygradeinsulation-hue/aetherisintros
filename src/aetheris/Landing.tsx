@@ -120,6 +120,7 @@ export default function Landing() {
         <div className="ael-membership-actions">
           <JoinAction signedIn={signedIn} className="ael-btn ael-btn-gold ai-gradient-button" />
           {!signedIn && <Link to="/auth" className="ael-text-link">Already a member? Sign in <ArrowRight aria-hidden="true" size={16} /></Link>}
+          {!signedIn && <Link to="/early-access" className="ael-text-link">Founding access details <ArrowRight aria-hidden="true" size={16} /></Link>}
         </div>
       </div>
     </section>
