@@ -46,8 +46,7 @@ function EarlyAccessPage() {
 
   useEffect(() => {
     if (access.loading || !access.signedIn) return
-    // A founding place is only half of membership: the business role must be verified too.
-    if (access.verification !== 'verified') { void navigate({ to: '/verify', replace: true }); return }
+    // Approved users proceed to onboarding; a role badge can be verified later.
     if (access.status === 'approved') {
       void navigate({ to: access.onboarded ? '/app' : '/onboarding', replace: true })
     }
@@ -59,7 +58,7 @@ function EarlyAccessPage() {
       const result = await claimAccess(code)
       await refresh()
       reloadStats()
-      if (result.status === 'approved') void navigate({ to: '/verify', replace: true })
+      if (result.status === 'approved') void navigate({ to: '/onboarding', replace: true })
       else if (result.status === 'waitlisted') setNotice('The founding places are taken. You are on the waitlist and we will write when a place opens.')
       else setError('This account is not approved yet. An invitation or admin approval is needed.')
     } catch (caught) {
@@ -79,7 +78,7 @@ function EarlyAccessPage() {
 
   const remaining = Math.max(0, stats.capacity - stats.approved)
   const modeCopy = stats.mode === 'first_1000'
-    ? `${remaining.toLocaleString()} founding places remain of ${stats.capacity.toLocaleString()}.`
+    ? `${remaining.toLocaleString()} founding badges remain; membership is open to everyone with a confirmed email.`
     : stats.mode === 'invite_only'
       ? 'Access is currently by invitation only.'
       : 'Registration is closed. Approved members can still sign in.'
@@ -118,13 +117,13 @@ function EarlyAccessPage() {
         {access.status === 'suspended' && <p className="auth-error"><ShieldAlert size={13} /> This account is suspended. Reply to your welcome email and we will look at it.</p>}
         {access.status === 'denied' && <p className="auth-error"><ShieldAlert size={13} /> This account was not approved for early access.</p>}
         {(access.status === 'none' || access.status === 'pending') && <>
-          <p className="auth-notice"><Clock size={13} /> You are on the whitelist. Explore the demo now — full access opens with a member’s access code.</p>
+          <p className="auth-notice"><Clock size={13} /> {stats.mode === 'first_1000' ? 'Confirm your email to activate membership, then complete your profile.' : 'An invitation or approval is needed to join the live network.'}</p>
           <Link to="/demo" className="btn primary">Explore the demo <ArrowRight size={15} /></Link>
-          <label className="access-field">
+          {stats.mode === 'invite_only' && <label className="access-field">
             <span>MEMBER ACCESS CODE</span>
             <input value={code} onChange={e => setCode(e.target.value)} placeholder="Code from a member" />
-          </label>
-          <button className="btn ghost" type="button" onClick={() => void claim()} disabled={busy || !code.trim()}>
+          </label>}
+          <button className="btn ghost" type="button" onClick={() => void claim()} disabled={busy || (stats.mode === 'invite_only' && !code.trim())}>
             {busy ? 'One moment…' : 'Unlock full access'} <ArrowRight size={15} />
           </button>
         </>}

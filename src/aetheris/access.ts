@@ -2,7 +2,7 @@
  * Early-access gate for the Founding 1,000.
  *
  * A signed-in account is only a *member* of the live network once it holds an
- * approved `early_access_members` row. Everything network-facing in the app
+ * approved `early_access_members` row and complete their profile. Everything network-facing in the app
  * goes through `isLiveMember()` so a new page cannot accidentally admit an
  * unapproved account or read quarantined demo data.
  */
@@ -25,7 +25,7 @@ export interface AccessState {
   mode: LaunchMode
   isAdmin: boolean
   onboarded: boolean
-  /** Membership verification decides network access; the database enforces it too. */
+  /** Business-role verification is optional; only role-verified accounts show a badge. */
   verification: VerificationStatus
 }
 
@@ -37,7 +37,7 @@ export const noAccess: AccessState = {
 
 /** The single guard every network-facing surface must respect. */
 export const isLiveMember = (access: AccessState) =>
-  access.signedIn && access.status === 'approved' && access.verification === 'verified'
+  access.signedIn && access.status === 'approved' && access.onboarded
 
 export interface FoundingStats { approved: number; capacity: number; mode: LaunchMode }
 
@@ -90,9 +90,9 @@ export async function fetchAccess(): Promise<AccessState> {
   // Retry with the remembered invite (email-confirm and Google return paths skip /auth).
   if (!existing.data || existing.data.status === 'pending' || existing.data.status === 'waitlisted') {
     const code = storedInvite()
-    // Retry pending accounts after launch settings change, including accounts
-    // created before public signup was restored. The RPC enforces eligibility.
-    try { await claimAccess(code || undefined); if (code) clearInvite() } catch { /* the page surfaces the state below */ }
+    if (!existing.data || existing.data.status === 'pending' || existing.data.status === 'waitlisted' || code) {
+      try { await claimAccess(code || undefined); if (code) clearInvite() } catch { /* the page surfaces the state below */ }
+    }
   }
 
   const [membership, roles, profile, stats, verification] = await Promise.all([

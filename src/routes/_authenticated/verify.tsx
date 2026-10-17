@@ -17,10 +17,10 @@ export const Route = createFileRoute('/_authenticated/verify')({
   staticData: { sitemap: false },
   head: () => ({
     meta: [
-      { title: 'Membership verification — Ask Intros' },
+      { title: 'Business-role verification — Ask Intros' },
       {
         name: 'description',
-        content: 'A network built for people who actually run companies. Every Ask Intros member is verified before they reach the network.',
+        content: 'Request an independently verified business-role badge. Your email-confirmed Ask Intros membership remains available while your role is reviewed.',
       },
       { property: 'og:title', content: 'Membership verification — Ask Intros' },
       { property: 'og:description', content: 'Every member is verified. Every relationship starts with a real person.' },
@@ -147,7 +147,7 @@ function VerifyPortal() {
       <p className="auth-lede">Invited as someone’s assistant or operator? <Link to="/delegate">Open the delegate workspace</Link>.</p>
       <h1>A network built for people who<br /><em>actually run companies.</em></h1>
       <p className="auth-lede">
-        Every member is verified. Every relationship starts with a real person. Verification protects
+        Business-role badges are independently reviewed. Every relationship starts with member consent. Verification protects
         executive attention, prevents impersonation, and keeps the network worth the time it asks for.
       </p>
 
@@ -254,7 +254,7 @@ function VerifyPortal() {
       </div>
       <div className="portrait-caption">
         <span><BadgeCheck size={13} /> CEO VERIFIED · FOUNDER VERIFIED · OWNER VERIFIED</span>
-        <p>Every member is verified. Every relationship starts with a real person.</p>
+        <p>Member accounts are email-confirmed. Business-role badges require a separate review.</p>
       </div>
     </aside>
   </main>
