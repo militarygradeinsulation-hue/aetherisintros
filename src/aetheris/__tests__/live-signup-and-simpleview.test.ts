@@ -17,10 +17,22 @@ describe('Ask Intros signup link', () => {
     expect(auth).toContain("requestedMode === 'signup' ? 'signup' : 'signin'")
   })
 
-  it('preserves invite enforcement rather than granting membership client-side', () => {
-    expect(auth).toContain("if (!invite.trim()) throw new Error(")
+  it('allows signup in the open founding mode without treating an unverified account as live', () => {
+    expect(auth).toContain("launchMode !== 'first_1000'")
+    expect(auth).toContain("await previewInvite(invite.trim())")
+    expect(auth).toContain("Membership availability could not be checked")
+    expect(auth).toContain("Founding registration is open. No invitation is needed.")
     expect(access).toContain("supabase.rpc('claim_early_access', args)")
     expect(access).toContain("access.status === 'approved' && access.verification === 'verified'")
+  })
+
+  it('keeps both appearance modes readable on mobile without recoloring private status badges', () => {
+    const css = source('../site-readability.css')
+    expect(css).toContain('.text-xs.font-semibold.truncate')
+    expect(css).toContain('color:var(--msg-ink)!important')
+    expect(css).toContain('overflow-wrap:anywhere')
+    expect(css).toContain('max-height:calc(100dvh - 32px)')
+    expect(css).toContain('font-size:max(16px,1em)')
   })
 })
 
