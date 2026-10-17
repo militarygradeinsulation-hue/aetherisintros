@@ -151,7 +151,7 @@ function VerifyPortal() {
         verification is a separate trust badge that helps prevent impersonation.
       </p>
 
-      {access.status === 'approved' && <Link to={access.onboarded ? '/app' : '/onboarding'} className="btn ghost">Continue to your network <ArrowRight size={14} /></Link>}
+      {access.status === 'approved' && access.emailConfirmed && access.verification !== 'rejected' && access.verification !== 'suspended' && <Link to={access.onboarded ? '/app' : '/onboarding'} className="btn ghost">Continue to your network <ArrowRight size={14} /></Link>}
 
       <div className={`verify-status verify-${verification.status}`}>
         <span className="folio">{verification.status === 'none' ? 'NOT STARTED' : verification.status.replace(/_/g, ' ').toUpperCase()}</span>

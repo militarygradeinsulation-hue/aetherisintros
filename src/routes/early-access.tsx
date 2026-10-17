@@ -46,9 +46,9 @@ function EarlyAccessPage() {
 
   useEffect(() => {
     if (access.loading || !access.signedIn) return
-    // Network approval and onboarding are separate from optional role verification.
-    if (access.status === 'approved') {
-      void navigate({ to: access.onboarded ? '/app' : '/onboarding', replace: true })
+    if (access.status === 'approved' && access.emailConfirmed) {
+      void navigate({ to: access.verification === 'rejected' || access.verification === 'suspended'
+        ? '/verify' : access.onboarded ? '/app' : '/onboarding', replace: true })
     }
   }, [access, navigate])
 
@@ -58,7 +58,7 @@ function EarlyAccessPage() {
       const result = await claimAccess(code)
       await refresh()
       reloadStats()
-      if (result.status === 'approved') void navigate({ to: access.onboarded ? '/app' : '/onboarding', replace: true })
+      if (result.status === 'approved') setNotice('Membership confirmed. Opening your workspace…')
       else if (result.status === 'waitlisted') setNotice('The founding places are taken. You are on the waitlist and we will write when a place opens.')
       else setError('This account is not approved yet. An invitation or admin approval is needed.')
     } catch (caught) {
@@ -104,6 +104,7 @@ function EarlyAccessPage() {
 
       {access.loading && <p className="auth-notice">Checking your place…</p>}
 
+      {!access.loading && access.signedIn && access.status === 'approved' && !access.emailConfirmed && <p className="auth-notice" role="status">Confirm your email address before entering the network.</p>}
       {!access.loading && !access.signedIn && <>
         <p className="auth-lede">Explore the complete showcase without an account. Create one only when you are ready to build your real professional network.</p>
         <div className="access-entry-actions">

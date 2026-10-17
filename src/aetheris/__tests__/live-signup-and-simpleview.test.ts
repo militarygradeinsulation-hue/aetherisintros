@@ -23,7 +23,7 @@ describe('Ask Intros signup link', () => {
     expect(auth).not.toContain("if (!invite.trim()) throw new Error(")
     expect(auth).toContain("Membership RPCs enforce launch mode")
     expect(access).toContain("supabase.rpc('claim_early_access', args)")
-    expect(access).toContain("access.status === 'approved' && access.onboarded")
+    expect(access).toContain("access.emailConfirmed && access.status === 'approved' && access.onboarded")
     expect(access).not.toContain("access.verification === 'verified'")
   })
 })
@@ -66,10 +66,10 @@ describe('Open-member activation without unearned role verification', () => {
   const early = source('../../routes/early-access.tsx')
   const bridge = source('../../intros-ui/liveMembers.tsx')
   it('routes approved members to onboarding then their real network', () => {
-    expect(gate).toContain("access.status === 'approved' && access.onboarded")
+    expect(gate).toContain("isLiveMember(access)")
     expect(gate).not.toContain("access.verification === 'verified'")
     expect(onboarding).not.toContain("access.verification !== 'verified'")
-    expect(early).toContain("access.onboarded ? '/app' : '/onboarding'")
+    expect(early).toContain("access.emailConfirmed")
   })
   it('never claims that every approved profile has a verified business role', () => {
     expect(bridge).toContain("verified: businessRoleVerified")
