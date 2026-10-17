@@ -17,7 +17,7 @@ function readAppearance(): AppearanceMode {
     const previous = window.localStorage.getItem('aetheris.home.theme');
     if (previous === 'light' || previous === 'dark') return previous;
   } catch { /* Browser may block storage. */ }
-  return 'light';
+  return 'dark';
 }
 
 function applyAppearance(theme: AppearanceMode) {
@@ -29,15 +29,15 @@ function applyAppearance(theme: AppearanceMode) {
 }
 
 export function AppearanceProvider({ children }: { children: ReactNode }) {
-  // Messages-derived light appearance is the default; restore explicit saved choices.
-  const [theme, setThemeState] = useState<AppearanceMode>('light');
+  // Dark is the default for new visitors; explicit saved choices still win.
+  const [theme, setThemeState] = useState<AppearanceMode>('dark');
   useEffect(() => {
     const restored = readAppearance();
     setThemeState(restored);
     applyAppearance(restored);
     const onStorage = (event: StorageEvent) => {
       if (event.key !== STORAGE_KEY) return;
-      const next = event.newValue === 'light' ? 'light' : 'dark';
+      const next = readAppearance();
       setThemeState(next);
       applyAppearance(next);
     };

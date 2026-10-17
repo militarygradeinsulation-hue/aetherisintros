@@ -154,6 +154,8 @@ function RootShell({ children }: { children: ReactNode }) {
   return (
     <html lang="en">
       <head>
+        {/* Apply saved appearance before CSS paints to avoid a light-mode flash. */}
+        <script src="/appearance-init.js" />
         <HeadContent />
         <BrandFonts />
       </head>
