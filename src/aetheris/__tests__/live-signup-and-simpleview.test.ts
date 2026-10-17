@@ -8,6 +8,9 @@ const access = source('../access.ts')
 const store = source('../store.tsx')
 const simple = source('../pages/SimpleViewPage.tsx')
 const early = source('../../routes/early-access.tsx')
+const messages = source('../../intros-ui/views/LiveMessagesView.tsx')
+const app = source('../App.tsx')
+const css = source('../site-readability.css')
 
 describe('Ask Intros signup link', () => {
   it('takes new people straight to the signup form, not sign-in', () => {
@@ -42,5 +45,24 @@ describe('Simple View verified introduction requests', () => {
     expect(simple).toContain('const confirmed = await net.requestIntro(member.id)')
     expect(simple).toContain("if (!confirmed) setRequestError(")
     expect(simple).toContain('disabled={requesting || requested}')
+  })
+})
+
+describe('Live member messaging and relationship history', () => {
+  it('promotes the first delivery to its persisted thread across full and live views', () => {
+    expect(messages).toContain('if (confirmedThreadId && confirmedThreadId !== threadId) setActiveId(confirmedThreadId)')
+    expect(app).toContain('if (savedThreadId && savedThreadId !== threadId) setActiveId(savedThreadId)')
+  })
+
+  it('never calls an unrecorded exchange old or dormant', () => {
+    expect(app).toContain('p.lastInteractionDays != null && p.lastInteractionDays < 9000')
+    expect(app).not.toContain('${(person.lastInteractionDays ?? 0)} days ago')
+  })
+
+  it('uses light/dark message labels and contains long tiles and mobile dialogs', () => {
+    expect(css).toContain('color:var(--msg-ink)!important')
+    expect(css).toContain('overflow-wrap:anywhere')
+    expect(css).toContain('max-height:calc(100dvh - 32px)')
+    expect(css).toContain('font-size:max(16px,1em)')
   })
 })
