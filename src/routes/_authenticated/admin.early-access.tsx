@@ -105,7 +105,7 @@ function AdminRoute() {
         async () => await supabase.from('launch_settings')
           .update({ mode, capacity, updated_by: access.userId, updated_at: new Date().toISOString() })
           .eq('id', 1).select('mode, capacity').maybeSingle(),
-        row => row.mode === mode && row.capacity === capacity,
+        row => row !== null && row.mode === mode && row.capacity === capacity,
         'Launch settings',
       )
       return 'Launch settings saved and confirmed.'
@@ -122,7 +122,7 @@ function AdminRoute() {
         async () => await supabase.from('whitelist_entries')
           .insert({ email: normalized, added_by: access.userId })
           .select('email').maybeSingle(),
-        row => row.email === normalized,
+        row => row !== null && row.email === normalized,
         'Whitelisting',
       )
       setEmail('')
@@ -138,7 +138,7 @@ function AdminRoute() {
         async () => await supabase.from('invitations')
           .insert({ code: value, created_by: access.userId, max_uses: 1 })
           .select('code').maybeSingle(),
-        row => row.code === value,
+        row => row !== null && row.code === value,
         'Invitation creation',
       )
       setCode('')
@@ -152,7 +152,7 @@ function AdminRoute() {
         async () => await supabase.from('early_access_members')
           .update({ status, updated_at: new Date().toISOString() })
           .eq('user_id', userId).select('user_id, status').maybeSingle(),
-        row => row.user_id === userId && row.status === status,
+        row => row !== null && row.user_id === userId && row.status === status,
         'Member status',
       )
       return 'Member status saved and confirmed.'
