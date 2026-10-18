@@ -66,6 +66,12 @@ export async function joinWaitlist(email: string, name = '') {
 
 /** Atomically claim (or re-check) this account's place in the launch. */
 export async function claimAccess(inviteCode?: string): Promise<{ status: AccessStatus; foundingNumber: number | null }> {
+  // Guard every caller, including the manual Founding Member form: an unconfirmed
+  // account must not consume a founding slot even if a UI gate is bypassed.
+  const { data: auth, error: authError } = await supabase.auth.getUser()
+  if (authError) throw authError
+  if (!auth.user) throw new Error('Sign in before requesting membership.')
+  if (!auth.user.email_confirmed_at) throw new Error('Confirm your email address before claiming a founding place.')
   const trimmed = inviteCode?.trim()
   const args: { p_invite_code?: string } = {}
   if (trimmed) args.p_invite_code = trimmed
