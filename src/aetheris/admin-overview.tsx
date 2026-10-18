@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useAccess } from '@/aetheris/access'
 import { parseAdminOverview, type AdminStats } from '@/aetheris/lib/admin-overview-contract'
 import { supabase } from '@/integrations/supabase/client'
@@ -20,21 +20,29 @@ export function AdminOverview() {
   const [stats, setStats] = useState<Stats | null>(null)
   const [error, setError] = useState('')
   const [busy, setBusy] = useState(false)
+  const requestSequence = useRef(0)
   const refresh = async () => {
+    const requestId = ++requestSequence.current
     setBusy(true)
     setError('')
     try {
       const { data, error: fault } = await (supabase as unknown as { rpc: (name: string) => Promise<{ data: unknown; error: { message: string } | null }> }).rpc('admin_platform_overview')
       if (fault) throw new Error(fault.message)
-      setStats(parseAdminOverview(data))
+      const validated = parseAdminOverview(data)
+      if (requestId === requestSequence.current) setStats(validated)
     } catch (cause) {
-      setError(cause instanceof Error ? cause.message : 'Could not load administrator analytics. Try again.')
-      setStats(null)
+      if (requestId === requestSequence.current) {
+        setError(cause instanceof Error ? cause.message : 'Could not load administrator analytics. Try again.')
+        setStats(null)
+      }
     } finally {
-      setBusy(false)
+      if (requestId === requestSequence.current) setBusy(false)
     }
   }
-  useEffect(() => { if (!access.loading && access.isAdmin && access.emailConfirmed) void refresh() }, [access.loading, access.isAdmin, access.emailConfirmed])
+  useEffect(() => {
+    if (!access.loading && access.isAdmin && access.emailConfirmed) void refresh()
+    return () => { requestSequence.current += 1 }
+  }, [access.loading, access.isAdmin, access.emailConfirmed])
   if (access.loading) return <main style={{ padding: 32 }}>Checking permissions…</main>
   if (!access.signedIn || !access.isAdmin || !access.emailConfirmed) return <main style={{ padding: 32 }}>Administrator access only.</main>
   return <main style={{ background: '#10151d', color: '#f5f7fb', minHeight: '100vh', padding: 'clamp(20px,4vw,56px)' }}>
