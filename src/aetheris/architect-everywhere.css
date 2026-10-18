@@ -342,6 +342,11 @@ body:has(.ix-root) .site-ambient-connections {opacity:.26;}
  color:var(--architect-ink);
  border-bottom-color:var(--architect-rule);
 }
+/* Dark header CTA: the ivory bridge rule below would put near-black text on the dark
+   architect panel, so the header CTA reads the light architect ink in dark appearance. */
+:root[data-theme="dark"] .ael.ael-compact .ael-nav-cta {
+ color:var(--architect-ink)!important;
+}
 :root[data-theme="dark"] .ael.ael-compact .ael-header :is(.ael-nav a,.ael-signin) {
  color:var(--architect-ink)!important;
 }

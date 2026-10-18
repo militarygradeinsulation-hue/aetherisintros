@@ -4,6 +4,7 @@ import originalPortrait from '@/assets/aetheris-home-portrait.jpg.asset.json'
 import { useAccess } from './access'
 import { AskIntrosLockup } from './AskIntrosLockup'
 import { AppearanceToggle } from './AppearanceToggle'
+import { StencilHeadline } from './StencilHeadline'
 import './editorial-landing.css'
 import './architectural-system.css'
 import './compact-homepage.css'
@@ -35,7 +36,7 @@ function Photo({ src, alt, className = '', eager = false }: { src: string; alt: 
 function JoinAction({ signedIn, className = '' }: { signedIn: boolean; className?: string }) {
   return signedIn
     ? <Link className={className} to="/app">Enter your network <ArrowUpRight aria-hidden="true" size={16} /></Link>
-    : <Link className={className} to="/early-access">Apply for access <ArrowUpRight aria-hidden="true" size={16} /></Link>
+    : <Link className={className} to="/auth" search={{ mode: 'signup' }}>Create your account <ArrowUpRight aria-hidden="true" size={16} /></Link>
 }
 
 export default function Landing() {
@@ -66,8 +67,19 @@ export default function Landing() {
       <div className="ael-hero-shade" aria-hidden="true" />
       <div className="ael-architecture-meta" aria-hidden="true"><span>RELATIONSHIPS / BY DESIGN</span><span>ASK INTROS — CONNECTION 001</span></div>
       <div className="ael-hero-content">
+        <div className="ael-platform-strip" aria-label="Familiar business platforms Ask Intros brings together in one experience">
+          <p className="ael-platform-statement">LinkedIn, Salesforce, Google Meet, ZoomInfo <strong>and 60+ more, all rolled into one.</strong></p>
+          <div className="ael-platform-marks" aria-label="LinkedIn, Salesforce, Google Meet, and ZoomInfo brand marks">
+            <span className="ael-platform-mark"><img src="/brands/linkedin.svg" alt="" width={26} height={26} loading="eager" decoding="async" /><span>LinkedIn</span></span>
+            <span className="ael-platform-mark"><img src="https://cdn.simpleicons.org/salesforce/00A1E0" onError={e => { e.currentTarget.onerror = null; e.currentTarget.src = "https://www.google.com/s2/favicons?domain=salesforce.com&sz=128" }} alt="" width={26} height={26} loading="eager" /><span>Salesforce</span></span>
+            <span className="ael-platform-mark"><img src="https://cdn.simpleicons.org/googlemeet/00897B" onError={e => { e.currentTarget.onerror = null; e.currentTarget.src = "https://www.google.com/s2/favicons?domain=meet.google.com&sz=128" }} alt="" width={26} height={26} loading="eager" /><span>Google Meet</span></span>
+            <span className="ael-platform-mark"><img src="https://www.google.com/s2/favicons?domain=zoominfo.com&sz=128" alt="" width={26} height={26} loading="eager" /><span>ZoomInfo</span></span>
+            <span className="ael-platform-more">+60 more</span>
+          </div>
+          <p className="ael-platform-disclaimer">Brand marks are illustrative. No affiliation or live integration is implied.</p>
+        </div>
         <p className="ael-kicker ael-kicker-light"><span className="ael-dash" /> Relationships by design</p>
-        <h1 id="ael-hero-title">The right room <em>changes everything.</em></h1>
+        <h1 id="ael-hero-title" className="stencil-display"><span className="sr-only">The right room changes everything.</span><StencilHeadline lines={['THE RIGHT ROOM', 'CHANGES', 'EVERYTHING']} className="stencil-headline--hero" /></h1>
         <p className="ael-hero-lede">The people who matter. A reason to meet. A place to make something happen.</p>
         <div className="ael-hero-actions">
           <JoinAction signedIn={signedIn} className="ael-btn ael-btn-gold ai-gradient-button" />
@@ -85,7 +97,7 @@ export default function Landing() {
       <div className="ael-compact-story-main">
         <div className="ael-compact-story-copy">
           <div className="ael-editorial-meta"><span>THE PHILOSOPHY</span><span>001 — RELATIONSHIPS WITH PURPOSE</span></div>
-          <h2 id="ael-experience-title">Not more contacts. <em>Better connections.</em></h2>
+          <h2 id="ael-experience-title" className="stencil-display"><span className="sr-only">Not more contacts. Better connections.</span><StencilHeadline lines={['NOT MORE CONTACTS', 'BETTER CONNECTIONS']} /></h2>
           <p>Most networks stop at the introduction. Ask Intros gives each connection a clear purpose, mutual consent and a path to meaningful business.</p>
           <Link className="ael-underlink" to="/founder-story">Why we built it <ArrowUpRight aria-hidden="true" size={16} /></Link>
         </div>
@@ -97,7 +109,7 @@ export default function Landing() {
       <div className="ael-compact-method" id="approach" aria-labelledby="ael-approach-title">
         <div className="ael-compact-method-heading">
           <span className="ael-fine-label">HOW IT WORKS / THREE MOVES</span>
-          <h3 id="ael-approach-title">From introduction <em>to impact.</em></h3>
+          <h3 id="ael-approach-title" className="stencil-display"><span className="sr-only">From introduction to impact.</span><StencilHeadline lines={['FROM INTRODUCTION', 'TO IMPACT']} /></h3>
         </div>
         <ol className="ael-compact-steps">
           <li><span>01</span><div><strong>Show your intent</strong><p>What you need, offer or want to build.</p></div></li>
@@ -113,18 +125,19 @@ export default function Landing() {
       <div className="ael-compact-membership-content">
         <div>
           <span className="ael-fine-label">MEMBERSHIP / ASK INTROS</span>
-          <h2 id="ael-membership-title">Your next room is <em>waiting.</em></h2>
+          <h2 id="ael-membership-title" className="stencil-display"><span className="sr-only">Your next room is waiting.</span><StencilHeadline lines={['YOUR NEXT ROOM', 'IS WAITING']} /></h2>
           <p>Bring a purpose. Meet the right people. Make the connection count.</p>
         </div>
         <div className="ael-membership-actions">
           <JoinAction signedIn={signedIn} className="ael-btn ael-btn-gold ai-gradient-button" />
           {!signedIn && <Link to="/auth" className="ael-text-link">Already a member? Sign in <ArrowRight aria-hidden="true" size={16} /></Link>}
+          {!signedIn && <Link to="/early-access" className="ael-text-link">Founding access details <ArrowRight aria-hidden="true" size={16} /></Link>}
         </div>
       </div>
     </section>
 
     <footer className="ael-compact-footer">
-      <Link to="/" className="ael-compact-footer-brand" aria-label="Ask Intros home">ASK INTROS</Link>
+      <Link to="/" className="ael-compact-footer-brand" aria-label="Ask Intros home"><span className="stencil-footer-wordmark" style={{ color: "var(--st-ink)", backgroundColor: "var(--st-bg)" }}>ASK INTROS</span></Link>
       <span>WHY ME · WHY THEM · WHY NOW</span>
       <small>Editorial imagery is illustrative. Pictured subjects are not Ask Intros members or endorsers.</small>
     </footer>

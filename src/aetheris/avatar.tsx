@@ -4,7 +4,11 @@ import { supabase } from '@/integrations/supabase/client'
 const resolvedUrls = new Map<string, string>()
 const pendingUrls = new Map<string, Promise<string | null>>()
 
-const isDirectUrl = (source: string) => /^(https?:|data:|blob:)/i.test(source)
+// Bundled Vite assets and Lovable image assets are site-relative URLs, not
+// objects in the private Supabase `avatars` bucket. Treating "/assets/..." as
+// a storage key makes profile portraits silently disappear behind initials.
+export const isDirectAvatarUrl = (source: string) => /^(https?:|data:|blob:|\/(?!\/)|\.\.?\/|assets\/|__l5e\/)/i.test(source)
+const isDirectUrl = isDirectAvatarUrl
 
 async function resolveAvatarUrl(source: string): Promise<string | null> {
   if (isDirectUrl(source)) return source
@@ -18,9 +22,8 @@ async function resolveAvatarUrl(source: string): Promise<string | null> {
     if (error || !data) return null
     const url = URL.createObjectURL(data)
     resolvedUrls.set(source, url)
-    pendingUrls.delete(source)
     return url
-  })()
+  })().finally(() => pendingUrls.delete(source))
   pendingUrls.set(source, work)
   return work
 }
@@ -50,5 +53,6 @@ export function AvatarImage({ source, alt = '', className = '', width, height, l
   }, [source])
 
   if (!url) return null
-  return <img src={url} alt={alt} className={className} width={width} height={height} loading={loading} style={style} />
+  return <img src={url} alt={alt} className={className} width={width} height={height} loading={loading} style={style}
+    onError={() => { if (source) resolvedUrls.delete(source); setUrl(null) }} />
 }

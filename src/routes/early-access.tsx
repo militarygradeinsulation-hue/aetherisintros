@@ -46,9 +46,8 @@ function EarlyAccessPage() {
 
   useEffect(() => {
     if (access.loading || !access.signedIn) return
-    // A founding place is only half of membership: the business role must be verified too.
-    if (access.verification !== 'verified') { void navigate({ to: '/verify', replace: true }); return }
-    if (access.status === 'approved') {
+    // Network approval and onboarding are separate from optional role verification.
+    if (access.status === 'approved' && access.emailConfirmed && access.verification !== 'rejected' && access.verification !== 'suspended') {
       void navigate({ to: access.onboarded ? '/app' : '/onboarding', replace: true })
     }
   }, [access, navigate])
@@ -59,7 +58,7 @@ function EarlyAccessPage() {
       const result = await claimAccess(code)
       await refresh()
       reloadStats()
-      if (result.status === 'approved') void navigate({ to: '/verify', replace: true })
+      if (result.status === 'approved') setNotice('Your membership is approved. Confirm your email if prompted; your account will continue when verification finishes.')
       else if (result.status === 'waitlisted') setNotice('The founding places are taken. You are on the waitlist and we will write when a place opens.')
       else setError('This account is not approved yet. An invitation or admin approval is needed.')
     } catch (caught) {
@@ -104,27 +103,35 @@ function EarlyAccessPage() {
       </div>
 
       {access.loading && <p className="auth-notice">Checking your place…</p>}
+      {access.error && <div className="auth-error" role="alert">
+        <p>{access.error}</p>
+        <button className="btn secondary" type="button" onClick={() => { void refresh() }}>Retry membership check</button>
+      </div>}
 
-      {!access.loading && !access.signedIn && <>
+      {!access.loading && !access.error && access.signedIn && access.status === 'approved' && !access.emailConfirmed && (
+        <p className="auth-notice" role="status">Your account is approved. Confirm your email address using the link in your inbox before entering the network.</p>
+      )}
+
+      {!access.loading && !access.error && !access.signedIn && <>
         <p className="auth-lede">Explore the complete showcase without an account. Create one only when you are ready to build your real professional network.</p>
         <div className="access-entry-actions">
           <Link to="/demo" className="btn primary">Demo the system <ArrowRight size={15} /></Link>
-          <Link to="/auth" search={{ next: '/early-access' }} className="btn access-account">Create your account</Link>
+          <Link to="/auth" search={{ next: '/early-access', mode: 'signup' }} className="btn access-account">Create your account</Link>
         </div>
       </>}
 
-      {!access.loading && access.signedIn && access.status !== 'approved' && <>
+      {!access.loading && !access.error && access.signedIn && access.status !== 'approved' && <>
         {access.status === 'waitlisted' && <p className="auth-notice"><Clock size={13} /> You are on the waitlist. Nothing more to do — we will write when a place opens.</p>}
         {access.status === 'suspended' && <p className="auth-error"><ShieldAlert size={13} /> This account is suspended. Reply to your welcome email and we will look at it.</p>}
         {access.status === 'denied' && <p className="auth-error"><ShieldAlert size={13} /> This account was not approved for early access.</p>}
         {(access.status === 'none' || access.status === 'pending') && <>
-          <p className="auth-notice"><Clock size={13} /> You are on the whitelist. Explore the demo now — full access opens with a member’s access code.</p>
+          <p className="auth-notice"><Clock size={13} /> {stats.mode === 'first_1000' ? 'A founding place may be available. Claim it to build your network.' : 'Explore the demo while you wait for an invitation.'}</p>
           <Link to="/demo" className="btn primary">Explore the demo <ArrowRight size={15} /></Link>
           <label className="access-field">
             <span>MEMBER ACCESS CODE</span>
             <input value={code} onChange={e => setCode(e.target.value)} placeholder="Code from a member" />
           </label>
-          <button className="btn ghost" type="button" onClick={() => void claim()} disabled={busy || !code.trim()}>
+          <button className="btn ghost" type="button" onClick={() => void claim()} disabled={busy || (!code.trim() && stats.mode !== 'first_1000')}>
             {busy ? 'One moment…' : 'Unlock full access'} <ArrowRight size={15} />
           </button>
         </>}
@@ -135,7 +142,7 @@ function EarlyAccessPage() {
         </button>
       </>}
 
-      {!access.loading && !access.signedIn && stats.mode !== 'first_1000' && <div className="access-waitlist">
+      {!access.loading && !access.error && !access.signedIn && stats.mode !== 'first_1000' && <div className="access-waitlist">
         <label className="access-field">
           <span>JOIN THE WAITLIST</span>
           <input type="email" value={waitEmail} onChange={e => setWaitEmail(e.target.value)} placeholder="you@company.com" />
@@ -149,7 +156,9 @@ function EarlyAccessPage() {
         <span><b>03</b> Your memory, controlled</span>
       </div>
       <span className="auth-foot"><LockKeyhole size={12} /> {access.foundingNumber ? foundingLabel(access.foundingNumber, stats.capacity) : 'Nothing is shared without your explicit opt-in.'}</span>
-      {access.status === 'approved' && <Link to="/app" className="auth-switch">Enter your network.</Link>}
+      {access.status === 'approved' && access.emailConfirmed && access.verification !== 'rejected' && access.verification !== 'suspended' && (
+        <Link to={access.onboarded ? '/app' : '/onboarding'} className="auth-switch">{access.onboarded ? 'Enter your network.' : 'Complete your profile.'}</Link>
+      )}
     </section>
     <aside className="auth-visual auth-visual-type" aria-label="Ask Intros founding network principles">
       <span className="auth-visual-mark" aria-hidden="true">+</span>

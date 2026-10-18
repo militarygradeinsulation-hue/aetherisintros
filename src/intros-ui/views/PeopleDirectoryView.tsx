@@ -18,7 +18,7 @@ import {
 } from 'lucide-react';
 import type { NetworkMember, RelationshipTier } from '../networkData';
 import { ExecutivePortrait } from '../components/shared/ExecutivePortrait';
-import { ConstellationGraphic } from '../components/shared/ConstellationGraphic';
+import Map from '@/components/ui/map';
 import { FloatingConnectionField } from '../components/shared/FloatingConnectionField';
 import type { ActivePage } from '../components/layout/TopNavigation';
 
@@ -135,10 +135,10 @@ export const PeopleDirectoryView: React.FC<PeopleDirectoryViewProps> = ({
   return (
     <div className="w-full max-w-7xl mx-auto px-4 md:px-8 py-6 space-y-8 animate-fadeIn">
       {/* Top Editorial Hero Banner (Matching Image 5) */}
-      <section className="relative overflow-hidden rounded-2xl border border-white/10 bg-gradient-to-br from-[#0C1017] via-[#090C10] to-[#07090C] p-6 lg:p-8">
+      <section className="bridge-discover-hero relative overflow-hidden rounded-2xl border border-white/25 bg-[#080808] p-6 lg:p-8">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
           {/* Hero Left: Large Editorial Headline */}
-          <div className="lg:col-span-7 space-y-4">
+          <div className="lg:col-span-6 space-y-4">
             <div className="text-[10px] md:text-xs font-mono uppercase tracking-[0.25em] text-[#9CA3AF] font-semibold flex items-center gap-2">
               <span className="w-2 h-2 rounded-full bg-[#F5B027]" />
               People Search
@@ -155,15 +155,17 @@ export const PeopleDirectoryView: React.FC<PeopleDirectoryViewProps> = ({
           </div>
 
           {/* Hero Right: "A Global Network of Possibility" World Map & Stats */}
-          <div className="lg:col-span-5 space-y-3">
+          <div className="lg:col-span-6 min-w-0 space-y-3">
             <div className="flex items-center justify-between text-[10px] font-mono tracking-widest uppercase text-[#9CA3AF] font-semibold">
               <span>A Global Network of Possibility</span>
             </div>
 
-            <ConstellationGraphic
-              variant="world-map"
-              onSelectNode={(cityName) => setSelectedCity(cityName)}
-            />
+            <div className="bridge-discover-map relative h-[230px] w-full overflow-hidden border border-white/40 bg-black sm:h-[260px] lg:h-[270px]">
+              <Map />
+              <span className="pointer-events-none absolute bottom-2 left-3 bg-black/90 px-2 py-1 font-mono text-[9px] tracking-wide text-white">
+                Illustrative network map · not live member locations
+              </span>
+            </div>
 
             <div className="grid grid-cols-4 gap-2 pt-2 border-t border-white/10 text-center font-mono">
               <div>
@@ -277,8 +279,9 @@ export const PeopleDirectoryView: React.FC<PeopleDirectoryViewProps> = ({
                 ].map((tierItem) => (
                   <button
                     key={tierItem.id}
+                    aria-pressed={selectedTier === tierItem.id}
                     onClick={() => setSelectedTier(tierItem.id as any)}
-                    className={`flex items-center justify-between px-2.5 py-1.5 rounded-lg text-xs font-mono transition-all cursor-pointer border ${
+                    className={`ix-option-tile ix-relationship-tier-option flex items-center justify-between px-2.5 py-1.5 rounded-lg text-xs font-mono transition-all cursor-pointer border ${
                       selectedTier === tierItem.id
                         ? 'bg-[#F5B027] text-white border-[#F5B027] font-semibold shadow-sm shadow-[#F5B027]/30'
                         : 'bg-[#131722] hover:bg-[#1A202C] text-[#CBD5E1] border-white/5'
@@ -286,10 +289,10 @@ export const PeopleDirectoryView: React.FC<PeopleDirectoryViewProps> = ({
                   >
                     <span className="flex items-center gap-2">
                       <span className={`w-2 h-2 rounded-full ${tierItem.dot}`} />
-                      <span>{tierItem.label}</span>
+                      <span className="ix-relationship-tier-label">{tierItem.label}</span>
                     </span>
                     <span
-                      className={`text-[10px] px-1.5 py-0.2 rounded ${
+                      className={`ix-relationship-tier-count text-[10px] px-1.5 py-0.2 rounded ${
                         selectedTier === tierItem.id
                           ? 'bg-white/20 text-white'
                           : 'bg-white/5 text-[#9CA3AF]'
@@ -380,7 +383,7 @@ export const PeopleDirectoryView: React.FC<PeopleDirectoryViewProps> = ({
 
             <button
               onClick={handleClearFilters}
-              className="w-full py-2 text-xs font-semibold text-white bg-[#F5B027] hover:bg-[#C78522] rounded-lg transition-colors cursor-pointer"
+              className="bridge-primary-action w-full py-2 px-3 text-xs font-semibold transition-colors cursor-pointer"
             >
               Reset Filters
             </button>
@@ -474,7 +477,8 @@ export const PeopleDirectoryView: React.FC<PeopleDirectoryViewProps> = ({
               <button
                 key={t.id}
                 onClick={() => setSelectedTier(t.id as any)}
-                className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-mono transition-all cursor-pointer shrink-0 border ${
+                aria-pressed={selectedTier === t.id}
+                className={`ix-relationship-tier-quick-option flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-mono transition-all cursor-pointer shrink-0 border ${
                   selectedTier === t.id
                     ? 'bg-[#F5B027] text-white border-[#F5B027] shadow-sm font-semibold'
                     : 'bg-[#0E121A] text-[#9CA3AF] hover:text-white border-white/10 hover:border-white/25'
@@ -561,7 +565,7 @@ export const PeopleDirectoryView: React.FC<PeopleDirectoryViewProps> = ({
                     <div className="flex items-center gap-2 self-end sm:self-auto shrink-0">
                       <button
                         onClick={() => onRequestIntro(member)}
-                        className="px-3 py-1.5 text-xs font-semibold text-white bg-[#F5B027] hover:bg-[#C78522] rounded-lg transition-colors cursor-pointer"
+                        className="bridge-primary-action px-3 py-2 text-xs font-semibold transition-colors cursor-pointer"
                       >
                         Request Intro
                       </button>
@@ -667,7 +671,7 @@ export const PeopleDirectoryView: React.FC<PeopleDirectoryViewProps> = ({
                       <div className="flex items-center gap-2">
                         <button
                           onClick={() => onRequestIntro(member)}
-                          className="flex-1 py-1.5 text-xs font-semibold text-white bg-[#F5B027] hover:bg-[#C78522] rounded-lg transition-colors cursor-pointer text-center"
+                          className="bridge-primary-action flex-1 min-w-[124px] py-2 px-3 text-xs font-semibold transition-colors cursor-pointer text-center"
                         >
                           Request Intro
                         </button>

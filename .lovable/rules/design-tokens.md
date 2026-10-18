@@ -62,8 +62,6 @@ Apply with any color utility: `bg-<name>`, `text-<name>`, `border-<name>`, `ring
 | `ivory` | `--ivory` |
 | `paper` | `--paper` |
 | `ink` | `--ink` |
-| `liquid-rail` | `--liquid-rail` |
-| `liquid-knob` | `--liquid-knob` |
 | `ai-border-angle` | `--ai-border-angle` |
 | `ai-button-surface` | `--ai-button-surface` |
 | `ai-button-edge` | `--ai-button-edge` |

@@ -1,0 +1,221 @@
+/* Feed-first home: focused stream, two draggable tool rails, persistent per-user display preferences. */
+.ix-root .home-feed-layout {
+  display:grid;grid-template-columns:minmax(0,1fr);gap:16px;
+  min-width:0;align-items:start;
+}
+.ix-root .home-feed-center {min-width:0;}
+.ix-root .home-feed-rail {min-width:0;display:none;}
+/* Both desktop side rails use full-page-height widgets, at least double the
+   previous 472px height. The content area remains independently scrollable. */
+.ix-root .home-feed-rail .home-feed-side-grid [data-slot="widget-grid"] {
+  /* rowHeight comes from the viewport and also drives pointer/keyboard math. */
+  min-width:0;
+}
+.ix-root .home-feed-rail .home-widget-scroll {
+  min-height:0!important;
+  flex:1 1 auto;
+  overflow-y:auto;
+  overscroll-behavior-y:contain;
+  scrollbar-width:thin;
+  scrollbar-color:#b5541f #111;
+}
+.ix-root .home-feed-rail .home-feed-widget {
+  height:100%;
+  min-height:0;
+}
+
+.ix-root .home-feed-controls {
+  display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:space-between;
+  padding:0 0 13px;border-bottom:1px solid rgba(255,255,255,.35);
+}
+.ix-root .home-feed-controls-label,
+.ix-root .home-feed-rail-label {
+  color:#d3d3d3;
+  font:600 10px/1.4 "JetBrains Mono",monospace;
+  text-transform:uppercase;letter-spacing:.12em;
+}
+.ix-root .home-feed-controls-actions {display:flex;align-items:center;gap:7px;flex-wrap:wrap;}
+.ix-root .home-feed-controls-actions button {
+  display:inline-flex;align-items:center;justify-content:center;gap:7px;
+  min-height:34px;padding:7px 11px;border:1px solid rgba(255,255,255,.45);
+  background:#101010!important;color:#fff!important;-webkit-text-fill-color:#fff!important;
+  font:600 11px/1.3 "JetBrains Mono",monospace;cursor:pointer;border-radius:2px;
+}
+.ix-root .home-feed-controls-actions button:hover,
+.ix-root .home-feed-controls-actions button[aria-pressed=true] {background:#1a1a1a!important;border-color:#e99463;}
+.ix-root .home-feed-visible-count {background:#b5541f;color:white;padding:1px 5px;border-radius:2px;}
+.ix-root .home-feed-center .home-social-heading {padding:17px 0 16px;border-top:0;gap:12px;}
+.ix-root .home-feed-center .home-social-heading h2 {font-size:clamp(20px,2vw,30px);line-height:1.18;}
+.ix-root .home-feed-center .home-social-heading p {line-height:1.5;}
+.ix-root .home-feed-center .home-social-board > div {max-width:none;}
+.ix-root .home-feed-center .home-social-board main {min-width:0;}
+.ix-root .home-feed-rail-label {padding:9px 0 14px;border-bottom:1px solid rgba(255,255,255,.32);margin-bottom:12px;}
+.ix-root .home-feed-side-grid [data-slot=widget] {min-width:0;}
+.ix-root .home-feed-side-grid .board-tile {
+  border:1px solid rgba(255,255,255,.38);background:#080808!important;
+  color:#fff!important;box-shadow:none!important;
+}
+.ix-root .home-feed-widget {background:#080808;color:#fff;min-width:0;}
+.ix-root .home-feed-widget-title {
+  display:flex;align-items:center;gap:3px;min-height:35px;
+  padding:5px 6px;border-bottom:1px solid rgba(255,255,255,.28);background:#131313;
+}
+.ix-root .home-feed-widget-title strong {
+  flex:1;min-width:0;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;
+  font:650 10px/1.3 "JetBrains Mono",monospace;text-transform:uppercase;
+}
+.ix-root .home-feed-grip {flex:none;color:#999;cursor:grab;}
+.ix-root .home-feed-widget-title button {
+  min-height:26px;min-width:26px;display:grid;place-items:center;
+  border:1px solid transparent;background:transparent!important;color:#ececec!important;cursor:pointer;
+}
+.ix-root .home-feed-widget-title button:hover {border-color:#e99463;}
+.ix-root .home-feed-widget-choice {
+  display:block;padding:6px;border-bottom:1px solid rgba(255,255,255,.28);background:#101010;
+}
+.ix-root :is(.home-feed-widget-choice,.home-feed-customize) select {
+  width:100%;max-width:100%;height:32px;padding:5px 7px;
+  background:#0f0f0f!important;color:#fff!important;-webkit-text-fill-color:#fff!important;
+  border:1px solid rgba(255,255,255,.45);border-radius:2px;
+  font:600 10px "JetBrains Mono",monospace;
+  color-scheme:dark;
+}
+.ix-root :is(.home-feed-widget-choice,.home-feed-customize) option {background:#0f0f0f!important;color:#fff!important;}
+.ix-root .home-feed-widget .home-widget-scroll {overflow:auto;scrollbar-width:thin;min-height:0!important;touch-action:pan-y;}
+.ix-root .home-feed-widget .home-board-tile {
+  background:transparent!important;border:0!important;
+  color:#f5f5f5!important;
+  padding:11px;gap:7px;min-height:100%;max-height:none;height:auto;
+}
+.ix-root .home-feed-widget .home-board-tile h3 {font-size:13px;line-height:1.2;}
+.ix-root .home-feed-widget .home-board-content {font-size:11px;line-height:1.4;gap:7px;overflow:visible;}
+.ix-root .home-feed-widget .home-board-label {font-size:10px;}
+.ix-root .home-feed-widget .home-board-link {font-size:11px;padding:6px 2px;min-height:29px;}
+.ix-root .home-feed-widget .home-board-person {min-height:32px;font-size:11px;}
+.ix-root .home-feed-widget .home-board-person small {font-size:10px;}
+.ix-root .home-feed-widget .home-board-tags span {font-size:10px;padding:2px 6px;}
+.ix-root .home-feed-empty {padding:12px;color:#d0d0d0;font:11px/1.5 "JetBrains Mono",monospace;}
+.ix-root .home-feed-priorities {
+  margin-top:13px;min-width:0;padding:10px;border:1px solid rgba(255,255,255,.3);
+  background:#0c0c0c;color:#fff;
+}
+.ix-root .home-feed-priorities summary {
+  display:flex;align-items:center;justify-content:space-between;gap:8px;
+  font:650 11px/1.3 "JetBrains Mono",monospace;color:#f5f5f5;cursor:pointer;
+}
+.ix-root .home-feed-priorities summary span {color:#ccc;font-size:10px;font-weight:400;}
+.ix-root .home-feed-priorities-content {margin-top:13px;}
+.ix-root .home-feed-priorities .rc-stack {display:flex;flex-direction:column;gap:10px;min-width:0;}
+.ix-root .home-feed-priorities .rc-stack > * {max-width:100%;min-width:0;}
+.ix-root .home-feed-overview {margin-top:25px;border-top:1px solid rgba(255,255,255,.3);padding-top:14px;}
+.ix-root .home-feed-overview > summary {
+  display:flex;align-items:center;gap:12px;padding:10px 13px;cursor:pointer;
+  border:1px solid rgba(255,255,255,.35);background:#080808;color:#f5f5f5;
+  font:650 11px/1.4 "JetBrains Mono",monospace;
+}
+.ix-root .home-feed-overview > summary span {margin-left:auto;color:#cacaca;font-size:10px;font-weight:400;}
+.ix-root .home-feed-overview[open] > section {margin-top:12px;}
+@media (min-width:1100px) {
+  .ix-root .home-feed-layout {
+    grid-template-columns:minmax(198px,228px) minmax(0,1fr) minmax(198px,228px);gap:17px;
+  }
+  /* Keep both 944px+ rails in the document flow. An old 100dvh
+     overflow container clipped the enlarged cards to the viewport. */
+  .ix-root .home-feed-layout > .home-feed-rail {
+    display:block;
+    position:relative;
+    top:auto;
+    align-self:stretch;
+    max-height:none;
+    overflow:visible;
+  }
+  .ix-root .home-feed-rail-label {
+    position:relative;
+    z-index:1;
+    top:auto;
+    background:#080808;
+    padding-top:9px;
+  }
+  .ix-root .home-feed-layout--focus {grid-template-columns:minmax(0,1fr);}
+  .ix-root .home-feed-layout--no-left:not(.home-feed-layout--focus) {grid-template-columns:minmax(0,1fr) minmax(198px,228px);}
+  .ix-root .home-feed-layout--no-right:not(.home-feed-layout--focus) {grid-template-columns:minmax(198px,228px) minmax(0,1fr);}
+  .ix-root .home-feed-layout--no-left.home-feed-layout--no-right {grid-template-columns:minmax(0,1fr);}
+}
+.ix-root .home-feed-mobile-tools {margin-top:18px;border:1px solid rgba(255,255,255,.4);background:#0a0a0a;}
+.ix-root .home-feed-mobile-tools > summary {
+  display:flex;align-items:center;gap:8px;padding:13px;
+  font:650 11px/1.4 "JetBrains Mono",monospace;color:#fff;cursor:pointer;
+}
+.ix-root .home-feed-mobile-tools > summary span {margin-left:auto;color:#e99463;font-size:10px;}
+.ix-root .home-feed-mobile-tool-list {display:grid;gap:12px;padding:12px;border-top:1px solid rgba(255,255,255,.25);}
+.ix-root .home-feed-mobile-widget {
+  min-height:clamp(620px,85dvh,1100px);
+  border:1px solid rgba(255,255,255,.35);
+  background:#080808;
+}
+.ix-root .home-feed-mobile-widget .home-feed-widget {
+  height:clamp(620px,85dvh,1100px);
+  min-height:620px;
+}
+.ix-root .home-feed-mobile-widget .home-widget-scroll {
+  max-height:none;
+  min-height:0;
+  flex:1 1 auto;
+  overflow-y:auto;
+  overscroll-behavior:contain;
+}
+@media(min-width:1100px){.ix-root .home-feed-mobile-tools {display:none;}}
+/* Customizer: dark, high-contrast, scrollable in mobile safe areas. */
+.ix-root .home-feed-customize-backdrop {
+  position:fixed;inset:0;z-index:2000;padding:18px;
+  display:grid;place-items:center;background:rgba(0,0,0,.84);backdrop-filter:blur(8px);
+}
+.ix-root .home-feed-customize {
+  width:min(620px,100%);max-height:calc(100dvh - 36px);
+  overflow-y:auto;overscroll-behavior:contain;
+  padding:20px;background:#101010;color:#fff;
+  border:1px solid rgba(255,255,255,.65);
+  box-shadow:0 24px 50px rgba(0,0,0,.6);
+}
+.ix-root .home-feed-customize > header {display:flex;align-items:start;justify-content:space-between;gap:14px;}
+.ix-root .home-feed-customize header h2 {margin:5px 0 0;font-size:23px;color:#fff;}
+.ix-root .home-feed-customize > p {margin:10px 0 16px;color:#d3d3d3;font-size:12px;line-height:1.6;}
+.ix-root .home-feed-customize :is(header button,footer button) {
+  border:1px solid rgba(255,255,255,.45);background:#121212;color:#fff;
+  -webkit-text-fill-color:#fff;
+  min-height:36px;padding:6px 10px;cursor:pointer;
+  display:inline-flex;align-items:center;justify-content:center;gap:7px;
+}
+.ix-root .home-feed-customize-list {display:grid;gap:7px;}
+.ix-root .home-feed-customize-row {
+  display:grid;grid-template-columns:minmax(0,1fr) 98px minmax(112px,155px);
+  align-items:center;gap:8px;padding:9px;border:1px solid rgba(255,255,255,.26);
+}
+.ix-root .home-feed-customize-show {display:flex;align-items:center;gap:8px;min-width:0;font-size:11px;color:#fff;}
+.ix-root .home-feed-customize-show strong {overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.ix-root .home-feed-customize-show input {accent-color:#b5541f;width:17px;height:17px;flex:none;}
+.ix-root .home-feed-customize > footer {display:flex;justify-content:space-between;gap:12px;margin-top:16px;}
+.ix-root .home-feed-customize .home-feed-customize-done {background:#b5541f!important;border-color:#b5541f!important;}
+@media(max-width:640px) {
+  .ix-root .home-feed-customize-row {grid-template-columns:minmax(0,1fr) 90px;}
+  .ix-root .home-feed-customize-row > label:last-child {grid-column:1 / -1;}
+  .ix-root .home-feed-center .home-social-heading {flex-wrap:wrap;}
+  .ix-root .home-feed-center .home-social-heading > button {margin-left:0;}
+}
+@media(prefers-reduced-motion:reduce) {
+  .ix-root .home-feed-widget, .ix-root .home-feed-controls-actions button {transition:none!important;}
+}
+
+/* Global scroll instrument brand exception: this is the last stylesheet
+   linked by RootShell, so the stencil grayscale override cannot win. */
+.ask-scroll-caliper {
+  --caliper-ink:#e99463!important;
+  --caliper-accent:#f4a125!important;
+  color:#e99463!important;
+  filter:none!important;
+}
+.ask-scroll-caliper .ask-scroll-caliper-ticks {color:#e99463!important;}
+.ask-scroll-caliper .ask-scroll-caliper-jaw,
+.ask-scroll-caliper .ask-scroll-caliper-indicator {color:#f4a125!important;}
+.ask-scroll-caliper .ask-scroll-caliper-label {color:#f4a125!important;}
+.ask-scroll-caliper .ask-scroll-caliper-chip {border-color:#f4a125!important;}

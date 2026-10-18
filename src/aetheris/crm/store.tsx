@@ -15,6 +15,8 @@ import {
   type OperationalSnapshot,
 } from './repo'
 import { blankColumns, templateById, type LinkedField } from './linked'
+import type { FreeformPastePlan } from './paste'
+import { requireSavedGridRecord } from './grid-write-contract'
 import type {
   CrmCompany, CrmOpportunity, CrmPerson, CrmTask, GridColumn, GridSheet, GridWorkbook, ID, LinkedEntity,
 } from './types'
@@ -64,6 +66,7 @@ export interface OpsApi extends OperationalSnapshot {
   removeColumn: (id: ID) => Promise<void>
   addRow: (sheetId: ID, values?: Record<string, unknown>) => Promise<void>
   addRows: (sheetId: ID, rows: Array<Record<string, unknown>>) => Promise<void>
+  pasteFreeform: (sheetId: ID, plan: FreeformPastePlan) => Promise<void>
   setCell: (rowId: ID, key: string, value: unknown) => Promise<void>
   removeRow: (id: ID) => Promise<void>
   saveView: (sheetId: ID, name: string, config: Record<string, unknown>) => Promise<void>
@@ -343,12 +346,38 @@ export function OpsProvider({ children }: { children: ReactNode }) {
         await rowRepo.createMany(sheetId, rows.map((values, i) => ({ position: base + i, values })))
         await refresh()
       },
+      pasteFreeform: async (sheetId, plan) => {
+        const sheet = snap.sheets.find(s => s.id === sheetId && s.mode === 'freeform' && !s.archived)
+        if (!sheet) throw new Error('This sheet is no longer available for editing. Refresh and retry.')
+        if (plan.updates.some(row => !snap.rows.some(existing => existing.id === row.rowId && existing.sheetId === sheetId))) {
+          throw new Error('The paste references a row outside this sheet. Refresh and retry.')
+        }
+        try {
+          // Save one merged row at a time: per-cell writes against a stale snapshot
+          // would otherwise silently overwrite earlier cells in the same paste.
+          for (const update of plan.updates) {
+            await requireSavedGridRecord(rowRepo.update(update.rowId, update.values))
+          }
+          if (plan.appended.length) {
+            const base = snap.rows.filter(r => r.sheetId === sheetId).length
+            await rowRepo.createMany(sheetId, plan.appended.map((values, i) => ({
+              position: base + i, values,
+            })))
+          }
+        } catch {
+          throw new Error('Grid paste was interrupted. Some earlier rows may have saved. Review the sheet before retrying.')
+        } finally {
+          // Always reconcile the client with confirmed DB state, including partial failures.
+          await refresh()
+        }
+      },
       setCell: async (rowId, key, value) => {
         const row = snap.rows.find(r => r.id === rowId)
-        if (!row) return
+        if (!row) throw new Error('This Grid row is no longer available. Refresh and retry.')
         const next = { ...row.values, [key]: value }
+        await requireSavedGridRecord(rowRepo.update(rowId, next))
+        // Never show an optimistic value as saved when RLS or the network rejected it.
         setSnap(prev => ({ ...prev, rows: prev.rows.map(r => (r.id === rowId ? { ...r, values: next } : r)) }))
-        await rowRepo.update(rowId, next)
       },
       removeRow: async id => { await rowRepo.remove(id); await refresh() },
       saveView: async (sheetId, name, config) => { await viewRepo.create(sheetId, name, config); await refresh() },
@@ -369,7 +398,7 @@ export function OpsProvider({ children }: { children: ReactNode }) {
             p.companyName = textValue
             p.companyId = textValue ? (await ensureCompany(textValue))?.id ?? null : null
           } else return
-          await personRepo.update(entityId, p)
+          await requireSavedGridRecord(personRepo.update(entityId, p))
         } else if (entityType === 'crm_companies') {
           const c: Partial<CrmCompany> = {}
           if (key === 'name') c.name = textValue
@@ -378,7 +407,7 @@ export function OpsProvider({ children }: { children: ReactNode }) {
           else if (key === 'website') c.website = textValue
           else if (key === 'employees') c.employees = textValue
           else return
-          await companyRepo.update(entityId, c)
+          await requireSavedGridRecord(companyRepo.update(entityId, c))
         } else if (entityType === 'crm_opportunities') {
           const o: Partial<CrmOpportunity> = {}
           if (key === 'name') o.name = textValue
@@ -396,7 +425,7 @@ export function OpsProvider({ children }: { children: ReactNode }) {
           } else if (key === 'companyName') {
             o.companyId = textValue ? (await ensureCompany(textValue))?.id ?? null : null
           } else return
-          await opportunityRepo.update(entityId, o)
+          await requireSavedGridRecord(opportunityRepo.update(entityId, o))
         } else if (entityType === 'crm_tasks') {
           const t: Partial<CrmTask> = {}
           if (key === 'title') t.title = textValue
@@ -410,27 +439,34 @@ export function OpsProvider({ children }: { children: ReactNode }) {
             const opp = snap.opportunities.find(o => o.name.toLowerCase() === textValue.toLowerCase())
             t.opportunityId = opp?.id ?? null
           } else return
-          await taskRepo.update(entityId, t)
+          await requireSavedGridRecord(taskRepo.update(entityId, t))
         } else return
         await after(entityType, entityId, 'grid-edit', `${key} changed in Grid`)
       },
       createLinkedRecord: async (entityType, primary) => {
-        const name = primary.trim() || 'Untitled'
+        const name = primary.trim()
+        if (!name) throw new Error('A record must have a name or task title.')
         if (entityType === 'crm_people') {
           const created = await personRepo.create({ fullName: name, lifecycle: 'Lead', source: 'Grid' })
-          if (created) await after('crm_person', created.id, 'created', `${name} created from Grid`)
+          if (!created) throw new Error('The person was not confirmed saved.')
+          await after('crm_person', created.id, 'created', `${name} created from Grid`)
         } else if (entityType === 'crm_companies') {
           const created = await companyRepo.create({ name })
-          if (created) await after('crm_company', created.id, 'created', `${name} created from Grid`)
+          if (!created) throw new Error('The company was not confirmed saved.')
+          await after('crm_company', created.id, 'created', `${name} created from Grid`)
         } else if (entityType === 'crm_opportunities') {
           const created = await opportunityRepo.create({
             name, pipelineId: defaultPipeline?.id ?? null, stageId: firstStage?.id ?? null,
             stageName: firstStage?.name ?? '', probability: firstStage?.probability ?? 0,
           })
-          if (created) await after('crm_opportunity', created.id, 'created', `${name} created from Grid`)
+          if (!created) throw new Error('The opportunity was not confirmed saved.')
+          await after('crm_opportunity', created.id, 'created', `${name} created from Grid`)
         } else if (entityType === 'crm_tasks') {
           const created = await taskRepo.create({ title: name })
-          if (created) await after('crm_task', created.id, 'created', `${name} created from Grid`)
+          if (!created) throw new Error('The task was not confirmed saved.')
+          await after('crm_task', created.id, 'created', `${name} created from Grid`)
+        } else {
+          throw new Error('This linked sheet is read-only. You cannot create network intelligence records.')
         }
       },
     }

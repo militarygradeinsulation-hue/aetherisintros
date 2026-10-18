@@ -1,0 +1,641 @@
+/*
+ * Ask Intros / Executive Workspace UI
+ * Reference: warm ivory canvas, paper panels, graphite copy, muted blue actions,
+ * pale powder-blue selections, subtle blueprint grid and controlled hierarchy.
+ *
+ * Affects product OPTIONS, not image-backed landing photography.
+ * Theme stays binary: Light (reference) and Dark (accessible inverse).
+ * Preserve native controls, statuses, chart colors, system alerts and all behavior.
+ */
+:root {
+  --ai-ui-canvas:#111719;
+  --ai-ui-surface:#1a2223;
+  --ai-ui-raised:#222d30;
+  --ai-ui-input:#151d20;
+  --ai-ui-ink:#f3f0e9;
+  --ai-ui-muted:#bec6c6;
+  --ai-ui-border:#3e4b50;
+  --ai-ui-grid:rgba(205,216,218,.045);
+  --ai-ui-blue:#80b2d6;
+  --ai-ui-blue-hover:#a7cbe6;
+  --ai-ui-blue-ink:#10212d;
+  --ai-ui-selected:#243b4c;
+  --ai-ui-selected-ink:#e8f2fa;
+  --ai-ui-selected-border:#52728b;
+  --ai-ui-warm:#d8a879;
+  --ai-ui-shadow:0 6px 20px rgba(0,0,0,.13);
+  --ai-ui-radius:12px;
+}
+:root[data-theme="light"] {
+  --ai-ui-canvas:#F5F2EC;
+  --ai-ui-surface:#FBF9F4;
+  --ai-ui-raised:#F2EEE8;
+  --ai-ui-input:#FFFEFB;
+  --ai-ui-ink:#2E3438;
+  --ai-ui-muted:#667078;
+  --ai-ui-border:#D7D3CB;
+  --ai-ui-grid:rgba(120,120,120,.08);
+  --ai-ui-blue:#2F5F87;
+  --ai-ui-blue-hover:#244B6B;
+  --ai-ui-blue-ink:#ffffff;
+  --ai-ui-selected:#DCE8F3;
+  --ai-ui-selected-ink:#233E53;
+  --ai-ui-selected-border:#B9CBDD;
+  --ai-ui-warm:#8d6b4d;
+  --ai-ui-shadow:0 6px 18px rgba(26,33,39,.05);
+}
+/* Adapt the earlier architectural system to the actual product reference. */
+:root[data-theme="light"] {
+  --architect-canvas:var(--ai-ui-canvas);
+  --architect-panel:var(--ai-ui-surface);
+  --architect-raised:var(--ai-ui-raised);
+  --architect-input:var(--ai-ui-input);
+  --architect-ink:var(--ai-ui-ink);
+  --architect-subtle:var(--ai-ui-muted);
+  --architect-rule:var(--ai-ui-border);
+  --architect-label:#6c665d;
+  --architect-shadow:var(--ai-ui-shadow);
+  --architect-grid:linear-gradient(90deg,var(--ai-ui-grid) 1px,transparent 1px),
+                   linear-gradient(var(--ai-ui-grid) 1px,transparent 1px);
+  --popover:oklch(0.982 0.008 84);
+  --popover-foreground:oklch(0.302 0.01 243);
+  --accent:oklch(0.908 0.023 243);
+  --accent-foreground:oklch(0.30 0.046 243);
+  --input:oklch(0.84 0.009 82);
+  --ring:oklch(0.48 0.075 242);
+}
+/* In dark mode use identical surface hierarchy, with accessible contrast. */
+:root[data-theme="dark"] {
+  --architect-canvas:var(--ai-ui-canvas);
+  --architect-panel:var(--ai-ui-surface);
+  --architect-raised:var(--ai-ui-raised);
+  --architect-input:var(--ai-ui-input);
+  --architect-ink:var(--ai-ui-ink);
+  --architect-subtle:var(--ai-ui-muted);
+  --architect-rule:var(--ai-ui-border);
+  --architect-shadow:var(--ai-ui-shadow);
+  --architect-grid:linear-gradient(90deg,var(--ai-ui-grid) 1px,transparent 1px),
+                   linear-gradient(var(--ai-ui-grid) 1px,transparent 1px);
+  --popover:oklch(0.22 0.013 240);
+  --popover-foreground:oklch(0.95 0.008 84);
+  --accent:oklch(0.32 0.04 245);
+  --accent-foreground:oklch(0.97 0.01 84);
+  --ring:oklch(0.72 0.07 240);
+}
+/* Shared shell and subtle grid for all authenticated pages. */
+.ix-root {
+  --sys-bg:var(--ai-ui-canvas);
+  --sys-bg-dark:var(--ai-ui-canvas);
+  --sys-tile:var(--ai-ui-surface);
+  --sys-tile-inner:var(--ai-ui-raised);
+  --sys-panel:var(--ai-ui-surface);
+  --sys-panel-line:var(--ai-ui-border);
+  --sys-line:var(--ai-ui-border);
+  --sys-ink:var(--ai-ui-ink);
+  --sys-ink-dim:var(--ai-ui-muted);
+  --sys-accent:var(--ai-ui-blue);
+}
+.ix-root .arch-product-main {
+  background-color:var(--ai-ui-canvas);
+  color:var(--ai-ui-ink);
+  background-image:linear-gradient(90deg,var(--ai-ui-grid) 1px,transparent 1px),
+                   linear-gradient(var(--ai-ui-grid) 1px,transparent 1px);
+  background-size:86px 86px;
+}
+.ix-root :is(.ix-global-header,.ix-global-header .ix-desktop-more-menu,.ix-mobile-sheet) {
+  --sys-panel:var(--ai-ui-surface);
+  --sys-ink:var(--ai-ui-ink);
+  --sys-ink-dim:var(--ai-ui-muted);
+  --sys-line:var(--ai-ui-border);
+}
+:root[data-theme="light"] .ix-root .ix-global-header {
+  background:color-mix(in srgb,var(--ai-ui-surface) 97%,transparent)!important;
+  color:var(--ai-ui-ink);
+  border-color:var(--ai-ui-border)!important;
+}
+:root[data-theme="light"] .ix-root .ix-desktop-nav-link {
+  background:var(--ai-ui-surface);
+  color:var(--ai-ui-muted);
+  border:1px solid var(--ai-ui-border);
+}
+:root[data-theme="light"] .ix-root .ix-desktop-nav-link.is-active {
+  background:var(--ai-ui-selected);
+  border-color:var(--ai-ui-selected-border);
+  box-shadow:inset 0 -2px 0 var(--ai-ui-blue);
+  color:var(--ai-ui-selected-ink);
+  animation:none;
+}
+:root[data-theme="light"] .ix-root .ix-desktop-nav-link:not(.is-active):hover {
+  background:var(--ai-ui-selected);
+  color:var(--ai-ui-selected-ink);
+  border-color:var(--ai-ui-selected-border);
+}
+/* Paper panels, option tiles, module cards and dashboard surfaces. */
+.ix-root .arch-product-main :is(
+  .sys-tile,.home-board-tile,.home-widget,.module,.mod,.feed-card,.post-card,
+  .need-case,.match-report,.attention-panel,.intro-recommendation,.profile-settings,
+  .profile-hero,.home-matches,.home-education,.home-board-tiles,
+  .messages-layout,.rc-stack,.drawer-panel,.business-lobby-card,.panel
+) {
+  border-color:var(--ai-ui-border);
+  background-color:var(--ai-ui-surface);
+  color:var(--ai-ui-ink);
+  border-radius:var(--ai-ui-radius);
+  box-shadow:var(--ai-ui-shadow);
+}
+.ix-root .arch-product-main :is(.sys-tile,.home-board-tile,.module,.feed-card,.home-widget):hover {
+  border-color:var(--ai-ui-selected-border);
+  box-shadow:0 7px 20px rgba(30,52,67,.09);
+  transform:none;
+}
+.ix-root .arch-product-main :is(.sys-tile-inner,.home-board-tags span,.home-board-initials) {
+  background:var(--ai-ui-raised);
+  color:var(--ai-ui-ink);
+  border-color:var(--ai-ui-border);
+}
+/* Legacy Tailwind dark panels that still occur inside older option pages. */
+:root[data-theme="light"] .ix-root .arch-product-main :is(section,article,div)[class*="bg-[#0E121A]"],
+:root[data-theme="light"] .ix-root .arch-product-main :is(section,article,div)[class*="bg-[#0C1017]"],
+:root[data-theme="light"] .ix-root .arch-product-main :is(section,article,div)[class*="bg-[#131722]"],
+:root[data-theme="light"] .ix-root .arch-product-main :is(section,article,div)[class*="bg-[#151922]"],
+:root[data-theme="light"] .ix-root .arch-product-main :is(section,article,div)[class*="bg-[#0B0E13]"],
+:root[data-theme="light"] .ix-root .arch-product-main :is(section,article,div)[class*="bg-[#0E1116]"] {
+  background-color:var(--ai-ui-surface)!important;
+  border-color:var(--ai-ui-border)!important;
+  color:var(--ai-ui-ink);
+}
+:root[data-theme="light"] .ix-root .arch-product-main :is(
+ .sys-tile,.home-board-tile,.home-widget,.module,.mod,.feed-card,.post-card,
+ .need-case,.match-report,.attention-panel,.profile-settings,.profile-hero,
+ .home-matches,.home-education,
+ [class*="bg-[#0E121A]"],[class*="bg-[#0C1017]"],
+ [class*="bg-[#131722]"],[class*="bg-[#151922]"],[class*="bg-[#0B0E13]"]
+) :is([class~="text-white"],[class*="text-[#F2EEE6]"],[class*="text-[#CBD5E1]"]) {
+  color:var(--ai-ui-ink)!important;
+}
+:root[data-theme="light"] .ix-root .arch-product-main :is(
+ .sys-tile,.home-board-tile,.module,.feed-card,.home-widget,
+ [class*="bg-[#0E121A]"],[class*="bg-[#0C1017]"],
+ [class*="bg-[#131722]"],[class*="bg-[#151922]"]
+) :is([class*="text-[#9CA3AF]"],[class*="text-[#6B7280]"]) {
+  color:var(--ai-ui-muted)!important;
+}
+/* Do not recolor intentionally dark photo covers or red/green status pills. */
+:root[data-theme="light"] .ix-root .arch-product-main :is(.photo-overlay,.on-photo,.portrait-caption,[data-on-photo]) {
+  color:inherit;
+}
+/* Options, tabs, chips and list selections consistently show powder-blue state.
+   Never target destructive/warning/status button classes here. */
+.ix-root .arch-product-main :is(
+  [role="tab"][aria-selected="true"],[role="tab"][data-state="active"],
+  [role="option"][aria-selected="true"],[role="option"][data-state="checked"],
+  [role="menuitemcheckbox"][data-state="checked"],
+  .ix-tools button.on,.state-filters button[aria-pressed="true"],
+  .filter-chip[aria-pressed="true"],.option-tile[aria-selected="true"],
+  .ix-option-tile.is-selected
+) {
+  color:var(--ai-ui-selected-ink)!important;
+  background:var(--ai-ui-selected)!important;
+  border-color:var(--ai-ui-selected-border)!important;
+}
+.ix-root .arch-product-main :is(
+  [role="tab"],.ix-tools button,.state-filters button,
+  .filter-chip,.option-tile,.ix-option-tile
+):not([aria-disabled="true"]):not(:disabled):hover {
+  border-color:var(--ai-ui-selected-border);
+  background-color:var(--ai-ui-selected);
+  color:var(--ai-ui-selected-ink);
+}
+.ix-root .arch-product-main :is(
+  .ix-tools,.providers-tabs,[role="tablist"],.state-filters,
+  .filter-list,.filter-panel,.filter-sidebar
+) {
+  border-color:var(--ai-ui-border);
+}
+.ix-root .arch-product-main .ix-tools {
+  background:var(--ai-ui-surface);
+  border-bottom-color:var(--ai-ui-border);
+}
+.ix-root .arch-product-main .ix-tools button {
+  background:transparent;
+  color:var(--ai-ui-muted);
+  border:1px solid transparent;
+  border-radius:8px;
+  font-family:Inter,system-ui,sans-serif;
+  font-weight:550;
+  letter-spacing:.005em;
+}
+.ix-root .arch-product-main .ix-tools button.on {
+  color:var(--ai-ui-selected-ink)!important;
+  background:var(--ai-ui-selected)!important;
+  border-color:var(--ai-ui-selected-border)!important;
+}
+/* Apply the same hierarchy inside classic CRM, Library, Deal Rooms and other tools. */
+:root[data-theme="light"] .ix-root .ix-classic :is(.app-shell,.social-shell,.workspace,.content) {
+  --night:var(--ai-ui-canvas);
+  --raised:var(--ai-ui-surface);
+  --graphite:var(--ai-ui-raised);
+  --paper:var(--ai-ui-surface);
+  --ivory:var(--ai-ui-canvas);
+  --soft:var(--ai-ui-ink);
+  --ink:var(--ai-ui-ink);
+  --muted:var(--ai-ui-muted);
+  --line-dark:var(--ai-ui-border);
+  --line-light:var(--ai-ui-border);
+  --cobalt:var(--ai-ui-blue);
+  --cobalt-bright:var(--ai-ui-blue-hover);
+  color:var(--ai-ui-ink);
+  background-color:var(--ai-ui-canvas);
+}
+:root[data-theme="light"] .ix-root .ix-classic :is(
+  .workspace-grid,.content,.context-rail,.topbar,.more-panel,.intel-drawer,
+  .nav-rail,.topbar-dropmenu,.global-search-panel,.modal
+) {
+  background:var(--ai-ui-surface)!important;
+  color:var(--ai-ui-ink)!important;
+  border-color:var(--ai-ui-border)!important;
+}
+:root[data-theme="light"] .ix-root .ix-classic :is(
+  .module,.card,.panel,section.module,.editorial,.masthead,
+  .feed-card,.post-card,.thread-list,.messages-layout,.conversation,.context-rail
+) {
+  background-color:var(--ai-ui-surface)!important;
+  border-color:var(--ai-ui-border)!important;
+  color:var(--ai-ui-ink)!important;
+  border-radius:var(--ai-ui-radius);
+}
+:root[data-theme="light"] .ix-root .ix-classic :is(.nav-rail nav button.active,.topbar-dropmenu button.active,[role="tab"][aria-selected="true"]) {
+  color:var(--ai-ui-selected-ink)!important;
+  background:var(--ai-ui-selected)!important;
+  border-color:var(--ai-ui-selected-border)!important;
+}
+:root[data-theme="light"] .ix-root .ix-classic :is(
+  .module,.card,.panel,.editorial,.masthead
+) :is(p,small,dd,dt) {color:var(--ai-ui-muted)!important;}
+:root[data-theme="light"] .ix-root .ix-classic :is(
+  .module,.card,.panel,.editorial,.masthead
+) :is(h1,h2,h3,h4,strong) {color:var(--ai-ui-ink)!important;}
+/* Fields, dropdown triggers, search boxes and option forms. */
+.ix-root .arch-product-main :is(
+  input:not([type="checkbox"]):not([type="radio"]):not([type="range"]),
+  select,textarea,[role="combobox"],.ai-option-trigger
+) {
+  background-color:var(--ai-ui-input)!important;
+  color:var(--ai-ui-ink)!important;
+  border:1px solid var(--ai-ui-border)!important;
+  border-radius:8px;
+  box-shadow:none;
+}
+.ix-root .arch-product-main :is(input,textarea)::placeholder {
+  color:var(--ai-ui-muted)!important;
+  opacity:1;
+}
+.ix-root .arch-product-main select option {
+  color:var(--ai-ui-ink);
+  background-color:var(--ai-ui-surface);
+}
+.ix-root .arch-product-main :is(input,select,textarea,[role="combobox"]):focus-visible {
+  outline:2px solid var(--ai-ui-blue)!important;
+  outline-offset:2px;
+  border-color:var(--ai-ui-blue)!important;
+}
+.ix-root .arch-product-main :is(input[type="checkbox"],input[type="radio"],input[type="range"]) {
+  accent-color:var(--ai-ui-blue);
+}
+/* Keep the previously approved rotating-gradient for explicit signature CTA,
+   but use solid muted blue for routine functional actions shown in the reference. */
+.ix-root .arch-product-main :is(
+  .btn.primary,.msg-primary-action,.btn-primary,
+  button[data-ui="primary"],.ai-functional-action
+) {
+  --ai-border-angle:0deg;
+  color:var(--ai-ui-blue-ink)!important;
+  border:1px solid var(--ai-ui-blue)!important;
+  border-radius:8px!important;
+  background:var(--ai-ui-blue)!important;
+  box-shadow:none;
+  animation:none!important;
+  transform:none;
+}
+.ix-root .arch-product-main :is(.btn.primary,.msg-primary-action,.btn-primary,button[data-ui="primary"],.ai-functional-action):hover:not(:disabled) {
+  color:var(--ai-ui-blue-ink)!important;
+  border-color:var(--ai-ui-blue-hover)!important;
+  background:var(--ai-ui-blue-hover)!important;
+  box-shadow:0 4px 12px rgba(35,70,95,.12);
+}
+.ix-root .arch-product-main :is(.btn.secondary,.btn.quiet,.ai-option-secondary) {
+  background:var(--ai-ui-surface);
+  border:1px solid var(--ai-ui-border);
+  color:var(--ai-ui-ink);
+  border-radius:8px;
+}
+/* Generic reusable Radix dropdowns/select popovers are portaled outside the app. */
+:where([data-radix-popper-content-wrapper]) :is(.ai-option-menu,.ai-option-list,[role="menu"],[role="listbox"]),
+:where([role="dialog"],[role="alertdialog"]) :is(.ai-option-menu,.ai-option-list) {
+  background:var(--ai-ui-surface)!important;
+  color:var(--ai-ui-ink)!important;
+  border:1px solid var(--ai-ui-border)!important;
+  border-radius:10px;
+  box-shadow:0 16px 38px rgba(30,44,52,.14);
+  padding:5px;
+}
+:where([data-radix-popper-content-wrapper]) :is(
+  .ai-option-item,[role="menuitem"],[role="menuitemcheckbox"],[role="menuitemradio"],[role="option"]
+) {
+  color:var(--ai-ui-ink);
+  border-radius:7px;
+}
+:where([data-radix-popper-content-wrapper]) :is(
+  .ai-option-item,[role="menuitem"],[role="menuitemcheckbox"],[role="menuitemradio"],[role="option"]
+):is(:hover,[data-highlighted],[data-state="checked"],[aria-selected="true"]) {
+  color:var(--ai-ui-selected-ink)!important;
+  background:var(--ai-ui-selected)!important;
+  outline:none;
+}
+:where([data-radix-popper-content-wrapper]) [data-disabled] {opacity:.48;cursor:not-allowed;}
+/* Menus drawn by the legacy system rather than a Radix primitive. */
+.ix-root :is(.ix-desktop-more-menu,.ix-mobile-sheet,.topbar-dropmenu,.more-panel,.qm) {
+  background:var(--ai-ui-surface)!important;
+  color:var(--ai-ui-ink)!important;
+  border:1px solid var(--ai-ui-border)!important;
+  box-shadow:0 16px 38px rgba(26,33,39,.10);
+}
+.ix-root :is(.ix-desktop-more-item,.ix-mobile-sheet-item,.topbar-dropmenu button,.more-panel button,.qm button) {
+  color:var(--ai-ui-ink);
+}
+.ix-root :is(.ix-desktop-more-item,.ix-mobile-sheet-item,.topbar-dropmenu button,.more-panel button,.qm button):is(:hover,.is-active,[aria-current="page"]) {
+  background:var(--ai-ui-selected)!important;
+  color:var(--ai-ui-selected-ink)!important;
+}
+/* Preserve the screenshot's message design while aligning its tokens with all
+   other option pages; both modes deliberately use the light message panels. */
+.ix-root :is(.ix-messages,.ix-live-messages) {
+  --msg-page:#F5F2EC;
+  --msg-panel:#FBF9F4;
+  --msg-panel-inset:#F2EEE8;
+  --msg-border:#D7D3CB;
+  --msg-ink:#2E3438;
+  --msg-body:#3A454A;
+  --msg-muted:#56626A;
+  --msg-copper:#8b6a4e;
+  --msg-accent:#2F5F87;
+  --msg-accent-hover:#244B6B;
+  --msg-accent-ink:#fff;
+  --msg-selected:#DCE8F3;
+  --msg-hover:#E9F1F6;
+  --msg-outgoing:#DCE8F3;
+  --msg-incoming:#EEF1F1;
+}
+.ix-root .arch-product-main :is(.ix-messages,.ix-live-messages) :is(
+  input:not([type="checkbox"]):not([type="radio"]),textarea
+) {
+  background:var(--msg-panel)!important;
+  border-color:var(--msg-border)!important;
+  color:var(--msg-ink)!important;
+}
+/* Draw attention to critical status only with semantic red, amber or green. */
+.ix-root [role="alert"] {border-left-width:3px;}
+.ix-root :is([aria-invalid="true"],input[aria-invalid="true"]) {
+  border-color:#b7483c!important;
+}
+@media(max-width:700px) {
+  .ix-root .arch-product-main {background-size:64px 64px;}
+  .ix-root .arch-product-main :is(.sys-tile,.home-board-tile,.module,.feed-card,.panel) {
+    box-shadow:none;
+    border-radius:10px;
+  }
+}
+@media(prefers-reduced-motion:reduce) {
+  .ix-root .arch-product-main :is(.sys-tile,.home-widget,.home-board-tile,.module) {
+    transition:none;
+    transform:none;
+  }
+}
+@media print {
+  .ix-root .arch-product-main {background-image:none!important;}
+  .ix-root .arch-product-main :is(.module,.sys-tile,.home-board-tile,.home-widget,.panel) {box-shadow:none!important;}
+}
+
+
+/* Reusable controls wired to actual People, Intros and Home option buttons. */
+.ix-root .arch-product-main :is(.ix-option-tile,.ix-option-tab) {
+  border:1px solid var(--ai-ui-border);
+  border-radius:8px;
+  background:var(--ai-ui-surface);
+  color:var(--ai-ui-ink);
+  box-shadow:none;
+  font-weight:550;
+  transition:border-color .16s ease,background-color .16s ease,color .16s ease;
+}
+.ix-root .arch-product-main .ix-option-tab {padding:7px 11px;min-height:34px;}
+.ix-root .arch-product-main :is(.ix-option-tile,.ix-option-tab)[aria-pressed="true"] {
+  color:var(--ai-ui-selected-ink)!important;
+  background:var(--ai-ui-selected)!important;
+  border-color:var(--ai-ui-selected-border)!important;
+  box-shadow:inset 0 -1px 0 var(--ai-ui-blue);
+}
+.ix-root .arch-product-main :is(.ix-option-tile,.ix-option-tab):hover:not(:disabled) {
+  background:var(--ai-ui-selected)!important;
+  color:var(--ai-ui-selected-ink)!important;
+  border-color:var(--ai-ui-selected-border)!important;
+}
+.ix-root .arch-product-main :is(.ix-option-tile,.ix-option-tab)[aria-pressed="true"] :is(span,strong,small) {
+  color:var(--ai-ui-selected-ink)!important;
+}
+.ix-root .arch-product-main :is(.ix-option-tile,.ix-option-tab):focus-visible {
+  outline:2px solid var(--ai-ui-blue)!important;
+  outline-offset:3px;
+}
+.ix-root .ix-messages nav button[aria-pressed="true"] {
+  background:var(--msg-selected)!important;
+  color:#233E53!important;
+  border-color:#B9CBDD!important;
+}
+.ix-root .ix-messages nav button:hover {background:var(--msg-hover);}
+.ix-root .ix-messages nav button[aria-pressed="true"] span {color:inherit;}
+/* Rich visualizations intentionally have their own dark plots; do not give
+   canvas, video, pictures or graph node charts a paper background. */
+.ix-root .arch-product-main :is(canvas,video,svg,img,.ix-field-tile,.network-field,.constellation-graph) {
+  border-color:inherit;
+}
+@media(prefers-reduced-motion:reduce) {
+  .ix-root .arch-product-main :is(.ix-option-tile,.ix-option-tab) {transition:none;}
+}
+
+
+/* Override the earlier light-only messaging token block at equal-or-higher
+   specificity so both modes reproduce the approved screenshot palette. */
+:root[data-theme="light"] .ix-root :is(.ix-messages,.ix-live-messages),
+:root[data-theme="dark"] .ix-root :is(.ix-messages,.ix-live-messages) {
+  --msg-page:#F5F2EC;
+  --msg-panel:#FBF9F4;
+  --msg-panel-inset:#F2EEE8;
+  --msg-border:#D7D3CB;
+  --msg-ink:#2E3438;
+  --msg-body:#3A454A;
+  --msg-muted:#56626A;
+  --msg-copper:#80634a;
+  --msg-accent:#2F5F87;
+  --msg-accent-hover:#244B6B;
+  --msg-accent-ink:#FFFFFF;
+  --msg-selected:#DCE8F3;
+  --msg-hover:#E9F1F6;
+  --msg-outgoing:#DCE8F3;
+  --msg-incoming:#EEF1F1;
+}
+
+
+/* Priority accessibility guarantee for the actual message buttons.
+   Older light-mode text utilities must not cancel the white-on-slate action. */
+:root[data-theme="light"] .ix-root .arch-product-main :is(.ix-messages,.ix-live-messages) button.msg-primary-action,
+:root[data-theme="dark"] .ix-root .arch-product-main :is(.ix-messages,.ix-live-messages) button.msg-primary-action {
+  background-color:#2F5F87!important;
+  background-image:none!important;
+  color:#FFFFFF!important;
+  -webkit-text-fill-color:#FFFFFF!important;
+  border:1px solid #2F5F87!important;
+  box-shadow:none;
+}
+:root[data-theme="light"] .ix-root .arch-product-main :is(.ix-messages,.ix-live-messages) button.msg-primary-action:hover:not(:disabled),
+:root[data-theme="dark"] .ix-root .arch-product-main :is(.ix-messages,.ix-live-messages) button.msg-primary-action:hover:not(:disabled) {
+  background-color:#244B6B!important;
+  background-image:none!important;
+  color:#FFFFFF!important;
+  -webkit-text-fill-color:#FFFFFF!important;
+  border-color:#244B6B!important;
+}
+
+
+/* Light More menus previously inherited a stronger legacy #fffdf9 rule.
+   Match the same cream panel token used by every other dropdown. */
+:root[data-theme="light"] .ix-root .ix-desktop-more-menu,
+:root[data-theme="light"] .ix-root .ix-mobile-sheet {
+  background:#FBF9F4!important;
+  color:#2E3438!important;
+  border-color:#D7D3CB!important;
+}
+
+
+/*
+ * INSIGHTS / SIGNALS — intentional light paper surface in BOTH appearances.
+ * The old .insight-list>article rule uses #0d1115 even when the surrounding
+ * page is ivory. It also inherits dark-mode muted foreground colors, producing
+ * the almost invisible names, evidence and confidence shown in feedback.
+ * This local surface contract fixes the actual article, not just the canvas.
+ */
+.ix-root .ix-classic .app-shell .content .ai-insight-numbers,
+.ix-root .ix-classic .app-shell .content .ai-insight-list {
+  --insight-paper:#FBF9F4;
+  --insight-ink:#263640;
+  --insight-muted:#52616c;
+  --insight-rule:#D7D3CB;
+  --insight-blue:#2F5F87;
+  background:var(--insight-paper)!important;
+  color:var(--insight-ink)!important;
+  border:1px solid var(--insight-rule)!important;
+  border-radius:12px;
+  box-shadow:0 6px 18px rgba(26,33,39,.05);
+  overflow:hidden;
+}
+.ix-root .ix-classic .app-shell .content .ai-insight-list>article,
+.ix-root .ix-classic .app-shell .content .ai-insight-numbers>div {
+  background:var(--insight-paper)!important;
+  color:var(--insight-ink)!important;
+  border-color:var(--insight-rule)!important;
+}
+.ix-root .ix-classic .app-shell .content .ai-insight-list>article {
+  padding:clamp(18px,2.25vw,30px);
+  row-gap:14px;
+}
+.ix-root .ix-classic .app-shell .content .ai-insight-list>article + article {
+  border-top:1px solid var(--insight-rule)!important;
+}
+.ix-root .ix-classic .app-shell .content .ai-insight-list .insight-main h3 {
+  color:var(--insight-ink)!important;
+  font-size:clamp(24px,2.1vw,32px);
+  line-height:1.15;
+  font-weight:600;
+  margin:7px 0 12px;
+}
+.ix-root .ix-classic .app-shell .content .ai-insight-list .insight-main p {
+  color:#40515c!important;
+  font-size:clamp(14px,1.15vw,16px)!important;
+  line-height:1.55;
+}
+.ix-root .ix-classic .app-shell .content .ai-insight-list .insight-main small {
+  color:var(--insight-muted)!important;
+  display:block;
+  margin-top:8px;
+  font-size:13px!important;
+  line-height:1.45;
+}
+.ix-root .ix-classic .app-shell .content .ai-insight-list .insight-index {
+  color:var(--insight-muted)!important;
+  font-size:13px!important;
+}
+.ix-root .ix-classic .app-shell .content .ai-insight-list .insight-main :is(.eyebrow,.signal-label,.tag) {
+  color:var(--insight-blue)!important;
+  letter-spacing:.075em;
+  font-size:12px!important;
+  font-weight:650;
+}
+.ix-root .ix-classic .app-shell .content .ai-insight-list .insight-confidence strong {
+  color:var(--insight-blue)!important;
+  font-size:32px!important;
+  line-height:1;
+}
+.ix-root .ix-classic .app-shell .content .ai-insight-list .insight-confidence small {
+  color:var(--insight-muted)!important;
+  font-size:11px!important;
+  letter-spacing:.055em;
+}
+.ix-root .ix-classic .app-shell .content .ai-insight-list .insight-actions .dismiss {
+  color:#40515c!important;
+  text-decoration:underline;
+  text-underline-offset:3px;
+}
+.ix-root .ix-classic .app-shell .content .ai-insight-list .insight-actions .dismiss:hover {
+  color:var(--insight-blue)!important;
+}
+.ix-root .ix-classic .app-shell .content .ai-insight-numbers strong {
+  color:var(--insight-ink)!important;
+}
+.ix-root .ix-classic .app-shell .content .ai-insight-numbers :is(span,small) {
+  color:var(--insight-muted)!important;
+  font-size:13px!important;
+  line-height:1.5;
+  letter-spacing:0;
+}
+/* Buttons are visually secondary to relationship evidence, but fully readable. */
+.ix-root .ix-classic .app-shell .content .ai-insight-list .insight-actions .btn:not(.primary) {
+  background:#FFFEFB!important;
+  color:#263640!important;
+  border:1px solid #C8CAC8!important;
+  border-radius:9px;
+  animation:none;
+}
+.ix-root .ix-classic .app-shell .content .ai-insight-list .insight-actions .btn:not(.primary):hover {
+  background:#DCE8F3!important;
+  color:#233E53!important;
+  border-color:#B9CBDD!important;
+}
+.ix-root .ix-classic .app-shell .content .ai-insight-list .insight-actions .btn.primary,
+.ix-root .ix-classic .app-shell .content .ai-insight-list .insight-actions .btn:not([class*="quiet"]):not([class*="secondary"]):first-of-type {
+  border-radius:9px;
+}
+.ix-root .ix-classic .app-shell .content .ai-insight-list :is(a,button):focus-visible {
+  outline:2px solid #2F5F87!important;
+  outline-offset:3px;
+}
+@media(max-width:720px) {
+  .ix-root .ix-classic .app-shell .content .ai-insight-list>article {
+    grid-template-columns:minmax(0,1fr);
+    padding:18px;
+  }
+  .ix-root .ix-classic .app-shell .content .ai-insight-list .insight-actions {
+    grid-column:1;
+  }
+  .ix-root .ix-classic .app-shell .content .ai-insight-list .insight-main h3 {
+    font-size:25px;
+  }
+}

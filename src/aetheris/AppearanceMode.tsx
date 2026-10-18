@@ -14,7 +14,8 @@ function readAppearance(): AppearanceMode {
     const stored = window.localStorage.getItem(STORAGE_KEY);
     if (stored === 'light' || stored === 'dark') return stored;
     // Preserve an existing user's home preference when migrating to one setting.
-    if (window.localStorage.getItem('aetheris.home.theme') === 'light') return 'light';
+    const previous = window.localStorage.getItem('aetheris.home.theme');
+    if (previous === 'light' || previous === 'dark') return previous;
   } catch { /* Browser may block storage. */ }
   return 'dark';
 }
@@ -28,7 +29,7 @@ function applyAppearance(theme: AppearanceMode) {
 }
 
 export function AppearanceProvider({ children }: { children: ReactNode }) {
-  // Start in the existing dark theme for SSR, then restore the saved selection.
+  // Dark is the default for new visitors; explicit saved choices still win.
   const [theme, setThemeState] = useState<AppearanceMode>('dark');
   useEffect(() => {
     const restored = readAppearance();
@@ -36,7 +37,7 @@ export function AppearanceProvider({ children }: { children: ReactNode }) {
     applyAppearance(restored);
     const onStorage = (event: StorageEvent) => {
       if (event.key !== STORAGE_KEY) return;
-      const next = event.newValue === 'light' ? 'light' : 'dark';
+      const next = readAppearance();
       setThemeState(next);
       applyAppearance(next);
     };

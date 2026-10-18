@@ -27,10 +27,10 @@ describe('activationView', () => {
 })
 
 describe('activationProgress', () => {
-  it('counts required steps only, so the optional calendar never holds the checklist open', () => {
+  it('counts required steps only, so optional business-role verification and calendar never hold the checklist open', () => {
     const view = activationView(all(true), { calendarAvailable: true })
-    expect(activationProgress(view)).toEqual({ done: 6, total: 6, complete: true })
-    expect(activationProgress(activationView(all(false), { calendarAvailable: true }))).toEqual({ done: 0, total: 6, complete: false })
+    expect(activationProgress(view)).toEqual({ done: 5, total: 5, complete: true })
+    expect(activationProgress(activationView(all(false), { calendarAvailable: true }))).toEqual({ done: 0, total: 5, complete: false })
   })
   it('is never complete with no steps', () => {
     expect(activationProgress([]).complete).toBe(false)

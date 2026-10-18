@@ -1,0 +1,146 @@
+/*
+ * AETHERIS BRIDGE | LEGIBILITY / ORANGE INK
+ * Canonical surfaces: black stencil shell, white/light message sheets, high
+ * contrast copy, restrained burnt-orange metadata and hairline accents.
+ * Explicit foreground/background PAIRS prevent the old white-on-white failure.
+ * No network, routing or interactive behaviour changes.
+ */
+
+:root {
+  --bridge-orange:#e99463;          /* on black (decorative / labels) */
+  --bridge-orange-dark:#923d15;     /* on white, WCAG AA normal text */
+  --bridge-orange-rule:#b5541f;     /* decorative hairlines only */
+  --bridge-cream:#fffdf9;
+  --bridge-paper:#f7f7f5;
+  --bridge-light-ink:#161719;
+  --bridge-light-muted:#404448;
+  --bridge-white:#f9f9f9;
+  --bridge-border:#c9c9c4;
+}
+
+/* Messages use src/aetheris/messages-inverse-theme.css (loaded last).
+   Keep the orange brand tokens here; no Messages background or ink overrides. */
+
+/* The editorial footer is an ALWAYS DARK signature element, including when
+   the rest of the member's appearance is light. No pale ink on pale paper. */
+:root[data-theme] body .ix-root .ix-editorial-signoff,
+:root[data-theme] body .ix-root .ix-editorial-signoff-nav,
+:root[data-theme] body .ix-root .ix-halftone-footer {
+  background-color:#080808!important;
+  color:#f4f4f4!important;
+  border-color:rgba(255,255,255,.25)!important;
+  -webkit-text-fill-color:#f4f4f4!important;
+}
+:root[data-theme] body .ix-root .ix-editorial-signoff-nav {
+  border-top:1px solid var(--bridge-orange-rule)!important;
+}
+:root[data-theme] body .ix-root .ix-editorial-signoff-nav > span {
+  color:#e0e0e0!important;
+  -webkit-text-fill-color:#e0e0e0!important;
+  opacity:1!important;
+  font-size:max(12px,.75rem)!important;
+}
+:root[data-theme] body .ix-root .ix-editorial-signoff-nav button {
+  color:#f4f4f4!important;
+  -webkit-text-fill-color:#f4f4f4!important;
+  opacity:1!important;
+  font-size:max(12px,.75rem)!important;
+  border-radius:0!important;
+}
+:root[data-theme] body .ix-root .ix-editorial-signoff-nav button:hover,
+:root[data-theme] body .ix-root .ix-editorial-signoff-nav button:focus-visible {
+  color:var(--bridge-orange)!important;
+  -webkit-text-fill-color:var(--bridge-orange)!important;
+}
+:root[data-theme] body .ix-root .ix-halftone-footer.hwf-root {
+  --hwf-bg:#080808!important;
+  --hwf-ink:#f4f4f4!important;
+  --hwf-warm:#b5541f!important;
+}
+:root[data-theme] body .ix-root .ix-halftone-footer .hwf-top {
+  color:#f4f4f4!important;
+  -webkit-text-fill-color:#f4f4f4!important;
+  background:transparent!important;
+}
+:root[data-theme] body .ix-root .ix-halftone-footer .hwf-brand strong,
+:root[data-theme] body .ix-root .ix-halftone-footer .hwf-col h3 {
+  color:var(--bridge-orange)!important;
+  -webkit-text-fill-color:var(--bridge-orange)!important;
+  opacity:1!important;
+  font-size:max(12px,.75rem)!important;
+  font-weight:700!important;
+}
+:root[data-theme] body .ix-root .ix-halftone-footer .hwf-brand span,
+:root[data-theme] body .ix-root .ix-halftone-footer .hwf-col a,
+:root[data-theme] body .ix-root .ix-halftone-footer .hwf-up,
+:root[data-theme] body .ix-root .ix-halftone-footer .hwf-rule {
+  color:#e2e2e2!important;
+  -webkit-text-fill-color:#e2e2e2!important;
+  opacity:1!important;
+  font-size:max(12px,.75rem)!important;
+}
+:root[data-theme] body .ix-root .ix-halftone-footer
+ :is(.hwf-col a,.hwf-up):hover {
+  color:var(--bridge-orange)!important;
+  -webkit-text-fill-color:var(--bridge-orange)!important;
+}
+/* Existing homepage footer brand link has an active state which had white
+   text on white paper; its -webkit-text-fill-color must be reset, not only color. */
+:root[data-theme="light"] body .ael.ael-compact
+ .ael-compact-footer .ael-compact-footer-brand .stencil-footer-wordmark {
+  color:#101010!important;
+  -webkit-text-fill-color:#101010!important;
+  background:#fff!important;
+}
+:root[data-theme="dark"] body .ael.ael-compact
+ .ael-compact-footer .ael-compact-footer-brand .stencil-footer-wordmark {
+  color:#fff!important;
+  -webkit-text-fill-color:#fff!important;
+  background:#000!important;
+}
+@media(max-width:767px) {
+  :root[data-theme] body .ix-root .ix-messages
+   :is(.msg-hero,.msg-request-section,.msg-brief-panel,.msg-next-step) {
+    border-radius:2px!important;
+  }
+  :root[data-theme] body .ix-root .ix-messages .msg-hero {
+    padding:20px!important;
+  }
+  :root[data-theme] body .ix-root .ix-messages .msg-hero h1 {
+    font-size:clamp(28px,7.2vw,44px)!important;
+    line-height:1.13!important;
+  }
+  :root[data-theme] body .ix-root .ix-messages .msg-hero .msg-hero-stat-label {
+    font-size:11px!important;
+    letter-spacing:0;
+  }
+}
+@media(prefers-reduced-motion:reduce) {
+  .ix-editorial-signoff :is(button,a) {transition:none!important}
+}
+
+
+/* Accessible CTA on Active Memory: the stencil white fill previously
+ * inherited near-white text, making “Your Network Remembers” disappear. */
+:root[data-theme] body :is(.ix-root,.app-shell,.ask-os)
+ .memory-cta.ai-gradient-button {
+  background:#fff!important;
+  background-image:none!important;
+  border:1px solid #fff!important;
+  border-radius:0!important;
+  color:#111!important;
+  -webkit-text-fill-color:#111!important;
+  opacity:1!important;
+}
+:root[data-theme] body :is(.ix-root,.app-shell,.ask-os)
+ .memory-cta.ai-gradient-button :is(span,strong,svg) {
+  color:#111!important;
+  -webkit-text-fill-color:#111!important;
+  stroke:currentColor!important;
+}
+:root[data-theme] body :is(.ix-root,.app-shell,.ask-os)
+ .memory-cta.ai-gradient-button:hover {
+  background:#ececec!important;
+  border-color:#ececec!important;
+  color:#111!important;
+}

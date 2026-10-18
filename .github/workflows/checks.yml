@@ -35,13 +35,27 @@ jobs:
       - name: Build
         run: npx vite build
       - name: Database migration checks
-        run: node scripts/migration-checks/run.mjs
+        run: |
+          node scripts/migration-checks/run.mjs
+          node scripts/migration-checks/launch-signup.standalone.mjs
       - name: Install Chromium
         run: npx playwright install --with-deps chromium
+      - name: Mobile site and business journey (browser)
+        env:
+          PLAYWRIGHT_MODULE: ${{ github.workspace }}/node_modules/playwright/index.mjs
+        run: node scripts/mobile-site-check/run.mjs
       - name: Compact homepage layout (browser)
         env:
           PLAYWRIGHT_MODULE: ${{ github.workspace }}/node_modules/playwright/index.mjs
         run: node scripts/homepage-check/run.mjs
+      - name: Messages readability (browser)
+        env:
+          PLAYWRIGHT_MODULE: ${{ github.workspace }}/node_modules/playwright/index.mjs
+        run: node scripts/messages-contrast-check/run.mjs
+      - name: Read aloud and managed ElevenLabs voice behavior (browser)
+        env:
+          PLAYWRIGHT_MODULE: ${{ github.workspace }}/node_modules/playwright/index.mjs
+        run: node scripts/voice-read-aloud-check/run.mjs
       - name: Meeting call engine (browser)
         env:
           PLAYWRIGHT_MODULE: ${{ github.workspace }}/node_modules/playwright/index.mjs
@@ -54,6 +68,14 @@ jobs:
         env:
           PLAYWRIGHT_MODULE: ${{ github.workspace }}/node_modules/playwright/index.mjs
         run: node scripts/deal-room-check/run.mjs
+      - name: Administrator connection preflight (browser)
+        env:
+          PLAYWRIGHT_MODULE: ${{ github.workspace }}/node_modules/playwright/index.mjs
+        run: node scripts/admin-connections-check/run.mjs
+      - name: Shared Opportunity Exchange (browser)
+        env:
+          PLAYWRIGHT_MODULE: ${{ github.workspace }}/node_modules/playwright/index.mjs
+        run: node scripts/exchange-check/run.mjs
       - name: LinkedIn scan (browser)
         env:
           PLAYWRIGHT_MODULE: ${{ github.workspace }}/node_modules/playwright/index.mjs

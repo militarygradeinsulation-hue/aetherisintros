@@ -19,20 +19,13 @@ import {
   Video,
   FileText,
   Paperclip,
-  Pin,
-  PinOff,
-  Maximize2,
 } from 'lucide-react';
 import { FeedPost, UPCOMING_EVENTS, SUGGESTED_CIRCLES, TRENDING_SECTORS, NetworkMember } from '../networkData';
 import { ExecutivePortrait } from '../components/shared/ExecutivePortrait';
 import { ConstellationGraphic } from '../components/shared/ConstellationGraphic';
 import { RelationshipFieldGraph } from '../components/shared/RelationshipFieldGraph';
 import { ActivePage } from '../components/layout/TopNavigation';
-import { DraggableWidgetGrid, type WidgetItem, type WidgetSize } from '@/components/ui/widget-board';
-
-const widgetIds = new Set(['network','explore','introduce','need','ask','sectors','events','circles','whynow','people','offers','conversations','saved','updates','profile']);
-const widgetSizes: readonly WidgetSize[] = ['sm', 'wide', 'tall', 'lg'];
-const isWidgetSize = (value: unknown): value is WidgetSize => typeof value === 'string' && widgetSizes.includes(value as WidgetSize);
+import { FeedSidebarLayout } from '../components/home/FeedSidebarLayout';
 
 interface HomeFeedViewProps {
   posts: FeedPost[];
@@ -98,47 +91,6 @@ export const HomeFeedView: React.FC<HomeFeedViewProps> = ({
     );
   };
 
-  const defaultBoard: WidgetItem[] = [
-    { id: 'network', size: 'sm', label: 'Your Network card' },
-    { id: 'explore', size: 'sm', label: 'Explore card' },
-    { id: 'introduce', size: 'sm', label: 'Introduce a colleague callout' },
-    { id: 'need', size: 'sm', label: 'What do you need right now' },
-    { id: 'ask', size: 'sm', label: 'Ask Intros' },
-    { id: 'sectors', size: 'sm', label: 'Trending Sectors' },
-    { id: 'events', size: 'wide', label: 'Upcoming Business Events' },
-    { id: 'circles', size: 'sm', label: 'Suggested Circles' },
-    { id: 'whynow', size: 'sm', label: 'Why now' },
-    ...['people','offers','conversations','saved','updates','profile'].map(id => ({ id, size: 'sm' as const, label: id }))
-  ];
-  const [boardItems, setBoardItems] = useState<WidgetItem[]>(defaultBoard);
-  const [boardPinned, setBoardPinned] = useState(false);
-  React.useEffect(() => {
-    try { setBoardPinned(localStorage.getItem('intros.home.board.pinned') === 'true'); } catch {}
-    const readBoard = (): WidgetItem[] => {
-      try {
-        const saved: unknown = JSON.parse(localStorage.getItem('intros.home.board.v2') || 'null');
-        if (Array.isArray(saved)) {
-          const seen = new Set<string>();
-          const valid: WidgetItem[] = [];
-          for (const raw of saved) {
-            if (!raw || typeof raw !== 'object') continue;
-            const item = raw as { id?: unknown; size?: unknown };
-            if (typeof item.id !== 'string' || !widgetIds.has(item.id) || seen.has(item.id)) continue;
-            const base = defaultBoard.find(entry => entry.id === item.id);
-            if (!base) continue;
-            seen.add(item.id);
-            valid.push({ ...base, size: isWidgetSize(item.size) ? item.size : 'sm' });
-          }
-          return [...valid, ...defaultBoard.filter(item => !seen.has(item.id))];
-        }
-      } catch {}
-      return defaultBoard;
-    };
-    setBoardItems(readBoard());
-  }, []);
-  const [narrow, setNarrow] = useState(false);
-  React.useEffect(() => { const q = window.matchMedia('(max-width: 640px)'); const f = () => setNarrow(q.matches); f(); q.addEventListener('change', f); return () => q.removeEventListener('change', f); }, []);
-  const saveBoard = (next: WidgetItem[]) => { setBoardItems(next); try { localStorage.setItem('intros.home.board.v2', JSON.stringify(next)); } catch {} };
   const boardPeople = networkMembers.filter(member => member.name !== me?.name);
   const topics = [...new Set(boardPeople.flatMap(member => member.focusAreas || []))].slice(0, 5);
   const goals = boardPeople.filter(member => member.currentObjectives?.length).slice(0, 3);
@@ -176,214 +128,8 @@ export const HomeFeedView: React.FC<HomeFeedViewProps> = ({
   };
 
   return (
-    <div className="w-full max-w-7xl mx-auto px-4 md:px-8 py-6 space-y-8 animate-fadeIn">
-      {/* Editorial Hero Banner */}
-      <section className="relative overflow-hidden rounded-2xl border border-white/10 bg-gradient-to-br from-[#0C1017] via-[#090C10] to-[#07090C] p-6 lg:p-8">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
-          {/* Hero Left: Editorial Headline & Value Proposition */}
-          <div className="lg:col-span-7 space-y-5">
-            <div className="text-[10px] md:text-xs font-mono uppercase tracking-[0.25em] text-[#9CA3AF] font-semibold flex items-center gap-2">
-              <span className="w-2 h-2 rounded-full bg-[#F5B027]" />
-              Professional Connections
-            </div>
-
-            <h1 className="font-serif-editorial text-3xl sm:text-4xl md:text-5xl lg:text-5xl xl:text-6xl text-[#F2EEE6] leading-[1.08] tracking-tight">
-              Where professional relationships{' '}
-              <span className="text-[#F5B027]">create momentum.</span>
-            </h1>
-
-            <p className="text-sm md:text-base text-[#9CA3AF] max-w-xl leading-relaxed">
-              Ask Intros is the exclusive professional network for ambitious people who
-              build, invest, and create what's next.
-            </p>
-
-            {/* CTAs */}
-            <div className="flex flex-wrap items-center gap-3 pt-1">
-              <button
-                onClick={() => onNavigate('people')}
-                className="flex items-center gap-2 px-5 py-2.5 rounded-lg bg-[#F5B027] hover:bg-[#C78522] text-white text-xs md:text-sm font-semibold transition-all shadow-lg shadow-[#F5B027]/20 cursor-pointer"
-              >
-                Start Connecting
-                <ArrowRight className="w-4 h-4" />
-              </button>
-              <button
-                onClick={() => onNavigate('people')}
-                className="px-5 py-2.5 rounded-lg border border-white/15 hover:border-white/30 text-[#F2EEE6] hover:text-white text-xs md:text-sm font-medium transition-colors cursor-pointer"
-              >
-                Explore the Network
-              </button>
-            </div>
-
-            {/* Key Stats Bar */}
-            <div className="flex items-center gap-6 sm:gap-10 pt-4 border-t border-white/10 text-[#F2EEE6]">
-              <div>
-                <div className="text-xl md:text-2xl font-serif-editorial font-bold text-white">{boardPeople.length}</div>
-                <div className="text-[11px] font-mono text-[#9CA3AF] tracking-wider uppercase">Professionals</div>
-              </div>
-              <div className="w-[1px] h-8 bg-white/10" />
-              <div>
-                <div className="text-xl md:text-2xl font-serif-editorial font-bold text-white">{new Set(boardPeople.map(member => member.company).filter(Boolean)).size}</div>
-                <div className="text-[11px] font-mono text-[#9CA3AF] tracking-wider uppercase">Companies</div>
-              </div>
-              <div className="w-[1px] h-8 bg-white/10" />
-              <div>
-                <div className="text-xl md:text-2xl font-serif-editorial font-bold text-white">{topics.length}</div>
-                <div className="text-[11px] font-mono text-[#9CA3AF] tracking-wider uppercase">Shared interests</div>
-              </div>
-            </div>
-          </div>
-
-          {/* Hero Right: "Who to Meet This Week" Spotlight or Floating Connection Bubbles */}
-          <div className="lg:col-span-5 flex flex-col items-center">
-            <div className="w-full bg-[#111622]/90 border border-white/10 rounded-xl p-5 relative overflow-hidden backdrop-blur-sm shadow-xl">
-              <div className="flex items-center justify-between mb-3">
-                <div className="flex items-center gap-1 bg-white/5 p-0.5 rounded-lg border border-white/10">
-                  <button
-                    onClick={() => setHeroVisualMode('bubbles')}
-                    className={`px-2.5 py-1 text-[10px] font-mono rounded transition-colors cursor-pointer ${
-                      heroVisualMode === 'bubbles'
-                        ? 'bg-[#F5B027] text-white font-semibold'
-                        : 'text-[#9CA3AF] hover:text-white'
-                    }`}
-                  >
-                    ✦ Relationship Field
-                  </button>
-                  <button
-                    onClick={() => setHeroVisualMode('spotlight')}
-                    className={`px-2.5 py-1 text-[10px] font-mono rounded transition-colors cursor-pointer ${
-                      heroVisualMode === 'spotlight'
-                        ? 'bg-[#F5B027] text-white font-semibold'
-                        : 'text-[#9CA3AF] hover:text-white'
-                    }`}
-                  >
-                    ★ Spotlight Match
-                  </button>
-                </div>
-                <span className="text-[11px] font-mono text-[#F5B027] bg-[#F5B027]/10 border border-[#F5B027]/20 px-2 py-0.5 rounded font-medium">
-                  {heroVisualMode === 'bubbles' ? (isLive ? 'Your Network' : 'Demo Network') : elena ? `${elena.matchScore}% Match` : 'No match yet'}
-                </span>
-              </div>
-
-              {heroVisualMode === 'bubbles' ? (
-                <div className="space-y-3">
-                  <div className="ix-field-tile h-[270px] w-full rounded-lg border border-white/10 overflow-hidden bg-[#07090C]/80 relative">
-                    <RelationshipFieldGraph
-                      members={networkMembers}
-                      onSelectMember={(id) => onNavigate('profile', id)}
-                      className="w-full h-full"
-                    />
-                  </div>
-                  <div className="flex items-center justify-between text-[11px] pt-1">
-                    <span className="text-[#9CA3AF] italic">
-                      Click a node to open their profile
-                    </span>
-                    <button
-                      onClick={() => onNavigate('bubbles')}
-                      className="text-[#FFC85C] hover:text-white font-semibold flex items-center gap-1 cursor-pointer"
-                    >
-                      Full Screen Graph →
-                    </button>
-                  </div>
-                </div>
-              ) : elena ? (
-                <>
-                  {/* Spotlight Member Information */}
-                  <div className="flex items-start gap-3.5 mb-3">
-                    <ExecutivePortrait name={elena.name} avatarUrl={elena.avatarUrl} size="lg" />
-                    <div>
-                      <h3
-                        onClick={() => onNavigate('profile', elena.id)}
-                        className="font-serif-editorial text-lg font-bold text-white hover:text-[#F5B027] transition-colors cursor-pointer"
-                      >
-                        {elena.name}
-                      </h3>
-                      <p className="text-xs text-[#9CA3AF]">
-                        {elena.title} · {elena.company}
-                      </p>
-                      <div className="flex flex-wrap gap-1.5 mt-2">
-                        {elena.focusAreas.slice(0, 3).map((tag, i) => (
-                          <span key={i} className="text-[10px] text-[#9CA3AF] bg-white/5 border border-white/10 px-2 py-0.5 rounded">
-                            {tag}
-                          </span>
-                        ))}
-                      </div>
-                    </div>
-                  </div>
-
-                  <p className="text-xs text-[#CBD5E1] line-clamp-2 italic mb-3">
-                    "{elena.bioStatement}"
-                  </p>
-
-                  <div className="text-[11px] text-[#9CA3AF] space-y-1 mb-4 pt-2 border-t border-white/5">
-                    <div className="flex items-center gap-1.5">
-                      <Users className="w-3.5 h-3.5 text-[#F5B027]" />
-                      <span>12 mutual connections</span>
-                    </div>
-                    <div className="flex items-center gap-1.5">
-                      <Sparkles className="w-3.5 h-3.5 text-[#F59E0B]" />
-                      <span>Shared interests: AI Infrastructure, Climate Tech</span>
-                    </div>
-                  </div>
-
-                  <div className="flex items-center gap-2">
-                    <button
-                      onClick={() => onRequestIntro(elena)}
-                      className="flex-1 py-2 text-xs font-semibold text-white bg-[#F5B027] hover:bg-[#C78522] rounded-lg transition-colors cursor-pointer text-center"
-                    >
-                      Request Introduction
-                    </button>
-                    <button
-                      onClick={() => onNavigate('profile', elena.id)}
-                      className="px-3 py-2 text-xs text-[#9CA3AF] hover:text-white border border-white/10 hover:border-white/20 rounded-lg transition-colors cursor-pointer"
-                    >
-                      View Profile
-                    </button>
-                  </div>
-                </>
-              ) : <p>No member spotlight yet.</p>}
-            </div>
-          </div>
-        </div>
-      </section>
-
-
-
-      {/* Movable widget board — drag to rearrange (Alt + arrows on keyboard) */}
-      {actionQueue}
-
-      <section className="home-board-section space-y-3">
-        <div className="flex items-center justify-between">
-          <div className="text-[11px] font-mono tracking-widest uppercase text-[#9CA3AF] font-semibold">Your board</div>
-          <div className="flex items-center gap-2">
-            <span className="hidden sm:inline text-xs text-[var(--sys-ink-dim)]">People · Context · Opportunity</span>
-            <Button variant="ghost" size="sm" aria-label={boardPinned ? 'Unpin board' : 'Pin board'} aria-pressed={boardPinned} title={boardPinned ? 'Unpin board to rearrange tiles' : 'Pin board to keep tiles in place'} className="home-board-pin" onClick={() => {
-              const next = !boardPinned;
-              setBoardPinned(next);
-              try { localStorage.setItem('intros.home.board.pinned', String(next)); } catch {}
-            }}>{boardPinned ? <PinOff /> : <Pin />}{boardPinned ? 'Pinned' : 'Pin board'}</Button>
-          </div>
-        </div>
-        <DraggableWidgetGrid
-          items={boardItems}
-          onChange={saveBoard}
-          maxColumns={narrow ? 1 : 4}
-          editable={!boardPinned}
-          cellSize={280}
-          gap={12}
-          radius={8}
-          renderItem={(item) => <div className="flex h-full min-h-0 w-full flex-col">
-            <div className="flex shrink-0 justify-end border-b border-[var(--sys-line)] bg-[var(--sys-tile-inner)]">
-              <Button variant="ghost" size="sm" disabled={boardPinned} aria-label={`Resize ${item.label || item.id}`} title={`Resize tile · ${item.size === 'sm' ? 'Small' : item.size === 'lg' ? 'Large' : item.size === 'wide' ? 'Wide' : 'Tall'}`} onClick={() => {
-                const sizes: WidgetSize[] = narrow ? ['sm', 'tall'] : ['sm', 'wide', 'tall', 'lg'];
-                const size = sizes[(sizes.indexOf(item.size) + 1) % sizes.length] ?? 'sm';
-                saveBoard(boardItems.map(entry => entry.id === item.id ? { ...entry, size } : entry));
-              }}><Maximize2 /><span>{item.size === 'sm' ? 'Small' : item.size === 'lg' ? 'Large' : item.size === 'wide' ? 'Wide' : 'Tall'}</span></Button>
-            </div>
-            <div data-no-drag className="home-widget-scroll min-h-0 flex-1 overflow-y-auto touch-pan-y">{widgets[item.id]}</div>
-          </div>}
-        />
-      </section>
-
+    <div className="home-feed-page w-full max-w-[1620px] mx-auto px-4 md:px-6 py-6 space-y-8 animate-fadeIn">
+      <FeedSidebarLayout widgets={widgets} actionQueue={actionQueue}>
       <section id="home-social-board" className="home-social-board scroll-mt-24">
         <header className="home-social-heading"><div><span className="home-board-label">Social Board</span><h2>The people. The work. The conversation.</h2><p>Share what matters now, and make room for a useful reply.</p></div><Button variant="outline" onClick={() => onNavigate('people')}><Users />Find people</Button></header>
         {socialFeed || <div className="max-w-3xl mx-auto w-full">
@@ -533,7 +279,7 @@ export const HomeFeedView: React.FC<HomeFeedViewProps> = ({
                 </div>
 
                 {/* Content */}
-                <p className="text-xs md:text-sm text-[#E2E8F0] leading-relaxed">
+                <p className="text-xs md:text-sm text-[var(--ai-ui-ink)] leading-relaxed font-medium">
                   {post.content}
                 </p>
 
@@ -591,6 +337,183 @@ export const HomeFeedView: React.FC<HomeFeedViewProps> = ({
         </main>
       </div>}
       </section>
+      </FeedSidebarLayout>
+      <details className="home-feed-overview">
+        <summary>Network overview <span>Relationship graph &amp; featured connection</span></summary>
+      {/* Optional network overview, kept available without pushing the feed down. */}
+      <section className="relative overflow-hidden rounded-2xl border border-white/10 bg-gradient-to-br from-[#0C1017] via-[#090C10] to-[#07090C] p-6 lg:p-8">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+          {/* Hero Left: Editorial Headline & Value Proposition */}
+          <div className="lg:col-span-7 space-y-5">
+            <div className="text-[10px] md:text-xs font-mono uppercase tracking-[0.25em] text-[#9CA3AF] font-semibold flex items-center gap-2">
+              <span className="w-2 h-2 rounded-full bg-[#F5B027]" />
+              Professional Connections
+            </div>
+
+            <h1 className="font-serif-editorial text-3xl sm:text-4xl md:text-5xl lg:text-5xl xl:text-6xl text-[#F2EEE6] leading-[1.08] tracking-tight">
+              Where professional relationships{' '}
+              <span className="text-[#F5B027]">create momentum.</span>
+            </h1>
+
+            <p className="text-sm md:text-base text-[#9CA3AF] max-w-xl leading-relaxed">
+              Ask Intros is the exclusive professional network for ambitious people who
+              build, invest, and create what's next.
+            </p>
+
+            {/* CTAs */}
+            <div className="flex flex-wrap items-center gap-3 pt-1">
+              <button
+                onClick={() => onNavigate('people')}
+                className="flex items-center gap-2 px-5 py-2.5 rounded-lg bg-[#F5B027] hover:bg-[#C78522] text-white text-xs md:text-sm font-semibold transition-all shadow-lg shadow-[#F5B027]/20 cursor-pointer"
+              >
+                Start Connecting
+                <ArrowRight className="w-4 h-4" />
+              </button>
+              <button
+                onClick={() => onNavigate('people')}
+                className="px-5 py-2.5 rounded-lg border border-white/15 hover:border-white/30 text-[#F2EEE6] hover:text-white text-xs md:text-sm font-medium transition-colors cursor-pointer"
+              >
+                Explore the Network
+              </button>
+            </div>
+
+            {/* Key Stats Bar */}
+            <div className="flex items-center gap-6 sm:gap-10 pt-4 border-t border-white/10 text-[#F2EEE6]">
+              <div>
+                <div className="text-xl md:text-2xl font-serif-editorial font-bold text-white">{boardPeople.length}</div>
+                <div className="text-[11px] font-mono text-[#9CA3AF] tracking-wider uppercase">Professionals</div>
+              </div>
+              <div className="w-[1px] h-8 bg-white/10" />
+              <div>
+                <div className="text-xl md:text-2xl font-serif-editorial font-bold text-white">{new Set(boardPeople.map(member => member.company).filter(Boolean)).size}</div>
+                <div className="text-[11px] font-mono text-[#9CA3AF] tracking-wider uppercase">Companies</div>
+              </div>
+              <div className="w-[1px] h-8 bg-white/10" />
+              <div>
+                <div className="text-xl md:text-2xl font-serif-editorial font-bold text-white">{topics.length}</div>
+                <div className="text-[11px] font-mono text-[#9CA3AF] tracking-wider uppercase">Shared interests</div>
+              </div>
+            </div>
+          </div>
+
+          {/* Hero Right: "Who to Meet This Week" Spotlight or Floating Connection Bubbles */}
+          <div className="lg:col-span-5 flex flex-col items-center">
+            <div className="w-full bg-[#111622]/90 border border-white/10 rounded-xl p-5 relative overflow-hidden backdrop-blur-sm shadow-xl">
+              <div className="flex items-center justify-between mb-3">
+                <div className="flex items-center gap-1 bg-white/5 p-0.5 rounded-lg border border-white/10">
+                  <button
+                    onClick={() => setHeroVisualMode('bubbles')}
+                    aria-pressed={heroVisualMode === 'bubbles'}
+                    className={`ix-option-tab px-2.5 py-1 text-[10px] font-mono rounded transition-colors cursor-pointer ${
+                      heroVisualMode === 'bubbles'
+                        ? 'bg-[#F5B027] text-white font-semibold'
+                        : 'text-[#9CA3AF] hover:text-white'
+                    }`}
+                  >
+                    ✦ Relationship Field
+                  </button>
+                  <button
+                    onClick={() => setHeroVisualMode('spotlight')}
+                    aria-pressed={heroVisualMode === 'spotlight'}
+                    className={`ix-option-tab px-2.5 py-1 text-[10px] font-mono rounded transition-colors cursor-pointer ${
+                      heroVisualMode === 'spotlight'
+                        ? 'bg-[#F5B027] text-white font-semibold'
+                        : 'text-[#9CA3AF] hover:text-white'
+                    }`}
+                  >
+                    ★ Spotlight Match
+                  </button>
+                </div>
+                <span className="text-[11px] font-mono text-[#F5B027] bg-[#F5B027]/10 border border-[#F5B027]/20 px-2 py-0.5 rounded font-medium">
+                  {heroVisualMode === 'bubbles' ? (isLive ? 'Your Network' : 'Demo Network') : elena ? `${elena.matchScore}% Match` : 'No match yet'}
+                </span>
+              </div>
+
+              {heroVisualMode === 'bubbles' ? (
+                <div className="space-y-3">
+                  <div className="ix-field-tile h-[270px] w-full rounded-lg border border-white/10 overflow-hidden bg-[#07090C]/80 relative">
+                    <RelationshipFieldGraph
+                      members={networkMembers}
+                      onSelectMember={(id) => onNavigate('profile', id)}
+                      className="w-full h-full"
+                    />
+                  </div>
+                  <div className="flex items-center justify-between text-[11px] pt-1">
+                    <span className="text-[#9CA3AF] italic">
+                      Click a node to open their profile
+                    </span>
+                    <button
+                      onClick={() => onNavigate('bubbles')}
+                      className="text-[#FFC85C] hover:text-white font-semibold flex items-center gap-1 cursor-pointer"
+                    >
+                      Full Screen Graph →
+                    </button>
+                  </div>
+                </div>
+              ) : elena ? (
+                <>
+                  {/* Spotlight Member Information */}
+                  <div className="flex items-start gap-3.5 mb-3">
+                    <ExecutivePortrait name={elena.name} avatarUrl={elena.avatarUrl} size="lg" />
+                    <div>
+                      <h3
+                        onClick={() => onNavigate('profile', elena.id)}
+                        className="font-serif-editorial text-lg font-bold text-white hover:text-[#F5B027] transition-colors cursor-pointer"
+                      >
+                        {elena.name}
+                      </h3>
+                      <p className="text-xs text-[#9CA3AF]">
+                        {elena.title} · {elena.company}
+                      </p>
+                      <div className="flex flex-wrap gap-1.5 mt-2">
+                        {elena.focusAreas.slice(0, 3).map((tag, i) => (
+                          <span key={i} className="text-[10px] text-[#9CA3AF] bg-white/5 border border-white/10 px-2 py-0.5 rounded">
+                            {tag}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+
+                  <p className="text-xs text-[#CBD5E1] line-clamp-2 italic mb-3">
+                    "{elena.bioStatement}"
+                  </p>
+
+                  <div className="text-[11px] text-[#9CA3AF] space-y-1 mb-4 pt-2 border-t border-white/5">
+                    <div className="flex items-center gap-1.5">
+                      <Users className="w-3.5 h-3.5 text-[#F5B027]" />
+                      <span>12 mutual connections</span>
+                    </div>
+                    <div className="flex items-center gap-1.5">
+                      <Sparkles className="w-3.5 h-3.5 text-[#F59E0B]" />
+                      <span>Shared interests: AI Infrastructure, Climate Tech</span>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center gap-2">
+                    <button
+                      onClick={() => onRequestIntro(elena)}
+                      className="flex-1 py-2 text-xs font-semibold text-white bg-[#F5B027] hover:bg-[#C78522] rounded-lg transition-colors cursor-pointer text-center"
+                    >
+                      Request Introduction
+                    </button>
+                    <button
+                      onClick={() => onNavigate('profile', elena.id)}
+                      className="px-3 py-2 text-xs text-[#9CA3AF] hover:text-white border border-white/10 hover:border-white/20 rounded-lg transition-colors cursor-pointer"
+                    >
+                      View Profile
+                    </button>
+                  </div>
+                </>
+              ) : <p>No member spotlight yet.</p>}
+            </div>
+          </div>
+        </div>
+      </section>
+
+
+
+      </details>
     </div>
   );
 };

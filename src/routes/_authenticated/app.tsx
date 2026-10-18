@@ -3,7 +3,8 @@ import { useEffect } from 'react'
 
 import IntrosApp from '@/intros-ui/IntrosApp'
 import { AetherisProviderRoot } from '@/aetheris/AetherisProviderRoot'
-import { useAccess } from '@/aetheris/access'
+import { useAccess, isLiveMember } from '@/aetheris/access'
+import { supabase } from '@/integrations/supabase/client'
 import '@/aetheris/styles.css'
 
 export const Route = createFileRoute('/_authenticated/app')({
@@ -34,18 +35,37 @@ function AppRoute() {
 }
 
 function Gate() {
-  const { access } = useAccess()
+  const { access, refresh } = useAccess()
   const navigate = useNavigate()
-  const ready = access.status === 'approved' && access.verification === 'verified' && access.onboarded
+  const ready = isLiveMember(access)
 
   useEffect(() => {
-    if (access.loading) return
-    // Verification decides network access; the database enforces the same rule.
-    if (access.verification !== 'verified') void navigate({ to: '/verify', replace: true })
+    if (access.loading || access.error) return
+    // Approval and onboarding grant network access; business-role badges are separate.
+    if (!access.signedIn) void navigate({ to: '/auth', replace: true })
     else if (access.status !== 'approved') void navigate({ to: '/early-access', replace: true })
-    else if (!access.onboarded) void navigate({ to: '/onboarding', replace: true })
+    else if (access.emailConfirmed && access.verification !== 'rejected' && access.verification !== 'suspended' && !access.onboarded) void navigate({ to: '/onboarding', replace: true })
   }, [access, navigate])
 
+  if (access.error) {
+    return <main className="access-waiting" role="alert">
+      <span className="folio">ASK INTROS / CONNECTION ISSUE</span>
+      <p>{access.error}</p>
+      <button className="btn secondary" type="button" onClick={() => { void refresh() }}>Retry membership check</button>
+    </main>
+  }
+  if (!access.loading && access.signedIn && access.status === 'approved' && access.onboarded && !ready) {
+    const accountRestricted = access.verification === 'rejected' || access.verification === 'suspended'
+    return <main className="access-waiting" role="alert">
+      <span className="folio">ASK INTROS / MEMBER ACCESS</span>
+      <p>{accountRestricted
+        ? 'Your membership has an unresolved restriction. Please contact Ask Intros support.'
+        : 'Confirm the email address associated with your account to activate live networking.'}</p>
+      <button className="btn secondary" type="button" onClick={() => {
+        void supabase.auth.signOut().then(() => { window.location.assign('/auth') })
+      }}>Sign out</button>
+    </main>
+  }
   if (access.loading || !ready) {
     return <main className="access-waiting"><span className="folio">ASK INTROS</span><p>Checking your membership…</p></main>
   }

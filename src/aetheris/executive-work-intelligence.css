@@ -1,0 +1,58 @@
+/* Executive Workbench intelligence views.
+   This is the canonical tabbed surface; no duplicate routes are needed.
+   Both palettes meet legibility needs without hard-coded dark cards in light mode. */
+:root[data-theme="dark"] .executive-workbench {
+  --evi-panel:#131b21; --evi-card:#1b262d; --evi-text:#f7fafb;
+  --evi-muted:#d0dce2; --evi-line:#667782; --evi-link:#a9d8ff;
+  --evi-action:#346c9b; --evi-action-text:#fff; --evi-danger:#ffc5c5;
+}
+:root[data-theme="light"] .executive-workbench {
+  --evi-panel:#fff; --evi-card:#edf3f7; --evi-text:#111820;
+  --evi-muted:#394c59; --evi-line:#9aaab6; --evi-link:#174d78;
+  --evi-action:#265e88; --evi-action-text:#fff; --evi-danger:#942222;
+}
+.executive-workbench :is(.analyst-panel,.track-record,.reputation-dashboard) {
+  color:var(--evi-text); min-width:0; overflow-wrap:anywhere;
+}
+.executive-workbench .analyst-panel {display:grid;gap:20px;padding:clamp(12px,2.5vw,24px);max-width:980px}
+.executive-workbench .analyst-panel-header {display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:12px}
+.executive-workbench .analyst-panel-title {font-size:clamp(18px,2.3vw,24px);font-weight:700;color:var(--evi-text);margin:0}
+.executive-workbench :is(.analyst-panel-subtitle,.analyst-loading,.analyst-loading-init,.analyst-timestamp,.analyst-card-title,.analyst-opp-rationale,.analyst-summary h3,.momentum-gauge-label,.momentum-gauge-status,.track-stat-label) {color:var(--evi-muted);opacity:1}
+.executive-workbench :is(.analyst-card,.analyst-summary,.analyst-empty,.momentum-gauge,.reputation-dashboard,.track-record-card,.track-stat) {
+  background:var(--evi-card);color:var(--evi-text);border:1px solid var(--evi-line);
+  border-radius:10px;padding:clamp(12px,2vw,18px);min-width:0;
+}
+.executive-workbench :is(.analyst-summary,.reputation-dashboard) {background:var(--evi-panel)}
+.executive-workbench .analyst-results {display:grid;gap:18px}
+.executive-workbench .analyst-cards-grid {display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,270px),1fr));gap:14px}
+.executive-workbench :is(.analyst-card,.analyst-summary,.momentum-gauge) {display:grid;gap:10px}
+.executive-workbench .analyst-card-title {font-size:12px;text-transform:uppercase;letter-spacing:.06em;font-weight:700;margin:0}
+.executive-workbench .analyst-card-list {display:grid;gap:6px;padding-left:20px;margin:0}
+.executive-workbench .analyst-card-list li {color:var(--evi-text);line-height:1.5;overflow-wrap:anywhere}
+.executive-workbench :is(.analyst-opp-action,.track-record-kind) {color:var(--evi-link);font-weight:650}
+.executive-workbench .analyst-generate-btn {display:inline-flex;align-items:center;justify-content:center;min-height:44px;padding:9px 16px;border:1px solid var(--evi-action);background:var(--evi-action);color:var(--evi-action-text);border-radius:8px;cursor:pointer;font-weight:700}
+.executive-workbench .analyst-generate-btn:disabled {opacity:.65;cursor:not-allowed}
+.executive-workbench .analyst-error {color:var(--evi-danger);font-weight:650}
+.executive-workbench .analyst-spin {width:16px;height:16px;display:inline-block;border:2px solid var(--evi-line);border-top-color:var(--evi-link);border-radius:50%;animation:evi-spin .8s linear infinite}
+@keyframes evi-spin {to{transform:rotate(360deg)}}
+.executive-workbench .momentum-gauge-header {display:flex;align-items:center;justify-content:space-between;gap:8px}
+.executive-workbench .momentum-gauge-track {height:8px;background:var(--evi-line);border-radius:9px;overflow:hidden}
+.executive-workbench .momentum-gauge-fill {height:100%;border-radius:9px;transition:width .2s ease}
+.executive-workbench .track-record {margin-top:16px}
+.executive-workbench .track-record-card {margin:10px 0}
+.executive-workbench .track-record-verified {color:var(--evi-link);margin-left:8px}
+.executive-workbench .track-stats-row {display:flex;flex-wrap:wrap;gap:10px}
+.executive-workbench .track-stat {flex:1 1 110px;display:flex;flex-direction:column;align-items:center;gap:5px;text-align:center}
+.executive-workbench :is(.track-stat-value,.reputation-score,.analyst-summary p,.momentum-gauge-value) {color:var(--evi-text);font-weight:700}
+.executive-workbench .reputation-badge {position:relative;display:grid;place-items:center;width:80px;height:80px}
+.executive-workbench .reputation-ring {position:absolute;inset:0}
+.executive-workbench .reputation-score {position:relative;z-index:1;font-size:24px}
+@media(max-width:600px) {
+  .executive-workbench .analyst-panel-header {flex-direction:column}
+  .executive-workbench .analyst-generate-btn {width:100%}
+  .executive-workbench .analyst-cards-grid {grid-template-columns:minmax(0,1fr)}
+}
+@media(prefers-reduced-motion:reduce) {
+  .executive-workbench .analyst-spin {animation:none}
+  .executive-workbench .momentum-gauge-fill {transition:none}
+}

@@ -1,0 +1,41 @@
+/*
+ * Shared Messages component ergonomics (demo + live).
+ * Appearance colors intentionally live in messages-inverse-theme.css.
+ * Don't hardcode light panels here: both modes should invert together.
+ */
+.ix-root :is(.ix-messages,.ix-live-messages) {
+  font-family:"JetBrains Mono",ui-monospace,monospace;
+  min-width:0;
+  max-width:100%;
+}
+.ix-root :is(.ix-messages,.ix-live-messages) .msg-body-text {
+  font-size:13px;
+  line-height:1.65;
+  font-weight:450;
+  overflow-wrap:anywhere;
+}
+.ix-root :is(.ix-messages,.ix-live-messages) .msg-body-text p {line-height:1.65;}
+.ix-root :is(.ix-messages,.ix-live-messages) :is(input,textarea)::placeholder {
+  color:var(--msg-muted);opacity:1;
+}
+.ix-root :is(.ix-messages,.ix-live-messages) :is(button,input,textarea,a,select):focus-visible {
+  outline:2px solid var(--msg-copper)!important;
+  outline-offset:2px;
+}
+.ix-root :is(.ix-messages,.ix-live-messages) button:disabled {
+  cursor:not-allowed;
+}
+.ix-root :is(.ix-messages,.ix-live-messages) :is(.msg-outgoing,.msg-incoming) {
+  overflow-wrap:anywhere;
+  max-width:min(82%,100%);
+}
+.ix-root :is(.ix-messages,.ix-live-messages) :is(.msg-outgoing,.msg-incoming) a {
+  text-decoration:underline;
+  text-underline-offset:2px;
+}
+@media(max-width:767px) {
+  .ix-root :is(.ix-messages,.ix-live-messages) .msg-body-text {font-size:13px;}
+}
+@media print {
+  .ix-root :is(.ix-messages,.ix-live-messages) {box-shadow:none!important;}
+}
