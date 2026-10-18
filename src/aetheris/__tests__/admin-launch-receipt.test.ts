@@ -33,7 +33,7 @@ describe('owner launch-control write acknowledgements', () => {
   })
   it('guards every existing admin mutation and avoids Math.random invites', () => {
     const page = readFileSync(new URL('../../routes/_authenticated/admin.early-access.tsx', import.meta.url), 'utf8')
-    expect(page.match(/requireConfirmedAdminWrite\(/g)?.length).toBe(4)
+    expect(page.match(/requireConfirmedAdminWrite</g)?.length).toBe(4)
     expect(page).toContain('crypto.randomUUID()')
     expect(page).not.toContain('Math.random().toString')
     expect(page).toContain('savingRef.current')
