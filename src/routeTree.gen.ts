@@ -20,13 +20,13 @@ import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as Char91DotwellKnownChar93OauthProtectedResourceRouteImport } from './routes/[.well-known]/oauth-protected-resource'
 import { Route as AuthenticatedAppRouteImport } from './routes/_authenticated/app'
 import { Route as AuthenticatedDelegateRouteImport } from './routes/_authenticated/delegate'
+import { Route as AuthenticatedMemberIntelligenceRouteImport } from './routes/_authenticated/member-intelligence'
 import { Route as AuthenticatedOnboardingRouteImport } from './routes/_authenticated/onboarding'
 import { Route as AuthenticatedVerifyRouteImport } from './routes/_authenticated/verify'
 import { Route as ImpactSlugRouteImport } from './routes/impact.$slug'
 import { Route as InviteCodeRouteImport } from './routes/invite.$code'
 import { Route as PassportTokenRouteImport } from './routes/passport.$token'
 import { Route as DotlovableOauthConsentRouteImport } from './routes/[.]lovable.oauth.consent'
-import { Route as AuthenticatedMemberIntelligenceRouteImport } from './routes/_authenticated/member-intelligence'
 import { Route as AuthenticatedAdminEarlyAccessRouteImport } from './routes/_authenticated/admin.early-access'
 import { Route as AuthenticatedAdminVerificationRouteImport } from './routes/_authenticated/admin.verification'
 import { Route as ApiAgentAsksRouteImport } from './routes/api/agent/asks'
@@ -101,6 +101,12 @@ const AuthenticatedDelegateRoute = AuthenticatedDelegateRouteImport.update({
   path: '/delegate',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedMemberIntelligenceRoute =
+  AuthenticatedMemberIntelligenceRouteImport.update({
+    id: '/member-intelligence',
+    path: '/member-intelligence',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedOnboardingRoute = AuthenticatedOnboardingRouteImport.update({
   id: '/onboarding',
   path: '/onboarding',
@@ -130,11 +136,6 @@ const DotlovableOauthConsentRoute = DotlovableOauthConsentRouteImport.update({
   id: '/.lovable/oauth/consent',
   path: '/.lovable/oauth/consent',
   getParentRoute: () => rootRouteImport,
-} as any)
-const AuthenticatedMemberIntelligenceRoute = AuthenticatedMemberIntelligenceRouteImport.update({
-  id: '/member-intelligence',
-  path: '/member-intelligence',
-  getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const AuthenticatedAdminEarlyAccessRoute =
   AuthenticatedAdminEarlyAccessRouteImport.update({
@@ -241,13 +242,13 @@ export interface FileRoutesByFullPath {
   '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
   '/app': typeof AuthenticatedAppRoute
   '/delegate': typeof AuthenticatedDelegateRoute
+  '/member-intelligence': typeof AuthenticatedMemberIntelligenceRoute
   '/onboarding': typeof AuthenticatedOnboardingRoute
   '/verify': typeof AuthenticatedVerifyRoute
   '/impact/$slug': typeof ImpactSlugRoute
   '/invite/$code': typeof InviteCodeRoute
   '/passport/$token': typeof PassportTokenRoute
   '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
-  '/member-intelligence': typeof AuthenticatedMemberIntelligenceRoute
   '/admin/early-access': typeof AuthenticatedAdminEarlyAccessRoute
   '/admin/verification': typeof AuthenticatedAdminVerificationRoute
   '/api/agent/asks': typeof ApiAgentAsksRoute
@@ -278,13 +279,13 @@ export interface FileRoutesByTo {
   '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
   '/app': typeof AuthenticatedAppRoute
   '/delegate': typeof AuthenticatedDelegateRoute
+  '/member-intelligence': typeof AuthenticatedMemberIntelligenceRoute
   '/onboarding': typeof AuthenticatedOnboardingRoute
   '/verify': typeof AuthenticatedVerifyRoute
   '/impact/$slug': typeof ImpactSlugRoute
   '/invite/$code': typeof InviteCodeRoute
   '/passport/$token': typeof PassportTokenRoute
   '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
-  '/member-intelligence': typeof AuthenticatedMemberIntelligenceRoute
   '/admin/early-access': typeof AuthenticatedAdminEarlyAccessRoute
   '/admin/verification': typeof AuthenticatedAdminVerificationRoute
   '/api/agent/asks': typeof ApiAgentAsksRoute
@@ -317,13 +318,13 @@ export interface FileRoutesById {
   '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
   '/_authenticated/app': typeof AuthenticatedAppRoute
   '/_authenticated/delegate': typeof AuthenticatedDelegateRoute
+  '/_authenticated/member-intelligence': typeof AuthenticatedMemberIntelligenceRoute
   '/_authenticated/onboarding': typeof AuthenticatedOnboardingRoute
   '/_authenticated/verify': typeof AuthenticatedVerifyRoute
   '/impact/$slug': typeof ImpactSlugRoute
   '/invite/$code': typeof InviteCodeRoute
   '/passport/$token': typeof PassportTokenRoute
   '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
-  '/_authenticated/member-intelligence': typeof AuthenticatedMemberIntelligenceRoute
   '/_authenticated/admin/early-access': typeof AuthenticatedAdminEarlyAccessRoute
   '/_authenticated/admin/verification': typeof AuthenticatedAdminVerificationRoute
   '/api/agent/asks': typeof ApiAgentAsksRoute
@@ -356,13 +357,13 @@ export interface FileRouteTypes {
     | '/.well-known/oauth-protected-resource'
     | '/app'
     | '/delegate'
+    | '/member-intelligence'
     | '/onboarding'
     | '/verify'
     | '/impact/$slug'
     | '/invite/$code'
     | '/passport/$token'
     | '/.lovable/oauth/consent'
-    | '/member-intelligence'
     | '/admin/early-access'
     | '/admin/verification'
     | '/api/agent/asks'
@@ -393,13 +394,13 @@ export interface FileRouteTypes {
     | '/.well-known/oauth-protected-resource'
     | '/app'
     | '/delegate'
+    | '/member-intelligence'
     | '/onboarding'
     | '/verify'
     | '/impact/$slug'
     | '/invite/$code'
     | '/passport/$token'
     | '/.lovable/oauth/consent'
-    | '/member-intelligence'
     | '/admin/early-access'
     | '/admin/verification'
     | '/api/agent/asks'
@@ -431,13 +432,13 @@ export interface FileRouteTypes {
     | '/.well-known/oauth-protected-resource'
     | '/_authenticated/app'
     | '/_authenticated/delegate'
+    | '/_authenticated/member-intelligence'
     | '/_authenticated/onboarding'
     | '/_authenticated/verify'
     | '/impact/$slug'
     | '/invite/$code'
     | '/passport/$token'
     | '/.lovable/oauth/consent'
-    | '/_authenticated/member-intelligence'
     | '/_authenticated/admin/early-access'
     | '/_authenticated/admin/verification'
     | '/api/agent/asks'
@@ -569,6 +570,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedDelegateRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/member-intelligence': {
+      id: '/_authenticated/member-intelligence'
+      path: '/member-intelligence'
+      fullPath: '/member-intelligence'
+      preLoaderRoute: typeof AuthenticatedMemberIntelligenceRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/onboarding': {
       id: '/_authenticated/onboarding'
       path: '/onboarding'
@@ -610,13 +618,6 @@ declare module '@tanstack/react-router' {
       fullPath: '/.lovable/oauth/consent'
       preLoaderRoute: typeof DotlovableOauthConsentRouteImport
       parentRoute: typeof rootRouteImport
-    }
-    '/_authenticated/member-intelligence': {
-      id: '/_authenticated/member-intelligence'
-      path: '/member-intelligence'
-      fullPath: '/member-intelligence'
-      preLoaderRoute: typeof AuthenticatedMemberIntelligenceRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/admin/early-access': {
       id: '/_authenticated/admin/early-access'
@@ -750,9 +751,9 @@ declare module '@tanstack/react-router' {
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedAppRoute: typeof AuthenticatedAppRoute
   AuthenticatedDelegateRoute: typeof AuthenticatedDelegateRoute
+  AuthenticatedMemberIntelligenceRoute: typeof AuthenticatedMemberIntelligenceRoute
   AuthenticatedOnboardingRoute: typeof AuthenticatedOnboardingRoute
   AuthenticatedVerifyRoute: typeof AuthenticatedVerifyRoute
-  AuthenticatedMemberIntelligenceRoute: typeof AuthenticatedMemberIntelligenceRoute
   AuthenticatedAdminEarlyAccessRoute: typeof AuthenticatedAdminEarlyAccessRoute
   AuthenticatedAdminVerificationRoute: typeof AuthenticatedAdminVerificationRoute
 }
@@ -760,9 +761,9 @@ interface AuthenticatedRouteRouteChildren {
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedAppRoute: AuthenticatedAppRoute,
   AuthenticatedDelegateRoute: AuthenticatedDelegateRoute,
+  AuthenticatedMemberIntelligenceRoute: AuthenticatedMemberIntelligenceRoute,
   AuthenticatedOnboardingRoute: AuthenticatedOnboardingRoute,
   AuthenticatedVerifyRoute: AuthenticatedVerifyRoute,
-  AuthenticatedMemberIntelligenceRoute: AuthenticatedMemberIntelligenceRoute,
   AuthenticatedAdminEarlyAccessRoute: AuthenticatedAdminEarlyAccessRoute,
   AuthenticatedAdminVerificationRoute: AuthenticatedAdminVerificationRoute,
 }
