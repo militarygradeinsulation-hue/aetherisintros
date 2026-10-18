@@ -80,6 +80,9 @@ export async function claimAccess(inviteCode?: string): Promise<{ status: Access
 
 export async function fetchAccess(): Promise<AccessState> {
   const { data: userData, error: authError } = await supabase.auth.getUser()
+  // A visitor without a session is a legitimate guest, not a database outage.
+  // All other auth failures remain hard errors and never grant membership.
+  if (authError?.name === 'AuthSessionMissingError') return { ...noAccess, loading: false }
   if (authError) throw authError
   const user = userData.user
   if (!user) return { ...noAccess, loading: false }
