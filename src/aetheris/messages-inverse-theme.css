@@ -261,3 +261,15 @@ html:root[data-theme="light"] body .ix-root .ix-live-messages [role="alert"] {
 @media(prefers-reduced-motion:reduce) {
   .ix-root :is(.ix-messages,.ix-live-messages) :is(button,a) {transition:none!important;}
 }
+
+/* Selected thread rows use Tailwind transition-all. When appearance switches,
+ * text flips instantly but the tile's background interpolates from dark to
+ * light, briefly producing black-on-black (measured at 1.22:1 in CI). Avoid
+ * animating a color whose matching ink changes immediately. */
+html:root[data-theme] body .ix-root
+  :is(.ix-messages,.ix-live-messages) aside
+  [class~="bg-[var(--msg-selected)]"] {
+  transition-property:none!important;
+  transition-duration:0s!important;
+  animation:none!important;
+}
