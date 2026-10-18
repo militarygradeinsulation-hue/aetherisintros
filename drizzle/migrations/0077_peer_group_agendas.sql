@@ -19,7 +19,7 @@ CREATE POLICY "agreed members read agendas" ON public.peer_group_agendas FOR SEL
 DROP POLICY IF EXISTS "facilitator creates agendas" ON public.peer_group_agendas;
 CREATE POLICY "facilitator creates agendas" ON public.peer_group_agendas FOR INSERT TO authenticated WITH CHECK (public.is_peer_group_facilitator(group_id));
 
-CREATE TABLE public.peer_group_commitments (
+CREATE TABLE IF NOT EXISTS public.peer_group_commitments (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
   group_id uuid NOT NULL REFERENCES public.peer_groups(id) ON DELETE CASCADE,
   user_id uuid NOT NULL DEFAULT auth.uid() REFERENCES auth.users(id) ON DELETE CASCADE,
@@ -30,19 +30,23 @@ CREATE TABLE public.peer_group_commitments (
   created_at timestamptz NOT NULL DEFAULT now(),
   completed_at timestamptz
 );
-CREATE INDEX peer_group_commitments_group_idx ON public.peer_group_commitments(group_id,created_at DESC);
-CREATE INDEX peer_group_commitments_user_idx ON public.peer_group_commitments(user_id,status);
+CREATE INDEX IF NOT EXISTS peer_group_commitments_group_idx ON public.peer_group_commitments(group_id,created_at DESC);
+CREATE INDEX IF NOT EXISTS peer_group_commitments_user_idx ON public.peer_group_commitments(user_id,status);
 REVOKE ALL ON public.peer_group_commitments FROM PUBLIC, anon, authenticated;
 GRANT ALL ON public.peer_group_commitments TO service_role;
 GRANT SELECT, INSERT, DELETE ON public.peer_group_commitments TO authenticated;
 GRANT UPDATE (status) ON public.peer_group_commitments TO authenticated;
 ALTER TABLE public.peer_group_commitments ENABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS "agreed members read commitments" ON public.peer_group_commitments;
 CREATE POLICY "agreed members read commitments" ON public.peer_group_commitments FOR SELECT TO authenticated USING (public.can_read_peer_group(group_id));
+DROP POLICY IF EXISTS "members add own commitments" ON public.peer_group_commitments;
 CREATE POLICY "members add own commitments" ON public.peer_group_commitments FOR INSERT TO authenticated
   WITH CHECK (user_id=auth.uid() AND public.can_read_peer_group(group_id));
+DROP POLICY IF EXISTS "members update own commitments" ON public.peer_group_commitments;
 CREATE POLICY "members update own commitments" ON public.peer_group_commitments FOR UPDATE TO authenticated
   USING (user_id=auth.uid() AND public.can_read_peer_group(group_id))
   WITH CHECK (user_id=auth.uid() AND public.can_read_peer_group(group_id));
+DROP POLICY IF EXISTS "members delete own commitments" ON public.peer_group_commitments;
 CREATE POLICY "members delete own commitments" ON public.peer_group_commitments FOR DELETE TO authenticated
   USING (user_id=auth.uid() AND public.is_peer_group_member(group_id));
 
@@ -60,5 +64,6 @@ BEGIN
   RETURN NEW;
 END $$;
 REVOKE ALL ON FUNCTION public.peer_group_commitments_guard() FROM PUBLIC, anon, authenticated;
+DROP TRIGGER IF EXISTS peer_group_commitments_guard ON public.peer_group_commitments;
 CREATE TRIGGER peer_group_commitments_guard BEFORE INSERT OR UPDATE ON public.peer_group_commitments
   FOR EACH ROW EXECUTE FUNCTION public.peer_group_commitments_guard();
