@@ -1,5 +1,6 @@
 import { createServerFn } from '@tanstack/react-start'
 import { requireAuthContract } from './auth-gate'
+import { supabaseAdmin } from '../integrations/supabase/client.server'
 
 // ---------------------------------------------------------------------------
 // Reputation Score
@@ -56,7 +57,7 @@ export const computeAndSaveScore = createServerFn({ method: 'POST' })
     const score = total > 0
       ? Math.min(100, Math.round((intro_success_rate * 0.5) + (follow_through_rate * 0.5)))
       : 50
-    await db.from('reputation_scores').upsert(
+    await supabaseAdmin.from('reputation_scores').upsert(
       {
         user_id: userId,
         score,
