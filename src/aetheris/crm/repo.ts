@@ -418,12 +418,16 @@ export const rowRepo = {
   create: (sheetId: ID, position: number, values: Record<string, unknown> = {}) =>
     insert('grid_rows', { sheet_id: sheetId, position, values }, toGridRow),
   createMany: async (sheetId: ID, rows: Array<{ position: number; values: Record<string, unknown> }>) => {
+    if (!rows.length) return []
     const owner = await currentAccountId()
-    if (!owner) return []
-    const { data } = await db.from('grid_rows')
+    if (!owner) throw new Error('Sign in before adding private Grid rows.')
+    const { data, error } = await db.from('grid_rows')
       .insert(rows.map(r => ({ owner_id: owner, sheet_id: sheetId, position: r.position, values: r.values })))
       .select('*')
-    return (data ?? []).map(r => toGridRow(r as Row))
+    if (error || !data || data.length !== rows.length) {
+      throw new Error('The database did not confirm that all Grid rows were saved.')
+    }
+    return data.map(r => toGridRow(r as Row))
   },
   update: (id: ID, values: Record<string, unknown>) => patch('grid_rows', id, { values }, toGridRow),
   move: (id: ID, position: number) => patch('grid_rows', id, { position }, toGridRow),
