@@ -28,7 +28,7 @@ import { Route as InviteCodeRouteImport } from './routes/invite.$code'
 import { Route as PassportTokenRouteImport } from './routes/passport.$token'
 import { Route as DotlovableOauthConsentRouteImport } from './routes/[.]lovable.oauth.consent'
 import { Route as AuthenticatedSyndicationRouteImport } from './routes/_authenticated/syndication'
-import { Route as AuthenticatedWarmReferralsRouteImport } from './routes/_authenticated/warm-referrals'
+import { Route as AuthenticatedPeerGroupsRouteImport } from './routes/_authenticated/peer-groups'
 import { Route as AuthenticatedAdminEarlyAccessRouteImport } from './routes/_authenticated/admin.early-access'
 import { Route as AuthenticatedAdminVerificationRouteImport } from './routes/_authenticated/admin.verification'
 import { Route as StorefrontUserIdRouteImport } from './routes/storefront.$userId'
@@ -145,9 +145,9 @@ const AuthenticatedSyndicationRoute = AuthenticatedSyndicationRouteImport.update
   path: '/syndication',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
-const AuthenticatedWarmReferralsRoute = AuthenticatedWarmReferralsRouteImport.update({
-  id: '/warm-referrals',
-  path: '/warm-referrals',
+const AuthenticatedPeerGroupsRoute = AuthenticatedPeerGroupsRouteImport.update({
+  id: '/peer-groups',
+  path: '/peer-groups',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const AuthenticatedAdminEarlyAccessRoute =
@@ -268,7 +268,7 @@ export interface FileRoutesByFullPath {
   '/passport/$token': typeof PassportTokenRoute
   '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
   '/syndication': typeof AuthenticatedSyndicationRoute
-  '/warm-referrals': typeof AuthenticatedWarmReferralsRoute
+  '/peer-groups': typeof AuthenticatedPeerGroupsRoute
   '/admin/early-access': typeof AuthenticatedAdminEarlyAccessRoute
   '/admin/verification': typeof AuthenticatedAdminVerificationRoute
   '/storefront/$userId': typeof StorefrontUserIdRoute
@@ -308,7 +308,7 @@ export interface FileRoutesByTo {
   '/passport/$token': typeof PassportTokenRoute
   '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
   '/syndication': typeof AuthenticatedSyndicationRoute
-  '/warm-referrals': typeof AuthenticatedWarmReferralsRoute
+  '/peer-groups': typeof AuthenticatedPeerGroupsRoute
   '/admin/early-access': typeof AuthenticatedAdminEarlyAccessRoute
   '/admin/verification': typeof AuthenticatedAdminVerificationRoute
   '/storefront/$userId': typeof StorefrontUserIdRoute
@@ -350,7 +350,7 @@ export interface FileRoutesById {
   '/passport/$token': typeof PassportTokenRoute
   '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
   '/_authenticated/syndication': typeof AuthenticatedSyndicationRoute
-  '/_authenticated/warm-referrals': typeof AuthenticatedWarmReferralsRoute
+  '/_authenticated/peer-groups': typeof AuthenticatedPeerGroupsRoute
   '/_authenticated/admin/early-access': typeof AuthenticatedAdminEarlyAccessRoute
   '/_authenticated/admin/verification': typeof AuthenticatedAdminVerificationRoute
   '/storefront/$userId': typeof StorefrontUserIdRoute
@@ -392,7 +392,7 @@ export interface FileRouteTypes {
     | '/passport/$token'
     | '/.lovable/oauth/consent'
     | '/syndication'
-    | '/warm-referrals'
+    | '/peer-groups'
     | '/admin/early-access'
     | '/admin/verification'
     | '/storefront/$userId'
@@ -432,7 +432,7 @@ export interface FileRouteTypes {
     | '/passport/$token'
     | '/.lovable/oauth/consent'
     | '/syndication'
-    | '/warm-referrals'
+    | '/peer-groups'
     | '/admin/early-access'
     | '/admin/verification'
     | '/storefront/$userId'
@@ -473,7 +473,7 @@ export interface FileRouteTypes {
     | '/passport/$token'
     | '/.lovable/oauth/consent'
     | '/_authenticated/syndication'
-    | '/_authenticated/warm-referrals'
+    | '/_authenticated/peer-groups'
     | '/_authenticated/admin/early-access'
     | '/_authenticated/admin/verification'
     | '/storefront/$userId'
@@ -663,11 +663,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedSyndicationRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
-    '/_authenticated/warm-referrals': {
-      id: '/_authenticated/warm-referrals'
-      path: '/warm-referrals'
-      fullPath: '/warm-referrals'
-      preLoaderRoute: typeof AuthenticatedWarmReferralsRouteImport
+    '/_authenticated/peer-groups': {
+      id: '/_authenticated/peer-groups'
+      path: '/peer-groups'
+      fullPath: '/peer-groups'
+      preLoaderRoute: typeof AuthenticatedPeerGroupsRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/admin/early-access': {
@@ -813,7 +813,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedOnboardingRoute: typeof AuthenticatedOnboardingRoute
   AuthenticatedVerifyRoute: typeof AuthenticatedVerifyRoute
   AuthenticatedSyndicationRoute: typeof AuthenticatedSyndicationRoute
-  AuthenticatedWarmReferralsRoute: typeof AuthenticatedWarmReferralsRoute
+  AuthenticatedPeerGroupsRoute: typeof AuthenticatedPeerGroupsRoute
   AuthenticatedAdminEarlyAccessRoute: typeof AuthenticatedAdminEarlyAccessRoute
   AuthenticatedAdminVerificationRoute: typeof AuthenticatedAdminVerificationRoute
 }
@@ -825,7 +825,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedOnboardingRoute: AuthenticatedOnboardingRoute,
   AuthenticatedVerifyRoute: AuthenticatedVerifyRoute,
   AuthenticatedSyndicationRoute: AuthenticatedSyndicationRoute,
-  AuthenticatedWarmReferralsRoute: AuthenticatedWarmReferralsRoute,
+  AuthenticatedPeerGroupsRoute: AuthenticatedPeerGroupsRoute,
   AuthenticatedAdminEarlyAccessRoute: AuthenticatedAdminEarlyAccessRoute,
   AuthenticatedAdminVerificationRoute: AuthenticatedAdminVerificationRoute,
 }

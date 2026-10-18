@@ -39,16 +39,16 @@ export const listMyPeerGroups = createServerFn({ method: 'GET' })
 /** Create a new peer group; the caller automatically becomes its facilitator. */
 export const createPeerGroup = createServerFn({ method: 'POST' })
   .middleware([requireAuthContract])
-  .validator((input: { name: string; description: string; cadence?: string; maxSize?: number; stageLabel?: string; industryFocus?: string }) => input)
+  .validator((input: { name: string; description: string; stageLabel: string; industryFocus: string; cadence?: string; maxSize?: number }) => input)
   .handler(async ({ data, context }): Promise<{ id: string }> => {
     const db = context.supabase as AnyDb
     const { data: group, error } = await (db.rpc as AnyDb)('create_peer_group', {
       p_name: data.name,
       p_description: data.description,
-      p_cadence: data.cadence ?? '',
+      p_stage_label: data.stageLabel,
+      p_industry_focus: data.industryFocus,
+      p_cadence: data.cadence ?? 'monthly',
       p_max_size: data.maxSize ?? 8,
-      p_stage_label: data.stageLabel ?? '',
-      p_industry_focus: data.industryFocus ?? '',
     })
     if (error) throw new Error(error.message)
     return { id: (group as { id: string }).id }
