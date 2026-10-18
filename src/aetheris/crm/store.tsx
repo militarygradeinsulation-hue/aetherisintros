@@ -73,7 +73,7 @@ export interface OpsApi extends OperationalSnapshot {
   removeView: (id: ID) => Promise<void>
   /* linked writes */
   writeLinkedField: (entityType: LinkedEntity, entityId: ID, key: string, value: unknown) => Promise<void>
-  createLinkedRecord: (entityType: LinkedEntity, primary: string) => Promise<void>
+  createLinkedRecord: (entityType: LinkedEntity, primary: string) => Promise<boolean>
 }
 
 const OpsCtx = createContext<OpsApi | null>(null)
@@ -444,23 +444,25 @@ export function OpsProvider({ children }: { children: ReactNode }) {
         await after(entityType, entityId, 'grid-edit', `${key} changed in Grid`)
       },
       createLinkedRecord: async (entityType, primary) => {
-        const name = primary.trim() || 'Untitled'
+        const name = primary.trim()
+        if (!name) throw new Error('A linked CRM record requires a name.')
         if (entityType === 'crm_people') {
-          const created = await personRepo.create({ fullName: name, lifecycle: 'Lead', source: 'Grid' })
-          if (created) await after('crm_person', created.id, 'created', `${name} created from Grid`)
+          const created = await requireSavedGridRecord(personRepo.create({ fullName: name, lifecycle: 'Lead', source: 'Grid' }))
+          await after('crm_person', created.id, 'created', `${name} created from Grid`)
         } else if (entityType === 'crm_companies') {
-          const created = await companyRepo.create({ name })
-          if (created) await after('crm_company', created.id, 'created', `${name} created from Grid`)
+          const created = await requireSavedGridRecord(companyRepo.create({ name }))
+          await after('crm_company', created.id, 'created', `${name} created from Grid`)
         } else if (entityType === 'crm_opportunities') {
-          const created = await opportunityRepo.create({
+          const created = await requireSavedGridRecord(opportunityRepo.create({
             name, pipelineId: defaultPipeline?.id ?? null, stageId: firstStage?.id ?? null,
             stageName: firstStage?.name ?? '', probability: firstStage?.probability ?? 0,
-          })
-          if (created) await after('crm_opportunity', created.id, 'created', `${name} created from Grid`)
+          }))
+          await after('crm_opportunity', created.id, 'created', `${name} created from Grid`)
         } else if (entityType === 'crm_tasks') {
-          const created = await taskRepo.create({ title: name })
-          if (created) await after('crm_task', created.id, 'created', `${name} created from Grid`)
-        }
+          const created = await requireSavedGridRecord(taskRepo.create({ title: name }))
+          await after('crm_task', created.id, 'created', `${name} created from Grid`)
+        } else return false
+        return true
       },
     }
   }, [snap, ready, signedIn, refresh])
