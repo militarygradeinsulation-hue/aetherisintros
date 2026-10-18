@@ -17,7 +17,7 @@ describe('existing admin network health response contract', () => {
   it('preserves genuine zeros and valid nested diagnostic lists', () => {
     const result = parseNetworkHealth(valid())
     expect(result.marketplace.live_asks).toBe(0)
-    expect(result.stalled_verifications[0].status).toBe('manual_review')
+    expect(result.stalled_verifications[0]!.status).toBe('manual_review')
   })
   it('refuses partial server responses instead of silently displaying zeros', () => {
     for (const key of ['members','marketplace','checked_at','incomplete_profiles','isolated_members']) {
