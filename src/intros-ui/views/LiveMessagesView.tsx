@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
+import '../message-thread-contrast.css'
 import { Send, Search, MessageSquare } from 'lucide-react'
 import { useNetwork } from '@/aetheris/store'
 import { AttachButton, MessageBody, attachmentPreview } from '@/aetheris/MessageAttachments'

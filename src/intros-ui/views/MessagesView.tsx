@@ -1,5 +1,6 @@
 // @ts-nocheck
 import React, { useState } from 'react';
+import '../message-thread-contrast.css';
 import {
   Search,
   Plus,
