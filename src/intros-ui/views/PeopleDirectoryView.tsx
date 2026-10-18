@@ -281,7 +281,7 @@ export const PeopleDirectoryView: React.FC<PeopleDirectoryViewProps> = ({
                     key={tierItem.id}
                     aria-pressed={selectedTier === tierItem.id}
                     onClick={() => setSelectedTier(tierItem.id as any)}
-                    className={`ix-option-tile flex items-center justify-between px-2.5 py-1.5 rounded-lg text-xs font-mono transition-all cursor-pointer border ${
+                    className={`ix-option-tile ix-relationship-tier-option flex items-center justify-between px-2.5 py-1.5 rounded-lg text-xs font-mono transition-all cursor-pointer border ${
                       selectedTier === tierItem.id
                         ? 'bg-[#F5B027] text-white border-[#F5B027] font-semibold shadow-sm shadow-[#F5B027]/30'
                         : 'bg-[#131722] hover:bg-[#1A202C] text-[#CBD5E1] border-white/5'
@@ -289,10 +289,10 @@ export const PeopleDirectoryView: React.FC<PeopleDirectoryViewProps> = ({
                   >
                     <span className="flex items-center gap-2">
                       <span className={`w-2 h-2 rounded-full ${tierItem.dot}`} />
-                      <span>{tierItem.label}</span>
+                      <span className="ix-relationship-tier-label">{tierItem.label}</span>
                     </span>
                     <span
-                      className={`text-[10px] px-1.5 py-0.2 rounded ${
+                      className={`ix-relationship-tier-count text-[10px] px-1.5 py-0.2 rounded ${
                         selectedTier === tierItem.id
                           ? 'bg-white/20 text-white'
                           : 'bg-white/5 text-[#9CA3AF]'
@@ -477,7 +477,8 @@ export const PeopleDirectoryView: React.FC<PeopleDirectoryViewProps> = ({
               <button
                 key={t.id}
                 onClick={() => setSelectedTier(t.id as any)}
-                className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-mono transition-all cursor-pointer shrink-0 border ${
+                aria-pressed={selectedTier === t.id}
+                className={`ix-relationship-tier-quick-option flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-mono transition-all cursor-pointer shrink-0 border ${
                   selectedTier === t.id
                     ? 'bg-[#F5B027] text-white border-[#F5B027] shadow-sm font-semibold'
                     : 'bg-[#0E121A] text-[#9CA3AF] hover:text-white border-white/10 hover:border-white/25'
