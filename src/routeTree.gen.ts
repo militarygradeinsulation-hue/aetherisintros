@@ -27,8 +27,8 @@ import { Route as ImpactSlugRouteImport } from './routes/impact.$slug'
 import { Route as InviteCodeRouteImport } from './routes/invite.$code'
 import { Route as PassportTokenRouteImport } from './routes/passport.$token'
 import { Route as DotlovableOauthConsentRouteImport } from './routes/[.]lovable.oauth.consent'
-import { Route as AuthenticatedPeerGroupsRouteImport } from './routes/_authenticated/peer-groups'
 import { Route as AuthenticatedSyndicationRouteImport } from './routes/_authenticated/syndication'
+import { Route as AuthenticatedPeerGroupsRouteImport } from './routes/_authenticated/peer-groups'
 import { Route as AuthenticatedAdminEarlyAccessRouteImport } from './routes/_authenticated/admin.early-access'
 import { Route as AuthenticatedAdminVerificationRouteImport } from './routes/_authenticated/admin.verification'
 import { Route as StorefrontUserIdRouteImport } from './routes/storefront.$userId'
@@ -140,14 +140,14 @@ const DotlovableOauthConsentRoute = DotlovableOauthConsentRouteImport.update({
   path: '/.lovable/oauth/consent',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AuthenticatedPeerGroupsRoute = AuthenticatedPeerGroupsRouteImport.update({
-  id: '/peer-groups',
-  path: '/peer-groups',
-  getParentRoute: () => AuthenticatedRouteRoute,
-} as any)
 const AuthenticatedSyndicationRoute = AuthenticatedSyndicationRouteImport.update({
   id: '/syndication',
   path: '/syndication',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedPeerGroupsRoute = AuthenticatedPeerGroupsRouteImport.update({
+  id: '/peer-groups',
+  path: '/peer-groups',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const AuthenticatedAdminEarlyAccessRoute =
@@ -267,8 +267,8 @@ export interface FileRoutesByFullPath {
   '/invite/$code': typeof InviteCodeRoute
   '/passport/$token': typeof PassportTokenRoute
   '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
-  '/peer-groups': typeof AuthenticatedPeerGroupsRoute
   '/syndication': typeof AuthenticatedSyndicationRoute
+  '/peer-groups': typeof AuthenticatedPeerGroupsRoute
   '/admin/early-access': typeof AuthenticatedAdminEarlyAccessRoute
   '/admin/verification': typeof AuthenticatedAdminVerificationRoute
   '/storefront/$userId': typeof StorefrontUserIdRoute
@@ -307,8 +307,8 @@ export interface FileRoutesByTo {
   '/invite/$code': typeof InviteCodeRoute
   '/passport/$token': typeof PassportTokenRoute
   '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
-  '/peer-groups': typeof AuthenticatedPeerGroupsRoute
   '/syndication': typeof AuthenticatedSyndicationRoute
+  '/peer-groups': typeof AuthenticatedPeerGroupsRoute
   '/admin/early-access': typeof AuthenticatedAdminEarlyAccessRoute
   '/admin/verification': typeof AuthenticatedAdminVerificationRoute
   '/storefront/$userId': typeof StorefrontUserIdRoute
@@ -349,8 +349,8 @@ export interface FileRoutesById {
   '/invite/$code': typeof InviteCodeRoute
   '/passport/$token': typeof PassportTokenRoute
   '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
-  '/_authenticated/peer-groups': typeof AuthenticatedPeerGroupsRoute
   '/_authenticated/syndication': typeof AuthenticatedSyndicationRoute
+  '/_authenticated/peer-groups': typeof AuthenticatedPeerGroupsRoute
   '/_authenticated/admin/early-access': typeof AuthenticatedAdminEarlyAccessRoute
   '/_authenticated/admin/verification': typeof AuthenticatedAdminVerificationRoute
   '/storefront/$userId': typeof StorefrontUserIdRoute
@@ -391,8 +391,8 @@ export interface FileRouteTypes {
     | '/invite/$code'
     | '/passport/$token'
     | '/.lovable/oauth/consent'
-    | '/peer-groups'
     | '/syndication'
+    | '/peer-groups'
     | '/admin/early-access'
     | '/admin/verification'
     | '/storefront/$userId'
@@ -431,8 +431,8 @@ export interface FileRouteTypes {
     | '/invite/$code'
     | '/passport/$token'
     | '/.lovable/oauth/consent'
-    | '/peer-groups'
     | '/syndication'
+    | '/peer-groups'
     | '/admin/early-access'
     | '/admin/verification'
     | '/storefront/$userId'
@@ -472,8 +472,8 @@ export interface FileRouteTypes {
     | '/invite/$code'
     | '/passport/$token'
     | '/.lovable/oauth/consent'
-    | '/_authenticated/peer-groups'
     | '/_authenticated/syndication'
+    | '/_authenticated/peer-groups'
     | '/_authenticated/admin/early-access'
     | '/_authenticated/admin/verification'
     | '/storefront/$userId'
@@ -656,18 +656,18 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DotlovableOauthConsentRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/_authenticated/peer-groups': {
-      id: '/_authenticated/peer-groups'
-      path: '/peer-groups'
-      fullPath: '/peer-groups'
-      preLoaderRoute: typeof AuthenticatedPeerGroupsRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
-    }
     '/_authenticated/syndication': {
       id: '/_authenticated/syndication'
       path: '/syndication'
       fullPath: '/syndication'
       preLoaderRoute: typeof AuthenticatedSyndicationRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/peer-groups': {
+      id: '/_authenticated/peer-groups'
+      path: '/peer-groups'
+      fullPath: '/peer-groups'
+      preLoaderRoute: typeof AuthenticatedPeerGroupsRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/admin/early-access': {
@@ -812,8 +812,8 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedMemberIntelligenceRoute: typeof AuthenticatedMemberIntelligenceRoute
   AuthenticatedOnboardingRoute: typeof AuthenticatedOnboardingRoute
   AuthenticatedVerifyRoute: typeof AuthenticatedVerifyRoute
-  AuthenticatedPeerGroupsRoute: typeof AuthenticatedPeerGroupsRoute
   AuthenticatedSyndicationRoute: typeof AuthenticatedSyndicationRoute
+  AuthenticatedPeerGroupsRoute: typeof AuthenticatedPeerGroupsRoute
   AuthenticatedAdminEarlyAccessRoute: typeof AuthenticatedAdminEarlyAccessRoute
   AuthenticatedAdminVerificationRoute: typeof AuthenticatedAdminVerificationRoute
 }
@@ -824,8 +824,8 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedMemberIntelligenceRoute: AuthenticatedMemberIntelligenceRoute,
   AuthenticatedOnboardingRoute: AuthenticatedOnboardingRoute,
   AuthenticatedVerifyRoute: AuthenticatedVerifyRoute,
-  AuthenticatedPeerGroupsRoute: AuthenticatedPeerGroupsRoute,
   AuthenticatedSyndicationRoute: AuthenticatedSyndicationRoute,
+  AuthenticatedPeerGroupsRoute: AuthenticatedPeerGroupsRoute,
   AuthenticatedAdminEarlyAccessRoute: AuthenticatedAdminEarlyAccessRoute,
   AuthenticatedAdminVerificationRoute: AuthenticatedAdminVerificationRoute,
 }
