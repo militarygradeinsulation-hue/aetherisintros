@@ -462,6 +462,7 @@ export function IntentExchangePanel() {
   const [busy, setBusy] = useState(false)
   const inFlight = useRef(false)
   const retryId = useRef<string | null>(null)
+  const retryDraftKey = useRef('')
 
   const load = async (): Promise<boolean> => {
     if (!graph.signedIn || !graph.userId) return false
@@ -495,8 +496,10 @@ export function IntentExchangePanel() {
     inFlight.current = true
     setBusy(true)
     setMsg('')
-    const newId = retryId.current ?? `ask-${crypto.randomUUID()}`
+    const draftKey = JSON.stringify([statement, form.category, form.industry, form.location, privacy, form.days, form.missionId, form.reveal])
+    const newId = retryId.current && retryDraftKey.current === draftKey ? retryId.current : `ask-${crypto.randomUUID()}`
     retryId.current = newId
+    retryDraftKey.current = draftKey
     try {
       const expires = new Date(Date.now() + Number(form.days) * 86400000).toISOString()
       const insert = await db.from('asks').insert({
@@ -514,6 +517,7 @@ export function IntentExchangePanel() {
         : insert
       confirmIntentReceipt(response.data, response.error, newId, graph.userId, 'active')
       retryId.current = null
+      retryDraftKey.current = ''
       setForm(f => ({ ...f, statement: '' }))
       const refreshed = await load()
       setMsg(!refreshed ? 'Signal saved, but the list did not refresh.' : form.privacy === 'trusted'
