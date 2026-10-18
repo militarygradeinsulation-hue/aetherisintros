@@ -10,7 +10,7 @@ const me = {
 const connector = { ...members[1]!, name: 'Verified Connector' }
 const target = { ...members[0]!, mutuals: ['Verified Connector'],
   bestPath: ['You', 'Verified Connector', members[0]!.name],
-  offers: [], needs: [], expertise: [], tags: [], lastInteractionDays: undefined,
+  offers: [], needs: [], expertise: [], tags: [], lastInteractionDays: null,
   availability: '',
 }
 
