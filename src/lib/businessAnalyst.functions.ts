@@ -2,6 +2,7 @@ import { createServerFn } from '@tanstack/react-start'
 
 import { requireAuthContract } from './auth-gate'
 import { gatewayChat, routeLlmChat } from './aiGateway.server'
+import { supabaseAdmin } from '../integrations/supabase/client.server'
 
 const ANALYST_SYSTEM_PROMPT = `You are a business development analyst for a professional network of CEOs and senior executives. Analyze the member's data and return ONLY valid JSON with no markdown, no explanation, and no extra whitespace:
 {"lead_leaks":["...","..."],"cold_relationships":["...","..."],"partner_needs":["...","..."],"top_opportunities":[{"title":"...","rationale":"...","action":"..."}],"health_score":75,"summary":"..."}`
@@ -142,7 +143,7 @@ export const generateBusinessAnalysis = createServerFn({ method: 'POST' })
     }
 
     // Store the result.
-    const { data: saved, error: saveError } = await db
+    const { data: saved, error: saveError } = await supabaseAdmin
       .from('business_diagnostics' as never)
       .insert({
         user_id: userId,
