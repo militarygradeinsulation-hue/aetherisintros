@@ -67,9 +67,6 @@ export default function Landing() {
       <div className="ael-hero-shade" aria-hidden="true" />
       <div className="ael-architecture-meta" aria-hidden="true"><span>RELATIONSHIPS / BY DESIGN</span><span>ASK INTROS — CONNECTION 001</span></div>
       <div className="ael-hero-content">
-        <p className="ael-kicker ael-kicker-light"><span className="ael-dash" /> Relationships by design</p>
-        <h1 id="ael-hero-title" className="stencil-display"><span className="sr-only">The right room changes everything.</span><StencilHeadline lines={['THE RIGHT ROOM', 'CHANGES', 'EVERYTHING']} className="stencil-headline--hero" /></h1>
-        <p className="ael-hero-lede">The people who matter. A reason to meet. A place to make something happen.</p>
         <div className="ael-platform-strip" aria-label="Familiar business platforms Ask Intros brings together in one experience">
           <p className="ael-platform-statement">LinkedIn, Salesforce, Google Meet, ZoomInfo <strong>and 60+ more, all rolled into one.</strong></p>
           <div className="ael-platform-marks" aria-label="LinkedIn, Salesforce, Google Meet, and ZoomInfo brand marks">
@@ -81,6 +78,9 @@ export default function Landing() {
           </div>
           <p className="ael-platform-disclaimer">Brand marks are illustrative. No affiliation or live integration is implied.</p>
         </div>
+        <p className="ael-kicker ael-kicker-light"><span className="ael-dash" /> Relationships by design</p>
+        <h1 id="ael-hero-title" className="stencil-display"><span className="sr-only">The right room changes everything.</span><StencilHeadline lines={['THE RIGHT ROOM', 'CHANGES', 'EVERYTHING']} className="stencil-headline--hero" /></h1>
+        <p className="ael-hero-lede">The people who matter. A reason to meet. A place to make something happen.</p>
         <div className="ael-hero-actions">
           <JoinAction signedIn={signedIn} className="ael-btn ael-btn-gold ai-gradient-button" />
           <Link to="/demo" className="ael-text-link">Explore Ask Intros <ArrowRight aria-hidden="true" size={16} /></Link>
