@@ -35,13 +35,13 @@ export function ExecutiveWorkPage() {
     <nav className="ops-tabs executive-workbench-tabs" aria-label="Executive workbench tools">
       {tabs.map(item => {
         const Icon = item.icon
-        return <button key={item.id} type="button" className={tab === item.id ? 'active' : ''} aria-pressed={tab === item.id} onClick={() => setTab(item.id)}>
+        return <button key={item.id} type="button" className={tab === item.id ? 'active' : ''} aria-pressed={tab === item.id} aria-controls="executive-workbench-panel" onClick={() => setTab(item.id)}>
           <Icon size={14} /> {item.label}
         </button>
       })}
     </nav>
 
-    <div className="executive-workbench-body">
+    <div id="executive-workbench-panel" className="executive-workbench-body" role="region" aria-label={current.label}>
       {tab === 'analyst' && <BusinessAnalystPanel />}
       {tab === 'referrals' && <WarmReferralPanel />}
       {tab === 'track' && <CurrentUserTrackRecord />}
