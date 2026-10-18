@@ -6,6 +6,7 @@ import { loadReadReceiptsSetting, markThreadRead, saveReadReceiptsSetting, useUn
 import { badgeLabel, seenUnderMessageId, shouldMarkRead } from '@/aetheris/messaging-state'
 import { OpenDealRoomButton } from '@/aetheris/deals-ui'
 import { draftTitle } from '@/aetheris/deals-core'
+import { MeetingBriefPanel } from '@/aetheris/meeting-brief-ui'
 import { StartWorkspaceButton } from '@/aetheris/workspaces/StartWorkspace'
 
 const isUuid = (v: string) => /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(v)
@@ -17,6 +18,7 @@ function Inner({ onOpenWorkspaces }: { onOpenWorkspaces?: () => void }) {
   const [activeId, setActiveId] = useState<string>(() => (typeof window === 'undefined' ? '' : localStorage.getItem('aetheris-intros-thread') ?? ''))
   const [query, setQuery] = useState('')
   const [draft, setDraft] = useState('')
+  const [briefThreadId, setBriefThreadId] = useState<string | null>(null)
   const [sending, setSending] = useState(false)
   const [readError, setReadError] = useState('')
   const [failed, setFailed] = useState<{ id: string; threadId: string; text: string; reason: string } | null>(null)
@@ -143,11 +145,21 @@ function Inner({ onOpenWorkspaces }: { onOpenWorkspaces?: () => void }) {
                 <p className="text-sm font-semibold text-[var(--msg-ink)] truncate">{person?.name ?? 'Member'}</p>
                 <p className="text-[11px] text-[var(--msg-muted)] truncate">{[person?.title, person?.company].filter(Boolean).join(' · ')}</p>
               </div>
-              {person && <div className="ml-auto shrink-0 flex flex-wrap items-center justify-end gap-2">
+              {person && <div className="ml-auto min-w-0 flex flex-wrap items-center justify-end gap-2">
+                {isUuid(person.id) && isUuid(active.id) && <button type="button"
+                  onClick={() => setBriefThreadId(id => id === active.id ? null : active.id)}
+                  aria-expanded={briefThreadId === active.id}
+                  aria-controls="active-member-meeting-brief"
+                  className="msg-meeting-brief-trigger inline-flex min-h-10 items-center justify-center px-3 text-xs border border-[var(--msg-border)] bg-[var(--msg-panel-inset)] text-[var(--msg-ink)] hover:bg-[var(--msg-selected)] cursor-pointer">
+                  {briefThreadId === active.id ? 'Hide brief' : 'Pre-meeting brief'}
+                </button>}
                 {onOpenWorkspaces && isUuid(active.id) && <StartWorkspaceButton source="dm_thread" sourceId={active.id} withName={person.name} onOpen={onOpenWorkspaces} label="Workspace" />}
                 <OpenDealRoomButton kind="quiet" label="Deal room" draft={{ sourceKind: 'thread', sourceId: active.id, title: draftTitle('thread', person.name), need: active.introContext ?? '', counterpartId: person.id, counterpartName: person.name }} />
               </div>}
             </header>
+            {briefThreadId === active.id && person && isUuid(person.id) && isUuid(active.id) && <div id="active-member-meeting-brief" className="msg-meeting-brief-panel overflow-y-auto px-4 py-3 border-b border-[var(--msg-border)]" style={{ maxHeight: 'min(44vh, 420px)' }}>
+              <MeetingBriefPanel key={person.id} otherUserId={person.id} otherName={person.name} />
+            </div>}
             <div className="msg-live-chat-body flex-1 overflow-y-auto px-4 py-4 space-y-2.5">
               {active.messages.length === 0 && <p className="text-xs text-[var(--msg-muted)] text-center">Say hello — this is the start of your conversation.</p>}
               {active.messages.map(msg => (
