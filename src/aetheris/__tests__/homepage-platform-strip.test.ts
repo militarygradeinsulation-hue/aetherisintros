@@ -13,11 +13,16 @@ describe('homepage platform thumbnail strip', () => {
     expect(landing.indexOf('ael-platform-strip')).toBeLessThan(landing.indexOf('ael-hero-actions'))
   })
   it('uses brand-identifiable image thumbnails instead of generic icons', () => {
-    expect(landing).toContain('cdn.simpleicons.org/linkedin')
+    // Self-hosted LinkedIn mark cannot break when a third-party CDN or favicon service fails.
+    const linkedinMark = readFileSync(new URL('../../../public/brands/linkedin.svg', import.meta.url), 'utf8')
+    expect(landing).toContain('src="/brands/linkedin.svg"')
+    expect(landing).not.toContain('cdn.simpleicons.org/linkedin')
+    expect(linkedinMark).toContain('viewBox="0 0 24 24"')
+    expect(linkedinMark).toContain('fill="#0A66C2"')
     expect(landing).toContain('cdn.simpleicons.org/salesforce')
     expect(landing).toContain('cdn.simpleicons.org/googlemeet')
     expect(landing).toContain('domain=zoominfo.com')
-    expect(landing).toContain('domain=linkedin.com')
+    expect(landing).not.toContain('domain=linkedin.com')
     expect(landing).toContain('domain=salesforce.com')
     expect(landing).toContain('domain=meet.google.com')
   })
