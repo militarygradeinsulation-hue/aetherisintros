@@ -108,6 +108,10 @@ function EarlyAccessPage() {
         <button className="btn secondary" type="button" onClick={() => { void refresh() }}>Retry membership check</button>
       </div>}
 
+      {!access.loading && !access.error && access.signedIn && access.status === 'approved' && !access.emailConfirmed && (
+        <p className="auth-notice" role="status">Your account is approved. Confirm your email address using the link in your inbox before entering the network.</p>
+      )}
+
       {!access.loading && !access.error && !access.signedIn && <>
         <p className="auth-lede">Explore the complete showcase without an account. Create one only when you are ready to build your real professional network.</p>
         <div className="access-entry-actions">
@@ -152,7 +156,9 @@ function EarlyAccessPage() {
         <span><b>03</b> Your memory, controlled</span>
       </div>
       <span className="auth-foot"><LockKeyhole size={12} /> {access.foundingNumber ? foundingLabel(access.foundingNumber, stats.capacity) : 'Nothing is shared without your explicit opt-in.'}</span>
-      {access.status === 'approved' && <Link to="/app" className="auth-switch">Enter your network.</Link>}
+      {access.status === 'approved' && access.emailConfirmed && access.verification !== 'rejected' && access.verification !== 'suspended' && (
+        <Link to={access.onboarded ? '/app' : '/onboarding'} className="auth-switch">{access.onboarded ? 'Enter your network.' : 'Complete your profile.'}</Link>
+      )}
     </section>
     <aside className="auth-visual auth-visual-type" aria-label="Ask Intros founding network principles">
       <span className="auth-visual-mark" aria-hidden="true">+</span>
