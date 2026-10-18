@@ -3,10 +3,11 @@
  * Writes only through the basic CRM (useOps), so imported records are real,
  * account-scoped, and flow into the full workspace automatically.
  */
-import { useMemo, useState } from 'react'
+import { useMemo, useRef, useState } from 'react'
 import { Check, FileUp, RotateCcw, Wand2 } from 'lucide-react'
 import { Btn, Eyebrow } from '../ui'
 import { useOps } from '../crm/store'
+import { safeImportSelection } from '../crm/import-policy'
 
 type Target = 'people' | 'companies'
 type Field = { key: string; label: string; required?: boolean; hints: string[] }
@@ -84,6 +85,7 @@ export default function SheetImport() {
   const [map, setMap] = useState<Record<string, number>>({})
   const [skipBad, setSkipBad] = useState(true)
   const [busy, setBusy] = useState(false)
+  const importingRef = useRef(false)
   const [done, setDone] = useState<string | null>(null)
   const [readError, setReadError] = useState<string | null>(null)
 
@@ -136,25 +138,56 @@ export default function SheetImport() {
     : required.some(f => !(f.key in map))
 
   const run = async () => {
+    // A second click must not create duplicate contacts before the first import finishes.
+    if (importingRef.current) return
+    setReadError(null)
+    const selected = safeImportSelection(checked, skipBad)
+    if (selected.error) { setReadError(selected.error); return }
+    if (!selected.rows.length) { setReadError('There are no valid new records to import.'); return }
+
+    importingRef.current = true
     setBusy(true)
-    let n = 0
-    for (const c of skipBad ? good : checked.filter(x => !x.errors.includes('Already in your CRM'))) {
-      const v = c.values
-      const res = target === 'people'
-        ? await ops.createPerson({
-          fullName: v.fullName ?? '', email: v.email ?? '', phone: v.phone ?? '', title: v.title ?? '',
-          companyName: v.companyName ?? '', location: v.location ?? '', linkedinUrl: v.linkedinUrl ?? '',
-          notes: v.notes ?? '', source: `Import · ${fileName}`,
-        })
-        : await ops.createCompany({
-          name: v.name ?? '', domain: v.domain ?? '', website: v.website ?? '', industry: v.industry ?? '',
-          location: v.location ?? '', phone: v.phone ?? '', employees: v.employees ?? '', notes: v.notes ?? '',
-        })
-      if (res) n++
+    let saved = 0
+    let failed = 0
+    let failureDetail = ''
+    try {
+      for (const candidate of selected.rows) {
+        const v = candidate.values
+        try {
+          const res = target === 'people'
+            ? await ops.createPerson({
+              fullName: v.fullName ?? '', email: v.email ?? '', phone: v.phone ?? '', title: v.title ?? '',
+              companyName: v.companyName ?? '', location: v.location ?? '', linkedinUrl: v.linkedinUrl ?? '',
+              notes: v.notes ?? '', source: `Import · ${fileName}`,
+            })
+            : await ops.createCompany({
+              name: v.name ?? '', domain: v.domain ?? '', website: v.website ?? '', industry: v.industry ?? '',
+              location: v.location ?? '', phone: v.phone ?? '', employees: v.employees ?? '', notes: v.notes ?? '',
+            })
+          if (res) saved += 1
+          else {
+            failed += 1
+            failureDetail ||= ops.lastError() || 'The CRM did not confirm the record.'
+          }
+        } catch {
+          failed += 1
+          failureDetail ||= 'The CRM request failed or the network connection was interrupted.'
+        }
+      }
+    } finally {
+      importingRef.current = false
+      setBusy(false)
     }
-    setBusy(false)
-    setDone(`${n} ${target === 'people' ? (n === 1 ? 'person' : 'people') : (n === 1 ? 'company' : 'companies')} added to your CRM.`)
-    setGrid([]); setFileName('')
+    const unit = target === 'people' ? (saved === 1 ? 'person' : 'people') : (saved === 1 ? 'company' : 'companies')
+    setDone(`${saved} ${unit} saved to your CRM.`)
+    if (failed) {
+      setReadError(`${failed} record(s) could not be saved. ${failureDetail} The source file remains loaded so you can review or retry only the remaining valid records.`)
+    } else if (selected.rows.length < checked.length) {
+      setReadError(`${checked.length - selected.rows.length} invalid or duplicate row(s) were skipped. Your file remains loaded for review.`)
+    } else {
+      setGrid([])
+      setFileName('')
+    }
   }
 
   const reset = () => { setGrid([]); setFileName(''); setMap({}); setDone(null); setReadError(null) }
@@ -228,17 +261,17 @@ export default function SheetImport() {
       <section className="simp-block simp-go">
         <label className="simp-toggle">
           <input type="checkbox" checked={skipBad} onChange={e => setSkipBad(e.target.checked)} />
-          Skip rows that need attention (duplicates are always skipped)
+          Skip invalid and duplicate rows (otherwise, resolve them before importing)
         </label>
         <div>
           <Btn kind="quiet" onClick={reset}><RotateCcw size={14} /> Start over</Btn>
-          <Btn kind="primary" disabled={busy || missingRequired || !good.length} onClick={() => void run()}>
-            {busy ? 'Adding…' : `Add ${skipBad ? good.length : checked.filter(x => !x.errors.includes('Already in your CRM')).length} to CRM`}
+          <Btn kind="primary" disabled={busy || missingRequired || !good.length || (!skipBad && bad > 0)} onClick={() => void run()}>
+            {busy ? 'Adding…' : `Add ${good.length} to CRM`}
           </Btn>
         </div>
       </section>
     </>}
 
-    {readError && <p className="simp-warn">{readError}</p>}
+    {readError && <p className="simp-warn" role="alert">{readError}</p>}
   </div>
 }
