@@ -414,5 +414,10 @@
  .ael.ael-compact .ael-platform-more{grid-column:1 / -1;justify-self:start;min-height:26px}
  .ael.ael-compact .ael-platform-promise{margin-top:9px;font-size:11px}
  .ael.ael-compact .ael-platform-disclosure{font-size:9px}
- .ael.ael-compact .ael-hero{padding-top:157px;padding-bottom:85px}
+ .ael.ael-compact .ael-hero{padding-top:120px;padding-bottom:62px}
+ .ael.ael-compact .ael-platform-unified{margin-bottom:6px;padding:7px 9px}
+ .ael.ael-compact .ael-platform-eyebrow{margin-bottom:4px;font-size:9px}
+ .ael.ael-compact .ael-platform-brand img{width:23px;height:23px}
+ .ael.ael-compact .ael-platform-brands{gap:5px 9px}
+ .ael.ael-compact .ael-platform-promise{margin-top:6px;font-size:10px;line-height:1.3}
 }
