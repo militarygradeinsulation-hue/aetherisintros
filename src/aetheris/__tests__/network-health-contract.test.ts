@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { parseNetworkHealth } from '../lib/network-health-contract'
+import { parseNetworkHealth, parseAdminErrorReports } from '../lib/network-health-contract'
 
 const valid = () => ({
   checked_at: '2026-10-17T20:00:00Z',
@@ -37,5 +37,20 @@ describe('existing admin network health response contract', () => {
   it('accepts nullable dates and member names but never invents metric values', () => {
     const result = parseNetworkHealth({ ...valid(), incomplete_profiles: [{ ...valid().incomplete_profiles[0], name: null, strength: null }] })
     expect(result.incomplete_profiles[0]).toMatchObject({ name: '', strength: null, last_sign_in: null })
+  })
+})
+
+describe('owner error-report service contract', () => {
+  const report = () => ({ id: 'sample-id', source: 'server', message: 'Example failure',
+    created_at: '2026-10-17T20:00:00Z', stack: null, url: null, user_agent: null })
+  it('shows a confirmed empty log only for an actual empty response', () => {
+    expect(parseAdminErrorReports([])).toEqual([])
+    expect(parseAdminErrorReports([report()])).toMatchObject([{ source: 'server', url: '', stack: '' }])
+  })
+  it('never turns null/partial/malformed replies into zero incident reports', () => {
+    for (const result of [null, undefined, {}, [{ ...report(), message: null }],
+      [{ ...report(), source: 'other' }], [{ ...report(), created_at: 'invalid' }]]) {
+      expect(() => parseAdminErrorReports(result)).toThrow('incomplete or invalid')
+    }
   })
 })
