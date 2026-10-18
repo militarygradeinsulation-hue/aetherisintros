@@ -74,19 +74,19 @@ export default function Landing() {
           </p>
           <div className="ael-platform-marks" aria-label="Examples of the tools referenced">
             <span className="ael-platform-mark">
-              <img src="https://cdn.simpleicons.org/linkedin/0A66C2" width="23" height="23" alt="" loading="lazy" />
+              <img src="https://cdn.simpleicons.org/linkedin/0A66C2" onError={e => { e.currentTarget.onerror = null; e.currentTarget.src = 'https://www.google.com/s2/favicons?domain=linkedin.com&sz=128' }} width="23" height="23" alt="" loading="lazy" />
               <span>LinkedIn</span>
             </span>
             <span className="ael-platform-mark">
-              <img src="https://cdn.simpleicons.org/salesforce/00A1E0" width="23" height="23" alt="" loading="lazy" />
+              <img src="https://cdn.simpleicons.org/salesforce/00A1E0" onError={e => { e.currentTarget.onerror = null; e.currentTarget.src = 'https://www.google.com/s2/favicons?domain=salesforce.com&sz=128' }} width="23" height="23" alt="" loading="lazy" />
               <span>Salesforce</span>
             </span>
             <span className="ael-platform-mark">
-              <img src="https://cdn.simpleicons.org/googlemeet/00897B" width="23" height="23" alt="" loading="lazy" />
+              <img src="https://cdn.simpleicons.org/googlemeet/00897B" onError={e => { e.currentTarget.onerror = null; e.currentTarget.src = 'https://www.google.com/s2/favicons?domain=meet.google.com&sz=128' }} width="23" height="23" alt="" loading="lazy" />
               <span>Google Meet</span>
             </span>
             <span className="ael-platform-mark">
-              <img src="https://commons.wikimedia.org/wiki/Special:FilePath/ZoomInfo_logo.svg" width="31" height="23" alt="" loading="lazy" />
+              <img src="https://commons.wikimedia.org/wiki/Special:FilePath/ZoomInfo_logo.svg" onError={e => { e.currentTarget.onerror = null; e.currentTarget.src = 'https://www.google.com/s2/favicons?domain=zoominfo.com&sz=128' }} width="31" height="23" alt="" loading="lazy" />
               <span>ZoomInfo</span>
             </span>
           </div>
