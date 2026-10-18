@@ -24,7 +24,7 @@ describe('Intent Exchange confirmed writes', () => {
   })
   it('keeps stable retry IDs and disables the editor on pending writes', () => {
     const code = readFileSync(new URL('../opportunity-ui.tsx', import.meta.url), 'utf8')
-    expect(code).toContain('retryId.current ??')
+    expect(code).toContain('retryId.current && retryDraftKey.current === draftKey')
     expect(code).toContain("insert.error?.code === '23505'")
     expect(code).toContain('inFlight.current = false')
     expect(code).toContain('disabled={busy || !form.statement.trim()}')
