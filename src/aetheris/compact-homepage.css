@@ -352,3 +352,67 @@
 :root .ael.ael-compact .ael-compact-steps li,
 :root .ael.ael-compact .ael-compact-method {border-color:rgba(255,255,255,.35)!important;}
 :root .ael.ael-compact .ael-compact-story :is(.ael-underlink,.ael-underlink-dark) {color:#fff!important;border-color:#b5541f!important;}
+
+/* Four real platform brand thumbnails, shown as a compact top-of-hero rail.
+ * Avoid a grid of decorative screenshots or any claim of brand endorsement. */
+.ael.ael-compact .ael-platform-unified{
+  width:min(100%,680px);
+  margin:0 0 17px;
+  padding:13px clamp(12px,1.6vw,19px) 11px;
+  background:rgba(10,13,16,.89);
+  border:1px solid rgba(255,255,255,.35);
+  border-left:3px solid #ed9a4a;
+  border-radius:8px;
+  box-shadow:0 10px 30px rgba(0,0,0,.17);
+  color:#fff;
+}
+.ael.ael-compact .ael-platform-eyebrow{
+  margin:0 0 9px;
+  color:#ffd4a1!important;
+  font:700 10px/1.25 Inter,system-ui,sans-serif;
+  letter-spacing:.12em;
+}
+.ael.ael-compact .ael-platform-brands{
+  display:flex;align-items:center;gap:8px 15px;flex-wrap:wrap;
+}
+.ael.ael-compact .ael-platform-brand{
+  display:inline-flex;align-items:center;gap:7px;
+  min-width:0;white-space:nowrap;
+  color:#fff!important;
+  font:650 11px/1.2 Inter,system-ui,sans-serif;
+}
+.ael.ael-compact .ael-platform-brand img{
+  width:30px;height:30px;flex:none;object-fit:contain;
+  padding:4px;background:#fff;border-radius:7px;
+}
+.ael.ael-compact .ael-platform-more{
+  display:inline-flex;align-items:center;min-height:30px;
+  border:1px solid rgba(255,255,255,.55);
+  border-radius:5px;padding:5px 8px;
+  color:#fff!important;
+  font:750 10px/1 Inter,system-ui,sans-serif;letter-spacing:.07em;
+}
+.ael.ael-compact .ael-platform-promise{
+  margin:11px 0 4px;
+  color:#f4f4f4!important;
+  font:500 clamp(12px,1.1vw,14px)/1.45 Inter,system-ui,sans-serif;
+}
+.ael.ael-compact .ael-platform-promise strong{color:#ffd4a1!important;font-weight:750}
+.ael.ael-compact .ael-platform-disclosure{
+  display:block;color:#dadada!important;
+  font:400 10px/1.4 Inter,system-ui,sans-serif;
+}
+@media(max-width:750px){
+ .ael.ael-compact .ael-platform-unified{margin-bottom:12px;padding:11px 12px}
+ .ael.ael-compact .ael-platform-brands{gap:8px 12px}
+ .ael.ael-compact .ael-platform-brand{font-size:10px}
+ .ael.ael-compact .ael-platform-brand img{width:27px;height:27px;padding:3px}
+ .ael.ael-compact .ael-hero{padding-bottom:90px}
+}
+@media(max-width:420px){
+ .ael.ael-compact .ael-platform-brands{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px 9px}
+ .ael.ael-compact .ael-platform-more{grid-column:1 / -1;justify-self:start;min-height:26px}
+ .ael.ael-compact .ael-platform-promise{margin-top:9px;font-size:11px}
+ .ael.ael-compact .ael-platform-disclosure{font-size:9px}
+ .ael.ael-compact .ael-hero{padding-top:157px;padding-bottom:85px}
+}
