@@ -101,7 +101,7 @@ function AdminRoute() {
       if (!Number.isSafeInteger(capacity) || capacity < 1 || capacity > 1000000) {
         throw new Error('Capacity must be a whole number between 1 and 1,000,000.')
       }
-      await requireConfirmedAdminWrite(
+      await requireConfirmedAdminWrite<{ mode: string; capacity: number }> (
         async () => await supabase.from('launch_settings')
           .update({ mode, capacity, updated_by: access.userId, updated_at: new Date().toISOString() })
           .eq('id', 1).select('mode, capacity').maybeSingle(),
@@ -118,7 +118,7 @@ function AdminRoute() {
       if (!/^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/.test(normalized)) {
         throw new Error('Enter a valid email address before whitelisting.')
       }
-      await requireConfirmedAdminWrite(
+      await requireConfirmedAdminWrite<{ email: string }> (
         async () => await supabase.from('whitelist_entries')
           .insert({ email: normalized, added_by: access.userId })
           .select('email').maybeSingle(),
@@ -134,7 +134,7 @@ function AdminRoute() {
     await perform('invite', async () => {
       // The invite is a bearer credential; Math.random is not an acceptable token generator.
       const value = code.trim() || crypto.randomUUID().replaceAll('-', '').slice(0, 16).toUpperCase()
-      await requireConfirmedAdminWrite(
+      await requireConfirmedAdminWrite<{ code: string }> (
         async () => await supabase.from('invitations')
           .insert({ code: value, created_by: access.userId, max_uses: 1 })
           .select('code').maybeSingle(),
@@ -148,7 +148,7 @@ function AdminRoute() {
 
   const setStatus = async (userId: string, status: string) => {
     await perform(`member:${userId}`, async () => {
-      await requireConfirmedAdminWrite(
+      await requireConfirmedAdminWrite<{ user_id: string; status: string }> (
         async () => await supabase.from('early_access_members')
           .update({ status, updated_at: new Date().toISOString() })
           .eq('user_id', userId).select('user_id, status').maybeSingle(),
