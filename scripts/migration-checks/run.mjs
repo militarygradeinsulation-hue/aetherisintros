@@ -298,7 +298,7 @@ console.log(`Migrations: ${migrations.join(', ')}`)
 for (const file of suites) {
   console.log(`\n${file.replace('.check.mjs', '')}`)
   const ok = (cond, msg) => { if (cond) { pass++; console.log('  ✓', msg) } else { fail++; console.log('  ✗', msg) } }
-  const ctx = { ...(await boot({ actualMembershipGate: file === 'zz-confirmed-onboarding.check.mjs' })), ok, A, B, C, ADMIN }
+  const ctx = { ...(await boot({ actualMembershipGate: ['zz-confirmed-onboarding.check.mjs', 'exchange.check.mjs'].includes(file) })), ok, A, B, C, ADMIN }
   try { await (await import(join(here, file))).default(ctx) } catch (e) { fail++; console.log('  ✗ suite crashed:', e.message) }
   await ctx.db.close()
 }
