@@ -75,7 +75,7 @@ function autoMap(headers: string[], target: Target): Record<string, number> {
 
 const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 type Vals = Partial<Record<'fullName'|'firstName'|'lastName'|'email'|'phone'|'title'|'companyName'|'location'|'linkedinUrl'|'notes'|'name'|'domain'|'website'|'industry'|'employees', string>> & Record<string, string | undefined>
-type Checked = { values: Vals; errors: string[]; warnings: string[] }
+type Checked = { sourceRow: number; values: Vals; errors: string[]; warnings: string[] }
 
 export default function SheetImport() {
   const ops = useOps()
@@ -86,6 +86,7 @@ export default function SheetImport() {
   const [skipBad, setSkipBad] = useState(true)
   const [busy, setBusy] = useState(false)
   const importingRef = useRef(false)
+  const importedRowsRef = useRef(new Set<string>())
   const [done, setDone] = useState<string | null>(null)
   const [readError, setReadError] = useState<string | null>(null)
 
@@ -97,6 +98,7 @@ export default function SheetImport() {
     if (!/\.(csv|tsv|txt)$/i.test(file.name)) { setReadError('Save the sheet as CSV first (File → Download → CSV), then drop it here.'); return }
     const rows = parseCsv(await file.text())
     if (rows.length < 2) { setReadError('That file has no rows under the header.'); return }
+    importedRowsRef.current.clear()
     setFileName(file.name); setGrid(rows); setMap(autoMap(rows[0] ?? [], target))
   }
 
@@ -106,7 +108,7 @@ export default function SheetImport() {
     const seen = new Set<string>()
     const existingEmails = new Set(ops.people.map(p => p.email.toLowerCase()).filter(Boolean))
     const existingCompanies = new Set(ops.companies.map(c => c.name.toLowerCase()))
-    return body.map(r => {
+    return body.map((r, sourceRow) => {
       const values: Vals = {}
       for (const [k, i] of Object.entries(map)) values[k] = (r[i] ?? '').trim()
       const errors: string[] = [], warnings: string[] = []
@@ -126,7 +128,7 @@ export default function SheetImport() {
         else if (key && seen.has(key)) errors.push('Repeated in this sheet')
         if (key) seen.add(key)
       }
-      return { values, errors, warnings }
+      return { sourceRow, values, errors, warnings }
     })
   }, [body, map, target, ops.people, ops.companies])
 
@@ -143,7 +145,8 @@ export default function SheetImport() {
     setReadError(null)
     const selected = safeImportSelection(checked, skipBad)
     if (selected.error) { setReadError(selected.error); return }
-    if (!selected.rows.length) { setReadError('There are no valid new records to import.'); return }
+    const pending = selected.rows.filter(row => !importedRowsRef.current.has(`${target}:${row.sourceRow}`))
+    if (!pending.length) { setReadError('There are no new valid records to import. All confirmed rows in this file are already saved.'); return }
 
     importingRef.current = true
     setBusy(true)
@@ -151,7 +154,7 @@ export default function SheetImport() {
     let failed = 0
     let failureDetail = ''
     try {
-      for (const candidate of selected.rows) {
+      for (const candidate of pending) {
         const v = candidate.values
         try {
           const res = target === 'people'
@@ -164,7 +167,7 @@ export default function SheetImport() {
               name: v.name ?? '', domain: v.domain ?? '', website: v.website ?? '', industry: v.industry ?? '',
               location: v.location ?? '', phone: v.phone ?? '', employees: v.employees ?? '', notes: v.notes ?? '',
             })
-          if (res) saved += 1
+          if (res) { saved += 1; importedRowsRef.current.add(`${target}:${candidate.sourceRow}`) }
           else {
             failed += 1
             failureDetail ||= ops.lastError() || 'The CRM did not confirm the record.'
@@ -185,12 +188,13 @@ export default function SheetImport() {
     } else if (selected.rows.length < checked.length) {
       setReadError(`${checked.length - selected.rows.length} invalid or duplicate row(s) were skipped. Your file remains loaded for review.`)
     } else {
+      importedRowsRef.current.clear()
       setGrid([])
       setFileName('')
     }
   }
 
-  const reset = () => { setGrid([]); setFileName(''); setMap({}); setDone(null); setReadError(null) }
+  const reset = () => { importedRowsRef.current.clear(); setGrid([]); setFileName(''); setMap({}); setDone(null); setReadError(null) }
 
   return <div className="simp">
     <div className="simp-intro">
