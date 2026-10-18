@@ -8,7 +8,7 @@ import { Activity } from 'lucide-react'
 
 import { supabase } from '@/integrations/supabase/client'
 import { Eyebrow } from './ui'
-import { parseNetworkHealth, type NetworkHealth } from './lib/network-health-contract'
+import { parseNetworkHealth, parseAdminErrorReports, type NetworkHealth, type AdminErrorReport } from './lib/network-health-contract'
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 type Health = NetworkHealth
@@ -69,15 +69,17 @@ export function AdminNetworkHealthPanel() {
   </section>
 }
 
-interface AppError { id: string; created_at: string; source: 'client' | 'server'; message: string; stack: string; url: string; user_agent: string }
+type AppError = AdminErrorReport
 
 /** Errors members and the server hit in the last two weeks, grouped by message (newest first). */
 export function AdminErrorsPanel() {
   const [rows, setRows] = useState<AppError[] | null>(null)
+  const requestId = useRef(0)
   const [open, setOpen] = useState<string | null>(null)
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(true)
   const reload = async () => {
+    const request = ++requestId.current
     setLoading(true)
     setError('')
     // Keep the time window aligned with the panel title, and cap expensive reads.
@@ -87,16 +89,19 @@ export function AdminErrorsPanel() {
         .select('id, created_at, source, message, stack, url, user_agent')
         .gte('created_at', since)
         .order('created_at', { ascending: false }).limit(300)
-      if (r.error) { setRows(null); setError(r.error.message || 'Unable to load error reports.') }
-      else setRows(r.data ?? [])
-    } catch {
-      setRows(null)
-      setError('Unable to reach the error reporting service.')
+      if (r.error) throw new Error(r.error.message || 'Unable to load error reports.')
+      const reports = parseAdminErrorReports(r.data)
+      if (request === requestId.current) setRows(reports)
+    } catch (cause) {
+      if (request === requestId.current) {
+        setRows(null)
+        setError(cause instanceof Error ? cause.message : 'Unable to reach the error reporting service.')
+      }
     } finally {
-      setLoading(false)
+      if (request === requestId.current) setLoading(false)
     }
   }
-  useEffect(() => { void reload() }, [])
+  useEffect(() => { void reload(); return () => { requestId.current++ } }, [])
   if (loading && !rows) return <section className="executive-section admin-health" aria-busy="true"><h2>Loading error reports…</h2></section>
   if (error) return <section className="executive-section admin-health" role="alert"><h2>Error reporting unavailable</h2><p className="og-note">{error}</p><button type="button" onClick={() => void reload()}>Retry</button></section>
   if (!rows) return null
