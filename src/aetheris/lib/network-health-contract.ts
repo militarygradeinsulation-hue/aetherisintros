@@ -98,7 +98,7 @@ export function parseAdminErrorReports(value: unknown): AdminErrorReport[] {
     const source = r['source']
     if (!id || Number.isNaN(Date.parse(created_at)) || !message ||
         (source !== 'server' && source !== 'client')) invalid()
-    return { id, created_at, message, source,
+    return { id, created_at, message, source: source as 'client' | 'server',
       stack: nullableStr(r['stack']) ?? '', url: nullableStr(r['url']) ?? '',
       user_agent: nullableStr(r['user_agent']) ?? '' }
   })
