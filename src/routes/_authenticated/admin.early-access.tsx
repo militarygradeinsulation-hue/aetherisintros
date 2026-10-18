@@ -58,7 +58,7 @@ function AdminRoute() {
         supabase.from('whitelist_entries').select('email, status').order('created_at').limit(200),
         supabase.from('invitations').select('code, uses, max_uses, revoked').order('created_at').limit(200),
       ])
-      if (settings.error || memberRows.error || waitRows.error || whiteRows.error || inviteRows.error || !settings.data) {
+      if (settings.error || memberRows.error || waitRows.error || whiteRows.error || inviteRows.error || !settings.data || !memberRows.data || !waitRows.data || !whiteRows.data || !inviteRows.data) {
         throw new Error('Launch-control data was not completely available.')
       }
       setMode(settings.data.mode as LaunchMode)
