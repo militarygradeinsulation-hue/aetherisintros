@@ -17,6 +17,7 @@ import { useOps } from '../crm/store'
 import { linkedTemplates } from '../crm/linked'
 import { colLetters, evaluateFormula } from '../crm/formula'
 import { projectRows, type NetworkIndex, type ProjectedRow } from '../crm/project'
+import { planFreeformPaste } from '../crm/paste'
 import type { GridColumn, GridColumnType, LinkedEntity } from '../crm/types'
 
 const columnTypes: GridColumnType[] = ['text', 'number', 'currency', 'percent', 'date', 'checkbox', 'select', 'relation', 'formula']
@@ -137,6 +138,7 @@ export default function GridPage() {
   const [creating, setCreating] = useState(false)
   const fileRef = useRef<HTMLInputElement>(null)
   const gridRef = useRef<HTMLDivElement>(null)
+  const pasteInProgress = useRef(false)
 
   useEffect(() => { setCell({ r: 0, c: 0 }); setEditing(null) }, [sheet?.id])
 
@@ -206,22 +208,48 @@ export default function GridPage() {
     const text = event.clipboardData.getData('text/plain')
     if (!text.trim() || !sheet) return
     event.preventDefault()
+    if (pasteInProgress.current) {
+      setCellError('An earlier paste is still being saved. Retry after it finishes.')
+      return
+    }
     const table = parseDelimited(text)
+    if (!table.length) return
+    setCellError('')
     if (sheet.mode === 'freeform') {
-      const needed = cell.r + table.length - rows.length
-      if (needed > 0) {
-        await ops.addRows(sheet.id, Array.from({ length: needed }, () => ({})))
+      if (filter.trim() || sortConf) {
+        setCellError('Clear the current filter and sort before pasting multiple rows, so no records are misplaced.')
         return
       }
-    }
-    for (let r = 0; r < table.length; r += 1) {
-      const line = table[r] ?? []
-      for (let c = 0; c < line.length; c += 1) {
-        const target = rows[cell.r + r]
-        const column = columns[cell.c + c]
-        if (!target || !column) continue
-        if (!(await commit(cell.r + r, cell.c + c, line[c] ?? ''))) return
+      try {
+        const plan = planFreeformPaste(rows, columns, cell.r, cell.c, table)
+        pasteInProgress.current = true
+        await ops.pasteFreeform(sheet.id, plan)
+        setEditing(null)
+        setNotice('Clipboard rows saved to your private Grid.')
+      } catch (cause) {
+        setCellError(cause instanceof Error ? cause.message : 'Grid paste failed. Inspect the rows and try again.')
+      } finally {
+        pasteInProgress.current = false
       }
+      return
+    }
+    // Linked sheets may only update existing writable canonical CRM fields.
+    const invalid = table.some((line, r) => !rows[cell.r + r] ||
+      line.some((_, c) => !columns[cell.c + c]?.writable))
+    if (invalid) {
+      setCellError('The paste extends beyond existing rows or includes read-only CRM columns. No changes were made.')
+      return
+    }
+    pasteInProgress.current = true
+    try {
+      for (let r = 0; r < table.length; r += 1) {
+        const line = table[r] ?? []
+        for (let c = 0; c < line.length; c += 1) {
+          if (!(await commit(cell.r + r, cell.c + c, line[c] ?? ''))) return
+        }
+      }
+    } finally {
+      pasteInProgress.current = false
     }
   }
 
