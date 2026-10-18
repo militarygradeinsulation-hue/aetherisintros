@@ -12,6 +12,7 @@ import { parseBusinessDetails } from './business-posts'
 import { calculateConnectionScore, determineRadarState } from './lib/engine'
 import type { Directory } from './db'
 import type { Member, NetworkAsk, Post, Thread } from './social'
+import { isActiveSharedSignal } from './opportunity-graph'
 import type { ScoreBreakdown } from './types'
 import type { GiverBand } from './reciprocity-core'
 
@@ -294,7 +295,7 @@ export async function loadLiveDirectory(userId: string): Promise<{ directory: Di
       expiresAt: r.expires_at,
       category: r.category,
       ...(r.author_id === userId ? { mine: true } : {}),
-    }))
+    })).filter(ask => isActiveSharedSignal(ask))
 
     return { directory: { members, posts, asks, signals: [], threads, learnings: [] }, me, failed: false, reason: null }
   } catch (error) {

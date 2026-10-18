@@ -267,14 +267,18 @@ export interface ReverseMatch { member: Member; need: string; whyYouFit: Reason[
  * expired, or invalid-expiry signal as a live opportunity.
  * Older demo rows without lifecycle metadata remain valid as demo content.
  */
-export function isEligibleOpportunitySignal(ask: NetworkAsk, nowMs = Date.now()): boolean {
-  if (ask.mine || ask.visibility !== 'network') return false
+export function isActiveSharedSignal(ask: NetworkAsk, nowMs = Date.now()): boolean {
+  if (ask.visibility !== 'network') return false
   if (ask.status && ask.status !== 'active') return false
   if (ask.expiresAt) {
     const expiry = Date.parse(ask.expiresAt)
     if (!Number.isFinite(expiry) || expiry <= nowMs) return false
   }
   return true
+}
+
+export function isEligibleOpportunitySignal(ask: NetworkAsk, nowMs = Date.now()): boolean {
+  return !ask.mine && isActiveSharedSignal(ask, nowMs)
 }
 
 const openToForCategory: Record<string, string> = {
