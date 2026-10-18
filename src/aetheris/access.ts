@@ -119,6 +119,7 @@ export async function fetchAccess(): Promise<AccessState> {
 
   return {
     loading: false,
+    error: null,
     signedIn: true,
     emailConfirmed: Boolean(user.email_confirmed_at),
     userId: user.id,
