@@ -162,3 +162,45 @@
   .auth-page .auth-foot { flex-wrap: wrap; }
   .ix-root .providers-empty > div { display: flex; flex-wrap: wrap; gap: 10px; }
 }
+
+
+/*
+ * Extracted from the older public-onboarding/mobile PRs without importing
+ * their conflicting migrations or authentication decisions.
+ * Local member cards and form controls must fit in a narrow or zoomed layout.
+ */
+.ix-root .arch-product-main :is(
+  .module,.mod,.sys-tile,.home-widget,.home-board-tile,.panel,
+  .feed-card,.post-card,.match-report,.person-card,.member-tile,
+  .profile-settings,.profile-hero,.executive-workbench-body,
+  .messages-layout,.ix-messages,.ix-live-messages,
+  .ops-card,.ops-panel,.provider-card
+) { box-sizing:border-box;min-width:0;max-width:100%; }
+
+.ix-root .arch-product-main :is(
+  .module,.sys-tile,.home-widget,.home-board-tile,.panel,
+  .feed-card,.post-card,.match-report,.person-card,.member-tile,
+  .ops-card,.ops-panel
+) :is(h1,h2,h3,h4,p,small,label,dd,dt) { overflow-wrap:anywhere; }
+
+.ix-root :is(.arch-product-main,.home-feed-customize,.ix-mobile-sheet)
+  :is(input:not([type="checkbox"]):not([type="radio"]),textarea,select,[role="combobox"]) {
+  box-sizing:border-box;min-width:0;max-width:100%;
+}
+.ix-root :is(.arch-product-main,.home-feed-customize,.ix-mobile-sheet)
+  :is(pre,code) { max-width:100%;overflow-x:auto; }
+
+@media (max-width:768px) {
+  .ix-root .arch-product-main :is(.ix-tools,.ops-tabs,.insight-tabs,[role="tablist"]) {
+    max-width:100%;min-width:0;overflow-x:auto;scroll-padding-inline:12px;
+    overscroll-behavior-x:contain;-webkit-overflow-scrolling:touch;
+  }
+  .ix-root .arch-product-main :is(.ix-tools,.ops-tabs,.insight-tabs,[role="tablist"]) > :is(a,button) {
+    flex-shrink:0;
+  }
+}
+@media (max-width:380px) {
+  .ix-root .arch-product-main :is(.filter-chips,.module-actions,.panel-actions,.sv-sheet-actions) {
+    max-width:100%;flex-wrap:wrap;
+  }
+}
