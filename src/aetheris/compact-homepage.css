@@ -335,7 +335,8 @@
 @media (max-width:420px) {
   .ael.ael-compact .ael-header { min-height:98px; padding:8px 13px; gap:8px; }
   .ael.ael-compact .ael-header .ask-intros-lockup { width:clamp(153px,43vw,181px); }
-  .ael.ael-compact .ael-hero { padding-top:164px; }
+  /* Keep the newly added platform marks inside the first phone viewport while preserving header clearance. */
+  .ael.ael-compact .ael-hero { padding-top:116px; }
 }
 
 /* Consistent dark editorial story chapter in both appearance modes. */
