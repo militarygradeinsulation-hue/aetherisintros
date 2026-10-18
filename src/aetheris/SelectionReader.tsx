@@ -5,6 +5,9 @@ import { Volume2 } from 'lucide-react'
 import { readAloud, selectedText } from './voice'
 
 let owner: symbol | null = null
+// Multiple app shells can mount a reader. Every mounted instance must be able
+// to take ownership after the active shell navigates away.
+const waitingReaders = new Set<() => void>()
 
 interface Spot { text: string; top: number; left: number }
 
@@ -13,9 +16,22 @@ export function SelectionReader() {
   const [id] = useState(() => Symbol('reader'))
   const [active, setActive] = useState(false)
   useEffect(() => {
-    if (owner) return
-    owner = id; setActive(true)
-    return () => { if (owner === id) owner = null }
+    const acquire = () => {
+      if (owner === null || owner === id) {
+        owner = id
+        setActive(true)
+      } else setActive(false)
+    }
+    waitingReaders.add(acquire)
+    acquire()
+    return () => {
+      waitingReaders.delete(acquire)
+      if (owner === id) {
+        owner = null
+        // The first remaining mounted reader claims the single overlay.
+        for (const candidate of waitingReaders) candidate()
+      }
+    }
   }, [id])
 
   useEffect(() => {
