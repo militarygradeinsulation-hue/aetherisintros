@@ -2,11 +2,12 @@
  * Opportunity Graph surfaces. Contextual panels only — they live inside the
  * existing Home, Network, Work, Me, Executive Page and Needs surfaces.
  */
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { ArrowRight, Check, CircleDot, Compass, DoorOpen, Link2, LockKeyhole, Pause, Play, Plus, Route as RouteIcon, ShieldCheck, Trash2, X } from 'lucide-react'
 
 import { supabase } from '@/integrations/supabase/client'
 import { submitIntroRequest } from './lib/intro-request'
+import { confirmIntentReceipt } from './lib/intent-receipt'
 import { useOps } from './crm/store'
 import { useGraph, useGraphInputs } from './graph-store'
 import { useNav } from './nav'
@@ -458,34 +459,94 @@ export function IntentExchangePanel() {
   const [filter, setFilter] = useState<'ALL' | IntentCategory>('ALL')
   const [form, setForm] = useState({ category: 'LOOKING FOR' as IntentCategory, statement: '', industry: '', location: '', privacy: 'network' as IntentPrivacy, days: '30', missionId: '', reveal: true })
   const [msg, setMsg] = useState('')
-  const load = async () => {
-    if (!graph.signedIn) return
-    const r = await db.from('asks').select('id,ask,category,visibility,status,expires_at,industry,location,mission_id').eq('author_id', graph.userId).order('created_at', { ascending: false })
-    setMine(r.data ?? [])
+  const [busy, setBusy] = useState(false)
+  const inFlight = useRef(false)
+  const retryId = useRef<string | null>(null)
+
+  const load = async (): Promise<boolean> => {
+    if (!graph.signedIn || !graph.userId) return false
+    try {
+      const result = await db.from('asks')
+        .select('id,ask,category,visibility,status,expires_at,industry,location,mission_id')
+        .eq('author_id', graph.userId).order('created_at', { ascending: false })
+      if (result.error || !result.data) throw Error('Unable to read the signal list.')
+      setMine(result.data)
+      return true
+    } catch {
+      setMsg('Unable to refresh your signals. Check the connection and reopen this page.')
+      return false
+    }
   }
   useEffect(() => { void load() }, [graph.userId])
+
   const post = async () => {
     const statement = form.statement.trim()
-    if (!statement) return
+    if (!statement || inFlight.current) return
     const privacy = form.privacy === 'trusted' ? 'private' : form.privacy
     if (!graph.signedIn) {
       try {
         await net.addAsk({ ask: statement, detail: `${form.category}`, whyNow: '', offer: '', industry: form.industry, location: form.location, urgency: 'medium', visibility: privacy === 'private' ? 'private' : 'network' })
-        setMsg('Posted in preview only. Sign in with a verified account to publish.'); setForm(f => ({ ...f, statement: '' }))
-      } catch (error) { setMsg(error instanceof Error ? error.message : 'Your ask could not be saved.') }
+        setMsg('Posted to preview only, not the live member network.')
+        setForm(f => ({ ...f, statement: '' }))
+      } catch { setMsg('Could not save the preview signal.') }
       return
     }
-    const expires = new Date(Date.now() + Number(form.days) * 86400000).toISOString()
-    const res = await db.from('asks').insert({
-      id: `ask-${Date.now().toString(36)}`, author_id: graph.userId, ask: statement, detail: '', why_now: '', offer: '', industry: form.industry, location: form.location,
-      urgency: 'medium', posted: 'Just now', response_count: 0, visibility: privacy, category: form.category, expires_at: expires,
-      mission_id: form.missionId || null, reveal_identity: form.reveal, status: 'active',
-    })
-    setMsg(res.error ? res.error.message : form.privacy === 'trusted' ? 'Saved as Private — trusted sharing stays off until an explicit permission model exists.' : privacy === 'private' ? 'Saved privately. Only your matching engine uses it.' : 'Live to verified members until it expires.')
-    if (!res.error) setForm(f => ({ ...f, statement: '' }))
-    await load()
+    if (!graph.userId) { setMsg('Sign in again before publishing a signal.'); return }
+    inFlight.current = true
+    setBusy(true)
+    setMsg('')
+    const newId = retryId.current ?? `ask-${crypto.randomUUID()}`
+    retryId.current = newId
+    try {
+      const expires = new Date(Date.now() + Number(form.days) * 86400000).toISOString()
+      const insert = await db.from('asks').insert({
+        id: newId, author_id: graph.userId, ask: statement, detail: '', why_now: '', offer: '',
+        industry: form.industry, location: form.location, urgency: 'medium',
+        posted: 'Just now', response_count: 0, visibility: privacy, category: form.category,
+        expires_at: expires, mission_id: form.missionId || null,
+        reveal_identity: form.reveal, status: 'active',
+      }).select('id,author_id,status').maybeSingle()
+      // If the first attempt reached the server but its acknowledgement was lost,
+      // retry the same ID and inspect the member-owned row rather than duplicate it.
+      const response = insert.error?.code === '23505'
+        ? await db.from('asks').select('id,author_id,status')
+          .eq('id', newId).eq('author_id', graph.userId).maybeSingle()
+        : insert
+      confirmIntentReceipt(response.data, response.error, newId, graph.userId, 'active')
+      retryId.current = null
+      setForm(f => ({ ...f, statement: '' }))
+      const refreshed = await load()
+      setMsg(!refreshed ? 'Signal saved, but the list did not refresh.' : form.privacy === 'trusted'
+        ? 'Saved privately. Trusted sharing stays off without explicit permission.'
+        : privacy === 'private' ? 'Saved privately.' : 'Signal published to verified members.')
+    } catch {
+      setMsg('The signal was not confirmed saved. Keep this draft and retry after checking your connection.')
+    } finally {
+      inFlight.current = false
+      setBusy(false)
+    }
   }
-  const close = async (id: string) => { await db.from('asks').update({ status: 'closed' }).eq('id', id); await load() }
+
+  const close = async (id: string) => {
+    if (inFlight.current) return
+    if (!graph.signedIn || !graph.userId) { setMsg('Sign in before editing your signal.'); return }
+    inFlight.current = true
+    setBusy(true)
+    setMsg('')
+    try {
+      const result = await db.from('asks').update({ status: 'closed' })
+        .eq('id', id).eq('author_id', graph.userId)
+        .select('id,author_id,status').maybeSingle()
+      confirmIntentReceipt(result.data, result.error, id, graph.userId, 'closed')
+      const refreshed = await load()
+      setMsg(refreshed ? 'Signal closed.' : 'Signal closed, but its list did not refresh.')
+    } catch {
+      setMsg('Closure was not confirmed. Refresh to check the signal before retrying.')
+    } finally {
+      inFlight.current = false
+      setBusy(false)
+    }
+  }
   const network = net.asks.filter(a => !a.mine && a.memberId !== 'me' && a.visibility !== 'private')
     .filter(a => filter === 'ALL' || ((a as unknown as { category?: string }).category ?? 'LOOKING FOR') === filter)
   return <section className="og-exchange">
@@ -501,9 +562,9 @@ export function IntentExchangePanel() {
       <label>Mission<select value={form.missionId} onChange={e => setForm(f => ({ ...f, missionId: e.target.value }))}><option value="">None</option>{graph.missions.filter(m => m.status !== 'completed').map(m => <option key={m.id} value={m.id}>{m.title}</option>)}</select></label>
       <label className="og-check"><input type="checkbox" checked={form.reveal} onChange={e => setForm(f => ({ ...f, reveal: e.target.checked }))} /> Reveal my identity</label>
     </div>
-    <Btn disabled={!form.statement.trim()} onClick={() => void post()}><CircleDot size={14} /> Post Signal</Btn>
-    {msg && <p className="executive-form-note">{msg}</p>}
-    {mine.length > 0 && <div className="og-mine"><Eyebrow>YOUR SIGNALS</Eyebrow>{mine.map(i => <article key={i.id}><b>{i.category}</b><span>{i.ask}</span><small>{i.visibility.toUpperCase()} · {i.status}{i.expires_at ? ` · expires ${new Date(i.expires_at).toLocaleDateString()}` : ''}</small>{i.status === 'active' && <button onClick={() => void close(i.id)}>Close</button>}</article>)}</div>}
+    <Btn disabled={busy || !form.statement.trim()} onClick={() => void post()}><CircleDot size={14} /> Post Signal</Btn>
+    {msg && <p className="executive-form-note" role="status">{msg}</p>}
+    {mine.length > 0 && <div className="og-mine"><Eyebrow>YOUR SIGNALS</Eyebrow>{mine.map(i => <article key={i.id}><b>{i.category}</b><span>{i.ask}</span><small>{i.visibility.toUpperCase()} · {i.status}{i.expires_at ? ` · expires ${new Date(i.expires_at).toLocaleDateString()}` : ''}</small>{i.status === 'active' && <button disabled={busy} onClick={() => void close(i.id)}>Close</button>}</article>)}</div>}
     <div className="state-filters">{(['ALL', ...INTENT_CATEGORIES] as const).map(c => <button key={c} className={filter === c ? 'active' : ''} onClick={() => setFilter(c)}>{c}</button>)}</div>
     <div className="og-reverse-list">{network.slice(0, 8).map(a => { const m = net.members.find(x => x.id === a.memberId); return <article key={a.id}>
       <header><b>{(a as unknown as { category?: string }).category ?? 'LOOKING FOR'}</b><small>{m?.name ?? 'Verified member'} · {a.posted}</small></header><p>{a.ask}</p>
