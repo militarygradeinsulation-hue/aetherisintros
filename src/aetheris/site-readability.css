@@ -470,3 +470,53 @@ body .collision-card .collision-faces button:focus-visible {
   outline-offset:3px!important;
 }
 body .ix-root .ix-relationship-tier-quick-option { min-height:44px; }
+
+/* Member profile heroes must pair ink with their actual appearance surface. */
+html:root[data-theme="dark"] body .executive-page .executive-identity {
+  --member-ink:#ffffff;
+  --member-detail:#d9e1e6;
+  --member-panel:#172229;
+}
+html:root[data-theme="light"] body .executive-page .executive-identity {
+  --member-ink:#12181d;
+  --member-detail:#3a464d;
+  --member-panel:#f7f9fa;
+}
+html:root[data-theme] body .executive-page .executive-identity {
+  background:var(--member-panel)!important;
+  color:var(--member-ink)!important;
+}
+html:root[data-theme] body .executive-page .executive-identity-copy :is(h1,.executive-role,.executive-statement) {
+  color:var(--member-ink)!important;
+  -webkit-text-fill-color:var(--member-ink)!important;
+  opacity:1!important;
+}
+html:root[data-theme] body .executive-page .executive-identity-copy :is(.executive-verified,.executive-meta,.executive-verified span) {
+  color:var(--member-detail)!important;
+  -webkit-text-fill-color:var(--member-detail)!important;
+  opacity:1!important;
+}
+html:root[data-theme] body .executive-page .executive-identity figure {
+  min-width:0;
+  overflow:hidden;
+}
+html:root[data-theme] body .executive-page .executive-identity figure .person-avatar {
+  display:block;
+  width:100%!important;
+  height:100%!important;
+  min-width:0;
+}
+html:root[data-theme] body .executive-page .executive-identity figure .person-avatar img {
+  display:block!important;
+  width:100%!important;
+  height:100%!important;
+  object-fit:cover!important;
+  object-position:center 28%;
+  filter:none!important;
+  opacity:1!important;
+  visibility:visible!important;
+}
+html:root[data-theme] body .executive-page .executive-identity-copy {
+  min-width:0;
+  overflow-wrap:anywhere;
+}
