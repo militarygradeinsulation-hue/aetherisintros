@@ -67,6 +67,18 @@ export default function Landing() {
       <div className="ael-hero-shade" aria-hidden="true" />
       <div className="ael-architecture-meta" aria-hidden="true"><span>RELATIONSHIPS / BY DESIGN</span><span>ASK INTROS — CONNECTION 001</span></div>
       <div className="ael-hero-content">
+        <div className="ael-platform-unified" aria-label="One workspace for your business tools">
+          <p className="ael-platform-eyebrow">YOUR TOOLS. ONE EXPERIENCE.</p>
+          <div className="ael-platform-brands" aria-label="Example platforms">
+            <span className="ael-platform-brand"><img src="https://www.google.com/s2/favicons?domain=linkedin.com&sz=128" alt="LinkedIn logo" width={30} height={30} loading="eager" />LinkedIn</span>
+            <span className="ael-platform-brand"><img src="https://www.google.com/s2/favicons?domain=salesforce.com&sz=128" alt="Salesforce logo" width={30} height={30} loading="eager" />Salesforce</span>
+            <span className="ael-platform-brand"><img src="https://www.google.com/s2/favicons?domain=meet.google.com&sz=128" alt="Google Meet logo" width={30} height={30} loading="eager" />Google Meet</span>
+            <span className="ael-platform-brand"><img src="https://www.google.com/s2/favicons?domain=zoominfo.com&sz=128" alt="ZoomInfo logo" width={30} height={30} loading="eager" />ZoomInfo</span>
+            <span className="ael-platform-more">+ 60 MORE</span>
+          </div>
+          <p className="ael-platform-promise">LinkedIn, Salesforce, Google Meet, ZoomInfo and 60 more. <strong>All rolled into one.</strong></p>
+          <small className="ael-platform-disclosure">Brand logos identify third-party products, not endorsements. Connection availability varies.</small>
+        </div>
         <p className="ael-kicker ael-kicker-light"><span className="ael-dash" /> Relationships by design</p>
         <h1 id="ael-hero-title" className="stencil-display"><span className="sr-only">The right room changes everything.</span><StencilHeadline lines={['THE RIGHT ROOM', 'CHANGES', 'EVERYTHING']} className="stencil-headline--hero" /></h1>
         <p className="ael-hero-lede">The people who matter. A reason to meet. A place to make something happen.</p>
