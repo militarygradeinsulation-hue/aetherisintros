@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { AskIntrosLockup } from '@/aetheris/AskIntrosLockup';
-import { Search, Bell, Orbit, LogOut, Home, Users, MessageSquare, MoreHorizontal, Network, Brain, Newspaper, Briefcase, X, Video, ChevronDown } from 'lucide-react';
+import { Search, Bell, Orbit, LogOut, Home, Users, MessageSquare, MoreHorizontal, Network, Brain, Newspaper, Briefcase, X, Video, ChevronDown, TrendingUp } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { AvatarImage } from '@/aetheris/avatar';
 import { signOutMember } from '@/aetheris/sync/workspace-sync';
@@ -151,6 +151,10 @@ export const TopNavigation: React.FC<TopNavigationProps> = ({
                     <Icon className="w-4 h-4" aria-hidden="true" />{label}
                   </button>
                 ))}
+                <a role="menuitem" href="/member-intelligence" onClick={() => setDeskMoreOpen(false)}
+                  className="ix-desktop-more-item w-full flex items-center gap-2 rounded-lg px-3 py-2.5 text-left text-[13px] cursor-pointer">
+                  <TrendingUp className="w-4 h-4" aria-hidden="true" />Member Intelligence
+                </a>
               </div>
             )}
           </div>
@@ -228,6 +232,8 @@ export const TopNavigation: React.FC<TopNavigationProps> = ({
       <div ref={sheetRef} id="mobile-more-menu" className="ix-mobile-sheet" role="dialog" aria-modal="true" aria-label="More destinations">
         <div className="ix-mobile-sheet-head"><span>More</span><Button variant="ghost" size="icon" aria-label="Close more menu" onClick={closeMore}><X /></Button></div>
         {mobileExtra.map(({ id, label, icon: Icon }) => <Button key={id} variant="ghost" className="ix-mobile-sheet-item" aria-current={activePage === id ? 'page' : undefined} onClick={() => { closeMore(); onNavigate(id); }}><Icon aria-hidden="true" />{label}</Button>)}
+        <a href="/member-intelligence" className="ix-mobile-sheet-item flex items-center gap-3" style={{ color: 'var(--st-ink)' }}
+          onClick={() => setMoreOpen(false)}><TrendingUp aria-hidden="true" />Member Intelligence</a>
         <Button variant="ghost" className="ix-mobile-sheet-item" onClick={() => { closeMore(); if (onOpenMyProfile) onOpenMyProfile(); else onNavigate('profile', 'sarah-chen'); }}><Users aria-hidden="true" />My profile</Button>
         <Button variant="ghost" className="ix-mobile-sheet-item" onClick={() => { closeMore(); void signOut(); }}><LogOut aria-hidden="true" />Log out</Button>
       </div>
