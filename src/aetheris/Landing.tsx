@@ -73,12 +73,13 @@ export default function Landing() {
         <div className="ael-platform-strip" aria-label="Familiar business platforms Ask Intros brings together in one experience">
           <p className="ael-platform-statement">LinkedIn, Salesforce, Google Meet, ZoomInfo <strong>and 60+ more, all rolled into one.</strong></p>
           <div className="ael-platform-marks" aria-label="LinkedIn, Salesforce, Google Meet, and ZoomInfo brand marks">
-            <span className="ael-platform-mark"><img src="https://cdn.simpleicons.org/linkedin/0A66C2" alt="" width={26} height={26} loading="eager" /><span>LinkedIn</span></span>
-            <span className="ael-platform-mark"><img src="https://cdn.simpleicons.org/salesforce/00A1E0" alt="" width={26} height={26} loading="eager" /><span>Salesforce</span></span>
-            <span className="ael-platform-mark"><img src="https://cdn.simpleicons.org/googlemeet/00897B" alt="" width={26} height={26} loading="eager" /><span>Google Meet</span></span>
-            <span className="ael-platform-mark"><img src="https://commons.wikimedia.org/wiki/Special:FilePath/ZoomInfo_logo_%282024%29.png" alt="" width={26} height={26} loading="eager" /><span>ZoomInfo</span></span>
+            <span className="ael-platform-mark"><img src="https://cdn.simpleicons.org/linkedin/0A66C2" onError={e => { e.currentTarget.onerror = null; e.currentTarget.src = "https://www.google.com/s2/favicons?domain=linkedin.com&sz=128" }} alt="" width={26} height={26} loading="eager" /><span>LinkedIn</span></span>
+            <span className="ael-platform-mark"><img src="https://cdn.simpleicons.org/salesforce/00A1E0" onError={e => { e.currentTarget.onerror = null; e.currentTarget.src = "https://www.google.com/s2/favicons?domain=salesforce.com&sz=128" }} alt="" width={26} height={26} loading="eager" /><span>Salesforce</span></span>
+            <span className="ael-platform-mark"><img src="https://cdn.simpleicons.org/googlemeet/00897B" onError={e => { e.currentTarget.onerror = null; e.currentTarget.src = "https://www.google.com/s2/favicons?domain=meet.google.com&sz=128" }} alt="" width={26} height={26} loading="eager" /><span>Google Meet</span></span>
+            <span className="ael-platform-mark"><img src="https://www.google.com/s2/favicons?domain=zoominfo.com&sz=128" alt="" width={26} height={26} loading="eager" /><span>ZoomInfo</span></span>
             <span className="ael-platform-more">+60 more</span>
           </div>
+          <p className="ael-platform-disclaimer">Brand marks are illustrative. No affiliation or live integration is implied.</p>
         </div>
         <div className="ael-hero-actions">
           <JoinAction signedIn={signedIn} className="ael-btn ael-btn-gold ai-gradient-button" />
