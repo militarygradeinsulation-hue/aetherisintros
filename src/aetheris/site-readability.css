@@ -470,3 +470,98 @@ body .collision-card .collision-faces button:focus-visible {
   outline-offset:3px!important;
 }
 body .ix-root .ix-relationship-tier-quick-option { min-height:44px; }
+
+/* Member profile heroes must pair ink with their actual appearance surface. */
+html:root[data-theme="dark"] body .executive-page .executive-identity {
+  --member-ink:#ffffff;
+  --member-detail:#d9e1e6;
+  --member-panel:#172229;
+}
+html:root[data-theme="light"] body .executive-page .executive-identity {
+  --member-ink:#12181d;
+  --member-detail:#3a464d;
+  --member-panel:#f7f9fa;
+}
+html:root[data-theme] body .executive-page .executive-identity {
+  background:var(--member-panel)!important;
+  color:var(--member-ink)!important;
+}
+html:root[data-theme] body .executive-page .executive-identity-copy :is(h1,.executive-role,.executive-statement) {
+  color:var(--member-ink)!important;
+  -webkit-text-fill-color:var(--member-ink)!important;
+  opacity:1!important;
+}
+html:root[data-theme] body .executive-page .executive-identity-copy :is(.executive-verified,.executive-meta,.executive-verified span) {
+  color:var(--member-detail)!important;
+  -webkit-text-fill-color:var(--member-detail)!important;
+  opacity:1!important;
+}
+html:root[data-theme] body .executive-page .executive-identity figure {
+  min-width:0;
+  overflow:hidden;
+}
+html:root[data-theme] body .executive-page .executive-identity figure .person-avatar {
+  display:block;
+  width:100%!important;
+  height:100%!important;
+  min-width:0;
+}
+html:root[data-theme] body .executive-page .executive-identity figure .person-avatar img {
+  display:block!important;
+  width:100%!important;
+  height:100%!important;
+  object-fit:cover!important;
+  object-position:center 28%;
+  filter:none!important;
+  opacity:1!important;
+  visibility:visible!important;
+}
+html:root[data-theme] body .executive-page .executive-identity-copy {
+  min-width:0;
+  overflow-wrap:anywhere;
+}
+
+/* SYSTEMS AND CIRCLES: these pages previously combined black (var(--ivory))
+ * surfaces with fixed charcoal #2a2f36 headings and descriptions. */
+html:root[data-theme="dark"] body :is(.sys-hero,.circle-hero) {
+  --detail-hero-surface:#141b1f;
+  --detail-hero-ink:#f7fafc;
+  --detail-hero-sub:#d1dce2;
+  --detail-hero-rule:rgba(255,255,255,.3);
+}
+html:root[data-theme="light"] body :is(.sys-hero,.circle-hero) {
+  --detail-hero-surface:#f7f9fa;
+  --detail-hero-ink:#111820;
+  --detail-hero-sub:#3a4650;
+  --detail-hero-rule:rgba(0,0,0,.3);
+}
+html:root[data-theme] body :is(.sys-hero,.circle-hero) {
+  background:var(--detail-hero-surface)!important;
+  color:var(--detail-hero-ink)!important;
+  border-color:var(--detail-hero-rule)!important;
+  min-width:0;
+}
+html:root[data-theme] body :is(.sys-hero,.circle-hero) :is(h1,.sys-stats dd) {
+  color:var(--detail-hero-ink)!important;
+  -webkit-text-fill-color:var(--detail-hero-ink)!important;
+  opacity:1!important;
+  overflow-wrap:anywhere;
+}
+html:root[data-theme] body :is(.sys-hero,.circle-hero)
+  :is(h2,p,.eyebrow,.sys-stats dt,.sys-hero-side span,.sys-hero-side p,.sys-hero-side .mod-list li) {
+  color:var(--detail-hero-sub)!important;
+  -webkit-text-fill-color:var(--detail-hero-sub)!important;
+  opacity:1!important;
+}
+html:root[data-theme] body :is(.sys-hero,.circle-hero)
+  :is(.sys-hero-side,.sys-stats,.shared-list li) {
+  border-color:var(--detail-hero-rule)!important;
+}
+html:root[data-theme] body :is(.sys-hero,.circle-hero) .purpose-actions button {
+  color:var(--detail-hero-ink)!important;
+  -webkit-text-fill-color:var(--detail-hero-ink)!important;
+  border-color:var(--detail-hero-rule)!important;
+}
+html:root[data-theme] body :is(.sys-hero,.circle-hero) :is(.eyebrow,.sys-stats dt,.sys-hero-side span) {
+  font-size:max(11px, .7rem);
+}
