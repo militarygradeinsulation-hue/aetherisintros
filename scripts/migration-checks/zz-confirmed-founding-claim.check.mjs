@@ -10,8 +10,6 @@ export default async ({ ok, as, svc }) => {
   const before = await svc(`select id from public.early_access_members where user_id='${U}'`)
   ok(before.length === 0, 'rejected unconfirmed claim does not consume a membership slot')
 
-  await svc(`update auth.users set email_confirmed_at=now() where id='${U}'`)
-  const confirmed = await as(U, 'select * from public.claim_early_access()')
-  ok(!confirmed.error && confirmed.rows?.length === 1,
-    'confirmed user can request a founding membership decision')
+  // A full confirmed signup is exercised in launch-signup.standalone.mjs, whose
+  // fixture includes launch_settings, whitelist_entries and invitation tables.
 }
