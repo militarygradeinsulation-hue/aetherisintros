@@ -77,7 +77,8 @@ export async function claimAccess(inviteCode?: string): Promise<{ status: Access
 }
 
 export async function fetchAccess(): Promise<AccessState> {
-  const { data: userData } = await supabase.auth.getUser()
+  const { data: userData, error: authError } = await supabase.auth.getUser()
+  if (authError) throw authError
   const user = userData.user
   if (!user) return { ...noAccess, loading: false }
 
@@ -97,6 +98,11 @@ export async function fetchAccess(): Promise<AccessState> {
     try { await claimAccess(code || undefined); if (code) clearInvite() } catch { /* the page surfaces the state below */ }
   }
 
+  // Never grant network or admin privileges from partial/failed database reads.
+  // The caller must surface the error rather than mistaking a permission failure
+  // for a new or unapproved member.
+  if (existing.error) throw existing.error
+
   const [membership, roles, profile, stats, verification] = await Promise.all([
     supabase.from('early_access_members').select('status, founding_member_number').eq('user_id', user.id).maybeSingle(),
     supabase.from('user_roles').select('role').eq('user_id', user.id),
@@ -104,6 +110,10 @@ export async function fetchAccess(): Promise<AccessState> {
     foundingStats(),
     fetchVerification(),
   ])
+
+  for (const result of [membership, roles, profile]) {
+    if (result.error) throw result.error
+  }
 
   return {
     loading: false,
