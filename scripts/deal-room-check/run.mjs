@@ -110,7 +110,7 @@ await page.waitForFunction(() => document.querySelector('.deals-flash')?.textCon
 ok(await page.isVisible('text=Raise readiness: model, data room, investor Q&A.'), 'terms save and show')
 await page.fill('[aria-label="New milestone"]', 'Three-statement model')
 await btn('Add milestone').click()
-await page.waitForFunction(() => document.querySelector('.deals-flash')?.textContent?.includes('Milestone "Three-statement model" added'))
+await page.waitForFunction(() => document.querySelector('.deals-flash')?.textContent?.includes('Milestone “Three-statement model” added'))
 ok(!(await has('Submit for review')), "the buyer is not offered to submit the provider's milestone")
 ok(!(await has('Mark delivered')), "the buyer cannot mark the provider's work delivered")
 
@@ -125,7 +125,7 @@ ok(!(await has('Request changes')), 'the provider cannot review their own submis
 await as('A')
 await openRoom('Deal with Ben Okafor')
 await page.locator('.deals-milestone').getByRole('button', { name: 'Accept' }).click()
-await page.waitForFunction(() => document.querySelector('.deals-flash')?.textContent?.includes('"Three-statement model" accepted'))
+await page.waitForFunction(() => document.querySelector('.deals-flash')?.textContent?.includes('“Three-statement model” accepted'))
 ok(await page.isVisible('.deals-milestone.m-accepted'), 'the buyer accepts the milestone')
 await page.fill('[aria-label="Add a note"]', 'Kick-off call went well.')
 await btn('Add note').click()
