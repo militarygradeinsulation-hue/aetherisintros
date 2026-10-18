@@ -16,6 +16,8 @@ export type LaunchMode = 'first_1000' | 'invite_only' | 'closed'
 
 export interface AccessState {
   loading: boolean
+  /** A failed authorization lookup is not evidence of membership or sign-out. */
+  error: string | null
   signedIn: boolean
   emailConfirmed: boolean
   userId: string | null
@@ -31,7 +33,7 @@ export interface AccessState {
 }
 
 export const noAccess: AccessState = {
-  loading: true, signedIn: false, emailConfirmed: false, userId: null, email: '', name: '',
+  loading: true, error: null, signedIn: false, emailConfirmed: false, userId: null, email: '', name: '',
   status: 'none', foundingNumber: null, mode: 'invite_only', isAdmin: false, onboarded: false,
   verification: 'none',
 }
@@ -78,6 +80,9 @@ export async function claimAccess(inviteCode?: string): Promise<{ status: Access
 
 export async function fetchAccess(): Promise<AccessState> {
   const { data: userData, error: authError } = await supabase.auth.getUser()
+  // A visitor without a session is a legitimate guest, not a database outage.
+  // All other auth failures remain hard errors and never grant membership.
+  if (authError?.name === 'AuthSessionMissingError') return { ...noAccess, loading: false }
   if (authError) throw authError
   const user = userData.user
   if (!user) return { ...noAccess, loading: false }
@@ -117,6 +122,7 @@ export async function fetchAccess(): Promise<AccessState> {
 
   return {
     loading: false,
+    error: null,
     signedIn: true,
     emailConfirmed: Boolean(user.email_confirmed_at),
     userId: user.id,
@@ -131,22 +137,36 @@ export async function fetchAccess(): Promise<AccessState> {
   }
 }
 
+const ACCESS_READ_ERROR = 'We could not verify your membership right now. Your account has not been changed. Please retry.'
+
 export function useAccess() {
   const [access, setAccess] = useState<AccessState>(noAccess)
 
   const refresh = useCallback(async () => {
-    setAccess(await fetchAccess())
+    setAccess(prev => ({ ...prev, loading: true, error: null }))
+    try {
+      setAccess(await fetchAccess())
+    } catch {
+      // Fail closed, but surface a recoverable failure rather than leaving the page
+      // loading forever or redirecting a signed-in member to the sign-in screen.
+      setAccess({ ...noAccess, loading: false, error: ACCESS_READ_ERROR })
+    }
   }, [])
 
   useEffect(() => {
     let cancelled = false
-    void fetchAccess().then(next => { if (!cancelled) setAccess(next) })
+    const load = () => {
+      void fetchAccess()
+        .then(next => { if (!cancelled) setAccess(next) })
+        .catch(() => {
+          if (!cancelled) setAccess({ ...noAccess, loading: false, error: ACCESS_READ_ERROR })
+        })
+    }
+    load()
     const { data: sub } = supabase.auth.onAuthStateChange(event => {
       if (event !== 'SIGNED_IN' && event !== 'SIGNED_OUT' && event !== 'USER_UPDATED') return
       // Auth callbacks run under the client session lock; read after it is released.
-      setTimeout(() => {
-        if (!cancelled) void fetchAccess().then(next => { if (!cancelled) setAccess(next) })
-      }, 0)
+      setTimeout(() => { if (!cancelled) load() }, 0)
     })
     return () => { cancelled = true; sub.subscription.unsubscribe() }
   }, [])

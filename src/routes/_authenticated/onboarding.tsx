@@ -50,7 +50,7 @@ const list = (value: string) => value.split(/[,·;/]+/).map(x => x.trim()).filte
 
 function OnboardingRoute() {
   const navigate = useNavigate()
-  const { access } = useAccess()
+  const { access, refresh } = useAccess()
   const [answers, setAnswers] = useState<Record<string, string>>({})
   const [busy, setBusy] = useState(false)
   const [profileSaved, setProfileSaved] = useState(false)
@@ -59,7 +59,7 @@ function OnboardingRoute() {
   const [linkedinUrl, setLinkedinUrl] = useState('')
 
   useEffect(() => {
-    if (access.loading) return
+    if (access.loading || access.error) return
     if (access.status !== 'approved' || !access.emailConfirmed || access.verification === 'rejected' || access.verification === 'suspended') void navigate({ to: '/early-access', replace: true })
     else if (access.name && !answers['name']) setAnswers(prev => ({ ...prev, name: access.name }))
   }, [access, answers, navigate])
@@ -124,6 +124,14 @@ function OnboardingRoute() {
       savingRef.current = false
       setBusy(false)
     }
+  }
+
+  if (access.error) {
+    return <main className="access-waiting" role="alert">
+      <span className="folio">ASK INTROS / CONNECTION ISSUE</span>
+      <p>{access.error}</p>
+      <button type="button" className="btn secondary" onClick={() => { void refresh() }}>Retry membership check</button>
+    </main>
   }
 
   return <main className="onboarding-page">

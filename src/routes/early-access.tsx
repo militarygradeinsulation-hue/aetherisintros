@@ -103,8 +103,12 @@ function EarlyAccessPage() {
       </div>
 
       {access.loading && <p className="auth-notice">Checking your place…</p>}
+      {access.error && <div className="auth-error" role="alert">
+        <p>{access.error}</p>
+        <button className="btn secondary" type="button" onClick={() => { void refresh() }}>Retry membership check</button>
+      </div>}
 
-      {!access.loading && !access.signedIn && <>
+      {!access.loading && !access.error && !access.signedIn && <>
         <p className="auth-lede">Explore the complete showcase without an account. Create one only when you are ready to build your real professional network.</p>
         <div className="access-entry-actions">
           <Link to="/demo" className="btn primary">Demo the system <ArrowRight size={15} /></Link>
@@ -112,7 +116,7 @@ function EarlyAccessPage() {
         </div>
       </>}
 
-      {!access.loading && access.signedIn && access.status !== 'approved' && <>
+      {!access.loading && !access.error && access.signedIn && access.status !== 'approved' && <>
         {access.status === 'waitlisted' && <p className="auth-notice"><Clock size={13} /> You are on the waitlist. Nothing more to do — we will write when a place opens.</p>}
         {access.status === 'suspended' && <p className="auth-error"><ShieldAlert size={13} /> This account is suspended. Reply to your welcome email and we will look at it.</p>}
         {access.status === 'denied' && <p className="auth-error"><ShieldAlert size={13} /> This account was not approved for early access.</p>}
@@ -134,7 +138,7 @@ function EarlyAccessPage() {
         </button>
       </>}
 
-      {!access.loading && !access.signedIn && stats.mode !== 'first_1000' && <div className="access-waitlist">
+      {!access.loading && !access.error && !access.signedIn && stats.mode !== 'first_1000' && <div className="access-waitlist">
         <label className="access-field">
           <span>JOIN THE WAITLIST</span>
           <input type="email" value={waitEmail} onChange={e => setWaitEmail(e.target.value)} placeholder="you@company.com" />
