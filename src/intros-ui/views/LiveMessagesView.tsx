@@ -102,8 +102,8 @@ function Inner({ onOpenWorkspaces }: { onOpenWorkspaces?: () => void }) {
               const count = reads.loaded ? (reads.threads[t.id]?.unread ?? 0) : (t.unread ? 1 : 0)
               const label = reads.loaded ? badgeLabel(count) : ''
               return (
-                <button key={t.id} onClick={() => setActiveId(t.id)}
-                  className={`w-full text-left px-3 py-3 border-b border-[var(--msg-border)] flex gap-3 cursor-pointer ${on ? 'bg-[var(--msg-selected)]' : 'hover:bg-[var(--msg-selected)]'}`}>
+                <button key={t.id} type="button" data-selected={on} aria-current={on ? 'true' : undefined} onClick={() => setActiveId(t.id)}
+                  className={`msg-thread-tile w-full text-left px-3 py-3 border-b border-[var(--msg-border)] flex gap-3 cursor-pointer ${on ? 'bg-[var(--msg-selected)]' : 'hover:bg-[var(--msg-selected)]'}`}>
                   <div className="w-9 h-9 shrink-0 rounded-full bg-[var(--msg-incoming)] border border-[var(--msg-border)] flex items-center justify-center text-[11px] text-[var(--msg-ink)]">
                     {(m?.name ?? '?').split(' ').map(s => s[0]).slice(0, 2).join('')}
                   </div>

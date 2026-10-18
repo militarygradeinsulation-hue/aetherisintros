@@ -262,8 +262,9 @@ export const MessagesView: React.FC<MessagesViewProps> = ({
                 return (
                   <div
                     key={thread.id}
+                    data-selected={isSelected}
                     onClick={() => setSelectedThreadId(thread.id)}
-                    className={`p-2.5 rounded-lg cursor-pointer transition-all flex items-start gap-2.5 ${
+                    className={`msg-thread-tile p-2.5 rounded-lg cursor-pointer transition-all flex items-start gap-2.5 ${
                       isSelected
                         ? 'bg-[var(--msg-selected)] border border-[var(--msg-accent)] shadow-sm'
                         : 'hover:bg-[var(--msg-hover)] border border-transparent'

@@ -643,3 +643,27 @@ html:root[data-theme="dark"] body .ix-root .ix-live-messages .meeting-brief p.te
     white-space:normal;
   }
 }
+
+/* Selected conversation identity follows the actual appearance mode rather
+ * than inferring selection from fragile Tailwind class text. Keep avatars,
+ * timestamps and unread badges on their dedicated color tokens. */
+html:root[data-theme="light"] body .ix-root
+  :is(.ix-messages,.ix-live-messages) .msg-thread-tile[data-selected="true"] {
+  background-color:#eaeaea!important;
+}
+html:root[data-theme="dark"] body .ix-root
+  :is(.ix-messages,.ix-live-messages) .msg-thread-tile[data-selected="true"] {
+  background-color:#202020!important;
+}
+html:root[data-theme="light"] body .ix-root
+  :is(.ix-messages,.ix-live-messages) .msg-thread-tile[data-selected="true"]
+  :is(span.text-sm,span.text-xs.font-semibold) {
+  color:#090909!important;
+  -webkit-text-fill-color:#090909!important;
+}
+html:root[data-theme="dark"] body .ix-root
+  :is(.ix-messages,.ix-live-messages) .msg-thread-tile[data-selected="true"]
+  :is(span.text-sm,span.text-xs.font-semibold) {
+  color:#fff!important;
+  -webkit-text-fill-color:#fff!important;
+}
