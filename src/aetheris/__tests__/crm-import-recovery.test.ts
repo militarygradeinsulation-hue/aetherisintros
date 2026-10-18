@@ -27,5 +27,7 @@ describe('CRM import validation and recovery', () => {
     expect(source).toContain('if (failed)')
     expect(source).toContain('The source file remains loaded')
     expect(source).toContain('safeImportSelection(checked, skipBad)')
+    expect(source).toContain('importedRowsRef.current.add')
+    expect(source).toContain('!importedRowsRef.current.has')
   })
 })
