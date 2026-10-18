@@ -3,7 +3,7 @@
  * This is used before local feed, learning, or activity mutations.
  */
 type NetworkReceipt = {
-  data: { id: string; author_id: string } | null
+  data: { id: string; author_id: string | null } | null
   error: { message?: string } | null
 }
 
