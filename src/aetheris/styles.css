@@ -6141,3 +6141,39 @@ body:has([role=menu],[role=listbox],.ix-mobile-sheet,.topbar-dropmenu,.notificat
 @media(prefers-reduced-motion:reduce) {
   :where(.app-shell,.ask-os,.editorial-home) :is(.btn.primary,.ai-gradient-button,.eh-primary,.tile-cta,.memory-cta),.auth-panel .btn.primary {animation:none;}
 }
+
+/* Ask Intros: suggested next actions must not be clipped under the composer
+   or disappear off the right edge on mobile and zoomed layouts. */
+.ask-dock { min-width: 0; }
+.ask-dock-log { min-height: 0; min-width: 0; overflow-wrap: anywhere; }
+.ask-dock-openers {
+  flex: 0 0 auto;
+  flex-wrap: wrap;
+  overflow-x: visible;
+  overflow-y: auto;
+  max-height: min(34vh, 180px);
+  align-content: flex-start;
+  gap: 8px;
+  padding: 10px 14px 12px;
+  min-width: 0;
+}
+.ask-dock-openers-label { align-self: center; }
+.ask-dock-openers button {
+  flex: 0 1 auto;
+  min-width: 0;
+  max-width: 100%;
+  min-height: 36px;
+  white-space: normal;
+  overflow-wrap: anywhere;
+  text-align: left;
+  line-height: 1.35;
+  padding: 8px 12px;
+}
+.ask-dock-input { flex: 0 0 auto; min-width: 0; align-items: stretch; }
+.ask-dock-input input { min-width: 0; width: 0; }
+.ask-dock-input button { flex: 0 0 38px; min-height: 44px; }
+@media (max-width: 820px) {
+  .ask-dock { max-width: calc(100vw - 20px); }
+  .ask-dock-openers { max-height: min(28vh, 152px); }
+  .ask-dock-openers button { font-size: 13px; min-height: 44px; }
+}
