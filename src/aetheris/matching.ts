@@ -61,7 +61,7 @@ export function scoreMatch(
   // Listed mutual names and free-form best-path text are not verified edges.
   // Score only a direct recorded connection or verified common contact.
   const directConnection = context.connections.includes(member.id)
-  const trustDepth = directConnection ? 100 : Math.min(90, mutualConnections.length * 50)
+  const trustDepth = directConnection ? 100 : Math.min(60, mutualConnections.length * 25)
   const lastInteraction = member.lastInteractionDays
   const timing = lastInteraction == null || !Number.isFinite(lastInteraction)
     ? 0 : Math.max(0, 100 - Math.min(Math.max(0, lastInteraction), 180) / 1.8)
@@ -92,7 +92,7 @@ export function scoreMatch(
     {
       label: 'Trust path', weight: 0.18, score: trustDepth,
       evidence: directConnection ? 'You already have a recorded connection with this member.'
-        : mutualConnections.length ? `Warm through ${mutualConnections.slice(0, 2).join(' and ')} in your recorded connections.`
+        : mutualConnections.length ? `Possible path via ${mutualConnections.slice(0, 2).join(' and ')}, who are in your recorded connections. Their connection to the target is member-listed, not independently confirmed.`
           : member.mutuals.length || member.bestPath.length > 2
             ? 'A member-listed path exists, but no connecting edge to your recorded network is confirmed.'
             : 'No recorded warm path yet; a direct, consent-based introduction is the honest route.',
