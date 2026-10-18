@@ -13,6 +13,7 @@
 import { supabase } from '@/integrations/supabase/client'
 import { parseBusinessDetails } from './business-posts'
 import { reportClientError } from '@/lib/error-report'
+import { requireSavedNetworkRecord } from './lib/network-write-receipt'
 import type { PrivacyScope } from './types'
 import {
   learnings as catalogueLearnings, members as catalogueMembers, networkAsks as catalogueAsks,
@@ -212,28 +213,34 @@ export function saveNote(userId: string, note: MemoryNote) {
 }
 
 export async function savePost(userId: string, post: Post): Promise<void> {
-  const { error } = await supabase.from('posts').insert({
-    id: post.id, author_id: userId, kind: post.kind, text: post.text,
-    detail: post.detail, when_label: post.when, response_count: 0,
-    media: (post.media ?? []) as never, visibility: post.visibility ?? 'network',
-    ...(post.business ? { business: post.business as never } : {}),
-  })
-  if (error) {
-    reportClientError(error, 'post-persist')
-    throw new Error('Your post could not be saved. Check your connection and try again.')
-  }
+  await requireSavedNetworkRecord(
+    async () => {
+      const result = await supabase.from('posts').insert({
+        id: post.id, author_id: userId, kind: post.kind, text: post.text,
+        detail: post.detail, when_label: post.when, response_count: 0,
+        media: (post.media ?? []) as never, visibility: post.visibility ?? 'network',
+        ...(post.business ? { business: post.business as never } : {}),
+      }).select('id,author_id').maybeSingle()
+      if (result.error) reportClientError(result.error, 'post-persist')
+      return result
+    },
+    post.id, userId, 'post',
+  )
 }
 
 export async function saveAsk(userId: string, ask: NetworkAsk): Promise<void> {
-  const { error } = await supabase.from('asks').insert({
-    id: ask.id, author_id: userId, ask: ask.ask, detail: ask.detail, why_now: ask.whyNow,
-    offer: ask.offer, industry: ask.industry, location: ask.location, urgency: ask.urgency,
-    posted: ask.posted, response_count: 0, visibility: ask.visibility,
-  })
-  if (error) {
-    reportClientError(error, 'ask-persist')
-    throw new Error('Your need could not be saved. Check your connection and try again.')
-  }
+  await requireSavedNetworkRecord(
+    async () => {
+      const result = await supabase.from('asks').insert({
+        id: ask.id, author_id: userId, ask: ask.ask, detail: ask.detail, why_now: ask.whyNow,
+        offer: ask.offer, industry: ask.industry, location: ask.location, urgency: ask.urgency,
+        posted: ask.posted, response_count: 0, visibility: ask.visibility,
+      }).select('id,author_id').maybeSingle()
+      if (result.error) reportClientError(result.error, 'ask-persist')
+      return result
+    },
+    ask.id, userId, 'need',
+  )
 }
 
 export function saveAskResponse(userId: string, askId: string, text: string) {
