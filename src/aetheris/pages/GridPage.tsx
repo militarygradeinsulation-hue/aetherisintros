@@ -18,6 +18,8 @@ import { linkedTemplates } from '../crm/linked'
 import { colLetters, evaluateFormula } from '../crm/formula'
 import { projectRows, type NetworkIndex, type ProjectedRow } from '../crm/project'
 import { planFreeformPaste } from '../crm/paste'
+import { gridExportContainsContacts } from '../crm/export-policy'
+import { contactExportIsDenied } from '@/lib/contact-export'
 import type { GridColumn, GridColumnType, LinkedEntity } from '../crm/types'
 
 const columnTypes: GridColumnType[] = ['text', 'number', 'currency', 'percent', 'date', 'checkbox', 'select', 'relation', 'formula']
@@ -253,8 +255,16 @@ export default function GridPage() {
     }
   }
 
-  const exportCsv = () => {
+  const exportCsv = async () => {
     if (!sheet) return
+    // Linked grids reflect real CRM contacts and intelligence. Freeform grids can
+    // also contain contact-shaped exports; use the existing always-deny contract.
+    if (gridExportContainsContacts(sheet.mode === 'linked', columns, rows)) {
+      await contactExportIsDenied()
+      setCellError('Contact-list CSV export is disabled by platform privacy policy. This Grid remains available for viewing and editing.')
+      return
+    }
+    setCellError('')
     const header = columns.map(c => csvCell(c.name)).join(',')
     const body = rows.map(r => columns.map(c => csvCell(r.values[c.key])).join(',')).join('\n')
     const blob = new Blob([`${header}\n${body}`], { type: 'text/csv;charset=utf-8' })
