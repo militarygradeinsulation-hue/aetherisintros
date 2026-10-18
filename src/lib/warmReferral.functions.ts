@@ -1,7 +1,6 @@
 import { createServerFn } from '@tanstack/react-start'
 import { gatewayChat } from './aiGateway.server'
 import { requireAuthContract } from './auth-gate'
-import { supabaseAdmin } from '@/integrations/supabase/client.server'
 
 export interface ReferralSuggestion {
   id: string
@@ -122,7 +121,7 @@ Other active members: ${(otherMembers ?? []).map((p: any) => `${p.name} (${p.tit
     if (suggestions.length === 0) return []
 
     // Clear previous active suggestions for this user
-    await (supabaseAdmin as any).from('referral_suggestions')
+    await (db as any).from('referral_suggestions')
       .update({ status: 'dismissed' })
       .eq('for_user_id', userId)
       .eq('status', 'active')
@@ -135,7 +134,7 @@ Other active members: ${(otherMembers ?? []).map((p: any) => `${p.name} (${p.tit
       const target = allProfiles.find(p => p.name.toLowerCase() === s.target_name.toLowerCase())
       const connector = allProfiles.find(p => p.name.toLowerCase() === s.connector_name.toLowerCase())
 
-      const { data: row, error } = await (supabaseAdmin as any).from('referral_suggestions').insert({
+      const { data: row, error } = await (db as any).from('referral_suggestions').insert({
         for_user_id: userId,
         target_user_id: target?.id ?? null,
         connector_user_id: connector?.id ?? null,
@@ -196,7 +195,7 @@ export const dismissSuggestion = createServerFn({ method: 'POST' })
   .handler(async ({ data, context }) => {
     const db = (context as any).supabase
     const userId: string = (context as any).userId
-    await (supabaseAdmin as any).from('referral_suggestions')
+    await (db as any).from('referral_suggestions')
       .update({ status: 'dismissed' })
       .eq('id', data.suggestionId)
       .eq('for_user_id', userId)
@@ -210,7 +209,7 @@ export const snoozeSuggestion = createServerFn({ method: 'POST' })
     const userId: string = (context as any).userId
     const days = data.days ?? 7
     const snoozeUntil = new Date(Date.now() + days * 24 * 60 * 60 * 1000).toISOString()
-    await (supabaseAdmin as any).from('referral_suggestions')
+    await (db as any).from('referral_suggestions')
       .update({ status: 'snoozed', snoozed_until: snoozeUntil })
       .eq('id', data.suggestionId)
       .eq('for_user_id', userId)
@@ -223,7 +222,7 @@ export const requestReferral = createServerFn({ method: 'POST' })
     const db = (context as any).supabase
     const userId: string = (context as any).userId
 
-    const { data: row, error } = await (supabaseAdmin as any).from('referral_requests').insert({
+    const { data: row, error } = await (db as any).from('referral_requests').insert({
       suggestion_id: data.suggestionId,
       requester_id: userId,
       connector_id: data.connectorId,
@@ -234,7 +233,7 @@ export const requestReferral = createServerFn({ method: 'POST' })
     if (error) throw new Error(error.message)
 
     // Mark the suggestion as acted on
-    await (supabaseAdmin as any).from('referral_suggestions')
+    await (db as any).from('referral_suggestions')
       .update({ status: 'acted_on', acted_at: new Date().toISOString() })
       .eq('id', data.suggestionId)
       .eq('for_user_id', userId)
