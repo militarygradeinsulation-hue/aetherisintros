@@ -27,6 +27,7 @@ import { Route as ImpactSlugRouteImport } from './routes/impact.$slug'
 import { Route as InviteCodeRouteImport } from './routes/invite.$code'
 import { Route as PassportTokenRouteImport } from './routes/passport.$token'
 import { Route as DotlovableOauthConsentRouteImport } from './routes/[.]lovable.oauth.consent'
+import { Route as AuthenticatedSyndicationRouteImport } from './routes/_authenticated/syndication'
 import { Route as AuthenticatedAdminEarlyAccessRouteImport } from './routes/_authenticated/admin.early-access'
 import { Route as AuthenticatedAdminVerificationRouteImport } from './routes/_authenticated/admin.verification'
 import { Route as StorefrontUserIdRouteImport } from './routes/storefront.$userId'
@@ -137,6 +138,11 @@ const DotlovableOauthConsentRoute = DotlovableOauthConsentRouteImport.update({
   id: '/.lovable/oauth/consent',
   path: '/.lovable/oauth/consent',
   getParentRoute: () => rootRouteImport,
+} as any)
+const AuthenticatedSyndicationRoute = AuthenticatedSyndicationRouteImport.update({
+  id: '/syndication',
+  path: '/syndication',
+  getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const AuthenticatedAdminEarlyAccessRoute =
   AuthenticatedAdminEarlyAccessRouteImport.update({
@@ -255,6 +261,7 @@ export interface FileRoutesByFullPath {
   '/invite/$code': typeof InviteCodeRoute
   '/passport/$token': typeof PassportTokenRoute
   '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
+  '/syndication': typeof AuthenticatedSyndicationRoute
   '/admin/early-access': typeof AuthenticatedAdminEarlyAccessRoute
   '/admin/verification': typeof AuthenticatedAdminVerificationRoute
   '/storefront/$userId': typeof StorefrontUserIdRoute
@@ -293,6 +300,7 @@ export interface FileRoutesByTo {
   '/invite/$code': typeof InviteCodeRoute
   '/passport/$token': typeof PassportTokenRoute
   '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
+  '/syndication': typeof AuthenticatedSyndicationRoute
   '/admin/early-access': typeof AuthenticatedAdminEarlyAccessRoute
   '/admin/verification': typeof AuthenticatedAdminVerificationRoute
   '/storefront/$userId': typeof StorefrontUserIdRoute
@@ -333,6 +341,7 @@ export interface FileRoutesById {
   '/invite/$code': typeof InviteCodeRoute
   '/passport/$token': typeof PassportTokenRoute
   '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
+  '/_authenticated/syndication': typeof AuthenticatedSyndicationRoute
   '/_authenticated/admin/early-access': typeof AuthenticatedAdminEarlyAccessRoute
   '/_authenticated/admin/verification': typeof AuthenticatedAdminVerificationRoute
   '/storefront/$userId': typeof StorefrontUserIdRoute
@@ -373,6 +382,7 @@ export interface FileRouteTypes {
     | '/invite/$code'
     | '/passport/$token'
     | '/.lovable/oauth/consent'
+    | '/syndication'
     | '/admin/early-access'
     | '/admin/verification'
     | '/storefront/$userId'
@@ -411,6 +421,7 @@ export interface FileRouteTypes {
     | '/invite/$code'
     | '/passport/$token'
     | '/.lovable/oauth/consent'
+    | '/syndication'
     | '/admin/early-access'
     | '/admin/verification'
     | '/storefront/$userId'
@@ -450,6 +461,7 @@ export interface FileRouteTypes {
     | '/invite/$code'
     | '/passport/$token'
     | '/.lovable/oauth/consent'
+    | '/_authenticated/syndication'
     | '/_authenticated/admin/early-access'
     | '/_authenticated/admin/verification'
     | '/storefront/$userId'
@@ -632,6 +644,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DotlovableOauthConsentRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_authenticated/syndication': {
+      id: '/_authenticated/syndication'
+      path: '/syndication'
+      fullPath: '/syndication'
+      preLoaderRoute: typeof AuthenticatedSyndicationRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/admin/early-access': {
       id: '/_authenticated/admin/early-access'
       path: '/admin/early-access'
@@ -774,6 +793,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedMemberIntelligenceRoute: typeof AuthenticatedMemberIntelligenceRoute
   AuthenticatedOnboardingRoute: typeof AuthenticatedOnboardingRoute
   AuthenticatedVerifyRoute: typeof AuthenticatedVerifyRoute
+  AuthenticatedSyndicationRoute: typeof AuthenticatedSyndicationRoute
   AuthenticatedAdminEarlyAccessRoute: typeof AuthenticatedAdminEarlyAccessRoute
   AuthenticatedAdminVerificationRoute: typeof AuthenticatedAdminVerificationRoute
 }
@@ -784,6 +804,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedMemberIntelligenceRoute: AuthenticatedMemberIntelligenceRoute,
   AuthenticatedOnboardingRoute: AuthenticatedOnboardingRoute,
   AuthenticatedVerifyRoute: AuthenticatedVerifyRoute,
+  AuthenticatedSyndicationRoute: AuthenticatedSyndicationRoute,
   AuthenticatedAdminEarlyAccessRoute: AuthenticatedAdminEarlyAccessRoute,
   AuthenticatedAdminVerificationRoute: AuthenticatedAdminVerificationRoute,
 }
