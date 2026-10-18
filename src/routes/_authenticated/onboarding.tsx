@@ -60,7 +60,7 @@ function OnboardingRoute() {
 
   useEffect(() => {
     if (access.loading) return
-    if (access.status !== 'approved') void navigate({ to: '/early-access', replace: true })
+    if (access.status !== 'approved' || !access.emailConfirmed || access.verification === 'rejected' || access.verification === 'suspended') void navigate({ to: '/early-access', replace: true })
     else if (access.name && !answers['name']) setAnswers(prev => ({ ...prev, name: access.name }))
   }, [access, answers, navigate])
 
