@@ -15,6 +15,7 @@ import {
   type OperationalSnapshot,
 } from './repo'
 import { blankColumns, templateById, type LinkedField } from './linked'
+import type { FreeformPastePlan } from './paste'
 import { requireSavedGridRecord } from './grid-write-contract'
 import type {
   CrmCompany, CrmOpportunity, CrmPerson, CrmTask, GridColumn, GridSheet, GridWorkbook, ID, LinkedEntity,
@@ -65,6 +66,7 @@ export interface OpsApi extends OperationalSnapshot {
   removeColumn: (id: ID) => Promise<void>
   addRow: (sheetId: ID, values?: Record<string, unknown>) => Promise<void>
   addRows: (sheetId: ID, rows: Array<Record<string, unknown>>) => Promise<void>
+  pasteFreeform: (sheetId: ID, plan: FreeformPastePlan) => Promise<void>
   setCell: (rowId: ID, key: string, value: unknown) => Promise<void>
   removeRow: (id: ID) => Promise<void>
   saveView: (sheetId: ID, name: string, config: Record<string, unknown>) => Promise<void>
@@ -343,6 +345,31 @@ export function OpsProvider({ children }: { children: ReactNode }) {
         const base = snap.rows.filter(r => r.sheetId === sheetId).length
         await rowRepo.createMany(sheetId, rows.map((values, i) => ({ position: base + i, values })))
         await refresh()
+      },
+      pasteFreeform: async (sheetId, plan) => {
+        const sheet = snap.sheets.find(s => s.id === sheetId && s.mode === 'freeform' && !s.archived)
+        if (!sheet) throw new Error('This sheet is no longer available for editing. Refresh and retry.')
+        if (plan.updates.some(row => !snap.rows.some(existing => existing.id === row.rowId && existing.sheetId === sheetId))) {
+          throw new Error('The paste references a row outside this sheet. Refresh and retry.')
+        }
+        try {
+          // Save one merged row at a time: per-cell writes against a stale snapshot
+          // would otherwise silently overwrite earlier cells in the same paste.
+          for (const update of plan.updates) {
+            await requireSavedGridRecord(rowRepo.update(update.rowId, update.values))
+          }
+          if (plan.appended.length) {
+            const base = snap.rows.filter(r => r.sheetId === sheetId).length
+            await rowRepo.createMany(sheetId, plan.appended.map((values, i) => ({
+              position: base + i, values,
+            })))
+          }
+        } catch {
+          throw new Error('Grid paste was interrupted. Some earlier rows may have saved. Review the sheet before retrying.')
+        } finally {
+          // Always reconcile the client with confirmed DB state, including partial failures.
+          await refresh()
+        }
       },
       setCell: async (rowId, key, value) => {
         const row = snap.rows.find(r => r.id === rowId)
