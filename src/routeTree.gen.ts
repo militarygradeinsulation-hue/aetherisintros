@@ -29,6 +29,7 @@ import { Route as PassportTokenRouteImport } from './routes/passport.$token'
 import { Route as DotlovableOauthConsentRouteImport } from './routes/[.]lovable.oauth.consent'
 import { Route as AuthenticatedAdminEarlyAccessRouteImport } from './routes/_authenticated/admin.early-access'
 import { Route as AuthenticatedAdminVerificationRouteImport } from './routes/_authenticated/admin.verification'
+import { Route as StorefrontUserIdRouteImport } from './routes/storefront.$userId'
 import { Route as ApiAgentAsksRouteImport } from './routes/api/agent/asks'
 import { Route as ApiAgentInboundRouteImport } from './routes/api/agent/inbound'
 import { Route as ApiAgentIntrosRouteImport } from './routes/api/agent/intros'
@@ -149,6 +150,11 @@ const AuthenticatedAdminVerificationRoute =
     path: '/admin/verification',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const StorefrontUserIdRoute = StorefrontUserIdRouteImport.update({
+  id: '/storefront/$userId',
+  path: '/storefront/$userId',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiAgentAsksRoute = ApiAgentAsksRouteImport.update({
   id: '/api/agent/asks',
   path: '/api/agent/asks',
@@ -251,6 +257,7 @@ export interface FileRoutesByFullPath {
   '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
   '/admin/early-access': typeof AuthenticatedAdminEarlyAccessRoute
   '/admin/verification': typeof AuthenticatedAdminVerificationRoute
+  '/storefront/$userId': typeof StorefrontUserIdRoute
   '/api/agent/asks': typeof ApiAgentAsksRoute
   '/api/agent/inbound': typeof ApiAgentInboundRoute
   '/api/agent/intros': typeof ApiAgentIntrosRoute
@@ -288,6 +295,7 @@ export interface FileRoutesByTo {
   '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
   '/admin/early-access': typeof AuthenticatedAdminEarlyAccessRoute
   '/admin/verification': typeof AuthenticatedAdminVerificationRoute
+  '/storefront/$userId': typeof StorefrontUserIdRoute
   '/api/agent/asks': typeof ApiAgentAsksRoute
   '/api/agent/inbound': typeof ApiAgentInboundRoute
   '/api/agent/intros': typeof ApiAgentIntrosRoute
@@ -327,6 +335,7 @@ export interface FileRoutesById {
   '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
   '/_authenticated/admin/early-access': typeof AuthenticatedAdminEarlyAccessRoute
   '/_authenticated/admin/verification': typeof AuthenticatedAdminVerificationRoute
+  '/storefront/$userId': typeof StorefrontUserIdRoute
   '/api/agent/asks': typeof ApiAgentAsksRoute
   '/api/agent/inbound': typeof ApiAgentInboundRoute
   '/api/agent/intros': typeof ApiAgentIntrosRoute
@@ -366,6 +375,7 @@ export interface FileRouteTypes {
     | '/.lovable/oauth/consent'
     | '/admin/early-access'
     | '/admin/verification'
+    | '/storefront/$userId'
     | '/api/agent/asks'
     | '/api/agent/inbound'
     | '/api/agent/intros'
@@ -403,6 +413,7 @@ export interface FileRouteTypes {
     | '/.lovable/oauth/consent'
     | '/admin/early-access'
     | '/admin/verification'
+    | '/storefront/$userId'
     | '/api/agent/asks'
     | '/api/agent/inbound'
     | '/api/agent/intros'
@@ -441,6 +452,7 @@ export interface FileRouteTypes {
     | '/.lovable/oauth/consent'
     | '/_authenticated/admin/early-access'
     | '/_authenticated/admin/verification'
+    | '/storefront/$userId'
     | '/api/agent/asks'
     | '/api/agent/inbound'
     | '/api/agent/intros'
@@ -473,6 +485,7 @@ export interface RootRouteChildren {
   InviteCodeRoute: typeof InviteCodeRoute
   PassportTokenRoute: typeof PassportTokenRoute
   DotlovableOauthConsentRoute: typeof DotlovableOauthConsentRoute
+  StorefrontUserIdRoute: typeof StorefrontUserIdRoute
   ApiAgentAsksRoute: typeof ApiAgentAsksRoute
   ApiAgentInboundRoute: typeof ApiAgentInboundRoute
   ApiAgentIntrosRoute: typeof ApiAgentIntrosRoute
@@ -633,6 +646,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminVerificationRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/storefront/$userId': {
+      id: '/storefront/$userId'
+      path: '/storefront/$userId'
+      fullPath: '/storefront/$userId'
+      preLoaderRoute: typeof StorefrontUserIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/agent/asks': {
       id: '/api/agent/asks'
       path: '/api/agent/asks'
@@ -786,6 +806,7 @@ const rootRouteChildren: RootRouteChildren = {
   InviteCodeRoute: InviteCodeRoute,
   PassportTokenRoute: PassportTokenRoute,
   DotlovableOauthConsentRoute: DotlovableOauthConsentRoute,
+  StorefrontUserIdRoute: StorefrontUserIdRoute,
   ApiAgentAsksRoute: ApiAgentAsksRoute,
   ApiAgentInboundRoute: ApiAgentInboundRoute,
   ApiAgentIntrosRoute: ApiAgentIntrosRoute,
