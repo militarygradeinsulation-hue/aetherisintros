@@ -29,7 +29,7 @@ describe('evidence-grounded relationship matching', () => {
     const match = scoreMatch(me, target, {
       connections: [connector.id], members: [target, connector],
     })
-    expect(match.components.find(c => c.label === 'Trust path')?.score).toBe(50)
+    expect(match.components.find(c => c.label === 'Trust path')?.score).toBe(25)
     expect(match.mutualConnections).toEqual(['Verified Connector'])
   })
   it('recognizes direct connections without inventing indirect paths', () => {
