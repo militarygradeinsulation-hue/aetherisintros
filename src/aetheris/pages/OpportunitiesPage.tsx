@@ -61,7 +61,8 @@ export function OpportunitiesPage() {
           </dl>
 
           {!!o.qualification.length && <p className="opp-qual"><b>What qualifies someone.</b> {o.qualification.join(' · ')}</p>}
-          {!!o.evidence.length && <p className="opp-evidence"><b>Evidence.</b> {o.evidence.join(' · ')}</p>}
+          {!!o.evidence.length && <p className="opp-evidence"><b>Evidence supplied by the poster (not independently verified).</b> {o.evidence.join(' · ')}</p>}
+          <p className="opp-evidence" role="note">Fit is an estimate, not a guarantee. Verify claims and ask permission before sharing private contact details.</p>
           <Why>{fit.why}{fit.missing.length ? ` Still unproven for you: ${fit.missing.join(', ')}.` : ''}</Why>
 
           <footer className="opp-foot">
