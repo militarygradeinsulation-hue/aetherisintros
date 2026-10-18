@@ -164,6 +164,7 @@ export async function listWorkspaces(): Promise<
           .eq("user_id", uid)
           .in("workspace_id", ids)
       : { data: [] };
+  if ("error" in mine && mine.error) throw new Error(mine.error.message);
   const by = new Map<string, MemberRow["status"]>(
     (mine.data ?? []).map((m: any) => [m.workspace_id, m.status]),
   );
