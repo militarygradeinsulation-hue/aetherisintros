@@ -18,6 +18,7 @@ import { linkedTemplates } from '../crm/linked'
 import { colLetters, evaluateFormula } from '../crm/formula'
 import { projectRows, type NetworkIndex, type ProjectedRow } from '../crm/project'
 import { planFreeformPaste } from '../crm/paste'
+import { validateLinkedGridCsv } from '../crm/linked-csv-policy'
 import { gridExportContainsContacts } from '../crm/export-policy'
 import { contactExportIsDenied } from '@/lib/contact-export'
 import type { GridColumn, GridColumnType, LinkedEntity } from '../crm/types'
@@ -278,19 +279,40 @@ export default function GridPage() {
 
   const importCsv = async (file: File) => {
     if (!sheet) return
-    const table = parseDelimited(await file.text())
-    const [header, ...body] = table
-    if (!header || !body.length) return
-    const keys = header.map(name => columns.find(c => c.name.toLowerCase() === name.trim().toLowerCase())?.key)
-    if (sheet.mode === 'linked' && sheet.entityType) {
-      for (const line of body) {
-        const primary = line[0] ?? ''
-        if (primary.trim()) await ops.createLinkedRecord(sheet.entityType as LinkedEntity, primary)
+    setCellError('')
+    setNotice('')
+    try {
+      const table = parseDelimited(await file.text())
+      const [header, ...body] = table
+      if (!header || !body.length) throw new Error('CSV needs a header and at least one data row.')
+      if (sheet.mode === 'linked') {
+        if (!sheet.entityType) throw new Error('This linked sheet has no supported record type.')
+        // Multi-column CRM imports belong in the existing CRM import flow;
+        // Grid's quick-create API accepts only a single name/title.
+        const issue = validateLinkedGridCsv(sheet.entityType as LinkedEntity, header, body)
+        if (issue) throw new Error(issue)
+        let saved = 0
+        try {
+          for (const line of body) {
+            await ops.createLinkedRecord(sheet.entityType as LinkedEntity, line[0] ?? '')
+            saved += 1
+          }
+        } catch {
+          throw new Error(`Import stopped after ${saved} confirmed record(s). Some data may already be saved. Check the CRM before trying again.`)
+        }
+        setNotice(`${saved} record(s) created in your canonical CRM.`)
+      } else {
+        const keys = header.map(name => columns.find(c => c.name.toLowerCase() === name.trim().toLowerCase())?.key)
+        if (keys.some(key => !key) || keys.length > columns.length) {
+          throw new Error('Some CSV headers do not match this Grid. Map or add those columns before importing.')
+        }
+        await ops.addRows(sheet.id, body.map(line => Object.fromEntries(
+          line.flatMap((value, i) => (keys[i] ? [[keys[i] as string, value]] : [])),
+        )))
+        setNotice(`${body.length} row(s) saved to your private Grid.`)
       }
-    } else {
-      await ops.addRows(sheet.id, body.map(line => Object.fromEntries(
-        line.flatMap((value, i) => (keys[i] ? [[keys[i] as string, value]] : [])),
-      )))
+    } catch (cause) {
+      setCellError(cause instanceof Error ? cause.message : 'CSV import did not finish. Check the CRM or Grid before retrying.')
     }
   }
 
@@ -333,6 +355,7 @@ export default function GridPage() {
       action={<Btn kind="secondary" disabled={busy} onClick={() => { void makeWorkbook(`Workbook ${workbooks.length + 1}`) }}><FilePlus2 size={14} /> {busy ? 'Creating…' : 'New workbook'}</Btn>} />
 
     {cellError && <p role="alert" className="ops-note">{cellError}</p>}
+    {notice && <p role="status" className="ops-note">{notice}</p>}
     <div className="grid-shell">
       <div className="grid-bar">
         <select aria-label="Workbook" value={activeWorkbook.id} onChange={e => { setWorkbookId(e.target.value); setSheetId('') }}>
