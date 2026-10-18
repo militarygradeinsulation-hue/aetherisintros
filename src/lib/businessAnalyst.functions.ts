@@ -154,7 +154,7 @@ export const generateBusinessAnalysis = createServerFn({ method: 'POST' })
         health_score: typeof parsed['health_score'] === 'number' ? Math.max(0, Math.min(100, parsed['health_score'])) : 50,
         summary: typeof parsed['summary'] === 'string' ? parsed['summary'] : '',
         model_used: routeKey ? 'routellm' : 'gateway',
-      } as never)
+      })
       .select()
       .single()
 
