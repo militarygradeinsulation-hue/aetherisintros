@@ -53,7 +53,9 @@ export function IntroRequestInbox() {
           .in('intro_request_id', ids) : { data: [], error: null },
         ids.length ? db.rpc('my_intro_participant_names', { p_intro_ids: ids }) : { data: [], error: null },
       ])
-      if (caps.error || names.error) throw new Error('Introduction context is temporarily unavailable.')
+      // Capsules enrich context but are optional: a capsule read error must not hide the
+      // underlying introduction from its intended recipient.
+      if (names.error) throw new Error('Introduction names are temporarily unavailable.')
       const capBy = new Map<string, any>((caps.data ?? []).map((c: any) => [c.intro_request_id, c]))
       const nameBy = new Map<string, string>((names.data ?? []).map((p: any) => [p.intro_request_id, p.other_name as string]))
       setRows(reqs.map((x: any): Incoming => {
@@ -111,7 +113,10 @@ export function IntroRequestInbox() {
     }
   }
 
-  if (!graph.signedIn || !rows.length) return msg ? <p className="og-note" role="alert">{msg}</p> : null
+  if (!graph.signedIn) return null
+  if (!rows.length) return msg
+    ? <div className="og-note"><p role="alert">{msg}</p><Btn kind="quiet" onClick={() => { setMsg(''); void load() }}>Retry inbox</Btn></div>
+    : null
 
   return <section className="executive-section intro-inbox">
     <Eyebrow signal><Inbox size={12} /> WAITING ON YOU</Eyebrow>
