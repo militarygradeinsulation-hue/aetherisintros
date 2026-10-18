@@ -444,22 +444,29 @@ export function OpsProvider({ children }: { children: ReactNode }) {
         await after(entityType, entityId, 'grid-edit', `${key} changed in Grid`)
       },
       createLinkedRecord: async (entityType, primary) => {
-        const name = primary.trim() || 'Untitled'
+        const name = primary.trim()
+        if (!name) throw new Error('A record must have a name or task title.')
         if (entityType === 'crm_people') {
           const created = await personRepo.create({ fullName: name, lifecycle: 'Lead', source: 'Grid' })
-          if (created) await after('crm_person', created.id, 'created', `${name} created from Grid`)
+          if (!created) throw new Error('The person was not confirmed saved.')
+          await after('crm_person', created.id, 'created', `${name} created from Grid`)
         } else if (entityType === 'crm_companies') {
           const created = await companyRepo.create({ name })
-          if (created) await after('crm_company', created.id, 'created', `${name} created from Grid`)
+          if (!created) throw new Error('The company was not confirmed saved.')
+          await after('crm_company', created.id, 'created', `${name} created from Grid`)
         } else if (entityType === 'crm_opportunities') {
           const created = await opportunityRepo.create({
             name, pipelineId: defaultPipeline?.id ?? null, stageId: firstStage?.id ?? null,
             stageName: firstStage?.name ?? '', probability: firstStage?.probability ?? 0,
           })
-          if (created) await after('crm_opportunity', created.id, 'created', `${name} created from Grid`)
+          if (!created) throw new Error('The opportunity was not confirmed saved.')
+          await after('crm_opportunity', created.id, 'created', `${name} created from Grid`)
         } else if (entityType === 'crm_tasks') {
           const created = await taskRepo.create({ title: name })
-          if (created) await after('crm_task', created.id, 'created', `${name} created from Grid`)
+          if (!created) throw new Error('The task was not confirmed saved.')
+          await after('crm_task', created.id, 'created', `${name} created from Grid`)
+        } else {
+          throw new Error('This linked sheet is read-only. You cannot create network intelligence records.')
         }
       },
     }
