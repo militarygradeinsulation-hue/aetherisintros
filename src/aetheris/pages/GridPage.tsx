@@ -17,6 +17,11 @@ import { useOps } from '../crm/store'
 import { linkedTemplates } from '../crm/linked'
 import { colLetters, evaluateFormula } from '../crm/formula'
 import { projectRows, type NetworkIndex, type ProjectedRow } from '../crm/project'
+import { planFreeformPaste } from '../crm/paste'
+import { validateLinkedGridCsv } from '../crm/linked-csv-policy'
+import { preflightFreeformCsv } from '../crm/freeform-csv-policy'
+import { gridExportContainsContacts } from '../crm/export-policy'
+import { contactExportIsDenied } from '@/lib/contact-export'
 import type { GridColumn, GridColumnType, LinkedEntity } from '../crm/types'
 
 const columnTypes: GridColumnType[] = ['text', 'number', 'currency', 'percent', 'date', 'checkbox', 'select', 'relation', 'formula']
@@ -79,6 +84,7 @@ export default function GridPage() {
 
   const [busy, setBusy] = useState(false)
   const [notice, setNotice] = useState('')
+  const [cellError, setCellError] = useState('')
 
   const makeWorkbook = async (name: string, description = '') => {
     setNotice('')
@@ -136,6 +142,7 @@ export default function GridPage() {
   const [creating, setCreating] = useState(false)
   const fileRef = useRef<HTMLInputElement>(null)
   const gridRef = useRef<HTMLDivElement>(null)
+  const pasteInProgress = useRef(false)
 
   useEffect(() => { setCell({ r: 0, c: 0 }); setEditing(null) }, [sheet?.id])
 
@@ -160,16 +167,24 @@ export default function GridPage() {
     return fmt(value, column.type)
   }
 
-  const commit = async (rowIndex: number, colIndex: number, value: string) => {
+  const commit = async (rowIndex: number, colIndex: number, value: string): Promise<boolean> => {
     const column = columns[colIndex]
     const row = rows[rowIndex]
-    setEditing(null)
-    if (!column || !row || !sheet) return
-    if (sheet.mode === 'linked' && sheet.entityType) {
-      if (!column.writable) return
-      await ops.writeLinkedField(sheet.entityType as LinkedEntity, row.id, column.key, value)
-    } else {
-      await ops.setCell(row.id, column.key, value)
+    if (!column || !row || !sheet || (sheet.mode === 'linked' && !column.writable)) return false
+    setCellError('')
+    try {
+      if (sheet.mode === 'linked' && sheet.entityType) {
+        await ops.writeLinkedField(sheet.entityType as LinkedEntity, row.id, column.key, value)
+      } else {
+        await ops.setCell(row.id, column.key, value)
+      }
+      setEditing(null)
+      return true
+    } catch {
+      setCell({ r: rowIndex, c: colIndex })
+      setEditing(value)
+      setCellError('Your edit was not saved. The value is still in the editor. Check your connection or permissions and retry.')
+      return false
     }
   }
 
@@ -197,27 +212,61 @@ export default function GridPage() {
     const text = event.clipboardData.getData('text/plain')
     if (!text.trim() || !sheet) return
     event.preventDefault()
+    if (pasteInProgress.current) {
+      setCellError('An earlier paste is still being saved. Retry after it finishes.')
+      return
+    }
     const table = parseDelimited(text)
+    if (!table.length) return
+    setCellError('')
     if (sheet.mode === 'freeform') {
-      const needed = cell.r + table.length - rows.length
-      if (needed > 0) {
-        await ops.addRows(sheet.id, Array.from({ length: needed }, () => ({})))
+      if (filter.trim() || sortConf) {
+        setCellError('Clear the current filter and sort before pasting multiple rows, so no records are misplaced.')
         return
       }
-    }
-    for (let r = 0; r < table.length; r += 1) {
-      const line = table[r] ?? []
-      for (let c = 0; c < line.length; c += 1) {
-        const target = rows[cell.r + r]
-        const column = columns[cell.c + c]
-        if (!target || !column) continue
-        await commit(cell.r + r, cell.c + c, line[c] ?? '')
+      try {
+        const plan = planFreeformPaste(rows, columns, cell.r, cell.c, table)
+        pasteInProgress.current = true
+        await ops.pasteFreeform(sheet.id, plan)
+        setEditing(null)
+        setNotice('Clipboard rows saved to your private Grid.')
+      } catch (cause) {
+        setCellError(cause instanceof Error ? cause.message : 'Grid paste failed. Inspect the rows and try again.')
+      } finally {
+        pasteInProgress.current = false
       }
+      return
+    }
+    // Linked sheets may only update existing writable canonical CRM fields.
+    const invalid = table.some((line, r) => !rows[cell.r + r] ||
+      line.some((_, c) => !columns[cell.c + c]?.writable))
+    if (invalid) {
+      setCellError('The paste extends beyond existing rows or includes read-only CRM columns. No changes were made.')
+      return
+    }
+    pasteInProgress.current = true
+    try {
+      for (let r = 0; r < table.length; r += 1) {
+        const line = table[r] ?? []
+        for (let c = 0; c < line.length; c += 1) {
+          if (!(await commit(cell.r + r, cell.c + c, line[c] ?? ''))) return
+        }
+      }
+    } finally {
+      pasteInProgress.current = false
     }
   }
 
-  const exportCsv = () => {
+  const exportCsv = async () => {
     if (!sheet) return
+    // Linked grids reflect real CRM contacts and intelligence. Freeform grids can
+    // also contain contact-shaped exports; use the existing always-deny contract.
+    if (gridExportContainsContacts(sheet.mode === 'linked', columns, rows)) {
+      await contactExportIsDenied()
+      setCellError('Contact-list CSV export is disabled by platform privacy policy. This Grid remains available for viewing and editing.')
+      return
+    }
+    setCellError('')
     const header = columns.map(c => csvCell(c.name)).join(',')
     const body = rows.map(r => columns.map(c => csvCell(r.values[c.key])).join(',')).join('\n')
     const blob = new Blob([`${header}\n${body}`], { type: 'text/csv;charset=utf-8' })
@@ -231,19 +280,35 @@ export default function GridPage() {
 
   const importCsv = async (file: File) => {
     if (!sheet) return
-    const table = parseDelimited(await file.text())
-    const [header, ...body] = table
-    if (!header || !body.length) return
-    const keys = header.map(name => columns.find(c => c.name.toLowerCase() === name.trim().toLowerCase())?.key)
-    if (sheet.mode === 'linked' && sheet.entityType) {
-      for (const line of body) {
-        const primary = line[0] ?? ''
-        if (primary.trim()) await ops.createLinkedRecord(sheet.entityType as LinkedEntity, primary)
+    setCellError('')
+    setNotice('')
+    try {
+      const table = parseDelimited(await file.text())
+      const [header, ...body] = table
+      if (!header || !body.length) throw new Error('CSV needs a header and at least one data row.')
+      if (sheet.mode === 'linked') {
+        if (!sheet.entityType) throw new Error('This linked sheet has no supported record type.')
+        // Multi-column CRM imports belong in the existing CRM import flow;
+        // Grid's quick-create API accepts only a single name/title.
+        const issue = validateLinkedGridCsv(sheet.entityType as LinkedEntity, header, body)
+        if (issue) throw new Error(issue)
+        let saved = 0
+        try {
+          for (const line of body) {
+            await ops.createLinkedRecord(sheet.entityType as LinkedEntity, line[0] ?? '')
+            saved += 1
+          }
+        } catch {
+          throw new Error(`Import stopped after ${saved} confirmed record(s). Some data may already be saved. Check the CRM before trying again.`)
+        }
+        setNotice(`${saved} record(s) created in your canonical CRM.`)
+      } else {
+        const prepared = preflightFreeformCsv(header, body, columns)
+        await ops.addRows(sheet.id, prepared)
+        setNotice(`${prepared.length} row(s) saved to your private Grid.`)
       }
-    } else {
-      await ops.addRows(sheet.id, body.map(line => Object.fromEntries(
-        line.flatMap((value, i) => (keys[i] ? [[keys[i] as string, value]] : [])),
-      )))
+    } catch (cause) {
+      setCellError(cause instanceof Error ? cause.message : 'CSV import did not finish. Check the CRM or Grid before retrying.')
     }
   }
 
@@ -285,6 +350,8 @@ export default function GridPage() {
       proof="Edit a linked cell and the CRM record changes with it."
       action={<Btn kind="secondary" disabled={busy} onClick={() => { void makeWorkbook(`Workbook ${workbooks.length + 1}`) }}><FilePlus2 size={14} /> {busy ? 'Creating…' : 'New workbook'}</Btn>} />
 
+    {cellError && <p role="alert" className="ops-note">{cellError}</p>}
+    {notice && <p role="status" className="ops-note">{notice}</p>}
     <div className="grid-shell">
       <div className="grid-bar">
         <select aria-label="Workbook" value={activeWorkbook.id} onChange={e => { setWorkbookId(e.target.value); setSheetId('') }}>
@@ -387,10 +454,22 @@ export default function GridPage() {
         </div>
 
         <div className="grid-footer">
-          <Btn kind="quiet" onClick={() => {
-            if (sheet.mode === 'linked' && sheet.entityType) void ops.createLinkedRecord(sheet.entityType as LinkedEntity, 'Untitled')
-            else void ops.addRow(sheet.id)
-          }}><Rows3 size={14} /> Add row</Btn>
+          <Btn kind="quiet"
+            disabled={sheet.mode === 'linked' && !(['crm_people', 'crm_companies', 'crm_opportunities', 'crm_tasks'] as string[]).includes(sheet.entityType ?? '')}
+            onClick={() => {
+              setCellError('')
+              void (async () => {
+                try {
+                  if (sheet.mode === 'linked' && sheet.entityType) {
+                    await ops.createLinkedRecord(sheet.entityType as LinkedEntity, 'Untitled')
+                  } else {
+                    await ops.addRow(sheet.id)
+                  }
+                } catch {
+                  setCellError('The new row was not confirmed. Check your CRM/Grid before retrying.')
+                }
+              })()
+            }}><Rows3 size={14} /> Add row</Btn>
           {sheet.mode === 'freeform' && <Btn kind="quiet" onClick={() => {
             const name = window.prompt('Column name')
             if (name?.trim()) void ops.addColumn(sheet.id, name.trim(), 'text')

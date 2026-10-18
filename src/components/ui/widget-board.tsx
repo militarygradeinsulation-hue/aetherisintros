@@ -58,6 +58,8 @@ export interface DraggableWidgetGridProps {
 	maxColumns?: number
 	/** Target cell width in px; the column count is derived from it. */
 	cellSize?: number
+	/** Optional explicit row height in pixels; defaults to square cells. */
+	rowHeight?: number
 	/** Gap between widgets in px. */
 	gap?: number
 	/** Corner radius of a widget in px. */
@@ -653,6 +655,7 @@ export function DraggableWidgetGrid({
 	editable = true,
 	maxColumns = 4,
 	cellSize = 215,
+	rowHeight,
 	gap = 12,
 	radius = 24,
 	className = '',
@@ -718,7 +721,7 @@ export function DraggableWidgetGrid({
 			const { unit } = latest.current.metrics
 			const rect = el?.getBoundingClientRect()
 			const colStep = unit + gap
-			const rowStep = Math.round(unit) + gap
+			const rowStep = (rowHeight ?? Math.round(unit)) + gap
 			const left = (rect?.left ?? 0) + box.col * colStep
 			const top = (rect?.top ?? 0) + box.row * rowStep
 			return {
@@ -728,7 +731,7 @@ export function DraggableWidgetGrid({
 				bottom: top + box.h * rowStep - gap,
 			}
 		},
-		[gap],
+		[gap, rowHeight],
 	)
 
 	/* Drag state. React only re-renders on lift, reorder and drop. */
@@ -910,9 +913,11 @@ export function DraggableWidgetGrid({
 						gap,
 						gridTemplateColumns: `repeat(${columns}, minmax(0, 1fr))`,
 						// Square cells: row height equals column width.
-						gridAutoRows: metrics.unit
-							? `${Math.round(metrics.unit)}px`
-							: `minmax(${cellSize * 0.75}px, auto)`,
+						gridAutoRows: rowHeight != null
+							? `${rowHeight}px`
+							: metrics.unit
+								? `${Math.round(metrics.unit)}px`
+								: `minmax(${cellSize * 0.75}px, auto)`,
 					}}>
 					{domOrder.current.map((id) => {
 						const item = byId.get(id)

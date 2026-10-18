@@ -55,7 +55,7 @@ export function CollisionCard({ collision, compact = false }: { collision: Oppor
         <div><dt>Trust path</dt><dd>{collision.trustPath.join(' → ')}</dd></div>
         <div><dt>Safe to say</dt><dd>{collision.safeSummary}</dd></div>
       </dl>
-      <div className="collision-faces">{people.map(p => p && <button key={p.id} onClick={() => nav.openMember(p)}><Face person={p} /><span>{p.name}</span></button>)}</div>
+      <div className="collision-faces">{people.map(p => p && <button key={p.id} onClick={() => nav.openMember(p)}><Face person={p} /><span className="collision-person-name">{p.name}</span></button>)}</div>
     </>}
     <p className="collision-action"><b>Recommended:</b> {collision.recommendedAction}</p>
     <footer>

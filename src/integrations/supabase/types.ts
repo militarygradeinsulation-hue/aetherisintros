@@ -5076,6 +5076,85 @@ export type Database = {
         }
         Relationships: []
       }
+      professional_opportunities: {
+        Row: {
+          created_at: string
+          data: Json
+          id: string
+          owner_id: string
+          scope: string | null
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          data?: Json
+          id: string
+          owner_id: string
+          scope?: string | null
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          data?: Json
+          id?: string
+          owner_id?: string
+          scope?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      professional_opportunity_interests: {
+        Row: {
+          created_at: string
+          note: string
+          opportunity_id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          note: string
+          opportunity_id: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          note?: string
+          opportunity_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "professional_opportunity_interests_opportunity_id_fkey"
+            columns: ["opportunity_id"]
+            isOneToOne: false
+            referencedRelation: "professional_opportunities"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      professional_opportunity_saves: {
+        Row: {
+          opportunity_id: string
+          user_id: string
+        }
+        Insert: {
+          opportunity_id: string
+          user_id: string
+        }
+        Update: {
+          opportunity_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "professional_opportunity_saves_opportunity_id_fkey"
+            columns: ["opportunity_id"]
+            isOneToOne: false
+            referencedRelation: "professional_opportunities"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       profiles: {
         Row: {
           availability: string
@@ -6060,6 +6139,10 @@ export type Database = {
         Args: { p_group: string }
         Returns: string
       }
+      act_on_exchange_opportunity: {
+        Args: { p_action: string; p_id: string; p_note?: string }
+        Returns: undefined
+      }
       activation_flags: { Args: { p_user: string }; Returns: Json }
       add_capability_finding: {
         Args: {
@@ -6110,6 +6193,7 @@ export type Database = {
         Returns: Json
       }
       admin_network_health: { Args: never; Returns: Json }
+      admin_platform_overview: { Args: never; Returns: Json }
       admin_provider_requests: { Args: never; Returns: Json }
       admin_provider_summary: { Args: never; Returns: Json }
       admin_revenue_summary: { Args: never; Returns: Json }
@@ -6324,6 +6408,12 @@ export type Database = {
         Returns: boolean
       }
       event_attendees: { Args: { p_event: string }; Returns: Json }
+      exchange_visible: {
+        Args: {
+          p: Database["public"]["Tables"]["professional_opportunities"]["Row"]
+        }
+        Returns: boolean
+      }
       find_warm_paths: {
         Args: { p_company?: string; p_limit?: number; p_target_member?: string }
         Returns: {
@@ -6430,6 +6520,7 @@ export type Database = {
         Returns: string
       }
       linkedin_handle: { Args: { p_url: string }; Returns: string }
+      list_exchange_opportunities: { Args: never; Returns: Json }
       list_member_events: { Args: never; Returns: Json }
       log_app_error: {
         Args: {
@@ -6652,6 +6743,7 @@ export type Database = {
         }
         Returns: undefined
       }
+      publish_exchange_opportunity: { Args: { p_input: Json }; Returns: string }
       purge_verification_proof: { Args: never; Returns: number }
       reciprocity_events: {
         Args: { p_user: string }

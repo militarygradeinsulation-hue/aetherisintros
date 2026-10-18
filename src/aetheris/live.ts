@@ -12,6 +12,7 @@ import { parseBusinessDetails } from './business-posts'
 import { calculateConnectionScore, determineRadarState } from './lib/engine'
 import type { Directory } from './db'
 import type { Member, NetworkAsk, Post, Thread } from './social'
+import { isActiveSharedSignal } from './opportunity-graph'
 import type { ScoreBreakdown } from './types'
 import type { GiverBand } from './reciprocity-core'
 
@@ -195,7 +196,7 @@ export async function loadMyProfile(userId: string): Promise<LiveProfileRow | nu
  * Members = other approved profiles (RLS already restricts this to approved
  * accounts). Posts/asks = real authored rows. Threads = real conversations.
  */
-export async function loadLiveDirectory(userId: string): Promise<{ directory: Directory; me: LiveProfileRow | null; failed: boolean }> {
+export async function loadLiveDirectory(userId: string): Promise<{ directory: Directory; me: LiveProfileRow | null; failed: boolean; reason: string | null }> {
   try {
     const [profileRows, postRows, askRows, threadRows] = await Promise.all([
       loadVisibleMemberProfiles(null, 100),
@@ -290,13 +291,16 @@ export async function loadLiveDirectory(userId: string): Promise<{ directory: Di
       posted: relative(r.created_at),
       responses: r.response_count ?? 0,
       visibility: r.visibility as NetworkAsk['visibility'],
+      status: r.status,
+      expiresAt: r.expires_at,
+      category: r.category,
       ...(r.author_id === userId ? { mine: true } : {}),
-    }))
+    })).filter(ask => isActiveSharedSignal(ask))
 
-    return { directory: { members, posts, asks, signals: [], threads, learnings: [] }, me, failed: false }
+    return { directory: { members, posts, asks, signals: [], threads, learnings: [] }, me, failed: false, reason: null }
   } catch (error) {
     reportClientError(error, 'live-directory-read')
-    return { directory: emptyDirectory, me: null, failed: true }
+    return { directory: emptyDirectory, me: null, failed: true, reason: error instanceof Error ? error.message : 'Network data could not be loaded.' }
   }
 }
 

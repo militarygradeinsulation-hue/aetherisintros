@@ -42,3 +42,155 @@
  .journey-footnote { margin-inline: 1rem; }
 }
 @media (prefers-reduced-motion: reduce) { .journey-shell * { scroll-behavior: auto; transition: none; } }
+
+
+/*
+ * In-flow guided tour. The old viewport-fixed launcher obstructed content and
+ * overlapped the 72px mobile navigation. This bar occupies layout space and
+ * never floats above the user's controls.
+ */
+.ix-root .journey-shell {
+  position: relative;
+  z-index: 1;
+  inset: auto;
+  right: auto;
+  bottom: auto;
+  left: auto;
+  width: 100%;
+  min-width: 0;
+  padding: 8px clamp(14px, 3vw, 36px);
+  background: var(--sys-bg);
+  border-bottom: 1px solid var(--sys-line);
+  pointer-events: auto;
+  box-sizing: border-box;
+}
+.ix-root .journey-launcher {
+  width: 100%;
+  min-height: 45px;
+  max-width: 1600px;
+  margin: 0 auto;
+  padding: 6px 13px;
+  background: color-mix(in srgb, var(--sys-panel) 91%, transparent);
+  color: var(--sys-ink);
+  border: 1px solid var(--sys-line);
+  border-radius: 10px;
+  box-shadow: none;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  text-align: left;
+  font-size: 12px;
+  letter-spacing: .015em;
+}
+.ix-root .journey-launcher:hover {
+  border-color: var(--acc-line);
+  background: color-mix(in srgb, var(--sys-panel) 85%, var(--acc) 15%);
+}
+.ix-root .journey-launcher-label,
+.ix-root .journey-launcher-cue {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+.ix-root .journey-launcher-label svg { color: var(--acc); flex: 0 0 auto; }
+.ix-root .journey-launcher-cue {
+  font: 500 11px/1.25 Inter,system-ui,sans-serif;
+  color: var(--sys-ink-dim);
+  white-space: nowrap;
+}
+.ix-root .journey-panel {
+  position: relative;
+  width: 100%;
+  max-width: 760px;
+  max-height: none;
+  margin: 0 auto;
+  border-radius: 12px;
+  overflow: visible;
+  color: #f6f0e6;
+}
+.ix-root .journey-close { min-width: 44px; min-height: 44px; display:grid;place-items:center; }
+.ix-root .journey-stages button { min-height: 50px; }
+.ix-root .journey-footer button { min-height: 44px; }
+:root[data-theme="light"] .ix-root .journey-panel {
+  background: #fbfaf7;
+  border-color: #cfc7bb;
+  color: #232b29;
+  box-shadow: 0 7px 25px rgba(35,32,27,.09);
+}
+:root[data-theme="light"] .ix-root .journey-head span,
+:root[data-theme="light"] .ix-root .journey-eyebrow,
+:root[data-theme="light"] .ix-root .journey-evidence small,
+:root[data-theme="light"] .ix-root .journey-result small { color: #865832; }
+:root[data-theme="light"] .ix-root .journey-body > p,
+:root[data-theme="light"] .ix-root .journey-disclaimer,
+:root[data-theme="light"] .ix-root .journey-footnote,
+:root[data-theme="light"] .ix-root .journey-count { color: #505d5b; }
+:root[data-theme="light"] .ix-root .journey-stages button {
+  background: #eeeae3; color: #29312f; border-color: #d6cdc0;
+}
+:root[data-theme="light"] .ix-root .journey-stages button.active {
+  background: #334a55; border-color: #526e78; color: #fff;
+}
+:root[data-theme="light"] .ix-root .journey-evidence {
+  background: #f5f1e9; border-color: #d0c4b3;
+}
+:root[data-theme="light"] .ix-root .journey-result {
+  background: #ebf4ed; border-color: #9bbfa6;
+}
+:root[data-theme="light"] .ix-root .journey-close,
+:root[data-theme="light"] .ix-root .journey-footer button {
+  background: #f6f1e8; border-color: #cbbfae; color: #283130;
+}
+:root[data-theme="light"] .ix-root .journey-footer .journey-next {
+  background: #344d58; border-color: #344d58; color: #fff;
+}
+@media(max-width:680px) {
+  .ix-root .journey-shell {
+    position: relative;
+    width: 100%;
+    inset: auto;
+    padding: 7px 12px;
+  }
+  .ix-root .journey-launcher {
+    gap: 8px;
+    padding: 6px 12px;
+    min-height: 44px;
+  }
+  .ix-root .journey-launcher-cue { font-size: 0; gap: 0; }
+  .ix-root .journey-launcher-cue svg { width: 16px; height: 16px; }
+  .ix-root .journey-panel {
+    max-width: 100%;
+    max-height: none;
+    overflow: visible;
+  }
+  .ix-root .journey-stages {
+    display: flex;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    overscroll-behavior-inline: contain;
+    scrollbar-width: thin;
+    gap: 4px;
+    padding: 0 10px 6px;
+  }
+  .ix-root .journey-stages button {
+    flex: 0 0 76px;
+    min-width: 76px;
+    min-height: 60px;
+  }
+  .ix-root .journey-stages button small { font-size: 10px;max-width: 70px;overflow-wrap:normal; }
+  .ix-root .journey-head { padding: 12px 12px 5px; }
+  .ix-root .journey-body { padding: 12px 14px 6px; }
+  .ix-root .journey-disclaimer,
+  .ix-root .journey-footnote { margin-inline: 14px; }
+  .ix-root .journey-footer {
+    flex-wrap: wrap;
+    padding: 10px 14px 0;
+    row-gap: 8px;
+  }
+  .ix-root .journey-footer > div { margin-left:auto; }
+}
+@media(max-width:360px) {
+  .ix-root .journey-footer button { padding: .5rem .6rem; }
+  .ix-root .journey-launcher-label { font-size: 11px; }
+}

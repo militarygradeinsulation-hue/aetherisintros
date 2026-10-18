@@ -40,4 +40,12 @@ describe('live introductions and relationship trust boundaries', () => {
     expect(weather.recencyDays).toBeNull()
     expect(weather.why).not.toContain('9999')
   })
+  it('treats the old 9999-day placeholder as never exchanged', () => {
+    const member = { ...profileToMember(profile, null), lastInteractionDays: 9999 }
+    const weather = deriveWeather(member, [])
+    expect(weather.state).toBe('Building')
+    expect(weather.recencyDays).toBeNull()
+    expect(weather.why).not.toContain('9999')
+  })
+
 })

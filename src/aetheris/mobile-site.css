@@ -1,0 +1,206 @@
+/*
+ * Ask Intros / Mobile site refinements — across public, authenticated, and demo routes.
+ * Functional changes limited to layout, safe-area spacing, form ergonomics, and menu placement.
+ * The architectural design system, accessibility roles, data and desktop behavior are preserved.
+ */
+@media (max-width: 1023px) {
+  /* All five mobile navigation destinations remain visible; menus appear within
+     the available viewport, never as a sheet hidden behind the phone toolbar. */
+  .ix-root .ix-mobile-nav {
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    padding-inline: max(4px, env(safe-area-inset-left, 0px));
+    border-top-color: var(--sys-line);
+    box-sizing: border-box;
+  }
+  .ix-root .ix-mobile-nav-item {
+    min-width: 0;
+    min-height: 44px;
+    touch-action: manipulation;
+  }
+  .ix-root .ix-mobile-more {
+    position: fixed;
+    inset: 0;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: max(16px, env(safe-area-inset-top, 0px)) 12px
+      calc(20px + env(safe-area-inset-bottom, 0px));
+    box-sizing: border-box;
+  }
+  .ix-root .ix-mobile-scrim { position: absolute; inset: 0; }
+  .ix-root .ix-mobile-sheet {
+    position: relative;
+    inset: auto;
+    width: min(100%, 430px);
+    margin: auto;
+    max-height: min(76dvh, 650px);
+    border: 1px solid var(--sys-line);
+    border-radius: 18px;
+    padding: 15px;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    box-shadow: 0 24px 80px rgba(0, 0, 0, .34);
+    background: var(--sys-panel);
+    color: var(--sys-ink);
+  }
+  .ix-root .ix-mobile-sheet-head {
+    position: sticky;
+    top: -15px;
+    z-index: 2;
+    min-height: 48px;
+    background: var(--sys-panel);
+    border-bottom: 1px solid var(--sys-line);
+    margin-bottom: 7px;
+  }
+  .ix-root .ix-mobile-sheet-item { min-height: 48px; }
+  .ix-root .ix-header-logout-action,
+  .ix-root .ix-header-profile-action,
+  .ix-root .ix-header-appearance {
+    min-width: 40px;
+    min-height: 40px;
+  }
+  .ix-root .ix-global-header-inner {
+    min-width: 0;
+    column-gap: clamp(6px, 2vw, 18px);
+  }
+  .ix-root .ix-global-account-actions {
+    min-width: 0;
+    gap: 4px;
+  }
+  .ix-root :is(.arch-product-main,.ix-classic,.home-board-tile,.sys-tile) { min-width: 0; }
+  .ix-root .arch-product-main { width: 100%; max-width: 100%; }
+  .ix-root .arch-product-main img { max-width: 100%; height: auto; }
+}
+@media (max-width: 750px) {
+  /* iOS zooms focused controls with fonts under 16px; avoid sudden zoom and
+     preserve a usable text caret on the smallest member and public screens. */
+  :is(.ix-root,.auth-page,.onboarding-page,.verify-page,.admin-page,.founder-book,.ael)
+    :is(input:not([type="checkbox"]):not([type="radio"]),textarea,select) {
+    font-size: max(16px, 1em);
+  }
+  :is(.auth-page,.onboarding-page,.verify-page,.admin-page,.founder-book)
+    :is(input:not([type="checkbox"]):not([type="radio"]),textarea,select) {
+    max-width: 100%;
+    box-sizing: border-box;
+  }
+  :is(.auth-page,.onboarding-page,.verify-page,.admin-page,.founder-book)
+    :is(.auth-panel,.onboarding-form,.verify-panel,.admin-panel) {
+    width: min(100%, 100vw - 24px);
+    max-width: 100%;
+    min-width: 0;
+    margin-inline: auto;
+  }
+  :is(.auth-page,.onboarding-page,.verify-page,.admin-page,.founder-book)
+    :is(h1,h2,p,label) { overflow-wrap: break-word; }
+  .ael.ael-compact .ael-hero-actions,
+  .ael.ael-compact .ael-compact-membership .ael-membership-actions {
+    align-items: flex-start;
+    max-width: 100%;
+  }
+  .ael.ael-compact .ael-hero-actions :is(a,button),
+  .ael.ael-compact .ael-membership-actions :is(a,button) {
+    max-width: 100%;
+    min-height: 44px;
+    touch-action: manipulation;
+  }
+  .ael.ael-compact :is(.ael-compact-story-copy,.ael-compact-method,.ael-compact-membership-content) {
+    min-width: 0;
+    max-width: 100%;
+  }
+  .ael.ael-compact .ael-compact-story-copy p { overflow-wrap: break-word; }
+}
+@media (max-width: 420px) {
+  .ix-root .ix-global-header-inner { gap: 4px; }
+  .ix-root .ix-global-account-actions { gap: 2px; }
+  .ix-root .ix-mobile-nav-item { font-size: max(10px, var(--mobile-nav-label)); }
+  .ix-root .ix-mobile-sheet {
+    padding: 12px;
+    max-height: min(73dvh, 590px);
+    border-radius: 15px;
+  }
+  .ael.ael-compact .ael-hero h1 { overflow-wrap: normal; }
+  .ael.ael-compact .ael-header { padding-inline: 12px; }
+  .ael.ael-compact .ael-header-actions { gap: 5px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .ix-root .ix-mobile-more *,
+  .ix-root .ix-mobile-sheet * { animation: none !important; transition-duration: 0s !important; }
+}
+
+/* Keep long member names, translated labels and enlarged text inside their
+   actual cards. Let navigation scroll instead of clipping its final action. */
+:is(.ix-root,.auth-page,.verify-page,.onboarding-page)
+  :is(.provider-card,.providers-search,.home-feed-customize-row,.auth-form label) {
+  min-width: 0;
+  max-width: 100%;
+}
+:is(.ix-root,.auth-page,.verify-page,.onboarding-page)
+  :is(.provider-card h3,.provider-card p,.provider-card small,.auth-error,.auth-notice) {
+  overflow-wrap: anywhere;
+}
+.ix-root :is(.providers-tabs,.providers-chips) {
+  max-width: 100%;
+  overflow-x: auto;
+  scrollbar-width: thin;
+}
+.ix-root :is(.providers-tabs,.providers-chips) > button {
+  flex-shrink: 0;
+}
+@media (max-width: 750px) {
+  .auth-page :is(.auth-proof,.auth-index,.auth-soon-actions) {
+    flex-wrap: wrap;
+    height: auto;
+    gap: 12px;
+  }
+  .auth-page :is(.auth-switch,.auth-foot,.btn) {
+    max-width: 100%;
+    white-space: normal;
+    overflow-wrap: anywhere;
+    height: auto;
+  }
+  .auth-page .auth-foot { flex-wrap: wrap; }
+  .ix-root .providers-empty > div { display: flex; flex-wrap: wrap; gap: 10px; }
+}
+
+
+/*
+ * Extracted from the older public-onboarding/mobile PRs without importing
+ * their conflicting migrations or authentication decisions.
+ * Local member cards and form controls must fit in a narrow or zoomed layout.
+ */
+.ix-root .arch-product-main :is(
+  .module,.mod,.sys-tile,.home-widget,.home-board-tile,.panel,
+  .feed-card,.post-card,.match-report,.person-card,.member-tile,
+  .profile-settings,.profile-hero,.executive-workbench-body,
+  .messages-layout,.ix-messages,.ix-live-messages,
+  .ops-card,.ops-panel,.provider-card
+) { box-sizing:border-box;min-width:0;max-width:100%; }
+
+.ix-root .arch-product-main :is(
+  .module,.sys-tile,.home-widget,.home-board-tile,.panel,
+  .feed-card,.post-card,.match-report,.person-card,.member-tile,
+  .ops-card,.ops-panel
+) :is(h1,h2,h3,h4,p,small,label,dd,dt) { overflow-wrap:anywhere; }
+
+.ix-root :is(.arch-product-main,.home-feed-customize,.ix-mobile-sheet)
+  :is(input:not([type="checkbox"]):not([type="radio"]),textarea,select,[role="combobox"]) {
+  box-sizing:border-box;min-width:0;max-width:100%;
+}
+.ix-root :is(.arch-product-main,.home-feed-customize,.ix-mobile-sheet)
+  :is(pre,code) { max-width:100%;overflow-x:auto; }
+
+@media (max-width:768px) {
+  .ix-root .arch-product-main :is(.ix-tools,.ops-tabs,.insight-tabs,[role="tablist"]) {
+    max-width:100%;min-width:0;overflow-x:auto;scroll-padding-inline:12px;
+    overscroll-behavior-x:contain;-webkit-overflow-scrolling:touch;
+  }
+  .ix-root .arch-product-main :is(.ix-tools,.ops-tabs,.insight-tabs,[role="tablist"]) > :is(a,button) {
+    flex-shrink:0;
+  }
+}
+@media (max-width:380px) {
+  .ix-root .arch-product-main :is(.filter-chips,.module-actions,.panel-actions,.sv-sheet-actions) {
+    max-width:100%;flex-wrap:wrap;
+  }
+}

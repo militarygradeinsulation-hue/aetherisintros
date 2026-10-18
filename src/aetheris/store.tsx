@@ -11,7 +11,7 @@ import {
 import {
   currentUserId, loadDirectory, loadUserGraph, saveAsk, saveAskResponse, saveDoc, saveIntro,
   saveLearning, saveMessage, saveNote, savePost, saveProfileFields, saveRelationship, saveThread,
-  type Directory, type MemoryNote,
+  type Directory, type MemoryNote, type RemoteGraph,
 } from './db'
 import {
   emptyDirectory, ensureThread, loadLiveDirectory, mirrorFollow, saveComment,
@@ -262,12 +262,13 @@ interface NetworkApi {
   /** True once this member's own graph has been read from the database. */
   synced: boolean
   feedError: boolean
+  networkLoadError: string
   /* graph actions */
   connect: (id: string) => void
   follow: (id: string) => void
   toggleSave: (id: string, label?: string) => void
   openThreadWith: (id: string) => string
-  sendMessage: (threadId: string, text: string, messageId?: string) => Promise<void>
+  sendMessage: (threadId: string, text: string, messageId?: string) => Promise<string | undefined>
   requestIntro: (id: string, note?: string) => Promise<boolean>
   authorizeIntro: (id: string) => void
   declineIntro: (id: string) => void
@@ -353,7 +354,10 @@ export function NetworkProvider({ children, mode = 'live' }: { children: React.R
   const [userId, setUserId] = useState<string | null>(null)
   const [synced, setSynced] = useState(false)
   const [feedError, setFeedError] = useState(false)
+  const [networkLoadError, setNetworkLoadError] = useState('')
   const lastSynced = useRef<Persisted | null>(null)
+  // Never overwrite private records after a failed live graph read.
+  const privateGraphReady = useRef(!live)
 
   useEffect(() => { if (live) return; try { localStorage.setItem(KEY, JSON.stringify(s)) } catch { /* storage full */ } }, [s, live])
 
@@ -372,14 +376,25 @@ export function NetworkProvider({ children, mode = 'live' }: { children: React.R
       let meRow: LiveProfileRow | null = null
       let myGoals: string[] = []
       if (live) {
-        const [{ directory, me, failed }, goals] = await Promise.all([loadLiveDirectory(id), loadOwnGoals()])
+        const [{ directory, me, failed, reason }, goals] = await Promise.all([loadLiveDirectory(id), loadOwnGoals()])
         if (cancelled) return
         setFeedError(failed)
+        setNetworkLoadError(failed ? (reason ?? 'Live directory unavailable.') : '')
         meRow = me
         myGoals = goals
         setDir(directory)
       }
-      const remote = await loadUserGraph(id)
+      privateGraphReady.current = false
+      const remote = await loadUserGraph(id, live).then((data): Partial<RemoteGraph> => {
+        privateGraphReady.current = true
+        return data
+      }).catch((error): Partial<RemoteGraph> => {
+        if (live && !cancelled) {
+          setFeedError(true)
+          setNetworkLoadError(error instanceof Error ? error.message : 'Could not read your saved network activity.')
+        }
+        return {}
+      })
       if (cancelled) return
       setS(prev => {
         const doc = (remote.doc ?? {}) as Partial<Persisted>
@@ -424,7 +439,7 @@ export function NetworkProvider({ children, mode = 'live' }: { children: React.R
   /* live messaging: new messages and conversations from other members arrive instantly */
   useEffect(() => {
     if (!live || !userId) return
-    const refresh = () => { void loadLiveDirectory(userId).then(({ directory, failed }) => { setFeedError(failed); if (!failed) setDir(directory) }) }
+    const refresh = () => { void loadLiveDirectory(userId).then(({ directory, failed, reason }) => { setFeedError(failed); setNetworkLoadError(failed ? (reason ?? 'Live directory unavailable.') : ''); if (!failed) setDir(directory) }) }
     const channel = supabase
       .channel(`dm-${userId}-${Math.random().toString(36).slice(2, 10)}`)
       .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'dm_messages' }, payload => {
@@ -454,7 +469,7 @@ export function NetworkProvider({ children, mode = 'live' }: { children: React.R
 
   /* write-through: persist only what changed since the last database read */
   useEffect(() => {
-    if (!userId || !synced) return
+    if (!userId || !synced || (live && !privateGraphReady.current)) return
     const prev = lastSynced.current
     lastSynced.current = s
     if (!prev) return
@@ -572,6 +587,7 @@ export function NetworkProvider({ children, mode = 'live' }: { children: React.R
     return {
       synced,
       feedError,
+      networkLoadError,
       members: baseMembers.map(m => ({
         ...m,
         introState: s.introStates[m.id] ?? m.introState,
@@ -665,13 +681,16 @@ export function NetworkProvider({ children, mode = 'live' }: { children: React.R
           if (actualThread !== threadId) setS(prev => ({
             ...prev, ownThreads: prev.ownThreads.filter(t => t.id !== threadId),
           }))
-          return
+          // Give callers the server's canonical thread ID so a newly opened
+          // Simple View panel does not point at an obsolete local draft ID.
+          return actualThread
         }
         const who = thread ? nameOf(thread.memberId) : 'a member'
         patch(prev => ({
           sentMessages: { ...prev.sentMessages, [threadId]: [...(prev.sentMessages[threadId] ?? []), { id: messageId ?? rowId(), text, at: clock() }] },
           learned: remember(prev, { category: 'Messages', text: `You sent ${who} a message: “${text.slice(0, 70)}${text.length > 70 ? '…' : ''}”`, source: 'Conversation', confidence: 99, scope: 'private' }),
         }))
+        return threadId
       },
 
       requestIntro: (id, note) => {
@@ -943,7 +962,7 @@ export function NetworkProvider({ children, mode = 'live' }: { children: React.R
         }
       }),
     }
-  }, [s, dir, synced, feedError, live, userId])
+  }, [s, dir, synced, feedError, networkLoadError, live, userId])
 
   return <Ctx.Provider value={api}>{children}</Ctx.Provider>
 }

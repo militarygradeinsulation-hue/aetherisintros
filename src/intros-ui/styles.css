@@ -621,8 +621,8 @@
 .ix-root .sys-tile { border-color:rgba(215,194,154,.12); }
 .ix-root .sys-tile:hover { border-color:rgba(244,161,37,.44); }
 .ix-root :is(input,textarea,select):focus-visible { outline:2px solid #f4a125; outline-offset:2px; }
-.ix-root .ask-intros-lockup--compact { width:clamp(175px,16vw,235px); max-height:none; }
-@media(max-width:680px) { .ix-root .ask-intros-lockup--compact { width:150px; } }
+.ix-root .ask-intros-lockup--compact { width:clamp(220px,20vw,300px); height:auto; max-height:none; }
+@media(max-width:680px) { .ix-root .ask-intros-lockup--compact { width:clamp(165px,48vw,208px); } }
 
 
 /* HALFTONE NIGHT / member network. Scoped so charts and statuses retain meaning. */
@@ -844,10 +844,22 @@
 }
 @media(max-width:550px) {
   .ix-global-header-inner { gap:8px; }
-  .ix-global-brand .ask-intros-lockup--compact { width:clamp(105px,30vw,150px); }
+  .ix-global-brand .ask-intros-lockup--compact { width:clamp(165px,48vw,208px); }
   .ix-global-account-actions { gap:5px; }
 }
 @media(prefers-reduced-motion:reduce) {
   .ix-desktop-nav-link.is-active { animation:none; }
   .ix-desktop-nav-link { transition:none; }
+}
+
+/* Larger member logo with intact SVG proportions and responsive account access. */
+.ix-root .ix-global-brand .ask-intros-lockup--compact { flex:0 0 auto; height:auto; max-height:none; }
+.ix-global-header-inner { min-width:0; }
+.ix-global-account-actions { flex-shrink:0; }
+@media (max-width:550px) {
+  .ix-root .ix-global-header { padding-inline:8px; }
+  .ix-global-header-inner { grid-template-columns:minmax(0,1fr) auto; }
+  .ix-global-brand .ask-intros-lockup--compact { width:clamp(165px,48vw,208px); }
+  /* Profile and logout remain available via the existing mobile More sheet. */
+  .ix-header-profile-action,.ix-header-logout-action { display:none!important; }
 }

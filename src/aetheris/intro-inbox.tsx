@@ -4,7 +4,7 @@
  * request with the context the requester wrote, and accepts or declines in place using the
  * same server-guarded writes as the profile flow (only the target can set their opt-in).
  */
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { Check, Inbox, X } from 'lucide-react'
 
 import { supabase } from '@/integrations/supabase/client'
@@ -35,49 +35,88 @@ export function IntroRequestInbox() {
   const nav = useNav()
   const [rows, setRows] = useState<Incoming[]>([])
   const [busy, setBusy] = useState('')
+  const decisionPending = useRef(false)
   const [msg, setMsg] = useState('')
 
   const load = useCallback(async () => {
-    if (!graph.signedIn || !graph.userId) return
-    const r = await db.from('intro_requests').select('id, user_id, reason, mutual_value, created_at, status')
-      .eq('target_user_id', graph.userId).eq('member_opt_in', false).neq('status', 'declined').order('created_at', { ascending: true }).limit(50)
-    if (r.error) { setMsg(r.error.message); return }
-    const reqs = r.data ?? []
-    const ids = reqs.map((x: any) => x.id)
-    const [caps, names] = await Promise.all([
-      ids.length ? db.from('intro_context_capsules').select('id, intro_request_id, why_exists, why_target, why_now, first_goal').in('intro_request_id', ids) : { data: [] },
-      // Return names only for introductions the caller is actually part of.
-      ids.length ? db.rpc('my_intro_participant_names', { p_intro_ids: ids }) : { data: [] },
-    ])
-    if (names.error) { setMsg('Could not load introduction names. Retry shortly.'); return }
-    const capBy = new Map<string, any>((caps.data ?? []).map((c: any) => [c.intro_request_id, c]))
-    const nameBy = new Map<string, string>((names.data ?? []).map((p: any) => [p.intro_request_id, p.other_name as string]))
-    setRows(reqs.map((x: any): Incoming => {
-      const c: any = capBy.get(x.id)
-      return {
-        id: x.id, requesterId: x.user_id, requesterName: nameBy.get(x.id) || 'A member', createdAt: x.created_at, capsuleId: c?.id ?? null,
-        whyExists: c?.why_exists || x.reason || '', whyTarget: c?.why_target || x.mutual_value || '', whyNow: c?.why_now || '', firstGoal: c?.first_goal || '',
-      }
-    }))
+    if (!graph.signedIn || !graph.userId) { setRows([]); return }
+    try {
+      const r = await db.from('intro_requests').select('id, user_id, reason, mutual_value, created_at, status')
+        .eq('target_user_id', graph.userId).eq('member_opt_in', false)
+        .neq('status', 'declined').order('created_at', { ascending: true }).limit(50)
+      if (r.error) throw new Error('Unable to read introduction requests.')
+      const reqs = r.data ?? []
+      const ids = reqs.map((x: any) => x.id)
+      const [caps, names] = await Promise.all([
+        ids.length ? db.from('intro_context_capsules')
+          .select('id, intro_request_id, why_exists, why_target, why_now, first_goal')
+          .in('intro_request_id', ids) : { data: [], error: null },
+        ids.length ? db.rpc('my_intro_participant_names', { p_intro_ids: ids }) : { data: [], error: null },
+      ])
+      // Capsules enrich context but are optional: a capsule read error must not hide the
+      // underlying introduction from its intended recipient.
+      if (names.error) throw new Error('Introduction names are temporarily unavailable.')
+      const capBy = new Map<string, any>((caps.data ?? []).map((c: any) => [c.intro_request_id, c]))
+      const nameBy = new Map<string, string>((names.data ?? []).map((p: any) => [p.intro_request_id, p.other_name as string]))
+      setRows(reqs.map((x: any): Incoming => {
+        const c: any = capBy.get(x.id)
+        return {
+          id: x.id, requesterId: x.user_id, requesterName: nameBy.get(x.id) || 'A member',
+          createdAt: x.created_at, capsuleId: c?.id ?? null,
+          whyExists: c?.why_exists || x.reason || '', whyTarget: c?.why_target || x.mutual_value || '',
+          whyNow: c?.why_now || '', firstGoal: c?.first_goal || '',
+        }
+      }))
+    } catch {
+      setRows([])
+      setMsg('Could not refresh your introduction inbox. Retry after checking your connection.')
+    }
   }, [graph.signedIn, graph.userId])
   useEffect(() => { void load() }, [load])
 
   const respond = async (row: Incoming, accept: boolean) => {
-    setBusy(row.id); setMsg('')
-    if (accept && row.capsuleId) {
-      const c = await db.from('intro_context_capsules').update({ target_approved: true }).eq('id', row.capsuleId)
-      if (c.error) { setMsg(c.error.message); setBusy(''); return }
+    if (decisionPending.current) return
+    decisionPending.current = true
+    setBusy(row.id)
+    setMsg('')
+    try {
+      if (accept && row.capsuleId) {
+        const c = await db.from('intro_context_capsules').update({ target_approved: true })
+          .eq('id', row.capsuleId).select('id')
+        if (c.error || !(c.data ?? []).length) {
+          throw new Error('The introduction context approval was not confirmed.')
+        }
+      }
+      const u = await db.from('intro_requests')
+        .update(accept ? { member_opt_in: true, status: 'accepted' } : { status: 'declined' })
+        .eq('id', row.id).select('id')
+      if (u.error) throw new Error('The introduction response was not confirmed.')
+      if (!(u.data ?? []).length) {
+        setMsg('This request was withdrawn or already answered. Refresh to see its current state.')
+        await load()
+        return
+      }
+      // The response is durable before any auxiliary activity record is attempted.
+      try {
+        await graph.logEvent('intro_request', row.id, accept ? 'accepted' : 'declined',
+          `Introduction ${accept ? 'accepted' : 'declined'} with ${row.requesterName}`)
+      } catch { /* the confirmed decision must remain usable if activity logging is delayed */ }
+      setMsg(accept
+        ? `Accepted. You and ${row.requesterName} can now open a Relationship Room.`
+        : `Declined. ${row.requesterName} is not told why.`)
+      await load()
+    } catch {
+      setMsg('Could not confirm this decision. Refresh the inbox to check its state before retrying.')
+    } finally {
+      decisionPending.current = false
+      setBusy('')
     }
-    const u = await db.from('intro_requests').update(accept ? { member_opt_in: true, status: 'accepted' } : { status: 'declined' }).eq('id', row.id).select('id')
-    setBusy('')
-    if (u.error) { setMsg(u.error.message); return }
-    if (!(u.data ?? []).length) { setMsg(`${row.requesterName} withdrew this request.`); await load(); return }
-    await graph.logEvent('intro_request', row.id, accept ? 'accepted' : 'declined', `Introduction ${accept ? 'accepted' : 'declined'} with ${row.requesterName}`)
-    setMsg(accept ? `Accepted. You and ${row.requesterName} can now open a Relationship Room.` : `Declined. ${row.requesterName} is not told why.`)
-    await load()
   }
 
-  if (!graph.signedIn || !rows.length) return msg ? <p className="og-note">{msg}</p> : null
+  if (!graph.signedIn) return null
+  if (!rows.length) return msg
+    ? <div className="og-note"><p role="alert">{msg}</p><Btn kind="quiet" onClick={() => { setMsg(''); void load() }}>Retry inbox</Btn></div>
+    : null
 
   return <section className="executive-section intro-inbox">
     <Eyebrow signal><Inbox size={12} /> WAITING ON YOU</Eyebrow>
@@ -100,6 +139,6 @@ export function IntroRequestInbox() {
         </div>
       </article>
     })}
-    {msg && <p className="og-note">{msg}</p>}
+    {msg && <p className="og-note" role="status">{msg}</p>}
   </section>
 }

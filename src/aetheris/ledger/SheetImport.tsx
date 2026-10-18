@@ -3,10 +3,11 @@
  * Writes only through the basic CRM (useOps), so imported records are real,
  * account-scoped, and flow into the full workspace automatically.
  */
-import { useMemo, useState } from 'react'
+import { useMemo, useRef, useState } from 'react'
 import { Check, FileUp, RotateCcw, Wand2 } from 'lucide-react'
 import { Btn, Eyebrow } from '../ui'
 import { useOps } from '../crm/store'
+import { safeImportSelection } from '../crm/import-policy'
 
 type Target = 'people' | 'companies'
 type Field = { key: string; label: string; required?: boolean; hints: string[] }
@@ -74,7 +75,7 @@ function autoMap(headers: string[], target: Target): Record<string, number> {
 
 const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 type Vals = Partial<Record<'fullName'|'firstName'|'lastName'|'email'|'phone'|'title'|'companyName'|'location'|'linkedinUrl'|'notes'|'name'|'domain'|'website'|'industry'|'employees', string>> & Record<string, string | undefined>
-type Checked = { values: Vals; errors: string[]; warnings: string[] }
+type Checked = { sourceRow: number; values: Vals; errors: string[]; warnings: string[] }
 
 export default function SheetImport() {
   const ops = useOps()
@@ -84,6 +85,8 @@ export default function SheetImport() {
   const [map, setMap] = useState<Record<string, number>>({})
   const [skipBad, setSkipBad] = useState(true)
   const [busy, setBusy] = useState(false)
+  const importingRef = useRef(false)
+  const importedRowsRef = useRef(new Set<string>())
   const [done, setDone] = useState<string | null>(null)
   const [readError, setReadError] = useState<string | null>(null)
 
@@ -95,6 +98,7 @@ export default function SheetImport() {
     if (!/\.(csv|tsv|txt)$/i.test(file.name)) { setReadError('Save the sheet as CSV first (File → Download → CSV), then drop it here.'); return }
     const rows = parseCsv(await file.text())
     if (rows.length < 2) { setReadError('That file has no rows under the header.'); return }
+    importedRowsRef.current.clear()
     setFileName(file.name); setGrid(rows); setMap(autoMap(rows[0] ?? [], target))
   }
 
@@ -104,7 +108,7 @@ export default function SheetImport() {
     const seen = new Set<string>()
     const existingEmails = new Set(ops.people.map(p => p.email.toLowerCase()).filter(Boolean))
     const existingCompanies = new Set(ops.companies.map(c => c.name.toLowerCase()))
-    return body.map(r => {
+    return body.map((r, sourceRow) => {
       const values: Vals = {}
       for (const [k, i] of Object.entries(map)) values[k] = (r[i] ?? '').trim()
       const errors: string[] = [], warnings: string[] = []
@@ -124,7 +128,7 @@ export default function SheetImport() {
         else if (key && seen.has(key)) errors.push('Repeated in this sheet')
         if (key) seen.add(key)
       }
-      return { values, errors, warnings }
+      return { sourceRow, values, errors, warnings }
     })
   }, [body, map, target, ops.people, ops.companies])
 
@@ -136,28 +140,61 @@ export default function SheetImport() {
     : required.some(f => !(f.key in map))
 
   const run = async () => {
+    // A second click must not create duplicate contacts before the first import finishes.
+    if (importingRef.current) return
+    setReadError(null)
+    const selected = safeImportSelection(checked, skipBad)
+    if (selected.error) { setReadError(selected.error); return }
+    const pending = selected.rows.filter(row => !importedRowsRef.current.has(`${target}:${row.sourceRow}`))
+    if (!pending.length) { setReadError('There are no new valid records to import. All confirmed rows in this file are already saved.'); return }
+
+    importingRef.current = true
     setBusy(true)
-    let n = 0
-    for (const c of skipBad ? good : checked.filter(x => !x.errors.includes('Already in your CRM'))) {
-      const v = c.values
-      const res = target === 'people'
-        ? await ops.createPerson({
-          fullName: v.fullName ?? '', email: v.email ?? '', phone: v.phone ?? '', title: v.title ?? '',
-          companyName: v.companyName ?? '', location: v.location ?? '', linkedinUrl: v.linkedinUrl ?? '',
-          notes: v.notes ?? '', source: `Import · ${fileName}`,
-        })
-        : await ops.createCompany({
-          name: v.name ?? '', domain: v.domain ?? '', website: v.website ?? '', industry: v.industry ?? '',
-          location: v.location ?? '', phone: v.phone ?? '', employees: v.employees ?? '', notes: v.notes ?? '',
-        })
-      if (res) n++
+    let saved = 0
+    let failed = 0
+    let failureDetail = ''
+    try {
+      for (const candidate of pending) {
+        const v = candidate.values
+        try {
+          const res = target === 'people'
+            ? await ops.createPerson({
+              fullName: v.fullName ?? '', email: v.email ?? '', phone: v.phone ?? '', title: v.title ?? '',
+              companyName: v.companyName ?? '', location: v.location ?? '', linkedinUrl: v.linkedinUrl ?? '',
+              notes: v.notes ?? '', source: `Import · ${fileName}`,
+            })
+            : await ops.createCompany({
+              name: v.name ?? '', domain: v.domain ?? '', website: v.website ?? '', industry: v.industry ?? '',
+              location: v.location ?? '', phone: v.phone ?? '', employees: v.employees ?? '', notes: v.notes ?? '',
+            })
+          if (res) { saved += 1; importedRowsRef.current.add(`${target}:${candidate.sourceRow}`) }
+          else {
+            failed += 1
+            failureDetail ||= ops.lastError() || 'The CRM did not confirm the record.'
+          }
+        } catch {
+          failed += 1
+          failureDetail ||= 'The CRM request failed or the network connection was interrupted.'
+        }
+      }
+    } finally {
+      importingRef.current = false
+      setBusy(false)
     }
-    setBusy(false)
-    setDone(`${n} ${target === 'people' ? (n === 1 ? 'person' : 'people') : (n === 1 ? 'company' : 'companies')} added to your CRM.`)
-    setGrid([]); setFileName('')
+    const unit = target === 'people' ? (saved === 1 ? 'person' : 'people') : (saved === 1 ? 'company' : 'companies')
+    setDone(`${saved} ${unit} saved to your CRM.`)
+    if (failed) {
+      setReadError(`${failed} record(s) could not be saved. ${failureDetail} The source file remains loaded so you can review or retry only the remaining valid records.`)
+    } else if (selected.rows.length < checked.length) {
+      setReadError(`${checked.length - selected.rows.length} invalid or duplicate row(s) were skipped. Your file remains loaded for review.`)
+    } else {
+      importedRowsRef.current.clear()
+      setGrid([])
+      setFileName('')
+    }
   }
 
-  const reset = () => { setGrid([]); setFileName(''); setMap({}); setDone(null); setReadError(null) }
+  const reset = () => { importedRowsRef.current.clear(); setGrid([]); setFileName(''); setMap({}); setDone(null); setReadError(null) }
 
   return <div className="simp">
     <div className="simp-intro">
@@ -228,17 +265,17 @@ export default function SheetImport() {
       <section className="simp-block simp-go">
         <label className="simp-toggle">
           <input type="checkbox" checked={skipBad} onChange={e => setSkipBad(e.target.checked)} />
-          Skip rows that need attention (duplicates are always skipped)
+          Skip invalid and duplicate rows (otherwise, resolve them before importing)
         </label>
         <div>
           <Btn kind="quiet" onClick={reset}><RotateCcw size={14} /> Start over</Btn>
-          <Btn kind="primary" disabled={busy || missingRequired || !good.length} onClick={() => void run()}>
-            {busy ? 'Adding…' : `Add ${skipBad ? good.length : checked.filter(x => !x.errors.includes('Already in your CRM')).length} to CRM`}
+          <Btn kind="primary" disabled={busy || missingRequired || !good.length || (!skipBad && bad > 0)} onClick={() => void run()}>
+            {busy ? 'Adding…' : `Add ${good.length} to CRM`}
           </Btn>
         </div>
       </section>
     </>}
 
-    {readError && <p className="simp-warn">{readError}</p>}
+    {readError && <p className="simp-warn" role="alert">{readError}</p>}
   </div>
 }

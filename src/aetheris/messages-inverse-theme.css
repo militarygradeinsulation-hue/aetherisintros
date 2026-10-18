@@ -1,0 +1,275 @@
+/*
+ * ASK INTROS / MESSAGES — INVERTED STENCIL THEME
+ *
+ * Source of truth for BOTH the demo MessagesView and signed-in LiveMessagesView.
+ * Dark: all message tiles black/graphite with white text.
+ * Light: all message tiles white/off-white with black text.
+ * Orange is reserved for actions, metadata, and keyboard focus.
+ *
+ * Loaded after all old palette layers in __root.tsx. Never fork these colors
+ * into other CSS files: the old "cream in both modes" overrides were removed.
+ */
+html:root[data-theme="dark"] body .ix-root :is(.ix-messages,.ix-live-messages) {
+  --msg-page:#000000!important;
+  --msg-panel:#080808!important;
+  --msg-panel-inset:#111111!important;
+  --msg-selected:#202020!important;
+  --msg-hover:#252525!important;
+  --msg-border:#646464!important;
+  --msg-ink:#ffffff!important;
+  --msg-body:#f5f5f5!important;
+  --msg-muted:#cecece!important;
+  --msg-copper:#ef9a69!important;
+  --msg-accent:#b5541f!important;
+  --msg-accent-hover:#9c431b!important;
+  --msg-accent-ink:#ffffff!important;
+  --msg-note:#0d0d0d!important;
+  --msg-outgoing:#202020!important;
+  --msg-incoming:#101010!important;
+  --msg-paper:#111111!important;
+  color-scheme:dark;
+}
+html:root[data-theme="light"] body .ix-root :is(.ix-messages,.ix-live-messages) {
+  --msg-page:#ffffff!important;
+  --msg-panel:#ffffff!important;
+  --msg-panel-inset:#f6f6f6!important;
+  --msg-selected:#eaeaea!important;
+  --msg-hover:#eeeeee!important;
+  --msg-border:#b4b4b4!important;
+  --msg-ink:#090909!important;
+  --msg-body:#171717!important;
+  --msg-muted:#454545!important;
+  --msg-copper:#934016!important;
+  --msg-accent:#b5541f!important;
+  --msg-accent-hover:#963e17!important;
+  --msg-accent-ink:#ffffff!important;
+  --msg-note:#fafafa!important;
+  --msg-outgoing:#e8e8e8!important;
+  --msg-incoming:#ffffff!important;
+  --msg-paper:#f5f5f5!important;
+  color-scheme:light;
+}
+
+/* Inversion contract: always set foreground AND background on the same
+   surface to defeat the legacy stencil blue/ivory and text-fill rules. */
+html:root[data-theme] body .ix-root :is(.ix-messages,.ix-live-messages) {
+  background:var(--msg-page)!important;
+  background-image:none!important;
+  border:1px solid var(--msg-border)!important;
+  color:var(--msg-ink)!important;
+  -webkit-text-fill-color:var(--msg-ink)!important;
+  border-radius:2px!important;
+  box-shadow:none!important;
+  font-family:"JetBrains Mono",ui-monospace,monospace!important;
+}
+html:root[data-theme] body .ix-root :is(.ix-messages,.ix-live-messages)
+  :is(aside,main,.msg-hero,.msg-request-section,.msg-brief-panel,.msg-next-step,
+      .msg-chat-body,.msg-live-chat-body) {
+  background:var(--msg-panel)!important;
+  background-image:none!important;
+  border-color:var(--msg-border)!important;
+  color:var(--msg-ink)!important;
+  -webkit-text-fill-color:var(--msg-ink)!important;
+  box-shadow:none!important;
+  border-radius:2px!important;
+}
+html:root[data-theme] body .ix-root :is(.ix-messages,.ix-live-messages)
+  :is(.msg-request-section,.msg-brief-panel,.msg-next-step) {
+  border:1px solid var(--msg-border)!important;
+}
+html:root[data-theme] body .ix-root :is(.ix-messages,.ix-live-messages)
+  :is(.msg-hero,.msg-request-section,.msg-next-step,.msg-brief-panel)
+  :is(h1,h2,h3,h4,p,span,strong,small,label,li,div) {
+  color:var(--msg-ink)!important;
+  -webkit-text-fill-color:var(--msg-ink)!important;
+  opacity:1!important;
+}
+html:root[data-theme] body .ix-root :is(.ix-messages,.ix-live-messages)
+  :is(h1,h2,h3,h4,.msg-hero h1) {
+  color:var(--msg-ink)!important;
+  -webkit-text-fill-color:var(--msg-ink)!important;
+  text-shadow:none!important;
+}
+html:root[data-theme] body .ix-root :is(.ix-messages,.ix-live-messages)
+  :is(.msg-hero,.msg-request-section,.msg-next-step,.msg-brief-panel)
+  :is(.msg-hero-emphasis,.msg-hero-kicker,.msg-request-title,.msg-brief-title,
+      .msg-brief-link,[class*="text-[var(--msg-copper)]"]) {
+  color:var(--msg-copper)!important;
+  -webkit-text-fill-color:var(--msg-copper)!important;
+}
+html:root[data-theme] body .ix-root :is(.ix-messages,.ix-live-messages)
+  :is(.msg-hero-stat-label,.msg-request-section [class*="text-[var(--msg-muted)]"],
+      .msg-brief-panel [class*="text-[var(--msg-muted)]"]) {
+  color:var(--msg-muted)!important;
+  -webkit-text-fill-color:var(--msg-muted)!important;
+}
+html:root[data-theme] body .ix-root :is(.ix-messages,.ix-live-messages)
+  :is(.msg-chat-body,.msg-live-chat-body) {
+  background:var(--msg-page)!important;
+  background-image:none!important;
+}
+/* Correspondence: two adjacent grayscale values, never white-on-white or
+   black-on-black. Read and unread labels inherit from the appropriate tile. */
+html:root[data-theme] body .ix-root :is(.ix-messages,.ix-live-messages) .msg-outgoing {
+  background:var(--msg-outgoing)!important;
+  background-image:none!important;
+  color:var(--msg-ink)!important;
+  -webkit-text-fill-color:var(--msg-ink)!important;
+  border:1px solid var(--msg-border)!important;
+  border-radius:2px!important;
+  box-shadow:none!important;
+}
+html:root[data-theme] body .ix-root :is(.ix-messages,.ix-live-messages) .msg-incoming {
+  background:var(--msg-incoming)!important;
+  background-image:none!important;
+  color:var(--msg-ink)!important;
+  -webkit-text-fill-color:var(--msg-ink)!important;
+  border:1px solid var(--msg-border)!important;
+  border-radius:2px!important;
+  box-shadow:none!important;
+}
+html:root[data-theme] body .ix-root :is(.ix-messages,.ix-live-messages)
+  :is(.msg-outgoing,.msg-incoming) :is(p,span,div,small,time,a) {
+  color:inherit!important;
+  -webkit-text-fill-color:currentColor!important;
+}
+html:root[data-theme] body .ix-root :is(.ix-messages,.ix-live-messages)
+  :is(.msg-outgoing,.msg-incoming) [class*="text-[var(--msg-muted)]"] {
+  color:var(--msg-muted)!important;
+  -webkit-text-fill-color:var(--msg-muted)!important;
+}
+
+/* Inbox rows, connection tiles, right-hand intelligence cards and selected
+   states all share the same inverse palette. */
+html:root[data-theme] body .ix-root :is(.ix-messages,.ix-live-messages)
+  :is([class*="bg-[var(--msg-panel)]"],[class*="bg-[var(--msg-panel-inset)]"],
+      [class*="bg-[var(--msg-selected)]"]) {
+  background-color:var(--msg-panel-inset)!important;
+  color:var(--msg-ink)!important;
+  -webkit-text-fill-color:var(--msg-ink)!important;
+}
+html:root[data-theme] body .ix-root :is(.ix-messages,.ix-live-messages)
+  :is(.msg-request-section,.msg-brief-panel,.msg-next-step)
+  :is([class*="bg-[var(--msg-selected)]"],[class*="bg-[var(--msg-panel-inset)]"]) {
+  background:var(--msg-selected)!important;
+  color:var(--msg-ink)!important;
+  -webkit-text-fill-color:var(--msg-ink)!important;
+  border-color:var(--msg-border)!important;
+}
+html:root[data-theme] body .ix-root :is(.ix-messages,.ix-live-messages)
+  :is(.msg-next-step,.msg-brief-panel) :is(.msg-body-text,p) {
+  color:var(--msg-body)!important;
+  -webkit-text-fill-color:var(--msg-body)!important;
+}
+html:root[data-theme] body .ix-root :is(.ix-messages,.ix-live-messages)
+  :is(.msg-next-step,.msg-brief-panel) .msg-brief-link {
+  color:var(--msg-copper)!important;
+  -webkit-text-fill-color:var(--msg-copper)!important;
+}
+/* All ordinary ink respects mode, including names, thread timestamps, right
+   sidebar context, and the legacy Tailwind arbitrary-color utilities. */
+html:root[data-theme] body .ix-root :is(.ix-messages,.ix-live-messages)
+  :is([class*="text-[var(--msg-ink)]"],[class*="text-[var(--msg-body)]"]) {
+  color:var(--msg-ink)!important;
+  -webkit-text-fill-color:var(--msg-ink)!important;
+}
+html:root[data-theme] body .ix-root :is(.ix-messages,.ix-live-messages)
+  [class*="text-[var(--msg-muted)]"] {
+  color:var(--msg-muted)!important;
+  -webkit-text-fill-color:var(--msg-muted)!important;
+}
+html:root[data-theme] body .ix-root :is(.ix-messages,.ix-live-messages)
+  [class*="text-[var(--msg-copper)]"] {
+  color:var(--msg-copper)!important;
+  -webkit-text-fill-color:var(--msg-copper)!important;
+}
+/* Buttons: orange primary with white label, monochrome secondary. */
+html:root[data-theme] body .ix-root .arch-product-main :is(.ix-messages,.ix-live-messages) button.msg-primary-action,
+html:root[data-theme] body .ix-root .arch-product-main :is(.ix-messages,.ix-live-messages) button.msg-primary-action:hover:not(:disabled),
+html:root[data-theme] body .ix-root :is(.ix-messages,.ix-live-messages) button.msg-primary-action {
+  background:var(--msg-accent)!important;
+  background-image:none!important;
+  color:var(--msg-accent-ink)!important;
+  -webkit-text-fill-color:var(--msg-accent-ink)!important;
+  border:1px solid var(--msg-accent)!important;
+  border-radius:2px!important;
+  box-shadow:none!important;
+}
+html:root[data-theme] body .ix-root .arch-product-main :is(.ix-messages,.ix-live-messages) button.msg-primary-action:hover:not(:disabled),
+html:root[data-theme] body .ix-root :is(.ix-messages,.ix-live-messages) button.msg-primary-action:hover:not(:disabled) {
+  background:var(--msg-accent-hover)!important;
+  border-color:var(--msg-copper)!important;
+  box-shadow:inset 0 0 0 1px var(--msg-copper)!important;
+}
+html:root[data-theme] body .ix-root :is(.ix-messages,.ix-live-messages) button.msg-primary-action :is(span,strong,svg) {
+  color:var(--msg-accent-ink)!important;
+  -webkit-text-fill-color:var(--msg-accent-ink)!important;
+}
+html:root[data-theme] body .ix-root :is(.ix-messages,.ix-live-messages)
+  :is(.msg-request-section button:not(.msg-primary-action),
+      button:not(.msg-primary-action)[class*="border-[var(--msg-border)]"]) {
+  background:var(--msg-panel)!important;
+  color:var(--msg-ink)!important;
+  -webkit-text-fill-color:var(--msg-ink)!important;
+  border-color:var(--msg-border)!important;
+}
+html:root[data-theme] body .ix-root :is(.ix-messages,.ix-live-messages) button:not(.msg-primary-action):hover:not(:disabled) {
+  border-color:var(--msg-copper)!important;
+}
+/* Inputs and select dropdowns invert with the sheet, with visible caret and
+   options in both appearance modes; unrelated red error alerts retain meaning. */
+html:root[data-theme] body .ix-root :is(.ix-messages,.ix-live-messages)
+  :is(input:not([type="checkbox"]):not([type="radio"]),textarea,select,[role="combobox"]) {
+  background:var(--msg-panel-inset)!important;
+  background-image:none!important;
+  color:var(--msg-ink)!important;
+  -webkit-text-fill-color:var(--msg-ink)!important;
+  caret-color:var(--msg-ink)!important;
+  border:1px solid var(--msg-border)!important;
+  color-scheme:inherit;
+}
+html:root[data-theme] body .ix-root :is(.ix-messages,.ix-live-messages)
+  :is(input,textarea)::placeholder {
+  color:var(--msg-muted)!important;
+  -webkit-text-fill-color:var(--msg-muted)!important;
+  opacity:1!important;
+}
+html:root[data-theme] body .ix-root :is(.ix-messages,.ix-live-messages)
+  :is(select option,[role="option"]) {
+  background:var(--msg-panel-inset)!important;
+  color:var(--msg-ink)!important;
+  -webkit-text-fill-color:var(--msg-ink)!important;
+}
+html:root[data-theme] body .ix-root :is(.ix-messages,.ix-live-messages) :is(button,input,textarea,a,select):focus-visible {
+  outline:2px solid var(--msg-copper)!important;
+  outline-offset:3px!important;
+}
+/* Non-blocking live errors are deliberately status-red, with readable ink.
+   These are NOT ordinary message tiles. */
+html:root[data-theme="dark"] body .ix-root .ix-live-messages [role="alert"] {
+  background:#301510!important;
+  color:#ffe7df!important;
+  -webkit-text-fill-color:#ffe7df!important;
+  border-color:#bc755e!important;
+}
+html:root[data-theme="light"] body .ix-root .ix-live-messages [role="alert"] {
+  background:#fff0ed!important;
+  color:#812b22!important;
+  -webkit-text-fill-color:#812b22!important;
+  border-color:#bf6c59!important;
+}
+@media(prefers-reduced-motion:reduce) {
+  .ix-root :is(.ix-messages,.ix-live-messages) :is(button,a) {transition:none!important;}
+}
+
+/* Selected thread rows use Tailwind transition-all. When appearance switches,
+ * text flips instantly but the tile's background interpolates from dark to
+ * light, briefly producing black-on-black (measured at 1.22:1 in CI). Avoid
+ * animating a color whose matching ink changes immediately. */
+html:root[data-theme] body .ix-root
+  :is(.ix-messages,.ix-live-messages) aside
+  [class~="bg-[var(--msg-selected)]"] {
+  transition-property:none!important;
+  transition-duration:0s!important;
+  animation:none!important;
+}

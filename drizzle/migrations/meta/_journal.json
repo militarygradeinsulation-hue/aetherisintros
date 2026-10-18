@@ -589,6 +589,48 @@
       "when": 1792072000000,
       "tag": "0084_live_intro_secure_read_grants",
       "breakpoints": true
+    },
+    {
+      "idx": 85,
+      "version": "7",
+      "when": 1792073000000,
+      "tag": "0085_restore_live_member_capabilities",
+      "breakpoints": true
+    },
+    {
+      "idx": 86,
+      "version": "7",
+      "when": 1792273000000,
+      "tag": "0086_restore_launch_mode_signup",
+      "breakpoints": true
+    },
+    {
+      "idx": 87,
+      "version": "7",
+      "when": 1792273000001,
+      "tag": "0087_confirmed_member_onboarding",
+      "breakpoints": true
+    },
+    {
+      "idx": 88,
+      "version": "7",
+      "when": 1792273000002,
+      "tag": "0088_admin_platform_overview",
+      "breakpoints": true
+    },
+    {
+      "idx": 89,
+      "version": "7",
+      "when": 1792273000003,
+      "tag": "0089_verified_owner_admin_provision",
+      "breakpoints": true
+    },
+    {
+      "idx": 90,
+      "version": "7",
+      "when": 1792273000004,
+      "tag": "0090_shared_opportunity_exchange",
+      "breakpoints": true
     }
   ]
 }

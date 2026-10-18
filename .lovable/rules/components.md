@@ -90,6 +90,12 @@ import HalftoneWordmarkFooter from "@ws-gmhcx8w6bqvecbtkycud/c1248cd8-77de-4eaa-
 import Landing from "@ws-gmhcx8w6bqvecbtkycud/c1248cd8-77de-4eaa-8d9d-e7da71e70ae9"
 ```
 
+### MapDemo
+
+```ts
+import MapDemo from "@ws-gmhcx8w6bqvecbtkycud/c1248cd8-77de-4eaa-8d9d-e7da71e70ae9"
+```
+
 ### MetroHero
 
 ```ts

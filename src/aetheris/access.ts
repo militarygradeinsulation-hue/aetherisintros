@@ -16,7 +16,10 @@ export type LaunchMode = 'first_1000' | 'invite_only' | 'closed'
 
 export interface AccessState {
   loading: boolean
+  /** A failed authorization lookup is not evidence of membership or sign-out. */
+  error: string | null
   signedIn: boolean
+  emailConfirmed: boolean
   userId: string | null
   email: string
   name: string
@@ -25,19 +28,20 @@ export interface AccessState {
   mode: LaunchMode
   isAdmin: boolean
   onboarded: boolean
-  /** Membership verification decides network access; the database enforces it too. */
+  /** Separately earned business-role verification; approval and onboarding grant membership. */
   verification: VerificationStatus
 }
 
 export const noAccess: AccessState = {
-  loading: true, signedIn: false, userId: null, email: '', name: '',
-  status: 'none', foundingNumber: null, mode: 'first_1000', isAdmin: false, onboarded: false,
+  loading: true, error: null, signedIn: false, emailConfirmed: false, userId: null, email: '', name: '',
+  status: 'none', foundingNumber: null, mode: 'invite_only', isAdmin: false, onboarded: false,
   verification: 'none',
 }
 
 /** The single guard every network-facing surface must respect. */
 export const isLiveMember = (access: AccessState) =>
-  access.signedIn && access.status === 'approved' && access.verification === 'verified'
+  access.signedIn && access.emailConfirmed && access.status === 'approved' && access.onboarded
+    && access.verification !== 'rejected' && access.verification !== 'suspended'
 
 export interface FoundingStats { approved: number; capacity: number; mode: LaunchMode }
 
@@ -45,14 +49,14 @@ export async function foundingStats(): Promise<FoundingStats> {
   try {
     const { data } = await supabase.rpc('founding_stats')
     const row = Array.isArray(data) ? data[0] : data
-    if (!row) return { approved: 0, capacity: 1000, mode: 'first_1000' }
+    if (!row) return { approved: 0, capacity: 1000, mode: 'invite_only' }
     return {
       approved: Number(row.approved ?? 0),
       capacity: Number(row.capacity ?? 1000),
-      mode: (row.mode ?? 'first_1000') as LaunchMode,
+      mode: (row.mode ?? 'invite_only') as LaunchMode,
     }
   } catch {
-    return { approved: 0, capacity: 1000, mode: 'first_1000' }
+    return { approved: 0, capacity: 1000, mode: 'invite_only' }
   }
 }
 
@@ -75,7 +79,11 @@ export async function claimAccess(inviteCode?: string): Promise<{ status: Access
 }
 
 export async function fetchAccess(): Promise<AccessState> {
-  const { data: userData } = await supabase.auth.getUser()
+  const { data: userData, error: authError } = await supabase.auth.getUser()
+  // A visitor without a session is a legitimate guest, not a database outage.
+  // All other auth failures remain hard errors and never grant membership.
+  if (authError?.name === 'AuthSessionMissingError') return { ...noAccess, loading: false }
+  if (authError) throw authError
   const user = userData.user
   if (!user) return { ...noAccess, loading: false }
 
@@ -88,12 +96,17 @@ export async function fetchAccess(): Promise<AccessState> {
     .eq('user_id', user.id)
     .maybeSingle()
   // Retry with the remembered invite (email-confirm and Google return paths skip /auth).
-  if (!existing.data || existing.data.status === 'pending') {
+  if (user.email_confirmed_at && !existing.error && (!existing.data || existing.data.status === 'pending' || existing.data.status === 'waitlisted')) {
     const code = storedInvite()
-    if (!existing.data || code) {
-      try { await claimAccess(code || undefined); if (code) clearInvite() } catch { /* the page surfaces the state below */ }
-    }
+    // Retry pending accounts after launch settings change, including accounts
+    // created before public signup was restored. The RPC enforces eligibility.
+    try { const result = await claimAccess(code || undefined); if (code && result.status === 'approved') clearInvite() } catch { /* the page surfaces the state below */ }
   }
+
+  // Never grant network or admin privileges from partial/failed database reads.
+  // The caller must surface the error rather than mistaking a permission failure
+  // for a new or unapproved member.
+  if (existing.error) throw existing.error
 
   const [membership, roles, profile, stats, verification] = await Promise.all([
     supabase.from('early_access_members').select('status, founding_member_number').eq('user_id', user.id).maybeSingle(),
@@ -103,9 +116,15 @@ export async function fetchAccess(): Promise<AccessState> {
     fetchVerification(),
   ])
 
+  for (const result of [membership, roles, profile]) {
+    if (result.error) throw result.error
+  }
+
   return {
     loading: false,
+    error: null,
     signedIn: true,
+    emailConfirmed: Boolean(user.email_confirmed_at),
     userId: user.id,
     email: user.email ?? '',
     name: profile.data?.name ?? (user.user_metadata?.['name'] as string | undefined) ?? '',
@@ -118,19 +137,36 @@ export async function fetchAccess(): Promise<AccessState> {
   }
 }
 
+const ACCESS_READ_ERROR = 'We could not verify your membership right now. Your account has not been changed. Please retry.'
+
 export function useAccess() {
   const [access, setAccess] = useState<AccessState>(noAccess)
 
   const refresh = useCallback(async () => {
-    setAccess(await fetchAccess())
+    setAccess(prev => ({ ...prev, loading: true, error: null }))
+    try {
+      setAccess(await fetchAccess())
+    } catch {
+      // Fail closed, but surface a recoverable failure rather than leaving the page
+      // loading forever or redirecting a signed-in member to the sign-in screen.
+      setAccess({ ...noAccess, loading: false, error: ACCESS_READ_ERROR })
+    }
   }, [])
 
   useEffect(() => {
     let cancelled = false
-    void fetchAccess().then(next => { if (!cancelled) setAccess(next) })
+    const load = () => {
+      void fetchAccess()
+        .then(next => { if (!cancelled) setAccess(next) })
+        .catch(() => {
+          if (!cancelled) setAccess({ ...noAccess, loading: false, error: ACCESS_READ_ERROR })
+        })
+    }
+    load()
     const { data: sub } = supabase.auth.onAuthStateChange(event => {
       if (event !== 'SIGNED_IN' && event !== 'SIGNED_OUT' && event !== 'USER_UPDATED') return
-      void fetchAccess().then(next => { if (!cancelled) setAccess(next) })
+      // Auth callbacks run under the client session lock; read after it is released.
+      setTimeout(() => { if (!cancelled) load() }, 0)
     })
     return () => { cancelled = true; sub.subscription.unsubscribe() }
   }, [])
