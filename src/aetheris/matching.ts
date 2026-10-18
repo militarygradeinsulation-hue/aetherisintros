@@ -58,39 +58,54 @@ export function scoreMatch(
   const iHelpThem = overlapCount(words(myOffer), words(member.needs.join(' '))) * 22
   const mutualConnections = member.mutuals.filter(name =>
     context.connections.some(id => context.members.find(m => m.id === id)?.name === name))
-  const trustDepth = Math.min(100, member.mutuals.length * 18 + mutualConnections.length * 22 + (member.bestPath.length > 2 ? 24 : 0))
-  const timing = Math.max(0, 100 - Math.min(member.lastInteractionDays ?? 180, 180) / 1.8)
+  // Listed mutual names and free-form best-path text are not verified edges.
+  // Score only a direct recorded connection or verified common contact.
+  const directConnection = context.connections.includes(member.id)
+  const trustDepth = directConnection ? 100 : Math.min(90, mutualConnections.length * 50)
+  const lastInteraction = member.lastInteractionDays
+  const timing = lastInteraction == null || !Number.isFinite(lastInteraction)
+    ? 0 : Math.max(0, 100 - Math.min(Math.max(0, lastInteraction), 180) / 1.8)
   const relevance = Math.min(100, sharedInterests.length * 16 + (industryHit ? 30 : 0))
-  const availability = /open|actively|welcomes|available/i.test(member.availability) ? 90 : 55
+  const availability = !member.availability.trim() ? 0
+    : /open|actively|welcomes|available/i.test(member.availability) ? 90 : 45
 
   const components: MatchComponent[] = [
     {
       label: 'Strategic relevance', weight: 0.24, score: relevance,
       evidence: sharedInterests.length
         ? `Shared ground in ${sharedInterests.slice(0, 3).join(', ')}${industryHit ? ` and both working in ${member.industry.toLowerCase()}` : ''}.`
-        : `Different field — ${member.industry.toLowerCase()} — which can be the point when you need an outside read.`,
+        : industryHit ? `Both working in ${member.industry.toLowerCase()}.`
+          : 'No specific shared expertise or target industry recorded yet.',
     },
     {
       label: 'They can help you', weight: 0.2, score: Math.min(100, theyHelpMe),
-      evidence: member.offers.length ? `They offer ${member.offers[0]!.toLowerCase()}.` : 'No stated offer yet.',
+      evidence: theyHelpMe > 0
+        ? `Their stated offers overlap your current goals: ${member.offers.slice(0, 2).join(', ')}.`
+        : 'No direct overlap between their stated offers and your goals was found.',
     },
     {
       label: 'You can help them', weight: 0.18, score: Math.min(100, iHelpThem),
-      evidence: member.needs.length ? `They are looking for ${member.needs[0]!.toLowerCase()}.` : 'No stated need yet.',
+      evidence: iHelpThem > 0
+        ? `Their stated needs overlap what you can provide: ${member.needs.slice(0, 2).join(', ')}.`
+        : 'No direct overlap between their stated needs and your capabilities was found.',
     },
     {
       label: 'Trust path', weight: 0.18, score: trustDepth,
-      evidence: mutualConnections.length
-        ? `Warm through ${mutualConnections.slice(0, 2).join(' and ')} in your connections.`
-        : member.mutuals.length ? `${member.mutuals.length} mutual contacts in the wider network.` : 'No path yet — a cold, well-reasoned note is the honest route.',
+      evidence: directConnection ? 'You already have a recorded connection with this member.'
+        : mutualConnections.length ? `Warm through ${mutualConnections.slice(0, 2).join(' and ')} in your recorded connections.`
+          : member.mutuals.length || member.bestPath.length > 2
+            ? 'A member-listed path exists, but no connecting edge to your recorded network is confirmed.'
+            : 'No recorded warm path yet; a direct, consent-based introduction is the honest route.',
     },
     {
       label: 'Timing', weight: 0.12, score: timing,
-      evidence: member.whyNow,
+      evidence: lastInteraction == null || !Number.isFinite(lastInteraction)
+        ? 'No verified interaction recency recorded; current timing is unknown.'
+        : `Last recorded interaction ${Math.max(0, Math.round(lastInteraction))} days ago. ${member.whyNow || ''}`.trim(),
     },
     {
       label: 'Availability', weight: 0.08, score: availability,
-      evidence: member.availability,
+      evidence: member.availability || 'Member availability has not been stated.',
     },
   ]
 
@@ -117,5 +132,5 @@ export function rankMatches(
 ): Array<{ member: Member; match: MatchResult }> {
   return members
     .map(member => ({ member, match: scoreMatch(me, member, { connections, members }) }))
-    .sort((a, b) => b.match.total - a.match.total)
+    .sort((a, b) => b.match.total - a.match.total || a.member.id.localeCompare(b.member.id))
 }
