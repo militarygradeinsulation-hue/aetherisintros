@@ -161,7 +161,7 @@ export const MessagesView: React.FC<MessagesViewProps> = ({
                     <div className="flex items-center gap-2 min-w-0 flex-1">
                       <ExecutivePortrait name={req.requesterName} size="sm" />
                       <div className="min-w-0">
-                        <div className="text-xs font-semibold text-[var(--msg-ink)] truncate">{req.requesterName}</div>
+                        <div className="msg-thread-name text-xs font-semibold text-[var(--msg-ink)] truncate">{req.requesterName}</div>
                         <div className="text-[10px] text-[var(--msg-muted)] truncate">{req.requesterCompany}</div>
                       </div>
                     </div>
@@ -262,8 +262,9 @@ export const MessagesView: React.FC<MessagesViewProps> = ({
                 return (
                   <div
                     key={thread.id}
+                    data-selected={isSelected}
                     onClick={() => setSelectedThreadId(thread.id)}
-                    className={`p-2.5 rounded-lg cursor-pointer transition-all flex items-start gap-2.5 ${
+                    className={`msg-thread-tile p-2.5 rounded-lg cursor-pointer transition-all flex items-start gap-2.5 ${
                       isSelected
                         ? 'bg-[var(--msg-selected)] border border-[var(--msg-accent)] shadow-sm'
                         : 'hover:bg-[var(--msg-hover)] border border-transparent'
