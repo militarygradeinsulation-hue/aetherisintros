@@ -95,7 +95,7 @@ export async function fetchAccess(): Promise<AccessState> {
     const code = storedInvite()
     // Retry pending accounts after launch settings change, including accounts
     // created before public signup was restored. The RPC enforces eligibility.
-    try { await claimAccess(code || undefined); if (code) clearInvite() } catch { /* the page surfaces the state below */ }
+    try { const result = await claimAccess(code || undefined); if (code && result.status === 'approved') clearInvite() } catch { /* the page surfaces the state below */ }
   }
 
   // Never grant network or admin privileges from partial/failed database reads.
