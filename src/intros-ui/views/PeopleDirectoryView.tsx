@@ -477,7 +477,8 @@ export const PeopleDirectoryView: React.FC<PeopleDirectoryViewProps> = ({
               <button
                 key={t.id}
                 onClick={() => setSelectedTier(t.id as any)}
-                className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-mono transition-all cursor-pointer shrink-0 border ${
+                aria-pressed={selectedTier === t.id}
+                className={`ix-relationship-tier-quick-option flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-mono transition-all cursor-pointer shrink-0 border ${
                   selectedTier === t.id
                     ? 'bg-[#F5B027] text-white border-[#F5B027] shadow-sm font-semibold'
                     : 'bg-[#0E121A] text-[#9CA3AF] hover:text-white border-white/10 hover:border-white/25'
