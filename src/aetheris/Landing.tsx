@@ -70,6 +70,16 @@ export default function Landing() {
         <p className="ael-kicker ael-kicker-light"><span className="ael-dash" /> Relationships by design</p>
         <h1 id="ael-hero-title" className="stencil-display"><span className="sr-only">The right room changes everything.</span><StencilHeadline lines={['THE RIGHT ROOM', 'CHANGES', 'EVERYTHING']} className="stencil-headline--hero" /></h1>
         <p className="ael-hero-lede">The people who matter. A reason to meet. A place to make something happen.</p>
+        <div className="ael-platform-strip" aria-label="Familiar business platforms Ask Intros brings together in one experience">
+          <p className="ael-platform-statement">LinkedIn, Salesforce, Google Meet, ZoomInfo <strong>and 60+ more, all rolled into one.</strong></p>
+          <div className="ael-platform-marks" aria-label="LinkedIn, Salesforce, Google Meet, and ZoomInfo brand marks">
+            <span className="ael-platform-mark"><img src="https://cdn.simpleicons.org/linkedin/0A66C2" alt="" width={26} height={26} loading="eager" /><span>LinkedIn</span></span>
+            <span className="ael-platform-mark"><img src="https://cdn.simpleicons.org/salesforce/00A1E0" alt="" width={26} height={26} loading="eager" /><span>Salesforce</span></span>
+            <span className="ael-platform-mark"><img src="https://cdn.simpleicons.org/googlemeet/00897B" alt="" width={26} height={26} loading="eager" /><span>Google Meet</span></span>
+            <span className="ael-platform-mark"><img src="https://commons.wikimedia.org/wiki/Special:FilePath/ZoomInfo_logo_%282024%29.png" alt="" width={26} height={26} loading="eager" /><span>ZoomInfo</span></span>
+            <span className="ael-platform-more">+60 more</span>
+          </div>
+        </div>
         <div className="ael-hero-actions">
           <JoinAction signedIn={signedIn} className="ael-btn ael-btn-gold ai-gradient-button" />
           <Link to="/demo" className="ael-text-link">Explore Ask Intros <ArrowRight aria-hidden="true" size={16} /></Link>
