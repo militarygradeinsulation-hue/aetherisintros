@@ -35,18 +35,25 @@ function AppRoute() {
 }
 
 function Gate() {
-  const { access } = useAccess()
+  const { access, refresh } = useAccess()
   const navigate = useNavigate()
   const ready = isLiveMember(access)
 
   useEffect(() => {
-    if (access.loading) return
+    if (access.loading || access.error) return
     // Approval and onboarding grant network access; business-role badges are separate.
     if (!access.signedIn) void navigate({ to: '/auth', replace: true })
     else if (access.status !== 'approved') void navigate({ to: '/early-access', replace: true })
     else if (!access.onboarded) void navigate({ to: '/onboarding', replace: true })
   }, [access, navigate])
 
+  if (access.error) {
+    return <main className="access-waiting" role="alert">
+      <span className="folio">ASK INTROS / CONNECTION ISSUE</span>
+      <p>{access.error}</p>
+      <button className="btn secondary" type="button" onClick={() => { void refresh() }}>Retry membership check</button>
+    </main>
+  }
   if (!access.loading && access.signedIn && access.status === 'approved' && access.onboarded && !ready) {
     const accountRestricted = access.verification === 'rejected' || access.verification === 'suspended'
     return <main className="access-waiting" role="alert">
