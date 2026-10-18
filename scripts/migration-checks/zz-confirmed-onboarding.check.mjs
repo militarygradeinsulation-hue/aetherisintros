@@ -46,6 +46,59 @@ export default async ({ ok, as, svc }) => {
   ok(stored.length===1 && stored[0].requester_opt_in===true
     && stored[0].member_opt_in===false,'new intro remains pending until target consents')
 
+  // A may request an intro but may never impersonate E's decision.
+  let decision = await as(D,`update public.intro_requests
+    set member_opt_in=true,status='accepted' where id='${firstId}'
+    returning member_opt_in,status`)
+  const afterForgery = await svc(`select member_opt_in from public.intro_requests where id='${firstId}'`)
+  ok(afterForgery[0]?.member_opt_in===false,
+    'requester cannot self-accept an introduction')
+  ok(!!decision.error || !decision.rows?.some(x=>x.member_opt_in===true),
+    'forged requester consent is not acknowledged')
+
+  const pendingForTarget=await as(E,`select id,member_opt_in from public.intro_requests where id='${firstId}'`)
+  ok(!pendingForTarget.error && pendingForTarget.rows?.length===1
+    && pendingForTarget.rows[0].member_opt_in===false,
+    'target sees exactly one pending introduction request')
+  const anonymousIntro=await as(null,`select id from public.intro_requests where id='${firstId}'`)
+  ok(!!anonymousIntro.error || !anonymousIntro.rows?.length,
+    'anonymous visitors cannot read the private introduction')
+
+  decision=await as(E,`update public.intro_requests
+    set member_opt_in=true,status='accepted' where id='${firstId}'
+    returning member_opt_in,status`)
+  ok(!decision.error && decision.rows?.[0]?.member_opt_in===true
+    && decision.rows?.[0]?.status==='accepted',
+    'only the target confirms mutual consent and accepts the introduction')
+  const storedAccepted=await svc(`select requester_opt_in,member_opt_in,status
+    from public.intro_requests where id='${firstId}'`)
+  ok(storedAccepted.length===1 && storedAccepted[0].requester_opt_in===true
+    && storedAccepted[0].member_opt_in===true
+    && storedAccepted[0].status==='accepted',
+    'both-sided consent persists on reload')
+
+  const opened=await as(D,`insert into public.dm_threads(member_a,member_b,created_by)
+    values('${D}','${E}','${D}') returning id`)
+  const threadId=opened.rows?.[0]?.id
+  ok(!opened.error && !!threadId,
+    'confirmed member can open a private conversation with the consenting member')
+  if (threadId) {
+    const firstMessage=await as(D,`insert into public.dm_messages(thread_id,sender_id,text)
+      values('${threadId}','${D}','Hello after our introduction') returning id`)
+    ok(!firstMessage.error && !!firstMessage.rows?.[0]?.id,
+      'requester message is persisted to the real conversation table')
+    const received=await as(E,`select text from public.dm_messages where thread_id='${threadId}'`)
+    ok(!received.error && received.rows?.some(x=>x.text==='Hello after our introduction'),
+      'receiving member can read the persisted message')
+    const reply=await as(E,`insert into public.dm_messages(thread_id,sender_id,text)
+      values('${threadId}','${E}','Thank you for connecting') returning id`)
+    ok(!reply.error && !!reply.rows?.[0]?.id,
+      'recipient can reply and the message is persisted')
+    const visitorThread=await as(null,`select text from public.dm_messages where thread_id='${threadId}'`)
+    ok(!!visitorThread.error || !visitorThread.rows?.length,
+      'anonymous visitor cannot inspect member conversation')
+  }
+
   await svc(`insert into public.member_verifications(user_id,status)
     values ('${D}','manual_review')
     on conflict (user_id) do update set status=excluded.status`)
