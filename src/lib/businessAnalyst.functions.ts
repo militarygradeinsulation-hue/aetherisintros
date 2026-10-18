@@ -143,8 +143,8 @@ export const generateBusinessAnalysis = createServerFn({ method: 'POST' })
     }
 
     // Store the result.
-    const { data: saved, error: saveError } = await supabaseAdmin
-      .from('business_diagnostics' as never)
+    const { data: saved, error: saveError } = await (supabaseAdmin as any)
+      .from('business_diagnostics')
       .insert({
         user_id: userId,
         lead_leaks: parsed['lead_leaks'] ?? [],
