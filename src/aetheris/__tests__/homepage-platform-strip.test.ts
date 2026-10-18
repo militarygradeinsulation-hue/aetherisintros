@@ -9,6 +9,7 @@ describe('homepage platform thumbnail strip', () => {
     expect(landing).toContain('LinkedIn, Salesforce, Google Meet, ZoomInfo')
     expect(landing).toContain('and 60+ more, all rolled into one.')
     expect(landing).toContain('ael-platform-strip')
+    expect(landing.indexOf('className="ael-platform-strip"')).toBeLessThan(landing.indexOf('<h1 id="ael-hero-title"'))
     expect(landing.indexOf('ael-platform-strip')).toBeLessThan(landing.indexOf('ael-hero-actions'))
   })
   it('uses brand-identifiable image thumbnails instead of generic icons', () => {
