@@ -42,6 +42,14 @@ describe('readable messaging surfaces in demo and live', () => {
     expect(app).toContain("import './messages-readability.css'")
     expect(styles).toContain(':is(.ix-messages,.ix-live-messages)')
   })
+  it('does not animate selected tile backgrounds while theme ink changes instantly', () => {
+    const marker = inverse.indexOf('briefly producing black-on-black')
+    expect(marker).toBeGreaterThan(-1)
+    const declarations = inverse.slice(marker, marker + 550)
+    expect(declarations).toContain('[class~="bg-[var(--msg-selected)]"]')
+    expect(declarations).toContain('transition-property:none!important')
+    expect(declarations).toContain('animation:none!important')
+  })
   it('both modes use semantic colors without hardcoded dark message cards', () => {
     expect(demo).toContain('ix-messages')
     expect(live).toContain('ix-live-messages')
