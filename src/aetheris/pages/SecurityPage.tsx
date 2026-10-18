@@ -9,6 +9,8 @@ import { BadgeCheck, Download, FileMinus, KeyRound, LogOut, ShieldCheck, Trash2 
 import { supabase } from '@/integrations/supabase/client'
 import { deleteMyAccount } from '@/lib/account.functions'
 import { Btn, Eyebrow } from '../ui'
+import { flushWorkspaceSync, useWorkspaceSyncStatus } from '../sync/workspace-sync'
+import { keysToClearOnSignOut } from '../sync/sync-logic'
 import {
   badgeLabel, fetchSecurityEvents, logSecurityEvent, purgeProof, statusCopy,
   passwordProblem, useVerification, type SecurityEvent,
@@ -24,6 +26,7 @@ export function SecurityPage() {
   const [password, setPassword] = useState('')
   const [message, setMessage] = useState('')
   const [busy, setBusy] = useState(false)
+  const sync = useWorkspaceSyncStatus()
 
   const reload = useCallback(() => { void fetchSecurityEvents().then(setEvents) }, [])
   useEffect(reload, [reload])
@@ -61,15 +64,17 @@ export function SecurityPage() {
   const COLUMNS: Record<string, string> = {
     membership_cards: 'code, holder_name, verified_at, issued_at, status',
     email_preferences: 'weekly_digest, last_digest_at',
+    member_workspace_state: 'store_key, data, version, updated_at',
   }
 
   /** Everything the account owns, in one file, from the member's own permissions. */
   const exportData = async () => {
     setBusy(true); setMessage('')
+    await flushWorkspaceSync().catch(() => undefined)
     const tables = ['profiles', 'memories', 'posts', 'asks', 'intro_requests', 'intro_outcomes', 'calendar_events',
       'crm_people', 'crm_companies', 'crm_opportunities', 'crm_tasks', 'crm_notes',
       'grid_workbooks', 'grid_sheets', 'grid_rows', 'meetings', 'meeting_notes', 'leak_checks',
-      'membership_cards', 'email_preferences', 'account_security_events'] as const
+      'membership_cards', 'email_preferences', 'account_security_events', 'member_workspace_state'] as const
     const payload: Record<string, unknown> = { exported_at: new Date().toISOString(), excluded: NEVER_EXPORTED }
     for (const table of tables) {
       const columns = COLUMNS[table] ?? '*'
@@ -103,6 +108,7 @@ export function SecurityPage() {
       const r = await deleteMyAccount({ data: { confirm: 'DELETE' } })
       if (!r.deleted) { setMessage(r.error ?? 'Your account could not be deleted.'); setBusy(false); return }
       await supabase.auth.signOut().catch(() => undefined)
+      try { keysToClearOnSignOut(Object.keys(localStorage)).forEach(k => localStorage.removeItem(k)) } catch { /* unavailable */ }
       window.location.assign('/')
     } catch (e) {
       setMessage(e instanceof Error ? e.message : 'Your account could not be deleted.')
@@ -126,6 +132,8 @@ export function SecurityPage() {
         <li><span>This session started</span><small>{sessionSince || '—'}</small></li>
         <li><span>Proof documents</span><small>{verification.proofRetention === 'purged' ? 'Removed' : verification.evidenceCount ? `${verification.evidenceCount} held privately` : 'None held'}</small></li>
         <li><span>Privacy default</span><small>Everything private unless you share it</small></li>
+        {sync.signedIn && sync.failing && <li><span>Workspace</span><small>Not saved to your account right now. Your work is kept on this device and will be saved when the connection returns.</small></li>}
+        {sync.signedIn && !sync.failing && sync.lastSavedAt && <li><span>Workspace</span><small>Saved to your account · last saved {new Date(sync.lastSavedAt).toLocaleString()}</small></li>}
       </ul>
     </section>
 
@@ -149,6 +157,8 @@ export function SecurityPage() {
       <p>
         Your CRM records, Grid workbooks, notes, meetings, relationship memory and private drafts are
         yours alone. They are never shown to the network, to reviewers, or to another account.
+        Your workspace (ledgers, rooms, boards and edits) is saved to your account so it follows you
+        to other devices; only you can see it, and signing out clears it from this browser.
       </p>
       <div className="security-actions">
         <Btn onClick={() => void exportData()} disabled={busy}><Download size={14} /> Export my data</Btn>

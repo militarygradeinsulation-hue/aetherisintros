@@ -15,6 +15,8 @@ import {
 } from './outcomes'
 import { useGraph } from './graph-store'
 import { MeetNowButton } from './meetings-ui'
+import { OpenDealRoomButton } from './deals-ui'
+import { draftTitle } from './deals-core'
 import { useNetwork } from './store'
 import { Btn, Eyebrow } from './ui'
 
@@ -91,7 +93,10 @@ export function OutcomeCheckins() {
     {due.map(c => <article key={`${c.introRequestId}-${c.checkpoint}`} className="oc-card">
       <p><b>{checkinPrompt(c, nameOf(c.counterpartId))}</b></p>
       <small className="og-note">Accepted {c.daysSince} days ago{c.lastStage ? ` · last update: ${stageLabel[c.lastStage]}` : ''}</small>
-      {(!c.lastStage || c.lastStage === 'too_early') && <div className="og-inline"><MeetNowButton introId={c.introRequestId} title={`Introduction: ${nameOf(c.counterpartId)}`} /></div>}
+      <div className="og-inline">
+        {(!c.lastStage || c.lastStage === 'too_early') && <MeetNowButton introId={c.introRequestId} title={`Introduction: ${nameOf(c.counterpartId)}`} />}
+        <OpenDealRoomButton draft={{ sourceKind: 'intro', sourceId: c.introRequestId, title: draftTitle('intro', nameOf(c.counterpartId) === 'your introduction' ? '' : nameOf(c.counterpartId)) || 'Deal from an introduction', need: '', counterpartId: c.counterpartId, counterpartName: nameOf(c.counterpartId) }} />
+      </div>
       <OutcomeForm introRequestId={c.introRequestId} onSaved={() => void load()} />
     </article>)}
     {error && <p className="og-note">{error}</p>}

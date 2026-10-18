@@ -28,7 +28,7 @@ export function GoogleCalendarConnect() {
   const [status, setStatus] = useState<GoogleStatus | null>(null)
   const [busy, setBusy] = useState('')
   const [msg, setMsg] = useState('')
-  const load = () => googleStatus().then(setStatus).catch(() => setStatus({ configured: false, connected: false, email: '', lastSyncAt: null, lastError: '' }))
+  const load = () => googleStatus().then(setStatus).catch(() => setStatus({ configured: false, connected: false, email: '', lastSyncAt: null, lastError: '', gmailAvailable: false, gmailConnected: false }))
   useEffect(() => { void load() }, [])
   if (!status) return null
 
@@ -37,8 +37,13 @@ export function GoogleCalendarConnect() {
     try { await action() } catch (e) { setMsg(e instanceof Error ? e.message : 'That did not work. Please try again.') }
     setBusy('')
   }
-  const connect = () => run('connect', async () => { const { url } = await startGoogleConnect(); location.assign(url) })
-  const sync = () => run('sync', async () => { const { matched } = await syncGoogleNow(); setMsg(matched ? `Found meetings with ${matched} member${matched === 1 ? '' : 's'}.` : 'Synced. No meetings with members found yet.'); await load() })
+  const connect = (withGmail = false) => run(withGmail ? 'gmail' : 'connect', async () => { const { url } = await startGoogleConnect({ data: { withGmail } }); location.assign(url) })
+  const sync = () => run('sync', async () => {
+    const { matched, emailMatched } = await syncGoogleNow()
+    const parts = [matched ? `meetings with ${matched} member${matched === 1 ? '' : 's'}` : '', emailMatched ? `email with ${emailMatched} member${emailMatched === 1 ? '' : 's'}` : ''].filter(Boolean)
+    setMsg(parts.length ? `Found ${parts.join(' and ')}.` : 'Synced. Nothing with members found yet.')
+    await load()
+  })
   const remove = () => run('disconnect', async () => { await disconnectGoogle(); setMsg('Disconnected. Your calendar data was removed.'); await load() })
 
   return <div className="connected-app">
@@ -46,7 +51,7 @@ export function GoogleCalendarConnect() {
     <p>See when you last met each member and when you meet next, on their profile, visible only to you. Ask Intros reads who attended and when, never titles, notes or other details, and never writes to your calendar.</p>
     {status.connected && <p className="connected-app-meta">Last synced {when(status.lastSyncAt)}. Syncs daily.{status.lastError ? ` Last attempt failed: ${status.lastError}` : ''}</p>}
     <div className="connected-app-actions">
-      {!status.connected && <button type="button" className="push-btn" disabled={!status.configured || !!busy} onClick={() => void connect()}>{busy === 'connect' ? 'Opening Google…' : 'Connect Google Calendar'}</button>}
+      {!status.connected && <button type="button" className="push-btn" disabled={!status.configured || !!busy} onClick={() => void connect(false)}>{busy === 'connect' ? 'Opening Google…' : 'Connect Google Calendar'}</button>}
       {status.connected && <>
         <button type="button" className="push-btn" disabled={!!busy} onClick={() => void sync()}>{busy === 'sync' ? 'Syncing…' : 'Sync now'}</button>
         <button type="button" className="push-btn quiet" disabled={!!busy} onClick={() => void remove()}>{busy === 'disconnect' ? 'Disconnecting…' : 'Disconnect'}</button>
@@ -54,30 +59,36 @@ export function GoogleCalendarConnect() {
     </div>
     {!status.configured && <p className="connected-app-meta">Google sign-in is not set up for this site yet.</p>}
     {msg && <p className="push-msg">{msg}</p>}
-    <p className="connected-app-meta">Gmail is coming later: reading email requires Google's security assessment for restricted access, which we will complete first.</p>
+    {status.gmailAvailable
+      ? <div className="connected-app-gmail">
+        <p><b>Gmail</b> {status.gmailConnected ? '· connected' : ''}<br />See when you last emailed each member. Ask Intros reads only who an email was from and to, and when. Never subjects, message text or attachments.</p>
+        {!status.gmailConnected && <button type="button" className="push-btn quiet" disabled={!status.configured || !!busy} onClick={() => void connect(true)}>{busy === 'gmail' ? 'Opening Google…' : 'Add Gmail'}</button>}
+      </div>
+      : <p className="connected-app-meta">Gmail is coming later: reading email requires Google's security assessment for restricted access, which we will complete first.</p>}
   </div>
 }
 
-interface CalendarSignal { last_at: string | null; next_at: string | null; count_90d: number }
+interface CalendarSignal { source: 'calendar' | 'email'; last_at: string | null; next_at: string | null; count_90d: number }
 
-/** Your own calendar's view of one member, or null when there is none. */
-export function useCalendarSignal(memberId: string): CalendarSignal | null {
-  const [signal, setSignal] = useState<CalendarSignal | null>(null)
+/** What your own calendar and email say about one member (each null when there is nothing). */
+export function useRelationshipSignals(memberId: string): { calendar: CalendarSignal | null; email: CalendarSignal | null } {
+  const [rows, setRows] = useState<CalendarSignal[]>([])
   useEffect(() => {
     let live = true
-    void db.from('relationship_signals').select('last_at, next_at, count_90d').eq('member_id', memberId).eq('source', 'calendar').maybeSingle()
-      .then((r: { data: CalendarSignal | null }) => { if (live) setSignal(r.data ?? null) })
+    void db.from('relationship_signals').select('source, last_at, next_at, count_90d').eq('member_id', memberId)
+      .then((r: { data: CalendarSignal[] | null }) => { if (live) setRows(r.data ?? []) })
     return () => { live = false }
   }, [memberId])
-  return signal
+  return { calendar: rows.find(r => r.source === 'calendar') ?? null, email: rows.find(r => r.source === 'email') ?? null }
 }
 
 export function CalendarSignalRows({ memberId }: { memberId: string }) {
-  const s = useCalendarSignal(memberId)
-  if (!s) return null
+  const { calendar, email } = useRelationshipSignals(memberId)
   const day = (iso: string) => new Date(iso).toLocaleDateString(undefined, { dateStyle: 'medium' })
+  const plural = (n: number, word: string) => `${n} ${word}${n === 1 ? '' : 's'}`
   return <>
-    <div><dt>Last met (calendar)</dt><dd>{s.last_at ? `${day(s.last_at)} · ${s.count_90d} meeting${s.count_90d === 1 ? '' : 's'} in 90 days` : 'No recent meetings'}</dd></div>
-    {s.next_at && <div><dt>Next meeting</dt><dd>{day(s.next_at)}</dd></div>}
+    {calendar && <div><dt>Last met (calendar)</dt><dd>{calendar.last_at ? `${day(calendar.last_at)} · ${plural(calendar.count_90d, 'meeting')} in 90 days` : 'No recent meetings'}</dd></div>}
+    {calendar?.next_at && <div><dt>Next meeting</dt><dd>{day(calendar.next_at)}</dd></div>}
+    {email?.last_at && <div><dt>Last emailed</dt><dd>{`${day(email.last_at)} · ${plural(email.count_90d, 'email')} in 90 days`}</dd></div>}
   </>
 }

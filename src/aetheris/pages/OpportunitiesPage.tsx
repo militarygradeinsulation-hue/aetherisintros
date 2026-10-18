@@ -4,6 +4,7 @@ import { useNetwork } from '../store'
 import { usePro } from '../pro-store'
 import { useNav } from '../nav'
 import { Btn, Eyebrow, Face, Head, Numeral, Why, memberById } from '../ui'
+import { OpenDealRoomButton } from '../deals-ui'
 
 const kinds = ['All', 'Partnership', 'Advisory role', 'Board seat', 'Acquisition', 'Investment', 'Pilot', 'Hiring', 'Expert request'] as const
 
@@ -69,9 +70,10 @@ export function OpportunitiesPage() {
             {fit.expired
               ? <Btn kind="secondary" onClick={() => pro.renewOpportunity(o.id)}>Renew for 30 days</Btn>
               : <Btn onClick={() => setOpenId(open ? null : o.id)}>{open ? 'Close' : 'Express interest'}</Btn>}
-            <Btn kind="quiet" onClick={() => { pro.convertToDealRoom(o.id); nav.setPage('dealrooms') }}>
-              {o.dealRoomId ? 'Open deal room' : 'Open a deal room'}
-            </Btn>
+            <OpenDealRoomButton kind="quiet" draft={{
+              sourceKind: 'manual', sourceId: null, title: o.title, counterpartId: owner?.id ?? null, ...(owner ? { counterpartName: owner.name } : {}),
+              need: [o.whatIsNeeded && `Needed: ${o.whatIsNeeded}`, o.whatIsOffered && `Offered: ${o.whatIsOffered}`, o.mutualValue && `Mutual value: ${o.mutualValue}`].filter(Boolean).join('\n'),
+            }} />
           </footer>
 
           {open && <div className="opp-respond">
@@ -103,7 +105,7 @@ export function OpportunitiesPage() {
       <div><Eyebrow>WHY THIS IS NOT A JOB BOARD OR A LEAD LIST</Eyebrow>
         <h2>Every opportunity here expires, and every ranking explains itself.</h2>
         <p>Nobody can pay to appear higher. Ranking comes from your industries, your proven expertise, whether you already have a relationship with the owner, and whether the objective carries evidence. Interest is private, questions are public, and the moment two parties are serious it becomes a deal room with real diligence.</p>
-        <button className="text-action" onClick={() => nav.setPage('dealrooms')}>See deal rooms <ArrowRight size={14} /></button></div>
+        <button className="text-action" onClick={() => nav.setPage('deals')}>See deal rooms <ArrowRight size={14} /></button></div>
     </section>
   </>
 }

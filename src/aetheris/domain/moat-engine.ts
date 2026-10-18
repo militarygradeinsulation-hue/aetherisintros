@@ -133,12 +133,12 @@ export function routeQuestion(question: string, opts: {
     const hits = terms.filter(t => haystack.includes(t))
     const passport = opts.passports ? passportFor(opts.passports, m.id) : undefined
     const verifiedBoost = passport && credibilityBand(passport).band === 'Evidence-backed' ? 12 : passport ? 6 : 0
-    const recency = m.lastInteractionDays < 45 ? 8 : 0
+    const recency = (m.lastInteractionDays !== null && m.lastInteractionDays < 45) ? 8 : 0
     const confidence = Math.min(96, hits.length * 22 + verifiedBoost + recency)
     const reasonBits = [
       hits.length ? `Permissioned signal on ${hits.slice(0, 2).join(' and ')}` : '',
       passport ? `${credibilityBand(passport).band.toLowerCase()} passport in ${m.industry.toLowerCase()}` : '',
-      m.lastInteractionDays < 45 ? 'active in the network recently' : '',
+      (m.lastInteractionDays !== null && m.lastInteractionDays < 45) ? 'active in the network recently' : '',
     ].filter(Boolean)
     return { memberId: m.id, reason: reasonBits.join(' · ') || 'Adjacent industry context only', confidence, responded: false }
   })
@@ -236,10 +236,10 @@ export function decayFor(risks: RelationshipDecayRisk[], memberId: ID) {
 
 export function deriveDecay(member: Member, ownerId = 'me'): RelationshipDecayRisk {
   const causes: RelationshipDecayRisk['causes'] = []
-  if (member.lastInteractionDays > 60) causes.push({ cause: 'no natural cadence', explanation: `${member.lastInteractionDays} days without a reason to talk.` })
+  if (member.lastInteractionDays !== null && member.lastInteractionDays > 60) causes.push({ cause: 'no natural cadence', explanation: `${member.lastInteractionDays} days without a reason to talk.` })
   if (member.introState === 'waiting') causes.push({ cause: 'unanswered message', explanation: 'An introduction is waiting on a response.' })
   if (!member.nextAction) causes.push({ cause: 'no next reason', explanation: 'Nothing scheduled or promised creates the next conversation.' })
-  const risk = Math.min(92, causes.length * 26 + Math.min(40, member.lastInteractionDays / 3))
+  const risk = Math.min(92, causes.length * 26 + Math.min(40, (member.lastInteractionDays ?? 0) / 3))
   const quiet = risk < 30
   return {
     id: uid('dr'), ownerId, memberId: member.id, risk,

@@ -4,7 +4,7 @@ import {
   History, Home as HomeIcon, Inbox, Landmark, Layers, Lock, Map as MapIcon, MessageSquareText, Network,
   Newspaper, PlaneTakeoff, Puzzle, Radar, ScrollText, Settings2, ShieldAlert, ShieldCheck, Sparkle, Target,
   TrendingUp, UserRound, Users, UsersRound,
-  Lightbulb, Stethoscope, Video,
+  Lightbulb, Route, Stethoscope, Video, HandHelping,
 } from 'lucide-react'
 import type { Page } from './nav'
 
@@ -249,12 +249,24 @@ const basePages: BaseMeta[] = [
     changes: 'New needs and intents create and retire collisions.',
     next: 'Act on a collision while the timing holds.',
   }, ['overlap', 'timing']),
+  m('agentinbox', 'Agent Inbox', Inbox, 'RELATIONSHIP INTELLIGENCE', 'Requests from outside AI agents, screened by your Agent policy.', {
+    does: 'Shows requests from outside AI agents that passed your Agent policy.',
+    look: 'Who the request is for, why you, and what you get.',
+    changes: 'Your Agent policy in Settings decides what is delivered, held or rejected.',
+    next: 'Accept the one worth a reply; block domains that waste your time.',
+  }, ['agents', 'ai', 'requests', 'inbound', 'screening']),
   m('evidence', 'Evidence', FileSearch, 'RELATIONSHIP INTELLIGENCE', 'The record behind every claim and recommendation.', {
     does: 'Shows the record behind every claim and recommendation.',
     look: 'What was observed, when, and how strong the source is.',
     changes: 'Approved notes, messages and outcomes add entries.',
     next: 'Check the evidence before trusting a score.',
   }, ['ledger', 'proof', 'audit']),
+  m('warmpaths', 'Warm Paths', Route, 'RELATIONSHIP INTELLIGENCE', 'Who can get you to a person or company, and how warm each path is.', {
+    does: 'Ranks the people who can introduce you to a member or company, with the reasons.',
+    look: 'Hot, Warm or Cool paths, who the connector is, and why the path is warm.',
+    changes: 'Meetings, introductions, connections and your own calendar change the ranking.',
+    next: 'Ask the warmest connector for an introduction.',
+  }, ['warm path', 'path', 'who knows', 'introduction', 'reach', 'get to']),
   m('gaps', 'Gap Map', MapIcon, 'RELATIONSHIP INTELLIGENCE', 'Where your network is missing something.', {
     does: 'Maps where your network is thin relative to what you are trying to move.',
     look: 'Missing roles, sectors and geographies.',
@@ -308,12 +320,27 @@ const basePages: BaseMeta[] = [
     changes: 'Recorded conversations and outcomes update readiness.',
     next: 'Qualify the mandate before the meeting.',
   }, ['investors', 'acquisition', 'funding']),
-  m('dealrooms', 'Deal Rooms', FolderLock, 'OPPORTUNITY & EXECUTION', 'Permissioned rooms where real business gets done.', {
-    does: 'Runs permissioned rooms where real transactions get worked.',
-    look: 'Who has access, what is shared and what is outstanding.',
-    changes: 'Documents, participants and decisions move the deal.',
-    next: 'Resolve the item blocking the room.',
-  }, ['transactions', 'diligence']),
+  m('deals', 'Deals', FolderLock, 'OPPORTUNITY & EXECUTION', 'Private rooms where the business after an introduction gets done.', {
+    does: 'Gives each engagement a private room: the original need, terms, proposals, milestones and a permanent timeline.',
+    look: 'Invitations to answer, then your rooms by stage — what is waiting on you.',
+    changes: 'Accepted proposals agree terms, accepted milestones record delivery, and closing records the outcome.',
+    next: 'Open a room from an accepted introduction, a reply to your ask or a conversation.',
+    why: 'Only people who accept an invitation see a room. Nothing is shared with the wider network.',
+  }, ['deals', 'deal rooms', 'my deals', 'engagements', 'proposals', 'milestones', 'transactions']),
+  m('workspaces', 'Workspaces', Briefcase, 'OPPORTUNITY & EXECUTION', 'Private two-party spaces for shaping scope, approvals, delivery and next actions before or alongside a deal.', {
+    does: 'Turns an accepted introduction or active conversation into a private working space without copying the conversation itself.',
+    look: 'Invitations, scope, roles, approvals, next actions, delivery status and anything waiting on you.',
+    changes: 'Both parties approve the business roles and progression; delivery and rework remain explicit.',
+    next: 'Open the workspace attached to the conversation you are actively moving.',
+    why: 'A Workspace is collaborative working context. A Deal Room is the transaction record. They stay separate on purpose.',
+  }, ['workspace', 'business workspace', 'private work', 'scope', 'delivery', 'collaboration']),
+  m('executivework', 'Executive Workbench', Briefcase, 'OPPORTUNITY & EXECUTION', 'Business analysis, warm referrals, reputation, proposals and private group decisions in one workbench.', {
+    does: 'Brings recovered executive tools into one place without creating five more primary destinations.',
+    look: 'Strategic analysis, warm referral paths, Track Record, your storefront and proposals, and private syndication rooms.',
+    changes: 'Each tab writes only through its own permissioned workflow; verified reputation remains server-owned.',
+    next: 'Open the tab tied to the decision or relationship you are moving right now.',
+    why: 'These tools share the same business graph but stay separate where consent, privacy, and verification rules differ.',
+  }, ['business analyst', 'warm referrals', 'track record', 'reputation', 'storefront', 'proposals', 'syndication']),
   m('rooms', 'Opportunity Rooms', DoorOpen, 'OPPORTUNITY & EXECUTION', 'Small working rooms around a single opportunity.', {
     does: 'Creates small working rooms around one opportunity.',
     look: 'Stage, participants and the next concrete action.',
@@ -425,6 +452,13 @@ const basePages: BaseMeta[] = [
     changes: 'Ideas stay private to your account on this device until you export them.',
     next: 'Start from a shape and ask for a review.',
   }, ['pocket', 'idea room', 'test an idea', 'sandbox', 'prototype']),
+  m('providers', 'Trusted Providers', HandHelping, 'OPPORTUNITY & EXECUTION', 'Service firms members have worked with and vouch for, and help finding the right one.', {
+    does: 'Lists accountants, advisors, lawyers, agencies and fractional executives that members nominated and the team approved, with member endorsements.',
+    look: 'How many members endorse a firm, and who they are.',
+    changes: 'Requests you send go to the Ask Intros team, who match you with up to three approved providers.',
+    next: 'Request help with the thing you have been putting off, or endorse a firm you trust.',
+    why: 'Matched providers see what you need, not your private notes; your name only once you choose them.',
+  }, ['providers', 'vendors', 'accountant', 'lawyer', 'advisor', 'agency', 'fractional', 'referral', 'recommend a firm']),
   m('diagnostic', 'Diagnostic', Stethoscope, 'PRIMARY', 'Where your company needs attention, from your own records.', {
     does: 'Reads your deals, people and tasks and shows what is stalled, quiet, single-threaded or late.',
     look: 'The high-severity issues first, with the evidence and cause chain behind each one.',
@@ -460,11 +494,11 @@ const hubOf: Partial<Record<Page, Hub>> = {
   presence: 'PEOPLE & NETWORK', ask: 'PEOPLE & NETWORK', serendipity: 'PEOPLE & NETWORK',
 
   work: 'OPPORTUNITIES & WORK', needs: 'OPPORTUNITIES & WORK', opportunities: 'OPPORTUNITIES & WORK', rooms: 'OPPORTUNITIES & WORK',
-  dealrooms: 'OPPORTUNITIES & WORK', outcomes: 'OPPORTUNITIES & WORK', capital: 'OPPORTUNITIES & WORK',
-  systems: 'OPPORTUNITIES & WORK', strategy: 'OPPORTUNITIES & WORK', crm: 'OPPORTUNITIES & WORK', pocket: 'OPPORTUNITIES & WORK', diagnostic: 'INTELLIGENCE & MEMORY',
+  deals: 'OPPORTUNITIES & WORK', outcomes: 'OPPORTUNITIES & WORK', capital: 'OPPORTUNITIES & WORK',
+  systems: 'OPPORTUNITIES & WORK', strategy: 'OPPORTUNITIES & WORK', crm: 'OPPORTUNITIES & WORK', pocket: 'OPPORTUNITIES & WORK', providers: 'OPPORTUNITIES & WORK', diagnostic: 'INTELLIGENCE & MEMORY',
   grid: 'OPPORTUNITIES & WORK', knowledgeassets: 'OPPORTUNITIES & WORK', vault: 'OPPORTUNITIES & WORK',
 
-  memory: 'INTELLIGENCE & MEMORY', insights: 'INTELLIGENCE & MEMORY', evidence: 'INTELLIGENCE & MEMORY',
+  memory: 'INTELLIGENCE & MEMORY', insights: 'INTELLIGENCE & MEMORY', evidence: 'INTELLIGENCE & MEMORY', agentinbox: 'INTELLIGENCE & MEMORY',
   gaps: 'INTELLIGENCE & MEMORY', loops: 'INTELLIGENCE & MEMORY', collisions: 'INTELLIGENCE & MEMORY',
   simulation: 'INTELLIGENCE & MEMORY', attribution: 'INTELLIGENCE & MEMORY',
   timemachine: 'INTELLIGENCE & MEMORY', autopilot: 'INTELLIGENCE & MEMORY',
@@ -494,7 +528,7 @@ export const primaryPages: Page[] = ['home', 'network', 'intros', 'messages', 'm
 export const networkTabs: Page[] = ['discover', 'intros', 'companies', 'circles', 'events']
 export const networkAdvanced: Page[] = ['directory', 'expertise', 'serendipity', 'gaps', 'identity', 'organization', 'talent', 'knowledge', 'boards', 'intelrooms', 'passport', 'ask']
 export const workTabs: Page[] = ['crm', 'diagnostic', 'pocket', 'opportunities', 'grid', 'calendar', 'outcomes']
-export const workAdvanced: Page[] = ['needs', 'rooms', 'dealrooms', 'systems', 'strategy', 'simulation', 'collisions', 'capital', 'attribution', 'loops', 'knowledgeassets', 'timemachine']
+export const workAdvanced: Page[] = ['needs', 'rooms', 'deals', 'workspaces', 'executivework', 'systems', 'strategy', 'simulation', 'collisions', 'capital', 'attribution', 'loops', 'knowledgeassets', 'timemachine']
 export const meTabs: Page[] = ['profile', 'passport', 'permission', 'preferences', 'integrations']
 export const meAdvanced: Page[] = ['identity', 'consent', 'constitution', 'presence', 'vault', 'autopilot']
 
@@ -525,7 +559,7 @@ export function groupedSecondary(hub: Hub): PageMeta[] {
 
 /** Local "related tools" rows so members are not forced to learn the whole map. */
 export const relatedPages: Partial<Record<Page, { label: string; pages: Page[] }>> = {
-  opportunities: { label: 'Opportunity tools', pages: ['rooms', 'dealrooms', 'outcomes', 'capital', 'systems'] },
+  opportunities: { label: 'Opportunity tools', pages: ['rooms', 'deals', 'outcomes', 'capital', 'systems'] },
   memory: { label: 'Memory tools', pages: ['evidence', 'loops', 'timemachine', 'attribution'] },
   discover: { label: 'Explore more', pages: ['circles', 'companies', 'expertise', 'talent', 'serendipity', 'gaps'] },
   profile: { label: 'Identity tools', pages: ['passport', 'identity', 'permission', 'consent', 'preferences', 'presence'] },

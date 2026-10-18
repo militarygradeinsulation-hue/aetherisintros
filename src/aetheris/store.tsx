@@ -1,4 +1,5 @@
-import { createContext, useContext, useEffect, useMemo, useRef, useState } from 'react'
+import { createContext, useContext, useEffect, useMemo, useRef, useState, type Context } from 'react'
+import type { BusinessDetails } from './business-posts'
 import type { AutonomyLevel, DigitalYouProfile, Objective, PrivacyScope } from './types'
 import { defaultDigitalYou, objectives as seedObjectives } from './data'
 import {
@@ -13,10 +14,13 @@ import {
   type Directory, type MemoryNote,
 } from './db'
 import {
-  createLiveThread, emptyDirectory, loadLiveDirectory, mirrorFollow, saveComment,
+  emptyDirectory, ensureThread, loadLiveDirectory, mirrorFollow, saveComment,
   saveReaction, sendLiveMessage, uploadProfileAvatar, type LiveProfileRow,
 } from './live'
 import { supabase } from '@/integrations/supabase/client'
+import { reportWriteFailure } from './write-failures'
+import { submitIntroRequest } from './lib/intro-request'
+import { quarterStart } from './activation'
 
 /** 'live' = real members only (the network). 'demo' = the labelled showcase. */
 export type NetworkMode = 'live' | 'demo'
@@ -32,6 +36,8 @@ export type MeProfile = typeof seedMe & {
   building?: string
   openTo?: string[]
   schedulingEnabled?: boolean
+  /** This quarter's goals (member_goals, 0051). Read-only here; feeds matching, never saved with the profile. */
+  goals?: string[]
 }
 
 export interface PreferenceSettings {
@@ -255,24 +261,25 @@ interface NetworkApi {
   warmPaths: string[]
   /** True once this member's own graph has been read from the database. */
   synced: boolean
+  feedError: boolean
   /* graph actions */
   connect: (id: string) => void
   follow: (id: string) => void
   toggleSave: (id: string, label?: string) => void
   openThreadWith: (id: string) => string
-  sendMessage: (threadId: string, text: string) => void
-  requestIntro: (id: string) => void
+  sendMessage: (threadId: string, text: string, messageId?: string) => Promise<void>
+  requestIntro: (id: string, note?: string) => Promise<boolean>
   authorizeIntro: (id: string) => void
   declineIntro: (id: string) => void
   /** Forget a withdrawn request locally; the row itself is deleted by the caller. */
   withdrawIntro: (id: string) => void
-  addPost: (text: string, detail?: string, media?: JournalAttachment[], visibility?: 'network' | 'private', kind?: Post['kind']) => void
+  addPost: (text: string, detail?: string, media?: JournalAttachment[], visibility?: 'network' | 'private', kind?: Post['kind'], business?: BusinessDetails) => Promise<void>
   respondToPost: (postId: string, memberId: string) => string | null
   togglePostLike: (postId: string) => void
   togglePostRepost: (postId: string, memberId: string) => void
   addPostComment: (postId: string, text: string, memberId: string) => void
   setFeedPreferences: (settings: FeedPreferences) => void
-  addAsk: (ask: Omit<NetworkAsk, 'id' | 'posted' | 'responses' | 'memberId' | 'mine'>) => void
+  addAsk: (ask: Omit<NetworkAsk, 'id' | 'posted' | 'responses' | 'memberId' | 'mine'>) => Promise<void>
   respondToAsk: (askId: string, text: string) => string | null
   requestWarmPath: (askId: string) => void
   addObjective: (o: Objective) => void
@@ -288,7 +295,8 @@ interface NetworkApi {
   toggleEventSave: (id: string) => void
 }
 
-const Ctx = createContext<NetworkApi | null>(null)
+const ctxHolder = globalThis as unknown as { __aetherisNetworkCtx?: Context<NetworkApi | null> }
+const Ctx = (ctxHolder.__aetherisNetworkCtx ??= createContext<NetworkApi | null>(null))
 
 const catalogue: Directory = {
   members: catalogueMembers, posts: cataloguePosts, asks: catalogueAsks,
@@ -301,6 +309,14 @@ const blankMe: MeProfile = {
   lookingFor: '', canHelpWith: '', industries: [], values: '', availability: '', expertise: [],
   wantToMeet: '', introPreferences: '', boundaries: '', onboarded: false,
   whatIDo: '', building: '', openTo: [], schedulingEnabled: false,
+}
+
+/** This quarter's goals for the signed-in member (own rows only by RLS). Empty on any error. */
+async function loadOwnGoals(): Promise<string[]> {
+  try {
+    const r = await (supabase as any).from('member_goals').select('goal').eq('quarter', quarterStart(new Date())).order('position') // eslint-disable-line @typescript-eslint/no-explicit-any
+    return (r.data ?? []).map((g: { goal: string }) => g.goal)
+  } catch { return [] }
 }
 
 /** The signed-in member's own identity, read from their real profile row. */
@@ -336,6 +352,7 @@ export function NetworkProvider({ children, mode = 'live' }: { children: React.R
   const [dir, setDir] = useState<Directory>(live ? emptyDirectory : catalogue)
   const [userId, setUserId] = useState<string | null>(null)
   const [synced, setSynced] = useState(false)
+  const [feedError, setFeedError] = useState(false)
   const lastSynced = useRef<Persisted | null>(null)
 
   useEffect(() => { if (live) return; try { localStorage.setItem(KEY, JSON.stringify(s)) } catch { /* storage full */ } }, [s, live])
@@ -353,10 +370,13 @@ export function NetworkProvider({ children, mode = 'live' }: { children: React.R
       if (!id) { setSynced(true); return }
       setUserId(id)
       let meRow: LiveProfileRow | null = null
+      let myGoals: string[] = []
       if (live) {
-        const { directory, me } = await loadLiveDirectory(id)
+        const [{ directory, me, failed }, goals] = await Promise.all([loadLiveDirectory(id), loadOwnGoals()])
         if (cancelled) return
+        setFeedError(failed)
         meRow = me
+        myGoals = goals
         setDir(directory)
       }
       const remote = await loadUserGraph(id)
@@ -372,6 +392,7 @@ export function NetworkProvider({ children, mode = 'live' }: { children: React.R
         // your own record — never from anything left behind by the demo showcase.
         if (live) {
           next.profile = profileFromRow(blankMe, meRow ?? ({ industries: [], expertise: [] } as unknown as LiveProfileRow))
+          if (myGoals.length) next.profile = { ...next.profile, goals: myGoals }
           if (doc['objectives'] === undefined) next.objectives = []
           if (doc['activity'] === undefined) next.activity = []
           if (doc['preferences'] === undefined) {
@@ -403,7 +424,7 @@ export function NetworkProvider({ children, mode = 'live' }: { children: React.R
   /* live messaging: new messages and conversations from other members arrive instantly */
   useEffect(() => {
     if (!live || !userId) return
-    const refresh = () => { void loadLiveDirectory(userId).then(({ directory }) => setDir(directory)) }
+    const refresh = () => { void loadLiveDirectory(userId).then(({ directory, failed }) => { setFeedError(failed); if (!failed) setDir(directory) }) }
     const channel = supabase
       .channel(`dm-${userId}-${Math.random().toString(36).slice(2, 10)}`)
       .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'dm_messages' }, payload => {
@@ -443,33 +464,23 @@ export function NetworkProvider({ children, mode = 'live' }: { children: React.R
     for (const group of groups) {
       for (const id of s[group]) if (!prev[group].includes(id)) {
         saveRelationship(userId, group, id, true)
-        if (live) {
-          // The follows_notify trigger (0026) tells the other member; clients cannot write notifications.
-          mirrorFollow(userId, id, relayKind[group], true)
-        }
+        // The live follow/connection was acknowledged before local state changed.
       }
       for (const id of prev[group]) if (!s[group].includes(id)) {
         saveRelationship(userId, group, id, false)
-        if (live) mirrorFollow(userId, id, relayKind[group], false)
+        // The live unfollow was acknowledged before local state changed.
       }
     }
-    for (const [memberId, status] of Object.entries(s.introStates)) {
-      if (prev.introStates[memberId] !== status) {
-        // The intro_requests_notify trigger (0026) notifies the target once, for every request path.
-        saveIntro(userId, memberId, status)
-      }
+    if (!live) for (const [memberId, status] of Object.entries(s.introStates)) {
+      if (prev.introStates[memberId] !== status) saveIntro(userId, memberId, status)
     }
+    // Live introduction transitions are persisted by guarded actions before
+    // local state changes. Never replay guessed consent from optimistic UI state.
     for (const learning of s.learned) {
       if (!prev.learned.some(l => l.id === learning.id)) saveLearning(userId, learning)
     }
     for (const note of s.notes) {
       if (!prev.notes.some(n => n.id === note.id)) saveNote(userId, note)
-    }
-    for (const post of s.ownPosts) {
-      if (!prev.ownPosts.some(p => p.id === post.id)) savePost(userId, post)
-    }
-    for (const ask of s.ownAsks) {
-      if (!prev.ownAsks.some(a => a.id === ask.id)) saveAsk(userId, ask)
     }
     for (const [askId, texts] of Object.entries(s.askResponses)) {
       const before = prev.askResponses[askId] ?? []
@@ -477,31 +488,24 @@ export function NetworkProvider({ children, mode = 'live' }: { children: React.R
     }
     for (const thread of s.ownThreads) {
       if (prev.ownThreads.some(t => t.id === thread.id)) continue
-      if (live) createLiveThread(thread.id, userId, thread.memberId, thread.introContext)
-      else saveThread(userId, thread)
+      if (!live) saveThread(userId, thread)
     }
-    for (const [threadId, messages] of Object.entries(s.sentMessages)) {
-      const before = prev.sentMessages[threadId] ?? []
-      messages.slice(before.length).forEach(message => {
-        if (live) {
-          // The dm_messages_notify trigger (0026) notifies the other participant.
-          sendLiveMessage(threadId, userId, message.text)
-        } else saveMessage(userId, threadId, message)
-      })
-    }
-    if (live) {
-      for (const id of s.likedPosts) if (!prev.likedPosts.includes(id)) saveReaction(id, userId, 'like', true)
-      for (const id of prev.likedPosts) if (!s.likedPosts.includes(id)) saveReaction(id, userId, 'like', false)
-      for (const id of s.repostedPosts) if (!prev.repostedPosts.includes(id)) saveReaction(id, userId, 'repost', true)
-      for (const id of prev.repostedPosts) if (!s.repostedPosts.includes(id)) saveReaction(id, userId, 'repost', false)
-      for (const [postId, comments] of Object.entries(s.postComments)) {
-        const before = prev.postComments[postId] ?? []
-        comments.slice(before.length).forEach(comment => saveComment(postId, userId, comment.text))
+    if (!live) {
+      for (const [threadId, messages] of Object.entries(s.sentMessages)) {
+        const before = prev.sentMessages[threadId] ?? []
+        messages.slice(before.length).forEach(message => saveMessage(userId, threadId, message))
       }
     }
+    // In live mode, messages are persisted in the action and displayed only after
+    // the server acknowledges the exact message UUID. Replaying state here caused
+    // phantom deliveries on failure and duplicate sends on graph refresh.
+    // Live reactions and comments persist inside their individual confirmed actions.
+    // Never replay local state into the server without an acknowledgement.
     if (DOC_KEYS.some(key => prev[key] !== s[key])) {
       const doc: Record<string, unknown> = {}
       for (const key of DOC_KEYS) doc[key] = s[key]
+      // Goals live in member_goals; keep the private copy out of the saved document.
+      if (s.profile.goals) { const { goals: _goals, ...profile } = s.profile; doc['profile'] = profile }
       saveDoc(userId, doc)
       if (prev.profile !== s.profile) {
         saveProfileFields(userId, {
@@ -530,6 +534,22 @@ export function NetworkProvider({ children, mode = 'live' }: { children: React.R
     const log = (prev: Persisted, a: Omit<Signal, 'id' | 'when'>): Signal[] =>
       [{ ...a, id: uid('act'), when: 'Just now' }, ...prev.activity]
 
+    /** Confirmation-first action with a shared warning that retains a real Retry. */
+    const verifiedWrite = (title: string, write: () => Promise<void>, commit: () => void): Promise<boolean> => {
+      const attempt = async (): Promise<boolean> => {
+        try { await write(); commit(); return true }
+        catch (error) {
+          reportWriteFailure({
+            title: `${title} not saved`,
+            message: error instanceof Error ? error.message : 'The server did not confirm this update.',
+            retry: async () => { await attempt() },
+          })
+          return false
+        }
+      }
+      return attempt()
+    }
+
     const threadFor = (prev: Persisted, memberId: string) => {
       const existing = [...dir.threads, ...prev.ownThreads].find(t => t.memberId === memberId)
       return existing?.id ?? null
@@ -551,6 +571,7 @@ export function NetworkProvider({ children, mode = 'live' }: { children: React.R
 
     return {
       synced,
+      feedError,
       members: baseMembers.map(m => ({
         ...m,
         introState: s.introStates[m.id] ?? m.introState,
@@ -563,7 +584,7 @@ export function NetworkProvider({ children, mode = 'live' }: { children: React.R
       })),
       threads: byId([...dir.threads, ...s.ownThreads]).map(t => ({
         ...t,
-        messages: [...t.messages, ...(s.sentMessages[t.id] ?? []).map(m => ({ id: m.id, from: 'me' as const, text: m.text, at: m.at }))],
+        messages: live ? t.messages : byId([...t.messages, ...(s.sentMessages[t.id] ?? []).map(m => ({ id: m.id, from: 'me' as const, text: m.text, at: m.at }))]),
       })),
       learnings: [...s.learned, ...dir.learnings],
       activity: [...s.activity, ...dir.signals],
@@ -587,20 +608,26 @@ export function NetworkProvider({ children, mode = 'live' }: { children: React.R
       askResponses: s.askResponses,
       warmPaths: s.warmPaths,
 
-      connect: (id) => patch(prev => prev.connections.includes(id) ? {
-        connections: prev.connections.filter(x => x !== id),
-      } : {
-        connections: [...prev.connections, id],
-        learned: remember(prev, { category: 'People', text: `You connected with ${nameOf(id)}.`, source: 'Your action · Discover', confidence: 100, scope: 'shareable' }),
-        activity: log(prev, { memberId: id, kind: 'New project', text: `${nameOf(id)} is now a direct connection in your graph.` }),
-      }),
+      connect: (id) => {
+        const on = !s.connections.includes(id)
+        const commit = () => patch(prev => ({
+          connections: on ? [...new Set([...prev.connections, id])] : prev.connections.filter(x => x !== id),
+          ...(on ? { learned: remember(prev, { category: 'People', text: `You saved a connection to ${nameOf(id)}.`, source: 'Confirmed network action', confidence: 100, scope: 'private' }) } : {}),
+        }))
+        return live ? verifiedWrite('Connection', () => {
+          if (!userId) throw new Error('Sign in to save this connection.')
+          return mirrorFollow(userId, id, 'connection', on)
+        }, commit) : Promise.resolve(commit())
+      },
 
-      follow: (id) => patch(prev => prev.follows.includes(id) ? {
-        follows: prev.follows.filter(x => x !== id),
-      } : {
-        follows: [...prev.follows, id],
-        learned: remember(prev, { category: 'Interests', text: `You are following ${nameOf(id)}'s professional activity.`, source: 'Your action', confidence: 100, scope: 'private' }),
-      }),
+      follow: (id) => {
+        const on = !s.follows.includes(id)
+        const commit = () => patch(prev => ({ follows: on ? [...new Set([...prev.follows, id])] : prev.follows.filter(x => x !== id) }))
+        return live ? verifiedWrite('Follow', () => {
+          if (!userId) throw new Error('Sign in to follow this member.')
+          return mirrorFollow(userId, id, 'follow', on)
+        }, commit) : Promise.resolve(commit())
+      },
 
       toggleSave: (id, label) => patch(prev => prev.saved.includes(id) ? { saved: prev.saved.filter(x => x !== id) } : {
         saved: [...prev.saved, id],
@@ -619,45 +646,113 @@ export function NetworkProvider({ children, mode = 'live' }: { children: React.R
         return threadId
       },
 
-      sendMessage: (threadId, text) => patch(prev => {
-        const thread = [...prev.ownThreads, ...dir.threads].find(t => t.id === threadId)
+      sendMessage: async (threadId, text, messageId) => {
+        if (!text.trim()) return
+        const thread = [...s.ownThreads, ...dir.threads].find(t => t.id === threadId)
+        if (live) {
+          if (!userId || !thread) throw new Error('Not sent. This conversation is unavailable. Retry.')
+          const actualThread = await ensureThread(userId, thread.memberId, thread.introContext)
+          if (!actualThread) throw new Error('Not sent. This conversation could not be saved. Retry.')
+          const id = await sendLiveMessage(actualThread, userId, text, messageId)
+          const at = clock()
+          setDir(prev => ({
+            ...prev,
+            threads: prev.threads.some(t => t.id === actualThread)
+              ? prev.threads.map(t => t.id === actualThread && !t.messages.some(m => m.id === id)
+                ? { ...t, messages: [...t.messages, { id, from: 'me' as const, text, at }] } : t)
+              : [{ ...thread, id: actualThread, messages: [{ id, from: 'me' as const, text, at }] }, ...prev.threads],
+          }))
+          if (actualThread !== threadId) setS(prev => ({
+            ...prev, ownThreads: prev.ownThreads.filter(t => t.id !== threadId),
+          }))
+          return
+        }
         const who = thread ? nameOf(thread.memberId) : 'a member'
-        return {
-          sentMessages: { ...prev.sentMessages, [threadId]: [...(prev.sentMessages[threadId] ?? []), { id: rowId(), text, at: clock() }] },
+        patch(prev => ({
+          sentMessages: { ...prev.sentMessages, [threadId]: [...(prev.sentMessages[threadId] ?? []), { id: messageId ?? rowId(), text, at: clock() }] },
           learned: remember(prev, { category: 'Messages', text: `You sent ${who} a message: “${text.slice(0, 70)}${text.length > 70 ? '…' : ''}”`, source: 'Conversation', confidence: 99, scope: 'private' }),
+        }))
+      },
+
+      requestIntro: (id, note) => {
+        const commit = () => patch(prev => ({
+          introStates: { ...prev.introStates, [id]: 'requested' },
+          learned: remember(prev, { category: 'Introductions', text: `You requested an introduction to ${nameOf(id)}. Waiting on their opt-in.`, source: 'Confirmed double opt-in request', confidence: 100, scope: 'shareable' }),
+          activity: log(prev, { memberId: id, kind: 'Intro requested', text: `Request saved for ${nameOf(id)} — both sides must agree.` }),
+        }))
+        if (live) return verifiedWrite('Introduction request', async () => { await submitIntroRequest(id, note?.trim() || `I would like to request an introduction to ${nameOf(id)}.`) }, commit)
+        commit()
+        return Promise.resolve(true)
+      },
+
+      authorizeIntro: (id) => {
+        const commit = () => patch(prev => ({
+          introStates: { ...prev.introStates, [id]: 'introduced' },
+          learned: remember(prev, { category: 'Introductions', text: `${nameOf(id)} and you both opted in. The introduction is authorized.`, source: 'Confirmed double opt-in', confidence: 100, scope: 'shareable' }),
+        }))
+        if (live) return verifiedWrite('Introduction acceptance', async () => {
+          if (!userId) throw new Error('Sign in to accept an introduction.')
+          const { data, error } = await supabase.from('intro_requests')
+            .update({ member_opt_in: true, status: 'accepted' })
+            .eq('target_user_id', userId).eq('user_id', id).eq('member_opt_in', false)
+            .select('id')
+          if (error || !data?.length) throw new Error('Acceptance was not confirmed. This request may already have changed.')
+        }, commit)
+        commit()
+        return Promise.resolve()
+      },
+
+      declineIntro: (id) => {
+        const commit = () => patch(prev => ({
+          introStates: { ...prev.introStates, [id]: 'closed' },
+          learned: remember(prev, { category: 'Decisions', text: `You declined the introduction to ${nameOf(id)}.`, source: 'Confirmed network action', confidence: 100, scope: 'private' }),
+        }))
+        if (live) return verifiedWrite('Introduction decline', async () => {
+          if (!userId) throw new Error('Sign in to decline an introduction.')
+          const { data, error } = await supabase.from('intro_requests')
+            .update({ status: 'declined' })
+            .eq('target_user_id', userId).eq('user_id', id).eq('member_opt_in', false)
+            .select('id')
+          if (error || !data?.length) throw new Error('Decline was not confirmed. This request may already have changed.')
+        }, commit)
+        commit()
+        return Promise.resolve()
+      },
+
+      withdrawIntro: (id) => {
+        const commit = () => patch(prev => {
+          const { [id]: _withdrawn, ...introStates } = prev.introStates
+          return {
+            introStates,
+            learned: remember(prev, { category: 'Decisions', text: `You withdrew your introduction request to ${nameOf(id)}.`, source: 'Confirmed withdrawal', confidence: 100, scope: 'private' }),
+          }
+        })
+        if (live) return verifiedWrite('Introduction withdrawal', async () => {
+          if (!userId) throw new Error('Sign in to withdraw an introduction.')
+          const { data, error } = await supabase.from('intro_requests')
+            .delete().eq('user_id', userId).eq('member_id', id).eq('status', 'requested').select('id')
+          if (error || !data?.length) throw new Error('The server could not confirm withdrawal. Reload and retry.')
+        }, commit)
+        commit()
+        return Promise.resolve()
+      },
+
+      addPost: async (text, detail, media, visibility, kind = 'Insight', business) => {
+        const post: Post = { id: uid('post'), memberId: 'me', kind, text, detail: detail ?? 'Shared with your network.', when: 'Just now', responses: 0, media: media ?? [], visibility: visibility ?? 'network', ...(business ? { business } : {}) }
+        try {
+          // The demo remains usable signed out. A live member must receive a database confirmation.
+          if (userId) await savePost(userId, post)
+          else if (live) throw new Error('Sign in again before posting to the network.')
+        } catch (error) {
+          window.dispatchEvent(new CustomEvent('aetheris:post-failed', { detail: { kind } }))
+          throw error
         }
-      }),
-
-      requestIntro: (id) => patch(prev => ({
-        introStates: { ...prev.introStates, [id]: 'requested' },
-        learned: remember(prev, { category: 'Introductions', text: `You requested an introduction to ${nameOf(id)}. Waiting on their opt-in.`, source: 'Double opt-in request', confidence: 100, scope: 'shareable' }),
-        activity: log(prev, { memberId: id, kind: 'Intro requested', text: `Introduction to ${nameOf(id)} requested — both sides must agree.` }),
-      })),
-
-      authorizeIntro: (id) => patch(prev => ({
-        introStates: { ...prev.introStates, [id]: 'introduced' },
-        learned: remember(prev, { category: 'Introductions', text: `${nameOf(id)} and you both opted in. The introduction is authorized.`, source: 'Double opt-in', confidence: 100, scope: 'shareable' }),
-        activity: log(prev, { memberId: id, kind: 'Waiting on you', text: `Introduction to ${nameOf(id)} authorized — open the conversation.` }),
-      })),
-
-      declineIntro: (id) => patch(prev => ({
-        introStates: { ...prev.introStates, [id]: 'closed' },
-        learned: remember(prev, { category: 'Decisions', text: `You set the ${nameOf(id)} introduction to “not now”.`, source: 'Your action', confidence: 100, scope: 'private' }),
-      })),
-
-      withdrawIntro: (id) => patch(prev => {
-        const { [id]: _withdrawn, ...introStates } = prev.introStates
-        return {
-          introStates,
-          learned: remember(prev, { category: 'Decisions', text: `You withdrew your introduction request to ${nameOf(id)}.`, source: 'Your action', confidence: 100, scope: 'private' }),
-        }
-      }),
-
-      addPost: (text, detail, media, visibility, kind = 'Insight') => patch(prev => ({
-        ownPosts: [{ id: uid('post'), memberId: 'me', kind, text, detail: detail ?? 'Shared with your network.', when: 'Just now', responses: 0, media: media ?? [], visibility: visibility ?? 'network' }, ...prev.ownPosts],
-        learned: remember(prev, { category: 'Interests', text: `You wrote in your Journal: “${text.slice(0, 80)}${text.length > 80 ? '…' : ''}”`, source: 'Your Journal', confidence: 100, scope: visibility === 'private' ? 'private' : 'public' }),
-        activity: log(prev, { memberId: 'me', kind: 'New project', text: `You added a Journal entry.` }),
-      })),
+        patch(prev => ({
+          ownPosts: [post, ...prev.ownPosts],
+          learned: remember(prev, { category: 'Interests', text: business ? `You posted a ${kind}: “${text.slice(0, 80)}${text.length > 80 ? '…' : ''}”` : `You wrote in your Journal: “${text.slice(0, 80)}${text.length > 80 ? '…' : ''}”`, source: business ? 'Network feed' : 'Your Journal', confidence: 100, scope: visibility === 'private' ? 'private' : 'public' }),
+          activity: log(prev, { memberId: 'me', kind: 'New project', text: business ? `You posted a ${kind} to the network.` : `You added a Journal entry.` }),
+        }))
+      },
 
       respondToPost: (postId, memberId) => {
         if (memberId === 'me') return null
@@ -672,38 +767,54 @@ export function NetworkProvider({ children, mode = 'live' }: { children: React.R
         return threadId
       },
 
-      togglePostLike: (postId) => patch(prev => ({
-        likedPosts: prev.likedPosts.includes(postId)
-          ? prev.likedPosts.filter(id => id !== postId)
-          : [...prev.likedPosts, postId],
-      })),
+      togglePostLike: (postId) => {
+        const on = !s.likedPosts.includes(postId)
+        const commit = () => patch(prev => ({
+          likedPosts: on ? [...new Set([...prev.likedPosts, postId])] : prev.likedPosts.filter(id => id !== postId),
+        }))
+        return live ? verifiedWrite('Like', () => {
+          if (!userId) throw new Error('Sign in before liking a post.')
+          return saveReaction(postId, userId, 'like', on)
+        }, commit) : Promise.resolve(commit())
+      },
 
-      togglePostRepost: (postId, memberId) => patch(prev => {
-        const reposted = prev.repostedPosts.includes(postId)
-        return {
-          repostedPosts: reposted ? prev.repostedPosts.filter(id => id !== postId) : [...prev.repostedPosts, postId],
-          ...(!reposted ? {
-            learned: remember(prev, { category: 'Interests', text: `You reposted ${nameOf(memberId)}'s professional update.`, source: 'Network feed', confidence: 100, scope: 'public' }),
-            activity: log(prev, { memberId, kind: 'New project', text: `You shared ${nameOf(memberId)}'s update with your network.` }),
-          } : {}),
-        }
-      }),
+      togglePostRepost: (postId, memberId) => {
+        const on = !s.repostedPosts.includes(postId)
+        const commit = () => patch(prev => ({
+          repostedPosts: on ? [...new Set([...prev.repostedPosts, postId])] : prev.repostedPosts.filter(id => id !== postId),
+          ...(on ? { learned: remember(prev, { category: 'Interests', text: `You shared ${nameOf(memberId)}'s post.`, source: 'Confirmed network action', confidence: 100, scope: 'public' }) } : {}),
+        }))
+        return live ? verifiedWrite('Repost', () => {
+          if (!userId) throw new Error('Sign in to repost.')
+          return saveReaction(postId, userId, 'repost', on)
+        }, commit) : Promise.resolve(commit())
+      },
 
-      addPostComment: (postId, text, memberId) => patch(prev => ({
-        postComments: {
-          ...prev.postComments,
-          [postId]: [...(prev.postComments[postId] ?? []), { id: rowId(), text, when: 'Just now' }],
-        },
-        learned: remember(prev, { category: 'Interests', text: `You joined the discussion on ${nameOf(memberId)}'s post.`, source: 'Network feed', confidence: 100, scope: 'public' }),
-      })),
+      addPostComment: (postId, text, memberId) => {
+        const commit = () => patch(prev => ({
+          postComments: { ...prev.postComments,
+            [postId]: [...(prev.postComments[postId] ?? []), { id: rowId(), text, when: 'Just now' }],
+          },
+          learned: remember(prev, { category: 'Interests', text: `You commented on ${nameOf(memberId)}'s post.`, source: 'Confirmed network action', confidence: 100, scope: 'public' }),
+        }))
+        return live ? verifiedWrite('Comment', () => {
+          if (!userId) throw new Error('Sign in before commenting.')
+          return saveComment(postId, userId, text)
+        }, commit) : Promise.resolve(commit())
+      },
 
       setFeedPreferences: (feedPreferences) => patch(() => ({ feedPreferences })),
 
-      addAsk: (ask) => patch(prev => ({
-        ownAsks: [{ ...ask, id: uid('ask'), memberId: 'me', posted: 'Just now', responses: 0, mine: true }, ...prev.ownAsks],
-        learned: remember(prev, { category: 'Needs', text: `You posted a need: ${ask.ask}`, source: 'Needs marketplace', confidence: 100, scope: ask.visibility === 'private' ? 'private' : 'public' }),
-        activity: log(prev, { memberId: 'me', kind: 'New need', text: `You posted a need to the network: ${ask.ask}` }),
-      })),
+      addAsk: async (ask) => {
+        const ownAsk: NetworkAsk = { ...ask, id: uid('ask'), memberId: 'me', posted: 'Just now', responses: 0, mine: true }
+        if (userId) await saveAsk(userId, ownAsk)
+        else if (live) throw new Error('Sign in again before posting a need to the network.')
+        patch(prev => ({
+          ownAsks: [ownAsk, ...prev.ownAsks],
+          learned: remember(prev, { category: 'Needs', text: `You posted a need: ${ask.ask}`, source: 'Needs marketplace', confidence: 100, scope: ask.visibility === 'private' ? 'private' : 'public' }),
+          activity: log(prev, { memberId: 'me', kind: 'New need', text: `You posted a need to the network: ${ask.ask}` }),
+        }))
+      },
 
       respondToAsk: (askId, text) => {
         const ask = [...s.ownAsks, ...dir.asks].find(a => a.id === askId)
@@ -832,7 +943,7 @@ export function NetworkProvider({ children, mode = 'live' }: { children: React.R
         }
       }),
     }
-  }, [s, dir, synced, live, userId])
+  }, [s, dir, synced, feedError, live, userId])
 
   return <Ctx.Provider value={api}>{children}</Ctx.Provider>
 }

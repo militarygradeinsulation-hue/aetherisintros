@@ -8,7 +8,7 @@ import { Btn, Eyebrow, Face, Head, memberById } from '../ui'
 import { bucketMeaning, groupInbox } from '../domain/pro-engine'
 import type { Page } from '../nav'
 
-const pages = new Set<string>(['opportunities', 'dealrooms', 'expertise', 'talent', 'capital', 'intelrooms', 'presence', 'permission', 'vault', 'knowledgeassets', 'passport', 'briefing', 'collisions', 'loops', 'travel', 'strategy', 'rooms', 'inbox', 'messages', 'memory', 'intros', 'attribution', 'eventmode'])
+const pages = new Set<string>(['opportunities', 'dealrooms', 'deals', 'expertise', 'talent', 'capital', 'intelrooms', 'presence', 'permission', 'vault', 'knowledgeassets', 'passport', 'briefing', 'collisions', 'loops', 'travel', 'strategy', 'rooms', 'inbox', 'messages', 'memory', 'intros', 'attribution', 'eventmode'])
 
 export function BriefingPage() {
   const net = useNetwork()

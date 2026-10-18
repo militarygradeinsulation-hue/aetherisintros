@@ -27,8 +27,8 @@ export function determineRadarState(p: Pick<Person, 'scoreTotal' | 'lastInteract
   if (p.scoreTotal >= 80 && p.score.timing >= 75) return 'hot_now'
   if (p.scoreTotal >= 70 && p.score.timing >= 50) return 'emerging'
   if (p.scoreTotal >= 70) return 'strategic'
-  if (p.score.relationshipStrength >= 70 && p.lastInteractionDays > 365) return 'at_risk'
-  if (p.score.relationshipStrength >= 65 && p.lastInteractionDays > 180) return 'dormant'
+  if (p.score.relationshipStrength >= 70 && (p.lastInteractionDays !== null && p.lastInteractionDays > 365)) return 'at_risk'
+  if (p.score.relationshipStrength >= 65 && (p.lastInteractionDays !== null && p.lastInteractionDays > 180)) return 'dormant'
   return 'unknown_path'
 }
 

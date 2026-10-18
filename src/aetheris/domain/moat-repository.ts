@@ -7,6 +7,7 @@
  * no surface changes required. Tables are declared in ./schema.sql.
  */
 import { isShowcase } from '../showcase'
+import { notifyWorkspaceChange, registerSyncedStore } from '../sync/workspace-sync'
 import type { ID } from './models'
 import type { Repository, TableGateway } from './repository'
 import type {
@@ -101,18 +102,22 @@ const storeKey = () => `${KEY}-${isShowcase() ? 'demo' : 'live'}`
 
 export function createLocalMoatLayer(): MoatDataLayer {
   const seeded = isShowcase() ? seedMoatCollections() : emptyMoatCollections()
+  const isLive = !isShowcase()
+  const fromStored = (parsed: Partial<MoatCollections> | null): MoatCollections => {
+    const merged = { ...seeded } as MoatCollections
+    if (!parsed || typeof parsed !== 'object') return merged
+    for (const key of Object.keys(seeded) as MoatCollectionName[]) {
+      const stored = parsed[key]
+      if (Array.isArray(stored)) (merged[key] as unknown[]) = stored
+    }
+    return merged
+  }
   let state: MoatCollections = (() => {
     if (typeof window === 'undefined') return seeded
     try {
       const raw = localStorage.getItem(storeKey())
       if (!raw) return seeded
-      const parsed = JSON.parse(raw) as Partial<MoatCollections>
-      const merged = { ...seeded } as MoatCollections
-      for (const key of Object.keys(seeded) as MoatCollectionName[]) {
-        const stored = parsed[key]
-        if (Array.isArray(stored)) (merged[key] as unknown[]) = stored
-      }
-      return merged
+      return fromStored(JSON.parse(raw) as Partial<MoatCollections>)
     } catch {
       return seeded
     }
@@ -124,7 +129,21 @@ export function createLocalMoatLayer(): MoatDataLayer {
     if (typeof window !== 'undefined') {
       try { localStorage.setItem(storeKey(), JSON.stringify(state)) } catch { /* storage full */ }
     }
+    if (isLive) notifyWorkspaceChange('aetheris-moat-v1-live')
     listeners.forEach(l => l(state))
+  }
+
+  // A member's live data is also saved to their account (never demo data).
+  if (isLive) {
+    const localKey = storeKey()
+    registerSyncedStore({
+      key: 'aetheris-moat-v1-live', localKey,
+      apply: data => {
+        state = fromStored(data as Partial<MoatCollections> | null)
+        try { localStorage.setItem(localKey, JSON.stringify(state)) } catch { /* storage full */ }
+        listeners.forEach(l => l(state))
+      },
+    })
   }
 
   return {

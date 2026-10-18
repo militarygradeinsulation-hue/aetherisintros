@@ -7,7 +7,7 @@ import { Btn, Eyebrow, Head, memberById } from '../ui'
 import type { SearchCorpusItem } from '../domain/pro-engine'
 import type { Page } from '../nav'
 
-const routable = new Set<string>(['opportunities', 'dealrooms', 'expertise', 'talent', 'capital', 'intelrooms', 'presence', 'permission', 'knowledgeassets', 'discover', 'companies', 'systems', 'circles'])
+const routable = new Set<string>(['opportunities', 'dealrooms', 'deals', 'expertise', 'talent', 'capital', 'intelrooms', 'presence', 'permission', 'knowledgeassets', 'discover', 'companies', 'systems', 'circles'])
 
 /** Real browser download of the generated export. */
 function download(fileName: string, content: string, format: 'json' | 'csv') {
