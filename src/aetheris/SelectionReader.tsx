@@ -42,13 +42,15 @@ export function SelectionReader() {
     document.addEventListener('mouseup', update)
     document.addEventListener('keyup', update)
     document.addEventListener('selectionchange', update)
+    const clearOnScroll = () => setSpot(null)
     document.addEventListener('mousedown', clear, true)
-    window.addEventListener('scroll', () => setSpot(null), true)
+    window.addEventListener('scroll', clearOnScroll, true)
     return () => {
       document.removeEventListener('mouseup', update)
       document.removeEventListener('keyup', update)
       document.removeEventListener('selectionchange', update)
       document.removeEventListener('mousedown', clear, true)
+      window.removeEventListener('scroll', clearOnScroll, true)
     }
   }, [active])
 
