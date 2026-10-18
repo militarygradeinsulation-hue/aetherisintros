@@ -19,6 +19,7 @@ import { colLetters, evaluateFormula } from '../crm/formula'
 import { projectRows, type NetworkIndex, type ProjectedRow } from '../crm/project'
 import { planFreeformPaste } from '../crm/paste'
 import { validateLinkedGridCsv } from '../crm/linked-csv-policy'
+import { preflightFreeformCsv } from '../crm/freeform-csv-policy'
 import { gridExportContainsContacts } from '../crm/export-policy'
 import { contactExportIsDenied } from '@/lib/contact-export'
 import type { GridColumn, GridColumnType, LinkedEntity } from '../crm/types'
@@ -302,14 +303,9 @@ export default function GridPage() {
         }
         setNotice(`${saved} record(s) created in your canonical CRM.`)
       } else {
-        const keys = header.map(name => columns.find(c => c.name.toLowerCase() === name.trim().toLowerCase())?.key)
-        if (keys.some(key => !key) || keys.length > columns.length) {
-          throw new Error('Some CSV headers do not match this Grid. Map or add those columns before importing.')
-        }
-        await ops.addRows(sheet.id, body.map(line => Object.fromEntries(
-          line.flatMap((value, i) => (keys[i] ? [[keys[i] as string, value]] : [])),
-        )))
-        setNotice(`${body.length} row(s) saved to your private Grid.`)
+        const prepared = preflightFreeformCsv(header, body, columns)
+        await ops.addRows(sheet.id, prepared)
+        setNotice(`${prepared.length} row(s) saved to your private Grid.`)
       }
     } catch (cause) {
       setCellError(cause instanceof Error ? cause.message : 'CSV import did not finish. Check the CRM or Grid before retrying.')
