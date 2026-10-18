@@ -290,6 +290,9 @@ export async function loadLiveDirectory(userId: string): Promise<{ directory: Di
       posted: relative(r.created_at),
       responses: r.response_count ?? 0,
       visibility: r.visibility as NetworkAsk['visibility'],
+      status: r.status,
+      expiresAt: r.expires_at,
+      category: r.category,
       ...(r.author_id === userId ? { mine: true } : {}),
     }))
 

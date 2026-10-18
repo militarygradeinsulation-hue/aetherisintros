@@ -263,6 +263,20 @@ export function routeTo(target: Member, g: GraphInputs): Route {
 
 export interface ReverseMatch { member: Member; need: string; whyYouFit: Reason[]; whyNow: string; path: string; score: number; askId?: string }
 
+/** A recommendation must never surface a member's private, closed, paused,
+ * expired, or invalid-expiry signal as a live opportunity.
+ * Older demo rows without lifecycle metadata remain valid as demo content.
+ */
+export function isEligibleOpportunitySignal(ask: NetworkAsk, nowMs = Date.now()): boolean {
+  if (ask.mine || ask.visibility !== 'network') return false
+  if (ask.status && ask.status !== 'active') return false
+  if (ask.expiresAt) {
+    const expiry = Date.parse(ask.expiresAt)
+    if (!Number.isFinite(expiry) || expiry <= nowMs) return false
+  }
+  return true
+}
+
 const openToForCategory: Record<string, string> = {
   CAPITAL: 'Investment conversations', PARTNERSHIP: 'Strategic partnerships', ACQUISITION: 'Acquisition discussions',
   ADVISOR: 'Advisory conversations', TALENT: 'Hiring / Talent', VENDOR: 'Vendor introductions', CUSTOMER: 'Customer conversations',
@@ -273,35 +287,48 @@ export function reverseDiscovery(g: GraphInputs, limit = 5): ReverseMatch[] {
   if (!offerWords.length) return []
   const mission = activeMission(g.missions)
   const out: ReverseMatch[] = []
+  const nowMs = Date.now()
   for (const member of g.members) {
-    const asks = g.asks.filter(ask => ask.memberId === member.id && !ask.mine)
+    const asks = g.asks.filter(ask => ask.memberId === member.id && isEligibleOpportunitySignal(ask, nowMs))
+    // Member-stated needs are useful context, not proof of current buying intent.
     const needs = [...asks.map(ask => ({ text: `${ask.ask} ${ask.detail}`, label: ask.ask, ask })), ...member.needs.map(text => ({ text, label: text, ask: undefined as NetworkAsk | undefined }))]
     let best: ReverseMatch | null = null
     for (const need of needs) {
       const shared = overlap(tokens(need.text), offerWords)
       if (!shared.length) continue
       const reasons: Reason[] = [{ label: 'Your offer matches', evidence: `Shared terms: ${shared.slice(0, 4).join(', ')}`, weight: shared.length * 12 }]
-      const category = (need.ask as (NetworkAsk & { category?: string }) | undefined)?.category
+      const category = need.ask?.category
       const openTo = category ? openToForCategory[category] : undefined
       if (openTo && g.me.openTo.includes(openTo)) reasons.push({ label: 'Open To', evidence: `You are open to ${openTo.toLowerCase()}`, weight: 8 })
       if (g.me.industries.some(i => member.industry.toLowerCase().includes(i.toLowerCase()))) reasons.push({ label: 'Industry', evidence: member.industry, weight: 6 })
       if (g.me.location && member.location && member.location.split(',').pop()?.trim() === g.me.location.split(',').pop()?.trim()) reasons.push({ label: 'Geography', evidence: member.location, weight: 4 })
       const fit = missionFit(member, mission)
       if (fit.score >= 15) reasons.push({ label: 'Mission fit', evidence: fit.reasons.map(r => r.evidence).join('; '), weight: Math.round(fit.score / 3) })
-      if (need.ask) reasons.push({ label: 'Live Signal', evidence: `Posted ${need.ask.posted} · ${need.ask.urgency} urgency`, weight: need.ask.urgency === 'high' ? 10 : 5 })
+      if (need.ask) reasons.push({
+        label: 'Published active Signal',
+        evidence: `Member-published need · ${need.ask.posted} · ${need.ask.urgency} urgency`,
+        weight: need.ask.urgency === 'high' ? 10 : 5,
+      })
+      else reasons.push({
+        label: 'Profile-stated need',
+        evidence: 'Stated on the member profile; current timing and availability are not independently confirmed.',
+        weight: 0,
+      })
       const score = reasons.reduce((s, r) => s + r.weight, 0)
       if (!best || score > best.score) {
         const route = routeTo(member, g)
         best = {
           member, need: need.label, whyYouFit: reasons, score, ...(need.ask ? { askId: need.ask.id } : {}),
-          whyNow: need.ask?.whyNow || (need.ask ? `Active Signal posted ${need.ask.posted}` : member.whyNow || 'Listed as a current need on their profile.'),
+          whyNow: need.ask
+            ? (need.ask.whyNow || `Active Signal posted ${need.ask.posted}; timing provided by the member.`)
+            : 'Listed in the member profile. Timing has not been verified.',
           path: route.best ? route.best.labels.join(' → ') : 'No recorded path — respond to their Signal directly.',
         }
       }
     }
     if (best) out.push(best)
   }
-  return out.sort((a, b) => b.score - a.score).slice(0, limit)
+  return out.sort((a, b) => b.score - a.score || a.member.id.localeCompare(b.member.id)).slice(0, limit)
 }
 
 /* ───────────────────────── meeting brief + debrief ───────────────────────── */
