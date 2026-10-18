@@ -5,6 +5,7 @@ import { usePro } from '../pro-store'
 import { useNav } from '../nav'
 import { Btn, Eyebrow, Face, Head, Numeral, Why, memberById } from '../ui'
 import { OpenDealRoomButton } from '../deals-ui'
+import { matchesOpportunityFocus, opportunityDaysLeft, opportunityFocuses, type OpportunityFocus } from '../opportunity-focus'
 
 const kinds = ['All', 'Partnership', 'Advisory role', 'Board seat', 'Acquisition', 'Investment', 'Pilot', 'Hiring', 'Expert request'] as const
 
@@ -13,6 +14,7 @@ export function OpportunitiesPage() {
   const pro = usePro()
   const nav = useNav()
   const [kind, setKind] = useState<string>('All')
+  const [focus, setFocus] = useState<OpportunityFocus>('Active')
   const [openId, setOpenId] = useState<string | null>(null)
   const [note, setNote] = useState('')
   const [question, setQuestion] = useState('')
@@ -21,25 +23,30 @@ export function OpportunitiesPage() {
     industries: net.profile.industries ?? [],
     expertise: net.profile.expertise ?? [],
     connections: net.connections,
-  }).filter(r => kind === 'All' || r.opportunity.kind === kind)
+  }).filter(r => (kind === 'All' || r.opportunity.kind === kind) && matchesOpportunityFocus(r.opportunity, focus))
 
   return <>
     <Head
       label="OPPORTUNITY EXCHANGE"
       title="Real opportunity, posted by the person who owns it."
       copy="Partnerships, advisory seats, pilots, capital, acquisitions and expert requests — each one carries the objective, who it is for, what qualifies you, what is offered in return, and an expiry date so nothing lingers as noise."
-      proof={`${pro.opportunities.filter(o => o.status !== 'expired').length} live · ranked by fit and relationship path, never by payment`}
+      proof={`${pro.opportunities.filter(o => matchesOpportunityFocus(o, 'Active')).length} active · ranked by fit and relationship path, never by payment`}
       action={<Btn kind="secondary" onClick={() => nav.setPage('rooms')}>Opportunity rooms <ArrowRight size={13} /></Btn>}
     />
 
-    <div className="filter-chips">
-      {kinds.map(k => <button key={k} className={`chip ${kind === k ? 'on' : ''}`} onClick={() => setKind(k)}>{k}</button>)}
+    <div className="filter-chips" role="group" aria-label="Opportunity focus">
+      {opportunityFocuses.map(f => <button key={f} aria-pressed={focus === f} className={`chip ${focus === f ? 'on' : ''}`} onClick={() => setFocus(f)}>{f}</button>)}
+    </div>
+    <div className="filter-chips" role="group" aria-label="Opportunity category">
+      {kinds.map(k => <button key={k} aria-pressed={kind === k} className={`chip ${kind === k ? 'on' : ''}`} onClick={() => setKind(k)}>{k}</button>)}
     </div>
 
     <section className="opp-list">
       {ranked.map(({ opportunity: o, fit }) => {
         const owner = memberById(net.members, o.ownerId)
         const open = openId === o.id
+        const daysLeft = opportunityDaysLeft(o)
+        const inactive = !matchesOpportunityFocus(o, 'Active')
         return <article key={o.id} className={`module opp-card ${fit.expired ? 'expired' : ''}`}>
           <header>
             <div>
@@ -51,6 +58,7 @@ export function OpportunitiesPage() {
           </header>
 
           <p className="opp-objective">{o.objective}</p>
+          {!inactive && daysLeft !== null && daysLeft <= 7 && <p className="opp-evidence"><b>{daysLeft === 0 ? 'Closes today (UTC)' : `${daysLeft} day${daysLeft === 1 ? '' : 's'} left`}</b> · Review the requirements before expressing interest.</p>}
           <dl className="opp-grid">
             <div><dt>Who it is for</dt><dd>{o.whoItIsFor}</dd></div>
             <div><dt>What is needed</dt><dd>{o.whatIsNeeded}</dd></div>
@@ -68,8 +76,8 @@ export function OpportunitiesPage() {
           <footer className="opp-foot">
             {owner && <Btn kind="quiet" onClick={() => nav.openMember(owner)}>Open profile</Btn>}
             <Btn kind="secondary" onClick={() => pro.toggleOpportunitySave(o.id)}>{o.saved ? 'Saved' : 'Save'}</Btn>
-            {fit.expired
-              ? <Btn kind="secondary" onClick={() => pro.renewOpportunity(o.id)}>Renew for 30 days</Btn>
+            {inactive
+              ? <span className="opp-evidence">{o.status === 'closed' ? 'Closed' : daysLeft === null ? 'Closing date needs confirmation' : 'Expired'}</span>
               : <Btn onClick={() => setOpenId(open ? null : o.id)}>{open ? 'Close' : 'Express interest'}</Btn>}
             <OpenDealRoomButton kind="quiet" draft={{
               sourceKind: 'manual', sourceId: null, title: o.title, counterpartId: owner?.id ?? null, ...(owner ? { counterpartName: owner.name } : {}),
@@ -77,7 +85,7 @@ export function OpportunitiesPage() {
             }} />
           </footer>
 
-          {open && <div className="opp-respond">
+          {open && !inactive && <div className="opp-respond">
             <label>What is the specific reason this is a fit for you?
               <textarea value={note} onChange={e => setNote(e.target.value)} rows={2} placeholder="One paragraph. No pitch, no template." />
             </label>
@@ -99,7 +107,7 @@ export function OpportunitiesPage() {
           {!!o.interest.length && <p className="opp-interest">{o.interest.length} member{o.interest.length === 1 ? '' : 's'} in conversation. Interest is private to the owner.</p>}
         </article>
       })}
-      {!ranked.length && <p className="empty-state">No live opportunity in this category. Post one and it will be routed by fit, not blasted to everyone.</p>}
+      {!ranked.length && <p className="empty-state">{focus === 'Saved' ? 'No saved opportunities in this category. Save an opportunity to return to it here.' : focus === 'Closing soon' ? 'Nothing in this category closes within the next 7 days.' : focus === 'Past / closed' ? 'No past or closed opportunities in this category.' : 'No active opportunities in this category. Try another category or check your saved opportunities.'}</p>}
     </section>
 
     <section className="teach-block">
