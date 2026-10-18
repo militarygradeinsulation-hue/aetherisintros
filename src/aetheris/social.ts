@@ -465,6 +465,10 @@ export interface NetworkAsk {
   posted: string
   responses: number
   visibility: 'network' | 'private'
+  /** Optional live-table lifecycle evidence; legacy demo asks have none. */
+  status?: string
+  expiresAt?: string | null
+  category?: string
   mine?: boolean
 }
 
