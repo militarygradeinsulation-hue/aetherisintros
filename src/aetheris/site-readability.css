@@ -565,3 +565,81 @@ html:root[data-theme] body :is(.sys-hero,.circle-hero) .purpose-actions button {
 html:root[data-theme] body :is(.sys-hero,.circle-hero) :is(.eyebrow,.sys-stats dt,.sys-hero-side span) {
   font-size:max(11px, .7rem);
 }
+
+/* Pre-meeting briefs reuse the existing private server function, but their
+ * older panel was built with dark-only Tailwind text colors. Pair its copy
+ * with the actual Messages panel in either appearance mode. */
+html:root[data-theme] body .ix-root .ix-live-messages .msg-meeting-brief-panel {
+  background:var(--msg-panel-inset)!important;
+  color:var(--msg-ink)!important;
+  min-width:0;
+}
+html:root[data-theme] body .ix-root .ix-live-messages .meeting-brief {
+  color:var(--msg-ink)!important;
+}
+html:root[data-theme] body .ix-root .ix-live-messages .meeting-brief
+  :is(p,li,li span,.brief-talking-point span) {
+  color:var(--msg-body)!important;
+  -webkit-text-fill-color:var(--msg-body)!important;
+  opacity:1!important;
+}
+html:root[data-theme] body .ix-root .ix-live-messages .meeting-brief > div:first-child > p {
+  color:var(--msg-ink)!important;
+  -webkit-text-fill-color:var(--msg-ink)!important;
+}
+html:root[data-theme] body .ix-root .ix-live-messages .meeting-brief :is(h4,.brief-section h4) {
+  color:var(--msg-muted)!important;
+  -webkit-text-fill-color:var(--msg-muted)!important;
+  font-size:12px!important;
+  font-weight:700;
+  text-transform:uppercase;
+  letter-spacing:.09em;
+  margin:0 0 8px;
+}
+html:root[data-theme] body .ix-root .ix-live-messages .meeting-brief .brief-section {
+  margin:0 0 15px;
+}
+html:root[data-theme] body .ix-root .ix-live-messages .meeting-brief
+  :is(.brief-talking-point,.brief-section li) {
+  display:flex;
+  align-items:flex-start;
+  gap:10px;
+  margin-bottom:8px;
+  overflow-wrap:anywhere;
+}
+html:root[data-theme] body .ix-root .ix-live-messages .meeting-brief .brief-num {
+  display:grid;
+  place-items:center;
+  min-width:26px;
+  height:26px;
+  background:var(--msg-selected);
+  color:var(--msg-ink)!important;
+  -webkit-text-fill-color:var(--msg-ink)!important;
+  font-size:12px;
+}
+html:root[data-theme] body .ix-root .ix-live-messages .meeting-brief button {
+  background:var(--msg-accent)!important;
+  color:var(--msg-accent-ink)!important;
+  -webkit-text-fill-color:var(--msg-accent-ink)!important;
+  min-height:40px;
+}
+html:root[data-theme] body .ix-root .ix-live-messages
+  :is(.msg-meeting-brief-trigger,.meeting-brief button):focus-visible {
+  outline:2px solid var(--msg-accent);
+  outline-offset:3px;
+}
+html:root[data-theme="light"] body .ix-root .ix-live-messages .meeting-brief p.text-red-400 {
+  color:#982424!important;-webkit-text-fill-color:#982424!important;
+}
+html:root[data-theme="dark"] body .ix-root .ix-live-messages .meeting-brief p.text-red-400 {
+  color:#ffb4b4!important;-webkit-text-fill-color:#ffb4b4!important;
+}
+@media (max-width:650px) {
+  html:root[data-theme] body .ix-root .ix-live-messages .msg-meeting-brief-panel {
+    max-height:42vh!important;
+  }
+  html:root[data-theme] body .ix-root .ix-live-messages .msg-meeting-brief-trigger {
+    min-height:42px;
+    white-space:normal;
+  }
+}
