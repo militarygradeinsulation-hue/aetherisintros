@@ -90,7 +90,7 @@ export async function fetchAccess(): Promise<AccessState> {
     .eq('user_id', user.id)
     .maybeSingle()
   // Retry with the remembered invite (email-confirm and Google return paths skip /auth).
-  if (!existing.data || existing.data.status === 'pending' || existing.data.status === 'waitlisted') {
+  if (user.email_confirmed_at && !existing.error && (!existing.data || existing.data.status === 'pending' || existing.data.status === 'waitlisted')) {
     const code = storedInvite()
     // Retry pending accounts after launch settings change, including accounts
     // created before public signup was restored. The RPC enforces eligibility.
