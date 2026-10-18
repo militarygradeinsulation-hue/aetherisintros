@@ -15,6 +15,7 @@ import {
   type OperationalSnapshot,
 } from './repo'
 import { blankColumns, templateById, type LinkedField } from './linked'
+import { requireSavedGridRecord } from './grid-write-contract'
 import type {
   CrmCompany, CrmOpportunity, CrmPerson, CrmTask, GridColumn, GridSheet, GridWorkbook, ID, LinkedEntity,
 } from './types'
@@ -345,10 +346,11 @@ export function OpsProvider({ children }: { children: ReactNode }) {
       },
       setCell: async (rowId, key, value) => {
         const row = snap.rows.find(r => r.id === rowId)
-        if (!row) return
+        if (!row) throw new Error('This Grid row is no longer available. Refresh and retry.')
         const next = { ...row.values, [key]: value }
+        await requireSavedGridRecord(rowRepo.update(rowId, next))
+        // Never show an optimistic value as saved when RLS or the network rejected it.
         setSnap(prev => ({ ...prev, rows: prev.rows.map(r => (r.id === rowId ? { ...r, values: next } : r)) }))
-        await rowRepo.update(rowId, next)
       },
       removeRow: async id => { await rowRepo.remove(id); await refresh() },
       saveView: async (sheetId, name, config) => { await viewRepo.create(sheetId, name, config); await refresh() },
@@ -369,7 +371,7 @@ export function OpsProvider({ children }: { children: ReactNode }) {
             p.companyName = textValue
             p.companyId = textValue ? (await ensureCompany(textValue))?.id ?? null : null
           } else return
-          await personRepo.update(entityId, p)
+          await requireSavedGridRecord(personRepo.update(entityId, p))
         } else if (entityType === 'crm_companies') {
           const c: Partial<CrmCompany> = {}
           if (key === 'name') c.name = textValue
@@ -378,7 +380,7 @@ export function OpsProvider({ children }: { children: ReactNode }) {
           else if (key === 'website') c.website = textValue
           else if (key === 'employees') c.employees = textValue
           else return
-          await companyRepo.update(entityId, c)
+          await requireSavedGridRecord(companyRepo.update(entityId, c))
         } else if (entityType === 'crm_opportunities') {
           const o: Partial<CrmOpportunity> = {}
           if (key === 'name') o.name = textValue
@@ -396,7 +398,7 @@ export function OpsProvider({ children }: { children: ReactNode }) {
           } else if (key === 'companyName') {
             o.companyId = textValue ? (await ensureCompany(textValue))?.id ?? null : null
           } else return
-          await opportunityRepo.update(entityId, o)
+          await requireSavedGridRecord(opportunityRepo.update(entityId, o))
         } else if (entityType === 'crm_tasks') {
           const t: Partial<CrmTask> = {}
           if (key === 'title') t.title = textValue
@@ -410,7 +412,7 @@ export function OpsProvider({ children }: { children: ReactNode }) {
             const opp = snap.opportunities.find(o => o.name.toLowerCase() === textValue.toLowerCase())
             t.opportunityId = opp?.id ?? null
           } else return
-          await taskRepo.update(entityId, t)
+          await requireSavedGridRecord(taskRepo.update(entityId, t))
         } else return
         await after(entityType, entityId, 'grid-edit', `${key} changed in Grid`)
       },
