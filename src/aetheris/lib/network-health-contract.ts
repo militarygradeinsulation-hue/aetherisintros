@@ -76,3 +76,30 @@ export function parseNetworkHealth(value: unknown): NetworkHealth {
     isolated_members: array(v['isolated_members']).map(item => nullableStr(item) ?? ''),
   }
 }
+
+/** The browser error log is not an empty array when an RPC/permission layer
+ * returns null or an incomplete response. Never claim "No errors" on failure.
+ */
+export interface AdminErrorReport {
+  id: string
+  created_at: string
+  source: 'client' | 'server'
+  message: string
+  stack: string
+  url: string
+  user_agent: string
+}
+export function parseAdminErrorReports(value: unknown): AdminErrorReport[] {
+  return array(value).map(item => {
+    const r = obj(item)
+    const id = str(r['id'])
+    const created_at = str(r['created_at'])
+    const message = str(r['message'])
+    const source = r['source']
+    if (!id || Number.isNaN(Date.parse(created_at)) || !message ||
+        (source !== 'server' && source !== 'client')) invalid()
+    return { id, created_at, message, source,
+      stack: nullableStr(r['stack']) ?? '', url: nullableStr(r['url']) ?? '',
+      user_agent: nullableStr(r['user_agent']) ?? '' }
+  })
+}
