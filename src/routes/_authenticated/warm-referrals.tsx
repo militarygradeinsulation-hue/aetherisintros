@@ -3,7 +3,7 @@ import { ClientOnly, createFileRoute } from '@tanstack/react-router'
 import { WarmReferralPanel } from '@/aetheris/WarmReferralPanel'
 import '@/aetheris/styles.css'
 
-export const Route = createFileRoute('/_authenticated/warm-referrals')({
+export const Route = createFileRoute('/_authenticated/warm-referrals' as never)({
   staticData: { sitemap: false },
   ssr: false,
   head: () => ({
