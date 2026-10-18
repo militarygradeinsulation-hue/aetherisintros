@@ -352,3 +352,74 @@
 :root .ael.ael-compact .ael-compact-steps li,
 :root .ael.ael-compact .ael-compact-method {border-color:rgba(255,255,255,.35)!important;}
 :root .ael.ael-compact .ael-compact-story :is(.ael-underlink,.ael-underlink-dark) {color:#fff!important;border-color:#b5541f!important;}
+
+/* Compact homepage capability vision with recognizable brand marks.
+   Branded tools are comparisons, not a partnership or live-integration claim. */
+.ael.ael-compact .ael-platform-unified{
+  width:min(100%,720px);
+  min-width:0;
+  display:grid;
+  gap:7px;
+  margin:0 0 13px;
+  padding:11px 13px;
+  background:rgba(7,10,13,.79);
+  border:1px solid rgba(231,181,116,.45);
+  border-left:3px solid #db9958;
+  color:#fff;
+  box-sizing:border-box;
+}
+.ael.ael-compact .ael-platform-unified-title{
+  margin:0;
+  font:600 11px/1.42 Inter,system-ui,sans-serif;
+  letter-spacing:.025em;
+  color:#f6f6f6!important;
+  text-wrap:pretty;
+}
+.ael.ael-compact .ael-platform-unified-title strong{
+  color:#f1be81!important;
+  font-weight:760;
+}
+.ael.ael-compact .ael-platform-marks{
+  display:flex;
+  flex-wrap:wrap;
+  align-items:center;
+  gap:5px 12px;
+  min-width:0;
+}
+.ael.ael-compact .ael-platform-mark{
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+  min-width:0;
+  white-space:nowrap;
+  font:600 10px/1.3 Inter,system-ui,sans-serif;
+  color:#fff!important;
+}
+.ael.ael-compact .ael-platform-mark img{
+  flex:0 0 auto;
+  width:23px;
+  height:23px;
+  object-fit:contain;
+  padding:3px;
+  border-radius:4px;
+  background:#fff;
+}
+.ael.ael-compact .ael-platform-disclaimer{
+  margin:0;
+  max-width:100%;
+  font:400 9px/1.35 Inter,system-ui,sans-serif;
+  letter-spacing:0;
+  color:#d2d5d8!important;
+}
+@media(max-width:650px){
+  .ael.ael-compact .ael-platform-unified{
+    padding:9px 10px;
+    margin-bottom:8px;
+    gap:6px;
+  }
+  .ael.ael-compact .ael-platform-unified-title{font-size:10px}
+  .ael.ael-compact .ael-platform-marks{gap:5px 9px}
+  .ael.ael-compact .ael-platform-mark{font-size:9px;gap:4px}
+  .ael.ael-compact .ael-platform-mark img{width:20px;height:20px;padding:2px}
+  .ael.ael-compact .ael-platform-disclaimer{font-size:8px}
+}
