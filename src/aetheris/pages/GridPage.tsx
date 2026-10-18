@@ -458,10 +458,22 @@ export default function GridPage() {
         </div>
 
         <div className="grid-footer">
-          <Btn kind="quiet" onClick={() => {
-            if (sheet.mode === 'linked' && sheet.entityType) void ops.createLinkedRecord(sheet.entityType as LinkedEntity, 'Untitled')
-            else void ops.addRow(sheet.id)
-          }}><Rows3 size={14} /> Add row</Btn>
+          <Btn kind="quiet"
+            disabled={sheet.mode === 'linked' && !(['crm_people', 'crm_companies', 'crm_opportunities', 'crm_tasks'] as string[]).includes(sheet.entityType ?? '')}
+            onClick={() => {
+              setCellError('')
+              void (async () => {
+                try {
+                  if (sheet.mode === 'linked' && sheet.entityType) {
+                    await ops.createLinkedRecord(sheet.entityType as LinkedEntity, 'Untitled')
+                  } else {
+                    await ops.addRow(sheet.id)
+                  }
+                } catch {
+                  setCellError('The new row was not confirmed. Check your CRM/Grid before retrying.')
+                }
+              })()
+            }}><Rows3 size={14} /> Add row</Btn>
           {sheet.mode === 'freeform' && <Btn kind="quiet" onClick={() => {
             const name = window.prompt('Column name')
             if (name?.trim()) void ops.addColumn(sheet.id, name.trim(), 'text')
