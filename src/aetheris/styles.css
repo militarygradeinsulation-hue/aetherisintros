@@ -5837,7 +5837,7 @@ body:has([role=menu],[role=listbox],.ix-mobile-sheet,.topbar-dropmenu,.notificat
 .track-stat-label{font:600 10px var(--sans);letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
 @keyframes spin{to{transform:rotate(360deg)}}
 .spin{animation:spin .8s linear infinite}
-.track-record { margin-top: 2rem; }
+
 .track-record-card { background: var(--bg-2); border: 1px solid var(--border); border-radius: 8px; padding: 1rem; margin-bottom: .75rem; }
 .track-record-kind { font-size: .7rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--accent); margin-bottom: .25rem; }
 .track-record-verified { display: inline-flex; align-items: center; gap: .25rem; font-size: .7rem; color: var(--success, #22c55e); margin-left: .5rem; }
