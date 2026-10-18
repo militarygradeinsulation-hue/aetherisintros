@@ -86,7 +86,7 @@ function RecordOutcome({ onClose }: { onClose: () => void }) {
     influencedState: 'unquantified' as ValueState, influencedNote: '', evidence: '', confidence: '80',
   })
   return <div className="modal-wrap light-modal-wrap" onMouseDown={onClose}>
-    <div className="modal need-modal" onMouseDown={e => e.stopPropagation()}>
+    <div className="modal need-modal outcome-modal" onMouseDown={e => e.stopPropagation()}>
       <header><div><Eyebrow>RECORD OUTCOME</Eyebrow><h2>What actually happened?</h2>
         <p>Record the evidence. If the value is not known, say so.</p></div>
         <button className="icon-btn" onClick={onClose} aria-label="Close"><X size={17} /></button></header>
