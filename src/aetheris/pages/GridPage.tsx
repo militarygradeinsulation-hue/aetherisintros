@@ -19,6 +19,7 @@ import { colLetters, evaluateFormula } from '../crm/formula'
 import { projectRows, type NetworkIndex, type ProjectedRow } from '../crm/project'
 import { planFreeformPaste } from '../crm/paste'
 import { gridExportContainsContacts } from '../crm/export-policy'
+import { preflightFreeformCsv, preflightLinkedNames } from '../crm/csv-import-preflight'
 import { contactExportIsDenied } from '@/lib/contact-export'
 import type { GridColumn, GridColumnType, LinkedEntity } from '../crm/types'
 
@@ -278,19 +279,35 @@ export default function GridPage() {
 
   const importCsv = async (file: File) => {
     if (!sheet) return
-    const table = parseDelimited(await file.text())
-    const [header, ...body] = table
-    if (!header || !body.length) return
-    const keys = header.map(name => columns.find(c => c.name.toLowerCase() === name.trim().toLowerCase())?.key)
-    if (sheet.mode === 'linked' && sheet.entityType) {
-      for (const line of body) {
-        const primary = line[0] ?? ''
-        if (primary.trim()) await ops.createLinkedRecord(sheet.entityType as LinkedEntity, primary)
+    if (pasteInProgress.current) {
+      setCellError('A Grid write is already in progress. Retry the import after it finishes.')
+      return
+    }
+    pasteInProgress.current = true
+    setCellError('')
+    setNotice('')
+    try {
+      const table = parseDelimited(await file.text())
+      const [header, ...body] = table
+      if (sheet.mode === 'linked' && sheet.entityType) {
+        // Never silently discard extra CSV columns. Full people/company imports
+        // use the existing CRM > Import column-mapping and validation screen.
+        const names = preflightLinkedNames(header ?? [], body, columns[0]?.name ?? '')
+        for (const name of names) {
+          const saved = await ops.createLinkedRecord(sheet.entityType as LinkedEntity, name)
+          if (!saved) throw new Error('A new CRM record was not confirmed by the database.')
+        }
+        setNotice(`${names.length} records saved to the linked CRM view.`)
+      } else {
+        const prepared = preflightFreeformCsv(header ?? [], body, columns)
+        await ops.addRows(sheet.id, prepared)
+        setNotice(`${prepared.length} rows saved to your private Grid.`)
       }
-    } else {
-      await ops.addRows(sheet.id, body.map(line => Object.fromEntries(
-        line.flatMap((value, i) => (keys[i] ? [[keys[i] as string, value]] : [])),
-      )))
+    } catch (cause) {
+      const reason = cause instanceof Error ? cause.message : 'The CSV could not be read.'
+      setCellError(`${reason} If the import stopped mid-save, review existing rows before trying again.`)
+    } finally {
+      pasteInProgress.current = false
     }
   }
 
@@ -333,6 +350,7 @@ export default function GridPage() {
       action={<Btn kind="secondary" disabled={busy} onClick={() => { void makeWorkbook(`Workbook ${workbooks.length + 1}`) }}><FilePlus2 size={14} /> {busy ? 'Creating…' : 'New workbook'}</Btn>} />
 
     {cellError && <p role="alert" className="ops-note">{cellError}</p>}
+    {notice && <p role="status" className="ops-note">{notice}</p>}
     <div className="grid-shell">
       <div className="grid-bar">
         <select aria-label="Workbook" value={activeWorkbook.id} onChange={e => { setWorkbookId(e.target.value); setSheetId('') }}>
