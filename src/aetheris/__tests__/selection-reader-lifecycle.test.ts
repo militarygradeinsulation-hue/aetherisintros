@@ -9,6 +9,13 @@ describe('selection read-aloud lifecycle', () => {
     expect(source).toContain("window.removeEventListener('scroll', clearOnScroll, true)")
     expect(source).not.toContain("window.addEventListener('scroll', () => setSpot(null), true)")
   })
+  it('promotes a waiting mounted instance after owner unmounts', () => {
+    expect(source).toContain('waitingReaders.add(acquire)')
+    expect(source).toContain('waitingReaders.delete(acquire)')
+    expect(source).toContain('if (owner === id)')
+    expect(source).toContain('owner = null')
+    expect(source).toContain('for (const candidate of waitingReaders) candidate()')
+  })
   it('retains member-initiated read-aloud from the selection button', () => {
     expect(source).toContain("readAloud([spot.text], 'Reading what you highlighted')")
   })
