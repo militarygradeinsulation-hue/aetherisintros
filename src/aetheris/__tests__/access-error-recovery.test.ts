@@ -8,6 +8,11 @@ const onboarding = read('../../routes/_authenticated/onboarding.tsx')
 const early = read('../../routes/early-access.tsx')
 
 describe('member access error recovery', () => {
+  it('allows genuine signed-out visitors to register without treating a missing session as an outage', () => {
+    expect(access).toContain("authError?.name === 'AuthSessionMissingError'")
+    expect(access).toContain('if (authError) throw authError')
+  })
+
   it('finishes the loading state after an access query fails, without granting live access', () => {
     expect(access).toContain('error: string | null')
     expect(access).toContain('loading: false, error: ACCESS_READ_ERROR')
