@@ -19,6 +19,9 @@ await build({
     b.onResolve({ filter: /^@\/integrations\/supabase\/client$/ }, () => ({ path: join(here, 'db-stub.ts') }))
     b.onResolve({ filter: /^@\/lib\/voice\.functions$/ }, () => ({ path: join(here, 'voice-stub.ts') }))
     b.onResolve({ filter: /^@\/lib\/warmReferral\.functions$/ }, () => ({ path: join(here, 'voice-stub.ts') }))
+    // The deal-room check exercises the referral prompt UI, not its server RPCs.
+    // Stub its server functions so esbuild never pulls TanStack Start into a browser bundle.
+    b.onResolve({ filter: /^@\/lib\/referrals\.functions$/ }, () => ({ path: join(here, 'voice-stub.ts') }))
     b.onResolve({ filter: /^@\// }, a => {
       const p = join(src, a.path.slice(2))
       for (const ext of ['.ts', '.tsx', '/index.ts']) if (existsSync(p + ext)) return { path: p + ext }
