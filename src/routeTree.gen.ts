@@ -29,6 +29,7 @@ import { Route as PassportTokenRouteImport } from './routes/passport.$token'
 import { Route as DotlovableOauthConsentRouteImport } from './routes/[.]lovable.oauth.consent'
 import { Route as AuthenticatedSyndicationRouteImport } from './routes/_authenticated/syndication'
 import { Route as AuthenticatedPeerGroupsRouteImport } from './routes/_authenticated/peer-groups'
+import { Route as AuthenticatedWarmReferralsRouteImport } from './routes/_authenticated/warm-referrals'
 import { Route as AuthenticatedAdminEarlyAccessRouteImport } from './routes/_authenticated/admin.early-access'
 import { Route as AuthenticatedAdminVerificationRouteImport } from './routes/_authenticated/admin.verification'
 import { Route as StorefrontUserIdRouteImport } from './routes/storefront.$userId'
@@ -150,6 +151,11 @@ const AuthenticatedPeerGroupsRoute = AuthenticatedPeerGroupsRouteImport.update({
   path: '/peer-groups',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedWarmReferralsRoute = AuthenticatedWarmReferralsRouteImport.update({
+  id: '/warm-referrals',
+  path: '/warm-referrals',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const AuthenticatedAdminEarlyAccessRoute =
   AuthenticatedAdminEarlyAccessRouteImport.update({
     id: '/admin/early-access',
@@ -269,6 +275,7 @@ export interface FileRoutesByFullPath {
   '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
   '/syndication': typeof AuthenticatedSyndicationRoute
   '/peer-groups': typeof AuthenticatedPeerGroupsRoute
+  '/warm-referrals': typeof AuthenticatedWarmReferralsRoute
   '/admin/early-access': typeof AuthenticatedAdminEarlyAccessRoute
   '/admin/verification': typeof AuthenticatedAdminVerificationRoute
   '/storefront/$userId': typeof StorefrontUserIdRoute
@@ -309,6 +316,7 @@ export interface FileRoutesByTo {
   '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
   '/syndication': typeof AuthenticatedSyndicationRoute
   '/peer-groups': typeof AuthenticatedPeerGroupsRoute
+  '/warm-referrals': typeof AuthenticatedWarmReferralsRoute
   '/admin/early-access': typeof AuthenticatedAdminEarlyAccessRoute
   '/admin/verification': typeof AuthenticatedAdminVerificationRoute
   '/storefront/$userId': typeof StorefrontUserIdRoute
@@ -351,6 +359,7 @@ export interface FileRoutesById {
   '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
   '/_authenticated/syndication': typeof AuthenticatedSyndicationRoute
   '/_authenticated/peer-groups': typeof AuthenticatedPeerGroupsRoute
+  '/_authenticated/warm-referrals': typeof AuthenticatedWarmReferralsRoute
   '/_authenticated/admin/early-access': typeof AuthenticatedAdminEarlyAccessRoute
   '/_authenticated/admin/verification': typeof AuthenticatedAdminVerificationRoute
   '/storefront/$userId': typeof StorefrontUserIdRoute
@@ -670,6 +679,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedPeerGroupsRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/warm-referrals': {
+      id: '/_authenticated/warm-referrals'
+      path: '/warm-referrals'
+      fullPath: '/warm-referrals'
+      preLoaderRoute: typeof AuthenticatedWarmReferralsRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/admin/early-access': {
       id: '/_authenticated/admin/early-access'
       path: '/admin/early-access'
@@ -814,6 +830,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedVerifyRoute: typeof AuthenticatedVerifyRoute
   AuthenticatedSyndicationRoute: typeof AuthenticatedSyndicationRoute
   AuthenticatedPeerGroupsRoute: typeof AuthenticatedPeerGroupsRoute
+  AuthenticatedWarmReferralsRoute: typeof AuthenticatedWarmReferralsRoute
   AuthenticatedAdminEarlyAccessRoute: typeof AuthenticatedAdminEarlyAccessRoute
   AuthenticatedAdminVerificationRoute: typeof AuthenticatedAdminVerificationRoute
 }
@@ -826,6 +843,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedVerifyRoute: AuthenticatedVerifyRoute,
   AuthenticatedSyndicationRoute: AuthenticatedSyndicationRoute,
   AuthenticatedPeerGroupsRoute: AuthenticatedPeerGroupsRoute,
+  AuthenticatedWarmReferralsRoute: AuthenticatedWarmReferralsRoute,
   AuthenticatedAdminEarlyAccessRoute: AuthenticatedAdminEarlyAccessRoute,
   AuthenticatedAdminVerificationRoute: AuthenticatedAdminVerificationRoute,
 }
