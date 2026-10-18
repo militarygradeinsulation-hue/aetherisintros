@@ -47,7 +47,7 @@ function EarlyAccessPage() {
   useEffect(() => {
     if (access.loading || !access.signedIn) return
     // Network approval and onboarding are separate from optional role verification.
-    if (access.status === 'approved') {
+    if (access.status === 'approved' && access.emailConfirmed && access.verification !== 'rejected' && access.verification !== 'suspended') {
       void navigate({ to: access.onboarded ? '/app' : '/onboarding', replace: true })
     }
   }, [access, navigate])
@@ -58,7 +58,7 @@ function EarlyAccessPage() {
       const result = await claimAccess(code)
       await refresh()
       reloadStats()
-      if (result.status === 'approved') void navigate({ to: access.onboarded ? '/app' : '/onboarding', replace: true })
+      if (result.status === 'approved') setNotice('Your membership is approved. Confirm your email if prompted; your account will continue when verification finishes.')
       else if (result.status === 'waitlisted') setNotice('The founding places are taken. You are on the waitlist and we will write when a place opens.')
       else setError('This account is not approved yet. An invitation or admin approval is needed.')
     } catch (caught) {
