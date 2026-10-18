@@ -439,3 +439,34 @@ body .ix-root .ix-relationship-tier-option .ix-relationship-tier-label {
   overflow-wrap:anywhere;
   text-align:start;
 }
+
+/* The second tier selector uses compact chips. Keep it consistent with the
+ * larger filter list, including its count badge and visible keyboard focus. */
+html:root[data-theme="dark"] body .ix-root .ix-relationship-tier-quick-option[aria-pressed="true"] {
+  background:#292017!important; border-color:#c78522!important;
+  color:#fff!important; -webkit-text-fill-color:#fff!important;
+}
+html:root[data-theme="dark"] body .ix-root .ix-relationship-tier-quick-option[aria-pressed="false"] {
+  background:#101317!important; border-color:#61656d!important;
+  color:#f2eee6!important; -webkit-text-fill-color:#f2eee6!important;
+}
+html:root[data-theme="light"] body .ix-root .ix-relationship-tier-quick-option[aria-pressed="true"] {
+  background:#fff0db!important; border-color:#af641b!important;
+  color:#1c1711!important; -webkit-text-fill-color:#1c1711!important;
+}
+html:root[data-theme="light"] body .ix-root .ix-relationship-tier-quick-option[aria-pressed="false"] {
+  background:#fff!important; border-color:#737b86!important;
+  color:#16191e!important; -webkit-text-fill-color:#16191e!important;
+}
+html:root[data-theme="dark"] body .ix-root .ix-relationship-tier-quick-option > span {
+  color:#f2eee6!important; -webkit-text-fill-color:#f2eee6!important;
+}
+html:root[data-theme="light"] body .ix-root .ix-relationship-tier-quick-option > span {
+  color:#16191e!important; -webkit-text-fill-color:#16191e!important;
+}
+body .ix-root :is(.ix-relationship-tier-option,.ix-relationship-tier-quick-option):focus-visible,
+body .collision-card .collision-faces button:focus-visible {
+  outline:2px solid #f4a125!important;
+  outline-offset:3px!important;
+}
+body .ix-root .ix-relationship-tier-quick-option { min-height:44px; }
