@@ -5,6 +5,7 @@ import { supabase } from "@/integrations/supabase/client";
 import {
   actOnExchange,
   exchangeKinds,
+  exchangeReadableKinds,
   listExchange,
   publishExchange,
   type ExchangeDraft,
@@ -131,7 +132,7 @@ export function LiveOpportunityExchange() {
         ))}
       </div>
       <div className="filter-chips" role="group" aria-label="Opportunity category">
-        {["All", ...exchangeKinds].map((k) => (
+        {["All", ...exchangeReadableKinds].map((k) => (
           <button
             key={k}
             className={`chip ${kind === k ? "on" : ""}`}

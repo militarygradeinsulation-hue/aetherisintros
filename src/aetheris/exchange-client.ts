@@ -1,45 +1,13 @@
 import { z } from "zod";
 import { supabase } from "@/integrations/supabase/client";
+import { exchangeRow, type ExchangeDraft } from "./exchange-contract";
+export {
+  exchangeKinds,
+  exchangeReadableKinds,
+  type ExchangeDraft,
+  type ExchangeOpportunity,
+} from "./exchange-contract";
 
-export const exchangeKinds = [
-  "Partnership",
-  "Advisory role",
-  "Board seat",
-  "Acquisition",
-  "Investment",
-  "Pilot",
-  "Hiring",
-  "Expert request",
-] as const;
-const interest = z.object({ memberId: z.string().uuid(), note: z.string(), when: z.string() });
-export const exchangeRow = z.object({
-  id: z.string(),
-  ownerId: z.string().uuid(),
-  visibility: z.string(),
-  createdAt: z.string(),
-  title: z.string(),
-  objective: z.string(),
-  kind: z.enum(exchangeKinds),
-  whatIsNeeded: z.string(),
-  whatIsOffered: z.string(),
-  mutualValue: z.string(),
-  expiresOn: z.string(),
-  status: z.enum(["open", "in-conversation", "room-open", "deal-room", "expired", "closed"]),
-  saved: z.boolean(),
-  interest: z.array(interest),
-});
-export type ExchangeOpportunity = z.infer<typeof exchangeRow>;
-export type ExchangeDraft = Pick<
-  ExchangeOpportunity,
-  | "title"
-  | "objective"
-  | "kind"
-  | "whatIsNeeded"
-  | "whatIsOffered"
-  | "mutualValue"
-  | "expiresOn"
-  | "visibility"
->;
 // RPCs use the caller's JWT and enforce membership/ownership in Postgres.
 const db = supabase as unknown as {
   rpc(
