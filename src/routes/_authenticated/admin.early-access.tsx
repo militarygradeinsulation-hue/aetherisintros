@@ -12,6 +12,7 @@ import { AdminProvidersPanel } from '@/aetheris/providers-ui'
 import { AdminImpactPanel } from '@/aetheris/impact-ui'
 import { AdminGrowthPanel } from '@/aetheris/growth-ui'
 import { AdminOverview } from '@/aetheris/admin-overview'
+import { AdminConnectionsPanel } from '@/aetheris/admin-connections'
 import { requireConfirmedAdminWrite } from '@/aetheris/lib/admin-launch-receipt'
 import { supabase } from '@/integrations/supabase/client'
 import '@/aetheris/styles.css'
@@ -173,6 +174,7 @@ function AdminRoute() {
     </header>
 
     <AdminOverview />
+    <AdminConnectionsPanel />
     <NetworkProofPanel />
     <AdminGrowthPanel />
     <AdminRevenuePanel />
