@@ -389,3 +389,10 @@
   .ael.ael-compact .ael-platform-mark img{width:18px;height:18px;}
   .ael.ael-compact .ael-platform-disclaimer{font-size:10px;}
 }
+
+
+/* The platform thumbnails now sit above the hero title. Keep the full
+   headline and actions near the first viewport on narrow phones. */
+@media (max-width:420px) {
+  .ael.ael-compact .ael-hero { padding-top:136px; padding-bottom:60px; }
+}
