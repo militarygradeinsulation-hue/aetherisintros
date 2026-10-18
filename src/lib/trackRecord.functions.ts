@@ -45,7 +45,7 @@ export const computeAndSaveScore = createServerFn({ method: 'POST' })
     const { data: myRequests } = await db
       .from('intro_requests')
       .select('id')
-      .or(`user_id.eq.${userId},member_id.eq.${userId}`)
+      .or(`user_id.eq.${userId},target_user_id.eq.${userId}`)
     const myRequestIds = new Set(((myRequests ?? []) as Array<{ id: string }>).map(r => r.id))
     const relevant = peerOutcomes.filter(o => myRequestIds.has(o.intro_request_id))
     const total = myRequestIds.size
