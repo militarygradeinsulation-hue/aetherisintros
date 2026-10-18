@@ -102,14 +102,14 @@ function Inner({ onOpenWorkspaces }: { onOpenWorkspaces?: () => void }) {
               const count = reads.loaded ? (reads.threads[t.id]?.unread ?? 0) : (t.unread ? 1 : 0)
               const label = reads.loaded ? badgeLabel(count) : ''
               return (
-                <button key={t.id} onClick={() => setActiveId(t.id)}
-                  className={`w-full text-left px-3 py-3 border-b border-[var(--msg-border)] flex gap-3 cursor-pointer ${on ? 'bg-[var(--msg-selected)]' : 'hover:bg-[var(--msg-selected)]'}`}>
+                <button key={t.id} data-selected={on} onClick={() => setActiveId(t.id)}
+                  className={`msg-thread-tile w-full text-left px-3 py-3 border-b border-[var(--msg-border)] flex gap-3 cursor-pointer ${on ? 'bg-[var(--msg-selected)]' : 'hover:bg-[var(--msg-selected)]'}`}>
                   <div className="w-9 h-9 shrink-0 rounded-full bg-[var(--msg-incoming)] border border-[var(--msg-border)] flex items-center justify-center text-[11px] text-[var(--msg-ink)]">
                     {(m?.name ?? '?').split(' ').map(s => s[0]).slice(0, 2).join('')}
                   </div>
                   <div className="min-w-0 flex-1">
                     <div className="flex items-center justify-between gap-2">
-                      <span className={`text-sm truncate ${count > 0 ? 'text-[var(--msg-ink)] font-semibold' : 'text-[var(--msg-ink)]'}`}>{m?.name ?? 'Member'}</span>
+                      <span className={`msg-thread-name text-sm truncate ${count > 0 ? 'text-[var(--msg-ink)] font-semibold' : 'text-[var(--msg-ink)]'}`}>{m?.name ?? 'Member'}</span>
                       {count > 0 && (label
                         ? <span className="min-w-[18px] h-[18px] px-1 rounded-full bg-[var(--msg-accent)] text-[10px] font-semibold text-[var(--msg-accent-ink)] flex items-center justify-center shrink-0" aria-label={`${count} unread`}>{label}</span>
                         : <span className="w-2 h-2 rounded-full bg-[var(--msg-accent)] shrink-0" aria-label="Unread" />)}
