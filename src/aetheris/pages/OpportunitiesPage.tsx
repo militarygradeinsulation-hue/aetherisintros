@@ -1,4 +1,6 @@
 import { useState } from 'react'
+import { isShowcase } from '../showcase'
+import { LiveOpportunityExchange } from '../LiveOpportunityExchange'
 import { ArrowRight } from 'lucide-react'
 import { useNetwork } from '../store'
 import { usePro } from '../pro-store'
@@ -10,6 +12,10 @@ import { matchesOpportunityFocus, opportunityDaysLeft, opportunityFocuses, type 
 const kinds = ['All', 'Partnership', 'Advisory role', 'Board seat', 'Acquisition', 'Investment', 'Pilot', 'Hiring', 'Expert request'] as const
 
 export function OpportunitiesPage() {
+  return isShowcase() ? <ShowcaseOpportunitiesPage /> : <LiveOpportunityExchange />
+}
+
+function ShowcaseOpportunitiesPage() {
   const net = useNetwork()
   const pro = usePro()
   const nav = useNav()

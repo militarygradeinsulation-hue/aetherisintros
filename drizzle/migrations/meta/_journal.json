@@ -624,6 +624,13 @@
       "when": 1792273000003,
       "tag": "0089_verified_owner_admin_provision",
       "breakpoints": true
+    },
+    {
+      "idx": 90,
+      "version": "7",
+      "when": 1792273000004,
+      "tag": "0090_shared_opportunity_exchange",
+      "breakpoints": true
     }
   ]
 }

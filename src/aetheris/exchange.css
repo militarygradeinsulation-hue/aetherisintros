@@ -1,0 +1,18 @@
+/* Live exchange uses the existing surface and contrast tokens. */
+.exchange-form { display: grid; gap: 16px; margin-block: 20px; padding: 20px; }
+.exchange-form label { display: grid; gap: 8px; min-width: 0; color: var(--soft); }
+.exchange-form textarea, .exchange-form input, .exchange-form select { width: 100%; max-width: 100%; min-width: 0; font-size: 16px; }
+.exchange-form textarea { resize: vertical; overflow-wrap: anywhere; }
+.exchange-form button { max-width: 100%; }
+/* Explicit live-exchange surfaces also work outside the classic showcase skin. */
+.exchange-live { --exchange-bg:#fff; --exchange-ink:#111; --exchange-line:#686868; background:var(--exchange-bg); color:var(--exchange-ink); overflow-wrap:anywhere; }
+:root[data-theme="dark"] .exchange-live { --exchange-bg:#090909; --exchange-ink:#fff; --exchange-line:#aaa; }
+.app-shell .exchange-live :is(.module,.exchange-form,.opp-card) { background:var(--exchange-bg)!important; color:var(--exchange-ink)!important; border:1px solid var(--exchange-line); }
+.app-shell .exchange-live :is(h1,h2,h3,p,small,label,dt,dd,.eyebrow,.page-proof,.opp-evidence) { color:var(--exchange-ink)!important; opacity:1; }
+.app-shell .exchange-live :is(input,textarea,select,option) { color:var(--exchange-ink)!important; -webkit-text-fill-color:var(--exchange-ink)!important; background:var(--exchange-bg)!important; border:1px solid var(--exchange-line); padding:10px; border-radius:5px; }
+.app-shell .exchange-live :is(button.btn,button.chip) { color:var(--exchange-ink)!important; -webkit-text-fill-color:var(--exchange-ink)!important; background:var(--exchange-bg)!important; border:1px solid var(--exchange-line); min-height:44px; white-space:normal; }
+.app-shell .exchange-live :is(button.primary,button.chip.on) { background:#f4a125!important; color:#111!important; -webkit-text-fill-color:#111!important; border-color:#f4a125!important; }
+.app-shell .exchange-live button:disabled { opacity:.6; }
+.exchange-live .opp-list { margin-top:20px; }
+.exchange-live { color-scheme:light; }
+:root[data-theme="dark"] .exchange-live { color-scheme:dark; }

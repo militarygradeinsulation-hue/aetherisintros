@@ -68,6 +68,10 @@ jobs:
         env:
           PLAYWRIGHT_MODULE: ${{ github.workspace }}/node_modules/playwright/index.mjs
         run: node scripts/deal-room-check/run.mjs
+      - name: Shared Opportunity Exchange (browser)
+        env:
+          PLAYWRIGHT_MODULE: ${{ github.workspace }}/node_modules/playwright/index.mjs
+        run: node scripts/exchange-check/run.mjs
       - name: LinkedIn scan (browser)
         env:
           PLAYWRIGHT_MODULE: ${{ github.workspace }}/node_modules/playwright/index.mjs
