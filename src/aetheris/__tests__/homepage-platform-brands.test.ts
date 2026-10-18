@@ -15,7 +15,7 @@ describe('top homepage platform banner', () => {
       expect(landing).toContain('domain=' + domain + '&sz=128')
       expect(landing).toContain('alt="' + brand + ' logo"')
     }
-    expect(landing.indexOf('ael-platform-unified')).toBeLessThan(landing.indexOf('ael-hero-title'))
+    expect(landing.indexOf('ael-platform-unified')).toBeLessThan(landing.indexOf('<h1 id="ael-hero-title"'))
   })
 
   it('includes requested message and is explicit about third-party branding', () => {
