@@ -7,6 +7,7 @@ import { CurrentUserTrackRecord } from '../CurrentUserTrackRecord'
 import { StorefrontPanel } from '../StorefrontPanel'
 import { SyndicationRoomsPanel } from '../SyndicationRoomsPanel'
 import { Eyebrow } from '../ui'
+import '../executive-work-intelligence.css'
 
 type WorkbenchTab = 'analyst' | 'referrals' | 'track' | 'storefront' | 'syndication'
 
