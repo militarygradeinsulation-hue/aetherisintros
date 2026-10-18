@@ -19,6 +19,7 @@ import {
 import { createShowcaseDeals, liveDeals, SHOWCASE_THEM, SHOWCASE_YOU, type DealsApi, type RoomBundle, type ShowcaseDeals } from './deals'
 import type { DealMemberRow, DealRoomRow } from './deals-engine'
 import { NavCtx } from './nav'
+import { PostDealReferralPrompt } from './referrals-ui'
 import { isShowcase } from './showcase'
 import { Btn, Eyebrow } from './ui'
 
@@ -265,6 +266,7 @@ function DealRoomView({ api, id, me, onBack, initialFlash }: { api: DealsApi; id
   const [flash, setFlash] = useState(initialFlash)
   const [error, setError] = useState('')
   const [busy, setBusy] = useState(false)
+  const [showReferralPrompt, setShowReferralPrompt] = useState(false)
 
   const load = useCallback(async () => {
     const r = await api.loadRoom(id)
@@ -349,9 +351,11 @@ function DealRoomView({ api, id, me, onBack, initialFlash }: { api: DealsApi; id
           // Say the outcome was recorded only when the database actually recorded it just now.
           const recorded = !!fresh?.events.some(e => e.kind === 'intro_outcome_recorded' && e.actor === me && !events.some(old => old.id === e.id))
           const head = to === 'closed' ? `Deal closed — ${outcome === 'won' ? 'won' : 'lost'}.` : 'Deal cancelled.'
+          if (to === 'closed') setShowReferralPrompt(true)
           return recorded ? `${head} Your outcome is recorded on the introduction, privately.` : head
         })} />}
     {room.stage === 'proposal' && !actions.some(a => a.to === 'agreed') && <p className="deals-muted">Terms are agreed when the other side accepts a proposal.</p>}
+    {showReferralPrompt && <PostDealReferralPrompt dealTitle={room.title} dealRoomId={room.id} onClose={() => setShowReferralPrompt(false)} />}
 
     <div className="deals-sections">
       <section className="deals-block" aria-label="Need and context">
