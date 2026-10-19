@@ -717,6 +717,10 @@ html:root[data-theme="light"] body
   color:var(--read-brand)!important;
   -webkit-text-fill-color:var(--read-brand)!important;
 }
+html:root[data-theme="light"] body :is(.memory-editorial-copy,.editorial-field) > p {
+  color:var(--read-ink)!important;
+  -webkit-text-fill-color:var(--read-ink)!important;
+}
 /* Taxonomy remains readable at compact widths without altering metric data. */
 html:root[data-theme="light"] body
   :is(.memory-editorial-copy,.editorial-field,.member-identity-copy,.premium-home-copy) dt {
