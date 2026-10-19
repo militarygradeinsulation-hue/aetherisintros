@@ -1,5 +1,10 @@
 # Aetheris specification completion
 
+## Prospect release safety repair (Oct 19)
+- [x] Restore 0082, 0090 and 0092 byte-for-byte from a7ebe8262766e23fb1e86449989e285c496a1081; preserve journal and snapshots.
+- [ ] Audit and test direct workspace/RPC access, status retries and review history in isolated Postgres.
+- [ ] Recheck compilation/tests and intended-file scope; report database drift and GitHub sync status; no deployment.
+
 ## ICP Connection Engine (Oct 19)
 - [x] Reuse canonical CRM, existing admin role and private workspace state; Apollo/Clay available but not connected.
 - [x] Implement editable ICPs, deterministic scoring, ranked review and safe manual LinkedIn workflow.
