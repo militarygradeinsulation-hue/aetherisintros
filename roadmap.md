@@ -1,5 +1,10 @@
 # Aetheris specification completion
 
+## Google Search Console setup (Oct 19)
+- [x] Check Joseph's linked Google connection and property access; obtain the verification tag.
+- [x] Add the root verification tag and correct the existing sitemap origin without changing page content or canonical URLs.
+- [ ] Publish with approval, confirm the live tag and sitemap, verify ownership, add the property and submit the sitemap.
+
 ## Home resizing and scrolling (Oct 7)
 - [x] Keep tile resizing in place; browser verified the selected size changes, every tile retains its original node, no tiles remount, scroll position stays unchanged, and no runtime errors occur.
 - [x] Add persistent tile size controls; preview verified resizing, reload persistence, content wheel scrolling and pinned resize lock with no runtime errors.
