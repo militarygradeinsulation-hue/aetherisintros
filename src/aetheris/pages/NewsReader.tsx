@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react'
 import { useServerFn } from '@tanstack/react-start'
-import { ArrowLeft, Loader2 } from 'lucide-react'
+import { ArrowLeft, Loader2, Copy, Check } from 'lucide-react'
+import { newsStoryUrl } from '../news-links'
 import { Btn, Eyebrow } from '../ui'
 import { newsAge, type NewsItem } from '../news'
 import { askNewsPerspective, readNewsArticle, type ArticleRead } from '../../lib/newsReader.functions'
@@ -19,12 +20,17 @@ const VIEWS: { label: string; question: string }[] = [
   { label: 'Worth a conversation?', question: 'What is a sharp, non-generic conversation opener a CEO could send someone about this?' },
 ]
 
-export function NewsReader({ item, onBack }: { item: NewsItem; onBack: () => void }) {
+export function NewsReader({ item, onBack, publicMode = false }: { item: NewsItem; onBack: () => void; publicMode?: boolean }) {
   const read = useServerFn(readNewsArticle)
   const perspective = useServerFn(askNewsPerspective)
   const [views, setViews] = useState<{ label: string; question: string; answer: string }[]>([])
   const [pending, setPending] = useState<string | null>(null)
   const [custom, setCustom] = useState('')
+  const [copied, setCopied] = useState(false)
+  const copyArticle = async () => {
+    try { await navigator.clipboard.writeText(newsStoryUrl(item)); setCopied(true) }
+    catch { setCopied(false) }
+  }
 
   const { data, isLoading, isError } = useQuery<ArticleRead>({
     queryKey: ['news-read', item.id],
@@ -66,7 +72,8 @@ export function NewsReader({ item, onBack }: { item: NewsItem; onBack: () => voi
       </div>
       <h1>{item.title}</h1>
       <div className="reader-image"><NewsThumbnail item={item} large /></div>
-      <NewsActions item={item} />
+      {!publicMode && <NewsActions item={item} />}
+      <button type="button" className="public-news-copy" onClick={() => void copyArticle()}><Copy size={15} /> {copied ? 'Link copied' : 'Copy article link'} {copied && <Check size={14} />}</button>
 
     </header>
 

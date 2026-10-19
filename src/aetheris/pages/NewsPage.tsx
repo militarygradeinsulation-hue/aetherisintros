@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react'
-import { ArrowUpRight, RefreshCw, X } from 'lucide-react'
+import { ArrowUpRight, RefreshCw, X, Copy, Check } from 'lucide-react'
 import { Btn, Eyebrow, Head } from '../ui'
 import { NewsImagesProvider, newsAge, useAetherisNews, useNewsImages, type NewsItem } from '../news'
 import { NewsReader } from './NewsReader'
@@ -15,6 +15,7 @@ export function NewsPage() {
   const [q, setQ] = useState('')
   const [open, setOpen] = useState<NewsItem | null>(null)
   const [tab, setTab] = useState<Tab>('feed')
+  const [feedCopied, setFeedCopied] = useState(false)
   const shelf = useNewsShelf()
 
   const items = data?.items ?? []
@@ -47,7 +48,7 @@ export function NewsPage() {
   return <NewsImagesProvider value={resolvedImages}>
     <header className="news-editorial-head">
       <div><Eyebrow>EXECUTIVE INTELLIGENCE / LIVE</Eyebrow><h1>Read the signal.<br /><em>Call the right person.</em></h1><p>Live reporting, considered alongside the relationships and work already moving through your private operating system.</p></div>
-      <Btn kind="secondary" onClick={() => refetch()}><RefreshCw size={13} /> {isFetching ? 'Refreshing…' : 'Refresh'}</Btn>
+      <div className="public-news-header-actions"><Btn kind="secondary" onClick={() => { void navigator.clipboard.writeText('https://askintros.vip/news').then(() => setFeedCopied(true)).catch(() => setFeedCopied(false)) }}><Copy size={13} /> {feedCopied ? 'News link copied' : 'Copy public news link'} {feedCopied && <Check size={13} />}</Btn><Btn kind="secondary" onClick={() => refetch()}><RefreshCw size={13} /> {isFetching ? 'Refreshing…' : 'Refresh'}</Btn></div>
     </header>
 
     <section className="module news-controls">
