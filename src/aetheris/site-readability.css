@@ -10,13 +10,13 @@
 html:root[data-theme="light"] body {
   --read-panel:#ffffff;
   --read-inset:#f6f6f6;
-  --read-ink:#111111;
-  --read-secondary:#353535;
-  --read-muted:#505050;
+  --read-ink:#17212b;
+  --read-secondary:#435363;
+  --read-muted:#435363;
   --read-border:#888888;
   --read-highlight:#efefef;
-  --read-brand:#984116;
-  --read-accent:#b5541f;
+  --read-brand:#0b4dae;
+  --read-accent:#0f5ccb;
   --read-accent-ink:#ffffff;
 }
 html:root[data-theme="dark"] body {
@@ -666,4 +666,74 @@ html:root[data-theme="dark"] body .ix-root
   :is(span.text-sm,span.text-xs.font-semibold) {
   color:#fff!important;
   -webkit-text-fill-color:#fff!important;
+}
+
+/* Paper surfaces own their ink. The classic host's dark-only text rules
+ * otherwise leak pale copy into Memory and every shared EditorialHero.
+ * Keep photo captions, dark intelligence graphs, buttons and statuses out. */
+html:root[data-theme="light"] {
+  --st-ink:#17212b;
+  --st-quiet:#435363;
+  --st-faint:#435363;
+  --foreground:var(--st-ink);
+  --card-foreground:var(--st-ink);
+  --popover-foreground:var(--st-ink);
+  --muted-foreground:var(--st-quiet);
+}
+html:root[data-theme="light"] body
+  :is(.memory-editorial-copy,.editorial-field,.member-identity-copy,.identity-copy,
+      .masthead-brand,.premium-home-copy) {
+  --ink:var(--read-ink);
+  --soft:var(--read-ink);
+  --muted:var(--read-secondary);
+  --cobalt:var(--read-brand);
+  --cobalt-bright:var(--read-brand);
+  color:var(--read-ink)!important;
+  -webkit-text-fill-color:var(--read-ink);
+  opacity:1!important;
+}
+html:root[data-theme="light"] body
+  :is(.memory-editorial-copy,.editorial-field,.member-identity-copy,.identity-copy,
+      .masthead-brand,.premium-home-copy)
+  :is(h1,h2,h3,blockquote,dt,dd,.folio,.eyebrow) {
+  color:var(--read-ink)!important;
+  -webkit-text-fill-color:var(--read-ink)!important;
+  opacity:1!important;
+  text-shadow:none!important;
+}
+html:root[data-theme="light"] body
+  :is(.memory-editorial-copy,.editorial-field,.member-identity-copy,.identity-copy,
+      .masthead-brand,.premium-home-copy)
+  :is(p,small,.subtitle,.description) {
+  color:var(--read-secondary)!important;
+  -webkit-text-fill-color:var(--read-secondary)!important;
+  opacity:1!important;
+  text-shadow:none!important;
+}
+html:root[data-theme="light"] body
+  :is(.memory-editorial-copy,.editorial-field,.member-identity-copy,.identity-copy,
+      .masthead-brand,.premium-home-copy)
+  :is(h1 em,h2 em,.folio,.eyebrow) {
+  color:var(--read-brand)!important;
+  -webkit-text-fill-color:var(--read-brand)!important;
+}
+/* Taxonomy remains readable at compact widths without altering metric data. */
+html:root[data-theme="light"] body
+  :is(.memory-editorial-copy,.editorial-field,.member-identity-copy,.premium-home-copy) dt {
+  font-size:max(11px,.7rem);
+  line-height:1.5;
+  overflow-wrap:anywhere;
+}
+html:root[data-theme="light"] body
+  :is(.auth-panel,.onboarding-page,.verify-page,.access-waiting)
+  :is(.auth-lede,.auth-proof,.auth-index,.auth-switch,.eyebrow,.page-proof) {
+  color:var(--read-secondary)!important;
+  -webkit-text-fill-color:var(--read-secondary)!important;
+  opacity:1!important;
+}
+html:root[data-theme="light"] body .bridge-meeting-option
+  :is(.bridge-meeting-index,a,.bridge-meeting-link) {
+  color:var(--read-brand)!important;
+  -webkit-text-fill-color:var(--read-brand)!important;
+  opacity:1!important;
 }
