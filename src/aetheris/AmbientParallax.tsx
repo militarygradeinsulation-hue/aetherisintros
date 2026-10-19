@@ -39,7 +39,7 @@ export function AmbientParallax() {
           },
         });
         layers.forEach((layer, index) => {
-          timeline.fromTo(layer, { y: 0 }, { y: [-48, -30, -14][index], ease: 'none', immediateRender: false }, 0);
+          timeline.fromTo(layer, { y: 0 }, { y: ([-48, -30, -14][index] ?? 0), ease: 'none', immediateRender: false }, 0);
         });
       }, root);
       cleanup = () => context.revert(); // Only remove triggers created here.
