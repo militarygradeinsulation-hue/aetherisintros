@@ -15,9 +15,8 @@ import { Route as AuthRouteImport } from './routes/auth'
 import { Route as DemoRouteImport } from './routes/demo'
 import { Route as EarlyAccessRouteImport } from './routes/early-access'
 import { Route as FounderStoryRouteImport } from './routes/founder-story'
-import { Route as NewsRouteImport } from './routes/news'
-import { Route as NewsStoryRouteImport } from './routes/news.story'
 import { Route as McpRouteImport } from './routes/mcp'
+import { Route as NewsRouteImport } from './routes/news'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as Char91DotwellKnownChar93OauthProtectedResourceRouteImport } from './routes/[.well-known]/oauth-protected-resource'
 import { Route as AuthenticatedAppRouteImport } from './routes/_authenticated/app'
@@ -30,6 +29,7 @@ import { Route as AuthenticatedVerifyRouteImport } from './routes/_authenticated
 import { Route as AuthenticatedWarmReferralsRouteImport } from './routes/_authenticated/warm-referrals'
 import { Route as ImpactSlugRouteImport } from './routes/impact.$slug'
 import { Route as InviteCodeRouteImport } from './routes/invite.$code'
+import { Route as NewsStoryRouteImport } from './routes/news.story'
 import { Route as PassportTokenRouteImport } from './routes/passport.$token'
 import { Route as StorefrontUserIdRouteImport } from './routes/storefront.$userId'
 import { Route as DotlovableOauthConsentRouteImport } from './routes/[.]lovable.oauth.consent'
@@ -81,19 +81,14 @@ const FounderStoryRoute = FounderStoryRouteImport.update({
   path: '/founder-story',
   getParentRoute: () => rootRouteImport,
 } as any)
-const NewsRoute = NewsRouteImport.update({
-  id: '/news',
-  path: '/news',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const NewsStoryRoute = NewsStoryRouteImport.update({
-  id: '/story',
-  path: '/story',
-  getParentRoute: () => NewsRoute,
-} as any)
 const McpRoute = McpRouteImport.update({
   id: '/mcp',
   path: '/mcp',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const NewsRoute = NewsRouteImport.update({
+  id: '/news',
+  path: '/news',
   getParentRoute: () => rootRouteImport,
 } as any)
 const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
@@ -159,6 +154,11 @@ const InviteCodeRoute = InviteCodeRouteImport.update({
   id: '/invite/$code',
   path: '/invite/$code',
   getParentRoute: () => rootRouteImport,
+} as any)
+const NewsStoryRoute = NewsStoryRouteImport.update({
+  id: '/story',
+  path: '/story',
+  getParentRoute: () => NewsRoute,
 } as any)
 const PassportTokenRoute = PassportTokenRouteImport.update({
   id: '/passport/$token',
@@ -270,14 +270,13 @@ const ApiStripeWebhookRoute = ApiStripeWebhookRouteImport.update({
 } as any)
 
 export interface FileRoutesByFullPath {
-  '/news': typeof NewsRoute
-  '/news/story': typeof NewsStoryRoute
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/demo': typeof DemoRoute
   '/early-access': typeof EarlyAccessRoute
   '/founder-story': typeof FounderStoryRoute
   '/mcp': typeof McpRoute
+  '/news': typeof NewsRouteWithChildren
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
   '/app': typeof AuthenticatedAppRoute
@@ -290,6 +289,7 @@ export interface FileRoutesByFullPath {
   '/warm-referrals': typeof AuthenticatedWarmReferralsRoute
   '/impact/$slug': typeof ImpactSlugRoute
   '/invite/$code': typeof InviteCodeRoute
+  '/news/story': typeof NewsStoryRoute
   '/passport/$token': typeof PassportTokenRoute
   '/storefront/$userId': typeof StorefrontUserIdRoute
   '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
@@ -313,14 +313,13 @@ export interface FileRoutesByFullPath {
   '/api/stripe/webhook': typeof ApiStripeWebhookRoute
 }
 export interface FileRoutesByTo {
-  '/news': typeof NewsRoute
-  '/news/story': typeof NewsStoryRoute
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/demo': typeof DemoRoute
   '/early-access': typeof EarlyAccessRoute
   '/founder-story': typeof FounderStoryRoute
   '/mcp': typeof McpRoute
+  '/news': typeof NewsRouteWithChildren
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
   '/app': typeof AuthenticatedAppRoute
@@ -333,6 +332,7 @@ export interface FileRoutesByTo {
   '/warm-referrals': typeof AuthenticatedWarmReferralsRoute
   '/impact/$slug': typeof ImpactSlugRoute
   '/invite/$code': typeof InviteCodeRoute
+  '/news/story': typeof NewsStoryRoute
   '/passport/$token': typeof PassportTokenRoute
   '/storefront/$userId': typeof StorefrontUserIdRoute
   '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
@@ -356,8 +356,6 @@ export interface FileRoutesByTo {
   '/api/stripe/webhook': typeof ApiStripeWebhookRoute
 }
 export interface FileRoutesById {
-  '/news': typeof NewsRouteWithChildren
-  '/news/story': typeof NewsStoryRoute
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
@@ -366,6 +364,7 @@ export interface FileRoutesById {
   '/early-access': typeof EarlyAccessRoute
   '/founder-story': typeof FounderStoryRoute
   '/mcp': typeof McpRoute
+  '/news': typeof NewsRouteWithChildren
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
   '/_authenticated/app': typeof AuthenticatedAppRoute
@@ -378,6 +377,7 @@ export interface FileRoutesById {
   '/_authenticated/warm-referrals': typeof AuthenticatedWarmReferralsRoute
   '/impact/$slug': typeof ImpactSlugRoute
   '/invite/$code': typeof InviteCodeRoute
+  '/news/story': typeof NewsStoryRoute
   '/passport/$token': typeof PassportTokenRoute
   '/storefront/$userId': typeof StorefrontUserIdRoute
   '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
@@ -403,14 +403,13 @@ export interface FileRoutesById {
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
-    | '/news'
-    | '/news/story'
     | '/'
     | '/auth'
     | '/demo'
     | '/early-access'
     | '/founder-story'
     | '/mcp'
+    | '/news'
     | '/sitemap.xml'
     | '/.well-known/oauth-protected-resource'
     | '/app'
@@ -423,6 +422,7 @@ export interface FileRouteTypes {
     | '/warm-referrals'
     | '/impact/$slug'
     | '/invite/$code'
+    | '/news/story'
     | '/passport/$token'
     | '/storefront/$userId'
     | '/.lovable/oauth/consent'
@@ -446,14 +446,13 @@ export interface FileRouteTypes {
     | '/api/stripe/webhook'
   fileRoutesByTo: FileRoutesByTo
   to:
-    | '/news'
-    | '/news/story'
     | '/'
     | '/auth'
     | '/demo'
     | '/early-access'
     | '/founder-story'
     | '/mcp'
+    | '/news'
     | '/sitemap.xml'
     | '/.well-known/oauth-protected-resource'
     | '/app'
@@ -466,6 +465,7 @@ export interface FileRouteTypes {
     | '/warm-referrals'
     | '/impact/$slug'
     | '/invite/$code'
+    | '/news/story'
     | '/passport/$token'
     | '/storefront/$userId'
     | '/.lovable/oauth/consent'
@@ -488,8 +488,6 @@ export interface FileRouteTypes {
     | '/api/push/dispatch'
     | '/api/stripe/webhook'
   id:
-    | '/news'
-    | '/news/story'
     | '__root__'
     | '/'
     | '/_authenticated'
@@ -498,6 +496,7 @@ export interface FileRouteTypes {
     | '/early-access'
     | '/founder-story'
     | '/mcp'
+    | '/news'
     | '/sitemap.xml'
     | '/.well-known/oauth-protected-resource'
     | '/_authenticated/app'
@@ -510,6 +509,7 @@ export interface FileRouteTypes {
     | '/_authenticated/warm-referrals'
     | '/impact/$slug'
     | '/invite/$code'
+    | '/news/story'
     | '/passport/$token'
     | '/storefront/$userId'
     | '/.lovable/oauth/consent'
@@ -534,7 +534,6 @@ export interface FileRouteTypes {
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
-  NewsRoute: typeof NewsRouteWithChildren
   IndexRoute: typeof IndexRoute
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
   AuthRoute: typeof AuthRoute
@@ -542,6 +541,7 @@ export interface RootRouteChildren {
   EarlyAccessRoute: typeof EarlyAccessRoute
   FounderStoryRoute: typeof FounderStoryRoute
   McpRoute: typeof McpRoute
+  NewsRoute: typeof NewsRouteWithChildren
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   Char91DotwellKnownChar93OauthProtectedResourceRoute: typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
   ImpactSlugRoute: typeof ImpactSlugRoute
@@ -569,20 +569,6 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/news': {
-      id: '/news'
-      path: '/news'
-      fullPath: '/news'
-      preLoaderRoute: typeof NewsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/news/story': {
-      id: '/news/story'
-      path: '/story'
-      fullPath: '/news/story'
-      preLoaderRoute: typeof NewsStoryRouteImport
-      parentRoute: typeof NewsRoute
-    }
     '/': {
       id: '/'
       path: '/'
@@ -630,6 +616,13 @@ declare module '@tanstack/react-router' {
       path: '/mcp'
       fullPath: '/mcp'
       preLoaderRoute: typeof McpRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/news': {
+      id: '/news'
+      path: '/news'
+      fullPath: '/news'
+      preLoaderRoute: typeof NewsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/sitemap.xml': {
@@ -715,6 +708,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/invite/$code'
       preLoaderRoute: typeof InviteCodeRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/news/story': {
+      id: '/news/story'
+      path: '/story'
+      fullPath: '/news/story'
+      preLoaderRoute: typeof NewsStoryRouteImport
+      parentRoute: typeof NewsRoute
     }
     '/passport/$token': {
       id: '/passport/$token'
@@ -898,11 +898,14 @@ const AuthenticatedRouteRouteWithChildren =
 interface NewsRouteChildren {
   NewsStoryRoute: typeof NewsStoryRoute
 }
-const NewsRouteChildren: NewsRouteChildren = { NewsStoryRoute: NewsStoryRoute }
+
+const NewsRouteChildren: NewsRouteChildren = {
+  NewsStoryRoute: NewsStoryRoute,
+}
+
 const NewsRouteWithChildren = NewsRoute._addFileChildren(NewsRouteChildren)
 
 const rootRouteChildren: RootRouteChildren = {
-  NewsRoute: NewsRouteWithChildren,
   IndexRoute: IndexRoute,
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
   AuthRoute: AuthRoute,
@@ -910,6 +913,7 @@ const rootRouteChildren: RootRouteChildren = {
   EarlyAccessRoute: EarlyAccessRoute,
   FounderStoryRoute: FounderStoryRoute,
   McpRoute: McpRoute,
+  NewsRoute: NewsRouteWithChildren,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
   Char91DotwellKnownChar93OauthProtectedResourceRoute:
     Char91DotwellKnownChar93OauthProtectedResourceRoute,

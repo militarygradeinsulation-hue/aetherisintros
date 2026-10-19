@@ -6687,6 +6687,7 @@ export type Database = {
       }
       my_executive_application: { Args: never; Returns: Json }
       my_impact_card: { Args: never; Returns: Json }
+      my_intro_allowance: { Args: never; Returns: Json }
       my_intro_outcome_notes: {
         Args: never
         Returns: {
