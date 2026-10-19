@@ -1,8 +1,9 @@
 import type { NewsItem } from '@/lib/news.functions'
 
 /** Share the publisher URL, not an ephemeral feed index, so old links still open. */
-export function newsStoryPath(item: Pick<NewsItem, 'link'>): string {
-  return '/news/story?url=' + encodeURIComponent(item.link)
+export function newsStoryPath(item: Pick<NewsItem, 'link' | 'title' | 'source' | 'summary'>): string {
+  const params = new URLSearchParams({ url: item.link, title: item.title.slice(0, 180), source: item.source.slice(0, 60), summary: item.summary.slice(0, 420) })
+  return '/news/story?' + params.toString()
 }
 
 export function newsStoryUrl(item: Pick<NewsItem, 'link'>, origin = 'https://askintros.vip'): string {
