@@ -19,11 +19,11 @@ describe('homepage platform thumbnail strip', () => {
     expect(landing).not.toContain('cdn.simpleicons.org/linkedin')
     expect(linkedinMark).toContain('viewBox="0 0 24 24"')
     expect(linkedinMark).toContain('fill="#0A66C2"')
-    expect(landing).toContain('cdn.simpleicons.org/salesforce')
+    expect(landing).toContain('/brands/salesforce.svg')
     expect(landing).toContain('cdn.simpleicons.org/googlemeet')
     expect(landing).toContain('domain=zoominfo.com')
     expect(landing).not.toContain('domain=linkedin.com')
-    expect(landing).toContain('domain=salesforce.com')
+    expect(landing).not.toContain('domain=salesforce.com')
     expect(landing).toContain('domain=meet.google.com')
   })
   it('avoids an unsubstantiated affiliation claim and supports mobile wraps', () => {
