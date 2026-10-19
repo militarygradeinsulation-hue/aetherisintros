@@ -1,4 +1,4 @@
-.prospect-engine { --prospect-blue: #0f5ccb; color:var(--read-ink); width:100%; min-width:0; }
+.prospect-engine { --prospect-blue: var(--read-accent); color:var(--read-ink); width:100%; min-width:0; overflow-wrap:anywhere; }
 .prospect-engine .page-title h1 {font-size:40px;line-height:1.1;letter-spacing:0;color:var(--read-ink)}
 .prospect-engine p,.prospect-engine small,.prospect-engine label {color:var(--read-secondary);opacity:1}
 .prospect-engine .btn.primary {background:var(--prospect-blue)!important;color:var(--read-accent-ink)!important;border-color:var(--prospect-blue)!important}

@@ -84,7 +84,7 @@ export default function CrmPage() {
   const match = (text: string) => !term || text.toLowerCase().includes(term)
 
   if (!ops.ready) return <p className="ops-note">Loading your records…</p>
-  if (prospecting) return <ProspectEngine onBack={() => setProspecting(false)} />
+  if (prospecting) return <ProspectEngine onBack={() => setProspecting(false)} onNewPerson={() => {setProspecting(false);setCreating('person')}} />
 
   /* ------------------------------------------------ full workspace */
 

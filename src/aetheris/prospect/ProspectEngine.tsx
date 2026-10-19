@@ -12,14 +12,14 @@ import './prospect.css'
 
 type Stored = { version:number; data:Workflow }
 const labelStatus = (s: string) => s.replaceAll('_',' ')
-export function ProspectEngine({ onBack }: { onBack: () => void }) {
+export function ProspectEngine({ onBack,onNewPerson }: { onBack: () => void; onNewPerson: () => void }) {
   const { access } = useAccess()
   if (access.loading) return <p>Checking private access…</p>
   if (access.error) return <p role="alert">{access.error}</p>
   if (!access.isAdmin) return <div><p>Prospect Intelligence is private to the owner.</p><Btn kind="secondary" onClick={onBack}>Back to CRM</Btn></div>
-  return <PrivateEngine onBack={onBack} ownerId={access.userId ?? ''} />
+  return <PrivateEngine onBack={onBack} onNewPerson={onNewPerson} ownerId={access.userId ?? ''} />
 }
-function PrivateEngine({ onBack,ownerId }: { onBack: () => void; ownerId:string }) {
+function PrivateEngine({ onBack,onNewPerson,ownerId }: { onBack: () => void; onNewPerson: () => void; ownerId:string }) {
   const ops = useOps(); const moat = useMoat()
   const loadFn = useServerFn(loadProspectState); const saveFn = useServerFn(saveProspectState)
   const [profiles,setProfiles] = useState<Icp[]>([starter]); const [profileId,setProfileId] = useState(starter.id)
@@ -73,7 +73,7 @@ function PrivateEngine({ onBack,ownerId }: { onBack: () => void; ownerId:string 
     setWorkflows(prev => ({...prev,[selected]:saved})); await ops.refresh();setNotice('Saved to your private CRM timeline.')
   }
   const updateProfile = (patch: Partial<Icp>) => setProfiles(prev => prev.map(p => p.id===icp.id ? {...p,...patch} : p))
-  if (loading || !ops.ready) return <p>Loading your private prospect records…</p>
+  if (loading || (!ops.ready && !error)) return <p>Loading your private prospect records…</p>
   return <section className="prospect-engine">
     <Btn kind="quiet" onClick={onBack}><ArrowLeft size={14}/> CRM</Btn>
     <Head label="PRIVATE / PROSPECT INTELLIGENCE" title="The right people. A reason to connect."
@@ -84,7 +84,7 @@ function PrivateEngine({ onBack,ownerId }: { onBack: () => void; ownerId:string 
     <div className="prospect-toolbar">
       <label>Ideal profile<select value={icp.id} onChange={e => setProfileId(e.target.value)}>{profiles.map(p => <option key={p.id} value={p.id}>{p.label}</option>)}</select></label>
       <Btn kind="secondary" onClick={() => setImporting(!importing)}><FileUp size={14}/> Import CSV</Btn>
-      <Btn kind="secondary" onClick={onBack}><Plus size={14}/> New CRM person</Btn>
+      <Btn kind="secondary" onClick={onNewPerson}><Plus size={14}/> New CRM person</Btn>
       <Btn kind="quiet" disabled={busy} onClick={() => void reload()}><RefreshCw size={14}/> Refresh</Btn>
     </div>
     {editor && <div className="prospect-editor">

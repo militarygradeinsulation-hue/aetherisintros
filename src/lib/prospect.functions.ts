@@ -28,6 +28,13 @@ export const saveProspectState = createServerFn({ method: 'POST' }).middleware([
   if (data.kind === 'person' && data.status === 'approved') {
     const issues = reviewNote(data.note)
     if (issues.length) throw new Error(issues.join(' '))
+    const { data: prior,error: priorError } = await context.supabase.from('member_workspace_state').select('store_key,data').eq('user_id',context.userId).like('store_key','icp:person:%')
+    if (priorError) throw new Error('Previous prospect reviews could not be checked. Retry before approval.')
+    const duplicate = prior?.some(row => {
+      const value = row.data as { status?:string; note?:string }
+      return row.store_key !== `icp:person:${data.personId}` && ['invited','accepted','follow_up'].includes(value.status ?? '') && value.note?.trim()===data.note.trim()
+    })
+    if (duplicate) throw new Error('This note was already used for another person. Add their individual context.')
   }
   const key = data.kind === 'profiles' ? 'icp:profiles' : `icp:person:${data.personId}`
   const payload = data.kind === 'profiles' ? { profiles: data.profiles } : { status:data.status, note:data.note, consent:data.consent }

@@ -1,10 +1,12 @@
 # Aetheris specification completion
 
 ## ICP Connection Engine (Oct 19)
-- [ ] Reuse canonical CRM, existing admin role and private workspace state; audit provider availability.
-- [ ] Implement editable ICPs, deterministic scoring, ranked review and safe manual LinkedIn workflow.
-- [ ] Reuse validated CSV/manual CRM ingestion; persist notes and contact outcomes atomically.
-- [ ] Run scoring/upload/workflow/isolation tests and preview smoke checks; do not publish.
+- [x] Reuse canonical CRM, existing admin role and private workspace state; Apollo/Clay available but not connected.
+- [x] Implement editable ICPs, deterministic scoring, ranked review and safe manual LinkedIn workflow.
+- [x] Reuse validated CSV/manual CRM ingestion; persist notes and contact outcomes atomically.
+- [x] Run 39 scoring/upload/workflow/isolation regressions; automatic compilation passed; no publication.
+- [ ] Verify real owner workflow and private phone/light/dark screens — blocked: requesting-account session cannot be minted; owner must sign in to preview.
+- [ ] Enable external provider search/enrichment — blocked: no accessible Apollo/Clay connection; manual/CRM workflow works independently.
 
 ## Original site light-mode contrast (Oct 19)
 - [x] Repair shared light-mode ink and editorial copy/metrics without changing dark mode or features.
