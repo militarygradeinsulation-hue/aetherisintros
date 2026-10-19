@@ -16,7 +16,7 @@ export const Route = createFileRoute('/_authenticated/onboarding')({
       { title: 'Build your profile — Ask Intros' },
       {
         name: 'description',
-        content: 'Answer nine questions and Ask Intros builds your professional profile and the memory behind your introductions.',
+        content: 'Answer ten questions and Ask Intros builds your professional profile and the memory behind your introductions.',
       },
       { property: 'og:title', content: 'Build your profile — Ask Intros' },
       { property: 'og:description', content: 'Real identity, real work, real context. Nine questions is all it takes.' },
@@ -57,6 +57,8 @@ function OnboardingRoute() {
   const savingRef = useRef(false)
   const [error, setError] = useState('')
   const [linkedinUrl, setLinkedinUrl] = useState('')
+  const answeredCount = questions.filter(q => (answers[q.key] ?? '').trim().length > 0).length
+  const completion = Math.round((answeredCount / questions.length) * 100)
 
   useEffect(() => {
     if (access.loading || access.error) return
@@ -144,6 +146,13 @@ function OnboardingRoute() {
       </p>
     </header>
     <section className="onboarding-form">
+      <div className="onboarding-progress" role="group" aria-label="Profile completion">
+        <div className="onboarding-progress-label"><strong>Profile progress</strong><span aria-live="polite">{answeredCount} of {questions.length} answered</span></div>
+        <div className="onboarding-progress-track" role="progressbar" aria-label="Profile questions answered" aria-valuemin={0} aria-valuemax={100} aria-valuenow={completion}>
+          <div className="onboarding-progress-fill" style={{ width: `${completion}%` }} />
+        </div>
+        <small>Only your name is required to continue. More context helps make introductions relevant.</small>
+      </div>
       <LinkedInScanPanel
         keys={ONBOARDING_KEYS} demo={false}
         current={{ ...answers, linkedin_url: linkedinUrl }}
