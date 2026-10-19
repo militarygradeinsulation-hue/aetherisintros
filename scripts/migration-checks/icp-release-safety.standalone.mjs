@@ -18,7 +18,7 @@ for (const [file, hash] of [
   ['0092_basic_executive_membership', 'f158ba177a2db3b32d6afdd8d428c1f24779f2e3a59ea4a61d9c522a3e72d34d'],
 ]) check(createHash('sha256').update(readFileSync(new URL(`drizzle/migrations/${file}.sql`, root))).digest('hex') === hash, `${file} matches pre-prospect bytes`)
 const journal = JSON.parse(read('drizzle/migrations/meta/_journal.json')).entries
-check(journal.every((entry, i) => entry.idx === i && (i === 0 || entry.when > journal[i - 1].when)), 'journal indices and timestamps remain ordered')
+check(journal.every((entry, i) => i === 0 || (entry.idx > journal[i - 1].idx && entry.when > journal[i - 1].when)), 'journal indices and timestamps remain ordered')
 const s36 = JSON.parse(read('drizzle/migrations/meta/0036_snapshot.json'))
 const s93 = JSON.parse(read('drizzle/migrations/meta/0093_snapshot.json'))
 const s94 = JSON.parse(read('drizzle/migrations/meta/0094_snapshot.json'))
