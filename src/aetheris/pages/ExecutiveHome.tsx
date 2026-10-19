@@ -162,7 +162,10 @@ export function ExecutiveHome({ embedded = false }: { embedded?: boolean }) {
             {renderWidget(config.id)}
           </HomeWidgetFrame>
         }} />
-      <details className="home-feature-details">\n        <summary className="cursor-pointer py-3 text-sm font-medium">Explore more Ask Intros capabilities</summary>\n        <IntrosSystemFeatures compact />\n      </details>
+      <details className="home-feature-details">
+        <summary className="cursor-pointer py-3 text-sm font-medium">Explore more Ask Intros capabilities</summary>
+        <IntrosSystemFeatures compact />
+      </details>
     </div>
   </NewsImagesProvider>
 }
