@@ -14,3 +14,6 @@
 .executive-upgrade-actions{display:flex;gap:.7rem;margin-top:.8rem}
 .executive-application{padding:1rem;border:1px solid #647587;border-radius:12px;margin:1rem 0;overflow-wrap:anywhere}
 @media(max-width:600px){.executive-upgrade-trigger{bottom:calc(1rem + env(safe-area-inset-bottom));right:.75rem;max-width:calc(100vw - 1.5rem);font-size:.85rem}.executive-upgrade-dialog{padding:1.2rem}}
+
+.executive-allowance{border:1px solid #647587;border-radius:10px;background:#1a2b3a;padding:.8rem 1rem;color:#f2f6f9!important}
+.executive-allowance strong{color:#f5b55c}
