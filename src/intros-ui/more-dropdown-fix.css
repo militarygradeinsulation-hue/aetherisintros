@@ -1,0 +1,33 @@
+/* Desktop More must size to its menu items, not to the narrow More trigger.
+ * site-readability.css applies max-width:100% to overlays, which otherwise
+ * constrains this absolute dropdown to its containing navigation button. */
+.ix-root .ix-desktop-more .ix-desktop-more-menu {
+  box-sizing: border-box;
+  width: min(280px, calc(100vw - 24px));
+  min-width: min(240px, calc(100vw - 24px));
+  max-width: calc(100vw - 24px) !important;
+  left: auto !important;
+  right: 0;
+  transform: none !important;
+  padding: 8px;
+  overflow-wrap: normal;
+}
+.ix-root .ix-desktop-more .ix-desktop-more-item {
+  display: flex;
+  width: 100%;
+  min-width: 0;
+  min-height: 44px;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 12px;
+  white-space: normal;
+  overflow-wrap: normal;
+  word-break: normal;
+  line-height: 1.35;
+  text-align: left;
+}
+.ix-root .ix-desktop-more .ix-desktop-more-item svg {
+  flex: 0 0 18px;
+  width: 18px;
+  height: 18px;
+}
