@@ -1,0 +1,28 @@
+.prospect-engine { --prospect-blue: var(--read-accent); color:var(--read-ink); width:100%; min-width:0; overflow-wrap:anywhere; }
+.prospect-engine .page-title h1 {font-size:40px;line-height:1.1;letter-spacing:0;color:var(--read-ink)}
+.prospect-engine p,.prospect-engine small,.prospect-engine label {color:var(--read-secondary);opacity:1}
+.prospect-engine .btn.primary {background:var(--prospect-blue)!important;color:var(--read-accent-ink)!important;border-color:var(--prospect-blue)!important}
+.prospect-engine .btn.secondary,.prospect-engine .btn.quiet {color:var(--read-ink)!important;background:var(--read-inset)!important;border-color:var(--read-border)!important}
+.prospect-toolbar {display:flex;gap:12px;flex-wrap:wrap;align-items:center;margin:20px 0}
+.prospect-engine input:not([type=checkbox]),.prospect-engine select,.prospect-engine textarea {background:var(--read-panel)!important;color:var(--read-ink)!important;border:1px solid var(--read-border)!important;border-radius:6px;min-height:42px;padding:10px;width:100%;font:inherit;opacity:1}
+.prospect-engine option {background:var(--read-panel);color:var(--read-ink)}
+.prospect-toolbar>label {flex:1;min-width:150px}.prospect-toolbar>label:first-child {flex:2}
+.prospect-layout {display:grid;grid-template-columns:minmax(260px,1fr) minmax(0,1.35fr);gap:28px;align-items:start}
+.prospect-list {display:grid;gap:12px}.prospect-list article {border:1px solid var(--read-border);border-radius:8px;padding:16px;background:var(--read-panel);display:grid;gap:10px}
+.prospect-list article.selected {border-color:var(--prospect-blue)}
+.prospect-person-head {display:flex;justify-content:space-between;align-items:start;gap:12px}
+.prospect-person-head strong {font-family:'Space Grotesk',sans-serif;font-size:30px;line-height:1.1;color:var(--read-ink)}
+.prospect-detail {min-width:0;border-left:1px solid var(--read-border);padding-left:24px;display:grid;gap:16px}
+.prospect-detail h2 {font-family:'Cormorant Garamond',serif;font-size:36px;color:var(--read-ink);line-height:1.1}
+.prospect-detail dl {display:grid;gap:12px}.prospect-detail dt {font-weight:600;color:var(--read-ink)}.prospect-detail dd {margin:4px 0 0;color:var(--read-secondary);overflow-wrap:anywhere}
+.prospect-breakdown {display:grid;gap:8px}.prospect-breakdown>div {padding:10px 0;border-bottom:1px solid var(--read-border);display:grid;gap:4px}
+.prospect-actions {display:flex;flex-wrap:wrap;gap:8px}
+.prospect-engine textarea {min-height:110px;resize:vertical}
+.prospect-editor {display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;border-block:1px solid var(--read-border);padding:24px 0;margin:20px 0}
+.prospect-editor label {display:grid;gap:6px}.prospect-editor .wide {grid-column:1/-1}
+.prospect-provider {display:flex;flex-wrap:wrap;gap:20px;border-top:1px solid var(--read-border);padding-top:20px;margin-top:28px;color:var(--read-secondary)}
+.prospect-error {color:var(--read-ink)!important;border:1px solid var(--read-border);padding:12px}
+.prospect-engine a {color:var(--prospect-blue);text-decoration:underline}
+.prospect-engine :focus-visible {outline:2px solid var(--prospect-blue);outline-offset:3px}
+.prospect-engine .simp {color:var(--read-ink);background:var(--read-panel)}
+@media(max-width:700px) {.prospect-layout {grid-template-columns:minmax(0,1fr)}.prospect-detail {border-left:0;padding-left:0;border-top:1px solid var(--read-border);padding-top:24px}.prospect-editor {grid-template-columns:minmax(0,1fr)}.prospect-engine .page-title h1 {font-size:32px}.prospect-toolbar {gap:8px}.prospect-engine {padding-bottom:24px}}

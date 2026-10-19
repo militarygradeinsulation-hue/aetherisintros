@@ -8,6 +8,8 @@ import { Check, FileUp, RotateCcw, Wand2 } from 'lucide-react'
 import { Btn, Eyebrow } from '../ui'
 import { useOps } from '../crm/store'
 import { safeImportSelection } from '../crm/import-policy'
+import { isDuplicate, safeLinkedInLink } from '../prospect/core'
+import { validateProspectFile, validateProspectGrid } from '../prospect/upload'
 
 type Target = 'people' | 'companies'
 type Field = { key: string; label: string; required?: boolean; hints: string[] }
@@ -33,6 +35,7 @@ const FIELDS: Record<Target, Field[]> = {
     { key: 'location', label: 'Location', hints: ['location', 'city', 'country', 'hq'] },
     { key: 'phone', label: 'Phone', hints: ['phone', 'tel'] },
     { key: 'employees', label: 'Employees', hints: ['employees', 'headcount', 'size'] },
+    { key: 'revenueBand', label: 'Revenue band', hints: ['revenue band', 'revenue'] },
     { key: 'notes', label: 'Notes', hints: ['note', 'comment'] },
   ],
 }
@@ -56,6 +59,7 @@ function parseCsv(text: string): string[][] {
       row = []
     } else cell += ch
   }
+  if (q) throw new Error('The file contains an unclosed quoted cell.')
   row.push(cell)
   if (row.some(c => c.trim())) rows.push(row)
   return rows
@@ -96,16 +100,20 @@ export default function SheetImport() {
   const load = async (file: File) => {
     setDone(null); setReadError(null)
     if (!/\.(csv|tsv|txt)$/i.test(file.name)) { setReadError('Save the sheet as CSV first (File → Download → CSV), then drop it here.'); return }
-    const rows = parseCsv(await file.text())
-    if (rows.length < 2) { setReadError('That file has no rows under the header.'); return }
-    importedRowsRef.current.clear()
-    setFileName(file.name); setGrid(rows); setMap(autoMap(rows[0] ?? [], target))
+    try {
+      validateProspectFile(file)
+      const rows = parseCsv(await file.text())
+      validateProspectGrid(rows)
+      importedRowsRef.current.clear()
+      setFileName(file.name); setGrid(rows); setMap(autoMap(rows[0] ?? [], target))
+    } catch (error) { setGrid([]); setReadError(error instanceof Error ? error.message : 'That file could not be read.') }
   }
 
   const switchTarget = (t: Target) => { setTarget(t); setMap(autoMap(headers, t)); setDone(null) }
 
   const checked: Checked[] = useMemo(() => {
     const seen = new Set<string>()
+    const seenPeople: Array<Partial<import('../crm/types').CrmPerson>> = []
     const existingEmails = new Set(ops.people.map(p => p.email.toLowerCase()).filter(Boolean))
     const existingCompanies = new Set(ops.companies.map(c => c.name.toLowerCase()))
     return body.map((r, sourceRow) => {
@@ -116,6 +124,13 @@ export default function SheetImport() {
         if (!values.fullName) values.fullName = [values.firstName, values.lastName].filter(Boolean).join(' ')
         if (!values.fullName) errors.push('No name')
         if (values.email && !EMAIL.test(values.email)) errors.push('Email looks wrong')
+        if (values.linkedinUrl) {
+          const url = safeLinkedInLink(values.linkedinUrl)
+          if (!url) errors.push('Invalid LinkedIn profile URL')
+          else values.linkedinUrl = url
+        }
+        if (isDuplicate(values, [...ops.people, ...seenPeople])) errors.push('Duplicate person identity')
+        seenPeople.push(values)
         const key = (values.email || values.fullName || '').toLowerCase()
         if (values.email && existingEmails.has(values.email.toLowerCase())) errors.push('Already in your CRM')
         else if (key && seen.has(key)) errors.push('Repeated in this sheet')
@@ -166,6 +181,7 @@ export default function SheetImport() {
             : await ops.createCompany({
               name: v.name ?? '', domain: v.domain ?? '', website: v.website ?? '', industry: v.industry ?? '',
               location: v.location ?? '', phone: v.phone ?? '', employees: v.employees ?? '', notes: v.notes ?? '',
+              revenueBand: v['revenueBand'] ?? '',
             })
           if (res) { saved += 1; importedRowsRef.current.add(`${target}:${candidate.sourceRow}`) }
           else {
