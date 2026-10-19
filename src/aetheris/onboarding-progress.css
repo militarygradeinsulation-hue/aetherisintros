@@ -1,0 +1,7 @@
+.onboarding-progress{display:grid;gap:.55rem;padding:1rem;margin:0 0 1.3rem;border:1px solid #647587;border-radius:12px;background:#182635;color:#f7f9fb}
+.onboarding-progress-label{display:flex;justify-content:space-between;align-items:center;gap:1rem;flex-wrap:wrap;font-size:.95rem;color:#f7f9fb}
+.onboarding-progress-label span{color:#f5b55c;font-variant-numeric:tabular-nums}
+.onboarding-progress-track{height:.5rem;border-radius:99px;background:#526579;overflow:hidden}
+.onboarding-progress-fill{height:100%;border-radius:inherit;background:#f4a125;transition:width .2s ease}
+.onboarding-progress small{color:#e0e7ee;line-height:1.5}
+@media(prefers-reduced-motion:reduce){.onboarding-progress-fill{transition:none}}
