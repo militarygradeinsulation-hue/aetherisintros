@@ -23,3 +23,4 @@
 - Home board migrations retain known widget IDs and append new defaults. Why: adding tiles must not erase a member’s saved arrangement.
 - Home board pinning disables the existing grid's editing rather than blocking tile actions, and persists on the device. Why: members can lock placement without losing navigation or social controls.
 - Home tile sizes persist with the arrangement and sync into the mounted grid without size-dependent keys; content and resize controls opt out of dragging. Why: resizing must not replay board entrance animations, lose scroll position, or interfere with reading.
+- Prospect Intelligence lives inside canonical CRM, uses the existing admin gate and owner-scoped workspace state, and saves reviewed outcomes atomically through icp_save; LinkedIn actions remain manual. Why: one person graph, no duplicate contacts or falsely recorded sends.

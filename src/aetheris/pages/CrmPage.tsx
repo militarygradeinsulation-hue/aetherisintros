@@ -27,6 +27,8 @@ import { CONTACT_KEYS, splitList } from '../linkedin-scan'
 import { LinkedInScanPanel } from '../linkedin-scan-ui'
 import FullCrm from '../ledger/FullCrm'
 import { OpenDealRoomButton } from '../deals-ui'
+import { ProspectEngine } from '../prospect/ProspectEngine'
+import { useAccess } from '../access'
 import type { CrmCompany, CrmOpportunity, CrmPerson, CrmTask, Lifecycle } from '../crm/types'
 
 
@@ -48,6 +50,8 @@ const day = (iso: string | null) => (iso ? new Date(iso).toLocaleDateString('en-
 
 export default function CrmPage() {
   const ops = useOps()
+  const { access } = useAccess()
+  const [prospecting, setProspecting] = useState(false)
   const net = useNetwork()
   const nav = useNav()
   const [tab, setTab] = useState<Tab>(() => (typeof window === 'undefined' ? 'overview' : (localStorage.getItem('aetheris.crm.tab') as Tab) || 'overview'))
@@ -80,6 +84,7 @@ export default function CrmPage() {
   const match = (text: string) => !term || text.toLowerCase().includes(term)
 
   if (!ops.ready) return <p className="ops-note">Loading your records…</p>
+  if (prospecting) return <ProspectEngine onBack={() => setProspecting(false)} />
 
   /* ------------------------------------------------ full workspace */
 
@@ -109,6 +114,7 @@ export default function CrmPage() {
       action={<Btn onClick={() => setCreating('person')}><Plus size={14} /> New person</Btn>} />
 
     {switcher}
+    {access.isAdmin && <div className="ops-toolbar"><Btn kind="secondary" onClick={() => setProspecting(true)}><Target size={14} /> Prospect Intelligence</Btn></div>}
 
     <nav className="ops-tabs" role="tablist" aria-label="CRM sections">
       {tabs.map(t => <button key={t.id} role="tab" aria-selected={t.id === tab}
