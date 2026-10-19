@@ -638,6 +638,13 @@
       "when": 1792273000005,
       "tag": "0091_confirmed_founding_claim",
       "breakpoints": true
+    },
+    {
+      "idx": 92,
+      "version": "7",
+      "when": 1792427000000,
+      "tag": "0092_basic_executive_membership",
+      "breakpoints": true
     }
   ]
 }
