@@ -83,7 +83,7 @@ function Inner({ onOpenWorkspaces }: { onOpenWorkspaces?: () => void }) {
     <div className="max-w-[1400px] mx-auto px-3 md:px-6 py-4 ix-live-messages">
       <div className="mb-3">
         <p className="text-[10px] font-mono tracking-[0.2em] uppercase text-[var(--msg-muted)]">Private communication</p>
-        <h1 className="font-serif-editorial text-2xl md:text-3xl text-[var(--msg-ink)]">Conversations with <em className="text-[var(--msg-copper)]">relationship context.</em></h1>
+        <h1 className="font-serif-editorial text-2xl md:text-3xl text-[var(--msg-ink)]">Your <em className="text-[var(--msg-copper)]">conversations.</em></h1>
       </div>
       {readError && <div role="alert" className="mb-2 p-2 border border-red-400/40 bg-[#fff0ed] text-xs text-[#8e302b] rounded">{readError} <button type="button" className="underline font-semibold" onClick={() => { if (active) void markThreadRead(active.id).then(() => setReadError('')).catch(() => {}) }}>Retry</button></div>}
       <div className="grid grid-cols-1 md:grid-cols-[300px_1fr] lg:grid-cols-[300px_1fr_260px] gap-3 h-[calc(100vh-210px)] min-h-[480px]">
@@ -94,7 +94,7 @@ function Inner({ onOpenWorkspaces }: { onOpenWorkspaces?: () => void }) {
               className="w-full bg-[var(--msg-panel-inset)] text-xs text-[var(--msg-ink)] rounded-lg pl-8 pr-3 py-2 border border-[var(--msg-border)] focus:outline-none focus:border-[var(--msg-accent)]" />
           </div>
           <div className="flex-1 overflow-y-auto">
-            {threads.length === 0 && <p className="p-4 text-xs text-[var(--msg-muted)]">No conversations yet. Open a member's profile and choose Message to start one.</p>}
+            {threads.length === 0 && <p className="p-4 text-xs text-[var(--msg-muted)]">No conversations yet. Message someone from their profile.</p>}
             {threads.map(t => {
               const m = byId.get(t.memberId)
               const last = t.messages[t.messages.length - 1]
@@ -200,7 +200,7 @@ function Inner({ onOpenWorkspaces }: { onOpenWorkspaces?: () => void }) {
             {active?.introContext && <div><p className="text-[10px] uppercase tracking-widest text-[var(--msg-muted)] mb-1">How you met</p><p className="text-xs text-[var(--msg-body)]">{active.introContext}</p></div>}
             {active?.commitment && <div><p className="text-[10px] uppercase tracking-widest text-[var(--msg-muted)] mb-1">Open loop</p><p className="text-xs text-[var(--msg-body)]">{active.commitment}</p></div>}
             <p className="text-[11px] text-[var(--msg-muted)] mt-auto">Files up to 50 MB — images, video, PDFs. Only the two of you can open them.</p>
-          </>) : <p className="text-xs text-[var(--msg-muted)]">Context appears here when you open a conversation.</p>}
+          </>) : <p className="text-xs text-[var(--msg-muted)]">Select a conversation to see its context.</p>}
         </aside>
       </div>
     </div>
