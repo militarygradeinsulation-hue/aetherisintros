@@ -125,6 +125,8 @@ CREATE FUNCTION public.enforce_basic_intro_quota() RETURNS trigger
 LANGUAGE plpgsql SECURITY DEFINER SET search_path = '' AS $$
 BEGIN
  IF auth.uid() IS NOT NULL AND NOT public.is_admin() AND public.my_membership_tier()='basic' THEN
+  -- Serialize concurrent requests by the same member so parallel inserts cannot evade the quota.
+  PERFORM pg_catalog.pg_advisory_xact_lock(pg_catalog.hashtextextended(auth.uid()::text, 0));
   IF (SELECT count(*) FROM public.intro_requests r WHERE r.user_id=auth.uid()
       AND r.created_at >= date_trunc('month',now())
       AND r.created_at < date_trunc('month',now())+interval '1 month') >= 3
