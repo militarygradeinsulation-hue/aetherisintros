@@ -52,6 +52,13 @@ export function reviewNote(note: string) {
   return issues
 }
 export function safeLinkedInLink(value: string) { return normalizeLinkedInUrl(value) || null }
+/** Only a navigation effect; never sends or mutates workflow state. */
+export function openManualProfile(url: string, open: (url:string,target:string,features:string) => unknown) {
+  const link = safeLinkedInLink(url)
+  if (!link) return false
+  open(link,'_blank','noopener,noreferrer')
+  return true
+}
 export function isDuplicate(candidate: Partial<CrmPerson>, existing: readonly Partial<CrmPerson>[]) {
   const norm = (s?: string) => (s ?? '').trim().toLowerCase()
   const url = candidate.linkedinUrl ? safeLinkedInLink(candidate.linkedinUrl) : null

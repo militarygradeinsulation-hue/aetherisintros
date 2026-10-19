@@ -181,7 +181,7 @@ export default function SheetImport() {
             : await ops.createCompany({
               name: v.name ?? '', domain: v.domain ?? '', website: v.website ?? '', industry: v.industry ?? '',
               location: v.location ?? '', phone: v.phone ?? '', employees: v.employees ?? '', notes: v.notes ?? '',
-              revenueBand: v.revenueBand ?? '',
+              revenueBand: v['revenueBand'] ?? '',
             })
           if (res) { saved += 1; importedRowsRef.current.add(`${target}:${candidate.sourceRow}`) }
           else {

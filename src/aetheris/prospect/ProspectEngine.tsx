@@ -7,7 +7,7 @@ import { useOps } from '../crm/store'
 import { useMoat } from '../moat-store'
 import { Btn,Head } from '../ui'
 import SheetImport from '../ledger/SheetImport'
-import { canTransition,draftNote,initialWorkflow,reviewNote,safeLinkedInLink,scoreProspect,starter,statuses,type Icp,type Status,type Workflow } from './core'
+import { canTransition,draftNote,initialWorkflow,openManualProfile,reviewNote,safeLinkedInLink,scoreProspect,starter,statuses,type Icp,type Status,type Workflow } from './core'
 import './prospect.css'
 
 type Stored = { version:number; data:Workflow }
@@ -128,7 +128,7 @@ function PrivateEngine({ onBack,ownerId }: { onBack: () => void; ownerId:string 
           <Btn kind="secondary" disabled={busy || !canTransition(state.status,'draft')} onClick={() => void run(() => saveWorkflow('draft'))}>Save draft</Btn>
           <Btn disabled={busy || state.status!=='draft' || issues.length>0 || !consent || !!current.fit.excluded || !icp.valueOffer.trim()} onClick={() => void run(() => saveWorkflow('approved'))}>Approve note</Btn>
           <Btn kind="secondary" disabled={!note.trim()} onClick={() => void run(async () => {await navigator.clipboard.writeText(note);setNotice('Note copied. No invitation was sent.')} )}><Copy size={14}/> Copy</Btn>
-          {safeLinkedInLink(current.person.linkedinUrl) && <Btn kind="secondary" onClick={() => {const link=safeLinkedInLink(current.person.linkedinUrl);if (link) window.open(link,'_blank','noopener,noreferrer');setNotice('Profile opened. Invitation status is unchanged.')}}><ExternalLink size={14}/> Open LinkedIn</Btn>}
+          {safeLinkedInLink(current.person.linkedinUrl) && <Btn kind="secondary" onClick={() => {openManualProfile(current.person.linkedinUrl,(...args) => window.open(...args));setNotice('Profile opened. Invitation status is unchanged.')}}><ExternalLink size={14}/> Open LinkedIn</Btn>}
         </div>
         <div className="prospect-actions">{(['invited','accepted','follow_up','dismissed','not_appropriate'] as const).filter(s => canTransition(state.status,s)).map(s => <Btn key={s} kind="secondary" disabled={busy || (s==='invited' && (note!==state.note || consent!==state.consent))} onClick={() => {if (['invited','accepted','follow_up'].includes(s) && !window.confirm(`Confirm you manually completed: ${labelStatus(s)}?`)) return;void run(() => saveWorkflow(s))}}>Mark {labelStatus(s)}</Btn>)}</div>
         <details><summary>Private note &amp; contact timeline</summary>{ops.activities.filter(a => a.personId===selected).map(a => <div key={a.id}><b>{a.subject}</b><p>{new Date(a.occurredAt).toLocaleString()} · {a.detail}</p></div>)}</details>
