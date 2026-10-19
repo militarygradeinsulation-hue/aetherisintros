@@ -10,8 +10,12 @@ export interface AskIntrosOptionWheelProps {
   className?: string;
 }
 export function AskIntrosOptionWheel({ items, value, onChange, label = "Choose an option", className }: AskIntrosOptionWheelProps) {
-  const index = Math.max(0, items.indexOf(value ?? items[0]));
-  const choose = (next: number) => { if (items.length) onChange(items[(next + items.length) % items.length]); };
+  const index = Math.max(0, items.indexOf(value ?? items[0] ?? ""));
+  const choose = (next: number) => {
+    if (!items.length) return;
+    const item = items[((next % items.length) + items.length) % items.length];
+    if (item !== undefined) onChange(item);
+  };
   const touchStart = React.useRef<number | null>(null);
   if (!items.length) return null;
   return <div className={cn("relative mx-auto w-full max-w-xl rounded-2xl border border-border bg-card p-4 text-card-foreground", className)}>
@@ -19,8 +23,8 @@ export function AskIntrosOptionWheel({ items, value, onChange, label = "Choose a
     <div role="listbox" tabIndex={0} aria-label={label} aria-activedescendant={`wheel-option-${index}`}
       onKeyDown={e => { if (e.key === "ArrowDown" || e.key === "ArrowRight") { e.preventDefault(); choose(index + 1); } else if (e.key === "ArrowUp" || e.key === "ArrowLeft") { e.preventDefault(); choose(index - 1); } }}
       onWheel={e => { if (Math.abs(e.deltaY) > 8) choose(index + Math.sign(e.deltaY)); }}
-      onTouchStart={e => { touchStart.current = e.touches[0].clientY; }}
-      onTouchEnd={e => { if (touchStart.current !== null) { const d = touchStart.current - e.changedTouches[0].clientY; if (Math.abs(d) > 25) choose(index + Math.sign(d)); touchStart.current = null; } }}
+      onTouchStart={e => { touchStart.current = e.touches[0]?.clientY ?? null; }}
+      onTouchEnd={e => { const touch = e.changedTouches[0]; if (touchStart.current !== null && touch) { const d = touchStart.current - touch.clientY; if (Math.abs(d) > 25) choose(index + Math.sign(d)); } touchStart.current = null; }}
       className="relative flex min-h-52 flex-col items-center justify-center gap-2 overflow-hidden rounded-xl bg-background px-3 py-4 outline-none focus-visible:ring-2 focus-visible:ring-ring">
       {[-2,-1,0,1,2].map(offset => {
         const itemIndex = (index + offset + items.length) % items.length;

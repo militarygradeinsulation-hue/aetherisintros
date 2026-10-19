@@ -13,7 +13,7 @@ export interface AskIntrosTimelineProps {
   onItemClick?: (id: string) => void;
   className?: string;
 }
-const minutes = (time: string) => { const [h,m] = time.split(":").map(Number); return h * 60 + m; };
+const minutes = (time: string) => { const [h = 0,m = 0] = time.split(":").map(Number); return h * 60 + m; };
 const clock = (m: number) => `${String(Math.floor(m / 60)).padStart(2,"0")}:${String(m % 60).padStart(2,"0")}`;
 export function AskIntrosTimeline({ rows, items, startHour=8, endHour=19, snapMinutes=15, onMove, onItemClick, className }: AskIntrosTimelineProps) {
   const [busy,setBusy] = React.useState<string | null>(null);

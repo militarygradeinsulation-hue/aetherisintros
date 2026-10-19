@@ -15,7 +15,7 @@ import type { PeerGroupSummary, PeerFeedPost } from '@/lib/peerGroups.functions'
 import { listMyPeerGroups, createPeerGroup, getPeerGroupFeed, postToPeerGroup } from '@/lib/peerGroups.functions'
 import {
   AGREEMENT_POINTS, MAX_GROUP_SIZE, cleanMeetingUrl, localInputToIso, seatsLeft, splitSessions, threadPosts, validateIssue,
-  type PeerPost, type PeerSession,
+  type PeerPost as PeerBoardPost, type PeerSession,
 } from './peer-groups'
 import { Btn, Eyebrow } from './ui'
 import { PeerGroupAccountability } from './PeerGroupsPanel'
@@ -281,7 +281,7 @@ export function SessionForm({ groupId, onDone, onCancel }: { groupId: string; on
 }
 
 function Board({ groupId, userId, names }: { groupId: string; userId: string; names: Names }) {
-  const [posts, setPosts] = useState<PeerPost[]>([])
+  const [posts, setPosts] = useState<PeerBoardPost[]>([])
   const [draft, setDraft] = useState('')
   const [msg, setMsg] = useState('')
   const load = useCallback(async () => {
@@ -313,7 +313,7 @@ function Board({ groupId, userId, names }: { groupId: string; userId: string; na
   </div>
 }
 
-function PostItem({ p, userId, names, onChanged }: { p: PeerPost; userId: string; names: Names; onChanged: () => void }) {
+function PostItem({ p, userId, names, onChanged }: { p: PeerBoardPost; userId: string; names: Names; onChanged: () => void }) {
   const [editing, setEditing] = useState(false)
   const [body, setBody] = useState(p.body)
   const mine = p.author_id === userId
