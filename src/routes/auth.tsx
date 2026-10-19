@@ -98,7 +98,7 @@ function AuthPage() {
   const hasInvite = Boolean(inviteParam) || (mode === 'signup' && Boolean(inviter?.valid))
   const [launchMode, setLaunchMode] = useState<string | null>(null)
   useEffect(() => { void foundingStats().then(stats => setLaunchMode(stats.mode)) }, [])
-  const inviteRequired = launchMode === 'invite_only' || launchMode === 'closed'
+  const inviteRequired = false // Basic registration is open; launch mode only controls founding invitations.
   const [name, setName] = useState('')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
@@ -197,10 +197,10 @@ function AuthPage() {
           </p>
         : <div className="auth-soon" role="status">
             <span><i aria-hidden="true" />MEMBER SIGNUP</span>
-            <p>{inviteRequired ? 'An invitation or whitelist approval is required for network access.' : 'Create your account, confirm your email, then complete your profile to join the network. Business-role badges require separate evidence.'}</p>
+            <p>{inviteRequired ? 'Create a free Basic account, confirm your email, and complete your profile. C-suite members can apply for reviewed Executive access after joining.' : 'Create a free Basic account, confirm your email, and complete your profile. C-suite members can apply for reviewed Executive access after joining.'}</p>
             <div className="auth-soon-actions">
               <Link to="/demo">Explore the demo <ArrowRight size={13} /></Link>
-              <Link to="/early-access">Join the whitelist <ArrowRight size={13} /></Link>
+              <Link to="/early-access">Explore Executive access <ArrowRight size={13} /></Link>
             </div>
           </div>}
       <h1>{mode === 'signin' ? <>Welcome<br /><em>back.</em></> : <>Join the<br /><em>network.</em></>}</h1>
@@ -250,7 +250,7 @@ function AuthPage() {
       <button type="button" className="auth-switch" onClick={() => { setMode(mode === 'signin' ? 'signup' : 'signin'); setError(''); setNotice('') }}>
         {mode === 'signin' ? 'New to Ask Intros? Create your account.' : 'Already a member? Sign in.'}
       </button>
-      <Link to="/early-access" className="auth-switch">No invite yet? Request whitelist access.</Link>
+      <Link to="/early-access" className="auth-switch">Want Executive access? Start with Basic.</Link>
       <Link to="/demo" className="auth-switch">Not ready to join? Open the demo.</Link>
 
       <span className="auth-foot"><LockKeyhole size={12} /> Nothing is shared without your explicit opt-in.</span>
