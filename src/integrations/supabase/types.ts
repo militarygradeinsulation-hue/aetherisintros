@@ -6538,6 +6538,10 @@ export type Database = {
         Returns: boolean
       }
       help_tokens: { Args: { p_text: string }; Returns: string[] }
+      icp_save: {
+        Args: { p_data: Json; p_expected?: number; p_key: string }
+        Returns: Json
+      }
       impact_freeze: { Args: { p: Json }; Returns: Json }
       impact_metrics: { Args: { p_from: string; p_to: string }; Returns: Json }
       impact_suppress_counts: { Args: { p: Json }; Returns: Json }
