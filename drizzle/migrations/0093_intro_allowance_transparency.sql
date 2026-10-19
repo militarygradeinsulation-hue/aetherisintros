@@ -2,14 +2,14 @@
 -- Quotas remain enforced by 0092's database trigger; this is read-only.
 CREATE FUNCTION public.my_intro_allowance() RETURNS jsonb
 LANGUAGE plpgsql STABLE SECURITY DEFINER SET search_path = '' AS $$
-DECLARE member_id uuid := auth.uid(); member_tier text; used_count integer; reset_at timestamptz;
+DECLARE v_member_id uuid := auth.uid(); member_tier text; used_count integer; reset_at timestamptz;
 BEGIN
- IF member_id IS NULL OR NOT public.is_live_member() THEN
+ IF v_member_id IS NULL OR NOT public.is_live_member() THEN
   RAISE EXCEPTION 'Active membership required' USING ERRCODE='42501';
  END IF;
  member_tier := public.my_membership_tier();
  SELECT count(*)::integer INTO used_count FROM public.intro_requests r
- WHERE r.user_id=member_id
+ WHERE r.user_id=v_member_id
  AND r.created_at >= date_trunc('month',now())
  AND r.created_at < date_trunc('month',now()) + interval '1 month';
  reset_at := date_trunc('month',now()) + interval '1 month';
