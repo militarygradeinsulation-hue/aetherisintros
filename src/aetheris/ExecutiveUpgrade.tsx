@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { supabase } from '@/integrations/supabase/client'
 
+type Allowance = { tier: 'basic' | 'executive'; used: number; limit: number | null; remaining: number | null; resetsAt: string }
 type Application = { userId: string; name: string; title: string; company: string; profileUrl: string; reason: string; status: string; createdAt: string }
 const rpc = (name: string, args?: Record<string, unknown>) =>
   (supabase as any).rpc(name, args) as Promise<{ data: any; error: { message: string } | null }> // eslint-disable-line @typescript-eslint/no-explicit-any
@@ -13,16 +14,21 @@ export function ExecutiveUpgrade({ tier, isAdmin }: { tier: 'basic' | 'executive
   const [error, setError] = useState('')
   const [busy, setBusy] = useState(false)
   const [applications, setApplications] = useState<Application[]>([])
+  const [allowance, setAllowance] = useState<Allowance | null>(null)
   const [fields, setFields] = useState({ name: '', title: '', company: '', profileUrl: '', reason: '' })
   const load = async () => {
     const own = await rpc('my_executive_application')
     if (!own.error) setStatus(own.data?.status || '')
+    if (tier === 'basic') {
+      const quota = await rpc('my_intro_allowance')
+      if (!quota.error && quota.data) setAllowance(quota.data as Allowance)
+    }
     if (isAdmin) {
       const queue = await rpc('admin_executive_applications')
       if (!queue.error) setApplications(Array.isArray(queue.data) ? queue.data : [])
     }
   }
-  useEffect(() => { if (open) void load() }, [open, isAdmin])
+  useEffect(() => { if (open) void load() }, [open, isAdmin, tier])
   if (tier === 'executive' && !isAdmin) return null
   const submit = async (e: React.FormEvent) => {
     e.preventDefault(); setBusy(true); setError('')
@@ -64,6 +70,7 @@ export function ExecutiveUpgrade({ tier, isAdmin }: { tier: 'basic' | 'executive
           </article>)}
         </> : <>
           <p>Basic includes your profile, network discovery, messages, and up to three introduction requests each month. Executive unlocks unrestricted introduction requests and opportunity publishing after review.</p>
+          {allowance && <p role="status" className="executive-allowance"><strong>{allowance.remaining} of {allowance.limit} introductions remaining</strong> this month. Your allowance resets {new Date(allowance.resetsAt).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}. Each new introduction request counts toward this limit.</p>}
           {status === 'pending' && <p role="status">Your application is under review. Basic access remains active.</p>}
           {status === 'declined' && <p role="status">Your previous application was declined. You may submit updated information.</p>}
           {status !== 'pending' && <form onSubmit={e => void submit(e)} className="executive-upgrade-form">
