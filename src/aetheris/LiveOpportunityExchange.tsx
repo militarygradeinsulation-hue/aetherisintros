@@ -1,4 +1,5 @@
 import "./exchange.css";
+import { OpportunityWheel } from "./OpportunityWheel";
 import { useEffect, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
@@ -246,6 +247,10 @@ export function LiveOpportunityExchange() {
           </button>
         </form>
       )}
+      {userId && !query.isError && visible.length > 1 && <OpportunityWheel
+        items={visible.map(o => ({ id: o.id, label: o.title, kind: o.kind, summary: o.objective }))}
+        onSelect={id => document.getElementById('exchange-opportunity-' + id)?.scrollIntoView({ behavior: 'smooth', block: 'center' })}
+      />}
       <section className="opp-list">
         {visible.map((o) => {
           const own = o.ownerId === userId;
@@ -253,7 +258,7 @@ export function LiveOpportunityExchange() {
           const days = opportunityDaysLeft(o);
           const sent = o.interest.some((i) => i.memberId === userId);
           return (
-            <article className="module opp-card" key={o.id}>
+            <article className="module opp-card" key={o.id} id={"exchange-opportunity-" + o.id}>
               <Eyebrow>
                 {o.kind} · {own ? "YOUR POST" : "MEMBER POST"} ·{" "}
                 {o.visibility === "private" ? "PRIVATE" : "NETWORK"}
