@@ -150,7 +150,7 @@ export const PeopleDirectoryView: React.FC<PeopleDirectoryViewProps> = ({
             </h1>
 
             <p className="text-sm md:text-base text-[#9CA3AF] max-w-xl leading-relaxed">
-              Founders. Operators. Investors. Advisors. A higher standard for professional connections.
+              Find people who share your goals.
             </p>
           </div>
 
@@ -197,7 +197,7 @@ export const PeopleDirectoryView: React.FC<PeopleDirectoryViewProps> = ({
               Featured Connectors
             </div>
             <p className="text-xs text-[#CBD5E1]">
-              Work with experienced members to find the right introductions.
+              Find a trusted introduction.
             </p>
           </div>
 
@@ -808,7 +808,7 @@ export const PeopleDirectoryView: React.FC<PeopleDirectoryViewProps> = ({
 
           <div className="p-4 rounded-xl border border-[#F5B027]/30 bg-gradient-to-br from-[#121A2C] to-[#0A0D15]">
             <p className="font-serif-editorial text-lg leading-snug text-[#F2EEE6]">Know who matters. Know why now.</p>
-            <p className="text-[11px] text-[#9CA3AF] mt-1">Ask Intros who in your network can help with what you need this week.</p>
+            <p className="text-[11px] text-[#9CA3AF] mt-1">Find the right connection for your next move.</p>
             <button onClick={() => onNavigate('workspace')} className="mt-3 w-full text-xs font-semibold py-2 rounded-md bg-[#F5B027] hover:bg-[#C78522] text-white cursor-pointer">Ask Intros</button>
           </div>
         </aside>
