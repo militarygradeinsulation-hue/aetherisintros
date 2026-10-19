@@ -123,9 +123,10 @@ export async function fetchAccess(): Promise<AccessState> {
     (supabase as any).rpc('my_membership_tier'), // eslint-disable-line @typescript-eslint/no-explicit-any
   ])
 
-  for (const result of [membership, roles, profile, tierResult]) {
-    if (result.error) throw result.error
-  }
+  if (membership.error) throw membership.error
+  if (roles.error) throw roles.error
+  if (profile.error) throw profile.error
+  if (tierResult.error) throw tierResult.error
 
   return {
     loading: false,
