@@ -27,6 +27,7 @@ export interface AccessState {
   foundingNumber: number | null
   mode: LaunchMode
   isAdmin: boolean
+  tier: 'basic' | 'executive'
   onboarded: boolean
   /** Separately earned business-role verification; approval and onboarding grant membership. */
   verification: VerificationStatus
@@ -34,7 +35,7 @@ export interface AccessState {
 
 export const noAccess: AccessState = {
   loading: true, error: null, signedIn: false, emailConfirmed: false, userId: null, email: '', name: '',
-  status: 'none', foundingNumber: null, mode: 'invite_only', isAdmin: false, onboarded: false,
+  status: 'none', foundingNumber: null, mode: 'invite_only', isAdmin: false, tier: 'basic', onboarded: false,
   verification: 'none',
 }
 
@@ -93,20 +94,24 @@ export async function fetchAccess(): Promise<AccessState> {
   const user = userData.user
   if (!user) return { ...noAccess, loading: false }
 
-  // A confirmed account with no membership row yet claims its place automatically:
-  // in FIRST_1000 the founding place is granted, otherwise the row records the
-  // waitlisted / pending / denied outcome so the member always sees a real state.
-  const existing = await supabase
-    .from('early_access_members')
-    .select('status')
-    .eq('user_id', user.id)
-    .maybeSingle()
-  // Retry with the remembered invite (email-confirm and Google return paths skip /auth).
-  if (user.email_confirmed_at && !existing.error && (!existing.data || existing.data.status === 'pending' || existing.data.status === 'waitlisted')) {
+  // Every confirmed account can enter Basic. Invitation claims still run first,
+  // preserving existing founding invitations and whitelist grants.
+  const existing = await supabase.from('early_access_members').select('status').eq('user_id', user.id).maybeSingle()
+  if (existing.error) throw existing.error
+  if (user.email_confirmed_at && (!existing.data || existing.data.status === 'pending' || existing.data.status === 'waitlisted')) {
     const code = storedInvite()
-    // Retry pending accounts after launch settings change, including accounts
-    // created before public signup was restored. The RPC enforces eligibility.
-    try { const result = await claimAccess(code || undefined); if (code && result.status === 'approved') clearInvite() } catch { /* the page surfaces the state below */ }
+    let approvedByInvite = false
+    if (code) {
+      try {
+        const result = await claimAccess(code)
+        approvedByInvite = result.status === 'approved'
+        if (approvedByInvite) clearInvite()
+      } catch { /* invalid invite never blocks the free Basic path */ }
+    }
+    if (!approvedByInvite) {
+      const { error } = await (supabase as any).rpc('claim_basic_membership') // eslint-disable-line @typescript-eslint/no-explicit-any
+      if (error) throw error
+    }
   }
 
   // Never grant network or admin privileges from partial/failed database reads.
@@ -114,15 +119,16 @@ export async function fetchAccess(): Promise<AccessState> {
   // for a new or unapproved member.
   if (existing.error) throw existing.error
 
-  const [membership, roles, profile, stats, verification] = await Promise.all([
+  const [membership, roles, profile, stats, verification, tierResult] = await Promise.all([
     supabase.from('early_access_members').select('status, founding_member_number').eq('user_id', user.id).maybeSingle(),
     supabase.from('user_roles').select('role').eq('user_id', user.id),
     supabase.from('profiles').select('onboarded, name').eq('id', user.id).maybeSingle(),
     foundingStats(),
     fetchVerification(),
+    (supabase as any).rpc('my_membership_tier'), // eslint-disable-line @typescript-eslint/no-explicit-any
   ])
 
-  for (const result of [membership, roles, profile]) {
+  for (const result of [membership, roles, profile, tierResult]) {
     if (result.error) throw result.error
   }
 
@@ -138,6 +144,7 @@ export async function fetchAccess(): Promise<AccessState> {
     foundingNumber: membership.data?.founding_member_number ?? null,
     mode: stats.mode,
     isAdmin: (roles.data ?? []).some(r => r.role === 'admin'),
+    tier: tierResult.data === 'executive' ? 'executive' : 'basic',
     onboarded: profile.data?.onboarded ?? false,
     verification: verification.status,
   }
