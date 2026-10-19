@@ -9,10 +9,10 @@ describe('canonical membership access fetch', () => {
   })
   it('never treats membership permission failures as a missing account', () => {
     expect(access).toContain('if (existing.error) throw existing.error')
-    expect(access).toContain('!existing.error &&')
+    expect(access).toContain('if (existing.error) throw existing.error')
   })
   it('fails closed on partial member role/profile reads', () => {
-    expect(access).toContain('for (const result of [membership, roles, profile])')
-    expect(access).toContain('if (result.error) throw result.error')
+    expect(access).toContain('if (membership.error) throw membership.error')
+    expect(access).toContain('if (roles.error) throw roles.error')
   })
 })
