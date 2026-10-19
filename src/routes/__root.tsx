@@ -15,9 +15,7 @@ import { CursorGlow } from "@/components/ui/cursor-glow";
 import { BrandFonts } from "@/aetheris/BrandFonts";
 import { AppearanceProvider } from "@/aetheris/AppearanceMode";
 import { SystemScrollCaliper } from "@/aetheris/SystemScrollCaliper";
-import Aurora from "@/intros-ui/Aurora";
-import ParticleDrift from "@/aetheris/ParticleDrift";
-import ConstellationField from "@/aetheris/ConstellationField";
+import { AmbientParallax } from "@/aetheris/AmbientParallax";
 import appCss from "../styles.css?url";
 import architecturalCss from "../aetheris/architectural-system.css?url";
 import architectEverywhereCss from "../aetheris/architect-everywhere.css?url";
@@ -159,11 +157,7 @@ function RootShell({ children }: { children: ReactNode }) {
       <body>
         {children}
         <SystemScrollCaliper />
-        <div className="site-ambient" aria-hidden="true">
-          <Aurora className="site-ambient-lights" colors={["var(--acc, var(--cobalt))", "var(--acc-bright, var(--cobalt-bright))", "var(--acc-glow, var(--cobalt))"]} duration={22} intensity={0.34} />
-          <ParticleDrift className="site-ambient-numbers" />
-          <ConstellationField className="site-ambient-connections" />
-        </div>
+        <AmbientParallax />
         <Toaster position="bottom-right" />
         <CursorGlow />
         <Scripts />
