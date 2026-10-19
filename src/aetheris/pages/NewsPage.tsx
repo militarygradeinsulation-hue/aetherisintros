@@ -6,10 +6,11 @@ import { NewsReader } from './NewsReader'
 import { NewsActions } from './NewsActions'
 import { useNewsShelf } from '../newsShelf'
 import { NewsThumbnail } from './NewsThumbnail'
+import { newsStoryPath } from '../news-links'
 
 type Tab = 'feed' | 'later' | 'library'
 
-export function NewsPage() {
+export function NewsPage({ publicMode = false }: { publicMode?: boolean } = {}) {
   const { data, isLoading, isError, isFetching, refetch } = useAetherisNews()
   const [filter, setFilter] = useState<string>('ALL')
   const [q, setQ] = useState('')
@@ -34,20 +35,22 @@ export function NewsPage() {
   const featured = shown[0]
   const remaining = shown.slice(1)
 
-  if (open) return <NewsImagesProvider value={resolvedImages}>
+  if (open && !publicMode) return <NewsImagesProvider value={resolvedImages}>
     <NewsReader item={open} onBack={() => setOpen(null)} />
   </NewsImagesProvider>
 
   const tabs: { id: Tab; label: string; count: number }[] = [
     { id: 'feed', label: 'Feed', count: items.length },
-    { id: 'later', label: 'Read later', count: shelf.later.length },
-    { id: 'library', label: 'Library', count: shelf.library.length },
+    ...(!publicMode ? [
+      { id: 'later' as const, label: 'Read later', count: shelf.later.length },
+      { id: 'library' as const, label: 'Library', count: shelf.library.length },
+    ] : []),
   ]
 
 
   return <NewsImagesProvider value={resolvedImages}>
     <header className="news-editorial-head">
-      <div><Eyebrow>EXECUTIVE INTELLIGENCE / LIVE</Eyebrow><h1>Read the signal.<br /><em>Call the right person.</em></h1><p>Live reporting, considered alongside the relationships and work already moving through your private operating system.</p></div>
+      <div><Eyebrow>EXECUTIVE INTELLIGENCE / LIVE</Eyebrow><h1>Read the signal.<br /><em>Call the right person.</em></h1><p>{publicMode ? 'Live reporting and executive intelligence. Explore the stories, then share a direct link to any article.' : 'Live reporting, considered alongside the relationships and work already moving through your private operating system.'}</p></div>
       <div className="public-news-header-actions"><Btn kind="secondary" onClick={() => { void navigator.clipboard.writeText('https://askintros.vip/news').then(() => setFeedCopied(true)).catch(() => setFeedCopied(false)) }}><Copy size={13} /> {feedCopied ? 'News link copied' : 'Copy public news link'} {feedCopied && <Check size={13} />}</Btn><Btn kind="secondary" onClick={() => refetch()}><RefreshCw size={13} /> {isFetching ? 'Refreshing…' : 'Refresh'}</Btn></div>
     </header>
 
@@ -76,23 +79,21 @@ export function NewsPage() {
     {tab === 'library' && !shelf.library.length && <section className="module"><p className="sv-empty">Your library is empty. Save the pieces worth returning to and they stay here.</p></section>}
 
     {!(tab === 'feed' && (isLoading || isError)) && featured && <article className="news-featured">
-      <button className="news-thumb" onClick={() => setOpen(featured)} aria-label={`Read ${featured.title}`}><NewsThumbnail item={featured} /></button>
-      <div><header><Eyebrow signal={featured.kind === 'aetheris'}>{featured.source}</Eyebrow><small>{newsAge(featured.published)}</small></header><h2><button className="news-title" onClick={() => setOpen(featured)}>{featured.title}</button></h2>{featured.summary && <p>{featured.summary}</p>}<NewsActions item={featured} compact /><button className="news-link" onClick={() => setOpen(featured)}>Read the full brief <ArrowUpRight size={13} /></button></div>
+      {publicMode ? <a className="news-thumb" href={newsStoryPath(featured)} aria-label={`Read ${featured.title}`}><NewsThumbnail item={featured} /></a> : <button className="news-thumb" onClick={() => setOpen(featured)} aria-label={`Read ${featured.title}`}><NewsThumbnail item={featured} /></button>}
+      <div><header><Eyebrow signal={featured.kind === 'aetheris'}>{featured.source}</Eyebrow><small>{newsAge(featured.published)}</small></header><h2>{publicMode ? <a className="news-title" href={newsStoryPath(featured)}>{featured.title}</a> : <button className="news-title" onClick={() => setOpen(featured)}>{featured.title}</button>}</h2>{featured.summary && <p>{featured.summary}</p>}{!publicMode && <NewsActions item={featured} compact />}{publicMode ? <a className="news-link" href={newsStoryPath(featured)}>Read the full brief <ArrowUpRight size={13} /></a> : <button className="news-link" onClick={() => setOpen(featured)}>Read the full brief <ArrowUpRight size={13} /></button>}</div>
     </article>}
 
     {!(tab === 'feed' && (isLoading || isError)) && <section className="news-grid">
       {remaining.map(item => <article key={item.id} className="news-card">
-        <button className="news-thumb" onClick={() => setOpen(item)} aria-label={`Read ${item.title}`}>
-          <NewsThumbnail item={item} />
-        </button>
+        {publicMode ? <a className="news-thumb" href={newsStoryPath(item)} aria-label={`Read ${item.title}`}><NewsThumbnail item={item} /></a> : <button className="news-thumb" onClick={() => setOpen(item)} aria-label={`Read ${item.title}`}><NewsThumbnail item={item} /></button>}
         <header><Eyebrow signal={item.kind === 'aetheris'}>{item.source}</Eyebrow><small>{newsAge(item.published)}</small></header>
-        <h3><button className="news-title" onClick={() => setOpen(item)}>{item.title}</button></h3>
+        <h3>{publicMode ? <a className="news-title" href={newsStoryPath(item)}>{item.title}</a> : <button className="news-title" onClick={() => setOpen(item)}>{item.title}</button>}</h3>
         {item.summary && <p>{item.summary}</p>}
-        <NewsActions item={item} compact />
+        {!publicMode && <NewsActions item={item} compact />}
         <footer>
           <span className="news-tag">{item.category}</span>
           <div className="news-actions">
-            <button className="news-link" onClick={() => setOpen(item)}>Read <ArrowUpRight size={13} /></button>
+            {publicMode ? <a className="news-link" href={newsStoryPath(item)}>Read <ArrowUpRight size={13} /></a> : <button className="news-link" onClick={() => setOpen(item)}>Read <ArrowUpRight size={13} /></button>}
             <span className="news-source-link">{item.source}</span>
             {tab !== 'feed' && <button className="news-remove" onClick={() => shelf.remove(tab === 'later' ? 'later' : 'library', item.id)} aria-label="Remove from this shelf"><X size={12} /></button>}
           </div>
