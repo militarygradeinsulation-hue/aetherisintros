@@ -15,6 +15,8 @@ import { Route as AuthRouteImport } from './routes/auth'
 import { Route as DemoRouteImport } from './routes/demo'
 import { Route as EarlyAccessRouteImport } from './routes/early-access'
 import { Route as FounderStoryRouteImport } from './routes/founder-story'
+import { Route as NewsRouteImport } from './routes/news'
+import { Route as NewsStoryRouteImport } from './routes/news.story'
 import { Route as McpRouteImport } from './routes/mcp'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as Char91DotwellKnownChar93OauthProtectedResourceRouteImport } from './routes/[.well-known]/oauth-protected-resource'
@@ -78,6 +80,16 @@ const FounderStoryRoute = FounderStoryRouteImport.update({
   id: '/founder-story',
   path: '/founder-story',
   getParentRoute: () => rootRouteImport,
+} as any)
+const NewsRoute = NewsRouteImport.update({
+  id: '/news',
+  path: '/news',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const NewsStoryRoute = NewsStoryRouteImport.update({
+  id: '/story',
+  path: '/story',
+  getParentRoute: () => NewsRoute,
 } as any)
 const McpRoute = McpRouteImport.update({
   id: '/mcp',
@@ -258,6 +270,8 @@ const ApiStripeWebhookRoute = ApiStripeWebhookRouteImport.update({
 } as any)
 
 export interface FileRoutesByFullPath {
+  '/news': typeof NewsRoute
+  '/news/story': typeof NewsStoryRoute
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/demo': typeof DemoRoute
@@ -299,6 +313,8 @@ export interface FileRoutesByFullPath {
   '/api/stripe/webhook': typeof ApiStripeWebhookRoute
 }
 export interface FileRoutesByTo {
+  '/news': typeof NewsRoute
+  '/news/story': typeof NewsStoryRoute
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/demo': typeof DemoRoute
@@ -340,6 +356,8 @@ export interface FileRoutesByTo {
   '/api/stripe/webhook': typeof ApiStripeWebhookRoute
 }
 export interface FileRoutesById {
+  '/news': typeof NewsRouteWithChildren
+  '/news/story': typeof NewsStoryRoute
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
@@ -385,6 +403,8 @@ export interface FileRoutesById {
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
+    | '/news'
+    | '/news/story'
     | '/'
     | '/auth'
     | '/demo'
@@ -426,6 +446,8 @@ export interface FileRouteTypes {
     | '/api/stripe/webhook'
   fileRoutesByTo: FileRoutesByTo
   to:
+    | '/news'
+    | '/news/story'
     | '/'
     | '/auth'
     | '/demo'
@@ -466,6 +488,8 @@ export interface FileRouteTypes {
     | '/api/push/dispatch'
     | '/api/stripe/webhook'
   id:
+    | '/news'
+    | '/news/story'
     | '__root__'
     | '/'
     | '/_authenticated'
@@ -510,6 +534,7 @@ export interface FileRouteTypes {
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
+  NewsRoute: typeof NewsRouteWithChildren
   IndexRoute: typeof IndexRoute
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
   AuthRoute: typeof AuthRoute
@@ -544,6 +569,20 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/news': {
+      id: '/news'
+      path: '/news'
+      fullPath: '/news'
+      preLoaderRoute: typeof NewsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/news/story': {
+      id: '/news/story'
+      path: '/story'
+      fullPath: '/news/story'
+      preLoaderRoute: typeof NewsStoryRouteImport
+      parentRoute: typeof NewsRoute
+    }
     '/': {
       id: '/'
       path: '/'
@@ -856,7 +895,14 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
 const AuthenticatedRouteRouteWithChildren =
   AuthenticatedRouteRoute._addFileChildren(AuthenticatedRouteRouteChildren)
 
+interface NewsRouteChildren {
+  NewsStoryRoute: typeof NewsStoryRoute
+}
+const NewsRouteChildren: NewsRouteChildren = { NewsStoryRoute: NewsStoryRoute }
+const NewsRouteWithChildren = NewsRoute._addFileChildren(NewsRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
+  NewsRoute: NewsRouteWithChildren,
   IndexRoute: IndexRoute,
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
   AuthRoute: AuthRoute,
