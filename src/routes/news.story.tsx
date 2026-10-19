@@ -9,10 +9,10 @@ import type { NewsItem } from '@/lib/news.functions'
 
 export const Route = createFileRoute('/news/story')({
   validateSearch: (params: Record<string, unknown>) => ({
-    url: typeof params.url === 'string' ? params.url : '',
-    title: typeof params.title === 'string' ? params.title.slice(0, 180) : '',
-    source: typeof params.source === 'string' ? params.source.slice(0, 60) : '',
-    summary: typeof params.summary === 'string' ? params.summary.slice(0, 420) : '',
+    url: typeof params['url'] === 'string' ? params['url'] : '',
+    title: typeof params['title'] === 'string' ? params['title'].slice(0, 180) : '',
+    source: typeof params['source'] === 'string' ? params['source'].slice(0, 60) : '',
+    summary: typeof params['summary'] === 'string' ? params['summary'].slice(0, 420) : '',
   }),
   head: () => ({
     meta: [
@@ -29,15 +29,15 @@ export const Route = createFileRoute('/news/story')({
 
 function PublicNewsStory() {
   const params = Route.useSearch()
-  const url = validNewsSource(params.url)
+  const url = validNewsSource(params['url'])
   const { data, isLoading } = useAetherisNews()
   const [copied, setCopied] = useState(false)
   const found = data?.items.find(item => item.link === url)
   const images = useNewsImages(found ? [found] : [])
   // Keep the shared headline and summary readable even after the rolling feed
   // removes an older story. Never pretend an expired article is a live feed item.
-  const fallback: NewsItem | null = url && params.title ? {
-    id: 'shared:' + url, link: url, title: params.title, summary: params.summary,
+  const fallback: NewsItem | null = url && params['title'] ? {
+    id: 'shared:' + url, link: url, title: params['title'], summary: params['summary'],
     source: new URL(url).hostname, category: 'UNVERIFIED SHARED LINK',
     published: null, image: null, kind: 'industry',
   } : null
