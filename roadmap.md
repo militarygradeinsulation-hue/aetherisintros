@@ -8,6 +8,7 @@
 ## SEO finding repairs (Oct 19)
 - [x] Read stored findings and refresh foundation checks; preserve the already passing sitemap.
 - [x] Correct crawler sitemap reference and page-specific search/social information; verified single rendered tags on five public pages and the signup link without runtime errors; recorded completed findings.
+- [x] Publish the search fixes and verify live: robots.txt, sitemap (4 askintros.vip URLs), and canonical/og URLs confirmed on /, /demo, /early-access, /founder-story, /auth; intros.today redirects to askintros.vip.
 - [ ] Proposed new search landing page — blocked pending topic-specific approval, not a confirmed technical defect.
 
 ## Home resizing and scrolling (Oct 7)
