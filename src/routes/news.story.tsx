@@ -38,7 +38,7 @@ function PublicNewsStory() {
   // removes an older story. Never pretend an expired article is a live feed item.
   const fallback: NewsItem | null = url && params.title ? {
     id: 'shared:' + url, link: url, title: params.title, summary: params.summary,
-    source: params.source || 'Original publisher', category: 'SHARED ARTICLE',
+    source: new URL(url).hostname, category: 'UNVERIFIED SHARED LINK',
     published: null, image: null, kind: 'industry',
   } : null
   const item = found ?? fallback
@@ -62,7 +62,7 @@ function PublicNewsStory() {
         <a href={item.link} target="_blank" rel="noopener noreferrer">Original publisher <ArrowUpRight size={14} /></a>
       </div>
       {found ? <NewsImagesProvider value={images}><NewsReader item={found} onBack={() => { window.location.assign('/news') }} publicMode /></NewsImagesProvider>
-        : <article className="public-news-card public-news-archived"><small>{item.source} / SHARED ARTICLE</small><h1>{item.title}</h1><p>{item.summary || 'This story is no longer in the current news feed. Open the original publisher to read the complete article.'}</p><p>The original story is no longer in the live Ask Intros feed, so its interactive executive analysis is unavailable here.</p><a href={item.link} target="_blank" rel="noopener noreferrer">Read the original article <ArrowUpRight size={15} /></a></article>}
+        : <article className="public-news-card public-news-archived"><small>{item.source} / UNVERIFIED SHARED LINK</small><h1>{item.title}</h1><p>{item.summary || 'This story is no longer in the current news feed. Open the original publisher to read the complete article.'}</p><p>This link contains a user-provided headline and summary that Ask Intros cannot currently verify against the live feed. The original publisher link is provided for independent confirmation.</p><a href={item.link} target="_blank" rel="noopener noreferrer">Read the original article <ArrowUpRight size={15} /></a></article>}
     </>}
   </main>
 }
