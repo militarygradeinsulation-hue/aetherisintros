@@ -22,16 +22,17 @@ import { Route as AuthenticatedAppRouteImport } from './routes/_authenticated/ap
 import { Route as AuthenticatedDelegateRouteImport } from './routes/_authenticated/delegate'
 import { Route as AuthenticatedMemberIntelligenceRouteImport } from './routes/_authenticated/member-intelligence'
 import { Route as AuthenticatedOnboardingRouteImport } from './routes/_authenticated/onboarding'
+import { Route as AuthenticatedPeerGroupsRouteImport } from './routes/_authenticated/peer-groups'
+import { Route as AuthenticatedSyndicationRouteImport } from './routes/_authenticated/syndication'
 import { Route as AuthenticatedVerifyRouteImport } from './routes/_authenticated/verify'
+import { Route as AuthenticatedWarmReferralsRouteImport } from './routes/_authenticated/warm-referrals'
 import { Route as ImpactSlugRouteImport } from './routes/impact.$slug'
 import { Route as InviteCodeRouteImport } from './routes/invite.$code'
 import { Route as PassportTokenRouteImport } from './routes/passport.$token'
+import { Route as StorefrontUserIdRouteImport } from './routes/storefront.$userId'
 import { Route as DotlovableOauthConsentRouteImport } from './routes/[.]lovable.oauth.consent'
-import { Route as AuthenticatedSyndicationRouteImport } from './routes/_authenticated/syndication'
-import { Route as AuthenticatedPeerGroupsRouteImport } from './routes/_authenticated/peer-groups'
 import { Route as AuthenticatedAdminEarlyAccessRouteImport } from './routes/_authenticated/admin.early-access'
 import { Route as AuthenticatedAdminVerificationRouteImport } from './routes/_authenticated/admin.verification'
-import { Route as StorefrontUserIdRouteImport } from './routes/storefront.$userId'
 import { Route as ApiAgentAsksRouteImport } from './routes/api/agent/asks'
 import { Route as ApiAgentInboundRouteImport } from './routes/api/agent/inbound'
 import { Route as ApiAgentIntrosRouteImport } from './routes/api/agent/intros'
@@ -115,11 +116,28 @@ const AuthenticatedOnboardingRoute = AuthenticatedOnboardingRouteImport.update({
   path: '/onboarding',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedPeerGroupsRoute = AuthenticatedPeerGroupsRouteImport.update({
+  id: '/peer-groups',
+  path: '/peer-groups',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedSyndicationRoute =
+  AuthenticatedSyndicationRouteImport.update({
+    id: '/syndication',
+    path: '/syndication',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedVerifyRoute = AuthenticatedVerifyRouteImport.update({
   id: '/verify',
   path: '/verify',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedWarmReferralsRoute =
+  AuthenticatedWarmReferralsRouteImport.update({
+    id: '/warm-referrals',
+    path: '/warm-referrals',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const ImpactSlugRoute = ImpactSlugRouteImport.update({
   id: '/impact/$slug',
   path: '/impact/$slug',
@@ -135,20 +153,15 @@ const PassportTokenRoute = PassportTokenRouteImport.update({
   path: '/passport/$token',
   getParentRoute: () => rootRouteImport,
 } as any)
+const StorefrontUserIdRoute = StorefrontUserIdRouteImport.update({
+  id: '/storefront/$userId',
+  path: '/storefront/$userId',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const DotlovableOauthConsentRoute = DotlovableOauthConsentRouteImport.update({
   id: '/.lovable/oauth/consent',
   path: '/.lovable/oauth/consent',
   getParentRoute: () => rootRouteImport,
-} as any)
-const AuthenticatedSyndicationRoute = AuthenticatedSyndicationRouteImport.update({
-  id: '/syndication',
-  path: '/syndication',
-  getParentRoute: () => AuthenticatedRouteRoute,
-} as any)
-const AuthenticatedPeerGroupsRoute = AuthenticatedPeerGroupsRouteImport.update({
-  id: '/peer-groups',
-  path: '/peer-groups',
-  getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const AuthenticatedAdminEarlyAccessRoute =
   AuthenticatedAdminEarlyAccessRouteImport.update({
@@ -162,11 +175,6 @@ const AuthenticatedAdminVerificationRoute =
     path: '/admin/verification',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
-const StorefrontUserIdRoute = StorefrontUserIdRouteImport.update({
-  id: '/storefront/$userId',
-  path: '/storefront/$userId',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const ApiAgentAsksRoute = ApiAgentAsksRouteImport.update({
   id: '/api/agent/asks',
   path: '/api/agent/asks',
@@ -262,16 +270,17 @@ export interface FileRoutesByFullPath {
   '/delegate': typeof AuthenticatedDelegateRoute
   '/member-intelligence': typeof AuthenticatedMemberIntelligenceRoute
   '/onboarding': typeof AuthenticatedOnboardingRoute
+  '/peer-groups': typeof AuthenticatedPeerGroupsRoute
+  '/syndication': typeof AuthenticatedSyndicationRoute
   '/verify': typeof AuthenticatedVerifyRoute
+  '/warm-referrals': typeof AuthenticatedWarmReferralsRoute
   '/impact/$slug': typeof ImpactSlugRoute
   '/invite/$code': typeof InviteCodeRoute
   '/passport/$token': typeof PassportTokenRoute
+  '/storefront/$userId': typeof StorefrontUserIdRoute
   '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
-  '/syndication': typeof AuthenticatedSyndicationRoute
-  '/peer-groups': typeof AuthenticatedPeerGroupsRoute
   '/admin/early-access': typeof AuthenticatedAdminEarlyAccessRoute
   '/admin/verification': typeof AuthenticatedAdminVerificationRoute
-  '/storefront/$userId': typeof StorefrontUserIdRoute
   '/api/agent/asks': typeof ApiAgentAsksRoute
   '/api/agent/inbound': typeof ApiAgentInboundRoute
   '/api/agent/intros': typeof ApiAgentIntrosRoute
@@ -302,16 +311,17 @@ export interface FileRoutesByTo {
   '/delegate': typeof AuthenticatedDelegateRoute
   '/member-intelligence': typeof AuthenticatedMemberIntelligenceRoute
   '/onboarding': typeof AuthenticatedOnboardingRoute
+  '/peer-groups': typeof AuthenticatedPeerGroupsRoute
+  '/syndication': typeof AuthenticatedSyndicationRoute
   '/verify': typeof AuthenticatedVerifyRoute
+  '/warm-referrals': typeof AuthenticatedWarmReferralsRoute
   '/impact/$slug': typeof ImpactSlugRoute
   '/invite/$code': typeof InviteCodeRoute
   '/passport/$token': typeof PassportTokenRoute
+  '/storefront/$userId': typeof StorefrontUserIdRoute
   '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
-  '/syndication': typeof AuthenticatedSyndicationRoute
-  '/peer-groups': typeof AuthenticatedPeerGroupsRoute
   '/admin/early-access': typeof AuthenticatedAdminEarlyAccessRoute
   '/admin/verification': typeof AuthenticatedAdminVerificationRoute
-  '/storefront/$userId': typeof StorefrontUserIdRoute
   '/api/agent/asks': typeof ApiAgentAsksRoute
   '/api/agent/inbound': typeof ApiAgentInboundRoute
   '/api/agent/intros': typeof ApiAgentIntrosRoute
@@ -344,16 +354,17 @@ export interface FileRoutesById {
   '/_authenticated/delegate': typeof AuthenticatedDelegateRoute
   '/_authenticated/member-intelligence': typeof AuthenticatedMemberIntelligenceRoute
   '/_authenticated/onboarding': typeof AuthenticatedOnboardingRoute
+  '/_authenticated/peer-groups': typeof AuthenticatedPeerGroupsRoute
+  '/_authenticated/syndication': typeof AuthenticatedSyndicationRoute
   '/_authenticated/verify': typeof AuthenticatedVerifyRoute
+  '/_authenticated/warm-referrals': typeof AuthenticatedWarmReferralsRoute
   '/impact/$slug': typeof ImpactSlugRoute
   '/invite/$code': typeof InviteCodeRoute
   '/passport/$token': typeof PassportTokenRoute
+  '/storefront/$userId': typeof StorefrontUserIdRoute
   '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
-  '/_authenticated/syndication': typeof AuthenticatedSyndicationRoute
-  '/_authenticated/peer-groups': typeof AuthenticatedPeerGroupsRoute
   '/_authenticated/admin/early-access': typeof AuthenticatedAdminEarlyAccessRoute
   '/_authenticated/admin/verification': typeof AuthenticatedAdminVerificationRoute
-  '/storefront/$userId': typeof StorefrontUserIdRoute
   '/api/agent/asks': typeof ApiAgentAsksRoute
   '/api/agent/inbound': typeof ApiAgentInboundRoute
   '/api/agent/intros': typeof ApiAgentIntrosRoute
@@ -386,16 +397,17 @@ export interface FileRouteTypes {
     | '/delegate'
     | '/member-intelligence'
     | '/onboarding'
+    | '/peer-groups'
+    | '/syndication'
     | '/verify'
+    | '/warm-referrals'
     | '/impact/$slug'
     | '/invite/$code'
     | '/passport/$token'
+    | '/storefront/$userId'
     | '/.lovable/oauth/consent'
-    | '/syndication'
-    | '/peer-groups'
     | '/admin/early-access'
     | '/admin/verification'
-    | '/storefront/$userId'
     | '/api/agent/asks'
     | '/api/agent/inbound'
     | '/api/agent/intros'
@@ -426,16 +438,17 @@ export interface FileRouteTypes {
     | '/delegate'
     | '/member-intelligence'
     | '/onboarding'
+    | '/peer-groups'
+    | '/syndication'
     | '/verify'
+    | '/warm-referrals'
     | '/impact/$slug'
     | '/invite/$code'
     | '/passport/$token'
+    | '/storefront/$userId'
     | '/.lovable/oauth/consent'
-    | '/syndication'
-    | '/peer-groups'
     | '/admin/early-access'
     | '/admin/verification'
-    | '/storefront/$userId'
     | '/api/agent/asks'
     | '/api/agent/inbound'
     | '/api/agent/intros'
@@ -467,16 +480,17 @@ export interface FileRouteTypes {
     | '/_authenticated/delegate'
     | '/_authenticated/member-intelligence'
     | '/_authenticated/onboarding'
+    | '/_authenticated/peer-groups'
+    | '/_authenticated/syndication'
     | '/_authenticated/verify'
+    | '/_authenticated/warm-referrals'
     | '/impact/$slug'
     | '/invite/$code'
     | '/passport/$token'
+    | '/storefront/$userId'
     | '/.lovable/oauth/consent'
-    | '/_authenticated/syndication'
-    | '/_authenticated/peer-groups'
     | '/_authenticated/admin/early-access'
     | '/_authenticated/admin/verification'
-    | '/storefront/$userId'
     | '/api/agent/asks'
     | '/api/agent/inbound'
     | '/api/agent/intros'
@@ -508,8 +522,8 @@ export interface RootRouteChildren {
   ImpactSlugRoute: typeof ImpactSlugRoute
   InviteCodeRoute: typeof InviteCodeRoute
   PassportTokenRoute: typeof PassportTokenRoute
-  DotlovableOauthConsentRoute: typeof DotlovableOauthConsentRoute
   StorefrontUserIdRoute: typeof StorefrontUserIdRoute
+  DotlovableOauthConsentRoute: typeof DotlovableOauthConsentRoute
   ApiAgentAsksRoute: typeof ApiAgentAsksRoute
   ApiAgentInboundRoute: typeof ApiAgentInboundRoute
   ApiAgentIntrosRoute: typeof ApiAgentIntrosRoute
@@ -621,11 +635,32 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedOnboardingRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/peer-groups': {
+      id: '/_authenticated/peer-groups'
+      path: '/peer-groups'
+      fullPath: '/peer-groups'
+      preLoaderRoute: typeof AuthenticatedPeerGroupsRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/syndication': {
+      id: '/_authenticated/syndication'
+      path: '/syndication'
+      fullPath: '/syndication'
+      preLoaderRoute: typeof AuthenticatedSyndicationRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/verify': {
       id: '/_authenticated/verify'
       path: '/verify'
       fullPath: '/verify'
       preLoaderRoute: typeof AuthenticatedVerifyRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/warm-referrals': {
+      id: '/_authenticated/warm-referrals'
+      path: '/warm-referrals'
+      fullPath: '/warm-referrals'
+      preLoaderRoute: typeof AuthenticatedWarmReferralsRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/impact/$slug': {
@@ -649,26 +684,19 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PassportTokenRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/storefront/$userId': {
+      id: '/storefront/$userId'
+      path: '/storefront/$userId'
+      fullPath: '/storefront/$userId'
+      preLoaderRoute: typeof StorefrontUserIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/.lovable/oauth/consent': {
       id: '/.lovable/oauth/consent'
       path: '/.lovable/oauth/consent'
       fullPath: '/.lovable/oauth/consent'
       preLoaderRoute: typeof DotlovableOauthConsentRouteImport
       parentRoute: typeof rootRouteImport
-    }
-    '/_authenticated/syndication': {
-      id: '/_authenticated/syndication'
-      path: '/syndication'
-      fullPath: '/syndication'
-      preLoaderRoute: typeof AuthenticatedSyndicationRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
-    }
-    '/_authenticated/peer-groups': {
-      id: '/_authenticated/peer-groups'
-      path: '/peer-groups'
-      fullPath: '/peer-groups'
-      preLoaderRoute: typeof AuthenticatedPeerGroupsRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/admin/early-access': {
       id: '/_authenticated/admin/early-access'
@@ -683,13 +711,6 @@ declare module '@tanstack/react-router' {
       fullPath: '/admin/verification'
       preLoaderRoute: typeof AuthenticatedAdminVerificationRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
-    }
-    '/storefront/$userId': {
-      id: '/storefront/$userId'
-      path: '/storefront/$userId'
-      fullPath: '/storefront/$userId'
-      preLoaderRoute: typeof StorefrontUserIdRouteImport
-      parentRoute: typeof rootRouteImport
     }
     '/api/agent/asks': {
       id: '/api/agent/asks'
@@ -811,9 +832,10 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedDelegateRoute: typeof AuthenticatedDelegateRoute
   AuthenticatedMemberIntelligenceRoute: typeof AuthenticatedMemberIntelligenceRoute
   AuthenticatedOnboardingRoute: typeof AuthenticatedOnboardingRoute
-  AuthenticatedVerifyRoute: typeof AuthenticatedVerifyRoute
-  AuthenticatedSyndicationRoute: typeof AuthenticatedSyndicationRoute
   AuthenticatedPeerGroupsRoute: typeof AuthenticatedPeerGroupsRoute
+  AuthenticatedSyndicationRoute: typeof AuthenticatedSyndicationRoute
+  AuthenticatedVerifyRoute: typeof AuthenticatedVerifyRoute
+  AuthenticatedWarmReferralsRoute: typeof AuthenticatedWarmReferralsRoute
   AuthenticatedAdminEarlyAccessRoute: typeof AuthenticatedAdminEarlyAccessRoute
   AuthenticatedAdminVerificationRoute: typeof AuthenticatedAdminVerificationRoute
 }
@@ -823,9 +845,10 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedDelegateRoute: AuthenticatedDelegateRoute,
   AuthenticatedMemberIntelligenceRoute: AuthenticatedMemberIntelligenceRoute,
   AuthenticatedOnboardingRoute: AuthenticatedOnboardingRoute,
-  AuthenticatedVerifyRoute: AuthenticatedVerifyRoute,
-  AuthenticatedSyndicationRoute: AuthenticatedSyndicationRoute,
   AuthenticatedPeerGroupsRoute: AuthenticatedPeerGroupsRoute,
+  AuthenticatedSyndicationRoute: AuthenticatedSyndicationRoute,
+  AuthenticatedVerifyRoute: AuthenticatedVerifyRoute,
+  AuthenticatedWarmReferralsRoute: AuthenticatedWarmReferralsRoute,
   AuthenticatedAdminEarlyAccessRoute: AuthenticatedAdminEarlyAccessRoute,
   AuthenticatedAdminVerificationRoute: AuthenticatedAdminVerificationRoute,
 }
@@ -847,8 +870,8 @@ const rootRouteChildren: RootRouteChildren = {
   ImpactSlugRoute: ImpactSlugRoute,
   InviteCodeRoute: InviteCodeRoute,
   PassportTokenRoute: PassportTokenRoute,
-  DotlovableOauthConsentRoute: DotlovableOauthConsentRoute,
   StorefrontUserIdRoute: StorefrontUserIdRoute,
+  DotlovableOauthConsentRoute: DotlovableOauthConsentRoute,
   ApiAgentAsksRoute: ApiAgentAsksRoute,
   ApiAgentInboundRoute: ApiAgentInboundRoute,
   ApiAgentIntrosRoute: ApiAgentIntrosRoute,
