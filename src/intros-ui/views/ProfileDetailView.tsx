@@ -76,9 +76,9 @@ export const ProfileDetailView: React.FC<ProfileDetailViewProps> = ({
               <h1 className="font-serif-editorial text-5xl sm:text-6xl md:text-7xl font-bold tracking-tight text-white leading-[0.95]">
                 {member.firstName}
               </h1>
-              <h1 className="font-serif-editorial text-5xl sm:text-6xl md:text-7xl font-bold tracking-tight text-[#F5B027] leading-[0.95] mt-1">
+              <div className="font-serif-editorial text-5xl sm:text-6xl md:text-7xl font-bold tracking-tight text-[#F5B027] leading-[0.95] mt-1">
                 {member.lastName}
-              </h1>
+              </div>
             </div>
 
             {/* Title & Affiliation */}
@@ -189,10 +189,10 @@ export const ProfileDetailView: React.FC<ProfileDetailViewProps> = ({
           <div className="lg:col-span-4 space-y-5">
             {/* Constellation Graphic Heading */}
             <div className="flex items-center justify-between text-[10px] font-mono tracking-widest uppercase text-[#9CA3AF] font-semibold">
-              <span>Strategic Connections Accelerate Progress</span>
+              <span>Relevant connections</span>
             </div>
 
-            {/* AI Introduction Recommendation Card */}
+            {/* Suggested introduction Card */}
             {aiRec && (
               <div className="bg-[#111622]/95 border border-[#F5B027]/30 rounded-xl p-5 shadow-lg relative overflow-hidden backdrop-blur-sm">
                 <div className="flex items-center justify-between mb-3">
@@ -204,11 +204,6 @@ export const ProfileDetailView: React.FC<ProfileDetailViewProps> = ({
                     BETA
                   </span>
                 </div>
-
-                <p className="text-xs text-[#CBD5E1] mb-3">
-                  We found a strong match based on your mutual interests in AI infrastructure,
-                  enterprise software, and climate tech.
-                </p>
 
                 {/* Counterpart Preview */}
                 <div className="flex items-center gap-3 p-3 bg-white/[0.03] border border-white/5 rounded-lg mb-3">
