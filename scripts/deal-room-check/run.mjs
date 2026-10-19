@@ -19,6 +19,9 @@ await build({
     b.onResolve({ filter: /^@\/integrations\/supabase\/client$/ }, () => ({ path: join(here, 'db-stub.ts') }))
     b.onResolve({ filter: /^@\/lib\/voice\.functions$/ }, () => ({ path: join(here, 'voice-stub.ts') }))
     b.onResolve({ filter: /^@\/lib\/warmReferral\.functions$/ }, () => ({ path: join(here, 'voice-stub.ts') }))
+    // The deal-room check exercises the referral prompt UI, not its server RPCs.
+    // Stub its server functions so esbuild never pulls TanStack Start into a browser bundle.
+    b.onResolve({ filter: /^@\/lib\/referrals\.functions$/ }, () => ({ path: join(here, 'voice-stub.ts') }))
     b.onResolve({ filter: /^@\// }, a => {
       const p = join(src, a.path.slice(2))
       for (const ext of ['.ts', '.tsx', '/index.ts']) if (existsSync(p + ext)) return { path: p + ext }
@@ -107,9 +110,9 @@ await page.waitForFunction(() => document.querySelector('.deals-flash')?.textCon
 ok(await page.isVisible('text=Raise readiness: model, data room, investor Q&A.'), 'terms save and show')
 await page.fill('[aria-label="New milestone"]', 'Three-statement model')
 await btn('Add milestone').click()
-await page.waitForFunction(() => document.querySelector('.deals-flash')?.textContent?.includes('Milestone "Three-statement model" added'))
-ok(!(await has('Submit for review')), 'the buyer is not offered to submit the provider's milestone')
-ok(!(await has('Mark delivered')), 'the buyer cannot mark the provider's work delivered')
+await page.waitForFunction(() => document.querySelector('.deals-flash')?.textContent?.includes('Milestone “Three-statement model” added'))
+ok(!(await has('Submit for review')), "the buyer is not offered to submit the provider's milestone")
+ok(!(await has('Mark delivered')), "the buyer cannot mark the provider's work delivered")
 
 // Ben submits it.
 await as('B')
@@ -122,7 +125,7 @@ ok(!(await has('Request changes')), 'the provider cannot review their own submis
 await as('A')
 await openRoom('Deal with Ben Okafor')
 await page.locator('.deals-milestone').getByRole('button', { name: 'Accept' }).click()
-await page.waitForFunction(() => document.querySelector('.deals-flash')?.textContent?.includes('"Three-statement model" accepted'))
+await page.waitForFunction(() => document.querySelector('.deals-flash')?.textContent?.includes('“Three-statement model” accepted'))
 ok(await page.isVisible('.deals-milestone.m-accepted'), 'the buyer accepts the milestone')
 await page.fill('[aria-label="Add a note"]', 'Kick-off call went well.')
 await btn('Add note').click()
@@ -145,7 +148,10 @@ ok(!(await has('Edit terms')) && !(await has('Add milestone')), 'a closed room o
 const kinds = await page.evaluate(() => window.__state.events.map(e => e.kind))
 ok(['created', 'member_invited', 'member_joined', 'proposal_submitted', 'proposal_accepted', 'milestone_added', 'milestone_submitted', 'milestone_accepted', 'details_updated', 'note'].every(k => kinds.includes(k)), 'every step is on the timeline')
 await shot('3-closed')
-await page.click('.deals-back')
+// Closing a deal opens the optional referral dialog; dismiss it through the UI
+// before navigating back. The overlay intentionally blocks background clicks.
+await page.getByRole('button', { name: 'Skip for now' }).click()
+await page.locator('.deals-back').click()
 ok(await page.isVisible('text=CLOSED · 1'), 'the list groups the room under Closed')
 
 // /demo showcase: a local example room, clearly labelled, no writes.
