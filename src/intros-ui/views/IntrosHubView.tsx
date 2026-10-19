@@ -63,12 +63,11 @@ export const IntrosHubView: React.FC<IntrosHubViewProps> = ({
               Double Opt-In Protocol
             </div>
             <h1 className="font-serif-editorial text-3xl sm:text-4xl md:text-5xl text-[#F2EEE6] leading-tight">
-              Warm Introductions{' '}
-              <span className="text-[#F5B027]">Workspace</span>
+              Introductions{' '}
+              <span className="text-[#F5B027]">with context.</span>
             </h1>
             <p className="text-xs md:text-sm text-[#9CA3AF] max-w-xl">
-              Facilitate high-signal relationships with confidential double-opt-in workflows.
-              Every introduction is protected by mutual consent.
+              Introduce people with mutual consent.
             </p>
           </div>
 
@@ -77,7 +76,7 @@ export const IntrosHubView: React.FC<IntrosHubViewProps> = ({
             className="bridge-primary-action flex items-center gap-2 px-5 py-2.5 text-xs md:text-sm font-semibold transition-all cursor-pointer self-start md:self-auto"
           >
             <Plus className="w-4 h-4" />
-            Facilitate New Introduction
+            New introduction
           </button>
         </div>
       </section>
