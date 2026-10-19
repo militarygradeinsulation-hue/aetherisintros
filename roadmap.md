@@ -1,5 +1,9 @@
 # Aetheris specification completion
 
+## Original site light-mode contrast (Oct 19)
+- [ ] Repair shared light-mode ink and editorial copy/metrics without changing dark mode or features.
+- [ ] Verify real pages, phone screenshots, contrast ratios and automatic production compilation; report synced commit without publishing.
+
 ## Google Search Console setup (Oct 19)
 - [x] Check Joseph's linked Google connection and property access; obtain the verification tag.
 - [x] Add the root verification tag and correct the existing sitemap origin without changing page content or canonical URLs.
