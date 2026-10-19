@@ -2423,6 +2423,45 @@ export type Database = {
         }
         Relationships: []
       }
+      executive_applications: {
+        Row: {
+          company: string
+          created_at: string
+          full_name: string
+          profile_url: string
+          reason: string
+          reviewed_at: string | null
+          reviewed_by: string | null
+          status: string
+          title: string
+          user_id: string
+        }
+        Insert: {
+          company: string
+          created_at?: string
+          full_name: string
+          profile_url: string
+          reason: string
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          status?: string
+          title: string
+          user_id: string
+        }
+        Update: {
+          company?: string
+          created_at?: string
+          full_name?: string
+          profile_url?: string
+          reason?: string
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          status?: string
+          title?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       executive_office_hours: {
         Row: {
           capacity: number
@@ -3632,6 +3671,30 @@ export type Database = {
         Update: {
           items?: string[]
           updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      member_tiers: {
+        Row: {
+          approved_at: string | null
+          approved_by: string | null
+          created_at: string
+          tier: string
+          user_id: string
+        }
+        Insert: {
+          approved_at?: string | null
+          approved_by?: string | null
+          created_at?: string
+          tier?: string
+          user_id: string
+        }
+        Update: {
+          approved_at?: string | null
+          approved_by?: string | null
+          created_at?: string
+          tier?: string
           user_id?: string
         }
         Relationships: []
@@ -6187,6 +6250,7 @@ export type Database = {
         Returns: string
       }
       admin_delete_impact_report: { Args: { p_id: string }; Returns: undefined }
+      admin_executive_applications: { Args: never; Returns: Json }
       admin_growth_metrics: { Args: { p_weeks?: number }; Returns: Json }
       admin_impact_report: {
         Args: { p_from: string; p_to: string }
@@ -6249,6 +6313,16 @@ export type Database = {
         }
         Returns: string
       }
+      apply_for_executive: {
+        Args: {
+          p_company: string
+          p_name: string
+          p_profile_url: string
+          p_reason: string
+          p_title: string
+        }
+        Returns: string
+      }
       apply_professional_field: {
         Args: { p_proposal_id: string }
         Returns: undefined
@@ -6295,6 +6369,7 @@ export type Database = {
           tier: string
         }[]
       }
+      claim_basic_membership: { Args: never; Returns: string }
       claim_early_access: {
         Args: { p_invite_code?: string }
         Returns: {
@@ -6610,6 +6685,7 @@ export type Database = {
           last_stage: string
         }[]
       }
+      my_executive_application: { Args: never; Returns: Json }
       my_impact_card: { Args: never; Returns: Json }
       my_intro_outcome_notes: {
         Args: never
@@ -6627,6 +6703,7 @@ export type Database = {
         }[]
       }
       my_invite_code: { Args: never; Returns: string }
+      my_membership_tier: { Args: never; Returns: string }
       my_pending_intro_requests: {
         Args: never
         Returns: {
@@ -6784,6 +6861,10 @@ export type Database = {
       }
       resolve_capability_finding: {
         Args: { p_id: string; p_note?: string; p_status: string }
+        Returns: undefined
+      }
+      review_executive_application: {
+        Args: { p_approve: boolean; p_user: string }
         Returns: undefined
       }
       review_member_verification: {
