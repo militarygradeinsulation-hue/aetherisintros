@@ -7,7 +7,7 @@ import gsap from 'gsap'
 import { supabase } from '@/integrations/supabase/client'
 import { lovable } from '@/integrations/lovable/index'
 import { AUTH_REQUIRED } from '@/aetheris/config'
-import { foundingStats, previewInvite, rememberInvite, storedInvite } from '@/aetheris/access'
+import { previewInvite, rememberInvite, storedInvite } from '@/aetheris/access'
 import { logSecurityEvent, passwordProblem } from '@/aetheris/verification'
 import { AppearanceToggle } from '@/aetheris/AppearanceToggle'
 import '@/aetheris/styles.css'
@@ -96,9 +96,6 @@ function AuthPage() {
     return () => clearTimeout(t)
   }, [invite])
   const hasInvite = Boolean(inviteParam) || (mode === 'signup' && Boolean(inviter?.valid))
-  const [launchMode, setLaunchMode] = useState<string | null>(null)
-  useEffect(() => { void foundingStats().then(stats => setLaunchMode(stats.mode)) }, [])
-  const inviteRequired = false // Basic registration is open; launch mode only controls founding invitations.
   const [name, setName] = useState('')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
@@ -197,7 +194,7 @@ function AuthPage() {
           </p>
         : <div className="auth-soon" role="status">
             <span><i aria-hidden="true" />MEMBER SIGNUP</span>
-            <p>{inviteRequired ? 'Create a free Basic account, confirm your email, and complete your profile. C-suite members can apply for reviewed Executive access after joining.' : 'Create a free Basic account, confirm your email, and complete your profile. C-suite members can apply for reviewed Executive access after joining.'}</p>
+            <p>Create a free Basic account, confirm your email, and complete your profile. C-suite members can apply for reviewed Executive access after joining.</p>
             <div className="auth-soon-actions">
               <Link to="/demo">Explore the demo <ArrowRight size={13} /></Link>
               <Link to="/early-access">Explore Executive access <ArrowRight size={13} /></Link>
