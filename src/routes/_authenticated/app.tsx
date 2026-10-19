@@ -47,7 +47,13 @@ function Gate() {
     // Approval and onboarding grant network access; business-role badges are separate.
     if (!access.signedIn) void navigate({ to: '/auth', replace: true })
     else if (access.status !== 'approved') void navigate({ to: '/early-access', replace: true })
-    else if (access.emailConfirmed && access.verification !== 'rejected' && access.verification !== 'suspended' && !access.onboarded) void navigate({ to: '/onboarding', replace: true })
+    else if (!access.onboarded) {
+      // Approved but not onboarded: confirmed members go to onboarding; everyone
+      // else (unconfirmed email, restricted verification) goes to /early-access,
+      // which explains the next step instead of hanging on "Checking your membership…".
+      if (access.emailConfirmed && access.verification !== 'rejected' && access.verification !== 'suspended') void navigate({ to: '/onboarding', replace: true })
+      else void navigate({ to: '/early-access', replace: true })
+    }
   }, [access, navigate])
 
   if (access.error) {

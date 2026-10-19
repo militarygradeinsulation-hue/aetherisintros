@@ -110,29 +110,19 @@ export const createSyndicationRoom = createServerFn({ method: 'POST' })
     const db = context.supabase as any // eslint-disable-line @typescript-eslint/no-explicit-any
     const userId = context.userId
 
-    const { data: room, error: roomErr } = await db
-      .from('syndication_rooms')
-      .insert({
-        created_by: userId,
-        title: data.title.trim(),
-        room_type: data.roomType,
-        description: data.description?.trim() ?? null,
-        opportunity_size: data.opportunitySize?.trim() ?? null,
-        deadline: data.deadline ?? null,
-      })
-      .select()
-      .single()
+    // Room and member inserts go through the SECURITY DEFINER RPC: the tables
+    // are deliberately locked to service-role writes, and the RPC validates
+    // live membership, title, room type and invitees in one transaction.
+    const { data: room, error: roomErr } = await db.rpc('create_syndication_room', {
+      p_title: data.title.trim(),
+      p_room_type: data.roomType,
+      p_description: data.description?.trim() ?? null,
+      p_opportunity_size: data.opportunitySize?.trim() ?? null,
+      p_deadline: data.deadline ?? null,
+      p_invite_user_ids: (data.inviteUserIds ?? []).filter(id => id !== userId),
+    })
     if (roomErr) throw new Error(roomErr.message)
-
-    // Add creator as a member so they can vote
-    const membersToInsert = [
-      { room_id: room.id, user_id: userId },
-      ...(data.inviteUserIds ?? [])
-        .filter(id => id !== userId)
-        .map(id => ({ room_id: room.id, user_id: id })),
-    ]
-    const { error: membersErr } = await db.from('syndication_members').insert(membersToInsert)
-    if (membersErr) throw new Error(membersErr.message)
+    if (!room?.id) throw new Error('The room was not created. Retry.')
 
     return room as SyndicationRoom
   })
