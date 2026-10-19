@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
+import '../../more-dropdown-fix.css';
 import { AskIntrosLockup } from '@/aetheris/AskIntrosLockup';
 import { Search, Bell, Orbit, LogOut, Home, Users, MessageSquare, MoreHorizontal, Network, Brain, Newspaper, Briefcase, X, Video, ChevronDown, TrendingUp } from 'lucide-react';
 import { Button } from '@/components/ui/button';
