@@ -18,7 +18,7 @@ export default async ({ ok, as, svc, ADMIN }) => {
   ok(q.rows?.[0]?.tier==='basic','repeated Basic claim is idempotent: '+JSON.stringify(q))
   q = await as(U,'select public.my_intro_allowance() as allowance')
   ok(!q.error && q.rows?.[0]?.allowance?.remaining===3 && q.rows?.[0]?.allowance?.limit===3,
-    'Basic member sees their own three-request monthly allowance')
+    'Basic member sees their own three-request monthly allowance: '+JSON.stringify(q))
   const anonymousAllowance = await as(null,'select public.my_intro_allowance()')
   ok(!!anonymousAllowance.error,'anonymous visitors cannot read introduction allowance')
   q = await as(U,'select public.my_membership_tier() as tier')
@@ -43,7 +43,7 @@ export default async ({ ok, as, svc, ADMIN }) => {
   q = await as(U,'select public.my_intro_allowance() as allowance')
   ok(!q.error && q.rows?.[0]?.allowance?.tier==='executive'
     && q.rows?.[0]?.allowance?.limit===null,
-    'approved Executive members see an unlimited introduction allowance')
+    'approved Executive members see an unlimited introduction allowance: '+JSON.stringify(q))
   await svc(`update public.early_access_members set status='suspended' where user_id='${V}'`)
   q = await as(V,'select public.claim_basic_membership()')
   ok(!!q.error,'suspended accounts cannot bypass restrictions by claiming Basic')
