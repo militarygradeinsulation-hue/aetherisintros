@@ -45,7 +45,7 @@ BEGIN
  IF em IS NULL THEN RAISE EXCEPTION 'Confirm your email first' USING ERRCODE='42501'; END IF;
  -- Do not turn suspended or denied members into basic members.
  SELECT status INTO existing_status FROM public.early_access_members WHERE user_id=uid FOR UPDATE;
- IF existing_status IN ('denied','suspended') THEN RAISE EXCEPTION 'Account restricted' USING ERRCODE='42501'; END IF;
+ IF existing_status IN ('denied','suspended','revoked','rejected','banned') THEN RAISE EXCEPTION 'Account restricted' USING ERRCODE='42501'; END IF;
  IF existing_status IS DISTINCT FROM 'approved' THEN
   INSERT INTO public.early_access_members(user_id,email,status,source,approved_at)
   VALUES(uid,em,'approved','basic',now())
