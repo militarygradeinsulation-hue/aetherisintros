@@ -6,7 +6,7 @@ export function newsStoryPath(item: Pick<NewsItem, 'link' | 'title' | 'source' |
   return '/news/story?' + params.toString()
 }
 
-export function newsStoryUrl(item: Pick<NewsItem, 'link'>, origin = 'https://askintros.vip'): string {
+export function newsStoryUrl(item: Pick<NewsItem, 'link' | 'title' | 'source' | 'summary'>, origin = 'https://askintros.vip'): string {
   return origin.replace(/\/$/, '') + newsStoryPath(item)
 }
 
