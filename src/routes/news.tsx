@@ -1,9 +1,7 @@
 import { createFileRoute, Link, Outlet, useLocation } from '@tanstack/react-router'
-import { useState } from 'react'
-import { Copy, Check, ArrowUpRight } from 'lucide-react'
+import { ArrowUpRight } from 'lucide-react'
 import { AskIntrosLockup } from '@/aetheris/AskIntrosLockup'
-import { useAetherisNews } from '@/aetheris/news'
-import { newsStoryPath } from '@/aetheris/news-links'
+import { NewsPage } from '@/aetheris/pages/NewsPage'
 import '@/aetheris/styles.css'
 import '@/aetheris/public-news.css'
 
@@ -30,41 +28,11 @@ function PublicNewsRoute() {
 }
 
 function PublicNewsIndex() {
-  const { data, isLoading, isError, refetch } = useAetherisNews()
-  const [copied, setCopied] = useState('')
-  const [search, setSearch] = useState('')
-  const items = (data?.items ?? []).filter(item => (item.title + ' ' + item.summary + ' ' + item.source).toLowerCase().includes(search.trim().toLowerCase()))
-  async function copy(url: string, key: string) {
-    try { await navigator.clipboard.writeText(url); setCopied(key) }
-    catch { setCopied('error') }
-  }
-  return <main className="public-news">
-    <header className="public-news-header">
+  return <main className="public-news public-news-editorial">
+    <nav className="public-news-topbar" aria-label="Public news navigation">
       <Link to="/" aria-label="Ask Intros home"><AskIntrosLockup /></Link>
-      <span className="folio">ASK INTROS / EXECUTIVE INTELLIGENCE</span>
-      <h1>Read the signal. <em>Share the perspective.</em></h1>
-      <p>Business and industry reporting, with a direct link to every article. No account required to read.</p>
-      <div className="public-news-header-actions">
-        <button type="button" onClick={() => void copy('https://askintros.vip/news', 'feed')}><Copy size={16} /> {copied === 'feed' ? 'News link copied' : 'Copy news page link'}</button>
-        <button type="button" onClick={() => void refetch()}>Refresh news</button>
-        <Link to="/auth">Join Ask Intros <ArrowUpRight size={15} /></Link>
-      </div>
-    </header>
-    <label className="public-news-search">Find an article<input type="search" value={search} onChange={e => setSearch(e.target.value)} placeholder="Search headlines, sources or topics" /></label>
-    {isLoading && <p role="status">Loading the latest articles…</p>}
-    {isError && <p role="alert">News is unavailable right now. Please try refreshing.</p>}
-    {copied === 'error' && <p role="alert">Copy was blocked by your browser. You can copy the address from the link instead.</p>}
-    <section className="public-news-grid" aria-label="News articles">
-      {items.map(item => <article key={item.id} className="public-news-card">
-        <small>{item.source} · {item.category}</small>
-        <h2><a href={newsStoryPath(item)}> {item.title}</a></h2>
-        {item.summary && <p>{item.summary}</p>}
-        <div className="public-news-card-actions">
-          <a href={newsStoryPath(item)}> Read on Ask Intros <ArrowUpRight size={15} /></a>
-          <button type="button" onClick={() => void copy('https://askintros.vip' + newsStoryPath(item), item.id)}><Copy size={14} /> {copied === item.id ? 'Copied' : 'Copy article link'}</button>
-        </div>
-      </article>)}
-    </section>
-    {!isLoading && !isError && !items.length && <p>No matching articles right now.</p>}
+      <Link to="/auth" className="public-news-join">Join Ask Intros <ArrowUpRight size={15} /></Link>
+    </nav>
+    <NewsPage publicMode />
   </main>
 }
