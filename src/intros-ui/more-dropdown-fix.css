@@ -1,33 +1,47 @@
-/* Desktop More must size to its menu items, not to the narrow More trigger.
- * site-readability.css applies max-width:100% to overlays, which otherwise
- * constrains this absolute dropdown to its containing navigation button. */
-.ix-root .ix-desktop-more .ix-desktop-more-menu {
-  box-sizing: border-box;
-  width: min(280px, calc(100vw - 24px));
-  min-width: min(240px, calc(100vw - 24px));
-  max-width: calc(100vw - 24px) !important;
-  left: auto !important;
-  right: 0;
-  transform: none !important;
-  padding: 8px;
-  overflow-wrap: normal;
+/* Desktop More menu: override the global overlay max-width rule and the
+   trigger-sized absolute containing block. Keep whole words on one line. */
+html body .ix-root .ix-desktop-more {
+  position: relative;
+  flex: 0 0 auto;
 }
-.ix-root .ix-desktop-more .ix-desktop-more-item {
-  display: flex;
-  width: 100%;
+html body .ix-root .ix-desktop-more > .ix-desktop-more-menu[role="menu"] {
+  position: absolute !important;
+  box-sizing: border-box !important;
+  left: auto !important;
+  right: 0 !important;
+  top: calc(100% + 10px);
+  transform: none !important;
+  width: 280px !important;
+  min-width: 280px !important;
+  max-width: none !important;
+  padding: 8px !important;
+  overflow: visible;
+  overflow-wrap: normal !important;
+  word-break: normal !important;
+}
+html body .ix-root .ix-desktop-more > .ix-desktop-more-menu[role="menu"] > .ix-desktop-more-item {
+  display: flex !important;
+  box-sizing: border-box;
+  width: 100% !important;
   min-width: 0;
   min-height: 44px;
   align-items: center;
   gap: 12px;
   padding: 10px 12px;
-  white-space: normal;
-  overflow-wrap: normal;
-  word-break: normal;
-  line-height: 1.35;
+  white-space: nowrap !important;
+  overflow-wrap: normal !important;
+  word-break: keep-all !important;
+  line-height: 1.4;
   text-align: left;
 }
-.ix-root .ix-desktop-more .ix-desktop-more-item svg {
+html body .ix-root .ix-desktop-more > .ix-desktop-more-menu[role="menu"] > .ix-desktop-more-item svg {
   flex: 0 0 18px;
   width: 18px;
   height: 18px;
+}
+@media (max-width: 360px) {
+  html body .ix-root .ix-desktop-more > .ix-desktop-more-menu[role="menu"] {
+    width: calc(100vw - 24px) !important;
+    min-width: 0 !important;
+  }
 }
