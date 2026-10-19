@@ -11,6 +11,10 @@ export const Route = createFileRoute('/_authenticated/member-intelligence')({
   head: () => ({ meta: [
     { title: 'Member Intelligence — Ask Intros' },
     { name: 'description', content: 'Private business analysis and your evidence-based reputation score.' },
+    { property: 'og:title', content: 'Member Intelligence — Ask Intros' },
+    { property: 'og:description', content: 'Private business analysis and your evidence-based reputation score.' },
+    { property: 'og:type', content: 'website' },
+    { name: 'twitter:card', content: 'summary' },
   ] }),
   component: MemberIntelligence,
 })

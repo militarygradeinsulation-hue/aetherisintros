@@ -8,6 +8,10 @@ export const Route = createFileRoute('/_authenticated/peer-groups')({
   head: () => ({
     meta: [
       { title: 'Peer Groups — Ask Intros' },
+      { property: 'og:title', content: 'Peer Groups — Ask Intros' },
+      { property: 'og:description', content: 'Private peer-group sessions, agendas, commitments and confidential discussion.' },
+      { property: 'og:type', content: 'website' },
+      { name: 'twitter:card', content: 'summary' },
       {
         name: 'description',
         content: 'AI-facilitated peer cohorts for CEOs and founders. Session agendas, commitment tracking, and confidential discussion.',

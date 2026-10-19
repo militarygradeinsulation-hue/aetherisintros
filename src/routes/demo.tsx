@@ -13,13 +13,13 @@ export const Route = createFileRoute('/demo')({
         content:
           'Explore Ask Intros, the relationship network for CEOs. Who matters. Why they matter. Why now.',
       },
-      { property: 'og:title', content: 'Ask Intros — The Relationship Network for CEOs' },
-      { property: 'og:description', content: 'Who matters. Why they matter. Why now.' },
+      { property: 'og:title', content: 'Ask Intros CEO Network — Guided Showcase' },
+      { property: 'og:description', content: 'Explore the Ask Intros showcase: relationships, introductions and active memory for CEOs.' },
       { property: 'og:type', content: 'website' },
       { name: 'twitter:card', content: 'summary_large_image' },
-      { property: 'og:url', content: 'https://intros.today/demo' },
+      { property: 'og:url', content: 'https://askintros.vip/demo' },
     ],
-    links: [{ rel: 'canonical', href: 'https://intros.today/demo' }],
+    links: [{ rel: 'canonical', href: 'https://askintros.vip/demo' }],
   }),
   component: DemoRoute,
 })

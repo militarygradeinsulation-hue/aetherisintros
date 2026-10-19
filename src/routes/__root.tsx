@@ -106,12 +106,8 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1, viewport-fit=cover" },
-      { title: "Ask Intros — The Relationship Network for CEOs" },
-      { name: "description", content: "Who matters. Why they matter. Why now." },
       { name: "author", content: "Ask Intros" },
       { name: "google-site-verification", content: "zSC2ljyv5uc7wlsZuE1Exo8oCOOPTC_wjlKsI8idzMk" },
-      { property: "og:title", content: "Ask Intros — The Relationship Network for CEOs" },
-      { property: "og:description", content: "Who matters. Why they matter. Why now." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
       { name: "theme-color", content: "#07090C" },

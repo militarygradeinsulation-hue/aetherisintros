@@ -45,10 +45,10 @@ export const Route = createFileRoute('/founder-story')({
       { property: 'og:title', content: 'The Architect Behind the Operator — Aetheris' },
       { property: 'og:description', content: 'Why Joseph Toney built Aetheris—and why everything leaves evidence.' },
       { property: 'og:type', content: 'article' },
-      { property: 'og:url', content: 'https://intros.today/founder-story' },
+      { property: 'og:url', content: 'https://askintros.vip/founder-story' },
       { name: 'twitter:card', content: 'summary_large_image' },
     ],
-    links: [{ rel: 'canonical', href: 'https://intros.today/founder-story' }],
+    links: [{ rel: 'canonical', href: 'https://askintros.vip/founder-story' }],
   }),
   component: FounderStoryPage,
 })
