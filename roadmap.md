@@ -1,5 +1,11 @@
 # Aetheris specification completion
 
+## ICP Connection Engine (Oct 19)
+- [ ] Reuse canonical CRM, existing admin role and private workspace state; audit provider availability.
+- [ ] Implement editable ICPs, deterministic scoring, ranked review and safe manual LinkedIn workflow.
+- [ ] Reuse validated CSV/manual CRM ingestion; persist notes and contact outcomes atomically.
+- [ ] Run scoring/upload/workflow/isolation tests and preview smoke checks; do not publish.
+
 ## Original site light-mode contrast (Oct 19)
 - [x] Repair shared light-mode ink and editorial copy/metrics without changing dark mode or features.
 - [x] Verify actual Memory/Insights demo hosts at 390/360px, public pages at 390px, unchanged dark mode, 33 regression tests and automatic compilation; no publication.
