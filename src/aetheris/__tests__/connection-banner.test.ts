@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest'
 import { readFileSync } from 'node:fs'
 
 const banner = readFileSync(new URL('../ConnectionBanner.tsx', import.meta.url), 'utf8')
+const styles = readFileSync(new URL('../connection-banner.css', import.meta.url), 'utf8')
 const route = readFileSync(new URL('../../routes/_authenticated/app.tsx', import.meta.url), 'utf8')
 
 describe('live connection warning', () => {
@@ -10,6 +11,12 @@ describe('live connection warning', () => {
     expect(banner).toContain("window.addEventListener('online', sync)")
     expect(banner).toContain("window.removeEventListener('offline', sync)")
     expect(banner).toContain("window.removeEventListener('online', sync)")
+  })
+  it('does not obscure the navigation or print on relationship snapshots', () => {
+    expect(styles).toContain('position:relative')
+    expect(styles).not.toContain('position:fixed')
+    expect(styles).toContain('@media print')
+    expect(styles).toContain('display:none!important')
   })
   it('is visible to assistive technology but does not impersonate a save confirmation', () => {
     expect(banner).toContain('role="status"')
