@@ -45,7 +45,7 @@ export interface LibrarySuggestion {
 const db = supabase as any;
 
 function checked<T>(data: T | null, error: { message?: string } | null, fallback: string): T {
-  if (error || data == null) throw new Error(fallback);
+  if (error || data == null) throw new Error(error?.message ? `${fallback} ${error.message}` : fallback);
   return data;
 }
 
