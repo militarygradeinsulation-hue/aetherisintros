@@ -100,6 +100,22 @@ try {
   await nav.locator('[aria-haspopup=menu]').click();
   const menuSurface=await page.locator('.ix-desktop-more-menu').evaluate(el=>getComputedStyle(el).backgroundColor);
   check((theme==='light'?/rgb\((?:24[0-9]|25[0-5]),/.test(menuSurface):/rgb\((?:[0-3]?\d),/.test(menuSurface)),'More dropdown respects light/dark surface contrast');
+  const moreLayout = await page.locator('.ix-desktop-more-menu').evaluate(menu => {
+    const menuRect = menu.getBoundingClientRect();
+    const items = [...menu.querySelectorAll('.ix-desktop-more-item')];
+    return {
+      width: menuRect.width,
+      insideViewport: menuRect.left >= 0 && menuRect.right <= window.innerWidth,
+      readableItems: items.every(item => {
+        const label = item.textContent?.trim() ?? '';
+        const rect = item.getBoundingClientRect();
+        return rect.width >= 190 && rect.height <= 75 &&
+          (label.length < 8 || getComputedStyle(item).wordBreak !== 'break-all');
+      }),
+    };
+  });
+  check(moreLayout.width >= 230 && moreLayout.insideViewport && moreLayout.readableItems,
+    'More menu has a readable width and no vertically crushed labels ('+JSON.stringify(moreLayout)+')');
   await page.keyboard.press('Escape');
   await nav.locator('> button',{hasText:'Messages'}).click();
   await page.waitForFunction(()=>document.querySelector('.arch-product-main')?.dataset.archPage==='messages');
