@@ -57,10 +57,10 @@ function PublicNewsIndex() {
     <section className="public-news-grid" aria-label="News articles">
       {items.map(item => <article key={item.id} className="public-news-card">
         <small>{item.source} · {item.category}</small>
-        <h2><Link to={newsStoryPath(item)}>{item.title}</Link></h2>
+        <h2><a href={newsStoryPath(item)}> {item.title}</a></h2>
         {item.summary && <p>{item.summary}</p>}
         <div className="public-news-card-actions">
-          <Link to={newsStoryPath(item)}>Read on Ask Intros <ArrowUpRight size={15} /></Link>
+          <a href={newsStoryPath(item)}> Read on Ask Intros <ArrowUpRight size={15} /></a>
           <button type="button" onClick={() => void copy('https://askintros.vip' + newsStoryPath(item), item.id)}><Copy size={14} /> {copied === item.id ? 'Copied' : 'Copy article link'}</button>
         </div>
       </article>)}
