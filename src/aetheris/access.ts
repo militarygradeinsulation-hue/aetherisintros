@@ -114,11 +114,6 @@ export async function fetchAccess(): Promise<AccessState> {
     }
   }
 
-  // Never grant network or admin privileges from partial/failed database reads.
-  // The caller must surface the error rather than mistaking a permission failure
-  // for a new or unapproved member.
-  if (existing.error) throw existing.error
-
   const [membership, roles, profile, stats, verification, tierResult] = await Promise.all([
     supabase.from('early_access_members').select('status, founding_member_number').eq('user_id', user.id).maybeSingle(),
     supabase.from('user_roles').select('role').eq('user_id', user.id),
