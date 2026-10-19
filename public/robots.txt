@@ -13,4 +13,4 @@ Allow: /
 User-agent: *
 Allow: /
 
-Sitemap: https://intros.today/sitemap.xml
+Sitemap: https://askintros.vip/sitemap.xml

@@ -22,6 +22,14 @@ const oauth = () => (supabase.auth as unknown as { oauth: OAuthApi }).oauth
 
 export const Route = createFileRoute('/.lovable/oauth/consent')({
   staticData: { sitemap: false },
+  head: () => ({ meta: [
+    { title: 'Authorize an agent — Ask Intros' },
+    { name: 'description', content: 'Review and approve or deny an agent’s permission to act on your Ask Intros account.' },
+    { property: 'og:title', content: 'Authorize an agent — Ask Intros' },
+    { property: 'og:description', content: 'Review the account access requested by an agent before you approve or deny it.' },
+    { property: 'og:type', content: 'website' },
+    { name: 'twitter:card', content: 'summary' },
+  ] }),
   ssr: false,
   validateSearch: (s: Record<string, unknown>) => ({
     authorization_id: typeof s['authorization_id'] === 'string' ? (s['authorization_id'] as string) : '',

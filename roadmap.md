@@ -3,7 +3,12 @@
 ## Google Search Console setup (Oct 19)
 - [x] Check Joseph's linked Google connection and property access; obtain the verification tag.
 - [x] Add the root verification tag and correct the existing sitemap origin without changing page content or canonical URLs.
-- [ ] Publish with approval, confirm the live tag and sitemap, verify ownership, add the property and submit the sitemap.
+- [x] Publish with approval, confirm the live tag and sitemap, verify ownership, add the property and submit the sitemap.
+
+## SEO finding repairs (Oct 19)
+- [x] Read stored findings and refresh foundation checks; preserve the already passing sitemap.
+- [ ] Correct crawler sitemap reference and page-specific search/social information; verify preview and record completed findings.
+- [ ] Leave the proposed new search landing page unchanged pending topic-specific approval.
 
 ## Home resizing and scrolling (Oct 7)
 - [x] Keep tile resizing in place; browser verified the selected size changes, every tile retains its original node, no tiles remount, scroll position stays unchanged, and no runtime errors occur.

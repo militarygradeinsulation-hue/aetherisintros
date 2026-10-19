@@ -11,16 +11,16 @@ export const Route = createFileRoute('/_authenticated/app')({
   staticData: { sitemap: false },
   head: () => ({
     meta: [
-      { title: 'Ask Intros — The Relationship Network for CEOs' },
+      { title: 'Your Network — Ask Intros' },
       {
         name: 'description',
         content:
           'The relationship network for CEOs. See who matters, why they matter, and why now.',
       },
-      { property: 'og:title', content: 'Ask Intros — The Relationship Network for CEOs' },
+      { property: 'og:title', content: 'Your Network — Ask Intros' },
       {
         property: 'og:description',
-        content: 'Who matters. Why they matter. Why now.',
+        content: 'Your private member network, conversations and introduction opportunities.',
       },
       { property: 'og:type', content: 'website' },
       { name: 'twitter:card', content: 'summary_large_image' },

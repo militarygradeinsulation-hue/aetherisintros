@@ -42,6 +42,7 @@ export const Route = createFileRoute('/auth')({
         content: 'Your introductions, memory and preferences, kept private and permissioned.',
       },
       { property: 'og:type', content: 'website' },
+      { property: 'og:url', content: 'https://askintros.vip/auth' },
       { name: 'twitter:card', content: 'summary_large_image' },
     ],
   }),

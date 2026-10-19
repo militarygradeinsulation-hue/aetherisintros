@@ -20,9 +20,11 @@ export const Route = createFileRoute('/')({
       },
       { property: 'og:type', content: 'website' },
       { name: 'twitter:card', content: 'summary_large_image' },
-      { property: 'og:url', content: 'https://intros.today/' },
+      { property: 'og:url', content: 'https://askintros.vip/' },
+      { property: 'og:image', content: 'https://images.unsplash.com/photo-1556761175-5973dc0f32e7?auto=format&fit=crop&w=1200&h=630&q=80' },
+      { name: 'twitter:image', content: 'https://images.unsplash.com/photo-1556761175-5973dc0f32e7?auto=format&fit=crop&w=1200&h=630&q=80' },
     ],
-    links: [{ rel: 'canonical', href: 'https://intros.today/' }],
+    links: [{ rel: 'canonical', href: 'https://askintros.vip/' }],
   }),
   component: Landing,
 })
