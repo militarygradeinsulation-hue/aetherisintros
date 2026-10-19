@@ -47,9 +47,9 @@ BEGIN
  SELECT status INTO existing_status FROM public.early_access_members WHERE user_id=uid FOR UPDATE;
  IF existing_status IN ('denied','suspended','revoked','rejected','banned') THEN RAISE EXCEPTION 'Account restricted' USING ERRCODE='42501'; END IF;
  IF existing_status IS DISTINCT FROM 'approved' THEN
-  INSERT INTO public.early_access_members(user_id,email,status,source,approved_at)
-  VALUES(uid,em,'approved','basic',now())
-  ON CONFLICT(user_id) DO UPDATE SET status='approved',source='basic',approved_at=coalesce(early_access_members.approved_at,now()),updated_at=now();
+  INSERT INTO public.early_access_members(user_id,email,status,approved_at)
+  VALUES(uid,em,'approved',now())
+  ON CONFLICT(user_id) DO UPDATE SET status='approved',approved_at=coalesce(early_access_members.approved_at,now()),updated_at=now();
  END IF;
  INSERT INTO public.member_tiers(user_id,tier) VALUES(uid,'basic') ON CONFLICT(user_id) DO NOTHING;
  RETURN public.my_membership_tier();
