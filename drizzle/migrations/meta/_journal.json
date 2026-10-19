@@ -645,6 +645,13 @@
       "when": 1792427000000,
       "tag": "0092_basic_executive_membership",
       "breakpoints": true
+    },
+    {
+      "idx": 93,
+      "version": "7",
+      "when": 1792427000001,
+      "tag": "0093_intro_allowance_transparency",
+      "breakpoints": true
     }
   ]
 }
