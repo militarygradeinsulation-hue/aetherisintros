@@ -3,7 +3,7 @@ import { Check, Clock } from 'lucide-react'
 import { useNetwork } from '../store'
 import { useOS } from '../os-store'
 import { useNav } from '../nav'
-import { Btn, Eyebrow, Face, Head } from '../ui'
+import { Btn, Face, Head } from '../ui'
 import { EvidenceLink } from '../os-ui'
 import { orderInbox } from '../domain/os-engine'
 import type { InboxLane, RelationshipInboxItem } from '../domain/os-models'
@@ -20,7 +20,7 @@ export function RelationshipInboxPage() {
     <Head
       label="RELATIONSHIP INBOX"
       title="What deserves your attention."
-      copy="Not notifications. This is the short list of relationships, commitments and openings where your attention changes the outcome today — each one carrying why it matters, why now, and the next move."
+      copy="The relationships where your attention matters today."
       proof={`${items.length} open · ${done} closed this cycle`}
     />
     <nav className="lane-row" role="tablist" aria-label="Inbox lanes">
@@ -29,17 +29,6 @@ export function RelationshipInboxPage() {
     <section className="inbox-list">
       {items.map(i => <InboxRow key={i.id} item={i} />)}
       {!items.length && <p className="quiet-empty">Nothing in this lane. That is a good state, not an empty one.</p>}
-    </section>
-    <section className="teach-block">
-      <div><Eyebrow>HOW THIS LIST IS BUILT</Eyebrow>
-        <h2>Attention is the scarcest thing in a network.</h2>
-        <p>Overdue commitments, cooling relationships, newly relevant context, people you can help, intro approvals, placements, collisions and meetings needing a close — ranked by consequence, never by recency.</p>
-      </div>
-      <ul className="teach-points">
-        <li><b>Why this matters</b><span>The consequence if you do nothing.</span></li>
-        <li><b>Why now</b><span>The event that made this week the right week.</span></li>
-        <li><b>Next move</b><span>One action, executed here.</span></li>
-      </ul>
     </section>
   </>
 }
@@ -67,11 +56,16 @@ export function InboxRow({ item, compact = false }: { item: RelationshipInboxIte
         <b>{item.title}</b>
       </div>
     </div>
-    {!compact && <dl className="inbox-reasons">
-      <div><dt>Why this matters</dt><dd>{item.whyThisMatters}</dd></div>
-      <div><dt>Why now</dt><dd>{item.whyNow}</dd></div>
-      <div><dt>Next move</dt><dd>{item.nextMove}</dd></div>
-    </dl>}
+    {!compact && <div className="inbox-reasons">
+      <dl><div><dt>Why now</dt><dd>{item.whyNow}</dd></div></dl>
+      <details>
+        <summary className="cursor-pointer text-sm font-medium">View reasoning and next move</summary>
+        <dl>
+          <div><dt>Why this matters</dt><dd>{item.whyThisMatters}</dd></div>
+          <div><dt>Next move</dt><dd>{item.nextMove}</dd></div>
+        </dl>
+      </details>
+    </div>}
     <footer>
       <EvidenceLink ids={item.evidenceIds} label="Evidence" />
       <div className="inbox-actions">
