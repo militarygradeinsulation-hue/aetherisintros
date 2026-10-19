@@ -13,7 +13,7 @@ export const Route = createFileRoute('/early-access')({
   staticData: { sitemap: true },
   head: () => ({
     meta: [
-      { title: 'Founding 1,000 — Ask Intros' },
+      { title: 'Basic & Executive — Ask Intros' },
       {
         name: 'description',
         content:
@@ -91,10 +91,9 @@ function EarlyAccessPage() {
         <span className="brand-name">Ask<em>Intros</em></span>
       </Link>
       <div className="auth-index"><span className="folio">FOUNDING 1,000 / 2026</span><span>01 / MEMBER ACCESS</span></div>
-      <h1>The first<br /><em>thousand.</em></h1>
+      <h1>Start with<br /><em>Basic.</em></h1>
       <p className="auth-lede">
-        Ask Intros opens with 1,000 members. No selling, no mass outreach, no bought attention —
-        every introduction needs both sides to agree.
+        Anyone can create a Basic account and join after email confirmation and profile setup. Executive membership is reviewed separately for C-suite leaders. Every introduction requires consent.
       </p>
 
       <div className="access-meter" aria-label="Founding member places">
@@ -116,7 +115,7 @@ function EarlyAccessPage() {
         <p className="auth-lede">Explore the complete showcase without an account. Create one only when you are ready to build your real professional network.</p>
         <div className="access-entry-actions">
           <Link to="/demo" className="btn primary">Demo the system <ArrowRight size={15} /></Link>
-          <Link to="/auth" search={{ next: '/early-access', mode: 'signup' }} className="btn access-account">Create your account</Link>
+          <Link to="/auth" search={{ next: '/early-access', mode: 'signup' }} className="btn access-account">Create a Basic account</Link>
         </div>
       </>}
 
@@ -132,7 +131,7 @@ function EarlyAccessPage() {
             <input value={code} onChange={e => setCode(e.target.value)} placeholder="Code from a member" />
           </label>
           <button className="btn ghost" type="button" onClick={() => void claim()} disabled={busy || (!code.trim() && stats.mode !== 'first_1000')}>
-            {busy ? 'One moment…' : 'Unlock full access'} <ArrowRight size={15} />
+            {busy ? 'One moment…' : 'Claim founding access'} <ArrowRight size={15} />
           </button>
         </>}
         {error && <p className="auth-error">{error}</p>}

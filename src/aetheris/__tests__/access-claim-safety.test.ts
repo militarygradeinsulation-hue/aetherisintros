@@ -5,11 +5,11 @@ const access = readFileSync(new URL('../access.ts', import.meta.url), 'utf8')
 
 describe('member activation claim safety', () => {
   it('does not claim access for an unconfirmed email', () => {
-    expect(access).toContain('if (user.email_confirmed_at && !existing.error &&')
-    expect(access).toContain('await claimAccess(code || undefined)')
+    expect(access).toContain('if (user.email_confirmed_at && (!existing.data')
+    expect(access).toContain('await claimAccess(code)')
   })
   it('does not treat a failed membership lookup as an empty membership', () => {
-    expect(access).toContain('!existing.error && (!existing.data')
+    expect(access).toContain('if (existing.error) throw existing.error')
   })
   it('keeps server-authoritative live membership checks', () => {
     expect(access).toContain("access.status === 'approved' && access.onboarded")

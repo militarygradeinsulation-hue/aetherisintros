@@ -3,7 +3,11 @@ export default async ({ ok, as, svc, A, B, C, ADMIN }) => {
   await svc(`update auth.users set email_confirmed_at=now() where id in ('${A}','${B}','${C}')`)
   await svc(`update public.profiles set onboarded=true where id in ('${A}','${B}','${C}')`)
   await svc(`insert into public.early_access_members(user_id,email,status) values ('${A}','a@test.invalid','approved'),('${B}','b@test.invalid','approved'),('${C}','c@test.invalid','approved') on conflict(user_id) do update set status='approved';`)
+  // A has explicitly approved Executive publishing rights; B and C remain Basic.
+  await svc(`insert into public.member_tiers(user_id,tier) values ('${A}','executive') on conflict(user_id) do update set tier='executive'`)
   const draft = { title: 'Partner for industrial pilot', objective: 'Run a bounded industrial pilot', kind: 'Partnership', whatIsNeeded: 'Hydraulic engineering expertise', whatIsOffered: 'Pilot access and implementation budget', mutualValue: 'Test a practical implementation together', visibility: 'network', expiresOn: new Date(Date.now() + 7*86400000).toISOString().slice(0,10), ownerId: B, interest: [{ memberId: B, note: 'Injected response' }] }
+  ok(!!(await as(B, 'select public.publish_exchange_opportunity($1::jsonb)', [JSON.stringify(draft)])).error,
+    'Basic members cannot publish shared opportunities without Executive approval')
   let r=await as(A, 'select public.publish_exchange_opportunity($1::jsonb) id', [JSON.stringify(draft)])
   ok(!r.error && !!r.rows?.[0]?.id,'approved member publishes shared opportunity')
   const id=r.rows?.[0]?.id

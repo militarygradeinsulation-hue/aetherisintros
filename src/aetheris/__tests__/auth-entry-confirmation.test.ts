@@ -13,8 +13,8 @@ describe('canonical confirmed member entry', () => {
   it('does not claim or clear invitation before email confirmation', () => {
     expect(auth).not.toContain('await claimAccess(')
     expect(auth).not.toContain('clearInvite()')
-    expect(access).toContain("if (user.email_confirmed_at && !existing.error")
-    expect(access).toContain("result.status === 'approved') clearInvite()")
+    expect(access).toContain("if (user.email_confirmed_at && (!existing.data")
+    expect(access).toContain("if (approvedByInvite) clearInvite()")
   })
   it('preserves explicit authenticated next destinations', () => {
     expect(auth).toContain('if (next) { window.location.replace(next); return }')
