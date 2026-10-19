@@ -1,196 +1,197 @@
--- Ask Intros Business Lobby. A member explicitly opens a temporary availability
--- window; only approved, mutually opted-in introduction counterparts can see it
--- or knock. No continuous presence tracking, public office directory, or auto-calls.
-
-CREATE TABLE public.business_lobby_windows (
-  user_id uuid PRIMARY KEY REFERENCES auth.users(id) ON DELETE CASCADE,
-  available_until timestamptz NOT NULL,
-  headline text NOT NULL DEFAULT '' CHECK (char_length(headline) <= 160),
-  updated_at timestamptz NOT NULL DEFAULT now()
-);
-REVOKE ALL ON public.business_lobby_windows FROM PUBLIC, anon, authenticated;
-GRANT ALL ON public.business_lobby_windows TO service_role;
-GRANT SELECT ON public.business_lobby_windows TO authenticated;
-ALTER TABLE public.business_lobby_windows ENABLE ROW LEVEL SECURITY;
-CREATE POLICY "my lobby window only" ON public.business_lobby_windows FOR SELECT TO authenticated
-  USING (user_id = auth.uid());
-
-CREATE TABLE public.business_lobby_knocks (
-  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
-  intro_request_id uuid NOT NULL REFERENCES public.intro_requests(id) ON DELETE CASCADE,
-  requester_id uuid NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
-  recipient_id uuid NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
-  note text NOT NULL DEFAULT '' CHECK (char_length(note) <= 240),
-  status text NOT NULL DEFAULT 'pending' CHECK (status IN ('pending','accepted','declined','expired')),
-  expires_at timestamptz NOT NULL DEFAULT (now() + interval '10 minutes'),
-  meeting_id uuid REFERENCES public.meetings(id) ON DELETE SET NULL,
-  created_at timestamptz NOT NULL DEFAULT now(),
-  decided_at timestamptz,
-  CONSTRAINT business_lobby_not_self CHECK (requester_id <> recipient_id)
-);
-CREATE INDEX business_lobby_inbox_idx ON public.business_lobby_knocks(recipient_id, created_at DESC);
-CREATE INDEX business_lobby_sender_idx ON public.business_lobby_knocks(requester_id, created_at DESC);
-CREATE UNIQUE INDEX business_lobby_one_pending_pair ON public.business_lobby_knocks(requester_id, recipient_id)
-  WHERE status = 'pending';
-REVOKE ALL ON public.business_lobby_knocks FROM PUBLIC, anon, authenticated;
-GRANT ALL ON public.business_lobby_knocks TO service_role;
-GRANT SELECT ON public.business_lobby_knocks TO authenticated;
-ALTER TABLE public.business_lobby_knocks ENABLE ROW LEVEL SECURITY;
-CREATE POLICY "knock participants read" ON public.business_lobby_knocks FOR SELECT TO authenticated
-  USING (auth.uid() IN (requester_id, recipient_id));
-
--- Set availability for at most two hours. Calling with zero immediately closes
--- the lobby without requiring a background clock or silently broadcasting presence.
-CREATE OR REPLACE FUNCTION public.set_business_lobby(p_minutes integer, p_headline text DEFAULT '')
-RETURNS timestamptz
-LANGUAGE plpgsql VOLATILE SECURITY DEFINER SET search_path = ''
-AS $lobby$
-DECLARE v_uid uuid := auth.uid(); v_until timestamptz;
-BEGIN
-  IF v_uid IS NULL OR NOT public.is_live_member() OR NOT public.is_approved_member(v_uid) THEN
-    RAISE EXCEPTION 'Approved membership required' USING ERRCODE = '42501';
-  END IF;
-  IF p_minutes IS NULL OR p_minutes NOT IN (0,15,30,60,120)
-    OR char_length(coalesce(p_headline,'')) > 160 THEN
-    RAISE EXCEPTION 'Choose a permitted availability window' USING ERRCODE = '22023';
-  END IF;
-  IF p_minutes = 0 THEN
-    DELETE FROM public.business_lobby_windows WHERE user_id = v_uid;
-    RETURN NULL;
-  END IF;
-  v_until := now() + make_interval(mins => p_minutes);
-  INSERT INTO public.business_lobby_windows(user_id, available_until, headline)
-  VALUES(v_uid,v_until,btrim(coalesce(p_headline,'')))
-  ON CONFLICT(user_id) DO UPDATE
-    SET available_until=excluded.available_until, headline=excluded.headline, updated_at=now();
-  RETURN v_until;
-END;
-$lobby$;
-REVOKE ALL ON FUNCTION public.set_business_lobby(integer,text) FROM PUBLIC,anon,authenticated;
-GRANT EXECUTE ON FUNCTION public.set_business_lobby(integer,text) TO authenticated;
-
--- Only mutually accepted counterparts can discover availability; a missing
--- record/expired window is indistinguishable from someone choosing to be offline.
-CREATE OR REPLACE FUNCTION public.my_business_lobby_contacts()
-RETURNS TABLE(intro_request_id uuid, other_id uuid, other_name text, headline text, available_until timestamptz)
-LANGUAGE sql STABLE SECURITY DEFINER SET search_path = ''
-AS $lobby$
-  SELECT DISTINCT ON (r.id)
-    r.id,
-    CASE WHEN r.user_id = auth.uid() THEN r.target_user_id ELSE r.user_id END,
-    coalesce(nullif(btrim(p.name),''),'Member'),
-    w.headline, w.available_until
-  FROM public.intro_requests r
-  JOIN public.business_lobby_windows w ON w.user_id =
-    CASE WHEN r.user_id = auth.uid() THEN r.target_user_id ELSE r.user_id END
-  JOIN public.profiles p ON p.id = w.user_id
-  WHERE auth.uid() IS NOT NULL AND public.is_live_member()
-    AND public.is_approved_member(auth.uid())
-    AND public.is_approved_member(w.user_id)
-    AND r.requester_opt_in AND r.member_opt_in AND r.accepted_at IS NOT NULL
-    AND (r.user_id = auth.uid() OR r.target_user_id = auth.uid())
-    AND w.available_until > now()
-  ORDER BY r.id
-  LIMIT 100;
-$lobby$;
-REVOKE ALL ON FUNCTION public.my_business_lobby_contacts() FROM PUBLIC,anon,authenticated;
-GRANT EXECUTE ON FUNCTION public.my_business_lobby_contacts() TO authenticated;
-
-CREATE OR REPLACE FUNCTION public.knock_business_lobby(p_intro uuid, p_note text DEFAULT '')
-RETURNS uuid
-LANGUAGE plpgsql VOLATILE SECURITY DEFINER SET search_path = ''
-AS $lobby$
-DECLARE v_uid uuid := auth.uid(); v_other uuid; v_id uuid; v_name text;
-BEGIN
-  IF v_uid IS NULL OR NOT public.is_live_member() OR NOT public.is_approved_member(v_uid) THEN
-    RAISE EXCEPTION 'Approved membership required' USING ERRCODE = '42501';
-  END IF;
-  IF p_note IS NULL OR char_length(p_note) > 240 THEN
-    RAISE EXCEPTION 'Short context only' USING ERRCODE = '22023';
-  END IF;
-  SELECT CASE WHEN r.user_id = v_uid THEN r.target_user_id ELSE r.user_id END
-    INTO v_other FROM public.intro_requests r
-    WHERE r.id = p_intro AND r.requester_opt_in AND r.member_opt_in
-      AND r.accepted_at IS NOT NULL
-      AND (r.user_id = v_uid OR r.target_user_id = v_uid);
-  IF v_other IS NULL OR NOT public.is_approved_member(v_other) OR NOT EXISTS(
-    SELECT 1 FROM public.business_lobby_windows w
-    WHERE w.user_id = v_other AND w.available_until > now()
-  ) THEN
-    RAISE EXCEPTION 'This member is not available for a drop-in' USING ERRCODE = '42501';
-  END IF;
-  -- Lock both participants' pair to avoid duplicate concurrent requests.
-  PERFORM pg_advisory_xact_lock(hashtextextended(least(v_uid,v_other)::text || ':' || greatest(v_uid,v_other)::text, 0));
-  UPDATE public.business_lobby_knocks SET status='expired', decided_at=now()
-    WHERE status='pending' AND expires_at <= now()
-      AND requester_id = v_uid AND recipient_id = v_other;
-  SELECT id INTO v_id FROM public.business_lobby_knocks
-    WHERE requester_id=v_uid AND recipient_id=v_other AND status='pending'
-      AND expires_at>now() ORDER BY created_at DESC LIMIT 1;
-  IF v_id IS NOT NULL THEN RETURN v_id; END IF;
-  IF (SELECT count(*) FROM public.business_lobby_knocks
-      WHERE requester_id = v_uid AND created_at > now() - interval '10 minutes') >= 3 THEN
-    RAISE EXCEPTION 'Please allow some time between drop-in requests' USING ERRCODE='22023';
-  END IF;
-  INSERT INTO public.business_lobby_knocks(intro_request_id,requester_id,recipient_id,note)
-    VALUES(p_intro,v_uid,v_other,btrim(p_note)) RETURNING id INTO v_id;
-  SELECT coalesce(nullif(btrim(name),''),'A member') INTO v_name FROM public.profiles WHERE id=v_uid;
-  INSERT INTO public.notifications(user_id,kind,text,actor_id,link)
-    VALUES(v_other,'meeting_invite',left(v_name || ' is requesting a quick business conversation',220),v_uid,'/app/meetings');
-  RETURN v_id;
-END;
-$lobby$;
-REVOKE ALL ON FUNCTION public.knock_business_lobby(uuid,text) FROM PUBLIC,anon,authenticated;
-GRANT EXECUTE ON FUNCTION public.knock_business_lobby(uuid,text) TO authenticated;
-
--- Only the recipient accepts or declines. A dropped/expired availability window
--- also prevents acceptance. Accepting reuses the existing consented-intro meeting
--- engine, preserving the original introduction for follow-through/outcome records.
-CREATE OR REPLACE FUNCTION public.answer_business_lobby(p_knock uuid,p_accept boolean)
-RETURNS uuid
-LANGUAGE plpgsql VOLATILE SECURITY DEFINER SET search_path = ''
-AS $lobby$
-DECLARE v_row public.business_lobby_knocks%ROWTYPE; v_meeting uuid; v_name text;
-BEGIN
-  IF auth.uid() IS NULL OR NOT public.is_live_member() OR NOT public.is_approved_member(auth.uid()) THEN
-    RAISE EXCEPTION 'Approved membership required' USING ERRCODE='42501';
-  END IF;
-  IF p_accept IS NULL THEN RAISE EXCEPTION 'Choose accept or decline' USING ERRCODE='22023'; END IF;
-  SELECT * INTO v_row FROM public.business_lobby_knocks WHERE id=p_knock FOR UPDATE;
-  IF NOT FOUND OR v_row.recipient_id <> auth.uid() OR v_row.status<>'pending' THEN
-    RAISE EXCEPTION 'Request is unavailable' USING ERRCODE='42501';
-  END IF;
-  IF v_row.expires_at <= now() THEN
-    UPDATE public.business_lobby_knocks SET status='expired', decided_at=now() WHERE id=p_knock;
-    RETURN NULL;
-  END IF;
-  IF p_accept THEN
-    IF NOT EXISTS(SELECT 1 FROM public.business_lobby_windows
-                  WHERE user_id=auth.uid() AND available_until>now()) THEN
-      RAISE EXCEPTION 'Your availability window has ended' USING ERRCODE='22023';
-    END IF;
-    IF NOT EXISTS(SELECT 1 FROM public.intro_requests
-                  WHERE id=v_row.intro_request_id AND requester_opt_in AND member_opt_in
-                  AND accepted_at IS NOT NULL
-                  AND (user_id=auth.uid() OR target_user_id=auth.uid())) THEN
-      RAISE EXCEPTION 'Introduction is no longer accepted' USING ERRCODE='42501';
-    END IF;
-    v_meeting := public.create_meeting(
-      'Business Lobby conversation', ARRAY[v_row.requester_id], NULL,
-      left(concat_ws(E'\n','Accepted introduction drop-in', nullif(v_row.note,'')),2000),
-      v_row.intro_request_id
-    );
-  END IF;
-  UPDATE public.business_lobby_knocks SET
-    status=CASE WHEN p_accept THEN 'accepted' ELSE 'declined' END,
-    decided_at=now(), meeting_id=v_meeting WHERE id=p_knock;
-  SELECT coalesce(nullif(btrim(name),''),'A member') INTO v_name FROM public.profiles WHERE id=auth.uid();
-  INSERT INTO public.notifications(user_id,kind,text,actor_id,link)
-    VALUES(v_row.requester_id,'meeting_invite',
-      left(v_name || CASE WHEN p_accept THEN ' accepted your drop-in request' ELSE ' declined your drop-in request' END,220),
-      auth.uid(),'/app/meetings');
-  RETURN v_meeting;
-END;
-$lobby$;
-REVOKE ALL ON FUNCTION public.answer_business_lobby(uuid,boolean) FROM PUBLIC,anon,authenticated;
-GRANT EXECUTE ON FUNCTION public.answer_business_lobby(uuid,boolean) TO authenticated;
+-- The content of this migration cannot be applied: business_lobby_windows already exists.
+-- -- Ask Intros Business Lobby. A member explicitly opens a temporary availability
+-- -- window; only approved, mutually opted-in introduction counterparts can see it
+-- -- or knock. No continuous presence tracking, public office directory, or auto-calls.
+-- 
+-- CREATE TABLE public.business_lobby_windows (
+--   user_id uuid PRIMARY KEY REFERENCES auth.users(id) ON DELETE CASCADE,
+--   available_until timestamptz NOT NULL,
+--   headline text NOT NULL DEFAULT '' CHECK (char_length(headline) <= 160),
+--   updated_at timestamptz NOT NULL DEFAULT now()
+-- );
+-- REVOKE ALL ON public.business_lobby_windows FROM PUBLIC, anon, authenticated;
+-- GRANT ALL ON public.business_lobby_windows TO service_role;
+-- GRANT SELECT ON public.business_lobby_windows TO authenticated;
+-- ALTER TABLE public.business_lobby_windows ENABLE ROW LEVEL SECURITY;
+-- CREATE POLICY "my lobby window only" ON public.business_lobby_windows FOR SELECT TO authenticated
+--   USING (user_id = auth.uid());
+-- 
+-- CREATE TABLE public.business_lobby_knocks (
+--   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+--   intro_request_id uuid NOT NULL REFERENCES public.intro_requests(id) ON DELETE CASCADE,
+--   requester_id uuid NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
+--   recipient_id uuid NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
+--   note text NOT NULL DEFAULT '' CHECK (char_length(note) <= 240),
+--   status text NOT NULL DEFAULT 'pending' CHECK (status IN ('pending','accepted','declined','expired')),
+--   expires_at timestamptz NOT NULL DEFAULT (now() + interval '10 minutes'),
+--   meeting_id uuid REFERENCES public.meetings(id) ON DELETE SET NULL,
+--   created_at timestamptz NOT NULL DEFAULT now(),
+--   decided_at timestamptz,
+--   CONSTRAINT business_lobby_not_self CHECK (requester_id <> recipient_id)
+-- );
+-- CREATE INDEX business_lobby_inbox_idx ON public.business_lobby_knocks(recipient_id, created_at DESC);
+-- CREATE INDEX business_lobby_sender_idx ON public.business_lobby_knocks(requester_id, created_at DESC);
+-- CREATE UNIQUE INDEX business_lobby_one_pending_pair ON public.business_lobby_knocks(requester_id, recipient_id)
+--   WHERE status = 'pending';
+-- REVOKE ALL ON public.business_lobby_knocks FROM PUBLIC, anon, authenticated;
+-- GRANT ALL ON public.business_lobby_knocks TO service_role;
+-- GRANT SELECT ON public.business_lobby_knocks TO authenticated;
+-- ALTER TABLE public.business_lobby_knocks ENABLE ROW LEVEL SECURITY;
+-- CREATE POLICY "knock participants read" ON public.business_lobby_knocks FOR SELECT TO authenticated
+--   USING (auth.uid() IN (requester_id, recipient_id));
+-- 
+-- -- Set availability for at most two hours. Calling with zero immediately closes
+-- -- the lobby without requiring a background clock or silently broadcasting presence.
+-- CREATE OR REPLACE FUNCTION public.set_business_lobby(p_minutes integer, p_headline text DEFAULT '')
+-- RETURNS timestamptz
+-- LANGUAGE plpgsql VOLATILE SECURITY DEFINER SET search_path = ''
+-- AS $lobby$
+-- DECLARE v_uid uuid := auth.uid(); v_until timestamptz;
+-- BEGIN
+--   IF v_uid IS NULL OR NOT public.is_live_member() OR NOT public.is_approved_member(v_uid) THEN
+--     RAISE EXCEPTION 'Approved membership required' USING ERRCODE = '42501';
+--   END IF;
+--   IF p_minutes IS NULL OR p_minutes NOT IN (0,15,30,60,120)
+--     OR char_length(coalesce(p_headline,'')) > 160 THEN
+--     RAISE EXCEPTION 'Choose a permitted availability window' USING ERRCODE = '22023';
+--   END IF;
+--   IF p_minutes = 0 THEN
+--     DELETE FROM public.business_lobby_windows WHERE user_id = v_uid;
+--     RETURN NULL;
+--   END IF;
+--   v_until := now() + make_interval(mins => p_minutes);
+--   INSERT INTO public.business_lobby_windows(user_id, available_until, headline)
+--   VALUES(v_uid,v_until,btrim(coalesce(p_headline,'')))
+--   ON CONFLICT(user_id) DO UPDATE
+--     SET available_until=excluded.available_until, headline=excluded.headline, updated_at=now();
+--   RETURN v_until;
+-- END;
+-- $lobby$;
+-- REVOKE ALL ON FUNCTION public.set_business_lobby(integer,text) FROM PUBLIC,anon,authenticated;
+-- GRANT EXECUTE ON FUNCTION public.set_business_lobby(integer,text) TO authenticated;
+-- 
+-- -- Only mutually accepted counterparts can discover availability; a missing
+-- -- record/expired window is indistinguishable from someone choosing to be offline.
+-- CREATE OR REPLACE FUNCTION public.my_business_lobby_contacts()
+-- RETURNS TABLE(intro_request_id uuid, other_id uuid, other_name text, headline text, available_until timestamptz)
+-- LANGUAGE sql STABLE SECURITY DEFINER SET search_path = ''
+-- AS $lobby$
+--   SELECT DISTINCT ON (r.id)
+--     r.id,
+--     CASE WHEN r.user_id = auth.uid() THEN r.target_user_id ELSE r.user_id END,
+--     coalesce(nullif(btrim(p.name),''),'Member'),
+--     w.headline, w.available_until
+--   FROM public.intro_requests r
+--   JOIN public.business_lobby_windows w ON w.user_id =
+--     CASE WHEN r.user_id = auth.uid() THEN r.target_user_id ELSE r.user_id END
+--   JOIN public.profiles p ON p.id = w.user_id
+--   WHERE auth.uid() IS NOT NULL AND public.is_live_member()
+--     AND public.is_approved_member(auth.uid())
+--     AND public.is_approved_member(w.user_id)
+--     AND r.requester_opt_in AND r.member_opt_in AND r.accepted_at IS NOT NULL
+--     AND (r.user_id = auth.uid() OR r.target_user_id = auth.uid())
+--     AND w.available_until > now()
+--   ORDER BY r.id
+--   LIMIT 100;
+-- $lobby$;
+-- REVOKE ALL ON FUNCTION public.my_business_lobby_contacts() FROM PUBLIC,anon,authenticated;
+-- GRANT EXECUTE ON FUNCTION public.my_business_lobby_contacts() TO authenticated;
+-- 
+-- CREATE OR REPLACE FUNCTION public.knock_business_lobby(p_intro uuid, p_note text DEFAULT '')
+-- RETURNS uuid
+-- LANGUAGE plpgsql VOLATILE SECURITY DEFINER SET search_path = ''
+-- AS $lobby$
+-- DECLARE v_uid uuid := auth.uid(); v_other uuid; v_id uuid; v_name text;
+-- BEGIN
+--   IF v_uid IS NULL OR NOT public.is_live_member() OR NOT public.is_approved_member(v_uid) THEN
+--     RAISE EXCEPTION 'Approved membership required' USING ERRCODE = '42501';
+--   END IF;
+--   IF p_note IS NULL OR char_length(p_note) > 240 THEN
+--     RAISE EXCEPTION 'Short context only' USING ERRCODE = '22023';
+--   END IF;
+--   SELECT CASE WHEN r.user_id = v_uid THEN r.target_user_id ELSE r.user_id END
+--     INTO v_other FROM public.intro_requests r
+--     WHERE r.id = p_intro AND r.requester_opt_in AND r.member_opt_in
+--       AND r.accepted_at IS NOT NULL
+--       AND (r.user_id = v_uid OR r.target_user_id = v_uid);
+--   IF v_other IS NULL OR NOT public.is_approved_member(v_other) OR NOT EXISTS(
+--     SELECT 1 FROM public.business_lobby_windows w
+--     WHERE w.user_id = v_other AND w.available_until > now()
+--   ) THEN
+--     RAISE EXCEPTION 'This member is not available for a drop-in' USING ERRCODE = '42501';
+--   END IF;
+--   -- Lock both participants' pair to avoid duplicate concurrent requests.
+--   PERFORM pg_advisory_xact_lock(hashtextextended(least(v_uid,v_other)::text || ':' || greatest(v_uid,v_other)::text, 0));
+--   UPDATE public.business_lobby_knocks SET status='expired', decided_at=now()
+--     WHERE status='pending' AND expires_at <= now()
+--       AND requester_id = v_uid AND recipient_id = v_other;
+--   SELECT id INTO v_id FROM public.business_lobby_knocks
+--     WHERE requester_id=v_uid AND recipient_id=v_other AND status='pending'
+--       AND expires_at>now() ORDER BY created_at DESC LIMIT 1;
+--   IF v_id IS NOT NULL THEN RETURN v_id; END IF;
+--   IF (SELECT count(*) FROM public.business_lobby_knocks
+--       WHERE requester_id = v_uid AND created_at > now() - interval '10 minutes') >= 3 THEN
+--     RAISE EXCEPTION 'Please allow some time between drop-in requests' USING ERRCODE='22023';
+--   END IF;
+--   INSERT INTO public.business_lobby_knocks(intro_request_id,requester_id,recipient_id,note)
+--     VALUES(p_intro,v_uid,v_other,btrim(p_note)) RETURNING id INTO v_id;
+--   SELECT coalesce(nullif(btrim(name),''),'A member') INTO v_name FROM public.profiles WHERE id=v_uid;
+--   INSERT INTO public.notifications(user_id,kind,text,actor_id,link)
+--     VALUES(v_other,'meeting_invite',left(v_name || ' is requesting a quick business conversation',220),v_uid,'/app/meetings');
+--   RETURN v_id;
+-- END;
+-- $lobby$;
+-- REVOKE ALL ON FUNCTION public.knock_business_lobby(uuid,text) FROM PUBLIC,anon,authenticated;
+-- GRANT EXECUTE ON FUNCTION public.knock_business_lobby(uuid,text) TO authenticated;
+-- 
+-- -- Only the recipient accepts or declines. A dropped/expired availability window
+-- -- also prevents acceptance. Accepting reuses the existing consented-intro meeting
+-- -- engine, preserving the original introduction for follow-through/outcome records.
+-- CREATE OR REPLACE FUNCTION public.answer_business_lobby(p_knock uuid,p_accept boolean)
+-- RETURNS uuid
+-- LANGUAGE plpgsql VOLATILE SECURITY DEFINER SET search_path = ''
+-- AS $lobby$
+-- DECLARE v_row public.business_lobby_knocks%ROWTYPE; v_meeting uuid; v_name text;
+-- BEGIN
+--   IF auth.uid() IS NULL OR NOT public.is_live_member() OR NOT public.is_approved_member(auth.uid()) THEN
+--     RAISE EXCEPTION 'Approved membership required' USING ERRCODE='42501';
+--   END IF;
+--   IF p_accept IS NULL THEN RAISE EXCEPTION 'Choose accept or decline' USING ERRCODE='22023'; END IF;
+--   SELECT * INTO v_row FROM public.business_lobby_knocks WHERE id=p_knock FOR UPDATE;
+--   IF NOT FOUND OR v_row.recipient_id <> auth.uid() OR v_row.status<>'pending' THEN
+--     RAISE EXCEPTION 'Request is unavailable' USING ERRCODE='42501';
+--   END IF;
+--   IF v_row.expires_at <= now() THEN
+--     UPDATE public.business_lobby_knocks SET status='expired', decided_at=now() WHERE id=p_knock;
+--     RETURN NULL;
+--   END IF;
+--   IF p_accept THEN
+--     IF NOT EXISTS(SELECT 1 FROM public.business_lobby_windows
+--                   WHERE user_id=auth.uid() AND available_until>now()) THEN
+--       RAISE EXCEPTION 'Your availability window has ended' USING ERRCODE='22023';
+--     END IF;
+--     IF NOT EXISTS(SELECT 1 FROM public.intro_requests
+--                   WHERE id=v_row.intro_request_id AND requester_opt_in AND member_opt_in
+--                   AND accepted_at IS NOT NULL
+--                   AND (user_id=auth.uid() OR target_user_id=auth.uid())) THEN
+--       RAISE EXCEPTION 'Introduction is no longer accepted' USING ERRCODE='42501';
+--     END IF;
+--     v_meeting := public.create_meeting(
+--       'Business Lobby conversation', ARRAY[v_row.requester_id], NULL,
+--       left(concat_ws(E'\n','Accepted introduction drop-in', nullif(v_row.note,'')),2000),
+--       v_row.intro_request_id
+--     );
+--   END IF;
+--   UPDATE public.business_lobby_knocks SET
+--     status=CASE WHEN p_accept THEN 'accepted' ELSE 'declined' END,
+--     decided_at=now(), meeting_id=v_meeting WHERE id=p_knock;
+--   SELECT coalesce(nullif(btrim(name),''),'A member') INTO v_name FROM public.profiles WHERE id=auth.uid();
+--   INSERT INTO public.notifications(user_id,kind,text,actor_id,link)
+--     VALUES(v_row.requester_id,'meeting_invite',
+--       left(v_name || CASE WHEN p_accept THEN ' accepted your drop-in request' ELSE ' declined your drop-in request' END,220),
+--       auth.uid(),'/app/meetings');
+--   RETURN v_meeting;
+-- END;
+-- $lobby$;
+-- REVOKE ALL ON FUNCTION public.answer_business_lobby(uuid,boolean) FROM PUBLIC,anon,authenticated;
+-- GRANT EXECUTE ON FUNCTION public.answer_business_lobby(uuid,boolean) TO authenticated;
