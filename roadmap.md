@@ -1,5 +1,11 @@
 # Aetheris specification completion
 
+## Original site light-mode contrast (Oct 19)
+- [x] Repair shared light-mode ink and editorial copy/metrics without changing dark mode or features.
+- [x] Verify actual Memory/Insights demo hosts at 390/360px, public pages at 390px, unchanged dark mode, 33 regression tests and automatic compilation; no publication.
+- [ ] Verify authenticated-only pages — blocked: requesting-account session could not be minted; user must sign in to preview.
+- [ ] Confirm remote GitHub sync status — blocked: repository connection/status is only visible in Project settings → Git.
+
 ## Google Search Console setup (Oct 19)
 - [x] Check Joseph's linked Google connection and property access; obtain the verification tag.
 - [x] Add the root verification tag and correct the existing sitemap origin without changing page content or canonical URLs.
