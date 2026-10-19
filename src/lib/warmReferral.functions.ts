@@ -65,6 +65,15 @@ function parseAiSuggestions(text: string): AiSuggestion[] {
   }
 }
 
+// Referral tables are deliberately locked to service-role writes (migration
+// 0072 grants members SELECT only). Every write below runs through the
+// privileged client, loaded inside the handler after requireAuthContract has
+// verified the caller; each write is still scoped to that caller's userId.
+async function adminDb() {
+  const { supabaseAdmin } = await import('@/integrations/supabase/client.server')
+  return supabaseAdmin as any // eslint-disable-line @typescript-eslint/no-explicit-any
+}
+
 export const generateReferralSuggestions = createServerFn({ method: 'POST' })
   .middleware([requireAuthContract])
   .handler(async ({ context }): Promise<ReferralSuggestion[]> => {
