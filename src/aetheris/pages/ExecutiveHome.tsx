@@ -129,7 +129,7 @@ export function ExecutiveHome({ embedded = false }: { embedded?: boolean }) {
         {isLoading && <p>Composing today’s intelligence feed…</p>}{!isLoading && !stories.length && <p>News will appear here when the live feed is available.</p>}
       </TileShell>
       case 'assistant': return <TileShell label="ONE CLEAR MOVE" title="Ask Intros what to do next." variant="action">
-        <MessageSquareText size={32} /><p>Use the assistant to navigate, change settings, research, draft, or act across your account.</p>
+        <MessageSquareText size={32} /><p>Get a clear next step.</p>
         <button className="tile-cta" onClick={() => window.dispatchEvent(new CustomEvent('aetheris:open-assistant'))}>Ask Intros <ArrowRight size={14} /></button>
       </TileShell>
     }
@@ -140,10 +140,10 @@ export function ExecutiveHome({ embedded = false }: { embedded?: boolean }) {
   return <NewsImagesProvider value={images}>
     <div className={`core-hub home-hub ${embedded ? 'home-brief-embedded' : ''}`}>
       {!embedded && <HubIntro label="CEO NOW / TODAY" title={<>Good morning, {firstName}.<br /><em>Here is what matters now.</em></>}
-        copy="A concise reading of timing, relationships, commitments and movement across your private operating system."
+        copy="What matters now, and why."
         aside={<div className="home-intro-aside"><div className="hub-now"><strong>{attention}</strong><span>items may need<br />your attention</span></div><Btn kind={customizing ? 'primary' : 'secondary'} onClick={() => setCustomizing(value => !value)}>{customizing ? <Check size={14} /> : <LayoutDashboard size={14} />}{customizing ? 'Done' : 'Customize Home'}</Btn></div>} />}
 
-      {embedded && <div className="home-brief-tools"><div><span>EXECUTIVE BRIEF</span><h2>Everything that deserves your attention.</h2></div><Btn kind={customizing ? 'primary' : 'secondary'} onClick={() => setCustomizing(value => !value)}>{customizing ? <Check size={14} /> : <LayoutDashboard size={14} />}{customizing ? 'Done' : 'Customize brief'}</Btn></div>}
+      {embedded && <div className="home-brief-tools"><div><span>EXECUTIVE BRIEF</span><h2>Your priorities, at a glance.</h2></div><Btn kind={customizing ? 'primary' : 'secondary'} onClick={() => setCustomizing(value => !value)}>{customizing ? <Check size={14} /> : <LayoutDashboard size={14} />}{customizing ? 'Done' : 'Customize brief'}</Btn></div>}
 
       <DigitalOffice />
       <BusinessPulse />
@@ -162,7 +162,10 @@ export function ExecutiveHome({ embedded = false }: { embedded?: boolean }) {
             {renderWidget(config.id)}
           </HomeWidgetFrame>
         }} />
-      <IntrosSystemFeatures compact />
+      <details className="home-feature-details">
+        <summary className="cursor-pointer py-3 text-sm font-medium">Explore more Ask Intros capabilities</summary>
+        <IntrosSystemFeatures compact />
+      </details>
     </div>
   </NewsImagesProvider>
 }
