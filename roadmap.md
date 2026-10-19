@@ -7,8 +7,8 @@
 
 ## SEO finding repairs (Oct 19)
 - [x] Read stored findings and refresh foundation checks; preserve the already passing sitemap.
-- [ ] Correct crawler sitemap reference and page-specific search/social information; verify preview and record completed findings.
-- [ ] Leave the proposed new search landing page unchanged pending topic-specific approval.
+- [x] Correct crawler sitemap reference and page-specific search/social information; verified single rendered tags on five public pages and the signup link without runtime errors; recorded completed findings.
+- [ ] Proposed new search landing page — blocked pending topic-specific approval, not a confirmed technical defect.
 
 ## Home resizing and scrolling (Oct 7)
 - [x] Keep tile resizing in place; browser verified the selected size changes, every tile retains its original node, no tiles remount, scroll position stays unchanged, and no runtime errors occur.
