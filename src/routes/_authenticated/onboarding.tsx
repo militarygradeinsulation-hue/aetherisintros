@@ -8,6 +8,7 @@ import { ONBOARDING_KEYS, splitList } from '@/aetheris/linkedin-scan'
 import { LinkedInScanPanel, type ScanPatch } from '@/aetheris/linkedin-scan-ui'
 import { supabase } from '@/integrations/supabase/client'
 import '@/aetheris/styles.css'
+import '@/aetheris/onboarding-progress.css'
 
 export const Route = createFileRoute('/_authenticated/onboarding')({
   staticData: { sitemap: false },
