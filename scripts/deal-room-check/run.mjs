@@ -148,7 +148,10 @@ ok(!(await has('Edit terms')) && !(await has('Add milestone')), 'a closed room o
 const kinds = await page.evaluate(() => window.__state.events.map(e => e.kind))
 ok(['created', 'member_invited', 'member_joined', 'proposal_submitted', 'proposal_accepted', 'milestone_added', 'milestone_submitted', 'milestone_accepted', 'details_updated', 'note'].every(k => kinds.includes(k)), 'every step is on the timeline')
 await shot('3-closed')
-await page.click('.deals-back')
+// Closing a deal opens the optional referral dialog; dismiss it through the UI
+// before navigating back. The overlay intentionally blocks background clicks.
+await page.getByRole('button', { name: 'Skip for now' }).click()
+await page.locator('.deals-back').click()
 ok(await page.isVisible('text=CLOSED · 1'), 'the list groups the room under Closed')
 
 // /demo showcase: a local example room, clearly labelled, no writes.
