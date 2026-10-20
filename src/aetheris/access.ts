@@ -162,14 +162,16 @@ const ACCESS_READ_ERROR = 'We could not verify your membership right now. Your a
 export function useAccess() {
   const [access, setAccess] = useState<AccessState>(noAccess)
 
-  const refresh = useCallback(async () => {
+  const refresh = useCallback(async (): Promise<AccessState | null> => {
     setAccess(prev => ({ ...prev, loading: true, error: null }))
     try {
-      setAccess(await fetchAccess())
+      const latest = await fetchAccess()
+      setAccess(latest)
+      return latest
     } catch {
-      // Fail closed, but surface a recoverable failure rather than leaving the page
-      // loading forever or redirecting a signed-in member to the sign-in screen.
+      // Fail closed; callers must not treat a failed read as confirmed approval.
       setAccess({ ...noAccess, loading: false, error: ACCESS_READ_ERROR })
+      return null
     }
   }, [])
 
