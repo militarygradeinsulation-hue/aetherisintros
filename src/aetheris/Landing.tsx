@@ -12,7 +12,7 @@ import './compact-homepage.css'
 /**
  * A compact architectural editorial homepage.
  * Photos are illustrative, not member portraits, endorsements or outcomes.
- * Four chapters: hero, experience + process, intelligence preview, membership.
+ * Three chapters: hero, experience + process + AI brief, membership.
  * Navigation and access destinations are unchanged.
  */
 const photo = {
@@ -118,29 +118,18 @@ export default function Landing() {
         </ol>
         <Link to="/demo" className="ael-underlink ael-underlink-dark">See the experience <ArrowUpRight aria-hidden="true" size={16} /></Link>
       </div>
-    </section>
-
-    <section className="ael-compact-method" id="intelligence" aria-labelledby="ael-intelligence-title">
-      <div className="ael-compact-method-heading">
-        <span className="ael-fine-label">THE AI BRIEF / WHAT YOUR NETWORK SURFACES</span>
-        <h3 id="ael-intelligence-title" className="stencil-display"><span className="sr-only">What your AI Business Analyst finds.</span><StencilHeadline lines={['YOUR BUSINESS', 'BRIEF']} /></h3>
-        <p style={{ maxWidth: '38rem', marginTop: '0.5rem', lineHeight: 1.6, opacity: 0.85 }}>Every member gets an AI Business Analyst that reads your profile, intro history, and active asks — then reports back on four things your network can see that you might not.</p>
-      </div>
-      <ol className="ael-compact-steps">
-        <li><span>01</span><div><strong>Lead leaks</strong><p>Where your business is losing deals before they close and follow-through gaps costing you revenue right now.</p></div></li>
-        <li><span>02</span><div><strong>Cold relationships</strong><p>High-value connections that have gone quiet and the ones worth a single reactivation conversation.</p></div></li>
-        <li><span>03</span><div><strong>Partner introductions</strong><p>Specific people in the network whose work directly addresses the gaps in yours — named, ranked, and explained.</p></div></li>
-        <li><span>04</span><div><strong>Network health score</strong><p>A live 0–100 reading of how well your relationship activity aligns with the opportunities you are chasing.</p></div></li>
-      </ol>
-      <Link to="/demo" className="ael-underlink ael-underlink-dark">See a sample brief <ArrowUpRight aria-hidden="true" size={16} /></Link>
-    </section>
-
-    <section className="ael-compact-story" id="founder" aria-label="From the founder" style={{ paddingTop: 0 }}>
-      <div className="ael-compact-story-main" style={{ gridTemplateColumns: '1fr', maxWidth: '52rem', margin: '0 auto' }}>
-        <blockquote style={{ borderLeft: '3px solid var(--st-gold, #b07c1c)', paddingLeft: '1.5rem', margin: 0 }}>
-          <p style={{ fontSize: 'clamp(1rem, 2vw, 1.2rem)', lineHeight: 1.65, fontStyle: 'italic' }}>&ldquo;I built this because every network I joined stopped at the introduction. After building more than 300 systems across construction, technology, and AI — and running companies to $3M while living with combat injuries — I finally built the one I always needed. One that gives each connection a clear purpose, mutual consent, and a real path to business.&rdquo;</p>
-          <footer style={{ marginTop: '1rem', fontSize: '0.825rem', fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', opacity: 0.75 }}>— Joseph &middot; Founder, Ask Intros &middot; Marine Veteran &middot; Operator</footer>
-        </blockquote>
+      <div className="ael-compact-method" id="intelligence" aria-labelledby="ael-intelligence-title">
+        <div className="ael-compact-method-heading">
+          <span className="ael-fine-label">THE AI BRIEF / YOUR BUSINESS ANALYST</span>
+          <h3 id="ael-intelligence-title" className="stencil-display"><span className="sr-only">What your AI Business Analyst surfaces.</span><StencilHeadline lines={['YOUR BUSINESS', 'BRIEF']} /></h3>
+        </div>
+        <ol className="ael-compact-steps">
+          <li><span>01</span><div><strong>Lead leaks</strong><p>Where deals slip before they close.</p></div></li>
+          <li><span>02</span><div><strong>Cold relationships</strong><p>High-value connections worth one reactivation.</p></div></li>
+          <li><span>03</span><div><strong>Partner introductions</strong><p>Named people whose work addresses your gaps.</p></div></li>
+          <li><span>04</span><div><strong>Network health score</strong><p>A live 0–100 reading of your activity vs. your opportunities.</p></div></li>
+        </ol>
+        <Link to="/demo" className="ael-underlink ael-underlink-dark">See a sample brief <ArrowUpRight aria-hidden="true" size={16} /></Link>
       </div>
     </section>
 
