@@ -25,13 +25,13 @@ export function ThisWeekPanel({ onOpen }: { onOpen: (target: WeekTarget) => void
     })
     return () => { stale = true }
   }, [])
-  if (items === null) return null
+  if (items === null) return <section className="this-week" aria-label="This week" aria-busy="true"><header><span className="home-board-label">This week</span><h2>Checking your next actions…</h2></header></section>
 
   return <section className="this-week" aria-label="This week">
     <header>
       <span className="home-board-label">This week</span>
-      <h2>{items.length ? `${items.length} thing${items.length === 1 ? '' : 's'} waiting on you.` : 'Nothing is waiting on you.'}</h2>
-      {!items.length && <p><CheckCircle2 size={14} /> Every request is answered and every introduction followed up. Post an ask when you need something.</p>}
+      <h2>{items.length ? `${items.length} thing${items.length === 1 ? '' : 's'} waiting on you.` : error ? 'Some actions could not be checked.' : 'No pending actions found in the checked sources.'}</h2>
+      {!items.length && !error && <p><CheckCircle2 size={14} /> No pending actions were found in the sources checked. You can post an ask when you need something.</p>}
     </header>
     {items.length > 0 && <ol>{items.map(item => {
       const Icon = icon[item.kind]

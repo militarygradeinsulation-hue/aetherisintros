@@ -8,8 +8,8 @@ const all = (done: boolean): ActivationStepState[] => [
 ]
 
 describe('activationView', () => {
-  it('keeps the server order and drops the calendar step when Google is not set up', () => {
-    expect(activationView(all(false), { calendarAvailable: false }).map(s => s.id)).toEqual(['profile', 'verified', 'goals', 'ask', 'intro', 'push'])
+  it('prioritizes core steps and drops the calendar step when Google is not set up', () => {
+    expect(activationView(all(false), { calendarAvailable: false }).map(s => s.id)).toEqual(['profile', 'goals', 'ask', 'intro', 'verified', 'push'])
     expect(activationView(all(false), { calendarAvailable: true }).map(s => s.id)).toContain('calendar')
   })
   it('sends a member without a photo to Settings and one without a title to My profile', () => {
@@ -27,10 +27,10 @@ describe('activationView', () => {
 })
 
 describe('activationProgress', () => {
-  it('counts required steps only, so optional business-role verification and calendar never hold the checklist open', () => {
+  it('counts required steps only, so optional verification, notifications and calendar never hold the checklist open', () => {
     const view = activationView(all(true), { calendarAvailable: true })
-    expect(activationProgress(view)).toEqual({ done: 5, total: 5, complete: true })
-    expect(activationProgress(activationView(all(false), { calendarAvailable: true }))).toEqual({ done: 0, total: 5, complete: false })
+    expect(activationProgress(view)).toEqual({ done: 4, total: 4, complete: true })
+    expect(activationProgress(activationView(all(false), { calendarAvailable: true }))).toEqual({ done: 0, total: 4, complete: false })
   })
   it('is never complete with no steps', () => {
     expect(activationProgress([]).complete).toBe(false)
