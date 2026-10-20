@@ -13,12 +13,12 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as DemoRouteImport } from './routes/demo'
-import { Route as TryRouteImport } from './routes/try'
 import { Route as EarlyAccessRouteImport } from './routes/early-access'
 import { Route as FounderStoryRouteImport } from './routes/founder-story'
 import { Route as McpRouteImport } from './routes/mcp'
 import { Route as NewsRouteImport } from './routes/news'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
+import { Route as TryRouteImport } from './routes/try'
 import { Route as Char91DotwellKnownChar93OauthProtectedResourceRouteImport } from './routes/[.well-known]/oauth-protected-resource'
 import { Route as AuthenticatedAppRouteImport } from './routes/_authenticated/app'
 import { Route as AuthenticatedDelegateRouteImport } from './routes/_authenticated/delegate'
@@ -72,11 +72,6 @@ const DemoRoute = DemoRouteImport.update({
   path: '/demo',
   getParentRoute: () => rootRouteImport,
 } as any)
-const TryRoute = TryRouteImport.update({
-  id: '/try',
-  path: '/try',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const EarlyAccessRoute = EarlyAccessRouteImport.update({
   id: '/early-access',
   path: '/early-access',
@@ -100,6 +95,11 @@ const NewsRoute = NewsRouteImport.update({
 const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
   id: '/sitemap.xml',
   path: '/sitemap.xml',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const TryRoute = TryRouteImport.update({
+  id: '/try',
+  path: '/try',
   getParentRoute: () => rootRouteImport,
 } as any)
 const Char91DotwellKnownChar93OauthProtectedResourceRoute =
@@ -279,12 +279,12 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/demo': typeof DemoRoute
-  '/try': typeof TryRoute
   '/early-access': typeof EarlyAccessRoute
   '/founder-story': typeof FounderStoryRoute
   '/mcp': typeof McpRoute
   '/news': typeof NewsRouteWithChildren
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/try': typeof TryRoute
   '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
   '/app': typeof AuthenticatedAppRoute
   '/delegate': typeof AuthenticatedDelegateRoute
@@ -323,12 +323,12 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/demo': typeof DemoRoute
-  '/try': typeof TryRoute
   '/early-access': typeof EarlyAccessRoute
   '/founder-story': typeof FounderStoryRoute
   '/mcp': typeof McpRoute
   '/news': typeof NewsRouteWithChildren
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/try': typeof TryRoute
   '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
   '/app': typeof AuthenticatedAppRoute
   '/delegate': typeof AuthenticatedDelegateRoute
@@ -369,12 +369,12 @@ export interface FileRoutesById {
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/auth': typeof AuthRoute
   '/demo': typeof DemoRoute
-  '/try': typeof TryRoute
   '/early-access': typeof EarlyAccessRoute
   '/founder-story': typeof FounderStoryRoute
   '/mcp': typeof McpRoute
   '/news': typeof NewsRouteWithChildren
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/try': typeof TryRoute
   '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
   '/_authenticated/app': typeof AuthenticatedAppRoute
   '/_authenticated/delegate': typeof AuthenticatedDelegateRoute
@@ -415,12 +415,12 @@ export interface FileRouteTypes {
     | '/'
     | '/auth'
     | '/demo'
-    | '/try'
     | '/early-access'
     | '/founder-story'
     | '/mcp'
     | '/news'
     | '/sitemap.xml'
+    | '/try'
     | '/.well-known/oauth-protected-resource'
     | '/app'
     | '/delegate'
@@ -459,12 +459,12 @@ export interface FileRouteTypes {
     | '/'
     | '/auth'
     | '/demo'
-    | '/try'
     | '/early-access'
     | '/founder-story'
     | '/mcp'
     | '/news'
     | '/sitemap.xml'
+    | '/try'
     | '/.well-known/oauth-protected-resource'
     | '/app'
     | '/delegate'
@@ -504,12 +504,12 @@ export interface FileRouteTypes {
     | '/_authenticated'
     | '/auth'
     | '/demo'
-    | '/try'
     | '/early-access'
     | '/founder-story'
     | '/mcp'
     | '/news'
     | '/sitemap.xml'
+    | '/try'
     | '/.well-known/oauth-protected-resource'
     | '/_authenticated/app'
     | '/_authenticated/delegate'
@@ -550,12 +550,12 @@ export interface RootRouteChildren {
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
   AuthRoute: typeof AuthRoute
   DemoRoute: typeof DemoRoute
-  TryRoute: typeof TryRoute
   EarlyAccessRoute: typeof EarlyAccessRoute
   FounderStoryRoute: typeof FounderStoryRoute
   McpRoute: typeof McpRoute
   NewsRoute: typeof NewsRouteWithChildren
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
+  TryRoute: typeof TryRoute
   Char91DotwellKnownChar93OauthProtectedResourceRoute: typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
   ImpactSlugRoute: typeof ImpactSlugRoute
   InviteCodeRoute: typeof InviteCodeRoute
@@ -610,13 +610,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DemoRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/try': {
-      id: '/try'
-      path: '/try'
-      fullPath: '/try'
-      preLoaderRoute: typeof TryRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/early-access': {
       id: '/early-access'
       path: '/early-access'
@@ -650,6 +643,13 @@ declare module '@tanstack/react-router' {
       path: '/sitemap.xml'
       fullPath: '/sitemap.xml'
       preLoaderRoute: typeof SitemapDotxmlRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/try': {
+      id: '/try'
+      path: '/try'
+      fullPath: '/try'
+      preLoaderRoute: typeof TryRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/.well-known/oauth-protected-resource': {
@@ -930,12 +930,12 @@ const rootRouteChildren: RootRouteChildren = {
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
   AuthRoute: AuthRoute,
   DemoRoute: DemoRoute,
-  TryRoute: TryRoute,
   EarlyAccessRoute: EarlyAccessRoute,
   FounderStoryRoute: FounderStoryRoute,
   McpRoute: McpRoute,
   NewsRoute: NewsRouteWithChildren,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
+  TryRoute: TryRoute,
   Char91DotwellKnownChar93OauthProtectedResourceRoute:
     Char91DotwellKnownChar93OauthProtectedResourceRoute,
   ImpactSlugRoute: ImpactSlugRoute,
