@@ -158,7 +158,10 @@ function sectionLines(text: string, heading: RegExp): string[] {
   const out: string[] = []
   for (const line of lines.slice(at + 1)) {
     if (KEEP_SECTION.test(line)) break
-    for (const part of line.split(/\s+•\s+|\s+·\s+/)) {\n      const value = squash(part)\n      if (value) out.push(value.slice(0, 600))\n    }
+    for (const part of line.split(/\s+•\s+|\s+·\s+/)) {
+      const value = squash(part)
+      if (value) out.push(value.slice(0, 600))
+    }
   }
   return [...new Set(out)].slice(0, 12)
 }
