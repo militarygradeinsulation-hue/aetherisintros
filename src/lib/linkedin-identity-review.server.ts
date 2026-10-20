@@ -19,11 +19,12 @@ export async function saveLinkedInIdentityDraft(db: IdentityDb, userId: string, 
   if (!fresh || fresh.userId !== draft.userId) throw new Error('Your account changed. Reload the LinkedIn review before applying.')
   if ((['name','email','photoUrl'] as const).some(key=>fresh.suggestion[key] !== draft.suggestion[key])) throw new Error('Your LinkedIn details changed. Reload the review before applying.')
   const picked = applyOidcConsent(fresh.suggestion, consent)
-  const patch: { name?: string; email?: string; avatar_url?: string } = {}
+  const patch: { name?: string; email?: string; avatar_url?: string; initials?: string } = {}
   if (picked.name) patch.name = picked.name
   if (picked.email) patch.email = picked.email
   if (picked.photoUrl) patch.avatar_url = picked.photoUrl
   const columns = Object.keys(patch) as Array<keyof IdentityProfile>
+  if (picked.name) patch.initials = picked.name.split(/\s+/).slice(0,2).map(part=>part[0]??'').join('').toUpperCase() || 'M'
   if (!columns.length) throw new Error('Select at least one LinkedIn detail first.')
   if (columns.some(key=>fresh.current[key] !== draft.current[key])) throw new Error('Your profile changed while this review was open. Reload it to protect your edits.')
   let query = db.from('profiles').update(patch).eq('id', draft.userId)

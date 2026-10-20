@@ -55,7 +55,7 @@ try {
  await page.evaluate(()=>{window.__identityFailure=false})
  await apply().click()
  await page.waitForFunction(()=>window.__identityReceipts.length===1)
- ok(await page.evaluate(()=>JSON.stringify(window.__identityWrites[0])===JSON.stringify({name:'LinkedIn Name'})),'only the selected identity field is saved')
+ ok(await page.evaluate(()=>JSON.stringify(window.__identityWrites[0])===JSON.stringify({name:'LinkedIn Name',initials:'LN'})),'only the selected identity field is saved')
  ok(await page.evaluate(()=>window.__identityProfile.email===null && window.__identityProfile.avatar_url===null),'unticked email and photo stay unchanged')
  await page.getByRole('checkbox').first().check()
  await page.evaluate(()=>{window.__identityProfile.name='Concurrent edit'})

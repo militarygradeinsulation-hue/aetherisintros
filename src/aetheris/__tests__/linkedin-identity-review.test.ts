@@ -33,7 +33,7 @@ describe('reviewed LinkedIn identity persistence',()=>{
   await expect(saveLinkedInIdentityDraft(draft(),{})).rejects.toThrow('Select at least')
   expect(mocks.update).not.toHaveBeenCalled()
   const result=await saveLinkedInIdentityDraft(draft(),{name:true})
-  expect(mocks.update).toHaveBeenCalledWith({name:suggestion.name})
+  expect(mocks.update).toHaveBeenCalledWith({name:suggestion.name,initials:'LN'})
   expect(mocks.eq).toHaveBeenCalledWith('id','member-a')
   expect(mocks.eq).toHaveBeenCalledWith('name',current.name)
   expect(result.changed).toEqual(['name'])
@@ -41,7 +41,7 @@ describe('reviewed LinkedIn identity persistence',()=>{
  it('atomically applies selected verified fields with optimistic null guards',async()=>{
   mocks.receipt.mockResolvedValue({data:{id:'member-a',name:suggestion.name,email:suggestion.email,avatar_url:suggestion.photoUrl},error:null})
   const result=await saveLinkedInIdentityDraft(draft(),{name:true,email:true,photoUrl:true})
-  expect(mocks.update).toHaveBeenCalledWith({name:suggestion.name,email:suggestion.email,avatar_url:suggestion.photoUrl})
+  expect(mocks.update).toHaveBeenCalledWith({name:suggestion.name,email:suggestion.email,avatar_url:suggestion.photoUrl,initials:'LN'})
   expect(mocks.is).toHaveBeenCalledWith('email',null);expect(mocks.is).toHaveBeenCalledWith('avatar_url',null)
   expect(result.changed).toEqual(['name','email','avatar_url'])
  })
