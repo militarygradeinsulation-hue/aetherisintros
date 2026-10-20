@@ -56,7 +56,17 @@ try {
       await page.waitForLoadState('load')
       const hydrated = await page.waitForFunction(() => {
         const button = document.querySelector('.ai-try-goal')
-        return Boolean(button && Object.keys(button).some(key => key.startsWith('__reactProps
+        return Boolean(button && Object.keys(button).some(key => key.startsWith('__reactProps$')))
+      }, null, { timeout: 60000 }).then(() => true).catch(() => false)
+      if (!hydrated) {
+        console.log('hydration diagnostic:', JSON.stringify({
+          errors,
+          scripts: await page.locator('script[src]').evaluateAll(nodes => nodes.map(n => n.getAttribute('src'))),
+          url: page.url(),
+        }))
+      }
+      assert(hydrated, theme + '/' + width + ' interactive React hydration: ' + errors.join('; '))
+      await page.getByRole('button', { name: /Build a partnership/ }).click()
       const updated = await page.waitForFunction(() =>
         document.querySelector('.ai-try-draft')?.textContent?.includes('new service into another market'),
       null, { timeout: 10000 }).then(() => true).catch(() => false)
