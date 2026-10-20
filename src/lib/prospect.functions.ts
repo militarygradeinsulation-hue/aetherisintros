@@ -28,7 +28,7 @@ const saveSchema = z.discriminatedUnion('kind', [
   z.object({ kind: z.literal('person'), personId: z.string().uuid(), status: z.enum(statuses), note: z.string().max(300), consent: z.boolean(), expected: z.number().int().min(0) }),
 ])
 export const saveProspectState = createServerFn({ method: 'POST' }).middleware([requireSupabaseAuth]).inputValidator(saveSchema).handler(async ({ data,context }) => {
-  await requirePrivateOwner(context as unknown as Ctx)
+  await gate(context)
   if (data.kind === 'person' && data.status === 'approved') {
     const issues = reviewNote(data.note)
     if (issues.length) throw new Error(issues.join(' '))

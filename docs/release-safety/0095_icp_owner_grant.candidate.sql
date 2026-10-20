@@ -3,7 +3,7 @@
 -- needs Joseph's explicit approval first. Tested only in disposable PGlite:
 --   node scripts/migration-checks/icp-owner-grant.standalone.mjs
 --
--- 1. Explicit owner grant: Prospect Intelligence requires BOTH the admin role AND a row in
+-- 1. Explicit single-owner grant (one account per capability): Prospect Intelligence requires BOTH the admin role AND a row in
 --    private_owner_grants. No row => fail closed. Nobody is granted here; a grant is a
 --    separate, approved data insert by a privileged operator (service role), never by a client.
 -- 2. Key allowlist: existing keys kept verbatim; adds only 'icp:profiles' and
@@ -22,6 +22,10 @@ CREATE TABLE IF NOT EXISTS public.private_owner_grants (
 REVOKE ALL ON public.private_owner_grants FROM PUBLIC, anon, authenticated;
 GRANT ALL ON public.private_owner_grants TO service_role;
 ALTER TABLE public.private_owner_grants ENABLE ROW LEVEL SECURITY;
+-- Single owner: at most one account may hold each capability. The table is new in this
+-- migration, so no existing rows can conflict; on replay, audit rows before relying on it
+-- (CREATE UNIQUE INDEX fails loudly rather than silently if duplicates were ever inserted).
+CREATE UNIQUE INDEX IF NOT EXISTS private_owner_grants_one_owner ON public.private_owner_grants (capability);
 -- No authenticated policies: members cannot read or write grants. Checked via the function below.
 
 CREATE OR REPLACE FUNCTION public.has_private_owner_grant(p_capability text)
