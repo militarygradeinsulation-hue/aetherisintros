@@ -765,7 +765,6 @@ html:root[data-theme] body .security-verify-link:focus-visible {
 html:root[data-theme] body .ix-root .request-intro-modal-surface {
   background-color:#0E1218!important;
   color:#F2EEE6!important;
-  -webkit-text-fill-color:#F2EEE6!important;
 }
 html:root[data-theme] body .ix-root .request-intro-modal-surface .intro-modal-amber-label {
   color:#F5B027!important;
