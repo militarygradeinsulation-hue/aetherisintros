@@ -1,5 +1,11 @@
 # Aetheris specification completion
 
+## Offline database recovery engineering (Oct 20)
+- [ ] Add disposable baseline/supplied-schema replay, ordered 0058–0078 diagnostics and collision probes.
+- [ ] Harden unapplied 0095 proposal and extend isolated regressions.
+- [ ] Prepare DBA ledger handoff and document synthetic validation limits.
+- [ ] Run checks and verify refs; no live changes or publication.
+
 ## Prospect release safety repair (Oct 19)
 - [x] Restore 0082, 0090 and 0092 byte-for-byte from a7ebe8262766e23fb1e86449989e285c496a1081; preserve journal and snapshots.
 - [x] Audit and test direct workspace/RPC access, status retries and review history: 25 isolated Postgres checks passed.
