@@ -54,10 +54,18 @@ export function SecurityPage() {
 
   const revokeOthers = async () => {
     setBusy(true); setMessage('')
-    const { error } = await supabase.auth.signOut({ scope: 'others' })
-    await logSecurityEvent('sessions_revoked', 'Signed out of all other devices.')
-    setMessage(error ? error.message : 'Every other signed-in device has been signed out.')
-    reload(); setBusy(false)
+    try {
+      const { error } = await supabase.auth.signOut({ scope: 'others' })
+      if (error) { setMessage(error.message); return }
+      // Record success only after the identity provider confirms revocation.
+      await logSecurityEvent('sessions_revoked', 'Signed out of all other devices.').catch(() => undefined)
+      setMessage('Every other signed-in device has been signed out.')
+      reload()
+    } catch (caught) {
+      setMessage(caught instanceof Error ? caught.message : 'Other sessions could not be revoked. Try again.')
+    } finally {
+      setBusy(false)
+    }
   }
 
   /** Tables where members may read only some columns (server-held tokens are left out). */
