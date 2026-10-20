@@ -17,3 +17,11 @@ Authenticated server functions (`requireAuthContract`), 60k-character text cap, 
 
 ## Verification
 `npx vitest run`, `npx tsc --noEmit`, `npx vite build` pass. `npm run lint` reports only pre-existing prettier style errors repo-wide. Not verified: real AI provider calls and the live save path (need credentials and a Supabase session); no real LinkedIn provider exists to test.
+
+## Linked identity and public search review
+
+A signed-in member can connect LinkedIn, then explicitly select available provider name, verified contact email, and allowlisted photo fields. Loading or linking never automatically applies them. Profile contact email does not change the authentication email. Each save targets the same authenticated member, protects selected fields against concurrent edits, and requires a matching saved-row receipt. Account changes clear consent and discard in-flight review results. Unselected fields stay unchanged.
+
+Own-profile public search also requires consent and field-by-field review. Saving protects the saved name and headline used for searching, plus selected destination fields, with one optimistic write. Unsupported building suggestions remain review-only. A stale account, changed profile, or missing receipt requires a new review. Existing text/PDF scanning remains available; LinkedIn URL-only extraction still requires a licensed provider.
+
+The identity browser harness exercises failed-save retries, per-field consent, account changes, concurrent edits and stale receipts at mobile/desktop sizes in light/dark themes. Real LinkedIn provider configuration and live OAuth completion require separate verification.

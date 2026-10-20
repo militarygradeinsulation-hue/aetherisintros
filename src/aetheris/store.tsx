@@ -288,6 +288,9 @@ interface NetworkApi {
   setDigitalYou: (x: DigitalYouProfile) => void
   setAutonomy: (x: AutonomyLevel) => void
   updateIdentity: (fields: { name: string; photo?: File | null }) => Promise<void>
+  /** Mirror a confirmed own-profile receipt; this is not a persistence/authorization path. */
+  applyIdentityReceipt: (fields: { userId: string; name?: string; avatarUrl?: string | null }) => void
+  applyExecutiveReceipt: (userId: string, fields: Partial<Pick<MeProfile, 'title' | 'company' | 'location' | 'thesis' | 'whatIDo'>>) => void
   updateExecutiveProfile: (fields: Partial<Pick<MeProfile, 'title' | 'company' | 'location' | 'whatIDo' | 'building' | 'focus' | 'thesis' | 'lookingFor' | 'canHelpWith' | 'expertise' | 'industries' | 'openTo' | 'schedulingEnabled' | 'availability'>>) => Promise<void>
   completeOnboarding: (answers: Record<string, string>) => void
   setPreferences: (settings: PreferenceSettings) => void
@@ -353,9 +356,12 @@ export function NetworkProvider({ children, mode = 'live' }: { children: React.R
   const [dir, setDir] = useState<Directory>(live ? emptyDirectory : catalogue)
   const [userId, setUserId] = useState<string | null>(null)
   const [synced, setSynced] = useState(false)
+  const identityUserId = useRef(userId)
+  identityUserId.current = userId
   const [feedError, setFeedError] = useState(false)
   const [networkLoadError, setNetworkLoadError] = useState('')
   const lastSynced = useRef<Persisted | null>(null)
+  const confirmedProfiles = useRef(new WeakSet<object>())
   // Never overwrite private records after a failed live graph read.
   const privateGraphReady = useRef(!live)
 
@@ -522,7 +528,7 @@ export function NetworkProvider({ children, mode = 'live' }: { children: React.R
       // Goals live in member_goals; keep the private copy out of the saved document.
       if (s.profile.goals) { const { goals: _goals, ...profile } = s.profile; doc['profile'] = profile }
       saveDoc(userId, doc)
-      if (prev.profile !== s.profile) {
+      if (prev.profile !== s.profile && !confirmedProfiles.current.has(s.profile)) {
         saveProfileFields(userId, {
           name: s.profile.name, initials: s.profile.initials, title: s.profile.title, company: s.profile.company,
           location: s.profile.location, focus: s.profile.focus, thesis: s.profile.thesis,
@@ -880,6 +886,28 @@ export function NetworkProvider({ children, mode = 'live' }: { children: React.R
 
       setDigitalYou: (x) => patch(() => ({ digitalYou: x })),
       setAutonomy: (x) => patch(() => ({ autonomy: x })),
+      applyExecutiveReceipt: (receiptUserId, fields) => {
+        if (!live || receiptUserId !== identityUserId.current) return
+        patch(prev => {
+          if (receiptUserId !== identityUserId.current) return {}
+          const profile = { ...prev.profile, ...fields }
+          confirmedProfiles.current.add(profile)
+          return { profile }
+        })
+      },
+      applyIdentityReceipt: receipt => {
+        if (!live || !receipt.userId || receipt.userId !== identityUserId.current) return
+        patch(prev => {
+          if (receipt.userId !== identityUserId.current) return {}
+          const profile = {
+            ...prev.profile,
+            ...(typeof receipt.name === 'string' ? { name: receipt.name, initials: identityInitials(receipt.name) } : {}),
+            ...('avatarUrl' in receipt ? { avatarUrl: receipt.avatarUrl ?? undefined } : {}),
+          }
+          confirmedProfiles.current.add(profile)
+          return { profile }
+        })
+      },
       updateIdentity: async ({ name, photo }) => {
         const cleanName = name.trim().replace(/\s+/g, ' ')
         if (!cleanName) throw new Error('Enter your name.')
