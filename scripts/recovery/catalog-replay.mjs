@@ -46,7 +46,7 @@ export function catalogSteps(catalog) {
 }
 
 export function collisionStatus(existing, errorCode, error) {
-  return error ? (errorCode === '42P07' && existing.length ? 'COLLISION' : 'FAIL') : 'PASS'
+  return error ? (errorCode === '42P07' && existing.some(name => error === `relation \"${name}\" already exists`) ? 'COLLISION' : 'FAIL') : 'PASS'
 }
 
 export async function replayCatalog({ catalog, repo, pending, security = false }) {

@@ -46,8 +46,9 @@ describe('observed catalog recovery rehearsal', () => {
   it('requires explicit column ACL provenance and preserves unrelated probe failures', () => {
     const c: any = emptyCatalog(); delete c.column_grants
     expect(()=>catalogSteps(c)).toThrow('explicitly capture column_grants')
-    expect(collisionStatus(['existing'], '42P07', 'duplicate relation')).toBe('COLLISION')
+    expect(collisionStatus(['existing'], '42P07', 'relation \"existing\" already exists')).toBe('COLLISION')
     expect(collisionStatus(['existing'], '42703', 'missing column')).toBe('FAIL')
+    expect(collisionStatus(['existing'], '42P07', 'relation \"unrelated_index\" already exists')).toBe('FAIL')
     expect(collisionStatus([], '42P07', 'unexpected duplicate relation')).toBe('FAIL')
     expect(collisionStatus(['existing'], undefined, undefined)).toBe('PASS')
   })
