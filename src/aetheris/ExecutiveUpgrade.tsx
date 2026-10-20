@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { supabase } from '@/integrations/supabase/client'
 
+type Allowance = { tier: 'basic' | 'executive'; used: number; limit: number | null; remaining: number | null; resetsAt: string }
 type Application = { userId: string; name: string; title: string; company: string; profileUrl: string; reason: string; status: string; createdAt: string }
 const rpc = (name: string, args?: Record<string, unknown>) =>
   (supabase as any).rpc(name, args) as Promise<{ data: any; error: { message: string } | null }> // eslint-disable-line @typescript-eslint/no-explicit-any
@@ -13,10 +14,25 @@ export function ExecutiveUpgrade({ tier, isAdmin }: { tier: 'basic' | 'executive
   const [error, setError] = useState('')
   const [busy, setBusy] = useState(false)
   const [applications, setApplications] = useState<Application[]>([])
+  const [allowance, setAllowance] = useState<Allowance | null>(null)
   const [fields, setFields] = useState({ name: '', title: '', company: '', profileUrl: '', reason: '' })
   const load = async () => {
     const own = await rpc('my_executive_application')
     if (!own.error) setStatus(own.data?.status || '')
+    // Optional existing server-owned RPC; never estimate or persist another member's quota.
+    // If the deployment does not expose it, keep the application usable without a false count.
+    if (tier === 'basic') {
+      const { data, error: quotaError } = await rpc('my_intro_allowance')
+      const q = data as Partial<Allowance> | null
+      if (!quotaError && q && (q.tier === 'basic' || q.tier === 'executive') &&
+          Number.isInteger(q.used) && Number(q.used) >= 0 &&
+          (q.remaining === null || (Number.isInteger(q.remaining) && Number(q.remaining) >= 0)) &&
+          typeof q.resetsAt === 'string' && !Number.isNaN(Date.parse(q.resetsAt))) {
+        setAllowance(q as Allowance)
+      } else {
+        setAllowance(null)
+      }
+    }
     if (isAdmin) {
       const queue = await rpc('admin_executive_applications')
       if (!queue.error) setApplications(Array.isArray(queue.data) ? queue.data : [])
@@ -64,6 +80,10 @@ export function ExecutiveUpgrade({ tier, isAdmin }: { tier: 'basic' | 'executive
           </article>)}
         </> : <>
           <p>Basic includes your profile, network discovery, messages, and up to three introduction requests each month. Executive unlocks unrestricted introduction requests and opportunity publishing after review.</p>
+          {allowance?.tier === 'basic' && allowance.remaining !== null && <p role="status" className="executive-upgrade-allowance">
+            <strong>{allowance.remaining} of {allowance.limit ?? 3} introduction requests remaining this month.</strong>{' '}
+            Resets {new Date(allowance.resetsAt).toLocaleDateString()}.
+          </p>}
           {status === 'pending' && <p role="status">Your application is under review. Basic access remains active.</p>}
           {status === 'declined' && <p role="status">Your previous application was declined. You may submit updated information.</p>}
           {status !== 'pending' && <form onSubmit={e => void submit(e)} className="executive-upgrade-form">
