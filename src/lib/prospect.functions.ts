@@ -2,6 +2,7 @@ import { createServerFn } from '@tanstack/react-start'
 import { requireSupabaseAuth } from '@/integrations/supabase/auth-middleware'
 import { z } from 'zod'
 import { reviewNote, statuses } from '@/aetheris/prospect/core'
+import { requirePrivateOwner, type GateRpc } from '@/aetheris/prospect/owner-gate'
 
 const profile = z.object({
   id: z.string().min(1).max(80), label: z.string().min(1).max(120), objective: z.enum(['client','partner','investor','referral','hire']),
