@@ -14,6 +14,7 @@ const statement = value => value.trim().replace(/;+$/, '') + ';'
 const roleName = value => value === 'PUBLIC' || value === 'public' ? 'PUBLIC' : ident(value)
 
 export function catalogSteps(catalog) {
+  if (!Array.isArray(catalog.column_grants)) throw new Error('Catalog must explicitly capture column_grants; recapture with catalog-export.sql')
   const steps = []
   const add = (phase, name, sql) => steps.push({ phase, name, sql })
   for (const e of catalog.enums) add('enum', e.name, `CREATE TYPE public.${ident(e.name)} AS ENUM (${e.labels.map(literal).join(',')});`)
@@ -37,10 +38,15 @@ export function catalogSteps(catalog) {
   const relationNames = [...catalog.tables, ...catalog.views].map(t => `public.${ident(t.name)}`)
   const acl = relationNames.length ? [`REVOKE ALL ON ${relationNames.join(',')} FROM PUBLIC,anon,authenticated,service_role;`] : []
   for (const g of catalog.relation_grants) acl.push(`GRANT ${g.privilege} ON public.${ident(g.table_name)} TO ${roleName(g.role)}${g.is_grantable ? ' WITH GRANT OPTION' : ''};`)
+  for (const g of catalog.column_grants ?? []) acl.push(`GRANT ${g.privilege} (${ident(g.column_name)}) ON public.${ident(g.table_name)} TO ${roleName(g.role)}${g.is_grantable ? ' WITH GRANT OPTION' : ''};`)
   for (const f of catalog.functions.filter(f => f.kind === 'f')) acl.push(`REVOKE ALL ON FUNCTION public.${ident(f.name)}(${f.arguments}) FROM PUBLIC,anon,authenticated,service_role;`)
   for (const g of catalog.function_grants) acl.push(`GRANT ${g.privilege} ON FUNCTION ${g.signature} TO ${roleName(g.role)}${g.is_grantable ? ' WITH GRANT OPTION' : ''};`)
   add('acl', 'observed grants', acl.join('\n'))
   return steps
+}
+
+export function collisionStatus(existing, errorCode, error) {
+  return error ? (errorCode === '42P07' && existing.length ? 'COLLISION' : 'FAIL') : 'PASS'
 }
 
 export async function replayCatalog({ catalog, repo, pending, security = false }) {
@@ -59,7 +65,7 @@ export async function replayCatalog({ catalog, repo, pending, security = false }
     const journal = JSON.parse(readFileSync(join(repo,'drizzle/migrations/meta/_journal.json'),'utf8')).entries.map(e=>e.tag)
     if(pending.some(tag=>!journal.includes(tag))) throw Error('Recovery tags must be present in the unchanged migration journal')
     const all = catalogSteps(catalog)
-    const roles = new Set([...catalog.relation_grants, ...catalog.function_grants].map(g=>g.role).filter(r=>r !== 'PUBLIC' && r !== 'public'))
+    const roles = new Set([...catalog.relation_grants, ...catalog.column_grants, ...catalog.function_grants].map(g=>g.role).filter(r=>r !== 'PUBLIC' && r !== 'public'))
     for (const role of roles) if (!(await db.query('SELECT 1 FROM pg_roles WHERE rolname=$1',[role])).rows.length) report.steps.push(await run({phase:'role',name:role,sql:`CREATE ROLE ${ident(role)};`}))
     for (const step of all.filter(s=>['enum','table'].includes(s.phase))) report.steps.push(await run(step))
     let unresolved = all.filter(s=>s.phase === 'definition')
@@ -85,10 +91,10 @@ export async function replayCatalog({ catalog, repo, pending, security = false }
       const created=[...sql.matchAll(/create\s+table\s+(?:if\s+not\s+exists\s+)?public\.(\w+)/gi)].map(m=>m[1])
       const existing=[]
       for(const name of created) if((await db.query('SELECT to_regclass($1) AS name',['public.'+name])).rows[0]?.name) existing.push(name)
-      let error
+      let error, errorCode
       await db.exec('BEGIN')
-      try { await db.exec(sql) } catch(e) {error=e.message} finally {await db.exec('ROLLBACK')}
-      report.collisions.push({name:tag,existingTables:existing,status:existing.length?'COLLISION':error?'FAIL':'PASS',error})
+      try { await db.exec(sql) } catch(e) {error=e.message;errorCode=e.code} finally {await db.exec('ROLLBACK')}
+      report.collisions.push({name:tag,existingTables:existing,status:collisionStatus(existing,errorCode,error),error,errorCode})
     }
     if(security && report.recovery.every(s=>s.status==='PASS')) report.security=await checkObservedSecurity(db,repo)
     return report

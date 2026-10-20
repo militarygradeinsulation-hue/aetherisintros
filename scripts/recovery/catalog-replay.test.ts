@@ -1,8 +1,8 @@
 import { describe, expect, it } from 'vitest'
 import { resolve } from 'node:path'
-import { catalogSteps, replayCatalog } from './catalog-replay.mjs'
+import { catalogSteps, collisionStatus, replayCatalog } from './catalog-replay.mjs'
 
-const emptyCatalog = () => ({ enums: [], tables: [], functions: [], views: [], constraints: [], indexes: [], triggers: [], policies: [], relation_grants: [], function_grants: [], extensions: [] })
+const emptyCatalog = () => ({ enums: [], tables: [], functions: [], views: [], constraints: [], indexes: [], triggers: [], policies: [], relation_grants: [], column_grants: [], function_grants: [], extensions: [] })
 const repo = resolve(import.meta.dirname, '../..')
 
 describe('observed catalog recovery rehearsal', () => {
@@ -11,7 +11,9 @@ describe('observed catalog recovery rehearsal', () => {
     c.enums = [{ name: 'example"kind', labels: ["can't", 'ordinary'] }]
     c.policies = [{ name: 'only mine', table_name: 'items', permissive: 'RESTRICTIVE', cmd: 'SELECT', roles: ['authenticated'], qual: 'owner_id = auth.uid()', with_check: null }]
     c.triggers = [{ name: 'blocked', table_name: 'items', definition: 'CREATE TRIGGER blocked BEFORE INSERT ON public.items FOR EACH ROW EXECUTE FUNCTION public.check_item()', enabled: 'D' }]
+    c.column_grants = [{table_name: 'items', column_name: 'member\"note', role: 'authenticated', privilege: 'UPDATE', is_grantable: true}]
     const steps = catalogSteps(c)
+    expect(steps.find(s=>s.phase==='acl')?.sql).toContain('GRANT UPDATE (\"member\"\"note\") ON public.\"items\" TO \"authenticated\" WITH GRANT OPTION;')
     expect(steps.find(s=>s.phase==='enum')?.sql).toContain('"example""kind"')
     expect(steps.find(s=>s.phase==='enum')?.sql).toContain("'can''t'")
     expect(steps.find(s=>s.phase==='policy')?.sql).toContain('AS RESTRICTIVE FOR SELECT TO "authenticated" USING (owner_id = auth.uid())')
@@ -39,6 +41,15 @@ describe('observed catalog recovery rehearsal', () => {
     expect(report.recovery).toEqual([])
     expect(report.collisions).toEqual([])
     expect(report.steps.some(s=>s.status==='FAIL')).toBe(true)
+  })
+
+  it('requires explicit column ACL provenance and preserves unrelated probe failures', () => {
+    const c: any = emptyCatalog(); delete c.column_grants
+    expect(()=>catalogSteps(c)).toThrow('explicitly capture column_grants')
+    expect(collisionStatus(['existing'], '42P07', 'duplicate relation')).toBe('COLLISION')
+    expect(collisionStatus(['existing'], '42703', 'missing column')).toBe('FAIL')
+    expect(collisionStatus([], '42P07', 'unexpected duplicate relation')).toBe('FAIL')
+    expect(collisionStatus(['existing'], undefined, undefined)).toBe('PASS')
   })
 
   it('refuses unsupported column semantics instead of silently stripping them', () => {

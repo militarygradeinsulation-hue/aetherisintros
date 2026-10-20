@@ -4,9 +4,9 @@ Original Ask Intros project: `c1248cd8-77de-4eaa-8d9d-e7da71e70ae9`. Source main
 
 ## Verified result
 
-- Structure-only public catalog captured through read-only queries: 149 tables, 258 functions, 4 enums, 1 view, 642 constraints, 98 non-constraint indexes, 122 triggers, 296 policies, 3,707 relation ACL entries, 802 function ACL entries.
+- Structure-only public catalog captured through read-only queries: 149 tables, 258 functions, 4 enums, 1 view, 642 constraints, 98 non-constraint indexes, 122 triggers, 296 policies, 3,707 relation ACL entries, 802 function ACL entries, 292 column ACL entries.
 - Connected PostgreSQL: 17.6. Disposable engine: PGlite 0.3.15 / PostgreSQL 17.5.
-- All 2582 catalog reconstruction steps passed. Capture SHA-256: `28c5a1474c4dee945f10aa501dde759f176a454ecac09f7a4b6304333127c40b`.
+- All 2582 catalog reconstruction steps passed. Capture SHA-256: `0b3aadef01b7103a9d3937cc8be9c733637c4493bc590a284bc5dff406aae6d4`.
 - All 20 pending migrations in `pending-0058-0078.json` applied unchanged and in order; already recorded 0062 was skipped.
 - 386 access/workflow assertions passed, 0 failed, using synthetic identities against observed membership helpers. No helper was relaxed or replaced. Suites: private Library, workspaces, deal rooms, Basic/Executive membership. Each suite runs in a rolled-back transaction so fixtures do not contaminate the next suite.
 - Existing-table collisions reproduced for 0082, 0090 and 0092; collision probes always roll back.
@@ -14,6 +14,9 @@ Original Ask Intros project: `c1248cd8-77de-4eaa-8d9d-e7da71e70ae9`. Source main
 The captured public definitions/grants are observed; auth/storage/realtime shells and actor records are synthetic. Managed extensions/services, actual Supabase JWT/PostgREST execution, external providers, realtime delivery and concurrent multi-connection behavior are not simulated. Object ownership is not restored. `baselineComplete` means every captured public catalog step was loaded, not that this is a full Supabase clone or production runtime verification.
 
 ## Corrections made to the rehearsal
+
+Review exposed omitted column-level grants. The export and replay now include all 292 observed column ACL entries, and the loader rejects older captures that do not explicitly contain `column_grants`. The security rehearsal above was rerun with those grants restored. Collision classification now requires PostgreSQL duplicate-relation code `42P07`; unrelated errors remain failures even when another named table already exists.
+
 
 The existing PGlite 0.2.17 engine runs PostgreSQL 16.4, which cannot replay PostgreSQL 17 `MAINTAIN` privileges. The new rehearsal accepts a separate, pinned PostgreSQL 17 engine; it does not drop unsupported grants to obtain a green result. It installs the captured pg_trgm extension, preserves default view-trigger state without an invalid ALTER VIEW trigger operation, and blocks target replay after any failed catalog step.
 
