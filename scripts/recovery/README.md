@@ -27,3 +27,21 @@ Default range is 0058–0061; `--from`/`--to` permit subsets of 0058–0078. `--
 - Dedicated supplied-schema tests detect all three existing-table collisions and prevent replay after a failed supplied schema.
 
 The previously observed live collisions remain unresolved. Successful DDL/function creation does not exercise every deferred PL/pgSQL branch or prove RLS behavior. These are not end-to-end feature tests. Use the DBA handoff before drawing any production conclusion. The full JSON report can be regenerated with the first command above; never commit supplied live schema or private data.
+
+## Observed public catalog rehearsal
+
+`catalog-export.sql` reads structure and ACL metadata only. Run it through an authorized read-only connection, save the returned `catalog` object as a local JSON file, inspect definitions/defaults for accidental private constants, and keep the supplied file outside git. It is not a backup and contains no application rows. A catalog captured under a different search path must be reviewed before reuse.
+
+The production-connected catalog used PostgreSQL 17.6 privileges. Keep the older migration harness's engine unchanged; use a separate pinned PostgreSQL 17 runtime for this rehearsal:
+
+```sh
+npm install --prefix /tmp/observed-recovery-runtime --ignore-scripts --no-audit --no-fund @electric-sql/pglite@0.3.15
+PGLITE_MODULE_ROOT=/tmp/observed-recovery-runtime node scripts/recovery/catalog-replay.mjs --catalog /tmp/public-catalog.json --pending docs/release-safety/pending-0058-0078.json --security --report /tmp/observed-recovery-report.json
+npx vitest run scripts/recovery/catalog-replay.test.ts
+```
+
+The pending list is a dated review input, not a migration executor. Revalidate both ledgers before any future recovery. The tool opens only disposable PGlite, never a network database; it never reads database environment variables or changes migration history. Catalog definitions are trusted local SQL, not untrusted user uploads.
+
+The loader restores captured enums/tables, retries dependent function/view definitions, restores defaults/constraints/indexes/triggers/policies/RLS and grants, then stops if any baseline step failed. Unsupported column semantics or privileges are reported instead of stripped. Targets stop on the first failed migration. All collision probes roll back and distinguish existing-table collisions from other SQL errors. With `--security`, the existing Library, workspace, deal-room and Basic/Executive suites use synthetic confirmed identities and the observed membership helper; each suite rolls back independently.
+
+`baselineComplete` certifies loading the supplied public catalog, not full Supabase compatibility. Auth/storage/realtime fixtures, owners and managed services remain explicit limitations. See `docs/release-safety/OBSERVED_SCHEMA_REHEARSAL_2026_10_20.md` for the dated result and restore-point blocker.

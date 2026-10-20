@@ -180,7 +180,7 @@ create table public.members (id text primary key, name text not null, initials t
 create table public.crm_activities (id uuid primary key default gen_random_uuid(), owner_id uuid, person_id uuid, kind text not null default 'note', subject text not null default '', occurred_at timestamptz not null default now());
 create table public.crm_companies (id uuid primary key default gen_random_uuid(), owner_id uuid, name text not null default '', archived boolean not null default false);
 create table public.crm_notes (id uuid primary key default gen_random_uuid(), owner_id uuid);
-create table public.crm_opportunities (id uuid primary key default gen_random_uuid(), owner_id uuid);
+create table public.crm_opportunities (id uuid primary key default gen_random_uuid(), owner_id uuid, name text not null);
 create table public.crm_people (id uuid primary key default gen_random_uuid(), owner_id uuid, full_name text not null default '', title text not null default '', company_id uuid, company_name text not null default '', email text not null default '', source text not null default '', notes text not null default '',
   profile_id uuid, last_activity_at timestamptz, archived boolean not null default false);
 create table public.directory_contacts (id uuid primary key default gen_random_uuid(), user_id uuid, full_name text not null, title text not null default '', company_name text not null default '');
