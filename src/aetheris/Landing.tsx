@@ -72,7 +72,7 @@ export default function Landing() {
           <p className="ael-platform-disclaimer">The relationship network for CEOs. Who matters. Why they matter. Why now.</p>
         </div>
         <p className="ael-kicker ael-kicker-light"><span className="ael-dash" /> Relationships by design</p>
-        <h1 id="ael-hero-title" className="stencil-display"><span className="sr-only">Meet people who move your business forward.</span><StencilHeadline lines={['MEET PEOPLE WHO', 'MOVE YOUR BUSINESS', 'FORWARD']} className="stencil-headline--hero" /></h1>
+        <h1 id="ael-hero-title" className="stencil-display"><span className="sr-only">The Only social platform that runs your business.</span><StencilHeadline lines={['THE ONLY SOCIAL', 'PLATFORM THAT', 'RUNS YOUR BUSINESS']} className="stencil-headline--hero" /></h1>
         <p className="ael-hero-lede">Share what you need. Explore relevant people. Request an introduction with context and mutual consent.</p>
         <div className="ael-hero-actions">
           <JoinAction signedIn={signedIn} className="ael-btn ael-btn-gold ai-gradient-button" />
@@ -110,19 +110,6 @@ export default function Landing() {
           <li><span>03</span><div><strong>Agree on a next step</strong><p>Continue the conversation, arrange a meeting and record what you agree to do next.</p></div></li>
         </ol>
         <Link to="/demo" className="ael-underlink ael-underlink-dark">See the demo experience <ArrowUpRight aria-hidden="true" size={16} /></Link>
-      </div>
-      <div className="ael-compact-method" id="intelligence" aria-labelledby="ael-intelligence-title">
-        <div className="ael-compact-method-heading">
-          <span className="ael-fine-label">THE AI BRIEF / YOUR BUSINESS ANALYST</span>
-          <h3 id="ael-intelligence-title" className="stencil-display"><span className="sr-only">What your AI Business Analyst surfaces.</span><StencilHeadline lines={['YOUR BUSINESS', 'BRIEF']} /></h3>
-        </div>
-        <ol className="ael-compact-steps">
-          <li><span>01</span><div><strong>Lead leaks</strong><p>Where deals slip before they close.</p></div></li>
-          <li><span>02</span><div><strong>Cold relationships</strong><p>High-value connections worth one reactivation.</p></div></li>
-          <li><span>03</span><div><strong>Partner introductions</strong><p>Named people whose work addresses your gaps.</p></div></li>
-          <li><span>04</span><div><strong>Network health score</strong><p>A live 0–100 reading of your activity vs. your opportunities.</p></div></li>
-        </ol>
-        <Link to="/demo" className="ael-underlink ael-underlink-dark">See a sample brief <ArrowUpRight aria-hidden="true" size={16} /></Link>
       </div>
       <div className="ael-compact-method" id="intelligence" aria-labelledby="ael-intelligence-title">
         <div className="ael-compact-method-heading">
