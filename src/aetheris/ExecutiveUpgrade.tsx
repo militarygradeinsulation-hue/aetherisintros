@@ -17,16 +17,27 @@ export function ExecutiveUpgrade({ tier, isAdmin }: { tier: 'basic' | 'executive
   const [allowance, setAllowance] = useState<Allowance | null>(null)
   const [fields, setFields] = useState({ name: '', title: '', company: '', profileUrl: '', reason: '' })
   const load = async () => {
-    const own = await rpc('my_executive_application')
-    if (!own.error) setStatus(own.data?.status || '')
-    // Optional existing server-owned RPC; never estimate or persist another member's quota.
-    // If the deployment does not expose it, keep the application usable without a false count.
+    // Each private RPC is independent: a failed application lookup must not hide
+    // the member's allowance, and a failed admin queue must never look like an
+    // empty queue. Never substitute client-estimated data for server responses.
+    const settled = await Promise.allSettled([
+      rpc('my_executive_application'),
+      tier === 'basic' ? rpc('my_intro_allowance') : Promise.resolve(null),
+      isAdmin ? rpc('admin_executive_applications') : Promise.resolve(null),
+    ])
+    setError('')
+    const own = settled[0].status === 'fulfilled' ? settled[0].value : null
+    if (own && !own.error) setStatus(own.data?.status || '')
+    else if (!isAdmin) setError('Your application status could not be loaded. Please retry.')
+
     if (tier === 'basic') {
-      const { data, error: quotaError } = await rpc('my_intro_allowance')
-      const q = data as Partial<Allowance> | null
-      if (!quotaError && q && (q.tier === 'basic' || q.tier === 'executive') &&
-          Number.isInteger(q.used) && Number(q.used) >= 0 &&
-          (q.remaining === null || (Number.isInteger(q.remaining) && Number(q.remaining) >= 0)) &&
+      const quota = settled[1].status === 'fulfilled' ? settled[1].value : null
+      const q = quota && !quota.error ? quota.data as Partial<Allowance> | null : null
+      if (q && q.tier === 'basic' &&
+          Number.isInteger(q.used) && q.used! >= 0 &&
+          Number.isInteger(q.limit) && q.limit! >= 0 &&
+          Number.isInteger(q.remaining) && q.remaining! >= 0 &&
+          q.remaining! <= q.limit! &&
           typeof q.resetsAt === 'string' && !Number.isNaN(Date.parse(q.resetsAt))) {
         setAllowance(q as Allowance)
       } else {
@@ -34,8 +45,13 @@ export function ExecutiveUpgrade({ tier, isAdmin }: { tier: 'basic' | 'executive
       }
     }
     if (isAdmin) {
-      const queue = await rpc('admin_executive_applications')
-      if (!queue.error) setApplications(Array.isArray(queue.data) ? queue.data : [])
+      const queue = settled[2].status === 'fulfilled' ? settled[2].value : null
+      if (queue && !queue.error && Array.isArray(queue.data)) {
+        setApplications(queue.data)
+      } else {
+        setApplications([])
+        setError('Executive applications could not be loaded. Please retry.')
+      }
     }
   }
   useEffect(() => { if (open) void load() }, [open, isAdmin])
