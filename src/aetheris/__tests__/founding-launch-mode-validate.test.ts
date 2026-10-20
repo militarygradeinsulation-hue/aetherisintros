@@ -19,4 +19,21 @@ describe('founding member launch statistics', () => {
       expect(normalizeFoundingStats(raw)).toEqual(restricted)
     }
   })
+  it('rejects coercible non-numbers in either counter', () => {
+    for (const value of [null, undefined, true, false, '', '0', '10', '1000', [], [1], {}, { valueOf: () => 1 }]) {
+      expect(normalizeFoundingStats({ mode: 'first_1000', approved: value, capacity: 1000 })).toEqual(restricted)
+      expect(normalizeFoundingStats({ mode: 'first_1000', approved: 0, capacity: value })).toEqual(restricted)
+    }
+  })
+  it('rejects non-finite, fractional, and unsafe numeric counters', () => {
+    for (const value of [NaN, Infinity, -Infinity, -1, 1.5, Number.MAX_SAFE_INTEGER + 1]) {
+      expect(normalizeFoundingStats({ mode: 'first_1000', approved: value, capacity: Number.MAX_SAFE_INTEGER })).toEqual(restricted)
+      expect(normalizeFoundingStats({ mode: 'first_1000', approved: 0, capacity: value })).toEqual(restricted)
+    }
+  })
+  it('accepts numeric boundary values without coercion', () => {
+    for (const [approved, capacity] of [[0, 1], [1, 1], [Number.MAX_SAFE_INTEGER, Number.MAX_SAFE_INTEGER]]) {
+      expect(normalizeFoundingStats({ mode: 'first_1000', approved, capacity })).toEqual({ mode: 'first_1000', approved, capacity })
+    }
+  })
 })
