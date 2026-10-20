@@ -17,6 +17,8 @@ try {
     CREATE ROLE anon; CREATE ROLE authenticated; CREATE ROLE service_role BYPASSRLS;
     CREATE SCHEMA auth; CREATE TABLE auth.users(id uuid PRIMARY KEY);
     INSERT INTO auth.users VALUES('${A}'),('${B}'),('${C}');
+    CREATE TABLE public.profiles(id uuid PRIMARY KEY REFERENCES auth.users(id) ON DELETE CASCADE);
+    INSERT INTO public.profiles SELECT id FROM auth.users;
     CREATE FUNCTION auth.uid() RETURNS uuid LANGUAGE sql STABLE AS $$ SELECT nullif(current_setting('request.jwt.claim.sub',true),'')::uuid $$;
     GRANT USAGE ON SCHEMA auth TO authenticated,anon; GRANT EXECUTE ON FUNCTION auth.uid() TO authenticated,anon;
     CREATE TYPE public.app_role AS ENUM ('admin','moderator','user');
@@ -89,6 +91,43 @@ try {
   check(await denied(A, `SELECT * FROM save_workspace_state('anything-else','{}'::jsonb,0)`), 'unknown keys still refused')
   await db.query(`INSERT INTO crm_people VALUES($1,$2,false,NULL)`, ['00000000-0000-4000-8000-000000000002', B])
   check(Number((await db.query('SELECT count(*) n FROM crm_people')).rows[0].n) === 2, 'other CRM records keep working')
+  const P2 = '00000000-0000-4000-8000-000000000003'
+  await db.query('INSERT INTO crm_people VALUES($1,$2,false,NULL)', [P2,A])
+  const key2=`icp:person:${P2}`
+  for (const uid of [A,B,C]) {
+    await db.exec(`SET ROLE authenticated; SELECT set_config('request.jwt.claim.sub','${uid}',false); SELECT set_config('app.icp_reviewed_write','${uid}',false)`)
+    let blocked=false
+    try {await db.query('INSERT INTO member_workspace_state(store_key,data) VALUES($1,$2::jsonb)',[key2,'{"status":"accepted","note":"forged","consent":true}'])} catch {blocked=true} finally {await db.exec('RESET ROLE')}
+    check(blocked, `forged marker direct INSERT rejected for ${uid===A?'founder':uid===B?'ungranted admin':'member'}`)
+  }
+  await db.exec(`SELECT set_config('app.icp_reviewed_write','',false)`)
+  check((await db.query('SELECT 1 FROM member_workspace_state WHERE store_key=$1',[key2])).rows.length===0,'forged inserts leave no poisoned initial state')
+  check(await denied(A,'SELECT icp_save($1,$2::jsonb,0)',[key2,'{"status":"new","note":"","consent":false}']),'initial new status is not a reviewed write')
+  check(await denied(A,'SELECT icp_save($1,$2::jsonb,0)',[key2,'{"status":"draft","note":"x","consent":false,"extra":true}']),'extra review fields rejected')
+  check(await denied(A,'SELECT icp_save(NULL,$1::jsonb,0)',['{}']),'NULL workspace key rejected')
+  check(await denied(A,'SELECT icp_save($1,$2::jsonb,0)',['icp:profiles','{"profiles":"poison"}']),'non-array profile list rejected')
+  check(await denied(A,'SELECT icp_save($1,$2::jsonb,0)',['icp:profiles','{"profiles":[]}']),'empty profile list rejected')
+  const profile={id:'primary',label:'My clients',objective:'client',industries:'',employees:'',revenue:'',titles:'',locations:'',keywords:'',disqualifiers:'',excludeClients:true,excludeContacted:true,minimumFit:60,valueOffer:''}
+  const profileSave=await as(A,'SELECT icp_save($1,$2::jsonb,0) value',['icp:profiles',JSON.stringify({profiles:[profile]})])
+  check(Number(profileSave.rows[0].value.version)===1,'valid UI-shaped profiles accepted')
+  check(await denied(A,'SELECT icp_save($1,$2::jsonb,1)',['icp:profiles',JSON.stringify({profiles:[profile,{...profile}]})]),'duplicate profile IDs rejected')
+  check(await denied(A,'SELECT icp_save($1,$2::jsonb,1)',['icp:profiles',JSON.stringify({profiles:[{...profile,minimumFit:101}]})]),'out-of-range fit threshold rejected')
+  await as(A,'SELECT icp_save($1,$2::jsonb,0)',[key2,'{"status":"draft","note":"x","consent":true}'])
+  check(await denied(A,'SELECT icp_save($1,$2::jsonb,1)',[key2,'{"status":"approved","note":"https://example.com","consent":true}']),'direct RPC cannot approve promotional links')
+  check(await denied(A,'SELECT icp_save($1,$2::jsonb,1)',[key2,'{"status":"approved","note":"We met before","consent":true}']),'direct RPC cannot approve unsupported familiarity')
+  check(await denied(A,'SELECT icp_save($1,$2::jsonb,1)',[key2,JSON.stringify({status:'approved',note:'Hi Alex, I can share an operating checklist.',consent:true})]),'direct RPC cannot reuse a contacted person note')
+  // Adversarial fixture only: grant TEMP locally so shadowing is actually exercised.
+  await db.exec('GRANT TEMP ON DATABASE template1 TO authenticated')
+  await db.exec(`SET ROLE authenticated; SELECT set_config('request.jwt.claim.sub','${A}',false); CREATE TEMP TABLE crm_people(id uuid,owner_id uuid,archived boolean); INSERT INTO crm_people VALUES('00000000-0000-4000-8000-000000000004','${A}',false)`)
+  let shadowBlocked=false
+  try {await db.query('SELECT public.icp_save($1,$2::jsonb,0)',['icp:person:00000000-0000-4000-8000-000000000004','{"status":"draft","note":"x","consent":false}'])} catch {shadowBlocked=true} finally {await db.exec('RESET ROLE; DROP TABLE pg_temp.crm_people')}
+  check(shadowBlocked,'temporary CRM shadow cannot authorize an unknown person')
+  await db.exec('ALTER TABLE member_workspace_state DISABLE TRIGGER icp_private_workspace_guard')
+  await db.query("UPDATE member_workspace_state SET data=$1::jsonb WHERE store_key=$2",['{"status":"garbage","note":"x","consent":true}',key2])
+  await db.exec('ALTER TABLE member_workspace_state ENABLE TRIGGER icp_private_workspace_guard')
+  check(await denied(A,'SELECT icp_save($1,$2::jsonb,1)',[key2,'{"status":"accepted","note":"x","consent":true}']),'invalid legacy status cannot exploit NULL transition logic')
+  const freshRetry=await as(A,'SELECT icp_save($1,$2::jsonb,0) value',['icp:profiles',JSON.stringify({profiles:[profile]})])
+  check(Number(freshRetry.rows[0].value.version)===1,'identical initial profile retry stays at version one')
   await db.exec(`DELETE FROM auth.users WHERE id='${A}'`)
   check(Number((await db.query(`SELECT count(*) n FROM member_workspace_state WHERE user_id='${A}'`)).rows[0].n) === 0, 'account deletion still cascades')
   console.log(`${passed} candidate 0095 checks passed; no live database touched.`)

@@ -13,7 +13,7 @@
 -- 4. icp_save: payload validation, owner check, transition rules, retry idempotency.
 
 CREATE TABLE IF NOT EXISTS public.private_owner_grants (
-  user_id uuid NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
+  user_id uuid NOT NULL REFERENCES public.profiles(id) ON DELETE CASCADE,
   capability text NOT NULL CHECK (capability IN ('prospect_intelligence')),
   granted_by text NOT NULL,
   granted_at timestamptz NOT NULL DEFAULT now(),
@@ -29,7 +29,7 @@ CREATE UNIQUE INDEX IF NOT EXISTS private_owner_grants_one_owner ON public.priva
 -- No authenticated policies: members cannot read or write grants. Checked via the function below.
 
 CREATE OR REPLACE FUNCTION public.has_private_owner_grant(p_capability text)
-RETURNS boolean LANGUAGE sql STABLE SECURITY DEFINER SET search_path = public AS $$
+RETURNS boolean LANGUAGE sql STABLE SECURITY DEFINER SET search_path = pg_catalog, public, pg_temp AS $$
   SELECT auth.uid() IS NOT NULL
      AND public.has_role(auth.uid(), 'admin')
      AND EXISTS (SELECT 1 FROM public.private_owner_grants g
@@ -44,7 +44,7 @@ ALTER TABLE public.member_workspace_state ADD CONSTRAINT member_workspace_state_
   OR store_key ~ '^icp:person:[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$'
 );
 
-CREATE OR REPLACE FUNCTION public.icp_state_guard() RETURNS trigger LANGUAGE plpgsql SET search_path = public AS $$
+CREATE OR REPLACE FUNCTION public.icp_state_guard() RETURNS trigger LANGUAGE plpgsql SET search_path = pg_catalog, public, pg_temp AS $$
 DECLARE k text := CASE WHEN TG_OP = 'DELETE' THEN OLD.store_key ELSE NEW.store_key END;
 BEGIN
   IF k LIKE 'icp:%' OR (TG_OP = 'UPDATE' AND OLD.store_key LIKE 'icp:%') THEN
@@ -55,7 +55,11 @@ BEGIN
       END IF;
       RETURN OLD;
     END IF;
-    IF coalesce(current_setting('app.icp_reviewed_write', true), '') <> NEW.user_id::text THEN
+    -- A custom GUC is caller-controlled: never accept it as authorization alone.
+    IF current_user IN ('authenticated','anon','authenticator','service_role')
+       OR NEW.user_id IS DISTINCT FROM auth.uid()
+       OR NOT public.has_private_owner_grant('prospect_intelligence')
+       OR coalesce(current_setting('app.icp_reviewed_write', true), '') <> NEW.user_id::text THEN
       RAISE EXCEPTION 'Use the private reviewed prospect workflow';
     END IF;
   END IF;
@@ -69,10 +73,14 @@ DROP POLICY IF EXISTS icp_private_read_guard ON public.member_workspace_state;
 CREATE POLICY icp_private_read_guard ON public.member_workspace_state AS RESTRICTIVE FOR SELECT TO authenticated
   USING (store_key NOT LIKE 'icp:%' OR public.has_private_owner_grant('prospect_intelligence'));
 
+DROP POLICY IF EXISTS icp_no_direct_insert ON public.member_workspace_state;
+CREATE POLICY icp_no_direct_insert ON public.member_workspace_state AS RESTRICTIVE FOR INSERT TO authenticated
+  WITH CHECK (store_key NOT LIKE 'icp:%');
+
 -- General RPC: unchanged behaviour for legacy keys; refuses ICP keys outright.
 CREATE OR REPLACE FUNCTION public.save_workspace_state(p_key text, p_data jsonb, p_base_version bigint)
 RETURNS TABLE (saved boolean, current_version bigint, current_data jsonb, saved_at timestamptz)
-LANGUAGE plpgsql SECURITY DEFINER SET search_path = public AS $$
+LANGUAGE plpgsql SECURITY DEFINER SET search_path = pg_catalog, public, pg_temp AS $$
 DECLARE v_uid uuid := auth.uid(); v_row public.member_workspace_state%ROWTYPE;
 BEGIN
   IF v_uid IS NULL THEN RAISE EXCEPTION 'Sign in to save your workspace' USING errcode = '42501'; END IF;
@@ -96,26 +104,53 @@ REVOKE ALL ON FUNCTION public.save_workspace_state(text, jsonb, bigint) FROM PUB
 GRANT EXECUTE ON FUNCTION public.save_workspace_state(text, jsonb, bigint) TO authenticated, service_role;
 
 CREATE OR REPLACE FUNCTION public.icp_save(p_key text, p_data jsonb, p_expected bigint DEFAULT 0) RETURNS jsonb
-LANGUAGE plpgsql SECURITY DEFINER SET search_path = public AS $$
-DECLARE u uuid := auth.uid(); v bigint; old_data jsonb; person uuid; a text; b text;
+LANGUAGE plpgsql SECURITY DEFINER SET search_path = pg_catalog, public, pg_temp AS $$
+DECLARE u uuid := auth.uid(); v bigint; old_data jsonb; person uuid; a text; b text; item jsonb; field text; seen_ids text[] := ARRAY[]::text[];
   allowed jsonb := '{"new":["shortlisted","draft","dismissed","not_appropriate"],"shortlisted":["draft","dismissed","not_appropriate"],"draft":["approved","dismissed","not_appropriate"],"approved":["draft","invited","dismissed","not_appropriate"],"invited":["accepted","not_appropriate"],"accepted":["follow_up","not_appropriate"],"follow_up":["not_appropriate"],"dismissed":["shortlisted"],"not_appropriate":[]}';
 BEGIN
   IF NOT public.has_private_owner_grant('prospect_intelligence') THEN RAISE EXCEPTION 'Private owner access required'; END IF;
-  IF p_key <> 'icp:profiles' AND p_key !~ '^icp:person:[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$' THEN RAISE EXCEPTION 'Invalid key'; END IF;
+  IF p_key IS NULL OR (p_key <> 'icp:profiles' AND p_key !~ '^icp:person:[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$' ) THEN RAISE EXCEPTION 'Invalid key'; END IF;
   IF p_data IS NULL OR jsonb_typeof(p_data) <> 'object' OR p_expected IS NULL OR p_expected < 0 THEN RAISE EXCEPTION 'Invalid payload or version'; END IF;
   IF octet_length(p_data::text) > 100000 THEN RAISE EXCEPTION 'Input too large'; END IF;
+  IF p_key = 'icp:profiles' THEN
+    IF p_data - 'profiles' <> '{}'::jsonb OR jsonb_typeof(p_data->'profiles') IS DISTINCT FROM 'array' THEN RAISE EXCEPTION 'Invalid profiles'; END IF;
+    IF jsonb_array_length(p_data->'profiles') NOT BETWEEN 1 AND 20 THEN RAISE EXCEPTION 'Invalid profile count'; END IF;
+    FOR item IN SELECT value FROM jsonb_array_elements(p_data->'profiles') LOOP
+      IF jsonb_typeof(item) <> 'object' OR item - ARRAY['id','label','objective','industries','employees','revenue','titles','locations','keywords','disqualifiers','excludeClients','excludeContacted','minimumFit','valueOffer'] <> '{}'::jsonb THEN RAISE EXCEPTION 'Invalid profile fields'; END IF;
+      FOREACH field IN ARRAY ARRAY['id','label','objective','industries','employees','revenue','titles','locations','keywords','disqualifiers','valueOffer'] LOOP
+        IF jsonb_typeof(item->field) IS DISTINCT FROM 'string' OR length(item->>field) > (CASE field WHEN 'id' THEN 80 WHEN 'label' THEN 120 WHEN 'valueOffer' THEN 200 ELSE 1000 END) THEN RAISE EXCEPTION 'Invalid profile field'; END IF;
+      END LOOP;
+      IF length(item->>'id')=0 OR length(item->>'label')=0 OR item->>'id'=ANY(seen_ids)
+        OR item->>'objective' NOT IN ('client','partner','investor','referral','hire')
+        OR jsonb_typeof(item->'excludeClients') IS DISTINCT FROM 'boolean'
+        OR jsonb_typeof(item->'excludeContacted') IS DISTINCT FROM 'boolean'
+        OR jsonb_typeof(item->'minimumFit') IS DISTINCT FROM 'number' THEN RAISE EXCEPTION 'Invalid profile'; END IF;
+      IF (item->>'minimumFit')::numeric NOT BETWEEN 0 AND 100 OR (item->>'minimumFit')::numeric <> trunc((item->>'minimumFit')::numeric) THEN RAISE EXCEPTION 'Invalid fit threshold'; END IF;
+      seen_ids := array_append(seen_ids,item->>'id');
+    END LOOP;
+  ELSE
+    IF p_data - ARRAY['status','note','consent'] <> '{}'::jsonb THEN RAISE EXCEPTION 'Invalid review fields'; END IF;
+  END IF;
+  -- Serialize note review and contact transitions across this owner's prospects.
+  PERFORM pg_advisory_xact_lock(hashtext(u::text || ':icp-notes'));
   PERFORM pg_advisory_xact_lock(hashtext(u::text || p_key));
   SELECT version, data INTO v, old_data FROM public.member_workspace_state WHERE user_id = u AND store_key = p_key;
+  IF p_key LIKE 'icp:person:%' AND old_data IS NOT NULL AND NOT (allowed ? coalesce(old_data->>'status','')) THEN RAISE EXCEPTION 'Invalid stored review status'; END IF;
   -- Lost-response retry: identical payload at the saved or just-previous version returns the saved row.
   IF old_data = p_data AND (p_expected = v OR p_expected = v - 1) THEN RETURN jsonb_build_object('version', v, 'data', old_data); END IF;
   IF coalesce(v, 0) <> p_expected THEN RAISE EXCEPTION 'Changed elsewhere. Reload before saving.'; END IF;
   IF p_key LIKE 'icp:person:%' THEN
     person := substring(p_key from 12)::uuid;
-    IF NOT EXISTS (SELECT 1 FROM public.crm_people WHERE id = person AND owner_id = u AND NOT archived) THEN RAISE EXCEPTION 'Person is not in your CRM'; END IF;
+    PERFORM 1 FROM public.crm_people WHERE id = person AND owner_id = u AND NOT archived FOR UPDATE;
+    IF NOT FOUND THEN RAISE EXCEPTION 'Person is not in your CRM'; END IF;
     a := coalesce(old_data->>'status', 'new'); b := p_data->>'status';
-    IF b IS NULL OR NOT allowed ? b OR (b <> a AND NOT (allowed->a ? b)) THEN RAISE EXCEPTION 'Invalid transition'; END IF;
+    IF b IS NULL OR NOT (allowed ? a) OR NOT (allowed ? b) OR (old_data IS NULL AND b = 'new') OR (b <> a AND NOT coalesce(allowed->a ? b, false)) THEN RAISE EXCEPTION 'Invalid transition'; END IF;
     IF jsonb_typeof(p_data->'note') IS DISTINCT FROM 'string' OR jsonb_typeof(p_data->'consent') IS DISTINCT FROM 'boolean' OR length(p_data->>'note') > 300 THEN RAISE EXCEPTION 'Invalid review fields'; END IF;
     IF b = ANY (ARRAY['approved','invited','accepted','follow_up']) AND (length(trim(p_data->>'note')) = 0 OR (p_data->>'consent')::boolean = false) THEN RAISE EXCEPTION 'Review note and confirm contact permission'; END IF;
+    IF b = ANY (ARRAY['approved','invited','accepted','follow_up']) THEN
+      IF p_data->>'note' ~* '(https?://|i (loved|enjoyed|saw|read)|we met|as discussed|guarantee|limited time|buy now)' THEN RAISE EXCEPTION 'Remove unsupported familiarity, promotional claims or links'; END IF;
+      IF EXISTS (SELECT 1 FROM public.member_workspace_state s WHERE s.user_id=u AND s.store_key LIKE 'icp:person:%' AND s.store_key<>p_key AND s.data->>'status' IN ('invited','accepted','follow_up') AND trim(s.data->>'note')=trim(p_data->>'note')) THEN RAISE EXCEPTION 'This note was already used for another person'; END IF;
+    END IF;
     IF a = ANY (ARRAY['approved','invited','accepted','follow_up']) AND b <> 'draft' AND (old_data->>'note' IS DISTINCT FROM p_data->>'note' OR old_data->'consent' IS DISTINCT FROM p_data->'consent') THEN RAISE EXCEPTION 'Edited notes require review again'; END IF;
     IF a = b AND b = ANY (ARRAY['invited','accepted','follow_up']) AND p_data <> old_data THEN RAISE EXCEPTION 'Repeated contact statuses cannot change review history'; END IF;
     IF p_data = old_data THEN RETURN jsonb_build_object('version', v, 'data', old_data); END IF;
@@ -129,7 +164,7 @@ BEGIN
   END IF;
   PERFORM set_config('app.icp_reviewed_write', u::text, true);
   INSERT INTO public.member_workspace_state(user_id, store_key, data, version) VALUES (u, p_key, p_data, 1)
-    ON CONFLICT (user_id, store_key) DO UPDATE SET data = excluded.data, version = member_workspace_state.version + 1, updated_at = now()
+    ON CONFLICT (user_id, store_key) DO UPDATE SET data = excluded.data, version = public.member_workspace_state.version + 1, updated_at = now()
     RETURNING version INTO v;
   PERFORM set_config('app.icp_reviewed_write', '', true);
   RETURN jsonb_build_object('version', v, 'data', p_data);
