@@ -134,7 +134,7 @@ export default async ({ ok, as, svc, A, B, C }) => {
   ok(!!R3 && (await svc(`select role from public.deal_room_members where room_id = '${R3}' and user_id = '${A}'`))[0].role === 'buyer', 'a thread participant opens a room as provider and the other is invited as buyer')
   ok(!!(await err(B, `select public.create_deal_room('thread', $1, 'Not my thread', '', 'buyer', null)`, [T])), 'someone outside the conversation cannot use it')
   ok(!!(await err(C, `select public.create_deal_room('opportunity', $1, 'Not a CRM row', '', 'buyer', null)`, [T])), 'only your own CRM opportunities can be a source')
-  const O = (await svc(`insert into public.crm_opportunities (owner_id) values ('${C}') returning id`))[0].id
+  const O = (await svc(`insert into public.crm_opportunities (owner_id,name) values ('${C}','Synthetic renewal') returning id`))[0].id
   ok(!!(await one(C, `select public.create_deal_room('opportunity', $1, 'Renewal', 'Renew the audit', 'provider', $2) as id`, [O, B]))?.id, 'an owner opens a room from their CRM opportunity and invites anyone')
   ok(!!(await err(B, `select public.create_deal_room('opportunity', $1, 'Theirs', '', 'buyer', null)`, [O])), 'but not from someone else’s')
   ok(!!(await err(C, `select public.create_deal_room('manual', 'x', 'Bad', '', 'buyer', null)`)), 'a room from scratch takes no source id')
