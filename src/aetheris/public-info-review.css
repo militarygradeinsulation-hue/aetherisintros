@@ -1,0 +1,48 @@
+/* Scoped, contrast-safe public-source review within the existing LinkedIn scanner. */
+.li-public-review {
+  --review-ink: #1f303a;
+  --review-subtle: #465d68;
+  --review-surface: #f3f7f9;
+  --review-item: #ffffff;
+  --review-rule: #aabdc9;
+  --review-link: #205b85;
+  display: grid;
+  gap: 12px;
+  padding: 16px;
+  margin-top: 14px;
+  border: 1px solid var(--review-rule);
+  border-radius: 12px;
+  background: var(--review-surface);
+  color: var(--review-ink);
+}
+:root[data-theme="dark"] .li-public-review {
+  --review-ink: #edf3f6;
+  --review-subtle: #c0d1da;
+  --review-surface: #192630;
+  --review-item: #23333f;
+  --review-rule: #647a89;
+  --review-link: #9fd6ff;
+}
+.li-public-review :is(p, small) { color: var(--review-subtle); line-height: 1.5; }
+.li-public-review .li-scan-label { color: var(--review-ink); }
+.li-public-consent { display: flex; align-items: flex-start; gap: 10px; color: var(--review-ink); font-weight: 600; }
+.li-public-consent input, .li-public-suggestions input { flex: none; margin: 4px 0 0; accent-color: var(--review-link); }
+.li-public-suggestions { display: grid; gap: 10px; min-width: 0; }
+.li-public-suggestions > label {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 10px;
+  padding: 12px;
+  border: 1px solid var(--review-rule);
+  border-radius: 9px;
+  background: var(--review-item);
+  color: var(--review-ink);
+}
+.li-public-suggestions > label > span { display: grid; gap: 5px; min-width: 0; }
+.li-public-suggestions :is(b, strong, small, a, em) { overflow-wrap: anywhere; }
+.li-public-suggestions b { color: var(--review-subtle); text-transform: uppercase; letter-spacing: .07em; font-size: 11px; }
+.li-public-suggestions strong { color: var(--review-ink); font-size: 14px; }
+.li-public-suggestions a { color: var(--review-link); font-size: 12px; text-decoration: underline; }
+.li-public-review-only { opacity: .8; }
+.li-public-review-only em { color: var(--review-subtle); font-size: 12px; }
+@media (max-width: 600px) { .li-public-review { padding: 12px; } }
