@@ -40,6 +40,12 @@ jobs:
           node scripts/migration-checks/launch-signup.standalone.mjs
       - name: Install Chromium
         run: npx playwright install --with-deps chromium
+      - name: Validate Opportunity Preview browser check syntax
+        run: node --check scripts/opportunity-preview-check/run.mjs
+      - name: Public Opportunity Preview (light/dark, desktop/phone browser)
+        env:
+          PLAYWRIGHT_MODULE: ${{ github.workspace }}/node_modules/playwright/index.mjs
+        run: node scripts/opportunity-preview-check/run.mjs
       - name: Mobile site and business journey (browser)
         env:
           PLAYWRIGHT_MODULE: ${{ github.workspace }}/node_modules/playwright/index.mjs

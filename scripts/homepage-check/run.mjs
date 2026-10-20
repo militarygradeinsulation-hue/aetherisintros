@@ -112,7 +112,8 @@ try {
             }),
           ),
           ctas: {
-            demo: Boolean(root.querySelector('.ael-hero-actions a[href="/demo"]')),
+            preview: Boolean(root.querySelector('.ael-hero-actions a[href="/try"]')),
+            demo: Boolean(root.querySelector('a[href="/demo"]')),
             join: Boolean(root.querySelector('.ael-hero-actions a[href^="/auth?"][href*="mode=signup"]')),
             story: Boolean(root.querySelector('a[href="/founder-story"]')),
             auth: Boolean(root.querySelector('.ael-header-actions a[href="/auth"]')),
@@ -133,7 +134,7 @@ try {
         'hero fits near the first viewport')
       assert(['experience', 'approach', 'membership'].every(id => m.links[id]),
         'every navigation anchor has a real destination')
-      assert(Object.values(m.ctas).every(Boolean), 'demo, join, sign-in and founder-story links remain')
+      assert(Object.values(m.ctas).every(Boolean), 'hero preview, deeper demo, join, sign-in and founder-story links remain')
       const onScreen = r => Boolean(r && r.width > 0 && r.right <= viewport.width + 3 && r.x >= -3)
       assert(m.logo && m.logo.width >= (viewport.width <= 420 ? 150 : viewport.width <= 750 ? 175 : 220),
         'approved Ask Intros wordmark is prominent at this breakpoint')

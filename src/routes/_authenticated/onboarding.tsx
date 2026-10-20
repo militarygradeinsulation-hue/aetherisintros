@@ -120,6 +120,8 @@ function OnboardingRoute() {
         setError(`Your profile was saved, but ${optionalFailures.join(' and ')} could not be saved. You can update them from your profile. Select Continue to the network.`)
         return
       }
+      // Set the welcome flag so the AI Business Analyst banner fires on first session.
+      try { localStorage.setItem('ai-welcome-pending', '1') } catch { /* storage blocked */ }
       void navigate({ to: '/app', replace: true })
     } catch (cause) {
       setError(cause instanceof Error ? cause.message : 'Your profile was not confirmed. Please retry.')

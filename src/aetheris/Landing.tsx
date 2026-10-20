@@ -12,7 +12,7 @@ import './compact-homepage.css'
 /**
  * A compact architectural editorial homepage.
  * Photos are illustrative, not member portraits, endorsements or outcomes.
- * Three chapters: hero, experience + process, membership.
+ * Three chapters: hero, experience + process + AI brief, membership.
  * Navigation and access destinations are unchanged.
  */
 const photo = {
@@ -83,7 +83,7 @@ export default function Landing() {
         <p className="ael-hero-lede">The people who matter. A reason to meet. A place to make something happen.</p>
         <div className="ael-hero-actions">
           <JoinAction signedIn={signedIn} className="ael-btn ael-btn-gold ai-gradient-button" />
-          <Link to="/demo" className="ael-text-link">Explore Ask Intros <ArrowRight aria-hidden="true" size={16} /></Link>
+          <Link to="/try" className="ael-text-link">Try it in 30 seconds <ArrowRight aria-hidden="true" size={16} /></Link>
         </div>
       </div>
       <div className="ael-hero-bottom">
@@ -118,6 +118,19 @@ export default function Landing() {
         </ol>
         <Link to="/demo" className="ael-underlink ael-underlink-dark">See the experience <ArrowUpRight aria-hidden="true" size={16} /></Link>
       </div>
+      <div className="ael-compact-method" id="intelligence" aria-labelledby="ael-intelligence-title">
+        <div className="ael-compact-method-heading">
+          <span className="ael-fine-label">THE AI BRIEF / YOUR BUSINESS ANALYST</span>
+          <h3 id="ael-intelligence-title" className="stencil-display"><span className="sr-only">What your AI Business Analyst surfaces.</span><StencilHeadline lines={['YOUR BUSINESS', 'BRIEF']} /></h3>
+        </div>
+        <ol className="ael-compact-steps">
+          <li><span>01</span><div><strong>Lead leaks</strong><p>Where deals slip before they close.</p></div></li>
+          <li><span>02</span><div><strong>Cold relationships</strong><p>High-value connections worth one reactivation.</p></div></li>
+          <li><span>03</span><div><strong>Partner introductions</strong><p>Named people whose work addresses your gaps.</p></div></li>
+          <li><span>04</span><div><strong>Network health score</strong><p>A live 0–100 reading of your activity vs. your opportunities.</p></div></li>
+        </ol>
+        <Link to="/demo" className="ael-underlink ael-underlink-dark">See a sample brief <ArrowUpRight aria-hidden="true" size={16} /></Link>
+      </div>
     </section>
 
     <section className="ael-membership ael-compact-membership" id="membership" aria-labelledby="ael-membership-title">
@@ -138,7 +151,7 @@ export default function Landing() {
 
     <footer className="ael-compact-footer">
       <Link to="/" className="ael-compact-footer-brand" aria-label="Ask Intros home"><span className="stencil-footer-wordmark" style={{ color: "var(--st-ink)", backgroundColor: "var(--st-bg)" }}>ASK INTROS</span></Link>
-      <span>WHY ME · WHY THEM · WHY NOW</span>
+      <span>WHY ME &middot; WHY THEM &middot; WHY NOW</span>
       <small>Editorial imagery is illustrative. Pictured subjects are not Ask Intros members or endorsers.</small>
     </footer>
   </main>
