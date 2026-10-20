@@ -64,6 +64,13 @@ describe('30-second public Opportunity Preview', () => {
     expect(landing).toContain('to="/demo" className="ael-underlink')
   })
 
+  it('allows the deliberate prepaint light/dark HTML attributes without masking inner hydration bugs', () => {
+    const root = read('../../routes/__root.tsx')
+    expect(root).toContain('<html lang="en" suppressHydrationWarning>')
+    expect(root).toContain('<script src="/appearance-init.js" />')
+    expect(root).toContain('<Scripts />')
+  })
+
   it('supports light and dark themes, keyboard focus, mobile layout, reduced motion', () => {
     expect(css).toContain(':root[data-theme="dark"] .ai-try')
     expect(css).toContain(':focus-visible')
