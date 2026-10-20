@@ -1,17 +1,17 @@
 # Aetheris specification completion
 
 ## Offline database recovery engineering (Oct 20)
-- [ ] Add disposable baseline/supplied-schema replay, ordered 0058–0078 diagnostics and collision probes.
-- [ ] Harden unapplied 0095 proposal and extend isolated regressions.
-- [ ] Prepare DBA ledger handoff and document synthetic validation limits.
-- [ ] Run checks and verify refs; no live changes or publication.
+- [x] Add disposable baseline/supplied-schema replay, ordered 0058–0078 diagnostics and collision probes.
+- [x] Harden unapplied 0095 proposal and extend isolated regressions.
+- [x] Prepare DBA ledger handoff and document synthetic validation limits.
+- [x] Run checks and inspect refs: 686 app/recovery + 54 candidate + 25 safety checks pass; automatic compilation OK. Local engineering HEAD differs from remote main; sync remains unverified, no live changes or publication.
 
 ## Prospect release safety repair (Oct 19)
 - [x] Restore 0082, 0090 and 0092 byte-for-byte from a7ebe8262766e23fb1e86449989e285c496a1081; preserve journal and snapshots.
 - [x] Audit and test direct workspace/RPC access, status retries and review history: 25 isolated Postgres checks passed.
 - [x] Recheck compilation/tests and intended-file scope: 39 application tests passed; automatic compilation passed; historical files have no diff against reference.
 - [ ] Apply narrowly scoped database reconciliation — blocked: restored historical migrations encounter existing-table drift; general RPC bypass and ICP key allowlist require reconciliation. Proposal tested only in disposable Postgres, not applied.
-- [ ] Apply candidate 0095 single-owner ICP grant migration + one founder grant — blocked: needs Joseph approval (36 PGlite checks).
+- [ ] Apply candidate 0095 single-owner ICP grant migration + one founder grant — blocked: needs Joseph approval (54 PGlite checks).
 - [ ] Recover 0058–0077 — blocked: both change ledgers permission-denied; plan in docs/release-safety/RECOVERY_0058_0077.md.
 - [ ] Confirm GitHub remote synchronization — blocked: remote sync status unavailable to the agent; no deployment.
 
