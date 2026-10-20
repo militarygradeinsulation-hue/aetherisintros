@@ -59,7 +59,6 @@ try {
   check(await denied(A, `UPDATE member_workspace_state SET data='{"status":"accepted"}' WHERE store_key=$1`, [key]), 'direct update refused')
   check(await denied(A, 'DELETE FROM member_workspace_state WHERE store_key=$1', [key]) ||
     (await as(A, 'SELECT 1 FROM member_workspace_state WHERE store_key=$1', [key])).rows.length === 1, 'direct delete keeps review history')
-  check(await denied(null, `SELECT set_config('app.icp_reviewed_write',$1,true)`, [A]) || true, 'session flag alone not a bypass (checked next)')
   check(await denied(A, `SELECT set_config('app.icp_reviewed_write','${A}',false); UPDATE member_workspace_state SET data='{"status":"accepted"}' WHERE store_key='${key}'`) ||
     (await db.query(`SELECT data->>'status' s FROM member_workspace_state WHERE store_key=$1`, [key])).rows[0].s === 'draft', 'a forged flag cannot change reviewed status via multi-statement')
   await db.exec(`SELECT set_config('app.icp_reviewed_write','',false)`)
