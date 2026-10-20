@@ -68,7 +68,7 @@ export const RequestIntroModal: React.FC<RequestIntroModalProps> = ({
           <div>
             {/* Header */}
             <div className="flex items-center gap-2 mb-1">
-              <span className="text-[10px] font-mono tracking-widest text-[#F5B027] uppercase font-semibold">
+              <span className="intro-modal-amber-label text-[10px] font-mono tracking-widest text-[#F5B027] uppercase font-semibold">
                 Double Opt-in Warm Introduction
               </span>
             </div>
@@ -82,7 +82,7 @@ export const RequestIntroModal: React.FC<RequestIntroModalProps> = ({
               <div>
                 <div className="text-sm font-semibold text-white flex items-center gap-1.5">
                   {targetMember.name}
-                  <span className="text-[10px] text-[#F5B027] font-mono font-medium">
+                  <span className="intro-modal-amber-label text-[10px] text-[#F5B027] font-mono font-medium">
                     {targetMember.matchScore}% Match
                   </span>
                 </div>
