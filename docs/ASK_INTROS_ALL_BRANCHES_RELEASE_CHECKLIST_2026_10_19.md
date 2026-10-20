@@ -9,6 +9,7 @@ Snapshot 2026-10-19. 216 GitHub branches including `main`. Checked means verifie
 - [x] PR #212: existing-RPC Basic allowance UI merged to `main` (`d29ef68`); no migration or RLS change.
 - [x] PR #203: unsafe duplicate migration closed as superseded by #212.
 - [ ] Verify Lovable editor SHA and separately verify the published site's deployment SHA.
+- [x] #1 legacy demo identity PR reviewed and closed as already integrated/superseded.
 - [ ] Verify exact production DB, obtain read-only migration ledger and restorable backup.
 - [ ] Reconcile missing live schema from migrations 0058–0077, collisions 0082/0090/0092 and reused 0093 in disposable DB first.
 - [ ] Test each restored RPC/table with anon, member A, member B, admin, consent, and revoked access.
@@ -27,7 +28,7 @@ Snapshot 2026-10-19. 216 GitHub branches including `main`. Checked means verifie
 - [ ] `claude/ask-response-count` — classify: integrated / unique / superseded / unsafe
 - [ ] `claude/company-continuity` — classify: integrated / unique / superseded / unsafe
 - [ ] `claude/deal-rooms` — classify: integrated / unique / superseded / unsafe
-- [ ] `claude/demo-live-account-fixes` — classify: integrated / unique / superseded / unsafe
+- [x] `claude/demo-live-account-fixes` — core identity/demo badge integrated; obsolete CTA diff superseded; PR #1 closed
 - [ ] `claude/events` — classify: integrated / unique / superseded / unsafe
 - [ ] `claude/foundation` — classify: integrated / unique / superseded / unsafe
 - [ ] `claude/founding-cohorts` — classify: integrated / unique / superseded / unsafe
@@ -271,6 +272,7 @@ Snapshot 2026-10-19. 216 GitHub branches including `main`. Checked means verifie
 
 - [x] #203 allowance: closed as superseded by merged #212; conflicting 0093 migration was not applied.
 - [ ] #125, #123, #117: overlapping signup migrations and activation changes.
-- [ ] #104 design; #80/#60 LinkedIn; #74 executive modules; #63/#50 integration; #45 library; #44 workspaces; #12 hover; #1 demo identity: compare with `main`, security, and CI before merge or close.
+- [x] #1 demo identity: closed as superseded; identity and desktop/mobile demo indicators verified in main; old landing CTA diff obsolete.
+- [ ] #104 design; #80/#60 LinkedIn; #74 executive modules; #63/#50 integration; #45 library; #44 workspaces; #12 hover: compare with `main`, security, and CI before merge or close.
 
 See issue #211 for live database blockers. Do not confuse a green branch check or Lovable `is_published` with a verified live deployment.
