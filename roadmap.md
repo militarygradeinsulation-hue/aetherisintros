@@ -5,7 +5,7 @@
 - [x] Audit and test direct workspace/RPC access, status retries and review history: 25 isolated Postgres checks passed.
 - [x] Recheck compilation/tests and intended-file scope: 39 application tests passed; automatic compilation passed; historical files have no diff against reference.
 - [ ] Apply narrowly scoped database reconciliation — blocked: restored historical migrations encounter existing-table drift; general RPC bypass and ICP key allowlist require reconciliation. Proposal tested only in disposable Postgres, not applied.
-- [ ] Apply candidate 0095 ICP owner-grant migration + founder grant — blocked: needs Joseph approval (tested in PGlite, 28 checks).
+- [ ] Apply candidate 0095 single-owner ICP grant migration + one founder grant — blocked: needs Joseph approval (36 PGlite checks).
 - [ ] Recover 0058–0077 — blocked: both change ledgers permission-denied; plan in docs/release-safety/RECOVERY_0058_0077.md.
 - [ ] Confirm GitHub remote synchronization — blocked: remote sync status unavailable to the agent; no deployment.
 
