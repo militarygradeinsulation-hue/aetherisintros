@@ -10,6 +10,7 @@ import { fetchLinkedInPhoto } from '@/lib/linkedinImport.functions'
 import { findPublicInformation } from '@/lib/publicInfo.functions'
 import { isLinkedInPhotoUrl } from './linkedin-import'
 import type { PublicSuggestion } from './public-info'
+import { reviewedPublicProfilePatch } from './public-info-review'
 import './public-info-review.css'
 import { PROFILE_KEYS, SCAN_LABELS, splitList, type ScanKey } from './linkedin-scan'
 import { LinkedInScanPanel, saveProfileScan, type ApplyOutcome, type ScanPatch } from './linkedin-scan-ui'
@@ -80,17 +81,8 @@ export function LinkedInImportPanel({ onApplied, defaultOpen = false }: { onAppl
   }
 
   const applySelectedPublicInformation = async () => {
-    if (demo || !pickedPublic.size) return
-    const patch: ScanPatch = {}
-    for (const [index, item] of publicMatches.entries()) {
-      if (!pickedPublic.has(index)) continue
-      if (item.field === 'title') patch.title = item.value
-      else if (item.field === 'company') patch.company = item.value
-      else if (item.field === 'location') patch.location = item.value
-      else if (item.field === 'thesis') patch.headline = item.value
-      else if (item.field === 'whatIDo') patch.about = item.value
-      // "building" does not have a canonical profile field: show, never auto-map.
-    }
+    if (demo || !publicConfirmed || !pickedPublic.size) return
+    const patch = reviewedPublicProfilePatch(publicMatches, pickedPublic)
     if (!Object.keys(patch).length) { setPublicNotice('No supported profile fields selected.'); return }
     setPublicBusy(true); setPublicNotice('')
     try {
@@ -211,7 +203,7 @@ export function LinkedInImportPanel({ onApplied, defaultOpen = false }: { onAppl
               </span>
             </label>
           })}
-          <Btn kind="secondary" disabled={publicBusy || !pickedPublic.size} onClick={() => void applySelectedPublicInformation()}>
+          <Btn kind="secondary" disabled={!publicConfirmed || publicBusy || !pickedPublic.size} onClick={() => void applySelectedPublicInformation()}>
             Apply selected public fields
           </Btn>
         </div>}
