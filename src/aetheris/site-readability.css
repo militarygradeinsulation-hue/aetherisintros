@@ -760,8 +760,5 @@ html:root[data-theme] body .security-verify-link:focus-visible {
   outline-offset:4px;
 }
 
-/* Warm-introduction dialog: amber labels need dark ink on the light surface. */
-html:root[data-theme="light"] body .ix-root .fixed.inset-0 > div span[class~="text-[#F5B027]"] {
-  color:#744200!important;
-  -webkit-text-fill-color:#744200!important;
-}
+/* Warm-introduction dialogs keep their own dark surface even in light mode.
+ * Preserve the component's high-contrast amber labels instead of forcing dark ink. */
