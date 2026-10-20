@@ -104,8 +104,14 @@ function daysSinceSubject(inp: CeoInputs, subjectId: string) {
   const crmLast = person ? lastTouch(inp.g, person.id) : null
   const thread = inp.g.threads.find(x => x.memberId === subjectId)
   const vals = [crmLast, thread?.messages[thread.messages.length - 1]?.at].filter(v => v && Number.isFinite(t(v))) as string[]
-  if (!vals.length) { const m = inp.g.members.find(x => x.id === subjectId); if (m && Number.isFinite(m.lastInteractionDays) && m.lastInteractionDays !== null && m.lastInteractionDays >= 0) return m.lastInteractionDays; return null }
-  return Math.min(...vals.map(v => ago(v) ?? 9999))
+  if (!vals.length) {
+    const m = inp.g.members.find(x => x.id === subjectId)
+    const days = m?.lastInteractionDays
+    // 9999 is a legacy "no known exchange" placeholder, never real history.
+    return days !== null && days !== undefined && Number.isFinite(days) && days >= 0 && days !== 9999 ? days : null
+  }
+  const ages = vals.map(ago).filter((v): v is number => v !== null && v >= 0 && Number.isFinite(v))
+  return ages.length ? Math.min(...ages) : null
 }
 
 /* ───────────────────────── J) Promise Risk ───────────────────────── */

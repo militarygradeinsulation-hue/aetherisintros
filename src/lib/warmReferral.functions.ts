@@ -181,7 +181,8 @@ export const getReferralSuggestions = createServerFn({ method: 'GET' })
       .order('strength_score', { ascending: false })
       .limit(20)
 
-    if (error) return []
+    // Throw so the panel shows its error state; an empty list would read as "no paths".
+    if (error) throw new Error(`Could not load referral suggestions: ${error.message}`)
 
     return (data ?? []).map((row: any) => ({
       id: row.id,

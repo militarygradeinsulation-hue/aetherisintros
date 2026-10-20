@@ -206,24 +206,41 @@ export function createLocalProLayer(): ProDataLayer {
   }
 }
 
-/** Remote adapter. Keeps the seeded snapshot until the first load resolves. */
-export function createRemoteProLayer(gateway: TableGateway): ProDataLayer {
-  const state = isShowcase() ? seedProCollections() : emptyProCollections()
+/**
+ * Remote adapter. Showcase keeps the seeded snapshot; the live network starts
+ * empty and never shows seeded rows. A collection that fails to load stays
+ * empty and its error is reported via `loadErrors()` so the UI can say
+ * "could not load" instead of implying "nothing here" (truthful instrumentation).
+ */
+export function createRemoteProLayer(gateway: TableGateway): ProDataLayer & {
+  loadErrors(): Partial<Record<ProCollectionName, string>>
+  ready: Promise<void>
+} {
+  const showcase = isShowcase()
+  const state = showcase ? seedProCollections() : emptyProCollections()
+  const errors: Partial<Record<ProCollectionName, string>> = {}
   const listeners = new Set<(next: ProCollections) => void>()
   const emit = () => listeners.forEach(l => l(state))
 
-  void (async () => {
+  const ready = (async () => {
     for (const key of Object.keys(proTableNames) as ProCollectionName[]) {
       try {
         const rows = await gateway.select(proTableNames[key])
         ;(state[key] as unknown[]) = rows as unknown[]
-      } catch { /* keep seeded rows for this collection */ }
+        delete errors[key]
+      } catch (err) {
+        errors[key] = err instanceof Error ? err.message : 'Could not load this section.'
+        // Live mode must not keep showcase rows on failure.
+        if (!showcase) (state[key] as unknown[]) = []
+      }
     }
     emit()
   })()
 
   return {
     mode: 'remote',
+    ready,
+    loadErrors: () => ({ ...errors }),
     snapshot: () => state,
     subscribe: listener => { listeners.add(listener); return () => listeners.delete(listener) },
     repo<K extends ProCollectionName>(name: K) {
@@ -235,15 +252,18 @@ export function createRemoteProLayer(gateway: TableGateway): ProDataLayer {
         list: async () => [...rows()],
         get: async (id: ID) => rows().find(r => r.id === id) ?? null,
         create: async (value: T) => {
-          const saved = (await gateway.insert(table, value as unknown as Record<string, unknown>)) as unknown as T
-          set([saved ?? value, ...rows()])
-          return saved ?? value
+          const saved = (await gateway.insert(table, value as unknown as Record<string, unknown>)) as unknown as T | null
+          // Only a row the server returned counts as saved; never surface the local value as confirmed.
+          if (!saved) throw new Error('The server did not confirm this save. Nothing was recorded.')
+          set([saved, ...rows()])
+          return saved
         },
         update: async (id: ID, p: Partial<T>) => {
-          await gateway.update(table, id, p as Record<string, unknown>)
-          const next = rows().map(r => (r.id === id ? { ...r, ...p } : r))
+          const saved = (await gateway.update(table, id, p as Record<string, unknown>)) as unknown as T | null
+          if (!saved) throw new Error('The server did not confirm this update. Nothing was changed.')
+          const next = rows().map(r => (r.id === id ? { ...r, ...saved } : r))
           set(next)
-          return next.find(r => r.id === id)!
+          return next.find(r => r.id === id) ?? saved
         },
         remove: async (id: ID) => {
           await gateway.delete(table, id)

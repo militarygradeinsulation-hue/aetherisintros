@@ -22,11 +22,13 @@ export const getReputationScore = createServerFn({ method: 'GET' })
   .inputValidator((data: unknown) => data as { userId: string })
   .handler(async ({ data, context }) => {
     const db = context.supabase as any // eslint-disable-line @typescript-eslint/no-explicit-any
-    const { data: score } = await db
+    const { data: score, error } = await db
       .from('reputation_scores')
       .select('*')
       .eq('user_id', (data as { userId: string }).userId)
       .maybeSingle()
+    // Surface read failures (e.g. table not yet migrated) instead of rendering "no score".
+    if (error) throw new Error(`Could not load reputation score: ${error.message}`)
     return score as ReputationScore | null
   })
 
@@ -36,16 +38,18 @@ export const computeAndSaveScore = createServerFn({ method: 'POST' })
     const db = context.supabase as any // eslint-disable-line @typescript-eslint/no-explicit-any
     const userId = context.userId
     // Compute from intro_outcomes (only outcomes authored by peers, not self)
-    const { data: outcomes } = await db
+    const { data: outcomes, error: outcomesError } = await db
       .from('intro_outcomes')
       .select('stage, outcome_category, author_id, intro_request_id')
       .neq('author_id', userId)
+    if (outcomesError) throw new Error(`Could not read introduction outcomes: ${outcomesError.message}`)
     const peerOutcomes = (outcomes ?? []) as Array<{ stage: string; outcome_category: string | null; author_id: string; intro_request_id: string }>
     // Outcomes on intros involving this user
-    const { data: myRequests } = await db
+    const { data: myRequests, error: requestsError } = await db
       .from('intro_requests')
       .select('id')
       .or(`user_id.eq.${userId},target_user_id.eq.${userId}`)
+    if (requestsError) throw new Error(`Could not read introductions: ${requestsError.message}`)
     const myRequestIds = new Set(((myRequests ?? []) as Array<{ id: string }>).map(r => r.id))
     const relevant = peerOutcomes.filter(o => myRequestIds.has(o.intro_request_id))
     const total = myRequestIds.size
@@ -57,7 +61,7 @@ export const computeAndSaveScore = createServerFn({ method: 'POST' })
     const score = total > 0
       ? Math.min(100, Math.round((intro_success_rate * 0.5) + (follow_through_rate * 0.5)))
       : 50
-    await (supabaseAdmin as any).from('reputation_scores').upsert(
+    const { error: saveError } = await (supabaseAdmin as any).from('reputation_scores').upsert(
       {
         user_id: userId,
         score,
@@ -68,6 +72,8 @@ export const computeAndSaveScore = createServerFn({ method: 'POST' })
       },
       { onConflict: 'user_id' },
     )
+    // Only report a score the database actually stored; never a locally computed preview.
+    if (saveError) throw new Error(`Score was computed but not saved: ${saveError.message}`)
     return { score, total_intros: total, intro_success_rate, follow_through_rate }
   })
 
@@ -96,12 +102,13 @@ export const getTrackRecord = createServerFn({ method: 'GET' })
   .inputValidator((data: unknown) => data as { userId: string })
   .handler(async ({ data, context }) => {
     const db = context.supabase as any // eslint-disable-line @typescript-eslint/no-explicit-any
-    const { data: rows } = await db
+    const { data: rows, error } = await db
       .from('track_record_entries')
       .select('*')
       .eq('user_id', (data as { userId: string }).userId)
       .eq('public', true)
       .order('created_at', { ascending: false })
+    if (error) throw new Error(`Could not load track record: ${error.message}`)
     return (rows ?? []) as TrackRecordEntry[]
   })
 

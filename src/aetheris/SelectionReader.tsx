@@ -2,7 +2,7 @@
 import { useEffect, useState } from 'react'
 import { createPortal } from 'react-dom'
 import { Volume2 } from 'lucide-react'
-import { readAloud, selectedText } from './voice'
+import { readAloud, selectedText, unlockAudio } from './voice'
 
 let owner: symbol | null = null
 // Multiple app shells can mount a reader. Every mounted instance must be able
@@ -73,6 +73,7 @@ export function SelectionReader() {
   if (!active || !spot || typeof document === 'undefined') return null
 
   const read = () => {
+    unlockAudio()
     readAloud([spot.text], 'Reading what you highlighted')
     window.getSelection()?.removeAllRanges()
     setSpot(null)

@@ -10,9 +10,19 @@ import { fileURLToPath } from 'node:url'
 const here = dirname(fileURLToPath(import.meta.url))
 const migrationsDir = join(here, '..', '..', 'drizzle', 'migrations')
 const FIRST = 22 // earlier migrations are already live and reproduced by BASE below
-const migrations = readdirSync(migrationsDir)
-  .filter(f => /^\d{4}_.*\.sql$/.test(f) && Number(f.slice(0, 4)) >= FIRST)
-  .sort()
+// Apply exactly what drizzle-kit would apply, in journal order. Never pick up stray
+// `NNNN_*.sql` files that are not journaled (e.g. superseded duplicates): they would be
+// tested here but never shipped, or shipped differently. Fail loudly on any drift.
+const journal = JSON.parse(readFileSync(join(migrationsDir, 'meta', '_journal.json'), 'utf8'))
+const journaled = journal.entries.map(e => `${e.tag}.sql`)
+const onDisk = readdirSync(migrationsDir).filter(f => /^\d{4}_.*\.sql$/.test(f))
+const stray = onDisk.filter(f => !journaled.includes(f))
+const missing = journaled.filter(f => !onDisk.includes(f))
+if (stray.length || missing.length) {
+  console.error(`journal drift — unjournaled: ${stray.join(', ') || 'none'}; missing: ${missing.join(', ') || 'none'}`)
+  process.exit(1)
+}
+const migrations = journaled.filter(f => Number(f.slice(0, 4)) >= FIRST)
 
 const A = '00000000-0000-4000-8000-00000000000a' // requester
 const B = '00000000-0000-4000-8000-00000000000b' // target

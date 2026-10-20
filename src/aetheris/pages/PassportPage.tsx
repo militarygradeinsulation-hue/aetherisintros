@@ -3,6 +3,8 @@ import { ArrowRight } from 'lucide-react'
 import { useNetwork } from '../store'
 import { usePro } from '../pro-store'
 import { useNav } from '../nav'
+import { isShowcase } from '../showcase'
+import { CurrentUserTrackRecord } from '../CurrentUserTrackRecord'
 import { Btn, Eyebrow, Face, Head, Numeral, memberById } from '../ui'
 import type { PrivacyScope } from '../types'
 
@@ -37,6 +39,15 @@ export function PassportPage() {
         return m ? <button key={id} className={`chip ${memberId === id ? 'on' : ''}`} onClick={() => setMemberId(id)}>{m.name}</button> : null
       })}
     </div>
+
+    {!passport && memberId === 'me' && <section className="module" aria-live="polite">
+      <Eyebrow>YOUR PASSPORT</Eyebrow>
+      <p className="empty-state">No passport recorded for your account yet. Nothing is shown here until you add verified work or credentials — Aetheris never fills this with sample data.</p>
+      <Btn kind="secondary" onClick={() => nav.setPage('profile')}>Start with your profile <ArrowRight size={13} /></Btn>
+    </section>}
+
+    {/* Live members see their server-backed track record (loading/error states live in the components). */}
+    {memberId === 'me' && !isShowcase() && <CurrentUserTrackRecord />}
 
     {passport && person && <section className="passport-layout">
       <article className="module passport-main">

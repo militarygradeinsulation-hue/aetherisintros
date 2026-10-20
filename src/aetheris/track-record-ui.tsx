@@ -24,15 +24,19 @@ const KIND_ICONS: Record<TrackRecordEntry['kind'], React.ReactNode> = {
 export function TrackRecordPanel({ userId, editable = false }: { userId: string; editable?: boolean }) {
   const [entries, setEntries] = useState<TrackRecordEntry[] | null>(null)
   const [loading, setLoading] = useState(false)
+  const [loadError, setLoadError] = useState('')
   const [showModal, setShowModal] = useState(false)
 
   const load = async () => {
     if (loading || entries !== null) return
     setLoading(true)
+    setLoadError('')
     try {
       const rows = await getTrackRecord({ data: { userId } })
       setEntries(rows)
-    } catch {
+    } catch (e) {
+      // Do not show "No track record yet" when the read failed.
+      setLoadError(e instanceof Error ? e.message : 'Could not load track record.')
       setEntries([])
     } finally {
       setLoading(false)
@@ -60,7 +64,14 @@ export function TrackRecordPanel({ userId, editable = false }: { userId: string;
 
       {loading && <p style={{ fontSize: '.8rem', color: 'var(--muted)' }}>Loading…</p>}
 
-      {!loading && entries !== null && entries.length === 0 && (
+      {!loading && loadError && (
+        <p role="alert" style={{ fontSize: '.8rem', color: 'var(--danger, #e05252)' }}>
+          {loadError}{' '}
+          <button type="button" style={{ textDecoration: 'underline' }} onClick={() => { setEntries(null) }}>Retry</button>
+        </p>
+      )}
+
+      {!loading && !loadError && entries !== null && entries.length === 0 && (
         <p style={{ fontSize: '.85rem', color: 'var(--muted)' }}>No track record yet.</p>
       )}
 

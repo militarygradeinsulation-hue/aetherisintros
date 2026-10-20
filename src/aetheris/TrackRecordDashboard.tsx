@@ -38,6 +38,7 @@ export function TrackRecordDashboard({ userId }: { userId: string }) {
   const [error, setError] = useState('')
 
   const load = useCallback(async () => {
+    setError('')
     try {
       const score = await getReputationScore({ data: { userId } })
       setData(score)
@@ -54,11 +55,10 @@ export function TrackRecordDashboard({ userId }: { userId: string }) {
     setRefreshing(true)
     setError('')
     try {
-      const result = await computeAndSaveScore()
-      setData(prev => prev
-        ? { ...prev, ...result, updated_at: new Date().toISOString() }
-        : { id: '', user_id: userId, response_rate: 0, ...result, updated_at: new Date().toISOString() }
-      )
+      // computeAndSaveScore throws unless the score row was stored; then re-read the stored
+      // row so the dashboard only ever shows server-confirmed values (no local preview).
+      await computeAndSaveScore()
+      setData(await getReputationScore({ data: { userId } }))
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Refresh failed.')
     } finally {
@@ -81,6 +81,12 @@ export function TrackRecordDashboard({ userId }: { userId: string }) {
 
       {loading ? (
         <p style={{ fontSize: '.8rem', color: 'var(--muted)' }}>Loading…</p>
+      ) : !data ? (
+        !error && (
+          <p style={{ fontSize: '.85rem', color: 'var(--muted)' }}>
+            No saved reputation score yet. Use Refresh Score to compute one from recorded introduction outcomes.
+          </p>
+        )
       ) : (
         <>
           <div style={{ display: 'flex', alignItems: 'center', gap: '1.5rem', flexWrap: 'wrap', marginBottom: '1.25rem' }}>
@@ -136,7 +142,7 @@ export function TrackRecordDashboard({ userId }: { userId: string }) {
         </>
       )}
 
-      {error && <p style={{ color: 'var(--danger, #e05252)', fontSize: '.8rem', marginTop: '.5rem' }}>{error}</p>}
+      {error && <p role="alert" style={{ color: 'var(--danger, #e05252)', fontSize: '.8rem', marginTop: '.5rem' }}>{error}</p>}
     </div>
   )
 }
