@@ -62,7 +62,8 @@ export async function foundingStats(): Promise<FoundingStats> {
 }
 
 export async function joinWaitlist(email: string, name = '') {
-  await supabase.rpc('join_waitlist', { p_email: email, p_name: name })
+  const { error } = await supabase.rpc('join_waitlist', { p_email: email, p_name: name })
+  if (error) throw error
 }
 
 /** Atomically claim (or re-check) this account's place in the launch. */
