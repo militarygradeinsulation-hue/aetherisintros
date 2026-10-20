@@ -58,7 +58,7 @@ const squash = (s: string) => s.replace(/\s+/g, ' ').trim()
 
 /** Sections whose content is about other people or other pages: dropped up to the next kept section. */
 const DROP_SECTION = /^(people also viewed|people you may know|you might like|more profiles for you|explore premium profiles|explore collaborative articles|other similar profiles|activity|featured|interests|analytics|causes|recommendations|pages for you|suggested for you|promoted|ad options|similar pages|groups)$/i
-const KEEP_SECTION = /^(contact|top skills|skills|languages|certifications|licenses & certifications|honors-awards|honors & awards|publications|patents|summary|about|experience|education|volunteer experience|volunteering|projects|providing services|services)$/i
+const KEEP_SECTION = /^(looking for|seeking|interested in|what i.?m building|currently building|contact|top skills|skills|languages|certifications|licenses & certifications|honors-awards|honors & awards|publications|patents|summary|about|experience|education|volunteer experience|volunteering|projects|providing services|services)$/i
 /** Single lines of LinkedIn page furniture. */
 const NOISE_LINE = new RegExp([
   '^(skip to (main content|search)|home|my network|jobs|messaging|notifications|me|for business|work|search|learning|post|start a post)$',
@@ -132,6 +132,7 @@ export function parseScanText(rawText: string, hints: { nameHint?: string | unde
   const experience = li.experience.slice(0, 20).map(r => ({ title: r.title, company: r.company, ...splitDates(r.dates) }))
   const now = currentRole(experience)
   const services = sectionLines(cleaned.text, /^(providing services|services)$/i)
+  const seeking = sectionLines(cleaned.text, /^(looking for|seeking|interested in)$/i)
   const scan: ScannedProfile = {
     ...emptyScan(),
     name: li.name,
@@ -142,6 +143,7 @@ export function parseScanText(rawText: string, hints: { nameHint?: string | unde
     about: li.about,
     expertise: li.skills.slice(0, 20),
     can_help_with: services.join(', ').slice(0, 600),
+    looking_for: seeking.join(', ').slice(0, 600),
     experience,
     education: li.education,
     linkedin_url: linkedInUrlFrom(hints.url, cleaned.text),
@@ -156,7 +158,10 @@ function sectionLines(text: string, heading: RegExp): string[] {
   const out: string[] = []
   for (const line of lines.slice(at + 1)) {
     if (KEEP_SECTION.test(line)) break
-    for (const part of line.split(/\s+•\s+|\s+·\s+/)) if (part.length <= 80) out.push(part)
+    for (const part of line.split(/\s+•\s+|\s+·\s+/)) {
+      const value = squash(part)
+      if (value) out.push(value.slice(0, 600))
+    }
   }
   return [...new Set(out)].slice(0, 12)
 }
