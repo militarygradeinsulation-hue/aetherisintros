@@ -3,16 +3,23 @@ import { createFileRoute } from '@tanstack/react-router'
 import Landing from '@/aetheris/Landing'
 import '@/aetheris/styles.css'
 
-const description = 'Meet people who can move your business forward. Share what you need, explore relevant connections, and request introductions by mutual consent.'
+const description = 'Share what you need, discover relevant business connections, and request introductions with mutual consent.'
 
 export const Route = createFileRoute('/')({
   staticData: { sitemap: true },
   head: () => ({
     meta: [
       { title: 'Ask Intros — The Relationship Network for CEOs' },
-      { name: 'description', content: description },
+      {
+        name: 'description',
+        content:
+          description,
+      },
       { property: 'og:title', content: 'Ask Intros — The Relationship Network for CEOs' },
-      { property: 'og:description', content: description },
+      {
+        property: 'og:description',
+        content: description,
+      },
       { property: 'og:type', content: 'website' },
       { name: 'twitter:card', content: 'summary_large_image' },
       { name: 'twitter:description', content: description },

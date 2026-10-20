@@ -1,6 +1,13 @@
-/** Canonical activation copy and pure rules. Completion comes from my_activation(). */
+/**
+ * New-member activation: the "first week" checklist steps, their copy and destinations, and
+ * the small pure rules around them (progress, goals clean-up, once-a-day activity ping,
+ * growth report formatting). Done/not-done comes from my_activation() (drizzle 0051).
+ */
+
 export type ActivationStepId = 'profile' | 'verified' | 'goals' | 'ask' | 'intro' | 'push' | 'calendar'
+/** Where a step's button goes: a classic workspace page key, the intros hub, the verify route, or inline goals. */
 export type ActivationTarget = 'profile' | 'preferences' | 'needs' | 'intros' | 'verify' | 'goals'
+
 export interface ActivationStepState {
   id: ActivationStepId
   done: boolean
@@ -9,22 +16,27 @@ export interface ActivationStepState {
   headline?: boolean
   count?: number
 }
+
 export interface ActivationStepView extends ActivationStepState {
   title: string
   detail: string
   action: string
   target: ActivationTarget
 }
+
 const COPY: Record<ActivationStepId, { title: string; detail: string; action: string; target: ActivationTarget }> = {
-  profile: { title: 'Show who you are and how you can help', detail: 'Give members the context to decide whether a conversation is relevant.', action: 'Edit profile', target: 'profile' },
-  verified: { title: 'Verify your business role (optional)', detail: 'Role verification is separate from proof of work and is not required for normal member networking.', action: 'Verify role', target: 'verify' },
-  goals: { title: 'Name what would move your business forward', detail: 'Keep up to three goals private. Saving a goal does not publish an ask.', action: 'Set goals', target: 'goals' },
-  ask: { title: 'Share one specific business need', detail: 'Review the audience and details before publishing. A response is not guaranteed.', action: 'Review an ask', target: 'needs' },
-  intro: { title: 'Start one useful introduction', detail: 'Explain why you want to meet. Each person chooses whether to connect.', action: 'Open introductions', target: 'intros' },
-  push: { title: 'Choose reply notifications (optional)', detail: 'Set your notification preferences when you are ready.', action: 'Review preferences', target: 'preferences' },
-  calendar: { title: 'Connect your calendar (optional)', detail: 'Review permissions before connecting your calendar.', action: 'Review connection', target: 'preferences' },
+  profile: { title: 'Add your photo and headline', detail: 'Members reply faster to a face and a title.', action: 'Edit profile', target: 'profile' },
+  verified: { title: 'Verify your business role (optional)', detail: 'Earn an evidence-based professional badge. Normal member networking does not require this badge.', action: 'Verify role', target: 'verify' },
+  goals: { title: 'Set your 3 goals for this quarter', detail: 'These goals are private. Saving a goal does not publish an ask.', action: 'Set goals', target: 'goals' },
+  ask: { title: 'Post your first ask', detail: 'Say what you need. Members who can help will reply.', action: 'Post an ask', target: 'needs' },
+  intro: { title: 'Request or accept your first introduction', detail: 'One warm introduction is the fastest way in.', action: 'Open introductions', target: 'intros' },
+  push: { title: 'Turn on notifications', detail: 'Choose your notification preferences when you are ready.', action: 'Turn on', target: 'preferences' },
+  calendar: { title: 'Connect your calendar (optional)', detail: 'See when you last met each member. Visible only to you.', action: 'Connect', target: 'preferences' },
 }
+
 export const ACTIVATION_ORDER: ActivationStepId[] = ['profile', 'goals', 'ask', 'intro', 'verified', 'push', 'calendar']
+
+/** Steps to show, in order. The calendar step is dropped when Google is not set up. */
 export function activationView(steps: ActivationStepState[], opts: { calendarAvailable: boolean }): ActivationStepView[] {
   const byId = new Map(steps.map(s => [s.id, s]))
   return ACTIVATION_ORDER
@@ -32,6 +44,7 @@ export function activationView(steps: ActivationStepState[], opts: { calendarAva
     .map(id => {
       const s = byId.get(id)!
       const copy = COPY[id]
+      // A member with a photo but no title goes to My profile; no photo goes to Settings (where photos are added).
       const target = id === 'profile' && s.photo === false ? 'preferences' : copy.target
       const detail = id === 'profile' && !s.done
         ? s.photo === false && s.headline === false ? 'Add a photo in Settings and your title in My profile.'
@@ -40,12 +53,17 @@ export function activationView(steps: ActivationStepState[], opts: { calendarAva
       return { ...s, ...copy, target, detail, optional: id === 'calendar' || id === 'verified' || id === 'push' || !!s.optional }
     })
 }
+
 export interface ActivationProgress { done: number; total: number; complete: boolean }
+
+/** Progress over required steps only; optional ones never hold the checklist open. */
 export function activationProgress(steps: Pick<ActivationStepState, 'done' | 'optional'>[]): ActivationProgress {
   const required = steps.filter(s => !s.optional)
   const done = required.filter(s => s.done).length
   return { done, total: required.length, complete: required.length > 0 && done === required.length }
 }
+
+/** Trimmed, non-empty, at most 140 characters each, no duplicates, at most three. */
 export function cleanGoals(goals: string[]): string[] {
   const out: string[] = []
   for (const g of goals) {
@@ -55,13 +73,25 @@ export function cleanGoals(goals: string[]): string[] {
   }
   return out
 }
+
+/** UTC day key, matching the database's day for member_activity_days. */
 export const utcDay = (now: Date) => now.toISOString().slice(0, 10)
-export function shouldTouch(lastDay: string | null, now: Date): boolean { return lastDay !== utcDay(now) }
+
+/** Whether this device should record today's visit (once per UTC day per device). */
+export function shouldTouch(lastDay: string | null, now: Date): boolean {
+  return lastDay !== utcDay(now)
+}
+
+/** A share 0–100 (or null for weeks not reached yet) as display text. */
 export const pctText = (v: number | null | undefined) => v == null ? '—' : `${Math.round(v)}%`
+
+/** Bar width as a percentage of the largest value, with a visible sliver for any non-zero value. */
 export function barPct(value: number, max: number): number {
   if (!max || value <= 0) return 0
   return Math.max(2, Math.round((value / max) * 100))
 }
+
+/** First day of the current UTC quarter, as stored in member_goals.quarter. */
 export function quarterStart(now: Date): string {
   const m = Math.floor(now.getUTCMonth() / 3) * 3 + 1
   return `${now.getUTCFullYear()}-${String(m).padStart(2, '0')}-01`
