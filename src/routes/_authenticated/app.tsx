@@ -7,6 +7,7 @@ import { useAccess, isLiveMember } from '@/aetheris/access'
 import { supabase } from '@/integrations/supabase/client'
 import { ExecutiveUpgrade } from '@/aetheris/ExecutiveUpgrade'
 import { ConnectionBanner } from '@/aetheris/ConnectionBanner'
+import { WelcomeDiagnosticBanner } from '@/aetheris/WelcomeDiagnosticBanner'
 import '@/aetheris/executive-upgrade.css'
 import '@/aetheris/styles.css'
 
@@ -78,5 +79,5 @@ function Gate() {
   if (access.loading || !ready) {
     return <main className="access-waiting"><span className="folio">ASK INTROS</span><p>Checking your membership…</p></main>
   }
-  return <AetherisProviderRoot mode="live"><ConnectionBanner /><IntrosApp mode="live" /><ExecutiveUpgrade tier={access.tier} isAdmin={access.isAdmin} /></AetherisProviderRoot>
+  return <AetherisProviderRoot mode="live"><ConnectionBanner /><WelcomeDiagnosticBanner /><IntrosApp mode="live" /><ExecutiveUpgrade tier={access.tier} isAdmin={access.isAdmin} /></AetherisProviderRoot>
 }
