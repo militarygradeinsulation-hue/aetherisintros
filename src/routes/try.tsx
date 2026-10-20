@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from '@tanstack/react-router'
 import { ArrowLeft, ArrowRight, Check, ClipboardCopy, RotateCcw } from 'lucide-react'
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 
 import { AppearanceToggle } from '@/aetheris/AppearanceToggle'
 import {
@@ -26,6 +26,8 @@ export const Route = createFileRoute('/try')({
 })
 
 function OpportunityPreviewPage() {
+  const [ready, setReady] = useState(false)
+  useEffect(() => { setReady(true) }, [])
   const [goalId, setGoalId] = useState<OpportunityGoal>('customers')
   const [fields, setFields] = useState<OpportunityFields>(() => {
     const first = opportunityGoals[0]
@@ -67,14 +69,14 @@ function OpportunityPreviewPage() {
       </div>
 
       <div className="ai-try-layout">
-        <section className="ai-try-builder" aria-labelledby="ai-try-build-heading">
+        <section className="ai-try-builder" aria-labelledby="ai-try-build-heading" aria-busy={!ready}>
           <h2 id="ai-try-build-heading">Start with what matters.</h2>
           <fieldset className="ai-try-goals">
             <legend>Choose a business goal</legend>
             <div className="ai-try-goal-grid">
               {opportunityGoals.map((item, index) =>
                 <button key={item.id} type="button" className={goalId === item.id ? 'ai-try-goal selected' : 'ai-try-goal'}
-                  aria-pressed={goalId === item.id} onClick={() => chooseGoal(item.id)}>
+                  aria-pressed={goalId === item.id} disabled={!ready} onClick={() => chooseGoal(item.id)}>
                   <span className="ai-try-goal-num">0{index + 1}</span>
                   <span><strong>{item.title}</strong><small>{item.label}</small></span>
                 </button>
@@ -84,16 +86,16 @@ function OpportunityPreviewPage() {
 
           <div className="ai-try-fields">
             <label htmlFor="ai-try-outcome">What are you trying to accomplish?</label>
-            <textarea id="ai-try-outcome" rows={2} maxLength={180} value={fields.outcome}
+            <textarea id="ai-try-outcome" rows={2} maxLength={180} value={fields.outcome} disabled={!ready}
               onChange={e => edit('outcome', e.target.value)} />
             <label htmlFor="ai-try-people">Who could help?</label>
-            <textarea id="ai-try-people" rows={2} maxLength={180} value={fields.people}
+            <textarea id="ai-try-people" rows={2} maxLength={180} value={fields.people} disabled={!ready}
               onChange={e => edit('people', e.target.value)} />
             <label htmlFor="ai-try-offer">What can you bring to the conversation?</label>
-            <textarea id="ai-try-offer" rows={2} maxLength={180} value={fields.offer}
+            <textarea id="ai-try-offer" rows={2} maxLength={180} value={fields.offer} disabled={!ready}
               onChange={e => edit('offer', e.target.value)} />
           </div>
-          <button className="ai-try-reset" type="button" onClick={() => chooseGoal(goalId)}>
+          <button className="ai-try-reset" type="button" disabled={!ready} onClick={() => chooseGoal(goalId)}>
             <RotateCcw size={14} aria-hidden="true" /> Reset example
           </button>
           <p className="ai-try-privacy">Your edits stay in this page. We don't upload, search, or save them.</p>
@@ -105,7 +107,7 @@ function OpportunityPreviewPage() {
           <div className="ai-try-draft">
             <span className="ai-try-draft-label">YOUR INTRODUCTION REQUEST · PREVIEW</span>
             <p aria-live="polite">{preview.ask}</p>
-            <button className="ai-try-copy" type="button" onClick={() => void copy()}>
+            <button className="ai-try-copy" type="button" disabled={!ready} onClick={() => void copy()}>
               {copied ? <Check size={16} aria-hidden="true" /> : <ClipboardCopy size={16} aria-hidden="true" />}
               {copied ? 'Copied' : 'Copy this request'}
             </button>
