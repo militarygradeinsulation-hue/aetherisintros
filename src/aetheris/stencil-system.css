@@ -1472,3 +1472,33 @@ body .ael.ael-compact .ael-compact-footer
   text-shadow:none!important;
   mix-blend-mode:normal!important;
 }
+
+
+/* 21 / CINEMATIC MEMBERSHIP: inverse ink must survive light-first stencil rules.
+ * Both modes keep this photographed chapter dark; only its non-action copy is
+ * forced light. Buttons and navigation links continue using their own tokens. */
+:root[data-theme="light"] body .ael.ael-compact section.ael-compact-membership,
+:root[data-theme="dark"] body .ael.ael-compact section.ael-compact-membership {
+  background-color:#11191c!important;
+  color:#f5f7f6!important;
+}
+:root[data-theme="light"] body .ael.ael-compact
+ .ael-compact-membership .ael-compact-membership-content :is(h2,h2 span,h2 em,h2 svg,p),
+:root[data-theme="dark"] body .ael.ael-compact
+ .ael-compact-membership .ael-compact-membership-content :is(h2,h2 span,h2 em,h2 svg,p) {
+  color:#f5f7f6!important;
+  opacity:1!important;
+}
+:root[data-theme="light"] body .ael.ael-compact
+ .ael-compact-membership .ael-compact-membership-content .ael-fine-label,
+:root[data-theme="dark"] body .ael.ael-compact
+ .ael-compact-membership .ael-compact-membership-content .ael-fine-label {
+  color:#f4d3a9!important;
+  opacity:1!important;
+}
+:root[data-theme="light"] body .ael.ael-compact
+ .ael-compact-membership .stencil-headline svg path,
+:root[data-theme="dark"] body .ael.ael-compact
+ .ael-compact-membership .stencil-headline svg path {
+  stroke:currentColor!important;
+}
