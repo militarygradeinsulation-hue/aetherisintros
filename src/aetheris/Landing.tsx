@@ -83,7 +83,7 @@ export default function Landing() {
         <p className="ael-hero-lede">The people who matter. A reason to meet. A place to make something happen.</p>
         <div className="ael-hero-actions">
           <JoinAction signedIn={signedIn} className="ael-btn ael-btn-gold ai-gradient-button" />
-          <Link to="/demo" className="ael-text-link">Explore Ask Intros <ArrowRight aria-hidden="true" size={16} /></Link>
+          <Link to="/try" className="ael-text-link">Try it in 30 seconds <ArrowRight aria-hidden="true" size={16} /></Link>
         </div>
       </div>
       <div className="ael-hero-bottom">

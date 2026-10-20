@@ -13,6 +13,7 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as DemoRouteImport } from './routes/demo'
+import { Route as TryRouteImport } from './routes/try'
 import { Route as EarlyAccessRouteImport } from './routes/early-access'
 import { Route as FounderStoryRouteImport } from './routes/founder-story'
 import { Route as McpRouteImport } from './routes/mcp'
@@ -69,6 +70,11 @@ const AuthRoute = AuthRouteImport.update({
 const DemoRoute = DemoRouteImport.update({
   id: '/demo',
   path: '/demo',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const TryRoute = TryRouteImport.update({
+  id: '/try',
+  path: '/try',
   getParentRoute: () => rootRouteImport,
 } as any)
 const EarlyAccessRoute = EarlyAccessRouteImport.update({
@@ -273,6 +279,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/demo': typeof DemoRoute
+  '/try': typeof TryRoute
   '/early-access': typeof EarlyAccessRoute
   '/founder-story': typeof FounderStoryRoute
   '/mcp': typeof McpRoute
@@ -316,6 +323,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/demo': typeof DemoRoute
+  '/try': typeof TryRoute
   '/early-access': typeof EarlyAccessRoute
   '/founder-story': typeof FounderStoryRoute
   '/mcp': typeof McpRoute
@@ -361,6 +369,7 @@ export interface FileRoutesById {
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/auth': typeof AuthRoute
   '/demo': typeof DemoRoute
+  '/try': typeof TryRoute
   '/early-access': typeof EarlyAccessRoute
   '/founder-story': typeof FounderStoryRoute
   '/mcp': typeof McpRoute
@@ -406,6 +415,7 @@ export interface FileRouteTypes {
     | '/'
     | '/auth'
     | '/demo'
+    | '/try'
     | '/early-access'
     | '/founder-story'
     | '/mcp'
@@ -449,6 +459,7 @@ export interface FileRouteTypes {
     | '/'
     | '/auth'
     | '/demo'
+    | '/try'
     | '/early-access'
     | '/founder-story'
     | '/mcp'
@@ -493,6 +504,7 @@ export interface FileRouteTypes {
     | '/_authenticated'
     | '/auth'
     | '/demo'
+    | '/try'
     | '/early-access'
     | '/founder-story'
     | '/mcp'
@@ -538,6 +550,7 @@ export interface RootRouteChildren {
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
   AuthRoute: typeof AuthRoute
   DemoRoute: typeof DemoRoute
+  TryRoute: typeof TryRoute
   EarlyAccessRoute: typeof EarlyAccessRoute
   FounderStoryRoute: typeof FounderStoryRoute
   McpRoute: typeof McpRoute
@@ -595,6 +608,13 @@ declare module '@tanstack/react-router' {
       path: '/demo'
       fullPath: '/demo'
       preLoaderRoute: typeof DemoRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/try': {
+      id: '/try'
+      path: '/try'
+      fullPath: '/try'
+      preLoaderRoute: typeof TryRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/early-access': {
@@ -910,6 +930,7 @@ const rootRouteChildren: RootRouteChildren = {
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
   AuthRoute: AuthRoute,
   DemoRoute: DemoRoute,
+  TryRoute: TryRoute,
   EarlyAccessRoute: EarlyAccessRoute,
   FounderStoryRoute: FounderStoryRoute,
   McpRoute: McpRoute,
