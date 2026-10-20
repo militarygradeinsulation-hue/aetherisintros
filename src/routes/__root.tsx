@@ -30,6 +30,7 @@ import bridgeExperienceCss from "../aetheris/bridge-experience.css?url";
 import messagesInverseThemeCss from "../aetheris/messages-inverse-theme.css?url";
 import editorialCopyContrastCss from "../aetheris/editorial-copy-contrast.css?url";
 import siteReadabilityCss from "../aetheris/site-readability.css?url";
+import mobileFitReadabilityCss from "../aetheris/mobile-fit-readability.css?url";
 import mobileSiteCss from "../aetheris/mobile-site.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 import { installClientErrorReporting, reportClientError } from "../lib/error-report";
@@ -134,6 +135,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { rel: "stylesheet", href: editorialCopyContrastCss },
       // Final: restore visible labels/field options on white and black surfaces.
       { rel: "stylesheet", href: siteReadabilityCss },
+      { rel: "stylesheet", href: mobileFitReadabilityCss },
       { rel: "icon", href: "/favicon.svg", type: "image/svg+xml" },
       { rel: "apple-touch-icon", href: "/apple-touch-icon.png", sizes: "180x180" },
       { rel: "manifest", href: "/manifest.webmanifest" },
