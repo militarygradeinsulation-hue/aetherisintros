@@ -2,7 +2,7 @@
  * Peer groups: small confidential groups that meet monthly. Members see the groups they are in;
  * inside, a confidentiality agreement comes first, then sessions, a private board and issue
  * processing. Admins create groups, manage membership and handle requests to join.
- * Access is enforced in the database (0044_peer_groups.sql + 0045_peer_group_feed.sql).
+ * Access is enforced in the database (0044_peer_groups.sql + 0076_peer_group_feed.sql + 0077_peer_group_agendas.sql).
  *
  * Feed components (PeerGroupCard, PeerGroupFeed, PostComposer, PeerPost, CreatePeerGroupModal)
  * are at the bottom of this file and back the async board-of-advisors view.
@@ -588,7 +588,7 @@ function GroupAdmin({ group, roster, people, nameOf, onChanged }: { group: Group
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// Feed components — async board-of-advisors view (0045_peer_group_feed.sql)
+// Feed components — async board-of-advisors view (0076_peer_group_feed.sql)
 // ─────────────────────────────────────────────────────────────────────────────
 
 const KIND_LABELS: Record<string, string> = {

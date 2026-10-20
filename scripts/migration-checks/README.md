@@ -13,6 +13,8 @@ schema dump is needed.
 
 `BASE` also carries objects that exist only in production (created outside these migrations), copied from the live schema: `set_intro_target`, `notify_intro_activity`, `relationships`, `follows`, `dm_threads`, `dm_messages` and the live notification insert policy. Since 0029 the remaining live-only functions, triggers, `events`, `members_base` and the `members` view are recorded as a migration; `BASE` holds just the tables they touch, and grants new tables to `anon` and `authenticated` the way Supabase's default privileges do. Re-check against production when it changes.
 
+Migrations are taken from `drizzle/migrations/meta/_journal.json` in journal order, never from a directory listing; `run.mjs` exits on any unjournaled `NNNN_*.sql` file or missing journaled file. `node scripts/migration-checks/journal-integrity.standalone.mjs` runs the same static check (plus duplicate numbers and monotonic `idx`/`when`) without PGlite.
+
 Pin PGlite 0.2.x: the 0.3.x builds tested here crash on `RAISE` inside PL/pgSQL.
 
 | Suite | Migration | Covers |
