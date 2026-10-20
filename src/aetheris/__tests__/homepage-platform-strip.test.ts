@@ -25,4 +25,9 @@ describe('homepage purpose strip', () => {
     expect(css).toContain('@media(max-width:680px)')
     expect(css).toContain('.ael-platform-disclaimer')
   })
+
+  it('renders the AI brief section exactly once (unique landmark ids)', () => {
+    expect(landing.match(/id="intelligence"/g)).toHaveLength(1)
+    expect(landing.match(/id="ael-intelligence-title"/g)).toHaveLength(1)
+  })
 })

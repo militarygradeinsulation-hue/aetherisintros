@@ -124,19 +124,6 @@ export default function Landing() {
         </ol>
         <Link to="/demo" className="ael-underlink ael-underlink-dark">See a sample brief <ArrowUpRight aria-hidden="true" size={16} /></Link>
       </div>
-      <div className="ael-compact-method" id="intelligence" aria-labelledby="ael-intelligence-title">
-        <div className="ael-compact-method-heading">
-          <span className="ael-fine-label">THE AI BRIEF / YOUR BUSINESS ANALYST</span>
-          <h3 id="ael-intelligence-title" className="stencil-display"><span className="sr-only">What your AI Business Analyst surfaces.</span><StencilHeadline lines={['YOUR BUSINESS', 'BRIEF']} /></h3>
-        </div>
-        <ol className="ael-compact-steps">
-          <li><span>01</span><div><strong>Lead leaks</strong><p>Where deals slip before they close.</p></div></li>
-          <li><span>02</span><div><strong>Cold relationships</strong><p>High-value connections worth one reactivation.</p></div></li>
-          <li><span>03</span><div><strong>Partner introductions</strong><p>Named people whose work addresses your gaps.</p></div></li>
-          <li><span>04</span><div><strong>Network health score</strong><p>A live 0–100 reading of your activity vs. your opportunities.</p></div></li>
-        </ol>
-        <Link to="/demo" className="ael-underlink ael-underlink-dark">See a sample brief <ArrowUpRight aria-hidden="true" size={16} /></Link>
-      </div>
     </section>
 
     <section className="ael-membership ael-compact-membership" id="membership" aria-labelledby="ael-membership-title">
