@@ -9,18 +9,25 @@ import { Eyebrow } from './ui'
 export function CurrentUserTrackRecord() {
   const [userId, setUserId] = useState<string | null>(null)
   const [resolved, setResolved] = useState(false)
+  const [authError, setAuthError] = useState<string | null>(null)
 
   useEffect(() => {
     let live = true
-    void supabase.auth.getUser().then(({ data }) => {
+    supabase.auth.getUser().then(({ data, error }) => {
       if (!live) return
+      if (error && error.name !== 'AuthSessionMissingError') setAuthError(error.message)
       setUserId(data.user?.id ?? null)
+      setResolved(true)
+    }).catch((err: unknown) => {
+      if (!live) return
+      setAuthError(err instanceof Error ? err.message : 'Could not confirm your session.')
       setResolved(true)
     })
     return () => { live = false }
   }, [])
 
   if (!resolved) return <section className="executive-section"><p className="og-note">Loading track record…</p></section>
+  if (authError) return <section className="executive-section"><p className="og-note" role="alert">Could not load your track record: {authError}</p></section>
   if (!userId) return <section className="executive-section"><p className="og-note">Sign in to see your track record.</p></section>
 
   return <section className="executive-section" aria-label="Your verified track record">
