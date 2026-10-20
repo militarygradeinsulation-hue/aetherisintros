@@ -45,16 +45,18 @@ try {
       const page = await context.newPage()
       const errors = []
       page.on('pageerror', error => errors.push(error.message))
+      page.on('console', message => { if (message.type() === 'error') errors.push('console: ' + message.text()) })
+      page.on('requestfailed', request => { if (request.url().startsWith(base)) errors.push('request: ' + request.url() + ' ' + request.failure()?.errorText) })
       await page.goto(base + '/try', { waitUntil: 'domcontentloaded', timeout: 120000 })
       await page.locator('.ai-try-output').waitFor({ timeout: 60000 })
       assert(await page.getByRole('heading', { name: /One goal/i }).count() === 1, theme + '/' + width + ' heading')
       assert(await page.getByRole('button', { name: /Build a partnership/ }).count() === 1, theme + '/' + width + ' scenarios')
       assert(await page.getByText('No member search was run', { exact: false }).count() > 0, theme + '/' + width + ' honest disclosure')
-      // SSR paints before React hydrates. A visible button is not yet an interactive button.
-      // Wait for React's attached DOM props, not the document load event.
+      // Server markup may paint before React has attached event handlers.
+      await page.waitForLoadState('load')
       const hydrated = await page.waitForFunction(() => {
-        const element = document.querySelector('.ai-try-goal')
-        return Boolean(element && Object.keys(element).some(key => key.startsWith('__reactProps
+        const button = document.querySelector('.ai-try-goal')
+        return Boolean(button && Object.keys(button).some(key => key.startsWith('__reactProps
       const updated = await page.waitForFunction(() =>
         document.querySelector('.ai-try-draft')?.textContent?.includes('new service into another market'),
       null, { timeout: 10000 }).then(() => true).catch(() => false)
@@ -84,13 +86,12 @@ try {
   if (server) try { process.kill(-server.pid) } catch { /* server exited */ }
 }
 )))
-      }, null, { timeout: 60000 }).then(() => true).catch(() => false)
-      if (!hydrated) console.log('hydration diagnostics:', await page.evaluate(() => ({
-        scripts: [...document.scripts].map(s => s.src || s.type).slice(-8),
-        readyState: document.readyState,
-        html: document.querySelector('.ai-try-goal')?.outerHTML.slice(0, 250),
-      })), 'page errors:', errors)
-      assert(hydrated, theme + '/' + width + ' interactive React hydration')
+      }, null, { timeout: 30000 }).then(() => true).catch(() => false)
+      if (!hydrated) console.log('hydration diagnostic:', JSON.stringify({
+        errors,
+        scripts: await page.locator('script[src]').evaluateAll(nodes => nodes.map(n => n.getAttribute('src'))),
+      }))
+      assert(hydrated, theme + '/' + width + ' React hydration completed: ' + errors.join('; '))
       await page.getByRole('button', { name: /Build a partnership/ }).click()
       const updated = await page.waitForFunction(() =>
         document.querySelector('.ai-try-draft')?.textContent?.includes('new service into another market'),
