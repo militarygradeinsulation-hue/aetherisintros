@@ -28,7 +28,7 @@ describe('recovered demo and tile polish', () => {
 
   it('keeps the editorial photographic experience and usable fallbacks in the public landing', () => {
     expect(landing).toContain("import './editorial-landing.css'")
-    expect(landing).toContain('The right room')
+    expect(landing).toContain('The Only social platform that runs your business.')
     expect(landing).toContain('Editorial imagery is illustrative')
     expect(landing).toContain('onError={event =>')
     expect(editorialCss).toContain('.ael-hero')

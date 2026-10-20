@@ -79,7 +79,7 @@ export default function Landing() {
           <p className="ael-platform-disclaimer">Brand marks are illustrative. No affiliation or live integration is implied.</p>
         </div>
         <p className="ael-kicker ael-kicker-light"><span className="ael-dash" /> Relationships by design</p>
-        <h1 id="ael-hero-title" className="stencil-display"><span className="sr-only">The right room changes everything.</span><StencilHeadline lines={['THE RIGHT ROOM', 'CHANGES', 'EVERYTHING']} className="stencil-headline--hero" /></h1>
+        <h1 id="ael-hero-title" className="stencil-display"><span className="sr-only">The Only social platform that runs your business.</span><StencilHeadline lines={['THE ONLY SOCIAL', 'PLATFORM THAT', 'RUNS YOUR BUSINESS']} className="stencil-headline--hero" /></h1>
         <p className="ael-hero-lede">The people who matter. A reason to meet. A place to make something happen.</p>
         <div className="ael-hero-actions">
           <JoinAction signedIn={signedIn} className="ael-btn ael-btn-gold ai-gradient-button" />
