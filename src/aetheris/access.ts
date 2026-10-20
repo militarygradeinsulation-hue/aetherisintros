@@ -46,16 +46,27 @@ export const isLiveMember = (access: AccessState) =>
 
 export interface FoundingStats { approved: number; capacity: number; mode: LaunchMode }
 
+/** Treat malformed or unavailable public launch metrics as restricted, never open. */
+export function normalizeFoundingStats(raw: unknown): FoundingStats {
+  const fallback: FoundingStats = { approved: 0, capacity: 1000, mode: 'invite_only' }
+  if (!raw || typeof raw !== 'object') return fallback
+  const row = raw as Record<string, unknown>
+  const validMode = row['mode'] === 'first_1000' || row['mode'] === 'invite_only' || row['mode'] === 'closed'
+  const approved = row['approved']
+  const capacity = row['capacity']
+  if (typeof approved !== 'number' || typeof capacity !== 'number') return fallback
+  if (!validMode || !Number.isSafeInteger(approved) || approved < 0 ||
+      !Number.isSafeInteger(capacity) || capacity < 1 || approved > capacity) return fallback
+  return { approved, capacity, mode: row['mode'] as LaunchMode }
+}
+
 export async function foundingStats(): Promise<FoundingStats> {
   try {
-    const { data } = await supabase.rpc('founding_stats')
+    const { data, error } = await supabase.rpc('founding_stats')
+    if (error) throw error
     const row = Array.isArray(data) ? data[0] : data
     if (!row) return { approved: 0, capacity: 1000, mode: 'invite_only' }
-    return {
-      approved: Number(row.approved ?? 0),
-      capacity: Number(row.capacity ?? 1000),
-      mode: (row.mode ?? 'invite_only') as LaunchMode,
-    }
+    return normalizeFoundingStats(row)
   } catch {
     return { approved: 0, capacity: 1000, mode: 'invite_only' }
   }
@@ -152,14 +163,16 @@ const ACCESS_READ_ERROR = 'We could not verify your membership right now. Your a
 export function useAccess() {
   const [access, setAccess] = useState<AccessState>(noAccess)
 
-  const refresh = useCallback(async () => {
+  const refresh = useCallback(async (): Promise<AccessState | null> => {
     setAccess(prev => ({ ...prev, loading: true, error: null }))
     try {
-      setAccess(await fetchAccess())
+      const latest = await fetchAccess()
+      setAccess(latest)
+      return latest
     } catch {
-      // Fail closed, but surface a recoverable failure rather than leaving the page
-      // loading forever or redirecting a signed-in member to the sign-in screen.
+      // Fail closed; callers must not treat a failed read as confirmed approval.
       setAccess({ ...noAccess, loading: false, error: ACCESS_READ_ERROR })
+      return null
     }
   }, [])
 
