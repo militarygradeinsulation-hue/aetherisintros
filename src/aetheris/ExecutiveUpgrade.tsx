@@ -54,7 +54,7 @@ export function ExecutiveUpgrade({ tier, isAdmin }: { tier: 'basic' | 'executive
       }
     }
   }
-  useEffect(() => { if (open) void load() }, [open, isAdmin])
+  useEffect(() => { if (open) void load() }, [open, isAdmin, tier])
   if (tier === 'executive' && !isAdmin) return null
   const submit = async (e: React.FormEvent) => {
     e.preventDefault(); setBusy(true); setError('')
@@ -84,7 +84,7 @@ export function ExecutiveUpgrade({ tier, isAdmin }: { tier: 'basic' | 'executive
         <h2>{isAdmin ? 'Executive review' : 'Apply for Executive access'}</h2>
         {isAdmin ? <>
           <p>Approve only after verifying professional identity and executive responsibilities. No automatic title-based upgrades.</p>
-          {applications.filter(a => a.status === 'pending').length === 0 && <p>No pending applications.</p>}
+          {!error && applications.filter(a => a.status === 'pending').length === 0 && <p>No pending applications.</p>}
           {applications.filter(a => a.status === 'pending').map(a => <article key={a.userId} className="executive-application">
             <strong>{a.name} · {a.title}</strong><p>{a.company}</p>
             <a href={a.profileUrl} target="_blank" rel="noopener noreferrer">Review professional profile</a>
