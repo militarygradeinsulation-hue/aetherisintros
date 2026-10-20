@@ -6,38 +6,18 @@
 import { Check, Mic, MicOff, NotebookPen, X } from 'lucide-react'
 import { useEffect, useLayoutEffect, useRef, useState } from 'react'
 
-import { supabase } from '@/integrations/supabase/client'
 import { placeMenu } from './quick-menu'
+import { MAX_NOTE, noteSavedMessage } from './quick-note'
+import { saveQuickNote } from './quick-note-save'
 import { useDictation } from './voice'
 
-const DEMO_KEY = 'aetheris-demo-quick-notes'
-const MAX_NOTE = 4000
+export { saveQuickNote } from './quick-note-save'
 
 export interface QuickNoteRequest { x?: number; y?: number; text?: string }
 
 /** Opens the quick-note card, optionally at a point and with text already in it. */
 export function openQuickNote(request: QuickNoteRequest = {}) {
   window.dispatchEvent(new CustomEvent<QuickNoteRequest>('aetheris:quick-note', { detail: request }))
-}
-
-/** Saves a private note to the member's Memory. Returns where it went. */
-export async function saveQuickNote(text: string): Promise<'account' | 'device'> {
-  const body = text.trim().slice(0, MAX_NOTE)
-  if (!body) throw new Error('Write something first.')
-  const { data } = await supabase.auth.getUser()
-  if (!data.user) {
-    try {
-      const list = JSON.parse(localStorage.getItem(DEMO_KEY) ?? '[]') as Array<{ text: string; at: string }>
-      localStorage.setItem(DEMO_KEY, JSON.stringify([{ text: body, at: new Date().toISOString() }, ...list].slice(0, 50)))
-    } catch { /* storage unavailable */ }
-    return 'device'
-  }
-  const { error } = await supabase.from('memories').insert({
-    user_id: data.user.id, kind: 'note', category: 'Quick note', member_id: null, text: body,
-    scope: 'private', source: 'Quick note', when_label: new Date().toLocaleString(undefined, { dateStyle: 'medium', timeStyle: 'short' }),
-  } as never)
-  if (error) throw new Error('Could not save the note. Please try again.')
-  return 'account'
 }
 
 export function QuickNoteHost() {
@@ -86,11 +66,12 @@ export function QuickNoteHost() {
   if (!req) return null
 
   const save = async () => {
+    if (busy) return
     setBusy(true); setMsg('')
     try {
       dictation.stop()
       const where = await saveQuickNote(text)
-      setMsg(where === 'account' ? 'Saved to your Memory.' : 'Saved on this device.')
+      setMsg(noteSavedMessage(where))
       setTimeout(() => setReq(null), 900)
     } catch (e) { setMsg(e instanceof Error ? e.message : 'Could not save the note.') }
     setBusy(false)
@@ -98,7 +79,7 @@ export function QuickNoteHost() {
 
   return <div ref={ref} className="qn" role="dialog" aria-label="Quick note" data-voice-skip="true"
     style={pos ? { left: pos.left, top: pos.top } : { left: 0, top: 0, visibility: 'hidden' }} onContextMenu={e => e.stopPropagation()}>
-    <header><NotebookPen size={14} aria-hidden /><b>Quick note</b><small>Private · saved to Memory</small>
+    <header><NotebookPen size={14} aria-hidden /><b>Quick note</b><small>Private note</small>
       <button type="button" aria-label="Close" onClick={close}><X size={14} /></button></header>
     <textarea ref={area} value={text} maxLength={MAX_NOTE} rows={5} placeholder={dictation.supported ? 'Type, or press the microphone and speak…' : 'Type your note…'}
       onChange={e => setText(e.target.value)}
