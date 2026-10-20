@@ -50,8 +50,47 @@ try {
       assert(await page.getByRole('heading', { name: /One goal/i }).count() === 1, theme + '/' + width + ' heading')
       assert(await page.getByRole('button', { name: /Build a partnership/ }).count() === 1, theme + '/' + width + ' scenarios')
       assert(await page.getByText('No member search was run', { exact: false }).count() > 0, theme + '/' + width + ' honest disclosure')
-      // Ensure hydration can attach React events before exercising the control.
-      await page.waitForLoadState('load')
+      // SSR paints before React hydrates. A visible button is not yet an interactive button.
+      // Wait for React's attached DOM props, not the document load event.
+      const hydrated = await page.waitForFunction(() => {
+        const element = document.querySelector('.ai-try-goal')
+        return Boolean(element && Object.keys(element).some(key => key.startsWith('__reactProps
+      const updated = await page.waitForFunction(() =>
+        document.querySelector('.ai-try-draft')?.textContent?.includes('new service into another market'),
+      null, { timeout: 10000 }).then(() => true).catch(() => false)
+      if (!updated) console.log('draft after goal click:', await page.locator('.ai-try-draft').innerText())
+      assert(updated, theme + '/' + width + ' goal changes preview')
+      await page.locator('#ai-try-outcome').fill('launch a market-entry pilot')
+      const custom = await page.waitForFunction(() =>
+        document.querySelector('.ai-try-draft')?.textContent?.includes('launch a market-entry pilot'),
+      null, { timeout: 10000 }).then(() => true).catch(() => false)
+      if (!custom) console.log('draft after editing:', await page.locator('.ai-try-draft').innerText())
+      assert(custom, theme + '/' + width + ' preview responds to user input')
+      const data = await page.evaluate(() => ({
+        docWidth: document.documentElement.scrollWidth,
+        viewport: innerWidth,
+        rootTheme: document.documentElement.getAttribute('data-theme'),
+        background: getComputedStyle(document.querySelector('.ai-try')).backgroundColor,
+      }))
+      assert(data.docWidth <= data.viewport + 2, theme + '/' + width + ' no sideways overflow ' + JSON.stringify(data))
+      assert(data.rootTheme === theme, theme + '/' + width + ' theme respected')
+      assert(!errors.length, theme + '/' + width + ' no page errors: ' + errors.join('; '))
+      await context.close()
+    }
+  }
+  console.log('Opportunity Preview passed ' + passed + ' browser assertions')
+} finally {
+  await browser.close()
+  if (server) try { process.kill(-server.pid) } catch { /* server exited */ }
+}
+)))
+      }, null, { timeout: 60000 }).then(() => true).catch(() => false)
+      if (!hydrated) console.log('hydration diagnostics:', await page.evaluate(() => ({
+        scripts: [...document.scripts].map(s => s.src || s.type).slice(-8),
+        readyState: document.readyState,
+        html: document.querySelector('.ai-try-goal')?.outerHTML.slice(0, 250),
+      })), 'page errors:', errors)
+      assert(hydrated, theme + '/' + width + ' interactive React hydration')
       await page.getByRole('button', { name: /Build a partnership/ }).click()
       const updated = await page.waitForFunction(() =>
         document.querySelector('.ai-try-draft')?.textContent?.includes('new service into another market'),
