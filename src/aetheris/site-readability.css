@@ -760,5 +760,15 @@ html:root[data-theme] body .security-verify-link:focus-visible {
   outline-offset:4px;
 }
 
-/* Warm-introduction dialogs keep their own dark surface even in light mode.
- * Preserve the component's high-contrast amber labels instead of forcing dark ink. */
+/* Warm-introduction dialog uses a deliberately dark surface in both appearance modes.
+ * Scope these rules to the dialog so light-theme page typography cannot override it. */
+html:root[data-theme] body .ix-root .request-intro-modal-surface {
+  background-color:#0E1218!important;
+  color:#F2EEE6!important;
+  -webkit-text-fill-color:#F2EEE6!important;
+}
+html:root[data-theme] body .ix-root .request-intro-modal-surface .intro-modal-amber-label {
+  color:#F5B027!important;
+  -webkit-text-fill-color:#F5B027!important;
+  opacity:1!important;
+}
