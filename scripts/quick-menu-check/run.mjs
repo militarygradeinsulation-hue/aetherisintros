@@ -150,6 +150,12 @@ ok(qn && Math.abs(qn.x - 300) < 4 && Math.abs(qn.y - 300) < 4, 'the note card op
 ok(await page.evaluate(() => document.activeElement?.tagName) === 'TEXTAREA', 'the note is ready to type into')
 await page.keyboard.type('Call Ana Friday about the CFO search')
 await shot('note')
+await page.evaluate(() => { window.__noteFailure = true })
+await page.keyboard.press('Control+Enter')
+await page.waitForSelector('.qn-msg')
+ok((await page.textContent('.qn-msg')).includes('Could not save') && await page.inputValue('.qn textarea') === 'Call Ana Friday about the CFO search', 'failed account save keeps the draft and reports failure')
+ok(await page.evaluate(() => window.__notes.length === 0), 'a denied note is never recorded as saved')
+await page.evaluate(() => { window.__noteFailure = false })
 await page.keyboard.press('Control+Enter')
 await page.waitForFunction(() => window.__notes.length === 1)
 const note = await page.evaluate(() => window.__notes[0])
@@ -162,6 +168,24 @@ await page.click('.qm >> text=Save as note')
 ok(await page.inputValue('.qn textarea') === 'Logistics CFO in Texas', 'Save as note starts a note from the selected text')
 await page.keyboard.press('Escape')
 ok(!(await page.isVisible('.qn')), 'Escape closes the note card')
+
+// A guest must not receive a success message when browser storage is full.
+await page.evaluate(() => {
+  window.__guest = true
+  window.__originalSetItem = Storage.prototype.setItem
+  Storage.prototype.setItem = function (key, value) {
+    if (key === 'aetheris-demo-quick-notes') throw new Error('QuotaExceededError')
+    return window.__originalSetItem.call(this, key, value)
+  }
+  window.dispatchEvent(new CustomEvent('aetheris:quick-note', { detail: { text: 'Guest note kept on failure' } }))
+})
+await page.click('.qn .qm-primary')
+await page.waitForSelector('.qn-msg')
+ok((await page.textContent('.qn-msg')).includes('Could not save') && await page.inputValue('.qn textarea') === 'Guest note kept on failure', 'full device storage reports failure and retains the note')
+await page.evaluate(() => { Storage.prototype.setItem = window.__originalSetItem })
+await page.click('.qn .qm-primary')
+await page.waitForFunction(() => document.querySelector('.qn-msg')?.textContent?.startsWith('Saved on this device only'))
+ok(await page.evaluate(() => window.__notes.length === 1 && JSON.parse(localStorage.getItem('aetheris-demo-quick-notes'))[0].text === 'Guest note kept on failure'), 'guest retry saves only to the device without claiming an account save')
 
 ok(errors.length === 0, `no page errors${errors.length ? ': ' + errors.join('; ') : ''}`)
 await browser.close(); server.close()
