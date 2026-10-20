@@ -116,6 +116,8 @@ try {
   check(await denied(A,'SELECT icp_save($1,$2::jsonb,1)',[key2,'{"status":"approved","note":"https://example.com","consent":true}']),'direct RPC cannot approve promotional links')
   check(await denied(A,'SELECT icp_save($1,$2::jsonb,1)',[key2,'{"status":"approved","note":"We met before","consent":true}']),'direct RPC cannot approve unsupported familiarity')
   check(await denied(A,'SELECT icp_save($1,$2::jsonb,1)',[key2,JSON.stringify({status:'approved',note:'Hi Alex, I can share an operating checklist.',consent:true})]),'direct RPC cannot reuse a contacted person note')
+  // Adversarial fixture only: grant TEMP locally so shadowing is actually exercised.
+  await db.exec('GRANT TEMP ON DATABASE template1 TO authenticated')
   await db.exec(`SET ROLE authenticated; SELECT set_config('request.jwt.claim.sub','${A}',false); CREATE TEMP TABLE crm_people(id uuid,owner_id uuid,archived boolean); INSERT INTO crm_people VALUES('00000000-0000-4000-8000-000000000004','${A}',false)`)
   let shadowBlocked=false
   try {await db.query('SELECT public.icp_save($1,$2::jsonb,0)',['icp:person:00000000-0000-4000-8000-000000000004','{"status":"draft","note":"x","consent":false}'])} catch {shadowBlocked=true} finally {await db.exec('RESET ROLE; DROP TABLE pg_temp.crm_people')}
