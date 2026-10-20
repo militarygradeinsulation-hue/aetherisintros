@@ -118,7 +118,7 @@ BEGIN
     FOR item IN SELECT value FROM jsonb_array_elements(p_data->'profiles') LOOP
       IF jsonb_typeof(item) <> 'object' OR item - ARRAY['id','label','objective','industries','employees','revenue','titles','locations','keywords','disqualifiers','excludeClients','excludeContacted','minimumFit','valueOffer'] <> '{}'::jsonb THEN RAISE EXCEPTION 'Invalid profile fields'; END IF;
       FOREACH field IN ARRAY ARRAY['id','label','objective','industries','employees','revenue','titles','locations','keywords','disqualifiers','valueOffer'] LOOP
-        IF jsonb_typeof(item->field) IS DISTINCT FROM 'string' OR length(item->>field) > CASE field WHEN 'id' THEN 80 WHEN 'label' THEN 120 WHEN 'valueOffer' THEN 200 ELSE 1000 END THEN RAISE EXCEPTION 'Invalid profile field'; END IF;
+        IF jsonb_typeof(item->field) IS DISTINCT FROM 'string' OR length(item->>field) > (CASE field WHEN 'id' THEN 80 WHEN 'label' THEN 120 WHEN 'valueOffer' THEN 200 ELSE 1000 END) THEN RAISE EXCEPTION 'Invalid profile field'; END IF;
       END LOOP;
       IF length(item->>'id')=0 OR length(item->>'label')=0 OR item->>'id'=ANY(seen_ids)
         OR item->>'objective' NOT IN ('client','partner','investor','referral','hire')
