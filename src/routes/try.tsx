@@ -32,7 +32,6 @@ function OpportunityPreviewPage() {
     return { outcome: first.outcome, people: first.people, offer: first.offer }
   })
   const [copied, setCopied] = useState(false)
-  const goal = opportunityGoal(goalId)
   const preview = useMemo(() => buildOpportunityPreview(goalId, fields), [goalId, fields])
 
   const chooseGoal = (id: OpportunityGoal) => {
