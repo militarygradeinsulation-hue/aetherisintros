@@ -27,14 +27,14 @@ export interface ActivationStepView extends ActivationStepState {
 const COPY: Record<ActivationStepId, { title: string; detail: string; action: string; target: ActivationTarget }> = {
   profile: { title: 'Add your photo and headline', detail: 'Members reply faster to a face and a title.', action: 'Edit profile', target: 'profile' },
   verified: { title: 'Verify your business role (optional)', detail: 'Earn an evidence-based professional badge. Normal member networking does not require this badge.', action: 'Verify role', target: 'verify' },
-  goals: { title: 'Set your 3 goals for this quarter', detail: 'Only you see them. They shape who we suggest you meet.', action: 'Set goals', target: 'goals' },
+  goals: { title: 'Set your 3 goals for this quarter', detail: 'These goals are private. Saving a goal does not publish an ask.', action: 'Set goals', target: 'goals' },
   ask: { title: 'Post your first ask', detail: 'Say what you need. Members who can help will reply.', action: 'Post an ask', target: 'needs' },
   intro: { title: 'Request or accept your first introduction', detail: 'One warm introduction is the fastest way in.', action: 'Open introductions', target: 'intros' },
-  push: { title: 'Turn on notifications', detail: 'Know the moment someone replies or accepts.', action: 'Turn on', target: 'preferences' },
+  push: { title: 'Turn on notifications', detail: 'Choose your notification preferences when you are ready.', action: 'Turn on', target: 'preferences' },
   calendar: { title: 'Connect your calendar (optional)', detail: 'See when you last met each member. Visible only to you.', action: 'Connect', target: 'preferences' },
 }
 
-export const ACTIVATION_ORDER: ActivationStepId[] = ['profile', 'verified', 'goals', 'ask', 'intro', 'push', 'calendar']
+export const ACTIVATION_ORDER: ActivationStepId[] = ['profile', 'goals', 'ask', 'intro', 'verified', 'push', 'calendar']
 
 /** Steps to show, in order. The calendar step is dropped when Google is not set up. */
 export function activationView(steps: ActivationStepState[], opts: { calendarAvailable: boolean }): ActivationStepView[] {
@@ -50,7 +50,7 @@ export function activationView(steps: ActivationStepState[], opts: { calendarAva
         ? s.photo === false && s.headline === false ? 'Add a photo in Settings and your title in My profile.'
           : s.photo === false ? 'Add a profile photo in Settings.' : 'Add your title in My profile.'
         : copy.detail
-      return { ...s, ...copy, target, detail, optional: id === 'calendar' || id === 'verified' || !!s.optional }
+      return { ...s, ...copy, target, detail, optional: id === 'calendar' || id === 'verified' || id === 'push' || !!s.optional }
     })
 }
 
