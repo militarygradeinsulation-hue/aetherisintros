@@ -7,7 +7,11 @@ import { ImageUp, Loader2, ScanLine } from 'lucide-react'
 import { useEffect, useRef, useState } from 'react'
 
 import { fetchLinkedInPhoto } from '@/lib/linkedinImport.functions'
+import { findPublicInformation } from '@/lib/publicInfo.functions'
 import { isLinkedInPhotoUrl } from './linkedin-import'
+import type { PublicSuggestion } from './public-info'
+import { reviewedPublicProfilePatch } from './public-info-review'
+import './public-info-review.css'
 import { PROFILE_KEYS, SCAN_LABELS, splitList, type ScanKey } from './linkedin-scan'
 import { LinkedInScanPanel, saveProfileScan, type ApplyOutcome, type ScanPatch } from './linkedin-scan-ui'
 import { isShowcase } from './showcase'
@@ -27,6 +31,11 @@ export function LinkedInImportPanel({ onApplied, defaultOpen = false }: { onAppl
   const [photoBusy, setPhotoBusy] = useState(false)
   const [photoError, setPhotoError] = useState('')
   const photoInput = useRef<HTMLInputElement>(null)
+  const [publicConfirmed, setPublicConfirmed] = useState(false)
+  const [publicBusy, setPublicBusy] = useState(false)
+  const [publicMatches, setPublicMatches] = useState<PublicSuggestion[]>([])
+  const [pickedPublic, setPickedPublic] = useState<Set<number>>(new Set())
+  const [publicNotice, setPublicNotice] = useState('')
 
   useEffect(() => () => { if (photoPreview) URL.revokeObjectURL(photoPreview) }, [photoPreview])
 
@@ -54,6 +63,38 @@ export function LinkedInImportPanel({ onApplied, defaultOpen = false }: { onAppl
     } catch (e) {
       setPhotoError(e instanceof Error ? e.message : 'That photo could not be loaded.')
     } finally { setPhotoBusy(false) }
+  }
+
+  // This searches only the signed-in member's own SAVED profile, after opt-in.
+  // No LinkedIn scraping, and nothing is applied without explicit field selection.
+  const searchMyPublicInformation = async () => {
+    if (demo || !publicConfirmed) return
+    setPublicBusy(true); setPublicNotice(''); setPublicMatches([]); setPickedPublic(new Set())
+    try {
+      const result = await findPublicInformation({ data: { confirmed: true } })
+      if (result.status !== 'ok') { setPublicNotice(result.reason); return }
+      setPublicMatches(result.suggestions)
+      setPublicNotice(`Found ${result.suggestions.length} sourced suggestion(s). Select only what is accurate.`)
+    } catch (error) {
+      setPublicNotice(error instanceof Error ? error.message : 'The public search is unavailable.')
+    } finally { setPublicBusy(false) }
+  }
+
+  const applySelectedPublicInformation = async () => {
+    if (demo || !publicConfirmed || !pickedPublic.size) return
+    const patch = reviewedPublicProfilePatch(publicMatches, pickedPublic)
+    if (!Object.keys(patch).length) { setPublicNotice('No supported profile fields selected.'); return }
+    setPublicBusy(true); setPublicNotice('')
+    try {
+      const outcome = await saveProfileScan(patch)
+      if (outcome.status === 'failed') throw new Error(outcome.message)
+      await showLocally(patch)
+      onApplied?.(patch)
+      setPublicNotice('Selected fields were saved to your profile.')
+      setPickedPublic(new Set())
+    } catch (error) {
+      setPublicNotice(error instanceof Error ? error.message : 'Those fields could not be saved.')
+    } finally { setPublicBusy(false) }
   }
 
   /** Mirror the applied fields into the open page so it shows them at once. */
@@ -117,7 +158,8 @@ export function LinkedInImportPanel({ onApplied, defaultOpen = false }: { onAppl
     intro="Your public profile fields are shown to verified members. Your LinkedIn link is shown on your profile."
     applyLabel={demo ? 'Apply to demo profile' : 'Apply to my profile'}
     onApply={apply} onClose={() => setOpen(false)}
-    extraStep={<div className="li-scan-photo">
+    extraStep={<>
+      <div className="li-scan-photo">
       <span className="li-scan-label"><ImageUp size={14} /> Photo <small>(optional)</small></span>
       <div>
         {photoPreview ? <img src={photoPreview} alt="Your new profile photo" /> : <span aria-hidden="true">{p.initials || 'ME'}</span>}
@@ -129,7 +171,45 @@ export function LinkedInImportPanel({ onApplied, defaultOpen = false }: { onAppl
         <Btn kind="quiet" disabled={!photoLink.trim() || photoBusy} onClick={() => void loadPhotoLink()}>{photoBusy ? <Loader2 size={14} className="li-spin" /> : 'Use'}</Btn>
       </div>}
       {photoError && <p className="li-scan-error" role="alert">{photoError}</p>}
-    </div>}
+    </div>
+      {!demo && <section className="li-public-review" aria-label="Find public information about my profile">
+        <span className="li-scan-label">Find public information about me</span>
+        <p>The search uses your own saved name and headline, not other members' profiles. Every suggestion needs a supporting source; you approve any changes.</p>
+        <label className="li-public-consent">
+          <input type="checkbox" checked={publicConfirmed} onChange={e => setPublicConfirmed(e.target.checked)} />
+          I approve searching the public web for my own saved name and headline.
+        </label>
+        <Btn kind="secondary" disabled={!publicConfirmed || publicBusy} onClick={() => void searchMyPublicInformation()}>
+          {publicBusy ? 'Searching…' : 'Find my public information'}
+        </Btn>
+        {!!publicMatches.length && <div className="li-public-suggestions" role="group" aria-label="Sourced suggestions to review">
+          {publicMatches.map((item, index) => {
+            const supported = item.field !== 'building'
+            return <label key={`${item.field}-${index}`} className={supported ? '' : 'li-public-review-only'}>
+              <input type="checkbox" disabled={!supported || publicBusy} checked={supported && pickedPublic.has(index)}
+                onChange={() => setPickedPublic(previous => {
+                  const next = new Set(previous)
+                  if (next.has(index)) next.delete(index); else next.add(index)
+                  return next
+                })} />
+              <span>
+                <b>{item.field === 'whatIDo' ? 'About' : item.field === 'thesis' ? 'Headline' : item.field}</b>
+                <strong>{item.value}</strong>
+                <small>Evidence: “{item.quote}”</small>
+                <a href={item.sourceUrl} target="_blank" rel="noopener noreferrer nofollow">
+                  {item.sourceTitle || item.sourceUrl}
+                </a>
+                {!supported && <em>Review only — there is not a matching profile field yet.</em>}
+              </span>
+            </label>
+          })}
+          <Btn kind="secondary" disabled={!publicConfirmed || publicBusy || !pickedPublic.size} onClick={() => void applySelectedPublicInformation()}>
+            Apply selected public fields
+          </Btn>
+        </div>}
+        {publicNotice && <p className="li-scan-outcome" role="status">{publicNotice}</p>}
+      </section>}
+    </>}
     extraReview={photoPreview ? <div className="li-scan-row on"><span /><span>Photo</span><span className="li-scan-now">Current photo</span>
       <img className="li-scan-photo-new" src={photoPreview} alt="New profile photo" /></div> : undefined}
   />
