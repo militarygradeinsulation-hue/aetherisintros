@@ -8,18 +8,12 @@ const profile = z.object({
   industries: z.string().max(1000), employees: z.string().max(1000), revenue: z.string().max(1000), titles: z.string().max(1000), locations: z.string().max(1000),
   keywords: z.string().max(1000), disqualifiers: z.string().max(1000), excludeClients: z.boolean(), excludeContacted: z.boolean(), minimumFit: z.number().int().min(0).max(100), valueOffer: z.string().max(200),
 })
-// Mirrors the database gate. Once the explicit owner grant exists in the database, access needs
-// admin + grant (fails closed). Until then the deployed rule (admin) applies, same as SQL.
-type Ctx = { supabase: { rpc: (fn: string, args: Record<string, unknown>) => PromiseLike<{ data: unknown; error: { code?: string } | null }> }; userId: string }
-export async function requirePrivateOwner(context: Ctx) {
-  const grant = await context.supabase.rpc('has_private_owner_grant', { p_capability: 'prospect_intelligence' })
-  if (!grant.error) { if (grant.data !== true) throw new Error('Private owner access required.'); return }
-  if (grant.error.code !== 'PGRST202' && grant.error.code !== '42883') throw new Error('Private owner access required.')
-  const { data: admin, error } = await context.supabase.rpc('has_role', { _user_id: context.userId, _role: 'admin' })
-  if (error || admin !== true) throw new Error('Private owner access required.')
+const gate = (context: unknown) => {
+  const sb = (context as { supabase: { rpc: GateRpc } }).supabase
+  return requirePrivateOwner(sb.rpc.bind(sb) as GateRpc)
 }
 export const loadProspectState = createServerFn({ method: 'POST' }).middleware([requireSupabaseAuth]).handler(async ({ context }) => {
-  await requirePrivateOwner(context as unknown as Ctx)
+  await gate(context)
   const [state,people,companies,activities] = await Promise.all([
     context.supabase.from('member_workspace_state').select('store_key,data,version').eq('user_id',context.userId).like('store_key','icp:%'),
     context.supabase.from('crm_people').select('id').eq('owner_id',context.userId),
