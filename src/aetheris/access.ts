@@ -52,8 +52,9 @@ export function normalizeFoundingStats(raw: unknown): FoundingStats {
   if (!raw || typeof raw !== 'object') return fallback
   const row = raw as Record<string, unknown>
   const validMode = row['mode'] === 'first_1000' || row['mode'] === 'invite_only' || row['mode'] === 'closed'
-  const approved = Number(row['approved'])
-  const capacity = Number(row['capacity'])
+  const approved = row['approved']
+  const capacity = row['capacity']
+  if (typeof approved !== 'number' || typeof capacity !== 'number') return fallback
   if (!validMode || !Number.isSafeInteger(approved) || approved < 0 ||
       !Number.isSafeInteger(capacity) || capacity < 1 || approved > capacity) return fallback
   return { approved, capacity, mode: row['mode'] as LaunchMode }
