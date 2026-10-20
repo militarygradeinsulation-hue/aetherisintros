@@ -7,11 +7,14 @@ import { ImageUp, Loader2, ScanLine } from 'lucide-react'
 import { useEffect, useRef, useState } from 'react'
 
 import { fetchLinkedInPhoto } from '@/lib/linkedinImport.functions'
+import { supabase } from '@/integrations/supabase/client'
 import { findPublicInformation } from '@/lib/publicInfo.functions'
 import { isLinkedInPhotoUrl } from './linkedin-import'
 import type { PublicSuggestion } from './public-info'
 import { reviewedPublicProfilePatch } from './public-info-review'
 import { startLinkedInAuthentication } from './linkedin-auth'
+import { LinkedInIdentityReview } from './LinkedInIdentityReview'
+import { loadPublicReviewContext, savePublicReview, type PublicReviewContext } from './public-profile-review-save'
 import './public-info-review.css'
 import { PROFILE_KEYS, SCAN_LABELS, splitList, type ScanKey } from './linkedin-scan'
 import { LinkedInScanPanel, saveProfileScan, type ApplyOutcome, type ScanPatch } from './linkedin-scan-ui'
@@ -37,10 +40,22 @@ export function LinkedInImportPanel({ onApplied, defaultOpen = false }: { onAppl
   const [publicMatches, setPublicMatches] = useState<PublicSuggestion[]>([])
   const [pickedPublic, setPickedPublic] = useState<Set<number>>(new Set())
   const [publicNotice, setPublicNotice] = useState('')
+  const [publicContext, setPublicContext] = useState<PublicReviewContext | null>(null)
+  const publicGeneration = useRef(0)
   const [linkBusy, setLinkBusy] = useState(false)
   const [linkNotice, setLinkNotice] = useState('')
 
   useEffect(() => () => { if (photoPreview) URL.revokeObjectURL(photoPreview) }, [photoPreview])
+  useEffect(() => {
+    if (demo) return
+    const { data: subscription } = supabase.auth.onAuthStateChange(event => {
+      if (!['SIGNED_IN','SIGNED_OUT','USER_UPDATED'].includes(event)) return
+      publicGeneration.current++
+      setPublicContext(null); setPublicMatches([]); setPickedPublic(new Set()); setPublicConfirmed(false); setPublicBusy(false)
+      setPublicNotice('Your account changed. Approve a new search before applying public fields.')
+    })
+    return () => { publicGeneration.current++; subscription.subscription.unsubscribe() }
+  }, [demo])
 
   const p = net.profile
   const current: ScanPatch = {
@@ -71,37 +86,44 @@ export function LinkedInImportPanel({ onApplied, defaultOpen = false }: { onAppl
   // This searches only the signed-in member's own SAVED profile, after opt-in.
   // No LinkedIn scraping, and nothing is applied without explicit field selection.
   const searchMyPublicInformation = async () => {
-    if (demo || !publicConfirmed) return
-    setPublicBusy(true); setPublicNotice(''); setPublicMatches([]); setPickedPublic(new Set())
+    if (demo || !publicConfirmed || !net.synced) return
+    const request = ++publicGeneration.current
+    setPublicBusy(true); setPublicNotice(''); setPublicMatches([]); setPickedPublic(new Set()); setPublicContext(null)
     try {
+      const context = await loadPublicReviewContext()
+      if (request !== publicGeneration.current) return
       const result = await findPublicInformation({ data: { confirmed: true } })
+      if (request !== publicGeneration.current) return
       if (result.status !== 'ok') { setPublicNotice(result.reason); return }
+      setPublicContext(context)
       setPublicMatches(result.suggestions)
       setPublicNotice(`Found ${result.suggestions.length} sourced suggestion(s). Select only what is accurate.`)
     } catch (error) {
-      setPublicNotice(error instanceof Error ? error.message : 'The public search is unavailable.')
-    } finally { setPublicBusy(false) }
+      if (request === publicGeneration.current) setPublicNotice(error instanceof Error ? error.message : 'The public search is unavailable.')
+    } finally { if (request === publicGeneration.current) setPublicBusy(false) }
   }
 
   const applySelectedPublicInformation = async () => {
-    if (demo || !publicConfirmed || !pickedPublic.size) return
+    if (demo || !publicConfirmed || !pickedPublic.size || !publicContext) return
+    const request = publicGeneration.current
     const patch = reviewedPublicProfilePatch(publicMatches, pickedPublic)
     if (!Object.keys(patch).length) { setPublicNotice('No supported profile fields selected.'); return }
     setPublicBusy(true); setPublicNotice('')
     try {
-      const outcome = await saveProfileScan(patch)
-      if (outcome.status === 'failed') throw new Error(outcome.message)
-      await showLocally(patch)
+      await savePublicReview(publicContext, patch)
+      if (request !== publicGeneration.current) return
+      await showLocally(patch, publicContext.userId)
+      if (request !== publicGeneration.current) return
       onApplied?.(patch)
       setPublicNotice('Selected fields were saved to your profile.')
       setPickedPublic(new Set())
     } catch (error) {
-      setPublicNotice(error instanceof Error ? error.message : 'Those fields could not be saved.')
-    } finally { setPublicBusy(false) }
+      if (request === publicGeneration.current) setPublicNotice(error instanceof Error ? error.message : 'Those fields could not be saved.')
+    } finally { if (request === publicGeneration.current) setPublicBusy(false) }
   }
 
   /** Mirror the applied fields into the open page so it shows them at once. */
-  const showLocally = async (patch: ScanPatch) => {
+  const showLocally = async (patch: ScanPatch, receiptUserId?: string) => {
     const fields: Parameters<typeof net.updateExecutiveProfile>[0] = {}
     if (patch.title) fields.title = patch.title
     if (patch.company) fields.company = patch.company
@@ -112,7 +134,10 @@ export function LinkedInImportPanel({ onApplied, defaultOpen = false }: { onAppl
     if (patch.expertise) fields.expertise = splitList(patch.expertise)
     if (patch.can_help_with) fields.canHelpWith = patch.can_help_with
     if (patch.looking_for) fields.lookingFor = patch.looking_for
-    if (Object.keys(fields).length) await net.updateExecutiveProfile(fields)
+    if (Object.keys(fields).length) {
+      if (receiptUserId) net.applyExecutiveReceipt(receiptUserId, fields)
+      else await net.updateExecutiveProfile(fields)
+    }
   }
 
   const apply = async (patch: ScanPatch): Promise<ApplyOutcome> => {
@@ -162,6 +187,14 @@ export function LinkedInImportPanel({ onApplied, defaultOpen = false }: { onAppl
     applyLabel={demo ? 'Apply to demo profile' : 'Apply to my profile'}
     onApply={apply} onClose={() => setOpen(false)}
     extraStep={<>
+      {!demo && net.synced && <LinkedInIdentityReview onSaved={receipt => {
+        net.applyIdentityReceipt({
+          userId: receipt.userId,
+          ...(receipt.changed.includes('name') && receipt.name != null ? { name: receipt.name } : {}),
+          ...(receipt.changed.includes('avatar_url') ? { avatarUrl: receipt.avatarUrl } : {}),
+        })
+        if (receipt.changed.includes('name') && receipt.name) onApplied?.({ name: receipt.name })
+      }} />}
       {!demo && <section className="li-public-review" aria-label="Connect my LinkedIn account">
         <span className="li-scan-label">Connect LinkedIn</span>
         <p>Link your own LinkedIn sign-in to this account. Profile fields still require your review before applying.</p>
@@ -191,10 +224,13 @@ export function LinkedInImportPanel({ onApplied, defaultOpen = false }: { onAppl
         <span className="li-scan-label">Find public information about me</span>
         <p>The search uses your own saved name and headline, not other members' profiles. Every suggestion needs a supporting source; you approve any changes.</p>
         <label className="li-public-consent">
-          <input type="checkbox" checked={publicConfirmed} onChange={e => setPublicConfirmed(e.target.checked)} />
+          <input type="checkbox" checked={publicConfirmed} onChange={e => {
+            setPublicConfirmed(e.target.checked)
+            if (!e.target.checked) { publicGeneration.current++; setPublicContext(null); setPublicMatches([]); setPickedPublic(new Set()); setPublicBusy(false) }
+          }} />
           I approve searching the public web for my own saved name and headline.
         </label>
-        <Btn kind="secondary" disabled={!publicConfirmed || publicBusy} onClick={() => void searchMyPublicInformation()}>
+        <Btn kind="secondary" disabled={!publicConfirmed || publicBusy || !net.synced} onClick={() => void searchMyPublicInformation()}>
           {publicBusy ? 'Searching…' : 'Find my public information'}
         </Btn>
         {!!publicMatches.length && <div className="li-public-suggestions" role="group" aria-label="Sourced suggestions to review">
@@ -218,7 +254,7 @@ export function LinkedInImportPanel({ onApplied, defaultOpen = false }: { onAppl
               </span>
             </label>
           })}
-          <Btn kind="secondary" disabled={!publicConfirmed || publicBusy || !pickedPublic.size} onClick={() => void applySelectedPublicInformation()}>
+          <Btn kind="secondary" disabled={!publicConfirmed || publicBusy || !pickedPublic.size || !publicContext} onClick={() => void applySelectedPublicInformation()}>
             Apply selected public fields
           </Btn>
         </div>}
