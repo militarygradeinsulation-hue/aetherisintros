@@ -741,3 +741,21 @@ html:root[data-theme="light"] body .bridge-meeting-option
   -webkit-text-fill-color:var(--read-brand)!important;
   opacity:1!important;
 }
+
+/* Optional verification is visible and keyboard accessible in both appearances. */
+html:root[data-theme] body .security-verify-link {
+  display:inline-flex;
+  align-items:center;
+  min-height:44px;
+  max-width:100%;
+  margin:8px 0 16px;
+  color:var(--read-brand)!important;
+  -webkit-text-fill-color:var(--read-brand)!important;
+  text-decoration:underline;
+  text-underline-offset:3px;
+  overflow-wrap:anywhere;
+}
+html:root[data-theme] body .security-verify-link:focus-visible {
+  outline:2px solid currentColor;
+  outline-offset:4px;
+}
