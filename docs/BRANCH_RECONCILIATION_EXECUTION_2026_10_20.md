@@ -173,3 +173,157 @@ truthful-instrumentation rule:
 | `claude/ask-intros-name` | 1 | 902 | 0 | 0 | 0 | 0 | 0 | no non-patch-equivalent commits; nothing to pick |
 | `claude/yellow-tile-hover` | 1 | 952 | 1 | 0 | 1 | 0 | 0 | skipped: every remaining commit is empty on main, conflicts with newer main code, or touches migrations |
 | `claude/demo-live-account-fixes` | 3 | 1263 | 3 | 0 | 3 | 0 | 0 | skipped: every remaining commit is empty on main, conflicts with newer main code, or touches migrations |
+
+## Branch cleanup (October 20, 2026, after PR #233 merged)
+
+135 remote branches whose content is already on `main` were deleted after archiving each tip as a tag
+`archive/<branch-name>` pointing at the exact same commit (each tag was checked against the branch tip before deletion).
+Criteria, computed fresh against `origin/main` 81a577cf:
+
+- **123 fully merged**: the branch tip is an ancestor of `main`.
+- **12 patch-equivalent**: `git cherry origin/main <branch>` lists no `+` commits.
+- No branch with an open pull request was deleted.
+
+To restore one: `git push origin refs/tags/archive/<name>:refs/heads/<name>`.
+
+106 branches still carry commits not on `main` and were kept for owner review (see the per-branch table above).
+
+<details><summary>Deleted branches (135)</summary>
+
+- `claude/activation`
+- `claude/agent-gateway`
+- `claude/ask-intros-name`
+- `claude/ask-response-count`
+- `claude/company-continuity`
+- `claude/deal-rooms`
+- `claude/events`
+- `claude/foundation`
+- `claude/founding-cohorts`
+- `claude/gmail-sms`
+- `claude/google-calendar`
+- `claude/growth`
+- `claude/impact-report`
+- `claude/leak-check`
+- `claude/linkedin-import`
+- `claude/linkedin-scan`
+- `claude/live-notifications`
+- `claude/meeting-calendar`
+- `claude/meeting-outcomes`
+- `claude/meeting-recording`
+- `claude/membership-card`
+- `claude/menu-contrast`
+- `claude/messaging`
+- `claude/migration-checks`
+- `claude/outcome-spine-diagnose-route`
+- `claude/providers`
+- `claude/quick-menu`
+- `claude/quick-menu-assistant`
+- `claude/reciprocity`
+- `claude/reliability-admin`
+- `claude/revenue`
+- `claude/staging`
+- `claude/stale-intro-requests`
+- `claude/this-week`
+- `claude/track-record-agent-capsules`
+- `claude/video-meetings`
+- `claude/voice-control`
+- `claude/warm-paths`
+- `claude/weekly-digest`
+- `claude/workspace-sync`
+- `copilot/update-modal-styles`
+- `copilot/update-savepost-handling`
+- `design/editorial-luxury-ask-intros-20261014`
+- `docs/ask-intros-unified-roadmap-20261017`
+- `docs/phase1-activation-reconciliation-20261017`
+- `docs/safe-innovation-release-plan-20261019`
+- `feat/admin-connection-preflight-20261018`
+- `feat/evidence-aware-opportunity-readiness-20261018`
+- `feat/home-platform-brand-strip-20261018`
+- `feat/opportunity-evidence-transparency-20261018`
+- `feat/opportunity-focus-20261018`
+- `feat/opportunity-signal-evidence-20261017`
+- `feat/premeeting-briefs-secure-messages-20261017`
+- `feat/shared-opportunity-exchange-20261018`
+- `feature/accepted-intro-workspace-trackrecord-20261011`
+- `feature/business-lobby-consented-meetings-20261013`
+- `feature/interactive-relationship-journey-20261013`
+- `feature/marketplace-pilot-qualified-demand-20261012`
+- `feature/peer-accountability-navigation-20261011`
+- `feature/system-scroll-caliper-20261013`
+- `fix/access-fetch-fail-closed-20261018`
+- `fix/access-query-error-recovery-20261018`
+- `fix/activation-queue-truth-and-order-20261020`
+- `fix/admin-launch-write-receipts-20261017`
+- `fix/admin-network-health-contract-20261017`
+- `fix/admin-overview-error-recovery-20261017`
+- `fix/admin-overview-request-race-20261017`
+- `fix/allowance-ui-existing-live-rpc-20261019`
+- `fix/allowance-ui-existing-rpc-no-migration-20261019`
+- `fix/approved-unconfirmed-member-status-20261018`
+- `fix/ask-dock-mobile-suggestion-wrapping-20261017`
+- `fix/askintros-productwide-contrast-20261017`
+- `fix/auth-verified-member-entry-20261018`
+- `fix/confirmed-early-access-navigation`
+- `fix/crm-import-recovery-validation-20261017`
+- `fix/deal-room-browser-check-syntax-20261018`
+- `fix/desktop-more-menu-clean-20261018`
+- `fix/desktop-more-width-clean-20261019`
+- `fix/executive-workbench-contrast-rebased-20261018`
+- `fix/executive-workbench-intelligence-contrast-20261018`
+- `fix/extract-member-mobile-overflow-20261018`
+- `fix/founding-launch-mode-validate-20261020`
+- `fix/grid-clipboard-row-recovery-20261017`
+- `fix/grid-confirmed-writes-20261017`
+- `fix/grid-contact-export-policy-20261017`
+- `fix/grid-freeform-csv-preflight-20261017`
+- `fix/handled-server-error-telemetry`
+- `fix/home-platform-strip-above-headline-20261018`
+- `fix/intent-exchange-confirmed-writes-20261017`
+- `fix/intro-inbox-two-member-contract-20261017`
+- `fix/landing-meta-pr234-extract-20261020`
+- `fix/linked-grid-csv-import-guard-20261017`
+- `fix/linkedin-oauth-connection-20261020`
+- `fix/live-directory-truth`
+- `fix/live-intros-network-permissions-20261015`
+- `fix/live-network-gate-routing`
+- `fix/matching-verified-path-evidence-20261017`
+- `fix/member-directory-intro-read-contract-20261012`
+- `fix/membership-inverse-contrast-20261020`
+- `fix/messages-selected-row-semantic-contrast-20261018`
+- `fix/messages-thread-theme-20261018`
+- `fix/mobile-ceo-command-panels`
+- `fix/more-menu-main-rebase-20261018`
+- `fix/network-post-ask-save-receipts-20261017`
+- `fix/news-ticker-scroll-jitter-20261020`
+- `fix/onboarding-save-recovery-20261017`
+- `fix/onboarding-social-count-20261019`
+- `fix/outcome-notes-hints-20261018`
+- `fix/production-delivery-directory-relationship-20261013`
+- `fix/read-aloud-selection-audio-activation-20261017`
+- `fix/reconcile-live-write-acknowledgement-20261015`
+- `fix/recover-quick-note-save-contract-20261020`
+- `fix/recovered-ui-polish`
+- `fix/recovery-ci-and-syndication-20261011`
+- `fix/recovery-ci-green`
+- `fix/relationship-tier-collisions-contrast-20261017`
+- `fix/restore-editorial-home-and-runtime-20261015`
+- `fix/restore-truncated-app-20261013`
+- `fix/secondary-message-and-capsule-acks-20261015`
+- `fix/selection-reader-scroll-lifecycle-20261017`
+- `fix/self-host-linkedin-hero-thumbnail-20261018`
+- `fix/verify-portal-network-link-gate-20261018`
+- `integration/recover-unmerged-work`
+- `reconcile/oct-2026-all-tracks`
+- `reconcile/pr80-reviewed-public-info-20261020`
+- `refactor/intros-core-ui-types`
+- `refactor/intros-shell-types`
+- `refactor/live-directory-pagination`
+- `release/rebase-cleanup-208-20261019`
+- `security/fix-avatar-profile-privilege-20261012`
+- `security/lovable-scan-exposure-20261012`
+- `test/admin-analytics-payload-contract-20261017`
+- `wire/business-feed-workspaces`
+- `wire/linkedin-profile-enrichment-v2`
+- `wire/recovered-executive-work-v2`
+
+</details>
