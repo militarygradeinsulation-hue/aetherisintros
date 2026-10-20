@@ -35,7 +35,7 @@ function Photo({ src, alt, className = '', eager = false }: { src: string; alt: 
 
 function JoinAction({ signedIn, className = '' }: { signedIn: boolean; className?: string }) {
   return signedIn
-    ? <Link className={className} to="/app">Enter your network <ArrowUpRight aria-hidden="true" size={16} /></Link>
+    ? <Link className={className} to="/app">Find your next connection <ArrowUpRight aria-hidden="true" size={16} /></Link>
     : <Link className={className} to="/auth" search={{ mode: 'signup' }}>Create your account <ArrowUpRight aria-hidden="true" size={16} /></Link>
 }
 
@@ -67,20 +67,13 @@ export default function Landing() {
       <div className="ael-hero-shade" aria-hidden="true" />
       <div className="ael-architecture-meta" aria-hidden="true"><span>RELATIONSHIPS / BY DESIGN</span><span>ASK INTROS — CONNECTION 001</span></div>
       <div className="ael-hero-content">
-        <div className="ael-platform-strip" aria-label="Familiar business platforms Ask Intros brings together in one experience">
-          <p className="ael-platform-statement">LinkedIn, Salesforce, Google Meet, ZoomInfo <strong>and 60+ more, all rolled into one.</strong></p>
-          <div className="ael-platform-marks" aria-label="LinkedIn, Salesforce, Google Meet, and ZoomInfo brand marks">
-            <span className="ael-platform-mark"><img src="/brands/linkedin.svg" alt="" width={26} height={26} loading="eager" decoding="async" /><span>LinkedIn</span></span>
-            <span className="ael-platform-mark"><img src="/brands/salesforce.svg" alt="" width={26} height={26} loading="eager" /><span>Salesforce</span></span>
-            <span className="ael-platform-mark"><img src="https://cdn.simpleicons.org/googlemeet/00897B" onError={e => { e.currentTarget.onerror = null; e.currentTarget.src = "https://www.google.com/s2/favicons?domain=meet.google.com&sz=128" }} alt="" width={26} height={26} loading="eager" /><span>Google Meet</span></span>
-            <span className="ael-platform-mark"><img src="https://www.google.com/s2/favicons?domain=zoominfo.com&sz=128" alt="" width={26} height={26} loading="eager" /><span>ZoomInfo</span></span>
-            <span className="ael-platform-more">+60 more</span>
-          </div>
-          <p className="ael-platform-disclaimer">Brand marks are illustrative. No affiliation or live integration is implied.</p>
+        <div className="ael-platform-strip" aria-label="A purposeful business connection">
+          <p className="ael-platform-statement">A real business need. A relevant person. <strong>A reason to connect.</strong></p>
+          <p className="ael-platform-disclaimer">The relationship network for CEOs. Who matters. Why they matter. Why now.</p>
         </div>
         <p className="ael-kicker ael-kicker-light"><span className="ael-dash" /> Relationships by design</p>
-        <h1 id="ael-hero-title" className="stencil-display"><span className="sr-only">The Only social platform that runs your business.</span><StencilHeadline lines={['THE ONLY SOCIAL', 'PLATFORM THAT', 'RUNS YOUR BUSINESS']} className="stencil-headline--hero" /></h1>
-        <p className="ael-hero-lede">The people who matter. A reason to meet. A place to make something happen.</p>
+        <h1 id="ael-hero-title" className="stencil-display"><span className="sr-only">Meet people who move your business forward.</span><StencilHeadline lines={['MEET PEOPLE WHO', 'MOVE YOUR BUSINESS', 'FORWARD']} className="stencil-headline--hero" /></h1>
+        <p className="ael-hero-lede">Share what you need. Explore relevant people. Request an introduction with context and mutual consent.</p>
         <div className="ael-hero-actions">
           <JoinAction signedIn={signedIn} className="ael-btn ael-btn-gold ai-gradient-button" />
           <Link to="/try" className="ael-text-link">Try it in 30 seconds <ArrowRight aria-hidden="true" size={16} /></Link>
@@ -98,7 +91,7 @@ export default function Landing() {
         <div className="ael-compact-story-copy">
           <div className="ael-editorial-meta"><span>THE PHILOSOPHY</span><span>001 — RELATIONSHIPS WITH PURPOSE</span></div>
           <h2 id="ael-experience-title" className="stencil-display"><span className="sr-only">Not more contacts. Better connections.</span><StencilHeadline lines={['NOT MORE CONTACTS', 'BETTER CONNECTIONS']} /></h2>
-          <p>Most networks stop at the introduction. Ask Intros gives each connection a clear purpose, mutual consent and a path to meaningful business.</p>
+          <p>Start with something specific: a customer you want to reach, expertise you need, or a project you can help deliver. Give the next conversation a clear purpose.</p>
           <Link className="ael-underlink" to="/founder-story">Why we built it <ArrowUpRight aria-hidden="true" size={16} /></Link>
         </div>
         <figure className="ael-compact-story-photo">
@@ -112,11 +105,24 @@ export default function Landing() {
           <h3 id="ael-approach-title" className="stencil-display"><span className="sr-only">From introduction to impact.</span><StencilHeadline lines={['FROM INTRODUCTION', 'TO IMPACT']} /></h3>
         </div>
         <ol className="ael-compact-steps">
-          <li><span>01</span><div><strong>Show your intent</strong><p>What you need, offer or want to build.</p></div></li>
-          <li><span>02</span><div><strong>Find the right path</strong><p>Relevant people and introductions by consent.</p></div></li>
-          <li><span>03</span><div><strong>Make progress</strong><p>Conversations, meetings and private follow-through.</p></div></li>
+          <li><span>01</span><div><strong>Bring one real need</strong><p>Explain what would move you forward and what you can help others with.</p></div></li>
+          <li><span>02</span><div><strong>Find a reason to meet</strong><p>Review the person and context before requesting an introduction. Both people choose whether to connect.</p></div></li>
+          <li><span>03</span><div><strong>Agree on a next step</strong><p>Continue the conversation, arrange a meeting and record what you agree to do next.</p></div></li>
         </ol>
-        <Link to="/demo" className="ael-underlink ael-underlink-dark">See the experience <ArrowUpRight aria-hidden="true" size={16} /></Link>
+        <Link to="/demo" className="ael-underlink ael-underlink-dark">See the demo experience <ArrowUpRight aria-hidden="true" size={16} /></Link>
+      </div>
+      <div className="ael-compact-method" id="intelligence" aria-labelledby="ael-intelligence-title">
+        <div className="ael-compact-method-heading">
+          <span className="ael-fine-label">THE AI BRIEF / YOUR BUSINESS ANALYST</span>
+          <h3 id="ael-intelligence-title" className="stencil-display"><span className="sr-only">What your AI Business Analyst surfaces.</span><StencilHeadline lines={['YOUR BUSINESS', 'BRIEF']} /></h3>
+        </div>
+        <ol className="ael-compact-steps">
+          <li><span>01</span><div><strong>Lead leaks</strong><p>Where deals slip before they close.</p></div></li>
+          <li><span>02</span><div><strong>Cold relationships</strong><p>High-value connections worth one reactivation.</p></div></li>
+          <li><span>03</span><div><strong>Partner introductions</strong><p>Named people whose work addresses your gaps.</p></div></li>
+          <li><span>04</span><div><strong>Network health score</strong><p>A live 0–100 reading of your activity vs. your opportunities.</p></div></li>
+        </ol>
+        <Link to="/demo" className="ael-underlink ael-underlink-dark">See a sample brief <ArrowUpRight aria-hidden="true" size={16} /></Link>
       </div>
       <div className="ael-compact-method" id="intelligence" aria-labelledby="ael-intelligence-title">
         <div className="ael-compact-method-heading">
@@ -138,8 +144,8 @@ export default function Landing() {
       <div className="ael-compact-membership-content">
         <div>
           <span className="ael-fine-label">MEMBERSHIP / ASK INTROS</span>
-          <h2 id="ael-membership-title" className="stencil-display"><span className="sr-only">Your next room is waiting.</span><StencilHeadline lines={['YOUR NEXT ROOM', 'IS WAITING']} /></h2>
-          <p>Bring a purpose. Meet the right people. Make the connection count.</p>
+          <h2 id="ael-membership-title" className="stencil-display"><span className="sr-only">Start with one useful connection.</span><StencilHeadline lines={['START WITH ONE', 'USEFUL CONNECTION']} /></h2>
+          <p>Bring a current need and something you can offer. Relevant connections depend on who has joined and what members choose to share.</p>
         </div>
         <div className="ael-membership-actions">
           <JoinAction signedIn={signedIn} className="ael-btn ael-btn-gold ai-gradient-button" />
