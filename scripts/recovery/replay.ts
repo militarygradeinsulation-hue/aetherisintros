@@ -1,8 +1,10 @@
 import { readFileSync, readdirSync } from 'node:fs'
 import { createHash } from 'node:crypto'
 import { join } from 'node:path'
-import { PGlite } from '@electric-sql/pglite'
-import { pg_trgm } from '@electric-sql/pglite/contrib/pg_trgm'
+import { createRequire } from 'node:module'
+const require = createRequire(import.meta.url)
+const { PGlite } = require('@electric-sql/pglite') as typeof import('@electric-sql/pglite')
+const { pg_trgm } = require(join(require.resolve('@electric-sql/pglite'), '../contrib/pg_trgm.cjs'))
 export type Step = { migration:string; phase:string; status:'PASS'|'FAIL'; sha256:string; error?:string; dependencyRoot?:string }
 export function dependencyRoot(message:string) {
   return message.match(/(?:relation|function|type|schema|column|role|extension) "([^"]+)" (?:does not exist|is not available)/i)?.[1]
