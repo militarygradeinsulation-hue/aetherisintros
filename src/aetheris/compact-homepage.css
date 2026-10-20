@@ -390,3 +390,7 @@
   .ael.ael-compact .ael-platform-mark img{width:18px;height:18px;}
   .ael.ael-compact .ael-platform-disclaimer{font-size:10px;}
 }
+
+@media (max-width:340px) {
+  .ael.ael-compact .ael-compact-story { padding-top:24px; padding-bottom:20px; }
+}
