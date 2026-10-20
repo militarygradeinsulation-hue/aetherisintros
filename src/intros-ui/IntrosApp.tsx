@@ -61,10 +61,12 @@ function NewsTicker({ onOpen }: { onOpen: () => void }) {
   const { data } = useAetherisNews();
   const items = (data?.items ?? []).slice(0, 8);
   if (!items.length) return null;
-  return <button onClick={onOpen} className="w-full overflow-hidden border-b border-white/10 bg-[#0E1116] py-2 text-left">
-    <div className="flex gap-10 whitespace-nowrap px-4 text-xs text-[#9CA3AF] animate-[ixmarquee_60s_linear_infinite]">
-      <span className="font-mono tracking-[0.2em] text-[#F4A125]">LIVE NEWS</span>
-      {items.map((n: any) => <span key={n.id}><b className="text-[#F2EEE6] font-medium">{n.title}</b> · {n.source}</span>)}
+  return <button type="button" onClick={onOpen} aria-label="Open live news" className="ix-news-ticker w-full overflow-hidden border-b border-white/10 bg-[#0E1116] py-2 text-left">
+    <div className="ix-news-ticker-track">
+      {[0, 1].map(copy => <div key={copy} className="ix-news-ticker-group" aria-hidden={copy === 1 ? true : undefined}>
+        <span className="font-mono tracking-[0.2em] text-[#F4A125]">LIVE NEWS</span>
+        {items.map((n: any) => <span key={n.id}><b className="text-[#F2EEE6] font-medium">{n.title}</b> · {n.source}</span>)}
+      </div>)}
     </div>
   </button>;
 }

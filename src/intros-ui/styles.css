@@ -863,3 +863,30 @@
   /* Profile and logout remain available via the existing mobile More sheet. */
   .ix-header-profile-action,.ix-header-logout-action { display:none!important; }
 }
+
+
+/* Keep the live-news rail continuous across scroll/repaint boundaries.
+   Both groups have identical width; move exactly one group per cycle. */
+.ix-news-ticker { contain: layout paint; }
+.ix-news-ticker-track {
+  display: flex;
+  width: max-content;
+  animation: ix-news-seamless 60s linear infinite;
+  will-change: transform;
+}
+.ix-news-ticker-group {
+  display: flex;
+  align-items: center;
+  flex: 0 0 auto;
+  gap: 2.5rem;
+  padding-inline: 1rem 2.5rem;
+  white-space: nowrap;
+  font-size: .75rem;
+  color: #9ca3af;
+}
+@keyframes ix-news-seamless { to { transform: translate3d(-50%,0,0); } }
+.ix-news-ticker:is(:hover,:focus-visible) .ix-news-ticker-track { animation-play-state: paused; }
+@media (prefers-reduced-motion: reduce) {
+  .ix-news-ticker-track { animation: none; will-change: auto; }
+  .ix-news-ticker-group:nth-child(2) { display: none; }
+}
