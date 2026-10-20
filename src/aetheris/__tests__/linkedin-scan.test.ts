@@ -133,6 +133,20 @@ describe('the built-in reader', () => {
     expect(scan.linkedin_url).toBe('')
   })
 
+  it('captures stated member needs, including descriptions longer than 80 characters', () => {
+    const need = 'I am looking for strategic distribution partners, enterprise logistics operators, and investors who understand regulated cold-chain infrastructure.'
+    const { scan } = parseScanText(`Maya Okafor
+Founder at Harbor Freight Labs
+Looking for
+${need}
+Experience
+Founder
+Harbor Freight Labs
+Jan 2020 - Present`)
+    expect(need.length).toBeGreaterThan(80)
+    expect(scan.looking_for).toBe(need)
+  })
+
   it('takes the profile link from a PDF contact section when none is given', () => {
     const { scan } = parseScanText('Contact\nwww.linkedin.com/in/adrian-north (LinkedIn)\nAdrian North\nFounder at Northline\nAustin, Texas, United States', { nameHint: 'Adrian North' })
     expect(scan.linkedin_url).toBe('https://www.linkedin.com/in/adrian-north')
