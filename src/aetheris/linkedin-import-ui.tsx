@@ -11,6 +11,7 @@ import { findPublicInformation } from '@/lib/publicInfo.functions'
 import { isLinkedInPhotoUrl } from './linkedin-import'
 import type { PublicSuggestion } from './public-info'
 import { reviewedPublicProfilePatch } from './public-info-review'
+import { startLinkedInAuthentication } from './linkedin-auth'
 import './public-info-review.css'
 import { PROFILE_KEYS, SCAN_LABELS, splitList, type ScanKey } from './linkedin-scan'
 import { LinkedInScanPanel, saveProfileScan, type ApplyOutcome, type ScanPatch } from './linkedin-scan-ui'
@@ -36,6 +37,8 @@ export function LinkedInImportPanel({ onApplied, defaultOpen = false }: { onAppl
   const [publicMatches, setPublicMatches] = useState<PublicSuggestion[]>([])
   const [pickedPublic, setPickedPublic] = useState<Set<number>>(new Set())
   const [publicNotice, setPublicNotice] = useState('')
+  const [linkBusy, setLinkBusy] = useState(false)
+  const [linkNotice, setLinkNotice] = useState('')
 
   useEffect(() => () => { if (photoPreview) URL.revokeObjectURL(photoPreview) }, [photoPreview])
 
@@ -159,6 +162,18 @@ export function LinkedInImportPanel({ onApplied, defaultOpen = false }: { onAppl
     applyLabel={demo ? 'Apply to demo profile' : 'Apply to my profile'}
     onApply={apply} onClose={() => setOpen(false)}
     extraStep={<>
+      {!demo && <section className="li-public-review" aria-label="Connect my LinkedIn account">
+        <span className="li-scan-label">Connect LinkedIn</span>
+        <p>Link your own LinkedIn sign-in to this account. Profile fields still require your review before applying.</p>
+        <Btn kind="secondary" disabled={linkBusy} onClick={() => {
+          if (linkBusy) return
+          setLinkBusy(true); setLinkNotice('')
+          void startLinkedInAuthentication('link', `${window.location.origin}/app`)
+            .catch(error => setLinkNotice(error instanceof Error ? error.message : 'LinkedIn could not connect.'))
+            .finally(() => setLinkBusy(false))
+        }}>{linkBusy ? 'Connecting…' : 'Connect my LinkedIn account'}</Btn>
+        {linkNotice && <p className="li-scan-error" role="alert">{linkNotice}</p>}
+      </section>}
       <div className="li-scan-photo">
       <span className="li-scan-label"><ImageUp size={14} /> Photo <small>(optional)</small></span>
       <div>

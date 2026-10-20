@@ -10,6 +10,7 @@ import { AUTH_REQUIRED } from '@/aetheris/config'
 import { previewInvite, rememberInvite, storedInvite } from '@/aetheris/access'
 import { logSecurityEvent, passwordProblem } from '@/aetheris/verification'
 import { AppearanceToggle } from '@/aetheris/AppearanceToggle'
+import { startLinkedInAuthentication } from '@/aetheris/linkedin-auth'
 import '@/aetheris/styles.css'
 
 const safeNext = (value: unknown) => {
@@ -178,6 +179,17 @@ function AuthPage() {
     }
   }
 
+  const linkedin = async () => {
+    if (busy) return
+    setBusy(true); setError(''); setNotice('')
+    rememberInvite(invite)
+    try {
+      await startLinkedInAuthentication('signin', `${window.location.origin}${next || '/early-access'}`)
+    } catch (caught) {
+      setError(caught instanceof Error ? caught.message : 'LinkedIn sign-in could not start. Try email instead.')
+    } finally { setBusy(false) }
+  }
+
   return <main className="auth-page">
     <section className="auth-panel">
       <AppearanceToggle className="auth-appearance" />
@@ -215,6 +227,9 @@ function AuthPage() {
 
       <button className="btn google" type="button" onClick={() => void google()} disabled={busy}>
         Continue with Google
+      </button>
+      <button className="btn google" type="button" onClick={() => void linkedin()} disabled={busy}>
+        Continue with LinkedIn
       </button>
       <div className="auth-divider"><span>or use email</span></div>
 

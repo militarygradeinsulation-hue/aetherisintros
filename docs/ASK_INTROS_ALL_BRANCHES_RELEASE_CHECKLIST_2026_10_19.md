@@ -21,55 +21,55 @@ Snapshot 2026-10-19. 216 GitHub branches including `main`. Checked means verifie
 ## All branches
 
 ### claude (50)
-- [ ] `claude/activation` — classify: integrated / unique / superseded / unsafe
-- [ ] `claude/agent-gateway` — classify: integrated / unique / superseded / unsafe
+- [x] `claude/activation` — verified ancestor of main at `b651b40d`; no merge needed
+- [x] `claude/agent-gateway` — verified ancestor of main at `b651b40d`; no merge needed
 - [ ] `claude/ai-business-analyst` — classify: integrated / unique / superseded / unsafe
 - [ ] `claude/ask-intros-name` — classify: integrated / unique / superseded / unsafe
-- [ ] `claude/ask-response-count` — classify: integrated / unique / superseded / unsafe
-- [ ] `claude/company-continuity` — classify: integrated / unique / superseded / unsafe
-- [ ] `claude/deal-rooms` — classify: integrated / unique / superseded / unsafe
+- [x] `claude/ask-response-count` — verified ancestor of main at `b651b40d`; no merge needed
+- [x] `claude/company-continuity` — verified ancestor of main at `b651b40d`; no merge needed
+- [x] `claude/deal-rooms` — verified ancestor of main at `b651b40d`; no merge needed
 - [x] `claude/demo-live-account-fixes` — core identity/demo badge integrated; obsolete CTA diff superseded; PR #1 closed
-- [ ] `claude/events` — classify: integrated / unique / superseded / unsafe
-- [ ] `claude/foundation` — classify: integrated / unique / superseded / unsafe
-- [ ] `claude/founding-cohorts` — classify: integrated / unique / superseded / unsafe
-- [ ] `claude/gmail-sms` — classify: integrated / unique / superseded / unsafe
-- [ ] `claude/google-calendar` — classify: integrated / unique / superseded / unsafe
-- [ ] `claude/growth` — classify: integrated / unique / superseded / unsafe
-- [ ] `claude/impact-report` — classify: integrated / unique / superseded / unsafe
-- [ ] `claude/leak-check` — classify: integrated / unique / superseded / unsafe
-- [ ] `claude/linkedin-import` — classify: integrated / unique / superseded / unsafe
+- [x] `claude/events` — verified ancestor of main at `b651b40d`; no merge needed
+- [x] `claude/foundation` — verified ancestor of main at `b651b40d`; no merge needed
+- [x] `claude/founding-cohorts` — verified ancestor of main at `b651b40d`; no merge needed
+- [x] `claude/gmail-sms` — verified ancestor of main at `b651b40d`; no merge needed
+- [x] `claude/google-calendar` — verified ancestor of main at `b651b40d`; no merge needed
+- [x] `claude/growth` — verified ancestor of main at `b651b40d`; no merge needed
+- [x] `claude/impact-report` — verified ancestor of main at `b651b40d`; no merge needed
+- [x] `claude/leak-check` — verified ancestor of main at `b651b40d`; no merge needed
+- [x] `claude/linkedin-import` — verified ancestor of main at `b651b40d`; no merge needed
 - [ ] `claude/linkedin-scan` — classify: integrated / unique / superseded / unsafe
-- [ ] `claude/live-notifications` — classify: integrated / unique / superseded / unsafe
-- [ ] `claude/meeting-calendar` — classify: integrated / unique / superseded / unsafe
-- [ ] `claude/meeting-outcomes` — classify: integrated / unique / superseded / unsafe
-- [ ] `claude/meeting-recording` — classify: integrated / unique / superseded / unsafe
-- [ ] `claude/membership-card` — classify: integrated / unique / superseded / unsafe
-- [ ] `claude/menu-contrast` — classify: integrated / unique / superseded / unsafe
-- [ ] `claude/messaging` — classify: integrated / unique / superseded / unsafe
-- [ ] `claude/migration-checks` — classify: integrated / unique / superseded / unsafe
-- [ ] `claude/outcome-spine-diagnose-route` — classify: integrated / unique / superseded / unsafe
+- [x] `claude/live-notifications` — verified ancestor of main at `b651b40d`; no merge needed
+- [x] `claude/meeting-calendar` — verified ancestor of main at `b651b40d`; no merge needed
+- [x] `claude/meeting-outcomes` — verified ancestor of main at `b651b40d`; no merge needed
+- [x] `claude/meeting-recording` — verified ancestor of main at `b651b40d`; no merge needed
+- [x] `claude/membership-card` — verified ancestor of main at `b651b40d`; no merge needed
+- [x] `claude/menu-contrast` — verified ancestor of main at `b651b40d`; no merge needed
+- [x] `claude/messaging` — verified ancestor of main at `b651b40d`; no merge needed
+- [x] `claude/migration-checks` — verified ancestor of main at `b651b40d`; no merge needed
+- [x] `claude/outcome-spine-diagnose-route` — verified ancestor of main at `b651b40d`; no merge needed
 - [ ] `claude/peer-groups` — classify: integrated / unique / superseded / unsafe
 - [ ] `claude/pre-meeting-brief` — classify: integrated / unique / superseded / unsafe
-- [ ] `claude/providers` — classify: integrated / unique / superseded / unsafe
-- [ ] `claude/quick-menu` — classify: integrated / unique / superseded / unsafe
-- [ ] `claude/quick-menu-assistant` — classify: integrated / unique / superseded / unsafe
-- [ ] `claude/reciprocity` — classify: integrated / unique / superseded / unsafe
+- [x] `claude/providers` — verified ancestor of main at `b651b40d`; no merge needed
+- [x] `claude/quick-menu` — verified ancestor of main at `b651b40d`; no merge needed
+- [x] `claude/quick-menu-assistant` — verified ancestor of main at `b651b40d`; no merge needed
+- [x] `claude/reciprocity` — verified ancestor of main at `b651b40d`; no merge needed
 - [ ] `claude/record-live-db-objects` — classify: integrated / unique / superseded / unsafe
-- [ ] `claude/reliability-admin` — classify: integrated / unique / superseded / unsafe
-- [ ] `claude/revenue` — classify: integrated / unique / superseded / unsafe
-- [ ] `claude/staging` — classify: integrated / unique / superseded / unsafe
-- [ ] `claude/stale-intro-requests` — classify: integrated / unique / superseded / unsafe
+- [x] `claude/reliability-admin` — verified ancestor of main at `b651b40d`; no merge needed
+- [x] `claude/revenue` — verified ancestor of main at `b651b40d`; no merge needed
+- [x] `claude/staging` — verified ancestor of main at `b651b40d`; no merge needed
+- [x] `claude/stale-intro-requests` — verified ancestor of main at `b651b40d`; no merge needed
 - [ ] `claude/storefront` — classify: integrated / unique / superseded / unsafe
 - [ ] `claude/syndication-rooms` — classify: integrated / unique / superseded / unsafe
-- [ ] `claude/this-week` — classify: integrated / unique / superseded / unsafe
+- [x] `claude/this-week` — verified ancestor of main at `b651b40d`; no merge needed
 - [ ] `claude/track-record` — classify: integrated / unique / superseded / unsafe
-- [ ] `claude/track-record-agent-capsules` — classify: integrated / unique / superseded / unsafe
-- [ ] `claude/video-meetings` — classify: integrated / unique / superseded / unsafe
-- [ ] `claude/voice-control` — classify: integrated / unique / superseded / unsafe
-- [ ] `claude/warm-paths` — classify: integrated / unique / superseded / unsafe
+- [x] `claude/track-record-agent-capsules` — verified ancestor of main at `b651b40d`; no merge needed
+- [x] `claude/video-meetings` — verified ancestor of main at `b651b40d`; no merge needed
+- [x] `claude/voice-control` — verified ancestor of main at `b651b40d`; no merge needed
+- [x] `claude/warm-paths` — verified ancestor of main at `b651b40d`; no merge needed
 - [ ] `claude/warm-referral-engine` — classify: integrated / unique / superseded / unsafe
-- [ ] `claude/weekly-digest` — classify: integrated / unique / superseded / unsafe
-- [ ] `claude/workspace-sync` — classify: integrated / unique / superseded / unsafe
+- [x] `claude/weekly-digest` — verified ancestor of main at `b651b40d`; no merge needed
+- [x] `claude/workspace-sync` — verified ancestor of main at `b651b40d`; no merge needed
 - [ ] `claude/yellow-tile-hover` — classify: integrated / unique / superseded / unsafe
 
 ### copilot (13)
@@ -90,147 +90,147 @@ Snapshot 2026-10-19. 216 GitHub branches including `main`. Checked means verifie
 ### design (6)
 - [ ] `design/architectural-blueprint-2026-10-15` — classify: integrated / unique / superseded / unsafe
 - [x] `design/cleaner-executive-home-inbox-20261019` — merged via PR
-- [ ] `design/editorial-luxury-ask-intros-20261014` — classify: integrated / unique / superseded / unsafe
+- [x] `design/editorial-luxury-ask-intros-20261014` — verified ancestor of main at `b651b40d`; no merge needed
 - [ ] `design/messages-inspired-light-system-20261015` — classify: integrated / unique / superseded / unsafe
 - [ ] `design/port-bridge-contrast-stencil-feed` — classify: integrated / unique / superseded / unsafe
 - [ ] `design/shorter-homepage-2026-10-15` — classify: integrated / unique / superseded / unsafe
 
 ### docs (3)
-- [ ] `docs/ask-intros-unified-roadmap-20261017` — classify: integrated / unique / superseded / unsafe
-- [ ] `docs/phase1-activation-reconciliation-20261017` — classify: integrated / unique / superseded / unsafe
+- [x] `docs/ask-intros-unified-roadmap-20261017` — verified ancestor of main at `b651b40d`; no merge needed
+- [x] `docs/phase1-activation-reconciliation-20261017` — verified ancestor of main at `b651b40d`; no merge needed
 - [x] `docs/safe-innovation-release-plan-20261019` — merged via PR
 
 ### feat (16)
 - [ ] `feat/admin-connection-preflight-20261018` — classify: integrated / unique / superseded / unsafe
 - [ ] `feat/ask-intros-public-onboarding-release-20261017` — classify: integrated / unique / superseded / unsafe
-- [ ] `feat/evidence-aware-opportunity-readiness-20261018` — classify: integrated / unique / superseded / unsafe
-- [ ] `feat/home-platform-brand-strip-20261018` — classify: integrated / unique / superseded / unsafe
+- [x] `feat/evidence-aware-opportunity-readiness-20261018` — verified ancestor of main at `b651b40d`; no merge needed
+- [x] `feat/home-platform-brand-strip-20261018` — verified ancestor of main at `b651b40d`; no merge needed
 - [ ] `feat/home-platform-logo-thumbnails-20261018` — classify: integrated / unique / superseded / unsafe
 - [ ] `feat/homepage-unified-platform-brand-strip-20261018` — classify: integrated / unique / superseded / unsafe
-- [ ] `feat/opportunity-evidence-transparency-20261018` — classify: integrated / unique / superseded / unsafe
-- [ ] `feat/opportunity-focus-20261018` — classify: integrated / unique / superseded / unsafe
-- [ ] `feat/opportunity-signal-evidence-20261017` — classify: integrated / unique / superseded / unsafe
+- [x] `feat/opportunity-evidence-transparency-20261018` — verified ancestor of main at `b651b40d`; no merge needed
+- [x] `feat/opportunity-focus-20261018` — verified ancestor of main at `b651b40d`; no merge needed
+- [x] `feat/opportunity-signal-evidence-20261017` — verified ancestor of main at `b651b40d`; no merge needed
 - [ ] `feat/opportunity-wheel-navigation-20261018` — classify: integrated / unique / superseded / unsafe
 - [ ] `feat/owner-admin-overview-20261017` — classify: integrated / unique / superseded / unsafe
 - [ ] `feat/premeeting-briefs-secure-messages-20261017` — classify: integrated / unique / superseded / unsafe
 - [ ] `feat/release-member-intelligence-panels-20261017` — classify: integrated / unique / superseded / unsafe
 - [ ] `feat/self-serve-signup-live-network-20261017` — classify: integrated / unique / superseded / unsafe
 - [ ] `feat/self-service-member-onboarding-20261017` — classify: integrated / unique / superseded / unsafe
-- [ ] `feat/shared-opportunity-exchange-20261018` — classify: integrated / unique / superseded / unsafe
+- [x] `feat/shared-opportunity-exchange-20261018` — verified ancestor of main at `b651b40d`; no merge needed
 
 ### feature (14)
-- [ ] `feature/accepted-intro-workspace-trackrecord-20261011` — classify: integrated / unique / superseded / unsafe
+- [x] `feature/accepted-intro-workspace-trackrecord-20261011` — verified ancestor of main at `b651b40d`; no merge needed
 - [ ] `feature/basic-intro-usage-transparency-20261019` — classify: integrated / unique / superseded / unsafe
-- [ ] `feature/business-lobby-consented-meetings-20261013` — classify: integrated / unique / superseded / unsafe
-- [ ] `feature/interactive-relationship-journey-20261013` — classify: integrated / unique / superseded / unsafe
+- [x] `feature/business-lobby-consented-meetings-20261013` — verified ancestor of main at `b651b40d`; no merge needed
+- [x] `feature/interactive-relationship-journey-20261013` — verified ancestor of main at `b651b40d`; no merge needed
 - [ ] `feature/interactive-timeline-option-wheel-20261018` — classify: integrated / unique / superseded / unsafe
-- [ ] `feature/marketplace-pilot-qualified-demand-20261012` — classify: integrated / unique / superseded / unsafe
+- [x] `feature/marketplace-pilot-qualified-demand-20261012` — verified ancestor of main at `b651b40d`; no merge needed
 - [ ] `feature/network-connection-recovery-banner-20261019` — classify: integrated / unique / superseded / unsafe
 - [ ] `feature/onboarding-progress-clarity-20261019` — classify: integrated / unique / superseded / unsafe
 - [ ] `feature/open-basic-executive-applications-20261019` — classify: integrated / unique / superseded / unsafe
-- [ ] `feature/peer-accountability-navigation-20261011` — classify: integrated / unique / superseded / unsafe
+- [x] `feature/peer-accountability-navigation-20261011` — verified ancestor of main at `b651b40d`; no merge needed
 - [ ] `feature/public-news-deep-links-20261019` — classify: integrated / unique / superseded / unsafe
 - [ ] `feature/sitewide-ambient-parallax` — classify: integrated / unique / superseded / unsafe
-- [ ] `feature/system-scroll-caliper-20261013` — classify: integrated / unique / superseded / unsafe
+- [x] `feature/system-scroll-caliper-20261013` — verified ancestor of main at `b651b40d`; no merge needed
 - [ ] `feature/wire-recovered-executive-modules` — classify: integrated / unique / superseded / unsafe
 
 ### fix (96)
 - [ ] `fix/access-confirmation-and-rpc-failure-20261017` — classify: integrated / unique / superseded / unsafe
-- [ ] `fix/access-fetch-fail-closed-20261018` — classify: integrated / unique / superseded / unsafe
-- [ ] `fix/access-query-error-recovery-20261018` — classify: integrated / unique / superseded / unsafe
+- [x] `fix/access-fetch-fail-closed-20261018` — verified ancestor of main at `b651b40d`; no merge needed
+- [x] `fix/access-query-error-recovery-20261018` — verified ancestor of main at `b651b40d`; no merge needed
 - [ ] `fix/admin-error-report-truthful-20261017` — classify: integrated / unique / superseded / unsafe
-- [ ] `fix/admin-launch-write-receipts-20261017` — classify: integrated / unique / superseded / unsafe
-- [ ] `fix/admin-network-health-contract-20261017` — classify: integrated / unique / superseded / unsafe
-- [ ] `fix/admin-overview-error-recovery-20261017` — classify: integrated / unique / superseded / unsafe
-- [ ] `fix/admin-overview-request-race-20261017` — classify: integrated / unique / superseded / unsafe
-- [ ] `fix/approved-unconfirmed-member-status-20261018` — classify: integrated / unique / superseded / unsafe
-- [ ] `fix/ask-dock-mobile-suggestion-wrapping-20261017` — classify: integrated / unique / superseded / unsafe
+- [x] `fix/admin-launch-write-receipts-20261017` — verified ancestor of main at `b651b40d`; no merge needed
+- [x] `fix/admin-network-health-contract-20261017` — verified ancestor of main at `b651b40d`; no merge needed
+- [x] `fix/admin-overview-error-recovery-20261017` — verified ancestor of main at `b651b40d`; no merge needed
+- [x] `fix/admin-overview-request-race-20261017` — verified ancestor of main at `b651b40d`; no merge needed
+- [x] `fix/approved-unconfirmed-member-status-20261018` — verified ancestor of main at `b651b40d`; no merge needed
+- [x] `fix/ask-dock-mobile-suggestion-wrapping-20261017` — verified ancestor of main at `b651b40d`; no merge needed
 - [ ] `fix/ask-intros-final-readability-and-live-qa-20261017` — classify: integrated / unique / superseded / unsafe
 - [ ] `fix/ask-intros-member-activation-and-messages-20261017` — classify: integrated / unique / superseded / unsafe
 - [ ] `fix/ask-intros-orange-bot-logo-contrast` — classify: integrated / unique / superseded / unsafe
-- [ ] `fix/askintros-productwide-contrast-20261017` — classify: integrated / unique / superseded / unsafe
-- [ ] `fix/auth-verified-member-entry-20261018` — classify: integrated / unique / superseded / unsafe
+- [x] `fix/askintros-productwide-contrast-20261017` — verified ancestor of main at `b651b40d`; no merge needed
+- [x] `fix/auth-verified-member-entry-20261018` — verified ancestor of main at `b651b40d`; no merge needed
 - [ ] `fix/compact-homepage-mobile-qa-20261015` — classify: integrated / unique / superseded / unsafe
 - [ ] `fix/confirmed-early-access-navigation` — classify: integrated / unique / superseded / unsafe
 - [ ] `fix/confirmed-manual-founding-claim-20261018` — classify: integrated / unique / superseded / unsafe
 - [ ] `fix/confirmed-member-invite-retention` — classify: integrated / unique / superseded / unsafe
 - [ ] `fix/confirmed-onboarded-live-member-gate-20261017` — classify: integrated / unique / superseded / unsafe
-- [ ] `fix/crm-import-recovery-validation-20261017` — classify: integrated / unique / superseded / unsafe
+- [x] `fix/crm-import-recovery-validation-20261017` — verified ancestor of main at `b651b40d`; no merge needed
 - [ ] `fix/dark-mode-default` — classify: integrated / unique / superseded / unsafe
-- [ ] `fix/deal-room-browser-check-syntax-20261018` — classify: integrated / unique / superseded / unsafe
-- [ ] `fix/desktop-more-menu-clean-20261018` — classify: integrated / unique / superseded / unsafe
+- [x] `fix/deal-room-browser-check-syntax-20261018` — verified ancestor of main at `b651b40d`; no merge needed
+- [x] `fix/desktop-more-menu-clean-20261018` — verified ancestor of main at `b651b40d`; no merge needed
 - [ ] `fix/desktop-more-menu-mainline-20261019` — classify: integrated / unique / superseded / unsafe
-- [ ] `fix/desktop-more-width-clean-20261019` — classify: integrated / unique / superseded / unsafe
+- [x] `fix/desktop-more-width-clean-20261019` — verified ancestor of main at `b651b40d`; no merge needed
 - [ ] `fix/elevenlabs-owner-voice-status` — classify: integrated / unique / superseded / unsafe
 - [ ] `fix/elevenlabs-verified-personal-voice` — classify: integrated / unique / superseded / unsafe
 - [ ] `fix/executive-workbench-contrast-rebased-20261018` — classify: integrated / unique / superseded / unsafe
-- [ ] `fix/executive-workbench-intelligence-contrast-20261018` — classify: integrated / unique / superseded / unsafe
-- [ ] `fix/extract-member-mobile-overflow-20261018` — classify: integrated / unique / superseded / unsafe
-- [ ] `fix/grid-clipboard-row-recovery-20261017` — classify: integrated / unique / superseded / unsafe
-- [ ] `fix/grid-confirmed-writes-20261017` — classify: integrated / unique / superseded / unsafe
-- [ ] `fix/grid-contact-export-policy-20261017` — classify: integrated / unique / superseded / unsafe
+- [x] `fix/executive-workbench-intelligence-contrast-20261018` — verified ancestor of main at `b651b40d`; no merge needed
+- [x] `fix/extract-member-mobile-overflow-20261018` — verified ancestor of main at `b651b40d`; no merge needed
+- [x] `fix/grid-clipboard-row-recovery-20261017` — verified ancestor of main at `b651b40d`; no merge needed
+- [x] `fix/grid-confirmed-writes-20261017` — verified ancestor of main at `b651b40d`; no merge needed
+- [x] `fix/grid-contact-export-policy-20261017` — verified ancestor of main at `b651b40d`; no merge needed
 - [ ] `fix/grid-csv-import-preflight-20261017` — classify: integrated / unique / superseded / unsafe
-- [ ] `fix/grid-freeform-csv-preflight-20261017` — classify: integrated / unique / superseded / unsafe
-- [ ] `fix/handled-server-error-telemetry` — classify: integrated / unique / superseded / unsafe
-- [ ] `fix/home-platform-strip-above-headline-20261018` — classify: integrated / unique / superseded / unsafe
+- [x] `fix/grid-freeform-csv-preflight-20261017` — verified ancestor of main at `b651b40d`; no merge needed
+- [x] `fix/handled-server-error-telemetry` — verified ancestor of main at `b651b40d`; no merge needed
+- [x] `fix/home-platform-strip-above-headline-20261018` — verified ancestor of main at `b651b40d`; no merge needed
 - [ ] `fix/inbox-light-mode-contrast-20261017` — classify: integrated / unique / superseded / unsafe
 - [ ] `fix/inbox-selected-contrast-20261017` — classify: integrated / unique / superseded / unsafe
 - [ ] `fix/integration-audit-three-targeted-repairs-20261019` — classify: integrated / unique / superseded / unsafe
-- [ ] `fix/intent-exchange-confirmed-writes-20261017` — classify: integrated / unique / superseded / unsafe
+- [x] `fix/intent-exchange-confirmed-writes-20261017` — verified ancestor of main at `b651b40d`; no merge needed
 - [ ] `fix/intro-dialog-verified-consent-20261015` — classify: integrated / unique / superseded / unsafe
-- [ ] `fix/intro-inbox-two-member-contract-20261017` — classify: integrated / unique / superseded / unsafe
-- [ ] `fix/linked-grid-csv-import-guard-20261017` — classify: integrated / unique / superseded / unsafe
+- [x] `fix/intro-inbox-two-member-contract-20261017` — verified ancestor of main at `b651b40d`; no merge needed
+- [x] `fix/linked-grid-csv-import-guard-20261017` — verified ancestor of main at `b651b40d`; no merge needed
 - [ ] `fix/linkedin-homepage-thumbnail-local-20261018` — classify: integrated / unique / superseded / unsafe
 - [ ] `fix/live-chat-consistency-and-recency` — classify: integrated / unique / superseded / unsafe
-- [ ] `fix/live-directory-truth` — classify: integrated / unique / superseded / unsafe
-- [ ] `fix/live-intros-network-permissions-20261015` — classify: integrated / unique / superseded / unsafe
+- [x] `fix/live-directory-truth` — verified ancestor of main at `b651b40d`; no merge needed
+- [x] `fix/live-intros-network-permissions-20261015` — verified ancestor of main at `b651b40d`; no merge needed
 - [ ] `fix/live-member-onboarding-20261017` — classify: integrated / unique / superseded / unsafe
-- [ ] `fix/live-network-gate-routing` — classify: integrated / unique / superseded / unsafe
+- [x] `fix/live-network-gate-routing` — verified ancestor of main at `b651b40d`; no merge needed
 - [ ] `fix/live-network-permissions-honest-errors-20261015` — classify: integrated / unique / superseded / unsafe
 - [ ] `fix/live-network-reliability-access-20261015` — classify: integrated / unique / superseded / unsafe
 - [ ] `fix/live-network-signal-freshness-20261017` — classify: integrated / unique / superseded / unsafe
 - [ ] `fix/live-signup-intros-and-messages-20261017` — classify: integrated / unique / superseded / unsafe
-- [ ] `fix/matching-verified-path-evidence-20261017` — classify: integrated / unique / superseded / unsafe
-- [ ] `fix/member-directory-intro-read-contract-20261012` — classify: integrated / unique / superseded / unsafe
+- [x] `fix/matching-verified-path-evidence-20261017` — verified ancestor of main at `b651b40d`; no merge needed
+- [x] `fix/member-directory-intro-read-contract-20261012` — verified ancestor of main at `b651b40d`; no merge needed
 - [ ] `fix/member-portrait-readability-release-20261017` — classify: integrated / unique / superseded / unsafe
 - [ ] `fix/member-portraits-contrast-20261017` — classify: integrated / unique / superseded / unsafe
 - [ ] `fix/message-thread-tiles-contrast-20261018` — classify: integrated / unique / superseded / unsafe
-- [ ] `fix/messages-selected-row-semantic-contrast-20261018` — classify: integrated / unique / superseded / unsafe
+- [x] `fix/messages-selected-row-semantic-contrast-20261018` — verified ancestor of main at `b651b40d`; no merge needed
 - [ ] `fix/messages-thread-name-contrast-after-bridge-port` — classify: integrated / unique / superseded / unsafe
-- [ ] `fix/messages-thread-theme-20261018` — classify: integrated / unique / superseded / unsafe
-- [ ] `fix/mobile-ceo-command-panels` — classify: integrated / unique / superseded / unsafe
+- [x] `fix/messages-thread-theme-20261018` — verified ancestor of main at `b651b40d`; no merge needed
+- [x] `fix/mobile-ceo-command-panels` — verified ancestor of main at `b651b40d`; no merge needed
 - [ ] `fix/mobile-site-tour-and-nav-20261015` — classify: integrated / unique / superseded / unsafe
 - [ ] `fix/more-dropdown-clean-20261019` — classify: integrated / unique / superseded / unsafe
 - [ ] `fix/more-dropdown-width-195` — classify: integrated / unique / superseded / unsafe
-- [ ] `fix/more-menu-main-rebase-20261018` — classify: integrated / unique / superseded / unsafe
+- [x] `fix/more-menu-main-rebase-20261018` — verified ancestor of main at `b651b40d`; no merge needed
 - [ ] `fix/more-menu-readable-contrast-port-20261019` — classify: integrated / unique / superseded / unsafe
-- [ ] `fix/network-post-ask-save-receipts-20261017` — classify: integrated / unique / superseded / unsafe
-- [ ] `fix/onboarding-save-recovery-20261017` — classify: integrated / unique / superseded / unsafe
-- [ ] `fix/onboarding-social-count-20261019` — classify: integrated / unique / superseded / unsafe
+- [x] `fix/network-post-ask-save-receipts-20261017` — verified ancestor of main at `b651b40d`; no merge needed
+- [x] `fix/onboarding-save-recovery-20261017` — verified ancestor of main at `b651b40d`; no merge needed
+- [x] `fix/onboarding-social-count-20261019` — verified ancestor of main at `b651b40d`; no merge needed
 - [ ] `fix/open-onboarding-responsive-theme-20261017` — classify: integrated / unique / superseded / unsafe
 - [ ] `fix/outcome-modal-contrast-wireup-20261017` — classify: integrated / unique / superseded / unsafe
-- [ ] `fix/outcome-notes-hints-20261018` — classify: integrated / unique / superseded / unsafe
-- [ ] `fix/production-delivery-directory-relationship-20261013` — classify: integrated / unique / superseded / unsafe
+- [x] `fix/outcome-notes-hints-20261018` — verified ancestor of main at `b651b40d`; no merge needed
+- [x] `fix/production-delivery-directory-relationship-20261013` — verified ancestor of main at `b651b40d`; no merge needed
 - [ ] `fix/public-news-match-member-editorial-20261019` — classify: integrated / unique / superseded / unsafe
 - [ ] `fix/read-aloud-page-and-mobile-playback` — classify: integrated / unique / superseded / unsafe
 - [ ] `fix/read-aloud-selection-audio-activation-20261017` — classify: integrated / unique / superseded / unsafe
 - [ ] `fix/readable-messages-light-surfaces-20261015` — classify: integrated / unique / superseded / unsafe
-- [ ] `fix/reconcile-live-write-acknowledgement-20261015` — classify: integrated / unique / superseded / unsafe
-- [ ] `fix/recovered-ui-polish` — classify: integrated / unique / superseded / unsafe
-- [ ] `fix/recovery-ci-and-syndication-20261011` — classify: integrated / unique / superseded / unsafe
-- [ ] `fix/recovery-ci-green` — classify: integrated / unique / superseded / unsafe
-- [ ] `fix/relationship-tier-collisions-contrast-20261017` — classify: integrated / unique / superseded / unsafe
-- [ ] `fix/restore-editorial-home-and-runtime-20261015` — classify: integrated / unique / superseded / unsafe
-- [ ] `fix/restore-truncated-app-20261013` — classify: integrated / unique / superseded / unsafe
+- [x] `fix/reconcile-live-write-acknowledgement-20261015` — verified ancestor of main at `b651b40d`; no merge needed
+- [x] `fix/recovered-ui-polish` — verified ancestor of main at `b651b40d`; no merge needed
+- [x] `fix/recovery-ci-and-syndication-20261011` — verified ancestor of main at `b651b40d`; no merge needed
+- [x] `fix/recovery-ci-green` — verified ancestor of main at `b651b40d`; no merge needed
+- [x] `fix/relationship-tier-collisions-contrast-20261017` — verified ancestor of main at `b651b40d`; no merge needed
+- [x] `fix/restore-editorial-home-and-runtime-20261015` — verified ancestor of main at `b651b40d`; no merge needed
+- [x] `fix/restore-truncated-app-20261013` — verified ancestor of main at `b651b40d`; no merge needed
 - [ ] `fix/salesforce-homepage-logo-local` — classify: integrated / unique / superseded / unsafe
-- [ ] `fix/secondary-message-and-capsule-acks-20261015` — classify: integrated / unique / superseded / unsafe
-- [ ] `fix/selection-reader-scroll-lifecycle-20261017` — classify: integrated / unique / superseded / unsafe
-- [ ] `fix/self-host-linkedin-hero-thumbnail-20261018` — classify: integrated / unique / superseded / unsafe
+- [x] `fix/secondary-message-and-capsule-acks-20261015` — verified ancestor of main at `b651b40d`; no merge needed
+- [x] `fix/selection-reader-scroll-lifecycle-20261017` — verified ancestor of main at `b651b40d`; no merge needed
+- [x] `fix/self-host-linkedin-hero-thumbnail-20261018` — verified ancestor of main at `b651b40d`; no merge needed
 - [ ] `fix/self-serve-member-readability-20261017` — classify: integrated / unique / superseded / unsafe
 - [ ] `fix/signup-and-live-intro-messaging-reliability` — classify: integrated / unique / superseded / unsafe
 - [ ] `fix/syndication-room-creator-read-20261011` — classify: integrated / unique / superseded / unsafe
 - [ ] `fix/verified-member-activation-reconciled` — classify: integrated / unique / superseded / unsafe
-- [ ] `fix/verify-portal-network-link-gate-20261018` — classify: integrated / unique / superseded / unsafe
+- [x] `fix/verify-portal-network-link-gate-20261018` — verified ancestor of main at `b651b40d`; no merge needed
 
 ### integration (4)
 - [ ] `integration/deal-workspaces-reconcile` — classify: integrated / unique / superseded / unsafe
@@ -248,22 +248,22 @@ Snapshot 2026-10-19. 216 GitHub branches including `main`. Checked means verifie
 - [x] `main` — canonical target
 
 ### refactor (3)
-- [ ] `refactor/intros-core-ui-types` — classify: integrated / unique / superseded / unsafe
-- [ ] `refactor/intros-shell-types` — classify: integrated / unique / superseded / unsafe
-- [ ] `refactor/live-directory-pagination` — classify: integrated / unique / superseded / unsafe
+- [x] `refactor/intros-core-ui-types` — verified ancestor of main at `b651b40d`; no merge needed
+- [x] `refactor/intros-shell-types` — verified ancestor of main at `b651b40d`; no merge needed
+- [x] `refactor/live-directory-pagination` — verified ancestor of main at `b651b40d`; no merge needed
 
 ### release (1)
 - [x] `release/rebase-cleanup-208-20261019` — verified zero commits ahead; no merge needed
 
 ### security (2)
-- [ ] `security/fix-avatar-profile-privilege-20261012` — classify: integrated / unique / superseded / unsafe
-- [ ] `security/lovable-scan-exposure-20261012` — classify: integrated / unique / superseded / unsafe
+- [x] `security/fix-avatar-profile-privilege-20261012` — verified ancestor of main at `b651b40d`; no merge needed
+- [x] `security/lovable-scan-exposure-20261012` — verified ancestor of main at `b651b40d`; no merge needed
 
 ### test (1)
-- [ ] `test/admin-analytics-payload-contract-20261017` — classify: integrated / unique / superseded / unsafe
+- [x] `test/admin-analytics-payload-contract-20261017` — verified ancestor of main at `b651b40d`; no merge needed
 
 ### wire (4)
-- [ ] `wire/business-feed-workspaces` — classify: integrated / unique / superseded / unsafe
+- [x] `wire/business-feed-workspaces` — verified ancestor of main at `b651b40d`; no merge needed
 - [ ] `wire/linkedin-profile-enrichment` — classify: integrated / unique / superseded / unsafe
 - [x] `wire/linkedin-profile-enrichment-v2` — verified zero commits ahead; no merge needed
 - [ ] `wire/recovered-executive-work-v2` — classify: integrated / unique / superseded / unsafe
