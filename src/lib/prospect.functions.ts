@@ -8,9 +8,18 @@ const profile = z.object({
   industries: z.string().max(1000), employees: z.string().max(1000), revenue: z.string().max(1000), titles: z.string().max(1000), locations: z.string().max(1000),
   keywords: z.string().max(1000), disqualifiers: z.string().max(1000), excludeClients: z.boolean(), excludeContacted: z.boolean(), minimumFit: z.number().int().min(0).max(100), valueOffer: z.string().max(200),
 })
+// Mirrors the database gate. Once the explicit owner grant exists in the database, access needs
+// admin + grant (fails closed). Until then the deployed rule (admin) applies, same as SQL.
+type Ctx = { supabase: { rpc: (fn: string, args: Record<string, unknown>) => PromiseLike<{ data: unknown; error: { code?: string } | null }> }; userId: string }
+export async function requirePrivateOwner(context: Ctx) {
+  const grant = await context.supabase.rpc('has_private_owner_grant', { p_capability: 'prospect_intelligence' })
+  if (!grant.error) { if (grant.data !== true) throw new Error('Private owner access required.'); return }
+  if (grant.error.code !== 'PGRST202' && grant.error.code !== '42883') throw new Error('Private owner access required.')
+  const { data: admin, error } = await context.supabase.rpc('has_role', { _user_id: context.userId, _role: 'admin' })
+  if (error || admin !== true) throw new Error('Private owner access required.')
+}
 export const loadProspectState = createServerFn({ method: 'POST' }).middleware([requireSupabaseAuth]).handler(async ({ context }) => {
-  const { data: admin,error: roleError } = await context.supabase.rpc('has_role', { _user_id: context.userId, _role: 'admin' })
-  if (roleError || !admin) throw new Error('Private owner access required.')
+  await requirePrivateOwner(context as unknown as Ctx)
   const [state,people,companies,activities] = await Promise.all([
     context.supabase.from('member_workspace_state').select('store_key,data,version').eq('user_id',context.userId).like('store_key','icp:%'),
     context.supabase.from('crm_people').select('id').eq('owner_id',context.userId),
@@ -25,6 +34,7 @@ const saveSchema = z.discriminatedUnion('kind', [
   z.object({ kind: z.literal('person'), personId: z.string().uuid(), status: z.enum(statuses), note: z.string().max(300), consent: z.boolean(), expected: z.number().int().min(0) }),
 ])
 export const saveProspectState = createServerFn({ method: 'POST' }).middleware([requireSupabaseAuth]).inputValidator(saveSchema).handler(async ({ data,context }) => {
+  await requirePrivateOwner(context as unknown as Ctx)
   if (data.kind === 'person' && data.status === 'approved') {
     const issues = reviewNote(data.note)
     if (issues.length) throw new Error(issues.join(' '))
