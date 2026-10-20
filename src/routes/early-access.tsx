@@ -4,7 +4,7 @@ import { ArrowRight, Check, Clock, LockKeyhole, ShieldAlert } from 'lucide-react
 import { useCallback, useEffect, useState } from 'react'
 import { signOutMember } from '@/aetheris/sync/workspace-sync'
 
-import { storedInvite, claimAccess, foundingLabel, foundingStats, joinWaitlist, useAccess, type FoundingStats } from '@/aetheris/access'
+import { storedInvite, claimAccess, foundingLabel, foundingStats, joinWaitlist, useAccess, type AccessState, type FoundingStats } from '@/aetheris/access'
 import { supabase } from '@/integrations/supabase/client'
 import { AppearanceToggle } from '@/aetheris/AppearanceToggle'
 import '@/aetheris/styles.css'
@@ -29,6 +29,13 @@ export const Route = createFileRoute('/early-access')({
   }),
   component: EarlyAccessPage,
 })
+
+/** Confirm the stored membership read-back, not just the claim RPC's receipt. */
+export function confirmedFoundingClaim(claimedStatus: string, checked: AccessState | null): boolean {
+  return claimedStatus === 'approved' && checked?.signedIn === true &&
+    checked.emailConfirmed === true && checked.status === 'approved' &&
+    checked.verification !== 'rejected' && checked.verification !== 'suspended'
+}
 
 function EarlyAccessPage() {
   const { access, refresh } = useAccess()
@@ -56,11 +63,17 @@ function EarlyAccessPage() {
     setBusy(true); setError(''); setNotice('')
     try {
       const result = await claimAccess(code)
-      await refresh()
+      const checked = await refresh()
       reloadStats()
-      if (result.status === 'approved') setNotice('Your membership is approved. Confirm your email if prompted; your account will continue when verification finishes.')
-      else if (result.status === 'waitlisted') setNotice('The founding places are taken. You are on the waitlist and we will write when a place opens.')
-      else setError('This account is not approved yet. An invitation or admin approval is needed.')
+      if (confirmedFoundingClaim(result.status, checked)) {
+        setNotice('Your membership is confirmed. Continue to your onboarding.')
+      } else if (result.status === 'approved') {
+        setError('Your claim was received, but we could not confirm the saved approval yet. Please retry before continuing.')
+      } else if (result.status === 'waitlisted') {
+        setNotice('Your claim was recorded as waitlisted. We will contact you when a place opens.')
+      } else {
+        setError('This account is not approved yet. An invitation or admin approval may be needed.')
+      }
     } catch (caught) {
       setError(caught instanceof Error ? caught.message : 'Something went wrong. Try again.')
     } finally { setBusy(false) }
