@@ -50,10 +50,20 @@ try {
       assert(await page.getByRole('heading', { name: /One goal/i }).count() === 1, theme + '/' + width + ' heading')
       assert(await page.getByRole('button', { name: /Build a partnership/ }).count() === 1, theme + '/' + width + ' scenarios')
       assert(await page.getByText('No member search was run', { exact: false }).count() > 0, theme + '/' + width + ' honest disclosure')
+      // Ensure hydration can attach React events before exercising the control.
+      await page.waitForLoadState('load')
       await page.getByRole('button', { name: /Build a partnership/ }).click()
-      assert(await page.locator('.ai-try-draft').innerText().then(t => t.includes('new service into another market')), theme + '/' + width + ' goal changes preview')
+      const updated = await page.waitForFunction(() =>
+        document.querySelector('.ai-try-draft')?.textContent?.includes('new service into another market'),
+      null, { timeout: 10000 }).then(() => true).catch(() => false)
+      if (!updated) console.log('draft after goal click:', await page.locator('.ai-try-draft').innerText())
+      assert(updated, theme + '/' + width + ' goal changes preview')
       await page.locator('#ai-try-outcome').fill('launch a market-entry pilot')
-      assert(await page.locator('.ai-try-draft').innerText().then(t => t.includes('launch a market-entry pilot')), theme + '/' + width + ' preview responds to user input')
+      const custom = await page.waitForFunction(() =>
+        document.querySelector('.ai-try-draft')?.textContent?.includes('launch a market-entry pilot'),
+      null, { timeout: 10000 }).then(() => true).catch(() => false)
+      if (!custom) console.log('draft after editing:', await page.locator('.ai-try-draft').innerText())
+      assert(custom, theme + '/' + width + ' preview responds to user input')
       const data = await page.evaluate(() => ({
         docWidth: document.documentElement.scrollWidth,
         viewport: innerWidth,
