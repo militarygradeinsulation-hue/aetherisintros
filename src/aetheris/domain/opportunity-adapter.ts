@@ -17,11 +17,11 @@ export type AuthorizedOpportunityEvidence = {
 export function assessAuthorizedOpportunity(evidence: AuthorizedOpportunityEvidence): OpportunityReadiness {
   const signals: OpportunitySignals = {
     consentToMatch: evidence.matchingConsentGranted === true,
-    profileFit: evidence.profileFit,
-    demonstratedNeed: evidence.statedNeedStrength,
-    timing: evidence.verifiedTiming,
-    evidenceQuality: evidence.evidenceConfidence,
-    engagement: evidence.recordedEngagement,
+    ...(evidence.profileFit !== undefined ? { profileFit: evidence.profileFit } : {}),
+    ...(evidence.statedNeedStrength !== undefined ? { demonstratedNeed: evidence.statedNeedStrength } : {}),
+    ...(evidence.verifiedTiming !== undefined ? { timing: evidence.verifiedTiming } : {}),
+    ...(evidence.evidenceConfidence !== undefined ? { evidenceQuality: evidence.evidenceConfidence } : {}),
+    ...(evidence.recordedEngagement !== undefined ? { engagement: evidence.recordedEngagement } : {}),
   };
   return assessOpportunity(signals);
 }
