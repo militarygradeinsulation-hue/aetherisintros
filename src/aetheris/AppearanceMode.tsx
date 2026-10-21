@@ -17,7 +17,7 @@ function readAppearance(): AppearanceMode {
     const previous = window.localStorage.getItem('aetheris.home.theme');
     if (previous === 'light' || previous === 'dark') return previous;
   } catch { /* Browser may block storage. */ }
-  return 'light';
+  return 'dark';
 }
 
 function applyAppearance(theme: AppearanceMode) {
@@ -29,8 +29,8 @@ function applyAppearance(theme: AppearanceMode) {
 }
 
 export function AppearanceProvider({ children }: { children: ReactNode }) {
-  // New visitors start with the readable light baseline; explicit saved choices still win.
-  const [theme, setThemeState] = useState<AppearanceMode>('light');
+  // New visitors start on the dark intelligence baseline; explicit saved choices still win.
+  const [theme, setThemeState] = useState<AppearanceMode>('dark');
   useEffect(() => {
     const restored = readAppearance();
     setThemeState(restored);

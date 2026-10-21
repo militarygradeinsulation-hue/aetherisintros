@@ -1,7 +1,7 @@
-/* Run before hydration so first-time visitors see light mode immediately.
+/* Run before hydration so first-time visitors see dark mode immediately.
  * Explicit choices from either current or legacy storage remain in effect. */
 (function () {
-  var mode = 'light';
+  var mode = 'dark';
   try {
     var saved = window.localStorage.getItem('ask-intros.appearance');
     var legacy = window.localStorage.getItem('aetheris.home.theme');

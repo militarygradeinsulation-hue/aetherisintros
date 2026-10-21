@@ -3,10 +3,10 @@ import { describe, expect, it } from 'vitest'
 
 const source = readFileSync(new URL('../AppearanceMode.tsx', import.meta.url), 'utf8')
 
-describe('Light-first appearance for new members', () => {
-  it('defaults to light without overriding explicit saved choices', () => {
-    expect(source).toContain("return 'light';\n}")
-    expect(source).toContain("useState<AppearanceMode>('light')")
+describe('Dark-first appearance for new members', () => {
+  it('defaults to dark without overriding explicit saved choices', () => {
+    expect(source).toContain("return 'dark';\n}")
+    expect(source).toContain("useState<AppearanceMode>('dark')")
     expect(source).toContain("if (stored === 'light' || stored === 'dark') return stored")
     expect(source).toContain("if (previous === 'light' || previous === 'dark') return previous")
   })
