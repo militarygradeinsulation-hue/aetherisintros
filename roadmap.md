@@ -1,5 +1,13 @@
 # Aetheris specification completion
 
+## Authorized professional evidence extension (Oct 21)
+- [x] Extend the existing LinkedIn reader, provenance and editable hypothesis review without external fetching; unsupported fields remain private review-only.
+- [x] Protect approved profile saves against account changes and concurrent edits; parser/save security regressions and isolated browser checks added.
+- [x] Verify local tests and automatic compilation; no production migration or publication. Full private evidence persistence awaits an approved storage design.
+- [ ] Verify a real signed-in profile save — blocked: requesting account session mint failed; sign in to the preview to enable this check.
+- [ ] Confirm GitHub checks and a reviewable PR — blocked: local HEAD is ahead of cached origin/main; remote CI/PR status is unavailable here.
+- [ ] Study Mindprint source — blocked: project 079f0929-6b92-4a8a-b9c7-b3278d4a8006 is inaccessible in this workspace; source export or sharing access required.
+
 ## Offline database recovery engineering (Oct 20)
 - [x] Add disposable baseline/supplied-schema replay, ordered 0058–0078 diagnostics and collision probes.
 - [x] Harden unapplied 0095 proposal and extend isolated regressions.

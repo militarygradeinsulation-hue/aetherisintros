@@ -7,18 +7,22 @@
  * fields, current values and what Apply does.
  */
 import { AlertTriangle, Check, FileText, Link2, Loader2, ScanLine, X } from 'lucide-react'
-import { useId, useRef, useState, type ReactNode } from 'react'
+import { useEffect, useId, useRef, useState, type ReactNode } from 'react'
 
 import { supabase } from '@/integrations/supabase/client'
 import { scanLinkedInProfile } from '@/lib/linkedinImport.functions'
 import { normalizeLinkedInUrl } from './linkedin-import'
+import { EVIDENCE_ONLY_KEYS, parseAuthorizedScan } from './linkedin-scan'
+import { AdditionalEvidenceSchema, type AdditionalEvidence } from './professional-evidence'
+import { loadProfileScanContext, saveReviewedProfileScan, type ProfileScanContext } from './profile-scan-save'
 import {
-  buildReviewRows, checkedPatch, defaultChecked, LIST_KEYS, LONG_KEYS, MIN_SCAN_TEXT, parseScanText, profileColumns, scanValues,
+  buildReviewRows, checkedPatch, defaultChecked, LIST_KEYS, LONG_KEYS, MIN_SCAN_TEXT, scanValues,
   sourceLabel, type ReviewRow, type ScanKey, type ScanResult,
 } from './linkedin-scan'
 import { readPdfText } from './pdf-text'
 import { isShowcase } from './showcase'
 import { Btn, Eyebrow } from './ui'
+import './public-info-review.css'
 
 export type ScanPatch = Partial<Record<ScanKey, string>>
 /**
@@ -28,26 +32,24 @@ export type ScanPatch = Partial<Record<ScanKey, string>>
 export interface ApplyOutcome { status: 'saved' | 'filled' | 'failed'; message: string }
 
 /** In the demo the built-in reader runs on the device; signed in, the server reads it. */
-export async function runLinkedInScan(input: { text: string; url: string; nameHint?: string }, demo = isShowcase()): Promise<ScanResult> {
+export async function runLinkedInScan(input: { text: string; url: string; nameHint?: string; evidence?: AdditionalEvidence[] }, demo = isShowcase()): Promise<ScanResult> {
   if (demo) {
     if (input.text.trim().length < MIN_SCAN_TEXT) throw new Error('Paste the profile text or add the LinkedIn PDF first.')
-    return { ...parseScanText(input.text, { ...(input.nameHint ? { nameHint: input.nameHint } : {}), url: input.url }), source: 'demo' }
+    return { ...parseAuthorizedScan(input.text, input.evidence ?? [], { ...(input.nameHint ? { nameHint: input.nameHint } : {}), url: input.url }), source: 'demo' }
   }
   return scanLinkedInProfile({ data: input })
 }
 
 /** Writes the ticked fields to the member's own public.profiles row and checks the write landed. */
-export async function saveProfileScan(patch: ScanPatch): Promise<ApplyOutcome> {
-  const columns = profileColumns(patch)
-  const names = Object.keys(columns)
-  if (!names.length) return { status: 'failed', message: 'Nothing was ticked, so nothing was saved.' }
-  const { data } = await supabase.auth.getSession()
-  const id = data.session?.user.id
-  if (!id) return { status: 'failed', message: 'You are signed out. Sign in again; nothing was saved.' }
-  const { data: rows, error } = await (supabase.from('profiles') as any).update(columns).eq('id', id).select('id') // eslint-disable-line @typescript-eslint/no-explicit-any
-  if (error) return { status: 'failed', message: `Not saved: ${error.message}` }
-  if (!rows?.length) return { status: 'failed', message: 'Not saved: your profile could not be found.' }
-  return { status: 'saved', message: 'Saved to your profile.' }
+export async function saveProfileScan(patch: ScanPatch, context?: ProfileScanContext): Promise<ApplyOutcome> {
+  if (!context) return { status: 'failed', message: 'Scan again to load your saved profile before applying.' }
+  try {
+    await saveReviewedProfileScan(patch, context)
+    return { status: 'saved', message: 'Saved to your profile.' }
+  } catch (error) {
+    return { status: 'failed', message: error instanceof Error ? error.message : 'Your profile could not be saved.' }
+  }
+
 }
 
 const fieldCount = (n: number) => `${n} field${n === 1 ? '' : 's'}`
@@ -61,7 +63,7 @@ export function LinkedInScanPanel({
   heading: string
   intro: string
   applyLabel?: string
-  onApply: (patch: ScanPatch) => Promise<ApplyOutcome>
+  onApply: (patch: ScanPatch, context?: ProfileScanContext) => Promise<ApplyOutcome>
   onClose?: () => void
   extraStep?: ReactNode
   extraReview?: ReactNode
@@ -80,12 +82,32 @@ export function LinkedInScanPanel({
   const [checked, setChecked] = useState<Set<ScanKey>>(new Set())
   const [outcome, setOutcome] = useState<ApplyOutcome | null>(null)
   const pdfInput = useRef<HTMLInputElement>(null)
+  const generation = useRef(0)
+  const running = useRef(false)
+  const [context, setContext] = useState<ProfileScanContext>()
+  const [evidenceText, setEvidenceText] = useState('')
+  const [evidenceAuthorized, setEvidenceAuthorized] = useState(false)
+  useEffect(() => {
+    if (demo) return
+    const { data } = supabase.auth.onAuthStateChange(event => {
+      if (!['SIGNED_IN', 'SIGNED_OUT', 'USER_UPDATED'].includes(event)) return
+      generation.current++; running.current = false
+      setResult(null); setRows([]); setChecked(new Set()); setEdits({}); setContext(undefined)
+      setText(''); setUrl(''); setPdf(null); setEvidenceText(''); setEvidenceAuthorized(false); setOutcome(null); setError(''); setBusy('')
+    })
+    return () => { generation.current++; data.subscription.unsubscribe() }
+  }, [demo])
 
   const scan = async () => {
+    if (running.current) return
+    const request = ++generation.current
     setError(''); setOutcome(null)
     if (url.trim() && !normalizeLinkedInUrl(url)) { setError('That is not a LinkedIn profile link. It looks like linkedin.com/in/name.'); return }
     setBusy('scan')
+    running.current = true
     try {
+      const snapshot = !demo && keys.includes('headline') ? await loadProfileScanContext() : undefined
+      const evidence = evidenceText.trim() ? [AdditionalEvidenceSchema.parse({ label: 'Additional authorized evidence', text: evidenceText, authorized: evidenceAuthorized })] : []
       let profileText = text
       let nameHint = ''
       if (mode === 'pdf') {
@@ -94,26 +116,34 @@ export function LinkedInScanPanel({
         profileText = read.text
         nameHint = read.largest
       }
-      const next = await runLinkedInScan({ text: profileText, url: url.trim(), nameHint }, demo)
+      const next = await runLinkedInScan({ text: profileText, url: url.trim(), nameHint, evidence }, demo)
+      if (request !== generation.current) return
+      setContext(snapshot)
       const review = buildReviewRows(keys, scanValues(next.scan), current, labels)
       setRows(review)
       setEdits({})
       setChecked(defaultChecked(review))
       setResult(next)
     } catch (e) {
+      if (request !== generation.current) return
       setError(e instanceof Error ? e.message : 'The profile could not be read. Try pasting the text instead.')
-    } finally { setBusy('') }
+    } finally { if (request === generation.current) { setBusy(''); running.current = false } }
   }
 
   const apply = async () => {
+    if (running.current) return
+    const request = generation.current
+    running.current = true
     setBusy('apply'); setError('')
     try {
-      const done = await onApply(checkedPatch(rows, checked, edits))
+      const done = await onApply(checkedPatch(rows, checked, edits), context)
+      if (request !== generation.current) return
       setOutcome(done)
       if (done.status !== 'failed') { setResult(null); setText(''); setPdf(null) }
     } catch (e) {
+      if (request !== generation.current) return
       setOutcome({ status: 'failed', message: `Not saved: ${e instanceof Error ? e.message : 'something went wrong.'}` })
-    } finally { setBusy('') }
+    } finally { if (request === generation.current) { setBusy(''); running.current = false } }
   }
 
   const toggle = (key: ScanKey) => setChecked(c => { const n = new Set(c); if (n.has(key)) n.delete(key); else n.add(key); return n })
@@ -150,6 +180,11 @@ export function LinkedInScanPanel({
           <input ref={pdfInput} type="file" accept="application/pdf" hidden onChange={e => { const f = e.target.files?.[0]; if (f) setPdf(f); e.target.value = '' }} />
           <small>On the LinkedIn profile, click <b>More</b> (or <b>Resources</b>), then <b>Save to PDF</b>. The PDF is read in your browser.</small>
         </>}
+        <label className="li-scan-label">Additional professional evidence (optional)
+          <textarea aria-label="Additional professional evidence" rows={4} maxLength={20000} value={evidenceText} onChange={e => setEvidenceText(e.target.value)} />
+        </label>
+        <label><input type="checkbox" checked={evidenceAuthorized} onChange={e => setEvidenceAuthorized(e.target.checked)} /> I am authorized to provide this evidence about this profile.</label>
+        <small>LinkedIn sign-in supplies basic identity only, not your full professional profile.</small>
         {extraStep}
       </div>
       {error && <p className="li-scan-error" role="alert">{error}</p>}
@@ -169,10 +204,10 @@ export function LinkedInScanPanel({
         {rows.map(row => {
           const id = `${uid}-${row.key}`
           const value = edits[row.key] ?? row.incoming
-          const long = LONG_KEYS.includes(row.key)
+          const long = LONG_KEYS.includes(row.key) || EVIDENCE_ONLY_KEYS.includes(row.key)
           return <div key={row.key} className={`li-scan-row${checked.has(row.key) ? ' on' : ''}${row.incoming ? '' : ' empty'}`} data-field={row.key}>
-            <input type="checkbox" id={id} checked={checked.has(row.key)} disabled={!row.incoming} onChange={() => toggle(row.key)} />
-            <label htmlFor={id}>{row.label}{LIST_KEYS.includes(row.key) && <small> (comma-separated)</small>}</label>
+            <input type="checkbox" id={id} checked={checked.has(row.key)} disabled={!row.incoming || EVIDENCE_ONLY_KEYS.includes(row.key) || Boolean(busy)} onChange={() => toggle(row.key)} />
+            <label htmlFor={id}>{row.label}{EVIDENCE_ONLY_KEYS.includes(row.key) && <small> — Private review only; not saved</small>}{LIST_KEYS.includes(row.key) && <small> (comma-separated)</small>}</label>
             <span className="li-scan-now"><span className="li-sr">Now: </span>{row.current || <em>Empty</em>}</span>
             {row.incoming
               ? (long
@@ -183,12 +218,20 @@ export function LinkedInScanPanel({
         })}
         {extraReview}
       </div>
+      {!!result.claims?.length && <details className="li-public-review"><summary>Evidence and professional hypotheses</summary>
+        {result.claims.map((claim, index) => <div key={index} className="li-public-suggestions">
+          <b>{claim.kind === 'hypothesis' ? 'Hypothesis — not a personal fact' : 'Self-reported'}</b>
+          {claim.kind === 'hypothesis' ? <textarea aria-label={`Review hypothesis ${index + 1}`} rows={3} defaultValue={claim.value} /> : <p>{claim.value}</p>}<small>{claim.confidence} confidence · {claim.source}</small>
+          <p>Evidence: “{claim.quote}”</p><small>{claim.explanation}</small>
+        </div>)}
+        <p>Evidence and hypotheses stay in this private review, not your public profile. Missing evidence remains unknown.</p>
+      </details>}
       {error && <p className="li-scan-error" role="alert">{error}</p>}
       <div className="li-scan-actions">
         <Btn disabled={busy === 'apply' || (!checked.size && !extraReview)} onClick={() => void apply()}>
           {busy === 'apply' ? <><Loader2 size={15} className="li-spin" /> Applying…</> : <><Check size={15} /> {applyLabel}{checked.size ? ` (${fieldCount(checked.size)})` : ''}</>}
         </Btn>
-        <Btn kind="quiet" onClick={() => setResult(null)}>Back</Btn>
+        <Btn kind="quiet" disabled={Boolean(busy)} onClick={() => { generation.current++; setResult(null); setContext(undefined) }}>Back</Btn>
       </div>
     </>}
   </section>

@@ -39,15 +39,14 @@ const server = createServer((req, res) => {
 }).listen(0, '127.0.0.1')
 await new Promise(r => server.once('listening', r))
 const base = `http://127.0.0.1:${server.address().port}/`
-const chromiumPath = () => { const p = process.env.CHROMIUM ?? '/opt/pw-browsers/chromium'; return existsSync(p) ? { executablePath: p } : {} }
 const { chromium } = await import(process.env.PLAYWRIGHT_MODULE ?? '/opt/node22/lib/node_modules/playwright/index.mjs')
-const browser = await chromium.launch({ ...chromiumPath() })
-const page = await browser.newPage({ viewport: { width: 1100, height: 900 } })
+const browser = await chromium.launch({ headless: true })
+const page = await browser.newPage({ viewport: { width: 1280, height: 1800 } })
 const errors = []
 page.on('pageerror', e => errors.push(e.message))
 let pass = 0, fail = 0
 const ok = (c, m) => { if (c) { pass++; console.log('  ✓', m) } else { fail++; console.log('  ✗', m) } }
-const shot = async n => { if (process.env.SHOTS) await page.screenshot({ path: join(process.env.SHOTS, `${n}.png`), fullPage: true }) }
+const shot = async n => { if (process.env.SHOTS) await page.screenshot({ path: join(process.env.SHOTS, `${n}.png`) }) }
 const PROFILE = readFileSync(join(here, 'profile.txt'), 'utf8')
 const P = '#profile'
 const row = (scope, key) => `${scope} [data-field=${key}]`
@@ -64,6 +63,8 @@ await page.click(scanBtn(P))
 ok(/not a LinkedIn profile link/.test(await page.textContent(`${P} [role=alert]`) ?? ''), 'a non-LinkedIn link is refused')
 ok(await page.evaluate(() => window.__scans.length) === 0, 'and nothing is sent to the server')
 await page.fill(`${P} input[inputmode=url]`, 'linkedin.com/in/maya-okafor/')
+await page.fill(`${P} textarea[aria-label="Additional professional evidence"]`, 'Projects\nTemperature monitoring toolkit\nAbout\nI prefer written messages.')
+await page.check(`${P} .li-scan-inputs input[type=checkbox]`)
 await page.click(scanBtn(P))
 await page.waitForSelector(`${P} .li-scan-review`)
 ok(await page.evaluate(() => window.__scans.length) === 1, 'Scan sends the pasted text to the server reader once')
@@ -80,6 +81,12 @@ const reviewText = await page.textContent(`${P} .li-scan-review`)
 ok(!/Tunde Bello|FreshBox|People also viewed/.test(reviewText ?? ''), 'other people’s profiles never reach the review')
 ok(/built-in reader/.test(await page.textContent(`${P} .li-scan-source`) ?? ''), 'the review says which reader read it')
 ok(await page.evaluate(() => window.__updates.length) === 0, 'nothing is saved before Apply')
+ok(await page.isDisabled(box(P, 'projects')), 'extra professional fields remain review-only')
+await page.click(`${P} summary`)
+ok((await page.textContent(`${P} details`))?.includes('Temperature monitoring toolkit'), 'authorized project evidence and provenance appear in review')
+await page.fill(`${P} textarea[aria-label^="Review hypothesis"] >> nth=0`, 'Reviewed hypothesis — needs confirmation')
+await shot('evidence')
+await page.click(`${P} summary`)
 await shot('review')
 
 // 3. Apply writes only the ticked fields, with the member's edit.
@@ -105,7 +112,7 @@ await page.waitForSelector(`${P} .li-scan-review`)
 await page.evaluate(() => { window.__failNext = true })
 await page.click(scanBtn(P))
 await page.waitForSelector(`${P} .li-scan-outcome.failed`)
-ok(/^Not saved: permission denied/.test((await page.textContent(`${P} .li-scan-outcome`))?.trim() ?? ''), 'a failed save says “Not saved”')
+ok(/could not be saved/.test((await page.textContent(`${P} .li-scan-outcome`))?.trim() ?? ''), 'a failed save does not claim success')
 ok(await page.isVisible(`${P} .li-scan-review`) && (await page.evaluate(() => window.__updates.length)) === 1, 'the review stays open and nothing extra is recorded')
 
 // 5. Demo reader (as in /demo and the CRM new-contact form): labelled, reads on the device, fills the form only.
@@ -145,6 +152,19 @@ ok(contrast.worst.length === 0, `all scan text meets AA contrast${contrast.worst
 await page.setViewportSize({ width: 375, height: 800 })
 ok(await page.evaluate(() => document.documentElement.scrollWidth <= 376), 'no horizontal scroll at phone width')
 await shot('phone')
+await page.goto(base)
+await page.fill(`${P} textarea[aria-label="Profile text"]`, PROFILE)
+await page.click(scanBtn(P))
+await page.waitForSelector(`${P} .li-scan-review`)
+await page.click(`${P} summary`)
+for (const theme of ['dark', 'light']) {
+  await page.evaluate(theme => document.documentElement.dataset.theme = theme, theme)
+  for (const width of [390, 1280]) {
+    await page.setViewportSize({ width, height: width === 390 ? 844 : 1800 })
+    ok(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1), `${theme} evidence review fits ${width}px`)
+    await shot(`evidence-${theme}-${width}`)
+  }
+}
 
 ok(errors.length === 0, `no page errors${errors.length ? ': ' + errors.join('; ') : ''}`)
 await browser.close(); server.close()

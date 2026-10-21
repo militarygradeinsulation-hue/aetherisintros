@@ -11,6 +11,7 @@
 import { z } from 'zod'
 
 import { normalizeLinkedInUrl, parseLinkedInText } from './linkedin-import'
+import { AdditionalEvidenceSchema, professionalClaims, type AdditionalEvidence, type ProfessionalClaim } from './professional-evidence'
 
 /** Raw text accepted from the member before cleaning. */
 export const MAX_RAW_INPUT = 120_000
@@ -18,7 +19,7 @@ export const MAX_RAW_INPUT = 120_000
 export const MAX_SCAN_TEXT = 40_000
 export const MIN_SCAN_TEXT = 40
 
-export interface ScannedRole { title: string; company: string; start: string; end: string }
+export interface ScannedRole { title: string; company: string; start: string; end: string; location?: string | undefined; description?: string | undefined }
 
 /** The one shape every reader (AI, built-in reader, demo) returns. */
 export interface ScannedProfile {
@@ -35,6 +36,12 @@ export interface ScannedProfile {
   looking_for: string
   experience: ScannedRole[]
   education: string[]
+  projects: string[]
+  credentials: string[]
+  languages: string[]
+  volunteering: string[]
+  achievements: string[]
+  websites: string[]
   linkedin_url: string
 }
 
@@ -42,6 +49,7 @@ export type ScanSource = 'ai' | 'parser' | 'demo'
 
 export interface ScanResult {
   scan: ScannedProfile
+  claims?: ProfessionalClaim[]
   source: ScanSource
   /** True when the pasted text was longer than we read. */
   truncated: boolean
@@ -49,7 +57,7 @@ export interface ScanResult {
 
 export const emptyScan = (): ScannedProfile => ({
   name: '', headline: '', title: '', company: '', location: '', about: '', industries: [], expertise: [],
-  can_help_with: '', looking_for: '', experience: [], education: [], linkedin_url: '',
+  can_help_with: '', looking_for: '', experience: [], education: [], projects: [], credentials: [], languages: [], volunteering: [], achievements: [], websites: [], linkedin_url: '',
 })
 
 /* ------------------------------------------------------------------ clean */
@@ -58,7 +66,7 @@ const squash = (s: string) => s.replace(/\s+/g, ' ').trim()
 
 /** Sections whose content is about other people or other pages: dropped up to the next kept section. */
 const DROP_SECTION = /^(people also viewed|people you may know|you might like|more profiles for you|explore premium profiles|explore collaborative articles|other similar profiles|activity|featured|interests|analytics|causes|recommendations|pages for you|suggested for you|promoted|ad options|similar pages|groups)$/i
-const KEEP_SECTION = /^(looking for|seeking|interested in|what i.?m building|currently building|contact|top skills|skills|languages|certifications|licenses & certifications|honors-awards|honors & awards|publications|patents|summary|about|experience|education|volunteer experience|volunteering|projects|providing services|services)$/i
+const KEEP_SECTION = /^(looking for|seeking|interested in|what i.?m building|currently building|contact|top skills|skills|languages|certifications|licenses & certifications|honors-awards|honors & awards|publications|patents|summary|about|experience|education|volunteer experience|volunteering|projects|providing services|services|industries|industry|websites|website)$/i
 /** Single lines of LinkedIn page furniture. */
 const NOISE_LINE = new RegExp([
   '^(skip to (main content|search)|home|my network|jobs|messaging|notifications|me|for business|work|search|learning|post|start a post)$',
@@ -128,8 +136,8 @@ const headlineRole = (headline: string) => squash(headline.split(/\s+(?:at|@)\s+
 /** The built-in reader: used when AI extraction is unavailable, and in the demo. */
 export function parseScanText(rawText: string, hints: { nameHint?: string | undefined; url?: string | undefined } = {}): ScanResult {
   const cleaned = cleanProfileText(rawText)
-  const li = parseLinkedInText(cleaned.text, hints.nameHint ? { name: hints.nameHint } : {})
-  const experience = li.experience.slice(0, 20).map(r => ({ title: r.title, company: r.company, ...splitDates(r.dates) }))
+  const li = parseLinkedInText(cleaned.text, hints.nameHint && statedIn(hints.nameHint, cleaned.text) ? { name: hints.nameHint } : {})
+  const experience = li.experience.slice(0, 20).map(r => ({ title: r.title, company: r.company, location: r.location, description: r.description, ...splitDates(r.dates) }))
   const now = currentRole(experience)
   const services = sectionLines(cleaned.text, /^(providing services|services)$/i)
   const seeking = sectionLines(cleaned.text, /^(looking for|seeking|interested in)$/i)
@@ -146,9 +154,17 @@ export function parseScanText(rawText: string, hints: { nameHint?: string | unde
     looking_for: seeking.join(', ').slice(0, 600),
     experience,
     education: li.education,
+    industries: sectionLines(cleaned.text, /^(industries|industry)$/i),
+    projects: sectionLines(cleaned.text, /^(projects|what i.?m building|currently building)$/i),
+    credentials: sectionLines(cleaned.text, /^(certifications|licenses & certifications)$/i),
+    languages: sectionLines(cleaned.text, /^languages$/i),
+    volunteering: sectionLines(cleaned.text, /^(volunteer experience|volunteering)$/i),
+    achievements: sectionLines(cleaned.text, /^(honors-awards|honors & awards|publications|patents)$/i),
+    websites: sectionLines(cleaned.text, /^(contact|websites|website)$/i).filter(safeWebsite),
     linkedin_url: linkedInUrlFrom(hints.url, cleaned.text),
   }
-  return { scan: validateScan(scan) ?? emptyScan(), source: 'parser', truncated: cleaned.truncated }
+  const validated = validateScan(scan) ?? emptyScan()
+  return { scan: validated, claims: professionalClaims(validated, [{ label: 'Supplied LinkedIn profile', text: cleaned.text }]), source: 'parser', truncated: cleaned.truncated }
 }
 
 function sectionLines(text: string, heading: RegExp): string[] {
@@ -166,6 +182,28 @@ function sectionLines(text: string, heading: RegExp): string[] {
   return [...new Set(out)].slice(0, 12)
 }
 
+/** Supplement only explicit professional sections; additional documents cannot replace identity. */
+export function parseAuthorizedScan(text: string, evidence: AdditionalEvidence[] = [], hints: { nameHint?: string; url?: string } = {}): ScanResult {
+  if (evidence.length > 3) throw new Error('Add at most three evidence documents.')
+  const documents = evidence.map(item => AdditionalEvidenceSchema.parse(item))
+  const result = parseScanText(text, hints)
+  const scan = { ...result.scan }
+  const sources = [{ label: 'Supplied LinkedIn profile', text: cleanProfileText(text).text }]
+  for (const document of documents) {
+    const cleaned = cleanProfileText(document.text)
+    sources.push({ label: document.label, text: cleaned.text })
+    const supplemental = parseScanText(`Evidence document\nProfessional evidence\nAbout\n${cleaned.text}`).scan
+    for (const key of ['industries', 'expertise', 'projects', 'credentials', 'languages', 'volunteering', 'achievements', 'websites'] as const) {
+      scan[key] = [...new Set([...scan[key], ...supplemental[key]])]
+    }
+    for (const key of ['can_help_with', 'looking_for'] as const) {
+      if (!scan[key]) scan[key] = supplemental[key]
+    }
+  }
+  const validated = validateScan(scan) ?? result.scan
+  return { ...result, scan: validated, claims: professionalClaims(validated, sources) }
+}
+
 /** The member's link wins; otherwise a profile link stated in the text (the PDF's Contact section). */
 export function linkedInUrlFrom(url: string | undefined, text: string): string {
   const given = url?.trim() ? normalizeLinkedInUrl(url) : null
@@ -175,6 +213,10 @@ export function linkedInUrlFrom(url: string | undefined, text: string): string {
 }
 
 /* --------------------------------------------------------- strict validation */
+
+export function safeWebsite(value: string): boolean {
+  try { const url = new URL(value); return url.protocol === 'https:' && !url.username && !url.password && !url.port && !/^(localhost|127\.|0\.|10\.|192\.168\.|169\.254\.|\[)/i.test(url.hostname) } catch { return false }
+}
 
 const str = (max: number) => z.preprocess(v => (typeof v === 'string' ? squash(v).slice(0, max) : ''), z.string())
 const list = (max: number, each = 120) => z.preprocess(v => {
@@ -189,6 +231,7 @@ const list = (max: number, each = 120) => z.preprocess(v => {
 
 const RoleSchema = z.preprocess(v => (v && typeof v === 'object' && !Array.isArray(v) ? v : {}), z.object({
   title: str(140), company: str(140), start: str(40), end: str(40),
+  location: str(140).optional(), description: str(1200).optional(),
 }).strip())
 
 /** Unknown keys are dropped, every value is trimmed and capped, wrong types become empty. */
@@ -205,6 +248,9 @@ export const ScanSchema = z.object({
   looking_for: str(600),
   experience: z.preprocess(v => (Array.isArray(v) ? v.slice(0, 20) : []), z.array(RoleSchema)),
   education: list(8, 160),
+  projects: list(20, 600), credentials: list(20, 600), languages: list(20, 120),
+  volunteering: list(20, 600), achievements: list(20, 600),
+  websites: list(12, 300).transform(values => values.filter(safeWebsite)),
   linkedin_url: z.preprocess(v => (typeof v === 'string' ? normalizeLinkedInUrl(v) ?? '' : ''), z.string()),
 }).strip()
 
@@ -226,13 +272,12 @@ export function parseScanJson(answer: string): ScannedProfile | null {
 
 const norm = (s: string) => s.toLowerCase().normalize('NFKD').replace(/[̀-ͯ]/g, '').replace(/[^\p{L}\p{N}]+/gu, ' ').trim()
 
-/** True when the value (or, for long text, its opening) appears in the source text. */
+/** True only when the entire value appears in the source text. */
 export function statedIn(value: string, source: string): boolean {
   const v = norm(value)
   if (!v) return false
   const s = ` ${norm(source)} `
-  if (v.length <= 60) return s.includes(` ${v} `)
-  return s.includes(v.slice(0, 40))
+  return s.includes(` ${v} `)
 }
 
 /** Drops any AI value the source text does not state. */
@@ -250,9 +295,11 @@ export function groundScan(scan: ScannedProfile, source: string): ScannedProfile
     expertise: keepAll(scan.expertise),
     can_help_with: keep(scan.can_help_with),
     looking_for: keep(scan.looking_for),
-    experience: scan.experience.filter(r => (!r.title || statedIn(r.title, source)) && (!r.company || statedIn(r.company, source))),
+    experience: scan.experience.filter(r => Object.values(r).every(value => !value || statedIn(value, source))),
     education: keepAll(scan.education),
-    linkedin_url: scan.linkedin_url,
+    projects: keepAll(scan.projects), credentials: keepAll(scan.credentials), languages: keepAll(scan.languages),
+    volunteering: keepAll(scan.volunteering), achievements: keepAll(scan.achievements), websites: keepAll(scan.websites),
+    linkedin_url: linkedInUrlFrom(undefined, source),
   }
 }
 
@@ -266,7 +313,7 @@ export function mergeScans(ai: ScannedProfile | null, parsed: ScannedProfile): S
   return {
     name: pick('name'), headline: pick('headline'), title: pick('title'), company: pick('company'), location: pick('location'),
     about: pick('about'), industries: pick('industries'), expertise: pick('expertise'), can_help_with: pick('can_help_with'),
-    looking_for: pick('looking_for'), experience: pick('experience'), education: pick('education'), linkedin_url: parsed.linkedin_url || ai.linkedin_url,
+    looking_for: pick('looking_for'), experience: pick('experience'), education: pick('education'), projects: pick('projects'), credentials: pick('credentials'), languages: pick('languages'), volunteering: pick('volunteering'), achievements: pick('achievements'), websites: pick('websites'), linkedin_url: parsed.linkedin_url,
   }
 }
 
@@ -282,7 +329,7 @@ Rules:
 - Answer with the JSON object only.
 
 Shape:
-{"name":"","headline":"","title":"","company":"","location":"","about":"","industries":[],"expertise":[],"can_help_with":"","looking_for":"","experience":[{"title":"","company":"","start":"","end":""}],"education":[],"linkedin_url":""}`
+{"name":"","headline":"","title":"","company":"","location":"","about":"","industries":[],"expertise":[],"can_help_with":"","looking_for":"","experience":[{"title":"","company":"","start":"","end":""}],"education":[],"projects":[],"credentials":[],"languages":[],"volunteering":[],"achievements":[],"websites":[],"linkedin_url":""}`
 
 /* ----------------------------------------------------------- review step */
 
@@ -290,6 +337,7 @@ Shape:
 export type ScanKey =
   | 'name' | 'title' | 'company' | 'location' | 'headline' | 'about' | 'focus'
   | 'industries' | 'expertise' | 'can_help_with' | 'looking_for' | 'linkedin_url'
+  | 'experience' | 'education' | 'projects' | 'credentials' | 'languages' | 'volunteering' | 'achievements' | 'websites'
 
 export const SCAN_LABELS: Record<ScanKey, string> = {
   name: 'Name',
@@ -304,12 +352,14 @@ export const SCAN_LABELS: Record<ScanKey, string> = {
   can_help_with: 'Can help with',
   looking_for: 'Looking for',
   linkedin_url: 'LinkedIn link',
+  experience: 'Roles', education: 'Education', projects: 'Projects', credentials: 'Credentials', languages: 'Languages', volunteering: 'Volunteering', achievements: 'Achievements', websites: 'Websites',
 }
 
 export const LIST_KEYS: ScanKey[] = ['industries', 'expertise']
 export const LONG_KEYS: ScanKey[] = ['about', 'focus', 'can_help_with', 'looking_for', 'headline']
 
-export const PROFILE_KEYS: ScanKey[] = ['name', 'title', 'company', 'location', 'headline', 'about', 'industries', 'expertise', 'can_help_with', 'looking_for', 'linkedin_url']
+export const EVIDENCE_ONLY_KEYS: ScanKey[] = ['experience', 'education', 'projects', 'credentials', 'languages', 'volunteering', 'achievements', 'websites']
+export const PROFILE_KEYS: ScanKey[] = ['name', 'title', 'company', 'location', 'headline', 'about', 'industries', 'expertise', 'can_help_with', 'looking_for', 'linkedin_url', ...EVIDENCE_ONLY_KEYS]
 export const ONBOARDING_KEYS: ScanKey[] = ['name', 'title', 'company', 'location', 'looking_for', 'can_help_with', 'industries', 'expertise', 'linkedin_url']
 export const CONTACT_KEYS: ScanKey[] = ['name', 'title', 'company', 'location', 'linkedin_url', 'about', 'expertise']
 
@@ -336,6 +386,8 @@ export function scanValues(scan: ScannedProfile, focusText = ''): Record<ScanKey
     can_help_with: scan.can_help_with,
     looking_for: scan.looking_for,
     linkedin_url: scan.linkedin_url,
+    experience: scan.experience.map(role => Object.values(role).filter(Boolean).join(' · ')).join('\n'),
+    education: scan.education.join('\n'), projects: scan.projects.join('\n'), credentials: scan.credentials.join('\n'), languages: scan.languages.join('\n'), volunteering: scan.volunteering.join('\n'), achievements: scan.achievements.join('\n'), websites: scan.websites.join('\n'),
   }
 }
 
@@ -353,13 +405,13 @@ export function buildReviewRows(keys: ScanKey[], incoming: Partial<Record<ScanKe
 }
 
 /** Ticked by default: only fields the profile states that differ from what is there. */
-export const defaultChecked = (rows: ReviewRow[]) => new Set(rows.filter(r => r.differs).map(r => r.key))
+export const defaultChecked = (rows: ReviewRow[]) => new Set(rows.filter(r => r.differs && !EVIDENCE_ONLY_KEYS.includes(r.key)).map(r => r.key))
 
 /** Only ticked, non-empty fields, with the member's edits. Nothing else is written. */
 export function checkedPatch(rows: ReviewRow[], checked: Set<ScanKey>, edits: Partial<Record<ScanKey, string>> = {}): Partial<Record<ScanKey, string>> {
   const out: Partial<Record<ScanKey, string>> = {}
   for (const row of rows) {
-    if (!checked.has(row.key)) continue
+    if (!checked.has(row.key) || EVIDENCE_ONLY_KEYS.includes(row.key)) continue
     const value = squash(edits[row.key] ?? row.incoming)
     if (value) out[row.key] = value
   }

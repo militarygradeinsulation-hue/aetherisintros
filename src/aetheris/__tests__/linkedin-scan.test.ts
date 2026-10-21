@@ -119,8 +119,8 @@ describe('the built-in reader', () => {
     expect(scan.about).toMatch(/^I run Harbor Freight Labs/)
     expect(scan.expertise).toEqual(['Supply Chain Management', 'Logistics', 'Cold Chain'])
     expect(scan.experience).toEqual([
-      { title: 'Chief Executive Officer', company: 'Harbor Freight Labs', start: 'Jan 2020', end: 'Present' },
-      { title: 'Head of Operations', company: 'Maersk', start: 'Mar 2014', end: 'Dec 2019' },
+      { title: 'Chief Executive Officer', company: 'Harbor Freight Labs', start: 'Jan 2020', end: 'Present', location: 'Lagos, Nigeria · Hybrid', description: 'Built the company from 3 to 120 people.' },
+      { title: 'Head of Operations', company: 'Maersk', start: 'Mar 2014', end: 'Dec 2019', location: 'Copenhagen, Denmark', description: '' },
     ])
     expect(scan.education[0]).toBe('University of Lagos')
   })
