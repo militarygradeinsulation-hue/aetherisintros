@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { parseReader, publicTarget } from './investigation';
+import { parseReader, parseReaderResponse, publicTarget } from './investigation';
 
 describe('public website targets', () => {
   it('normalizes bare domains and preserves page identity without secret parameters', () => {
@@ -31,5 +31,17 @@ describe('real reader evidence', () => {
     const history = [a,b];
     expect(history[0]!.snapshot).toMatchObject({url:'https://alpha.com/',title:'Alpha',headings:['Alpha heading']});
     expect(history[1]!.snapshot).toMatchObject({url:'https://beta.com/',title:'Beta',headings:['Beta heading']});
+  });
+});
+
+describe('complete reader summaries', () => {
+  it('fills navigation and images outside the main article body', () => {
+    const result = parseReaderResponse(JSON.stringify({data:{title:'Hallmark Homes',url:'https://hallmarkhomes.com/',content:'# Our homes',description:'Custom home builder in Indiana',links:{Contact:'https://hallmarkhomes.com/contact-us/',Guide:'https://hallmarkhomes.com/guide.pdf'},images:{House:'https://hallmarkhomes.com/house.jpg'}}}), 'https://hallmarkhomes.com');
+    expect(result.snapshot.links).toHaveLength(2);
+    expect(result.description).toBe('Custom home builder in Indiana');
+    expect(result.images[0]?.src).toBe('https://hallmarkhomes.com/house.jpg');
+  });
+  it('rejects an upstream error page even if the transport status was 200', () => {
+    expect(() => parseReaderResponse(JSON.stringify({data:{httpStatus:403,content:'Access denied'}}),'https://company.com')).toThrow();
   });
 });

@@ -34,7 +34,7 @@ export function parseReader(markdown: string, requestedUrl: string): Investigati
   const source = /^URL Source:\s*(.+)$/m.exec(markdown)?.[1] ?? requestedUrl;
   const url = publicTarget(source);
   const content = markdown.split(/Markdown Content:\s*\n/)[1] ?? markdown;
-  const headings = [...content.matchAll(/^#{1,3}\s+(.+)$/gm)].map(m => clean(m[1]!));
+  const headings = [...content.matchAll(/^#{1,6}\s+(.+)$/gm)].map(m => clean(m[1]!));
   // Reader also emits Setext headings.
   for (const match of content.matchAll(/^([^\n]+)\n[=-]{3,}\s*$/gm)) headings.push(clean(match[1]!));
   const links: PublicPageSnapshot['links'] = [];
@@ -46,9 +46,33 @@ export function parseReader(markdown: string, requestedUrl: string): Investigati
       else if (links.length < 100) links.push({ text: clean(m[2]!), href });
     } catch { /* A malformed or unsafe link must not discard a valid scan. */ }
   }
+  const uniqueLinks = links.filter((link, i) => links.findIndex(other => other.href === link.href && other.text === link.text) === i);
+  const uniqueImages = images.filter((image, i) => images.findIndex(other => other.src === image.src) === i);
   const description = clean(content.replace(/!?\[([^\]]*)\]\([^)]*\)/g, '$1').split('\n').filter(l => l.trim().length > 70 && !/^Title:|^URL Source:|^#/.test(l)).slice(0, 3).join(' '), 1200);
   return {
-    snapshot: validatePublicSnapshot({ url, title: clean(rawTitle, 300), headings: [...new Set(headings)].slice(0,100), links, capturedAt: new Date().toISOString() }),
-    description, images, mode: 'reader',
+    snapshot: validatePublicSnapshot({ url, title: clean(rawTitle, 300), headings: [...new Set(headings)].slice(0,100), links: uniqueLinks, capturedAt: new Date().toISOString() }),
+    description, images: uniqueImages, mode: 'reader',
   };
+}
+
+/** JSON summaries include navigation and image sources omitted from readable body copy. */
+export function parseReaderResponse(body: string, requestedUrl: string): Investigation {
+  if (!body.trimStart().startsWith('{')) return parseReader(body, requestedUrl);
+  const payload = JSON.parse(body);
+  const data = payload?.data;
+  if (!data || typeof data.content !== 'string' || (data.httpStatus && data.httpStatus >= 400)) throw new Error('The website did not return usable public content.');
+  const source = publicTarget(typeof data.url === 'string' ? data.url : requestedUrl);
+  const result = parseReader(`Title: ${typeof data.title === 'string' ? data.title.slice(0,300).replace(/[\r\n]/g,' ') : ''}\nURL Source: ${source}\nMarkdown Content:\n${data.content}`, source);
+  const pairs = (value: unknown): [string, string][] => value && typeof value === 'object' && !Array.isArray(value)
+    ? Object.entries(value).filter((pair): pair is [string,string] => typeof pair[1] === 'string').slice(0,200) : [];
+  const links = pairs(data.links).flatMap(([text, href]) => {
+    try { return [{ text: redactSensitiveText(text).slice(0,500), href: publicTarget(href) }]; } catch { return []; }
+  });
+  const images = pairs(data.images).flatMap(([alt, src]) => {
+    try { return [{ alt: redactSensitiveText(alt).slice(0,200), src: publicTarget(src) }]; } catch { return []; }
+  });
+  result.snapshot.links = [...links, ...result.snapshot.links].filter((link, i, all) => all.findIndex(other => other.href === link.href) === i).slice(0,100);
+  result.images = [...images, ...result.images].filter((image, i, all) => all.findIndex(other => other.src === image.src) === i).slice(0,24);
+  if (typeof data.description === 'string' && data.description.trim()) result.description = redactSensitiveText(data.description).slice(0,1200);
+  return result;
 }

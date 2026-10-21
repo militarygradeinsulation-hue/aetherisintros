@@ -1,4 +1,4 @@
-import { parseReader, publicTarget, type Investigation } from '@/features/specter-detect/investigation';
+import { parseReaderResponse, publicTarget, type Investigation } from '@/features/specter-detect/investigation';
 import { validatePublicSnapshot } from '@/features/specter-detect/snapshot-validation';
 
 /** A fixed external reader origin avoids fetching member-controlled hosts from our network. */
@@ -14,7 +14,7 @@ export async function captureSpecterWebsite(target: string): Promise<Investigati
         body: JSON.stringify({ url }),
       })
     : await fetch(`https://r.jina.ai/${url}`, {
-        redirect: 'error', signal: AbortSignal.timeout(25_000), headers: { accept: 'text/plain' },
+        redirect: 'error', signal: AbortSignal.timeout(25_000), headers: { accept: 'application/json', 'x-with-links-summary': 'true', 'x-with-images-summary': 'true' },
       });
   if (!response.ok) throw new Error(response.status === 429 ? 'Website capture is busy. Try again shortly.' : 'This website could not be captured. Try another public page or open the original website.');
   // Bound the response while streaming; do not buffer an unbounded third-party response.
@@ -41,7 +41,7 @@ export async function captureSpecterWebsite(target: string): Promise<Investigati
     });
     return { snapshot, description: '', images: [], mode: 'browser' };
   }
-  const result = parseReader(body, url);
+  const result = parseReaderResponse(body, url);
   if (!result.snapshot.title && !result.snapshot.headings.length && !result.description) throw new Error('No public website evidence was returned.');
   if (/^Warning:.*(?:403|blocked|captcha|429)/im.test(body)) throw new Error('The website blocked capture. Open the original website to review it.');
   return result;
