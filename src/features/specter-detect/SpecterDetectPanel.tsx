@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { detectPublicPage } from "./diagnostics";
+import { validatePublicSnapshot, redactSensitiveText } from "./snapshot-validation";
 import type { SpecterFinding } from "./types";
 
 /** Manual, local-only evidence capture. No URL fetching or background collection. */
@@ -18,13 +19,13 @@ export function SpecterDetectPanel() {
       if (!["https:", "http:"].includes(parsed.protocol)) throw new Error("Enter an HTTP(S) URL.");
       if (["localhost", "127.0.0.1", "::1"].includes(parsed.hostname)) throw new Error("Use a public business URL.");
       if (!title.trim() && !headings.trim() && !links.trim()) throw new Error("Provide actual page evidence first.");
-      const result = detectPublicPage({
+      const result = detectPublicPage(validatePublicSnapshot({
         url: parsed.href,
-        title: title.trim().slice(0, 300),
-        headings: headings.split("\n").map(s => s.trim()).filter(Boolean).slice(0, 100),
-        links: links.split("\n").map(s => s.trim()).filter(Boolean).slice(0, 100).map(text => ({ text, href: "" })),
+        title: redactSensitiveText(title.trim().slice(0, 300)),
+        headings: headings.split("\n").map(s => redactSensitiveText(s.trim())).filter(Boolean).slice(0, 100),
+        links: links.split("\n").map(s => redactSensitiveText(s.trim())).filter(Boolean).slice(0, 100).map(text => ({ text, href: "" })),
         capturedAt: new Date().toISOString()
-      });
+      }));
       setFindings(result.findings);
     } catch (e) {
       setError(e instanceof Error ? e.message : "Unable to analyze evidence.");
