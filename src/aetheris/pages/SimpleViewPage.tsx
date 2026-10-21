@@ -300,7 +300,7 @@ function ThreadSheet({ threadId, openMember, onThreadConfirmed }: { threadId: st
     <button className="sv-link" onClick={() => openMember(thread.memberId)}>Open {name}’s profile</button>
     <p className="sv-empty">{thread.introContext}</p>
     <ul className="sv-chat">
-      {thread.messages.map(message => <li key={message.id} className={message.from === 'me' ? 'mine' : ''}><p>{message.text}</p><small>{message.at}</small></li>)}
+      {thread.messages.map(message => <li key={message.id} className={message.from === 'me' ? 'mine' : ''}><p>{message.text}</p><small>{message.at}{message.status === 'pending' && ' · Sending…'}{message.status === 'unsaved' && <> · <span role="alert">Not sent</span> <button type="button" onClick={() => void net.retryWrite(`msg:${message.id}`)}>Retry</button></>}</small></li>)}
     </ul>
     {failed && <div role="alert" className="sv-empty" style={{ border: '1px solid #b76666', padding: 10 }}>
       {failed.reason} This message has not been delivered.
