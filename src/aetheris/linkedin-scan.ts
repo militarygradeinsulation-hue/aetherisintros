@@ -19,7 +19,7 @@ export const MAX_RAW_INPUT = 120_000
 export const MAX_SCAN_TEXT = 40_000
 export const MIN_SCAN_TEXT = 40
 
-export interface ScannedRole { title: string; company: string; start: string; end: string; location?: string; description?: string }
+export interface ScannedRole { title: string; company: string; start: string; end: string; location?: string | undefined; description?: string | undefined }
 
 /** The one shape every reader (AI, built-in reader, demo) returns. */
 export interface ScannedProfile {
