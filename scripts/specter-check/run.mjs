@@ -68,6 +68,8 @@ try {
   await page.getByRole('tab',{name:'Images',exact:true}).click();
   await page.getByRole('img',{name:'Alpha house',exact:true}).waitFor();
   assert(await page.locator('.specter-image img').getAttribute('src') === 'https://alpha.com/house.jpg','image tab renders captured image URL instead of empty placeholders');
+  await page.getByRole('button',{name:'Track Company',exact:true}).click();
+  assert((await page.evaluate(()=>localStorage.getItem('specter-tracked:member-1'))).includes('alpha.com'),'Track Company persists the captured company on this device');
   const download = page.waitForEvent('download');
   await page.getByRole('button',{name:'Export Report',exact:true}).click();
   assert((await download).suggestedFilename() === 'specter-report.json','report export produces a real file');

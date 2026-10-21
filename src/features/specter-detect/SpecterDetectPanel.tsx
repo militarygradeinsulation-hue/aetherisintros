@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { ArrowLeft, ArrowRight, RefreshCw, Globe, Search, Download, ExternalLink, Link2, List, Building2, Image as ImageIcon, FileText, Bookmark } from 'lucide-react';
+import { ArrowLeft, ArrowRight, RefreshCw, Globe, Search, Download, ExternalLink, Link2, List, Building2, Image as ImageIcon, FileText, Bookmark, CheckCircle2, CircleAlert, Radar } from 'lucide-react';
 import { scanSpecterWebsite } from '@/lib/specter.functions';
 import { supabase } from '@/integrations/supabase/client';
 import { detectPublicPage } from './diagnostics';
@@ -35,6 +35,7 @@ export function SpecterDetectPanel() {
   const [error, setError] = useState('');
   const [message, setMessage] = useState('');
   const [showPreview, setShowPreview] = useState(false);
+  const [tracking, setTracking] = useState(false);
   const generation = useRef(0);
   const currentOwner = useRef(owner);
   currentOwner.current = owner;
@@ -46,6 +47,11 @@ export function SpecterDetectPanel() {
   const snapshot = current?.snapshot;
   const contacts = snapshot?.links.filter(link => /contact|consultant|sales|support|call|appointment/i.test(link.text + ' ' + link.href)) || [];
   const documents = snapshot?.links.filter(link => /\.(?:pdf|docx?|xlsx?|pptx?)(?:[?#]|$)/i.test(link.href) || /download|brochure|guide|book/i.test(link.text)) || [];
+  useEffect(() => {
+    try { const tracked: unknown = JSON.parse(localStorage.getItem(`specter-tracked:${owner}`) || '[]'); setTracking(Array.isArray(tracked) && tracked.includes(snapshot?.url)); } catch { setTracking(false); }
+  }, [owner, snapshot?.url]);
+  const leadership = snapshot?.links.find(link => /leadership|our.team|management|founder/i.test(link.text+' '+link.href));
+  const news = snapshot?.links.find(link => /news|blog|press/i.test(link.text+' '+link.href));
   const result = snapshot ? detectPublicPage(snapshot) : { findings: [], evidence: [] };
   async function scan(target = url) {
     const request = ++generation.current;
@@ -82,6 +88,19 @@ export function SpecterDetectPanel() {
       localStorage.setItem(key, JSON.stringify([{...current, previewUrl: undefined}, ...cases.filter(c => c?.snapshot?.url !== snapshot?.url)].slice(0, 20)));
       setMessage('Case saved on this device. Use Saved Cases to reopen it.');
     } catch { setMessage('Device storage is unavailable. Export the report to keep a copy.'); }
+  }
+  function trackCompany() {
+    if (!current || !owner) return;
+    try {
+      const key = `specter-tracked:${owner}`;
+      const stored: unknown = JSON.parse(localStorage.getItem(key) || '[]');
+      const values: string[] = Array.isArray(stored) ? stored.filter((v): v is string => typeof v === 'string') : [];
+      const next = tracking ? values.filter(v=>v!==snapshot!.url) : [snapshot!.url, ...values].slice(0,20);
+      localStorage.setItem(key, JSON.stringify(next));
+      if (!tracking) saveCase();
+      setTracking(!tracking);
+      setMessage(tracking ? 'Company removed from this device watchlist.' : 'Company saved to this device watchlist. Open Saved Cases and refresh to check for updates; background monitoring is not enabled.');
+    } catch { setMessage('Device storage is unavailable. Export the report to keep this capture.'); }
   }
   function openSaved() {
     if (!owner || busy) return;
@@ -120,13 +139,20 @@ export function SpecterDetectPanel() {
       </div>
       <aside className="specter-insights"><div className="specter-tabs" role="tablist" aria-label="Investigation results">{(['analysis', 'evidence', 'facts', 'links', 'images'] as const).map(id => <button key={id} id={`specter-tab-${id}`} role="tab" aria-selected={tab === id} aria-controls="specter-results" onClick={() => setTab(id)} className={tab === id ? 'active' : ''}>{({ analysis: 'Analysis', evidence: 'Evidence', facts: 'Key Facts', links: 'Links', images: 'Images' })[id]}{id === 'links' ? ` (${snapshot?.links.length || 0})` : ''}</button>)}</div>
         <div id="specter-results" role="tabpanel" aria-labelledby={`specter-tab-${tab}`}>
-        {tab === 'analysis' && <><section className="specter-card"><h3>Company Overview <span>SOURCE OBSERVATIONS</span></h3><div className="specter-company"><Building2/><div><strong>{snapshot?.title || 'No company scanned'}</strong><small>{snapshot ? new URL(snapshot.url).hostname : 'Scan a website to begin'}</small></div></div><p>{current?.description || 'Company details appear when supported by captured website content.'}</p></section><section className="specter-card"><h3>Key Findings</h3>{!current ? <p>Scan a website to review its public evidence.</p> : result.findings.length ? result.findings.map(f => <div className="specter-finding" key={f.id}><FileText size={18}/><div><strong>{f.title}</strong><p>{f.recommendation}</p><small>Rule based observation from this page capture. Verify against the full website.</small></div></div>) : <p>No issues identified by the current heading and contact link checks. This is a limited page review.</p>}</section></>}
+        {tab === 'analysis' && <><section className="specter-card"><h3>Company Overview <span>SOURCE OBSERVATIONS</span></h3><div className="specter-company"><Building2/><div><strong>{snapshot?.title || 'No company scanned'}</strong><small>{snapshot ? new URL(snapshot.url).hostname : 'Scan a website to begin'}</small></div></div><p>{current?.description || 'Company details appear when supported by captured website content.'}</p></section><section className="specter-card"><h3>Key Findings <span>PAGE EVIDENCE</span></h3>{!current ? <p>Scan a website to review its public evidence.</p> : <div className="specter-facts-list">{[
+          {label:'Business Model', text:(current.description.length > 180 ? current.description.slice(0,180)+'…' : current.description) || snapshot?.title || 'Not established by this capture.', observed:!!current.description},
+          {label:'Target Market', text:'Requires evidence identifying the customers served.', observed:false},
+          {label:'Leadership', text:leadership ? leadership.text || 'Leadership source found' : 'No leadership source identified in this capture.', href:leadership?.href, observed:!!leadership},
+          {label:'Funding', text:'No funding evidence established by this page capture.', observed:false},
+          {label:'Recent News', text:news ? news.text || 'News source found; review dates at source' : 'No news source identified in this capture.', href:news?.href, observed:!!news},
+          {label:'Potential Risks', text:result.findings.length ? result.findings.map(f=>f.title).join('; ') : 'No heading or contact-link issue identified. Broader risks require further review.', observed:false},
+        ].map(row=><div className="specter-fact-row" key={row.label}><span>{row.label}</span>{row.observed ? <CheckCircle2 size={18} className="specter-observed"/> : <CircleAlert size={18} className="specter-unverified"/>}<p>{row.href ? <a href={row.href} target="_blank" rel="noopener noreferrer">{row.text}</a> : row.text}</p></div>)}<small>Source claims and captured links require independent verification. Unavailable facts are not inferred.</small></div>}</section></>}
         {tab === 'evidence' && <section className="specter-card"><h3>Captured Evidence</h3><p>{current ? `Source: ${snapshot!.url}` : 'No capture yet.'}</p>{snapshot?.headings.map((h,i) => <p className="specter-line" key={i}>{h}</p>)}{current && <><h3>Contact links ({contacts.length})</h3>{contacts.map((l,i)=><p className="specter-line" key={`c${i}`}><a href={l.href} target="_blank" rel="noopener noreferrer">{l.text || l.href}</a></p>)}{!contacts.length && <p>No contact links were found in this capture.</p>}<h3>Documents and guide links ({documents.length})</h3>{documents.map((l,i)=><p className="specter-line" key={`d${i}`}><a href={l.href} target="_blank" rel="noopener noreferrer">{l.text || l.href}</a></p>)}{!documents.length && <p>No document or guide links were found in this capture.</p>}</>}</section>}
         {tab === 'facts' && <section className="specter-card"><h3>Key Facts</h3><p>Title: {snapshot?.title || 'Unavailable'}</p><p>Source: {snapshot?.url || 'Unavailable'}</p><p>Capture method: {current?.mode || 'Unavailable'}</p><p>Ownership, funding, employee counts and revenue require additional sources.</p></section>}
         {tab === 'links' && <section className="specter-card"><h3>Captured Links</h3>{snapshot?.links.length ? snapshot.links.map((l,i) => <p className="specter-line" key={i}><a href={l.href} target="_blank" rel="noopener noreferrer">{l.text || l.href} <ExternalLink size={12}/></a></p>) : <p>No links captured.</p>}</section>}
         {tab === 'images' && <section className="specter-card"><h3>Captured Images</h3><p>Open an image source to review it.</p>{current?.images.length ? <div className="specter-image-grid">{current.images.map((img,i) => <CapturedImage key={img.src} src={img.src} alt={img.alt || `Image ${i+1}`}/>)}</div> : <p>No images captured by this capture method.</p>}</section>}
         </div>
-        <section className="specter-card specter-actions"><h3>Quick Actions</h3><div className="specter-action-row"><button disabled={!current || busy} onClick={saveCase}><Bookmark size={17}/> Save Case</button><button disabled={!current || busy} onClick={exportReport}><Download size={17}/> Export Report</button></div><p>Cases are saved privately on this device under your signed-in account.</p></section>
+        <section className="specter-card specter-actions"><h3>Quick Actions</h3><div className="specter-action-row"><button disabled={!current || busy} onClick={saveCase}><Bookmark size={17}/> Save Case</button><button disabled={!current || busy} onClick={exportReport}><Download size={17}/> Export Report</button><button disabled={!current || busy} onClick={trackCompany} aria-pressed={tracking}><Radar size={17}/> {tracking ? 'Tracking on device' : 'Track Company'}</button></div><p>Cases are saved privately on this device under your signed-in account.</p></section>
       </aside>
     </div>
   </section>;
