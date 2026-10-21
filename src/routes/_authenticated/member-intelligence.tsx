@@ -40,8 +40,8 @@ function MemberIntelligence() {
           <p className="member-intel-explanation">This score is calculated from network outcomes. Members cannot directly edit their reputation score.</p>
           <TrackRecordDashboard userId={user.id} />
         </section>
-        <section id="specter-detect" aria-labelledby="specter-heading" className="member-intel-panel">
-          <h2 id="specter-heading">Specter Detect — Evidence Preview</h2>
+        <section id="specter-detect" aria-labelledby="specter-heading" className="member-intel-specter">
+          <h2 id="specter-heading" className="sr-only">Specter Detect</h2>
           <SpecterDetectPanel />
         </section>
       </div> : <p className="member-intel-loading">Sign in to review your private business and track-record data.</p>}
