@@ -22,6 +22,7 @@ import {
 import { readPdfText } from './pdf-text'
 import { isShowcase } from './showcase'
 import { Btn, Eyebrow } from './ui'
+import './public-info-review.css'
 
 export type ScanPatch = Partial<Record<ScanKey, string>>
 /**
@@ -203,10 +204,10 @@ export function LinkedInScanPanel({
         {rows.map(row => {
           const id = `${uid}-${row.key}`
           const value = edits[row.key] ?? row.incoming
-          const long = LONG_KEYS.includes(row.key)
+          const long = LONG_KEYS.includes(row.key) || EVIDENCE_ONLY_KEYS.includes(row.key)
           return <div key={row.key} className={`li-scan-row${checked.has(row.key) ? ' on' : ''}${row.incoming ? '' : ' empty'}`} data-field={row.key}>
             <input type="checkbox" id={id} checked={checked.has(row.key)} disabled={!row.incoming || EVIDENCE_ONLY_KEYS.includes(row.key) || Boolean(busy)} onChange={() => toggle(row.key)} />
-            <label htmlFor={id}>{row.label}{EVIDENCE_ONLY_KEYS.includes(row.key) && <small>Private review only — no supported save field yet</small>}{LIST_KEYS.includes(row.key) && <small> (comma-separated)</small>}</label>
+            <label htmlFor={id}>{row.label}{EVIDENCE_ONLY_KEYS.includes(row.key) && <small> — Private review only; not saved</small>}{LIST_KEYS.includes(row.key) && <small> (comma-separated)</small>}</label>
             <span className="li-scan-now"><span className="li-sr">Now: </span>{row.current || <em>Empty</em>}</span>
             {row.incoming
               ? (long
@@ -220,7 +221,7 @@ export function LinkedInScanPanel({
       {!!result.claims?.length && <details className="li-public-review"><summary>Evidence and professional hypotheses</summary>
         {result.claims.map((claim, index) => <div key={index} className="li-public-suggestions">
           <b>{claim.kind === 'hypothesis' ? 'Hypothesis — not a personal fact' : 'Self-reported'}</b>
-          <p>{claim.value}</p><small>{claim.confidence} confidence · {claim.source}</small>
+          {claim.kind === 'hypothesis' ? <textarea aria-label={`Review hypothesis ${index + 1}`} rows={3} defaultValue={claim.value} /> : <p>{claim.value}</p>}<small>{claim.confidence} confidence · {claim.source}</small>
           <p>Evidence: “{claim.quote}”</p><small>{claim.explanation}</small>
         </div>)}
         <p>Evidence and hypotheses stay in this private review, not your public profile. Missing evidence remains unknown.</p>

@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import { AdditionalEvidenceSchema, containsCompleteClaim } from '../professional-evidence'
+import { groundLinkedInProfile, parseLinkedInText } from '../linkedin-import'
 import { checkedPatch, buildReviewRows, emptyScan, groundScan, parseAuthorizedScan, parseScanText, PROFILE_KEYS, scanValues } from '../linkedin-scan'
 
 const profile = `Ada Example
@@ -82,5 +83,13 @@ describe('authorized professional evidence', () => {
   it('rejects an invented PDF name hint and AI profile link', () => {
     expect(parseScanText(profile, { nameHint: 'Invented Person' }).scan.name).toBe('Ada Example')
     expect(groundScan({ ...emptyScan(), linkedin_url: 'https://www.linkedin.com/in/invented-person' }, profile).linkedin_url).toBe('')
+  })
+  it('grounds the older extraction pathway too, including full descriptions', () => {
+    const parsed = parseLinkedInText(profile)
+    const result = groundLinkedInProfile({ ...parsed, about: 'I build tools for small teams. I won a Nobel prize.', certifications: ['Invented award'], name: 'Other Person' }, profile)
+    expect(result.name).toBe('')
+    expect(result.about).toBe('')
+    expect(result.certifications).toEqual([])
+    expect(result.skills).toEqual(['Operations'])
   })
 })

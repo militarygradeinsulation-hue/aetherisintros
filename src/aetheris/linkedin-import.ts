@@ -224,6 +224,16 @@ export function parseAiProfile(answer: string): LinkedInProfile | null {
 }
 
 /** AI fields win where present; the parser fills any gaps. */
+export function groundLinkedInProfile(profile: LinkedInProfile, source: string): LinkedInProfile {
+  const norm = (value: string) => value.toLowerCase().replace(/[^\p{L}\p{N}]+/gu, ' ').trim()
+  const stated = (value: string) => Boolean(norm(value)) && ` ${norm(source)} `.includes(` ${norm(value)} `)
+  const keep = (value: string) => stated(value) ? value : ''
+  return { name: keep(profile.name), headline: keep(profile.headline), location: keep(profile.location), about: keep(profile.about),
+    skills: profile.skills.filter(stated), education: profile.education.filter(stated), languages: profile.languages.filter(stated),
+    certifications: profile.certifications.filter(stated),
+    experience: profile.experience.filter(role => Object.values(role).every(value => !value || stated(value))) }
+}
+
 export function mergeProfiles(ai: LinkedInProfile | null, parsed: LinkedInProfile): LinkedInProfile {
   if (!ai) return parsed
   return {
