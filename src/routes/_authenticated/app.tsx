@@ -1,4 +1,4 @@
-import { ClientOnly, createFileRoute, Link, useNavigate } from '@tanstack/react-router'
+import { ClientOnly, createFileRoute, useNavigate } from '@tanstack/react-router'
 import { useEffect } from 'react'
 
 import IntrosApp from '@/intros-ui/IntrosApp'
@@ -79,5 +79,5 @@ function Gate() {
   if (access.loading || !ready) {
     return <main className="access-waiting"><span className="folio">ASK INTROS</span><p>Checking your membership…</p></main>
   }
-  return <AetherisProviderRoot mode="live"><ConnectionBanner /><WelcomeDiagnosticBanner /><section aria-label="Specter Detect access" style={{padding:"12px 18px",borderBottom:"1px solid var(--border, #525252)",display:"flex",alignItems:"center",justifyContent:"space-between",gap:12,flexWrap:"wrap"}}><div><strong style={{display:"block"}}>AETHERIS SPECTER DETECT</strong><span style={{fontSize:13}}>Investigate business website evidence and prepare a private case.</span></div><Link to="/member-intelligence" hash="specter-detect" style={{display:"inline-flex",alignItems:"center",minHeight:44,padding:"10px 16px",borderRadius:6,background:"#f4a125",color:"#111317",fontWeight:700}}>Open Specter →</Link></section><IntrosApp mode="live" /><ExecutiveUpgrade tier={access.tier} isAdmin={access.isAdmin} /></AetherisProviderRoot>
+  return <AetherisProviderRoot mode="live"><ConnectionBanner /><WelcomeDiagnosticBanner /><IntrosApp mode="live" /><ExecutiveUpgrade tier={access.tier} isAdmin={access.isAdmin} /></AetherisProviderRoot>
 }
