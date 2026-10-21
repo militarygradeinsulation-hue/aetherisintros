@@ -136,7 +136,7 @@ const headlineRole = (headline: string) => squash(headline.split(/\s+(?:at|@)\s+
 /** The built-in reader: used when AI extraction is unavailable, and in the demo. */
 export function parseScanText(rawText: string, hints: { nameHint?: string | undefined; url?: string | undefined } = {}): ScanResult {
   const cleaned = cleanProfileText(rawText)
-  const li = parseLinkedInText(cleaned.text, hints.nameHint ? { name: hints.nameHint } : {})
+  const li = parseLinkedInText(cleaned.text, hints.nameHint && statedIn(hints.nameHint, cleaned.text) ? { name: hints.nameHint } : {})
   const experience = li.experience.slice(0, 20).map(r => ({ title: r.title, company: r.company, ...splitDates(r.dates) }))
   const now = currentRole(experience)
   const services = sectionLines(cleaned.text, /^(providing services|services)$/i)
@@ -298,7 +298,7 @@ export function groundScan(scan: ScannedProfile, source: string): ScannedProfile
     education: keepAll(scan.education),
     projects: keepAll(scan.projects), credentials: keepAll(scan.credentials), languages: keepAll(scan.languages),
     volunteering: keepAll(scan.volunteering), achievements: keepAll(scan.achievements), websites: keepAll(scan.websites),
-    linkedin_url: scan.linkedin_url,
+    linkedin_url: linkedInUrlFrom(undefined, source),
   }
 }
 
@@ -312,7 +312,7 @@ export function mergeScans(ai: ScannedProfile | null, parsed: ScannedProfile): S
   return {
     name: pick('name'), headline: pick('headline'), title: pick('title'), company: pick('company'), location: pick('location'),
     about: pick('about'), industries: pick('industries'), expertise: pick('expertise'), can_help_with: pick('can_help_with'),
-    looking_for: pick('looking_for'), experience: pick('experience'), education: pick('education'), projects: pick('projects'), credentials: pick('credentials'), languages: pick('languages'), volunteering: pick('volunteering'), achievements: pick('achievements'), websites: pick('websites'), linkedin_url: parsed.linkedin_url || ai.linkedin_url,
+    looking_for: pick('looking_for'), experience: pick('experience'), education: pick('education'), projects: pick('projects'), credentials: pick('credentials'), languages: pick('languages'), volunteering: pick('volunteering'), achievements: pick('achievements'), websites: pick('websites'), linkedin_url: parsed.linkedin_url,
   }
 }
 

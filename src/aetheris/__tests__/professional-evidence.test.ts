@@ -79,4 +79,8 @@ describe('authorized professional evidence', () => {
     const rows = buildReviewRows(PROFILE_KEYS, scanValues(result.scan), {})
     expect(checkedPatch(rows, new Set(['projects', 'credentials', 'name']))).toEqual({ name: 'Ada Example' })
   })
+  it('rejects an invented PDF name hint and AI profile link', () => {
+    expect(parseScanText(profile, { nameHint: 'Invented Person' }).scan.name).toBe('Ada Example')
+    expect(groundScan({ ...emptyScan(), linkedin_url: 'https://www.linkedin.com/in/invented-person' }, profile).linkedin_url).toBe('')
+  })
 })

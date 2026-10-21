@@ -35,4 +35,9 @@ describe('reviewed scan owner and concurrency guards', () => {
     await expect(saveReviewedProfileScan({ credentials: 'Certificate' }, { userId: 'owner', baseline: {} })).rejects.toThrow('No supported')
     expect(state.writes).toBe(0)
   })
+  it('compares the photo baseline in the same guarded write as selected profile fields', async () => {
+    await saveReviewedProfileScan({ title: 'CEO' }, { userId: 'owner', baseline: { title: 'Founder', avatar_url: null } }, 'owner/avatar.jpg')
+    expect(state.filters).toEqual([['id', 'owner'], ['title', 'Founder'], ['avatar_url', null]])
+    expect(state.writes).toBe(1)
+  })
 })
