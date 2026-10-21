@@ -40,6 +40,10 @@ jobs:
           node scripts/migration-checks/launch-signup.standalone.mjs
       - name: Install Chromium
         run: npx playwright install --with-deps chromium
+      - name: Specter URL capture workspace (browser)
+        env:
+          PLAYWRIGHT_MODULE: ${{ github.workspace }}/node_modules/playwright/index.mjs
+        run: node scripts/specter-check/run.mjs
       - name: Validate Opportunity Preview browser check syntax
         run: node --check scripts/opportunity-preview-check/run.mjs
       - name: Public Opportunity Preview (light/dark, desktop/phone browser)
