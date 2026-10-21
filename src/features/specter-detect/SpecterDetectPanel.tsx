@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { CaseWorkspace } from "./CaseWorkspace";
 import { detectPublicPage } from "./diagnostics";
 import { validatePublicSnapshot, redactSensitiveText } from "./snapshot-validation";
 import type { SpecterFinding } from "./types";
@@ -46,5 +47,6 @@ export function SpecterDetectPanel() {
     <div aria-live="polite">{findings.length === 0 && !error ? <p className="text-sm text-muted-foreground">No findings to display.</p> : null}
       <ul className="space-y-3">{findings.map(finding => <li key={finding.id} className="rounded border border-border p-3"><strong>{finding.title}</strong><p className="text-sm">{finding.recommendation}</p><small>Rule-based observation · confidence {Math.round(finding.confidence * 100)}% · verify against the complete site</small></li>)}</ul>
     </div>
+    <CaseWorkspace target={url} findings={findings} />
   </section>;
 }
