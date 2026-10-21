@@ -40,7 +40,7 @@ function MemberIntelligence() {
           <p className="member-intel-explanation">This score is calculated from network outcomes. Members cannot directly edit their reputation score.</p>
           <TrackRecordDashboard userId={user.id} />
         </section>
-        <section aria-labelledby="specter-heading" className="member-intel-panel">
+        <section id="specter-detect" aria-labelledby="specter-heading" className="member-intel-panel">
           <h2 id="specter-heading">Specter Detect — Evidence Preview</h2>
           <SpecterDetectPanel />
         </section>
