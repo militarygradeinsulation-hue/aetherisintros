@@ -85,3 +85,6 @@
   .member-intel-page .track-stats-row { grid-template-columns:minmax(0,1fr); }
   .member-intel-page .analyst-generate-btn { width:100%; }
 }
+
+/* Specter uses the full investigation canvas, not a half-width intelligence tile. */
+.member-intel-specter{grid-column:1/-1;min-width:0;scroll-margin-top:85px;}
