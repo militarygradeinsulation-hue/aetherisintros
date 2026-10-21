@@ -11,7 +11,7 @@
 import { z } from 'zod'
 
 import { normalizeLinkedInUrl, parseLinkedInText } from './linkedin-import'
-import { professionalClaims, type ProfessionalClaim } from './professional-evidence'
+import { AdditionalEvidenceSchema, professionalClaims, type AdditionalEvidence, type ProfessionalClaim } from './professional-evidence'
 
 /** Raw text accepted from the member before cleaning. */
 export const MAX_RAW_INPUT = 120_000
@@ -180,6 +180,28 @@ function sectionLines(text: string, heading: RegExp): string[] {
     }
   }
   return [...new Set(out)].slice(0, 12)
+}
+
+/** Supplement only explicit professional sections; additional documents cannot replace identity. */
+export function parseAuthorizedScan(text: string, evidence: AdditionalEvidence[] = [], hints: { nameHint?: string; url?: string } = {}): ScanResult {
+  if (evidence.length > 3) throw new Error('Add at most three evidence documents.')
+  const documents = evidence.map(item => AdditionalEvidenceSchema.parse(item))
+  const result = parseScanText(text, hints)
+  const scan = { ...result.scan }
+  const sources = [{ label: 'Supplied LinkedIn profile', text: cleanProfileText(text).text }]
+  for (const document of documents) {
+    const cleaned = cleanProfileText(document.text)
+    sources.push({ label: document.label, text: cleaned.text })
+    const supplemental = parseScanText(`Evidence document\nProfessional evidence\nAbout\n${cleaned.text}`).scan
+    for (const key of ['industries', 'expertise', 'projects', 'credentials', 'languages', 'volunteering', 'achievements', 'websites'] as const) {
+      scan[key] = [...new Set([...scan[key], ...supplemental[key]])]
+    }
+    for (const key of ['can_help_with', 'looking_for'] as const) {
+      if (!scan[key]) scan[key] = supplemental[key]
+    }
+  }
+  const validated = validateScan(scan) ?? result.scan
+  return { ...result, scan: validated, claims: professionalClaims(validated, sources) }
 }
 
 /** The member's link wins; otherwise a profile link stated in the text (the PDF's Contact section). */

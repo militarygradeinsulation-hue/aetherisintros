@@ -10,6 +10,8 @@ import {
   cleanProfileText, groundScan, LINKEDIN_SCAN_PROMPT, MAX_RAW_INPUT, mergeScans, MIN_SCAN_TEXT, parseScanJson, parseScanText,
   validateScan, type ScannedProfile, type ScanResult,
 } from '@/aetheris/linkedin-scan'
+import { parseAuthorizedScan } from '@/aetheris/linkedin-scan'
+import { AdditionalEvidenceSchema, professionalClaims, type AdditionalEvidence } from '@/aetheris/professional-evidence'
 
 export interface LinkedInExtraction {
   linkedinUrl: string | null
@@ -65,15 +67,17 @@ export const extractLinkedInProfile = createServerFn({ method: 'POST' })
  */
 export const scanLinkedInProfile = createServerFn({ method: 'POST' })
   .middleware([requireAuthContract])
-  .inputValidator((data: { text: string; url?: string; nameHint?: string }) => {
+  .inputValidator((data: { text: string; url?: string; nameHint?: string; evidence?: AdditionalEvidence[] }) => {
     const text = typeof data?.text === 'string' ? data.text.slice(0, MAX_RAW_INPUT) : ''
     if (text.trim().length < MIN_SCAN_TEXT) throw new Error('Paste the profile text or add the LinkedIn PDF first.')
     const url = typeof data.url === 'string' ? data.url.trim().slice(0, 300) : ''
     if (url && !normalizeLinkedInUrl(url)) throw new Error('That is not a LinkedIn profile link. It looks like linkedin.com/in/name.')
-    return { text, url, nameHint: typeof data.nameHint === 'string' ? data.nameHint.slice(0, 120) : '' }
+    if (data.evidence && (!Array.isArray(data.evidence) || data.evidence.length > 3)) throw new Error('Add at most three evidence documents.')
+    const evidence = (data.evidence ?? []).map(item => AdditionalEvidenceSchema.parse(item))
+    return { text, url, evidence, nameHint: typeof data.nameHint === 'string' ? data.nameHint.slice(0, 120) : '' }
   })
   .handler(async ({ data }): Promise<ScanResult> => {
-    const parsed = parseScanText(data.text, { nameHint: data.nameHint, url: data.url })
+    const parsed = parseAuthorizedScan(data.text, data.evidence, { nameHint: data.nameHint, url: data.url })
     const cleaned = cleanProfileText(data.text)
     let ai: ScannedProfile | null = null
     const routeKey = process.env['ROUTELLM_API_KEY']
@@ -92,7 +96,7 @@ export const scanLinkedInProfile = createServerFn({ method: 'POST' })
       }
     }
     const scan = validateScan(mergeScans(ai, parsed.scan)) ?? parsed.scan
-    return { scan, source: ai ? 'ai' : 'parser', truncated: cleaned.truncated }
+    return { scan, claims: professionalClaims(scan, [{ label: 'Supplied LinkedIn profile', text: cleaned.text }, ...data.evidence.map(item => ({ label: item.label, text: cleanProfileText(item.text).text }))]), source: ai ? 'ai' : 'parser', truncated: cleaned.truncated }
   })
 
 const MAX_PHOTO = 5 * 1024 * 1024
