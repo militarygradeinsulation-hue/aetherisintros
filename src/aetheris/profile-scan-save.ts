@@ -3,7 +3,7 @@ import { profileColumns, type ScanKey } from './linkedin-scan'
 import type { Database } from '@/integrations/supabase/types'
 
 export interface ProfileScanContext { userId: string; baseline: Record<string, unknown> }
-const columns = Object.keys(profileColumns({ name: 'Member', title: 'Role', company: 'Company', location: 'Place', headline: 'Headline', about: 'About', focus: 'Focus', industries: 'Industry', expertise: 'Skill', can_help_with: 'Help', looking_for: 'Need', linkedin_url: 'linkedin.com/in/member' }))
+const columns = [...Object.keys(profileColumns({ name: 'Member', title: 'Role', company: 'Company', location: 'Place', headline: 'Headline', about: 'About', focus: 'Focus', industries: 'Industry', expertise: 'Skill', can_help_with: 'Help', looking_for: 'Need', linkedin_url: 'linkedin.com/in/member' })), 'avatar_url']
 
 export async function loadProfileScanContext(): Promise<ProfileScanContext> {
   const { data, error } = await supabase.auth.getUser()
@@ -14,10 +14,11 @@ export async function loadProfileScanContext(): Promise<ProfileScanContext> {
 }
 
 /** RLS plus owner and per-column optimistic comparisons; no service-role writes. */
-export async function saveReviewedProfileScan(patch: Partial<Record<ScanKey, string>>, context: ProfileScanContext): Promise<void> {
+export async function saveReviewedProfileScan(patch: Partial<Record<ScanKey, string>>, context: ProfileScanContext, avatarUrl?: string): Promise<void> {
   const { data, error } = await supabase.auth.getUser()
   if (error || data.user?.id !== context.userId) throw new Error('Your account changed. Scan again before applying.')
   const changes = profileColumns(patch) as Database['public']['Tables']['profiles']['Update']
+  if (avatarUrl) changes.avatar_url = avatarUrl
   if (!Object.keys(changes).length) throw new Error('No supported profile fields were selected.')
   let query = supabase.from('profiles').update(changes).eq('id', context.userId)
   for (const column of Object.keys(changes)) {

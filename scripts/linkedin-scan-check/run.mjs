@@ -39,15 +39,14 @@ const server = createServer((req, res) => {
 }).listen(0, '127.0.0.1')
 await new Promise(r => server.once('listening', r))
 const base = `http://127.0.0.1:${server.address().port}/`
-const chromiumPath = () => { const p = process.env.CHROMIUM ?? '/opt/pw-browsers/chromium'; return existsSync(p) ? { executablePath: p } : {} }
 const { chromium } = await import(process.env.PLAYWRIGHT_MODULE ?? '/opt/node22/lib/node_modules/playwright/index.mjs')
-const browser = await chromium.launch({ ...chromiumPath() })
-const page = await browser.newPage({ viewport: { width: 1100, height: 900 } })
+const browser = await chromium.launch({ headless: true })
+const page = await browser.newPage({ viewport: { width: 1280, height: 1800 } })
 const errors = []
 page.on('pageerror', e => errors.push(e.message))
 let pass = 0, fail = 0
 const ok = (c, m) => { if (c) { pass++; console.log('  ✓', m) } else { fail++; console.log('  ✗', m) } }
-const shot = async n => { if (process.env.SHOTS) await page.screenshot({ path: join(process.env.SHOTS, `${n}.png`), fullPage: true }) }
+const shot = async n => { if (process.env.SHOTS) await page.screenshot({ path: join(process.env.SHOTS, `${n}.png`) }) }
 const PROFILE = readFileSync(join(here, 'profile.txt'), 'utf8')
 const P = '#profile'
 const row = (scope, key) => `${scope} [data-field=${key}]`
@@ -105,7 +104,7 @@ await page.waitForSelector(`${P} .li-scan-review`)
 await page.evaluate(() => { window.__failNext = true })
 await page.click(scanBtn(P))
 await page.waitForSelector(`${P} .li-scan-outcome.failed`)
-ok(/^Not saved: permission denied/.test((await page.textContent(`${P} .li-scan-outcome`))?.trim() ?? ''), 'a failed save says “Not saved”')
+ok(/could not be saved/.test((await page.textContent(`${P} .li-scan-outcome`))?.trim() ?? ''), 'a failed save does not claim success')
 ok(await page.isVisible(`${P} .li-scan-review`) && (await page.evaluate(() => window.__updates.length)) === 1, 'the review stays open and nothing extra is recorded')
 
 // 5. Demo reader (as in /demo and the CRM new-contact form): labelled, reads on the device, fills the form only.

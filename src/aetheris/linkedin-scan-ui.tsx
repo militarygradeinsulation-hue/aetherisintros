@@ -92,7 +92,7 @@ export function LinkedInScanPanel({
       if (!['SIGNED_IN', 'SIGNED_OUT', 'USER_UPDATED'].includes(event)) return
       generation.current++; running.current = false
       setResult(null); setRows([]); setChecked(new Set()); setEdits({}); setContext(undefined)
-      setText(''); setPdf(null); setEvidenceText(''); setEvidenceAuthorized(false); setBusy('')
+      setText(''); setUrl(''); setPdf(null); setEvidenceText(''); setEvidenceAuthorized(false); setOutcome(null); setError(''); setBusy('')
     })
     return () => { generation.current++; data.subscription.unsubscribe() }
   }, [demo])
@@ -230,7 +230,7 @@ export function LinkedInScanPanel({
         <Btn disabled={busy === 'apply' || (!checked.size && !extraReview)} onClick={() => void apply()}>
           {busy === 'apply' ? <><Loader2 size={15} className="li-spin" /> Applying…</> : <><Check size={15} /> {applyLabel}{checked.size ? ` (${fieldCount(checked.size)})` : ''}</>}
         </Btn>
-        <Btn kind="quiet" onClick={() => setResult(null)}>Back</Btn>
+        <Btn kind="quiet" disabled={Boolean(busy)} onClick={() => { generation.current++; setResult(null); setContext(undefined) }}>Back</Btn>
       </div>
     </>}
   </section>

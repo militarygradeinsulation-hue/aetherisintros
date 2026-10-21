@@ -17,6 +17,8 @@ import { LinkedInIdentityReview } from './LinkedInIdentityReview'
 import { loadPublicReviewContext, savePublicReview, type PublicReviewContext } from './public-profile-review-save'
 import './public-info-review.css'
 import type { ProfileScanContext } from './profile-scan-save'
+import { saveReviewedProfileScan } from './profile-scan-save'
+import { uploadProfileAvatar } from './live'
 import { PROFILE_KEYS, SCAN_LABELS, splitList, type ScanKey } from './linkedin-scan'
 import { LinkedInScanPanel, saveProfileScan, type ApplyOutcome, type ScanPatch } from './linkedin-scan-ui'
 import { isShowcase } from './showcase'
@@ -152,18 +154,24 @@ export function LinkedInImportPanel({ onApplied, defaultOpen = false }: { onAppl
       return { status: 'filled', message: `Applied to this demo profile in your browser only (${list}). Nothing was saved to an account.` }
     }
     const fields = { ...patch }
-    if (Object.keys(fields).length) {
+    let savedPhoto: string | undefined
+    if (photo) {
+      if (!context) return { status: 'failed', message: 'Scan again before saving your photo.' }
+      try {
+        const { data } = await supabase.auth.getUser()
+        if (data.user?.id !== context.userId) throw new Error('Your account changed. Scan again.')
+        savedPhoto = await uploadProfileAvatar(context.userId, photo)
+        await saveReviewedProfileScan(fields, context, savedPhoto)
+      } catch (error) {
+        return { status: 'failed', message: error instanceof Error ? error.message : 'Your selected profile details could not be saved.' }
+      }
+    }
+    if (!photo && Object.keys(fields).length) {
       const saved = await saveProfileScan(fields, context)
       if (saved.status === 'failed') return saved
     }
-    if (photo) {
-      try { await net.updateIdentity({ name: patch.name || p.name, photo }) } catch (e) {
-        const why = e instanceof Error ? e.message : 'it could not be uploaded'
-        return Object.keys(fields).length
-          ? { status: 'saved', message: `Saved to your profile: ${list.replace(/, photo$/, '')}. Your photo was not saved: ${why}` }
-          : { status: 'failed', message: `Not saved: ${why}` }
-      }
-    } else if (patch.name && context) net.applyIdentityReceipt({ userId: context.userId, name: patch.name })
+    if (context && (patch.name || savedPhoto)) net.applyIdentityReceipt({ userId: context.userId,
+      ...(patch.name ? { name: patch.name } : {}), ...(savedPhoto ? { avatarUrl: savedPhoto } : {}) })
     await showLocally(patch, context?.userId)
     onApplied?.(patch)
     setPhoto(null); setPhotoLink('')
