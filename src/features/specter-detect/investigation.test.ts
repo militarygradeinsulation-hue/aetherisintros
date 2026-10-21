@@ -36,10 +36,11 @@ describe('real reader evidence', () => {
 
 describe('complete reader summaries', () => {
   it('fills navigation and images outside the main article body', () => {
-    const result = parseReaderResponse(JSON.stringify({data:{title:'Hallmark Homes',url:'https://hallmarkhomes.com/',content:'# Our homes',description:'Custom home builder in Indiana',links:{Contact:'https://hallmarkhomes.com/contact-us/',Guide:'https://hallmarkhomes.com/guide.pdf'},images:{House:'https://hallmarkhomes.com/house.jpg'}}}), 'https://hallmarkhomes.com');
+    const result = parseReaderResponse(JSON.stringify({data:{title:'Hallmark Homes',url:'https://hallmarkhomes.com/',content:'# Our homes',description:'Custom home builder in Indiana',links:{Contact:'https://hallmarkhomes.com/contact-us/',Guide:'https://hallmarkhomes.com/guide.pdf'},images:{House:'https://hallmarkhomes.com/house.jpg'},screenshotUrl:'https://storage.googleapis.com/reader-6b7dc.appspot.com/screenshots/test?X-Amz-Signature=temporary'}}), 'https://hallmarkhomes.com');
     expect(result.snapshot.links).toHaveLength(2);
     expect(result.description).toBe('Custom home builder in Indiana');
     expect(result.images[0]?.src).toBe('https://hallmarkhomes.com/house.jpg');
+    expect(result.previewUrl).toContain('X-Amz-Signature=temporary');
   });
   it('rejects an upstream error page even if the transport status was 200', () => {
     expect(() => parseReaderResponse(JSON.stringify({data:{httpStatus:403,content:'Access denied'}}),'https://company.com')).toThrow();

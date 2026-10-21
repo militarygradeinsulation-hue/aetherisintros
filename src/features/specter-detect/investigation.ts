@@ -6,6 +6,7 @@ export interface Investigation {
   description: string;
   images: Array<{ src: string; alt: string }>;
   mode: 'browser' | 'reader';
+  previewUrl?: string;
 }
 
 /** Only public DNS names, no credentials or nonstandard ports. */
@@ -74,5 +75,11 @@ export function parseReaderResponse(body: string, requestedUrl: string): Investi
   result.snapshot.links = [...links, ...result.snapshot.links].filter((link, i, all) => all.findIndex(other => other.href === link.href) === i).slice(0,100);
   result.images = [...images, ...result.images].filter((image, i, all) => all.findIndex(other => other.src === image.src) === i).slice(0,24);
   if (typeof data.description === 'string' && data.description.trim()) result.description = redactSensitiveText(data.description).slice(0,1200);
+  if (typeof data.screenshotUrl === 'string' && data.screenshotUrl.length <= 6000) {
+    try {
+      const preview = new URL(data.screenshotUrl);
+      if (preview.protocol === 'https:' && preview.hostname === 'storage.googleapis.com' && preview.pathname.startsWith('/reader-6b7dc.appspot.com/screenshots/')) result.previewUrl = preview.href;
+    } catch { /* Screenshot is optional; evidence is still usable. */ }
+  }
   return result;
 }

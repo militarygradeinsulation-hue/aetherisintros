@@ -14,7 +14,7 @@ export async function captureSpecterWebsite(target: string): Promise<Investigati
         body: JSON.stringify({ url }),
       })
     : await fetch(`https://r.jina.ai/${url}`, {
-        redirect: 'error', signal: AbortSignal.timeout(25_000), headers: { accept: 'application/json', 'x-with-links-summary': 'true', 'x-with-images-summary': 'true' },
+        redirect: 'error', signal: AbortSignal.timeout(25_000), headers: { accept: 'application/json', 'x-with-links-summary': 'true', 'x-with-images-summary': 'true', 'x-respond-with': 'markdown,screenshot' },
       });
   if (!response.ok) throw new Error(response.status === 429 ? 'Website capture is busy. Try again shortly.' : 'This website could not be captured. Try another public page or open the original website.');
   // Bound the response while streaming; do not buffer an unbounded third-party response.
@@ -35,7 +35,7 @@ export async function captureSpecterWebsite(target: string): Promise<Investigati
   if (endpoint && secret) {
     const value = JSON.parse(body);
     const snapshot = validatePublicSnapshot(value.snapshot ?? value);
-    publicTarget(snapshot.url);
+    snapshot.url = publicTarget(snapshot.url);
     snapshot.links = snapshot.links.flatMap(link => {
       try { return [{ text: link.text, href: publicTarget(link.href) }]; } catch { return []; }
     });

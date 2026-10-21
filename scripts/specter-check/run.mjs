@@ -42,23 +42,32 @@ const page = await browser.newPage({ viewport: { width: 1536, height: 1024 } })
 
 const assert = (value, message) => { if (!value) throw new Error(message); console.log('✓', message); };
 try {
+  await page.route('https://alpha.com/house.jpg', route => route.fulfill({status:200,contentType:'image/svg+xml',body:'<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100"><rect width="100" height="100" fill="orange"/></svg>'}));
+  await page.route('https://storage.googleapis.com/reader-6b7dc.appspot.com/screenshots/*', route => route.fulfill({status:200,contentType:'image/svg+xml',body:'<svg xmlns="http://www.w3.org/2000/svg" width="1365" height="900"><rect width="1365" height="900" fill="#0d5488"/><text x="60" y="120" fill="white" font-size="50">Captured website preview</text></svg>'}));
   await page.goto(base);
   await page.getByLabel('Website URL').fill('https://alpha.com/company?id=123');
   await page.getByRole('button', {name:'Scan Website',exact:true}).click();
-  await page.getByRole('heading', {name:'Alpha',exact:true}).waitFor();
+  await page.getByRole('img',{name:'Captured website: Alpha',exact:true}).waitFor();
+  assert(await page.locator('.specter-app-sidebar').isVisible(),'reference sidebar is present on desktop');
+  assert(await page.locator('.specter-app-header').isVisible(),'reference top bar is present');
+  await page.screenshot({path:join(out,'specter-reference-desktop.png'),fullPage:true});
   await page.getByLabel('Website URL').fill('https://beta.com');
   await page.getByRole('button', {name:'Scan Website',exact:true}).click();
-  await page.getByRole('heading', {name:'Beta',exact:true}).waitFor();
+  await page.getByRole('img', {name:'Captured website: Beta',exact:true}).waitFor();
   await page.getByLabel('Previous investigation').click();
   assert((await page.locator('.specter-address').textContent()).includes('id=123'), 'history restores exact query-selected source');
   assert((await page.locator('.specter-company').textContent()).includes('Alpha'), 'history restores matching company evidence');
   await page.getByRole('tab',{name:'Evidence',exact:true}).click();
   assert((await page.locator('#specter-results').textContent()).includes('Alpha services'), 'evidence belongs to restored scan');
   await page.getByRole('button',{name:'Save Case',exact:true}).click();
+  assert(!(await page.evaluate(()=>localStorage.getItem('specter-cases:member-1'))).includes('previewUrl'),'temporary screenshot URLs are not persisted in cases');
   await page.reload();
   await page.getByRole('button',{name:'Saved Cases',exact:true}).click();
   await page.getByRole('heading',{name:'Alpha',exact:true}).waitFor();
   assert(true, 'case persists after reload and reopens');
+  await page.getByRole('tab',{name:'Images',exact:true}).click();
+  await page.getByRole('img',{name:'Alpha house',exact:true}).waitFor();
+  assert(await page.locator('.specter-image img').getAttribute('src') === 'https://alpha.com/house.jpg','image tab renders captured image URL instead of empty placeholders');
   const download = page.waitForEvent('download');
   await page.getByRole('button',{name:'Export Report',exact:true}).click();
   assert((await download).suggestedFilename() === 'specter-report.json','report export produces a real file');
@@ -71,5 +80,11 @@ try {
     assert(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth), `no horizontal overflow at ${width}px`);
     await page.screenshot({path: join(out,`specter-${width}.png`),fullPage:true});
   }
+  await page.setViewportSize({width:1536,height:1024});
+  await page.getByRole('button',{name:'Dashboard',exact:true}).click();
+  assert(await page.evaluate(()=>document.body.dataset.destination)==='home','sidebar Dashboard uses application navigation');
+  await page.getByLabel('Search members, companies, or keywords').fill('Hallmark');
+  await page.getByLabel('Search members, companies, or keywords').press('Enter');
+  assert(await page.evaluate(()=>document.body.dataset.search)==='Hallmark','top bar search connects to member search');
   console.log('Screenshots:',out);
 } finally { await browser.close(); server.close(); }
