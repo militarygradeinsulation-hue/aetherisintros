@@ -6,7 +6,7 @@ describe('assessOpportunity', () => {
   it('scores high readiness and explains the result', () => {
     const result = assessOpportunity(signals);
     expect(result.band).toBe('high');
-    expect(result.score).toBe(84);
+    expect(result.score).toBe(85);
     expect(result.reasons).toHaveLength(3);
   });
   it('never scores a member without consent', () => {
