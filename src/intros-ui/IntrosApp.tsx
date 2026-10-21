@@ -54,8 +54,9 @@ import { MembershipCardMailer } from '@/aetheris/membership-card-ui';
 import { InviteCard } from '@/aetheris/InviteCard';
 import { QuickMenuHost } from '@/aetheris/quick-menu-ui';
 import { QuickNoteHost } from '@/aetheris/quick-note-ui';
+import { SpecterDetectView } from './views/SpecterDetectView';
 
-const SHELL_PAGES: ActivePage[] = ['home', 'people', 'bubbles', 'intros', 'messages', 'insights', 'news', 'workspace', 'memory', 'work', 'meetings'];
+const SHELL_PAGES: ActivePage[] = ['home', 'people', 'bubbles', 'intros', 'messages', 'insights', 'news', 'workspace', 'memory', 'work', 'meetings', 'specter'];
 
 function NewsTicker({ onOpen }: { onOpen: () => void }) {
   const { data } = useAetherisNews();
@@ -297,7 +298,7 @@ export default function App({ mode = 'demo' }: { mode?: 'demo' | 'live' }) {
     window.addEventListener('aetheris:open-deals', open);
     return () => window.removeEventListener('aetheris:open-deals', open);
   }, []);
-  const classicPages = ['news','workspace','memory','work','insights','meetings', ...(mode === 'live' ? ['home','messages','intros','people'] : [])];
+  const classicPages = ['news','workspace','memory','work','insights','meetings','specter', ...(mode === 'live' ? ['home','messages','intros','people'] : [])];
 
   return (
     <div className="ix-root min-h-screen bg-[#07090C] text-[#F2EEE6] flex flex-col font-sans selection:bg-[#F5B027]/30 selection:text-white relative">
@@ -461,6 +462,7 @@ export default function App({ mode = 'demo' }: { mode?: 'demo' | 'live' }) {
         {activePage === 'memory' && <div className="ix-classic"><AetherisAppSurface key="memory"  startPage="memory"  /></div>}
         {activePage === 'meetings' && <div className="ix-classic"><AetherisAppSurface key="meetings"  startPage="meetings"  /></div>}
         {activePage === 'work' && <div className="ix-classic"><AetherisAppSurface key="work"  startPage="work"  /></div>}
+        {activePage === 'specter' && <SpecterDetectView />}
         {activePage === 'workspace' && <div className="ix-classic">
           <div className="ix-tools">
             {([['memory','Memory'],['crm','CRM'],['diagnostic','Company report'],['pocket','Private Library & Blueprints'],['executivework','Executive Workbench'],['providers','Trusted Providers'],['needs','Needs'],['companies','Companies'],['opportunities','Opportunities'],['deals','Deals'],['referrals','Referrals'],['workspaces','Workspaces'],['calendar','Calendar'],['grid','Grid'],['circles','Circles'],['peergroups','Peer groups'],['events','Events'],['profile','My profile'],['preferences','Settings']] as const).map(([id, label]) =>
