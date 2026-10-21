@@ -11,10 +11,26 @@ import {
   Send,
   Check,
   Share2,
+  Zap,
+  Eye,
+  ChevronDown,
+  ChevronUp,
 } from 'lucide-react';
 import { NetworkMember, IntroRequest } from '../networkData';
 import { ExecutivePortrait } from '../components/shared/ExecutivePortrait';
 import { ActivePage } from '../components/layout/TopNavigation';
+import { SpecterSignalFeed } from '../components/specter/SpecterSignalFeed';
+import type { SpecterSignal, SpecterEvidence } from '../components/specter/SpecterSignalFeed';
+import { GapOpportunityFeed } from '../components/specter/GapOpportunityFeed';
+import { RelationshipMomentBanner } from '../components/specter/RelationshipMomentBanner';
+
+interface AskDraft {
+  whoIAm: string;
+  whatIBring: string;
+  whoImLookingFor: string;
+  source: 'manual' | 'specter';
+  evidence: SpecterEvidence[];
+}
 
 interface IntrosHubViewProps {
   introRequests: IntroRequest[];
@@ -39,6 +55,28 @@ export const IntrosHubView: React.FC<IntrosHubViewProps> = ({
   const [personB, setPersonB] = useState(networkMembers[1]?.id || 'sarah-chen');
   const [introContext, setIntroContext] = useState('');
   const [introSuccessNotice, setIntroSuccessNotice] = useState(false);
+
+  // Ask composer draft state
+  const EMPTY_DRAFT: AskDraft = { whoIAm: '', whatIBring: '', whoImLookingFor: '', source: 'manual', evidence: [] };
+  const [askDraft, setAskDraft] = useState<AskDraft>(EMPTY_DRAFT);
+  const [askSubmitted, setAskSubmitted] = useState(false);
+  const [evidenceOpen, setEvidenceOpen] = useState(false);
+
+  const handleSpecterSignal = (signal: SpecterSignal) => {
+    setAskDraft(prev => ({
+      ...prev,
+      whoImLookingFor: signal.whoImLookingFor,
+      source: 'specter',
+      evidence: signal.evidence,
+    }));
+    setActiveTab('outbound');
+  };
+
+  const handleAskSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    setAskSubmitted(true);
+    setTimeout(() => { setAskSubmitted(false); setAskDraft(EMPTY_DRAFT); }, 2000);
+  };
 
   const handleMakeIntro = (e: React.FormEvent) => {
     e.preventDefault();
@@ -87,7 +125,7 @@ export const IntrosHubView: React.FC<IntrosHubViewProps> = ({
           { id: 'pending', label: 'Inbound Requests', count: introRequests.length },
           { id: 'outbound', label: 'My Requests', count: 2 },
           { id: 'completed', label: 'Introductions Made', count: 18 },
-          { id: 'recommendations', label: 'AI Match Synergies', count: 4 },
+          { id: 'recommendations', label: 'Specter Intelligence', count: 7 },
         ].map((tab) => (
           <button
             key={tab.id}
@@ -168,44 +206,172 @@ export const IntrosHubView: React.FC<IntrosHubViewProps> = ({
         </div>
       )}
 
-      {/* Tab 2: Outbound Requests */}
+      {/* Tab 2: Outbound — Ask Intros Composer + existing requests */}
       {activeTab === 'outbound' && (
-        <div className="space-y-4">
-          {[
-            {
-              targetName: 'Marcus Lee',
-              targetTitle: 'General Partner, Horizon Capital',
-              via: 'Elena Rossi',
-              date: '2 days ago',
-              status: 'Awaiting Connector Confirmation',
-            },
-            {
-              targetName: 'Lisa Tran',
-              targetTitle: 'VP Product, Atlas Cloud',
-              via: 'Daniel Kim',
-              date: '5 days ago',
-              status: 'Under Review',
-            },
-          ].map((item, idx) => (
-            <div
-              key={idx}
-              className="bg-[#0E121A] border border-white/10 rounded-xl p-5 flex items-center justify-between"
-            >
-              <div className="flex items-center gap-3.5">
-                <ExecutivePortrait name={item.targetName} size="md" />
-                <div>
-                  <div className="text-xs font-semibold text-white">{item.targetName}</div>
-                  <div className="text-[11px] text-[#9CA3AF]">{item.targetTitle}</div>
-                  <div className="text-[10px] text-[#6B7280] mt-0.5">
-                    Requested through {item.via} · {item.date}
+        <div className="space-y-6">
+          {/* Ask Intros Composer */}
+          <div className="bg-[#0E121A] border border-white/10 rounded-xl p-5 space-y-4">
+            <div className="flex items-center justify-between">
+              <div className="space-y-0.5">
+                <div className="flex items-center gap-2">
+                  <Send size={13} className="text-[#F5B027]" />
+                  <span className="text-xs font-semibold text-white">New Ask</span>
+                  {askDraft.source === 'specter' && (
+                    <span className="inline-flex items-center gap-1 text-[9px] font-bold px-1.5 py-0.5 rounded bg-teal-500/10 text-teal-400 border border-teal-500/25 uppercase tracking-wider">
+                      <Zap size={8} />
+                      Specter-assisted
+                    </span>
+                  )}
+                </div>
+                <p className="text-[10px] text-[#6B7280]">Fill in your three slots — who you are, what you bring, and who you need.</p>
+              </div>
+              {askDraft.source === 'specter' && (
+                <button
+                  type="button"
+                  onClick={() => setAskDraft(EMPTY_DRAFT)}
+                  className="text-[10px] text-[#6B7280] hover:text-white transition-colors cursor-pointer"
+                >
+                  Clear signal
+                </button>
+              )}
+            </div>
+
+            {askSubmitted ? (
+              <div className="py-8 text-center space-y-2">
+                <div className="w-10 h-10 rounded-full bg-emerald-500/15 border border-emerald-500/30 text-emerald-400 flex items-center justify-center mx-auto">
+                  <Check className="w-5 h-5" />
+                </div>
+                <p className="text-xs text-white font-semibold">Ask submitted</p>
+                <p className="text-[10px] text-[#9CA3AF]">Your network will be notified when a match is found.</p>
+              </div>
+            ) : (
+              <form onSubmit={handleAskSubmit} className="space-y-3">
+                <div className="space-y-2">
+                  {[
+                    { key: 'whoIAm', label: 'Who I am', placeholder: 'Founder of a B2B SaaS company, Series A stage…' },
+                    { key: 'whatIBring', label: 'What I bring', placeholder: 'Product expertise, warm intros into healthcare, advisory…' },
+                    { key: 'whoImLookingFor', label: 'Who I\'m looking for', placeholder: 'Enterprise AE with $500K+ deal experience…' },
+                  ].map(({ key, label, placeholder }) => (
+                    <div key={key}>
+                      <label className="text-[10px] text-[#9CA3AF] block mb-1">{label}</label>
+                      <textarea
+                        value={(askDraft as any)[key]}
+                        onChange={(e) => setAskDraft(prev => ({ ...prev, [key]: e.target.value }))}
+                        rows={2}
+                        placeholder={placeholder}
+                        className="w-full bg-[#151A24] border border-white/10 rounded-lg p-2.5 text-xs text-white placeholder-[#4B5563] focus:outline-none focus:border-teal-500/40 resize-none transition-colors"
+                      />
+                    </div>
+                  ))}
+                </div>
+
+                {/* Specter evidence block */}
+                {askDraft.source === 'specter' && askDraft.evidence.length > 0 && (
+                  <div className="border border-teal-500/20 rounded-lg overflow-hidden">
+                    <button
+                      type="button"
+                      onClick={() => setEvidenceOpen(v => !v)}
+                      className="w-full flex items-center justify-between gap-2 px-3 py-2 bg-teal-500/8 text-[10px] text-teal-400 hover:bg-teal-500/12 transition-colors cursor-pointer"
+                    >
+                      <span className="flex items-center gap-1.5">
+                        <Zap size={10} />
+                        Specter Detection Evidence · {askDraft.evidence.length} signal{askDraft.evidence.length !== 1 ? 's' : ''}
+                      </span>
+                      {evidenceOpen ? <ChevronUp size={11} /> : <ChevronDown size={11} />}
+                    </button>
+                    {evidenceOpen && (
+                      <ul className="divide-y divide-white/5 bg-[#0B0F15]">
+                        {askDraft.evidence.map((ev, i) => (
+                          <li key={i} className="flex items-center justify-between gap-3 px-3 py-2 text-[10px]">
+                            <span className="text-[#9CA3AF] capitalize">{ev.slot.replace(/([A-Z])/g, ' $1').toLowerCase()}</span>
+                            <span className="text-teal-400 font-mono">{Math.round(ev.confidence * 100)}%</span>
+                          </li>
+                        ))}
+                      </ul>
+                    )}
+                  </div>
+                )}
+
+                {/* Preview */}
+                {(askDraft.whoIAm || askDraft.whatIBring || askDraft.whoImLookingFor) && (
+                  <div className="bg-[#0B0F15] border border-white/8 rounded-lg p-3 space-y-2">
+                    <div className="flex items-center gap-1.5 text-[10px] text-[#6B7280]">
+                      <Eye size={10} />
+                      <span>How another member sees this ask</span>
+                    </div>
+                    <dl className="space-y-1.5">
+                      {askDraft.whoIAm && (
+                        <div className="grid grid-cols-[80px_1fr] gap-2 text-xs">
+                          <dt className="text-[#6B7280] font-medium shrink-0">Who I am</dt>
+                          <dd className="text-[#CBD5E1]">{askDraft.whoIAm}</dd>
+                        </div>
+                      )}
+                      {askDraft.whatIBring && (
+                        <div className="grid grid-cols-[80px_1fr] gap-2 text-xs">
+                          <dt className="text-[#6B7280] font-medium shrink-0">What I bring</dt>
+                          <dd className="text-[#CBD5E1]">{askDraft.whatIBring}</dd>
+                        </div>
+                      )}
+                      {askDraft.whoImLookingFor && (
+                        <div className="grid grid-cols-[80px_1fr] gap-2 text-xs">
+                          <dt className="text-[#6B7280] font-medium shrink-0">Looking for</dt>
+                          <dd className="text-[#CBD5E1]">{askDraft.whoImLookingFor}</dd>
+                        </div>
+                      )}
+                    </dl>
+                  </div>
+                )}
+
+                <button
+                  type="submit"
+                  className="bridge-primary-action w-full flex items-center justify-center gap-2 py-2.5 text-xs font-semibold transition-all cursor-pointer"
+                >
+                  <Send size={12} />
+                  Submit Ask to Network
+                </button>
+              </form>
+            )}
+          </div>
+
+          {/* Existing outbound requests */}
+          <div className="space-y-3">
+            <p className="text-[10px] font-mono uppercase tracking-widest text-[#6B7280]">Pending Requests</p>
+            {[
+              {
+                targetName: 'Marcus Lee',
+                targetTitle: 'General Partner, Horizon Capital',
+                via: 'Elena Rossi',
+                date: '2 days ago',
+                status: 'Awaiting Connector Confirmation',
+              },
+              {
+                targetName: 'Lisa Tran',
+                targetTitle: 'VP Product, Atlas Cloud',
+                via: 'Daniel Kim',
+                date: '5 days ago',
+                status: 'Under Review',
+              },
+            ].map((item, idx) => (
+              <div
+                key={idx}
+                className="bg-[#0E121A] border border-white/10 rounded-xl p-5 flex items-center justify-between"
+              >
+                <div className="flex items-center gap-3.5">
+                  <ExecutivePortrait name={item.targetName} size="md" />
+                  <div>
+                    <div className="text-xs font-semibold text-white">{item.targetName}</div>
+                    <div className="text-[11px] text-[#9CA3AF]">{item.targetTitle}</div>
+                    <div className="text-[10px] text-[#6B7280] mt-0.5">
+                      Requested through {item.via} · {item.date}
+                    </div>
                   </div>
                 </div>
+                <span className="text-xs font-mono text-[#F59E0B] bg-[#F59E0B]/10 border border-[#F59E0B]/20 px-2.5 py-1 rounded">
+                  {item.status}
+                </span>
               </div>
-              <span className="text-xs font-mono text-[#F59E0B] bg-[#F59E0B]/10 border border-[#F59E0B]/20 px-2.5 py-1 rounded">
-                {item.status}
-              </span>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
       )}
 
@@ -257,37 +423,53 @@ export const IntrosHubView: React.FC<IntrosHubViewProps> = ({
         </div>
       )}
 
-      {/* Tab 4: AI Match Synergies */}
+      {/* Tab 4: Specter Intelligence + AI Match Synergies */}
       {activeTab === 'recommendations' && (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {networkMembers.slice(0, 4).map((member) => (
-            <div
-              key={member.id}
-              className="bg-[#0E121A] border border-white/10 rounded-xl p-5 space-y-3"
-            >
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-3">
-                  <ExecutivePortrait name={member.name} size="md" />
-                  <div>
-                    <div className="text-xs font-semibold text-white">{member.name}</div>
-                    <div className="text-[11px] text-[#9CA3AF]">{member.title}</div>
-                  </div>
-                </div>
-                <span className="text-xs font-mono text-[#F5B027] font-bold">
-                  {member.matchScore}% Match
-                </span>
-              </div>
-              <p className="text-xs text-[#CBD5E1] italic">
-                "{member.bioStatement}"
-              </p>
-              <button
-                onClick={() => onRequestIntro(member)}
-                className="bridge-primary-action w-full py-2 px-3 text-xs font-semibold transition-colors cursor-pointer text-center"
-              >
-                Request Warm Introduction
-              </button>
+        <div className="space-y-6">
+          <RelationshipMomentBanner />
+
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <SpecterSignalFeed onBuildAsk={handleSpecterSignal} />
+            <GapOpportunityFeed onBuildAsk={handleSpecterSignal} />
+          </div>
+
+          {/* Member match cards below signals */}
+          <div>
+            <div className="flex items-center gap-2 mb-3">
+              <Sparkles size={13} className="text-[#9CA3AF]" />
+              <span className="text-[11px] font-mono uppercase tracking-widest text-[#9CA3AF]">Network Matches</span>
             </div>
-          ))}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {networkMembers.slice(0, 4).map((member) => (
+                <div
+                  key={member.id}
+                  className="bg-[#0E121A] border border-white/10 rounded-xl p-5 space-y-3"
+                >
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                      <ExecutivePortrait name={member.name} size="md" />
+                      <div>
+                        <div className="text-xs font-semibold text-white">{member.name}</div>
+                        <div className="text-[11px] text-[#9CA3AF]">{member.title}</div>
+                      </div>
+                    </div>
+                    <span className="text-xs font-mono text-[#F5B027] font-bold">
+                      {member.matchScore}% Match
+                    </span>
+                  </div>
+                  <p className="text-xs text-[#CBD5E1] italic">
+                    "{member.bioStatement}"
+                  </p>
+                  <button
+                    onClick={() => onRequestIntro(member)}
+                    className="bridge-primary-action w-full py-2 px-3 text-xs font-semibold transition-colors cursor-pointer text-center"
+                  >
+                    Request Warm Introduction
+                  </button>
+                </div>
+              ))}
+            </div>
+          </div>
         </div>
       )}
 
