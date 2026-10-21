@@ -152,6 +152,19 @@ ok(contrast.worst.length === 0, `all scan text meets AA contrast${contrast.worst
 await page.setViewportSize({ width: 375, height: 800 })
 ok(await page.evaluate(() => document.documentElement.scrollWidth <= 376), 'no horizontal scroll at phone width')
 await shot('phone')
+await page.goto(base)
+await page.fill(`${P} textarea[aria-label="Profile text"]`, PROFILE)
+await page.click(scanBtn(P))
+await page.waitForSelector(`${P} .li-scan-review`)
+await page.click(`${P} summary`)
+for (const theme of ['dark', 'light']) {
+  await page.evaluate(theme => document.documentElement.dataset.theme = theme, theme)
+  for (const width of [390, 1280]) {
+    await page.setViewportSize({ width, height: width === 390 ? 844 : 1800 })
+    ok(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1), `${theme} evidence review fits ${width}px`)
+    await shot(`evidence-${theme}-${width}`)
+  }
+}
 
 ok(errors.length === 0, `no page errors${errors.length ? ': ' + errors.join('; ') : ''}`)
 await browser.close(); server.close()
