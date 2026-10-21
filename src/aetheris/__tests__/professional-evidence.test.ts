@@ -8,8 +8,8 @@ Austin, Texas
 About
 I build tools for small teams.
 Experience
-Founder
 Example Labs
+Founder
 Jan 2021 - Present
 Education
 Example University

@@ -139,7 +139,7 @@ export function parseScanText(rawText: string, hints: { nameHint?: string | unde
   const li = parseLinkedInText(cleaned.text, hints.nameHint ? { name: hints.nameHint } : {})
   const experience = li.experience.slice(0, 20).map(r => ({ title: r.title, company: r.company, ...splitDates(r.dates) }))
   const now = currentRole(experience)
-  const services = sectionLines(cleaned.text, /^(providing services|services|industries|industry|websites|website)$/i)
+  const services = sectionLines(cleaned.text, /^(providing services|services)$/i)
   const seeking = sectionLines(cleaned.text, /^(looking for|seeking|interested in)$/i)
   const scan: ScannedProfile = {
     ...emptyScan(),
@@ -271,7 +271,7 @@ export function parseScanJson(answer: string): ScannedProfile | null {
 
 const norm = (s: string) => s.toLowerCase().normalize('NFKD').replace(/[̀-ͯ]/g, '').replace(/[^\p{L}\p{N}]+/gu, ' ').trim()
 
-/** True when the value (or, for long text, its opening) appears in the source text. */
+/** True only when the entire value appears in the source text. */
 export function statedIn(value: string, source: string): boolean {
   const v = norm(value)
   if (!v) return false
@@ -299,8 +299,6 @@ export function groundScan(scan: ScannedProfile, source: string): ScannedProfile
     projects: keepAll(scan.projects), credentials: keepAll(scan.credentials), languages: keepAll(scan.languages),
     volunteering: keepAll(scan.volunteering), achievements: keepAll(scan.achievements), websites: keepAll(scan.websites),
     linkedin_url: scan.linkedin_url,
-    experience: scan.experience.map(role => Object.values(role).filter(Boolean).join(' · ')).join('\n'),
-    education: scan.education.join('\n'), projects: scan.projects.join('\n'), credentials: scan.credentials.join('\n'), languages: scan.languages.join('\n'), volunteering: scan.volunteering.join('\n'), achievements: scan.achievements.join('\n'), websites: scan.websites.join('\n'),
   }
 }
 
@@ -330,7 +328,7 @@ Rules:
 - Answer with the JSON object only.
 
 Shape:
-{"name":"","headline":"","title":"","company":"","location":"","about":"","industries":[],"expertise":[],"can_help_with":"","looking_for":"","experience":[{"title":"","company":"","start":"","end":""}],"education":[],"linkedin_url":""}`
+{"name":"","headline":"","title":"","company":"","location":"","about":"","industries":[],"expertise":[],"can_help_with":"","looking_for":"","experience":[{"title":"","company":"","start":"","end":""}],"education":[],"projects":[],"credentials":[],"languages":[],"volunteering":[],"achievements":[],"websites":[],"linkedin_url":""}`
 
 /* ----------------------------------------------------------- review step */
 
