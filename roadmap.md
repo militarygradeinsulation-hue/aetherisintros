@@ -1,5 +1,11 @@
 # Aetheris specification completion
 
+## Authorized professional evidence extension (Oct 21)
+- [ ] Extend the existing LinkedIn reader, provenance and hypothesis review without external fetching.
+- [ ] Protect approved profile saves against account changes and concurrent edits; test parser and security boundaries.
+- [ ] Verify checks and document storage/access blockers; no production migration or publication.
+- [ ] Study Mindprint source — blocked: project 079f0929-6b92-4a8a-b9c7-b3278d4a8006 is inaccessible in this workspace; source export or sharing access required.
+
 ## Offline database recovery engineering (Oct 20)
 - [x] Add disposable baseline/supplied-schema replay, ordered 0058–0078 diagnostics and collision probes.
 - [x] Harden unapplied 0095 proposal and extend isolated regressions.
