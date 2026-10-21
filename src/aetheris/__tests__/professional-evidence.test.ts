@@ -12,6 +12,8 @@ Experience
 Example Labs
 Founder
 Jan 2021 - Present
+Austin, Texas
+Built factory planning tools.
 Education
 Example University
 Skills
@@ -42,6 +44,7 @@ describe('authorized professional evidence', () => {
       can_help_with: 'Process design', looking_for: 'Distribution partners', projects: ['Factory planning toolkit'], credentials: ['Safety certificate'],
       languages: ['English'], volunteering: ['Mentor at Local Workshop'], achievements: ['Community award'], websites: ['https://example.org/work'] })
     expect(scan.education).toEqual(['Example University'])
+    expect(scan.experience[0]).toMatchObject({ location: 'Austin, Texas', description: 'Built factory planning tools.' })
     expect(claims?.find(item => item.field === 'projects')).toMatchObject({ source: 'Supplied LinkedIn profile', quote: 'Factory planning toolkit', kind: 'self_reported' })
   })
   it('keeps missing facts empty and never infers communication style from a role', () => {

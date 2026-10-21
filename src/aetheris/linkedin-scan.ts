@@ -19,7 +19,7 @@ export const MAX_RAW_INPUT = 120_000
 export const MAX_SCAN_TEXT = 40_000
 export const MIN_SCAN_TEXT = 40
 
-export interface ScannedRole { title: string; company: string; start: string; end: string }
+export interface ScannedRole { title: string; company: string; start: string; end: string; location?: string; description?: string }
 
 /** The one shape every reader (AI, built-in reader, demo) returns. */
 export interface ScannedProfile {
@@ -137,7 +137,7 @@ const headlineRole = (headline: string) => squash(headline.split(/\s+(?:at|@)\s+
 export function parseScanText(rawText: string, hints: { nameHint?: string | undefined; url?: string | undefined } = {}): ScanResult {
   const cleaned = cleanProfileText(rawText)
   const li = parseLinkedInText(cleaned.text, hints.nameHint && statedIn(hints.nameHint, cleaned.text) ? { name: hints.nameHint } : {})
-  const experience = li.experience.slice(0, 20).map(r => ({ title: r.title, company: r.company, ...splitDates(r.dates) }))
+  const experience = li.experience.slice(0, 20).map(r => ({ title: r.title, company: r.company, location: r.location, description: r.description, ...splitDates(r.dates) }))
   const now = currentRole(experience)
   const services = sectionLines(cleaned.text, /^(providing services|services)$/i)
   const seeking = sectionLines(cleaned.text, /^(looking for|seeking|interested in)$/i)
@@ -231,6 +231,7 @@ const list = (max: number, each = 120) => z.preprocess(v => {
 
 const RoleSchema = z.preprocess(v => (v && typeof v === 'object' && !Array.isArray(v) ? v : {}), z.object({
   title: str(140), company: str(140), start: str(40), end: str(40),
+  location: str(140).optional(), description: str(1200).optional(),
 }).strip())
 
 /** Unknown keys are dropped, every value is trimmed and capped, wrong types become empty. */
