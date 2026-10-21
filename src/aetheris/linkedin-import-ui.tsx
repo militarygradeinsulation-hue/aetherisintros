@@ -16,6 +16,7 @@ import { startLinkedInAuthentication } from './linkedin-auth'
 import { LinkedInIdentityReview } from './LinkedInIdentityReview'
 import { loadPublicReviewContext, savePublicReview, type PublicReviewContext } from './public-profile-review-save'
 import './public-info-review.css'
+import type { ProfileScanContext } from './profile-scan-save'
 import { PROFILE_KEYS, SCAN_LABELS, splitList, type ScanKey } from './linkedin-scan'
 import { LinkedInScanPanel, saveProfileScan, type ApplyOutcome, type ScanPatch } from './linkedin-scan-ui'
 import { isShowcase } from './showcase'
@@ -140,7 +141,7 @@ export function LinkedInImportPanel({ onApplied, defaultOpen = false }: { onAppl
     }
   }
 
-  const apply = async (patch: ScanPatch): Promise<ApplyOutcome> => {
+  const apply = async (patch: ScanPatch, context?: ProfileScanContext): Promise<ApplyOutcome> => {
     const names = (Object.keys(patch) as ScanKey[]).map(k => (PROFILE_LABELS[k] ?? SCAN_LABELS[k]).toLowerCase())
     if (photo) names.push('photo')
     const list = names.join(', ')
@@ -152,7 +153,7 @@ export function LinkedInImportPanel({ onApplied, defaultOpen = false }: { onAppl
     }
     const fields = { ...patch }
     if (Object.keys(fields).length) {
-      const saved = await saveProfileScan(fields)
+      const saved = await saveProfileScan(fields, context)
       if (saved.status === 'failed') return saved
     }
     if (photo) {
@@ -162,8 +163,8 @@ export function LinkedInImportPanel({ onApplied, defaultOpen = false }: { onAppl
           ? { status: 'saved', message: `Saved to your profile: ${list.replace(/, photo$/, '')}. Your photo was not saved: ${why}` }
           : { status: 'failed', message: `Not saved: ${why}` }
       }
-    } else if (patch.name) await net.updateIdentity({ name: patch.name })
-    await showLocally(patch)
+    } else if (patch.name && context) net.applyIdentityReceipt({ userId: context.userId, name: patch.name })
+    await showLocally(patch, context?.userId)
     onApplied?.(patch)
     setPhoto(null); setPhotoLink('')
     setPhotoPreview(old => { if (old) URL.revokeObjectURL(old); return null })

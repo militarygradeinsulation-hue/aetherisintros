@@ -12,11 +12,11 @@ import { useEffect, useId, useRef, useState, type ReactNode } from 'react'
 import { supabase } from '@/integrations/supabase/client'
 import { scanLinkedInProfile } from '@/lib/linkedinImport.functions'
 import { normalizeLinkedInUrl } from './linkedin-import'
-import { EVIDENCE_ONLY_KEYS } from './linkedin-scan'
+import { EVIDENCE_ONLY_KEYS, parseAuthorizedScan } from './linkedin-scan'
 import { AdditionalEvidenceSchema, type AdditionalEvidence } from './professional-evidence'
 import { loadProfileScanContext, saveReviewedProfileScan, type ProfileScanContext } from './profile-scan-save'
 import {
-  buildReviewRows, checkedPatch, defaultChecked, LIST_KEYS, LONG_KEYS, MIN_SCAN_TEXT, parseScanText, profileColumns, scanValues,
+  buildReviewRows, checkedPatch, defaultChecked, LIST_KEYS, LONG_KEYS, MIN_SCAN_TEXT, scanValues,
   sourceLabel, type ReviewRow, type ScanKey, type ScanResult,
 } from './linkedin-scan'
 import { readPdfText } from './pdf-text'
@@ -34,7 +34,7 @@ export interface ApplyOutcome { status: 'saved' | 'filled' | 'failed'; message: 
 export async function runLinkedInScan(input: { text: string; url: string; nameHint?: string; evidence?: AdditionalEvidence[] }, demo = isShowcase()): Promise<ScanResult> {
   if (demo) {
     if (input.text.trim().length < MIN_SCAN_TEXT) throw new Error('Paste the profile text or add the LinkedIn PDF first.')
-    return { ...parseScanText(input.text, { ...(input.nameHint ? { nameHint: input.nameHint } : {}), url: input.url }), source: 'demo' }
+    return { ...parseAuthorizedScan(input.text, input.evidence ?? [], { ...(input.nameHint ? { nameHint: input.nameHint } : {}), url: input.url }), source: 'demo' }
   }
   return scanLinkedInProfile({ data: input })
 }
@@ -48,19 +48,7 @@ export async function saveProfileScan(patch: ScanPatch, context?: ProfileScanCon
   } catch (error) {
     return { status: 'failed', message: error instanceof Error ? error.message : 'Your profile could not be saved.' }
   }
-  /* Legacy unguarded writes are deliberately unavailable. */
-/*
-  const columns = profileColumns(patch)
-  const names = Object.keys(columns)
-  if (!names.length) return { status: 'failed', message: 'Nothing was ticked, so nothing was saved.' }
-  const { data } = await supabase.auth.getSession()
-  const id = data.session?.user.id
-  if (!id) return { status: 'failed', message: 'You are signed out. Sign in again; nothing was saved.' }
-  const { data: rows, error } = await (supabase.from('profiles') as any).update(columns).eq('id', id).select('id') // eslint-disable-line @typescript-eslint/no-explicit-any
-  if (error) return { status: 'failed', message: `Not saved: ${error.message}` }
-  if (!rows?.length) return { status: 'failed', message: 'Not saved: your profile could not be found.' }
-  return { status: 'saved', message: 'Saved to your profile.' }
-*/
+
 }
 
 const fieldCount = (n: number) => `${n} field${n === 1 ? '' : 's'}`
