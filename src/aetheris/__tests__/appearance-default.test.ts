@@ -30,12 +30,12 @@ const initialize = (saved: string | null, legacy: string | null, storageAvailabl
 };
 
 describe('Ask Intros initial appearance', () => {
-  it('defaults to light for first-time visitors', () => {
+  it('defaults to dark for first-time visitors', () => {
     const result = initialize(null, null);
-    expect(result.theme).toBe('light');
-    expect(result.colorScheme).toBe('light');
-    expect(result.classes.has('dark')).toBe(false);
-    expect(result.classes.has('light')).toBe(true);
+    expect(result.theme).toBe('dark');
+    expect(result.colorScheme).toBe('dark');
+    expect(result.classes.has('dark')).toBe(true);
+    expect(result.classes.has('light')).toBe(false);
   });
   it('retains an explicit light-mode preference', () => {
     const result = initialize('light', null);
@@ -49,8 +49,8 @@ describe('Ask Intros initial appearance', () => {
   it('preserves a previous light-mode choice during migration', () => {
     expect(initialize(null, 'light').theme).toBe('light');
   });
-  it('defaults to light when local storage is blocked or invalid', () => {
-    expect(initialize(null, null, false).theme).toBe('light');
-    expect(initialize('invalid', 'invalid').theme).toBe('light');
+  it('defaults to dark when local storage is blocked or invalid', () => {
+    expect(initialize(null, null, false).theme).toBe('dark');
+    expect(initialize('invalid', 'invalid').theme).toBe('dark');
   });
 });
