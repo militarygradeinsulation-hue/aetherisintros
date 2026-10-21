@@ -1,6 +1,7 @@
 import { ClientOnly, createFileRoute, Link } from '@tanstack/react-router'
 
 import BusinessAnalystPanel from '@/aetheris/BusinessAnalystPanel'
+import { SpecterDetectPanel } from '@/features/specter-detect/SpecterDetectPanel'
 import { TrackRecordDashboard } from '@/aetheris/TrackRecordDashboard'
 import '@/aetheris/member-intelligence.css'
 
@@ -38,6 +39,10 @@ function MemberIntelligence() {
           <h2 id="member-score-heading">Track Record</h2>
           <p className="member-intel-explanation">This score is calculated from network outcomes. Members cannot directly edit their reputation score.</p>
           <TrackRecordDashboard userId={user.id} />
+        </section>
+        <section aria-labelledby="specter-heading" className="member-intel-panel">
+          <h2 id="specter-heading">Specter Detect — Evidence Preview</h2>
+          <SpecterDetectPanel />
         </section>
       </div> : <p className="member-intel-loading">Sign in to review your private business and track-record data.</p>}
     </main>
