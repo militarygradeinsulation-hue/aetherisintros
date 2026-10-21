@@ -2,7 +2,7 @@
  * Peer groups: small confidential groups that meet monthly. Members see the groups they are in;
  * inside, a confidentiality agreement comes first, then sessions, a private board and issue
  * processing. Admins create groups, manage membership and handle requests to join.
- * Access is enforced in the database (0044_peer_groups.sql + 0076_peer_group_feed.sql + 0077_peer_group_agendas.sql).
+ * Access is enforced in the database (0044_peer_groups.sql + 0045_peer_group_feed.sql).
  *
  * Feed components (PeerGroupCard, PeerGroupFeed, PostComposer, PeerPost, CreatePeerGroupModal)
  * are at the bottom of this file and back the async board-of-advisors view.
@@ -15,7 +15,7 @@ import type { PeerGroupSummary, PeerFeedPost } from '@/lib/peerGroups.functions'
 import { listMyPeerGroups, createPeerGroup, getPeerGroupFeed, postToPeerGroup } from '@/lib/peerGroups.functions'
 import {
   AGREEMENT_POINTS, MAX_GROUP_SIZE, cleanMeetingUrl, localInputToIso, seatsLeft, splitSessions, threadPosts, validateIssue,
-  type PeerPost as PeerBoardPost, type PeerSession,
+  type PeerPost, type PeerSession,
 } from './peer-groups'
 import { Btn, Eyebrow } from './ui'
 import { PeerGroupAccountability } from './PeerGroupsPanel'
@@ -281,7 +281,7 @@ export function SessionForm({ groupId, onDone, onCancel }: { groupId: string; on
 }
 
 function Board({ groupId, userId, names }: { groupId: string; userId: string; names: Names }) {
-  const [posts, setPosts] = useState<PeerBoardPost[]>([])
+  const [posts, setPosts] = useState<PeerPost[]>([])
   const [draft, setDraft] = useState('')
   const [msg, setMsg] = useState('')
   const load = useCallback(async () => {
@@ -313,7 +313,7 @@ function Board({ groupId, userId, names }: { groupId: string; userId: string; na
   </div>
 }
 
-function PostItem({ p, userId, names, onChanged }: { p: PeerBoardPost; userId: string; names: Names; onChanged: () => void }) {
+function PostItem({ p, userId, names, onChanged }: { p: PeerPost; userId: string; names: Names; onChanged: () => void }) {
   const [editing, setEditing] = useState(false)
   const [body, setBody] = useState(p.body)
   const mine = p.author_id === userId
@@ -588,7 +588,7 @@ function GroupAdmin({ group, roster, people, nameOf, onChanged }: { group: Group
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// Feed components — async board-of-advisors view (0076_peer_group_feed.sql)
+// Feed components — async board-of-advisors view (0045_peer_group_feed.sql)
 // ─────────────────────────────────────────────────────────────────────────────
 
 const KIND_LABELS: Record<string, string> = {
