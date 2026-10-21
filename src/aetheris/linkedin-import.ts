@@ -86,7 +86,7 @@ export function isLinkedInPhotoUrl(input: string): boolean {
   } catch { return false }
 }
 
-const SECTION = /^(contact|top skills|skills|languages|certifications|honors-awards|honors & awards|publications|patents|summary|about|experience|education|volunteer experience|projects|recommendations|interests|activity|licenses & certifications)$/i
+const SECTION = /^(contact|top skills|skills|languages|certifications|honors-awards|honors & awards|publications|patents|summary|about|experience|education|volunteer experience|volunteering|projects|industries|industry|websites|website|services|providing services|looking for|seeking|interested in|currently building|what i.?m building|recommendations|interests|activity|licenses & certifications)$/i
 const DATE_LINE = /^((jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)[a-z]*\.?\s+)?\d{4}\s*[-–—]\s*(present|((jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)[a-z]*\.?\s+)?\d{4})(\s*[(·].*)?$/i
 const PAGE_FOOTER = /^page \d+ of \d+$/i
 const EMPLOYMENT = 'full-time|part-time|self-employed|freelance|contract|internship|apprenticeship|seasonal'
