@@ -140,8 +140,30 @@ export const PeopleDirectoryView: React.FC<PeopleDirectoryViewProps> = ({
   };
 
   return (
-    <div className="w-full max-w-7xl mx-auto px-4 md:px-8 py-6 space-y-8 animate-fadeIn">
-      {/* Top Editorial Hero Banner (Matching Image 5) */}
+    <div className="ix-network-clean w-full max-w-[1320px] mx-auto px-3 md:px-5 py-4 space-y-5 animate-fadeIn">
+      <header className="ix-network-header">
+        <div>
+          <span className="ix-workspace-eyebrow">ASK INTROS / NETWORK</span>
+          <h1>Find the right people.</h1>
+          <p>Search your network and find shared context before making an introduction.</p>
+        </div>
+        <button type="button" className="ix-network-intro-link" onClick={() => onNavigate('intros')}>View introductions <ArrowRight size={15}/></button>
+      </header>
+      <div className="ix-network-primary-search">
+        <Search size={19} aria-hidden="true"/>
+        <input
+          type="search"
+          aria-label="Search people in your network"
+          placeholder="Search name, company, location or expertise"
+          value={searchKeyword}
+          onChange={event => setSearchKeyword(event.target.value)}
+        />
+        <span>{filteredMembers.length} {filteredMembers.length === 1 ? 'person' : 'people'}</span>
+      </div>
+      <details className="ix-network-optional">
+        <summary>Explore the network overview and featured connectors <ChevronDown size={16} aria-hidden="true"/></summary>
+        <div className="ix-network-optional-content">
+      {/* Optional network overview; search and real member results stay above it. */}
       <section className="bridge-discover-hero relative overflow-hidden rounded-2xl border border-white/25 bg-[#080808] p-6 lg:p-8">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
           {/* Hero Left: Large Editorial Headline */}
@@ -230,6 +252,9 @@ export const PeopleDirectoryView: React.FC<PeopleDirectoryViewProps> = ({
           </div>
         </div>
       </section>
+
+        </div>
+      </details>
 
       {/* Main Directory Split: Left Filters (Col 3), Center Cards (Col 6), Right Insights (Col 3) */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
