@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState, type FormEvent, type KeyboardEvent as ReactKeyboardEvent, type ReactNode } from 'react';
 import {
-  ArrowRight, Bell, Bookmark, Brain, BriefcaseBusiness, CalendarDays,
+  ArrowRight, Bell, Bookmark, Brain, BriefcaseBusiness, CalendarDays, ChevronDown,
   CircleHelp, ClipboardList, ContactRound, Crown, Fingerprint, Home, Menu,
   MessageSquare, Newspaper, PanelLeftClose, PanelLeftOpen, Search,
   Settings, UserRound, Users, X,
@@ -41,6 +41,29 @@ export const WORKSPACE_DESTINATIONS: readonly WorkspaceDestination[] = [
   { label: 'Help & Support', icon: CircleHelp },
 ];
 
+/** Existing member workspaces exposed through the new UI, not cloned pages.
+ * Every destination is implemented by the already-shared AetherisAppSurface,
+ * inside the same verified-user shell and database-backed providers.
+ */
+export const MEMBER_TOOL_DESTINATIONS: readonly WorkspaceDestination[] = [
+  { label: 'CRM & Contacts', icon: ContactRound, workspace: 'crm' },
+  { label: 'Need / Offer Feed', icon: BriefcaseBusiness, workspace: 'needs' },
+  { label: 'Opportunities', icon: ClipboardList, workspace: 'opportunities' },
+  { label: 'Deal Rooms', icon: BriefcaseBusiness, workspace: 'deals' },
+  { label: 'Private Workspaces', icon: Users, workspace: 'workspaces' },
+  { label: 'Referral Engine', icon: Network, workspace: 'referrals' },
+  { label: 'Peer Groups', icon: Users, workspace: 'peergroups' },
+  { label: 'Calendar', icon: CalendarDays, workspace: 'calendar' },
+  { label: 'Events', icon: CalendarDays, workspace: 'events' },
+  { label: 'Private Library', icon: Bookmark, workspace: 'pocket' },
+  { label: 'Company Diagnostics', icon: ClipboardList, workspace: 'diagnostic' },
+  { label: 'Companies', icon: BriefcaseBusiness, workspace: 'companies' },
+  { label: 'Trusted Providers', icon: Users, workspace: 'providers' },
+  { label: 'Circles', icon: Users, workspace: 'circles' },
+  { label: 'Relationship Grid', icon: Network, workspace: 'grid' },
+  { label: 'Executive Workbench', icon: BriefcaseBusiness, workspace: 'executivework' },
+] as const
+
 export type WorkspaceShellProps = {
   activePage: ActivePage;
   /** Workspace subpage currently shown inside the Workspace host, for nav highlight. */
@@ -73,6 +96,8 @@ export function AetherisWorkspaceShell({
   const query = searchQuery ?? localQuery;
   const changeQuery = onSearchChange ?? setLocalQuery;
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [toolsOpen, setToolsOpen] = useState(() => Boolean(activeWorkspace && MEMBER_TOOL_DESTINATIONS.some(item => item.workspace === activeWorkspace)));
+  useEffect(() => { if (activeWorkspace && MEMBER_TOOL_DESTINATIONS.some(item => item.workspace === activeWorkspace)) setToolsOpen(true); }, [activeWorkspace]);
   const menuButtonRef = useRef<HTMLButtonElement>(null);
   const mobileDialogRef = useRef<HTMLDivElement>(null);
   // Render expanded during SSR/first paint, then adopt the saved preference.
@@ -162,6 +187,21 @@ export function AetherisWorkspaceShell({
               <Icon size={18}/><span>{item.label}</span>
             </button>;
       })}
+      <button type="button" className="specter-tools-toggle"
+        aria-expanded={toolsOpen} aria-controls={mobile ? 'specter-mobile-tools' : 'specter-desktop-tools'}
+        onClick={() => setToolsOpen(open => !open)}>
+        <BriefcaseBusiness size={18}/><span>Business Tools</span><ChevronDown className={toolsOpen ? 'specter-tools-chevron is-open' : 'specter-tools-chevron'} size={15}/>
+      </button>
+      {toolsOpen && <div id={mobile ? 'specter-mobile-tools' : 'specter-desktop-tools'} className="specter-tools-list" role="group" aria-label="Business and relationship tools">
+        {MEMBER_TOOL_DESTINATIONS.map(item => {
+          const Icon = item.icon;
+          const active = item.workspace === activeWorkspace && activePage === 'workspace';
+          return <button type="button" key={item.label} className={active ? 'active' : ''}
+            aria-current={active ? 'page' : undefined} onClick={() => destination(item)}>
+            <Icon size={16}/><span>{item.label}</span>
+          </button>;
+        })}
+      </div>}
       {executiveAction && <button type="button" className="specter-executive-action"
         aria-haspopup="dialog"
         onClick={() => { setMobileMenuOpen(false); executiveAction.onOpen(); }}>
