@@ -121,8 +121,9 @@ export const PeopleDirectoryView: React.FC<PeopleDirectoryViewProps> = ({
   const liveIndustries = useMemo(() => [...new Set(members.map(m => (m.industry ?? '').trim()).filter(Boolean))].sort(), [members]);
 
   // Real distributions computed from the actual member list — never hard-coded.
+  // (The `Map` name is taken by the imported map component, so use globalThis.Map.)
   const topCities = useMemo(() => {
-    const counts = new Map<string, number>();
+    const counts = new globalThis.Map<string, number>();
     members.forEach((m) => {
       const city = m.location.split(',')[0].trim();
       if (city) counts.set(city, (counts.get(city) ?? 0) + 1);
@@ -132,7 +133,7 @@ export const PeopleDirectoryView: React.FC<PeopleDirectoryViewProps> = ({
     return rows.map(([name, count]) => ({ name, count, percent: Math.round((count / max) * 100) }));
   }, [members]);
   const topIndustries = useMemo(() => {
-    const counts = new Map<string, number>();
+    const counts = new globalThis.Map<string, number>();
     members.forEach((m) => {
       const industry = (m.industry ?? '').trim();
       if (industry) counts.set(industry, (counts.get(industry) ?? 0) + 1);
