@@ -18,6 +18,7 @@ const navigation: NavItem[] = [
   { label: 'Calendar', icon: CalendarDays }, { label: 'Messages', icon: MessagesSquare },
   { label: 'Communities', icon: Users }, { label: 'Media', icon: Video },
   { label: 'AI Assistant', icon: Sparkles }, { label: 'Analytics', icon: Activity },
+  { label: 'Tasks & Work', icon: BriefcaseBusiness }, { label: 'Profile', icon: Users },
 ]
 const people = [
   { name: 'Sarah Mitchell', role: 'CEO · Summit Capital', initials: 'SM', shade: 'peach' },
@@ -81,7 +82,8 @@ export function Vision() {
     const params = new URLSearchParams()
     if (view) params.set('view', view)
     if (workspace) params.set('workspace', workspace)
-    const target = params.size ? `/app?${params.toString()}` : '/app'
+    const query = params.toString()
+    const target = query ? `/app?${query}` : '/app'
     window.location.assign(signedIn ? target : `/auth?next=${encodeURIComponent(target)}`)
   }
   const navClick = (name: string) => {
