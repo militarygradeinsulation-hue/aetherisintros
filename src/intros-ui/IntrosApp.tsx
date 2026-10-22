@@ -55,6 +55,7 @@ import { InviteCard } from '@/aetheris/InviteCard';
 import { QuickMenuHost } from '@/aetheris/quick-menu-ui';
 import { QuickNoteHost } from '@/aetheris/quick-note-ui';
 import { SpecterDetectView } from './views/SpecterDetectView';
+import { AetherisWorkspaceShell } from './components/layout/AetherisWorkspaceShell';
 
 const SHELL_PAGES: ActivePage[] = ['home', 'people', 'bubbles', 'intros', 'messages', 'insights', 'news', 'workspace', 'memory', 'work', 'meetings', 'specter'];
 
@@ -299,9 +300,13 @@ export default function App({ mode = 'demo' }: { mode?: 'demo' | 'live' }) {
     return () => window.removeEventListener('aetheris:open-deals', open);
   }, []);
   const classicPages = ['news','workspace','memory','work','insights','meetings','specter', ...(mode === 'live' ? ['home','messages','intros','people'] : [])];
+  // Shared Specter-style shell for the core relationship loop. Complex editor/graph
+  // pages retain their existing hosts until individually tested in the new layout.
+  const workspaceShellPages: ActivePage[] = ['home', 'people', 'intros', 'messages', 'specter'];
+  const inWorkspaceShell = workspaceShellPages.includes(activePage);
 
   return (
-    <div className={`${activePage === 'specter' ? 'ix-specter-mode ' : ''}ix-root min-h-screen bg-[#07090C] text-[#F2EEE6] flex flex-col font-sans selection:bg-[#F5B027]/30 selection:text-white relative`}>
+    <div className={`${activePage === 'specter' ? 'ix-specter-mode ' : inWorkspaceShell ? 'ix-aetheris-workspace-mode ' : ''}ix-root min-h-screen bg-[#07090C] text-[#F2EEE6] flex flex-col font-sans selection:bg-[#F5B027]/30 selection:text-white relative`}>
       <WriteFailureNotice />
       {/* Right-click quick menu (each member chooses its items) */}
       <QuickMenuHost
@@ -323,7 +328,7 @@ export default function App({ mode = 'demo' }: { mode?: 'demo' | 'live' }) {
         Unread counts could not be loaded. Do not assume your inbox is clear.
         <button type="button" className="ml-2 underline font-semibold" onClick={() => void refreshUnread()}>Retry</button>
       </div>}
-      {activePage !== 'specter' && <TopNavigation
+      {!inWorkspaceShell && <TopNavigation
         activePage={activePage}
         onNavigate={handleNavigate}
         searchQuery={searchQuery}
@@ -348,13 +353,28 @@ export default function App({ mode = 'demo' }: { mode?: 'demo' | 'live' }) {
           Retry network connection
         </button>
       </section>}
-      {mode !== 'live' && activePage !== 'specter' && <InteractiveRelationshipTour />}
+      {mode !== 'live' && !inWorkspaceShell && <InteractiveRelationshipTour />}
       {mode === 'live' && <LiveMembers onMembers={setMembers} onError={setLiveDirectoryError} />}
       {mode === 'live' && activePage !== 'specter' && <MeetingReminderBanner onJoin={() => handleNavigate('meetings')} />}
       {mode === 'live' && activePage !== 'specter' && <MembershipCardMailer />}
-      {activePage !== 'specter' && <NewsTicker onOpen={() => handleNavigate('news')} />}
+      {!inWorkspaceShell && <NewsTicker onOpen={() => handleNavigate('news')} />}
       {/* Primary Page Views */}
       <main className="flex-1 arch-product-main" data-arch-page={activePage}>
+        <AetherisWorkspaceShell
+          enabled={inWorkspaceShell && activePage !== 'specter'}
+          scrollContent
+          activePage={activePage}
+          onNavigate={handleNavigate}
+          onWorkspace={page => { setClassicPage(page); handleNavigate('workspace'); }}
+          onSearch={query => { setSearchQuery(query); handleNavigate('people'); }}
+          member={mode === 'live' ? me : null}
+          notifications={mode === 'live' ? <LiveNotificationsBell onOpen={destination => {
+            if (destination === 'peergroups' || destination === 'events' || destination === 'deals') {
+              setClassicPage(destination);
+              handleNavigate('workspace');
+            } else handleNavigate(destination);
+          }}/> : undefined}
+        >
         {activePage === 'home' && (
           <HomeFeedView
             posts={feedPosts}
@@ -470,10 +490,11 @@ export default function App({ mode = 'demo' }: { mode?: 'demo' | 'live' }) {
           </div>
           <AetherisAppSurface key={classicPage}  startPage={classicPage as any}  />
         </div>}
+        </AetherisWorkspaceShell>
       </main>
 
       {/* Editorial Footer */}
-      {activePage !== 'specter' && <EditorialFooter onNavigate={handleNavigate} />}
+      {!inWorkspaceShell && <EditorialFooter onNavigate={handleNavigate} />}
 
       {/* Interactive Modals */}
       <RequestIntroModal
