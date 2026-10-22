@@ -32,6 +32,8 @@ interface HomeFeedViewProps {
   posts: FeedPost[];
   isLive?: boolean;
   socialFeed?: React.ReactNode;
+  /** Authenticated-only snapshot from the canonical live network graph. */
+  liveOverview?: React.ReactNode;
   actionQueue?: React.ReactNode;
   onNavigate: (page: ActivePage, memberId?: string) => void;
   onRequestIntro: (member: NetworkMember) => void;
@@ -53,6 +55,7 @@ export const HomeFeedView: React.FC<HomeFeedViewProps> = ({
   me,
   isLive = false,
   socialFeed,
+  liveOverview,
   actionQueue,
 }) => {
   const [postLimit, setPostLimit] = useState(INITIAL_FEED_COUNT);
@@ -156,6 +159,7 @@ export const HomeFeedView: React.FC<HomeFeedViewProps> = ({
           <Button size="sm" className="home-feed-welcome-cta" onClick={jumpToSocial}><PlusCircle />Share an update</Button>
         </div>
       </header>
+      {liveOverview}
       <FeedSidebarLayout widgets={widgets} actionQueue={actionQueue}>
       <section id="home-social-board" className="home-social-board scroll-mt-24">
         
