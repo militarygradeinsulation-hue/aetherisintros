@@ -374,8 +374,8 @@
  * use a deeper shade and true white label for WCAG AA small-text contrast.
  * Scope to the real persistent member workspace; don't recolor system alerts.
  */
-html:root[data-theme="light"] body .ix-root .arch-product-main .aetheris-workspace-shell :is(.ix-messages,.ix-live-messages) button.msg-primary-action,
-html:root[data-theme="light"] body .ix-root .arch-product-main .aetheris-workspace-shell :is(.ix-messages,.ix-live-messages) button.msg-primary-action:hover:not(:disabled) {
+html:root[data-theme="light"] body .ix-root .aetheris-workspace-shell .arch-product-main :is(.ix-messages,.ix-live-messages) button.msg-primary-action,
+html:root[data-theme="light"] body .ix-root .aetheris-workspace-shell .arch-product-main :is(.ix-messages,.ix-live-messages) button.msg-primary-action:hover:not(:disabled) {
   background: #9c431b !important;
   background-color: #9c431b !important;
   background-image: none !important;
