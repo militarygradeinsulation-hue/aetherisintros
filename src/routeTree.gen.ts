@@ -13,8 +13,6 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as DemoRouteImport } from './routes/demo'
-import { Route as VisionRouteImport } from './routes/vision'
-import { Route as VisionProfileRouteImport } from './routes/vision-profile'
 import { Route as EarlyAccessRouteImport } from './routes/early-access'
 import { Route as FounderStoryRouteImport } from './routes/founder-story'
 import { Route as McpRouteImport } from './routes/mcp'
@@ -73,8 +71,6 @@ const AuthRoute = AuthRouteImport.update({
   path: '/auth',
   getParentRoute: () => rootRouteImport,
 } as any)
-const VisionRoute = VisionRouteImport.update({ id: '/vision', path: '/vision', getParentRoute: () => rootRouteImport } as any)
-const VisionProfileRoute = VisionProfileRouteImport.update({ id: '/vision-profile', path: '/vision-profile', getParentRoute: () => rootRouteImport } as any)
 const DemoRoute = DemoRouteImport.update({
   id: '/demo',
   path: '/demo',
@@ -306,8 +302,6 @@ const ApiStripeWebhookRoute = ApiStripeWebhookRouteImport.update({
 } as any)
 
 export interface FileRoutesByFullPath {
-  '/vision': typeof VisionRoute
-  '/vision-profile': typeof VisionProfileRoute
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/demo': typeof DemoRoute
@@ -356,8 +350,6 @@ export interface FileRoutesByFullPath {
   '/api/stripe/webhook': typeof ApiStripeWebhookRoute
 }
 export interface FileRoutesByTo {
-  '/vision': typeof VisionRoute
-  '/vision-profile': typeof VisionProfileRoute
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/demo': typeof DemoRoute
@@ -406,8 +398,6 @@ export interface FileRoutesByTo {
   '/api/stripe/webhook': typeof ApiStripeWebhookRoute
 }
 export interface FileRoutesById {
-  '/vision': typeof VisionRoute
-  '/vision-profile': typeof VisionProfileRoute
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
@@ -460,8 +450,6 @@ export interface FileRoutesById {
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
-    | '/vision'
-    | '/vision-profile'
     | '/'
     | '/auth'
     | '/demo'
@@ -510,8 +498,6 @@ export interface FileRouteTypes {
     | '/api/stripe/webhook'
   fileRoutesByTo: FileRoutesByTo
   to:
-    | '/vision'
-    | '/vision-profile'
     | '/'
     | '/auth'
     | '/demo'
@@ -559,8 +545,6 @@ export interface FileRouteTypes {
     | '/api/push/dispatch'
     | '/api/stripe/webhook'
   id:
-    | '/vision'
-    | '/vision-profile'
     | '__root__'
     | '/'
     | '/_authenticated'
@@ -612,8 +596,6 @@ export interface FileRouteTypes {
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
-  VisionRoute: typeof VisionRoute
-  VisionProfileRoute: typeof VisionProfileRoute
   IndexRoute: typeof IndexRoute
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
   AuthRoute: typeof AuthRoute
@@ -652,8 +634,6 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/vision': { id: '/vision'; path: '/vision'; fullPath: '/vision'; preLoaderRoute: typeof VisionRouteImport; parentRoute: typeof rootRouteImport }
-    '/vision-profile': { id: '/vision-profile'; path: '/vision-profile'; fullPath: '/vision-profile'; preLoaderRoute: typeof VisionProfileRouteImport; parentRoute: typeof rootRouteImport }
     '/': {
       id: '/'
       path: '/'
@@ -1030,8 +1010,6 @@ const NewsRouteChildren: NewsRouteChildren = {
 const NewsRouteWithChildren = NewsRoute._addFileChildren(NewsRouteChildren)
 
 const rootRouteChildren: RootRouteChildren = {
-  VisionRoute: VisionRoute,
-  VisionProfileRoute: VisionProfileRoute,
   IndexRoute: IndexRoute,
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
   AuthRoute: AuthRoute,
