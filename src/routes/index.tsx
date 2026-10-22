@@ -1,6 +1,6 @@
 import { createFileRoute } from '@tanstack/react-router'
 
-import Landing from '@/aetheris/Landing'
+import { Vision } from './vision'
 import '@/aetheris/styles.css'
 
 const description = 'Share what you need, discover relevant business connections, and request introductions with mutual consent.'
@@ -9,7 +9,7 @@ export const Route = createFileRoute('/')({
   staticData: { sitemap: true },
   head: () => ({
     meta: [
-      { title: 'Ask Intros — The Relationship Network for CEOs' },
+      { title: 'Aetheris Intros — One Connected System for CEOs' },
       {
         name: 'description',
         content:
@@ -27,5 +27,5 @@ export const Route = createFileRoute('/')({
     ],
     links: [{ rel: 'canonical', href: 'https://askintros.vip/' }],
   }),
-  component: Landing,
+  component: Vision,
 })
