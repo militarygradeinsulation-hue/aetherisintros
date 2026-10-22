@@ -724,88 +724,72 @@ export const PeopleDirectoryView: React.FC<PeopleDirectoryViewProps> = ({
           )}
         </main>
 
-        {/* Right Sidebar: Network Insights (Matching Image 5) */}
+        {/* Right Sidebar: Network Insights — computed from the real member list */}
         <aside className="lg:col-span-3 space-y-5">
           <div className="bg-[#0E121A] border border-white/10 rounded-xl p-4 space-y-5">
             <div className="flex items-center justify-between text-[11px] font-mono tracking-widest uppercase text-[#9CA3AF] font-semibold">
               <span>Network Insights</span>
-              <span className="text-[#F5B027]">Global</span>
+              <span className="text-[#F5B027]">{isLive ? 'Your network' : 'Demo'}</span>
             </div>
 
             <div>
               <div className="text-2xl font-serif-editorial font-bold text-white mb-1">
-                1,246
+                {members.length}
               </div>
               <div className="text-xs text-[#9CA3AF]">
-                People in your extended network
+                People in this directory
               </div>
             </div>
 
-            {/* Top Cities */}
-            <div className="space-y-2 pt-2 border-t border-white/5">
-              <div className="text-[10px] font-mono uppercase text-[#9CA3AF] tracking-wider font-semibold">
-                Top Cities
-              </div>
-              {[
-                { name: 'San Francisco', count: 248, percent: 100 },
-                { name: 'New York', count: 196, percent: 79 },
-                { name: 'London', count: 142, percent: 57 },
-                { name: 'Singapore', count: 98, percent: 40 },
-                { name: 'Berlin', count: 76, percent: 30 },
-              ].map((c) => (
-                <div
-                  key={c.name}
-                  onClick={() => setSelectedCity(c.name)}
-                  className="space-y-1 cursor-pointer group"
-                >
-                  <div className="flex items-center justify-between text-xs text-[#CBD5E1] group-hover:text-white">
-                    <span>{c.name}</span>
-                    <span className="font-mono text-[11px] text-[#9CA3AF]">{c.count}</span>
-                  </div>
-                  <div className="h-1.5 w-full bg-white/5 rounded-full overflow-hidden">
-                    <div
-                      className="h-full bg-[#F5B027] rounded-full transition-all"
-                      style={{ width: `${c.percent}%` }}
-                    />
-                  </div>
+            {/* Top Cities — real distribution */}
+            {topCities.length > 0 && (
+              <div className="space-y-2 pt-2 border-t border-white/5">
+                <div className="text-[10px] font-mono uppercase text-[#9CA3AF] tracking-wider font-semibold">
+                  Top Cities
                 </div>
-              ))}
-            </div>
-
-            {/* Top Industries */}
-            <div className="space-y-2 pt-2 border-t border-white/5">
-              <div className="text-[10px] font-mono uppercase text-[#9CA3AF] tracking-wider font-semibold">
-                Top Industries
+                {topCities.map((c) => (
+                  <div
+                    key={c.name}
+                    onClick={() => setSelectedCity(c.name)}
+                    className="space-y-1 cursor-pointer group"
+                  >
+                    <div className="flex items-center justify-between text-xs text-[#CBD5E1] group-hover:text-white">
+                      <span>{c.name}</span>
+                      <span className="font-mono text-[11px] text-[#9CA3AF]">{c.count}</span>
+                    </div>
+                    <div className="h-1.5 w-full bg-white/5 rounded-full overflow-hidden">
+                      <div
+                        className="h-full bg-[#F5B027] rounded-full transition-all"
+                        style={{ width: `${c.percent}%` }}
+                      />
+                    </div>
+                  </div>
+                ))}
               </div>
-              {[
-                { name: 'AI / Machine Learning', percent: 28 },
-                { name: 'Enterprise Software', percent: 18 },
-                { name: 'Fintech', percent: 12 },
-                { name: 'Infrastructure', percent: 10 },
-                { name: 'Healthtech', percent: 8 },
-              ].map((ind) => (
-                <div key={ind.name} className="space-y-1">
-                  <div className="flex items-center justify-between text-xs text-[#CBD5E1]">
-                    <span>{ind.name}</span>
-                    <span className="font-mono text-[11px] text-[#9CA3AF]">{ind.percent}%</span>
-                  </div>
-                  <div className="h-1.5 w-full bg-white/5 rounded-full overflow-hidden">
-                    <div
-                      className="h-full bg-[#F5B027] rounded-full"
-                      style={{ width: `${ind.percent * 2.5}%` }}
-                    />
-                  </div>
+            )}
+
+            {/* Top Industries — real distribution */}
+            {topIndustries.length > 0 && (
+              <div className="space-y-2 pt-2 border-t border-white/5">
+                <div className="text-[10px] font-mono uppercase text-[#9CA3AF] tracking-wider font-semibold">
+                  Top Industries
                 </div>
-              ))}
-            </div>
-
-            {/* Editorial Quote Callout */}
-            <div className="p-3 bg-white/[0.02] border border-white/5 rounded-lg text-xs text-[#9CA3AF] italic">
-              "The best opportunities come from the right people."
-              <div className="text-[10px] font-mono text-[#6B7280] not-italic mt-1 uppercase">
-                — Aetheris Member
+                {topIndustries.map((ind) => (
+                  <div key={ind.name} className="space-y-1">
+                    <div className="flex items-center justify-between text-xs text-[#CBD5E1]">
+                      <span>{ind.name}</span>
+                      <span className="font-mono text-[11px] text-[#9CA3AF]">{ind.percent}%</span>
+                    </div>
+                    <div className="h-1.5 w-full bg-white/5 rounded-full overflow-hidden">
+                      <div
+                        className="h-full bg-[#F5B027] rounded-full"
+                        style={{ width: `${Math.min(100, ind.percent * 2.5)}%` }}
+                      />
+                    </div>
+                  </div>
+                ))}
               </div>
-            </div>
+            )}
           </div>
 
           {/* Active asks — what people need right now */}
