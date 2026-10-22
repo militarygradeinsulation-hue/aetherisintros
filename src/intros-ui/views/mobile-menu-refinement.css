@@ -1,0 +1,186 @@
+/*
+ * Phone-first workspace cleanup. This sheet loads last to override older
+ * desktop navigation rules still hiding the mobile Menu label and SVG.
+ */
+@media (max-width: 760px) {
+  .ix-root .aetheris-workspace-shell .specter-app-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    min-width: 0;
+    gap: 8px;
+    padding-inline: max(12px, env(safe-area-inset-left, 0px)) max(12px, env(safe-area-inset-right, 0px));
+  }
+  .ix-root .aetheris-workspace-shell .specter-app-brand {
+    max-width: none;
+    flex: 1 1 0;
+    min-width: 0;
+  }
+  .ix-root .aetheris-workspace-shell .specter-app-brand strong {
+    font-size: clamp(14px,4.1vw,18px);
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .ix-root .aetheris-workspace-shell .specter-app-brand small {
+    letter-spacing: .075em;
+    font-size: 8px;
+  }
+  .ix-root .aetheris-workspace-shell .specter-app-account {
+    flex: 0 0 auto;
+    display: flex;
+    align-items: center;
+    margin: 0;
+    gap: 6px;
+  }
+  /* The legacy rule hides every account SVG and label. The Menu button must
+     override it explicitly, or it renders as an empty outlined orange square. */
+  .ix-root .aetheris-workspace-shell .specter-app-account > .specter-header-cta,
+  .ix-root .aetheris-workspace-shell .specter-app-account > .specter-account-button,
+  .ix-root .aetheris-workspace-shell .specter-app-account > .specter-notification {
+    display: none !important;
+  }
+  .ix-root .aetheris-workspace-shell .specter-app-account > .specter-mobile-menu-toggle {
+    display: inline-flex !important;
+    min-width: 88px;
+    min-height: 42px;
+    padding: 9px 12px;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    flex: 0 0 auto;
+    background: rgba(255,138,76,.09);
+    border: 1px solid rgba(255,138,76,.50);
+    border-radius: 9px;
+    color: #ffbc96;
+    box-shadow: none;
+    font: 600 12px/1.1 Poppins,Inter,system-ui,sans-serif;
+    white-space: nowrap;
+  }
+  .ix-root .aetheris-workspace-shell .specter-app-account > .specter-mobile-menu-toggle svg {
+    display: block !important;
+    width: 19px;
+    height: 19px;
+    flex: 0 0 auto;
+    color: inherit;
+    stroke: currentColor;
+  }
+  .ix-root .aetheris-workspace-shell .specter-app-account > .specter-mobile-menu-toggle span {
+    display: inline !important;
+    font-size: 12px;
+    color: inherit;
+    -webkit-text-fill-color: currentColor;
+  }
+  .ix-root .aetheris-workspace-shell .specter-app-account > .specter-mobile-menu-toggle[aria-expanded="true"] {
+    background: #ff8a4c;
+    color: #1b120e;
+    border-color: #ff8a4c;
+  }
+  .ix-root .aetheris-workspace-shell .specter-mobile-menu {
+    top: 64px;
+    height: auto;
+    max-height: calc(100dvh - 64px);
+    border-radius: 12px 0 0 0;
+    padding-bottom: max(24px,env(safe-area-inset-bottom,0px));
+  }
+  .ix-root .aetheris-workspace-shell .specter-mobile-menu nav {
+    grid-template-columns: minmax(0,1fr);
+    gap: 3px;
+  }
+  .ix-root .aetheris-workspace-shell .specter-mobile-menu nav :is(a,button) {
+    min-height: 44px;
+    font-size: 13px;
+  }
+
+  /* Reduce the competing visual weight of feed controls and the composer.
+     Feed content is never hidden; it remains scrollable and functional. */
+  .ix-root .aetheris-workspace-shell .home-feed-page {
+    padding: 8px 2px 18px;
+    row-gap: 10px;
+  }
+  .ix-root .aetheris-workspace-shell .home-feed-welcome {
+    padding: 12px !important;
+    gap: 9px;
+    border-left-width: 3px;
+    border-radius: 10px;
+  }
+  .ix-root .aetheris-workspace-shell .home-feed-welcome h1 {
+    font-size: clamp(19px,5vw,23px);
+    line-height: 1.18;
+    letter-spacing: -.035em;
+  }
+  .ix-root .aetheris-workspace-shell .home-feed-welcome-actions {
+    display: grid;
+    grid-template-columns: minmax(0,1fr) minmax(0,1fr);
+    gap: 7px;
+  }
+  .ix-root .aetheris-workspace-shell .home-feed-welcome-actions button {
+    min-height: 40px;
+    padding: 8px 7px;
+    border-radius: 8px;
+    font-size: 11px !important;
+  }
+  .ix-root .aetheris-workspace-shell .home-feed-controls {
+    padding-block: 6px;
+    gap: 5px;
+    margin-bottom: 5px;
+  }
+  .ix-root .aetheris-workspace-shell .home-feed-controls-label {
+    display: none;
+  }
+  .ix-root .aetheris-workspace-shell .home-feed-controls-actions {
+    width: 100%;
+    display: flex;
+    flex-wrap: nowrap;
+    align-items: stretch;
+    gap: 6px;
+  }
+  .ix-root .aetheris-workspace-shell .home-feed-controls-actions button {
+    flex: 1 1 0;
+    min-width: 0;
+    min-height: 40px;
+    padding: 7px 5px;
+    font-size: clamp(10px,2.7vw,12px);
+    line-height: 1.2;
+    white-space: normal;
+    text-align: center;
+  }
+  .ix-root .aetheris-workspace-shell .home-feed-controls-actions button svg {
+    width: 14px;
+    height: 14px;
+  }
+  .ix-root .aetheris-workspace-shell .home-feed-visible-count {
+    font-size: 10px;
+    padding: 1px 5px;
+  }
+  .ix-root .aetheris-workspace-shell :is(.home-social-board,.social-editorial--compact) {
+    min-width: 0;
+  }
+  .ix-root .aetheris-workspace-shell .social-editorial--compact .feed-editorial-layout {
+    padding: 0;
+  }
+  .ix-root .aetheris-workspace-shell .social-editorial--compact :is(.feed-editorial-main,.feed-grid) {
+    min-width: 0;
+  }
+  .ix-root .aetheris-workspace-shell .social-editorial--compact .social-feed-card {
+    padding: 12px;
+    border-radius: 10px;
+  }
+  .ix-root .aetheris-workspace-shell :is(input,textarea,select) {
+    font-size: max(16px,1em);
+  }
+}
+@media (max-width: 360px) {
+  .ix-root .aetheris-workspace-shell .specter-app-brand small {font-size: 7px;}
+  .ix-root .aetheris-workspace-shell .specter-app-account > .specter-mobile-menu-toggle {
+    min-width: 76px;
+    padding: 8px 9px;
+    gap: 5px;
+  }
+  .ix-root .aetheris-workspace-shell .home-feed-welcome-actions button {
+    font-size: 10px !important;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .ix-root .aetheris-workspace-shell .specter-mobile-menu {animation: none;}
+}
