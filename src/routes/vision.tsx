@@ -77,8 +77,11 @@ export function Vision() {
     setTab('For You')
     notify('Preview post created locally. Sign in to publish in the live network.')
   }
-  const goLive = (view?: string) => {
-    const target = view ? `/app?view=${encodeURIComponent(view)}` : '/app'
+  const goLive = (view?: string, workspace?: string) => {
+    const params = new URLSearchParams()
+    if (view) params.set('view', view)
+    if (workspace) params.set('workspace', workspace)
+    const target = params.size ? `/app?${params.toString()}` : '/app'
     window.location.assign(signedIn ? target : `/auth?next=${encodeURIComponent(target)}`)
   }
   const navClick = (name: string) => {
@@ -88,10 +91,14 @@ export function Vision() {
     else if (name === 'Network') goLive('people')
     else if (name === 'Introductions') goLive('intros')
     else if (name === 'Messages') goLive('messages')
-    else if (name === 'Calendar') goLive('meetings')
+    else if (name === 'Calendar') goLive(undefined, 'calendar')
     else if (name === 'Analytics') goLive('insights')
     else if (name === 'AI Assistant') goLive('intelligence')
-    else if (name === 'Opportunities' || name === 'CRM' || name === 'Communities') goLive()
+    else if (name === 'Opportunities') goLive(undefined, 'opportunities')
+    else if (name === 'CRM') goLive(undefined, 'crm')
+    else if (name === 'Communities') goLive(undefined, 'peergroups')
+    else if (name === 'Tasks & Work') goLive('work')
+    else if (name === 'Profile') goLive(undefined, 'profile')
     else if (name === 'Home') window.scrollTo({top: 0, behavior: 'smooth'})
     else notify(`${name} is available in the live member workspace.`)
   }
