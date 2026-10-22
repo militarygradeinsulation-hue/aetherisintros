@@ -7,9 +7,21 @@ const rpc = (name: string, args?: Record<string, unknown>) =>
   (supabase as any).rpc(name, args) as Promise<{ data: any; error: { message: string } | null }> // eslint-disable-line @typescript-eslint/no-explicit-any
 
 /** Basic and Executive share the same identity and privacy rules. Only an admin
- * can grant Executive; the application never writes tier rows from the browser. */
-export function ExecutiveUpgrade({ tier, isAdmin }: { tier: 'basic' | 'executive'; isAdmin: boolean }) {
-  const [open, setOpen] = useState(false)
+ * can grant Executive; the application never writes tier rows from the browser.
+ * The launcher is controllable: hosts such as the workspace shell can hide the
+ * floating trigger and open the same dialog from their own navigation instead. */
+export function ExecutiveUpgrade({ tier, isAdmin, open: controlledOpen, onOpenChange, hideTrigger = false }: {
+  tier: 'basic' | 'executive'; isAdmin: boolean;
+  open?: boolean | undefined;
+  onOpenChange?: ((open: boolean) => void) | undefined;
+  hideTrigger?: boolean | undefined;
+}) {
+  const [internalOpen, setInternalOpen] = useState(false)
+  const open = controlledOpen ?? internalOpen
+  const setOpen = (next: boolean) => {
+    if (controlledOpen === undefined) setInternalOpen(next)
+    onOpenChange?.(next)
+  }
   const [status, setStatus] = useState('')
   const [error, setError] = useState('')
   const [busy, setBusy] = useState(false)
@@ -74,9 +86,9 @@ export function ExecutiveUpgrade({ tier, isAdmin }: { tier: 'basic' | 'executive
     setBusy(false)
   }
   return <>
-    <button type="button" className="executive-upgrade-trigger" onClick={() => setOpen(true)}>
+    {!hideTrigger && <button type="button" className="executive-upgrade-trigger" onClick={() => setOpen(true)}>
       {isAdmin ? 'Executive applications' : 'Basic member · Apply for Executive'}
-    </button>
+    </button>}
     {open && <div className="executive-upgrade-overlay" role="presentation" onClick={() => setOpen(false)}>
       <section className="executive-upgrade-dialog" role="dialog" aria-modal="true" aria-label={isAdmin ? 'Executive applications' : 'Apply for Executive'} onClick={e => e.stopPropagation()}>
         <button className="executive-upgrade-close" type="button" onClick={() => setOpen(false)} aria-label="Close">×</button>
