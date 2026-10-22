@@ -3,6 +3,7 @@ import { describe, expect, it } from 'vitest'
 
 const component = readFileSync(new URL('../pages/CollisionsPage.tsx', import.meta.url), 'utf8')
 const directory = readFileSync(new URL('../../intros-ui/views/PeopleDirectoryView.tsx', import.meta.url), 'utf8')
+const directoryCss = readFileSync(new URL('../../intros-ui/views/people-directory.css', import.meta.url), 'utf8')
 const css = readFileSync(new URL('../site-readability.css', import.meta.url), 'utf8')
 
 const rgb = (hex: string) => {
@@ -33,22 +34,12 @@ describe('relationship filters and collision identities', () => {
     expect(contrast('#f5f5f5', '#000000')).toBeGreaterThanOrEqual(4.5)
     expect(contrast('#17191c', '#ffffff')).toBeGreaterThanOrEqual(4.5)
   })
-  it('keeps the selected Relationship Tier label, count and surface readable', () => {
-    expect(directory).toContain('ix-relationship-tier-option')
-    expect(directory).toContain('ix-relationship-tier-label')
-    expect(directory).toContain('ix-relationship-tier-count')
-    expect(stylesFor('dark', '.ix-root .ix-relationship-tier-option[aria-pressed="true"]')).toContain('background:#292017!important')
-    expect(stylesFor('light', '.ix-root .ix-relationship-tier-option[aria-pressed="true"]')).toContain('background:#fff0db!important')
-    expect(contrast('#ffffff', '#292017')).toBeGreaterThanOrEqual(4.5)
-    expect(contrast('#1c1711', '#fff0db')).toBeGreaterThanOrEqual(4.5)
+  it('keeps orange action ink readable in the dark workspace', () => {
+    expect(contrast('#1c110c', '#ff8a4c')).toBeGreaterThanOrEqual(4.5)
+    expect(contrast('#ff8a4c', '#131316')).toBeGreaterThanOrEqual(4.5)
   })
-  it('keeps the compact tier chips theme-aware and keyboard reachable', () => {
-    expect(directory).toContain('ix-relationship-tier-quick-option')
-    expect(directory).toContain('aria-pressed={selectedTier === t.id}')
-    for (const theme of ['dark', 'light'] as const) {
-      expect(stylesFor(theme, '.ix-root .ix-relationship-tier-quick-option[aria-pressed="true"]')).toContain('background:')
-      expect(stylesFor(theme, '.ix-root .ix-relationship-tier-option[aria-pressed="false"]')).toContain('color:')
-    }
-    expect(css).toContain('.ix-relationship-tier-quick-option):focus-visible')
+  it('keeps the compact native tier selector and focus indication', () => {
+    expect(directory).toContain('aria-label="Relationship tier"')
+    expect(directoryCss).toContain(':focus-visible')
   })
 })

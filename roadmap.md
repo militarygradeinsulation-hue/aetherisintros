@@ -399,3 +399,13 @@
 - [x] Dashboard: default focused social feed, separate tools/activity, closed overview, progressive feed loading and preserved drafts; measured 1440×900 and 390×844 before/after.
 - [ ] Verify the authenticated Dashboard and screenshot-specific live Introductions banner — blocked: requesting account has no mintable session; preview member sign-in required.
 - [ ] Confirm connected GitHub main/CI synchronization — blocked: sandbox exposes managed internal edit history, not GitHub main/CI status.
+
+## PR 263 orange integration QA (Oct 22)
+- [x] Confirm exact merged HEAD and CSS import order; detect displaced compact Dashboard/Network layouts.
+- [x] Restore prior viewport panels and search-first directory without losing orange styles or live callbacks.
+- [x] Current snapshot: 138 application test files / 858 tests pass; public/demo browser checks cover 1440/390/320 and Dashboard/Network 1280; preview automatic compilation OK.
+- [ ] Complete release safeguards — blocked: two recovery suites require missing PGlite; authenticated requesting-account session unavailable. No publication.
+
+## PR 264 latest-main density verification (Oct 22)
+- [ ] Synchronize PR #264 — blocked: GitHub commit 322a1a713fd87528afa671a8973cf9702dd9ec71 verified via public API, but preview HEAD caa31c117213ad3244fac1fc09684c9ef5b1fbd2 lacks its stylesheet/import/Network selectors. Agent cannot operate managed Git sync; user must inspect Project settings → Git. Do not overwrite either source version manually.
+- [ ] Check full-width Dashboard and balanced Network at desktop/mobile after sync; publication and live release identity remain unverified.

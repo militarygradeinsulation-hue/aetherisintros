@@ -37,7 +37,6 @@ describe('Ask Intros burnt-orange bento design contract', () => {
   it('applies orange to real product destinations without changing feed data', () => {
     for (const path of [
       '../../intros-ui/views/HomeFeedView.tsx',
-      '../../intros-ui/views/PeopleDirectoryView.tsx',
       '../../intros-ui/views/InsightsDashboardView.tsx',
       '../../intros-ui/views/IntrosHubView.tsx',
       '../../intros-ui/views/ConnectionBubblesView.tsx',
@@ -46,6 +45,9 @@ describe('Ask Intros burnt-orange bento design contract', () => {
       expect(content).toContain('#FF8A4C')
       expect(content).not.toContain('#F5B027')
     }
+    // The compact directory inherits the shared semantic accent, not literal colors.
+    expect(src('../../intros-ui/views/people-directory.css')).toContain('var(--ix-accent)')
+    expect(src('../../intros-ui/views/PeopleDirectoryView.tsx')).toContain("import './people-directory.css'")
     expect(src('../../intros-ui/views/HomeFeedView.tsx')).toContain('onAddPost')
     expect(src('../../intros-ui/views/PeopleDirectoryView.tsx')).toContain('filteredMembers')
   })

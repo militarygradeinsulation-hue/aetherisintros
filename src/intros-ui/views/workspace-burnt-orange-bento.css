@@ -367,3 +367,46 @@
     transform: none !important;
   }
 }
+
+/* Preserve the supplied interface typography against the legacy stencil layer. */
+:root[data-theme] body .ix-root .aetheris-workspace-shell :is(button,input,select,textarea,h1,h2,h3) {
+  font-family: Poppins, Inter, system-ui, sans-serif !important;
+  letter-spacing: 0 !important;
+}
+:root[data-theme] body .ix-root .aetheris-workspace-shell :is(.home-board-label,.directory-meta,.directory-tier,.mi-eyebrow,.specter-kicker) {
+  font-family: "IBM Plex Mono", ui-monospace, monospace !important;
+}
+
+/* Legacy mobile rules hid every span/SVG, including the actionable icons. */
+:root[data-theme] body .ix-root .ask-dock-fab {
+  min-width: 44px;
+  min-height: 44px;
+}
+:root[data-theme] body .ix-root .ask-dock-fab .aetheris-glyph {
+  display: inline-grid !important;
+  width: 18px;
+  height: 18px;
+}
+:root[data-theme] body .ix-root .ask-dock-fab > svg {
+  display: block !important;
+}
+@media (max-width: 760px) {
+  :root[data-theme] body .ix-root .aetheris-workspace-shell .specter-mobile-menu-toggle {
+    position: fixed;
+    right: 12px;
+    bottom: max(12px, env(safe-area-inset-bottom));
+    z-index: 100;
+    width: 44px;
+    height: 44px;
+    padding: 10px;
+    background: var(--ix-card);
+    border: 1px solid var(--ix-line-strong);
+    border-radius: 8px;
+  }
+  :root[data-theme] body .ix-root .aetheris-workspace-shell .specter-mobile-menu-toggle > svg {
+    display: block !important;
+    flex: none;
+    width: 23px;
+    height: 23px;
+  }
+}
