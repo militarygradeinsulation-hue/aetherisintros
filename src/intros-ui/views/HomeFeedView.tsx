@@ -128,10 +128,21 @@ export const HomeFeedView: React.FC<HomeFeedViewProps> = ({
   };
 
   return (
-    <div className="home-feed-page w-full max-w-[1620px] mx-auto px-4 md:px-6 py-6 space-y-8 animate-fadeIn">
+    <div className="home-feed-page ix-dashboard-clean w-full max-w-[1300px] mx-auto px-3 md:px-5 py-4 space-y-5 animate-fadeIn">
+      <header className="ix-dashboard-header">
+        <div>
+          <span className="ix-workspace-eyebrow">ASK INTROS / DASHBOARD</span>
+          <h1>Stay close to what matters.</h1>
+          <p>Your network updates and next steps, in one place.</p>
+        </div>
+        <div className="ix-dashboard-header-actions">
+          <button type="button" onClick={() => onNavigate('intros')}>Introductions <ArrowRight size={15}/></button>
+          <button type="button" onClick={() => onNavigate('people')}>Explore people <Users size={15}/></button>
+        </div>
+      </header>
       <FeedSidebarLayout widgets={widgets} actionQueue={actionQueue}>
       <section id="home-social-board" className="home-social-board scroll-mt-24">
-        <header className="home-social-heading"><div><span className="home-board-label">Social Board</span><h2>Your network, in motion.</h2></div><Button variant="outline" onClick={() => onNavigate('people')}><Users />Find people</Button></header>
+        <header className="home-social-heading"><div><span className="home-board-label">NETWORK ACTIVITY</span><h2>Recent updates</h2></div><Button variant="outline" onClick={() => onNavigate('people')}><Users />Find people</Button></header>
         {socialFeed || <div className="max-w-3xl mx-auto w-full">
         {/* Center Column: Feed Post Composer & Feed Stream */}
         <main className="space-y-6">
