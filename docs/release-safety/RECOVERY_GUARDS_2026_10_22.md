@@ -9,6 +9,14 @@ Tracks #211. No historical SQL, migration journal, application behavior or produ
 - Optionally bind the catalog rehearsal to a supplied ledger export and refuse replay of targets not confirmed pending by that export. Ledger discrepancies remain blockers even if isolated DDL succeeds. No SQL/ledger executor or automatic collision repair is provided.
 - Stop after the first failed recovery target. Fingerprint collision probe SQL; regressions exercise rollback of preceding data updates, grants and DDL on success, expected collision, and unrelated failure.
 - Verify reconstructed column ACLs and RLS with two synthetic members and an anonymous actor, including cross-member write denial, denied identity changes, private-column denial and caller-scoped SECURITY DEFINER reads. Extend observed-security rehearsal to the existing RLS-hardening candidate suite within a rollback transaction.
+- Synthetic security fixtures also support profiles already created by the signup trigger. An integration regression runs the expanded adapter against unchanged complete source history without disabling that trigger or replacing membership helpers, and verifies candidate ACL changes roll back.
+
+## Isolated validation
+
+- Recovery tests: 22 pass. Database regressions run on PGlite 0.2.17 and 0.3.15 using a temporary Vitest 3.2.4 runtime.
+- Expanded security adapter against the synthetic complete source baseline: 401 assertions pass, zero fail, including the candidate suite. This is additional synthetic evidence, not a rerun of the October 20 capture.
+- Full migration harness before the signup-fixture adjustment: 1,617 assertions pass on each engine. The adjusted fixture and final tree are also subject to GitHub's migration checks.
+- Journal integrity: 94 files / 94 entries, no drift. Historical migration SQL and journal bytes remain unchanged.
 
 ## Evidence and limits
 

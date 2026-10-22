@@ -26,7 +26,9 @@ export async function checkObservedSecurity(db, repo) {
   try {
     for(const [id,name] of [[A,'Synthetic A'],[B,'Synthetic B'],[C,'Synthetic C'],[ADMIN,'Synthetic Admin']]) {
       await svc(`INSERT INTO auth.users(id,email,email_confirmed_at) VALUES('${id}','${id}@test.invalid',now())`)
-      await svc(`INSERT INTO public.profiles(id,name,onboarded,visibility) VALUES('${id}','${name}',true,'network')`)
+      // A source-history baseline may include the auth signup trigger; the
+      // public-catalog baseline has only the synthetic auth shell. Support both.
+      await svc(`INSERT INTO public.profiles(id,name,onboarded,visibility) VALUES('${id}','${name}',true,'network') ON CONFLICT(id) DO UPDATE SET name=excluded.name,onboarded=excluded.onboarded,visibility=excluded.visibility`)
       await svc(`INSERT INTO public.early_access_members(user_id,email,status) VALUES('${id}','${id}@test.invalid','approved') ON CONFLICT(user_id) DO UPDATE SET status='approved'`)
     }
     await svc(`INSERT INTO public.user_roles(user_id,role) VALUES('${ADMIN}','admin') ON CONFLICT DO NOTHING`)
