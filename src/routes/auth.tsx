@@ -12,6 +12,7 @@ import { previewInvite, rememberInvite, storedInvite } from '@/aetheris/access'
 import { logSecurityEvent, passwordProblem } from '@/aetheris/verification'
 import { AppearanceToggle } from '@/aetheris/AppearanceToggle'
 import { startLinkedInAuthentication } from '@/aetheris/linkedin-auth'
+import { checkLinkedInReadiness, type ProviderReadiness } from '@/aetheris/auth-provider-readiness'
 import '@/aetheris/styles.css'
 
 export const Route = createFileRoute('/auth')({
@@ -47,6 +48,12 @@ export const Route = createFileRoute('/auth')({
 })
 
 function AuthPage() {
+  const [linkedInStatus, setLinkedInStatus] = useState<ProviderReadiness>('unverified')
+  useEffect(() => {
+    const controller = new AbortController()
+    void checkLinkedInReadiness(controller.signal).then(status => { if (!controller.signal.aborted) setLinkedInStatus(status) })
+    return () => controller.abort()
+  }, [])
   const visualRef = useRef<HTMLElement>(null)
   const [hydrated, setHydrated] = useState(false)
   useEffect(() => { setHydrated(true) }, [])
@@ -258,9 +265,10 @@ function AuthPage() {
         <button className="btn google" type="button" onClick={() => void google()} disabled={busy}>
           Continue with Google
         </button>
-        <button className="btn google" type="button" onClick={() => void linkedin()} disabled={busy}>
+        <button className="btn google" type="button" onClick={() => void linkedin()} disabled={busy || linkedInStatus === 'disabled'} aria-describedby={linkedInStatus === 'disabled' ? 'linkedin-unavailable' : undefined}>
           Continue with LinkedIn
         </button>
+        {linkedInStatus === 'disabled' && <p id="linkedin-unavailable" className="auth-notice">LinkedIn sign-in is not enabled yet. Use Google or email to access your account.</p>}
         <div className="auth-divider"><span>or use email</span></div>
       </>}
 

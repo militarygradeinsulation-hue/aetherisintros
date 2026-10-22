@@ -110,3 +110,7 @@
   .ix-root .live-exec-panel-title button { font-size: 10px; }
 }
 @media (prefers-reduced-motion: reduce) { .ix-root .live-exec button { transition: none; } }
+.live-insights-states { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; padding: 16px; margin: 0; }
+.live-insights-states dt { font-size: 12px; color: var(--specter-muted, #b4bac5); }
+.live-insights-states dd { margin: 4px 0 0; font-size: 24px; font-weight: 650; color: var(--specter-text, #f2eee6); }
+.live-exec-head h1 { margin: 4px 0 8px; font-size: clamp(24px, 4vw, 34px); }

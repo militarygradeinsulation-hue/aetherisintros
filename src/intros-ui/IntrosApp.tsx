@@ -22,10 +22,10 @@ import {
 import type { ActivePage } from './components/layout/TopNavigation';
 import { HomeFeedView } from './views/HomeFeedView';
 import { LiveExecutiveOverview } from './components/home/LiveExecutiveOverview';
+import { LiveInsightsDashboard } from './views/LiveInsightsDashboard';
 import { PeopleDirectoryView } from './views/PeopleDirectoryView';
 import { ProfileDetailView } from './views/ProfileDetailView';
 import { MessagesView } from './views/MessagesView';
-import { InsightsDashboardView } from './views/InsightsDashboardView';
 import { IntrosHubView } from './views/IntrosHubView';
 import { ConnectionBubblesView } from './views/ConnectionBubblesView';
 import { RequestIntroModal } from './components/modals/RequestIntroModal';
@@ -82,6 +82,11 @@ export default function App({ mode = 'demo', executiveAction, initialPage, initi
   );
   const [savedMemberIds, setSavedMemberIds] = useState<Set<string>>(new Set(mode === 'live' ? [] : ['marcus-lee']));
   const [searchQuery, setSearchQuery] = useState(() => mode === 'live' ? (initialSearch ?? '').trim().slice(0, 120) : '');
+  // A router search update can reuse this shell. Apply explicit entry changes
+  // without remounting the providers or discarding member feed drafts.
+  useEffect(() => { if (initialPage) setActivePage(initialPage); }, [initialPage]);
+  useEffect(() => { if (initialWorkspace) setClassicPage(initialWorkspace); }, [initialWorkspace]);
+  useEffect(() => { if (mode === 'live' && initialSearch !== undefined) setSearchQuery(initialSearch.trim().slice(0, 120)); }, [mode, initialSearch]);
 
   // Modals
   const [requestIntroTarget, setRequestIntroTarget] = useState<NetworkMember | null>(null);
@@ -445,13 +450,9 @@ export default function App({ mode = 'demo', executiveAction, initialPage, initi
           />
         )}
 
-        {activePage === 'insights' && <div className="ix-classic"><AetherisAppSurface key="live-insights"  startPage="insights"  /></div>}
-        {false && (
-          <InsightsDashboardView
-            onNavigate={handleNavigate}
-            onRequestIntro={(member) => setRequestIntroTarget(member)}
-            networkMembers={members}
-          />
+        {activePage === 'insights' && (
+          mode === 'live' ? <LiveInsightsDashboard onNavigate={handleNavigate} />
+            : <div className="ix-classic"><AetherisAppSurface key="demo-insights" startPage="insights" /></div>
         )}
 
         {activePage === 'news' && <div className="ix-classic"><AetherisAppSurface key="news"  startPage="news"  /></div>}
