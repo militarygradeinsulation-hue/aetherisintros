@@ -10,3 +10,10 @@
   .vision-page .vs-composer input,
   .vision-page .vs-ai-form input { font-size: 16px; }
 }
+
+/* Member account hand-off: the marketing preview never impersonates live activity. */
+.vision-page .vs-notification-popover a {display:inline-flex;gap:6px;align-items:center;color:#a7ceff;text-decoration:underline;text-underline-offset:3px;font-weight:700;font-size:11px;}
+.vision-page .vs-live-action-copy {margin:0 0 12px;color:#b8c8db;font-size:11px;line-height:1.5;}
+.vision-page .vs-toolbar-actions>a {display:inline-flex;flex-shrink:0;align-items:center;justify-content:center;text-decoration:none;}
+.vision-page .vs-toolbar-actions>a:focus-visible,.vision-page .vs-notification-popover a:focus-visible {outline:2px solid #ffc28c;outline-offset:3px;border-radius:5px;}
+@media (max-width: 560px) {.vision-page .vs-live-action-copy {font-size:12px;} .vision-page .vs-notification-popover {right:2px;max-width:min(300px, calc(100vw - 24px));}}
