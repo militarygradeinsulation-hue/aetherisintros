@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, type FormEvent, type KeyboardEvent as ReactKeyboardEvent, type ReactNode } from 'react';
+import { Fragment, useEffect, useRef, useState, type FormEvent, type KeyboardEvent as ReactKeyboardEvent, type ReactNode } from 'react';
 import {
   ArrowRight, Bell, Bookmark, Brain, BriefcaseBusiness, CalendarDays,
   CircleHelp, ClipboardList, ContactRound, Crown, Fingerprint, Home, Menu,
@@ -95,11 +95,18 @@ export function AetherisWorkspaceShell({
     // Focus the drawer's visible close action without popping the mobile keyboard.
     const drawer = mobileDialogRef.current;
     drawer?.querySelector<HTMLButtonElement>('.specter-mobile-menu-close')?.focus({ preventScroll: true });
+    const background = [...document.querySelectorAll<HTMLElement>('.specter-app-header, .specter-app-sidebar, .specter-app-canvas, .ask-dock-fab, .ask-dock')];
+    const previous = background.map(element => element.inert);
+    background.forEach(element => { element.inert = true; });
     // Changing to desktop while the menu is open must not leave a hidden modal.
     const desktop = window.matchMedia('(min-width: 761px)');
     const closeOnDesktop = () => { if (desktop.matches) setMobileMenuOpen(false); };
     desktop.addEventListener('change', closeOnDesktop);
-    return () => desktop.removeEventListener('change', closeOnDesktop);
+    return () => {
+      desktop.removeEventListener('change', closeOnDesktop);
+      background.forEach((element, index) => { element.inert = previous[index] ?? false; });
+      if (!desktop.matches) menuButtonRef.current?.focus({ preventScroll: true });
+    };
   }, [mobileMenuOpen]);
 
   function closeMobileMenu(restoreFocus = false) {
@@ -155,14 +162,14 @@ export function AetherisWorkspaceShell({
           || (item.workspace !== undefined && activePage === 'workspace' && item.workspace === activeWorkspace);
         const href = item.label === 'Help & Support' && onHelp ? undefined : item.href;
         const section = mobile ? ({ 0: 'Connect', 5: 'Intelligence & activity', 12: 'Personal' } as Record<number, string>)[index] : undefined;
-        return <div key={item.label} className="specter-nav-entry">{section && <p className="specter-nav-group">{section}</p>}{href
+        return <Fragment key={item.label}>{section && <p className="specter-nav-group">{section}</p>}{href
           ? <a key={item.label} href={href} onClick={() => setMobileMenuOpen(false)}>
               <Icon size={18}/><span>{item.label}</span>
             </a>
           : <button type="button" key={item.label} className={active ? 'active' : ''}
               aria-current={active ? 'page' : undefined} onClick={() => destination(item)}>
               <Icon size={18}/><span>{item.label}</span>
-            </button>}</div>;
+            </button>}</Fragment>;
       })}
       {executiveAction && <button type="button" className="specter-executive-action"
         aria-haspopup="dialog"

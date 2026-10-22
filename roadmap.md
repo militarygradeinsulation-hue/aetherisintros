@@ -1,5 +1,12 @@
 # Aetheris specification completion
 
+## Mobile tactile redesign (Oct 22)
+- [x] Redesign phone welcome, balanced actions, segmented feed controls and grouped navigation without changing desktop or member data.
+- [x] Collapse the existing demo/live composers on phones while keeping their state mounted.
+- [ ] Verify three phone sizes, desktop, drafts/uploads/post actions, keyboard drawer and Network scrolling.
+- [ ] Confirm automatic compilation and focused/full regressions; publish only if safeguards pass.
+- [ ] Confirm authenticated member workflow and outbound GitHub sync — only with requesting-user access and verifiable remote status.
+
 ## Authorized professional evidence extension (Oct 21)
 - [x] Extend the existing LinkedIn reader, provenance and editable hypothesis review without external fetching; unsupported fields remain private review-only.
 - [x] Protect approved profile saves against account changes and concurrent edits; parser/save security regressions and isolated browser checks added.

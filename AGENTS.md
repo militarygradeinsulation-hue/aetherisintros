@@ -32,3 +32,4 @@
 
 - Editorial openings use the shared media-optional composition and avatar fallbacks use member-media; no name resolves to a stock face. Why: compact layouts preserve genuine media without decorative photo substitutions.
 - Dashboard defaults to the social feed; tools occupy a separate view without unmounting feed drafts, and both feeds use the shared presentation-only feed window. Why: progressive disclosure reduces scroll without changing stored posts or live visibility rules.
+- Phone composer disclosure wraps, but never unmounts, the existing demo/live composer; phone-only art direction loads last and leaves Network scroll recovery intact. Why: smaller first screens must preserve drafts, uploads, posting and member reachability.
