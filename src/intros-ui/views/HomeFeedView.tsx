@@ -1,5 +1,5 @@
 import { INITIAL_FEED_COUNT, moreFeedCount } from '@/aetheris/feed-window'
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import {
   Users,
@@ -16,10 +16,6 @@ import {
   Globe,
   PlusCircle,
   CheckCircle2,
-  Image as ImageIcon,
-  Video,
-  FileText,
-  Paperclip,
 } from 'lucide-react';
 import { FeedPost, UPCOMING_EVENTS, SUGGESTED_CIRCLES, TRENDING_SECTORS, NetworkMember } from '../networkData';
 import { ExecutivePortrait } from '../components/shared/ExecutivePortrait';
@@ -58,6 +54,16 @@ export const HomeFeedView: React.FC<HomeFeedViewProps> = ({
   const [postLimit, setPostLimit] = useState(INITIAL_FEED_COUNT);
   const [feedFilter, setFeedFilter] = useState<'forYou' | 'network' | 'following' | 'trending'>('forYou');
   const [composerText, setComposerText] = useState('');
+  const [composerExpanded, setComposerExpanded] = useState(false);
+  // Demo drafts are device-local. Live posting is handled by AetherisAppSurface.
+  useEffect(() => {
+    if (isLive) return;
+    try { const draft = window.localStorage.getItem('askintros.demo.feedDraft'); if (draft) { setComposerText(draft); setComposerExpanded(true); } } catch { /* private browsing */ }
+  }, [isLive]);
+  useEffect(() => {
+    if (isLive) return;
+    try { if (composerText) window.localStorage.setItem('askintros.demo.feedDraft', composerText); else window.localStorage.removeItem('askintros.demo.feedDraft'); } catch { /* storage may be unavailable */ }
+  }, [composerText, isLive]);
   const [composerType, setComposerType] = useState<FeedPost['badge']>('Insight');
   const [eventsList, setEventsList] = useState(UPCOMING_EVENTS);
   const [circlesList, setCirclesList] = useState(SUGGESTED_CIRCLES);
@@ -74,14 +80,12 @@ export const HomeFeedView: React.FC<HomeFeedViewProps> = ({
   const [reply, setReply] = useState('');
   const visiblePosts = feedFilter === 'trending' ? [...posts].sort((a, b) => b.likes - a.likes) : feedFilter === 'network' ? posts.filter(post => networkMembers.some(member => member.id === post.authorId)) : feedFilter === 'following' ? posts.filter(post => post.isSaved) : posts;
   const portraitIds = new Set<string>(['sarah-chen', ...(heroVisualMode === 'spotlight' && elena ? [elena.id] : [])]);
-  const [attachments, setAttachments] = useState<File[]>([]);
   const handleCreatePost = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!composerText.trim() && attachments.length === 0) return;
-    const names = attachments.map((f) => `📎 ${f.name}`).join('\n');
-    onAddPost([composerText.trim(), names].filter(Boolean).join('\n'), composerType);
+    if (!composerText.trim()) return;
+    onAddPost(composerText.trim(), composerType);
     setComposerText('');
-    setAttachments([]);
+    setComposerExpanded(false);
   };
 
   const toggleEventRegistration = (eventId: string) => {
@@ -105,8 +109,8 @@ export const HomeFeedView: React.FC<HomeFeedViewProps> = ({
     requestAnimationFrame(() => {
       const board = document.getElementById('home-social-board');
       board?.scrollIntoView({ behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth', block: 'start' });
-      const input = board?.querySelector<HTMLTextAreaElement>('textarea');
-      input?.focus({ preventScroll: true });
+      setComposerExpanded(true);
+      requestAnimationFrame(() => board?.querySelector<HTMLTextAreaElement>('textarea')?.focus({ preventScroll: true }));
     });
   };
   const tile = (label: string, title: string, content: React.ReactNode, action: string, run: () => void) => (
@@ -164,7 +168,7 @@ export const HomeFeedView: React.FC<HomeFeedViewProps> = ({
         <main className="space-y-6">
           {/* Post Composer */}
           <div className="bg-[#0E121A] border border-white/10 rounded-xl p-4 shadow-sm">
-            <form onSubmit={handleCreatePost}>
+            {!composerExpanded ? <button type="button" onClick={() => setComposerExpanded(true)} className="w-full min-h-11 rounded-lg border border-[#FF8A4C]/30 bg-[#FF8A4C]/10 px-4 text-left text-sm text-[#FFD0B5] hover:bg-[#FF8A4C]/15 focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#FF8A4C]">Share an update…</button> : <form onSubmit={handleCreatePost}>
               <div className="flex items-start gap-3 mb-3">
                 <ExecutivePortrait name={me?.name || 'Sarah Chen'} {...(me?.avatarUrl ? { avatarUrl: me.avatarUrl } : {})} size="sm" />
                 <textarea
@@ -195,50 +199,17 @@ export const HomeFeedView: React.FC<HomeFeedViewProps> = ({
                 </div>
 
                 <div className="flex items-center gap-1">
-                  {[
-                    { label: 'Add image', accept: 'image/*', Icon: ImageIcon },
-                    { label: 'Add video', accept: 'video/*', Icon: Video },
-                    { label: 'Add document', accept: '.pdf,.doc,.docx,.ppt,.pptx,.xls,.xlsx,.txt,.csv', Icon: FileText },
-                    { label: 'Add file', accept: '*/*', Icon: Paperclip },
-                  ].map(({ label, accept, Icon }) => (
-                    <label key={label} title={label} className="p-1.5 rounded-md text-[#9CA3AF] hover:text-white hover:bg-white/5 cursor-pointer focus-within:ring-1 focus-within:ring-[#FF8A4C]">
-                      <Icon className="w-4 h-4" aria-hidden />
-                      <span className="sr-only">{label}</span>
-                      <input
-                        type="file"
-                        accept={accept}
-                        multiple
-                        className="sr-only"
-                        onChange={(e) => {
-                          const files = Array.from(e.target.files || []);
-                          if (files.length) setAttachments((prev) => [...prev, ...files].slice(0, 10));
-                          e.target.value = '';
-                        }}
-                      />
-                    </label>
-                  ))}
+                  <span className="hidden sm:inline text-[11px] text-[#9CA3AF]">Demo posts are text-only</span>
                   <button
                     type="submit"
-                    disabled={!composerText.trim() && attachments.length === 0}
+                    disabled={!composerText.trim()}
                     className="ml-1 px-4 py-1.5 text-xs font-semibold text-[#1c110c] bg-[#FF8A4C] hover:bg-[#DB6B36] disabled:opacity-40 disabled:cursor-not-allowed rounded-lg transition-colors cursor-pointer"
                   >
                     Post
                   </button>
                 </div>
               </div>
-              {attachments.length > 0 && (
-                <div className="flex flex-wrap gap-1.5 pt-2">
-                  {attachments.map((f, i) => (
-                    <span key={i} className="flex items-center gap-1 max-w-[220px] text-[11px] text-[#CBD5E1] bg-white/5 border border-white/10 rounded px-2 py-0.5">
-                      <span className="truncate">{f.name}</span>
-                      <button type="button" aria-label={`Remove ${f.name}`} onClick={() => setAttachments((p) => p.filter((_, j) => j !== i))} className="text-[#9CA3AF] hover:text-white cursor-pointer">×</button>
-                    </span>
-                  ))}
-                </div>
-              )}
-              <div className="hidden">
-              </div>
-            </form>
+            </form>}
           </div>
 
           {/* Feed Filter Tabs */}

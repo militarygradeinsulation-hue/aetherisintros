@@ -76,6 +76,8 @@ try {
     await launcher.click()
     const menu=page.locator('.specter-mobile-menu')
     await menu.waitFor({state:'visible'})
+    // Visibility begins during the entrance transition; measure its settled bounds.
+    await menu.evaluate(el => Promise.all(el.getAnimations().map(animation => animation.finished)))
     const bounds=await pos(menu)
     check(bounds.x>=-2&&bounds.right<=vp.width+2,'workspace menu fits phone width')
     await menu.locator('nav button').filter({hasText:'Messages'}).first().click()
