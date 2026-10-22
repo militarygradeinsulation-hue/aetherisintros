@@ -1,3 +1,4 @@
+import './executive-page-parity.css'
 import { useEffect, useState } from 'react'
 import { CheckCircle2 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
@@ -18,8 +19,8 @@ const UNLOCKS = [
 
 export function MembershipUpgradePage() {
   const { userId, ready } = useSessionUser()
-  if (!ready) return <p className="og-note">Loading…</p>
-  if (!userId) return <SignInRequired what="membership upgrades" />
+  if (!ready) return <section className="executive-section aetheris-parity"><p className="og-note parity-empty">Loading…</p></section>
+  if (!userId) return <div className="aetheris-parity"><SignInRequired what="membership upgrades" /></div>
   return <UpgradePanel />
 }
 
@@ -44,35 +45,37 @@ function UpgradePanel() {
   }
 
   return (
-    <section className="executive-section">
+    <section className="executive-section aetheris-parity">
+      <header className="parity-head"><div>
       <Eyebrow>Membership</Eyebrow>
       <h2>More context. Better intros. Stronger outcomes.</h2>
       <p className="og-note">Executive membership adds priority routing and private tools for members who make introductions a habit.</p>
+      </div></header>
 
-      <div className="module">
+      <div className="module parity-texture">
         <Eyebrow>Your tier</Eyebrow>
         {tier === null ? <p className="og-note">Loading…</p> : (
           <p>{tier === 'executive'
-            ? <><CheckCircle2 className="inline h-4 w-4" aria-hidden /> <Badge>Executive</Badge> You already have every Executive feature.</>
-            : <><Badge variant="secondary">Basic</Badge> Upgrade to Executive to add the features below.</>}</p>
+            ? <><CheckCircle2 className="inline h-4 w-4" aria-hidden /> <Badge className="parity-badge">Executive</Badge> You already have every Executive feature.</>
+            : <><Badge className="parity-badge" variant="secondary">Basic</Badge> Upgrade to Executive to add the features below.</>}</p>
         )}
       </div>
 
-      <div className="module">
+      <div className="module parity-texture">
         <Eyebrow>What Executive adds</Eyebrow>
-        <ul>{UNLOCKS.map(([t, d]) => <li key={t}><strong>{t}</strong> — {d}</li>)}</ul>
+        <ul className="parity-benefits">{UNLOCKS.map(([t, d]) => <li key={t}><strong>{t}</strong> — {d}</li>)}</ul>
       </div>
 
       {tier === 'basic' && (
-        <div className="module">
+        <div className="module parity-texture">
           <Eyebrow>Upgrade</Eyebrow>
           {!configured ? <p className="og-note">Online checkout is not available yet.</p>
             : plans.length === 0 ? <p className="og-note">No plans are currently offered.</p>
             : plans.map((p) => (
-              <div key={p.id}>
+              <div className="parity-row" key={p.id}>
                 <p><strong>{p.name}</strong> — {(p.amount_cents / 100).toLocaleString(undefined, { style: 'currency', currency: p.currency.toUpperCase() })} / {p.billing_interval}</p>
                 {p.description && <p className="og-note">{p.description}</p>}
-                <Button onClick={() => void checkout(p.id)} disabled={busy !== null}>{busy === p.id ? 'Opening checkout…' : `Upgrade to ${p.name}`}</Button>
+                <Button className="btn primary" onClick={() => void checkout(p.id)} disabled={busy !== null}>{busy === p.id ? 'Opening checkout…' : `Upgrade to ${p.name}`}</Button>
               </div>
             ))}
           {error && <p role="alert" className="og-note">{error}</p>}

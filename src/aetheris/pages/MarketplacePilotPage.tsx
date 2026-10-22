@@ -1,3 +1,4 @@
+import './executive-page-parity.css'
 import { useCallback, useEffect, useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
@@ -31,8 +32,8 @@ export function buildIntentPayload(f: { category: Category; description: string;
 
 export function MarketplacePilotPage() {
   const { userId, ready } = useSessionUser()
-  if (!ready) return <p className="og-note">Loading…</p>
-  if (!userId) return <SignInRequired what="the marketplace pilot" />
+  if (!ready) return <section className="executive-section aetheris-parity"><p className="og-note parity-empty">Loading…</p></section>
+  if (!userId) return <div className="aetheris-parity"><SignInRequired what="the marketplace pilot" /></div>
   return <PilotPanel />
 }
 
@@ -60,12 +61,14 @@ function PilotPanel() {
   }
 
   return (
-    <section className="executive-section">
+    <section className="executive-section aetheris-parity">
+      <header className="parity-head"><div>
       <Eyebrow>Marketplace pilot</Eyebrow>
       <h2>Tell us what you want to buy, partner on, or fund.</h2>
       <p className="og-note">Your intent shapes which marketplace features we build first. It stays private: it never becomes a listing or permits outreach.</p>
+      </div></header>
 
-      <div className="module">
+      <div className="module parity-texture">
         <Eyebrow>Submit an intent</Eyebrow>
         <label>Category <select value={form.category} onChange={set('category')}>{CATEGORIES.map((c) => <option key={c}>{c}</option>)}</select></label>
         <label>Budget range <select value={form.budget} onChange={set('budget')}>{BUDGETS.map((b) => <option key={b}>{b}</option>)}</select></label>
@@ -74,22 +77,22 @@ function PilotPanel() {
         <label>Role <Input value={form.role} onChange={set('role')} maxLength={120} /></label>
         <label>Industry <Input value={form.industry} onChange={set('industry')} maxLength={120} /></label>
         <label>City or region <Input value={form.city} onChange={set('city')} maxLength={120} /></label>
-        <Button onClick={() => void submit()} disabled={busy}>{busy ? 'Saving…' : 'Save intent'}</Button>
+        <Button className="btn primary" onClick={() => void submit()} disabled={busy}>{busy ? 'Saving…' : 'Save intent'}</Button>
         <p className="og-note">One intent per member; saving again replaces your earlier one.</p>
         {msg && <p role="status" className="og-note">{msg}</p>}
       </div>
 
-      <div className="module">
+      <div className="module parity-texture">
         <Eyebrow>Your intent</Eyebrow>
-        {saved.length === 0 ? <p className="og-note">You have not submitted an intent yet.</p> : saved.map((s) => (
-          <div key={s.updated_at}>
-            <Badge variant="secondary">Received · private</Badge> <span className="og-note">{new Date(s.updated_at).toLocaleDateString()}</span>
+        {saved.length === 0 ? <p className="og-note parity-empty">You have not submitted an intent yet.</p> : saved.map((s) => (
+          <div className="parity-row" key={s.updated_at}>
+            <Badge className="parity-badge" variant="secondary">Received · private</Badge> <span className="og-note">{new Date(s.updated_at).toLocaleDateString()}</span>
             <p>{s.response.difficulty}</p>
           </div>
         ))}
       </div>
 
-      <div className="module">
+      <div className="module parity-texture">
         <Eyebrow>Network signals</Eyebrow>
         <p className="og-note">Unavailable. Intents are private to each member, so no network feed is shared yet.</p>
       </div>

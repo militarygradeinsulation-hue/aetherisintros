@@ -1,3 +1,4 @@
+import './executive-page-parity.css'
 import { useCallback, useEffect, useState } from 'react'
 import { Bookmark, BookmarkCheck, Lock } from 'lucide-react'
 import { actOnExchange, exchangeKinds, listExchange, publishExchange, type ExchangeDraft, type ExchangeOpportunity } from '../exchange-client'
@@ -31,8 +32,8 @@ export function validateExchangeDraft(d: ExchangeDraft, now = new Date()): strin
 
 export function OpportunityExchangePage() {
   const { userId, ready } = useSessionUser()
-  if (!ready) return <p className="og-note">Loading…</p>
-  if (!userId) return <SignInRequired what="the Opportunity Exchange" />
+  if (!ready) return <section className="executive-section aetheris-parity"><p className="og-note parity-empty">Loading…</p></section>
+  if (!userId) return <div className="aetheris-parity"><SignInRequired what="the Opportunity Exchange" /></div>
   return <ExchangePanel userId={userId} />
 }
 
@@ -65,10 +66,12 @@ function ExchangePanel({ userId }: { userId: string }) {
   }
   const field = <K extends keyof ExchangeDraft>(k: K) => (e: { target: { value: string } }) => setDraft(d => ({ ...d, [k]: e.target.value }))
 
-  return <section className="executive-section" aria-label="Opportunity Exchange">
+  return <section className="executive-section aetheris-parity" aria-label="Opportunity Exchange">
+    <header className="parity-head"><div>
     <Eyebrow>OPPORTUNITY EXCHANGE</Eyebrow>
     <h2>Real opportunities, shared with people who can act.</h2>
     <p className="og-note">Browse what members need and offer. Express interest privately; the owner decides what happens next.</p>
+    </div></header>
     {error && <p role="alert" className="og-note">{error}</p>}
     {notice && <p role="status" className="og-note">{notice}</p>}
 
@@ -76,13 +79,13 @@ function ExchangePanel({ userId }: { userId: string }) {
       <TabsList><TabsTrigger value="browse">Browse</TabsTrigger><TabsTrigger value="publish">Publish</TabsTrigger></TabsList>
 
       <TabsContent value="browse">
-        {!items.length && <p className="og-note">No opportunities are published yet.</p>}
-        <div style={{ display: 'grid', gap: 12, gridTemplateColumns: 'repeat(auto-fill,minmax(280px,1fr))' }}>
+        {!items.length && <p className="og-note parity-empty">No opportunities are published yet.</p>}
+        <div className="parity-grid">
           {items.map(o => {
             const mine = o.ownerId === userId
-            return <article key={o.id} className="module" style={{ display: 'grid', gap: 6 }}>
-              <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', alignItems: 'center' }}>
-                <Badge variant="outline">{o.kind}</Badge><Badge variant={o.status === 'open' ? 'default' : 'secondary'}>{o.status}</Badge>
+            return <article key={o.id} className="module parity-texture">
+              <div className="parity-actions">
+                <Badge className="parity-badge" variant="outline">{o.kind}</Badge><Badge className="parity-badge" variant={o.status === 'open' ? 'default' : 'secondary'}>{o.status}</Badge>
                 {o.saved && <BookmarkCheck size={14} aria-label="Saved" />}
               </div>
               <h3>{o.title}</h3>
@@ -91,14 +94,14 @@ function ExchangePanel({ userId }: { userId: string }) {
               <p><strong>Needed:</strong> {o.whatIsNeeded}</p>
               <p><strong>Offered:</strong> {o.whatIsOffered}</p>
               <p><strong>Mutual value:</strong> {o.mutualValue}</p>
-              <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginTop: 4 }}>
+              <div className="parity-actions">
                 {mine ? <>
                   {o.status === 'open' && <span className="og-note">{o.interest.length} interested</span>}
-                  {o.status !== 'closed' && <Button size="sm" variant="outline" disabled={busy} onClick={() => void run(() => actOnExchange(o.id, 'close'), 'Opportunity closed.')}>Close</Button>}
+                  {o.status !== 'closed' && <Button className="btn secondary" size="sm" variant="outline" disabled={busy} onClick={() => void run(() => actOnExchange(o.id, 'close'), 'Opportunity closed.')}>Close</Button>}
                 </> : <>
-                  <Button size="sm" variant="outline" disabled={busy} onClick={() => void run(() => actOnExchange(o.id, o.saved ? 'unsave' : 'save'), o.saved ? 'Removed from saved.' : 'Saved.')}>
+                  <Button className="btn secondary" size="sm" variant="outline" disabled={busy} onClick={() => void run(() => actOnExchange(o.id, o.saved ? 'unsave' : 'save'), o.saved ? 'Removed from saved.' : 'Saved.')}>
                     <Bookmark size={13} /> {o.saved ? 'Unsave' : 'Save'}</Button>
-                  <Button size="sm" disabled={busy || o.status !== 'open'} onClick={() => { setInterestFor(o); setInterestNote('') }}>Express interest</Button>
+                  <Button className="btn primary" size="sm" disabled={busy || o.status !== 'open'} onClick={() => { setInterestFor(o); setInterestNote('') }}>Express interest</Button>
                 </>}
               </div>
             </article>
@@ -108,12 +111,12 @@ function ExchangePanel({ userId }: { userId: string }) {
 
       <TabsContent value="publish">
         {tier === null && <p className="og-note">Checking membership…</p>}
-        {tier === 'basic' && <article className="module">
+        {tier === 'basic' && <article className="module parity-texture">
           <Eyebrow><Lock size={13} /> EXECUTIVE ONLY</Eyebrow>
           <p className="og-note">Publishing opportunities is available to Executive members.</p>
-          <Button onClick={() => nav.setPage('membership')}>Apply for Executive</Button>
+          <Button className="btn primary" onClick={() => nav.setPage('membership')}>Apply for Executive</Button>
         </article>}
-        {tier === 'executive' && <form className="module" style={{ display: 'grid', gap: 10 }} onSubmit={e => {
+        {tier === 'executive' && <form className="module" onSubmit={e => {
           e.preventDefault()
           const problem = validateExchangeDraft(draft)
           if (problem) { setError(problem); return }
@@ -133,19 +136,19 @@ function ExchangePanel({ userId }: { userId: string }) {
             {(['network', 'private'] as const).map(v => <label key={v}><input type="radio" name="visibility" checked={draft.visibility === v} onChange={() => setDraft(d => ({ ...d, visibility: v }))} /> {v === 'network' ? 'Network' : 'Private'}</label>)}
           </fieldset>
           <label>Closing date<Input type="date" value={draft.expiresOn} min={isoDay(new Date(Date.now() + 864e5))} max={isoDay(new Date(Date.now() + 90 * 864e5))} onChange={field('expiresOn')} required /></label>
-          <Button type="submit" disabled={busy}>Publish opportunity</Button>
+          <Button className="btn primary" type="submit" disabled={busy}>Publish opportunity</Button>
         </form>}
       </TabsContent>
     </Tabs>
 
     <Dialog open={!!interestFor} onOpenChange={o => { if (!o) setInterestFor(null) }}>
-      <DialogContent>
+      <DialogContent className="aetheris-parity !border-[var(--line-dark)] !bg-[var(--raised)] !text-[var(--soft)] !rounded-xl">
         <DialogHeader><DialogTitle>Interest in “{interestFor?.title}”</DialogTitle>
           <DialogDescription>Only the owner sees your note.</DialogDescription></DialogHeader>
         <Textarea value={interestNote} onChange={e => setInterestNote(e.target.value)} aria-label="Interest note" placeholder="Why you are a fit (at least 12 characters)" />
         <DialogFooter>
-          <Button variant="outline" onClick={() => setInterestFor(null)}>Cancel</Button>
-          <Button disabled={busy || interestNote.trim().length < 12} onClick={() => { const o = interestFor!; setInterestFor(null); void run(() => actOnExchange(o.id, 'interest', interestNote.trim()), 'Interest sent.') }}>Send</Button>
+          <Button className="btn secondary" variant="outline" onClick={() => setInterestFor(null)}>Cancel</Button>
+          <Button className="btn primary" disabled={busy || interestNote.trim().length < 12} onClick={() => { const o = interestFor!; setInterestFor(null); void run(() => actOnExchange(o.id, 'interest', interestNote.trim()), 'Interest sent.') }}>Send</Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>
