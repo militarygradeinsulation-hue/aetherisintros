@@ -30,7 +30,7 @@ import { RequestIntroModal } from './components/modals/RequestIntroModal';
 import { ReviewIntroModal } from './components/modals/ReviewIntroModal';
 import { ScheduleMeetingModal } from './components/modals/ScheduleMeetingModal';
 import { FloatingConnectionField } from './components/shared/FloatingConnectionField';
-import { X, Orbit } from 'lucide-react';
+
 import { AetherisAppSurface, AetherisAssistantSurface } from '@/aetheris/App';
 import { VoiceBar } from '@/aetheris/VoiceBar';
 import { SelectionReader } from '@/aetheris/SelectionReader';
