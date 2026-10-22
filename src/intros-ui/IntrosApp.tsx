@@ -55,7 +55,9 @@ import './views/aetheris-workspace-pages.css';
 
 const SHELL_PAGES: ActivePage[] = ['home', 'people', 'bubbles', 'intros', 'messages', 'insights', 'news', 'workspace', 'memory', 'work', 'meetings', 'specter'];
 
-export default function App({ mode = 'demo' }: { mode?: 'demo' | 'live' }) {
+export type ExecutiveAction = { label: string; onOpen: () => void };
+
+export default function App({ mode = 'demo', executiveAction }: { mode?: 'demo' | 'live'; executiveAction?: ExecutiveAction | undefined }) {
   const network = useNetwork();
   const [activePage, setActivePage] = useState<ActivePage>('home');
   const [classicPage, setClassicPage] = useState<string>('memory');
@@ -330,6 +332,7 @@ export default function App({ mode = 'demo' }: { mode?: 'demo' | 'live' }) {
           onNavigate={handleNavigate}
           onWorkspace={page => { setClassicPage(page); handleNavigate('workspace'); }}
           onSearch={query => { setSearchQuery(query); handleNavigate('people'); }}
+          executiveAction={executiveAction}
           member={mode === 'live' ? me : null}
           notifications={mode === 'live' ? <LiveNotificationsBell onOpen={destination => {
             if (destination === 'peergroups' || destination === 'events' || destination === 'deals') {
