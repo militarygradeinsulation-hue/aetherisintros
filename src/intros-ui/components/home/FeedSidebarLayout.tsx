@@ -96,6 +96,9 @@ export function FeedSidebarLayout({ widgets, actionQueue, children }: FeedSideba
 
   useEffect(() => {
     setLayout(restoreLayout());
+    const showFeed = () => setFocus(true);
+    window.addEventListener('intros:dashboard-feed', showFeed);
+    return () => window.removeEventListener('intros:dashboard-feed', showFeed);
   }, []);
 
   useEffect(() => {
@@ -121,7 +124,6 @@ export function FeedSidebarLayout({ widgets, actionQueue, children }: FeedSideba
   const patch = (id: GroupKey, changes: Partial<GroupLayout>) => save(layout.map(item => item.id === id ? { ...item, ...changes } : item));
   const focusToggle = () => {
     setFocus(!focus);
-    try { localStorage.setItem(STORAGE_KEY + '.focus', String(!focus)); } catch { /* optional */ }
   };
   const selected = (side: Side) => layout.filter(item => item.side === side && !item.hidden);
   const count = layout.filter(item => !item.hidden).length;

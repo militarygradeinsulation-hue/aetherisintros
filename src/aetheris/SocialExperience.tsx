@@ -167,7 +167,7 @@ function FeedTicker() {
 export function SocialHome() {
   const net = useNetwork()
   const [mode, setMode] = useState<'feed' | 'brief'>('feed')
-  const [composerOpen, setComposerOpen] = useState(false)
+  const [composerOpen, setComposerOpen] = useState(compact)
   const [lane, setLane] = useState<FeedLane>('ALL SIGNALS')
   const feed = useMemo(() => {
     const rows: Array<{ id: string; type: 'post' | 'ask'; post?: Post; ask?: NetworkAsk; member?: Member }> = []

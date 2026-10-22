@@ -100,7 +100,15 @@ export const HomeFeedView: React.FC<HomeFeedViewProps> = ({
   const topics = [...new Set(boardPeople.flatMap(member => member.focusAreas || []))].slice(0, 5);
   const goals = boardPeople.filter(member => member.currentObjectives?.length).slice(0, 3);
   const savedPosts = posts.filter(post => post.isSaved);
-  const jumpToSocial = () => document.getElementById('home-social-board')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  const jumpToSocial = () => {
+    window.dispatchEvent(new Event('intros:dashboard-feed'));
+    requestAnimationFrame(() => {
+      const board = document.getElementById('home-social-board');
+      board?.scrollIntoView({ behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth', block: 'start' });
+      const input = board?.querySelector<HTMLTextAreaElement>('textarea');
+      input?.focus({ preventScroll: true });
+    });
+  };
   const tile = (label: string, title: string, content: React.ReactNode, action: string, run: () => void) => (
     <div className="home-board-tile">
       <span className="home-board-label">{label}</span><h3>{title}</h3>
