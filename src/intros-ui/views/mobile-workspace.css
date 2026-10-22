@@ -304,6 +304,15 @@
     font-size: 11px !important;
     white-space: normal;
   }
+  .ix-root .aetheris-workspace-shell .specter-how {
+    display: flex; position: static; justify-content: flex-end; margin-bottom: 8px;
+  }
+  .ix-root .aetheris-workspace-shell .ix-network-viewport > header h1 { font-size: 18px; line-height: 1.2; }
+  .ix-root .aetheris-workspace-shell .ix-network-viewport > header .space-y-1\.5 > * + * { margin-top: 4px; }
+  .ix-root .aetheris-workspace-shell .ix-network-viewport > header .gap-3 { gap: 6px; }
+  .ix-root .aetheris-workspace-shell .ix-network-viewport > details > summary {
+    min-height: 32px; padding: 6px 8px; font-size: 9px; line-height: 1.3;
+  }
   .ix-root .aetheris-workspace-shell .home-feed-controls-actions button,
   .ix-root .aetheris-workspace-shell .ix-network-viewport button,
   .ix-root .aetheris-workspace-shell .mi-tabs button {
