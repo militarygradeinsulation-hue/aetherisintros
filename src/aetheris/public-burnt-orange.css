@@ -59,3 +59,25 @@
 @media (prefers-reduced-motion: reduce) {
   .ael.ael-compact.ael--text .ai-gradient-button { transition: none !important; transform: none !important; }
 }
+
+/* The shared stencil layer otherwise overrides the scoped public actions. */
+:root[data-theme] body .ael.ael-compact.ael--text :is(.ael-btn,.ael-nav-cta).ai-gradient-button {
+  background: var(--ael-copper) !important;
+  background-image: none !important;
+  color: #1c120e !important;
+  -webkit-text-fill-color: #1c120e !important;
+  filter: none !important;
+  clip-path: none !important;
+  border-color: var(--ael-copper-line) !important;
+}
+:root[data-theme] body .ael.ael-compact.ael--text :is(.ael-btn,.ael-nav-cta).ai-gradient-button :is(span,svg) {
+  color: inherit !important;
+  -webkit-text-fill-color: inherit !important;
+}
+:root[data-theme] body .ael.ael-compact.ael--text :is(.ael-btn,.ael-nav-cta).ai-gradient-button:hover {
+  background: #ffae7d !important;
+}
+:root[data-theme] body .ael.ael-compact.ael--text .ael-hero h1 em {
+  color: var(--ael-copper) !important;
+  -webkit-text-fill-color: var(--ael-copper) !important;
+}

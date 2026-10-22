@@ -367,3 +367,12 @@
     transform: none !important;
   }
 }
+
+/* Preserve the supplied interface typography against the legacy stencil layer. */
+:root[data-theme] body .ix-root .aetheris-workspace-shell :is(button,input,select,textarea,h1,h2,h3) {
+  font-family: Poppins, Inter, system-ui, sans-serif !important;
+  letter-spacing: 0 !important;
+}
+:root[data-theme] body .ix-root .aetheris-workspace-shell :is(.home-board-label,.directory-meta,.directory-tier,.mi-eyebrow,.specter-kicker) {
+  font-family: "IBM Plex Mono", ui-monospace, monospace !important;
+}

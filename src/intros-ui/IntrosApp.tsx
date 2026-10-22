@@ -288,7 +288,7 @@ export default function App({ mode = 'demo', executiveAction, initialPage }: { m
     window.addEventListener('aetheris:open-deals', open);
     return () => window.removeEventListener('aetheris:open-deals', open);
   }, []);
-  const classicPages = ['news','workspace','memory','work','insights','meetings','specter', ...(mode === 'live' ? ['home','messages','intros','people'] : [])];
+  const classicPages = ['news','workspace','memory','work','insights','meetings', ...(mode === 'live' ? ['home','messages','intros'] : [])];
 
   return (
     <div className={`${activePage === 'specter' ? 'ix-specter-mode ' : ''}ix-aetheris-workspace-mode ix-root min-h-screen bg-[#07090C] text-[#F2EEE6] flex flex-col font-sans selection:bg-[#F5B027]/30 selection:text-white relative`}>
