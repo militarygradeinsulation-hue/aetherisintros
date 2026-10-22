@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, type FormEvent, type KeyboardEvent as ReactKeyboardEvent, type ReactNode } from 'react';
+import { Fragment, useEffect, useRef, useState, type FormEvent, type KeyboardEvent as ReactKeyboardEvent, type ReactNode } from 'react';
 import {
   ArrowRight, Bell, Bookmark, Brain, BriefcaseBusiness, CalendarDays,
   CircleHelp, ClipboardList, ContactRound, Crown, Fingerprint, Home, Menu,
@@ -95,11 +95,18 @@ export function AetherisWorkspaceShell({
     // Focus the drawer's visible close action without popping the mobile keyboard.
     const drawer = mobileDialogRef.current;
     drawer?.querySelector<HTMLButtonElement>('.specter-mobile-menu-close')?.focus({ preventScroll: true });
+    const background = [...document.querySelectorAll<HTMLElement>('.specter-app-header, .specter-app-sidebar, .specter-app-canvas, .ask-dock-fab, .ask-dock')];
+    const previous = background.map(element => element.inert);
+    background.forEach(element => { element.inert = true; });
     // Changing to desktop while the menu is open must not leave a hidden modal.
     const desktop = window.matchMedia('(min-width: 761px)');
     const closeOnDesktop = () => { if (desktop.matches) setMobileMenuOpen(false); };
     desktop.addEventListener('change', closeOnDesktop);
-    return () => desktop.removeEventListener('change', closeOnDesktop);
+    return () => {
+      desktop.removeEventListener('change', closeOnDesktop);
+      background.forEach((element, index) => { element.inert = previous[index] ?? false; });
+      if (!desktop.matches) menuButtonRef.current?.focus({ preventScroll: true });
+    };
   }, [mobileMenuOpen]);
 
   function closeMobileMenu(restoreFocus = false) {
@@ -118,8 +125,9 @@ export function AetherisWorkspaceShell({
       'button:not(:disabled), a[href], input:not(:disabled), select:not(:disabled), textarea:not(:disabled), [tabindex]:not([tabindex="-1"])'
     ) ?? [])].filter(element => element.getClientRects().length > 0);
     if (!focusable.length) return;
-    const first = focusable[0]!;
-    const last = focusable[focusable.length - 1]!;
+    const first = focusable[0];
+    const last = focusable[focusable.length - 1];
+    if (!first || !last) return;
     if (event.shiftKey && document.activeElement === first) {
       event.preventDefault();
       last.focus();
@@ -148,19 +156,20 @@ export function AetherisWorkspaceShell({
 
   function navigation(mobile: boolean) {
     return <nav aria-label={mobile ? 'Mobile workspace navigation' : 'Workspace navigation'}>
-      {WORKSPACE_DESTINATIONS.filter(item => item.label !== 'Help & Support' || onHelp).map(item => {
+      {WORKSPACE_DESTINATIONS.filter(item => item.label !== 'Help & Support' || onHelp).map((item, index) => {
         const Icon = item.icon;
         const active = (item.page !== undefined && item.page === activePage)
           || (item.workspace !== undefined && activePage === 'workspace' && item.workspace === activeWorkspace);
         const href = item.label === 'Help & Support' && onHelp ? undefined : item.href;
-        return href
+        const section = mobile ? ({ 0: 'Connect', 5: 'Intelligence & activity', 12: 'Personal' } as Record<number, string>)[index] : undefined;
+        return <Fragment key={item.label}>{section && <p className="specter-nav-group">{section}</p>}{href
           ? <a key={item.label} href={href} onClick={() => setMobileMenuOpen(false)}>
               <Icon size={18}/><span>{item.label}</span>
             </a>
           : <button type="button" key={item.label} className={active ? 'active' : ''}
               aria-current={active ? 'page' : undefined} onClick={() => destination(item)}>
               <Icon size={18}/><span>{item.label}</span>
-            </button>;
+            </button>}</Fragment>;
       })}
       {executiveAction && <button type="button" className="specter-executive-action"
         aria-haspopup="dialog"
@@ -206,7 +215,7 @@ export function AetherisWorkspaceShell({
       <nav className="specter-header-links" aria-label="Workspace shortcuts">
         <button type="button" aria-current={activePage === 'home' ? 'page' : undefined} onClick={() => onNavigate('home')}>Dashboard</button>
         <button type="button" aria-current={activePage === 'people' ? 'page' : undefined} onClick={() => onNavigate('people')}>Network</button>
-        <button type="button" aria-current={activePage === 'specter' ? 'page' : undefined} onClick={() => destination(WORKSPACE_DESTINATIONS[3]!)}>Specter Detect</button>
+        <button type="button" aria-current={activePage === 'specter' ? 'page' : undefined} onClick={() => onNavigate('specter')}>Specter Detect</button>
       </nav>
       <div className="specter-app-account">
         {notifications || <button type="button" className="specter-notification" aria-label="Open inbox" onClick={() => onNavigate('messages')}><Bell size={19}/></button>}
@@ -252,7 +261,7 @@ export function AetherisWorkspaceShell({
             aria-label="Close navigation"><X size={19} aria-hidden="true"/> <span>Close</span></button>
         </div>
         {memberSearch(true)}
-        <p className="specter-mobile-menu-section">YOUR WORKSPACE</p>
+        <div className="specter-drawer-identity"><span className="specter-account-initials">{initials}</span><span><b>{member?.name || 'Your workspace'}</b><small>People × Context × Opportunity</small></span></div>
         {navigation(true)}
       </div>
     </>}

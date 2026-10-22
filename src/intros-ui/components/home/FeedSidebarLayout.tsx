@@ -2,6 +2,7 @@ import { useEffect, useState, type ReactNode } from 'react';
 // Actual feed rail layout: the unimported CSS left the old square widgets in place.
 import '../../home-feed-layout.css';
 import { ArrowLeftRight, Eye, EyeOff, GripVertical, LayoutGrid, RotateCcw, Settings2, X } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 import { DraggableWidgetGrid, type WidgetItem } from '@/components/ui/widget-board';
 
 type Side = 'left' | 'right';
@@ -188,7 +189,7 @@ export function FeedSidebarLayout({ widgets, actionQueue, children }: FeedSideba
           <div className="home-feed-controls-actions">
             <button type="button" aria-pressed={focus} aria-controls="dashboard-social-panel" onClick={() => { if (!focus) focusToggle(); }}>Social feed</button>
             <button type="button" aria-pressed={!focus} aria-controls="dashboard-tools-panel" onClick={() => { if (focus) focusToggle(); }}>Tools & activity</button>
-            <button type="button" onClick={() => setCustomize(true)}><Settings2 size={15}/> Customize <span className="home-feed-visible-count">{count}</span></button>
+            <Button variant="ghost" className="home-feed-customize-action" aria-label="Customize feed" title="Customize feed" onClick={() => setCustomize(true)}><Settings2 size={17}/><span className="home-feed-customize-label">Customize</span><span className="home-feed-visible-count">{count}</span></Button>
           </div>
         </div>
         <div id="dashboard-social-panel" hidden={!focus}>{children}</div>
