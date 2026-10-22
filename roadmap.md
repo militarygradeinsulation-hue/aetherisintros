@@ -401,6 +401,6 @@
 - [ ] Confirm connected GitHub main/CI synchronization — blocked: sandbox exposes managed internal edit history, not GitHub main/CI status.
 
 ## Fixed-screen Dashboard and text-only workspace headings (Oct 22)
-- [ ] Replace shared editorial image/grid banners with compact text-only headings; preserve genuine media.
-- [ ] Fit Dashboard to viewport with separately reachable feed, tools and overview panels.
-- [ ] Verify four viewport sizes, interactions, focused tests and automatic compilation; record authenticated/sync limits.
+- [x] Replace shared editorial image/grid banners with compact text-only headings; preserve genuine media.
+- [x] Fit Dashboard to viewport with separately reachable feed, tools and overview panels.
+- [x] Verify four viewport sizes, interactions, 35 focused tests, 40 Specter browser assertions and automatic compilation; authenticated/sync checks remain blocked as recorded above.

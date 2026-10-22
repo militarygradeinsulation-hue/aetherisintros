@@ -32,6 +32,9 @@ async def main():
    await page.get_by_role('button',name='Social feed',exact=True).focus()
    await page.keyboard.press('Enter')
    assert await textarea.input_value()=='Fixed Dashboard regression draft'
+   await page.get_by_role('button',name='Share an update',exact=True).click()
+   await measure('share-action')
+   assert await textarea.input_value()=='Fixed Dashboard regression draft' 
    await page.locator('#home-social-board').get_by_role('button',name='Post',exact=True).click()
    await page.get_by_text('Fixed Dashboard regression draft',exact=True).wait_for()
    like=page.get_by_role('button',name="Like Sarah Chen's post",exact=True).first
