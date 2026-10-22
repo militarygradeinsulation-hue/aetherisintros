@@ -59,9 +59,10 @@ try {
  const calls = await page.evaluate(() => window.__calls)
  assert(calls.length === 7 && !calls.some(name => /insert|publish|send|delete|update|act_on/.test(name)),'only seven allowed reads are issued')
  await button('Check member feature storage').click()
- await page.getByText('8 of 12 feature reads verified.', { exact: false }).waitFor()
+ await page.getByText('7 of 13 feature reads verified.', { exact: false }).waitFor()
  const featureCalls = await page.evaluate(() => window.__calls.filter(name => name.startsWith('table:')))
- assert(featureCalls.length === 12 && featureCalls.every(name => name.endsWith(':id:0')), 'feature availability reads request zero rows and only the id column')
+ assert(featureCalls.length === 13 && featureCalls.every(name => name.endsWith(':0') && /:(?:id|user_id),/.test(name)), 'feature availability reads request zero rows and the required contract columns')
+ assert(await page.getByText('Schema mismatch', { exact: true }).count() === 2, 'existing incompatible tables are not mistaken for working features')
  assert(!(await page.textContent('body')).includes('DO_NOT_DISPLAY_TOKEN'), 'feature failures never display raw backend messages')
  for (const theme of ['light','dark']) {
   await page.evaluate(mode => {document.documentElement.dataset.theme=mode},theme)

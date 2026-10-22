@@ -30,6 +30,7 @@ describe("owner read-only connection preflight", () => {
     for (const code of ["PGRST202", "PGRST205", "42883", "42P01"])
       expect((await checkConnection(probe, response(null, code))).state).toBe("missing_database");
     expect((await checkConnection(probe, response(null, "42501"))).state).toBe("access_denied");
+    for (const code of ["42703", "PGRST204"]) expect((await checkConnection(probe, response(null, code))).state).toBe("schema_mismatch");
     expect(
       (
         await checkConnection(probe, async () => {

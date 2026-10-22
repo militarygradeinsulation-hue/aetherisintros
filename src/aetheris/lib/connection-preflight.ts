@@ -7,6 +7,7 @@ export type ConnectionState =
   | "read_verified"
   | "needs_action"
   | "missing_database"
+  | "schema_mismatch"
   | "access_denied"
   | "invalid_response"
   | "unavailable"
@@ -103,6 +104,8 @@ const detail: Record<ConnectionState, string> = {
   needs_action: "This account needs an access check.",
   missing_database:
     "A required database function or table is missing, or the API schema cache is stale. Check deployed migrations and schema reload.",
+  schema_mismatch:
+    "The database table does not expose the columns required by this feature. Compare the deployed schema with the application contract; do not replace existing member records or relax row security.",
   access_denied:
     "The database denied this account. Check membership and the expected role/grants; do not disable row security.",
   invalid_response:
@@ -152,6 +155,7 @@ export async function checkConnection(
     if (parent?.aborted) return result("cancelled");
     if (response.error) {
       const code = response.error.code;
+      if (code === "42703" || code === "PGRST204") return result("schema_mismatch");
       if (code === "42501") return result("access_denied");
       if (code === "PGRST202" || code === "PGRST205" || code === "42883" || code === "42P01")
         return result("missing_database");

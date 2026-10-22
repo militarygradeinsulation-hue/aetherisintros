@@ -6,9 +6,10 @@ import type { ConnectionResult, ReadRpc } from './lib/connection-preflight'
 import { checkLinkedInReadiness, type ProviderReadiness } from './auth-provider-readiness'
 
 const read: ReadRpc = (table, signal) => {
-  if (!MEMBER_FEATURE_READS.some(item => item.table === table)) throw new Error('Unsupported readiness read')
+  const feature = MEMBER_FEATURE_READS.find(item => item.table === table)
+  if (!feature) throw new Error('Unsupported readiness read')
   const db = supabase as unknown as { from(name: string): { select(columns: string): { limit(count: number): { abortSignal(value: AbortSignal): ReturnType<ReadRpc> } } } }
-  return db.from(table).select('id').limit(0).abortSignal(signal)
+  return db.from(table).select(feature.columns).limit(0).abortSignal(signal)
 }
 
 export function MemberFeatureReadinessPanel() {
@@ -40,7 +41,7 @@ export function MemberFeatureReadinessPanel() {
     {visible && <>
       <p role="status">{visible.rows.filter(row => row.state === 'read_verified').length} of {visible.rows.length} feature reads verified.</p>
       <p>LinkedIn: {visible.provider === 'enabled' ? 'provider enabled; real sign-in still needs verification' : visible.provider === 'disabled' ? 'provider disabled; configure the LinkedIn OIDC application in the production authentication settings' : 'provider configuration could not be verified'}</p>
-      <ul>{visible.rows.map(row => <li key={row.id} data-state={row.state}><h3>{row.label}</h3><strong>{row.state === 'read_verified' ? 'Read verified' : row.state === 'missing_database' ? 'Database setup needed' : row.state === 'access_denied' ? 'Access denied' : 'Check incomplete'}</strong><p>{row.detail}</p></li>)}</ul>
+      <ul>{visible.rows.map(row => <li key={row.id} data-state={row.state}><h3>{row.label}</h3><strong>{row.state === 'read_verified' ? 'Read verified' : row.state === 'schema_mismatch' ? 'Schema mismatch' : row.state === 'missing_database' ? 'Database setup needed' : row.state === 'access_denied' ? 'Access denied' : 'Check incomplete'}</strong><p>{row.detail}</p></li>)}</ul>
     </>}
   </section>
 }

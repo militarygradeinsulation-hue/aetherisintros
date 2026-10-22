@@ -14,6 +14,7 @@ const labels = {
   read_verified: "Read verified",
   needs_action: "Needs attention",
   missing_database: "Database setup needed",
+  schema_mismatch: "Schema mismatch",
   access_denied: "Access denied",
   invalid_response: "Unexpected response",
   unavailable: "Unavailable",
