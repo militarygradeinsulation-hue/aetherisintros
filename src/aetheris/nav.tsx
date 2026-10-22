@@ -10,6 +10,7 @@ export type Page =
   | 'directory' | 'passport' | 'opportunities' | 'dealrooms' | 'expertise' | 'talent' | 'capital'
   | 'intelrooms' | 'presence' | 'permission' | 'briefing' | 'vault' | 'knowledgeassets' | 'simple'
   | 'crm' | 'grid' | 'news' | 'pocket' | 'diagnostic' | 'meetings' | 'peergroups' | 'providers' | 'warmpaths' | 'agentinbox' | 'deals' | 'referrals' | 'workspaces' | 'executivework'
+  | 'business-lobby' | 'opportunity-exchange' | 'membership'
 
 /** Navigation intents any surface can trigger. */
 export interface NavApi {
