@@ -29,6 +29,8 @@ interface PeopleDirectoryViewProps {
   connectedMemberIds: Set<string>;
   onToggleConnect: (memberId: string) => void;
   isLive?: boolean;
+  searchQuery?: string;
+  onSearchChange?: (value: string) => void;
 }
 
 export const PeopleDirectoryView: React.FC<PeopleDirectoryViewProps> = ({
@@ -38,8 +40,13 @@ export const PeopleDirectoryView: React.FC<PeopleDirectoryViewProps> = ({
   connectedMemberIds,
   onToggleConnect,
   isLive = false,
+  searchQuery,
+  onSearchChange,
 }) => {
-  const [searchKeyword, setSearchKeyword] = useState('');
+  const [localKeyword, setLocalKeyword] = useState('');
+  // Shared workspace search and directory filters must describe the same result set.
+  const searchKeyword = searchQuery ?? localKeyword;
+  const setSearchKeyword = onSearchChange ?? setLocalKeyword;
   const [selectedRoleTypes, setSelectedRoleTypes] = useState<string[]>([]);
   const [selectedCity, setSelectedCity] = useState('All');
   const [selectedIndustry, setSelectedIndustry] = useState('All');
