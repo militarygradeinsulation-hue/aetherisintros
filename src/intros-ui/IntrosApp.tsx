@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { Button } from '@/components/ui/button';
 import { ArrowRight } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { isIntroTargetId, submitIntroRequest } from '@/aetheris/lib/intro-request';
@@ -392,11 +393,11 @@ export default function App({ mode = 'demo', executiveAction, initialPage }: { m
         {activePage === 'intros' && (
           <>
             <div className="ix-intros-crosslink">
-              <div>
-                <span className="home-board-label">Introductions</span>
-                <p>Review requests and curated matches here. Looking for someone specific?</p>
-              </div>
-              <button type="button" onClick={() => handleNavigate('people')}>Search the member network<ArrowRight size={14} /></button>
+              <nav aria-label="Network destinations">
+                <Button variant="ghost" size="sm" onClick={() => handleNavigate('people')}>People</Button>
+                <Button variant="ghost" size="sm" aria-current="page" onClick={() => handleNavigate('intros')}>Introductions</Button>
+              </nav>
+              <Button variant="outline" size="sm" onClick={() => handleNavigate('people')}>Search the member network<ArrowRight size={14} /></Button>
             </div>
             {mode === 'live'
               ? <div className="ix-classic"><InviteCard /><AetherisAppSurface key="live-intros"  startPage="intros"  /></div>
