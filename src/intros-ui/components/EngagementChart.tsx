@@ -29,8 +29,8 @@ export const EngagementChart: React.FC<EngagementChartProps> = ({
         <AreaChart data={data} margin={{ top: 2, right: 2, left: 2, bottom: 2 }}>
           <defs>
             <linearGradient id="engagementGlow" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="5%" stopColor="#F5B027" stopOpacity={0.4} />
-              <stop offset="95%" stopColor="#F5B027" stopOpacity={0.0} />
+              <stop offset="5%" stopColor="#FF8A4C" stopOpacity={0.4} />
+              <stop offset="95%" stopColor="#FF8A4C" stopOpacity={0.0} />
             </linearGradient>
           </defs>
           {showLabels && (
@@ -54,12 +54,12 @@ export const EngagementChart: React.FC<EngagementChartProps> = ({
                 const mutualVal = Math.min(100, Math.round(score * 1.02));
 
                 return (
-                  <div className="bg-[#0B0E14] border border-[#F5B027]/40 p-2.5 rounded-lg shadow-2xl text-[9px] font-mono text-[#F2EEE6] space-y-1.5 z-50 pointer-events-none min-w-[210px]">
+                  <div className="bg-[#0B0E14] border border-[#FF8A4C]/40 p-2.5 rounded-lg shadow-2xl text-[9px] font-mono text-[#F2EEE6] space-y-1.5 z-50 pointer-events-none min-w-[210px]">
                     <div className="flex items-center justify-between border-b border-white/10 pb-1">
                       <span className="font-serif-editorial text-[11px] text-[#F2EEE6] font-semibold">
                         Day {label} Trajectory
                       </span>
-                      <span className="text-[#F5B027] font-bold text-[10px] tabular-nums">
+                      <span className="text-[#FF8A4C] font-bold text-[10px] tabular-nums">
                         {score}/100
                       </span>
                     </div>
@@ -72,11 +72,11 @@ export const EngagementChart: React.FC<EngagementChartProps> = ({
                     <div className="space-y-1 pt-0.5 text-[8px]">
                       <div className="flex items-center justify-between">
                         <span className="text-[#F2EEE6]/70">Recency (R: 35%)</span>
-                        <span className="text-[#C78522] tabular-nums font-semibold">{recencyVal}%</span>
+                        <span className="text-[#DB6B36] tabular-nums font-semibold">{recencyVal}%</span>
                       </div>
                       <div className="flex items-center justify-between">
                         <span className="text-[#F2EEE6]/70">Frequency (F: 30%)</span>
-                        <span className="text-[#F5B027] tabular-nums font-semibold">{freqVal}%</span>
+                        <span className="text-[#FF8A4C] tabular-nums font-semibold">{freqVal}%</span>
                       </div>
                       <div className="flex items-center justify-between">
                         <span className="text-[#F2EEE6]/70">Reciprocity (ρ: 20%)</span>
@@ -84,7 +84,7 @@ export const EngagementChart: React.FC<EngagementChartProps> = ({
                       </div>
                       <div className="flex items-center justify-between">
                         <span className="text-[#F2EEE6]/70">Mutual Strength (M: 15%)</span>
-                        <span className="text-[#F5B027] tabular-nums font-semibold">{mutualVal}%</span>
+                        <span className="text-[#FF8A4C] tabular-nums font-semibold">{mutualVal}%</span>
                       </div>
                     </div>
                   </div>
@@ -96,7 +96,7 @@ export const EngagementChart: React.FC<EngagementChartProps> = ({
           <Area
             type="monotone"
             dataKey="value"
-            stroke="#F5B027"
+            stroke="#FF8A4C"
             strokeWidth={1.5}
             fillOpacity={1}
             fill="url(#engagementGlow)"
