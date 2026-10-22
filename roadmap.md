@@ -3,9 +3,10 @@
 ## Mobile tactile redesign (Oct 22)
 - [x] Redesign phone welcome, balanced actions, segmented feed controls and grouped navigation without changing desktop or member data.
 - [x] Collapse the existing demo/live composers on phones while keeping their state mounted.
-- [ ] Verify three phone sizes, desktop, drafts/uploads/post actions, keyboard drawer and Network scrolling.
-- [ ] Confirm automatic compilation and focused/full regressions; publish only if safeguards pass.
-- [ ] Confirm authenticated member workflow and outbound GitHub sync — only with requesting-user access and verifiable remote status.
+- [x] Verify three phone sizes and desktop: drafts/attachment retention, demo posting/replies/likes/saves, keyboard drawer, member search and reachable Network scrolling; screenshots reviewed.
+- [x] Automatic compilation OK; 22 focused tests and 861 full-suite tests pass.
+- [ ] Release — blocked: two unrelated recovery suites cannot load missing @electric-sql/pglite; no publication.
+- [ ] Confirm authenticated member workflow and outbound GitHub sync — blocked: requesting account has no mintable session; managed local commits alone do not establish remote CI/sync.
 
 ## Authorized professional evidence extension (Oct 21)
 - [x] Extend the existing LinkedIn reader, provenance and editable hypothesis review without external fetching; unsupported fields remain private review-only.
