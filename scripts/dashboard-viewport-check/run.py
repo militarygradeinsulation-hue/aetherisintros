@@ -66,7 +66,7 @@ async def main():
     await page.get_by_role('button',name='Open workspace menu',exact=True).click()
     nav=page.get_by_role('navigation',name='Mobile workspace navigation',exact=True)
    await nav.get_by_role('button',name='Member Network',exact=True).click()
-   await page.get_by_role('textbox',name='Search the member network',exact=True).wait_for()
+   await page.get_by_role('searchbox',name='Search the member network',exact=True).wait_for()
    await page.close()
   print(json.dumps({'results':results,'errors':errors},indent=2));assert not errors,errors
   await browser.close()
