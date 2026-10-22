@@ -270,3 +270,30 @@ body:has(.ix-specter-mode) :is(.ask-scroll-caliper,.ask-scroll-caliper-bottom-sc
   margin-top:8px;border-top:1px solid #27272a;border-radius:0 0 8px 8px;color:#e8c98a;
 }
 .specter-mobile-menu nav .specter-executive-action:hover{color:#ffd9a0}
+
+/* Specter browser-first workspace: maximize usable website area without masking live clicks. */
+.specter-app .specter-grid--browser-first{grid-template-columns:minmax(0,1fr) minmax(260px, .36fr)}
+.specter-app .specter-grid--browser-first .specter-browser{min-width:0}
+.specter-app .specter-grid--browser-first .specter-extracted{max-height:92px}
+.specter-app .specter-live-preview{min-height:0}
+.specter-app .specter-live-frame{width:100%;min-height:480px;pointer-events:auto}
+.specter-app .specter-expand-button,.specter-app .specter-browse-button{display:inline-flex;align-items:center;justify-content:center;gap:7px;border:1px solid rgba(255,138,76,.38);border-radius:7px;background:#261710;color:#ffbb97;padding:9px 12px;font-size:12px;cursor:pointer}
+.specter-app .specter-expand-button{flex:0 0 auto;margin:4px}
+.specter-app .specter-browse-button:disabled{opacity:.45;cursor:not-allowed}
+.specter-app .specter-browser-tabs{flex-wrap:wrap}
+.specter-app .specter-grid--browser-first .specter-preview-note{max-width:none}
+@media(min-width:1191px){
+ .specter-app .specter-grid--browser-first .specter-insights{min-width:0}
+ .specter-app .specter-grid--browser-first .specter-live-frame{min-height:560px}
+}
+@media(max-width:1190px){
+ .specter-app .specter-grid--browser-first{display:flex;flex-direction:column}
+ .specter-app .specter-grid--browser-first .specter-browser{min-height:680px}
+ .specter-app .specter-grid--browser-first .specter-browser-content{min-height:500px}
+}
+@media(max-width:760px){
+ .specter-app .specter-grid--browser-first .specter-browser{min-height:75dvh}
+ .specter-app .specter-grid--browser-first .specter-browser-content{min-height:55dvh}
+ .specter-app .specter-grid--browser-first .specter-live-frame{min-height:53dvh;height:53dvh}
+ .specter-app .specter-expand-button span{display:none}
+}
