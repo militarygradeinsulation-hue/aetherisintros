@@ -113,7 +113,7 @@ function AuthPage() {
   useEffect(() => {
     let cancelled = false
     void supabase.auth.getSession().then(({ data }) => {
-      if (!cancelled && data.session && requestedMode !== 'recovery' && mode !== 'reset' && mode !== 'forgot') void land()
+      if (!cancelled && data.session && mode !== 'reset' && mode !== 'forgot') void land()
     })
     const { data: sub } = supabase.auth.onAuthStateChange((event, session) => {
       if (event === 'PASSWORD_RECOVERY') {
@@ -122,7 +122,7 @@ function AuthPage() {
         setMode('reset')
         return
       }
-      if (session && requestedMode !== 'recovery' && mode !== 'reset' && mode !== 'forgot' &&
+      if (session && mode !== 'reset' && mode !== 'forgot' &&
           (event === 'SIGNED_IN' || event === 'INITIAL_SESSION')) {
         setTimeout(() => {
           if (cancelled) return
@@ -132,7 +132,7 @@ function AuthPage() {
       }
     })
     return () => { cancelled = true; sub.subscription.unsubscribe() }
-  }, [land, requestedMode, mode])
+  }, [land, mode])
 
   const submit = async (event: React.FormEvent) => {
     event.preventDefault()
