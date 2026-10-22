@@ -114,5 +114,35 @@ try {
   await page.getByRole('button',{name:'Show sidebar'}).click();
   assert(await page.locator('.specter-app-sidebar').isVisible(),'expand control restores the sidebar');
   assert((await page.evaluate(()=>localStorage.getItem('aetheris.sidebar.collapsed')))==='0','restored preference is saved on this device');
+
+  // Executive launcher regression: sidebar action opens the real dialog, no
+  // floating bubble ever overlaps the Butler launcher.
+  await page.goto(base + '#executive');
+  assert((await page.locator('.executive-upgrade-trigger').count()) === 0, 'no floating Executive bubble is rendered');
+  const fab = page.locator('.ask-dock-fab');
+  assert(await fab.isVisible(), 'Butler launcher stays visible');
+  await fab.click({ trial: true });
+  assert(true, 'Butler launcher is clickable and unobstructed');
+  await page.getByRole('navigation', { name: 'Workspace navigation' }).getByRole('button', { name: 'Executive access' }).click();
+  await page.getByRole('dialog', { name: 'Apply for Executive' }).waitFor();
+  assert(true, 'sidebar Executive access action opens the real membership dialog');
+  await page.getByRole('button', { name: 'Close', exact: true }).click();
+  assert((await page.getByRole('dialog').count()) === 0, 'Executive dialog closes');
+  await page.getByRole('button', { name: 'Hide sidebar' }).click();
+  await page.getByRole('button', { name: 'Show sidebar' }).click();
+  assert(await page.getByRole('navigation', { name: 'Workspace navigation' }).getByRole('button', { name: 'Executive access' }).isVisible(), 'Executive action is available again after expanding the sidebar');
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.getByRole('button', { name: 'Open workspace menu' }).click();
+  await page.getByRole('navigation', { name: 'Mobile workspace navigation' }).getByRole('button', { name: 'Executive access' }).click();
+  await page.getByRole('dialog', { name: 'Apply for Executive' }).waitFor();
+  assert((await page.getByRole('navigation', { name: 'Mobile workspace navigation' }).count()) === 0, 'mobile drawer closes when the Executive action opens');
+  await page.getByRole('button', { name: 'Close', exact: true }).click();
+  for (const width of [390, 320]) {
+    await page.setViewportSize({ width, height: 844 });
+    assert((await page.locator('.executive-upgrade-trigger').count()) === 0, `no floating Executive bubble at ${width}px`);
+    assert(await fab.isVisible(), `Butler launcher visible at ${width}px`);
+    await fab.click({ trial: true });
+    assert(true, `Butler launcher unobstructed at ${width}px`);
+  }
   console.log('Screenshots:',out);
 } finally { await browser.close(); server.close(); }
