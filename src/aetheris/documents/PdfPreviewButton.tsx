@@ -11,7 +11,7 @@ export function PdfPreviewButton({ url, name }: { url: string; name: string }) {
       <DialogTitle>{name}</DialogTitle>
       <DialogDescription>Read the attachment in your workspace. Document text stays in this browser.</DialogDescription>
       <a className="ai-pdf-original" href={url} target="_blank" rel="noopener noreferrer">Open original <ExternalLink size={14}/></a>
-      {open && <Suspense fallback={<p role="status">Loading document viewer…</p>}><PdfDocumentViewer url={url} name={name}/></Suspense>}
+      {open && <Suspense fallback={<p role="status">Loading document viewer…</p>}><PdfDocumentViewer key={url} url={url} name={name}/></Suspense>}
     </DialogContent>
   </Dialog>
 }

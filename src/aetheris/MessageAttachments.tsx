@@ -70,7 +70,7 @@ export function MessageBody({ text }: { text: string }) {
   let last = 0
   for (const m of text.matchAll(MARK)) {
     if (m.index! > last) parts.push(text.slice(last, m.index))
-    parts.push(<Attachment key={m.index} ref_={m[1]!} name={m[2]!} mime={m[3]!} />)
+    parts.push(<Attachment key={`${m.index}:${m[1]}`} ref_={m[1]!} name={m[2]!} mime={m[3]!} />)
     last = m.index! + m[0].length
   }
   if (last < text.length) parts.push(text.slice(last))
