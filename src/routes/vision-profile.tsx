@@ -3,7 +3,7 @@ import { ArrowLeft, BadgeCheck, Bookmark, Heart, MessageCircle, MoreHorizontal, 
 import { useState } from 'react'
 import './vision-profile.css'
 
-export const Route = createFileRoute('/vision-profile' as any)({
+export const Route = createFileRoute('/vision-profile')({
   head: () => ({ meta: [{title: 'Alex Carter | Aetheris Intros'}] }),
   component: VisionProfile,
 })

@@ -19,6 +19,8 @@ import { Route as McpRouteImport } from './routes/mcp'
 import { Route as NewsRouteImport } from './routes/news'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as TryRouteImport } from './routes/try'
+import { Route as VisionRouteImport } from './routes/vision'
+import { Route as VisionProfileRouteImport } from './routes/vision-profile'
 import { Route as Char91DotwellKnownChar93OauthProtectedResourceRouteImport } from './routes/[.well-known]/oauth-protected-resource'
 import { Route as AuthenticatedAppRouteImport } from './routes/_authenticated/app'
 import { Route as AuthenticatedBusinessAnalystRouteImport } from './routes/_authenticated/business-analyst'
@@ -102,6 +104,16 @@ const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
 const TryRoute = TryRouteImport.update({
   id: '/try',
   path: '/try',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const VisionRoute = VisionRouteImport.update({
+  id: '/vision',
+  path: '/vision',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const VisionProfileRoute = VisionProfileRouteImport.update({
+  id: '/vision-profile',
+  path: '/vision-profile',
   getParentRoute: () => rootRouteImport,
 } as any)
 const Char91DotwellKnownChar93OauthProtectedResourceRoute =
@@ -299,6 +311,8 @@ export interface FileRoutesByFullPath {
   '/news': typeof NewsRouteWithChildren
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/try': typeof TryRoute
+  '/vision': typeof VisionRoute
+  '/vision-profile': typeof VisionProfileRoute
   '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
   '/app': typeof AuthenticatedAppRoute
   '/business-analyst': typeof AuthenticatedBusinessAnalystRoute
@@ -345,6 +359,8 @@ export interface FileRoutesByTo {
   '/news': typeof NewsRouteWithChildren
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/try': typeof TryRoute
+  '/vision': typeof VisionRoute
+  '/vision-profile': typeof VisionProfileRoute
   '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
   '/app': typeof AuthenticatedAppRoute
   '/business-analyst': typeof AuthenticatedBusinessAnalystRoute
@@ -393,6 +409,8 @@ export interface FileRoutesById {
   '/news': typeof NewsRouteWithChildren
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/try': typeof TryRoute
+  '/vision': typeof VisionRoute
+  '/vision-profile': typeof VisionProfileRoute
   '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
   '/_authenticated/app': typeof AuthenticatedAppRoute
   '/_authenticated/business-analyst': typeof AuthenticatedBusinessAnalystRoute
@@ -441,6 +459,8 @@ export interface FileRouteTypes {
     | '/news'
     | '/sitemap.xml'
     | '/try'
+    | '/vision'
+    | '/vision-profile'
     | '/.well-known/oauth-protected-resource'
     | '/app'
     | '/business-analyst'
@@ -487,6 +507,8 @@ export interface FileRouteTypes {
     | '/news'
     | '/sitemap.xml'
     | '/try'
+    | '/vision'
+    | '/vision-profile'
     | '/.well-known/oauth-protected-resource'
     | '/app'
     | '/business-analyst'
@@ -534,6 +556,8 @@ export interface FileRouteTypes {
     | '/news'
     | '/sitemap.xml'
     | '/try'
+    | '/vision'
+    | '/vision-profile'
     | '/.well-known/oauth-protected-resource'
     | '/_authenticated/app'
     | '/_authenticated/business-analyst'
@@ -582,6 +606,8 @@ export interface RootRouteChildren {
   NewsRoute: typeof NewsRouteWithChildren
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   TryRoute: typeof TryRoute
+  VisionRoute: typeof VisionRoute
+  VisionProfileRoute: typeof VisionProfileRoute
   Char91DotwellKnownChar93OauthProtectedResourceRoute: typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
   ImpactSlugRoute: typeof ImpactSlugRoute
   InviteCodeRoute: typeof InviteCodeRoute
@@ -676,6 +702,20 @@ declare module '@tanstack/react-router' {
       path: '/try'
       fullPath: '/try'
       preLoaderRoute: typeof TryRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/vision': {
+      id: '/vision'
+      path: '/vision'
+      fullPath: '/vision'
+      preLoaderRoute: typeof VisionRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/vision-profile': {
+      id: '/vision-profile'
+      path: '/vision-profile'
+      fullPath: '/vision-profile'
+      preLoaderRoute: typeof VisionProfileRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/.well-known/oauth-protected-resource': {
@@ -980,6 +1020,8 @@ const rootRouteChildren: RootRouteChildren = {
   NewsRoute: NewsRouteWithChildren,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
   TryRoute: TryRoute,
+  VisionRoute: VisionRoute,
+  VisionProfileRoute: VisionProfileRoute,
   Char91DotwellKnownChar93OauthProtectedResourceRoute:
     Char91DotwellKnownChar93OauthProtectedResourceRoute,
   ImpactSlugRoute: ImpactSlugRoute,

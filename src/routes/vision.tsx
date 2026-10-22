@@ -3,7 +3,7 @@ import { useMemo, useState } from 'react'
 import { Activity, ArrowRight, Bell, Bookmark, BriefcaseBusiness, CalendarDays, Check, ChevronRight, Compass, Heart, Home, Menu, MessageCircle, MessagesSquare, MoreHorizontal, Play, Plus, Search, Send, Share2, Sparkles, TrendingUp, Users, Video, WandSparkles, X, type LucideIcon } from 'lucide-react'
 import './vision.css'
 
-export const Route = createFileRoute('/vision' as any)({
+export const Route = createFileRoute('/vision')({
   head: () => ({ meta: [{ title: 'Aetheris Intros | Connected Social Experience' }, { name: 'description', content: 'A premium, connected social and professional relationship experience.' }] }),
   component: Vision,
 })
