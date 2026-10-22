@@ -220,7 +220,7 @@ export const HomeFeedView: React.FC<HomeFeedViewProps> = ({
                   <button
                     type="submit"
                     disabled={!composerText.trim() && attachments.length === 0}
-                    className="ml-1 px-4 py-1.5 text-xs font-semibold text-white bg-[#FF8A4C] hover:bg-[#DB6B36] disabled:opacity-40 disabled:cursor-not-allowed rounded-lg transition-colors cursor-pointer"
+                    className="ml-1 px-4 py-1.5 text-xs font-semibold text-[#1c110c] bg-[#FF8A4C] hover:bg-[#DB6B36] disabled:opacity-40 disabled:cursor-not-allowed rounded-lg transition-colors cursor-pointer"
                   >
                     Post
                   </button>
@@ -434,7 +434,7 @@ export const HomeFeedView: React.FC<HomeFeedViewProps> = ({
                     aria-pressed={heroVisualMode === 'bubbles'}
                     className={`ix-option-tab px-2.5 py-1 text-[10px] font-mono rounded transition-colors cursor-pointer ${
                       heroVisualMode === 'bubbles'
-                        ? 'bg-[#FF8A4C] text-white font-semibold'
+                        ? 'bg-[#FF8A4C] text-[#1c110c] font-semibold'
                         : 'text-[#9CA3AF] hover:text-white'
                     }`}
                   >
@@ -445,7 +445,7 @@ export const HomeFeedView: React.FC<HomeFeedViewProps> = ({
                     aria-pressed={heroVisualMode === 'spotlight'}
                     className={`ix-option-tab px-2.5 py-1 text-[10px] font-mono rounded transition-colors cursor-pointer ${
                       heroVisualMode === 'spotlight'
-                        ? 'bg-[#FF8A4C] text-white font-semibold'
+                        ? 'bg-[#FF8A4C] text-[#1c110c] font-semibold'
                         : 'text-[#9CA3AF] hover:text-white'
                     }`}
                   >
@@ -521,7 +521,7 @@ export const HomeFeedView: React.FC<HomeFeedViewProps> = ({
                   <div className="flex items-center gap-2">
                     <button
                       onClick={() => onRequestIntro(elena)}
-                      className="flex-1 py-2 text-xs font-semibold text-white bg-[#FF8A4C] hover:bg-[#DB6B36] rounded-lg transition-colors cursor-pointer text-center"
+                      className="flex-1 py-2 text-xs font-semibold text-[#1c110c] bg-[#FF8A4C] hover:bg-[#DB6B36] rounded-lg transition-colors cursor-pointer text-center"
                     >
                       Request Introduction
                     </button>
