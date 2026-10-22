@@ -10,7 +10,7 @@ export interface MemberOverviewGraph {
   members: readonly { id: string }[]
   connections: readonly string[]
   threads: readonly { unread: boolean }[]
-  posts: readonly { visibility?: 'network' | 'private' }[]
+  posts: readonly { visibility?: 'network' | 'private' | undefined }[]
   asks: readonly { visibility: 'network' | 'private' }[]
 }
 
