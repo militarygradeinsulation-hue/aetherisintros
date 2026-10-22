@@ -90,13 +90,13 @@ interface FeedSidebarLayoutProps {
 export function FeedSidebarLayout({ widgets, actionQueue, children }: FeedSidebarLayoutProps) {
   const [layout, setLayout] = useState<GroupLayout[]>(defaults);
   const [customize, setCustomize] = useState(false);
-  const [focus, setFocus] = useState(false);
+  const [focus, setFocus] = useState(true);
   const [desktop, setDesktop] = useState(false);
   const [railHeight, setRailHeight] = useState(944);
 
   useEffect(() => {
     setLayout(restoreLayout());
-    try { setFocus(localStorage.getItem(STORAGE_KEY + '.focus') === 'true'); } catch { /* browser storage unavailable */ }
+    try { setFocus(localStorage.getItem(STORAGE_KEY + '.focus') !== 'false'); } catch { /* browser storage unavailable */ }
   }, []);
 
   useEffect(() => {
