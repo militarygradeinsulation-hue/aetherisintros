@@ -82,6 +82,7 @@ try {
     try {
       await page.goto(base + '/', { waitUntil: 'domcontentloaded', timeout: 120_000 })
       await page.locator('.vision-page .vs-shell').waitFor({ state: 'visible', timeout: 60_000 })
+      await page.locator('.vision-page[data-hydrated="true"]').waitFor({ state: 'attached', timeout: 60_000 })
       const info = await page.evaluate(() => {
         const root = document.querySelector('.vision-page')
         const rect = selector => {
