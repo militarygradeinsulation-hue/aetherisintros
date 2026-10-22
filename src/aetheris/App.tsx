@@ -1489,6 +1489,11 @@ function Memory({ people, select }: { people: Member[]; select: (p: Member) => v
           })}
           {!shown.length && <p className="empty-state">Nothing learned in this category yet.</p>}
         </div>
+        {shown.length > LEARNED_PREVIEW && <div className="ix-show-more">
+          <button onClick={() => setShowAllLearned(value => !value)}>
+            {showAllLearned ? 'Show fewer items' : `Show all ${shown.length} items`}
+          </button>
+        </div>}
       </section>
     </div>
     <div className="memory-modules">
