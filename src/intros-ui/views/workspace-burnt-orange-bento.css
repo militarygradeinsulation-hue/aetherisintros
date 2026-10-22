@@ -23,6 +23,7 @@
   --ix-line-strong: rgba(255,255,255,.14);
   --ix-text: #f2f1ec;
   --ix-muted: #9898a1;
+  --tile-hover: var(--ix-accent);
   --sys-accent: var(--ix-accent);
   --sys-gold: var(--ix-accent);
   --sys-gold-bright: var(--ix-accent-hover);
