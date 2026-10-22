@@ -1,0 +1,62 @@
+/* Warm-graphite + burnt-orange workspace accent layer.
+   Scoped to .ix-root (the authenticated /app and /demo host) so public
+   marketing and auth pages are never restyled. Poppins stays the interface
+   face; IBM Plex Mono is reserved for tiny metadata. */
+.ix-root {
+  --ix-accent: #ff8a4c;
+  --ix-accent-deep: #c96a3d;
+  --ix-bg: #0a0a0b;
+  --ix-panel: #0e0e10;
+  --ix-card: #131316;
+  --ix-line: rgba(255, 255, 255, .07);
+  --ix-text: #f2f1ec;
+  --ix-muted: #84848c;
+}
+
+/* Member Intelligence — compact tabbed destination inside the shared shell */
+.mi-view { max-width: 1100px; margin: 0 auto; padding: 28px 22px 64px; color: var(--ix-text); }
+.mi-head { max-width: 640px; }
+.mi-eyebrow {
+  font-family: 'IBM Plex Mono', ui-monospace, monospace;
+  font-size: 11px; letter-spacing: .22em; color: var(--ix-accent); margin: 0 0 10px;
+}
+.mi-head h1 { font-size: clamp(26px, 3vw, 36px); line-height: 1.15; margin: 0 0 10px; color: var(--ix-text); }
+.mi-head p { color: var(--ix-muted); font-size: 14px; line-height: 1.6; margin: 0; }
+.mi-loading { padding: 48px 22px; color: var(--ix-muted); font-size: 14px; }
+.mi-tabs {
+  display: flex; gap: 4px; margin: 26px 0 0;
+  border-bottom: 1px solid var(--ix-line); overflow-x: auto;
+}
+.mi-tabs button {
+  background: none; border: 0; border-bottom: 2px solid transparent; color: var(--ix-muted);
+  font: 500 13px/1 Poppins, Inter, system-ui, sans-serif; padding: 12px 16px; cursor: pointer;
+  white-space: nowrap; transition: color .15s ease, border-color .15s ease;
+}
+.mi-tabs button:hover { color: var(--ix-text); }
+.mi-tabs button.active { color: var(--ix-accent); border-bottom-color: var(--ix-accent); }
+.mi-tabs button:focus-visible { outline: 2px solid var(--ix-accent); outline-offset: 2px; }
+.mi-panel {
+  margin-top: 18px; background: var(--ix-panel); border: 1px solid var(--ix-line);
+  border-radius: 12px; padding: 20px; min-width: 0;
+}
+.mi-note {
+  font-family: 'IBM Plex Mono', ui-monospace, monospace;
+  font-size: 12px; color: var(--ix-muted); margin: 0 0 14px; letter-spacing: .02em;
+}
+.mi-specter-card h2 { margin: 0 0 8px; font-size: 18px; color: var(--ix-text); }
+.mi-specter-card p { color: var(--ix-muted); font-size: 14px; line-height: 1.6; margin: 0 0 16px; max-width: 520px; }
+.mi-cta {
+  background: var(--ix-accent); color: #131313; border: 0; border-radius: 8px;
+  font: 600 13px/1 Poppins, Inter, system-ui, sans-serif; padding: 12px 18px; cursor: pointer;
+  transition: background .15s ease;
+}
+.mi-cta:hover { background: #ffa166; }
+.mi-cta:focus-visible { outline: 2px solid var(--ix-accent); outline-offset: 3px; }
+
+@media (max-width: 640px) {
+  .mi-view { padding: 20px 14px 56px; }
+  .mi-panel { padding: 16px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .mi-tabs button, .mi-cta { transition: none; }
+}
