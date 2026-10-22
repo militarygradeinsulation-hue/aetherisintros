@@ -45,6 +45,8 @@ export type WorkspaceShellProps = {
   onNavigate: (page: ActivePage) => void;
   onWorkspace: (page: string) => void;
   onSearch: (query: string) => void;
+  searchQuery?: string;
+  onSearchChange?: (value: string) => void;
   member?: { name: string; avatarUrl?: string } | null;
   notifications?: ReactNode;
   children: ReactNode;
@@ -55,10 +57,12 @@ export type WorkspaceShellProps = {
 };
 
 export function AetherisWorkspaceShell({
-  activePage, onNavigate, onWorkspace, onSearch, member, notifications,
+  activePage, onNavigate, onWorkspace, onSearch, searchQuery, onSearchChange, member, notifications,
   children, enabled = true, scrollContent = false, onHelp,
 }: WorkspaceShellProps) {
-  const [query, setQuery] = useState('');
+  const [localQuery, setLocalQuery] = useState('');
+  const query = searchQuery ?? localQuery;
+  const changeQuery = onSearchChange ?? setLocalQuery;
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   useEffect(() => { setMobileMenuOpen(false); }, [activePage]);
   useEffect(() => {
@@ -120,7 +124,7 @@ export function AetherisWorkspaceShell({
         aria-label={mobile ? 'Search members on mobile' : 'Search members, companies, or keywords'}
         placeholder="Search the network..."
         value={query}
-        onChange={event => setQuery(event.target.value)}
+        onChange={event => changeQuery(event.target.value)}
       />
     </form>;
   }
