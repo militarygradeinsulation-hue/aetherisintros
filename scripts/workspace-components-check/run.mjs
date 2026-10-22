@@ -49,7 +49,7 @@ try{
   assert(await viewer.locator('img').count()===0,width+' PDF text cannot inject HTML')
   assert(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+2),width+' reader has no outer sideways overflow')
   await viewer.getByRole('button',{name:'Rotate PDF left'}).click();await viewer.getByRole('combobox',{name:'PDF zoom'}).selectOption('0.75');await viewer.getByRole('button',{name:'Go to PDF page 1'}).click();await page.waitForFunction(()=>document.querySelector('.ai-pdf-page canvas').width===300);await page.screenshot({path:join(out,`reader-${width}.png`),fullPage:true})
-  await page.keyboard.press('Escape');await page.getByRole('dialog').waitFor({state:'hidden'});assert(await page.getByRole('button',{name:'Read Evidence.pdf',exact:true}).evaluate(el=>el===document.activeElement),width+' closing reader restores trigger focus')
+  await page.keyboard.press('Escape');await page.getByRole('dialog').waitFor({state:'hidden'});await page.waitForFunction(()=>document.querySelector('.ai-pdf-open')===document.activeElement);assert(await page.getByRole('button',{name:'Read Evidence.pdf',exact:true}).evaluate(el=>el===document.activeElement),width+' closing reader restores trigger focus')
   assert(errors.length===0,width+' no browser runtime errors: '+errors.join(','))
   if(width===1280){await page.getByRole('button',{name:'Read Missing.pdf',exact:true}).click();await page.getByRole('alert').filter({hasText:'could not be opened'}).waitFor();assert(true,'missing document gives an honest error');await page.keyboard.press('Escape')}
   await page.close()
