@@ -1,0 +1,166 @@
+/* Shared presentation for the four member tools; no global theme overrides. */
+.aetheris-parity {
+  --night: var(--ix-bg, var(--halftone-night));
+  --raised: var(--ix-card, var(--card));
+  --soft: var(--ix-text, var(--halftone-ink));
+  --ink: var(--soft);
+  --muted: var(--ix-muted, var(--muted-foreground));
+  --line-dark: var(--ix-line-strong, var(--halftone-line));
+  --sans: Poppins, Inter, system-ui, sans-serif;
+  --font-micro: "IBM Plex Mono", ui-monospace, monospace;
+  --background: var(--night);
+  --foreground: var(--soft);
+  --card: var(--raised);
+  --card-foreground: var(--soft);
+  --input: var(--line-dark);
+  --border: var(--line-dark);
+  --ring: var(--acc);
+  color-scheme: dark;
+}
+html body .aetheris-parity.executive-section {
+  display: grid;
+  gap: 18px;
+  min-width: 0;
+  border: 0;
+  padding: 20px;
+  background: var(--night);
+  color: var(--soft);
+  font: 400 13px/1.6 var(--sans);
+}
+html body .aetheris-parity .parity-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 16px;
+  padding-bottom: 18px;
+  border-bottom: 1px solid var(--line-dark);
+}
+html body .aetheris-parity .eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  color: var(--acc);
+  font: 500 10px/1.5 var(--font-micro);
+  text-transform: uppercase;
+  letter-spacing: 0;
+}
+html body .aetheris-parity :is(h2,h3) {
+  color: var(--soft);
+  font-family: var(--sans);
+  letter-spacing: 0;
+  overflow-wrap: anywhere;
+}
+html body .aetheris-parity h2 { font-size: 24px; font-weight: 600; line-height: 1.25; margin: 7px 0 8px; }
+html body .aetheris-parity h3 { font-size: 17px; font-weight: 600; line-height: 1.35; margin: 8px 0; }
+html body .aetheris-parity p { margin: 0; overflow-wrap: anywhere; }
+html body .aetheris-parity :is(.og-note,small) { color: var(--muted); font: 400 12px/1.6 var(--sans); opacity: 1; }
+html body .aetheris-parity .parity-head .og-note { max-width: 72ch; }
+html body .aetheris-parity .module {
+  position: relative;
+  isolation: isolate;
+  display: grid;
+  gap: 12px;
+  min-width: 0;
+  margin: 0;
+  padding: 20px;
+  border: 1px solid var(--line-dark);
+  border-radius: var(--radius-xl);
+  background: var(--raised);
+  color: var(--soft);
+}
+html body .aetheris-parity .parity-texture::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  border-radius: inherit;
+  background-image: radial-gradient(circle, var(--acc) .65px, transparent .85px);
+  background-size: 12px 12px;
+  mask-image: linear-gradient(135deg, transparent 65%, black);
+  opacity: .08;
+}
+html body .aetheris-parity :is(label,fieldset) { min-width: 0; }
+html body .aetheris-parity label { display: grid; gap: 7px; color: var(--soft); font: 500 12px/1.5 var(--sans); }
+html body .aetheris-parity :is(input:not([type="radio"]),select,textarea) {
+  width: 100%;
+  min-width: 0;
+  border: 1px solid var(--line-dark);
+  border-radius: var(--radius-md);
+  padding: 10px 12px;
+  background: var(--night);
+  color: var(--soft);
+  -webkit-text-fill-color: var(--soft);
+  font: 400 13px/1.5 var(--sans);
+  box-shadow: none;
+}
+html body .aetheris-parity textarea { min-height: 96px; resize: vertical; }
+html body .aetheris-parity :is(input,textarea)::placeholder { color: var(--muted); -webkit-text-fill-color: var(--muted); }
+html body .aetheris-parity :is(button,input,select,textarea):focus-visible { outline: 2px solid var(--acc); outline-offset: 3px; }
+html body .aetheris-parity button.btn {
+  height: auto;
+  min-height: 36px;
+  max-width: 100%;
+  padding: 9px 14px;
+  border-radius: var(--radius-md);
+  font: 600 12px/1.4 var(--sans);
+  white-space: normal;
+  letter-spacing: 0;
+  box-shadow: none;
+  background-image: none;
+  transform: none;
+}
+html body .aetheris-parity button.btn.primary {
+  background: var(--acc) !important;
+  border: 1px solid var(--acc) !important;
+  color: var(--night) !important;
+  -webkit-text-fill-color: var(--night) !important;
+}
+html body .aetheris-parity button.btn.primary:hover:not(:disabled) { background: var(--acc-bright) !important; }
+html body .aetheris-parity button.btn.secondary {
+  background: var(--raised) !important;
+  border: 1px solid var(--line-dark) !important;
+  color: var(--soft) !important;
+  -webkit-text-fill-color: var(--soft) !important;
+}
+html body .aetheris-parity button.btn.secondary:hover:not(:disabled) { border-color: var(--acc) !important; color: var(--acc) !important; -webkit-text-fill-color: var(--acc) !important; }
+html body .aetheris-parity button.btn::before,
+html body .aetheris-parity button.btn::after { content: none; }
+html body .aetheris-parity [data-slot="badge"],
+html body .aetheris-parity .parity-badge {
+  width: fit-content;
+  border: 1px solid var(--acc-line);
+  border-radius: var(--radius-sm);
+  padding: 3px 7px;
+  background: var(--acc-wash);
+  color: var(--soft);
+  font: 500 10px/1.5 var(--font-micro);
+}
+html body .aetheris-parity .parity-empty { padding: 14px 0; color: var(--muted); }
+html body .aetheris-parity [role="alert"] { color: var(--destructive); }
+html body .aetheris-parity [role="status"] { padding: 10px 12px; border-left: 2px solid var(--acc); background: var(--acc-wash); color: var(--soft); }
+html body .aetheris-parity .parity-grid { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 18px; align-items: start; }
+html body .aetheris-parity .parity-availability { display: grid; grid-template-columns: minmax(120px,160px) minmax(0,1fr) auto; gap: 12px; align-items: end; }
+html body .aetheris-parity .parity-row { display: flex; align-items: flex-start; justify-content: space-between; flex-wrap: wrap; gap: 12px; padding: 12px 0; border-top: 1px solid var(--line-dark); }
+html body .aetheris-parity .parity-row > div { min-width: 0; }
+html body .aetheris-parity .parity-actions { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; }
+html body .aetheris-parity .parity-benefits { list-style: none; display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 16px; padding: 0; margin: 0; }
+html body .aetheris-parity .parity-benefits li { border-top: 1px solid var(--line-dark); padding-top: 12px; color: var(--muted); }
+html body .aetheris-parity .parity-benefits strong { color: var(--soft); }
+html body .aetheris-parity [role="tablist"] { height: auto; gap: 4px; padding: 4px; background: var(--raised); border: 1px solid var(--line-dark); border-radius: var(--radius-md); }
+html body .aetheris-parity [role="tab"] { min-height: 36px; padding: 8px 16px; color: var(--muted); border-radius: var(--radius-sm); font: 500 12px var(--sans); }
+html body .aetheris-parity [role="tab"][data-state="active"] { background: var(--acc-wash); color: var(--acc); box-shadow: none; }
+html body .aetheris-parity [role="tabpanel"] { margin-top: 18px; }
+html body .aetheris-parity fieldset { border: 1px solid var(--line-dark); border-radius: var(--radius-md); padding: 12px; }
+html body .aetheris-parity fieldset label { display: flex; align-items: center; gap: 8px; }
+@media (max-width: 760px) {
+  html body .aetheris-parity.executive-section { padding: 14px; gap: 14px; }
+  html body .aetheris-parity .module { padding: 16px; }
+  html body .aetheris-parity h2 { font-size: 20px; }
+  html body .aetheris-parity :is(.parity-grid,.parity-benefits,.parity-availability) { grid-template-columns: minmax(0,1fr); }
+  html body .aetheris-parity button.btn { min-height: 40px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  html body .aetheris-parity :is(.module,button) { transition: none; animation: none; }
+}
