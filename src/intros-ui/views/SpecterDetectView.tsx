@@ -86,7 +86,7 @@ export function SpecterDetectView({ onNavigate, onWorkspace, onSearch, member, n
         <nav className="specter-header-links" aria-label="Workspace shortcuts">
           <button type="button" onClick={() => onNavigate('home')}>Dashboard</button>
           <button type="button" onClick={() => onNavigate('people')}>Network</button>
-          <button type="button" aria-current="page">Specter Detect</button>
+          <button type="button" aria-current="page" onClick={() => document.querySelector<HTMLInputElement>('.specter-search input')?.focus()}>Specter Detect</button>
         </nav>
 
         <div className="specter-app-account">
