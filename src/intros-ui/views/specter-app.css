@@ -232,3 +232,8 @@ body:has(.ix-specter-mode) :is(.ask-scroll-caliper,.ask-scroll-caliper-bottom-sc
   color:#fafafa!important;background:#18181b!important;
   border-color:#3f3f46!important;box-shadow:inset 2px 0 #e4e4e7!important;
 }
+
+/* Keep the saved-cases control available on tablet and phone widths. */
+@media(max-width:1190px){
+  .specter-app .specter-title .specter-mode{display:inline-flex;align-items:center;justify-content:center}
+}
