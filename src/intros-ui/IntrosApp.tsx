@@ -355,6 +355,7 @@ export default function App({ mode = 'demo', executiveAction, initialPage, initi
           <HomeFeedView
             posts={feedPosts}
             onNavigate={handleNavigate}
+            onWorkspace={page => { setClassicPage(page); handleNavigate('workspace'); }}
             onRequestIntro={(member) => setRequestIntroTarget(member)}
             onLikePost={handleLikePost}
             onSavePost={handleSavePost}
