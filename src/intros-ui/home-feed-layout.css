@@ -238,3 +238,11 @@
 .ix-root .dashboard-feed-extra summary { padding:10px 0; cursor:pointer; color:var(--ix-muted); font-size:12px; }
 .ix-root .social-editorial--compact .feed-section-head { margin:0 0 12px; padding:0; }
 .ix-root .social-editorial--compact .signal-type-row,.ix-root .social-editorial--compact .feed-lanes { flex-wrap:wrap; }
+
+.ix-root .home-feed-page { padding-block:16px; }
+.ix-root .home-feed-page .home-feed-welcome { padding:12px 16px; }
+.ix-root .home-feed-page .home-feed-welcome-actions button { padding:8px 12px; font-size:12px; min-height:36px; }
+.ix-root .home-feed-page .home-feed-welcome h1 { font-size:20px; line-height:1.2; }
+.ix-root .home-feed-page .home-feed-welcome p { font-size:10px; line-height:1.4; }
+.ix-root .home-feed-page .home-feed-controls-actions button { font-family:Poppins, sans-serif; font-size:11px; }
+.ix-root .home-feed-page #home-social-board form textarea { min-height:64px; font-size:13px; }

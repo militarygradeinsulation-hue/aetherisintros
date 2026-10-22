@@ -1,7 +1,5 @@
-/** Only Joseph's supplied portrait is retained; fictional showcase people use initials. */
-import josephPortraitAsset from '@/assets/portraits/member-joseph.jpg.asset.json'
-
-export const memberPortraits: Record<string, string> = { me: josephPortraitAsset.url }
+/** No identity-based substitutes: actual portraits arrive on the member's avatarUrl. */
+export const memberPortraits: Record<string, string> = {}
 
 export function portraitFor(id: string): string | undefined {
   return memberPortraits[id]

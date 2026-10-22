@@ -1,3 +1,4 @@
+import { INITIAL_FEED_COUNT, moreFeedCount } from '@/aetheris/feed-window'
 import { useMemo, useState } from 'react'
 import { ArrowRight, Bell, Bookmark, CalendarDays, Check, CircleDot, Handshake, Heart, Image, Lightbulb, MessageCircle, MessageSquareText, Paperclip, Plus, Search, Send, ShieldCheck, Target, Upload, Users, X } from 'lucide-react'
 
@@ -200,7 +201,7 @@ export function SocialHome() {
 
 /* Editorial magazine feed used on the member home page. */
 export function EditorialFeed({ onBrief, compact = false }: { onBrief?: () => void; compact?: boolean }) {
-  const [postLimit, setPostLimit] = useState(3)
+  const [postLimit, setPostLimit] = useState(INITIAL_FEED_COUNT)
   const net = useNetwork()
   const [composerOpen, setComposerOpen] = useState(false)
   const [lane, setLane] = useState<FeedLane>('ALL SIGNALS')
@@ -229,7 +230,7 @@ export function EditorialFeed({ onBrief, compact = false }: { onBrief?: () => vo
         <header className="feed-section-head"><h2 id="editorial-feed-title">Latest from your network</h2><span>{feed.length} live {feed.length === 1 ? 'Signal' : 'Signals'}</span></header>
         <SignalComposer open={composerOpen} setOpen={setComposerOpen} />
         <details className="dashboard-feed-extra"><summary>Business post</summary><BusinessComposer /></details>
-        <nav className="feed-lanes" aria-label="Signal categories">{FEED_LANES.map(item => <button key={item} className={lane === item ? 'active' : ''} onClick={() => { setLane(item); setPostLimit(3) }}>{item}</button>)}</nav>
+        <nav className="feed-lanes" aria-label="Signal categories">{FEED_LANES.map(item => <button key={item} className={lane === item ? 'active' : ''} onClick={() => { setLane(item); setPostLimit(INITIAL_FEED_COUNT) }}>{item}</button>)}</nav>
         <details className="dashboard-feed-extra"><summary>Insights & activity</summary><IntelligenceCards /><MovingNow /></details>
         <div className="feed-grid">
           {shown.slice(0, postLimit).map((row, index) => {
@@ -237,7 +238,7 @@ export function EditorialFeed({ onBrief, compact = false }: { onBrief?: () => vo
             return row.ask && row.member ? <FeedAsk key={row.id} ask={row.ask} member={row.member} lead={index === 0} /> : null
           })}
         </div>
-        {shown.length > postLimit && <Btn kind="secondary" onClick={() => setPostLimit(limit => limit + 3)}>Show more updates</Btn>}
+        {shown.length > postLimit && <Btn kind="secondary" onClick={() => setPostLimit(moreFeedCount)}>Show more updates</Btn>}
         {!shown.length && <FeedEmpty lane={lane} hasAny={feed.length > 0} />}
       </div>
       {!compact && <aside className="feed-editorial-rail"><MovingNow /></aside>}

@@ -1,3 +1,4 @@
+import { INITIAL_FEED_COUNT, moreFeedCount } from '@/aetheris/feed-window'
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import {
@@ -54,7 +55,7 @@ export const HomeFeedView: React.FC<HomeFeedViewProps> = ({
   socialFeed,
   actionQueue,
 }) => {
-  const [postLimit, setPostLimit] = useState(3);
+  const [postLimit, setPostLimit] = useState(INITIAL_FEED_COUNT);
   const [feedFilter, setFeedFilter] = useState<'forYou' | 'network' | 'following' | 'trending'>('forYou');
   const [composerText, setComposerText] = useState('');
   const [composerType, setComposerType] = useState<FeedPost['badge']>('Insight');
@@ -243,7 +244,7 @@ export const HomeFeedView: React.FC<HomeFeedViewProps> = ({
               ].map((tab) => (
                 <button
                   key={tab.id}
-                  onClick={() => { setFeedFilter(tab.id as any); setPostLimit(3); }}
+                  onClick={() => { setFeedFilter(tab.id as any); setPostLimit(INITIAL_FEED_COUNT); }}
                   className={`text-xs font-medium cursor-pointer transition-colors pb-1 ${
                     feedFilter === tab.id
                       ? 'text-white border-b-2 border-[#F5B027] font-semibold'
@@ -350,7 +351,7 @@ export const HomeFeedView: React.FC<HomeFeedViewProps> = ({
                 {(commenting === post.id || comments[post.id]?.length) && <div className="home-demo-comments">{comments[post.id]?.map((text, index) => <p key={index}><b>Sarah Chen</b> {text}</p>)}{commenting === post.id && <form onSubmit={event => { event.preventDefault(); if (!reply.trim()) return; setComments(current => ({ ...current, [post.id]: [...(current[post.id] || []), reply.trim()] })); setReply(''); }}><input aria-label="Your comment" placeholder="Add a thoughtful reply…" value={reply} onChange={event => setReply(event.target.value)} /><Button size="sm" type="submit" disabled={!reply.trim()}>Reply</Button></form>}</div>}
               </article>
             ); })}
-            {visiblePosts.length > postLimit && <Button variant="outline" onClick={() => setPostLimit(limit => limit + 3)}>Show more updates</Button>}
+            {visiblePosts.length > postLimit && <Button variant="outline" onClick={() => setPostLimit(moreFeedCount)}>Show more updates</Button>}
             {!visiblePosts.length && <p className="text-sm text-[var(--sys-ink-dim)]">No updates in this view yet.</p>}
           </div>
         </main>
