@@ -76,7 +76,7 @@ export const ProfileDetailView: React.FC<ProfileDetailViewProps> = ({
               <h1 className="font-serif-editorial text-5xl sm:text-6xl md:text-7xl font-bold tracking-tight text-white leading-[0.95]">
                 {member.firstName}
               </h1>
-              <div className="font-serif-editorial text-5xl sm:text-6xl md:text-7xl font-bold tracking-tight text-[#F5B027] leading-[0.95] mt-1">
+              <div className="font-serif-editorial text-5xl sm:text-6xl md:text-7xl font-bold tracking-tight text-[#FF8A4C] leading-[0.95] mt-1">
                 {member.lastName}
               </div>
             </div>
@@ -98,7 +98,7 @@ export const ProfileDetailView: React.FC<ProfileDetailViewProps> = ({
                   href={`https://linkedin.com${member.linkedin}`}
                   target="_blank"
                   rel="noreferrer"
-                  className="text-[#F5B027] hover:underline flex items-center gap-1"
+                  className="text-[#FF8A4C] hover:underline flex items-center gap-1"
                 >
                   <Linkedin className="w-3.5 h-3.5" />
                   LinkedIn
@@ -140,7 +140,7 @@ export const ProfileDetailView: React.FC<ProfileDetailViewProps> = ({
             </div>
 
             {/* Quote Callout */}
-            <div className="p-4 bg-white/[0.02] border-l-2 border-[#F5B027] rounded-r-lg text-xs italic text-[#E2E8F0] leading-relaxed">
+            <div className="p-4 bg-white/[0.02] border-l-2 border-[#FF8A4C] rounded-r-lg text-xs italic text-[#E2E8F0] leading-relaxed">
               "{member.quote}"
               <div className="text-[10px] font-mono text-[#9CA3AF] not-italic mt-1.5 uppercase">
                 — {member.name}
@@ -151,7 +151,7 @@ export const ProfileDetailView: React.FC<ProfileDetailViewProps> = ({
             <div className="flex items-center gap-3 pt-2">
               <button
                 onClick={() => onRequestIntro(member)}
-                className="flex-1 py-2.5 px-4 text-xs font-semibold text-white bg-[#F5B027] hover:bg-[#C78522] rounded-lg shadow-sm transition-colors cursor-pointer text-center"
+                className="flex-1 py-2.5 px-4 text-xs font-semibold text-white bg-[#FF8A4C] hover:bg-[#DB6B36] rounded-lg shadow-sm transition-colors cursor-pointer text-center"
               >
                 Request Introduction →
               </button>
@@ -194,13 +194,13 @@ export const ProfileDetailView: React.FC<ProfileDetailViewProps> = ({
 
             {/* Suggested introduction Card */}
             {aiRec && (
-              <div className="bg-[#111622]/95 border border-[#F5B027]/30 rounded-xl p-5 shadow-lg relative overflow-hidden backdrop-blur-sm">
+              <div className="bg-[#111622]/95 border border-[#FF8A4C]/30 rounded-xl p-5 shadow-lg relative overflow-hidden backdrop-blur-sm">
                 <div className="flex items-center justify-between mb-3">
-                  <span className="text-[10px] font-mono uppercase tracking-widest text-[#F5B027] font-semibold flex items-center gap-1.5">
+                  <span className="text-[10px] font-mono uppercase tracking-widest text-[#FF8A4C] font-semibold flex items-center gap-1.5">
                     <Sparkles className="w-3.5 h-3.5" />
                     AI Introduction Recommendation
                   </span>
-                  <span className="text-[9px] font-mono px-1.5 py-0.5 rounded bg-[#F5B027]/20 text-[#FFC85C]">
+                  <span className="text-[9px] font-mono px-1.5 py-0.5 rounded bg-[#FF8A4C]/20 text-[#FFC85C]">
                     BETA
                   </span>
                 </div>
@@ -213,7 +213,7 @@ export const ProfileDetailView: React.FC<ProfileDetailViewProps> = ({
                       <span className="text-xs font-semibold text-white">
                         {aiRec.counterpartName}
                       </span>
-                      <span className="text-[10px] font-mono text-[#F5B027] font-semibold">
+                      <span className="text-[10px] font-mono text-[#FF8A4C] font-semibold">
                         {aiRec.matchPercent}% Match
                       </span>
                     </div>
@@ -253,7 +253,7 @@ export const ProfileDetailView: React.FC<ProfileDetailViewProps> = ({
                       } as NetworkMember;
                       onRequestIntro(counterpart);
                     }}
-                    className="flex-1 py-2 text-xs font-semibold text-white bg-[#F5B027] hover:bg-[#C78522] rounded-lg transition-colors cursor-pointer text-center"
+                    className="flex-1 py-2 text-xs font-semibold text-white bg-[#FF8A4C] hover:bg-[#DB6B36] rounded-lg transition-colors cursor-pointer text-center"
                   >
                     Request Introduction
                   </button>
@@ -280,7 +280,7 @@ export const ProfileDetailView: React.FC<ProfileDetailViewProps> = ({
                   <div className="text-[10px] text-[#9CA3AF] uppercase">Stronger Replies</div>
                 </div>
                 <div>
-                  <div className="text-xl font-bold text-[#C78522]">
+                  <div className="text-xl font-bold text-[#DB6B36]">
                     {member.networkInfluence.introSuccessRate}
                   </div>
                   <div className="text-[10px] text-[#9CA3AF] uppercase">Intro Success</div>
@@ -349,7 +349,7 @@ export const ProfileDetailView: React.FC<ProfileDetailViewProps> = ({
             </div>
             <div className="flex items-center gap-2">
               <Globe className="w-3.5 h-3.5 text-[#6B7280]" />
-              <span className="text-[#F5B027]">{member.website}</span>
+              <span className="text-[#FF8A4C]">{member.website}</span>
             </div>
           </div>
         </div>
@@ -379,7 +379,7 @@ export const ProfileDetailView: React.FC<ProfileDetailViewProps> = ({
             <ul className="space-y-2 text-xs text-[#CBD5E1]">
               {member.currentObjectives.map((obj, idx) => (
                 <li key={idx} className="flex items-start gap-2">
-                  <span className="w-1.5 h-1.5 rounded-full bg-[#F5B027] mt-1.5 shrink-0" />
+                  <span className="w-1.5 h-1.5 rounded-full bg-[#FF8A4C] mt-1.5 shrink-0" />
                   <span>{obj}</span>
                 </li>
               ))}
@@ -407,7 +407,7 @@ export const ProfileDetailView: React.FC<ProfileDetailViewProps> = ({
                   <path
                     d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
                     fill="none"
-                    stroke="#F5B027"
+                    stroke="#FF8A4C"
                     strokeWidth="3"
                     strokeDasharray={`${member.compatibility.strategicFit}, 100`}
                   />
@@ -457,7 +457,7 @@ export const ProfileDetailView: React.FC<ProfileDetailViewProps> = ({
                   <path
                     d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
                     fill="none"
-                    stroke="#C78522"
+                    stroke="#DB6B36"
                     strokeWidth="3"
                     strokeDasharray={`${member.compatibility.networkValue}, 100`}
                   />
@@ -471,7 +471,7 @@ export const ProfileDetailView: React.FC<ProfileDetailViewProps> = ({
           </div>
 
           <div className="p-3 bg-white/[0.02] border border-white/5 rounded-lg text-xs space-y-1">
-            <div className="text-[10px] font-mono uppercase text-[#F5B027]">Availability Status</div>
+            <div className="text-[10px] font-mono uppercase text-[#FF8A4C]">Availability Status</div>
             <div className="text-[#CBD5E1] flex items-center gap-1.5 font-medium">
               <span className="w-2 h-2 rounded-full bg-emerald-400" />
               {member.introStatusText}
@@ -485,7 +485,7 @@ export const ProfileDetailView: React.FC<ProfileDetailViewProps> = ({
             <span>Shared Connections ({member.mutualConnectionsCount})</span>
             <button
               onClick={() => onNavigate('people')}
-              className="text-[#F5B027] hover:underline cursor-pointer"
+              className="text-[#FF8A4C] hover:underline cursor-pointer"
             >
               View All
             </button>
@@ -501,7 +501,7 @@ export const ProfileDetailView: React.FC<ProfileDetailViewProps> = ({
                 <div className="flex items-center gap-2.5">
                   <ExecutivePortrait name={conn.name} size="sm" />
                   <div>
-                    <div className="text-xs font-semibold text-white group-hover:text-[#F5B027]">
+                    <div className="text-xs font-semibold text-white group-hover:text-[#FF8A4C]">
                       {conn.name}
                     </div>
                     <div className="text-[10px] text-[#9CA3AF]">
