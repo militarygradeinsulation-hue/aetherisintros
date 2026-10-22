@@ -27,4 +27,17 @@ describe('destinationFor', () => {
     expect(destinationFor({ kind: 'event_promoted' })).toBe('events')
     expect(destinationFor({ kind: 'event_reminder' })).toBe('events')
   })
+
+  it('routes CRM and social notification kinds correctly', () => {
+    // Auto-created deal/partnership opportunities open the CRM tab (under people section)
+    expect(destinationFor({ kind: 'crm_opportunity' })).toBe('people')
+    // Follow connections belong in the people section
+    expect(destinationFor({ kind: 'follow' })).toBe('people')
+    // Any meeting_* kind lands on the meetings screen
+    expect(destinationFor({ kind: 'meeting_started' })).toBe('meetings')
+    expect(destinationFor({ kind: 'meeting_joined' })).toBe('meetings')
+    expect(destinationFor({ kind: 'meeting_cancelled' })).toBe('meetings')
+    // Unknown kinds fall back to home
+    expect(destinationFor({ kind: 'unknown_future_kind' })).toBe('home')
+  })
 })

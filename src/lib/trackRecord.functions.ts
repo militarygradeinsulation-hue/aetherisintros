@@ -1,6 +1,6 @@
 import { createServerFn } from '@tanstack/react-start'
 import { requireAuthContract } from './auth-gate'
-import { supabaseAdmin } from '@/integrations/supabase/client.server'
+import { supabaseAdmin } from '../integrations/supabase/client.server'
 
 // ---------------------------------------------------------------------------
 // Reputation Score

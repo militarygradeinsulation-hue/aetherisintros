@@ -4,6 +4,7 @@ import { useMoat } from '../moat-store'
 import { useOS } from '../os-store'
 import { Btn, Eyebrow, Head } from '../ui'
 import { relationshipContext } from '../domain/moat-engine'
+import { knownInteractionDays } from '../lib/engine'
 import type { ContextSurface } from '../domain/moat-models'
 
 export function IntegrationsPage() {
@@ -44,7 +45,7 @@ export function IntegrationsPage() {
           if (!member) return
           const result = relationshipContext({
             member,
-            weather: `${member.relationshipStatus} · last exchange ${member.lastInteractionDays} days ago`,
+            weather: `${member.relationshipStatus} · ${knownInteractionDays(member) === null ? 'no recorded exchange' : `last exchange ${member.lastInteractionDays} days ago`}`,
             openLoops: os.inbox.filter(i => i.personId === member.id && i.status === 'open').map(i => i.title),
             currentIntent: member.needs[0] ?? 'Nothing declared',
             roomIds: os.rooms.filter(r => r.peopleIds.includes(member.id)).map(r => r.id),
