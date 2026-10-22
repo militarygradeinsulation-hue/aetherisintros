@@ -56,6 +56,7 @@ import { QuickMenuHost } from '@/aetheris/quick-menu-ui';
 import { QuickNoteHost } from '@/aetheris/quick-note-ui';
 import { SpecterDetectView } from './views/SpecterDetectView';
 import { AetherisWorkspaceShell } from './components/layout/AetherisWorkspaceShell';
+import './views/aetheris-workspace-pages.css';
 
 const SHELL_PAGES: ActivePage[] = ['home', 'people', 'bubbles', 'intros', 'messages', 'insights', 'news', 'workspace', 'memory', 'work', 'meetings', 'specter'];
 
