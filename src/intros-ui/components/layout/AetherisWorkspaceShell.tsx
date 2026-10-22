@@ -1,7 +1,7 @@
 import { useEffect, useState, type FormEvent, type ReactNode } from 'react';
 import {
   ArrowRight, Bell, Bookmark, Brain, BriefcaseBusiness, CalendarDays,
-  CircleHelp, ClipboardList, ContactRound, Fingerprint, Home, Menu,
+  CircleHelp, ClipboardList, ContactRound, Crown, Fingerprint, Home, Menu,
   MessageSquare, Newspaper, PanelLeftClose, PanelLeftOpen, Search,
   Settings, UserRound, Users, X,
   type LucideIcon,
@@ -57,6 +57,9 @@ export type WorkspaceShellProps = {
   enabled?: boolean | undefined;
   scrollContent?: boolean | undefined;
   onHelp?: (() => void) | undefined;
+  /** Optional membership action (e.g. Executive access) shown as a sidebar nav
+   * item. Omitted entirely when the member has no applicable action. */
+  executiveAction?: { label: string; onOpen: () => void } | undefined;
 };
 
 const SIDEBAR_STORAGE_KEY = 'aetheris.sidebar.collapsed';
@@ -64,7 +67,7 @@ const SIDEBAR_ID = 'aetheris-workspace-sidebar';
 
 export function AetherisWorkspaceShell({
   activePage, activeWorkspace, onNavigate, onWorkspace, onSearch, searchQuery, onSearchChange, member, notifications,
-  children, enabled = true, scrollContent = false, onHelp,
+  children, enabled = true, scrollContent = false, onHelp, executiveAction,
 }: WorkspaceShellProps) {
   const [localQuery, setLocalQuery] = useState('');
   const query = searchQuery ?? localQuery;
@@ -122,6 +125,11 @@ export function AetherisWorkspaceShell({
               <Icon size={18}/><span>{item.label}</span>
             </button>;
       })}
+      {executiveAction && <button type="button" className="specter-executive-action"
+        aria-haspopup="dialog"
+        onClick={() => { setMobileMenuOpen(false); executiveAction.onOpen(); }}>
+        <Crown size={18}/><span>{executiveAction.label}</span>
+      </button>}
     </nav>;
   }
 
