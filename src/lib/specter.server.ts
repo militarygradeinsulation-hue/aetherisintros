@@ -9,13 +9,14 @@ export async function captureSpecterWebsite(target: string): Promise<Investigati
   if (endpoint && secret && new URL(endpoint).protocol !== 'https:') throw new Error('Browser gateway requires HTTPS.');
   const response = endpoint && secret
     ? await fetch(endpoint, {
-        method: 'POST', redirect: 'error', signal: AbortSignal.timeout(25_000),
+        method: 'POST', redirect: 'manual', signal: AbortSignal.timeout(25_000),
         headers: { authorization: `Bearer ${secret}`, 'content-type': 'application/json' },
         body: JSON.stringify({ url }),
       })
     : await fetch(`https://r.jina.ai/${url}`, {
-        redirect: 'error', signal: AbortSignal.timeout(25_000), headers: { accept: 'application/json', 'x-with-links-summary': 'true', 'x-with-images-summary': 'true', 'x-respond-with': 'markdown,screenshot' },
+        redirect: 'follow', signal: AbortSignal.timeout(25_000), headers: { accept: 'application/json', 'x-with-links-summary': 'true', 'x-with-images-summary': 'true', 'x-respond-with': 'markdown,screenshot' },
       });
+  if (response.type === 'opaqueredirect' || (response.status >= 300 && response.status < 400)) throw new Error('This website could not be captured. Try another public page or open the original website.');
   if (!response.ok) throw new Error(response.status === 429 ? 'Website capture is busy. Try again shortly.' : 'This website could not be captured. Try another public page or open the original website.');
   // Bound the response while streaming; do not buffer an unbounded third-party response.
   const reader = response.body?.getReader();
