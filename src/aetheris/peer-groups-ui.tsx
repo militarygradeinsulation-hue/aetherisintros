@@ -625,7 +625,7 @@ export function PeerGroupCard({
 }
 
 /** A single feed post card with kind badge and author initials. */
-export function PeerPost({
+export function PeerPostCard({
   kind, body, authorName, authorInitials, createdAt,
 }: {
   kind: string; body: string; authorName: string; authorInitials: string; createdAt: string
@@ -734,7 +734,7 @@ export function PeerGroupFeed({ groupId, onBack }: { groupId: string; onBack: ()
         </p>
       )}
       {posts.map(p => (
-        <PeerPost
+        <PeerPostCard
           key={p.id}
           kind={p.kind}
           body={p.body}

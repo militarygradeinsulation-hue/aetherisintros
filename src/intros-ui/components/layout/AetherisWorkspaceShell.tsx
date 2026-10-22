@@ -45,15 +45,15 @@ export type WorkspaceShellProps = {
   onNavigate: (page: ActivePage) => void;
   onWorkspace: (page: string) => void;
   onSearch: (query: string) => void;
-  searchQuery?: string;
-  onSearchChange?: (value: string) => void;
-  member?: { name: string; avatarUrl?: string } | null;
-  notifications?: ReactNode;
+  searchQuery?: string | undefined;
+  onSearchChange?: ((value: string) => void) | undefined;
+  member?: { name: string; avatarUrl?: string } | null | undefined;
+  notifications?: ReactNode | undefined;
   children: ReactNode;
   /** When false, preserve the existing page content without a second host. */
-  enabled?: boolean;
-  scrollContent?: boolean;
-  onHelp?: () => void;
+  enabled?: boolean | undefined;
+  scrollContent?: boolean | undefined;
+  onHelp?: (() => void) | undefined;
 };
 
 export function AetherisWorkspaceShell({
