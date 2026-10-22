@@ -1,7 +1,11 @@
 /* Shared presentation for the four member tools; no global theme overrides. */
 .aetheris-parity {
+  --acc: var(--ix-accent, var(--halftone-warm));
+  --acc-bright: var(--ix-accent-hover, var(--halftone-warm));
+  --acc-line: var(--ix-accent-line, var(--halftone-line));
+  --acc-wash: var(--ix-accent-wash, transparent);
   --night: var(--ix-bg, var(--halftone-night));
-  --raised: var(--ix-card, var(--card));
+  --raised: var(--ix-card, var(--popover));
   --soft: var(--ix-text, var(--halftone-ink));
   --ink: var(--soft);
   --muted: var(--ix-muted, var(--muted-foreground));
@@ -26,6 +30,13 @@ html body .aetheris-parity.executive-section {
   background: var(--night);
   color: var(--soft);
   font: 400 13px/1.6 var(--sans);
+}
+html body .aetheris-parity > .executive-section {
+  border: 1px solid var(--line-dark);
+  border-radius: var(--radius-xl);
+  background: var(--raised);
+  padding: 20px;
+  color: var(--soft);
 }
 html body .aetheris-parity .parity-head {
   display: flex;

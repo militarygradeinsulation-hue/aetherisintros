@@ -1,5 +1,11 @@
 # Aetheris specification completion
 
+## Four member pages design parity (Oct 22)
+- [x] Match Lobby, Exchange, Membership Upgrade and Marketplace presentation to existing dark member surfaces without changing behavior.
+- [ ] Verify focused tests, automatic compilation, and desktop/mobile presentation.
+- [ ] Request publication after a current security scan and successful available checks.
+- [ ] Verify signed-in private page rendering — blocked: the requesting account has no mintable member session.
+
 ## Authorized professional evidence extension (Oct 21)
 - [x] Extend the existing LinkedIn reader, provenance and editable hypothesis review without external fetching; unsupported fields remain private review-only.
 - [x] Protect approved profile saves against account changes and concurrent edits; parser/save security regressions and isolated browser checks added.
