@@ -59,7 +59,7 @@ export const RequestIntroModal: React.FC<RequestIntroModalProps> = ({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-fadeIn">
-      <div className="request-intro-modal-surface relative w-full max-w-lg bg-[#0E1218] border border-white/10 rounded-2xl shadow-2xl p-6 text-[#F2EEE6] overflow-hidden">
+      <div className="request-intro-modal-surface stencil-intro-request-panel relative w-full max-w-lg bg-[#0E1218] border border-white/10 rounded-2xl shadow-2xl p-6 text-[#F2EEE6] overflow-hidden">
         {/* Close Button */}
         <button
           onClick={onClose}
@@ -168,7 +168,7 @@ export const RequestIntroModal: React.FC<RequestIntroModalProps> = ({
                     onClick={() => setUrgency(lvl)}
                     className={`px-2.5 py-1 rounded text-[11px] cursor-pointer transition-colors ${
                       urgency === lvl
-                        ? 'bg-[#FF8A4C] text-[#1c110c] font-medium'
+                        ? 'stencil-intro-selected bg-[#FF8A4C] text-[#1c110c] font-medium'
                         : 'bg-white/5 text-[#9CA3AF] hover:text-white'
                     }`}
                   >
@@ -193,7 +193,7 @@ export const RequestIntroModal: React.FC<RequestIntroModalProps> = ({
                 type="button"
                 onClick={() => void handleSend()}
                 disabled={sending}
-                className="flex items-center gap-1.5 px-4 py-2 text-xs font-medium text-[#1c110c] bg-[#FF8A4C] hover:bg-[#DB6B36] rounded-lg shadow-sm transition-colors cursor-pointer"
+                className="stencil-intro-submit flex items-center gap-1.5 px-4 py-2 text-xs font-medium text-[#1c110c] bg-[#FF8A4C] hover:bg-[#DB6B36] rounded-lg shadow-sm transition-colors cursor-pointer"
               >
                 <Send className="w-3.5 h-3.5" />
                 {sending ? 'Sending…' : sendError ? 'Retry Request' : 'Submit Request'}

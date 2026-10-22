@@ -46,7 +46,20 @@ try {
       const errors = []
       page.on('pageerror', error => errors.push(error.message))
       page.on('console', message => { if (message.type() === 'error') errors.push('console: ' + message.text()) })
-      page.on('requestfailed', request => { if (request.url().startsWith(base)) errors.push('request: ' + request.url() + ' ' + request.failure()?.errorText) })
+      page.on('requestfailed', request => {
+        if (!request.url().startsWith(base)) return
+        const failed = request.failure()?.errorText || ''
+        const localPath = new URL(request.url()).pathname
+        const localDevDependency = localPath.startsWith('/node_modules/.vite/deps/') ||
+          localPath.startsWith('/node_modules/@tanstack/react-start/')
+        // Vite may abort its first prebundled dependency request while
+        // restarting dependency optimization. React must STILL hydrate and
+        // the scenario/input assertions below must work. Only these
+        // transient dev-dependency cancellations are ignored; every other
+        // failed local request remains a test failure.
+        if (localDevDependency && failed.includes('net::ERR_ABORTED')) return
+        errors.push('request: ' + request.url() + ' ' + failed)
+      })
       await page.goto(base + '/try', { waitUntil: 'domcontentloaded', timeout: 120000 })
       await page.locator('.ai-try-output').waitFor({ timeout: 60000 })
       assert(await page.getByRole('heading', { name: /One goal/i }).count() === 1, theme + '/' + width + ' heading')
