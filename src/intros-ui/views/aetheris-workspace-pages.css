@@ -1,0 +1,48 @@
+/*
+ * Shared black-and-white workspace content frame.
+ * The canonical Specter shell owns the navigation, while pre-existing Ask Intros
+ * pages keep their native data/state and scroll within the viewport.
+ */
+.ix-aetheris-workspace-mode {
+  height: 100dvh;
+  min-height: 100dvh !important;
+  max-height: 100dvh;
+  overflow: hidden;
+}
+.ix-aetheris-workspace-mode > .arch-product-main {
+  flex: 1 1 auto;
+  min-height: 0;
+  width: 100% !important;
+  max-width: none !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  overflow: hidden;
+}
+.ix-aetheris-workspace-mode .aetheris-workspace-shell {
+  height: 100%;
+  min-height: 0;
+}
+.ix-aetheris-workspace-mode .aetheris-workspace-content {
+  flex: 1 1 auto;
+  min-height: 0;
+  min-width: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+  overscroll-behavior: contain;
+  scrollbar-width: thin;
+  padding: clamp(12px, 1.7vw, 26px);
+  background: #070709;
+}
+.ix-aetheris-workspace-mode .aetheris-workspace-content > * {
+  min-width: 0;
+}
+/* The page-level scrollbar and floating ruler would duplicate the workspace panes. */
+body:has(.ix-aetheris-workspace-mode) :is(.ask-scroll-caliper,.ask-scroll-caliper-bottom-scale) {
+  display: none !important;
+}
+@media (max-width: 760px) {
+  .ix-aetheris-workspace-mode .aetheris-workspace-content {
+    padding: 12px;
+    padding-bottom: calc(22px + env(safe-area-inset-bottom, 0px));
+  }
+}
