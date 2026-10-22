@@ -372,10 +372,36 @@ export default function App({ mode = 'demo', executiveAction, initialPage }: { m
           />
         )}
 
-        {(activePage === 'people' || activePage === 'intros') && (
-          <>
+        {/* Member discovery and introduction management are separate destinations.
+            The old combined render duplicated the entire live intro workbench on Network. */}
+        {activePage === 'people' && (
+          <section className="ix-network-directory" aria-label="Member network directory">
+            {mode === 'live' && liveDirectoryError && <div role="alert" className="mx-4 my-3 rounded-xl border border-red-400/40 p-3 text-sm text-red-200">The verified member directory did not load: {liveDirectoryError} Reopen this screen to retry. Demo profiles are never substituted.</div>}
+            <PeopleDirectoryView
+              members={members}
+              onNavigate={handleNavigate}
+              onRequestIntro={(member) => setRequestIntroTarget(member)}
+              connectedMemberIds={connectedMemberIds}
+              onToggleConnect={handleToggleConnect}
+              isLive={mode === 'live'}
+              searchQuery={searchQuery}
+              onSearchChange={setSearchQuery}
+            />
+          </section>
+        )}
+
+        {activePage === 'intros' && (
+          <section className="ix-intros-destination" aria-label="Introductions">
+            <header className="ix-intros-destination-header">
+              <div>
+                <span className="ix-workspace-eyebrow">RELATIONSHIPS / INTRODUCTIONS</span>
+                <h1>Make the right introduction.</h1>
+                <p>Manage your introduction requests and conversations with context.</p>
+              </div>
+              <button type="button" onClick={() => handleNavigate('people')}>Find people <span aria-hidden="true">↗</span></button>
+            </header>
             {mode === 'live'
-              ? <div className="ix-classic"><InviteCard /><AetherisAppSurface key="live-intros"  startPage="intros"  /></div>
+              ? <div className="ix-classic"><InviteCard /><AetherisAppSurface key="live-intros" startPage="intros" /></div>
               : <IntrosHubView
                   introRequests={introRequests}
                   networkMembers={members}
@@ -384,20 +410,7 @@ export default function App({ mode = 'demo', executiveAction, initialPage }: { m
                   onDismissRequest={handleDismissIntroRequest}
                   onRequestIntro={(member) => setRequestIntroTarget(member)}
                 />}
-            <div className="border-t border-white/10">
-              {mode === 'live' && liveDirectoryError && <div role="alert" className="mx-4 my-3 rounded-xl border border-red-400/40 p-3 text-sm text-red-200">The verified member directory did not load: {liveDirectoryError} Reopen this screen to retry. Demo profiles are never substituted.</div>}
-              <PeopleDirectoryView
-                members={members}
-                onNavigate={handleNavigate}
-                onRequestIntro={(member) => setRequestIntroTarget(member)}
-                connectedMemberIds={connectedMemberIds}
-                onToggleConnect={handleToggleConnect}
-                isLive={mode === 'live'}
-                searchQuery={searchQuery}
-                onSearchChange={setSearchQuery}
-              />
-            </div>
-          </>
+          </section>
         )}
 
         {activePage === 'bubbles' && (
