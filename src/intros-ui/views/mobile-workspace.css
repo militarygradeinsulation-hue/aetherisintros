@@ -1,0 +1,312 @@
+/*
+ * Mobile Ask Intros workspace.
+ * A usable labelled menu, a scroll-contained drawer and phone-size surface
+ * adjustments. No data, navigation contract, or desktop shell changes.
+ */
+@media (max-width: 760px) {
+  .ix-root .aetheris-workspace-shell {
+    position: relative;
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: 64px minmax(0, 1fr);
+    width: 100%;
+    min-width: 0;
+    height: 100%;
+    overflow: hidden;
+  }
+
+  .ix-root .aetheris-workspace-shell .specter-app-header {
+    height: 64px;
+    min-height: 64px;
+    padding: 0 max(10px, env(safe-area-inset-right, 0px)) 0 max(10px, env(safe-area-inset-left, 0px));
+    gap: 8px;
+    background: rgba(10, 10, 11, .97);
+    z-index: 45;
+  }
+  .ix-root .aetheris-workspace-shell .specter-app-brand {
+    flex: 0 1 auto;
+    gap: 7px;
+    min-width: 0;
+    max-width: calc(100% - 132px);
+  }
+  .ix-root .aetheris-workspace-shell .specter-app-brand img {
+    width: 25px;
+    height: 29px;
+    flex: none;
+  }
+  .ix-root .aetheris-workspace-shell .specter-app-brand span { min-width: 0; }
+  .ix-root .aetheris-workspace-shell .specter-app-brand strong {
+    display: block;
+    font-size: clamp(13px, 3.7vw, 17px);
+    line-height: 1.2;
+    white-space: nowrap;
+  }
+  .ix-root .aetheris-workspace-shell .specter-app-brand small {
+    display: block;
+    font-size: 7px;
+    letter-spacing: .09em;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+  }
+
+  .ix-root .aetheris-workspace-shell .specter-app-account {
+    gap: 5px;
+    flex: 0 0 auto;
+    margin-left: auto;
+    min-width: 0;
+  }
+  .ix-root .aetheris-workspace-shell .specter-app-account .specter-notification {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 40px;
+    min-height: 44px;
+    padding: 9px;
+    border-radius: 9px;
+    color: #c9c9d0;
+  }
+  .ix-root .aetheris-workspace-shell .specter-app-account .specter-notification:hover {
+    color: #ffbd9b;
+    background: rgba(255,138,76,.10);
+  }
+  .ix-root .aetheris-workspace-shell .specter-mobile-menu-toggle {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+    flex-shrink: 0;
+    min-width: 85px;
+    min-height: 44px;
+    padding: 10px 12px;
+    border: 1px solid rgba(255,138,76,.38);
+    border-radius: 10px;
+    color: #ffd2b9;
+    background: rgba(255,138,76,.11);
+    font: 600 12px/1 Poppins, Inter, system-ui, sans-serif;
+    letter-spacing: .01em;
+    cursor: pointer;
+  }
+  .ix-root .aetheris-workspace-shell .specter-mobile-menu-toggle[aria-expanded="true"] {
+    color: #18100b;
+    background: #ff8a4c;
+    border-color: #ff8a4c;
+  }
+  .ix-root .aetheris-workspace-shell .specter-mobile-menu-toggle:focus-visible,
+  .ix-root .aetheris-workspace-shell .specter-mobile-menu-close:focus-visible {
+    outline: 2px solid #ff8a4c;
+    outline-offset: 3px;
+  }
+
+  .ix-root .aetheris-workspace-shell .specter-mobile-menu-scrim {
+    display: block;
+    position: absolute;
+    inset: 64px 0 0 0;
+    z-index: 46;
+    width: 100%;
+    padding: 0;
+    margin: 0;
+    border: 0;
+    background: rgba(0,0,0,.66);
+    -webkit-tap-highlight-color: transparent;
+    cursor: pointer;
+  }
+  .ix-root .aetheris-workspace-shell .specter-mobile-menu {
+    display: flex;
+    flex-direction: column;
+    position: absolute;
+    top: 64px;
+    bottom: 0;
+    left: auto;
+    right: 0;
+    z-index: 50;
+    width: min(352px, calc(100% - 24px));
+    max-width: 100%;
+    min-width: 0;
+    min-height: 0;
+    overflow-y: auto;
+    overflow-x: hidden;
+    overscroll-behavior: contain;
+    scrollbar-width: thin;
+    padding-bottom: max(18px, env(safe-area-inset-bottom, 0px));
+    border-left: 1px solid rgba(255,138,76,.25);
+    border-top: 1px solid rgba(255,138,76,.22);
+    border-radius: 12px 0 0 0;
+    background: #101013;
+    box-shadow: -18px 0 70px rgba(0,0,0,.46);
+    animation: ask-mobile-menu-enter .2s ease-out both;
+  }
+  .ix-root .aetheris-workspace-shell .specter-mobile-menu-heading {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: sticky;
+    top: 0;
+    z-index: 1;
+    gap: 12px;
+    min-height: 79px;
+    padding: 18px 18px 12px;
+    background: rgba(16,16,19,.97);
+    border-bottom: 1px solid rgba(255,255,255,.08);
+    backdrop-filter: blur(14px);
+  }
+  .ix-root .aetheris-workspace-shell .specter-mobile-menu-kicker {
+    font: 500 9px/1.5 'IBM Plex Mono', ui-monospace, monospace;
+    letter-spacing: .17em;
+    color: #ff9f6c;
+  }
+  .ix-root .aetheris-workspace-shell .specter-mobile-menu-heading h2 {
+    margin: 3px 0 0;
+    color: #f3efeb;
+    font: 600 21px/1.2 Poppins, Inter, system-ui, sans-serif;
+    letter-spacing: -.03em;
+  }
+  .ix-root .aetheris-workspace-shell .specter-mobile-menu-close {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    flex: 0 0 auto;
+    min-height: 44px;
+    padding: 9px 12px;
+    border: 1px solid rgba(255,255,255,.17);
+    border-radius: 9px;
+    background: #19191d;
+    color: #f0ece9;
+    font-size: 12px;
+    cursor: pointer;
+  }
+  .ix-root .aetheris-workspace-shell .specter-mobile-menu-close:hover {
+    border-color: rgba(255,138,76,.42);
+    color: #ffbb97;
+  }
+  .ix-root .aetheris-workspace-shell .specter-mobile-search {
+    width: auto;
+    min-height: 46px;
+    margin: 14px 15px 7px !important;
+    padding: 9px 12px !important;
+    border: 1px solid rgba(255,255,255,.19) !important;
+    border-radius: 10px;
+    background: #1b1b20 !important;
+  }
+  .ix-root .aetheris-workspace-shell .specter-mobile-search input {
+    min-width: 0;
+    font-size: 16px !important; /* prevent iOS focus zoom */
+  }
+  .ix-root .aetheris-workspace-shell .specter-mobile-menu-section {
+    padding: 13px 18px 5px;
+    margin: 0;
+    font: 500 10px/1.4 'IBM Plex Mono', ui-monospace, monospace;
+    letter-spacing: .13em;
+    color: #ff9f6c;
+  }
+  .ix-root .aetheris-workspace-shell .specter-mobile-menu nav {
+    display: grid;
+    gap: 4px;
+    padding: 5px 12px 22px;
+    min-width: 0;
+  }
+  .ix-root .aetheris-workspace-shell .specter-mobile-menu nav :is(a,button) {
+    display: flex;
+    align-items: center;
+    gap: 13px;
+    width: 100%;
+    min-width: 0;
+    min-height: 48px;
+    padding: 11px 13px;
+    border: 1px solid transparent;
+    border-radius: 9px;
+    color: #c7c7ce;
+    background: transparent;
+    text-align: left;
+    font: 500 13px/1.3 Poppins, Inter, system-ui, sans-serif;
+    text-decoration: none;
+    cursor: pointer;
+  }
+  .ix-root .aetheris-workspace-shell .specter-mobile-menu nav :is(a,button) svg {
+    flex: 0 0 auto;
+    color: #9d9da5;
+  }
+  .ix-root .aetheris-workspace-shell .specter-mobile-menu nav :is(a,button):hover {
+    background: rgba(255,138,76,.08);
+    color: #ffcfb7;
+  }
+  .ix-root .aetheris-workspace-shell .specter-mobile-menu nav .active,
+  .ix-root .aetheris-workspace-shell .specter-mobile-menu nav [aria-current="page"] {
+    color: #ffc3a2;
+    background: rgba(255,138,76,.12);
+    border-color: rgba(255,138,76,.23);
+    box-shadow: inset 3px 0 #ff8a4c;
+  }
+  .ix-root .aetheris-workspace-shell .specter-mobile-menu nav .active svg {
+    color: #ff9e68;
+  }
+
+  .ix-root .aetheris-workspace-shell .specter-app-canvas {
+    grid-column: 1;
+    grid-row: 2;
+    min-height: 0;
+    min-width: 0;
+    overflow: hidden;
+  }
+  .ix-root.ix-aetheris-workspace-mode .aetheris-workspace-content {
+    padding: 12px 10px max(28px, env(safe-area-inset-bottom, 0px));
+  }
+  .ix-root .aetheris-workspace-shell :is(.home-feed-page,.mi-view,.ix-network-viewport) {
+    min-width: 0;
+    max-width: 100%;
+  }
+  .ix-root .aetheris-workspace-shell .home-feed-page {
+    padding: 12px 4px;
+  }
+  .ix-root .aetheris-workspace-shell .home-feed-welcome {
+    padding: 14px;
+    gap: 12px;
+    border-radius: 11px;
+  }
+  .ix-root .aetheris-workspace-shell .home-feed-welcome h1 {
+    font-size: clamp(19px, 5vw, 23px);
+  }
+  .ix-root .aetheris-workspace-shell .home-feed-welcome-actions {
+    width: 100%;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0,1fr));
+    gap: 8px;
+  }
+  .ix-root .aetheris-workspace-shell .home-feed-welcome-actions button {
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    min-width: 0;
+    min-height: 44px;
+    padding: 9px 8px;
+    font-size: 11px !important;
+    white-space: normal;
+  }
+  .ix-root .aetheris-workspace-shell .home-feed-controls-actions button,
+  .ix-root .aetheris-workspace-shell .ix-network-viewport button,
+  .ix-root .aetheris-workspace-shell .mi-tabs button {
+    min-height: 40px;
+  }
+}
+@keyframes ask-mobile-menu-enter {
+  from { opacity: .55; transform: translateX(22px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+@media (max-width: 360px) {
+  .ix-root .aetheris-workspace-shell .specter-app-header { padding-inline: 8px; gap: 4px; }
+  .ix-root .aetheris-workspace-shell .specter-app-brand { gap: 5px; max-width: calc(100% - 122px); }
+  .ix-root .aetheris-workspace-shell .specter-app-brand img { width: 23px; }
+  .ix-root .aetheris-workspace-shell .specter-app-brand strong { font-size: 13px; }
+  .ix-root .aetheris-workspace-shell .specter-mobile-menu-toggle {
+    min-width: 78px; padding-inline: 8px; gap: 5px;
+  }
+  .ix-root .aetheris-workspace-shell .specter-app-account .specter-notification { min-width: 36px; padding: 7px; }
+}
+@media (max-width: 480px) {
+  /* The account remains accessible in the drawer. Protect the Menu button. */
+  .ix-root .aetheris-workspace-shell .specter-account-button { display: none; }
+  .ix-root .aetheris-workspace-shell .specter-mobile-menu { width: min(352px, calc(100% - 16px)); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .ix-root .aetheris-workspace-shell .specter-mobile-menu { animation: none; }
+}
