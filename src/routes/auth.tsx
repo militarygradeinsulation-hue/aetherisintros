@@ -48,6 +48,8 @@ export const Route = createFileRoute('/auth')({
 
 function AuthPage() {
   const visualRef = useRef<HTMLElement>(null)
+  const [hydrated, setHydrated] = useState(false)
+  useEffect(() => { setHydrated(true) }, [])
 
   // Layered parallax on the visual panel: each [data-parallax-layer] drifts at
   // its own depth with the pointer and page scroll (gsap, no scroll hijacking).
@@ -214,7 +216,7 @@ function AuthPage() {
     } finally { setBusy(false) }
   }
 
-  return <main className="auth-page">
+  return <main className="auth-page" data-hydrated={hydrated ? "true" : "false"}>
     <section className="auth-panel">
       <AppearanceToggle className="auth-appearance" />
       <Link to="/" className="auth-brand">
@@ -298,7 +300,6 @@ function AuthPage() {
       <button type="button" className="auth-switch" onClick={() => { setMode(mode === 'signin' ? 'signup' : 'signin'); setError(''); setNotice(''); setPassword(''); setConfirmPassword('') }}>
         {mode === 'signin' ? 'New to Ask Intros? Create your account.' : 'Back to sign in'}
       </button>
-      {mode === 'signup' && <button type="button" className="auth-switch" onClick={() => { setMode('signin'); setError(''); setNotice('') }}>Already a member? Sign in.</button>}
       {mode === 'reset' && <button type="button" className="auth-switch" onClick={() => { setMode('forgot'); setError(''); setNotice('') }}>Request a new reset link</button>}
       <Link to="/early-access" className="auth-switch">Want Executive access? Start with Basic.</Link>
       <Link to="/demo" className="auth-switch">Not ready to join? Open the demo.</Link>
