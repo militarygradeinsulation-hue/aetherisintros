@@ -314,7 +314,7 @@ export const PeopleDirectoryView: React.FC<PeopleDirectoryViewProps> = ({
                     onClick={() => setSelectedTier(tierItem.id as any)}
                     className={`ix-option-tile ix-relationship-tier-option flex items-center justify-between px-2.5 py-1.5 rounded-lg text-xs font-mono transition-all cursor-pointer border ${
                       selectedTier === tierItem.id
-                        ? 'bg-[#FF8A4C] text-white border-[#FF8A4C] font-semibold shadow-sm shadow-[#FF8A4C]/30'
+                        ? 'bg-[#FF8A4C] text-[#1c110c] border-[#FF8A4C] font-semibold shadow-sm shadow-[#FF8A4C]/30'
                         : 'bg-[#131722] hover:bg-[#1A202C] text-[#CBD5E1] border-white/5'
                     }`}
                   >
@@ -424,7 +424,7 @@ export const PeopleDirectoryView: React.FC<PeopleDirectoryViewProps> = ({
             <div className="text-[11px] font-mono tracking-widest uppercase text-[#9CA3AF] font-semibold">Quick searches</div>
             <div className="flex flex-wrap gap-1.5">
               {['AI', 'Infrastructure', 'Fintech', 'Advisory', 'Climate', 'Go-to-Market'].map((t) => (
-                <button key={t} onClick={() => setSearchKeyword(t)} className={`text-[11px] px-2.5 py-1 rounded-full border cursor-pointer transition-colors ${searchKeyword === t ? 'border-[#FF8A4C] text-white bg-[#FF8A4C]/20' : 'border-white/10 text-[#CBD5E1] hover:border-[#FF8A4C]'}`}>{t}</button>
+                <button key={t} onClick={() => setSearchKeyword(t)} className={`text-[11px] px-2.5 py-1 rounded-full border cursor-pointer transition-colors ${searchKeyword === t ? 'border-[#FF8A4C] text-[#1c110c] bg-[#FF8A4C]/20' : 'border-white/10 text-[#CBD5E1] hover:border-[#FF8A4C]'}`}>{t}</button>
               ))}
             </div>
           </div>
@@ -467,7 +467,7 @@ export const PeopleDirectoryView: React.FC<PeopleDirectoryViewProps> = ({
                   onClick={() => setViewMode('grid')}
                   title="Grid View"
                   className={`p-1 rounded cursor-pointer ${
-                    viewMode === 'grid' ? 'bg-[#FF8A4C] text-white' : 'text-[#9CA3AF]'
+                    viewMode === 'grid' ? 'bg-[#FF8A4C] text-[#1c110c]' : 'text-[#9CA3AF]'
                   }`}
                 >
                   <LayoutGrid className="w-3.5 h-3.5" />
@@ -476,7 +476,7 @@ export const PeopleDirectoryView: React.FC<PeopleDirectoryViewProps> = ({
                   onClick={() => setViewMode('list')}
                   title="List View"
                   className={`p-1 rounded cursor-pointer ${
-                    viewMode === 'list' ? 'bg-[#FF8A4C] text-white' : 'text-[#9CA3AF]'
+                    viewMode === 'list' ? 'bg-[#FF8A4C] text-[#1c110c]' : 'text-[#9CA3AF]'
                   }`}
                 >
                   <List className="w-3.5 h-3.5" />
@@ -485,7 +485,7 @@ export const PeopleDirectoryView: React.FC<PeopleDirectoryViewProps> = ({
                   onClick={() => setViewMode('bubbles')}
                   title="Living Floating Connection Bubbles"
                   className={`p-1 rounded cursor-pointer flex items-center gap-1 text-[11px] font-mono px-1.5 ${
-                    viewMode === 'bubbles' ? 'bg-[#FF8A4C] text-white' : 'text-[#9CA3AF] hover:text-white'
+                    viewMode === 'bubbles' ? 'bg-[#FF8A4C] text-[#1c110c]' : 'text-[#9CA3AF] hover:text-white'
                   }`}
                 >
                   <Orbit className="w-3.5 h-3.5 text-[#FFC85C]" />
@@ -512,7 +512,7 @@ export const PeopleDirectoryView: React.FC<PeopleDirectoryViewProps> = ({
                 aria-pressed={selectedTier === t.id}
                 className={`ix-relationship-tier-quick-option flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-mono transition-all cursor-pointer shrink-0 border ${
                   selectedTier === t.id
-                    ? 'bg-[#FF8A4C] text-white border-[#FF8A4C] shadow-sm font-semibold'
+                    ? 'bg-[#FF8A4C] text-[#1c110c] border-[#FF8A4C] shadow-sm font-semibold'
                     : 'bg-[#0E121A] text-[#9CA3AF] hover:text-white border-white/10 hover:border-white/25'
                 }`}
               >
