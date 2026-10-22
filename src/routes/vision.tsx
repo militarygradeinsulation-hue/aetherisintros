@@ -45,6 +45,11 @@ function Surface({ title, action, children, className = '' }: { title: string; a
   return <section className={`vs-surface ${className}`}><div className="vs-surface-heading"><h3>{title}</h3>{action && <span>{action} <ChevronRight size={13}/></span>}</div>{children}</section>
 }
 export function Vision() {
+  // SSR markup is visible before client event handlers attach. Signal that
+  // hydration completed so interaction tests (and assistive consumers) can
+  // distinguish a working application from a static server-rendered preview.
+  const [hydrated, setHydrated] = useState(false)
+  useEffect(() => { setHydrated(true) }, [])
   const [signedIn, setSignedIn] = useState(false)
   const [accountEmail, setAccountEmail] = useState('')
   useEffect(() => {
@@ -109,7 +114,7 @@ export function Vision() {
     setAiResponse(`Try a warm introduction related to “${aiPrompt.trim()}”. Review your mutual connections and recent activity before reaching out.`)
     setAiPrompt('')
   }
-  return <div className="vision-page">
+  return <div className="vision-page" data-hydrated={hydrated ? "true" : "false"}>
     <header className="vs-topline"><a href="/" className="vs-brand"><span className="vs-symbol">A</span><span>AETHERIS <em>INTROS</em></span></a><div className="vs-top-motto">THE RELATIONSHIP NETWORK <span>FOR CEOS.</span></div><div className="vs-auth-links">{signedIn ? <><span className="vs-signedin" title={accountEmail}>Signed in</span><a href="/app" className="vs-auth-primary">Open workspace <ArrowRight size={14}/></a></> : <><a href="/auth?next=%2Fapp">Sign in</a><a className="vs-auth-primary" href="/auth?mode=signup&next=%2Fapp">Create account <ArrowRight size={14}/></a></>}</div></header>
     <div className="vs-hero"><div className="vs-eyebrow">A MORE CONNECTED TOMORROW · INTERACTIVE DESIGN PREVIEW</div><h1>One Connected System <i>for CEOs.</i></h1><p>People. Relationships. Opportunities. Meetings. Intelligence. <strong>All connected.</strong></p><div className="vs-hero-actions"><a href={signedIn ? "/app" : "/auth?next=%2Fapp"} className="vs-auth-primary">{signedIn ? "Enter your workspace" : "Sign in to your workspace"} <ArrowRight size={15}/></a><a href="/demo" className="vs-outline-action">Explore existing app</a></div></div>
     <div className="vs-shell">
