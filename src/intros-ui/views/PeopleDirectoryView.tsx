@@ -438,21 +438,22 @@ export const PeopleDirectoryView: React.FC<PeopleDirectoryViewProps> = ({
         </aside>
 
         {/* Center: Directory Header & Member Cards */}
-        <main className="lg:col-span-6 space-y-4">
+        <main className="lg:col-span-6 space-y-4 min-w-0">
           {/* Bar: Count, Sort Dropdown & Grid/List view toggle */}
-          <div className="flex items-center justify-between pb-1">
+          <div className="flex flex-wrap items-center justify-between gap-3 pb-1">
             <div className="text-xs font-mono text-[#9CA3AF] tracking-wide uppercase">
               <span className="text-white font-bold">{filteredMembers.length}</span> People Found
             </div>
 
-            <div className="flex items-center gap-3">
+            <div className="flex flex-wrap items-center gap-3 min-w-0 max-w-full">
               {/* Sort selector */}
-              <div className="flex items-center gap-1.5 text-xs text-[#9CA3AF]">
+              <div className="flex flex-wrap items-center gap-1.5 text-xs text-[#9CA3AF] min-w-0 max-w-full">
                 <span>Sort by:</span>
                 <select
                   value={sortBy}
                   onChange={(e) => setSortBy(e.target.value as any)}
-                  className="bg-[#0E121A] text-xs text-white rounded px-2 py-1 border border-white/10 focus:outline-none"
+                  aria-label="Sort people"
+                  className="bg-[#0E121A] text-xs text-white rounded px-2 py-1 border border-white/10 focus:outline-none min-w-0 flex-1"
                 >
                   <option value="relevance">Relevance</option>
                   <option value="match">Highest Fit</option>
@@ -495,7 +496,7 @@ export const PeopleDirectoryView: React.FC<PeopleDirectoryViewProps> = ({
           </div>
 
           {/* Quick Relationship Tier Filter Bar */}
-          <div className="flex items-center gap-2 overflow-x-auto pb-1">
+          <div className="flex flex-wrap items-center gap-2 pb-1">
             <span className="text-[10px] font-mono uppercase tracking-wider text-[#9CA3AF] shrink-0">
               Tier Filter:
             </span>

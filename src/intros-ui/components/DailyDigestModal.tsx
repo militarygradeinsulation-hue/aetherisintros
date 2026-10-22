@@ -1,4 +1,5 @@
 // @ts-nocheck
+import { ExecutivePortrait } from './shared/ExecutivePortrait';
 import React from 'react';
 import { Sparkles, Calendar, CheckSquare, AlertTriangle, X, ArrowRight, ShieldCheck, Zap } from 'lucide-react';
 import { Person, CalendarEvent, ActionableTaskItem } from '../types';
@@ -145,11 +146,7 @@ export const DailyDigestModal: React.FC<DailyDigestModalProps> = ({
                   className="p-3 rounded-xl bg-[#0A0D12] border border-[#C78522]/30 hover:border-[#C78522] transition-all cursor-pointer flex items-center justify-between gap-3 group"
                 >
                   <div className="flex items-center gap-3 min-w-0">
-                    <img
-                      src={p.avatar}
-                      alt={p.name}
-                      className="w-10 h-10 rounded-full object-cover border border-white/10 shrink-0"
-                    />
+                    <ExecutivePortrait name={p.name} avatarUrl={p.avatar} size="sm" />
                     <div className="min-w-0">
                       <div className="flex items-center gap-2">
                         <span className="font-serif-editorial text-sm font-medium text-[#F2EEE6] group-hover:text-white truncate">

@@ -1,6 +1,5 @@
 import { ArrowDownRight, ArrowRight, ArrowUpRight } from 'lucide-react'
 import { Link } from '@tanstack/react-router'
-import originalPortrait from '@/assets/aetheris-home-portrait.jpg.asset.json'
 import { useAccess } from './access'
 import { AskIntrosLockup } from './AskIntrosLockup'
 import { AppearanceToggle } from './AppearanceToggle'
@@ -8,31 +7,9 @@ import { StencilHeadline } from './StencilHeadline'
 import './editorial-landing.css'
 import './architectural-system.css'
 import './compact-homepage.css'
+import './editorial-media.css'
 
-/**
- * A compact architectural editorial homepage.
- * Photos are illustrative, not member portraits, endorsements or outcomes.
- * Three chapters: hero, experience + process + AI brief, membership.
- * Navigation and access destinations are unchanged.
- */
-const photo = {
-  room: 'https://images.unsplash.com/photo-1556761175-5973dc0f32e7?auto=format&fit=crop&w=2400&q=85',
-  gathering: 'https://images.unsplash.com/photo-1542744173-8e7e53415bb0?auto=format&fit=crop&w=1400&q=85',
-  membership: 'https://images.unsplash.com/photo-1552664730-d307ca884978?auto=format&fit=crop&w=1700&q=85',
-}
-
-function Photo({ src, alt, className = '', eager = false }: { src: string; alt: string; className?: string; eager?: boolean }) {
-  return <img
-    src={src}
-    alt={alt}
-    className={className}
-    loading={eager ? 'eager' : 'lazy'}
-    fetchPriority={eager ? 'high' : 'auto'}
-    decoding="async"
-    onError={event => { if (event.currentTarget.dataset['fallback'] !== 'true') { event.currentTarget.dataset['fallback'] = 'true'; event.currentTarget.src = originalPortrait.url } }}
-  />
-}
-
+/** Compact typographic homepage with no illustrative photography. */
 function JoinAction({ signedIn, className = '' }: { signedIn: boolean; className?: string }) {
   return signedIn
     ? <Link className={className} to="/app">Find your next connection <ArrowUpRight aria-hidden="true" size={16} /></Link>
@@ -43,7 +20,7 @@ export default function Landing() {
   const { access } = useAccess()
   const signedIn = access.signedIn
 
-  return <main className="ael ael-compact">
+  return <main className="ael ael-compact ael--text">
     <a className="ael-skip" href="#ael-main">Skip to content</a>
 
     <header className="ael-header" aria-label="Ask Intros public navigation">
@@ -63,8 +40,6 @@ export default function Landing() {
     </header>
 
     <section className="ael-hero" id="ael-main" aria-labelledby="ael-hero-title">
-      <Photo src={photo.room} alt="Professionals exchanging ideas during a focused executive meeting" className="ael-hero-image" eager />
-      <div className="ael-hero-shade" aria-hidden="true" />
       <div className="ael-architecture-meta" aria-hidden="true"><span>RELATIONSHIPS / BY DESIGN</span><span>ASK INTROS — CONNECTION 001</span></div>
       <div className="ael-hero-content">
         <div className="ael-platform-strip" aria-label="A purposeful business connection">
@@ -94,10 +69,6 @@ export default function Landing() {
           <p>Start with something specific: a customer you want to reach, expertise you need, or a project you can help deliver. Give the next conversation a clear purpose.</p>
           <Link className="ael-underlink" to="/founder-story">Why we built it <ArrowUpRight aria-hidden="true" size={16} /></Link>
         </div>
-        <figure className="ael-compact-story-photo">
-          <Photo src={photo.gathering} alt="A small leadership group collaborating around a meeting table" />
-          <figcaption>FIG 02 / CONVERSATIONS WITH PURPOSE</figcaption>
-        </figure>
       </div>
       <div className="ael-compact-method" id="approach" aria-labelledby="ael-approach-title">
         <div className="ael-compact-method-heading">
@@ -127,7 +98,6 @@ export default function Landing() {
     </section>
 
     <section className="ael-membership ael-compact-membership" id="membership" aria-labelledby="ael-membership-title">
-      <Photo src={photo.membership} alt="Business leaders discussing ideas and potential partnerships at a private meeting" className="ael-compact-membership-image" />
       <div className="ael-compact-membership-content">
         <div>
           <span className="ael-fine-label">MEMBERSHIP / ASK INTROS</span>
@@ -145,7 +115,6 @@ export default function Landing() {
     <footer className="ael-compact-footer">
       <Link to="/" className="ael-compact-footer-brand" aria-label="Ask Intros home"><span className="stencil-footer-wordmark" style={{ color: "var(--st-ink)", backgroundColor: "var(--st-bg)" }}>ASK INTROS</span></Link>
       <span>WHY ME &middot; WHY THEM &middot; WHY NOW</span>
-      <small>Editorial imagery is illustrative. Pictured subjects are not Ask Intros members or endorsers.</small>
     </footer>
   </main>
 }

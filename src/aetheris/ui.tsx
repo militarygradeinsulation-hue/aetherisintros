@@ -1,3 +1,4 @@
+import { memberPhotoSource } from './member-media'
 /** Shared editorial primitives used by every platform surface. */
 import { Volume2, VolumeX } from 'lucide-react'
 import { AvatarImage } from './avatar'
@@ -56,7 +57,7 @@ export function Head({ label, title, copy, proof, action }: {
 }
 
 export function Face({ person, large = false, portrait = false }: { person: { id: string; name: string; initials: string; avatarUrl?: string | undefined }; large?: boolean; portrait?: boolean }) {
-  const image = person.avatarUrl ?? portraitFor(person.id)
+  const image = memberPhotoSource(person.avatarUrl) || portraitFor(person.id)
   return <span className={`person-avatar ${large ? 'large' : ''} ${portrait ? 'portrait' : ''}`} data-person-portrait={person.id} aria-label={person.name}>
     <span className="avatar-initials" aria-hidden="true">{person.initials}</span>
     {image && <AvatarImage source={image} alt="" width={1024} height={1280} />}

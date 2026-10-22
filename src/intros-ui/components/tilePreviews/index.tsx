@@ -1,4 +1,5 @@
 // @ts-nocheck
+import { ExecutivePortrait } from '../shared/ExecutivePortrait';
 import React, { useState } from 'react';
 import {
   ChevronRight,
@@ -35,7 +36,6 @@ import { TileSummary } from '../../types';
 import { EngagementChart } from '../EngagementChart';
 import { RelationshipTierBadge } from '../RelationshipTierBadge';
 import { useVoiceRecorder } from '../../hooks/useVoiceRecorder';
-import emptyStateImg from '../../assets/images/network_empty_state_1791252869482.jpg';
 
 interface PreviewProps {
   summary: TileSummary;
@@ -92,11 +92,7 @@ export const RelationshipNetworkPreview: React.FC<PreviewProps> = ({ summary }) 
         <div className="flex items-center gap-2 justify-between">
           <div className="flex items-center gap-2 min-w-0">
             <div className="relative shrink-0">
-              <img
-                src={person.avatar}
-                alt={person.name}
-                className="w-7 h-7 rounded-full object-cover border border-white/10"
-              />
+              <ExecutivePortrait name={person.name} avatarUrl={person.avatar} size="sm" />
               <span
                 className={`absolute -bottom-0.5 -right-0.5 w-2 h-2 rounded-full ${getStatusColor(
                   person.engagement
@@ -164,12 +160,8 @@ export const RelationshipNetworkPreview: React.FC<PreviewProps> = ({ summary }) 
       {/* Avatars stack */}
       <div className="flex items-center justify-center -space-x-1.5 pt-1">
         {avatars.map((av: string, i: number) => (
-          <img
-            key={i}
-            src={av}
-            alt="Executive"
-            className="w-4.5 h-4.5 rounded-full object-cover border border-[#0E1116]"
-          />
+          <span key={i}
+            className="tile-member-initials" aria-label="Executive"><User size={12} /></span>
         ))}
         <span className="w-4.5 h-4.5 rounded-full bg-[#151922] border border-white/10 text-[7.5px] font-mono text-[#F2EEE6]/80 flex items-center justify-center font-semibold">
           {overflowCount}
@@ -215,11 +207,7 @@ export const IntrosCrmPreview: React.FC<PreviewProps> = ({ summary }) => {
               className="sys-card-ivory px-1.5 py-1 rounded flex items-center gap-1.5 shadow-sm text-[8.5px] leading-tight"
             >
               <div className="relative shrink-0">
-                <img
-                  src={c.avatar}
-                  alt={c.name}
-                  className="w-4 h-4 rounded-full object-cover shrink-0"
-                />
+                <ExecutivePortrait name={c.name} avatarUrl={c.avatar} size="sm" />
                 <span
                   className={`absolute -bottom-0.5 -right-0.5 w-1.5 h-1.5 rounded-full ${statusColor} ring-[0.5px] ring-white`}
                   title={`Status: ${status}`}
@@ -375,11 +363,7 @@ export const MeetingsPreview: React.FC<PreviewProps> = ({ summary }) => {
     <div className="flex flex-col justify-between h-full w-full">
       {/* Top Card */}
       <div className="bg-[#090C10] p-1.5 rounded border border-white/5 flex items-center gap-1.5">
-        <img
-          src={meeting.leadAvatar}
-          alt={meeting.title}
-          className="w-6 h-6 rounded object-cover shrink-0"
-        />
+        <ExecutivePortrait name={meeting.title} avatarUrl={meeting.leadAvatar} size="sm" />
         <div className="min-w-0 flex-1">
           <div className="text-[8.5px] font-bold text-[#F2EEE6] truncate leading-tight">
             {meeting.title}
@@ -389,12 +373,8 @@ export const MeetingsPreview: React.FC<PreviewProps> = ({ summary }) => {
           </div>
           <div className="flex items-center -space-x-1 mt-0.5">
             {meeting.attendees.map((att: string, i: number) => (
-              <img
-                key={i}
-                src={att}
-                alt="att"
-                className="w-3.5 h-3.5 rounded-full object-cover border border-black"
-              />
+              <span key={i}
+                className="tile-member-initials" aria-label="att"><User size={12} /></span>
             ))}
           </div>
         </div>
@@ -471,7 +451,7 @@ export const InboxPreview: React.FC<PreviewProps> = ({ summary }) => {
         {threads.map((th: any, i: number) => (
           <div key={i} className="flex items-center justify-between text-[7.5px] border-b border-black/5 pb-0.5 last:border-0">
             <div className="flex items-center gap-1.5 truncate">
-              <img src={th.avatar} alt={th.name} className="w-3.5 h-3.5 rounded-full object-cover shrink-0" />
+              <ExecutivePortrait name={th.name} avatarUrl={th.avatar} size="sm" />
               <div className="truncate">
                 <span className="font-bold text-[#14161A] block truncate">{th.name}</span>
                 <span className="text-[#14161A]/60 block text-[6.5px] truncate">{th.sub}</span>
@@ -582,11 +562,7 @@ export const ConnectionPathsPreview: React.FC<PreviewProps> = ({ summary }) => {
 
       {/* Node 2: Connector */}
       <div className="flex items-center gap-1.5">
-        <img
-          src={connector.avatar}
-          alt={connector.name}
-          className="w-4 h-4 rounded-full object-cover border border-[#F5B027]"
-        />
+        <ExecutivePortrait name={connector.name} avatarUrl={connector.avatar} size="sm" />
         <div className="text-left">
           <span className="text-[6.5px] text-[#F5B027] block leading-none">{connector.role}</span>
           <span className="text-[#F2EEE6] font-bold block leading-none">{connector.name}</span>
@@ -597,11 +573,7 @@ export const ConnectionPathsPreview: React.FC<PreviewProps> = ({ summary }) => {
 
       {/* Node 3: Target */}
       <div className="flex items-center gap-1.5">
-        <img
-          src={target.avatar}
-          alt={target.name}
-          className="w-4 h-4 rounded-full object-cover border border-white/20"
-        />
+        <ExecutivePortrait name={target.name} avatarUrl={target.avatar} size="sm" />
         <div className="text-left">
           <span className="text-[6.5px] text-[#F2EEE6]/50 block leading-none">{target.role}</span>
           <span className="text-[#F2EEE6] font-bold block leading-none">{target.name}</span>
@@ -683,11 +655,7 @@ export const DigitalYouPreview: React.FC<PreviewProps> = ({ summary }) => {
   return (
     <div className="flex flex-col justify-between items-center h-full w-full">
       {/* Centered Avatar */}
-      <img
-        src={avatar}
-        alt="Digital Twin"
-        className="w-9 h-9 rounded object-cover border border-[#F5B027]/50"
-      />
+      <ExecutivePortrait avatarUrl={avatar} name="Digital Twin" size="sm" />
 
       {/* 5 Actions */}
       <div className="w-full space-y-0.5 text-[7.5px] text-[#F2EEE6]/90 mt-1">
@@ -813,9 +781,9 @@ export const IntroductionsPreview: React.FC<PreviewProps> = ({ summary }) => {
     <div className="flex flex-col justify-between h-full w-full">
       {/* 2 faces with arrow */}
       <div className="flex items-center justify-center gap-2 pt-0.5">
-        <img src={partyA} alt="A" className="w-6 h-6 rounded-full object-cover border border-white/20" />
+        <ExecutivePortrait avatarUrl={partyA} name="A" size="sm" />
         <span className="text-[8px] text-[#F5B027] font-mono">→</span>
-        <img src={partyB} alt="B" className="w-6 h-6 rounded-full object-cover border border-white/20" />
+        <ExecutivePortrait avatarUrl={partyB} name="B" size="sm" />
       </div>
 
       <div className="text-center font-serif-editorial text-[9px] text-[#F2EEE6] leading-tight">
@@ -868,14 +836,14 @@ export const TeamGraphPreview: React.FC<PreviewProps> = ({ summary }) => {
       {/* Top cluster */}
       <div className="flex items-center -space-x-1">
         {avatars.slice(0, 3).map((av: string, i: number) => (
-          <img key={i} src={av} alt="top" className="w-4 h-4 rounded-full object-cover border border-black" />
+          <span key={i} className="tile-member-initials" aria-label="top"><User size={12} /></span>
         ))}
       </div>
 
       {/* Middle bridge */}
       <div className="flex items-center justify-between w-full px-1">
         <div className="text-center">
-          <img src={avatars[3]} alt="team" className="w-4 h-4 rounded-full object-cover mx-auto border border-[#F5B027]" />
+          <span className="tile-member-initials" aria-label="team"><User size={12} /></span>
           <span className="text-[#F2EEE6]/70 block">{yourTeam}</span>
         </div>
         <div className="w-4 h-0.5 bg-[#F5B027]/40" />
@@ -891,7 +859,7 @@ export const TeamGraphPreview: React.FC<PreviewProps> = ({ summary }) => {
       {/* Bottom nodes */}
       <div className="flex items-center -space-x-1">
         {avatars.slice(3, 5).map((av: string, i: number) => (
-          <img key={i} src={av} alt="bot" className="w-4 h-4 rounded-full object-cover border border-black" />
+          <span key={i} className="tile-member-initials" aria-label="bot"><User size={12} /></span>
         ))}
       </div>
     </div>
@@ -988,11 +956,7 @@ const EmptyPreview: React.FC<{ nextAction?: string; label: string }> = ({
   label,
 }) => (
   <div className="flex flex-col items-center justify-center h-full text-center p-2">
-    <img 
-        src={emptyStateImg} 
-        alt="Network empty state illustration" 
-        className="w-16 h-16 opacity-60 rounded-md border border-white/10 mb-2 object-cover"
-    />
+    <ExecutivePortrait avatarUrl={emptyStateImg} name="Network empty state illustration" size="sm" />
     <span className="text-[10px] text-[#F2EEE6]/50 mb-1">{label}</span>
     <span className="text-[9px] text-[#F5B027] font-mono font-medium">{nextAction}</span>
   </div>

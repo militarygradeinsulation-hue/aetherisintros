@@ -1,3 +1,4 @@
+import { INITIAL_FEED_COUNT, moreFeedCount } from '@/aetheris/feed-window'
 import { useMemo, useState } from 'react'
 import { ArrowRight, Bell, Bookmark, CalendarDays, Check, CircleDot, Handshake, Heart, Image, Lightbulb, MessageCircle, MessageSquareText, Paperclip, Plus, Search, Send, ShieldCheck, Target, Upload, Users, X } from 'lucide-react'
 
@@ -199,9 +200,10 @@ export function SocialHome() {
 }
 
 /* Editorial magazine feed used on the member home page. */
-export function EditorialFeed({ onBrief }: { onBrief?: () => void }) {
+export function EditorialFeed({ onBrief, compact = false }: { onBrief?: () => void; compact?: boolean }) {
+  const [postLimit, setPostLimit] = useState(INITIAL_FEED_COUNT)
   const net = useNetwork()
-  const [composerOpen, setComposerOpen] = useState(false)
+  const [composerOpen, setComposerOpen] = useState(compact)
   const [lane, setLane] = useState<FeedLane>('ALL SIGNALS')
   const feed = useMemo(() => {
     const rows: Array<{ id: string; type: 'post' | 'ask'; post?: Post; ask?: NetworkAsk; member?: Member }> = []
@@ -210,7 +212,7 @@ export function EditorialFeed({ onBrief }: { onBrief?: () => void }) {
       rows.push({ id: `p-${post.id}`, type: 'post', post, ...(member ? { member } : {}) })
     })
     net.asks.filter(ask => ask.visibility !== 'private' && ask.memberId !== 'me').forEach(ask => { const member = net.members.find(item => item.id === ask.memberId); if (member) rows.push({ id: `a-${ask.id}`, type: 'ask', ask, member }) })
-    return rows.slice(0, 12)
+    return rows
   }, [net.posts, net.asks, net.members])
   const shown = useMemo(() => feed.filter(row => {
     if (lane === 'ALL SIGNALS') return true
@@ -221,25 +223,25 @@ export function EditorialFeed({ onBrief }: { onBrief?: () => void }) {
     if (lane === 'HIRING') return kind === 'Hiring'
     return kind === 'Partnership'
   }), [feed, lane])
-  return <section className="social-editorial" aria-labelledby="editorial-feed-title">
-    <FeedMasthead count={feed.length} onCompose={() => setComposerOpen(true)} {...(onBrief ? { onBrief } : {})} />
-    <FeedTicker />
+  return <section className={`social-editorial${compact ? ' social-editorial--compact' : ''}`}  aria-labelledby="editorial-feed-title">
+    {!compact && <><FeedMasthead count={feed.length} onCompose={() => setComposerOpen(true)} {...(onBrief ? { onBrief } : {})} /><FeedTicker /></>}
     <div className="feed-editorial-layout">
       <div className="feed-editorial-main">
         <header className="feed-section-head"><h2 id="editorial-feed-title">Latest from your network</h2><span>{feed.length} live {feed.length === 1 ? 'Signal' : 'Signals'}</span></header>
         <SignalComposer open={composerOpen} setOpen={setComposerOpen} />
-        <BusinessComposer />
-        <nav className="feed-lanes" aria-label="Signal categories">{FEED_LANES.map(item => <button key={item} className={lane === item ? 'active' : ''} onClick={() => setLane(item)}>{item}</button>)}</nav>
-        <IntelligenceCards />
+        <details className="dashboard-feed-extra"><summary>Business post</summary><BusinessComposer /></details>
+        <nav className="feed-lanes" aria-label="Signal categories">{FEED_LANES.map(item => <button key={item} className={lane === item ? 'active' : ''} onClick={() => { setLane(item); setPostLimit(INITIAL_FEED_COUNT) }}>{item}</button>)}</nav>
+        <details className="dashboard-feed-extra"><summary>Insights & activity</summary><IntelligenceCards /><MovingNow /></details>
         <div className="feed-grid">
-          {shown.map((row, index) => {
+          {shown.slice(0, postLimit).map((row, index) => {
             if (row.type === 'post' && row.post) return row.member ? <FeedPost key={row.id} post={row.post} member={row.member} lead={index === 0} /> : <FeedPost key={row.id} post={row.post} lead={index === 0} />
             return row.ask && row.member ? <FeedAsk key={row.id} ask={row.ask} member={row.member} lead={index === 0} /> : null
           })}
         </div>
+        {shown.length > postLimit && <Btn kind="secondary" onClick={() => setPostLimit(moreFeedCount)}>Show more updates</Btn>}
         {!shown.length && <FeedEmpty lane={lane} hasAny={feed.length > 0} />}
       </div>
-      <aside className="feed-editorial-rail"><MovingNow /></aside>
+      {!compact && <aside className="feed-editorial-rail"><MovingNow /></aside>}
     </div>
   </section>
 }

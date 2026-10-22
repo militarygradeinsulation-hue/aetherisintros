@@ -391,3 +391,11 @@
 - [x] Fix redundant nested nav where found; scroll-to-top on root switches only
 - [x] Verify typecheck/build/browser desktop+mobile; report which of the 3 screens changed
 - [x] Do not publish; keep GitHub sync intact
+
+## Remove decorative photography
+- [x] Remove stock editorial photos and reflow public/member banners; preserve genuine media.
+- [x] Replace demo/generated stock faces with initials.
+- [x] Verify 35 focused regressions, Specter regression, and public/demo screenshots at 1440/390/320; automatic compilation passes.
+- [x] Dashboard: default focused social feed, separate tools/activity, closed overview, progressive feed loading and preserved drafts; measured 1440×900 and 390×844 before/after.
+- [ ] Verify the authenticated Dashboard and screenshot-specific live Introductions banner — blocked: requesting account has no mintable session; preview member sign-in required.
+- [ ] Confirm connected GitHub main/CI synchronization — blocked: sandbox exposes managed internal edit history, not GitHub main/CI status.

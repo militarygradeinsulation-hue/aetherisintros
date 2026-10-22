@@ -144,9 +144,13 @@
   font-family: "IBM Plex Mono", ui-monospace, monospace; font-size: 11px;
   color: var(--ix-muted, #84848c); margin: 4px 0 0; text-transform: uppercase; letter-spacing: .08em;
 }
-.home-feed-welcome-actions { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
+.home-feed-welcome-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; min-width: 0; max-width: 100%; }
 .home-feed-welcome-cta { background: var(--ix-accent, #ff8a4c) !important; color: #14100c !important; }
 .home-feed-welcome-cta:hover { filter: brightness(1.08); }
+@media (max-width: 640px) {
+  .home-feed-welcome-actions { width: 100%; }
+  .home-feed-welcome-actions button { max-width: 100%; white-space: normal; height: auto; min-height: 36px; }
+}
 
 /* Cross-link bar on the Introductions destination */
 .ix-intros-crosslink {

@@ -125,7 +125,6 @@ export const ConstellationGraphic: React.FC<ConstellationGraphicProps> = ({
       {
         id: 'self',
         label: 'Sarah Chen · Vercelity',
-        img: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=160&auto=format&fit=crop&q=80',
         x: 190,
         y: 120,
         type: 'self',
@@ -134,7 +133,6 @@ export const ConstellationGraphic: React.FC<ConstellationGraphicProps> = ({
       {
         id: 'marcus',
         label: 'Marcus Lee · Horizon',
-        img: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=160&auto=format&fit=crop&q=80',
         x: 290,
         y: 160,
         type: 'key',
@@ -143,7 +141,6 @@ export const ConstellationGraphic: React.FC<ConstellationGraphicProps> = ({
       {
         id: 'elena',
         label: 'Elena Rossi · Velora',
-        img: 'https://images.unsplash.com/photo-1580489944761-15a19d654956?w=160&auto=format&fit=crop&q=80',
         x: 95,
         y: 80,
         type: 'person',
@@ -152,7 +149,6 @@ export const ConstellationGraphic: React.FC<ConstellationGraphicProps> = ({
       {
         id: 'daniel',
         label: 'Daniel Kim · Nexus',
-        img: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=160&auto=format&fit=crop&q=80',
         x: 260,
         y: 60,
         type: 'company',
@@ -161,7 +157,6 @@ export const ConstellationGraphic: React.FC<ConstellationGraphicProps> = ({
       {
         id: 'priya',
         label: 'Priya Desai · Aurora',
-        img: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=160&auto=format&fit=crop&q=80',
         x: 105,
         y: 175,
         type: 'person',
@@ -188,28 +183,6 @@ export const ConstellationGraphic: React.FC<ConstellationGraphicProps> = ({
         </div>
 
         <svg viewBox="0 0 380 230" className="w-full h-[225px]">
-          <defs>
-            {graphNodes.map((n) => (
-              <pattern
-                key={`pat-${n.id}`}
-                id={`pat-${n.id}`}
-                x="0"
-                y="0"
-                width="1"
-                height="1"
-                viewBox="0 0 100 100"
-              >
-                <image
-                  href={n.img}
-                  x="0"
-                  y="0"
-                  width="100"
-                  height="100"
-                  preserveAspectRatio="xMidYMid slice"
-                />
-              </pattern>
-            ))}
-          </defs>
 
           {/* Connecting lines */}
           <g stroke="rgba(199, 133, 34,0.4)" strokeWidth="1.2">
@@ -248,10 +221,11 @@ export const ConstellationGraphic: React.FC<ConstellationGraphicProps> = ({
                   cx={n.x}
                   cy={n.y}
                   r={n.r}
-                  fill={`url(#pat-${n.id})`}
+                  fill="var(--ix-card, #131316)"
                   stroke="rgba(0,0,0,0.6)"
                   strokeWidth="1"
                 />
+                <text x={n.x} y={n.y} textAnchor="middle" dominantBaseline="central" fill="var(--ix-text, #f2f1ec)" fontSize="11">{n.label.split(' · ')[0].split(' ').map(part => part[0]).join('').slice(0, 2)}</text>
                 {/* Text Label */}
                 <text
                   x={n.x}
@@ -277,7 +251,6 @@ export const ConstellationGraphic: React.FC<ConstellationGraphicProps> = ({
     {
       label: 'Sarah Chen',
       sub: 'Founders',
-      img: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=160&auto=format&fit=crop&q=80',
       x: 55,
       y: 65,
       r: 18,
@@ -285,7 +258,6 @@ export const ConstellationGraphic: React.FC<ConstellationGraphicProps> = ({
     {
       label: 'Marcus Lee',
       sub: 'Investors',
-      img: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=160&auto=format&fit=crop&q=80',
       x: 140,
       y: 25,
       r: 19,
@@ -293,7 +265,6 @@ export const ConstellationGraphic: React.FC<ConstellationGraphicProps> = ({
     {
       label: 'Daniel Kim',
       sub: 'Operators',
-      img: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=160&auto=format&fit=crop&q=80',
       x: 225,
       y: 60,
       r: 17,
@@ -301,7 +272,6 @@ export const ConstellationGraphic: React.FC<ConstellationGraphicProps> = ({
     {
       label: 'Elena Rossi',
       sub: 'Partners',
-      img: 'https://images.unsplash.com/photo-1580489944761-15a19d654956?w=160&auto=format&fit=crop&q=80',
       x: 225,
       y: 145,
       r: 18,
@@ -309,7 +279,6 @@ export const ConstellationGraphic: React.FC<ConstellationGraphicProps> = ({
     {
       label: 'Priya Desai',
       sub: 'Advisors',
-      img: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=160&auto=format&fit=crop&q=80',
       x: 60,
       y: 150,
       r: 17,
@@ -320,26 +289,6 @@ export const ConstellationGraphic: React.FC<ConstellationGraphicProps> = ({
     <div className={`relative w-full max-w-[320px] aspect-square flex items-center justify-center ${className}`}>
       <svg viewBox="0 0 280 220" className="w-full h-full select-none">
         <defs>
-          {networkRoles.map((role, idx) => (
-            <pattern
-              key={`hero-pat-${idx}`}
-              id={`hero-pat-${idx}`}
-              x="0"
-              y="0"
-              width="1"
-              height="1"
-              viewBox="0 0 100 100"
-            >
-              <image
-                href={role.img}
-                x="0"
-                y="0"
-                width="100"
-                height="100"
-                preserveAspectRatio="xMidYMid slice"
-              />
-            </pattern>
-          ))}
           <radialGradient id="centerGlow" cx="50%" cy="50%" r="50%">
             <stop offset="0%" stopColor="#F5B027" stopOpacity="0.3" />
             <stop offset="100%" stopColor="#F5B027" stopOpacity="0" />
@@ -409,10 +358,11 @@ export const ConstellationGraphic: React.FC<ConstellationGraphicProps> = ({
                 cx={role.x}
                 cy={role.y}
                 r={role.r}
-                fill={`url(#hero-pat-${idx})`}
+                fill="var(--ix-card, #131316)"
                 stroke="rgba(0,0,0,0.7)"
                 strokeWidth="1"
               />
+              <text x={role.x} y={role.y} textAnchor="middle" dominantBaseline="central" fill="var(--ix-text, #f2f1ec)" fontSize="11">{role.label.split(' ').map(part => part[0]).join('').slice(0, 2)}</text>
               {/* Text Label */}
               <text
                 x={role.x}
