@@ -26,7 +26,6 @@ import { LiveInsightsDashboard } from './views/LiveInsightsDashboard';
 import { PeopleDirectoryView } from './views/PeopleDirectoryView';
 import { ProfileDetailView } from './views/ProfileDetailView';
 import { MessagesView } from './views/MessagesView';
-import { InsightsDashboardView } from './views/InsightsDashboardView';
 import { IntrosHubView } from './views/IntrosHubView';
 import { ConnectionBubblesView } from './views/ConnectionBubblesView';
 import { RequestIntroModal } from './components/modals/RequestIntroModal';
@@ -452,11 +451,8 @@ export default function App({ mode = 'demo', executiveAction, initialPage, initi
         )}
 
         {activePage === 'insights' && (
-          mode === 'live' ? <LiveInsightsDashboard onNavigate={handleNavigate} /> : <InsightsDashboardView
-            onNavigate={handleNavigate}
-            onRequestIntro={(member) => setRequestIntroTarget(member)}
-            networkMembers={members}
-          />
+          mode === 'live' ? <LiveInsightsDashboard onNavigate={handleNavigate} />
+            : <div className="ix-classic"><AetherisAppSurface key="demo-insights" startPage="insights" /></div>
         )}
 
         {activePage === 'news' && <div className="ix-classic"><AetherisAppSurface key="news"  startPage="news"  /></div>}
