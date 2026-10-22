@@ -6,6 +6,16 @@
   flex-direction:column;
   min-height:0;
 }
+.ix-aetheris-workspace-mode .aetheris-workspace-content > .ix-network-directory {
+  display:flex;
+  flex:1 1 auto;
+  min-height:0;
+  width:100%;
+  overflow:hidden;
+}
+.ix-aetheris-workspace-mode .ix-network-viewport > * + * {
+  margin-top:0;
+}
 .ix-aetheris-workspace-mode .ix-network-viewport {
   box-sizing:border-box;
   display:flex;
