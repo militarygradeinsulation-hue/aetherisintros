@@ -405,3 +405,7 @@
 - [x] Restore prior viewport panels and search-first directory without losing orange styles or live callbacks.
 - [ ] Run focused regressions and three-size public/demo visual checks; authenticated account unavailable.
 - [ ] Confirm automated compilation and publish only if all release checks are green.
+
+## PR 264 latest-main density verification (Oct 22)
+- [ ] Verify SHA 322a1a713fd87528afa671a8973cf9702dd9ec71, latest density stylesheet/import order and Network selectors without reverting newer code.
+- [ ] Check full-width Dashboard and balanced Network at desktop/mobile; distinguish preview, GitHub and published state.
