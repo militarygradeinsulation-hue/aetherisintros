@@ -70,20 +70,20 @@ export const RequestIntroModal: React.FC<RequestIntroModalProps> = ({
 
         {isSuccess ? (
           <div className="py-12 flex flex-col items-center justify-center text-center">
-            <div className="w-14 h-14 rounded-full bg-[#F5B027]/20 border border-[#F5B027] flex items-center justify-center text-[#F5B027] mb-4">
+            <div className="w-14 h-14 rounded-full bg-[#FF8A4C]/20 border border-[#FF8A4C] flex items-center justify-center text-[#FF8A4C] mb-4">
               <Check className="w-8 h-8" />
             </div>
             <h3 className="font-serif-editorial text-2xl font-bold mb-2">{requestState === 'existing' ? 'Request Already Saved' : 'Request Saved'}</h3>
             <p className="text-sm text-[#9CA3AF] max-w-xs">
               {requestState === 'existing' ? 'Your earlier introduction request is already saved.' : 'Your request is saved for the other member to consider.'} It is not an accepted introduction until both parties opt in.
             </p>
-            <button type="button" className="mt-5 px-4 py-2 rounded bg-[#C78522] text-white" onClick={() => { setIsSuccess(false); setNote(''); onClose(); }}>Close</button>
+            <button type="button" className="mt-5 px-4 py-2 rounded bg-[#DB6B36] text-white" onClick={() => { setIsSuccess(false); setNote(''); onClose(); }}>Close</button>
           </div>
         ) : (
           <div>
             {/* Header */}
             <div className="flex items-center gap-2 mb-1">
-              <span className="intro-modal-amber-label text-[10px] font-mono tracking-widest text-[#F5B027] uppercase font-semibold">
+              <span className="intro-modal-amber-label text-[10px] font-mono tracking-widest text-[#FF8A4C] uppercase font-semibold">
                 Double Opt-in Warm Introduction
               </span>
             </div>
@@ -97,7 +97,7 @@ export const RequestIntroModal: React.FC<RequestIntroModalProps> = ({
               <div>
                 <div className="text-sm font-semibold text-white flex items-center gap-1.5">
                   {targetMember.name}
-                  <span className="intro-modal-amber-label text-[10px] text-[#F5B027] font-mono font-medium">
+                  <span className="intro-modal-amber-label text-[10px] text-[#FF8A4C] font-mono font-medium">
                     {targetMember.matchScore}% Match
                   </span>
                 </div>
@@ -118,7 +118,7 @@ export const RequestIntroModal: React.FC<RequestIntroModalProps> = ({
               <select
                 value={sharedGoal}
                 onChange={(e) => setSharedGoal(e.target.value)}
-                className="w-full bg-[#151A24] border border-white/10 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-[#F5B027]"
+                className="w-full bg-[#151A24] border border-white/10 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-[#FF8A4C]"
               >
                 <option value="Explore strategic partnership & infrastructure synergies">
                   Explore strategic partnership & infrastructure synergies
@@ -150,14 +150,14 @@ export const RequestIntroModal: React.FC<RequestIntroModalProps> = ({
                 onChange={(e) => setNote(e.target.value)}
                 rows={3}
                 placeholder={`Hi ${targetMember.firstName}, I'd love to connect regarding your focus on ${targetMember.focusAreas[0] || 'AI infrastructure'}...`}
-                className="w-full bg-[#151A24] border border-white/10 rounded-lg p-3 text-xs text-white placeholder-[#6B7280] focus:outline-none focus:border-[#F5B027]"
+                className="w-full bg-[#151A24] border border-white/10 rounded-lg p-3 text-xs text-white placeholder-[#6B7280] focus:outline-none focus:border-[#FF8A4C]"
               />
             </div>
 
             {/* Urgency & Etiquette */}
             <div className="flex items-center justify-between text-xs text-[#9CA3AF] mb-6 pt-2 border-t border-white/5">
               <div className="flex items-center gap-1.5 text-[11px] text-[#6B7280]">
-                <ShieldCheck className="w-3.5 h-3.5 text-[#F5B027]" />
+                <ShieldCheck className="w-3.5 h-3.5 text-[#FF8A4C]" />
                 Strict double opt-in protocol ensures zero spam.
               </div>
               <div className="flex items-center gap-1">
@@ -168,7 +168,7 @@ export const RequestIntroModal: React.FC<RequestIntroModalProps> = ({
                     onClick={() => setUrgency(lvl)}
                     className={`px-2.5 py-1 rounded text-[11px] cursor-pointer transition-colors ${
                       urgency === lvl
-                        ? 'bg-[#F5B027] text-white font-medium'
+                        ? 'bg-[#FF8A4C] text-[#1c110c] font-medium'
                         : 'bg-white/5 text-[#9CA3AF] hover:text-white'
                     }`}
                   >
@@ -193,7 +193,7 @@ export const RequestIntroModal: React.FC<RequestIntroModalProps> = ({
                 type="button"
                 onClick={() => void handleSend()}
                 disabled={sending}
-                className="flex items-center gap-1.5 px-4 py-2 text-xs font-medium text-white bg-[#F5B027] hover:bg-[#C78522] rounded-lg shadow-sm transition-colors cursor-pointer"
+                className="flex items-center gap-1.5 px-4 py-2 text-xs font-medium text-[#1c110c] bg-[#FF8A4C] hover:bg-[#DB6B36] rounded-lg shadow-sm transition-colors cursor-pointer"
               >
                 <Send className="w-3.5 h-3.5" />
                 {sending ? 'Sending…' : sendError ? 'Retry Request' : 'Submit Request'}

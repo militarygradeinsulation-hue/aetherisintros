@@ -34,9 +34,9 @@ export const RelationshipTierBadge: React.FC<RelationshipTierBadgeProps> = ({
         return {
           label: 'Strategic',
           icon: Diamond,
-          textColor: 'text-[#F5B027]',
-          bgColor: 'bg-[#F5B027]/15',
-          borderColor: 'border-[#F5B027]/40',
+          textColor: 'text-[#FF8A4C]',
+          bgColor: 'bg-[#FF8A4C]/15',
+          borderColor: 'border-[#FF8A4C]/40',
           shadow: 'shadow-[0_0_8px_rgba(199, 133, 34,0.3)]',
           symbol: '◆',
           tooltip: 'Tier 2 Strategic: Institutional allocators & key enterprise mandates',

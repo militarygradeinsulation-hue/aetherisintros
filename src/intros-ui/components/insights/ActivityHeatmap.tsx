@@ -174,9 +174,9 @@ export const ActivityHeatmap: React.FC<ActivityHeatmapProps> = ({
   // Color intensity helper
   const getCellColor = (count: number) => {
     if (count === 0) return 'bg-[#121620] border-white/[0.04] hover:border-white/20';
-    if (count === 1) return 'bg-[#C78522]/80 border-[#F5B027]/40 hover:bg-[#C78522] text-white';
-    if (count === 2) return 'bg-[#C78522] border-[#FFC85C]/60 hover:bg-[#C78522] shadow-sm shadow-[#C78522]/40';
-    if (count === 3) return 'bg-[#F5B027] border-[#FFC85C] hover:bg-[#FFC85C] shadow-sm shadow-[#F5B027]/60';
+    if (count === 1) return 'bg-[#DB6B36]/80 border-[#FF8A4C]/40 hover:bg-[#DB6B36] text-white';
+    if (count === 2) return 'bg-[#DB6B36] border-[#FFC85C]/60 hover:bg-[#DB6B36] shadow-sm shadow-[#DB6B36]/40';
+    if (count === 3) return 'bg-[#FF8A4C] border-[#FFC85C] hover:bg-[#FFC85C] shadow-sm shadow-[#FF8A4C]/60';
     return 'bg-[#FFC85C] border-white hover:bg-white text-black shadow-md shadow-[#FFC85C]/70';
   };
 
@@ -184,7 +184,7 @@ export const ActivityHeatmap: React.FC<ActivityHeatmapProps> = ({
     switch (tier) {
       case 'Core':
         return (
-          <span className="px-1.5 py-0.5 rounded text-[9px] font-mono font-semibold uppercase tracking-wider bg-[#F5B027]/20 text-[#FFC85C] border border-[#F5B027]/40">
+          <span className="px-1.5 py-0.5 rounded text-[9px] font-mono font-semibold uppercase tracking-wider bg-[#FF8A4C]/20 text-[#FFC85C] border border-[#FF8A4C]/40">
             Core
           </span>
         );
@@ -214,7 +214,7 @@ export const ActivityHeatmap: React.FC<ActivityHeatmapProps> = ({
       <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 pb-4 border-b border-white/10">
         <div className="space-y-1">
           <div className="flex items-center gap-2 text-[11px] font-mono uppercase tracking-widest text-[#9CA3AF] font-semibold">
-            <Calendar className="w-3.5 h-3.5 text-[#F5B027]" />
+            <Calendar className="w-3.5 h-3.5 text-[#FF8A4C]" />
             <span>30-Day Communication Frequency</span>
             <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
             <span className="text-emerald-400 text-[10px] lowercase">live telemetry</span>
@@ -237,7 +237,7 @@ export const ActivityHeatmap: React.FC<ActivityHeatmapProps> = ({
                 onClick={() => setSelectedTier(tier)}
                 className={`px-3 py-1 rounded-md font-mono text-[11px] transition-all cursor-pointer ${
                   selectedTier === tier
-                    ? 'bg-[#F5B027] text-white shadow-sm font-semibold'
+                    ? 'bg-[#FF8A4C] text-white shadow-sm font-semibold'
                     : 'text-[#9CA3AF] hover:text-white'
                 }`}
               >
@@ -252,7 +252,7 @@ export const ActivityHeatmap: React.FC<ActivityHeatmapProps> = ({
             <select
               value={sortBy}
               onChange={(e) => setSortBy(e.target.value as any)}
-              className="bg-[#131722] text-xs text-white rounded px-2.5 py-1.5 border border-white/10 focus:outline-none focus:border-[#F5B027]"
+              className="bg-[#131722] text-xs text-white rounded px-2.5 py-1.5 border border-white/10 focus:outline-none focus:border-[#FF8A4C]"
             >
               <option value="touchpoints">Total Interactions</option>
               <option value="recent">Most Recently Active</option>
@@ -312,7 +312,7 @@ export const ActivityHeatmap: React.FC<ActivityHeatmapProps> = ({
               <span>-30 Days</span>
               <span>-20 Days</span>
               <span>-10 Days</span>
-              <span className="text-[#F5B027] font-bold">Today</span>
+              <span className="text-[#FF8A4C] font-bold">Today</span>
             </div>
             <div className="col-span-2 text-right pr-2 uppercase tracking-wider">
               Frequency
@@ -389,7 +389,7 @@ export const ActivityHeatmap: React.FC<ActivityHeatmapProps> = ({
 
                   <button
                     onClick={() => onSelectMember && onSelectMember(item.member.id)}
-                    className="p-1.5 rounded-md bg-white/5 hover:bg-[#F5B027] text-[#9CA3AF] hover:text-white transition-colors cursor-pointer"
+                    className="p-1.5 rounded-md bg-white/5 hover:bg-[#FF8A4C] text-[#9CA3AF] hover:text-white transition-colors cursor-pointer"
                     title="View Member Dossier"
                   >
                     <ChevronRight className="w-3.5 h-3.5" />
@@ -409,9 +409,9 @@ export const ActivityHeatmap: React.FC<ActivityHeatmapProps> = ({
           <span className="text-[10px] text-[#6B7280]">0</span>
           <div className="flex items-center gap-1">
             <span className="w-3 h-3 rounded-xs bg-[#121620] border border-white/10" title="0 interactions" />
-            <span className="w-3 h-3 rounded-xs bg-[#C78522] border border-[#F5B027]/40" title="1 interaction" />
-            <span className="w-3 h-3 rounded-xs bg-[#C78522] border border-[#FFC85C]/60" title="2 interactions" />
-            <span className="w-3 h-3 rounded-xs bg-[#F5B027] border border-[#FFC85C]" title="3 interactions" />
+            <span className="w-3 h-3 rounded-xs bg-[#DB6B36] border border-[#FF8A4C]/40" title="1 interaction" />
+            <span className="w-3 h-3 rounded-xs bg-[#DB6B36] border border-[#FFC85C]/60" title="2 interactions" />
+            <span className="w-3 h-3 rounded-xs bg-[#FF8A4C] border border-[#FFC85C]" title="3 interactions" />
             <span className="w-3 h-3 rounded-xs bg-[#FFC85C] border border-white" title="4+ interactions" />
           </div>
           <span className="text-[10px] text-[#6B7280]">4+ interactions</span>
@@ -425,7 +425,7 @@ export const ActivityHeatmap: React.FC<ActivityHeatmapProps> = ({
           {onNavigateToIntros && (
             <button
               onClick={onNavigateToIntros}
-              className="text-[11px] text-[#F5B027] hover:underline font-semibold cursor-pointer"
+              className="text-[11px] text-[#FF8A4C] hover:underline font-semibold cursor-pointer"
             >
               Curate Intro →
             </button>
@@ -436,7 +436,7 @@ export const ActivityHeatmap: React.FC<ActivityHeatmapProps> = ({
       {/* Interactive Tooltip Card on Hover */}
       {hoveredCell && (
         <div
-          className="fixed z-50 pointer-events-none transform -translate-x-1/2 -translate-y-full mb-2 bg-[#0A0D14]/95 border border-[#F5B027]/40 rounded-xl p-3 shadow-2xl backdrop-blur-md text-xs space-y-1.5 w-64 animate-in fade-in zoom-in-95 duration-100"
+          className="fixed z-50 pointer-events-none transform -translate-x-1/2 -translate-y-full mb-2 bg-[#0A0D14]/95 border border-[#FF8A4C]/40 rounded-xl p-3 shadow-2xl backdrop-blur-md text-xs space-y-1.5 w-64 animate-in fade-in zoom-in-95 duration-100"
           style={{
             left: `${hoveredCell.x}px`,
             top: `${hoveredCell.y - 8}px`,
@@ -467,7 +467,7 @@ export const ActivityHeatmap: React.FC<ActivityHeatmapProps> = ({
               <div className="text-[10px] font-mono uppercase tracking-wider text-[#9CA3AF]">Activity Log:</div>
               {hoveredCell.day.details.map((detail, idx) => (
                 <div key={idx} className="flex items-center gap-1.5 text-[11px] text-[#CBD5E1]">
-                  <span className="w-1 h-1 rounded-full bg-[#F5B027]" />
+                  <span className="w-1 h-1 rounded-full bg-[#FF8A4C]" />
                   <span>{detail}</span>
                 </div>
               ))}

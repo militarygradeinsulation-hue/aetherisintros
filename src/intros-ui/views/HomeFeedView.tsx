@@ -172,7 +172,7 @@ export const HomeFeedView: React.FC<HomeFeedViewProps> = ({
                   onChange={(e) => setComposerText(e.target.value)}
                   placeholder="Share an insight, milestone, or opportunity..."
                   rows={2}
-                  className="w-full bg-[#131722] text-xs text-white placeholder-[#6B7280] rounded-lg p-3 border border-white/10 focus:outline-none focus:border-[#F5B027] resize-none"
+                  className="w-full bg-[#131722] text-xs text-white placeholder-[#6B7280] rounded-lg p-3 border border-white/10 focus:outline-none focus:border-[#FF8A4C] resize-none"
                 />
               </div>
 
@@ -185,7 +185,7 @@ export const HomeFeedView: React.FC<HomeFeedViewProps> = ({
                       onClick={() => setComposerType(type)}
                       className={`px-2.5 py-1 text-[11px] rounded transition-colors cursor-pointer ${
                         composerType === type
-                          ? 'bg-[#F5B027]/20 text-[#FFC85C] border border-[#F5B027]/30'
+                          ? 'bg-[#FF8A4C]/20 text-[#FFC85C] border border-[#FF8A4C]/30'
                           : 'text-[#9CA3AF] hover:text-white hover:bg-white/5'
                       }`}
                     >
@@ -201,7 +201,7 @@ export const HomeFeedView: React.FC<HomeFeedViewProps> = ({
                     { label: 'Add document', accept: '.pdf,.doc,.docx,.ppt,.pptx,.xls,.xlsx,.txt,.csv', Icon: FileText },
                     { label: 'Add file', accept: '*/*', Icon: Paperclip },
                   ].map(({ label, accept, Icon }) => (
-                    <label key={label} title={label} className="p-1.5 rounded-md text-[#9CA3AF] hover:text-white hover:bg-white/5 cursor-pointer focus-within:ring-1 focus-within:ring-[#F5B027]">
+                    <label key={label} title={label} className="p-1.5 rounded-md text-[#9CA3AF] hover:text-white hover:bg-white/5 cursor-pointer focus-within:ring-1 focus-within:ring-[#FF8A4C]">
                       <Icon className="w-4 h-4" aria-hidden />
                       <span className="sr-only">{label}</span>
                       <input
@@ -220,7 +220,7 @@ export const HomeFeedView: React.FC<HomeFeedViewProps> = ({
                   <button
                     type="submit"
                     disabled={!composerText.trim() && attachments.length === 0}
-                    className="ml-1 px-4 py-1.5 text-xs font-semibold text-white bg-[#F5B027] hover:bg-[#C78522] disabled:opacity-40 disabled:cursor-not-allowed rounded-lg transition-colors cursor-pointer"
+                    className="ml-1 px-4 py-1.5 text-xs font-semibold text-[#1c110c] bg-[#FF8A4C] hover:bg-[#DB6B36] disabled:opacity-40 disabled:cursor-not-allowed rounded-lg transition-colors cursor-pointer"
                   >
                     Post
                   </button>
@@ -255,7 +255,7 @@ export const HomeFeedView: React.FC<HomeFeedViewProps> = ({
                   onClick={() => { setFeedFilter(tab.id as any); setPostLimit(INITIAL_FEED_COUNT); }}
                   className={`text-xs font-medium cursor-pointer transition-colors pb-1 ${
                     feedFilter === tab.id
-                      ? 'text-white border-b-2 border-[#F5B027] font-semibold'
+                      ? 'text-white border-b-2 border-[#FF8A4C] font-semibold'
                       : 'text-[#9CA3AF] hover:text-white'
                   }`}
                 >
@@ -288,7 +288,7 @@ export const HomeFeedView: React.FC<HomeFeedViewProps> = ({
                       <div className="flex items-center gap-2">
                         <h4
                           onClick={() => onNavigate('profile', post.authorId)}
-                          className="font-serif-editorial text-sm font-bold text-white hover:text-[#F5B027] transition-colors cursor-pointer"
+                          className="font-serif-editorial text-sm font-bold text-white hover:text-[#FF8A4C] transition-colors cursor-pointer"
                         >
                           {post.authorName}
                         </h4>
@@ -313,7 +313,7 @@ export const HomeFeedView: React.FC<HomeFeedViewProps> = ({
                 {/* Link Preview (if present) */}
                 {post.linkPreview && (
                   <div className="border border-white/10 rounded-lg p-3 bg-[#131722] hover:border-white/20 transition-colors cursor-pointer">
-                    <div className="text-[10px] font-mono text-[#F5B027] uppercase mb-0.5">
+                    <div className="text-[10px] font-mono text-[#FF8A4C] uppercase mb-0.5">
                       {post.linkPreview.domain}
                     </div>
                     <div className="text-xs font-semibold text-white mb-1">
@@ -334,7 +334,7 @@ export const HomeFeedView: React.FC<HomeFeedViewProps> = ({
                     aria-pressed={post.isLiked || false}
                     onClick={() => onLikePost(post.id)}
                     className={`flex items-center gap-1.5 transition-colors cursor-pointer ${
-                      post.isLiked ? 'text-[#F5B027]' : 'hover:text-white'
+                      post.isLiked ? 'text-[#FF8A4C]' : 'hover:text-white'
                     }`}
                   >
                     <ThumbsUp className="w-3.5 h-3.5" />
@@ -350,7 +350,7 @@ export const HomeFeedView: React.FC<HomeFeedViewProps> = ({
                     aria-pressed={post.isSaved || false}
                     onClick={() => onSavePost(post.id)}
                     className={`p-1 transition-colors cursor-pointer ${
-                      post.isSaved ? 'text-[#F5B027]' : 'hover:text-white'
+                      post.isSaved ? 'text-[#FF8A4C]' : 'hover:text-white'
                     }`}
                   >
                     <Bookmark className="w-3.5 h-3.5" />
@@ -374,13 +374,13 @@ export const HomeFeedView: React.FC<HomeFeedViewProps> = ({
           {/* Hero Left: Editorial Headline & Value Proposition */}
           <div className="lg:col-span-7 space-y-5">
             <div className="text-[10px] md:text-xs font-mono uppercase tracking-[0.25em] text-[#9CA3AF] font-semibold flex items-center gap-2">
-              <span className="w-2 h-2 rounded-full bg-[#F5B027]" />
+              <span className="w-2 h-2 rounded-full bg-[#FF8A4C]" />
               Professional Connections
             </div>
 
             <h1 className="font-serif-editorial text-3xl sm:text-4xl md:text-5xl lg:text-5xl xl:text-6xl text-[#F2EEE6] leading-[1.08] tracking-tight">
               Where professional relationships{' '}
-              <span className="text-[#F5B027]">create momentum.</span>
+              <span className="text-[#FF8A4C]">create momentum.</span>
             </h1>
 
             <p className="text-sm md:text-base text-[#9CA3AF] max-w-xl leading-relaxed">
@@ -392,7 +392,7 @@ export const HomeFeedView: React.FC<HomeFeedViewProps> = ({
             <div className="flex flex-wrap items-center gap-3 pt-1">
               <button
                 onClick={() => onNavigate('people')}
-                className="flex items-center gap-2 px-5 py-2.5 rounded-lg bg-[#F5B027] hover:bg-[#C78522] text-white text-xs md:text-sm font-semibold transition-all shadow-lg shadow-[#F5B027]/20 cursor-pointer"
+                className="flex items-center gap-2 px-5 py-2.5 rounded-lg bg-[#FF8A4C] hover:bg-[#DB6B36] text-white text-xs md:text-sm font-semibold transition-all shadow-lg shadow-[#FF8A4C]/20 cursor-pointer"
               >
                 Start Connecting
                 <ArrowRight className="w-4 h-4" />
@@ -434,7 +434,7 @@ export const HomeFeedView: React.FC<HomeFeedViewProps> = ({
                     aria-pressed={heroVisualMode === 'bubbles'}
                     className={`ix-option-tab px-2.5 py-1 text-[10px] font-mono rounded transition-colors cursor-pointer ${
                       heroVisualMode === 'bubbles'
-                        ? 'bg-[#F5B027] text-white font-semibold'
+                        ? 'bg-[#FF8A4C] text-[#1c110c] font-semibold'
                         : 'text-[#9CA3AF] hover:text-white'
                     }`}
                   >
@@ -445,14 +445,14 @@ export const HomeFeedView: React.FC<HomeFeedViewProps> = ({
                     aria-pressed={heroVisualMode === 'spotlight'}
                     className={`ix-option-tab px-2.5 py-1 text-[10px] font-mono rounded transition-colors cursor-pointer ${
                       heroVisualMode === 'spotlight'
-                        ? 'bg-[#F5B027] text-white font-semibold'
+                        ? 'bg-[#FF8A4C] text-[#1c110c] font-semibold'
                         : 'text-[#9CA3AF] hover:text-white'
                     }`}
                   >
                     ★ Spotlight Match
                   </button>}
                 </div>
-                <span className="text-[11px] font-mono text-[#F5B027] bg-[#F5B027]/10 border border-[#F5B027]/20 px-2 py-0.5 rounded font-medium">
+                <span className="text-[11px] font-mono text-[#FF8A4C] bg-[#FF8A4C]/10 border border-[#FF8A4C]/20 px-2 py-0.5 rounded font-medium">
                   {heroVisualMode === 'bubbles' ? (isLive ? 'Your Network' : 'Demo Network') : elena ? `${elena.matchScore}% Match` : 'No match yet'}
                 </span>
               </div>
@@ -486,7 +486,7 @@ export const HomeFeedView: React.FC<HomeFeedViewProps> = ({
                     <div>
                       <h3
                         onClick={() => onNavigate('profile', elena.id)}
-                        className="font-serif-editorial text-lg font-bold text-white hover:text-[#F5B027] transition-colors cursor-pointer"
+                        className="font-serif-editorial text-lg font-bold text-white hover:text-[#FF8A4C] transition-colors cursor-pointer"
                       >
                         {elena.name}
                       </h3>
@@ -509,7 +509,7 @@ export const HomeFeedView: React.FC<HomeFeedViewProps> = ({
 
                   <div className="text-[11px] text-[#9CA3AF] space-y-1 mb-4 pt-2 border-t border-white/5">
                     <div className="flex items-center gap-1.5">
-                      <Users className="w-3.5 h-3.5 text-[#F5B027]" />
+                      <Users className="w-3.5 h-3.5 text-[#FF8A4C]" />
                       <span>{elena.mutualConnectionsCount} mutual connections</span>
                     </div>
                     {elena.focusAreas.length > 0 && <div className="flex items-center gap-1.5">
@@ -521,7 +521,7 @@ export const HomeFeedView: React.FC<HomeFeedViewProps> = ({
                   <div className="flex items-center gap-2">
                     <button
                       onClick={() => onRequestIntro(elena)}
-                      className="flex-1 py-2 text-xs font-semibold text-white bg-[#F5B027] hover:bg-[#C78522] rounded-lg transition-colors cursor-pointer text-center"
+                      className="flex-1 py-2 text-xs font-semibold text-[#1c110c] bg-[#FF8A4C] hover:bg-[#DB6B36] rounded-lg transition-colors cursor-pointer text-center"
                     >
                       Request Introduction
                     </button>
