@@ -8,6 +8,7 @@ import './editorial-landing.css'
 import './architectural-system.css'
 import './compact-homepage.css'
 import './editorial-media.css'
+import './public-burnt-orange.css'
 
 /** Compact typographic homepage with no illustrative photography. */
 function JoinAction({ signedIn, className = '' }: { signedIn: boolean; className?: string }) {
