@@ -12,7 +12,15 @@ import { WelcomeDiagnosticBanner } from '@/aetheris/WelcomeDiagnosticBanner'
 import '@/aetheris/executive-upgrade.css'
 import '@/aetheris/styles.css'
 
+const entryPages: ActivePage[] = ['home', 'people', 'intros', 'messages', 'insights', 'meetings', 'specter', 'intelligence']
+
 export const Route = createFileRoute('/_authenticated/app')({
+  validateSearch: (search: Record<string, unknown>): { view?: ActivePage } => {
+    const view = search['view']
+    return typeof view === 'string' && entryPages.includes(view as ActivePage)
+      ? { view: view as ActivePage }
+      : {}
+  },
   staticData: { sitemap: false },
   head: () => ({
     meta: [
@@ -36,7 +44,8 @@ export const Route = createFileRoute('/_authenticated/app')({
 
 /** Only an approved, onboarded Founding Member reaches the live network. */
 function AppRoute() {
-  return <ClientOnly fallback={null}><Gate /></ClientOnly>
+  const { view } = Route.useSearch()
+  return <ClientOnly fallback={null}><Gate initialPage={view} /></ClientOnly>
 }
 
 /** Shared live-workspace gate: full membership checks, then the persistent
