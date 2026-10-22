@@ -310,21 +310,6 @@ export default function App({ mode = 'demo' }: { mode?: 'demo' | 'live' }) {
         Unread counts could not be loaded. Do not assume your inbox is clear.
         <button type="button" className="ml-2 underline font-semibold" onClick={() => void refreshUnread()}>Retry</button>
       </div>}
-      {!inWorkspaceShell && <TopNavigation
-        activePage={activePage}
-        onNavigate={handleNavigate}
-        searchQuery={searchQuery}
-        onSearchChange={setSearchQuery}
-        unreadCount={mode === 'live' ? liveUnread.total : 12}
-        onToggleConstellationOverlay={() => handleNavigate('bubbles')}
-        me={mode === 'live' ? me : null}
-        {...(mode === 'live' ? { onOpenMyProfile: () => { setClassicPage('profile'); handleNavigate('workspace'); } } : {})}
-        bell={mode === 'live' ? <LiveNotificationsBell onOpen={(destination) => {
-          if (destination === 'peergroups' || destination === 'events' || destination === 'deals') { setClassicPage(destination); handleNavigate('workspace'); return; }
-          handleNavigate(destination);
-        }} /> : undefined}
-      />}
-
       {mode === 'live' && activePage !== 'specter' && network.networkLoadError && <section role="alert" aria-live="polite"
         className="mx-3 sm:mx-6 my-3 rounded-xl border border-[#c9a673] bg-[#fff5e4] px-4 py-3 text-[#27343a] shadow-sm">
         <p className="text-sm font-semibold">Live network data is unavailable.</p>
@@ -335,17 +320,15 @@ export default function App({ mode = 'demo' }: { mode?: 'demo' | 'live' }) {
           Retry network connection
         </button>
       </section>}
-      {mode !== 'live' && !inWorkspaceShell && <InteractiveRelationshipTour />}
       {mode === 'live' && <LiveMembers onMembers={setMembers} onError={setLiveDirectoryError} />}
       {mode === 'live' && activePage !== 'specter' && <MeetingReminderBanner onJoin={() => handleNavigate('meetings')} />}
       {mode === 'live' && activePage !== 'specter' && <MembershipCardMailer />}
-      {!inWorkspaceShell && <NewsTicker onOpen={() => handleNavigate('news')} />}
-      {/* Primary Page Views */}
+      {/* Primary Page Views — one persistent workspace shell; only the right pane swaps. */}
       <main className="flex-1 arch-product-main" data-arch-page={activePage}>
         <AetherisWorkspaceShell
-          enabled={inWorkspaceShell && activePage !== 'specter'}
           scrollContent
           activePage={activePage}
+          activeWorkspace={activePage === 'workspace' ? classicPage : undefined}
           searchQuery={searchQuery}
           onSearchChange={setSearchQuery}
           onNavigate={handleNavigate}
