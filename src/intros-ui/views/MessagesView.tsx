@@ -82,60 +82,11 @@ export const MessagesView: React.FC<MessagesViewProps> = ({
 
   return (
     <div className="w-full max-w-7xl mx-auto px-4 md:px-8 py-6 space-y-6 animate-fadeIn ix-messages">
-      {/* Editorial Hero Banner (Matching Image 3) */}
-      <section className="relative overflow-hidden rounded-2xl border border-[var(--msg-border)] msg-hero p-6 lg:p-8">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
-          {/* Hero Left: Headline & Metrics */}
-          <div className="lg:col-span-8 space-y-4">
-            <div className="text-[10px] md:text-xs font-mono uppercase tracking-[0.25em] text-[var(--msg-muted)] font-semibold flex items-center gap-2">
-              <span className="w-2 h-2 rounded-full bg-[var(--msg-accent)]" />
-              Messages / Introductions
-            </div>
-
-            <h1 className="font-serif-editorial text-3xl sm:text-4xl md:text-5xl lg:text-5xl text-[var(--msg-ink)] leading-[1.1] tracking-tight">
-              Every conversation should move business{' '}
-              <span className="text-[var(--msg-copper)]">forward.</span>
-            </h1>
-
-            <p className="text-sm md:text-base text-[var(--msg-muted)] max-w-xl">
-              Meaningful introductions. Real conversations. Greater outcomes.
-            </p>
-
-            <div className="flex items-center gap-6 sm:gap-10 pt-3 border-t border-[var(--msg-border)] font-mono">
-              <div>
-                <div className="text-xl md:text-2xl font-serif-editorial font-bold text-[var(--msg-ink)]">
-                  1,248
-                </div>
-                <div className="text-[10px] text-[var(--msg-muted)] uppercase">Active Professionals</div>
-              </div>
-              <div className="w-[1px] h-8 bg-[var(--msg-border)]" />
-              <div>
-                <div className="text-xl md:text-2xl font-serif-editorial font-bold text-[var(--msg-ink)]">
-                  312
-                </div>
-                <div className="text-[10px] text-[var(--msg-muted)] uppercase">Companies</div>
-              </div>
-              <div className="w-[1px] h-8 bg-[var(--msg-border)]" />
-              <div>
-                <div className="text-xl md:text-2xl font-serif-editorial font-bold text-[var(--msg-ink)]">
-                  92%
-                </div>
-                <div className="text-[10px] text-[var(--msg-muted)] uppercase">Intro Lead to Chat</div>
-              </div>
-            </div>
-          </div>
-
-          {/* Hero Right: Constellation & Quote Callout (Matching Image 3) */}
-          <div className="lg:col-span-4 flex flex-col items-center text-center space-y-3">
-            <div className="w-36 h-36 relative">
-              <ConstellationGraphic variant="hero-nodes" />
-            </div>
-            <p className="text-xs italic text-[var(--msg-body)] max-w-xs">
-              “The right people turn conversations into compound opportunity.”
-            </p>
-          </div>
-        </div>
-      </section>
+      <header className="space-y-2">
+        <p className="mi-eyebrow text-xs text-[var(--msg-copper)]">Messages / Introductions</p>
+        <h1 className="text-2xl text-[var(--msg-ink)]">Messages</h1>
+        <p className="text-sm text-[var(--msg-muted)]">Your conversations and introduction requests, in one place.</p>
+      </header>
 
       {/* Active Introduction Requests Bar (Matching Image 3) */}
       {introRequests.length > 0 && (
