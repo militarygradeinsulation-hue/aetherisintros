@@ -54,6 +54,7 @@ export const HomeFeedView: React.FC<HomeFeedViewProps> = ({
   socialFeed,
   actionQueue,
 }) => {
+  const [postLimit, setPostLimit] = useState(3);
   const [feedFilter, setFeedFilter] = useState<'forYou' | 'network' | 'following' | 'trending'>('forYou');
   const [composerText, setComposerText] = useState('');
   const [composerType, setComposerType] = useState<FeedPost['badge']>('Insight');
@@ -132,7 +133,7 @@ export const HomeFeedView: React.FC<HomeFeedViewProps> = ({
 
   const firstName = me?.name?.split(' ')[0];
   return (
-    <div className="home-feed-page w-full max-w-[1620px] mx-auto px-4 md:px-6 py-6 space-y-6 animate-fadeIn">
+    <div className="home-feed-page w-full max-w-[1620px] mx-auto px-4 md:px-6 py-4 space-y-4 animate-fadeIn">
       <header className="home-feed-welcome">
         <div className="min-w-0">
           <span className="home-board-label">Dashboard</span>
@@ -148,7 +149,7 @@ export const HomeFeedView: React.FC<HomeFeedViewProps> = ({
       </header>
       <FeedSidebarLayout widgets={widgets} actionQueue={actionQueue}>
       <section id="home-social-board" className="home-social-board scroll-mt-24">
-        <header className="home-social-heading"><div><span className="home-board-label">Social Board</span><h2>Your network, in motion.</h2></div><Button variant="outline" onClick={() => onNavigate('people')}><Users />Find people</Button></header>
+        
         {socialFeed || <div className="max-w-3xl mx-auto w-full">
         {/* Center Column: Feed Post Composer & Feed Stream */}
         <main className="space-y-6">
@@ -242,7 +243,7 @@ export const HomeFeedView: React.FC<HomeFeedViewProps> = ({
               ].map((tab) => (
                 <button
                   key={tab.id}
-                  onClick={() => setFeedFilter(tab.id as any)}
+                  onClick={() => { setFeedFilter(tab.id as any); setPostLimit(3); }}
                   className={`text-xs font-medium cursor-pointer transition-colors pb-1 ${
                     feedFilter === tab.id
                       ? 'text-white border-b-2 border-[#F5B027] font-semibold'
@@ -257,7 +258,7 @@ export const HomeFeedView: React.FC<HomeFeedViewProps> = ({
 
           {/* Feed Stream Posts */}
           <div className="space-y-4">
-            {visiblePosts.map((post) => {
+            {visiblePosts.slice(0, postLimit).map((post) => {
               const showPortrait = !portraitIds.has(post.authorId);
               portraitIds.add(post.authorId);
               return (
@@ -349,6 +350,7 @@ export const HomeFeedView: React.FC<HomeFeedViewProps> = ({
                 {(commenting === post.id || comments[post.id]?.length) && <div className="home-demo-comments">{comments[post.id]?.map((text, index) => <p key={index}><b>Sarah Chen</b> {text}</p>)}{commenting === post.id && <form onSubmit={event => { event.preventDefault(); if (!reply.trim()) return; setComments(current => ({ ...current, [post.id]: [...(current[post.id] || []), reply.trim()] })); setReply(''); }}><input aria-label="Your comment" placeholder="Add a thoughtful reply…" value={reply} onChange={event => setReply(event.target.value)} /><Button size="sm" type="submit" disabled={!reply.trim()}>Reply</Button></form>}</div>}
               </article>
             ); })}
+            {visiblePosts.length > postLimit && <Button variant="outline" onClick={() => setPostLimit(limit => limit + 3)}>Show more updates</Button>}
             {!visiblePosts.length && <p className="text-sm text-[var(--sys-ink-dim)]">No updates in this view yet.</p>}
           </div>
         </main>

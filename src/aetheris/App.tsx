@@ -2883,7 +2883,7 @@ function Shell({ startPage, feedOnly = false }: { startPage?: Page | undefined; 
         <div className="workspace-grid">
           <main className="content">
             {briefing.on && <BriefingPanel key={page} page={page} />}
-            {feedOnly ? <EditorialFeed /> : content}
+            {feedOnly ? <EditorialFeed compact /> : content}
           </main>
           {contextOpen && <ContextRail page={page} people={people} select={setSelected} onAsk={() => setAskOpen(true)} />}
         </div>

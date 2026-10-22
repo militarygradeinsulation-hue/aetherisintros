@@ -90,13 +90,12 @@ interface FeedSidebarLayoutProps {
 export function FeedSidebarLayout({ widgets, actionQueue, children }: FeedSidebarLayoutProps) {
   const [layout, setLayout] = useState<GroupLayout[]>(defaults);
   const [customize, setCustomize] = useState(false);
-  const [focus, setFocus] = useState(false);
+  const [focus, setFocus] = useState(true);
   const [desktop, setDesktop] = useState(false);
-  const [railHeight, setRailHeight] = useState(944);
+  const [railHeight, setRailHeight] = useState(320);
 
   useEffect(() => {
     setLayout(restoreLayout());
-    try { setFocus(localStorage.getItem(STORAGE_KEY + '.focus') === 'true'); } catch { /* browser storage unavailable */ }
   }, []);
 
   useEffect(() => {
@@ -104,7 +103,7 @@ export function FeedSidebarLayout({ widgets, actionQueue, children }: FeedSideba
     const update = () => {
       setDesktop(query.matches);
       // Keep the measurements aligned with CSS's full-height side widgets.
-      setRailHeight(Math.max(944, Math.min(1600, window.innerHeight)));
+      setRailHeight(320);
     };
     update();
     query.addEventListener('change', update);
@@ -180,17 +179,18 @@ export function FeedSidebarLayout({ widgets, actionQueue, children }: FeedSideba
 
   return <>
     <section className={`home-feed-layout ${focus ? 'home-feed-layout--focus' : ''} ${!selected('left').length ? 'home-feed-layout--no-left' : ''} ${!selected('right').length && !actionQueue ? 'home-feed-layout--no-right' : ''}`}>
-      {!focus && desktop && rail('left')}
+
       <div className="home-feed-center">
         <div className="home-feed-controls">
           <span className="home-feed-controls-label">Your network / Social feed</span>
           <div className="home-feed-controls-actions">
-            <button type="button" aria-pressed={focus} onClick={focusToggle}>{focus ? 'Show sidebars' : 'Focus mode'}</button>
+            <button type="button" aria-pressed={focus} aria-controls="dashboard-social-panel" onClick={() => { if (!focus) focusToggle(); }}>Social feed</button>
+            <button type="button" aria-pressed={!focus} aria-controls="dashboard-tools-panel" onClick={() => { if (focus) focusToggle(); }}>Tools & activity</button>
             <button type="button" onClick={() => setCustomize(true)}><Settings2 size={15}/> Customize <span className="home-feed-visible-count">{count}</span></button>
           </div>
         </div>
-        {children}
-        {!focus && !desktop && <details className="home-feed-mobile-tools">
+        <div id="dashboard-social-panel" hidden={!focus}>{children}</div>
+        {!focus && !desktop && <details open className="home-feed-mobile-tools" id="dashboard-tools-panel">
           <summary><LayoutGrid size={16}/> Tools & widgets <span>{count} active</span></summary>
           <div className="home-feed-mobile-tool-list">
             {layout.filter(item => !item.hidden).map(item => <div key={item.id} className="home-feed-mobile-widget">{card(item)}</div>)}
@@ -198,7 +198,7 @@ export function FeedSidebarLayout({ widgets, actionQueue, children }: FeedSideba
           </div>
         </details>}
       </div>
-      {!focus && desktop && rail('right')}
+      {!focus && desktop && <div id="dashboard-tools-panel" className="dashboard-tools-grid">{rail('left')}{rail('right')}</div>}
     </section>
     {customize && <div className="home-feed-customize-backdrop" onMouseDown={event => {
       if (event.target === event.currentTarget) setCustomize(false);

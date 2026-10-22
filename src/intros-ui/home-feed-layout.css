@@ -219,3 +219,22 @@
 .ask-scroll-caliper .ask-scroll-caliper-indicator {color:#f4a125!important;}
 .ask-scroll-caliper .ask-scroll-caliper-label {color:#f4a125!important;}
 .ask-scroll-caliper .ask-scroll-caliper-chip {border-color:#f4a125!important;}
+
+/* Focused dashboard: tools occupy a separate view, never accumulate below posts. */
+.ix-root .home-feed-layout { display:block; }
+.ix-root .dashboard-tools-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:16px; }
+.ix-root .dashboard-tools-grid .home-feed-rail { display:block; }
+.ix-root .home-feed-mobile-widget,.ix-root .home-feed-mobile-widget .home-feed-widget { height:auto; min-height:0; }
+.ix-root .home-feed-mobile-widget .home-widget-scroll { overflow:visible; }
+.ix-root .home-feed-page #dashboard-social-panel { max-width:900px; margin-inline:auto; }
+.ix-root .home-feed-page #dashboard-social-panel[hidden] { display:none; }
+.ix-root .home-feed-page .home-feed-controls { margin-bottom:16px; border-color:var(--ix-line); }
+.ix-root .home-feed-page .home-feed-overview { margin-top:16px; }
+.ix-root .home-feed-page .home-feed-controls-label { display:none; }
+.ix-root .social-editorial--compact .feed-editorial-layout { display:block; }
+.ix-root .social-editorial--compact .feed-grid { display:block; }
+.ix-root .social-editorial--compact .social-feed-card { margin-top:16px; }
+.ix-root .dashboard-feed-extra { margin-block:12px; border-bottom:1px solid var(--ix-line); }
+.ix-root .dashboard-feed-extra summary { padding:10px 0; cursor:pointer; color:var(--ix-muted); font-size:12px; }
+.ix-root .social-editorial--compact .feed-section-head { margin:0 0 12px; padding:0; }
+.ix-root .social-editorial--compact .signal-type-row,.ix-root .social-editorial--compact .feed-lanes { flex-wrap:wrap; }
