@@ -83,6 +83,11 @@ export function AetherisWorkspaceShell({
     try { window.localStorage.setItem(SIDEBAR_STORAGE_KEY, collapsed ? '1' : '0'); } catch { /* storage unavailable */ }
   };
   useEffect(() => { setMobileMenuOpen(false); }, [activePage, activeWorkspace]);
+  // Navigating between root sections resets the right pane to the top so the
+  // member always lands on the page header, not mid-feed.
+  useEffect(() => {
+    document.querySelector('.aetheris-workspace-content')?.scrollTo({ top: 0, behavior: 'auto' });
+  }, [activePage, activeWorkspace]);
   useEffect(() => {
     if (!mobileMenuOpen) return;
     const close = (event: KeyboardEvent) => {
