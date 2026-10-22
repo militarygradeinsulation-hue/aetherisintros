@@ -32,3 +32,5 @@
 
 - Workspace editorial openings use compact text-only headings; avatar fallbacks use member-media, never stock faces. Why: decorative image/grid banners must not displace real actions or genuine member content.
 - Dashboard occupies a fixed viewport with separately scrollable feed/tools/overview regions; switching panels keeps feed drafts mounted and uses the shared presentation-only feed window. Why: no Dashboard outer scrolling or concealed controls, with unchanged stored posts and live visibility rules.
+
+- Member Network uses a viewport-fitted directory with collapsed filters and separately selected results/context; its selector operates only on the caller-provided authorized member list. Why: compact navigation must not change access boundaries or duplicate the member store.
