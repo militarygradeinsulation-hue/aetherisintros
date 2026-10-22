@@ -58,7 +58,7 @@ export const InsightsDashboardView: React.FC<InsightsDashboardViewProps> = ({
           {/* Hero Left: Headline & Description */}
           <div className="lg:col-span-7 space-y-4">
             <div className="text-[10px] md:text-xs font-mono uppercase tracking-[0.25em] text-[#9CA3AF] font-semibold flex items-center gap-2">
-              <span className="w-2 h-2 rounded-full bg-[#F5B027]" />
+              <span className="w-2 h-2 rounded-full bg-[#FF8A4C]" />
               Relationship Intelligence
             </div>
 
@@ -68,7 +68,7 @@ export const InsightsDashboardView: React.FC<InsightsDashboardViewProps> = ({
 
             <h2 className="font-serif-editorial text-2xl sm:text-3xl text-[#E2E8F0]">
               Deeper connections.{' '}
-              <span className="text-[#F5B027]">Greater possibilities.</span>
+              <span className="text-[#FF8A4C]">Greater possibilities.</span>
             </h2>
 
             <p className="text-sm md:text-base text-[#9CA3AF] max-w-xl leading-relaxed">
@@ -79,7 +79,7 @@ export const InsightsDashboardView: React.FC<InsightsDashboardViewProps> = ({
             <div className="flex flex-wrap items-center gap-3 pt-2">
               <button
                 onClick={() => onNavigate('intros')}
-                className="flex items-center gap-2 px-5 py-2.5 rounded-lg bg-[#F5B027] hover:bg-[#C78522] text-white text-xs md:text-sm font-semibold transition-all shadow-md shadow-[#F5B027]/20 cursor-pointer"
+                className="flex items-center gap-2 px-5 py-2.5 rounded-lg bg-[#FF8A4C] hover:bg-[#DB6B36] text-white text-xs md:text-sm font-semibold transition-all shadow-md shadow-[#FF8A4C]/20 cursor-pointer"
               >
                 Explore Opportunities →
               </button>
@@ -171,7 +171,7 @@ export const InsightsDashboardView: React.FC<InsightsDashboardViewProps> = ({
         <div className="lg:col-span-8 bg-[#0E121A] border border-white/10 rounded-xl p-5 space-y-4">
           <div className="flex items-center justify-between text-[11px] font-mono tracking-widest uppercase text-[#9CA3AF] font-semibold">
             <span>Relationship Intelligence Map</span>
-            <span className="text-[#F5B027]">People · Companies · Opportunities</span>
+            <span className="text-[#FF8A4C]">People · Companies · Opportunities</span>
           </div>
 
           <ConstellationGraphic
@@ -188,10 +188,10 @@ export const InsightsDashboardView: React.FC<InsightsDashboardViewProps> = ({
 
           <div className="space-y-3">
             {[
-              { name: 'AI Infrastructure', count: '24 opportunities', color: '#F5B027' },
+              { name: 'AI Infrastructure', count: '24 opportunities', color: '#FF8A4C' },
               { name: 'Enterprise SaaS', count: '11 opportunities', color: '#FFC85C' },
               { name: 'Fintech & Payments', count: '8 opportunities', color: '#F59E0B' },
-              { name: 'Climate & Sustainability', count: '5 opportunities', color: '#C78522' },
+              { name: 'Climate & Sustainability', count: '5 opportunities', color: '#DB6B36' },
               { name: 'Consumer & Creator', count: '4 opportunities', color: '#EC4899' },
             ].map((cl) => (
               <div
@@ -213,7 +213,7 @@ export const InsightsDashboardView: React.FC<InsightsDashboardViewProps> = ({
 
           <button
             onClick={() => onNavigate('people')}
-            className="w-full py-2 text-xs text-[#F5B027] hover:underline cursor-pointer text-center font-medium block"
+            className="w-full py-2 text-xs text-[#FF8A4C] hover:underline cursor-pointer text-center font-medium block"
           >
             View All Clusters →
           </button>
@@ -236,7 +236,7 @@ export const InsightsDashboardView: React.FC<InsightsDashboardViewProps> = ({
           <div className="flex items-center justify-between text-[11px] font-mono tracking-widest uppercase text-[#9CA3AF] font-semibold">
             <span>Intro Conversion Funnel</span>
             <div className="text-right">
-              <span className="text-lg font-serif-editorial font-bold text-[#F5B027] block leading-none">
+              <span className="text-lg font-serif-editorial font-bold text-[#FF8A4C] block leading-none">
                 28%
               </span>
               <span className="text-[9px] text-emerald-400">↑ 2.4x vs industry average</span>
@@ -252,7 +252,7 @@ export const InsightsDashboardView: React.FC<InsightsDashboardViewProps> = ({
                 </div>
                 <div className="h-2 w-full bg-white/5 rounded-full overflow-hidden">
                   <div
-                    className="h-full bg-gradient-to-r from-[#F5B027] to-[#FFC85C] rounded-full transition-all"
+                    className="h-full bg-gradient-to-r from-[#FF8A4C] to-[#FFC85C] rounded-full transition-all"
                     style={{ width: `${item.percent}%` }}
                   />
                 </div>
@@ -272,8 +272,8 @@ export const InsightsDashboardView: React.FC<InsightsDashboardViewProps> = ({
               <span className="flex items-center gap-1 text-[#F59E0B]">
                 <span className="w-2 h-2 rounded-full bg-[#F59E0B]" /> Meetings
               </span>
-              <span className="flex items-center gap-1 text-[#C78522]">
-                <span className="w-2 h-2 rounded-full bg-[#C78522]" /> Opportunities
+              <span className="flex items-center gap-1 text-[#DB6B36]">
+                <span className="w-2 h-2 rounded-full bg-[#DB6B36]" /> Opportunities
               </span>
             </div>
           </div>
@@ -283,8 +283,8 @@ export const InsightsDashboardView: React.FC<InsightsDashboardViewProps> = ({
               <AreaChart data={ENGAGEMENT_TRENDS_DATA}>
                 <defs>
                   <linearGradient id="msgGrad" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#F5B027" stopOpacity={0.4} />
-                    <stop offset="95%" stopColor="#F5B027" stopOpacity={0} />
+                    <stop offset="5%" stopColor="#FF8A4C" stopOpacity={0.4} />
+                    <stop offset="95%" stopColor="#FF8A4C" stopOpacity={0} />
                   </linearGradient>
                   <linearGradient id="meetGrad" x1="0" y1="0" x2="0" y2="1">
                     <stop offset="5%" stopColor="#F59E0B" stopOpacity={0.4} />
@@ -305,7 +305,7 @@ export const InsightsDashboardView: React.FC<InsightsDashboardViewProps> = ({
                 <Area
                   type="monotone"
                   dataKey="messages"
-                  stroke="#F5B027"
+                  stroke="#FF8A4C"
                   fillOpacity={1}
                   fill="url(#msgGrad)"
                 />
@@ -329,13 +329,13 @@ export const InsightsDashboardView: React.FC<InsightsDashboardViewProps> = ({
       {/* Row 4: AI Insights Card, Top Opportunities & Memory Graph */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
         {/* AI Insights Card (Col 4) */}
-        <div className="lg:col-span-4 bg-gradient-to-br from-[#121826] to-[#0A0D15] border border-[#F5B027]/30 rounded-xl p-5 space-y-4">
+        <div className="lg:col-span-4 bg-gradient-to-br from-[#121826] to-[#0A0D15] border border-[#FF8A4C]/30 rounded-xl p-5 space-y-4">
           <div className="flex items-center justify-between">
-            <span className="text-[10px] font-mono uppercase tracking-widest text-[#F5B027] font-semibold flex items-center gap-1.5">
+            <span className="text-[10px] font-mono uppercase tracking-widest text-[#FF8A4C] font-semibold flex items-center gap-1.5">
               <Sparkles className="w-3.5 h-3.5" />
               AI Insights
             </span>
-            <span className="text-[9px] font-mono px-1.5 py-0.2 rounded bg-[#F5B027]/20 text-[#FFC85C]">
+            <span className="text-[9px] font-mono px-1.5 py-0.2 rounded bg-[#FF8A4C]/20 text-[#FFC85C]">
               BETA
             </span>
           </div>
@@ -352,7 +352,7 @@ export const InsightsDashboardView: React.FC<InsightsDashboardViewProps> = ({
           <div className="flex items-center gap-2 pt-2">
             <button
               onClick={() => onNavigate('intros')}
-              className="flex-1 py-2 text-xs font-semibold text-white bg-[#F5B027] hover:bg-[#C78522] rounded-lg transition-colors cursor-pointer text-center"
+              className="flex-1 py-2 text-xs font-semibold text-white bg-[#FF8A4C] hover:bg-[#DB6B36] rounded-lg transition-colors cursor-pointer text-center"
             >
               See Opportunities →
             </button>
@@ -366,7 +366,7 @@ export const InsightsDashboardView: React.FC<InsightsDashboardViewProps> = ({
         <div className="lg:col-span-4 bg-[#0E121A] border border-white/10 rounded-xl p-5 space-y-3">
           <div className="flex items-center justify-between text-[11px] font-mono tracking-widest uppercase text-[#9CA3AF] font-semibold">
             <span>Top Opportunities For You</span>
-            <span className="text-[#F5B027] text-[10px]">Ranked</span>
+            <span className="text-[#FF8A4C] text-[10px]">Ranked</span>
           </div>
 
           <div className="space-y-2.5">
@@ -425,7 +425,7 @@ export const InsightsDashboardView: React.FC<InsightsDashboardViewProps> = ({
         <div className="lg:col-span-4 bg-[#0E121A] border border-white/10 rounded-xl p-5 space-y-3">
           <div className="flex items-center justify-between text-[11px] font-mono tracking-widest uppercase text-[#9CA3AF] font-semibold">
             <span>Memory Graph Insights</span>
-            <span className="text-[#F5B027] text-[10px]">Live Stream</span>
+            <span className="text-[#FF8A4C] text-[10px]">Live Stream</span>
           </div>
 
           <div className="space-y-3 text-xs text-[#CBD5E1]">
