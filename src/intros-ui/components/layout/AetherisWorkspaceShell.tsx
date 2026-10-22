@@ -37,7 +37,7 @@ export const WORKSPACE_DESTINATIONS: readonly WorkspaceDestination[] = [
   { label: 'Saved', icon: Bookmark, workspace: 'pocket' },
   { label: 'My Account', icon: UserRound, workspace: 'profile' },
   { label: 'Settings', icon: Settings, workspace: 'preferences' },
-  { label: 'Help & Support', icon: CircleHelp, href: '/help' },
+  { label: 'Help & Support', icon: CircleHelp },
 ];
 
 export type WorkspaceShellProps = {
@@ -50,12 +50,13 @@ export type WorkspaceShellProps = {
   children: ReactNode;
   /** When false, preserve the existing page content without a second host. */
   enabled?: boolean;
+  scrollContent?: boolean;
   onHelp?: () => void;
 };
 
 export function AetherisWorkspaceShell({
   activePage, onNavigate, onWorkspace, onSearch, member, notifications,
-  children, enabled = true, onHelp,
+  children, enabled = true, scrollContent = false, onHelp,
 }: WorkspaceShellProps) {
   const [query, setQuery] = useState('');
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -88,7 +89,7 @@ export function AetherisWorkspaceShell({
 
   function navigation(mobile: boolean) {
     return <nav aria-label={mobile ? 'Mobile workspace navigation' : 'Workspace navigation'}>
-      {WORKSPACE_DESTINATIONS.map(item => {
+      {WORKSPACE_DESTINATIONS.filter(item => item.label !== 'Help & Support' || onHelp).map(item => {
         const Icon = item.icon;
         const active = item.page === activePage && item.page !== undefined;
         const href = item.label === 'Help & Support' && onHelp ? undefined : item.href;
@@ -165,7 +166,7 @@ export function AetherisWorkspaceShell({
     </div>}
 
     <div className="specter-app-canvas" id="aetheris-workspace-content">
-      {children}
+      {scrollContent ? <div className="aetheris-workspace-content">{children}</div> : children}
     </div>
   </div>;
 }
