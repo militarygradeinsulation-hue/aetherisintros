@@ -297,3 +297,9 @@ body:has(.ix-specter-mode) :is(.ask-scroll-caliper,.ask-scroll-caliper-bottom-sc
  .specter-app .specter-grid--browser-first .specter-live-frame{min-height:53dvh;height:53dvh}
  .specter-app .specter-expand-button span{display:none}
 }
+
+/* Always expose the real-browser escape hatch for sites that prohibit framing. */
+.specter-app .specter-external-browser-button{display:inline-flex;align-items:center;justify-content:center;flex:0 0 auto;gap:6px;padding:9px 12px;border:1px solid #ff8a4c;border-radius:7px;background:#ff8a4c;color:#1b100b;text-decoration:none;font-size:12px;font-weight:600;white-space:nowrap}
+.specter-app .specter-external-browser-button:hover{background:#ffad79}
+.specter-app .specter-external-browser-button:focus-visible{outline:2px solid #fff;outline-offset:3px}
+@media(max-width:760px){.specter-app .specter-external-browser-button{width:100%;order:3;min-height:40px}}
