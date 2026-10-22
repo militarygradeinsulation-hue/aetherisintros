@@ -140,75 +140,75 @@ export const PeopleDirectoryView: React.FC<PeopleDirectoryViewProps> = ({
   };
 
   return (
-    <div className="w-full max-w-7xl mx-auto px-4 md:px-8 py-6 space-y-8 animate-fadeIn">
-      {/* Top Editorial Hero Banner (Matching Image 5) */}
-      <section className="bridge-discover-hero relative overflow-hidden rounded-2xl border border-white/25 bg-[#080808] p-6 lg:p-8">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
-          {/* Hero Left: Large Editorial Headline */}
-          <div className="lg:col-span-6 space-y-4">
-            <div className="text-[10px] md:text-xs font-mono uppercase tracking-[0.25em] text-[#9CA3AF] font-semibold flex items-center gap-2">
-              <span className="w-2 h-2 rounded-full bg-[#F5B027]" />
-              People Search
-            </div>
-
-            <h1 className="font-serif-editorial text-3xl sm:text-4xl md:text-5xl lg:text-5xl xl:text-6xl text-[#F2EEE6] leading-[1.08] tracking-tight">
-              Discover people{' '}
-              <span className="text-[#F5B027]">worth knowing.</span>
-            </h1>
-
-            <p className="text-sm md:text-base text-[#9CA3AF] max-w-xl leading-relaxed">
-              Find people who share your goals.
-            </p>
+    <div className="w-full max-w-7xl mx-auto px-4 md:px-8 py-6 space-y-5 animate-fadeIn">
+      {/* Compact header: purpose, prominent search, real result count */}
+      <header className="space-y-4">
+        <div className="space-y-1.5">
+          <div className="text-[10px] font-mono uppercase tracking-[0.25em] text-[#9CA3AF] font-semibold flex items-center gap-2">
+            <span className="w-2 h-2 rounded-full bg-[#F5B027]" />
+            Member Network
           </div>
+          <h1 className="font-serif-editorial text-2xl sm:text-3xl text-[#F2EEE6] leading-tight tracking-tight">
+            Discover people <span className="text-[#F5B027]">worth knowing.</span>
+          </h1>
+          <p className="text-xs md:text-sm text-[#9CA3AF] max-w-xl">
+            Search by name, role, company, city or focus — then connect or request an introduction with context.
+          </p>
+        </div>
+        <div className="flex flex-col sm:flex-row sm:items-center gap-3">
+          <div className="relative flex-1 max-w-xl">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#6B7280]" />
+            <input
+              type="text"
+              value={searchKeyword}
+              onChange={(e) => setSearchKeyword(e.target.value)}
+              placeholder="Search people, companies, cities, focus areas…"
+              aria-label="Search the member network"
+              className="w-full bg-[#131722] text-sm text-white placeholder-[#6B7280] rounded-lg pl-9 pr-3 py-2.5 border border-white/10 focus:outline-none focus:border-[#F5B027]"
+            />
+          </div>
+          <div className="text-xs font-mono text-[#9CA3AF] tracking-wide uppercase shrink-0">
+            <span className="text-white font-bold">{filteredMembers.length}</span> of {members.length} people
+          </div>
+        </div>
+      </header>
 
-          {/* Hero Right: "A Global Network of Possibility" World Map & Stats */}
-          <div className="lg:col-span-6 min-w-0 space-y-3">
-            <div className="flex items-center justify-between text-[10px] font-mono tracking-widest uppercase text-[#9CA3AF] font-semibold">
-              <span>A Global Network of Possibility</span>
+      {/* Optional context: illustrative map and network statistics */}
+      <details className="ix-disclosure">
+        <summary>Network map &amp; statistics <span>Illustrative overview</span></summary>
+        <div className="pt-3 space-y-3">
+          <div className="bridge-discover-map relative h-[220px] w-full overflow-hidden rounded-xl border border-white/15 bg-black">
+            <Map />
+            <span className="pointer-events-none absolute bottom-2 left-3 bg-black/90 px-2 py-1 font-mono text-[9px] tracking-wide text-white">
+              Illustrative network map · not live member locations
+            </span>
+          </div>
+          <div className="grid grid-cols-4 gap-2 rounded-xl border border-white/10 bg-[#0E121A] p-3 text-center font-mono">
+            <div>
+              <div className="text-base font-bold text-white">{members.length}</div>
+              <div className="text-[9px] text-[#9CA3AF] uppercase">Members</div>
             </div>
-
-            <div className="bridge-discover-map relative h-[230px] w-full overflow-hidden border border-white/40 bg-black sm:h-[260px] lg:h-[270px]">
-              <Map />
-              <span className="pointer-events-none absolute bottom-2 left-3 bg-black/90 px-2 py-1 font-mono text-[9px] tracking-wide text-white">
-                Illustrative network map · not live member locations
-              </span>
+            <div>
+              <div className="text-base font-bold text-white">{companiesCount}</div>
+              <div className="text-[9px] text-[#9CA3AF] uppercase">Companies</div>
             </div>
-
-            <div className="grid grid-cols-4 gap-2 pt-2 border-t border-white/10 text-center font-mono">
-              <div>
-                <div className="text-base font-bold text-white">{isLive ? members.length : '10K+'}</div>
-                <div className="text-[9px] text-[#9CA3AF] uppercase">{isLive ? 'Members' : 'Professionals'}</div>
-              </div>
-              <div>
-                <div className="text-base font-bold text-white">{isLive ? companiesCount : 312}</div>
-                <div className="text-[9px] text-[#9CA3AF] uppercase">Companies</div>
-              </div>
-              <div>
-                <div className="text-base font-bold text-white">{isLive ? locationsCount : 28}</div>
-                <div className="text-[9px] text-[#9CA3AF] uppercase">{isLive ? 'Locations' : 'Countries'}</div>
-              </div>
-              <div>
-                <div className="text-base font-bold text-white">{isLive ? `${averageMatch}%` : '92%'}</div>
-                <div className="text-[9px] text-[#9CA3AF] uppercase">{isLive ? 'Avg fit' : 'Matches'}</div>
-              </div>
+            <div>
+              <div className="text-base font-bold text-white">{locationsCount}</div>
+              <div className="text-[9px] text-[#9CA3AF] uppercase">Locations</div>
+            </div>
+            <div>
+              <div className="text-base font-bold text-white">{averageMatch}%</div>
+              <div className="text-[9px] text-[#9CA3AF] uppercase">Avg fit</div>
             </div>
           </div>
         </div>
-      </section>
+      </details>
 
-      {/* Featured Connectors Ribbon (Matching Image 5) */}
-      <section className="bg-[#0E121A] border border-white/10 rounded-xl p-4">
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-          <div>
-            <div className="text-[10px] font-mono tracking-widest uppercase text-[#9CA3AF] font-semibold mb-0.5">
-              Featured Connectors
-            </div>
-            <p className="text-xs text-[#CBD5E1]">
-              Find a trusted introduction.
-            </p>
-          </div>
-
-          <div className="flex flex-wrap items-center gap-3">
+      {/* Optional: members who opted into making introductions */}
+      {featuredConnectors.length > 0 && (
+        <details className="ix-disclosure">
+          <summary>Featured connectors <span>{featuredConnectors.length} open to introducing</span></summary>
+          <div className="flex flex-wrap items-center gap-3 pt-3">
             {featuredConnectors.map((connector) => (
               <div
                 key={connector.id}
@@ -228,8 +228,20 @@ export const PeopleDirectoryView: React.FC<PeopleDirectoryViewProps> = ({
               </div>
             ))}
           </div>
-        </div>
-      </section>
+        </details>
+      )}
+
+      {/* Mobile filter toggle (desktop shows the filter rail inline) */}
+      <button
+        type="button"
+        className="lg:hidden flex items-center gap-2 px-3 py-2 rounded-lg border border-white/15 text-xs font-semibold text-white cursor-pointer"
+        aria-expanded={filtersOpen}
+        aria-controls="people-filter-rail"
+        onClick={() => setFiltersOpen((open) => !open)}
+      >
+        <SlidersHorizontal className="w-3.5 h-3.5" />
+        {filtersOpen ? 'Hide filters' : 'Show filters'}
+      </button>
 
       {/* Main Directory Split: Left Filters (Col 3), Center Cards (Col 6), Right Insights (Col 3) */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
