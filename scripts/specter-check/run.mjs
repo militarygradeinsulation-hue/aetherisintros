@@ -1,8 +1,5 @@
-// Browser check for "Scan LinkedIn profile": paste a profile, scan it, review each field next to
-// the current value, and apply — only the ticked fields are written, and the confirmation says
-// whether anything was saved. Also covers the demo reader (no server, nothing saved) used by
-// the CRM's new-contact form.
-// Run: node scripts/linkedin-scan-check/run.mjs   (SHOTS=dir to save screenshots)
+// Browser check for Specter's fixed workspace, interactive preview and captured evidence.
+// Run: node scripts/specter-check/run.mjs
 import { build } from 'esbuild'
 import { createServer } from 'node:http'
 import { mkdtempSync, readFileSync, writeFileSync, existsSync } from 'node:fs'
@@ -27,7 +24,7 @@ await build({
   } }],
   loader: { '.woff2': 'empty', '.woff': 'empty', '.png': 'empty', '.jpg': 'empty', '.svg': 'empty' }, define: { 'process.env.NODE_ENV': '"production"' },
 })
-writeFileSync(join(out, 'index.html'), '<!doctype html><meta charset="utf-8"><link rel="stylesheet" href="entry.css"><div id="root"></div><script type="module" src="entry.js"></script>')
+writeFileSync(join(out, 'index.html'), '<!doctype html><meta charset="utf-8"><style>html,body,#root{margin:0;width:100%;height:100%;}</style><link rel="stylesheet" href="entry.css"><div id="root"></div><script type="module" src="entry.js"></script>')
 const server = createServer((req, res) => {
   const name = (req.url ?? '/').split('?')[0].slice(1) || 'index.html'
   const file = ['entry.js', 'entry.css'].includes(name) ? name : 'index.html'
@@ -42,18 +39,30 @@ const page = await browser.newPage({ viewport: { width: 1536, height: 1024 } })
 
 const assert = (value, message) => { if (!value) throw new Error(message); console.log('✓', message); };
 try {
+  await page.route('https://alpha.com/company?id=123', route => route.fulfill({
+    status:200,contentType:'text/html',
+    body:'<!doctype html><title>Alpha live</title><button id="interact" onclick="document.getElementById(\'feedback\').textContent=\'Clicked\'">Interact here</button><p id="feedback">Ready</p>',
+  }));
+  await page.route('https://beta.com/', route => route.fulfill({status:200,contentType:'text/html',body:'<!doctype html><title>Beta live</title><p>Beta page</p>'}));
   await page.route('https://alpha.com/house.jpg', route => route.fulfill({status:200,contentType:'image/svg+xml',body:'<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100"><rect width="100" height="100" fill="orange"/></svg>'}));
   await page.route('https://storage.googleapis.com/reader-6b7dc.appspot.com/screenshots/*', route => route.fulfill({status:200,contentType:'image/svg+xml',body:'<svg xmlns="http://www.w3.org/2000/svg" width="1365" height="900"><rect width="1365" height="900" fill="#0d5488"/><text x="60" y="120" fill="white" font-size="50">Captured website preview</text></svg>'}));
   await page.goto(base);
   await page.getByLabel('Website URL').fill('https://alpha.com/company?id=123');
   await page.getByRole('button', {name:'Scan Website',exact:true}).click();
+  await page.locator('iframe.specter-live-frame').waitFor();
+  assert((await page.locator('iframe.specter-live-frame').getAttribute('src')).includes('alpha.com/company?id=123'), 'scan opens the original URL in the browser pane');
+  await page.frameLocator('iframe.specter-live-frame').getByRole('button',{name:'Interact here'}).click();
+  assert((await page.frameLocator('iframe.specter-live-frame').locator('#feedback').textContent()) === 'Clicked', 'embedded website accepts real user interaction');
+  await page.getByRole('button',{name:'Capture',exact:true}).click();
   await page.getByRole('img',{name:'Captured website: Alpha',exact:true}).waitFor();
+  await page.getByRole('button',{name:'Interact',exact:true}).click();
   assert(await page.locator('.specter-app-sidebar').isVisible(),'reference sidebar is present on desktop');
   assert(await page.locator('.specter-app-header').isVisible(),'reference top bar is present');
+  assert(await page.evaluate(() => document.scrollingElement.scrollHeight <= innerHeight + 2),'desktop workspace locks the document to the viewport without dead space beneath');
   await page.screenshot({path:join(out,'specter-reference-desktop.png'),fullPage:true});
   await page.getByLabel('Website URL').fill('https://beta.com');
   await page.getByRole('button', {name:'Scan Website',exact:true}).click();
-  await page.getByRole('img', {name:'Captured website: Beta',exact:true}).waitFor();
+  await page.locator('iframe.specter-live-frame[src="https://beta.com/"]').waitFor();
   await page.getByLabel('Previous investigation').click();
   assert((await page.locator('.specter-address').textContent()).includes('id=123'), 'history restores exact query-selected source');
   assert((await page.locator('.specter-company').textContent()).includes('Alpha'), 'history restores matching company evidence');
@@ -80,6 +89,12 @@ try {
   for (const width of [1536,390]) {
     await page.setViewportSize({width,height:1024});
     assert(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth), `no horizontal overflow at ${width}px`);
+    assert(await page.evaluate(() => document.scrollingElement.scrollHeight <= innerHeight + 2), `locked document has no dead space at ${width}px`);
+    if (width === 390) {
+      await page.getByRole('button',{name:'Open workspace menu'}).click();
+      assert(await page.getByRole('navigation',{name:'Mobile workspace navigation'}).isVisible(),'mobile workspace navigation opens');
+      await page.getByRole('button',{name:'Close workspace menu'}).click();
+    }
     await page.screenshot({path: join(out,`specter-${width}.png`),fullPage:true});
   }
   await page.setViewportSize({width:1536,height:1024});
@@ -87,6 +102,6 @@ try {
   assert(await page.evaluate(()=>document.body.dataset.destination)==='home','sidebar Dashboard uses application navigation');
   await page.getByLabel('Search members, companies, or keywords').fill('Hallmark');
   await page.getByLabel('Search members, companies, or keywords').press('Enter');
-  assert(await page.evaluate(()=>document.body.dataset.search)==='Hallmark','top bar search connects to member search');
+  assert(await page.evaluate(()=>document.body.dataset.search)==='Hallmark','workspace sidebar search connects to member search');
   console.log('Screenshots:',out);
 } finally { await browser.close(); server.close(); }
