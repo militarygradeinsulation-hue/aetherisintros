@@ -372,8 +372,31 @@ export default function App({ mode = 'demo', executiveAction, initialPage }: { m
           />
         )}
 
-        {(activePage === 'people' || activePage === 'intros') && (
+        {activePage === 'people' && (
           <>
+            {mode === 'live' && liveDirectoryError && <div role="alert" className="mx-4 my-3 rounded-xl border border-red-400/40 p-3 text-sm text-red-200">The verified member directory did not load: {liveDirectoryError} Reopen this screen to retry. Demo profiles are never substituted.</div>}
+            <PeopleDirectoryView
+              members={members}
+              onNavigate={handleNavigate}
+              onRequestIntro={(member) => setRequestIntroTarget(member)}
+              connectedMemberIds={connectedMemberIds}
+              onToggleConnect={handleToggleConnect}
+              isLive={mode === 'live'}
+              searchQuery={searchQuery}
+              onSearchChange={setSearchQuery}
+            />
+          </>
+        )}
+
+        {activePage === 'intros' && (
+          <>
+            <div className="ix-intros-crosslink">
+              <div>
+                <span className="home-board-label">Introductions</span>
+                <p>Review requests and curated matches here. Looking for someone specific?</p>
+              </div>
+              <button type="button" onClick={() => handleNavigate('people')}>Search the member network<ArrowRight size={14} /></button>
+            </div>
             {mode === 'live'
               ? <div className="ix-classic"><InviteCard /><AetherisAppSurface key="live-intros"  startPage="intros"  /></div>
               : <IntrosHubView
@@ -384,19 +407,6 @@ export default function App({ mode = 'demo', executiveAction, initialPage }: { m
                   onDismissRequest={handleDismissIntroRequest}
                   onRequestIntro={(member) => setRequestIntroTarget(member)}
                 />}
-            <div className="border-t border-white/10">
-              {mode === 'live' && liveDirectoryError && <div role="alert" className="mx-4 my-3 rounded-xl border border-red-400/40 p-3 text-sm text-red-200">The verified member directory did not load: {liveDirectoryError} Reopen this screen to retry. Demo profiles are never substituted.</div>}
-              <PeopleDirectoryView
-                members={members}
-                onNavigate={handleNavigate}
-                onRequestIntro={(member) => setRequestIntroTarget(member)}
-                connectedMemberIds={connectedMemberIds}
-                onToggleConnect={handleToggleConnect}
-                isLive={mode === 'live'}
-                searchQuery={searchQuery}
-                onSearchChange={setSearchQuery}
-              />
-            </div>
           </>
         )}
 
