@@ -36,7 +36,9 @@ export async function checkObservedSecurity(db, repo) {
     await svc(`INSERT INTO public.ask_responses(ask_id,user_id,text) VALUES('ask-old','${B}','Synthetic response')`)
     for(const uid of [A,B,C,ADMIN]) ok((await as(uid,'SELECT public.is_live_member() AS live')).rows?.[0]?.live===true,'observed membership gate accepts confirmed/onboarded fixture '+uid.slice(-2))
   }catch(e){report.setupError=e.message;report.fail++;return report}
-  for(const suite of ['private-library','deal-workspaces','deal-rooms','zz-basic-executive']) {
+  // The candidate suite applies its forward repair twice inside its rolled-back
+  // transaction, verifies the gaps close, and never changes the supplied baseline.
+  for(const suite of ['private-library','deal-workspaces','deal-rooms','zz-basic-executive','rls-hardening-candidate']) {
     await db.exec('BEGIN');inSuite=true
     try {await (await import(pathToFileURL(join(repo,'scripts/migration-checks',suite+'.check.mjs')).href)).default({db,as,svc,ok,A,B,C,ADMIN})}
     catch(e){report.fail++;report.checks.push({name:suite,status:'FAIL',error:e.message})}
