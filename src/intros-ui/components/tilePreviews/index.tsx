@@ -956,7 +956,6 @@ const EmptyPreview: React.FC<{ nextAction?: string; label: string }> = ({
   label,
 }) => (
   <div className="flex flex-col items-center justify-center h-full text-center p-2">
-    <ExecutivePortrait avatarUrl={emptyStateImg} name="Network empty state illustration" size="sm" />
     <span className="text-[10px] text-[#F2EEE6]/50 mb-1">{label}</span>
     <span className="text-[9px] text-[#F5B027] font-mono font-medium">{nextAction}</span>
   </div>

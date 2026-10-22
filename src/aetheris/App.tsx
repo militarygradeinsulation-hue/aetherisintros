@@ -38,7 +38,6 @@ import { VOICE_PAGES } from './voice-commands'
 import overviewFilmAsset from '@/assets/aetheris-intros-overview.mp4.asset.json'
 import introVideoAsset from '@/assets/aetheris-intro-video.mp4.asset.json'
 import logoAsset from '@/assets/aetheris-logo.jpg.asset.json'
-import worldNetworkImg from '@/assets/aetheris-world-network.jpg'
 import { leaks } from './data'
 import type { AutonomyLevel, DigitalYouProfile, Objective, PrivacyScope } from './types'
 import {
@@ -1093,7 +1092,6 @@ function Discover({ people, select }: { people: Member[]; select: (p: Member) =>
     <section className="global-network">
       <header><span>A GLOBAL NETWORK<br />OF POSSIBILITY</span>
         <p>PEOPLE<br />IDEAS<br />CAPITAL<br />INFRASTRUCTURE<br />A MORE<br />CONNECTED<br />TOMORROW.</p></header>
-      <div className="globe-plate"><img src={worldNetworkImg} alt="Global Aetheris network connections across cities and regions" width={1600} height={720} loading="lazy" /></div>
       <dl className="global-stats">
         <div><dd>{people.length}</dd><dt>Available professionals</dt></div><div><dd>{new Set(people.map(person => person.company).filter(Boolean)).size}</dd><dt>Companies represented</dt></div>
         <div><dd>{new Set(people.map(person => person.location).filter(Boolean)).size}</dd><dt>Locations represented</dt></div><div><dd>{filtered.length}</dd><dt>People in this view</dt></div>
