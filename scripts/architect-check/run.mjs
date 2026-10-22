@@ -64,11 +64,11 @@ try {
   check(m.background=== (theme==='dark'?'rgb(0, 0, 0)':'rgb(255, 255, 255)'),'Canvas follows the black / white appearance mode');
   check(m.panel.toLowerCase()===(theme==='light'?'#fff':'#0c0c0c'),`White or graphite panel token matches appearance mode (received ${m.panel})`);
   check(m.mainWidth<=m.viewport+2,'Home stays within viewport');
-  const nav=page.locator('nav[aria-label="Desktop navigation"]');
-  await nav.locator('> button',{hasText:'People'}).click();
+  const nav=page.locator('.specter-app-sidebar nav[aria-label="Workspace navigation"]');
+  await nav.getByRole('button',{name:'Member Network'}).click();
   await page.waitForFunction(()=>document.querySelector('.arch-product-main')?.dataset.archPage==='people');
   check((await read()).page==='people','People directory shares the design shell');
-  await nav.locator('> button',{hasText:'Ask Intros'}).click();
+  await page.locator('.specter-app-header .specter-header-cta').click();
   await page.waitForFunction(()=>document.querySelector('.arch-product-main')?.dataset.archPage==='workspace');
   check((await read()).page==='workspace','All workspace tools share the design shell');
   check(await page.locator('.ix-tools button').count()>=10,'Real workspace module tabs remain available');
@@ -97,11 +97,11 @@ try {
   });
   check(Boolean(options.optionBg && options.optionInk && options.canvas),'Executive option tokens available in '+theme);
   check(Boolean(options.selectedColor) && options.selectedColor!=='rgb(220, 232, 243)','Selected workspace option is not stale powder-blue');
-  await nav.locator('[aria-haspopup=menu]').click();
-  const menuSurface=await page.locator('.ix-desktop-more-menu').evaluate(el=>getComputedStyle(el).backgroundColor);
-  check((theme==='light'?/rgb\((?:24[0-9]|25[0-5]),/.test(menuSurface):/rgb\((?:[0-3]?\d),/.test(menuSurface)),'More dropdown respects light/dark surface contrast');
-  await page.keyboard.press('Escape');
-  await nav.locator('> button',{hasText:'Messages'}).click();
+  // One persistent member sidebar replaces the obsolete desktop More dropdown.
+  check(await nav.isVisible(), 'Persistent workspace destinations are visible');
+  const navColor=await nav.evaluate(el=>getComputedStyle(el).color);
+  check(Boolean(navColor && navColor!=='rgba(0, 0, 0, 0)'), 'Workspace navigation has readable ink');
+  await nav.getByRole('button',{name:'Messages'}).click();
   await page.waitForFunction(()=>document.querySelector('.arch-product-main')?.dataset.archPage==='messages');
   check((await read()).page==='messages','Messages shares the product shell');
   const messaging=await page.evaluate(() => {
@@ -113,8 +113,7 @@ try {
   check(messaging.background===(theme==='dark'?'rgb(0, 0, 0)':'rgb(255, 255, 255)'),'Message panels invert black/white with the active appearance');
   check(!messaging.action || messaging.action!=='rgb(47, 95, 135)','Message actions never regress to obsolete slate blue');
   // Previously dark-on-dark relationship signal cards must remain readable.
-  await nav.locator('[aria-haspopup=menu]').click();
-  await page.getByRole('menuitem',{name:'Insights'}).click();
+  await nav.getByRole('button',{name:'Insights'}).click();
   await page.waitForFunction(()=>document.querySelector('.arch-product-main')?.dataset.archPage==='insights');
   await page.waitForSelector('.ai-insight-list>article',{timeout:30000});
   const signals=await page.evaluate(() => {
@@ -142,7 +141,7 @@ try {
     'Insights and relationship signals use inverse graphite/white cards');
   check(['heading','description','evidence','confidence'].every(k=>signals[k]>=4.5),
     'Insight names, descriptions, evidence and confidence all meet 4.5:1 text contrast ('+JSON.stringify(signals)+')');
-  await nav.locator('> button',{hasText:'Meetings'}).click();
+  await nav.getByRole('button',{name:'Meetings'}).click();
   await page.waitForFunction(()=>document.querySelector('.arch-product-main')?.dataset.archPage==='meetings');
   check((await read()).page==='meetings','Meeting workspace shares the design shell');
   await page.close();

@@ -367,3 +367,19 @@
     transform: none !important;
   }
 }
+
+/* Contrast repair found by the rendered Messages browser check.
+ * Some inherited light-theme stencil rules leave the label soft ivory on a
+ * mid-orange primary button (3.87:1). Keep the burnt orange treatment but
+ * use a deeper shade and true white label for WCAG AA small-text contrast.
+ * Scope to the real persistent member workspace; don't recolor system alerts.
+ */
+html:root[data-theme="light"] body .ix-root .aetheris-workspace-shell .arch-product-main :is(.ix-messages,.ix-live-messages) button.msg-primary-action,
+html:root[data-theme="light"] body .ix-root .aetheris-workspace-shell .arch-product-main :is(.ix-messages,.ix-live-messages) button.msg-primary-action:hover:not(:disabled) {
+  background: #9c431b !important;
+  background-color: #9c431b !important;
+  background-image: none !important;
+  border-color: #9c431b !important;
+  color: #ffffff !important;
+  -webkit-text-fill-color: #ffffff !important;
+}
