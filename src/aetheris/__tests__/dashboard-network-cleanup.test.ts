@@ -51,4 +51,21 @@ describe('dashboard and network cleanup', () => {
     expect(view).not.toContain('Shared interests: AI Infrastructure, Climate Tech')
     expect(view).toContain('elena.mutualConnectionsCount')
   })
+
+  it('organizes Memory detail modules behind an accessible section chooser', () => {
+    const app = file('../App.tsx')
+    expect(app).toContain('memory-modules--tabbed')
+    expect(app).toContain('role="tablist"')
+    expect(app).toContain('aria-selected={memoryModule')
+    // All four real-data sections remain reachable.
+    for (const label of ['Relationship patterns', 'Learned needs', 'Reconnect', 'Cooling']) {
+      expect(app).toContain(`'${label}'`)
+    }
+  })
+
+  it('folds Insights opportunity clusters into progressive disclosure', () => {
+    const app = file('../App.tsx')
+    expect(app).toContain('Opportunity clusters — where several relationships point the same way')
+    expect(app).toContain('ix-disclosure')
+  })
 })
