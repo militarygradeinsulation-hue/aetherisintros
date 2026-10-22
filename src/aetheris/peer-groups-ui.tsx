@@ -4,7 +4,7 @@
  * processing. Admins create groups, manage membership and handle requests to join.
  * Access is enforced in the database (0044_peer_groups.sql + 0045_peer_group_feed.sql).
  *
- * Feed components (PeerGroupCard, PeerGroupFeed, PostComposer, PeerPost, CreatePeerGroupModal)
+ * Feed components (PeerGroupCard, PeerGroupFeed, PostComposer, PeerPostCard, CreatePeerGroupModal)
  * are at the bottom of this file and back the async board-of-advisors view.
  */
 import { ArrowLeft, CalendarDays, Check, LifeBuoy, Lock, MessageSquare, Plus, ShieldCheck, Trash2, UserMinus, Users } from 'lucide-react'
@@ -625,7 +625,7 @@ export function PeerGroupCard({
 }
 
 /** A single feed post card with kind badge and author initials. */
-export function PeerPost({
+export function PeerPostCard({
   kind, body, authorName, authorInitials, createdAt,
 }: {
   kind: string; body: string; authorName: string; authorInitials: string; createdAt: string
@@ -734,7 +734,7 @@ export function PeerGroupFeed({ groupId, onBack }: { groupId: string; onBack: ()
         </p>
       )}
       {posts.map(p => (
-        <PeerPost
+        <PeerPostCard
           key={p.id}
           kind={p.kind}
           body={p.body}

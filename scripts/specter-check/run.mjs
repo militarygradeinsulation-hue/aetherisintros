@@ -98,7 +98,7 @@ try {
     await page.screenshot({path: join(out,`specter-${width}.png`),fullPage:true});
   }
   await page.setViewportSize({width:1536,height:1024});
-  await page.getByRole('button',{name:'Dashboard',exact:true}).click();
+  await page.getByRole('navigation',{name:'Workspace navigation'}).getByRole('button',{name:'Dashboard',exact:true}).click();
   assert(await page.evaluate(()=>document.body.dataset.destination)==='home','sidebar Dashboard uses application navigation');
   await page.getByLabel('Search members, companies, or keywords').fill('Hallmark');
   await page.getByLabel('Search members, companies, or keywords').press('Enter');
