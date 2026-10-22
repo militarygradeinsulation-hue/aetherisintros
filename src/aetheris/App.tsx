@@ -1611,7 +1611,8 @@ function Insights({ people, select, setPage }: { people: Member[]; select: (p: M
           onClick={() => setPage('intros')}>
         </BentoGridItem>)}
       </IntrosSystemBento>
-    </section>}
+      </section>
+    </details>}
 
     <details className="ix-disclosure">
       <summary>Relationship intelligence map — the same graph, read for opportunity</summary>
