@@ -36,16 +36,31 @@ let passed = 0
 const assert = (condition, note) => { if (!condition) throw new Error(note); passed++; console.log(' ✓ ' + note) }
 
 try {
+  // Warm Vite's dependency optimizer before collecting page errors. Its cold
+  // module replacement can abort the first client entry request even though
+  // hydration subsequently recovers; production builds have no such reload.
+  const warmup = await browser.newPage()
+  await warmup.route(/^https:\/\/fonts\.(googleapis|gstatic)\.com\//, route => route.fulfill({ contentType: 'text/css', body: '' }))
+  try {
+    await warmup.goto(base + '/try', { waitUntil: 'domcontentloaded', timeout: 120000 })
+    await warmup.waitForFunction(() => {
+      const button = document.querySelector('.ai-try-goal')
+      return Boolean(button && Object.keys(button).some(key => key.startsWith('__reactProps$')))
+    }, null, { timeout: 60000 })
+    await warmup.waitForLoadState('networkidle')
+  } finally { await warmup.close() }
   for (const theme of ['light', 'dark']) {
     for (const width of [1280, 390]) {
       const context = await browser.newContext({ viewport: { width, height: 850 } })
       await context.addInitScript(mode => {
         try { localStorage.setItem('ask-intros.appearance', mode) } catch { /* optional */ }
       }, theme)
+      // Remote font availability is outside this isolated functional check.
+      await context.route(/^https:\/\/fonts\.(googleapis|gstatic)\.com\//, route => route.fulfill({ contentType: 'text/css', body: '' }))
       const page = await context.newPage()
       const errors = []
       page.on('pageerror', error => errors.push(error.message))
-      page.on('console', message => { if (message.type() === 'error') errors.push('console: ' + message.text()) })
+      page.on('console', message => { if (message.type() === 'error') errors.push('console: ' + message.text() + ' ' + message.location().url) })
       page.on('requestfailed', request => { if (request.url().startsWith(base)) errors.push('request: ' + request.url() + ' ' + request.failure()?.errorText) })
       await page.goto(base + '/try', { waitUntil: 'domcontentloaded', timeout: 120000 })
       await page.locator('.ai-try-output').waitFor({ timeout: 60000 })
