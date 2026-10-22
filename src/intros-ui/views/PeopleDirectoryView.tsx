@@ -268,8 +268,8 @@ export const PeopleDirectoryView: React.FC<PeopleDirectoryViewProps> = ({
 
       {/* Main Directory Split: Left Filters (Col 3), Center Cards (Col 6), Right Insights (Col 3) */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-        {/* Left Filter Sidebar */}
-        <aside className="lg:col-span-3 space-y-4">
+        {/* Left Filter Sidebar (collapsible on mobile via the toggle above) */}
+        <aside id="people-filter-rail" className={`lg:col-span-3 space-y-4 ${filtersOpen ? '' : 'hidden lg:block'}`}>
           <div className="bg-[#0E121A] border border-white/10 rounded-xl p-4 space-y-5">
             <div className="flex items-center justify-between">
               <span className="text-[11px] font-mono tracking-widest uppercase text-[#9CA3AF] font-semibold flex items-center gap-1.5">
@@ -282,18 +282,6 @@ export const PeopleDirectoryView: React.FC<PeopleDirectoryViewProps> = ({
               >
                 Clear All
               </button>
-            </div>
-
-            {/* Keyword Input */}
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-[#6B7280]" />
-              <input
-                type="text"
-                value={searchKeyword}
-                onChange={(e) => setSearchKeyword(e.target.value)}
-                placeholder="Name or keyword..."
-                className="w-full bg-[#131722] text-xs text-white placeholder-[#6B7280] rounded-lg pl-8 pr-3 py-2 border border-white/10 focus:outline-none focus:border-[#F5B027]"
-              />
             </div>
 
             {/* Relationship Tier Filter */}
