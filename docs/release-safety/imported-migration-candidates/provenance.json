@@ -1,0 +1,32 @@
+[
+  {
+    "original": "drizzle/migrations/0045_peer_group_feed.sql",
+    "preserved": "docs/release-safety/imported-migration-candidates/0045_peer_group_feed.candidate.sql",
+    "sha256": "7250ff899ec35b3b647e5c9ad35ba2d058193e8297f826c2ce5e38dad8d891b3"
+  },
+  {
+    "original": "drizzle/migrations/0046_peer_group_agendas.sql",
+    "preserved": "docs/release-safety/imported-migration-candidates/0046_peer_group_agendas.candidate.sql",
+    "sha256": "4b1918bd7f9af7192d5b17a12d3536d7dd5a748510247a90a5e393cab42850da"
+  },
+  {
+    "original": "drizzle/migrations/0057_business_posts.sql",
+    "preserved": "docs/release-safety/imported-migration-candidates/0057_business_posts.candidate.sql",
+    "sha256": "42cc44b2b0db863276748b3ddd04198ff5cb8af263ceb9a781d1030d936e2c97"
+  },
+  {
+    "original": "drizzle/migrations/0058_business_posts_column.sql",
+    "preserved": "docs/release-safety/imported-migration-candidates/0058_business_posts_column.candidate.sql",
+    "sha256": "be03fd04e8624ac91bcfbbbd983a2ebc0fc0cb8942554973497b222a9664aa50"
+  },
+  {
+    "original": "drizzle/migrations/0059_business_execution_workbench.sql",
+    "preserved": "docs/release-safety/imported-migration-candidates/0059_business_execution_workbench.candidate.sql",
+    "sha256": "b790e5621ff845d42e0bb5eb013ce74f6f7a207ffe6b1c7d6f30ebc013d3f248"
+  },
+  {
+    "original": "drizzle/migrations/meta/0058_snapshot.json",
+    "preserved": "docs/release-safety/imported-migration-candidates/0058_snapshot.candidate.json",
+    "sha256": "6d3791ea9e3359dcebf8c32bacb76b1ef689612fbd0f6439988f918e514abd5c"
+  }
+]
