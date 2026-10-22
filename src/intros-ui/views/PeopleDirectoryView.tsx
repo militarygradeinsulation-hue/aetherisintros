@@ -447,7 +447,7 @@ export const PeopleDirectoryView: React.FC<PeopleDirectoryViewProps> = ({
 
             <div className="flex flex-wrap items-center gap-3 min-w-0 max-w-full">
               {/* Sort selector */}
-              <div className="flex items-center gap-1.5 text-xs text-[#9CA3AF] min-w-0 max-w-full">
+              <div className="flex flex-wrap items-center gap-1.5 text-xs text-[#9CA3AF] min-w-0 max-w-full">
                 <span>Sort by:</span>
                 <select
                   value={sortBy}
