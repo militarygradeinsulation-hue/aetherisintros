@@ -151,7 +151,7 @@ export const ProfileDetailView: React.FC<ProfileDetailViewProps> = ({
             <div className="flex items-center gap-3 pt-2">
               <button
                 onClick={() => onRequestIntro(member)}
-                className="flex-1 py-2.5 px-4 text-xs font-semibold text-white bg-[#FF8A4C] hover:bg-[#DB6B36] rounded-lg shadow-sm transition-colors cursor-pointer text-center"
+                className="flex-1 py-2.5 px-4 text-xs font-semibold text-[#1c110c] bg-[#FF8A4C] hover:bg-[#DB6B36] rounded-lg shadow-sm transition-colors cursor-pointer text-center"
               >
                 Request Introduction →
               </button>
@@ -253,7 +253,7 @@ export const ProfileDetailView: React.FC<ProfileDetailViewProps> = ({
                       } as NetworkMember;
                       onRequestIntro(counterpart);
                     }}
-                    className="flex-1 py-2 text-xs font-semibold text-white bg-[#FF8A4C] hover:bg-[#DB6B36] rounded-lg transition-colors cursor-pointer text-center"
+                    className="flex-1 py-2 text-xs font-semibold text-[#1c110c] bg-[#FF8A4C] hover:bg-[#DB6B36] rounded-lg transition-colors cursor-pointer text-center"
                   >
                     Request Introduction
                   </button>
