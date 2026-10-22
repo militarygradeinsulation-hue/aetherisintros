@@ -154,3 +154,57 @@
   .ix-aetheris-workspace-mode .ix-network-viewport *::before,
   .ix-aetheris-workspace-mode .ix-network-viewport *::after {scroll-behavior:auto!important;}
 }
+
+/*
+ * Scroll recovery: the prior nested overflow:hidden chain made member cards
+ * unreachable at several viewport sizes. Keep the app shell fixed, but let the
+ * right-hand Network pane be the single dependable scroll container.
+ * This is intentionally more robust than multiple competing scroll regions.
+ */
+.ix-aetheris-workspace-mode .aetheris-workspace-content:has(.ix-network-viewport) {
+  display:block;
+  overflow-y:auto!important;
+  overflow-x:hidden!important;
+  overscroll-behavior-y:contain;
+  -webkit-overflow-scrolling:touch;
+  scrollbar-width:thin;
+}
+.ix-aetheris-workspace-mode .aetheris-workspace-content > .ix-network-directory {
+  display:block;
+  min-height:auto;
+  height:auto;
+  overflow:visible;
+}
+.ix-aetheris-workspace-mode .ix-network-viewport {
+  display:block;
+  flex:none;
+  min-height:auto;
+  max-height:none;
+  height:auto;
+  overflow:visible;
+}
+.ix-aetheris-workspace-mode .ix-network-viewport > * + * {
+  margin-top:12px;
+}
+.ix-aetheris-workspace-mode .ix-network-results-layout {
+  height:auto;
+  min-height:0;
+  max-height:none;
+  overflow:visible;
+  align-items:start;
+}
+.ix-aetheris-workspace-mode .ix-network-results-layout > aside,
+.ix-aetheris-workspace-mode .ix-network-results-list {
+  height:auto;
+  max-height:none;
+  overflow:visible;
+}
+.ix-aetheris-workspace-mode .ix-network-results-list > div:first-child {
+  position:relative;
+  top:auto;
+}
+@media(max-width:1023px) {
+  .ix-aetheris-workspace-mode .ix-network-results-layout {
+    overflow:visible;
+  }
+}
