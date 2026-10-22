@@ -25,6 +25,17 @@ describe('saved member persistence contract', () => {
     expect(profile).not.toContain('setSavedState')
   })
 
+  it('shares a single server-confirmed connection state with the member directory', () => {
+    const app = source('../../intros-ui/IntrosApp.tsx')
+    const store = source('../store.tsx')
+    expect(app).toContain("const activeConnectedMemberIds = mode === 'live'")
+    expect(app).toContain('new Set(network.connections)')
+    expect(app).toContain('network.connect(memberId)')
+    expect(app).toContain('connectedMemberIds={activeConnectedMemberIds}')
+    expect(app).not.toContain("supabase.from('follows').upsert")
+    expect(store).toContain("return mirrorFollow(userId, id, 'connection', on)")
+  })
+
   it('keeps private bookmarks out of the public anonymous preview', () => {
     const app = source('../../intros-ui/IntrosApp.tsx')
     expect(app).toContain("new Set(mode === 'live' ? [] : ['marcus-lee'])")
