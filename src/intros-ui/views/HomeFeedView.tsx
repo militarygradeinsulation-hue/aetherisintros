@@ -60,9 +60,12 @@ export const HomeFeedView: React.FC<HomeFeedViewProps> = ({
   const [eventsList, setEventsList] = useState(UPCOMING_EVENTS);
   const [circlesList, setCirclesList] = useState(SUGGESTED_CIRCLES);
 
-  // Spotlight member for "Who to Meet This Week"
+  // Spotlight member for "Who to Meet This Week" — demo only; live members
+  // get the real relationship field, never a curated "match" presentation.
   const elena = networkMembers.find((m) => m.id === 'elena-rossi') || networkMembers[2];
-  const [heroVisualMode, setHeroVisualMode] = useState<'bubbles' | 'spotlight'>('bubbles');
+  const [heroVisualChoice, setHeroVisualChoice] = useState<'bubbles' | 'spotlight'>('bubbles');
+  const heroVisualMode: 'bubbles' | 'spotlight' = isLive ? 'bubbles' : heroVisualChoice;
+  const setHeroVisualMode = setHeroVisualChoice;
 
   const [comments, setComments] = useState<Record<string, string[]>>({});
   const [commenting, setCommenting] = useState<string | null>(null);
@@ -127,8 +130,22 @@ export const HomeFeedView: React.FC<HomeFeedViewProps> = ({
     profile: tile('Your identity', me?.name || 'Make yourself known.', <><p>What you are building. Who you can help. What you need next.</p><div className="home-board-tags"><span>Current focus</span><span>Looking for</span><span>Can help with</span></div><p>Give people a reason to start a meaningful conversation.</p></>, isLive ? 'Open my profile' : 'Meet a member', () => onNavigate(isLive ? 'workspace' : 'profile', isLive ? undefined : boardPeople[0]?.id)),
   };
 
+  const firstName = me?.name?.split(' ')[0];
   return (
-    <div className="home-feed-page w-full max-w-[1620px] mx-auto px-4 md:px-6 py-6 space-y-8 animate-fadeIn">
+    <div className="home-feed-page w-full max-w-[1620px] mx-auto px-4 md:px-6 py-6 space-y-6 animate-fadeIn">
+      <header className="home-feed-welcome">
+        <div className="min-w-0">
+          <span className="home-board-label">Dashboard</span>
+          <h1>{firstName ? `Good to see you, ${firstName}.` : 'Your network, in one place.'}</h1>
+          <p>
+            {boardPeople.length} {boardPeople.length === 1 ? 'person' : 'people'} · {posts.length} {posts.length === 1 ? 'update' : 'updates'} · {savedPosts.length} saved
+          </p>
+        </div>
+        <div className="home-feed-welcome-actions">
+          <Button variant="outline" size="sm" onClick={() => onNavigate('people')}><Users />Find people</Button>
+          <Button size="sm" className="home-feed-welcome-cta" onClick={jumpToSocial}><PlusCircle />Share an update</Button>
+        </div>
+      </header>
       <FeedSidebarLayout widgets={widgets} actionQueue={actionQueue}>
       <section id="home-social-board" className="home-social-board scroll-mt-24">
         <header className="home-social-heading"><div><span className="home-board-label">Social Board</span><h2>Your network, in motion.</h2></div><Button variant="outline" onClick={() => onNavigate('people')}><Users />Find people</Button></header>
@@ -412,7 +429,7 @@ export const HomeFeedView: React.FC<HomeFeedViewProps> = ({
                   >
                     ✦ Relationship Field
                   </button>
-                  <button
+                  {!isLive && <button
                     onClick={() => setHeroVisualMode('spotlight')}
                     aria-pressed={heroVisualMode === 'spotlight'}
                     className={`ix-option-tab px-2.5 py-1 text-[10px] font-mono rounded transition-colors cursor-pointer ${
@@ -422,7 +439,7 @@ export const HomeFeedView: React.FC<HomeFeedViewProps> = ({
                     }`}
                   >
                     ★ Spotlight Match
-                  </button>
+                  </button>}
                 </div>
                 <span className="text-[11px] font-mono text-[#F5B027] bg-[#F5B027]/10 border border-[#F5B027]/20 px-2 py-0.5 rounded font-medium">
                   {heroVisualMode === 'bubbles' ? (isLive ? 'Your Network' : 'Demo Network') : elena ? `${elena.matchScore}% Match` : 'No match yet'}
@@ -482,12 +499,12 @@ export const HomeFeedView: React.FC<HomeFeedViewProps> = ({
                   <div className="text-[11px] text-[#9CA3AF] space-y-1 mb-4 pt-2 border-t border-white/5">
                     <div className="flex items-center gap-1.5">
                       <Users className="w-3.5 h-3.5 text-[#F5B027]" />
-                      <span>12 mutual connections</span>
+                      <span>{elena.mutualConnectionsCount} mutual connections</span>
                     </div>
-                    <div className="flex items-center gap-1.5">
+                    {elena.focusAreas.length > 0 && <div className="flex items-center gap-1.5">
                       <Sparkles className="w-3.5 h-3.5 text-[#F59E0B]" />
-                      <span>Shared interests: AI Infrastructure, Climate Tech</span>
-                    </div>
+                      <span>Shared interests: {elena.focusAreas.slice(0, 2).join(', ')}</span>
+                    </div>}
                   </div>
 
                   <div className="flex items-center gap-2">

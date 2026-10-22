@@ -1418,6 +1418,7 @@ function Memory({ people, select }: { people: Member[]; select: (p: Member) => v
   const net = useNetwork()
   const [cat, setCat] = useState<Learning['category'] | 'All'>('All')
   const [showAllLearned, setShowAllLearned] = useState(false)
+  const [memoryModule, setMemoryModule] = useState<'patterns' | 'needs' | 'reconnect' | 'cooling'>('patterns')
   const items: Learning[] = [
     ...net.notes.slice(0, 4).map((n, i): Learning => ({
       id: `n${i}`, category: 'People', text: n.text, source: 'Recorded by you', confidence: 100, scope: n.scope, when: n.createdAt,
@@ -1496,34 +1497,39 @@ function Memory({ people, select }: { people: Member[]; select: (p: Member) => v
         </div>}
       </section>
     </div>
-    <div className="memory-modules">
-      <section className="mod">
-        <header><span>RELATIONSHIP PATTERNS</span><button className="mod-link">View all <ArrowRight size={12} /></button></header>
+    <div className="memory-modules memory-modules--tabbed">
+      <div className="memory-module-tabs" role="tablist" aria-label="Memory detail sections">
+        {([['patterns', 'Relationship patterns'], ['needs', 'Learned needs'], ['reconnect', 'Reconnect'], ['cooling', 'Cooling']] as const).map(([id, label]) =>
+          <button key={id} role="tab" aria-selected={memoryModule === id} className={memoryModule === id ? 'active' : ''}
+            onClick={() => setMemoryModule(id)}>{label}</button>)}
+      </div>
+      {memoryModule === 'patterns' && <section className="mod" role="tabpanel">
+        <header><span>RELATIONSHIP PATTERNS</span></header>
         <div className="pattern-body">
           <div className="pattern-faces">{people.slice(0, 3).map(p => <Avatar key={p.id} person={p} portrait />)}</div>
           <p>You often connect operators, founders and investors working on the same industrial and AI problems.</p>
         </div>
         <strong className="pattern-stat">{net.connections.length} connected relationships</strong>
         <small>in your current graph.</small>
-      </section>
-      <section className="mod">
-        <header><span>NEWLY LEARNED NEEDS</span><button className="mod-link">View all <ArrowRight size={12} /></button></header>
+      </section>}
+      {memoryModule === 'needs' && <section className="mod" role="tabpanel">
+        <header><span>NEWLY LEARNED NEEDS</span></header>
         <ul className="need-signals">{net.asks.slice(0, 3).map(ask => <li key={ask.id}><Target size={15} /><p>{ask.ask}</p></li>)}{!net.asks.length && <li><Network size={15} /><p>No network needs have been recorded yet.</p></li>}</ul>
-      </section>
-      <section className="mod">
-        <header><span>RECONNECT OPPORTUNITIES</span><button className="mod-link">View all <ArrowRight size={12} /></button></header>
+      </section>}
+      {memoryModule === 'reconnect' && <section className="mod" role="tabpanel">
+        <header><span>RECONNECT OPPORTUNITIES</span></header>
         <ul className="reconnect-list">{[...people].filter(p => p.lastInteractionDays != null && p.lastInteractionDays < 9000).sort((a, b) => (b.lastInteractionDays ?? 0) - (a.lastInteractionDays ?? 0)).slice(0, 3).map(p =>
           <li key={p.id}><button onClick={() => select(p)}><Avatar person={p} portrait />
             <div><strong>{p.name}</strong><small>Last conversation {Math.max(1, Math.round((p.lastInteractionDays ?? 0) / 30))} months ago</small>
               <small>{p.whyNow}</small></div></button></li>)}</ul>
-      </section>
-      <section className="mod">
-        <header><span>COOLING CONVERSATIONS</span><button className="mod-link">View all <ArrowRight size={12} /></button></header>
+      </section>}
+      {memoryModule === 'cooling' && <section className="mod" role="tabpanel">
+        <header><span>COOLING CONVERSATIONS</span></header>
         <ul className="reconnect-list">{people.filter(p => p.score.timing < 70 && p.lastInteractionDays != null && p.lastInteractionDays < 9000).slice(0, 3).map(p =>
           <li key={p.id}><button onClick={() => select(p)}><Avatar person={p} portrait />
             <div><strong>{p.name}</strong><small>Last message {Math.max(1, Math.round((p.lastInteractionDays ?? 0) / 7))} weeks ago</small>
               <small>{p.nextAction}</small></div></button></li>)}</ul>
-      </section>
+      </section>}
     </div>
   </>
 }
@@ -1593,8 +1599,9 @@ function Insights({ people, select, setPage }: { people: Member[]; select: (p: M
       })}
       {showcaseOnly(leaks).length === dismissed.length && <p className="empty-state">No relationship signals yet. As members join, message and update what they are working on, changes worth acting on appear here.</p>}
     </div>
-    {people.length > 0 && <section className="opportunity-clusters">
-      <header><Label><Layers size={11} /> OPPORTUNITY CLUSTERS</Label><h2>Where several relationships point the same way.</h2></header>
+    {people.length > 0 && <details className="ix-disclosure">
+      <summary>Opportunity clusters — where several relationships point the same way</summary>
+      <section className="opportunity-clusters">
       <IntrosSystemBento className="insight-cluster-bento md:grid-cols-3">
         {[
           { name: 'Industrial AI adoption', people: people.filter(p => /Manufacturing|AI/i.test(`${p.industry} ${p.expertise.join(' ')}`)).slice(0, 4) },
@@ -1604,7 +1611,8 @@ function Insights({ people, select, setPage }: { people: Member[]; select: (p: M
           onClick={() => setPage('intros')}>
         </BentoGridItem>)}
       </IntrosSystemBento>
-    </section>}
+      </section>
+    </details>}
 
     <details className="ix-disclosure">
       <summary>Relationship intelligence map — the same graph, read for opportunity</summary>
