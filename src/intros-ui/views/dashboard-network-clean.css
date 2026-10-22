@@ -1,0 +1,176 @@
+/* Focused Ask Intros Dashboard + Network, scoped to the authenticated/demo workspace. */
+.ix-root .ix-dashboard-clean,
+.ix-root .ix-network-clean {
+  --clean-bg:#0b0b0d;
+  --clean-card:#131316;
+  --clean-line:rgba(255,255,255,.09);
+  --clean-muted:#a1a1aa;
+  --clean-orange:#ff8a4c;
+  color:#f2f1ec;
+}
+.ix-root .ix-workspace-eyebrow {
+  color:#ff8a4c;
+  font:600 10px/1.4 "IBM Plex Mono",monospace;
+  letter-spacing:.15em;text-transform:uppercase;
+}
+.ix-root .ix-dashboard-header,
+.ix-root .ix-network-header {
+  display:flex;align-items:center;justify-content:space-between;
+  gap:18px 28px;flex-wrap:wrap;
+  padding:4px 0 17px;
+  border-bottom:1px solid var(--clean-line);
+}
+.ix-root .ix-dashboard-header h1,
+.ix-root .ix-network-header h1,
+.ix-root .ix-intros-destination-header h1 {
+  margin:6px 0 5px;
+  font-family:Poppins,Inter,system-ui,sans-serif;
+  font-weight:600;
+  letter-spacing:-.045em;
+  font-size:clamp(24px,2.5vw,33px);
+  line-height:1.16;
+  color:#f5f5f4;
+}
+.ix-root .ix-dashboard-header p,
+.ix-root .ix-network-header p,
+.ix-root .ix-intros-destination-header p {
+  margin:0;color:#a1a1aa;line-height:1.5;
+  font-size:clamp(12px,1.1vw,14px);
+}
+.ix-root .ix-dashboard-header-actions {
+  display:flex;align-items:center;gap:8px;flex-wrap:wrap;
+}
+.ix-root .ix-dashboard-header-actions button,
+.ix-root .ix-network-intro-link,
+.ix-root .ix-intros-destination-header button {
+  display:inline-flex;align-items:center;justify-content:center;
+  gap:9px;min-height:39px;padding:9px 13px;
+  background:#17171a;color:#fafafa;
+  border:1px solid #39393f;border-radius:8px;
+  font:600 12px/1.3 Poppins,Inter,system-ui,sans-serif;
+  cursor:pointer;transition:border-color .18s ease,background .18s ease;
+}
+.ix-root .ix-dashboard-header-actions button:first-child,
+.ix-root .ix-network-intro-link,
+.ix-root .ix-intros-destination-header button {
+  border-color:rgba(255,138,76,.36);background:rgba(255,138,76,.10);
+  color:#ffd4bc;
+}
+.ix-root .ix-dashboard-header-actions button:hover,
+.ix-root .ix-network-intro-link:hover,
+.ix-root .ix-intros-destination-header button:hover {
+  border-color:#ff8a4c;background:#242024;
+}
+.ix-root .ix-dashboard-clean .home-feed-layout--focus {
+  width:min(100%,940px);margin:0 auto;
+  grid-template-columns:minmax(0,1fr)!important;
+}
+.ix-root .ix-dashboard-clean .home-feed-layout--focus .home-feed-center {
+  width:100%;min-width:0;
+}
+.ix-root .ix-dashboard-clean .home-feed-controls {
+  padding:0 0 12px;
+  border-bottom-color:var(--clean-line);
+}
+.ix-root .ix-dashboard-clean .home-feed-controls-actions button {
+  border-radius:7px;color:#d4d4d8!important;
+  border-color:#36363c!important;
+  font-family:Poppins,Inter,system-ui,sans-serif;
+}
+.ix-root .ix-dashboard-clean .home-social-board {
+  min-width:0;
+}
+.ix-root .ix-dashboard-clean .home-social-heading h2 {
+  font-size:clamp(18px,1.8vw,24px);
+  font-family:Poppins,Inter,system-ui,sans-serif;
+  font-weight:600;letter-spacing:-.025em;
+}
+.ix-root .ix-dashboard-clean .home-feed-overview {
+  width:min(100%,940px);margin:0 auto;
+  border:1px solid var(--clean-line);border-radius:10px;
+  background:#111114;overflow:hidden;
+}
+.ix-root .ix-dashboard-clean .home-feed-overview > summary {
+  padding:13px 16px;cursor:pointer;
+  font:600 12px/1.5 Poppins,Inter,system-ui,sans-serif;
+  color:#d4d4d8;
+}
+.ix-root .ix-dashboard-clean .home-feed-overview > summary:hover {color:#fff;}
+.ix-root .ix-network-primary-search {
+  display:flex;align-items:center;gap:12px;min-height:56px;
+  padding:9px 14px;background:#131316;border:1px solid #38383d;
+  border-radius:10px;color:#ff8a4c;
+}
+.ix-root .ix-network-primary-search:focus-within {
+  border-color:#ff8a4c;box-shadow:0 0 0 2px rgba(255,138,76,.13);
+}
+.ix-root .ix-network-primary-search input {
+  min-width:0;flex:1 1 auto;outline:none;
+  color:#f2f1ec;background:transparent;border:0;
+  font:400 clamp(12px,1.15vw,14px)/1.5 Poppins,Inter,system-ui,sans-serif;
+}
+.ix-root .ix-network-primary-search input::placeholder {color:#8b8b93;opacity:1;}
+.ix-root .ix-network-primary-search span {
+  flex:none;padding-left:12px;border-left:1px solid var(--clean-line);
+  color:#a1a1aa;font:600 11px/1.5 "IBM Plex Mono",monospace;
+  white-space:nowrap;
+}
+.ix-root .ix-network-optional {
+  border:1px solid var(--clean-line);
+  background:#111114;border-radius:10px;overflow:hidden;
+}
+.ix-root .ix-network-optional > summary {
+  list-style:none;display:flex;justify-content:space-between;
+  align-items:center;gap:12px;padding:12px 16px;
+  cursor:pointer;color:#c4c4cc;
+  font:500 12px/1.5 Poppins,Inter,system-ui,sans-serif;
+}
+.ix-root .ix-network-optional > summary::-webkit-details-marker {display:none;}
+.ix-root .ix-network-optional > summary svg {transition:transform .15s ease;}
+.ix-root .ix-network-optional[open] > summary svg {transform:rotate(180deg);}
+.ix-root .ix-network-optional > summary:hover {color:#fff;}
+.ix-root .ix-network-optional-content {
+  display:grid;gap:16px;border-top:1px solid var(--clean-line);
+  padding:16px;
+}
+.ix-root .ix-network-optional .bridge-discover-hero {
+  border-color:var(--clean-line);padding:18px;
+}
+.ix-root .ix-network-clean > .grid {
+  gap:16px;min-width:0;align-items:start;
+}
+.ix-root .ix-network-clean > .grid > * {min-width:0;}
+.ix-root .ix-network-clean > .grid > :is(main,aside) {
+  scrollbar-width:thin;
+}
+.ix-root .ix-network-clean :is(button,a,input,select):focus-visible,
+.ix-root .ix-dashboard-clean :is(button,a,input):focus-visible,
+.ix-root .ix-intros-destination :is(button,a):focus-visible {
+  outline:2px solid #ff8a4c;outline-offset:3px;
+}
+.ix-root .ix-intros-destination {padding:16px;min-width:0;}
+.ix-root .ix-intros-destination-header {
+  display:flex;align-items:center;justify-content:space-between;
+  gap:16px;flex-wrap:wrap;margin:0 0 16px;
+  padding-bottom:16px;border-bottom:1px solid var(--clean-line);
+}
+@media(min-width:1200px) {
+  .ix-root .ix-network-clean > .grid > aside:first-child {grid-column:span 3 / span 3;}
+  .ix-root .ix-network-clean > .grid > main {grid-column:span 7 / span 7;}
+  .ix-root .ix-network-clean > .grid > aside:last-child {grid-column:span 2 / span 2;}
+}
+@media(max-width:760px) {
+  .ix-root .ix-dashboard-header,.ix-root .ix-network-header {align-items:flex-start;}
+  .ix-root .ix-dashboard-header-actions {width:100%;}
+  .ix-root .ix-dashboard-header-actions button {flex:1 1 0;}
+  .ix-root .ix-network-intro-link {width:100%;}
+  .ix-root .ix-network-primary-search {padding:8px 10px;gap:8px;}
+  .ix-root .ix-network-primary-search span {font-size:10px;padding-left:8px;}
+  .ix-root .ix-network-optional-content {padding:10px;}
+  .ix-root .ix-intros-destination {padding:10px 6px;}
+}
+@media(prefers-reduced-motion:reduce) {
+  .ix-root .ix-network-optional > summary svg,
+  .ix-root .ix-dashboard-header-actions button,
+  .ix-root .ix-network-intro-link {transition:none;}
+}
