@@ -125,7 +125,7 @@ export const PeopleDirectoryView: React.FC<PeopleDirectoryViewProps> = ({
   const topCities = useMemo(() => {
     const counts = new globalThis.Map<string, number>();
     members.forEach((m) => {
-      const city = m.location.split(',')[0].trim();
+      const city = m.location.split(',')[0]?.trim() ?? '';
       if (city) counts.set(city, (counts.get(city) ?? 0) + 1);
     });
     const rows = [...counts.entries()].sort((a, b) => b[1] - a[1]).slice(0, 5);
