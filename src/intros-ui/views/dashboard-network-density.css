@@ -1,0 +1,339 @@
+/*
+ * Ask Intros: density and width correction for Dashboard + Member Network.
+ * Keep the shared shell, content and navigation intact. Only the right
+ * workpane's dimensions and local scroll ownership change.
+ */
+
+/* The old 900px cap on the live feed created a blank band to the right
+   inside a much wider workspace. Both demo and signed-in feed must stretch. */
+.ix-root .aetheris-workspace-shell .home-feed-page {
+  box-sizing: border-box;
+  width: 100%;
+  max-width: none !important;
+  margin-inline: 0;
+  padding-inline: clamp(8px, 1vw, 18px);
+}
+.ix-root .aetheris-workspace-shell .home-feed-page .home-feed-layout,
+.ix-root .aetheris-workspace-shell .home-feed-center,
+.ix-root .aetheris-workspace-shell .home-feed-page #dashboard-social-panel,
+.ix-root .aetheris-workspace-shell .home-social-board,
+.ix-root .aetheris-workspace-shell .home-social-board > *,
+.ix-root .aetheris-workspace-shell .social-editorial--compact,
+.ix-root .aetheris-workspace-shell .social-editorial--compact .feed-editorial-layout,
+.ix-root .aetheris-workspace-shell .social-editorial--compact .feed-editorial-main {
+  box-sizing: border-box;
+  min-width: 0;
+  width: 100%;
+  max-width: none !important;
+  margin-inline: 0;
+}
+.ix-root .aetheris-workspace-shell .home-feed-page #dashboard-social-panel {
+  margin-inline: 0 !important;
+}
+.ix-root .aetheris-workspace-shell .social-editorial--compact .feed-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 420px), 1fr));
+  gap: 12px;
+  align-items: start;
+}
+.ix-root .aetheris-workspace-shell .social-editorial--compact .feed-grid > .social-feed-card {
+  grid-column: auto;
+  width: 100%;
+  margin-top: 0;
+  min-width: 0;
+  padding: clamp(13px, 1.3vw, 19px);
+  background: var(--ix-card, #131316);
+  border-color: var(--ix-line-strong, rgba(255,255,255,.14));
+  border-radius: 12px;
+}
+.ix-root .aetheris-workspace-shell .social-editorial--compact .feed-grid > .social-feed-card.is-lead {
+  grid-column: auto;
+}
+.ix-root .aetheris-workspace-shell .social-editorial--compact .feed-section-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+.ix-root .aetheris-workspace-shell .social-editorial--compact .feed-section-head h2 {
+  font-family: Poppins, Inter, system-ui, sans-serif;
+  font-size: clamp(18px, 1.6vw, 24px);
+  font-weight: 600;
+  letter-spacing: -.035em;
+}
+.ix-root .aetheris-workspace-shell .home-feed-page .home-feed-welcome {
+  gap: 12px;
+  padding: 12px 16px;
+}
+.ix-root .aetheris-workspace-shell .home-feed-page .home-feed-overview {
+  border-color: var(--ix-line);
+}
+.ix-root .aetheris-workspace-shell .home-feed-page .home-feed-overview[open] {
+  max-height: 33vh;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
+/* Full-height Dashboard on comfortably sized desktops. The dashboard itself
+   does not travel vertically; only live feed updates can scroll inside their
+   dedicated pane. Smaller viewports retain natural document scrolling. */
+@media (min-width: 900px) and (min-height: 660px) {
+  .ix-aetheris-workspace-mode .aetheris-workspace-content:has(> .home-feed-page) {
+    overflow-y: hidden;
+    display: flex;
+    flex-direction: column;
+  }
+  .ix-root .aetheris-workspace-shell .home-feed-page {
+    flex: 1 1 auto;
+    min-height: 0;
+    max-height: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding-block: 8px;
+  }
+  .ix-root .aetheris-workspace-shell .home-feed-page > .home-feed-welcome,
+  .ix-root .aetheris-workspace-shell .home-feed-page > .home-feed-overview {
+    flex: 0 0 auto;
+    margin: 0;
+  }
+  .ix-root .aetheris-workspace-shell .home-feed-page > .home-feed-layout {
+    flex: 1 1 auto;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+  }
+  .ix-root .aetheris-workspace-shell .home-feed-page .home-feed-center {
+    display: flex;
+    flex: 1 1 auto;
+    min-height: 0;
+    flex-direction: column;
+  }
+  .ix-root .aetheris-workspace-shell .home-feed-page .home-feed-controls {
+    flex: 0 0 auto;
+    margin-bottom: 8px;
+    padding-bottom: 8px;
+  }
+  .ix-root .aetheris-workspace-shell .home-feed-page #dashboard-social-panel,
+  .ix-root .aetheris-workspace-shell .home-feed-page #dashboard-tools-panel {
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(255,138,76,.34) #101012;
+  }
+}
+
+/* Network: one meaningful results pane instead of a cramped, three-column
+   directory. Secondary member-derived insights remain in a real disclosure. */
+.ix-root .aetheris-workspace-shell .ix-network-viewport {
+  width: 100%;
+  max-width: none !important;
+  margin: 0;
+  padding: clamp(8px, 1vw, 14px);
+  gap: 9px;
+}
+.ix-root .aetheris-workspace-shell .ix-network-viewport > header {
+  padding-bottom: 6px;
+  gap: 9px;
+}
+.ix-root .aetheris-workspace-shell .ix-network-viewport > header h1 {
+  font-family: Poppins, Inter, system-ui, sans-serif;
+  font-weight: 600;
+  font-size: clamp(22px, 2.05vw, 30px);
+  letter-spacing: -.038em;
+}
+.ix-root .aetheris-workspace-shell .ix-network-viewport > header p {
+  font-size: 12px;
+  max-width: 760px;
+  color: #a3a3ac;
+}
+.ix-root .aetheris-workspace-shell .ix-network-viewport .ix-network-results-layout {
+  gap: 12px;
+  min-width: 0;
+}
+.ix-root .aetheris-workspace-shell .ix-network-results-list {
+  min-width: 0;
+  min-height: 0;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255,138,76,.34) #101012;
+}
+.ix-root .aetheris-workspace-shell .ix-network-results-list > div:first-child {
+  background: #0a0a0b;
+  border-color: var(--ix-line-strong);
+  padding: 8px 0;
+}
+.ix-root .aetheris-workspace-shell .ix-network-results-list > div:nth-child(2) {
+  position: sticky;
+  top: 44px;
+  z-index: 3;
+  margin-top: 0;
+  padding: 9px 0 10px;
+  background: #0a0a0b;
+  border-bottom: 1px solid var(--ix-line);
+}
+.ix-root .aetheris-workspace-shell .ix-network-member-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 290px), 1fr));
+  gap: 12px;
+  align-items: stretch;
+  margin-top: 12px;
+}
+.ix-root .aetheris-workspace-shell .ix-network-member-card {
+  min-width: 0;
+  border: 1px solid var(--ix-line-strong);
+  border-radius: 12px;
+  background-color: var(--ix-card, #131316);
+  box-shadow: none;
+  padding: 15px;
+}
+.ix-root .aetheris-workspace-shell .ix-network-member-card:hover {
+  border-color: rgba(255,138,76,.35);
+  background: var(--ix-card-hover, #17171a);
+  box-shadow: none;
+}
+.ix-root .aetheris-workspace-shell .ix-network-member-card h3 {
+  font-family: Poppins, Inter, system-ui, sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.3;
+}
+.ix-root .aetheris-workspace-shell .ix-network-member-card :is(button,.bridge-primary-action) {
+  min-height: 34px;
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+.ix-root .aetheris-workspace-shell .ix-network-member-card p {
+  overflow-wrap: anywhere;
+}
+.ix-root .aetheris-workspace-shell .ix-network-insights-disclosure {
+  min-width: 0;
+  overflow: hidden;
+  align-self: stretch;
+  background: var(--ix-panel, #0e0e10);
+  border: 1px solid var(--ix-line-strong, rgba(255,255,255,.14));
+  border-radius: 10px;
+}
+.ix-root .aetheris-workspace-shell .ix-network-insights-disclosure > summary {
+  min-height: 36px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 13px;
+  cursor: pointer;
+  color: #f2f1ec;
+  font: 600 11px/1.4 "IBM Plex Mono", ui-monospace, monospace;
+  text-transform: uppercase;
+  letter-spacing: .07em;
+  list-style: none;
+}
+.ix-root .aetheris-workspace-shell .ix-network-insights-disclosure > summary::-webkit-details-marker {
+  display: none;
+}
+.ix-root .aetheris-workspace-shell .ix-network-insights-disclosure > summary::before {
+  content: "+";
+  color: var(--ix-accent, #ff8a4c);
+  margin-right: 2px;
+  font-size: 15px;
+}
+.ix-root .aetheris-workspace-shell .ix-network-insights-disclosure[open] > summary::before {
+  content: "−";
+}
+.ix-root .aetheris-workspace-shell .ix-network-insights-disclosure > summary span {
+  margin-left: auto;
+  color: #ffaf86;
+  text-transform: none;
+  letter-spacing: 0;
+  font-weight: 500;
+}
+.ix-root .aetheris-workspace-shell .ix-network-insights-disclosure:hover {
+  border-color: var(--ix-accent-line, rgba(255,138,76,.32));
+}
+.ix-root .aetheris-workspace-shell .ix-network-insights-inner {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 240px), 1fr));
+  gap: 10px;
+  padding: 10px;
+  border-top: 1px solid var(--ix-line);
+  max-height: min(36vh, 340px);
+  overflow-y: auto;
+  scrollbar-width: thin;
+}
+.ix-root .aetheris-workspace-shell .ix-network-insights-inner > div {
+  margin: 0;
+  padding: 13px;
+  border: 1px solid var(--ix-line);
+  border-radius: 10px;
+  background: var(--ix-card, #131316);
+}
+.ix-root .aetheris-workspace-shell .ix-network-insights-inner .space-y-5 {
+  row-gap: 12px;
+}
+@media (min-width: 1024px) {
+  .ix-aetheris-workspace-mode .ix-network-viewport .ix-network-results-layout {
+    display: grid;
+    grid-template-columns: clamp(214px, 22%, 258px) minmax(0,1fr);
+    grid-template-rows: auto minmax(0,1fr);
+    overflow: hidden;
+  }
+  .ix-aetheris-workspace-mode .ix-network-results-layout > aside:first-child {
+    grid-column: 1;
+    grid-row: 1 / span 2;
+    min-height: 0;
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding-right: 3px;
+  }
+  .ix-aetheris-workspace-mode .ix-network-results-layout > .ix-network-insights-disclosure {
+    grid-column: 2;
+    grid-row: 1;
+    max-height: min(43vh, 400px);
+    overflow-y: auto;
+  }
+  .ix-aetheris-workspace-mode .ix-network-results-layout > main.ix-network-results-list {
+    grid-column: 2;
+    grid-row: 2;
+    min-height: 0;
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding: 0 3px 14px 0;
+  }
+}
+@media (max-width: 1023px) {
+  .ix-aetheris-workspace-mode .ix-network-results-layout {
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+    overflow-x: hidden;
+  }
+  .ix-aetheris-workspace-mode .ix-network-results-layout > aside:first-child {
+    order: 0;
+    flex: 0 0 auto;
+    overflow: visible;
+  }
+  .ix-aetheris-workspace-mode .ix-network-results-layout > .ix-network-insights-disclosure {
+    order: 1;
+    flex: 0 0 auto;
+  }
+  .ix-aetheris-workspace-mode .ix-network-results-layout > main.ix-network-results-list {
+    order: 2;
+    flex: 0 0 auto;
+    overflow: visible;
+  }
+  .ix-aetheris-workspace-mode .ix-network-results-list > div:first-child,
+  .ix-aetheris-workspace-mode .ix-network-results-list > div:nth-child(2) {
+    position: static;
+  }
+}
+@media (max-width: 640px) {
+  .ix-root .aetheris-workspace-shell .ix-network-member-grid {grid-template-columns: minmax(0,1fr);}
+  .ix-root .aetheris-workspace-shell .ix-network-viewport {padding: 7px 8px;}
+  .ix-root .aetheris-workspace-shell .home-feed-page {padding-inline: 4px;}
+  .ix-root .aetheris-workspace-shell .social-editorial--compact .feed-grid {grid-template-columns: minmax(0,1fr);}
+  .ix-root .aetheris-workspace-shell .ix-network-insights-inner {max-height: 45vh;}
+}
+@media (prefers-reduced-motion: reduce) {
+  .ix-root .aetheris-workspace-shell .ix-network-member-card {transition: none;transform:none;}
+}

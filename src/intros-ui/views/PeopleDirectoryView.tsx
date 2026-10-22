@@ -164,7 +164,7 @@ export const PeopleDirectoryView: React.FC<PeopleDirectoryViewProps> = ({
   };
 
   return (
-    <div className="ix-network-viewport w-full max-w-7xl mx-auto px-3 md:px-5 py-3 space-y-3 animate-fadeIn">
+    <div className="ix-network-viewport w-full max-w-none mx-0 px-2 md:px-3 py-2 space-y-3 animate-fadeIn">
       {/* Compact header: purpose, prominent search, real result count */}
       <header className="space-y-4">
         <div className="space-y-1.5">
@@ -267,7 +267,7 @@ export const PeopleDirectoryView: React.FC<PeopleDirectoryViewProps> = ({
         {filtersOpen ? 'Hide filters' : 'Show filters'}
       </button>
 
-      {/* Main Directory Split: Left Filters (Col 3), Center Cards (Col 6), Right Insights (Col 3) */}
+      {/* Two-pane directory: filters on the left, full-width member results on the right. Insights remain available on demand. */}
       <div className="ix-network-results-layout grid grid-cols-1 lg:grid-cols-12 gap-3">
         {/* Left Filter Sidebar (collapsible on mobile via the toggle above) */}
         <aside id="people-filter-rail" className={`lg:col-span-3 space-y-4 ${filtersOpen ? '' : 'hidden lg:block'}`}>
@@ -438,7 +438,7 @@ export const PeopleDirectoryView: React.FC<PeopleDirectoryViewProps> = ({
         </aside>
 
         {/* Center: Directory Header & Member Cards */}
-        <main className="lg:col-span-6 space-y-4 min-w-0">
+        <main className="ix-network-results-list space-y-4 min-w-0">
           {/* Bar: Count, Sort Dropdown & Grid/List view toggle */}
           <div className="flex flex-wrap items-center justify-between gap-3 pb-1">
             <div className="text-xs font-mono text-[#9CA3AF] tracking-wide uppercase">
@@ -617,14 +617,14 @@ export const PeopleDirectoryView: React.FC<PeopleDirectoryViewProps> = ({
               })}
             </div>
           ) : (
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div className="ix-network-member-grid grid grid-cols-1 sm:grid-cols-2 gap-3">
               {filteredMembers.map((member) => {
                 const isConnected = connectedMemberIds.has(member.id);
 
                 return (
                   <div
                     key={member.id}
-                    className="bg-[#0E121A] border border-white/10 hover:border-[#FF8A4C]/50 rounded-xl p-4 flex flex-col justify-between transition-all group shadow-sm hover:shadow-lg hover:shadow-[#FF8A4C]/5"
+                    className="ix-network-member-card bg-[#131316] border border-white/10 hover:border-[#FF8A4C]/50 rounded-xl p-4 flex flex-col justify-between transition-all group shadow-sm"
                   >
                     <div>
                       {/* Top Row: Avatar + Name + Fit Badge */}
@@ -726,8 +726,10 @@ export const PeopleDirectoryView: React.FC<PeopleDirectoryViewProps> = ({
           )}
         </main>
 
-        {/* Right Sidebar: Network Insights — computed from the real member list */}
-        <aside className="lg:col-span-3 space-y-5">
+        {/* Member-derived intelligence is available without squeezing the result cards. */}
+        <details className="ix-network-insights-disclosure">
+          <summary>Network intelligence <span>{members.length} members · open details</span></summary>
+          <div className="ix-network-insights-inner">
           <div className="bg-[#0E121A] border border-white/10 rounded-xl p-4 space-y-5">
             <div className="flex items-center justify-between text-[11px] font-mono tracking-widest uppercase text-[#9CA3AF] font-semibold">
               <span>Network Insights</span>
@@ -794,18 +796,19 @@ export const PeopleDirectoryView: React.FC<PeopleDirectoryViewProps> = ({
             )}
           </div>
 
-          {/* Active asks — what people need right now */}
+          {/* Objectives volunteered by members; never infer asks from their specialties. */}
           <div className="bg-[#0E121A] border border-white/10 rounded-xl p-4 space-y-3">
             <div className="flex items-center justify-between text-[11px] font-mono tracking-widest uppercase text-[#9CA3AF] font-semibold">
-              <span>Looking for now</span>
-              <span className="text-[#FF8A4C]">Live</span>
+              <span>Shared priorities</span>
+              <span className="text-[#FF8A4C]">Member-stated</span>
             </div>
-            {members.slice(3, 6).map((m) => (
+            {members.filter((m) => m.currentObjectives?.length).slice(0, 3).map((m) => (
               <button key={m.id} onClick={() => onNavigate('profile', m.id)} className="w-full text-left p-2.5 rounded-lg border border-white/5 hover:border-[#FF8A4C]/50 bg-white/[0.02] transition-colors cursor-pointer min-w-0">
                 <div className="text-xs font-semibold text-white truncate">{m.name}</div>
-                <div className="text-[11px] text-[#9CA3AF] line-clamp-2">Seeking people in {m.focusAreas?.[0] ?? 'their field'}{m.focusAreas?.[1] ? ` and ${m.focusAreas[1]}` : ''}.</div>
+                <div className="text-[11px] text-[#9CA3AF] line-clamp-2">{m.currentObjectives[0]}</div>
               </button>
             ))}
+            {!members.some((m) => m.currentObjectives?.length) && <p className="text-xs text-[#9CA3AF]">No current priorities have been shared yet.</p>}
           </div>
 
           {/* Warm paths */}
@@ -825,9 +828,10 @@ export const PeopleDirectoryView: React.FC<PeopleDirectoryViewProps> = ({
           <div className="p-4 rounded-xl border border-[#FF8A4C]/30 bg-gradient-to-br from-[#121A2C] to-[#0A0D15]">
             <p className="font-serif-editorial text-lg leading-snug text-[#F2EEE6]">Know who matters. Know why now.</p>
             <p className="text-[11px] text-[#9CA3AF] mt-1">Find the right connection for your next move.</p>
-            <button onClick={() => onNavigate('workspace')} className="mt-3 w-full text-xs font-semibold py-2 rounded-md bg-[#FF8A4C] hover:bg-[#DB6B36] text-white cursor-pointer">Ask Intros</button>
+            <button onClick={() => onNavigate('workspace')} className="mt-3 w-full text-xs font-semibold py-2 rounded-md bg-[#FF8A4C] hover:bg-[#DB6B36] text-[#1c110c] cursor-pointer">Ask Intros</button>
           </div>
-        </aside>
+          </div>
+        </details>
       </div>
     </div>
   );
