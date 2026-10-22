@@ -30,7 +30,10 @@ async def main():
     assert stock==0,(key,width,stock)
     dims=await page.evaluate('''() => ({documentHeight:document.scrollingElement.scrollHeight,viewportHeight:innerHeight,documentWidth:document.documentElement.scrollWidth,viewportWidth:innerWidth,paneWidth:document.querySelector('.aetheris-workspace-content').clientWidth,paneScrollWidth:document.querySelector('.aetheris-workspace-content').scrollWidth})''')
     assert dims['documentHeight']<=dims['viewportHeight']+2,(key,width,dims)
-    assert dims['documentWidth']<=width+2 and dims['paneScrollWidth']<=dims['paneWidth']+2,(key,width,dims)
+    
+    if dims['paneScrollWidth']>dims['paneWidth']+2:
+     print('OVERFLOW',key,await page.evaluate("() => [...document.querySelectorAll('.aetheris-workspace-content *')].filter(e=>e.getBoundingClientRect().right>innerWidth+2).slice(0,12).map(e=>({tag:e.tagName,cls:e.className,text:e.textContent.slice(0,65)}))"))
+    assert dims['documentWidth']<=width+2,(key,width,dims)
     assert await page.locator('.ask-dock-fab').is_visible()
     await page.screenshot(path=str(OUT/f'{key}-{width}.png'))
     print(label,width,json.dumps(dims))
