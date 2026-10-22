@@ -1,5 +1,6 @@
 // @ts-nocheck
 import React, { useState } from 'react';
+import { ExecutivePortrait } from '../shared/ExecutivePortrait';
 import {
   X,
   Plus,
@@ -226,11 +227,7 @@ export const WorkspaceModal: React.FC<WorkspaceModalProps> = ({
             <div className="space-y-6">
               <div className="p-4 rounded-lg bg-[#151922] border border-white/5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
                 <div className="flex items-center gap-4">
-                  <img
-                    src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=160&auto=format&fit=crop&q=80"
-                    alt="Alex Carter"
-                    className="w-16 h-16 rounded-full object-cover border-2 border-[#F5B027]"
-                  />
+                  <ExecutivePortrait name="Alex Carter" size="lg" />
                   <div>
                     <h2 className="text-lg font-bold text-[#F2EEE6]">Alex Carter</h2>
                     <p className="text-sm text-[#F2EEE6]/60">
@@ -321,7 +318,7 @@ export const WorkspaceModal: React.FC<WorkspaceModalProps> = ({
                   ).map((p) => (
                     <div key={p.id} className="sys-card-ivory p-3.5 rounded-lg shadow-sm flex items-start justify-between">
                       <div className="flex items-start gap-3">
-                        <img src={p.avatar} alt={p.name} className="w-10 h-10 rounded-full object-cover" />
+                        <ExecutivePortrait name={p.name} avatarUrl={p.avatar} size="sm" />
                         <div>
                           <div className="font-bold text-sm text-[#14161A]">{p.name}</div>
                           <div className="text-xs text-[#14161A]/75">{p.title}</div>
@@ -634,7 +631,7 @@ export const WorkspaceModal: React.FC<WorkspaceModalProps> = ({
                   <div className="flex flex-wrap gap-3 mt-2">
                     {INITIAL_MEETING.attendees.map((att, i) => (
                       <div key={i} className="flex items-center gap-2 px-3 py-1.5 rounded bg-black/40 border border-white/5">
-                        <img src={att.avatar} alt={att.name} className="w-6 h-6 rounded-full object-cover" />
+                        <ExecutivePortrait name={att.name} avatarUrl={att.avatar} size="sm" />
                         <span className="text-xs text-[#F2EEE6] font-semibold">{att.name}</span>
                         <span className="text-[10px] font-mono text-[#F5B027] font-bold">({att.score})</span>
                       </div>
@@ -739,7 +736,7 @@ export const WorkspaceModal: React.FC<WorkspaceModalProps> = ({
                   <div key={th.id} className="sys-card-ivory p-4 rounded-lg shadow-sm">
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-2">
-                        <img src={th.avatar} alt={th.sender} className="w-7 h-7 rounded-full object-cover" />
+                        <ExecutivePortrait name={th.sender} avatarUrl={th.avatar} size="sm" />
                         <div>
                           <span className="font-bold text-sm text-[#14161A]">{th.sender}</span>
                           <span className="text-xs text-[#14161A]/60 ml-2">({th.company})</span>
@@ -999,11 +996,7 @@ export const WorkspaceModal: React.FC<WorkspaceModalProps> = ({
           {activeTileId === 'digital-you' && (
             <div className="space-y-5">
               <div className="p-4 rounded-lg bg-[#151922] border border-white/5 flex items-center gap-4">
-                <img
-                  src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=160&auto=format&fit=crop&q=80"
-                  alt="CEO Twin"
-                  className="w-14 h-14 rounded-full border-2 border-[#F5B027] object-cover"
-                />
+                <ExecutivePortrait name="CEO Twin" size="lg" />
                 <div>
                   <h3 className="text-base font-bold text-[#F2EEE6]">Executive Digital Twin</h3>
                   <p className="text-xs text-[#F2EEE6]/60">
@@ -1180,10 +1173,10 @@ export const WorkspaceModal: React.FC<WorkspaceModalProps> = ({
                   <div key={intr.id} className="p-4 rounded-lg bg-[#151922] border border-white/5 space-y-3">
                     <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
                       <div className="flex items-center gap-3">
-                        <img src={intr.partyA.avatar} alt={intr.partyA.name} className="w-8 h-8 rounded-full object-cover" />
+                        <ExecutivePortrait name={intr.partyA.name} avatarUrl={intr.partyA.avatar} size="sm" />
                         <span className="text-xs font-bold text-[#F2EEE6]">{intr.partyA.name}</span>
                         <span className="text-xs text-[#F5B027] font-mono">↔</span>
-                        <img src={intr.partyB.avatar} alt={intr.partyB.name} className="w-8 h-8 rounded-full object-cover" />
+                        <ExecutivePortrait name={intr.partyB.name} avatarUrl={intr.partyB.avatar} size="sm" />
                         <span className="text-xs font-bold text-[#F2EEE6]">{intr.partyB.name}</span>
                       </div>
                       <span className="text-xs font-mono text-[#C78522] font-bold">{intr.statusLabel}</span>

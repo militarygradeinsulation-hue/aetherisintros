@@ -1,3 +1,4 @@
+import './editorial-media.css'
 import { AttachButton, MessageBody, attachmentPreview } from './MessageAttachments'
 import { useEffect, useMemo, useState, type ReactNode } from 'react'
 import { useAppearance } from './AppearanceMode'
@@ -33,12 +34,6 @@ import { SelectionReader } from './SelectionReader'
 import { currentPagePassages, readAloud, readPageOrSelection, setVoiceSettings, stopReading, readerSnapshot, useVoiceSettings, voiceOutputSupported } from './voice'
 import { VOICE_PAGES } from './voice-commands'
 
-import discoverEditorialAsset from '@/assets/editorial-discover.jpg.asset.json'
-import introsEditorialAsset from '@/assets/editorial-intros.jpg.asset.json'
-import needsEditorialAsset from '@/assets/editorial-needs.jpg.asset.json'
-import memoryEditorialAsset from '@/assets/editorial-memory.jpg.asset.json'
-import insightsEditorialAsset from '@/assets/editorial-insights.jpg.asset.json'
-import homeEditorialAsset from '@/assets/aetheris-home-portrait.jpg.asset.json'
 import overviewFilmAsset from '@/assets/aetheris-intros-overview.mp4.asset.json'
 import introVideoAsset from '@/assets/aetheris-intro-video.mp4.asset.json'
 import logoAsset from '@/assets/aetheris-logo.jpg.asset.json'
@@ -216,12 +211,12 @@ function SaveButton({ saved, onToggle }: { saved: boolean; onToggle: () => void 
   </button>
 }
 
-/** Editorial ivory field beside a monochrome portrait — the signature Aetheris page opening. */
+/** Compact editorial opening; only verified, explicitly supplied media is optional. */
 function EditorialHero({ folio, title, statement, copy, caption, focus = 'center 30%', stats, action, image, compact = false }: {
   folio: string; title: React.ReactNode; statement: string; copy: string; caption: string
-  focus?: string; stats?: Array<{ k: string; v: string }>; action?: React.ReactNode; image: string; compact?: boolean
+  focus?: string; stats?: Array<{ k: string; v: string }>; action?: React.ReactNode; image?: string; compact?: boolean
 }) {
-  return <section className={`editorial-hero${compact ? ' compact' : ''}`}>
+  return <section className={`editorial-hero${image ? '' : ' editorial-hero--text'}${compact ? ' compact' : ''}`}>
     <div className="editorial-field">
       <span className="folio">{folio}</span>
       <h1>{title}</h1>
@@ -231,10 +226,10 @@ function EditorialHero({ folio, title, statement, copy, caption, focus = 'center
       {stats && <dl className="editorial-stats">{stats.map(s => <div key={s.k}><dt>{s.k}</dt><dd>{s.v}</dd></div>)}</dl>}
       <div className="blueprint-cross">+</div>
     </div>
-    <figure className="editorial-plate">
-       <img src={image} alt="A composed professional in architectural window light" style={{ objectPosition: focus }} loading="lazy" />
+    {image ? <figure className="editorial-plate">
+       <img src={image} alt="" style={{ objectPosition: focus }} loading="lazy" />
       <figcaption><span>ACTIVE MEMORY</span><p>{caption}</p></figcaption>
-    </figure>
+    </figure> : <p className="editorial-caption">{caption}</p>}
   </section>
 }
 
@@ -251,7 +246,7 @@ function HomeMasthead({ people, select, setPage, openNeed, openThread }: {
   const thread = net.threads[0]
   const threadMember = thread ? people.find(p => p.id === thread.memberId) : undefined
   const companies = new Set(people.map(p => p.company)).size
-  return <section className="masthead">
+  return <section className="masthead masthead--text">
     <div className="masthead-brand">
        <span className="folio">THE RELATIONSHIP NETWORK FOR CEOs</span>
       <h1 className="masthead-title">Ask<br /><em>Intros</em></h1>
@@ -270,10 +265,6 @@ function HomeMasthead({ people, select, setPage, openNeed, openThread }: {
       <span className="masthead-kicker">PEOPLE × CONTEXT × OPPORTUNITY</span>
     </div>
 
-    <figure className="masthead-plate" aria-label="A professional in thought — real business networking without the noise">
-      <img src={homeEditorialAsset.url} alt="Fictional professional in quiet thought beside hard window light" width={1024} height={1280} />
-      <figcaption>BETTER<br />CONTEXT.<br />BETTER<br />RELATIONSHIPS.</figcaption>
-    </figure>
 
     <aside className="masthead-intel">
       <header>
@@ -752,9 +743,9 @@ function PremiumHome({ people, select, setPage, openNeed, openThread }: {
   const threadPerson = people.find(person => person.id === thread?.memberId)
   const mission = activeMission(graph.missions)
   const story = news?.items[0]
-  return <div className="premium-home"><section className="premium-home-stage">
+  return <div className="premium-home"><section className={`premium-home-stage${net.profile.avatarUrl ? '' : ' premium-home-stage--text'}`}>
     <div className="premium-home-copy"><HomeBrand /><Label>RELATIONSHIP INTELLIGENCE FOR EXECUTIVES</Label><h1>Know who matters.<br />Know <em>why now.</em></h1><p>Your relationships, current mission, conversations and live signals—held in one private operating system.</p><div className="premium-home-actions"><Button onClick={openNeed}>State what you need <ArrowRight size={14} /></Button><Button kind="secondary" onClick={() => setPage('briefing')}>Open Executive Brief</Button></div><dl><div><dt>Relationships</dt><dd>{net.connections.length}</dd></div><div><dt>Open conversations</dt><dd>{net.threads.length}</dd></div><div><dt>Active missions</dt><dd>{graph.missions.filter(item => item.status === 'active').length}</dd></div></dl></div>
-    <figure className="premium-home-portrait"><img src={net.profile.avatarUrl || homeEditorialAsset.url} alt={net.profile.avatarUrl ? `${net.profile.name || 'Member'} executive portrait` : 'Executive in architectural window light'} /><figcaption>{net.profile.name || 'YOUR EXECUTIVE PAGE'}<small>{[net.profile.title, net.profile.company].filter(Boolean).join(' · ') || 'Complete your executive identity'}</small></figcaption></figure>
+    {net.profile.avatarUrl && <figure className="premium-home-portrait"><AvatarImage source={net.profile.avatarUrl} alt={net.profile.name || 'Member'} /><figcaption>{net.profile.name || 'YOUR EXECUTIVE PAGE'}<small>{[net.profile.title, net.profile.company].filter(Boolean).join(' · ')}</small></figcaption></figure>}
     <aside className="premium-home-intel"><header><Label signal>ACTIVE RELATIONSHIP FIELD</Label><h2>Who matters now.</h2></header><MemoryGraph people={ranked.slice(0, 6)} onSelect={select} compact />{lead ? <button className="premium-home-person" onClick={() => select(lead)}><Avatar person={lead} portrait /><span><b>{lead.name}</b><small>{lead.whyNow || lead.nextAction}</small></span><ArrowRight size={14} /></button> : <p className="quiet-empty">Your relationship field will form as verified people enter your network.</p>}<div className="premium-home-mission"><span>ACTIVE MISSION / WHY NOW</span><h3>{mission?.title ?? 'No active mission yet.'}</h3><p>{mission?.objective || mission?.successDefinition || 'State the outcome that should shape who and what rises to the surface.'}</p><button onClick={() => setPage('work')}>Open Work <ArrowRight size={13} /></button></div></aside>
   </section><IntrosSystemBento className="premium-home-deck md:grid-cols-4">
     <BentoGridItem className="premium-home-module" header={lead ? <button onClick={() => select(lead)}><Avatar person={lead} portrait /><span><h3>{lead.name}</h3><p>{lead.title} · {lead.company}</p></span></button> : null} title="Suggested person" description={lead?.whyThem || 'Add current context to sharpen who appears.'} onClick={lead ? () => select(lead) : undefined} />
@@ -846,16 +837,12 @@ function Home({ people, select, setPage, openNeed, openThread }: {
   return <div className={`editorial-home ${darkHome ? 'home-theme-dark' : 'home-theme-light'}`}>
     <header className="eh-brandbar"><HomeBrand /><div className="eh-brand-actions"><button type="button" onClick={toggleHomeTheme} aria-label={`Use ${darkHome ? 'light' : 'dark'} Home theme`} title={`Use ${darkHome ? 'light' : 'dark'} theme`}>{darkHome ? <Sun size={16} /> : <Moon size={16} />}</button><span>RELATIONSHIP<br />INTELLIGENCE AT WORK</span><i /></div></header>
 
-    <section className="eh-hero">
+    <section className="eh-hero eh-hero--text">
       <div className="eh-hero-copy">
         <span>ASK INTROS</span>
         <h1>The Relationship Network<br /><em>for CEOs.</em></h1>
         <p>Who matters. Why they matter. Why now.</p>
         <div><button className="eh-primary ai-gradient-button" onClick={openNeed}>GET STARTED <ArrowRight size={15} /></button><button className="eh-secondary" onClick={() => setPage('intros')}><Play size={13} /> SEE HOW IT WORKS</button></div>
-      </div>
-      <div className="eh-hero-art">
-        <img src={homeEditorialAsset.url} alt="A professional in quiet thought beside hard window light" width={597} height={804} />
-        <p>REAL PEOPLE. REAL OPPORTUNITIES. A BRIGHTER TOMORROW.</p>
       </div>
     </section>
 
@@ -909,7 +896,7 @@ function Home({ people, select, setPage, openNeed, openThread }: {
       </div>
       <div className="eh-film-videos">
         <figure>
-          <video src={overviewFilmAsset.url} controls preload="metadata" playsInline poster={homeEditorialAsset.url}>
+          <video src={overviewFilmAsset.url} controls preload="metadata" playsInline>
             <track kind="captions" />
           </video>
           <figcaption>Platform overview · 2 min</figcaption>
@@ -1029,7 +1016,6 @@ function Discover({ people, select }: { people: Member[]; select: (p: Member) =>
       statement="Search the way you would brief a trusted friend."
       copy="Describe the outcome you want and Intros reads needs, offers, expertise, location, availability and the trust paths already open to you."
       caption="Members are surfaced with reasoning, never as an anonymous list."
-       image={discoverEditorialAsset.url}
       focus="center 22%"
     />
     <section className="executive-discovery">
@@ -1188,7 +1174,7 @@ function Intros({ people, select, draft }: { people: Member[]; select: (p: Membe
   const ranked = scored.map(entry => entry.member)
   const shown = state === 'all' ? ranked.slice(0, 6) : ranked.filter(p => p.introState === state)
   return <>
-    <EditorialHero folio="INTROS / MUTUAL VALUE" title={<>A warm path is<br /><em>earned context.</em></>} statement="The right conversation, with a reason for both sides." copy="Each report explains the mutual value, live timing and trust path before anyone asks for an introduction." caption="Both people retain agency. Nothing moves until both choose the conversation." image={introsEditorialAsset.url} />
+    <EditorialHero folio="INTROS / MUTUAL VALUE" title={<>A warm path is<br /><em>earned context.</em></>} statement="The right conversation, with a reason for both sides." copy="Each report explains the mutual value, live timing and trust path before anyone asks for an introduction." caption="Both people retain agency. Nothing moves until both choose the conversation." />
     <PageHead label="CURATED INTRODUCTIONS" title="People worth knowing now."
       copy="Every introduction carries mutual value, timing and a credible path. Nothing is sent until both sides agree."
       proof={`${ranked.length} evidence-ranked people · ${ranked.filter(p => ['accepted', 'introduced', 'conversing', 'closed'].includes(p.introState)).length} progressed introductions`} />
@@ -1375,7 +1361,7 @@ function Needs({ onNew, people, select, setPage }: {
     : tab === 'saved' ? asks.filter(a => net.saved.includes(a.id))
       : forYou
   return <>
-    <EditorialHero folio="NEEDS / PROFESSIONAL ASKS" title={<>State the outcome.<br /><em>Find who can move it.</em></>} statement="Serious asks create useful professional context." copy="A need is not a broadcast. It is a concise case for why the right person should care, why now matters and what value moves both ways." caption="Specific needs produce considered responses—not noisy outreach." image={needsEditorialAsset.url} />
+    <EditorialHero folio="NEEDS / PROFESSIONAL ASKS" title={<>State the outcome.<br /><em>Find who can move it.</em></>} statement="Serious asks create useful professional context." copy="A need is not a broadcast. It is a concise case for why the right person should care, why now matters and what value moves both ways." caption="Specific needs produce considered responses—not noisy outreach." />
     <PageHead label="NEEDS" title="Tell the network what you need."
       copy="State the outcome you are trying to create. Intros finds who can move it forward and why they would want to."
       proof="Network-visible asks feed matching. Private asks stay private."
@@ -1429,7 +1415,7 @@ function Memory({ people, select }: { people: Member[]; select: (p: Member) => v
   const LEARNED_PREVIEW = 6
   const learnedRows = showAllLearned ? shown : shown.slice(0, LEARNED_PREVIEW)
   return <>
-    <section className="memory-editorial">
+    <section className="memory-editorial memory-editorial--text">
       <div className="memory-editorial-copy">
         <Brand />
         <Label>PEOPLE CREATE POSSIBILITIES</Label>
@@ -1442,7 +1428,6 @@ function Memory({ people, select }: { people: Member[]; select: (p: Member) => v
         </dl>
         <button className="memory-cta ai-gradient-button">Your Network Remembers <ArrowRight size={15} /></button>
       </div>
-      <figure><img src={memoryEditorialAsset.url} alt="Thoughtful professional in architectural window light" width={1024} height={1280} /><figcaption>ACTIVE MEMORY / CONTEXT HELD WITH INTENT</figcaption></figure>
     </section>
     <section className="memory-dark-intro">
       <div><Label signal>ACTIVE MEMORY GRAPH</Label><h2>Not a contact list.<br />A living record of <em>why.</em></h2></div>
@@ -1566,7 +1551,7 @@ function Insights({ people, select, setPage }: { people: Member[]; select: (p: M
   const nav = useNav()
   const [dismissed, setDismissed] = useState<string[]>([])
   return <>
-    <EditorialHero folio="INSIGHTS / RELATIONSHIP MOVEMENT" title={<>Notice what changed.<br /><em>Act while it matters.</em></>} statement="Signals become useful only when they change the next move." copy="Role changes, cooling conversations, matching needs and warm paths are organized around action—not analytics theater." caption="The strongest signal is often a small change in a relationship you already trust." image={insightsEditorialAsset.url} />
+    <EditorialHero folio="INSIGHTS / RELATIONSHIP MOVEMENT" title={<>Notice what changed.<br /><em>Act while it matters.</em></>} statement="Signals become useful only when they change the next move." copy="Role changes, cooling conversations, matching needs and warm paths are organized around action—not analytics theater." caption="The strongest signal is often a small change in a relationship you already trust." />
     <PageHead label="INSIGHTS" title="Signals worth acting on."
       copy="No vanity metrics. Only relationship changes that could alter an outcome, each with an action attached."
       proof={`${people.length} members in your network · ${net.connections.length} connections`} />
@@ -2547,7 +2532,7 @@ function Hub({ storeKey, title, blurb, tabs, advanced, onNavigate, kind }: {
   const current = tabs.find(t => t.id === tab) ?? first
   const go = (id: string) => { setTab(id); try { localStorage.setItem(storeKey, id) } catch { /* ignore */ } }
   return <>
-    {kind === 'work' && <section className="work-editorial-masthead"><div><HomeBrand /><Label>PRIVATE EXECUTIVE WORKSPACE</Label><h1>Turn relationships<br />into <em>movement.</em></h1><p>CRM, pipeline, Grid, calendar and forecast share one canonical working record—with relationship context beside the work.</p></div><figure><img src={needsEditorialAsset.url} alt="Executive reviewing consequential work in architectural light" /><figcaption><Label signal>ONE OPERATING SYSTEM</Label><p>People. Commitments. Opportunities. Time.</p></figcaption></figure></section>}
+    {kind === 'work' && <section className="work-editorial-masthead work-editorial-masthead--text"><div><HomeBrand /><Label>PRIVATE EXECUTIVE WORKSPACE</Label><h1>Turn relationships<br />into <em>movement.</em></h1><p>CRM, pipeline, Grid, calendar and forecast share one canonical working record—with relationship context beside the work.</p></div></section>}
     <header className={`hub-head ${kind}-hub-head`}>
       <div><Label>{title.toUpperCase()}</Label><h1>{blurb}</h1></div>
       <p>{metaById[current.id]?.blurb}</p>

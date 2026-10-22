@@ -38,7 +38,7 @@ export const QuickAddContactModal: React.FC<QuickAddContactModalProps> = ({
       name: name.trim(),
       title: title.trim() || 'Executive',
       company: company.trim(),
-      avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=160&auto=format&fit=crop&q=80',
+      avatar: '',
       connectionScore: 85,
       scoreBreakdown: { recency: 90, frequency: 85, reciprocity: 82, mutuals: 88 },
       mutualsCount: 12,

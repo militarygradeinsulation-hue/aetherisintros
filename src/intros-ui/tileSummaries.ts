@@ -34,15 +34,15 @@ export function tile_relationship_network_summary(isEmpty = false, topPerson?: P
       person: {
         name: topPerson ? topPerson.name : 'Alex Carter',
         title: topPerson ? `${topPerson.title} · ${topPerson.company}` : 'CEO - Horizon Partners',
-        avatar: topPerson ? topPerson.avatar : 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=160&auto=format&fit=crop&q=80',
+        avatar: topPerson ? topPerson.avatar : '',
         engagement: topPerson ? (topPerson.engagement || 'active') : 'active',
       },
       connectionScore: topPerson ? topPerson.connectionScore : 92,
       avatars: [
-        'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&auto=format&fit=crop&q=80',
-        'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=100&auto=format&fit=crop&q=80',
-        'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=100&auto=format&fit=crop&q=80',
-        'https://images.unsplash.com/photo-1580489944761-15a19d654956?w=100&auto=format&fit=crop&q=80',
+        '',
+        '',
+        '',
+        '',
       ],
       overflowCount: '+12',
     },
@@ -71,17 +71,17 @@ export function tile_intros_crm_summary(isEmpty = false): TileSummary {
         {
           name: 'Sarah Mitchell',
           title: 'CEO - Summit Capital',
-          avatar: 'https://images.unsplash.com/photo-1580489944761-15a19d654956?w=100&auto=format&fit=crop&q=80',
+          avatar: '',
         },
         {
           name: 'James Park',
           title: 'Founder - Vector Labs',
-          avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&auto=format&fit=crop&q=80',
+          avatar: '',
         },
         {
           name: 'Elena Ruiz',
           title: 'Partner - Ridgeway',
-          avatar: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=100&auto=format&fit=crop&q=80',
+          avatar: '',
         },
       ],
     },
@@ -228,11 +228,11 @@ export function tile_meetings_summary(isEmpty = false): TileSummary {
       meeting: {
         title: 'Intro Meeting',
         company: 'Horizon Partners',
-        leadAvatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&auto=format&fit=crop&q=80',
+        leadAvatar: '',
         attendees: [
-          'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=80&auto=format&fit=crop&q=80',
-          'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=80&auto=format&fit=crop&q=80',
-          'https://images.unsplash.com/photo-1580489944761-15a19d654956?w=80&auto=format&fit=crop&q=80',
+          '',
+          '',
+          '',
         ],
       },
       checklist: ['Notes', 'Decisions', 'Action Items', 'Follow-ups'],
@@ -291,19 +291,19 @@ export function tile_inbox_summary(isEmpty = false): TileSummary {
           name: 'Sarah Mitchell',
           sub: 'Re: Partnership',
           time: '10:24 AM',
-          avatar: 'https://images.unsplash.com/photo-1580489944761-15a19d654956?w=80&auto=format&fit=crop&q=80',
+          avatar: '',
         },
         {
           name: 'James Park',
           sub: 'Intro Request',
           time: 'Yesterday',
-          avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=80&auto=format&fit=crop&q=80',
+          avatar: '',
         },
         {
           name: 'Investor Group',
           sub: 'Opportunity',
           time: 'Nov 10',
-          avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=80&auto=format&fit=crop&q=80',
+          avatar: '',
         },
       ],
     },
@@ -389,13 +389,13 @@ export function tile_connection_paths_summary(isEmpty = false): TileSummary {
       connector: {
         role: 'Trusted Connector',
         name: 'Maria Lopez',
-        avatar: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=80&auto=format&fit=crop&q=80',
+        avatar: '',
       },
       target: {
         role: 'Target CEO',
         name: 'David Kim',
         company: 'Solaris Group',
-        avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=80&auto=format&fit=crop&q=80',
+        avatar: '',
       },
     },
   };
@@ -476,7 +476,7 @@ export function tile_digital_you_summary(isEmpty = false): TileSummary {
     caption: ['Your judgment,', 'operating digitally.'],
     empty: false,
     data: {
-      avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=160&auto=format&fit=crop&q=80',
+      avatar: '',
       actions: [
         'Draft in my style',
         'Represent my interests',
@@ -591,8 +591,8 @@ export function tile_introductions_summary(isEmpty = false): TileSummary {
     caption: ['Introductions', 'with a reason.'],
     empty: false,
     data: {
-      partyA: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=80&auto=format&fit=crop&q=80',
-      partyB: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=80&auto=format&fit=crop&q=80',
+      partyA: '',
+      partyB: '',
       title: 'Double Opt-In',
       sub: 'Introduction',
       checklist: [
@@ -655,11 +655,11 @@ export function tile_team_graph_summary(isEmpty = false): TileSummary {
       target: 'Target Company',
       sub: 'Executives',
       avatars: [
-        'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=80&auto=format&fit=crop&q=80',
-        'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=80&auto=format&fit=crop&q=80',
-        'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=80&auto=format&fit=crop&q=80',
-        'https://images.unsplash.com/photo-1580489944761-15a19d654956?w=80&auto=format&fit=crop&q=80',
-        'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=80&auto=format&fit=crop&q=80',
+        '',
+        '',
+        '',
+        '',
+        '',
       ],
     },
   };

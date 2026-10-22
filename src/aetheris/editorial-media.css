@@ -1,0 +1,32 @@
+/* Explicit photo-free compositions; never target genuine images globally. */
+.editorial-hero.editorial-hero--text { display:block; min-height:0; margin-bottom:20px; }
+.editorial-hero--text .editorial-field { min-height:0; padding:24px; }
+.editorial-hero--text .editorial-field h1 { font-size:36px; line-height:1.12; margin:12px 0; }
+.editorial-hero--text .editorial-field h2 { font-size:18px; margin:0 0 8px; }
+.editorial-hero--text .editorial-field > p { max-width:760px; margin:0; }
+.editorial-hero--text .editorial-caption { margin:0; padding:0 24px 20px; color:inherit; font-size:12px; }
+.memory-editorial.memory-editorial--text, .work-editorial-masthead.work-editorial-masthead--text { display:block; min-height:0; }
+.memory-editorial--text .memory-editorial-copy { padding:24px; }
+.memory-editorial--text h1, .work-editorial-masthead--text h1 { font-size:36px; line-height:1.12; }
+.masthead.masthead--text { grid-template-columns:minmax(0,1fr) minmax(0,1fr); }
+.premium-home-stage.premium-home-stage--text { grid-template-columns:minmax(0,1fr) minmax(0,1fr); }
+.eh-hero.eh-hero--text { display:block; min-height:0; padding-block:24px; }
+.ael.ael--text .ael-hero { height:auto; min-height:0; background:var(--night); }
+.ael.ael--text .ael-hero-content { max-width:900px; }
+.ael.ael--text .ael-compact-story-main { grid-template-columns:minmax(0,1fr); }
+.ael.ael--text .ael-compact-membership { background:var(--night); min-height:0; }
+.ael.ael--text .ael-compact-membership::before { content:none; }
+.ix-classic .editorial-hero--text .editorial-field { padding:20px; }
+.ix-classic .editorial-hero--text .editorial-field h1,
+.ix-classic .memory-editorial--text h1,
+.ix-classic .work-editorial-masthead--text h1 { font-family:Poppins, sans-serif; font-size:28px; line-height:1.2; }
+.ix-classic .editorial-hero--text { background:var(--ix-panel); color:var(--ix-text); border-color:var(--ix-line); }
+.ix-classic .editorial-hero--text .editorial-field { background:none; }
+.ix-classic .editorial-hero--text :is(h1,h2,p) { color:var(--ix-text); }
+.ix-classic .editorial-hero--text :is(em,.folio) { color:var(--ix-accent); }
+@media(max-width:680px) {
+ .masthead.masthead--text,.premium-home-stage.premium-home-stage--text { grid-template-columns:minmax(0,1fr); }
+ .editorial-hero--text .editorial-field,.memory-editorial--text .memory-editorial-copy { padding:18px; }
+ .editorial-hero--text .editorial-field h1,.memory-editorial--text h1,.work-editorial-masthead--text h1 { font-size:26px; }
+ .editorial-hero--text .editorial-caption { padding:0 18px 18px; }
+}

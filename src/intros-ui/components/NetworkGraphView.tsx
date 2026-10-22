@@ -269,7 +269,7 @@ export const NetworkGraphView: React.FC<NetworkGraphViewProps> = ({
             name: d.name,
             title: d.title,
             company: d.company,
-            avatar: d.avatar || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=160&auto=format&fit=crop&q=80',
+            avatar: d.avatar || '',
             connectionScore: d.connectionScore,
             scoreBreakdown: { recency: 90, frequency: 85, reciprocity: 88, mutuals: 90 },
             mutualsCount: 18,
