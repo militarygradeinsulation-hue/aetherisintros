@@ -1,0 +1,144 @@
+/* Member Network: fixed workspace, independently scrollable real results.
+   All filters/insights remain available; no arbitrary content clipping. */
+.ix-aetheris-workspace-mode .aetheris-workspace-content:has(.ix-network-viewport) {
+  overflow:hidden!important;
+  display:flex;
+  flex-direction:column;
+  min-height:0;
+}
+.ix-aetheris-workspace-mode .ix-network-viewport {
+  box-sizing:border-box;
+  display:flex;
+  flex-direction:column;
+  flex:1 1 auto;
+  width:100%;
+  min-height:0;
+  max-height:100%;
+  overflow:hidden;
+  gap:10px;
+}
+.ix-aetheris-workspace-mode .ix-network-viewport > header {
+  flex:0 0 auto;
+  margin:0;
+  padding:2px 0 8px;
+  gap:10px;
+}
+.ix-aetheris-workspace-mode .ix-network-viewport > header h1 {
+  font-family:Poppins,Inter,system-ui,sans-serif;
+  font-size:clamp(21px,2vw,29px);
+  line-height:1.15;
+  font-weight:600;
+  letter-spacing:-.035em;
+}
+.ix-aetheris-workspace-mode .ix-network-viewport > header p {max-width:none;line-height:1.4}
+.ix-aetheris-workspace-mode .ix-network-viewport > details {
+  flex:0 0 auto;
+  margin:0;
+}
+.ix-aetheris-workspace-mode .ix-network-viewport > details[open] {
+  max-height:35vh;
+  overflow-y:auto;
+  overscroll-behavior:contain;
+}
+.ix-aetheris-workspace-mode .ix-network-viewport > button {
+  flex:0 0 auto;
+  align-self:flex-start;
+}
+.ix-aetheris-workspace-mode .ix-network-results-layout {
+  flex:1 1 auto;
+  min-height:0;
+  min-width:0;
+  overflow:hidden;
+  margin:0;
+  align-items:stretch;
+  grid-template-columns:minmax(195px,22%) minmax(0,1fr) minmax(180px,22%);
+}
+.ix-aetheris-workspace-mode .ix-network-results-layout > aside,
+.ix-aetheris-workspace-mode .ix-network-results-list {
+  min-height:0;
+  min-width:0;
+  overflow-y:auto;
+  overflow-x:hidden;
+  overscroll-behavior:contain;
+  scrollbar-width:thin;
+  scrollbar-color:#626269 #121215;
+  padding-right:4px;
+}
+.ix-aetheris-workspace-mode .ix-network-results-layout > aside > div {
+  padding:12px;
+}
+.ix-aetheris-workspace-mode .ix-network-results-layout > aside > div + div {
+  margin-top:10px;
+}
+.ix-aetheris-workspace-mode .ix-network-results-layout > aside .space-y-5 {
+  row-gap:12px;
+}
+.ix-aetheris-workspace-mode .ix-network-results-list {
+  padding:0 7px 16px 0;
+}
+.ix-aetheris-workspace-mode .ix-network-results-list > div:first-child {
+  position:sticky;
+  top:0;
+  z-index:4;
+  padding:9px 0;
+  background:#08080b;
+  border-bottom:1px solid rgba(255,255,255,.10);
+}
+.ix-aetheris-workspace-mode .ix-network-results-list :is(button,input,select):focus-visible {
+  outline:2px solid #ff8a4c;
+  outline-offset:2px;
+}
+@media(max-width:1199px) {
+  .ix-aetheris-workspace-mode .ix-network-results-layout {
+    grid-template-columns:minmax(180px,25%) minmax(0,1fr);
+  }
+  .ix-aetheris-workspace-mode .ix-network-results-layout > aside:last-child {
+    display:none;
+  }
+}
+@media(max-width:1023px) {
+  .ix-aetheris-workspace-mode .ix-network-results-layout {
+    display:flex;
+    flex-direction:column;
+    gap:8px;
+    overflow-y:auto;
+    overflow-x:hidden;
+    overscroll-behavior:contain;
+  }
+  .ix-aetheris-workspace-mode .ix-network-results-layout > aside:first-child,
+  .ix-aetheris-workspace-mode .ix-network-results-list {
+    flex:0 0 auto;
+    overflow:visible;
+    max-height:none;
+  }
+  .ix-aetheris-workspace-mode .ix-network-results-layout > aside:last-child {
+    display:block;
+  }
+  .ix-aetheris-workspace-mode .ix-network-results-list > div:first-child {
+    top:0;
+  }
+}
+@media(max-width:760px) {
+  .ix-aetheris-workspace-mode .ix-network-viewport {
+    gap:7px;
+    padding:9px 10px;
+  }
+  .ix-aetheris-workspace-mode .ix-network-viewport > header {
+    gap:6px;
+    padding-bottom:5px;
+  }
+  .ix-aetheris-workspace-mode .ix-network-viewport > header p {
+    font-size:11px;
+  }
+  .ix-aetheris-workspace-mode .ix-network-viewport > header input {
+    min-height:35px;
+  }
+  .ix-aetheris-workspace-mode .ix-network-viewport > details[open] {
+    max-height:26vh;
+  }
+}
+@media(prefers-reduced-motion:reduce) {
+  .ix-aetheris-workspace-mode .ix-network-viewport *,
+  .ix-aetheris-workspace-mode .ix-network-viewport *::before,
+  .ix-aetheris-workspace-mode .ix-network-viewport *::after {scroll-behavior:auto!important;}
+}
