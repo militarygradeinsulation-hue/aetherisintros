@@ -7,21 +7,17 @@ import gsap from 'gsap'
 import { supabase } from '@/integrations/supabase/client'
 import { lovable } from '@/integrations/lovable/index'
 import { AUTH_REQUIRED } from '@/aetheris/config'
+import { safeAuthNext } from '@/aetheris/auth-next'
 import { previewInvite, rememberInvite, storedInvite } from '@/aetheris/access'
 import { logSecurityEvent, passwordProblem } from '@/aetheris/verification'
 import { AppearanceToggle } from '@/aetheris/AppearanceToggle'
 import { startLinkedInAuthentication } from '@/aetheris/linkedin-auth'
 import '@/aetheris/styles.css'
 
-const safeNext = (value: unknown) => {
-  if (typeof value !== 'string' || !value.startsWith('/') || value.startsWith('//')) return ''
-  return value
-}
-
 export const Route = createFileRoute('/auth')({
   staticData: { sitemap: false },
   validateSearch: (search: Record<string, unknown>): { next?: string; invite?: string; mode?: 'signup' } => {
-    const next = safeNext(search['next'])
+    const next = safeAuthNext(search['next'])
     const invite = typeof search['invite'] === 'string' ? search['invite'].slice(0, 64) : ''
     return { ...(next ? { next } : {}), ...(invite ? { invite } : {}), ...(search['mode'] === 'signup' ? { mode: 'signup' as const } : {}) }
   },
