@@ -420,7 +420,11 @@ export async function mirrorFollow(userId: string, peerId: string, kind: 'follow
 
 export async function saveComment(postId: string, authorId: string, text: string): Promise<void> {
   const result = await supabase.from('post_comments').insert({ post_id: postId, author_id: authorId, text })
+    .select('id,post_id,author_id').maybeSingle()
   if (result.error) { reportClientError(result.error, 'comment-write'); throw new Error('Comment was not saved.') }
+  if (!result.data?.id || result.data.post_id !== postId || result.data.author_id !== authorId) {
+    throw new Error('Comment save was not confirmed. Refresh before retrying to avoid a duplicate.')
+  }
 }
 
 export async function saveReaction(postId: string, userId: string, kind: 'like' | 'save' | 'repost', on: boolean): Promise<void> {
