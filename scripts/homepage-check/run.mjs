@@ -75,77 +75,91 @@ const assert = (condition, detail) => {
 
 try {
   for (const viewport of viewports) {
-    console.log('HOME / ' + viewport.name + ' / ' + viewport.width + 'x' + viewport.height)
+    console.log('AETHERIS HOME / ' + viewport.name + ' / ' + viewport.width + 'x' + viewport.height)
     const page = await browser.newPage({ viewport: { width: viewport.width, height: viewport.height } })
-    page.on('pageerror', error => console.log('  ! browser page error: ' + error.message.slice(0, 220)))
-    await page.addInitScript(() => {
-      try { localStorage.setItem('ask-intros.appearance', 'light') } catch { /* optional */ }
-    })
+    const errors = []
+    page.on('pageerror', error => errors.push(error.message))
     try {
       await page.goto(base + '/', { waitUntil: 'domcontentloaded', timeout: 120_000 })
-      await page.waitForSelector('.ael-compact', { timeout: 60_000 })
-
-      const m = await page.evaluate(() => {
-        const root = document.querySelector('.ael-compact')
+      await page.locator('.vision-page .vs-shell').waitFor({ state: 'visible', timeout: 60_000 })
+      await page.locator('.vision-page[data-hydrated="true"]').waitFor({ state: 'attached', timeout: 60_000 })
+      const info = await page.evaluate(() => {
+        const root = document.querySelector('.vision-page')
         const rect = selector => {
-          const node = root.querySelector(selector)
-          if (!node) return null
-          const r = node.getBoundingClientRect()
-          return { x: r.left, right: r.right, top: r.top, bottom: r.bottom, width: r.width, height: r.height }
+          const element = root.querySelector(selector)
+          if (!element) return null
+          const r = element.getBoundingClientRect()
+          return { x: r.x, right: r.right, width: r.width, height: r.height }
         }
         return {
-          sections: root.querySelectorAll(':scope > section').length,
-          pageHeight: document.documentElement.scrollHeight,
-          pageWidth: document.documentElement.scrollWidth,
-          viewportWidth: innerWidth,
-          hero: rect('.ael-hero'),
-          heroTitle: rect('#ael-hero-title'),
-          heroActions: rect('.ael-hero-actions'),
-          headerActions: rect('.ael-header-actions'),
-          logo: rect('.ael-header .ask-intros-lockup'),
-          signup: rect('.ael-header .ael-nav-cta'),
-          membership: rect('#membership'),
-          footer: rect('.ael-compact-footer'),
-          links: Object.fromEntries(
-            ['experience', 'approach', 'membership'].map(id => {
-              return [id, Boolean(root.querySelector('a[href="#' + id + '"]') && document.getElementById(id))]
-            }),
-          ),
-          ctas: {
-            preview: Boolean(root.querySelector('.ael-hero-actions a[href="/try"]')),
-            demo: Boolean(root.querySelector('a[href="/demo"]')),
-            join: Boolean(root.querySelector('.ael-hero-actions a[href^="/auth?"][href*="mode=signup"]')),
-            story: Boolean(root.querySelector('a[href="/founder-story"]')),
-            auth: Boolean(root.querySelector('.ael-header-actions a[href="/auth"]')),
-          },
+          width: innerWidth,
+          scrollWidth: document.documentElement.scrollWidth,
+          hero: rect('.vs-hero h1'),
+          heroActions: rect('.vs-hero-actions'),
+          toolbar: rect('.vs-toolbar'),
+          shell: rect('.vs-shell'),
+          footer: rect('.vs-footer'),
+          signIn: Boolean(root.querySelector('.vs-auth-links a[href^="/auth?"]')),
+          signup: Boolean(root.querySelector('.vs-auth-links a[href*="mode=signup"]')),
+          demo: Boolean(root.querySelector('a[href="/demo"]')),
+          previewLabel: Boolean(root.querySelector('.vs-data-disclaimer')),
+          appLink: Boolean(root.querySelector('a[href="/auth?next=%2Fapp"]')),
+          feed: Boolean(root.querySelector('#vision-feed')),
+          stats: root.querySelectorAll('.vs-stat').length,
         }
       })
-      console.log('  dimensions: ' + JSON.stringify({
-        height: m.pageHeight,
-        hero: Math.round(m.hero?.height ?? 0),
-        footer: Math.round(m.footer?.height ?? 0),
-      }))
-      assert(m.sections === 3, 'three concise chapters, no duplicate long sections')
-      assert(m.pageHeight <= viewport.maxHeight, 'scroll budget ' + m.pageHeight + ' <= ' + viewport.maxHeight + ' px')
-      assert(m.pageWidth <= m.viewportWidth + 2, 'no horizontal page overflow')
-      assert(Boolean(m.hero && m.heroTitle && m.heroActions && m.membership && m.footer),
-        'headline, primary actions, membership and footer all render')
-      assert(m.hero && m.hero.height <= Math.max(viewport.height * 1.10, 760),
-        'hero fits near the first viewport')
-      assert(['experience', 'approach', 'membership'].every(id => m.links[id]),
-        'every navigation anchor has a real destination')
-      assert(Object.values(m.ctas).every(Boolean), 'hero preview, deeper demo, join, sign-in and founder-story links remain')
-      const onScreen = r => Boolean(r && r.width > 0 && r.right <= viewport.width + 3 && r.x >= -3)
-      assert(m.logo && m.logo.width >= (viewport.width <= 420 ? 150 : viewport.width <= 750 ? 175 : 220),
-        'approved Ask Intros wordmark is prominent at this breakpoint')
-      assert([m.heroTitle, m.heroActions, m.headerActions, m.logo, m.signup, m.membership].every(onScreen),
-        'headlines and important actions remain within phone/desktop width')
+      assert(info.scrollWidth <= info.width + 2, 'homepage does not overflow horizontally')
+      assert(info.hero && info.hero.width > 200, 'social platform headline is visible')
+      assert(info.shell && info.toolbar && info.feed && info.stats === 5, 'desktop dashboard and example metrics render')
+      assert(info.previewLabel, 'sample business data is clearly identified as a preview')
+      assert(info.signIn && info.signup && info.demo && info.appLink, 'sign-in, registration, demo, and member entry points exist')
+      const onScreen = r => Boolean(r && r.width > 0 && r.x >= -3 && r.right <= viewport.width + 3)
+      assert(onScreen(info.hero) && onScreen(info.heroActions) && onScreen(info.toolbar), 'critical navigation fits the viewport')
+      assert(info.footer, 'the branded footer renders')
+      assert(!errors.length, 'homepage has no JavaScript runtime errors')
+
+      if (viewport.width <= 850) {
+        const bottomNav = page.locator('.vs-mobile-bottom')
+        assert(await bottomNav.isVisible(), 'mobile navigation is visible')
+        const toggle = page.getByRole('button', { name: 'Open menu' })
+        await toggle.click()
+        assert(await page.locator('.vs-sidebar.is-open').isVisible(), 'mobile navigation opens')
+        await page.getByRole('button', { name: 'Close menu' }).click()
+        assert(!(await page.locator('.vs-sidebar').evaluate(element => element.classList.contains('is-open'))), 'mobile navigation closes')
+        const fonts = await page.evaluate(() =>
+          [...document.querySelectorAll('.vision-page input, .vision-page textarea')].filter(element => {
+            const style = getComputedStyle(element)
+            return style.display !== 'none' && style.visibility !== 'hidden'
+          }).map(element => Number.parseFloat(getComputedStyle(element).fontSize)))
+        assert(fonts.every(size => size >= 16), 'inputs use accessible touch font sizes to prevent iOS zoom')
+      } else {
+        assert(await page.locator('.vs-sidebar nav').isVisible(), 'desktop sidebar stays visible')
+      }
 
       if (viewport.name === 'desktop') {
-        await page.locator('.ael-nav a[href="#approach"]').click()
-        assert(new URL(page.url()).hash === '#approach', 'How it works navigation updates the anchor')
-        await page.locator('.ael-nav a[href="#membership"]').click()
-        assert(new URL(page.url()).hash === '#membership', 'Membership navigation updates the anchor')
+        const ceos = page.locator('.vs-tabs button').filter({ hasText: 'CEOs' })
+        await ceos.click()
+        assert(await ceos.evaluate(element => element.classList.contains('active')), 'feed categories are selectable')
+        const draft = page.locator('#vision-composer')
+        await draft.fill('Preview-only example update')
+        await page.locator('.vs-composer-actions button').click()
+        assert(await page.getByText('Preview-only example update').count() > 0, 'preview composer updates its local feed')
+        assert(await page.getByText(/Preview post created locally/).count() > 0, 'preview composer does not claim a real published post')
+        const link = page.locator('.vs-auth-links a[href*="mode=signup"]')
+        assert(await link.count() === 1, 'create account links to existing authentication route')
+        // Browser-to-auth contract. No credentials or live member writes are used.
+        await page.locator('.vs-sidebar nav button').filter({ hasText: 'Messages' }).first().click()
+        await page.waitForURL(url => {
+          const target = new URL(url)
+          return target.pathname === '/auth' && target.searchParams.get('next') === '/app?view=messages'
+        }, { timeout: 30000 })
+        assert(await page.locator('.auth-form input[type="email"]').isVisible(), 'protected messages route shows the real email login')
+        assert(await page.locator('.auth-form input[type="password"]').isVisible(), 'real login requires a password')
+        assert(await page.getByRole('button', { name: 'Continue with Google' }).isVisible(), 'Google sign-in remains accessible')
+        assert(await page.getByRole('button', { name: 'Continue with LinkedIn' }).isVisible(), 'LinkedIn sign-in remains accessible')
+        await page.goto(base + '/auth?mode=signup&next=%2Fapp', { waitUntil: 'domcontentloaded' })
+        await page.locator('.auth-form input[autocomplete="name"]').waitFor({ state: 'visible' })
+        assert(await page.locator('.auth-form input[autocomplete="email"]').isVisible(), 'new accounts reach existing sign-up form')
       }
     } catch (error) {
       failed++
@@ -156,6 +170,7 @@ try {
       await page.close()
     }
   }
+
 } finally {
   await browser.close()
   stop()

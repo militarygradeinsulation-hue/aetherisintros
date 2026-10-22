@@ -66,10 +66,10 @@ const SHELL_PAGES: ActivePage[] = ['home', 'people', 'bubbles', 'intros', 'messa
 
 export type ExecutiveAction = { label: string; onOpen: () => void };
 
-export default function App({ mode = 'demo', executiveAction, initialPage }: { mode?: 'demo' | 'live'; executiveAction?: ExecutiveAction | undefined; initialPage?: ActivePage | undefined }) {
+export default function App({ mode = 'demo', executiveAction, initialPage, initialWorkspace }: { mode?: 'demo' | 'live'; executiveAction?: ExecutiveAction | undefined; initialPage?: ActivePage | undefined; initialWorkspace?: string | undefined }) {
   const network = useNetwork();
   const [activePage, setActivePage] = useState<ActivePage>(initialPage ?? 'home');
-  const [classicPage, setClassicPage] = useState<string>('memory');
+  const [classicPage, setClassicPage] = useState<string>(initialWorkspace ?? 'memory');
   const [selectedProfileId, setSelectedProfileId] = useState<string>(mode === 'live' ? '' : 'marcus-lee');
   const [members, setMembers] = useState<NetworkMember[]>(mode === 'live' ? [] : NETWORK_MEMBERS);
   const [liveDirectoryError, setLiveDirectoryError] = useState('');

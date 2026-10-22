@@ -12,7 +12,26 @@ import { WelcomeDiagnosticBanner } from '@/aetheris/WelcomeDiagnosticBanner'
 import '@/aetheris/executive-upgrade.css'
 import '@/aetheris/styles.css'
 
+const entryPages: ActivePage[] = ['home', 'people', 'intros', 'messages', 'insights', 'meetings', 'specter', 'intelligence']
+/** Existing workspaces only: arbitrary page names are never taken from a URL. */
+const entryWorkspaces = [
+  'crm', 'needs', 'opportunities', 'deals', 'calendar', 'peergroups', 'workspaces',
+  'referrals', 'companies', 'providers', 'pocket', 'profile', 'preferences',
+  'diagnostic', 'executivework', 'events', 'memory', 'circles', 'grid',
+] as const
+
+
 export const Route = createFileRoute('/_authenticated/app')({
+  validateSearch: (search: Record<string, unknown>): { view?: ActivePage; workspace?: string } => {
+    const view = search['view']
+    const workspace = search['workspace']
+    const validView = typeof view === 'string' && entryPages.includes(view as ActivePage) ? view as ActivePage : undefined
+    const validWorkspace = typeof workspace === 'string' && (entryWorkspaces as readonly string[]).includes(workspace) ? workspace : undefined
+    return {
+      ...(validView ? { view: validView } : {}),
+      ...(validWorkspace ? { workspace: validWorkspace } : {}),
+    }
+  },
   staticData: { sitemap: false },
   head: () => ({
     meta: [
@@ -36,13 +55,14 @@ export const Route = createFileRoute('/_authenticated/app')({
 
 /** Only an approved, onboarded Founding Member reaches the live network. */
 function AppRoute() {
-  return <ClientOnly fallback={null}><Gate /></ClientOnly>
+  const { view, workspace } = Route.useSearch()
+  return <ClientOnly fallback={null}><Gate initialPage={workspace ? 'workspace' : view} initialWorkspace={workspace} /></ClientOnly>
 }
 
 /** Shared live-workspace gate: full membership checks, then the persistent
  * shell. Deep links such as /member-intelligence reuse it with an initial
  * page instead of mounting a separate full-screen layout. */
-export function Gate({ initialPage }: { initialPage?: ActivePage | undefined }) {
+export function Gate({ initialPage, initialWorkspace }: { initialPage?: ActivePage | undefined; initialWorkspace?: string | undefined }) {
   const { access, refresh } = useAccess()
   const navigate = useNavigate()
   const ready = isLiveMember(access)
@@ -91,5 +111,5 @@ export function Gate({ initialPage }: { initialPage?: ActivePage | undefined }) 
     label: access.isAdmin ? 'Executive applications' : 'Executive access',
     onOpen: () => setExecutiveOpen(true),
   }
-  return <AetherisProviderRoot mode="live"><ConnectionBanner /><WelcomeDiagnosticBanner /><IntrosApp mode="live" executiveAction={executiveAction} initialPage={initialPage} /><ExecutiveUpgrade tier={access.tier} isAdmin={access.isAdmin} open={executiveOpen} onOpenChange={setExecutiveOpen} hideTrigger /></AetherisProviderRoot>
+  return <AetherisProviderRoot mode="live"><ConnectionBanner /><WelcomeDiagnosticBanner /><IntrosApp mode="live" executiveAction={executiveAction} initialPage={initialPage} initialWorkspace={initialWorkspace} /><ExecutiveUpgrade tier={access.tier} isAdmin={access.isAdmin} open={executiveOpen} onOpenChange={setExecutiveOpen} hideTrigger /></AetherisProviderRoot>
 }
