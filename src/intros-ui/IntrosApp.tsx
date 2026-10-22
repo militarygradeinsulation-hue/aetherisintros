@@ -29,7 +29,6 @@ import { ConnectionBubblesView } from './views/ConnectionBubblesView';
 import { RequestIntroModal } from './components/modals/RequestIntroModal';
 import { ReviewIntroModal } from './components/modals/ReviewIntroModal';
 import { ScheduleMeetingModal } from './components/modals/ScheduleMeetingModal';
-import { FloatingConnectionField } from './components/shared/FloatingConnectionField';
 
 import { AetherisAppSurface, AetherisAssistantSurface } from '@/aetheris/App';
 import { VoiceBar } from '@/aetheris/VoiceBar';
@@ -72,7 +71,6 @@ export default function App({ mode = 'demo' }: { mode?: 'demo' | 'live' }) {
   );
   const [savedMemberIds, setSavedMemberIds] = useState<Set<string>>(new Set(mode === 'live' ? [] : ['marcus-lee']));
   const [searchQuery, setSearchQuery] = useState('');
-  const [showConstellationOverlay, setShowConstellationOverlay] = useState(false);
 
   // Modals
   const [requestIntroTarget, setRequestIntroTarget] = useState<NetworkMember | null>(null);
@@ -278,7 +276,6 @@ export default function App({ mode = 'demo' }: { mode?: 'demo' | 'live' }) {
   // Find active profile
   const currentProfileMember =
     mode === 'live' ? members.find((m) => m.id === selectedProfileId) : (members.find((m) => m.id === selectedProfileId) || members[0]);
-  const liveUnread = useUnreadCounts(mode === 'live');
   // "Open deal room" anywhere in the product lands on the Deals workspace page.
   useEffect(() => {
     const open = (e: Event) => { e.preventDefault(); setClassicPage('deals'); handleNavigate('workspace'); };
