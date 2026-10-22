@@ -32,7 +32,7 @@ export const NO_INTERACTION_EVIDENCE = 9999
 /** Days since the last recorded interaction, or null when there is no evidence of one. */
 export function knownInteractionDays(p: Pick<Person, 'lastInteractionDays'>): number | null {
   const days = p.lastInteractionDays
-  return Number.isFinite(days) && days >= 0 && days < NO_INTERACTION_EVIDENCE ? days : null
+  return typeof days === 'number' && Number.isFinite(days) && days >= 0 && days < NO_INTERACTION_EVIDENCE ? days : null
 }
 
 export function determineRadarState(p: Pick<Person, 'scoreTotal' | 'lastInteractionDays' | 'score'>): RadarState {

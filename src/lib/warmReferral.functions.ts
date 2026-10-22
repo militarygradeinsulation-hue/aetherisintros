@@ -171,7 +171,7 @@ export const getReferralSuggestions = createServerFn({ method: 'GET' })
       .order('strength_score', { ascending: false })
       .limit(20)
 
-    if (error) return []
+    if (error) throw new Error(`Could not load referral suggestions: ${error.message}`)
 
     return (data ?? []).map((row: any) => ({
       id: row.id,

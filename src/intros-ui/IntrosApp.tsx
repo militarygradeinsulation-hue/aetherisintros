@@ -301,7 +301,7 @@ export default function App({ mode = 'demo' }: { mode?: 'demo' | 'live' }) {
   const classicPages = ['news','workspace','memory','work','insights','meetings','specter', ...(mode === 'live' ? ['home','messages','intros','people'] : [])];
 
   return (
-    <div className="ix-root min-h-screen bg-[#07090C] text-[#F2EEE6] flex flex-col font-sans selection:bg-[#F5B027]/30 selection:text-white relative">
+    <div className={`${activePage === 'specter' ? 'ix-specter-mode ' : ''}ix-root min-h-screen bg-[#07090C] text-[#F2EEE6] flex flex-col font-sans selection:bg-[#F5B027]/30 selection:text-white relative`}>
       <WriteFailureNotice />
       {/* Right-click quick menu (each member chooses its items) */}
       <QuickMenuHost
@@ -348,11 +348,11 @@ export default function App({ mode = 'demo' }: { mode?: 'demo' | 'live' }) {
           Retry network connection
         </button>
       </section>}
-      {mode !== 'live' && <InteractiveRelationshipTour />}
+      {mode !== 'live' && activePage !== 'specter' && <InteractiveRelationshipTour />}
       {mode === 'live' && <LiveMembers onMembers={setMembers} onError={setLiveDirectoryError} />}
       {mode === 'live' && <MeetingReminderBanner onJoin={() => handleNavigate('meetings')} />}
       {mode === 'live' && <MembershipCardMailer />}
-      <NewsTicker onOpen={() => handleNavigate('news')} />
+      {activePage !== 'specter' && <NewsTicker onOpen={() => handleNavigate('news')} />}
       {/* Primary Page Views */}
       <main className="flex-1 arch-product-main" data-arch-page={activePage}>
         {activePage === 'home' && (
@@ -462,7 +462,7 @@ export default function App({ mode = 'demo' }: { mode?: 'demo' | 'live' }) {
         {activePage === 'memory' && <div className="ix-classic"><AetherisAppSurface key="memory"  startPage="memory"  /></div>}
         {activePage === 'meetings' && <div className="ix-classic"><AetherisAppSurface key="meetings"  startPage="meetings"  /></div>}
         {activePage === 'work' && <div className="ix-classic"><AetherisAppSurface key="work"  startPage="work"  /></div>}
-        {activePage === 'specter' && <SpecterDetectView />}
+        {activePage === 'specter' && <SpecterDetectView onNavigate={handleNavigate} onWorkspace={page=>{setClassicPage(page);handleNavigate('workspace');}} onSearch={query=>{setSearchQuery(query);handleNavigate('people');}} member={me} notifications={mode === 'live' ? <LiveNotificationsBell onOpen={destination=>{if(destination==='peergroups'||destination==='events'||destination==='deals'){setClassicPage(destination);handleNavigate('workspace');}else handleNavigate(destination);}}/> : undefined}/> }
         {activePage === 'workspace' && <div className="ix-classic">
           <div className="ix-tools">
             {([['memory','Memory'],['crm','CRM'],['diagnostic','Company report'],['pocket','Private Library & Blueprints'],['executivework','Executive Workbench'],['providers','Trusted Providers'],['needs','Needs'],['companies','Companies'],['opportunities','Opportunities'],['deals','Deals'],['referrals','Referrals'],['workspaces','Workspaces'],['calendar','Calendar'],['grid','Grid'],['circles','Circles'],['peergroups','Peer groups'],['events','Events'],['profile','My profile'],['preferences','Settings']] as const).map(([id, label]) =>
@@ -473,7 +473,7 @@ export default function App({ mode = 'demo' }: { mode?: 'demo' | 'live' }) {
       </main>
 
       {/* Editorial Footer */}
-      <EditorialFooter onNavigate={handleNavigate} />
+      {activePage !== 'specter' && <EditorialFooter onNavigate={handleNavigate} />}
 
       {/* Interactive Modals */}
       <RequestIntroModal

@@ -21,11 +21,13 @@ import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as TryRouteImport } from './routes/try'
 import { Route as Char91DotwellKnownChar93OauthProtectedResourceRouteImport } from './routes/[.well-known]/oauth-protected-resource'
 import { Route as AuthenticatedAppRouteImport } from './routes/_authenticated/app'
+import { Route as AuthenticatedBusinessAnalystRouteImport } from './routes/_authenticated/business-analyst'
 import { Route as AuthenticatedDelegateRouteImport } from './routes/_authenticated/delegate'
 import { Route as AuthenticatedMemberIntelligenceRouteImport } from './routes/_authenticated/member-intelligence'
 import { Route as AuthenticatedOnboardingRouteImport } from './routes/_authenticated/onboarding'
 import { Route as AuthenticatedPeerGroupsRouteImport } from './routes/_authenticated/peer-groups'
 import { Route as AuthenticatedSyndicationRouteImport } from './routes/_authenticated/syndication'
+import { Route as AuthenticatedTrackRecordRouteImport } from './routes/_authenticated/track-record'
 import { Route as AuthenticatedVerifyRouteImport } from './routes/_authenticated/verify'
 import { Route as AuthenticatedWarmReferralsRouteImport } from './routes/_authenticated/warm-referrals'
 import { Route as ImpactSlugRouteImport } from './routes/impact.$slug'
@@ -36,7 +38,6 @@ import { Route as StorefrontUserIdRouteImport } from './routes/storefront.$userI
 import { Route as DotlovableOauthConsentRouteImport } from './routes/[.]lovable.oauth.consent'
 import { Route as AuthenticatedAdminEarlyAccessRouteImport } from './routes/_authenticated/admin.early-access'
 import { Route as AuthenticatedAdminVerificationRouteImport } from './routes/_authenticated/admin.verification'
-import { Route as StorefrontUserIdRouteImport } from './routes/storefront.$userId'
 import { Route as ApiAgentAsksRouteImport } from './routes/api/agent/asks'
 import { Route as ApiAgentInboundRouteImport } from './routes/api/agent/inbound'
 import { Route as ApiAgentIntrosRouteImport } from './routes/api/agent/intros'
@@ -114,6 +115,12 @@ const AuthenticatedAppRoute = AuthenticatedAppRouteImport.update({
   path: '/app',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedBusinessAnalystRoute =
+  AuthenticatedBusinessAnalystRouteImport.update({
+    id: '/business-analyst',
+    path: '/business-analyst',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedDelegateRoute = AuthenticatedDelegateRouteImport.update({
   id: '/delegate',
   path: '/delegate',
@@ -139,6 +146,12 @@ const AuthenticatedSyndicationRoute =
   AuthenticatedSyndicationRouteImport.update({
     id: '/syndication',
     path: '/syndication',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedTrackRecordRoute =
+  AuthenticatedTrackRecordRouteImport.update({
+    id: '/track-record',
+    path: '/track-record',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
 const AuthenticatedVerifyRoute = AuthenticatedVerifyRouteImport.update({
@@ -194,11 +207,6 @@ const AuthenticatedAdminVerificationRoute =
     path: '/admin/verification',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
-const StorefrontUserIdRoute = StorefrontUserIdRouteImport.update({
-  id: '/storefront/$userId',
-  path: '/storefront/$userId',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const ApiAgentAsksRoute = ApiAgentAsksRouteImport.update({
   id: '/api/agent/asks',
   path: '/api/agent/asks',
@@ -293,11 +301,13 @@ export interface FileRoutesByFullPath {
   '/try': typeof TryRoute
   '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
   '/app': typeof AuthenticatedAppRoute
+  '/business-analyst': typeof AuthenticatedBusinessAnalystRoute
   '/delegate': typeof AuthenticatedDelegateRoute
   '/member-intelligence': typeof AuthenticatedMemberIntelligenceRoute
   '/onboarding': typeof AuthenticatedOnboardingRoute
   '/peer-groups': typeof AuthenticatedPeerGroupsRoute
   '/syndication': typeof AuthenticatedSyndicationRoute
+  '/track-record': typeof AuthenticatedTrackRecordRoute
   '/verify': typeof AuthenticatedVerifyRoute
   '/warm-referrals': typeof AuthenticatedWarmReferralsRoute
   '/impact/$slug': typeof ImpactSlugRoute
@@ -308,7 +318,6 @@ export interface FileRoutesByFullPath {
   '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
   '/admin/early-access': typeof AuthenticatedAdminEarlyAccessRoute
   '/admin/verification': typeof AuthenticatedAdminVerificationRoute
-  '/storefront/$userId': typeof StorefrontUserIdRoute
   '/api/agent/asks': typeof ApiAgentAsksRoute
   '/api/agent/inbound': typeof ApiAgentInboundRoute
   '/api/agent/intros': typeof ApiAgentIntrosRoute
@@ -338,11 +347,13 @@ export interface FileRoutesByTo {
   '/try': typeof TryRoute
   '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
   '/app': typeof AuthenticatedAppRoute
+  '/business-analyst': typeof AuthenticatedBusinessAnalystRoute
   '/delegate': typeof AuthenticatedDelegateRoute
   '/member-intelligence': typeof AuthenticatedMemberIntelligenceRoute
   '/onboarding': typeof AuthenticatedOnboardingRoute
   '/peer-groups': typeof AuthenticatedPeerGroupsRoute
   '/syndication': typeof AuthenticatedSyndicationRoute
+  '/track-record': typeof AuthenticatedTrackRecordRoute
   '/verify': typeof AuthenticatedVerifyRoute
   '/warm-referrals': typeof AuthenticatedWarmReferralsRoute
   '/impact/$slug': typeof ImpactSlugRoute
@@ -353,7 +364,6 @@ export interface FileRoutesByTo {
   '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
   '/admin/early-access': typeof AuthenticatedAdminEarlyAccessRoute
   '/admin/verification': typeof AuthenticatedAdminVerificationRoute
-  '/storefront/$userId': typeof StorefrontUserIdRoute
   '/api/agent/asks': typeof ApiAgentAsksRoute
   '/api/agent/inbound': typeof ApiAgentInboundRoute
   '/api/agent/intros': typeof ApiAgentIntrosRoute
@@ -385,11 +395,13 @@ export interface FileRoutesById {
   '/try': typeof TryRoute
   '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
   '/_authenticated/app': typeof AuthenticatedAppRoute
+  '/_authenticated/business-analyst': typeof AuthenticatedBusinessAnalystRoute
   '/_authenticated/delegate': typeof AuthenticatedDelegateRoute
   '/_authenticated/member-intelligence': typeof AuthenticatedMemberIntelligenceRoute
   '/_authenticated/onboarding': typeof AuthenticatedOnboardingRoute
   '/_authenticated/peer-groups': typeof AuthenticatedPeerGroupsRoute
   '/_authenticated/syndication': typeof AuthenticatedSyndicationRoute
+  '/_authenticated/track-record': typeof AuthenticatedTrackRecordRoute
   '/_authenticated/verify': typeof AuthenticatedVerifyRoute
   '/_authenticated/warm-referrals': typeof AuthenticatedWarmReferralsRoute
   '/impact/$slug': typeof ImpactSlugRoute
@@ -400,7 +412,6 @@ export interface FileRoutesById {
   '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
   '/_authenticated/admin/early-access': typeof AuthenticatedAdminEarlyAccessRoute
   '/_authenticated/admin/verification': typeof AuthenticatedAdminVerificationRoute
-  '/storefront/$userId': typeof StorefrontUserIdRoute
   '/api/agent/asks': typeof ApiAgentAsksRoute
   '/api/agent/inbound': typeof ApiAgentInboundRoute
   '/api/agent/intros': typeof ApiAgentIntrosRoute
@@ -432,11 +443,13 @@ export interface FileRouteTypes {
     | '/try'
     | '/.well-known/oauth-protected-resource'
     | '/app'
+    | '/business-analyst'
     | '/delegate'
     | '/member-intelligence'
     | '/onboarding'
     | '/peer-groups'
     | '/syndication'
+    | '/track-record'
     | '/verify'
     | '/warm-referrals'
     | '/impact/$slug'
@@ -447,7 +460,6 @@ export interface FileRouteTypes {
     | '/.lovable/oauth/consent'
     | '/admin/early-access'
     | '/admin/verification'
-    | '/storefront/$userId'
     | '/api/agent/asks'
     | '/api/agent/inbound'
     | '/api/agent/intros'
@@ -477,11 +489,13 @@ export interface FileRouteTypes {
     | '/try'
     | '/.well-known/oauth-protected-resource'
     | '/app'
+    | '/business-analyst'
     | '/delegate'
     | '/member-intelligence'
     | '/onboarding'
     | '/peer-groups'
     | '/syndication'
+    | '/track-record'
     | '/verify'
     | '/warm-referrals'
     | '/impact/$slug'
@@ -492,7 +506,6 @@ export interface FileRouteTypes {
     | '/.lovable/oauth/consent'
     | '/admin/early-access'
     | '/admin/verification'
-    | '/storefront/$userId'
     | '/api/agent/asks'
     | '/api/agent/inbound'
     | '/api/agent/intros'
@@ -523,11 +536,13 @@ export interface FileRouteTypes {
     | '/try'
     | '/.well-known/oauth-protected-resource'
     | '/_authenticated/app'
+    | '/_authenticated/business-analyst'
     | '/_authenticated/delegate'
     | '/_authenticated/member-intelligence'
     | '/_authenticated/onboarding'
     | '/_authenticated/peer-groups'
     | '/_authenticated/syndication'
+    | '/_authenticated/track-record'
     | '/_authenticated/verify'
     | '/_authenticated/warm-referrals'
     | '/impact/$slug'
@@ -538,7 +553,6 @@ export interface FileRouteTypes {
     | '/.lovable/oauth/consent'
     | '/_authenticated/admin/early-access'
     | '/_authenticated/admin/verification'
-    | '/storefront/$userId'
     | '/api/agent/asks'
     | '/api/agent/inbound'
     | '/api/agent/intros'
@@ -574,7 +588,6 @@ export interface RootRouteChildren {
   PassportTokenRoute: typeof PassportTokenRoute
   StorefrontUserIdRoute: typeof StorefrontUserIdRoute
   DotlovableOauthConsentRoute: typeof DotlovableOauthConsentRoute
-  StorefrontUserIdRoute: typeof StorefrontUserIdRoute
   ApiAgentAsksRoute: typeof ApiAgentAsksRoute
   ApiAgentInboundRoute: typeof ApiAgentInboundRoute
   ApiAgentIntrosRoute: typeof ApiAgentIntrosRoute
@@ -679,6 +692,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAppRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/business-analyst': {
+      id: '/_authenticated/business-analyst'
+      path: '/business-analyst'
+      fullPath: '/business-analyst'
+      preLoaderRoute: typeof AuthenticatedBusinessAnalystRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/delegate': {
       id: '/_authenticated/delegate'
       path: '/delegate'
@@ -712,6 +732,13 @@ declare module '@tanstack/react-router' {
       path: '/syndication'
       fullPath: '/syndication'
       preLoaderRoute: typeof AuthenticatedSyndicationRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/track-record': {
+      id: '/_authenticated/track-record'
+      path: '/track-record'
+      fullPath: '/track-record'
+      preLoaderRoute: typeof AuthenticatedTrackRecordRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/verify': {
@@ -783,13 +810,6 @@ declare module '@tanstack/react-router' {
       fullPath: '/admin/verification'
       preLoaderRoute: typeof AuthenticatedAdminVerificationRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
-    }
-    '/storefront/$userId': {
-      id: '/storefront/$userId'
-      path: '/storefront/$userId'
-      fullPath: '/storefront/$userId'
-      preLoaderRoute: typeof StorefrontUserIdRouteImport
-      parentRoute: typeof rootRouteImport
     }
     '/api/agent/asks': {
       id: '/api/agent/asks'
@@ -908,11 +928,13 @@ declare module '@tanstack/react-router' {
 
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedAppRoute: typeof AuthenticatedAppRoute
+  AuthenticatedBusinessAnalystRoute: typeof AuthenticatedBusinessAnalystRoute
   AuthenticatedDelegateRoute: typeof AuthenticatedDelegateRoute
   AuthenticatedMemberIntelligenceRoute: typeof AuthenticatedMemberIntelligenceRoute
   AuthenticatedOnboardingRoute: typeof AuthenticatedOnboardingRoute
   AuthenticatedPeerGroupsRoute: typeof AuthenticatedPeerGroupsRoute
   AuthenticatedSyndicationRoute: typeof AuthenticatedSyndicationRoute
+  AuthenticatedTrackRecordRoute: typeof AuthenticatedTrackRecordRoute
   AuthenticatedVerifyRoute: typeof AuthenticatedVerifyRoute
   AuthenticatedWarmReferralsRoute: typeof AuthenticatedWarmReferralsRoute
   AuthenticatedAdminEarlyAccessRoute: typeof AuthenticatedAdminEarlyAccessRoute
@@ -921,11 +943,13 @@ interface AuthenticatedRouteRouteChildren {
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedAppRoute: AuthenticatedAppRoute,
+  AuthenticatedBusinessAnalystRoute: AuthenticatedBusinessAnalystRoute,
   AuthenticatedDelegateRoute: AuthenticatedDelegateRoute,
   AuthenticatedMemberIntelligenceRoute: AuthenticatedMemberIntelligenceRoute,
   AuthenticatedOnboardingRoute: AuthenticatedOnboardingRoute,
   AuthenticatedPeerGroupsRoute: AuthenticatedPeerGroupsRoute,
   AuthenticatedSyndicationRoute: AuthenticatedSyndicationRoute,
+  AuthenticatedTrackRecordRoute: AuthenticatedTrackRecordRoute,
   AuthenticatedVerifyRoute: AuthenticatedVerifyRoute,
   AuthenticatedWarmReferralsRoute: AuthenticatedWarmReferralsRoute,
   AuthenticatedAdminEarlyAccessRoute: AuthenticatedAdminEarlyAccessRoute,
@@ -963,7 +987,6 @@ const rootRouteChildren: RootRouteChildren = {
   PassportTokenRoute: PassportTokenRoute,
   StorefrontUserIdRoute: StorefrontUserIdRoute,
   DotlovableOauthConsentRoute: DotlovableOauthConsentRoute,
-  StorefrontUserIdRoute: StorefrontUserIdRoute,
   ApiAgentAsksRoute: ApiAgentAsksRoute,
   ApiAgentInboundRoute: ApiAgentInboundRoute,
   ApiAgentIntrosRoute: ApiAgentIntrosRoute,
