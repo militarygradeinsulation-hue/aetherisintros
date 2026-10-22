@@ -890,3 +890,10 @@
   .ix-news-ticker-track { animation: none; will-change: auto; }
   .ix-news-ticker-group:nth-child(2) { display: none; }
 }
+
+/* Paint the authenticated/demo workspace and every one of its interactive
+ * surfaces above the purely decorative root-level aurora. This corrects
+ * browser-observed ambient overlap on sidebar, tabs and mobile sheets while
+ * retaining ambient artwork on public routes. */
+body:has(.ix-root) .site-ambient { z-index: 0 !important; }
+body .ix-root { position: relative; z-index: 2; }
