@@ -1,5 +1,5 @@
-import { ExecutivePortrait } from './shared/ExecutivePortrait';
 // @ts-nocheck
+import { ExecutivePortrait } from './shared/ExecutivePortrait';
 import React, { useState, useEffect, useMemo } from 'react';
 import {
   Search,

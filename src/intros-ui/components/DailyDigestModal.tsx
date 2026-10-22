@@ -1,5 +1,5 @@
-import { ExecutivePortrait } from './shared/ExecutivePortrait';
 // @ts-nocheck
+import { ExecutivePortrait } from './shared/ExecutivePortrait';
 import React from 'react';
 import { Sparkles, Calendar, CheckSquare, AlertTriangle, X, ArrowRight, ShieldCheck, Zap } from 'lucide-react';
 import { Person, CalendarEvent, ActionableTaskItem } from '../types';

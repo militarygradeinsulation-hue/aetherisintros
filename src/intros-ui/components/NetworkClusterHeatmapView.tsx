@@ -1,5 +1,5 @@
-import { ExecutivePortrait } from './shared/ExecutivePortrait';
 // @ts-nocheck
+import { ExecutivePortrait } from './shared/ExecutivePortrait';
 import React, { useState, useMemo } from 'react';
 import {
   Activity,
