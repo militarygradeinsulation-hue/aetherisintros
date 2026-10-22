@@ -118,6 +118,7 @@ try {
   // Executive launcher regression: sidebar action opens the real dialog, no
   // floating bubble ever overlaps the Butler launcher.
   await page.goto(base + '#executive');
+  await page.reload(); // same-URL hash change does not remount the harness
   assert((await page.locator('.executive-upgrade-trigger').count()) === 0, 'no floating Executive bubble is rendered');
   const fab = page.locator('.ask-dock-fab');
   assert(await fab.isVisible(), 'Butler launcher stays visible');
