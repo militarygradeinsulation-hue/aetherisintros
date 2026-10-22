@@ -481,7 +481,7 @@ export const MessagesView: React.FC<MessagesViewProps> = ({
                 </button>
               </div>
 
-              <div className="flex items-center gap-2">
+              <div className="flex flex-wrap items-center gap-2">
                 {['Priya Desai', 'Daniel Kim', 'Elena Rossi'].map((name) => (
                   <div key={name} className="flex items-center gap-1.5 p-1 bg-[var(--msg-selected)] rounded-lg">
                     <ExecutivePortrait name={name} size="sm" />
