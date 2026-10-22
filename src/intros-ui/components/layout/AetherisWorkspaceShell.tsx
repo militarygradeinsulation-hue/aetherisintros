@@ -1,4 +1,4 @@
-import { useEffect, useState, type FormEvent, type ReactNode } from 'react';
+import { useEffect, useRef, useState, type FormEvent, type KeyboardEvent as ReactKeyboardEvent, type ReactNode } from 'react';
 import {
   ArrowRight, Bell, Bookmark, Brain, BriefcaseBusiness, CalendarDays,
   CircleHelp, ClipboardList, ContactRound, Crown, Fingerprint, Home, Menu,
@@ -73,6 +73,8 @@ export function AetherisWorkspaceShell({
   const query = searchQuery ?? localQuery;
   const changeQuery = onSearchChange ?? setLocalQuery;
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const menuButtonRef = useRef<HTMLButtonElement>(null);
+  const mobileDialogRef = useRef<HTMLDivElement>(null);
   // Render expanded during SSR/first paint, then adopt the saved preference.
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   useEffect(() => {
@@ -90,12 +92,42 @@ export function AetherisWorkspaceShell({
   }, [activePage, activeWorkspace]);
   useEffect(() => {
     if (!mobileMenuOpen) return;
-    const close = (event: KeyboardEvent) => {
-      if (event.key === 'Escape') setMobileMenuOpen(false);
-    };
-    document.addEventListener('keydown', close);
-    return () => document.removeEventListener('keydown', close);
+    // Focus the drawer's visible close action without popping the mobile keyboard.
+    const drawer = mobileDialogRef.current;
+    drawer?.querySelector<HTMLButtonElement>('.specter-mobile-menu-close')?.focus({ preventScroll: true });
+    // Changing to desktop while the menu is open must not leave a hidden modal.
+    const desktop = window.matchMedia('(min-width: 761px)');
+    const closeOnDesktop = () => { if (desktop.matches) setMobileMenuOpen(false); };
+    desktop.addEventListener('change', closeOnDesktop);
+    return () => desktop.removeEventListener('change', closeOnDesktop);
   }, [mobileMenuOpen]);
+
+  function closeMobileMenu(restoreFocus = false) {
+    setMobileMenuOpen(false);
+    if (restoreFocus) menuButtonRef.current?.focus({ preventScroll: true });
+  }
+
+  function handleMobileMenuKeyDown(event: ReactKeyboardEvent<HTMLDivElement>) {
+    if (event.key === 'Escape') {
+      event.preventDefault();
+      closeMobileMenu(true);
+      return;
+    }
+    if (event.key !== 'Tab') return;
+    const focusable = [...(mobileDialogRef.current?.querySelectorAll<HTMLElement>(
+      'button:not(:disabled), a[href], input:not(:disabled), select:not(:disabled), textarea:not(:disabled), [tabindex]:not([tabindex="-1"])'
+    ) ?? [])].filter(element => element.getClientRects().length > 0);
+    if (!focusable.length) return;
+    const first = focusable[0]!;
+    const last = focusable[focusable.length - 1]!;
+    if (event.shiftKey && document.activeElement === first) {
+      event.preventDefault();
+      last.focus();
+    } else if (!event.shiftKey && document.activeElement === last) {
+      event.preventDefault();
+      first.focus();
+    }
+  }
 
   const initials = member?.name.split(' ').filter(Boolean).map(s => s[0]).join('').slice(0, 2) || 'AI';
 
@@ -185,10 +217,12 @@ export function AetherisWorkspaceShell({
         <button type="button" className="specter-header-cta" onClick={() => onNavigate('workspace')}>
           Ask Intros <ArrowRight size={15}/>
         </button>
-        <button className="specter-mobile-menu-toggle" type="button" aria-expanded={mobileMenuOpen}
-          aria-controls="specter-mobile-navigation" aria-label={mobileMenuOpen ? 'Close workspace menu' : 'Open workspace menu'}
-          onClick={() => setMobileMenuOpen(open => !open)}>
-          {mobileMenuOpen ? <X size={23}/> : <Menu size={23}/>}
+        <button ref={menuButtonRef} className="specter-mobile-menu-toggle" type="button" aria-expanded={mobileMenuOpen}
+          aria-haspopup="dialog" aria-controls="specter-mobile-navigation"
+          aria-label={mobileMenuOpen ? 'Close workspace menu' : 'Open workspace menu'}
+          onClick={() => mobileMenuOpen ? closeMobileMenu(true) : setMobileMenuOpen(true)}>
+          {mobileMenuOpen ? <X size={20} aria-hidden="true"/> : <Menu size={20} aria-hidden="true"/>}
+          <span>Menu</span>
         </button>
       </div>
     </header>
@@ -203,10 +237,25 @@ export function AetherisWorkspaceShell({
       {navigation(false)}
     </aside>}
 
-    {mobileMenuOpen && <div className="specter-mobile-menu" id="specter-mobile-navigation">
-      {memberSearch(true)}
-      {navigation(true)}
-    </div>}
+    {mobileMenuOpen && <>
+      <button type="button" className="specter-mobile-menu-scrim" aria-label="Close navigation menu" tabIndex={-1}
+        onClick={() => closeMobileMenu(true)} />
+      <div className="specter-mobile-menu" id="specter-mobile-navigation"
+        ref={mobileDialogRef} role="dialog" aria-modal="true" aria-labelledby="specter-mobile-menu-heading"
+        onKeyDown={handleMobileMenuKeyDown}>
+        <div className="specter-mobile-menu-heading">
+          <div>
+            <span className="specter-mobile-menu-kicker">ASK INTROS / WORKSPACE</span>
+            <h2 id="specter-mobile-menu-heading">Navigate</h2>
+          </div>
+          <button type="button" className="specter-mobile-menu-close" onClick={() => closeMobileMenu(true)}
+            aria-label="Close navigation"><X size={19} aria-hidden="true"/> <span>Close</span></button>
+        </div>
+        {memberSearch(true)}
+        <p className="specter-mobile-menu-section">YOUR WORKSPACE</p>
+        {navigation(true)}
+      </div>
+    </>}
 
     <div className="specter-app-canvas" id="aetheris-workspace-content">
       {scrollContent ? <div className="aetheris-workspace-content">{children}</div> : children}
