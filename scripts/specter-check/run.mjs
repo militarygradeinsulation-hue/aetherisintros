@@ -103,5 +103,16 @@ try {
   await page.getByLabel('Search members, companies, or keywords').fill('Hallmark');
   await page.getByLabel('Search members, companies, or keywords').press('Enter');
   assert(await page.evaluate(()=>document.body.dataset.search)==='Hallmark','workspace sidebar search connects to member search');
+  // Collapsible sidebar: hide, persist across reload, restore.
+  await page.getByRole('button',{name:'Hide sidebar'}).click();
+  assert(!(await page.locator('.specter-app-sidebar').isVisible()),'hide control removes the sidebar panel');
+  assert(await page.getByRole('button',{name:'Show sidebar'}).isVisible(),'a persistent expand control stays in the top bar');
+  assert((await page.evaluate(()=>localStorage.getItem('aetheris.sidebar.collapsed')))==='1','collapsed preference is saved on this device');
+  await page.reload();
+  await page.getByRole('button',{name:'Show sidebar'}).waitFor();
+  assert(!(await page.locator('.specter-app-sidebar').isVisible()),'collapsed preference survives reload');
+  await page.getByRole('button',{name:'Show sidebar'}).click();
+  assert(await page.locator('.specter-app-sidebar').isVisible(),'expand control restores the sidebar');
+  assert((await page.evaluate(()=>localStorage.getItem('aetheris.sidebar.collapsed')))==='0','restored preference is saved on this device');
   console.log('Screenshots:',out);
 } finally { await browser.close(); server.close(); }
