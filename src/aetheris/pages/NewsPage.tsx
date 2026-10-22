@@ -35,7 +35,8 @@ export function NewsPage({ publicMode = false }: { publicMode?: boolean } = {}) 
 
   const resolvedImages = useNewsImages(items)
   const featured = shown[0]
-  const remaining = shown.slice(1)
+  const remaining = shown.slice(1, visibleCount)
+  const hiddenCount = Math.max(0, shown.length - 1 - remaining.length)
 
   if (open && !publicMode) return <NewsImagesProvider value={resolvedImages}>
     <NewsReader item={open} onBack={() => setOpen(null)} />

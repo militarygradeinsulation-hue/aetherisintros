@@ -1417,6 +1417,7 @@ const memoryCategories: Learning['category'][] = ['People', 'Companies', 'Needs'
 function Memory({ people, select }: { people: Member[]; select: (p: Member) => void }) {
   const net = useNetwork()
   const [cat, setCat] = useState<Learning['category'] | 'All'>('All')
+  const [showAllLearned, setShowAllLearned] = useState(false)
   const items: Learning[] = [
     ...net.notes.slice(0, 4).map((n, i): Learning => ({
       id: `n${i}`, category: 'People', text: n.text, source: 'Recorded by you', confidence: 100, scope: n.scope, when: n.createdAt,
@@ -1424,6 +1425,8 @@ function Memory({ people, select }: { people: Member[]; select: (p: Member) => v
     ...net.learnings,
   ]
   const shown = cat === 'All' ? items : items.filter(l => l.category === cat)
+  const LEARNED_PREVIEW = 6
+  const learnedRows = showAllLearned ? shown : shown.slice(0, LEARNED_PREVIEW)
   return <>
     <section className="memory-editorial">
       <div className="memory-editorial-copy">
@@ -1598,12 +1601,15 @@ function Insights({ people, select, setPage }: { people: Member[]; select: (p: M
       </IntrosSystemBento>
     </section>}
 
-    <section className="intelligence-map">
-      <div><Label signal>RELATIONSHIP INTELLIGENCE MAP</Label><h2>The same graph, read for opportunity.</h2>
-        <p>Amber nodes carry a live signal. Selecting one opens the reasoning, the trust path and the smallest next action.</p>
-        <button className="text-action" onClick={() => setPage('memory')}>Open Active Memory <ArrowRight size={13} /></button></div>
-      <MemoryGraph people={people} onSelect={select} compact />
-    </section>
+    <details className="ix-disclosure">
+      <summary>Relationship intelligence map — the same graph, read for opportunity</summary>
+      <section className="intelligence-map">
+        <div><Label signal>RELATIONSHIP INTELLIGENCE MAP</Label><h2>The same graph, read for opportunity.</h2>
+          <p>Amber nodes carry a live signal. Selecting one opens the reasoning, the trust path and the smallest next action.</p>
+          <button className="text-action" onClick={() => setPage('memory')}>Open Active Memory <ArrowRight size={13} /></button></div>
+        <MemoryGraph people={people} onSelect={select} compact />
+      </section>
+    </details>
 
   </>
 }
