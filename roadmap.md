@@ -403,9 +403,9 @@
 ## PR 263 orange integration QA (Oct 22)
 - [x] Confirm exact merged HEAD and CSS import order; detect displaced compact Dashboard/Network layouts.
 - [x] Restore prior viewport panels and search-first directory without losing orange styles or live callbacks.
-- [ ] Run focused regressions and three-size public/demo visual checks; authenticated account unavailable.
-- [ ] Confirm automated compilation and publish only if all release checks are green.
+- [x] Current snapshot: 138 application test files / 858 tests pass; public/demo browser checks cover 1440/390/320 and Dashboard/Network 1280; preview automatic compilation OK.
+- [ ] Complete release safeguards — blocked: two recovery suites require missing PGlite; authenticated requesting-account session unavailable. No publication.
 
 ## PR 264 latest-main density verification (Oct 22)
-- [ ] Verify SHA 322a1a713fd87528afa671a8973cf9702dd9ec71, latest density stylesheet/import order and Network selectors without reverting newer code.
-- [ ] Check full-width Dashboard and balanced Network at desktop/mobile; distinguish preview, GitHub and published state.
+- [ ] Synchronize PR #264 — blocked: GitHub commit 322a1a713fd87528afa671a8973cf9702dd9ec71 verified via public API, but preview HEAD caa31c117213ad3244fac1fc09684c9ef5b1fbd2 lacks its stylesheet/import/Network selectors. Agent cannot operate managed Git sync; user must inspect Project settings → Git. Do not overwrite either source version manually.
+- [ ] Check full-width Dashboard and balanced Network at desktop/mobile after sync; publication and live release identity remain unverified.
