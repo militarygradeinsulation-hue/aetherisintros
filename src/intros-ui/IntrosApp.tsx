@@ -183,6 +183,14 @@ export default function App({ mode = 'demo', executiveAction, initialPage, initi
   };
 
   const handleToggleSaveMember = (memberId: string) => {
+    if (mode === 'live') {
+      // A private bookmark is only displayed after the server acknowledges the
+      // saved relationship. This is the same write-through graph used elsewhere
+      // in the authenticated workspace, not a second client-only bookmark.
+      const person = network.members.find(member => member.id === memberId);
+      network.toggleSave(memberId, person?.name);
+      return;
+    }
     setSavedMemberIds((prev) => {
       const next = new Set(prev);
       if (next.has(memberId)) {
@@ -439,7 +447,7 @@ export default function App({ mode = 'demo', executiveAction, initialPage, initi
             onBack={() => handleNavigate('people')}
             onNavigate={handleNavigate}
             onRequestIntro={(member) => setRequestIntroTarget(member)}
-            isSaved={savedMemberIds.has(currentProfileMember.id)}
+            isSaved={mode === 'live' ? network.saved.includes(currentProfileMember.id) : savedMemberIds.has(currentProfileMember.id)}
             onToggleSave={handleToggleSaveMember}
           />
         )}
