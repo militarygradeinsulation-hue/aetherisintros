@@ -284,7 +284,7 @@
 /* Specter keeps its functional viewport, panels and frames; just harmonize
    chrome, scan CTA, selected tabs and the evidence cards with the same system. */
 :root[data-theme] body .ix-root.ix-specter-mode .specter-app .specter-primary,
-.ix-root .aetheris-workspace-shell .specter-app .specter-primary {
+.ix-root .aetheris-workspace-shell .specter-primary {
   background: var(--ix-accent) !important;
   color: #18100a !important;
   border: 1px solid rgba(255,184,137,.45) !important;
@@ -301,23 +301,23 @@
   border-color: var(--ix-accent-line) !important;
   box-shadow: inset 3px 0 var(--ix-accent) !important;
 }
-.ix-root .aetheris-workspace-shell .specter-app .specter-metrics > div,
-.ix-root .aetheris-workspace-shell .specter-app .specter-card {
+.ix-root .aetheris-workspace-shell .specter-metrics > div,
+.ix-root .aetheris-workspace-shell .specter-card {
   border-color: var(--ix-line-strong);
   background: var(--ix-card);
 }
-.ix-root .aetheris-workspace-shell .specter-app .specter-metrics strong {
+.ix-root .aetheris-workspace-shell .specter-metrics strong {
   color: #ffbb95;
 }
-.ix-root .aetheris-workspace-shell .specter-app .specter-browser-view-switch button.active {
+.ix-root .aetheris-workspace-shell .specter-browser-view-switch button.active {
   background: var(--ix-accent);
   color: #17100c;
 }
-.ix-root .aetheris-workspace-shell .specter-app .specter-title h1 span {
+.ix-root .aetheris-workspace-shell .specter-title h1 span {
   -webkit-text-fill-color: var(--ix-accent);
   color: var(--ix-accent);
 }
-.ix-root .aetheris-workspace-shell .specter-app .specter-search input:focus {
+.ix-root .aetheris-workspace-shell .specter-search input:focus {
   border-color: var(--ix-accent);
 }
 .ix-root .aetheris-workspace-shell :is(input[type="checkbox"],input[type="radio"]) {
