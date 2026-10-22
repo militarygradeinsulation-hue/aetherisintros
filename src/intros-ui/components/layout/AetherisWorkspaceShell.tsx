@@ -65,6 +65,16 @@ export const MEMBER_TOOL_DESTINATIONS: readonly WorkspaceDestination[] = [
   { label: 'Circles', icon: Users, workspace: 'circles' },
   { label: 'Relationship Grid', icon: Network, workspace: 'grid' },
   { label: 'Executive Workbench', icon: BriefcaseBusiness, workspace: 'executivework' },
+  { label: 'Track Record & Passport', icon: Fingerprint, workspace: 'passport' },
+  { label: 'Meeting Briefing', icon: CalendarDays, workspace: 'briefing' },
+  { label: 'Marketplace Pilot', icon: ClipboardList, workspace: 'marketplace-pilot' },
+  { label: 'Capital & Advisory', icon: BriefcaseBusiness, workspace: 'capital' },
+  { label: 'Expertise & Talent', icon: Users, workspace: 'expertise' },
+  { label: 'Intelligence Rooms', icon: Users, workspace: 'intelrooms' },
+  { label: 'Knowledge Assets', icon: Bookmark, workspace: 'knowledgeassets' },
+  { label: 'Private Vault', icon: Bookmark, workspace: 'vault' },
+  { label: 'Integrations', icon: Network, workspace: 'integrations' },
+  { label: 'Consent & Privacy', icon: Fingerprint, workspace: 'consent' },
 ] as const
 
 export type WorkspaceShellProps = {

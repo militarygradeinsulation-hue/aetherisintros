@@ -105,6 +105,7 @@ import { KnowledgePage } from './pages/KnowledgePage'
 import { AdvisoryBoardsPage } from './pages/AdvisoryBoardsPage'
 import { IntegrationsPage } from './pages/IntegrationsPage'
 import { usePro } from './pro-store'
+import { ProfessionalDraftBoundary } from './ProfessionalDraftBoundary'
 import { PassportPage } from './pages/PassportPage'
 import { OpportunitiesPage } from './pages/OpportunitiesPage'
 import { AskReplies, DealsPage, OpenDealRoomButton } from './deals-ui'
@@ -2815,12 +2816,15 @@ function Shell({ startPage, feedOnly = false }: { startPage?: Page | undefined; 
       'membership-upgrade': <MembershipUpgradePage />,
       'marketplace-pilot': <MarketplacePilotPage />,
     }
+  const guardedPageNode = Object.fromEntries(Object.entries(pageNode).map(([id, node]) => [id,
+    <ProfessionalDraftBoundary key={id} page={id} onNavigate={target => setPage(target as Page)}>{node}</ProfessionalDraftBoundary>,
+  ])) as Partial<Record<Page, ReactNode>>
   const hubLabel: Partial<Record<Page, string>> = {
     discover: 'People', opportunities: 'Pipeline', outcomes: 'Forecast', rooms: 'Rooms', deals: 'Deals',
     profile: 'Identity', passport: 'Passport', permission: 'Privacy', preferences: 'Controls', integrations: 'Apps',
   }
   const hubTabs = (ids: Page[]) => ids.flatMap(id => {
-    const node = pageNode[id]
+    const node = guardedPageNode[id]
     return node ? [{ id, label: hubLabel[id] ?? metaById[id]?.label ?? id, node }] : []
   })
   const content = selected
@@ -2831,7 +2835,7 @@ function Shell({ startPage, feedOnly = false }: { startPage?: Page | undefined; 
         : page === 'me'
           ? <Hub storeKey="aetheris.hub.me" title="Me" blurb="Your executive identity and your controls."
               tabs={hubTabs(meTabs)} advanced={meAdvanced} onNavigate={setPage} kind="me" />
-          : pageNode[page]
+          : guardedPageNode[page]
 
   useGrabScroll()
   useEffect(() => { applyTextScale(readTextScale()) }, [])

@@ -38,6 +38,7 @@ jobs:
         run: |
           node scripts/migration-checks/run.mjs
           node scripts/migration-checks/launch-signup.standalone.mjs
+          node scripts/recovery/member-families.standalone.mjs
       - name: Install Chromium
         run: npx playwright install --with-deps chromium
       - name: Specter URL capture workspace (browser)
@@ -82,6 +83,10 @@ jobs:
         env:
           PLAYWRIGHT_MODULE: ${{ github.workspace }}/node_modules/playwright/index.mjs
         run: node scripts/admin-connections-check/run.mjs
+      - name: Live member readiness and failure states (browser)
+        env:
+          PLAYWRIGHT_MODULE: ${{ github.workspace }}/node_modules/playwright/index.mjs
+        run: node scripts/member-readiness-check/run.mjs
       - name: Shared Opportunity Exchange (browser)
         env:
           PLAYWRIGHT_MODULE: ${{ github.workspace }}/node_modules/playwright/index.mjs

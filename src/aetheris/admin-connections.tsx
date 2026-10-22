@@ -8,6 +8,7 @@ import {
   type ReadRpc,
 } from "./lib/connection-preflight";
 import "./admin-connections.css";
+import { MemberFeatureReadinessPanel } from './MemberFeatureReadinessPanel';
 
 const labels = {
   read_verified: "Read verified",
@@ -71,7 +72,7 @@ export function AdminConnectionsPanel() {
   const visibleRows = reportAccount === access.userId ? rows : [];
   if (!allowed) return null;
   return (
-    <section className="admin-connection-checks" aria-label="Connection preflight" aria-busy={busy}>
+    <><section className="admin-connection-checks" aria-label="Connection preflight" aria-busy={busy}>
       <h2>Check the deployed connections</h2>
       <p>
         Runs read-only requests as your current administrator account. Results verify those reads
@@ -111,6 +112,6 @@ export function AdminConnectionsPanel() {
           </p>
         </>
       )}
-    </section>
+    </section><MemberFeatureReadinessPanel /></>
   );
 }

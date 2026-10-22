@@ -9,16 +9,12 @@ import { supabase } from '@/integrations/supabase/client'
 import { ExecutiveUpgrade } from '@/aetheris/ExecutiveUpgrade'
 import { ConnectionBanner } from '@/aetheris/ConnectionBanner'
 import { WelcomeDiagnosticBanner } from '@/aetheris/WelcomeDiagnosticBanner'
+import { isMemberWorkspace } from '@/aetheris/workspace-destinations'
 import '@/aetheris/executive-upgrade.css'
 import '@/aetheris/styles.css'
 
 const entryPages: ActivePage[] = ['home', 'people', 'intros', 'messages', 'insights', 'meetings', 'specter', 'intelligence']
 /** Existing workspaces only: arbitrary page names are never taken from a URL. */
-const entryWorkspaces = [
-  'crm', 'needs', 'opportunities', 'deals', 'calendar', 'peergroups', 'workspaces',
-  'referrals', 'companies', 'providers', 'pocket', 'profile', 'preferences',
-  'diagnostic', 'executivework', 'events', 'memory', 'circles', 'grid',
-] as const
 
 
 export const Route = createFileRoute('/_authenticated/app')({
@@ -28,7 +24,7 @@ export const Route = createFileRoute('/_authenticated/app')({
     const query = search['q']
     const q = typeof query === 'string' ? query.trim().slice(0, 120) : ''
     const validView = typeof view === 'string' && entryPages.includes(view as ActivePage) ? view as ActivePage : undefined
-    const validWorkspace = typeof workspace === 'string' && (entryWorkspaces as readonly string[]).includes(workspace) ? workspace : undefined
+    const validWorkspace = isMemberWorkspace(workspace) ? workspace : undefined
     return {
       ...(validView ? { view: validView } : {}),
       ...(validWorkspace ? { workspace: validWorkspace } : {}),

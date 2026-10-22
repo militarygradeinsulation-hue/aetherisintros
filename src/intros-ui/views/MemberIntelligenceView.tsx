@@ -26,13 +26,20 @@ export function MemberIntelligenceView({ live, onNavigate }: {
   const [tab, setTab] = useState<IntelligenceTab>('business');
   const [userId, setUserId] = useState<string | null>(null);
   const [checked, setChecked] = useState(!live);
+  const [authError, setAuthError] = useState('');
 
   useEffect(() => {
     if (!live) return;
     let off = false;
-    void supabase.auth.getUser().then(({ data }) => {
+    void supabase.auth.getUser().then(({ data, error }) => {
       if (off) return;
+      if (error) setAuthError('Your session could not be verified. Sign in again or retry.');
       setUserId(data.user?.id ?? null);
+      setChecked(true);
+    }).catch(() => {
+      if (off) return;
+      setAuthError('Your session could not be verified. Check your connection and retry.');
+      setUserId(null);
       setChecked(true);
     });
     return () => { off = true; };
@@ -51,6 +58,7 @@ export function MemberIntelligenceView({ live, onNavigate }: {
   if (!checked) {
     return <section className="mi-view" aria-busy="true"><p className="mi-loading">Loading member intelligence…</p></section>;
   }
+  if (authError) return <section className="mi-view" role="alert"><p className="mi-loading">{authError}</p><button type="button" onClick={() => window.location.reload()}>Retry member intelligence</button></section>;
   if (!userId) {
     return <section className="mi-view" role="alert"><p className="mi-loading">Sign in to review your private business and track-record data.</p></section>;
   }

@@ -153,7 +153,7 @@ export async function checkConnection(
     if (response.error) {
       const code = response.error.code;
       if (code === "42501") return result("access_denied");
-      if (code === "PGRST202" || code === "42883" || code === "42P01")
+      if (code === "PGRST202" || code === "PGRST205" || code === "42883" || code === "42P01")
         return result("missing_database");
       return result("unavailable");
     }
