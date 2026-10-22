@@ -9,16 +9,18 @@ interface Props {
   onNavigate: (page: ActivePage) => void;
   onWorkspace: (page: string) => void;
   onSearch: (query: string) => void;
+  searchQuery?: string;
+  onSearchChange?: (query: string) => void;
   member?: { name: string; avatarUrl?: string } | null;
   notifications?: ReactNode;
 }
 
 /** Specter now occupies the same navigable shell as the rest of Ask Intros. */
-export function SpecterDetectView({ onNavigate, onWorkspace, onSearch, member, notifications }: Props) {
+export function SpecterDetectView({ onNavigate, onWorkspace, onSearch, searchQuery, onSearchChange, member, notifications }: Props) {
   const [help, setHelp] = useState(false);
   return <AetherisWorkspaceShell
     activePage="specter" onNavigate={onNavigate} onWorkspace={onWorkspace}
-    onSearch={onSearch} member={member} notifications={notifications}
+    onSearch={onSearch} searchQuery={searchQuery} onSearchChange={onSearchChange} member={member} notifications={notifications}
     onHelp={() => setHelp(open => !open)}
   >
     <div className="specter-how">
