@@ -324,6 +324,37 @@
   accent-color: var(--ix-accent);
 }
 
+/* Solid orange actions use ink, not white text: maintains readable contrast.
+   Match only a complete Tailwind class token so orange translucent washes keep
+   their light-text treatments. */
+.ix-root .aetheris-workspace-shell :is(button,a)[class~="bg-[#FF8A4C]"] {
+  color: #1c110c !important;
+  -webkit-text-fill-color: #1c110c !important;
+}
+.ix-root .aetheris-workspace-shell :is(button,a)[class~="hover:bg-[#DB6B36]"]:hover {
+  color: #19100d !important;
+  -webkit-text-fill-color: #19100d !important;
+}
+.ix-root .aetheris-workspace-shell :is(button,a)[class~="bg-[#FF8A4C]"]:disabled {
+  opacity: .56;
+}
+
+/* An orange selection cue for real data-driven charts only; chart values and
+   their tooltip content continue to come from the original components. */
+.ix-root .aetheris-workspace-shell .recharts-cartesian-grid line {
+  stroke: rgba(255,255,255,.075);
+}
+.ix-root .aetheris-workspace-shell .recharts-tooltip-wrapper {
+  font-family: "IBM Plex Mono", ui-monospace, monospace;
+  font-size: 11px;
+}
+.ix-root .aetheris-workspace-shell .recharts-default-tooltip {
+  background-color: #17171a !important;
+  border: 1px solid var(--ix-accent-line) !important;
+  border-radius: 9px !important;
+  color: #f2f1ec !important;
+}
+
 /* Keep the visual polish low-cost and accessible. */
 @media (max-width: 760px) {
   .ix-root .aetheris-workspace-shell .specter-header-links button[aria-current="page"]::after { display: none; }
