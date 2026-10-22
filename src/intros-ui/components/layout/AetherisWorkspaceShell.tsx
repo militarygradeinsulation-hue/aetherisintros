@@ -209,7 +209,7 @@ export function AetherisWorkspaceShell({
     </div>}
 
     <div className="specter-app-canvas" id="aetheris-workspace-content">
-      {scrollContent ? <div className="aetheris-workspace-content">{children}</div> : children}
+      {scrollContent ? <div className={`aetheris-workspace-content${activePage === 'home' ? ' aetheris-dashboard-viewport' : ''}`}>{children}</div> : children}
     </div>
   </div>;
 }

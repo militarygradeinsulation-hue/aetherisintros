@@ -262,3 +262,66 @@
     padding:7px; font-size:11px !important; letter-spacing:0;
   }
 }
+
+/* Dashboard is a single-screen workspace. Only the selected content region scrolls. */
+.ix-aetheris-workspace-mode .aetheris-dashboard-viewport {
+  display:flex; flex-direction:column; overflow:clip; padding:12px;
+}
+.ix-root .aetheris-dashboard-viewport .home-feed-page {
+  display:flex; flex-direction:column; flex:1 1 0; min-height:0; height:100%;
+  padding:0; gap:12px; overflow:clip;
+}
+.ix-root .aetheris-dashboard-viewport .home-feed-welcome { flex:0 0 auto; }
+.ix-root .aetheris-dashboard-viewport .home-feed-layout {
+  display:flex; flex-direction:column; flex:1 1 0; min-height:0; gap:0;
+}
+.ix-root .aetheris-dashboard-viewport .home-feed-center {
+  display:flex; flex-direction:column; flex:1 1 0; min-height:0;
+}
+.ix-root .aetheris-dashboard-viewport .home-feed-controls {
+  flex:0 0 auto; margin:0; padding-bottom:10px;
+}
+.ix-root .aetheris-dashboard-viewport .dashboard-inner-panel {
+  flex:1 1 0; min-height:0; min-width:0; overflow-y:auto; overflow-x:clip;
+  overscroll-behavior:contain; scrollbar-width:thin; padding:12px 4px 76px;
+}
+.ix-root .aetheris-dashboard-viewport .dashboard-inner-panel[hidden] { display:none; }
+.ix-root .aetheris-dashboard-viewport #dashboard-social-panel { width:100%; margin-inline:auto; }
+.ix-root .aetheris-dashboard-viewport .dashboard-tools-grid { align-items:start; }
+.ix-root .aetheris-dashboard-viewport .home-feed-overview { margin:0; padding:0; border:0; }
+.ix-root .aetheris-dashboard-viewport .home-feed-mobile-tools { margin:0; }
+.ix-root .aetheris-dashboard-viewport .home-feed-controls-actions button { border-color:var(--ix-line); border-radius:6px; }
+.ix-root .aetheris-dashboard-viewport .home-feed-controls-actions button[aria-pressed=true] { border-color:var(--ix-accent); }
+.ix-root .aetheris-dashboard-viewport .dashboard-inner-panel:focus-visible { outline:2px solid var(--ix-accent); outline-offset:-2px; }
+@media(max-width:760px) {
+ .ix-root .aetheris-dashboard-viewport .home-feed-welcome { gap:8px; padding:10px; }
+ .ix-root .aetheris-dashboard-viewport .home-feed-welcome h1 { font-size:17px; }
+ .ix-root .aetheris-dashboard-viewport .home-feed-controls-actions { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); width:100%; }
+ .ix-root .aetheris-dashboard-viewport .home-feed-controls-actions button { min-height:34px; }
+ .ix-root .aetheris-dashboard-viewport .home-feed-mobile-widget .home-widget-scroll { overflow:visible; }
+}
+/* Legacy stencil buttons must not turn inactive panel labels white-on-white. */
+:root[data-theme] body .aetheris-workspace-shell .aetheris-dashboard-viewport .home-feed-controls-actions button {
+ background:var(--ix-card)!important; color:var(--ix-text)!important;
+ -webkit-text-fill-color:var(--ix-text)!important; clip-path:none!important;
+ font-family:Poppins,sans-serif!important; letter-spacing:0!important;
+}
+:root[data-theme] body .aetheris-workspace-shell .aetheris-dashboard-viewport .home-feed-controls-actions button[aria-pressed=true] {
+ background:var(--ix-panel)!important; border-color:var(--ix-accent)!important;
+}
+:root[data-theme] body .aetheris-workspace-shell .aetheris-dashboard-viewport .home-feed-controls-actions button span {
+ color:inherit!important; -webkit-text-fill-color:inherit!important;
+}
+:root[data-theme] body .aetheris-workspace-shell .aetheris-dashboard-viewport .home-feed-welcome h1 {
+ font-family:Poppins,sans-serif!important; letter-spacing:0!important; text-transform:none!important;
+}
+
+:root[data-theme] body .aetheris-workspace-shell .demo-intros-heading {
+ background:var(--ix-panel)!important; background-image:none!important;
+ border:0!important; border-bottom:1px solid var(--ix-line)!important; padding:12px 0!important;
+}
+:root[data-theme] body .aetheris-workspace-shell .demo-intros-heading::before,
+:root[data-theme] body .aetheris-workspace-shell .demo-intros-heading::after { content:none!important; }
+:root[data-theme] body .aetheris-workspace-shell .demo-intros-heading h1 {
+ font-family:Poppins,sans-serif!important; font-size:22px!important; text-transform:none!important; letter-spacing:0!important;
+}

@@ -2,6 +2,7 @@ import { useEffect, useState, type ReactNode } from 'react';
 // Actual feed rail layout: the unimported CSS left the old square widgets in place.
 import '../../home-feed-layout.css';
 import { ArrowLeftRight, Eye, EyeOff, GripVertical, LayoutGrid, RotateCcw, Settings2, X } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 import { DraggableWidgetGrid, type WidgetItem } from '@/components/ui/widget-board';
 
 type Side = 'left' | 'right';
@@ -85,12 +86,15 @@ interface FeedSidebarLayoutProps {
   widgets: Record<string, ReactNode>;
   actionQueue?: ReactNode;
   children: ReactNode;
+  overview?: ReactNode;
 }
 
-export function FeedSidebarLayout({ widgets, actionQueue, children }: FeedSidebarLayoutProps) {
+export function FeedSidebarLayout({ widgets, actionQueue, children, overview }: FeedSidebarLayoutProps) {
   const [layout, setLayout] = useState<GroupLayout[]>(defaults);
   const [customize, setCustomize] = useState(false);
-  const [focus, setFocus] = useState(true);
+  const [panel, setPanel] = useState<'feed' | 'tools' | 'overview'>('feed');
+  const focus = panel === 'feed';
+  const setFocus = (next: boolean) => setPanel(next ? 'feed' : 'tools');
   const [desktop, setDesktop] = useState(false);
   const [railHeight, setRailHeight] = useState(320);
 
@@ -186,21 +190,24 @@ export function FeedSidebarLayout({ widgets, actionQueue, children }: FeedSideba
         <div className="home-feed-controls">
           <span className="home-feed-controls-label">Your network / Social feed</span>
           <div className="home-feed-controls-actions">
-            <button type="button" aria-pressed={focus} aria-controls="dashboard-social-panel" onClick={() => { if (!focus) focusToggle(); }}>Social feed</button>
-            <button type="button" aria-pressed={!focus} aria-controls="dashboard-tools-panel" onClick={() => { if (focus) focusToggle(); }}>Tools & activity</button>
-            <button type="button" onClick={() => setCustomize(true)}><Settings2 size={15}/> Customize <span className="home-feed-visible-count">{count}</span></button>
+            <Button variant="outline" type="button" aria-pressed={focus} aria-controls="dashboard-social-panel" onClick={() => { if (!focus) focusToggle(); }}>Social feed</Button>
+            <Button variant="outline" type="button" aria-pressed={panel === 'tools'} aria-controls="dashboard-tools-panel" onClick={() => setPanel('tools')}>Tools & activity</Button>
+            {overview && <Button variant="outline" type="button" aria-pressed={panel === 'overview'} aria-controls="dashboard-overview-panel" onClick={() => setPanel('overview')}>Overview</Button>}
+            <Button variant="outline" type="button" onClick={() => setCustomize(true)}><Settings2 size={15}/> Customize <span className="home-feed-visible-count">{count}</span></Button>
           </div>
         </div>
-        <div id="dashboard-social-panel" hidden={!focus}>{children}</div>
-        {!focus && !desktop && <details open className="home-feed-mobile-tools" id="dashboard-tools-panel">
+        <div id="dashboard-social-panel" className="dashboard-inner-panel" role="region" aria-label="Social feed" tabIndex={0} hidden={!focus}>{children}</div>
+        {panel === 'tools' && !desktop && <details open className="home-feed-mobile-tools dashboard-inner-panel" id="dashboard-tools-panel">
           <summary><LayoutGrid size={16}/> Tools & widgets <span>{count} active</span></summary>
           <div className="home-feed-mobile-tool-list">
             {layout.filter(item => !item.hidden).map(item => <div key={item.id} className="home-feed-mobile-widget">{card(item)}</div>)}
             {actionQueue && <details className="home-feed-priorities"><summary>Weekly priorities</summary>{actionQueue}</details>}
           </div>
         </details>}
+      {panel === 'tools' && desktop && <div id="dashboard-tools-panel" className="dashboard-tools-grid dashboard-inner-panel" role="region" aria-label="Tools and activity" tabIndex={0}>{rail('left')}{rail('right')}</div>}
+        {overview && <div id="dashboard-overview-panel" className="dashboard-inner-panel" role="region" aria-label="Network overview" tabIndex={0} hidden={panel !== 'overview'}>{overview}</div>}
       </div>
-      {!focus && desktop && <div id="dashboard-tools-panel" className="dashboard-tools-grid">{rail('left')}{rail('right')}</div>}
+
     </section>
     {customize && <div className="home-feed-customize-backdrop" onMouseDown={event => {
       if (event.target === event.currentTarget) setCustomize(false);
