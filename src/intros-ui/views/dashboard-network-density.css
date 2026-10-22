@@ -361,4 +361,5 @@
   .ix-aetheris-workspace-mode .home-feed-page .home-feed-controls-actions { gap: 4px; }
   .ix-aetheris-workspace-mode .home-feed-page .home-feed-controls-actions button { padding: 7px; }
   .ix-aetheris-workspace-mode .home-feed-page > .home-feed-overview { max-height: 25vh; overflow-y: auto; }
+  .ix-aetheris-workspace-mode .ix-network-results-list > div:nth-child(2) { position: static; }
 }

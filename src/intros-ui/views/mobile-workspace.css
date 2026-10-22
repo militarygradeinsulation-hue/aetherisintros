@@ -343,3 +343,6 @@
 @media (prefers-reduced-motion: reduce) {
   .ix-root .aetheris-workspace-shell .specter-mobile-menu { animation: none; }
 }
+@media (min-width: 761px) {
+  .ix-root .aetheris-workspace-shell .specter-mobile-menu-toggle { display: none; }
+}
