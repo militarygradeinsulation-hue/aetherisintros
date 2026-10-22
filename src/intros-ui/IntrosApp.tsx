@@ -41,7 +41,6 @@ import '@/aetheris/architectural-system.css';
 import './messages-readability.css';
 import '@/aetheris/executive-options.css';
 import '@/aetheris/messages-master-theme.css';
-import { useAetherisNews } from '@/aetheris/news';
 import { LiveMembers } from './liveMembers';
 import { ThisWeekPanel } from '@/aetheris/this-week-ui';
 import { ActivationChecklist, recordVisit } from '@/aetheris/activation-ui';
@@ -57,20 +56,6 @@ import { AetherisWorkspaceShell } from './components/layout/AetherisWorkspaceShe
 import './views/aetheris-workspace-pages.css';
 
 const SHELL_PAGES: ActivePage[] = ['home', 'people', 'bubbles', 'intros', 'messages', 'insights', 'news', 'workspace', 'memory', 'work', 'meetings', 'specter'];
-
-function NewsTicker({ onOpen }: { onOpen: () => void }) {
-  const { data } = useAetherisNews();
-  const items = (data?.items ?? []).slice(0, 8);
-  if (!items.length) return null;
-  return <button type="button" onClick={onOpen} aria-label="Open live news" className="ix-news-ticker w-full overflow-hidden border-b border-white/10 bg-[#0E1116] py-2 text-left">
-    <div className="ix-news-ticker-track">
-      {[0, 1].map(copy => <div key={copy} className="ix-news-ticker-group" aria-hidden={copy === 1 ? true : undefined}>
-        <span className="font-mono tracking-[0.2em] text-[#F4A125]">LIVE NEWS</span>
-        {items.map((n: any) => <span key={n.id}><b className="text-[#F2EEE6] font-medium">{n.title}</b> · {n.source}</span>)}
-      </div>)}
-    </div>
-  </button>;
-}
 
 export default function App({ mode = 'demo' }: { mode?: 'demo' | 'live' }) {
   const network = useNetwork();
