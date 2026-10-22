@@ -43,8 +43,11 @@ try{
       return normalized<=0.04045?normalized/12.92:((normalized+0.055)/1.055)**2.4;
     };
     const luminance=color=>{
-      const rgb=color.match(/[0-9.]+/g)?.slice(0,3).map(Number)??[];
-      if(rgb.length!==3)throw new Error("Unparseable text color "+color);
+      const hex=color.match(/^#([0-9a-f]{6})$/i);
+      const rgb=hex
+        ? [0,2,4].map(index=>Number.parseInt(hex[1].slice(index,index+2),16))
+        : (color.match(/[0-9.]+/g)?.slice(0,3).map(Number)??[]);
+      if(rgb.length!==3 || rgb.some(value=>!Number.isFinite(value)))throw new Error("Unparseable text color "+color);
       return rgb.reduce((sum,v,i)=>sum+linear(v)*[0.2126,0.7152,0.0722][i],0);
     };
     const backgrounds={
