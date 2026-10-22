@@ -270,3 +270,50 @@ body:has(.ix-specter-mode) :is(.ask-scroll-caliper,.ask-scroll-caliper-bottom-sc
   margin-top:8px;border-top:1px solid #27272a;border-radius:0 0 8px 8px;color:#e8c98a;
 }
 .specter-mobile-menu nav .specter-executive-action:hover{color:#ffd9a0}
+
+/* Workspace tool navigation: compact, keyboard accessible and scrollable.
+   The same destinations are present in the desktop sidebar and mobile drawer.
+   Avoid huge visual banners: members stay in the persistent application shell. */
+.specter-app-sidebar nav .specter-tools-toggle,
+.specter-mobile-menu nav .specter-tools-toggle {
+  width:100%;justify-content:flex-start;gap:11px;border-top:1px solid rgba(156,163,175,.18);
+  margin-top:10px;padding-top:12px;color:#ffb889;font-weight:750;
+}
+.specter-tools-chevron{margin-left:auto;transition:transform .15s ease}
+.specter-tools-chevron.is-open{transform:rotate(180deg)}
+.specter-app-sidebar nav .specter-tools-list,
+.specter-mobile-menu nav .specter-tools-list {
+  min-width:0;display:grid;grid-template-columns:minmax(0,1fr);gap:2px;
+  padding:3px 5px 8px 10px;margin:0 1px 2px 9px;
+  border-left:1px solid rgba(245,135,76,.25);
+}
+.specter-app-sidebar nav .specter-tools-list button,
+.specter-mobile-menu nav .specter-tools-list button {
+  display:flex;align-items:center;min-width:0;min-height:35px;padding:7px 8px;
+  gap:9px;text-align:left;font-size:11px;line-height:1.35;
+  color:#c1cada;border:1px solid transparent;border-radius:6px;
+}
+.specter-app-sidebar nav .specter-tools-list button:hover,
+.specter-mobile-menu nav .specter-tools-list button:hover {
+  color:#fff;background:#1e2734;border-color:#344358;
+}
+.specter-app-sidebar nav .specter-tools-list button.active,
+.specter-mobile-menu nav .specter-tools-list button.active {
+  color:#ffd1b2!important;background:#302118!important;
+  border-color:#764526!important;box-shadow:inset 2px 0 #ff9b5b;
+}
+.specter-tools-list button span{overflow-wrap:anywhere}
+.specter-tools-list button svg{flex:none}
+.specter-app-sidebar nav :is(button,a):focus-visible,
+.specter-mobile-menu nav :is(button,a):focus-visible {
+  outline:2px solid #ffad7a;outline-offset:2px;
+}
+@media (max-width:760px){
+  .specter-mobile-menu nav .specter-tools-list {
+    padding:4px 8px 9px 12px;margin:0 7px 5px 12px;
+  }
+  .specter-mobile-menu nav .specter-tools-list button {
+    min-height:42px;font-size:12px;padding:10px 9px;
+  }
+}
+@media(prefers-reduced-motion:reduce){.specter-tools-chevron{transition:none}}
