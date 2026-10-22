@@ -33,7 +33,7 @@ html body .aetheris-parity.executive-section {
 }
 html body .aetheris-parity > .executive-section {
   border: 1px solid var(--line-dark);
-  border-radius: var(--radius-xl);
+  border-radius: var(--radius-xl) !important;
   background: var(--raised);
   padding: 20px;
   color: var(--soft);
@@ -160,8 +160,8 @@ html body .aetheris-parity .parity-benefits { list-style: none; display: grid; g
 html body .aetheris-parity .parity-benefits li { border-top: 1px solid var(--line-dark); padding-top: 12px; color: var(--muted); }
 html body .aetheris-parity .parity-benefits strong { color: var(--soft); }
 html body .aetheris-parity [role="tablist"] { height: auto; gap: 4px; padding: 4px; background: var(--raised); border: 1px solid var(--line-dark); border-radius: var(--radius-md); }
-html body .aetheris-parity [role="tab"] { min-height: 36px; padding: 8px 16px; color: var(--muted); border-radius: var(--radius-sm); font: 500 12px var(--sans); }
-html body .aetheris-parity [role="tab"][data-state="active"] { background: var(--acc-wash); color: var(--acc); box-shadow: none; }
+html body .aetheris-parity [role="tab"] { min-height: 36px; padding: 8px 16px; background: transparent !important; border: 0 !important; color: var(--muted) !important; border-radius: var(--radius-sm) !important; font: 500 12px var(--sans); }
+html body .aetheris-parity [role="tab"][data-state="active"] { background: var(--acc-wash) !important; color: var(--acc) !important; box-shadow: none; }
 html body .aetheris-parity [role="tabpanel"] { margin-top: 18px; }
 html body .aetheris-parity fieldset { border: 1px solid var(--line-dark); border-radius: var(--radius-md); padding: 12px; }
 html body .aetheris-parity fieldset label { display: flex; align-items: center; gap: 8px; }

@@ -2,7 +2,7 @@
 
 ## Four member pages design parity (Oct 22)
 - [x] Match Lobby, Exchange, Membership Upgrade and Marketplace presentation to existing dark member surfaces without changing behavior.
-- [ ] Verify focused tests, automatic compilation, and desktop/mobile presentation.
+- [x] Verify 24 focused tests, automatic compilation, and isolated four-page desktop/390/320 presentation; real preview navigation respects sign-in guards.
 - [ ] Request publication after a current security scan and successful available checks.
 - [ ] Verify signed-in private page rendering — blocked: the requesting account has no mintable member session.
 
