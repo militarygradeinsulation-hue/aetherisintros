@@ -70,6 +70,10 @@ try {
   assert(metrics.contrast>=4.5,theme+' report contrast >= 4.5:1')
   await page.screenshot({path:join(out,theme+'.png'),fullPage:true})
  }
+ await page.setViewportSize({width:1280,height:900})
+ await page.emulateMedia({reducedMotion:'reduce'})
+ assert(await page.locator('.admin-read-beam-confirmed').count()===2,'only the two verified reads receive result beams')
+ assert(await page.locator('.admin-read-beam-confirmed').first().evaluate(el=>getComputedStyle(el).animationName)==='none','result beams respect reduced motion')
  await button('Admin B').click()
  await page.getByText('No checks run in this session.').waitFor()
  assert(await page.locator('[data-state]').count()===0,'another administrator does not inherit a stale report')

@@ -1,3 +1,4 @@
+import { PdfPreviewButton } from './documents/PdfPreviewButton'
 import { memberPhotoSource } from './member-media'
 import './editorial-media.css'
 import { AttachButton, MessageBody, attachmentPreview } from './MessageAttachments'
@@ -479,6 +480,7 @@ function JournalFile({ item }: { item: JournalAttachment }) {
       ? <video src={url} controls preload="metadata" playsInline><track kind="captions" /></video>
       : <span>{item.name}</span>}</figure>
   }
+  if (url && /\.pdf$/i.test(item.name)) return <PdfPreviewButton url={url} name={item.name} />
   return <a className="journal-doc" href={url ?? undefined} target="_blank" rel="noreferrer">
     <FileText size={15} /><span>{item.name}</span><small>{Math.max(1, Math.round(item.size / 1024))} KB</small>
   </a>
