@@ -164,7 +164,7 @@ export const PeopleDirectoryView: React.FC<PeopleDirectoryViewProps> = ({
   };
 
   return (
-    <div className="w-full max-w-7xl mx-auto px-4 md:px-8 py-6 space-y-5 animate-fadeIn">
+    <div className="ix-network-viewport w-full max-w-7xl mx-auto px-3 md:px-5 py-3 space-y-3 animate-fadeIn">
       {/* Compact header: purpose, prominent search, real result count */}
       <header className="space-y-4">
         <div className="space-y-1.5">
@@ -268,7 +268,7 @@ export const PeopleDirectoryView: React.FC<PeopleDirectoryViewProps> = ({
       </button>
 
       {/* Main Directory Split: Left Filters (Col 3), Center Cards (Col 6), Right Insights (Col 3) */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+      <div className="ix-network-results-layout grid grid-cols-1 lg:grid-cols-12 gap-3">
         {/* Left Filter Sidebar (collapsible on mobile via the toggle above) */}
         <aside id="people-filter-rail" className={`lg:col-span-3 space-y-4 ${filtersOpen ? '' : 'hidden lg:block'}`}>
           <div className="bg-[#0E121A] border border-white/10 rounded-xl p-4 space-y-5">
