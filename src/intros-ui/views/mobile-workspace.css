@@ -246,7 +246,9 @@
     grid-row: 2;
     min-height: 0;
     min-width: 0;
-    overflow: hidden;
+    overflow-x: hidden;
+    overflow-y: auto;
+    overscroll-behavior: contain;
   }
   .ix-root.ix-aetheris-workspace-mode .aetheris-workspace-content {
     padding: 12px 10px max(28px, env(safe-area-inset-bottom, 0px));
