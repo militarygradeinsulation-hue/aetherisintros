@@ -50,16 +50,18 @@ import { InviteCard } from '@/aetheris/InviteCard';
 import { QuickMenuHost } from '@/aetheris/quick-menu-ui';
 import { QuickNoteHost } from '@/aetheris/quick-note-ui';
 import { SpecterDetectView } from './views/SpecterDetectView';
+import { MemberIntelligenceView } from './views/MemberIntelligenceView';
 import { AetherisWorkspaceShell } from './components/layout/AetherisWorkspaceShell';
 import './views/aetheris-workspace-pages.css';
+import './views/workspace-accent.css';
 
-const SHELL_PAGES: ActivePage[] = ['home', 'people', 'bubbles', 'intros', 'messages', 'insights', 'news', 'workspace', 'memory', 'work', 'meetings', 'specter'];
+const SHELL_PAGES: ActivePage[] = ['home', 'people', 'bubbles', 'intros', 'messages', 'insights', 'news', 'workspace', 'memory', 'work', 'meetings', 'specter', 'intelligence'];
 
 export type ExecutiveAction = { label: string; onOpen: () => void };
 
-export default function App({ mode = 'demo', executiveAction }: { mode?: 'demo' | 'live'; executiveAction?: ExecutiveAction | undefined }) {
+export default function App({ mode = 'demo', executiveAction, initialPage }: { mode?: 'demo' | 'live'; executiveAction?: ExecutiveAction | undefined; initialPage?: ActivePage | undefined }) {
   const network = useNetwork();
-  const [activePage, setActivePage] = useState<ActivePage>('home');
+  const [activePage, setActivePage] = useState<ActivePage>(initialPage ?? 'home');
   const [classicPage, setClassicPage] = useState<string>('memory');
   const [selectedProfileId, setSelectedProfileId] = useState<string>(mode === 'live' ? '' : 'marcus-lee');
   const [members, setMembers] = useState<NetworkMember[]>(mode === 'live' ? [] : NETWORK_MEMBERS);
@@ -450,6 +452,7 @@ export default function App({ mode = 'demo', executiveAction }: { mode?: 'demo' 
         {activePage === 'memory' && <div className="ix-classic"><AetherisAppSurface key="memory"  startPage="memory"  /></div>}
         {activePage === 'meetings' && <div className="ix-classic"><AetherisAppSurface key="meetings"  startPage="meetings"  /></div>}
         {activePage === 'work' && <div className="ix-classic"><AetherisAppSurface key="work"  startPage="work"  /></div>}
+        {activePage === 'intelligence' && <MemberIntelligenceView live={mode === 'live'} onNavigate={handleNavigate} />}
         {activePage === 'specter' && <SpecterDetectView embedded onNavigate={handleNavigate} onWorkspace={page=>{setClassicPage(page);handleNavigate('workspace');}} onSearch={query=>{setSearchQuery(query);handleNavigate('people');}} searchQuery={searchQuery} onSearchChange={setSearchQuery} member={me} notifications={mode === 'live' ? <LiveNotificationsBell onOpen={destination=>{if(destination==='peergroups'||destination==='events'||destination==='deals'){setClassicPage(destination);handleNavigate('workspace');}else handleNavigate(destination);}}/> : undefined}/> }
         {activePage === 'workspace' && <div className="ix-classic">
           <div className="ix-tools">

@@ -34,7 +34,7 @@ export const WORKSPACE_DESTINATIONS: readonly WorkspaceDestination[] = [
   { label: 'Work', icon: BriefcaseBusiness, page: 'work' },
   { label: 'News', icon: Newspaper, page: 'news' },
   { label: 'Golden Reports', icon: ClipboardList, workspace: 'diagnostic' },
-  { label: 'Member Intelligence', icon: Fingerprint, href: '/member-intelligence' },
+  { label: 'Member Intelligence', icon: Fingerprint, page: 'intelligence' },
   { label: 'Saved', icon: Bookmark, workspace: 'pocket' },
   { label: 'My Account', icon: UserRound, workspace: 'profile' },
   { label: 'Settings', icon: Settings, workspace: 'preferences' },

@@ -2,6 +2,7 @@ import { ClientOnly, createFileRoute, useNavigate } from '@tanstack/react-router
 import { useEffect, useState } from 'react'
 
 import IntrosApp from '@/intros-ui/IntrosApp'
+import type { ActivePage } from '@/intros-ui/components/layout/TopNavigation'
 import { AetherisProviderRoot } from '@/aetheris/AetherisProviderRoot'
 import { useAccess, isLiveMember } from '@/aetheris/access'
 import { supabase } from '@/integrations/supabase/client'
@@ -38,7 +39,10 @@ function AppRoute() {
   return <ClientOnly fallback={null}><Gate /></ClientOnly>
 }
 
-function Gate() {
+/** Shared live-workspace gate: full membership checks, then the persistent
+ * shell. Deep links such as /member-intelligence reuse it with an initial
+ * page instead of mounting a separate full-screen layout. */
+export function Gate({ initialPage }: { initialPage?: ActivePage | undefined }) {
   const { access, refresh } = useAccess()
   const navigate = useNavigate()
   const ready = isLiveMember(access)
@@ -87,5 +91,5 @@ function Gate() {
     label: access.isAdmin ? 'Executive applications' : 'Executive access',
     onOpen: () => setExecutiveOpen(true),
   }
-  return <AetherisProviderRoot mode="live"><ConnectionBanner /><WelcomeDiagnosticBanner /><IntrosApp mode="live" executiveAction={executiveAction} /><ExecutiveUpgrade tier={access.tier} isAdmin={access.isAdmin} open={executiveOpen} onOpenChange={setExecutiveOpen} hideTrigger /></AetherisProviderRoot>
+  return <AetherisProviderRoot mode="live"><ConnectionBanner /><WelcomeDiagnosticBanner /><IntrosApp mode="live" executiveAction={executiveAction} initialPage={initialPage} /><ExecutiveUpgrade tier={access.tier} isAdmin={access.isAdmin} open={executiveOpen} onOpenChange={setExecutiveOpen} hideTrigger /></AetherisProviderRoot>
 }
