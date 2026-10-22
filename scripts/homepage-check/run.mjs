@@ -148,6 +148,15 @@ try {
         const link = page.locator('.vs-auth-links a[href*="mode=signup"]')
         assert(await link.count() === 1, 'create account links to existing authentication route')
         // Browser-to-auth contract. No credentials or live member writes are used.
+        await page.getByRole('textbox', { name: 'Search people and posts' }).fill('New York')
+        await page.getByRole('button', { name: 'Search live member network' }).click()
+        await page.waitForURL(url => {
+          const target = new URL(url)
+          return target.pathname === '/auth' && target.searchParams.get('next') === '/app?view=people&q=New+York'
+        }, { timeout: 30000 })
+        assert(true, 'preview search is forwarded to the protected live member directory without exposing results')
+        await page.goto(base + '/', { waitUntil: 'domcontentloaded' })
+        await page.locator('.vision-page[data-hydrated="true"]').waitFor({ state: 'attached', timeout: 60_000 })
         await page.locator('.vs-sidebar nav button').filter({ hasText: 'Messages' }).first().click()
         await page.waitForURL(url => {
           const target = new URL(url)
@@ -160,6 +169,15 @@ try {
         await page.goto(base + '/auth?mode=signup&next=%2Fapp', { waitUntil: 'domcontentloaded' })
         await page.locator('.auth-form input[autocomplete="name"]').waitFor({ state: 'visible' })
         assert(await page.locator('.auth-form input[autocomplete="email"]').isVisible(), 'new accounts reach existing sign-up form')
+        await page.goto(base + '/auth', { waitUntil: 'domcontentloaded' })
+        await page.locator('.auth-page[data-hydrated="true"]').waitFor({ state: 'attached', timeout: 30_000 })
+        await page.getByRole('button', { name: 'Forgot your password?' }).click()
+        assert(await page.getByRole('button', { name: 'Send reset link' }).isVisible(), 'account recovery can request a reset link')
+        assert(await page.locator('.auth-form input[type="password"]').count() === 0, 'recovery email request never asks for the existing password')
+        await page.goto(base + '/auth?mode=recovery', { waitUntil: 'domcontentloaded' })
+        await page.locator('.auth-page[data-hydrated="true"]').waitFor({ state: 'attached', timeout: 30_000 })
+        assert(await page.locator('.auth-form input[autocomplete="new-password"]').count() === 2, 'recovery callback offers password and confirmation inputs')
+        assert(await page.getByRole('button', { name: 'Update password' }).isVisible(), 'new password is only submitted through the recovery flow')
       }
     } catch (error) {
       failed++

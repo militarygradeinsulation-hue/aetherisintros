@@ -51,7 +51,7 @@ try {
         const failed = request.failure()?.errorText || ''
         const localPath = new URL(request.url()).pathname
         const localDevDependency = localPath.startsWith('/node_modules/.vite/deps/') ||
-          localPath.startsWith('/node_modules/@tanstack/react-start/')
+          localPath.startsWith('/node_modules/@tanstack/react-start')
         // Vite may abort its first prebundled dependency request while
         // restarting dependency optimization. React must STILL hydrate and
         // the scenario/input assertions below must work. Only these

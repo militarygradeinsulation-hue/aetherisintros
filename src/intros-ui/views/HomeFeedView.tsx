@@ -32,8 +32,11 @@ interface HomeFeedViewProps {
   posts: FeedPost[];
   isLive?: boolean;
   socialFeed?: React.ReactNode;
+  /** Authenticated-only snapshot from the canonical live network graph. */
+  liveOverview?: React.ReactNode;
   actionQueue?: React.ReactNode;
   onNavigate: (page: ActivePage, memberId?: string) => void;
+  onWorkspace?: (destination: string) => void;
   onRequestIntro: (member: NetworkMember) => void;
   onLikePost: (postId: string) => void;
   onSavePost: (postId: string) => void;
@@ -45,6 +48,7 @@ interface HomeFeedViewProps {
 export const HomeFeedView: React.FC<HomeFeedViewProps> = ({
   posts,
   onNavigate,
+  onWorkspace,
   onRequestIntro,
   onLikePost,
   onSavePost,
@@ -53,6 +57,7 @@ export const HomeFeedView: React.FC<HomeFeedViewProps> = ({
   me,
   isLive = false,
   socialFeed,
+  liveOverview,
   actionQueue,
 }) => {
   const [postLimit, setPostLimit] = useState(INITIAL_FEED_COUNT);
@@ -126,18 +131,18 @@ export const HomeFeedView: React.FC<HomeFeedViewProps> = ({
     network: tile('Your network', 'People, not contacts.', <><p>{boardPeople.length} people in this directory. Relationships begin with shared context.</p>{personRows(boardPeople.slice(0, 2), member => [member.title, member.company].filter(Boolean).join(' · '))}</>, 'Meet your network', () => onNavigate('people')),
     explore: tile('Explore', 'Find common ground.', <><p>Explore people who share your interests.</p><div className="home-board-tags">{topics.slice(0, 4).map(topic => <span key={topic}>{topic}</span>)}</div><p>{new Set(boardPeople.map(member => member.location).filter(Boolean)).size} locations represented</p></>, 'Discover people', () => onNavigate('people')),
     introduce: tile('Warm introductions', 'Make the right connection.', <><p>Make introductions with context and consent.</p>{personRows(boardPeople.filter(member => member.openToIntros).slice(0, 2), member => member.introStatusText || 'Open to introductions')}</>, 'Review introductions', () => onNavigate('intros')),
-    need: tile('Looking for', 'What would move you forward?', <><p>Be specific about what you need.</p><div className="home-board-tags">{['Hiring', 'Customers', 'Capital', 'Advisors'].map(topic => <span key={topic}>{topic}</span>)}</div><p></p></>, 'Share an ask', jumpToSocial),
+    need: tile('Looking for', 'What would move you forward?', <><p>Be specific about what you need.</p><div className="home-board-tags">{['Hiring', 'Customers', 'Capital', 'Advisors'].map(topic => <span key={topic}>{topic}</span>)}</div><p></p></>, 'Share an ask', () => isLive ? onWorkspace?.('needs') : jumpToSocial()),
     ask: tile('Ask Intros', 'Context before the next move.', <><p>Who can help with your current focus? Which relationship deserves attention?</p><blockquote>“Who in my network has experience with my next market?”</blockquote><p>Your people and recorded context, in one conversation.</p></>, 'Ask your butler', () => window.dispatchEvent(new CustomEvent('aetheris:open-assistant'))),
     sectors: tile('Shared interests', 'Inside your network.', <><p>Areas members have included in their profiles.</p><div className="home-board-list">{topics.map(topic => <div key={topic}><span>{topic}</span><b>{boardPeople.filter(member => member.focusAreas?.includes(topic)).length}</b></div>)}</div>{!topics.length && <p>No focus areas shared yet.</p>}</>, 'Explore interests', () => onNavigate('people')),
-    events: tile('Events & conversations', 'Take the relationship beyond the feed.', isLive ? <><p>Upcoming gatherings belong here when they have been added to your account.</p><p>No event schedule is connected to this board yet.</p></> : <div className="home-board-list">{eventsList.map(event => <div key={event.id}><span><b>{event.title}</b><small>{event.dateMonth} {event.dateDay} · {event.location}</small></span><Button variant="outline" size="sm" aria-pressed={event.isRegistered} onClick={() => toggleEventRegistration(event.id)}>{event.isRegistered ? 'Registered' : 'Register'}</Button></div>)}</div>, isLive ? 'Open your workspace' : 'Meet the attendees', () => onNavigate(isLive ? 'workspace' : 'people')),
-    circles: tile('Shared circles', 'A smaller room. Better context.', isLive ? <><p>Gather people around a shared interest or a real decision.</p><p>No circle membership has been loaded into this board.</p></> : <div className="home-board-list">{circlesList.slice(0, 3).map(circle => <div key={circle.id}><span><b>{circle.name}</b><small>{circle.count}</small></span><Button size="sm" variant="outline" aria-pressed={circle.isJoined} onClick={() => toggleCircleJoin(circle.id)}>{circle.isJoined ? 'Joined' : 'Join'}</Button></div>)}</div>, 'Explore your workspace', () => onNavigate('workspace')),
+    events: tile('Events & conversations', 'Take the relationship beyond the feed.', isLive ? <><p>Upcoming gatherings belong here when they have been added to your account.</p><p>No event schedule is connected to this board yet.</p></> : <div className="home-board-list">{eventsList.map(event => <div key={event.id}><span><b>{event.title}</b><small>{event.dateMonth} {event.dateDay} · {event.location}</small></span><Button variant="outline" size="sm" aria-pressed={event.isRegistered} onClick={() => toggleEventRegistration(event.id)}>{event.isRegistered ? 'Registered' : 'Register'}</Button></div>)}</div>, isLive ? 'Open your workspace' : 'Meet the attendees', () => isLive ? onWorkspace?.('events') : onNavigate('people')),
+    circles: tile('Shared circles', 'A smaller room. Better context.', isLive ? <><p>Gather people around a shared interest or a real decision.</p><p>No circle membership has been loaded into this board.</p></> : <div className="home-board-list">{circlesList.slice(0, 3).map(circle => <div key={circle.id}><span><b>{circle.name}</b><small>{circle.count}</small></span><Button size="sm" variant="outline" aria-pressed={circle.isJoined} onClick={() => toggleCircleJoin(circle.id)}>{circle.isJoined ? 'Joined' : 'Join'}</Button></div>)}</div>, 'Explore peer groups', () => isLive ? onWorkspace?.('peergroups') : onNavigate('workspace')),
     whynow: tile('Active memory', 'Keep the context alive.', <><p>The last conversation. A current goal. The promise you made.</p><blockquote>Know who matters. Know why now.</blockquote><p>Return to the details that make your next message personal.</p></>, 'Open Memory', () => onNavigate('memory')),
     people: tile('People to know', 'Start with a real person.', <>{personRows(boardPeople.slice(2, 5), member => [member.company, member.location].filter(Boolean).join(' · '))}{!boardPeople.length && <p>Member profiles appear here as people join.</p>}</>, 'See all people', () => onNavigate('people')),
     offers: tile('Current focus', 'Where you could help.', <>{personRows(goals, member => member.currentObjectives[0] ?? '')}{!goals.length && <p>No current objectives have been shared yet.</p>}</>, 'Find shared goals', () => onNavigate('people')),
     conversations: tile('Messages', 'Pick up the conversation.', <><p>Private, person-to-person conversations with the context close by.</p>{personRows(boardPeople.slice(0, 2), member => member.bioStatement || [member.title, member.company].filter(Boolean).join(' · '))}</>, 'Open Messages', () => onNavigate('messages')),
     saved: tile('Saved for later', 'Keep the useful things.', isLive ? <><p>Return to the updates you saved in your network.</p><p>Your saved member signals stay in your private account.</p></> : <><p>{savedPosts.length} saved {savedPosts.length === 1 ? 'post' : 'posts'} on this board.</p>{savedPosts.slice(0, 2).map(post => <blockquote key={post.id}>{post.authorName}: {post.content.slice(0, 100)}</blockquote>)}{!savedPosts.length && <p>Save a member update when you want to return with a thoughtful reply.</p>}</>, 'Read the Social Board', jumpToSocial),
     updates: tile('Network dispatch', 'What people are sharing.', <>{posts.slice(0, 2).map(post => <div key={post.id} className="home-board-update"><b>{post.authorName}</b><small>{post.timeAgo} · {post.badge || 'Update'}</small><p>{post.content.slice(0, 130)}{post.content.length > 130 ? '…' : ''}</p></div>)}{!posts.length && <p>Member updates live on the Social Board below. Be the first to share what you are working on.</p>}</>, 'Join the conversation', jumpToSocial),
-    profile: tile('Your identity', me?.name || 'Make yourself known.', <><p>What you are building. Who you can help. What you need next.</p><div className="home-board-tags"><span>Current focus</span><span>Looking for</span><span>Can help with</span></div><p>Give people a reason to start a meaningful conversation.</p></>, isLive ? 'Open my profile' : 'Meet a member', () => onNavigate(isLive ? 'workspace' : 'profile', isLive ? undefined : boardPeople[0]?.id)),
+    profile: tile('Your identity', me?.name || 'Make yourself known.', <><p>What you are building. Who you can help. What you need next.</p><div className="home-board-tags"><span>Current focus</span><span>Looking for</span><span>Can help with</span></div><p>Give people a reason to start a meaningful conversation.</p></>, isLive ? 'Open my profile' : 'Meet a member', () => isLive ? onWorkspace?.('profile') : onNavigate('profile', boardPeople[0]?.id)),
   };
 
   const firstName = me?.name?.split(' ')[0];
@@ -148,7 +153,7 @@ export const HomeFeedView: React.FC<HomeFeedViewProps> = ({
           <span className="home-board-label">Dashboard</span>
           <h1>{firstName ? `Good to see you, ${firstName}.` : 'Your network, in one place.'}</h1>
           <p>
-            {boardPeople.length} {boardPeople.length === 1 ? 'person' : 'people'} · {posts.length} {posts.length === 1 ? 'update' : 'updates'} · {savedPosts.length} saved
+            {isLive ? 'Your member activity and private network, connected to one workspace.' : <>{boardPeople.length} {boardPeople.length === 1 ? 'person' : 'people'} · {posts.length} {posts.length === 1 ? 'update' : 'updates'} · {savedPosts.length} saved</>}
           </p>
         </div>
         <div className="home-feed-welcome-actions">
@@ -156,6 +161,7 @@ export const HomeFeedView: React.FC<HomeFeedViewProps> = ({
           <Button size="sm" className="home-feed-welcome-cta" onClick={jumpToSocial}><PlusCircle />Share an update</Button>
         </div>
       </header>
+      {liveOverview}
       <FeedSidebarLayout widgets={widgets} actionQueue={actionQueue}>
       <section id="home-social-board" className="home-social-board scroll-mt-24">
         

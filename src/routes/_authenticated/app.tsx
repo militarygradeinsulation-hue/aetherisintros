@@ -22,14 +22,17 @@ const entryWorkspaces = [
 
 
 export const Route = createFileRoute('/_authenticated/app')({
-  validateSearch: (search: Record<string, unknown>): { view?: ActivePage; workspace?: string } => {
+  validateSearch: (search: Record<string, unknown>): { view?: ActivePage; workspace?: string; q?: string } => {
     const view = search['view']
     const workspace = search['workspace']
+    const query = search['q']
+    const q = typeof query === 'string' ? query.trim().slice(0, 120) : ''
     const validView = typeof view === 'string' && entryPages.includes(view as ActivePage) ? view as ActivePage : undefined
     const validWorkspace = typeof workspace === 'string' && (entryWorkspaces as readonly string[]).includes(workspace) ? workspace : undefined
     return {
       ...(validView ? { view: validView } : {}),
       ...(validWorkspace ? { workspace: validWorkspace } : {}),
+      ...(q ? { q } : {}),
     }
   },
   staticData: { sitemap: false },
@@ -55,14 +58,14 @@ export const Route = createFileRoute('/_authenticated/app')({
 
 /** Only an approved, onboarded Founding Member reaches the live network. */
 function AppRoute() {
-  const { view, workspace } = Route.useSearch()
-  return <ClientOnly fallback={null}><Gate initialPage={workspace ? 'workspace' : view} initialWorkspace={workspace} /></ClientOnly>
+  const { view, workspace, q } = Route.useSearch()
+  return <ClientOnly fallback={null}><Gate initialPage={workspace ? 'workspace' : q ? 'people' : view} initialWorkspace={workspace} initialSearch={q} /></ClientOnly>
 }
 
 /** Shared live-workspace gate: full membership checks, then the persistent
  * shell. Deep links such as /member-intelligence reuse it with an initial
  * page instead of mounting a separate full-screen layout. */
-export function Gate({ initialPage, initialWorkspace }: { initialPage?: ActivePage | undefined; initialWorkspace?: string | undefined }) {
+export function Gate({ initialPage, initialWorkspace, initialSearch }: { initialPage?: ActivePage | undefined; initialWorkspace?: string | undefined; initialSearch?: string | undefined }) {
   const { access, refresh } = useAccess()
   const navigate = useNavigate()
   const ready = isLiveMember(access)
@@ -111,5 +114,5 @@ export function Gate({ initialPage, initialWorkspace }: { initialPage?: ActivePa
     label: access.isAdmin ? 'Executive applications' : 'Executive access',
     onOpen: () => setExecutiveOpen(true),
   }
-  return <AetherisProviderRoot mode="live"><ConnectionBanner /><WelcomeDiagnosticBanner /><IntrosApp mode="live" executiveAction={executiveAction} initialPage={initialPage} initialWorkspace={initialWorkspace} /><ExecutiveUpgrade tier={access.tier} isAdmin={access.isAdmin} open={executiveOpen} onOpenChange={setExecutiveOpen} hideTrigger /></AetherisProviderRoot>
+  return <AetherisProviderRoot mode="live"><ConnectionBanner /><WelcomeDiagnosticBanner /><IntrosApp mode="live" executiveAction={executiveAction} initialPage={initialPage} initialWorkspace={initialWorkspace} initialSearch={initialSearch} /><ExecutiveUpgrade tier={access.tier} isAdmin={access.isAdmin} open={executiveOpen} onOpenChange={setExecutiveOpen} hideTrigger /></AetherisProviderRoot>
 }

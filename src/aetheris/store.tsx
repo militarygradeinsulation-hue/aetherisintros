@@ -651,10 +651,19 @@ export function NetworkProvider({ children, mode = 'live' }: { children: React.R
         }, commit) : Promise.resolve(commit())
       },
 
-      toggleSave: (id, label) => patch(prev => prev.saved.includes(id) ? { saved: prev.saved.filter(x => x !== id) } : {
-        saved: [...prev.saved, id],
-        learned: remember(prev, { category: 'Decisions', text: `You saved ${label ?? nameOf(id)} for follow-up.`, source: 'Your action', confidence: 100, scope: 'private' }),
-      }),
+      toggleSave: (id, label) => {
+        const on = !s.saved.includes(id)
+        const commit = () => patch(prev => on
+          ? {
+              saved: [...new Set([...prev.saved, id])],
+              learned: remember(prev, { category: 'Decisions', text: `You saved ${label ?? nameOf(id)} for follow-up.`, source: 'Confirmed network action', confidence: 100, scope: 'private' }),
+            }
+          : { saved: prev.saved.filter(x => x !== id) })
+        return live ? verifiedWrite('Saved member', () => {
+          if (!userId) throw new Error('Sign in to save this member.')
+          return mirrorFollow(userId, id, 'saved', on)
+        }, commit) : Promise.resolve(commit())
+      },
 
       openThreadWith: (id) => {
         const existing = threadFor(s, id)

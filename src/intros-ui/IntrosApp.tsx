@@ -21,6 +21,7 @@ import {
 } from './networkData';
 import type { ActivePage } from './components/layout/TopNavigation';
 import { HomeFeedView } from './views/HomeFeedView';
+import { LiveExecutiveOverview } from './components/home/LiveExecutiveOverview';
 import { PeopleDirectoryView } from './views/PeopleDirectoryView';
 import { ProfileDetailView } from './views/ProfileDetailView';
 import { MessagesView } from './views/MessagesView';
@@ -66,7 +67,7 @@ const SHELL_PAGES: ActivePage[] = ['home', 'people', 'bubbles', 'intros', 'messa
 
 export type ExecutiveAction = { label: string; onOpen: () => void };
 
-export default function App({ mode = 'demo', executiveAction, initialPage, initialWorkspace }: { mode?: 'demo' | 'live'; executiveAction?: ExecutiveAction | undefined; initialPage?: ActivePage | undefined; initialWorkspace?: string | undefined }) {
+export default function App({ mode = 'demo', executiveAction, initialPage, initialWorkspace, initialSearch }: { mode?: 'demo' | 'live'; executiveAction?: ExecutiveAction | undefined; initialPage?: ActivePage | undefined; initialWorkspace?: string | undefined; initialSearch?: string | undefined }) {
   const network = useNetwork();
   const [activePage, setActivePage] = useState<ActivePage>(initialPage ?? 'home');
   const [classicPage, setClassicPage] = useState<string>(initialWorkspace ?? 'memory');
@@ -80,7 +81,7 @@ export default function App({ mode = 'demo', executiveAction, initialPage, initi
     new Set(mode === 'live' ? [] : ['marcus-lee', 'sarah-chen'])
   );
   const [savedMemberIds, setSavedMemberIds] = useState<Set<string>>(new Set(mode === 'live' ? [] : ['marcus-lee']));
-  const [searchQuery, setSearchQuery] = useState('');
+  const [searchQuery, setSearchQuery] = useState(() => mode === 'live' ? (initialSearch ?? '').trim().slice(0, 120) : '');
 
   // Modals
   const [requestIntroTarget, setRequestIntroTarget] = useState<NetworkMember | null>(null);
@@ -122,20 +123,11 @@ export default function App({ mode = 'demo', executiveAction, initialPage, initi
     };
   }, [mode]);
 
-  // Restore saved connections on reload instead of presenting them as absent.
-  useEffect(() => {
-    if (mode !== 'live') return;
-    let cancelled = false;
-    const loadConnections = async () => {
-      const { data: identity } = await supabase.auth.getUser();
-      if (!identity.user) return;
-      const { data, error } = await supabase.from('follows').select('followee_id')
-        .eq('follower_id', identity.user.id).eq('kind', 'connection');
-      if (!cancelled && !error) setConnectedMemberIds(new Set((data ?? []).map(row => row.followee_id)));
-    };
-    void loadConnections();
-    return () => { cancelled = true };
-  }, [mode]);
+  // Use one canonical member-graph state for connection buttons throughout the
+  // live workspace. Demo mode alone owns the local temporary connection set.
+  const activeConnectedMemberIds = mode === 'live'
+    ? new Set(network.connections)
+    : connectedMemberIds;
 
   // Count today's visit once per device for the admin growth report.
   useEffect(() => { if (mode === 'live') void recordVisit(); }, [mode]);
@@ -155,33 +147,28 @@ export default function App({ mode = 'demo', executiveAction, initialPage, initi
 
   // Interactions
   const handleToggleConnect = (memberId: string) => {
-    const on = !connectedMemberIds.has(memberId);
-    const persist = async () => {
-      if (mode === 'live') {
-        const { data: identity, error: authError } = await supabase.auth.getUser();
-        if (authError || !identity.user) throw new Error('Sign in to save a connection.');
-        const query = on
-          ? supabase.from('follows').upsert({ follower_id: identity.user.id, followee_id: memberId, kind: 'connection' }, { onConflict: 'follower_id,followee_id,kind' })
-          : supabase.from('follows').delete().eq('follower_id', identity.user.id).eq('followee_id', memberId).eq('kind', 'connection');
-        const { error } = await query;
-        if (error) throw new Error('The server did not confirm this connection change.');
-      }
-      setConnectedMemberIds(prev => {
-        const next = new Set(prev);
-        if (on) next.add(memberId); else next.delete(memberId);
-        return next;
-      });
-    };
-    const attempt = async () => {
-      try { await persist(); }
-      catch (error) {
-        reportWriteFailure({ title: 'Connection not saved', message: error instanceof Error ? error.message : 'No confirmation received.', retry: attempt });
-      }
-    };
-    void attempt();
+    if (mode === 'live') {
+      // Server-confirmed RLS-protected relationship write. The graph's own
+      // retry notice handles errors; don't race a second local connection set.
+      network.connect(memberId);
+      return;
+    }
+    setConnectedMemberIds(prev => {
+      const next = new Set(prev);
+      if (next.has(memberId)) next.delete(memberId); else next.add(memberId);
+      return next;
+    });
   };
 
   const handleToggleSaveMember = (memberId: string) => {
+    if (mode === 'live') {
+      // A private bookmark is only displayed after the server acknowledges the
+      // saved relationship. This is the same write-through graph used elsewhere
+      // in the authenticated workspace, not a second client-only bookmark.
+      const person = network.members.find(member => member.id === memberId);
+      network.toggleSave(memberId, person?.name);
+      return;
+    }
     setSavedMemberIds((prev) => {
       const next = new Set(prev);
       if (next.has(memberId)) {
@@ -354,6 +341,7 @@ export default function App({ mode = 'demo', executiveAction, initialPage, initi
           <HomeFeedView
             posts={feedPosts}
             onNavigate={handleNavigate}
+            onWorkspace={page => { setClassicPage(page); handleNavigate('workspace'); }}
             onRequestIntro={(member) => setRequestIntroTarget(member)}
             onLikePost={handleLikePost}
             onSavePost={handleSavePost}
@@ -361,6 +349,7 @@ export default function App({ mode = 'demo', executiveAction, initialPage, initi
             networkMembers={members}
             isLive={mode === 'live'}
             socialFeed={mode === 'live' ? <div className="ix-classic"><AetherisAppSurface  feedOnly  /></div> : undefined}
+            liveOverview={mode === 'live' ? <LiveExecutiveOverview onNavigate={handleNavigate} onWorkspace={page => { setClassicPage(page); handleNavigate('workspace'); }} /> : undefined}
             actionQueue={mode === 'live' ? <div className="rc-stack">
               <ActivationChecklist onOpen={(target) => {
                 if (target === 'intros') { handleNavigate('intros'); return; }
@@ -386,7 +375,7 @@ export default function App({ mode = 'demo', executiveAction, initialPage, initi
               members={members}
               onNavigate={handleNavigate}
               onRequestIntro={(member) => setRequestIntroTarget(member)}
-              connectedMemberIds={connectedMemberIds}
+              connectedMemberIds={activeConnectedMemberIds}
               onToggleConnect={handleToggleConnect}
               isLive={mode === 'live'}
               searchQuery={searchQuery}
@@ -436,7 +425,7 @@ export default function App({ mode = 'demo', executiveAction, initialPage, initi
             onBack={() => handleNavigate('people')}
             onNavigate={handleNavigate}
             onRequestIntro={(member) => setRequestIntroTarget(member)}
-            isSaved={savedMemberIds.has(currentProfileMember.id)}
+            isSaved={mode === 'live' ? network.saved.includes(currentProfileMember.id) : savedMemberIds.has(currentProfileMember.id)}
             onToggleSave={handleToggleSaveMember}
           />
         )}
