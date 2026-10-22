@@ -53,6 +53,7 @@ export const PeopleDirectoryView: React.FC<PeopleDirectoryViewProps> = ({
   const [selectedTier, setSelectedTier] = useState<'All' | RelationshipTier>('All');
   const [viewMode, setViewMode] = useState<'grid' | 'list' | 'bubbles'>('grid');
   const [sortBy, setSortBy] = useState<'relevance' | 'match' | 'mutuals'>('relevance');
+  const [filtersOpen, setFiltersOpen] = useState(false);
 
   // Filter logic
   const filteredMembers = useMemo(() => {
@@ -118,6 +119,28 @@ export const PeopleDirectoryView: React.FC<PeopleDirectoryViewProps> = ({
   const averageMatch = useMemo(() => members.length ? Math.round(members.reduce((sum, m) => sum + m.matchScore, 0) / members.length) : 0, [members]);
   const liveLocations = useMemo(() => [...new Set(members.map(m => m.location.trim()).filter(Boolean))].sort(), [members]);
   const liveIndustries = useMemo(() => [...new Set(members.map(m => (m.industry ?? '').trim()).filter(Boolean))].sort(), [members]);
+
+  // Real distributions computed from the actual member list — never hard-coded.
+  const topCities = useMemo(() => {
+    const counts = new Map<string, number>();
+    members.forEach((m) => {
+      const city = m.location.split(',')[0].trim();
+      if (city) counts.set(city, (counts.get(city) ?? 0) + 1);
+    });
+    const rows = [...counts.entries()].sort((a, b) => b[1] - a[1]).slice(0, 5);
+    const max = rows[0]?.[1] ?? 1;
+    return rows.map(([name, count]) => ({ name, count, percent: Math.round((count / max) * 100) }));
+  }, [members]);
+  const topIndustries = useMemo(() => {
+    const counts = new Map<string, number>();
+    members.forEach((m) => {
+      const industry = (m.industry ?? '').trim();
+      if (industry) counts.set(industry, (counts.get(industry) ?? 0) + 1);
+    });
+    const total = members.length || 1;
+    return [...counts.entries()].sort((a, b) => b[1] - a[1]).slice(0, 5)
+      .map(([name, count]) => ({ name, percent: Math.round((count / total) * 100) }));
+  }, [members]);
 
   // Demo keeps its curated connectors; live uses actual members who opted into introductions.
   const featuredConnectors = isLive
