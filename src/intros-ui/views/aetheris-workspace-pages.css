@@ -46,3 +46,5 @@ body:has(.ix-aetheris-workspace-mode) :is(.ask-scroll-caliper,.ask-scroll-calipe
     padding-bottom: calc(22px + env(safe-area-inset-bottom, 0px));
   }
 }
+/* Keep navigation and operational controls above the root decorative field. */
+.ix-aetheris-workspace-mode > .arch-product-main { position:relative; z-index:2; }
