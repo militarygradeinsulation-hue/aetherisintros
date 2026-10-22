@@ -396,3 +396,4 @@
 - [x] Remove stock editorial photos and reflow public/member banners; preserve genuine media.
 - [x] Replace demo/generated stock faces with initials.
 - [ ] Verify focused regressions and desktop/mobile screenshots; authenticated preview requires sign-in.
+- [ ] Dashboard: default focused social feed, optional board/activity/overview, progressive feed loading; measure 1440×900 and 390×844 before/after.
