@@ -278,7 +278,7 @@ interface NetworkApi {
   respondToPost: (postId: string, memberId: string) => string | null
   togglePostLike: (postId: string) => void
   togglePostRepost: (postId: string, memberId: string) => void
-  addPostComment: (postId: string, text: string, memberId: string) => void
+  addPostComment: (postId: string, text: string, memberId: string) => Promise<boolean>
   setFeedPreferences: (settings: FeedPreferences) => void
   addAsk: (ask: Omit<NetworkAsk, 'id' | 'posted' | 'responses' | 'memberId' | 'mine'>) => Promise<void>
   respondToAsk: (askId: string, text: string) => string | null
@@ -825,7 +825,7 @@ export function NetworkProvider({ children, mode = 'live' }: { children: React.R
         return live ? verifiedWrite('Comment', () => {
           if (!userId) throw new Error('Sign in before commenting.')
           return saveComment(postId, userId, text)
-        }, commit) : Promise.resolve(commit())
+        }, commit) : Promise.resolve().then(() => { commit(); return true })
       },
 
       setFeedPreferences: (feedPreferences) => patch(() => ({ feedPreferences })),

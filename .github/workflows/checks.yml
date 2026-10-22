@@ -40,6 +40,10 @@ jobs:
           node scripts/migration-checks/launch-signup.standalone.mjs
       - name: Install Chromium
         run: npx playwright install --with-deps chromium
+      - name: Confirmed network comment saves (browser)
+        env:
+          PLAYWRIGHT_MODULE: ${{ github.workspace }}/node_modules/playwright/index.mjs
+        run: node scripts/comment-save-check/run.mjs
       - name: Specter URL capture workspace (browser)
         env:
           PLAYWRIGHT_MODULE: ${{ github.workspace }}/node_modules/playwright/index.mjs
