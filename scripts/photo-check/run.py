@@ -34,6 +34,17 @@ async def main():
     assert await page.locator('.ask-dock-fab').is_visible()
     await page.screenshot(path=str(OUT/f'{key}-{width}.png'))
     print(label,width,json.dumps(dims))
+    if key=='home':
+     textarea=page.locator('#home-social-board textarea').first
+     await textarea.fill('Dashboard draft stays intact')
+     await page.get_by_role('button',name='Tools & activity',exact=True).focus()
+     await page.keyboard.press('Enter')
+     assert not await page.locator('#dashboard-social-panel').is_visible()
+     assert await page.locator('#dashboard-tools-panel').is_visible()
+     await page.get_by_role('button',name='Share an update',exact=True).click()
+     assert await page.locator('#dashboard-social-panel').is_visible()
+     assert await textarea.input_value()=='Dashboard draft stays intact'
+     await textarea.fill('')
    await page.close()
   assert not errors,errors
   print('PASS: photo-free public/demo screens, retained Butler, viewport lock, no overflow or page errors; live /app requires member sign-in.')
