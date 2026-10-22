@@ -1,0 +1,7 @@
+/* Selected copper buttons need dark ink even under inherited modal theme rules. */
+:root[data-theme] .ix-root .request-intro-modal-surface button.intro-modal-primary,
+:root[data-theme] .ix-root .request-intro-modal-surface button.intro-modal-urgency[aria-pressed="true"] {
+  background: #ffab76 !important;
+  color: #241309 !important;
+  -webkit-text-fill-color: #241309 !important;
+}
