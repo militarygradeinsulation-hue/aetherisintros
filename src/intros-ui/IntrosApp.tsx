@@ -319,11 +319,11 @@ export default function App({ mode = 'demo' }: { mode?: 'demo' | 'live' }) {
       <QuickNoteHost />
 
       {/* Universal Top Navigation Contract */}
-      {mode === 'live' && unreadUnavailable && <div role="alert" className="mx-4 mt-2 rounded-lg border border-red-400/40 px-3 py-2 text-xs text-[#FFD6D6]">
+      {mode === 'live' && activePage !== 'specter' && unreadUnavailable && <div role="alert" className="mx-4 mt-2 rounded-lg border border-red-400/40 px-3 py-2 text-xs text-[#FFD6D6]">
         Unread counts could not be loaded. Do not assume your inbox is clear.
         <button type="button" className="ml-2 underline font-semibold" onClick={() => void refreshUnread()}>Retry</button>
       </div>}
-      <TopNavigation
+      {activePage !== 'specter' && <TopNavigation
         activePage={activePage}
         onNavigate={handleNavigate}
         searchQuery={searchQuery}
@@ -336,9 +336,9 @@ export default function App({ mode = 'demo' }: { mode?: 'demo' | 'live' }) {
           if (destination === 'peergroups' || destination === 'events' || destination === 'deals') { setClassicPage(destination); handleNavigate('workspace'); return; }
           handleNavigate(destination);
         }} /> : undefined}
-      />
+      />}
 
-      {mode === 'live' && network.networkLoadError && <section role="alert" aria-live="polite"
+      {mode === 'live' && activePage !== 'specter' && network.networkLoadError && <section role="alert" aria-live="polite"
         className="mx-3 sm:mx-6 my-3 rounded-xl border border-[#c9a673] bg-[#fff5e4] px-4 py-3 text-[#27343a] shadow-sm">
         <p className="text-sm font-semibold">Live network data is unavailable.</p>
         <p className="mt-1 text-sm">Posts, asks, relationships or messages may not have loaded. No sample profiles are being substituted for real members; do not assume an empty network or a sent request.</p>
@@ -350,8 +350,8 @@ export default function App({ mode = 'demo' }: { mode?: 'demo' | 'live' }) {
       </section>}
       {mode !== 'live' && activePage !== 'specter' && <InteractiveRelationshipTour />}
       {mode === 'live' && <LiveMembers onMembers={setMembers} onError={setLiveDirectoryError} />}
-      {mode === 'live' && <MeetingReminderBanner onJoin={() => handleNavigate('meetings')} />}
-      {mode === 'live' && <MembershipCardMailer />}
+      {mode === 'live' && activePage !== 'specter' && <MeetingReminderBanner onJoin={() => handleNavigate('meetings')} />}
+      {mode === 'live' && activePage !== 'specter' && <MembershipCardMailer />}
       {activePage !== 'specter' && <NewsTicker onOpen={() => handleNavigate('news')} />}
       {/* Primary Page Views */}
       <main className="flex-1 arch-product-main" data-arch-page={activePage}>
