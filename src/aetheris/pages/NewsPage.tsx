@@ -17,6 +17,8 @@ export function NewsPage({ publicMode = false }: { publicMode?: boolean } = {}) 
   const [open, setOpen] = useState<NewsItem | null>(null)
   const [tab, setTab] = useState<Tab>('feed')
   const [feedCopied, setFeedCopied] = useState(false)
+  const PAGE_SIZE = 12
+  const [visibleCount, setVisibleCount] = useState(PAGE_SIZE)
   const shelf = useNewsShelf()
 
   const items = data?.items ?? []
