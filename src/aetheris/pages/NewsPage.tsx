@@ -62,15 +62,15 @@ export function NewsPage({ publicMode = false }: { publicMode?: boolean } = {}) 
         {tabs.map(entry => <button
           key={entry.id}
           className={tab === entry.id ? 'on' : ''}
-          onClick={() => setTab(entry.id)}
+          onClick={() => { setTab(entry.id); setVisibleCount(PAGE_SIZE) }}
         >{entry.label} {entry.count ? `· ${entry.count}` : ''}</button>)}
       </div>
-      <input value={q} onChange={e => setQ(e.target.value)} placeholder="Search the feed…" aria-label="Search the news feed" />
+      <input value={q} onChange={e => { setQ(e.target.value); setVisibleCount(PAGE_SIZE) }} placeholder="Search the feed…" aria-label="Search the news feed" />
     </section>
 
     {tab === 'feed' && <section className="module news-controls">
       <div className="news-filters">
-        {categories.map(cat => <button key={cat} className={filter === cat ? 'on' : ''} onClick={() => setFilter(cat)}>{cat}</button>)}
+        {categories.map(cat => <button key={cat} className={filter === cat ? 'on' : ''} onClick={() => { setFilter(cat); setVisibleCount(PAGE_SIZE) }}>{cat}</button>)}
       </div>
     </section>}
 
@@ -104,6 +104,11 @@ export function NewsPage({ publicMode = false }: { publicMode?: boolean } = {}) 
       </article>)}
       {!shown.length && tab === 'feed' && <p className="sv-empty">Nothing matches that filter yet.</p>}
     </section>}
+    {hiddenCount > 0 && <div className="ix-show-more">
+      <button onClick={() => setVisibleCount(count => count + PAGE_SIZE)}>
+        Show {Math.min(PAGE_SIZE, hiddenCount)} more {hiddenCount === 1 ? 'story' : 'stories'} · {hiddenCount} remaining
+      </button>
+    </div>}
   </NewsImagesProvider>
 
 }
