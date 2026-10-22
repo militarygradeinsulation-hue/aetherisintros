@@ -153,7 +153,7 @@ export const HomeFeedView: React.FC<HomeFeedViewProps> = ({
           <span className="home-board-label">Dashboard</span>
           <h1>{firstName ? `Good to see you, ${firstName}.` : 'Your network, in one place.'}</h1>
           <p>
-            {boardPeople.length} {boardPeople.length === 1 ? 'person' : 'people'} · {posts.length} {posts.length === 1 ? 'update' : 'updates'} · {savedPosts.length} saved
+            {isLive ? 'Your member activity and private network, connected to one workspace.' : <>{boardPeople.length} {boardPeople.length === 1 ? 'person' : 'people'} · {posts.length} {posts.length === 1 ? 'update' : 'updates'} · {savedPosts.length} saved</>}
           </p>
         </div>
         <div className="home-feed-welcome-actions">
