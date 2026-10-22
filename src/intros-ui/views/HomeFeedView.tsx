@@ -209,8 +209,6 @@ export const HomeFeedView: React.FC<HomeFeedViewProps> = ({
                   </button>
                 </div>
               </div>
-              <div className="hidden">
-              </div>
             </form>}
           </div>
 
