@@ -59,6 +59,7 @@ import './views/workspace-accent.css';
 import './views/workspace-burnt-orange-bento.css';
 import './views/mobile-workspace.css';
 import './views/dashboard-network-density.css';
+import './views/mobile-menu-refinement.css';
 
 const SHELL_PAGES: ActivePage[] = ['home', 'people', 'bubbles', 'intros', 'messages', 'insights', 'news', 'workspace', 'memory', 'work', 'meetings', 'specter', 'intelligence'];
 
