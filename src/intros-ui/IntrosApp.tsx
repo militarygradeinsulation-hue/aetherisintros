@@ -21,6 +21,7 @@ import {
 } from './networkData';
 import type { ActivePage } from './components/layout/TopNavigation';
 import { HomeFeedView } from './views/HomeFeedView';
+import { LiveExecutiveOverview } from './components/home/LiveExecutiveOverview';
 import { PeopleDirectoryView } from './views/PeopleDirectoryView';
 import { ProfileDetailView } from './views/ProfileDetailView';
 import { MessagesView } from './views/MessagesView';
@@ -361,6 +362,7 @@ export default function App({ mode = 'demo', executiveAction, initialPage, initi
             networkMembers={members}
             isLive={mode === 'live'}
             socialFeed={mode === 'live' ? <div className="ix-classic"><AetherisAppSurface  feedOnly  /></div> : undefined}
+            liveOverview={mode === 'live' ? <LiveExecutiveOverview onNavigate={handleNavigate} onWorkspace={page => { setClassicPage(page); handleNavigate('workspace'); }} /> : undefined}
             actionQueue={mode === 'live' ? <div className="rc-stack">
               <ActivationChecklist onOpen={(target) => {
                 if (target === 'intros') { handleNavigate('intros'); return; }
