@@ -2,6 +2,7 @@
 .home-welcome-mobile, .mobile-composer-trigger { display: none; }
 .specter-nav-entry { display: contents; }
 @media (max-width: 760px) {
+  .ix-root.ix-aetheris-workspace-mode { padding-bottom: 0 !important; }
   .ix-root .aetheris-workspace-shell {
     --phone-ink: #20130d;
     --phone-edge: rgba(255,138,76,.24);
@@ -33,8 +34,9 @@
     color: var(--phone-ink); background: var(--ix-accent);
   }
   .ix-root .aetheris-workspace-shell .specter-mobile-menu {
-    top: auto; bottom: 8px; right: 8px;
-    width: calc(100% - 32px); max-height: calc(100dvh - 84px);
+    position: fixed; top: auto !important; bottom: max(8px, env(safe-area-inset-bottom)); right: 8px;
+    width: calc(100% - 32px); height: min(640px, calc(100dvh - 80px)) !important;
+    max-height: calc(100dvh - 80px) !important;
     border: 1px solid var(--phone-edge); border-radius: 8px;
     background: var(--ix-panel);
     box-shadow: 0 -8px 40px var(--phone-shadow);
@@ -45,7 +47,7 @@
     background: var(--ix-card); border-bottom-color: var(--phone-edge);
   }
   .ix-root .aetheris-workspace-shell .specter-mobile-menu-heading h2 {
-    font: 500 26px/1.15 Poppins, Inter, sans-serif; letter-spacing: 0;
+    font: 500 26px/1.15 Poppins, Inter, sans-serif !important; letter-spacing: 0; text-transform: none !important;
   }
   .ix-root .aetheris-workspace-shell .specter-mobile-menu-kicker {
     font-size: 9px; letter-spacing: 0; color: var(--ix-accent);
@@ -122,7 +124,8 @@
     min-width: 0; height: 42px; padding: 8px; border-radius: 6px;
     font: 500 11px/1.2 Poppins, sans-serif !important; text-transform: none !important;
     background: var(--ix-card-hover) !important; color: var(--ix-text) !important;
-    border: 1px solid var(--ix-line-strong); box-shadow: inset 0 1px var(--phone-light);
+    border: 1px solid var(--ix-line-strong) !important; border-radius: 6px !important;
+    box-shadow: inset 0 1px var(--phone-light);
   }
   .ix-root .aetheris-workspace-shell .home-feed-welcome-actions .home-feed-welcome-cta {
     background: var(--ix-accent) !important; color: var(--phone-ink) !important;
@@ -169,11 +172,11 @@
   }
   .ix-root .aetheris-workspace-shell .dashboard-demo-composer textarea { min-height: 84px; background: var(--ix-panel); }
   .ix-root .aetheris-workspace-shell .dashboard-demo-composer form > div:nth-child(2) { display: grid; gap: 10px; }
-  .ix-root .aetheris-workspace-shell .dashboard-demo-filters > div { gap: 18px; overflow-x: auto; max-width: 100%; padding: 4px 0; }
+  .ix-root .aetheris-workspace-shell .dashboard-demo-filters > div { flex-wrap: nowrap !important; gap: 16px; overflow-x: auto; max-width: 100%; padding: 0; }
   .ix-root .aetheris-workspace-shell .dashboard-demo-filters button { flex-shrink: 0; min-height: 36px; font-size: 11px; }
   .ix-root .aetheris-workspace-shell :is(.dashboard-demo-post,.social-feed-card) {
     position: relative; padding: 14px; border: 1px solid var(--ix-line-strong);
-    border-top-color: var(--phone-edge); border-radius: 8px; background: var(--ix-card);
+    border-top-color: var(--phone-edge); border-radius: 8px; background: var(--ix-card) !important;
     box-shadow: inset 0 1px var(--phone-light), 0 4px 10px var(--phone-shadow);
   }
   .ix-root .aetheris-workspace-shell .dashboard-demo-post > div:first-child { display: grid; grid-template-columns: minmax(0,1fr); gap: 8px; }
