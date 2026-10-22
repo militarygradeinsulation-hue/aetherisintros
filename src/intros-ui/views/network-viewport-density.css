@@ -53,6 +53,11 @@
   align-items:stretch;
   grid-template-columns:minmax(195px,22%) minmax(0,1fr) minmax(180px,22%);
 }
+@media(min-width:1024px) {
+  .ix-aetheris-workspace-mode .ix-network-results-layout > aside:first-child {grid-column:1}
+  .ix-aetheris-workspace-mode .ix-network-results-layout > main {grid-column:2}
+  .ix-aetheris-workspace-mode .ix-network-results-layout > aside:last-child {grid-column:3}
+}
 .ix-aetheris-workspace-mode .ix-network-results-layout > aside,
 .ix-aetheris-workspace-mode .ix-network-results-list {
   min-height:0;
@@ -88,12 +93,9 @@
   outline:2px solid #ff8a4c;
   outline-offset:2px;
 }
-@media(max-width:1199px) {
+@media(min-width:1024px) and (max-width:1199px) {
   .ix-aetheris-workspace-mode .ix-network-results-layout {
-    grid-template-columns:minmax(180px,25%) minmax(0,1fr);
-  }
-  .ix-aetheris-workspace-mode .ix-network-results-layout > aside:last-child {
-    display:none;
+    grid-template-columns:minmax(175px,23%) minmax(0,1fr) minmax(170px,23%);
   }
 }
 @media(max-width:1023px) {
