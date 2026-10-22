@@ -5,6 +5,7 @@ on:
     paths:
       - 'src/**'
       - 'scripts/customize-contrast-check/**'
+      - 'scripts/dashboard-network-layout-check/**'
       - 'scripts/editorial-copy-contrast-check/**'
       - 'scripts/voice-read-aloud-check/**'
       - '.github/workflows/ask-intros-design-parity.yml'
@@ -38,6 +39,10 @@ jobs:
         run: npx vite build
       - name: Install Chromium
         run: npx playwright install --with-deps chromium
+      - name: Dashboard and Network density (desktop, tablet and mobile browser)
+        env:
+          PLAYWRIGHT_MODULE: ${{ github.workspace }}/node_modules/playwright/index.mjs
+        run: node scripts/dashboard-network-layout-check/run.mjs
       - name: Check real Customize modal readability
         env:
           PLAYWRIGHT_MODULE: ${{ github.workspace }}/node_modules/playwright/index.mjs
