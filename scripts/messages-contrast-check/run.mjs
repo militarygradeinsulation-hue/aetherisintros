@@ -34,7 +34,10 @@ try {
   page.on('pageerror',e=>errors.push(e.message))
   await page.goto(base+'/demo',{waitUntil:'domcontentloaded',timeout:120000})
   await page.waitForSelector('.ix-root',{timeout:60000})
-  await page.locator('.ix-desktop-main-nav button').filter({hasText:'Messages'}).first().click()
+  // The current workspace uses a persistent desktop sidebar, not the retired top navigation.
+  const messages = page.locator('.specter-app-sidebar nav button').filter({hasText:'Messages'}).first()
+  await messages.waitFor({state:'visible',timeout:30000})
+  await messages.click()
   await page.waitForSelector('.ix-messages .msg-outgoing',{timeout:30000})
   const parse = x => {
     const m=String(x).match(/[\d.]+/g)
