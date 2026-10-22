@@ -132,7 +132,7 @@ export default function App({ mode = 'demo' }: { mode?: 'demo' | 'live' }) {
   // Count today's visit once per device for the admin growth report.
   useEffect(() => { if (mode === 'live') void recordVisit(); }, [mode]);
 
-  // Navigation router
+  // Navigation router — only the right-hand content swaps; the shell stays mounted.
   const handleNavigate = (page: ActivePage, memberId?: string) => {
     if (memberId) {
       setSelectedProfileId(memberId);
@@ -140,7 +140,9 @@ export default function App({ mode = 'demo' }: { mode?: 'demo' | 'live' }) {
     } else {
       setActivePage(page);
     }
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    requestAnimationFrame(() => {
+      document.getElementById('aetheris-workspace-content')?.scrollTo({ top: 0 });
+    });
   };
 
   // Interactions
@@ -284,13 +286,9 @@ export default function App({ mode = 'demo' }: { mode?: 'demo' | 'live' }) {
     return () => window.removeEventListener('aetheris:open-deals', open);
   }, []);
   const classicPages = ['news','workspace','memory','work','insights','meetings','specter', ...(mode === 'live' ? ['home','messages','intros','people'] : [])];
-  // Shared Specter-style shell for the core relationship loop. Complex editor/graph
-  // pages retain their existing hosts until individually tested in the new layout.
-  const workspaceShellPages: ActivePage[] = ['home', 'people', 'intros', 'messages', 'specter'];
-  const inWorkspaceShell = workspaceShellPages.includes(activePage);
 
   return (
-    <div className={`${activePage === 'specter' ? 'ix-specter-mode ' : inWorkspaceShell ? 'ix-aetheris-workspace-mode ' : ''}ix-root min-h-screen bg-[#07090C] text-[#F2EEE6] flex flex-col font-sans selection:bg-[#F5B027]/30 selection:text-white relative`}>
+    <div className={`${activePage === 'specter' ? 'ix-specter-mode ' : ''}ix-aetheris-workspace-mode ix-root min-h-screen bg-[#07090C] text-[#F2EEE6] flex flex-col font-sans selection:bg-[#F5B027]/30 selection:text-white relative`}>
       <WriteFailureNotice />
       {/* Right-click quick menu (each member chooses its items) */}
       <QuickMenuHost
