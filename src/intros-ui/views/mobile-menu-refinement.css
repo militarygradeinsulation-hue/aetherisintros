@@ -184,3 +184,39 @@
 @media (prefers-reduced-motion: reduce) {
   .ix-root .aetheris-workspace-shell .specter-mobile-menu {animation: none;}
 }
+
+/*
+ * Remove dead bottom navigation reservation from the NEW workspace.
+ * Legacy .ix-root still applies 72px + safe-area padding below 1024px,
+ * even though the permanent five-item bottom bar is no longer mounted.
+ * This used to expose an empty gridded band under the final feed card.
+ * Keep the real iOS inset INSIDE the scrollable content, not on the shell.
+ */
+@media (max-width: 1023px) {
+  .ix-root.ix-aetheris-workspace-mode,
+  .ix-root.ix-specter-mode {
+    box-sizing: border-box;
+    padding-bottom: 0 !important;
+    margin-bottom: 0 !important;
+    height: 100dvh;
+    min-height: 100dvh !important;
+    max-height: 100dvh;
+  }
+  .ix-root.ix-aetheris-workspace-mode > .arch-product-main,
+  .ix-root.ix-specter-mode > .arch-product-main {
+    flex: 1 1 auto;
+    min-height: 0;
+    height: 100%;
+    max-height: 100%;
+  }
+  .ix-root.ix-aetheris-workspace-mode .aetheris-workspace-content {
+    min-height: 0;
+    padding-bottom: max(14px, env(safe-area-inset-bottom, 0px));
+    overscroll-behavior-y: contain;
+    -webkit-overflow-scrolling: touch;
+  }
+  .ix-root.ix-aetheris-workspace-mode .aetheris-workspace-shell {
+    min-height: 0;
+    height: 100%;
+  }
+}
