@@ -67,7 +67,7 @@ const SHELL_PAGES: ActivePage[] = ['home', 'people', 'bubbles', 'intros', 'messa
 
 export type ExecutiveAction = { label: string; onOpen: () => void };
 
-export default function App({ mode = 'demo', executiveAction, initialPage, initialWorkspace }: { mode?: 'demo' | 'live'; executiveAction?: ExecutiveAction | undefined; initialPage?: ActivePage | undefined; initialWorkspace?: string | undefined }) {
+export default function App({ mode = 'demo', executiveAction, initialPage, initialWorkspace, initialSearch }: { mode?: 'demo' | 'live'; executiveAction?: ExecutiveAction | undefined; initialPage?: ActivePage | undefined; initialWorkspace?: string | undefined; initialSearch?: string | undefined }) {
   const network = useNetwork();
   const [activePage, setActivePage] = useState<ActivePage>(initialPage ?? 'home');
   const [classicPage, setClassicPage] = useState<string>(initialWorkspace ?? 'memory');
@@ -81,7 +81,7 @@ export default function App({ mode = 'demo', executiveAction, initialPage, initi
     new Set(mode === 'live' ? [] : ['marcus-lee', 'sarah-chen'])
   );
   const [savedMemberIds, setSavedMemberIds] = useState<Set<string>>(new Set(mode === 'live' ? [] : ['marcus-lee']));
-  const [searchQuery, setSearchQuery] = useState('');
+  const [searchQuery, setSearchQuery] = useState(() => mode === 'live' ? (initialSearch ?? '').trim().slice(0, 120) : '');
 
   // Modals
   const [requestIntroTarget, setRequestIntroTarget] = useState<NetworkMember | null>(null);
