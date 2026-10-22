@@ -399,3 +399,8 @@
 - [x] Dashboard: default focused social feed, separate tools/activity, closed overview, progressive feed loading and preserved drafts; measured 1440×900 and 390×844 before/after.
 - [ ] Verify the authenticated Dashboard and screenshot-specific live Introductions banner — blocked: requesting account has no mintable session; preview member sign-in required.
 - [ ] Confirm connected GitHub main/CI synchronization — blocked: sandbox exposes managed internal edit history, not GitHub main/CI status.
+
+## Fixed-screen Dashboard and text-only workspace headings (Oct 22)
+- [ ] Replace shared editorial image/grid banners with compact text-only headings; preserve genuine media.
+- [ ] Fit Dashboard to viewport with separately reachable feed, tools and overview panels.
+- [ ] Verify four viewport sizes, interactions, focused tests and automatic compilation; record authenticated/sync limits.

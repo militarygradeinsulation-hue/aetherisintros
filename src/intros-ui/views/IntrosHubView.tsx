@@ -1,4 +1,5 @@
 // @ts-nocheck
+import { Button } from '@/components/ui/button';
 import React, { useState } from 'react';
 import {
   Sparkles,
@@ -91,16 +92,16 @@ export const IntrosHubView: React.FC<IntrosHubViewProps> = ({
   const memberB = networkMembers.find((m) => m.id === personB) || networkMembers[1];
 
   return (
-    <div className="w-full max-w-7xl mx-auto px-4 md:px-8 py-6 space-y-8 animate-fadeIn">
+    <div className="w-full max-w-7xl mx-auto px-4 md:px-8 py-3 space-y-4 animate-fadeIn">
       {/* Editorial Header */}
-      <section className="relative overflow-hidden rounded-2xl border border-white/10 bg-gradient-to-br from-[#0C1017] via-[#090C10] to-[#07090C] p-6 lg:p-8">
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
-          <div className="space-y-3">
+      <section className="workspace-section-heading demo-intros-heading">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-3">
+          <div className="space-y-2">
             <div className="text-[10px] md:text-xs font-mono uppercase tracking-[0.25em] text-[#9CA3AF] font-semibold flex items-center gap-2">
               <span className="w-2 h-2 rounded-full bg-[#F5B027]" />
               Double Opt-In Protocol
             </div>
-            <h1 className="font-serif-editorial text-3xl sm:text-4xl md:text-5xl text-[#F2EEE6] leading-tight">
+            <h1 className="text-xl text-[var(--ix-text)] leading-tight">
               Introductions{' '}
               <span className="text-[#F5B027]">with context.</span>
             </h1>
@@ -109,13 +110,13 @@ export const IntrosHubView: React.FC<IntrosHubViewProps> = ({
             </p>
           </div>
 
-          <button
+          <Button
             onClick={() => setShowMakeIntroModal(true)}
             className="bridge-primary-action flex items-center gap-2 px-5 py-2.5 text-xs md:text-sm font-semibold transition-all cursor-pointer self-start md:self-auto"
           >
             <Plus className="w-4 h-4" />
             New introduction
-          </button>
+          </Button>
         </div>
       </section>
 

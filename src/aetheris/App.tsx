@@ -212,26 +212,16 @@ function SaveButton({ saved, onToggle }: { saved: boolean; onToggle: () => void 
   </button>
 }
 
-/** Compact editorial opening; only verified, explicitly supplied media is optional. */
-function EditorialHero({ folio, title, statement, copy, caption, focus = 'center 30%', stats, action, image, compact = false }: {
-  folio: string; title: React.ReactNode; statement: string; copy: string; caption: string
-  focus?: string; stats?: Array<{ k: string; v: string }>; action?: React.ReactNode; image?: string; compact?: boolean
+/** Workspace headings are text-only; genuine member media belongs in member/content surfaces. */
+function EditorialHero({ folio, title, copy, stats, action }: {
+  folio: string; title: React.ReactNode; copy: string
+  stats?: Array<{ k: string; v: string }>; action?: React.ReactNode
 }) {
-  return <section className={`editorial-hero${image ? '' : ' editorial-hero--text'}${compact ? ' compact' : ''}`}>
-    <div className="editorial-field">
-      <span className="folio">{folio}</span>
-      <h1>{title}</h1>
-      <h2>{statement}</h2>
-      <p>{copy}</p>
-      {action && <div className="editorial-hero-actions">{action}</div>}
-      {stats && <dl className="editorial-stats">{stats.map(s => <div key={s.k}><dt>{s.k}</dt><dd>{s.v}</dd></div>)}</dl>}
-      <div className="blueprint-cross">+</div>
-    </div>
-    {image ? <figure className="editorial-plate">
-       <img src={image} alt="" style={{ objectPosition: focus }} loading="lazy" />
-      <figcaption><span>ACTIVE MEMORY</span><p>{caption}</p></figcaption>
-    </figure> : <p className="editorial-caption">{caption}</p>}
-  </section>
+  return <header className="workspace-section-heading">
+    <div><Label signal>{folio}</Label><h1>{title}</h1><p>{copy}</p></div>
+    {action && <div className="workspace-heading-actions">{action}</div>}
+    {stats && <dl className="workspace-heading-stats">{stats.map(s => <div key={s.k}><dt>{s.k}</dt><dd>{s.v}</dd></div>)}</dl>}
+  </header>
 }
 
 /** The signature Ask Intros masthead: ivory brand field, editorial portrait, dark intelligence panel, live deck. */
@@ -1011,14 +1001,7 @@ function Discover({ people, select }: { people: Member[]; select: (p: Member) =>
     { icon: <ShieldCheck size={14} />, label: 'Relationship Strength', value: strength, set: setStrength, options: ['Strong', 'Building'], any: 'Any Strength' },
   ]
   return <>
-    <EditorialHero
-      folio="DISCOVER / PROFESSIONAL NETWORK"
-      title={<>Find the person,<br /><em>not the job title.</em></>}
-      statement="Search the way you would brief a trusted friend."
-      copy="Describe the outcome you want and Intros reads needs, offers, expertise, location, availability and the trust paths already open to you."
-      caption="Members are surfaced with reasoning, never as an anonymous list."
-      focus="center 22%"
-    />
+    <EditorialHero folio="Discover" title="Find people" copy="Search needs, expertise and shared context to find the right person." />
     <section className="executive-discovery">
       <Label signal>WHO DO YOU NEED?</Label>
       <h2>Describe the person, outcome, or help you need.</h2>
@@ -1175,10 +1158,8 @@ function Intros({ people, select, draft }: { people: Member[]; select: (p: Membe
   const ranked = scored.map(entry => entry.member)
   const shown = state === 'all' ? ranked.slice(0, 6) : ranked.filter(p => p.introState === state)
   return <>
-    <EditorialHero folio="INTROS / MUTUAL VALUE" title={<>A warm path is<br /><em>earned context.</em></>} statement="The right conversation, with a reason for both sides." copy="Each report explains the mutual value, live timing and trust path before anyone asks for an introduction." caption="Both people retain agency. Nothing moves until both choose the conversation." />
-    <PageHead label="CURATED INTRODUCTIONS" title="People worth knowing now."
-      copy="Every introduction carries mutual value, timing and a credible path. Nothing is sent until both sides agree."
-      proof={`${ranked.length} evidence-ranked people · ${ranked.filter(p => ['accepted', 'introduced', 'conversing', 'closed'].includes(p.introState)).length} progressed introductions`} />
+    <EditorialHero folio="Introductions" title="People worth knowing now" copy="Review mutual value, timing and trust before both people choose a conversation." />
+    <p className="workspace-heading-proof">{`${ranked.length} evidence-ranked people · ${ranked.filter(p => ['accepted', 'introduced', 'conversing', 'closed'].includes(p.introState)).length} progressed introductions`}</p>
     <IntroRequestInbox />
     <SentIntroRequests />
     <OutcomeCheckins />
@@ -1362,11 +1343,7 @@ function Needs({ onNew, people, select, setPage }: {
     : tab === 'saved' ? asks.filter(a => net.saved.includes(a.id))
       : forYou
   return <>
-    <EditorialHero folio="NEEDS / PROFESSIONAL ASKS" title={<>State the outcome.<br /><em>Find who can move it.</em></>} statement="Serious asks create useful professional context." copy="A need is not a broadcast. It is a concise case for why the right person should care, why now matters and what value moves both ways." caption="Specific needs produce considered responses—not noisy outreach." />
-    <PageHead label="NEEDS" title="Tell the network what you need."
-      copy="State the outcome you are trying to create. Intros finds who can move it forward and why they would want to."
-      proof="Network-visible asks feed matching. Private asks stay private."
-      action={<Button onClick={onNew}><Plus size={15} />Post a need</Button>} />
+    <EditorialHero folio="Needs" title="Tell the network what you need" copy="Share an outcome; network-visible asks inform matching while private asks stay private." action={<Button onClick={onNew}><Plus size={15} />Post a need</Button>} />
     <div className="feed-tabs">
       {([['for-you', 'For you'], ['yours', 'Your needs'], ['network', 'Network needs'], ['saved', 'Saved']] as const).map(([id, label]) =>
         <button key={id} className={tab === id ? 'active' : ''} onClick={() => setTab(id)}>{label}</button>)}
@@ -1416,20 +1393,7 @@ function Memory({ people, select }: { people: Member[]; select: (p: Member) => v
   const LEARNED_PREVIEW = 6
   const learnedRows = showAllLearned ? shown : shown.slice(0, LEARNED_PREVIEW)
   return <>
-    <section className="memory-editorial memory-editorial--text">
-      <div className="memory-editorial-copy">
-        <Brand />
-        <Label>PEOPLE CREATE POSSIBILITIES</Label>
-        <h1>Memory that keeps<br />relationships <em>alive.</em></h1>
-        <p>A professional memory for builders, backed by real people, real context, and real intent.</p>
-        <blockquote>“Most opportunities aren’t lost because people say no. They’re lost because context is forgotten.”</blockquote>
-        <dl>
-          <div><dt>Relationships</dt><dd>{net.connections.length}</dd></div><div><dt>People mapped</dt><dd>{people.length}</dd></div>
-          <div><dt>Context items</dt><dd>{items.length}</dd></div><div><dt>Private notes</dt><dd>{net.notes.length}</dd></div>
-        </dl>
-        <button className="memory-cta ai-gradient-button">Your Network Remembers <ArrowRight size={15} /></button>
-      </div>
-    </section>
+    <EditorialHero folio="Memory" title="Keep relationship context alive" copy="Return to recorded conversations, needs and private notes." stats={[{ k: 'Relationships', v: String(net.connections.length) }, { k: 'Context items', v: String(items.length) }, { k: 'Private notes', v: String(net.notes.length) }]} />
     <section className="memory-dark-intro">
       <div><Label signal>ACTIVE MEMORY GRAPH</Label><h2>Not a contact list.<br />A living record of <em>why.</em></h2></div>
     </section>
@@ -1552,10 +1516,7 @@ function Insights({ people, select, setPage }: { people: Member[]; select: (p: M
   const nav = useNav()
   const [dismissed, setDismissed] = useState<string[]>([])
   return <>
-    <EditorialHero folio="INSIGHTS / RELATIONSHIP MOVEMENT" title={<>Notice what changed.<br /><em>Act while it matters.</em></>} statement="Signals become useful only when they change the next move." copy="Role changes, cooling conversations, matching needs and warm paths are organized around action—not analytics theater." caption="The strongest signal is often a small change in a relationship you already trust." />
-    <PageHead label="INSIGHTS" title="Signals worth acting on."
-      copy="No vanity metrics. Only relationship changes that could alter an outcome, each with an action attached."
-      proof={`${people.length} members in your network · ${net.connections.length} connections`} />
+    <EditorialHero folio="Insights" title="Signals worth acting on" copy="Review relationship changes and choose your next action." stats={[{ k: 'Members', v: String(people.length) }, { k: 'Connections', v: String(net.connections.length) }]} />
     <InsightCollisions />
     <div className="insight-numbers ai-insight-numbers">
       {insightCounts(net, people).map(([n, c]) =>
@@ -2531,7 +2492,7 @@ function Hub({ storeKey, title, blurb, tabs, advanced, onNavigate, kind }: {
   const current = tabs.find(t => t.id === tab) ?? first
   const go = (id: string) => { setTab(id); try { localStorage.setItem(storeKey, id) } catch { /* ignore */ } }
   return <>
-    {kind === 'work' && <section className="work-editorial-masthead work-editorial-masthead--text"><div><HomeBrand /><Label>PRIVATE EXECUTIVE WORKSPACE</Label><h1>Turn relationships<br />into <em>movement.</em></h1><p>CRM, pipeline, Grid, calendar and forecast share one canonical working record—with relationship context beside the work.</p></div></section>}
+    {kind === 'work' && <EditorialHero folio="Work" title="Your working record" copy="CRM, pipeline, calendar and forecast share your canonical relationship context." />}
     <header className={`hub-head ${kind}-hub-head`}>
       <div><Label>{title.toUpperCase()}</Label><h1>{blurb}</h1></div>
       <p>{metaById[current.id]?.blurb}</p>
