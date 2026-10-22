@@ -60,3 +60,72 @@
 @media (prefers-reduced-motion: reduce) {
   .mi-tabs button, .mi-cta { transition: none; }
 }
+
+/* ---------------------------------------------------------------------------
+   Embedded classic hosts (.ix-classic): the shared workspace shell already
+   provides navigation, search and account controls, so the classic host's own
+   top nav and bottom mobile nav are pure duplicates — hide them only here.
+   The classic topbar stays (it carries real feature actions: post a need,
+   capture conversation, briefing mode) but is slimmed down.
+--------------------------------------------------------------------------- */
+.ix-classic .social-topnav,
+.ix-classic .mobile-nav { display: none !important; }
+.ix-classic .app-shell { min-height: 0; }
+.ix-classic .workspace .topbar {
+  position: static; padding: 8px 4px; border-bottom: 1px solid var(--ix-line);
+  background: transparent; backdrop-filter: none;
+}
+.ix-classic .workspace .topbar .topbar-title { font-size: 13px; opacity: .75; }
+
+/* Compact editorial heroes so the first screen shows real content, not a
+   full-viewport masthead, when the classic page lives inside the shell. */
+.ix-classic .memory-editorial,
+.ix-classic .editorial-hero,
+.ix-classic .news-editorial-head {
+  min-height: 0 !important; padding-top: 28px !important; padding-bottom: 28px !important;
+}
+.ix-classic .memory-editorial figure,
+.ix-classic .editorial-hero figure,
+.ix-classic .editorial-hero img {
+  max-height: 300px;
+}
+.ix-classic .memory-editorial h1,
+.ix-classic .editorial-hero h1,
+.ix-classic .news-editorial-head h1 {
+  font-size: clamp(26px, 3.4vw, 40px) !important; line-height: 1.12 !important;
+}
+.ix-classic .memory-dark-intro { padding-top: 20px !important; padding-bottom: 20px !important; }
+.ix-classic .memory-stage { min-height: 320px; }
+
+/* Progressive disclosure used by embedded classic pages (Insights map, etc.) */
+.ix-disclosure {
+  border: 1px solid var(--ix-line); border-radius: 12px; background: var(--ix-panel);
+  margin-top: 18px;
+}
+.ix-disclosure > summary {
+  cursor: pointer; list-style: none; padding: 14px 18px;
+  font-family: 'IBM Plex Mono', ui-monospace, monospace; font-size: 12px;
+  letter-spacing: .08em; text-transform: uppercase; color: var(--ix-muted);
+  display: flex; align-items: center; gap: 8px;
+}
+.ix-disclosure > summary::-webkit-details-marker { display: none; }
+.ix-disclosure > summary::before { content: '+'; color: var(--ix-accent); font-size: 14px; }
+.ix-disclosure[open] > summary::before { content: '–'; }
+.ix-disclosure > summary:focus-visible { outline: 2px solid var(--ix-accent); outline-offset: 2px; border-radius: 12px; }
+.ix-disclosure > summary:hover { color: var(--ix-text); }
+.ix-disclosure > *:not(summary) { padding: 0 18px 18px; }
+
+/* "Show more" control for long feeds (News) */
+.ix-show-more {
+  display: flex; justify-content: center; margin: 18px 0 8px;
+}
+.ix-show-more button {
+  background: transparent; border: 1px solid var(--ix-line); border-radius: 8px;
+  color: var(--ix-text); font: 600 13px/1 Poppins, Inter, system-ui, sans-serif;
+  padding: 11px 22px; cursor: pointer; transition: border-color .15s ease, color .15s ease;
+}
+.ix-show-more button:hover { border-color: var(--ix-accent); color: var(--ix-accent); }
+.ix-show-more button:focus-visible { outline: 2px solid var(--ix-accent); outline-offset: 2px; }
+@media (prefers-reduced-motion: reduce) {
+  .ix-show-more button { transition: none; }
+}
