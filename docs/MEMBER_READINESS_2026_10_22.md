@@ -9,23 +9,11 @@
 - Recognize PostgREST PGRST205 as missing database/schema-cache evidence. Separate a confirmed disabled LinkedIn provider from an unavailable settings check. The login screen explains confirmed disablement and keeps Google/email available.
 - End Member Intelligence loading with an explicit retry when authentication verification rejects.
 
-## Fresh production-connected evidence
+## Backend acceptance
 
-Read-only checks through the original Lovable project `c1248cd8-77de-4eaa-8d9d-e7da71e70ae9`:
+Backend recovery remains a separate deployment procedure. Table-name existence and RLS enabled are not evidence that columns, keys, permissions, triggers and workflow transitions match the application contract. Keep detailed production catalog, access and security observations out of public release notes.
 
-| Feature | Observed structure |
-| --- | --- |
-| Private Library | private_library_workspaces, private_library_records and private_library_import_batches absent |
-| Track Record evidence | track_record_entries absent |
-| Storefront / Proposals | member_storefronts and proposals absent |
-| Deal Rooms / Workspaces | deal_rooms, deal_workspaces and deal_workspace_members exist |
-| Other recovered areas | meeting_briefs, reputation_scores, referrals, business_diagnostics, syndication_rooms and peer_groups exist |
-
-Existence checks do not validate columns, keys, grants, policies, triggers or workflows. The older blanket claim that every pending feature family is absent is stale.
-
-A deeper structure read confirms incompatible columns in several existing tables. Deal Rooms has owner_id/status instead of the canonical created_by/stage/source contract; Deal Workspaces has name/owner_id instead of title/created_by/source/version columns; workspace membership has member_id without canonical user_id/status. Meeting briefs lack user_id/other_user_id/generated_at; referrals lack referred_to_id; business diagnostics lack user_id/generated_at/health_score; Syndication Rooms lacks room_type. Reputation has member_id/overall_score rather than the user_id/score/rate contract used by the server functions. These are not recovered workflows merely because RLS is enabled or the table name exists. Require complete catalog/ACL comparison and reviewed data-preserving repairs; do not rename owner columns or grant shared access blindly.
-
-The configured production target is `uactagkdvafjombseswx`. A fresh public auth-settings read returned HTTP 200 with linkedin_oidc false and email enabled. The newly connected Supabase account lists three other projects, none matching production; requesting the exact target returns permission denied. Do not use those other projects as replacements, copy member data into them, or resume an unrelated project.
+Before activation, establish authorized management access to the actual production target and a verified restorable backup/isolated restore. Compare complete catalogs and migration ledgers, prepare reviewed data-preserving forward repairs, and validate real member and anonymous API acceptance. Source checks alone do not establish production readiness.
 
 ## Recovery rehearsal
 
@@ -39,6 +27,7 @@ Result: 78 synthetic workflow/access assertions passed. This is a compatibility 
 - The full canonical disposable migration suite passes 1,617 assertions.
 - 33 isolated browser assertions at 320px, 390px and desktop cover account counts, honest loading/error/empty states, navigation, private-planner boundaries and rejected authentication reads.
 - Administrator connection browser checks cover opt-in zero-row reads, sanitized errors, mobile/light/dark presentation and report isolation on account changes.
+- The existing full local Architect (40 assertions) and contrast/overlay (35 assertions) suites pass. The expanded menu fits 320px, 390px and desktop.
 - GitHub runs the existing full release suites plus the new member-readiness browser and recovery rehearsal checks before release.
 
 ## Remaining production acceptance
