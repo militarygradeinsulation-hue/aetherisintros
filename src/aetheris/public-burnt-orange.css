@@ -1,0 +1,61 @@
+/* Public entry point: same restrained copper/orange cues as the member app.
+   Text-only editorial layout stays intact. No stock art, fake figures or
+   additional scroll sections are introduced. */
+.ael.ael-compact.ael--text {
+  --ael-copper: #ff8a4c;
+  --ael-copper-line: rgba(255,138,76,.36);
+  --ael-copper-soft: rgba(255,138,76,.10);
+}
+.ael.ael-compact.ael--text .ael-header {
+  border-bottom-color: rgba(255,138,76,.22);
+}
+.ael.ael-compact.ael--text .ael-hero .ael-kicker,
+.ael.ael-compact.ael--text .ael-compact-method-heading .ael-fine-label {
+  color: #ffba96;
+}
+.ael.ael-compact.ael--text .ael-platform-statement strong {
+  color: #ffbf9f;
+}
+.ael.ael-compact.ael--text .ael-hero .ael-dash {
+  background: var(--ael-copper);
+}
+.ael.ael-compact.ael--text .ael-hero h1 em {
+  color: #ffac7c;
+}
+.ael.ael-compact.ael--text .ael-nav-cta.ai-gradient-button,
+.ael.ael-compact.ael--text .ael-btn.ai-gradient-button {
+  border: 1px solid var(--ael-copper-line) !important;
+  border-radius: 10px !important;
+  background: #181619 !important;
+  color: #ffd6c1 !important;
+  box-shadow: 0 7px 23px rgba(0,0,0,.21) !important;
+}
+.ael.ael-compact.ael--text .ael-nav-cta.ai-gradient-button:hover,
+.ael.ael-compact.ael--text .ael-btn.ai-gradient-button:hover {
+  background: var(--ael-copper) !important;
+  border-color: #ffac7a !important;
+  color: #1c120e !important;
+  box-shadow: 0 9px 24px rgba(0,0,0,.23) !important;
+}
+.ael.ael-compact.ael--text .ael-hero-actions .ael-text-link {
+  border-bottom-color: var(--ael-copper-line);
+}
+.ael.ael-compact.ael--text .ael-hero-actions .ael-text-link:hover,
+.ael.ael-compact.ael--text .ael-compact-story .ael-underlink:hover {
+  color: #ffb88d !important;
+  border-color: var(--ael-copper);
+}
+.ael.ael-compact.ael--text .ael-compact-story .ael-editorial-meta {
+  border-color: rgba(255,138,76,.20);
+}
+.ael.ael-compact.ael--text .ael-compact-method .ael-compact-steps li {
+  border-bottom-color: rgba(255,138,76,.18);
+}
+.ael.ael-compact.ael--text .ael-compact-story :is(a,button):focus-visible,
+.ael.ael-compact.ael--text .ael-hero :is(a,button):focus-visible {
+  outline: 2px solid var(--ael-copper);
+  outline-offset: 3px;
+}
+@media (prefers-reduced-motion: reduce) {
+  .ael.ael-compact.ael--text .ai-gradient-button { transition: none !important; transform: none !important; }
+}
