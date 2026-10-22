@@ -18,7 +18,6 @@ import {
 } from 'lucide-react';
 import type { NetworkMember, RelationshipTier } from '../networkData';
 import { ExecutivePortrait } from '../components/shared/ExecutivePortrait';
-import Map from '@/components/ui/map';
 import { FloatingConnectionField } from '../components/shared/FloatingConnectionField';
 import type { ActivePage } from '../components/layout/TopNavigation';
 
@@ -197,16 +196,10 @@ export const PeopleDirectoryView: React.FC<PeopleDirectoryViewProps> = ({
         </div>
       </header>
 
-      {/* Optional context: illustrative map and network statistics */}
+      {/* Optional context: network statistics */}
       <details className="ix-disclosure">
-        <summary>Network map &amp; statistics <span>Illustrative overview</span></summary>
+        <summary>Network statistics <span>Directory overview</span></summary>
         <div className="pt-3 space-y-3">
-          <div className="bridge-discover-map relative h-[220px] w-full overflow-hidden rounded-xl border border-white/15 bg-black">
-            <Map />
-            <span className="pointer-events-none absolute bottom-2 left-3 bg-black/90 px-2 py-1 font-mono text-[9px] tracking-wide text-white">
-              Illustrative network map · not live member locations
-            </span>
-          </div>
           <div className="grid grid-cols-4 gap-2 rounded-xl border border-white/10 bg-[#0E121A] p-3 text-center font-mono">
             <div>
               <div className="text-base font-bold text-white">{members.length}</div>

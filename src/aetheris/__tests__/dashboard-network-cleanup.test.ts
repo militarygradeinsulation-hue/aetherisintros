@@ -15,10 +15,10 @@ describe('dashboard and network cleanup', () => {
     expect(app).toContain("handleNavigate('people')")
   })
 
-  it('leads the directory with search and real counts, folding map and connectors into disclosures', () => {
+  it('leads the directory with search and real counts, folding statistics and connectors into disclosures', () => {
     const view = file('../../intros-ui/views/PeopleDirectoryView.tsx')
     expect(view).toContain('Search the member network')
-    expect(view).toContain('Network map &amp; statistics')
+    expect(view).toContain('Network statistics')
     expect(view).toContain('Featured connectors')
     expect(view).toContain('ix-disclosure')
     // Mobile filters collapse behind an accessible toggle.
