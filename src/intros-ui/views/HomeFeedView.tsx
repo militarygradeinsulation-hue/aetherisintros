@@ -26,6 +26,7 @@ import { ExecutivePortrait } from '../components/shared/ExecutivePortrait';
 import { ConstellationGraphic } from '../components/shared/ConstellationGraphic';
 import { RelationshipFieldGraph } from '../components/shared/RelationshipFieldGraph';
 import { ActivePage } from '../components/layout/TopNavigation';
+import { MobileComposerDisclosure } from '../components/home/MobileComposerDisclosure';
 import { FeedSidebarLayout } from '../components/home/FeedSidebarLayout';
 
 interface HomeFeedViewProps {
@@ -102,6 +103,7 @@ export const HomeFeedView: React.FC<HomeFeedViewProps> = ({
   const savedPosts = posts.filter(post => post.isSaved);
   const jumpToSocial = () => {
     window.dispatchEvent(new Event('intros:dashboard-feed'));
+    window.dispatchEvent(new Event('intros:dashboard-compose'));
     requestAnimationFrame(() => {
       const board = document.getElementById('home-social-board');
       board?.scrollIntoView({ behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth', block: 'start' });
@@ -146,7 +148,7 @@ export const HomeFeedView: React.FC<HomeFeedViewProps> = ({
       <header className="home-feed-welcome">
         <div className="min-w-0">
           <span className="home-board-label">Dashboard</span>
-          <h1>{firstName ? `Good to see you, ${firstName}.` : 'Your network, in one place.'}</h1>
+          <h1><span className="home-welcome-desktop">{firstName ? `Good to see you, ${firstName}.` : 'Your network, in one place.'}</span><span className="home-welcome-mobile">Your network<span className="home-welcome-period">.</span></span></h1>
           <p>
             {boardPeople.length} {boardPeople.length === 1 ? 'person' : 'people'} · {posts.length} {posts.length === 1 ? 'update' : 'updates'} · {savedPosts.length} saved
           </p>
@@ -163,7 +165,7 @@ export const HomeFeedView: React.FC<HomeFeedViewProps> = ({
         {/* Center Column: Feed Post Composer & Feed Stream */}
         <main className="space-y-6">
           {/* Post Composer */}
-          <div className="bg-[#0E121A] border border-white/10 rounded-xl p-4 shadow-sm">
+          <MobileComposerDisclosure><div className="dashboard-demo-composer bg-[#0E121A] border border-white/10 rounded-xl p-4 shadow-sm">
             <form onSubmit={handleCreatePost}>
               <div className="flex items-start gap-3 mb-3">
                 <ExecutivePortrait name={me?.name || 'Sarah Chen'} {...(me?.avatarUrl ? { avatarUrl: me.avatarUrl } : {})} size="sm" />
@@ -241,8 +243,10 @@ export const HomeFeedView: React.FC<HomeFeedViewProps> = ({
             </form>
           </div>
 
+          </MobileComposerDisclosure>
+
           {/* Feed Filter Tabs */}
-          <div className="flex items-center justify-between border-b border-white/10 pb-2">
+          <div className="dashboard-demo-filters flex items-center justify-between border-b border-white/10 pb-2">
             <div className="flex items-center gap-6">
               {[
                 { id: 'forYou', label: 'For You' },
@@ -273,7 +277,7 @@ export const HomeFeedView: React.FC<HomeFeedViewProps> = ({
               return (
               <article
                 key={post.id}
-                className="bg-[#0E121A] border border-white/10 rounded-xl p-5 space-y-4 hover:border-white/20 transition-all shadow-sm"
+                className="dashboard-demo-post bg-[#0E121A] border border-white/10 rounded-xl p-5 space-y-4 hover:border-white/20 transition-all shadow-sm"
               >
                 {/* Author row */}
                 <div className="flex items-start justify-between">

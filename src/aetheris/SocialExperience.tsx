@@ -1,3 +1,4 @@
+import { MobileComposerDisclosure } from '@/intros-ui/components/home/MobileComposerDisclosure'
 import { INITIAL_FEED_COUNT, moreFeedCount } from '@/aetheris/feed-window'
 import { useMemo, useState } from 'react'
 import { ArrowRight, Bell, Bookmark, CalendarDays, Check, CircleDot, Handshake, Heart, Image, Lightbulb, MessageCircle, MessageSquareText, Paperclip, Plus, Search, Send, ShieldCheck, Target, Upload, Users, X } from 'lucide-react'
@@ -228,7 +229,7 @@ export function EditorialFeed({ onBrief, compact = false }: { onBrief?: () => vo
     <div className="feed-editorial-layout">
       <div className="feed-editorial-main">
         <header className="feed-section-head"><h2 id="editorial-feed-title">Latest from your network</h2><span>{feed.length} live {feed.length === 1 ? 'Signal' : 'Signals'}</span></header>
-        <SignalComposer open={composerOpen} setOpen={setComposerOpen} />
+        {compact ? <MobileComposerDisclosure><SignalComposer open={composerOpen} setOpen={setComposerOpen} /></MobileComposerDisclosure> : <SignalComposer open={composerOpen} setOpen={setComposerOpen} />}
         <details className="dashboard-feed-extra"><summary>Business post</summary><BusinessComposer /></details>
         <nav className="feed-lanes" aria-label="Signal categories">{FEED_LANES.map(item => <button key={item} className={lane === item ? 'active' : ''} onClick={() => { setLane(item); setPostLimit(INITIAL_FEED_COUNT) }}>{item}</button>)}</nav>
         <details className="dashboard-feed-extra"><summary>Insights & activity</summary><IntelligenceCards /><MovingNow /></details>
