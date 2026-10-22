@@ -1,5 +1,5 @@
 import { ClientOnly, createFileRoute, useNavigate } from '@tanstack/react-router'
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 
 import IntrosApp from '@/intros-ui/IntrosApp'
 import { AetherisProviderRoot } from '@/aetheris/AetherisProviderRoot'
@@ -42,6 +42,9 @@ function Gate() {
   const { access, refresh } = useAccess()
   const navigate = useNavigate()
   const ready = isLiveMember(access)
+  // The Executive dialog is opened from the workspace sidebar, not a floating
+  // bubble, so it never overlaps the Butler launcher.
+  const [executiveOpen, setExecutiveOpen] = useState(false)
 
   useEffect(() => {
     if (access.loading || access.error) return
@@ -79,5 +82,10 @@ function Gate() {
   if (access.loading || !ready) {
     return <main className="access-waiting"><span className="folio">ASK INTROS</span><p>Checking your membership…</p></main>
   }
-  return <AetherisProviderRoot mode="live"><ConnectionBanner /><WelcomeDiagnosticBanner /><IntrosApp mode="live" /><ExecutiveUpgrade tier={access.tier} isAdmin={access.isAdmin} /></AetherisProviderRoot>
+  // Executive non-admin members have nothing to apply for or review: no action.
+  const executiveAction = access.tier === 'executive' && !access.isAdmin ? undefined : {
+    label: access.isAdmin ? 'Executive applications' : 'Executive access',
+    onOpen: () => setExecutiveOpen(true),
+  }
+  return <AetherisProviderRoot mode="live"><ConnectionBanner /><WelcomeDiagnosticBanner /><IntrosApp mode="live" executiveAction={executiveAction} /><ExecutiveUpgrade tier={access.tier} isAdmin={access.isAdmin} open={executiveOpen} onOpenChange={setExecutiveOpen} hideTrigger /></AetherisProviderRoot>
 }
