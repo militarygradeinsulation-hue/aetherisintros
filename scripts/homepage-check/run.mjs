@@ -146,6 +146,19 @@ try {
         assert(await page.getByText(/Preview post created locally/).count() > 0, 'preview composer does not claim a real published post')
         const link = page.locator('.vs-auth-links a[href*="mode=signup"]')
         assert(await link.count() === 1, 'create account links to existing authentication route')
+        // Browser-to-auth contract. No credentials or live member writes are used.
+        await page.locator('.vs-sidebar nav button').filter({ hasText: 'Messages' }).first().click()
+        await page.waitForURL(url => {
+          const target = new URL(url)
+          return target.pathname === '/auth' && target.searchParams.get('next') === '/app?view=messages'
+        }, { timeout: 30000 })
+        assert(await page.locator('.auth-form input[type="email"]').isVisible(), 'protected messages route shows the real email login')
+        assert(await page.locator('.auth-form input[type="password"]').isVisible(), 'real login requires a password')
+        assert(await page.getByRole('button', { name: 'Continue with Google' }).isVisible(), 'Google sign-in remains accessible')
+        assert(await page.getByRole('button', { name: 'Continue with LinkedIn' }).isVisible(), 'LinkedIn sign-in remains accessible')
+        await page.goto(base + '/auth?mode=signup&next=%2Fapp', { waitUntil: 'domcontentloaded' })
+        await page.locator('.auth-form input[autocomplete="name"]').waitFor({ state: 'visible' })
+        assert(await page.locator('.auth-form input[autocomplete="email"]').isVisible(), 'new accounts reach existing sign-up form')
       }
     } catch (error) {
       failed++
