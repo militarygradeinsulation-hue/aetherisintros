@@ -18,8 +18,7 @@ import {
   ConversationThread,
   IntroRequest,
 } from './networkData';
-import { TopNavigation, ActivePage } from './components/layout/TopNavigation';
-import { EditorialFooter } from './components/layout/EditorialFooter';
+import type { ActivePage } from './components/layout/TopNavigation';
 import { HomeFeedView } from './views/HomeFeedView';
 import { PeopleDirectoryView } from './views/PeopleDirectoryView';
 import { ProfileDetailView } from './views/ProfileDetailView';
@@ -36,7 +35,6 @@ import { AetherisAppSurface, AetherisAssistantSurface } from '@/aetheris/App';
 import { VoiceBar } from '@/aetheris/VoiceBar';
 import { SelectionReader } from '@/aetheris/SelectionReader';
 import { LiveMessagesView } from './views/LiveMessagesView';
-import { InteractiveRelationshipTour } from '@/aetheris/InteractiveRelationshipTour';
 import { useUnreadCounts } from '@/aetheris/read-receipts';
 import '@/aetheris/styles.css';
 import '@/aetheris/architectural-system.css';
