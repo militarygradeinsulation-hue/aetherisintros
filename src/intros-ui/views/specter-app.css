@@ -259,3 +259,14 @@ body:has(.ix-specter-mode) :is(.ask-scroll-caliper,.ask-scroll-caliper-bottom-sc
 @media(prefers-reduced-motion:reduce){
   .specter-app{transition:none}
 }
+
+/* Executive membership action — a normal nav item, never a floating bubble. */
+.specter-app-sidebar nav .specter-executive-action{
+  margin-top:10px;border-top:1px solid #20272b;border-radius:0 0 7px 7px;
+  color:#e8c98a;
+}
+.specter-app-sidebar nav .specter-executive-action:hover{color:#ffd9a0;background:#10171b}
+.specter-mobile-menu nav .specter-executive-action{
+  margin-top:8px;border-top:1px solid #27272a;border-radius:0 0 8px 8px;color:#e8c98a;
+}
+.specter-mobile-menu nav .specter-executive-action:hover{color:#ffd9a0}
