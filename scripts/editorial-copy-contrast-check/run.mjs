@@ -21,59 +21,51 @@ try{
   });
   const {chromium}=await import(process.env.PLAYWRIGHT_MODULE??resolve(root,"node_modules/playwright/index.mjs"));
   browser=await chromium.launch();
-  for(const width of [390,1280]){
+  // The public entry is now the Aetheris Vision dashboard rather than the
+  // former compact editorial landing page. Guard actual, visible copy rather
+  // than waiting for selectors from the removed landing.
+  for (const width of [320,390,768,1280]) {
     const page=await browser.newPage({viewport:{width,height:900}});
     await page.goto("http://127.0.0.1:"+port+"/",{waitUntil:"domcontentloaded",timeout:120000});
-    await page.waitForSelector(".ael-compact-story-copy p",{timeout:45000});
-    await page.evaluate(()=>{
-      const fixture=document.createElement("div");
-      fixture.id="news-copy-contrast-fixture";fixture.className="ix-root";
-      fixture.innerHTML='<div class="arch-product-main"><header class="news-editorial-head"><div><p class="eyebrow">EXECUTIVE INTELLIGENCE</p><h1>Read the signal. <em>Call the right person.</em></h1><p>Live reporting, considered alongside your relationships.</p></div></header></div>';
-      fixture.style.cssText="position:absolute;left:-20000px;top:0;width:900px";
-      document.body.appendChild(fixture);
+    await page.locator(".vision-page .vs-hero h1").waitFor({state:"visible",timeout:45000});
+    const result=await page.evaluate(()=>{
+      const selectors=[".vs-hero h1",".vs-eyebrow",".vs-hero p",".vs-data-disclaimer",".vs-surface-heading h3",".vs-sidebar nav button"];
+      return selectors.map(selector=>{
+        const element=document.querySelector(selector);
+        if(!element)return {selector,missing:true};
+        const style=getComputedStyle(element);
+        const r=element.getBoundingClientRect();
+        return {selector,color:style.color,opacity:Number(style.opacity),display:style.display,visibility:style.visibility,width:r.width,height:r.height};
+      });
     });
-    for(const theme of ["dark","light"]){
-      await page.evaluate(t=>{
-        const html=document.documentElement;html.dataset.theme=t;
-        html.classList.toggle("dark",t==="dark");html.classList.toggle("light",t==="light");
-        html.style.colorScheme=t;
-      },theme);
-      await page.waitForTimeout(120);
-      const cases=[
-        [".ael-compact-story",".ael-compact-story-copy p","philosophy text"],
-        [".ael-compact-story",".ael-editorial-meta","philosophy label"],
-        [".ael-compact-story",".ael-compact-method-heading .ael-fine-label","method label"],
-        [".ael-compact-story",".ael-compact-steps li:first-child strong","step title"],
-        [".ael-compact-story",".ael-compact-steps li:first-child p","step description"],
-        [".news-editorial-head",".news-editorial-head h1","news title"],
-        [".news-editorial-head",".news-editorial-head h1 em","news emphasis"],
-        [".news-editorial-head",".news-editorial-head p:last-child","news description"],
-      ];
-      for(const [background,text,name] of cases){
-        const isNews=background.startsWith(".news");
-        const result=await page.evaluate(args=>{
-          const t=document.querySelector(args.text),panel=document.querySelector(args.background);
-          if(!t||!panel)return null;
-          const a=getComputedStyle(t),b=getComputedStyle(panel);
-          return {ink:a.color,textFill:a.webkitTextFillColor,bg:b.backgroundColor,opacity:a.opacity};
-        },{background:(isNews?"#news-copy-contrast-fixture ":"")+background,
-           text:(isNews?"#news-copy-contrast-fixture ":"")+text});
-        if(!result)throw Error("Missing "+name);
-        const lum=color=>{const v=[...color.matchAll(/(?:\d*\.)?\d+/g)].slice(0,3).map(x=>Number(x[0])/255)
-          .map(x=>x<=.04045?x/12.92:((x+.055)/1.055)**2.4);
-          return v.reduce((sum,x,i)=>sum+x*[.2126,.7152,.0722][i],0);
-        };
-        const bg=lum(result.bg),fg=lum(result.textFill||result.ink);
-        const ratio=(Math.max(bg,fg)+.05)/(Math.min(bg,fg)+.05);
-        if(theme==="light"&&bg<.72)throw Error("Light panel is not white: "+name+" "+JSON.stringify(result));
-        if(theme==="dark"&&bg>.05)throw Error("Dark panel is not black: "+name+" "+JSON.stringify(result));
-        if(ratio<4.5||Number(result.opacity)<.95)throw Error("Low contrast "+name+" "+ratio.toFixed(1)+": "+JSON.stringify(result));
-        console.log("PASS "+width+" "+theme+" "+name+" "+ratio.toFixed(1)+":1");
-      }
+    const linear=value=>{
+      const normalized=value/255;
+      return normalized<=0.04045?normalized/12.92:((normalized+0.055)/1.055)**2.4;
+    };
+    const luminance=color=>{
+      const rgb=color.match(/[0-9.]+/g)?.slice(0,3).map(Number)??[];
+      if(rgb.length!==3)throw new Error("Unparseable text color "+color);
+      return rgb.reduce((sum,v,i)=>sum+linear(v)*[0.2126,0.7152,0.0722][i],0);
+    };
+    const backgrounds={
+      ".vs-hero h1":"#070c14",
+      ".vs-eyebrow":"#070c14",
+      ".vs-hero p":"#070c14",
+      ".vs-data-disclaimer":"#142438",
+      ".vs-surface-heading h3":"#101c2b",
+      ".vs-sidebar nav button":"#111b2a",
+    };
+    for(const item of result){
+      if(item.missing||item.width<=0||item.height<=0||item.display==="none"||item.visibility==="hidden"||item.opacity<0.95)throw Error("Missing or hidden "+item.selector);
+      const bg=luminance(backgrounds[item.selector]),fg=luminance(item.color);
+      const contrast=(Math.max(bg,fg)+0.05)/(Math.min(bg,fg)+0.05);
+      if(contrast<4.5)throw Error("Low contrast "+item.selector+" "+contrast.toFixed(1)+":1 at "+width);
+      console.log("PASS "+width+" "+item.selector+" "+contrast.toFixed(1)+":1");
     }
     await page.close();
   }
-  console.log("Public editorial contrast passed in both themes, on mobile and desktop.");
+
+  console.log("Public Aetheris copy contrast passed on mobile, tablet and desktop.");
 }finally{
   if(browser)await browser.close();
   stop();
