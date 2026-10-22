@@ -18,8 +18,7 @@ import {
   ConversationThread,
   IntroRequest,
 } from './networkData';
-import { TopNavigation, ActivePage } from './components/layout/TopNavigation';
-import { EditorialFooter } from './components/layout/EditorialFooter';
+import type { ActivePage } from './components/layout/TopNavigation';
 import { HomeFeedView } from './views/HomeFeedView';
 import { PeopleDirectoryView } from './views/PeopleDirectoryView';
 import { ProfileDetailView } from './views/ProfileDetailView';
@@ -30,20 +29,16 @@ import { ConnectionBubblesView } from './views/ConnectionBubblesView';
 import { RequestIntroModal } from './components/modals/RequestIntroModal';
 import { ReviewIntroModal } from './components/modals/ReviewIntroModal';
 import { ScheduleMeetingModal } from './components/modals/ScheduleMeetingModal';
-import { FloatingConnectionField } from './components/shared/FloatingConnectionField';
-import { X, Orbit } from 'lucide-react';
+
 import { AetherisAppSurface, AetherisAssistantSurface } from '@/aetheris/App';
 import { VoiceBar } from '@/aetheris/VoiceBar';
 import { SelectionReader } from '@/aetheris/SelectionReader';
 import { LiveMessagesView } from './views/LiveMessagesView';
-import { InteractiveRelationshipTour } from '@/aetheris/InteractiveRelationshipTour';
-import { useUnreadCounts } from '@/aetheris/read-receipts';
 import '@/aetheris/styles.css';
 import '@/aetheris/architectural-system.css';
 import './messages-readability.css';
 import '@/aetheris/executive-options.css';
 import '@/aetheris/messages-master-theme.css';
-import { useAetherisNews } from '@/aetheris/news';
 import { LiveMembers } from './liveMembers';
 import { ThisWeekPanel } from '@/aetheris/this-week-ui';
 import { ActivationChecklist, recordVisit } from '@/aetheris/activation-ui';
@@ -60,20 +55,6 @@ import './views/aetheris-workspace-pages.css';
 
 const SHELL_PAGES: ActivePage[] = ['home', 'people', 'bubbles', 'intros', 'messages', 'insights', 'news', 'workspace', 'memory', 'work', 'meetings', 'specter'];
 
-function NewsTicker({ onOpen }: { onOpen: () => void }) {
-  const { data } = useAetherisNews();
-  const items = (data?.items ?? []).slice(0, 8);
-  if (!items.length) return null;
-  return <button type="button" onClick={onOpen} aria-label="Open live news" className="ix-news-ticker w-full overflow-hidden border-b border-white/10 bg-[#0E1116] py-2 text-left">
-    <div className="ix-news-ticker-track">
-      {[0, 1].map(copy => <div key={copy} className="ix-news-ticker-group" aria-hidden={copy === 1 ? true : undefined}>
-        <span className="font-mono tracking-[0.2em] text-[#F4A125]">LIVE NEWS</span>
-        {items.map((n: any) => <span key={n.id}><b className="text-[#F2EEE6] font-medium">{n.title}</b> · {n.source}</span>)}
-      </div>)}
-    </div>
-  </button>;
-}
-
 export default function App({ mode = 'demo' }: { mode?: 'demo' | 'live' }) {
   const network = useNetwork();
   const [activePage, setActivePage] = useState<ActivePage>('home');
@@ -89,7 +70,6 @@ export default function App({ mode = 'demo' }: { mode?: 'demo' | 'live' }) {
   );
   const [savedMemberIds, setSavedMemberIds] = useState<Set<string>>(new Set(mode === 'live' ? [] : ['marcus-lee']));
   const [searchQuery, setSearchQuery] = useState('');
-  const [showConstellationOverlay, setShowConstellationOverlay] = useState(false);
 
   // Modals
   const [requestIntroTarget, setRequestIntroTarget] = useState<NetworkMember | null>(null);
@@ -149,7 +129,7 @@ export default function App({ mode = 'demo' }: { mode?: 'demo' | 'live' }) {
   // Count today's visit once per device for the admin growth report.
   useEffect(() => { if (mode === 'live') void recordVisit(); }, [mode]);
 
-  // Navigation router
+  // Navigation router — only the right-hand content swaps; the shell stays mounted.
   const handleNavigate = (page: ActivePage, memberId?: string) => {
     if (memberId) {
       setSelectedProfileId(memberId);
@@ -157,7 +137,9 @@ export default function App({ mode = 'demo' }: { mode?: 'demo' | 'live' }) {
     } else {
       setActivePage(page);
     }
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    requestAnimationFrame(() => {
+      document.getElementById('aetheris-workspace-content')?.scrollTo({ top: 0 });
+    });
   };
 
   // Interactions
@@ -293,7 +275,6 @@ export default function App({ mode = 'demo' }: { mode?: 'demo' | 'live' }) {
   // Find active profile
   const currentProfileMember =
     mode === 'live' ? members.find((m) => m.id === selectedProfileId) : (members.find((m) => m.id === selectedProfileId) || members[0]);
-  const liveUnread = useUnreadCounts(mode === 'live');
   // "Open deal room" anywhere in the product lands on the Deals workspace page.
   useEffect(() => {
     const open = (e: Event) => { e.preventDefault(); setClassicPage('deals'); handleNavigate('workspace'); };
@@ -301,13 +282,9 @@ export default function App({ mode = 'demo' }: { mode?: 'demo' | 'live' }) {
     return () => window.removeEventListener('aetheris:open-deals', open);
   }, []);
   const classicPages = ['news','workspace','memory','work','insights','meetings','specter', ...(mode === 'live' ? ['home','messages','intros','people'] : [])];
-  // Shared Specter-style shell for the core relationship loop. Complex editor/graph
-  // pages retain their existing hosts until individually tested in the new layout.
-  const workspaceShellPages: ActivePage[] = ['home', 'people', 'intros', 'messages', 'specter'];
-  const inWorkspaceShell = workspaceShellPages.includes(activePage);
 
   return (
-    <div className={`${activePage === 'specter' ? 'ix-specter-mode ' : inWorkspaceShell ? 'ix-aetheris-workspace-mode ' : ''}ix-root min-h-screen bg-[#07090C] text-[#F2EEE6] flex flex-col font-sans selection:bg-[#F5B027]/30 selection:text-white relative`}>
+    <div className={`${activePage === 'specter' ? 'ix-specter-mode ' : ''}ix-aetheris-workspace-mode ix-root min-h-screen bg-[#07090C] text-[#F2EEE6] flex flex-col font-sans selection:bg-[#F5B027]/30 selection:text-white relative`}>
       <WriteFailureNotice />
       {/* Right-click quick menu (each member chooses its items) */}
       <QuickMenuHost
@@ -329,21 +306,6 @@ export default function App({ mode = 'demo' }: { mode?: 'demo' | 'live' }) {
         Unread counts could not be loaded. Do not assume your inbox is clear.
         <button type="button" className="ml-2 underline font-semibold" onClick={() => void refreshUnread()}>Retry</button>
       </div>}
-      {!inWorkspaceShell && <TopNavigation
-        activePage={activePage}
-        onNavigate={handleNavigate}
-        searchQuery={searchQuery}
-        onSearchChange={setSearchQuery}
-        unreadCount={mode === 'live' ? liveUnread.total : 12}
-        onToggleConstellationOverlay={() => handleNavigate('bubbles')}
-        me={mode === 'live' ? me : null}
-        {...(mode === 'live' ? { onOpenMyProfile: () => { setClassicPage('profile'); handleNavigate('workspace'); } } : {})}
-        bell={mode === 'live' ? <LiveNotificationsBell onOpen={(destination) => {
-          if (destination === 'peergroups' || destination === 'events' || destination === 'deals') { setClassicPage(destination); handleNavigate('workspace'); return; }
-          handleNavigate(destination);
-        }} /> : undefined}
-      />}
-
       {mode === 'live' && activePage !== 'specter' && network.networkLoadError && <section role="alert" aria-live="polite"
         className="mx-3 sm:mx-6 my-3 rounded-xl border border-[#c9a673] bg-[#fff5e4] px-4 py-3 text-[#27343a] shadow-sm">
         <p className="text-sm font-semibold">Live network data is unavailable.</p>
@@ -354,17 +316,15 @@ export default function App({ mode = 'demo' }: { mode?: 'demo' | 'live' }) {
           Retry network connection
         </button>
       </section>}
-      {mode !== 'live' && !inWorkspaceShell && <InteractiveRelationshipTour />}
       {mode === 'live' && <LiveMembers onMembers={setMembers} onError={setLiveDirectoryError} />}
       {mode === 'live' && activePage !== 'specter' && <MeetingReminderBanner onJoin={() => handleNavigate('meetings')} />}
       {mode === 'live' && activePage !== 'specter' && <MembershipCardMailer />}
-      {!inWorkspaceShell && <NewsTicker onOpen={() => handleNavigate('news')} />}
-      {/* Primary Page Views */}
+      {/* Primary Page Views — one persistent workspace shell; only the right pane swaps. */}
       <main className="flex-1 arch-product-main" data-arch-page={activePage}>
         <AetherisWorkspaceShell
-          enabled={inWorkspaceShell && activePage !== 'specter'}
           scrollContent
           activePage={activePage}
+          activeWorkspace={activePage === 'workspace' ? classicPage : undefined}
           searchQuery={searchQuery}
           onSearchChange={setSearchQuery}
           onNavigate={handleNavigate}
@@ -487,7 +447,7 @@ export default function App({ mode = 'demo' }: { mode?: 'demo' | 'live' }) {
         {activePage === 'memory' && <div className="ix-classic"><AetherisAppSurface key="memory"  startPage="memory"  /></div>}
         {activePage === 'meetings' && <div className="ix-classic"><AetherisAppSurface key="meetings"  startPage="meetings"  /></div>}
         {activePage === 'work' && <div className="ix-classic"><AetherisAppSurface key="work"  startPage="work"  /></div>}
-        {activePage === 'specter' && <SpecterDetectView onNavigate={handleNavigate} onWorkspace={page=>{setClassicPage(page);handleNavigate('workspace');}} onSearch={query=>{setSearchQuery(query);handleNavigate('people');}} searchQuery={searchQuery} onSearchChange={setSearchQuery} member={me} notifications={mode === 'live' ? <LiveNotificationsBell onOpen={destination=>{if(destination==='peergroups'||destination==='events'||destination==='deals'){setClassicPage(destination);handleNavigate('workspace');}else handleNavigate(destination);}}/> : undefined}/> }
+        {activePage === 'specter' && <SpecterDetectView embedded onNavigate={handleNavigate} onWorkspace={page=>{setClassicPage(page);handleNavigate('workspace');}} onSearch={query=>{setSearchQuery(query);handleNavigate('people');}} searchQuery={searchQuery} onSearchChange={setSearchQuery} member={me} notifications={mode === 'live' ? <LiveNotificationsBell onOpen={destination=>{if(destination==='peergroups'||destination==='events'||destination==='deals'){setClassicPage(destination);handleNavigate('workspace');}else handleNavigate(destination);}}/> : undefined}/> }
         {activePage === 'workspace' && <div className="ix-classic">
           <div className="ix-tools">
             {([['memory','Memory'],['crm','CRM'],['diagnostic','Company report'],['pocket','Private Library & Blueprints'],['executivework','Executive Workbench'],['providers','Trusted Providers'],['needs','Needs'],['companies','Companies'],['opportunities','Opportunities'],['deals','Deals'],['referrals','Referrals'],['workspaces','Workspaces'],['calendar','Calendar'],['grid','Grid'],['circles','Circles'],['peergroups','Peer groups'],['events','Events'],['profile','My profile'],['preferences','Settings']] as const).map(([id, label]) =>
@@ -497,9 +457,6 @@ export default function App({ mode = 'demo' }: { mode?: 'demo' | 'live' }) {
         </div>}
         </AetherisWorkspaceShell>
       </main>
-
-      {/* Editorial Footer */}
-      {!inWorkspaceShell && <EditorialFooter onNavigate={handleNavigate} />}
 
       {/* Interactive Modals */}
       <RequestIntroModal

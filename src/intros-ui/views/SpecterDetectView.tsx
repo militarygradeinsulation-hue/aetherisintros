@@ -13,16 +13,14 @@ interface Props {
   onSearchChange?: (query: string) => void;
   member?: { name: string; avatarUrl?: string } | null;
   notifications?: ReactNode;
+  /** Render content only; the surrounding app already provides the shared shell. */
+  embedded?: boolean;
 }
 
 /** Specter now occupies the same navigable shell as the rest of Ask Intros. */
-export function SpecterDetectView({ onNavigate, onWorkspace, onSearch, searchQuery, onSearchChange, member, notifications }: Props) {
+export function SpecterDetectView({ onNavigate, onWorkspace, onSearch, searchQuery, onSearchChange, member, notifications, embedded = false }: Props) {
   const [help, setHelp] = useState(false);
-  return <AetherisWorkspaceShell
-    activePage="specter" onNavigate={onNavigate} onWorkspace={onWorkspace}
-    onSearch={onSearch} searchQuery={searchQuery} onSearchChange={onSearchChange} member={member} notifications={notifications}
-    onHelp={() => setHelp(open => !open)}
-  >
+  const content = <>
     <div className="specter-how">
       <button type="button" onClick={() => setHelp(open => !open)} aria-expanded={help}>
         <CircleHelp size={17}/> How it works
@@ -34,5 +32,13 @@ export function SpecterDetectView({ onNavigate, onWorkspace, onSearch, searchQue
       <button type="button" onClick={() => setHelp(false)}>Close help</button>
     </section>}
     <SpecterDetectPanel/>
+  </>;
+  if (embedded) return content;
+  return <AetherisWorkspaceShell
+    activePage="specter" onNavigate={onNavigate} onWorkspace={onWorkspace}
+    onSearch={onSearch} searchQuery={searchQuery} onSearchChange={onSearchChange} member={member} notifications={notifications}
+    onHelp={() => setHelp(open => !open)}
+  >
+    {content}
   </AetherisWorkspaceShell>;
 }

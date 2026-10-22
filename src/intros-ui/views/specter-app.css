@@ -237,3 +237,25 @@ body:has(.ix-specter-mode) :is(.ask-scroll-caliper,.ask-scroll-caliper-bottom-sc
 @media(max-width:1190px){
   .specter-app .specter-title .specter-mode{display:inline-flex;align-items:center;justify-content:center}
 }
+
+/* Collapsible workspace sidebar — the right pane takes the full width. */
+.specter-app{transition:grid-template-columns .22s ease}
+.aetheris-workspace-shell.sidebar-collapsed{grid-template-columns:0 minmax(0,1fr)}
+.specter-sidebar-toggle{
+  display:flex;align-items:center;gap:9px;margin:10px 10px 0;padding:8px 12px;
+  background:none;border:1px solid #27272a;border-radius:8px;color:#a1a1aa;
+  font-size:11px;cursor:pointer;transition:color .15s ease,border-color .15s ease;
+}
+.specter-sidebar-toggle:hover{color:#fff;border-color:#3f3f46}
+.specter-sidebar-expand{
+  display:inline-flex;align-items:center;justify-content:center;flex:0 0 auto;
+  background:none;border:1px solid #27272a;border-radius:8px;color:#e4e4e7;
+  padding:9px;cursor:pointer;transition:color .15s ease,border-color .15s ease;
+}
+.specter-sidebar-expand:hover{color:#fff;border-color:#52525b}
+@media(max-width:760px){
+  .specter-sidebar-expand{display:none}
+}
+@media(prefers-reduced-motion:reduce){
+  .specter-app{transition:none}
+}
