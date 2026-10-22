@@ -1,0 +1,194 @@
+/* Phone art direction only; all desktop content and composer state remain intact. */
+.home-welcome-mobile, .mobile-composer-trigger { display: none; }
+.specter-nav-entry { display: contents; }
+@media (max-width: 760px) {
+  .ix-root .aetheris-workspace-shell {
+    --phone-ink: #20130d;
+    --phone-edge: rgba(255,138,76,.24);
+    --phone-light: rgba(255,255,255,.035);
+    --phone-shadow: rgba(0,0,0,.28);
+    --phone-muted: #b5b1ae;
+    --phone-pattern: rgba(255,138,76,.065);
+    letter-spacing: 0;
+  }
+  .ix-root .aetheris-workspace-shell .specter-app-header {
+    display: grid;
+    grid-template-columns: minmax(0,1fr) auto;
+    border-bottom: 1px solid var(--phone-edge);
+    background: var(--ix-bg);
+  }
+  .ix-root .aetheris-workspace-shell .specter-app-brand strong {
+    font-size: 17px; letter-spacing: 0;
+  }
+  .ix-root .aetheris-workspace-shell .specter-app-brand small { letter-spacing: 0; }
+  .ix-root .aetheris-workspace-shell .specter-app-account > .specter-mobile-menu-toggle {
+    border-radius: 8px;
+    border-color: var(--phone-edge);
+    color: var(--ix-accent);
+    background: var(--ix-accent-wash);
+    box-shadow: inset 0 1px var(--phone-light), 0 3px 8px var(--phone-shadow);
+    min-height: 44px;
+  }
+  .ix-root .aetheris-workspace-shell .specter-app-account > .specter-mobile-menu-toggle[aria-expanded="true"] {
+    color: var(--phone-ink); background: var(--ix-accent);
+  }
+  .ix-root .aetheris-workspace-shell .specter-mobile-menu {
+    top: auto; bottom: 8px; right: 8px;
+    width: calc(100% - 32px); max-height: calc(100dvh - 84px);
+    border: 1px solid var(--phone-edge); border-radius: 8px;
+    background: var(--ix-panel);
+    box-shadow: 0 -8px 40px var(--phone-shadow);
+    padding-bottom: max(12px, env(safe-area-inset-bottom));
+  }
+  .ix-root .aetheris-workspace-shell .specter-mobile-menu-heading {
+    min-height: 72px; padding: 14px;
+    background: var(--ix-card); border-bottom-color: var(--phone-edge);
+  }
+  .ix-root .aetheris-workspace-shell .specter-mobile-menu-heading h2 {
+    font: 500 26px/1.15 Poppins, Inter, sans-serif; letter-spacing: 0;
+  }
+  .ix-root .aetheris-workspace-shell .specter-mobile-menu-kicker {
+    font-size: 9px; letter-spacing: 0; color: var(--ix-accent);
+  }
+  .ix-root .aetheris-workspace-shell .specter-mobile-menu-close {
+    width: 44px; padding: 0; border-radius: 8px;
+  }
+  .ix-root .aetheris-workspace-shell .specter-mobile-menu-close span { display: none; }
+  .ix-root .aetheris-workspace-shell .specter-mobile-search {
+    background: var(--ix-card) !important; border-radius: 8px;
+    border-color: var(--ix-line-strong) !important; margin: 12px !important;
+  }
+  .specter-drawer-identity {
+    display: grid; grid-template-columns: 36px minmax(0,1fr); gap: 10px;
+    margin: 0 14px 8px; align-items: center;
+  }
+  .specter-drawer-identity .specter-account-initials { width: 36px; height: 36px; }
+  .specter-drawer-identity b { display: block; font-size: 12px; color: var(--ix-text); }
+  .specter-drawer-identity small { font-size: 9px; color: var(--phone-muted); }
+  .ix-root .aetheris-workspace-shell .specter-mobile-menu nav { padding: 0 10px 12px; gap: 3px; }
+  .specter-nav-group {
+    margin: 14px 8px 5px; color: var(--phone-muted);
+    font: 500 10px/1.4 'IBM Plex Mono', monospace; text-transform: uppercase;
+  }
+  .ix-root .aetheris-workspace-shell .specter-mobile-menu nav :is(button,a) {
+    border-radius: 6px; font-size: 12px; min-height: 44px; padding: 10px;
+  }
+  .ix-root .aetheris-workspace-shell .specter-mobile-menu nav .active {
+    color: var(--ix-text); background: var(--ix-accent-wash);
+    border-color: var(--phone-edge); box-shadow: inset 3px 0 var(--ix-accent);
+  }
+  .ix-root .aetheris-workspace-shell .specter-mobile-menu nav .active svg { color: var(--ix-accent); }
+  .ix-root:has(.specter-mobile-menu) :is(.ask-dock-fab,.ask-dock) { visibility: hidden; }
+  .ix-root .ask-dock-fab {
+    min-width: 44px; min-height: 44px;
+    bottom: max(12px, env(safe-area-inset-bottom));
+  }
+  .ix-root .ask-dock-fab > .aetheris-glyph { display: inline-block; }
+  .ix-root .ask-dock { bottom: max(66px, calc(env(safe-area-inset-bottom) + 66px)); }
+  .ix-root .aetheris-workspace-shell .aetheris-workspace-content:has(> .home-feed-page) {
+    display: flex; flex-direction: column; overflow: hidden; padding: 10px 10px max(8px, env(safe-area-inset-bottom));
+  }
+  .ix-root .aetheris-workspace-shell .home-feed-page {
+    display: flex; flex-direction: column; flex: 1; min-height: 0;
+    padding: 0; gap: 12px;
+  }
+  .ix-root .aetheris-workspace-shell .home-feed-page > * { margin: 0; }
+  .ix-root .aetheris-workspace-shell .home-feed-welcome {
+    position: relative; display: grid; grid-template-columns: minmax(0,1fr);
+    flex: 0 0 auto; padding: 14px !important; gap: 13px;
+    border: 1px solid var(--phone-edge); border-top: 2px solid var(--ix-accent);
+    border-radius: 8px; background-color: var(--ix-card);
+    background-image: linear-gradient(115deg, var(--ix-accent-wash), transparent 65%), repeating-linear-gradient(0deg, transparent 0 15px, var(--phone-pattern) 15px 16px);
+    box-shadow: inset 0 1px var(--phone-light), 0 4px 12px var(--phone-shadow);
+  }
+  .home-welcome-desktop { display: none; }
+  .home-welcome-mobile { display: inline; }
+  .home-welcome-period { color: var(--ix-accent); }
+  .ix-root .aetheris-workspace-shell .home-feed-welcome h1 {
+    margin: 4px 0 7px; font: 500 28px/1.12 Poppins, Inter, sans-serif !important;
+    text-transform: none !important; letter-spacing: 0 !important;
+  }
+  .ix-root .aetheris-workspace-shell .home-feed-welcome .home-board-label {
+    color: var(--ix-accent); font: 500 9px/1.4 'IBM Plex Mono', monospace; letter-spacing: 0;
+  }
+  .ix-root .aetheris-workspace-shell .home-feed-welcome p {
+    font: 400 11px/1.5 Inter, sans-serif !important;
+    color: var(--phone-muted) !important; text-transform: none !important; letter-spacing: 0;
+  }
+  .ix-root .aetheris-workspace-shell .home-feed-welcome-actions {
+    display: grid; grid-template-columns: minmax(0,1fr) minmax(0,1fr); gap: 8px;
+  }
+  .ix-root .aetheris-workspace-shell .home-feed-welcome-actions button {
+    min-width: 0; height: 42px; padding: 8px; border-radius: 6px;
+    font: 500 11px/1.2 Poppins, sans-serif !important; text-transform: none !important;
+    background: var(--ix-card-hover) !important; color: var(--ix-text) !important;
+    border: 1px solid var(--ix-line-strong); box-shadow: inset 0 1px var(--phone-light);
+  }
+  .ix-root .aetheris-workspace-shell .home-feed-welcome-actions .home-feed-welcome-cta {
+    background: var(--ix-accent) !important; color: var(--phone-ink) !important;
+    border-color: var(--ix-accent); box-shadow: inset 0 1px var(--ix-accent-hover);
+  }
+  .ix-root .aetheris-workspace-shell .home-feed-welcome-actions svg { width: 15px; height: 15px; }
+  .ix-root .aetheris-workspace-shell .home-feed-layout,
+  .ix-root .aetheris-workspace-shell .home-feed-center {
+    display: flex; flex-direction: column; flex: 1; min-height: 0; gap: 0;
+  }
+  .ix-root .aetheris-workspace-shell .home-feed-controls { flex: 0 0 auto; padding: 0 0 10px; border: 0; }
+  .ix-root .aetheris-workspace-shell .home-feed-controls-actions {
+    display: grid; grid-template-columns: minmax(0,1fr) minmax(0,1fr) 42px; gap: 3px;
+    background: var(--ix-panel); padding: 3px; border: 1px solid var(--ix-line-strong); border-radius: 8px;
+  }
+  .ix-root .aetheris-workspace-shell .home-feed-controls-actions button {
+    min-height: 40px; padding: 6px; border: 0; border-radius: 5px;
+    font: 500 11px/1.2 Poppins, sans-serif; color: var(--phone-muted);
+    background: transparent; white-space: nowrap;
+  }
+  .ix-root .aetheris-workspace-shell .home-feed-controls-actions button[aria-pressed="true"] {
+    background: var(--ix-card-hover); color: var(--ix-text); box-shadow: inset 0 -2px var(--ix-accent);
+  }
+  .ix-root .aetheris-workspace-shell .home-feed-customize-action :is(.home-feed-customize-label,.home-feed-visible-count) { display: none; }
+  .ix-root .aetheris-workspace-shell :is(#dashboard-social-panel,#dashboard-tools-panel) {
+    flex: 1; min-height: 0; overflow-y: auto; overscroll-behavior: contain;
+    scrollbar-width: thin; padding-bottom: 64px;
+  }
+  .ix-root .aetheris-workspace-shell #dashboard-social-panel[hidden] { display: none; }
+  .ix-root .aetheris-workspace-shell .home-social-board main { gap: 12px; }
+  .ix-root .aetheris-workspace-shell .home-social-board main > * + * { margin-top: 12px; }
+  .ix-root .aetheris-workspace-shell .mobile-composer-trigger {
+    display: grid; grid-template-columns: 32px minmax(0,1fr) 18px; gap: 10px;
+    align-items: center; width: 100%; min-height: 58px; padding: 10px 12px;
+    text-align: left; color: var(--phone-muted); background: var(--ix-card);
+    border: 1px solid var(--ix-line-strong); border-radius: 8px;
+    box-shadow: inset 0 1px var(--phone-light); font-size: 12px;
+  }
+  .mobile-composer-symbol { display: grid; place-items: center; width: 32px; height: 32px; border-radius: 6px; background: var(--ix-accent-wash); color: var(--ix-accent); }
+  .mobile-composer-disclosure[data-expanded="false"] > .mobile-composer-content { display: none; }
+  .mobile-composer-disclosure[data-expanded="true"] > .mobile-composer-content { margin-top: 8px; }
+  .ix-root .aetheris-workspace-shell .dashboard-demo-composer {
+    padding: 12px; border-radius: 8px; background: var(--ix-card); border-color: var(--phone-edge);
+  }
+  .ix-root .aetheris-workspace-shell .dashboard-demo-composer textarea { min-height: 84px; background: var(--ix-panel); }
+  .ix-root .aetheris-workspace-shell .dashboard-demo-composer form > div:nth-child(2) { display: grid; gap: 10px; }
+  .ix-root .aetheris-workspace-shell .dashboard-demo-filters > div { gap: 18px; overflow-x: auto; max-width: 100%; padding: 4px 0; }
+  .ix-root .aetheris-workspace-shell .dashboard-demo-filters button { flex-shrink: 0; min-height: 36px; font-size: 11px; }
+  .ix-root .aetheris-workspace-shell :is(.dashboard-demo-post,.social-feed-card) {
+    position: relative; padding: 14px; border: 1px solid var(--ix-line-strong);
+    border-top-color: var(--phone-edge); border-radius: 8px; background: var(--ix-card);
+    box-shadow: inset 0 1px var(--phone-light), 0 4px 10px var(--phone-shadow);
+  }
+  .ix-root .aetheris-workspace-shell .dashboard-demo-post > div:first-child { display: grid; grid-template-columns: minmax(0,1fr); gap: 8px; }
+  .ix-root .aetheris-workspace-shell .dashboard-demo-post > div:first-child > div { min-width: 0; }
+  .ix-root .aetheris-workspace-shell .dashboard-demo-post h4 { font: 600 13px/1.4 Poppins, sans-serif; }
+  .ix-root .aetheris-workspace-shell .dashboard-demo-post > div:first-child > span { justify-self: start; font-size: 9px; color: var(--ix-accent); }
+  .ix-root .aetheris-workspace-shell .dashboard-demo-post > p { font-size: 13px; line-height: 1.65; }
+  .ix-root .aetheris-workspace-shell .home-feed-overview { flex-shrink: 0; }
+  .ix-root .aetheris-workspace-shell .home-feed-overview summary { font-size: 10px; }
+  .ix-root .aetheris-workspace-shell .home-feed-overview summary span { display: none; }
+  .ix-root .aetheris-workspace-shell .home-feed-overview[open] { max-height: 30dvh; overflow-y: auto; }
+  .ix-root .aetheris-workspace-shell .ix-network-member-card { border-radius: 8px; border-top-color: var(--phone-edge); box-shadow: inset 0 1px var(--phone-light); }
+  .ix-root .aetheris-workspace-shell :is(button,a,input,textarea,select,summary):focus-visible { outline: 2px solid var(--ix-accent); outline-offset: 2px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .ix-root .aetheris-workspace-shell .mobile-composer-disclosure,
+  .ix-root .aetheris-workspace-shell .specter-mobile-menu { animation: none; transition: none; }
+}
