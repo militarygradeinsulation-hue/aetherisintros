@@ -1,4 +1,6 @@
 import { createFileRoute, Link } from '@tanstack/react-router'
+import { useEffect } from 'react'
+import { supabase } from '@/integrations/supabase/client'
 import { useMemo, useState } from 'react'
 import { Activity, ArrowRight, Bell, Bookmark, BriefcaseBusiness, CalendarDays, Check, ChevronRight, Compass, Heart, Home, Menu, MessageCircle, MessagesSquare, MoreHorizontal, Play, Plus, Search, Send, Share2, Sparkles, TrendingUp, Users, Video, WandSparkles, X, type LucideIcon } from 'lucide-react'
 import './vision.css'
@@ -42,6 +44,14 @@ function Surface({ title, action, children, className = '' }: { title: string; a
   return <section className={`vs-surface ${className}`}><div className="vs-surface-heading"><h3>{title}</h3>{action && <span>{action} <ChevronRight size={13}/></span>}</div>{children}</section>
 }
 export function Vision() {
+  const [signedIn, setSignedIn] = useState(false)
+  const [accountEmail, setAccountEmail] = useState('')
+  useEffect(() => {
+    let mounted = true
+    void supabase.auth.getSession().then(({data}) => { if(mounted){setSignedIn(Boolean(data.session));setAccountEmail(data.session?.user.email || '')} })
+    const { data: listener } = supabase.auth.onAuthStateChange((_event,session)=>{ if(mounted){setSignedIn(Boolean(session));setAccountEmail(session?.user.email || '')} })
+    return () => {mounted=false;listener.subscription.unsubscribe()}
+  }, [])
   const [activeNav, setActiveNav] = useState('Home')
   const [tab, setTab] = useState('For You')
   const [mobileMenu, setMobileMenu] = useState(false)
@@ -75,7 +85,8 @@ export function Vision() {
     else if (name === 'Calendar') document.getElementById('vision-calendar')?.scrollIntoView({ behavior: 'smooth' })
     else if (name === 'AI Assistant') document.getElementById('vision-ai')?.scrollIntoView({ behavior: 'smooth' })
     else if (name === 'Home') window.scrollTo({top: 0, behavior: 'smooth'})
-    else notify(`${name} selected — connect this view to your existing Ask Intros workspace.`)
+    else if (name === "Messages" || name === "Communities" || name === "Analytics") window.location.assign(signedIn ? "/app" : "/auth?next=%2Fapp")
+    else notify(`${name} selected — open your live member workspace to continue.`)
   }
   const askAi = () => {
     if (!aiPrompt.trim()) return
@@ -83,13 +94,13 @@ export function Vision() {
     setAiPrompt('')
   }
   return <div className="vision-page">
-    <header className="vs-topline"><a href="/" className="vs-brand"><span className="vs-symbol">A</span><span>AETHERIS <em>INTROS</em></span></a><div className="vs-top-motto">THE RELATIONSHIP NETWORK <span>FOR CEOS.</span></div><div className="vs-top-right">PEOPLE <b>·</b> RELATIONSHIPS <b>·</b> OPPORTUNITIES</div></header>
-    <div className="vs-hero"><div className="vs-eyebrow">A MORE CONNECTED TOMORROW</div><h1>One Connected System <i>for CEOs.</i></h1><p>People. Relationships. Opportunities. Meetings. Intelligence. <strong>All connected.</strong></p></div>
+    <header className="vs-topline"><a href="/" className="vs-brand"><span className="vs-symbol">A</span><span>AETHERIS <em>INTROS</em></span></a><div className="vs-top-motto">THE RELATIONSHIP NETWORK <span>FOR CEOS.</span></div><div className="vs-auth-links">{signedIn ? <><span className="vs-signedin" title={accountEmail}>Signed in</span><a href="/app" className="vs-auth-primary">Open workspace <ArrowRight size={14}/></a></> : <><a href="/auth?next=%2Fapp">Sign in</a><a className="vs-auth-primary" href="/auth?mode=signup&next=%2Fapp">Create account <ArrowRight size={14}/></a></>}</div></header>
+    <div className="vs-hero"><div className="vs-eyebrow">A MORE CONNECTED TOMORROW · INTERACTIVE DESIGN PREVIEW</div><h1>One Connected System <i>for CEOs.</i></h1><p>People. Relationships. Opportunities. Meetings. Intelligence. <strong>All connected.</strong></p><div className="vs-hero-actions"><a href={signedIn ? "/app" : "/auth?next=%2Fapp"} className="vs-auth-primary">{signedIn ? "Enter your workspace" : "Sign in to your workspace"} <ArrowRight size={15}/></a><a href="/demo" className="vs-outline-action">Explore existing app</a></div></div>
     <div className="vs-shell">
       <aside className={`vs-sidebar ${mobileMenu ? 'is-open' : ''}`}>
         <div className="vs-sidebar-heading"><span className="vs-symbol">A</span><b>AETHERIS <span>INTROS</span></b><button onClick={() => setMobileMenu(false)} className="vs-close-nav" aria-label="Close menu"><X size={18}/></button></div>
         <nav aria-label="Platform navigation">{navigation.map(n => <button key={n.label} onClick={() => navClick(n.label)} className={activeNav === n.label ? 'selected' : ''}><n.icon size={17}/>{n.label}{n.label === 'Messages' && <small>3</small>}</button>)}</nav>
-        <div className="vs-sidebar-bottom"><Sparkles size={21}/><strong>Your network is your greatest asset.</strong><span>Make every connection count.</span></div>
+        <div className="vs-sidebar-bottom"><a href={signedIn?"/app":"/auth?next=%2Fapp"} className="vs-workspace-link">Open your live member workspace <ArrowRight size={14}/></a><Sparkles size={21}/><strong>Your network is your greatest asset.</strong><span>Make every connection count.</span></div>
       </aside>
       <div className="vs-workspace">
         <div className="vs-toolbar"><button className="vs-mobile-toggle" onClick={() => setMobileMenu(true)} aria-label="Open menu"><Menu size={21}/></button><div className="vs-search"><Search size={17}/><input aria-label="Search people and posts" value={query} onChange={e=>setQuery(e.target.value)} placeholder="Search people, companies, topics, or opportunities..." />{query && <button onClick={()=>setQuery('')} aria-label="Clear search"><X size={14}/></button>}</div><div className="vs-toolbar-actions"><button aria-label="Create post" onClick={()=>document.getElementById('vision-composer')?.focus()}><Plus size={18}/></button><button aria-label="Notifications" onClick={()=>setShowNotifications(!showNotifications)}><Bell size={18}/></button><Link to="/vision-profile" aria-label="View executive profile"><Avatar initials="AC" shade="orange"/></Link><span className="vs-profile-label"><b>Alex Carter</b><small>CEO · Horizon Partners</small></span></div>{showNotifications && <div className="vs-notification-popover"><strong>Notifications</strong><p>3 new connection requests</p><p>2 introductions ready for review</p></div>}</div>
@@ -118,3 +129,4 @@ export function Vision() {
     <nav className="vs-mobile-bottom" aria-label="Mobile navigation"><button onClick={()=>navClick('Home')}><Home size={20}/>Home</button><button onClick={()=>navClick('Discover')}><Compass size={20}/>Discover</button><button onClick={()=>document.getElementById('vision-composer')?.focus()} className="plus"><Plus size={24}/></button><button onClick={()=>navClick('Network')}><Users size={20}/>Network</button><button onClick={()=>setMobileMenu(true)}><Menu size={20}/>More</button></nav>
   </div>
 }
+
