@@ -156,6 +156,7 @@ export function SpecterDetectPanel() {
             <button type="button" className={showPreview ? 'active' : ''} aria-pressed={showPreview} disabled={!activeBrowserUrl} onClick={() => setShowPreview(true)}>Browse</button>
             <button type="button" className={!showPreview ? 'active' : ''} aria-pressed={!showPreview} disabled={!current?.previewUrl} onClick={() => setShowPreview(false)}>Capture</button>
           </div>
+          {activeBrowserUrl && <a className="specter-external-browser-button" href={activeBrowserUrl} target="_blank" rel="noopener noreferrer"><ExternalLink size={16}/> Open full browser</a>}
           <button type="button" className="specter-expand-button" aria-pressed={browserExpanded} onClick={() => setBrowserExpanded(v => !v)} title={browserExpanded ? "Show analysis alongside browser" : "Expand browser"}>{browserExpanded ? <Minimize2 size={16}/> : <Maximize2 size={16}/>}<span>{browserExpanded ? "Split view" : "Expand"}</span></button>
         </div>
         <div className="specter-address"><Globe size={16}/><span>{activeBrowserUrl || 'No website loaded'}</span>{activeBrowserUrl && <a href={activeBrowserUrl} target="_blank" rel="noopener noreferrer" aria-label="Open original website"><ExternalLink size={16}/></a>}</div>
