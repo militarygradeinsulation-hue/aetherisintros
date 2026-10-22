@@ -43,6 +43,16 @@
 .directory-context dd { margin: 0; }
 .directory-context ul { padding: 0; margin: 8px 0; list-style: none; display: grid; gap: 8px; }
 .directory-bubbles { height: 100%; min-height: 280px; }
+:root[data-theme] .ix-root .people-directory :is(h1,h2,button,input,select,label,p,summary) { font-family: Poppins, Inter, sans-serif !important; letter-spacing: 0 !important; }
+.ix-root .people-directory .directory-meta, .ix-root .people-directory .directory-tier { font-family: 'IBM Plex Mono', monospace !important; }
+.ix-root .people-directory :is(h1,h2,p) { margin: 0; }
+.directory-results > .directory-list { align-content: start; }
+@media (min-width: 761px) {
+  .directory-list .directory-person { display: grid; grid-template-columns: minmax(0,1fr) auto; column-gap: 16px; padding: 10px 12px; }
+  .directory-list .directory-person-top { grid-column: 1; grid-row: 1; }
+  .directory-list .directory-actions { grid-column: 2; grid-row: 1; align-self: center; margin: 0; }
+  .directory-list .directory-person details { grid-column: 1 / -1; margin: 4px 0 0 36px; }
+}
 @media (max-width: 760px) {
   .people-directory { gap: 8px; }
   .directory-filters { position: absolute; inset: 0; width: 100%; z-index: 5; }
