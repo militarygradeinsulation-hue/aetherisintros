@@ -11,3 +11,204 @@
 :root[data-theme] body .ix-specter-mode .specter-app .specter-app-sidebar nav .active{border-radius:7px!important;background:linear-gradient(90deg,#321500,#241406)!important;color:#ff8a1c!important}
 :root[data-theme] body .ix-specter-mode .specter-app .specter-action-row button{border-radius:8px!important}
 body:has(.ix-specter-mode) :is(.ask-scroll-caliper,.ask-scroll-caliper-bottom-scale){display:none!important}
+
+
+/* Aetheris unified workspace: restrained black/white editorial layout.
+   The document stays fixed; browsing and investigation results scroll in their own panes. */
+.ix-specter-mode{height:100dvh;min-height:100dvh;overflow:hidden}
+.ix-specter-mode>.arch-product-main{flex:1 1 auto;min-height:0;height:100%;overflow:hidden}
+.specter-app{
+  --specter-orange:#f3f4f6;
+  height:100%;min-height:0;max-height:100%;width:100%;
+  display:grid;grid-template-columns:220px minmax(0,1fr);
+  grid-template-rows:68px minmax(0,1fr);
+  background:#050505;color:#f9fafb;
+  font-family:'Poppins',Inter,system-ui,sans-serif;
+}
+.specter-app :is(button,input,textarea){font-family:inherit}
+.specter-app-header{
+  grid-column:1/-1;grid-row:1;position:relative;top:auto;z-index:45;
+  height:68px;padding:0 22px;display:flex;justify-content:space-between;
+  gap:20px;border-bottom:1px solid #27272a;
+  background:rgba(3,3,3,.88);backdrop-filter:blur(18px);
+}
+.specter-app-brand{min-width:190px}
+.specter-app-brand img{width:31px;height:36px}
+.specter-app-brand strong{font-size:20px;font-weight:600;letter-spacing:-.05em}
+.specter-app-brand b{color:#f4f4f5}
+.specter-app-brand small{text-align:left;color:#a1a1aa;letter-spacing:.2em;font-size:8px}
+.specter-header-links{display:flex;gap:30px;align-items:center;height:100%;margin:auto}
+.specter-header-links button{border:0;background:none;color:#a1a1aa;cursor:pointer;font-size:13px;white-space:nowrap;transition:color .15s ease}
+.specter-header-links button:hover,.specter-header-links button[aria-current=page]{color:#fff}
+.specter-app-account{gap:12px}
+.specter-app-account .specter-notification{border:0;background:none;padding:8px;color:#a1a1aa;cursor:pointer}
+.specter-account-button{display:flex;gap:9px;align-items:center;background:transparent;border:0;color:#e4e4e7;cursor:pointer;font-size:12px}
+.specter-account-button>span:not(.specter-account-initials){max-width:100px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.specter-account-initials,.specter-app-account img{height:32px;width:32px;font-size:11px;background:#27272a}
+.specter-header-cta{
+  background:linear-gradient(to bottom,#fff,#f1f1f1 50%,#a1a1aa);
+  color:#09090b;border:0;border-radius:8px;padding:10px 16px;font-size:12px;
+  font-weight:600;display:inline-flex;align-items:center;gap:8px;cursor:pointer;
+  transition:transform .18s ease;
+}
+.specter-header-cta:hover{transform:translateY(-1px)}
+.specter-mobile-menu-toggle{display:none;border:0;background:none;color:white;padding:9px;cursor:pointer}
+.specter-app-sidebar{
+  grid-column:1;grid-row:2;position:relative;left:auto;top:auto;bottom:auto;
+  width:auto;min-height:0;overflow-y:auto;overscroll-behavior:contain;
+  background:#050505;border-right:1px solid #27272a;scrollbar-width:thin;
+}
+.specter-app-sidebar nav{padding:12px 10px 24px;gap:2px}
+.specter-app-sidebar nav :is(a,button){
+  font-size:12px;min-height:39px;padding:9px 12px;gap:13px;
+  color:#a1a1aa;border-radius:8px;transition:background .15s,color .15s;
+}
+.specter-app-sidebar nav :is(a,button):hover{background:#18181b;color:white}
+.specter-app-sidebar nav .active{
+  color:#fafafa;border-color:#3f3f46;background:#18181b;box-shadow:inset 2px 0 #e4e4e7;
+}
+.specter-sidebar-search{margin:14px 10px 6px!important;width:auto;background:#111114!important;border-color:#303035!important;padding:9px 10px!important}
+.specter-sidebar-search input{font-size:11px!important;min-width:0}
+.specter-app-canvas{
+  grid-column:2;grid-row:2;margin:0;min-height:0;min-width:0;
+  display:flex;flex-direction:column;overflow:hidden;background:#050505;
+}
+.specter-how{top:26px;right:152px;z-index:5}
+.specter-how button{color:#a1a1aa}
+.specter-app .specter-shell{
+  flex:1 1 auto;display:flex;flex-direction:column;overflow:hidden;
+  min-height:0;height:100%;padding:16px 18px 13px;
+  background:#050505;color:#fafafa;line-height:1.5;
+}
+.specter-app .specter-title{flex:0 0 auto;padding:0 4px;margin:0 0 13px;min-height:0}
+.specter-app .specter-title h1{
+  font-family:'Poppins',Inter,system-ui,sans-serif!important;font-size:clamp(25px,2.1vw,33px);
+  font-weight:600!important;letter-spacing:-.05em!important;
+  background:linear-gradient(to bottom,#fff 10%,#f4f4f5 55%,#a1a1aa 100%);
+  -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;
+}
+.specter-app .specter-title h1 span{color:inherit}
+.specter-app .specter-title p{font-size:12px;color:#a1a1aa}
+.specter-app .specter-title .specter-mode{
+  margin-top:7px;border:1px solid #52525b;border-radius:7px;
+  color:#e4e4e7;background:#111113;font-size:11px;padding:9px 13px;
+}
+.specter-app .specter-search{
+  flex:0 0 auto;padding:9px 10px;margin-bottom:6px;gap:10px;
+  background:#09090b;border-color:#27272a;border-radius:9px;
+}
+.specter-app .specter-search input{
+  min-height:38px;padding:8px 12px;background:#111114;border-color:#3f3f46;
+  font-size:13px;color:#fafafa;
+}
+.specter-app .specter-primary{
+  background:linear-gradient(to bottom,#fff,#d4d4d8)!important;
+  color:#09090b!important;box-shadow:none;border-radius:7px;font-size:12px;
+  font-weight:600;padding:11px 15px;
+}
+.specter-app .specter-primary:hover{filter:brightness(.95)}
+.specter-app .specter-status{flex:0 0 auto;margin:2px 4px 8px;color:#a1a1aa}
+.specter-app .specter-grid{
+  flex:1 1 auto;min-height:0;display:grid;
+  grid-template-columns:minmax(0,1.45fr) minmax(315px,1fr);
+  align-items:stretch;gap:12px;
+}
+.specter-app .specter-browser{
+  display:flex;flex-direction:column;min-height:0;min-width:0;
+  background:#09090b;border-color:#27272a;border-radius:10px;
+}
+.specter-app .specter-browser-tabs{
+  min-height:45px;flex:0 0 auto;gap:6px;background:#0b0b0d;border-color:#27272a;
+}
+.specter-app .specter-browser-tabs button{font-size:11px}
+.specter-app .specter-tab{background:#18181b;color:#e4e4e7;flex:1;min-width:0;max-width:none}
+.specter-browser-view-switch{margin-left:auto;display:flex;gap:3px;border:1px solid #3f3f46;border-radius:7px;padding:3px}
+.specter-app .specter-browser-view-switch button{font-size:11px;padding:5px 9px;color:#a1a1aa;border-radius:4px}
+.specter-app .specter-browser-view-switch button.active{background:#e4e4e7;color:#09090b}
+.specter-app .specter-address{flex:0 0 auto;background:#111114;color:#d4d4d8;border-bottom:1px solid #27272a}
+.specter-browser-content{flex:1 1 auto;min-height:0;display:flex;flex-direction:column;overflow:auto}
+.specter-live-preview{height:100%;min-height:0;display:flex;flex-direction:column}
+.specter-app .specter-live-frame{flex:1 1 auto;min-height:240px;height:auto;background:#fff;border:0}
+.specter-app .specter-preview-note{margin:0;flex:0 0 auto;padding:8px 12px;font-size:11px;line-height:1.4;color:#a1a1aa;background:#101013;border-top:1px solid #27272a}
+.specter-app .specter-preview-note a,.specter-app .specter-line a{color:#f4f4f5;text-decoration:underline}
+.specter-app .specter-viewport{flex:1 1 auto;min-height:260px;background:radial-gradient(ellipse at 50% 30%,#27272a 0%,#09090b 65%);padding:22px}
+.specter-app .specter-viewport-mark>svg{color:#d4d4d8}
+.specter-app .specter-page-capture{flex:1;overflow:auto}
+.specter-app .specter-page-capture>img{height:auto;max-height:none;object-fit:contain}
+.specter-app .specter-capture-caption{background:#111114;color:#a1a1aa}
+.specter-app .specter-capture-caption button{color:#fafafa}
+.specter-app .specter-extracted{
+  flex:0 0 auto;max-height:143px;overflow:auto;padding:12px;
+  background:#0d0d10;border-color:#27272a;
+}
+.specter-app .specter-extracted h3{font-size:12px;margin-bottom:7px}
+.specter-app .specter-extracted h3 span{color:#a1a1aa}
+.specter-app .specter-metrics>div{min-height:59px;background:#17171a;border:1px solid #27272a;padding:8px}
+.specter-app .specter-metrics svg{width:16px}
+.specter-app .specter-metrics strong{font-size:16px}
+.specter-app .specter-metrics small{font-size:10px;color:#a1a1aa}
+.specter-app .specter-insights{min-height:0;display:flex;flex-direction:column;gap:10px;overflow:auto;overscroll-behavior:contain}
+.specter-app .specter-tabs{position:sticky;top:0;z-index:4;flex:0 0 auto;background:#101013;border-color:#27272a}
+.specter-app .specter-tabs button{padding:12px 10px;font-size:11px;color:#a1a1aa}
+.specter-app .specter-tabs button.active{background:#212124!important;color:#fff!important;border-bottom-color:#f4f4f5!important}
+.specter-app .specter-card{padding:15px 17px;background:#0d0d10;border-color:#27272a}
+.specter-app .specter-card h3{font-size:14px}
+.specter-app .specter-card h3 span{color:#a1a1aa}
+.specter-app .specter-card p{font-size:12px;color:#a1a1aa}
+.specter-app .specter-company svg{color:#d4d4d8}
+.specter-app .specter-action-row button{background:#18181b;border-color:#3f3f46;color:#f4f4f5}
+.specter-app .specter-action-row button[aria-pressed=true]{border-color:#a1a1aa;color:#fff}
+.specter-app :is(button,a,input):focus-visible{outline:2px solid #fafafa;outline-offset:3px}
+.specter-mobile-menu{display:none}
+@media(max-width:1190px){
+  .specter-app .specter-grid{display:flex;flex-direction:column;min-height:unset}
+  .specter-app-canvas{overflow-y:auto;overscroll-behavior:contain}
+  .specter-app .specter-shell{height:auto;min-height:100%;overflow:visible}
+  .specter-app .specter-browser{min-height:565px}
+  .specter-app .specter-browser-content{min-height:360px}
+  .specter-app .specter-live-frame{height:420px;min-height:420px}
+  .specter-app .specter-insights{overflow:visible}
+  .specter-header-links{gap:17px}
+}
+@media(max-width:760px){
+  .specter-app{grid-template-columns:minmax(0,1fr);grid-template-rows:64px minmax(0,1fr)}
+  .specter-app-header{height:64px;gap:8px;padding:0 12px}
+  .specter-app-brand{min-width:0}
+  .specter-app-brand img{width:26px;height:30px}
+  .specter-app-brand strong{font-size:16px}
+  .specter-header-links,.specter-app-sidebar,.specter-header-cta,.specter-account-button>span:not(.specter-account-initials){display:none}
+  .specter-app-account{margin-left:auto}
+  .specter-mobile-menu-toggle{display:inline-flex}
+  .specter-app-canvas{grid-column:1;grid-row:2;margin:0;min-height:0;overflow:auto}
+  .specter-mobile-menu{
+    display:block;position:absolute;z-index:50;top:64px;left:0;right:0;bottom:0;
+    overflow:auto;background:rgba(4,4,5,.98);backdrop-filter:blur(18px);
+    border-top:1px solid #27272a;
+  }
+  .specter-mobile-menu nav{display:grid;gap:3px;padding:8px 15px 26px}
+  .specter-mobile-menu nav :is(a,button){
+    display:flex;align-items:center;gap:15px;min-height:43px;
+    padding:10px 12px;text-align:left;background:none;border:0;
+    color:#a1a1aa;font-size:13px;border-radius:8px;text-decoration:none;
+  }
+  .specter-mobile-menu nav .active{background:#27272a;color:#fff}
+  .specter-mobile-search{display:flex;margin:15px;width:auto;max-width:none}
+  .specter-app .specter-shell{padding:15px 12px 14px}
+  .specter-app .specter-title{min-height:0;padding:0}
+  .specter-app .specter-title h1{font-size:26px}
+  .specter-app .specter-title p{max-width:none;font-size:11px}
+  .specter-app .specter-grid{grid-template-columns:minmax(0,1fr)}
+  .specter-app .specter-browser{min-height:480px}
+  .specter-app .specter-viewport{min-height:270px}
+  .specter-app .specter-live-frame{min-height:340px;height:340px}
+  .specter-app .specter-search{flex-wrap:wrap}
+  .specter-app .specter-search input{flex:1 1 100%;min-width:0}
+  .specter-app .specter-primary{flex:1 1 auto;justify-content:center}
+  .specter-app .specter-browser-tabs{gap:3px;padding:7px}
+  .specter-app .specter-tab{padding:7px;font-size:11px}
+  .specter-app .specter-browser-view-switch button{padding:5px 7px}
+  .specter-app .specter-metrics{grid-template-columns:repeat(3,minmax(0,1fr))}
+}
+@media(prefers-reduced-motion:reduce){
+  .specter-app :is(button,a){transition:none!important}
+}
