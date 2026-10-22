@@ -133,7 +133,7 @@ export const ScheduleMeetingModal: React.FC<ScheduleMeetingModalProps> = ({
               <button
                 type="button"
                 onClick={handleConfirm}
-                className="flex items-center gap-1.5 px-4 py-2 text-xs font-semibold text-white bg-[#FF8A4C] hover:bg-[#DB6B36] rounded-lg transition-colors cursor-pointer"
+                className="flex items-center gap-1.5 px-4 py-2 text-xs font-semibold text-[#1c110c] bg-[#FF8A4C] hover:bg-[#DB6B36] rounded-lg transition-colors cursor-pointer"
               >
                 <Calendar className="w-3.5 h-3.5" />
                 Dispatch Invite
