@@ -40,12 +40,9 @@ export const ProfileDetailView: React.FC<ProfileDetailViewProps> = ({
   onToggleSave,
 }) => {
   const [showReasoningModal, setShowReasoningModal] = useState(false);
-  const [savedState, setSavedState] = useState(isSaved);
-
-  const handleToggleSave = () => {
-    setSavedState(!savedState);
-    if (onToggleSave) onToggleSave(member.id);
-  };
+  // The parent owns the saved state. In live mode it changes only after the
+  // database confirms the bookmark; never display a false local success.
+  const handleToggleSave = () => onToggleSave?.(member.id);
 
   const aiRec = member.aiRecommendation;
 
@@ -158,12 +155,12 @@ export const ProfileDetailView: React.FC<ProfileDetailViewProps> = ({
               <button
                 onClick={handleToggleSave}
                 className={`px-4 py-2.5 text-xs font-medium rounded-lg border transition-colors cursor-pointer ${
-                  savedState
+                  isSaved
                     ? 'bg-white/10 text-white border-white/30'
                     : 'border-white/15 text-[#9CA3AF] hover:text-white hover:border-white/30'
                 }`}
               >
-                {savedState ? 'Saved to Network' : 'Save to Network'}
+                {isSaved ? 'Saved to Network' : 'Save to Network'}
               </button>
             </div>
           </div>
