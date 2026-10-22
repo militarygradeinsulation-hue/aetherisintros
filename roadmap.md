@@ -385,3 +385,9 @@
 - [x] Present a people-first Social Board, reusing real member posting, comments and messaging.
 - [x] Verify demo posting, saves, replies, People navigation and phone layouts without overflow; build passed; preview-only.
 - [ ] Verify the real member Home feed while signed in; automatic test-session selection is unavailable for the requesting account.
+
+## Open tasks
+- [ ] Compact Work, Memory, Insights inside the persistent right pane (tabs/accordion on worst page by DOM height, real components only, no mocks)
+- [ ] Fix redundant nested nav where found; scroll-to-top on root switches only
+- [ ] Verify typecheck/build/browser desktop+mobile; report which of the 3 screens changed
+- [ ] Do not publish; keep GitHub sync intact
