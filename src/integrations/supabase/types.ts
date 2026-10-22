@@ -484,6 +484,62 @@ export type Database = {
         }
         Relationships: []
       }
+      business_diagnostics: {
+        Row: {
+          completed_at: string | null
+          created_at: string
+          diagnostic_type: string
+          findings: Json | null
+          id: string
+          member_id: string
+          raw_data: Json | null
+          recommendations: Json | null
+          score: number | null
+          status: string
+          summary: string | null
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          completed_at?: string | null
+          created_at?: string
+          diagnostic_type: string
+          findings?: Json | null
+          id?: string
+          member_id: string
+          raw_data?: Json | null
+          recommendations?: Json | null
+          score?: number | null
+          status?: string
+          summary?: string | null
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          completed_at?: string | null
+          created_at?: string
+          diagnostic_type?: string
+          findings?: Json | null
+          id?: string
+          member_id?: string
+          raw_data?: Json | null
+          recommendations?: Json | null
+          score?: number | null
+          status?: string
+          summary?: string | null
+          title?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "business_diagnostics_member_id_fkey"
+            columns: ["member_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       business_lobby_knocks: {
         Row: {
           created_at: string
@@ -1779,6 +1835,454 @@ export type Database = {
             columns: ["person_id"]
             isOneToOne: false
             referencedRelation: "crm_people"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      deal_room_documents: {
+        Row: {
+          created_at: string
+          deal_room_id: string
+          file_size: number | null
+          file_type: string | null
+          id: string
+          name: string
+          uploaded_by: string | null
+          url: string
+        }
+        Insert: {
+          created_at?: string
+          deal_room_id: string
+          file_size?: number | null
+          file_type?: string | null
+          id?: string
+          name: string
+          uploaded_by?: string | null
+          url: string
+        }
+        Update: {
+          created_at?: string
+          deal_room_id?: string
+          file_size?: number | null
+          file_type?: string | null
+          id?: string
+          name?: string
+          uploaded_by?: string | null
+          url?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "deal_room_documents_deal_room_id_fkey"
+            columns: ["deal_room_id"]
+            isOneToOne: false
+            referencedRelation: "deal_rooms"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "deal_room_documents_uploaded_by_fkey"
+            columns: ["uploaded_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      deal_room_members: {
+        Row: {
+          created_at: string
+          deal_room_id: string
+          id: string
+          invited_by: string | null
+          member_id: string
+          role: string
+        }
+        Insert: {
+          created_at?: string
+          deal_room_id: string
+          id?: string
+          invited_by?: string | null
+          member_id: string
+          role?: string
+        }
+        Update: {
+          created_at?: string
+          deal_room_id?: string
+          id?: string
+          invited_by?: string | null
+          member_id?: string
+          role?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "deal_room_members_deal_room_id_fkey"
+            columns: ["deal_room_id"]
+            isOneToOne: false
+            referencedRelation: "deal_rooms"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "deal_room_members_invited_by_fkey"
+            columns: ["invited_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "deal_room_members_member_id_fkey"
+            columns: ["member_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      deal_room_messages: {
+        Row: {
+          content: string
+          created_at: string
+          deal_room_id: string
+          id: string
+          message_type: string
+          sender_id: string | null
+        }
+        Insert: {
+          content: string
+          created_at?: string
+          deal_room_id: string
+          id?: string
+          message_type?: string
+          sender_id?: string | null
+        }
+        Update: {
+          content?: string
+          created_at?: string
+          deal_room_id?: string
+          id?: string
+          message_type?: string
+          sender_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "deal_room_messages_deal_room_id_fkey"
+            columns: ["deal_room_id"]
+            isOneToOne: false
+            referencedRelation: "deal_rooms"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "deal_room_messages_sender_id_fkey"
+            columns: ["sender_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      deal_room_milestones: {
+        Row: {
+          assigned_to: string | null
+          completed_at: string | null
+          created_at: string
+          deal_room_id: string
+          description: string | null
+          due_date: string | null
+          id: string
+          status: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          assigned_to?: string | null
+          completed_at?: string | null
+          created_at?: string
+          deal_room_id: string
+          description?: string | null
+          due_date?: string | null
+          id?: string
+          status?: string
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          assigned_to?: string | null
+          completed_at?: string | null
+          created_at?: string
+          deal_room_id?: string
+          description?: string | null
+          due_date?: string | null
+          id?: string
+          status?: string
+          title?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "deal_room_milestones_assigned_to_fkey"
+            columns: ["assigned_to"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "deal_room_milestones_deal_room_id_fkey"
+            columns: ["deal_room_id"]
+            isOneToOne: false
+            referencedRelation: "deal_rooms"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      deal_rooms: {
+        Row: {
+          created_at: string
+          deal_type: string | null
+          description: string | null
+          estimated_value: number | null
+          id: string
+          owner_id: string
+          status: string
+          target_close_date: string | null
+          title: string
+          updated_at: string
+          visibility: string
+        }
+        Insert: {
+          created_at?: string
+          deal_type?: string | null
+          description?: string | null
+          estimated_value?: number | null
+          id?: string
+          owner_id: string
+          status?: string
+          target_close_date?: string | null
+          title: string
+          updated_at?: string
+          visibility?: string
+        }
+        Update: {
+          created_at?: string
+          deal_type?: string | null
+          description?: string | null
+          estimated_value?: number | null
+          id?: string
+          owner_id?: string
+          status?: string
+          target_close_date?: string | null
+          title?: string
+          updated_at?: string
+          visibility?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "deal_rooms_owner_id_fkey"
+            columns: ["owner_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      deal_workspace_files: {
+        Row: {
+          created_at: string
+          file_size: number | null
+          file_type: string | null
+          id: string
+          name: string
+          uploaded_by: string | null
+          url: string
+          version: number | null
+          workspace_id: string
+        }
+        Insert: {
+          created_at?: string
+          file_size?: number | null
+          file_type?: string | null
+          id?: string
+          name: string
+          uploaded_by?: string | null
+          url: string
+          version?: number | null
+          workspace_id: string
+        }
+        Update: {
+          created_at?: string
+          file_size?: number | null
+          file_type?: string | null
+          id?: string
+          name?: string
+          uploaded_by?: string | null
+          url?: string
+          version?: number | null
+          workspace_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "deal_workspace_files_uploaded_by_fkey"
+            columns: ["uploaded_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "deal_workspace_files_workspace_id_fkey"
+            columns: ["workspace_id"]
+            isOneToOne: false
+            referencedRelation: "deal_workspaces"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      deal_workspace_members: {
+        Row: {
+          created_at: string
+          id: string
+          member_id: string
+          role: string
+          workspace_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          member_id: string
+          role?: string
+          workspace_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          member_id?: string
+          role?: string
+          workspace_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "deal_workspace_members_member_id_fkey"
+            columns: ["member_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "deal_workspace_members_workspace_id_fkey"
+            columns: ["workspace_id"]
+            isOneToOne: false
+            referencedRelation: "deal_workspaces"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      deal_workspace_tasks: {
+        Row: {
+          assigned_to: string | null
+          created_at: string
+          created_by: string | null
+          description: string | null
+          due_date: string | null
+          id: string
+          priority: string
+          status: string
+          title: string
+          updated_at: string
+          workspace_id: string
+        }
+        Insert: {
+          assigned_to?: string | null
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          due_date?: string | null
+          id?: string
+          priority?: string
+          status?: string
+          title: string
+          updated_at?: string
+          workspace_id: string
+        }
+        Update: {
+          assigned_to?: string | null
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          due_date?: string | null
+          id?: string
+          priority?: string
+          status?: string
+          title?: string
+          updated_at?: string
+          workspace_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "deal_workspace_tasks_assigned_to_fkey"
+            columns: ["assigned_to"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "deal_workspace_tasks_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "deal_workspace_tasks_workspace_id_fkey"
+            columns: ["workspace_id"]
+            isOneToOne: false
+            referencedRelation: "deal_workspaces"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      deal_workspaces: {
+        Row: {
+          created_at: string
+          deal_room_id: string | null
+          description: string | null
+          id: string
+          name: string
+          owner_id: string
+          status: string
+          updated_at: string
+          workspace_type: string
+        }
+        Insert: {
+          created_at?: string
+          deal_room_id?: string | null
+          description?: string | null
+          id?: string
+          name: string
+          owner_id: string
+          status?: string
+          updated_at?: string
+          workspace_type?: string
+        }
+        Update: {
+          created_at?: string
+          deal_room_id?: string | null
+          description?: string | null
+          id?: string
+          name?: string
+          owner_id?: string
+          status?: string
+          updated_at?: string
+          workspace_type?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "deal_workspaces_deal_room_id_fkey"
+            columns: ["deal_room_id"]
+            isOneToOne: false
+            referencedRelation: "deal_rooms"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "deal_workspaces_owner_id_fkey"
+            columns: ["owner_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
         ]
@@ -3336,6 +3840,63 @@ export type Database = {
           user_id?: string
         }
         Relationships: []
+      }
+      meeting_briefs: {
+        Row: {
+          attendee_context: Json | null
+          brief_type: string
+          content: string
+          created_at: string
+          generated_by: string | null
+          id: string
+          key_points: Json | null
+          meeting_id: string
+          status: string
+          talking_points: Json | null
+          updated_at: string
+        }
+        Insert: {
+          attendee_context?: Json | null
+          brief_type?: string
+          content: string
+          created_at?: string
+          generated_by?: string | null
+          id?: string
+          key_points?: Json | null
+          meeting_id: string
+          status?: string
+          talking_points?: Json | null
+          updated_at?: string
+        }
+        Update: {
+          attendee_context?: Json | null
+          brief_type?: string
+          content?: string
+          created_at?: string
+          generated_by?: string | null
+          id?: string
+          key_points?: Json | null
+          meeting_id?: string
+          status?: string
+          talking_points?: Json | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "meeting_briefs_generated_by_fkey"
+            columns: ["generated_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "meeting_briefs_meeting_id_fkey"
+            columns: ["meeting_id"]
+            isOneToOne: false
+            referencedRelation: "meetings"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       meeting_notes: {
         Row: {
@@ -5139,6 +5700,223 @@ export type Database = {
         }
         Relationships: []
       }
+      private_contact_categories: {
+        Row: {
+          color: string | null
+          created_at: string
+          description: string | null
+          id: string
+          name: string
+          owner_id: string
+        }
+        Insert: {
+          color?: string | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          name: string
+          owner_id: string
+        }
+        Update: {
+          color?: string | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          name?: string
+          owner_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "private_contact_categories_owner_id_fkey"
+            columns: ["owner_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      private_contact_notes: {
+        Row: {
+          contact_id: string
+          content: string
+          created_at: string
+          id: string
+          note_type: string
+          owner_id: string
+          updated_at: string
+        }
+        Insert: {
+          contact_id: string
+          content: string
+          created_at?: string
+          id?: string
+          note_type?: string
+          owner_id: string
+          updated_at?: string
+        }
+        Update: {
+          contact_id?: string
+          content?: string
+          created_at?: string
+          id?: string
+          note_type?: string
+          owner_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "private_contact_notes_contact_id_fkey"
+            columns: ["contact_id"]
+            isOneToOne: false
+            referencedRelation: "private_contacts"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "private_contact_notes_owner_id_fkey"
+            columns: ["owner_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      private_contact_shares: {
+        Row: {
+          contact_id: string
+          created_at: string
+          id: string
+          permission: string
+          shared_by: string
+          shared_with: string
+        }
+        Insert: {
+          contact_id: string
+          created_at?: string
+          id?: string
+          permission?: string
+          shared_by: string
+          shared_with: string
+        }
+        Update: {
+          contact_id?: string
+          created_at?: string
+          id?: string
+          permission?: string
+          shared_by?: string
+          shared_with?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "private_contact_shares_contact_id_fkey"
+            columns: ["contact_id"]
+            isOneToOne: false
+            referencedRelation: "private_contacts"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "private_contact_shares_shared_by_fkey"
+            columns: ["shared_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "private_contact_shares_shared_with_fkey"
+            columns: ["shared_with"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      private_contact_tags: {
+        Row: {
+          contact_id: string
+          created_at: string
+          id: string
+          tag: string
+        }
+        Insert: {
+          contact_id: string
+          created_at?: string
+          id?: string
+          tag: string
+        }
+        Update: {
+          contact_id?: string
+          created_at?: string
+          id?: string
+          tag?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "private_contact_tags_contact_id_fkey"
+            columns: ["contact_id"]
+            isOneToOne: false
+            referencedRelation: "private_contacts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      private_contacts: {
+        Row: {
+          avatar_url: string | null
+          bio: string | null
+          company: string | null
+          created_at: string
+          email: string | null
+          id: string
+          location: string | null
+          name: string
+          owner_id: string
+          phone: string | null
+          relationship_strength: number | null
+          source: string | null
+          title: string | null
+          updated_at: string
+        }
+        Insert: {
+          avatar_url?: string | null
+          bio?: string | null
+          company?: string | null
+          created_at?: string
+          email?: string | null
+          id?: string
+          location?: string | null
+          name: string
+          owner_id: string
+          phone?: string | null
+          relationship_strength?: number | null
+          source?: string | null
+          title?: string | null
+          updated_at?: string
+        }
+        Update: {
+          avatar_url?: string | null
+          bio?: string | null
+          company?: string | null
+          created_at?: string
+          email?: string | null
+          id?: string
+          location?: string | null
+          name?: string
+          owner_id?: string
+          phone?: string | null
+          relationship_strength?: number | null
+          source?: string | null
+          title?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "private_contacts_owner_id_fkey"
+            columns: ["owner_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       professional_opportunities: {
         Row: {
           created_at: string
@@ -5551,6 +6329,187 @@ export type Database = {
         }
         Relationships: []
       }
+      referral_requests: {
+        Row: {
+          connector_id: string | null
+          created_at: string
+          decline_reason: string | null
+          id: string
+          message: string | null
+          requester_id: string
+          responded_at: string | null
+          status: string
+          target_member_id: string
+          updated_at: string
+        }
+        Insert: {
+          connector_id?: string | null
+          created_at?: string
+          decline_reason?: string | null
+          id?: string
+          message?: string | null
+          requester_id: string
+          responded_at?: string | null
+          status?: string
+          target_member_id: string
+          updated_at?: string
+        }
+        Update: {
+          connector_id?: string | null
+          created_at?: string
+          decline_reason?: string | null
+          id?: string
+          message?: string | null
+          requester_id?: string
+          responded_at?: string | null
+          status?: string
+          target_member_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "referral_requests_connector_id_fkey"
+            columns: ["connector_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "referral_requests_requester_id_fkey"
+            columns: ["requester_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "referral_requests_target_member_id_fkey"
+            columns: ["target_member_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      referral_suggestions: {
+        Row: {
+          actioned_at: string | null
+          context: Json | null
+          created_at: string
+          dismissed_at: string | null
+          for_member_id: string
+          id: string
+          reason: string | null
+          score: number | null
+          status: string
+          suggested_member_id: string
+          updated_at: string
+        }
+        Insert: {
+          actioned_at?: string | null
+          context?: Json | null
+          created_at?: string
+          dismissed_at?: string | null
+          for_member_id: string
+          id?: string
+          reason?: string | null
+          score?: number | null
+          status?: string
+          suggested_member_id: string
+          updated_at?: string
+        }
+        Update: {
+          actioned_at?: string | null
+          context?: Json | null
+          created_at?: string
+          dismissed_at?: string | null
+          for_member_id?: string
+          id?: string
+          reason?: string | null
+          score?: number | null
+          status?: string
+          suggested_member_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "referral_suggestions_for_member_id_fkey"
+            columns: ["for_member_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "referral_suggestions_suggested_member_id_fkey"
+            columns: ["suggested_member_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      referrals: {
+        Row: {
+          conversion_date: string | null
+          created_at: string
+          id: string
+          notes: string | null
+          referral_code: string | null
+          referred_email: string | null
+          referred_id: string | null
+          referrer_id: string
+          reward_amount: number | null
+          reward_paid_at: string | null
+          reward_type: string | null
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          conversion_date?: string | null
+          created_at?: string
+          id?: string
+          notes?: string | null
+          referral_code?: string | null
+          referred_email?: string | null
+          referred_id?: string | null
+          referrer_id: string
+          reward_amount?: number | null
+          reward_paid_at?: string | null
+          reward_type?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          conversion_date?: string | null
+          created_at?: string
+          id?: string
+          notes?: string | null
+          referral_code?: string | null
+          referred_email?: string | null
+          referred_id?: string | null
+          referrer_id?: string
+          reward_amount?: number | null
+          reward_paid_at?: string | null
+          reward_type?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "referrals_referred_id_fkey"
+            columns: ["referred_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "referrals_referrer_id_fkey"
+            columns: ["referrer_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       relationship_rooms: {
         Row: {
           commitments: Json
@@ -5684,6 +6643,103 @@ export type Database = {
           user_id?: string
         }
         Relationships: []
+      }
+      reputation_events: {
+        Row: {
+          created_at: string
+          event_type: string
+          id: string
+          member_id: string
+          points_delta: number
+          reason: string | null
+          reference_id: string | null
+          reference_type: string | null
+        }
+        Insert: {
+          created_at?: string
+          event_type: string
+          id?: string
+          member_id: string
+          points_delta?: number
+          reason?: string | null
+          reference_id?: string | null
+          reference_type?: string | null
+        }
+        Update: {
+          created_at?: string
+          event_type?: string
+          id?: string
+          member_id?: string
+          points_delta?: number
+          reason?: string | null
+          reference_id?: string | null
+          reference_type?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "reputation_events_member_id_fkey"
+            columns: ["member_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      reputation_scores: {
+        Row: {
+          created_at: string
+          id: string
+          intro_score: number | null
+          member_id: string
+          negative_outcomes: number | null
+          overall_score: number
+          positive_outcomes: number | null
+          quality_score: number | null
+          reliability_score: number | null
+          response_score: number | null
+          total_intros_given: number | null
+          total_intros_received: number | null
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          intro_score?: number | null
+          member_id: string
+          negative_outcomes?: number | null
+          overall_score?: number
+          positive_outcomes?: number | null
+          quality_score?: number | null
+          reliability_score?: number | null
+          response_score?: number | null
+          total_intros_given?: number | null
+          total_intros_received?: number | null
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          intro_score?: number | null
+          member_id?: string
+          negative_outcomes?: number | null
+          overall_score?: number
+          positive_outcomes?: number | null
+          quality_score?: number | null
+          reliability_score?: number | null
+          response_score?: number | null
+          total_intros_given?: number | null
+          total_intros_received?: number | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "reputation_scores_member_id_fkey"
+            columns: ["member_id"]
+            isOneToOne: true
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       scenario_rooms: {
         Row: {
@@ -5873,6 +6929,336 @@ export type Database = {
           when_label?: string
         }
         Relationships: []
+      }
+      storefront_proposals: {
+        Row: {
+          amount: number | null
+          created_at: string
+          currency: string | null
+          description: string | null
+          id: string
+          line_items: Json | null
+          recipient_id: string | null
+          responded_at: string | null
+          response_notes: string | null
+          sender_id: string
+          sent_at: string | null
+          status: string
+          storefront_id: string
+          terms: string | null
+          title: string
+          updated_at: string
+          valid_until: string | null
+          viewed_at: string | null
+        }
+        Insert: {
+          amount?: number | null
+          created_at?: string
+          currency?: string | null
+          description?: string | null
+          id?: string
+          line_items?: Json | null
+          recipient_id?: string | null
+          responded_at?: string | null
+          response_notes?: string | null
+          sender_id: string
+          sent_at?: string | null
+          status?: string
+          storefront_id: string
+          terms?: string | null
+          title: string
+          updated_at?: string
+          valid_until?: string | null
+          viewed_at?: string | null
+        }
+        Update: {
+          amount?: number | null
+          created_at?: string
+          currency?: string | null
+          description?: string | null
+          id?: string
+          line_items?: Json | null
+          recipient_id?: string | null
+          responded_at?: string | null
+          response_notes?: string | null
+          sender_id?: string
+          sent_at?: string | null
+          status?: string
+          storefront_id?: string
+          terms?: string | null
+          title?: string
+          updated_at?: string
+          valid_until?: string | null
+          viewed_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "storefront_proposals_recipient_id_fkey"
+            columns: ["recipient_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "storefront_proposals_sender_id_fkey"
+            columns: ["sender_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "storefront_proposals_storefront_id_fkey"
+            columns: ["storefront_id"]
+            isOneToOne: false
+            referencedRelation: "storefronts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      storefronts: {
+        Row: {
+          banner_url: string | null
+          contact_email: string | null
+          created_at: string
+          description: string | null
+          headline: string | null
+          id: string
+          logo_url: string | null
+          metadata: Json | null
+          name: string
+          owner_id: string
+          primary_color: string | null
+          published_at: string | null
+          slug: string | null
+          status: string
+          tags: string[] | null
+          updated_at: string
+          visibility: string
+          website_url: string | null
+        }
+        Insert: {
+          banner_url?: string | null
+          contact_email?: string | null
+          created_at?: string
+          description?: string | null
+          headline?: string | null
+          id?: string
+          logo_url?: string | null
+          metadata?: Json | null
+          name: string
+          owner_id: string
+          primary_color?: string | null
+          published_at?: string | null
+          slug?: string | null
+          status?: string
+          tags?: string[] | null
+          updated_at?: string
+          visibility?: string
+          website_url?: string | null
+        }
+        Update: {
+          banner_url?: string | null
+          contact_email?: string | null
+          created_at?: string
+          description?: string | null
+          headline?: string | null
+          id?: string
+          logo_url?: string | null
+          metadata?: Json | null
+          name?: string
+          owner_id?: string
+          primary_color?: string | null
+          published_at?: string | null
+          slug?: string | null
+          status?: string
+          tags?: string[] | null
+          updated_at?: string
+          visibility?: string
+          website_url?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "storefronts_owner_id_fkey"
+            columns: ["owner_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      syndication_interests: {
+        Row: {
+          created_at: string
+          follow_up_date: string | null
+          id: string
+          intended_amount: number | null
+          interest_level: string
+          member_id: string
+          notes: string | null
+          room_id: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          follow_up_date?: string | null
+          id?: string
+          intended_amount?: number | null
+          interest_level?: string
+          member_id: string
+          notes?: string | null
+          room_id: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          follow_up_date?: string | null
+          id?: string
+          intended_amount?: number | null
+          interest_level?: string
+          member_id?: string
+          notes?: string | null
+          room_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "syndication_interests_member_id_fkey"
+            columns: ["member_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "syndication_interests_room_id_fkey"
+            columns: ["room_id"]
+            isOneToOne: false
+            referencedRelation: "syndication_rooms"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      syndication_room_members: {
+        Row: {
+          commitment_amount: number | null
+          created_at: string
+          id: string
+          invited_by: string | null
+          joined_at: string | null
+          member_id: string
+          role: string
+          room_id: string
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          commitment_amount?: number | null
+          created_at?: string
+          id?: string
+          invited_by?: string | null
+          joined_at?: string | null
+          member_id: string
+          role?: string
+          room_id: string
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          commitment_amount?: number | null
+          created_at?: string
+          id?: string
+          invited_by?: string | null
+          joined_at?: string | null
+          member_id?: string
+          role?: string
+          room_id?: string
+          status?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "syndication_room_members_invited_by_fkey"
+            columns: ["invited_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "syndication_room_members_member_id_fkey"
+            columns: ["member_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "syndication_room_members_room_id_fkey"
+            columns: ["room_id"]
+            isOneToOne: false
+            referencedRelation: "syndication_rooms"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      syndication_rooms: {
+        Row: {
+          close_date: string | null
+          created_at: string
+          created_by: string
+          deal_type: string | null
+          description: string | null
+          documents: Json | null
+          id: string
+          max_investors: number | null
+          metadata: Json | null
+          min_investment: number | null
+          status: string
+          target_raise: number | null
+          title: string
+          updated_at: string
+          visibility: string
+        }
+        Insert: {
+          close_date?: string | null
+          created_at?: string
+          created_by: string
+          deal_type?: string | null
+          description?: string | null
+          documents?: Json | null
+          id?: string
+          max_investors?: number | null
+          metadata?: Json | null
+          min_investment?: number | null
+          status?: string
+          target_raise?: number | null
+          title: string
+          updated_at?: string
+          visibility?: string
+        }
+        Update: {
+          close_date?: string | null
+          created_at?: string
+          created_by?: string
+          deal_type?: string | null
+          description?: string | null
+          documents?: Json | null
+          id?: string
+          max_investors?: number | null
+          metadata?: Json | null
+          min_investment?: number | null
+          status?: string
+          target_raise?: number | null
+          title?: string
+          updated_at?: string
+          visibility?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "syndication_rooms_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       threads: {
         Row: {
