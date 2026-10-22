@@ -55,7 +55,7 @@ try {
   assert((await page.frameLocator('iframe.specter-live-frame').locator('#feedback').textContent()) === 'Clicked', 'embedded website accepts real user interaction');
   await page.getByRole('button',{name:'Capture',exact:true}).click();
   await page.getByRole('img',{name:'Captured website: Alpha',exact:true}).waitFor();
-  await page.getByRole('button',{name:'Browse',exact:true}).click();
+  await page.getByRole('group', {name:'Website view'}).getByRole('button',{name:'Browse',exact:true}).click();
   assert(await page.locator('iframe.specter-live-frame').isVisible(), 'Browse tab restores the live interactive iframe');
   assert(await page.getByRole('link',{name:'Open full browser',exact:true}).first().getAttribute('href') === 'https://alpha.com/company?id=123', 'external browser action preserves the requested URL');
   await page.getByRole('button',{name:'Split view',exact:true}).click();
@@ -67,7 +67,7 @@ try {
   assert(await page.evaluate(() => document.scrollingElement.scrollHeight <= innerHeight + 2),'desktop workspace locks the document to the viewport without dead space beneath');
   await page.screenshot({path:join(out,'specter-reference-desktop.png'),fullPage:true});
   await page.getByLabel('Website URL').fill('https://beta.com');
-  await page.getByRole('button',{name:'Browse',exact:true}).last().click();
+  await page.locator('.specter-browse-button').click();
   await page.locator('iframe.specter-live-frame[src="https://beta.com/"]').waitFor();
   assert(await page.getByRole('link',{name:'Open full browser',exact:true}).first().getAttribute('href') === 'https://beta.com/', 'browse without a scan navigates to the website');
   await page.getByLabel('Website URL').fill('https://beta.com');
