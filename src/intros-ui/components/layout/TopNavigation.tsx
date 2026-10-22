@@ -11,7 +11,7 @@ async function signOut() {
   await signOutMember('/auth');
 }
 
-export type ActivePage = 'home' | 'people' | 'bubbles' | 'intros' | 'messages' | 'insights' | 'profile' | 'news' | 'workspace' | 'memory' | 'work' | 'meetings' | 'specter';
+export type ActivePage = 'home' | 'people' | 'bubbles' | 'intros' | 'messages' | 'insights' | 'profile' | 'news' | 'workspace' | 'memory' | 'work' | 'meetings' | 'specter' | 'intelligence';
 
 interface TopNavigationProps {
   activePage: ActivePage;
