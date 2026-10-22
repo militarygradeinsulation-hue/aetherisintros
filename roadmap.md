@@ -2,10 +2,11 @@
 
 ## PR268 mobile finishing pass (Oct 22)
 - [x] Confirm the existing project contains merge 25ef80511bfa3c731dc398ef02b61fcce5ee0daf, PR264 density and orange imports.
-- [ ] Repair observed Menu/Butler visibility and mobile Dashboard/Network scroll ownership; preserve data and navigation.
-- [ ] Verify five viewport sizes, keyboard/drawer/search/Specter interactions, unit tests and automatic compilation.
+- [x] Repair observed Menu/Butler visibility and mobile Dashboard/Network scroll ownership; preserve data and navigation.
+- [x] Verify 320×700, 390×844, 430×932, 760×900, 1440×900; drawer focus/backdrop/search, demo posting/draft preservation, tools, bounded results and Specter scrolling; 21 focused tests and automatic compilation pass.
+- [ ] Full suite green — blocked: 857 tests pass; two recovery suites cannot import the pre-existing missing @electric-sql/pglite test dependency. Separate TypeScript command not run; automatic harness compilation passed.
 - [ ] Verify authenticated account — blocked: no auth user matches the requesting user's email.
-- [ ] Publish only after passing checks and security safeguards; distinguish scheduled deployment from verified live content.
+- [ ] Publish only after passing checks and security safeguards — withheld because the complete suite is not green. Basic security checks found no issues; deep code analysis was not included.
 
 ## Authorized professional evidence extension (Oct 21)
 - [x] Extend the existing LinkedIn reader, provenance and editable hypothesis review without external fetching; unsupported fields remain private review-only.

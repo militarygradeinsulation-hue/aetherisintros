@@ -9,6 +9,10 @@ export const Route = createFileRoute('/_authenticated/track-record')({
   head: () => ({
     meta: [
       { title: 'Track Record — Ask Intros' },
+      { property: 'og:title', content: 'Track Record — Ask Intros' },
+      { property: 'og:description', content: 'Review your introduction outcomes and recorded follow-through in Ask Intros.' },
+      { property: 'og:type', content: 'website' },
+      { name: 'twitter:card', content: 'summary' },
       {
         name: 'description',
         content: 'Your reputation score, introduction success rate, and follow-through metrics.',
