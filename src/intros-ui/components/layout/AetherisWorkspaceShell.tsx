@@ -29,6 +29,8 @@ export const WORKSPACE_DESTINATIONS: readonly WorkspaceDestination[] = [
   { label: 'Specter Detect', icon: Search, page: 'specter' },
   { label: 'Messages', icon: MessageSquare, page: 'messages' },
   { label: 'Meetings', icon: CalendarDays, page: 'meetings' },
+  { label: 'Business Lobby', icon: CalendarDays, workspace: 'business-lobby' },
+  { label: 'Opportunity Exchange', icon: BriefcaseBusiness, workspace: 'opportunity-exchange' },
   { label: 'Insights', icon: Fingerprint, page: 'insights' },
   { label: 'Memory', icon: Brain, page: 'memory' },
   { label: 'Work', icon: BriefcaseBusiness, page: 'work' },
@@ -37,6 +39,7 @@ export const WORKSPACE_DESTINATIONS: readonly WorkspaceDestination[] = [
   { label: 'Member Intelligence', icon: Fingerprint, page: 'intelligence' },
   { label: 'Saved', icon: Bookmark, workspace: 'pocket' },
   { label: 'My Account', icon: UserRound, workspace: 'profile' },
+  { label: 'Membership', icon: UserRound, workspace: 'membership' },
   { label: 'Settings', icon: Settings, workspace: 'preferences' },
   { label: 'Help & Support', icon: CircleHelp },
 ];

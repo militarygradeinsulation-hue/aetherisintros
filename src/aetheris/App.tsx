@@ -49,6 +49,9 @@ import { useNetwork, type MemoryNote, type MeProfile, type NetworkMode } from '.
 import { isShowcase, showcaseOnly } from './showcase'
 import { classifyConnection, composeWarmIntro, radarLabel } from './lib/engine'
 import { useGrabScroll } from './lib/dragScroll'
+import { BusinessLobbyPage } from './pages/BusinessLobbyPage'
+import { OpportunityExchangePage } from './pages/OpportunityExchangePage'
+import { MembershipPage } from './pages/MembershipPage'
 import { metaById, primaryPages, pageMeta, networkTabs, networkAdvanced, workTabs, workAdvanced, meTabs, meAdvanced } from './pageMeta'
 import { MoreDrawer, rememberRecent } from './pages/MoreDrawer'
 import { BriefingPanel, useBriefingMode } from './BriefingMode'
@@ -2804,6 +2807,9 @@ function Shell({ startPage, feedOnly = false }: { startPage?: Page | undefined; 
       diagnostic: <><LeakCheckPanel /><CompanyDiagnosticReport /></>,
       grid: <GridPage />,
       news: <NewsPage />,
+      'business-lobby': <BusinessLobbyPage />,
+      'opportunity-exchange': <OpportunityExchangePage />,
+      membership: <MembershipPage />,
     }
   const hubLabel: Partial<Record<Page, string>> = {
     discover: 'People', opportunities: 'Pipeline', outcomes: 'Forecast', rooms: 'Rooms', deals: 'Deals',
