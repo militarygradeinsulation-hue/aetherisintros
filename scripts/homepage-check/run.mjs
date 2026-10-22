@@ -160,6 +160,15 @@ try {
         await page.goto(base + '/auth?mode=signup&next=%2Fapp', { waitUntil: 'domcontentloaded' })
         await page.locator('.auth-form input[autocomplete="name"]').waitFor({ state: 'visible' })
         assert(await page.locator('.auth-form input[autocomplete="email"]').isVisible(), 'new accounts reach existing sign-up form')
+        await page.goto(base + '/auth', { waitUntil: 'domcontentloaded' })
+        await page.locator('.auth-page[data-hydrated="true"]').waitFor({ state: 'attached', timeout: 30_000 })
+        await page.getByRole('button', { name: 'Forgot your password?' }).click()
+        assert(await page.getByRole('button', { name: 'Send reset link' }).isVisible(), 'account recovery can request a reset link')
+        assert(await page.locator('.auth-form input[type="password"]').count() === 0, 'recovery email request never asks for the existing password')
+        await page.goto(base + '/auth?mode=recovery', { waitUntil: 'domcontentloaded' })
+        await page.locator('.auth-page[data-hydrated="true"]').waitFor({ state: 'attached', timeout: 30_000 })
+        assert(await page.locator('.auth-form input[autocomplete="new-password"]').count() === 2, 'recovery callback offers password and confirmation inputs')
+        assert(await page.getByRole('button', { name: 'Update password' }).isVisible(), 'new password is only submitted through the recovery flow')
       }
     } catch (error) {
       failed++
