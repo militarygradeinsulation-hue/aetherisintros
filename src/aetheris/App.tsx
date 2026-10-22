@@ -1472,7 +1472,7 @@ function Memory({ people, select }: { people: Member[]; select: (p: Member) => v
           <strong>{shown.length.toString().padStart(2, '0')} items</strong>
         </header>
         <div className="memory-cats">{(['All', ...memoryCategories] as const).map(c =>
-          <button key={c} className={cat === c ? 'active' : ''} onClick={() => setCat(c)}>{c}</button>)}</div>
+          <button key={c} className={cat === c ? 'active' : ''} onClick={() => { setCat(c); setShowAllLearned(false) }}>{c}</button>)}</div>
         <div className="learned-table">
           {learnedRows.map((l, index) => {
             const relatedPerson = people[index % people.length]
