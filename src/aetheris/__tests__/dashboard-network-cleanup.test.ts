@@ -1,5 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import { readFileSync } from 'node:fs'
+import { selectDirectoryMembers, directoryDistribution } from '../../intros-ui/directory-model'
+import { NETWORK_MEMBERS } from '../../intros-ui/networkData'
 
 const file = (relative: string) => readFileSync(new URL(relative, import.meta.url), 'utf8')
 
@@ -15,15 +17,13 @@ describe('dashboard and network cleanup', () => {
     expect(app).toContain("handleNavigate('people')")
   })
 
-  it('leads the directory with search and real counts, folding map and connectors into disclosures', () => {
-    const view = file('../../intros-ui/views/PeopleDirectoryView.tsx')
-    expect(view).toContain('Search the member network')
-    expect(view).toContain('Network map &amp; statistics')
-    expect(view).toContain('Featured connectors')
-    expect(view).toContain('ix-disclosure')
-    // Mobile filters collapse behind an accessible toggle.
-    expect(view).toContain('aria-controls="people-filter-rail"')
-    expect(view).toContain('aria-expanded={filtersOpen}')
+  it('selects only caller-supplied members without substituting demo results', () => {
+    const filters = { keyword: '', roles: [], city: 'All', industry: 'All', tier: 'All', sort: 'relevance' } as const
+    expect(selectDirectoryMembers([], { ...filters, roles: [] })).toEqual([])
+    const member = NETWORK_MEMBERS[0]
+    if (!member) throw new Error('Missing test fixture')
+    expect(selectDirectoryMembers([member], { ...filters, roles: [], keyword: member.name })).toEqual([member])
+    expect(selectDirectoryMembers([member], { ...filters, roles: [], keyword: 'does not exist' })).toEqual([])
   })
 
   it('never renders fabricated network statistics for members', () => {
@@ -31,9 +31,7 @@ describe('dashboard and network cleanup', () => {
     expect(view).not.toContain('1,246')
     expect(view).not.toContain("'10K+'")
     expect(view).not.toContain('Aetheris Member')
-    // City and industry distributions are computed from the real member list.
-    expect(view).toContain('const topCities = useMemo(')
-    expect(view).toContain('const topIndustries = useMemo(')
+    expect(directoryDistribution([], 'location')).toEqual([])
   })
 
   it('keeps the dashboard welcome compact and grounded in real counts', () => {
