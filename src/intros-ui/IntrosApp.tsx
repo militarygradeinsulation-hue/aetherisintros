@@ -54,6 +54,7 @@ import { SpecterDetectView } from './views/SpecterDetectView';
 import { MemberIntelligenceView } from './views/MemberIntelligenceView';
 import { AetherisWorkspaceShell } from './components/layout/AetherisWorkspaceShell';
 import './views/aetheris-workspace-pages.css';
+import './views/network-viewport-density.css';
 import './views/workspace-accent.css';
 
 const SHELL_PAGES: ActivePage[] = ['home', 'people', 'bubbles', 'intros', 'messages', 'insights', 'news', 'workspace', 'memory', 'work', 'meetings', 'specter', 'intelligence'];
