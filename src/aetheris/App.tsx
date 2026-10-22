@@ -1599,8 +1599,9 @@ function Insights({ people, select, setPage }: { people: Member[]; select: (p: M
       })}
       {showcaseOnly(leaks).length === dismissed.length && <p className="empty-state">No relationship signals yet. As members join, message and update what they are working on, changes worth acting on appear here.</p>}
     </div>
-    {people.length > 0 && <section className="opportunity-clusters">
-      <header><Label><Layers size={11} /> OPPORTUNITY CLUSTERS</Label><h2>Where several relationships point the same way.</h2></header>
+    {people.length > 0 && <details className="ix-disclosure">
+      <summary>Opportunity clusters — where several relationships point the same way</summary>
+      <section className="opportunity-clusters">
       <IntrosSystemBento className="insight-cluster-bento md:grid-cols-3">
         {[
           { name: 'Industrial AI adoption', people: people.filter(p => /Manufacturing|AI/i.test(`${p.industry} ${p.expertise.join(' ')}`)).slice(0, 4) },

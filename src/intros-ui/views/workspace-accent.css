@@ -168,3 +168,24 @@
 @media (prefers-reduced-motion: reduce) {
   .home-feed-welcome-cta, .ix-intros-crosslink button { transition: none; }
 }
+
+/* Memory detail modules: segmented section chooser */
+.ix-classic .memory-modules--tabbed { display: block; }
+.ix-classic .memory-module-tabs {
+  display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 14px;
+  border-bottom: 1px solid rgba(255,255,255,.08); padding-bottom: 10px;
+}
+.ix-classic .memory-module-tabs button {
+  background: transparent; border: 1px solid rgba(255,255,255,.1); border-radius: 8px;
+  color: #9ea4ac; font: 600 11px/1 "IBM Plex Mono", ui-monospace, monospace;
+  letter-spacing: .06em; text-transform: uppercase; padding: 8px 14px; cursor: pointer;
+  transition: border-color .15s ease, color .15s ease, background .15s ease;
+}
+.ix-classic .memory-module-tabs button:hover { color: #f2f1ec; border-color: rgba(255,255,255,.25); }
+.ix-classic .memory-module-tabs button.active {
+  background: rgba(255,138,76,.12); border-color: #ff8a4c; color: #ff8a4c;
+}
+.ix-classic .memory-module-tabs button:focus-visible { outline: 2px solid #ff8a4c; outline-offset: 2px; }
+@media (prefers-reduced-motion: reduce) {
+  .ix-classic .memory-module-tabs button { transition: none; }
+}
