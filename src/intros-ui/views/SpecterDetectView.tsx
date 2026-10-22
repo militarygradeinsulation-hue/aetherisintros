@@ -1,4 +1,4 @@
-import { useState, type ReactNode } from 'react';
+import { useState, type ReactNode, type FormEvent } from 'react';
 import {
   Home, ContactRound, Users, ClipboardList, Fingerprint, Search, MessageSquare,
   Bookmark, UserRound, Settings, CircleHelp, Bell, Menu, X, BriefcaseBusiness,
@@ -46,7 +46,7 @@ export function SpecterDetectView({ onNavigate, onWorkspace, onSearch, member, n
     { label: 'Help & Support', icon: CircleHelp, action: () => setHelp(v => !v) },
   ];
 
-  function submitSearch(event: React.FormEvent<HTMLFormElement>) {
+  function submitSearch(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     if (!query.trim()) return;
     setMobileMenuOpen(false);
