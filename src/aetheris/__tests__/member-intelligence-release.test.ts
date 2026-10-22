@@ -25,7 +25,7 @@ describe('member intelligence release', () => {
     expect(route).toContain('<Gate initialPage="intelligence" />')
     expect(file('../../routeTree.gen.ts')).toContain("'/_authenticated/member-intelligence'")
     const app = file('../../routes/_authenticated/app.tsx')
-    expect(app).toMatch(/export function Gate\\(\\{ initialPage(?:, initialWorkspace)? \\}/)
+    expect(app).toMatch(/export function Gate\(\{ initialPage(?:, initialWorkspace)? \}/)
     expect(app).toContain('const ready = isLiveMember(access)')
     expect(app).toContain('initialPage={initialPage}')
   })
