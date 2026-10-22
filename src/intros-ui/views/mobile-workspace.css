@@ -4,6 +4,22 @@
  * adjustments. No data, navigation contract, or desktop shell changes.
  */
 @media (max-width: 760px) {
+  .ix-root.ix-aetheris-workspace-mode { padding-bottom: 0; }
+  .ix-root .aetheris-workspace-shell .specter-app-account .specter-header-cta { display: none; }
+  .ix-root .aetheris-workspace-shell .specter-mobile-menu-toggle > span { display: inline; }
+  .ix-root .aetheris-workspace-shell .specter-app-account > button > svg { display: block; }
+  .ix-root .aetheris-workspace-shell .specter-mobile-menu-toggle {
+    background: var(--ix-accent, #ff8a4c) !important;
+    color: var(--ix-accent-ink, #18100b) !important;
+    -webkit-text-fill-color: var(--ix-accent-ink, #18100b) !important;
+  }
+  .ix-root .aetheris-workspace-shell .specter-mobile-menu-toggle :is(span,svg) { color: inherit !important; }
+  .ix-root .ask-dock-fab {
+    min-width: 44px; min-height: 44px;
+    bottom: max(14px, env(safe-area-inset-bottom, 0px));
+  }
+  .ix-root .ask-dock-fab > .aetheris-glyph { display: inline-block; }
+  .ix-root .ask-dock { bottom: max(72px, calc(env(safe-area-inset-bottom, 0px) + 72px)); }
   .ix-root .aetheris-workspace-shell {
     position: relative;
     grid-template-columns: minmax(0, 1fr);
@@ -199,6 +215,10 @@
     letter-spacing: .13em;
     color: #ff9f6c;
   }
+  .ix-root .aetheris-workspace-shell .specter-mobile-menu nav :is(button,a):focus-visible {
+    outline: 2px solid var(--ix-accent, #ff8a4c);
+    outline-offset: -2px;
+  }
   .ix-root .aetheris-workspace-shell .specter-mobile-menu nav {
     display: grid;
     gap: 4px;
@@ -290,6 +310,8 @@
     min-height: 40px;
   }
 }
+/* The drawer is the sole active overlay; the Butler returns on dismissal. */
+.ix-root:has(.specter-mobile-menu) :is(.ask-dock-fab,.ask-dock) { visibility: hidden; pointer-events: none; }
 @keyframes ask-mobile-menu-enter {
   from { opacity: .55; transform: translateX(22px); }
   to { opacity: 1; transform: translateX(0); }

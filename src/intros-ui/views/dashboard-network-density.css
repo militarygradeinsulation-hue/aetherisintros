@@ -77,7 +77,8 @@
 /* Full-height Dashboard on comfortably sized desktops. The dashboard itself
    does not travel vertically; only live feed updates can scroll inside their
    dedicated pane. Smaller viewports retain natural document scrolling. */
-@media (min-width: 900px) and (min-height: 660px) {
+@media (min-width: 0px) {
+  .ix-aetheris-workspace-mode .specter-app-canvas:has(.home-feed-page) { overflow: hidden; }
   .ix-aetheris-workspace-mode .aetheris-workspace-content:has(> .home-feed-page) {
     overflow-y: hidden;
     display: flex;
@@ -336,4 +337,28 @@
 }
 @media (prefers-reduced-motion: reduce) {
   .ix-root .aetheris-workspace-shell .ix-network-member-card {transition: none;transform:none;}
+}
+
+/* Restore bounded results at every size without undoing PR264's two columns. */
+.ix-aetheris-workspace-mode .aetheris-workspace-content:has(.ix-network-viewport) {
+  display: flex; flex-direction: column; overflow: hidden !important;
+}
+.ix-aetheris-workspace-mode .aetheris-workspace-content > .ix-network-directory {
+  display: flex; flex: 1; min-height: 0; overflow: hidden;
+}
+.ix-aetheris-workspace-mode .ix-network-viewport {
+  display: flex; flex-direction: column; flex: 1; min-height: 0; max-height: 100%; overflow: hidden;
+}
+.ix-aetheris-workspace-mode .ix-network-viewport > * + * { margin-top: 0; }
+.ix-aetheris-workspace-mode .ix-network-results-layout { flex: 1; min-height: 0; align-items: stretch; }
+@media (max-width: 1023px) {
+  .ix-aetheris-workspace-mode .ix-network-results-layout { overflow-y: auto; }
+  .ix-aetheris-workspace-mode .home-feed-page .home-feed-welcome h1 { font-size: 18px; line-height: 1.2; }
+  .ix-aetheris-workspace-mode .home-feed-page .home-feed-welcome { padding: 8px; }
+  .ix-aetheris-workspace-mode .home-feed-page .home-feed-welcome-actions { gap: 6px; }
+  .ix-aetheris-workspace-mode .home-feed-page .home-feed-controls { padding-bottom: 4px; margin-bottom: 4px; }
+  .ix-aetheris-workspace-mode .home-feed-page .home-feed-controls-label { display: none; }
+  .ix-aetheris-workspace-mode .home-feed-page .home-feed-controls-actions { gap: 4px; }
+  .ix-aetheris-workspace-mode .home-feed-page .home-feed-controls-actions button { padding: 7px; }
+  .ix-aetheris-workspace-mode .home-feed-page > .home-feed-overview { max-height: 25vh; overflow-y: auto; }
 }

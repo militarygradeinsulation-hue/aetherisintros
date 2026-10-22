@@ -1,5 +1,12 @@
 # Aetheris specification completion
 
+## PR268 mobile finishing pass (Oct 22)
+- [x] Confirm the existing project contains merge 25ef80511bfa3c731dc398ef02b61fcce5ee0daf, PR264 density and orange imports.
+- [ ] Repair observed Menu/Butler visibility and mobile Dashboard/Network scroll ownership; preserve data and navigation.
+- [ ] Verify five viewport sizes, keyboard/drawer/search/Specter interactions, unit tests and automatic compilation.
+- [ ] Verify authenticated account — blocked: no auth user matches the requesting user's email.
+- [ ] Publish only after passing checks and security safeguards; distinguish scheduled deployment from verified live content.
+
 ## Authorized professional evidence extension (Oct 21)
 - [x] Extend the existing LinkedIn reader, provenance and editable hypothesis review without external fetching; unsupported fields remain private review-only.
 - [x] Protect approved profile saves against account changes and concurrent edits; parser/save security regressions and isolated browser checks added.

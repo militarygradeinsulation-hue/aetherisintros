@@ -95,11 +95,25 @@ export function AetherisWorkspaceShell({
     // Focus the drawer's visible close action without popping the mobile keyboard.
     const drawer = mobileDialogRef.current;
     drawer?.querySelector<HTMLButtonElement>('.specter-mobile-menu-close')?.focus({ preventScroll: true });
+    const background = [...document.querySelectorAll<HTMLElement>('.specter-app-header, .specter-app-sidebar, .specter-app-canvas, .ask-dock-fab, .ask-dock')];
+    const previous = background.map(element => element.inert);
+    background.forEach(element => { element.inert = true; });
+    const containFocus = (event: FocusEvent) => {
+      if (event.target instanceof Node && !drawer?.contains(event.target)) {
+        drawer?.querySelector<HTMLButtonElement>('.specter-mobile-menu-close')?.focus({ preventScroll: true });
+      }
+    };
+    document.addEventListener('focusin', containFocus);
     // Changing to desktop while the menu is open must not leave a hidden modal.
     const desktop = window.matchMedia('(min-width: 761px)');
     const closeOnDesktop = () => { if (desktop.matches) setMobileMenuOpen(false); };
     desktop.addEventListener('change', closeOnDesktop);
-    return () => desktop.removeEventListener('change', closeOnDesktop);
+    return () => {
+      desktop.removeEventListener('change', closeOnDesktop);
+      document.removeEventListener('focusin', containFocus);
+      background.forEach((element, index) => { element.inert = previous[index] ?? false; });
+      if (!desktop.matches) menuButtonRef.current?.focus({ preventScroll: true });
+    };
   }, [mobileMenuOpen]);
 
   function closeMobileMenu(restoreFocus = false) {
@@ -118,8 +132,9 @@ export function AetherisWorkspaceShell({
       'button:not(:disabled), a[href], input:not(:disabled), select:not(:disabled), textarea:not(:disabled), [tabindex]:not([tabindex="-1"])'
     ) ?? [])].filter(element => element.getClientRects().length > 0);
     if (!focusable.length) return;
-    const first = focusable[0]!;
-    const last = focusable[focusable.length - 1]!;
+    const first = focusable[0];
+    const last = focusable[focusable.length - 1];
+    if (!first || !last) return;
     if (event.shiftKey && document.activeElement === first) {
       event.preventDefault();
       last.focus();
@@ -206,7 +221,7 @@ export function AetherisWorkspaceShell({
       <nav className="specter-header-links" aria-label="Workspace shortcuts">
         <button type="button" aria-current={activePage === 'home' ? 'page' : undefined} onClick={() => onNavigate('home')}>Dashboard</button>
         <button type="button" aria-current={activePage === 'people' ? 'page' : undefined} onClick={() => onNavigate('people')}>Network</button>
-        <button type="button" aria-current={activePage === 'specter' ? 'page' : undefined} onClick={() => destination(WORKSPACE_DESTINATIONS[3]!)}>Specter Detect</button>
+        <button type="button" aria-current={activePage === 'specter' ? 'page' : undefined} onClick={() => onNavigate('specter')}>Specter Detect</button>
       </nav>
       <div className="specter-app-account">
         {notifications || <button type="button" className="specter-notification" aria-label="Open inbox" onClick={() => onNavigate('messages')}><Bell size={19}/></button>}

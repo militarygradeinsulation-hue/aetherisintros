@@ -32,3 +32,4 @@
 
 - Editorial openings use the shared media-optional composition and avatar fallbacks use member-media; no name resolves to a stock face. Why: compact layouts preserve genuine media without decorative photo substitutions.
 - Dashboard defaults to the social feed; tools occupy a separate view without unmounting feed drafts, and both feeds use the shared presentation-only feed window. Why: progressive disclosure reduces scroll without changing stored posts or live visibility rules.
+- The shared workspace drawer makes background controls inert while open and restores Menu focus on dismissal; final density rules own bounded Dashboard/Network scrolling at all sizes. Why: legacy responsive styles must not hide navigation or move scroll ownership back to the whole page.
