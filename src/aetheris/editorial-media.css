@@ -42,3 +42,40 @@
  .editorial-hero--text .editorial-field h1,.memory-editorial--text h1,.work-editorial-masthead--text h1 { font-size:26px; }
  .editorial-hero--text .editorial-caption { padding:0 18px 18px; }
 }
+
+
+/* Compact headings replace the former blueprint/image-and-copy composition. */
+.workspace-section-heading {
+ display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:12px;
+ padding:16px 0; margin:0 0 16px; border-bottom:1px solid var(--line);
+ background:none; min-height:0;
+}
+.workspace-section-heading h1 { font:600 24px/1.2 Poppins,sans-serif; margin:6px 0; letter-spacing:0; }
+.workspace-section-heading p { font-size:13px; line-height:1.5; margin:0; max-width:720px; }
+.workspace-heading-stats { display:flex; flex-wrap:wrap; gap:16px; margin:0; }
+.workspace-heading-stats dt { font-size:10px; }
+.workspace-heading-stats dd { margin:2px 0 0; font-size:16px; }
+.workspace-heading-proof { font-size:12px; margin:0 0 16px; }
+.ix-classic .workspace-section-heading { border-color:var(--ix-line); color:var(--ix-text); }
+.ix-classic .workspace-section-heading .eyebrow { color:var(--ix-accent); font-family:'IBM Plex Mono',monospace; }
+.ix-classic .workspace-section-heading p,.ix-classic .workspace-heading-proof { color:var(--ix-muted); }
+@media(max-width:680px) { .workspace-section-heading h1 { font-size:21px; } }
+/* Shared legacy typography cannot inflate the new workspace heading. */
+:root[data-theme] body .aetheris-workspace-shell .ix-classic .workspace-section-heading {
+ padding:12px 0!important; background:none!important; background-image:none!important;
+ border:0!important; border-bottom:1px solid var(--ix-line)!important; min-height:0!important;
+}
+:root[data-theme] body .aetheris-workspace-shell .ix-classic .workspace-section-heading h1 {
+ font-family:Poppins,sans-serif!important; font-size:24px!important; line-height:1.25!important;
+ text-transform:none!important; letter-spacing:0!important; margin:6px 0!important;
+}
+:root[data-theme] body .aetheris-workspace-shell .ix-classic .workspace-section-heading p {
+ font-family:Poppins,sans-serif!important; font-size:13px!important; line-height:1.5!important;
+ letter-spacing:0!important; text-transform:none!important;
+}
+:root[data-theme] body .aetheris-workspace-shell .ix-classic .workspace-section-heading :is(dt,dd) {
+ font-family:'IBM Plex Mono',monospace!important; font-size:12px!important; letter-spacing:0!important;
+}
+@media(max-width:680px) {
+ :root[data-theme] body .aetheris-workspace-shell .ix-classic .workspace-section-heading h1 { font-size:21px!important; }
+}

@@ -212,26 +212,17 @@ function SaveButton({ saved, onToggle }: { saved: boolean; onToggle: () => void 
   </button>
 }
 
-/** Compact editorial opening; only verified, explicitly supplied media is optional. */
-function EditorialHero({ folio, title, statement, copy, caption, focus = 'center 30%', stats, action, image, compact = false }: {
-  folio: string; title: React.ReactNode; statement: string; copy: string; caption: string
-  focus?: string; stats?: Array<{ k: string; v: string }>; action?: React.ReactNode; image?: string; compact?: boolean
+/** Workspace openings stay text-only; genuine media belongs in member/content surfaces. */
+function EditorialHero({ folio, title, copy, stats, action }: {
+  folio: string; title: React.ReactNode; copy: string
+  statement?: string; caption?: string; focus?: string; compact?: boolean
+  stats?: Array<{ k: string; v: string }>; action?: React.ReactNode
 }) {
-  return <section className={`editorial-hero${image ? '' : ' editorial-hero--text'}${compact ? ' compact' : ''}`}>
-    <div className="editorial-field">
-      <span className="folio">{folio}</span>
-      <h1>{title}</h1>
-      <h2>{statement}</h2>
-      <p>{copy}</p>
-      {action && <div className="editorial-hero-actions">{action}</div>}
-      {stats && <dl className="editorial-stats">{stats.map(s => <div key={s.k}><dt>{s.k}</dt><dd>{s.v}</dd></div>)}</dl>}
-      <div className="blueprint-cross">+</div>
-    </div>
-    {image ? <figure className="editorial-plate">
-       <img src={image} alt="" style={{ objectPosition: focus }} loading="lazy" />
-      <figcaption><span>ACTIVE MEMORY</span><p>{caption}</p></figcaption>
-    </figure> : <p className="editorial-caption">{caption}</p>}
-  </section>
+  return <header className="workspace-section-heading">
+    <div><Label signal>{folio}</Label><h1>{title}</h1><p>{copy}</p></div>
+    {action && <div className="workspace-heading-actions">{action}</div>}
+    {stats && <dl className="workspace-heading-stats">{stats.map(s => <div key={s.k}><dt>{s.k}</dt><dd>{s.v}</dd></div>)}</dl>}
+  </header>
 }
 
 /** The signature Ask Intros masthead: ivory brand field, editorial portrait, dark intelligence panel, live deck. */

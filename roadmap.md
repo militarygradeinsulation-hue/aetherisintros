@@ -399,3 +399,9 @@
 - [x] Dashboard: default focused social feed, separate tools/activity, closed overview, progressive feed loading and preserved drafts; measured 1440×900 and 390×844 before/after.
 - [ ] Verify the authenticated Dashboard and screenshot-specific live Introductions banner — blocked: requesting account has no mintable session; preview member sign-in required.
 - [ ] Confirm connected GitHub main/CI synchronization — blocked: sandbox exposes managed internal edit history, not GitHub main/CI status.
+
+## PR 263 orange integration QA (Oct 22)
+- [x] Confirm exact merged HEAD and CSS import order; detect displaced compact Dashboard/Network layouts.
+- [x] Restore prior viewport panels and search-first directory without losing orange styles or live callbacks.
+- [ ] Run focused regressions and three-size public/demo visual checks; authenticated account unavailable.
+- [ ] Confirm automated compilation and publish only if all release checks are green.
