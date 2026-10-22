@@ -120,7 +120,7 @@ export const IntrosHubView: React.FC<IntrosHubViewProps> = ({
       </section>
 
       {/* Tabs */}
-      <div className="flex items-center gap-6 border-b border-white/10 pb-2">
+      <div className="flex flex-wrap items-center gap-x-6 gap-y-3 border-b border-white/10 pb-2">
         {[
           { id: 'pending', label: 'Inbound Requests', count: introRequests.length },
           { id: 'outbound', label: 'My Requests', count: 2 },

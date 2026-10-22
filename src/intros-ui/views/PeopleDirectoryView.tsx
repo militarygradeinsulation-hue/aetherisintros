@@ -440,12 +440,12 @@ export const PeopleDirectoryView: React.FC<PeopleDirectoryViewProps> = ({
         {/* Center: Directory Header & Member Cards */}
         <main className="lg:col-span-6 space-y-4">
           {/* Bar: Count, Sort Dropdown & Grid/List view toggle */}
-          <div className="flex items-center justify-between pb-1">
+          <div className="flex flex-wrap items-center justify-between gap-3 pb-1">
             <div className="text-xs font-mono text-[#9CA3AF] tracking-wide uppercase">
               <span className="text-white font-bold">{filteredMembers.length}</span> People Found
             </div>
 
-            <div className="flex items-center gap-3">
+            <div className="flex flex-wrap items-center gap-3 min-w-0 max-w-full">
               {/* Sort selector */}
               <div className="flex items-center gap-1.5 text-xs text-[#9CA3AF]">
                 <span>Sort by:</span>

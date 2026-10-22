@@ -7,6 +7,18 @@
 .editorial-hero--text .editorial-caption { margin:0; padding:0 24px 20px; color:inherit; font-size:12px; }
 .memory-editorial.memory-editorial--text, .work-editorial-masthead.work-editorial-masthead--text { display:block; min-height:0; }
 .memory-editorial--text .memory-editorial-copy { padding:24px; }
+.memory-editorial--text .memory-editorial-copy > .eyebrow { margin-top:12px; }
+.memory-editorial--text .memory-editorial-copy h1 { margin:12px 0; max-width:760px; }
+.memory-editorial--text .memory-editorial-copy blockquote { margin:12px 0; font-size:18px; }
+.memory-editorial--text .memory-editorial-copy dl { margin:12px 0; }
+.ix-classic .memory-editorial--text, .ix-classic .work-editorial-masthead--text { background:var(--ix-panel); color:var(--ix-text); padding:0 !important; }
+.ix-classic .memory-editorial--text .memory-editorial-copy,
+.ix-classic .work-editorial-masthead--text > div { background:var(--ix-panel); padding:20px; }
+.ix-classic .memory-editorial--text :is(h1,p,blockquote,dt,dd),
+.ix-classic .work-editorial-masthead--text :is(h1,p) { color:var(--ix-text); }
+.ix-classic .memory-editorial--text :is(em,.eyebrow),
+.ix-classic .work-editorial-masthead--text :is(em,.eyebrow) { color:var(--ix-accent); }
+.tile-member-initials { width:18px; height:18px; display:inline-grid; place-items:center; border-radius:50%; background:var(--ix-card); color:var(--ix-text); border:1px solid var(--ix-line); }
 .memory-editorial--text h1, .work-editorial-masthead--text h1 { font-size:36px; line-height:1.12; }
 .masthead.masthead--text { grid-template-columns:minmax(0,1fr) minmax(0,1fr); }
 .premium-home-stage.premium-home-stage--text { grid-template-columns:minmax(0,1fr) minmax(0,1fr); }
