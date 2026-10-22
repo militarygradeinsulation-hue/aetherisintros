@@ -1,5 +1,11 @@
 # Aetheris specification completion
 
+## Missing feature database recovery (Oct 22)
+- [x] Compare ten feature contracts with live catalog and existing migration history.
+- [ ] Prepare forward-only recovery for existing schemas/RPCs, retaining collaborative permissions and server-owned scores.
+- [ ] Validate isolated schema, ownership and participant permissions before live application.
+- [ ] Apply through the managed migration tool and read back tables, grants and policies.
+
 ## Four member pages design parity (Oct 22)
 - [x] Match Lobby, Exchange, Membership Upgrade and Marketplace presentation to existing dark member surfaces without changing behavior.
 - [x] Verify 24 focused tests, automatic compilation, and isolated four-page desktop/390/320 presentation; real preview navigation respects sign-in guards.
