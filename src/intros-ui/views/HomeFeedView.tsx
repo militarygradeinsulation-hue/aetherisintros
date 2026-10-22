@@ -177,7 +177,7 @@ export const HomeFeedView: React.FC<HomeFeedViewProps> = ({
               </div>
 
               <div className="flex flex-wrap items-center justify-between gap-2 pt-2 border-t border-white/5">
-                <div className="flex items-center gap-1.5">
+                <div className="dashboard-composer-kinds flex flex-wrap items-center gap-1.5">
                   {(['Insight', 'Hiring', 'Fund Announcement', 'Event Takeaway'] as const).map((type) => (
                     <button
                       key={type}
