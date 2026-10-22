@@ -447,12 +447,13 @@ export const PeopleDirectoryView: React.FC<PeopleDirectoryViewProps> = ({
 
             <div className="flex flex-wrap items-center gap-3 min-w-0 max-w-full">
               {/* Sort selector */}
-              <div className="flex items-center gap-1.5 text-xs text-[#9CA3AF]">
+              <div className="flex items-center gap-1.5 text-xs text-[#9CA3AF] min-w-0 max-w-full">
                 <span>Sort by:</span>
                 <select
                   value={sortBy}
                   onChange={(e) => setSortBy(e.target.value as any)}
-                  className="bg-[#0E121A] text-xs text-white rounded px-2 py-1 border border-white/10 focus:outline-none"
+                  aria-label="Sort people"
+                  className="bg-[#0E121A] text-xs text-white rounded px-2 py-1 border border-white/10 focus:outline-none min-w-0 flex-1"
                 >
                   <option value="relevance">Relevance</option>
                   <option value="match">Highest Fit</option>
