@@ -1,3 +1,4 @@
+import { ExecutivePortrait } from './shared/ExecutivePortrait';
 // @ts-nocheck
 import React, { useState, useMemo } from 'react';
 import {
@@ -173,11 +174,7 @@ export const ExecutiveIntelligenceSidebar: React.FC<ExecutiveIntelligenceSidebar
             <div className="flex flex-col items-center gap-1.5">
               {activePerson?.avatar && (
                 <div className="relative">
-                  <img
-                    src={activePerson.avatar}
-                    alt={activePerson.name}
-                    className="w-5 h-5 rounded-full object-cover border border-white/20"
-                  />
+                  <ExecutivePortrait name={activePerson.name} avatarUrl={activePerson.avatar} size="sm" />
                   <span
                     className={`absolute -bottom-0.5 -right-0.5 w-1.5 h-1.5 rounded-full ${getStatusColor(
                       activePerson.engagement
@@ -279,11 +276,7 @@ export const ExecutiveIntelligenceSidebar: React.FC<ExecutiveIntelligenceSidebar
                       : 'bg-white/5 text-[#F2EEE6]/70 hover:bg-white/10 border border-transparent'
                   }`}
                 >
-                  <img
-                    src={p.avatar}
-                    alt={p.name}
-                    className="w-3.5 h-3.5 rounded-full object-cover shrink-0"
-                  />
+                  <ExecutivePortrait name={p.name} avatarUrl={p.avatar} size="sm" />
                   <span className="truncate max-w-[85px]">{p.name.split(' ')[0]}</span>
                 </button>
               );
@@ -298,11 +291,7 @@ export const ExecutiveIntelligenceSidebar: React.FC<ExecutiveIntelligenceSidebar
                 <div className="p-3.5 rounded-lg bg-[#0E1116] border border-white/10 space-y-3">
                   <div className="flex items-start gap-3">
                     <div className="relative shrink-0">
-                      <img
-                        src={dossier.avatar}
-                        alt={dossier.personName}
-                        className="w-12 h-12 rounded-lg object-cover border border-white/15"
-                      />
+                      <ExecutivePortrait name={dossier.personName} avatarUrl={dossier.avatar} size="sm" />
                       <span
                         className={`absolute -bottom-1 -right-1 w-2.5 h-2.5 rounded-full ${getStatusColor(
                           dossier.engagement

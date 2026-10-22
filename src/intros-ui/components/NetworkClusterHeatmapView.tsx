@@ -1,3 +1,4 @@
+import { ExecutivePortrait } from './shared/ExecutivePortrait';
 // @ts-nocheck
 import React, { useState, useMemo } from 'react';
 import {
@@ -383,11 +384,7 @@ export const NetworkClusterHeatmapView: React.FC<NetworkClusterHeatmapViewProps>
                         className="p-2 rounded-lg bg-black/30 hover:bg-[#151922] border border-white/5 hover:border-[#F5B027]/50 transition-all cursor-pointer flex items-center justify-between gap-2.5 group"
                       >
                         <div className="flex items-center gap-2.5 min-w-0">
-                          <img
-                            src={person.avatar}
-                            alt={person.name}
-                            className="w-7 h-7 rounded-full object-cover border border-white/10 shrink-0"
-                          />
+                          <ExecutivePortrait name={person.name} avatarUrl={person.avatar} size="sm" />
                           <div className="min-w-0 truncate">
                             <div className="text-xs font-bold text-[#F2EEE6] group-hover:text-[#F5B027] transition-colors truncate flex items-center gap-1.5">
                               <span>{person.name}</span>

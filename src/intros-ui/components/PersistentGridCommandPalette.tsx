@@ -1,3 +1,4 @@
+import { ExecutivePortrait } from './shared/ExecutivePortrait';
 // @ts-nocheck
 import React, { useState, useRef, useEffect, useMemo } from 'react';
 import {
@@ -615,11 +616,7 @@ export const PersistentGridCommandPalette: React.FC<PersistentGridCommandPalette
                   <div className="flex items-center gap-2.5 min-w-0">
                     {item.person ? (
                       <div className="relative shrink-0">
-                        <img
-                          src={item.person.avatar}
-                          alt={item.person.name}
-                          className="w-7 h-7 rounded-full object-cover border border-white/15"
-                        />
+                        <ExecutivePortrait name={item.person.name} avatarUrl={item.person.avatar} size="sm" />
                         {item.person.tier && (
                           <div className="absolute -bottom-1 -right-1 scale-75">
                             <RelationshipTierBadge tier={item.person.tier} size="xs" showLabel={false} />

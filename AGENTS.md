@@ -29,3 +29,5 @@
 - Professional document evidence extends the existing LinkedIn scan contract; unsupported fields and hypotheses remain ephemeral private review, while supported own-profile changes use an owner-bound optimistic snapshot. Why: no duplicate profile store, public evidence leak or silent concurrent overwrite.
 
 - Specter Detect uses the single canonical `src/features/specter-detect/SpecterDetectPanel.tsx` capture workflow inside the reference sidebar/top-bar host in `src/intros-ui/views/SpecterDetectView.tsx`. Preserve its live-data integration and scoped black/orange reference layout. Never replace that host with a simulated browser, preloaded sample company, fixed extraction counts or fabricated findings; anonymous demo visitors get a sign-in path for real capture. Why: the owner explicitly requires the reference appearance AND functional URL autofill, not a visual-only simulator.
+
+- Editorial openings use the shared media-optional composition and avatar fallbacks use member-media; no name resolves to a stock face. Why: compact layouts preserve genuine media without decorative photo substitutions.

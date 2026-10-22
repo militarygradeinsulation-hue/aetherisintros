@@ -391,3 +391,8 @@
 - [x] Fix redundant nested nav where found; scroll-to-top on root switches only
 - [x] Verify typecheck/build/browser desktop+mobile; report which of the 3 screens changed
 - [x] Do not publish; keep GitHub sync intact
+
+## Remove decorative photography
+- [x] Remove stock editorial photos and reflow public/member banners; preserve genuine media.
+- [x] Replace demo/generated stock faces with initials.
+- [ ] Verify focused regressions and desktop/mobile screenshots; authenticated preview requires sign-in.

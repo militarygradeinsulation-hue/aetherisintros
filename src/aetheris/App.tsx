@@ -1,3 +1,4 @@
+import { memberPhotoSource } from './member-media'
 import './editorial-media.css'
 import { AttachButton, MessageBody, attachmentPreview } from './MessageAttachments'
 import { useEffect, useMemo, useState, type ReactNode } from 'react'
@@ -177,7 +178,7 @@ function AetherisGlyph({ size = 18 }: { size?: number }) {
   return <span className="aetheris-glyph" style={{ width: size, height: size }} aria-hidden="true"><i /><b /></span>
 }
 function Avatar({ person, large = false, portrait = false, primary = false }: { person: Member; large?: boolean; portrait?: boolean; primary?: boolean }) {
-  const image = person.avatarUrl ?? portraitFor(person.id)
+  const image = memberPhotoSource(person.avatarUrl) || portraitFor(person.id)
   return <span className={`person-avatar ${large ? 'large' : ''} ${portrait ? 'portrait' : ''}`} data-person-portrait={person.id} {...(primary ? { 'data-portrait-primary': 'true' } : {})} aria-label={person.name}>
     <span className="avatar-initials" aria-hidden="true">{person.initials}</span>
     {image && <AvatarImage source={image} alt="" width={1024} height={1280} />}
@@ -1678,9 +1679,7 @@ function Profile({ people, setPage, openOnboarding }: {
       <div className="identity-portrait" data-person-portrait="me" data-portrait-primary="true">
         {me.avatarUrl
           ? <AvatarImage source={me.avatarUrl} alt={`${me.name || 'Member'} profile portrait`} width={1024} height={1280} loading="eager" />
-          : isShowcase() && portraitFor('me')
-            ? <AvatarImage source={portraitFor('me')} alt="Fictional Aetheris member in architectural window light" width={1024} height={1280} loading="eager" />
-            : <span className="identity-placeholder" aria-hidden="true">{me.initials || 'M'}</span>}
+          : <span className="identity-placeholder" aria-hidden="true">{me.initials || 'M'}</span>}
         <small>AETHERIS MEMBER PROFILE</small>
       </div>
       <div className="identity-copy">
@@ -1902,7 +1901,7 @@ function MemberProfile({ person, people, onClose, onDraft, onMessage }: {
         {copied && <small className="copied-note">Profile link copied.</small>}
       </div>
       <figure className="member-plate" data-person-portrait={person.id} data-portrait-primary="true">
-        {(person.avatarUrl ?? portraitFor(person.id)) && <AvatarImage source={person.avatarUrl ?? portraitFor(person.id)} alt={`${person.name}, monochrome editorial portrait`} />}
+        {memberPhotoSource(person.avatarUrl) || portraitFor(person.id) ? <AvatarImage source={memberPhotoSource(person.avatarUrl) || portraitFor(person.id)} alt={person.name} /> : <span className="identity-placeholder" aria-label={person.name}>{person.initials}</span>}
         <figcaption><span>{classifyConnection(person.scoreTotal).toUpperCase()}</span><p>{person.focus}</p></figcaption>
       </figure>
     </section>

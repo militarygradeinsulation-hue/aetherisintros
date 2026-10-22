@@ -1,3 +1,4 @@
+import { ExecutivePortrait } from './shared/ExecutivePortrait';
 // @ts-nocheck
 import React, { useState, useEffect, useMemo } from 'react';
 import {
@@ -564,11 +565,7 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({
                   <div className="flex items-center gap-3 min-w-0">
                     {item.person ? (
                       <div className="relative shrink-0">
-                        <img
-                          src={item.person.avatar}
-                          alt={item.person.name}
-                          className="w-8 h-8 rounded-full object-cover border border-white/15"
-                        />
+                        <ExecutivePortrait name={item.person.name} avatarUrl={item.person.avatar} size="sm" />
                         <span
                           className={`absolute -bottom-0.5 -right-0.5 w-2 h-2 rounded-full ${getStatusDot(
                             item.person.engagement
