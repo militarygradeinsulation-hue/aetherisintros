@@ -2,7 +2,8 @@ import { useEffect, useState, type FormEvent, type ReactNode } from 'react';
 import {
   ArrowRight, Bell, Bookmark, Brain, BriefcaseBusiness, CalendarDays,
   CircleHelp, ClipboardList, ContactRound, Fingerprint, Home, Menu,
-  MessageSquare, Newspaper, Search, Settings, UserRound, Users, X,
+  MessageSquare, Newspaper, PanelLeftClose, PanelLeftOpen, Search,
+  Settings, UserRound, Users, X,
   type LucideIcon,
 } from 'lucide-react';
 import type { ActivePage } from './TopNavigation';
@@ -42,6 +43,8 @@ export const WORKSPACE_DESTINATIONS: readonly WorkspaceDestination[] = [
 
 export type WorkspaceShellProps = {
   activePage: ActivePage;
+  /** Workspace subpage currently shown inside the Workspace host, for nav highlight. */
+  activeWorkspace?: string | undefined;
   onNavigate: (page: ActivePage) => void;
   onWorkspace: (page: string) => void;
   onSearch: (query: string) => void;
@@ -56,15 +59,27 @@ export type WorkspaceShellProps = {
   onHelp?: (() => void) | undefined;
 };
 
+const SIDEBAR_STORAGE_KEY = 'aetheris.sidebar.collapsed';
+const SIDEBAR_ID = 'aetheris-workspace-sidebar';
+
 export function AetherisWorkspaceShell({
-  activePage, onNavigate, onWorkspace, onSearch, searchQuery, onSearchChange, member, notifications,
+  activePage, activeWorkspace, onNavigate, onWorkspace, onSearch, searchQuery, onSearchChange, member, notifications,
   children, enabled = true, scrollContent = false, onHelp,
 }: WorkspaceShellProps) {
   const [localQuery, setLocalQuery] = useState('');
   const query = searchQuery ?? localQuery;
   const changeQuery = onSearchChange ?? setLocalQuery;
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  useEffect(() => { setMobileMenuOpen(false); }, [activePage]);
+  // Render expanded during SSR/first paint, then adopt the saved preference.
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+  useEffect(() => {
+    try { setSidebarCollapsed(window.localStorage.getItem(SIDEBAR_STORAGE_KEY) === '1'); } catch { /* storage unavailable */ }
+  }, []);
+  const toggleSidebar = (collapsed: boolean) => {
+    setSidebarCollapsed(collapsed);
+    try { window.localStorage.setItem(SIDEBAR_STORAGE_KEY, collapsed ? '1' : '0'); } catch { /* storage unavailable */ }
+  };
+  useEffect(() => { setMobileMenuOpen(false); }, [activePage, activeWorkspace]);
   useEffect(() => {
     if (!mobileMenuOpen) return;
     const close = (event: KeyboardEvent) => {
@@ -95,7 +110,8 @@ export function AetherisWorkspaceShell({
     return <nav aria-label={mobile ? 'Mobile workspace navigation' : 'Workspace navigation'}>
       {WORKSPACE_DESTINATIONS.filter(item => item.label !== 'Help & Support' || onHelp).map(item => {
         const Icon = item.icon;
-        const active = item.page === activePage && item.page !== undefined;
+        const active = (item.page !== undefined && item.page === activePage)
+          || (item.workspace !== undefined && activePage === 'workspace' && item.workspace === activeWorkspace);
         const href = item.label === 'Help & Support' && onHelp ? undefined : item.href;
         return href
           ? <a key={item.label} href={href} onClick={() => setMobileMenuOpen(false)}>
@@ -131,8 +147,13 @@ export function AetherisWorkspaceShell({
 
   if (!enabled) return <>{children}</>;
 
-  return <div className="specter-app aetheris-workspace-shell" data-workspace-view={activePage}>
+  return <div className={`specter-app aetheris-workspace-shell${sidebarCollapsed ? ' sidebar-collapsed' : ''}`} data-workspace-view={activePage}>
     <header className="specter-app-header">
+      {sidebarCollapsed && <button type="button" className="specter-sidebar-expand"
+        aria-label="Show sidebar" aria-expanded={false} aria-controls={SIDEBAR_ID}
+        onClick={() => toggleSidebar(false)}>
+        <PanelLeftOpen size={18}/>
+      </button>}
       <button className="specter-app-brand" aria-label="Ask Intros dashboard" onClick={() => onNavigate('home')}>
         <img src={logoAsset.url} alt=""/>
         <span><strong>ASK <b>INTROS</b></strong><small>AETHERIS WORKSPACE</small></span>
@@ -159,10 +180,15 @@ export function AetherisWorkspaceShell({
       </div>
     </header>
 
-    <aside className="specter-app-sidebar">
+    {!sidebarCollapsed && <aside className="specter-app-sidebar" id={SIDEBAR_ID}>
+      <button type="button" className="specter-sidebar-toggle"
+        aria-label="Hide sidebar" aria-expanded={true} aria-controls={SIDEBAR_ID}
+        onClick={() => toggleSidebar(true)}>
+        <PanelLeftClose size={15}/><span>Hide panel</span>
+      </button>
       {memberSearch(false)}
       {navigation(false)}
-    </aside>
+    </aside>}
 
     {mobileMenuOpen && <div className="specter-mobile-menu" id="specter-mobile-navigation">
       {memberSearch(true)}
