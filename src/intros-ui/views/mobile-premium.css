@@ -185,7 +185,7 @@
   .ix-root .aetheris-workspace-shell .dashboard-demo-post > div:first-child > span { justify-self: start; font-size: 9px; color: var(--ix-accent); }
   .ix-root .aetheris-workspace-shell .dashboard-demo-post > p { font-size: 13px; line-height: 1.65; }
   .ix-root .aetheris-workspace-shell .home-feed-overview { flex-shrink: 0; }
-  .ix-root .aetheris-workspace-shell .home-feed-overview summary { font-size: 10px; }
+  .ix-root .aetheris-workspace-shell .home-feed-overview summary { font-size: 10px; padding-right: 64px; }
   .ix-root .aetheris-workspace-shell .home-feed-overview summary span { display: none; }
   .ix-root .aetheris-workspace-shell .home-feed-overview[open] { max-height: 30dvh; overflow-y: auto; }
   .ix-root .aetheris-workspace-shell .ix-network-member-card { border-radius: 8px; border-top-color: var(--phone-edge); box-shadow: inset 0 1px var(--phone-light); }
