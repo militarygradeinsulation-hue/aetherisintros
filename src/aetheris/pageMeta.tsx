@@ -3,7 +3,7 @@ import {
   DoorOpen, FileSearch, FileText, Flag, FolderLock, Gauge, GitMerge, GraduationCap, Handshake, HelpCircle,
   History, Home as HomeIcon, Inbox, Landmark, Layers, Lock, Map as MapIcon, MessageSquareText, Network,
   Newspaper, PlaneTakeoff, Puzzle, Radar, ScrollText, Settings2, ShieldAlert, ShieldCheck, Sparkle, Target,
-  TrendingUp, UserRound, Users, UsersRound,
+  RefreshCw, ShoppingBag, Star, TrendingUp, UserRound, Users, UsersRound,
   Lightbulb, Route, Stethoscope, Video, HandHelping,
 } from 'lucide-react'
 import type { Page } from './nav'
@@ -479,6 +479,32 @@ const basePages: BaseMeta[] = [
     next: 'Read one item, then act on it with the person it matters to.',
     why: 'Coverage is only useful when it turns into a conversation with the right person.',
   }, ['news', 'feed', 'press', 'industry', 'security', 'ai', 'aetheris']),
+  /* --------------------------------------------- new feature pages */
+  m('business-lobby', 'Business Lobby', DoorOpen, 'OPPORTUNITY & EXECUTION', 'Drop-in availability windows for accepted connections — a knock, not an automatic call.', {
+    does: 'Opens a private drop-in window for members who have already accepted an introduction with you.',
+    look: 'Your open availability window, contacts who are also available, and incoming knock requests.',
+    changes: 'Setting availability is off by default and expires automatically. Nothing starts until both sides agree.',
+    next: 'Open your lobby when you are genuinely available for a short business conversation.',
+    why: 'Nobody is ever connected without an explicit accept — a knock is a request, not a call.',
+  }, ['lobby', 'drop-in', 'availability', 'meeting']),
+  m('opportunity-exchange', 'Opportunity Exchange', ShoppingBag, 'OPPORTUNITY & EXECUTION', 'Live deal flow and partnership opportunities from members who opted in to share them.', {
+    does: 'Shows live opportunities members have chosen to surface to the network.',
+    look: 'Opportunity type, stage, what is being sought and a warm path to get there.',
+    changes: 'Expressing interest notifies the originator through the introduction workflow, not a cold message.',
+    next: 'Express interest through the intro workflow — the platform matches context before connecting.',
+  }, ['deals', 'opportunities', 'exchange', 'marketplace']),
+  m('membership-upgrade', 'Membership', Star, 'TRUST, PERMISSION & CONTROL', 'Your current membership tier and what upgrading to Executive unlocks.', {
+    does: 'Shows your current tier, what executive membership adds and a path to upgrade through Stripe.',
+    look: 'Current plan, feature comparison and the upgrade CTA.',
+    changes: 'Upgrading unlocks Business Lobby, priority introductions, advanced analytics and the concierge desk.',
+    next: 'Review what executive membership adds before upgrading.',
+  }, ['membership', 'upgrade', 'plan', 'executive', 'billing']),
+  m('marketplace-pilot', 'Marketplace', Landmark, 'OPPORTUNITY & EXECUTION', 'Research intent signals — what members are looking to buy, partner on or invest in.', {
+    does: 'Lets you post research intent and see anonymised signals from the network.',
+    look: 'Your own submitted intents and a curated feed of what others are seeking.',
+    changes: 'Submitting intent is private until you approve a match; signals from others are anonymised.',
+    next: 'Post the thing you are actively trying to find or buy right now.',
+  }, ['marketplace', 'research', 'intent', 'buy', 'partner', 'invest']),
 ]
 
 /** Every page belongs to one of five hubs, so nothing has to be hunted for. */
@@ -497,6 +523,9 @@ const hubOf: Partial<Record<Page, Hub>> = {
   deals: 'OPPORTUNITIES & WORK', outcomes: 'OPPORTUNITIES & WORK', capital: 'OPPORTUNITIES & WORK',
   systems: 'OPPORTUNITIES & WORK', strategy: 'OPPORTUNITIES & WORK', crm: 'OPPORTUNITIES & WORK', pocket: 'OPPORTUNITIES & WORK', providers: 'OPPORTUNITIES & WORK', diagnostic: 'INTELLIGENCE & MEMORY',
   grid: 'OPPORTUNITIES & WORK', knowledgeassets: 'OPPORTUNITIES & WORK', vault: 'OPPORTUNITIES & WORK',
+  'business-lobby': 'OPPORTUNITIES & WORK', 'opportunity-exchange': 'OPPORTUNITIES & WORK',
+  'marketplace-pilot': 'OPPORTUNITIES & WORK',
+  'membership-upgrade': 'TRUST & CONTROL',
 
   memory: 'INTELLIGENCE & MEMORY', insights: 'INTELLIGENCE & MEMORY', evidence: 'INTELLIGENCE & MEMORY', agentinbox: 'INTELLIGENCE & MEMORY',
   gaps: 'INTELLIGENCE & MEMORY', loops: 'INTELLIGENCE & MEMORY', collisions: 'INTELLIGENCE & MEMORY',
@@ -528,9 +557,9 @@ export const primaryPages: Page[] = ['home', 'network', 'intros', 'messages', 'm
 export const networkTabs: Page[] = ['discover', 'intros', 'companies', 'circles', 'events']
 export const networkAdvanced: Page[] = ['directory', 'expertise', 'serendipity', 'gaps', 'identity', 'organization', 'talent', 'knowledge', 'boards', 'intelrooms', 'passport', 'ask']
 export const workTabs: Page[] = ['crm', 'diagnostic', 'pocket', 'opportunities', 'grid', 'calendar', 'outcomes']
-export const workAdvanced: Page[] = ['needs', 'rooms', 'deals', 'workspaces', 'executivework', 'systems', 'strategy', 'simulation', 'collisions', 'capital', 'attribution', 'loops', 'knowledgeassets', 'timemachine']
+export const workAdvanced: Page[] = ['needs', 'rooms', 'deals', 'workspaces', 'executivework', 'systems', 'strategy', 'simulation', 'collisions', 'capital', 'attribution', 'loops', 'knowledgeassets', 'timemachine', 'business-lobby', 'opportunity-exchange', 'marketplace-pilot']
 export const meTabs: Page[] = ['profile', 'passport', 'permission', 'preferences', 'integrations']
-export const meAdvanced: Page[] = ['identity', 'consent', 'constitution', 'presence', 'vault', 'autopilot']
+export const meAdvanced: Page[] = ['identity', 'consent', 'constitution', 'presence', 'vault', 'autopilot', 'membership-upgrade']
 
 /** The five capability hubs, in the order members read them. News is a daily destination. */
 export const groupOrder: Hub[] = [
