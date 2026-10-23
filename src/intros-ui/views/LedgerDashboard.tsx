@@ -17,6 +17,7 @@ interface LedgerDashboardProps {
   liveOverview?: React.ReactNode;
   unreadCount: number | null;
   onNavigate: (page: ActivePage, memberId?: string) => void;
+  onOpenTool?: (tool: string) => void;
   onRequestIntro: (member: NetworkMember) => void;
   onAddPost: (content: string, badge?: FeedPost['badge']) => void;
   onLikePost: (postId: string) => void;
@@ -25,7 +26,7 @@ interface LedgerDashboardProps {
 
 export function LedgerDashboard({
   posts, members, live, socialFeed, actionQueue, liveOverview, unreadCount,
-  onNavigate, onRequestIntro, onAddPost, onLikePost, onSavePost,
+  onNavigate, onRequestIntro, onAddPost, onLikePost, onSavePost, onOpenTool,
 }: LedgerDashboardProps) {
   const [draft, setDraft] = useState('');
   const [feedTab, setFeedTab] = useState<'all' | 'saved'>('all');
@@ -45,7 +46,6 @@ export function LedgerDashboard({
         <button type="button" className="ledger-ui-button primary" onClick={() => onNavigate('intros')}><Plus size={16}/> Request intro</button>
       </>} />
 
-    {liveOverview && <section className="ledger-ui-live-overview" aria-label="Live executive overview">{liveOverview}</section>}
     <div className="ledger-dashboard-stats">
       <StatCard label="Members in view" value={String(members.length)} hint={live ? 'Verified live directory' : 'Showcase directory'}
         icon={<Users size={17}/>} onClick={() => onNavigate('people')}/>
@@ -55,9 +55,13 @@ export function LedgerDashboard({
         hint={live ? 'From your live inbox' : 'Showcase conversations'}
         icon={<MessageSquare size={17}/>} onClick={() => onNavigate('messages')}/>
       <StatCard label="Opportunity work" value="Explore" hint="CRM, deals, proposals and workspaces"
-        icon={<ArrowRight size={17}/>} onClick={() => onNavigate('workspace')}/>
+        icon={<ArrowRight size={17}/>} onClick={() => onOpenTool ? onOpenTool('crm') : onNavigate('workspace')}/>
     </div>
 
+    {liveOverview && <details className="ledger-ui-live-overview">
+      <summary>Executive overview <span>Expand your live network metrics and recent activity</span></summary>
+      <div>{liveOverview}</div>
+    </details>}
     <div className="ledger-dashboard-grid">
       <div className="ledger-dashboard-primary">
         <Panel className="ledger-dashboard-feed" title="Network activity"
@@ -120,7 +124,7 @@ export function LedgerDashboard({
         <Panel title="Next moves" subtitle="Relationship and deal execution" bodyClassName="ledger-next-moves">
           <button type="button" onClick={() => onNavigate('intros')}><Handshake size={17}/><span><strong>Introduction requests</strong><small>Review consent and open conversations</small></span><ArrowRight size={15}/></button>
           <button type="button" onClick={() => onNavigate('messages')}><MessageSquare size={17}/><span><strong>Messages</strong><small>Continue conversations</small></span><ArrowRight size={15}/></button>
-          <button type="button" onClick={() => onNavigate('work')}><ArrowRight size={17}/><span><strong>Workspaces</strong><small>Advance deals and projects</small></span><ArrowRight size={15}/></button>
+          <button type="button" onClick={() => onOpenTool ? onOpenTool('workspaces') : onNavigate('workspace')}><ArrowRight size={17}/><span><strong>Workspaces</strong><small>Advance deals and projects</small></span><ArrowRight size={15}/></button>
         </Panel>
         {actionQueue && <Panel title="Weekly priorities" subtitle="Your live member action queue" bodyClassName="ledger-priorities">{actionQueue}</Panel>}
       </div>
