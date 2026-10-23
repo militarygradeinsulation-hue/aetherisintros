@@ -149,7 +149,7 @@ try {
   await page.getByRole('button',{name:'Customize',exact:true}).click();
   await check(page,'crm-customization','.ledger-customize-dialog','');
   await page.keyboard.press('Escape');
-  await page.mouse.click(700,600,{button:'right'});
+  await page.locator('.ledger-ui-page-header h1').click({button:'right'});
   await check(page,'quick-menu','.qm','');
   await page.keyboard.press('Escape');
   if(await page.locator('.ask-dock-fab').count()){
@@ -157,14 +157,14 @@ try {
     await check(page,'ask-dock','.ask-dock','');
     await page.click('.ask-dock-fab');
   }
-  await nav.getByRole('button',{name:'People & contacts'}).click();
+  await nav.getByRole('button',{name:'Network',exact:true}).click();
   await page.locator('.ledger-directory-table').waitFor({state:'visible',timeout:30000});
   await check(page,'crm-contact-records','.ledger-ui-panel','');
   await page.locator('.ledger-directory-actions button[title="Request introduction"]').first().click();
   await check(page,'request-intro-modal','[role=dialog], .fixed.inset-0 > div','');
   await page.keyboard.press('Escape');
   ok(await page.getByRole('dialog', {name:/^Request introduction to /}).count()===0,'Escape dismisses introduction request before workspace navigation');
-  await nav.getByRole('button',{name:'CRM pipeline'}).click();
+  await nav.getByRole('button',{name:'CRM & Pipeline',exact:true}).click();
   await page.locator('.ledger-workspace-modules').waitFor({state:'visible',timeout:30000});
   await check(page,'operations-module-navigation','.ledger-workspace-modules','');
   await check(page,'operations-module-details','.ledger-workspace-detail','');
@@ -175,12 +175,17 @@ try {
   };
   await tool('CRM');
   await check(page,'crm-tabs','[role=tablist][aria-label="CRM sections"]','',{inline:true});
-  await nav.getByRole('button',{name:'Business tools',exact:true}).click();
-  await tool('Providers');
+  await nav.getByRole('button',{name:'My Work',exact:true}).click();
+  const sections=page.locator('.ledger-section-navigation');
+  await check(page,'consolidated-section-navigation','.ledger-section-navigation','');
+  await sections.locator('summary').click();
+  await sections.getByRole('button',{name:'Trusted Providers',exact:true}).click();
   await check(page,'providers-tabs','.providers-tabs','',{inline:true});
-  await tool('Needs');
+  await sections.getByRole('button',{name:'Needs & Offers',exact:true}).click();
   await check(page,'needs-select-options','main :has(> select)','',{inline:true,field:true});
-  await tool('My profile');
+  await page.getByRole('button',{name:'Account menu',exact:true}).click();
+  await check(page,'account-menu','.ledger-native-account-dropdown','');
+  await page.getByRole('menuitem',{name:'My profile',exact:true}).click();
   await page.evaluate(() => {
     const details = document.querySelector('details.identity-more');
     for(let node=details;node;node=node.parentElement?.closest('details')) node.open=true;

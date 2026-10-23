@@ -93,7 +93,7 @@ try {
               !index || labels[index - 1].localeCompare(value, 'en', { sensitivity: 'base' }) <= 0)
           }))
         assert(sorted, 'CRM navigation items are alphabetical in each section', { sorted })
-        await page.locator('.ledger-crm-sidebar').getByRole('button', { name: 'People & contacts' }).click()
+        await page.locator('.ledger-crm-sidebar').getByRole('button', { name: 'Network', exact: true }).click()
       } else {
         assert(!metrics.sidebarVisible && metrics.bottomVisible, 'CRM mobile uses bottom bar and drawer', metrics)
         assert(metrics.bodyLeft < 3 && metrics.bodyWidth >= 380, 'CRM mobile content uses full screen', metrics)
@@ -102,7 +102,7 @@ try {
         await drawer.waitFor()
         assert(await page.locator('.ledger-native-mobile-account a[href="/auth"]').count() === 1,
           'Guest can log in from the CRM mobile menu')
-        await drawer.getByRole('button', { name: 'People & contacts' }).click()
+        await drawer.getByRole('button', { name: 'Network', exact: true }).click()
       }
 
       await page.locator('.ledger-directory-table').waitFor({ state: 'visible', timeout: 20_000 })

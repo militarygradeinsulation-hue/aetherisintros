@@ -31,6 +31,18 @@ async function checkBrand(page, label) {
   });
   check(!warm.length,label+' has no orange brand accents: '+JSON.stringify(warm));
 }
+async function checkMenuAlignment(root,label) {
+  const layout=await root.locator('.ledger-native-nav-item').evaluateAll(buttons=>buttons.map(button=>{
+    const b=button.getBoundingClientRect(),i=button.querySelector('svg').getBoundingClientRect(),t=button.querySelector('.ledger-native-nav-label').getBoundingClientRect();
+    const text=button.querySelector('.ledger-native-nav-label');
+    return {x:b.x,width:b.width,height:b.height,icon:i.x,label:t.x,clipped:text.scrollWidth-text.clientWidth};
+  }));
+  check(layout.length===10,label+' has ten primary destinations');
+  for(const property of ['x','width','icon','label']) check(Math.max(...layout.map(b=>b[property]))-Math.min(...layout.map(b=>b[property]))<1.5,label+' '+property+' aligns across every menu group');
+  check(layout.every(b=>b.height>=43.5),label+' rows have consistent touch spacing');
+  check(Math.max(...layout.map(b=>b.height))-Math.min(...layout.map(b=>b.height))<1.5,label+' rows have equal height');
+  check(layout.every(b=>b.clipped<=1),label+' every menu label is fully readable');
+}
 let browser;
 try{
   await new Promise((ready,fail)=>{
@@ -69,11 +81,13 @@ try{
     check(await page.locator('.ledger-dashboard-stats .ledger-ui-stat').count()===4,theme+' grounded KPI cards');
     await checkBrand(page,theme+' Dashboard');
     const sidebar=page.locator('.ledger-crm-sidebar');
-    await sidebar.getByRole('button',{name:'People & contacts'}).click();
+    await checkMenuAlignment(sidebar,theme+' desktop');
+    if(process.env.NAV_SCREENSHOT_DIR) await page.screenshot({path:process.env.NAV_SCREENSHOT_DIR+'/'+theme+'-desktop.png'});
+    await sidebar.getByRole('button',{name:'Network',exact:true}).click();
     await page.locator('.ledger-directory-table').waitFor({state:'visible',timeout:30000});
     check(await page.locator('[data-arch-page="people"]').count()===1,theme+' contacts use CRM records');
     await checkBrand(page,theme+' Contacts');
-    await sidebar.getByRole('button',{name:'CRM pipeline'}).click();
+    await sidebar.getByRole('button',{name:'CRM & Pipeline',exact:true}).click();
     await page.locator('.ledger-workspace-modules').waitFor({state:'visible',timeout:30000});
     check(await page.locator('[data-arch-page="workspace"]').count()===1,theme+' authenticated tool frame is preserved');
     const focused=page.locator('.ledger-workspace-modules');
@@ -89,17 +103,31 @@ try{
     await focused.getByRole('button',{name:'CRM',exact:true}).click();
     await page.getByRole('tablist',{name:'CRM sections'}).waitFor();
     check(await page.locator('.ops-board').count()===0,theme+' CRM returns to relationship records');
-    await sidebar.getByRole('button',{name:'Business tools',exact:true}).click();
-    check(await page.locator('.ledger-workspace-modules button').count()>=10,theme+' Business tools retains production tools');
-    const modules=page.locator('.ledger-workspace-modules');
-    const labels=await modules.locator('button').allTextContents();
-    for(const label of labels) {
-      await sidebar.getByRole('button',{name:'Business tools',exact:true}).click();
-      await modules.getByRole('button',{name:label.trim(),exact:true}).click();
-      await page.waitForTimeout(120);
-      await checkBrand(page,theme+' '+label.trim());
+    for (const destination of ['Dashboard','Network','Introductions','Meetings','Deals & Workspaces','Intelligence','My Work','Library']) {
+      await sidebar.getByRole('button',{name:destination,exact:true}).click();
+      const section=page.locator('.ledger-section-navigation');
+      await section.waitFor();
+      const labels=(await section.locator('nav button').allTextContents()).map(s=>s.trim());
+      for (const label of labels) {
+        const button=section.getByRole('button',{name:label,exact:true,includeHidden:true});
+        if (!(await button.isVisible())) await section.locator('summary').click();
+        await button.click();
+        await page.waitForTimeout(120);
+        check(await sidebar.getByRole('button',{name:destination,exact:true}).getAttribute('aria-current')==='page',theme+' '+label+' retains '+destination+' parent');
+        check(await section.getByRole('button',{name:label,exact:true,includeHidden:true}).getAttribute('aria-current')==='page',theme+' '+label+' section is selected');
+        await checkBrand(page,theme+' '+label);
+      }
     }
-    await sidebar.getByRole('button',{name:'Specter Detect',exact:true}).click();
+    await page.getByRole('button',{name:'Account menu',exact:true}).click();
+    await page.getByRole('menuitem',{name:'My profile',exact:true}).click();
+    const account=page.locator('.ledger-section-navigation[data-destination="account"]');
+    for (const label of (await account.locator('button').allTextContents()).map(s=>s.trim())) {
+      await account.getByRole('button',{name:label,exact:true}).click();
+      check(await sidebar.locator('.ledger-native-nav-item[aria-current="page"]').count()===0,theme+' '+label+' stays outside primary navigation');
+      await checkBrand(page,theme+' account '+label);
+    }
+    await sidebar.getByRole('button',{name:'Intelligence',exact:true}).click();
+    await page.locator('.ledger-section-navigation').getByRole('button',{name:'Specter Detect',exact:true}).click();
     await page.locator('.specter-shell').waitFor();
     await checkBrand(page,theme+' Specter browser');
     await sidebar.getByRole('button',{name:'Messages'}).click();
@@ -107,12 +135,34 @@ try{
     await page.locator('.ix-messages').first().waitFor({state:'visible',timeout:30000});
     check(await sidebar.isVisible(),theme+' CRM sidebar persists across messaging');
     await checkBrand(page,theme+' Messages');
-    await sidebar.getByRole('button',{name:'Network intelligence'}).click();
+    await sidebar.getByRole('button',{name:'Intelligence',exact:true}).click();
     await page.locator('[data-arch-page="insights"]').waitFor({state:'visible',timeout:30000});
     check(await page.locator('.ai-insight-list').count()>0,theme+' real Insights view remains connected');
     await sidebar.getByRole('button',{name:'Meetings'}).click();
     await page.locator('[data-arch-page="meetings"]').waitFor({state:'visible',timeout:30000});
     await checkBrand(page,theme+' Meetings');
+    // A collapsed desktop sidebar must not hide labels in the mobile drawer.
+    await page.getByRole('button',{name:'Collapse sidebar',exact:true}).click();
+    await page.setViewportSize({width:390,height:844});
+    await page.getByRole('button',{name:'More menu',exact:true}).click();
+    const mobile=page.locator('.ledger-native-mobile-sidebar');
+    await checkMenuAlignment(mobile,theme+' mobile');
+    if(process.env.NAV_SCREENSHOT_DIR) await page.screenshot({path:process.env.NAV_SCREENSHOT_DIR+'/'+theme+'-mobile.png'});
+    await mobile.getByRole('button',{name:'Network',exact:true}).click();
+    check(!(await mobile.isVisible()),theme+' mobile selection closes drawer');
+    await page.locator('.ledger-section-navigation').getByRole('button',{name:'Network map',exact:true}).click();
+    check(await page.locator('[data-arch-page="bubbles"]').count()===1,theme+' mobile Network map remains reachable');
+    check(await page.locator('.ask-dock-fab').count()===1,theme+' consolidated navigation retains one floating bot');
+    await page.getByRole('button',{name:'More menu',exact:true}).click();
+    await mobile.locator('.ledger-native-mobile-account-options summary').click();
+    await mobile.getByRole('button',{name:'Preferences',exact:true}).click();
+    check(await page.locator('.ledger-section-navigation[data-destination="account"]').isVisible(),theme+' mobile account settings remain reachable');
+    await page.getByRole('button',{name:'Search records, people, modules and contacts',exact:true}).click();
+    const search=page.getByRole('dialog',{name:'Search Ask Intros',exact:true});
+    await search.getByRole('searchbox').fill('Private Vault');
+    await search.getByRole('button',{name:/Private Vault/}).click();
+    check(await page.locator('.ledger-section-navigation[data-destination="library"]').isVisible(),theme+' command search reaches nested tools directly');
+    check(await page.evaluate(()=>document.documentElement.scrollWidth-innerWidth)<=3,theme+' mobile sections fit viewport');
     check(!errors.length,theme+' no uncaught member-page errors: '+errors.slice(0,2).join('; '));
     for(const route of ['/', '/auth']){await page.goto('http://127.0.0.1:'+port+route,{waitUntil:'domcontentloaded'});await page.waitForTimeout(300);await checkBrand(page,theme+' '+route)}
     await context.close();
