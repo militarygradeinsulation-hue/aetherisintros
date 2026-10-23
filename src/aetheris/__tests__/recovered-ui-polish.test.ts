@@ -23,7 +23,7 @@ describe('recovered demo and tile polish', () => {
     expect(header).toContain('<JoinAction')
     expect(header.indexOf('to="/auth"')).toBeLessThan(header.indexOf('<JoinAction'))
     expect(landing).toContain('search={{ mode: \'signup\' }}')
-    expect(landing).toContain('Create your account')
+    expect(landing).toContain('Enter your network')
     expect(landing).toContain('to="/demo"')
   })
 
