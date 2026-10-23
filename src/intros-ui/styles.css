@@ -390,7 +390,10 @@
 .ix-root [class*="bg-[#C78522]"],
 .ix-root [class*="bg-[#8A5A12]"] {
   background-color: var(--acc-btn) !important;
-  color: var(--sys-ink) !important;
+  /* Solid accent buttons must use the ink paired with --acc-btn
+     (--ai-ui-selected-ink), not the page ink — otherwise light mode
+     renders black text on black and dark mode ivory on white. */
+  color: var(--ai-ui-selected-ink, var(--sys-ink)) !important;
   box-shadow: inset 0 0 0 1px var(--acc-btn-line) !important;
 }
 .ix-root [class*="bg-[#F5B027]/"],
@@ -410,7 +413,7 @@
 .ix-root .btn-primary-cta {
   background-color: var(--acc-btn) !important;
   border-color: var(--acc-btn-line) !important;
-  color: var(--sys-ink) !important;
+  color: var(--ai-ui-selected-ink, var(--sys-ink)) !important;
 }
 /* hover: a touch warmer, still translucent */
 .ix-root [class*="hover:bg-[#F5B027]"]:hover,
@@ -428,7 +431,7 @@
 .ix-root .ask-primary:hover,
 .ix-root .btn-primary-cta:hover {
   background-color: var(--acc-btn-hover) !important;
-  color: var(--sys-ink) !important;
+  color: var(--ai-ui-selected-ink, var(--sys-ink)) !important;
   box-shadow: inset 0 0 0 1px var(--acc-btn-line) !important;
 }
 /* round indicators keep solid gold — dots and badges, not buttons */
