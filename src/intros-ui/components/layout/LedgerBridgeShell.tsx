@@ -63,6 +63,7 @@ export interface LedgerBridgeShellProps {
   onOpenMyProfile: () => void;
   unreadCount: number | null;
   notifications?: React.ReactNode;
+  executiveAction?: { label: string; onOpen: () => void } | undefined;
 }
 
 const STORAGE_KEY = 'ask-intros.absolute-ledger.sidebar';
@@ -72,7 +73,7 @@ function persistedCollapsed() {
 
 export function LedgerBridgeShell({
   children, activePage, activeTool, onNavigate, onOpenTool, searchQuery,
-  onSearchChange, members, mode, me, onOpenMyProfile, unreadCount, notifications,
+  onSearchChange, members, mode, me, onOpenMyProfile, unreadCount, notifications, executiveAction,
 }: LedgerBridgeShellProps) {
   const [collapsed, setCollapsed] = useState(persistedCollapsed);
   const [drawerOpen, setDrawerOpen] = useState(false);
@@ -184,6 +185,7 @@ export function LedgerBridgeShell({
         </div>
         <Nav mobile />
         <div className="ledger-native-mobile-account">
+          {mode === 'live' && executiveAction && <button type="button" onClick={() => { setDrawerOpen(false); executiveAction.onOpen(); }}>{executiveAction.label}</button>}
           {mode === 'live'
             ? <button type="button" onClick={() => { closeAll(); void signOutMember('/auth'); }}><LogOut size={16} /> Log out</button>
             : <a href="/auth">Log in</a>}
@@ -202,6 +204,7 @@ export function LedgerBridgeShell({
         </button>
         {notifications || <button type="button" className="ledger-native-icon" aria-label="Introduction requests" onClick={() => onNavigate('intros')}><Bell size={17}/></button>}
         <AppearanceToggle className="ledger-native-appearance" />
+        {mode === 'live' && executiveAction && <button type="button" className="ledger-native-auth-shortcut" onClick={executiveAction.onOpen}>{executiveAction.label}</button>}
         {mode === 'live'
           ? <button type="button" className="ledger-native-auth-shortcut" aria-label="Log out"
               onClick={() => { closeAll(); void signOutMember('/auth'); }}><LogOut size={15}/> Log out</button>
@@ -219,9 +222,9 @@ export function LedgerBridgeShell({
 
     <nav className="ledger-native-bottom ix-mobile-nav" aria-label="Mobile navigation">
       {([
-        { label: 'Home', page: 'home', icon: House },
-        { label: 'People', page: 'people', icon: Users },
+        { label: 'Dashboard', page: 'home', icon: House },
         { label: 'Messages', page: 'messages', icon: MessageSquare },
+        { label: 'People', page: 'people', icon: Users },
       ] as const).map(item => {
         const Icon = item.icon;
         return <button key={item.page} type="button" className="ix-mobile-nav-item"
