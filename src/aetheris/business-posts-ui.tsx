@@ -36,8 +36,24 @@ export function BusinessComposer() {
       if (!isBusinessKind((event as CustomEvent<{ kind?: string }>).detail?.kind)) return
       setNote({ tone: 'error', text: 'Your post could not be saved to the network. Check your connection and try again.' })
     }
+    const openComposer = (event: Event) => {
+      const nextKind = (event as CustomEvent<{ kind?: string }>).detail?.kind
+      if (!isBusinessKind(nextKind)) return
+      setKind(nextKind)
+      setErrors({})
+      setNote(null)
+      setOpen(true)
+      requestAnimationFrame(() => {
+        document.getElementById('business-post-composer')?.scrollIntoView({ behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth', block: 'center' })
+        document.querySelector<HTMLInputElement>('#business-post-composer input')?.focus({ preventScroll: true })
+      })
+    }
     window.addEventListener('aetheris:post-failed', failed)
-    return () => window.removeEventListener('aetheris:post-failed', failed)
+    window.addEventListener('aetheris:open-business-composer', openComposer)
+    return () => {
+      window.removeEventListener('aetheris:post-failed', failed)
+      window.removeEventListener('aetheris:open-business-composer', openComposer)
+    }
   }, [])
 
   const set = (key: keyof BusinessDraft) => (event: { target: { value: string } }) => setDraft(current => ({ ...current, [key]: event.target.value }))
@@ -59,7 +75,7 @@ export function BusinessComposer() {
     }
   }
 
-  return <section className="biz-composer social-composer" aria-label="Post a Need, Offer or Proof of work">
+  return <section id="business-post-composer" className="biz-composer social-composer" aria-label="Post a Need, Offer or Proof of work">
     <div className="signal-type-row" role="group" aria-label="Business post type">
       {BUSINESS_KINDS.map(item => <button key={item} type="button" aria-pressed={open && kind === item} className={open && kind === item ? 'active' : ''}
         onClick={() => { setKind(item); setErrors({}); setNote(null); setOpen(true) }}>{item === 'Proof of work' ? 'Share proof of work' : `Post a ${item}`}</button>)}
