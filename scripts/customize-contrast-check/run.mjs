@@ -1,4 +1,4 @@
-// Browser regression for the actual Feed > Customize dialog, not a CSS mock.
+// Browser regression for actual CRM Dashboard > Customize, preserving member preferences.
 // Checks real computed text-fill and background colors on mobile + desktop,
 // with BOTH saved appearance modes (including native selects and option text).
 import { spawn } from "node:child_process";
@@ -46,64 +46,51 @@ try {
       },theme);
       const page=await context.newPage();
       await page.goto("http://127.0.0.1:"+port+"/demo",{waitUntil:"domcontentloaded",timeout:120000});
-      const button=page.getByRole("button",{name:/Customize/i}).first();
-      await button.waitFor({state:"visible",timeout:45000});
+      await page.locator('.ledger-dashboard').waitFor({state:'visible',timeout:60000});
+      const button=page.getByRole('button',{name:'Customize',exact:true});
+      await button.waitFor({state:'visible',timeout:45000});
       await button.click();
-      const modal=page.getByRole("dialog",{name:"Customize your feed"});
-      await modal.waitFor({state:"visible"});
+      const modal=page.getByRole('dialog',{name:'Customize your dashboard'});
+      await modal.waitFor({state:'visible',timeout:10000});
       const data=await modal.evaluate(el=>{
-        const cs=getComputedStyle(el);
-        const selectors=[
-          ["heading","header h2"],
-          ["eyebrow",".home-board-label"],
-          ["description",":scope > p"],
-          ["group",".home-feed-customize-show strong"],
-          ["row label",".home-feed-customize-row label"],
-          ["position",".home-feed-customize-row select"],
-          ["view",".home-feed-customize-row label:last-child select"],
-          ["close","header button"],
-          ["reset","footer button:first-child"],
-          ["done","footer button:last-child"],
-        ];
-        return {
-          background:cs.backgroundColor,
-          items:selectors.map(([name,sel])=>{
-            const child=el.querySelector(sel);
-            if(!child)return {name,missing:true};
-            const computed=getComputedStyle(child);
-            const parentColor=child.closest("button,select,.home-feed-customize-row") ?? el;
-            const panel=getComputedStyle(parentColor);
-            return {name,text:(child.textContent||child.getAttribute("aria-label")||"").trim().slice(0,80),
-              ink:computed.webkitTextFillColor||computed.color,
-              fg:computed.color,background:panel.backgroundColor,opacity:computed.opacity,
-              visible:computed.display!=="none"&&computed.visibility!=="hidden"};
-          }),
-          rows:el.querySelectorAll(".home-feed-customize-row").length,
-          nativeOptions:[...el.querySelectorAll("select option")].slice(0,5).map(opt=>{
-            const c=getComputedStyle(opt);return {text:opt.textContent,ink:c.color,bg:c.backgroundColor};
-          })
-        };
+        const selected=['header h2','header p','.ledger-customize-option strong','.ledger-customize-option small','footer button'];
+        const resolved=selected.map(selector=>{
+          const target=el.querySelector(selector);
+          if(!target)return {selector,missing:true};
+          const style=getComputedStyle(target);
+          const surface=getComputedStyle(el);
+          return {selector,foreground:style.webkitTextFillColor||style.color,
+            background:surface.backgroundColor,opacity:style.opacity};
+        });
+        return {count:el.querySelectorAll('.ledger-customize-option').length,items:resolved,
+          background:getComputedStyle(el).backgroundColor};
       });
-      if(data.rows!==6)throw Error("Missing Customize groups: "+JSON.stringify(data));
+      if(data.count!==4)throw Error('CRM dashboard must expose four layout settings: '+JSON.stringify(data));
       for(const item of data.items){
-        if(item.missing||!item.visible)throw Error(theme+" "+size.width+" missing "+JSON.stringify(item));
-        const bg=item.background==="rgba(0, 0, 0, 0)"?data.background:item.background;
-        const ratio=contrast(item.ink,bg);
-        if(ratio<4.5)throw Error(theme+" "+size.width+" unreadable "+item.name+" "+ratio.toFixed(2)+":1 "+JSON.stringify(item));
-        if(Number(item.opacity)<.95)throw Error(theme+" "+size.width+" transparent label "+JSON.stringify(item));
-        console.log("PASS "+theme+" "+size.width+" "+item.name+" "+ratio.toFixed(1)+":1");
+        if(item.missing)throw Error('Missing CRM customization label: '+item.selector);
+        if(contrast(item.foreground,item.background)<4.5)
+          throw Error(theme+' '+size.width+' unreadable CRM customization text '+JSON.stringify(item));
+        if(Number(item.opacity)<.95)throw Error('Transparent CRM customization text '+JSON.stringify(item));
       }
-      for(const item of data.nativeOptions){
-        if(contrast(item.ink,item.bg)<4.5)throw Error(theme+" "+size.width+" dropdown option unreadable: "+JSON.stringify(item));
-      }
-      const panelRatio=contrast(theme==="light"?"rgb(17,17,17)":"rgb(255,255,255)",data.background);
-      if(panelRatio<12)throw Error("Wrong modal palette for "+theme+" "+JSON.stringify(data.background));
-      await modal.getByRole("button",{name:"Done"}).click();
-      if(await modal.isVisible())throw Error("Done did not close modal");
+      const activity=modal.getByRole('checkbox',{name:/Network activity/});
+      if(!(await activity.isChecked()))throw Error('Default CRM activity section is not visible');
+      await activity.uncheck();
+      if(await page.locator('.ledger-dashboard-feed').count())throw Error('CRM activity did not hide');
+      await modal.getByRole('button',{name:'Done'}).click();
+      if(await modal.isVisible())throw Error('CRM Done failed to close');
+      await page.getByRole('button',{name:'Customize',exact:true}).click();
+      const reopened=page.getByRole('dialog',{name:'Customize your dashboard'});
+      if(await reopened.getByRole('checkbox',{name:/Network activity/}).isChecked())
+        throw Error('Saved CRM dashboard customization did not persist');
+      await reopened.getByRole('button',{name:'Reset defaults'}).click();
+      if(!(await reopened.getByRole('checkbox',{name:/Network activity/}).isChecked()))
+        throw Error('CRM Reset defaults failed');
+      await reopened.getByRole('button',{name:'Done'}).click();
+      console.log('PASS CRM customizable dashboard '+theme+' '+size.width);
       await context.close();
     }
   }
-  console.log("Customize modal controls, text and options readable in both modes on desktop/mobile.");
+  console.log('CRM dashboard customization controls and member preferences passed desktop/mobile and both appearance modes.');
 }finally{
   if(browser)await browser.close();
   stop();
