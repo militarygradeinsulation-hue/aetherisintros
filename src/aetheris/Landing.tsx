@@ -9,19 +9,20 @@ import './architectural-system.css'
 import './compact-homepage.css'
 import './editorial-media.css'
 import './public-burnt-orange.css'
+import './reference-landing.css'
 
-/** Compact typographic homepage with no illustrative photography. */
+/** Screenshot-inspired, interactive entry point; member workflows stay in /app. */
 function JoinAction({ signedIn, className = '' }: { signedIn: boolean; className?: string }) {
   return signedIn
-    ? <Link className={className} to="/app">Find your next connection <ArrowUpRight aria-hidden="true" size={16} /></Link>
-    : <Link className={className} to="/auth" search={{ mode: 'signup' }}>Create your account <ArrowUpRight aria-hidden="true" size={16} /></Link>
+    ? <Link className={className} to="/app">Enter your network <ArrowUpRight aria-hidden="true" size={16} /></Link>
+    : <Link className={className} to="/auth" search={{ mode: 'signup' }}>Enter your network <ArrowUpRight aria-hidden="true" size={16} /></Link>
 }
 
 export default function Landing() {
   const { access } = useAccess()
   const signedIn = access.signedIn
 
-  return <main className="ael ael-compact ael--text">
+  return <main className="ael ael-compact ael--text ael--reference">
     <a className="ael-skip" href="#ael-main">Skip to content</a>
 
     <header className="ael-header" aria-label="Ask Intros public navigation">
@@ -45,14 +46,20 @@ export default function Landing() {
       <div className="ael-hero-content">
         <div className="ael-platform-strip" aria-label="A purposeful business connection">
           <p className="ael-platform-statement">A real business need. A relevant person. <strong>A reason to connect.</strong></p>
+          <div className="ael-platform-features" aria-label="Ask Intros business tools">
+            <span>Member network</span>
+            <span>Introductions</span>
+            <span>Meetings</span>
+            <span>Opportunities</span>
+          </div>
           <p className="ael-platform-disclaimer">The relationship network for CEOs. Who matters. Why they matter. Why now.</p>
         </div>
         <p className="ael-kicker ael-kicker-light"><span className="ael-dash" /> Relationships by design</p>
         <h1 id="ael-hero-title" className="stencil-display"><span className="sr-only">The Only social platform that runs your business.</span><StencilHeadline lines={['THE ONLY SOCIAL', 'PLATFORM THAT', 'RUNS YOUR BUSINESS']} className="stencil-headline--hero" /></h1>
-        <p className="ael-hero-lede">Share what you need. Explore relevant people. Request an introduction with context and mutual consent.</p>
+        <p className="ael-hero-lede">The people who matter. A reason to meet. A place to make something happen.</p>
         <div className="ael-hero-actions">
           <JoinAction signedIn={signedIn} className="ael-btn ael-btn-gold ai-gradient-button" />
-          <Link to="/try" className="ael-text-link">Try it in 30 seconds <ArrowRight aria-hidden="true" size={16} /></Link>
+          <Link to="/try" className="ael-text-link">Explore Ask Intros <ArrowRight aria-hidden="true" size={16} /></Link>
         </div>
       </div>
       <div className="ael-hero-bottom">
