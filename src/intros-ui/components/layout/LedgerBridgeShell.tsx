@@ -165,7 +165,7 @@ export function LedgerBridgeShell({
     <aside className="ledger-crm-sidebar ix-global-header" aria-label="Workspace sidebar">
       <div className="ledger-native-brand">
         <button type="button" onClick={() => { closeAll(); onNavigate('home'); }}
-          aria-label="Ask Intros home" title="Ask Intros home" className="ledger-native-logo">Æ</button>
+          aria-label="Ask Intros home" title="Ask Intros home" className="ledger-native-logo"><span aria-hidden="true" className="ledger-ai-mono"><span>A</span><span>I</span></span></button>
         <button type="button" className="ledger-native-brand-name" onClick={() => { closeAll(); onNavigate('home'); }}>
           <strong>ASK INTROS</strong><small>RELATIONSHIP OS</small>
         </button>
@@ -180,7 +180,7 @@ export function LedgerBridgeShell({
     {drawerOpen && <div className="ledger-native-drawer-backdrop">
       <button type="button" className="ledger-native-drawer-scrim" aria-label="Close navigation" onClick={() => setDrawerOpen(false)} />
       <aside className="ledger-native-mobile-sidebar" aria-label="Mobile workspace sidebar">
-        <div className="ledger-native-brand"><span className="ledger-native-logo">Æ</span><strong>ASK INTROS</strong>
+        <div className="ledger-native-brand"><span className="ledger-native-logo"><span aria-hidden="true" className="ledger-ai-mono"><span>A</span><span>I</span></span></span><strong>ASK INTROS</strong>
           <button type="button" aria-label="Close navigation" onClick={() => setDrawerOpen(false)}><X size={20}/></button>
         </div>
         <Nav mobile />
