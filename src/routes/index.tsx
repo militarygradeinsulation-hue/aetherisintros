@@ -9,7 +9,7 @@ export const Route = createFileRoute('/')({
   staticData: { sitemap: true },
   head: () => ({
     meta: [
-      { title: 'Aetheris Intros — One Connected System for CEOs' },
+      { title: 'Ask Intros — One Connected System for CEOs' },
       {
         name: 'description',
         content:
