@@ -197,7 +197,7 @@ export const WorkspaceModal: React.FC<WorkspaceModalProps> = ({
               <ShieldCheck size={13} className="text-[#F5B027]" />
               <span>Approvals</span>
               {pendingApprovalsCount > 0 && (
-                <span className="px-1.5 py-0.2 rounded-full bg-[#C78522] text-white text-[9px] font-bold">
+                <span className="px-1.5 py-0.2 rounded-full bg-[#B91C1C] text-white text-[9px] font-bold">
                   {pendingApprovalsCount}
                 </span>
               )}
@@ -214,7 +214,7 @@ export const WorkspaceModal: React.FC<WorkspaceModalProps> = ({
 
         {/* Success Banner */}
         {actionSuccessMessage && (
-          <div className="px-5 py-2.5 bg-[#C78522]/15 border-b border-[#C78522]/30 text-[#C78522] text-xs flex items-center gap-2">
+          <div className="px-5 py-2.5 bg-[#B91C1C]/15 border-b border-[#B91C1C]/30 text-[#B91C1C] text-xs flex items-center gap-2">
             <CheckCircle2 size={14} />
             <span>{actionSuccessMessage}</span>
           </div>
@@ -233,7 +233,7 @@ export const WorkspaceModal: React.FC<WorkspaceModalProps> = ({
                     <p className="text-sm text-[#F2EEE6]/60">
                       CEO · Horizon Partners
                     </p>
-                    <div className="text-xs text-[#C78522] font-mono mt-1">
+                    <div className="text-xs text-[#B91C1C] font-mono mt-1">
                       Active Leadership Alignment · 12 Mutual Bridges
                     </div>
                   </div>
@@ -464,7 +464,7 @@ export const WorkspaceModal: React.FC<WorkspaceModalProps> = ({
                   value="=SUM(Q3_SYNDICATE_COMMITS) * INTRO_AFFINITY_WEIGHT"
                   className="bg-transparent text-[#F2EEE6] flex-1 focus:outline-none"
                 />
-                <span className="text-[#C78522] font-bold">$4,800,000 USD</span>
+                <span className="text-[#B91C1C] font-bold">$4,800,000 USD</span>
               </div>
 
               {/* Full Interactive Table */}
@@ -607,7 +607,7 @@ export const WorkspaceModal: React.FC<WorkspaceModalProps> = ({
                     <h2 className="text-lg sm:text-xl font-bold text-[#F2EEE6] mt-0.5">
                       {INITIAL_MEETING.title}
                     </h2>
-                    <span className="text-xs font-mono text-[#C78522]">{INITIAL_MEETING.time}</span>
+                    <span className="text-xs font-mono text-[#B91C1C]">{INITIAL_MEETING.time}</span>
                   </div>
                   <div className="flex items-center gap-2">
                     <button
@@ -646,7 +646,7 @@ export const WorkspaceModal: React.FC<WorkspaceModalProps> = ({
                     <ul className="space-y-1 text-[#F2EEE6]">
                       {INITIAL_MEETING.decisions.map((d, i) => (
                         <li key={i} className="flex items-start gap-1.5">
-                          <span className="text-[#C78522] font-bold">✓</span>
+                          <span className="text-[#B91C1C] font-bold">✓</span>
                           <span>{d}</span>
                         </li>
                       ))}
@@ -696,7 +696,7 @@ export const WorkspaceModal: React.FC<WorkspaceModalProps> = ({
                     className="p-3 rounded-lg bg-[#151922] border border-white/5 flex items-start gap-3 hover:bg-white/5 cursor-pointer transition-colors"
                   >
                     {task.completed ? (
-                      <CheckCircle2 size={16} className="text-[#C78522] shrink-0 mt-0.5" />
+                      <CheckCircle2 size={16} className="text-[#B91C1C] shrink-0 mt-0.5" />
                     ) : (
                       <Circle size={16} className="text-[#F2EEE6]/40 hover:text-[#F5B027] shrink-0 mt-0.5" />
                     )}
@@ -725,7 +725,7 @@ export const WorkspaceModal: React.FC<WorkspaceModalProps> = ({
             <div className="space-y-4">
               <div className="flex items-center justify-between p-3 rounded-lg bg-[#151922] border border-white/5 text-xs font-mono">
                 <div className="flex items-center gap-2">
-                  <span className="w-2 h-2 rounded-full bg-[#C78522]" />
+                  <span className="w-2 h-2 rounded-full bg-[#B91C1C]" />
                   <span>Executive Thread Model: Active</span>
                 </div>
                 <span className="text-[#F2EEE6]/60">Gmail & Outlook Connector Synced</span>
@@ -813,18 +813,18 @@ export const WorkspaceModal: React.FC<WorkspaceModalProps> = ({
                     Predictive cadence & touchpoint drift alerts
                   </div>
                 </div>
-                <span className="px-2.5 py-1 rounded bg-[#C78522]/10 text-[#C78522] font-mono text-xs font-bold">
+                <span className="px-2.5 py-1 rounded bg-[#B91C1C]/10 text-[#B91C1C] font-mono text-xs font-bold">
                   66 Monitored Principals
                 </span>
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-5 gap-3">
                 {[
-                  { key: 'hot', name: 'Hot Now', count: 8, color: '#C78522', desc: '< 7d touchpoint' },
+                  { key: 'hot', name: 'Hot Now', count: 8, color: '#B91C1C', desc: '< 7d touchpoint' },
                   { key: 'emerging', name: 'Emerging', count: 14, color: '#F5B027', desc: 'Accelerating affinity' },
                   { key: 'strategic', name: 'Strategic', count: 29, color: '#F5B027', desc: 'Core institutional bridge' },
                   { key: 'dormant', name: 'Dormant', count: 12, color: '#64748B', desc: '> 30d gap' },
-                  { key: 'at_risk', name: 'At Risk', count: 3, color: '#C78522', desc: 'Critical pending deal' },
+                  { key: 'at_risk', name: 'At Risk', count: 3, color: '#B91C1C', desc: 'Critical pending deal' },
                 ].map((b) => (
                   <div key={b.key} className="bg-[#151922] p-3 rounded-lg border border-white/5 space-y-2">
                     <div className="flex justify-between items-center">
@@ -873,7 +873,7 @@ export const WorkspaceModal: React.FC<WorkspaceModalProps> = ({
                 </div>
 
                 <div className="flex justify-between items-center pt-2">
-                  <div className="text-xs font-mono text-[#C78522] font-bold">
+                  <div className="text-xs font-mono text-[#B91C1C] font-bold">
                     Path Strength: 98% (2 Degrees)
                   </div>
                   <button
@@ -957,16 +957,16 @@ export const WorkspaceModal: React.FC<WorkspaceModalProps> = ({
           {/* 14. NETWORK FORENSICS */}
           {activeTileId === 'network-forensics' && (
             <div className="space-y-5">
-              <div className="p-4 rounded-lg bg-[#C78522]/10 border border-[#C78522]/30 flex items-center justify-between">
+              <div className="p-4 rounded-lg bg-[#B91C1C]/10 border border-[#B91C1C]/30 flex items-center justify-between">
                 <div>
-                  <span className="text-xs font-mono uppercase text-[#C78522] font-bold">
+                  <span className="text-xs font-mono uppercase text-[#B91C1C] font-bold">
                     Forensic Leak Audit Complete
                   </span>
                   <div className="text-sm text-[#F2EEE6] mt-0.5">
                     $1,400,000 USD at-risk capital identified with verified row evidence.
                   </div>
                 </div>
-                <span className="text-xs font-mono px-3 py-1 rounded bg-[#C78522] text-white font-bold">
+                <span className="text-xs font-mono px-3 py-1 rounded bg-[#B91C1C] text-white font-bold">
                   Rule AGENTS.md Compliant
                 </span>
               </div>
@@ -978,7 +978,7 @@ export const WorkspaceModal: React.FC<WorkspaceModalProps> = ({
                 </div>
                 <div className="p-3 rounded-lg bg-[#151922] border border-white/5">
                   <div className="text-[#F2EEE6]/60">MISSED FOLLOW-UPS</div>
-                  <div className="text-xl font-bold text-[#C78522] mt-1">5 Critical</div>
+                  <div className="text-xl font-bold text-[#B91C1C] mt-1">5 Critical</div>
                 </div>
                 <div className="p-3 rounded-lg bg-[#151922] border border-white/5">
                   <div className="text-[#F2EEE6]/60">UNFINISHED INTROS</div>
@@ -986,7 +986,7 @@ export const WorkspaceModal: React.FC<WorkspaceModalProps> = ({
                 </div>
                 <div className="p-3 rounded-lg bg-[#151922] border border-white/5">
                   <div className="text-[#F2EEE6]/60">AT-RISK OPPORTUNITIES</div>
-                  <div className="text-xl font-bold text-[#C78522] mt-1">2 Deals</div>
+                  <div className="text-xl font-bold text-[#B91C1C] mt-1">2 Deals</div>
                 </div>
               </div>
             </div>
@@ -1070,7 +1070,7 @@ export const WorkspaceModal: React.FC<WorkspaceModalProps> = ({
                           {r.relationshipCondition} → {r.action}
                         </div>
                       </div>
-                      <span className="text-[10px] font-bold text-[#C78522] px-2 py-0.5 rounded bg-[#C78522]/10">
+                      <span className="text-[10px] font-bold text-[#B91C1C] px-2 py-0.5 rounded bg-[#B91C1C]/10">
                         {r.executionsCount} fired
                       </span>
                     </div>
@@ -1086,7 +1086,7 @@ export const WorkspaceModal: React.FC<WorkspaceModalProps> = ({
               <div className="p-5 rounded-lg bg-[#151922] border border-white/5 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                 <div>
                   <span className="text-xs font-mono uppercase text-[#F2EEE6]/60">Relationship ROI</span>
-                  <div className="text-3xl font-mono font-bold text-[#C78522]">+342%</div>
+                  <div className="text-3xl font-mono font-bold text-[#B91C1C]">+342%</div>
                   <p className="text-xs text-[#F2EEE6]/60 mt-1">
                     Attribution Model: 4 closed enterprise contracts directly originating from warm double opt-in intros.
                   </p>
@@ -1179,7 +1179,7 @@ export const WorkspaceModal: React.FC<WorkspaceModalProps> = ({
                         <ExecutivePortrait name={intr.partyB.name} avatarUrl={intr.partyB.avatar} size="sm" />
                         <span className="text-xs font-bold text-[#F2EEE6]">{intr.partyB.name}</span>
                       </div>
-                      <span className="text-xs font-mono text-[#C78522] font-bold">{intr.statusLabel}</span>
+                      <span className="text-xs font-mono text-[#B91C1C] font-bold">{intr.statusLabel}</span>
                     </div>
                     <p className="text-xs text-[#F2EEE6]/80 italic">"{intr.context}"</p>
 
@@ -1198,7 +1198,7 @@ export const WorkspaceModal: React.FC<WorkspaceModalProps> = ({
                             key={sIdx}
                             className={`p-1.5 rounded text-center ${
                               isDone
-                                ? 'bg-[#C78522]/15 text-[#C78522] font-bold'
+                                ? 'bg-[#B91C1C]/15 text-[#B91C1C] font-bold'
                                 : isCurrent
                                 ? 'bg-[#F5B027]/20 text-[#F5B027] font-bold border border-[#F5B027]'
                                 : 'bg-black/20 text-[#F2EEE6]/40'
@@ -1259,7 +1259,7 @@ export const WorkspaceModal: React.FC<WorkspaceModalProps> = ({
                 <div className="space-y-2 text-xs font-mono text-[#F2EEE6]">
                   <div className="flex justify-between p-2 rounded bg-[#151922]">
                     <span>Partner A (You) → Elena Rostova (Apex)</span>
-                    <span className="text-[#C78522] font-bold">Primary Lead</span>
+                    <span className="text-[#B91C1C] font-bold">Primary Lead</span>
                   </div>
                   <div className="flex justify-between p-2 rounded bg-[#151922]">
                     <span>Partner B → Marcus Vance (Vance Aero)</span>
@@ -1277,8 +1277,8 @@ export const WorkspaceModal: React.FC<WorkspaceModalProps> = ({
           {/* 22. DIAGNOSTICS */}
           {activeTileId === 'diagnostics' && (
             <div className="space-y-5">
-              <div className="p-5 rounded-lg bg-[#151922] border border-[#C78522]/30 space-y-3">
-                <div className="flex items-center gap-2 text-[#C78522] font-bold text-sm">
+              <div className="p-5 rounded-lg bg-[#151922] border border-[#B91C1C]/30 space-y-3">
+                <div className="flex items-center gap-2 text-[#B91C1C] font-bold text-sm">
                   <ShieldCheck size={18} />
                   <span>Forensic Scan Complete · Executive Golden Report Ready</span>
                 </div>
@@ -1289,7 +1289,7 @@ export const WorkspaceModal: React.FC<WorkspaceModalProps> = ({
                 <div className="flex justify-end pt-2">
                   <button
                     onClick={() => handleSendToApprovalQueue('Download Golden Report PDF', 'Golden report exported')}
-                    className="px-4 py-2 rounded bg-[#C78522] text-black text-xs font-mono font-bold hover:bg-[#C78522]/90"
+                    className="px-4 py-2 rounded bg-[#B91C1C] text-black text-xs font-mono font-bold hover:bg-[#B91C1C]/90"
                   >
                     View Full Golden Report
                   </button>
@@ -1361,7 +1361,7 @@ export const WorkspaceModal: React.FC<WorkspaceModalProps> = ({
 
               <div className="space-y-2.5 text-xs">
                 <div className="p-3 rounded-lg bg-black/40 border border-white/5 flex items-start gap-2.5">
-                  <span className="text-[#C78522] font-bold text-sm shrink-0">!</span>
+                  <span className="text-[#B91C1C] font-bold text-sm shrink-0">!</span>
                   <div>
                     <span className="font-bold text-[#F2EEE6]">3 Relationships Needing Attention:</span>
                     <span className="text-[#F2EEE6]/70 ml-1">
@@ -1371,7 +1371,7 @@ export const WorkspaceModal: React.FC<WorkspaceModalProps> = ({
                 </div>
 
                 <div className="p-3 rounded-lg bg-black/40 border border-white/5 flex items-start gap-2.5">
-                  <span className="text-[#C78522] font-bold text-sm shrink-0">↑</span>
+                  <span className="text-[#B91C1C] font-bold text-sm shrink-0">↑</span>
                   <div>
                     <span className="font-bold text-[#F2EEE6]">2 Opportunities Changed:</span>
                     <span className="text-[#F2EEE6]/70 ml-1">

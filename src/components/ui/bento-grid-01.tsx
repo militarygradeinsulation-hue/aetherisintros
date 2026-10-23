@@ -67,7 +67,7 @@ function SpeedIndicator() {
           initial={{ width: 0 }}
           animate={{ width: loading ? '30%' : '100%' }}
           transition={{ duration: 1 }}
-          className="h-full rounded-full bg-[#C78522]"
+          className="h-full rounded-full bg-[#B91C1C]"
         />
       </div>
     </div>
@@ -88,7 +88,7 @@ function SecurityBadge() {
           animate={{ opacity: i < count ? 1 : 0.25 }}
           className="grid h-11 w-11 place-items-center rounded-md border border-white/10 bg-[#1A1F25]"
         >
-          <Lock size={16} className={i < count ? 'text-[#F4A125]' : 'text-[#9EA4AC]'} />
+          <Lock size={16} className={i < count ? 'text-[#DC2626]' : 'text-[#9EA4AC]'} />
         </motion.span>
       ))}
     </div>
@@ -104,7 +104,7 @@ function GlobalNetwork() {
           key={i}
           animate={{ opacity: [0.2, 1, 0.2] }}
           transition={{ duration: 2.4, repeat: Infinity, delay: i * 0.4 }}
-          className="absolute block h-[3px] w-[3px] rounded-full bg-[#F4A125]"
+          className="absolute block h-[3px] w-[3px] rounded-full bg-[#DC2626]"
           style={{ left: `${18 + i * 16}%`, top: `${30 + (i % 3) * 18}%` }}
         />
       ))}
@@ -176,7 +176,7 @@ export function BentoGrid() {
       <div className="mx-auto max-w-6xl">
         <p className="text-[13px] tracking-[0.22em] text-[#9EA4AC] uppercase">One connected system</p>
         <h2 className="mt-4 max-w-2xl font-serif text-4xl leading-tight text-[#F1EFE9] md:text-5xl">
-          Built around the way relationships <span className="text-[#C78522]">actually move.</span>
+          Built around the way relationships <span className="text-[#B91C1C]">actually move.</span>
         </h2>
         <div className="mt-12 grid auto-rows-[minmax(0,auto)] grid-cols-1 gap-4 md:grid-cols-6">
           {tiles.map((tile) => (
@@ -191,7 +191,7 @@ export function BentoGrid() {
               {tile.visual}
               <div className="mt-6 border-t border-white/10 pt-5">
                 {tile.eyebrow ? (
-                  <p className="text-[12px] tracking-[0.2em] text-[#F4A125] uppercase">{tile.eyebrow}</p>
+                  <p className="text-[12px] tracking-[0.2em] text-[#DC2626] uppercase">{tile.eyebrow}</p>
                 ) : null}
                 <h3 className="mt-2 font-serif text-2xl text-[#F1EFE9]">{tile.title}</h3>
                 <p className="mt-2 max-w-[46ch] text-[15px] leading-relaxed text-[#9EA4AC]">{tile.copy}</p>

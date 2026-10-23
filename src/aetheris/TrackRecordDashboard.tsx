@@ -9,7 +9,7 @@ import { Btn, Eyebrow } from './ui'
 
 function scoreColor(score: number): string {
   if (score >= 70) return '#22c55e'
-  if (score >= 40) return '#f59e0b'
+  if (score >= 40) return '#DC2626'
   return '#ef4444'
 }
 

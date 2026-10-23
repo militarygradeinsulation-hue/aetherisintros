@@ -66,8 +66,8 @@
     color: #c9c9d0;
   }
   .ix-root .aetheris-workspace-shell .specter-app-account .specter-notification:hover {
-    color: #ffbd9b;
-    background: rgba(255,138,76,.10);
+    color: #FCA5A5;
+    background: rgba(239,68,68,.10);
   }
   .ix-root .aetheris-workspace-shell .specter-mobile-menu-toggle {
     display: inline-flex;
@@ -78,22 +78,22 @@
     min-width: 85px;
     min-height: 44px;
     padding: 10px 12px;
-    border: 1px solid rgba(255,138,76,.38);
+    border: 1px solid rgba(239,68,68,.38);
     border-radius: 10px;
     color: #ffd2b9;
-    background: rgba(255,138,76,.11);
+    background: rgba(239,68,68,.11);
     font: 600 12px/1 Poppins, Inter, system-ui, sans-serif;
     letter-spacing: .01em;
     cursor: pointer;
   }
   .ix-root .aetheris-workspace-shell .specter-mobile-menu-toggle[aria-expanded="true"] {
     color: #18100b;
-    background: #ff8a4c;
-    border-color: #ff8a4c;
+    background: #EF4444;
+    border-color: #EF4444;
   }
   .ix-root .aetheris-workspace-shell .specter-mobile-menu-toggle:focus-visible,
   .ix-root .aetheris-workspace-shell .specter-mobile-menu-close:focus-visible {
-    outline: 2px solid #ff8a4c;
+    outline: 2px solid #EF4444;
     outline-offset: 3px;
   }
 
@@ -128,8 +128,8 @@
     overscroll-behavior: contain;
     scrollbar-width: thin;
     padding-bottom: max(18px, env(safe-area-inset-bottom, 0px));
-    border-left: 1px solid rgba(255,138,76,.25);
-    border-top: 1px solid rgba(255,138,76,.22);
+    border-left: 1px solid rgba(239,68,68,.25);
+    border-top: 1px solid rgba(239,68,68,.22);
     border-radius: 12px 0 0 0;
     background: #101013;
     box-shadow: -18px 0 70px rgba(0,0,0,.46);
@@ -152,7 +152,7 @@
   .ix-root .aetheris-workspace-shell .specter-mobile-menu-kicker {
     font: 500 9px/1.5 'IBM Plex Mono', ui-monospace, monospace;
     letter-spacing: .17em;
-    color: #ff9f6c;
+    color: #FCA5A5;
   }
   .ix-root .aetheris-workspace-shell .specter-mobile-menu-heading h2 {
     margin: 3px 0 0;
@@ -176,8 +176,8 @@
     cursor: pointer;
   }
   .ix-root .aetheris-workspace-shell .specter-mobile-menu-close:hover {
-    border-color: rgba(255,138,76,.42);
-    color: #ffbb97;
+    border-color: rgba(239,68,68,.42);
+    color: #FCA5A5;
   }
   .ix-root .aetheris-workspace-shell .specter-mobile-search {
     width: auto;
@@ -197,7 +197,7 @@
     margin: 0;
     font: 500 10px/1.4 'IBM Plex Mono', ui-monospace, monospace;
     letter-spacing: .13em;
-    color: #ff9f6c;
+    color: #FCA5A5;
   }
   .ix-root .aetheris-workspace-shell .specter-mobile-menu nav {
     display: grid;
@@ -227,18 +227,18 @@
     color: #9d9da5;
   }
   .ix-root .aetheris-workspace-shell .specter-mobile-menu nav :is(a,button):hover {
-    background: rgba(255,138,76,.08);
+    background: rgba(239,68,68,.08);
     color: #ffcfb7;
   }
   .ix-root .aetheris-workspace-shell .specter-mobile-menu nav .active,
   .ix-root .aetheris-workspace-shell .specter-mobile-menu nav [aria-current="page"] {
     color: #ffc3a2;
-    background: rgba(255,138,76,.12);
-    border-color: rgba(255,138,76,.23);
-    box-shadow: inset 3px 0 #ff8a4c;
+    background: rgba(239,68,68,.12);
+    border-color: rgba(239,68,68,.23);
+    box-shadow: inset 3px 0 #EF4444;
   }
   .ix-root .aetheris-workspace-shell .specter-mobile-menu nav .active svg {
-    color: #ff9e68;
+    color: #FCA5A5;
   }
 
   .ix-root .aetheris-workspace-shell .specter-app-canvas {

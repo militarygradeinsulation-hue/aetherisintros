@@ -296,7 +296,7 @@ export const ExecutiveRichTextEditor: React.FC<ExecutiveRichTextEditorProps> = (
         const itemText = line.replace(/^- \[[ xX]\] /, '');
         return (
           <div key={idx} className="flex items-start gap-2 py-0.5 text-xs text-[#F2EEE6]/90">
-            <span className={`mt-0.5 text-xs ${isChecked ? 'text-[#C78522]' : 'text-[#F5B027]'}`}>
+            <span className={`mt-0.5 text-xs ${isChecked ? 'text-[#B91C1C]' : 'text-[#F5B027]'}`}>
               {isChecked ? '☑' : '☐'}
             </span>
             <span className={isChecked ? 'line-through text-[#F2EEE6]/50' : ''}>{itemText}</span>
@@ -416,7 +416,7 @@ export const ExecutiveRichTextEditor: React.FC<ExecutiveRichTextEditorProps> = (
                         title="Copy structured minutes to clipboard"
                       >
                         {copiedNoteId === activeNote.id ? (
-                          <Check size={12} className="text-[#C78522]" />
+                          <Check size={12} className="text-[#B91C1C]" />
                         ) : (
                           <Copy size={12} />
                         )}
@@ -430,7 +430,7 @@ export const ExecutiveRichTextEditor: React.FC<ExecutiveRichTextEditorProps> = (
                       </button>
                       <button
                         onClick={() => handleDeleteNote(activeNote.id)}
-                        className="p-1 rounded text-[#F2EEE6]/50 hover:text-[#C78522] hover:bg-white/10 transition-colors"
+                        className="p-1 rounded text-[#F2EEE6]/50 hover:text-[#B91C1C] hover:bg-white/10 transition-colors"
                         title="Delete note"
                       >
                         <Trash2 size={12} />
@@ -650,7 +650,7 @@ export const ExecutiveRichTextEditor: React.FC<ExecutiveRichTextEditorProps> = (
 
             <div className="flex items-center gap-2">
               {saveSuccess && (
-                <span className="text-[11px] font-mono text-[#C78522] flex items-center gap-1">
+                <span className="text-[11px] font-mono text-[#B91C1C] flex items-center gap-1">
                   <Check size={12} /> Saved!
                 </span>
               )}

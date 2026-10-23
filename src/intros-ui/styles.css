@@ -359,16 +359,16 @@
 /* leftover hard-coded green / red — retired in favour of the gold signal */
 .ix-root [class*="text-[#3FB37F]"],
 .ix-root [class*="text-[#E5484D]"],
-.ix-root [class*="text-[#F97316]"] { color: var(--acc) !important; }
+.ix-root [class*="text-[#EF4444]"] { color: var(--acc) !important; }
 .ix-root [class*="bg-[#3FB37F]"],
 .ix-root [class*="bg-[#E5484D]"],
-.ix-root [class*="bg-[#F97316]"] {
+.ix-root [class*="bg-[#EF4444]"] {
   background-color: var(--acc) !important;
   color: #101216 !important;
 }
 .ix-root [class*="border-[#3FB37F]"],
 .ix-root [class*="border-[#E5484D]"],
-.ix-root [class*="border-[#F97316]"] { border-color: var(--acc-line) !important; }
+.ix-root [class*="border-[#EF4444]"] { border-color: var(--acc-line) !important; }
 
 /* classic primary CTA: light black with a gold hairline, never solid blue */
 .ix-root .btn.primary {
@@ -387,7 +387,7 @@
    ============================================================ */
 .ix-root [class*="bg-[#F5B027]"],
 .ix-root [class*="bg-[#FFC85C]"],
-.ix-root [class*="bg-[#C78522]"],
+.ix-root [class*="bg-[#B91C1C]"],
 .ix-root [class*="bg-[#8A5A12]"] {
   background-color: var(--acc-btn) !important;
   /* Solid accent buttons must use the ink paired with --acc-btn
@@ -397,7 +397,7 @@
   box-shadow: inset 0 0 0 1px var(--acc-btn-line) !important;
 }
 .ix-root [class*="bg-[#F5B027]/"],
-.ix-root [class*="bg-[#C78522]/"],
+.ix-root [class*="bg-[#B91C1C]/"],
 .ix-root [class*="bg-[#FFC85C]/"],
 .ix-root [class*="bg-[#8A5A12]/"] {
   background-color: var(--acc-wash) !important;
@@ -418,7 +418,7 @@
 /* hover: a touch warmer, still translucent */
 .ix-root [class*="hover:bg-[#F5B027]"]:hover,
 .ix-root [class*="hover:bg-[#FFC85C]"]:hover,
-.ix-root [class*="hover:bg-[#C78522]"]:hover,
+.ix-root [class*="hover:bg-[#B91C1C]"]:hover,
 .ix-root [class*="hover:bg-[#8A5A12]"]:hover,
 .ix-root [class*="hover:bg-[#3D6BF2]"]:hover,
 .ix-root [class*="hover:bg-[#60A5FA]"]:hover,
@@ -436,11 +436,11 @@
 }
 /* round indicators keep solid gold — dots and badges, not buttons */
 .ix-root [class*="rounded-full"][class*="bg-[#F5B027]"],
-.ix-root [class*="rounded-full"][class*="bg-[#C78522]"],
+.ix-root [class*="rounded-full"][class*="bg-[#B91C1C]"],
 .ix-root [class*="rounded-full"][class*="bg-[#FFC85C]"],
 .ix-root [class*="rounded-full"][class*="bg-[#8A5A12]"],
 .ix-root [class*="rounded-[999px]"][class*="bg-[#F5B027]"],
-.ix-root [class*="rounded-[999px]"][class*="bg-[#C78522]"],
+.ix-root [class*="rounded-[999px]"][class*="bg-[#B91C1C]"],
 .ix-root [class*="rounded-[999px]"][class*="bg-[#FFC85C]"],
 .ix-root [class*="rounded-[999px]"][class*="bg-[#8A5A12]"] {
   background-color: var(--acc) !important;
@@ -448,10 +448,10 @@
   box-shadow: 0 0 14px -3px var(--acc-glow) !important;
 }
 .ix-root [class*="rounded-full"][class*="hover:bg-[#F5B027]"]:hover,
-.ix-root [class*="rounded-full"][class*="hover:bg-[#C78522]"]:hover,
+.ix-root [class*="rounded-full"][class*="hover:bg-[#B91C1C]"]:hover,
 .ix-root [class*="rounded-full"][class*="hover:bg-[#FFC85C]"]:hover,
 .ix-root [class*="rounded-[999px]"][class*="hover:bg-[#F5B027]"]:hover,
-.ix-root [class*="rounded-[999px]"][class*="hover:bg-[#C78522]"]:hover {
+.ix-root [class*="rounded-[999px]"][class*="hover:bg-[#B91C1C]"]:hover {
   background-color: var(--acc-bright) !important;
   color: #101216 !important;
   box-shadow: 0 0 16px -2px var(--acc-glow) !important;
@@ -473,10 +473,10 @@
 /* Inline SVG attributes follow the mode too. */
 .ix-root [stroke="#F5B027"] { stroke: var(--acc) !important; }
 .ix-root [stroke="#FFC85C"] { stroke: var(--acc-bright) !important; }
-.ix-root [stroke="#C78522"] { stroke: var(--acc-strong) !important; }
+.ix-root [stroke="#B91C1C"] { stroke: var(--acc-strong) !important; }
 .ix-root [fill="#F5B027"] { fill: var(--acc) !important; }
 .ix-root [fill="#FFC85C"] { fill: var(--acc-bright) !important; }
-.ix-root [fill="#C78522"] { fill: var(--acc-strong) !important; }
+.ix-root [fill="#B91C1C"] { fill: var(--acc-strong) !important; }
 .ix-root [style*="#F5B027"] { color: var(--acc); }
 
 /* ---------- aurora backdrop ---------- */
@@ -616,14 +616,14 @@
   --sys-panel:#11161b;
   --sys-ink:#f2eee6;
   --sys-card:#f4f1ea;
-  --sys-warn:#f4a125;
-  --sys-gold:#f4a125;
-  --sys-accent:#f4a125;
+  --sys-warn:#DC2626;
+  --sys-gold:#DC2626;
+  --sys-accent:#DC2626;
 }
 .ix-root header { border-bottom-color:rgba(215,194,154,.22); }
 .ix-root .sys-tile { border-color:rgba(215,194,154,.12); }
-.ix-root .sys-tile:hover { border-color:rgba(244,161,37,.44); }
-.ix-root :is(input,textarea,select):focus-visible { outline:2px solid #f4a125; outline-offset:2px; }
+.ix-root .sys-tile:hover { border-color:rgba(220,38,38,.44); }
+.ix-root :is(input,textarea,select):focus-visible { outline:2px solid #DC2626; outline-offset:2px; }
 .ix-root .ask-intros-lockup--compact { width:clamp(220px,20vw,300px); height:auto; max-height:none; }
 @media(max-width:680px) { .ix-root .ask-intros-lockup--compact { width:clamp(165px,48vw,208px); } }
 

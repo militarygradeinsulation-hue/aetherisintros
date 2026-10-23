@@ -1058,9 +1058,9 @@ body .ix-root .ix-classic .app-shell .content .ai-insight-list .insight-actions 
 body :is(.ix-root,.app-shell,.ask-os,.ael,.auth-page,.verify-page,.admin-page)
  :is(button,a,span,div)[class~="bg-[#F5B027]"],
 body :is(.ix-root,.app-shell,.ask-os,.ael,.auth-page,.verify-page,.admin-page)
- :is(button,a,span,div)[class~="bg-[#C78522]"],
+ :is(button,a,span,div)[class~="bg-[#B91C1C]"],
 body :is(.ix-root,.app-shell,.ask-os,.ael,.auth-page,.verify-page,.admin-page)
- :is(button,a,span,div)[class~="bg-[#F4A125]"],
+ :is(button,a,span,div)[class~="bg-[#DC2626]"],
 body :is(.ix-root,.app-shell,.ask-os,.ael,.auth-page,.verify-page,.admin-page)
  :is(button,a,span,div)[class~="bg-[#FFC85C]"] {
   background:var(--st-ink)!important;color:var(--st-bg)!important;
@@ -1069,9 +1069,9 @@ body :is(.ix-root,.app-shell,.ask-os,.ael,.auth-page,.verify-page,.admin-page)
 body :is(.ix-root,.app-shell,.ask-os,.ael,.auth-page,.verify-page,.admin-page)
  :is(button,a,span,div)[class~="bg-[#F5B027]"] :is(span,strong,small,svg),
 body :is(.ix-root,.app-shell,.ask-os,.ael,.auth-page,.verify-page,.admin-page)
- :is(button,a,span,div)[class~="bg-[#C78522]"] :is(span,strong,small,svg),
+ :is(button,a,span,div)[class~="bg-[#B91C1C]"] :is(span,strong,small,svg),
 body :is(.ix-root,.app-shell,.ask-os,.ael,.auth-page,.verify-page,.admin-page)
- :is(button,a,span,div)[class~="bg-[#F4A125]"] :is(span,strong,small,svg),
+ :is(button,a,span,div)[class~="bg-[#DC2626]"] :is(span,strong,small,svg),
 body :is(.ix-root,.app-shell,.ask-os,.ael,.auth-page,.verify-page,.admin-page)
  :is(button,a,span,div)[class~="bg-[#FFC85C]"] :is(span,strong,small,svg) {
   color:inherit!important;stroke:currentColor;
@@ -1395,7 +1395,7 @@ body .auth-page .auth-panel .auth-index :is(span,b,small) {
 /* Profile initials and score badges in the introduction modal, including
  * cases where a real avatar image isn't available. */
 body .stencil-intro-request-panel
- :is([class~="text-[#F5B027]"],[class~="text-[#C78522]"]) {
+ :is([class~="text-[#F5B027]"],[class~="text-[#B91C1C]"]) {
   color:var(--st-ink)!important;opacity:1!important;
 }
 body .stencil-intro-request-panel .bg-gradient-to-br {

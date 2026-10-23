@@ -123,7 +123,7 @@ function Inner({ onOpenWorkspaces }: { onOpenWorkspaces?: () => void }) {
           <div className="p-3 border-t border-[var(--msg-border)] space-y-1">
             <label className="flex items-center justify-between gap-2 text-xs text-[var(--msg-body)] cursor-pointer">
               <span>Read receipts</span>
-              <input type="checkbox" checked={receipts ?? true} disabled={receipts === null} onChange={() => void toggleReceipts()} className="accent-[#FF8A4C]" />
+              <input type="checkbox" checked={receipts ?? true} disabled={receipts === null} onChange={() => void toggleReceipts()} className="accent-[#EF4444]" />
             </label>
             <p className="text-[11px] text-[var(--msg-muted)]">{receipts === false
               ? 'Off: nobody sees when you have read their messages, and you do not see when they read yours.'

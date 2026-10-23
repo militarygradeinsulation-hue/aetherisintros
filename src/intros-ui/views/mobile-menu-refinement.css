@@ -49,10 +49,10 @@
     justify-content: center;
     gap: 8px;
     flex: 0 0 auto;
-    background: rgba(255,138,76,.09);
-    border: 1px solid rgba(255,138,76,.50);
+    background: rgba(239,68,68,.09);
+    border: 1px solid rgba(239,68,68,.50);
     border-radius: 9px;
-    color: #ffbc96;
+    color: #FCA5A5;
     box-shadow: none;
     font: 600 12px/1.1 Poppins,Inter,system-ui,sans-serif;
     white-space: nowrap;
@@ -72,9 +72,9 @@
     -webkit-text-fill-color: currentColor;
   }
   .ix-root .aetheris-workspace-shell .specter-app-account > .specter-mobile-menu-toggle[aria-expanded="true"] {
-    background: #ff8a4c;
+    background: #EF4444;
     color: #1b120e;
-    border-color: #ff8a4c;
+    border-color: #EF4444;
   }
   .ix-root .aetheris-workspace-shell .specter-mobile-menu {
     top: 64px;

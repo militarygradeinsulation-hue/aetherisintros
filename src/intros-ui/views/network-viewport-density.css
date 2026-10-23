@@ -100,7 +100,7 @@
   border-bottom:1px solid rgba(255,255,255,.10);
 }
 .ix-aetheris-workspace-mode .ix-network-results-list :is(button,input,select):focus-visible {
-  outline:2px solid #ff8a4c;
+  outline:2px solid #EF4444;
   outline-offset:2px;
 }
 @media(min-width:1024px) and (max-width:1199px) {

@@ -636,7 +636,7 @@ const Widget = memo(function Widget({
 					delay,
 				}}
 				className={`board-tile relative isolate flex h-full w-full flex-col overflow-hidden rounded-[var(--widget-radius)] bg-[#0E121A] text-[#F2EEE6] ring-inset transition-shadow duration-300 [clip-path:inset(0_round_var(--widget-radius))] ${
-					landed ? 'ring-2 ring-[#C78522]' : 'ring-1 ring-white/10'
+					landed ? 'ring-2 ring-[#B91C1C]' : 'ring-1 ring-white/10'
 				}`}>
 				{renderItem?.(item as never, sizeOf(w, h))}
 			</motion.div>

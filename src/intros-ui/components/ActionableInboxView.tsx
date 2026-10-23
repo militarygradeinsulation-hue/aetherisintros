@@ -116,7 +116,7 @@ export const ActionableInboxView: React.FC<ActionableInboxViewProps> = ({
   const getPriorityStyle = (priority: 'high' | 'medium' | 'low') => {
     switch (priority) {
       case 'high':
-        return 'text-[#C78522] border-[#C78522]/30 bg-[#C78522]/10';
+        return 'text-[#B91C1C] border-[#B91C1C]/30 bg-[#B91C1C]/10';
       case 'medium':
         return 'text-[#F5B027] border-[#F5B027]/30 bg-[#F5B027]/10';
       case 'low':
@@ -150,8 +150,8 @@ export const ActionableInboxView: React.FC<ActionableInboxViewProps> = ({
             </div>
           </div>
           <div className="px-3 py-2 rounded-lg bg-black/40 border border-white/5 text-center min-w-[90px]">
-            <div className="text-[9px] font-mono text-[#C78522] uppercase tracking-wider">High Urgency</div>
-            <div className="text-lg font-mono font-bold text-[#C78522] tabular-nums mt-0.5">
+            <div className="text-[9px] font-mono text-[#B91C1C] uppercase tracking-wider">High Urgency</div>
+            <div className="text-lg font-mono font-bold text-[#B91C1C] tabular-nums mt-0.5">
               {highPriorityCount}
             </div>
           </div>
@@ -261,7 +261,7 @@ export const ActionableInboxView: React.FC<ActionableInboxViewProps> = ({
 
         {/* Toast confirmation */}
         {completedToast && (
-          <div className="text-[11px] font-mono text-[#C78522] flex items-center gap-1.5 animate-in fade-in duration-200">
+          <div className="text-[11px] font-mono text-[#B91C1C] flex items-center gap-1.5 animate-in fade-in duration-200">
             <CheckCircle2 size={13} />
             <span>{completedToast}</span>
           </div>
@@ -295,7 +295,7 @@ export const ActionableInboxView: React.FC<ActionableInboxViewProps> = ({
                   className="mt-0.5 text-[#F5B027] hover:text-white transition-colors shrink-0"
                 >
                   {isCompleted ? (
-                    <CheckSquare size={17} className="text-[#C78522]" />
+                    <CheckSquare size={17} className="text-[#B91C1C]" />
                   ) : (
                     <Square size={17} className="text-[#F2EEE6]/40 group-hover:text-[#F5B027]" />
                   )}
@@ -379,14 +379,14 @@ export const ActionableInboxView: React.FC<ActionableInboxViewProps> = ({
                   <div className="flex items-center gap-1.5 shrink-0 self-center">
                     <button
                       onClick={(e) => handleApprove(task.id, e)}
-                      className="px-2.5 py-1 rounded bg-[#C78522]/20 hover:bg-[#C78522]/30 border border-[#C78522]/40 text-[#C78522] text-xs font-mono font-medium flex items-center gap-1 transition-colors"
+                      className="px-2.5 py-1 rounded bg-[#B91C1C]/20 hover:bg-[#B91C1C]/30 border border-[#B91C1C]/40 text-[#B91C1C] text-xs font-mono font-medium flex items-center gap-1 transition-colors"
                     >
                       <Check size={12} />
                       <span>Approve</span>
                     </button>
                     <button
                       onClick={(e) => handleReject(task.id, e)}
-                      className="px-2 py-1 rounded bg-white/5 hover:bg-[#C78522]/20 text-[#F2EEE6]/60 hover:text-[#C78522] text-xs font-mono transition-colors"
+                      className="px-2 py-1 rounded bg-white/5 hover:bg-[#B91C1C]/20 text-[#F2EEE6]/60 hover:text-[#B91C1C] text-xs font-mono transition-colors"
                     >
                       <X size={12} />
                     </button>
@@ -397,7 +397,7 @@ export const ActionableInboxView: React.FC<ActionableInboxViewProps> = ({
           })
         ) : (
           <div className="p-12 text-center border border-dashed border-white/10 rounded-xl bg-[#0E1116]/40 space-y-2">
-            <CheckCircle2 size={24} className="mx-auto text-[#C78522]" />
+            <CheckCircle2 size={24} className="mx-auto text-[#B91C1C]" />
             <div className="font-serif-editorial text-lg text-[#F2EEE6]">Inbox Cleared</div>
             <p className="text-xs text-[#F2EEE6]/50 max-w-sm mx-auto">
               No outstanding action items match this filter. All commitments across your relationship network are synchronized.

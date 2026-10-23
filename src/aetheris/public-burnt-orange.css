@@ -2,25 +2,25 @@
    Text-only editorial layout stays intact. No stock art, fake figures or
    additional scroll sections are introduced. */
 .ael.ael-compact.ael--text {
-  --ael-copper: #ff8a4c;
-  --ael-copper-line: rgba(255,138,76,.36);
-  --ael-copper-soft: rgba(255,138,76,.10);
+  --ael-copper: #EF4444;
+  --ael-copper-line: rgba(239,68,68,.36);
+  --ael-copper-soft: rgba(239,68,68,.10);
 }
 .ael.ael-compact.ael--text .ael-header {
-  border-bottom-color: rgba(255,138,76,.22);
+  border-bottom-color: rgba(239,68,68,.22);
 }
 .ael.ael-compact.ael--text .ael-hero .ael-kicker,
 .ael.ael-compact.ael--text .ael-compact-method-heading .ael-fine-label {
-  color: #ffba96;
+  color: #FCA5A5;
 }
 .ael.ael-compact.ael--text .ael-platform-statement strong {
-  color: #ffbf9f;
+  color: #FCA5A5;
 }
 .ael.ael-compact.ael--text .ael-hero .ael-dash {
   background: var(--ael-copper);
 }
 .ael.ael-compact.ael--text .ael-hero h1 em {
-  color: #ffac7c;
+  color: #FCA5A5;
 }
 .ael.ael-compact.ael--text .ael-nav-cta.ai-gradient-button,
 .ael.ael-compact.ael--text .ael-btn.ai-gradient-button {
@@ -33,7 +33,7 @@
 .ael.ael-compact.ael--text .ael-nav-cta.ai-gradient-button:hover,
 .ael.ael-compact.ael--text .ael-btn.ai-gradient-button:hover {
   background: var(--ael-copper) !important;
-  border-color: #ffac7a !important;
+  border-color: #FCA5A5 !important;
   color: #1c120e !important;
   box-shadow: 0 9px 24px rgba(0,0,0,.23) !important;
 }
@@ -42,14 +42,14 @@
 }
 .ael.ael-compact.ael--text .ael-hero-actions .ael-text-link:hover,
 .ael.ael-compact.ael--text .ael-compact-story .ael-underlink:hover {
-  color: #ffb88d !important;
+  color: #FCA5A5 !important;
   border-color: var(--ael-copper);
 }
 .ael.ael-compact.ael--text .ael-compact-story .ael-editorial-meta {
-  border-color: rgba(255,138,76,.20);
+  border-color: rgba(239,68,68,.20);
 }
 .ael.ael-compact.ael--text .ael-compact-method .ael-compact-steps li {
-  border-bottom-color: rgba(255,138,76,.18);
+  border-bottom-color: rgba(239,68,68,.18);
 }
 .ael.ael-compact.ael--text .ael-compact-story :is(a,button):focus-visible,
 .ael.ael-compact.ael--text .ael-hero :is(a,button):focus-visible {

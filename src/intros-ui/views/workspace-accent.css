@@ -3,7 +3,7 @@
    marketing and auth pages are never restyled. Poppins stays the interface
    face; IBM Plex Mono is reserved for tiny metadata. */
 .ix-root {
-  --ix-accent: #ff8a4c;
+  --ix-accent: #EF4444;
   --ix-accent-deep: #c96a3d;
   --ix-bg: #0a0a0b;
   --ix-panel: #0e0e10;
@@ -50,7 +50,7 @@
   font: 600 13px/1 Poppins, Inter, system-ui, sans-serif; padding: 12px 18px; cursor: pointer;
   transition: background .15s ease;
 }
-.mi-cta:hover { background: #ffa166; }
+.mi-cta:hover { background: #FCA5A5; }
 .mi-cta:focus-visible { outline: 2px solid var(--ix-accent); outline-offset: 3px; }
 
 @media (max-width: 640px) {
@@ -145,7 +145,7 @@
   color: var(--ix-muted, #84848c); margin: 4px 0 0; text-transform: uppercase; letter-spacing: .08em;
 }
 .home-feed-welcome-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; min-width: 0; max-width: 100%; }
-.home-feed-welcome-cta { background: var(--ix-accent, #ff8a4c) !important; color: #14100c !important; }
+.home-feed-welcome-cta { background: var(--ix-accent, #EF4444) !important; color: #14100c !important; }
 .home-feed-welcome-cta:hover { filter: brightness(1.08); }
 @media (max-width: 640px) {
   .home-feed-welcome-actions { width: 100%; }
@@ -167,8 +167,8 @@
   font: 600 12px/1 Poppins, Inter, system-ui, sans-serif; padding: 9px 14px; cursor: pointer;
   transition: border-color .15s ease, color .15s ease;
 }
-.ix-intros-crosslink button:hover { border-color: var(--ix-accent, #ff8a4c); color: var(--ix-accent, #ff8a4c); }
-.ix-intros-crosslink button:focus-visible { outline: 2px solid var(--ix-accent, #ff8a4c); outline-offset: 2px; }
+.ix-intros-crosslink button:hover { border-color: var(--ix-accent, #EF4444); color: var(--ix-accent, #EF4444); }
+.ix-intros-crosslink button:focus-visible { outline: 2px solid var(--ix-accent, #EF4444); outline-offset: 2px; }
 @media (prefers-reduced-motion: reduce) {
   .home-feed-welcome-cta, .ix-intros-crosslink button { transition: none; }
 }
@@ -187,9 +187,9 @@
 }
 .ix-classic .memory-module-tabs button:hover { color: #f2f1ec; border-color: rgba(255,255,255,.25); }
 .ix-classic .memory-module-tabs button.active {
-  background: rgba(255,138,76,.12); border-color: #ff8a4c; color: #ff8a4c;
+  background: rgba(239,68,68,.12); border-color: #EF4444; color: #EF4444;
 }
-.ix-classic .memory-module-tabs button:focus-visible { outline: 2px solid #ff8a4c; outline-offset: 2px; }
+.ix-classic .memory-module-tabs button:focus-visible { outline: 2px solid #EF4444; outline-offset: 2px; }
 @media (prefers-reduced-motion: reduce) {
   .ix-classic .memory-module-tabs button { transition: none; }
 }

@@ -207,7 +207,7 @@ ${processedResult.decisions.map((d) => `- ${d}`).join('\n')}`;
                 <span className="text-[9.5px] font-mono tracking-[0.25em] text-[#F5B027] uppercase font-bold">
                   Voice Note to Minutes
                 </span>
-                <span className="text-[9px] font-mono px-1.5 py-0.2 rounded bg-[#C78522]/15 text-[#C78522] font-semibold border border-[#C78522]/30">
+                <span className="text-[9px] font-mono px-1.5 py-0.2 rounded bg-[#B91C1C]/15 text-[#B91C1C] font-semibold border border-[#B91C1C]/30">
                   Gemini LLM
                 </span>
               </div>
@@ -248,7 +248,7 @@ ${processedResult.decisions.map((d) => `- ${d}`).join('\n')}`;
                 onClick={isRecording ? stopRecording : startRecording}
                 className={`px-4 py-2.5 rounded-xl font-mono text-xs font-semibold flex items-center gap-2 transition-all shadow-md shrink-0 ${
                   isRecording
-                    ? 'bg-[#C78522] text-white animate-pulse shadow-[0_0_12px_rgba(229,72,77,0.7)]'
+                    ? 'bg-[#B91C1C] text-white animate-pulse shadow-[0_0_12px_rgba(229,72,77,0.7)]'
                     : 'bg-[#F5B027] hover:bg-[#F5B027]/90 text-white'
                 }`}
               >
@@ -267,12 +267,12 @@ ${processedResult.decisions.map((d) => `- ${d}`).join('\n')}`;
 
               <div className="flex-1 min-w-0 text-xs font-mono">
                 {isRecording ? (
-                  <div className="flex items-center gap-2 text-[#C78522]">
-                    <span className="w-2 h-2 rounded-full bg-[#C78522] animate-ping" />
+                  <div className="flex items-center gap-2 text-[#B91C1C]">
+                    <span className="w-2 h-2 rounded-full bg-[#B91C1C] animate-ping" />
                     <span className="truncate">Recording live speech audio...</span>
                   </div>
                 ) : currentDictation ? (
-                  <div className="text-[#C78522] text-[11px] truncate flex items-center gap-1">
+                  <div className="text-[#B91C1C] text-[11px] truncate flex items-center gap-1">
                     <CheckCircle2 size={12} />
                     <span>Spoken note ready for processing</span>
                   </div>
@@ -313,7 +313,7 @@ ${processedResult.decisions.map((d) => `- ${d}`).join('\n')}`;
                 type="button"
                 onClick={handleProcessMinutes}
                 disabled={!currentDictation.trim() || isProcessing}
-                className="px-4 py-1.5 rounded-lg bg-[#C78522] hover:bg-[#C78522]/90 disabled:opacity-40 text-black text-xs font-mono font-bold flex items-center gap-1.5 transition-all shadow-md"
+                className="px-4 py-1.5 rounded-lg bg-[#B91C1C] hover:bg-[#B91C1C]/90 disabled:opacity-40 text-black text-xs font-mono font-bold flex items-center gap-1.5 transition-all shadow-md"
               >
                 {isProcessing ? (
                   <>
@@ -336,7 +336,7 @@ ${processedResult.decisions.map((d) => `- ${d}`).join('\n')}`;
               <div className="flex items-start justify-between gap-2 border-b border-white/10 pb-2">
                 <div>
                   <div className="text-[9px] font-mono text-[#F5B027] uppercase font-bold tracking-wider flex items-center gap-1.5">
-                    <Sparkles size={10} className="text-[#C78522]" />
+                    <Sparkles size={10} className="text-[#B91C1C]" />
                     <span>Bulleted Minutes Structured by {processedResult.source || 'Gemini 3.8 Flash'}</span>
                   </div>
                   <h4 className="font-serif-editorial text-base text-[#F2EEE6] font-bold mt-0.5">
@@ -350,7 +350,7 @@ ${processedResult.decisions.map((d) => `- ${d}`).join('\n')}`;
                     className="p-1 rounded text-[#F2EEE6]/60 hover:text-white transition-colors"
                     title="Copy formatted text"
                   >
-                    {copied ? <Check size={12} className="text-[#C78522]" /> : <Copy size={12} />}
+                    {copied ? <Check size={12} className="text-[#B91C1C]" /> : <Copy size={12} />}
                   </button>
                 </div>
               </div>
@@ -367,7 +367,7 @@ ${processedResult.decisions.map((d) => `- ${d}`).join('\n')}`;
                 </div>
                 {processedResult.bulletedMinutes.map((item, idx) => (
                   <div key={idx} className="flex items-start gap-2 text-xs text-[#F2EEE6]/90 leading-snug">
-                    <span className="text-[#C78522] mt-0.5 font-bold">▪</span>
+                    <span className="text-[#B91C1C] mt-0.5 font-bold">▪</span>
                     <span>{item}</span>
                   </div>
                 ))}
@@ -390,7 +390,7 @@ ${processedResult.decisions.map((d) => `- ${d}`).join('\n')}`;
 
               {/* Commit & Save Actions */}
               <div className="pt-2 border-t border-white/10 flex items-center justify-between gap-2">
-                <div className="text-[10px] font-mono text-[#C78522]">
+                <div className="text-[10px] font-mono text-[#B91C1C]">
                   {savedSuccess && '✓ Minutes committed to dossier & Actionable Inbox!'}
                 </div>
                 <button

@@ -97,12 +97,12 @@ export const IntrosHubView: React.FC<IntrosHubViewProps> = ({
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
           <div className="space-y-3">
             <div className="text-[10px] md:text-xs font-mono uppercase tracking-[0.25em] text-[#9CA3AF] font-semibold flex items-center gap-2">
-              <span className="w-2 h-2 rounded-full bg-[#FF8A4C]" />
+              <span className="w-2 h-2 rounded-full bg-[#EF4444]" />
               Double Opt-In Protocol
             </div>
             <h1 className="font-serif-editorial text-3xl sm:text-4xl md:text-5xl text-[#F2EEE6] leading-tight">
               Introductions{' '}
-              <span className="text-[#FF8A4C]">with context.</span>
+              <span className="text-[#EF4444]">with context.</span>
             </h1>
             <p className="text-xs md:text-sm text-[#9CA3AF] max-w-xl">
               Introduce people with mutual consent.
@@ -133,7 +133,7 @@ export const IntrosHubView: React.FC<IntrosHubViewProps> = ({
             onClick={() => setActiveTab(tab.id as any)}
             className={`ix-option-tab text-xs font-medium cursor-pointer transition-colors pb-1 flex items-center gap-1.5 ${
               activeTab === tab.id
-                ? 'text-white border-b-2 border-[#FF8A4C] font-semibold'
+                ? 'text-white border-b-2 border-[#EF4444] font-semibold'
                 : 'text-[#9CA3AF] hover:text-white'
             }`}
           >
@@ -214,7 +214,7 @@ export const IntrosHubView: React.FC<IntrosHubViewProps> = ({
             <div className="flex items-center justify-between">
               <div className="space-y-0.5">
                 <div className="flex items-center gap-2">
-                  <Send size={13} className="text-[#FF8A4C]" />
+                  <Send size={13} className="text-[#EF4444]" />
                   <span className="text-xs font-semibold text-white">New Ask</span>
                   {askDraft.source === 'specter' && (
                     <span className="inline-flex items-center gap-1 text-[9px] font-bold px-1.5 py-0.5 rounded bg-teal-500/10 text-teal-400 border border-teal-500/25 uppercase tracking-wider">
@@ -366,7 +366,7 @@ export const IntrosHubView: React.FC<IntrosHubViewProps> = ({
                     </div>
                   </div>
                 </div>
-                <span className="text-xs font-mono text-[#F59E0B] bg-[#F59E0B]/10 border border-[#F59E0B]/20 px-2.5 py-1 rounded">
+                <span className="text-xs font-mono text-[#DC2626] bg-[#DC2626]/10 border border-[#DC2626]/20 px-2.5 py-1 rounded">
                   {item.status}
                 </span>
               </div>
@@ -407,7 +407,7 @@ export const IntrosHubView: React.FC<IntrosHubViewProps> = ({
                   <ExecutivePortrait name={item.p1} size="sm" />
                   <span className="text-xs font-semibold text-white">{item.p1}</span>
                 </div>
-                <ArrowRight className="w-3.5 h-3.5 text-[#FF8A4C] shrink-0" />
+                <ArrowRight className="w-3.5 h-3.5 text-[#EF4444] shrink-0" />
                 <div className="flex items-center gap-2">
                   <ExecutivePortrait name={item.p2} size="sm" />
                   <span className="text-xs font-semibold text-white">{item.p2}</span>
@@ -453,7 +453,7 @@ export const IntrosHubView: React.FC<IntrosHubViewProps> = ({
                         <div className="text-[11px] text-[#9CA3AF]">{member.title}</div>
                       </div>
                     </div>
-                    <span className="text-xs font-mono text-[#FF8A4C] font-bold">
+                    <span className="text-xs font-mono text-[#EF4444] font-bold">
                       {member.matchScore}% Match
                     </span>
                   </div>
@@ -537,7 +537,7 @@ export const IntrosHubView: React.FC<IntrosHubViewProps> = ({
                     onChange={(e) => setIntroContext(e.target.value)}
                     rows={3}
                     placeholder="Connecting both of you to explore AI infrastructure architectures..."
-                    className="w-full bg-[#151A24] border border-white/10 rounded-lg p-3 text-xs text-white placeholder-[#6B7280] focus:outline-none focus:border-[#FF8A4C]"
+                    className="w-full bg-[#151A24] border border-white/10 rounded-lg p-3 text-xs text-white placeholder-[#6B7280] focus:outline-none focus:border-[#EF4444]"
                   />
                 </div>
 

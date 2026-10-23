@@ -20,7 +20,7 @@ const STYLES = `
   --foreground: #F1EFE9;
   --primary: #0F5CCB;
   --secondary: #1A1F25;
-  --destructive: #F4A125;
+  --destructive: #DC2626;
 
   --pill-bg-1: color-mix(in oklch, var(--foreground) 4%, transparent);
   --pill-bg-2: color-mix(in oklch, var(--foreground) 1%, transparent);

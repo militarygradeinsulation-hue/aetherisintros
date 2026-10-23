@@ -70,7 +70,7 @@ export const UtilitiesModal: React.FC<UtilitiesModalProps> = ({ isOpen, onClose 
           <div className="border-t border-sys-panel-line mt-2">
              <div className="panel-item text-[#F2EEE6]/80 text-sm"><HelpCircle size={18} /> Help</div>
              <div className="panel-item text-[#F2EEE6]/80 text-sm"><BookOpen size={18} /> Founder Story</div>
-             <div className="panel-item text-[#C78522]/80 text-sm"><LogOut size={18} /> Sign Out</div>
+             <div className="panel-item text-[#B91C1C]/80 text-sm"><LogOut size={18} /> Sign Out</div>
           </div>
         </div>
       </div>

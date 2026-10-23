@@ -75,13 +75,13 @@ export const RelationshipNetworkPreview: React.FC<PreviewProps> = ({ summary }) 
   const getStatusColor = (status?: string) => {
     switch (status) {
       case 'active':
-        return 'bg-[#C78522] shadow-[0_0_6px_rgba(63,179,127,0.7)]';
+        return 'bg-[#B91C1C] shadow-[0_0_6px_rgba(63,179,127,0.7)]';
       case 'followup':
         return 'bg-[#F5B027] shadow-[0_0_6px_rgba(242,169,59,0.7)]';
       case 'dormant':
         return 'bg-[#64748B]';
       default:
-        return 'bg-[#C78522] shadow-[0_0_6px_rgba(63,179,127,0.7)]';
+        return 'bg-[#B91C1C] shadow-[0_0_6px_rgba(63,179,127,0.7)]';
     }
   };
 
@@ -120,7 +120,7 @@ export const RelationshipNetworkPreview: React.FC<PreviewProps> = ({ summary }) 
             }}
             className={`p-1.5 rounded-full transition-all shrink-0 ${
               isRecording
-                ? 'bg-[#C78522] text-white animate-pulse shadow-[0_0_8px_rgba(229,72,77,0.8)]'
+                ? 'bg-[#B91C1C] text-white animate-pulse shadow-[0_0_8px_rgba(229,72,77,0.8)]'
                 : 'bg-white/10 hover:bg-white/20 text-[#F2EEE6]'
             }`}
             title={isRecording ? 'Click to stop & save note' : 'Click to dictate voice note'}
@@ -131,15 +131,15 @@ export const RelationshipNetworkPreview: React.FC<PreviewProps> = ({ summary }) 
 
         {/* Live voice recording feedback or 30-day engagement chart */}
         {isRecording ? (
-          <div className="h-[44px] flex items-center justify-center gap-1.5 bg-[#C78522]/10 rounded border border-[#C78522]/30 px-2 py-1">
-            <span className="w-1.5 h-1.5 rounded-full bg-[#C78522] animate-ping" />
-            <span className="text-[8.5px] font-mono text-[#C78522] font-medium tracking-wide">
+          <div className="h-[44px] flex items-center justify-center gap-1.5 bg-[#B91C1C]/10 rounded border border-[#B91C1C]/30 px-2 py-1">
+            <span className="w-1.5 h-1.5 rounded-full bg-[#B91C1C] animate-ping" />
+            <span className="text-[8.5px] font-mono text-[#B91C1C] font-medium tracking-wide">
               Listening & Transcribing...
             </span>
           </div>
         ) : savedNote ? (
-          <div className="h-[44px] flex flex-col justify-center bg-[#C78522]/10 rounded border border-[#C78522]/25 px-2 py-0.5 text-left">
-            <span className="text-[7.5px] font-mono text-[#C78522] font-bold uppercase tracking-wider flex items-center gap-1">
+          <div className="h-[44px] flex flex-col justify-center bg-[#B91C1C]/10 rounded border border-[#B91C1C]/25 px-2 py-0.5 text-left">
+            <span className="text-[7.5px] font-mono text-[#B91C1C] font-bold uppercase tracking-wider flex items-center gap-1">
               <Check size={8} /> Voice Note Saved
             </span>
             <span className="text-[8px] text-[#F2EEE6]/80 truncate italic">
@@ -196,7 +196,7 @@ export const IntrosCrmPreview: React.FC<PreviewProps> = ({ summary }) => {
           const status = crmStatuses[i % crmStatuses.length];
           const statusColor =
             status === 'active'
-              ? 'bg-[#C78522]'
+              ? 'bg-[#B91C1C]'
               : status === 'followup'
               ? 'bg-[#F5B027]'
               : 'bg-[#64748B]';
@@ -508,7 +508,7 @@ export const RelationshipRadarPreview: React.FC<PreviewProps> = ({ summary }) =>
       <div className="space-y-0.5 text-[7.5px] font-mono">
         <div className="flex justify-between items-center">
           <span className="flex items-center gap-1 text-[#F2EEE6]/80">
-            <span className="w-1.5 h-1.5 rounded-full bg-[#C78522]" /> Hot Now
+            <span className="w-1.5 h-1.5 rounded-full bg-[#B91C1C]" /> Hot Now
           </span>
           <span className="text-[#F2EEE6] font-bold">{hot}</span>
         </div>
@@ -532,7 +532,7 @@ export const RelationshipRadarPreview: React.FC<PreviewProps> = ({ summary }) =>
         </div>
         <div className="flex justify-between items-center">
           <span className="flex items-center gap-1 text-[#F2EEE6]/80">
-            <span className="w-1.5 h-1.5 rounded-full bg-[#C78522]" /> At Risk
+            <span className="w-1.5 h-1.5 rounded-full bg-[#B91C1C]" /> At Risk
           </span>
           <span className="text-[#F2EEE6] font-bold">{atRisk}</span>
         </div>
@@ -622,19 +622,19 @@ export const NetworkForensicsPreview: React.FC<PreviewProps> = ({ summary }) => 
   return (
     <div className="flex flex-col justify-between h-full w-full space-y-1 text-[8px]">
       <div className="flex items-center gap-1.5 text-[#F2EEE6]/90">
-        <AlertTriangle size={9} className="text-[#C78522] shrink-0" />
+        <AlertTriangle size={9} className="text-[#B91C1C] shrink-0" />
         <span>{dormant} dormant contacts</span>
       </div>
       <div className="flex items-center gap-1.5 text-[#F2EEE6]/90">
-        <AlertTriangle size={9} className="text-[#C78522] shrink-0" />
+        <AlertTriangle size={9} className="text-[#B91C1C] shrink-0" />
         <span>{missed} missed follow-ups</span>
       </div>
       <div className="flex items-center gap-1.5 text-[#F2EEE6]/90">
-        <AlertTriangle size={9} className="text-[#C78522] shrink-0" />
+        <AlertTriangle size={9} className="text-[#B91C1C] shrink-0" />
         <span>{unfinished} unfinished intros</span>
       </div>
       <div className="flex items-center gap-1.5 text-[#F2EEE6]/90">
-        <AlertTriangle size={9} className="text-[#C78522] shrink-0" />
+        <AlertTriangle size={9} className="text-[#B91C1C] shrink-0" />
         <span>{atRisk} at risk opportunities</span>
       </div>
       <div className="flex items-center gap-1.5 text-[#F2EEE6] font-bold pt-0.5 border-t border-white/5">

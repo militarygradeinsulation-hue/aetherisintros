@@ -1,7 +1,7 @@
 .admin-connection-checks { background:#fff; color:#111; padding:clamp(16px,3vw,28px); border:1px solid #666; border-radius:10px; margin-block:24px; overflow-wrap:anywhere; }
 :root[data-theme="dark"] .admin-connection-checks { background:#090909; color:#fff; }
 .admin-connection-checks :is(h2,h3,p,strong) { color:inherit!important; opacity:1; }
-.admin-connection-checks button { min-height:44px; padding:10px 18px; color:#111!important; -webkit-text-fill-color:#111!important; background:#f4a125!important; border:1px solid #111; border-radius:6px; white-space:normal; }
+.admin-connection-checks button { min-height:44px; padding:10px 18px; color:#111!important; -webkit-text-fill-color:#111!important; background:#DC2626!important; border:1px solid #111; border-radius:6px; white-space:normal; }
 .admin-connection-checks button:disabled { opacity:.65; }
 .admin-connection-checks ul { list-style:none; padding:0; display:grid; grid-template-columns:repeat(auto-fit,minmax(min(100%,260px),1fr)); gap:14px; }
 .admin-connection-checks li { padding:16px; border:1px solid currentColor; min-width:0; }
