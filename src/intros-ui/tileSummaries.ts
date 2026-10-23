@@ -167,13 +167,13 @@ export function tile_signals_summary(isEmpty = false): TileSummary {
     data: {
       items: [
         { label: 'Looking For', color: '#B91C1C', icon: 'search' },
-        { label: 'Offering', color: '#F5B027', icon: 'tag' },
+        { label: 'Offering', color: '#EF4444', icon: 'tag' },
         { label: 'Capital', color: '#B91C1C', icon: 'dollar' },
-        { label: 'Talent', color: '#F5B027', icon: 'users' },
+        { label: 'Talent', color: '#EF4444', icon: 'users' },
         { label: 'Partnership', color: '#B91C1C', icon: 'link' },
-        { label: 'Acquisition', color: '#FFC85C', icon: 'building' },
+        { label: 'Acquisition', color: '#FCA5A5', icon: 'building' },
         { label: 'Insight', color: '#B91C1C', icon: 'bulb' },
-        { label: 'Opportunity', color: '#F5B027', icon: 'target' },
+        { label: 'Opportunity', color: '#EF4444', icon: 'target' },
       ],
     },
   };
@@ -532,10 +532,10 @@ export function tile_analytics_summary(isEmpty = false): TileSummary {
       roi: '+ 312%',
       bars: [30, 42, 55, 68, 85, 100],
       legend: [
-        { label: 'Meetings', color: '#F5B027' },
+        { label: 'Meetings', color: '#EF4444' },
         { label: 'Opportunities', color: '#DC2626' },
         { label: 'Revenue Influence', color: '#B91C1C' },
-        { label: 'Introductions', color: '#F5B027' },
+        { label: 'Introductions', color: '#EF4444' },
       ],
     },
   };
@@ -686,7 +686,7 @@ export function tile_diagnostics_summary(isEmpty = false): TileSummary {
       status: 'Forensic Scan Complete',
       items: [
         { label: '12 Gaps Found', color: '#B91C1C', icon: 'alert' },
-        { label: '5 Risks Identified', color: '#F5B027', icon: 'shield' },
+        { label: '5 Risks Identified', color: '#EF4444', icon: 'shield' },
         { label: '8 Opportunities', color: '#B91C1C', icon: 'target' },
         { label: 'Recommended Actions', color: '#B91C1C', icon: 'check' },
       ],
@@ -713,11 +713,11 @@ export function tile_growth_studio_summary(isEmpty = false): TileSummary {
     empty: false,
     data: {
       items: [
-        { label: 'Content', color: '#FFC85C' },
-        { label: 'Follow-ups', color: '#F5B027' },
+        { label: 'Content', color: '#FCA5A5' },
+        { label: 'Follow-ups', color: '#EF4444' },
         { label: 'Scripts', color: '#EC4899' },
-        { label: 'Campaigns', color: '#FFC85C' },
-        { label: 'Signals', color: '#F5B027' },
+        { label: 'Campaigns', color: '#FCA5A5' },
+        { label: 'Signals', color: '#EF4444' },
         { label: 'Templates', color: '#B91C1C' },
       ],
     },
@@ -744,10 +744,10 @@ export function tile_executive_brief_summary(isEmpty = false): TileSummary {
     data: {
       title: "Today's Focus",
       items: [
-        { label: '4 relationships need attention', color: '#D7C29A' },
+        { label: '4 relationships need attention', color: '#D79A9A' },
         { label: '2 opportunities changed', color: '#B91C1C' },
-        { label: '1 intro ready to send', color: '#F5B027' },
-        { label: '3 new signals match your goals', color: '#F5B027' },
+        { label: '1 intro ready to send', color: '#EF4444' },
+        { label: '3 new signals match your goals', color: '#EF4444' },
       ],
     },
   };

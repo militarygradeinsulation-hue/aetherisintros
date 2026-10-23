@@ -2385,8 +2385,8 @@ function AccountControl() {
 
 /* ---------------------------------------------------------------------- app */
 
-export function AetherisAppSurface({ startPage, feedOnly = false, assistant = true }: { startPage?: Page | undefined; feedOnly?: boolean; assistant?: boolean }) {
-  return <Shell startPage={startPage} feedOnly={feedOnly} assistant={assistant} />
+export function AetherisAppSurface({ startPage, feedOnly = false, assistant = true, crmSection }: { startPage?: Page | undefined; feedOnly?: boolean; assistant?: boolean; crmSection?: 'crm' | 'pipeline' | undefined }) {
+  return <Shell startPage={startPage} feedOnly={feedOnly} assistant={assistant} crmSection={crmSection} />
 }
 
 export default function App({ startPage, mode = 'live', feedOnly = false }: { startPage?: Page | undefined; mode?: NetworkMode; feedOnly?: boolean }) {
@@ -2585,7 +2585,7 @@ function TopbarVoice() {
   </button>
 }
 
-function Shell({ startPage, feedOnly = false, assistant = true }: { startPage?: Page | undefined; feedOnly?: boolean; assistant?: boolean }) {
+function Shell({ startPage, feedOnly = false, assistant = true, crmSection }: { startPage?: Page | undefined; feedOnly?: boolean; assistant?: boolean; crmSection?: 'crm' | 'pipeline' | undefined }) {
   const net = useNetwork()
   const stored = typeof window !== 'undefined' ? localStorage.getItem('aetheris-intros-page') : null
   const initial = startPage ?? (stored && allNav.some(n => n.id === stored) ? stored : legacyPage[stored ?? ''] ?? 'home') as Page
@@ -2805,7 +2805,7 @@ function Shell({ startPage, feedOnly = false, assistant = true }: { startPage?: 
       vault: <VaultPage />,
       knowledgeassets: <KnowledgeAssetsPage />,
       simple: <SimpleViewPage />,
-      crm: <CrmPage />,
+      crm: <CrmPage section={crmSection} />,
       pocket: <PocketWorkspace />,
       diagnostic: <><LeakCheckPanel /><CompanyDiagnosticReport /></>,
       grid: <GridPage />,

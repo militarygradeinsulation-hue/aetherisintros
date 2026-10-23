@@ -72,7 +72,7 @@ export const EngagementChart: React.FC<EngagementChartProps> = ({
                     <div className="space-y-1 pt-0.5 text-[8px]">
                       <div className="flex items-center justify-between">
                         <span className="text-[#F2EEE6]/70">Recency (R: 35%)</span>
-                        <span className="text-[#DB6B36] tabular-nums font-semibold">{recencyVal}%</span>
+                        <span className="text-[#B91C1C] tabular-nums font-semibold">{recencyVal}%</span>
                       </div>
                       <div className="flex items-center justify-between">
                         <span className="text-[#F2EEE6]/70">Frequency (F: 30%)</span>

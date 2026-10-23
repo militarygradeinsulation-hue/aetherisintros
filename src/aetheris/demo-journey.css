@@ -3,11 +3,11 @@
 .journey-shell button { cursor: pointer; font: inherit; }
 .journey-shell button:focus-visible { outline: 3px solid #6987ff; outline-offset: 3px; }
 .journey-launcher { pointer-events: auto; margin-left: auto; display: flex; align-items: center; gap: .65rem; background: #171c26; border: 1px solid #7889ad; box-shadow: 0 12px 36px #0006; color: #f6f0e6; border-radius: 999px; padding: .84rem 1.15rem; font-size: .86rem; font-weight: 650; }
-.journey-launcher svg:first-child { color: #d5a455; }
+.journey-launcher svg:first-child { color: #D55555; }
 .journey-panel { pointer-events: auto; max-height: min(82vh, 700px); overflow: auto; overscroll-behavior: contain; background: #121722; color: #f6f0e6; border: 1px solid #465577; border-radius: 18px; box-shadow: 0 20px 70px #0009; }
 .journey-head { display: flex; justify-content: space-between; align-items: flex-start; padding: 1.15rem 1.3rem .55rem; gap: 1rem; }
 .journey-head div { display: grid; gap: .3rem; }
-.journey-head span, .journey-eyebrow, .journey-evidence small, .journey-result small { letter-spacing: .12em; color: #ddb67e; font-size: .63rem; font-weight: 750; }
+.journey-head span, .journey-eyebrow, .journey-evidence small, .journey-result small { letter-spacing: .12em; color: #DD7E7E; font-size: .63rem; font-weight: 750; }
 .journey-head strong { font-family: Georgia, 'Times New Roman', serif; font-size: clamp(1.25rem, 2.5vw, 1.65rem); font-weight: 600; }
 .journey-close { padding: .35rem; border: 1px solid #536080; background: #1e2637; color: #fff; border-radius: 9px; }
 .journey-disclaimer { margin: 0 1.3rem 1rem; font-size: .72rem; color: #c7c8d0; line-height: 1.45; }
@@ -121,7 +121,7 @@
 :root[data-theme="light"] .ix-root .journey-head span,
 :root[data-theme="light"] .ix-root .journey-eyebrow,
 :root[data-theme="light"] .ix-root .journey-evidence small,
-:root[data-theme="light"] .ix-root .journey-result small { color: #865832; }
+:root[data-theme="light"] .ix-root .journey-result small { color: #863232; }
 :root[data-theme="light"] .ix-root .journey-body > p,
 :root[data-theme="light"] .ix-root .journey-disclaimer,
 :root[data-theme="light"] .ix-root .journey-footnote,

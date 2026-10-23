@@ -49,16 +49,16 @@ export function digestEmail(input: DigestInput): DigestEmail | null {
   const row = (i: WeekItem) => `<tr><td style="padding:14px 0;border-top:1px solid #E6E1D8">
     <div style="font:600 15px/1.4 Georgia,serif;color:#111">${esc(i.title)}</div>
     <div style="font:14px/1.5 -apple-system,Segoe UI,sans-serif;color:#555;margin:4px 0 8px">${esc(i.detail)}</div>
-    <a href="${esc(link(i.target))}" style="font:600 13px -apple-system,Segoe UI,sans-serif;color:#9A6A00;text-decoration:none">${esc(i.action)} →</a>
+    <a href="${esc(link(i.target))}" style="font:600 13px -apple-system,Segoe UI,sans-serif;color:#9A0000;text-decoration:none">${esc(i.action)} →</a>
   </td></tr>`
   const html = `<!doctype html><html><body style="margin:0;background:#F6F3EE;padding:24px">
   <table role="presentation" width="100%" style="max-width:560px;margin:0 auto;background:#fff;border-radius:10px;padding:28px">
-    <tr><td style="font:700 11px -apple-system,Segoe UI,sans-serif;letter-spacing:.14em;color:#9A6A00">ASK INTROS · THIS WEEK</td></tr>
+    <tr><td style="font:700 11px -apple-system,Segoe UI,sans-serif;letter-spacing:.14em;color:#9A0000">ASK INTROS · THIS WEEK</td></tr>
     <tr><td style="font:22px/1.3 Georgia,serif;color:#111;padding:10px 0 6px">${esc(hello)}</td></tr>
     ${items.length ? `<tr><td style="font:14px -apple-system,Segoe UI,sans-serif;color:#555;padding-bottom:6px">${esc(plural(items.length, 'thing'))} waiting on you.</td></tr>${items.map(row).join('')}` : ''}
     ${meetings.length ? `<tr><td style="font:600 13px -apple-system,Segoe UI,sans-serif;color:#111;padding:18px 0 6px">Meetings this week</td></tr>
     ${meetings.map(m => `<tr><td style="font:14px/1.6 -apple-system,Segoe UI,sans-serif;color:#333">${esc(m.title)} <span style="color:#777">· ${esc(when(m.startsAt))}</span></td></tr>`).join('')}` : ''}
-    <tr><td style="padding-top:22px"><a href="${esc(input.appUrl)}" style="display:inline-block;background:#F5B027;color:#111;font:600 14px -apple-system,Segoe UI,sans-serif;padding:10px 16px;border-radius:8px;text-decoration:none">Open Ask Intros</a></td></tr>
+    <tr><td style="padding-top:22px"><a href="${esc(input.appUrl)}" style="display:inline-block;background:#EF4444;color:#111;font:600 14px -apple-system,Segoe UI,sans-serif;padding:10px 16px;border-radius:8px;text-decoration:none">Open Ask Intros</a></td></tr>
     <tr><td style="font:12px/1.5 -apple-system,Segoe UI,sans-serif;color:#999;padding-top:22px">You asked for this weekly email. <a href="${esc(input.unsubscribeUrl)}" style="color:#999">Stop these emails</a>.</td></tr>
   </table></body></html>`
   return { subject, html, text }

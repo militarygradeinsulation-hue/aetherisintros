@@ -9,7 +9,7 @@ const registry = readFileSync(new URL('../../intros-ui/components/layout/Aetheri
 describe('workspace tools live in the menu, not above page content', () => {
   it('opens the selected canonical workspace directly without a duplicate toolbar', () => {
     const start = app.indexOf("{activePage === 'workspace' && <LedgerWorkspace")
-    const end = app.indexOf('<AetherisAppSurface key={classicPage}', start)
+    const end = app.indexOf('<AetherisAppSurface key=', start)
     expect(start).toBeGreaterThan(0)
     expect(end).toBeGreaterThan(start)
     const pageHeader = app.slice(start, end)

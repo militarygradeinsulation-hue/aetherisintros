@@ -41,7 +41,7 @@ export const UtilitiesModal: React.FC<UtilitiesModalProps> = ({ isOpen, onClose 
       <div className="drawer-panel w-full max-w-[400px] flex flex-col">
         <div className="panel-head flex items-center justify-between">
           <div>
-            <span className="text-[10px] font-mono tracking-widest text-[#F5B027] uppercase font-bold">Account</span>
+            <span className="text-[10px] font-mono tracking-widest text-[#EF4444] uppercase font-bold">Account</span>
             <h2 className="text-xl font-serif-editorial text-[#F2EEE6]">Utilities</h2>
             <p className="text-xs text-[#F2EEE6]/60">The essentials, without a directory of features.</p>
           </div>

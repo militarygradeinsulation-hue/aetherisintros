@@ -48,11 +48,11 @@ export function AdminOverview() {
   return <main style={{ background: '#10151d', color: '#f5f7fb', minHeight: '100vh', padding: 'clamp(20px,4vw,56px)' }}>
     <div style={{ maxWidth: 1100, margin: 'auto' }}>
       <a href="/app" style={{ color: '#9ad6f8' }}>← Return to Ask Intros</a>
-      <p style={{ color: '#ffb45a', letterSpacing: 2, fontSize: 12, marginTop: 32 }}>ASK INTROS / OWNER OPERATIONS</p>
+      <p style={{ color: '#FF5A5A', letterSpacing: 2, fontSize: 12, marginTop: 32 }}>ASK INTROS / OWNER OPERATIONS</p>
       <h1 style={{ fontSize: 'clamp(28px,4vw,44px)', fontWeight: 700 }}>Platform overview</h1>
       <p style={{ color: '#ccd6e2' }}>Private aggregated platform statistics. Only server-authorized administrators can query the totals.</p>
       <button type="button" disabled={busy} onClick={() => void refresh()} style={{ background: '#235777', color: 'white', padding: '12px 20px', borderRadius: 10, marginBlock: 20 }}>{busy ? 'Refreshing…' : 'Refresh counts'}</button>
-      {error && <p role="alert" style={{ color: '#ffb6a7' }}>{error}</p>}
+      {error && <p role="alert" style={{ color: '#FFA7A7' }}>{error}</p>}
       {!stats && !error && <p>Loading statistics…</p>}
       {stats && <section aria-label="Platform statistics" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(min(100%,220px),1fr))', gap: 16 }}>
         {metrics.map(m => <article key={m.key} style={{ background: '#1c2938', border: '1px solid #52718b', borderRadius: 14, padding: 22, minWidth: 0 }}>

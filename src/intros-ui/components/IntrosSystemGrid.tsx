@@ -545,7 +545,7 @@ export const IntrosSystemGrid: React.FC = () => {
 
             <div className="font-serif-editorial text-xs sm:text-[13px] leading-tight text-[#F2EEE6]/90">
               <div>The Relationship Network</div>
-              <div>for <span className="text-[#F5B027] font-semibold not-italic">CEOs.</span></div>
+              <div>for <span className="text-[#EF4444] font-semibold not-italic">CEOs.</span></div>
             </div>
           </div>
 
@@ -560,7 +560,7 @@ export const IntrosSystemGrid: React.FC = () => {
               }`}
               title="24-Tile System Grid View"
             >
-              <LayoutGrid size={13} className={dashboardView === 'grid' ? 'text-[#F5B027]' : 'text-current'} />
+              <LayoutGrid size={13} className={dashboardView === 'grid' ? 'text-[#EF4444]' : 'text-current'} />
               <span>Intelligence Grid</span>
             </button>
 
@@ -573,7 +573,7 @@ export const IntrosSystemGrid: React.FC = () => {
               }`}
               title="Central Actionable Inbox"
             >
-              <CheckSquare size={13} className={dashboardView === 'inbox' ? 'text-[#F5B027]' : 'text-current'} />
+              <CheckSquare size={13} className={dashboardView === 'inbox' ? 'text-[#EF4444]' : 'text-current'} />
               <span>Actionable Inbox</span>
               <span className="px-1.5 py-0.2 rounded-full bg-[#B91C1C] text-white text-[9px] font-bold">
                 8
@@ -589,7 +589,7 @@ export const IntrosSystemGrid: React.FC = () => {
               }`}
               title="D3 Network Graph Visualization (3)"
             >
-              <Share2 size={13} className={dashboardView === 'graph' ? 'text-[#F5B027]' : 'text-current'} />
+              <Share2 size={13} className={dashboardView === 'graph' ? 'text-[#EF4444]' : 'text-current'} />
               <span>Network Graph</span>
             </button>
 
@@ -602,7 +602,7 @@ export const IntrosSystemGrid: React.FC = () => {
               }`}
               title="Cluster Engagement Density Heatmap Visualization (4)"
             >
-              <Activity size={13} className={dashboardView === 'heatmap' ? 'text-[#F5B027]' : 'text-current'} />
+              <Activity size={13} className={dashboardView === 'heatmap' ? 'text-[#EF4444]' : 'text-current'} />
               <span>Cluster Heatmap</span>
             </button>
           </div>
@@ -612,10 +612,10 @@ export const IntrosSystemGrid: React.FC = () => {
             {/* Full-Text Search Quick Button */}
             <button
               onClick={() => setIsFullTextSearchOpen(true)}
-              className="px-2.5 py-1 rounded bg-[#F5B027]/15 hover:bg-[#F5B027]/25 border border-[#F5B027]/40 text-[#F2EEE6] text-[11px] font-mono flex items-center gap-1.5 transition-all shadow-sm"
+              className="px-2.5 py-1 rounded bg-[#EF4444]/15 hover:bg-[#EF4444]/25 border border-[#EF4444]/40 text-[#F2EEE6] text-[11px] font-mono flex items-center gap-1.5 transition-all shadow-sm"
               title="Full-Text Search Across Profiles, Tags & Notes (⌘F / /)"
             >
-              <Search size={12} className="text-[#F5B027]" />
+              <Search size={12} className="text-[#EF4444]" />
               <span className="hidden sm:inline">Search</span>
               <kbd className="hidden lg:inline px-1 py-0.2 bg-white/10 rounded border border-white/15 text-[8.5px] text-white">⌘F</kbd>
             </button>
@@ -648,7 +648,7 @@ export const IntrosSystemGrid: React.FC = () => {
               onClick={() => setHeatmapActive((prev) => !prev)}
               className={`px-2.5 py-1 rounded border text-[11px] font-mono flex items-center gap-1.5 transition-all shadow-sm ${
                 heatmapActive
-                  ? 'bg-[#F5B027]/25 border-[#F5B027]/60 text-[#F5B027] font-bold shadow-[0_0_12px_rgba(249,115,22,0.3)]'
+                  ? 'bg-[#EF4444]/25 border-[#EF4444]/60 text-[#EF4444] font-bold shadow-[0_0_12px_rgba(249,115,22,0.3)]'
                   : 'bg-white/5 border-white/10 text-[#F2EEE6]/75 hover:bg-white/10 hover:text-white'
               }`}
               title="Toggle Activity Density & Frequency Heatmap Overlay"
@@ -660,16 +660,16 @@ export const IntrosSystemGrid: React.FC = () => {
             {/* Predictive LLM Insights Trigger */}
             <button
               onClick={() => setIsPredictiveModalOpen(true)}
-              className="px-2.5 py-1 rounded bg-[#F5B027]/20 hover:bg-[#F5B027]/30 border border-[#F5B027]/50 text-white text-[11px] font-mono flex items-center gap-1.5 transition-all shadow-sm"
+              className="px-2.5 py-1 rounded bg-[#EF4444]/20 hover:bg-[#EF4444]/30 border border-[#EF4444]/50 text-white text-[11px] font-mono flex items-center gap-1.5 transition-all shadow-sm"
               title="Run Predictive LLM Network Analysis (⌘P)"
             >
-              <Sparkles size={12} className="text-[#F5B027]" />
+              <Sparkles size={12} className="text-[#EF4444]" />
               <span className="hidden sm:inline">Predictive AI</span>
             </button>
 
             {/* Sort Dropdown Menu in Header */}
             <div className="flex items-center gap-1.5 px-2.5 py-1 rounded bg-[#0E1116] border border-white/10 text-xs">
-              <ArrowUpDown size={12} className="text-[#F5B027]" />
+              <ArrowUpDown size={12} className="text-[#EF4444]" />
               <label htmlFor="header-sort" className="text-[10px] font-mono text-[#F2EEE6]/60 uppercase tracking-wider hidden sm:inline">
                 Sort:
               </label>
@@ -692,12 +692,12 @@ export const IntrosSystemGrid: React.FC = () => {
               disabled={isScanning}
               className={`px-2.5 py-1 rounded border text-[11px] font-mono flex items-center gap-1.5 transition-colors ${
                 isScanning
-                  ? 'bg-[#F5B027]/30 border-[#F5B027] text-white animate-pulse'
-                  : 'bg-white/5 hover:bg-[#F5B027]/20 border-white/10 text-[#F2EEE6]'
+                  ? 'bg-[#EF4444]/30 border-[#EF4444] text-white animate-pulse'
+                  : 'bg-white/5 hover:bg-[#EF4444]/20 border-white/10 text-[#F2EEE6]'
               }`}
               title="Scan calendar events and auto-map connection engagement status"
             >
-              <Calendar size={12} className="text-[#F5B027]" />
+              <Calendar size={12} className="text-[#EF4444]" />
               <span className="hidden sm:inline">Scan Calendar</span>
               {isScanning && <RefreshCw size={10} className="animate-spin text-white" />}
             </button>
@@ -705,10 +705,10 @@ export const IntrosSystemGrid: React.FC = () => {
             {/* Download Report Button (CSV Export) */}
             <button
               onClick={handleDownloadReport}
-              className="px-2.5 py-1 rounded bg-[#F5B027]/15 hover:bg-[#F5B027]/25 border border-[#F5B027]/40 text-[#F2EEE6] text-[11px] font-mono flex items-center gap-1.5 transition-colors"
+              className="px-2.5 py-1 rounded bg-[#EF4444]/15 hover:bg-[#EF4444]/25 border border-[#EF4444]/40 text-[#F2EEE6] text-[11px] font-mono flex items-center gap-1.5 transition-colors"
               title="Download Executive Network Report (CSV)"
             >
-              <Download size={12} className="text-[#F5B027]" />
+              <Download size={12} className="text-[#EF4444]" />
               <span className="hidden sm:inline">Download Report</span>
             </button>
 
@@ -730,7 +730,7 @@ export const IntrosSystemGrid: React.FC = () => {
                 className={`p-1.5 rounded border text-[10px] font-mono flex items-center gap-1 transition-colors ${
                   isBiometricUnlocked
                     ? 'bg-[#B91C1C]/15 border-[#B91C1C]/30 text-[#B91C1C]'
-                    : 'bg-[#F5B027]/15 border-[#F5B027]/40 text-[#F5B027] hover:bg-[#F5B027]/25'
+                    : 'bg-[#EF4444]/15 border-[#EF4444]/40 text-[#EF4444] hover:bg-[#EF4444]/25'
                 }`}
                 title={
                   isBiometricUnlocked
@@ -746,7 +746,7 @@ export const IntrosSystemGrid: React.FC = () => {
                 onClick={() => setIsSidebarOpen((prev) => !prev)}
                 className={`px-2 py-1 rounded border text-[10px] font-mono flex items-center gap-1 transition-all ${
                   isSidebarOpen
-                    ? 'bg-[#F5B027] text-white border-[#F5B027] shadow-sm font-semibold'
+                    ? 'bg-[#EF4444] text-white border-[#EF4444] shadow-sm font-semibold'
                     : 'bg-white/5 border-white/10 hover:bg-white/10 text-[#F2EEE6]/80'
                 }`}
                 title="Toggle Executive Intelligence Sidebar (⌘I)"
@@ -760,7 +760,7 @@ export const IntrosSystemGrid: React.FC = () => {
                 className="p-1.5 rounded bg-white/5 hover:bg-white/10 text-[#F2EEE6]/70 text-[10px] font-mono flex items-center gap-1 transition-colors"
                 title="Search modules and predictive actions (⌘K)"
               >
-                <Search size={12} className="text-[#F5B027]" />
+                <Search size={12} className="text-[#EF4444]" />
                 <span className="hidden sm:inline text-[9px]">⌘K</span>
               </button>
               <button
@@ -768,7 +768,7 @@ export const IntrosSystemGrid: React.FC = () => {
                 className="p-1.5 rounded bg-white/5 hover:bg-white/10 text-[#F2EEE6]/70 text-[10px] font-mono flex items-center gap-1 transition-colors"
                 title="Keyboard Shortcuts & Cheat Sheet (? or ⌘/)"
               >
-                <Keyboard size={12} className="text-[#F5B027]" />
+                <Keyboard size={12} className="text-[#EF4444]" />
                 <span className="hidden sm:inline text-[9px]">⌘/</span>
               </button>
               <button
@@ -776,7 +776,7 @@ export const IntrosSystemGrid: React.FC = () => {
                 className="p-1.5 rounded bg-white/5 hover:bg-white/10 text-[#F2EEE6]/70 text-[10px] font-mono flex items-center gap-1 transition-colors relative"
                 title="Approval Queue"
               >
-                <ShieldCheck size={12} className="text-[#F5B027]" />
+                <ShieldCheck size={12} className="text-[#EF4444]" />
                 {pendingApprovalsCount > 0 && (
                   <span className="absolute -top-0.5 -right-0.5 w-1.5 h-1.5 rounded-full bg-[#B91C1C]" />
                 )}
@@ -790,14 +790,14 @@ export const IntrosSystemGrid: React.FC = () => {
                 }`}
                 title={isEmptyState ? 'Switch back to Live Network' : 'Demo Empty State Illustration'}
               >
-                {isEmptyState ? <EyeOff size={12} /> : <Eye size={12} className="text-[#F5B027]" />}
+                {isEmptyState ? <EyeOff size={12} /> : <Eye size={12} className="text-[#EF4444]" />}
               </button>
               <button
                 onClick={() => setIsUtilitiesOpen(true)}
                 className="p-1.5 rounded bg-white/5 hover:bg-white/10 text-[#F2EEE6]/70 text-[10px] font-mono flex items-center gap-1 transition-colors"
                 title="Utilities Drawer"
               >
-                <Settings size={12} className="text-[#F5B027]" />
+                <Settings size={12} className="text-[#EF4444]" />
               </button>
             </div>
           </div>
@@ -805,7 +805,7 @@ export const IntrosSystemGrid: React.FC = () => {
 
         {/* Real-time Notification Banner for Calendar Scan & Report Export */}
         {notification && (
-          <div className="w-full bg-[#0E1116] border-t border-b border-[#F5B027]/30 px-4 py-2 flex items-center justify-between text-xs animate-in slide-in-from-top-1 duration-200">
+          <div className="w-full bg-[#0E1116] border-t border-b border-[#EF4444]/30 px-4 py-2 flex items-center justify-between text-xs animate-in slide-in-from-top-1 duration-200">
             <div className="max-w-[1560px] mx-auto w-full flex items-center justify-between gap-3">
               <div className="flex items-center gap-2">
                 <CheckCircle2 size={13} className="text-[#B91C1C] shrink-0" />
@@ -866,7 +866,7 @@ export const IntrosSystemGrid: React.FC = () => {
           {/* HERO HEADLINE & SUBHEAD */}
           <section className="relative z-10 w-full pt-8 sm:pt-11 pb-5 sm:pb-7 px-4 sm:px-6 lg:px-8 text-center max-w-5xl mx-auto">
             <h1 className="font-serif-editorial text-3xl sm:text-5xl lg:text-[56px] leading-[1.06] font-normal tracking-[-0.01em] text-[#F2EEE6]">
-              One Connected System for <span className="text-[#F5B027] font-semibold">CEOs.</span>
+              One Connected System for <span className="text-[#EF4444] font-semibold">CEOs.</span>
             </h1>
             <p className="mt-2.5 sm:mt-3 font-serif-editorial text-xs sm:text-[14px] leading-relaxed tracking-[0.06em] text-[#F2EEE6]/75">
               Relationships. CRM. Grid. Work. Meetings. Intelligence. All connected.
@@ -879,7 +879,7 @@ export const IntrosSystemGrid: React.FC = () => {
                 <span>Active ({people.filter((p) => p.engagement === 'active' || !p.engagement).length})</span>
               </div>
               <div className="flex items-center gap-1.5">
-                <span className="w-2 h-2 rounded-full bg-[#F5B027] shadow-[0_0_6px_rgba(242,169,59,0.7)]" />
+                <span className="w-2 h-2 rounded-full bg-[#EF4444] shadow-[0_0_6px_rgba(242,169,59,0.7)]" />
                 <span>Follow-up Needed ({people.filter((p) => p.engagement === 'followup').length})</span>
               </div>
               <div className="flex items-center gap-1.5">
@@ -894,11 +894,11 @@ export const IntrosSystemGrid: React.FC = () => {
                     setIsSidebarOpen(true);
                   }
                 }}
-                className="text-[10px] text-[#F5B027] hover:underline flex items-center gap-1"
+                className="text-[10px] text-[#EF4444] hover:underline flex items-center gap-1"
               >
                 <span>Current Focus:</span>
                 <span className="font-bold text-[#F2EEE6]">{topPerson?.name || 'Network Sync'}</span>
-                <span className="text-[9px] font-mono text-[#F5B027]">(Inspect Dossier →)</span>
+                <span className="text-[9px] font-mono text-[#EF4444]">(Inspect Dossier →)</span>
               </button>
             </div>
           </section>
@@ -952,14 +952,14 @@ export const IntrosSystemGrid: React.FC = () => {
 
             {/* Visual Heatmap Overlay Controller & Editorial Legend */}
             {heatmapActive && (
-              <div className="mb-3.5 p-3 sm:p-3.5 rounded-xl bg-[#0E1116] border border-[#F5B027]/40 shadow-[0_0_25px_rgba(249,115,22,0.15)] flex flex-col md:flex-row md:items-center justify-between gap-3 animate-in fade-in duration-200">
+              <div className="mb-3.5 p-3 sm:p-3.5 rounded-xl bg-[#0E1116] border border-[#EF4444]/40 shadow-[0_0_25px_rgba(249,115,22,0.15)] flex flex-col md:flex-row md:items-center justify-between gap-3 animate-in fade-in duration-200">
                 <div className="flex items-center gap-3 min-w-0">
-                  <div className="w-8 h-8 rounded-lg bg-[#F5B027]/20 border border-[#F5B027]/40 flex items-center justify-center text-base shrink-0">
+                  <div className="w-8 h-8 rounded-lg bg-[#EF4444]/20 border border-[#EF4444]/40 flex items-center justify-center text-base shrink-0">
                     🔥
                   </div>
                   <div className="min-w-0">
                     <div className="flex items-center gap-2 flex-wrap">
-                      <span className="text-[10px] font-mono tracking-wider uppercase font-bold text-[#F5B027]">
+                      <span className="text-[10px] font-mono tracking-wider uppercase font-bold text-[#EF4444]">
                         Activity Density Heatmap Active
                       </span>
                       <span className="text-[9px] font-mono px-1.5 py-0.2 rounded bg-white/10 text-[#F2EEE6]/70">
@@ -977,16 +977,16 @@ export const IntrosSystemGrid: React.FC = () => {
                 <div className="flex items-center gap-3 flex-wrap justify-between md:justify-end">
                   {/* Legend Scale */}
                   <div className="flex items-center gap-2 text-[9px] font-mono flex-wrap">
-                    <span className="flex items-center gap-1 text-[#F5B027]">
-                      <span className="w-2 h-2 rounded-full bg-[#F5B027] shadow-[0_0_6px_rgba(249,115,22,0.8)]" />
+                    <span className="flex items-center gap-1 text-[#EF4444]">
+                      <span className="w-2 h-2 rounded-full bg-[#EF4444] shadow-[0_0_6px_rgba(249,115,22,0.8)]" />
                       <span>&gt;88% High Density</span>
                     </span>
                     <span className="flex items-center gap-1 text-[#B91C1C]">
                       <span className="w-2 h-2 rounded-full bg-[#B91C1C] shadow-[0_0_6px_rgba(63,179,127,0.8)]" />
                       <span>75–87% Optimal</span>
                     </span>
-                    <span className="flex items-center gap-1 text-[#F5B027]">
-                      <span className="w-2 h-2 rounded-full bg-[#F5B027]" />
+                    <span className="flex items-center gap-1 text-[#EF4444]">
+                      <span className="w-2 h-2 rounded-full bg-[#EF4444]" />
                       <span>60–74% Baseline</span>
                     </span>
                     <span className="flex items-center gap-1 text-[#94A3B8]">
@@ -1083,7 +1083,7 @@ export const IntrosSystemGrid: React.FC = () => {
               gridActivityHistoryFilter !== 'all' ||
               gridSearchQuery.trim()) && (
               <div className="mb-3.5 px-3 py-1.5 rounded-lg bg-[#0E1116] border border-white/10 flex items-center justify-between text-xs font-mono">
-                <span className="text-[#F5B027]">
+                <span className="text-[#EF4444]">
                   Showing {filteredGridPeople.length} of {people.length} executive connections
                   {gridFilterStatus !== 'all' && ` · Status: ${gridFilterStatus}`}
                   {gridTierFilter !== 'all' && ` · Tier: ${gridTierFilter}`}
@@ -1200,7 +1200,7 @@ export const IntrosSystemGrid: React.FC = () => {
 
         {/* Mountain Horizon Atmospheric Background Graphic */}
         <div className="absolute inset-0 pointer-events-none opacity-40 overflow-hidden" aria-hidden="true">
-          <div className="absolute inset-x-0 bottom-0 h-40 bg-gradient-to-t from-[#F5B027]/10 via-[#F5B027]/10 to-transparent" />
+          <div className="absolute inset-x-0 bottom-0 h-40 bg-gradient-to-t from-[#EF4444]/10 via-[#EF4444]/10 to-transparent" />
           <svg
             className="w-full h-full object-cover"
             viewBox="0 0 1440 280"
@@ -1213,7 +1213,7 @@ export const IntrosSystemGrid: React.FC = () => {
             />
             <path
               d="M0,185 L110,165 L220,195 L340,150 L470,175 L590,130 L720,170 L830,120 L960,160 L1080,135 L1210,175 L1330,145 L1440,170"
-              stroke="rgba(249, 115, 22, 0.35)"
+              stroke="rgba(249,22,22, 0.35)"
               strokeWidth="1.5"
             />
             <path
@@ -1232,7 +1232,7 @@ export const IntrosSystemGrid: React.FC = () => {
             <h2 className="font-serif-editorial text-xl sm:text-3xl text-[#F2EEE6] tracking-[0.02em] font-normal">
               One person. One company. One relationship record.
             </h2>
-            <h2 className="font-serif-editorial text-xl sm:text-3xl text-[#F5B027] tracking-[0.02em] font-medium">
+            <h2 className="font-serif-editorial text-xl sm:text-3xl text-[#EF4444] tracking-[0.02em] font-medium">
               Everything connected.
             </h2>
             <p className="font-serif-editorial text-sm sm:text-base text-[#F2EEE6]/60 italic tracking-[0.04em] pt-1">
@@ -1261,7 +1261,7 @@ export const IntrosSystemGrid: React.FC = () => {
               <div>OPPORTUNITIES</div>
               <div>OPPORTUNITIES</div>
               <div>CREATE</div>
-              <div className="text-[#F5B027] font-semibold">FREEDOM</div>
+              <div className="text-[#EF4444] font-semibold">FREEDOM</div>
             </div>
           </div>
         </div>
@@ -1429,7 +1429,7 @@ export const IntrosSystemGrid: React.FC = () => {
       <div className="fixed bottom-20 right-6 z-40">
         <button
           onClick={() => setIsQuickAddOpen(true)}
-          className="px-4 py-3 rounded-2xl bg-[#F5B027] hover:bg-[#F5B027]/90 text-white font-mono text-xs font-medium shadow-[0_10px_30px_rgba(185,28,28,0.6)] flex items-center gap-2 transition-all active:scale-95 group"
+          className="px-4 py-3 rounded-2xl bg-[#EF4444] hover:bg-[#EF4444]/90 text-white font-mono text-xs font-medium shadow-[0_10px_30px_rgba(185,28,28,0.6)] flex items-center gap-2 transition-all active:scale-95 group"
           title="Quickly add a new executive contact (Quick Add)"
         >
           <span className="text-base font-bold">+</span>

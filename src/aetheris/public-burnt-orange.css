@@ -27,14 +27,14 @@
   border: 1px solid var(--ael-copper-line) !important;
   border-radius: 10px !important;
   background: #181619 !important;
-  color: #ffd6c1 !important;
+  color: #FFC1C1 !important;
   box-shadow: 0 7px 23px rgba(0,0,0,.21) !important;
 }
 .ael.ael-compact.ael--text .ael-nav-cta.ai-gradient-button:hover,
 .ael.ael-compact.ael--text .ael-btn.ai-gradient-button:hover {
   background: var(--ael-copper) !important;
   border-color: #FCA5A5 !important;
-  color: #1c120e !important;
+  color: #1C0E0E !important;
   box-shadow: 0 9px 24px rgba(0,0,0,.23) !important;
 }
 .ael.ael-compact.ael--text .ael-hero-actions .ael-text-link {

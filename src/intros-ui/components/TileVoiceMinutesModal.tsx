@@ -199,12 +199,12 @@ ${processedResult.decisions.map((d) => `- ${d}`).join('\n')}`;
         {/* Top Header */}
         <div className="p-4 sm:p-5 border-b border-white/10 bg-[#07090C] flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="w-8 h-8 rounded-lg bg-[#F5B027]/20 border border-[#F5B027]/40 flex items-center justify-center text-[#F5B027]">
+            <div className="w-8 h-8 rounded-lg bg-[#EF4444]/20 border border-[#EF4444]/40 flex items-center justify-center text-[#EF4444]">
               <Mic size={16} />
             </div>
             <div>
               <div className="flex items-center gap-2">
-                <span className="text-[9.5px] font-mono tracking-[0.25em] text-[#F5B027] uppercase font-bold">
+                <span className="text-[9.5px] font-mono tracking-[0.25em] text-[#EF4444] uppercase font-bold">
                   Voice Note to Minutes
                 </span>
                 <span className="text-[9px] font-mono px-1.5 py-0.2 rounded bg-[#B91C1C]/15 text-[#B91C1C] font-semibold border border-[#B91C1C]/30">
@@ -212,7 +212,7 @@ ${processedResult.decisions.map((d) => `- ${d}`).join('\n')}`;
                 </span>
               </div>
               <h3 id="voice-modal-title" className="font-serif-editorial text-lg sm:text-xl text-[#F2EEE6] leading-tight">
-                Attach Meeting Minutes to <span className="text-[#F5B027]">{tileTitle}</span>
+                Attach Meeting Minutes to <span className="text-[#EF4444]">{tileTitle}</span>
               </h3>
             </div>
           </div>
@@ -234,7 +234,7 @@ ${processedResult.decisions.map((d) => `- ${d}`).join('\n')}`;
                 Dictate Notes via MediaRecorder API:
               </span>
               {linkedPerson && (
-                <span className="text-[10px] font-mono text-[#F5B027] flex items-center gap-1">
+                <span className="text-[10px] font-mono text-[#EF4444] flex items-center gap-1">
                   <span>Linked:</span>
                   <span className="font-bold text-[#F2EEE6]">{linkedPerson.name}</span>
                 </span>
@@ -249,7 +249,7 @@ ${processedResult.decisions.map((d) => `- ${d}`).join('\n')}`;
                 className={`px-4 py-2.5 rounded-xl font-mono text-xs font-semibold flex items-center gap-2 transition-all shadow-md shrink-0 ${
                   isRecording
                     ? 'bg-[#B91C1C] text-white animate-pulse shadow-[0_0_12px_rgba(229,72,77,0.7)]'
-                    : 'bg-[#F5B027] hover:bg-[#F5B027]/90 text-white'
+                    : 'bg-[#EF4444] hover:bg-[#EF4444]/90 text-white'
                 }`}
               >
                 {isRecording ? (
@@ -291,7 +291,7 @@ ${processedResult.decisions.map((d) => `- ${d}`).join('\n')}`;
                 value={currentDictation}
                 onChange={(e) => setManualText(e.target.value)}
                 placeholder="Spoken words transcribe here live. Or type your bulleted debrief..."
-                className="w-full bg-[#07090C] border border-white/10 rounded-lg p-2.5 text-xs text-[#F2EEE6] placeholder-[#F2EEE6]/30 focus:outline-none focus:border-[#F5B027] font-mono leading-relaxed"
+                className="w-full bg-[#07090C] border border-white/10 rounded-lg p-2.5 text-xs text-[#F2EEE6] placeholder-[#F2EEE6]/30 focus:outline-none focus:border-[#EF4444] font-mono leading-relaxed"
               />
             </div>
 
@@ -332,10 +332,10 @@ ${processedResult.decisions.map((d) => `- ${d}`).join('\n')}`;
 
           {/* Processed AI Output Display */}
           {processedResult && (
-            <div className="p-4 rounded-xl bg-[#0E1116] border border-[#F5B027]/40 shadow-xl space-y-3 animate-in fade-in duration-200">
+            <div className="p-4 rounded-xl bg-[#0E1116] border border-[#EF4444]/40 shadow-xl space-y-3 animate-in fade-in duration-200">
               <div className="flex items-start justify-between gap-2 border-b border-white/10 pb-2">
                 <div>
-                  <div className="text-[9px] font-mono text-[#F5B027] uppercase font-bold tracking-wider flex items-center gap-1.5">
+                  <div className="text-[9px] font-mono text-[#EF4444] uppercase font-bold tracking-wider flex items-center gap-1.5">
                     <Sparkles size={10} className="text-[#B91C1C]" />
                     <span>Bulleted Minutes Structured by {processedResult.source || 'Gemini 3.8 Flash'}</span>
                   </div>
@@ -362,7 +362,7 @@ ${processedResult.decisions.map((d) => `- ${d}`).join('\n')}`;
 
               {/* Bulleted Minutes */}
               <div className="space-y-1.5 pt-1">
-                <div className="text-[9.5px] font-mono uppercase tracking-wider text-[#F5B027] font-semibold">
+                <div className="text-[9.5px] font-mono uppercase tracking-wider text-[#EF4444] font-semibold">
                   Discussion Minutes
                 </div>
                 {processedResult.bulletedMinutes.map((item, idx) => (
@@ -376,12 +376,12 @@ ${processedResult.decisions.map((d) => `- ${d}`).join('\n')}`;
               {/* Action Items */}
               {processedResult.actionItems.length > 0 && (
                 <div className="space-y-1.5 pt-1 border-t border-white/5">
-                  <div className="text-[9.5px] font-mono uppercase tracking-wider text-[#F5B027] font-semibold">
+                  <div className="text-[9.5px] font-mono uppercase tracking-wider text-[#EF4444] font-semibold">
                     Extracted Action Items
                   </div>
                   {processedResult.actionItems.map((act, idx) => (
                     <div key={idx} className="flex items-start gap-2 text-xs text-[#F2EEE6]/90 leading-snug">
-                      <span className="text-[#F5B027] font-bold">☑</span>
+                      <span className="text-[#EF4444] font-bold">☑</span>
                       <span>{act}</span>
                     </div>
                   ))}
@@ -396,7 +396,7 @@ ${processedResult.decisions.map((d) => `- ${d}`).join('\n')}`;
                 <button
                   type="button"
                   onClick={handleSaveAndCommit}
-                  className="px-4 py-2 rounded-lg bg-[#F5B027] hover:bg-[#F5B027]/90 text-white text-xs font-mono font-bold flex items-center gap-1.5 transition-all shadow-md"
+                  className="px-4 py-2 rounded-lg bg-[#EF4444] hover:bg-[#EF4444]/90 text-white text-xs font-mono font-bold flex items-center gap-1.5 transition-all shadow-md"
                 >
                   <Save size={13} />
                   <span>Commit Minutes to Tile Record</span>

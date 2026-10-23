@@ -424,11 +424,11 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({
       case 'active':
         return 'bg-[#B91C1C] shadow-[0_0_8px_rgba(63,179,127,0.7)]';
       case 'followup':
-        return 'bg-[#F5B027] shadow-[0_0_8px_rgba(242,169,59,0.7)]';
+        return 'bg-[#EF4444] shadow-[0_0_8px_rgba(242,169,59,0.7)]';
       case 'dormant':
         return 'bg-[#64748B]';
       default:
-        return 'bg-[#F5B027]';
+        return 'bg-[#EF4444]';
     }
   };
 
@@ -446,7 +446,7 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({
         {/* Main Search Input */}
         <div className="p-4 border-b border-white/10 flex items-center gap-3 bg-[#07090C]/80">
           <div className="relative shrink-0">
-            <Search size={18} className="text-[#F5B027]" />
+            <Search size={18} className="text-[#EF4444]" />
             <Sparkles size={8} className="absolute -top-1 -right-1 text-[#B91C1C] animate-pulse" />
           </div>
           <input
@@ -468,7 +468,7 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({
                 className="px-2 py-1 rounded bg-white/5 hover:bg-white/10 text-[10px] font-mono text-[#F2EEE6]/70 flex items-center gap-1 transition-colors border border-white/5"
                 title="View Keyboard Shortcuts Cheat Sheet (⌘/)"
               >
-                <Keyboard size={12} className="text-[#F5B027]" />
+                <Keyboard size={12} className="text-[#EF4444]" />
                 <span className="hidden sm:inline">Cheat Sheet</span>
                 <kbd className="text-[9px] opacity-60">⌘/</kbd>
               </button>
@@ -486,7 +486,7 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({
         <div className="px-4 py-2 border-b border-white/10 bg-[#0E1116] flex flex-wrap items-center justify-between gap-2 text-xs">
           {/* Predictive Banner State */}
           <div className="flex items-center gap-2">
-            <div className="flex items-center gap-1.5 text-[10px] font-mono text-[#F5B027] uppercase font-bold tracking-wider">
+            <div className="flex items-center gap-1.5 text-[10px] font-mono text-[#EF4444] uppercase font-bold tracking-wider">
               <Zap size={11} className="text-[#B91C1C]" />
               <span>Real-Time Predictive Engine</span>
             </div>
@@ -513,9 +513,9 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({
                   onScanCalendar();
                   onClose();
                 }}
-                className="px-2 py-0.5 rounded bg-white/5 hover:bg-[#F5B027]/20 border border-white/10 text-[10px] font-mono text-[#F2EEE6] flex items-center gap-1 transition-colors"
+                className="px-2 py-0.5 rounded bg-white/5 hover:bg-[#EF4444]/20 border border-white/10 text-[10px] font-mono text-[#F2EEE6] flex items-center gap-1 transition-colors"
               >
-                <Calendar size={10} className="text-[#F5B027]" />
+                <Calendar size={10} className="text-[#EF4444]" />
                 <span className="hidden sm:inline">Scan</span>
               </button>
             )}
@@ -525,9 +525,9 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({
                   onDownloadReport();
                   onClose();
                 }}
-                className="px-2 py-0.5 rounded bg-[#F5B027]/20 hover:bg-[#F5B027]/30 border border-[#F5B027]/40 text-[10px] font-mono text-[#F2EEE6] flex items-center gap-1 transition-colors"
+                className="px-2 py-0.5 rounded bg-[#EF4444]/20 hover:bg-[#EF4444]/30 border border-[#EF4444]/40 text-[10px] font-mono text-[#F2EEE6] flex items-center gap-1 transition-colors"
               >
-                <Download size={10} className="text-[#F5B027]" />
+                <Download size={10} className="text-[#EF4444]" />
                 <span className="hidden sm:inline">CSV</span>
               </button>
             )}
@@ -558,7 +558,7 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({
                   onMouseEnter={() => setSelectedIndex(idx)}
                   className={`w-full p-2.5 rounded-xl text-left flex items-center justify-between gap-3 transition-all ${
                     isSelected
-                      ? 'bg-[#151922] border border-[#F5B027]/60 shadow-lg translate-x-0.5'
+                      ? 'bg-[#151922] border border-[#EF4444]/60 shadow-lg translate-x-0.5'
                       : 'hover:bg-white/5 border border-transparent'
                   }`}
                 >
@@ -573,7 +573,7 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({
                         />
                       </div>
                     ) : item.type === 'action' ? (
-                      <div className="w-8 h-8 rounded-lg bg-[#F5B027]/20 border border-[#F5B027]/40 flex items-center justify-center text-[#F5B027] shrink-0">
+                      <div className="w-8 h-8 rounded-lg bg-[#EF4444]/20 border border-[#EF4444]/40 flex items-center justify-center text-[#EF4444] shrink-0">
                         <Zap size={15} />
                       </div>
                     ) : item.type === 'tool' ? (
@@ -591,7 +591,7 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({
                         <span className="text-xs sm:text-[13px] font-semibold text-[#F2EEE6] truncate">
                           {item.title}
                         </span>
-                        <span className="text-[9px] font-mono px-1.5 py-0.2 rounded bg-white/5 text-[#F5B027] shrink-0 border border-white/5">
+                        <span className="text-[9px] font-mono px-1.5 py-0.2 rounded bg-white/5 text-[#EF4444] shrink-0 border border-white/5">
                           {item.badge}
                         </span>
                       </div>
@@ -607,7 +607,7 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({
                     </span>
                     <ArrowRight
                       size={13}
-                      className={isSelected ? 'text-[#F5B027]' : 'text-[#F2EEE6]/30'}
+                      className={isSelected ? 'text-[#EF4444]' : 'text-[#F2EEE6]/30'}
                     />
                   </div>
                 </button>
@@ -634,7 +634,7 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({
             </span>
           </div>
 
-          <div className="text-[9.5px] text-[#F5B027] flex items-center gap-1 font-semibold">
+          <div className="text-[9.5px] text-[#EF4444] flex items-center gap-1 font-semibold">
             <span>Powered by Aetheris Activity Graph</span>
           </div>
         </div>

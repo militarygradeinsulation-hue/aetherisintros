@@ -470,3 +470,7 @@
 
 /* Production Ask Intros owns its existing providers, auth, and route tree. */
 :root body .ix-root.ix-aetheris-workspace-mode.ix-absolute-ledger.ledger-native-app {--ledger-crm-accent:#EF4444;--mp-bridge-copper:#B91C1C;--mp-bridge-copper-bright:#EF4444;--mp-bridge-line:rgba(239,68,68,.24)}
+
+/* Privacy/context captions retain AA contrast on the CRM's actual card surface. */
+:root[data-theme="dark"] body .ix-root.ledger-native-app .page-proof {color:#fca5a5!important;-webkit-text-fill-color:#fca5a5!important;opacity:1!important}
+:root[data-theme="light"] body .ix-root.ledger-native-app .page-proof {color:#991b1b!important;-webkit-text-fill-color:#991b1b!important;opacity:1!important}

@@ -150,7 +150,7 @@ export const PeopleDirectoryView: React.FC<PeopleDirectoryViewProps> = ({
   const renderTierBadge = (tier?: RelationshipTier) => {
     if (!tier) return null;
     const styles = {
-      Core: 'bg-[#EF4444]/20 text-[#FFC85C] border-[#EF4444]/40',
+      Core: 'bg-[#EF4444]/20 text-[#FCA5A5] border-[#EF4444]/40',
       Extended: 'bg-emerald-500/15 text-emerald-400 border-emerald-500/30',
       Prospect: 'bg-red-500/15 text-red-300 border-red-500/30',
     }[tier];
@@ -307,7 +307,7 @@ export const PeopleDirectoryView: React.FC<PeopleDirectoryViewProps> = ({
                     onClick={() => setSelectedTier(tierItem.id as any)}
                     className={`ix-option-tile ix-relationship-tier-option flex items-center justify-between px-2.5 py-1.5 rounded-lg text-xs font-mono transition-all cursor-pointer border ${
                       selectedTier === tierItem.id
-                        ? 'bg-[#EF4444] text-[#1c110c] border-[#EF4444] font-semibold shadow-sm shadow-[#EF4444]/30'
+                        ? 'bg-[#EF4444] text-[#1C0C0C] border-[#EF4444] font-semibold shadow-sm shadow-[#EF4444]/30'
                         : 'bg-[#131722] hover:bg-[#1A202C] text-[#CBD5E1] border-white/5'
                     }`}
                   >
@@ -417,7 +417,7 @@ export const PeopleDirectoryView: React.FC<PeopleDirectoryViewProps> = ({
             <div className="text-[11px] font-mono tracking-widest uppercase text-[#9CA3AF] font-semibold">Quick searches</div>
             <div className="flex flex-wrap gap-1.5">
               {['AI', 'Infrastructure', 'Fintech', 'Advisory', 'Climate', 'Go-to-Market'].map((t) => (
-                <button key={t} onClick={() => setSearchKeyword(t)} className={`text-[11px] px-2.5 py-1 rounded-full border cursor-pointer transition-colors ${searchKeyword === t ? 'border-[#EF4444] text-[#1c110c] bg-[#EF4444]/20' : 'border-white/10 text-[#CBD5E1] hover:border-[#EF4444]'}`}>{t}</button>
+                <button key={t} onClick={() => setSearchKeyword(t)} className={`text-[11px] px-2.5 py-1 rounded-full border cursor-pointer transition-colors ${searchKeyword === t ? 'border-[#EF4444] text-[#1C0C0C] bg-[#EF4444]/20' : 'border-white/10 text-[#CBD5E1] hover:border-[#EF4444]'}`}>{t}</button>
               ))}
             </div>
           </div>
@@ -460,7 +460,7 @@ export const PeopleDirectoryView: React.FC<PeopleDirectoryViewProps> = ({
                   onClick={() => setViewMode('grid')}
                   title="Grid View"
                   className={`p-1 rounded cursor-pointer ${
-                    viewMode === 'grid' ? 'bg-[#EF4444] text-[#1c110c]' : 'text-[#9CA3AF]'
+                    viewMode === 'grid' ? 'bg-[#EF4444] text-[#1C0C0C]' : 'text-[#9CA3AF]'
                   }`}
                 >
                   <LayoutGrid className="w-3.5 h-3.5" />
@@ -469,7 +469,7 @@ export const PeopleDirectoryView: React.FC<PeopleDirectoryViewProps> = ({
                   onClick={() => setViewMode('list')}
                   title="List View"
                   className={`p-1 rounded cursor-pointer ${
-                    viewMode === 'list' ? 'bg-[#EF4444] text-[#1c110c]' : 'text-[#9CA3AF]'
+                    viewMode === 'list' ? 'bg-[#EF4444] text-[#1C0C0C]' : 'text-[#9CA3AF]'
                   }`}
                 >
                   <List className="w-3.5 h-3.5" />
@@ -478,10 +478,10 @@ export const PeopleDirectoryView: React.FC<PeopleDirectoryViewProps> = ({
                   onClick={() => setViewMode('bubbles')}
                   title="Living Floating Connection Bubbles"
                   className={`p-1 rounded cursor-pointer flex items-center gap-1 text-[11px] font-mono px-1.5 ${
-                    viewMode === 'bubbles' ? 'bg-[#EF4444] text-[#1c110c]' : 'text-[#9CA3AF] hover:text-white'
+                    viewMode === 'bubbles' ? 'bg-[#EF4444] text-[#1C0C0C]' : 'text-[#9CA3AF] hover:text-white'
                   }`}
                 >
-                  <Orbit className="w-3.5 h-3.5 text-[#FFC85C]" />
+                  <Orbit className="w-3.5 h-3.5 text-[#FCA5A5]" />
                   <span className="hidden sm:inline">Bubbles</span>
                 </button>
               </div>
@@ -505,7 +505,7 @@ export const PeopleDirectoryView: React.FC<PeopleDirectoryViewProps> = ({
                 aria-pressed={selectedTier === t.id}
                 className={`ix-relationship-tier-quick-option flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-mono transition-all cursor-pointer shrink-0 border ${
                   selectedTier === t.id
-                    ? 'bg-[#EF4444] text-[#1c110c] border-[#EF4444] shadow-sm font-semibold'
+                    ? 'bg-[#EF4444] text-[#1C0C0C] border-[#EF4444] shadow-sm font-semibold'
                     : 'bg-[#0E121A] text-[#9CA3AF] hover:text-white border-white/10 hover:border-white/25'
                 }`}
               >
@@ -821,7 +821,7 @@ export const PeopleDirectoryView: React.FC<PeopleDirectoryViewProps> = ({
           <div className="p-4 rounded-xl border border-[#EF4444]/30 bg-gradient-to-br from-[#121A2C] to-[#0A0D15]">
             <p className="font-serif-editorial text-lg leading-snug text-[#F2EEE6]">Know who matters. Know why now.</p>
             <p className="text-[11px] text-[#9CA3AF] mt-1">Find the right connection for your next move.</p>
-            <button onClick={() => onNavigate('workspace')} className="mt-3 w-full text-xs font-semibold py-2 rounded-md bg-[#EF4444] hover:bg-[#DB6B36] text-[#1c110c] cursor-pointer">Ask Intros</button>
+            <button onClick={() => onNavigate('workspace')} className="mt-3 w-full text-xs font-semibold py-2 rounded-md bg-[#EF4444] hover:bg-[#B91C1C] text-[#1C0C0C] cursor-pointer">Ask Intros</button>
           </div>
           </div>
         </details>

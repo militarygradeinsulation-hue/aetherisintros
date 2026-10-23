@@ -19,9 +19,9 @@ html:root[data-theme="dark"] body .ix-root :is(.ix-messages,.ix-live-messages) {
   --msg-ink:#ffffff!important;
   --msg-body:#f5f5f5!important;
   --msg-muted:#cecece!important;
-  --msg-copper:#ef9a69!important;
-  --msg-accent:#b5541f!important;
-  --msg-accent-hover:#9c431b!important;
+  --msg-copper:#EF6969!important;
+  --msg-accent:#B91C1C!important;
+  --msg-accent-hover:#9C1B1B!important;
   --msg-accent-ink:#ffffff!important;
   --msg-note:#0d0d0d!important;
   --msg-outgoing:#202020!important;
@@ -39,9 +39,9 @@ html:root[data-theme="light"] body .ix-root :is(.ix-messages,.ix-live-messages) 
   --msg-ink:#090909!important;
   --msg-body:#171717!important;
   --msg-muted:#454545!important;
-  --msg-copper:#934016!important;
-  --msg-accent:#b5541f!important;
-  --msg-accent-hover:#963e17!important;
+  --msg-copper:#931616!important;
+  --msg-accent:#B91C1C!important;
+  --msg-accent-hover:#961717!important;
   --msg-accent-ink:#ffffff!important;
   --msg-note:#fafafa!important;
   --msg-outgoing:#e8e8e8!important;
@@ -247,16 +247,16 @@ html:root[data-theme] body .ix-root :is(.ix-messages,.ix-live-messages) :is(butt
 /* Non-blocking live errors are deliberately status-red, with readable ink.
    These are NOT ordinary message tiles. */
 html:root[data-theme="dark"] body .ix-root .ix-live-messages [role="alert"] {
-  background:#301510!important;
+  background:#301010!important;
   color:#ffe7df!important;
   -webkit-text-fill-color:#ffe7df!important;
-  border-color:#bc755e!important;
+  border-color:#BC5E5E!important;
 }
 html:root[data-theme="light"] body .ix-root .ix-live-messages [role="alert"] {
   background:#fff0ed!important;
   color:#812b22!important;
   -webkit-text-fill-color:#812b22!important;
-  border-color:#bf6c59!important;
+  border-color:#BF5959!important;
 }
 @media(prefers-reduced-motion:reduce) {
   .ix-root :is(.ix-messages,.ix-live-messages) :is(button,a) {transition:none!important;}

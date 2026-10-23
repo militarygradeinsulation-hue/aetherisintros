@@ -20,18 +20,18 @@ export const NetworkPulseHeaderTile: React.FC<NetworkPulseHeaderTileProps> = ({
   const minVal = Math.min(...sparklineValues);
 
   return (
-    <div className="w-full mb-4 p-4 sm:p-5 rounded-2xl bg-gradient-to-r from-[#0E1116] via-[#121824] to-[#0E1116] border border-[#F5B027]/40 shadow-[0_0_30px_rgba(185,28,28,0.15)] flex flex-col lg:flex-row lg:items-center justify-between gap-4 select-none relative overflow-hidden">
+    <div className="w-full mb-4 p-4 sm:p-5 rounded-2xl bg-gradient-to-r from-[#0E1116] via-[#121824] to-[#0E1116] border border-[#EF4444]/40 shadow-[0_0_30px_rgba(185,28,28,0.15)] flex flex-col lg:flex-row lg:items-center justify-between gap-4 select-none relative overflow-hidden">
       {/* Background glow accent */}
-      <div className="absolute -right-20 -top-20 w-60 h-60 bg-[#F5B027]/10 rounded-full blur-3xl pointer-events-none" aria-hidden="true" />
+      <div className="absolute -right-20 -top-20 w-60 h-60 bg-[#EF4444]/10 rounded-full blur-3xl pointer-events-none" aria-hidden="true" />
 
       {/* Left: Title & Executive Summary */}
       <div className="flex items-start gap-3.5 min-w-0">
-        <div className="w-10 h-10 rounded-xl bg-[#F5B027]/20 border border-[#F5B027]/50 flex items-center justify-center text-[#F5B027] shrink-0 shadow-sm">
+        <div className="w-10 h-10 rounded-xl bg-[#EF4444]/20 border border-[#EF4444]/50 flex items-center justify-center text-[#EF4444] shrink-0 shadow-sm">
           <Activity size={20} />
         </div>
         <div className="min-w-0">
           <div className="flex items-center gap-2 flex-wrap">
-            <span className="text-[10px] font-mono tracking-[0.2em] uppercase font-bold text-[#F5B027]">
+            <span className="text-[10px] font-mono tracking-[0.2em] uppercase font-bold text-[#EF4444]">
               Network Pulse &amp; Activity Velocity
             </span>
             <span className="px-2 py-0.5 rounded-full bg-[#B91C1C]/20 text-[#B91C1C] text-[9.5px] font-mono font-bold flex items-center gap-1">
@@ -66,7 +66,7 @@ export const NetworkPulseHeaderTile: React.FC<NetworkPulseHeaderTileProps> = ({
                 style={{ height: `${heightPct}%` }}
                 className={`w-2.5 rounded-t transition-all ${
                   isLatest
-                    ? 'bg-[#F5B027] shadow-[0_0_10px_rgba(185,28,28,0.8)]'
+                    ? 'bg-[#EF4444] shadow-[0_0_10px_rgba(185,28,28,0.8)]'
                     : 'bg-white/25 hover:bg-white/40'
                 }`}
                 title={`Day ${idx + 1}: ${val} interactions`}
@@ -83,15 +83,15 @@ export const NetworkPulseHeaderTile: React.FC<NetworkPulseHeaderTileProps> = ({
           className="px-3 py-2 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-[#F2EEE6] text-xs font-mono flex items-center gap-1.5 transition-all"
           title="Open D3 Network Graph"
         >
-          <Sparkles size={13} className="text-[#F5B027]" />
+          <Sparkles size={13} className="text-[#EF4444]" />
           <span>Network Graph</span>
         </button>
         <button
           onClick={onOpenHeatmap}
-          className="px-3 py-2 rounded-xl bg-[#F5B027]/20 hover:bg-[#F5B027]/30 border border-[#F5B027]/40 text-white text-xs font-mono flex items-center gap-1.5 transition-all shadow-sm"
+          className="px-3 py-2 rounded-xl bg-[#EF4444]/20 hover:bg-[#EF4444]/30 border border-[#EF4444]/40 text-white text-xs font-mono flex items-center gap-1.5 transition-all shadow-sm"
           title="Open Cluster Heatmap"
         >
-          <Zap size={13} className="text-[#F5B027]" />
+          <Zap size={13} className="text-[#EF4444]" />
           <span>Cluster Heatmap</span>
         </button>
       </div>

@@ -22,7 +22,7 @@
   --ai-ui-selected:#243b4c;
   --ai-ui-selected-ink:#e8f2fa;
   --ai-ui-selected-border:#52728b;
-  --ai-ui-warm:#d8a879;
+  --ai-ui-warm:#D87979;
   --ai-ui-shadow:0 6px 20px rgba(0,0,0,.13);
   --ai-ui-radius:12px;
 }
@@ -41,7 +41,7 @@
   --ai-ui-selected:#DCE8F3;
   --ai-ui-selected-ink:#233E53;
   --ai-ui-selected-border:#B9CBDD;
-  --ai-ui-warm:#8d6b4d;
+  --ai-ui-warm:#8D4D4D;
   --ai-ui-shadow:0 6px 18px rgba(26,33,39,.05);
 }
 /* Adapt the earlier architectural system to the actual product reference. */
@@ -377,7 +377,7 @@
   --msg-ink:#2E3438;
   --msg-body:#3A454A;
   --msg-muted:#56626A;
-  --msg-copper:#8b6a4e;
+  --msg-copper:#8B4E4E;
   --msg-accent:#2F5F87;
   --msg-accent-hover:#244B6B;
   --msg-accent-ink:#fff;
@@ -474,7 +474,7 @@
   --msg-ink:#2E3438;
   --msg-body:#3A454A;
   --msg-muted:#56626A;
-  --msg-copper:#80634a;
+  --msg-copper:#804A4A;
   --msg-accent:#2F5F87;
   --msg-accent-hover:#244B6B;
   --msg-accent-ink:#FFFFFF;

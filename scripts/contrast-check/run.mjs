@@ -175,6 +175,7 @@ try {
   };
   await tool('CRM');
   await check(page,'crm-tabs','[role=tablist][aria-label="CRM sections"]','',{inline:true});
+  await nav.getByRole('button',{name:'Business tools',exact:true}).click();
   await tool('Providers');
   await check(page,'providers-tabs','.providers-tabs','',{inline:true});
   await tool('Needs');

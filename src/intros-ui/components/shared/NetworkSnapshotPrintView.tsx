@@ -72,7 +72,7 @@ export const NetworkSnapshotPrintView: React.FC<NetworkSnapshotPrintViewProps> =
         x,
         y,
         radius: idx < 3 ? 28 : 24,
-        ringColor: m.tier === 'Core' ? '#F5B027' : m.tier === 'Extended' ? '#B91C1C' : '#DC2626',
+        ringColor: m.tier === 'Core' ? '#EF4444' : m.tier === 'Extended' ? '#B91C1C' : '#DC2626',
       };
     });
   }, [members, cx, cy]);
@@ -80,10 +80,10 @@ export const NetworkSnapshotPrintView: React.FC<NetworkSnapshotPrintViewProps> =
   return (
     <div className="hidden print:block print-snapshot-container w-full bg-[#07090C] text-[#F2EEE6] p-6 space-y-6">
       {/* 1. Executive Letterhead & Document Metadata */}
-      <header className="border-b-2 border-[#F5B027] pb-4 flex items-start justify-between">
+      <header className="border-b-2 border-[#EF4444] pb-4 flex items-start justify-between">
         <div className="space-y-1">
-          <div className="flex items-center gap-2 text-[10px] font-mono uppercase tracking-[0.25em] text-[#F5B027] font-semibold">
-            <Radio className="w-3.5 h-3.5 text-[#F5B027]" />
+          <div className="flex items-center gap-2 text-[10px] font-mono uppercase tracking-[0.25em] text-[#EF4444] font-semibold">
+            <Radio className="w-3.5 h-3.5 text-[#EF4444]" />
             <span>AETHERIS // RELATIONSHIP INTELLIGENCE SYSTEM</span>
           </div>
           <h1 className="font-serif-editorial text-2xl font-bold text-white tracking-tight">
@@ -109,7 +109,7 @@ export const NetworkSnapshotPrintView: React.FC<NetworkSnapshotPrintViewProps> =
         </div>
         <div>
           <div className="text-[10px] font-mono text-[#9CA3AF] uppercase">Total Active Nodes</div>
-          <div className="text-sm font-bold text-[#FFC85C] mt-0.5">{members.length} Verified People</div>
+          <div className="text-sm font-bold text-[#FCA5A5] mt-0.5">{members.length} Verified People</div>
         </div>
         <div>
           <div className="text-[10px] font-mono text-[#9CA3AF] uppercase">Mean Affinity Fit</div>
@@ -126,7 +126,7 @@ export const NetworkSnapshotPrintView: React.FC<NetworkSnapshotPrintViewProps> =
       {/* 3. High-Resolution Visual Vector Web / Radar Constellation */}
       <div className="bg-[#090C11] border border-white/10 rounded-xl p-4 overflow-hidden relative shadow-lg print-break-inside-avoid">
         <div className="flex items-center justify-between text-[10px] font-mono uppercase tracking-wider text-[#9CA3AF] mb-2 border-b border-white/5 pb-1.5">
-          <span className="flex items-center gap-1.5 text-[#F5B027] font-semibold">
+          <span className="flex items-center gap-1.5 text-[#EF4444] font-semibold">
             <Compass className="w-3.5 h-3.5" />
             300 DPI Vector Cluster Topology · Orbital Radar Coordinates
           </span>
@@ -138,8 +138,8 @@ export const NetworkSnapshotPrintView: React.FC<NetworkSnapshotPrintViewProps> =
           <svg className="absolute inset-0 w-full h-full pointer-events-none" viewBox={`0 0 ${width} ${height}`}>
             <defs>
               <radialGradient id="printRadarGrad" cx="50%" cy="50%" r="50%">
-                <stop offset="0%" stopColor="#F5B027" stopOpacity="0.12" />
-                <stop offset="60%" stopColor="#F5B027" stopOpacity="0.03" />
+                <stop offset="0%" stopColor="#EF4444" stopOpacity="0.12" />
+                <stop offset="60%" stopColor="#EF4444" stopOpacity="0.03" />
                 <stop offset="100%" stopColor="#07090C" stopOpacity="0" />
               </radialGradient>
             </defs>
@@ -189,7 +189,7 @@ export const NetworkSnapshotPrintView: React.FC<NetworkSnapshotPrintViewProps> =
                       y1={n1.y}
                       x2={n2.x}
                       y2={n2.y}
-                      stroke="rgba(255, 200, 92, 0.45)"
+                      stroke="rgba(255,92,92, 0.45)"
                       strokeWidth="1.2"
                     />
                   );
@@ -206,7 +206,7 @@ export const NetworkSnapshotPrintView: React.FC<NetworkSnapshotPrintViewProps> =
               { x: cx + 80, y: cy + 90, label: 'Enterprise GTM' },
             ].map((micro, idx) => (
               <g key={idx}>
-                <circle cx={micro.x} cy={micro.y} r={3} fill="#FFC85C" />
+                <circle cx={micro.x} cy={micro.y} r={3} fill="#FCA5A5" />
                 <text
                   x={micro.x + 6}
                   y={micro.y + 3}
@@ -307,10 +307,10 @@ export const NetworkSnapshotPrintView: React.FC<NetworkSnapshotPrintViewProps> =
                         <img
                           src={u}
                           alt={m.name}
-                          className="w-7 h-7 rounded-full object-cover border border-[#F5B027]/40 grayscale"
+                          className="w-7 h-7 rounded-full object-cover border border-[#EF4444]/40 grayscale"
                         />
                       ) : (
-                        <div className="w-7 h-7 rounded-full bg-[#1E232F] border border-[#F5B027]/40 flex items-center justify-center text-[9px] font-semibold text-white">
+                        <div className="w-7 h-7 rounded-full bg-[#1E232F] border border-[#EF4444]/40 flex items-center justify-center text-[9px] font-semibold text-white">
                           {m.name.split(' ').filter(Boolean).map((p) => p[0]).join('').slice(0, 2).toUpperCase()}
                         </div>
                       );
@@ -322,13 +322,13 @@ export const NetworkSnapshotPrintView: React.FC<NetworkSnapshotPrintViewProps> =
                   </td>
                   <td className="p-2.5">
                     <div className="text-white font-medium">{m.title}</div>
-                    <div className="text-[10px] text-[#FFC85C]">{m.company}</div>
+                    <div className="text-[10px] text-[#FCA5A5]">{m.company}</div>
                   </td>
                   <td className="p-2.5">
                     <span
                       className={`px-1.5 py-0.5 rounded text-[9px] font-mono uppercase font-bold border ${
                         m.tier === 'Core'
-                          ? 'bg-[#F5B027]/20 text-[#FFC85C] border-[#F5B027]/40'
+                          ? 'bg-[#EF4444]/20 text-[#FCA5A5] border-[#EF4444]/40'
                           : m.tier === 'Extended'
                           ? 'bg-emerald-500/20 text-emerald-400 border-emerald-500/40'
                           : 'bg-red-500/20 text-red-300 border-red-500/40'

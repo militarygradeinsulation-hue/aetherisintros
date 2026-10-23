@@ -48,13 +48,13 @@ const tabs: Array<{ id: Tab; label: string }> = [
 const money = (n: number) => n.toLocaleString('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 })
 const day = (iso: string | null) => (iso ? new Date(iso).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : '—')
 
-export default function CrmPage() {
+export default function CrmPage({ section }: { section?: 'crm' | 'pipeline' | undefined }) {
   const ops = useOps()
   const { access } = useAccess()
   const [prospecting, setProspecting] = useState(false)
   const net = useNetwork()
   const nav = useNav()
-  const [tab, setTab] = useState<Tab>(() => (typeof window === 'undefined' ? 'overview' : (localStorage.getItem('aetheris.crm.tab') as Tab) || 'overview'))
+  const [tab, setTab] = useState<Tab>(() => (section === 'pipeline' ? 'opportunities' : section === 'crm' ? 'overview' : typeof window === 'undefined' ? 'overview' : (localStorage.getItem('aetheris.crm.tab') as Tab) || 'overview'))
   const [selected, setSelected] = useState<Selection>(null)
   const [query, setQuery] = useState('')
   const [creating, setCreating] = useState<'person' | 'company' | 'opportunity' | 'task' | null>(null)
@@ -88,7 +88,7 @@ export default function CrmPage() {
 
   /* ------------------------------------------------ full workspace */
 
-  if (view === 'full') {
+  if (!section && view === 'full') {
     return <LedgerProvider><FullCrm onBack={() => setWorkspace('basic')} /></LedgerProvider>
   }
 
@@ -108,23 +108,23 @@ export default function CrmPage() {
   </div>
 
   return <>
-    <Head label="AETHERIS CRM" title="One record per person. Everywhere."
-      copy="Enter a person, company, opportunity or number once and the whole account uses it — CRM lists, Grid sheets, your pipeline and the relationship intelligence beside them."
+    <Head label={section === 'pipeline' ? "ASK INTROS PIPELINE" : "ASK INTROS CRM"} title={section === 'pipeline' ? "Your opportunity pipeline." : "One record per person. Everywhere."}
+      copy={section === 'pipeline' ? "Track opportunity stages, values, expected closes and next actions using your CRM records." : "Enter a person, company, opportunity or number once and the whole account uses it — CRM lists, Grid sheets, your pipeline and the relationship intelligence beside them."}
       proof="Private to your account. Nothing here is visible to the network."
-      action={<Btn onClick={() => setCreating('person')}><Plus size={14} /> New person</Btn>} />
+      action={<Btn onClick={() => setCreating(section === 'pipeline' ? 'opportunity' : 'person')}><Plus size={14} /> {section === 'pipeline' ? 'New opportunity' : 'New person'}</Btn>} />
 
-    {switcher}
-    {access.isAdmin && <div className="ops-toolbar"><Btn kind="secondary" onClick={() => setProspecting(true)}><Target size={14} /> Prospect Intelligence</Btn></div>}
+    {!section && switcher}
+    {section !== 'pipeline' && access.isAdmin && <div className="ops-toolbar"><Btn kind="secondary" onClick={() => setProspecting(true)}><Target size={14} /> Prospect Intelligence</Btn></div>}
 
-    <nav className="ops-tabs" role="tablist" aria-label="CRM sections">
-      {tabs.map(t => <button key={t.id} role="tab" aria-selected={t.id === tab}
+    {section !== 'pipeline' && <nav className="ops-tabs" role="tablist" aria-label="CRM sections">
+      {tabs.filter(t => !section || t.id !== 'opportunities').map(t => <button key={t.id} role="tab" aria-selected={t.id === tab}
         className={t.id === tab ? 'active' : ''} onClick={() => go(t.id)}>{t.label}</button>)}
-    </nav>
+    </nav>}
 
 
     {creating && <CreateForm kind={creating} onClose={() => setCreating(null)} />}
 
-    {empty && tab !== 'overview' && <p className="ops-note">Nothing here yet. Add your first record from Overview.</p>}
+    {empty && tab !== 'overview' && <p className="ops-note">Nothing here yet. Add a record to get started.</p>}
 
     {tab === 'overview' && <section className="ops-overview">
       <div className="ops-stats">

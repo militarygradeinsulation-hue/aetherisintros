@@ -3,7 +3,7 @@ import { useEffect, useRef } from 'react'
 // Native, brand-styled version of the supplied "Constellation Field" effect:
 // slowly drifting nodes joined by hairline links — a quiet network metaphor
 // in the Ask Intros palette (warm-gold nodes, cobalt links, graphite fades).
-const GOLD = '199, 133, 34'    // warm gold rgb
+const GOLD = '239, 68, 68'    // warm gold rgb
 const AMBER = '244, 161, 37'   // signal amber rgb
 const COBALT = '96, 165, 250'  // cobalt-bright rgb
 

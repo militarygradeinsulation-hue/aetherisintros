@@ -159,10 +159,10 @@ export const PredictiveInsightsModal: React.FC<PredictiveInsightsModalProps> = (
       case 'critical':
         return 'text-[#B91C1C] border-[#B91C1C]/30 bg-[#B91C1C]/10';
       case 'high':
-        return 'text-[#F5B027] border-[#F5B027]/30 bg-[#F5B027]/10';
+        return 'text-[#EF4444] border-[#EF4444]/30 bg-[#EF4444]/10';
       case 'strategic':
       default:
-        return 'text-[#F5B027] border-[#F5B027]/30 bg-[#F5B027]/10';
+        return 'text-[#EF4444] border-[#EF4444]/30 bg-[#EF4444]/10';
     }
   };
 
@@ -177,8 +177,8 @@ export const PredictiveInsightsModal: React.FC<PredictiveInsightsModalProps> = (
         {/* Header */}
         <div className="flex items-start justify-between pb-4 border-b border-white/10">
           <div>
-            <div className="text-[10px] font-mono tracking-[0.28em] text-[#F5B027] uppercase font-bold flex items-center gap-1.5">
-              <Sparkles size={12} className="text-[#F5B027]" />
+            <div className="text-[10px] font-mono tracking-[0.28em] text-[#EF4444] uppercase font-bold flex items-center gap-1.5">
+              <Sparkles size={12} className="text-[#EF4444]" />
               <span>Predictive Intelligence Engine</span>
             </div>
             <h2 id="insights-title" className="font-serif-editorial text-2xl text-[#F2EEE6] mt-0.5">
@@ -196,7 +196,7 @@ export const PredictiveInsightsModal: React.FC<PredictiveInsightsModalProps> = (
               className="p-2 rounded-lg bg-white/5 hover:bg-white/10 text-[#F2EEE6] transition-colors"
               title="Rerun Predictive LLM Analysis"
             >
-              <RefreshCw size={14} className={isLoading ? 'animate-spin text-[#F5B027]' : ''} />
+              <RefreshCw size={14} className={isLoading ? 'animate-spin text-[#EF4444]' : ''} />
             </button>
             <button
               onClick={onClose}
@@ -211,7 +211,7 @@ export const PredictiveInsightsModal: React.FC<PredictiveInsightsModalProps> = (
         <div className="flex-1 overflow-y-auto py-4 space-y-3.5 pr-1">
           {isLoading ? (
             <div className="py-16 text-center space-y-3">
-              <RefreshCw size={28} className="animate-spin text-[#F5B027] mx-auto" />
+              <RefreshCw size={28} className="animate-spin text-[#EF4444] mx-auto" />
               <div className="font-serif-editorial text-lg text-[#F2EEE6]">
                 Analyzing Network Topology & Syndicate Graph...
               </div>
@@ -238,7 +238,7 @@ export const PredictiveInsightsModal: React.FC<PredictiveInsightsModalProps> = (
                       >
                         {insight.severity}
                       </span>
-                      <span className="text-[10px] font-mono text-[#F5B027] font-semibold">
+                      <span className="text-[10px] font-mono text-[#EF4444] font-semibold">
                         {insight.type.replace('_', ' ').toUpperCase()}
                       </span>
                     </div>
@@ -259,20 +259,20 @@ export const PredictiveInsightsModal: React.FC<PredictiveInsightsModalProps> = (
                     </h3>
                     <div className="text-[11px] font-mono text-[#F2EEE6]/60 mt-0.5 flex items-center gap-1.5 truncate">
                       <span className="text-[#F2EEE6]">{insight.sourceEntity}</span>
-                      <ArrowRight size={10} className="text-[#F5B027]" />
+                      <ArrowRight size={10} className="text-[#EF4444]" />
                       <span className="text-[#F2EEE6]">{insight.targetEntity}</span>
                     </div>
                   </div>
 
                   {/* Analysis Paragraph */}
-                  <p className="text-xs text-[#F2EEE6]/80 leading-relaxed font-sans border-l-2 border-[#F5B027]/40 pl-3">
+                  <p className="text-xs text-[#F2EEE6]/80 leading-relaxed font-sans border-l-2 border-[#EF4444]/40 pl-3">
                     {insight.analysis}
                   </p>
 
                   {/* Recommended Action & Trigger Button */}
                   <div className="pt-2 border-t border-white/5 flex items-center justify-between gap-3 flex-wrap">
                     <div className="text-[11px] text-[#F2EEE6]/90 font-serif-editorial italic flex-1 min-w-[200px]">
-                      <span className="text-[#F5B027] font-semibold not-italic">Action: </span>
+                      <span className="text-[#EF4444] font-semibold not-italic">Action: </span>
                       {insight.recommendedAction}
                     </div>
 
@@ -282,7 +282,7 @@ export const PredictiveInsightsModal: React.FC<PredictiveInsightsModalProps> = (
                       className={`px-3 py-1.5 rounded-lg text-xs font-mono font-medium flex items-center gap-1.5 transition-all ${
                         isCommitted
                           ? 'bg-[#B91C1C]/20 text-[#B91C1C] border border-[#B91C1C]/40'
-                          : 'bg-[#F5B027]/20 hover:bg-[#F5B027]/30 text-white border border-[#F5B027]/50'
+                          : 'bg-[#EF4444]/20 hover:bg-[#EF4444]/30 text-white border border-[#EF4444]/50'
                       }`}
                     >
                       {isCommitted ? (
@@ -292,7 +292,7 @@ export const PredictiveInsightsModal: React.FC<PredictiveInsightsModalProps> = (
                         </>
                       ) : (
                         <>
-                          <Zap size={12} className="text-[#F5B027]" />
+                          <Zap size={12} className="text-[#EF4444]" />
                           <span>Commit Action</span>
                         </>
                       )}

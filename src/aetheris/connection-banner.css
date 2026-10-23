@@ -1,5 +1,5 @@
 .ask-intros-connection-banner{position:relative;z-index:1;display:flex;align-items:center;justify-content:center;gap:.7rem;padding:.7rem 1rem;padding-top:calc(.7rem + env(safe-area-inset-top));background:#182635;color:#fff;border-bottom:2px solid #DC2626;box-shadow:0 6px 20px #0005;text-align:center;font-size:.875rem;line-height:1.5}
-.ask-intros-connection-banner strong{color:#ffcf82}
+.ask-intros-connection-banner strong{color:#FF8282}
 .ask-intros-connection-indicator{flex:0 0 .65rem;width:.65rem;height:.65rem;border-radius:50%;background:#DC2626}
 @media(max-width:480px){.ask-intros-connection-banner{font-size:.8rem;padding-inline:.65rem}}
 @media print{.ask-intros-connection-banner{display:none!important}}

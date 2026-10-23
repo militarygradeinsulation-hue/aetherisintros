@@ -32,6 +32,7 @@ const NAV_GROUPS: Group[] = [
     { label: 'Meetings', page: 'meetings', icon: CalendarDays },
   ] },
   { title: 'Revenue & work', items: [
+    { label: 'Business tools', page: 'workspace', tool: 'memory', icon: LayoutGrid },
     { label: 'My work', page: 'work', icon: BriefcaseBusiness },
     { label: 'CRM pipeline', page: 'workspace', tool: 'crm', icon: Target },
     { label: 'Deals', page: 'workspace', tool: 'deals', icon: Handshake },

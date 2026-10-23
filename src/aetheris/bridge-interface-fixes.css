@@ -6,9 +6,9 @@
  * These selectors do not modify behavior, requests or member data.
  */
 :root {
-  --bridge-burnt:#b5541f;
-  --bridge-burnt-hover:#983f17;
-  --bridge-burnt-on-dark:#e99463;
+  --bridge-burnt:#B91C1C;
+  --bridge-burnt-hover:#981717;
+  --bridge-burnt-on-dark:#FCA5A5;
   --ask-intros-logo-yellow:#DC2626;
 }
 
@@ -39,7 +39,7 @@
 :root[data-theme] body .ix-root button.bridge-primary-action:hover,
 :root[data-theme] body button.bridge-primary-action:hover {
   background:var(--bridge-burnt)!important;
-  border-color:#f6a16e!important;
+  border-color:#F66E6E!important;
   color:#fff!important;
   -webkit-text-fill-color:#fff!important;
 }
@@ -63,12 +63,12 @@
 }
 :root[data-theme] body .ix-root button.bridge-secondary-action:hover {
   background:var(--st-card)!important;
-  border-color:#e99463!important;
+  border-color:#FCA5A5!important;
 }
 
 /* Catch other legacy yellow-background action buttons without changing
    badges, markers or text containers; no black-on-black filled controls. */
-:root[data-theme] body .ix-root button[class~="bg-[#F5B027]"],
+:root[data-theme] body .ix-root button[class~="bg-[#EF4444]"],
 :root[data-theme] body .ix-root button[class~="bg-[#B91C1C]"],
 :root[data-theme] body .ix-root button[class~="bg-[#DC2626]"] {
   background:var(--bridge-burnt)!important;
@@ -76,17 +76,17 @@
   color:#fff!important;
   -webkit-text-fill-color:#fff!important;
 }
-:root[data-theme] body .ix-root button[class~="bg-[#F5B027]"] :is(span,small,strong,svg),
+:root[data-theme] body .ix-root button[class~="bg-[#EF4444]"] :is(span,small,strong,svg),
 :root[data-theme] body .ix-root button[class~="bg-[#DC2626]"] :is(span,small,strong,svg) {
   color:inherit!important;-webkit-text-fill-color:inherit!important;
 }
 
 /* Apply burnt orange to yellow labels but never repaint the logo. On white
    panels, use a deeper accessible text shade. */
-:root[data-theme="light"] body .ix-root [class~="text-[#F5B027]"] {color:#923d15!important;-webkit-text-fill-color:#923d15!important;}
-:root[data-theme="dark"] body .ix-root [class~="text-[#F5B027]"] {color:#e99463!important;-webkit-text-fill-color:#e99463!important;}
-:root[data-theme] body .ix-root [class~="bg-[#F5B027]"]:not(button) {background:#b5541f!important;}
-:root[data-theme] body .ix-root [class~="border-[#F5B027]"] {border-color:#b5541f!important;}
+:root[data-theme="light"] body .ix-root [class~="text-[#EF4444]"] {color:#921515!important;-webkit-text-fill-color:#921515!important;}
+:root[data-theme="dark"] body .ix-root [class~="text-[#EF4444]"] {color:#FCA5A5!important;-webkit-text-fill-color:#FCA5A5!important;}
+:root[data-theme] body .ix-root [class~="bg-[#EF4444]"]:not(button) {background:#B91C1C!important;}
+:root[data-theme] body .ix-root [class~="border-[#EF4444]"] {border-color:#B91C1C!important;}
 
 /* Brand exception: yellow detail AND connecting rule of the Ask Intros logo. */
 :root[data-theme] body .ask-intros-lockup__symbol line,
@@ -100,15 +100,15 @@
 
 /* Distinct orange assistant launcher rather than dark or stencil-white. */
 :root[data-theme] body .ask-dock-fab {
-  background:#b5541f!important;
+  background:#B91C1C!important;
   color:#fff!important;
   -webkit-text-fill-color:#fff!important;
-  border:1px solid #e99463!important;
+  border:1px solid #FCA5A5!important;
   box-shadow:0 12px 35px rgba(0,0,0,.4)!important;
   border-radius:9px!important;
 }
-:root[data-theme] body .ask-dock-fab:hover {background:#983f17!important;}
-:root[data-theme] body .ask-dock-fab.active {background:#813613!important;}
+:root[data-theme] body .ask-dock-fab:hover {background:#981717!important;}
+:root[data-theme] body .ask-dock-fab.active {background:#811313!important;}
 :root[data-theme] body .ask-dock-fab :is(svg,span) {color:#fff!important;stroke:currentColor;}
 
 /* Clean, native-feeling thumb; never render a checkbox/checkmark or an SVG gooey filter. */
@@ -122,7 +122,7 @@
   min-width:58px!important;
   height:32px!important;
   padding:3px!important;
-  border:1px solid #b5541f!important;
+  border:1px solid #B91C1C!important;
   border-radius:999px!important;
   background:#e6e4e1!important;
   background-image:none!important;
@@ -132,7 +132,7 @@
   transform:none;
 }
 :root[data-theme] body .appearance-liquid-toggle[data-state="checked"] {
-  background:#b5541f!important;
+  background:#B91C1C!important;
 }
 :root[data-theme] body .appearance-liquid-toggle__thumb {
   display:block;
@@ -140,7 +140,7 @@
   width:24px!important;height:24px!important;
   flex:none;
   border-radius:50%!important;
-  background:#b5541f!important;
+  background:#B91C1C!important;
   transform:translateX(0);
   transition:transform .2s,background-color .2s;
   box-shadow:0 1px 3px rgba(0,0,0,.35);
@@ -150,7 +150,7 @@
 }
 :root[data-theme] body .appearance-liquid-toggle:focus-visible,
 :root[data-theme] body .ix-root button.bridge-primary-action:focus-visible {
-  outline:3px solid #e99463!important;
+  outline:3px solid #FCA5A5!important;
   outline-offset:3px!important;
 }
 @media (prefers-reduced-motion:reduce) {

@@ -73,10 +73,10 @@ export interface HalftoneWordmarkFooterProps {
 }
 
 const PRESETS: { [K in HalftonePreset]: HalftonePalette } = {
-  night: { background: "#0c0c0b", ink: "#e9e4da", warm: "#e9762b" },
-  paper: { background: "#efebe3", ink: "#17150f", warm: "#c2361c" },
-  ember: { background: "#160a06", ink: "#f2c48c", warm: "#ff5a1f" },
-  cobalt: { background: "#0d1b4d", ink: "#dfe7ff", warm: "#ffcd3c" },
+  night: { background: "#0c0c0b", ink: "#E9DADA", warm: "#EF4444" },
+  paper: { background: "#efebe3", ink: "#17150f", warm: "#C21C1C" },
+  ember: { background: "#160606", ink: "#F28C8C", warm: "#FF1F1F" },
+  cobalt: { background: "#0d1b4d", ink: "#dfe7ff", warm: "#FF3C3C" },
 }
 
 const DEFAULT_COLUMNS: FooterColumn[] = [

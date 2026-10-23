@@ -51,7 +51,7 @@ export const DailyDigestModal: React.FC<DailyDigestModalProps> = ({
                 <span className="font-serif-editorial text-xs tracking-[0.25em] text-[#EF4444] uppercase font-semibold">
                   E X E C U T I V E &nbsp; I N T E L L I G E N C E
                 </span>
-                <span className="px-1.5 py-0.2 rounded bg-[#DB6B36]/20 text-[#DB6B36] text-[9px] font-mono font-bold">
+                <span className="px-1.5 py-0.2 rounded bg-[#B91C1C]/20 text-[#B91C1C] text-[9px] font-mono font-bold">
                   Morning Briefing
                 </span>
               </div>
@@ -88,7 +88,7 @@ export const DailyDigestModal: React.FC<DailyDigestModalProps> = ({
             </div>
 
             <div className="p-3.5 rounded-xl bg-[#0E1116] border border-white/10 flex items-center gap-3">
-              <div className="w-9 h-9 rounded-lg bg-[#DB6B36]/15 text-[#FF6369] flex items-center justify-center shrink-0">
+              <div className="w-9 h-9 rounded-lg bg-[#B91C1C]/15 text-[#FF6369] flex items-center justify-center shrink-0">
                 <AlertTriangle size={18} />
               </div>
               <div>
@@ -102,7 +102,7 @@ export const DailyDigestModal: React.FC<DailyDigestModalProps> = ({
             </div>
 
             <div className="p-3.5 rounded-xl bg-[#0E1116] border border-white/10 flex items-center gap-3">
-              <div className="w-9 h-9 rounded-lg bg-[#DB6B36]/15 text-[#DB6B36] flex items-center justify-center shrink-0">
+              <div className="w-9 h-9 rounded-lg bg-[#B91C1C]/15 text-[#B91C1C] flex items-center justify-center shrink-0">
                 <CheckSquare size={18} />
               </div>
               <div>
@@ -120,7 +120,7 @@ export const DailyDigestModal: React.FC<DailyDigestModalProps> = ({
           <div className="space-y-3">
             <div className="flex items-center justify-between">
               <h3 className="font-serif-editorial text-sm sm:text-base text-[#F2EEE6] flex items-center gap-2">
-                <span className="w-2 h-2 rounded-full bg-[#DB6B36] animate-ping" />
+                <span className="w-2 h-2 rounded-full bg-[#B91C1C] animate-ping" />
                 <span>Overdue Connections & Drift Alerts ({followupPeople.length})</span>
               </h3>
               <button
@@ -143,7 +143,7 @@ export const DailyDigestModal: React.FC<DailyDigestModalProps> = ({
                     onSelectPerson(p);
                     onClose();
                   }}
-                  className="p-3 rounded-xl bg-[#0A0D12] border border-[#DB6B36]/30 hover:border-[#DB6B36] transition-all cursor-pointer flex items-center justify-between gap-3 group"
+                  className="p-3 rounded-xl bg-[#0A0D12] border border-[#B91C1C]/30 hover:border-[#B91C1C] transition-all cursor-pointer flex items-center justify-between gap-3 group"
                 >
                   <div className="flex items-center gap-3 min-w-0">
                     <ExecutivePortrait name={p.name} avatarUrl={p.avatar} size="sm" />
@@ -163,7 +163,7 @@ export const DailyDigestModal: React.FC<DailyDigestModalProps> = ({
                     </div>
                   </div>
 
-                  <span className="px-2 py-1 rounded bg-[#DB6B36]/20 text-[#FF6369] text-[10px] font-mono shrink-0 group-hover:bg-[#DB6B36] group-hover:text-white transition-colors">
+                  <span className="px-2 py-1 rounded bg-[#B91C1C]/20 text-[#FF6369] text-[10px] font-mono shrink-0 group-hover:bg-[#B91C1C] group-hover:text-white transition-colors">
                     Restore →
                   </span>
                 </div>
@@ -175,7 +175,7 @@ export const DailyDigestModal: React.FC<DailyDigestModalProps> = ({
           <div className="space-y-3">
             <div className="flex items-center justify-between">
               <h3 className="font-serif-editorial text-sm sm:text-base text-[#F2EEE6] flex items-center gap-2">
-                <span className="w-2 h-2 rounded-full bg-[#DB6B36]" />
+                <span className="w-2 h-2 rounded-full bg-[#B91C1C]" />
                 <span>Actionable Commitments ({highPriorityTasks.length})</span>
               </h3>
               <button

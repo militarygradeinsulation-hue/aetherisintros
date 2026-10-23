@@ -29,7 +29,7 @@ describe('Ask Intros shared red workspace design contract', () => {
 
   it('protects readable text on fully filled red actions', () => {
     expect(memberStyles).toContain('[class~="bg-[#EF4444]"]')
-    expect(memberStyles).toContain('color: #1c110c !important')
+    expect(memberStyles).toContain('color: #1C0C0C !important')
     expect(memberStyles).toContain(':focus-visible')
     expect(memberStyles).toContain('prefers-reduced-motion: reduce')
   })

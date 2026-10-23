@@ -79,7 +79,7 @@ export const InsightsDashboardView: React.FC<InsightsDashboardViewProps> = ({
             <div className="flex flex-wrap items-center gap-3 pt-2">
               <button
                 onClick={() => onNavigate('intros')}
-                className="flex items-center gap-2 px-5 py-2.5 rounded-lg bg-[#EF4444] hover:bg-[#DB6B36] text-white text-xs md:text-sm font-semibold transition-all shadow-md shadow-[#EF4444]/20 cursor-pointer"
+                className="flex items-center gap-2 px-5 py-2.5 rounded-lg bg-[#EF4444] hover:bg-[#B91C1C] text-white text-xs md:text-sm font-semibold transition-all shadow-md shadow-[#EF4444]/20 cursor-pointer"
               >
                 Explore Opportunities →
               </button>
@@ -189,9 +189,9 @@ export const InsightsDashboardView: React.FC<InsightsDashboardViewProps> = ({
           <div className="space-y-3">
             {[
               { name: 'AI Infrastructure', count: '24 opportunities', color: '#EF4444' },
-              { name: 'Enterprise SaaS', count: '11 opportunities', color: '#FFC85C' },
+              { name: 'Enterprise SaaS', count: '11 opportunities', color: '#FCA5A5' },
               { name: 'Fintech & Payments', count: '8 opportunities', color: '#DC2626' },
-              { name: 'Climate & Sustainability', count: '5 opportunities', color: '#DB6B36' },
+              { name: 'Climate & Sustainability', count: '5 opportunities', color: '#B91C1C' },
               { name: 'Consumer & Creator', count: '4 opportunities', color: '#EC4899' },
             ].map((cl) => (
               <div
@@ -252,7 +252,7 @@ export const InsightsDashboardView: React.FC<InsightsDashboardViewProps> = ({
                 </div>
                 <div className="h-2 w-full bg-white/5 rounded-full overflow-hidden">
                   <div
-                    className="h-full bg-gradient-to-r from-[#EF4444] to-[#FFC85C] rounded-full transition-all"
+                    className="h-full bg-gradient-to-r from-[#EF4444] to-[#FCA5A5] rounded-full transition-all"
                     style={{ width: `${item.percent}%` }}
                   />
                 </div>
@@ -266,14 +266,14 @@ export const InsightsDashboardView: React.FC<InsightsDashboardViewProps> = ({
           <div className="flex items-center justify-between text-[11px] font-mono tracking-widest uppercase text-[#9CA3AF] font-semibold">
             <span>Engagement Trends</span>
             <div className="flex items-center gap-3 text-[10px]">
-              <span className="flex items-center gap-1 text-[#FFC85C]">
-                <span className="w-2 h-2 rounded-full bg-[#FFC85C]" /> Messages
+              <span className="flex items-center gap-1 text-[#FCA5A5]">
+                <span className="w-2 h-2 rounded-full bg-[#FCA5A5]" /> Messages
               </span>
               <span className="flex items-center gap-1 text-[#DC2626]">
                 <span className="w-2 h-2 rounded-full bg-[#DC2626]" /> Meetings
               </span>
-              <span className="flex items-center gap-1 text-[#DB6B36]">
-                <span className="w-2 h-2 rounded-full bg-[#DB6B36]" /> Opportunities
+              <span className="flex items-center gap-1 text-[#B91C1C]">
+                <span className="w-2 h-2 rounded-full bg-[#B91C1C]" /> Opportunities
               </span>
             </div>
           </div>
@@ -335,7 +335,7 @@ export const InsightsDashboardView: React.FC<InsightsDashboardViewProps> = ({
               <Sparkles className="w-3.5 h-3.5" />
               AI Insights
             </span>
-            <span className="text-[9px] font-mono px-1.5 py-0.2 rounded bg-[#EF4444]/20 text-[#FFC85C]">
+            <span className="text-[9px] font-mono px-1.5 py-0.2 rounded bg-[#EF4444]/20 text-[#FCA5A5]">
               BETA
             </span>
           </div>
@@ -352,7 +352,7 @@ export const InsightsDashboardView: React.FC<InsightsDashboardViewProps> = ({
           <div className="flex items-center gap-2 pt-2">
             <button
               onClick={() => onNavigate('intros')}
-              className="flex-1 py-2 text-xs font-semibold text-white bg-[#EF4444] hover:bg-[#DB6B36] rounded-lg transition-colors cursor-pointer text-center"
+              className="flex-1 py-2 text-xs font-semibold text-white bg-[#EF4444] hover:bg-[#B91C1C] rounded-lg transition-colors cursor-pointer text-center"
             >
               See Opportunities →
             </button>

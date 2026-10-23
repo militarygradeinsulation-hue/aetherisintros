@@ -2,7 +2,7 @@
 .ai-try {
   --try-canvas: #f1f4f3; --try-paper: #fffdfa; --try-raised: #eaf0ef;
   --try-ink: #1c2c33; --try-body: #39515c; --try-muted: #536772;
-  --try-line: #bac9ce; --try-copper: #90532d; --try-accent: #205a7d;
+  --try-line: #bac9ce; --try-copper: #902D2D; --try-accent: #205a7d;
   --try-btn: #172b36; --try-btn-ink: #fff; --try-focus: #2a81b3;
   min-height: 100vh; overflow-x: clip; background: var(--try-canvas);
   color: var(--try-ink); font-family: Inter, system-ui, sans-serif;
@@ -10,8 +10,8 @@
 :root[data-theme="dark"] .ai-try {
   --try-canvas: #10181d; --try-paper: #18242a; --try-raised: #223139;
   --try-ink: #f3f6f4; --try-body: #d5e0e1; --try-muted: #b7c9d0;
-  --try-line: #536b77; --try-copper: #f0bc88; --try-accent: #a0d7f9;
-  --try-btn: #f1f5f2; --try-btn-ink: #15232a; --try-focus: #f0bc88;
+  --try-line: #536b77; --try-copper: #F08888; --try-accent: #a0d7f9;
+  --try-btn: #f1f5f2; --try-btn-ink: #15232a; --try-focus: #F08888;
 }
 .ai-try *, .ai-try *::before, .ai-try *::after { box-sizing: border-box; }
 .ai-try :is(button,textarea,a):focus-visible {

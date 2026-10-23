@@ -4,16 +4,16 @@
  * not turn the new hero or assistant back to cream, gold or blue.
  */
 :root {
-  --ask-orange:#B5541F;
-  --ask-orange-hover:#C96831;
-  --ask-orange-text:#E99463;
+  --ask-orange:#B91C1C;
+  --ask-orange-hover:#C93131;
+  --ask-orange-text:#FCA5A5;
   --ask-logo-yellow:#DC2626;
   --amber:var(--ask-orange);
   --gold:var(--ask-orange);
   --tile-hover:var(--ask-orange);
   --halftone-warm:var(--ask-orange);
 }
-:root[data-theme="light"] {--amber:#B5541F;--gold:#B5541F;--tile-hover:#B5541F;}
+:root[data-theme="light"] {--amber:#B91C1C;--gold:#B91C1C;--tile-hover:#B91C1C;}
 :root .ael {--ael-gold:var(--ask-orange);}
 
 /* Exact Ask Intros mark: the top dots, connector line and wordmark rule stay yellow. */
@@ -37,38 +37,38 @@
 :root .ix-assistant .ask-dock-fab,
 :root .ix-classic .ask-dock-fab {
   background:var(--ask-orange)!important;
-  border:1px solid #E18F5C!important;
+  border:1px solid #E15C5C!important;
   color:#FFF9F3!important;
-  box-shadow:0 16px 36px rgba(0,0,0,.36),0 0 0 3px rgba(181,84,31,.14)!important;
+  box-shadow:0 16px 36px rgba(0,0,0,.36),0 0 0 3px rgba(181,31,31,.14)!important;
 }
 :root .ask-dock-fab:hover,
 :root .ix-assistant .ask-dock-fab:hover {
   background:var(--ask-orange-hover)!important;border-color:#FCA5A5!important;
 }
-:root .ask-dock-fab.active {background:#813613!important;}
+:root .ask-dock-fab.active {background:#811313!important;}
 :root .ask-dock-fab :is(svg,span),:root .ix-assistant .ask-dock-fab .aetheris-glyph {
   color:#FFF9F3!important;
 }
 
 /* Orange only where legacy layouts use yellow. Do not recolor status errors or
  * the Messages product's intentionally blue controls. */
-:root .ix-root :is([class*="text-[#F5B027]"],[class*="text-[#DC2626]"],[class*="text-yellow-"],[class*="text-amber-"]) {
+:root .ix-root :is([class*="text-[#EF4444]"],[class*="text-[#DC2626]"],[class*="text-yellow-"],[class*="text-amber-"]) {
   color:var(--ask-orange-text)!important;
 }
-:root .ix-root :is([class*="bg-[#F5B027]"],[class*="bg-[#DC2626]"],[class*="bg-yellow-"],[class*="bg-amber-"]) {
+:root .ix-root :is([class*="bg-[#EF4444]"],[class*="bg-[#DC2626]"],[class*="bg-yellow-"],[class*="bg-amber-"]) {
   background-color:var(--ask-orange)!important;
 }
-:root .ix-root :is([class*="border-[#F5B027]"],[class*="border-[#DC2626]"],[class*="border-yellow-"],[class*="border-amber-"]) {
+:root .ix-root :is([class*="border-[#EF4444]"],[class*="border-[#DC2626]"],[class*="border-yellow-"],[class*="border-amber-"]) {
   border-color:var(--ask-orange)!important;
 }
-:root .ix-root [class*="hover:bg-[#F5B027]"]:hover,
+:root .ix-root [class*="hover:bg-[#EF4444]"]:hover,
 :root .ix-root [class*="hover:bg-yellow-"]:hover {
   background-color:var(--ask-orange-hover)!important;
 }
-:root .ix-root :is([class*="bg-[#F5B027]"],[class*="bg-[#DC2626]"]) {
+:root .ix-root :is([class*="bg-[#EF4444]"],[class*="bg-[#DC2626]"]) {
   color:#FFF9F3!important;
 }
-:root .ix-root :is([class*="focus:border-[#F5B027]"],[class*="focus:border-yellow-"]):focus {
+:root .ix-root :is([class*="focus:border-[#EF4444]"],[class*="focus:border-yellow-"]):focus {
   border-color:var(--ask-orange-hover)!important;
 }
 :root .ix-root [class*="accent-yellow-"] {accent-color:var(--ask-orange)!important;}
@@ -84,7 +84,7 @@
 :root .ael.ael-compact .ael-compact-story :is(p,small) {
   color:#D7D9D9!important;
 }
-:root .ael.ael-compact .ael-compact-story :is(h2,h3) em {color:#E99463!important;}
+:root .ael.ael-compact .ael-compact-story :is(h2,h3) em {color:#FCA5A5!important;}
 :root .ael.ael-compact .ael-compact-story .ael-underlink {
   color:#F6F4F0!important;border-color:var(--ask-orange)!important;
 }
@@ -97,17 +97,17 @@
 
 /* Appearance toggle thumb remains isolated from legacy global button rules. */
 :root .appearance-liquid-toggle, :root .ix-root .appearance-liquid-toggle {
-  background:#E8E3DD!important;border:1px solid #B5541F!important;
+  background:#E8E3DD!important;border:1px solid #B91C1C!important;
   padding:3px!important;width:58px!important;height:32px!important;min-width:58px!important;
   border-radius:999px!important;box-shadow:inset 0 1px 2px rgba(0,0,0,.16)!important;
   animation:none!important;overflow:visible;
 }
 :root .appearance-liquid-toggle[data-state="checked"],
 :root .ix-root .appearance-liquid-toggle[data-state="checked"] {
-  background:#B5541F!important;border-color:#DC8350!important;
+  background:#B91C1C!important;border-color:#DC5050!important;
 }
 :root .appearance-liquid-toggle__thumb {
-  background:#B5541F!important;width:24px!important;height:24px!important;
+  background:#B91C1C!important;width:24px!important;height:24px!important;
   border-radius:50%!important;transform:translateX(0);
 }
 :root .appearance-liquid-toggle[data-state="checked"] .appearance-liquid-toggle__thumb {

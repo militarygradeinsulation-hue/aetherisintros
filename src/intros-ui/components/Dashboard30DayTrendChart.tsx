@@ -66,7 +66,7 @@ export const Dashboard30DayTrendChart: React.FC<Dashboard30DayTrendChartProps> =
               <span className="text-[9.5px] font-mono tracking-[0.25em] text-[#EF4444] uppercase font-bold">
                 Engagement Telemetry
               </span>
-              <span className="text-[9px] font-mono px-1.5 py-0.2 rounded bg-[#DB6B36]/15 text-[#DB6B36] border border-[#DB6B36]/30 font-semibold">
+              <span className="text-[9px] font-mono px-1.5 py-0.2 rounded bg-[#B91C1C]/15 text-[#B91C1C] border border-[#B91C1C]/30 font-semibold">
                 +14.2% MoM
               </span>
             </div>
@@ -87,7 +87,7 @@ export const Dashboard30DayTrendChart: React.FC<Dashboard30DayTrendChartProps> =
 
           <div className="text-right">
             <div className="text-[8.5px] font-mono text-[#F2EEE6]/50 uppercase">Touchpoint Interval</div>
-            <div className="text-sm font-mono font-bold text-[#DB6B36] tabular-nums">
+            <div className="text-sm font-mono font-bold text-[#B91C1C] tabular-nums">
               3.8d <span className="text-[9px] text-[#F2EEE6]/40">avg</span>
             </div>
           </div>
@@ -171,7 +171,7 @@ export const Dashboard30DayTrendChart: React.FC<Dashboard30DayTrendChartProps> =
                           <div className="space-y-1 pt-0.5 text-[8.5px]">
                             <div className="flex items-center justify-between">
                               <span className="text-[#F2EEE6]/70">Recency (R: 35%):</span>
-                              <span className="text-[#DB6B36] tabular-nums font-semibold">{recencyVal}%</span>
+                              <span className="text-[#B91C1C] tabular-nums font-semibold">{recencyVal}%</span>
                             </div>
                             <div className="flex items-center justify-between">
                               <span className="text-[#F2EEE6]/70">Frequency (F: 30%):</span>
@@ -199,7 +199,7 @@ export const Dashboard30DayTrendChart: React.FC<Dashboard30DayTrendChartProps> =
                   strokeWidth={2}
                   fillOpacity={1}
                   fill="url(#dashboardTrendGradient)"
-                  activeDot={{ r: 5, fill: '#DB6B36', stroke: '#07090C', strokeWidth: 2 }}
+                  activeDot={{ r: 5, fill: '#B91C1C', stroke: '#07090C', strokeWidth: 2 }}
                 />
               </AreaChart>
             </ResponsiveContainer>
@@ -213,7 +213,7 @@ export const Dashboard30DayTrendChart: React.FC<Dashboard30DayTrendChartProps> =
             </div>
             <div className="flex items-center gap-3">
               <span className="flex items-center gap-1">
-                <span className="w-2 h-2 rounded-full bg-[#DB6B36]" /> Active Cohort
+                <span className="w-2 h-2 rounded-full bg-[#B91C1C]" /> Active Cohort
               </span>
               <span className="flex items-center gap-1">
                 <span className="w-2 h-2 rounded-full bg-[#EF4444]" /> Recharts Spline

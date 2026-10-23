@@ -59,7 +59,7 @@ export const ApprovalQueueModal: React.FC<ApprovalQueueModalProps> = ({
         <div className="flex-1 overflow-y-auto p-5 sm:p-6 space-y-4">
           {approvals.length === 0 ? (
             <div className="text-center py-12 text-[#F2EEE6]/60">
-              <ShieldCheck size={36} className="mx-auto text-[#DB6B36] mb-3" />
+              <ShieldCheck size={36} className="mx-auto text-[#B91C1C] mb-3" />
               <p className="text-sm font-semibold text-[#F2EEE6]">Approval Queue Clear</p>
               <p className="text-xs text-[#F2EEE6]/50 mt-1">
                 No outbound drafts or automations pending authorization.
@@ -97,14 +97,14 @@ export const ApprovalQueueModal: React.FC<ApprovalQueueModalProps> = ({
                   <div className="flex justify-end gap-2 pt-2">
                     <button
                       onClick={() => onReject(act.id)}
-                      className="px-3.5 py-1.5 rounded bg-white/5 hover:bg-[#DB6B36]/20 text-[#DB6B36] text-xs font-mono font-bold flex items-center gap-1.5 transition-colors"
+                      className="px-3.5 py-1.5 rounded bg-white/5 hover:bg-[#B91C1C]/20 text-[#B91C1C] text-xs font-mono font-bold flex items-center gap-1.5 transition-colors"
                     >
                       <Ban size={13} />
                       <span>Reject</span>
                     </button>
                     <button
                       onClick={() => onApprove(act.id)}
-                      className="px-4 py-1.5 rounded bg-[#DB6B36] text-black text-xs font-mono font-bold hover:bg-[#DB6B36]/90 flex items-center gap-1.5 transition-colors"
+                      className="px-4 py-1.5 rounded bg-[#B91C1C] text-black text-xs font-mono font-bold hover:bg-[#B91C1C]/90 flex items-center gap-1.5 transition-colors"
                     >
                       <Check size={14} />
                       <span>Approve & Transmit</span>

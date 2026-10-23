@@ -77,7 +77,7 @@ export const RelationshipNetworkPreview: React.FC<PreviewProps> = ({ summary }) 
       case 'active':
         return 'bg-[#B91C1C] shadow-[0_0_6px_rgba(63,179,127,0.7)]';
       case 'followup':
-        return 'bg-[#F5B027] shadow-[0_0_6px_rgba(242,169,59,0.7)]';
+        return 'bg-[#EF4444] shadow-[0_0_6px_rgba(242,169,59,0.7)]';
       case 'dormant':
         return 'bg-[#64748B]';
       default:
@@ -103,7 +103,7 @@ export const RelationshipNetworkPreview: React.FC<PreviewProps> = ({ summary }) 
             <div className="min-w-0 flex-1">
               <div className="text-[10.5px] font-bold text-[#F2EEE6] leading-tight truncate flex items-center gap-1">
                 <span className="truncate">{person.name}</span>
-                <span className="text-[9px] font-mono text-[#F5B027]">({connectionScore})</span>
+                <span className="text-[9px] font-mono text-[#EF4444]">({connectionScore})</span>
               </div>
               <div className="flex items-center gap-1 mt-0.5">
                 <RelationshipTierBadge tier={person.tier || 'inner_circle'} size="xs" />
@@ -150,7 +150,7 @@ export const RelationshipNetworkPreview: React.FC<PreviewProps> = ({ summary }) 
           <div className="pt-0.5">
             <div className="flex items-center justify-between text-[7.5px] font-mono text-[#F2EEE6]/40 px-0.5 pb-0.5">
               <span>30-Day Trajectory</span>
-              <span className="text-[#F5B027]">+14% MoM</span>
+              <span className="text-[#EF4444]">+14% MoM</span>
             </div>
             <EngagementChart data={engagementData} height={36} />
           </div>
@@ -198,7 +198,7 @@ export const IntrosCrmPreview: React.FC<PreviewProps> = ({ summary }) => {
             status === 'active'
               ? 'bg-[#B91C1C]'
               : status === 'followup'
-              ? 'bg-[#F5B027]'
+              ? 'bg-[#EF4444]'
               : 'bg-[#64748B]';
 
           return (
@@ -226,7 +226,7 @@ export const IntrosCrmPreview: React.FC<PreviewProps> = ({ summary }) => {
       </div>
 
       {/* Circular + button at bottom right */}
-      <div className="absolute right-0 bottom-0 w-4 h-4 rounded-full bg-[#F5B027] text-white flex items-center justify-center text-[10px] font-bold shadow-md">
+      <div className="absolute right-0 bottom-0 w-4 h-4 rounded-full bg-[#EF4444] text-white flex items-center justify-center text-[10px] font-bold shadow-md">
         +
       </div>
     </div>
@@ -245,7 +245,7 @@ export const OpportunitiesPreview: React.FC<PreviewProps> = ({ summary }) => {
       {/* Top Header */}
       <div className="flex items-center justify-between border-b border-white/5 pb-1 text-[9px]">
         <span className="text-[#F2EEE6] font-semibold">Pipeline</span>
-        <span className="text-[#F5B027] font-bold">{total} &gt;</span>
+        <span className="text-[#EF4444] font-bold">{total} &gt;</span>
       </div>
 
       {/* Stage Table */}
@@ -341,7 +341,7 @@ export const CalendarPreview: React.FC<PreviewProps> = ({ summary }) => {
         {events.map((ev: any, i: number) => (
           <div key={i} className="flex items-start gap-1.5 text-[7.5px] leading-tight">
             <span className="font-mono text-[#F2EEE6]/50 shrink-0 w-11">{ev.time}</span>
-            <div className="pl-1 border-l-2 border-[#F5B027] truncate flex-1">
+            <div className="pl-1 border-l-2 border-[#EF4444] truncate flex-1">
               <span className="font-semibold text-[#F2EEE6] block truncate">{ev.title}</span>
               <span className="text-[#F2EEE6]/50 block truncate text-[7px]">{ev.sub}</span>
             </div>
@@ -384,7 +384,7 @@ export const MeetingsPreview: React.FC<PreviewProps> = ({ summary }) => {
       <div className="grid grid-cols-2 gap-x-2 gap-y-1 text-[8px] pt-1 border-t border-white/5">
         {checklist.map((c: string, i: number) => (
           <div key={i} className="flex items-center gap-1 text-[#F2EEE6]/80 truncate">
-            <span className="w-2.5 h-2.5 rounded-[2px] bg-[#F5B027]/20 border border-[#F5B027] text-[#F5B027] flex items-center justify-center text-[6px] font-bold">
+            <span className="w-2.5 h-2.5 rounded-[2px] bg-[#EF4444]/20 border border-[#EF4444] text-[#EF4444] flex items-center justify-center text-[6px] font-bold">
               ✓
             </span>
             <span className="truncate">{c}</span>
@@ -411,7 +411,7 @@ export const TasksWorkPreview: React.FC<PreviewProps> = ({ summary, onTaskToggle
             onClick={(e) => onTaskToggle && onTaskToggle(task.id, e)}
             className="flex items-start gap-1.5 text-[8px] leading-tight cursor-pointer group"
           >
-            <span className="w-2.5 h-2.5 rounded-[2px] border border-white/40 group-hover:border-[#F5B027] flex items-center justify-center text-[7px] text-[#F5B027] shrink-0 mt-0.5">
+            <span className="w-2.5 h-2.5 rounded-[2px] border border-white/40 group-hover:border-[#EF4444] flex items-center justify-center text-[7px] text-[#EF4444] shrink-0 mt-0.5">
               ✓
             </span>
             <div className="truncate flex-1">
@@ -423,7 +423,7 @@ export const TasksWorkPreview: React.FC<PreviewProps> = ({ summary, onTaskToggle
       </div>
 
       {/* Blue circular + button */}
-      <div className="absolute right-0 bottom-0 w-4 h-4 rounded-full bg-[#F5B027] text-white flex items-center justify-center text-[10px] font-bold shadow-md">
+      <div className="absolute right-0 bottom-0 w-4 h-4 rounded-full bg-[#EF4444] text-white flex items-center justify-center text-[10px] font-bold shadow-md">
         +
       </div>
     </div>
@@ -441,7 +441,7 @@ export const InboxPreview: React.FC<PreviewProps> = ({ summary }) => {
     <div className="flex flex-col justify-between h-full w-full">
       {/* 3 tabs */}
       <div className="flex items-center gap-1 text-[7.5px] font-mono pb-1 border-b border-white/5">
-        <span className="bg-[#F5B027] text-white px-2 py-0.5 rounded font-bold">All</span>
+        <span className="bg-[#EF4444] text-white px-2 py-0.5 rounded font-bold">All</span>
         <span className="text-[#F2EEE6]/60 px-1">Email</span>
         <span className="text-[#F2EEE6]/60 px-1">Messages</span>
       </div>
@@ -476,7 +476,7 @@ export const KnowledgePreview: React.FC<PreviewProps> = ({ summary }) => {
     <div className="flex flex-col justify-between h-full w-full space-y-0.5 py-0.5">
       {folders.map((f: string, i: number) => (
         <div key={i} className="flex items-center gap-1.5 text-[8px] text-[#F2EEE6]/90 truncate">
-          <Folder size={10} className="text-[#F5B027] shrink-0" />
+          <Folder size={10} className="text-[#EF4444] shrink-0" />
           <span className="truncate">{f}</span>
         </div>
       ))}
@@ -496,8 +496,8 @@ export const RelationshipRadarPreview: React.FC<PreviewProps> = ({ summary }) =>
       {/* Radar concentric circular graphic */}
       <div className="relative h-14 flex items-center justify-center">
         <div className="w-12 h-12 rounded-full border border-white/10 flex items-center justify-center">
-          <div className="w-8 h-8 rounded-full border border-[#F5B027]/30 flex items-center justify-center">
-            <div className="w-4 h-4 rounded-full bg-[#D7C29A]/30" />
+          <div className="w-8 h-8 rounded-full border border-[#EF4444]/30 flex items-center justify-center">
+            <div className="w-4 h-4 rounded-full bg-[#D79A9A]/30" />
           </div>
         </div>
         <span className="absolute top-1 right-2 text-[6.5px] font-mono text-[#F2EEE6]/40">43</span>
@@ -514,13 +514,13 @@ export const RelationshipRadarPreview: React.FC<PreviewProps> = ({ summary }) =>
         </div>
         <div className="flex justify-between items-center">
           <span className="flex items-center gap-1 text-[#F2EEE6]/80">
-            <span className="w-1.5 h-1.5 rounded-full bg-[#F5B027]" /> Emerging
+            <span className="w-1.5 h-1.5 rounded-full bg-[#EF4444]" /> Emerging
           </span>
           <span className="text-[#F2EEE6] font-bold">{emerging}</span>
         </div>
         <div className="flex justify-between items-center">
           <span className="flex items-center gap-1 text-[#F2EEE6]/80">
-            <span className="w-1.5 h-1.5 rounded-full bg-[#F5B027]" /> Strategic
+            <span className="w-1.5 h-1.5 rounded-full bg-[#EF4444]" /> Strategic
           </span>
           <span className="text-[#F2EEE6] font-bold">{strategic}</span>
         </div>
@@ -552,24 +552,24 @@ export const ConnectionPathsPreview: React.FC<PreviewProps> = ({ summary }) => {
     <div className="flex flex-col justify-between items-center h-full w-full text-[7.5px] font-mono">
       {/* Node 1: You */}
       <div className="flex items-center gap-1.5">
-        <div className="w-4 h-4 rounded-full bg-[#F5B027] text-white flex items-center justify-center text-[7px]">
+        <div className="w-4 h-4 rounded-full bg-[#EF4444] text-white flex items-center justify-center text-[7px]">
           <User size={8} />
         </div>
         <span className="text-[#F2EEE6] font-bold">You</span>
       </div>
 
-      <div className="w-0.5 h-2 bg-[#F5B027]/50" />
+      <div className="w-0.5 h-2 bg-[#EF4444]/50" />
 
       {/* Node 2: Connector */}
       <div className="flex items-center gap-1.5">
         <ExecutivePortrait name={connector.name} avatarUrl={connector.avatar} size="sm" />
         <div className="text-left">
-          <span className="text-[6.5px] text-[#F5B027] block leading-none">{connector.role}</span>
+          <span className="text-[6.5px] text-[#EF4444] block leading-none">{connector.role}</span>
           <span className="text-[#F2EEE6] font-bold block leading-none">{connector.name}</span>
         </div>
       </div>
 
-      <div className="w-0.5 h-2 bg-[#F5B027]/50" />
+      <div className="w-0.5 h-2 bg-[#EF4444]/50" />
 
       {/* Node 3: Target */}
       <div className="flex items-center gap-1.5">
@@ -596,7 +596,7 @@ export const IntrosIqPreview: React.FC<PreviewProps> = ({ summary }) => {
       {/* Search Input Bar */}
       <div className="bg-[#090C10] px-2 py-1 rounded border border-white/10 flex items-center justify-between text-[8px] text-[#F2EEE6]/50">
         <span>{placeholder}</span>
-        <span className="text-[#F5B027] font-bold">&gt;</span>
+        <span className="text-[#EF4444] font-bold">&gt;</span>
       </div>
 
       {/* 5 Starter queries */}
@@ -638,7 +638,7 @@ export const NetworkForensicsPreview: React.FC<PreviewProps> = ({ summary }) => 
         <span>{atRisk} at risk opportunities</span>
       </div>
       <div className="flex items-center gap-1.5 text-[#F2EEE6] font-bold pt-0.5 border-t border-white/5">
-        <DollarSign size={9} className="text-[#F5B027] shrink-0" />
+        <DollarSign size={9} className="text-[#EF4444] shrink-0" />
         <span>{potential} in potential value</span>
       </div>
     </div>
@@ -661,7 +661,7 @@ export const DigitalYouPreview: React.FC<PreviewProps> = ({ summary }) => {
       <div className="w-full space-y-0.5 text-[7.5px] text-[#F2EEE6]/90 mt-1">
         {actions.map((act: string, i: number) => (
           <div key={i} className="flex items-center gap-1.5 truncate">
-            <span className="w-2 h-2 rounded-full bg-[#F5B027] shrink-0" />
+            <span className="w-2 h-2 rounded-full bg-[#EF4444] shrink-0" />
             <span className="truncate">{act}</span>
           </div>
         ))}
@@ -682,13 +682,13 @@ export const AutomationsPreview: React.FC<PreviewProps> = ({ summary }) => {
       {steps.map((st: string, i: number) => (
         <React.Fragment key={st}>
           <div className="flex items-center gap-2 w-full px-2 py-0.5 bg-[#090C10] rounded border border-white/5 text-[#F2EEE6]">
-            <span className="w-3.5 h-3.5 rounded bg-[#F5B027] text-white flex items-center justify-center text-[7px] font-bold shrink-0">
+            <span className="w-3.5 h-3.5 rounded bg-[#EF4444] text-white flex items-center justify-center text-[7px] font-bold shrink-0">
               {i + 1}
             </span>
             <span className="truncate font-medium">{st}</span>
           </div>
           {i < steps.length - 1 && (
-            <div className="w-0.5 h-1.5 bg-[#F5B027]/60" />
+            <div className="w-0.5 h-1.5 bg-[#EF4444]/60" />
           )}
         </React.Fragment>
       ))}
@@ -717,7 +717,7 @@ export const AnalyticsPreview: React.FC<PreviewProps> = ({ summary }) => {
         {bars.map((h: number, i: number) => (
           <div key={i} className="flex-1 bg-white/5 rounded-t overflow-hidden h-full flex items-end">
             <div
-              className={`w-full rounded-t ${i === bars.length - 1 ? 'bg-[#F5B027]' : 'bg-[#F5B027]/50'}`}
+              className={`w-full rounded-t ${i === bars.length - 1 ? 'bg-[#EF4444]' : 'bg-[#EF4444]/50'}`}
               style={{ height: `${h}%` }}
             />
           </div>
@@ -748,7 +748,7 @@ export const CompanyIntelligencePreview: React.FC<PreviewProps> = ({ summary }) 
     <div className="flex flex-col justify-between h-full w-full">
       {/* Top Company Card */}
       <div className="bg-[#090C10] p-1.5 rounded border border-white/5 flex items-center gap-2">
-        <div className="w-5 h-5 rounded bg-[#F5B027] flex items-center justify-center text-white shrink-0">
+        <div className="w-5 h-5 rounded bg-[#EF4444] flex items-center justify-center text-white shrink-0">
           <Building2 size={11} />
         </div>
         <div className="min-w-0 flex-1 truncate">
@@ -761,7 +761,7 @@ export const CompanyIntelligencePreview: React.FC<PreviewProps> = ({ summary }) 
       <div className="grid grid-cols-2 gap-x-1 gap-y-0.5 text-[7.5px] text-[#F2EEE6]/80 my-auto">
         {items.map((sec: string, i: number) => (
           <div key={i} className="flex items-center gap-1 truncate">
-            <span className="w-1.5 h-1.5 rounded-[1px] bg-[#F5B027]/60 shrink-0" />
+            <span className="w-1.5 h-1.5 rounded-[1px] bg-[#EF4444]/60 shrink-0" />
             <span className="truncate">{sec}</span>
           </div>
         ))}
@@ -782,7 +782,7 @@ export const IntroductionsPreview: React.FC<PreviewProps> = ({ summary }) => {
       {/* 2 faces with arrow */}
       <div className="flex items-center justify-center gap-2 pt-0.5">
         <ExecutivePortrait avatarUrl={partyA} name="A" size="sm" />
-        <span className="text-[8px] text-[#F5B027] font-mono">→</span>
+        <span className="text-[8px] text-[#EF4444] font-mono">→</span>
         <ExecutivePortrait avatarUrl={partyB} name="B" size="sm" />
       </div>
 
@@ -795,7 +795,7 @@ export const IntroductionsPreview: React.FC<PreviewProps> = ({ summary }) => {
       <div className="space-y-0.5 text-[7.5px] font-mono text-[#F2EEE6]/80">
         {checklist.map((step: string, i: number) => (
           <div key={i} className="flex items-center gap-1 truncate">
-            <span className="text-[#F5B027] font-bold text-[7px]">✓</span>
+            <span className="text-[#EF4444] font-bold text-[7px]">✓</span>
             <span className="truncate">{step}</span>
           </div>
         ))}
@@ -812,10 +812,10 @@ export const RelationshipMemoryPreview: React.FC<PreviewProps> = ({ summary }) =
   const { events } = summary.data;
 
   return (
-    <div className="flex flex-col justify-between h-full w-full space-y-1 pl-2 border-l border-[#F5B027]/40 my-auto text-[7.5px]">
+    <div className="flex flex-col justify-between h-full w-full space-y-1 pl-2 border-l border-[#EF4444]/40 my-auto text-[7.5px]">
       {events.map((ev: any, i: number) => (
         <div key={i} className="relative pl-2 leading-tight">
-          <span className="absolute -left-[11px] top-1 w-1.5 h-1.5 rounded-full bg-[#F5B027]" />
+          <span className="absolute -left-[11px] top-1 w-1.5 h-1.5 rounded-full bg-[#EF4444]" />
           <div className="font-semibold text-[#F2EEE6] truncate">{ev.title}</div>
           <div className="text-[6.5px] font-mono text-[#F2EEE6]/50">{ev.date}</div>
         </div>
@@ -846,9 +846,9 @@ export const TeamGraphPreview: React.FC<PreviewProps> = ({ summary }) => {
           <span className="tile-member-initials" aria-label="team"><User size={12} /></span>
           <span className="text-[#F2EEE6]/70 block">{yourTeam}</span>
         </div>
-        <div className="w-4 h-0.5 bg-[#F5B027]/40" />
+        <div className="w-4 h-0.5 bg-[#EF4444]/40" />
         <div className="text-center">
-          <div className="w-4 h-4 rounded-full bg-[#F5B027] text-white flex items-center justify-center text-[7px] mx-auto">
+          <div className="w-4 h-4 rounded-full bg-[#EF4444] text-white flex items-center justify-center text-[7px] mx-auto">
             <Building2 size={8} />
           </div>
           <span className="text-[#F2EEE6] font-bold block">{target}</span>
@@ -891,7 +891,7 @@ export const DiagnosticsPreview: React.FC<PreviewProps> = ({ summary }) => {
         ))}
       </div>
 
-      <div className="w-full py-1 rounded bg-[#F5B027] text-white font-bold text-[7px] flex items-center justify-center gap-1">
+      <div className="w-full py-1 rounded bg-[#EF4444] text-white font-bold text-[7px] flex items-center justify-center gap-1">
         <span>View Full Report</span>
         <span>→</span>
       </div>
@@ -957,7 +957,7 @@ const EmptyPreview: React.FC<{ nextAction?: string; label: string }> = ({
 }) => (
   <div className="flex flex-col items-center justify-center h-full text-center p-2">
     <span className="text-[10px] text-[#F2EEE6]/50 mb-1">{label}</span>
-    <span className="text-[9px] text-[#F5B027] font-mono font-medium">{nextAction}</span>
+    <span className="text-[9px] text-[#EF4444] font-mono font-medium">{nextAction}</span>
   </div>
 );
 

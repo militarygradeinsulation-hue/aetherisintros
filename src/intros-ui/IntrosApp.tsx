@@ -70,6 +70,7 @@ export default function App({ mode = 'demo', executiveAction, initialPage, initi
   const network = useNetwork();
   const unread = useUnreadCounts(mode === 'live');
   const [activePage, setActivePage] = useState<ActivePage>(initialPage ?? 'home');
+  const [crmSection, setCrmSection] = useState<'crm' | 'pipeline'>('crm');
   const [classicPage, setClassicPage] = useState<string>(initialWorkspace ?? 'memory');
   const [selectedProfileId, setSelectedProfileId] = useState<string>(mode === 'live' ? '' : 'marcus-lee');
   const [members, setMembers] = useState<NetworkMember[]>(mode === 'live' ? [] : NETWORK_MEMBERS);
@@ -309,7 +310,7 @@ export default function App({ mode = 'demo', executiveAction, initialPage, initi
         <button type="button" className="ml-2 underline font-semibold" onClick={() => void refreshUnread()}>Retry</button>
       </div>}
       {mode === 'live' && activePage !== 'specter' && network.networkLoadError && <section role="alert" aria-live="polite"
-        className="mx-3 sm:mx-6 my-3 rounded-xl border border-[#c9a673] bg-[#fff5e4] px-4 py-3 text-[#27343a] shadow-sm">
+        className="mx-3 sm:mx-6 my-3 rounded-xl border border-[#C97373] bg-[#fff5e4] px-4 py-3 text-[#27343a] shadow-sm">
         <p className="text-sm font-semibold">Live network data is unavailable.</p>
         <p className="mt-1 text-sm">Posts, asks, relationships or messages may not have loaded. No sample profiles are being substituted for real members; do not assume an empty network or a sent request.</p>
         <details className="mt-2 text-xs"><summary className="cursor-pointer font-semibold">Technical details</summary>
@@ -454,8 +455,8 @@ export default function App({ mode = 'demo', executiveAction, initialPage, initi
         {activePage === 'work' && <div className="ix-classic"><AetherisAppSurface key="work"  startPage="work"  assistant={false} /></div>}
         {activePage === 'intelligence' && <MemberIntelligenceView live={mode === 'live'} onNavigate={handleNavigate} />}
         {activePage === 'specter' && <SpecterDetectView embedded onNavigate={handleNavigate} onWorkspace={page=>{setClassicPage(page);handleNavigate('workspace');}} onSearch={query=>{setSearchQuery(query);handleNavigate('people');}} searchQuery={searchQuery} onSearchChange={setSearchQuery} member={me} notifications={mode === 'live' ? <LiveNotificationsBell onOpen={destination=>{if(destination==='peergroups'||destination==='events'||destination==='deals'){setClassicPage(destination);handleNavigate('workspace');}else handleNavigate(destination);}}/> : undefined}/> }
-        {activePage === 'workspace' && <LedgerWorkspace activeTool={classicPage} onChange={setClassicPage}>
-          <div className="ix-classic"><AetherisAppSurface key={classicPage} startPage={classicPage as any} assistant={false} /></div>
+        {activePage === 'workspace' && <LedgerWorkspace activeTool={classicPage} onChange={setClassicPage} crmSection={crmSection} onCrmSectionChange={setCrmSection}>
+          <div className="ix-classic"><AetherisAppSurface key={classicPage === 'crm' ? `crm-${crmSection}` : classicPage} startPage={classicPage as any} crmSection={crmSection} assistant={false} /></div>
         </LedgerWorkspace>}
       </main>
       </LedgerBridgeShell>

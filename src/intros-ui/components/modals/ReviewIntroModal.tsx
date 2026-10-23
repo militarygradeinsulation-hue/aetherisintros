@@ -147,7 +147,7 @@ export const ReviewIntroModal: React.FC<ReviewIntroModalProps> = ({
                 <button
                   type="button"
                   onClick={handleAccept}
-                  className="flex items-center gap-1.5 px-4 py-2 text-xs font-semibold text-[#1c110c] bg-[#EF4444] hover:bg-[#DB6B36] rounded-lg transition-colors cursor-pointer shadow-sm"
+                  className="flex items-center gap-1.5 px-4 py-2 text-xs font-semibold text-[#1C0C0C] bg-[#EF4444] hover:bg-[#B91C1C] rounded-lg transition-colors cursor-pointer shadow-sm"
                 >
                   <Check className="w-3.5 h-3.5" />
                   Accept & Make Intro

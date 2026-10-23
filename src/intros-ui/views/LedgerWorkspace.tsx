@@ -38,20 +38,24 @@ for (const group of GROUPS) {
   group.modules.sort((a, b) => a[1].localeCompare(b[1], 'en', { sensitivity: 'base' }));
 }
 
-export function LedgerWorkspace({ activeTool, onChange, children }: {
+export function LedgerWorkspace({ activeTool, onChange, crmSection = 'crm', onCrmSectionChange, children }: {
+  crmSection?: 'crm' | 'pipeline'; onCrmSectionChange?: (section: 'crm' | 'pipeline') => void;
   activeTool: string; onChange: (tool: string) => void; children: ReactNode;
 }) {
-  const active = GROUPS.flatMap(g=>g.modules).find(module=>module[0]===activeTool);
+  const focused = activeTool === 'crm';
+  const groups = focused ? [{ title: 'CRM & Pipeline', modules: [['crm', 'CRM', Users], ['pipeline', 'Pipeline', Target]] as [string, string, LucideIcon][] }] : GROUPS;
+  const selectedTool = focused ? crmSection : activeTool;
+  const active = groups.flatMap(g=>g.modules).find(module=>module[0]===selectedTool);
   return <div className="ledger-workspace">
-    <PageHeader eyebrow="Workspace / Operations" title="Business Workspaces"
-      description="Manage your relationships, opportunities, projects and evidence from one connected operating system." />
+    <PageHeader eyebrow={focused ? "Relationships / Revenue" : "Workspace / Operations"} title={focused ? "CRM & Pipeline" : "Business Workspaces"}
+      description={focused ? "Manage customer relationships and track opportunities through your pipeline." : "Manage your relationships, opportunities, projects and evidence from one connected operating system."} />
     <div className="ledger-workspace-grid">
-      <aside className="ledger-workspace-modules" aria-label="Business workspace modules">
-        {GROUPS.map(group=><nav key={group.title} aria-label={group.title}>
+      <aside className="ledger-workspace-modules" aria-label={focused ? "CRM and Pipeline navigation" : "Business workspace modules"}>
+        {groups.map(group=><nav key={group.title} aria-label={group.title}>
           <h2>{group.title}</h2>
           {group.modules.map(([id,label,Icon])=><button type="button" key={id}
-            className={activeTool===id?'active':''} aria-current={activeTool===id?'page':undefined}
-            onClick={()=>onChange(id)}><Icon size={16}/><span>{label}</span></button>)}
+            className={selectedTool===id?'active':''} aria-current={selectedTool===id?'page':undefined}
+            onClick={()=>focused ? onCrmSectionChange?.(id as 'crm' | 'pipeline') : onChange(id)}><Icon size={16}/><span>{label}</span></button>)}
         </nav>)}
       </aside>
       <div className="ledger-workspace-detail">

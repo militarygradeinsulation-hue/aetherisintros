@@ -45,7 +45,7 @@ export const SystemTile: React.FC<SystemTileProps> = ({
   const getStatusColor = (status?: string) => {
     switch (status) {
       case 'active': return 'bg-[#B91C1C]';
-      case 'followup': return 'bg-[#F5B027]';
+      case 'followup': return 'bg-[#EF4444]';
       case 'dormant': return 'bg-[#64748B]';
       default: return 'bg-transparent';
     }
@@ -54,9 +54,9 @@ export const SystemTile: React.FC<SystemTileProps> = ({
   const getHeatmapStyling = (score: number = 75) => {
     if (score >= 88) {
       return {
-        border: 'border-[#F5B027]/50 shadow-[0_0_20px_rgba(249,115,22,0.25)]',
-        bg: 'bg-gradient-to-b from-[#F5B027]/10 to-transparent',
-        badgeColor: 'bg-[#F5B027]/20 text-[#F5B027] border-[#F5B027]/40',
+        border: 'border-[#EF4444]/50 shadow-[0_0_20px_rgba(249,115,22,0.25)]',
+        bg: 'bg-gradient-to-b from-[#EF4444]/10 to-transparent',
+        badgeColor: 'bg-[#EF4444]/20 text-[#EF4444] border-[#EF4444]/40',
       };
     }
     if (score >= 75) {
@@ -68,9 +68,9 @@ export const SystemTile: React.FC<SystemTileProps> = ({
     }
     if (score >= 60) {
       return {
-        border: 'border-[#F5B027]/35 shadow-[0_0_12px_rgba(185,28,28,0.15)]',
-        bg: 'bg-gradient-to-b from-[#F5B027]/10 to-transparent',
-        badgeColor: 'bg-[#F5B027]/20 text-[#F5B027] border-[#F5B027]/40',
+        border: 'border-[#EF4444]/35 shadow-[0_0_12px_rgba(185,28,28,0.15)]',
+        bg: 'bg-gradient-to-b from-[#EF4444]/10 to-transparent',
+        badgeColor: 'bg-[#EF4444]/20 text-[#EF4444] border-[#EF4444]/40',
       };
     }
     return {
@@ -106,7 +106,7 @@ export const SystemTile: React.FC<SystemTileProps> = ({
       }}
       className={`sys-tile group w-full h-[276px] sm:h-[286px] p-2.5 sm:p-3 flex flex-col justify-between text-left cursor-pointer focus-visible:outline-none select-none transition-all duration-200 hover:shadow-[0_0_15px_rgba(185,28,28,0.3)] relative overflow-hidden ${
         isKeyboardFocused
-          ? 'ring-2 ring-[#F5B027] shadow-[0_0_24px_rgba(185,28,28,0.45)] z-20 scale-[1.01]'
+          ? 'ring-2 ring-[#EF4444] shadow-[0_0_24px_rgba(185,28,28,0.45)] z-20 scale-[1.01]'
           : ''
       } ${
         isInactivityAlerted
@@ -161,7 +161,7 @@ export const SystemTile: React.FC<SystemTileProps> = ({
             </span>
           )}
           {isKeyboardFocused && (
-            <span className="text-[7px] font-mono uppercase px-1 py-0.2 rounded bg-[#F5B027] text-white font-bold tracking-wider">
+            <span className="text-[7px] font-mono uppercase px-1 py-0.2 rounded bg-[#EF4444] text-white font-bold tracking-wider">
               ↵ Focus
             </span>
           )}
@@ -172,7 +172,7 @@ export const SystemTile: React.FC<SystemTileProps> = ({
                 e.stopPropagation();
                 onAttachVoiceNote();
               }}
-              className="p-0.5 sm:p-1 rounded bg-white/5 hover:bg-[#F5B027]/25 text-[#F2EEE6]/60 hover:text-white transition-all shrink-0"
+              className="p-0.5 sm:p-1 rounded bg-white/5 hover:bg-[#EF4444]/25 text-[#F2EEE6]/60 hover:text-white transition-all shrink-0"
               title="Attach Voice Note & Generate AI Meeting Minutes"
               aria-label="Attach Voice Note to Tile"
             >
@@ -186,7 +186,7 @@ export const SystemTile: React.FC<SystemTileProps> = ({
             />
           )}
           <div
-            className="w-1.5 h-1.5 rounded-full bg-[#F5B027] opacity-0 group-hover:opacity-100 transition-opacity duration-200 shrink-0 mt-0.5"
+            className="w-1.5 h-1.5 rounded-full bg-[#EF4444] opacity-0 group-hover:opacity-100 transition-opacity duration-200 shrink-0 mt-0.5"
             aria-hidden="true"
           />
         </div>
