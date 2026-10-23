@@ -157,6 +157,13 @@ try {
     await check(page,'ask-dock','.ask-dock','');
     await page.click('.ask-dock-fab');
   }
+  await page.getByRole('button',{name:'My board',exact:true}).click();
+  await page.waitForTimeout(750);
+  await check(page,'dashboard-board-pipeline','.ledger-widget-board [data-widget-id="pipeline"] > div','');
+  await page.getByRole('button',{name:'Edit layout',exact:true}).click();
+  await check(page,'dashboard-board-size-controls','.ledger-widget-board [data-widget-id="network"] > div','');
+  await page.getByRole('button',{name:'Lock layout',exact:true}).click();
+  await page.getByRole('button',{name:'Activity feed',exact:true}).click();
   await nav.getByRole('button',{name:'Network',exact:true}).click();
   await page.locator('.ledger-directory-table').waitFor({state:'visible',timeout:30000});
   await check(page,'crm-contact-records','.ledger-ui-panel','');
@@ -207,6 +214,12 @@ try {
     await page.click('.ask-dock-fab');
     await check(page,'mobile-ask-dock','.ask-dock','m-');
   }
+  if(await page.getByRole('dialog',{name:'Ask Intros',exact:true}).isVisible()) await page.click('.ask-dock-fab');
+  await page.getByRole('button',{name:'My board',exact:true}).click();
+  await page.waitForTimeout(750);
+  await page.locator('.ledger-widget-board [data-widget-id="pipeline"]').evaluate(el=>el.scrollIntoView({block:'center'}));
+  await check(page,'mobile-dashboard-board','.ledger-widget-board [data-widget-id="pipeline"] > div','m-');
+  ok(await page.evaluate(()=>document.documentElement.scrollWidth-innerWidth)<=3,'mobile board fits the viewport');
   await page.close();
 } catch (e) {
   fail++; console.log('  ✗ check crashed:', e.message.split('\n')[0])

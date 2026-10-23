@@ -3,6 +3,7 @@
  */
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import './ledger-bridge-shell.css';
+import './raised-surfaces.css';
 import { Bell, ChevronDown, ChevronLeft, ChevronRight, Command, House, Menu, MessageSquare, Search, UserRound, Users, X, LogOut } from 'lucide-react';
 import { AppearanceToggle } from '@/aetheris/AppearanceToggle';
 import { signOutMember } from '@/aetheris/sync/workspace-sync';

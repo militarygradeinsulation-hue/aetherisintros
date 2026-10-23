@@ -43,6 +43,65 @@ async function checkMenuAlignment(root,label) {
   check(Math.max(...layout.map(b=>b.height))-Math.min(...layout.map(b=>b.height))<1.5,label+' rows have equal height');
   check(layout.every(b=>b.clipped<=1),label+' every menu label is fully readable');
 }
+async function checkDashboardBoard(page,theme) {
+  const stat=page.locator('.ledger-ui-stat').first();
+  check(await stat.evaluate(tile=>getComputedStyle(tile).boxShadow!=='none'),theme+' dashboard cards have depth at rest');
+  const resting=await stat.boundingBox();
+  await stat.hover();await page.waitForTimeout(250);
+  check((await stat.boundingBox()).y<resting.y-2,theme+' pointer hover lifts a dashboard tile');
+  await page.mouse.move(5,5);await page.waitForTimeout(250);
+  await page.emulateMedia({reducedMotion:'reduce'});
+  const steady=await stat.boundingBox();await stat.hover();await page.waitForTimeout(100);
+  check(Math.abs((await stat.boundingBox()).y-steady.y)<1,theme+' reduced motion keeps tile position steady');
+  await page.mouse.move(5,5);await page.emulateMedia({reducedMotion:'no-preference'});
+  const draft=page.locator('#ledger-post-content');
+  await draft.fill('Keep this draft while arranging my board');
+  await page.getByRole('button',{name:'My board',exact:true}).click();
+  const board=page.getByRole('region',{name:'Your customizable dashboard board',exact:true});
+  await board.waitFor();
+  check(await board.locator('[data-widget-id]').count()===8,theme+' dashboard board has eight real-action widgets');
+  check(await board.locator('[data-widget-id][tabindex="0"]').count()===0,theme+' board starts locked');
+  await board.getByRole('button',{name:'Edit layout',exact:true}).click();
+  const before=await page.evaluate(()=>localStorage.getItem('ask-intros.dashboard.widgets.v1'));
+  const source=board.locator('[data-widget-id="conversations"]');
+  const target=board.locator('[data-widget-id="crm"]');
+  await source.scrollIntoViewIfNeeded();
+  const a=await source.boundingBox(),b=await target.boundingBox();
+  await page.mouse.move(a.x+a.width/2,a.y+25);await page.mouse.down();
+  await page.mouse.move(b.x+b.width/2,b.y+b.height/2,{steps:15});
+  await page.waitForTimeout(200);await page.mouse.up();
+  await page.waitForFunction(previous=>localStorage.getItem('ask-intros.dashboard.widgets.v1')!==previous,before);
+  check(true,theme+' mouse dragging changes and saves board order');
+  const order=await page.evaluate(()=>localStorage.getItem('ask-intros.dashboard.widgets.v1'));
+  await source.focus();await source.press('Alt+ArrowLeft');
+  await page.waitForFunction(previous=>localStorage.getItem('ask-intros.dashboard.widgets.v1')!==previous,order);
+  check(true,theme+' keyboard reordering changes and saves board order');
+  const network=board.locator('[data-widget-id="network"]');
+  await network.evaluate(el=>el.dataset.mountProof='same-widget');
+  await network.getByRole('combobox',{name:'Size of Member network',exact:true}).selectOption('lg');
+  check(await network.getAttribute('data-mount-proof')==='same-widget',theme+' resizing preserves the mounted widget');
+  await board.getByRole('button',{name:'Lock layout',exact:true}).click();
+  await page.getByRole('button',{name:'Activity feed',exact:true}).click();
+  check(await draft.inputValue()==='Keep this draft while arranging my board',theme+' feed draft survives board toggles');
+  await draft.fill('');
+  await page.reload({waitUntil:'domcontentloaded'});
+  await page.getByRole('button',{name:'My board',exact:true}).click();
+  const restored=page.getByRole('region',{name:'Your customizable dashboard board',exact:true});
+  await page.waitForFunction(()=>JSON.parse(localStorage.getItem('ask-intros.dashboard.widgets.v1')).items.find(i=>i.id==='network').size==='lg');
+  check(await restored.getByRole('button',{name:'Edit layout',exact:true}).isVisible(),theme+' locked preference survives reload');
+  check(await restored.locator('[data-widget-id="network"]').evaluate(el=>el.style.gridRow.includes('span 2')),theme+' chosen widget size survives reload');
+  await restored.getByRole('button',{name:'Reset board',exact:true}).click();
+  await page.waitForTimeout(750);
+  const boxes=await restored.locator('[data-widget-id]').evaluateAll(tiles=>tiles.map(tile=>{const b=tile.getBoundingClientRect();return {x:b.x,y:b.y,right:b.right,bottom:b.bottom}}));
+  check(boxes.every((a,i)=>boxes.every((b,j)=>i===j || a.right<=b.x+1 || b.right<=a.x+1 || a.bottom<=b.y+1 || b.bottom<=a.y+1)),theme+' settled board tiles never overlap');
+  check(await restored.locator('[data-widget-id]').first().evaluate(tile=>getComputedStyle(tile).filter!=='none'),theme+' board tiles cast shadows above the canvas');
+  if(process.env.NAV_SCREENSHOT_DIR) await page.screenshot({path:process.env.NAV_SCREENSHOT_DIR+'/'+theme+'-board.png'});
+  await checkBrand(page,theme+' Dashboard board');
+  await restored.getByRole('button',{name:'Open CRM & Pipeline',exact:true}).click();
+  await page.getByRole('heading',{name:'Your opportunity pipeline.',exact:true}).waitFor();
+  check(true,theme+' board action opens the canonical Pipeline');
+  await page.locator('.ledger-crm-sidebar').getByRole('button',{name:'Dashboard',exact:true}).click();
+}
 let browser;
 try{
   await new Promise((ready,fail)=>{
@@ -83,6 +142,7 @@ try{
     const sidebar=page.locator('.ledger-crm-sidebar');
     await checkMenuAlignment(sidebar,theme+' desktop');
     if(process.env.NAV_SCREENSHOT_DIR) await page.screenshot({path:process.env.NAV_SCREENSHOT_DIR+'/'+theme+'-desktop.png'});
+    await checkDashboardBoard(page,theme);
     await sidebar.getByRole('button',{name:'Network',exact:true}).click();
     await page.locator('.ledger-directory-table').waitFor({state:'visible',timeout:30000});
     check(await page.locator('[data-arch-page="people"]').count()===1,theme+' contacts use CRM records');
@@ -163,6 +223,19 @@ try{
     await search.getByRole('button',{name:/Private Vault/}).click();
     check(await page.locator('.ledger-section-navigation[data-destination="library"]').isVisible(),theme+' command search reaches nested tools directly');
     check(await page.evaluate(()=>document.documentElement.scrollWidth-innerWidth)<=3,theme+' mobile sections fit viewport');
+    await page.getByRole('button',{name:'More menu',exact:true}).click();
+    await mobile.getByRole('button',{name:'Dashboard',exact:true}).click();
+    await page.getByRole('button',{name:'My board',exact:true}).click();
+    const mobileBoard=page.getByRole('region',{name:'Your customizable dashboard board',exact:true});
+    await mobileBoard.locator('[data-widget-id="pipeline"]').evaluate(el=>el.scrollIntoView({block:'center'}));
+    await page.waitForTimeout(750);
+    check(await mobileBoard.locator('[data-slot="widget-grid"]').evaluate(el=>getComputedStyle(el).gridTemplateColumns.split(' ').length===2),theme+' mobile board adapts to two columns');
+    check(await page.evaluate(()=>document.documentElement.scrollWidth-innerWidth)<=3,theme+' mobile board never forces horizontal scrolling');
+    if(process.env.NAV_SCREENSHOT_DIR) await page.screenshot({path:process.env.NAV_SCREENSHOT_DIR+'/'+theme+'-mobile-board.png'});
+    await mobileBoard.getByRole('button',{name:'Open CRM & Pipeline',exact:true}).click();
+    await page.getByRole('heading',{name:'Your opportunity pipeline.',exact:true}).waitFor();
+    check(true,theme+' mobile board actions remain usable above navigation');
+
     check(!errors.length,theme+' no uncaught member-page errors: '+errors.slice(0,2).join('; '));
     for(const route of ['/', '/auth']){await page.goto('http://127.0.0.1:'+port+route,{waitUntil:'domcontentloaded'});await page.waitForTimeout(300);await checkBrand(page,theme+' '+route)}
     await context.close();
