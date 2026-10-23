@@ -95,7 +95,7 @@ try {
 
     await launcher.click()
     await page.getByRole('navigation',{name:'Mobile workspace navigation'})
-      .getByRole('button',{name:'People & contacts'}).click()
+      .getByRole('button',{name:'Network',exact:true}).click()
     await page.locator('.ledger-directory-table').waitFor({state:'visible',timeout:25000})
     await clearLayout(page,'contacts '+vp.width)
   }else{
@@ -107,7 +107,7 @@ try {
     check(await page.locator('.ask-dock-fab').count()===1,'page navigation does not duplicate the bot')
     await butler.click()
     await clearLayout(page,'messages '+vp.width)
-    await nav.getByRole('button',{name:'People & contacts'}).click()
+    await nav.getByRole('button',{name:'Network',exact:true}).click()
     await page.locator('.ledger-directory-table').waitFor({state:'visible',timeout:25000})
     await clearLayout(page,'contacts '+vp.width)
     await page.getByRole('button',{name:'Collapse sidebar'}).click()

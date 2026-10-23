@@ -1,5 +1,6 @@
 .ledger-workspace {display:flex;flex-direction:column;gap:18px;min-width:0}
 .ledger-workspace-grid {display:grid;grid-template-columns:215px minmax(0,1fr);gap:14px;align-items:start;min-width:0}
+.ledger-workspace-grid.ledger-workspace-single {grid-template-columns:minmax(0,1fr)}
 .ledger-workspace-modules {display:flex;flex-direction:column;border:1px solid var(--ledger-crm-border);background:var(--ledger-crm-surface);max-height:min(780px,calc(100vh - 125px));overflow:auto;padding:14px 10px;position:sticky;top:85px}
 .ledger-workspace-modules nav {display:flex;flex-direction:column;gap:3px;margin-bottom:14px}
 .ledger-workspace-modules h2 {font:700 10px system-ui,sans-serif!important;letter-spacing:.18em;text-transform:uppercase;color:var(--ledger-crm-muted)!important;margin:8px 0 7px;padding:0 10px}

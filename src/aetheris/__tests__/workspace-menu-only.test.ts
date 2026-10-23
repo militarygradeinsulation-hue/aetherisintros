@@ -20,9 +20,9 @@ describe('workspace tools live in the menu, not above page content', () => {
   it('preserves all advanced tools in desktop sidebar and mobile menu', () => {
     expect(shell).toContain('<Nav />')
     expect(shell).toContain('<Nav mobile />')
-    expect(tools).toContain('MEMBER_TOOL_DESTINATIONS')
-    expect(tools).toContain('group.modules.sort')
-    expect(tools).toContain('additional.length')
+    expect(shell).toContain('PRIMARY_NAV_GROUPS')
+    expect(shell).toContain('LedgerSectionNavigation')
+    expect(tools).not.toContain('Business workspace modules')
     for (const key of ['crm', 'diagnostic', 'pocket', 'executivework', 'providers', 'needs', 'companies', 'opportunities', 'deals', 'referrals', 'workspaces', 'calendar', 'grid', 'circles', 'peergroups', 'events']) {
       expect(registry).toContain(`workspace: '${key}'`)
     }

@@ -271,3 +271,47 @@
   :root[data-theme] body .ix-root.ledger-native-app > .ix-assistant .ask-dock {bottom:calc(146px + env(safe-area-inset-bottom,0px));max-height:calc(100dvh - 230px - env(safe-area-inset-bottom,0px))!important}
 }
 :root[data-theme] body .ix-root.ledger-native-app > .ix-assistant .ask-dock-fab > span {display:inline-flex!important}
+
+/* The old horizontal header centers its children. A vertical sidebar must
+   stretch every group to one common left edge, including the mobile drawer. */
+:root body .ix-root.ledger-native-app .ledger-crm-shell .ledger-native-nav {
+  align-items:stretch!important;justify-content:flex-start!important;
+}
+:root body .ix-root.ledger-native-app .ledger-crm-shell .ledger-native-group {
+  width:100%!important;align-items:stretch!important;margin:0!important;transform:none!important;
+}
+:root body .ix-root.ix-mindprint-bridge.ix-absolute-ledger.ledger-native-app .ledger-crm-shell .ledger-native-nav-item {
+  display:grid!important;grid-template-columns:18px minmax(0,1fr) auto!important;
+  align-items:center!important;justify-content:stretch!important;column-gap:12px!important;
+  min-height:44px!important;margin:0!important;transform:none!important;text-align:left!important;
+}
+.ledger-native-nav-item > svg {width:18px;height:18px;justify-self:center}
+:root body .ix-root.ledger-native-app .ledger-crm-shell .ledger-native-nav-label {min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font:inherit!important;letter-spacing:0!important;line-height:1.4}
+.ledger-native-mobile-account > button,.ledger-native-account-dropdown > button {
+  display:grid;grid-template-columns:18px minmax(0,1fr);gap:12px;align-items:center;text-align:left;
+}
+.ledger-native-account-dropdown {max-height:calc(100dvh - 90px);overflow:auto}
+.ledger-native-mobile-account > button {width:100%;min-height:44px;padding:10px 12px}
+.ledger-native-mobile-account-options {max-height:40dvh;overflow:auto}
+.ledger-native-mobile-account-options summary {display:flex;align-items:center;justify-content:space-between;min-height:44px;padding:10px 12px;cursor:pointer;color:var(--ledger-crm-ink);font:500 12px system-ui,sans-serif}
+.ledger-native-mobile-account-options button {width:100%;min-height:44px;display:grid;grid-template-columns:18px minmax(0,1fr);gap:12px;text-align:left;align-items:center;padding:10px 12px}
+:root body .ix-root.ledger-native-app .ledger-crm-shell .ledger-native-mobile-sidebar .ledger-native-brand {display:grid!important;grid-template-columns:37px minmax(0,1fr) 32px!important;align-items:center!important;min-height:70px!important;gap:10px!important;padding:14px!important;text-align:left!important}
+:root body .ix-root.ledger-native-app .ledger-crm-shell .ledger-native-mobile-sidebar .ledger-native-brand button {width:32px!important;height:32px!important;padding:0!important;margin:0!important;display:grid!important;place-items:center!important}
+:root body .ix-root.ix-mindprint-bridge.ix-absolute-ledger.ledger-native-app .ledger-crm-shell.ledger-crm-collapsed .ledger-crm-sidebar .ledger-native-nav-item {
+  grid-template-columns:18px!important;justify-content:center!important;
+}
+.ledger-section-navigation {min-width:0;margin:0 0 18px;padding:14px;border:1px solid var(--ledger-crm-border);background:var(--ledger-crm-surface);color:var(--ledger-crm-ink)}
+.ledger-section-title {margin:0 0 10px;font:700 10px/1.4 system-ui,sans-serif;letter-spacing:.14em;text-transform:uppercase;color:var(--ledger-crm-muted)}
+.ledger-section-options {display:grid;grid-template-columns:repeat(auto-fit,minmax(145px,1fr));gap:8px;min-width:0}
+.ledger-section-options button {display:grid;grid-template-columns:18px minmax(0,1fr);align-items:center;gap:10px;text-align:left;min-width:0;min-height:44px;margin:0;padding:10px 12px;border:1px solid var(--ledger-crm-border);border-radius:0;background:var(--ledger-crm-raised);color:var(--ledger-crm-ink);font:500 12px/1.4 system-ui,sans-serif}
+.ledger-section-options button svg {width:16px;height:16px;justify-self:center;flex:none}
+.ledger-section-options button:hover,.ledger-section-options button[aria-current="page"] {border-color:var(--ledger-crm-accent);background:color-mix(in srgb,var(--ledger-crm-accent) 12%,var(--ledger-crm-surface))}
+.ledger-section-options button[aria-current="page"] svg {color:var(--ledger-crm-accent)}
+.ledger-section-options button:focus-visible,.ledger-section-more summary:focus-visible {outline:2px solid var(--ledger-crm-accent);outline-offset:3px}
+.ledger-section-more {margin-top:10px}
+.ledger-section-more summary {width:fit-content;min-height:40px;display:flex;align-items:center;gap:8px;cursor:pointer;font:500 12px/1.4 system-ui,sans-serif;color:var(--ledger-crm-ink)}
+@media(max-width:550px){.ledger-section-navigation {padding:10px;margin-bottom:12px}.ledger-section-options {grid-template-columns:repeat(2,minmax(0,1fr))}.ledger-section-options button {padding:9px 8px;gap:7px;font-size:11px}}
+@media(max-width:1120px){
+  :root body .ix-root.ledger-native-app .ledger-crm-collapsed .ledger-native-mobile-sidebar :is(.ledger-native-nav-label,.ledger-native-group-label,.ledger-native-count) {display:block!important}
+  :root body .ix-root.ledger-native-app .ledger-crm-collapsed .ledger-native-mobile-sidebar .ledger-native-nav {padding:15px 12px 20px!important}
+}
