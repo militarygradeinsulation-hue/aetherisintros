@@ -462,10 +462,8 @@ export default function App({ mode = 'demo', executiveAction, initialPage, initi
         {activePage === 'intelligence' && <MemberIntelligenceView live={mode === 'live'} onNavigate={handleNavigate} />}
         {activePage === 'specter' && <SpecterDetectView embedded onNavigate={handleNavigate} onWorkspace={page=>{setClassicPage(page);handleNavigate('workspace');}} onSearch={query=>{setSearchQuery(query);handleNavigate('people');}} searchQuery={searchQuery} onSearchChange={setSearchQuery} member={me} notifications={mode === 'live' ? <LiveNotificationsBell onOpen={destination=>{if(destination==='peergroups'||destination==='events'||destination==='deals'){setClassicPage(destination);handleNavigate('workspace');}else handleNavigate(destination);}}/> : undefined}/> }
         {activePage === 'workspace' && <div className="ix-classic">
-          <div className="ix-tools">
-            {([['memory','Memory'],['crm','CRM'],['diagnostic','Company report'],['pocket','Private Library & Blueprints'],['executivework','Executive Workbench'],['providers','Trusted Providers'],['needs','Needs'],['companies','Companies'],['opportunities','Opportunities'],['deals','Deals'],['referrals','Referrals'],['workspaces','Workspaces'],['calendar','Calendar'],['grid','Grid'],['circles','Circles'],['peergroups','Peer groups'],['events','Events'],['profile','My profile'],['preferences','Settings']] as const).map(([id, label]) =>
-              <button key={id} className={classicPage === id ? 'on' : ''} onClick={() => setClassicPage(id)}>{label}</button>)}
-          </div>
+          {/* Workspace navigation is owned by the persistent sidebar and mobile Menu.
+              Do not duplicate its full destination list above every tool. */}
           <AetherisAppSurface key={classicPage}  startPage={classicPage as any}  />
         </div>}
         </AetherisWorkspaceShell>

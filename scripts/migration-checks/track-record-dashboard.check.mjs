@@ -1,4 +1,4 @@
-// Reputation scores are derived/server-owned; authenticated live members may read them.
+// Reputation scores are derived/server-owned; 0095 limits member reads to self or reciprocal connections.
 export default async ({ ok, as, svc, A, B }) => {
   await svc(`insert into public.reputation_scores (user_id, score, total_intros, intro_success_rate)
     values ('${A}', 85, 10, 80.00)
@@ -11,7 +11,7 @@ export default async ({ ok, as, svc, A, B }) => {
   ok(Boolean(bad), 'score above 100 is rejected by the database')
 
   const memberRead = await as(B, `select score from public.reputation_scores where user_id = $1`, [A])
-  ok(!memberRead.error && memberRead.rows?.length === 1, 'live members can read reputation scores')
+  ok(!memberRead.error && memberRead.rows?.length === 0, 'unrelated members cannot read other members\' reputation scores')
 
   const anonRead = await as(null, `select score from public.reputation_scores where user_id = $1`, [A])
   ok(!!anonRead.error || anonRead.rows?.length === 0, 'anonymous visitors cannot read reputation scores')
