@@ -1,7 +1,7 @@
 /* CRM Contacts pattern, sourced from the REAL Bridge directory.
  * Search, saved and connection actions remain the signed-in handlers.
  */
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { Bookmark, Handshake, ListFilter, Network, Search, UserRound, Users } from 'lucide-react';
 import type { NetworkMember } from '@/intros-ui/networkData';
 import type { ActivePage } from '@/intros-ui/components/layout/TopNavigation';
@@ -19,6 +19,7 @@ export function LedgerDirectory({
   searchQuery?: string;
 }) {
   const [search, setSearch] = useState(searchQuery);
+  useEffect(() => { setSearch(searchQuery); }, [searchQuery]);
   const [role, setRole] = useState('all');
   const [sort, setSort] = useState<'name' | 'match'>('match');
   const filtered = useMemo(() => members.filter(person => {
