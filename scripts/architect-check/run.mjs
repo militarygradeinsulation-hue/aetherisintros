@@ -71,7 +71,19 @@ try {
   await page.locator('.specter-app-header .specter-header-cta').click();
   await page.waitForFunction(()=>document.querySelector('.arch-product-main')?.dataset.archPage==='workspace');
   check((await read()).page==='workspace','All workspace tools share the design shell');
-  check(await page.locator('.ix-tools button').count()>=10,'Real workspace module tabs remain available');
+  // Workspace tools now live exclusively in the persistent sidebar and mobile
+  // Menu; a second 19-button strip above the active workspace obscured content.
+  check(await page.locator('.ix-tools').count()===0,'Duplicate workspace button strip is absent');
+  const toolsToggle=nav.getByRole('button',{name:'Business Tools'});
+  if ((await toolsToggle.getAttribute('aria-expanded'))!=='true') await toolsToggle.click();
+  const toolsList=nav.locator('.specter-tools-list');
+  check(await toolsList.isVisible() && await toolsList.getByRole('button').count()>=16,
+    'Real workspace tools remain accessible in the business menu');
+  await toolsList.getByRole('button',{name:'CRM & Contacts'}).click();
+  await page.waitForFunction(()=>document.querySelector('.arch-product-main')?.dataset.archPage==='workspace');
+  const selectedTool=toolsList.getByRole('button',{name:'CRM & Contacts'});
+  check((await selectedTool.getAttribute('aria-current'))==='page',
+    'Selected workspace tool remains highlighted in the persistent menu');
   const workspaceSkin=await page.evaluate(() => {
     const app=document.querySelector('.ix-classic .app-shell');
     const get=(selector)=>{const el=document.querySelector(selector);return el?getComputedStyle(el).backgroundColor:null;};
@@ -80,12 +92,12 @@ try {
   });
   check(workspaceSkin.app=== (theme==='light'?'rgb(255, 255, 255)':'rgb(0, 0, 0)'),
     'Classic workspace actual background matches inverse stencil theme ('+JSON.stringify(workspaceSkin)+')');
-  check(workspaceSkin.toolstrip=== (theme==='light'?'rgb(255, 255, 255)':'rgb(12, 12, 12)'),
-    'Workspace option strip uses white or graphite shared surface');
+  check(workspaceSkin.toolstrip===null && workspaceSkin.main===workspaceSkin.app,
+    'Workspace content uses the shared surface without an overlaying option strip');
 
   // Option pages share the current stencil/orange selection system, not obsolete powder blue.
   const options = await page.evaluate(() => {
-    const chosen=document.querySelector('.arch-product-main .ix-tools button.on');
+    const chosen=document.querySelector('.specter-app-sidebar .specter-tools-list button[aria-current="page"]');
     const selected=chosen?getComputedStyle(chosen):null;
     const root=getComputedStyle(document.documentElement);
     return {
@@ -96,7 +108,7 @@ try {
     };
   });
   check(Boolean(options.optionBg && options.optionInk && options.canvas),'Executive option tokens available in '+theme);
-  check(Boolean(options.selectedColor) && options.selectedColor!=='rgb(220, 232, 243)','Selected workspace option is not stale powder-blue');
+  check(Boolean(options.selectedColor) && options.selectedColor!=='rgb(220, 232, 243)','Selected business tool uses the current design rather than stale powder-blue');
   // One persistent member sidebar replaces the obsolete desktop More dropdown.
   check(await nav.isVisible(), 'Persistent workspace destinations are visible');
   const navColor=await nav.evaluate(el=>getComputedStyle(el).color);
