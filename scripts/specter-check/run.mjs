@@ -43,12 +43,16 @@ try {
     status:200,contentType:'text/html',
     body:'<!doctype html><title>Alpha live</title><button id="interact" onclick="document.getElementById(\'feedback\').textContent=\'Clicked\'">Interact here</button><p id="feedback">Ready</p>',
   }));
-  await page.route('https://beta.com/', route => route.fulfill({status:200,contentType:'text/html',body:'<!doctype html><title>Beta live</title><p>Beta page</p>'}));
+  await page.route('https://beta.com/', route => route.fulfill({status:200,contentType:'text/html',headers:{'Content-Security-Policy':"frame-ancestors 'none'",'X-Frame-Options':'DENY'},body:'<!doctype html><title>Beta live</title><p>Beta page</p>'}));
   await page.route('https://alpha.com/house.jpg', route => route.fulfill({status:200,contentType:'image/svg+xml',body:'<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100"><rect width="100" height="100" fill="orange"/></svg>'}));
   await page.route('https://storage.googleapis.com/reader-6b7dc.appspot.com/screenshots/*', route => route.fulfill({status:200,contentType:'image/svg+xml',body:'<svg xmlns="http://www.w3.org/2000/svg" width="1365" height="900"><rect width="1365" height="900" fill="#0d5488"/><text x="60" y="120" fill="white" font-size="50">Captured website preview</text></svg>'}));
   await page.goto(base);
   await page.getByLabel('Website URL').fill('https://alpha.com/company?id=123');
   await page.getByRole('button', {name:'Scan Website',exact:true}).click();
+  await page.getByRole('region',{name:'Captured page evidence'}).waitFor();
+  assert(await page.locator('iframe.specter-live-frame').count()===0,'scan defaults to usable captured evidence instead of a potentially blocked frame');
+  assert(await page.getByRole('link',{name:/Open full browser/}).count()>=1,'full browser access is prominent');
+  await page.getByRole('button',{name:'Interact',exact:true}).click();
   await page.locator('iframe.specter-live-frame').waitFor();
   assert((await page.locator('iframe.specter-live-frame').getAttribute('src')).includes('alpha.com/company?id=123'), 'scan opens the original URL in the browser pane');
   await page.frameLocator('iframe.specter-live-frame').getByRole('button',{name:'Interact here'}).click();
@@ -62,7 +66,15 @@ try {
   await page.screenshot({path:join(out,'specter-reference-desktop.png'),fullPage:true});
   await page.getByLabel('Website URL').fill('https://beta.com');
   await page.getByRole('button', {name:'Scan Website',exact:true}).click();
+  await page.getByRole('region',{name:'Captured page evidence'}).waitFor();
+  await page.getByRole('button',{name:'Interact',exact:true}).click();
   await page.locator('iframe.specter-live-frame[src="https://beta.com/"]').waitFor();
+  assert(await page.locator('.specter-live-actions a').getAttribute('href')==='https://beta.com/','frame-blocked website keeps a full-browser exit');
+  await page.getByRole('button',{name:'Return to captured page'}).click();
+  assert(await page.getByRole('region',{name:'Captured page evidence'}).isVisible(),'blocked embedded view can return to real captured evidence');
+  await page.getByRole('button',{name:'Expand browser',exact:true}).click();
+  assert(!(await page.locator('.specter-insights').isVisible()),'expanded browser uses the complete workspace width');
+  await page.getByRole('button',{name:'Restore split view',exact:true}).click();
   await page.getByLabel('Previous investigation').click();
   assert((await page.locator('.specter-address').textContent()).includes('id=123'), 'history restores exact query-selected source');
   assert((await page.locator('.specter-company').textContent()).includes('Alpha'), 'history restores matching company evidence');

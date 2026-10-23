@@ -14,7 +14,7 @@ const contrast = (a: string, b: string) => {
 describe('cinematic membership contrast after light-first appearance', () => {
   it('uses contrast-safe inverse heading, body and kicker colors on the dark chapter', () => {
     expect(contrast('#f5f7f6', '#11191c')).toBeGreaterThan(7)
-    expect(contrast('#f4d3a9', '#11191c')).toBeGreaterThan(7)
+    expect(contrast('#F4A9A9', '#11191c')).toBeGreaterThan(7)
   })
   it('scopes the override to this section in both themes', () => {
     expect(part).toContain(':root[data-theme="light"]')

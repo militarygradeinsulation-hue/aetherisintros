@@ -6,7 +6,7 @@
   --le-ink: #f3f1ed;
   --le-muted: #a4afbf;
   --le-rule: rgba(179, 197, 218, .18);
-  --le-accent: #f5874c;
+  --le-accent: #F54C4C;
   color: var(--le-ink);
   margin: 0 0 14px;
   border: 1px solid var(--le-rule);
@@ -27,7 +27,7 @@
   font-size: 10px;
   font-weight: 750;
   letter-spacing: .15em;
-  color: #ffae7a;
+  color: #FF7A7A;
 }
 .ix-root .live-exec h2 {
   margin: 4px 0;
@@ -45,20 +45,20 @@
   cursor: pointer;
   transition: background-color .16s ease, border-color .16s ease;
 }
-.ix-root .live-exec button:focus-visible { outline: 2px solid #ffae7a; outline-offset: 3px; }
+.ix-root .live-exec button:focus-visible { outline: 2px solid #FF7A7A; outline-offset: 3px; }
 .ix-root .live-exec-view-feed,
 .ix-root .live-exec-panel-title button {
   display: inline-flex;
   align-items: center;
   gap: 7px;
   white-space: nowrap;
-  color: #ffc8a4;
+  color: #FFA4A4;
   font-size: 11px;
   font-weight: 700;
 }
-.ix-root .live-exec-view-feed { border: 1px solid rgba(245, 135, 76, .3); border-radius: 7px; padding: 8px 11px; }
+.ix-root .live-exec-view-feed { border: 1px solid rgba(245,76,76, .3); border-radius: 7px; padding: 8px 11px; }
 .ix-root .live-exec-view-feed:hover,
-.ix-root .live-exec-actions button:hover { background: rgba(245,135,76,.11); border-color: rgba(245,135,76,.35); }
+.ix-root .live-exec-actions button:hover { background: rgba(245,76,76,.11); border-color: rgba(245,76,76,.35); }
 .ix-root .live-exec-stat-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; margin: 13px 0 10px; }
 .ix-root .live-exec-stat {
   min-width: 0;
@@ -70,7 +70,7 @@
   text-align: left;
   background: rgba(21, 36, 54, .86);
 }
-.ix-root .live-exec-stat:hover { border-color: rgba(245, 135, 76, .50); background: #203045; }
+.ix-root .live-exec-stat:hover { border-color: rgba(245,76,76, .50); background: #203045; }
 .ix-root .live-exec-stat-top { width: 100%; justify-content: space-between; color: #70b7fb; }
 .ix-root .live-exec-stat-top svg:last-child { color: #a2b3c6; }
 .ix-root .live-exec-stat strong { font-size: clamp(19px, 2.2vw, 26px); color: #fafcff; line-height: 1.15; margin: 7px 0 2px; font-variant-numeric: tabular-nums; }
@@ -83,7 +83,7 @@
 .ix-root .live-exec-row { gap: 10px; width: 100%; min-width: 0; text-align: left; padding: 8px 0; border-bottom: 1px solid rgba(134,166,202,.11) !important; color: #f1f5fb; }
 .ix-root .live-exec-row:last-child { border-bottom: 0 !important; }
 .ix-root button.live-exec-row:hover { background: rgba(115, 158, 199, .08); }
-.ix-root .live-exec-row-icon { flex-shrink: 0; display: grid; place-items: center; color: #ffb27c; background: rgba(245,135,76,.12); border-radius: 6px; width: 30px; height: 30px; }
+.ix-root .live-exec-row-icon { flex-shrink: 0; display: grid; place-items: center; color: #FF7C7C; background: rgba(245,76,76,.12); border-radius: 6px; width: 30px; height: 30px; }
 .ix-root .live-exec-row-content { flex: 1; min-width: 0; }
 .ix-root .live-exec-row-content strong { display: block; font-size: 10px; font-weight: 650; line-height: 1.35; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: #e8eef8; }
 .ix-root .live-exec-row-content small { color: #aebed0; display: block; font-size: 10px; margin-top: 3px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
@@ -91,10 +91,10 @@
 .ix-root .live-exec-foot { font-size: 10px; color: #8fa8bf; padding-top: 9px; }
 .ix-root .live-exec-empty { color: #a6bacc; font-size: 11px; line-height: 1.4; padding: 10px 0; margin: 0; }
 .ix-root .live-exec-actions { flex-wrap: wrap; gap: 6px; margin-top: 10px; }
-.ix-root .live-exec-actions button { display: flex; align-items: center; gap: 7px; padding: 7px 9px; border: 1px solid rgba(245,135,76,.24); border-radius: 6px; color: #f9c09b; font-size: 10px; font-weight: 700; }
+.ix-root .live-exec-actions button { display: flex; align-items: center; gap: 7px; padding: 7px 9px; border: 1px solid rgba(245,76,76,.24); border-radius: 6px; color: #F99B9B; font-size: 10px; font-weight: 700; }
 .ix-root .live-exec-state { background: #1c2c40; color: #e4eefc; padding: 14px; border: 1px solid #364e69; border-radius: 8px; margin-top: 12px; font-size: 12px; }
-.ix-root .live-exec-error { border-color: #b8794e; }
-.ix-root .live-exec-error button { margin-left: 7px; text-decoration: underline; color: #ffb88f; }
+.ix-root .live-exec-error { border-color: #B84E4E; }
+.ix-root .live-exec-error button { margin-left: 7px; text-decoration: underline; color: #FF8F8F; }
 @media (max-width: 950px) {
   .ix-root .live-exec-panels { grid-template-columns: 1fr; }
 }

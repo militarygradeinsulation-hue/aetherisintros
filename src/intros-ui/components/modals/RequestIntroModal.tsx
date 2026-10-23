@@ -106,7 +106,7 @@ export const RequestIntroModal: React.FC<RequestIntroModalProps> = ({
             <p className="text-sm text-[#9CA3AF] max-w-xs">
               {requestState === 'existing' ? 'Your earlier introduction request is already saved.' : 'Your request is saved for the other member to consider.'} It is not an accepted introduction until both parties opt in.
             </p>
-            <button type="button" className="mt-5 px-4 py-2 rounded bg-[#DB6B36] text-white" onClick={() => { setIsSuccess(false); setNote(''); onClose(); }}>Close</button>
+            <button type="button" className="mt-5 px-4 py-2 rounded bg-[#B91C1C] text-white" onClick={() => { setIsSuccess(false); setNote(''); onClose(); }}>Close</button>
           </div>
         ) : (
           <div>
@@ -197,7 +197,7 @@ export const RequestIntroModal: React.FC<RequestIntroModalProps> = ({
                     onClick={() => setUrgency(lvl)}
                     className={`px-2.5 py-1 rounded text-[11px] cursor-pointer transition-colors ${
                       urgency === lvl
-                        ? 'stencil-intro-selected bg-[#EF4444] text-[#1c110c] font-medium'
+                        ? 'stencil-intro-selected bg-[#EF4444] text-[#1C0C0C] font-medium'
                         : 'bg-white/5 text-[#9CA3AF] hover:text-white'
                     }`}
                   >
@@ -222,7 +222,7 @@ export const RequestIntroModal: React.FC<RequestIntroModalProps> = ({
                 type="button"
                 onClick={() => void handleSend()}
                 disabled={sending}
-                className="stencil-intro-submit flex items-center gap-1.5 px-4 py-2 text-xs font-medium text-[#1c110c] bg-[#EF4444] hover:bg-[#DB6B36] rounded-lg shadow-sm transition-colors cursor-pointer"
+                className="stencil-intro-submit flex items-center gap-1.5 px-4 py-2 text-xs font-medium text-[#1C0C0C] bg-[#EF4444] hover:bg-[#B91C1C] rounded-lg shadow-sm transition-colors cursor-pointer"
               >
                 <Send className="w-3.5 h-3.5" />
                 {sending ? 'Sending…' : sendError ? 'Retry Request' : 'Submit Request'}

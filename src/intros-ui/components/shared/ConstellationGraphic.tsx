@@ -51,7 +51,7 @@ export const ConstellationGraphic: React.FC<ConstellationGraphicProps> = ({
           />
 
           {/* Connection arcs between tech capitals */}
-          <g stroke="#F5B027" strokeWidth="1" strokeDasharray="3 3" opacity="0.6">
+          <g stroke="#EF4444" strokeWidth="1" strokeDasharray="3 3" opacity="0.6">
             <path d="M 75 85 Q 98 60 120 78" />
             <path d="M 120 78 Q 165 40 215 62" />
             <path d="M 215 62 Q 225 58 235 60" />
@@ -76,14 +76,14 @@ export const ConstellationGraphic: React.FC<ConstellationGraphicProps> = ({
                   cx={city.x}
                   cy={city.y}
                   r={isHovered ? 6 : 3.5}
-                  fill={isHovered ? '#FFC85C' : '#F5B027'}
+                  fill={isHovered ? '#FCA5A5' : '#EF4444'}
                   className="transition-all"
                 />
                 <circle
                   cx={city.x}
                   cy={city.y}
                   r={isHovered ? 12 : 7}
-                  fill="#F5B027"
+                  fill="#EF4444"
                   opacity={isHovered ? 0.35 : 0.15}
                   className="animate-pulse"
                 />
@@ -96,7 +96,7 @@ export const ConstellationGraphic: React.FC<ConstellationGraphicProps> = ({
                       height="20"
                       rx="4"
                       fill="#0F172A"
-                      stroke="#F5B027"
+                      stroke="#EF4444"
                       strokeWidth="1"
                     />
                     <text
@@ -170,7 +170,7 @@ export const ConstellationGraphic: React.FC<ConstellationGraphicProps> = ({
         <div className="flex items-center justify-between text-[11px] text-[#9CA3AF] mb-1 font-mono px-2">
           <div className="flex items-center gap-4">
             <div className="flex items-center gap-1.5">
-              <span className="w-2 h-2 rounded-full bg-[#F5B027]" /> People Bubbles
+              <span className="w-2 h-2 rounded-full bg-[#EF4444]" /> People Bubbles
             </div>
             <div className="flex items-center gap-1.5">
               <span className="w-2 h-2 rounded-full bg-[#DC2626]" /> Companies
@@ -179,7 +179,7 @@ export const ConstellationGraphic: React.FC<ConstellationGraphicProps> = ({
               <span className="w-2 h-2 rounded-full border border-white bg-transparent" /> Key Relationship
             </div>
           </div>
-          <span className="text-[10px] text-[#F5B027]">Interactive Graph</span>
+          <span className="text-[10px] text-[#EF4444]">Interactive Graph</span>
         </div>
 
         <svg viewBox="0 0 380 230" className="w-full h-[225px]">
@@ -188,7 +188,7 @@ export const ConstellationGraphic: React.FC<ConstellationGraphicProps> = ({
           <g stroke="rgba(185,28,28,0.4)" strokeWidth="1.2">
             <line x1="190" y1="120" x2="260" y2="60" strokeDasharray="3 3" />
             <line x1="190" y1="120" x2="95" y2="80" />
-            <line x1="190" y1="120" x2="290" y2="160" stroke="#F5B027" strokeWidth="2.5" />
+            <line x1="190" y1="120" x2="290" y2="160" stroke="#EF4444" strokeWidth="2.5" />
             <line x1="190" y1="120" x2="105" y2="175" />
             <line x1="95" y1="80" x2="260" y2="60" stroke="rgba(255,255,255,0.15)" strokeDasharray="2 2" />
           </g>
@@ -197,7 +197,7 @@ export const ConstellationGraphic: React.FC<ConstellationGraphicProps> = ({
           {graphNodes.map((n) => {
             const isSelf = n.type === 'self';
             const isKey = n.type === 'key';
-            const strokeColor = isKey ? '#FFFFFF' : isSelf ? '#F5B027' : '#FFC85C';
+            const strokeColor = isKey ? '#FFFFFF' : isSelf ? '#EF4444' : '#FCA5A5';
 
             return (
               <g
@@ -234,7 +234,7 @@ export const ConstellationGraphic: React.FC<ConstellationGraphicProps> = ({
                   fontSize="9.5"
                   fontWeight="600"
                   textAnchor="middle"
-                  className="group-hover:fill-[#FFC85C] transition-colors"
+                  className="group-hover:fill-[#FCA5A5] transition-colors"
                 >
                   {n.label}
                 </text>
@@ -290,8 +290,8 @@ export const ConstellationGraphic: React.FC<ConstellationGraphicProps> = ({
       <svg viewBox="0 0 280 220" className="w-full h-full select-none">
         <defs>
           <radialGradient id="centerGlow" cx="50%" cy="50%" r="50%">
-            <stop offset="0%" stopColor="#F5B027" stopOpacity="0.3" />
-            <stop offset="100%" stopColor="#F5B027" stopOpacity="0" />
+            <stop offset="0%" stopColor="#EF4444" stopOpacity="0.3" />
+            <stop offset="100%" stopColor="#EF4444" stopOpacity="0" />
           </radialGradient>
         </defs>
 
@@ -325,8 +325,8 @@ export const ConstellationGraphic: React.FC<ConstellationGraphicProps> = ({
         <g transform="translate(128, 93)">
           <polygon
             points="12,0 24,24 0,24"
-            fill="#F5B027"
-            className="filter drop-shadow-[0_0_8px_#F5B027]"
+            fill="#EF4444"
+            className="filter drop-shadow-[0_0_8px_#EF4444]"
           />
           <polygon points="12,6 20,22 4,22" fill="#0A0D14" />
         </g>
@@ -348,7 +348,7 @@ export const ConstellationGraphic: React.FC<ConstellationGraphicProps> = ({
                 cy={role.y}
                 r={role.r + (isHovered ? 5 : 2.5)}
                 fill="none"
-                stroke={isHovered ? '#FFC85C' : '#F5B027'}
+                stroke={isHovered ? '#FCA5A5' : '#EF4444'}
                 strokeWidth={isHovered ? 2.5 : 1.5}
                 opacity={0.8}
                 className="transition-all"

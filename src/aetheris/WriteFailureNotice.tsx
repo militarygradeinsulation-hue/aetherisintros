@@ -23,7 +23,7 @@ export function WriteFailureNotice() {
     <strong className="block font-semibold text-sm">{failure.title}</strong>
     <p className="text-xs mt-2 mb-3">{failure.message} Your change was not confirmed and may not have been saved.</p>
     <div className="flex gap-3 items-center">
-      <button type="button" disabled={busy} className="rounded-md border border-[#F5B027] px-4 py-2 text-xs font-semibold" onClick={() => void retry()}>{busy ? 'Retrying…' : 'Retry'}</button>
+      <button type="button" disabled={busy} className="rounded-md border border-[#EF4444] px-4 py-2 text-xs font-semibold" onClick={() => void retry()}>{busy ? 'Retrying…' : 'Retry'}</button>
       <button type="button" className="text-xs underline" onClick={() => setFailure(null)}>Dismiss</button>
     </div>
   </div>

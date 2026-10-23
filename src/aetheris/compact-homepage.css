@@ -43,7 +43,7 @@
  letter-spacing:-.045em;
 }
 .ael.ael-compact .ael-compact-story-copy h2 em{
- font-style:italic;color:#a36b43;font-weight:400;
+ font-style:italic;color:#A34343;font-weight:400;
 }
 .ael.ael-compact .ael-compact-story-copy p{
  max-width:515px;margin:0 0 18px;
@@ -81,7 +81,7 @@
  letter-spacing:-.035em;margin:10px 0 0;
 }
 .ael.ael-compact .ael-compact-method-heading h3 em{
- font-style:italic;color:#a36b43;
+ font-style:italic;color:#A34343;
 }
 .ael.ael-compact .ael-compact-steps{
  display:grid;grid-template-columns:repeat(3,minmax(0,1fr));
@@ -92,7 +92,7 @@
  border-left:1px solid rgba(41,46,43,.21);padding-left:15px;min-width:0;
 }
 .ael.ael-compact .ael-compact-steps li>span{
- color:#93633e;font:650 11px/1.35 'Space Grotesk',monospace;
+ color:#933E3E;font:650 11px/1.35 'Space Grotesk',monospace;
 }
 .ael.ael-compact .ael-compact-steps strong{
  color:#202420;display:block;font:650 12px/1.35 Inter,system-ui,sans-serif;
@@ -122,14 +122,14 @@
  display:flex;align-items:center;justify-content:space-between;gap:35px;width:100%;
 }
 .ael.ael-compact .ael-compact-membership .ael-fine-label{
- color:#d0b08c;font-size:10px;letter-spacing:.16em;
+ color:#D08C8C;font-size:10px;letter-spacing:.16em;
 }
 .ael.ael-compact .ael-compact-membership h2{
  margin:13px 0 9px;max-width:620px;
  font:400 clamp(47px,5.1vw,77px)/.92 'Cormorant Garamond',Georgia,serif;
  letter-spacing:-.04em;color:#f2eee6;
 }
-.ael.ael-compact .ael-compact-membership h2 em{font-style:italic;color:#e2c7a4}
+.ael.ael-compact .ael-compact-membership h2 em{font-style:italic;color:#E2A4A4}
 .ael.ael-compact .ael-compact-membership p{
  max-width:515px;margin:0;font:400 14px/1.55 Inter,system-ui,sans-serif;color:#e9e5dc;
 }
@@ -228,7 +228,7 @@
 .ael.ael-compact #experience,
 .ael.ael-compact #membership {scroll-margin-top:12px}
 .ael.ael-compact :is(.ael-nav a,.ael-header-actions a):focus-visible {
- outline:2px solid #a36b43;outline-offset:3px;
+ outline:2px solid #A34343;outline-offset:3px;
 }
 @media (max-width:750px) {
  .ael.ael-compact .ael-hero {
@@ -349,10 +349,10 @@
 :root .ael.ael-compact .ael-compact-story :is(h2,h3,strong) {color:#fff!important;}
 :root .ael.ael-compact .ael-compact-story :is(p,small,.ael-editorial-meta,.ael-fine-label) {color:#dedede!important;}
 :root .ael.ael-compact .ael-compact-story :is(h2,h3) em,
-:root .ael.ael-compact .ael-compact-steps li>span {color:#e99463!important;}
+:root .ael.ael-compact .ael-compact-steps li>span {color:#FCA5A5!important;}
 :root .ael.ael-compact .ael-compact-steps li,
 :root .ael.ael-compact .ael-compact-method {border-color:rgba(255,255,255,.35)!important;}
-:root .ael.ael-compact .ael-compact-story :is(.ael-underlink,.ael-underlink-dark) {color:#fff!important;border-color:#b5541f!important;}
+:root .ael.ael-compact .ael-compact-story :is(.ael-underlink,.ael-underlink-dark) {color:#fff!important;border-color:#B91C1C!important;}
 
 
 /* Editorial platform strip: genuine brand marks rather than generic icon replacements.
@@ -362,7 +362,7 @@
   margin:0 0 12px;color:#fff;font:500 clamp(13px,1.15vw,16px)/1.45 Inter,system-ui,sans-serif;
   text-wrap:pretty;letter-spacing:0;
 }
-.ael.ael-compact .ael-platform-statement strong{font-weight:750;color:#f7c883;}
+.ael.ael-compact .ael-platform-statement strong{font-weight:750;color:#F78383;}
 .ael.ael-compact .ael-platform-marks{display:flex;align-items:center;flex-wrap:wrap;gap:7px;}
 .ael.ael-compact .ael-platform-mark,.ael.ael-compact .ael-platform-more{
   display:inline-flex;align-items:center;justify-content:center;gap:8px;
@@ -375,7 +375,7 @@
   display:block;width:22px;height:22px;object-fit:contain;flex:none;
 }
 .ael.ael-compact .ael-platform-more{
-  border-color:rgba(246,184,86,.62);color:#ffe4b5;font-weight:750;
+  border-color:rgba(246,86,86,.62);color:#FFB5B5;font-weight:750;
 }
 .ael.ael-compact .ael-platform-disclaimer{
   color:#e1e5eb;font:500 10px/1.45 Inter,system-ui,sans-serif;

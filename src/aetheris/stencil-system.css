@@ -1056,24 +1056,24 @@ body .ix-root .ix-classic .app-shell .content .ai-insight-list .insight-actions 
 /* Tailwind's former gold-filled primary buttons must have INVERSE text.
  * They appear in introductions, profiles, approval queues, forms and tools. */
 body :is(.ix-root,.app-shell,.ask-os,.ael,.auth-page,.verify-page,.admin-page)
- :is(button,a,span,div)[class~="bg-[#F5B027]"],
+ :is(button,a,span,div)[class~="bg-[#EF4444]"],
 body :is(.ix-root,.app-shell,.ask-os,.ael,.auth-page,.verify-page,.admin-page)
  :is(button,a,span,div)[class~="bg-[#B91C1C]"],
 body :is(.ix-root,.app-shell,.ask-os,.ael,.auth-page,.verify-page,.admin-page)
  :is(button,a,span,div)[class~="bg-[#DC2626]"],
 body :is(.ix-root,.app-shell,.ask-os,.ael,.auth-page,.verify-page,.admin-page)
- :is(button,a,span,div)[class~="bg-[#FFC85C]"] {
+ :is(button,a,span,div)[class~="bg-[#FCA5A5]"] {
   background:var(--st-ink)!important;color:var(--st-bg)!important;
   border-color:var(--st-ink)!important;
 }
 body :is(.ix-root,.app-shell,.ask-os,.ael,.auth-page,.verify-page,.admin-page)
- :is(button,a,span,div)[class~="bg-[#F5B027]"] :is(span,strong,small,svg),
+ :is(button,a,span,div)[class~="bg-[#EF4444]"] :is(span,strong,small,svg),
 body :is(.ix-root,.app-shell,.ask-os,.ael,.auth-page,.verify-page,.admin-page)
  :is(button,a,span,div)[class~="bg-[#B91C1C]"] :is(span,strong,small,svg),
 body :is(.ix-root,.app-shell,.ask-os,.ael,.auth-page,.verify-page,.admin-page)
  :is(button,a,span,div)[class~="bg-[#DC2626]"] :is(span,strong,small,svg),
 body :is(.ix-root,.app-shell,.ask-os,.ael,.auth-page,.verify-page,.admin-page)
- :is(button,a,span,div)[class~="bg-[#FFC85C]"] :is(span,strong,small,svg) {
+ :is(button,a,span,div)[class~="bg-[#FCA5A5]"] :is(span,strong,small,svg) {
   color:inherit!important;stroke:currentColor;
 }
 
@@ -1395,7 +1395,7 @@ body .auth-page .auth-panel .auth-index :is(span,b,small) {
 /* Profile initials and score badges in the introduction modal, including
  * cases where a real avatar image isn't available. */
 body .stencil-intro-request-panel
- :is([class~="text-[#F5B027]"],[class~="text-[#B91C1C]"]) {
+ :is([class~="text-[#EF4444]"],[class~="text-[#B91C1C]"]) {
   color:var(--st-ink)!important;opacity:1!important;
 }
 body .stencil-intro-request-panel .bg-gradient-to-br {
@@ -1493,7 +1493,7 @@ body .ael.ael-compact .ael-compact-footer
  .ael-compact-membership .ael-compact-membership-content .ael-fine-label,
 :root[data-theme="dark"] body .ael.ael-compact
  .ael-compact-membership .ael-compact-membership-content .ael-fine-label {
-  color:#f4d3a9!important;
+  color:#F4A9A9!important;
   opacity:1!important;
 }
 :root[data-theme="light"] body .ael.ael-compact

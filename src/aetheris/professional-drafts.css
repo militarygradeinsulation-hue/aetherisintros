@@ -1,10 +1,10 @@
 .professional-draft-boundary { display: grid; gap: 20px; }
-.professional-draft-notice { padding: 20px; border: 1px solid #ad663c; border-radius: 16px; background: #171b22; color: #f2eee6; }
+.professional-draft-notice { padding: 20px; border: 1px solid #AD3C3C; border-radius: 16px; background: #171b22; color: #f2eee6; }
 .professional-draft-notice h2 { margin: 0 0 10px; font-size: 22px; }
 .professional-draft-notice p { color: #ced3dc; font-size: 14px; line-height: 1.6; }
 .professional-draft-notice nav { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 16px; }
-.professional-draft-notice button { padding: 10px 14px; min-height: 44px; border: 1px solid #865238; border-radius: 10px; background: #32251f; color: #fff3e8; font-size: 13px; cursor: pointer; }
-.professional-draft-notice button:focus-visible, .professional-draft-review summary:focus-visible { outline: 2px solid #ffb176; outline-offset: 3px; }
+.professional-draft-notice button { padding: 10px 14px; min-height: 44px; border: 1px solid #863838; border-radius: 10px; background: #32251f; color: #fff3e8; font-size: 13px; cursor: pointer; }
+.professional-draft-notice button:focus-visible, .professional-draft-review summary:focus-visible { outline: 2px solid #FF7676; outline-offset: 3px; }
 .professional-draft-review summary { padding: 14px; border: 1px solid #7a6d63; border-radius: 10px; cursor: pointer; }
 .professional-draft-review fieldset { border: 0; padding: 16px 0; margin: 0; min-width: 0; }
 .professional-draft-review legend { padding: 14px 0; font-size: 13px; }

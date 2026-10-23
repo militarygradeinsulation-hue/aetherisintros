@@ -32,8 +32,6 @@ import { ReviewIntroModal } from './components/modals/ReviewIntroModal';
 import { ScheduleMeetingModal } from './components/modals/ScheduleMeetingModal';
 
 import { AetherisAppSurface, AetherisAssistantSurface } from '@/aetheris/App';
-import { VoiceBar } from '@/aetheris/VoiceBar';
-import { SelectionReader } from '@/aetheris/SelectionReader';
 import { LiveMessagesView } from './views/LiveMessagesView';
 import '@/aetheris/styles.css';
 import '@/aetheris/architectural-system.css';
@@ -72,6 +70,7 @@ export default function App({ mode = 'demo', executiveAction, initialPage, initi
   const network = useNetwork();
   const unread = useUnreadCounts(mode === 'live');
   const [activePage, setActivePage] = useState<ActivePage>(initialPage ?? 'home');
+  const [crmSection, setCrmSection] = useState<'crm' | 'pipeline'>('crm');
   const [classicPage, setClassicPage] = useState<string>(initialWorkspace ?? 'memory');
   const [selectedProfileId, setSelectedProfileId] = useState<string>(mode === 'live' ? '' : 'marcus-lee');
   const [members, setMembers] = useState<NetworkMember[]>(mode === 'live' ? [] : NETWORK_MEMBERS);
@@ -286,7 +285,6 @@ export default function App({ mode = 'demo', executiveAction, initialPage, initi
     window.addEventListener('aetheris:open-deals', open);
     return () => window.removeEventListener('aetheris:open-deals', open);
   }, []);
-  const classicPages = ['news','workspace','memory','work','insights','meetings','specter', ...(mode === 'live' ? ['home','messages','intros','people'] : [])];
 
   return (
     <div className="ix-aetheris-workspace-mode ix-root ix-mindprint-bridge ix-absolute-ledger ledger-native-app min-h-screen bg-[#0a0a0a] text-[#f5f5f0] flex flex-col font-sans selection:bg-red-700/30 selection:text-white relative">
@@ -312,7 +310,7 @@ export default function App({ mode = 'demo', executiveAction, initialPage, initi
         <button type="button" className="ml-2 underline font-semibold" onClick={() => void refreshUnread()}>Retry</button>
       </div>}
       {mode === 'live' && activePage !== 'specter' && network.networkLoadError && <section role="alert" aria-live="polite"
-        className="mx-3 sm:mx-6 my-3 rounded-xl border border-[#c9a673] bg-[#fff5e4] px-4 py-3 text-[#27343a] shadow-sm">
+        className="mx-3 sm:mx-6 my-3 rounded-xl border border-[#C97373] bg-[#fff5e4] px-4 py-3 text-[#27343a] shadow-sm">
         <p className="text-sm font-semibold">Live network data is unavailable.</p>
         <p className="mt-1 text-sm">Posts, asks, relationships or messages may not have loaded. No sample profiles are being substituted for real members; do not assume an empty network or a sent request.</p>
         <details className="mt-2 text-xs"><summary className="cursor-pointer font-semibold">Technical details</summary>
@@ -358,7 +356,7 @@ export default function App({ mode = 'demo', executiveAction, initialPage, initi
             members={members}
             live={mode === 'live'}
             unreadCount={mode === 'live' ? (unread.loaded && !unreadUnavailable ? unread.total : null) : 0}
-            socialFeed={mode === 'live' ? <div className="ix-classic"><AetherisAppSurface  feedOnly  /></div> : undefined}
+            socialFeed={mode === 'live' ? <div className="ix-classic"><AetherisAppSurface  feedOnly assistant={false} /></div> : undefined}
             liveOverview={mode === 'live' ? <LiveExecutiveOverview onNavigate={handleNavigate} onWorkspace={page => { setClassicPage(page); handleNavigate('workspace'); }} /> : undefined}
             actionQueue={mode === 'live' ? <div className="rc-stack">
               <ActivationChecklist onOpen={(target) => {
@@ -403,7 +401,7 @@ export default function App({ mode = 'demo', executiveAction, initialPage, initi
             onDismiss={handleDismissIntroRequest}
             onRequest={member => setRequestIntroTarget(member)}
           >
-            {mode === 'live' && <div className="ix-classic"><InviteCard /><AetherisAppSurface key="live-intros" startPage="intros" /></div>}
+            {mode === 'live' && <div className="ix-classic"><InviteCard /><AetherisAppSurface key="live-intros" startPage="intros" assistant={false} /></div>}
           </LedgerIntroductions>
         )}
 
@@ -448,17 +446,17 @@ export default function App({ mode = 'demo', executiveAction, initialPage, initi
 
         {activePage === 'insights' && (
           mode === 'live' ? <LiveInsightsDashboard onNavigate={handleNavigate} />
-            : <div className="ix-classic"><AetherisAppSurface key="demo-insights" startPage="insights" /></div>
+            : <div className="ix-classic"><AetherisAppSurface key="demo-insights" startPage="insights" assistant={false} /></div>
         )}
 
-        {activePage === 'news' && <div className="ix-classic"><AetherisAppSurface key="news"  startPage="news"  /></div>}
-        {activePage === 'memory' && <div className="ix-classic"><AetherisAppSurface key="memory"  startPage="memory"  /></div>}
-        {activePage === 'meetings' && <div className="ix-classic"><AetherisAppSurface key="meetings"  startPage="meetings"  /></div>}
-        {activePage === 'work' && <div className="ix-classic"><AetherisAppSurface key="work"  startPage="work"  /></div>}
+        {activePage === 'news' && <div className="ix-classic"><AetherisAppSurface key="news"  startPage="news"  assistant={false} /></div>}
+        {activePage === 'memory' && <div className="ix-classic"><AetherisAppSurface key="memory"  startPage="memory"  assistant={false} /></div>}
+        {activePage === 'meetings' && <div className="ix-classic"><AetherisAppSurface key="meetings"  startPage="meetings"  assistant={false} /></div>}
+        {activePage === 'work' && <div className="ix-classic"><AetherisAppSurface key="work"  startPage="work"  assistant={false} /></div>}
         {activePage === 'intelligence' && <MemberIntelligenceView live={mode === 'live'} onNavigate={handleNavigate} />}
         {activePage === 'specter' && <SpecterDetectView embedded onNavigate={handleNavigate} onWorkspace={page=>{setClassicPage(page);handleNavigate('workspace');}} onSearch={query=>{setSearchQuery(query);handleNavigate('people');}} searchQuery={searchQuery} onSearchChange={setSearchQuery} member={me} notifications={mode === 'live' ? <LiveNotificationsBell onOpen={destination=>{if(destination==='peergroups'||destination==='events'||destination==='deals'){setClassicPage(destination);handleNavigate('workspace');}else handleNavigate(destination);}}/> : undefined}/> }
-        {activePage === 'workspace' && <LedgerWorkspace activeTool={classicPage} onChange={setClassicPage}>
-          <div className="ix-classic"><AetherisAppSurface key={classicPage} startPage={classicPage as any} /></div>
+        {activePage === 'workspace' && <LedgerWorkspace activeTool={classicPage} onChange={setClassicPage} crmSection={crmSection} onCrmSectionChange={setCrmSection}>
+          <div className="ix-classic"><AetherisAppSurface key={classicPage === 'crm' ? `crm-${crmSection}` : classicPage} startPage={classicPage as any} crmSection={crmSection} assistant={false} /></div>
         </LedgerWorkspace>}
       </main>
       </LedgerBridgeShell>
@@ -486,9 +484,8 @@ export default function App({ mode = 'demo', executiveAction, initialPage, initi
         memberName={scheduleMeetingTarget?.name || ''}
         memberTitle={scheduleMeetingTarget?.title || ''}
       />
-      {!classicPages.includes(activePage) && (<>
         <AetherisAssistantSurface
-          page={activePage}
+          page={activePage === 'workspace' ? classicPage : activePage}
           onNavigate={(p) => {
             if ((SHELL_PAGES as string[]).includes(p)) handleNavigate(p as ActivePage);
             else { setClassicPage(p); handleNavigate('workspace'); }
@@ -498,9 +495,6 @@ export default function App({ mode = 'demo', executiveAction, initialPage, initi
           onRequestIntro={(id) => { const m = members.find((x) => x.id === id); if (m) setRequestIntroTarget(m); }}
           onSearch={(text) => { setSearchQuery(text); handleNavigate('people'); }}
         />
-        <VoiceBar />
-        <SelectionReader />
-      </>)}
     </div>
   );
 }

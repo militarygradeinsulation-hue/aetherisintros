@@ -118,10 +118,10 @@ export const ActionableInboxView: React.FC<ActionableInboxViewProps> = ({
       case 'high':
         return 'text-[#B91C1C] border-[#B91C1C]/30 bg-[#B91C1C]/10';
       case 'medium':
-        return 'text-[#F5B027] border-[#F5B027]/30 bg-[#F5B027]/10';
+        return 'text-[#EF4444] border-[#EF4444]/30 bg-[#EF4444]/10';
       case 'low':
       default:
-        return 'text-[#F5B027] border-[#F5B027]/30 bg-[#F5B027]/10';
+        return 'text-[#EF4444] border-[#EF4444]/30 bg-[#EF4444]/10';
     }
   };
 
@@ -130,7 +130,7 @@ export const ActionableInboxView: React.FC<ActionableInboxViewProps> = ({
       {/* Top Banner / Metrics Band */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 p-5 rounded-xl bg-[#0E1116] border border-white/10">
         <div>
-          <div className="text-[10px] font-mono tracking-[0.25em] text-[#F5B027] uppercase font-bold">
+          <div className="text-[10px] font-mono tracking-[0.25em] text-[#EF4444] uppercase font-bold">
             Executive Queue
           </div>
           <h2 className="font-serif-editorial text-2xl sm:text-3xl text-[#F2EEE6] mt-0.5">
@@ -156,14 +156,14 @@ export const ActionableInboxView: React.FC<ActionableInboxViewProps> = ({
             </div>
           </div>
           <div className="px-3 py-2 rounded-lg bg-black/40 border border-white/5 text-center min-w-[90px]">
-            <div className="text-[9px] font-mono text-[#F5B027] uppercase tracking-wider">Approvals</div>
-            <div className="text-lg font-mono font-bold text-[#F5B027] tabular-nums mt-0.5">
+            <div className="text-[9px] font-mono text-[#EF4444] uppercase tracking-wider">Approvals</div>
+            <div className="text-lg font-mono font-bold text-[#EF4444] tabular-nums mt-0.5">
               {approvalsCount}
             </div>
           </div>
           <button
             onClick={() => setIsAdding((prev) => !prev)}
-            className="px-3.5 py-2 rounded-lg bg-[#F5B027] hover:bg-[#F5B027]/90 text-white text-xs font-mono font-semibold flex items-center gap-1.5 transition-all shadow-md"
+            className="px-3.5 py-2 rounded-lg bg-[#EF4444] hover:bg-[#EF4444]/90 text-white text-xs font-mono font-semibold flex items-center gap-1.5 transition-all shadow-md"
           >
             <Plus size={13} />
             <span>Add Task</span>
@@ -175,9 +175,9 @@ export const ActionableInboxView: React.FC<ActionableInboxViewProps> = ({
       {isAdding && (
         <form
           onSubmit={handleAddTask}
-          className="p-4 rounded-xl bg-[#12161F] border border-[#F5B027]/40 shadow-xl space-y-3 animate-in fade-in duration-150"
+          className="p-4 rounded-xl bg-[#12161F] border border-[#EF4444]/40 shadow-xl space-y-3 animate-in fade-in duration-150"
         >
-          <div className="text-xs font-mono text-[#F5B027] uppercase tracking-wider font-bold">
+          <div className="text-xs font-mono text-[#EF4444] uppercase tracking-wider font-bold">
             Create Priority Action Item
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
@@ -187,13 +187,13 @@ export const ActionableInboxView: React.FC<ActionableInboxViewProps> = ({
               placeholder="e.g., Deliver Series B capitalization model to Elena Rostova..."
               value={newTitle}
               onChange={(e) => setNewTitle(e.target.value)}
-              className="sm:col-span-2 bg-[#07090C] border border-white/15 rounded-lg px-3 py-2 text-xs text-[#F2EEE6] placeholder-[#F2EEE6]/30 focus:outline-none focus:border-[#F5B027]"
+              className="sm:col-span-2 bg-[#07090C] border border-white/15 rounded-lg px-3 py-2 text-xs text-[#F2EEE6] placeholder-[#F2EEE6]/30 focus:outline-none focus:border-[#EF4444]"
             />
             <div className="flex gap-2">
               <select
                 value={newPerson}
                 onChange={(e) => setNewPerson(e.target.value)}
-                className="flex-1 bg-[#07090C] border border-white/15 rounded-lg px-2.5 py-2 text-xs text-[#F2EEE6] focus:outline-none focus:border-[#F5B027]"
+                className="flex-1 bg-[#07090C] border border-white/15 rounded-lg px-2.5 py-2 text-xs text-[#F2EEE6] focus:outline-none focus:border-[#EF4444]"
               >
                 <option value="">Link Person (Optional)</option>
                 {people.map((p) => (
@@ -205,7 +205,7 @@ export const ActionableInboxView: React.FC<ActionableInboxViewProps> = ({
               <select
                 value={newPriority}
                 onChange={(e) => setNewPriority(e.target.value as any)}
-                className="bg-[#07090C] border border-white/15 rounded-lg px-2 py-2 text-xs text-[#F2EEE6] focus:outline-none focus:border-[#F5B027]"
+                className="bg-[#07090C] border border-white/15 rounded-lg px-2 py-2 text-xs text-[#F2EEE6] focus:outline-none focus:border-[#EF4444]"
               >
                 <option value="high">High</option>
                 <option value="medium">Medium</option>
@@ -223,7 +223,7 @@ export const ActionableInboxView: React.FC<ActionableInboxViewProps> = ({
             </button>
             <button
               type="submit"
-              className="px-4 py-1.5 rounded bg-[#F5B027] hover:bg-[#F5B027]/90 text-white text-xs font-mono font-semibold"
+              className="px-4 py-1.5 rounded bg-[#EF4444] hover:bg-[#EF4444]/90 text-white text-xs font-mono font-semibold"
             >
               Commit Task
             </button>
@@ -253,7 +253,7 @@ export const ActionableInboxView: React.FC<ActionableInboxViewProps> = ({
                 }`}
               >
                 <span>{f.label}</span>
-                <span className="text-[10px] text-[#F5B027] tabular-nums font-semibold">({f.count})</span>
+                <span className="text-[10px] text-[#EF4444] tabular-nums font-semibold">({f.count})</span>
               </button>
             );
           })}
@@ -292,12 +292,12 @@ export const ActionableInboxView: React.FC<ActionableInboxViewProps> = ({
                     e.stopPropagation();
                     toggleTask(task.id);
                   }}
-                  className="mt-0.5 text-[#F5B027] hover:text-white transition-colors shrink-0"
+                  className="mt-0.5 text-[#EF4444] hover:text-white transition-colors shrink-0"
                 >
                   {isCompleted ? (
                     <CheckSquare size={17} className="text-[#B91C1C]" />
                   ) : (
-                    <Square size={17} className="text-[#F2EEE6]/40 group-hover:text-[#F5B027]" />
+                    <Square size={17} className="text-[#F2EEE6]/40 group-hover:text-[#EF4444]" />
                   )}
                 </button>
 
@@ -318,7 +318,7 @@ export const ActionableInboxView: React.FC<ActionableInboxViewProps> = ({
                           e.stopPropagation();
                           if (onOpenTileWorkspace) onOpenTileWorkspace(task.sourceTile);
                         }}
-                        className="text-[9.5px] font-mono text-[#F5B027] hover:underline flex items-center gap-1"
+                        className="text-[9.5px] font-mono text-[#EF4444] hover:underline flex items-center gap-1"
                       >
                         <span>{task.sourceTileTitle}</span>
                         <ArrowRight size={9} />
@@ -358,9 +358,9 @@ export const ActionableInboxView: React.FC<ActionableInboxViewProps> = ({
                                 e.stopPropagation();
                                 if (found && onSelectPerson) onSelectPerson(found);
                               }}
-                              className="inline-flex items-center gap-1 text-[11px] font-mono text-[#F2EEE6]/80 hover:text-[#F5B027] transition-colors"
+                              className="inline-flex items-center gap-1 text-[11px] font-mono text-[#F2EEE6]/80 hover:text-[#EF4444] transition-colors"
                             >
-                              <User size={11} className="text-[#F5B027]" />
+                              <User size={11} className="text-[#EF4444]" />
                               <span>{task.linkedPerson}</span>
                               {task.linkedCompany && <span className="text-[#F2EEE6]/40">· {task.linkedCompany}</span>}
                             </button>

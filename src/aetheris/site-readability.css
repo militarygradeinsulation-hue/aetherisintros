@@ -27,8 +27,8 @@ html:root[data-theme="dark"] body {
   --read-muted:#cecece;
   --read-border:#858585;
   --read-highlight:#242424;
-  --read-brand:#ef9a69;
-  --read-accent:#b5541f;
+  --read-brand:#EF6969;
+  --read-accent:#B91C1C;
   --read-accent-ink:#ffffff;
 }
 
@@ -368,8 +368,8 @@ html:root[data-theme="dark"] body .collision-card .collision-faces button:is(:ho
   -webkit-text-fill-color:#FCA5A5!important;
 }
 html:root[data-theme="light"] body .collision-card .collision-faces button:is(:hover,:focus-visible) .collision-person-name {
-  color:#79380b!important;
-  -webkit-text-fill-color:#79380b!important;
+  color:#790B0B!important;
+  -webkit-text-fill-color:#790B0B!important;
 }
 body .collision-card .collision-faces button {
   min-width:0;
@@ -385,8 +385,8 @@ body .collision-card .collision-faces .collision-person-name {
  * Scope the selected surface AND its text to the same appearance. Preserve
  * the category dot, input values and all unrelated buttons. */
 html:root[data-theme="dark"] body .ix-root .ix-relationship-tier-option[aria-pressed="true"] {
-  background:#292017!important;
-  background-color:#292017!important;
+  background:#291717!important;
+  background-color:#291717!important;
   border-color:#B91C1C!important;
   color:#ffffff!important;
   -webkit-text-fill-color:#ffffff!important;
@@ -401,7 +401,7 @@ html:root[data-theme="dark"] body .ix-root .ix-relationship-tier-option[aria-pre
 html:root[data-theme="light"] body .ix-root .ix-relationship-tier-option[aria-pressed="true"] {
   background:#fff0db!important;
   background-color:#fff0db!important;
-  border-color:#af641b!important;
+  border-color:#AF1B1B!important;
   color:#1c1711!important;
   -webkit-text-fill-color:#1c1711!important;
 }
@@ -423,10 +423,10 @@ html:root[data-theme="light"] body .ix-root .ix-relationship-tier-option :is(.ix
   opacity:1!important;
 }
 html:root[data-theme="dark"] body .ix-root .ix-relationship-tier-option[aria-pressed="true"] .ix-relationship-tier-count {
-  background:#423022!important;
+  background:#422222!important;
 }
 html:root[data-theme="light"] body .ix-root .ix-relationship-tier-option[aria-pressed="true"] .ix-relationship-tier-count {
-  background:#f4d6b1!important;
+  background:#F4B1B1!important;
 }
 body .ix-root .ix-relationship-tier-option {
   min-height:44px;
@@ -443,7 +443,7 @@ body .ix-root .ix-relationship-tier-option .ix-relationship-tier-label {
 /* The second tier selector uses compact chips. Keep it consistent with the
  * larger filter list, including its count badge and visible keyboard focus. */
 html:root[data-theme="dark"] body .ix-root .ix-relationship-tier-quick-option[aria-pressed="true"] {
-  background:#292017!important; border-color:#B91C1C!important;
+  background:#291717!important; border-color:#B91C1C!important;
   color:#fff!important; -webkit-text-fill-color:#fff!important;
 }
 html:root[data-theme="dark"] body .ix-root .ix-relationship-tier-quick-option[aria-pressed="false"] {
@@ -451,7 +451,7 @@ html:root[data-theme="dark"] body .ix-root .ix-relationship-tier-quick-option[ar
   color:#f2eee6!important; -webkit-text-fill-color:#f2eee6!important;
 }
 html:root[data-theme="light"] body .ix-root .ix-relationship-tier-quick-option[aria-pressed="true"] {
-  background:#fff0db!important; border-color:#af641b!important;
+  background:#fff0db!important; border-color:#AF1B1B!important;
   color:#1c1711!important; -webkit-text-fill-color:#1c1711!important;
 }
 html:root[data-theme="light"] body .ix-root .ix-relationship-tier-quick-option[aria-pressed="false"] {
@@ -767,7 +767,7 @@ html:root[data-theme] body .ix-root .request-intro-modal-surface {
   color:#F2EEE6!important;
 }
 html:root[data-theme] body .ix-root .request-intro-modal-surface .intro-modal-amber-label {
-  color:#F5B027!important;
-  -webkit-text-fill-color:#F5B027!important;
+  color:#EF4444!important;
+  -webkit-text-fill-color:#EF4444!important;
   opacity:1!important;
 }

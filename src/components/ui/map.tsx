@@ -22,7 +22,7 @@ function Marker({ src, top, offset, delay }: MarkerProps) {
         />
         <path
           d="m28.9 25.698-9.9 9.9-9.9-9.9C3.634 20.232 3.634 11.367 9.1 5.9 14.569.432 23.433.432 28.9 5.9c5.467 5.468 5.467 14.332 0 19.8Z"
-          fill="#F4F0EC" stroke="#B5541F" strokeWidth="1.2"
+          fill="#F4F0EC" stroke="#B91C1C" strokeWidth="1.2"
         />
       </svg>
       <img alt="" src={src} loading="lazy" decoding="async"

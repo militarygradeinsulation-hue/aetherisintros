@@ -174,17 +174,17 @@ export const ActivityHeatmap: React.FC<ActivityHeatmapProps> = ({
   // Color intensity helper
   const getCellColor = (count: number) => {
     if (count === 0) return 'bg-[#121620] border-white/[0.04] hover:border-white/20';
-    if (count === 1) return 'bg-[#DB6B36]/80 border-[#EF4444]/40 hover:bg-[#DB6B36] text-white';
-    if (count === 2) return 'bg-[#DB6B36] border-[#FFC85C]/60 hover:bg-[#DB6B36] shadow-sm shadow-[#DB6B36]/40';
-    if (count === 3) return 'bg-[#EF4444] border-[#FFC85C] hover:bg-[#FFC85C] shadow-sm shadow-[#EF4444]/60';
-    return 'bg-[#FFC85C] border-white hover:bg-white text-black shadow-md shadow-[#FFC85C]/70';
+    if (count === 1) return 'bg-[#B91C1C]/80 border-[#EF4444]/40 hover:bg-[#B91C1C] text-white';
+    if (count === 2) return 'bg-[#B91C1C] border-[#FCA5A5]/60 hover:bg-[#B91C1C] shadow-sm shadow-[#B91C1C]/40';
+    if (count === 3) return 'bg-[#EF4444] border-[#FCA5A5] hover:bg-[#FCA5A5] shadow-sm shadow-[#EF4444]/60';
+    return 'bg-[#FCA5A5] border-white hover:bg-white text-black shadow-md shadow-[#FCA5A5]/70';
   };
 
   const getTierBadge = (tier?: RelationshipTier) => {
     switch (tier) {
       case 'Core':
         return (
-          <span className="px-1.5 py-0.5 rounded text-[9px] font-mono font-semibold uppercase tracking-wider bg-[#EF4444]/20 text-[#FFC85C] border border-[#EF4444]/40">
+          <span className="px-1.5 py-0.5 rounded text-[9px] font-mono font-semibold uppercase tracking-wider bg-[#EF4444]/20 text-[#FCA5A5] border border-[#EF4444]/40">
             Core
           </span>
         );
@@ -275,7 +275,7 @@ export const ActivityHeatmap: React.FC<ActivityHeatmapProps> = ({
 
         <div className="bg-[#121620] border border-white/5 rounded-lg p-3 space-y-1">
           <div className="text-[10px] font-mono uppercase tracking-wider text-[#9CA3AF]">Active Cadence</div>
-          <div className="text-2xl font-serif-editorial font-bold text-[#FFC85C]">
+          <div className="text-2xl font-serif-editorial font-bold text-[#FCA5A5]">
             {activeMemberCount} / {networkMembers.length}
           </div>
           <div className="text-[11px] text-[#9CA3AF]">Contacted within last 14 days</div>
@@ -339,7 +339,7 @@ export const ActivityHeatmap: React.FC<ActivityHeatmapProps> = ({
                   />
                   <div className="truncate min-w-0 space-y-0.5">
                     <div className="flex items-center gap-2">
-                      <span className="text-xs font-semibold text-white group-hover:text-[#FFC85C] transition-colors truncate">
+                      <span className="text-xs font-semibold text-white group-hover:text-[#FCA5A5] transition-colors truncate">
                         {item.member.name}
                       </span>
                       {getTierBadge(item.member.tier)}
@@ -409,10 +409,10 @@ export const ActivityHeatmap: React.FC<ActivityHeatmapProps> = ({
           <span className="text-[10px] text-[#6B7280]">0</span>
           <div className="flex items-center gap-1">
             <span className="w-3 h-3 rounded-xs bg-[#121620] border border-white/10" title="0 interactions" />
-            <span className="w-3 h-3 rounded-xs bg-[#DB6B36] border border-[#EF4444]/40" title="1 interaction" />
-            <span className="w-3 h-3 rounded-xs bg-[#DB6B36] border border-[#FFC85C]/60" title="2 interactions" />
-            <span className="w-3 h-3 rounded-xs bg-[#EF4444] border border-[#FFC85C]" title="3 interactions" />
-            <span className="w-3 h-3 rounded-xs bg-[#FFC85C] border border-white" title="4+ interactions" />
+            <span className="w-3 h-3 rounded-xs bg-[#B91C1C] border border-[#EF4444]/40" title="1 interaction" />
+            <span className="w-3 h-3 rounded-xs bg-[#B91C1C] border border-[#FCA5A5]/60" title="2 interactions" />
+            <span className="w-3 h-3 rounded-xs bg-[#EF4444] border border-[#FCA5A5]" title="3 interactions" />
+            <span className="w-3 h-3 rounded-xs bg-[#FCA5A5] border border-white" title="4+ interactions" />
           </div>
           <span className="text-[10px] text-[#6B7280]">4+ interactions</span>
         </div>
@@ -450,7 +450,7 @@ export const ActivityHeatmap: React.FC<ActivityHeatmapProps> = ({
                 <div className="text-[10px] text-[#9CA3AF]">{hoveredCell.member.tier} Tier</div>
               </div>
             </div>
-            <div className="text-right font-mono text-[10px] text-[#FFC85C]">
+            <div className="text-right font-mono text-[10px] text-[#FCA5A5]">
               {hoveredCell.day.dateStr}
             </div>
           </div>

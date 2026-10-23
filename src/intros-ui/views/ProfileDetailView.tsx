@@ -148,7 +148,7 @@ export const ProfileDetailView: React.FC<ProfileDetailViewProps> = ({
             <div className="flex items-center gap-3 pt-2">
               <button
                 onClick={() => onRequestIntro(member)}
-                className="flex-1 py-2.5 px-4 text-xs font-semibold text-[#1c110c] bg-[#EF4444] hover:bg-[#DB6B36] rounded-lg shadow-sm transition-colors cursor-pointer text-center"
+                className="flex-1 py-2.5 px-4 text-xs font-semibold text-[#1C0C0C] bg-[#EF4444] hover:bg-[#B91C1C] rounded-lg shadow-sm transition-colors cursor-pointer text-center"
               >
                 Request Introduction →
               </button>
@@ -197,7 +197,7 @@ export const ProfileDetailView: React.FC<ProfileDetailViewProps> = ({
                     <Sparkles className="w-3.5 h-3.5" />
                     AI Introduction Recommendation
                   </span>
-                  <span className="text-[9px] font-mono px-1.5 py-0.5 rounded bg-[#EF4444]/20 text-[#FFC85C]">
+                  <span className="text-[9px] font-mono px-1.5 py-0.5 rounded bg-[#EF4444]/20 text-[#FCA5A5]">
                     BETA
                   </span>
                 </div>
@@ -250,7 +250,7 @@ export const ProfileDetailView: React.FC<ProfileDetailViewProps> = ({
                       } as NetworkMember;
                       onRequestIntro(counterpart);
                     }}
-                    className="flex-1 py-2 text-xs font-semibold text-[#1c110c] bg-[#EF4444] hover:bg-[#DB6B36] rounded-lg transition-colors cursor-pointer text-center"
+                    className="flex-1 py-2 text-xs font-semibold text-[#1C0C0C] bg-[#EF4444] hover:bg-[#B91C1C] rounded-lg transition-colors cursor-pointer text-center"
                   >
                     Request Introduction
                   </button>
@@ -277,7 +277,7 @@ export const ProfileDetailView: React.FC<ProfileDetailViewProps> = ({
                   <div className="text-[10px] text-[#9CA3AF] uppercase">Stronger Replies</div>
                 </div>
                 <div>
-                  <div className="text-xl font-bold text-[#DB6B36]">
+                  <div className="text-xl font-bold text-[#B91C1C]">
                     {member.networkInfluence.introSuccessRate}
                   </div>
                   <div className="text-[10px] text-[#9CA3AF] uppercase">Intro Success</div>
@@ -429,7 +429,7 @@ export const ProfileDetailView: React.FC<ProfileDetailViewProps> = ({
                   <path
                     d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
                     fill="none"
-                    stroke="#FFC85C"
+                    stroke="#FCA5A5"
                     strokeWidth="3"
                     strokeDasharray={`${member.compatibility.sharedInterests}, 100`}
                   />
@@ -454,7 +454,7 @@ export const ProfileDetailView: React.FC<ProfileDetailViewProps> = ({
                   <path
                     d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
                     fill="none"
-                    stroke="#DB6B36"
+                    stroke="#B91C1C"
                     strokeWidth="3"
                     strokeDasharray={`${member.compatibility.networkValue}, 100`}
                   />

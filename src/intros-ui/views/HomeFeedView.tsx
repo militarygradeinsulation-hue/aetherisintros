@@ -191,7 +191,7 @@ export const HomeFeedView: React.FC<HomeFeedViewProps> = ({
                       onClick={() => setComposerType(type)}
                       className={`px-2.5 py-1 text-[11px] rounded transition-colors cursor-pointer ${
                         composerType === type
-                          ? 'bg-[#EF4444]/20 text-[#FFC85C] border border-[#EF4444]/30'
+                          ? 'bg-[#EF4444]/20 text-[#FCA5A5] border border-[#EF4444]/30'
                           : 'text-[#9CA3AF] hover:text-white hover:bg-white/5'
                       }`}
                     >
@@ -226,7 +226,7 @@ export const HomeFeedView: React.FC<HomeFeedViewProps> = ({
                   <button
                     type="submit"
                     disabled={!composerText.trim() && attachments.length === 0}
-                    className="ml-1 px-4 py-1.5 text-xs font-semibold text-[#1c110c] bg-[#EF4444] hover:bg-[#DB6B36] disabled:opacity-40 disabled:cursor-not-allowed rounded-lg transition-colors cursor-pointer"
+                    className="ml-1 px-4 py-1.5 text-xs font-semibold text-[#1C0C0C] bg-[#EF4444] hover:bg-[#B91C1C] disabled:opacity-40 disabled:cursor-not-allowed rounded-lg transition-colors cursor-pointer"
                   >
                     Post
                   </button>
@@ -398,7 +398,7 @@ export const HomeFeedView: React.FC<HomeFeedViewProps> = ({
             <div className="flex flex-wrap items-center gap-3 pt-1">
               <button
                 onClick={() => onNavigate('people')}
-                className="flex items-center gap-2 px-5 py-2.5 rounded-lg bg-[#EF4444] hover:bg-[#DB6B36] text-white text-xs md:text-sm font-semibold transition-all shadow-lg shadow-[#EF4444]/20 cursor-pointer"
+                className="flex items-center gap-2 px-5 py-2.5 rounded-lg bg-[#EF4444] hover:bg-[#B91C1C] text-white text-xs md:text-sm font-semibold transition-all shadow-lg shadow-[#EF4444]/20 cursor-pointer"
               >
                 Start Connecting
                 <ArrowRight className="w-4 h-4" />
@@ -440,7 +440,7 @@ export const HomeFeedView: React.FC<HomeFeedViewProps> = ({
                     aria-pressed={heroVisualMode === 'bubbles'}
                     className={`ix-option-tab px-2.5 py-1 text-[10px] font-mono rounded transition-colors cursor-pointer ${
                       heroVisualMode === 'bubbles'
-                        ? 'bg-[#EF4444] text-[#1c110c] font-semibold'
+                        ? 'bg-[#EF4444] text-[#1C0C0C] font-semibold'
                         : 'text-[#9CA3AF] hover:text-white'
                     }`}
                   >
@@ -451,7 +451,7 @@ export const HomeFeedView: React.FC<HomeFeedViewProps> = ({
                     aria-pressed={heroVisualMode === 'spotlight'}
                     className={`ix-option-tab px-2.5 py-1 text-[10px] font-mono rounded transition-colors cursor-pointer ${
                       heroVisualMode === 'spotlight'
-                        ? 'bg-[#EF4444] text-[#1c110c] font-semibold'
+                        ? 'bg-[#EF4444] text-[#1C0C0C] font-semibold'
                         : 'text-[#9CA3AF] hover:text-white'
                     }`}
                   >
@@ -478,7 +478,7 @@ export const HomeFeedView: React.FC<HomeFeedViewProps> = ({
                     </span>
                     <button
                       onClick={() => onNavigate('bubbles')}
-                      className="text-[#FFC85C] hover:text-white font-semibold flex items-center gap-1 cursor-pointer"
+                      className="text-[#FCA5A5] hover:text-white font-semibold flex items-center gap-1 cursor-pointer"
                     >
                       Full Screen Graph →
                     </button>
@@ -527,7 +527,7 @@ export const HomeFeedView: React.FC<HomeFeedViewProps> = ({
                   <div className="flex items-center gap-2">
                     <button
                       onClick={() => onRequestIntro(elena)}
-                      className="flex-1 py-2 text-xs font-semibold text-[#1c110c] bg-[#EF4444] hover:bg-[#DB6B36] rounded-lg transition-colors cursor-pointer text-center"
+                      className="flex-1 py-2 text-xs font-semibold text-[#1C0C0C] bg-[#EF4444] hover:bg-[#B91C1C] rounded-lg transition-colors cursor-pointer text-center"
                     >
                       Request Introduction
                     </button>

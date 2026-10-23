@@ -11,7 +11,7 @@
  */
 .ix-root .aetheris-workspace-shell {
   --ix-accent: #EF4444;
-  --ix-accent-deep: #c96a3d;
+  --ix-accent-deep: #C93D3D;
   --ix-accent-hover: #FCA5A5;
   --ix-accent-wash: rgba(239,68,68,.10);
   --ix-accent-line: rgba(239,68,68,.32);
@@ -86,11 +86,11 @@
   border-radius: 9px;
 }
 .ix-root .aetheris-workspace-shell .specter-app-sidebar nav :is(button,a):hover {
-  color: #ffdbca;
+  color: #FFCACA;
   background: rgba(239,68,68,.065);
 }
 .ix-root .aetheris-workspace-shell .specter-app-sidebar nav .active {
-  color: #ffc29f !important;
+  color: #FF9F9F !important;
   background: rgba(239,68,68,.105) !important;
   border-color: rgba(239,68,68,.28) !important;
   box-shadow: inset 3px 0 var(--ix-accent) !important;
@@ -99,7 +99,7 @@
   color: var(--ix-accent);
 }
 .ix-root .aetheris-workspace-shell .specter-mobile-menu nav .active {
-  color: #ffcfb7;
+  color: #FFB7B7;
   background: rgba(239,68,68,.13);
   box-shadow: inset 3px 0 var(--ix-accent);
 }
@@ -109,7 +109,7 @@
   border-top-color: var(--ix-accent-line);
 }
 .ix-root .aetheris-workspace-shell .specter-app-sidebar nav .specter-executive-action:hover {
-  color: #ffd9c5;
+  color: #FFC5C5;
   background: rgba(239,68,68,.08);
 }
 .ix-root .aetheris-workspace-shell .specter-sidebar-toggle,
@@ -131,9 +131,9 @@
   background-color: var(--ix-bg);
 }
 .ix-root .aetheris-workspace-shell .specter-header-cta {
-  color: #17100c !important;
+  color: #170C0C !important;
   background: var(--ix-accent) !important;
-  border: 1px solid rgba(255,175,128,.55) !important;
+  border: 1px solid rgba(255,128,128,.55) !important;
   border-radius: 9px;
   box-shadow: none;
 }
@@ -197,13 +197,13 @@
 }
 .ix-root .aetheris-workspace-shell .home-feed-controls-actions button:hover,
 .ix-root .aetheris-workspace-shell .home-feed-controls-actions button[aria-pressed="true"] {
-  color: #ffccad !important;
+  color: #FFADAD !important;
   border-color: var(--ix-accent-line) !important;
   background: var(--ix-accent-wash) !important;
 }
 .ix-root .aetheris-workspace-shell .home-feed-visible-count {
   background: var(--ix-accent);
-  color: #1c120e;
+  color: #1C0E0E;
   border-radius: 5px;
 }
 .ix-root .aetheris-workspace-shell .home-feed-welcome {
@@ -217,12 +217,12 @@
 }
 .ix-root .aetheris-workspace-shell .home-feed-overview > summary:hover {
   border-color: var(--ix-accent-line);
-  color: #ffc5a6;
+  color: #FFA6A6;
 }
 .ix-root .aetheris-workspace-shell .home-feed-customize .home-feed-customize-done {
   background: var(--ix-accent) !important;
   border-color: var(--ix-accent) !important;
-  color: #14100c !important;
+  color: #140C0C !important;
 }
 .ix-root .aetheris-workspace-shell .home-feed-customize-show input {
   accent-color: var(--ix-accent);
@@ -242,7 +242,7 @@
 .ix-root .aetheris-workspace-shell .ix-network-viewport .ix-option-tile[aria-pressed="true"] {
   border-color: var(--ix-accent-line);
   background: var(--ix-accent-wash);
-  color: #ffd0b4;
+  color: #FFB4B4;
 }
 .ix-root .aetheris-workspace-shell .ix-network-viewport .ix-network-results-list {
   scrollbar-color: rgba(239,68,68,.40) #121214;
@@ -274,7 +274,7 @@
   --msg-copper: #FCA5A5 !important;
   --msg-accent: #EF4444 !important;
   --msg-accent-hover: #FCA5A5 !important;
-  --msg-accent-ink: #1a120f !important;
+  --msg-accent-ink: #1A0F0F !important;
   --msg-selected: #261b18 !important;
 }
 .ix-root .aetheris-workspace-shell .ix-live-messages .msg-thread-tile:focus-visible,
@@ -287,17 +287,17 @@
 :root[data-theme] body .ix-root.ix-specter-mode .specter-app .specter-primary,
 .ix-root .aetheris-workspace-shell .specter-primary {
   background: var(--ix-accent) !important;
-  color: #18100a !important;
-  border: 1px solid rgba(255,184,137,.45) !important;
+  color: #180A0A !important;
+  border: 1px solid rgba(255,137,137,.45) !important;
   box-shadow: none !important;
 }
 :root[data-theme] body .ix-root.ix-specter-mode .specter-app .specter-tabs button.active {
   background: rgba(239,68,68,.12) !important;
-  color: #ffcaac !important;
+  color: #FFACAC !important;
   border-bottom-color: var(--ix-accent) !important;
 }
 :root[data-theme] body .ix-root.ix-specter-mode .specter-app .specter-app-sidebar nav .active {
-  color: #ffc29f !important;
+  color: #FF9F9F !important;
   background: rgba(239,68,68,.105) !important;
   border-color: var(--ix-accent-line) !important;
   box-shadow: inset 3px 0 var(--ix-accent) !important;
@@ -312,7 +312,7 @@
 }
 .ix-root .aetheris-workspace-shell .specter-browser-view-switch button.active {
   background: var(--ix-accent);
-  color: #17100c;
+  color: #170C0C;
 }
 .ix-root .aetheris-workspace-shell .specter-title h1 span {
   -webkit-text-fill-color: var(--ix-accent);
@@ -329,12 +329,12 @@
    Match only a complete Tailwind class token so orange translucent washes keep
    their light-text treatments. */
 .ix-root .aetheris-workspace-shell :is(button,a)[class~="bg-[#EF4444]"] {
-  color: #1c110c !important;
-  -webkit-text-fill-color: #1c110c !important;
+  color: #1C0C0C !important;
+  -webkit-text-fill-color: #1C0C0C !important;
 }
-.ix-root .aetheris-workspace-shell :is(button,a)[class~="hover:bg-[#DB6B36]"]:hover {
-  color: #19100d !important;
-  -webkit-text-fill-color: #19100d !important;
+.ix-root .aetheris-workspace-shell :is(button,a)[class~="hover:bg-[#B91C1C]"]:hover {
+  color: #190D0D !important;
+  -webkit-text-fill-color: #190D0D !important;
 }
 .ix-root .aetheris-workspace-shell :is(button,a)[class~="bg-[#EF4444]"]:disabled {
   opacity: .56;
@@ -359,7 +359,7 @@
 /* Keep the visual polish low-cost and accessible. */
 @media (max-width: 760px) {
   .ix-root .aetheris-workspace-shell .specter-header-links button[aria-current="page"]::after { display: none; }
-  .ix-root .aetheris-workspace-shell .specter-mobile-menu nav .active { color: #ffd0b0; }
+  .ix-root .aetheris-workspace-shell .specter-mobile-menu nav .active { color: #FFB0B0; }
 }
 @media (prefers-reduced-motion: reduce) {
   .ix-root .aetheris-workspace-shell :is(.home-board-tile,.home-feed-widget,.sys-tile,.mi-panel,.specter-header-cta) {
@@ -376,10 +376,10 @@
  */
 html:root[data-theme="light"] body .ix-root .aetheris-workspace-shell .arch-product-main :is(.ix-messages,.ix-live-messages) button.msg-primary-action,
 html:root[data-theme="light"] body .ix-root .aetheris-workspace-shell .arch-product-main :is(.ix-messages,.ix-live-messages) button.msg-primary-action:hover:not(:disabled) {
-  background: #9c431b !important;
-  background-color: #9c431b !important;
+  background: #9C1B1B !important;
+  background-color: #9C1B1B !important;
   background-image: none !important;
-  border-color: #9c431b !important;
+  border-color: #9C1B1B !important;
   color: #ffffff !important;
   -webkit-text-fill-color: #ffffff !important;
 }

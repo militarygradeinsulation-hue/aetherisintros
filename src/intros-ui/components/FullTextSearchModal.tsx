@@ -337,7 +337,7 @@ export const FullTextSearchModal: React.FC<FullTextSearchModalProps> = ({
       <span>
         {parts.map((part, i) =>
           part.toLowerCase() === query.trim().toLowerCase() ? (
-            <mark key={i} className="bg-[#F5B027]/30 text-[#FFC85C] font-semibold px-0.5 rounded">
+            <mark key={i} className="bg-[#EF4444]/30 text-[#FCA5A5] font-semibold px-0.5 rounded">
               {part}
             </mark>
           ) : (
@@ -365,7 +365,7 @@ export const FullTextSearchModal: React.FC<FullTextSearchModalProps> = ({
       >
         {/* Top Search Input Bar */}
         <div className="relative flex items-center px-4 sm:px-6 py-4 border-b border-white/10 bg-[#0E1116]">
-          <Search size={18} className="text-[#F5B027] shrink-0 mr-3" />
+          <Search size={18} className="text-[#EF4444] shrink-0 mr-3" />
           <input
             ref={inputRef}
             type="text"
@@ -399,7 +399,7 @@ export const FullTextSearchModal: React.FC<FullTextSearchModalProps> = ({
               onClick={() => setActiveTab('all')}
               className={`px-2.5 py-1 rounded-md text-xs font-mono transition-all ${
                 activeTab === 'all'
-                  ? 'bg-[#F5B027]/20 text-[#FFC85C] border border-[#F5B027]/40 font-semibold'
+                  ? 'bg-[#EF4444]/20 text-[#FCA5A5] border border-[#EF4444]/40 font-semibold'
                   : 'text-[#F2EEE6]/60 hover:text-white hover:bg-white/5'
               }`}
             >
@@ -409,7 +409,7 @@ export const FullTextSearchModal: React.FC<FullTextSearchModalProps> = ({
               onClick={() => setActiveTab('people')}
               className={`px-2.5 py-1 rounded-md text-xs font-mono transition-all flex items-center gap-1 ${
                 activeTab === 'people'
-                  ? 'bg-[#F5B027]/20 text-[#FFC85C] border border-[#F5B027]/40 font-semibold'
+                  ? 'bg-[#EF4444]/20 text-[#FCA5A5] border border-[#EF4444]/40 font-semibold'
                   : 'text-[#F2EEE6]/60 hover:text-white hover:bg-white/5'
               }`}
             >
@@ -420,7 +420,7 @@ export const FullTextSearchModal: React.FC<FullTextSearchModalProps> = ({
               onClick={() => setActiveTab('notes')}
               className={`px-2.5 py-1 rounded-md text-xs font-mono transition-all flex items-center gap-1 ${
                 activeTab === 'notes'
-                  ? 'bg-[#F5B027]/20 text-[#FFC85C] border border-[#F5B027]/40 font-semibold'
+                  ? 'bg-[#EF4444]/20 text-[#FCA5A5] border border-[#EF4444]/40 font-semibold'
                   : 'text-[#F2EEE6]/60 hover:text-white hover:bg-white/5'
               }`}
             >
@@ -431,7 +431,7 @@ export const FullTextSearchModal: React.FC<FullTextSearchModalProps> = ({
               onClick={() => setActiveTab('tags')}
               className={`px-2.5 py-1 rounded-md text-xs font-mono transition-all flex items-center gap-1 ${
                 activeTab === 'tags'
-                  ? 'bg-[#F5B027]/20 text-[#FFC85C] border border-[#F5B027]/40 font-semibold'
+                  ? 'bg-[#EF4444]/20 text-[#FCA5A5] border border-[#EF4444]/40 font-semibold'
                   : 'text-[#F2EEE6]/60 hover:text-white hover:bg-white/5'
               }`}
             >
@@ -442,7 +442,7 @@ export const FullTextSearchModal: React.FC<FullTextSearchModalProps> = ({
               onClick={() => setActiveTab('calendar')}
               className={`px-2.5 py-1 rounded-md text-xs font-mono transition-all flex items-center gap-1 ${
                 activeTab === 'calendar'
-                  ? 'bg-[#F5B027]/20 text-[#FFC85C] border border-[#F5B027]/40 font-semibold'
+                  ? 'bg-[#EF4444]/20 text-[#FCA5A5] border border-[#EF4444]/40 font-semibold'
                   : 'text-[#F2EEE6]/60 hover:text-white hover:bg-white/5'
               }`}
             >
@@ -475,7 +475,7 @@ export const FullTextSearchModal: React.FC<FullTextSearchModalProps> = ({
                   <button
                     key={tag}
                     onClick={() => setQuery(tag)}
-                    className="px-2 py-0.5 rounded border border-white/10 text-[10px] font-mono text-[#FFC85C] hover:bg-white/5"
+                    className="px-2 py-0.5 rounded border border-white/10 text-[10px] font-mono text-[#FCA5A5] hover:bg-white/5"
                   >
                     #{tag}
                   </button>
@@ -492,7 +492,7 @@ export const FullTextSearchModal: React.FC<FullTextSearchModalProps> = ({
                   onMouseEnter={() => setSelectedIndex(idx)}
                   className={`p-3 sm:p-3.5 rounded-xl border transition-all cursor-pointer flex flex-col gap-1.5 ${
                     isSelected
-                      ? 'bg-[#0E1524] border-[#F5B027]/60 shadow-[0_0_15px_rgba(185,28,28,0.25)]'
+                      ? 'bg-[#0E1524] border-[#EF4444]/60 shadow-[0_0_15px_rgba(185,28,28,0.25)]'
                       : 'bg-[#0A0D12] border-white/5 hover:border-white/15 hover:bg-white/[0.02]'
                   }`}
                 >
@@ -502,11 +502,11 @@ export const FullTextSearchModal: React.FC<FullTextSearchModalProps> = ({
                       <div
                         className={`w-7 h-7 rounded-lg flex items-center justify-center shrink-0 text-xs ${
                           result.type === 'person'
-                            ? 'bg-[#F5B027]/20 text-[#FFC85C]'
+                            ? 'bg-[#EF4444]/20 text-[#FCA5A5]'
                             : result.type === 'note'
-                            ? 'bg-[#F5B027]/20 text-[#F5B027]'
+                            ? 'bg-[#EF4444]/20 text-[#EF4444]'
                             : result.type === 'tag'
-                            ? 'bg-[#FFC85C]/20 text-[#FFC85C]'
+                            ? 'bg-[#FCA5A5]/20 text-[#FCA5A5]'
                             : 'bg-[#B91C1C]/20 text-[#B91C1C]'
                         }`}
                       >
@@ -544,7 +544,7 @@ export const FullTextSearchModal: React.FC<FullTextSearchModalProps> = ({
                       <span
                         className={`px-2 py-0.5 rounded text-[10px] font-mono flex items-center gap-1 transition-all ${
                           isSelected
-                            ? 'bg-[#F5B027] text-white shadow-sm'
+                            ? 'bg-[#EF4444] text-white shadow-sm'
                             : 'bg-white/5 text-[#F2EEE6]/60'
                         }`}
                       >
@@ -569,7 +569,7 @@ export const FullTextSearchModal: React.FC<FullTextSearchModalProps> = ({
                             e.stopPropagation();
                             setQuery(t);
                           }}
-                          className="px-1.5 py-0.2 rounded text-[9.5px] font-mono bg-white/5 hover:bg-[#F5B027]/20 text-[#FFC85C] border border-white/10 transition-colors"
+                          className="px-1.5 py-0.2 rounded text-[9.5px] font-mono bg-white/5 hover:bg-[#EF4444]/20 text-[#FCA5A5] border border-white/10 transition-colors"
                         >
                           #{t}
                         </span>
@@ -601,8 +601,8 @@ export const FullTextSearchModal: React.FC<FullTextSearchModalProps> = ({
           </div>
 
           <div className="flex items-center gap-2">
-            <Sparkles size={11} className="text-[#F5B027]" />
-            <span className="text-[#F5B027] font-semibold">Aetheris Full-Text Intelligence</span>
+            <Sparkles size={11} className="text-[#EF4444]" />
+            <span className="text-[#EF4444] font-semibold">Aetheris Full-Text Intelligence</span>
           </div>
         </div>
       </div>

@@ -11,7 +11,7 @@ import { generateBusinessAnalysis, getLatestAnalysis, type BusinessDiagnostic, t
 
 function scoreColor(score: number): string {
   if (score >= 75) return '#4ade80'   // green
-  if (score >= 50) return '#facc15'   // amber
+  if (score >= 50) return '#FA1515'   // amber
   return '#f87171'                     // red
 }
 

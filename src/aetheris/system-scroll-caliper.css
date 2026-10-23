@@ -1,8 +1,8 @@
 /* Ask Intros kinetic vernier — non-interactive scrolling reference, not a
    custom scrollbar. Existing wheel/touch/keyboard scroll remains untouched. */
 .ask-scroll-caliper {
-  --caliper-ink: rgba(236, 231, 218, .72);
-  --caliper-accent: #f5b027;
+  --caliper-ink: rgba(236,218,218, .72);
+  --caliper-accent: #EF4444;
   position: fixed;
   top: max(102px, env(safe-area-inset-top));
   bottom: 24px;
@@ -27,7 +27,7 @@
   bottom: 8px;
   min-width: 91px;
   background: rgba(14, 17, 23, .94);
-  border: 1px solid rgba(245, 176, 39, .26);
+  border: 1px solid rgba(245,39,39, .26);
   color: #f5f0e9;
   border-radius: 5px;
   padding: 6px 8px;
@@ -68,7 +68,7 @@ body:has([data-meeting-active="true"]) .ask-scroll-caliper { opacity: 0; }
    Mounted once in RootShell for all screens. It remains decorative and never
    replaces browser scroll. Do not grayscale these branded accent marks. */
 .ask-scroll-caliper {
-  --caliper-ink:#e99463!important;
+  --caliper-ink:#FCA5A5!important;
   --caliper-accent:#DC2626!important;
   color:var(--caliper-ink)!important;
   filter:none!important;
@@ -76,8 +76,8 @@ body:has([data-meeting-active="true"]) .ask-scroll-caliper { opacity: 0; }
   z-index:49;
 }
 .ask-scroll-caliper[data-scrollable="false"] {opacity:.68!important;}
-.ask-scroll-caliper-ticks {color:#e99463!important;opacity:.85;}
-.ask-scroll-caliper-svg > path {stroke:#e99463;}
+.ask-scroll-caliper-ticks {color:#FCA5A5!important;opacity:.85;}
+.ask-scroll-caliper-svg > path {stroke:#FCA5A5;}
 .ask-scroll-caliper-jaw {color:#DC2626!important;}
 .ask-scroll-caliper-indicator {color:#DC2626!important;}
 .ask-scroll-caliper-chip {
@@ -86,13 +86,13 @@ body:has([data-meeting-active="true"]) .ask-scroll-caliper { opacity: 0; }
   box-shadow:none!important;border-radius:2px!important;
 }
 .ask-scroll-caliper-label {color:#DC2626!important;}
-.ask-scroll-caliper-dim {color:#edb78e!important;}
+.ask-scroll-caliper-dim {color:#ED8E8E!important;}
 .ask-scroll-caliper-bottom-scale {
   position:fixed;right:55px;left:2vw;bottom:max(0px,env(safe-area-inset-bottom));
   height:20px;pointer-events:none;
   z-index:48;opacity:.72;
   background-image:
-    repeating-linear-gradient(to right,rgba(233,148,99,.62) 0 1px,transparent 1px 8px),
+    repeating-linear-gradient(to right,rgba(233,99,99,.62) 0 1px,transparent 1px 8px),
     repeating-linear-gradient(to right,rgba(220,38,38,.78) 0 2px,transparent 2px 80px);
   background-size:100% 5px,100% 16px;
   background-position:left bottom,left bottom;

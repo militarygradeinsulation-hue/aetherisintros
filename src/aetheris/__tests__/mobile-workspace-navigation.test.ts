@@ -35,7 +35,7 @@ describe('mobile Ask Intros workspace navigation', () => {
     expect(phone).toBeGreaterThan(shared)
     expect(mobile).toContain('@media (max-width: 760px)')
     expect(mobile).toContain('.specter-mobile-menu-toggle')
-    expect(mobile).toContain('background: #ff8a4c')
+    expect(mobile).toContain('background: #EF4444')
   })
 
   it('protects narrow phones, touch reachability, small-screen scrolling and motion preference', () => {

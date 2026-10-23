@@ -37,9 +37,9 @@ describe('relationship filters and collision identities', () => {
     expect(directory).toContain('ix-relationship-tier-option')
     expect(directory).toContain('ix-relationship-tier-label')
     expect(directory).toContain('ix-relationship-tier-count')
-    expect(stylesFor('dark', '.ix-root .ix-relationship-tier-option[aria-pressed="true"]')).toContain('background:#292017!important')
+    expect(stylesFor('dark', '.ix-root .ix-relationship-tier-option[aria-pressed="true"]')).toContain('background:#291717!important')
     expect(stylesFor('light', '.ix-root .ix-relationship-tier-option[aria-pressed="true"]')).toContain('background:#fff0db!important')
-    expect(contrast('#ffffff', '#292017')).toBeGreaterThanOrEqual(4.5)
+    expect(contrast('#ffffff', '#291717')).toBeGreaterThanOrEqual(4.5)
     expect(contrast('#1c1711', '#fff0db')).toBeGreaterThanOrEqual(4.5)
   })
   it('keeps the compact tier chips theme-aware and keyboard reachable', () => {

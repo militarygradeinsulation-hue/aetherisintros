@@ -17,7 +17,7 @@
   overflow-y:auto;
   overscroll-behavior-y:contain;
   scrollbar-width:thin;
-  scrollbar-color:#b5541f #111;
+  scrollbar-color:#B91C1C #111;
 }
 .ix-root .home-feed-rail .home-feed-widget {
   height:100%;
@@ -42,8 +42,8 @@
   font:600 11px/1.3 "JetBrains Mono",monospace;cursor:pointer;border-radius:2px;
 }
 .ix-root .home-feed-controls-actions button:hover,
-.ix-root .home-feed-controls-actions button[aria-pressed=true] {background:#1a1a1a!important;border-color:#e99463;}
-.ix-root .home-feed-visible-count {background:#b5541f;color:white;padding:1px 5px;border-radius:2px;}
+.ix-root .home-feed-controls-actions button[aria-pressed=true] {background:#1a1a1a!important;border-color:#FCA5A5;}
+.ix-root .home-feed-visible-count {background:#B91C1C;color:white;padding:1px 5px;border-radius:2px;}
 .ix-root .home-feed-center .home-social-heading {padding:17px 0 16px;border-top:0;gap:12px;}
 .ix-root .home-feed-center .home-social-heading h2 {font-size:clamp(20px,2vw,30px);line-height:1.18;}
 .ix-root .home-feed-center .home-social-heading p {line-height:1.5;}
@@ -69,7 +69,7 @@
   min-height:26px;min-width:26px;display:grid;place-items:center;
   border:1px solid transparent;background:transparent!important;color:#ececec!important;cursor:pointer;
 }
-.ix-root .home-feed-widget-title button:hover {border-color:#e99463;}
+.ix-root .home-feed-widget-title button:hover {border-color:#FCA5A5;}
 .ix-root .home-feed-widget-choice {
   display:block;padding:6px;border-bottom:1px solid rgba(255,255,255,.28);background:#101010;
 }
@@ -146,7 +146,7 @@
   display:flex;align-items:center;gap:8px;padding:13px;
   font:650 11px/1.4 "JetBrains Mono",monospace;color:#fff;cursor:pointer;
 }
-.ix-root .home-feed-mobile-tools > summary span {margin-left:auto;color:#e99463;font-size:10px;}
+.ix-root .home-feed-mobile-tools > summary span {margin-left:auto;color:#FCA5A5;font-size:10px;}
 .ix-root .home-feed-mobile-tool-list {display:grid;gap:12px;padding:12px;border-top:1px solid rgba(255,255,255,.25);}
 .ix-root .home-feed-mobile-widget {
   min-height:clamp(620px,85dvh,1100px);
@@ -193,9 +193,9 @@
 }
 .ix-root .home-feed-customize-show {display:flex;align-items:center;gap:8px;min-width:0;font-size:11px;color:#fff;}
 .ix-root .home-feed-customize-show strong {overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
-.ix-root .home-feed-customize-show input {accent-color:#b5541f;width:17px;height:17px;flex:none;}
+.ix-root .home-feed-customize-show input {accent-color:#B91C1C;width:17px;height:17px;flex:none;}
 .ix-root .home-feed-customize > footer {display:flex;justify-content:space-between;gap:12px;margin-top:16px;}
-.ix-root .home-feed-customize .home-feed-customize-done {background:#b5541f!important;border-color:#b5541f!important;}
+.ix-root .home-feed-customize .home-feed-customize-done {background:#B91C1C!important;border-color:#B91C1C!important;}
 @media(max-width:640px) {
   .ix-root .home-feed-customize-row {grid-template-columns:minmax(0,1fr) 90px;}
   .ix-root .home-feed-customize-row > label:last-child {grid-column:1 / -1;}
@@ -209,12 +209,12 @@
 /* Global scroll instrument brand exception: this is the last stylesheet
    linked by RootShell, so the stencil grayscale override cannot win. */
 .ask-scroll-caliper {
-  --caliper-ink:#e99463!important;
+  --caliper-ink:#FCA5A5!important;
   --caliper-accent:#DC2626!important;
-  color:#e99463!important;
+  color:#FCA5A5!important;
   filter:none!important;
 }
-.ask-scroll-caliper .ask-scroll-caliper-ticks {color:#e99463!important;}
+.ask-scroll-caliper .ask-scroll-caliper-ticks {color:#FCA5A5!important;}
 .ask-scroll-caliper .ask-scroll-caliper-jaw,
 .ask-scroll-caliper .ask-scroll-caliper-indicator {color:#DC2626!important;}
 .ask-scroll-caliper .ask-scroll-caliper-label {color:#DC2626!important;}

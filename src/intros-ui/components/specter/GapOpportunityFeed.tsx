@@ -20,7 +20,7 @@ interface GapOpportunityCardProps {
 
 const URGENCY_STYLES = {
   high: 'bg-red-500/10 text-red-400 border-red-500/25',
-  medium: 'bg-red-500/10 text-[#F5B027] border-red-500/25',
+  medium: 'bg-red-500/10 text-[#EF4444] border-red-500/25',
   low: 'bg-white/5 text-[#9CA3AF] border-white/10',
 } as const;
 
@@ -53,7 +53,7 @@ function GapOpportunityCard({ gap, onBuildAsk }: GapOpportunityCardProps) {
       </div>
 
       <div className="flex items-center gap-4 text-[10px] text-[#6B7280]">
-        <span className="text-[#F5B027] font-mono font-semibold">{gap.impactEstimate} potential</span>
+        <span className="text-[#EF4444] font-mono font-semibold">{gap.impactEstimate} potential</span>
         <span>{gap.matchCount} network match{gap.matchCount !== 1 ? 'es' : ''}</span>
       </div>
 
@@ -104,8 +104,8 @@ export function GapOpportunityFeed({ onBuildAsk }: GapOpportunityFeedProps) {
   return (
     <div className="space-y-3">
       <div className="flex items-center gap-2">
-        <Zap size={13} className="text-[#F5B027]" />
-        <span className="text-[11px] font-mono uppercase tracking-widest text-[#F5B027]">Gap Opportunities</span>
+        <Zap size={13} className="text-[#EF4444]" />
+        <span className="text-[11px] font-mono uppercase tracking-widest text-[#EF4444]">Gap Opportunities</span>
       </div>
       <div className="space-y-3">
         {MOCK_GAPS.map(gap => (

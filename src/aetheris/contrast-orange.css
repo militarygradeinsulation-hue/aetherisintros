@@ -7,9 +7,9 @@
  */
 
 :root {
-  --bridge-orange:#e99463;          /* on black (decorative / labels) */
-  --bridge-orange-dark:#923d15;     /* on white, WCAG AA normal text */
-  --bridge-orange-rule:#b5541f;     /* decorative hairlines only */
+  --bridge-orange:#FCA5A5;          /* on black (decorative / labels) */
+  --bridge-orange-dark:#921515;     /* on white, WCAG AA normal text */
+  --bridge-orange-rule:#B91C1C;     /* decorative hairlines only */
   --bridge-cream:#fffdf9;
   --bridge-paper:#f7f7f5;
   --bridge-light-ink:#161719;
@@ -55,7 +55,7 @@
 :root[data-theme] body .ix-root .ix-halftone-footer.hwf-root {
   --hwf-bg:#080808!important;
   --hwf-ink:#f4f4f4!important;
-  --hwf-warm:#b5541f!important;
+  --hwf-warm:#B91C1C!important;
 }
 :root[data-theme] body .ix-root .ix-halftone-footer .hwf-top {
   color:#f4f4f4!important;

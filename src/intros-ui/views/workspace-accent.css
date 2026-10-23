@@ -4,7 +4,7 @@
    face; IBM Plex Mono is reserved for tiny metadata. */
 .ix-root {
   --ix-accent: #EF4444;
-  --ix-accent-deep: #c96a3d;
+  --ix-accent-deep: #C93D3D;
   --ix-bg: #0a0a0b;
   --ix-panel: #0e0e10;
   --ix-card: #131316;
@@ -145,7 +145,7 @@
   color: var(--ix-muted, #84848c); margin: 4px 0 0; text-transform: uppercase; letter-spacing: .08em;
 }
 .home-feed-welcome-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; min-width: 0; max-width: 100%; }
-.home-feed-welcome-cta { background: var(--ix-accent, #EF4444) !important; color: #14100c !important; }
+.home-feed-welcome-cta { background: var(--ix-accent, #EF4444) !important; color: #140C0C !important; }
 .home-feed-welcome-cta:hover { filter: brightness(1.08); }
 @media (max-width: 640px) {
   .home-feed-welcome-actions { width: 100%; }

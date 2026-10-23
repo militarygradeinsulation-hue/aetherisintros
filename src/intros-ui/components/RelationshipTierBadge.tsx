@@ -23,9 +23,9 @@ export const RelationshipTierBadge: React.FC<RelationshipTierBadgeProps> = ({
         return {
           label: 'Inner Circle',
           icon: Crown,
-          textColor: 'text-[#F5A623]',
-          bgColor: 'bg-[#F5A623]/15',
-          borderColor: 'border-[#F5A623]/40',
+          textColor: 'text-[#F52323]',
+          bgColor: 'bg-[#F52323]/15',
+          borderColor: 'border-[#F52323]/40',
           shadow: 'shadow-[0_0_8px_rgba(245,166,35,0.35)]',
           symbol: '▲',
           tooltip: 'Tier 1 Inner Circle: Core syndicate anchors & daily executive touchpoints',

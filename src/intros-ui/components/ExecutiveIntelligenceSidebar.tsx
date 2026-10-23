@@ -118,7 +118,7 @@ export const ExecutiveIntelligenceSidebar: React.FC<ExecutiveIntelligenceSidebar
       case 'active':
         return 'bg-[#B91C1C] shadow-[0_0_6px_rgba(63,179,127,0.7)]';
       case 'followup':
-        return 'bg-[#F5B027] shadow-[0_0_6px_rgba(242,169,59,0.7)]';
+        return 'bg-[#EF4444] shadow-[0_0_6px_rgba(242,169,59,0.7)]';
       case 'dormant':
         return 'bg-[#64748B]';
       default:
@@ -145,7 +145,7 @@ export const ExecutiveIntelligenceSidebar: React.FC<ExecutiveIntelligenceSidebar
       case 'bullish':
         return <span className="text-[#B91C1C] text-[9px] font-mono tracking-wider">▲ Bullish</span>;
       case 'watch':
-        return <span className="text-[#F5B027] text-[9px] font-mono tracking-wider">● Watch</span>;
+        return <span className="text-[#EF4444] text-[9px] font-mono tracking-wider">● Watch</span>;
       case 'neutral':
       default:
         return <span className="text-[#F2EEE6]/50 text-[9px] font-mono tracking-wider">◆ Neutral</span>;
@@ -167,10 +167,10 @@ export const ExecutiveIntelligenceSidebar: React.FC<ExecutiveIntelligenceSidebar
         >
           <button
             onClick={onToggle}
-            className="flex items-center gap-2 bg-[#0E1116] hover:bg-[#151922] text-[#F2EEE6] border-l border-y border-white/15 py-3.5 px-2 rounded-l-lg shadow-2xl transition-all hover:border-[#F5B027]/60 group"
+            className="flex items-center gap-2 bg-[#0E1116] hover:bg-[#151922] text-[#F2EEE6] border-l border-y border-white/15 py-3.5 px-2 rounded-l-lg shadow-2xl transition-all hover:border-[#EF4444]/60 group"
             title="Expand Executive Intelligence (Dossier & News)"
           >
-            <ChevronLeft size={14} className="text-[#F5B027] group-hover:-translate-x-0.5 transition-transform" />
+            <ChevronLeft size={14} className="text-[#EF4444] group-hover:-translate-x-0.5 transition-transform" />
             <div className="flex flex-col items-center gap-1.5">
               {activePerson?.avatar && (
                 <div className="relative">
@@ -199,7 +199,7 @@ export const ExecutiveIntelligenceSidebar: React.FC<ExecutiveIntelligenceSidebar
           {/* Header */}
           <div className="p-4 border-b border-white/10 flex items-center justify-between bg-[#07090C]/80">
             <div>
-              <div className="text-[9px] font-mono tracking-[0.28em] text-[#F5B027] uppercase font-semibold">
+              <div className="text-[9px] font-mono tracking-[0.28em] text-[#EF4444] uppercase font-semibold">
                 Relationship Dossier
               </div>
               <h2 className="font-serif-editorial text-lg text-[#F2EEE6] leading-tight mt-0.5">
@@ -219,7 +219,7 @@ export const ExecutiveIntelligenceSidebar: React.FC<ExecutiveIntelligenceSidebar
                 className={`px-2 py-1 rounded text-[10px] font-mono flex items-center gap-1.5 transition-all border ${
                   isBiometricUnlocked
                     ? 'bg-[#B91C1C]/15 border-[#B91C1C]/30 text-[#B91C1C]'
-                    : 'bg-[#F5B027]/15 border-[#F5B027]/40 text-[#F5B027] hover:bg-[#F5B027]/25'
+                    : 'bg-[#EF4444]/15 border-[#EF4444]/40 text-[#EF4444] hover:bg-[#EF4444]/25'
                 }`}
                 title={
                   isBiometricUnlocked
@@ -243,7 +243,7 @@ export const ExecutiveIntelligenceSidebar: React.FC<ExecutiveIntelligenceSidebar
               <button
                 type="button"
                 onClick={() => window.print()}
-                className="px-2.5 py-1 rounded bg-[#F5B027]/20 hover:bg-[#F5B027]/30 border border-[#F5B027]/40 text-white text-[10px] font-mono flex items-center gap-1 transition-all cursor-pointer"
+                className="px-2.5 py-1 rounded bg-[#EF4444]/20 hover:bg-[#EF4444]/30 border border-[#EF4444]/40 text-white text-[10px] font-mono flex items-center gap-1 transition-all cursor-pointer"
                 title="Print Executive Summary to PDF"
               >
                 <span>Print PDF</span>
@@ -272,7 +272,7 @@ export const ExecutiveIntelligenceSidebar: React.FC<ExecutiveIntelligenceSidebar
                   onClick={() => onSelectPerson && onSelectPerson(p)}
                   className={`px-2 py-1 rounded text-[10.5px] font-mono flex items-center gap-1.5 shrink-0 transition-all ${
                     isSelected
-                      ? 'bg-[#F5B027]/20 text-white border border-[#F5B027]/50 shadow-sm'
+                      ? 'bg-[#EF4444]/20 text-white border border-[#EF4444]/50 shadow-sm'
                       : 'bg-white/5 text-[#F2EEE6]/70 hover:bg-white/10 border border-transparent'
                   }`}
                 >
@@ -310,13 +310,13 @@ export const ExecutiveIntelligenceSidebar: React.FC<ExecutiveIntelligenceSidebar
                           )}
                         </div>
                         <div className="flex items-center gap-1 shrink-0">
-                          <span className="text-[10px] font-mono text-[#F5B027] font-semibold tabular-nums">
+                          <span className="text-[10px] font-mono text-[#EF4444] font-semibold tabular-nums">
                             {dossier.connectionScore}/100
                           </span>
                         </div>
                       </div>
                       <div className="text-[11px] text-[#F2EEE6]/75 font-serif-editorial">
-                        {dossier.title} · <span className="text-[#F5B027]">{dossier.company}</span>
+                        {dossier.title} · <span className="text-[#EF4444]">{dossier.company}</span>
                       </div>
                       <div className="text-[9.5px] font-mono text-[#F2EEE6]/50 mt-1 truncate">
                         {dossier.lastTouchpoint}
@@ -346,7 +346,7 @@ export const ExecutiveIntelligenceSidebar: React.FC<ExecutiveIntelligenceSidebar
                     <div className="p-1.5 rounded bg-black/30 border border-white/5 relative">
                       <div className="text-[8.5px] font-mono text-[#F2EEE6]/50 uppercase">Pipeline</div>
                       {isBiometricUnlocked ? (
-                        <div className="text-xs font-mono font-bold text-[#F5B027] tabular-nums mt-0.5 flex items-center justify-center gap-1">
+                        <div className="text-xs font-mono font-bold text-[#EF4444] tabular-nums mt-0.5 flex items-center justify-center gap-1">
                           <span>
                             {dossier.pipelineExposure > 0
                               ? `$${(dossier.pipelineExposure / 1000000).toFixed(1)}M`
@@ -357,7 +357,7 @@ export const ExecutiveIntelligenceSidebar: React.FC<ExecutiveIntelligenceSidebar
                       ) : (
                         <button
                           onClick={onTriggerBiometricAuth}
-                          className="text-[10px] font-mono text-[#F5B027] hover:underline flex items-center justify-center gap-1 mt-0.5 w-full"
+                          className="text-[10px] font-mono text-[#EF4444] hover:underline flex items-center justify-center gap-1 mt-0.5 w-full"
                           title="Click to authenticate via FaceID / Biometrics"
                         >
                           <Lock size={9} />
@@ -370,7 +370,7 @@ export const ExecutiveIntelligenceSidebar: React.FC<ExecutiveIntelligenceSidebar
 
                 {/* 2. Current Focus & Key Priorities */}
                 <div className="p-3.5 rounded-lg bg-[#0E1116] border border-white/10 space-y-2.5">
-                  <div className="flex items-center gap-1.5 text-[10px] font-mono text-[#F5B027] uppercase font-bold tracking-wider">
+                  <div className="flex items-center gap-1.5 text-[10px] font-mono text-[#EF4444] uppercase font-bold tracking-wider">
                     <Target size={12} />
                     <span>Current Strategic Mandate</span>
                   </div>
@@ -384,17 +384,17 @@ export const ExecutiveIntelligenceSidebar: React.FC<ExecutiveIntelligenceSidebar
                     </div>
                     {dossier.keyPriorities.map((priority, idx) => (
                       <div key={idx} className="flex items-start gap-2 text-[11px] text-[#F2EEE6]/80 leading-snug">
-                        <span className="text-[#F5B027] mt-0.5">▪</span>
+                        <span className="text-[#EF4444] mt-0.5">▪</span>
                         <span>{priority}</span>
                       </div>
                     ))}
                   </div>
 
                   {/* Recommended Next Action Banner */}
-                  <div className="p-2.5 rounded bg-[#F5B027]/10 border border-[#F5B027]/30 mt-2 flex items-start gap-2">
-                    <Sparkles size={13} className="text-[#F5B027] shrink-0 mt-0.5" />
+                  <div className="p-2.5 rounded bg-[#EF4444]/10 border border-[#EF4444]/30 mt-2 flex items-start gap-2">
+                    <Sparkles size={13} className="text-[#EF4444] shrink-0 mt-0.5" />
                     <div>
-                      <div className="text-[9px] font-mono text-[#F5B027] uppercase font-bold tracking-wider">
+                      <div className="text-[9px] font-mono text-[#EF4444] uppercase font-bold tracking-wider">
                         Recommended Next Action
                       </div>
                       <div className="text-[11px] text-[#F2EEE6] mt-0.5">
@@ -405,13 +405,13 @@ export const ExecutiveIntelligenceSidebar: React.FC<ExecutiveIntelligenceSidebar
                 </div>
 
                 {/* AI Predictive Blind Spot & Opportunity Analysis */}
-                <div className="p-3.5 rounded-lg bg-gradient-to-br from-[#120D1A] via-[#0E1116] to-[#0A0D12] border border-[#FFC85C]/40 space-y-2.5 shadow-[0_0_20px_rgba(255, 200, 92,0.12)]">
+                <div className="p-3.5 rounded-lg bg-gradient-to-br from-[#120D1A] via-[#0E1116] to-[#0A0D12] border border-[#FCA5A5]/40 space-y-2.5 shadow-[0_0_20px_rgba(255, 200, 92,0.12)]">
                   <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-1.5 text-[10px] font-mono text-[#FFC85C] uppercase font-bold tracking-wider">
+                    <div className="flex items-center gap-1.5 text-[10px] font-mono text-[#FCA5A5] uppercase font-bold tracking-wider">
                       <Sparkles size={12} />
                       <span>AI Predictive Blind Spot Analysis</span>
                     </div>
-                    <span className="text-[9px] font-mono px-1.5 py-0.2 rounded bg-[#FFC85C]/20 text-[#FFC85C] border border-[#FFC85C]/30">
+                    <span className="text-[9px] font-mono px-1.5 py-0.2 rounded bg-[#FCA5A5]/20 text-[#FCA5A5] border border-[#FCA5A5]/30">
                       LLM Grounded
                     </span>
                   </div>
@@ -422,7 +422,7 @@ export const ExecutiveIntelligenceSidebar: React.FC<ExecutiveIntelligenceSidebar
 
                   <div className="space-y-1.5 text-[11px] font-mono text-[#F2EEE6]/75">
                     <div className="p-2 rounded bg-black/40 border border-white/5 flex items-start gap-2">
-                      <span className="text-[#F5B027]">⚠️</span>
+                      <span className="text-[#EF4444]">⚠️</span>
                       <div>
                         <strong className="text-[#F2EEE6]">Interaction Drift Flag:</strong> Recency interval exceeds 30-day half-life decay threshold by 18 days.
                       </div>
@@ -439,7 +439,7 @@ export const ExecutiveIntelligenceSidebar: React.FC<ExecutiveIntelligenceSidebar
                 {/* 3. Priority Meetings (Upcoming Calendar Integration) */}
                 <div className="p-3.5 rounded-lg bg-[#0E1116] border border-white/10 space-y-3">
                   <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-1.5 text-[10px] font-mono text-[#F5B027] uppercase font-bold tracking-wider">
+                    <div className="flex items-center gap-1.5 text-[10px] font-mono text-[#EF4444] uppercase font-bold tracking-wider">
                       <Calendar size={12} />
                       <span>Priority Meetings ({priorityMeetings.length})</span>
                     </div>
@@ -453,11 +453,11 @@ export const ExecutiveIntelligenceSidebar: React.FC<ExecutiveIntelligenceSidebar
                       {priorityMeetings.map((meeting: CalendarEvent) => (
                         <div
                           key={meeting.id}
-                          className="p-3 rounded-lg bg-black/40 border border-white/5 hover:border-[#F5B027]/40 transition-all space-y-2"
+                          className="p-3 rounded-lg bg-black/40 border border-white/5 hover:border-[#EF4444]/40 transition-all space-y-2"
                         >
                           <div className="flex items-start justify-between gap-2">
                             <div className="min-w-0">
-                              <span className="text-[8.5px] font-mono uppercase px-1.5 py-0.2 rounded bg-[#F5B027]/20 text-[#F5B027] border border-[#F5B027]/35 font-bold">
+                              <span className="text-[8.5px] font-mono uppercase px-1.5 py-0.2 rounded bg-[#EF4444]/20 text-[#EF4444] border border-[#EF4444]/35 font-bold">
                                 {meeting.priorityCategory || 'Priority Meeting'}
                               </span>
                               <h4 className="text-xs font-bold text-[#F2EEE6] leading-snug mt-1">
@@ -466,7 +466,7 @@ export const ExecutiveIntelligenceSidebar: React.FC<ExecutiveIntelligenceSidebar
                             </div>
 
                             <div className="text-right shrink-0">
-                              <div className="text-[10px] font-mono text-[#F5B027] font-semibold">
+                              <div className="text-[10px] font-mono text-[#EF4444] font-semibold">
                                 {meeting.meetingDate || 'Upcoming Today'}
                               </div>
                               <div className="text-[9px] font-mono text-[#F2EEE6]/50">
@@ -477,13 +477,13 @@ export const ExecutiveIntelligenceSidebar: React.FC<ExecutiveIntelligenceSidebar
 
                           <div className="flex items-center gap-3 text-[10px] font-mono text-[#F2EEE6]/70">
                             <div className="flex items-center gap-1 truncate">
-                              <MapPin size={10} className="text-[#F5B027] shrink-0" />
+                              <MapPin size={10} className="text-[#EF4444] shrink-0" />
                               <span className="truncate">{meeting.location}</span>
                             </div>
                           </div>
 
                           {meeting.notes && (
-                            <p className="text-[11px] text-[#F2EEE6]/80 font-sans italic border-l-2 border-[#F5B027]/60 pl-2 py-0.5 leading-relaxed">
+                            <p className="text-[11px] text-[#F2EEE6]/80 font-sans italic border-l-2 border-[#EF4444]/60 pl-2 py-0.5 leading-relaxed">
                               "{meeting.notes}"
                             </p>
                           )}
@@ -511,7 +511,7 @@ export const ExecutiveIntelligenceSidebar: React.FC<ExecutiveIntelligenceSidebar
                                   );
                                 }
                               }}
-                              className="text-[9.5px] font-mono text-[#F5B027] hover:text-white flex items-center gap-1 transition-colors font-semibold"
+                              className="text-[9.5px] font-mono text-[#EF4444] hover:text-white flex items-center gap-1 transition-colors font-semibold"
                             >
                               <Plus size={10} />
                               <span>Send to Inbox</span>
@@ -525,7 +525,7 @@ export const ExecutiveIntelligenceSidebar: React.FC<ExecutiveIntelligenceSidebar
                       <div className="text-xs text-[#F2EEE6]/60 font-serif-editorial">
                         No upcoming calendar events detected for {activePerson?.name}.
                       </div>
-                      <div className="text-[9.5px] font-mono text-[#F5B027]">
+                      <div className="text-[9.5px] font-mono text-[#EF4444]">
                         Cadence tracking active (Target touchpoint due in 4 days)
                       </div>
                     </div>
@@ -536,7 +536,7 @@ export const ExecutiveIntelligenceSidebar: React.FC<ExecutiveIntelligenceSidebar
                 <div className="space-y-2.5">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-1.5 text-[10px] font-mono text-[#F2EEE6]/70 uppercase font-bold tracking-wider">
-                      <Newspaper size={12} className="text-[#F5B027]" />
+                      <Newspaper size={12} className="text-[#EF4444]" />
                       <span>Recent News & Market Radar ({filteredNews.length})</span>
                     </div>
                   </div>
@@ -549,7 +549,7 @@ export const ExecutiveIntelligenceSidebar: React.FC<ExecutiveIntelligenceSidebar
                         className="p-3 rounded-lg bg-[#0E1116] hover:bg-[#12161E] border border-white/5 hover:border-white/15 transition-all space-y-1.5"
                       >
                         <div className="flex items-center justify-between text-[9px] font-mono text-[#F2EEE6]/50 gap-2">
-                          <span className="text-[#F5B027] uppercase font-semibold">{news.category}</span>
+                          <span className="text-[#EF4444] uppercase font-semibold">{news.category}</span>
                           <span className="flex items-center gap-1">
                             <span>{news.source}</span>
                             <span>·</span>
@@ -589,15 +589,15 @@ export const ExecutiveIntelligenceSidebar: React.FC<ExecutiveIntelligenceSidebar
             {onOpenGraph && (
               <button
                 onClick={onOpenGraph}
-                className="flex-1 py-1.5 px-2.5 rounded bg-white/5 hover:bg-[#F5B027]/20 border border-white/10 hover:border-[#F5B027]/40 text-xs font-mono text-[#F2EEE6] flex items-center justify-center gap-1.5 transition-colors"
+                className="flex-1 py-1.5 px-2.5 rounded bg-white/5 hover:bg-[#EF4444]/20 border border-white/10 hover:border-[#EF4444]/40 text-xs font-mono text-[#F2EEE6] flex items-center justify-center gap-1.5 transition-colors"
               >
                 <span>View in Network Graph</span>
-                <ArrowRight size={11} className="text-[#F5B027]" />
+                <ArrowRight size={11} className="text-[#EF4444]" />
               </button>
             )}
             <button
               onClick={() => onOpenWorkspace && onOpenWorkspace('relationship-network')}
-              className="py-1.5 px-3 rounded bg-[#F5B027]/20 hover:bg-[#F5B027]/30 border border-[#F5B027]/40 text-xs font-mono text-[#F2EEE6] transition-colors"
+              className="py-1.5 px-3 rounded bg-[#EF4444]/20 hover:bg-[#EF4444]/30 border border-[#EF4444]/40 text-xs font-mono text-[#F2EEE6] transition-colors"
             >
               Open Full Record
             </button>

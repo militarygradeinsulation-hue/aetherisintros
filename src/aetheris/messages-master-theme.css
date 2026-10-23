@@ -374,7 +374,7 @@
 }
 :root[data-theme="light"] .ix-root .arch-product-main
  :is(.ix-option-tab,.ix-option-tile,.ix-tools button,.ops-tabs button,.insight-tabs button)
- :is(.text-red-400,.text-yellow-500) {
+ :is(.text-red-400,.text-red-500) {
  color:#233E53;
 }
 

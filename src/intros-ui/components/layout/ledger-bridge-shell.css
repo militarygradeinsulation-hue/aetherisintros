@@ -254,3 +254,20 @@
 .ledger-native-app .ledger-native-content {flex:1;min-height:0;overflow-y:auto;overscroll-behavior:contain}
 .ledger-ai-mono{display:inline-flex;align-items:flex-end;font:400 24px/1 Georgia,'Times New Roman',serif;letter-spacing:0}
 .ledger-ai-mono span:last-child{margin-left:-.32em;transform:translateY(.12em)}
+
+
+/* Persistent floating Butler, outside every embedded tool and scroll pane. */
+:root[data-theme] body .ix-root.ledger-native-app > .ix-assistant .ask-dock-fab {
+  position:fixed;z-index:150;right:22px;bottom:24px;min-height:48px;
+  display:inline-flex!important;align-items:center;gap:9px;padding:12px 16px;
+  border-radius:999px!important;background:#121212!important;color:#f5f5f0!important;
+  border:1px solid #ef4444!important;box-shadow:0 8px 28px rgba(0,0,0,.4)!important;
+  touch-action:none;cursor:grab;
+}
+:root[data-theme] body .ix-root.ledger-native-app > .ix-assistant .ask-dock-fab :is(span,svg) {color:inherit!important}
+:root[data-theme] body .ix-root.ledger-native-app > .ix-assistant .ask-dock {position:fixed;z-index:151;bottom:86px}
+@media(max-width:720px) {
+  :root[data-theme] body .ix-root.ledger-native-app > .ix-assistant .ask-dock-fab {right:14px;bottom:calc(84px + env(safe-area-inset-bottom,0px))}
+  :root[data-theme] body .ix-root.ledger-native-app > .ix-assistant .ask-dock {bottom:calc(146px + env(safe-area-inset-bottom,0px));max-height:calc(100dvh - 230px - env(safe-area-inset-bottom,0px))!important}
+}
+:root[data-theme] body .ix-root.ledger-native-app > .ix-assistant .ask-dock-fab > span {display:inline-flex!important}

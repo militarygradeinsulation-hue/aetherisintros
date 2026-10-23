@@ -37,7 +37,7 @@ export const EditorialFooter: React.FC<EditorialFooterProps> = ({ onNavigate }) 
       dotGap={7}
       radius={82}
       grain={0.28}
-      palette={theme === 'dark' ? { background: '#0c0c0b', ink: '#e9e4da', warm: '#e9762b' } : { background: '#efebe3', ink: '#17150f', warm: '#c2361c' }}
+      palette={theme === 'dark' ? { background: '#0c0c0b', ink: '#E9DADA', warm: '#EF4444' } : { background: '#efebe3', ink: '#17150f', warm: '#C21C1C' }}
     />
   </div>
   );

@@ -50,7 +50,7 @@ const AMBER = '#DC2626'
 const GOLD = '#B91C1C'
 const INK_LINE = 'rgba(255,255,255,.10)'
 const MUTED = '#9EA4AC'
-const PIE_COLORS = [COBALT, AMBER, '#B91C1C', GOLD, '#FFC85C', '#8C6A2B']
+const PIE_COLORS = [COBALT, AMBER, '#B91C1C', GOLD, '#FCA5A5', '#8C2B2B']
 
 const axis = { stroke: MUTED, fontSize: 11, tickLine: false as const }
 const tooltipStyle = {

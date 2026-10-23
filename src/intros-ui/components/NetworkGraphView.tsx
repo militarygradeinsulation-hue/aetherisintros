@@ -28,11 +28,11 @@ interface NetworkGraphViewProps {
 
 const CLUSTERS = [
   { id: 'all', label: 'All Clusters', color: '#F2EEE6' },
-  { id: 'capital', label: 'Capital & Syndicates', color: '#F5B027' },
+  { id: 'capital', label: 'Capital & Syndicates', color: '#EF4444' },
   { id: 'aerospace', label: 'Deep Tech & Aerospace', color: '#B91C1C' },
-  { id: 'sovereign', label: 'Sovereign Allocators', color: '#F5B027' },
-  { id: 'ai_deeptech', label: 'AI & Photonics', color: '#FFC85C' },
-  { id: 'enterprise', label: 'Enterprise Strategy', color: '#D7C29A' },
+  { id: 'sovereign', label: 'Sovereign Allocators', color: '#EF4444' },
+  { id: 'ai_deeptech', label: 'AI & Photonics', color: '#FCA5A5' },
+  { id: 'enterprise', label: 'Enterprise Strategy', color: '#D79A9A' },
 ];
 
 export const NetworkGraphView: React.FC<NetworkGraphViewProps> = ({
@@ -149,7 +149,7 @@ export const NetworkGraphView: React.FC<NetworkGraphViewProps> = ({
     // Helper color mapping
     const getClusterColor = (cluster: string) => {
       const found = CLUSTERS.find((c) => c.id === cluster);
-      return found ? found.color : '#F5B027';
+      return found ? found.color : '#EF4444';
     };
 
     // Node Outer Ring
@@ -193,7 +193,7 @@ export const NetworkGraphView: React.FC<NetworkGraphViewProps> = ({
       .attr('cy', (d) => -(d.val || 20) * 0.7)
       .attr('fill', (d) => {
         if (d.engagement === 'active') return '#B91C1C';
-        if (d.engagement === 'followup') return '#F5B027';
+        if (d.engagement === 'followup') return '#EF4444';
         return '#64748B';
       })
       .attr('stroke', '#0E1116')
@@ -231,7 +231,7 @@ export const NetworkGraphView: React.FC<NetworkGraphViewProps> = ({
         // Highlight connected links and nodes
         link
           .attr('stroke', (l: any) =>
-            l.source.id === d.id || l.target.id === d.id ? '#F5B027' : 'rgba(255, 255, 255, 0.05)'
+            l.source.id === d.id || l.target.id === d.id ? '#EF4444' : 'rgba(255, 255, 255, 0.05)'
           )
           .attr('stroke-width', (l: any) =>
             l.source.id === d.id || l.target.id === d.id ? 2.5 : 1
@@ -325,7 +325,7 @@ export const NetworkGraphView: React.FC<NetworkGraphViewProps> = ({
       {/* Top Header & Cluster Navigation Bar */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 p-5 rounded-xl bg-[#0E1116] border border-white/10">
         <div>
-          <div className="text-[10px] font-mono tracking-[0.25em] text-[#F5B027] uppercase font-bold">
+          <div className="text-[10px] font-mono tracking-[0.25em] text-[#EF4444] uppercase font-bold">
             Interactive Topology
           </div>
           <h2 className="font-serif-editorial text-2xl sm:text-3xl text-[#F2EEE6] mt-0.5">
@@ -341,10 +341,10 @@ export const NetworkGraphView: React.FC<NetworkGraphViewProps> = ({
           {onOpenPredictiveInsights && (
             <button
               onClick={onOpenPredictiveInsights}
-              className="px-3 py-1.5 rounded-lg bg-[#F5B027]/20 hover:bg-[#F5B027]/30 border border-[#F5B027]/50 text-white text-xs font-mono font-medium flex items-center gap-1.5 transition-all shadow-sm"
+              className="px-3 py-1.5 rounded-lg bg-[#EF4444]/20 hover:bg-[#EF4444]/30 border border-[#EF4444]/50 text-white text-xs font-mono font-medium flex items-center gap-1.5 transition-all shadow-sm"
               title="Run Predictive LLM Network Analysis"
             >
-              <Sparkles size={13} className="text-[#F5B027]" />
+              <Sparkles size={13} className="text-[#EF4444]" />
               <span>Predictive LLM Insights</span>
             </button>
           )}
@@ -396,7 +396,7 @@ export const NetworkGraphView: React.FC<NetworkGraphViewProps> = ({
 
         {/* Floating Controls (Top Left: Cluster Legend Stats) */}
         <div className="absolute top-4 left-4 p-3 rounded-lg bg-[#0E1116]/95 backdrop-blur-md border border-white/10 text-xs font-mono text-[#F2EEE6]/80 space-y-1 pointer-events-none">
-          <div className="text-[9px] uppercase tracking-wider text-[#F5B027] font-bold">
+          <div className="text-[9px] uppercase tracking-wider text-[#EF4444] font-bold">
             Network Clusters
           </div>
           <div className="text-[11px] font-sans flex items-center gap-3">
@@ -435,9 +435,9 @@ export const NetworkGraphView: React.FC<NetworkGraphViewProps> = ({
 
         {/* Subtle, High-Editorial Tooltip on Hover explaining specific metric calculation */}
         {hoveredNode && (
-          <div className="absolute bottom-4 left-4 max-w-sm p-4 rounded-xl bg-[#090C11]/95 backdrop-blur-xl border border-[#F5B027]/40 shadow-2xl text-xs space-y-2 pointer-events-none animate-in fade-in duration-150 z-30">
+          <div className="absolute bottom-4 left-4 max-w-sm p-4 rounded-xl bg-[#090C11]/95 backdrop-blur-xl border border-[#EF4444]/40 shadow-2xl text-xs space-y-2 pointer-events-none animate-in fade-in duration-150 z-30">
             <div className="flex items-center justify-between gap-2 border-b border-white/10 pb-1.5">
-              <span className="text-[9px] font-mono uppercase text-[#F5B027] font-semibold">
+              <span className="text-[9px] font-mono uppercase text-[#EF4444] font-semibold">
                 {hoveredNode.clusterLabel}
               </span>
               <span className="text-[11px] font-mono text-[#B91C1C] font-bold tabular-nums">
@@ -454,7 +454,7 @@ export const NetworkGraphView: React.FC<NetworkGraphViewProps> = ({
 
             {/* High-Editorial Calculation Explanation */}
             <div className="p-2 rounded bg-black/40 border border-white/5 space-y-1">
-              <div className="text-[8.5px] font-mono text-[#F5B027] uppercase font-bold tracking-wider flex items-center gap-1">
+              <div className="text-[8.5px] font-mono text-[#EF4444] uppercase font-bold tracking-wider flex items-center gap-1">
                 <Calculator size={10} />
                 <span>Formula: 0.35R + 0.30F + 0.20ρ + 0.15M</span>
               </div>
@@ -467,7 +467,7 @@ export const NetworkGraphView: React.FC<NetworkGraphViewProps> = ({
                 </div>
                 <div className="flex justify-between">
                   <span className="text-white/50">Frequency (F: 30%):</span>
-                  <span className="text-[#F5B027] font-semibold">
+                  <span className="text-[#EF4444] font-semibold">
                     {Math.min(100, Math.round(hoveredNode.connectionScore * 0.97))}%
                   </span>
                 </div>
@@ -479,7 +479,7 @@ export const NetworkGraphView: React.FC<NetworkGraphViewProps> = ({
                 </div>
                 <div className="flex justify-between">
                   <span className="text-white/50">Mutuals (M: 15%):</span>
-                  <span className="text-[#F5B027] font-semibold">
+                  <span className="text-[#EF4444] font-semibold">
                     {Math.min(100, Math.round(hoveredNode.connectionScore * 1.02))}%
                   </span>
                 </div>
@@ -491,7 +491,7 @@ export const NetworkGraphView: React.FC<NetworkGraphViewProps> = ({
 
             <div className="pt-0.5 flex items-center justify-between text-[9px] font-mono text-[#F2EEE6]/50">
               <span className="capitalize">Engagement: {hoveredNode.engagement}</span>
-              <span className="text-[#F5B027] font-medium">Click to inspect executive dossier →</span>
+              <span className="text-[#EF4444] font-medium">Click to inspect executive dossier →</span>
             </div>
           </div>
         )}
