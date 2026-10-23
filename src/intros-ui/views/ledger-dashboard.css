@@ -95,3 +95,8 @@
 .ledger-customize-dialog>footer{display:flex;justify-content:space-between;gap:10px;padding:15px 20px;border-top:1px solid var(--ledger-crm-border)}
 .ledger-customize-dialog :is(button,input):focus-visible{outline:2px solid var(--ledger-crm-accent)!important;outline-offset:2px}
 @media(max-width:540px){.ledger-customize-backdrop{align-items:center;padding:12px}.ledger-customize-dialog>header{padding:16px}.ledger-customize-options{padding:7px 16px}.ledger-customize-dialog>footer{padding:12px 16px}.ledger-customize-dialog>footer button{flex:1}}
+
+:root body .ix-root.ledger-native-app .ledger-customize-dialog .ledger-ui-button.primary {
+  background:#b91c1c!important;color:#fff!important;-webkit-text-fill-color:#fff!important;
+  border-color:#b91c1c!important;
+}

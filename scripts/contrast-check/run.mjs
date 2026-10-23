@@ -163,6 +163,7 @@ try {
   await page.locator('.ledger-directory-actions button[title="Request introduction"]').first().click();
   await check(page,'request-intro-modal','[role=dialog], .fixed.inset-0 > div','');
   await page.keyboard.press('Escape');
+  ok(await page.getByRole('dialog', {name:/^Request introduction to /}).count()===0,'Escape dismisses introduction request before workspace navigation');
   await nav.getByRole('button',{name:'CRM pipeline'}).click();
   await page.locator('.ledger-workspace-modules').waitFor({state:'visible',timeout:30000});
   await check(page,'operations-module-navigation','.ledger-workspace-modules','');

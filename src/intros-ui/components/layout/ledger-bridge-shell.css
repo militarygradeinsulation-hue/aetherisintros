@@ -245,3 +245,10 @@
 
 /* Touch target stays at least 44 CSS pixels across phone and tablet CRM layouts. */
 @media(max-width:1120px){.ledger-crm-shell .ledger-native-menu{min-width:44px!important;min-height:44px!important;width:44px!important;height:44px!important}}
+
+/* The production host is viewport-bound. Give its content pane explicit scroll
+   ownership so long directories and tool pages are never clipped by that host. */
+.ledger-native-app .ledger-crm-shell {height:100dvh;min-height:0;overflow:hidden}
+.ledger-native-app .ledger-crm-body {height:100%;min-height:0;display:flex;flex-direction:column}
+.ledger-native-app .ledger-crm-topbar {flex:none}
+.ledger-native-app .ledger-native-content {flex:1;min-height:0;overflow-y:auto;overscroll-behavior:contain}

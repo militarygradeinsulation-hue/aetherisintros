@@ -100,6 +100,16 @@ try {
     check(await nav.isVisible(),'CRM sidebar expands without navigation loss')
   }
 
+  const reachability=await page.evaluate(()=>{
+    const pane=document.getElementById('aetheris-workspace-content');
+    const last=document.querySelector('.ledger-directory-table tbody tr:last-child');
+    last?.scrollIntoView({block:'end'});
+    const row=last?.getBoundingClientRect(),area=pane?.getBoundingClientRect();
+    return {scroll:pane?.scrollTop,needsScroll:!!pane&&pane.scrollHeight>pane.clientHeight+2,
+      lastReachable:!!row&&!!area&&row.top>=area.top-2&&row.bottom<=area.bottom+2};
+  });
+  check(reachability.lastReachable,'last contact row can scroll into the content viewport')
+  check(!reachability.needsScroll||reachability.scroll>0,'long CRM directory has a working scroll pane')
   check(!errors.length,'no unhandled JavaScript errors in demo')
   await page.close()
  }
