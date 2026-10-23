@@ -17,3 +17,5 @@
 .vision-page .vs-toolbar-actions>a {display:inline-flex;flex-shrink:0;align-items:center;justify-content:center;text-decoration:none;}
 .vision-page .vs-toolbar-actions>a:focus-visible,.vision-page .vs-notification-popover a:focus-visible {outline:2px solid #ffc28c;outline-offset:3px;border-radius:5px;}
 @media (max-width: 560px) {.vision-page .vs-live-action-copy {font-size:12px;} .vision-page .vs-notification-popover {right:2px;max-width:min(300px, calc(100vw - 24px));}}
+
+.vision-page .vs-logo{display:block;height:46px;width:auto}.vision-page .vs-logo-small{height:32px}@media(max-width:560px){.vision-page .vs-topline .vs-logo{height:38px}}
