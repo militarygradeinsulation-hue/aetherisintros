@@ -6,6 +6,7 @@ import type { LucideIcon } from 'lucide-react';
 import { Brain, BriefcaseBusiness, CalendarDays, FileText, Handshake, Layers,
   LayoutGrid, Network, Package, Settings, Sparkles, Target, Users } from 'lucide-react';
 import { PageHeader } from '@/intros-ui/components/layout/LedgerUiKit';
+import { MEMBER_TOOL_DESTINATIONS } from '@/intros-ui/components/layout/AetherisWorkspaceShell';
 import './ledger-workspace.css';
 
 const GROUPS: Array<{ title: string; modules: [string, string, LucideIcon][] }> = [
@@ -24,6 +25,14 @@ const GROUPS: Array<{ title: string; modules: [string, string, LucideIcon][] }> 
   ] },
   { title: 'Admin', modules: [['profile','My profile',Users],['preferences','Settings',Settings]] },
 ];
+// Preserve every real Ask Intros tool introduced after Bridge was branched.
+// Each target originates in the production workspace registry and is handled
+// by the existing AetherisAppSurface and its authenticated data providers.
+const alreadyListed = new Set(GROUPS.flatMap(group => group.modules.map(([id]) => id)));
+const additional = MEMBER_TOOL_DESTINATIONS
+  .filter(item => item.workspace && !alreadyListed.has(item.workspace))
+  .map(item => [item.workspace!, item.label, item.icon] as [string, string, LucideIcon]);
+if (additional.length) GROUPS.push({ title: 'More tools', modules: additional });
 // Alphabetize module options inside each CRM section on every viewport.
 for (const group of GROUPS) {
   group.modules.sort((a, b) => a[1].localeCompare(b[1], 'en', { sensitivity: 'base' }));
