@@ -54,6 +54,8 @@ export interface DraggableWidgetGridProps {
 	renderItem?: (item: WidgetItem, size: WidgetSize) => ReactNode
 	/** Enables dragging and keyboard moves. */
 	editable?: boolean
+	/** Disable the built-in hover transform when the host supplies its own lift. */
+	hoverLift?: boolean
 	/** Upper bound for the number of columns. */
 	maxColumns?: number
 	/** Target cell width in px; the column count is derived from it. */
@@ -458,6 +460,7 @@ const Widget = memo(function Widget({
 	columns,
 	rows,
 	editable,
+	hoverLift,
 	held,
 	raised,
 	landed,
@@ -475,6 +478,7 @@ const Widget = memo(function Widget({
 	columns: number
 	rows: number
 	editable: boolean
+	hoverLift: boolean
 	held: boolean
 	raised: boolean
 	landed: boolean
@@ -628,7 +632,7 @@ const Widget = memo(function Widget({
 			<motion.div
 				initial={{ opacity: 0, y: 18, scale: 0.97 }}
 				animate={{ opacity: 1, y: 0, scale: 1 }}
-				{...(held ? {} : { whileHover: { y: -4, scale: 1.02, transition: { type: 'spring', stiffness: 320, damping: 24 } } })}
+				{...(held || !hoverLift ? {} : { whileHover: { y: -4, scale: 1.02, transition: { type: 'spring', stiffness: 320, damping: 24 } } })}
 				transition={{
 					type: 'spring',
 					visualDuration: 0.6,
@@ -653,6 +657,7 @@ export function DraggableWidgetGrid({
 	onChange,
 	renderItem,
 	editable = true,
+	hoverLift = true,
 	maxColumns = 4,
 	cellSize = 215,
 	rowHeight,
@@ -936,6 +941,7 @@ export function DraggableWidgetGrid({
 								columns={columns}
 								rows={rows}
 								editable={editable}
+								hoverLift={hoverLift}
 								held={held === p.id}
 								raised={raised === p.id}
 								landed={landed === p.id}

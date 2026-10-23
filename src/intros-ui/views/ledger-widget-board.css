@@ -1,0 +1,71 @@
+.ledger-dashboard-views {display:flex;align-items:center;gap:6px;border-bottom:1px solid var(--ledger-crm-border);padding-bottom:10px}
+.ledger-dashboard-views button {min-height:40px;padding:9px 14px;border:1px solid var(--ledger-crm-border);color:var(--ledger-crm-ink);background:var(--ledger-crm-surface);font:600 12px system-ui,sans-serif}
+.ledger-dashboard-views button[aria-pressed="true"] {border-color:var(--ledger-crm-accent);background:color-mix(in srgb,var(--ledger-crm-accent) 12%,var(--ledger-crm-surface))}
+.ledger-dashboard-view {display:flex;flex-direction:column;gap:17px;min-width:0}
+.ledger-dashboard-view[hidden] {display:none!important}
+.ledger-widget-board {min-width:0;color:var(--ledger-crm-ink)}
+.ledger-widget-toolbar {display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:14px;margin-bottom:16px}
+.ledger-widget-toolbar h2 {margin:0 0 5px;font:500 24px Georgia,serif;color:var(--ledger-crm-ink)}
+.ledger-widget-toolbar p {margin:0;max-width:640px;color:var(--ledger-crm-muted);font:400 12px/1.6 system-ui,sans-serif}
+.ledger-widget-toolbar > div:last-child {display:flex;gap:8px;flex-wrap:wrap}
+.ledger-widget-toolbar button {min-height:40px;display:flex;align-items:center;gap:7px;padding:9px 12px;border:1px solid var(--ledger-crm-border);background:var(--ledger-crm-surface);color:var(--ledger-crm-ink);font:500 12px system-ui,sans-serif}
+.ledger-widget-toolbar button:hover {border-color:var(--ledger-crm-accent)}
+.ledger-widget-board [data-slot="widget"] > div {background:var(--ledger-crm-surface)!important;color:var(--ledger-crm-ink)!important;border:1px solid var(--ledger-crm-border)}
+.ledger-widget-board [data-slot="widget"]:focus-visible {outline:2px solid var(--ledger-crm-accent);outline-offset:3px}
+.ledger-widget-card {display:flex;flex-direction:column;gap:12px;min-width:0;height:100%;padding:18px}
+.ledger-widget-card > header {display:flex;align-items:center;gap:8px;min-width:0;flex:none}
+.ledger-widget-card > header > svg {color:var(--ledger-crm-accent);flex:none}
+.ledger-widget-card h3 {margin:0;flex:1;min-width:0;color:var(--ledger-crm-muted);font:600 11px/1.4 system-ui,sans-serif;letter-spacing:.04em;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ledger-widget-card select {max-width:68px;min-height:32px;background:var(--ledger-crm-raised);color:var(--ledger-crm-ink);border:1px solid var(--ledger-crm-border);padding:4px;font:400 11px system-ui,sans-serif}
+.ledger-widget-body {display:flex;flex-direction:column;gap:10px;flex:1;min-height:0;min-width:0;overflow:auto;overscroll-behavior:contain}
+.ledger-widget-body p,.ledger-widget-body li {color:var(--ledger-crm-muted);font:400 12px/1.6 system-ui,sans-serif;margin:0;overflow-wrap:anywhere}
+.ledger-widget-body ul {margin:0;padding-left:17px}
+.ledger-widget-metric {display:flex;align-items:baseline;flex-wrap:wrap;gap:8px;min-width:0}
+.ledger-widget-metric > strong {font:500 38px/1.1 Georgia,serif;color:var(--ledger-crm-ink)}
+.ledger-widget-metric > span {font:400 12px/1.5 system-ui,sans-serif;color:var(--ledger-crm-muted)}
+.ledger-widget-message {font:500 23px/1.25 Georgia,serif;color:var(--ledger-crm-ink);overflow-wrap:anywhere}
+.ledger-widget-action {display:flex;align-items:center;justify-content:space-between;gap:8px;flex:none;text-align:left;width:100%;min-height:36px;border:0;border-top:1px solid var(--ledger-crm-border);padding:10px 0 0;background:transparent;color:var(--ledger-crm-accent);font:600 11px/1.4 system-ui,sans-serif}
+.ledger-widget-action svg {flex:none}
+.ledger-widget-bars {display:grid;gap:7px}
+.ledger-widget-bars > div {display:grid;grid-template-columns:minmax(65px,1fr) minmax(35px,2fr) 24px;align-items:center;gap:10px;font:400 11px/1.4 system-ui,sans-serif;color:var(--ledger-crm-muted)}
+.ledger-widget-bars i {height:5px;background:var(--ledger-crm-raised);overflow:hidden}
+.ledger-widget-bars b {display:block;height:100%;background:var(--ledger-crm-accent)}
+.ledger-widget-bars strong {text-align:right;color:var(--ledger-crm-ink)}
+.ledger-widget-people {display:grid;gap:5px}
+.ledger-widget-people button {display:flex;align-items:center;gap:8px;width:100%;border:0;background:transparent;color:var(--ledger-crm-ink);padding:3px 0;text-align:left;min-width:0}
+.ledger-widget-people span {width:23px;height:23px;display:grid;place-items:center;flex:none;border:1px solid var(--ledger-crm-border);font:600 9px system-ui,sans-serif}
+.ledger-widget-people b {font:500 11px system-ui,sans-serif;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ledger-widget-events {display:grid;gap:9px;margin:0;padding:0;list-style:none}
+.ledger-widget-events li {display:flex;align-items:baseline;justify-content:space-between;gap:12px}
+.ledger-widget-events time {flex:none;font-size:10px}
+@media(max-width:550px){.ledger-widget-card {padding:12px;gap:9px}.ledger-widget-metric > strong {font-size:30px}.ledger-widget-card > header {gap:5px}.ledger-widget-card select {max-width:55px}.ledger-widget-message {font-size:20px}.ledger-widget-toolbar > div:last-child {width:100%}.ledger-widget-toolbar button {flex:1;justify-content:center}.ledger-widget-events li {flex-wrap:wrap;gap:3px}}
+
+/* Rounded bento surfaces and quiet lighting from the supplied finance
+   reference, adapted to Ask Intros' colors and real relationship records. */
+.ledger-dashboard {--dashboard-radius:24px}
+:root body .ix-root.ledger-native-app .ledger-dashboard .ledger-ui-page-header h1 {font-family:ui-sans-serif,system-ui,sans-serif!important;font-weight:650!important;letter-spacing:-.045em}
+:root body .ix-root.ledger-native-app .ledger-dashboard :is(.ledger-ui-stat,.ledger-ui-panel) {border-radius:var(--dashboard-radius)!important;overflow:hidden;border-color:var(--ledger-crm-border);box-shadow:inset 0 1px 0 color-mix(in srgb,var(--ledger-crm-ink) 6%,transparent)}
+.ledger-dashboard .ledger-ui-stat {padding:20px 22px;background:linear-gradient(145deg,color-mix(in srgb,var(--ledger-crm-ink) 3%,var(--ledger-crm-surface)),var(--ledger-crm-surface));transition:border-color .2s,background .2s}
+.ledger-dashboard .ledger-ui-stat:first-child {background:radial-gradient(ellipse at 80% 150%,color-mix(in srgb,var(--ledger-crm-accent) 28%,transparent),transparent 80%),var(--ledger-crm-surface)}
+.ledger-dashboard .ledger-ui-stat strong {font-family:ui-sans-serif,system-ui,sans-serif;font-weight:350;font-variant-numeric:tabular-nums;letter-spacing:-.045em}
+.ledger-dashboard .ledger-ui-stat-title {letter-spacing:.065em;font-weight:550}
+.ledger-dashboard .ledger-ui-panel-heading h2 {letter-spacing:.04em;font-weight:600!important}
+.ledger-dashboard-views {width:fit-content;padding:4px;gap:3px;background:var(--ledger-crm-raised);border:1px solid var(--ledger-crm-border);border-radius:16px}
+:root body .ix-root.ledger-native-app .ledger-dashboard .ledger-dashboard-views button {border-radius:12px!important;border:0;background:transparent;min-height:36px;color:var(--ledger-crm-muted)}
+:root body .ix-root.ledger-native-app .ledger-dashboard .ledger-dashboard-views button[aria-pressed="true"] {background:var(--ledger-crm-ink);color:var(--ledger-crm-bg)}
+.ledger-widget-toolbar h2 {font-family:ui-sans-serif,system-ui,sans-serif;font-weight:600;letter-spacing:-.03em}
+:root body .ix-root.ledger-native-app .ledger-widget-toolbar button {border-radius:12px!important}
+.ledger-widget-board [data-slot="widget"] > div {box-shadow:inset 0 1px 0 color-mix(in srgb,var(--ledger-crm-ink) 6%,transparent);background:linear-gradient(145deg,color-mix(in srgb,var(--ledger-crm-ink) 3%,var(--ledger-crm-surface)),var(--ledger-crm-surface))!important}
+.ledger-widget-board [data-widget-id="pipeline"] > div {background:radial-gradient(ellipse at 70% 120%,color-mix(in srgb,var(--ledger-crm-accent) 28%,transparent),transparent 72%),var(--ledger-crm-surface)!important}
+.ledger-widget-card {padding:20px 22px}
+.ledger-widget-card > header {display:grid;grid-template-columns:16px minmax(0,1fr) auto}
+.ledger-widget-card > header > label {grid-column:1/-1;justify-self:end}
+.ledger-widget-metric > strong {font-family:ui-sans-serif,system-ui,sans-serif;font-size:46px;font-weight:300;letter-spacing:-.055em;font-variant-numeric:tabular-nums}
+.ledger-widget-message {font-family:ui-sans-serif,system-ui,sans-serif;font-weight:450;font-size:23px;letter-spacing:-.035em;line-height:1.25}
+.ledger-widget-action {color:var(--ledger-crm-ink);font-weight:550}
+.ledger-widget-action:hover {color:var(--ledger-crm-accent)}
+.ledger-widget-bars i,.ledger-widget-bars b {border-radius:8px}
+:root body .ix-root.ledger-native-app .ledger-widget-board :is(h2,h3,p,button,select,li,time) {font-family:ui-sans-serif,system-ui,sans-serif!important}
+:root body .ix-root.ledger-native-app .ledger-widget-toolbar h2 {font-size:24px!important;font-weight:600!important;text-transform:none!important;letter-spacing:-.03em!important}
+:root body .ix-root.ledger-native-app .ledger-widget-card h3 {font:550 12px/1.4 ui-sans-serif,system-ui,sans-serif!important;letter-spacing:0!important;text-transform:none!important}
+@media(max-width:550px){.ledger-dashboard {--dashboard-radius:20px}.ledger-dashboard .ledger-ui-stat {padding:16px}.ledger-widget-card {padding:15px}.ledger-widget-metric > strong {font-size:36px}.ledger-widget-message {font-size:19px}}

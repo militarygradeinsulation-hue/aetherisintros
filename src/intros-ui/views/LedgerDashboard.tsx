@@ -7,6 +7,8 @@ import type { FeedPost, NetworkMember } from '@/intros-ui/networkData';
 import type { ActivePage } from '@/intros-ui/components/layout/TopNavigation';
 import { PageHeader, Panel, StatCard } from '@/intros-ui/components/layout/LedgerUiKit';
 import './ledger-dashboard.css';
+import { LedgerWidgetBoard } from './LedgerWidgetBoard';
+import './ledger-widget-board.css';
 
 type PanelKey = 'activity' | 'people' | 'actions' | 'priorities';
 const DASHBOARD_PREFERENCES = 'ask-intros.crm.dashboard.panels.v1';
@@ -24,6 +26,7 @@ interface LedgerDashboardProps {
   unreadCount: number | null;
   onNavigate: (page: ActivePage, memberId?: string) => void;
   onOpenTool?: (tool: string) => void;
+  onOpenPipeline?: () => void;
   onRequestIntro: (member: NetworkMember) => void;
   onAddPost: (content: string, badge?: FeedPost['badge']) => void;
   onLikePost: (postId: string) => void;
@@ -32,8 +35,10 @@ interface LedgerDashboardProps {
 
 export function LedgerDashboard({
   posts, members, live, socialFeed, actionQueue, liveOverview, unreadCount,
-  onNavigate, onRequestIntro, onAddPost, onLikePost, onSavePost, onOpenTool,
+  onNavigate, onRequestIntro, onAddPost, onLikePost, onSavePost, onOpenTool, onOpenPipeline,
 }: LedgerDashboardProps) {
+  const [view, setView] = useState<'activity' | 'board'>('activity');
+  const [boardVisited, setBoardVisited] = useState(false);
   const [draft, setDraft] = useState('');
   const [feedTab, setFeedTab] = useState<'all' | 'saved'>('all');
   const [customizeOpen, setCustomizeOpen] = useState(false);
@@ -87,6 +92,11 @@ export function LedgerDashboard({
         <button type="button" className="ledger-ui-button primary" onClick={() => onNavigate('intros')}><Plus size={16}/> Request intro</button>
       </>} />
 
+    <div className="ledger-dashboard-views" role="group" aria-label="Dashboard view">
+      <button type="button" aria-pressed={view === 'activity'} aria-controls="dashboard-activity-view" onClick={() => setView('activity')}>Activity feed</button>
+      <button type="button" aria-pressed={view === 'board'} aria-controls="dashboard-widget-view" onClick={() => { setBoardVisited(true); setView('board'); }}>My board</button>
+    </div>
+    <section id="dashboard-activity-view" className="ledger-dashboard-view" hidden={view !== 'activity'}>
     <div className="ledger-dashboard-stats">
       <StatCard label="Members in view" value={String(members.length)} hint={live ? 'Verified live directory' : 'Showcase directory'}
         icon={<Users size={17}/>} onClick={() => onNavigate('people')}/>
@@ -170,6 +180,10 @@ export function LedgerDashboard({
         {panels.priorities && actionQueue && <Panel title="Weekly priorities" subtitle="Your live member action queue" bodyClassName="ledger-priorities">{actionQueue}</Panel>}
       </div>
     </div>
+    </section>
+    <section id="dashboard-widget-view" className="ledger-dashboard-view" hidden={view !== 'board'}>
+      {boardVisited && <LedgerWidgetBoard members={members} unreadCount={unreadCount} live={live} onNavigate={onNavigate} onOpenTool={onOpenTool} onOpenPipeline={onOpenPipeline}/>}
+    </section>
     {customizeOpen && <div className="ledger-customize-backdrop" onMouseDown={event => {
       if (event.target === event.currentTarget) setCustomizeOpen(false);
     }}>

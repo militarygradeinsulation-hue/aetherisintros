@@ -346,6 +346,7 @@ export default function App({ mode = 'demo', executiveAction, initialPage, initi
       <main className="flex-1 arch-product-main" data-arch-page={activePage}>
         {activePage === 'home' && (
           <LedgerDashboard
+            onOpenPipeline={() => { setCrmSection('pipeline'); setClassicPage('crm'); handleNavigate('workspace'); }}
             posts={feedPosts}
             onNavigate={handleNavigate}
             onOpenTool={tool => { setClassicPage(tool); handleNavigate('workspace'); }}
