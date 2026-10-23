@@ -1,0 +1,20 @@
+.ledger-introductions {display:flex;flex-direction:column;gap:16px;min-width:0}
+.ledger-intros-grid {display:grid;grid-template-columns:minmax(0,1.8fr) minmax(270px,1fr);align-items:start;gap:13px}
+.ledger-intros-main {min-width:0}
+.ledger-intros-list {padding:0}
+.ledger-intros-filters {display:flex;align-items:center;gap:8px;border-bottom:1px solid var(--ledger-crm-border);padding:8px 13px}
+.ledger-intros-filters button {background:transparent;border:0;border-bottom:2px solid transparent;color:var(--ledger-crm-muted);font-size:12px;text-transform:capitalize;padding:10px 8px}
+.ledger-intros-filters button[aria-pressed="true"] {border-color:var(--ledger-crm-accent);color:var(--ledger-crm-ink)}
+.ledger-intro-row {display:flex;align-items:center;gap:12px;justify-content:space-between;padding:17px;border-bottom:1px solid var(--ledger-crm-border)}
+.ledger-intro-row h3 {display:flex;align-items:center;gap:8px;margin:7px 0;font:500 18px/1.4 "Playfair Display",Georgia,serif!important;color:var(--ledger-crm-ink)!important}
+.ledger-intro-row p {font-size:12px;line-height:1.55;color:var(--ledger-crm-ink);margin:5px 0}
+.ledger-intro-row small {font-size:10px;color:var(--ledger-crm-muted)}
+.ledger-intro-status {font:700 9px system-ui,sans-serif;letter-spacing:.13em;text-transform:uppercase;color:var(--ledger-crm-accent);border:1px solid var(--ledger-crm-border);padding:4px 6px}
+.ledger-intro-row-actions {display:flex;gap:6px;flex-wrap:wrap;flex:none}
+.ledger-intros-people {padding:0}
+.ledger-intro-builder-button {display:flex;align-items:center;gap:8px;margin:14px 17px;border:1px solid var(--ledger-crm-border);padding:9px 11px;background:var(--ledger-crm-raised);color:var(--ledger-crm-ink);font-size:11px}
+.ledger-intro-builder-button:hover {border-color:var(--ledger-crm-accent)}
+.ledger-intros-list .ix-classic {min-width:0;max-width:100%;overflow-x:clip}
+.ledger-intros-list .ix-classic > .absolute-ledger-shell {max-width:100%}
+@media(max-width:1050px){.ledger-intros-grid {grid-template-columns:minmax(0,1fr)}}
+@media(max-width:580px){.ledger-intro-row {flex-direction:column;align-items:stretch}.ledger-intro-row-actions {justify-content:start}}

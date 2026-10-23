@@ -1,0 +1,69 @@
+/* Actual Absolute Ledger dashboard structure, ported from CRM index + ui-kit */
+.ledger-dashboard {display:flex;flex-direction:column;gap:17px;min-width:0}
+.ledger-ui-page-header {display:flex;flex-wrap:wrap;align-items:end;justify-content:space-between;gap:17px;padding-bottom:21px;border-bottom:1px solid var(--ledger-crm-border)}
+.ledger-ui-eyebrow {margin:0;font:700 10px/1.4 system-ui,sans-serif;letter-spacing:.27em;text-transform:uppercase;color:var(--ledger-crm-accent)}
+.ledger-ui-page-header h1 {font:500 clamp(27px,3vw,37px)/1.2 "Playfair Display",Georgia,serif!important;letter-spacing:-.025em;color:var(--ledger-crm-ink);margin:6px 0 0}
+.ledger-ui-description {margin:5px 0 0;font-size:13px;line-height:1.5;color:var(--ledger-crm-muted)}
+.ledger-ui-header-actions {display:flex;align-items:center;flex-wrap:wrap;gap:8px}
+.ledger-ui-button {display:inline-flex;align-items:center;justify-content:center;gap:7px;min-height:37px;padding:8px 12px;border:1px solid var(--ledger-crm-border);background:var(--ledger-crm-surface);color:var(--ledger-crm-ink);font:650 11px system-ui,sans-serif;text-transform:uppercase;letter-spacing:.09em;border-radius:0!important}
+.ledger-ui-button:hover {border-color:var(--ledger-crm-accent)}
+.ledger-ui-button.primary {background:var(--ledger-crm-accent);border-color:var(--ledger-crm-accent);color:#090909}
+.ledger-ui-button.primary:hover {filter:brightness(.93)}
+.ledger-ui-button:disabled {opacity:.45;cursor:not-allowed}
+.ledger-dashboard-stats {display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:11px}
+.ledger-ui-stat {display:flex;flex-direction:column;align-items:stretch;min-width:0;text-align:left;border:1px solid var(--ledger-crm-border);background:var(--ledger-crm-surface);padding:17px 18px;color:var(--ledger-crm-ink);min-height:125px;border-radius:0!important}
+.ledger-ui-stat-action:hover {border-color:var(--ledger-crm-accent);background:var(--ledger-crm-raised)}
+.ledger-ui-stat-title {display:flex;align-items:center;justify-content:space-between;gap:8px;color:var(--ledger-crm-muted);font:700 10px/1.4 system-ui,sans-serif;letter-spacing:.17em;text-transform:uppercase}
+.ledger-ui-stat-title svg {color:var(--ledger-crm-accent)}
+.ledger-ui-stat strong {font:500 clamp(24px,2.7vw,34px)/1.2 "Playfair Display",Georgia,serif;margin:13px 0 6px;word-break:break-word}
+.ledger-ui-stat p {font-size:11px;line-height:1.3;color:var(--ledger-crm-muted);margin:0}
+.ledger-dashboard-grid {display:grid;grid-template-columns:minmax(0,1.75fr) minmax(285px,1fr);gap:12px;align-items:start}
+.ledger-dashboard-primary,.ledger-dashboard-secondary {display:flex;flex-direction:column;gap:12px;min-width:0}
+.ledger-ui-panel {min-width:0;border:1px solid var(--ledger-crm-border);background:var(--ledger-crm-surface);border-radius:0!important}
+.ledger-ui-panel-heading {display:flex;justify-content:space-between;align-items:center;gap:10px;min-height:66px;padding:12px 17px;border-bottom:1px solid var(--ledger-crm-border)}
+.ledger-ui-panel-heading h2 {font:700 11px/1.45 system-ui,sans-serif!important;letter-spacing:.16em;text-transform:uppercase;margin:0;color:var(--ledger-crm-ink)}
+.ledger-ui-panel-heading p {font-size:11px;line-height:1.45;color:var(--ledger-crm-muted);margin:3px 0 0}
+.ledger-ui-panel-body {padding:17px}
+.ledger-ui-link {border:0;background:transparent;color:var(--ledger-crm-accent);display:inline-flex;align-items:center;gap:5px;font:700 10px system-ui,sans-serif;letter-spacing:.08em;text-transform:uppercase;white-space:nowrap}
+.ledger-feed-body,.ledger-people-list {padding:0}
+.ledger-feed-composer {padding:17px;border-bottom:1px solid var(--ledger-crm-border);display:flex;flex-direction:column;gap:10px}
+.ledger-feed-composer label {font-size:11px;font-weight:650;color:var(--ledger-crm-ink)}
+.ledger-feed-composer textarea {width:100%;resize:vertical;min-height:72px;border:1px solid var(--ledger-crm-border);background:var(--ledger-crm-bg);color:var(--ledger-crm-ink);padding:12px;font-size:13px;line-height:1.5;border-radius:0!important}
+.ledger-feed-composer textarea::placeholder {color:var(--ledger-crm-muted)}
+.ledger-feed-composer > div {display:flex;align-items:center;justify-content:space-between;gap:10px}
+.ledger-feed-composer > div > span {font-size:11px;color:var(--ledger-crm-muted)}
+.ledger-feed-tabs {display:flex;border-bottom:1px solid var(--ledger-crm-border);gap:3px;padding:0 14px}
+.ledger-feed-tabs button {background:transparent;color:var(--ledger-crm-muted);padding:13px 10px;border:0;border-bottom:2px solid transparent;font-size:12px}
+.ledger-feed-tabs button[aria-pressed="true"] {color:var(--ledger-crm-ink);border-color:var(--ledger-crm-accent)}
+.ledger-feed-items {min-width:0}
+.ledger-feed-entry {padding:17px;border-bottom:1px solid var(--ledger-crm-border)}
+.ledger-feed-entry:last-child {border-bottom:0}
+.ledger-feed-entry > header {display:flex;gap:11px;align-items:center;min-width:0}
+.ledger-feed-initial,.ledger-person-initial {display:grid;place-items:center;width:36px;height:36px;flex:none;background:var(--ledger-crm-raised);border:1px solid var(--ledger-crm-border);color:var(--ledger-crm-ink);font:700 11px system-ui,sans-serif}
+.ledger-feed-entry > header > div {min-width:0;flex:1}
+.ledger-feed-entry > header strong,.ledger-person strong {color:var(--ledger-crm-ink);font-size:12px}
+.ledger-feed-entry > header p {font-size:10px;line-height:1.4;color:var(--ledger-crm-muted);margin:3px 0 0}
+.ledger-feed-entry time {font-size:10px;color:var(--ledger-crm-muted)}
+.ledger-feed-content {font-size:13px;line-height:1.7;white-space:pre-wrap;overflow-wrap:anywhere;margin:13px 0;color:var(--ledger-crm-ink)}
+.ledger-feed-entry > footer {display:flex;align-items:center;flex-wrap:wrap;gap:8px;border-top:1px solid var(--ledger-crm-border);padding-top:12px}
+.ledger-feed-entry > footer button {display:inline-flex;align-items:center;gap:6px;color:var(--ledger-crm-muted);border:1px solid var(--ledger-crm-border);background:transparent;font-size:11px;padding:6px 9px}
+.ledger-feed-entry > footer button[aria-pressed="true"] {color:var(--ledger-crm-accent)}
+.ledger-feed-badge {margin-right:auto;color:var(--ledger-crm-accent);font-size:10px;letter-spacing:.1em;text-transform:uppercase}
+.ledger-person {display:flex;gap:8px;align-items:center;padding:12px 15px;border-bottom:1px solid var(--ledger-crm-border)}
+.ledger-person:last-child {border-bottom:0}
+.ledger-person-main {display:flex;align-items:center;gap:10px;flex:1;min-width:0;text-align:left;background:transparent;border:0;color:var(--ledger-crm-ink);padding:0}
+.ledger-person-main > span:last-child {min-width:0;display:grid;gap:3px}
+.ledger-person small {display:block;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:10px;color:var(--ledger-crm-muted)}
+.ledger-person-intro {flex:none;display:grid;place-items:center;width:32px;height:32px;border:1px solid var(--ledger-crm-border);background:transparent;color:var(--ledger-crm-accent)}
+.ledger-person-intro:hover {border-color:var(--ledger-crm-accent)}
+.ledger-next-moves {padding:2px 14px}
+.ledger-next-moves button {display:flex;align-items:center;gap:10px;width:100%;padding:13px 0;text-align:left;background:transparent;border:0;border-bottom:1px solid var(--ledger-crm-border);color:var(--ledger-crm-accent)}
+.ledger-next-moves button:last-child {border-bottom:0}
+.ledger-next-moves button > span {display:grid;gap:3px;flex:1;color:var(--ledger-crm-ink)}
+.ledger-next-moves strong {font-size:12px}.ledger-next-moves small {color:var(--ledger-crm-muted);font-size:10px}
+.ledger-ui-empty {padding:25px;text-align:center;font-size:12px;color:var(--ledger-crm-muted)}
+.ledger-priorities .rc-stack {display:grid;gap:12px}
+.ledger-dashboard .ix-classic {min-width:0}
+.ledger-dashboard .ledger-dashboard-feed .absolute-ledger-shell {max-width:100%}
+@media(max-width:1080px) {.ledger-dashboard-stats {grid-template-columns:repeat(2,minmax(0,1fr))}.ledger-dashboard-grid {grid-template-columns:minmax(0,1fr)}}
+@media(max-width:540px) {.ledger-dashboard-stats {gap:8px}.ledger-ui-stat {min-height:112px;padding:12px}.ledger-ui-page-header {align-items:start}.ledger-ui-header-actions {width:100%}.ledger-ui-header-actions .ledger-ui-button {flex:1}.ledger-ui-stat strong {font-size:24px}.ledger-ui-panel-heading {padding:12px}.ledger-feed-entry {padding:12px}}

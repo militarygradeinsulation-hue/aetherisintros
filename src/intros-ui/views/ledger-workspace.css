@@ -1,0 +1,19 @@
+.ledger-workspace {display:flex;flex-direction:column;gap:18px;min-width:0}
+.ledger-workspace-grid {display:grid;grid-template-columns:215px minmax(0,1fr);gap:14px;align-items:start;min-width:0}
+.ledger-workspace-modules {display:flex;flex-direction:column;border:1px solid var(--ledger-crm-border);background:var(--ledger-crm-surface);max-height:min(780px,calc(100vh - 125px));overflow:auto;padding:14px 10px;position:sticky;top:85px}
+.ledger-workspace-modules nav {display:flex;flex-direction:column;gap:3px;margin-bottom:14px}
+.ledger-workspace-modules h2 {font:700 10px system-ui,sans-serif!important;letter-spacing:.18em;text-transform:uppercase;color:var(--ledger-crm-muted)!important;margin:8px 0 7px;padding:0 10px}
+.ledger-workspace-modules button {width:100%;display:flex;align-items:center;gap:11px;min-height:37px;text-align:left;background:transparent;border:0;border-left:2px solid transparent;color:var(--ledger-crm-muted);padding:8px 10px;font:500 12px system-ui,sans-serif}
+.ledger-workspace-modules button:hover {background:rgba(239,68,68,.075);color:var(--ledger-crm-ink)}
+.ledger-workspace-modules button.active {background:rgba(239,68,68,.14);border-left-color:var(--ledger-crm-accent);color:var(--ledger-crm-ink)}
+.ledger-workspace-modules button.active svg {color:var(--ledger-crm-accent)}
+.ledger-workspace-detail {min-width:0;background:var(--ledger-crm-surface);border:1px solid var(--ledger-crm-border)}
+.ledger-workspace-heading {min-height:75px;display:flex;justify-content:space-between;align-items:center;gap:10px;padding:16px 19px;border-bottom:1px solid var(--ledger-crm-border)}
+.ledger-workspace-eyebrow,.ledger-workspace-live-tag {color:var(--ledger-crm-accent);font:700 10px system-ui,sans-serif;letter-spacing:.18em;text-transform:uppercase}
+.ledger-workspace-heading h2 {font:500 21px "Playfair Display",Georgia,serif!important;margin:4px 0 0;color:var(--ledger-crm-ink)!important}
+.ledger-workspace-live-tag {font-size:9px;border:1px solid var(--ledger-crm-border);padding:7px 10px}
+.ledger-workspace-body {min-width:0;overflow:clip}
+.ledger-workspace-body .ix-classic {width:100%;min-width:0}
+.ledger-workspace-body .absolute-ledger-shell {min-width:0;width:100%}
+@media(max-width:1000px){.ledger-workspace-grid {grid-template-columns:minmax(0,1fr)}.ledger-workspace-modules {position:static;max-height:none;flex-direction:row;overflow-x:auto;overflow-y:hidden;gap:9px;padding:10px}.ledger-workspace-modules nav {flex:none;flex-direction:row;align-items:center;margin:0;border-right:1px solid var(--ledger-crm-border);padding-right:10px}.ledger-workspace-modules h2 {display:none}.ledger-workspace-modules button {width:auto;white-space:nowrap}}
+@media(max-width:550px){.ledger-workspace-heading {padding:12px}.ledger-workspace-live-tag {display:none}}
