@@ -1,0 +1,387 @@
+/*
+ * The supplied black architectural Ask Intros screenshot is the public
+ * landing-page reference. This stylesheet is deliberately scoped to the
+ * public entry so /app and /vision keep their existing working interfaces.
+ * Never represent third-party services as connected without verification.
+ */
+.ael.ael-compact.ael--reference {
+  --ref-orange: #e49047;
+  --ref-orange-soft: #ffd09c;
+  --ref-blue: #315e7e;
+  --ref-blue-hover: #44799b;
+  --ref-white: #f7f7f7;
+  background: #050505 !important;
+  color: var(--ref-white) !important;
+}
+
+/* Header: original Ask Intros lockup, copper graph nodes and simple entry. */
+.ael.ael-compact.ael--reference .ael-header,
+:root[data-theme="light"] .ael.ael-compact.ael--reference .ael-header {
+  background: rgba(3, 4, 5, .97) !important;
+  border-bottom: 1px solid rgba(242, 241, 238, .44) !important;
+  color: var(--ref-white) !important;
+  box-shadow: none !important;
+  backdrop-filter: blur(18px);
+}
+.ael.ael-compact.ael--reference .ael-header .ask-intros-lockup__ask,
+.ael.ael-compact.ael--reference .ael-header .ask-intros-lockup__intros,
+.ael.ael-compact.ael--reference .ael-header .ask-intros-lockup__tagline {
+  fill: #f8f7f3 !important;
+}
+.ael.ael-compact.ael--reference .ael-header .ask-intros-lockup__symbol line,
+.ael.ael-compact.ael--reference .ael-header .ask-intros-lockup__rule {
+  stroke: var(--ref-orange) !important;
+}
+.ael.ael-compact.ael--reference .ael-header :is(
+  .ask-intros-lockup__node,
+  .ask-intros-lockup__rule-dot,
+  .ask-intros-lockup__separator
+) {
+  fill: var(--ref-orange) !important;
+}
+.ael.ael-compact.ael--reference .ael-header :is(.ael-nav a, .ael-signin),
+:root[data-theme="light"] .ael.ael-compact.ael--reference .ael-header :is(.ael-nav a, .ael-signin) {
+  color: #f4f2f0 !important;
+}
+.ael.ael-compact.ael--reference .ael-header :is(.ael-nav a, .ael-signin):hover {
+  color: var(--ref-orange-soft) !important;
+}
+
+/* Preserve the functional liquid theme switch, with reference orange chrome. */
+.ael.ael-compact.ael--reference .ael-appearance .appearance-liquid-toggle {
+  width: 56px;
+  height: 31px;
+  padding: 3px;
+  background: #b95423 !important;
+  border: 1px solid #dd7e3c !important;
+  border-radius: 22px !important;
+  display: inline-flex;
+  align-items: center;
+  cursor: pointer;
+}
+.ael.ael-compact.ael--reference .ael-appearance .appearance-liquid-toggle__thumb {
+  display: block;
+  width: 23px;
+  height: 23px;
+  border-radius: 50%;
+  background: #fff !important;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, .4) !important;
+  transform: translateX(0);
+  transition: transform .2s ease;
+}
+.ael.ael-compact.ael--reference .ael-appearance .appearance-liquid-toggle[data-state="checked"] .appearance-liquid-toggle__thumb {
+  transform: translateX(25px);
+}
+.ael.ael-compact.ael--reference .ael-appearance :is(svg, .appearance-switcher__label) {
+  display: none !important;
+}
+
+/* Architecture grid + scale at the edge; intentionally no stock photography. */
+.ael.ael-compact.ael--reference .ael-hero,
+:root[data-theme="light"] .ael.ael-compact.ael--reference .ael-hero {
+  background:
+    radial-gradient(ellipse at 76% 62%, rgba(48, 48, 45, .26), transparent 56%),
+    linear-gradient(105deg, #050505 0%, #090909 58%, #101010 100%) !important;
+  color: var(--ref-white) !important;
+  border-bottom: 1px solid rgba(250, 250, 250, .52) !important;
+}
+.ael.ael-compact.ael--reference .ael-hero::before {
+  content: "";
+  position: absolute;
+  z-index: 1;
+  pointer-events: none;
+  width: 15px;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  opacity: .72;
+  background:
+    repeating-linear-gradient(
+      to bottom,
+      transparent 0 11px,
+      rgba(209, 125, 61, .7) 11px 12px,
+      transparent 12px 22px
+    );
+  border-left: 1px solid rgba(196, 100, 40, .24);
+}
+.ael.ael-compact.ael--reference .ael-hero::after {
+  opacity: .16 !important;
+  background-size: 900px 600px !important;
+  pointer-events: none;
+}
+.ael.ael-compact.ael--reference .ael-hero-content {
+  position: relative;
+  z-index: 3;
+  max-width: min(880px, calc(100vw - 72px)) !important;
+}
+.ael.ael-compact.ael--reference .ael-architecture-meta {
+  color: #aaa8a4 !important;
+}
+.ael.ael-compact.ael--reference .ael-platform-strip {
+  margin: 0 0 20px;
+  max-width: 800px;
+}
+.ael.ael-compact.ael--reference .ael-platform-statement {
+  color: #f4f2f0 !important;
+  font-size: clamp(14px, 1.65vw, 18px);
+  line-height: 1.48;
+  max-width: 760px;
+  margin: 0 0 16px;
+  letter-spacing: -.015em;
+}
+.ael.ael-compact.ael--reference .ael-platform-statement strong {
+  color: var(--ref-orange-soft) !important;
+}
+.ael.ael-compact.ael--reference .ael-platform-features {
+  display: flex;
+  gap: 7px;
+  flex-wrap: wrap;
+  align-items: center;
+  margin: 0 0 9px;
+}
+.ael.ael-compact.ael--reference .ael-platform-features span {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: #f4f4f4;
+  border: 1px solid rgba(245, 245, 245, .35);
+  background: rgba(11, 17, 23, .72);
+  font: 600 11px/1.4 Inter, system-ui, sans-serif;
+  padding: 8px 12px;
+  min-height: 34px;
+  white-space: nowrap;
+}
+.ael.ael-compact.ael--reference .ael-platform-features span:last-child {
+  border-color: rgba(228, 144, 71, .74);
+  color: #ffe2c3;
+}
+.ael.ael-compact.ael--reference .ael-platform-disclaimer {
+  color: #cdd0d0 !important;
+  font: 500 11px/1.6 Inter, system-ui, sans-serif;
+  margin: 0;
+}
+.ael.ael-compact.ael--reference .ael-hero .ael-kicker,
+:root[data-theme="light"] .ael.ael-compact.ael--reference .ael-hero .ael-kicker {
+  color: #e9e8e6 !important;
+  margin-bottom: 12px;
+  letter-spacing: .18em;
+}
+.ael.ael-compact.ael--reference .ael-hero .ael-dash {
+  background: var(--ref-orange) !important;
+}
+.ael.ael-compact.ael--reference .ael-hero h1,
+:root[data-theme="light"] .ael.ael-compact.ael--reference .ael-hero h1 {
+  color: #fff !important;
+  margin: 18px 0 23px;
+  max-width: 100%;
+  text-shadow: none !important;
+}
+.ael.ael-compact.ael--reference .ael-hero .stencil-headline {
+  color: #fbfbfb !important;
+  width: min(830px, 100%);
+  gap: clamp(4px, .7vw, 11px);
+}
+.ael.ael-compact.ael--reference .ael-hero .stencil-headline svg:nth-child(2) {
+  opacity: .77;
+}
+.ael.ael-compact.ael--reference .ael-hero .stencil-display .stencil-headline svg {
+  height: clamp(38px, 6vw, 76px);
+  max-width: 100%;
+}
+.ael.ael-compact.ael--reference .ael-hero .ael-hero-lede,
+:root[data-theme="light"] .ael.ael-compact.ael--reference .ael-hero .ael-hero-lede {
+  color: #f0f0ef !important;
+  max-width: 660px;
+  font: 450 clamp(15px, 1.75vw, 20px)/1.65 var(--st-mono), monospace;
+  letter-spacing: -.015em;
+  text-shadow: none !important;
+}
+.ael.ael-compact.ael--reference .ael-hero-actions {
+  gap: 16px 22px;
+  margin-top: 24px;
+}
+.ael.ael-compact.ael--reference :is(.ael-nav-cta, .ael-btn).ai-gradient-button,
+:root[data-theme="light"] .ael.ael-compact.ael--reference :is(.ael-nav-cta, .ael-btn).ai-gradient-button {
+  border: 1px solid #7da1b9 !important;
+  border-radius: 0 !important;
+  clip-path: polygon(11px 0, 100% 0, 100% calc(100% - 11px), calc(100% - 11px) 100%, 0 100%, 0 11px);
+  background: var(--ref-blue) !important;
+  color: #fff !important;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .12) !important;
+  font-family: var(--st-mono), monospace !important;
+  font-weight: 700;
+  letter-spacing: .09em;
+  animation: none !important;
+}
+.ael.ael-compact.ael--reference :is(.ael-nav-cta, .ael-btn).ai-gradient-button:hover {
+  background: var(--ref-blue-hover) !important;
+  color: #fff !important;
+}
+.ael.ael-compact.ael--reference .ael-hero-actions .ael-btn {
+  padding: 0 26px;
+  min-height: 58px;
+  gap: 22px;
+}
+.ael.ael-compact.ael--reference .ael-hero-actions .ael-text-link,
+:root[data-theme="light"] .ael.ael-compact.ael--reference .ael-hero-actions .ael-text-link {
+  color: #fff !important;
+  min-height: 53px;
+  border-bottom: 1px solid rgba(244, 244, 244, .56);
+  font: 700 12px/1.25 var(--st-mono), monospace;
+  letter-spacing: .1em;
+  padding: 10px 0;
+}
+.ael.ael-compact.ael--reference .ael-hero-actions .ael-text-link:hover {
+  color: var(--ref-orange-soft) !important;
+}
+.ael.ael-compact.ael--reference .ael-hero-bottom,
+:root[data-theme="light"] .ael.ael-compact.ael--reference .ael-hero-bottom {
+  border-top-color: rgba(235, 235, 235, .25) !important;
+  color: #e7e7e7 !important;
+}
+.ael.ael-compact.ael--reference .ael-hero-bottom a {
+  color: #f3f3f3 !important;
+}
+
+/* Follow the screenshot's next chapter: black, outlined, prominent stencil. */
+.ael.ael-compact.ael--reference .ael-compact-story,
+:root[data-theme="light"] .ael.ael-compact.ael--reference .ael-compact-story {
+  background: #080808 !important;
+  color: #f6f6f6 !important;
+  border-block-color: rgba(255, 255, 255, .4) !important;
+  background-image: linear-gradient(90deg, rgba(255, 255, 255, .04) 1px, transparent 1px) !important;
+}
+.ael.ael-compact.ael--reference .ael-compact-story-main {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) !important;
+}
+.ael.ael-compact.ael--reference .ael-compact-story-copy {
+  max-width: 900px;
+}
+.ael.ael-compact.ael--reference .ael-compact-story :is(h2, h3, strong),
+.ael.ael-compact.ael--reference .ael-compact-story .stencil-headline {
+  color: #fff !important;
+}
+.ael.ael-compact.ael--reference .ael-compact-story :is(p, .ael-editorial-meta, .ael-fine-label) {
+  color: #e0e0e0 !important;
+}
+.ael.ael-compact.ael--reference .ael-compact-story .ael-editorial-meta,
+.ael.ael-compact.ael--reference .ael-compact-method {
+  border-color: rgba(255, 255, 255, .27) !important;
+}
+.ael.ael-compact.ael--reference .ael-compact-story .ael-compact-story-copy .stencil-headline svg {
+  height: clamp(33px, 4.5vw, 66px);
+}
+.ael.ael-compact.ael--reference .ael-compact-story .ael-underlink {
+  color: #fff !important;
+  border-color: rgba(228, 144, 71, .65) !important;
+}
+.ael.ael-compact.ael--reference .ael-compact-steps li > span {
+  color: var(--ref-orange) !important;
+  background: transparent !important;
+}
+
+/* The lower invitation remains part of the same functional landing page. */
+.ael.ael-compact.ael--reference .ael-compact-membership,
+:root[data-theme="light"] .ael.ael-compact.ael--reference .ael-compact-membership,
+.ael.ael-compact.ael--reference .ael-compact-footer,
+:root[data-theme="light"] .ael.ael-compact.ael--reference .ael-compact-footer {
+  background: #0b0b0b !important;
+  color: #f7f7f7 !important;
+}
+.ael.ael-compact.ael--reference .ael-compact-membership :is(h2, p, span, a),
+:root[data-theme="light"] .ael.ael-compact.ael--reference .ael-compact-membership :is(h2, p, span, a) {
+  color: #f0f0f0 !important;
+}
+.ael.ael-compact.ael--reference .ael-compact-footer span,
+:root[data-theme="light"] .ael.ael-compact.ael--reference .ael-compact-footer span {
+  color: #ddd !important;
+}
+
+/* Mobile composition: no horizontal clipping or giant off-screen controls. */
+@media (max-width: 750px) {
+  .ael.ael-compact.ael--reference .ael-hero {
+    padding: 143px 23px 84px;
+    min-height: 0;
+    height: auto;
+  }
+  .ael.ael-compact.ael--reference .ael-hero-content {
+    max-width: 100% !important;
+  }
+  .ael.ael-compact.ael--reference .ael-platform-strip {
+    margin-bottom: 18px;
+  }
+  .ael.ael-compact.ael--reference .ael-hero .stencil-display .stencil-headline svg {
+    height: clamp(30px, 7vw, 49px);
+  }
+  .ael.ael-compact.ael--reference .ael-hero-actions {
+    gap: 12px 18px;
+  }
+  .ael.ael-compact.ael--reference .ael-hero::after {
+    background-size: 700px 470px !important;
+  }
+}
+@media (max-width: 440px) {
+  .ael.ael-compact.ael--reference .ael-header {
+    min-height: 102px;
+    padding: 8px 12px;
+  }
+  .ael.ael-compact.ael--reference .ael-hero {
+    padding: 121px 18px 70px;
+  }
+  .ael.ael-compact.ael--reference .ael-platform-statement {
+    font-size: 13px;
+    margin-bottom: 11px;
+  }
+  .ael.ael-compact.ael--reference .ael-platform-features {
+    gap: 5px;
+  }
+  .ael.ael-compact.ael--reference .ael-platform-features span {
+    font-size: 10px;
+    min-height: 30px;
+    padding: 5px 8px;
+  }
+  .ael.ael-compact.ael--reference .ael-hero .ael-kicker {
+    letter-spacing: .10em;
+    font-size: 9px;
+  }
+  .ael.ael-compact.ael--reference .ael-hero .stencil-display .stencil-headline svg {
+    height: clamp(27px, 7.2vw, 34px);
+  }
+  .ael.ael-compact.ael--reference .ael-hero .ael-hero-lede {
+    font-size: 13px;
+    line-height: 1.6;
+  }
+  .ael.ael-compact.ael--reference .ael-hero-actions .ael-btn {
+    min-height: 51px;
+    padding: 0 16px;
+    letter-spacing: .055em;
+  }
+  .ael.ael-compact.ael--reference .ael-hero-actions .ael-text-link {
+    min-height: 45px;
+    font-size: 10px;
+    letter-spacing: .05em;
+  }
+  .ael.ael-compact.ael--reference .ael-compact-story {
+    padding-top: 29px;
+  }
+  .ael.ael-compact.ael--reference .ael-compact-story .ael-compact-story-copy .stencil-headline svg {
+    height: clamp(28px, 7vw, 36px);
+  }
+  .ael.ael-compact.ael--reference .ael-appearance .appearance-liquid-toggle {
+    width: 48px;
+    height: 28px;
+  }
+  .ael.ael-compact.ael--reference .ael-appearance .appearance-liquid-toggle__thumb {
+    width: 20px;
+    height: 20px;
+  }
+  .ael.ael-compact.ael--reference .ael-appearance .appearance-liquid-toggle[data-state="checked"] .appearance-liquid-toggle__thumb {
+    transform: translateX(20px);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .ael.ael-compact.ael--reference .ael-appearance .appearance-liquid-toggle__thumb {
+    transition: none;
+  }
+}
