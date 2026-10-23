@@ -165,7 +165,7 @@ export function LedgerBridgeShell({
     <aside className="ledger-crm-sidebar ix-global-header" aria-label="Workspace sidebar">
       <div className="ledger-native-brand">
         <button type="button" onClick={() => { closeAll(); onNavigate('home'); }}
-          aria-label="Ask Intros home" title="Ask Intros home" className="ledger-native-logo">Æ</button>
+          aria-label="Ask Intros home" title="Ask Intros home" className="ledger-native-logo"><span aria-hidden="true" className="ledger-ai-mono"><span>A</span><span>I</span></span></button>
         <button type="button" className="ledger-native-brand-name" onClick={() => { closeAll(); onNavigate('home'); }}>
           <strong>ASK INTROS</strong><small>RELATIONSHIP OS</small>
         </button>
