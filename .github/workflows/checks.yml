@@ -107,6 +107,10 @@ jobs:
         env:
           PLAYWRIGHT_MODULE: ${{ github.workspace }}/node_modules/playwright/index.mjs
         run: node scripts/architect-check/run.mjs
+      - name: All member tool pages (light/dark, phone/desktop browser)
+        env:
+          PLAYWRIGHT_MODULE: ${{ github.workspace }}/node_modules/playwright/index.mjs
+        run: node scripts/member-pages-check/run.mjs
       - name: Contrast and overlay safety (browser)
         env:
           PLAYWRIGHT_MODULE: ${{ github.workspace }}/node_modules/playwright/index.mjs

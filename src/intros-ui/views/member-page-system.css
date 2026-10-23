@@ -1,0 +1,198 @@
+/* Canonical member tools use the same content system as the new workspace.
+   Keep this scoped to embedded feature hosts; never repaint evidence, member
+   media, semantic alerts, the public site, or the labelled showcase charts. */
+html:root[data-theme] body .ix-root .ix-classic {
+  --member-panel: #131316;
+  --member-field: #0e0e10;
+  --member-text: #f2f1ec;
+  --member-muted: #aaaab3;
+  --member-line: #333338;
+  --member-accent: #ff8a4c;
+  --member-selected: #2b1d16;
+  min-height: 0;
+  width: 100%;
+  min-width: 0;
+}
+html:root[data-theme="light"] body .ix-root .ix-classic {
+  --member-panel: #fff;
+  --member-field: #f6f5f3;
+  --member-text: #202025;
+  --member-muted: #62626b;
+  --member-line: #d9d5d1;
+  --member-accent: #9c431b;
+  --member-selected: #fff0e7;
+}
+html:root[data-theme] body .ix-root .ix-classic .app-shell:not([data-member-page="insights"]) {
+  --st-display: Poppins, Inter, system-ui, sans-serif;
+  --st-mono: Poppins, Inter, system-ui, sans-serif;
+  --st-card: var(--member-panel);
+  --st-raised: var(--member-field);
+  --st-rule: var(--member-line);
+  --st-ink: var(--member-text);
+  --st-quiet: var(--member-muted);
+  --sans: Poppins, Inter, system-ui, sans-serif;
+  --serif: Poppins, Inter, system-ui, sans-serif;
+  --mono: "IBM Plex Mono", ui-monospace, monospace;
+  --muted: var(--member-muted);
+  --line-dark: var(--member-line);
+  --line-light: var(--member-line);
+  font-family: var(--sans);
+  min-height: 0 !important;
+}
+html:root[data-theme] body .ix-root .ix-classic .workspace { min-width: 0; width: 100%; }
+html:root[data-theme] body .ix-root .ix-classic .workspace-grid { min-width: 0; }
+html:root[data-theme] body .ix-root .ix-classic .content {
+  max-width: 1280px;
+  width: 100%;
+  min-width: 0;
+  margin-inline: auto;
+  padding: 20px 0 32px !important;
+}
+html:root[data-theme] body .ix-root .ix-classic .workspace > .topbar {
+  gap: 12px;
+  min-height: 48px;
+  padding: 10px 0;
+  flex-wrap: wrap;
+  border-bottom-color: var(--member-line);
+}
+html:root[data-theme] body .ix-root .ix-classic .topbar-actions { flex-wrap: wrap; min-width: 0; gap: 8px; }
+html:root[data-theme] body .ix-root .ix-classic .topbar-title { color: var(--member-muted); font-family: var(--sans); }
+html:root[data-theme] body .ix-root .ix-classic .content :is(.page-title,.parity-head,.pk-head,.pl-header,.news-editorial-head) {
+  margin: 0 0 20px;
+  padding: 0 0 20px;
+  border-bottom: 1px solid var(--member-line);
+  gap: 16px;
+}
+html:root[data-theme] body .ix-root .ix-classic .content :is(.page-title h1,.parity-head h1,.pk-head h1,.news-editorial-head h1) {
+  font: 600 clamp(24px, 2.5vw, 34px)/1.2 Poppins, Inter, system-ui, sans-serif !important;
+  text-transform: none !important;
+  letter-spacing: -.035em;
+  color: var(--member-text);
+  margin: 7px 0 10px;
+  overflow-wrap: anywhere;
+}
+html:root[data-theme] body .ix-root .ix-classic .content :is(.page-title p,.pk-head p,.parity-head p,.news-editorial-head p) {
+  color: var(--member-muted);
+  font: 400 13px/1.7 Poppins, Inter, system-ui, sans-serif;
+  max-width: 70ch;
+}
+html:root[data-theme] body .ix-root .ix-classic .content :is(.eyebrow,.page-proof) { color: var(--member-accent); }
+html:root[data-theme] body .ix-root .ix-classic .content :is(.page-title-actions,.public-news-header-actions,.parity-actions,.og-inline,.pl-actions) {
+  display: flex; flex-wrap: wrap; align-items: center; gap: 8px;
+  min-width: 0; max-width: 100%;
+}
+/* Explicit shared surface families, including empty/error states. No substring
+   class matching: a chart, image or coloured status keeps its own meaning. */
+html:root[data-theme] body .ix-root .ix-classic .content :is(.module,.mod,.og-tile,.executive-section,.ops-card,.ops-stat,.ops-panel,
+  .preference-panel,.preference-preview,.profile-settings,.company-row,.company-detail,
+  .pk-list,.pk-edit,.pk-preview,.pl-record,.pl-suggestion,.pl-enrichment,
+  .news-card,.news-featured,.need-case,.professional-draft-notice,.professional-draft-review) {
+  background-color: var(--member-panel) !important;
+  color: var(--member-text);
+  border: 1px solid var(--member-line);
+  border-radius: 12px !important;
+  box-shadow: none;
+  min-width: 0;
+}
+html:root[data-theme] body .ix-root .ix-classic .content :is(.module,.mod,.og-tile,.executive-section,.ops-card,.ops-panel,.preference-panel,.preference-preview) {
+  padding: clamp(14px, 1.7vw, 22px);
+}
+html:root[data-theme] body .ix-root .ix-classic .content :is(.og-stack,.parity-grid,.capital-grid,.vault-grid,.ops-stats,.news-grid) { gap: 16px; }
+html:root[data-theme] body .ix-root .ix-classic .content :is(.empty-state,.sv-empty,.dx-empty,.ops-note,.og-note,.pl-note,.page-proof) {
+  color: var(--member-muted);
+  line-height: 1.65;
+}
+html:root[data-theme] body .ix-root .ix-classic .content :is(.ops-tabs,.preference-tabs,.providers-tabs,.news-filters,.filter-chips,.memory-module-tabs,.state-filters,.providers-chips,.profile-tabs,.feed-tabs,.cal-views) {
+  display: flex; flex-wrap: wrap !important; gap: 6px;
+  padding: 8px 0 12px; margin-bottom: 16px;
+  border-bottom: 1px solid var(--member-line);
+  max-width: 100%;
+}
+html:root[data-theme] body .ix-root .ix-classic .content :is(.ops-tabs,.preference-tabs,.providers-tabs,.news-filters,.filter-chips,.memory-module-tabs,.state-filters,.providers-chips,.profile-tabs,.feed-tabs,.cal-views) > button {
+  min-height: 36px; padding: 8px 12px;
+  border: 1px solid var(--member-line); border-radius: 8px !important;
+  font: 500 12px/1.4 Poppins, Inter, system-ui, sans-serif;
+  background: var(--member-field) !important; color: var(--member-muted) !important;
+  white-space: normal; text-transform: none; letter-spacing: 0;
+}
+html:root[data-theme] body .ix-root .ix-classic .content :is(.ops-tabs,.preference-tabs,.providers-tabs,.news-filters,.filter-chips,.memory-module-tabs,.state-filters,.providers-chips,.profile-tabs,.feed-tabs,.cal-views) > button:is(.active,.on,[aria-pressed="true"]) {
+  border-color: var(--member-accent) !important; color: var(--member-accent) !important; background: var(--member-selected) !important;
+}
+html:root[data-theme] body .ix-root .ix-classic :is(.btn,.topbar-dropbtn,.topbar-search) {
+  min-height: 36px; border-radius: 8px;
+  font-family: Poppins, Inter, system-ui, sans-serif !important;
+  text-transform: none !important; letter-spacing: 0 !important; clip-path: none !important;
+  white-space: normal; overflow-wrap: anywhere;
+}
+html:root[data-theme] body .ix-root .ix-classic .btn.primary { background: #ff8a4c !important; color: #20120b !important; -webkit-text-fill-color: #20120b !important; border-color: #ff8a4c !important; }
+html:root[data-theme] body .ix-root .ix-classic .btn.secondary { background: var(--member-field); color: var(--member-text); border-color: var(--member-line); }
+html:root[data-theme] body .ix-root .ix-classic .content :is(input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="color"]),select,textarea) {
+  min-width: 0; max-width: 100%; min-height: 38px;
+  border: 1px solid var(--member-line); border-radius: 8px;
+  background-color: var(--member-field); color: var(--member-text);
+  font-family: Poppins, Inter, system-ui, sans-serif;
+}
+html:root[data-theme] body .ix-root .ix-classic .content :is(input,textarea)::placeholder { color: var(--member-muted); opacity: 1; }
+html:root[data-theme] body .ix-root .ix-classic :is(button,a,input,select,textarea,summary):focus-visible {
+  outline: 2px solid var(--member-accent); outline-offset: 3px;
+}
+html:root[data-theme] body .ix-root .ix-classic .content :is(h2,h3) { overflow-wrap: anywhere; }
+/* A single compact directory replaces the wall of 21 unrelated tab buttons. */
+html:root[data-theme] body .ix-root .arch-product-main .ix-workspace-tools { display: block; padding: 0; margin: 0 0 16px; border: 1px solid var(--member-line); border-radius: 12px; }
+.ix-workspace-tools > summary { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 14px 16px; cursor: pointer; list-style: none; }
+.ix-workspace-tools > summary::-webkit-details-marker { display: none; }
+.ix-workspace-tools > summary > span:first-child { display: grid; gap: 5px; min-width: 0; }
+.ix-workspace-tools summary small { font: 500 10px/1.3 "IBM Plex Mono", ui-monospace, monospace; letter-spacing: .12em; color: var(--member-accent); }
+.ix-workspace-tools summary strong { font: 600 14px/1.4 Poppins, Inter, system-ui, sans-serif; color: var(--member-text); }
+.ix-tools-browse { display: flex; align-items: center; gap: 8px; color: var(--member-muted); font-size: 12px; flex-shrink: 0; }
+.ix-workspace-tools[open] .ix-tools-browse svg { transform: rotate(180deg); }
+.ix-tool-picker { padding: 0 16px 16px; }
+.ix-tool-search { display: flex; align-items: center; gap: 8px; border: 1px solid var(--member-line); background: var(--member-field); border-radius: 8px; padding: 0 12px; color: var(--member-muted); }
+.ix-tool-search input { width: 100%; min-width: 0; background: transparent; color: var(--member-text); border: 0; padding: 12px 0; font-size: 14px; }
+.ix-tool-picker nav { display: grid; grid-template-columns: repeat(4,minmax(0,1fr)); gap: 18px; padding-top: 16px; }
+.ix-tool-picker nav section { min-width: 0; }
+.ix-tool-picker h2 { font: 600 11px/1.5 Poppins, Inter, system-ui, sans-serif; color: var(--member-muted); margin: 0 0 8px; }
+html:root[data-theme] body .ix-root .arch-product-main .ix-workspace-tools nav button { display: block; width: 100%; text-align: left; margin: 0 0 4px; padding: 9px 10px; min-height: 38px; border: 1px solid transparent; border-radius: 7px; background: transparent; color: var(--member-text); font: 500 12px/1.5 Poppins, Inter, system-ui, sans-serif; white-space: normal; }
+html:root[data-theme] body .ix-root .arch-product-main .ix-workspace-tools nav button:is(:hover,.on) { background: var(--member-selected); color: var(--member-accent); border-color: var(--member-accent); }
+.ix-tool-picker > p { color: var(--member-muted); padding-top: 16px; font-size: 13px; }
+/* Existing dialogs retain their focus traps and actions. Constrain the actual
+   Radix content, not dropdowns, tooltips or the full-screen meeting room. */
+body:has(.ix-aetheris-workspace-mode) [role="dialog"][id^="radix-"] {
+  max-width: min(640px, calc(100vw - 32px));
+  max-height: calc(100dvh - 48px - env(safe-area-inset-top) - env(safe-area-inset-bottom));
+  overflow-y: auto; overscroll-behavior: contain; border-radius: 12px;
+}
+@media (max-width: 900px) { .ix-tool-picker nav { grid-template-columns: repeat(2,minmax(0,1fr)); } }
+@media (max-width: 640px) {
+  html:root[data-theme] body .ix-root .ix-classic .content { padding-top: 14px !important; }
+  html:root[data-theme] body .ix-root .ix-classic .content :is(.page-title,.parity-head) { grid-template-columns: minmax(0,1fr); align-items: start; }
+  html:root[data-theme] body .ix-root .ix-classic .content :is(.preferences-layout,.pk-grid,.memory-map-row,.memory-dark-intro,.capital-grid,.vault-grid,.parity-grid) { grid-template-columns: minmax(0,1fr); }
+  html:root[data-theme] body .ix-root .ix-classic .content :is(.company-row,.memory-learned-head,.pl-header) { flex-wrap: wrap; gap: 12px; }
+  html:root[data-theme] body .ix-root .ix-classic .content :is(.company-row-side,.pk-edit,.pk-preview,.pl-toolbar) { min-width: 0; max-width: 100%; }
+  html:root[data-theme] body .ix-root .ix-classic .content .memory-editorial-copy { padding: 16px !important; }
+  html:root[data-theme] body .ix-root .ix-classic .content .memory-editorial dl { grid-template-columns: repeat(2,minmax(0,1fr)); }
+  html:root[data-theme] body .ix-root .ix-classic .topbar .topbar-search { max-width: 100%; }
+  .ix-workspace-tools > summary { padding: 12px; }
+  .ix-tools-browse { font-size: 0; }
+  .ix-tool-picker { padding: 0 10px 12px; }
+  .ix-tool-picker nav { gap: 12px; }
+  html:root[data-theme] body .ix-root .arch-product-main .ix-workspace-tools nav button { min-height: 44px; padding: 8px; }
+}
+
+/* Counter the older global stencil declarations only within feature content. */
+html:root[data-theme] body .ix-root .ix-classic .content :is(.page-title,.page-title p,.page-title small,.parity-head,.pk-head,.news-editorial-head) { text-transform: none !important; letter-spacing: normal; }
+html:root[data-theme] body .ix-root .ix-classic .content :is(h2,h3,h4) { font-family: Poppins, Inter, system-ui, sans-serif !important; text-transform: none; }
+html:root[data-theme] body .ix-root .ix-classic .content :is(p,label,input,textarea,select,button) { font-family: Poppins, Inter, system-ui, sans-serif !important; }
+html:root[data-theme] body .ix-root .ix-classic :is(.btn,.topbar-dropbtn,.topbar-search) { border-radius: 8px !important; }
+html:root[data-theme] body .ix-root .ix-classic .btn.primary:hover:not(:disabled) { background: #ffae7d !important; border-color: #ffae7d !important; color: #20120b !important; -webkit-text-fill-color: #20120b !important; }
+html:root[data-theme] body .ix-root .ix-classic .content :is(.eyebrow,.page-proof) { color: var(--member-accent) !important; }
+html:root[data-theme] body .ix-root .ix-classic .content :is(.eyebrow,.pl-note,.og-note) { font-family: "IBM Plex Mono", ui-monospace, monospace !important; }
+html:root[data-theme] body .ix-root .arch-product-main .ix-workspace-tools nav button { border-radius: 7px !important; color: var(--member-text) !important; background: transparent !important; border-color: transparent !important; }
+html:root[data-theme] body .ix-root .arch-product-main .ix-workspace-tools nav button:is(:hover,.on) { color: var(--member-accent) !important; background: var(--member-selected) !important; border-color: var(--member-accent) !important; }
+
+html:root[data-theme] body .ix-root .ix-classic .content { font-family: Poppins, Inter, system-ui, sans-serif !important; }
+html:root[data-theme] body .ix-root .ix-classic .content .ops-stats > div { background: var(--member-panel) !important; border: 1px solid var(--member-line); border-radius: 12px !important; padding: 16px; }
+html:root[data-theme] body .ix-root .ix-classic .content .ops-stats { background: transparent !important; gap: 12px; border: 0; }
+html:root[data-theme] body .ix-root .ix-classic .content :is(.ops-view-switch,.pk-starters) { gap: 8px; }
+html:root[data-theme] body .ix-root .ix-classic .btn.secondary { background: var(--member-field) !important; color: var(--member-text) !important; border-color: var(--member-line) !important; }
+html:root[data-theme] body .ix-root .ix-classic .content :is(.pk-head h1 em,.page-title h1 em) { font: inherit !important; color: var(--member-accent) !important; }

@@ -2385,8 +2385,8 @@ function AccountControl() {
 
 /* ---------------------------------------------------------------------- app */
 
-export function AetherisAppSurface({ startPage, feedOnly = false }: { startPage?: Page | undefined; feedOnly?: boolean }) {
-  return <Shell startPage={startPage} feedOnly={feedOnly} />
+export function AetherisAppSurface({ startPage, feedOnly = false, onPageChange }: { startPage?: Page | undefined; feedOnly?: boolean; onPageChange?: ((page: Page) => void) | undefined }) {
+  return <Shell startPage={startPage} feedOnly={feedOnly} onPageChange={onPageChange} />
 }
 
 export default function App({ startPage, mode = 'live', feedOnly = false }: { startPage?: Page | undefined; mode?: NetworkMode; feedOnly?: boolean }) {
@@ -2585,7 +2585,7 @@ function TopbarVoice() {
   </button>
 }
 
-function Shell({ startPage, feedOnly = false }: { startPage?: Page | undefined; feedOnly?: boolean }) {
+function Shell({ startPage, feedOnly = false, onPageChange }: { startPage?: Page | undefined; feedOnly?: boolean; onPageChange?: ((page: Page) => void) | undefined }) {
   const net = useNetwork()
   const stored = typeof window !== 'undefined' ? localStorage.getItem('aetheris-intros-page') : null
   const initial = startPage ?? (stored && allNav.some(n => n.id === stored) ? stored : legacyPage[stored ?? ''] ?? 'home') as Page
@@ -2837,6 +2837,11 @@ function Shell({ startPage, feedOnly = false }: { startPage?: Page | undefined; 
               tabs={hubTabs(meTabs)} advanced={meAdvanced} onNavigate={setPage} kind="me" />
           : guardedPageNode[page]
 
+  // Keep the outer tool chooser and canonical internal navigation in agreement.
+  // Prop changes navigate the mounted host rather than remounting its providers.
+  useEffect(() => { if (startPage) setPage(startPage) }, [startPage])
+  useEffect(() => { onPageChange?.(page) }, [page, onPageChange])
+
   useGrabScroll()
   useEffect(() => { applyTextScale(readTextScale()) }, [])
   useEffect(() => { applyCursorScale(readCursorScale()) }, [])
@@ -2850,7 +2855,7 @@ function Shell({ startPage, feedOnly = false }: { startPage?: Page | undefined; 
   useEffect(() => { window.scrollTo({ top: 0, behavior: 'auto' }) }, [page, selected?.id])
 
   return <NavCtx.Provider value={navApi}>
-    <div className={`app-shell social-shell ${feedOnly ? 'home-social-only' : ''} ${contextOpen ? 'show-context' : ''}`}>
+    <div data-member-page={page} className={`app-shell social-shell ${feedOnly ? 'home-social-only' : ''} ${contextOpen ? 'show-context' : ''}`}>
       <header className="social-topnav">
         <button className="social-brand" onClick={() => setPage('home')} aria-label={isShowcase() ? 'Ask Intros Home — Demo' : 'Ask Intros Home'}><Brand />{isShowcase() && <span className="demo-flag">Demo</span>}</button>
         <nav aria-label="Primary navigation">{nav.map(item => {
