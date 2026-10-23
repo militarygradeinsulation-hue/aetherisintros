@@ -268,6 +268,6 @@
 :root[data-theme] body .ix-root.ledger-native-app > .ix-assistant .ask-dock {position:fixed;z-index:151;bottom:86px}
 @media(max-width:720px) {
   :root[data-theme] body .ix-root.ledger-native-app > .ix-assistant .ask-dock-fab {right:14px;bottom:calc(84px + env(safe-area-inset-bottom,0px))}
-  :root[data-theme] body .ix-root.ledger-native-app > .ix-assistant .ask-dock {bottom:calc(146px + env(safe-area-inset-bottom,0px));max-height:calc(100dvh - 165px - env(safe-area-inset-bottom,0px))}
+  :root[data-theme] body .ix-root.ledger-native-app > .ix-assistant .ask-dock {bottom:calc(146px + env(safe-area-inset-bottom,0px));max-height:calc(100dvh - 230px - env(safe-area-inset-bottom,0px))}
 }
 :root[data-theme] body .ix-root.ledger-native-app > .ix-assistant .ask-dock-fab > span {display:inline-flex!important}
