@@ -100,3 +100,28 @@
   background:#b91c1c!important;color:#fff!important;-webkit-text-fill-color:#fff!important;
   border-color:#b91c1c!important;
 }
+
+/* The shared workspace button-tone rule paints every button.primary with the
+   theme surface (--acc-btn) and previously kept the page ink, so ledger
+   primary buttons rendered black-on-black in light mode and ivory-on-white
+   in dark mode. Re-assert the ledger accent with the ink paired to it. */
+:root[data-theme="dark"] body .ix-root.ix-absolute-ledger .ledger-ui-button.primary {
+  background:var(--ledger-crm-accent)!important;
+  border-color:var(--ledger-crm-accent)!important;
+  color:#090909!important;
+  -webkit-text-fill-color:#090909!important;
+}
+:root[data-theme="light"] body .ix-root.ix-absolute-ledger .ledger-ui-button.primary {
+  background:var(--ledger-crm-accent)!important;
+  border-color:var(--ledger-crm-accent)!important;
+  color:#fff!important;
+  -webkit-text-fill-color:#fff!important;
+}
+
+/* Light mode must keep the darker ledger red everywhere the accent is used
+   as text or ink on light surfaces; the dark-theme root override otherwise
+   leaves bright #EF4444 on cream at 3.7:1. */
+:root[data-theme="light"] body .ix-root.ix-absolute-ledger.ledger-native-app {
+  --ledger-crm-accent:#B91C1C;
+  --mp-bridge-copper-bright:#B91C1C;
+}
