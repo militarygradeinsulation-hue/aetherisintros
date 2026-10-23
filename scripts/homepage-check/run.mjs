@@ -85,6 +85,29 @@ try {
       await page.goto(base + '/', { waitUntil: 'domcontentloaded', timeout: 120_000 })
       await page.waitForSelector('.ael-compact', { timeout: 60_000 })
       assert(await page.locator('.vision-page').count() === 0, 'sample-only Vision dashboard is not the primary homepage')
+      assert(await page.locator('.ael--reference').count() === 1, 'approved screenshot language is used as the live public homepage')
+
+      const visual = await page.evaluate(() => {
+        const root = document.querySelector('.ael--reference')
+        const style = selector => {
+          const node = root.querySelector(selector)
+          return node ? getComputedStyle(node) : null
+        }
+        return {
+          heroBackground: style('.ael-hero')?.backgroundImage,
+          heroInk: style('.stencil-headline--hero')?.color,
+          logoInk: style('.ask-intros-lockup__ask')?.fill,
+          headerBackground: style('.ael-header')?.backgroundColor,
+          primaryButton: style('.ael-hero-actions .ael-btn')?.backgroundColor,
+          featureCount: root.querySelectorAll('.ael-platform-features span').length,
+        }
+      })
+      assert(Boolean(visual.heroBackground?.includes('gradient')), 'black architectural hero texture renders')
+      assert(visual.heroInk === 'rgb(251, 251, 251)', 'stencil headline stays light and readable')
+      assert(visual.logoInk === 'rgb(248, 247, 243)', 'Ask Intros logo remains light against black header')
+      assert(visual.headerBackground?.startsWith('rgba(3, 4, 5'), 'public header stays near-black')
+      assert(visual.primaryButton === 'rgb(49, 94, 126)', 'Enter Your Network uses approved blue')
+      assert(visual.featureCount === 4, 'genuine business capabilities appear in compact chips')
 
       const m = await page.evaluate(() => {
         const root = document.querySelector('.ael-compact')

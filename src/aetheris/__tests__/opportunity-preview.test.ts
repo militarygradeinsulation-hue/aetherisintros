@@ -60,7 +60,7 @@ describe('30-second public Opportunity Preview', () => {
   })
 
   it('makes the preview visible from the public hero but retains the deeper demo link', () => {
-    expect(landing).toContain('to="/try" className="ael-text-link">Try it in 30 seconds')
+    expect(landing).toContain('to="/try" className="ael-text-link">Explore Ask Intros')
     expect(landing).toContain('to="/demo" className="ael-underlink')
   })
 

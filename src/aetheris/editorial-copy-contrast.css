@@ -122,3 +122,43 @@ html:root[data-theme] body
   :is(p,.eyebrow,.ael-editorial-meta,.ael-fine-label) {
   text-shadow:none!important;
 }
+
+
+/*
+ * Screenshot-approved public homepage is intentionally cinematic black even
+ * when a visitor selects light appearance. Keep this exception limited to
+ * .ael--reference; all other light-mode paper/editorial panels still invert.
+ * The effective text fill must match CSS color on WebKit/iOS as well.
+ */
+html:root[data-theme="light"] body .ael.ael-compact.ael--reference
+  :is(.ael-compact-story,.ael-compact-story-main,.ael-compact-story-copy,
+      .ael-compact-method,.ael-compact-method-heading) {
+  background-color:#080808!important;
+  color:#f5f5f5!important;
+  -webkit-text-fill-color:#f5f5f5!important;
+}
+html:root[data-theme="light"] body .ael.ael-compact.ael--reference .ael-compact-story
+  :is(.ael-compact-story-copy,.ael-compact-method,.ael-compact-method-heading,
+      .ael-compact-steps) :is(p,strong,small,li,div:not(.stencil-headline)),
+html:root[data-theme="light"] body .ael.ael-compact.ael--reference .ael-compact-story
+  :is(.ael-editorial-meta,.ael-fine-label,.ael-compact-steps strong) {
+  color:#ededed!important;
+  -webkit-text-fill-color:#ededed!important;
+  opacity:1!important;
+}
+html:root[data-theme="light"] body .ael.ael-compact.ael--reference .ael-compact-story
+  :is(.ael-underlink,.ael-underlink-dark) {
+  color:#ffffff!important;
+  -webkit-text-fill-color:#ffffff!important;
+  border-color:#e49047!important;
+}
+html:root[data-theme="light"] body .ael.ael-compact.ael--reference .ael-compact-story
+  .ael-compact-steps li > span {
+  color:#ffb77e!important;
+  -webkit-text-fill-color:#ffb77e!important;
+  background:transparent!important;
+}
+html:root[data-theme="light"] body .ael.ael-compact.ael--reference .ael-compact-story
+  :is(.ael-compact-steps li,.ael-compact-method) {
+  border-color:rgba(255,255,255,.28)!important;
+}
