@@ -167,6 +167,24 @@ try {
   await page.locator('.ledger-workspace-modules').waitFor({state:'visible',timeout:30000});
   await check(page,'operations-module-navigation','.ledger-workspace-modules','');
   await check(page,'operations-module-details','.ledger-workspace-detail','');
+  // Keep coverage of the canonical controls hosted inside the CRM frame.
+  const tool = async label => {
+    await page.locator('.ledger-workspace-modules').getByRole('button', { name: label, exact: true }).click();
+    await page.waitForTimeout(500);
+  };
+  await tool('CRM');
+  await check(page,'crm-tabs','[role=tablist][aria-label="CRM sections"]','',{inline:true});
+  await tool('Providers');
+  await check(page,'providers-tabs','.providers-tabs','',{inline:true});
+  await tool('Needs');
+  await check(page,'needs-select-options','main :has(> select)','',{inline:true,field:true});
+  await tool('My profile');
+  await page.evaluate(() => {
+    const details = document.querySelector('details.identity-more');
+    for(let node=details;node;node=node.parentElement?.closest('details')) node.open=true;
+    details?.scrollIntoView({block:'center'});
+  });
+  await check(page,'profile-more-menu','details.identity-more[open] > div','');
   await page.close();
 
   console.log('Phone CRM 390x844');
