@@ -65,8 +65,12 @@ try{
         };
         const bg=lum(result.bg),fg=lum(result.textFill||result.ink);
         const ratio=(Math.max(bg,fg)+.05)/(Math.min(bg,fg)+.05);
-        if(theme==="light"&&bg<.72)throw Error("Light panel is not white: "+name+" "+JSON.stringify(result));
-        if(theme==="dark"&&bg>.05)throw Error("Dark panel is not black: "+name+" "+JSON.stringify(result));
+        // The reference homepage's philosophy chapter intentionally remains
+        // black in *both* appearance modes; News continues to switch its paper
+        // background. Test the actual design contract, never just text color.
+        if(!isNews&&bg>.05)throw Error("Cinematic philosophy panel is not black: "+name+" "+JSON.stringify(result));
+        if(isNews&&theme==="light"&&bg<.72)throw Error("Light news panel is not white: "+name+" "+JSON.stringify(result));
+        if(isNews&&theme==="dark"&&bg>.05)throw Error("Dark news panel is not black: "+name+" "+JSON.stringify(result));
         if(ratio<4.5||Number(result.opacity)<.95)throw Error("Low contrast "+name+" "+ratio.toFixed(1)+": "+JSON.stringify(result));
         console.log("PASS "+width+" "+theme+" "+name+" "+ratio.toFixed(1)+":1");
       }
