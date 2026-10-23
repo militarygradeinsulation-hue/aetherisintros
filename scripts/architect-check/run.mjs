@@ -1,155 +1,72 @@
-// Product-wide Architect smoke test: the look cannot stop at the homepage.
-// Checks both modes across the member destinations and classic operational pages.
+// Product-wide visual and route smoke test against the REAL Absolute Ledger CRM shell.
+// Keep member behavior and underlying Ask Intros modules, not superseded Specter navigation.
 import { spawn } from 'node:child_process';
-import { existsSync } from 'node:fs';
 import { createServer } from 'node:net';
-import { dirname, resolve } from 'node:path';
+import { resolve, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
-
-const root = resolve(dirname(fileURLToPath(import.meta.url)), '../..');
-const port = () => new Promise(done => {
-  const s = createServer().listen(0, '127.0.0.1', () => {
-    const p = s.address().port;
-    s.close(() => done(p));
+const root=resolve(dirname(fileURLToPath(import.meta.url)),'../..');
+const port=await new Promise(done=>{const s=createServer().listen(0,'127.0.0.1',()=>{const p=s.address().port;s.close(()=>done(p))})});
+const child=spawn('npx',['vite','dev','--port',String(port),'--host','127.0.0.1','--strictPort'],{cwd:root,stdio:['ignore','pipe','pipe'],detached:true});
+const stop=()=>{try{process.kill(-child.pid)}catch{}};
+const check=(condition,label)=>{if(!condition)throw Error(label);console.log('PASS '+label)};
+let browser;
+try{
+  await new Promise((ready,fail)=>{
+    const timeout=setTimeout(()=>fail(Error('Vite startup timed out')),90000);
+    const receive=data=>{if(/ready in|Local:/.test(String(data))){clearTimeout(timeout);ready()}};
+    child.stdout.on('data',receive);child.stderr.on('data',receive);
+    child.once('exit',code=>{clearTimeout(timeout);fail(Error('Server exited '+code))});
   });
-});
-let child;
-let base = process.env.BASE;
-if (!base) {
-  const p = await port();
-  base = `http://127.0.0.1:${p}`;
-  child = spawn('npx',['vite','dev','--port',String(p),'--host','127.0.0.1','--strictPort'],{
-    cwd:root,stdio:['ignore','pipe','pipe'],detached:true,
-  });
-  await new Promise((ok,fail) => {
-    const timer = setTimeout(() => fail(new Error('dev server startup exceeded 90s')),90000);
-    const started = data => { if (/ready in|Local:/.test(String(data))) { clearTimeout(timer); ok(); } };
-    child.stdout.on('data',started);child.stderr.on('data',started);
-    child.once('exit',code => {clearTimeout(timer);fail(new Error('server exited '+code));});
-  });
-}
-const stop = () => {if (child) try {process.kill(-child.pid);}catch {/* ignored */}};
-const {chromium} = await import(process.env.PLAYWRIGHT_MODULE ?? resolve(root,'node_modules/playwright/index.mjs'));
-const executable = process.env.CHROMIUM ?? '/opt/pw-browsers/chromium';
-const browser = await chromium.launch(existsSync(executable)?{executablePath:executable}:{});
-let failures = 0,passes=0;
-const check=(condition,description) => {if(condition){passes++;console.log('  ✓ '+description);}else{failures++;console.log('  ✗ '+description);}};
-
-try {
- for(const theme of ['dark','light']){
-  const page = await browser.newPage({viewport:{width:1440,height:900}});
-  await page.addInitScript(mode => {
-    try { localStorage.setItem('ask-intros.appearance',mode); } catch { /* optional */ }
-  },theme);
-  await page.goto(base+'/demo',{waitUntil:'domcontentloaded',timeout:120000});
-  await page.waitForSelector('.arch-product-main',{timeout:60000});
-  await page.waitForFunction(mode=>document.documentElement.dataset.theme===mode,theme);
-  const read=()=>page.evaluate(() => {
-    const main=document.querySelector('.arch-product-main');
-    const styles=getComputedStyle(main);
-    const root=getComputedStyle(document.documentElement);
-    return {
-      page:main?.getAttribute('data-arch-page'),
-      background:styles.backgroundColor,
-      panel:root.getPropertyValue('--ai-ui-surface').trim(),
-      ink:root.getPropertyValue('--architect-ink').trim(),
-      mainWidth:main?.getBoundingClientRect().width,
-      viewport:innerWidth,
-    };
-  });
-  console.log('ARCHITECT / '+theme);
-  let m=await read();
-  check(m.page==='home','Home uses the shared product layout');
-  check(m.panel.length>0 && m.ink.length>0,'Design tokens load in '+theme);
-  check(m.background=== (theme==='dark'?'rgb(0, 0, 0)':'rgb(255, 255, 255)'),'Canvas follows the black / white appearance mode');
-  check(m.panel.toLowerCase()===(theme==='light'?'#fff':'#0c0c0c'),`White or graphite panel token matches appearance mode (received ${m.panel})`);
-  check(m.mainWidth<=m.viewport+2,'Home stays within viewport');
-  const nav=page.locator('.specter-app-sidebar nav[aria-label="Workspace navigation"]');
-  await nav.getByRole('button',{name:'Member Network'}).click();
-  await page.waitForFunction(()=>document.querySelector('.arch-product-main')?.dataset.archPage==='people');
-  check((await read()).page==='people','People directory shares the design shell');
-  await page.locator('.specter-app-header .specter-header-cta').click();
-  await page.waitForFunction(()=>document.querySelector('.arch-product-main')?.dataset.archPage==='workspace');
-  check((await read()).page==='workspace','All workspace tools share the design shell');
-  check(await page.locator('.ix-tools button').count()>=10,'Real workspace module tabs remain available');
-  const workspaceSkin=await page.evaluate(() => {
-    const app=document.querySelector('.ix-classic .app-shell');
-    const get=(selector)=>{const el=document.querySelector(selector);return el?getComputedStyle(el).backgroundColor:null;};
-    return {app:app?getComputedStyle(app).backgroundColor:null,
-      toolstrip:get('.ix-tools'),main:get('.arch-product-main')};
-  });
-  check(workspaceSkin.app=== (theme==='light'?'rgb(255, 255, 255)':'rgb(0, 0, 0)'),
-    'Classic workspace actual background matches inverse stencil theme ('+JSON.stringify(workspaceSkin)+')');
-  check(workspaceSkin.toolstrip=== (theme==='light'?'rgb(255, 255, 255)':'rgb(12, 12, 12)'),
-    'Workspace option strip uses white or graphite shared surface');
-
-  // Option pages share the current stencil/orange selection system, not obsolete powder blue.
-  const options = await page.evaluate(() => {
-    const chosen=document.querySelector('.arch-product-main .ix-tools button.on');
-    const selected=chosen?getComputedStyle(chosen):null;
-    const root=getComputedStyle(document.documentElement);
-    return {
-      selectedColor:selected?.backgroundColor,
-      optionInk:root.getPropertyValue('--ai-ui-selected-ink').trim(),
-      optionBg:root.getPropertyValue('--ai-ui-selected').trim(),
-      canvas:root.getPropertyValue('--ai-ui-canvas').trim()
-    };
-  });
-  check(Boolean(options.optionBg && options.optionInk && options.canvas),'Executive option tokens available in '+theme);
-  check(Boolean(options.selectedColor) && options.selectedColor!=='rgb(220, 232, 243)','Selected workspace option is not stale powder-blue');
-  // One persistent member sidebar replaces the obsolete desktop More dropdown.
-  check(await nav.isVisible(), 'Persistent workspace destinations are visible');
-  const navColor=await nav.evaluate(el=>getComputedStyle(el).color);
-  check(Boolean(navColor && navColor!=='rgba(0, 0, 0, 0)'), 'Workspace navigation has readable ink');
-  await nav.getByRole('button',{name:'Messages'}).click();
-  await page.waitForFunction(()=>document.querySelector('.arch-product-main')?.dataset.archPage==='messages');
-  check((await read()).page==='messages','Messages shares the product shell');
-  const messaging=await page.evaluate(() => {
-    const root=document.querySelector('.ix-messages,.ix-live-messages');
-    const action=root?.querySelector('.msg-primary-action');
-    return { background:root?getComputedStyle(root).backgroundColor:null,
-      action:action?getComputedStyle(action).backgroundColor:null };
-  });
-  check(messaging.background===(theme==='dark'?'rgb(0, 0, 0)':'rgb(255, 255, 255)'),'Message panels invert black/white with the active appearance');
-  check(!messaging.action || messaging.action!=='rgb(47, 95, 135)','Message actions never regress to obsolete slate blue');
-  // Previously dark-on-dark relationship signal cards must remain readable.
-  await nav.getByRole('button',{name:'Insights'}).click();
-  await page.waitForFunction(()=>document.querySelector('.arch-product-main')?.dataset.archPage==='insights');
-  await page.waitForSelector('.ai-insight-list>article',{timeout:30000});
-  const signals=await page.evaluate(() => {
-    const card=document.querySelector('.ai-insight-list>article');
-    const group=document.querySelector('.ai-insight-numbers');
-    const styles=el=>el?getComputedStyle(el):null;
-    const color=s=>{const m=s?.match(/[\d.]+/g);return m?m.slice(0,3).map(Number):null};
-    const luminosity=channels=>channels.reduce((a,v,i)=>{
-      const x=v/255,linear=x<=.04045?x/12.92:((x+.055)/1.055)**2.4;
-      return a+linear*[.2126,.7152,.0722][i];
-    },0);
-    const contrast=(fg,bg)=>{const f=color(fg),b=color(bg);
-      if(!f||!b)return 0;
-      const a=luminosity(f),z=luminosity(b);
-      return (Math.max(a,z)+.05)/(Math.min(a,z)+.05);
-    };
-    const surface=styles(card)?.backgroundColor;
-    return {surface,metrics:styles(group)?.backgroundColor,
-      heading:contrast(styles(card?.querySelector('.insight-main h3'))?.color,surface),
-      description:contrast(styles(card?.querySelector('.insight-main p'))?.color,surface),
-      evidence:contrast(styles(card?.querySelector('.insight-main small'))?.color,surface),
-      confidence:contrast(styles(card?.querySelector('.insight-confidence strong'))?.color,surface)};
-  });
-  check(signals.surface===(theme==='dark'?'rgb(12, 12, 12)':'rgb(255, 255, 255)') && signals.metrics===signals.surface,
-    'Insights and relationship signals use inverse graphite/white cards');
-  check(['heading','description','evidence','confidence'].every(k=>signals[k]>=4.5),
-    'Insight names, descriptions, evidence and confidence all meet 4.5:1 text contrast ('+JSON.stringify(signals)+')');
-  await nav.getByRole('button',{name:'Meetings'}).click();
-  await page.waitForFunction(()=>document.querySelector('.arch-product-main')?.dataset.archPage==='meetings');
-  check((await read()).page==='meetings','Meeting workspace shares the design shell');
-  await page.close();
- }
-} catch(error){
- failures++; console.error('  ✗ Architect smoke test crashed:',error.message.slice(0,600));
+  const {chromium}=await import(process.env.PLAYWRIGHT_MODULE ?? resolve(root,'node_modules/playwright/index.mjs'));
+  browser=await chromium.launch();
+  for(const theme of ['dark','light']){
+    const context=await browser.newContext({viewport:{width:1440,height:900}});
+    await context.addInitScript(value=>{localStorage.setItem('ask-intros.appearance',value)},theme);
+    const page=await context.newPage();
+    const errors=[];
+    page.on('pageerror',error=>errors.push(error.message));
+    await page.goto('http://127.0.0.1:'+port+'/demo',{waitUntil:'domcontentloaded',timeout:120000});
+    await page.locator('.ledger-crm-shell[data-layout-source="absolute-ledger-flow/app-shell"]').waitFor({timeout:60000});
+    await page.waitForFunction(mode=>document.documentElement.dataset.theme===mode,theme);
+    const style=await page.evaluate(()=>{
+      const root=document.querySelector('.ledger-native-app');
+      const shell=document.querySelector('.ledger-crm-shell');
+      const label=document.querySelector('.ledger-ui-page-header h1');
+      const css=getComputedStyle(root);
+      return {background:css.backgroundColor,color:css.color,accent:css.getPropertyValue('--ledger-crm-accent').trim(),
+        h1:label?.textContent?.trim(),sidebarCount:shell?.querySelectorAll('.ledger-crm-sidebar').length,
+        overflow:document.documentElement.scrollWidth-innerWidth,
+        rootWidth:root?.getBoundingClientRect().width};
+    });
+    check(style.h1==='Command Dashboard',theme+' native CRM dashboard heading');
+    check(style.sidebarCount===1,theme+' one persistent CRM sidebar');
+    check(style.overflow<=3 && style.rootWidth<=1442,theme+' CRM layout fits viewport');
+    check(style.background===(theme==='dark'?'rgb(10, 10, 10)':'rgb(245, 245, 240)'),
+      theme+' CRM canvas follows black/ivory appearance');
+    check(/^#(?:ef4444|b91c1c|cb3000)$/i.test(style.accent),theme+' CRM accent is red, not orange');
+    check(await page.locator('.ledger-dashboard-stats .ledger-ui-stat').count()===4,theme+' grounded KPI cards');
+    const sidebar=page.locator('.ledger-crm-sidebar');
+    await sidebar.getByRole('button',{name:'People & contacts'}).click();
+    await page.locator('.ledger-directory-table').waitFor({state:'visible',timeout:30000});
+    check(await page.locator('[data-arch-page="people"]').count()===1,theme+' contacts use CRM records');
+    await sidebar.getByRole('button',{name:'CRM pipeline'}).click();
+    await page.locator('.ledger-workspace-modules').waitFor({state:'visible',timeout:30000});
+    check(await page.locator('[data-arch-page="workspace"]').count()===1,theme+' authenticated tool frame is preserved');
+    check(await page.locator('.ledger-workspace-modules button').count()>=10,theme+' module navigation retains production tools');
+    await sidebar.getByRole('button',{name:'Messages'}).click();
+    await page.locator('[data-arch-page="messages"]').waitFor({state:'visible',timeout:30000});
+    await page.locator('.ix-messages').first().waitFor({state:'visible',timeout:30000});
+    check(await sidebar.isVisible(),theme+' CRM sidebar persists across messaging');
+    await sidebar.getByRole('button',{name:'Network intelligence'}).click();
+    await page.locator('[data-arch-page="insights"]').waitFor({state:'visible',timeout:30000});
+    check(await page.locator('.ai-insight-list').count()>0,theme+' real Insights view remains connected');
+    await sidebar.getByRole('button',{name:'Meetings'}).click();
+    await page.locator('[data-arch-page="meetings"]').waitFor({state:'visible',timeout:30000});
+    check(!errors.length,theme+' no uncaught member-page errors: '+errors.slice(0,2).join('; '));
+    await context.close();
+  }
+  console.log('Native CRM multi-page architecture checks passed in dark and light appearances.');
 } finally {
- await browser.close();stop();
+  if(browser)await browser.close();
+  stop();
 }
-console.log(`Architect whole-product: ${passes} passed, ${failures} failed`);
-process.exit(failures?1:0);
