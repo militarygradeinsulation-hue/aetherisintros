@@ -50,6 +50,7 @@ try {
   const page=await browser.newPage({viewport:vp})
   const errors=[]
   page.on('pageerror',e=>errors.push(e.message))
+  if(vp.width===320)await page.addInitScript(()=>localStorage.setItem('aetheris-dock-fab-pos',JSON.stringify({left:5000,top:5000})))
   await page.goto(base+'/demo',{waitUntil:'domcontentloaded',timeout:120000})
   const shell=page.locator('.ix-root .ledger-crm-shell')
   await shell.waitFor({state:'visible',timeout:60000})
@@ -61,7 +62,17 @@ try {
   check(frame.height>=vp.height*.7,'CRM frame retains usable viewport height')
   await clearLayout(page,'CRM dashboard '+vp.width)
   const butler=page.locator('.ask-dock-fab')
-  if(await butler.count())check(await butler.isVisible(),'Ask Intros Butler stays visible')
+  await butler.waitFor({state:'visible',timeout:30000})
+  check(await butler.count()===1,'exactly one floating Ask Intros Butler is present')
+  const floating=await butler.evaluate(el=>{
+    const r=el.getBoundingClientRect(),nav=document.querySelector('.ledger-native-bottom')?.getBoundingClientRect();
+    return {fixed:getComputedStyle(el).position==='fixed',visible:r.left>=0&&r.right<=innerWidth&&r.top>=0&&r.bottom<=innerHeight,
+      aboveMenu:!nav||!nav.height||r.bottom<=nav.top,
+      reachable:el.contains(document.elementFromPoint(r.left+r.width/2,r.top+r.height/2))};
+  })
+  check(floating.fixed&&floating.visible&&floating.aboveMenu&&floating.reachable,'floating Butler is reachable above mobile navigation, including saved positions')
+  await butler.click()
+  await page.getByRole('dialog',{name:'Ask Intros',exact:true}).waitFor({state:'visible'})
 
   if(vp.width<=1120){
     const launcher=page.getByRole('button',{name:'Open navigation'})
@@ -76,6 +87,9 @@ try {
     const mobileNav=page.getByRole('navigation',{name:'Mobile workspace navigation'})
     await mobileNav.getByRole('button',{name:'Messages'}).click()
     await page.locator('.ix-messages').first().waitFor({state:'visible',timeout:25000})
+    check(await page.getByRole('dialog',{name:'Ask Intros',exact:true}).isVisible(),'floating bot stays open across page navigation')
+    check(await page.locator('.ask-dock-fab').count()===1,'page navigation does not duplicate the bot')
+    await butler.click()
     check(!(await menu.isVisible()),'CRM navigation drawer closes after selection')
     await clearLayout(page,'messages '+vp.width)
 
@@ -89,6 +103,9 @@ try {
     check(await nav.isVisible(),'desktop CRM sidebar is visible')
     await nav.getByRole('button',{name:'Messages'}).click()
     await page.locator('.ix-messages').first().waitFor({state:'visible',timeout:25000})
+    check(await page.getByRole('dialog',{name:'Ask Intros',exact:true}).isVisible(),'floating bot stays open across page navigation')
+    check(await page.locator('.ask-dock-fab').count()===1,'page navigation does not duplicate the bot')
+    await butler.click()
     await clearLayout(page,'messages '+vp.width)
     await nav.getByRole('button',{name:'People & contacts'}).click()
     await page.locator('.ledger-directory-table').waitFor({state:'visible',timeout:25000})

@@ -34,13 +34,18 @@ const POS_KEY = 'aetheris-dock-pos'
 const FAB_KEY = 'aetheris-dock-fab-pos'
 type Point = { left: number; top: number }
 const readPoint = (key: string): Point | null => {
-  try { const v = JSON.parse(localStorage.getItem(key) ?? 'null'); return v && typeof v.left === 'number' && typeof v.top === 'number' ? v : null } catch { return null }
+  try { const v = JSON.parse(localStorage.getItem(key) ?? 'null'); return v && typeof v.left === 'number' && typeof v.top === 'number' && Number.isFinite(v.left) && Number.isFinite(v.top) ? v : null } catch { return null }
 }
 const writePoint = (key: string, p: Point | null) => { try { if (p) localStorage.setItem(key, JSON.stringify(p)); else localStorage.removeItem(key) } catch { /* unavailable */ } }
-const clampPoint = (p: Point, w: number, h: number): Point => ({
-  left: Math.min(Math.max(8, p.left), Math.max(8, window.innerWidth - w - 8)),
-  top: Math.min(Math.max(8, p.top), Math.max(8, window.innerHeight - h - 8)),
-})
+const clampPoint = (p: Point, w: number, h: number): Point => {
+  const navigation = document.querySelector('.ledger-native-bottom')?.getBoundingClientRect()
+  const height = window.visualViewport?.height ?? window.innerHeight
+  const floor = navigation && navigation.height > 0 ? Math.min(height, navigation.top) : height
+  return {
+    left: Math.min(Math.max(8, p.left), Math.max(8, window.innerWidth - w - 8)),
+    top: Math.min(Math.max(8, p.top), Math.max(8, floor - h - 8)),
+  }
+}
 
 /** Pointer-drag for a fixed element; reports whether the pointer actually moved (so clicks still work). */
 function useDrag(onMove: (p: Point) => void, onEnd: (p: Point) => void) {
@@ -149,6 +154,18 @@ function AskIntrosDockInner({ page, peopleNames, memberName, briefing, contextPa
   const fabRef = useRef<HTMLButtonElement>(null)
   const dragDock = useDrag(setPos, p => writePoint(POS_KEY, p))
   const dragFab = useDrag(setFabPos, p => writePoint(FAB_KEY, p))
+  useEffect(() => {
+    const keepVisible = () => {
+      setFabPos(point => point ? clampPoint(point, fabRef.current?.offsetWidth ?? 140, fabRef.current?.offsetHeight ?? 48) : null)
+      setPos(point => point ? clampPoint(point, dockRef.current?.offsetWidth ?? 390, dockRef.current?.offsetHeight ?? 420) : null)
+    }
+    window.addEventListener('resize', keepVisible)
+    window.visualViewport?.addEventListener('resize', keepVisible)
+    return () => {
+      window.removeEventListener('resize', keepVisible)
+      window.visualViewport?.removeEventListener('resize', keepVisible)
+    }
+  }, [])
   const pendingVoice = useRef(false)
   const [voiceAsk, setVoiceAsk] = useState(0)
   const live = useRef({ open, turns })
@@ -332,8 +349,8 @@ function AskIntrosDockInner({ page, peopleNames, memberName, briefing, contextPa
   const status = busy ? 'Thinking' : reader.state !== 'idle' ? 'Speaking' : dictation.listening ? 'Listening' : ''
 
   return <>
-    <button ref={fabRef} className={`ask-dock-fab ${open ? 'active' : ''}`} aria-label="Ask Intros" title="Drag to move"
-      style={fabPos ? { left: fabPos.left, top: fabPos.top, right: 'auto', bottom: 'auto' } : undefined}
+    <button ref={fabRef} className={`ask-dock-fab ${open ? 'active' : ''}`} aria-label="Ask Intros" aria-expanded={open} title="Ask Intros · drag to move"
+      style={fabPos ? { ...clampPoint(fabPos, fabRef.current?.offsetWidth ?? 140, fabRef.current?.offsetHeight ?? 48), right: 'auto', bottom: 'auto' } : undefined}
       onPointerDown={e => dragFab(e, fabRef.current)}
       onClick={() => { if (fabRef.current?.dataset['dragged']) return; setOpen(value => !value) }}>
       {open ? <X size={18} /> : <AetherisGlyph size={18} />}

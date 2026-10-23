@@ -2385,8 +2385,8 @@ function AccountControl() {
 
 /* ---------------------------------------------------------------------- app */
 
-export function AetherisAppSurface({ startPage, feedOnly = false }: { startPage?: Page | undefined; feedOnly?: boolean }) {
-  return <Shell startPage={startPage} feedOnly={feedOnly} />
+export function AetherisAppSurface({ startPage, feedOnly = false, assistant = true }: { startPage?: Page | undefined; feedOnly?: boolean; assistant?: boolean }) {
+  return <Shell startPage={startPage} feedOnly={feedOnly} assistant={assistant} />
 }
 
 export default function App({ startPage, mode = 'live', feedOnly = false }: { startPage?: Page | undefined; mode?: NetworkMode; feedOnly?: boolean }) {
@@ -2585,7 +2585,7 @@ function TopbarVoice() {
   </button>
 }
 
-function Shell({ startPage, feedOnly = false }: { startPage?: Page | undefined; feedOnly?: boolean }) {
+function Shell({ startPage, feedOnly = false, assistant = true }: { startPage?: Page | undefined; feedOnly?: boolean; assistant?: boolean }) {
   const net = useNetwork()
   const stored = typeof window !== 'undefined' ? localStorage.getItem('aetheris-intros-page') : null
   const initial = startPage ?? (stored && allNav.some(n => n.id === stored) ? stored : legacyPage[stored ?? ''] ?? 'home') as Page
@@ -2923,8 +2923,8 @@ function Shell({ startPage, feedOnly = false }: { startPage?: Page | undefined; 
       <SelectionReader />
       <CeoHost />
       <CapabilityWorkspaceHost />
-      <AskIntrosDock page={page} peopleNames={people.map(p => p.name)} memberName={me.name}
-        briefing={briefing.on} contextPanel={contextOpen} run={runAssistantAction} />
+      {assistant && <AskIntrosDock page={page} peopleNames={people.map(p => p.name)} memberName={me.name}
+        briefing={briefing.on} contextPanel={contextOpen} run={runAssistantAction} />}
     </div>
   </NavCtx.Provider>
 }
