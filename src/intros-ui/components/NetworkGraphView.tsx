@@ -29,7 +29,7 @@ interface NetworkGraphViewProps {
 const CLUSTERS = [
   { id: 'all', label: 'All Clusters', color: '#F2EEE6' },
   { id: 'capital', label: 'Capital & Syndicates', color: '#F5B027' },
-  { id: 'aerospace', label: 'Deep Tech & Aerospace', color: '#C78522' },
+  { id: 'aerospace', label: 'Deep Tech & Aerospace', color: '#B91C1C' },
   { id: 'sovereign', label: 'Sovereign Allocators', color: '#F5B027' },
   { id: 'ai_deeptech', label: 'AI & Photonics', color: '#FFC85C' },
   { id: 'enterprise', label: 'Enterprise Strategy', color: '#D7C29A' },
@@ -192,7 +192,7 @@ export const NetworkGraphView: React.FC<NetworkGraphViewProps> = ({
       .attr('cx', (d) => (d.val || 20) * 0.7)
       .attr('cy', (d) => -(d.val || 20) * 0.7)
       .attr('fill', (d) => {
-        if (d.engagement === 'active') return '#C78522';
+        if (d.engagement === 'active') return '#B91C1C';
         if (d.engagement === 'followup') return '#F5B027';
         return '#64748B';
       })
@@ -440,7 +440,7 @@ export const NetworkGraphView: React.FC<NetworkGraphViewProps> = ({
               <span className="text-[9px] font-mono uppercase text-[#F5B027] font-semibold">
                 {hoveredNode.clusterLabel}
               </span>
-              <span className="text-[11px] font-mono text-[#C78522] font-bold tabular-nums">
+              <span className="text-[11px] font-mono text-[#B91C1C] font-bold tabular-nums">
                 Index: {hoveredNode.connectionScore}/100
               </span>
             </div>
@@ -461,7 +461,7 @@ export const NetworkGraphView: React.FC<NetworkGraphViewProps> = ({
               <div className="grid grid-cols-2 gap-x-3 gap-y-1 text-[8.5px] font-mono pt-1 text-[#F2EEE6]/80">
                 <div className="flex justify-between">
                   <span className="text-white/50">Recency (R: 35%):</span>
-                  <span className="text-[#C78522] font-semibold">
+                  <span className="text-[#B91C1C] font-semibold">
                     {Math.min(100, Math.round(hoveredNode.connectionScore * 1.03))}%
                   </span>
                 </div>

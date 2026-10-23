@@ -10,11 +10,11 @@
  * member-provided images or the page/inner-scroll contracts.
  */
 .ix-root .aetheris-workspace-shell {
-  --ix-accent: #ff8a4c;
+  --ix-accent: #EF4444;
   --ix-accent-deep: #c96a3d;
-  --ix-accent-hover: #ffae7d;
-  --ix-accent-wash: rgba(255,138,76,.10);
-  --ix-accent-line: rgba(255,138,76,.32);
+  --ix-accent-hover: #FCA5A5;
+  --ix-accent-wash: rgba(239,68,68,.10);
+  --ix-accent-line: rgba(239,68,68,.32);
   --ix-bg: #0a0a0b;
   --ix-panel: #0e0e10;
   --ix-card: #131316;
@@ -33,7 +33,7 @@
   --acc-bright: var(--ix-accent-hover);
   --acc-line: var(--ix-accent-line);
   --acc-wash: var(--ix-accent-wash);
-  --acc-glow: rgba(255,138,76,.12);
+  --acc-glow: rgba(239,68,68,.12);
   --specter-orange: var(--ix-accent);
   --font-sans: Poppins, Inter, system-ui, sans-serif;
   background: var(--ix-bg);
@@ -43,7 +43,7 @@
 }
 
 .ix-root .aetheris-workspace-shell ::selection {
-  background: rgba(255,138,76,.34);
+  background: rgba(239,68,68,.34);
   color: #fff;
 }
 
@@ -87,12 +87,12 @@
 }
 .ix-root .aetheris-workspace-shell .specter-app-sidebar nav :is(button,a):hover {
   color: #ffdbca;
-  background: rgba(255,138,76,.065);
+  background: rgba(239,68,68,.065);
 }
 .ix-root .aetheris-workspace-shell .specter-app-sidebar nav .active {
   color: #ffc29f !important;
-  background: rgba(255,138,76,.105) !important;
-  border-color: rgba(255,138,76,.28) !important;
+  background: rgba(239,68,68,.105) !important;
+  border-color: rgba(239,68,68,.28) !important;
   box-shadow: inset 3px 0 var(--ix-accent) !important;
 }
 .ix-root .aetheris-workspace-shell .specter-app-sidebar nav .active svg {
@@ -100,17 +100,17 @@
 }
 .ix-root .aetheris-workspace-shell .specter-mobile-menu nav .active {
   color: #ffcfb7;
-  background: rgba(255,138,76,.13);
+  background: rgba(239,68,68,.13);
   box-shadow: inset 3px 0 var(--ix-accent);
 }
 .ix-root .aetheris-workspace-shell .specter-app-sidebar nav .specter-executive-action,
 .ix-root .aetheris-workspace-shell .specter-mobile-menu nav .specter-executive-action {
-  color: #ffb388;
+  color: #FCA5A5;
   border-top-color: var(--ix-accent-line);
 }
 .ix-root .aetheris-workspace-shell .specter-app-sidebar nav .specter-executive-action:hover {
   color: #ffd9c5;
-  background: rgba(255,138,76,.08);
+  background: rgba(239,68,68,.08);
 }
 .ix-root .aetheris-workspace-shell .specter-sidebar-toggle,
 .ix-root .aetheris-workspace-shell .specter-sidebar-expand {
@@ -124,7 +124,7 @@
 .ix-root .aetheris-workspace-shell .specter-sidebar-search:focus-within,
 .ix-root .aetheris-workspace-shell .specter-app-member-search:focus-within {
   border-color: var(--ix-accent-line) !important;
-  box-shadow: 0 0 0 2px rgba(255,138,76,.07);
+  box-shadow: 0 0 0 2px rgba(239,68,68,.07);
 }
 .ix-root .aetheris-workspace-shell .specter-app-canvas,
 .ix-root .aetheris-workspace-shell .aetheris-workspace-content {
@@ -157,11 +157,11 @@
   transition: background-color .18s ease, border-color .18s ease, transform .18s ease;
 }
 .ix-root .aetheris-workspace-shell :is(.home-board-tile,.home-feed-widget,.sys-tile,.mi-panel):hover {
-  border-color: rgba(255,138,76,.24);
+  border-color: rgba(239,68,68,.24);
   background-color: var(--ix-card-hover);
 }
 .ix-root .aetheris-workspace-shell .sys-tile:hover {
-  box-shadow: 0 7px 23px rgba(0,0,0,.22), 0 0 0 1px rgba(255,138,76,.035);
+  box-shadow: 0 7px 23px rgba(0,0,0,.22), 0 0 0 1px rgba(239,68,68,.035);
   transform: translateY(-1px);
 }
 .ix-root .aetheris-workspace-shell .home-board-tile {
@@ -175,7 +175,7 @@
   pointer-events: none;
   z-index: -1;
   inset: 0;
-  background-image: radial-gradient(circle, rgba(255,138,76,.65) .65px, transparent .85px);
+  background-image: radial-gradient(circle, rgba(239,68,68,.65) .65px, transparent .85px);
   background-size: 12px 12px;
   mask-image: linear-gradient(135deg,transparent 58%,black 100%);
   opacity: .11;
@@ -245,7 +245,7 @@
   color: #ffd0b4;
 }
 .ix-root .aetheris-workspace-shell .ix-network-viewport .ix-network-results-list {
-  scrollbar-color: rgba(255,138,76,.40) #121214;
+  scrollbar-color: rgba(239,68,68,.40) #121214;
 }
 .ix-root .aetheris-workspace-shell .ix-network-viewport .ix-network-results-list > div:first-child {
   border-bottom-color: var(--ix-line-strong);
@@ -271,9 +271,9 @@
 /* Message palette: the private threads stay intact; only actionable UI warms.
    Do not repaint error/success callouts or override members' content colors. */
 :root[data-theme="dark"] body .ix-root .aetheris-workspace-shell :is(.ix-messages,.ix-live-messages) {
-  --msg-copper: #ffab7e !important;
-  --msg-accent: #ff8a4c !important;
-  --msg-accent-hover: #ffab7e !important;
+  --msg-copper: #FCA5A5 !important;
+  --msg-accent: #EF4444 !important;
+  --msg-accent-hover: #FCA5A5 !important;
   --msg-accent-ink: #1a120f !important;
   --msg-selected: #261b18 !important;
 }
@@ -292,13 +292,13 @@
   box-shadow: none !important;
 }
 :root[data-theme] body .ix-root.ix-specter-mode .specter-app .specter-tabs button.active {
-  background: rgba(255,138,76,.12) !important;
+  background: rgba(239,68,68,.12) !important;
   color: #ffcaac !important;
   border-bottom-color: var(--ix-accent) !important;
 }
 :root[data-theme] body .ix-root.ix-specter-mode .specter-app .specter-app-sidebar nav .active {
   color: #ffc29f !important;
-  background: rgba(255,138,76,.105) !important;
+  background: rgba(239,68,68,.105) !important;
   border-color: var(--ix-accent-line) !important;
   box-shadow: inset 3px 0 var(--ix-accent) !important;
 }
@@ -308,7 +308,7 @@
   background: var(--ix-card);
 }
 .ix-root .aetheris-workspace-shell .specter-metrics strong {
-  color: #ffbb95;
+  color: #FCA5A5;
 }
 .ix-root .aetheris-workspace-shell .specter-browser-view-switch button.active {
   background: var(--ix-accent);
@@ -328,7 +328,7 @@
 /* Solid orange actions use ink, not white text: maintains readable contrast.
    Match only a complete Tailwind class token so orange translucent washes keep
    their light-text treatments. */
-.ix-root .aetheris-workspace-shell :is(button,a)[class~="bg-[#FF8A4C]"] {
+.ix-root .aetheris-workspace-shell :is(button,a)[class~="bg-[#EF4444]"] {
   color: #1c110c !important;
   -webkit-text-fill-color: #1c110c !important;
 }
@@ -336,7 +336,7 @@
   color: #19100d !important;
   -webkit-text-fill-color: #19100d !important;
 }
-.ix-root .aetheris-workspace-shell :is(button,a)[class~="bg-[#FF8A4C]"]:disabled {
+.ix-root .aetheris-workspace-shell :is(button,a)[class~="bg-[#EF4444]"]:disabled {
   opacity: .56;
 }
 

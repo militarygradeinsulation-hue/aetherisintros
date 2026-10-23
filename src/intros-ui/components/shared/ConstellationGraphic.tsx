@@ -58,7 +58,7 @@ export const ConstellationGraphic: React.FC<ConstellationGraphicProps> = ({
             <path d="M 215 62 Q 250 68 285 92" />
             <path d="M 285 92 Q 320 100 350 125" />
             <path d="M 350 125 Q 380 95 390 82" />
-            <path d="M 75 85 Q 240 10 390 82" stroke="#F59E0B" strokeWidth="0.8" opacity="0.4" />
+            <path d="M 75 85 Q 240 10 390 82" stroke="#DC2626" strokeWidth="0.8" opacity="0.4" />
           </g>
 
           {/* City Nodes */}
@@ -173,7 +173,7 @@ export const ConstellationGraphic: React.FC<ConstellationGraphicProps> = ({
               <span className="w-2 h-2 rounded-full bg-[#F5B027]" /> People Bubbles
             </div>
             <div className="flex items-center gap-1.5">
-              <span className="w-2 h-2 rounded-full bg-[#F59E0B]" /> Companies
+              <span className="w-2 h-2 rounded-full bg-[#DC2626]" /> Companies
             </div>
             <div className="flex items-center gap-1.5">
               <span className="w-2 h-2 rounded-full border border-white bg-transparent" /> Key Relationship
@@ -185,7 +185,7 @@ export const ConstellationGraphic: React.FC<ConstellationGraphicProps> = ({
         <svg viewBox="0 0 380 230" className="w-full h-[225px]">
 
           {/* Connecting lines */}
-          <g stroke="rgba(199, 133, 34,0.4)" strokeWidth="1.2">
+          <g stroke="rgba(185,28,28,0.4)" strokeWidth="1.2">
             <line x1="190" y1="120" x2="260" y2="60" strokeDasharray="3 3" />
             <line x1="190" y1="120" x2="95" y2="80" />
             <line x1="190" y1="120" x2="290" y2="160" stroke="#F5B027" strokeWidth="2.5" />
@@ -299,10 +299,10 @@ export const ConstellationGraphic: React.FC<ConstellationGraphicProps> = ({
 
         {/* Orbit Rings */}
         <circle cx="140" cy="105" r="75" fill="none" stroke="rgba(255,255,255,0.06)" strokeDasharray="4 4" />
-        <circle cx="140" cy="105" r="45" fill="none" stroke="rgba(199, 133, 34,0.15)" />
+        <circle cx="140" cy="105" r="45" fill="none" stroke="rgba(185,28,28,0.15)" />
 
         {/* Radiating Lines to Center */}
-        <g stroke="rgba(199, 133, 34,0.4)" strokeWidth="1.2">
+        <g stroke="rgba(185,28,28,0.4)" strokeWidth="1.2">
           {networkRoles.map((role, idx) => (
             <line
               key={idx}

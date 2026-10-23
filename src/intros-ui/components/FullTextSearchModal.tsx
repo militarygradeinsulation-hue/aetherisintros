@@ -492,7 +492,7 @@ export const FullTextSearchModal: React.FC<FullTextSearchModalProps> = ({
                   onMouseEnter={() => setSelectedIndex(idx)}
                   className={`p-3 sm:p-3.5 rounded-xl border transition-all cursor-pointer flex flex-col gap-1.5 ${
                     isSelected
-                      ? 'bg-[#0E1524] border-[#F5B027]/60 shadow-[0_0_15px_rgba(199, 133, 34,0.25)]'
+                      ? 'bg-[#0E1524] border-[#F5B027]/60 shadow-[0_0_15px_rgba(185,28,28,0.25)]'
                       : 'bg-[#0A0D12] border-white/5 hover:border-white/15 hover:bg-white/[0.02]'
                   }`}
                 >
@@ -507,7 +507,7 @@ export const FullTextSearchModal: React.FC<FullTextSearchModalProps> = ({
                             ? 'bg-[#F5B027]/20 text-[#F5B027]'
                             : result.type === 'tag'
                             ? 'bg-[#FFC85C]/20 text-[#FFC85C]'
-                            : 'bg-[#C78522]/20 text-[#C78522]'
+                            : 'bg-[#B91C1C]/20 text-[#B91C1C]'
                         }`}
                       >
                         {result.type === 'person' && <User size={13} />}

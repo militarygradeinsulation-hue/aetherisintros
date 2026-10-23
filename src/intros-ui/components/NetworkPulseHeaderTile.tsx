@@ -20,7 +20,7 @@ export const NetworkPulseHeaderTile: React.FC<NetworkPulseHeaderTileProps> = ({
   const minVal = Math.min(...sparklineValues);
 
   return (
-    <div className="w-full mb-4 p-4 sm:p-5 rounded-2xl bg-gradient-to-r from-[#0E1116] via-[#121824] to-[#0E1116] border border-[#F5B027]/40 shadow-[0_0_30px_rgba(199, 133, 34,0.15)] flex flex-col lg:flex-row lg:items-center justify-between gap-4 select-none relative overflow-hidden">
+    <div className="w-full mb-4 p-4 sm:p-5 rounded-2xl bg-gradient-to-r from-[#0E1116] via-[#121824] to-[#0E1116] border border-[#F5B027]/40 shadow-[0_0_30px_rgba(185,28,28,0.15)] flex flex-col lg:flex-row lg:items-center justify-between gap-4 select-none relative overflow-hidden">
       {/* Background glow accent */}
       <div className="absolute -right-20 -top-20 w-60 h-60 bg-[#F5B027]/10 rounded-full blur-3xl pointer-events-none" aria-hidden="true" />
 
@@ -34,7 +34,7 @@ export const NetworkPulseHeaderTile: React.FC<NetworkPulseHeaderTileProps> = ({
             <span className="text-[10px] font-mono tracking-[0.2em] uppercase font-bold text-[#F5B027]">
               Network Pulse &amp; Activity Velocity
             </span>
-            <span className="px-2 py-0.5 rounded-full bg-[#C78522]/20 text-[#C78522] text-[9.5px] font-mono font-bold flex items-center gap-1">
+            <span className="px-2 py-0.5 rounded-full bg-[#B91C1C]/20 text-[#B91C1C] text-[9.5px] font-mono font-bold flex items-center gap-1">
               <TrendingUp size={10} />
               <span>+342% ROI Velocity</span>
             </span>
@@ -52,7 +52,7 @@ export const NetworkPulseHeaderTile: React.FC<NetworkPulseHeaderTileProps> = ({
       <div className="flex items-center gap-4 bg-[#07090C] border border-white/10 rounded-xl px-4 py-3 shrink-0">
         <div className="flex flex-col">
           <span className="text-[9.5px] font-mono text-[#F2EEE6]/50 uppercase tracking-wider">Weekly Activity</span>
-          <span className="text-base font-serif-editorial text-[#C78522] font-semibold">+48 Touchpoints</span>
+          <span className="text-base font-serif-editorial text-[#B91C1C] font-semibold">+48 Touchpoints</span>
         </div>
 
         {/* SVG Sparkline */}
@@ -66,7 +66,7 @@ export const NetworkPulseHeaderTile: React.FC<NetworkPulseHeaderTileProps> = ({
                 style={{ height: `${heightPct}%` }}
                 className={`w-2.5 rounded-t transition-all ${
                   isLatest
-                    ? 'bg-[#F5B027] shadow-[0_0_10px_rgba(199, 133, 34,0.8)]'
+                    ? 'bg-[#F5B027] shadow-[0_0_10px_rgba(185,28,28,0.8)]'
                     : 'bg-white/25 hover:bg-white/40'
                 }`}
                 title={`Day ${idx + 1}: ${val} interactions`}

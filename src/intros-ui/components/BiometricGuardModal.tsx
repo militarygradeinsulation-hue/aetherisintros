@@ -150,8 +150,8 @@ export const BiometricGuardModal: React.FC<BiometricGuardModalProps> = ({
               {/* Central Glyph */}
               {scanState === 'success' ? (
                 <div className="flex flex-col items-center animate-in zoom-in-75 duration-300">
-                  <CheckCircle2 size={44} className="text-[#C78522]" />
-                  <span className="text-[10px] font-mono text-[#C78522] mt-2 font-bold tracking-wider">
+                  <CheckCircle2 size={44} className="text-[#B91C1C]" />
+                  <span className="text-[10px] font-mono text-[#B91C1C] mt-2 font-bold tracking-wider">
                     FACE ID VERIFIED
                   </span>
                 </div>
@@ -174,7 +174,7 @@ export const BiometricGuardModal: React.FC<BiometricGuardModalProps> = ({
                 </>
               )}
               {scanState === 'success' && (
-                <span className="text-[#C78522] font-bold">Enclave Decrypted Successfully</span>
+                <span className="text-[#B91C1C] font-bold">Enclave Decrypted Successfully</span>
               )}
             </div>
           </div>
@@ -193,7 +193,7 @@ export const BiometricGuardModal: React.FC<BiometricGuardModalProps> = ({
             </div>
 
             {errorMessage && (
-              <div className="text-[10px] font-mono text-[#C78522]">{errorMessage}</div>
+              <div className="text-[10px] font-mono text-[#B91C1C]">{errorMessage}</div>
             )}
 
             <div className="grid grid-cols-3 gap-2 max-w-[210px] mx-auto pt-1 font-mono">

@@ -116,13 +116,13 @@ export const ExecutiveIntelligenceSidebar: React.FC<ExecutiveIntelligenceSidebar
   const getStatusColor = (status?: string) => {
     switch (status) {
       case 'active':
-        return 'bg-[#C78522] shadow-[0_0_6px_rgba(63,179,127,0.7)]';
+        return 'bg-[#B91C1C] shadow-[0_0_6px_rgba(63,179,127,0.7)]';
       case 'followup':
         return 'bg-[#F5B027] shadow-[0_0_6px_rgba(242,169,59,0.7)]';
       case 'dormant':
         return 'bg-[#64748B]';
       default:
-        return 'bg-[#C78522]';
+        return 'bg-[#B91C1C]';
     }
   };
 
@@ -143,7 +143,7 @@ export const ExecutiveIntelligenceSidebar: React.FC<ExecutiveIntelligenceSidebar
   const getSentimentBadge = (sentiment: 'bullish' | 'neutral' | 'watch') => {
     switch (sentiment) {
       case 'bullish':
-        return <span className="text-[#C78522] text-[9px] font-mono tracking-wider">▲ Bullish</span>;
+        return <span className="text-[#B91C1C] text-[9px] font-mono tracking-wider">▲ Bullish</span>;
       case 'watch':
         return <span className="text-[#F5B027] text-[9px] font-mono tracking-wider">● Watch</span>;
       case 'neutral':
@@ -218,7 +218,7 @@ export const ExecutiveIntelligenceSidebar: React.FC<ExecutiveIntelligenceSidebar
                 }}
                 className={`px-2 py-1 rounded text-[10px] font-mono flex items-center gap-1.5 transition-all border ${
                   isBiometricUnlocked
-                    ? 'bg-[#C78522]/15 border-[#C78522]/30 text-[#C78522]'
+                    ? 'bg-[#B91C1C]/15 border-[#B91C1C]/30 text-[#B91C1C]'
                     : 'bg-[#F5B027]/15 border-[#F5B027]/40 text-[#F5B027] hover:bg-[#F5B027]/25'
                 }`}
                 title={
@@ -339,7 +339,7 @@ export const ExecutiveIntelligenceSidebar: React.FC<ExecutiveIntelligenceSidebar
                     </div>
                     <div className="p-1.5 rounded bg-black/30 border border-white/5">
                       <div className="text-[8.5px] font-mono text-[#F2EEE6]/50 uppercase">Active Deals</div>
-                      <div className="text-xs font-mono font-bold text-[#C78522] tabular-nums mt-0.5">
+                      <div className="text-xs font-mono font-bold text-[#B91C1C] tabular-nums mt-0.5">
                         {dossier.activeDealsCount}
                       </div>
                     </div>
@@ -352,7 +352,7 @@ export const ExecutiveIntelligenceSidebar: React.FC<ExecutiveIntelligenceSidebar
                               ? `$${(dossier.pipelineExposure / 1000000).toFixed(1)}M`
                               : '$0'}
                           </span>
-                          <ShieldCheck size={11} className="text-[#C78522]" />
+                          <ShieldCheck size={11} className="text-[#B91C1C]" />
                         </div>
                       ) : (
                         <button
@@ -428,7 +428,7 @@ export const ExecutiveIntelligenceSidebar: React.FC<ExecutiveIntelligenceSidebar
                       </div>
                     </div>
                     <div className="p-2 rounded bg-black/40 border border-white/5 flex items-start gap-2">
-                      <span className="text-[#C78522]">💡</span>
+                      <span className="text-[#B91C1C]">💡</span>
                       <div>
                         <strong className="text-[#F2EEE6]">Unutilized Synergy:</strong> {activePerson?.mutualsCount || 38} mutual peers in Apex syndicate. Bridge potential to Jensen Huang unallocated.
                       </div>
@@ -443,7 +443,7 @@ export const ExecutiveIntelligenceSidebar: React.FC<ExecutiveIntelligenceSidebar
                       <Calendar size={12} />
                       <span>Priority Meetings ({priorityMeetings.length})</span>
                     </div>
-                    <span className="text-[9px] font-mono px-1.5 py-0.2 rounded bg-[#C78522]/15 text-[#C78522] border border-[#C78522]/30 font-semibold">
+                    <span className="text-[9px] font-mono px-1.5 py-0.2 rounded bg-[#B91C1C]/15 text-[#B91C1C] border border-[#B91C1C]/30 font-semibold">
                       Calendar Synced
                     </span>
                   </div>

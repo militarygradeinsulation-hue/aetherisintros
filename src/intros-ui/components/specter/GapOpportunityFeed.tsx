@@ -20,7 +20,7 @@ interface GapOpportunityCardProps {
 
 const URGENCY_STYLES = {
   high: 'bg-red-500/10 text-red-400 border-red-500/25',
-  medium: 'bg-amber-500/10 text-[#F5B027] border-amber-500/25',
+  medium: 'bg-red-500/10 text-[#F5B027] border-red-500/25',
   low: 'bg-white/5 text-[#9CA3AF] border-white/10',
 } as const;
 

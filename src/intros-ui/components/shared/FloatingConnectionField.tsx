@@ -222,7 +222,7 @@ export const FloatingConnectionField: React.FC<FloatingConnectionFieldProps> = (
         baseRadius: baseR,
         pulsePhase: Math.random() * Math.PI * 2,
         _appearAt: idx < 2 ? 1 : 0,
-        ringHue: m.tier === 'Core' ? '#F5B027' : m.tier === 'Extended' ? '#C78522' : '#F59E0B',
+        ringHue: m.tier === 'Core' ? '#F5B027' : m.tier === 'Extended' ? '#B91C1C' : '#DC2626',
       };
     });
 
@@ -339,9 +339,9 @@ export const FloatingConnectionField: React.FC<FloatingConnectionFieldProps> = (
       // Smooth, gentle Radar Sweep Beam (slow, serene rotation ~22s per cycle)
       const sweepAngle = (now * 0.00028) % (Math.PI * 2);
       const sweepGradient = ctx.createRadialGradient(cx, cy, 0, cx, cy, radarMaxRadius);
-      sweepGradient.addColorStop(0, 'rgba(199, 133, 34, 0.14)');
+      sweepGradient.addColorStop(0, 'rgba(185,28,28, 0.14)');
       sweepGradient.addColorStop(0.7, 'rgba(255, 200, 92, 0.04)');
-      sweepGradient.addColorStop(1, 'rgba(199, 133, 34, 0)');
+      sweepGradient.addColorStop(1, 'rgba(185,28,28, 0)');
 
       ctx.save();
       ctx.beginPath();
@@ -825,7 +825,7 @@ export const FloatingConnectionField: React.FC<FloatingConnectionFieldProps> = (
 
         ctx.beginPath();
         ctx.roundRect(node.x - pillW / 2, pillY - pillH / 2, pillW, pillH, 9);
-        ctx.fillStyle = isHovered ? 'rgba(199, 133, 34, 0.95)' : 'rgba(14, 18, 26, 0.88)';
+        ctx.fillStyle = isHovered ? 'rgba(185,28,28, 0.95)' : 'rgba(14, 18, 26, 0.88)';
         ctx.fill();
         ctx.strokeStyle = isHovered ? '#FFC85C' : 'rgba(255, 255, 255, 0.12)';
         ctx.lineWidth = 1;
@@ -995,12 +995,12 @@ export const FloatingConnectionField: React.FC<FloatingConnectionFieldProps> = (
           </linearGradient>
           <linearGradient id="trail-grad-extended" x1="0%" y1="0%" x2="100%" y2="100%">
             <stop offset="0%" stopColor="#059669" stopOpacity="0.05" />
-            <stop offset="65%" stopColor="#C78522" stopOpacity="0.6" />
+            <stop offset="65%" stopColor="#B91C1C" stopOpacity="0.6" />
             <stop offset="100%" stopColor="#6EE7B7" stopOpacity="0.9" />
           </linearGradient>
           <linearGradient id="trail-grad-prospect" x1="0%" y1="0%" x2="100%" y2="100%">
             <stop offset="0%" stopColor="#D97706" stopOpacity="0.05" />
-            <stop offset="65%" stopColor="#F59E0B" stopOpacity="0.6" />
+            <stop offset="65%" stopColor="#DC2626" stopOpacity="0.6" />
             <stop offset="100%" stopColor="#FCD34D" stopOpacity="0.9" />
           </linearGradient>
         </defs>
@@ -1145,7 +1145,7 @@ export const FloatingConnectionField: React.FC<FloatingConnectionFieldProps> = (
                 onSelectMember(activeDossier.member.id);
                 setActiveDossier(null);
               }}
-              className="flex-1 flex items-center justify-center gap-1.5 py-2 px-3 rounded-lg bg-[#F5B027] hover:bg-[#C78522] text-white text-xs font-semibold shadow-md shadow-[#F5B027]/30 transition-all cursor-pointer"
+              className="flex-1 flex items-center justify-center gap-1.5 py-2 px-3 rounded-lg bg-[#F5B027] hover:bg-[#B91C1C] text-white text-xs font-semibold shadow-md shadow-[#F5B027]/30 transition-all cursor-pointer"
             >
               <span>Open Profile</span>
               <ArrowRight className="w-3.5 h-3.5" />

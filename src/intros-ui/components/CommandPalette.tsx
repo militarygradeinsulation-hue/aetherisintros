@@ -422,7 +422,7 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({
   const getStatusDot = (status?: string) => {
     switch (status) {
       case 'active':
-        return 'bg-[#C78522] shadow-[0_0_8px_rgba(63,179,127,0.7)]';
+        return 'bg-[#B91C1C] shadow-[0_0_8px_rgba(63,179,127,0.7)]';
       case 'followup':
         return 'bg-[#F5B027] shadow-[0_0_8px_rgba(242,169,59,0.7)]';
       case 'dormant':
@@ -447,7 +447,7 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({
         <div className="p-4 border-b border-white/10 flex items-center gap-3 bg-[#07090C]/80">
           <div className="relative shrink-0">
             <Search size={18} className="text-[#F5B027]" />
-            <Sparkles size={8} className="absolute -top-1 -right-1 text-[#C78522] animate-pulse" />
+            <Sparkles size={8} className="absolute -top-1 -right-1 text-[#B91C1C] animate-pulse" />
           </div>
           <input
             type="text"
@@ -487,7 +487,7 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({
           {/* Predictive Banner State */}
           <div className="flex items-center gap-2">
             <div className="flex items-center gap-1.5 text-[10px] font-mono text-[#F5B027] uppercase font-bold tracking-wider">
-              <Zap size={11} className="text-[#C78522]" />
+              <Zap size={11} className="text-[#B91C1C]" />
               <span>Real-Time Predictive Engine</span>
             </div>
             <span className="text-white/20">|</span>
@@ -537,7 +537,7 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({
                   onClose();
                   onOpenPredictiveInsights();
                 }}
-                className="px-2 py-0.5 rounded bg-[#C78522]/15 hover:bg-[#C78522]/25 border border-[#C78522]/40 text-[#C78522] text-[10px] font-mono flex items-center gap-1 transition-colors"
+                className="px-2 py-0.5 rounded bg-[#B91C1C]/15 hover:bg-[#B91C1C]/25 border border-[#B91C1C]/40 text-[#B91C1C] text-[10px] font-mono flex items-center gap-1 transition-colors"
               >
                 <Sparkles size={10} />
                 <span className="hidden sm:inline">AI Blind Spots</span>
@@ -577,7 +577,7 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({
                         <Zap size={15} />
                       </div>
                     ) : item.type === 'tool' ? (
-                      <div className="w-8 h-8 rounded-lg bg-[#C78522]/20 border border-[#C78522]/40 flex items-center justify-center text-[#C78522] shrink-0">
+                      <div className="w-8 h-8 rounded-lg bg-[#B91C1C]/20 border border-[#B91C1C]/40 flex items-center justify-center text-[#B91C1C] shrink-0">
                         <Sparkles size={15} />
                       </div>
                     ) : (

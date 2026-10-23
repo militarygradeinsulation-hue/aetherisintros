@@ -157,7 +157,7 @@ export const PredictiveInsightsModal: React.FC<PredictiveInsightsModalProps> = (
   const getSeverityStyle = (severity: 'critical' | 'high' | 'strategic') => {
     switch (severity) {
       case 'critical':
-        return 'text-[#C78522] border-[#C78522]/30 bg-[#C78522]/10';
+        return 'text-[#B91C1C] border-[#B91C1C]/30 bg-[#B91C1C]/10';
       case 'high':
         return 'text-[#F5B027] border-[#F5B027]/30 bg-[#F5B027]/10';
       case 'strategic':
@@ -244,7 +244,7 @@ export const PredictiveInsightsModal: React.FC<PredictiveInsightsModalProps> = (
                     </div>
 
                     <div className="flex items-center gap-3 text-[10px] font-mono">
-                      <span className="text-[#C78522] font-bold">{insight.potentialValue}</span>
+                      <span className="text-[#B91C1C] font-bold">{insight.potentialValue}</span>
                       <span className="text-[#F2EEE6]/50">·</span>
                       <span className="text-[#F2EEE6]/70 tabular-nums">
                         {insight.confidenceScore}% Confidence
@@ -281,7 +281,7 @@ export const PredictiveInsightsModal: React.FC<PredictiveInsightsModalProps> = (
                       disabled={isCommitted}
                       className={`px-3 py-1.5 rounded-lg text-xs font-mono font-medium flex items-center gap-1.5 transition-all ${
                         isCommitted
-                          ? 'bg-[#C78522]/20 text-[#C78522] border border-[#C78522]/40'
+                          ? 'bg-[#B91C1C]/20 text-[#B91C1C] border border-[#B91C1C]/40'
                           : 'bg-[#F5B027]/20 hover:bg-[#F5B027]/30 text-white border border-[#F5B027]/50'
                       }`}
                     >

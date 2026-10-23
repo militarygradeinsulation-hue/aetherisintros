@@ -575,7 +575,7 @@ export const IntrosSystemGrid: React.FC = () => {
             >
               <CheckSquare size={13} className={dashboardView === 'inbox' ? 'text-[#F5B027]' : 'text-current'} />
               <span>Actionable Inbox</span>
-              <span className="px-1.5 py-0.2 rounded-full bg-[#C78522] text-white text-[9px] font-bold">
+              <span className="px-1.5 py-0.2 rounded-full bg-[#B91C1C] text-white text-[9px] font-bold">
                 8
               </span>
             </button>
@@ -633,7 +633,7 @@ export const IntrosSystemGrid: React.FC = () => {
               }}
               className={`px-2.5 py-1 rounded border text-[11px] font-mono flex items-center gap-1.5 transition-all shadow-sm ${
                 isInactivityAlertActive && alertedConnectionTilesCount > 0
-                  ? 'bg-[#C78522]/25 border-[#C78522]/60 text-[#FF6369] font-bold shadow-[0_0_12px_rgba(229,72,77,0.3)]'
+                  ? 'bg-[#B91C1C]/25 border-[#B91C1C]/60 text-[#FF6369] font-bold shadow-[0_0_12px_rgba(229,72,77,0.3)]'
                   : 'bg-white/5 border-white/10 text-[#F2EEE6]/75 hover:bg-white/10'
               }`}
               title="Toggle Inactivity SLA Drift Alerts for Connection Tiles"
@@ -729,7 +729,7 @@ export const IntrosSystemGrid: React.FC = () => {
                 }}
                 className={`p-1.5 rounded border text-[10px] font-mono flex items-center gap-1 transition-colors ${
                   isBiometricUnlocked
-                    ? 'bg-[#C78522]/15 border-[#C78522]/30 text-[#C78522]'
+                    ? 'bg-[#B91C1C]/15 border-[#B91C1C]/30 text-[#B91C1C]'
                     : 'bg-[#F5B027]/15 border-[#F5B027]/40 text-[#F5B027] hover:bg-[#F5B027]/25'
                 }`}
                 title={
@@ -778,14 +778,14 @@ export const IntrosSystemGrid: React.FC = () => {
               >
                 <ShieldCheck size={12} className="text-[#F5B027]" />
                 {pendingApprovalsCount > 0 && (
-                  <span className="absolute -top-0.5 -right-0.5 w-1.5 h-1.5 rounded-full bg-[#C78522]" />
+                  <span className="absolute -top-0.5 -right-0.5 w-1.5 h-1.5 rounded-full bg-[#B91C1C]" />
                 )}
               </button>
               <button
                 onClick={() => setIsEmptyState((prev) => !prev)}
                 className={`p-1.5 rounded border text-[10px] font-mono flex items-center gap-1 transition-colors ${
                   isEmptyState
-                    ? 'bg-[#C78522]/20 border-[#C78522]/40 text-[#C78522]'
+                    ? 'bg-[#B91C1C]/20 border-[#B91C1C]/40 text-[#B91C1C]'
                     : 'bg-white/5 border-white/10 hover:bg-white/10 text-[#F2EEE6]/70'
                 }`}
                 title={isEmptyState ? 'Switch back to Live Network' : 'Demo Empty State Illustration'}
@@ -808,7 +808,7 @@ export const IntrosSystemGrid: React.FC = () => {
           <div className="w-full bg-[#0E1116] border-t border-b border-[#F5B027]/30 px-4 py-2 flex items-center justify-between text-xs animate-in slide-in-from-top-1 duration-200">
             <div className="max-w-[1560px] mx-auto w-full flex items-center justify-between gap-3">
               <div className="flex items-center gap-2">
-                <CheckCircle2 size={13} className="text-[#C78522] shrink-0" />
+                <CheckCircle2 size={13} className="text-[#B91C1C] shrink-0" />
                 <span className="text-[11px] font-mono text-[#F2EEE6] tracking-wide">
                   {notification.message}
                 </span>
@@ -875,7 +875,7 @@ export const IntrosSystemGrid: React.FC = () => {
             {/* Status Legend Bar */}
             <div className="mt-4 flex items-center justify-center gap-4 text-[10px] font-mono text-[#F2EEE6]/60 flex-wrap">
               <div className="flex items-center gap-1.5">
-                <span className="w-2 h-2 rounded-full bg-[#C78522] shadow-[0_0_6px_rgba(63,179,127,0.7)]" />
+                <span className="w-2 h-2 rounded-full bg-[#B91C1C] shadow-[0_0_6px_rgba(63,179,127,0.7)]" />
                 <span>Active ({people.filter((p) => p.engagement === 'active' || !p.engagement).length})</span>
               </div>
               <div className="flex items-center gap-1.5">
@@ -981,8 +981,8 @@ export const IntrosSystemGrid: React.FC = () => {
                       <span className="w-2 h-2 rounded-full bg-[#F5B027] shadow-[0_0_6px_rgba(249,115,22,0.8)]" />
                       <span>&gt;88% High Density</span>
                     </span>
-                    <span className="flex items-center gap-1 text-[#C78522]">
-                      <span className="w-2 h-2 rounded-full bg-[#C78522] shadow-[0_0_6px_rgba(63,179,127,0.8)]" />
+                    <span className="flex items-center gap-1 text-[#B91C1C]">
+                      <span className="w-2 h-2 rounded-full bg-[#B91C1C] shadow-[0_0_6px_rgba(63,179,127,0.8)]" />
                       <span>75–87% Optimal</span>
                     </span>
                     <span className="flex items-center gap-1 text-[#F5B027]">
@@ -1017,9 +1017,9 @@ export const IntrosSystemGrid: React.FC = () => {
 
             {/* Inactivity Notification System Control Banner */}
             {isInactivityAlertActive && (
-              <div className="mb-3.5 p-3 sm:p-3.5 rounded-xl bg-[#140A0D] border border-[#C78522]/40 shadow-[0_0_20px_rgba(229,72,77,0.15)] flex flex-col md:flex-row md:items-center justify-between gap-3 animate-in fade-in duration-200">
+              <div className="mb-3.5 p-3 sm:p-3.5 rounded-xl bg-[#140A0D] border border-[#B91C1C]/40 shadow-[0_0_20px_rgba(229,72,77,0.15)] flex flex-col md:flex-row md:items-center justify-between gap-3 animate-in fade-in duration-200">
                 <div className="flex items-center gap-3 min-w-0">
-                  <div className="w-8 h-8 rounded-lg bg-[#C78522]/20 border border-[#C78522]/40 flex items-center justify-center text-sm shrink-0 text-[#FF6369]">
+                  <div className="w-8 h-8 rounded-lg bg-[#B91C1C]/20 border border-[#B91C1C]/40 flex items-center justify-center text-sm shrink-0 text-[#FF6369]">
                     <AlertTriangle size={15} />
                   </div>
                   <div className="min-w-0">
@@ -1027,7 +1027,7 @@ export const IntrosSystemGrid: React.FC = () => {
                       <span className="text-[10px] font-mono tracking-wider uppercase font-bold text-[#FF6369]">
                         Inactivity Notification System Active
                       </span>
-                      <span className="text-[9px] font-mono px-1.5 py-0.2 rounded bg-[#C78522]/25 text-[#FF6369] font-bold">
+                      <span className="text-[9px] font-mono px-1.5 py-0.2 rounded bg-[#B91C1C]/25 text-[#FF6369] font-bold">
                         {alertedConnectionTilesCount} Connection Tiles Exceed SLA Threshold
                       </span>
                     </div>
@@ -1053,7 +1053,7 @@ export const IntrosSystemGrid: React.FC = () => {
                         }}
                         className={`px-2 py-0.5 rounded text-[10px] font-mono transition-all ${
                           inactivityThreshold === days
-                            ? 'bg-[#C78522] text-white font-bold shadow-sm'
+                            ? 'bg-[#B91C1C] text-white font-bold shadow-sm'
                             : 'bg-white/5 hover:bg-white/10 text-[#F2EEE6]/70'
                         }`}
                       >
@@ -1429,7 +1429,7 @@ export const IntrosSystemGrid: React.FC = () => {
       <div className="fixed bottom-20 right-6 z-40">
         <button
           onClick={() => setIsQuickAddOpen(true)}
-          className="px-4 py-3 rounded-2xl bg-[#F5B027] hover:bg-[#F5B027]/90 text-white font-mono text-xs font-medium shadow-[0_10px_30px_rgba(199, 133, 34,0.6)] flex items-center gap-2 transition-all active:scale-95 group"
+          className="px-4 py-3 rounded-2xl bg-[#F5B027] hover:bg-[#F5B027]/90 text-white font-mono text-xs font-medium shadow-[0_10px_30px_rgba(185,28,28,0.6)] flex items-center gap-2 transition-all active:scale-95 group"
           title="Quickly add a new executive contact (Quick Add)"
         >
           <span className="text-base font-bold">+</span>

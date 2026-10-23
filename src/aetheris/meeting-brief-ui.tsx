@@ -57,7 +57,7 @@ export function MeetingBriefPanel({ otherUserId, otherName }: Props) {
         <button
           onClick={handleGenerate}
           disabled={loading}
-          className="text-[11px] px-2.5 py-1 rounded-md bg-[#C78522] text-white font-medium disabled:opacity-50 cursor-pointer"
+          className="text-[11px] px-2.5 py-1 rounded-md bg-[#B91C1C] text-white font-medium disabled:opacity-50 cursor-pointer"
         >
           {loading ? 'Generating…' : brief ? 'Refresh' : 'Generate Brief'}
         </button>

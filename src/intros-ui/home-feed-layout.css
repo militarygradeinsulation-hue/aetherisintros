@@ -210,15 +210,15 @@
    linked by RootShell, so the stencil grayscale override cannot win. */
 .ask-scroll-caliper {
   --caliper-ink:#e99463!important;
-  --caliper-accent:#f4a125!important;
+  --caliper-accent:#DC2626!important;
   color:#e99463!important;
   filter:none!important;
 }
 .ask-scroll-caliper .ask-scroll-caliper-ticks {color:#e99463!important;}
 .ask-scroll-caliper .ask-scroll-caliper-jaw,
-.ask-scroll-caliper .ask-scroll-caliper-indicator {color:#f4a125!important;}
-.ask-scroll-caliper .ask-scroll-caliper-label {color:#f4a125!important;}
-.ask-scroll-caliper .ask-scroll-caliper-chip {border-color:#f4a125!important;}
+.ask-scroll-caliper .ask-scroll-caliper-indicator {color:#DC2626!important;}
+.ask-scroll-caliper .ask-scroll-caliper-label {color:#DC2626!important;}
+.ask-scroll-caliper .ask-scroll-caliper-chip {border-color:#DC2626!important;}
 
 /* Focused dashboard: tools occupy a separate view, never accumulate below posts. */
 .ix-root .home-feed-layout { display:block; }

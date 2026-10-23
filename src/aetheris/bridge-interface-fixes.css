@@ -9,7 +9,7 @@
   --bridge-burnt:#b5541f;
   --bridge-burnt-hover:#983f17;
   --bridge-burnt-on-dark:#e99463;
-  --ask-intros-logo-yellow:#f4a125;
+  --ask-intros-logo-yellow:#DC2626;
 }
 
 /* Primary intro actions in People Directory and Introduction Workspace. */
@@ -69,15 +69,15 @@
 /* Catch other legacy yellow-background action buttons without changing
    badges, markers or text containers; no black-on-black filled controls. */
 :root[data-theme] body .ix-root button[class~="bg-[#F5B027]"],
-:root[data-theme] body .ix-root button[class~="bg-[#C78522]"],
-:root[data-theme] body .ix-root button[class~="bg-[#F4A125]"] {
+:root[data-theme] body .ix-root button[class~="bg-[#B91C1C]"],
+:root[data-theme] body .ix-root button[class~="bg-[#DC2626]"] {
   background:var(--bridge-burnt)!important;
   border-color:var(--bridge-burnt)!important;
   color:#fff!important;
   -webkit-text-fill-color:#fff!important;
 }
 :root[data-theme] body .ix-root button[class~="bg-[#F5B027]"] :is(span,small,strong,svg),
-:root[data-theme] body .ix-root button[class~="bg-[#F4A125]"] :is(span,small,strong,svg) {
+:root[data-theme] body .ix-root button[class~="bg-[#DC2626]"] :is(span,small,strong,svg) {
   color:inherit!important;-webkit-text-fill-color:inherit!important;
 }
 

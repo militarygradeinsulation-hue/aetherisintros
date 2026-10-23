@@ -44,7 +44,7 @@ export const SystemTile: React.FC<SystemTileProps> = ({
 
   const getStatusColor = (status?: string) => {
     switch (status) {
-      case 'active': return 'bg-[#C78522]';
+      case 'active': return 'bg-[#B91C1C]';
       case 'followup': return 'bg-[#F5B027]';
       case 'dormant': return 'bg-[#64748B]';
       default: return 'bg-transparent';
@@ -61,14 +61,14 @@ export const SystemTile: React.FC<SystemTileProps> = ({
     }
     if (score >= 75) {
       return {
-        border: 'border-[#C78522]/40 shadow-[0_0_15px_rgba(63,179,127,0.2)]',
-        bg: 'bg-gradient-to-b from-[#C78522]/10 to-transparent',
-        badgeColor: 'bg-[#C78522]/20 text-[#C78522] border-[#C78522]/40',
+        border: 'border-[#B91C1C]/40 shadow-[0_0_15px_rgba(63,179,127,0.2)]',
+        bg: 'bg-gradient-to-b from-[#B91C1C]/10 to-transparent',
+        badgeColor: 'bg-[#B91C1C]/20 text-[#B91C1C] border-[#B91C1C]/40',
       };
     }
     if (score >= 60) {
       return {
-        border: 'border-[#F5B027]/35 shadow-[0_0_12px_rgba(199, 133, 34,0.15)]',
+        border: 'border-[#F5B027]/35 shadow-[0_0_12px_rgba(185,28,28,0.15)]',
         bg: 'bg-gradient-to-b from-[#F5B027]/10 to-transparent',
         badgeColor: 'bg-[#F5B027]/20 text-[#F5B027] border-[#F5B027]/40',
       };
@@ -104,13 +104,13 @@ export const SystemTile: React.FC<SystemTileProps> = ({
       style={{
         animationDelay: staggerDelay,
       }}
-      className={`sys-tile group w-full h-[276px] sm:h-[286px] p-2.5 sm:p-3 flex flex-col justify-between text-left cursor-pointer focus-visible:outline-none select-none transition-all duration-200 hover:shadow-[0_0_15px_rgba(199, 133, 34,0.3)] relative overflow-hidden ${
+      className={`sys-tile group w-full h-[276px] sm:h-[286px] p-2.5 sm:p-3 flex flex-col justify-between text-left cursor-pointer focus-visible:outline-none select-none transition-all duration-200 hover:shadow-[0_0_15px_rgba(185,28,28,0.3)] relative overflow-hidden ${
         isKeyboardFocused
-          ? 'ring-2 ring-[#F5B027] shadow-[0_0_24px_rgba(199, 133, 34,0.45)] z-20 scale-[1.01]'
+          ? 'ring-2 ring-[#F5B027] shadow-[0_0_24px_rgba(185,28,28,0.45)] z-20 scale-[1.01]'
           : ''
       } ${
         isInactivityAlerted
-          ? 'border-[#C78522]/90 ring-1 ring-[#C78522]/70 shadow-[0_0_22px_rgba(229,72,77,0.35)]'
+          ? 'border-[#B91C1C]/90 ring-1 ring-[#B91C1C]/70 shadow-[0_0_22px_rgba(229,72,77,0.35)]'
           : heatStyle
           ? heatStyle.border
           : ''
@@ -120,7 +120,7 @@ export const SystemTile: React.FC<SystemTileProps> = ({
       {/* Inactivity warning ambient glow */}
       {isInactivityAlerted && (
         <div
-          className="absolute inset-0 pointer-events-none bg-gradient-to-b from-[#C78522]/15 via-transparent to-transparent opacity-80"
+          className="absolute inset-0 pointer-events-none bg-gradient-to-b from-[#B91C1C]/15 via-transparent to-transparent opacity-80"
           aria-hidden="true"
         />
       )}
@@ -143,7 +143,7 @@ export const SystemTile: React.FC<SystemTileProps> = ({
         <div className="flex items-center gap-1.5 flex-wrap justify-end">
           {isInactivityAlerted && (
             <span
-              className="text-[7.5px] font-mono font-bold uppercase px-1 py-0.2 rounded bg-[#C78522]/25 text-[#FF6369] border border-[#C78522]/50 flex items-center gap-0.5 animate-pulse shadow-sm"
+              className="text-[7.5px] font-mono font-bold uppercase px-1 py-0.2 rounded bg-[#B91C1C]/25 text-[#FF6369] border border-[#B91C1C]/50 flex items-center gap-0.5 animate-pulse shadow-sm"
               title={`Inactivity Alert: ${inactivityDays}d since last touch (exceeds ${inactivityThreshold}d SLA threshold)`}
             >
               <AlertTriangle size={7.5} />

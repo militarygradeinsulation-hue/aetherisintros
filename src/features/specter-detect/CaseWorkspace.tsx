@@ -27,7 +27,7 @@ export function CaseWorkspace({ target, findings }: { target: string; findings: 
     <label htmlFor="specter-case-notes" className="block text-sm">Investigation notes</label>
     <textarea id="specter-case-notes" value={notes} onChange={event => setNotes(event.target.value)} rows={3} maxLength={2000} className="w-full rounded border border-input bg-background p-2 text-foreground" />
     <div className="flex flex-wrap gap-2">
-      <button type="button" onClick={save} className="rounded bg-amber-500 px-3 py-2 font-medium text-black">Prepare case</button>
+      <button type="button" onClick={save} className="rounded bg-red-500 px-3 py-2 font-medium text-black">Prepare case</button>
       <button type="button" disabled={!saved} onClick={exportCase} className="rounded border border-border px-3 py-2 disabled:opacity-50">Export JSON</button>
     </div>
     {message && <p role="status" className="text-sm">{message}</p>}

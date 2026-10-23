@@ -69,7 +69,7 @@ body:has([data-meeting-active="true"]) .ask-scroll-caliper { opacity: 0; }
    replaces browser scroll. Do not grayscale these branded accent marks. */
 .ask-scroll-caliper {
   --caliper-ink:#e99463!important;
-  --caliper-accent:#f4a125!important;
+  --caliper-accent:#DC2626!important;
   color:var(--caliper-ink)!important;
   filter:none!important;
   opacity:.96;
@@ -78,14 +78,14 @@ body:has([data-meeting-active="true"]) .ask-scroll-caliper { opacity: 0; }
 .ask-scroll-caliper[data-scrollable="false"] {opacity:.68!important;}
 .ask-scroll-caliper-ticks {color:#e99463!important;opacity:.85;}
 .ask-scroll-caliper-svg > path {stroke:#e99463;}
-.ask-scroll-caliper-jaw {color:#f4a125!important;}
-.ask-scroll-caliper-indicator {color:#f4a125!important;}
+.ask-scroll-caliper-jaw {color:#DC2626!important;}
+.ask-scroll-caliper-indicator {color:#DC2626!important;}
 .ask-scroll-caliper-chip {
   background:rgba(6,6,6,.94)!important;color:#fff!important;
-  border:1px solid rgba(244,161,37,.75)!important;
+  border:1px solid rgba(220,38,38,.75)!important;
   box-shadow:none!important;border-radius:2px!important;
 }
-.ask-scroll-caliper-label {color:#f4a125!important;}
+.ask-scroll-caliper-label {color:#DC2626!important;}
 .ask-scroll-caliper-dim {color:#edb78e!important;}
 .ask-scroll-caliper-bottom-scale {
   position:fixed;right:55px;left:2vw;bottom:max(0px,env(safe-area-inset-bottom));
@@ -93,11 +93,11 @@ body:has([data-meeting-active="true"]) .ask-scroll-caliper { opacity: 0; }
   z-index:48;opacity:.72;
   background-image:
     repeating-linear-gradient(to right,rgba(233,148,99,.62) 0 1px,transparent 1px 8px),
-    repeating-linear-gradient(to right,rgba(244,161,37,.78) 0 2px,transparent 2px 80px);
+    repeating-linear-gradient(to right,rgba(220,38,38,.78) 0 2px,transparent 2px 80px);
   background-size:100% 5px,100% 16px;
   background-position:left bottom,left bottom;
   background-repeat:repeat-x;
-  border-bottom:1px solid rgba(244,161,37,.6);
+  border-bottom:1px solid rgba(220,38,38,.6);
 }
 @media(max-width:767px) {
   .ask-scroll-caliper {right:0;opacity:.62;}

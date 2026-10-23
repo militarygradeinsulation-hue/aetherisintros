@@ -194,7 +194,7 @@ export const PersistentFooterKeyMap: React.FC<PersistentFooterKeyMapProps> = ({
 
         {/* Right: Status & Executive Brand */}
         <div className="flex items-center gap-2 text-[10px] font-mono text-[#F2EEE6]/50">
-          <span className="w-1.5 h-1.5 rounded-full bg-[#C78522] animate-pulse" />
+          <span className="w-1.5 h-1.5 rounded-full bg-[#B91C1C] animate-pulse" />
           <span>Aetheris Key-Nav Active</span>
           <span className="text-white/20">|</span>
           <span className="text-[#F5B027]">CEOs Operating System</span>

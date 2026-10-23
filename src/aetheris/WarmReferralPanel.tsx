@@ -267,7 +267,7 @@ const STYLES = `
   --wr-text: #e8eaed;
   --wr-muted: #8b909a;
   --wr-accent: #6c63ff;
-  --wr-hot: #f59e0b;
+  --wr-hot: #DC2626;
   --wr-warm: #10b981;
   --wr-cool: #6b7280;
   --wr-radius: 10px;
@@ -375,7 +375,7 @@ const STYLES = `
   font-weight: 600;
 }
 
-.wr-badge--hot { background: rgba(245,158,11,.15); color: var(--wr-hot); }
+.wr-badge--hot { background: rgba(220,38,38,.15); color: var(--wr-hot); }
 .wr-badge--warm { background: rgba(16,185,129,.15); color: var(--wr-warm); }
 .wr-badge--cool { background: rgba(107,114,128,.15); color: var(--wr-cool); }
 

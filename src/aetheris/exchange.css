@@ -11,7 +11,7 @@
 .app-shell .exchange-live :is(h1,h2,h3,p,small,label,dt,dd,.eyebrow,.page-proof,.opp-evidence) { color:var(--exchange-ink)!important; opacity:1; }
 .app-shell .exchange-live :is(input,textarea,select,option) { color:var(--exchange-ink)!important; -webkit-text-fill-color:var(--exchange-ink)!important; background:var(--exchange-bg)!important; border:1px solid var(--exchange-line); padding:10px; border-radius:5px; }
 .app-shell .exchange-live :is(button.btn,button.chip) { color:var(--exchange-ink)!important; -webkit-text-fill-color:var(--exchange-ink)!important; background:var(--exchange-bg)!important; border:1px solid var(--exchange-line); min-height:44px; white-space:normal; }
-.app-shell .exchange-live :is(button.primary,button.chip.on) { background:#f4a125!important; color:#111!important; -webkit-text-fill-color:#111!important; border-color:#f4a125!important; }
+.app-shell .exchange-live :is(button.primary,button.chip.on) { background:#DC2626!important; color:#111!important; -webkit-text-fill-color:#111!important; border-color:#DC2626!important; }
 .app-shell .exchange-live button:disabled { opacity:.6; }
 .exchange-live .opp-list { margin-top:20px; }
 .exchange-live { color-scheme:light; }

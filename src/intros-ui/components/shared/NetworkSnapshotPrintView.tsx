@@ -72,7 +72,7 @@ export const NetworkSnapshotPrintView: React.FC<NetworkSnapshotPrintViewProps> =
         x,
         y,
         radius: idx < 3 ? 28 : 24,
-        ringColor: m.tier === 'Core' ? '#F5B027' : m.tier === 'Extended' ? '#C78522' : '#F59E0B',
+        ringColor: m.tier === 'Core' ? '#F5B027' : m.tier === 'Extended' ? '#B91C1C' : '#DC2626',
       };
     });
   }, [members, cx, cy]);
@@ -155,7 +155,7 @@ export const NetworkSnapshotPrintView: React.FC<NetworkSnapshotPrintViewProps> =
                 cy={cy}
                 r={r}
                 fill="none"
-                stroke="rgba(199, 133, 34, 0.18)"
+                stroke="rgba(185,28,28, 0.18)"
                 strokeWidth="1"
                 strokeDasharray={i % 2 === 0 ? '4 4' : undefined}
               />
@@ -171,7 +171,7 @@ export const NetworkSnapshotPrintView: React.FC<NetworkSnapshotPrintViewProps> =
                   y1={cy}
                   x2={cx + Math.cos(rad) * 220}
                   y2={cy + Math.sin(rad) * 220}
-                  stroke="rgba(199, 133, 34, 0.12)"
+                  stroke="rgba(185,28,28, 0.12)"
                   strokeWidth="0.8"
                 />
               );
@@ -331,7 +331,7 @@ export const NetworkSnapshotPrintView: React.FC<NetworkSnapshotPrintViewProps> =
                           ? 'bg-[#F5B027]/20 text-[#FFC85C] border-[#F5B027]/40'
                           : m.tier === 'Extended'
                           ? 'bg-emerald-500/20 text-emerald-400 border-emerald-500/40'
-                          : 'bg-amber-500/20 text-amber-300 border-amber-500/40'
+                          : 'bg-red-500/20 text-red-300 border-red-500/40'
                       }`}
                     >
                       {m.tier || 'Prospect'}

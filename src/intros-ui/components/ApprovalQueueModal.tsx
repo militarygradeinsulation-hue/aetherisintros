@@ -35,7 +35,7 @@ export const ApprovalQueueModal: React.FC<ApprovalQueueModalProps> = ({
         {/* Header */}
         <div className="px-5 py-4 border-b border-[rgba(255,255,255,0.08)] flex items-center justify-between bg-[#07090C]/60">
           <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-full bg-[#FF8A4C]/10 border border-[#FF8A4C]/40 flex items-center justify-center text-[#FF8A4C]">
+            <div className="w-8 h-8 rounded-full bg-[#EF4444]/10 border border-[#EF4444]/40 flex items-center justify-center text-[#EF4444]">
               <ShieldCheck size={18} />
             </div>
             <div>
@@ -74,7 +74,7 @@ export const ApprovalQueueModal: React.FC<ApprovalQueueModalProps> = ({
                 >
                   <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-white/5 pb-2">
                     <div className="flex items-center gap-2">
-                      <span className="px-2 py-0.5 rounded bg-[#FF8A4C]/10 border border-[#FF8A4C]/30 text-[#FF8A4C] text-[10px] font-mono font-bold uppercase">
+                      <span className="px-2 py-0.5 rounded bg-[#EF4444]/10 border border-[#EF4444]/30 text-[#EF4444] text-[10px] font-mono font-bold uppercase">
                         {act.originTile}
                       </span>
                       <span className="text-xs font-semibold text-[#F2EEE6]">

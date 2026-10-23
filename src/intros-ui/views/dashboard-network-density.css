@@ -121,7 +121,7 @@
     overflow-y: auto;
     overscroll-behavior: contain;
     scrollbar-width: thin;
-    scrollbar-color: rgba(255,138,76,.34) #101012;
+    scrollbar-color: rgba(239,68,68,.34) #101012;
   }
 }
 
@@ -157,7 +157,7 @@
   min-width: 0;
   min-height: 0;
   scrollbar-width: thin;
-  scrollbar-color: rgba(255,138,76,.34) #101012;
+  scrollbar-color: rgba(239,68,68,.34) #101012;
 }
 .ix-root .aetheris-workspace-shell .ix-network-results-list > div:first-child {
   background: #0a0a0b;
@@ -189,7 +189,7 @@
   padding: 15px;
 }
 .ix-root .aetheris-workspace-shell .ix-network-member-card:hover {
-  border-color: rgba(255,138,76,.35);
+  border-color: rgba(239,68,68,.35);
   background: var(--ix-card-hover, #17171a);
   box-shadow: none;
 }
@@ -234,7 +234,7 @@
 }
 .ix-root .aetheris-workspace-shell .ix-network-insights-disclosure > summary::before {
   content: "+";
-  color: var(--ix-accent, #ff8a4c);
+  color: var(--ix-accent, #EF4444);
   margin-right: 2px;
   font-size: 15px;
 }
@@ -243,13 +243,13 @@
 }
 .ix-root .aetheris-workspace-shell .ix-network-insights-disclosure > summary span {
   margin-left: auto;
-  color: #ffaf86;
+  color: #FCA5A5;
   text-transform: none;
   letter-spacing: 0;
   font-weight: 500;
 }
 .ix-root .aetheris-workspace-shell .ix-network-insights-disclosure:hover {
-  border-color: var(--ix-accent-line, rgba(255,138,76,.32));
+  border-color: var(--ix-accent-line, rgba(239,68,68,.32));
 }
 .ix-root .aetheris-workspace-shell .ix-network-insights-inner {
   display: grid;
