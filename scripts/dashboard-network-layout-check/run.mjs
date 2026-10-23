@@ -34,6 +34,8 @@ try {
   const { chromium } = await import(process.env.PLAYWRIGHT_MODULE ?? resolve(root, 'node_modules/playwright/index.mjs'))
   browser = await chromium.launch()
 
+  // Native Absolute Ledger CRM contract; no selectors from the superseded
+  // HomeFeedView/PeopleDirectoryView widget and gallery layouts.
   for (const viewport of [
     { width: 1440, height: 900 },
     { width: 1180, height: 800 },
@@ -45,77 +47,90 @@ try {
     })
     const page = await context.newPage()
     try {
-      await page.goto('http://127.0.0.1:' + port + '/demo', { waitUntil: 'domcontentloaded', timeout: 120_000 })
-      await page.locator('.home-feed-page').waitFor({ state: 'visible', timeout: 60000 })
-      const dashboard = await page.evaluate(() => {
-        const frame = document.querySelector('.home-feed-page')
-        const panel = document.querySelector('#dashboard-social-panel')
-        const area = document.querySelector('.aetheris-workspace-content')
-        const width = node => node?.getBoundingClientRect().width || 0
-        return {
-          width: width(frame),
-          panelWidth: width(panel),
-          viewport: innerWidth,
-          horizontalOverflow: document.documentElement.scrollWidth - innerWidth,
-          pageScroll: area ? area.scrollHeight - area.clientHeight : -1,
-          panelScroll: panel ? panel.scrollHeight - panel.clientHeight : -1,
-          panelVisible: Boolean(panel && getComputedStyle(panel).display !== 'none'),
-        }
+      await page.goto('http://127.0.0.1:' + port + '/demo', {
+        waitUntil: 'domcontentloaded', timeout: 120_000,
       })
-      console.log('DASHBOARD ' + viewport.width, dashboard)
-      assert(dashboard.panelVisible, 'Dashboard feed remains usable', dashboard)
-      assert(dashboard.panelWidth >= dashboard.width * .90, 'Dashboard feed fills available content width', dashboard)
-      assert(dashboard.horizontalOverflow <= 2, 'Dashboard has no horizontal overflow', dashboard)
-      if (viewport.width >= 900) {
-        assert(dashboard.pageScroll <= 4, 'Desktop dashboard owns scrolling within the feed pane', dashboard)
-      }
-      const nav = page.getByRole('navigation', { name: 'Workspace navigation' })
-      if (viewport.width < 760) {
-        await page.getByRole('button', { name: 'Open workspace menu' }).click()
-        await page.getByRole('navigation', { name: 'Mobile workspace navigation' })
-          .getByRole('button', { name: 'Member Network' }).click()
-      } else {
-        await nav.getByRole('button', { name: 'Member Network' }).click()
-      }
-      await page.locator('.ix-network-viewport').waitFor({ state: 'visible', timeout: 20000 })
-      const network = await page.evaluate(() => {
-        const container = document.querySelector('.ix-network-results-layout')
-        const filter = document.querySelector('#people-filter-rail')
-        const results = document.querySelector('.ix-network-results-list')
-        const insights = document.querySelector('.ix-network-insights-disclosure')
-        const grid = document.querySelector('.ix-network-member-grid')
-        const rect = node => {
-          if (!node) return null
-          const r = node.getBoundingClientRect()
-          return { x: r.x, y: r.y, right: r.right, width: r.width, height: r.height }
-        }
+      await page.locator('.ledger-crm-shell[data-layout-source="absolute-ledger-flow/app-shell"]').waitFor({
+        state: 'visible', timeout: 60_000,
+      })
+      await page.locator('.ledger-dashboard-stats .ledger-ui-stat').first().waitFor()
+      const metrics = await page.evaluate(() => {
+        const root = document.querySelector('.ledger-native-app')
+        const side = document.querySelector('.ledger-crm-sidebar')
+        const body = document.querySelector('.ledger-crm-body')
+        const bottom = document.querySelector('.ledger-native-bottom')
+        const dashboard = document.querySelector('.ledger-dashboard')
+        const bounding = node => node?.getBoundingClientRect()
+        const css = root && getComputedStyle(root)
         return {
-          container: rect(container),
-          filter: rect(filter),
-          results: rect(results),
-          insights: rect(insights),
-          grid: rect(grid),
-          columns: container ? getComputedStyle(container).gridTemplateColumns : '',
+          sidebarWidth: bounding(side)?.width ?? 0,
+          sidebarVisible: Boolean(side && getComputedStyle(side).display !== 'none'),
+          bodyLeft: bounding(body)?.left ?? -1,
+          bodyWidth: bounding(body)?.width ?? 0,
+          dashboardWidth: bounding(dashboard)?.width ?? 0,
+          bottomVisible: Boolean(bottom && getComputedStyle(bottom).display !== 'none'),
           overflow: document.documentElement.scrollWidth - innerWidth,
+          accent: css?.getPropertyValue('--ledger-crm-accent').trim(),
+          background: css?.backgroundColor,
+          stats: document.querySelectorAll('.ledger-dashboard-stats .ledger-ui-stat').length,
         }
       })
-      console.log('NETWORK ' + viewport.width, network)
-      assert(Boolean(network.results && network.insights && network.container), 'Network results and optional insights exist', network)
-      assert(network.overflow <= 2, 'Network does not overflow viewport horizontally', network)
-      if (viewport.width >= 1024) {
-        assert(network.results.width > network.filter.width * 1.6, 'Results are wider than the left filters', network)
-        assert(network.results.width >= network.container.width * .62, 'Results use the second column instead of a squeezed center', network)
-        assert(Math.abs(network.results.width - network.insights.width) <= 6, 'Insights align with results instead of occupying a third column', network)
+      console.log('CRM ' + viewport.width, metrics)
+      assert(metrics.stats === 4, 'CRM data dashboard has four actionable KPI cards', metrics)
+      assert(metrics.background === 'rgb(10, 10, 10)' && /^#(?:ef4444|b91c1c)$/i.test(metrics.accent || ''),
+        'CRM uses black and red rather than orange', metrics)
+      assert(metrics.dashboardWidth > 0 && metrics.overflow <= 3, 'CRM dashboard stays inside viewport', metrics)
+      if (viewport.width > 1120) {
+        assert(metrics.sidebarVisible && metrics.sidebarWidth >= 245 && metrics.sidebarWidth <= 260,
+          'Native desktop CRM sidebar is visible', metrics)
+        assert(metrics.bodyLeft >= 245 && metrics.bodyWidth > 600, 'CRM content occupies the remaining screen', metrics)
+        const groups = await page.locator('.ledger-crm-sidebar .ledger-native-group').count()
+        assert(groups >= 4, 'Grouped CRM navigation renders on desktop', { groups })
+        const sorted = await page.locator('.ledger-crm-sidebar .ledger-native-group').evaluateAll(groups =>
+          groups.every(group => {
+            const labels = [...group.querySelectorAll('.ledger-native-nav-label')].map(el => el.textContent?.trim() || '')
+            return labels.every((value, index) =>
+              !index || labels[index - 1].localeCompare(value, 'en', { sensitivity: 'base' }) <= 0)
+          }))
+        assert(sorted, 'CRM navigation items are alphabetical in each section', { sorted })
+        await page.locator('.ledger-crm-sidebar').getByRole('button', { name: 'People & contacts' }).click()
+      } else {
+        assert(!metrics.sidebarVisible && metrics.bottomVisible, 'CRM mobile uses bottom bar and drawer', metrics)
+        assert(metrics.bodyLeft < 3 && metrics.bodyWidth >= 380, 'CRM mobile content uses full screen', metrics)
+        await page.getByRole('button', { name: 'More menu' }).click()
+        const drawer = page.getByRole('navigation', { name: 'Mobile workspace navigation' })
+        await drawer.waitFor()
+        assert(await page.locator('.ledger-native-mobile-account a[href="/auth"]').count() === 1,
+          'Guest can log in from the CRM mobile menu')
+        await drawer.getByRole('button', { name: 'People & contacts' }).click()
       }
-      const disclosure = page.locator('.ix-network-insights-disclosure')
-      assert(!(await disclosure.evaluate(el => el.open)), 'Network insights are compact by default', network)
-      await disclosure.locator('summary').click()
-      assert(await disclosure.evaluate(el => el.open), 'Network insights expand on request', network)
+
+      await page.locator('.ledger-directory-table').waitFor({ state: 'visible', timeout: 20_000 })
+      const records = await page.locator('.ledger-directory-table tbody tr').count()
+      assert(records > 0, 'CRM contacts table loads the showcase member directory', { records })
+      await page.getByRole('textbox', { name: 'Search people' }).fill('nonexistent-member-string')
+      assert(await page.locator('.ledger-directory-table tbody tr').count() === 0,
+        'CRM contacts search filters results')
+      assert(await page.locator('.ledger-directory .ledger-ui-empty').count() > 0,
+        'No-results feedback explains empty CRM search')
+      assert(await page.evaluate(() => document.documentElement.scrollWidth - innerWidth) <= 3,
+        'CRM contacts do not force horizontal page overflow', { viewport })
+
+      if (viewport.width > 1120) {
+        await page.locator('.ledger-crm-sidebar').getByRole('button', { name: 'Introductions' }).click()
+      } else {
+        await page.getByRole('button', { name: 'More menu' }).click()
+        await page.getByRole('navigation', { name: 'Mobile workspace navigation' })
+          .getByRole('button', { name: 'Introductions' }).click()
+      }
+      await page.locator('.ledger-introductions').waitFor()
+      assert(await page.getByRole('button', { name: 'Find a member' }).count() > 0,
+        'CRM introduction pipeline links into the member directory')
     } finally {
       await context.close()
     }
   }
-  console.log('Dashboard and Network layout checks passed.')
+  console.log('Native CRM dashboard, contacts, introductions and responsive navigation checks passed.')
 } finally {
   if (browser) await browser.close()
   stop()

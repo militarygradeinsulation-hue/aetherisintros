@@ -1,0 +1,254 @@
+/*
+ * Structural port of Absolute Ledger CRM / src/components/app/app-shell.tsx.
+ * Layout is authored in React, not a cosmetic reshuffle of TopNavigation.
+ */
+:root .ix-root.ix-absolute-ledger.ledger-native-app {
+  padding:0!important;
+  width:100%;max-width:none;min-width:0;overflow-x:clip;
+  --ledger-crm-bg:#0a0a0a;--ledger-crm-surface:#121212;
+  --ledger-crm-raised:#1a1a1a;--ledger-crm-ink:#f5f5f0;
+  --ledger-crm-muted:#a3a39e;--ledger-crm-accent:#EF4444;
+  --ledger-crm-border:rgba(245,245,240,.14);
+  --ledger-crm-sidebar:256px;
+  background:var(--ledger-crm-bg)!important;
+  color:var(--ledger-crm-ink)!important;
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif!important;
+}
+:root[data-theme="light"] .ix-root.ix-absolute-ledger.ledger-native-app {
+  --ledger-crm-bg:#f5f5f0;--ledger-crm-surface:#fffefa;
+  --ledger-crm-raised:#e9e9e2;--ledger-crm-ink:#141414;
+  --ledger-crm-muted:#585852;--ledger-crm-accent:#B91C1C;
+  --ledger-crm-border:rgba(16,16,16,.16);
+}
+.ledger-crm-shell {position:relative;min-height:100vh;min-width:0;background:var(--ledger-crm-bg);color:var(--ledger-crm-ink)}
+.ledger-crm-shell :is(button,input,a,select,textarea):focus-visible {outline:2px solid var(--ledger-crm-accent)!important;outline-offset:2px}
+.ledger-crm-shell :is(button,input,select,textarea,[role="dialog"],[role="menu"]) {border-radius:0!important}
+.ledger-crm-shell button {cursor:pointer}
+.ledger-crm-sidebar {
+  position:fixed;z-index:70;inset:0 auto 0 0;width:var(--ledger-crm-sidebar);
+  display:flex;flex-direction:column;
+  background:var(--ledger-crm-surface)!important;color:var(--ledger-crm-ink)!important;
+  border-right:1px solid var(--ledger-crm-border)!important;
+  padding:0!important;height:100dvh!important;max-width:none!important;
+  box-shadow:none!important;border-radius:0!important;overflow:hidden!important;
+  transition:width .18s ease;
+}
+.ledger-native-brand {
+  flex:none;min-height:76px;padding:14px 14px;
+  display:flex;align-items:center;gap:11px;border-bottom:1px solid var(--ledger-crm-border);
+}
+.ledger-native-logo {
+  display:grid;place-items:center;width:37px;height:37px;flex:none;
+  background:transparent;border:1px solid var(--ledger-crm-accent);
+  color:var(--ledger-crm-accent);font:700 22px/1 Georgia,serif;
+  text-align:center;padding:0;
+}
+.ledger-native-brand-name {display:grid;align-content:center;gap:4px;min-width:0;text-align:left;flex:1;color:var(--ledger-crm-ink);border:0;background:transparent;padding:0}
+.ledger-native-brand-name strong {font:500 18px/1 "Playfair Display",Georgia,serif;white-space:nowrap}
+.ledger-native-brand-name small {font:700 9px/1.3 system-ui,sans-serif;letter-spacing:.22em;text-transform:uppercase;color:var(--ledger-crm-muted);white-space:nowrap}
+.ledger-native-collapse {display:grid;place-items:center;width:28px;height:28px;flex:none;border:1px solid var(--ledger-crm-border);color:var(--ledger-crm-muted);background:transparent}
+.ledger-native-nav {flex:1;min-height:0;overflow:auto;overscroll-behavior:contain;padding:15px 12px 20px;display:flex;flex-direction:column;gap:10px}
+.ledger-native-group {display:flex;flex-direction:column;gap:2px;min-width:0}
+.ledger-native-group-label {margin:9px 0 4px;padding:3px 12px;font:700 10px/1.4 system-ui,sans-serif;letter-spacing:.23em;text-transform:uppercase;color:var(--ledger-crm-muted)}
+.ledger-native-nav-item {
+  min-height:38px;width:100%;display:flex;align-items:center;gap:12px;
+  background:transparent;border:0;border-left:2px solid transparent;
+  color:var(--ledger-crm-muted);text-align:left;
+  padding:9px 12px;font:500 12px/1.35 system-ui,sans-serif;
+  letter-spacing:0;white-space:nowrap;box-shadow:none;
+}
+.ledger-native-nav-item svg {flex:none}
+.ledger-native-nav-item:hover {background:rgba(239,68,68,.08);color:var(--ledger-crm-ink);border-left-color:rgba(239,68,68,.5)}
+.ledger-native-nav-item.is-active {background:rgba(239,68,68,.14);color:var(--ledger-crm-ink);border-left-color:var(--ledger-crm-accent)}
+.ledger-native-nav-item.is-active svg {color:var(--ledger-crm-accent)}
+.ledger-native-count {margin-left:auto;border:1px solid var(--ledger-crm-accent);padding:2px 5px;color:var(--ledger-crm-accent);font-size:10px}
+.ledger-native-agent {border:1px solid var(--ledger-crm-border);padding:12px 12px 11px;margin-top:auto;min-width:0}
+.ledger-native-eyebrow {color:var(--ledger-crm-accent);font:700 10px system-ui,sans-serif;letter-spacing:.17em;text-transform:uppercase}
+.ledger-native-agent p {font-size:12px;line-height:1.5;color:var(--ledger-crm-muted);margin:7px 0}
+.ledger-native-agent button {display:flex;gap:5px;align-items:center;border:0;background:transparent;color:var(--ledger-crm-ink);padding:3px 0;text-decoration:underline;text-underline-offset:4px;text-align:left;font-size:11px}
+.ledger-crm-body {min-height:100vh;margin-left:var(--ledger-crm-sidebar);width:calc(100% - var(--ledger-crm-sidebar));min-width:0;background:var(--ledger-crm-bg);transition:margin-left .18s ease,width .18s ease}
+.ledger-crm-topbar {
+  display:flex;align-items:center;gap:11px;flex-wrap:nowrap;position:sticky;top:0;z-index:55;
+  width:100%;min-height:66px;padding:12px clamp(14px,2vw,25px);
+  border-bottom:1px solid var(--ledger-crm-border);
+  background:var(--ledger-crm-bg);box-shadow:none;
+}
+.ledger-native-breadcrumb {display:flex;align-items:center;gap:9px;min-width:0;flex:none;color:var(--ledger-crm-muted);font-size:12px;letter-spacing:.02em}
+.ledger-native-breadcrumb b {font-weight:600;max-width:180px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--ledger-crm-ink)}
+.ledger-native-search {
+  display:flex;align-items:center;gap:11px;margin-left:auto;
+  width:min(38vw,420px);height:39px;padding:0 12px;min-width:170px;
+  border:1px solid var(--ledger-crm-border);background:var(--ledger-crm-surface);
+  color:var(--ledger-crm-muted);text-align:left;font-size:12px;
+}
+.ledger-native-search span {white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ledger-native-search:hover {border-color:var(--ledger-crm-accent)}
+.ledger-native-search kbd {margin-left:auto;display:flex;align-items:center;gap:4px;font:600 10px system-ui,sans-serif;color:var(--ledger-crm-muted);white-space:nowrap}
+.ledger-native-icon {display:grid;place-items:center;position:relative;width:39px;height:39px;flex:none;border:1px solid var(--ledger-crm-border);background:var(--ledger-crm-surface);color:var(--ledger-crm-ink)}
+.ledger-native-appearance {flex:none}
+.ledger-native-user-wrap {position:relative;flex:none}
+.ledger-native-user {height:39px;display:flex;align-items:center;gap:9px;padding:0 9px;border:1px solid var(--ledger-crm-border);background:var(--ledger-crm-surface);color:var(--ledger-crm-ink);font-size:12px}
+.ledger-native-avatar {display:grid;place-items:center;min-width:25px;height:25px;padding:0 4px;background:var(--ledger-crm-accent);color:#0a0a0a;font-weight:800;font-size:10px}
+.ledger-native-user-label {max-width:110px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ledger-native-account-dropdown {position:absolute;right:0;top:45px;min-width:225px;padding:8px;background:var(--ledger-crm-surface);border:1px solid var(--ledger-crm-border);box-shadow:0 14px 35px rgba(0,0,0,.3);z-index:75}
+.ledger-native-account-name {font:600 12px/1.4 system-ui,sans-serif;color:var(--ledger-crm-ink);padding:8px 10px;border-bottom:1px solid var(--ledger-crm-border)}
+.ledger-native-account-dropdown :is(button,a) {display:flex;align-items:center;gap:10px;width:100%;background:transparent;border:0;color:var(--ledger-crm-ink);text-align:left;font-size:12px;padding:11px 10px;text-decoration:none}
+.ledger-native-account-dropdown :is(button,a):hover {background:var(--ledger-crm-raised)}
+.ledger-native-content {width:100%;max-width:1640px;margin:0 auto;padding:clamp(15px,2.3vw,32px);min-width:0}
+.ledger-native-content > .arch-product-main {max-width:none;width:100%;min-width:0;overflow:visible}
+.ledger-native-content > .arch-product-main > :first-child {max-width:none}
+.ledger-native-content .home-feed-page {padding:0!important;max-width:none!important}
+.ledger-native-content .home-feed-page .home-feed-layout {min-width:0}
+.ledger-crm-collapsed {--ledger-crm-sidebar:72px}
+.ledger-crm-collapsed .ledger-native-brand {flex-direction:column;gap:7px;padding:10px 5px}
+.ledger-crm-collapsed .ledger-native-brand-name,.ledger-crm-collapsed .ledger-native-nav-label,
+.ledger-crm-collapsed .ledger-native-group-label,.ledger-crm-collapsed .ledger-native-count,
+.ledger-crm-collapsed .ledger-native-agent {display:none}
+.ledger-crm-collapsed .ledger-native-nav {padding:12px 6px}
+.ledger-crm-collapsed .ledger-native-nav-item {justify-content:center;padding:10px 4px}
+.ledger-crm-collapsed .ledger-native-breadcrumb {max-width:160px}
+.ledger-native-menu,.ledger-native-bottom,.ledger-native-drawer-backdrop {display:none}
+.ledger-native-palette-backdrop {position:fixed;z-index:220;inset:0;background:rgba(0,0,0,.75);display:flex;justify-content:center;align-items:flex-start;padding:clamp(55px,10vh,110px) 15px 20px}
+.ledger-native-palette {width:100%;max-width:580px;max-height:min(650px,78vh);display:flex;flex-direction:column;background:var(--ledger-crm-surface);border:1px solid var(--ledger-crm-border);box-shadow:0 30px 80px rgba(0,0,0,.4)}
+.ledger-native-palette-head {display:flex;align-items:center;gap:12px;padding:12px 16px;border-bottom:1px solid var(--ledger-crm-border);color:var(--ledger-crm-accent)}
+.ledger-native-palette-head input {flex:1;min-width:0;background:transparent;border:0;outline:none!important;color:var(--ledger-crm-ink);font-size:14px}
+.ledger-native-palette-head button {color:var(--ledger-crm-muted);background:transparent;border:0;padding:4px}
+.ledger-native-palette-results {overflow-y:auto;padding:11px 10px 18px}
+.ledger-native-palette-results > button {display:flex;align-items:center;gap:12px;text-align:left;width:100%;min-height:42px;padding:10px;border:0;background:transparent;color:var(--ledger-crm-ink);font-size:13px}
+.ledger-native-palette-results > button:hover {background:var(--ledger-crm-raised)}
+.ledger-native-palette-results small {display:block;font-size:11px;color:var(--ledger-crm-muted);margin-top:2px}
+.ledger-native-result-type {margin-left:auto;font-size:9px;color:var(--ledger-crm-muted);letter-spacing:.12em}
+.ledger-native-empty {padding:14px;color:var(--ledger-crm-muted);font-size:13px}
+.ledger-native-drawer-backdrop {position:fixed;z-index:190;inset:0}
+.ledger-native-drawer-scrim {position:absolute;inset:0;border:0;background:rgba(0,0,0,.75);width:100%}
+.ledger-native-mobile-sidebar {position:absolute;inset:0 auto 0 0;width:min(85vw,300px);display:flex;flex-direction:column;background:var(--ledger-crm-surface);border-right:1px solid var(--ledger-crm-border)}
+.ledger-native-mobile-sidebar .ledger-native-brand strong {font:500 18px "Playfair Display",Georgia,serif}
+.ledger-native-mobile-sidebar .ledger-native-brand button {margin-left:auto;background:transparent;color:var(--ledger-crm-ink);border:0}
+.ledger-native-mobile-account {padding:15px;border-top:1px solid var(--ledger-crm-border)}
+.ledger-native-mobile-account :is(button,a) {display:flex;align-items:center;gap:9px;color:var(--ledger-crm-ink);padding:10px;background:var(--ledger-crm-raised);border:1px solid var(--ledger-crm-border);width:100%;text-decoration:none}
+.ledger-native-content :is(.home-board-tile,.sys-tile,.home-feed-widget,.bridge-discover-hero) {border-radius:0!important}
+@media(max-width:1120px) {
+  .ledger-crm-sidebar {display:none}
+  .ledger-crm-body {margin-left:0;width:100%}
+  .ledger-native-menu {display:grid;place-items:center;width:36px;height:36px;flex:none;color:var(--ledger-crm-ink);background:transparent;border:0}
+  .ledger-native-drawer-backdrop {display:block}
+  .ledger-native-breadcrumb {max-width:180px}
+}
+@media(max-width:720px) {
+  .ledger-crm-topbar {gap:7px;padding:9px 10px;min-height:58px}
+  .ledger-native-breadcrumb {font-size:11px;max-width:120px}
+  .ledger-native-breadcrumb > span {display:none}
+  .ledger-native-search {margin-left:auto;min-width:36px;width:38px;padding:0;justify-content:center;height:36px}
+  .ledger-native-search span,.ledger-native-search kbd {display:none}
+  .ledger-native-user {height:36px;gap:0;padding:0 5px}
+  .ledger-native-user-label,.ledger-native-user > svg {display:none}
+  .ledger-native-appearance {display:none!important}
+  .ledger-native-content {padding:12px 12px 105px}
+  .ledger-native-bottom {position:fixed;bottom:0;left:0;right:0;z-index:75;display:grid;grid-template-columns:repeat(4,1fr);height:68px;padding-bottom:env(safe-area-inset-bottom);border-top:1px solid var(--ledger-crm-border);background:var(--ledger-crm-surface)}
+  .ledger-native-bottom .ix-mobile-nav-item {border:0;background:transparent;color:var(--ledger-crm-muted);padding:8px 2px;display:flex;align-items:center;justify-content:center;gap:4px;flex-direction:column;font-size:10px}
+  .ledger-native-bottom .ix-mobile-nav-item[aria-current="page"] {color:var(--ledger-crm-accent)}
+  .ledger-native-bottom .ix-mobile-nav-item svg {flex:none}
+  .ledger-native-palette-backdrop {padding:15px}
+  .ledger-native-palette {max-height:90vh}
+}
+@media(prefers-reduced-motion:reduce) {
+  .ledger-crm-sidebar,.ledger-crm-body {transition:none}
+}
+
+
+/* Native CRM DOM hierarchy takes precedence over the old header layout. */
+:root body .ix-root.ix-mindprint-bridge.ix-absolute-ledger.ledger-native-app {
+  padding-left:0!important;overflow-x:clip!important;min-width:0!important;
+}
+:root body .ix-root.ix-mindprint-bridge.ix-absolute-ledger.ledger-native-app .ledger-crm-shell > .ledger-crm-sidebar.ix-global-header {
+  position:fixed!important;top:0!important;bottom:0!important;left:0!important;right:auto!important;
+  width:var(--ledger-crm-sidebar)!important;height:100dvh!important;
+  display:flex!important;flex-direction:column!important;
+  padding:0!important;overflow:hidden!important;max-width:none!important;
+  background:var(--ledger-crm-surface)!important;color:var(--ledger-crm-ink)!important;
+  border-right:1px solid var(--ledger-crm-border)!important;border-bottom:0!important;
+}
+:root body .ix-root.ix-mindprint-bridge.ix-absolute-ledger.ledger-native-app .ledger-crm-shell .ledger-native-nav {
+  display:flex!important;flex-direction:column!important;flex:1 1 auto!important;
+  min-height:0!important;width:100%!important;overflow-y:auto!important;
+}
+:root body .ix-root.ix-mindprint-bridge.ix-absolute-ledger.ledger-native-app .ledger-crm-shell .ledger-native-nav-item {
+  display:flex!important;align-items:center!important;gap:12px!important;width:100%!important;
+  color:var(--ledger-crm-muted)!important;background:transparent!important;
+  border:0!important;border-left:2px solid transparent!important;border-radius:0!important;
+  padding:9px 12px!important;font:500 12px system-ui,sans-serif!important;
+  text-transform:none!important;letter-spacing:0!important;min-height:38px!important;
+}
+:root body .ix-root.ix-mindprint-bridge.ix-absolute-ledger.ledger-native-app .ledger-crm-shell .ledger-native-nav-item.is-active {
+  border-left-color:var(--ledger-crm-accent)!important;
+  background:rgba(239,68,68,.14)!important;color:var(--ledger-crm-ink)!important;
+  -webkit-text-fill-color:var(--ledger-crm-ink)!important;
+}
+:root body .ix-root.ix-mindprint-bridge.ix-absolute-ledger.ledger-native-app .ledger-crm-shell .ledger-native-nav-item:hover {
+  background:rgba(239,68,68,.09)!important;color:var(--ledger-crm-ink)!important;
+}
+@media(max-width:1120px){
+  :root body .ix-root.ix-mindprint-bridge.ix-absolute-ledger.ledger-native-app .ledger-crm-shell > .ledger-crm-sidebar.ix-global-header {display:none!important}
+  :root body .ix-root.ix-mindprint-bridge.ix-absolute-ledger.ledger-native-app .ledger-crm-shell .ledger-native-mobile-sidebar .ledger-native-nav {display:flex!important}
+}
+
+
+/* Explicit responsive ownership of the new CRM shell; old .ix-mobile-nav
+   styles must not suppress the new four-action bottom bar. */
+@media(max-width:1120px){
+  :root body .ix-root.ix-mindprint-bridge.ix-absolute-ledger.ledger-native-app .ledger-crm-shell > .ledger-crm-sidebar.ix-global-header{
+    display:none!important;
+  }
+  :root body .ix-root.ix-mindprint-bridge.ix-absolute-ledger.ledger-native-app .ledger-crm-shell > .ledger-crm-body{
+    margin-left:0!important;width:100%!important;max-width:100%!important;
+  }
+}
+@media(max-width:720px){
+  :root body .ix-root.ix-mindprint-bridge.ix-absolute-ledger.ledger-native-app .ledger-crm-shell .ledger-native-bottom.ix-mobile-nav {
+    display:grid!important;grid-template-columns:repeat(4,minmax(0,1fr))!important;
+    position:fixed!important;bottom:0!important;left:0!important;right:0!important;
+    width:100%!important;z-index:110!important;
+    background:var(--ledger-crm-surface)!important;color:var(--ledger-crm-ink)!important;
+  }
+  :root body .ix-root.ix-mindprint-bridge.ix-absolute-ledger.ledger-native-app,
+  :root body .ix-root.ix-mindprint-bridge.ix-absolute-ledger.ledger-native-app .ledger-crm-shell{
+    width:100%!important;max-width:100vw!important;overflow-x:clip!important;
+  }
+}
+
+
+.ledger-native-auth-shortcut {
+  flex:none;height:39px;display:flex;align-items:center;justify-content:center;gap:7px;
+  padding:0 12px;border:1px solid var(--ledger-crm-accent);background:transparent;
+  color:var(--ledger-crm-accent)!important;text-decoration:none;
+  font:700 11px system-ui,sans-serif;letter-spacing:.09em;text-transform:uppercase;
+}
+.ledger-native-auth-shortcut:hover {background:rgba(239,68,68,.1)}
+@media(max-width:720px){
+  .ledger-native-auth-shortcut {display:none!important}
+}
+
+
+/* Mobile orientation/viewport changes must immediately drop desktop sidebar
+   geometry. Prevent a stale 256px animated margin from clipping the topbar. */
+@media(max-width:1120px) {
+  :root body .ix-root.ix-mindprint-bridge.ix-absolute-ledger.ledger-native-app .ledger-crm-shell > .ledger-crm-body {
+    transition:none!important;
+    margin-left:0!important;
+    width:100%!important;
+    max-width:100%!important;
+  }
+  :root body .ix-root.ix-mindprint-bridge.ix-absolute-ledger.ledger-native-app .ledger-crm-shell > .ledger-crm-sidebar {
+    transition:none!important;
+  }
+}
+
+/* Touch target stays at least 44 CSS pixels across phone and tablet CRM layouts. */
+@media(max-width:1120px){.ledger-crm-shell .ledger-native-menu{min-width:44px!important;min-height:44px!important;width:44px!important;height:44px!important}}
+
+/* The production host is viewport-bound. Give its content pane explicit scroll
+   ownership so long directories and tool pages are never clipped by that host. */
+.ledger-native-app .ledger-crm-shell {height:100dvh;min-height:0;overflow:hidden}
+.ledger-native-app .ledger-crm-body {height:100%;min-height:0;display:flex;flex-direction:column}
+.ledger-native-app .ledger-crm-topbar {flex:none}
+.ledger-native-app .ledger-native-content {flex:1;min-height:0;overflow-y:auto;overscroll-behavior:contain}

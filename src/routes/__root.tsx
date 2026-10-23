@@ -28,6 +28,7 @@ import bridgeInterfaceFixesCss from "../aetheris/bridge-interface-fixes.css?url"
 import homeFeedLayoutCss from "../intros-ui/home-feed-layout.css?url";
 import bridgeExperienceCss from "../aetheris/bridge-experience.css?url";
 import messagesInverseThemeCss from "../aetheris/messages-inverse-theme.css?url";
+import absoluteLedgerThemeCss from "../aetheris/absolute-ledger-theme.css?url";
 import editorialCopyContrastCss from "../aetheris/editorial-copy-contrast.css?url";
 import siteReadabilityCss from "../aetheris/site-readability.css?url";
 import mobileFitReadabilityCss from "../aetheris/mobile-fit-readability.css?url";
@@ -136,6 +137,8 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       // Final: restore visible labels/field options on white and black surfaces.
       { rel: "stylesheet", href: siteReadabilityCss },
       { rel: "stylesheet", href: mobileFitReadabilityCss },
+      // CRM theme last: preserves production safeguards while consistently replacing orange accents.
+      { rel: "stylesheet", href: absoluteLedgerThemeCss },
       { rel: "icon", type: "image/png", href: "/favicon.png" },
       { rel: "apple-touch-icon", href: "/apple-touch-icon.png", sizes: "180x180" },
       { rel: "manifest", href: "/manifest.webmanifest" },

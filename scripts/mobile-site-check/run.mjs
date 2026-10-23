@@ -1,4 +1,4 @@
-// Responsive UI guard: public page, /demo product flows, guided tour and More sheet.
+// Responsive UI guard: public page and actual CRM /demo product flows at seven viewport sizes.
 // This script runs only against the isolated Vite demo — no live member data or writes.
 import { spawn } from 'node:child_process'
 import { createServer } from 'node:net'
@@ -51,61 +51,65 @@ try {
   const errors=[]
   page.on('pageerror',e=>errors.push(e.message))
   await page.goto(base+'/demo',{waitUntil:'domcontentloaded',timeout:120000})
-  const shell=page.locator('.ix-root .aetheris-workspace-shell')
+  const shell=page.locator('.ix-root .ledger-crm-shell')
   await shell.waitFor({state:'visible',timeout:60000})
-  check(await shell.isVisible(),'shared Ask Intros shell is visible')
-  const header=page.locator('.specter-app-header')
-  check(await header.isVisible(),'persistent workspace header is visible')
+  check(await shell.isVisible(),'native Ask Intros CRM shell is visible')
+  const header=page.locator('.ledger-crm-topbar')
+  check(await header.isVisible(),'persistent CRM header is visible')
   const frame=await pos(shell)
-  check(frame.x>=-2&&frame.right<=vp.width+2,'workspace shell fits device width')
-  // The shared shell can start below a legitimate status/banner in the outer
-  // app, so it need not itself be exactly 100dvh. It must fit the available
-  // phone viewport without spilling beyond it, with room to use the pane.
-  console.log('  workspace bounds', JSON.stringify({shell:frame, viewport:vp}))
-  check(frame.y>=-2&&frame.bottom<=vp.height+3&&frame.height>=vp.height*.6,
-    'workspace stays within viewport with enough usable height')
-  await clearLayout(page,'demo '+vp.width)
+  check(frame.x>=-2&&frame.right<=vp.width+2,'CRM shell fits device width')
+  check(frame.height>=vp.height*.7,'CRM frame retains usable viewport height')
+  await clearLayout(page,'CRM dashboard '+vp.width)
   const butler=page.locator('.ask-dock-fab')
-  if (await butler.count()) check(await butler.isVisible(),'Ask Intros Butler stays visible')
+  if(await butler.count())check(await butler.isVisible(),'Ask Intros Butler stays visible')
 
-  if (vp.width<=760) {
-    const launcher=page.getByRole('button',{name:'Open workspace menu'})
+  if(vp.width<=1120){
+    const launcher=page.getByRole('button',{name:'Open navigation'})
     await launcher.waitFor({state:'visible'})
     const touch=await pos(launcher)
-    check(touch.height>=40,'mobile menu remains touch reachable')
+    check(touch.height>=40,'responsive CRM menu stays touch reachable')
     await launcher.click()
-    const menu=page.locator('.specter-mobile-menu')
+    const menu=page.locator('.ledger-native-mobile-sidebar')
     await menu.waitFor({state:'visible'})
-    // Visibility begins during the slide-in; measure its settled position.
-    await menu.evaluate(async element => {
-      await Promise.all(element.getAnimations().map(animation => animation.finished.catch(() => {})))
-    })
     const bounds=await pos(menu)
-    check(bounds.x>=-2&&bounds.right<=vp.width+2,'workspace menu fits phone width')
-    await menu.locator('nav button').filter({hasText:'Messages'}).first().click()
+    check(bounds.x>=-2&&bounds.right<=vp.width+2,'CRM navigation drawer fits the viewport')
+    const mobileNav=page.getByRole('navigation',{name:'Mobile workspace navigation'})
+    await mobileNav.getByRole('button',{name:'Messages'}).click()
     await page.locator('.ix-messages').first().waitFor({state:'visible',timeout:25000})
-    check(!(await menu.isVisible()),'mobile menu closes after navigation')
+    check(!(await menu.isVisible()),'CRM navigation drawer closes after selection')
     await clearLayout(page,'messages '+vp.width)
 
-    await page.getByRole('button',{name:'Open workspace menu'}).click()
-    await page.locator('.specter-mobile-menu nav button').filter({hasText:'Member Network'}).first().click()
-    await page.locator('.ix-network-viewport').waitFor({state:'visible',timeout:25000})
-    await clearLayout(page,'network '+vp.width)
-  } else {
-    const nav=page.locator('.specter-app-sidebar')
-    check(await nav.isVisible(),'desktop sidebar is visible')
-    await nav.locator('nav button').filter({hasText:'Messages'}).first().click()
+    await launcher.click()
+    await page.getByRole('navigation',{name:'Mobile workspace navigation'})
+      .getByRole('button',{name:'People & contacts'}).click()
+    await page.locator('.ledger-directory-table').waitFor({state:'visible',timeout:25000})
+    await clearLayout(page,'contacts '+vp.width)
+  }else{
+    const nav=page.locator('.ledger-crm-sidebar')
+    check(await nav.isVisible(),'desktop CRM sidebar is visible')
+    await nav.getByRole('button',{name:'Messages'}).click()
     await page.locator('.ix-messages').first().waitFor({state:'visible',timeout:25000})
     await clearLayout(page,'messages '+vp.width)
-    await nav.locator('nav button').filter({hasText:'Member Network'}).first().click()
-    await page.locator('.ix-network-viewport').waitFor({state:'visible',timeout:25000})
-    await clearLayout(page,'network '+vp.width)
-    await page.getByRole('button',{name:'Hide sidebar'}).click()
-    check(await page.getByRole('button',{name:'Show sidebar'}).isVisible(),'collapsed sidebar retains restore control')
-    await page.getByRole('button',{name:'Show sidebar'}).click()
-    check(await page.locator('.specter-app-sidebar').isVisible(),'sidebar expands without leaving page')
+    await nav.getByRole('button',{name:'People & contacts'}).click()
+    await page.locator('.ledger-directory-table').waitFor({state:'visible',timeout:25000})
+    await clearLayout(page,'contacts '+vp.width)
+    await page.getByRole('button',{name:'Collapse sidebar'}).click()
+    check(await page.getByRole('button',{name:'Expand sidebar'}).isVisible(),
+      'collapsed CRM sidebar retains its restore control')
+    await page.getByRole('button',{name:'Expand sidebar'}).click()
+    check(await nav.isVisible(),'CRM sidebar expands without navigation loss')
   }
 
+  const reachability=await page.evaluate(()=>{
+    const pane=document.getElementById('aetheris-workspace-content');
+    const last=document.querySelector('.ledger-directory-table tbody tr:last-child');
+    last?.scrollIntoView({block:'end'});
+    const row=last?.getBoundingClientRect(),area=pane?.getBoundingClientRect();
+    return {scroll:pane?.scrollTop,needsScroll:!!pane&&pane.scrollHeight>pane.clientHeight+2,
+      lastReachable:!!row&&!!area&&row.top>=area.top-2&&row.bottom<=area.bottom+2};
+  });
+  check(reachability.lastReachable,'last contact row can scroll into the content viewport')
+  check(!reachability.needsScroll||reachability.scroll>0,'long CRM directory has a working scroll pane')
   check(!errors.length,'no unhandled JavaScript errors in demo')
   await page.close()
  }
@@ -126,4 +130,4 @@ try {
  if(browser)await browser.close()
  stop()
 }
-console.log('Mobile site browser guard: '+passed+' passed')
+console.log('Native CRM mobile and site browser guard: '+passed+' passed')

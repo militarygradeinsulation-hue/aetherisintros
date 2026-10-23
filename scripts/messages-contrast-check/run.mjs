@@ -34,8 +34,8 @@ try {
   page.on('pageerror',e=>errors.push(e.message))
   await page.goto(base+'/demo',{waitUntil:'domcontentloaded',timeout:120000})
   await page.waitForSelector('.ix-root',{timeout:60000})
-  // The current workspace uses a persistent desktop sidebar, not the retired top navigation.
-  const messages = page.locator('.specter-app-sidebar nav button').filter({hasText:'Messages'}).first()
+  // The native CRM shell owns the desktop navigation and the messaging surface.
+  const messages = page.locator('.ledger-crm-sidebar .ledger-native-nav-item[aria-label="Messages"]')
   await messages.waitFor({state:'visible',timeout:30000})
   await messages.click()
   await page.waitForSelector('.ix-messages .msg-outgoing',{timeout:30000})

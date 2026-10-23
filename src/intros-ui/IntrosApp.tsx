@@ -1,11 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { ArrowRight } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { isIntroTargetId, submitIntroRequest } from '@/aetheris/lib/intro-request';
 import { useNetwork } from '@/aetheris/store';
 import { loadMyProfile } from '@/aetheris/live';
 import { WriteFailureNotice } from '@/aetheris/WriteFailureNotice';
-import { refreshUnread } from '@/aetheris/read-receipts';
+import { refreshUnread, useUnreadCounts } from '@/aetheris/read-receipts';
 import { reportWriteFailure } from '@/aetheris/write-failures';
 import './styles.css';
 
@@ -20,10 +19,10 @@ import {
   IntroRequest,
 } from './networkData';
 import type { ActivePage } from './components/layout/TopNavigation';
-import { HomeFeedView } from './views/HomeFeedView';
+import { LedgerDashboard } from './views/LedgerDashboard';
 import { LiveExecutiveOverview } from './components/home/LiveExecutiveOverview';
 import { LiveInsightsDashboard } from './views/LiveInsightsDashboard';
-import { PeopleDirectoryView } from './views/PeopleDirectoryView';
+import { LedgerDirectory } from './views/LedgerDirectory';
 import { ProfileDetailView } from './views/ProfileDetailView';
 import { MessagesView } from './views/MessagesView';
 import { IntrosHubView } from './views/IntrosHubView';
@@ -53,7 +52,9 @@ import { QuickMenuHost } from '@/aetheris/quick-menu-ui';
 import { QuickNoteHost } from '@/aetheris/quick-note-ui';
 import { SpecterDetectView } from './views/SpecterDetectView';
 import { MemberIntelligenceView } from './views/MemberIntelligenceView';
-import { AetherisWorkspaceShell } from './components/layout/AetherisWorkspaceShell';
+import { LedgerBridgeShell } from './components/layout/LedgerBridgeShell';
+import { LedgerIntroductions } from './views/LedgerIntroductions';
+import { LedgerWorkspace } from './views/LedgerWorkspace';
 import './views/aetheris-workspace-pages.css';
 import './views/network-viewport-density.css';
 import './views/workspace-accent.css';
@@ -69,6 +70,7 @@ export type ExecutiveAction = { label: string; onOpen: () => void };
 
 export default function App({ mode = 'demo', executiveAction, initialPage, initialWorkspace, initialSearch }: { mode?: 'demo' | 'live'; executiveAction?: ExecutiveAction | undefined; initialPage?: ActivePage | undefined; initialWorkspace?: string | undefined; initialSearch?: string | undefined }) {
   const network = useNetwork();
+  const unread = useUnreadCounts(mode === 'live');
   const [activePage, setActivePage] = useState<ActivePage>(initialPage ?? 'home');
   const [classicPage, setClassicPage] = useState<string>(initialWorkspace ?? 'memory');
   const [selectedProfileId, setSelectedProfileId] = useState<string>(mode === 'live' ? '' : 'marcus-lee');
@@ -287,7 +289,7 @@ export default function App({ mode = 'demo', executiveAction, initialPage, initi
   const classicPages = ['news','workspace','memory','work','insights','meetings','specter', ...(mode === 'live' ? ['home','messages','intros','people'] : [])];
 
   return (
-    <div className={`${activePage === 'specter' ? 'ix-specter-mode ' : ''}ix-aetheris-workspace-mode ix-root min-h-screen bg-[#07090C] text-[#F2EEE6] flex flex-col font-sans selection:bg-[#F5B027]/30 selection:text-white relative`}>
+    <div className="ix-aetheris-workspace-mode ix-root ix-mindprint-bridge ix-absolute-ledger ledger-native-app min-h-screen bg-[#0a0a0a] text-[#f5f5f0] flex flex-col font-sans selection:bg-red-700/30 selection:text-white relative">
       <WriteFailureNotice />
       {/* Right-click quick menu (each member chooses its items) */}
       <QuickMenuHost
@@ -323,36 +325,39 @@ export default function App({ mode = 'demo', executiveAction, initialPage, initi
       {mode === 'live' && activePage !== 'specter' && <MeetingReminderBanner onJoin={() => handleNavigate('meetings')} />}
       {mode === 'live' && activePage !== 'specter' && <MembershipCardMailer />}
       {/* Primary Page Views — one persistent workspace shell; only the right pane swaps. */}
-      <main className="flex-1 arch-product-main" data-arch-page={activePage}>
-        <AetherisWorkspaceShell
-          scrollContent
+      <LedgerBridgeShell
           activePage={activePage}
-          activeWorkspace={activePage === 'workspace' ? classicPage : undefined}
+          activeTool={classicPage}
+          onNavigate={handleNavigate}
+          onOpenTool={tool => { setClassicPage(tool); handleNavigate('workspace'); }}
           searchQuery={searchQuery}
           onSearchChange={setSearchQuery}
-          onNavigate={handleNavigate}
-          onWorkspace={page => { setClassicPage(page); handleNavigate('workspace'); }}
-          onSearch={query => { setSearchQuery(query); handleNavigate('people'); }}
+          members={members}
+          mode={mode}
+          me={mode === 'live' ? me : null}
+          onOpenMyProfile={() => { setClassicPage('profile'); handleNavigate('workspace'); }}
+          unreadCount={mode === 'live' ? (unread.loaded && !unreadUnavailable ? unread.total : null) : 0}
           executiveAction={executiveAction}
-          member={mode === 'live' ? me : null}
           notifications={mode === 'live' ? <LiveNotificationsBell onOpen={destination => {
             if (destination === 'peergroups' || destination === 'events' || destination === 'deals') {
               setClassicPage(destination);
               handleNavigate('workspace');
             } else handleNavigate(destination);
           }}/> : undefined}
-        >
+      >
+      <main className="flex-1 arch-product-main" data-arch-page={activePage}>
         {activePage === 'home' && (
-          <HomeFeedView
+          <LedgerDashboard
             posts={feedPosts}
             onNavigate={handleNavigate}
-            onWorkspace={page => { setClassicPage(page); handleNavigate('workspace'); }}
+            onOpenTool={tool => { setClassicPage(tool); handleNavigate('workspace'); }}
             onRequestIntro={(member) => setRequestIntroTarget(member)}
             onLikePost={handleLikePost}
             onSavePost={handleSavePost}
             onAddPost={handleAddPost}
-            networkMembers={members}
-            isLive={mode === 'live'}
+            members={members}
+            live={mode === 'live'}
+            unreadCount={mode === 'live' ? (unread.loaded && !unreadUnavailable ? unread.total : null) : 0}
             socialFeed={mode === 'live' ? <div className="ix-classic"><AetherisAppSurface  feedOnly  /></div> : undefined}
             liveOverview={mode === 'live' ? <LiveExecutiveOverview onNavigate={handleNavigate} onWorkspace={page => { setClassicPage(page); handleNavigate('workspace'); }} /> : undefined}
             actionQueue={mode === 'live' ? <div className="rc-stack">
@@ -369,46 +374,37 @@ export default function App({ mode = 'demo', executiveAction, initialPage, initi
               <KeepWarmPanel onMessage={() => handleNavigate('messages')} />
               <GiveGetCard onOpenAsks={() => { setClassicPage('needs'); handleNavigate('workspace'); }} />
             </div> : undefined}
-            me={mode === 'live' ? me : null}
           />
         )}
 
         {activePage === 'people' && (
           <>
-            {mode === 'live' && liveDirectoryError && <div role="alert" className="mx-4 my-3 rounded-xl border border-red-400/40 p-3 text-sm text-red-200">The verified member directory did not load: {liveDirectoryError} Reopen this screen to retry. Demo profiles are never substituted.</div>}
-            <PeopleDirectoryView
+            {mode === 'live' && liveDirectoryError && <div role="alert" className="mx-4 my-3 border border-red-400/40 p-3 text-sm text-red-200">The verified directory did not load: {liveDirectoryError}. Demo profiles are never substituted.</div>}
+            <LedgerDirectory
               members={members}
-              onNavigate={handleNavigate}
-              onRequestIntro={(member) => setRequestIntroTarget(member)}
-              connectedMemberIds={activeConnectedMemberIds}
-              onToggleConnect={handleToggleConnect}
               isLive={mode === 'live'}
+              connectedMemberIds={activeConnectedMemberIds}
+              savedMemberIds={mode === 'live' ? new Set(network.saved) : savedMemberIds}
+              onToggleConnect={handleToggleConnect}
+              onToggleSave={handleToggleSaveMember}
+              onRequestIntro={member => setRequestIntroTarget(member)}
+              onNavigate={handleNavigate}
               searchQuery={searchQuery}
-              onSearchChange={setSearchQuery}
             />
           </>
         )}
-
         {activePage === 'intros' && (
-          <>
-            <div className="ix-intros-crosslink">
-              <div>
-                <span className="home-board-label">Introductions</span>
-                <p>Review requests and curated matches here. Looking for someone specific?</p>
-              </div>
-              <button type="button" onClick={() => handleNavigate('people')}>Search the member network<ArrowRight size={14} /></button>
-            </div>
-            {mode === 'live'
-              ? <div className="ix-classic"><InviteCard /><AetherisAppSurface key="live-intros"  startPage="intros"  /></div>
-              : <IntrosHubView
-                  introRequests={introRequests}
-                  networkMembers={members}
-                  onNavigate={handleNavigate}
-                  onReviewRequest={(req) => setReviewIntroRequest(req)}
-                  onDismissRequest={handleDismissIntroRequest}
-                  onRequestIntro={(member) => setRequestIntroTarget(member)}
-                />}
-          </>
+          <LedgerIntroductions
+            requests={introRequests}
+            members={members}
+            live={mode === 'live'}
+            onNavigate={handleNavigate}
+            onReview={req => setReviewIntroRequest(req)}
+            onDismiss={handleDismissIntroRequest}
+            onRequest={member => setRequestIntroTarget(member)}
+          >
+            {mode === 'live' && <div className="ix-classic"><InviteCard /><AetherisAppSurface key="live-intros" startPage="intros" /></div>}
+          </LedgerIntroductions>
         )}
 
         {activePage === 'bubbles' && (
@@ -461,13 +457,12 @@ export default function App({ mode = 'demo', executiveAction, initialPage, initi
         {activePage === 'work' && <div className="ix-classic"><AetherisAppSurface key="work"  startPage="work"  /></div>}
         {activePage === 'intelligence' && <MemberIntelligenceView live={mode === 'live'} onNavigate={handleNavigate} />}
         {activePage === 'specter' && <SpecterDetectView embedded onNavigate={handleNavigate} onWorkspace={page=>{setClassicPage(page);handleNavigate('workspace');}} onSearch={query=>{setSearchQuery(query);handleNavigate('people');}} searchQuery={searchQuery} onSearchChange={setSearchQuery} member={me} notifications={mode === 'live' ? <LiveNotificationsBell onOpen={destination=>{if(destination==='peergroups'||destination==='events'||destination==='deals'){setClassicPage(destination);handleNavigate('workspace');}else handleNavigate(destination);}}/> : undefined}/> }
-        {activePage === 'workspace' && <div className="ix-classic">
-          {/* Workspace navigation is owned by the persistent sidebar and mobile Menu.
-              Do not duplicate its full destination list above every tool. */}
-          <AetherisAppSurface key={classicPage}  startPage={classicPage as any}  />
-        </div>}
-        </AetherisWorkspaceShell>
+        {activePage === 'workspace' && <LedgerWorkspace activeTool={classicPage} onChange={setClassicPage}>
+          <div className="ix-classic"><AetherisAppSurface key={classicPage} startPage={classicPage as any} /></div>
+        </LedgerWorkspace>}
       </main>
+      </LedgerBridgeShell>
+
 
       {/* Interactive Modals */}
       <RequestIntroModal

@@ -1,0 +1,472 @@
+/* Absolute Ledger CRM visual contract, sourced from absolute-ledger-flow/src/styles.css.
+   Scoped to Bridge's live shell; data providers, auth, routes and dialogs remain native. */
+:root {
+  --ledger-base:#0a0a0a;--ledger-surface:#121212;--ledger-elevated:#1a1a1a;
+  --ledger-ink:#f5f5f0;--ledger-muted:#a3a39e;--ledger-accent:#EF4444;
+}
+:root[data-theme="dark"] {
+  --night:#0a0a0a;--raised:#121212;--graphite:#1a1a1a;
+  --soft:#f5f5f0;--muted:#a3a39e;--ivory:#f5f5f0;--paper:#e9e9e2;
+  --ink:#0a0a0a;--cobalt:#EF4444;--cobalt-bright:#EF4444;
+  --cobalt-hover:#B91C1C;--amber:#EF4444;--gold:#EF4444;
+  --acc:#EF4444;--acc-bright:#EF4444;--acc-strong:#EF4444;
+  --line-dark:rgba(239,68,68,.20);--serif:'Playfair Display',Georgia,serif;
+  --sans:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
+  --tile-hover:#EF4444;--menu-hover:rgba(239,68,68,.15);
+  --menu-bg:#121212;--menu-line:rgba(239,68,68,.25);
+  --menu-ink:#f5f5f0;--menu-ink-dim:#a3a39e;
+}
+:root[data-theme="light"] {
+  --night:#f5f5f0;--raised:#e9e9e2;--graphite:#dedede;
+  --soft:#0a0a0a;--muted:#5a5a54;--cobalt:#B91C1C;
+  --cobalt-bright:#B91C1C;--cobalt-hover:#991B1B;--amber:#B91C1C;
+  --acc:#B91C1C;--acc-bright:#991B1B;--acc-strong:#B91C1C;
+  --line-dark:rgba(239,68,68,.2);--serif:'Playfair Display',Georgia,serif;
+  --sans:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
+  --tile-hover:#B91C1C;
+}
+.absolute-ledger-shell {--ledger-sidebar-width:244px; min-height:100vh;background:var(--night);color:var(--soft);font-family:var(--sans)}
+.absolute-ledger-shell :is(button,input,textarea,select,[role="dialog"],[role="menu"],[role="listbox"],.btn,.icon-btn,.feature-tile,.board-tile,.member-tile,.og-tile,.deck-card,.module,.topbar,.topbar-auth){border-radius:0!important}
+.absolute-ledger-shell :is(h1,h2,h3,.page-title h1,.section-heading h2){font-family:var(--serif)}
+.absolute-ledger-shell .absolute-ledger-sidebar{position:fixed;inset:0 auto 0 0;z-index:52;width:var(--ledger-sidebar-width);background:var(--raised);border-right:1px solid var(--line-dark);display:flex;flex-direction:column;transition:width .22s ease}
+.absolute-ledger-shell .ledger-side-brand{min-height:73px;padding:13px 10px 13px 15px;display:flex;align-items:center;gap:8px;border-bottom:1px solid var(--line-dark)}
+.absolute-ledger-shell .ledger-brand-link{border:0;background:transparent;color:var(--soft);min-width:0;display:flex;align-items:center;gap:11px;text-align:left;cursor:pointer;flex:1}
+.absolute-ledger-shell .ledger-brand-mark{border:1px solid var(--cobalt);color:var(--cobalt);display:grid;place-items:center;width:36px;height:36px;font-family:var(--serif);font-size:21px;flex:none}
+.absolute-ledger-shell .ledger-brand-copy{display:grid;gap:3px;min-width:0}
+.absolute-ledger-shell .ledger-brand-copy strong{font:500 16px/1 var(--serif);white-space:nowrap;letter-spacing:.045em}
+.absolute-ledger-shell .ledger-brand-copy small{font:700 8px var(--sans);letter-spacing:.19em;color:var(--muted)}
+.absolute-ledger-shell .ledger-collapse{border:1px solid var(--line-dark);background:transparent;color:var(--muted);width:28px;height:28px;display:grid;place-items:center;cursor:pointer}
+.absolute-ledger-shell .ledger-side-scroll{overflow-y:auto;overscroll-behavior:contain;min-height:0;flex:1;padding:12px 10px 18px}
+.absolute-ledger-shell .ledger-nav-group{padding:10px 0}
+.absolute-ledger-shell .ledger-nav-group h2{font:700 10px var(--sans);color:var(--muted);letter-spacing:.19em;text-transform:uppercase;padding:9px 11px;margin:0 0 5px}
+.absolute-ledger-shell .ledger-side-link,.absolute-ledger-shell .ledger-all-tools{width:100%;height:39px;padding:0 11px;display:flex;gap:12px;align-items:center;border:0;border-left:2px solid transparent;background:transparent;color:var(--muted);font:500 12px var(--sans);text-align:left;cursor:pointer;transition:background .15s,color .15s}
+.absolute-ledger-shell .ledger-side-link:hover,.absolute-ledger-shell .ledger-all-tools:hover{color:var(--soft);background:rgba(239,68,68,.07)}
+.absolute-ledger-shell .ledger-side-link.active{border-left-color:var(--cobalt);background:rgba(239,68,68,.13);color:var(--soft)}
+.absolute-ledger-shell .ledger-side-link.active svg{color:var(--cobalt)}
+.absolute-ledger-shell .ledger-side-footer{border-top:1px solid var(--line-dark);padding:12px 10px 16px}
+.absolute-ledger-shell .ledger-account{padding:9px 10px}.absolute-ledger-shell .ledger-account .topbar-auth{min-height:33px}
+.absolute-ledger-shell .workspace{margin-left:var(--ledger-sidebar-width);transition:margin-left .22s ease}
+.absolute-ledger-shell .social-topnav{display:none}
+.absolute-ledger-shell .topbar{height:auto;min-height:64px;background:color-mix(in srgb,var(--night) 94%,transparent);border-bottom:1px solid var(--line-dark);padding:9px 22px}
+.absolute-ledger-shell .topbar-title{font:600 11px var(--sans);letter-spacing:.16em;text-transform:uppercase}
+.absolute-ledger-shell .topbar-title i{color:var(--cobalt)}
+.absolute-ledger-shell .topbar-search{border:1px solid var(--line-dark);background:var(--raised)}
+.absolute-ledger-shell .topbar-auth{border:1px solid var(--line-dark);color:var(--soft);background:var(--raised);display:inline-flex;gap:6px;align-items:center;padding:7px 10px}
+.absolute-ledger-shell .content{max-width:1480px;padding:clamp(16px,3vw,40px)}
+.absolute-ledger-shell .workspace-grid{background:var(--night)}
+.absolute-ledger-shell .ledger-topbar-account{display:flex;align-items:center;gap:6px}
+.absolute-ledger-shell .ledger-topbar-account>a,.absolute-ledger-shell .ledger-topbar-account>button{white-space:nowrap}
+.absolute-ledger-shell.ledger-collapsed{--ledger-sidebar-width:66px}
+.absolute-ledger-shell.ledger-collapsed .ledger-brand-copy,.absolute-ledger-shell.ledger-collapsed .ledger-side-link span,.absolute-ledger-shell.ledger-collapsed .ledger-nav-group h2,.absolute-ledger-shell.ledger-collapsed .ledger-all-tools span,.absolute-ledger-shell.ledger-collapsed .ledger-account{display:none}
+.absolute-ledger-shell.ledger-collapsed .ledger-side-brand{padding:12px 5px;flex-direction:column}
+.absolute-ledger-shell.ledger-collapsed .ledger-brand-link{flex:initial}
+.absolute-ledger-shell.ledger-collapsed .ledger-side-link,.absolute-ledger-shell.ledger-collapsed .ledger-all-tools{justify-content:center;padding:0}
+.absolute-ledger-shell.ledger-collapsed .ledger-side-scroll{padding:8px 5px}
+.absolute-ledger-shell :is(.page-title,.home-grid,.premium-home-deck,.social-feed-card,.module){border-color:var(--line-dark)}
+.absolute-ledger-shell :is(.feature-tile,.member-tile,.premium-home-deck>article):hover{border-color:var(--cobalt);box-shadow:0 0 0 1px rgba(239,68,68,.35)}
+.absolute-ledger-shell :is(.topbar-dropmenu,.notifications-panel,[role="menu"],[role="listbox"]){background:var(--raised);border-color:var(--line-dark)}
+@media(max-width:960px){
+  .absolute-ledger-shell .absolute-ledger-sidebar{display:none}
+  .absolute-ledger-shell .social-topnav{display:flex}
+  .absolute-ledger-shell .workspace{margin-left:0}
+  .absolute-ledger-shell .ledger-topbar-account{display:none}
+}
+@media(max-width:650px){
+  .absolute-ledger-shell .topbar{padding:9px 12px}
+  .absolute-ledger-shell .content{padding:16px 12px 95px}
+  .absolute-ledger-shell .topbar-search span{display:none}
+  .absolute-ledger-shell .topbar-title{max-width:38vw;text-overflow:ellipsis;overflow:hidden;white-space:nowrap}
+}
+@media(prefers-reduced-motion:reduce){.absolute-ledger-shell .absolute-ledger-sidebar,.absolute-ledger-shell .workspace{transition:none}}
+
+/* Operational dashboard: every figure and row comes from the existing live stores. */
+.absolute-ledger-shell .ledger-dashboard{display:grid;gap:18px;min-width:0}
+.absolute-ledger-shell .ledger-dashboard-heading{display:flex;justify-content:space-between;align-items:flex-end;gap:18px;flex-wrap:wrap;padding:6px 0 22px;border-bottom:1px solid var(--line-dark)}
+.absolute-ledger-shell .ledger-eyebrow{display:block;color:var(--cobalt);font:700 10px/1.3 var(--sans);letter-spacing:.2em;text-transform:uppercase}
+.absolute-ledger-shell .ledger-dashboard-heading h1{font:400 clamp(28px,3.3vw,45px)/1.05 var(--serif);text-transform:uppercase;letter-spacing:-.035em;margin:8px 0;color:var(--soft)}
+.absolute-ledger-shell .ledger-dashboard-heading p{color:var(--muted);font:400 13px/1.55 var(--sans);margin:5px 0 0}
+.absolute-ledger-shell .ledger-dashboard-actions{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.absolute-ledger-shell .ledger-action{min-height:39px;padding:0 15px;border:1px solid var(--cobalt);background:#B91C1C;color:#fff;display:inline-flex;align-items:center;justify-content:center;gap:9px;cursor:pointer;font:700 10px var(--sans);letter-spacing:.13em;text-transform:uppercase}
+.absolute-ledger-shell .ledger-action:hover{background:#991B1B}
+.absolute-ledger-shell .ledger-action.secondary{background:var(--raised);color:var(--soft);border-color:var(--line-dark)}
+.absolute-ledger-shell .ledger-action.secondary:hover{border-color:var(--cobalt)}
+.absolute-ledger-shell .ledger-metrics{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
+.absolute-ledger-shell .ledger-metric{background:var(--raised);border:1px solid var(--line-dark);text-align:left;padding:17px 18px 16px;display:grid;gap:8px;min-width:0;cursor:pointer;transition:border-color .16s,background .16s;color:var(--soft)}
+.absolute-ledger-shell .ledger-metric:hover{border-color:var(--cobalt);background:var(--graphite)}
+.absolute-ledger-shell .ledger-metric-top{display:flex;align-items:center;justify-content:space-between;gap:8px;font:700 10px/1.35 var(--sans);color:var(--muted);letter-spacing:.13em;text-transform:uppercase}
+.absolute-ledger-shell .ledger-metric-top svg{color:var(--cobalt);flex:none}
+.absolute-ledger-shell .ledger-metric strong{font:400 clamp(29px,3vw,41px)/1.1 var(--serif);color:var(--soft);font-variant-numeric:tabular-nums}
+.absolute-ledger-shell .ledger-metric small{font:400 11px/1.45 var(--sans);color:var(--muted)}
+.absolute-ledger-shell .ledger-dashboard-columns{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(270px,.75fr);gap:12px;align-items:stretch}
+.absolute-ledger-shell .ledger-panel{border:1px solid var(--line-dark);background:var(--raised);min-width:0}
+.absolute-ledger-shell .ledger-panel>header{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;padding:17px 19px;border-bottom:1px solid var(--line-dark)}
+.absolute-ledger-shell .ledger-panel>header h2{font:400 21px/1.2 var(--serif);letter-spacing:-.02em;margin:5px 0 0;color:var(--soft);text-transform:uppercase}
+.absolute-ledger-shell .ledger-text-button{display:flex;align-items:center;gap:7px;border:0;background:transparent;color:var(--muted);font:600 10px/1.3 var(--sans);letter-spacing:.07em;cursor:pointer}
+.absolute-ledger-shell .ledger-text-button:hover{color:var(--cobalt)}
+.absolute-ledger-shell .ledger-person-row,.absolute-ledger-shell .ledger-priority-row{display:flex;align-items:center;gap:12px;padding:15px 19px;width:100%;background:transparent;border:0;border-bottom:1px solid var(--line-dark);text-align:left;color:var(--soft);cursor:pointer;min-width:0}
+.absolute-ledger-shell .ledger-person-row:hover,.absolute-ledger-shell .ledger-priority-row:hover{background:rgba(239,68,68,.055)}
+.absolute-ledger-shell .ledger-person-row>svg:last-child,.absolute-ledger-shell .ledger-priority-row>svg:last-child{margin-left:auto;color:var(--cobalt);flex:none}
+.absolute-ledger-shell .ledger-person-copy,.absolute-ledger-shell .ledger-priority-row>span:nth-child(2){display:flex;flex-direction:column;min-width:0;gap:3px;flex:1}
+.absolute-ledger-shell .ledger-person-copy strong,.absolute-ledger-shell .ledger-priority-row strong{font:600 13px/1.3 var(--sans);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.absolute-ledger-shell .ledger-person-copy small,.absolute-ledger-shell .ledger-priority-row small{font:400 11px/1.45 var(--sans);color:var(--muted);overflow:hidden;text-overflow:ellipsis}
+.absolute-ledger-shell .ledger-person-copy em{font:400 10px/1.4 var(--sans);color:var(--muted);font-style:normal;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden}
+.absolute-ledger-shell .ledger-match-score{font:400 23px/1 var(--serif);color:var(--soft);text-align:right;flex:none;min-width:43px}
+.absolute-ledger-shell .ledger-match-score small{display:block;font:700 9px var(--sans);color:var(--cobalt);letter-spacing:.12em;margin-top:4px}
+.absolute-ledger-shell .ledger-priority-symbol{width:34px;height:34px;border:1px solid var(--line-dark);display:grid;place-items:center;color:var(--cobalt);flex:none}
+.absolute-ledger-shell .ledger-empty{padding:38px 20px;text-align:center;color:var(--muted);font:400 12px/1.6 var(--sans)}
+.absolute-ledger-shell .ledger-panel-footer{padding:13px 18px}
+.absolute-ledger-shell .ledger-panel-footer button{border:0;background:transparent;color:var(--cobalt);font:700 10px var(--sans);letter-spacing:.08em;display:flex;gap:7px;align-items:center;cursor:pointer}
+.absolute-ledger-shell .ledger-panel-footer button:hover{text-decoration:underline;text-underline-offset:3px}
+.absolute-ledger-shell .ledger-feed-body{padding:15px;min-width:0}
+.absolute-ledger-shell .ledger-advanced-work{border:1px solid var(--line-dark);background:var(--raised);min-width:0}
+.absolute-ledger-shell .ledger-advanced-work>summary{padding:17px 20px;cursor:pointer;display:flex;align-items:center;justify-content:space-between;color:var(--soft);font:700 11px var(--sans);text-transform:uppercase;letter-spacing:.14em;list-style:none}
+.absolute-ledger-shell .ledger-advanced-work>summary::-webkit-details-marker{display:none}
+.absolute-ledger-shell .ledger-advanced-work[open]>summary{border-bottom:1px solid var(--line-dark)}
+.absolute-ledger-shell .ledger-advanced-work>summary svg{color:var(--cobalt)}
+.absolute-ledger-shell .ledger-advanced-work[open]>summary svg{transform:rotate(180deg)}
+.absolute-ledger-shell .ledger-advanced-work>div{padding:15px}
+@media(max-width:1150px){.absolute-ledger-shell .ledger-dashboard-columns{grid-template-columns:minmax(0,1fr)}}
+@media(max-width:790px){.absolute-ledger-shell .ledger-metrics{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:480px){.absolute-ledger-shell .ledger-metrics{gap:7px}.absolute-ledger-shell .ledger-metric{padding:13px}.absolute-ledger-shell .ledger-dashboard-heading{padding-top:0}.absolute-ledger-shell .ledger-person-row,.absolute-ledger-shell .ledger-priority-row{padding:13px 11px;gap:9px}.absolute-ledger-shell .ledger-panel>header{padding:14px 12px}.absolute-ledger-shell .ledger-feed-body{padding:8px}.absolute-ledger-shell .ledger-match-score{font-size:19px}}
+
+/* Shared CRM tokens also cover public, auth, and the alternate network shell. */
+:root[data-theme] {
+  --radius:0px;--radius-sm:0px;--radius-md:0px;--radius-lg:0px;
+  --radius-xl:0px;--radius-2xl:0px;--radius-3xl:0px;--radius-4xl:0px;
+}
+:root[data-theme="dark"] {
+  --background:#0a0a0a;--foreground:#f5f5f0;--card:#121212;
+  --card-foreground:#f5f5f0;--popover:#121212;--popover-foreground:#f5f5f0;
+  --primary:#B91C1C;--primary-foreground:#ffffff;
+  --secondary:#1a1a1a;--secondary-foreground:#f5f5f0;
+  --muted:#1a1a1a;--muted-foreground:#a3a39e;
+  --accent:#1a1a1a;--accent-foreground:#f5f5f0;
+  --border:rgba(239,68,68,.23);--input:rgba(239,68,68,.26);
+  --ring:#EF4444;--sidebar:#121212;--sidebar-foreground:#f5f5f0;
+  --sidebar-primary:#B91C1C;--sidebar-primary-foreground:#ffffff;
+  --sidebar-accent:#1a1a1a;--sidebar-accent-foreground:#f5f5f0;
+  --sidebar-border:rgba(239,68,68,.23);--sidebar-ring:#EF4444;
+  --halftone-night:#0a0a0a;--halftone-ink:#f5f5f0;--halftone-warm:#EF4444;
+}
+:root[data-theme="light"] {
+  --background:#f5f5f0;--foreground:#0a0a0a;--card:#e9e9e2;
+  --card-foreground:#0a0a0a;--popover:#e9e9e2;--popover-foreground:#0a0a0a;
+  --primary:#B91C1C;--primary-foreground:#ffffff;
+  --secondary:#dedede;--secondary-foreground:#0a0a0a;
+  --muted:#dedede;--muted-foreground:#5a5a54;
+  --accent:#dedede;--accent-foreground:#0a0a0a;
+  --border:rgba(239,68,68,.22);--input:rgba(239,68,68,.28);
+  --ring:#B91C1C;--sidebar:#e9e9e2;--sidebar-foreground:#0a0a0a;
+  --sidebar-primary:#B91C1C;--sidebar-primary-foreground:#ffffff;
+  --sidebar-accent:#dedede;--sidebar-accent-foreground:#0a0a0a;
+  --sidebar-border:rgba(239,68,68,.22);--sidebar-ring:#B91C1C;
+  --halftone-night:#f5f5f0;--halftone-ink:#0a0a0a;--halftone-warm:#B91C1C;
+}
+:root[data-theme] :is(.auth-page,.lv,.ix-root) :is(button,input,textarea,select,[role="dialog"],[role="menu"],[role="listbox"]) {
+  border-radius:0!important;
+}
+:root[data-theme] :is(.auth-page,.lv) :is(h1,h2,h3) {
+  font-family:var(--serif,'Playfair Display',Georgia,serif);
+  letter-spacing:-.035em;
+}
+:root[data-theme="dark"] :is(.auth-page,.lv) :is(.auth-card,.auth-form,.lv-auth-card) {
+  border-color:rgba(239,68,68,.23);
+}
+:root[data-theme] :is(.auth-page,.lv,.ix-root) :is(button,a,input,textarea,select):focus-visible {
+  outline:2px solid var(--ring);
+  outline-offset:3px;
+}
+/* Keep the inverse-message CSS authoritative and avoid unrelated theme regressions. */
+:root[data-theme] .ix-root :is(.ix-messages,.ix-live-messages) {
+  --radius:0px;
+}
+
+
+/* The real /app and /demo use IntrosApp, not the historical Aetheris shell. */
+:root body .ix-root.ix-absolute-ledger {
+  --st-bg:#0a0a0a;--st-card:#121212;--st-panel:#1a1a1a;--st-ink:#f5f5f0;
+  --st-muted:#a3a39e;--mp-bridge-bg:#0a0a0a;--mp-bridge-panel:#121212;
+  --mp-bridge-ink:#f5f5f0;--mp-bridge-muted:#a3a39e;
+  --mp-bridge-copper:#EF4444;--mp-bridge-copper-bright:#EF4444;
+  --mp-bridge-line:rgba(239,68,68,.22);
+  --st-mono:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
+  --radius:0px;
+  background:#0a0a0a!important;color:#f5f5f0!important;
+  font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif!important;
+}
+:root[data-theme="light"] body .ix-root.ix-absolute-ledger {
+  --st-bg:#f5f5f0;--st-card:#e9e9e2;--st-panel:#dedede;--st-ink:#0a0a0a;
+  --st-muted:#5a5a54;--mp-bridge-bg:#f5f5f0;--mp-bridge-panel:#e9e9e2;
+  --mp-bridge-ink:#0a0a0a;--mp-bridge-muted:#5a5a54;
+  --mp-bridge-copper:#B91C1C;--mp-bridge-copper-bright:#991B1B;
+  --mp-bridge-line:rgba(185,28,28,.2);
+  background:#f5f5f0!important;color:#0a0a0a!important;
+}
+.ix-root.ix-absolute-ledger :is(h1,h2,h3,.font-display,.serif-heading) {
+  font-family:'Playfair Display',Georgia,serif!important;
+  letter-spacing:-.025em;
+}
+.ix-root.ix-absolute-ledger :is(button,input,textarea,select,.rounded-lg,.rounded-xl,.rounded-2xl,.rounded-full,.rounded-md,[role="dialog"],[role="menu"],[role="listbox"]) {
+  border-radius:0!important;
+}
+.ix-root.ix-absolute-ledger :is(button,a,input,textarea,select):focus-visible {
+  outline:2px solid var(--mp-bridge-copper-bright)!important;outline-offset:2px;
+}
+:root body .ix-root.ix-absolute-ledger :is(.ix-eyebrow,.eyebrow,.folio) {
+  color:var(--mp-bridge-copper-bright)!important;
+}
+:root body .ix-root.ix-absolute-ledger .ix-global-header {
+  background:var(--st-bg)!important;color:var(--st-ink)!important;
+  border-color:var(--mp-bridge-line)!important;
+}
+:root body .ix-root.ix-absolute-ledger .ledger-real-collapse {
+  background:var(--st-card)!important;border:1px solid var(--mp-bridge-line)!important;
+  color:var(--st-ink)!important;display:grid;place-items:center;
+  width:30px;height:30px;flex:none;cursor:pointer;
+}
+:root body .ix-root.ix-absolute-ledger .ix-desktop-main-nav .ledger-desktop-group {
+  display:flex!important;flex-direction:column!important;align-items:stretch;
+  width:100%;gap:3px;min-width:0;margin-bottom:8px;
+}
+:root body .ix-root.ix-absolute-ledger .ledger-desktop-group-label {
+  display:block;padding:9px 12px 7px;font:700 10px/1.2 system-ui,sans-serif;
+  text-transform:uppercase;letter-spacing:.19em;color:var(--st-muted);
+}
+:root body .ix-root.ix-absolute-ledger .ledger-desktop-group .ix-desktop-nav-link {
+  width:100%!important;min-height:39px!important;padding:8px 11px!important;
+  display:flex!important;align-items:center;justify-content:flex-start!important;
+  border:0!important;border-left:2px solid transparent!important;
+  background:transparent!important;color:var(--st-muted)!important;
+  font:500 12px/1.3 system-ui,sans-serif!important;letter-spacing:.01em!important;
+  text-transform:none!important;
+}
+:root body .ix-root.ix-absolute-ledger .ledger-desktop-group .ix-desktop-nav-label {
+  display:flex;align-items:center;gap:11px;flex-wrap:nowrap;min-width:0;
+}
+:root body .ix-root.ix-absolute-ledger .ledger-desktop-group .ix-desktop-nav-link:hover {
+  background:rgba(239,68,68,.075)!important;color:var(--st-ink)!important;
+  border-left-color:rgba(239,68,68,.45)!important;
+}
+:root body .ix-root.ix-absolute-ledger .ledger-desktop-group .ix-desktop-nav-link.is-active {
+  background:rgba(239,68,68,.14)!important;color:var(--st-ink)!important;
+  -webkit-text-fill-color:var(--st-ink)!important;
+  border-left-color:var(--mp-bridge-copper-bright)!important;
+}
+:root body .ix-root.ix-absolute-ledger .ledger-desktop-group .ix-desktop-nav-link.is-active svg {
+  color:var(--mp-bridge-copper-bright)!important;
+}
+:root body .ix-root.ix-absolute-ledger .ledger-more-tools {width:100%}
+:root body .ix-root.ix-absolute-ledger .ledger-more-tools .ix-desktop-more-trigger {
+  min-height:39px!important;display:flex!important;justify-content:space-between!important;
+  background:transparent!important;color:var(--st-muted)!important;
+  border:0!important;border-left:2px solid transparent!important;
+  font:500 12px system-ui,sans-serif!important;
+}
+:root body .ix-root.ix-absolute-ledger .ledger-more-tools .ix-desktop-more-trigger:hover {
+  background:rgba(239,68,68,.075)!important;color:var(--st-ink)!important;
+}
+:root body .ix-root.ix-absolute-ledger .ix-global-account-actions .ix-header-logout-action {
+  display:inline-flex!important;gap:9px;align-items:center!important;min-height:39px;
+  border:1px solid var(--mp-bridge-line)!important;color:var(--st-ink)!important;
+  padding:8px 12px!important;background:var(--st-card)!important;
+}
+:root body .ix-root.ix-absolute-ledger .ix-global-account-actions .ledger-account-text {
+  display:inline!important;color:inherit!important;
+}
+:root body .ix-root.ix-absolute-ledger .ix-global-account-actions .ix-header-logout-action:hover {
+  border-color:var(--mp-bridge-copper-bright)!important;
+}
+@media(min-width:1100px) {
+  :root body .ix-root.ix-mindprint-bridge.ix-absolute-ledger {
+    padding-left:244px!important;
+  }
+  :root body .ix-root.ix-mindprint-bridge.ix-absolute-ledger > .ix-global-header {
+    width:244px!important;padding:12px 10px!important;overflow-y:auto!important;
+    overflow-x:hidden!important;background:var(--st-card)!important;
+  }
+  :root body .ix-root.ix-absolute-ledger .ix-global-brand {
+    display:flex!important;align-items:center;gap:8px;padding:8px 3px 12px!important;
+  }
+  :root body .ix-root.ix-absolute-ledger .ix-global-brand > button:first-child {flex:1;min-width:0}
+  :root body .ix-root.ix-absolute-ledger .ix-global-brand .ask-intros-lockup--compact {
+    width:170px!important;max-width:100%!important;
+  }
+  :root body .ix-root.ix-absolute-ledger .ix-desktop-main-nav {
+    flex-direction:column!important;gap:3px!important;align-items:stretch!important;
+  }
+  :root body .ix-root.ix-absolute-ledger .ix-global-account-actions {
+    margin-top:auto!important;border-top:1px solid var(--mp-bridge-line)!important;
+  }
+  :root body .ix-root.ix-mindprint-bridge.ix-absolute-ledger.ledger-nav-collapsed {
+    padding-left:74px!important;
+  }
+  :root body .ix-root.ix-mindprint-bridge.ix-absolute-ledger.ledger-nav-collapsed > .ix-global-header {
+    width:74px!important;padding:12px 5px!important;
+  }
+  :root body .ix-root.ix-absolute-ledger.ledger-nav-collapsed .ix-global-brand {
+    display:flex!important;flex-direction:column!important;align-items:center!important;
+  }
+  :root body .ix-root.ix-absolute-ledger.ledger-nav-collapsed .ix-global-brand > button:first-child,
+  :root body .ix-root.ix-absolute-ledger.ledger-nav-collapsed .ledger-desktop-group-label,
+  :root body .ix-root.ix-absolute-ledger.ledger-nav-collapsed .ledger-side-text,
+  :root body .ix-root.ix-absolute-ledger.ledger-nav-collapsed .ledger-more-chevron,
+  :root body .ix-root.ix-absolute-ledger.ledger-nav-collapsed .ix-desktop-unread-count,
+  :root body .ix-root.ix-absolute-ledger.ledger-nav-collapsed .ix-global-account-actions > :not(.ix-header-logout-action),
+  :root body .ix-root.ix-absolute-ledger.ledger-nav-collapsed .ledger-account-text {
+    display:none!important;
+  }
+  :root body .ix-root.ix-absolute-ledger.ledger-nav-collapsed .ledger-desktop-group .ix-desktop-nav-link {
+    justify-content:center!important;padding:10px 2px!important;
+  }
+  :root body .ix-root.ix-absolute-ledger.ledger-nav-collapsed .ledger-desktop-group .ix-desktop-nav-label {
+    justify-content:center!important;
+  }
+  :root body .ix-root.ix-absolute-ledger.ledger-nav-collapsed .ix-global-account-actions {
+    justify-content:center!important;padding:10px 0!important;
+  }
+  :root body .ix-root.ix-absolute-ledger.ledger-nav-collapsed .ix-global-account-actions .ix-header-logout-action {
+    padding:8px!important;min-width:36px;justify-content:center;
+  }
+  :root body .ix-root.ix-absolute-ledger.ledger-nav-collapsed .ledger-more-tools .ix-desktop-more-trigger {
+    justify-content:center!important;padding:10px 3px!important;
+  }
+}
+@media(max-width:1099px) {
+  :root body .ix-root.ix-mindprint-bridge.ix-absolute-ledger {padding-left:0!important}
+  :root body .ix-root.ix-absolute-ledger .ledger-real-collapse {display:none!important}
+  :root body .ix-root.ix-absolute-ledger .ledger-desktop-groups {display:none!important}
+  :root body .ix-root.ix-absolute-ledger .ix-global-header {width:100%!important}
+  :root body .ix-root.ix-absolute-ledger .ix-global-account-actions .ledger-account-text {display:none!important}
+}
+
+/* Search is a centered command palette at every viewport, not a clipped bottom sheet. */
+.absolute-ledger-shell .global-search-wrap{position:fixed;inset:0;z-index:10005;display:flex;align-items:center;justify-content:center;padding:clamp(12px,3vw,28px)}
+.absolute-ledger-shell .global-search-panel{width:min(760px,100%);max-height:min(86dvh,850px);display:flex;flex-direction:column;overflow:hidden;background:var(--raised);border:1px solid var(--line-dark)}
+.absolute-ledger-shell .global-search-panel .global-results{overflow-y:auto;overscroll-behavior:contain;min-height:0}
+.absolute-ledger-shell .ledger-search-error{margin:0;padding:12px 18px;background:rgba(185,28,28,.12);border-bottom:1px solid rgba(185,28,28,.45);color:var(--soft);font:600 12px/1.5 var(--sans)}
+@media(max-width:650px){.absolute-ledger-shell .global-search-wrap{align-items:center;justify-content:center;padding:max(10px,env(safe-area-inset-top)) 10px max(10px,env(safe-area-inset-bottom))}.absolute-ledger-shell .global-search-panel{max-height:84dvh;width:100%}}
+
+
+/* Embedded legacy workspaces inside the member-facing IntrosApp must NOT
+   mount a second sidebar or steal viewport width. Root Aetheris stays standalone. */
+:root body .ix-root.ix-absolute-ledger .ix-classic .absolute-ledger-shell {
+  --ledger-sidebar-width:0px!important;
+  width:100%;min-width:0;max-width:100%;
+}
+:root body .ix-root.ix-absolute-ledger .ix-classic .absolute-ledger-shell > .absolute-ledger-sidebar,
+:root body .ix-root.ix-absolute-ledger .ix-classic .absolute-ledger-shell > .social-topnav {
+  display:none!important;
+}
+:root body .ix-root.ix-absolute-ledger .ix-classic .absolute-ledger-shell > .workspace {
+  margin-left:0!important;min-width:0!important;width:100%!important;
+}
+:root body .ix-root.ix-absolute-ledger .ix-classic .absolute-ledger-shell .workspace-grid {
+  min-width:0;width:100%;max-width:100%;
+}
+:root body .ix-root.ix-absolute-ledger .ix-classic .absolute-ledger-shell .content {
+  min-width:0;max-width:100%;padding:clamp(14px,2vw,30px);
+}
+@media(max-width:650px) {
+  :root body .ix-root.ix-absolute-ledger .ix-classic .absolute-ledger-shell .content {
+    padding:12px 8px 96px;
+  }
+}
+
+
+/* Map the real social, people, message and work screens onto the exact CRM
+   tokens without changing their routes, data adapters or user actions. */
+:root body .ix-root.ix-absolute-ledger {
+  --sys-bg:var(--st-bg);--sys-tile:var(--st-card);
+  --sys-tile-inner:var(--st-panel);--sys-panel:var(--st-card);
+  --sys-bg-dark:var(--st-bg);--sys-panel-line:var(--mp-bridge-line);
+  --sys-line:var(--mp-bridge-line);--sys-ink:var(--st-ink);
+  --sys-ink-dim:var(--st-muted);--sys-card:var(--st-card);
+  --sys-card-ink:var(--st-ink);--sys-accent:var(--mp-bridge-copper-bright);
+  --font-serif:'Playfair Display',Georgia,serif;
+  --font-sans:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
+  --radius-tile:0px;--radius-inner:0px;--radius-chip:0px;
+}
+:root body .ix-root.ix-absolute-ledger :is(.sys-tile,.sys-tile-inner,.home-board-tile,.home-social-board) {
+  border-radius:0!important;border-color:var(--mp-bridge-line)!important;
+}
+:root body .ix-root.ix-absolute-ledger :is(.home-feed-page,.home-social-board,.bridge-discover-hero) {
+  color:var(--st-ink)!important;
+}
+:root body .ix-root.ix-absolute-ledger .arch-product-main [class*="bg-[#0E121A]"],
+:root body .ix-root.ix-absolute-ledger .arch-product-main [class*="bg-[#131722]"],
+:root body .ix-root.ix-absolute-ledger .arch-product-main [class*="bg-[#0C1017]"],
+:root body .ix-root.ix-absolute-ledger .arch-product-main [class*="bg-[#080808]"] {
+  background:var(--st-card)!important;color:var(--st-ink)!important;
+  border-color:var(--mp-bridge-line)!important;
+}
+:root body .ix-root.ix-absolute-ledger .arch-product-main :is(.bridge-primary-action,.home-board-tile button[data-primary]) {
+  background:#B91C1C!important;
+  border-color:#B91C1C!important;
+  color:#ffffff!important;-webkit-text-fill-color:#ffffff!important;
+  box-shadow:none!important;
+}
+:root body .ix-root.ix-absolute-ledger .arch-product-main .bridge-secondary-action {
+  background:var(--st-card)!important;color:var(--st-ink)!important;
+  border-color:var(--mp-bridge-line)!important;box-shadow:none!important;
+}
+:root body .ix-root.ix-absolute-ledger :is(.sys-tile,.home-board-tile,.home-board-person,.bridge-secondary-action):hover {
+  border-color:var(--mp-bridge-copper-bright)!important;
+  box-shadow:0 0 0 1px rgba(239,68,68,.22)!important;
+}
+:root body .ix-root.ix-absolute-ledger .arch-product-main :is(.font-serif-editorial,.home-social-heading h2,.home-board-tile h3) {
+  font-family:'Playfair Display',Georgia,serif!important;
+}
+:root body .ix-root.ix-absolute-ledger .arch-product-main :is(.home-board-label,.ix-eyebrow,.eyebrow) {
+  color:var(--mp-bridge-copper-bright)!important;
+}
+:root body .ix-root.ix-absolute-ledger .arch-product-main .bridge-discover-map {
+  border-color:var(--mp-bridge-line)!important;
+}
+
+
+/* The PUBLIC Ask Intros landing uses .ael, not .ix-root. Keep it in the same
+   Absolute Ledger language instead of leaving the previous orange design. */
+:root body .ael.ael-compact.ael-mindprint {
+  --mp-bridge-bg:#0a0a0a;--mp-bridge-panel:#121212;
+  --mp-bridge-ink:#f5f5f0;--mp-bridge-muted:#a3a39e;
+  --mp-bridge-copper:#EF4444;--mp-bridge-copper-bright:#EF4444;
+  --mp-bridge-line:rgba(239,68,68,.22);--mp-bridge-rule:var(--mp-bridge-line);
+  background:#0a0a0a!important;color:#f5f5f0!important;
+  font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif!important;
+}
+:root[data-theme="light"] body .ael.ael-compact.ael-mindprint {
+  --mp-bridge-bg:#f5f5f0;--mp-bridge-panel:#e9e9e2;
+  --mp-bridge-ink:#0a0a0a;--mp-bridge-muted:#5a5a54;
+  --mp-bridge-copper:#B91C1C;--mp-bridge-copper-bright:#991B1B;
+  --mp-bridge-line:rgba(185,28,28,.22);
+  background:#f5f5f0!important;color:#0a0a0a!important;
+}
+:root body .ael.ael-mindprint :is(h1,h2,h3,h4,.ael-hero-title,.ael-section-title) {
+  font-family:'Playfair Display',Georgia,serif!important;
+  letter-spacing:-.035em!important;
+}
+:root body .ael.ael-mindprint :is(.ael-header,.ael-hero,.ael-panel,.ael-card,.ael-module) {
+  border-color:var(--mp-bridge-line)!important;
+}
+:root body .ael.ael-mindprint :is(button,input,select,textarea,.ael-btn-gold,.ael-nav-cta) {
+  border-radius:0!important;
+}
+:root body .ael.ael-mindprint :is(.ael-nav-cta,.ael-btn-gold) {
+  background:#B91C1C!important;color:#ffffff!important;
+  -webkit-text-fill-color:#ffffff!important;
+  border-color:#B91C1C!important;box-shadow:none!important;
+  font:700 11px/1.3 -apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif!important;
+}
+:root body .ael.ael-mindprint :is(.ael-nav-cta,.ael-btn-gold):hover {
+  background:#B91C1C!important;border-color:#B91C1C!important;
+  color:#0a0a0a!important;-webkit-text-fill-color:#ffffff!important;
+}
+
+/* Red logo and assistant accents; keep validation warnings independent. */
+:root[data-theme] body :is(.ix-root,.ael,.auth-page,.absolute-ledger-shell) :is(.ask-intros-lockup__node--top,.ask-intros-lockup__rule-dot){fill:#EF4444!important}
+:root[data-theme] body :is(.ix-root,.ael,.auth-page,.absolute-ledger-shell) .ask-intros-lockup__rule{stroke:#EF4444!important}
+:root[data-theme] body .ix-root.ix-absolute-ledger :is(.ask-dock-mark,.voice-bar-mark,.ix-assistant .ask-dock-fab .aetheris-glyph){color:var(--ledger-crm-accent,#EF4444)!important}
+:root[data-theme] body .ael.ael-mindprint :is(.ael-nav-cta,.ael-btn-gold):hover {background:#991B1B!important;border-color:#991B1B!important;color:#ffffff!important;-webkit-text-fill-color:#ffffff!important}
+
+/* Production Ask Intros owns its existing providers, auth, and route tree. */
+:root body .ix-root.ix-aetheris-workspace-mode.ix-absolute-ledger.ledger-native-app {--ledger-crm-accent:#EF4444;--mp-bridge-copper:#B91C1C;--mp-bridge-copper-bright:#EF4444;--mp-bridge-line:rgba(239,68,68,.24)}

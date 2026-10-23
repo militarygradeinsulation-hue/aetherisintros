@@ -11,8 +11,11 @@ describe('dashboard and network cleanup', () => {
     // The old combined branch mounted both surfaces on both routes.
     expect(app).not.toContain("activePage === 'people' || activePage === 'intros'")
     // Introductions keeps a discoverable path back into people search.
-    expect(app).toContain('ix-intros-crosslink')
-    expect(app).toContain("handleNavigate('people')")
+    expect(app).toContain('<LedgerIntroductions')
+    const introductions = file('../../intros-ui/views/LedgerIntroductions.tsx')
+    expect(introductions).toContain('onNavigate(\'people\')')
+    expect(introductions).toContain('Find a member')
+    expect(app).toContain('onNavigate={handleNavigate}')
   })
 
   it('leads the directory with search and real counts, folding statistics and connectors into disclosures', () => {
@@ -36,20 +39,26 @@ describe('dashboard and network cleanup', () => {
     expect(view).toContain('const topIndustries = useMemo(')
   })
 
-  it('keeps the dashboard welcome compact and grounded in real counts', () => {
-    const view = file('../../intros-ui/views/HomeFeedView.tsx')
-    expect(view).toContain('home-feed-welcome')
+  it('mounts the CRM dashboard with real member, unread and feed sources', () => {
+    const app = file('../../intros-ui/IntrosApp.tsx')
+    const view = file('../../intros-ui/views/LedgerDashboard.tsx')
+    expect(app).toContain('<LedgerDashboard')
+    expect(app).toContain('members={members}')
+    expect(app).toContain('unread.loaded && !unreadUnavailable ? unread.total : null')
+    expect(app).toContain('<AetherisAppSurface  feedOnly')
+    expect(view).toContain('Members in view')
     expect(view).toContain('Share an update')
-    expect(view).toContain('boardPeople.length')
+    expect(view).toContain('String(members.length)')
   })
 
-  it('never shows a curated spotlight match or invented mutuals to live members', () => {
-    const view = file('../../intros-ui/views/HomeFeedView.tsx')
-    expect(view).toContain("isLive ? 'bubbles' : heroVisualChoice")
-    expect(view).toContain('{!isLive && <button')
+  it('never substitutes a fabricated spotlight or fixture posts into the live CRM view', () => {
+    const app = file('../../intros-ui/IntrosApp.tsx')
+    const view = file('../../intros-ui/views/LedgerDashboard.tsx')
+    expect(app).toContain("mode === 'live' ? [] : INITIAL_FEED_POSTS")
+    expect(app).toContain("mode === 'live' ? [] : NETWORK_MEMBERS")
     expect(view).not.toContain('12 mutual connections')
     expect(view).not.toContain('Shared interests: AI Infrastructure, Climate Tech')
-    expect(view).toContain('elena.mutualConnectionsCount')
+    expect(view).toContain('{live ?')
   })
 
   it('organizes Memory detail modules behind an accessible section chooser', () => {

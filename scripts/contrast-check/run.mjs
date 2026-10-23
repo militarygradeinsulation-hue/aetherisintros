@@ -1,4 +1,4 @@
-// Browser check that menus, sheets, tab bars and popovers stay readable on the dark theme.
+// Browser check for actual black-red CRM menus, drawers, dialogs and popovers.
 // For each surface it opens (in the /demo showcase, desktop and phone sizes) it asserts:
 //   - the surface's own background is (near) opaque: alpha >= 0.9
 //   - nothing decorative (the site-wide ambient field) paints on top of it
@@ -137,49 +137,71 @@ async function open(viewport) {
 }
 
 try {
-  console.log('Desktop 1440x900')
-  let page = await open({ width: 1440, height: 900 })
-  // Product navigation moved into the persistent workspace sidebar.
-  const desk = page.locator('.specter-app-sidebar nav[aria-label="Workspace navigation"]')
-  await desk.waitFor({ state: 'visible', timeout: 30000 })
-  await check(page, 'desktop-navigation', '.specter-app-sidebar', '')
-  await page.mouse.click(700, 600, { button: 'right' })
-  await check(page, 'quick-menu', '.qm', '')
-  await page.keyboard.press('Escape')
-  await page.click('.ask-dock-fab')
-  await check(page, 'ask-dock', '.ask-dock', '')
-  await page.click('.ask-dock-fab')
-  await desk.getByRole('button', { name: 'Member Network' }).click()
-  await page.locator('button', { hasText: 'Request Intro' }).first().click()
-  await check(page, 'request-intro-modal', '[role=dialog], .fixed.inset-0 > div', '')
-  await page.keyboard.press('Escape')
-  await page.goto(`${base}/demo`, { waitUntil: 'networkidle' })
-  await page.locator('.specter-app-header .specter-header-cta').click()
-  await check(page, 'workspace-tool-tabs', '.ix-tools', '')
-  const tool = async label => { await page.locator('.ix-tools button', { hasText: new RegExp(`^${label}$`) }).click(); await page.waitForTimeout(500) }
-  await tool('CRM')
-  await check(page, 'crm-tabs', '[role=tablist][aria-label="CRM sections"]', '', { inline: true })
-  await tool('Trusted Providers')
-  await check(page, 'providers-tabs', '.providers-tabs', '', { inline: true })
-  await tool('Needs')
-  await check(page, 'needs-select-options', 'main :has(> select)', '', { inline: true, field: true })
-  await tool('My profile')
-  await page.evaluate(() => { const d = document.querySelector('details.identity-more'); for (let n = d; n; n = n.parentElement?.closest('details')) n.open = true; d?.scrollIntoView({ block: 'center' }) })
-  await check(page, 'profile-more-menu', 'details.identity-more[open] > div', '')
-  await page.close()
+  console.log('Desktop CRM 1440x900');
+  let page=await open({width:1440,height:900});
+  const nav=page.locator('.ledger-crm-sidebar');
+  await nav.waitFor({state:'visible',timeout:30000});
+  await check(page,'desktop-crm-navigation','.ledger-crm-sidebar','');
+  await check(page,'crm-command-header','.ledger-crm-topbar','');
+  await page.getByRole('button',{name:'Account menu'}).click();
+  await check(page,'crm-account-dropdown','.ledger-native-account-dropdown','');
+  await page.getByRole('button',{name:'Account menu'}).click();
+  await page.getByRole('button',{name:'Customize',exact:true}).click();
+  await check(page,'crm-customization','.ledger-customize-dialog','');
+  await page.keyboard.press('Escape');
+  await page.mouse.click(700,600,{button:'right'});
+  await check(page,'quick-menu','.qm','');
+  await page.keyboard.press('Escape');
+  if(await page.locator('.ask-dock-fab').count()){
+    await page.click('.ask-dock-fab');
+    await check(page,'ask-dock','.ask-dock','');
+    await page.click('.ask-dock-fab');
+  }
+  await nav.getByRole('button',{name:'People & contacts'}).click();
+  await page.locator('.ledger-directory-table').waitFor({state:'visible',timeout:30000});
+  await check(page,'crm-contact-records','.ledger-ui-panel','');
+  await page.locator('.ledger-directory-actions button[title="Request introduction"]').first().click();
+  await check(page,'request-intro-modal','[role=dialog], .fixed.inset-0 > div','');
+  await page.keyboard.press('Escape');
+  ok(await page.getByRole('dialog', {name:/^Request introduction to /}).count()===0,'Escape dismisses introduction request before workspace navigation');
+  await nav.getByRole('button',{name:'CRM pipeline'}).click();
+  await page.locator('.ledger-workspace-modules').waitFor({state:'visible',timeout:30000});
+  await check(page,'operations-module-navigation','.ledger-workspace-modules','');
+  await check(page,'operations-module-details','.ledger-workspace-detail','');
+  // Keep coverage of the canonical controls hosted inside the CRM frame.
+  const tool = async label => {
+    await page.locator('.ledger-workspace-modules').getByRole('button', { name: label, exact: true }).click();
+    await page.waitForTimeout(500);
+  };
+  await tool('CRM');
+  await check(page,'crm-tabs','[role=tablist][aria-label="CRM sections"]','',{inline:true});
+  await tool('Providers');
+  await check(page,'providers-tabs','.providers-tabs','',{inline:true});
+  await tool('Needs');
+  await check(page,'needs-select-options','main :has(> select)','',{inline:true,field:true});
+  await tool('My profile');
+  await page.evaluate(() => {
+    const details = document.querySelector('details.identity-more');
+    for(let node=details;node;node=node.parentElement?.closest('details')) node.open=true;
+    details?.scrollIntoView({block:'center'});
+  });
+  await check(page,'profile-more-menu','details.identity-more[open] > div','');
+  await page.close();
 
-  console.log('Phone 390x844')
-  page = await open({ width: 390, height: 844 })
-  await check(page, 'mobile-nav', '.specter-app-header', 'm-')
-  await page.getByRole('button', { name: 'Open workspace menu' }).click()
-  await check(page, 'mobile-more-sheet', '.specter-mobile-menu[role=dialog]', 'm-')
-  await page.keyboard.press('Escape')
-  await page.mouse.click(200, 420, { button: 'right' })
-  await check(page, 'mobile-quick-menu', '.qm', 'm-')
-  await page.keyboard.press('Escape')
-  await page.click('.ask-dock-fab')
-  await check(page, 'mobile-ask-dock', '.ask-dock', 'm-')
-  await page.close()
+  console.log('Phone CRM 390x844');
+  page=await open({width:390,height:844});
+  await check(page,'mobile-crm-header','.ledger-crm-topbar','m-');
+  await page.getByRole('button',{name:'Open navigation'}).click();
+  await check(page,'mobile-crm-drawer','.ledger-native-mobile-sidebar','m-');
+  await page.keyboard.press('Escape');
+  await page.mouse.click(200,420,{button:'right'});
+  await check(page,'mobile-quick-menu','.qm','m-');
+  await page.keyboard.press('Escape');
+  if(await page.locator('.ask-dock-fab').count()){
+    await page.click('.ask-dock-fab');
+    await check(page,'mobile-ask-dock','.ask-dock','m-');
+  }
+  await page.close();
 } catch (e) {
   fail++; console.log('  ✗ check crashed:', e.message.split('\n')[0])
 } finally {
