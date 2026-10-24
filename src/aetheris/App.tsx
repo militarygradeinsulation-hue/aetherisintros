@@ -1,3 +1,4 @@
+import { PostShareButton } from './PostShareButton'
 import { NetworkCommentComposer } from './NetworkCommentComposer'
 import { memberPhotoSource } from './member-media'
 import './editorial-media.css'
@@ -581,10 +582,11 @@ function PostCard({ post, member, onOpen }: { post: Post; member: Member | undef
     <footer>
       <small>{post.when} · {post.responses + comments.length + (responded ? 1 : 0)} responses</small>
       <div className="post-actions">
-        <Button kind="quiet" onClick={() => net.togglePostLike(post.id)}><Heart size={14} fill={liked ? 'currentColor' : 'none'} /> {liked ? 'Liked' : 'Like'}</Button>
+        <Button kind="quiet" aria-pressed={liked} onClick={() => net.togglePostLike(post.id)}><Heart size={14} fill={liked ? 'currentColor' : 'none'} /> {liked ? 'Liked' : 'Like'}</Button>
         <Button kind="quiet" onClick={() => setCommenting(value => !value)}><MessageCircle size={14} /> Comment</Button>
         {!mine && <Button kind="quiet" onClick={() => net.togglePostRepost(post.id, post.memberId)}><Repeat2 size={14} /> {reposted ? 'Reposted' : 'Repost'}</Button>}
         <SaveButton saved={net.saved.includes(post.id)} onToggle={() => net.toggleSave(post.id, 'this post')} />
+        {post.visibility !== 'private' && <PostShareButton text={[post.text, post.detail].filter(Boolean).join('\n\n')} />}
         {!mine && member && <Button kind="secondary" onClick={() => { const id = net.respondToPost(post.id, member.id); if (id) nav.goToThread(id) }}>
           {responded ? <><Check size={14} /> Responded</> : <><MessageSquareText size={14} /> Message privately</>}
         </Button>}

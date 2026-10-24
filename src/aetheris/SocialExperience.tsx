@@ -1,3 +1,4 @@
+import { PostShareButton } from './PostShareButton'
 import { JournalMedia } from './journal-media'
 import { NetworkCommentComposer } from './NetworkCommentComposer'
 import { INITIAL_FEED_COUNT, moreFeedCount } from '@/aetheris/feed-window'
@@ -85,7 +86,7 @@ function FeedPost({ post, member, lead = false }: { post: Post; member?: Member;
     <div className="social-feed-copy"><h2>{post.text}</h2><p>{post.detail}</p></div>
     <BusinessDetailsView post={post} />
     <JournalMedia media={post.media} />
-    <footer><button className={liked ? 'active' : ''} onClick={() => net.togglePostLike(post.id)}><Heart size={16} fill={liked ? 'currentColor' : 'none'} />{liked ? 'Liked' : 'Like'}</button><button onClick={() => setCommenting(value => !value)}><MessageCircle size={16} />Comment</button><button onClick={() => net.toggleSave(post.id, 'this Signal')}><Bookmark size={16} />Save</button>{!mine && member && <button onClick={() => { const id = net.respondToPost(post.id, member.id); if (id) nav.goToThread(id) }}><MessageSquareText size={16} />Message</button>}<BusinessActionButton post={post} member={member} /></footer>
+    <footer><button className={liked ? 'active' : ''} aria-pressed={liked} onClick={() => net.togglePostLike(post.id)}><Heart size={16} fill={liked ? 'currentColor' : 'none'} />{liked ? 'Liked' : 'Like'}</button><button onClick={() => setCommenting(value => !value)}><MessageCircle size={16} />Comment</button><button aria-pressed={net.saved.includes(post.id)} onClick={() => net.toggleSave(post.id, 'this Signal')}><Bookmark size={16} fill={net.saved.includes(post.id) ? 'currentColor' : 'none'} />{net.saved.includes(post.id) ? 'Saved' : 'Save'}</button>{post.visibility !== 'private' && <PostShareButton text={[post.text, post.detail].filter(Boolean).join('\n\n')} />}{!mine && member && <button onClick={() => { const id = net.respondToPost(post.id, member.id); if (id) nav.goToThread(id) }}><MessageSquareText size={16} />Message</button>}<BusinessActionButton post={post} member={member} /></footer>
     {(commenting || comments.length > 0) && <div className="social-comments">{comments.map(item => <p key={item.id}><b>{net.profile.name || 'You'}</b>{item.text}<small>{item.when}</small></p>)}{commenting && <NetworkCommentComposer onSubmit={text => net.addPostComment(post.id, text, post.memberId)} />}</div>}
   </article>
 }

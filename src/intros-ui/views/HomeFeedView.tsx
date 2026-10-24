@@ -1,3 +1,4 @@
+import { PostShareButton } from '@/aetheris/PostShareButton';
 import { INITIAL_FEED_COUNT, moreFeedCount } from '@/aetheris/feed-window'
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
@@ -6,7 +7,7 @@ import {
   Bookmark,
   Share2,
   MessageSquare,
-  ThumbsUp,
+  Heart,
   TrendingUp,
   Calendar,
   Sparkles,
@@ -279,7 +280,7 @@ export const HomeFeedView: React.FC<HomeFeedViewProps> = ({
               return (
               <article
                 key={post.id}
-                className="bg-[#0E121A] border border-white/10 rounded-xl p-5 space-y-4 hover:border-white/20 transition-all shadow-sm"
+                className="premium-demo-post bg-[#0E121A] border border-white/10 rounded-xl p-5 space-y-4 hover:border-white/20 transition-all shadow-sm"
               >
                 {/* Author row */}
                 <div className="flex items-start justify-between">
@@ -334,7 +335,7 @@ export const HomeFeedView: React.FC<HomeFeedViewProps> = ({
                 )}
 
                 {/* Post Actions Bar */}
-                <div className="flex items-center justify-between text-xs text-[#9CA3AF] pt-2 border-t border-white/5">
+                <div className="premium-post-actions flex items-center justify-between text-xs text-[#9CA3AF] pt-2 border-t border-white/5">
                   <button
                     aria-label={`Like ${post.authorName}'s post`}
                     aria-pressed={post.isLiked || false}
@@ -343,7 +344,7 @@ export const HomeFeedView: React.FC<HomeFeedViewProps> = ({
                       post.isLiked ? 'text-[#EF4444]' : 'hover:text-white'
                     }`}
                   >
-                    <ThumbsUp className="w-3.5 h-3.5" />
+                    <Heart className="w-3.5 h-3.5" fill={post.isLiked ? 'currentColor' : 'none'} />
                     <span>{post.likes}</span>
                   </button>
 
@@ -359,8 +360,9 @@ export const HomeFeedView: React.FC<HomeFeedViewProps> = ({
                       post.isSaved ? 'text-[#EF4444]' : 'hover:text-white'
                     }`}
                   >
-                    <Bookmark className="w-3.5 h-3.5" />
+                    <Bookmark className="w-3.5 h-3.5" fill={post.isSaved ? 'currentColor' : 'none'} /><span>{post.isSaved ? 'Saved' : 'Save'}</span>
                   </button>
+                  <PostShareButton text={post.content} />
                 </div>
                 {(commenting === post.id || comments[post.id]?.length) && <div className="home-demo-comments">{comments[post.id]?.map((text, index) => <p key={index}><b>Sarah Chen</b> {text}</p>)}{commenting === post.id && <form onSubmit={event => { event.preventDefault(); if (!reply.trim()) return; setComments(current => ({ ...current, [post.id]: [...(current[post.id] || []), reply.trim()] })); setReply(''); }}><input aria-label="Your comment" placeholder="Add a thoughtful reply…" value={reply} onChange={event => setReply(event.target.value)} /><Button size="sm" type="submit" disabled={!reply.trim()}>Reply</Button></form>}</div>}
               </article>
