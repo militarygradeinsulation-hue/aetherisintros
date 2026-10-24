@@ -19,7 +19,7 @@ export interface MacOsDockProps {
 const FAR = 99999, REST = 44, PEAK = 56, RADIUS = 110;
 const EASE = [0.16,1,0.3,1] as const;
 function DockItem({mouseX,reduce,label,hovered,active,badge,onEnter,onClick,children}:{
-  mouseX:MotionValue<number>;reduce:boolean;label:string;hovered:boolean;active:boolean;badge?:number;
+  mouseX:MotionValue<number>;reduce:boolean;label:string;hovered:boolean;active:boolean;badge?:number | undefined;
   onEnter:()=>void;onClick:()=>void;children:React.ReactNode;
 }) {
  const ref=React.useRef<HTMLButtonElement>(null);
