@@ -7,7 +7,7 @@ import {
   Bookmark,
   Share2,
   MessageSquare,
-  ThumbsUp,
+  Heart,
   TrendingUp,
   Calendar,
   Sparkles,
@@ -344,7 +344,7 @@ export const HomeFeedView: React.FC<HomeFeedViewProps> = ({
                       post.isLiked ? 'text-[#EF4444]' : 'hover:text-white'
                     }`}
                   >
-                    <ThumbsUp className="w-3.5 h-3.5" />
+                    <Heart className="w-3.5 h-3.5" fill={post.isLiked ? 'currentColor' : 'none'} />
                     <span>{post.likes}</span>
                   </button>
 
@@ -362,8 +362,8 @@ export const HomeFeedView: React.FC<HomeFeedViewProps> = ({
                   >
                     <Bookmark className="w-3.5 h-3.5" fill={post.isSaved ? 'currentColor' : 'none'} /><span>{post.isSaved ? 'Saved' : 'Save'}</span>
                   </button>
+                  <PostShareButton text={post.content} />
                 </div>
-                <PostShareButton text={post.content} />
                 {(commenting === post.id || comments[post.id]?.length) && <div className="home-demo-comments">{comments[post.id]?.map((text, index) => <p key={index}><b>Sarah Chen</b> {text}</p>)}{commenting === post.id && <form onSubmit={event => { event.preventDefault(); if (!reply.trim()) return; setComments(current => ({ ...current, [post.id]: [...(current[post.id] || []), reply.trim()] })); setReply(''); }}><input aria-label="Your comment" placeholder="Add a thoughtful reply…" value={reply} onChange={event => setReply(event.target.value)} /><Button size="sm" type="submit" disabled={!reply.trim()}>Reply</Button></form>}</div>}
               </article>
             ); })}
