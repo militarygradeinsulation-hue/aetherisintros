@@ -2,6 +2,9 @@ import { ArrowDownRight, ArrowRight, ArrowUpRight } from 'lucide-react'
 import { Link } from '@tanstack/react-router'
 import { useAccess } from './access'
 import { AskIntrosLockup } from './AskIntrosLockup'
+import { CinematicHero } from '@/components/ui/cinematic-landing-hero'
+import { CinematicEntrance } from '@/components/ui/cinematic-entrance'
+import introFilmAsset from '@/assets/aetheris-intro-video.mp4.asset.json'
 import { AppearanceToggle } from './AppearanceToggle'
 import { StencilHeadline } from './StencilHeadline'
 import './editorial-landing.css'
@@ -22,6 +25,7 @@ export default function Landing() {
   const signedIn = access.signedIn
 
   return <main className="ael ael-compact ael--text">
+    <CinematicEntrance videoSrc={introFilmAsset.url} />
     <a className="ael-skip" href="#ael-main">Skip to content</a>
 
     <header className="ael-header" aria-label="Ask Intros public navigation">
@@ -61,6 +65,23 @@ export default function Landing() {
         <span>01 / 03</span>
       </div>
     </section>
+
+    <CinematicHero
+      id="cinematic-experience"
+      brandName="ASK INTROS"
+      tagline1="Each Connection"
+      tagline2="Matters."
+      cardHeading="The next relationship should start with a reason."
+      cardDescription="Share a specific need, discover who can help, and make introductions with mutual consent. An intentional process, not another pile of contacts."
+      metricValue={3}
+      metricLabel="Simple steps"
+      ctaHeading="Every great opportunity begins with a meaningful introduction."
+      ctaDescription="Discover relevant people, know why they matter, and decide together what comes next."
+      primaryHref={signedIn ? '/app' : '/auth?mode=signup'}
+      primaryLabel={signedIn ? 'Open your network' : 'Create your account'}
+      secondaryHref="/try"
+      secondaryLabel="Try the live experience"
+    />
 
     <section className="ael-compact-story" id="experience" aria-labelledby="ael-experience-title">
       <div className="ael-compact-story-main">
