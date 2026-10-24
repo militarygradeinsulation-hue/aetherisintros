@@ -87,6 +87,29 @@ try {
         throw Error('CRM Reset defaults failed');
       await reopened.getByRole('button',{name:'Done'}).click();
       console.log('PASS CRM customizable dashboard '+theme+' '+size.width);
+      if(size.width < 600) {
+        await page.getByRole('button',{name:'More menu',exact:true}).click();
+        await page.getByRole('complementary',{name:'Mobile workspace sidebar'}).getByRole('button',{name:'CRM & Pipeline',exact:true}).click();
+      } else {
+        await page.getByRole('navigation',{name:'Desktop navigation'}).getByRole('button',{name:'CRM & Pipeline',exact:true}).click();
+      }
+      await page.locator('.ops-stats > div').first().waitFor();
+      const cards=await page.locator('.ops-stats > div').evaluateAll(nodes=>nodes.map(el=>({
+        background:getComputedStyle(el).backgroundColor,
+        radius:parseFloat(getComputedStyle(el).borderTopLeftRadius),
+        shadow:getComputedStyle(el).boxShadow,
+        items:[...el.querySelectorAll('strong,small,.eyebrow')].map(n=>({
+          text:n.textContent,foreground:getComputedStyle(n).webkitTextFillColor||getComputedStyle(n).color
+        }))
+      })));
+      for(const card of cards) {
+        if(card.radius<20||card.shadow==='none')throw Error('CRM summary lost Command Dashboard depth '+JSON.stringify(card));
+        for(const item of card.items)if(contrast(item.foreground,card.background)<4.5)
+          throw Error(theme+' '+size.width+' unreadable CRM summary '+JSON.stringify({card,item}));
+      }
+      const tabs=await page.getByRole('tablist',{name:'CRM sections'}).getByRole('tab').evaluateAll(nodes=>nodes.map(el=>({color:getComputedStyle(el).webkitTextFillColor||getComputedStyle(el).color,background:getComputedStyle(el.closest('.content')).backgroundColor})));
+      if(theme==='light')for(const tab of tabs)if(contrast(tab.color,tab.background)<4.5)throw Error('Unreadable CRM tab '+JSON.stringify(tab));
+      console.log('PASS Command CRM card depth and text contrast '+theme+' '+size.width);
       await context.close();
     }
   }

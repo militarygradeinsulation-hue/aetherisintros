@@ -1,0 +1,49 @@
+/* Command Dashboard presentation shared by the existing member controllers.
+   Keep scroll containers, table geometry and overlays owned by their modules. */
+:root body .ix-root.ledger-native-app .ledger-native-content {
+  --command-radius:24px;
+  --command-panel:linear-gradient(145deg,color-mix(in srgb,var(--ledger-crm-ink) 3%,var(--ledger-crm-surface)),var(--ledger-crm-surface));
+}
+:root body .ix-root.ledger-native-app .ledger-native-content :is(.ledger-ui-panel,.ledger-ui-stat,.ledger-workspace-detail,.ledger-workspace-modules,.live-exec-panel,.live-exec-stat,.meetings-card,.pl-card,.pl-import,.module,.specter-card,.home-feed-widget,.sys-tile,.ops-stats > div,.ops-panel,.ops-lane,.ops-empty,.fcrm-card) {
+  border-radius:var(--command-radius)!important;
+  border-color:var(--ledger-crm-border)!important;
+  background-color:var(--ledger-crm-surface)!important;
+  background-image:var(--command-panel)!important;
+  color:var(--ledger-crm-ink);
+  box-shadow:var(--surface-cast)!important;
+}
+.ledger-native-content .ops-stats {gap:14px;background:transparent;border:0}
+:root body .ix-root.ledger-native-app .ledger-native-content :is(.ledger-ui-page-header h1,.ledger-workspace-heading h2,.meetings-head h1,.pl-header h1,.live-exec-head h1,.specter-title h1,.ix-live-messages h1,.ix-messages h1) {
+  font-family:ui-sans-serif,system-ui,sans-serif!important;
+  font-weight:650!important;letter-spacing:-.045em!important;
+}
+:root body .ix-root.ledger-native-app .ledger-native-content :is(.ledger-ui-stat strong,.live-exec-stat strong) {
+  font-family:ui-sans-serif,system-ui,sans-serif!important;
+  font-weight:350;letter-spacing:-.045em;font-variant-numeric:tabular-nums;
+}
+:root body .ix-root.ledger-native-app .ledger-native-content :is(.ledger-ui-button,.ledger-directory-search,.ledger-directory-select,.ledger-directory-actions button,.ledger-intros-filters button,.ledger-workspace-modules button,.ledger-section-options button,.pl-toolbar button,.pl-toolbar input,.specter-search,.specter-mode,.specter-primary,.specter-open-browser) {
+  border-radius:12px!important;
+}
+:root body .ix-root.ledger-native-app .ledger-section-navigation {
+  border-radius:20px;box-shadow:var(--surface-cast);
+  background-color:var(--ledger-crm-surface);
+  background-image:var(--command-panel);
+}
+.ledger-workspace-detail > .ledger-workspace-heading {border-radius:24px 24px 0 0;background:radial-gradient(ellipse at 100% 0,color-mix(in srgb,var(--ledger-crm-accent) 10%,transparent),transparent 70%)}
+.ledger-workspace-body {border-radius:0 0 24px 24px}
+:root body .ix-root.ledger-native-app .ledger-native-content :is(.ix-live-messages,.ix-messages) :is(aside,section,[class*="bg-[var(--msg-panel)]"]) {
+  border-radius:20px!important;box-shadow:var(--surface-cast)!important;
+}
+/* Large reading and editing panes stay still. Only independent summary cards lift. */
+:root body .ix-root.ledger-native-app .ledger-native-content :is(.live-exec-stat,.meetings-card,.pl-card) {transition:translate .2s ease,box-shadow .2s ease}
+@media(hover:hover) and (pointer:fine) {
+  :root body .ix-root.ledger-native-app .ledger-native-content :is(.live-exec-stat,.meetings-card,.pl-card):hover {translate:0 -3px;box-shadow:var(--surface-cast-raised)!important}
+}
+@media(max-width:550px) {
+  :root body .ix-root.ledger-native-app .ledger-native-content {--command-radius:20px}
+  .ledger-workspace-detail > .ledger-workspace-heading {border-radius:20px 20px 0 0}
+  .ledger-workspace-body {border-radius:0 0 20px 20px}
+}
+@media(prefers-reduced-motion:reduce) {
+  :root body .ix-root.ledger-native-app .ledger-native-content :is(.live-exec-stat,.meetings-card,.pl-card) {translate:none!important;transition:none!important}
+}
