@@ -753,3 +753,9 @@
   }
   :root[data-experience="social"] .meetings {background:var(--social-card)!important;border:1px solid var(--social-line)!important;border-radius:24px!important;padding:28px!important;margin:24px 0!important}
 }
+@layer social-experience {
+  :root[data-experience="social"] .social-primary-nav :is(button,summary) {color:var(--social-muted)!important;-webkit-text-fill-color:currentColor!important}
+  :root[data-experience="social"] .social-primary-nav button[aria-current="page"] {color:var(--social-link)!important}
+  :root[data-experience="social"] .ix-root :is(button,a,input,textarea,select,summary) {-webkit-text-fill-color:currentColor!important}
+  :root[data-experience="social"] .appearance-switcher {color:var(--social-muted)!important}
+}
