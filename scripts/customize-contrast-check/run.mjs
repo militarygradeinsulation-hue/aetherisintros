@@ -99,6 +99,16 @@ try {
       await highlights.getByRole('button',{name:'Pause highlights',exact:true}).click();
       const track=highlights.locator('.network-marquee-track').first();
       if(await track.evaluate(el=>getComputedStyle(el).animationPlayState)!=='paused')throw Error('Highlights pause control failed');
+      const pausedWindow=highlights.locator('.network-marquee-window');
+      const pausedScroll=await pausedWindow.evaluate(el=>{
+        const style=getComputedStyle(el);el.scrollTop=10000;
+        return {overflow:style.overflowY,height:el.clientHeight,total:el.scrollHeight,top:el.scrollTop};
+      });
+      if(pausedScroll.overflow!=='auto')throw Error('Paused highlights do not allow manual scrolling');
+      if(pausedScroll.total>pausedScroll.height+1&&pausedScroll.top<=0)throw Error('Paused highlights trap posts below the viewport');
+      if(await track.evaluate(el=>getComputedStyle(el).transform)!=='none')throw Error('Paused highlights leave posts translated outside the scroll range');
+      await pausedWindow.evaluate(el=>el.scrollTop=0);
+
       const first=highlightCards.first();
       const like=first.getByRole('button',{name:/^(Like|Liked)$/});
 
@@ -114,7 +124,9 @@ try {
       const wasSaved=await save.getAttribute('aria-pressed');
       await save.click();
       if(await save.getAttribute('aria-pressed')===wasSaved)throw Error('Highlights did not update shared Save state');
+      await pausedWindow.evaluate(el=>el.scrollTop=10000);
       await highlights.getByRole('button',{name:'Resume highlights',exact:true}).click();
+      await page.waitForFunction(()=>document.querySelector('.network-marquee-window').scrollTop===0);
       await highlights.locator('.network-marquee-window').focus();
       if(await track.evaluate(el=>getComputedStyle(el).animationPlayState)!=='paused')throw Error('Keyboard focus did not pause highlights');
       await page.emulateMedia({reducedMotion:'reduce'});
