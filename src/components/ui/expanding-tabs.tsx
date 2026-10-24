@@ -15,7 +15,7 @@ export type ExpandingTabItem = {
 
 export interface ExpandingTabsProps {
   items?: readonly ExpandingTabItem[];
-  value?: string;
+  value?: string | undefined;
   defaultValue?: string;
   onValueChange?: (id: string) => void;
   ariaLabel?: string;
@@ -92,8 +92,8 @@ export function ExpandingTabs({
             aria-pressed={mode === "navigation" ? active : undefined}
             disabled={item.disabled}
             onClick={() => activate(item.id)}
-            whileHover={reduceMotion || active ? undefined : { scale: 1.045 }}
-            whileTap={reduceMotion ? undefined : { scale: 0.95 }}
+            whileHover={reduceMotion || active ? {} : { scale: 1.045 }}
+            whileTap={reduceMotion ? {} : { scale: 0.95 }}
             transition={reduceMotion ? { duration: 0 } : SPRING}
             className={["ask-expanding-tab", active ? "is-active" : ""].filter(Boolean).join(" ")}>
             <motion.span
