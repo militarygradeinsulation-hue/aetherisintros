@@ -1,5 +1,10 @@
 # Aetheris specification completion
 
+## PR #313 Social reference preview (Oct 24)
+- [ ] Import the reviewed PR presentation files with verified hashes; preserve Business and canonical data controllers.
+- [ ] Run source integrity, focused tests and desktop/mobile Social/Business interaction checks.
+- [ ] Report preview results without merging or publishing; authenticated persistence requires a permitted session.
+
 ## Missing feature database recovery (Oct 22)
 - [x] Compare ten feature contracts with live catalog and existing migration history.
 - [ ] Prepare forward-only recovery for existing schemas/RPCs, retaining collaborative permissions and server-owned scores.
