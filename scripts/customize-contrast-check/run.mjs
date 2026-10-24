@@ -87,6 +87,35 @@ try {
         throw Error('CRM Reset defaults failed');
       await reopened.getByRole('button',{name:'Done'}).click();
       console.log('PASS CRM customizable dashboard '+theme+' '+size.width);
+      await page.getByRole('button',{name:'My board',exact:true}).click();
+      const stack=page.locator('.ledger-member-stack');
+      const memberCards=stack.getByRole('button',{name:/^Select /});
+      if(await memberCards.count()!==3)throw Error('Expected three directory-backed member cards');
+      const chosenName=(await memberCards.first().getAttribute('aria-label')).replace('Select ','');
+      const chosen=stack.getByRole('button',{name:'Select '+chosenName,exact:true});
+      await chosen.focus();
+      await chosen.press('Enter');
+      if(await chosen.getAttribute('aria-pressed')!=='true')throw Error('Keyboard selection did not bring member card forward');
+      if(!(await stack.locator('.ledger-member-stack-detail strong').textContent()).includes(chosenName))throw Error('Member detail does not follow selected card');
+      await page.emulateMedia({reducedMotion:'reduce'});
+      if(await chosen.evaluate(el=>getComputedStyle(el).transitionDuration)!=='0s')throw Error('Card stack ignores reduced motion');
+      await page.emulateMedia({reducedMotion:'no-preference'});
+      // Test actual foreground tokens over the lightest/darkest card gradient stops.
+      const stackColors=await chosen.evaluate(el=>{
+        const style=getComputedStyle(el),root=getComputedStyle(document.querySelector('.ledger-native-app'));
+        const ink=style.webkitTextFillColor||style.color;
+        const sample=document.createElement('span');document.body.append(sample);
+        const colors=['--ledger-crm-raised','--ledger-crm-surface'].map(key=>{
+          sample.style.color=root.getPropertyValue(key);return getComputedStyle(sample).color;
+        });sample.remove();return {ink,colors};
+      });
+      for(const surface of stackColors.colors)if(contrast(stackColors.ink,surface)<4.5)throw Error('Unreadable member card '+JSON.stringify(stackColors));
+      if(await page.evaluate(()=>document.documentElement.scrollWidth-innerWidth)>3)throw Error('Member stack causes viewport overflow');
+      if(process.env.BENTO_SCREENSHOT_DIR)await page.screenshot({path:process.env.BENTO_SCREENSHOT_DIR+'/'+theme+'-'+size.width+'.png'});
+      await stack.getByRole('button',{name:'View profile of '+chosenName,exact:true}).click();
+      await page.getByRole('heading',{name:chosenName,exact:true}).waitFor({timeout:15000});
+      console.log('PASS bento member stack selection, profile navigation, contrast and motion '+theme+' '+size.width);
+
       if(size.width < 600) {
         await page.getByRole('button',{name:'More menu',exact:true}).click();
         await page.getByRole('complementary',{name:'Mobile workspace sidebar'}).getByRole('button',{name:'CRM & Pipeline',exact:true}).click();
