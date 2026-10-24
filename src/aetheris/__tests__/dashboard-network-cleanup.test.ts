@@ -7,7 +7,9 @@ describe('dashboard and network cleanup', () => {
   it('gives Network and Introductions separate destinations instead of a duplicated stack', () => {
     const app = file('../../intros-ui/IntrosApp.tsx')
     expect(app).toContain("activePage === 'people' && (")
-    expect(app).toContain("activePage === 'intros' && (")
+    expect(app).toContain("activePage === 'intros' && experience === 'social'")
+    expect(app).toContain("activePage === 'intros' && experience !== 'social'")
+    expect(app).toContain('<BridgeIntroductions')
     // The old combined branch mounted both surfaces on both routes.
     expect(app).not.toContain("activePage === 'people' || activePage === 'intros'")
     // Introductions keeps a discoverable path back into people search.
