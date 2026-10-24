@@ -5,6 +5,7 @@ import { createRequire } from 'node:module'
 import { createHash } from 'node:crypto'
 import { pathToFileURL } from 'node:url'
 import { checkObservedSecurity } from './observed-security.mjs'
+import { collisionTags, validatePending, reconciliationPlan } from './reconciliation-plan.mjs'
 const require = createRequire(process.env.PGLITE_MODULE_ROOT ? resolve(process.env.PGLITE_MODULE_ROOT, 'package.json') : import.meta.url)
 const { PGlite } = require('@electric-sql/pglite')
 const { pg_trgm } = require(join(require.resolve('@electric-sql/pglite'), '../contrib/pg_trgm.cjs'))
@@ -49,9 +50,23 @@ export function collisionStatus(existing, errorCode, error) {
   return error ? (errorCode === '42P07' && existing.some(name => error === `relation \"${name}\" already exists`) ? 'COLLISION' : 'FAIL') : 'PASS'
 }
 
-export async function replayCatalog({ catalog, repo, pending, security = false }) {
+export async function probeCollision(db, tag, sql) {
+  const created=[...sql.matchAll(/create\s+table\s+(?:if\s+not\s+exists\s+)?public\.(\w+)/gi)].map(m=>m[1])
+  const existing=[]
+  for(const name of created) if((await db.query('SELECT to_regclass($1) AS name',['public.'+name])).rows[0]?.name) existing.push(name)
+  let error, errorCode
+  await db.exec('BEGIN')
+  try { await db.exec(sql) } catch(e) {error=e.message;errorCode=e.code} finally {await db.exec('ROLLBACK')}
+  return {name:tag,existingTables:existing,status:collisionStatus(existing,errorCode,error),error,errorCode,sha256:createHash('sha256').update(sql).digest('hex')}
+}
+
+export async function replayCatalog({ catalog, repo, pending, security = false, ledger }) {
+  const entries = JSON.parse(readFileSync(join(repo,'drizzle/migrations/meta/_journal.json'),'utf8')).entries
+  validatePending(entries, pending)
+  const ledgerPlan = ledger === undefined ? null : reconciliationPlan({repo, ledger, pending})
+  if (ledgerPlan?.selected.some(m=>m.status !== 'PENDING')) throw Error('Supplied ledger does not confirm every selected migration is pending')
   const db = new PGlite({ extensions: { pg_trgm } })
-  const report = { provenance: 'Observed public catalog + SYNTHETIC auth/storage/realtime shell; NOT a full live-schema clone', runtimeVerified: false, baselineComplete: false, catalogSha256:createHash('sha256').update(JSON.stringify(catalog)).digest('hex'), sourceContext:catalog.context??null, catalogCounts: Object.fromEntries(Object.entries(catalog).filter(([,v])=>Array.isArray(v)).map(([k,v])=>[k,v.length])), platformExtensions: catalog.extensions, steps: [], recovery: [], collisions: [] }
+  const report = { provenance: 'Observed public catalog + SYNTHETIC auth/storage/realtime shell; NOT a full live-schema clone', runtimeVerified: false, productionActivationAllowed: false, ledgerPlan, baselineComplete: false, catalogSha256:createHash('sha256').update(JSON.stringify(catalog)).digest('hex'), sourceContext:catalog.context??null, catalogCounts: Object.fromEntries(Object.entries(catalog).filter(([,v])=>Array.isArray(v)).map(([k,v])=>[k,v.length])), platformExtensions: catalog.extensions, steps: [], recovery: [], collisions: [] }
   const run = async step => {
     try { await db.exec('BEGIN'); await db.exec(step.sql); await db.exec('COMMIT'); return { ...step, sql: undefined, status: 'PASS' } }
     catch (e) { await db.exec('ROLLBACK'); return { phase: step.phase, name: step.name, status: 'FAIL', error: String(e.message) } }
@@ -62,8 +77,6 @@ export async function replayCatalog({ catalog, repo, pending, security = false }
     report.steps.push(platform)
     if (platform.status === 'FAIL') return report
     for (const extension of catalog.extensions.filter(e=>e.name==='pg_trgm')) report.steps.push(await run({phase:'extension',name:extension.name,sql:`CREATE EXTENSION IF NOT EXISTS ${ident(extension.name)} WITH SCHEMA ${ident(extension.schema)};`}))
-    const journal = JSON.parse(readFileSync(join(repo,'drizzle/migrations/meta/_journal.json'),'utf8')).entries.map(e=>e.tag)
-    if(pending.some(tag=>!journal.includes(tag))) throw Error('Recovery tags must be present in the unchanged migration journal')
     const all = catalogSteps(catalog)
     const roles = new Set([...catalog.relation_grants, ...catalog.column_grants, ...catalog.function_grants].map(g=>g.role).filter(r=>r !== 'PUBLIC' && r !== 'public'))
     for (const role of roles) if (!(await db.query('SELECT 1 FROM pg_roles WHERE rolname=$1',[role])).rows.length) report.steps.push(await run({phase:'role',name:role,sql:`CREATE ROLE ${ident(role)};`}))
@@ -83,20 +96,14 @@ export async function replayCatalog({ catalog, repo, pending, security = false }
       const sql=readFileSync(join(repo,'drizzle/migrations',tag+'.sql'),'utf8')
       const result=await run({phase:'recovery',name:tag,sql})
       report.recovery.push({...result,sha256:createHash('sha256').update(sql).digest('hex')})
-      if(result.status === 'FAIL') break
+      if(result.status === 'FAIL') return report
     }
-    for (const tag of ['0082_business_lobby','0090_shared_opportunity_exchange','0092_basic_executive_membership']) {
+    for (const tag of collisionTags) {
       // Probe separately and always roll back, including a successful statement.
       const sql=readFileSync(join(repo,'drizzle/migrations',tag+'.sql'),'utf8')
-      const created=[...sql.matchAll(/create\s+table\s+(?:if\s+not\s+exists\s+)?public\.(\w+)/gi)].map(m=>m[1])
-      const existing=[]
-      for(const name of created) if((await db.query('SELECT to_regclass($1) AS name',['public.'+name])).rows[0]?.name) existing.push(name)
-      let error, errorCode
-      await db.exec('BEGIN')
-      try { await db.exec(sql) } catch(e) {error=e.message;errorCode=e.code} finally {await db.exec('ROLLBACK')}
-      report.collisions.push({name:tag,existingTables:existing,status:collisionStatus(existing,errorCode,error),error,errorCode})
+      report.collisions.push(await probeCollision(db,tag,sql))
     }
-    if(security && report.recovery.every(s=>s.status==='PASS')) report.security=await checkObservedSecurity(db,repo)
+    if(security && report.collisions.every(s=>s.status!=='FAIL')) report.security=await checkObservedSecurity(db,repo)
     return report
   } finally { await db.close() }
 }
@@ -104,8 +111,8 @@ export async function replayCatalog({ catalog, repo, pending, security = false }
 if (process.argv[1] && import.meta.url === pathToFileURL(resolve(process.argv[1])).href) {
   const args=process.argv.slice(2),value=k=>args[args.indexOf(k)+1]
   if(!args.includes('--catalog') || !args.includes('--pending') || !args.includes('--report')) throw Error('Required: --catalog structure.json --pending tags.json --report report.json [--repo path]')
-  const report=await replayCatalog({catalog:JSON.parse(readFileSync(value('--catalog'),'utf8')),pending:JSON.parse(readFileSync(value('--pending'),'utf8')),repo:resolve(args.includes('--repo')?value('--repo'):'.'),security:args.includes('--security')})
+  const report=await replayCatalog({catalog:JSON.parse(readFileSync(value('--catalog'),'utf8')),pending:JSON.parse(readFileSync(value('--pending'),'utf8')),repo:resolve(args.includes('--repo')?value('--repo'):'.'),security:args.includes('--security'),ledger:args.includes('--ledger')?JSON.parse(readFileSync(value('--ledger'),'utf8')):undefined})
   writeFileSync(value('--report'),JSON.stringify(report,null,2)+'\n')
-  console.log(JSON.stringify({provenance:report.provenance,engineVersion:report.engineVersion,catalogSha256:report.catalogSha256,baselineComplete:report.baselineComplete,counts:report.catalogCounts,failures:report.steps.filter(s=>s.status==='FAIL'),recovery:report.recovery,collisions:report.collisions,security:report.security},null,2))
-  if(!report.baselineComplete || report.recovery.some(s=>s.status==='FAIL') || report.security?.fail || report.collisions.some(c=>c.status==='FAIL')) process.exitCode=2
+  console.log(JSON.stringify({provenance:report.provenance,productionActivationAllowed:report.productionActivationAllowed,ledgerPlan:report.ledgerPlan,engineVersion:report.engineVersion,catalogSha256:report.catalogSha256,baselineComplete:report.baselineComplete,counts:report.catalogCounts,failures:report.steps.filter(s=>s.status==='FAIL'),recovery:report.recovery,collisions:report.collisions,security:report.security},null,2))
+  if(!report.baselineComplete || report.recovery.some(s=>s.status==='FAIL') || report.security?.fail || report.collisions.some(c=>c.status==='FAIL') || report.ledgerPlan?.blockers.length) process.exitCode=2
 }

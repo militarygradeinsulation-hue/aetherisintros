@@ -6,7 +6,8 @@ export default async ({ ok, as, svc, ADMIN }) => {
   await svc(`insert into auth.users(id,email,email_confirmed_at) values
     ('${U}','basic@test.invalid',null),('${V}','peer@test.invalid',now())`)
   await svc(`insert into public.profiles(id,name,onboarded,visibility) values
-    ('${U}','Basic User',true,'network'),('${V}','Peer Member',true,'network')`)
+    ('${U}','Basic User',true,'network'),('${V}','Peer Member',true,'network')
+    on conflict(id) do update set name=excluded.name,onboarded=excluded.onboarded,visibility=excluded.visibility`)
   await svc(`insert into public.early_access_members(user_id,email,status) values
     ('${V}','peer@test.invalid','approved')`)
   let q = await as(U,'select public.claim_basic_membership()')
