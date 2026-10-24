@@ -24,7 +24,7 @@
   box-shadow:var(--glass-shadow)!important;
 }
 :root body .ix-root.ledger-native-app .ledger-widget-board {--widget-radius:var(--glass-radius)}
-:root body .ix-root.ledger-native-app .ledger-crm-shell :is(button,input:not([type="checkbox"]):not([type="radio"]):not([type="range"]),select,textarea,.ledger-native-nav-item,.ledger-native-search) {border-radius:14px!important}
+:root body .ix-root.ledger-native-app .ledger-crm-shell :is(button,input:not([type="checkbox"]):not([type="radio"]):not([type="range"]),select,textarea,.ledger-native-nav-item,.ledger-native-search,.ledger-native-auth-shortcut) {border-radius:14px!important}
 :root body .ix-root.ledger-native-app .ledger-crm-shell :is(.ledger-native-count,.ai-gradient-button) {border-radius:999px!important}
 :root body .ix-root.ledger-native-app .ledger-crm-shell :is(.ledger-native-account-dropdown,.ledger-section-navigation,[role="dialog"],[role="menu"]) {
   border-radius:22px!important;
@@ -116,3 +116,8 @@
 :root body .ix-root.ledger-native-app .ledger-feed-entry > header strong {font-size:14px}
 :root body .ix-root.ledger-native-app .ledger-feed-entry > footer {margin-top:18px}
 @media(max-width:600px) {:root body .ix-root.ledger-native-app .ledger-feed-items {padding:10px;gap:14px}}
+
+:root body .ix-root.ledger-native-app .ledger-feed-entry > .ledger-feed-badge {display:inline-block;margin-top:12px;font-size:10px}
+@media(prefers-reduced-transparency:reduce) {
+  :root body :is(.ix-root,.app-shell,.ask-os) :is(.social-feed-card,.post-card,.premium-demo-post,.ledger-feed-entry) {background-color:var(--glass-solid)!important}
+}

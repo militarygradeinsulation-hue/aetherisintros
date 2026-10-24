@@ -148,6 +148,7 @@ export function LedgerDashboard({
                     <div><strong>{post.authorName}</strong><p>{post.authorTitle} · {post.authorCompany}</p></div>
                     <time>{post.timeAgo}</time>
                   </header>
+                  {post.badge && <span className="ledger-feed-badge">{post.badge}</span>}
                   <p className="ledger-feed-content">{post.content}</p>
                   {post.image && <img className="ledger-post-photo" src={post.image.src} alt={post.image.alt} loading="lazy"/>}
                   <footer>
