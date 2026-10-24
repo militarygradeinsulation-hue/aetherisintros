@@ -1,0 +1,16 @@
+/* Restore semantic chart colors without changing the stencil treatment elsewhere. */
+:root .fcrm .fcrm-dashboard-views{display:flex;justify-content:flex-end;gap:5px;margin:0 0 16px;flex-wrap:wrap}
+:root .fcrm .fcrm-dashboard-views button{background:#172036!important;border:1px solid #465470!important;color:#EEF2FA!important;
+ padding:9px 13px;border-radius:12px!important;font:600 12px Inter,system-ui,sans-serif!important;cursor:pointer}
+:root .fcrm .fcrm-dashboard-views button[aria-pressed="true"]{background:#E7ECF6!important;color:#141C2A!important;border-color:#fff!important}
+:root .fcrm .fcrm-dashboard-views button:focus-visible{outline:3px solid #FB7185!important;outline-offset:3px}
+:root .fcrm-chart{min-width:0;width:100%}
+body .fcrm-chart .recharts-wrapper svg,body .fcrm-chart .recharts-surface,
+body .fcrm-chart :is(.recharts-sector,.recharts-bar-rectangle){filter:none!important}
+body .fcrm-chart .recharts-cartesian-grid line{stroke:rgba(148,163,184,.23)!important}
+body .fcrm-chart .recharts-cartesian-axis-tick text{fill:#CBD5E1!important}
+@media(max-width:520px){
+ :root .fcrm .fcrm-dashboard-views{justify-content:stretch}
+ :root .fcrm .fcrm-dashboard-views button{flex:1 1 0}
+ body .fcrm-chart .recharts-cartesian-axis-tick text{font-size:10px}
+}
