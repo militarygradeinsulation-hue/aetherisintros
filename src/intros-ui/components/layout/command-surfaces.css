@@ -7,7 +7,8 @@
 :root body .ix-root.ledger-native-app .ledger-native-content :is(.ledger-ui-panel,.ledger-ui-stat,.ledger-workspace-detail,.ledger-workspace-modules,.live-exec-panel,.live-exec-stat,.meetings-card,.pl-card,.pl-import,.module,.specter-card,.home-feed-widget,.sys-tile,.ops-stats > div,.ops-panel,.ops-lane,.ops-empty,.fcrm-card) {
   border-radius:var(--command-radius)!important;
   border-color:var(--ledger-crm-border)!important;
-  background:var(--command-panel)!important;
+  background-color:var(--ledger-crm-surface)!important;
+  background-image:var(--command-panel)!important;
   color:var(--ledger-crm-ink);
   box-shadow:var(--surface-cast)!important;
 }
@@ -25,7 +26,8 @@
 }
 :root body .ix-root.ledger-native-app .ledger-section-navigation {
   border-radius:20px;box-shadow:var(--surface-cast);
-  background:var(--command-panel,var(--ledger-crm-surface));
+  background-color:var(--ledger-crm-surface);
+  background-image:var(--command-panel);
 }
 .ledger-workspace-detail > .ledger-workspace-heading {border-radius:24px 24px 0 0;background:radial-gradient(ellipse at 100% 0,color-mix(in srgb,var(--ledger-crm-accent) 10%,transparent),transparent 70%)}
 .ledger-workspace-body {border-radius:0 0 24px 24px}
