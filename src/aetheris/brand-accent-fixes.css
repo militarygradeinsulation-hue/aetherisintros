@@ -16,7 +16,7 @@
 :root[data-theme="light"] {--amber:#B91C1C;--gold:#B91C1C;--tile-hover:#B91C1C;}
 :root .ael {--ael-gold:var(--ask-orange);}
 
-/* Exact Ask Intros mark: the top dots, connector line and wordmark rule stay yellow. */
+/* Ask Intros mark: a proprietary three-person bridge, with strong light and dark contrast. */
 :root .ask-intros-lockup__symbol line,
 :root .ael .ael-header .ask-intros-lockup__symbol line {
   stroke:var(--ask-logo-yellow)!important;
@@ -113,3 +113,10 @@
 :root .appearance-liquid-toggle[data-state="checked"] .appearance-liquid-toggle__thumb {
   background:#fff!important;transform:translateX(26px)!important;
 }
+
+/* Identity: the proprietary three-point connection A (not the stock AI sparkle). */
+:root .ask-intros-mark {display:inline-block;vertical-align:middle;flex-shrink:0}
+:root .ask-intros-lockup__symbol .ask-intros-mark{color:var(--soft,#F6F2EE);--ask-mark-accent:#EF4444}
+:root .ael .ael-header .ask-intros-lockup__symbol .ask-intros-mark{color:#202420}
+:root .ask-dock-fab .ask-intros-mark{color:#FFF9F3!important;--ask-mark-accent:#FFD8D8}
+:root .ask-dock-mark .ask-intros-mark{color:#FFF9F3;--ask-mark-accent:#EF4444}

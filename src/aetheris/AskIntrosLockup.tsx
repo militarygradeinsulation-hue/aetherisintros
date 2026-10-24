@@ -1,3 +1,4 @@
+import { AskIntrosMark } from '@/aetheris/AskIntrosMark'
 import { useId } from 'react'
 
 type AskIntrosLockupProps = {
@@ -19,10 +20,7 @@ export function AskIntrosLockup({ variant = 'compact', className = '' }: AskIntr
     >
       <title id={titleId}>Ask Intros — Why me, why them, why now</title>
       <g className="ask-intros-lockup__symbol" aria-hidden="true">
-        <line x1="72" y1="68" x2="145" y2="27" />
-        <circle className="ask-intros-lockup__node ask-intros-lockup__node--left" cx="67" cy="71" r="10" />
-        <circle className="ask-intros-lockup__node ask-intros-lockup__node--top" cx="151" cy="23" r="10" />
-        <circle className="ask-intros-lockup__node ask-intros-lockup__node--lower" cx="161" cy="83" r="8" />
+        <AskIntrosMark x={35} y={-25} size={144} />
       </g>
 
       <text className="ask-intros-lockup__ask" x="14" y="157">ASK</text>

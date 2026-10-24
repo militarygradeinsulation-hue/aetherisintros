@@ -1,3 +1,4 @@
+import { AskIntrosMark } from '@/aetheris/AskIntrosMark'
 import { useEffect, useRef, useState } from 'react'
 import { ArrowUp, Mic, MicOff, Radio, Volume2, VolumeX, X } from 'lucide-react'
 import { ThinkingOrb } from '@/components/ui/thinking-orbs'
@@ -22,7 +23,7 @@ import {
   unlockAudio,
 } from './voice'
 function AetherisGlyph({ size = 18 }: { size?: number }) {
-  return <span className="aetheris-glyph" style={{ width: size, height: size }} aria-hidden="true"><i /><b /></span>
+  return <AskIntrosMark size={size} />
 }
 
 export type { AskIntrosAction }

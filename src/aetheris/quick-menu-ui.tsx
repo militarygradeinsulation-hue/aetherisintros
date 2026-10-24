@@ -1,3 +1,4 @@
+import { AskIntrosMark } from '@/aetheris/AskIntrosMark'
 /**
  * Quick Menu: right-click anywhere in the app for the actions you use most, plus a few that fit
  * what you clicked (a member, a link, selected text). Members choose and order their own items
@@ -6,7 +7,7 @@
  */
 import {
   ArrowDown, ArrowUp, Bot, Briefcase, CalendarDays, Copy, ExternalLink, HandHelping, Handshake, Home, Lightbulb,
-  Link2, MessageSquareText, Mic, Newspaper, NotebookPen, Route, Search, Settings2, Sparkles, UserRound, UsersRound, Video, X,
+  Link2, MessageSquareText, Mic, Newspaper, NotebookPen, Route, Search, Settings2, UserRound, UsersRound, Video, X,
 } from 'lucide-react'
 import { useCallback, useEffect, useLayoutEffect, useRef, useState, type ReactNode } from 'react'
 
@@ -21,7 +22,7 @@ const db = supabase as any // eslint-disable-line @typescript-eslint/no-explicit
 
 /** The Ask Intros assistant's mark, sized like the menu's other icons. */
 function AssistantGlyph({ size = 14 }: { size?: number }) {
-  return <span className="aetheris-glyph qm-glyph" style={{ width: size, height: size }} aria-hidden="true"><i /><b /></span>
+  return <AskIntrosMark size={size} className="qm-glyph" />
 }
 
 /** Opens the Ask Intros assistant (AskIntrosDock): optionally with a question typed in, at a point
@@ -35,7 +36,7 @@ const short = (text: string, n = 28) => (text.length > n ? `${text.slice(0, n - 
 const CACHE_KEY = 'aetheris.quickmenu.v1'
 
 const ICONS: Record<string, typeof Home> = {
-  'new-ask': Lightbulb, people: Search, intros: Sparkles, messages: MessageSquareText, meetings: Video,
+  'new-ask': Lightbulb, people: Search, intros: Handshake, messages: MessageSquareText, meetings: Video,
   warmpaths: Route, events: CalendarDays, peergroups: UsersRound, providers: HandHelping, calendar: CalendarDays,
   crm: Briefcase, deals: Handshake, workspaces: Briefcase, storefront: Handshake, agentinbox: Bot, home: Home, news: Newspaper, insights: Lightbulb, profile: UserRound, settings: Settings2,
 }
