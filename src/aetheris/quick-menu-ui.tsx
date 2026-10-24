@@ -1,3 +1,4 @@
+import { AskIntrosMark } from '@/aetheris/AskIntrosMark'
 /**
  * Quick Menu: right-click anywhere in the app for the actions you use most, plus a few that fit
  * what you clicked (a member, a link, selected text). Members choose and order their own items
@@ -6,7 +7,7 @@
  */
 import {
   ArrowDown, ArrowUp, Bot, Briefcase, CalendarDays, Copy, ExternalLink, HandHelping, Handshake, Home, Lightbulb,
-  Link2, MessageSquareText, Mic, Newspaper, NotebookPen, Route, Search, Settings2, Sparkles, UserRound, UsersRound, Video, X,
+  Link2, MessageSquareText, Mic, Newspaper, NotebookPen, Route, Search, Settings2, UserRound, UsersRound, Video, X,
 } from 'lucide-react'
 import { useCallback, useEffect, useLayoutEffect, useRef, useState, type ReactNode } from 'react'
 
@@ -21,7 +22,7 @@ const db = supabase as any // eslint-disable-line @typescript-eslint/no-explicit
 
 /** The Ask Intros assistant's mark, sized like the menu's other icons. */
 function AssistantGlyph({ size = 14 }: { size?: number }) {
-  return <span className="aetheris-glyph qm-glyph" style={{ width: size, height: size }} aria-hidden="true"><i /><b /></span>
+  return <AskIntrosMark size={size} className="qm-glyph" />
 }
 
 /** Opens the Ask Intros assistant (AskIntrosDock): optionally with a question typed in, at a point
@@ -35,7 +36,7 @@ const short = (text: string, n = 28) => (text.length > n ? `${text.slice(0, n - 
 const CACHE_KEY = 'aetheris.quickmenu.v1'
 
 const ICONS: Record<string, typeof Home> = {
-  'new-ask': Lightbulb, people: Search, intros: Sparkles, messages: MessageSquareText, meetings: Video,
+  'new-ask': Lightbulb, people: Search, intros: Handshake, messages: MessageSquareText, meetings: Video,
   warmpaths: Route, events: CalendarDays, peergroups: UsersRound, providers: HandHelping, calendar: CalendarDays,
   crm: Briefcase, deals: Handshake, workspaces: Briefcase, storefront: Handshake, agentinbox: Bot, home: Home, news: Newspaper, insights: Lightbulb, profile: UserRound, settings: Settings2,
 }
@@ -140,7 +141,7 @@ export function QuickMenuHost(props: Props) {
       }
       if (member) {
         if (onOpenMember) context.push({ key: 'open-member', label: `Open ${member.name}`, icon: UserRound, run: () => onOpenMember(member.id) })
-        if (onRequestIntro) context.push({ key: 'intro-member', label: `Request intro to ${member.name}`, icon: Sparkles, run: () => onRequestIntro(member.id) })
+        if (onRequestIntro) context.push({ key: 'intro-member', label: `Request intro to ${member.name}`, icon: Handshake, run: () => onRequestIntro(member.id) })
       }
       const link = el?.closest('a[href]') as HTMLAnchorElement | null
       if (link && /^https?:/i.test(link.href)) {
@@ -204,7 +205,7 @@ export function QuickMenuHost(props: Props) {
         <hr />
       </>}
       {chosen.length
-        ? chosen.map(a => <MenuItem key={a.id} icon={ICONS[a.id] ?? Sparkles} label={a.label} onClick={() => run(() => onGo(a.target))} />)
+        ? chosen.map(a => <MenuItem key={a.id} icon={ICONS[a.id] ?? Handshake} label={a.label} onClick={() => run(() => onGo(a.target))} />)
         : <p className="qm-empty">Your menu is empty.</p>}
       <hr />
       <MenuItem icon={Settings2} label="Customize this menu…" onClick={() => run(() => setEditing(true))} />
@@ -247,7 +248,7 @@ function QuickMenuEditor({ items, onClose, onSave, onReset }: { items: string[];
         <ol className="qm-list">
           {draft.map((id, i) => {
             const a = quickAction(id)!
-            const Icon = ICONS[id] ?? Sparkles
+            const Icon = ICONS[id] ?? Handshake
             return <li key={id}>
               <Icon size={14} aria-hidden /><span><b>{a.label}</b><small>{a.hint}</small></span>
               <button type="button" aria-label={`Move ${a.label} up`} disabled={i === 0} onClick={() => setDraft(d => moveItem(d, id, -1))}><ArrowUp size={13} /></button>
@@ -261,7 +262,7 @@ function QuickMenuEditor({ items, onClose, onSave, onReset }: { items: string[];
         <h4>Add</h4>
         <div className="qm-add">
           {unchosen.map(a => {
-            const Icon = ICONS[a.id] ?? Sparkles
+            const Icon = ICONS[a.id] ?? Handshake
             return <button key={a.id} type="button" disabled={draft.length >= MAX_QUICK_ITEMS} onClick={() => setDraft(d => toggleItem(d, a.id))} title={a.hint}>
               <Icon size={13} aria-hidden /> {a.label}
             </button>

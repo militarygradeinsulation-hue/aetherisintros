@@ -759,3 +759,13 @@
   :root[data-experience="social"] .ix-root :is(button,a,input,textarea,select,summary) {-webkit-text-fill-color:currentColor!important}
   :root[data-experience="social"] .appearance-switcher {color:var(--social-muted)!important}
 }
+@layer social-experience {
+  :root[data-experience="social"] .ledger-native-quick-dock {display:none!important}
+  :root[data-experience="social"] .ask-expanding-tabs {
+    --et-bg:var(--social-card)!important;--et-active:var(--social-wash)!important;
+    --et-idle:var(--social-card)!important;--et-ink:var(--social-link)!important;--et-muted:var(--social-muted)!important;
+    background:var(--social-card)!important;border-color:var(--social-line)!important;
+  }
+  :root[data-experience="social"] .ask-expanding-tabs .ask-expanding-tab.is-active {border-color:var(--social-blue)!important;background:var(--social-wash)!important;color:var(--social-link)!important}
+  :root[data-experience="social"] .ask-expanding-badge {background:var(--social-button)!important}
+}

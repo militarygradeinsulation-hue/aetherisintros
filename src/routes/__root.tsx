@@ -33,6 +33,8 @@ import editorialCopyContrastCss from "../aetheris/editorial-copy-contrast.css?ur
 import siteReadabilityCss from "../aetheris/site-readability.css?url";
 import mobileFitReadabilityCss from "../aetheris/mobile-fit-readability.css?url";
 import mobileSiteCss from "../aetheris/mobile-site.css?url";
+import financeBentoCss from "../components/ui/finance-bento.css?url";
+import financeChartsCss from "../aetheris/ledger/finance-charts.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 import { installClientErrorReporting, reportClientError } from "../lib/error-report";
 import { registerServiceWorker } from "../aetheris/push-client";
@@ -139,7 +141,10 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { rel: "stylesheet", href: mobileFitReadabilityCss },
       // CRM theme last: preserves production safeguards while consistently replacing orange accents.
       { rel: "stylesheet", href: absoluteLedgerThemeCss },
-      { rel: "icon", type: "image/png", href: "/favicon.png" },
+      { rel: "stylesheet", href: financeBentoCss },
+      { rel: "stylesheet", href: financeChartsCss },
+      { rel: "icon", type: "image/svg+xml", href: "/ask-intros-mark.svg" },
+      { rel: "icon", type: "image/png", href: "/favicon.png", sizes: "64x64" },
       { rel: "apple-touch-icon", href: "/apple-touch-icon.png", sizes: "180x180" },
       { rel: "manifest", href: "/manifest.webmanifest" },
     ],

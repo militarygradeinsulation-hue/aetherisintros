@@ -7,7 +7,6 @@ import {
   type LucideIcon,
 } from 'lucide-react';
 import type { ActivePage } from './TopNavigation';
-import logoAsset from '@/assets/aetheris-logo.jpg.asset.json';
 import '../../views/specter-app.css';
 
 type WorkspaceDestination = {
@@ -253,7 +252,7 @@ export function AetherisWorkspaceShell({
         <PanelLeftOpen size={18}/>
       </button>}
       <button className="specter-app-brand" aria-label="Ask Intros dashboard" onClick={() => onNavigate('home')}>
-        <img src={logoAsset.url} alt=""/>
+        <img src="/ask-intros-mark.svg" alt=""/>
         <span><strong>ASK <b>INTROS</b></strong><small>AETHERIS WORKSPACE</small></span>
       </button>
       <nav className="specter-header-links" aria-label="Workspace shortcuts">

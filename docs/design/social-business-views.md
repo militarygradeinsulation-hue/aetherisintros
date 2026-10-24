@@ -1,6 +1,7 @@
 # Social and Business views
 
 Branch base: `aetherisintros/main` at `61b500c8571b09aa5eda880f8dbed6565bcb7fb4`.
+Latest main reconciled without replacing either view: `840d6a713956f4a9b25c7ec62256784ce1e5995a` (branding, cinematic landing, expanding tabs, desktop dock and CRM Finance Bento).
 Social visual reference: `aetheris-bridge/design/absolute-ledger-bridge-20261023` at `2d20c664f51e4777c8bb8750ee36ede141d8a75f`.
 
 The member shell offers Social and Business presentation choices. Business remains the default for existing visitors. The device preference is stored in `ask-intros.experience.v1`; the separate light/dark preference remains unchanged (dark by default).

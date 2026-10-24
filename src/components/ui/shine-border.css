@@ -1,0 +1,11 @@
+/* ShineBorder for Tailwind v4: no tailwind.config.js or next-themes needed. */
+.ask-shine-border{position:relative;display:flex;align-items:stretch;min-width:0;isolation:isolate;border-radius:var(--shine-radius)!important}
+.ask-shine-border::before{content:"";position:absolute;inset:0;z-index:1;pointer-events:none;will-change:background-position;
+border-radius:inherit!important;padding:var(--shine-width);
+background:linear-gradient(105deg,transparent 10%,var(--shine-start) 34%,var(--shine-middle) 51%,var(--shine-end) 67%,transparent 90%);
+background-size:300% 300%;animation:ask-shine-travel var(--shine-duration) linear infinite;
+-webkit-mask:linear-gradient(#fff 0 0) content-box,linear-gradient(#fff 0 0);
+-webkit-mask-composite:xor;mask-composite:exclude}
+.ask-shine-border>*{position:relative;min-width:0}
+@keyframes ask-shine-travel{0%{background-position:0% 20%}50%{background-position:100% 80%}100%{background-position:0% 20%}}
+@media(prefers-reduced-motion:reduce){.ask-shine-border::before{animation:none;background-position:50% 50%;will-change:auto}}

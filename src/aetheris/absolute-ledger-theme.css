@@ -474,3 +474,6 @@
 /* Privacy/context captions retain AA contrast on the CRM's actual card surface. */
 :root[data-theme="dark"] body .ix-root.ledger-native-app .page-proof {color:#fca5a5!important;-webkit-text-fill-color:#fca5a5!important;opacity:1!important}
 :root[data-theme="light"] body .ix-root.ledger-native-app .page-proof {color:#991b1b!important;-webkit-text-fill-color:#991b1b!important;opacity:1!important}
+
+/* White bridge glyph stays visible over the red assistant button. */
+:root[data-theme] body .ix-root.ix-absolute-ledger .ask-dock-fab .ask-intros-mark{color:#FFF9F3!important;--ask-mark-accent:#FFD8D8}

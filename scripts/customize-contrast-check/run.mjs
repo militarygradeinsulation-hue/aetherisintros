@@ -178,6 +178,16 @@ try {
       } else {
         await page.getByRole('navigation',{name:'Desktop navigation'}).getByRole('button',{name:'CRM & Pipeline',exact:true}).click();
       }
+      const liveBento = page.locator('.ask-crm-bento');
+      await liveBento.waitFor({state:'visible',timeout:25000});
+      const visibleTiles = liveBento.locator('.ask-crm-bento-tile');
+      if(await visibleTiles.count()!==6)throw Error('The canonical CRM must display six live operational bento tiles');
+      const visual = await liveBento.locator('.recharts-wrapper svg').first().evaluate(el => ({
+        filter:getComputedStyle(el).filter,
+        colors:[...el.querySelectorAll('.recharts-area-curve,.recharts-bar-rectangle')]
+          .map(node=>getComputedStyle(node).stroke+' '+getComputedStyle(node).fill)
+      })).catch(()=>null);
+      if(visual && visual.filter!=='none')throw Error('Live CRM chart is desaturated '+JSON.stringify(visual));
       await page.locator('.ops-stats > div').first().waitFor();
       const cards=await page.locator('.ops-stats > div').evaluateAll(nodes=>nodes.map(el=>({
         background:getComputedStyle(el).backgroundColor,
