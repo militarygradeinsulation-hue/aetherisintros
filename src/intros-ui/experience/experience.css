@@ -46,8 +46,8 @@
   color: white;
 }
 @media (max-width: 720px) {
-  .ledger-crm-topbar {
-    flex-wrap: wrap !important;
+  .ledger-crm-topbar > .experience-switch {
+    display: none !important;
   }
   .experience-switch {
     order: 10;
