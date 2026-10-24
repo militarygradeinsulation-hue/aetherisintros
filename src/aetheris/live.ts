@@ -347,15 +347,15 @@ export async function uploadJournalMedia(userId: string, file: File) {
   return { path, kind, name: file.name, mime: file.type, size: file.size }
 }
 
-const journalUrls = new Map<string, string>()
+const journalUrls = new Map<string, { url: string; expires: number }>()
 
 /** Short-lived signed URL for a private Journal file, cached in memory. */
 export async function journalUrl(path: string): Promise<string | null> {
   const cached = journalUrls.get(path)
-  if (cached) return cached
+  if (cached && cached.expires > Date.now()) return cached.url
   const { data, error } = await supabase.storage.from('journal').createSignedUrl(path, 60 * 60)
   if (error || !data?.signedUrl) return null
-  journalUrls.set(path, data.signedUrl)
+  journalUrls.set(path, { url: data.signedUrl, expires: Date.now() + 55 * 60 * 1000 })
   return data.signedUrl
 }
 

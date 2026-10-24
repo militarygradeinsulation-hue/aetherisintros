@@ -10,6 +10,7 @@ interface Highlight {
   id: string; authorId: string; name: string; role: string; text: string;
   when: string; kind: string; liked: boolean; saved: boolean;
   media?: JournalAttachment[] | undefined;
+  image?: FeedPost['image'] | undefined;
 }
 
 /** Presentation only: all live records and writes stay in the canonical provider. */
@@ -45,7 +46,7 @@ export function NetworkHighlights({ live, posts, active, onReadFeed, onOpenAutho
   }) : posts.slice(0, 12).map(post => ({
     id: post.id, authorId: post.authorId, name: post.authorName,
     role: [post.authorTitle, post.authorCompany].filter(Boolean).join(' · '), text: post.content,
-    when: post.timeAgo, kind: post.badge || 'Update', liked: !!post.isLiked, saved: !!post.isSaved,
+    image: post.image, when: post.timeAgo, kind: post.badge || 'Update', liked: !!post.isLiked, saved: !!post.isSaved,
   }));
   const unavailable = live && (net.feedError || !!net.networkLoadError);
   const loading = live && !net.synced;
@@ -58,6 +59,7 @@ export function NetworkHighlights({ live, posts, active, onReadFeed, onOpenAutho
     </button><span className="network-highlight-kind">{post.kind}</span></header>
     <p>{post.text}</p>
     <JournalMedia media={post.media}/>
+    {post.image && <img className="ledger-post-photo" src={post.image.src} alt={post.image.alt} loading="lazy"/>}
     <footer><time>{post.when}</time><div>
       <button type="button" aria-pressed={post.liked} onClick={() => live ? net.togglePostLike(post.id) : onLikePost(post.id)}><Heart size={14} aria-hidden="true"/>{post.liked ? 'Liked' : 'Like'}</button>
       <button type="button" aria-pressed={post.saved} onClick={() => live ? net.toggleSave(post.id, 'this post') : onSavePost(post.id)}><Bookmark size={14} aria-hidden="true"/>{post.saved ? 'Saved' : 'Save'}</button>

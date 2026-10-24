@@ -1,3 +1,4 @@
+import { JournalMedia } from './journal-media'
 import { NetworkCommentComposer } from './NetworkCommentComposer'
 import { INITIAL_FEED_COUNT, moreFeedCount } from '@/aetheris/feed-window'
 import { useMemo, useState } from 'react'
@@ -83,7 +84,7 @@ function FeedPost({ post, member, lead = false }: { post: Post; member?: Member;
     <header>{member ? <button onClick={() => nav.openMember(member)}><Face person={member} portrait /><span><b>{member.name} <VerifiedBadge memberId={member.id} /></b><small>{[member.title, member.company].filter(Boolean).join(' · ')}</small><em>{post.when}</em></span></button> : <div><SelfFace /><span><b>{author}</b><small>{[net.profile.title, net.profile.company].filter(Boolean).join(' · ')}</small><em>{post.when}</em></span></div>}{post.business ? <BusinessBadge kind={post.kind} /> : <span className="signal-badge">{post.kind}</span>}</header>
     <div className="social-feed-copy"><h2>{post.text}</h2><p>{post.detail}</p></div>
     <BusinessDetailsView post={post} />
-    {post.media?.length ? <div className="social-media-note"><Image size={16} /><span>{post.media.length} attached {post.media.length === 1 ? 'file' : 'files'} · open this Signal on the member profile to view</span></div> : null}
+    <JournalMedia media={post.media} />
     <footer><button className={liked ? 'active' : ''} onClick={() => net.togglePostLike(post.id)}><Heart size={16} fill={liked ? 'currentColor' : 'none'} />{liked ? 'Liked' : 'Like'}</button><button onClick={() => setCommenting(value => !value)}><MessageCircle size={16} />Comment</button><button onClick={() => net.toggleSave(post.id, 'this Signal')}><Bookmark size={16} />Save</button>{!mine && member && <button onClick={() => { const id = net.respondToPost(post.id, member.id); if (id) nav.goToThread(id) }}><MessageSquareText size={16} />Message</button>}<BusinessActionButton post={post} member={member} /></footer>
     {(commenting || comments.length > 0) && <div className="social-comments">{comments.map(item => <p key={item.id}><b>{net.profile.name || 'You'}</b>{item.text}<small>{item.when}</small></p>)}{commenting && <NetworkCommentComposer onSubmit={text => net.addPostComment(post.id, text, post.memberId)} />}</div>}
   </article>

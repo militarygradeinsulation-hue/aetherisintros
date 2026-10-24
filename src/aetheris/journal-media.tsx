@@ -7,7 +7,8 @@ function JournalFile({ item }: { item: JournalAttachment }) {
   const [url, setUrl] = useState<string | null>(null)
   useEffect(() => {
     let active = true
-    void journalUrl(item.path).then(resolved => { if (active) setUrl(resolved) })
+    setUrl(null)
+    void journalUrl(item.path).then(resolved => { if (active) setUrl(resolved) }).catch(() => { if (active) setUrl(null) })
     return () => { active = false }
   }, [item.path])
 

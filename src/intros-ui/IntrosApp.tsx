@@ -1,3 +1,4 @@
+import { NewsTicker } from './components/NewsTicker';
 import React, { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { isIntroTargetId, submitIntroRequest } from '@/aetheris/lib/intro-request';
@@ -344,6 +345,7 @@ export default function App({ mode = 'demo', executiveAction, initialPage, initi
           }}/> : undefined}
       >
       <main className="flex-1 arch-product-main" data-arch-page={activePage}>
+        <NewsTicker onOpenNews={() => handleNavigate('news')} />
         {activePage === 'home' && (
           <LedgerDashboard
             onOpenPipeline={() => { setCrmSection('pipeline'); setClassicPage('crm'); handleNavigate('workspace'); }}
