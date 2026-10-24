@@ -48,3 +48,8 @@
   .network-highlights-heading > div:last-child button {flex:1}
   .network-highlight-card {padding:16px}
 }
+/* Manual pause is a readable, scrollable snapshot of every original post. */
+.network-highlights[data-paused="true"] .network-marquee-window {overflow:auto}
+.network-highlights[data-paused="true"] .network-marquee-columns {height:auto;align-items:flex-start}
+.network-highlights[data-paused="true"] .network-marquee-column {overflow:visible}
+.network-highlights[data-paused="true"] .network-marquee-track {transform:none!important;will-change:auto}

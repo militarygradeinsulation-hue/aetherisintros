@@ -24,6 +24,9 @@ export function NetworkHighlights({ live, posts, active, onReadFeed, onOpenAutho
   const [paused, setPaused] = useState(false);
   const [columns, setColumns] = useState(1);
   useEffect(() => {
+    if (!paused && active) root.current?.querySelector('.network-marquee-window')?.scrollTo({ top: 0 });
+  }, [paused, active]);
+  useEffect(() => {
     const query = window.matchMedia('(min-width: 900px)');
     const update = () => setColumns(query.matches ? 2 : 1);
     update(); query.addEventListener('change', update);
