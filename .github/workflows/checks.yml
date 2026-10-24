@@ -41,6 +41,10 @@ jobs:
           node scripts/recovery/member-families.standalone.mjs
       - name: Install Chromium
         run: npx playwright install --with-deps chromium
+      - name: PDF attachment reader (browser)
+        env:
+          PLAYWRIGHT_MODULE: ${{ github.workspace }}/node_modules/playwright/index.mjs
+        run: node scripts/workspace-components-check/run.mjs
       - name: Comment draft save confirmation (browser)
         env:
           PLAYWRIGHT_MODULE: ${{ github.workspace }}/node_modules/playwright/index.mjs
