@@ -22,6 +22,19 @@ try {
     await page.getByRole('dialog', { name: 'Ask Intros', exact: true }).waitFor({ state: 'hidden' });
     console.log('Social Butler blob is visible and opens its canonical dialog');
   };
+  const checkIntroductions = async (mobile = false) => {
+    const nav = page.getByRole('navigation', { name: mobile ? 'Mobile navigation' : 'Desktop navigation', exact: true });
+    await nav.getByRole('button', { name: 'Ask Intros', exact: true }).click();
+    await page.getByRole('heading', { name: 'Ask Intros', exact: true }).waitFor();
+    await page.getByRole('tabpanel').locator('canvas[data-effect="particle-drift"]').waitFor({ state: 'attached' });
+    const color = await page.locator('canvas[data-effect="particle-drift"]').evaluate(canvas => getComputedStyle(canvas).getPropertyValue('--ambient-beam').trim());
+    if (!color || !await page.evaluate(color => CSS.supports('color', color), color)) throw new Error('Radar animation color is invalid: ' + color);
+    await page.getByRole('tab', { name: 'Introductions', exact: true }).click();
+    await page.getByRole('tabpanel', { name: 'Introductions', exact: true }).waitFor();
+    await nav.getByRole('button', { name: 'Home', exact: true }).click();
+    await page.getByRole('heading', { name: 'Today, in good company.' }).waitFor();
+    console.log(`${mobile ? 'Mobile' : 'Desktop'} Ask Intros opens radar and introductions`);
+  };
   const errors = [];
   page.on("pageerror", (e) => errors.push(e.message));
   await page.goto(url, { waitUntil: "domcontentloaded", timeout: 90000 });
@@ -71,6 +84,7 @@ try {
   if ((await search.inputValue()) !== "Marcus") throw new Error("Directory filter lost");
   await page.getByRole("button", { name: "Social", exact: true }).click();
   console.log("People filters preserved");
+  await checkIntroductions();
   await page
     .getByRole("navigation", { name: "Desktop navigation" })
     .getByRole("button", { name: "Messages", exact: true })
@@ -112,6 +126,7 @@ try {
   if (await page.evaluate(() => document.documentElement.scrollWidth > innerWidth))
     throw new Error("Mobile horizontal overflow");
   await checkButler();
+  await checkIntroductions(true);
   console.log("Mobile layout fits viewport");
   if (errors.length) throw new Error(errors.join("\n"));
   console.log("No uncaught browser errors");

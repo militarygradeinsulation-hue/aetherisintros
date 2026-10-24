@@ -12,7 +12,12 @@ function scope(ast) {
 const css=postcss.parse(fs.readFileSync(dir+'intros-ui/commons-bridge.css','utf8'));
 const root=postcss.parse(fs.readFileSync(dir+'styles.css','utf8'));
 const tokens=postcss.root();
-root.nodes.filter(n=>n.type==='atrule'&&n.name==='layer'&&n.params==='commons').forEach(n=>tokens.append(n.clone()));
+// Canvas effects read these unlayered tokens directly through getComputedStyle.
+// Carry their original light/dark rules into the scoped host alongside Commons.
+root.nodes.filter(n =>
+ (n.type === 'atrule' && n.name === 'layer' && n.params === 'commons') ||
+ (n.type === 'rule' && n.nodes?.some(d => d.type === 'decl' && ['--ambient-beam', '--ambient-glyph', '--ambient-champagne'].includes(d.prop)))
+).forEach(n => tokens.append(n.clone()));
 const outputs={
  'src/intros-ui/experience/bridge-social.css':fs.readFileSync(dir+'intros-ui/commons-fonts.css','utf8')+'\n'+scope(css),
  'src/intros-ui/experience/bridge-social-tokens.css':scope(tokens),
