@@ -1,3 +1,4 @@
+import { NetworkCommentComposer } from './NetworkCommentComposer'
 import { memberPhotoSource } from './member-media'
 import './editorial-media.css'
 import { AttachButton, MessageBody, attachmentPreview } from './MessageAttachments'
@@ -567,12 +568,6 @@ function PostCard({ post, member, onOpen }: { post: Post; member: Member | undef
   const comments = net.postComments[post.id] ?? []
   const mine = post.memberId === 'me'
   const [commenting, setCommenting] = useState(false)
-  const [comment, setComment] = useState('')
-  const submitComment = () => {
-    if (!comment.trim()) return
-    net.addPostComment(post.id, comment.trim(), post.memberId)
-    setComment('')
-  }
   return <article className="post-card">
     <header>
       {member
@@ -598,7 +593,7 @@ function PostCard({ post, member, onOpen }: { post: Post; member: Member | undef
     </footer>
     {(commenting || comments.length > 0) && <section className="post-discussion">
       {comments.map(item => <div key={item.id}><SelfAvatar /><p><strong>{net.profile.name || 'You'}</strong>{item.text}<small>{item.when}</small></p></div>)}
-      {commenting && <div className="comment-composer"><SelfAvatar /><input value={comment} onChange={event => setComment(event.target.value)} onKeyDown={event => { if (event.key === 'Enter') submitComment() }} placeholder="Add useful context to the discussion…" /><Button disabled={!comment.trim()} onClick={submitComment}><Send size={13} /></Button></div>}
+      {commenting && <NetworkCommentComposer className="comment-composer" onSubmit={text => net.addPostComment(post.id, text, post.memberId)}><SelfAvatar /></NetworkCommentComposer>}
     </section>}
   </article>
 }
