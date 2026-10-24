@@ -1,3 +1,10 @@
+@font-face {
+  font-family: "Bridge JetBrains Mono";
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: swap;
+  src: url("/fonts/jetbrains-mono.woff2") format("woff2");
+}
 /* Exact uploaded Bridge presentation, scoped to Social View. */
 @property --glass-sweep-x {
   syntax: "<percentage>";
@@ -71,7 +78,7 @@
     --commons-link: #1e35b0 !important;
     --acc: #2f4be0 !important;
     --acc-bright: #4863f1 !important;
-    --st-mono: "JetBrains Mono", monospace !important;
+    --st-mono: "Bridge JetBrains Mono", monospace !important;
     --sans: "Inter", sans-serif !important;
     --serif: "Bricolage Grotesque", sans-serif !important;
   }
@@ -273,7 +280,7 @@
   }
   :root[data-experience="social"] .commons-eyebrow {
     font:
-      500 10px/1.5 "JetBrains Mono",
+      500 10px/1.5 "Bridge JetBrains Mono",
       monospace !important;
     letter-spacing: 0.09em !important;
     color: var(--commons-link) !important;
