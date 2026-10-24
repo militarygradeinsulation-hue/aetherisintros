@@ -38,7 +38,7 @@ try {
   const messages = page.locator('.ledger-crm-sidebar .ledger-native-nav-item[aria-label="Messages"]')
   await messages.waitFor({state:'visible',timeout:30000})
   await messages.click()
-  await page.waitForSelector('.ix-messages .msg-outgoing',{timeout:30000})
+  await page.waitForSelector('.ix-messages:visible .msg-outgoing',{timeout:30000})
   const parse = x => {
     const m=String(x).match(/[\d.]+/g)
     if(!m || m.length<3)throw new Error('cannot parse color '+x)
@@ -56,12 +56,12 @@ try {
   for(const theme of ['dark','light']){
     await page.evaluate(mode=>document.documentElement.setAttribute('data-theme',mode),theme)
     for(const [name,selector] of [
-      ['outgoing bubble','.ix-messages .msg-outgoing'],
-      ['incoming bubble','.ix-messages .msg-incoming'],
-      ['AI next step','.ix-messages .msg-next-step .msg-body-text'],
-      ['AI brief','.ix-messages .msg-brief-panel .msg-body-text'],
-      ['conversation name','.ix-messages aside .text-xs.font-semibold.truncate'],
-      ['primary action','.ix-messages aside .msg-primary-action'],
+      ['outgoing bubble','.ix-messages:visible .msg-outgoing'],
+      ['incoming bubble','.ix-messages:visible .msg-incoming'],
+      ['AI next step','.ix-messages:visible .msg-next-step .msg-body-text'],
+      ['AI brief','.ix-messages:visible .msg-brief-panel .msg-body-text'],
+      ['conversation name','.ix-messages:visible aside .text-xs.font-semibold.truncate'],
+      ['primary action','.ix-messages:visible aside .msg-primary-action'],
     ]){
       const computed=await page.locator(selector).first().evaluate(el=>{
         const ink=getComputedStyle(el).color
