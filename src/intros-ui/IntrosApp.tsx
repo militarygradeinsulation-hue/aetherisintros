@@ -446,7 +446,7 @@ export default function App({ mode = 'demo', executiveAction, initialPage, initi
           />
         )}
 
-        {mode === 'live' && activePage === 'messages' && <LiveMessagesView onOpenWorkspaces={() => { setClassicPage('workspaces'); handleNavigate('workspace'); }} />}
+        {mode === 'live' && activePage === 'messages' && <LiveMessagesView social={experience === 'social'} onOpenWorkspaces={() => { setClassicPage('workspaces'); handleNavigate('workspace'); }} />}
         {mode !== 'live' && activePage === 'messages' && (
           <><div hidden={experience !== 'social'}>          <OriginalMessagesView
             conversations={conversations}

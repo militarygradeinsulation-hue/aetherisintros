@@ -176,7 +176,7 @@ export function LedgerBridgeShell({
     </div>}
 
     <div className="ledger-crm-body">
-      <div hidden={experience !== 'social'}><BridgeTopNavigation mode={mode}
+      <div className="bridge-navigation-host" hidden={experience !== 'social'}><BridgeTopNavigation mode={mode}
         activePage={activePage === 'intelligence' || activePage === 'specter' ? 'workspace' : activePage}
         onNavigate={onNavigate} searchQuery={searchQuery} onSearchChange={onSearchChange}
         unreadCount={unreadCount ?? 0} me={me} onOpenMyProfile={onOpenMyProfile}

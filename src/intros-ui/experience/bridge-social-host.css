@@ -11,5 +11,6 @@
   :root[data-experience="social"] .ledger-dashboard :is(.ledger-dashboard-grid,.ledger-dashboard-primary) { display:contents !important; }
   :root[data-experience="social"] .ledger-persistent-feed:not([hidden]) { display:contents !important; }
   :root[data-experience="social"] .ledger-persistent-feed .ledger-ui-panel > header { display:none !important; }
+  :root[data-experience="social"] .bridge-navigation-host { display:contents !important; }
   .bridge-experience-control { display:flex; justify-content:flex-end; padding:4px 16px; }
 }

@@ -24,3 +24,5 @@ Canonical member types/data are re-exported at the snapshot boundary. Existing c
 Original Bridge demo draft and directory filters remain internal to their original components. Each view retains its own unsent demo draft and filters when toggling views; demo drafts and search input text no longer mirror between the two presentations. Shared records and submitted actions still use the canonical handlers. This is an intentional consequence of retaining the original component code.
 
 This is not a byte-identical copy of the entire Bridge application: host controllers, other workspaces, authentication, the view switch and the feed integration remain Ask Intros code. Source equality checks apply exactly to the files listed in the manifest.
+
+Live messaging now uses the exact original Bridge JSX in Social mode, verified against the untouched source snapshot by the same source check. The shared newer controller above that rendering continues to supply idempotent send/retry and canonical thread IDs. There is one live messaging controller, not two hidden inboxes.
