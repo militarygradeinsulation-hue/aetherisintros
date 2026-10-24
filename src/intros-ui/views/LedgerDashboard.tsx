@@ -1,3 +1,4 @@
+import type { ExperienceView } from '../experience/preference';
 import { PostShareButton } from '@/aetheris/PostShareButton';
 import { MemberThumbnail } from '../components/shared/MemberThumbnail';
 /* Absolute Ledger CRM dashboard composition using the active Ask Intros
@@ -20,6 +21,7 @@ const DEFAULT_PANELS: Record<PanelKey, boolean> = {
 };
 
 interface LedgerDashboardProps {
+  experience?: ExperienceView;
   posts: FeedPost[];
   members: NetworkMember[];
   live: boolean;
@@ -37,7 +39,7 @@ interface LedgerDashboardProps {
 }
 
 export function LedgerDashboard({
-  posts, members, live, socialFeed, actionQueue, liveOverview, unreadCount,
+  experience = 'business', posts, members, live, socialFeed, actionQueue, liveOverview, unreadCount,
   onNavigate, onRequestIntro, onAddPost, onLikePost, onSavePost, onOpenTool, onOpenPipeline,
 }: LedgerDashboardProps) {
   const [view, setView] = useState<'activity' | 'board' | 'highlights'>('activity');
@@ -88,7 +90,7 @@ export function LedgerDashboard({
     setDraft('');
   };
   return <div className="ledger-dashboard">
-    <PageHeader eyebrow="Workspace / Relationship OS" title="Command Dashboard"
+    <PageHeader eyebrow={experience === 'social' ? 'People create possibilities' : 'Workspace / Relationship OS'} title={experience === 'social' ? 'Your network, in motion.' : 'Command Dashboard'}
       description="Your relationships, introductions, and next moves in one operating workspace."
       actions={<>
         <button type="button" className="ledger-ui-button secondary" onClick={() => setCustomizeOpen(true)}><Settings2 size={15}/> Customize</button>

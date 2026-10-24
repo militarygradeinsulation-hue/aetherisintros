@@ -18,9 +18,9 @@ describe('member portrait provenance', () => {
       expect(memberPhotoSource(photo)).toBe(photo)
     }
   })
-  it('showcase contacts have no stock-photo assignments', () => {
+  it('showcase uses explicit bundled portraits while unassigned contacts stay empty', () => {
     expect(NETWORK_MEMBERS.length).toBeGreaterThan(0)
-    expect(NETWORK_MEMBERS.every(member => !member.avatarUrl)).toBe(true)
+    expect(NETWORK_MEMBERS.every(member => member.avatarUrl === `/portraits/demo-${member.id}.jpg`)).toBe(true)
     expect(INITIAL_PEOPLE.length).toBeGreaterThan(0)
     expect(INITIAL_PEOPLE.every(person => !person.avatar)).toBe(true)
   })

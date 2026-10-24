@@ -13,7 +13,7 @@ import { isMemberWorkspace } from '@/aetheris/workspace-destinations'
 import '@/aetheris/executive-upgrade.css'
 import '@/aetheris/styles.css'
 
-const entryPages: ActivePage[] = ['home', 'people', 'intros', 'messages', 'insights', 'meetings', 'specter', 'intelligence']
+const entryPages: ActivePage[] = ['home', 'people', 'intros', 'messages', 'insights', 'meetings', 'specter', 'intelligence', 'bubbles', 'memory']
 /** Existing workspaces only: arbitrary page names are never taken from a URL. */
 
 

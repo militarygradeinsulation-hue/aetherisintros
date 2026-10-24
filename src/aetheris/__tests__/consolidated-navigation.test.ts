@@ -20,17 +20,17 @@ describe('consolidated navigation preserves production destinations', () => {
     }
   });
   it('keeps parent navigation selected for child pages, old tool links, and member profiles', () => {
-    expect(destinationFor('bubbles')?.id).toBe('network');
+    expect(destinationFor('bubbles')?.id).toBe('introductions');
     expect(destinationFor('profile')?.id).toBe('network');
     expect(destinationFor('specter')?.id).toBe('intelligence');
     expect(destinationFor('workspace', 'briefing')?.id).toBe('meetings');
     expect(destinationFor('workspace', 'providers')?.id).toBe('work');
-    expect(destinationFor('workspace', 'memory')?.id).toBe('library');
+    expect(destinationFor('workspace', 'memory')?.id).toBe('introductions');
     expect(destinationFor('news')?.id).toBe('dashboard');
   });
   it('keeps deal systems and library permissions behind their original distinct controllers', () => {
     expect(WORKSPACE_DESTINATIONS.find(d => d.id === 'deals')!.sections.map(t => t.tool)).toEqual(['deals', 'workspaces']);
-    expect(WORKSPACE_DESTINATIONS.find(d => d.id === 'library')!.sections.map(t => t.tool || t.page)).toEqual(['pocket', 'memory', 'knowledgeassets', 'vault']);
+    expect(WORKSPACE_DESTINATIONS.find(d => d.id === 'library')!.sections.map(t => t.tool || t.page)).toEqual(['pocket', 'knowledgeassets', 'vault']);
     expect(WORKSPACE_DESTINATIONS.find(d => d.id === 'crm')!.sections).toEqual([]);
     expect(targetMatches(ACCOUNT_SECTIONS.find(t => t.tool === 'profile')!, 'profile')).toBe(false);
   });

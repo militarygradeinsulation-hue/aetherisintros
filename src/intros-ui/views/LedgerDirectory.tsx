@@ -1,3 +1,4 @@
+import type { ExperienceView } from '../experience/preference';
 import { MemberThumbnail } from '../components/shared/MemberThumbnail';
 /* CRM Contacts pattern, sourced from the REAL Bridge directory.
  * Search, saved and connection actions remain the signed-in handlers.
@@ -10,9 +11,10 @@ import { PageHeader, Panel, StatCard } from '@/intros-ui/components/layout/Ledge
 import './ledger-directory.css';
 
 export function LedgerDirectory({
-  members, isLive, connectedMemberIds, savedMemberIds, onToggleConnect, onToggleSave,
+  experience = 'business', members, isLive, connectedMemberIds, savedMemberIds, onToggleConnect, onToggleSave,
   onRequestIntro, onNavigate, searchQuery = '',
 }: {
+  experience?: ExperienceView;
   members: NetworkMember[]; isLive: boolean; connectedMemberIds: Set<string>; savedMemberIds: Set<string>;
   onToggleConnect: (id: string) => void; onToggleSave: (id: string) => void;
   onRequestIntro: (person: NetworkMember) => void;
@@ -30,7 +32,7 @@ export function LedgerDirectory({
   }).sort((a, b) => sort === 'name' ? a.name.localeCompare(b.name) : b.matchScore - a.matchScore), [members, search, role, sort]);
   return <div className="ledger-directory">
     <PageHeader eyebrow="Relationships / Contacts" title="People & Network"
-      description="A working relationship directory, not a visual gallery. Find the people, context and warm paths that matter."
+      description="Find the people, context and warm paths that matter."
       actions={<>
         <button type="button" className="ledger-ui-button secondary" onClick={() => onNavigate('bubbles')}><Network size={15}/> Network map</button>
         <button type="button" className="ledger-ui-button primary" onClick={() => onNavigate('intros')}><Handshake size={15}/> Introductions</button>
@@ -62,20 +64,20 @@ export function LedgerDirectory({
         </label>
       </div>
       <div className="ledger-directory-table-scroller">
-        <table className="ledger-directory-table">
-          <thead><tr><th>Member</th><th>Industry / Role</th><th>Location</th><th>Fit</th><th>Relationship</th><th>Actions</th></tr></thead>
-          <tbody>
-          {filtered.map(person => <tr key={person.id}>
-            <td><button type="button" className="ledger-directory-person" onClick={() => onNavigate('people',person.id)}>
+        <table role="table" className="ledger-directory-table" data-presentation={experience === 'social' ? 'cards' : 'table'}>
+          <thead role="rowgroup"><tr role="row"><th scope="col" role="columnheader">Member</th><th scope="col" role="columnheader">Industry / Role</th><th scope="col" role="columnheader">Location</th><th scope="col" role="columnheader">Fit</th><th scope="col" role="columnheader">Relationship</th><th scope="col" role="columnheader">Actions</th></tr></thead>
+          <tbody role="rowgroup">
+          {filtered.map(person => <tr role="row" key={person.id}>
+            <td role="cell"><button type="button" className="ledger-directory-person" onClick={() => onNavigate('people',person.id)}>
               <MemberThumbnail name={person.name} source={person.avatarUrl} className="ledger-person-initial"/>
               <span><strong>{person.name}</strong><small>{person.title} · {person.company}</small></span>
             </button></td>
-            <td><span className="ledger-directory-role">{person.roleType}</span><small>{person.industry || 'Business'}</small></td>
-            <td>{person.location}</td>
-            <td><span className="ledger-directory-fit">{person.matchScore}%</span></td>
-            <td><span className={connectedMemberIds.has(person.id) ? 'ledger-directory-status connected' : 'ledger-directory-status'}>
+            <td role="cell"><span className="ledger-directory-role">{person.roleType}</span><small>{person.industry || 'Business'}</small></td>
+            <td role="cell">{person.location}</td>
+            <td role="cell"><span className="ledger-directory-fit">{person.matchScore}%</span></td>
+            <td role="cell"><span className={connectedMemberIds.has(person.id) ? 'ledger-directory-status connected' : 'ledger-directory-status'}>
               {connectedMemberIds.has(person.id) ? 'Connected' : 'Not connected'}</span></td>
-            <td><div className="ledger-directory-actions">
+            <td role="cell"><div className="ledger-directory-actions">
               <button type="button" aria-label={(connectedMemberIds.has(person.id) ? 'Disconnect ' : 'Connect with ') + person.name}
                 title={connectedMemberIds.has(person.id)?'Disconnect':'Connect'} onClick={()=>onToggleConnect(person.id)}>
                 <Users size={14}/></button>

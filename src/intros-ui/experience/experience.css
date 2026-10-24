@@ -1,0 +1,755 @@
+@font-face {
+  font-family: Inter;
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: swap;
+  src: url("/fonts/inter.woff2") format("woff2");
+}
+@font-face {
+  font-family: "Bricolage Grotesque";
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: swap;
+  src: url("/fonts/bricolage-grotesque.woff2") format("woff2");
+}
+/* Bridge Commons presentation adapted from aetheris-bridge@2d20c664.
+ * Only the experience attribute enables this layer, including body portals.
+ * No view-specific controllers, records, authentication, or permissions. */
+.experience-switch {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  flex: none;
+  padding: 4px;
+  border: 1px solid var(--ledger-crm-border);
+  border-radius: 16px;
+  background: var(--ledger-crm-surface);
+}
+:root body .ledger-crm-shell .experience-switch button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  min-height: 40px;
+  padding: 8px 12px;
+  border: 0;
+  border-radius: 12px !important;
+  background: transparent;
+  color: var(--ledger-crm-muted);
+  font:
+    600 13px/1.3 system-ui,
+    sans-serif;
+  white-space: nowrap;
+}
+:root body .ledger-crm-shell .experience-switch button[aria-pressed="true"] {
+  background: var(--ledger-crm-accent);
+  color: white;
+}
+@media (max-width: 720px) {
+  .ledger-crm-topbar {
+    flex-wrap: wrap !important;
+  }
+  .experience-switch {
+    order: 10;
+    width: 100%;
+    justify-content: center;
+  }
+  .experience-switch button {
+    flex: 1;
+  }
+}
+
+/* Important layered rules outrank legacy unlayered theme overrides. */
+@layer social-experience {
+  :root[data-experience="social"] {
+    --social-bg: #050914 !important;
+    --social-card: #101a2c !important;
+    --social-raised: #17243b !important;
+    --social-ink: #f5f8ff !important;
+    --social-muted: #b2bfd3 !important;
+    --social-line: #354365 !important;
+    --social-blue: #3b82f6 !important;
+    --social-button: #2563eb !important;
+    --social-link: #85b8ff !important;
+    --social-wash: #162c6d !important;
+    --sans: Inter, ui-sans-serif, system-ui, sans-serif !important;
+    --serif: "Bricolage Grotesque", Inter, ui-sans-serif, system-ui, sans-serif !important;
+    --acc: var(--social-blue) !important;
+    --acc-bright: var(--social-link) !important;
+    --st-bg: var(--social-bg) !important;
+    --st-card: var(--social-card) !important;
+    --st-panel: var(--social-raised) !important;
+    --st-ink: var(--social-ink) !important;
+    --st-muted: var(--social-muted) !important;
+    --mp-bridge-bg: var(--social-bg) !important;
+    --mp-bridge-panel: var(--social-card) !important;
+    --mp-bridge-line: var(--social-line) !important;
+    --mp-bridge-copper: var(--social-blue) !important;
+    --mp-bridge-copper-bright: var(--social-link) !important;
+    --primary: var(--social-button) !important;
+    --primary-foreground: #fff !important;
+    --background: var(--social-bg) !important;
+    --foreground: var(--social-ink) !important;
+    --card: var(--social-card) !important;
+    --card-foreground: var(--social-ink) !important;
+    --popover: var(--social-card) !important;
+    --popover-foreground: var(--social-ink) !important;
+    --border: var(--social-line) !important;
+    --ring: var(--social-link) !important;
+  }
+  :root[data-experience="social"][data-theme="light"] {
+    --social-bg: #f6f6f3 !important;
+    --social-card: #fff !important;
+    --social-raised: #edf1fc !important;
+    --social-ink: #15171c !important;
+    --social-muted: #5a5f6b !important;
+    --social-line: #dce1ed !important;
+    --social-blue: #2f4be0 !important;
+    --social-button: #2f4be0 !important;
+    --social-link: #1e35b0 !important;
+    --social-wash: #e8ecfd !important;
+    --primary: #2f4be0 !important;
+  }
+  :root[data-experience="social"] body {
+    background: var(--social-bg) !important;
+    color: var(--social-ink) !important;
+  }
+  :root[data-experience="social"] .ix-root {
+    --ledger-crm-bg: var(--social-bg) !important;
+    --ledger-crm-surface: var(--social-card) !important;
+    --ledger-crm-raised: var(--social-raised) !important;
+    --ledger-crm-ink: var(--social-ink) !important;
+    --ledger-crm-muted: var(--social-muted) !important;
+    --ledger-crm-accent: var(--social-blue) !important;
+    --ledger-crm-border: var(--social-line) !important;
+    --surface-cast: 0 18px 40px -20px #0008, inset 0 1px 0 #ffffff22 !important;
+    --surface-cast-raised: 0 24px 48px -20px #0009, inset 0 1px 0 #ffffff33 !important;
+    font-family: var(--sans) !important;
+    background: var(--social-bg) !important;
+    color: var(--social-ink) !important;
+  }
+  :root[data-experience="social"] .ledger-crm-sidebar {
+    display: none !important;
+  }
+  :root[data-experience="social"] .ledger-crm-body {
+    margin-left: 0 !important;
+    width: 100% !important;
+  }
+  :root[data-experience="social"] .ledger-native-content {
+    max-width: 1320px !important;
+    padding: 28px 24px 110px !important;
+  }
+  :root[data-experience="social"] .ledger-crm-shell {
+    background:
+      radial-gradient(
+        ellipse at 85% 0%,
+        color-mix(in srgb, var(--social-blue) 12%, transparent),
+        transparent 55%
+      ),
+      var(--social-bg) !important;
+  }
+  :root[data-experience="social"] .ledger-crm-topbar {
+    background: color-mix(in srgb, var(--social-card) 94%, transparent) !important;
+    backdrop-filter: blur(20px);
+    border-color: var(--social-line) !important;
+    padding: 12px 24px !important;
+    gap: 12px !important;
+  }
+  :root[data-experience="social"] .ledger-native-breadcrumb > span {
+    display: inline !important;
+    font-size: 20px !important;
+    font-weight: 700 !important;
+    color: var(--social-ink) !important;
+  }
+  :root[data-experience="social"] .ledger-native-breadcrumb > :is(svg, b) {
+    display: none !important;
+  }
+  :root[data-experience="social"] .ledger-native-breadcrumb {
+    order: -1;
+    max-width: none !important;
+  }
+  :root[data-experience="social"] .ledger-native-menu {
+    display: none !important;
+  }
+  :root[data-experience="social"] .social-primary-nav {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 12px 24px;
+    position: relative;
+    z-index: 54;
+    background: var(--social-card);
+    border-bottom: 1px solid var(--social-line);
+  }
+  :root[data-experience="social"] .social-primary-nav :is(button, summary) {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    min-height: 44px;
+    padding: 10px 16px;
+    border: 0;
+    border-radius: 14px !important;
+    background: transparent;
+    color: var(--social-muted);
+    font: 600 14px/1.4 var(--sans);
+    cursor: pointer;
+    list-style: none;
+    white-space: nowrap;
+  }
+  :root[data-experience="social"] .social-primary-nav summary::-webkit-details-marker {
+    display: none;
+  }
+  :root[data-experience="social"]
+    .social-primary-nav
+    :is(button[aria-current="page"], button:hover, summary:hover) {
+    color: var(--social-link) !important;
+    background: var(--social-wash) !important;
+  }
+  :root[data-experience="social"] .social-primary-nav details {
+    position: relative;
+  }
+  :root[data-experience="social"] .social-more-menu {
+    position: absolute;
+    right: 0;
+    top: calc(100% + 8px);
+    min-width: 240px;
+    padding: 8px;
+    border: 1px solid var(--social-line);
+    border-radius: 20px;
+    background: var(--social-card);
+    box-shadow: 0 20px 60px #0005;
+  }
+  :root[data-experience="social"] .social-more-menu button {
+    width: 100%;
+    text-align: left;
+  }
+  :root[data-experience="social"]
+    :is(.ledger-crm-shell, .ix-root)
+    :is(button, input, select, textarea) {
+    border-radius: 14px !important;
+    clip-path: none !important;
+    font-family: var(--sans) !important;
+    letter-spacing: normal !important;
+    text-transform: none !important;
+  }
+  :root[data-experience="social"] .ledger-crm-shell :is(button, input, select, textarea) {
+    min-height: 40px;
+  }
+  :root[data-experience="social"] .ledger-crm-shell :is(h1, h2, h3) {
+    font-family: var(--serif) !important;
+    letter-spacing: -0.025em !important;
+    text-transform: none !important;
+    color: var(--social-ink) !important;
+  }
+  :root[data-experience="social"] .ledger-ui-page-header h1 {
+    font-size: clamp(28px, 3vw, 40px) !important;
+    line-height: 1.15 !important;
+  }
+  :root[data-experience="social"]
+    :is(
+      .ledger-ui-description,
+      .ledger-feed-content,
+      .ledger-feed-composer textarea,
+      .ledger-intro-row p,
+      .ledger-person p
+    ) {
+    font: 400 16px/1.65 var(--sans) !important;
+    color: var(--social-muted) !important;
+  }
+  :root[data-experience="social"]
+    :is(
+      .ledger-ui-panel,
+      .ledger-ui-stat,
+      .ledger-section-navigation,
+      .ledger-workspace-detail,
+      .ledger-workspace-modules,
+      .live-exec-panel,
+      .live-exec-stat,
+      .meetings-card,
+      .pl-card,
+      .pl-import,
+      .module,
+      .home-feed-widget,
+      .sys-tile,
+      .ops-panel,
+      .ops-lane,
+      .fcrm-card
+    ) {
+    border-radius: 24px !important;
+    border: 1px solid var(--social-line) !important;
+    background: linear-gradient(
+      135deg,
+      color-mix(in srgb, var(--social-card) 88%, var(--social-blue)),
+      var(--social-card) 60%
+    ) !important;
+    box-shadow: var(--surface-cast) !important;
+    backdrop-filter: blur(16px);
+    color: var(--social-ink) !important;
+  }
+  :root[data-experience="social"] :is(.ledger-ui-panel-heading, .ledger-ui-panel-body) {
+    padding: 22px !important;
+  }
+  :root[data-experience="social"] :is(.ledger-ui-panel-heading h2, .ledger-person strong) {
+    font-size: 17px !important;
+  }
+  :root[data-experience="social"]
+    :is(.ledger-ui-panel-heading p, .ledger-ui-stat p, .ledger-person small) {
+    font-size: 13px !important;
+    line-height: 1.5 !important;
+  }
+  :root[data-experience="social"] .ledger-ui-button.primary {
+    background: var(--social-button) !important;
+    color: #fff !important;
+    border-color: transparent !important;
+  }
+  :root[data-experience="social"] .ledger-ui-button.secondary {
+    background: var(--social-card) !important;
+    color: var(--social-ink) !important;
+    border-color: var(--social-line) !important;
+  }
+  :root[data-experience="social"] .ledger-dashboard-grid {
+    grid-template-columns: minmax(0, 1fr) 330px !important;
+    gap: 24px !important;
+  }
+  :root[data-experience="social"] .ledger-dashboard-stats {
+    gap: 16px !important;
+  }
+  :root[data-experience="social"] .ledger-feed-entry {
+    padding: 24px !important;
+    margin-top: 18px;
+    border-radius: 22px !important;
+    border: 1px solid var(--social-line) !important;
+    background: var(--social-card) !important;
+  }
+  :root[data-experience="social"] .ledger-feed-entry strong {
+    font-size: 16px !important;
+  }
+  :root[data-experience="social"] .ledger-feed-entry :is(time, header p) {
+    font-size: 13px !important;
+    line-height: 1.5 !important;
+  }
+  :root[data-experience="social"] .ledger-post-photo {
+    border-radius: 18px !important;
+    max-height: 520px;
+    object-fit: cover;
+  }
+  :root[data-experience="social"]
+    :is(.ledger-person-initial, .ledger-feed-initial, .ledger-native-avatar) {
+    border-radius: 50% !important;
+    overflow: hidden;
+    min-width: 48px !important;
+    width: 48px !important;
+    height: 48px !important;
+    background: var(--social-wash) !important;
+    color: var(--social-link) !important;
+  }
+  :root[data-experience="social"] :is(.ledger-person-initial, .ledger-feed-initial) img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  :root[data-experience="social"] .ledger-directory-table-scroller {
+    overflow: visible !important;
+  }
+  :root[data-experience="social"] .ledger-directory-table {
+    display: block;
+    min-width: 0 !important;
+  }
+  :root[data-experience="social"] .ledger-directory-table thead {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+  }
+  :root[data-experience="social"] .ledger-directory-table tbody {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 18px;
+    padding: 20px;
+  }
+  :root[data-experience="social"] .ledger-directory-table tbody tr {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: 22px;
+    border: 1px solid var(--social-line);
+    border-radius: 24px;
+    background: linear-gradient(140deg, var(--social-raised), var(--social-card));
+    box-shadow: var(--surface-cast);
+  }
+  :root[data-experience="social"] .ledger-directory-table td {
+    display: block;
+    padding: 0 !important;
+    border: 0 !important;
+    white-space: normal !important;
+    font-size: 14px !important;
+  }
+  :root[data-experience="social"] .ledger-directory-person {
+    flex-direction: column;
+    align-items: flex-start;
+    min-width: 0 !important;
+    width: 100%;
+    gap: 16px;
+    margin-bottom: 8px;
+  }
+  :root[data-experience="social"] .ledger-directory-person strong {
+    font-size: 20px !important;
+    line-height: 1.35 !important;
+  }
+  :root[data-experience="social"] .ledger-directory-person small {
+    font-size: 14px !important;
+  }
+  :root[data-experience="social"] .ledger-directory-person .ledger-person-initial {
+    width: 72px !important;
+    height: 72px !important;
+  }
+  :root[data-experience="social"] .ledger-directory-actions {
+    margin-top: 12px;
+    gap: 10px;
+  }
+  :root[data-experience="social"] .ledger-directory-actions button {
+    width: 44px !important;
+    height: 44px !important;
+  }
+  :root[data-experience="social"] .ledger-directory-status {
+    border-radius: 20px;
+    padding: 7px 12px !important;
+    font-size: 13px !important;
+  }
+  :root[data-experience="social"] .ledger-directory-fit::before {
+    content: "Fit: ";
+    font-weight: 400;
+  }
+  :root[data-experience="social"]
+    :is(
+      .ledger-native-account-dropdown,
+      .ledger-native-palette,
+      .ledger-section-more nav,
+      [data-radix-popper-content-wrapper] [role="menu"],
+      [data-radix-popper-content-wrapper] [role="listbox"],
+      [role="dialog"]
+    ) {
+    border-radius: 22px !important;
+    background: var(--social-card) !important;
+    color: var(--social-ink) !important;
+    border-color: var(--social-line) !important;
+  }
+  :root[data-experience="social"] :is(.ix-messages, .ix-live-messages) {
+    --msg-panel: var(--social-card) !important;
+    --msg-bg: var(--social-bg) !important;
+    --msg-ink: var(--social-ink) !important;
+    --msg-muted: var(--social-muted) !important;
+    --msg-accent: var(--social-blue) !important;
+    --msg-line: var(--social-line) !important;
+    --msg-selected: var(--social-wash) !important;
+    --msg-copper: var(--social-link) !important;
+    --msg-accent-hover: var(--social-link) !important;
+    --msg-accent-ink: #fff !important;
+    font-family: var(--sans) !important;
+  }
+  :root[data-experience="social"] :is(.ix-messages, .ix-live-messages) :is(p, textarea, input) {
+    font: 400 16px/1.65 var(--sans) !important;
+  }
+  :root[data-experience="social"] :is(.ix-messages, .ix-live-messages) :is(section, aside) {
+    border-radius: 24px !important;
+  }
+  :root[data-experience="social"] .ledger-native-bottom {
+    background: var(--social-card) !important;
+    border-color: var(--social-line) !important;
+  }
+  :root[data-experience="social"]
+    :is(
+      .ledger-native-bottom button[aria-current="page"],
+      .ledger-section-options button[aria-current="page"]
+    ) {
+    background: var(--social-wash) !important;
+    color: var(--social-link) !important;
+  }
+  :root[data-experience="social"] .ledger-native-content [hidden] {
+    display: none !important;
+  }
+  @media (hover: hover) and (prefers-reduced-motion: no-preference) {
+    :root[data-experience="social"] :is(.ledger-ui-stat, .ledger-directory-table tbody tr) {
+      transition:
+        box-shadow 0.25s ease,
+        translate 0.25s ease;
+    }
+    :root[data-experience="social"] :is(.ledger-ui-stat, .ledger-directory-table tbody tr):hover {
+      translate: 0 -3px;
+      box-shadow: var(--surface-cast-raised) !important;
+    }
+  }
+  @media (max-width: 1000px) {
+    :root[data-experience="social"] .ledger-directory-table tbody {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+    :root[data-experience="social"] .ledger-dashboard-grid {
+      grid-template-columns: minmax(0, 1fr) !important;
+    }
+    :root[data-experience="social"] .social-primary-nav {
+      gap: 2px;
+      padding: 8px;
+    }
+    :root[data-experience="social"] .social-primary-nav :is(button, summary) {
+      padding: 10px;
+      font-size: 13px;
+    }
+    :root[data-experience="social"] .ledger-native-breadcrumb {
+      display: none !important;
+    }
+  }
+  @media (max-width: 720px) {
+    :root[data-experience="social"] .social-primary-nav {
+      display: none !important;
+    }
+    :root[data-experience="social"] .ledger-native-menu {
+      display: grid !important;
+    }
+    :root[data-experience="social"] .ledger-native-content {
+      padding: 20px 14px 110px !important;
+    }
+    :root[data-experience="social"] .ledger-crm-topbar {
+      padding: 10px !important;
+    }
+    :root[data-experience="social"] .ledger-directory-table tbody {
+      grid-template-columns: minmax(0, 1fr);
+      padding: 12px;
+    }
+    :root[data-experience="social"] .ledger-ui-panel-body {
+      padding: 14px !important;
+    }
+  }
+}
+@layer social-experience {
+  :root[data-experience="social"]
+    .shared-signal-radar
+    :is([class~="text-[#EF4444]"], [class~="text-[#FCA5A5]"]) {
+    color: var(--social-link) !important;
+  }
+  :root[data-experience="social"] .shared-signal-radar :is(aside, [class~="bg-card"]) {
+    background: var(--social-card) !important;
+    color: var(--social-ink) !important;
+    border-radius: 24px !important;
+    border-color: var(--social-line) !important;
+  }
+  :root[data-experience="social"] .shared-signal-radar canvas {
+    filter: none !important;
+  }
+  :root[data-experience="social"] .ledger-ui-stat {
+    background-size: 200% 200% !important;
+    background-position: 100% 100% !important;
+  }
+  @media (hover: hover) and (prefers-reduced-motion: no-preference) {
+    :root[data-experience="social"] .ledger-ui-stat:hover {
+      background-position: 0 0 !important;
+      transition:
+        background-position 0.7s ease,
+        box-shadow 0.25s ease,
+        translate 0.25s ease;
+    }
+  }
+}
+@layer social-experience {
+  :root[data-experience="social"] [role="dialog"] :is(button, input, textarea, select),
+  :root[data-experience="social"]
+    [data-radix-popper-content-wrapper]
+    :is(button, input, [role="menuitem"]) {
+    font-family: var(--sans) !important;
+    border-radius: 14px !important;
+    min-height: 40px;
+  }
+  :root[data-experience="social"] [role="dialog"] :is(h1, h2, h3) {
+    font-family: var(--serif) !important;
+  }
+}
+
+@layer social-experience {
+  :root[data-experience="social"] .experience-switch button[aria-pressed="true"] {
+    background: var(--social-button) !important;
+    color: #fff !important;
+  }
+}
+/* Prevent nested legacy tokens and hardcoded surfaces leaking into Social. */
+@layer social-experience {
+  :root[data-experience="social"]
+    :is(
+      .ix-root,
+      .ix-classic,
+      .app-shell,
+      .social-shell,
+      .arch-product-main,
+      .content,
+      .workspace
+    ) {
+    --serif: "Bricolage Grotesque", Inter, ui-sans-serif, system-ui, sans-serif !important;
+    --sans: Inter, ui-sans-serif, system-ui, sans-serif !important;
+    --acc: var(--social-blue) !important;
+    --acc-bright: var(--social-link) !important;
+    --ink: var(--social-ink) !important;
+    --ink-muted: var(--social-muted) !important;
+    --paper: var(--social-bg) !important;
+    --panel: var(--social-card) !important;
+    --line: var(--social-line) !important;
+  }
+  :root[data-experience="social"]
+    .ix-root
+    :is(.arch-product-main, .ix-classic, .app-shell, .social-shell, .workspace, .content) {
+    background: transparent !important;
+    background-image: none !important;
+    color: var(--social-ink) !important;
+  }
+  :root[data-experience="social"] .ix-root :is(h1, h2, h3, .font-serif-editorial) {
+    font-family: "Bricolage Grotesque", Inter, ui-sans-serif, system-ui, sans-serif !important;
+  }
+  :root[data-experience="social"]
+    .ix-root
+    :is(button, input, textarea, select, .font-mono, .folio) {
+    font-family: Inter, ui-sans-serif, system-ui, sans-serif !important;
+    letter-spacing: normal !important;
+  }
+  :root[data-experience="social"] .ix-root :is(.folio, .ledger-ui-eyebrow) {
+    color: var(--social-link) !important;
+  }
+  :root[data-experience="social"] .ix-root :is(input, textarea, select) {
+    background: var(--social-card) !important;
+    color: var(--social-ink) !important;
+    border-color: var(--social-line) !important;
+  }
+  :root[data-experience="social"] .ix-root :is(button, a, input, textarea, select):focus-visible {
+    outline: 2px solid var(--social-link) !important;
+    outline-offset: 3px !important;
+    box-shadow: none !important;
+  }
+  :root[data-experience="social"]
+    .ix-root
+    :is(.social-primary-nav button, .experience-switch button):hover {
+    border-color: var(--social-link) !important;
+    box-shadow: none !important;
+  }
+  :root[data-experience="social"] .appearance-liquid-toggle[data-state="checked"] {
+    background: var(--social-button) !important;
+    border-color: var(--social-link) !important;
+  }
+  :root[data-experience="social"] .ask-dock-fab {
+    background: var(--social-button) !important;
+    color: white !important;
+    border-color: var(--social-link) !important;
+    border-radius: 22px !important;
+    box-shadow: 0 12px 36px #2563eb44 !important;
+  }
+  :root[data-experience="social"] .ask-dock {
+    background: var(--social-card) !important;
+    color: var(--social-ink) !important;
+    border: 1px solid var(--social-line) !important;
+    border-radius: 24px !important;
+  }
+  :root[data-experience="social"] .ask-dock :is(header, .ask-dock-voice, .ask-dock-compose) {
+    background: var(--social-card) !important;
+    color: var(--social-ink) !important;
+    border-color: var(--social-line) !important;
+  }
+  :root[data-experience="social"] .ask-dock-turn {
+    background: var(--social-raised) !important;
+    color: var(--social-ink) !important;
+    font:
+      400 16px/1.65 Inter,
+      system-ui,
+      sans-serif !important;
+  }
+  :root[data-experience="social"] .site-ambient {
+    filter: hue-rotate(200deg) saturate(0.45);
+    opacity: 0.25 !important;
+  }
+  :root[data-experience="social"] :is(.ix-messages, .ix-live-messages) {
+    --msg-bg: var(--social-bg) !important;
+    --msg-panel: var(--social-card) !important;
+    --msg-panel-2: var(--social-raised) !important;
+    --msg-border: var(--social-line) !important;
+    --msg-body: var(--social-ink) !important;
+    --msg-ink: var(--social-ink) !important;
+    --msg-muted: var(--social-muted) !important;
+    --msg-accent: var(--social-button) !important;
+    background: transparent !important;
+    border: 0 !important;
+  }
+  :root[data-experience="social"]
+    :is(.ix-messages, .ix-live-messages)
+    :is(section, aside, [class~="bg-[var(--msg-panel)]"], [class~="bg-[var(--msg-panel-2)]"]) {
+    background: var(--social-card) !important;
+    border-color: var(--social-line) !important;
+    border-radius: 24px !important;
+  }
+  :root[data-experience="social"] .ix-messages .msg-hero {
+    padding: 24px !important;
+  }
+  :root[data-experience="social"] .ix-messages .msg-hero h1 {
+    font-size: clamp(26px, 3vw, 36px) !important;
+  }
+  :root[data-experience="social"] .ledger-ui-button.primary {
+    background: var(--social-button) !important;
+    color: white !important;
+    -webkit-text-fill-color: white !important;
+  }
+}
+@layer social-experience {
+  :root[data-experience="social"]
+    :is(
+      .ledger-dashboard,
+      .ledger-directory,
+      .ledger-introductions,
+      .ledger-workspace,
+      .ledger-ui-page-header
+    ) {
+    background: transparent !important;
+  }
+  :root[data-experience="social"][data-theme="light"] .ix-root {
+    --surface-cast: 0 16px 36px -24px #344a7b55, inset 0 1px 0 #fff !important;
+    --surface-cast-raised: 0 22px 44px -24px #344a7b66, inset 0 1px 0 #fff !important;
+  }
+  :root[data-experience="social"]
+    :is(
+      .ledger-native-search,
+      .ledger-native-icon,
+      .ledger-native-user,
+      .ledger-section-options button
+    ) {
+    background: var(--social-card) !important;
+    color: var(--social-ink) !important;
+    border-color: var(--social-line) !important;
+  }
+  :root[data-experience="social"] .appearance-liquid-toggle[data-state="unchecked"] {
+    background: var(--social-raised) !important;
+    border-color: var(--social-line) !important;
+  }
+}
+@layer social-experience {
+  /* Change foreground and background together when toggling appearance. */
+  :root[data-experience="social"]
+    .ix-root
+    :is(button, a, input, select, textarea, .ledger-ui-panel, .ledger-ui-stat, .ledger-crm-topbar) {
+    transition-property: transform, translate, box-shadow !important;
+  }
+  :root[data-experience="social"] .appearance-liquid-toggle__thumb {
+    background: var(--social-button) !important;
+  }
+  :root[data-experience="social"]
+    .appearance-liquid-toggle[data-state="checked"]
+    .appearance-liquid-toggle__thumb {
+    background: #fff !important;
+  }
+  :root[data-experience="social"] .ix-root :is(.eyebrow, .meetings-head .kicker) {
+    color: var(--social-link) !important;
+  }
+}
+@layer social-experience {
+  :root[data-experience="social"], :root[data-experience="social"] .ix-root {
+    --acc-strong:var(--social-link)!important;--acc-deep:var(--social-button)!important;
+    --acc-wash:var(--social-wash)!important;--acc-line:var(--social-line)!important;
+    --acc-glow:color-mix(in srgb,var(--social-blue) 22%,transparent)!important;
+    --acc-btn:var(--social-wash)!important;--acc-btn-hover:var(--social-raised)!important;--acc-btn-line:var(--social-line)!important;
+    --cobalt:var(--social-blue)!important;
+  }
+  :root[data-experience="social"] .meetings {background:var(--social-card)!important;border:1px solid var(--social-line)!important;border-radius:24px!important;padding:28px!important;margin:24px 0!important}
+}

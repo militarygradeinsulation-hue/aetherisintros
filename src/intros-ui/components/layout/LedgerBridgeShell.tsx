@@ -1,3 +1,6 @@
+import { ExperienceSwitch } from '../../experience/ExperienceSwitch';
+import { SocialNavigation } from '../../experience/SocialNavigation';
+import type { ExperienceView } from '../../experience/preference';
 /* Native port of absolute-ledger-flow/src/components/app/app-shell.tsx.
  * Owns the member frame; all records/actions remain Ask Intros, never the CRM seed data.
  */
@@ -17,6 +20,8 @@ import { LedgerSectionNavigation } from './LedgerSectionNavigation';
 type Item = NavigationTarget;
 
 export interface LedgerBridgeShellProps {
+  experience: ExperienceView;
+  onExperienceChange: (value: ExperienceView) => void;
   children: React.ReactNode;
   activePage: ActivePage;
   activeTool?: string;
@@ -39,7 +44,7 @@ function persistedCollapsed() {
 }
 
 export function LedgerBridgeShell({
-  children, activePage, activeTool, onNavigate, onOpenTool, searchQuery,
+  experience, onExperienceChange, children, activePage, activeTool, onNavigate, onOpenTool, searchQuery,
   onSearchChange, members, mode, me, onOpenMyProfile, unreadCount, notifications, executiveAction,
 }: LedgerBridgeShellProps) {
   const [collapsed, setCollapsed] = useState(persistedCollapsed);
@@ -154,6 +159,7 @@ export function LedgerBridgeShell({
 
     <div className="ledger-crm-body">
       <header className="ledger-crm-topbar">
+        <ExperienceSwitch value={experience} onChange={onExperienceChange}/>
         <button type="button" className="ledger-native-menu" aria-label="Open navigation" onClick={() => setDrawerOpen(true)}>
           <Menu size={20} />
         </button>
@@ -176,6 +182,7 @@ export function LedgerBridgeShell({
           {userOpen && <AccountMenu/>}
         </div>
       </header>
+      {experience === 'social' && <SocialNavigation activePage={activePage} activeTool={activeTool} onSelect={navigate}/>}
       <div id="aetheris-workspace-content" className="ledger-native-content"><LedgerSectionNavigation activePage={activePage} activeTool={activeTool} onSelect={navigate}/>{children}</div>
     </div>
 
