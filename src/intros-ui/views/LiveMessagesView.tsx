@@ -1,3 +1,4 @@
+import { MemberThumbnail } from '../components/shared/MemberThumbnail';
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { Send, Search, MessageSquare } from 'lucide-react'
 import { useNetwork } from '@/aetheris/store'
@@ -104,9 +105,8 @@ function Inner({ onOpenWorkspaces }: { onOpenWorkspaces?: () => void }) {
               return (
                 <button key={t.id} type="button" data-selected={on} aria-current={on ? 'true' : undefined} onClick={() => setActiveId(t.id)}
                   className={`msg-thread-tile w-full text-left px-3 py-3 border-b border-[var(--msg-border)] flex gap-3 cursor-pointer ${on ? 'bg-[var(--msg-selected)]' : 'hover:bg-[var(--msg-selected)]'}`}>
-                  <div className="w-9 h-9 shrink-0 rounded-full bg-[var(--msg-incoming)] border border-[var(--msg-border)] flex items-center justify-center text-[11px] text-[var(--msg-ink)]">
-                    {(m?.name ?? '?').split(' ').map(s => s[0]).slice(0, 2).join('')}
-                  </div>
+                  <MemberThumbnail name={m?.name || 'Member'} source={m?.avatarUrl}/>
+
                   <div className="min-w-0 flex-1">
                     <div className="flex items-center justify-between gap-2">
                       <span className={`text-sm truncate ${count > 0 ? 'text-[var(--msg-ink)] font-semibold' : 'text-[var(--msg-ink)]'}`}>{m?.name ?? 'Member'}</span>
@@ -141,6 +141,7 @@ function Inner({ onOpenWorkspaces }: { onOpenWorkspaces?: () => void }) {
           ) : (<>
             <header className="px-4 py-3 border-b border-[var(--msg-border)] flex items-center gap-3">
               <button onClick={() => setActiveId('')} className="md:hidden text-xs text-[var(--msg-copper)] cursor-pointer">← Back</button>
+              <MemberThumbnail name={person?.name || 'Member'} source={person?.avatarUrl}/>
               <div className="min-w-0">
                 <p className="text-sm font-semibold text-[var(--msg-ink)] truncate">{person?.name ?? 'Member'}</p>
                 <p className="text-[11px] text-[var(--msg-muted)] truncate">{[person?.title, person?.company].filter(Boolean).join(' · ')}</p>

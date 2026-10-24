@@ -1,0 +1,8 @@
+:root body .member-thumbnail {position:relative;isolation:isolate;display:inline-grid;place-items:center;flex:none;width:36px;height:36px;overflow:hidden;border-radius:50%;border:1px solid var(--ledger-crm-border,rgba(128,128,128,.3));background:var(--ledger-crm-raised,#26262a);color:var(--ledger-crm-ink,#f4f4f4);font:600 11px/1 system-ui,sans-serif;vertical-align:middle}
+:root body .member-thumbnail>img {position:absolute;z-index:1;inset:0;display:block;width:100%;height:100%;max-width:none;object-fit:cover;filter:none!important;opacity:1!important}
+:root body .ledger-native-user .member-thumbnail {width:28px;height:28px;font-size:10px}
+:root body .ledger-widget-people .member-thumbnail {width:26px;height:26px;font-size:9px}
+:root body .network-highlight-author>.member-thumbnail {width:36px;height:36px}
+:root body .member-thumbnail.w-8 {width:32px;height:32px}
+:root body .member-thumbnail.w-11 {width:44px;height:44px}
+:root body .member-thumbnail.w-16 {width:64px;height:64px}
