@@ -1,3 +1,4 @@
+import { PdfPreviewButton } from './documents/PdfPreviewButton'
 import { useEffect, useRef, useState } from 'react'
 import { FileText, Paperclip, Download } from 'lucide-react'
 import { supabase } from '@/integrations/supabase/client'
@@ -58,6 +59,7 @@ function Attachment({ ref_, name, mime }: { ref_: string; name: string; mime: st
   if (!url) return <span className="msg-file">{name}</span>
   if (mime.startsWith('image/')) return <a href={url} target="_blank" rel="noreferrer"><img className="msg-media" src={url} alt={name} /></a>
   if (mime.startsWith('video/')) return <video className="msg-media" src={url} controls preload="metadata" />
+  if (mime === 'application/pdf' || /\.pdf$/i.test(name)) return <PdfPreviewButton url={url} name={name} />
   return <a className="msg-file" href={url} target="_blank" rel="noreferrer" download={name}>
     <FileText size={16} /><span>{name}</span><Download size={14} />
   </a>
@@ -68,7 +70,7 @@ export function MessageBody({ text }: { text: string }) {
   let last = 0
   for (const m of text.matchAll(MARK)) {
     if (m.index! > last) parts.push(text.slice(last, m.index))
-    parts.push(<Attachment key={m.index} ref_={m[1]!} name={m[2]!} mime={m[3]!} />)
+    parts.push(<Attachment key={`${m.index}:${m[1]}`} ref_={m[1]!} name={m[2]!} mime={m[3]!} />)
     last = m.index! + m[0].length
   }
   if (last < text.length) parts.push(text.slice(last))

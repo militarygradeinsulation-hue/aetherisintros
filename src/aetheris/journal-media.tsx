@@ -1,3 +1,4 @@
+import { PdfPreviewButton } from './documents/PdfPreviewButton'
 import { useEffect, useState } from 'react';
 import { FileText } from 'lucide-react';
 import { journalUrl } from './live';
@@ -19,6 +20,7 @@ function JournalFile({ item }: { item: JournalAttachment }) {
       ? <video src={url} controls preload="metadata" playsInline><track kind="captions" /></video>
       : <span>{item.name}</span>}</figure>
   }
+  if (url && (item.mime === 'application/pdf' || /\.pdf$/i.test(item.name))) return <PdfPreviewButton url={url} name={item.name} />
   return <a className="journal-doc" href={url ?? undefined} target="_blank" rel="noreferrer">
     <FileText size={15} /><span>{item.name}</span><small>{Math.max(1, Math.round(item.size / 1024))} KB</small>
   </a>
