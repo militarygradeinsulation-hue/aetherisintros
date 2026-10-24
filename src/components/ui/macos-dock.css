@@ -1,0 +1,49 @@
+.ask-macos-dock{--ask-dock-tray:#1A1A20;--ask-dock-text:#F4F4F6;--ask-dock-line:rgba(255,255,255,.18);
+position:relative;display:flex;align-items:flex-end;justify-content:center;gap:6px;padding:11px 12px 15px;
+border:1px solid var(--ask-dock-line)!important;border-radius:22px!important;color:var(--ask-dock-text)!important;
+background:linear-gradient(180deg,rgba(255,255,255,.10),transparent 45%),var(--ask-dock-tray)!important;
+box-shadow:0 20px 44px rgba(0,0,0,.45),inset 0 1px 0 rgba(255,255,255,.19);backdrop-filter:blur(22px)}
+:root[data-theme="light"] .ask-macos-dock{--ask-dock-tray:#FAFAFC;--ask-dock-text:#17191E;
+--ask-dock-line:rgba(22,24,28,.17);box-shadow:0 20px 40px rgba(30,32,40,.16),inset 0 1px 0 #FFF}
+.ask-macos-dock-glint{position:absolute;pointer-events:none;top:1px;left:16px;right:16px;height:1px;
+background:linear-gradient(90deg,transparent,rgba(255,255,255,.42),transparent)}
+.ask-macos-dock-item{position:relative;min-width:44px;display:flex;flex-direction:column;align-items:center;
+padding:0!important;cursor:pointer;background:none!important;color:var(--ask-dock-text)!important;border:0!important}
+.ask-macos-dock-item:focus-visible{outline:3px solid #EF4444!important;outline-offset:3px!important;border-radius:11px!important}
+.ask-macos-dock-icon{position:relative;z-index:3;display:flex;align-items:center;justify-content:center;
+border-radius:11px!important;overflow:visible;filter:drop-shadow(0 6px 10px rgba(0,0,0,.42)) drop-shadow(0 2px 3px rgba(0,0,0,.2))}
+.ask-macos-dock-plate{width:82%;height:82%;display:flex;align-items:center;justify-content:center;
+border:1px solid rgba(255,255,255,.22)!important;border-radius:24%!important;
+color:#FFF!important;background:linear-gradient(140deg,#E56868,#9D252C 76%,#66161D)!important;
+box-shadow:inset 0 2px 2px rgba(255,255,255,.25),0 7px 15px rgba(0,0,0,.3)}
+.ask-macos-dock-item:nth-of-type(2) .ask-macos-dock-plate{background:linear-gradient(140deg,#6975D9,#383E87 76%,#20214C)!important}
+.ask-macos-dock-item:nth-of-type(3) .ask-macos-dock-plate{background:linear-gradient(140deg,#47B9AD,#1A746D 76%,#114C48)!important}
+.ask-macos-dock-item:nth-of-type(4) .ask-macos-dock-plate{background:linear-gradient(140deg,#E0AA60,#A36823 76%,#70451A)!important}
+.ask-macos-dock-item:nth-of-type(5) .ask-macos-dock-plate{background:linear-gradient(140deg,#B28CED,#6852A8 76%,#473677)!important}
+.ask-macos-dock-item:nth-of-type(6) .ask-macos-dock-plate{background:linear-gradient(140deg,#8D9AAE,#465268 76%,#303A4B)!important}
+.ask-macos-dock-plate>svg{width:22px;height:22px;flex:none}
+.ask-macos-dock-reflection{pointer-events:none;position:absolute;top:100%;left:50%;transform:translateX(-50%) scaleY(-.72);
+border-radius:11px!important;opacity:.11;overflow:hidden;mask-image:linear-gradient(to bottom,rgba(0,0,0,.5),transparent 65%);
+display:flex;justify-content:center;align-items:center}
+.ask-macos-dock-reflection .ask-macos-dock-plate{height:82%;width:82%}
+.ask-macos-dock-running{position:absolute;bottom:-3px;width:4px;height:4px;border-radius:50%!important;background:#EF4444;box-shadow:0 0 6px #EF4444;z-index:6}
+.ask-macos-dock-badge{position:absolute;right:-5px;top:-5px;z-index:8;min-width:16px;height:16px;border-radius:10px!important;
+padding:2px;background:#EF4444;color:#FFF;font:700 9px system-ui,sans-serif;display:grid;place-items:center}
+.ask-macos-dock-tooltip{pointer-events:none;position:absolute;z-index:10;bottom:calc(100% + 5px);left:50%;
+transform:translateX(-50%);padding:7px 10px;white-space:nowrap;border-radius:9px!important;
+background:#181B22!important;color:#FFF!important;border:1px solid rgba(255,255,255,.2)!important;
+font:650 10px/1.1 system-ui,sans-serif;letter-spacing:.08em;text-transform:uppercase;box-shadow:0 10px 26px rgba(0,0,0,.35)}
+.ask-macos-dock-divider{align-self:center;height:30px;width:1px;background:var(--ask-dock-line);margin:0 1px}
+.ask-macos-command-wrap{position:relative;display:flex}
+.ask-macos-command-icon{background:linear-gradient(140deg,#555962,#23262C)!important;gap:1px}
+.ask-macos-command-icon span{font:800 12px system-ui,sans-serif}
+.ask-macos-command-menu{position:absolute;bottom:calc(100% + 19px);right:0;z-index:40;width:215px;padding:6px;
+border-radius:14px!important;border:1px solid var(--ask-dock-line);background:var(--ask-dock-tray)!important;
+box-shadow:0 20px 45px rgba(0,0,0,.35)}
+.ask-macos-command-menu button{display:flex;width:100%;min-height:39px;align-items:center;justify-content:space-between;gap:10px;
+text-align:left;padding:8px 10px!important;border-radius:8px!important;background:transparent!important;
+color:var(--ask-dock-text)!important;border:0!important;font:500 12px system-ui,sans-serif}
+.ask-macos-command-menu button:hover,.ask-macos-command-menu button:focus-visible{background:rgba(239,68,68,.12)!important}
+.ask-macos-command-menu kbd{font:500 10px system-ui,sans-serif;opacity:.65;border:1px solid var(--ask-dock-line);padding:2px 4px}
+@media(max-width:720px){.ask-macos-dock{display:none!important}}
+@media(prefers-reduced-motion:reduce){.ask-macos-dock *{animation:none!important;transition:none!important}}
