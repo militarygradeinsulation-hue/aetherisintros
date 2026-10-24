@@ -178,6 +178,17 @@ try {
       } else {
         await page.getByRole('navigation',{name:'Desktop navigation'}).getByRole('button',{name:'CRM & Pipeline',exact:true}).click();
       }
+      const financeBento = page.locator('.fpb');
+      await financeBento.waitFor({state:'visible',timeout:25000});
+      const visibleTiles = financeBento.locator('.fpb-card');
+      if(await visibleTiles.count()<8)throw Error('Finance Bento must retain the eight real financial signal tiles');
+      const visual = await financeBento.locator('.recharts-wrapper svg').first().evaluate(el => ({
+        filter: getComputedStyle(el).filter,
+        colors: [...el.querySelectorAll('.recharts-area-curve,.recharts-bar-rectangle,.recharts-sector')]
+          .map(node=>getComputedStyle(node).stroke+' '+getComputedStyle(node).fill)
+      })).catch(()=>null);
+      if(visual && visual.filter!=='none')throw Error('Bento chart is still desaturated '+JSON.stringify(visual));
+      await page.getByRole('button',{name:'Detailed view',exact:true}).click();
       await page.locator('.ops-stats > div').first().waitFor();
       const cards=await page.locator('.ops-stats > div').evaluateAll(nodes=>nodes.map(el=>({
         background:getComputedStyle(el).backgroundColor,
