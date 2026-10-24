@@ -1,3 +1,4 @@
+import { BridgeSocialLogo } from '../../experience/BridgeSocialLogo';
 import { ExperienceSwitch } from '../../experience/ExperienceSwitch';
 import { SocialNavigation } from '../../experience/SocialNavigation';
 import type { ExperienceView } from '../../experience/preference';
@@ -177,6 +178,7 @@ export function LedgerBridgeShell({
 
     <div className="ledger-crm-body">
       <header className="ledger-crm-topbar">
+        {experience === 'social' && <><button type="button" className="bridge-social-brand" aria-label="Ask Intros home" onClick={() => onNavigate('home')}><BridgeSocialLogo/></button><SocialNavigation activePage={activePage} activeTool={activeTool} onSelect={navigate}/></>}
         <ExperienceSwitch value={experience} onChange={onExperienceChange}/>
         <button type="button" className="ledger-native-menu" aria-label="Open navigation" onClick={() => setDrawerOpen(true)}>
           <Menu size={20} />
@@ -202,8 +204,7 @@ export function LedgerBridgeShell({
           {userOpen && <AccountMenu/>}
         </div>
       </header>
-      {experience === 'social' && <SocialNavigation activePage={activePage} activeTool={activeTool} onSelect={navigate}/>}
-      <div id="aetheris-workspace-content" className="ledger-native-content"><LedgerSectionNavigation activePage={activePage} activeTool={activeTool} onSelect={navigate}/>{children}</div>
+      <div id="aetheris-workspace-content" className="ledger-native-content"><div hidden={experience === 'social' && activePage === 'home'}><LedgerSectionNavigation activePage={activePage} activeTool={activeTool} onSelect={navigate}/></div>{children}</div>
     </div>
 
     <div className="ledger-native-quick-dock" aria-label="Desktop quick launch tools">

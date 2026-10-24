@@ -1,5 +1,7 @@
 import { useExperience } from './experience/useExperience';
 import './experience/experience.css';
+import './experience/bridge-social.css';
+import './experience/bridge-social-host.css';
 import { NewsTicker } from './components/NewsTicker';
 import React, { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
@@ -26,7 +28,7 @@ import { LedgerDashboard } from './views/LedgerDashboard';
 import { LiveExecutiveOverview } from './components/home/LiveExecutiveOverview';
 import { LiveInsightsDashboard } from './views/LiveInsightsDashboard';
 import { LedgerDirectory } from './views/LedgerDirectory';
-import { ProfileDetailView } from './views/ProfileDetailView';
+import { ExperienceProfileView } from './views/ExperienceProfileView';
 import { MessagesView } from './views/MessagesView';
 import { IntrosHubView } from './views/IntrosHubView';
 import { ConnectionBubblesView } from './views/ConnectionBubblesView';
@@ -291,7 +293,7 @@ export default function App({ mode = 'demo', executiveAction, initialPage, initi
   }, []);
 
   return (
-    <div data-experience={experience} className="ix-aetheris-workspace-mode ix-root ix-mindprint-bridge ix-absolute-ledger ledger-native-app min-h-screen bg-[#0a0a0a] text-[#f5f5f0] flex flex-col font-sans selection:bg-red-700/30 selection:text-white relative">
+    <div data-experience={experience} className={(experience === 'social' ? 'ix-commons-bridge ' : '') + "ix-aetheris-workspace-mode ix-root ix-mindprint-bridge ix-absolute-ledger ledger-native-app min-h-screen bg-[#0a0a0a] text-[#f5f5f0] flex flex-col font-sans selection:bg-red-700/30 selection:text-white relative"}>
       <WriteFailureNotice />
       {/* Right-click quick menu (each member chooses its items) */}
       <QuickMenuHost
@@ -349,9 +351,10 @@ export default function App({ mode = 'demo', executiveAction, initialPage, initi
           }}/> : undefined}
       >
       <main className="flex-1 arch-product-main" data-arch-page={activePage}>
-        <NewsTicker onOpenNews={() => handleNavigate('news')} />
+        <NewsTicker social={experience === 'social'} onOpenNews={() => handleNavigate('news')} />
         {activePage === 'home' && (
           <LedgerDashboard
+            requests={introRequests} me={me} onReview={setReviewIntroRequest}
             experience={experience}
             onOpenPipeline={() => { setCrmSection('pipeline'); setClassicPage('crm'); handleNavigate('workspace'); }}
             posts={feedPosts}
@@ -428,7 +431,7 @@ export default function App({ mode = 'demo', executiveAction, initialPage, initi
           <button className="mt-4 rounded-md bg-[#28587d] px-4 py-2 text-sm font-semibold text-white" onClick={() => handleNavigate('people')}>Back to People</button>
         </div>}
         {activePage === 'profile' && currentProfileMember && (
-          <ProfileDetailView
+          <ExperienceProfileView experience={experience}
             member={currentProfileMember}
             onBack={() => handleNavigate('people')}
             onNavigate={handleNavigate}

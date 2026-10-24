@@ -34,12 +34,12 @@ export function SocialNavigation({
       }}
     >
       <item.icon size={17} aria-hidden="true" />
-      {item.label}
+      {item.id === "dashboard" ? "Home" : item.id === "network" ? "People" : item.label}
     </button>
   );
   return (
     <nav className="social-primary-nav" aria-label="Social workspace navigation">
-      {WORKSPACE_DESTINATIONS.filter((item) => primary.has(item.id)).map(render)}
+      {["dashboard", "network", "introductions", "meetings", "messages"].map(id => WORKSPACE_DESTINATIONS.find(item => item.id === id)!).map(render)}
       <details
         ref={more}
         onKeyDown={(event) => {

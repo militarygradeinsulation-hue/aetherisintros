@@ -1,3 +1,4 @@
+import { CommonsHomeView } from './CommonsHomeView';
 import type { ExperienceView } from '../experience/preference';
 import { PostShareButton } from '@/aetheris/PostShareButton';
 import { MemberThumbnail } from '../components/shared/MemberThumbnail';
@@ -6,7 +7,7 @@ import { MemberThumbnail } from '../components/shared/MemberThumbnail';
  */
 import React, { useEffect, useState } from 'react';
 import { ArrowRight, Bookmark, Handshake, Heart, MessageSquare, Plus, Search, Settings2, Users, X } from 'lucide-react';
-import type { FeedPost, NetworkMember } from '@/intros-ui/networkData';
+import type { FeedPost, IntroRequest, NetworkMember } from '@/intros-ui/networkData';
 import type { ActivePage } from '@/intros-ui/components/layout/TopNavigation';
 import { PageHeader, Panel, StatCard } from '@/intros-ui/components/layout/LedgerUiKit';
 import './ledger-dashboard.css';
@@ -23,6 +24,9 @@ const DEFAULT_PANELS: Record<PanelKey, boolean> = {
 interface LedgerDashboardProps {
   experience?: ExperienceView;
   posts: FeedPost[];
+  requests: IntroRequest[];
+  me: { name: string; avatarUrl?: string } | null;
+  onReview: (request: IntroRequest) => void;
   members: NetworkMember[];
   live: boolean;
   socialFeed?: React.ReactNode;
@@ -39,10 +43,11 @@ interface LedgerDashboardProps {
 }
 
 export function LedgerDashboard({
-  experience = 'business', posts, members, live, socialFeed, actionQueue, liveOverview, unreadCount,
+  experience = 'business', requests, me, onReview, posts, members, live, socialFeed, actionQueue, liveOverview, unreadCount,
   onNavigate, onRequestIntro, onAddPost, onLikePost, onSavePost, onOpenTool, onOpenPipeline,
 }: LedgerDashboardProps) {
   const [view, setView] = useState<'activity' | 'board' | 'highlights'>('activity');
+  useEffect(() => { if (experience === 'social') setView('activity'); }, [experience]);
   const [highlightsVisited, setHighlightsVisited] = useState(false);
   const [boardVisited, setBoardVisited] = useState(false);
   const [draft, setDraft] = useState('');
@@ -125,11 +130,15 @@ export function LedgerDashboard({
     </details>}
     <div className="ledger-dashboard-grid">
       <div className="ledger-dashboard-primary">
-        {panels.activity && <Panel className="ledger-dashboard-feed" title="Network activity"
+        <CommonsHomeView social={experience === 'social'} draft={draft} onDraftChange={setDraft}
+          posts={posts} members={members} requests={requests} isLive={live} me={me}
+          onNavigate={onNavigate} onWorkspace={tool => onOpenTool ? onOpenTool(tool) : onNavigate('workspace')}
+          onRequestIntro={onRequestIntro} onReview={onReview} onAddPost={onAddPost} onLike={onLikePost} onSave={onSavePost}>
+        <div className="ledger-persistent-feed" hidden={experience === 'social' ? !live : !panels.activity}><Panel className="ledger-dashboard-feed" title="Network activity"
           subtitle={live ? 'Confirmed activity from your connected network' : 'Sample conversations from the guided showcase'}
           action={<button type="button" className="ledger-ui-link" onClick={() => onNavigate('people')}>Network <ArrowRight size={13}/></button>}
           bodyClassName="ledger-feed-body">
-          {socialFeed ? socialFeed : <>
+          {socialFeed ? socialFeed : <div hidden={experience === 'social'}>
             <form className="ledger-feed-composer" onSubmit={sendPost}>
               <label htmlFor="ledger-post-content">Share an update with your network</label>
               <textarea id="ledger-post-content" value={draft} onChange={event => setDraft(event.target.value)}
@@ -165,8 +174,9 @@ export function LedgerDashboard({
                 </article>
               )) : <p className="ledger-ui-empty">No posts for this filter.</p>}
             </div>
-          </>}
-        </Panel>}
+          </div>}
+        </Panel></div>
+        </CommonsHomeView>
       </div>
       <div className="ledger-dashboard-secondary">
         {panels.people && <Panel title="People to know" subtitle="Browse and build meaningful relationships"

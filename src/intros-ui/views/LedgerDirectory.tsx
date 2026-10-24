@@ -1,3 +1,4 @@
+import { BridgePeopleDirectory } from './BridgePeopleDirectory';
 import type { ExperienceView } from '../experience/preference';
 import { MemberThumbnail } from '../components/shared/MemberThumbnail';
 /* CRM Contacts pattern, sourced from the REAL Bridge directory.
@@ -30,7 +31,7 @@ export function LedgerDirectory({
     const text = [person.name, person.title, person.company, person.industry, person.location].join(' ').toLowerCase();
     return (!query || text.includes(query)) && (role === 'all' || person.roleType === role);
   }).sort((a, b) => sort === 'name' ? a.name.localeCompare(b.name) : b.matchScore - a.matchScore), [members, search, role, sort]);
-  return <div className="ledger-directory">
+  return <><div hidden={experience !== 'social'}><BridgePeopleDirectory members={members} isLive={isLive} searchKeyword={search} onSearchChange={setSearch} onNavigate={onNavigate} onRequestIntro={onRequestIntro} connectedMemberIds={connectedMemberIds} onToggleConnect={onToggleConnect}/></div><div className="ledger-directory" hidden={experience === 'social'}>
     <PageHeader eyebrow="Relationships / Contacts" title="People & Network"
       description="Find the people, context and warm paths that matter."
       actions={<>
@@ -93,5 +94,5 @@ export function LedgerDirectory({
         {!filtered.length && <div className="ledger-ui-empty">{members.length ? 'No matching people. Clear a filter or try another keyword.' : isLive ? 'The verified directory is loading or unavailable.' : 'No people yet.'}</div>}
       </div>
     </Panel>
-  </div>;
+  </div></>;
 }

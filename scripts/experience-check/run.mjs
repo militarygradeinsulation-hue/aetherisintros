@@ -21,7 +21,7 @@ try {
     window.__draftNode = document.querySelector("#ledger-post-content");
   });
   await page.getByRole("button", { name: "Social", exact: true }).click();
-  await page.getByRole("heading", { name: "Your network, in motion." }).waitFor();
+  await page.getByRole("heading", { name: "Today, in good company." }).waitFor();
   if (
     (await page.locator("#ledger-post-content").inputValue()) !==
     "Keep this draft across both visual views"
@@ -34,17 +34,26 @@ try {
   )
     throw new Error("Feed was remounted");
   console.log("Social switch preserves feed DOM and draft");
+  if ((await page.locator("#commons-post").inputValue()) !== "Keep this draft across both visual views") throw new Error("Social composer draft did not carry over");
+  await page.locator("#commons-post").fill("Edited in Social, retained in Business");
+  await page.getByRole("tab", { name: "Intros", exact: false }).click();
+  await page.getByRole("tab", { name: "Posts", exact: true }).click();
+  if ((await page.locator("#commons-post").inputValue()) !== "Edited in Social, retained in Business") throw new Error("Feed section switch discarded draft");
+  await page.getByRole("button", { name: "Business", exact: true }).click();
+  if ((await page.locator("#ledger-post-content").inputValue()) !== "Edited in Social, retained in Business") throw new Error("Business composer draft did not carry over");
+  await page.getByRole("button", { name: "Social", exact: true }).click();
+  await page.getByRole("tab", { name: "Everything", exact: true }).click();
   await page.waitForTimeout(500);
   await page.screenshot({ path: `${output}/social.png`, fullPage: false });
   console.log(
     "social title font",
-    await page.locator(".ledger-ui-page-header h1").evaluate((n) => getComputedStyle(n).fontFamily),
+    await page.locator(".commons-welcome h1").evaluate((n) => getComputedStyle(n).fontFamily),
   );
   await page
     .getByRole("navigation", { name: "Social workspace navigation" })
-    .getByRole("button", { name: "Network", exact: true })
+    .getByRole("button", { name: "People", exact: true })
     .click();
-  const search = page.getByPlaceholder("Search name, company, industry or city…");
+  const search = page.getByPlaceholder("Name or keyword...");
   await search.fill("Marcus");
   await page.waitForTimeout(500);
   await page.screenshot({ path: `${output}/social-people.png`, fullPage: false });
