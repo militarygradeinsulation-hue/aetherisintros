@@ -4,12 +4,12 @@ import { useAetherisNews } from '@/aetheris/news';
 import './news-ticker.css';
 
 /** Publisher headlines from the same canonical feed as Business news. */
-export function NewsTicker({ onOpenNews }: { onOpenNews: () => void }) {
+export function NewsTicker({ onOpenNews, social = false }: { social?: boolean; onOpenNews: () => void }) {
   const { data, isPending, isError } = useAetherisNews();
   const [paused, setPaused] = useState(false);
   const items = (data?.items ?? []).slice(0, 10);
   return <section className="workspace-news" aria-label="Business headlines" data-paused={paused}>
-    <button type="button" className="workspace-news-label" onClick={onOpenNews}><Newspaper size={15}/> News</button>
+    <button type="button" className="workspace-news-label" onClick={onOpenNews}><Newspaper size={15}/> {social ? "IN THE KNOW" : "News"}</button>
     {items.length ? <>
       <div className="workspace-news-window" tabIndex={0} aria-label="Headlines; hover or focus to pause">
         <div className="workspace-news-track">{[0, 1].map(copy => <div className="workspace-news-group" key={copy} aria-hidden={copy === 1 || undefined}>

@@ -78,8 +78,12 @@ try {
       }
       const activity=modal.getByRole('checkbox',{name:/Network activity/});
       if(!(await activity.isChecked()))throw Error('Default CRM activity section is not visible');
+      const retainedComposer = page.locator('#ledger-post-content');
+      await retainedComposer.fill('Retain this draft while the activity panel is hidden');
       await activity.uncheck();
-      if(await page.locator('.ledger-dashboard-feed').count())throw Error('CRM activity did not hide');
+      // Hidden panels remain mounted so hiding activity never destroys an unsent post.
+      if(await page.locator('.ledger-dashboard-feed').isVisible())throw Error('CRM activity did not hide');
+      if(await retainedComposer.inputValue() !== 'Retain this draft while the activity panel is hidden')throw Error('Hiding activity discarded the post draft');
       await modal.getByRole('button',{name:'Done'}).click();
       if(await modal.isVisible())throw Error('CRM Done failed to close');
       await page.getByRole('button',{name:'Customize',exact:true}).click();

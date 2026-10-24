@@ -39,6 +39,10 @@ jobs:
         run: npx vite build
       - name: Install Chromium
         run: npx playwright install --with-deps chromium
+      - name: Published Bridge Social View and Business state retention (browser)
+        env:
+          PLAYWRIGHT_MODULE: ${{ github.workspace }}/node_modules/playwright/index.mjs
+        run: node scripts/experience-check/ci.mjs
       - name: Dashboard and Network density (desktop, tablet and mobile browser)
         env:
           PLAYWRIGHT_MODULE: ${{ github.workspace }}/node_modules/playwright/index.mjs

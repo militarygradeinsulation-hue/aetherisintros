@@ -1,19 +1,13 @@
 # Social and Business views
 
-Branch base: `aetherisintros/main` at `61b500c8571b09aa5eda880f8dbed6565bcb7fb4`.
-Latest main reconciled without replacing either view: `840d6a713956f4a9b25c7ec62256784ce1e5995a` (branding, cinematic landing, expanding tabs, desktop dock and CRM Finance Bento).
-Social visual reference: `aetheris-bridge/design/absolute-ledger-bridge-20261023` at `2d20c664f51e4777c8bb8750ee36ede141d8a75f`.
+Social View follows the published `https://aetheris-bridge.lovable.app/demo` and the owner-supplied `aetheris-bridge.zip` from October 24, 2026. The prior Social View used the different Absolute Ledger Bridge branch; the published Commons composition is now the reference.
 
-The member shell offers Social and Business presentation choices. Business remains the default for existing visitors. The device preference is stored in `ask-intros.experience.v1`; the separate light/dark preference remains unchanged (dark by default).
+The Commons home, People directory, profile, logo and complete light/dark glass stylesheet are adapted directly from that source. `bridge-social.css` scopes every top-level selector to `html[data-experience="social"]`, including portal styling. `bridge-social-host.css` adapts the presentation to the existing Ask Intros shell. Business retains its current dashboard, sidebar, tables and controllers. The existing Social/Business preference and dark default remain intact.
 
-Both views render the same IntrosApp, page components, data providers, action callbacks and modal instances. Switching updates presentation attributes and navigation chrome, never a React key or a second application tree. This preserves the current page, selected record, mounted drafts, search filters and board configuration.
+Both views use the same `IntrosApp`, canonical navigation destinations, records, action callbacks, assistant and modal instances. The live feed remains in one stable child slot within `LedgerDashboard` through experience and feed-section switches. The demo draft is shared by both composers; demo replies remain local. The reference post renderer also displays the existing demo post photos. People filters and profile actions use the production member records and existing handlers; names never resolve to unrelated portraits.
 
-Social uses the Bridge blue/navy and ivory palettes, Inter/Bricolage fonts, rounded glass cards, horizontal desktop navigation, and portrait cards for People. Business retains the existing sidebar and table/dashboard layout. Social styles live in the `social-experience` layer and require `html[data-experience="social"]`, including body portals. Leaving the member shell removes this attribute. Semantic destructive/error colors remain distinct.
-
-Both navigation styles use `workspace-navigation.ts`. Ask Intros groups Introductions, Live Signal Radar (the retained `bubbles` page), Memory and Referral Engine. Existing page/tool IDs remain valid. CRM & Pipeline remains restricted to those tools. Mobile retains the existing drawer and bottom navigation.
-
-The 11 Bridge showcase portraits and two fonts are copied into public assets, with the font licenses. Demo portrait assignments live only in the explicit network fixtures. Live data, missing-photo fallbacks, private storage and account permissions remain unchanged. No Bridge project configuration, database migrations or credentials are copied.
+The original Bridge logo is bundled at `/ask-intros-bridge-logo.jpg` and only CSS crops it. Existing bundled fonts are reused. No Bridge environment settings, backend configuration, database migrations, credentials or account records are imported.
 
 ## Validation
 
-Run the preference and canonical-navigation tests along with member-media, mobile-navigation, appearance, board-layout and feed-window tests. Build with `npm run build`. Browser checks should cover Social/Business in both themes and mobile/desktop, draft retention, directory filters, all navigation targets, modal styling and missing-photo behavior. Authenticated persistence requires a permitted test account; demo tests do not prove production database readiness.
+Run `npx tsc --noEmit -p .`, `npx vitest run` and `npm run build`. The retained `scripts/experience-check/run.mjs` checks the Commons composition, shared draft values and DOM preservation across views, directory search retention, message drafts, light/dark controls, saved experience and mobile overflow. Production persistence still requires a permitted authenticated test account; demo checks do not establish production database readiness.
