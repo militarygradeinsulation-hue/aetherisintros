@@ -1,6 +1,7 @@
 @import "tailwindcss" source(none);
 @source ".";
 @import "tw-animate-css";
+@import "./premium-glass.css";
 
 @custom-variant dark (&:is(.dark *));
 
@@ -62,7 +63,7 @@
 }
 
 :root {
-  --radius: 0.625rem;
+  --radius: 1rem;
   --background: var(--night);
   --foreground: var(--soft);
   --card: oklch(1 0 0);

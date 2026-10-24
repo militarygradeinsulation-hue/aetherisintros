@@ -69,3 +69,43 @@
     -webkit-backdrop-filter:none;backdrop-filter:none;
   }
 }
+
+/* Social post anatomy shared by live Signals, profile journals and demo feed. */
+:root body :is(.ix-root,.app-shell,.ask-os) :is(.social-feed-card,.post-card,.premium-demo-post) {
+  min-width:0;
+  border:1px solid var(--glass-edge)!important;
+  border-radius:var(--glass-radius)!important;
+  padding:20px!important;
+  background:linear-gradient(145deg,var(--glass-sheen),transparent 65%),var(--glass-fill)!important;
+  color:var(--ledger-crm-ink,var(--soft));
+  box-shadow:var(--glass-shadow)!important;
+}
+:root body :is(.ix-root,.app-shell,.ask-os) :is(.social-feed-card,.post-card) :is(.social-feed-copy h2,h3) {
+  font:600 18px/1.5 ui-sans-serif,system-ui,sans-serif!important;
+  letter-spacing:normal!important;
+}
+:root body :is(.ix-root,.app-shell,.ask-os) :is(.social-feed-copy p,.post-card > p) {
+  font-size:14px!important;line-height:1.75!important;white-space:pre-wrap;
+  color:var(--ledger-crm-ink,var(--soft))!important;
+}
+:root body :is(.ix-root,.app-shell,.ask-os) :is(.social-feed-card,.post-card) :is(.person-avatar,.member-thumbnail) {width:40px;height:40px;flex:0 0 40px;border-radius:50%!important;overflow:hidden}
+:root body :is(.ix-root,.app-shell,.ask-os) :is(.social-feed-card,.post-card) .journal-media {margin:18px 0}
+:root body :is(.ix-root,.app-shell,.ask-os) :is(.social-feed-card,.post-card) :is(.journal-image,.journal-video,.journal-image img,.journal-video video) {border-radius:18px!important;overflow:hidden}
+:root body :is(.ix-root,.app-shell,.ask-os) :is(.social-feed-card > footer,.post-actions,.premium-post-actions) {
+  display:flex!important;flex-wrap:wrap;gap:8px!important;border-top:0!important;
+}
+:root body :is(.ix-root,.app-shell,.ask-os) .post-card > footer {flex-direction:column;align-items:stretch;border-top:0!important}
+:root body :is(.ix-root,.app-shell,.ask-os) :is(.social-feed-card > footer,.post-actions,.premium-post-actions) > :is(button,.post-share-control) {flex:1 1 90px!important}
+:root body :is(.ix-root,.app-shell,.ask-os) :is(.social-feed-card > footer,.post-actions,.premium-post-actions,.post-share-control) button {
+  display:inline-flex;align-items:center;justify-content:center;gap:8px;
+  min-height:44px;padding:10px 12px!important;border:0;border-radius:14px!important;
+  font:500 13px/1.3 ui-sans-serif,system-ui,sans-serif;
+}
+:root body .post-share-control {display:flex;flex-direction:column;align-items:stretch;min-width:0}
+:root body .post-share-control button {background:transparent;color:inherit;cursor:pointer}
+:root body .post-share-control small {font-size:11px;line-height:1.4}
+:root body :is(.social-feed-card > footer,.post-actions,.premium-post-actions,.post-share-control) button:hover {background:var(--acc-wash)!important}
+:root body :is(.social-feed-card,.post-card,.premium-demo-post) button[aria-pressed="true"] {color:var(--acc)!important}
+@media(max-width:600px) {
+  :root body :is(.ix-root,.app-shell,.ask-os) :is(.social-feed-card,.post-card,.premium-demo-post) {padding:16px!important}
+}
