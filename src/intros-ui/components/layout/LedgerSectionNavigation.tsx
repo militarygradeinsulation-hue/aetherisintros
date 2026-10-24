@@ -24,7 +24,7 @@ export function LedgerSectionNavigation({ activePage, activeTool, onSelect }: { 
     <p className="ledger-section-title">{name}</p>
     <nav className="ledger-section-options ledger-section-expanding" aria-label={`${name} pages`}>
       <ExpandingTabs items={tabs} mode="navigation" ariaLabel={`${name} pages`}
-        value={selected >= 0 ? tabs[selected]?.id : ''}
+        value={selected >= 0 ? (tabs[selected]?.id ?? '') : ''}
         onValueChange={id => { const index = tabs.findIndex(item => item.id === id); if (index >= 0 && primary[index]) onSelect(primary[index]); }} />
     </nav>
     {secondary.length > 0 && <details ref={detailsRef} className="ledger-section-more">
