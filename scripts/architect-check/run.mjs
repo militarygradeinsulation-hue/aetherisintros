@@ -164,7 +164,7 @@ try{
     await focused.getByRole('button',{name:'CRM',exact:true}).click();
     await page.getByRole('tablist',{name:'CRM sections'}).waitFor();
     check(await page.locator('.ops-board').count()===0,theme+' CRM returns to relationship records');
-    for (const destination of ['Dashboard','Network','Introductions','Meetings','Deals & Workspaces','Intelligence','My Work','Library']) {
+    for (const destination of ['Dashboard','Network','Ask Intros','Meetings','Deals & Workspaces','Intelligence','My Work','Library']) {
       await sidebar.getByRole('button',{name:destination,exact:true}).click();
       const section=page.locator('.ledger-section-navigation');
       await section.waitFor();
