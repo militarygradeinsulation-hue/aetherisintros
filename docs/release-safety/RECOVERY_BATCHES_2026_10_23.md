@@ -13,22 +13,11 @@ The recovery preserves the current Ledger/Command Dashboard design. Changes are 
 | Opportunity intelligence | #302 | Read current account CRM opportunity/contact/activity records; require permission and matching consent plus explicit reviewer ratings. Unknown data remains unknown. Explain weights and coverage; no enrichment, outreach, predictions or persistent ratings. Twelve focused scoring/adapter/evidence-boundary tests passed. |
 | Backend safeguards | #301 | Pending-order/ledger validation, known collision exclusions, fail-closed replay and expanded isolation rehearsal. Seventeen recovery tests passed. Production activation remains separate. |
 
-## Production activation: current evidence supersedes the old replay assumption
+## Production acceptance remains separate
 
-A fresh read-only export of the connected production Drizzle ledger has 76 rows. Comparing unchanged source migrations finds 71 hash matches, 20 pending tags and four hash conflicts. One historical ledger row has an unmatched hash/timestamp. These findings do not authorize edits to the ledger.
+Source tests and frontend publication do not certify production database activation. Production maintenance and real-account acceptance remain tracked separately under #211. This source-only recovery does not change production member data, schema, permissions or migration history.
 
-The refreshed public catalog was reconstructed successfully in disposable PGlite. Attempting unchanged migration 0058 then failed because `deal_rooms` already exists. Replay stopped immediately. This demonstrates partial schema activation without corresponding canonical ledger evidence; the October 20 successful rehearsal is not evidence that the old replay plan remains safe today.
-
-Raw catalog definitions and ledger exports are intentionally outside git. No production schema, RLS, grant, member-data or migration-ledger writes were performed.
-
-Before activation:
-
-1. Verify management access to the actual Ask Intros database and a restorable backup; perform an isolated restore.
-2. Compare existing definitions, ACLs, policies, triggers and dependencies with intended contracts. Prepare additive/forward-only repairs; do not relabel or replay 0062 and do not overwrite historical SQL or ledger rows.
-3. Rehearse those exact repairs against the restored schema, then verify anonymous, distinct members, revoked members and administrator behavior.
-4. Perform real-account upload, save, reload and member-isolation acceptance before claiming activation.
-
-The journal bucket exists and is private; an owner-folder upload policy exists. That inspection alone does not establish end-to-end media or private-file isolation. Issue #211 remains the activation tracker.
+Complete an authorized backup/restore and reconciliation process before database activation. Verify real-account uploads, saves, reloads and member isolation before claiming end-to-end production acceptance. Detailed operational findings are intentionally excluded from this public report.
 
 ## Disposition of every older PR open at the start of this recovery
 
