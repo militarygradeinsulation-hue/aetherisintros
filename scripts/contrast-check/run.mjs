@@ -77,7 +77,7 @@ function measure(selector) {
       // hit targets and content scroll reachability are covered by mobile-site-check.
       // Continue detecting decorative fields and unknown overlays here.
       if (hit?.closest('.ledger-native-quick-dock,.ask-dock-fab') && !s.contains(hit)) continue
-      if (hit && !s.contains(hit)) covered = (hit.className && String(hit.className).split(' ')[0]) || hit.tagName.toLowerCase()
+      if (hit && !s.contains(hit)) { covered = (hit.className && String(hit.className).split(' ')[0]) || hit.tagName.toLowerCase(); console.log('OVERLAY_DIAGNOSTIC', JSON.stringify({selector,x,y,surface:r.toJSON(),hit:hit.outerHTML.slice(0,300),hitRect:hit.getBoundingClientRect().toJSON(),clip:{left,top,right,bottom}})); }
     }
     if (amb) amb.style.pointerEvents = prev
   }
@@ -133,7 +133,7 @@ async function check(page, name, selector, prefix, { inline = false, field = fal
 async function open(viewport) {
   const page = await browser.newPage({ viewport })
   page.on('pageerror', e => console.log('  ! page error:', e.message.slice(0, 400)))
-  page.on('console', message => { if (message.type() === 'error') console.log('  ! browser console:', message.text().slice(0, 500)) })
+  page.on('console', message => { if (message.type() === 'error' || message.text().startsWith('OVERLAY_DIAGNOSTIC')) console.log('  ! browser console:', message.text().slice(0, 2000)) })
   page.on('response', response => { if (response.status() >= 400 && response.url().startsWith(base)) console.log('  ! local HTTP:', response.status(), response.url().slice(0, 230)) })
   await page.goto(`${base}/demo`, { waitUntil: 'networkidle', timeout: 120_000 })
   try {
