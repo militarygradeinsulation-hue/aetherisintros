@@ -26,8 +26,9 @@ describe('homepage purpose strip', () => {
     expect(css).toContain('.ael-platform-disclaimer')
   })
 
-  it('renders the AI brief section exactly once (unique landmark ids)', () => {
-    expect(landing.match(/id="intelligence"/g)).toHaveLength(1)
-    expect(landing.match(/id="ael-intelligence-title"/g)).toHaveLength(1)
+  it('keeps the removed explanation sections off the compact homepage', () => {
+    for (const id of ['experience', 'approach', 'intelligence', 'ael-intelligence-title']) {
+      expect(landing).not.toContain(`id="${id}"`)
+    }
   })
 })

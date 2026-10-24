@@ -33,8 +33,8 @@ export default function Landing() {
         <AskIntrosLockup variant="compact" />
       </Link>
       <nav className="ael-nav" aria-label="Primary navigation">
-        <a href="#experience">The experience</a>
-        <a href="#approach">How it works</a>
+        <a href="#cinematic-experience">The experience</a>
+        <Link to="/demo">Explore the demo</Link>
         <a href="#membership">Membership</a>
       </nav>
       <div className="ael-header-actions">
@@ -61,7 +61,7 @@ export default function Landing() {
       </div>
       <div className="ael-hero-bottom">
         <span>WHY ME. WHY THEM. WHY NOW.</span>
-        <a href="#experience">THE EXPERIENCE <ArrowDownRight aria-hidden="true" size={16} /></a>
+        <a href="#cinematic-experience">THE EXPERIENCE <ArrowDownRight aria-hidden="true" size={16} /></a>
         <span>01 / 03</span>
       </div>
     </section>
@@ -82,42 +82,6 @@ export default function Landing() {
       secondaryHref="/try"
       secondaryLabel="Try the live experience"
     />
-
-    <section className="ael-compact-story" id="experience" aria-labelledby="ael-experience-title">
-      <div className="ael-compact-story-main">
-        <div className="ael-compact-story-copy">
-          <div className="ael-editorial-meta"><span>THE PHILOSOPHY</span><span>001 — RELATIONSHIPS WITH PURPOSE</span></div>
-          <h2 id="ael-experience-title" className="stencil-display"><span className="sr-only">Not more contacts. Better connections.</span><StencilHeadline lines={['NOT MORE CONTACTS', 'BETTER CONNECTIONS']} /></h2>
-          <p>Start with something specific: a customer you want to reach, expertise you need, or a project you can help deliver. Give the next conversation a clear purpose.</p>
-          <Link className="ael-underlink" to="/founder-story">Why we built it <ArrowUpRight aria-hidden="true" size={16} /></Link>
-        </div>
-      </div>
-      <div className="ael-compact-method" id="approach" aria-labelledby="ael-approach-title">
-        <div className="ael-compact-method-heading">
-          <span className="ael-fine-label">HOW IT WORKS / THREE MOVES</span>
-          <h3 id="ael-approach-title" className="stencil-display"><span className="sr-only">From introduction to impact.</span><StencilHeadline lines={['FROM INTRODUCTION', 'TO IMPACT']} /></h3>
-        </div>
-        <ol className="ael-compact-steps">
-          <li><span>01</span><div><strong>Bring one real need</strong><p>Explain what would move you forward and what you can help others with.</p></div></li>
-          <li><span>02</span><div><strong>Find a reason to meet</strong><p>Review the person and context before requesting an introduction. Both people choose whether to connect.</p></div></li>
-          <li><span>03</span><div><strong>Agree on a next step</strong><p>Continue the conversation, arrange a meeting and record what you agree to do next.</p></div></li>
-        </ol>
-        <Link to="/demo" className="ael-underlink ael-underlink-dark">See the demo experience <ArrowUpRight aria-hidden="true" size={16} /></Link>
-      </div>
-      <div className="ael-compact-method" id="intelligence" aria-labelledby="ael-intelligence-title">
-        <div className="ael-compact-method-heading">
-          <span className="ael-fine-label">THE AI BRIEF / YOUR BUSINESS ANALYST</span>
-          <h3 id="ael-intelligence-title" className="stencil-display"><span className="sr-only">What your AI Business Analyst surfaces.</span><StencilHeadline lines={['YOUR BUSINESS', 'BRIEF']} /></h3>
-        </div>
-        <ol className="ael-compact-steps">
-          <li><span>01</span><div><strong>Lead leaks</strong><p>Where deals slip before they close.</p></div></li>
-          <li><span>02</span><div><strong>Cold relationships</strong><p>High-value connections worth one reactivation.</p></div></li>
-          <li><span>03</span><div><strong>Partner introductions</strong><p>Named people whose work addresses your gaps.</p></div></li>
-          <li><span>04</span><div><strong>Network health score</strong><p>A live 0–100 reading of your activity vs. your opportunities.</p></div></li>
-        </ol>
-        <Link to="/demo" className="ael-underlink ael-underlink-dark">See a sample brief <ArrowUpRight aria-hidden="true" size={16} /></Link>
-      </div>
-    </section>
 
     <section className="ael-membership ael-compact-membership" id="membership" aria-labelledby="ael-membership-title">
       <div className="ael-compact-membership-content">
