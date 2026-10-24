@@ -113,7 +113,8 @@ try {
       if(await page.evaluate(()=>document.documentElement.scrollWidth-innerWidth)>3)throw Error('Member stack causes viewport overflow');
       if(process.env.BENTO_SCREENSHOT_DIR)await page.screenshot({path:process.env.BENTO_SCREENSHOT_DIR+'/'+theme+'-'+size.width+'.png'});
       await stack.getByRole('button',{name:'View profile of '+chosenName,exact:true}).click();
-      await page.getByRole('heading',{name:chosenName,exact:true}).waitFor({timeout:15000});
+      await page.getByRole('button',{name:'Back to People',exact:true}).waitFor({timeout:15000});
+      await page.getByRole('heading',{name:chosenName.split(' ')[0],exact:true}).waitFor({timeout:15000});
       console.log('PASS bento member stack selection, profile navigation, contrast and motion '+theme+' '+size.width);
 
       if(size.width < 600) {
