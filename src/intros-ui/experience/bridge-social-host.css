@@ -1,5 +1,9 @@
 /* Integration geometry only. Original Bridge modules own Social presentation. */
 @layer bridge-social-reference {
+  :root[data-experience="social"],
+  :root[data-experience="social"] body {
+    height:auto !important; max-height:none !important; overflow-y:auto !important;
+  }
   :root body .ix-root [hidden] { display:none !important; }
   :root[data-experience="social"] .ledger-crm-shell,
   :root[data-experience="social"] .ledger-crm-body { display:block !important; margin:0 !important; padding:0 !important; width:100% !important; min-width:0 !important; }
@@ -12,5 +16,11 @@
   :root[data-experience="social"] .ledger-persistent-feed:not([hidden]) { display:contents !important; }
   :root[data-experience="social"] .ledger-persistent-feed .ledger-ui-panel > header { display:none !important; }
   :root[data-experience="social"] .bridge-navigation-host { display:contents !important; }
+  :root[data-experience="social"] body .ix-root.ix-aetheris-workspace-mode,
+  :root[data-experience="social"] body .ix-root .ledger-crm-shell,
+  :root[data-experience="social"] body .ix-root .ledger-crm-body,
+  :root[data-experience="social"] body .ix-root .ledger-native-content {
+    height:auto !important; max-height:none !important; overflow:visible !important;
+  }
   .bridge-experience-control { display:flex; justify-content:flex-end; padding:4px 16px; }
 }

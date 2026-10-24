@@ -24,7 +24,7 @@ try{
   for(const width of [390,1280]){
     const page=await browser.newPage({viewport:{width,height:900}});
     await page.goto("http://127.0.0.1:"+port+"/",{waitUntil:"domcontentloaded",timeout:120000});
-    await page.waitForSelector(".ael-compact-story-copy p",{timeout:45000});
+    await page.waitForSelector(".ael-hero-lede",{timeout:45000});
     await page.evaluate(()=>{
       const fixture=document.createElement("div");
       fixture.id="news-copy-contrast-fixture";fixture.className="ix-root";
@@ -40,11 +40,6 @@ try{
       },theme);
       await page.waitForTimeout(120);
       const cases=[
-        [".ael-compact-story",".ael-compact-story-copy p","philosophy text"],
-        [".ael-compact-story",".ael-editorial-meta","philosophy label"],
-        [".ael-compact-story",".ael-compact-method-heading .ael-fine-label","method label"],
-        [".ael-compact-story",".ael-compact-steps li:first-child strong","step title"],
-        [".ael-compact-story",".ael-compact-steps li:first-child p","step description"],
         [".news-editorial-head",".news-editorial-head h1","news title"],
         [".news-editorial-head",".news-editorial-head h1 em","news emphasis"],
         [".news-editorial-head",".news-editorial-head p:last-child","news description"],

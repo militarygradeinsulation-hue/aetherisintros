@@ -112,7 +112,7 @@ try {
           membership: rect('#membership'),
           footer: rect('.ael-compact-footer'),
           links: Object.fromEntries(
-            ['experience', 'approach', 'membership'].map(id => {
+            ['cinematic-experience', 'membership'].map(id => {
               return [id, Boolean(root.querySelector('a[href="#' + id + '"]') && document.getElementById(id))]
             }),
           ),
@@ -120,7 +120,6 @@ try {
             preview: Boolean(root.querySelector('.ael-hero-actions a[href="/try"]')),
             demo: Boolean(root.querySelector('a[href="/demo"]')),
             join: Boolean(root.querySelector('.ael-hero-actions a[href^="/auth?"][href*="mode=signup"]')),
-            story: Boolean(root.querySelector('a[href="/founder-story"]')),
             auth: Boolean(root.querySelector('.ael-header-actions a[href="/auth"]')),
           },
         }
@@ -130,7 +129,7 @@ try {
         hero: Math.round(m.hero?.height ?? 0),
         footer: Math.round(m.footer?.height ?? 0),
       }))
-      assert(m.sections === 4, 'three original chapters plus one cinematic product demonstration')
+      assert(m.sections === 3, 'hero, cinematic experience and membership keep the homepage concise')
       const allowedHeight = viewport.maxHeight + Math.ceil(m.cinematic?.height ?? 0) + 80
       assert(Boolean(m.cinematic && m.cinematicCTA && m.cinematic.height > 380), 'cinematic product demo and working CTA render')
       assert(m.pageHeight <= allowedHeight, 'scroll budget includes one approved cinematic chapter: ' + m.pageHeight + ' <= ' + allowedHeight + ' px')
@@ -139,9 +138,9 @@ try {
         'headline, primary actions, membership and footer all render')
       assert(m.hero && m.hero.height <= Math.max(viewport.height * 1.10, 760),
         'hero fits near the first viewport')
-      assert(['experience', 'approach', 'membership'].every(id => m.links[id]),
+      assert(['cinematic-experience', 'membership'].every(id => m.links[id]),
         'every navigation anchor has a real destination')
-      assert(Object.values(m.ctas).every(Boolean), 'hero preview, deeper demo, join, sign-in and founder-story links remain')
+      assert(Object.values(m.ctas).every(Boolean), 'hero preview, demo, join and sign-in links remain')
       const onScreen = r => Boolean(r && r.width > 0 && r.right <= viewport.width + 3 && r.x >= -3)
       assert(m.logo && m.logo.width >= (viewport.width <= 420 ? 150 : viewport.width <= 750 ? 175 : 220),
         'approved Ask Intros wordmark is prominent at this breakpoint')
@@ -149,8 +148,8 @@ try {
         'headlines and important actions remain within phone/desktop width')
 
       if (viewport.name === 'desktop') {
-        await page.locator('.ael-nav a[href="#approach"]').click()
-        assert(new URL(page.url()).hash === '#approach', 'How it works navigation updates the anchor')
+        await page.locator('.ael-nav a[href="#cinematic-experience"]').click()
+        assert(new URL(page.url()).hash === '#cinematic-experience', 'Experience navigation updates the anchor')
         await page.locator('.ael-nav a[href="#membership"]').click()
         assert(new URL(page.url()).hash === '#membership', 'Membership navigation updates the anchor')
       }
