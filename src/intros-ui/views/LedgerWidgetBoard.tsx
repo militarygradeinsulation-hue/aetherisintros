@@ -1,4 +1,4 @@
-import { useEffect, useState, type ReactNode } from 'react';
+import { useEffect, useState, type ReactNode, type CSSProperties } from 'react';
 import { ArrowRight, BookOpen, CheckSquare, GripVertical, Lock, Mail, Radar, RotateCcw, Target, Unlock, Users } from 'lucide-react';
 import { DraggableWidgetGrid, type WidgetItem, type WidgetSize } from '@/components/ui/widget-board';
 import { useOps } from '@/aetheris/crm/store';
@@ -6,6 +6,8 @@ import type { NetworkMember } from '@/intros-ui/networkData';
 import type { ActivePage } from '@/intros-ui/components/layout/TopNavigation';
 import { DASHBOARD_BOARD_KEY, normalizeDashboardBoard, type DashboardBoardLayout } from './dashboard-board-layout';
 import './ledger-widget-board.css';
+import { MemberCardStack } from './MemberCardStack';
+import './relationship-bento.css';
 
 export function LedgerWidgetBoard({ members, unreadCount, live, onNavigate, onOpenTool, onOpenPipeline }: {
   members: NetworkMember[]; unreadCount: number | null; live: boolean;
@@ -46,9 +48,10 @@ export function LedgerWidgetBoard({ members, unreadCount, live, onNavigate, onOp
   const views: Record<string, { icon: typeof Users; content: ReactNode; action: string; run: () => void }> = {
     pipeline: { icon: Target, action: 'Open CRM & Pipeline', run: () => onOpenPipeline ? onOpenPipeline() : openTool('crm'), content: <>
       {metric(count(opportunities.length), 'open opportunities')}
+      {available && opportunities.length > 0 && <div className="ledger-pipeline-allocation" role="img" aria-label={stages.map(([name, n]) => `${name}: ${n}`).join(', ')}>{stages.map(([name, n], index) => <span key={name} style={{ flexGrow: n, '--stage-opacity': Math.max(.25, 1 - index * .13) } as CSSProperties} title={`${name}: ${n}`} />)}</div>}
       {available ? stages.length ? <div className="ledger-widget-bars" aria-label="Open opportunities by stage">{stages.slice(0, 4).map(([name, n]) => <div key={name}><span>{name}</span><i aria-hidden="true"><b style={{ width: `${n / Math.max(opportunities.length, 1) * 100}%` }}/></i><strong>{n}</strong></div>)}</div> : <p>No open opportunities in your loaded CRM records.</p> : <p>{pending}</p>}
     </> },
-    network: { icon: Users, action: 'Explore network', run: () => onNavigate('people'), content: <>{metric(String(members.length), live ? 'members in your directory' : 'showcase members')}<div className="ledger-widget-people">{members.slice(0, 3).map(person => <button type="button" key={person.id} onClick={() => onNavigate('people', person.id)}><span>{person.name.split(' ').map(part => part[0]).slice(0, 2).join('')}</span><b>{person.name}</b></button>)}</div></> },
+    network: { icon: Users, action: 'Explore network', run: () => onNavigate('people'), content: <MemberCardStack members={members} live={live} onOpen={id => onNavigate('people', id)}/> },
     conversations: { icon: Mail, action: 'Open messages', run: () => onNavigate('messages'), content: <>{metric(unreadCount === null ? '—' : String(unreadCount), 'unread messages')}<p>{unreadCount === null ? 'Inbox counts are unavailable. Open Messages to check.' : live ? 'From your live inbox.' : 'Showcase conversations.'}</p></> },
     crm: { icon: Users, action: 'Open CRM', run: () => openTool('crm'), content: <>{metric(count(people.length), 'CRM contacts loaded')}<p>{available ? `${ops.companies.filter(c => !c.archived).length} companies · ${people.filter(p => p.memberId).length} linked network members` : pending}</p></> },
     tasks: { icon: CheckSquare, action: 'Review CRM', run: () => openTool('crm'), content: <>{metric(count(tasks.length), 'open CRM tasks')}<p>{available ? `${overdue.length} overdue in your loaded records` : pending}</p>{available && <ul>{tasks.slice(0, 2).map(task => <li key={task.id}>{task.title}</li>)}</ul>}</> },

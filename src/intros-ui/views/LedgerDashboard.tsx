@@ -8,6 +8,7 @@ import type { ActivePage } from '@/intros-ui/components/layout/TopNavigation';
 import { PageHeader, Panel, StatCard } from '@/intros-ui/components/layout/LedgerUiKit';
 import './ledger-dashboard.css';
 import { LedgerWidgetBoard } from './LedgerWidgetBoard';
+import { NetworkHighlights } from './NetworkHighlights';
 import './ledger-widget-board.css';
 
 type PanelKey = 'activity' | 'people' | 'actions' | 'priorities';
@@ -37,7 +38,8 @@ export function LedgerDashboard({
   posts, members, live, socialFeed, actionQueue, liveOverview, unreadCount,
   onNavigate, onRequestIntro, onAddPost, onLikePost, onSavePost, onOpenTool, onOpenPipeline,
 }: LedgerDashboardProps) {
-  const [view, setView] = useState<'activity' | 'board'>('activity');
+  const [view, setView] = useState<'activity' | 'board' | 'highlights'>('activity');
+  const [highlightsVisited, setHighlightsVisited] = useState(false);
   const [boardVisited, setBoardVisited] = useState(false);
   const [draft, setDraft] = useState('');
   const [feedTab, setFeedTab] = useState<'all' | 'saved'>('all');
@@ -95,7 +97,11 @@ export function LedgerDashboard({
     <div className="ledger-dashboard-views" role="group" aria-label="Dashboard view">
       <button type="button" aria-pressed={view === 'activity'} aria-controls="dashboard-activity-view" onClick={() => setView('activity')}>Activity feed</button>
       <button type="button" aria-pressed={view === 'board'} aria-controls="dashboard-widget-view" onClick={() => { setBoardVisited(true); setView('board'); }}>My board</button>
+      <button type="button" aria-pressed={view === 'highlights'} aria-controls="dashboard-highlights-view" onClick={() => { setHighlightsVisited(true); setView('highlights'); }}>Network highlights</button>
     </div>
+    <section id="dashboard-highlights-view" className="ledger-dashboard-view" hidden={view !== 'highlights'}>
+      {highlightsVisited && <NetworkHighlights live={live} posts={posts} active={view === 'highlights'} onReadFeed={() => setView('activity')} onOpenAuthor={id => id === 'me' && onOpenTool ? onOpenTool('profile') : onNavigate('people', id)} onLikePost={onLikePost} onSavePost={onSavePost}/>}
+    </section>
     <section id="dashboard-activity-view" className="ledger-dashboard-view" hidden={view !== 'activity'}>
     <div className="ledger-dashboard-stats">
       <StatCard label="Members in view" value={String(members.length)} hint={live ? 'Verified live directory' : 'Showcase directory'}

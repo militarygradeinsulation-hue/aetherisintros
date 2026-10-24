@@ -1,5 +1,11 @@
 # Aetheris specification completion
 
+## PR #296 preview verification (Oct 24)
+- [x] Bring exact PR head 368faaff into preview without merging or publishing.
+- [x] Verify 902 tests and eight demo browser combinations (1440/1280/390/320, dark/light): shared Like/Save, keyboard card selection, profiles, draft retention, reduced motion and zero horizontal overflow; no uncaught errors.
+- [x] Remote Checks, CodeQL and UI passed; design review neutral; automatic compilation OK. Paused highlights cannot manually scroll hidden posts; full-feed return does not target individual posts. These remain review findings, not approved repairs.
+- [ ] Verify signed-in highlights and private CRM data — blocked: no auth account matches the requesting user's email; preview sign-in required. No live writes, merge or publication performed.
+
 ## Missing feature database recovery (Oct 22)
 - [x] Compare ten feature contracts with live catalog and existing migration history.
 - [ ] Prepare forward-only recovery for existing schemas/RPCs, retaining collaborative permissions and server-owned scores.

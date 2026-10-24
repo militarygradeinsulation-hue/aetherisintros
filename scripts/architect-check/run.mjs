@@ -78,6 +78,7 @@ async function checkDashboardBoard(page,theme) {
   check(true,theme+' keyboard reordering changes and saves board order');
   const network=board.locator('[data-widget-id="network"]');
   await network.evaluate(el=>el.dataset.mountProof='same-widget');
+  await network.getByRole('combobox',{name:'Size of Member network',exact:true}).selectOption('wide');
   await network.getByRole('combobox',{name:'Size of Member network',exact:true}).selectOption('lg');
   check(await network.getAttribute('data-mount-proof')==='same-widget',theme+' resizing preserves the mounted widget');
   await board.getByRole('button',{name:'Lock layout',exact:true}).click();
