@@ -1,3 +1,4 @@
+import { AskIntrosMark } from '@/aetheris/AskIntrosMark'
 import { PostShareButton } from './PostShareButton'
 import { NetworkCommentComposer } from './NetworkCommentComposer'
 import { memberPhotoSource } from './member-media'
@@ -40,7 +41,6 @@ import { VOICE_PAGES } from './voice-commands'
 
 import overviewFilmAsset from '@/assets/aetheris-intros-overview.mp4.asset.json'
 import introVideoAsset from '@/assets/aetheris-intro-video.mp4.asset.json'
-import logoAsset from '@/assets/aetheris-logo.jpg.asset.json'
 import { leaks } from './data'
 import type { AutonomyLevel, DigitalYouProfile, Objective, PrivacyScope } from './types'
 import {
@@ -183,7 +183,7 @@ function Brand() {
   return <AskIntrosLockup variant="compact" />
 }
 function AetherisGlyph({ size = 18 }: { size?: number }) {
-  return <span className="aetheris-glyph" style={{ width: size, height: size }} aria-hidden="true"><i /><b /></span>
+  return <AskIntrosMark size={size} />
 }
 function Avatar({ person, large = false, portrait = false, primary = false }: { person: Member; large?: boolean; portrait?: boolean; primary?: boolean }) {
   const image = memberPhotoSource(person.avatarUrl) || portraitFor(person.id)

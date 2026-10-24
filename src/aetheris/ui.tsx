@@ -1,3 +1,4 @@
+import { AskIntrosMark } from '@/aetheris/AskIntrosMark'
 import { memberPhotoSource } from './member-media'
 /** Shared editorial primitives used by every platform surface. */
 import { Volume2, VolumeX } from 'lucide-react'
@@ -26,7 +27,7 @@ export function ReadButton({ passages, label = 'Read aloud', className = '' }: {
 }
 
 export function Glyph({ size = 18 }: { size?: number }) {
-  return <span className="aetheris-glyph" style={{ width: size, height: size }} aria-hidden="true"><i /><b /></span>
+  return <AskIntrosMark size={size} />
 }
 
 export function Btn({ children, kind = 'primary', onClick, disabled = false, className = '' }: {
