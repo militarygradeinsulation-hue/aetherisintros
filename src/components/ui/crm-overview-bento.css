@@ -1,0 +1,49 @@
+/* Live CRM counterpart to the Finance Bento. Namespaced, dark/light legible, no global filters. */
+.ask-crm-bento{color:#F9FAFB!important;max-width:100%;min-width:0;margin:0 0 22px;font-family:Inter,system-ui,sans-serif}
+.ask-crm-bento-head{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:14px;margin-bottom:15px}
+.ask-crm-bento-eyebrow{font:700 10px/1.4 "JetBrains Mono",monospace;color:#FFABB0!important;letter-spacing:.12em}
+.ask-crm-bento-head h2{margin:6px 0!important;color:var(--ledger-crm-ink,#F9FAFB)!important;font:750 clamp(22px,3vw,30px)/1.1 Inter,system-ui,sans-serif!important;letter-spacing:-.035em}
+.ask-crm-bento-head p{color:var(--ledger-crm-muted,#CBD5E1)!important;font:500 12px/1.5 Inter,system-ui,sans-serif!important;margin:3px 0!important}
+.ask-crm-bento-period{display:flex;align-items:center;border-radius:13px!important;padding:4px;gap:4px;background:var(--ledger-crm-surface,#181A20);border:1px solid var(--ledger-crm-border,#FFF3)}
+.ask-crm-bento-period button{padding:8px 13px!important;min-height:36px;background:transparent!important;border:0!important;border-radius:9px!important;color:var(--ledger-crm-ink,#FFF)!important;font:650 12px Inter,system-ui,sans-serif;cursor:pointer}
+.ask-crm-bento-period button[aria-pressed="true"]{background:#EF4444!important;color:#FFF!important;box-shadow:0 4px 13px #0006}
+.ask-crm-bento-grid{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));gap:13px}
+.ask-crm-bento-tile{position:relative;min-width:0;overflow:hidden;border-radius:24px!important;
+ border:1px solid #FFFFFF30!important;color:#FFFFFF!important;
+ box-shadow:0 19px 42px -21px #0009,inset 0 1px 0 #ffffff29;padding:23px;
+ background:radial-gradient(ellipse at 35% -55%,var(--bento-glow),transparent 77%),
+ linear-gradient(148deg,var(--bento-base),#0C1321 90%)!important;
+ transition:box-shadow .25s,transform .25s}
+.ask-crm-bento-tile:hover{transform:translateY(-2px);box-shadow:0 26px 43px -20px #000A,inset 0 1px 0 #ffffff36}
+.ask-crm-bento-tile.tone-cobalt{--bento-base:#1E3266;--bento-glow:#6676EA9A}
+.ask-crm-bento-tile.tone-violet{--bento-base:#281C49;--bento-glow:#9977E9A0}
+.ask-crm-bento-tile.tone-green{--bento-base:#102D2D;--bento-glow:#35AD869A}
+.ask-crm-bento-tile.tone-pink{--bento-base:#3A1A34;--bento-glow:#F060A388}
+.ask-crm-bento-tile.tone-amber{--bento-base:#3C281E;--bento-glow:#F6B54A88}
+.ask-crm-bento-tile.tone-graphite{--bento-base:#171E2D;--bento-glow:#7389A88A}
+.ask-crm-bento-wide{grid-column:span 7;min-height:359px}
+.ask-crm-bento-stage{grid-column:span 5;min-height:359px}
+.ask-crm-bento-kpi{grid-column:span 3;min-height:145px;display:flex;flex-direction:column;justify-content:space-between;gap:13px}
+.ask-crm-bento-cap{display:block;font:700 10px/1.5 "JetBrains Mono",monospace;color:#DBE7FF!important;letter-spacing:.12em;text-transform:uppercase}
+.ask-crm-bento-tile h3{margin:7px 0 12px!important;color:#FFFFFF!important;font:700 19px/1.24 Inter,system-ui,sans-serif!important}
+.ask-crm-bento-big{display:block;color:#FFFFFF!important;font:650 clamp(30px,4vw,43px)/1.05 Inter,system-ui,sans-serif!important;letter-spacing:-.05em}
+.ask-crm-bento-hint{color:#D7E2F6!important;margin:6px 0 8px!important;font-size:12px!important;line-height:1.4!important}
+.ask-crm-bento-legend{display:flex;align-items:center;gap:16px;color:#EDF4FF!important;font-size:11px!important}
+.ask-crm-bento-legend span,.ask-crm-bento-stage-legend span,.ask-crm-bento-foot{display:inline-flex;align-items:center;gap:6px}
+.ask-crm-bento-dot{display:inline-block;flex:none;width:9px;height:9px;border-radius:99px!important}
+.ask-crm-bento-stage-legend{display:flex;flex-wrap:wrap;gap:7px 11px;margin:4px 0 7px;color:#E7EBFF!important;font-size:10px}
+.ask-crm-bento-chart{width:100%;height:215px;min-width:0;margin-top:5px}
+.ask-crm-bento-chart .recharts-wrapper svg,.ask-crm-bento-chart .recharts-surface,
+.ask-crm-bento-chart .recharts-area,.ask-crm-bento-chart .recharts-bar-rectangle{filter:none!important}
+.ask-crm-bento-chart .recharts-cartesian-axis-tick text{fill:#DDE5F3!important;font-size:10px}
+.ask-crm-bento-value{color:#FFFFFF!important;font:650 clamp(26px,3.2vw,39px)/1.1 Inter,system-ui,sans-serif!important;letter-spacing:-.05em;white-space:nowrap}
+.ask-crm-bento-foot{color:#E0E7F6!important;font:500 11px/1.4 Inter,system-ui,sans-serif!important}
+.ask-crm-bento-empty{margin:55px 0 0!important;color:#D8E1F2!important;font:500 13px/1.5 Inter,system-ui,sans-serif!important}
+@media(max-width:1080px){.ask-crm-bento-wide,.ask-crm-bento-stage{grid-column:span 12}
+.ask-crm-bento-kpi{grid-column:span 6}}
+@media(min-width:740px) and (max-width:1080px){.ask-crm-bento-wide,.ask-crm-bento-stage{grid-column:span 6}}
+@media(max-width:470px){.ask-crm-bento-grid{gap:9px}.ask-crm-bento-tile{padding:16px}
+.ask-crm-bento-wide,.ask-crm-bento-stage{min-height:325px}.ask-crm-bento-chart{height:186px}
+.ask-crm-bento-kpi{min-height:127px}.ask-crm-bento-value{font-size:clamp(23px,6.3vw,30px)!important}
+.ask-crm-bento-foot{font-size:10px!important}.ask-crm-bento-head p{font-size:11px!important}}
+@media(prefers-reduced-motion:reduce){.ask-crm-bento-tile{transition:none}.ask-crm-bento-tile:hover{transform:none}}

@@ -27,6 +27,7 @@ import { normalizeLinkedInUrl } from '../linkedin-import'
 import { CONTACT_KEYS, splitList } from '../linkedin-scan'
 import { LinkedInScanPanel } from '../linkedin-scan-ui'
 import FullCrm from '../ledger/FullCrm'
+import { CrmOverviewBento } from '@/components/ui/crm-overview-bento'
 import { OpenDealRoomButton } from '../deals-ui'
 import { ProspectEngine } from '../prospect/ProspectEngine'
 import { useAccess } from '../access'
@@ -128,6 +129,13 @@ export default function CrmPage({ section }: { section?: 'crm' | 'pipeline' | un
     {empty && tab !== 'overview' && <p className="ops-note">Nothing here yet. Add a record to get started.</p>}
 
     {tab === 'overview' && <section className="ops-overview">
+      <CrmOverviewBento
+        opportunities={opportunities}
+        stages={stages}
+        peopleCount={people.length}
+        linkedMemberCount={people.filter(p => Boolean(p.memberId)).length}
+        openTaskCount={openTasks.length}
+      />
       <div className="ops-stats">
         <div><Eyebrow>OPEN PIPELINE</Eyebrow><strong>{money(pipelineValue)}</strong><small>{openOpps.length} active opportunities</small></div>
         <div><Eyebrow>WEIGHTED</Eyebrow><strong>{money(Math.round(weighted))}</strong><small>By stage probability — modelled, not promised</small></div>
