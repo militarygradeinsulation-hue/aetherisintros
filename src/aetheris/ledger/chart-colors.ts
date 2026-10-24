@@ -1,7 +1,7 @@
 /** Accessible financial chart colors: never apply global grayscale to these. */
 export const CHART_COLORS = {
   billed:'#60A5FA', collected:'#34D399', teal:'#2DD4BF',
-  amber:'#FBBF24', violet:'#C4B5FD', rose:'#FB7185',
+  amber:'#F472B6', violet:'#C4B5FD', rose:'#FB7185',
 } as const
 export const STAGE_COLORS = [CHART_COLORS.billed,CHART_COLORS.teal,CHART_COLORS.amber,
  CHART_COLORS.violet,CHART_COLORS.collected,CHART_COLORS.rose] as const
