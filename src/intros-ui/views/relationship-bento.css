@@ -38,3 +38,7 @@
 @media(prefers-reduced-motion:reduce) {
   .ledger-member-stack-card {transition:none!important}
 }
+/* Leave room to scroll the final card action above the floating assistant. */
+.ledger-widget-board {padding-bottom:100px}
+.ledger-native-content:has(.ledger-widget-board) {scroll-padding-bottom:150px}
+.ledger-widget-board [data-slot="widget"] {scroll-margin-top:20px;scroll-margin-bottom:100px}
