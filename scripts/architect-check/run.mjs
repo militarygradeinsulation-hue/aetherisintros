@@ -115,7 +115,7 @@ try{
   browser=await chromium.launch();
   for(const theme of ['dark','light']){
     const context=await browser.newContext({viewport:{width:1440,height:900}});
-    await context.addInitScript(value=>{localStorage.setItem('ask-intros.appearance',value);localStorage.setItem('aetheris.crm.view','full');localStorage.setItem('aetheris.crm.tab','tasks')},theme);
+    await context.addInitScript(value=>{localStorage.setItem('ask-intros.appearance',value);localStorage.setItem('aetheris.crm.view','full');localStorage.setItem('aetheris.crm.tab','tasks');sessionStorage.setItem('ask-intros.entrance-film.seen','1')},theme);
     const page=await context.newPage();
     const errors=[];
     page.on('pageerror',error=>errors.push(error.message));
@@ -168,7 +168,7 @@ try{
       await sidebar.getByRole('button',{name:destination,exact:true}).click();
       const section=page.locator('.ledger-section-navigation');
       await section.waitFor();
-      const labels=(await section.locator('nav button').allTextContents()).map(s=>s.trim());
+      const labels=await section.locator('nav button').evaluateAll(nodes=>nodes.map(node=>node.getAttribute('aria-label')||node.textContent?.trim()||'').filter(Boolean));
       for (const label of labels) {
         const button=section.getByRole('button',{name:label,exact:true,includeHidden:true});
         if (!(await button.isVisible())) await section.locator('summary').click();
@@ -182,7 +182,7 @@ try{
     await page.getByRole('button',{name:'Account menu',exact:true}).click();
     await page.getByRole('menuitem',{name:'My profile',exact:true}).click();
     const account=page.locator('.ledger-section-navigation[data-destination="account"]');
-    for (const label of (await account.locator('button').allTextContents()).map(s=>s.trim())) {
+    for (const label of await account.locator('button').evaluateAll(nodes=>nodes.map(node=>node.getAttribute('aria-label')||node.textContent?.trim()||'').filter(Boolean))) {
       await account.getByRole('button',{name:label,exact:true}).click();
       check(await sidebar.locator('.ledger-native-nav-item[aria-current="page"]').count()===0,theme+' '+label+' stays outside primary navigation');
       await checkBrand(page,theme+' account '+label);

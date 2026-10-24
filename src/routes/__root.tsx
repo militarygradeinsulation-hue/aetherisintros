@@ -141,10 +141,10 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { rel: "stylesheet", href: mobileFitReadabilityCss },
       // CRM theme last: preserves production safeguards while consistently replacing orange accents.
       { rel: "stylesheet", href: absoluteLedgerThemeCss },
-      // Scoped data chart colors deliberately override the stencil grayscale.
       { rel: "stylesheet", href: financeBentoCss },
       { rel: "stylesheet", href: financeChartsCss },
-      { rel: "icon", type: "image/png", href: "/favicon.png" },
+      { rel: "icon", type: "image/svg+xml", href: "/ask-intros-mark.svg" },
+      { rel: "icon", type: "image/png", href: "/favicon.png", sizes: "64x64" },
       { rel: "apple-touch-icon", href: "/apple-touch-icon.png", sizes: "180x180" },
       { rel: "manifest", href: "/manifest.webmanifest" },
     ],

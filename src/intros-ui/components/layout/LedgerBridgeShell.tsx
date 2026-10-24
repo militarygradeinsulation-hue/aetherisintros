@@ -14,6 +14,10 @@ import type { ActivePage } from '@/intros-ui/components/layout/TopNavigation';
 
 import { PRIMARY_NAV_GROUPS as NAV_GROUPS, ACCOUNT_SECTIONS, SEARCH_DESTINATIONS, destinationFor, targetFor, type NavigationTarget } from './workspace-navigation';
 import { LedgerSectionNavigation } from './LedgerSectionNavigation';
+import { MacOsDock, type DockApp } from '@/components/ui/macos-dock';
+import { ShineBorder } from '@/components/ui/shine-border';
+import { WORKSPACE_DESTINATIONS } from './workspace-navigation';
+import { useAppearance } from '@/aetheris/AppearanceMode';
 type Item = NavigationTarget;
 
 export interface LedgerBridgeShellProps {
@@ -42,6 +46,7 @@ export function LedgerBridgeShell({
   children, activePage, activeTool, onNavigate, onOpenTool, searchQuery,
   onSearchChange, members, mode, me, onOpenMyProfile, unreadCount, notifications, executiveAction,
 }: LedgerBridgeShellProps) {
+  const { toggleTheme } = useAppearance();
   const [collapsed, setCollapsed] = useState(persistedCollapsed);
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [paletteOpen, setPaletteOpen] = useState(false);
@@ -86,6 +91,19 @@ export function LedgerBridgeShell({
   }, [query, members]);
   const displayName = me?.name || (mode === 'live' ? 'My account' : 'Guest showcase');
   const initials = displayName.split(' ').filter(Boolean).map(piece => piece[0]).join('').slice(0, 2).toUpperCase();
+  const dockTargets = WORKSPACE_DESTINATIONS.filter(item => ['dashboard', 'introductions', 'network', 'messages', 'meetings', 'crm'].includes(item.id));
+  const dockItems: DockApp[] = dockTargets.map(item => ({
+    id: item.id, label: item.label, icon: <item.icon size={22} strokeWidth={1.8} aria-hidden="true" />,
+    ...(item.id === 'messages' && unreadCount !== null && unreadCount > 0 ? { badge: unreadCount } : {}),
+  }));
+  const dockActiveId = destinationFor(activePage, activeTool)?.id;
+  const openPalette = () => { setQuery(searchQuery); setPaletteOpen(true); };
+  const quickCommands = [
+    { id: 'search', label: 'Search people & tools', shortcut: '⌘K', onSelect: openPalette },
+    { id: 'assistant', label: 'Ask Intros assistant', onSelect: () => window.dispatchEvent(new CustomEvent('aetheris:open-assistant')) },
+    { id: 'intro', label: 'Find an introduction', onSelect: () => { closeAll(); onNavigate('intros'); } },
+    { id: 'theme', label: 'Switch light / dark', onSelect: toggleTheme },
+  ];
   const Nav = ({ mobile = false }: { mobile?: boolean }) => (
     <nav className="ledger-native-nav ix-desktop-main-nav" aria-label={mobile ? 'Mobile workspace navigation' : 'Desktop navigation'}>
       {NAV_GROUPS.map(group => <div className="ledger-native-group" key={group.title}>
@@ -158,9 +176,11 @@ export function LedgerBridgeShell({
           <Menu size={20} />
         </button>
         <div className="ledger-native-breadcrumb"><span>Ask Intros</span><ChevronRight size={13}/><b>{targetFor(activePage, activeTool)?.label || 'Network'}</b></div>
-        <button type="button" className="ledger-native-search" aria-label="Search records, people, modules and contacts" onClick={() => { setQuery(searchQuery); setPaletteOpen(true); }}>
-          <Search size={15} /> <span>Search people, modules, relationships…</span><kbd><Command size={12}/> K</kbd>
-        </button>
+        <ShineBorder className="ledger-native-search-frame" borderRadius={18} borderWidth={1} duration={22} color={['#EF4444','#B76CD9','#EF4444']}>
+          <button type="button" className="ledger-native-search" aria-label="Search records, people, modules and contacts" onClick={openPalette}>
+            <Search size={15} /> <span>Search people, modules, relationships…</span><kbd><Command size={12}/> K</kbd>
+          </button>
+        </ShineBorder>
         {notifications || <button type="button" className="ledger-native-icon" aria-label="Introduction requests" onClick={() => onNavigate('intros')}><Bell size={17}/></button>}
         <AppearanceToggle className="ledger-native-appearance" />
         {mode === 'live' && executiveAction && <button type="button" className="ledger-native-auth-shortcut" onClick={executiveAction.onOpen}>{executiveAction.label}</button>}
@@ -177,6 +197,16 @@ export function LedgerBridgeShell({
         </div>
       </header>
       <div id="aetheris-workspace-content" className="ledger-native-content"><LedgerSectionNavigation activePage={activePage} activeTool={activeTool} onSelect={navigate}/>{children}</div>
+    </div>
+
+    <div className="ledger-native-quick-dock" aria-label="Desktop quick launch tools">
+      <MacOsDock
+        items={dockItems}
+        activeIds={dockActiveId ? [dockActiveId] : []}
+        onSelect={app => { const item = dockTargets.find(target => target.id === app.id); if (item) navigate(item); }}
+        commands={quickCommands}
+        onCommand={openPalette}
+      />
     </div>
 
     <nav className="ledger-native-bottom ix-mobile-nav" aria-label="Mobile navigation">
