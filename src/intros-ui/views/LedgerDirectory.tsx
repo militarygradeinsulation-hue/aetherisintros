@@ -1,3 +1,4 @@
+import { MemberThumbnail } from '../components/shared/MemberThumbnail';
 /* CRM Contacts pattern, sourced from the REAL Bridge directory.
  * Search, saved and connection actions remain the signed-in handlers.
  */
@@ -66,7 +67,7 @@ export function LedgerDirectory({
           <tbody>
           {filtered.map(person => <tr key={person.id}>
             <td><button type="button" className="ledger-directory-person" onClick={() => onNavigate('people',person.id)}>
-              <span className="ledger-person-initial">{person.name.split(' ').map(s=>s[0]).slice(0,2).join('')}</span>
+              <MemberThumbnail name={person.name} source={person.avatarUrl} className="ledger-person-initial"/>
               <span><strong>{person.name}</strong><small>{person.title} · {person.company}</small></span>
             </button></td>
             <td><span className="ledger-directory-role">{person.roleType}</span><small>{person.industry || 'Business'}</small></td>

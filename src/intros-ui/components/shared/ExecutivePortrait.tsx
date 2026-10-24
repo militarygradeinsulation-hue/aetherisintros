@@ -1,6 +1,7 @@
 // @ts-nocheck
 import React from 'react';
 import { AvatarImage } from '@/aetheris/avatar';
+import { MemberThumbnail } from './MemberThumbnail';
 import { memberPhotoSource } from '@/aetheris/member-media';
 
 interface ExecutivePortraitProps {
@@ -69,20 +70,5 @@ export const ExecutivePortrait: React.FC<ExecutivePortraitProps> = ({
       ? 'w-16 h-16 text-lg'
       : 'w-11 h-11 text-sm';
 
-  return (
-    <div
-      className={`relative shrink-0 overflow-hidden rounded-full border border-white/20 bg-gradient-to-br from-[#1C2230] to-[#0A0D14] flex items-center justify-center text-[#F2EEE6] font-semibold select-none shadow-sm ${dimensionClass} ${className}`}
-    >
-      <span className="relative z-10 tracking-wider font-mono text-white/90">
-        {initials}
-      </span>
-      {resolvedUrl && (
-        <AvatarImage
-          source={resolvedUrl}
-          alt={name}
-          className="absolute inset-0 w-full h-full object-cover grayscale contrast-110 brightness-95"
-        />
-      )}
-    </div>
-  );
+  return <MemberThumbnail name={name} source={resolvedUrl} className={`${dimensionClass} ${className}`}/>;
 };

@@ -5,6 +5,7 @@ import { JournalMedia } from '@/aetheris/journal-media';
 import type { JournalAttachment } from '@/aetheris/social';
 import type { FeedPost } from '@/intros-ui/networkData';
 import './network-highlights.css';
+import { MemberThumbnail } from '../components/shared/MemberThumbnail';
 
 interface Highlight {
   id: string; authorId: string; name: string; role: string; text: string;
@@ -54,7 +55,7 @@ export function NetworkHighlights({ live, posts, active, onReadFeed, onOpenAutho
     ? [items.filter((_, i) => i % 2 === 0), items.filter((_, i) => i % 2 !== 0)] : [items];
   const card = (post: Highlight) => <article className="network-highlight-card" data-post-id={post.id} key={post.id}>
     <header><button type="button" className="network-highlight-author" onClick={() => onOpenAuthor(post.authorId)}>
-      <span aria-hidden="true">{post.name.split(' ').map(part => part[0]).slice(0, 2).join('')}</span>
+      <MemberThumbnail name={post.name} source={live ? post.authorId === 'me' ? net.profile.avatarUrl : net.members.find(member => member.id === post.authorId)?.avatarUrl : undefined}/>
       <span><strong>{post.name}</strong><small>{post.role}</small></span>
     </button><span className="network-highlight-kind">{post.kind}</span></header>
     <p>{post.text}</p>

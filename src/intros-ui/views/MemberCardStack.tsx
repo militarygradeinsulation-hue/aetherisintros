@@ -1,3 +1,4 @@
+import { MemberThumbnail } from '../components/shared/MemberThumbnail';
 import { useState, type CSSProperties } from 'react';
 import type { NetworkMember } from '@/intros-ui/networkData';
 
@@ -20,7 +21,7 @@ export function MemberCardStack({ members, live, onOpen }: {
         className="ledger-member-stack-card" aria-pressed={member.id === selected.id}
         aria-label={`Select ${member.name}`} onClick={() => setSelectedId(member.id)}
         style={{ '--stack-index': index } as CSSProperties}>
-        <span className="ledger-member-stack-name"><span aria-hidden="true">{member.name.split(' ').map(part => part[0]).slice(0, 2).join('')}</span><strong>{member.name}</strong></span>
+        <span className="ledger-member-stack-name"><MemberThumbnail name={member.name} source={member.avatarUrl}/><strong>{member.name}</strong></span>
         <span className="ledger-member-stack-role">{member.title}<br/>{member.company}</span>
       </button>)}
     </div>

@@ -1,3 +1,4 @@
+import { MemberThumbnail } from '../components/shared/MemberThumbnail';
 /* Native Absolute Ledger record/detail layout for Ask Intros consent workflows. */
 import React, { useState } from 'react';
 import { ArrowRight, CheckCircle2, Clock3, Handshake, Users } from 'lucide-react';
@@ -60,7 +61,7 @@ export function LedgerIntroductions({
       <Panel title="Suggested counterparts" subtitle="People available for a meaningful conversation" bodyClassName="ledger-intros-people">
         {members.filter(person=>person.openToIntros).slice(0,5).map(person=><div className="ledger-person" key={person.id}>
           <button type="button" className="ledger-person-main" onClick={()=>onNavigate('people',person.id)}>
-            <span className="ledger-person-initial">{person.name.split(' ').map(s=>s[0]).slice(0,2).join('')}</span>
+            <MemberThumbnail name={person.name} source={person.avatarUrl} className="ledger-person-initial"/>
             <span><strong>{person.name}</strong><small>{person.title} · {person.company}</small></span>
           </button>
           <button type="button" className="ledger-person-intro" aria-label={'Request introduction to '+person.name}

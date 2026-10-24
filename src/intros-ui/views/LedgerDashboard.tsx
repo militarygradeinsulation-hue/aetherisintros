@@ -1,3 +1,4 @@
+import { MemberThumbnail } from '../components/shared/MemberThumbnail';
 /* Absolute Ledger CRM dashboard composition using the active Ask Intros
  * feed/member callbacks. It never imports absolute-ledger-flow fixture records.
  */
@@ -142,7 +143,7 @@ export function LedgerDashboard({
               {filteredPosts.length ? filteredPosts.slice(0, 12).map(post => (
                 <article key={post.id} className="ledger-feed-entry">
                   <header>
-                    <span className="ledger-feed-initial">{post.authorName.split(' ').map(value => value.charAt(0)).slice(0,2).join('')}</span>
+                    <MemberThumbnail name={post.authorName} source={members.find(member => member.id === post.authorId)?.avatarUrl} className="ledger-feed-initial"/>
                     <div><strong>{post.authorName}</strong><p>{post.authorTitle} · {post.authorCompany}</p></div>
                     <time>{post.timeAgo}</time>
                   </header>
@@ -170,7 +171,7 @@ export function LedgerDashboard({
           {members.slice(0, 5).map(person => (
             <div className="ledger-person" key={person.id}>
               <button type="button" className="ledger-person-main" onClick={() => onNavigate('people', person.id)}>
-                <span className="ledger-person-initial">{person.name.split(' ').map(value => value.charAt(0)).slice(0,2).join('')}</span>
+                <MemberThumbnail name={person.name} source={person.avatarUrl} className="ledger-person-initial"/>
                 <span><strong>{person.name}</strong><small>{person.title} · {person.company}</small></span>
               </button>
               <button type="button" className="ledger-person-intro" title={'Request introduction to ' + person.name}

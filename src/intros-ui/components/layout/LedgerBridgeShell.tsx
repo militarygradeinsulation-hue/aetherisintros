@@ -3,6 +3,7 @@
  */
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import './ledger-bridge-shell.css';
+import { MemberThumbnail } from '../shared/MemberThumbnail';
 import './raised-surfaces.css';
 import './command-surfaces.css';
 import { Bell, ChevronDown, ChevronLeft, ChevronRight, Command, House, Menu, MessageSquare, Search, UserRound, Users, X, LogOut } from 'lucide-react';
@@ -170,7 +171,7 @@ export function LedgerBridgeShell({
         <div className="ledger-native-user-wrap">
           <button type="button" className="ledger-native-user" aria-label="Account menu" aria-expanded={userOpen}
             onClick={() => { setUserOpen(open => !open); }}>
-            <span className="ledger-native-avatar">{initials}</span><span className="ledger-native-user-label">{displayName}</span><ChevronDown size={13}/>
+            <MemberThumbnail name={displayName} source={me?.avatarUrl} className="ledger-native-avatar"/><span className="ledger-native-user-label">{displayName}</span><ChevronDown size={13}/>
           </button>
           {userOpen && <AccountMenu/>}
         </div>
