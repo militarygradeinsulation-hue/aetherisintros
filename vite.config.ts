@@ -17,6 +17,9 @@ export default defineConfig({
       if (!id.includes('/src/bridge-reference/') || !/\.[jt]sx?$/.test(id)) return null;
       // Only redirect module locations; the checked-in reference source stays untouched.
       const resolved = code.replace(/(['"])@\/([^'"]+)\1/g, (match, quote, name) => {
+        if (name === 'assets/ask-intros-official-logo.jpg.asset.json') {
+          return quote + path.resolve('src/intros-ui/experience/bridge-logo.asset.json') + quote;
+        }
         const original = path.resolve('src/bridge-reference/src', name);
         for (const extension of ['', '.tsx', '.ts']) {
           if (existsSync(original + extension)) return quote + original + extension + quote;
