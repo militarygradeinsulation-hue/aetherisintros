@@ -8,6 +8,20 @@ mkdirSync(output, { recursive: true });
 const browser = await chromium.launch({ headless: true, ...(process.env.PLAYWRIGHT_EXECUTABLE_PATH ? { executablePath: process.env.PLAYWRIGHT_EXECUTABLE_PATH } : {}) });
 try {
   const page = await browser.newPage({ viewport: { width: 1440, height: 1000 } });
+  const checkButler = async () => {
+    const button = page.locator('.ix-assistant .ask-dock-fab');
+    if (await button.count() !== 1) throw new Error('Expected one canonical Butler launcher');
+    const blob = button.locator('.ask-dock-blob');
+    if (!await blob.isVisible()) throw new Error('Social Butler blob is hidden');
+    const bounds = await button.boundingBox();
+    const viewport = page.viewportSize();
+    if (!bounds || bounds.x < 0 || bounds.y < 0 || bounds.x + bounds.width > viewport.width || bounds.y + bounds.height > viewport.height) throw new Error('Butler is outside the viewport');
+    await button.click();
+    await page.getByRole('dialog', { name: 'Ask Intros', exact: true }).waitFor();
+    await button.click();
+    await page.getByRole('dialog', { name: 'Ask Intros', exact: true }).waitFor({ state: 'hidden' });
+    console.log('Social Butler blob is visible and opens its canonical dialog');
+  };
   const errors = [];
   page.on("pageerror", (e) => errors.push(e.message));
   await page.goto(url, { waitUntil: "domcontentloaded", timeout: 90000 });
@@ -22,6 +36,7 @@ try {
   });
   await page.getByRole("button", { name: "Social", exact: true }).click();
   await page.getByRole("heading", { name: "Today, in good company." }).waitFor();
+  await checkButler();
   await page.locator("#commons-post").fill("Original Bridge draft");
   await page.getByRole("tab", { name: "Intros", exact: false }).click();
   await page.getByRole("tab", { name: "Posts", exact: true }).click();
@@ -96,6 +111,7 @@ try {
   await page.screenshot({ path: `${output}/mobile.png`, fullPage: false });
   if (await page.evaluate(() => document.documentElement.scrollWidth > innerWidth))
     throw new Error("Mobile horizontal overflow");
+  await checkButler();
   console.log("Mobile layout fits viewport");
   if (errors.length) throw new Error(errors.join("\n"));
   console.log("No uncaught browser errors");

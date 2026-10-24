@@ -38,73 +38,23 @@ const assert = (condition, note) => { if (!condition) throw new Error(note); pas
 try {
   for (const theme of ['light', 'dark']) {
     for (const width of [1280, 390]) {
-      const context = await browser.newContext({ viewport: { width, height: 850 } })
-      await context.addInitScript(mode => {
-        try { localStorage.setItem('ask-intros.appearance', mode) } catch { /* optional */ }
-      }, theme)
+      const context = await browser.newContext({ viewport: { width, height: 850 }, reducedMotion: 'reduce' })
+      await context.addInitScript(mode => localStorage.setItem('ask-intros.appearance', mode), theme)
       const page = await context.newPage()
-      const errors = []
-      page.on('pageerror', error => errors.push(error.message))
-      page.on('console', message => { if (message.type() === 'error') errors.push('console: ' + message.text()) })
-      page.on('requestfailed', request => {
-        if (!request.url().startsWith(base)) return
-        const failed = request.failure()?.errorText || ''
-        const localPath = new URL(request.url()).pathname
-        const localDevDependency = localPath.startsWith('/node_modules/.vite/deps/') ||
-          localPath.startsWith('/node_modules/@tanstack/react-start')
-        // Vite may abort its first prebundled dependency request while
-        // restarting dependency optimization. React must STILL hydrate and
-        // the scenario/input assertions below must work. Only these
-        // transient dev-dependency cancellations are ignored; every other
-        // failed local request remains a test failure.
-        if (localDevDependency && failed.includes('net::ERR_ABORTED')) return
-        errors.push('request: ' + request.url() + ' ' + failed)
-      })
       await page.goto(base + '/try', { waitUntil: 'domcontentloaded', timeout: 120000 })
-      await page.locator('.ai-try-output').waitFor({ timeout: 60000 })
-      assert(await page.getByRole('heading', { name: /One goal/i }).count() === 1, theme + '/' + width + ' heading')
-      assert(await page.getByRole('button', { name: /Build a partnership/ }).count() === 1, theme + '/' + width + ' scenarios')
-      assert(await page.getByText('No member search was run', { exact: false }).count() > 0, theme + '/' + width + ' honest disclosure')
-      // Server markup may paint before React has attached event handlers.
-      await page.waitForLoadState('load')
-      const hydrated = await page.waitForFunction(() => {
-        const button = document.querySelector('.ai-try-goal')
-        return Boolean(button && Object.keys(button).some(key => key.startsWith('__reactProps$')))
-      }, null, { timeout: 60000 }).then(() => true).catch(() => false)
-      if (!hydrated) {
-        console.log('hydration diagnostic:', JSON.stringify({
-          errors,
-          scripts: await page.locator('script[src]').evaluateAll(nodes => nodes.map(n => n.getAttribute('src'))),
-          url: page.url(),
-        }))
-      }
-      assert(hydrated, theme + '/' + width + ' interactive React hydration: ' + errors.join('; '))
-      await page.getByRole('button', { name: /Build a partnership/ }).click()
-      const updated = await page.waitForFunction(() =>
-        document.querySelector('.ai-try-draft')?.textContent?.includes('new service into another market'),
-      null, { timeout: 10000 }).then(() => true).catch(() => false)
-      if (!updated) console.log('draft after goal click:', await page.locator('.ai-try-draft').innerText())
-      assert(updated, theme + '/' + width + ' goal changes preview')
-      await page.locator('#ai-try-outcome').fill('launch a market-entry pilot')
-      const custom = await page.waitForFunction(() =>
-        document.querySelector('.ai-try-draft')?.textContent?.includes('launch a market-entry pilot'),
-      null, { timeout: 10000 }).then(() => true).catch(() => false)
-      if (!custom) console.log('draft after editing:', await page.locator('.ai-try-draft').innerText())
-      assert(custom, theme + '/' + width + ' preview responds to user input')
-      const data = await page.evaluate(() => ({
-        docWidth: document.documentElement.scrollWidth,
-        viewport: innerWidth,
-        rootTheme: document.documentElement.getAttribute('data-theme'),
-        background: getComputedStyle(document.querySelector('.ai-try')).backgroundColor,
-      }))
-      assert(data.docWidth <= data.viewport + 2, theme + '/' + width + ' no sideways overflow ' + JSON.stringify(data))
-      assert(data.rootTheme === theme, theme + '/' + width + ' theme respected')
-      assert(!errors.length, theme + '/' + width + ' no page errors: ' + errors.join('; '))
+      await page.waitForURL(base + '/', { timeout: 60000 })
+      await page.locator('.ael-hero').waitFor({ timeout: 60000 })
+      assert(new URL(page.url()).pathname === '/', theme + '/' + width + ' retired preview redirects home')
+      assert(await page.locator('.ai-try').count() === 0, 'questionnaire is removed')
+      assert(await page.locator('.ael-hero-actions a[href="/demo"]').count() === 1, 'primary demo opens the actual workspace')
+      assert(await page.locator('a[href="/try"]').count() === 0, 'no obsolete questionnaire links')
+      await page.locator('.ask-cinematic-entrance').waitFor({ state: 'hidden', timeout: 60000 })
+      assert(await page.locator('.ael-hero-actions').isVisible(), 'reduced motion leaves homepage accessible')
       await context.close()
     }
   }
-  console.log('Opportunity Preview passed ' + passed + ' browser assertions')
+  console.log(passed + ' retired-preview and homepage-entry checks passed')
 } finally {
   await browser.close()
-  if (server) try { process.kill(-server.pid) } catch { /* server exited */ }
+  if (server) { try { process.kill(-server.pid) } catch { /* already closed */ } }
 }
