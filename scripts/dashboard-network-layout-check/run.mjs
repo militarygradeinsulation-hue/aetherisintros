@@ -117,11 +117,11 @@ try {
         'CRM contacts do not force horizontal page overflow', { viewport })
 
       if (viewport.width > 1120) {
-        await page.locator('.ledger-crm-sidebar').getByRole('button', { name: 'Introductions' }).click()
+        await page.locator('.ledger-crm-sidebar').getByRole('button', { name: 'Ask Intros', exact: true }).click()
       } else {
         await page.getByRole('button', { name: 'More menu' }).click()
         await page.getByRole('navigation', { name: 'Mobile workspace navigation' })
-          .getByRole('button', { name: 'Introductions' }).click()
+          .getByRole('button', { name: 'Ask Intros', exact: true }).click()
       }
       await page.locator('.ledger-introductions').waitFor()
       assert(await page.getByRole('button', { name: 'Find a member' }).count() > 0,
