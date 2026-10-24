@@ -3,7 +3,7 @@ import type { WidgetItem, WidgetSize } from '@/components/ui/widget-board';
 export const DASHBOARD_BOARD_KEY = 'ask-intros.dashboard.widgets.v1';
 export const BOARD_WIDGETS: WidgetItem[] = [
   { id: 'pipeline', size: 'wide', label: 'Open pipeline' },
-  { id: 'network', size: 'wide', label: 'Member network' },
+  { id: 'network', size: 'lg', label: 'Member network' },
   { id: 'conversations', size: 'sm', label: 'Inbox' },
   { id: 'crm', size: 'sm', label: 'CRM contacts' },
   { id: 'tasks', size: 'sm', label: 'CRM tasks' },

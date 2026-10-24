@@ -161,6 +161,9 @@ try {
   await page.waitForTimeout(750);
   await check(page,'dashboard-board-pipeline','.ledger-widget-board [data-widget-id="pipeline"] > div','');
   await page.getByRole('button',{name:'Edit layout',exact:true}).click();
+  // The member stack is now a two-row tile. Bring the whole tile into the
+  // scroll viewport before testing every sample point for overlay obstruction.
+  await page.locator('.ledger-widget-board [data-widget-id="network"]').evaluate(el=>el.scrollIntoView({block:'start'}));
   await check(page,'dashboard-board-size-controls','.ledger-widget-board [data-widget-id="network"] > div','');
   await page.getByRole('button',{name:'Lock layout',exact:true}).click();
   await page.getByRole('button',{name:'Activity feed',exact:true}).click();

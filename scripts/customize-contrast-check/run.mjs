@@ -87,6 +87,75 @@ try {
         throw Error('CRM Reset defaults failed');
       await reopened.getByRole('button',{name:'Done'}).click();
       console.log('PASS CRM customizable dashboard '+theme+' '+size.width);
+      const feedDraft=page.locator('#ledger-post-content');
+      await feedDraft.fill('Preserve my draft while reading highlights');
+      await page.getByRole('button',{name:'Network highlights',exact:true}).click();
+      const highlights=page.getByRole('region',{name:'Network highlights',exact:true});
+      await highlights.waitFor();
+      const highlightCards=highlights.locator('.network-highlight-card');
+      if(await highlightCards.count()<2)throw Error('Highlights did not use existing showcase posts');
+      const ids=await highlightCards.evaluateAll(cards=>cards.map(card=>card.dataset.postId));
+      if(new Set(ids).size!==ids.length)throw Error('Marquee duplicated accessible post controls');
+      await highlights.getByRole('button',{name:'Pause highlights',exact:true}).click();
+      const track=highlights.locator('.network-marquee-track').first();
+      if(await track.evaluate(el=>getComputedStyle(el).animationPlayState)!=='paused')throw Error('Highlights pause control failed');
+      const first=highlightCards.first();
+      const like=first.getByRole('button',{name:/^(Like|Liked)$/});
+
+      const highlightColors=await first.evaluate(el=>({
+        background:getComputedStyle(el).backgroundColor,
+        text:[...el.querySelectorAll('strong,small,p,time,button')].map(node=>getComputedStyle(node).color)
+      }));
+      for(const ink of highlightColors.text)if(contrast(ink,highlightColors.background)<4.5)throw Error('Unreadable highlight card '+JSON.stringify(highlightColors));
+      const wasLiked=await like.getAttribute('aria-pressed');
+      await like.click();
+      if(await like.getAttribute('aria-pressed')===wasLiked)throw Error('Highlights did not update shared Like state');
+      const save=first.getByRole('button',{name:/^(Save|Saved)$/});
+      const wasSaved=await save.getAttribute('aria-pressed');
+      await save.click();
+      if(await save.getAttribute('aria-pressed')===wasSaved)throw Error('Highlights did not update shared Save state');
+      await highlights.getByRole('button',{name:'Resume highlights',exact:true}).click();
+      await highlights.locator('.network-marquee-window').focus();
+      if(await track.evaluate(el=>getComputedStyle(el).animationPlayState)!=='paused')throw Error('Keyboard focus did not pause highlights');
+      await page.emulateMedia({reducedMotion:'reduce'});
+      if(await track.evaluate(el=>getComputedStyle(el).animationName)!=='none')throw Error('Highlights ignored reduced motion');
+      if(await highlights.locator('.network-marquee-window').evaluate(el=>getComputedStyle(el).overflowY)!=='auto')throw Error('Reduced-motion highlights are not manually scrollable');
+      await highlights.getByRole('button',{name:'Read full feed',exact:true}).click();
+      if(await feedDraft.inputValue()!=='Preserve my draft while reading highlights')throw Error('Highlights discarded a feed draft');
+      await feedDraft.fill('');
+      await page.emulateMedia({reducedMotion:'no-preference'});
+      console.log('PASS highlights controls, shared social state, draft retention and reduced motion '+theme+' '+size.width);
+
+      await page.getByRole('button',{name:'My board',exact:true}).click();
+      const stack=page.locator('.ledger-member-stack');
+      const memberCards=stack.getByRole('button',{name:/^Select /});
+      if(await memberCards.count()!==3)throw Error('Expected three directory-backed member cards');
+      const chosenName=(await memberCards.first().getAttribute('aria-label')).replace('Select ','');
+      const chosen=stack.getByRole('button',{name:'Select '+chosenName,exact:true});
+      await chosen.focus();
+      await chosen.press('Enter');
+      if(await chosen.getAttribute('aria-pressed')!=='true')throw Error('Keyboard selection did not bring member card forward');
+      if(!(await stack.locator('.ledger-member-stack-detail strong').textContent()).includes(chosenName))throw Error('Member detail does not follow selected card');
+      await page.emulateMedia({reducedMotion:'reduce'});
+      if(await chosen.evaluate(el=>getComputedStyle(el).transitionDuration)!=='0s')throw Error('Card stack ignores reduced motion');
+      await page.emulateMedia({reducedMotion:'no-preference'});
+      // Test actual foreground tokens over the lightest/darkest card gradient stops.
+      const stackColors=await chosen.evaluate(el=>{
+        const style=getComputedStyle(el),root=getComputedStyle(document.querySelector('.ledger-native-app'));
+        const ink=style.webkitTextFillColor||style.color;
+        const sample=document.createElement('span');document.body.append(sample);
+        const colors=['--ledger-crm-raised','--ledger-crm-surface'].map(key=>{
+          sample.style.color=root.getPropertyValue(key);return getComputedStyle(sample).color;
+        });sample.remove();return {ink,colors};
+      });
+      for(const surface of stackColors.colors)if(contrast(stackColors.ink,surface)<4.5)throw Error('Unreadable member card '+JSON.stringify(stackColors));
+      if(await page.evaluate(()=>document.documentElement.scrollWidth-innerWidth)>3)throw Error('Member stack causes viewport overflow');
+      if(process.env.BENTO_SCREENSHOT_DIR)await page.screenshot({path:process.env.BENTO_SCREENSHOT_DIR+'/'+theme+'-'+size.width+'.png'});
+      await stack.getByRole('button',{name:'View profile of '+chosenName,exact:true}).click();
+      await page.getByRole('button',{name:'Back to People',exact:true}).waitFor({timeout:15000});
+      await page.getByRole('heading',{name:chosenName.split(' ')[0],exact:true}).waitFor({timeout:15000});
+      console.log('PASS bento member stack selection, profile navigation, contrast and motion '+theme+' '+size.width);
+
       if(size.width < 600) {
         await page.getByRole('button',{name:'More menu',exact:true}).click();
         await page.getByRole('complementary',{name:'Mobile workspace sidebar'}).getByRole('button',{name:'CRM & Pipeline',exact:true}).click();

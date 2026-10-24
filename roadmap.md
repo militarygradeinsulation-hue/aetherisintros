@@ -1,5 +1,10 @@
 # Aetheris specification completion
 
+## PR #296 preview verification (Oct 24)
+- [ ] Bring exact PR head 368faaff into preview without merging or publishing.
+- [ ] Run focused tests and verify highlights, member cards, profile navigation and saved drafts on desktop/phones.
+- [ ] Check remote CI and automatic compilation; report signed-in verification limitations.
+
 ## Missing feature database recovery (Oct 22)
 - [x] Compare ten feature contracts with live catalog and existing migration history.
 - [ ] Prepare forward-only recovery for existing schemas/RPCs, retaining collaborative permissions and server-owned scores.
