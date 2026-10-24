@@ -47,21 +47,12 @@ describe('30-second public Opportunity Preview', () => {
     expect(answer.ask).toContain(goal.offer)
   })
 
-  it('is public, local only, has typed goals, explicit caveat, and a genuine signup/demo path', () => {
+  it('retires the questionnaire and routes old links to the homepage', () => {
     expect(page).toContain("createFileRoute('/try')")
-    expect(page).toContain('staticData: { sitemap: true }')
-    expect(page).toContain('aria-pressed={goalId === item.id}')
-    expect(page).toContain('navigator.clipboard.writeText(preview.ask)')
-    expect(page).toContain('preview.notice')
-    expect(page).toContain('We don\'t upload, search, or save them.')
-    expect(page).toContain('search={{ mode: \'signup\' }}')
-    expect(page).toContain('to="/demo"')
-    expect(page).not.toMatch(/supabase|\.rpc\(|fetch\(|localStorage|sendMessage\(/)
-  })
-
-  it('makes the preview visible from the public hero but retains the deeper demo link', () => {
-    expect(landing).toContain('to="/try" className="ael-text-link">Try it in 30 seconds')
-    expect(landing).toContain('to="/demo">Explore the demo')
+    expect(page).toContain("throw redirect({ to: '/', replace: true })")
+    expect(page).not.toContain('OpportunityPreviewPage')
+    expect(landing).not.toContain('to="/try"')
+    expect(landing).toContain('to="/demo" className="ael-text-link">Explore the demo')
   })
 
   it('allows the deliberate prepaint light/dark HTML attributes without masking inner hydration bugs', () => {

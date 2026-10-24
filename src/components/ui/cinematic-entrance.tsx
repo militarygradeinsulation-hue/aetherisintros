@@ -5,9 +5,9 @@ import { useEffect, useRef, useState } from "react";
 import "./cinematic-entrance.css";
 
 export interface CinematicEntranceProps { videoSrc: string; /** Fires only when the intro finishes or is skipped. */ onComplete?: () => void }
-const STORAGE_KEY = "ask-intros.entrance-film.seen";
 
-/** Full-screen, muted autoplay introduction once per tab session; always skippable. */
+
+/** Full-screen, muted autoplay introduction on every homepage arrival; always skippable. */
 export function CinematicEntrance({ videoSrc, onComplete }: CinematicEntranceProps) {
   const [visible, setVisible] = useState(true);
   const [exiting, setExiting] = useState(false);
@@ -18,19 +18,17 @@ export function CinematicEntrance({ videoSrc, onComplete }: CinematicEntrancePro
   const finish = React.useCallback(() => {
     if (endedRef.current) return;
     endedRef.current = true;
-    try { sessionStorage.setItem(STORAGE_KEY, "1"); } catch { /* private browsing */ }
     setExiting(true);
     window.setTimeout(() => { setVisible(false); callbackRef.current?.(); }, 450);
   }, []);
 
   useEffect(() => {
-    let alreadySeen = false;
-    try { alreadySeen = sessionStorage.getItem(STORAGE_KEY) === "1"; } catch { /* optional */ }
-    if (alreadySeen || window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
       endedRef.current = true;
       setVisible(false);
       return;
     }
+    endedRef.current = false;
     const video = videoRef.current;
     if (!video) return;
     video.muted = true;
@@ -38,7 +36,8 @@ export function CinematicEntrance({ videoSrc, onComplete }: CinematicEntrancePro
     if (playback && typeof playback.catch === "function") playback.catch(() => { /* fallback below */ });
     // If silent autoplay cannot begin, never leave visitors blocked by the overlay.
     const fallback = window.setTimeout(() => { if (!video || video.currentTime < .1) finish(); }, 9000);
-    const stop = () => { window.clearTimeout(fallback); video.pause(); };
+    const maximum = window.setTimeout(finish, 30000);
+    const stop = () => { window.clearTimeout(fallback); window.clearTimeout(maximum); video.pause(); };
     return stop;
   }, [videoSrc, finish]);
 

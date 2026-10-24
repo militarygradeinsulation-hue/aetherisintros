@@ -77,6 +77,7 @@ try {
   for (const viewport of viewports) {
     console.log('HOME / ' + viewport.name + ' / ' + viewport.width + 'x' + viewport.height)
     const page = await browser.newPage({ viewport: { width: viewport.width, height: viewport.height } })
+    await page.emulateMedia({ reducedMotion: 'reduce' })
     page.on('pageerror', error => console.log('  ! browser page error: ' + error.message.slice(0, 220)))
     await page.addInitScript(() => {
       try { localStorage.setItem('ask-intros.appearance', 'light') } catch { /* optional */ }
@@ -117,7 +118,7 @@ try {
             }),
           ),
           ctas: {
-            preview: Boolean(root.querySelector('.ael-hero-actions a[href="/try"]')),
+            preview: Boolean(root.querySelector('.ael-hero-actions a[href="/demo"]')),
             demo: Boolean(root.querySelector('a[href="/demo"]')),
             join: Boolean(root.querySelector('.ael-hero-actions a[href^="/auth?"][href*="mode=signup"]')),
             auth: Boolean(root.querySelector('.ael-header-actions a[href="/auth"]')),

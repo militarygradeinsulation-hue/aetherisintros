@@ -133,7 +133,7 @@ try {
  for(const vp of [{width:320,height:700},{width:390,height:844},{width:768,height:1024}]) {
    console.log('Public homepage / '+vp.width)
    const page=await browser.newPage({viewport:vp})
-   await page.addInitScript(() => { try { sessionStorage.setItem('ask-intros.entrance-film.seen','1') } catch { /* optional */ } })
+   await page.emulateMedia({ reducedMotion: 'reduce' })
    await page.goto(base+'/',{waitUntil:'domcontentloaded',timeout:120000})
    await page.waitForSelector('.ael-compact',{timeout:60000})
    await clearLayout(page,'homepage '+vp.width)
