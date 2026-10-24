@@ -42,6 +42,22 @@ npx vitest run scripts/recovery/catalog-replay.test.ts
 
 The pending list is a dated review input, not a migration executor. Revalidate both ledgers before any future recovery. The tool opens only disposable PGlite, never a network database; it never reads database environment variables or changes migration history. Catalog definitions are trusted local SQL, not untrusted user uploads.
 
+## Ledger-aware forward-only planning
+
+Using a fresh authorized read-only export of **all** Drizzle rows (`SELECT id, hash, created_at ...` from `docs/release-safety/LEDGER_HANDOFF.md`), save the JSON array outside git. Do not substitute the dated summary or a partial list for that export.
+
+```sh
+node scripts/recovery/reconciliation-plan.mjs --ledger /tmp/drizzle-ledger.json --pending docs/release-safety/pending-0058-0078.json > /tmp/reconciliation-plan.json
+```
+
+The planner needs only Node. It fingerprints the exact source SQL and supplied ledger, searches matching hashes across **all timestamps**, preserves mismatches and unknown history, and flags duplicate/conflicting evidence. `APPLIED` means hash evidence only, not verified schema or behavior. Missing hash/time entries are `PENDING`, conflicting timestamp entries are `HASH_CONFLICT`, and contradictory/multiple entries are `AMBIGUOUS`. Exit 2 means unresolved ledger blockers; malformed input throws. Exit 0 is an offline classification result, never production authorization.
+
+The selected pending list must be unique, journaled and in journal order. Recorded 0062 and collision migrations 0082/0090/0092 are always rejected as replay targets. Older pending timestamps are explicitly flagged: the normal timestamp-based migrator may skip them. A reviewed new forward-only recovery package remains necessary; this planner emits **no executable SQL**, does not insert/relabel ledger rows and cannot certify the target, export completeness or freshness, restore capability, or managed-service behavior.
+
+Pass `--ledger /tmp/drizzle-ledger.json` to `catalog-replay.mjs` to attach this classification to the rehearsal. A selected target with any state other than `PENDING` blocks all DDL before the disposable database opens. Other ledger discrepancies remain visible blockers and cause CLI exit 2 even when an isolated rehearsal succeeds. Omitting `--ledger` retains schema-only rehearsal compatibility and reports `ledgerPlan:null`. Every report explicitly retains `productionActivationAllowed:false`.
+
+The catalog runner now stops all further recovery, collision and security work after the first failed target. Collision probes fingerprint their SQL and always roll back preceding data/grant/DDL changes, even when the probe succeeds. With `--security`, the existing RLS-hardening candidate suite also runs in its own rollback transaction, including double-application, anonymous helper denial, immutable reaction identity/timestamps, and retained member paths. Candidate SQL is still unjournaled and unapplied in production.
+
 The loader restores captured enums/tables, retries dependent function/view definitions, restores defaults/constraints/indexes/triggers/policies/RLS and grants, then stops if any baseline step failed. Unsupported column semantics or privileges are reported instead of stripped. Targets stop on the first failed migration. All collision probes roll back and distinguish existing-table collisions from other SQL errors. With `--security`, the existing Library, workspace, deal-room and Basic/Executive suites use synthetic confirmed identities and the observed membership helper; each suite rolls back independently.
 
 `baselineComplete` certifies loading the supplied public catalog, not full Supabase compatibility. Auth/storage/realtime fixtures, owners and managed services remain explicit limitations. See `docs/release-safety/OBSERVED_SCHEMA_REHEARSAL_2026_10_20.md` for the dated result and restore-point blocker.
