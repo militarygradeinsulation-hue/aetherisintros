@@ -58,3 +58,6 @@
   }
 }
 
+
+/* AA contrast for the host Business selector; original Bridge styles stay untouched. */
+:root:not([data-experience="social"]) body .ledger-crm-shell .experience-switch button[aria-pressed="true"] { background:#b91c1c !important; color:#fff !important; }

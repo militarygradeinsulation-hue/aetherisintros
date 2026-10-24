@@ -62,10 +62,21 @@ function measure(selector) {
   {
     const prev = amb?.style.pointerEvents; if (amb) amb.style.pointerEvents = 'auto'
     const r = s.getBoundingClientRect()
+    // Only sample the part visible inside all scrolling/clipping ancestors.
+    let left=0,top=0,right=innerWidth,bottom=innerHeight;
+    for(let parent=s.parentElement;parent;parent=parent.parentElement) {
+      const style=getComputedStyle(parent),box=parent.getBoundingClientRect();
+      if(/auto|scroll|hidden|clip/.test(style.overflowX)) { left=Math.max(left,box.left);right=Math.min(right,box.right); }
+      if(/auto|scroll|hidden|clip/.test(style.overflowY)) { top=Math.max(top,box.top);bottom=Math.min(bottom,box.bottom); }
+    }
     for (const fx of [.08, .29, .5, .71, .92]) for (const fy of [.08, .29, .5, .71, .92]) {
       const x = r.left + r.width * fx, y = r.top + r.height * fy
-      if (x < 0 || y < 0 || x >= innerWidth || y >= innerHeight) continue
+      if (x < left || y < top || x >= right || y >= bottom) continue
       const hit = document.elementFromPoint(x, y)
+      // Shell launchers intentionally float above scrolling content. Their own
+      // hit targets and content scroll reachability are covered by mobile-site-check.
+      // Continue detecting decorative fields and unknown overlays here.
+      if (hit?.closest('.ledger-native-quick-dock,.ask-dock-fab') && !s.contains(hit)) continue
       if (hit && !s.contains(hit)) covered = (hit.className && String(hit.className).split(' ')[0]) || hit.tagName.toLowerCase()
     }
     if (amb) amb.style.pointerEvents = prev
@@ -113,7 +124,7 @@ async function check(page, name, selector, prefix, { inline = false, field = fal
   if (process.env.SHOTS) await page.screenshot({ path: join(process.env.SHOTS, `${process.env.PREFIX ?? 'check'}-${prefix}${name}.png`) })
   if (!m) { ok(false, `${name}: surface ${selector} is visible`); return }
   if (!inline) ok(m.alpha >= 0.9, `${name}: background alpha ${m.alpha} >= 0.9`)
-  if (!field) ok(!m.covered, `${name}: nothing painted over it` + (m.covered ? ` (covered by ${m.covered})` : ''))
+  if (!field) ok(!m.covered, `${name}: no unexpected overlay on its visible content` + (m.covered ? ` (covered by ${m.covered})` : ''))
   const bad = m.texts.filter(t => t.ratio < t.need)
   const worst = m.texts.reduce((w, t) => (!w || t.ratio < w.ratio ? t : w), null)
   ok(bad.length === 0, `${name}: ${m.texts.length} text items readable (lowest ${worst ? `${worst.ratio}:1 "${worst.text}"` : 'n/a'})` + (bad.length ? ` — below AA: ${bad.slice(0, 4).map(t => `"${t.text}" ${t.ratio}`).join(', ')}` : ''))
