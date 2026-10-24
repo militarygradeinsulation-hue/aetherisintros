@@ -49,7 +49,15 @@ try {
       await page.locator('.ledger-dashboard').waitFor({state:'visible',timeout:60000});
       const photos=page.locator('.ledger-feed-entry .ledger-post-photo');
       if(await photos.count()<2)throw Error('Showcase photo posts missing');
-      await page.waitForFunction(()=>[...document.querySelectorAll('.ledger-feed-entry .ledger-post-photo')].every(img=>img.complete&&img.naturalWidth>0));
+      // Showcase photos are lazy loaded. Exercise each image in the real content
+      // viewport before asserting decode, rather than waiting for offscreen images.
+      for(let index=0;index<await photos.count();index++) {
+        await photos.nth(index).scrollIntoViewIfNeeded();
+        await page.waitForFunction(i=>{
+          const img=document.querySelectorAll('.ledger-feed-entry .ledger-post-photo')[i];
+          return img.complete&&img.naturalWidth>0;
+        },index);
+      }
       await page.getByRole('region',{name:'Business headlines',exact:true}).waitFor();
       const button=page.getByRole('button',{name:'Customize',exact:true});
       await button.waitFor({state:'visible',timeout:45000});
