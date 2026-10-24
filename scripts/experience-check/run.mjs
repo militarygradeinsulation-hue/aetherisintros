@@ -5,7 +5,7 @@ const { chromium } = await import(process.env.PLAYWRIGHT_MODULE || "playwright")
 const url = new URL("/demo", process.env.EXPERIENCE_BASE_URL || "http://127.0.0.1:5173").href;
 const output = process.env.EXPERIENCE_SCREENSHOTS || "/tmp/ask-intros-experience";
 mkdirSync(output, { recursive: true });
-const browser = await chromium.launch({ headless: true });
+const browser = await chromium.launch({ headless: true, ...(process.env.PLAYWRIGHT_EXECUTABLE_PATH ? { executablePath: process.env.PLAYWRIGHT_EXECUTABLE_PATH } : {}) });
 try {
   const page = await browser.newPage({ viewport: { width: 1440, height: 1000 } });
   const errors = [];
