@@ -771,3 +771,21 @@ html:root[data-theme] body .ix-root .request-intro-modal-surface .intro-modal-am
   -webkit-text-fill-color:#EF4444!important;
   opacity:1!important;
 }
+/* Legacy CRM/Grid surfaces used fixed dark paint underneath theme-aware ink.
+   Pair the surface and foreground explicitly; do not touch evidence/media. */
+html:root[data-theme="light"] body .ix-root.ledger-native-app :is(.ops-stats > div,.ops-panel,.ops-lane,.ops-empty,.fcrm-card,.grid-new-sheet,.grid-footer,.grid-table thead th,.grid-corner,.grid-rownum,.grid-table td input,.deck-reason,.deck-compose,.journal-composer,.simp-drop,.simp-block,.simp-done) {
+  background:var(--ledger-crm-surface,#fffefa)!important;
+  color:var(--ledger-crm-ink,#141414)!important;
+  border-color:var(--ledger-crm-border,rgba(16,16,16,.16))!important;
+  color-scheme:light;
+}
+html:root[data-theme="light"] body .ix-root.ledger-native-app :is(.ops-stats,.ops-panel,.ops-lane,.ops-empty,.fcrm-card) :is(strong,b,h2,h3,label) {
+  color:#141414!important;-webkit-text-fill-color:#141414!important;
+}
+html:root[data-theme="light"] body .ix-root.ledger-native-app :is(.ops-stats,.ops-panel,.ops-lane,.ops-empty,.fcrm-card) :is(small,p,.ops-note) {
+  color:#585852!important;-webkit-text-fill-color:#585852!important;
+}
+html:root[data-theme="light"] body .ix-root.ledger-native-app :is(.ops-tabs button.active,.ops-tabs button[aria-selected="true"]) {
+  background:#e9e9e2!important;color:#141414!important;-webkit-text-fill-color:#141414!important;
+  border-color:#b91c1c!important;
+}
