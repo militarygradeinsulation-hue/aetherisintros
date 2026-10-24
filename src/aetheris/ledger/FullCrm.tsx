@@ -24,6 +24,9 @@ import {
   tierCohorts, winLossByMonth,
 } from './analytics'
 import { DEAL_STAGES, orderTotal, type DealStage } from './types'
+import { FinanceBento } from '@/components/ui/finance-bento'
+import { financeBentoFromLedger } from './finance-bento-adapter'
+import { CHART_COLORS, CATEGORY_COLORS, stageChartColor, compactPipelineStageLabel } from './chart-colors'
 
 type Module =
   | 'dashboard' | 'leads' | 'contacts' | 'companies' | 'deals' | 'activities'
@@ -45,12 +48,12 @@ const MODULES: Array<{ id: Module; label: string; icon: typeof Kanban; group: st
   { id: 'import', label: 'Import', icon: FileUp, group: 'Data' },
 ]
 
-const COBALT = '#B91C1C'
-const AMBER = '#DC2626'
-const GOLD = '#B91C1C'
-const INK_LINE = 'rgba(255,255,255,.10)'
-const MUTED = '#9EA4AC'
-const PIE_COLORS = [COBALT, AMBER, '#B91C1C', GOLD, '#FCA5A5', '#8C2B2B']
+const COBALT = CHART_COLORS.billed
+const AMBER = CHART_COLORS.amber
+const GOLD = CHART_COLORS.rose
+const INK_LINE = 'rgba(148,163,184,.22)'
+const MUTED = '#CBD5E1'
+const PIE_COLORS = CATEGORY_COLORS
 
 const axis = { stroke: MUTED, fontSize: 11, tickLine: false as const }
 const tooltipStyle = {
@@ -87,6 +90,14 @@ export default function FullCrm({ onBack }: { onBack: () => void }) {
   })
   const [query, setQuery] = useState('')
   const [hideStarterPref, setHideStarter] = useState(false)
+  const [dashboardView, setDashboardView] = useState<'bento' | 'detailed'>(() => {
+    if (typeof window === 'undefined') return 'bento'
+    return window.localStorage.getItem('aetheris.ledger.dashboardView') === 'detailed' ? 'detailed' : 'bento'
+  })
+  const selectDashboardView = (next: 'bento' | 'detailed') => {
+    setDashboardView(next)
+    if (typeof window !== 'undefined') window.localStorage.setItem('aetheris.ledger.dashboardView', next)
+  }
   // Real accounts only ever see their own records; examples exist in the demo only.
   const hideStarter = !isShowcase() || hideStarterPref
 
@@ -110,6 +121,7 @@ export default function FullCrm({ onBack }: { onBack: () => void }) {
 
   const k = useMemo(() => kpis(l), [l])
   const margins = useMemo(() => marginTotals(l), [l])
+  const financeData = useMemo(() => financeBentoFromLedger(l), [l])
   const starterCount = (['companies', 'contacts', 'leads', 'deals', 'activities', 'products', 'inventory', 'orders', 'invoices', 'vendors'] as const)
     .reduce((n, key) => n + (api.ledger[key] as { starter?: boolean }[]).filter(r => r.starter).length, 0)
 
@@ -153,6 +165,15 @@ export default function FullCrm({ onBack }: { onBack: () => void }) {
 
       <section className="fcrm-panel-area">
         {module === 'dashboard' && <>
+          <div className="fcrm-dashboard-views" role="group" aria-label="Dashboard display">
+            <button type="button" aria-pressed={dashboardView === 'bento'} onClick={() => selectDashboardView('bento')}>Bento dashboard</button>
+            <button type="button" aria-pressed={dashboardView === 'detailed'} onClick={() => selectDashboardView('detailed')}>Detailed view</button>
+          </div>
+          {dashboardView === 'bento' ? <FinanceBento
+            data={financeData}
+            title="Revenue & Pipeline"
+            subtitle={isShowcase() && !hideStarter ? 'Demo records included · hide examples above for real numbers' : 'Based on your current workspace records'}
+          /> : <>
           <div className="ops-stats">
             <Stat label="OPEN PIPELINE" value={money(k.pipeline, true)} note={`${k.openDealCount} open opportunities`} />
             <Stat label="WEIGHTED" value={money(k.weighted, true)} note="By stage probability — modelled" />
@@ -165,16 +186,19 @@ export default function FullCrm({ onBack }: { onBack: () => void }) {
                 <CartesianGrid stroke={INK_LINE} vertical={false} />
                 <XAxis dataKey="month" {...axis} /><YAxis {...axis} tickFormatter={v => money(Number(v), true)} width={60} />
                 <Tooltip contentStyle={tooltipStyle} formatter={(v: number) => money(v)} />
-                <Area type="monotone" dataKey="billed" stroke={COBALT} fill={COBALT} fillOpacity={0.18} />
-                <Area type="monotone" dataKey="collected" stroke={AMBER} fill={AMBER} fillOpacity={0.12} />
+                <Legend verticalAlign="top" align="right" wrapperStyle={{ fontSize: 11, color: MUTED }} />
+                <Area type="monotone" dataKey="billed" name="Billed" stroke={COBALT} strokeWidth={2.8} fill={COBALT} fillOpacity={0.18} />
+                <Area type="monotone" dataKey="collected" name="Collected" stroke={CHART_COLORS.collected} strokeWidth={2.8} fill={CHART_COLORS.collected} fillOpacity={0.16} />
               </AreaChart></Chart>
             </Panel>
             <Panel title="PIPELINE BY STAGE">
               <Chart><BarChart data={pipelineByStage(l)}>
                 <CartesianGrid stroke={INK_LINE} vertical={false} />
-                <XAxis dataKey="name" {...axis} /><YAxis {...axis} tickFormatter={v => money(Number(v), true)} width={60} />
+                <XAxis dataKey="name" {...axis} interval={0} tickFormatter={compactPipelineStageLabel} /><YAxis {...axis} tickFormatter={v => money(Number(v), true)} width={60} />
                 <Tooltip contentStyle={tooltipStyle} formatter={(v: number) => money(v)} />
-                <Bar dataKey="value" fill={COBALT} radius={[4, 4, 0, 0]} />
+                <Bar dataKey="value" name="Pipeline value" radius={[4, 4, 0, 0]} maxBarSize={70}>
+                  {pipelineByStage(l).map((stage, index) => <Cell key={stage.name} fill={stageChartColor(index)} />)}
+                </Bar>
               </BarChart></Chart>
             </Panel>
           </div>
@@ -197,6 +221,7 @@ export default function FullCrm({ onBack }: { onBack: () => void }) {
               </div>
             </Panel>
           </div>
+          </>}
         </>}
 
         {module === 'leads' && (() => {
@@ -213,7 +238,7 @@ export default function FullCrm({ onBack }: { onBack: () => void }) {
                   <XAxis dataKey="name" {...axis} /><YAxis {...axis} width={34} />
                   <Tooltip contentStyle={tooltipStyle} />
                   <Bar dataKey="leads" fill={COBALT} radius={[4, 4, 0, 0]} />
-                  <Bar dataKey="qualified" fill={AMBER} radius={[4, 4, 0, 0]} />
+                  <Bar dataKey="qualified" name="Qualified" fill={CHART_COLORS.teal} radius={[4, 4, 0, 0]} />
                 </BarChart></Chart>
               </Panel>
               <Panel title="WHAT THIS TELLS YOU">
@@ -403,7 +428,8 @@ export default function FullCrm({ onBack }: { onBack: () => void }) {
                   <CartesianGrid stroke={INK_LINE} vertical={false} />
                   <XAxis dataKey="name" {...axis} /><YAxis {...axis} width={40} />
                   <Tooltip contentStyle={tooltipStyle} />
-                  <Bar dataKey="onHand" fill={COBALT} radius={[4, 4, 0, 0]} />
+                  <Legend verticalAlign="top" align="right" wrapperStyle={{ fontSize: 11, color: MUTED }} />
+                  <Bar dataKey="onHand" name="On hand" fill={COBALT} radius={[4, 4, 0, 0]} />
                   <Bar dataKey="committed" fill={AMBER} radius={[4, 4, 0, 0]} />
                 </BarChart></Chart>
               </Panel>
@@ -525,8 +551,9 @@ export default function FullCrm({ onBack }: { onBack: () => void }) {
                 <CartesianGrid stroke={INK_LINE} vertical={false} />
                 <XAxis dataKey="month" {...axis} /><YAxis {...axis} width={34} />
                 <Tooltip contentStyle={tooltipStyle} />
-                <Bar dataKey="won" fill={COBALT} radius={[4, 4, 0, 0]} />
-                <Bar dataKey="lost" fill={GOLD} radius={[4, 4, 0, 0]} />
+                <Legend verticalAlign="top" align="right" wrapperStyle={{ fontSize: 11, color: MUTED }} />
+                <Bar dataKey="won" name="Won" fill={CHART_COLORS.collected} radius={[4, 4, 0, 0]} />
+                <Bar dataKey="lost" name="Lost" fill={GOLD} radius={[4, 4, 0, 0]} />
               </BarChart></Chart>
             </Panel>
             <Panel title="COLLECTIONS TREND">
@@ -534,8 +561,9 @@ export default function FullCrm({ onBack }: { onBack: () => void }) {
                 <CartesianGrid stroke={INK_LINE} vertical={false} />
                 <XAxis dataKey="month" {...axis} /><YAxis {...axis} tickFormatter={v => money(Number(v), true)} width={60} />
                 <Tooltip contentStyle={tooltipStyle} formatter={(v: number) => money(v)} />
-                <Area type="monotone" dataKey="collected" stroke={AMBER} fill={AMBER} fillOpacity={0.14} />
-                <Area type="monotone" dataKey="target" stroke={COBALT} fill="none" strokeDasharray="4 4" />
+                <Legend verticalAlign="top" align="right" wrapperStyle={{ fontSize: 11, color: MUTED }} />
+                <Area type="monotone" dataKey="collected" name="Collected" stroke={CHART_COLORS.collected} strokeWidth={2.8} fill={CHART_COLORS.collected} fillOpacity={0.15} />
+                <Area type="monotone" dataKey="target" name="Target" stroke={CHART_COLORS.violet} strokeWidth={2.4} fill="none" strokeDasharray="4 4" />
               </AreaChart></Chart>
             </Panel>
           </div>
