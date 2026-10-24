@@ -1,9 +1,9 @@
 # Aetheris specification completion
 
 ## PR #313 Social reference preview (Oct 24)
-- [ ] Import the reviewed PR presentation files with verified hashes; preserve Business and canonical data controllers.
-- [ ] Run source integrity, focused tests and desktop/mobile Social/Business interaction checks.
-- [ ] Report preview results without merging or publishing; authenticated persistence requires a permitted session.
+- [x] Import PR #313 at 737bc406 with verified hashes; preserve Business and canonical controllers. Repair host-only logo serving and inherited Social scroll locks without editing reference files.
+- [x] Verify 29 original file hashes, generated CSS, compilation and four-size demo checks; retain canonical feed node, separate drafts, People filters, messages, saved experience and full Social scrolling. Full suite first passed 948 tests; a repeat timed out in one unrelated offline recovery test.
+- [x] Report preview-only results; no merge or publication. GitHub Architect browser check remains failed, and authenticated persistence is unverified without a permitted session.
 
 ## Missing feature database recovery (Oct 22)
 - [x] Compare ten feature contracts with live catalog and existing migration history.
