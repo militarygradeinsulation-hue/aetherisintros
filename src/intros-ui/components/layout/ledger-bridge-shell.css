@@ -315,3 +315,55 @@
   :root body .ix-root.ledger-native-app .ledger-crm-collapsed .ledger-native-mobile-sidebar :is(.ledger-native-nav-label,.ledger-native-group-label,.ledger-native-count) {display:block!important}
   :root body .ix-root.ledger-native-app .ledger-crm-collapsed .ledger-native-mobile-sidebar .ledger-native-nav {padding:15px 12px 20px!important}
 }
+
+
+/* Ask Intros floating desktop command dock. Deliberately hidden on mobile:
+   the persistent 4-button touch navigation and floating assistant remain accessible. */
+:root body .ix-root.ledger-native-app .ledger-native-quick-dock {
+ position:fixed;left:calc(50% + var(--ledger-crm-sidebar,256px)/2);bottom:18px;z-index:85;
+ transform:translateX(-50%);pointer-events:none;max-width:calc(100vw - var(--ledger-crm-sidebar,256px) - 36px)
+}
+:root body .ix-root.ledger-native-app .ledger-native-quick-dock .ask-macos-dock{pointer-events:auto}
+:root body .ix-root.ledger-native-app .ledger-native-content{padding-bottom:115px}
+:root body .ix-root.ledger-native-app .ledger-native-search-frame {
+ display:flex;flex:none;min-width:0;width:min(38vw,420px);margin-left:auto;
+ border-radius:18px!important
+}
+:root body .ix-root.ledger-native-app .ledger-native-search-frame .ledger-native-search{
+ margin-left:0;min-width:0;width:100%;height:39px;border-radius:17px!important
+}
+:root body .ix-root.ledger-native-app .ledger-section-navigation {
+ border-radius:20px!important;box-shadow:0 13px 34px rgba(0,0,0,.15);background:var(--ledger-crm-surface)
+}
+:root body .ix-root.ledger-native-app .ledger-section-expanding {
+ display:flex!important;grid-template-columns:none!important;overflow-x:auto;max-width:100%;
+ gap:0!important;scrollbar-width:thin;overscroll-behavior-x:contain
+}
+:root body .ix-root.ledger-native-app .ledger-section-expanding .ask-expanding-tabs{flex:none;margin-inline:auto}
+:root body .ix-root.ledger-native-app .ledger-section-expanding .ask-expanding-tab {
+ display:flex!important;grid-template-columns:none!important;min-height:42px!important;width:auto!important;
+ gap:8px!important;margin:0!important;padding:0 11px!important;border-radius:999px!important;
+ color:var(--et-muted)!important;background:var(--et-idle)!important;
+ font:600 12px/1.2 system-ui,sans-serif!important;text-align:left
+}
+:root body .ix-root.ledger-native-app .ledger-section-expanding .ask-expanding-tab.is-active{
+ color:var(--et-ink)!important;background:var(--et-active)!important;padding-right:14px!important
+}
+:root body .ix-root.ledger-native-app .ledger-section-expanding .ask-expanding-tab svg{width:18px;height:18px;flex:none}
+:root body .ix-root.ledger-native-app .ledger-native-quick-dock .ask-macos-dock-item,
+:root body .ix-root.ledger-native-app .ledger-native-quick-dock .ask-macos-dock-plate,
+:root body .ix-root.ledger-native-app .ledger-native-quick-dock .ask-macos-command-menu button {
+ border-radius:11px!important
+}
+:root body .ix-root.ledger-native-app .ledger-native-quick-dock .ask-macos-dock{border-radius:22px!important}
+:root body .ix-root.ledger-native-app .ledger-native-quick-dock .ask-macos-dock-plate{border-radius:24%!important}
+@media(max-width:1120px){
+ :root body .ix-root.ledger-native-app .ledger-native-quick-dock{display:none!important}
+ :root body .ix-root.ledger-native-app .ledger-native-content{padding-bottom:30px}
+}
+@media(max-width:720px){
+ :root body .ix-root.ledger-native-app .ledger-native-search-frame{min-width:36px;width:38px}
+ :root body .ix-root.ledger-native-app .ledger-native-content{padding-bottom:110px}
+ :root body .ix-root.ledger-native-app .ledger-section-expanding .ask-expanding-tabs{margin-inline:0}
+ :root body .ix-root.ledger-native-app .ledger-section-expanding .ask-expanding-tab{padding:0 9px!important}
+}

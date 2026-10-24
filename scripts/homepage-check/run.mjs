@@ -80,6 +80,8 @@ try {
     page.on('pageerror', error => console.log('  ! browser page error: ' + error.message.slice(0, 220)))
     await page.addInitScript(() => {
       try { localStorage.setItem('ask-intros.appearance', 'light') } catch { /* optional */ }
+      // Inspect the actual homepage after the one-time cinematic intro (film has a dedicated component test).
+      try { sessionStorage.setItem('ask-intros.entrance-film.seen', '1') } catch { /* optional */ }
     })
     try {
       await page.goto(base + '/', { waitUntil: 'domcontentloaded', timeout: 120_000 })
@@ -100,6 +102,8 @@ try {
           pageWidth: document.documentElement.scrollWidth,
           viewportWidth: innerWidth,
           hero: rect('.ael-hero'),
+          cinematic: rect('.ask-cinematic-hero'),
+          cinematicCTA: rect('.ask-cine-cta'),
           heroTitle: rect('#ael-hero-title'),
           heroActions: rect('.ael-hero-actions'),
           headerActions: rect('.ael-header-actions'),
@@ -126,8 +130,10 @@ try {
         hero: Math.round(m.hero?.height ?? 0),
         footer: Math.round(m.footer?.height ?? 0),
       }))
-      assert(m.sections === 3, 'three concise chapters, no duplicate long sections')
-      assert(m.pageHeight <= viewport.maxHeight, 'scroll budget ' + m.pageHeight + ' <= ' + viewport.maxHeight + ' px')
+      assert(m.sections === 4, 'three original chapters plus one cinematic product demonstration')
+      const allowedHeight = viewport.maxHeight + Math.ceil(m.cinematic?.height ?? 0) + 80
+      assert(Boolean(m.cinematic && m.cinematicCTA && m.cinematic.height > 380), 'cinematic product demo and working CTA render')
+      assert(m.pageHeight <= allowedHeight, 'scroll budget includes one approved cinematic chapter: ' + m.pageHeight + ' <= ' + allowedHeight + ' px')
       assert(m.pageWidth <= m.viewportWidth + 2, 'no horizontal page overflow')
       assert(Boolean(m.hero && m.heroTitle && m.heroActions && m.membership && m.footer),
         'headline, primary actions, membership and footer all render')
@@ -139,7 +145,7 @@ try {
       const onScreen = r => Boolean(r && r.width > 0 && r.right <= viewport.width + 3 && r.x >= -3)
       assert(m.logo && m.logo.width >= (viewport.width <= 420 ? 150 : viewport.width <= 750 ? 175 : 220),
         'approved Ask Intros wordmark is prominent at this breakpoint')
-      assert([m.heroTitle, m.heroActions, m.headerActions, m.logo, m.signup, m.membership].every(onScreen),
+      assert([m.heroTitle, m.heroActions, m.headerActions, m.logo, m.signup, m.membership, m.cinematicCTA].every(onScreen),
         'headlines and important actions remain within phone/desktop width')
 
       if (viewport.name === 'desktop') {
