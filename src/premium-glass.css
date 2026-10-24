@@ -1,0 +1,71 @@
+/* Shared finish only: preserve scrolling, overlay placement and controller state.
+   Opaque fallback keeps the same contrast when backdrop filtering is unavailable. */
+:root {
+  --glass-radius: 28px;
+  --glass-solid: #19191c;
+  --glass-fill: rgba(25,25,28,.9);
+  --glass-edge: rgba(255,255,255,.12);
+  --glass-sheen: rgba(255,255,255,.065);
+  --glass-shadow: 0 18px 44px -26px rgba(0,0,0,.65), inset 0 1px 0 rgba(255,255,255,.1);
+}
+:root[data-theme="light"] {
+  --glass-solid: #fffefa;
+  --glass-fill: rgba(255,254,250,.92);
+  --glass-edge: rgba(30,30,38,.12);
+  --glass-sheen: rgba(255,255,255,.8);
+  --glass-shadow: 0 18px 44px -28px rgba(30,30,38,.24), inset 0 1px 0 #fff;
+}
+/* Specificity intentionally beats the legacy square Ledger presentation. */
+:root body .ix-root.ledger-native-app .ledger-crm-shell .ledger-native-content :is(.ledger-ui-panel,.ledger-ui-stat,.ledger-workspace-detail,.ledger-workspace-modules,.live-exec-panel,.live-exec-stat,.meetings-card,.pl-card,.pl-import,.module,.specter-card,.home-feed-widget,.home-board-tile,.sys-tile,.ops-stats > div,.ops-panel,.ops-lane,.ops-empty,.fcrm-card,.board-tile) {
+  border-radius:var(--glass-radius)!important;
+  border-color:var(--glass-edge)!important;
+  background-color:var(--glass-solid)!important;
+  background-image:linear-gradient(145deg,var(--glass-sheen),transparent 65%)!important;
+  box-shadow:var(--glass-shadow)!important;
+}
+:root body .ix-root.ledger-native-app .ledger-widget-board {--widget-radius:var(--glass-radius)}
+:root body .ix-root.ledger-native-app .ledger-crm-shell :is(button,input:not([type="checkbox"]):not([type="radio"]):not([type="range"]),select,textarea,.ledger-native-nav-item,.ledger-native-search) {border-radius:14px!important}
+:root body .ix-root.ledger-native-app .ledger-crm-shell :is(.ledger-native-count,.ai-gradient-button) {border-radius:999px!important}
+:root body .ix-root.ledger-native-app .ledger-crm-shell :is(.ledger-native-account-dropdown,.ledger-section-navigation,[role="dialog"],[role="menu"]) {
+  border-radius:22px!important;
+  border-color:var(--glass-edge)!important;
+  box-shadow:var(--glass-shadow)!important;
+}
+:root body .ix-root.ledger-native-app .ledger-crm-sidebar {border-radius:0 26px 26px 0!important}
+:root body .ix-root.ledger-native-app .ledger-native-mobile-sidebar {border-radius:0 26px 26px 0!important}
+:root body .ix-root.ledger-native-app .ledger-crm-shell :is(.ledger-crm-sidebar,.ledger-crm-topbar,.ledger-native-mobile-sidebar) {
+  background:linear-gradient(135deg,var(--glass-sheen),transparent 65%),var(--glass-solid)!important;
+  border-color:var(--glass-edge)!important;
+}
+:root body .ix-root.ledger-native-app .ledger-workspace-detail > .ledger-workspace-heading {border-radius:var(--glass-radius) var(--glass-radius) 0 0}
+:root body .ix-root.ledger-native-app .ledger-workspace-body {border-radius:0 0 var(--glass-radius) var(--glass-radius)}
+/* Public sections retain their established ink and paper palette. */
+:root body .ael.ael-compact :is(.ael-hero,.ael-compact-method,.ael-compact-membership) {
+  border-radius:var(--glass-radius)!important;
+  border-color:var(--glass-edge)!important;
+  box-shadow:var(--glass-shadow)!important;
+  background-image:linear-gradient(135deg,var(--glass-sheen),transparent 65%)!important;
+}
+:root body .ael.ael-compact .ael-header {border-radius:0 0 24px 24px!important;box-shadow:var(--glass-shadow)}
+:root body :is(.auth-panel,[role="dialog"],[data-radix-popper-content-wrapper] > *) {border-radius:22px}
+@supports ((backdrop-filter:blur(1px)) or (-webkit-backdrop-filter:blur(1px))) {
+  :root body .ix-root.ledger-native-app .ledger-crm-shell .ledger-native-content :is(.ledger-ui-panel,.ledger-ui-stat,.ledger-workspace-detail,.live-exec-panel,.meetings-card,.pl-card,.module,.specter-card,.home-feed-widget,.home-board-tile,.sys-tile,.ops-panel,.fcrm-card,.board-tile) {
+    background-color:var(--glass-fill)!important;
+    -webkit-backdrop-filter:blur(16px) saturate(115%);
+    backdrop-filter:blur(16px) saturate(115%);
+  }
+  /* No filter on the sidebar: it contains fixed/portalled navigation controls. */
+  :root body .ix-root.ledger-native-app .ledger-crm-topbar {
+    background:linear-gradient(135deg,var(--glass-sheen),transparent 65%),var(--glass-fill)!important;
+    -webkit-backdrop-filter:blur(16px);
+    backdrop-filter:blur(16px);
+  }
+}
+@media(max-width:600px) {:root {--glass-radius:22px}}
+@media(prefers-reduced-transparency:reduce) {
+  :root body .ix-root.ledger-native-app .ledger-crm-shell .ledger-native-content :is(.ledger-ui-panel,.ledger-ui-stat,.ledger-workspace-detail,.live-exec-panel,.meetings-card,.pl-card,.module,.specter-card,.home-feed-widget,.home-board-tile,.sys-tile,.ops-panel,.fcrm-card,.board-tile),
+  :root body .ix-root.ledger-native-app .ledger-crm-topbar {
+    background-color:var(--glass-solid)!important;
+    -webkit-backdrop-filter:none;backdrop-filter:none;
+  }
+}
