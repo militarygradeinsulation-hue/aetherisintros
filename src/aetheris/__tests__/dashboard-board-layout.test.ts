@@ -12,9 +12,12 @@ describe('Dashboard board preferences', () => {
   it('reuses known former board IDs and never restores arbitrary labels or malformed sizes', () => {
     const result = normalizeDashboardBoard([{ id: 'updates', size: 'wide', label: 'Private previous member name' }, { id: 'network', size: 'broken' }]);
     expect(result.items[0]).toEqual({ id: 'updates', size: 'wide', label: 'Recent CRM activity' });
-    expect(result.items[1]?.size).toBe('wide');
+    expect(result.items[1]?.size).toBe('lg');
     expect(result.locked).toBe(true);
     expect(JSON.stringify(result)).not.toContain('Private previous member name');
+  });
+  it('keeps a previously saved compact network card after the larger default is added', () => {
+    expect(normalizeDashboardBoard({ items: [{ id: 'network', size: 'wide' }] }).items[0]?.size).toBe('wide');
   });
   it('recovers malformed preferences with a locked, complete board', () => {
     for (const input of [null, 'invalid', { locked: 'false', items: {} }, [null, 4, {}]]) {

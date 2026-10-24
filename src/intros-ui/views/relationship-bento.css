@@ -1,0 +1,58 @@
+/* Web3 bento reference translated into relationship tools, using the native
+   theme tokens in both appearances. No simulated financial data or timers. */
+.ledger-dashboard {--dashboard-radius:26px}
+.ledger-dashboard-views {border-radius:999px}
+:root body .ix-root.ledger-native-app .ledger-dashboard .ledger-dashboard-views button {border-radius:999px!important}
+.ledger-widget-card > header {margin-bottom:3px}
+.ledger-widget-card select {border-radius:999px;padding-inline:8px}
+.ledger-widget-metric > strong {font-family:ui-monospace,SFMono-Regular,Consolas,monospace;font-weight:550;font-size:42px;letter-spacing:-.06em}
+.ledger-widget-bars > div {font-variant-numeric:tabular-nums}
+.ledger-pipeline-allocation {display:flex;gap:4px;min-height:22px;flex-shrink:0}
+.ledger-pipeline-allocation span {flex-basis:0;min-width:2px;border-radius:6px;background:color-mix(in srgb,var(--ledger-crm-accent) calc(var(--stage-opacity) * 100%),var(--ledger-crm-raised))}
+.ledger-widget-events li {padding:8px 0;border-bottom:1px solid var(--ledger-crm-border)}
+.ledger-widget-events time {font-family:ui-monospace,monospace!important;font-variant-numeric:tabular-nums}
+.ledger-widget-board [data-widget-id="tasks"] > div {background:linear-gradient(145deg,color-mix(in srgb,var(--ledger-crm-accent) 16%,var(--ledger-crm-surface)),var(--ledger-crm-surface))!important}
+.ledger-member-stack {display:flex;flex-direction:column;min-width:0;flex:1}
+.ledger-member-stack-label {display:flex;justify-content:space-between;gap:8px;color:var(--ledger-crm-muted);font-size:11px;margin-bottom:12px}
+.ledger-member-stack-label span:last-child {font-family:ui-monospace,monospace;font-variant-numeric:tabular-nums}
+.ledger-member-stack-cards {position:relative;isolation:isolate;min-height:calc(126px + (var(--stack-count) - 1) * 38px);margin-inline:4px}
+:root body .ix-root.ledger-native-app .ledger-member-stack-card {position:absolute;inset-inline:0;top:calc(var(--stack-index) * 38px);z-index:var(--stack-index);width:100%;height:126px;display:flex;flex-direction:column;align-items:stretch;text-align:left;padding:9px 14px;border:1px solid var(--ledger-crm-border);border-radius:16px!important;background:linear-gradient(130deg,color-mix(in srgb,var(--ledger-crm-accent) 9%,var(--ledger-crm-surface)),var(--ledger-crm-raised));color:var(--ledger-crm-ink);box-shadow:0 -6px 20px -12px rgba(0,0,0,.45),inset 0 1px 0 color-mix(in srgb,var(--ledger-crm-ink) 10%,transparent);transition:top .35s cubic-bezier(.22,1,.36,1),background .2s ease}
+:root body .ix-root.ledger-native-app .ledger-member-stack-card[aria-pressed="true"] {background:linear-gradient(130deg,color-mix(in srgb,var(--ledger-crm-accent) 18%,var(--ledger-crm-surface)),var(--ledger-crm-raised));border-color:var(--ledger-crm-accent)}
+.ledger-member-stack-card:focus-visible {outline:2px solid var(--ledger-crm-ink);outline-offset:2px;z-index:4!important}
+.ledger-member-stack-name {display:flex;align-items:center;gap:9px;min-width:0}
+.ledger-member-stack-name > span {display:grid;place-items:center;border:1px solid var(--ledger-crm-border);border-radius:7px;width:24px;height:24px;flex-shrink:0;font-size:9px}
+.ledger-member-stack-name strong {font-size:13px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ledger-member-stack-role {display:block;margin-top:18px;font-size:12px;line-height:1.5;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ledger-member-stack-detail {position:relative;z-index:5;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px 0 5px;min-width:0;border-top:1px solid var(--ledger-crm-border);margin-top:10px}
+.ledger-member-stack-detail > span {min-width:0}
+.ledger-member-stack-detail strong,.ledger-member-stack-detail small {display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ledger-member-stack-detail strong {font-size:13px}
+.ledger-member-stack-detail small {font-size:11px;color:var(--ledger-crm-muted);margin-top:4px}
+:root body .ix-root.ledger-native-app .ledger-member-stack-detail button {flex-shrink:0;border:1px solid var(--ledger-crm-border);border-radius:999px!important;padding:8px 11px;min-height:36px;background:var(--ledger-crm-ink);color:var(--ledger-crm-bg);font-size:11px;font-weight:600}
+.ledger-member-stack-detail button:focus-visible {outline:2px solid var(--ledger-crm-accent);outline-offset:3px}
+@media(max-width:550px) {
+  .ledger-widget-metric > strong {font-size:34px}
+  .ledger-member-stack-detail {flex-wrap:wrap}
+  .ledger-member-stack-label {flex-wrap:wrap}
+}
+@media(prefers-reduced-motion:reduce) {
+  .ledger-member-stack-card {transition:none!important}
+}
+/* Leave room to scroll the final card action above the floating assistant. */
+.ledger-widget-board {padding-bottom:100px}
+.ledger-native-content:has(.ledger-widget-board) {scroll-padding-bottom:150px}
+.ledger-widget-board [data-slot="widget"] {scroll-margin-top:20px;scroll-margin-bottom:100px}
+
+/* Lighting and tactile rim from the finance and liquid-metal references. */
+:root body .ix-root.ledger-native-app .ledger-dashboard .ledger-ui-header-actions .secondary {
+  background:linear-gradient(180deg,color-mix(in srgb,var(--ledger-crm-ink) 9%,var(--ledger-crm-surface)),var(--ledger-crm-surface))!important;
+  box-shadow:inset 0 1px 0 color-mix(in srgb,var(--ledger-crm-ink) 18%,transparent),0 7px 12px -8px rgba(0,0,0,.5);
+  border-radius:999px!important;transition:translate .2s,box-shadow .2s;
+}
+.ledger-dashboard .ledger-ui-header-actions .secondary:active {translate:0 1px}
+.ledger-widget-board [data-widget-id="crm"] > div {background:radial-gradient(ellipse at 50% 110%,color-mix(in srgb,var(--ledger-crm-accent) 15%,transparent),transparent 75%),var(--ledger-crm-surface)!important}
+/* The weather reference's recessed dot well, applied to the real directory. */
+.ledger-member-stack-cards {border-radius:18px;background-image:radial-gradient(var(--ledger-crm-border) .8px,transparent .8px);background-size:8px 8px}
+.ledger-dashboard-views {max-width:100%;flex-wrap:wrap}
+@media(prefers-reduced-motion:reduce) {.ledger-dashboard .ledger-ui-header-actions .secondary {translate:none!important;transition:none!important}}
+.ledger-widget-board [data-widget-id="specter"] > div {background:radial-gradient(circle,var(--ledger-crm-border) .8px,transparent .9px) 0 0/8px 8px,var(--ledger-crm-surface)!important}
