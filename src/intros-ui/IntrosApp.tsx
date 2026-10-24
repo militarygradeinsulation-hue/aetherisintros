@@ -1,5 +1,6 @@
 import { useExperience } from './experience/useExperience';
 import './experience/experience.css';
+import './experience/bridge-social-tokens.css';
 import './experience/bridge-social.css';
 import './experience/bridge-social-host.css';
 import { NewsTicker } from './components/NewsTicker';

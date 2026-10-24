@@ -45,6 +45,12 @@ try {
   await page.getByRole("tab", { name: "Everything", exact: true }).click();
   await page.waitForTimeout(500);
   await page.screenshot({ path: `${output}/social.png`, fullPage: false });
+  const material = await page.locator('.commons-card').first().evaluate(node => {
+    const style = getComputedStyle(node);
+    return { radius: parseFloat(style.borderTopLeftRadius), background: style.backgroundImage, material: style.getPropertyValue('--glass-material').trim() };
+  });
+  if (material.radius < 24 || material.background === 'none' || !material.material) throw new Error('Bridge glass and rounded shape tokens are missing: ' + JSON.stringify(material));
+  console.log('Published Bridge glass and rounded cards verified', material);
   console.log(
     "social title font",
     await page.locator(".commons-welcome h1").evaluate((n) => getComputedStyle(n).fontFamily),
