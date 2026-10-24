@@ -1,56 +1,16 @@
-/* One persistent feed host serves both views, retaining live uploads and drafts. */
+/* Integration geometry only. Original Bridge modules own Social presentation. */
 @layer bridge-social-reference {
   :root body .ix-root [hidden] { display:none !important; }
-  :root:not([data-experience="social"]) .ledger-dashboard :is(.commons-home,.commons-columns,.commons-feed,.commons-posts) {display:contents !important;}
-  :root:not([data-experience="social"]) .ledger-dashboard :is(.commons-welcome,.commons-tabs,.commons-intros,.commons-caught-up,.commons-rail) {display:none !important;}
-  :root[data-experience="social"][data-theme] {
-    --social-bg:var(--commons-bg) !important;--social-card:var(--commons-card) !important;
-    --social-ink:var(--commons-ink) !important;--social-muted:var(--commons-muted) !important;
-    --social-line:var(--commons-line) !important;--social-wash:var(--commons-wash) !important;
-    --social-blue:var(--commons-blue) !important;--social-link:var(--commons-link) !important;
-  }
-  :root[data-experience="social"] .ledger-native-content {max-width:none !important;padding:0 0 90px !important;}
-  :root[data-experience="social"] .ledger-dashboard {gap:0 !important;display:block !important;padding:0 !important;}
-  :root[data-experience="social"] .ledger-dashboard > :is(.ledger-ui-page-header,.ledger-dashboard-views) {display:none !important;}
-  :root[data-experience="social"] .ledger-dashboard :is(.ledger-dashboard-stats,.ledger-ui-live-overview,.ledger-dashboard-secondary) {display:none !important;}
-  :root[data-experience="social"] .ledger-dashboard :is(.ledger-dashboard-grid,.ledger-dashboard-primary) {display:contents !important;}
-  :root[data-experience="social"] .ledger-persistent-feed:not([hidden]) {display:contents !important;}
-  :root[data-experience="social"] .ledger-persistent-feed .ledger-ui-panel {margin:0 !important;}
-  :root[data-experience="social"] .ledger-persistent-feed .ledger-ui-panel > header {display:none !important;}
-  :root[data-experience="social"] .commons-demo-posts {display:flex !important;flex-direction:column !important;gap:18px !important;}
-  :root[data-experience="social"] .commons-post-photo {width:100% !important;max-height:460px !important;object-fit:cover !important;border-radius:16px !important;}
-  :root[data-experience="social"] .commons-home .commons-caught-up :is(h2,p) {color:var(--commons-ink) !important;}
-  :root[data-experience="social"] .commons-home .commons-caught-up button:not(.commons-primary) {color:var(--commons-ink) !important;}
-  :root[data-experience="social"] .ledger-crm-topbar {display:flex !important;flex-wrap:wrap !important;justify-content:space-between !important;gap:10px !important;padding:10px 24px !important;min-height:90px !important;}
-  :root[data-experience="social"] .bridge-social-brand {display:flex !important;align-items:center !important;width:200px !important;flex:none !important;border:0 !important;background:transparent !important;padding:0 !important;}
-  :root[data-experience="social"] .bridge-social-brand svg {width:200px !important;height:60px !important;}
-  :root[data-experience="social"] .ledger-native-breadcrumb {display:none !important;}
-  :root[data-experience="social"] .ledger-crm-topbar .social-primary-nav {position:relative !important;padding:0 !important;background:transparent !important;border:0 !important;gap:2px !important;flex:1 !important;}
-  :root[data-experience="social"] .social-primary-nav :is(button,summary) {font-size:13px !important;padding:10px 12px !important;gap:6px !important;}
-  :root[data-experience="social"] .ledger-native-search-frame {flex:0 0 118px !important;width:118px !important;}
-  :root[data-experience="social"] .ledger-native-search {padding:8px 10px !important;min-width:0 !important;}
-  :root[data-experience="social"] .ledger-native-search span {overflow:hidden !important;white-space:nowrap !important;text-overflow:ellipsis !important;}
-  :root[data-experience="social"] .ledger-native-user-label {display:none !important;}
-  :root[data-experience="social"] .ledger-crm-topbar .experience-switch {order:9 !important;width:auto !important;margin-left:auto !important;padding:2px !important;}
-  :root[data-experience="social"] .experience-switch button {min-height:32px !important;padding:6px 10px !important;font-size:12px !important;}
-  :root[data-experience="social"] .ledger-native-quick-dock {display:none !important;}
-
-  :root[data-experience="social"] .workspace-news {margin:0 !important;border-radius:0 0 16px 16px !important;}
-  :root[data-experience="social"] .workspace-news-label {font:600 10px/1.5 var(--sans) !important;letter-spacing:.08em !important;}
-  :root[data-experience="social"] .workspace-news-label svg {display:none !important;}
-  @media(max-width:1100px) {
-    :root[data-experience="social"] .ledger-crm-topbar .social-primary-nav {order:10 !important;flex-basis:100% !important;}
-  }
-  @media(max-width:767px) {
-    :root[data-experience="social"] .ledger-crm-topbar {padding:8px 14px !important;min-height:64px !important;gap:8px !important;}
-    :root[data-experience="social"] .bridge-social-brand {width:142px !important;}
-    :root[data-experience="social"] .bridge-social-brand svg {width:142px !important;height:44px !important;}
-    :root[data-experience="social"] .ledger-crm-topbar .social-primary-nav {display:none !important;}
-    :root[data-experience="social"] .ledger-native-menu {display:inline-flex !important;}
-    :root[data-experience="social"] .ledger-native-search-frame {display:none !important;}
-    :root[data-experience="social"] .ledger-crm-topbar .experience-switch {width:100% !important;justify-content:center !important;}
-    :root[data-experience="social"] .ledger-native-auth-shortcut {font-size:12px !important;}
-    :root[data-experience="social"] .commons-columns {grid-template-columns:minmax(0,1fr) !important;}
-    :root[data-experience="social"] .commons-home {padding:26px 16px !important;}
-  }
+  :root[data-experience="social"] .ledger-crm-shell,
+  :root[data-experience="social"] .ledger-crm-body { display:block !important; margin:0 !important; padding:0 !important; width:100% !important; min-width:0 !important; }
+  :root[data-experience="social"] :is(.ledger-crm-sidebar,.ledger-native-quick-dock) { display:none !important; }
+  :root[data-experience="social"] .ledger-native-content { max-width:none !important; padding:0 !important; }
+  :root[data-experience="social"] .ledger-dashboard { display:block !important; padding:0 !important; }
+  :root[data-experience="social"] .ledger-dashboard > :is(.ledger-ui-page-header,.ledger-dashboard-views),
+  :root[data-experience="social"] .ledger-dashboard :is(.ledger-dashboard-stats,.ledger-ui-live-overview,.ledger-dashboard-secondary) { display:none !important; }
+  :root[data-experience="social"] .ledger-dashboard :is(.ledger-dashboard-grid,.ledger-dashboard-primary) { display:contents !important; }
+  :root[data-experience="social"] .ledger-persistent-feed:not([hidden]) { display:contents !important; }
+  :root[data-experience="social"] .ledger-persistent-feed .ledger-ui-panel > header { display:none !important; }
+  :root[data-experience="social"] .bridge-navigation-host { display:contents !important; }
+  .bridge-experience-control { display:flex; justify-content:flex-end; padding:4px 16px; }
 }

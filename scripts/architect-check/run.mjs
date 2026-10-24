@@ -193,7 +193,7 @@ try{
     await checkBrand(page,theme+' Specter browser');
     await sidebar.getByRole('button',{name:'Messages'}).click();
     await page.locator('[data-arch-page="messages"]').waitFor({state:'visible',timeout:30000});
-    await page.locator('.ix-messages').first().waitFor({state:'visible',timeout:30000});
+    await page.locator('.ix-messages:visible').first().waitFor({state:'visible',timeout:30000});
     check(await sidebar.isVisible(),theme+' CRM sidebar persists across messaging');
     await checkBrand(page,theme+' Messages');
     await sidebar.getByRole('button',{name:'Intelligence',exact:true}).click();
