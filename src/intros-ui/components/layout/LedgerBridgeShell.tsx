@@ -1,3 +1,6 @@
+import { ExperienceSwitch } from '../../experience/ExperienceSwitch';
+import { SocialNavigation } from '../../experience/SocialNavigation';
+import type { ExperienceView } from '../../experience/preference';
 /* Native port of absolute-ledger-flow/src/components/app/app-shell.tsx.
  * Owns the member frame; all records/actions remain Ask Intros, never the CRM seed data.
  */
@@ -21,6 +24,8 @@ import { useAppearance } from '@/aetheris/AppearanceMode';
 type Item = NavigationTarget;
 
 export interface LedgerBridgeShellProps {
+  experience: ExperienceView;
+  onExperienceChange: (value: ExperienceView) => void;
   children: React.ReactNode;
   activePage: ActivePage;
   activeTool?: string;
@@ -43,7 +48,7 @@ function persistedCollapsed() {
 }
 
 export function LedgerBridgeShell({
-  children, activePage, activeTool, onNavigate, onOpenTool, searchQuery,
+  experience, onExperienceChange, children, activePage, activeTool, onNavigate, onOpenTool, searchQuery,
   onSearchChange, members, mode, me, onOpenMyProfile, unreadCount, notifications, executiveAction,
 }: LedgerBridgeShellProps) {
   const { toggleTheme } = useAppearance();
@@ -172,11 +177,12 @@ export function LedgerBridgeShell({
 
     <div className="ledger-crm-body">
       <header className="ledger-crm-topbar">
+        <ExperienceSwitch value={experience} onChange={onExperienceChange}/>
         <button type="button" className="ledger-native-menu" aria-label="Open navigation" onClick={() => setDrawerOpen(true)}>
           <Menu size={20} />
         </button>
         <div className="ledger-native-breadcrumb"><span>Ask Intros</span><ChevronRight size={13}/><b>{targetFor(activePage, activeTool)?.label || 'Network'}</b></div>
-        <ShineBorder className="ledger-native-search-frame" borderRadius={18} borderWidth={1} duration={22} color={['#EF4444','#B76CD9','#EF4444']}>
+        <ShineBorder className="ledger-native-search-frame" borderRadius={18} borderWidth={1} duration={22} color={experience === 'social' ? ['#3b82f6','#a8c7ff','#3b82f6'] : ['#EF4444','#B76CD9','#EF4444']}>
           <button type="button" className="ledger-native-search" aria-label="Search records, people, modules and contacts" onClick={openPalette}>
             <Search size={15} /> <span>Search people, modules, relationships…</span><kbd><Command size={12}/> K</kbd>
           </button>
@@ -196,6 +202,7 @@ export function LedgerBridgeShell({
           {userOpen && <AccountMenu/>}
         </div>
       </header>
+      {experience === 'social' && <SocialNavigation activePage={activePage} activeTool={activeTool} onSelect={navigate}/>}
       <div id="aetheris-workspace-content" className="ledger-native-content"><LedgerSectionNavigation activePage={activePage} activeTool={activeTool} onSelect={navigate}/>{children}</div>
     </div>
 

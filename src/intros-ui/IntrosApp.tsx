@@ -1,3 +1,5 @@
+import { useExperience } from './experience/useExperience';
+import './experience/experience.css';
 import { NewsTicker } from './components/NewsTicker';
 import React, { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
@@ -68,6 +70,7 @@ const SHELL_PAGES: ActivePage[] = ['home', 'people', 'bubbles', 'intros', 'messa
 export type ExecutiveAction = { label: string; onOpen: () => void };
 
 export default function App({ mode = 'demo', executiveAction, initialPage, initialWorkspace, initialSearch }: { mode?: 'demo' | 'live'; executiveAction?: ExecutiveAction | undefined; initialPage?: ActivePage | undefined; initialWorkspace?: string | undefined; initialSearch?: string | undefined }) {
+  const { experience, chooseExperience } = useExperience();
   const network = useNetwork();
   const unread = useUnreadCounts(mode === 'live');
   const [activePage, setActivePage] = useState<ActivePage>(initialPage ?? 'home');
@@ -288,7 +291,7 @@ export default function App({ mode = 'demo', executiveAction, initialPage, initi
   }, []);
 
   return (
-    <div className="ix-aetheris-workspace-mode ix-root ix-mindprint-bridge ix-absolute-ledger ledger-native-app min-h-screen bg-[#0a0a0a] text-[#f5f5f0] flex flex-col font-sans selection:bg-red-700/30 selection:text-white relative">
+    <div data-experience={experience} className="ix-aetheris-workspace-mode ix-root ix-mindprint-bridge ix-absolute-ledger ledger-native-app min-h-screen bg-[#0a0a0a] text-[#f5f5f0] flex flex-col font-sans selection:bg-red-700/30 selection:text-white relative">
       <WriteFailureNotice />
       {/* Right-click quick menu (each member chooses its items) */}
       <QuickMenuHost
@@ -325,6 +328,7 @@ export default function App({ mode = 'demo', executiveAction, initialPage, initi
       {mode === 'live' && activePage !== 'specter' && <MembershipCardMailer />}
       {/* Primary Page Views — one persistent workspace shell; only the right pane swaps. */}
       <LedgerBridgeShell
+          experience={experience} onExperienceChange={chooseExperience}
           activePage={activePage}
           activeTool={classicPage}
           onNavigate={handleNavigate}
@@ -348,6 +352,7 @@ export default function App({ mode = 'demo', executiveAction, initialPage, initi
         <NewsTicker onOpenNews={() => handleNavigate('news')} />
         {activePage === 'home' && (
           <LedgerDashboard
+            experience={experience}
             onOpenPipeline={() => { setCrmSection('pipeline'); setClassicPage('crm'); handleNavigate('workspace'); }}
             posts={feedPosts}
             onNavigate={handleNavigate}
@@ -382,6 +387,7 @@ export default function App({ mode = 'demo', executiveAction, initialPage, initi
           <>
             {mode === 'live' && liveDirectoryError && <div role="alert" className="mx-4 my-3 border border-red-400/40 p-3 text-sm text-red-200">The verified directory did not load: {liveDirectoryError}. Demo profiles are never substituted.</div>}
             <LedgerDirectory
+              experience={experience}
               members={members}
               isLive={mode === 'live'}
               connectedMemberIds={activeConnectedMemberIds}

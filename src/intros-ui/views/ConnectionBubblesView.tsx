@@ -187,7 +187,7 @@ export const ConnectionBubblesView: React.FC<ConnectionBubblesViewProps> = ({
     members[0];
 
   return (
-    <div className="w-full max-w-7xl mx-auto px-4 md:px-8 py-6 space-y-6 animate-fadeIn">
+    <div className="shared-signal-radar w-full max-w-7xl mx-auto px-4 md:px-8 py-6 space-y-6 animate-fadeIn">
       {/* On-screen interactive interface (hidden during print) */}
       <div className="print:hidden space-y-6">
         {/* Editorial Header */}
@@ -195,7 +195,7 @@ export const ConnectionBubblesView: React.FC<ConnectionBubblesViewProps> = ({
           <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-6">
             <div className="space-y-3 max-w-2xl">
               <div className="text-[10px] font-mono uppercase tracking-[0.3em] text-[#9EA4AC]">
-                Network · Live Constellation
+                Ask Intros · Live Signal Radar
               </div>
               <h1 className="font-serif-editorial text-4xl sm:text-5xl md:text-6xl text-[#F1EFE9] leading-[1.02] tracking-tight">
                 The people around you, <em className="text-[#EF4444] not-italic">in motion.</em>

@@ -1,3 +1,15 @@
+// Explicit showcase portraits from Bridge; never used as live avatar fallbacks.
+import demoPortrait0 from '@/assets/portraits/demo-marcus-lee.jpg.asset.json';
+import demoPortrait1 from '@/assets/portraits/demo-sarah-chen.jpg.asset.json';
+import demoPortrait2 from '@/assets/portraits/demo-elena-rossi.jpg.asset.json';
+import demoPortrait3 from '@/assets/portraits/demo-daniel-kim.jpg.asset.json';
+import demoPortrait4 from '@/assets/portraits/demo-lisa-tran.jpg.asset.json';
+import demoPortrait5 from '@/assets/portraits/demo-alex-monroe.jpg.asset.json';
+import demoPortrait6 from '@/assets/portraits/demo-maya-patel.jpg.asset.json';
+import demoPortrait7 from '@/assets/portraits/demo-carlos-mendes.jpg.asset.json';
+import demoPortrait8 from '@/assets/portraits/demo-nina-park.jpg.asset.json';
+import demoPortrait9 from '@/assets/portraits/demo-priya-desai.jpg.asset.json';
+import demoPortrait10 from '@/assets/portraits/demo-james-okafor.jpg.asset.json';
 export type RelationshipTier = 'Core' | 'Extended' | 'Prospect';
 export type CompanySizeCategory = '1-10' | '11-50' | '51-250' | '250+';
 
@@ -168,7 +180,7 @@ export const NETWORK_MEMBERS: NetworkMember[] = [
     roleType: 'investor',
     tier: 'Core',
     location: 'New York, NY',
-    avatarUrl: '',
+    avatarUrl: demoPortrait0.url,
     verified: true,
     matchScore: 92,
     matchTier: 'STRONG FIT',
@@ -261,7 +273,7 @@ export const NETWORK_MEMBERS: NetworkMember[] = [
     roleType: 'founder',
     tier: 'Core',
     location: 'San Francisco, CA',
-    avatarUrl: '',
+    avatarUrl: demoPortrait1.url,
     verified: true,
     matchScore: 98,
     matchTier: 'EXCELLENT FIT',
@@ -346,7 +358,7 @@ export const NETWORK_MEMBERS: NetworkMember[] = [
     roleType: 'operator',
     tier: 'Core',
     location: 'London, UK',
-    avatarUrl: '',
+    avatarUrl: demoPortrait2.url,
     verified: true,
     matchScore: 89,
     matchTier: 'STRONG FIT',
@@ -419,7 +431,7 @@ export const NETWORK_MEMBERS: NetworkMember[] = [
     roleType: 'operator',
     tier: 'Extended',
     location: 'Seattle, WA',
-    avatarUrl: '',
+    avatarUrl: demoPortrait3.url,
     verified: true,
     matchScore: 87,
     matchTier: 'GREAT FIT',
@@ -492,7 +504,7 @@ export const NETWORK_MEMBERS: NetworkMember[] = [
     roleType: 'operator',
     tier: 'Extended',
     location: 'Singapore',
-    avatarUrl: '',
+    avatarUrl: demoPortrait4.url,
     verified: true,
     matchScore: 85,
     matchTier: 'GREAT FIT',
@@ -556,7 +568,7 @@ export const NETWORK_MEMBERS: NetworkMember[] = [
     roleType: 'advisor',
     tier: 'Extended',
     location: 'Dubai, UAE',
-    avatarUrl: '',
+    avatarUrl: demoPortrait5.url,
     verified: true,
     matchScore: 78,
     matchTier: 'GOOD FIT',
@@ -620,7 +632,7 @@ export const NETWORK_MEMBERS: NetworkMember[] = [
     roleType: 'investor',
     tier: 'Prospect',
     location: 'Boston, MA',
-    avatarUrl: '',
+    avatarUrl: demoPortrait6.url,
     verified: false,
     matchScore: 76,
     matchTier: 'GOOD FIT',
@@ -674,7 +686,7 @@ export const NETWORK_MEMBERS: NetworkMember[] = [
     roleType: 'founder',
     tier: 'Prospect',
     location: 'Berlin, Germany',
-    avatarUrl: '',
+    avatarUrl: demoPortrait7.url,
     verified: false,
     matchScore: 72,
     matchTier: 'POTENTIAL',
@@ -728,7 +740,7 @@ export const NETWORK_MEMBERS: NetworkMember[] = [
     roleType: 'investor',
     tier: 'Prospect',
     location: 'Seoul, South Korea',
-    avatarUrl: '',
+    avatarUrl: demoPortrait8.url,
     verified: false,
     matchScore: 71,
     matchTier: 'POTENTIAL',
@@ -782,7 +794,7 @@ export const NETWORK_MEMBERS: NetworkMember[] = [
     roleType: 'advisor',
     tier: 'Core',
     location: 'San Francisco, CA',
-    avatarUrl: '',
+    avatarUrl: demoPortrait9.url,
     verified: true,
     matchScore: 94,
     matchTier: 'EXCELLENT FIT',
@@ -836,7 +848,7 @@ export const NETWORK_MEMBERS: NetworkMember[] = [
     roleType: 'founder',
     tier: 'Extended',
     location: 'Austin, TX',
-    avatarUrl: '',
+    avatarUrl: demoPortrait10.url,
     verified: true,
     matchScore: 91,
     matchTier: 'STRONG FIT',
