@@ -1,3 +1,4 @@
+import { CrmOpportunityReadiness } from '../components/CrmOpportunityReadiness'
 /**
  * AETHERIS CRM — the operating layer over one account-scoped data graph.
  *
@@ -329,6 +330,7 @@ function CrmDetail({ selection, onClose, onOpen }: {
   return <article className="ops-detail">
     <button className="member-back" onClick={onClose}><ChevronLeft size={16} /> Back to CRM</button>
 
+    {opportunity && <CrmOpportunityReadiness key={`${opportunity.id}:${opportunity.updatedAt}`} opportunityId={opportunity.id} />}
     <header className="ops-detail-head">
       <div>
         <Eyebrow>{selection.type === 'person' ? 'CRM PERSON' : selection.type === 'company' ? 'CRM COMPANY' : 'CRM OPPORTUNITY'}</Eyebrow>
