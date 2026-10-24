@@ -1,0 +1,28 @@
+.social-comments > .network-comment-composer,
+.post-discussion > .network-comment-composer {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+.post-discussion > .network-comment-composer[data-avatar="true"] {
+  grid-template-columns: 30px minmax(0, 1fr) auto;
+}
+.network-comment-composer input { min-width: 0; }
+.network-comment-composer .network-comment-submit {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 44px;
+  min-height: 44px;
+  border: 1px solid var(--line-dark);
+  border-radius: 6px;
+  background: var(--raised);
+  color: var(--cobalt-bright);
+  cursor: pointer;
+}
+.network-comment-composer .network-comment-submit:disabled { opacity: .5; cursor: default; }
+.network-comment-composer .network-comment-submit:focus-visible { outline: 2px solid var(--cobalt-bright); outline-offset: 2px; }
+.network-comment-composer > [role="alert"] { grid-column: 1 / -1; color: var(--soft); padding: 6px 10px; }
+@media (max-width: 760px) { .network-comment-composer input { font-size: 16px; } }
