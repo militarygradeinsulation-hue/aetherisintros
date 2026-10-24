@@ -1,0 +1,120 @@
+/* Ask Intros cinematic chapter. The deep-blue physical materials are deliberately
+   confined to the product card; the rest of Ask Intros remains black and red. */
+.ask-cinematic-hero{position:relative;isolation:isolate;overflow:hidden;display:flex;flex-direction:column;
+align-items:center;gap:clamp(24px,4vw,52px);padding:clamp(65px,8vw,115px) clamp(15px,4vw,58px) 65px;
+background:#080A0F!important;color:#F7F7FA!important;font-family:Inter,system-ui,sans-serif}
+.ask-cine-grid{position:absolute;inset:0;pointer-events:none;opacity:.33;
+background-image:linear-gradient(to right,rgba(255,255,255,.045) 1px,transparent 1px),
+linear-gradient(to bottom,rgba(255,255,255,.045) 1px,transparent 1px);background-size:62px 62px;
+mask-image:radial-gradient(ellipse at center,#000 0%,transparent 75%)}
+.ask-cine-grain{position:absolute;inset:0;pointer-events:none;opacity:.2;
+background-image:radial-gradient(rgba(255,255,255,.1) .55px,transparent .8px);
+background-size:5px 5px}
+.ask-cine-heading{position:relative;z-index:2;text-align:center;width:100%;max-width:1100px}
+.ask-cine-eyebrow{color:#FFA4A7!important;font:750 10px/1.5 Inter,system-ui,sans-serif;
+text-transform:uppercase;letter-spacing:.24em;margin:0 0 16px!important}
+.ask-cine-headline{display:flex;flex-direction:column;gap:0;margin:0!important;
+font:750 clamp(39px,7.6vw,96px)/.98 Inter,system-ui,sans-serif!important;
+letter-spacing:-.07em;line-height:1.04!important}
+.ask-cine-headline span{color:#F8F8FA!important;text-shadow:0 12px 30px #0007}
+.ask-cine-headline strong{color:#FFF!important;background:linear-gradient(180deg,#FFF,#9FA8C9);
+background-clip:text;-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.ask-cine-subheading{margin:16px auto 0!important;max-width:670px;color:#D1D7E2!important;font:400 15px/1.6 Inter,system-ui,sans-serif!important}
+.ask-cine-shell{position:relative;z-index:2;width:min(1200px,100%);min-width:0;padding:0!important}
+.ask-cine-card{--mouse-x:50%;--mouse-y:50%;position:relative;display:grid;grid-template-columns:minmax(0,1fr) minmax(300px,.9fr);
+width:100%;min-height:590px;align-items:center;gap:12px;padding:45px clamp(28px,6vw,82px);
+border-radius:36px!important;overflow:hidden;
+background:radial-gradient(ellipse at 78% 45%,rgba(38,66,147,.32),transparent 47%),linear-gradient(145deg,#182758,#090F1D 65%,#07090E)!important;
+border:1px solid rgba(255,255,255,.1)!important;
+box-shadow:0 35px 90px -27px #000B,inset 0 1px 2px #ffffff29,inset 0 -2px 4px #0008}
+.ask-cine-sheen{position:absolute;inset:0;z-index:3;pointer-events:none;mix-blend-mode:screen;
+border-radius:inherit;background:radial-gradient(700px circle at var(--mouse-x) var(--mouse-y),rgba(255,255,255,.08),transparent 42%)}
+.ask-cine-card-copy{position:relative;z-index:4;display:flex;flex-direction:column;align-items:flex-start;min-width:0}
+.ask-cine-card-kicker{display:flex;align-items:center;gap:8px;color:#FFB5B5!important;letter-spacing:.18em;
+font:750 10px/1.5 Inter,system-ui,sans-serif;margin-bottom:25px}
+.ask-cine-brand{font:850 clamp(37px,4.6vw,67px)/1.1 Inter,system-ui,sans-serif;letter-spacing:-.065em;
+white-space:nowrap;background:linear-gradient(180deg,#FFF 0%,#A8ACBA 100%);background-clip:text;
+-webkit-background-clip:text;-webkit-text-fill-color:transparent;filter:drop-shadow(0 12px 24px #0009)}
+.ask-cine-card-copy h3{margin:24px 0 15px!important;color:#FFF!important;font:700 clamp(26px,3vw,38px)/1.16 Inter,system-ui,sans-serif!important;
+letter-spacing:-.04em;max-width:470px}
+.ask-cine-card-copy>p{margin:0!important;font:400 15px/1.75 Inter,system-ui,sans-serif!important;
+color:#CBD5E6!important;max-width:410px}
+.ask-cine-cta,.ask-cine-secondary{display:inline-flex;align-items:center;justify-content:center;gap:13px;
+border-radius:16px!important;text-decoration:none;font-weight:750;min-height:51px;padding:0 20px}
+.ask-cine-cta{margin-top:28px;background:linear-gradient(180deg,#FFF,#E9EAF1)!important;color:#1B1C26!important;
+box-shadow:0 12px 25px -7px #0008,inset 0 1px 0 #FFF;border:1px solid #FFFFFF99!important;
+font-size:13px;transition:transform .25s ease,box-shadow .25s ease}
+.ask-cine-cta:hover{transform:translateY(-2px);box-shadow:0 17px 30px -7px #000B}
+.ask-cine-secondary{margin-top:9px;padding:0 3px;color:#FFCACB!important;font-size:12px;min-height:36px}
+.ask-cine-scene{position:relative;z-index:2;min-height:510px;display:flex;align-items:center;justify-content:center;
+perspective:1100px;transform-style:preserve-3d}
+.ask-cine-phone{position:relative;width:244px;height:504px;flex:none;border-radius:45px!important;
+background:#07090E;border:7px solid #111115;box-shadow:inset 0 0 0 2px #61636A,0 28px 75px #000C,0 11px 22px #0009;
+transform-style:preserve-3d;will-change:transform}
+.ask-cine-phone-side{position:absolute;width:3px;background:linear-gradient(90deg,#5D6068,#23242A);border-radius:2px}
+.ask-cine-phone-volume{top:116px;left:-10px;height:55px}
+.ask-cine-phone-power{top:158px;right:-10px;height:64px}
+.ask-cine-screen{position:absolute;inset:3px;border-radius:36px!important;overflow:hidden;color:#FFF!important;
+background:linear-gradient(170deg,#111B34,#090D16 70%,#04070E);padding:45px 15px 15px;display:flex;flex-direction:column}
+.ask-cine-screen::before{content:"";position:absolute;inset:0;pointer-events:none;background:linear-gradient(110deg,rgba(255,255,255,.055),transparent 43%)}
+.ask-cine-island{position:absolute;top:7px;left:50%;transform:translateX(-50%);width:85px;height:23px;border-radius:99px;background:#000}
+.ask-cine-screen-heading{display:flex;align-items:center;justify-content:space-between;gap:5px;position:relative;z-index:1}
+.ask-cine-screen-heading>div{display:flex;flex-direction:column;gap:5px}
+.ask-cine-screen-heading small{font-size:8px;color:#FCA5A5;font-weight:750;letter-spacing:.2em}
+.ask-cine-screen-heading strong{font-size:13px;letter-spacing:-.02em}
+.ask-cine-profile{display:grid;place-items:center;width:30px;height:30px;border-radius:50%;border:1px solid #ffffff32;background:#ffffff0e;color:#FCA5A5}
+.ask-cine-screen-ring{position:relative;display:grid;place-items:center;align-self:center;width:170px;height:170px;margin:6px 0 3px}
+.ask-cine-screen-ring svg{width:100%;height:100%}
+.ask-cine-screen-ring>span{position:absolute;display:flex;flex-direction:column;align-items:center}
+.ask-cine-screen-ring strong{font:750 40px/1 Inter,system-ui,sans-serif;color:#FFF}
+.ask-cine-screen-ring small{margin-top:7px;color:#CFD4E1;text-transform:uppercase;font-size:9px;letter-spacing:.1em}
+.ask-cine-phone-step{min-height:51px;margin:3px 0 5px;padding:8px;display:flex;align-items:center;gap:9px;
+border-radius:12px!important;border:1px solid #ffffff17;background:linear-gradient(120deg,#ffffff10,#ffffff04);
+box-shadow:inset 0 1px 0 #ffffff0e}
+.ask-cine-step-icon{width:30px;height:30px;display:grid;place-items:center;flex:none;border-radius:9px;background:#EF444426;color:#FFAAAA}
+.ask-cine-phone-step>span:nth-child(2){display:flex;flex:1;min-width:0;flex-direction:column;gap:3px}
+.ask-cine-phone-step b{font-size:10px;line-height:1.2;font-weight:750;white-space:nowrap}
+.ask-cine-phone-step small{font-size:8px;color:#BFCBE0;white-space:nowrap}
+.ask-cine-step-check{color:#86E7B0}
+.ask-cine-phone-caption{margin:auto 0 8px;text-align:center;color:#B1BBCB;font-size:8px}
+.ask-cine-home-indicator{display:block;align-self:center;width:91px;height:4px;border-radius:20px;background:#ffffff5b}
+.ask-cine-glass-badge{position:absolute;z-index:5;display:flex;align-items:center;gap:9px;padding:12px;
+border-radius:17px!important;min-width:175px;background:linear-gradient(135deg,#FFFFFF20,#FFFFFF0B);
+backdrop-filter:blur(18px);border:1px solid #FFFFFF35;box-shadow:0 19px 40px #000B,inset 0 1px 0 #FFFFFF35;color:#FFF!important}
+.ask-cine-glass-badge>span{width:33px;height:33px;display:grid;place-items:center;flex:none;border-radius:50%;background:#EF44443D;color:#FFD0D0}
+.ask-cine-glass-badge>div{display:flex;flex-direction:column;gap:4px}
+.ask-cine-glass-badge strong{font-size:11px;line-height:1.2;white-space:nowrap}
+.ask-cine-glass-badge small{font-size:9px;color:#D1D7E7;white-space:nowrap}
+.ask-cine-badge-top{top:20px;left:-18px;transform:rotate(-5deg)}
+.ask-cine-badge-bottom{bottom:37px;right:-23px;transform:rotate(4deg)}
+.ask-cine-footer{position:relative;z-index:2;text-align:center;max-width:730px}
+.ask-cine-footer span{font:650 10px/1.4 Inter,system-ui,sans-serif;letter-spacing:.24em;color:#FFB5B5}
+.ask-cine-footer h3{margin:14px 0 0!important;font:700 clamp(22px,3vw,37px)/1.25 Inter,system-ui,sans-serif!important;color:#FFF!important}
+:root[data-theme="light"] .ask-cinematic-hero{background:#ECEEF3!important}
+:root[data-theme="light"] .ask-cine-grid{background-image:linear-gradient(to right,#0B122414 1px,transparent 1px),linear-gradient(to bottom,#0B122414 1px,transparent 1px)}
+:root[data-theme="light"] .ask-cine-eyebrow,:root[data-theme="light"] .ask-cine-footer span{color:#9F202B!important}
+:root[data-theme="light"] .ask-cine-headline span{color:#111827!important}
+:root[data-theme="light"] .ask-cine-headline strong{background:linear-gradient(180deg,#111827,#555C77);background-clip:text;-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+:root[data-theme="light"] .ask-cine-subheading{color:#394252!important}
+:root[data-theme="light"] .ask-cine-footer h3{color:#171C2D!important}
+@media(max-width:970px){.ask-cine-card{grid-template-columns:minmax(0,1fr) minmax(260px,.9fr);padding:36px 28px}
+.ask-cine-brand{font-size:45px}.ask-cine-badge-top{left:-5px}.ask-cine-badge-bottom{right:-8px}}
+@media(max-width:720px){.ask-cinematic-hero{padding:62px 14px 51px;gap:30px}
+.ask-cine-card{grid-template-columns:minmax(0,1fr);gap:2px;min-height:0;padding:28px 19px 20px;border-radius:29px!important}
+.ask-cine-card-copy{align-items:center;text-align:center}.ask-cine-card-kicker{font-size:9px;margin-bottom:12px}
+.ask-cine-brand{font-size:48px}.ask-cine-card-copy h3{font-size:27px;margin:12px 0!important}
+.ask-cine-card-copy>p{font-size:13px;line-height:1.55}.ask-cine-cta{margin-top:17px;min-height:47px}
+.ask-cine-scene{min-height:485px;max-width:100%;margin-top:9px}.ask-cine-phone{transform:scale(.91)}
+.ask-cine-glass-badge{padding:9px;min-width:135px;gap:6px}
+.ask-cine-glass-badge>span{width:24px;height:24px}.ask-cine-glass-badge>span svg{width:14px;height:14px}
+.ask-cine-glass-badge strong{font-size:9px}.ask-cine-glass-badge small{font-size:8px}
+.ask-cine-badge-top{left:-2px;top:18px}.ask-cine-badge-bottom{right:-1px;bottom:18px}
+.ask-cine-headline{font-size:clamp(39px,9vw,62px)!important}
+.ask-cine-subheading{font-size:13px!important}
+}
+@media(max-width:375px){.ask-cine-brand{font-size:41px}.ask-cine-card{padding:25px 10px 15px}
+.ask-cine-phone{width:228px;height:480px}.ask-cine-scene{min-height:472px}
+.ask-cine-badge-top{left:-7px}.ask-cine-badge-bottom{right:-9px}}
+@media(prefers-reduced-motion:reduce){.ask-cinematic-hero *{animation:none!important;transition:none!important}
+.ask-cine-phone{will-change:auto!important;transform:none!important}}
+@media print{.ask-cine-grain,.ask-cine-grid{display:none!important}}
