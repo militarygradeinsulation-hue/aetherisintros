@@ -170,6 +170,7 @@ try {
   }
   await page.getByRole('button',{name:'My board',exact:true}).click();
   await page.waitForTimeout(750);
+  await page.locator('.ledger-widget-board [data-widget-id="pipeline"]').evaluate(el=>el.scrollIntoView({block:'center'}));
   await check(page,'dashboard-board-pipeline','.ledger-widget-board [data-widget-id="pipeline"] > div','');
   await page.getByRole('button',{name:'Edit layout',exact:true}).click();
   // The member stack is now a two-row tile. Bring the whole tile into the
