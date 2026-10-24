@@ -1,9 +1,10 @@
+import { PostShareButton } from '@/aetheris/PostShareButton';
 import { MemberThumbnail } from '../components/shared/MemberThumbnail';
 /* Absolute Ledger CRM dashboard composition using the active Ask Intros
  * feed/member callbacks. It never imports absolute-ledger-flow fixture records.
  */
 import React, { useEffect, useState } from 'react';
-import { ArrowRight, Bookmark, Handshake, MessageSquare, Plus, Search, Settings2, Users, X } from 'lucide-react';
+import { ArrowRight, Bookmark, Handshake, Heart, MessageSquare, Plus, Search, Settings2, Users, X } from 'lucide-react';
 import type { FeedPost, NetworkMember } from '@/intros-ui/networkData';
 import type { ActivePage } from '@/intros-ui/components/layout/TopNavigation';
 import { PageHeader, Panel, StatCard } from '@/intros-ui/components/layout/LedgerUiKit';
@@ -150,13 +151,13 @@ export function LedgerDashboard({
                   <p className="ledger-feed-content">{post.content}</p>
                   {post.image && <img className="ledger-post-photo" src={post.image.src} alt={post.image.alt} loading="lazy"/>}
                   <footer>
-                    <span className="ledger-feed-badge">{post.badge}</span>
                     <button type="button" aria-pressed={post.isLiked} onClick={() => onLikePost(post.id)}>
-                      {post.isLiked ? 'Liked' : 'Like'} · {post.likes}
+                      <Heart size={16} fill={post.isLiked ? 'currentColor' : 'none'}/> {post.isLiked ? 'Liked' : 'Like'} · {post.likes}
                     </button>
                     <button type="button" aria-pressed={post.isSaved} onClick={() => onSavePost(post.id)}>
-                      <Bookmark size={14}/> {post.isSaved ? 'Saved' : 'Save'}
+                      <Bookmark size={16} fill={post.isSaved ? 'currentColor' : 'none'}/> {post.isSaved ? 'Saved' : 'Save'}
                     </button>
+                    <PostShareButton text={post.content}/>
                   </footer>
                 </article>
               )) : <p className="ledger-ui-empty">No posts for this filter.</p>}
