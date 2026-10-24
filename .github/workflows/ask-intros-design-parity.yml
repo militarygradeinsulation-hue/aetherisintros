@@ -33,6 +33,10 @@ jobs:
           rm -f bun.lock
           bun install
           bun add --no-save playwright@1.56.1
+      - name: Verify unchanged Bridge source and generated style scope
+        run: |
+          node scripts/bridge-reference/check.mjs
+          node scripts/bridge-reference/styles.mjs --check
       - name: Typecheck
         run: npx tsc --noEmit -p .
       - name: Build production bundle

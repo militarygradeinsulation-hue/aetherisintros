@@ -1,0 +1,150 @@
+{
+  "source": "user-supplied aetheris-bridge.zip",
+  "files": [
+    {
+      "source": "src/intros-ui/views/CommonsHomeView.tsx",
+      "target": "src/bridge-reference/src/intros-ui/views/CommonsHomeView.tsx",
+      "sha256": "730aa965beeb19da2c4c1aafc98048049ddab2f5a1e1a9ee0796d599cabbbb44"
+    },
+    {
+      "source": "src/intros-ui/views/CommonsProfileView.tsx",
+      "target": "src/bridge-reference/src/intros-ui/views/CommonsProfileView.tsx",
+      "sha256": "83f0256dd0c926e9b1ae76ef4b200397058f76e4347f3af21a6e9ae7eb71995b"
+    },
+    {
+      "source": "src/intros-ui/views/PeopleDirectoryView.tsx",
+      "target": "src/bridge-reference/src/intros-ui/views/PeopleDirectoryView.tsx",
+      "sha256": "3b2bf0aee05b7018bc6fc33641aef901a43b308a694bd4d6c126395ef39c02ef"
+    },
+    {
+      "source": "src/intros-ui/components/shared/ExecutivePortrait.tsx",
+      "target": "src/bridge-reference/src/intros-ui/components/shared/ExecutivePortrait.tsx",
+      "sha256": "372fd59b42af445ed1ce03f004c6abf8f722beec55d9067e6180926be1480c36"
+    },
+    {
+      "source": "src/intros-ui/components/layout/TopNavigation.tsx",
+      "target": "src/bridge-reference/src/intros-ui/components/layout/TopNavigation.tsx",
+      "sha256": "841b557302df24f09590586f40deaa04ef0a9c0c9f65322288381c2a5cf5ab59"
+    },
+    {
+      "source": "src/aetheris/AskIntrosLockup.tsx",
+      "target": "src/bridge-reference/src/aetheris/AskIntrosLockup.tsx",
+      "sha256": "16bebe93684c916ba1ffd1f1a8adf5fe333aeff2991d65bc6582ad1b5a13ca9f"
+    },
+    {
+      "source": "src/intros-ui/commons-bridge.css",
+      "target": "src/bridge-reference/src/intros-ui/commons-bridge.css",
+      "sha256": "56bfac8e2dc5910f8dcbeff642be0da5fc145710a039ba4c4cf2bcd81fb0194b"
+    },
+    {
+      "source": "src/intros-ui/commons-fonts.css",
+      "target": "src/bridge-reference/src/intros-ui/commons-fonts.css",
+      "sha256": "8a4c00f3cccca3a03e907a860425f2616885553a1fc825901d97fe51976022fa"
+    },
+    {
+      "source": "src/styles.css",
+      "target": "src/bridge-reference/src/styles.css",
+      "sha256": "678230c7634993114e5072b016e5cfc6fecd24031dbe6de2bd0759e3d938259d"
+    },
+    {
+      "source": "src/assets/ask-intros-official-logo.jpg.asset.json",
+      "target": "src/bridge-reference/src/assets/ask-intros-official-logo.jpg.asset.json",
+      "sha256": "5d83652c27821963ae07f21d4d977e43b72bda1467e6f2c58fb00b0927588dfb"
+    },
+    {
+      "source": "src/intros-ui/views/MessagesView.tsx",
+      "target": "src/bridge-reference/src/intros-ui/views/MessagesView.tsx",
+      "sha256": "1742d47f909a0433ccf460c66c3a7fdc14e48406fa90fa423cb3032ef8f82a53"
+    },
+    {
+      "source": "src/intros-ui/components/shared/ConstellationGraphic.tsx",
+      "target": "src/bridge-reference/src/intros-ui/components/shared/ConstellationGraphic.tsx",
+      "sha256": "c87b774a9efb475ab05004859b0b0341d6ec2eeb2963b71f8c15a9ef7380ee1d"
+    },
+    {
+      "source": "src/intros-ui/views/LiveMessagesView.tsx",
+      "target": "src/bridge-reference/src/intros-ui/views/LiveMessagesView.tsx",
+      "sha256": "754c63ec45597bece9d02d85ca87a5fd4e6d508d19504433be0f803eae88c11b"
+    },
+    {
+      "source": "src/intros-ui/views/ConnectionBubblesView.tsx",
+      "target": "src/bridge-reference/src/intros-ui/views/ConnectionBubblesView.tsx",
+      "sha256": "d587b6de2434c792990562699aa47ba0d4d24dc9f21f515218213782ec86c877"
+    },
+    {
+      "source": "src/intros-ui/components/shared/FloatingConnectionField.tsx",
+      "target": "src/bridge-reference/src/intros-ui/components/shared/FloatingConnectionField.tsx",
+      "sha256": "767020de873e8ec4e75b2adb1ad684b576bdd3b0a7b60649614b10e09d8786c0"
+    },
+    {
+      "source": "src/intros-ui/components/shared/NetworkSnapshotPrintView.tsx",
+      "target": "src/bridge-reference/src/intros-ui/components/shared/NetworkSnapshotPrintView.tsx",
+      "sha256": "ff89ed164978b0c94e7bf99bea0dc58dd2c3ea0fbd66ba2d4bda63c2b9b13696"
+    },
+    {
+      "source": "src/intros-ui/views/IntrosHubView.tsx",
+      "target": "src/bridge-reference/src/intros-ui/views/IntrosHubView.tsx",
+      "sha256": "187ec3f5c1b9c46b2037be9ba3b9725b26f1999880a5c8bd955db9bc93ec6fcf"
+    },
+    {
+      "source": "src/aetheris/ParticleDrift.tsx",
+      "target": "src/bridge-reference/src/aetheris/ParticleDrift.tsx",
+      "sha256": "5bb83d96695b9edbb064015ee671578ed75828c7bb02a2b27b7dd5d8e3112fd8"
+    },
+    {
+      "source": "src/aetheris/canvas-motion.ts",
+      "target": "src/bridge-reference/src/aetheris/canvas-motion.ts",
+      "sha256": "1c9b176fb3654c688e26c781cbdd92eb269ec1c95ad3ebaf70dc2d9712567c6d"
+    },
+    {
+      "source": "src/aetheris/AskIntrosComposerCard.tsx",
+      "target": "src/aetheris/AskIntrosComposerCard.tsx",
+      "sha256": "f5d4597ebc1d60ddd6465c4e925a7aafbd6e360e66b238ae987f574afcbb2dda"
+    },
+    {
+      "source": "src/aetheris/AskIntrosPreview.tsx",
+      "target": "src/aetheris/AskIntrosPreview.tsx",
+      "sha256": "4fcabe3a6c22d814f946b11b78260d1f96f46d5d3ef9f4f64d05f58f3af5896b"
+    },
+    {
+      "source": "src/aetheris/MatchedMemberCards.tsx",
+      "target": "src/aetheris/MatchedMemberCards.tsx",
+      "sha256": "db09036b537a8eb2dd153ff6dc426a6b2e328ead9e4b008d6a8d0dce52b375fa"
+    },
+    {
+      "source": "src/aetheris/ConsentHandshake.tsx",
+      "target": "src/aetheris/ConsentHandshake.tsx",
+      "sha256": "f8e15fe3b460a08667060af8effc318f9dab699bf5753a7a1804eb5ba5dcf88f"
+    },
+    {
+      "source": "src/aetheris/SpecterSignalFeed.tsx",
+      "target": "src/aetheris/SpecterSignalFeed.tsx",
+      "sha256": "6988d971c1d042e4fcdb358e7065762ac4e3fc6d85dc0640e3174c33369927f1"
+    },
+    {
+      "source": "src/aetheris/SpecterSignalCard.tsx",
+      "target": "src/aetheris/SpecterSignalCard.tsx",
+      "sha256": "133e57fde327dcb4ec6ee4b560e616cc5d242467baac6990fc129b5672e598eb"
+    },
+    {
+      "source": "src/aetheris/GapOpportunityCard.tsx",
+      "target": "src/aetheris/GapOpportunityCard.tsx",
+      "sha256": "533b5eed75f3c81b2dcc7e63f79d7cf95b5851e89951d5901c65e855d0549062"
+    },
+    {
+      "source": "src/aetheris/RelationshipMomentBanner.tsx",
+      "target": "src/aetheris/RelationshipMomentBanner.tsx",
+      "sha256": "06e242302bd32739c82162a15bf04be9f34f4835ea6dd26b4f660a3619933145"
+    },
+    {
+      "source": "src/aetheris/canvas-motion.ts",
+      "target": "src/aetheris/canvas-motion.ts",
+      "sha256": "1c9b176fb3654c688e26c781cbdd92eb269ec1c95ad3ebaf70dc2d9712567c6d"
+    },
+    {
+      "source": "src/aetheris/avatar.tsx",
+      "target": "src/bridge-reference/src/aetheris/avatar.tsx",
+      "sha256": "d2b76c7341962e4acb5dec10af6ae9ba45689863899598fa1a5ddc1819111551"
+    }
+  ]
+}

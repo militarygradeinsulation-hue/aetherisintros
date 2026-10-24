@@ -1,6 +1,5 @@
-import { BridgeSocialLogo } from '../../experience/BridgeSocialLogo';
+import { TopNavigation as BridgeTopNavigation } from '../../../bridge-reference/src/intros-ui/components/layout/TopNavigation';
 import { ExperienceSwitch } from '../../experience/ExperienceSwitch';
-import { SocialNavigation } from '../../experience/SocialNavigation';
 import type { ExperienceView } from '../../experience/preference';
 /* Native port of absolute-ledger-flow/src/components/app/app-shell.tsx.
  * Owns the member frame; all records/actions remain Ask Intros, never the CRM seed data.
@@ -177,8 +176,15 @@ export function LedgerBridgeShell({
     </div>}
 
     <div className="ledger-crm-body">
-      <header className="ledger-crm-topbar">
-        {experience === 'social' && <><button type="button" className="bridge-social-brand" aria-label="Ask Intros home" onClick={() => onNavigate('home')}><BridgeSocialLogo/></button><SocialNavigation activePage={activePage} activeTool={activeTool} onSelect={navigate}/></>}
+      <div className="bridge-navigation-host" hidden={experience !== 'social'}><BridgeTopNavigation mode={mode}
+        activePage={activePage === 'intelligence' || activePage === 'specter' ? 'workspace' : activePage}
+        onNavigate={onNavigate} searchQuery={searchQuery} onSearchChange={onSearchChange}
+        unreadCount={unreadCount ?? 0} me={me} onOpenMyProfile={onOpenMyProfile}
+        bell={notifications} onToggleConstellationOverlay={() => onNavigate('bubbles')}/>
+        <div className="bridge-experience-control"><ExperienceSwitch value={experience} onChange={onExperienceChange}/></div>
+      </div>
+      <header className="ledger-crm-topbar" hidden={experience === 'social'}>
+
         <ExperienceSwitch value={experience} onChange={onExperienceChange}/>
         <button type="button" className="ledger-native-menu" aria-label="Open navigation" onClick={() => setDrawerOpen(true)}>
           <Menu size={20} />
@@ -204,7 +210,7 @@ export function LedgerBridgeShell({
           {userOpen && <AccountMenu/>}
         </div>
       </header>
-      <div id="aetheris-workspace-content" className="ledger-native-content"><div hidden={experience === 'social' && activePage === 'home'}><LedgerSectionNavigation activePage={activePage} activeTool={activeTool} onSelect={navigate}/></div>{children}</div>
+      <div id="aetheris-workspace-content" className="ledger-native-content"><div hidden={experience === 'social'}><LedgerSectionNavigation activePage={activePage} activeTool={activeTool} onSelect={navigate}/></div>{children}</div>
     </div>
 
     <div className="ledger-native-quick-dock" aria-label="Desktop quick launch tools">
@@ -217,7 +223,7 @@ export function LedgerBridgeShell({
       />
     </div>
 
-    <nav className="ledger-native-bottom ix-mobile-nav" aria-label="Mobile navigation">
+    <nav hidden={experience === 'social'} className="ledger-native-bottom ix-mobile-nav" aria-label="Mobile navigation">
       {([
         { label: 'Dashboard', page: 'home', icon: House },
         { label: 'Messages', page: 'messages', icon: MessageSquare },

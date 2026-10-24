@@ -1,4 +1,5 @@
-import { CommonsHomeView } from './CommonsHomeView';
+import { CommonsHomeView } from '../../bridge-reference/src/intros-ui/views/CommonsHomeView';
+import { PersistentBridgeFeed, BridgeFeedSlot, BridgeFeedProvider } from '../experience/PersistentBridgeFeed';
 import type { ExperienceView } from '../experience/preference';
 import { PostShareButton } from '@/aetheris/PostShareButton';
 import { MemberThumbnail } from '../components/shared/MemberThumbnail';
@@ -94,7 +95,7 @@ export function LedgerDashboard({
     onAddPost(content, 'Insight');
     setDraft('');
   };
-  return <div className="ledger-dashboard">
+  return <BridgeFeedProvider><div className="ledger-dashboard">
     <PageHeader eyebrow={experience === 'social' ? 'People create possibilities' : 'Workspace / Relationship OS'} title={experience === 'social' ? 'Your network, in motion.' : 'Command Dashboard'}
       description="Your relationships, introductions, and next moves in one operating workspace."
       actions={<>
@@ -130,11 +131,14 @@ export function LedgerDashboard({
     </details>}
     <div className="ledger-dashboard-grid">
       <div className="ledger-dashboard-primary">
-        <CommonsHomeView social={experience === 'social'} draft={draft} onDraftChange={setDraft}
+        <div hidden={experience !== 'social'}><CommonsHomeView
           posts={posts} members={members} requests={requests} isLive={live} me={me}
+          socialFeed={<BridgeFeedSlot active={experience === 'social'} />} actionQueue={actionQueue}
           onNavigate={onNavigate} onWorkspace={tool => onOpenTool ? onOpenTool(tool) : onNavigate('workspace')}
-          onRequestIntro={onRequestIntro} onReview={onReview} onAddPost={onAddPost} onLike={onLikePost} onSave={onSavePost}>
-        <div className="ledger-persistent-feed" hidden={experience === 'social' ? !live : !panels.activity}><Panel className="ledger-dashboard-feed" title="Network activity"
+          onRequestIntro={onRequestIntro} onReview={onReview} onAddPost={onAddPost} onLike={onLikePost} onSave={onSavePost}/></div>
+        <div hidden={experience === 'social'}><BridgeFeedSlot active={experience !== 'social'}/></div>
+        <PersistentBridgeFeed>
+        <div className="ledger-persistent-feed" hidden={experience !== 'social' && !panels.activity}><Panel className="ledger-dashboard-feed" title="Network activity"
           subtitle={live ? 'Confirmed activity from your connected network' : 'Sample conversations from the guided showcase'}
           action={<button type="button" className="ledger-ui-link" onClick={() => onNavigate('people')}>Network <ArrowRight size={13}/></button>}
           bodyClassName="ledger-feed-body">
@@ -176,7 +180,7 @@ export function LedgerDashboard({
             </div>
           </div>}
         </Panel></div>
-        </CommonsHomeView>
+        </PersistentBridgeFeed>
       </div>
       <div className="ledger-dashboard-secondary">
         {panels.people && <Panel title="People to know" subtitle="Browse and build meaningful relationships"
@@ -232,5 +236,5 @@ export function LedgerDashboard({
         </footer>
       </section>
     </div>}
-  </div>;
+  </div></BridgeFeedProvider>;
 }
