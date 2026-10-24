@@ -107,6 +107,8 @@ try {
         for(const item of card.items)if(contrast(item.foreground,card.background)<4.5)
           throw Error(theme+' '+size.width+' unreadable CRM summary '+JSON.stringify({card,item}));
       }
+      const tabs=await page.getByRole('tablist',{name:'CRM sections'}).getByRole('tab').evaluateAll(nodes=>nodes.map(el=>({color:getComputedStyle(el).webkitTextFillColor||getComputedStyle(el).color,background:getComputedStyle(el.closest('.content')).backgroundColor})));
+      if(theme==='light')for(const tab of tabs)if(contrast(tab.color,tab.background)<4.5)throw Error('Unreadable CRM tab '+JSON.stringify(tab));
       console.log('PASS Command CRM card depth and text contrast '+theme+' '+size.width);
       await context.close();
     }
