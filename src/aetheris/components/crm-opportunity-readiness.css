@@ -1,0 +1,5 @@
+.ops-readiness-evidence {display:grid;grid-template-columns:minmax(100px,1fr) minmax(0,3fr);gap:8px;margin:16px 0;font-size:13px}
+.ops-readiness-evidence dt {font-weight:700}.ops-readiness-evidence dd {margin:0;overflow-wrap:anywhere;white-space:pre-wrap}
+.ops-readiness-ratings {display:flex;flex-wrap:wrap;gap:12px;margin:16px 0;border:1px solid var(--line-dark);padding:12px}
+.ops-readiness-ratings label {display:flex;flex-direction:column;gap:6px;font-size:12px;flex:1 1 130px}
+.ops-readiness-ratings input {width:100%;min-height:44px}
