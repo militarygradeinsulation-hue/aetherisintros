@@ -147,6 +147,7 @@ export function LedgerDashboard({
                     <time>{post.timeAgo}</time>
                   </header>
                   <p className="ledger-feed-content">{post.content}</p>
+                  {post.image && <img className="ledger-post-photo" src={post.image.src} alt={post.image.alt} loading="lazy"/>}
                   <footer>
                     <span className="ledger-feed-badge">{post.badge}</span>
                     <button type="button" aria-pressed={post.isLiked} onClick={() => onLikePost(post.id)}>

@@ -82,6 +82,7 @@ export interface NetworkMember {
 }
 
 export interface FeedPost {
+  image?: { src: string; alt: string };
   id: string;
   authorId: string;
   authorName: string;
@@ -883,6 +884,7 @@ export const NETWORK_MEMBERS: NetworkMember[] = [
 export const INITIAL_FEED_POSTS: FeedPost[] = [
   {
     id: 'feed-1',
+    image: { src: '/demo-posts/founders-coffee.webp', alt: 'Demo illustration: founders sharing ideas over coffee' },
     authorId: 'marcus-lee',
     authorName: 'Marcus Lee',
     authorTitle: 'General Partner at Horizon Ventures',
@@ -903,6 +905,7 @@ export const INITIAL_FEED_POSTS: FeedPost[] = [
   },
   {
     id: 'feed-2',
+    image: { src: '/demo-posts/product-workshop.webp', alt: 'Demo illustration: a product team reviewing a prototype' },
     authorId: 'sarah-chen',
     authorName: 'Sarah Chen',
     authorTitle: 'Founder & CEO at Vercelity',

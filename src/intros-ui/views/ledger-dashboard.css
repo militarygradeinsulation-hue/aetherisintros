@@ -125,3 +125,5 @@
   --ledger-crm-accent:#B91C1C;
   --mp-bridge-copper-bright:#B91C1C;
 }
+
+.ledger-post-photo {display:block;width:100%;max-height:420px;object-fit:cover;border-radius:12px;margin:12px 0}

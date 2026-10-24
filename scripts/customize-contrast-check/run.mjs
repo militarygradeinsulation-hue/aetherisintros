@@ -47,6 +47,10 @@ try {
       const page=await context.newPage();
       await page.goto("http://127.0.0.1:"+port+"/demo",{waitUntil:"domcontentloaded",timeout:120000});
       await page.locator('.ledger-dashboard').waitFor({state:'visible',timeout:60000});
+      const photos=page.locator('.ledger-feed-entry .ledger-post-photo');
+      if(await photos.count()<2)throw Error('Showcase photo posts missing');
+      await page.waitForFunction(()=>[...document.querySelectorAll('.ledger-feed-entry .ledger-post-photo')].every(img=>img.complete&&img.naturalWidth>0));
+      await page.getByRole('region',{name:'Business headlines',exact:true}).waitFor();
       const button=page.getByRole('button',{name:'Customize',exact:true});
       await button.waitFor({state:'visible',timeout:45000});
       await button.click();
