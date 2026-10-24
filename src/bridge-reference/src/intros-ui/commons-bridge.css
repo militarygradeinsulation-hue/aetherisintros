@@ -1,0 +1,1389 @@
+@import "./commons-fonts.css";
+@property --glass-sweep-x {
+  syntax: "<percentage>";
+  inherits: false;
+  initial-value: 160%;
+}
+@keyframes commons-glass-sweep {
+  from { --glass-sweep-x: 160%; }
+  to { --glass-sweep-x: -60%; }
+}
+/* The reference supplies the layout and palette; existing controllers own all writes.
+   Important declarations in this layer outrank the older unlayered stencil rules. */
+@layer commons {
+  .ix-commons-bridge .commons-mobile-filter-toggle { display:none !important; }
+  @media(max-width:900px) {
+    .ix-commons-bridge .commons-mobile-filter-toggle { display:inline-flex !important; width:max-content; }
+    .ix-commons-bridge .commons-people-filters > :not(.commons-mobile-filter-toggle) { display:none !important; }
+    .ix-commons-bridge .commons-people-filters > .is-open { display:block !important; }
+  }
+  .ix-commons-bridge:has(.bridge-meetings-hub) .ix-classic .content { margin: 0 auto !important; }
+  .ix-commons-bridge:has(.bridge-meetings-hub) .workspace > main { min-height: 0 !important; align-content: start !important; justify-content: start !important; }
+  .ix-commons-bridge .bridge-meetings-hub { margin: 0 auto !important; padding: 28px 24px !important; align-self: start !important; width: 100%; }
+  .ix-commons-bridge .commons-radar canvas { filter: none !important; }
+  .ix-commons-bridge .commons-radar-identity { display:flex; align-items:center; gap:12px; color:var(--commons-muted); }
+  :root { --commons-person-surface: var(--commons-card); --commons-person-accent: var(--commons-wash); }
+  :root[data-theme="dark"] { --commons-person-surface: oklch(0.22 0.035 265); --commons-person-accent: oklch(0.29 0.065 260); }
+  .ix-commons-bridge :is(.commons-people,.commons-intros-workspace) { max-width: 1280px !important; margin: 0 auto !important; padding: 28px 24px !important; }
+  .ix-commons-bridge .commons-section-tabs { display: flex; flex-wrap: wrap; gap: 8px; margin: 20px 0 24px; }
+  .ix-commons-bridge .commons-section-tabs [role="tab"] { min-height: 44px !important; padding: 10px 16px !important; background: var(--commons-card) !important; color: var(--commons-muted) !important; border: 1px solid var(--commons-line) !important; }
+  .ix-commons-bridge .commons-section-tabs [aria-selected="true"] { background: var(--commons-wash) !important; color: var(--commons-link) !important; border-color: var(--commons-blue) !important; }
+  .ix-commons-bridge .commons-people > section { background: transparent !important; border: 0 !important; padding: 0 !important; }
+  .ix-commons-bridge .commons-people > div.grid { grid-template-columns: 220px minmax(0,1fr) !important; }
+  .ix-commons-bridge .commons-people > div.grid > main { grid-column: auto !important; min-width: 0; }
+  .ix-commons-bridge .commons-people > div.grid > aside:first-child { grid-column: auto !important; }
+  .ix-commons-bridge .commons-people > div.grid > aside:last-child { display: none !important; }
+  .ix-commons-bridge .commons-people :is(.commons-person-card,aside > div) { background: var(--commons-person-surface) !important; border: 1px solid var(--commons-line) !important; border-radius: 24px !important; box-shadow: var(--commons-shadow) !important; }
+  .ix-commons-bridge .commons-people .commons-person-card { padding: 24px !important; }
+  .ix-commons-bridge .commons-people button { white-space: normal !important; height: auto; min-height: 36px; }
+  .ix-commons-bridge .commons-people .commons-person-card h3 { font-size: 20px !important; }
+  .ix-commons-bridge .commons-people .commons-person-card p { font-size: 13px !important; line-height: 1.6 !important; }
+  .ix-commons-bridge .commons-people .commons-person-card .commons-portrait { width: 80px !important; height: 80px !important; }
+  .ix-commons-bridge .commons-portrait { isolation: isolate; background: var(--commons-wash) !important; color: var(--commons-link) !important; border-color: var(--commons-line) !important; }
+  .ix-commons-bridge .commons-portrait img { z-index: 1; filter: none !important; opacity: 1 !important; object-fit: cover !important; }
+  .ix-commons-bridge .commons-person-initial { display: grid; place-items: center; width: 32px; height: 32px; border-radius: 50%; background: var(--commons-wash); color: var(--commons-link); flex: none; }
+  .ix-commons-bridge .commons-radar-embedded { padding: 0 !important; }
+  .ix-commons-bridge .commons-radar :is(aside,.bg-card) { border-radius: 24px !important; border-color: var(--commons-line) !important; background: var(--commons-person-surface) !important; }
+  .ix-commons-bridge .commons-radar input { width: 100%; min-width: 0; }
+  .ix-commons-bridge :is(.meetings-card,.bridge-meeting-option,.meetings-new,.meeting-brief) { clip-path: none !important; border-radius: 26px !important; background: var(--commons-person-surface) !important; border: 1px solid var(--commons-line) !important; box-shadow: var(--commons-shadow) !important; padding: 24px !important; }
+  .ix-commons-bridge .bridge-meeting-options { gap: 24px !important; }
+  .ix-commons-bridge .meetings :is(button,input,textarea,select,.bridge-meeting-cta) { clip-path: none !important; border-radius: 16px !important; }
+  .ix-commons-bridge .bridge-meeting-intro h1 { font-size: 32px !important; max-width: none !important; }
+  .ix-commons-bridge .bridge-meeting-option :is(p,small,.bridge-meeting-index) { color: var(--commons-muted) !important; }
+  .ix-commons-bridge .bridge-meeting-option :is(h2,a) { color: var(--commons-ink) !important; }
+  @media(max-width:900px) {
+    .ix-commons-bridge .commons-people > div.grid { grid-template-columns: minmax(0,1fr) !important; }
+    .ix-commons-bridge .commons-people > div.grid > aside:first-child { display: grid; grid-template-columns: minmax(0,1fr); }
+  }
+  @media(max-width:767px) {
+    .ix-commons-bridge :is(.commons-people,.commons-intros-workspace) { padding: 20px 16px !important; }
+    .ix-commons-bridge .commons-people main > div:first-child { flex-wrap: wrap; gap: 12px; }
+    .ix-commons-bridge .bridge-meeting-options { grid-template-columns: minmax(0,1fr) !important; }
+  }
+  :root {
+    --commons-bg: #f6f6f3 !important;
+    --commons-card: #fff !important;
+    --commons-ink: #15171c !important;
+    --commons-muted: #5a5f6b !important;
+    --commons-line: #e3e3de !important;
+    --commons-wash: #e8ecfd !important;
+    --commons-blue: #2f4be0 !important;
+    --commons-link: #1e35b0 !important;
+    --acc: #2f4be0 !important;
+    --acc-bright: #4863f1 !important;
+    --st-mono: "JetBrains Mono", monospace !important;
+    --sans: "Inter", sans-serif !important;
+    --serif: "Bricolage Grotesque", sans-serif !important;
+  }
+  :root[data-theme="dark"] {
+    --commons-bg: #050914 !important;
+    --commons-card: #0a101d !important;
+    --commons-ink: #ffffff !important;
+    --commons-muted: #a1a1aa !important;
+    --commons-line: #354365 !important;
+    --commons-wash: #162c6d !important;
+    --commons-blue: #3b82f6 !important;
+    --commons-link: #60a5fa !important;
+  }
+  body:has(.ix-commons-bridge),
+  body:has(.commons-landing) {
+    background: var(--commons-bg) !important;
+    color: var(--commons-ink) !important;
+  }
+  body:has(.ix-commons-bridge) .site-ambient,
+  body:has(.commons-landing) .site-ambient {
+    display: block !important;
+  }
+  .ix-root.ix-commons-bridge {
+    background: transparent !important;
+    background-image: none !important;
+    color: var(--commons-ink) !important;
+    font-family: "Inter", sans-serif !important;
+    padding: 0 0 90px !important;
+    min-width: 0 !important;
+  }
+  .ix-commons-bridge *,
+  .commons-landing * {
+    letter-spacing: normal !important;
+    text-shadow: none !important;
+    text-transform: none !important;
+    -webkit-text-fill-color: currentColor !important;
+  }
+  .ix-commons-bridge :is(h1, h2, h3, h4),
+  .commons-landing :is(h1, h2, h3) {
+    font-family: "Bricolage Grotesque", sans-serif !important;
+    text-transform: none !important;
+    color: var(--commons-ink) !important;
+    font-weight: 700 !important;
+    line-height: 1.15 !important;
+  }
+  .ix-commons-bridge :is(button, input, textarea, select),
+  .commons-landing :is(button, a) {
+    font-family: "Inter", sans-serif !important;
+    text-transform: none !important;
+    letter-spacing: normal !important;
+  }
+  .ix-commons-bridge :is(button, a):focus-visible,
+  .commons-landing a:focus-visible {
+    outline: 3px solid #7085ff !important;
+    outline-offset: 3px !important;
+  }
+  .ix-commons-bridge button {
+    cursor: pointer !important;
+  }
+  .ix-commons-bridge button:disabled {
+    opacity: 0.5 !important;
+    cursor: not-allowed !important;
+  }
+  .ix-commons-bridge .arch-product-main {
+    margin: 0 !important;
+    padding: 0 !important;
+    width: 100% !important;
+    max-width: none !important;
+    background: var(--commons-bg) !important;
+  }
+  .ix-commons-bridge .ix-global-header {
+    position: sticky !important;
+    top: 0 !important;
+    left: auto !important;
+    width: 100% !important;
+    height: auto !important;
+    padding: 10px 24px !important;
+    background: var(--commons-card) !important;
+    border: 0 !important;
+    border-bottom: 1px solid var(--commons-line) !important;
+    backdrop-filter: blur(16px) !important;
+  }
+  .ix-commons-bridge .ix-global-header-inner {
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: center !important;
+    gap: 24px !important;
+    min-height: 58px !important;
+    width: 100% !important;
+    max-width: 1280px !important;
+    margin: auto !important;
+  }
+  .ix-commons-bridge .ix-global-brand {
+    width: auto !important;
+    flex: none !important;
+  }
+  .ix-commons-bridge .commons-wordmark {
+    display: flex !important;
+    align-items: center !important;
+    gap: 10px !important;
+    color: var(--commons-ink) !important;
+    font:
+      700 23px/1.1 "Bricolage Grotesque",
+      sans-serif !important;
+  }
+  .ix-commons-bridge .commons-wordmark svg {
+    width: 32px !important;
+    height: 32px !important;
+    padding: 6px !important;
+    background: var(--commons-blue) !important;
+    color: var(--commons-on-blue) !important;
+    border-radius: var(--commons-radius-control) !important;
+  }
+  .ix-commons-bridge .ix-desktop-main-nav {
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: center !important;
+    gap: 4px !important;
+    padding: 0 !important;
+    border: 0 !important;
+    flex: 1 !important;
+  }
+  .ix-commons-bridge .ix-desktop-nav-link {
+    padding: 10px 12px !important;
+    border: 0 !important;
+    border-radius: var(--commons-radius-control) !important;
+    color: var(--commons-muted) !important;
+    background: transparent !important;
+    font-size: 13px !important;
+    min-height: 44px !important;
+  }
+  .ix-commons-bridge .ix-desktop-nav-link.is-active {
+    color: var(--commons-link) !important;
+    background: var(--commons-wash) !important;
+  }
+  .ix-commons-bridge .ix-desktop-nav-label {
+    color: inherit !important;
+    font-family: inherit !important;
+  }
+  .ix-commons-bridge .ix-global-account-actions {
+    margin-left: auto !important;
+  }
+  .ix-commons-bridge .ix-global-account-actions :is(button, span),
+  .ix-commons-bridge .ix-desktop-more-menu {
+    color: var(--commons-ink) !important;
+  }
+  .ix-commons-bridge .ix-global-account-actions input {
+    background: var(--commons-bg) !important;
+    color: var(--commons-ink) !important;
+    border: 1px solid var(--commons-line) !important;
+  }
+  .ix-commons-bridge .ix-desktop-more-menu {
+    background: var(--commons-card) !important;
+    border: 1px solid var(--commons-line) !important;
+    border-radius: 14px !important;
+  }
+  .ix-commons-bridge .commons-news {
+    display: flex !important;
+    align-items: center !important;
+    gap: 22px !important;
+    width: 100% !important;
+    overflow: hidden !important;
+    background: var(--commons-card) !important;
+    border: 0 !important;
+    border-bottom: 1px solid var(--commons-line) !important;
+    padding: 10px 24px !important;
+    color: var(--commons-muted) !important;
+    text-align: left !important;
+    font-size: 12px !important;
+  }
+  .ix-commons-bridge .commons-news strong {
+    color: var(--commons-link) !important;
+    flex-shrink: 0 !important;
+    font-size: 10px !important;
+    letter-spacing: 0.08em !important;
+  }
+  .ix-commons-bridge .commons-news div {
+    overflow: hidden !important;
+    white-space: nowrap !important;
+    text-overflow: ellipsis !important;
+  }
+  .commons-home {
+    width: 100% !important;
+    max-width: 1240px !important;
+    margin: auto !important;
+    padding: 40px 28px !important;
+  }
+  .commons-welcome {
+    display: flex !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+    gap: 20px !important;
+    margin-bottom: 32px !important;
+  }
+  .commons-welcome h1 {
+    font-size: 44px !important;
+    letter-spacing: 0 !important;
+    margin: 10px 0 !important;
+  }
+  .commons-welcome p {
+    font-size: 15px !important;
+    color: var(--commons-muted) !important;
+  }
+  .commons-eyebrow {
+    font:
+      500 10px/1.5 "JetBrains Mono",
+      monospace !important;
+    letter-spacing: 0.09em !important;
+    color: var(--commons-link) !important;
+  }
+  .commons-mode,
+  .commons-pill {
+    display: inline-flex !important;
+    align-items: center !important;
+    padding: 5px 10px !important;
+    border: 1px solid var(--commons-line) !important;
+    border-radius: 999px !important;
+    font-size: 11px !important;
+    white-space: nowrap !important;
+    color: var(--commons-muted) !important;
+  }
+  .commons-columns {
+    display: grid !important;
+    grid-template-columns: minmax(0, 1fr) 320px !important;
+    gap: 28px !important;
+    align-items: start !important;
+  }
+  .commons-feed,
+  .commons-posts,
+  .commons-intros,
+  .commons-rail {
+    display: flex !important;
+    flex-direction: column !important;
+    min-width: 0 !important;
+    gap: 18px !important;
+  }
+  .commons-tabs {
+    display: flex !important;
+    gap: 8px !important;
+    border-bottom: 1px solid var(--commons-line) !important;
+    padding-bottom: 12px !important;
+  }
+  .commons-tabs button {
+    padding: 8px 16px !important;
+    min-height: 44px !important;
+    border-radius: 999px !important;
+    border: 1px solid transparent !important;
+    color: var(--commons-muted) !important;
+    background: transparent !important;
+    font-size: 14px !important;
+  }
+  .commons-tabs button[aria-selected="true"] {
+    color: var(--commons-ink) !important;
+    background: var(--commons-card) !important;
+    border-color: var(--commons-line) !important;
+    font-weight: 600 !important;
+  }
+  .commons-tabs button span {
+    margin-left: 8px !important;
+    border-radius: 50% !important;
+    background: var(--commons-wash) !important;
+    color: var(--commons-link) !important;
+    padding: 2px 6px !important;
+    font-size: 11px !important;
+  }
+  .commons-section-title {
+    display: flex !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+    gap: 10px !important;
+  }
+  .commons-section-title h2 {
+    font-size: 22px !important;
+  }
+  .commons-section-title button {
+    display: flex !important;
+    gap: 6px !important;
+    align-items: center !important;
+    color: var(--commons-link) !important;
+    font-size: 12px !important;
+    background: none !important;
+    border: 0 !important;
+    padding: 8px 0 !important;
+  }
+  .commons-card {
+    background: var(--commons-card) !important;
+    color: var(--commons-ink) !important;
+    border: 1px solid var(--commons-line) !important;
+    border-radius: var(--commons-radius-card) !important;
+    padding: 22px !important;
+    box-shadow: 0 5px 20px #15171c04 !important;
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 12px !important;
+  }
+  .commons-card h2,
+  .commons-card h3 {
+    font-size: 22px !important;
+    margin: 0 !important;
+  }
+  .commons-card p {
+    color: var(--commons-muted) !important;
+    font-size: 14px !important;
+    line-height: 1.65 !important;
+    margin: 0 !important;
+  }
+  .commons-card small {
+    color: var(--commons-muted) !important;
+    font-size: 12px !important;
+    line-height: 1.5 !important;
+  }
+  .commons-person {
+    display: flex !important;
+    align-items: center !important;
+    gap: 12px !important;
+    min-width: 0 !important;
+  }
+  .commons-person > div {
+    display: flex !important;
+    flex: 1 !important;
+    min-width: 0 !important;
+    flex-direction: column !important;
+    gap: 3px !important;
+  }
+  .commons-person strong {
+    color: var(--commons-ink) !important;
+    font-size: 14px !important;
+  }
+  .commons-person button {
+    padding: 0 !important;
+    background: none !important;
+    border: 0 !important;
+  }
+  .commons-avatar {
+    width: 44px !important;
+    height: 44px !important;
+    flex: 0 0 44px !important;
+    border-radius: 50% !important;
+    background: var(--commons-wash) !important;
+    color: var(--commons-link) !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    overflow: hidden !important;
+    font-size: 13px !important;
+    font-weight: 600 !important;
+  }
+  .commons-avatar img {
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: cover !important;
+    filter: none !important;
+  }
+  .commons-intro-card blockquote {
+    margin: 0 !important;
+    font-size: 15px !important;
+    line-height: 1.6 !important;
+    color: var(--commons-ink) !important;
+  }
+  .commons-primary {
+    display: inline-flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+    gap: 8px !important;
+    align-self: flex-start !important;
+    background: #2f4be0 !important;
+    color: #fff !important;
+    border: 1px solid #2f4be0 !important;
+    border-radius: var(--commons-radius-control) !important;
+    padding: 11px 16px !important;
+    min-height: 44px !important;
+    font-size: 13px !important;
+    font-weight: 600 !important;
+    text-decoration: none !important;
+  }
+  .commons-primary:hover {
+    background: #243bc0 !important;
+  }
+  .commons-composer label {
+    font-size: 16px !important;
+    font-weight: 600 !important;
+    color: var(--commons-ink) !important;
+  }
+  .commons-composer textarea {
+    width: 100% !important;
+    padding: 12px !important;
+    border-radius: var(--commons-radius-control) !important;
+    border: 1px solid var(--commons-line) !important;
+    background: var(--commons-bg) !important;
+    color: var(--commons-ink) !important;
+    font-size: 14px !important;
+    resize: vertical !important;
+    min-height: 90px !important;
+  }
+  .commons-composer > div {
+    display: flex !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+    gap: 10px !important;
+  }
+  .commons-author {
+    display: flex !important;
+    align-items: center !important;
+    gap: 6px !important;
+    font-size: 14px !important;
+    font-weight: 600 !important;
+    text-align: left !important;
+    color: var(--commons-ink) !important;
+  }
+  .commons-author svg {
+    color: var(--commons-link) !important;
+  }
+  .commons-post .commons-post-body {
+    font-size: 16px !important;
+    color: var(--commons-ink) !important;
+    line-height: 1.65 !important;
+    white-space: pre-wrap !important;
+  }
+  .commons-post-actions {
+    display: flex !important;
+    align-items: center !important;
+    gap: 12px !important;
+    flex-wrap: wrap !important;
+    border-top: 1px solid var(--commons-line) !important;
+    padding-top: 8px !important;
+  }
+  .commons-post-actions button {
+    display: flex !important;
+    align-items: center !important;
+    gap: 6px !important;
+    background: none !important;
+    border: 0 !important;
+    color: var(--commons-muted) !important;
+    min-height: 40px !important;
+    padding: 5px 0 !important;
+    font-size: 12px !important;
+  }
+  .commons-post-actions button[aria-pressed="true"] {
+    color: var(--commons-link) !important;
+  }
+  .commons-post-actions .commons-intro-link {
+    margin-left: auto !important;
+    color: var(--commons-link) !important;
+    font-weight: 600 !important;
+  }
+  .commons-reply {
+    display: flex !important;
+    flex-direction: column !important;
+    padding: 12px !important;
+    border-radius: var(--commons-radius-control) !important;
+    background: var(--commons-bg) !important;
+  }
+  .commons-reply-form {
+    display: flex !important;
+    gap: 8px !important;
+  }
+  .commons-reply-form input {
+    min-width: 0 !important;
+    flex: 1 !important;
+    border: 1px solid var(--commons-line) !important;
+    border-radius: var(--commons-radius-control) !important;
+    padding: 10px !important;
+    background: var(--commons-bg) !important;
+    color: var(--commons-ink) !important;
+  }
+  .commons-butler,
+  .commons-caught-up {
+    background: #15171c !important;
+    color: #fff !important;
+    border-radius: var(--commons-radius-card) !important;
+    border: 1px solid #262931 !important;
+    padding: 22px !important;
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 14px !important;
+  }
+  .commons-butler :is(h2, strong),
+  .commons-caught-up h2 {
+    color: #fff !important;
+  }
+  .commons-butler h2 {
+    font-size: 23px !important;
+  }
+  .commons-butler :is(p, small),
+  .commons-caught-up p {
+    color: #c9ccd4 !important;
+    font-size: 13px !important;
+    line-height: 1.65 !important;
+  }
+  .commons-assistant-icon {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    height: 40px !important;
+    width: 40px !important;
+    border-radius: 12px !important;
+    background: #2f4be0 !important;
+    color: #fff !important;
+  }
+  .commons-butler > button {
+    display: flex !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+    gap: 10px !important;
+    text-align: left !important;
+    min-height: 44px !important;
+    padding: 10px 12px !important;
+    border: 1px solid #3d414b !important;
+    border-radius: var(--commons-radius-control) !important;
+    color: #fff !important;
+    background: transparent !important;
+    font-size: 12px !important;
+  }
+  .commons-butler > .commons-conversation {
+    color: #aebbff !important;
+    border: 0 !important;
+    padding: 4px 0 !important;
+  }
+  .commons-row {
+    display: flex !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+    gap: 10px !important;
+    text-align: left !important;
+    min-height: 44px !important;
+    border-radius: var(--commons-radius-control) !important;
+    background: var(--commons-bg) !important;
+    color: var(--commons-ink) !important;
+    padding: 10px 12px !important;
+    font-size: 12px !important;
+    border: 0 !important;
+  }
+  .commons-member-row {
+    display: flex !important;
+    align-items: center !important;
+    gap: 10px !important;
+    width: 100% !important;
+    text-align: left !important;
+    border: 0 !important;
+    background: none !important;
+    padding: 8px 0 !important;
+    color: var(--commons-ink) !important;
+  }
+  .commons-member-row > span:not(.commons-avatar) {
+    flex: 1 !important;
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 3px !important;
+  }
+  .commons-member-row strong {
+    font-size: 12px !important;
+  }
+  .commons-member-row small {
+    font-size: 11px !important;
+  }
+  .commons-caught-up {
+    text-align: center !important;
+    align-items: center !important;
+    padding: 36px 24px !important;
+  }
+  .commons-caught-up h2 {
+    font-size: 30px !important;
+  }
+  .commons-caught-up > div {
+    display: flex !important;
+    gap: 10px !important;
+    justify-content: center !important;
+    flex-wrap: wrap !important;
+  }
+  .commons-caught-up button:not(.commons-primary) {
+    display: flex !important;
+    align-items: center !important;
+    gap: 8px !important;
+    color: #fff !important;
+    border: 1px solid #5a5f6b !important;
+    border-radius: var(--commons-radius-control) !important;
+    padding: 10px 16px !important;
+    background: transparent !important;
+    font-size: 13px !important;
+  }
+  /* Existing directory, profile, request forms and embedded workspaces share the palette. */
+  .ix-commons-bridge .arch-product-main > :not(.commons-home) {
+    color: var(--commons-ink) !important;
+    background: var(--commons-bg) !important;
+  }
+  .ix-commons-bridge
+    :is(
+      .arch-product-main > :not(.commons-home),
+      .commons-live-actions,
+      .stencil-intro-request-panel
+    )
+    :is(
+      [class*="bg-[#"],
+      [class*="bg-white"],
+      [class*="bg-gradient"],
+      input,
+      textarea,
+      select,
+      .legacy-surface
+    ) {
+    background: var(--commons-card) !important;
+    background-image: none !important;
+    border-color: var(--commons-line) !important;
+    border-radius: 14px !important;
+  }
+  .ix-commons-bridge
+    :is(
+      .arch-product-main > :not(.commons-home),
+      .commons-live-actions,
+      .stencil-intro-request-panel
+    )
+    :is(button, [class*="border"]) {
+    border-color: var(--commons-line) !important;
+  }
+  .ix-commons-bridge
+    :is(.arch-product-main > :not(.commons-home), .stencil-intro-request-panel)
+    button:hover {
+    background: var(--commons-wash) !important;
+    color: var(--commons-link) !important;
+  }
+  .ix-commons-bridge .stencil-intro-request-panel {
+    background: var(--commons-card) !important;
+    color: var(--commons-ink) !important;
+    border: 1px solid var(--commons-line) !important;
+    border-radius: var(--commons-radius-card) !important;
+    max-height: calc(100dvh - 32px) !important;
+    overflow-y: auto !important;
+  }
+  .ix-commons-bridge .ix-mobile-nav {
+    background: var(--commons-card) !important;
+    border-top: 1px solid var(--commons-line) !important;
+  }
+  .ix-commons-bridge .ix-mobile-nav-item {
+    color: var(--commons-muted) !important;
+    border-radius: var(--commons-radius-control) !important;
+  }
+  .ix-commons-bridge .ix-mobile-nav-item[aria-current="page"] {
+    color: var(--commons-link) !important;
+    background: var(--commons-wash) !important;
+  }
+  .ix-commons-bridge .ix-mobile-sheet {
+    background: var(--commons-card) !important;
+    color: var(--commons-ink) !important;
+    border: 1px solid var(--commons-line) !important;
+    border-radius: var(--commons-radius-card) !important;
+  }
+  .ix-commons-bridge footer {
+    background: var(--commons-card) !important;
+    color: var(--commons-muted) !important;
+    border-top: 1px solid var(--commons-line) !important;
+  }
+  .ix-commons-bridge footer :is(p, span, a, button, h2, h3) {
+    color: var(--commons-muted) !important;
+  }
+  .commons-landing {
+    min-height: 100vh !important;
+    background: transparent !important;
+    color: var(--commons-ink) !important;
+    font-family: "Inter", sans-serif !important;
+  }
+  .commons-landing header {
+    max-width: 1200px !important;
+    margin: auto !important;
+    padding: 24px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    gap: 20px !important;
+    border-bottom: 1px solid var(--commons-line) !important;
+  }
+  .commons-landing header > a {
+    color: var(--commons-ink) !important;
+    font:
+      700 26px "Bricolage Grotesque",
+      sans-serif !important;
+    text-decoration: none !important;
+  }
+  .commons-landing nav {
+    display: flex !important;
+    align-items: center !important;
+    gap: 20px !important;
+  }
+  .commons-landing nav a {
+    font-size: 13px !important;
+    color: var(--commons-link) !important;
+    text-decoration: none !important;
+  }
+  .commons-landing-hero {
+    max-width: 1120px !important;
+    margin: auto !important;
+    padding: 90px 28px !important;
+    display: grid !important;
+    grid-template-columns: 1.2fr 1fr !important;
+    gap: 60px !important;
+    align-items: center !important;
+  }
+  .commons-landing h1 {
+    font-size: 64px !important;
+    letter-spacing: 0 !important;
+    margin: 20px 0 !important;
+  }
+  .commons-landing-hero > div > p {
+    font-size: 17px !important;
+    line-height: 1.7 !important;
+    color: var(--commons-muted) !important;
+    max-width: 500px !important;
+  }
+  .commons-landing-actions {
+    display: flex !important;
+    gap: 18px !important;
+    align-items: center !important;
+    margin-top: 28px !important;
+  }
+  .commons-landing-actions a:not(.commons-primary) {
+    color: var(--commons-link) !important;
+    font-size: 14px !important;
+  }
+  .commons-landing-features {
+    max-width: 1120px !important;
+    margin: auto !important;
+    padding: 0 28px 80px !important;
+    display: grid !important;
+    grid-template-columns: repeat(3, 1fr) !important;
+    gap: 20px !important;
+  }
+  body:has(.ix-commons-bridge) :is(.ask-scroll-caliper, .ask-scroll-caliper-bottom-scale) {
+    display: none !important;
+  }
+  .ix-commons-bridge .ask-dock-fab {
+    background: #2f4be0 !important;
+    border: 1px solid #2f4be0 !important;
+    color: #fff !important;
+    border-radius: 999px !important;
+  }
+  .ix-commons-bridge .ask-dock,
+  .ix-commons-bridge .ask-dock :is(header, .ask-dock-log, .ask-dock-openers, .ask-dock-input) {
+    background: #15171c !important;
+    color: #fff !important;
+    border-color: #3d414b !important;
+    border-radius: 14px !important;
+  }
+  .ix-commons-bridge .ask-dock :is(p, span, button, strong) {
+    color: #ecedf1 !important;
+  }
+  .ix-commons-bridge .ask-dock :is(input, textarea, .ask-dock-turn) {
+    background: #262931 !important;
+    color: #fff !important;
+    border: 1px solid #3d414b !important;
+    border-radius: 12px !important;
+  }
+  .ix-commons-bridge .appearance-switcher input {
+    accent-color: #2f4be0 !important;
+  }
+  .commons-footer {
+    max-width: 1184px !important;
+    margin: 0 auto !important;
+    padding: 28px !important;
+    display: flex !important;
+    align-items: center !important;
+    gap: 20px !important;
+    justify-content: space-between !important;
+    background: transparent !important;
+    border-top: 1px solid var(--commons-line) !important;
+    font-size: 12px !important;
+    color: var(--commons-muted) !important;
+  }
+  .commons-footer button {
+    background: none !important;
+    color: var(--commons-link) !important;
+    border: 0 !important;
+  }
+  .ix-commons-bridge .appearance-liquid-toggle {
+    background: var(--commons-line) !important;
+    border: 0 !important;
+    border-radius: 999px !important;
+    width: 38px !important;
+    height: 24px !important;
+    padding: 3px !important;
+  }
+  .ix-commons-bridge .appearance-liquid-toggle[data-state="checked"] {
+    background: #2f4be0 !important;
+  }
+  .ix-commons-bridge .appearance-liquid-toggle__thumb {
+    background: #fff !important;
+    border: 0 !important;
+    border-radius: 50% !important;
+    height: 18px !important;
+    width: 18px !important;
+    box-shadow: 0 1px 4px #0002 !important;
+  }
+  .ix-commons-bridge .stencil-intro-submit {
+    background: #2f4be0 !important;
+    color: #fff !important;
+    border: 0 !important;
+    border-radius: var(--commons-radius-control) !important;
+  }
+  .ix-commons-bridge .commons-profile {
+    max-width: 1020px !important;
+    margin: auto !important;
+    padding: 32px 20px !important;
+  }
+  .ix-commons-bridge .commons-back {
+    display: flex !important;
+    align-items: center !important;
+    gap: 8px !important;
+    background: none !important;
+    border: 0 !important;
+    padding: 8px 0 24px !important;
+    font-size: 13px !important;
+    color: var(--commons-link) !important;
+  }
+  .ix-commons-bridge .commons-profile-heading {
+    padding: 28px !important;
+    gap: 18px !important;
+  }
+  .ix-commons-bridge .commons-profile-heading .commons-avatar {
+    width: 70px !important;
+    height: 70px !important;
+    flex-basis: 70px !important;
+    font-size: 20px !important;
+  }
+  .ix-commons-bridge .commons-profile h1 {
+    display: flex !important;
+    align-items: center !important;
+    gap: 10px !important;
+    font-size: 32px !important;
+    margin: 8px 0 !important;
+  }
+  .ix-commons-bridge .commons-profile h2 {
+    font-size: 23px !important;
+  }
+  .ix-commons-bridge .commons-profile h3 {
+    font-size: 17px !important;
+  }
+  .ix-commons-bridge .commons-profile-meta,
+  .ix-commons-bridge .commons-profile-actions,
+  .ix-commons-bridge .commons-profile-tags {
+    display: flex !important;
+    align-items: center !important;
+    gap: 12px !important;
+    flex-wrap: wrap !important;
+  }
+  .ix-commons-bridge .commons-profile-meta > span {
+    display: flex !important;
+    align-items: center !important;
+    gap: 6px !important;
+    color: var(--commons-muted) !important;
+    font-size: 13px !important;
+  }
+  .ix-commons-bridge .commons-profile-grid {
+    display: grid !important;
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 20px !important;
+    margin-top: 20px !important;
+    background: transparent !important;
+  }
+  .ix-commons-bridge .commons-profile :is(p, small, blockquote) {
+    color: var(--commons-muted) !important;
+    line-height: 1.7 !important;
+  }
+  .ix-commons-bridge .commons-profile .commons-primary {
+    background: #2f4be0 !important;
+    color: #fff !important;
+  }
+  .ix-commons-bridge .commons-profile .commons-avatar {
+    background: var(--commons-wash) !important;
+    color: var(--commons-link) !important;
+  }
+  .ix-commons-bridge .commons-profile a {
+    color: var(--commons-link) !important;
+    font-size: 13px !important;
+  }
+  .ix-commons-bridge .commons-profile .commons-row > span {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: start !important;
+  }
+  @media (max-width: 767px) {
+    .ix-commons-bridge .commons-profile-grid {
+      grid-template-columns: 1fr !important;
+    }
+    .ix-commons-bridge .commons-profile h1 {
+      font-size: 26px !important;
+    }
+    .ix-commons-bridge .commons-profile-heading {
+      padding: 20px !important;
+    }
+  }
+  @media (max-width: 1050px) {
+    .ix-commons-bridge .ix-desktop-nav-link {
+      padding: 8px !important;
+      font-size: 12px !important;
+    }
+    .ix-commons-bridge .ix-global-header-inner {
+      gap: 12px !important;
+    }
+    .ix-commons-bridge .commons-wordmark {
+      font-size: 20px !important;
+    }
+  }
+  @media (max-width: 900px) {
+    .commons-columns {
+      grid-template-columns: minmax(0, 1fr) !important;
+    }
+    .commons-rail {
+      display: grid !important;
+      grid-template-columns: 1fr 1fr !important;
+    }
+    .commons-rail > :first-child {
+      grid-column: 1/-1 !important;
+    }
+    .commons-landing-hero {
+      gap: 24px !important;
+    }
+  }
+  @media (max-width: 767px) {
+    .ix-commons-bridge .ix-global-header {
+      padding: 8px 14px !important;
+    }
+    .ix-commons-bridge .ix-desktop-main-nav {
+      display: none !important;
+    }
+    .ix-commons-bridge .ix-global-header-inner {
+      min-height: 44px !important;
+    }
+    .commons-home {
+      padding: 26px 16px !important;
+    }
+    .commons-welcome {
+      align-items: start !important;
+      flex-direction: column !important;
+      gap: 12px !important;
+      margin-bottom: 22px !important;
+    }
+    .commons-welcome h1 {
+      font-size: 32px !important;
+    }
+    .commons-card {
+      padding: 18px !important;
+    }
+    .commons-person .commons-pill {
+      display: none !important;
+    }
+    .commons-rail {
+      display: flex !important;
+    }
+    .commons-composer > div {
+      flex-wrap: wrap !important;
+    }
+    .commons-section-title h2 {
+      font-size: 20px !important;
+    }
+    .commons-landing-hero {
+      grid-template-columns: 1fr !important;
+      padding: 48px 20px !important;
+    }
+    .commons-landing-features {
+      grid-template-columns: 1fr !important;
+      padding: 0 20px 40px !important;
+    }
+    .commons-landing header {
+      padding: 18px !important;
+    }
+    .commons-landing nav {
+      gap: 10px !important;
+    }
+    .commons-post-actions {
+      gap: 10px !important;
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .ix-commons-bridge * {
+      animation: none !important;
+      transition: none !important;
+      scroll-behavior: auto !important;
+    }
+  }
+}
+
+@layer commons {
+  html, body { background: var(--commons-bg) !important; color: var(--commons-ink) !important; }
+  body::before { display: none !important; }
+  body { font-family: var(--sans) !important; }
+  :is(.auth-page,.lv,.ael,.app-shell,.ask-os,.ix-root,.absolute-ledger-shell) {
+    color: var(--commons-ink) !important;
+    background-color: var(--commons-bg) !important;
+    background-image: none !important;
+    font-family: var(--sans) !important;
+    min-width: 0;
+  }
+  :is(.ix-root,.auth-page,.lv,.ael,.app-shell,.ask-os) :is(h1,h2,h3,h4,.font-serif-editorial,.serif-heading),
+  body :is([role="dialog"],.modal) :is(h1,h2,h3,h4) {
+    font-family: var(--serif) !important; letter-spacing: 0 !important;
+    text-transform: none !important; color: var(--commons-ink) !important;
+  }
+  :is(.ix-root,.auth-page,.lv,.ael,.app-shell,.ask-os) :is(button,input,textarea,select,.btn),
+  body :is([role="dialog"],[role="menu"],[role="listbox"],[data-radix-popper-content-wrapper]) {
+    font-family: var(--sans) !important; letter-spacing: 0 !important; text-transform: none !important;
+  }
+  :is(.ix-root,.auth-page,.lv,.ael,.app-shell,.ask-os) :is(button,.btn,input:not([type="checkbox"]):not([type="radio"]):not([type="range"]),textarea,select),
+  body :is([role="dialog"],[data-radix-popper-content-wrapper]) :is(button,input:not([type="checkbox"]):not([type="radio"]):not([type="range"]),textarea,select) {
+    border-radius: var(--commons-radius-control) !important;
+  }
+  :is(.ix-root,.auth-page,.lv,.ael,.app-shell,.ask-os) :is(input,textarea,select) {
+    color: var(--commons-ink) !important; border-color: var(--commons-line) !important;
+    background-color: var(--commons-bg) !important; accent-color: var(--commons-blue) !important;
+  }
+  :is(.ix-root,.auth-page,.lv,.ael,.app-shell,.ask-os) :is(input,textarea)::placeholder { color: var(--commons-muted) !important; }
+  :is(.ix-root,.auth-page,.lv,.ael,.app-shell,.ask-os) :is(button,a,input,textarea,select):focus-visible,
+  body [data-radix-popper-content-wrapper] :focus-visible { outline-color: var(--commons-blue) !important; }
+  /* Real card surfaces, not every layout div or text span. */
+  :is(.ix-root,.auth-page,.lv,.ael,.app-shell,.ask-os) :is(.commons-card,.commons-butler,.commons-caught-up,.ledger-ui-stat,.ledger-ui-panel,.ledger-panel,.ledger-metric,.ledger-advanced-work,.ledger-workspace-modules,.ledger-workspace-detail,.module,.feature-tile,.board-tile,.member-tile,.og-tile,.deck-card,.sys-tile,.home-board-tile,.home-feed-widget,.auth-card,.auth-form,.lv-auth-card,.msg-hero,.msg-request-section,.msg-next-step,.msg-brief-panel,.crm-card,.crm-panel,.pipeline-card,.prefs-section,.settings-card) {
+    border-radius: var(--commons-radius-card) !important;
+    border-color: var(--commons-line) !important; box-shadow: var(--commons-shadow) !important;
+  }
+  :is(.ix-root,.auth-page,.lv,.ael,.app-shell,.ask-os) :is(.module,.feature-tile,.board-tile,.member-tile,.og-tile,.deck-card,.sys-tile,.home-board-tile,.auth-card,.auth-form,.lv-auth-card,.msg-hero,.msg-request-section,.crm-card,.crm-panel,.pipeline-card,.prefs-section,.settings-card) {
+    background: var(--commons-card) !important; color: var(--commons-ink) !important;
+  }
+  .ix-commons-bridge .arch-product-main :is([class*="bg-[#"],[class*="bg-white"],[class*="bg-gradient"]):not(.commons-butler):not(.commons-caught-up):not(.commons-primary):not(.bg-primary):not(.bridge-primary-action):not(.msg-primary-action):not([role="alert"]) {
+    background-color: var(--commons-card) !important; background-image: none !important;
+    border-color: var(--commons-line) !important;
+  }
+  .ix-commons-bridge .arch-product-main :is([class*="rounded-xl"],[class*="rounded-2xl"],[class*="rounded-lg"].border):not(button):not(input):not(textarea):not(select):not([class*="rounded-full"]) {
+    border-radius: var(--commons-radius-card) !important;
+  }
+  .ix-commons-bridge .arch-product-main :is([class*="shadow-"],[class*="shadow["]) { box-shadow: var(--commons-shadow) !important; }
+  /* Legacy utility text is converted by role, never a blanket div/span rule. */
+  .ix-commons-bridge :is([class*="text-[#F"],[class*="text-[#f"],.text-white,.text-black):not(.commons-primary):not(.bg-primary):not(.msg-primary-action):not(.bridge-primary-action) { color: var(--commons-ink) !important; }
+  .ix-commons-bridge :is([class*="text-[#9"],[class*="text-[#6"],[class*="text-[#CBD"],[class*="text-[#cbd"]) { color: var(--commons-muted) !important; }
+  .ix-commons-bridge :is([class*="text-[#ff3131]"],[class*="text-[#c4161c]"],[class*="text-[#ff6b61]"],.eyebrow,.folio) { color: var(--commons-link) !important; }
+  .ix-commons-bridge :is(.ix-tools,.topbar,.workspace,.workspace-grid,.content,.ix-classic,.ledger-crm-body) { background: var(--commons-bg) !important; color: var(--commons-ink) !important; min-width: 0 !important; }
+  .ix-commons-bridge .ix-classic .absolute-ledger-shell { --ledger-sidebar-width: 0px !important; width: 100% !important; min-width: 0 !important; }
+  .ix-commons-bridge .ix-classic .absolute-ledger-shell > :is(.absolute-ledger-sidebar,.social-topnav) { display: none !important; }
+  .ix-commons-bridge .ix-classic .absolute-ledger-shell > .workspace { margin-left: 0 !important; width: 100% !important; }
+  .ix-commons-bridge .ix-classic .content { padding: 28px !important; max-width: 1280px !important; margin: auto !important; }
+  .ix-commons-bridge .ix-tools { display: flex; flex-wrap: wrap; gap: 8px; padding: 20px 28px !important; }
+  .ix-commons-bridge .ix-tools button { padding: 10px 14px !important; background: var(--commons-card) !important; color: var(--commons-muted) !important; border: 1px solid var(--commons-line) !important; }
+  .ix-commons-bridge .ix-tools button.on { background: var(--commons-wash) !important; color: var(--commons-link) !important; border-color: var(--commons-blue) !important; }
+  /* Overlays include Radix/React body portals and native workspace sheets. */
+  body :is([role="dialog"],.modal,.stencil-intro-request-panel,.global-search-panel,.ledger-native-palette,.capability-workspace,.quick-note-panel,.notifications-panel) {
+    background: var(--commons-card) !important; color: var(--commons-ink) !important;
+    border: 1px solid var(--commons-line) !important; border-radius: var(--commons-radius-dialog) !important;
+    box-shadow: var(--commons-dialog-shadow) !important;
+  }
+  body :is([role="menu"],[role="listbox"],[data-radix-popper-content-wrapper]>*,[data-sonner-toast],.topbar-dropmenu,.ix-desktop-more-menu,.ix-mobile-sheet,.quick-menu) {
+    background: var(--commons-card) !important; color: var(--commons-ink) !important;
+    border-color: var(--commons-line) !important; border-radius: var(--commons-radius-control) !important;
+    box-shadow: var(--commons-dialog-shadow) !important;
+  }
+  body :is([data-slot="dialog-overlay"],[data-slot="alert-dialog-overlay"],.modal-wrap,.ledger-native-palette-backdrop,.ix-mobile-sheet-backdrop) { background: var(--commons-scrim) !important; }
+  body :is([role="dialog"],.modal,.stencil-intro-request-panel) :is(input,textarea,select) { background: var(--commons-bg) !important; color: var(--commons-ink) !important; border-color: var(--commons-line) !important; }
+  /* Primary ink is intentionally white, including descendants and hover. */
+  body :is(.commons-primary,.bridge-primary-action,.msg-primary-action,.stencil-intro-submit,.ai-gradient-button,.btn.primary,.eh-primary,.tile-cta,.memory-cta,.ledger-action:not(.secondary),.ledger-ui-button.primary,.ael-btn-gold,.ael-nav-cta,[data-variant="default"],button.bg-primary,a.bg-primary) {
+    background: var(--commons-blue) !important; color: var(--commons-on-blue) !important;
+    -webkit-text-fill-color: var(--commons-on-blue) !important; border-color: var(--commons-blue) !important;
+    box-shadow: none !important; animation: none !important;
+  }
+  body :is(.commons-primary,.bridge-primary-action,.msg-primary-action,.stencil-intro-submit,.ai-gradient-button,.btn.primary,.eh-primary,.tile-cta,.memory-cta,.ledger-ui-button.primary,.bg-primary) :is(span,svg,strong) { color: inherit !important; -webkit-text-fill-color: inherit !important; }
+  body :is(.commons-primary,.bridge-primary-action,.msg-primary-action,.stencil-intro-submit,.ai-gradient-button,.btn.primary,.eh-primary,.tile-cta,.memory-cta,.ledger-ui-button.primary,.bg-primary):hover:not(:disabled) {
+    background: var(--commons-blue-hover) !important; color: var(--commons-on-blue) !important; border-color: var(--commons-blue-hover) !important; box-shadow: none !important;
+  }
+  .ix-root :is(button:not(:disabled),a[role="button"],.btn):hover { border-color: var(--commons-blue) !important; box-shadow: none !important; }
+  .ix-root :is(.rounded-full,.commons-pill,.commons-avatar,.appearance-liquid-toggle,.appearance-liquid-toggle__thumb,.ask-dock-fab,.ledger-native-avatar,.ledger-person-initial,.ledger-feed-initial) { border-radius: 999px !important; }
+  .ix-root .appearance-liquid-toggle { --liquid-rail: var(--commons-line); --liquid-knob: var(--commons-card); }
+  .ix-root .appearance-liquid-toggle:has(input:checked),.ix-root .appearance-liquid-toggle[data-state="checked"] { background: var(--commons-blue) !important; --liquid-rail: var(--commons-blue); }
+  .ix-root :is(.ask-intros-lockup__node--top,.ask-intros-lockup__rule-dot),.auth-page :is(.ask-intros-lockup__node--top,.ask-intros-lockup__rule-dot) { fill: var(--commons-blue) !important; }
+  .ix-root .ask-intros-lockup__rule,.auth-page .ask-intros-lockup__rule { stroke: var(--commons-blue) !important; }
+  @media(max-width:767px) {
+    .ix-commons-bridge .ix-classic .content { padding: 20px 16px 40px !important; }
+    .ix-commons-bridge .ix-tools { padding: 16px !important; flex-wrap: nowrap; overflow-x: auto; max-width: 100%; }
+    .ix-commons-bridge .ix-tools button { flex: none; }
+    .ix-commons-bridge .ix-mobile-sheet { border-radius: var(--commons-radius-dialog) !important; padding-bottom: max(20px,env(safe-area-inset-bottom)) !important; }
+    .commons-landing h1 { font-size: 40px !important; }
+  }
+}
+
+@layer commons {
+  .ix-commons-bridge .ix-classic .page-title { min-height: 0 !important; padding: 28px 0 !important; margin: 0 0 24px !important; }
+  .ix-commons-bridge :is(.ops-panel,.ops-stats>div,.fcrm-card,.deals-card,.deals-block,.deals-room,.preferences-layout,.preference-preview) {
+    background: var(--commons-card) !important; color: var(--commons-ink) !important;
+    border-color: var(--commons-line) !important; border-radius: var(--commons-radius-card) !important;
+    box-shadow: var(--commons-shadow) !important;
+  }
+  .ix-commons-bridge .ops-stats { gap: 16px !important; background: transparent !important; border: 0 !important; }
+  .ix-commons-bridge :is(.ops-stats strong,.fcrm-card b) { color: var(--commons-ink) !important; }
+  .ix-commons-bridge :is(.ops-note,.ops-stats small,.ops-panel p,.preference-preview>p,.preference-preview dd,.privacy-proof small) { color: var(--commons-muted) !important; }
+  .ix-commons-bridge :is(.ops-tabs,.crm-switch) button { background: var(--commons-card) !important; color: var(--commons-muted) !important; }
+  .ix-commons-bridge :is(.ops-tabs,.crm-switch) button.active { background: var(--commons-wash) !important; color: var(--commons-link) !important; }
+  .ix-commons-bridge .preferences-layout { overflow: hidden !important; }
+  .ix-commons-bridge .preview-initials { background: var(--commons-wash) !important; color: var(--commons-link) !important; border-radius: var(--commons-radius-card) !important; }
+  .auth-page :is(.auth-panel,.auth-visual,.auth-soon,.auth-invited) { background: var(--commons-card) !important; color: var(--commons-ink) !important; background-image: none !important; }
+  .auth-page .auth-visual { background: var(--commons-wash) !important; }
+  .auth-page .auth-visual::after { background: none !important; }
+  .auth-page .auth-visual-statement { font-family: var(--serif) !important; font-size: 48px !important; line-height: 1.15 !important; color: var(--commons-ink) !important; }
+  .auth-page :is(.auth-soon,.auth-invited) { border-radius: var(--commons-radius-card) !important; border-color: var(--commons-line) !important; }
+  .auth-page :is(.auth-soon>span,.auth-visual-statement i) { color: var(--commons-link) !important; }
+  .auth-page .auth-form { grid-template-columns: 1fr !important; background: transparent !important; box-shadow: none !important; }
+  .auth-page :is(.auth-lede,.auth-foot,.auth-proof span,.portrait-caption p) { color: var(--commons-muted) !important; }
+  body .appearance-liquid-toggle { --liquid-rail: var(--commons-line) !important; --liquid-knob: var(--commons-card) !important; }
+  body .appearance-liquid-toggle:has(input:checked) { --liquid-rail: var(--commons-blue) !important; }
+  body .appearance-liquid-toggle svg { fill: var(--liquid-knob) !important; }
+  body .btn { clip-path: none !important; }
+  body .ask-scroll-caliper { --caliper-accent:var(--commons-blue) !important; --caliper-ink:var(--commons-link) !important; }
+  .ix-commons-bridge :is(.font-mono,.msg-hero p,.msg-body,.ops-note) { font-family: var(--sans) !important; }
+}
+
+@layer commons {
+  /* Only the outer Commons shell owns navigation. The legacy tools stay mounted. */
+  .ix-commons-bridge .ix-classic .absolute-ledger-shell > :is(.absolute-ledger-sidebar,.social-topnav,.mobile-nav),
+  .ix-commons-bridge .ix-classic .absolute-ledger-shell > .workspace > .topbar { display: none !important; }
+  .ix-commons-bridge .ix-classic .absolute-ledger-shell,
+  .ix-commons-bridge .ix-classic .workspace { min-height: 0 !important; }
+  .ix-commons-bridge .ix-classic .workspace-grid { padding-bottom: 0 !important; }
+  .ix-commons-bridge .ix-classic .content { display: flex !important; flex-direction: column !important; gap: 24px !important; }
+  .commons-page-head { display: flex !important; justify-content: space-between !important; align-items: center !important; flex-wrap: wrap !important; gap: 16px !important; margin: 0 !important; padding: 0 0 20px !important; border-bottom: 1px solid var(--commons-line) !important; background: transparent !important; }
+  .commons-page-head h1 { font-size: 32px !important; margin: 6px 0 8px !important; }
+  .commons-page-head p { display: block !important; color: var(--commons-muted) !important; font-size: 14px !important; margin: 0 !important; line-height: 1.5 !important; }
+  body:has(.ix-commons-bridge) .cursor-glow { display: none !important; }
+  .ix-commons-bridge .memory-map-row { border: 0 !important; }
+  .ix-commons-bridge .memory-modules { display: grid !important; grid-template-columns: repeat(2,minmax(0,1fr)) !important; background: transparent !important; border: 0 !important; }
+  .ix-commons-bridge .memory-modules .mod:nth-child(4) { grid-column: auto !important; grid-row: auto !important; }
+  .ix-commons-bridge .memory-stage { overflow: hidden !important; }
+  .ix-commons-bridge .memory-graph { background-color: var(--commons-card) !important; background-image: linear-gradient(var(--commons-line) 1px,transparent 1px),linear-gradient(90deg,var(--commons-line) 1px,transparent 1px) !important; position: relative !important; top: auto !important; }
+  .ix-commons-bridge .graph-node { color: var(--commons-ink) !important; }
+  .ix-commons-bridge .graph-node>span { background: var(--commons-card) !important; color: var(--commons-ink) !important; }
+  .ix-commons-bridge :is(.graph-taxonomy span,.graph-live-status) { color: var(--commons-muted) !important; }
+  .ix-commons-bridge .graph-origin { background: var(--commons-blue) !important; color: var(--commons-on-blue) !important; }
+  .ix-commons-bridge .graph-taxonomy { flex-wrap: wrap !important; align-content: end !important; gap: 8px !important; }
+  .ix-commons-bridge .ix-desktop-more-trigger.is-active { background: var(--commons-wash) !important; color: var(--commons-link) !important; }
+  .ix-commons-bridge :is(.collision-card,.passport-module,.strategy-card,.ledger-workspace-detail,.ledger-workspace-modules) { background: var(--commons-card-material) !important; color: var(--commons-ink) !important; border: 1px solid var(--commons-line) !important; border-radius: var(--commons-radius-card) !important; box-shadow: var(--commons-shadow) !important; }
+  .ix-commons-bridge :is(.collision-confidence,.collision-card small,.collision-card p,.collision-card .confidence) { color: var(--commons-muted) !important; }
+  .ix-commons-bridge :is(.insight-collisions,.hub-panel,.ops) { background: transparent !important; border: 0 !important; }
+  .ix-commons-bridge .insight-collisions { padding: 0 !important; }
+  .ix-commons-bridge .ix-classic .content>.core-hub { margin-top: 0 !important; padding-top: 0 !important; }
+  body :is([role="dialog"],.modal,.stencil-intro-request-panel) :is(p,small,label,.text-muted-foreground) { color: var(--commons-muted) !important; }
+  .ix-commons-bridge :is(.memory-map-row,.memory-modules,.hub-prelude) { gap: 24px !important; margin: 0 !important; }
+  .ix-commons-bridge .memory-layout { display: block !important; background: transparent !important; border: 0 !important; }
+  .ix-commons-bridge :is(.memory-stage,.memory-quote-rail,.memory-changes,.mod,.insight-numbers>div,.insight-list>article,.evidence-line,.ledger-ui-panel,.ledger-panel,.ledger-metric,.commons-card,.commons-butler,.commons-caught-up,.feature-tile,.board-tile,.member-tile,.og-tile,.deck-card,.sys-tile,.home-board-tile,.crm-card,.crm-panel,.pipeline-card,.prefs-section,.settings-card,.ops-panel,.ops-stats>div,.fcrm-card,.deals-card,.deals-block,.deals-room),
+  :is(.auth-page,.lv) :is(.auth-card,.auth-soon,.auth-invited,.lv-auth-card),
+  body :is([role="dialog"],.modal,.stencil-intro-request-panel,.capability-workspace,.global-search-panel,.quick-note-panel,.notifications-panel) {
+    background: var(--commons-card-material) !important;
+    color: var(--commons-ink) !important; border: 1px solid var(--commons-line) !important;
+    border-radius: var(--commons-radius-card) !important; box-shadow: var(--commons-shadow) !important; min-width: 0 !important;
+  }
+  body :is([role="dialog"],.modal,.stencil-intro-request-panel,.capability-workspace,.global-search-panel,.quick-note-panel,.notifications-panel),
+  body .ix-root.ix-commons-bridge :is([role="dialog"],.modal,.stencil-intro-request-panel) { background: var(--commons-card-material) !important; border-radius: var(--commons-radius-dialog) !important; box-shadow: var(--commons-dialog-shadow) !important; }
+  .ix-commons-bridge :is(.insight-numbers,.insight-list) { background: transparent !important; border: 0 !important; gap: 16px !important; margin: 0 !important; }
+  .ix-commons-bridge .insight-numbers { display: grid !important; grid-template-columns: repeat(auto-fit,minmax(160px,1fr)) !important; }
+  .ix-commons-bridge .insight-list { display: grid !important; }
+  .ix-commons-bridge :is(.memory-quote-rail p,.memory-quote-rail blockquote,.learned-text p,.mod p,.insight-main p,.insight-main small,.insight-numbers small,.evidence-line p,.hub-prelude p,.learned-cell small,.learned-when,.memory-quote-rail dt) { color: var(--commons-muted) !important; }
+  .ix-commons-bridge :is(.memory-quote-rail dd,.learned-cell strong,.insight-numbers strong,.insight-confidence strong,.mod strong) { color: var(--commons-ink) !important; }
+  .ix-commons-bridge .insight-actions .dismiss { color: var(--commons-muted) !important; }
+  body .ix-root.ix-commons-bridge .stencil-intro-request-panel .stencil-intro-submit { background: var(--commons-blue) !important; color: var(--commons-on-blue) !important; -webkit-text-fill-color: var(--commons-on-blue) !important; border: 1px solid var(--commons-blue) !important; }
+  :root[data-theme="dark"] body .ix-root.ix-commons-bridge .stencil-intro-request-panel .stencil-intro-submit { background: var(--commons-button-material) !important; border-color: var(--commons-line) !important; }
+  .ix-commons-bridge .graph-node { opacity: 1 !important; }
+  .ix-commons-bridge .memory-changes { padding: 24px !important; scroll-margin-top: 100px; }
+  .ix-commons-bridge :is(.memory-cats,.hub-tabs) { display: flex !important; flex-wrap: wrap !important; gap: 8px !important; }
+  .ix-commons-bridge :is(.memory-cats,.hub-tabs) button { min-height: 40px !important; padding: 8px 14px !important; background: var(--commons-card) !important; color: var(--commons-muted) !important; border: 1px solid var(--commons-line) !important; }
+  .ix-commons-bridge :is(.memory-cats,.hub-tabs) button.active { color: var(--commons-link) !important; background: var(--commons-wash) !important; border-color: var(--commons-blue) !important; }
+  :root[data-theme="dark"] body :is(.commons-primary,.bridge-primary-action,.msg-primary-action,.stencil-intro-submit,.ai-gradient-button,.btn,.eh-primary,.tile-cta,.ledger-action,.ledger-ui-button,.ael-btn-gold,.ael-nav-cta,[data-variant="default"],button.bg-primary,a.bg-primary) {
+    background: var(--commons-button-material) !important; color: var(--commons-on-blue) !important;
+    -webkit-text-fill-color: var(--commons-on-blue) !important; border: 1px solid var(--commons-line) !important;
+    box-shadow: 0 5px 12px var(--commons-scrim), inset 0 1px 0 var(--commons-highlight) !important;
+  }
+  :root[data-theme="dark"] body :is(.commons-primary,.btn,.ai-gradient-button,.ledger-ui-button,.bridge-primary-action,.msg-primary-action,.stencil-intro-submit):hover:not(:disabled) { background: var(--commons-button-hover) !important; color: var(--commons-on-blue) !important; }
+  :root[data-theme="dark"] body :is(.commons-pill,.commons-mode,.ledger-intro-status,.ledger-directory-status,[data-slot="badge"],.ix-desktop-unread-count,[role="menu"],[role="listbox"],.ix-desktop-more-menu,.ix-mobile-sheet) { background: var(--commons-glass) !important; color: var(--commons-ink) !important; border-color: var(--commons-highlight) !important; backdrop-filter: blur(20px); }
+  @media(max-width:767px) {
+    .commons-page-head h1 { font-size: 28px !important; }
+    .ix-commons-bridge .memory-map-row { grid-template-columns: minmax(0,1fr) !important; }
+    .ix-commons-bridge .memory-changes { padding: 18px !important; }
+    .ix-commons-bridge .memory-legend { flex-wrap: wrap !important; }
+    .ix-commons-bridge .memory-modules { grid-template-columns: minmax(0,1fr) !important; }
+  }
+}
+
+@layer commons {
+  /* Crop the original square only at presentation time. No filters or redraws. */
+  body .official-logo {
+    display: block !important; position: relative; flex: none;
+    width: 194px !important; height: 112px !important; max-width: 100%;
+    overflow: hidden !important; border-radius: 14px; background: var(--logo-surface);
+    isolation: isolate; margin: 0 !important;
+  }
+  body .official-logo > img {
+    position: absolute !important; width: 120% !important; max-width: none !important;
+    height: auto !important; left: -10%; top: -54%; display: block;
+    object-fit: contain !important; filter: none !important; opacity: 1 !important;
+  }
+  body .official-logo--hero { width: 240px !important; height: 138px !important; }
+  body .official-logo--header {
+    width: 204px !important; height: 50px !important; display: flex !important;
+    align-items: center; gap: 4px; padding: 4px 7px;
+  }
+  body .official-logo-symbol, body .official-logo-lettering { position: relative; display: block; overflow: hidden; flex: none; }
+  body .official-logo-symbol { width: 42px; height: 38px; }
+  body .official-logo-lettering { width: 142px; height: 37px; }
+  body .official-logo-symbol img {
+    position: absolute; width: 169px !important; height: auto !important; max-width: none !important;
+    left: -61px; top: -43px; filter: none !important; opacity: 1 !important;
+  }
+  body .official-logo-lettering img {
+    position: absolute; width: 178px !important; height: auto !important; max-width: none !important;
+    left: -19px; top: -89px; filter: none !important; opacity: 1 !important;
+  }
+  body .official-logo-action { padding: 0 !important; height: auto !important; background: transparent !important; border: 0 !important; }
+  .ix-commons-bridge .ix-global-header-inner { gap: 16px !important; }
+  .auth-brand:has(.official-logo) { width: max-content; max-width: 100%; }
+  @media(max-width:767px) {
+    .ix-commons-bridge .ix-global-header-inner { gap: 8px !important; }
+    .ix-commons-bridge .ix-global-account-actions { gap: 4px !important; }
+    .ix-commons-bridge .official-logo--header { width: 170px !important; height: 44px !important; padding: 2px 4px; gap: 2px; }
+    .ix-commons-bridge .official-logo-symbol { width: 32px; height: 30px; }
+    .ix-commons-bridge .official-logo-symbol img { width: 130px !important; left: -48px; top: -33px; }
+    .ix-commons-bridge .official-logo-lettering { width: 128px; height: 34px; }
+    .ix-commons-bridge .official-logo-lettering img { width: 160px !important; left: -19px; top: -80px; }
+  }
+  /* Named framed surfaces only. Background layers stay behind text and actions;
+     no pseudo-element overlays, clipping, transforms or nested blur stacks. */
+  :root[data-theme] body :is(.commons-glass-tile,.commons-card,.commons-butler,.commons-caught-up,.commons-person-card,.meetings-card,.bridge-meeting-option,.meetings-new,.meeting-brief,.memory-stage,.memory-quote-rail,.memory-changes,.mod,.insight-numbers>div,.insight-list>article,.collision-card,.strategy-card,.passport-module,.ledger-workspace-detail,.ledger-ui-panel,.ledger-panel,.ledger-metric,.feature-tile,.board-tile,.member-tile,.og-tile,.deck-card,.sys-tile,.home-board-tile,.home-feed-widget,.crm-card,.crm-panel,.pipeline-card,.prefs-section,.settings-card,.ops-panel,.ops-stats>div,.fcrm-card,.deals-card,.deals-block,.deals-room,.auth-card,.auth-soon,.auth-invited,.lv-auth-card,.msg-request-section,.msg-next-step,.msg-brief-panel,[data-slot="card"],.commons-radar aside,.commons-radar .bg-card,[role="dialog"],.modal,.stencil-intro-request-panel,.capability-workspace,.global-search-panel,.quick-note-panel,.notifications-panel,.ix-mobile-sheet,.ix-desktop-more-menu) {
+    background-color: var(--commons-card) !important;
+    background-image: var(--glass-sweep), var(--glass-fallback) !important;
+    background-size: 260% 100%, 100% 100% !important;
+    background-position: var(--glass-sweep-x) 0, 0 0 !important;
+    background-repeat: no-repeat !important;
+    border: 1px solid var(--glass-edge) !important;
+    box-shadow: var(--glass-shadow) !important;
+    /* Keep existing radii and positioning for grids, draggable tiles and sheets. */
+    @supports (backdrop-filter: blur(1px)) {
+      background-color: transparent !important;
+      background-image: var(--glass-sweep), var(--glass-material) !important;
+      backdrop-filter: blur(10px);
+    }
+    /* Inner surfaces inherit the material, not a second expensive blur layer. */
+    & :is(.commons-card,.mod,[data-slot="card"],.crm-card,.crm-panel) { backdrop-filter: none !important; }
+    @media(hover:hover) and (pointer:fine) and (prefers-reduced-motion:no-preference) {
+      &:hover { animation: commons-glass-sweep 650ms ease-out 1 !important; }
+    }
+    @media(prefers-reduced-motion:no-preference) {
+      &:focus-within { animation: commons-glass-sweep 650ms ease-out 1 !important; }
+    }
+    @media(prefers-reduced-motion:reduce) {
+      animation: none !important; transition: none !important;
+      --glass-sweep-x: 90%; transform: none !important;
+    }
+  }
+  /* Restore paired ink on former inverse Home tiles when the glass is pearl. */
+  .ix-commons-bridge :is(.commons-butler,.commons-caught-up) { color: var(--commons-ink) !important; }
+  .ix-commons-bridge :is(.commons-butler,.commons-caught-up) :is(h2,strong,button) { color: var(--commons-ink) !important; }
+  .ix-commons-bridge :is(.commons-butler,.commons-caught-up) :is(p,small) { color: var(--commons-muted) !important; }
+  .ix-commons-bridge :is(.commons-butler,.commons-caught-up) .commons-primary { color: var(--commons-on-blue) !important; }
+  .commons-landing header { flex-wrap: wrap; }
+  .commons-landing header nav { flex-wrap: wrap; }
+  .commons-landing .commons-butler :is(h2,strong) { color: var(--commons-ink) !important; }
+  .commons-landing .commons-butler :is(p,small) { color: var(--commons-muted) !important; }
+}
+
+@layer commons {
+  body .site-ambient {
+    position: fixed !important; inset: 0 !important; z-index: 0 !important;
+    pointer-events: none !important; opacity: 1 !important; filter: none !important;
+    mix-blend-mode: normal !important; overflow: hidden;
+  }
+  body .ambient-effect { pointer-events: none !important; filter: none !important; }
+  body .site-ambient-connections { width: 100% !important; height: 100% !important; opacity: 1 !important; }
+  .ix-root.ix-commons-bridge, .commons-landing { position: relative; z-index: 1; }
+  .ix-commons-bridge .arch-product-main,
+  .ix-commons-bridge .arch-product-main > :not(.commons-home) { background: transparent !important; }
+  .ix-commons-bridge .commons-radar-canvas { isolation: isolate; }
+  .ix-commons-bridge .commons-radar-drift { position: absolute !important; inset: 0; width: 100%; height: 100%; z-index: 0; }
+  .ix-commons-bridge .commons-radar-people.bg-card {
+    position: relative !important; z-index: 1; background: transparent !important;
+    background-image: none !important; box-shadow: none !important;
+    backdrop-filter: none !important; border: 0 !important;
+  }
+}
+
+/* Messages typography: only named messaging surfaces, no global text overrides.
+   Use Commons' important layer so legacy architectural fonts cannot win. */
+@layer commons {
+  body .ix-root :is(.ix-messages,.ix-live-messages),
+  body .msg-dialog {
+    font-family: var(--sans) !important;
+    font-size: 16px;
+    line-height: 1.6;
+    font-weight: 400;
+    letter-spacing: 0 !important;
+    text-transform: none !important;
+  }
+  body :is(.ix-messages,.ix-live-messages,.msg-dialog) :is(.msg-heading,.msg-section-heading,.msg-hero-kicker,.msg-hero-stat-label) {
+    font-family: var(--sans) !important;
+    line-height: 1.35 !important;
+    font-weight: 500 !important;
+    letter-spacing: 0 !important;
+    text-transform: none !important;
+  }
+  body .ix-messages :is(.msg-hero-kicker,.msg-hero-stat-label) { font-size: 13px !important; }
+  body .ix-messages .msg-hero h1 { font-size: 22px !important; }
+  body :is(.ix-messages,.ix-live-messages,.msg-dialog) :is(.msg-body-text,.msg-composer) {
+    font-family: var(--sans) !important;
+    font-size: 16px !important;
+    line-height: 1.6 !important;
+    font-weight: 400 !important;
+    letter-spacing: 0 !important;
+    text-transform: none !important;
+  }
+  body :is(.ix-messages,.ix-live-messages) .msg-thread-header {
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+  body :is(.ix-messages,.ix-live-messages) .msg-thread-header > div { min-width: 0; }
+  body .msg-dialog { max-height: calc(100dvh - 32px); overflow-y: auto; }
+  @media (max-width: 767px) {
+    body .ix-messages .msg-thread-header > div:first-child { flex: 1 1 100%; }
+  }
+}

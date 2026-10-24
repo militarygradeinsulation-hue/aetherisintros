@@ -1,4 +1,4 @@
-/* Supplied Bridge material and shape tokens; never active in Business. */
+/* Generated from unchanged Bridge source; only selectors and layer namespace are scoped. */
 
 @layer bridge-social-reference {
   :root[data-experience="social"] {

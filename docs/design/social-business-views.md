@@ -11,3 +11,16 @@ The original Bridge logo is bundled at `/ask-intros-bridge-logo.jpg` and only CS
 ## Validation
 
 Run `npx tsc --noEmit -p .`, `npx vitest run` and `npm run build`. The retained `scripts/experience-check/run.mjs` checks the Commons composition, shared draft values and DOM preservation across views, directory search retention, message drafts, light/dark controls, saved experience and mobile overflow. Production persistence still requires a permitted authenticated test account; demo checks do not establish production database readiness.
+
+
+## Unmodified Bridge presentation source
+
+The `src/bridge-reference` snapshot copies the supplied `aetheris-bridge.zip` presentation files byte for byte. `manifest.json` pins their SHA-256 digests; `scripts/bridge-reference/check.mjs` fails if any copied file changes. Home, People, profile, navigation, portrait and logo render directly from this snapshot. Do not edit these files to implement host integration.
+
+The original Commons stylesheet, fonts and root theme stylesheet are retained unchanged. `scripts/bridge-reference/styles.mjs` generates Social-only selector scopes and a layer namespace from those originals. No design declarations are rewritten. Business uses its original stylesheet. The previous approximate Social rules have been removed.
+
+Canonical member types/data are re-exported at the snapshot boundary. Existing callbacks still own posts, introductions and connections. The live feed uses a single persistent portal, so moving its host between presentations or hiding Bridge's Posts tab never recreates the feed controller. The original Bridge navigation is mounted beside the host's separate view switch. Vite resolves the original logo implementation and its original asset URL within the snapshot.
+
+Original Bridge demo draft and directory filters remain internal to their original components. Each view retains its own unsent demo draft and filters when toggling views; demo drafts and search input text no longer mirror between the two presentations. Shared records and submitted actions still use the canonical handlers. This is an intentional consequence of retaining the original component code.
+
+This is not a byte-identical copy of the entire Bridge application: host controllers, other workspaces, authentication, the view switch and the feed integration remain Ask Intros code. Source equality checks apply exactly to the files listed in the manifest.

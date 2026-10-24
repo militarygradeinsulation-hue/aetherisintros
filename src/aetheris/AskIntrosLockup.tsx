@@ -2,7 +2,7 @@ import { AskIntrosMark } from '@/aetheris/AskIntrosMark'
 import { useId } from 'react'
 
 type AskIntrosLockupProps = {
-  variant?: 'compact' | 'hero'
+  variant?: 'compact' | 'hero' | 'header'
   className?: string
 }
 

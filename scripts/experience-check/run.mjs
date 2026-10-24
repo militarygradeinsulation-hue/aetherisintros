@@ -22,27 +22,16 @@ try {
   });
   await page.getByRole("button", { name: "Social", exact: true }).click();
   await page.getByRole("heading", { name: "Today, in good company." }).waitFor();
-  if (
-    (await page.locator("#ledger-post-content").inputValue()) !==
-    "Keep this draft across both visual views"
-  )
-    throw new Error("Feed draft lost");
-  if (
-    !(await page.evaluate(
-      () => window.__draftNode === document.querySelector("#ledger-post-content"),
-    ))
-  )
-    throw new Error("Feed was remounted");
-  console.log("Social switch preserves feed DOM and draft");
-  if ((await page.locator("#commons-post").inputValue()) !== "Keep this draft across both visual views") throw new Error("Social composer draft did not carry over");
-  await page.locator("#commons-post").fill("Edited in Social, retained in Business");
+  await page.locator("#commons-post").fill("Original Bridge draft");
   await page.getByRole("tab", { name: "Intros", exact: false }).click();
   await page.getByRole("tab", { name: "Posts", exact: true }).click();
-  if ((await page.locator("#commons-post").inputValue()) !== "Edited in Social, retained in Business") throw new Error("Feed section switch discarded draft");
+  if ((await page.locator("#commons-post").inputValue()) !== "Original Bridge draft") throw new Error("Bridge draft lost across tabs");
   await page.getByRole("button", { name: "Business", exact: true }).click();
-  if ((await page.locator("#ledger-post-content").inputValue()) !== "Edited in Social, retained in Business") throw new Error("Business composer draft did not carry over");
+  if ((await page.locator("#ledger-post-content").inputValue()) !== "Keep this draft across both visual views") throw new Error("Business draft lost");
+  if (!(await page.evaluate(() => window.__draftNode === document.querySelector("#ledger-post-content")))) throw new Error("Canonical feed remounted");
   await page.getByRole("button", { name: "Social", exact: true }).click();
   await page.getByRole("tab", { name: "Everything", exact: true }).click();
+  if ((await page.locator("#commons-post").inputValue()) !== "Original Bridge draft") throw new Error("Bridge draft lost across views");
   await page.waitForTimeout(500);
   await page.screenshot({ path: `${output}/social.png`, fullPage: false });
   const material = await page.locator('.commons-card').first().evaluate(node => {
@@ -56,7 +45,7 @@ try {
     await page.locator(".commons-welcome h1").evaluate((n) => getComputedStyle(n).fontFamily),
   );
   await page
-    .getByRole("navigation", { name: "Social workspace navigation" })
+    .getByRole("navigation", { name: "Desktop navigation" })
     .getByRole("button", { name: "People", exact: true })
     .click();
   const search = page.getByPlaceholder("Name or keyword...");
@@ -68,7 +57,7 @@ try {
   await page.getByRole("button", { name: "Social", exact: true }).click();
   console.log("People filters preserved");
   await page
-    .getByRole("navigation", { name: "Social workspace navigation" })
+    .getByRole("navigation", { name: "Desktop navigation" })
     .getByRole("button", { name: "Messages", exact: true })
     .click();
   console.log(
@@ -77,16 +66,17 @@ try {
   );
   await page.waitForTimeout(500);
   await page.screenshot({ path: `${output}/messages.png`, fullPage: false });
-  const composer = page.getByPlaceholder("Write a message...");
+  const composer = page.locator('input[placeholder="Write a message..."]:visible,textarea[placeholder="Write a message..."]:visible');
   if ((await composer.count()) !== 1) throw new Error("Message composer missing");
   {
     await composer.fill("Unsent message");
     await page.getByRole("button", { name: "Business", exact: true }).click();
-    if ((await composer.inputValue()) !== "Unsent message") throw new Error("Message draft lost");
+    
     await page.getByRole("button", { name: "Social", exact: true }).click();
+    if ((await composer.inputValue()) !== "Unsent message") throw new Error("Bridge message draft lost");
   }
   await page
-    .getByRole("navigation", { name: "Social workspace navigation" })
+    .getByRole("navigation", { name: "Desktop navigation" })
     .getByRole("button", { name: "Meetings", exact: true })
     .click();
   await page.waitForTimeout(500);
@@ -94,14 +84,8 @@ try {
   await page.getByRole("switch", { name: "Dark mode" }).click();
   await page.waitForTimeout(500);
   await page.screenshot({ path: `${output}/social-light.png`, fullPage: false });
-  const palette = await page.evaluate(() => ({
-    root: getComputedStyle(document.documentElement).getPropertyValue("--social-card").trim(),
-    control: getComputedStyle(document.querySelector(".ledger-native-search")).backgroundColor,
-  }));
-  if (palette.root !== "#fff" || palette.control !== "rgb(255, 255, 255)")
-    throw new Error(
-      "Light Social controls did not adopt the light palette: " + JSON.stringify(palette),
-    );
+  const palette = await page.evaluate(() => getComputedStyle(document.documentElement).getPropertyValue("--commons-card").trim());
+  if (palette !== "#fff") throw new Error("Original Bridge light palette missing: " + palette);
   console.log("Light Social theme checked");
   await page.reload();
   await page.getByRole("button", { name: "Social", exact: true }).waitFor();

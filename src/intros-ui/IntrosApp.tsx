@@ -1,3 +1,6 @@
+import { BridgeIntroductions } from './experience/BridgeIntroductions';
+import { MessagesView as OriginalMessagesView } from '../bridge-reference/src/intros-ui/views/MessagesView';
+import { BridgeNewsTicker } from './experience/BridgeNewsTicker';
 import { useExperience } from './experience/useExperience';
 import './experience/experience.css';
 import './experience/bridge-social-tokens.css';
@@ -352,7 +355,7 @@ export default function App({ mode = 'demo', executiveAction, initialPage, initi
           }}/> : undefined}
       >
       <main className="flex-1 arch-product-main" data-arch-page={activePage}>
-        <NewsTicker social={experience === 'social'} onOpenNews={() => handleNavigate('news')} />
+        {experience === 'social' ? <BridgeNewsTicker onOpen={() => handleNavigate('news')}/> : <NewsTicker onOpenNews={() => handleNavigate('news')}/>} 
         {activePage === 'home' && (
           <LedgerDashboard
             requests={introRequests} me={me} onReview={setReviewIntroRequest}
@@ -404,7 +407,8 @@ export default function App({ mode = 'demo', executiveAction, initialPage, initi
             />
           </>
         )}
-        {activePage === 'intros' && (
+        {activePage === 'intros' && experience === 'social' && <BridgeIntroductions mode={mode} members={members} introRequests={introRequests} handleNavigate={handleNavigate} setRequestIntroTarget={setRequestIntroTarget} setReviewIntroRequest={setReviewIntroRequest} handleDismissIntroRequest={handleDismissIntroRequest}/>}
+        {activePage === 'intros' && experience !== 'social' && (
           <LedgerIntroductions
             requests={introRequests}
             members={members}
@@ -444,7 +448,7 @@ export default function App({ mode = 'demo', executiveAction, initialPage, initi
 
         {mode === 'live' && activePage === 'messages' && <LiveMessagesView onOpenWorkspaces={() => { setClassicPage('workspaces'); handleNavigate('workspace'); }} />}
         {mode !== 'live' && activePage === 'messages' && (
-          <MessagesView
+          <><div hidden={experience !== 'social'}>          <OriginalMessagesView
             conversations={conversations}
             introRequests={introRequests}
             onNavigate={handleNavigate}
@@ -454,7 +458,17 @@ export default function App({ mode = 'demo', executiveAction, initialPage, initi
               setScheduleMeetingTarget({ name, title })
             }
             onSendMessage={handleSendMessage}
-          />
+          /></div><div hidden={experience === 'social'}>          <MessagesView
+            conversations={conversations}
+            introRequests={introRequests}
+            onNavigate={handleNavigate}
+            onReviewIntroRequest={(req) => setReviewIntroRequest(req)}
+            onDismissIntroRequest={handleDismissIntroRequest}
+            onScheduleMeeting={(name, title) =>
+              setScheduleMeetingTarget({ name, title })
+            }
+            onSendMessage={handleSendMessage}
+          /></div></>
         )}
 
         {activePage === 'insights' && (
