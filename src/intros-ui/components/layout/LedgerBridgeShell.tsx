@@ -6,6 +6,7 @@ import type { ExperienceView } from '../../experience/preference';
  */
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import './ledger-bridge-shell.css';
+import './mobile-workspace.css';
 import { MemberThumbnail } from '../shared/MemberThumbnail';
 import './raised-surfaces.css';
 import './command-surfaces.css';
@@ -160,6 +161,10 @@ export function LedgerBridgeShell({
       <aside className="ledger-native-mobile-sidebar" aria-label="Mobile workspace sidebar">
         <div className="ledger-native-brand"><span className="ledger-native-logo"><span aria-hidden="true" className="ledger-ai-mono"><span>A</span><span>I</span></span></span><strong>ASK INTROS</strong>
           <button type="button" aria-label="Close navigation" onClick={() => setDrawerOpen(false)}><X size={20}/></button>
+        </div>
+        <div className="ledger-mobile-view-choice">
+          <span>Workspace view</span>
+          <ExperienceSwitch value={experience} onChange={onExperienceChange}/>
         </div>
         <Nav mobile />
         <div className="ledger-native-mobile-account" aria-label="Account options">

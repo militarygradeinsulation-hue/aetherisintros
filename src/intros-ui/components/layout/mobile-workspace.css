@@ -1,0 +1,43 @@
+/* One phone scroll surface: the toolbar scrolls away with the page. Keep the
+   thumb navigation compact and reserve its safe area below the final action. */
+.ledger-mobile-view-choice {padding:12px 16px;flex:none}
+.ledger-mobile-view-choice > span {display:block;margin-bottom:8px;font:600 12px/1.4 system-ui,sans-serif;color:var(--ledger-crm-muted)}
+.ledger-mobile-view-choice .experience-switch {width:100%}
+.ledger-mobile-view-choice .experience-switch button {flex:1}
+@layer social-experience {
+  @media(max-width:720px) {
+    :root body .ix-root.ledger-native-app .ledger-crm-shell {
+      height:100dvh!important;min-height:0!important;overflow-y:auto!important;
+      overscroll-behavior-y:contain;-webkit-overflow-scrolling:touch;
+    }
+    :root body .ix-root.ledger-native-app .ledger-crm-shell > .ledger-crm-body {
+      height:auto!important;min-height:100%!important;overflow:visible!important;
+    }
+    :root body .ix-root.ledger-native-app .ledger-crm-shell .ledger-crm-topbar {
+      position:relative!important;top:auto!important;min-height:56px!important;
+      padding:6px 10px!important;flex-wrap:nowrap!important;border-radius:0!important;
+    }
+    :root body .ix-root.ledger-native-app .ledger-crm-topbar > .experience-switch {display:none!important}
+    :root body .ix-root.ledger-native-app .ledger-crm-shell .ledger-native-content {
+      flex:1 0 auto!important;overflow:visible!important;min-height:0!important;
+      padding:12px 10px calc(76px + env(safe-area-inset-bottom,0px))!important;
+    }
+    :root body .ix-root.ledger-native-app .ledger-crm-shell .ledger-native-bottom.ix-mobile-nav {
+      height:calc(52px + env(safe-area-inset-bottom,0px))!important;
+      min-height:0!important;padding:0 6px env(safe-area-inset-bottom,0px)!important;
+      border-radius:0!important;gap:0!important;
+    }
+    :root body .ix-root.ledger-native-app .ledger-crm-shell .ledger-native-bottom .ix-mobile-nav-item {
+      min-height:44px!important;height:52px!important;min-width:0!important;
+      padding:4px 2px!important;gap:3px!important;border:0!important;border-radius:0!important;
+      box-shadow:none!important;background:transparent!important;font:500 10px/1.2 system-ui,sans-serif!important;
+    }
+    :root body .ix-root.ledger-native-app .ledger-native-mobile-sidebar {
+      left:auto!important;right:0!important;width:min(90vw,340px)!important;
+      padding-bottom:env(safe-area-inset-bottom,0px)!important;
+    }
+    :root body .ix-root.ledger-native-app > .ix-assistant .ask-dock-fab {
+      bottom:calc(64px + env(safe-area-inset-bottom,0px))!important;
+    }
+  }
+}
