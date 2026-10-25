@@ -13,6 +13,25 @@ try {
  const page=await browser.newPage({viewport:{width:390,height:844}});const errors=[];page.on('pageerror',e=>errors.push(e.message));page.on('dialog',d=>d.accept());await page.goto('http://127.0.0.1:'+server.address().port);
  await page.getByLabel('Offer',{exact:true}).fill('CRM cleanup');await page.getByLabel('Target buyer',{exact:true}).fill('Founders');await page.getByRole('button',{name:'Generate content',exact:true}).click();await page.getByRole('status').filter({hasText:'Content generated'}).waitFor();
  if(!(await page.getByLabel('Editable draft').inputValue()).includes('Finished sales script'))throw Error('Generated output missing');
+
+ await page.getByRole('button',{name:'Review and post to Ask Intros',exact:true}).click();
+ const review=page.getByRole('dialog');
+ if(!await review.getByRole('button',{name:'Approve and publish now'}).isDisabled())throw Error('Posting allowed before approval');
+ await review.getByLabel('Post content',{exact:true}).fill('My reviewed post');
+ await review.getByRole('checkbox').check();
+ await review.getByLabel('Post content',{exact:true}).fill('My revised post');
+ if(await review.getByRole('checkbox').isChecked())throw Error('Editing did not reset approval');
+ await review.getByRole('checkbox').check();await page.evaluate(()=>window.failDelivery=true);
+ await review.getByRole('button',{name:'Approve and publish now'}).click();await review.getByRole('alert').filter({hasText:'Delivery unavailable'}).waitFor();
+ if(await review.getByLabel('Post content',{exact:true}).inputValue()!=='My revised post')throw Error('Failure lost review');
+ await page.evaluate(()=>window.failDelivery=false);await review.getByRole('button',{name:'Retry approved action'}).click();
+ await review.getByRole('status').filter({hasText:'Published to Ask Intros'}).waitFor();await review.getByRole('button',{name:'Done',exact:true}).click();
+ if(await page.getByLabel('Editable draft').inputValue()!=='Finished sales script for your offer')throw Error('Review overwrote original');
+ await page.getByRole('button',{name:'Review and add to calendar',exact:true}).click();
+ await review.getByLabel('Starts',{exact:true}).fill('2026-11-01T10:00');await review.getByLabel('Ends',{exact:true}).fill('2026-11-01T10:30');
+ await review.getByRole('checkbox').check();await review.getByRole('button',{name:'Add to my calendar',exact:true}).click();await review.getByRole('status').filter({hasText:'Added to your calendar'}).waitFor();await review.getByRole('button',{name:'Done',exact:true}).click();
+ const deliveries=await page.evaluate(()=>window.deliveries);if(deliveries.length!==2||deliveries[0].destination!=='post'||deliveries[1].destination!=='calendar')throw Error('Unexpected deliveries');
+ const saved=page.getByRole('region',{name:'Saved business documents'});if(await saved.getByRole('button',{name:'Review and edit'}).count()!==2)throw Error('Review copies not available');
  await page.getByRole('navigation',{name:'Business tools'}).getByRole('button',{name:/Website Review/}).click();await page.getByLabel('Website URL',{exact:true}).fill('https://company.com');await page.getByRole('button',{name:'Capture and analyze'}).click();await page.getByRole('status').filter({hasText:'Public page capture completed'}).waitFor();
  await page.evaluate(()=>window.failGeneration=true);await page.getByRole('button',{name:'Capture and analyze'}).click();await page.getByRole('alert').filter({hasText:'Capture blocked'}).waitFor();if(!(await page.getByLabel('Editable draft').inputValue()).includes('Captured https://company.com'))throw Error('Failed request erased output');
  await page.getByRole('navigation',{name:'Business tools'}).getByRole('button',{name:/Image Studio/}).click();await page.getByLabel('Subject',{exact:true}).fill('A business workshop');await page.getByLabel('Style',{exact:true}).fill('Editorial illustration');await page.getByRole('button',{name:'Generate image',exact:true}).click();await page.getByRole('alert').filter({hasText:'Image provider unavailable'}).waitFor();

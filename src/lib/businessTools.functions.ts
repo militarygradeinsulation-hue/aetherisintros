@@ -8,6 +8,13 @@ import { validateToolInput, type ToolDraft } from '@/features/business-tools/dra
 import { captureSpecterWebsite } from './specter.server';
 import { collectToolEvidence, evidenceReport, generationPrompt } from './businessTools.engine';
 import { generateBusinessImage } from './businessTools.images.server';
+import { deliverySchema, deliverBusinessContent } from './businessTools.delivery';
+
+export const deliverBusinessTool = createServerFn({method:'POST'}).middleware([requireAuthContract]).inputValidator(deliverySchema).handler(async({data,context})=>{
+  const c=context as any;
+  await memberProfile(c);
+  return deliverBusinessContent(c.supabase,c.userId,data);
+});
 
 const requestSchema = z.object({ toolId: z.string().max(80), inputs: z.record(z.string(), z.string().max(16000)) });
 async function memberProfile(context: any) {
