@@ -181,11 +181,8 @@ export function LedgerBridgeShell({
         onNavigate={onNavigate} searchQuery={searchQuery} onSearchChange={onSearchChange}
         unreadCount={unreadCount ?? 0} me={me} onOpenMyProfile={onOpenMyProfile}
         bell={notifications} onToggleConstellationOverlay={() => onNavigate('bubbles')}/>
-        <div className="bridge-experience-control"><ExperienceSwitch value={experience} onChange={onExperienceChange}/></div>
       </div>
       <header className="ledger-crm-topbar" hidden={experience === 'social'}>
-
-        <ExperienceSwitch value={experience} onChange={onExperienceChange}/>
         <button type="button" className="ledger-native-menu" aria-label="Open navigation" onClick={() => setDrawerOpen(true)}>
           <Menu size={20} />
         </button>
@@ -210,6 +207,7 @@ export function LedgerBridgeShell({
           {userOpen && <AccountMenu/>}
         </div>
       </header>
+      <div className="bridge-experience-control"><ExperienceSwitch value={experience} onChange={onExperienceChange}/></div>
       <div id="aetheris-workspace-content" className="ledger-native-content"><div hidden={experience === 'social'}><LedgerSectionNavigation activePage={activePage} activeTool={activeTool} onSelect={navigate}/></div>{children}</div>
     </div>
 
