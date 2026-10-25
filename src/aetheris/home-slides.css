@@ -81,6 +81,29 @@
   }
 }
 
+/* Sign-in button beside the primary signup call to action. */
+:root .ael.ael-compact .ael-hero--carousel .ael-hero-actions {
+  flex-wrap: wrap;
+  row-gap: 14px;
+}
+
+.ael .ael-hero-actions .ael-btn-ghost {
+  background: transparent !important;
+  border: 1px solid color-mix(in srgb, var(--st-ink) 42%, transparent) !important;
+  color: var(--st-ink) !important;
+  -webkit-text-fill-color: var(--st-ink) !important;
+}
+
+.ael .ael-hero-actions .ael-btn-ghost:hover {
+  background: color-mix(in srgb, var(--st-ink) 12%, transparent) !important;
+  border-color: var(--st-ink) !important;
+}
+
+.ael .ael-hero-actions .ael-btn-ghost:focus-visible {
+  outline: 2px solid #A34343;
+  outline-offset: 3px;
+}
+
 /* Side panels use the desktop space around the uncropped portrait artwork. */
 .ael-carousel-stage {
   width: 100%;

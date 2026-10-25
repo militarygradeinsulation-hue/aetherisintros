@@ -52,6 +52,9 @@ export default function Landing() {
         <p className="sr-only">Share what you need. Explore relevant people. Request an introduction with context and mutual consent.</p>
         <div className="ael-hero-actions">
           <JoinAction signedIn={signedIn} className="ael-btn ael-btn-gold ai-gradient-button" />
+          {signedIn
+            ? <Link to="/app" className="ael-btn ael-btn-ghost">My network <ArrowUpRight aria-hidden="true" size={16} /></Link>
+            : <Link to="/auth" className="ael-btn ael-btn-ghost">Member sign in <ArrowUpRight aria-hidden="true" size={16} /></Link>}
           <Link to="/demo" className="ael-text-link">Explore the demo <ArrowRight aria-hidden="true" size={16} /></Link>
         </div>
       </div>
