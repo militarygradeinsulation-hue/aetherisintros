@@ -4,7 +4,7 @@ export const BUSINESS_TOOLS: BusinessTool[] = [
     "id": "ai-checklist",
     "name": "AI Readiness Checklist",
     "category": "Planning & reports",
-    "description": "Score a business on AI-readiness in one pass.",
+    "description": "Assess AI readiness from the business information you supply.",
     "fields": [
       "Company",
       "Team size",
@@ -114,7 +114,7 @@ export const BUSINESS_TOOLS: BusinessTool[] = [
     "id": "creation-studio",
     "name": "Creation Studio",
     "category": "Content & creative",
-    "description": "Mixed-media asset generator with brand memory.",
+    "description": "Create copy and generate a visual from your brand brief.",
     "fields": [
       "Brand",
       "Asset type",
@@ -180,7 +180,7 @@ export const BUSINESS_TOOLS: BusinessTool[] = [
     "id": "forensic-scan-all",
     "name": "Business Review",
     "category": "Business reviews",
-    "description": "Runs every diagnostic in one shot.",
+    "description": "Review a captured public page across messaging, trust, and buyer experience.",
     "fields": [
       "Website URL",
       "Company"
@@ -247,9 +247,9 @@ export const BUSINESS_TOOLS: BusinessTool[] = [
   },
   {
     "id": "image-studio",
-    "name": "Image Brief Studio",
+    "name": "Image Studio",
     "category": "Content & creative",
-    "description": "On-brand image prompt builder + watermark.",
+    "description": "Generate an image or prepare a detailed visual brief.",
     "fields": [
       "Subject",
       "Style"
@@ -335,7 +335,7 @@ export const BUSINESS_TOOLS: BusinessTool[] = [
     "id": "resume-forensics",
     "name": "Resume Review",
     "category": "Planning & reports",
-    "description": "Rewrites resumes to beat ATS filters.",
+    "description": "Review and rewrite your resume for a target role.",
     "fields": [
       "Target role",
       "Paste resume text"
@@ -421,7 +421,7 @@ export const BUSINESS_TOOLS: BusinessTool[] = [
     "id": "website-scanner",
     "name": "Website Review",
     "category": "Business reviews",
-    "description": "Live scan for revenue leaks on any URL.",
+    "description": "Capture a public webpage and review evidence-backed findings.",
     "fields": [
       "Website URL"
     ],
