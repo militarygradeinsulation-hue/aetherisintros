@@ -31,8 +31,10 @@ export function HomeSlideCarousel() {
   }, [paused, reduced, count])
 
   useEffect(() => {
+    const next = HOME_SLIDES[(index + 1) % count]
+    if (!next) return
     const preload = new Image()
-    preload.src = HOME_SLIDES[(index + 1) % count].src
+    preload.src = next.src
   }, [index, count])
 
   const step = (direction: number) => setIndex(i => (i + direction + count) % count)
