@@ -42,3 +42,28 @@
   :root[data-theme] body .bridge-navigation-host .ask-intros-lockup--header {width:100px!important}
  }
 }
+
+/* The shared 64px row owns header height; inherited vertical padding must not overflow into news. */
+@layer bridge-social-reference {
+ :root[data-theme] body .workspace-navigation-row,
+ :root[data-theme] body .workspace-navigation-row > .bridge-navigation-host,
+ :root[data-theme] body .workspace-navigation-row .bridge-navigation-host > .ix-global-header {box-sizing:border-box!important;flex-shrink:0!important}
+ :root[data-theme] body .workspace-navigation-row .bridge-navigation-host > .ix-global-header {position:relative!important;inset:auto!important;display:flex!important;align-items:center!important;width:100%!important;max-width:100%!important;margin:0!important;padding-block:0!important;transform:none!important}
+ :root[data-theme] body .workspace-navigation-row .ix-global-header-inner {box-sizing:border-box!important;flex-direction:row!important;flex-wrap:nowrap!important;height:64px!important;min-height:0!important;max-height:64px!important;padding-block:0!important;position:relative!important;inset:auto!important;transform:none!important}
+ :root[data-theme] body .workspace-navigation-row .ix-global-account-actions {display:flex!important;align-items:center!important;flex:0 0 auto!important;gap:8px!important;margin:0 0 0 auto!important;padding:0!important;position:static!important;transform:none!important;white-space:nowrap}
+ :root[data-theme] body .workspace-navigation-row .ix-desktop-main-nav {align-items:center!important;flex-wrap:nowrap!important;padding-block:0!important;position:static!important;transform:none!important}
+ :root[data-theme] body .workspace-navigation-row .ix-desktop-nav-link {display:inline-flex!important;align-items:center!important;justify-content:center!important;flex:none!important;min-height:38px!important;height:auto!important;padding:8px 10px!important;margin:0!important;white-space:nowrap!important;line-height:1.25!important}
+ :root[data-theme] body .workspace-navigation-row .ix-desktop-nav-label {white-space:nowrap!important;line-height:1.25!important}
+ @media(max-width:1400px) {
+  :root[data-theme] body .workspace-navigation-row .ix-header-profile-action > span:last-child:not(:first-child) {display:none!important}
+  :root[data-theme] body .workspace-navigation-row .ix-header-appearance {display:none!important}
+  :root[data-theme] body .workspace-navigation-row .ix-global-account-actions > .relative {display:none!important}
+ }
+ @media(max-width:1100px) {
+  :root[data-theme] body .workspace-navigation-row .ix-desktop-main-nav {display:none!important}
+ }
+ @media(max-width:520px) {
+  :root[data-theme] body .workspace-navigation-row .ix-global-account-actions {gap:4px!important}
+  :root[data-theme] body .workspace-navigation-row .ix-header-profile-action {display:none!important}
+ }
+}
