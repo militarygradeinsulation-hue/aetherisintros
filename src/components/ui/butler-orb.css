@@ -1,0 +1,10 @@
+.butler-orb {position:relative;display:inline-block;width:56px;height:56px;flex:0 0 56px;pointer-events:none;isolation:isolate;border-radius:50%;background:radial-gradient(circle,#fde1e4 0%,#6d102640 60%,transparent 72%);filter:drop-shadow(0 2px 6px #ef233c66)}
+.butler-orb[data-orb-view="social"] {background:radial-gradient(circle,#e5e7eb 0%,#c3c8d266 58%,transparent 72%);filter:drop-shadow(0 2px 6px #dce4f066)}
+.butler-orb > div {position:absolute!important;inset:0}
+.butler-orb canvas {display:block;pointer-events:none}
+.butler-orb-fallback {position:absolute;inset:8px;border-radius:44% 56% 48% 52% / 52% 43% 57% 48%;background:radial-gradient(circle at 32% 24%,#ffb3b3,#e31c32 45%,#70091a 80%);box-shadow:inset -3px -5px 8px #0005}
+.butler-orb[data-orb-view="social"] .butler-orb-fallback {background:radial-gradient(circle at 32% 24%,#b6b9c2,#18181d 45%,#050507 80%)}
+/* Override the former Social-only placeholder without touching the Bridge snapshot. */
+:root[data-theme] body .ix-root.ledger-native-app[data-experience] > .ix-assistant button.ask-dock-fab > .ask-dock-blob {display:inline-flex!important;width:56px!important;height:56px!important;flex:none;background:none!important;box-shadow:none!important;border-radius:50%!important;pointer-events:none}
+:root[data-theme] body .ix-root.ledger-native-app[data-experience] > .ix-assistant button.ask-dock-fab:not(.active) {padding:4px 14px 4px 4px!important;border-radius:999px!important;min-height:64px}
+:root[data-theme] body .ix-root.ledger-native-app[data-experience] > .ix-assistant button.ask-dock-fab:not(.active) > svg {display:none!important}

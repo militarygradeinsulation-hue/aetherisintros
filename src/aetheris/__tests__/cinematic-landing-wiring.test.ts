@@ -10,7 +10,7 @@ const section = read('../../intros-ui/components/layout/LedgerSectionNavigation.
 
 describe('Ask Intros cinematic UX integration', () => {
   it('plays the current branded intro before the homepage without person credits', () => {
-    expect(landing).toContain('CinematicEntrance videoSrc={introFilmAsset.url}')
+    expect(landing).toContain('CinematicEntrance videoSrc={CITY_OPENING_VIDEO}')
     expect(landing).toContain('CinematicHero')
     expect(landing).toContain('Each Connection')
     expect(landing).toContain('Matters.')

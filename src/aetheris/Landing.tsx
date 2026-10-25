@@ -3,8 +3,7 @@ import { Link } from '@tanstack/react-router'
 import { useAccess } from './access'
 import { AskIntrosLockup } from './AskIntrosLockup'
 import { CinematicHero } from '@/components/ui/cinematic-landing-hero'
-import { CinematicEntrance } from '@/components/ui/cinematic-entrance'
-import introFilmAsset from '@/assets/aetheris-intro-video.mp4.asset.json'
+import { CinematicEntrance, CITY_OPENING_VIDEO } from '@/components/ui/cinematic-entrance'
 import { AppearanceToggle } from './AppearanceToggle'
 import { StencilHeadline } from './StencilHeadline'
 import './editorial-landing.css'
@@ -25,7 +24,7 @@ export default function Landing() {
   const signedIn = access.signedIn
 
   return <main className="ael ael-compact ael--text">
-    <CinematicEntrance videoSrc={introFilmAsset.url} />
+    <CinematicEntrance videoSrc={CITY_OPENING_VIDEO} />
     <a className="ael-skip" href="#ael-main">Skip to content</a>
 
     <header className="ael-header" aria-label="Ask Intros public navigation">

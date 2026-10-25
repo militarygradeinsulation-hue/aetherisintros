@@ -4,28 +4,32 @@ import * as React from "react";
 import { useEffect, useRef, useState } from "react";
 import "./cinematic-entrance.css";
 
-export interface CinematicEntranceProps { videoSrc: string; /** Fires only when the intro finishes or is skipped. */ onComplete?: () => void }
+// Film from the supplied MetroHero; the site keeps its automatic, bounded entrance.
+export const CITY_OPENING_VIDEO = "https://cdn.21st.dev/assets/mirror/21/21a77eac28eacbb7e142016eefeaa0b4a766619e51113629a3bc6df6af066c0f.mp4";
+export interface CinematicEntranceProps { videoSrc: string; onComplete?: () => void }
+const clamp = (value: number) => Math.max(0, Math.min(1, value));
 
-
-/** Full-screen, muted autoplay introduction on every homepage arrival; always skippable. */
 export function CinematicEntrance({ videoSrc, onComplete }: CinematicEntranceProps) {
   const [visible, setVisible] = useState(true);
   const [exiting, setExiting] = useState(false);
+  const [progress, setProgress] = useState(0);
   const videoRef = useRef<HTMLVideoElement>(null);
   const endedRef = useRef(false);
+  const exitTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const holdTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const callbackRef = useRef(onComplete);
   callbackRef.current = onComplete;
   const finish = React.useCallback(() => {
     if (endedRef.current) return;
     endedRef.current = true;
     setExiting(true);
-    window.setTimeout(() => { setVisible(false); callbackRef.current?.(); }, 450);
+    exitTimer.current = setTimeout(() => { setVisible(false); callbackRef.current?.(); }, 450);
   }, []);
-
   useEffect(() => {
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
       endedRef.current = true;
       setVisible(false);
+      callbackRef.current?.();
       return;
     }
     endedRef.current = false;
@@ -33,27 +37,37 @@ export function CinematicEntrance({ videoSrc, onComplete }: CinematicEntrancePro
     if (!video) return;
     video.muted = true;
     const playback = video.play();
-    if (playback && typeof playback.catch === "function") playback.catch(() => { /* fallback below */ });
-    // If silent autoplay cannot begin, never leave visitors blocked by the overlay.
-    const fallback = window.setTimeout(() => { if (!video || video.currentTime < .1) finish(); }, 9000);
+    playback?.catch(() => { /* The timeout and Skip remain available if autoplay is denied. */ });
+    const fallback = window.setTimeout(() => { if (video.currentTime < .1) finish(); }, 9000);
     const maximum = window.setTimeout(finish, 30000);
-    const stop = () => { window.clearTimeout(fallback); window.clearTimeout(maximum); video.pause(); };
-    return stop;
+    const escape = (event: KeyboardEvent) => { if (event.key === 'Escape') finish(); };
+    window.addEventListener('keydown', escape);
+    return () => {
+      window.clearTimeout(fallback); window.clearTimeout(maximum);
+      if (exitTimer.current) clearTimeout(exitTimer.current);
+      if (holdTimer.current) clearTimeout(holdTimer.current);
+      window.removeEventListener('keydown', escape);
+      video.pause();
+    };
   }, [videoSrc, finish]);
-
   if (!visible) return null;
+  const title = 1 - clamp(progress / .35);
+  const tagline = clamp((progress - .82) / .18);
   return <div className={"ask-cinematic-entrance" + (exiting ? " is-exiting" : "")}
     role="region" aria-label="Ask Intros introduction film">
     <video ref={videoRef} src={videoSrc} autoPlay playsInline muted preload="auto"
-      onEnded={finish} onError={finish} disablePictureInPicture
-      aria-label="Ask Intros introduction film">
+      style={{ transform: `scale(${1 + progress * .06})` }}
+      onTimeUpdate={event => { const video = event.currentTarget; if (Number.isFinite(video.duration) && video.duration > 0) setProgress(clamp(video.currentTime / video.duration)); }}
+      onEnded={() => { setProgress(1); if (!holdTimer.current) holdTimer.current = setTimeout(finish, 1600); }}
+      onError={finish} disablePictureInPicture aria-label="Ask Intros introduction film">
       <track kind="captions" />
     </video>
     <div className="ask-cinematic-entrance-shade" aria-hidden="true" />
-    <div className="ask-cinematic-entrance-title">
-      <span>ASK INTROS</span>
-      <h2>Each Connection Matters.</h2>
+    <div className="ask-cinematic-entrance-opening" style={{ opacity: title, transform: `translateY(${(1-title)*-24}px) scale(${.96+title*.04})`, filter: `blur(${(1-title)*10}px)` }}><h2>ASK INTROS</h2></div>
+    <div className="ask-cinematic-entrance-title" style={{ opacity: tagline, transform: `translateY(${(1-tagline)*20}px) scale(${.97+tagline*.03})`, filter: `blur(${(1-tagline)*8}px)` }}>
+      <h2>Each Connection Matters.</h2><span>ASK INTROS</span>
     </div>
+    <div className="ask-cinematic-entrance-progress" aria-hidden="true"><span style={{ transform: `scaleX(${progress})` }} /></div>
     <button className="ask-cinematic-entrance-skip" type="button" onClick={finish}>Skip intro <span aria-hidden="true">↗</span></button>
   </div>;
 }
