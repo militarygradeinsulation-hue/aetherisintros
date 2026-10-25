@@ -358,7 +358,7 @@ function AskIntrosDockInner({ page, peopleNames, memberName, briefing, contextPa
       onPointerDown={e => { if (!window.matchMedia('(max-width: 767px)').matches) dragFab(e, fabRef.current) }}
       onClick={() => { if (fabRef.current?.dataset['dragged']) return; setOpen(value => !value) }}>
       {open ? <X size={18} /> : <><span className="ask-dock-blob" aria-hidden="true"><ButlerOrb /></span><AetherisGlyph size={18} /></>}
-      {!open && <span>Ask Intros</span>}
+      {!open && <span className="assistant-launcher-label">Ask Intros</span>}
     </button>
 
     {open && <aside ref={dockRef} className="ask-dock" role="dialog" aria-label="Ask Intros" data-voice-skip="true"

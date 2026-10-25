@@ -16,7 +16,7 @@ function Blob({ social, reducedMotion, hovered, pointer }: BlobCanvasProps) {
   const uniforms = useMemo(() => ({
     u_time: { value: 0.8 },
     u_intensity: { value: 0.5 },
-    u_color: { value: new Color(social ? '#08080b' : '#e31c32') },
+    u_color: { value: new Color(social ? '#2f4be0' : '#e31c32') },
   }), [social]);
   useFrame(({ clock }, delta) => {
     if (!mesh.current || reducedMotion) return;
