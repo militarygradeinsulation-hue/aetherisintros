@@ -102,3 +102,30 @@
   :root[data-theme] body .workspace-navigation-row .ix-global-account-actions {display:none!important}
  }
 }
+
+/* Business header items shrink within their own slots, never over each other. */
+@layer bridge-social-reference {
+ :root[data-theme] body .workspace-navigation-row {container-type:inline-size}
+ :root[data-theme] body .workspace-navigation-row > .ledger-crm-topbar:not([hidden]) {display:flex!important;align-items:center!important;flex-wrap:nowrap!important;gap:12px!important;padding:10px 14px!important;box-sizing:border-box!important;overflow:visible!important}
+ :root[data-theme] body .workspace-navigation-row .ledger-native-breadcrumb {display:flex!important;flex:0 1 180px!important;min-width:0!important;max-width:180px!important;gap:0!important;overflow:hidden!important}
+ :root[data-theme] body .workspace-navigation-row .ledger-native-breadcrumb > span,
+ :root[data-theme] body .workspace-navigation-row .ledger-native-breadcrumb > svg {display:none!important}
+ :root[data-theme] body .workspace-navigation-row .ledger-native-breadcrumb b {display:block!important;min-width:0!important;max-width:100%!important;white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important;line-height:1.4!important}
+ :root[data-theme] body .workspace-navigation-row .ledger-native-search-frame {flex:1 1 240px!important;width:auto!important;min-width:38px!important;max-width:420px!important;margin:0 auto 0 0!important;box-sizing:border-box!important}
+ :root[data-theme] body .workspace-navigation-row .ledger-native-search-frame .ledger-native-search {display:flex!important;gap:8px!important;width:100%!important;min-width:0!important;margin:0!important;box-sizing:border-box!important;overflow:hidden!important}
+ :root[data-theme] body .workspace-navigation-row .ledger-native-search span {min-width:0!important;flex:1!important;overflow:hidden!important;text-overflow:ellipsis!important;white-space:nowrap!important}
+ :root[data-theme] body .workspace-navigation-row .ledger-native-search svg {flex:none!important}
+ :root[data-theme] body .workspace-navigation-row .ledger-native-search kbd {flex:none!important}
+ @container(max-width:1000px) {
+  :root[data-theme] body .workspace-navigation-row .ledger-native-auth-shortcut,
+  :root[data-theme] body .workspace-navigation-row .ledger-native-appearance,
+  :root[data-theme] body .workspace-navigation-row .ledger-native-user-label {display:none!important}
+ }
+ @container(max-width:650px) {
+  :root[data-theme] body .workspace-navigation-row .ledger-native-breadcrumb,
+  :root[data-theme] body .workspace-navigation-row .ledger-native-search span,
+  :root[data-theme] body .workspace-navigation-row .ledger-native-search kbd {display:none!important}
+  :root[data-theme] body .workspace-navigation-row > .ledger-crm-topbar:not([hidden]) {gap:6px!important;padding-inline:8px!important}
+  :root[data-theme] body .workspace-navigation-row .ledger-native-search-frame {flex:0 0 38px!important}
+ }
+}
