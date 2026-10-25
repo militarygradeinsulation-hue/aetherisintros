@@ -7,6 +7,7 @@ try{
   if(view==='social')await p.getByRole('button',{name:'Social',exact:true}).first().click();
   await p.locator(`.site-ambient[data-particle-view="${view}"] canvas`).waitFor();
   await p.waitForTimeout(400);
+  if(await p.locator('.ledger-crm-body').evaluate(n=>getComputedStyle(n).backgroundColor)!=='rgba(0, 0, 0, 0)')throw Error('Opaque workspace hides background');
   const result=await p.locator('.site-ambient[data-particle-view] canvas').evaluate(c=>{const ctx=c.getContext('2d');const d=ctx.getImageData(0,0,c.width,c.height).data;let red=0,blue=0;for(let i=0;i<d.length;i+=4)if(d[i+3]>20){if(d[i]>d[i+2]*1.3)red++;if(d[i+2]>d[i]*1.3)blue++;}return {red,blue,filter:getComputedStyle(c).filter,pointer:getComputedStyle(c).pointerEvents,count:document.querySelectorAll('.site-ambient canvas').length};});
   console.log(view,result);if(result[view==='social'?'blue':'red']<100||result.count!==1||result.pointer!=='none'||result.filter!=='none')throw Error('Particle color/layer contract failed');
 
