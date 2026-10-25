@@ -318,12 +318,29 @@
 
 
 /* Ask Intros floating desktop command dock. Deliberately hidden on mobile:
-   the persistent 4-button touch navigation and floating assistant remain accessible. */
+   the persistent 4-button touch navigation and floating assistant remain accessible.
+   On desktop it stays parked out of sight at the bottom edge and only rises when the
+   pointer reaches that edge, or when one of its controls takes keyboard focus. */
 :root body .ix-root.ledger-native-app .ledger-native-quick-dock {
- position:fixed;left:calc(50% + var(--ledger-crm-sidebar,256px)/2);bottom:18px;z-index:85;
- transform:translateX(-50%);pointer-events:none;max-width:calc(100vw - var(--ledger-crm-sidebar,256px) - 36px)
+ position:fixed;left:calc(50% + var(--ledger-crm-sidebar,256px)/2);bottom:0;z-index:85;
+ transform:translateX(-50%);pointer-events:none;max-width:calc(100vw - var(--ledger-crm-sidebar,256px) - 36px);
+ padding-bottom:18px
 }
-:root body .ix-root.ledger-native-app .ledger-native-quick-dock .ask-macos-dock{pointer-events:auto}
+/* Invisible grab strip: hovering the bottom edge reveals the tray without covering page actions. */
+:root body .ix-root.ledger-native-app .ledger-native-quick-dock::before {
+ content:"";position:absolute;left:0;right:0;bottom:0;height:20px;pointer-events:auto
+}
+:root body .ix-root.ledger-native-app .ledger-native-quick-dock .ask-macos-dock{
+ pointer-events:auto;transform:translateY(calc(100% + 30px));
+ transition:transform .34s cubic-bezier(.22,1,.36,1)
+}
+:root body .ix-root.ledger-native-app .ledger-native-quick-dock:hover .ask-macos-dock,
+:root body .ix-root.ledger-native-app .ledger-native-quick-dock:focus-within .ask-macos-dock {
+ transform:translateY(0)
+}
+@media(prefers-reduced-motion:reduce){
+ :root body .ix-root.ledger-native-app .ledger-native-quick-dock .ask-macos-dock{transition:none}
+}
 :root body .ix-root.ledger-native-app .ledger-native-content{padding-bottom:115px}
 :root body .ix-root.ledger-native-app .ledger-native-search-frame {
  display:flex;flex:none;min-width:0;width:min(38vw,420px);margin-left:auto;
