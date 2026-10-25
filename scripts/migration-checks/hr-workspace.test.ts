@@ -43,6 +43,11 @@ beforeAll(async () => {
   await db.exec(
     `create role anon;create role authenticated;create role service_role bypassrls;create schema auth;create table auth.users(id uuid primary key,active boolean default true);create function auth.uid() returns uuid language sql as $$select nullif(current_setting('request.jwt.claim.sub',true),'')::uuid$$;grant usage on schema auth to anon,authenticated;grant execute on function auth.uid() to anon,authenticated;create function public.is_live_member() returns boolean language sql security definer set search_path='' as $$select exists(select 1 from auth.users where id=auth.uid() and active)$$;`,
   );
+  const identityGuard = readFileSync(
+    new URL("../../drizzle/migrations/0004_opportunity_graph_hardening.sql", import.meta.url),
+    "utf8",
+  ).match(/create or replace function public.freeze_columns\(\)[\s\S]*?end \$\$;/i)![0];
+  await db.exec(identityGuard);
   for (const id of [A, B, C])
     await db.query("insert into auth.users(id,active) values($1,$2)", [id, id !== C]);
   await db.exec(
@@ -125,6 +130,15 @@ describe("Private HR database authority", () => {
       }),
     ).rejects.toThrow();
     expect((await call(B, "load")).records).toHaveLength(0);
+    await db.query("select set_config('request.jwt.claim.sub',$1,false)", [A]);
+    try {
+      await expect(
+        db.query("update public.hr_records set owner_id=$1 where id=$2", [B, employee]),
+      ).rejects.toThrow("cannot be changed");
+    } finally {
+      await db.query("select set_config('request.jwt.claim.sub','',false)");
+    }
+
     expect(await as(B, "select * from public.hr_records")).toHaveLength(0);
   });
   it("blocks direct RPC malformed fields, invalid approval and cross-account employee references", async () => {

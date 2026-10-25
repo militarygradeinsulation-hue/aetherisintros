@@ -58,11 +58,18 @@ try {
   page.on("pageerror", (e) => errors.push(e.message));
   page.on("dialog", (d) => d.accept());
   await page.goto("http://127.0.0.1:" + server.address().port);
-  const nav = (label) =>
-    page
+  const nav = async (label) => {
+    const selector = page.getByLabel("HR section", { exact: true });
+    if (await selector.isVisible()) {
+      await selector.selectOption({ label });
+      return;
+    }
+    await page
       .getByRole("navigation", { name: "HR sections" })
-      .getByRole("button", { name: new RegExp("^" + label.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")) })
+      .getByRole("button")
+      .filter({ has: page.getByText(label, { exact: true }) })
       .click();
+  };
   await page.getByRole("button", { name: "Review business setup", exact: true }).click();
   if (
     (await page.getByLabel("Business name", { exact: true }).inputValue()) !==

@@ -29,6 +29,9 @@ GRANT ALL ON public.hr_workspaces,public.hr_records,public.hr_audit TO service_r
 CREATE POLICY hr_workspace_owner_read ON public.hr_workspaces FOR SELECT TO authenticated USING(owner_id=(SELECT auth.uid()) AND public.is_live_member());
 CREATE POLICY hr_record_owner_read ON public.hr_records FOR SELECT TO authenticated USING(owner_id=(SELECT auth.uid()) AND public.is_live_member());
 CREATE POLICY hr_audit_owner_read ON public.hr_audit FOR SELECT TO authenticated USING(owner_id=(SELECT auth.uid()) AND public.is_live_member());
+CREATE TRIGGER hr_workspace_freeze BEFORE UPDATE ON public.hr_workspaces FOR EACH ROW EXECUTE FUNCTION public.freeze_columns('owner_id');
+CREATE TRIGGER hr_record_freeze BEFORE UPDATE ON public.hr_records FOR EACH ROW EXECUTE FUNCTION public.freeze_columns('id','owner_id','kind');
+CREATE TRIGGER hr_audit_freeze BEFORE UPDATE ON public.hr_audit FOR EACH ROW EXECUTE FUNCTION public.freeze_columns('id','owner_id','record_id','kind','action','created_at');
 -- No member DML grants: ownership, kind and IDs cannot be reassigned. All writes
 -- use the serialized, version-checked commands below, including direct RPC calls.
 

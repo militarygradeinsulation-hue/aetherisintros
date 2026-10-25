@@ -302,3 +302,16 @@
     scroll-behavior: auto !important;
   }
 }
+
+.hr-workspace .hr-mobile-section {
+  display: none;
+}
+@media (max-width: 900px) {
+  .hr-workspace .hr-mobile-section {
+    display: grid;
+    margin: 0;
+  }
+  .hr-layout > nav {
+    display: none;
+  }
+}
