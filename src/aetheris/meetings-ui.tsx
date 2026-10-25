@@ -1,3 +1,5 @@
+import { MeetingShare, MeetingRecordEditor } from './meeting-sharing'
+import { MeetingAudio, saveMeetingAudio } from './meeting-audio'
 /**
  * Meetings: start a video meeting in one click (or schedule one) with up to three members,
  * check your camera before joining, invite people from inside the call, and press Record to
@@ -45,6 +47,7 @@ export function MeetingsPage() {
   const [notesId, setNotesId] = useState<string | null>(null)
   const [briefId, setBriefId] = useState<string | null>(null)
   const [starting, setStarting] = useState(false)
+  const [recordView,setRecordView]=useState<'active'|'archived'|'trash'>('active')
 
   const refresh = useCallback(async () => {
     const r = await loadMeetings()
@@ -75,8 +78,9 @@ export function MeetingsPage() {
     return <MeetingRoom meeting={room} userId={graph.userId} onBack={() => setRoomId(null)} onLeave={async () => { setRoomId(null); await refresh(); setNotesId(room.id) }} />
   }
 
-  const open = meetings.filter(m => meetingStatus(m) !== 'ended')
-  const past = meetings.filter(m => meetingStatus(m) === 'ended')
+  const visible=meetings.filter(m=>recordView==='trash'?!!m.deletedAt:recordView==='archived'?!!m.archivedAt&&!m.deletedAt:!m.archivedAt&&!m.deletedAt)
+  const open = visible.filter(m => meetingStatus(m) !== 'ended')
+  const past = visible.filter(m => meetingStatus(m) === 'ended')
 
   return <section className="meetings">
     <header className="meetings-head">
@@ -98,13 +102,14 @@ export function MeetingsPage() {
       setRoomId(meetingId)
     }} />
 
+    <div className="og-inline"><a href="/meet">Join by code</a>{(['active','archived','trash'] as const).map(v=><button type="button" key={v} aria-pressed={recordView===v} onClick={()=>setRecordView(v)}>{v}</button>)}</div>
     <h2 className="meetings-sub">Upcoming and live</h2>
-    {open.length ? <div className="meetings-list">{open.map(m => <MeetingCard key={m.id} meeting={m} userId={graph.userId!} onJoin={() => setRoomId(m.id)} onNotes={() => setNotesId(m.id)} onBrief={() => setBriefId(briefId === m.id ? null : m.id)} />)}</div>
+    {open.length ? <div className="meetings-list">{open.map(m => <MeetingCard key={m.id} meeting={m} userId={graph.userId!} onSaved={refresh} onJoin={() => setRoomId(m.id)} onNotes={() => setNotesId(m.id)} onBrief={() => setBriefId(briefId === m.id ? null : m.id)} />)}</div>
       : <p className="og-note">No meetings yet. Start one and invite the people you want to talk to.</p>}
 
     {past.length > 0 && <>
       <h2 className="meetings-sub">Past meetings</h2>
-      <div className="meetings-list">{past.map(m => <MeetingCard key={m.id} meeting={m} userId={graph.userId!} onJoin={() => setRoomId(m.id)} onNotes={() => setNotesId(notesId === m.id ? null : m.id)} onBrief={() => setBriefId(briefId === m.id ? null : m.id)} />)}</div>
+      <div className="meetings-list">{past.map(m => <MeetingCard key={m.id} meeting={m} userId={graph.userId!} onSaved={refresh} onJoin={() => setRoomId(m.id)} onNotes={() => setNotesId(notesId === m.id ? null : m.id)} onBrief={() => setBriefId(briefId === m.id ? null : m.id)} />)}</div>
     </>}
 
     {briefId && meetings.some(m => m.id === briefId) && <section className="executive-section meeting-brief-panel">
@@ -115,7 +120,7 @@ export function MeetingsPage() {
   </section>
 }
 
-function MeetingCard({ meeting, userId, onJoin, onNotes, onBrief }: { meeting: Meeting; userId: string; onJoin: () => void; onNotes: () => void; onBrief: () => void }) {
+function MeetingCard({ meeting, userId, onJoin, onNotes, onBrief, onSaved }: { meeting: Meeting; userId: string; onSaved:()=>void; onJoin: () => void; onNotes: () => void; onBrief: () => void }) {
   const status = meetingStatus(meeting)
   const others = meeting.participants.filter(p => p.userId !== userId)
   return <article className={`meetings-card meetings-${status}`}>
@@ -126,12 +131,13 @@ function MeetingCard({ meeting, userId, onJoin, onNotes, onBrief }: { meeting: M
       {meeting.agenda && <p className="meetings-agenda">{meeting.agenda.split('\n')[0]}</p>}
     </div>
     <div className="og-inline">
-      {status !== 'ended' && <Btn onClick={onJoin}><Video size={14} /> Join</Btn>}
+      {status !== 'ended' && !meeting.archivedAt && !meeting.deletedAt && <Btn onClick={onJoin}><Video size={14} /> Join</Btn>}
       {status !== 'ended' && others.length > 0 && <Btn kind="quiet" onClick={onBrief}><Compass size={14} /> Brief</Btn>}
       {status === 'scheduled' && meeting.scheduledFor && <Btn kind="quiet" onClick={() => downloadIcs(`${meeting.title.replace(/[^a-z0-9]+/gi, '-').toLowerCase() || 'meeting'}.ics`,
         icsForMeeting({ id: meeting.id, title: meeting.title, startsAt: meeting.scheduledFor!, agenda: meeting.agenda, url: `${location.origin}/app/meetings` }))}><CalendarPlus size={14} /> Add to calendar</Btn>}
       <Btn kind="quiet" onClick={onNotes}><FileText size={14} /> {meeting.hasNotes ? 'My notes' : 'Notes'}</Btn>
     </div>
+    {meeting.hostId===userId&&<><MeetingRecordEditor meeting={meeting} onSaved={onSaved}/>{!meeting.endedAt&&!meeting.archivedAt&&!meeting.deletedAt&&<MeetingShare meetingId={meeting.id}/>}</>}
   </article>
 }
 
@@ -197,6 +203,10 @@ type Phase = 'lobby' | 'room'
 
 export function MeetingRoom({ meeting, userId, onLeave, onBack }: { meeting: Meeting; userId: string; onLeave: () => void; onBack: () => void }) {
   const [phase, setPhase] = useState<Phase>('lobby')
+  const [captureConsent,setCaptureConsent]=useState(true)
+  const [joining,setJoining]=useState(false)
+  const [joinError,setJoinError]=useState('')
+  const enter=async()=>{setJoining(true);setJoinError('');try{const error=captureConsent?await setMeetingRecording(meeting.id,true):await setNotesConsent(meeting.id,false);if(error){setJoinError(error);return}setPhase('room')}catch{setJoinError('Could not start recording. Please retry.')}finally{setJoining(false)}}
   const [attempt, setAttempt] = useState(0)
   const [local, setLocal] = useState<MediaStream | null>(null)
   const [deviceProblem, setDeviceProblem] = useState('')
@@ -262,7 +272,8 @@ export function MeetingRoom({ meeting, userId, onLeave, onBack }: { meeting: Mee
                 <button type="button" className="meeting-pill" aria-pressed={!camOn} disabled={!local?.getVideoTracks().length} onClick={() => { const next = !camOn; setCamOn(next); local?.getVideoTracks().forEach(t => { t.enabled = next }) }}>{camOn ? <><Video size={15} /> Camera on</> : <><VideoOff size={15} /> Camera off</>}</button>
               </div>
               <div className="og-inline">
-                <Btn disabled={!local} onClick={() => setPhase('room')}><Video size={14} /> {local ? 'Join meeting' : 'Waiting for camera…'}</Btn>
+                <label><input type="checkbox" checked={captureConsent} onChange={e=>setCaptureConsent(e.target.checked)}/> Save my microphone audio, transcribe it, and let Butler analyze it. All meeting participants can access the saved audio and transcript.</label>{joinError&&<p role="alert">{joinError}</p>}
+                <Btn disabled={!local||joining} onClick={() => void enter()}><Video size={14} /> {local ? 'Join meeting' : 'Waiting for camera…'}</Btn>
                 <Btn kind="quiet" onClick={onBack}>Back</Btn>
               </div>
             </>}
@@ -293,6 +304,7 @@ function LiveRoom({ meeting, userId, local, initialMic, initialCam, initialFacin
   const [askDismissed, setAskDismissed] = useState(false)
   const [sttMode, setSttMode] = useState<'server' | 'browser' | 'none'>(() => (recordingSupported() ? 'server' : dictationSupported() ? 'browser' : 'none'))
   const call = useRef<MeetingCall | null>(null)
+  const flushCapture=useRef<()=>Promise<void>>(async()=>{})
   const names = useMemo(() => new Map(room.roster.map(p => [p.userId, p.name])), [room.roster])
   const nameOf = (id: string) => (id === userId ? 'You' : names.get(id) ?? 'A member')
   const consent = useMemo(() => Object.fromEntries(room.roster.map(p => [p.userId, p.notesConsent])), [room.roster])
@@ -351,14 +363,16 @@ function LiveRoom({ meeting, userId, local, initialMic, initialCam, initialFacin
   }, [addLine, userId])
 
   // Your own speech: recorded in short clips and transcribed on the server, while your notes are on.
-  const transcribing = myConsent && micOn && status === 'joined'
+  const transcribing = recording && myConsent && micOn && !room.endedAt && status === 'joined'
   const rosterNames = room.roster.map(p => p.name)
   useEffect(() => {
-    if (!transcribing || sttMode !== 'server') return
+    if (!transcribing || !recordingSupported()) return
     let queue = Promise.resolve()
     const recorder = new ClipRecorder(local, clip => {
       queue = queue.then(async () => {
         try {
+          try { await saveMeetingAudio(meeting.id,userId,clip.blob,clip.mimeType) } catch(error) { setNoteMsg(error instanceof Error?error.message:'Audio save failed.') }
+          if(sttMode!=='server')return
           const r = await transcribeMeetingAudio({ data: { meetingId: meeting.id, audio: await blobToBase64(clip.blob), mimeType: clip.mimeType, names: rosterNames } })
           if (r.text) publish(r.text)
           if (r.error === 'not_configured') setSttMode(dictationSupported() ? 'browser' : 'none')
@@ -367,8 +381,9 @@ function LiveRoom({ meeting, userId, local, initialMic, initialCam, initialFacin
         } catch { setNoteMsg('A moment of the recording could not be transcribed. Recording continues.') }
       })
     })
-    recorder.start()
-    return () => recorder.stop()
+    flushCapture.current=async()=>{await recorder.stop();await queue}
+    try { recorder.start() } catch { setNoteMsg('Microphone recording could not start. Your audio is not being saved.'); setSttMode('none') }
+    return () => { void recorder.stop() }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [transcribing, sttMode, local, meeting.id, publish])
 
@@ -409,11 +424,33 @@ function LiveRoom({ meeting, userId, local, initialMic, initialCam, initialFacin
   const toggleMic = () => { const next = !micOn; setMicOn(next); call.current?.setTrackEnabled('audio', next) }
   const toggleCam = () => { const next = !camOn; setCamOn(next); call.current?.setTrackEnabled('video', next) }
   const leave = async () => {
+    await flushCapture.current()
     if (myConsent) await setNotesConsent(meeting.id, false)
     announce()
     await call.current?.leave(); call.current = null; onLeave()
   }
-  const endForAll = async () => { const err = await endMeeting(meeting.id); if (err) { setNoteMsg(err); return } announce(); await leave() }
+  const endForAll = async () => { await flushCapture.current(); const err = await endMeeting(meeting.id); if (err) { setNoteMsg(err); return } announce(); await leave() }
+
+  const [butlerNotes,setButlerNotes]=useState<SavedNotes|null>(null)
+  const [butlerError,setButlerError]=useState('')
+  const lineCount=useRef(0), lastReviewed=useRef(0), reviewing=useRef(false)
+  lineCount.current=lines.length
+  useEffect(()=>{
+    if(!recording||!myConsent)return
+    let stale=false
+    const review=async()=>{
+      if(reviewing.current||lineCount.current<=lastReviewed.current)return
+      reviewing.current=true
+      const count=lineCount.current
+      try{const r=await generateMeetingNotes({data:{meetingId:meeting.id}})
+        if(!stale){if(r.error)setButlerError(r.error);else if(r.notes){setButlerNotes({...r.notes,privateNote:'',generatedAt:new Date().toISOString()});lastReviewed.current=count;setButlerError('')}}
+      }catch{if(!stale)setButlerError('Butler notes are temporarily unavailable. Your transcript is separate.')}
+      finally{reviewing.current=false}
+    }
+    const timer=setInterval(()=>void review(),60000)
+    return()=>{stale=true;clearInterval(timer)}
+  },[meeting.id,recording,myConsent])
+  useEffect(()=>{if(room.endedAt){void call.current?.leave();call.current=null;setStatus('error');setProblem('The host ended this meeting. Your saved transcript and audio remain available in notes.')}},[room.endedAt])
 
   const notesOn = room.roster.filter(p => p.notesConsent)
   const startedBy = room.recordingBy ? nameOf(room.recordingBy) : 'Someone'
@@ -426,6 +463,7 @@ function LiveRoom({ meeting, userId, local, initialMic, initialCam, initialFacin
       <div><Eyebrow>{status === 'joined' ? 'LIVE' : status === 'error' ? 'NOT CONNECTED' : 'CONNECTING'}</Eyebrow><h1>{meeting.title}</h1></div>
       {recording && <span className="meeting-recording-badge" role="status"><span className="dot" aria-hidden /> Recording · notes for {notesOn.map(p => (p.userId === userId ? 'you' : p.name)).join(', ') || 'nobody yet'}</span>}
     </header>
+    {isHost&&<MeetingShare meetingId={meeting.id}/>}
     {problem && <p className="og-note meeting-problem">{problem}</p>}
     {status === 'full' && <p className="og-note meeting-problem">This meeting is full ({MAX_MEETING_PEOPLE} people). You are connected to the first arrivals only.</p>}
 
@@ -453,12 +491,12 @@ function LiveRoom({ meeting, userId, local, initialMic, initialCam, initialFacin
           <MeetingBrief meeting={meeting} userId={userId} compact />
         </details>}
         <div className={`meeting-consent ${myConsent ? 'on' : ''}`}>
-          <b><Sparkles size={14} /> Notes</b>
+          <b><Sparkles size={14} /> Butler listening</b>
           {sttMode === 'none'
             ? <p>This browser cannot record for notes. Use a current Chrome, Edge, Safari or Firefox to add your voice. You can still read the transcript and generate notes.</p>
             : recording
               ? myConsent
-                ? <p>Recording. Your speech is transcribed every few seconds and shared with everyone here. {micOn ? '' : 'Paused while you are muted.'}</p>
+                ? <p>Your microphone audio is saved in short clips and transcribed every few seconds for everyone here. {micOn ? '' : 'Paused while you are muted.'}</p>
                 : <p>Recording is on, but your voice is not included.</p>
               : <p>Press <b>Record</b> to transcribe this meeting for notes. Everyone is asked before their voice is included.</p>}
           {recording && sttMode !== 'none' && <Btn kind={myConsent ? 'quiet' : 'secondary'} onClick={() => void setMyConsent(!myConsent)}>{myConsent ? 'Stop including my voice' : 'Include my voice'}</Btn>}
@@ -473,6 +511,7 @@ function LiveRoom({ meeting, userId, local, initialMic, initialCam, initialFacin
               <Btn kind="quiet" onClick={() => setInviting(false)}>Close</Btn></>
             : <Btn kind="secondary" disabled={room.roster.length >= MAX_MEETING_PEOPLE} onClick={() => setInviting(true)}><UserPlus size={14} /> {room.roster.length >= MAX_MEETING_PEOPLE ? 'Meeting is full' : 'Invite people'}</Btn>}
         </div>}
+        <div className="meeting-butler"><b>Butler live notes</b><p>{butlerNotes?.summary||'Butler reviews new transcript once a minute after you consent.'}</p>{butlerNotes?.actionItems.map((a,i)=><p key={i}>{a.task}{a.owner?' · '+a.owner:''}</p>)}{butlerError&&<p role="alert">{butlerError}</p>}</div>
         <ol className="meeting-transcript" ref={tail}>
           {lines.map(l => <li key={l.key}><b>{nameOf(l.speakerId)}</b> {l.text}</li>)}
           {!lines.length && <li className="og-note">{recording ? 'The transcript appears here as people speak.' : 'Nothing recorded yet.'}</li>}
@@ -496,7 +535,7 @@ function LiveRoom({ meeting, userId, local, initialMic, initialCam, initialFacin
   </section>
 }
 
-function MeetingNotesPanel({ meeting, userId, onClose, onSaved }: { meeting: Meeting | null; userId: string; onClose: () => void; onSaved: () => void }) {
+export function MeetingNotesPanel({ meeting, userId, onClose, onSaved }: { meeting: Meeting | null; userId: string; onClose: () => void; onSaved: () => void }) {
   const net = useNetwork()
   const [notes, setNotes] = useState<SavedNotes | null>(null)
   const [loading, setLoading] = useState(true)
@@ -544,6 +583,7 @@ function MeetingNotesPanel({ meeting, userId, onClose, onSaved }: { meeting: Mee
 
   return <section className="executive-section meeting-notes-panel" aria-label={`Notes for ${meeting.title}`}>
     <header><div><Eyebrow><FileText size={12} /> MY NOTES</Eyebrow><h2>{meeting.title}</h2></div><button type="button" className="text-link" onClick={onClose}>Close</button></header>
+    <MeetingAudio meeting={meeting}/>
     {loading ? <p className="og-note">Loading…</p> : <>
       {notes?.summary || notes?.decisions.length || notes?.actionItems.length ? <>
         {notes.summary && <p>{notes.summary}</p>}

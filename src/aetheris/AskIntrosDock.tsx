@@ -1,3 +1,5 @@
+import { transcribeButlerAudio } from '@/lib/butlerTranscribe.functions'
+import { blobToBase64 } from './meeting-recorder'
 import { ButlerWorkspaceControls, useButlerWelcome } from '@/intros-ui/onboarding/ButlerWorkspaceControls'
 import { ButlerOrb } from '@/components/ui/butler-orb'
 import { AskIntrosMark } from '@/aetheris/AskIntrosMark'
@@ -217,7 +219,7 @@ function AskIntrosDockInner({ page, peopleNames, memberName, briefing, contextPa
       if (req.question) setInput(req.question)
       if (typeof req.x === 'number' && typeof req.y === 'number') {
         // Open right where the member asked for it, kept on screen.
-        const at = placeMenu(req.x, req.y, Math.min(390, window.innerWidth - 32), Math.min(window.innerHeight * 0.72, 600), window.innerWidth, window.innerHeight)
+        const at = placeMenu(req.x, req.y, Math.min(expanded?680:440, window.innerWidth - 32), Math.min(window.innerHeight * 0.72, 600), window.innerWidth, window.innerHeight)
         setPos(at)
       }
       if (req.voice) { pendingVoice.current = true; setVoiceAsk(n => n + 1) }
@@ -372,7 +374,7 @@ function AskIntrosDockInner({ page, peopleNames, memberName, briefing, contextPa
     void send(phrase)
   }
 
-  const dictation = useDictation({ onFinal: heard, keepOpen: voice.conversation })
+  const dictation = useDictation({ onFinal: heard, keepOpen: voice.conversation, transcribe: async(blob,mimeType)=>(await transcribeButlerAudio({data:{audio:await blobToBase64(blob),mimeType:mimeType as 'audio/webm'|'audio/mp4'|'audio/ogg'}})).text })
 
   /* Conversation mode: listen, answer aloud, then listen again — never while speaking. */
   useEffect(() => {
@@ -383,6 +385,8 @@ function AskIntrosDockInner({ page, peopleNames, memberName, briefing, contextPa
   }, [open, voice.conversation, busy, reader.state, dictation.listening, dictation.supported, dictation.error])
 
   useEffect(() => { if (!open) dictation.stop() }, [open])
+
+  useEffect(()=>{dictation.stop()},[memory.owner]) // Account changes end microphone capture.
 
   // Voice mode from the right-click menu: start a spoken conversation straight away.
   useEffect(() => {
@@ -397,6 +401,7 @@ function AskIntrosDockInner({ page, peopleNames, memberName, briefing, contextPa
     }
   }, [open, voiceAsk]) // eslint-disable-line react-hooks/exhaustive-deps
 
+  const [expanded,setExpanded]=useState(false)
   const status = busy ? 'Thinking' : reader.state !== 'idle' ? 'Speaking' : dictation.listening ? 'Listening' : ''
 
   return <>
@@ -408,8 +413,8 @@ function AskIntrosDockInner({ page, peopleNames, memberName, briefing, contextPa
       {!open && <span className="assistant-launcher-label">Ask Intros</span>}
     </button>
 
-    {open && <aside ref={dockRef} className="ask-dock" role="dialog" aria-label="Ask Intros" data-voice-skip="true"
-      style={pos ? { ...clampPoint(pos, Math.min(390, window.innerWidth - 32), dockRef.current?.offsetHeight ?? 420), right: 'auto', bottom: 'auto' } : undefined}>
+    {open && <aside ref={dockRef} className={'ask-dock butler-conversation'+(expanded?' butler-expanded':'')} role="dialog" aria-label="Ask Intros" data-voice-skip="true"
+      style={pos ? { ...clampPoint(pos, Math.min(expanded?680:440, window.innerWidth - 32), dockRef.current?.offsetHeight ?? 420), right: 'auto', bottom: 'auto' } : undefined}>
       <header className="ask-dock-drag" title="Drag to move" onPointerDown={e => { if ((e.target as HTMLElement).closest('button')) return; dragDock(e, dockRef.current) }}>
         <span className="ask-dock-mark"><AetherisGlyph size={14} /></span>
         <div><b>Ask Intros</b><small>Your butler for the whole system</small></div>
@@ -419,15 +424,20 @@ function AskIntrosDockInner({ page, peopleNames, memberName, briefing, contextPa
           onClick={() => { setVoice({ speakReplies: !voice.speakReplies }); if (voice.speakReplies) stopReading() }}>
           {voice.speakReplies ? <Volume2 size={15} /> : <VolumeX size={15} />}</button>}
         {pos && <button className="icon-btn" aria-label="Move Ask Intros back to the corner" title="Back to the corner" onClick={() => { setPos(null); writePoint(POS_KEY, null) }}>↘</button>}
+        <button className="icon-btn" aria-label={expanded?'Compact conversation':'Expand conversation'} onClick={()=>setExpanded(v=>!v)}>{expanded?'↙':'↗'}</button>
         <button className="icon-btn" aria-label="Close Ask Intros" onClick={() => setOpen(false)}><X size={16} /></button>
       </header>
+      <details className="butler-options"><summary>Conversation options <span>History · settings</span></summary><div className="butler-options-body">
       <div className="butler-history-controls">
         <button type="button" disabled={busy || !memory.ready} onClick={() => { setShowHistory(value => !value); void memory.listHistory() }}><History size={13}/> History</button>
         <button type="button" disabled={busy || !memory.ready} onClick={() => { setDraft(null); setFileExport(null); setAttachments([]); void memory.switchConversation() }}><Plus size={13}/> New conversation</button>
       </div>
-      <p className="butler-save-notice" role="status">{memory.notice} <button type="button" onClick={memory.retrySave}>Retry</button></p>
+
       {showHistory && <div className="butler-history-list">{memory.history.map(item => <button type="button" key={item.id} disabled={busy} onClick={() => { setDraft(null); setFileExport(null); setAttachments([]); void memory.switchConversation(item.id); setShowHistory(false) }}>{item.title}</button>)}{memory.historyBefore && <button type="button" onClick={() => void memory.listHistory(true)}>More conversations</button>}{!memory.history.length && <span>No saved conversations found.</span>}</div>}
       <ButlerWorkspaceControls welcome={newMemberWelcome} onStart={() => { setOpen(false); window.dispatchEvent(new Event('ask-intros:onboarding')) }} />
+
+      </div></details>
+      {/failed|unavailable|before switching/i.test(memory.notice)&&<p className="butler-save-notice" role="alert">{memory.notice} <button type="button" onClick={memory.retrySave}>Retry</button></p>}
 
       {dictation.supported && <div className="ask-dock-voice">
         <button type="button" className={voice.conversation ? 'active' : ''} aria-pressed={voice.conversation}
@@ -438,9 +448,9 @@ function AskIntrosDockInner({ page, peopleNames, memberName, briefing, contextPa
         {dictation.interim && <em>{dictation.interim}</em>}
       </div>}
 
-      {dictation.error && <p className="ask-dock-voice-notice" role="alert">{dictation.error}</p>}
+      {dictation.error && <p className="ask-dock-voice-notice" role="alert">{dictation.error} <button type="button" onClick={dictation.start}>Retry voice</button></p>}
       {reader.problem && <p className="ask-dock-voice-notice" role="alert">{reader.problem}</p>}
-      {!dictation.supported && <p className="ask-dock-voice-notice">Voice input is unavailable in this browser. You can still type a conversation and use the reply’s read-aloud button.</p>}
+
       <div className="ask-dock-log" ref={listRef}>
         {memory.older && <button type="button" onClick={() => void memory.loadOlder()}>Load older messages</button>}
         {turns.map((turn, index) => <div key={index} className={`ask-dock-turn ${turn.role}`}>
@@ -451,10 +461,9 @@ function AskIntrosDockInner({ page, peopleNames, memberName, briefing, contextPa
           {turn.did && turn.did.length > 0 && <ul className="ask-dock-did">{turn.did.map(note => <li key={note}>{note}</li>)}</ul>}
         </div>)}
         {busy && <div className="ask-dock-turn assistant"><span className="ask-dock-thinking-pill"><ThinkingOrb state="solving" size={20} theme="dark" /><span>Thinking…</span></span></div>}
-      </div>
 
-      <div className="ask-dock-openers">{openers.length > 0 && <span className="ask-dock-openers-label">Next</span>}{openers.map(item =>
-        <button key={item} disabled={busy || fileBusy || !memory.ready} onClick={() => void send(item)}>{item}</button>)}</div>
+      <details className="butler-suggestions"><summary>Suggested questions</summary><div className="ask-dock-openers">{openers.length > 0 && <span className="ask-dock-openers-label">Next</span>}{openers.map(item =>
+        <button key={item} disabled={busy || fileBusy || !memory.ready} onClick={() => void send(item)}>{item}</button>)}</div></details>
 
       {fileExport && <div className="butler-draft"><span>File ready</span><button type="button" onClick={() => { void downloadButlerFile(fileExport).catch(error => setDraftError(error instanceof Error ? error.message : 'Download failed.')) }}>Download file</button><button type="button" onClick={() => setFileExport(null)}>Dismiss</button>{draftError && <p role="alert">{draftError}</p>}</div>}
       {draft && <section className="butler-draft" aria-label="Review Butler draft">
@@ -464,13 +473,15 @@ function AskIntrosDockInner({ page, peopleNames, memberName, briefing, contextPa
         {draft.kind === 'draft-email' ? <button type="button" onClick={() => { void navigator.clipboard.writeText(draft.text).then(() => setDraftError('Draft copied.')).catch(() => setDraftError('Select the draft text to copy it.')) }}>Copy email draft</button> : <button type="button" disabled={draftBusy || draft.text.trim().length < 4 || !memory.owner} onClick={() => void commitDraft()}>{draftBusy ? 'Saving…' : draft.kind === 'publish-post' ? 'Publish to my network' : 'Save'}</button>}
         <button type="button" disabled={draftBusy} onClick={() => setDraft(null)}>Dismiss</button>
       </section>}
-      <div className="butler-files">
-        <label><Paperclip size={14}/> {fileBusy ? 'Reading files…' : 'Attach files'}<input type="file" multiple accept={BUTLER_ACCEPT} disabled={busy || fileBusy} onChange={event => { void addFiles(event.target.files); event.target.value = '' }}/></label>
+      </div>
+      {(attachments.length>0||fileError||fileBusy)&&<div className="butler-files">
+
         {attachments.map((file, index) => <span key={index}>{file.name}<button type="button" disabled={busy} aria-label={`Remove ${file.name}`} onClick={() => setAttachments(files => files.filter((_, i) => i !== index))}>×</button></span>)}
         {fileError && <p role="alert">{fileError}</p>}
-      </div>
+      </div>}
       <form className="ask-dock-input" onSubmit={event => { event.preventDefault(); void send(input) }}>
-        <input value={input} onChange={event => setInput(event.target.value)} placeholder="Ask, say it, or tell me what to do…" />
+        <label className="butler-attach" title="Attach images or files"><Paperclip size={16}/><input aria-label="Attach images or files" type="file" multiple accept={BUTLER_ACCEPT} disabled={busy||fileBusy} onChange={event=>{void addFiles(event.target.files);event.target.value=''}}/></label>
+        <input aria-label="Message Butler" value={input} onChange={event => setInput(event.target.value)} placeholder="Ask, say it, or tell me what to do…" />
         {dictation.supported && <button type="button" className={dictation.listening ? 'listening' : ''}
           aria-label={dictation.listening ? 'Stop listening' : 'Speak to Ask Intros'} onClick={dictation.toggle}>
           {dictation.listening ? <MicOff size={15} /> : <Mic size={15} />}</button>}

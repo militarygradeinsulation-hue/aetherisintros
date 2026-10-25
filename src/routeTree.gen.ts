@@ -13,6 +13,7 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as ActiveMemoryRouteImport } from './routes/active-memory'
 import { Route as AuthRouteImport } from './routes/auth'
+import { Route as MeetRouteImport } from './routes/meet'
 import { Route as DemoRouteImport } from './routes/demo'
 import { Route as EarlyAccessRouteImport } from './routes/early-access'
 import { Route as FounderStoryRouteImport } from './routes/founder-story'
@@ -79,6 +80,7 @@ const AuthRoute = AuthRouteImport.update({
   path: '/auth',
   getParentRoute: () => rootRouteImport,
 } as any)
+const MeetRoute = MeetRouteImport.update({ id: '/meet', path: '/meet', getParentRoute: () => rootRouteImport } as any)
 const DemoRoute = DemoRouteImport.update({
   id: '/demo',
   path: '/demo',
@@ -323,6 +325,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/active-memory': typeof ActiveMemoryRoute
   '/auth': typeof AuthRoute
+  '/meet': typeof MeetRoute
   '/demo': typeof DemoRoute
   '/early-access': typeof EarlyAccessRoute
   '/founder-story': typeof FounderStoryRoute
@@ -374,6 +377,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/active-memory': typeof ActiveMemoryRoute
   '/auth': typeof AuthRoute
+  '/meet': typeof MeetRoute
   '/demo': typeof DemoRoute
   '/early-access': typeof EarlyAccessRoute
   '/founder-story': typeof FounderStoryRoute
@@ -427,6 +431,7 @@ export interface FileRoutesById {
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/active-memory': typeof ActiveMemoryRoute
   '/auth': typeof AuthRoute
+  '/meet': typeof MeetRoute
   '/demo': typeof DemoRoute
   '/early-access': typeof EarlyAccessRoute
   '/founder-story': typeof FounderStoryRoute
@@ -480,6 +485,7 @@ export interface FileRouteTypes {
     | '/'
     | '/active-memory'
     | '/auth'
+    | '/meet'
     | '/demo'
     | '/early-access'
     | '/founder-story'
@@ -531,6 +537,7 @@ export interface FileRouteTypes {
     | '/'
     | '/active-memory'
     | '/auth'
+    | '/meet'
     | '/demo'
     | '/early-access'
     | '/founder-story'
@@ -583,6 +590,7 @@ export interface FileRouteTypes {
     | '/_authenticated'
     | '/active-memory'
     | '/auth'
+    | '/meet'
     | '/demo'
     | '/early-access'
     | '/founder-story'
@@ -636,6 +644,7 @@ export interface RootRouteChildren {
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
   ActiveMemoryRoute: typeof ActiveMemoryRoute
   AuthRoute: typeof AuthRoute
+  MeetRoute: typeof MeetRoute
   DemoRoute: typeof DemoRoute
   EarlyAccessRoute: typeof EarlyAccessRoute
   FounderStoryRoute: typeof FounderStoryRoute
@@ -701,6 +710,7 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/meet': { id: '/meet'; path: '/meet'; fullPath: '/meet'; preLoaderRoute: typeof MeetRouteImport; parentRoute: typeof rootRouteImport }
     '/demo': {
       id: '/demo'
       path: '/demo'
@@ -1074,6 +1084,7 @@ const rootRouteChildren: RootRouteChildren = {
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
   ActiveMemoryRoute: ActiveMemoryRoute,
   AuthRoute: AuthRoute,
+  MeetRoute: MeetRoute,
   DemoRoute: DemoRoute,
   EarlyAccessRoute: EarlyAccessRoute,
   FounderStoryRoute: FounderStoryRoute,

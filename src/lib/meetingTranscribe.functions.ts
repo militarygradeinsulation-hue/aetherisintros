@@ -34,9 +34,9 @@ export const transcribeMeetingAudio = createServerFn({ method: 'POST' })
     // Only spend on transcription for someone the database would let speak.
     const [{ data: me }, { data: meeting }] = await Promise.all([
       db.from('meeting_participants' as never).select('notes_consent').eq('meeting_id', data.meetingId).eq('user_id', context.userId).maybeSingle(),
-      db.from('meetings' as never).select('ended_at').eq('id', data.meetingId).maybeSingle(),
+      db.from('meetings' as never).select('ended_at, recording_started_at').eq('id', data.meetingId).maybeSingle(),
     ])
-    if (!meeting || (meeting as { ended_at: string | null }).ended_at || !(me as { notes_consent?: boolean } | null)?.notes_consent) {
+    if (!meeting || !(meeting as {recording_started_at?:string}).recording_started_at || (meeting as { ended_at: string | null }).ended_at || !(me as { notes_consent?: boolean } | null)?.notes_consent) {
       return { text: '', error: 'not_recording' }
     }
 
