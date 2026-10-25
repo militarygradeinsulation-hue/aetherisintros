@@ -2590,28 +2590,7 @@ function Shell({ startPage, feedOnly = false, assistant = true, crmSection }: { 
     window.addEventListener('keydown', onKey)
     return () => window.removeEventListener('keydown', onKey)
   }, [])
-  useEffect(() => {
-    const enforceUniquePortraits = () => {
-      const seenPeople = new Set<string>()
-      const seenSources = new Set<string>()
-      const portraits = Array.from(document.querySelectorAll<HTMLElement>('[data-person-portrait]'))
-        .sort((a, b) => Number(b.dataset['portraitPrimary'] === 'true') - Number(a.dataset['portraitPrimary'] === 'true'))
-      portraits.forEach(node => {
-        const id = node.dataset['personPortrait']
-        if (!id) return
-        const image = node.querySelector<HTMLImageElement>('img')
-        const source = image?.currentSrc || image?.getAttribute('src')
-        const repeated = seenPeople.has(id) || Boolean(source && seenSources.has(source))
-        node.classList.toggle('portrait-repeat', repeated)
-        seenPeople.add(id)
-        if (source) seenSources.add(source)
-      })
-    }
-    enforceUniquePortraits()
-    const observer = new MutationObserver(enforceUniquePortraits)
-    observer.observe(document.body, { childList: true, subtree: true })
-    return () => observer.disconnect()
-  }, [page, selected, draft, askOpen, needOpen, onboardOpen, threadId])
+
 
   const addNeed = async (o: Objective) => {
     await net.addAsk({ ask: o.title, detail: o.outcome, whyNow: o.whyNow, offer: o.valueOffer, industry: 'Cross-industry', location: me.location, urgency: 'high', visibility: 'network' })
