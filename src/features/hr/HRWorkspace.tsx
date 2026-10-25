@@ -238,7 +238,12 @@ function MemberHR({ account }: { account: string }) {
           <div className="hr-layout">
             <label className="hr-mobile-section">
               HR section
-              <select value={tab} disabled={busy} onChange={(e) => navigate(e.target.value as Tab)}>
+              <select
+                aria-label="HR section"
+                value={tab}
+                disabled={busy}
+                onChange={(e) => navigate(e.target.value as Tab)}
+              >
                 {(["overview", "setup", ...KINDS, "assistant"] as Tab[]).map((t) => (
                   <option key={t} value={t}>
                     {t === "overview"
