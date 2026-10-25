@@ -24,7 +24,7 @@ try{
   for(const width of [390,1280]){
     const page=await browser.newPage({viewport:{width,height:900}});
     await page.goto("http://127.0.0.1:"+port+"/",{waitUntil:"domcontentloaded",timeout:120000});
-    await page.waitForSelector(".ael-hero-lede",{timeout:45000});
+    await page.waitForSelector(".ael-hero-actions",{timeout:45000});
     await page.evaluate(()=>{
       const fixture=document.createElement("div");
       fixture.id="news-copy-contrast-fixture";fixture.className="ix-root";

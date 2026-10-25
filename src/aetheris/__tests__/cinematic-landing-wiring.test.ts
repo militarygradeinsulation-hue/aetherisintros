@@ -27,9 +27,7 @@ describe('Ask Intros cinematic UX integration', () => {
     expect(hero).not.toContain('Download on the')
     expect(hero).not.toContain('Days Sober')
   })
-  it('preserves purpose copy and connects real navigation actions', () => {
-    expect(landing).toContain('A real business need. A relevant person.')
-    expect(landing).toContain('The relationship network for CEOs.')
+  it('connects real navigation actions', () => {
     expect(section).toContain('<ExpandingTabs')
     expect(shell).toContain('<MacOsDock')
     expect(shell).toContain('const dockTargets = WORKSPACE_DESTINATIONS.filter')

@@ -40,10 +40,10 @@ export const Route = createFileRoute('/founder-story')({
   staticData: { sitemap: true },
   head: () => ({
     meta: [
-      { title: 'The Architect Behind the Operator — Aetheris' },
-      { name: 'description', content: 'Why Joseph Toney built Aetheris: a founder case file about evidence, responsibility, systems, and what operators carry.' },
-      { property: 'og:title', content: 'The Architect Behind the Operator — Aetheris' },
-      { property: 'og:description', content: 'Why Joseph Toney built Aetheris—and why everything leaves evidence.' },
+      { title: 'Why Joseph Toney Built Ask Intros | Founder Story' },
+      { name: 'description', content: 'Meet Joseph Toney, founder of Ask Intros, and read the story behind its approach to business relationships, context, and useful introductions.' },
+      { property: 'og:title', content: 'Why Joseph Toney Built Ask Intros | Founder Story' },
+      { property: 'og:description', content: 'The founder story behind Ask Intros and its approach to business relationships, context, and useful introductions.' },
       { property: 'og:type', content: 'article' },
       { property: 'og:url', content: 'https://askintros.vip/founder-story' },
       { name: 'twitter:card', content: 'summary_large_image' },
@@ -88,6 +88,7 @@ function FounderStoryPage() {
     <section className="founder-preface">
       <span>BEFORE THE SOFTWARE</span>
       <blockquote>“Before Aetheris was software, it was a lifetime of learning how people, systems, pressure, failure, and responsibility connect.”</blockquote>
+      <p>Ask Intros is the product on this site. Aetheris is the name used throughout the founder manuscript below.</p>
       <p>This is not a vanity biography. It is the evidence behind why Aetheris exists, how its operating principles were formed, and why its work begins with what is real.</p>
     </section>
 

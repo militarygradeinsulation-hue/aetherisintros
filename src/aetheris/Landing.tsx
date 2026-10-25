@@ -6,6 +6,8 @@ import { CinematicHero } from '@/components/ui/cinematic-landing-hero'
 import { CinematicEntrance, CITY_OPENING_VIDEO } from '@/components/ui/cinematic-entrance'
 import { AppearanceToggle } from './AppearanceToggle'
 import { HomeSlideCarousel } from './HomeSlideCarousel'
+import { PublicStructuredData } from './PublicStructuredData'
+import { PRODUCT_TITLE, PRODUCT_DESCRIPTION } from '@/lib/public-search'
 import './editorial-landing.css'
 import './architectural-system.css'
 import './compact-homepage.css'
@@ -25,6 +27,7 @@ export default function Landing() {
   const signedIn = access.signedIn
 
   return <main className="ael ael-compact ael--text">
+    <PublicStructuredData path="/" title={PRODUCT_TITLE} description={PRODUCT_DESCRIPTION} />
     <CinematicEntrance videoSrc={CITY_OPENING_VIDEO} />
     <a className="ael-skip" href="#ael-main">Skip to content</a>
 
@@ -75,6 +78,12 @@ export default function Landing() {
     <footer className="ael-compact-footer">
       <Link to="/" className="ael-compact-footer-brand" aria-label="Ask Intros home"><span className="stencil-footer-wordmark" style={{ color: "var(--st-ink)", backgroundColor: "var(--st-bg)" }}>ASK INTROS</span></Link>
       <span>WHY ME &middot; WHY THEM &middot; WHY NOW</span>
+      <nav className="ael-guide-links" aria-label="Learn about Ask Intros">
+        <Link to="/how-it-works">How it works</Link>
+        <Link to="/warm-introductions">Warm introductions</Link>
+        <Link to="/active-memory">Active Memory</Link>
+        <Link to="/founder-story">Founder story</Link>
+      </nav>
     </footer>
   </main>
 }
