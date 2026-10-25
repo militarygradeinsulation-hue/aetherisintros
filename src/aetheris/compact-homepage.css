@@ -262,7 +262,7 @@
   max-height:none;
  }
  .ael.ael-compact .ael-header-actions {gap:6px;min-width:0}
- .ael.ael-compact .ael-header .ael-signin {display:none}
+ .ael.ael-compact .ael-header .ael-signin {display:inline-flex;font-size:9px;letter-spacing:.03em}
  .ael.ael-compact .ael-header .ael-nav-cta {
   padding:0 9px;
   min-height:42px;
@@ -324,7 +324,7 @@
     justify-content:center;
     gap:7px;
   }
-  .ael.ael-compact .ael-header .ael-signin { display:none; }
+  .ael.ael-compact .ael-header .ael-signin { display:inline-flex;font-size:9px;letter-spacing:.03em; }
   .ael.ael-compact .ael-header .ask-intros-lockup {
     width:clamp(153px,43vw,204px);
     height:auto;
