@@ -1,5 +1,5 @@
 // Browser check for the meeting room UI: two people with fake cameras (and a speech-like fake
-// microphone) pass the camera check, join, connect, and record. The host presses Record, the
+// microphone) pass the camera check, join, connect, and record. The host consents on joining, the
 // guest is asked and agrees, and both people's speech is transcribed into the shared
 // transcript. Database, realtime and server functions are in-browser stand-ins.
 // Run: node scripts/meeting-room-check/run.mjs   (SHOTS=dir to save screenshots)
@@ -73,6 +73,8 @@ for (const p of [host, guest]) p.on('pageerror', e => console.log('  page error:
 console.log('meeting room')
 ok(await seen(host, 'READY TO JOIN') && await seen(host, 'Join meeting'), 'the camera check shows before joining')
 await shot(host, '1-lobby')
+ok(await host.getByRole('checkbox').isChecked(), 'saving audio and Butler analysis are disclosed and enabled in the lobby')
+await guest.getByRole('checkbox').uncheck()
 await host.getByRole('button', { name: 'Join meeting' }).click()
 await guest.getByRole('button', { name: 'Join meeting' }).click()
 ok(await seen(host, 'LIVE') && await seen(guest, 'LIVE'), 'both join the meeting')
@@ -80,10 +82,10 @@ ok(await host.waitForFunction(() => document.querySelectorAll('.meeting-grid vid
 ok(await seen(host, 'Invite people'), 'the host can invite people from inside the call')
 ok(!(await guest.getByText('Invite people').count()), 'guests cannot invite')
 
-await host.getByRole('button', { name: 'Record' }).click()
-ok(await seen(host, 'Stop recording') && await seen(host, 'Recording · notes for you'), 'Record starts recording and includes the person who pressed it')
+ok(await seen(host, 'Stop recording') && await seen(host, 'Recording · notes for you'), 'joining with consent starts recording automatically')
 ok(await seen(guest, 'started recording for notes', 10000), 'the guest is asked straight away whether to include their voice')
 ok(await seen(host, 'line 1', 20000), "the host's speech is transcribed into the transcript")
+ok(await host.evaluate(() => JSON.parse(localStorage.getItem('db:audio_uploads') ?? '[]').length > 0), 'consented microphone audio is uploaded')
 await guest.getByLabel('Recording consent').getByRole('button', { name: 'Include my voice' }).click()
 ok(await seen(guest, 'Recording · notes for', 10000) && await seen(guest, 'Stop including my voice'), 'the guest agrees and is now included')
 ok(await host.waitForFunction(() => [...document.querySelectorAll('.meeting-transcript li b')].some(b => b.textContent === 'Ben Guest'), null, { timeout: 25000 }).then(() => true, () => false), "the guest's speech reaches the host's transcript, attributed to them")

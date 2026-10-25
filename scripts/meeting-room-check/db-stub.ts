@@ -69,5 +69,9 @@ export const supabase = {
     getUser: async () => ({ data: { user: { id: me() } } }),
     onAuthStateChange: () => ({ data: { subscription: { unsubscribe() {} } } }),
   },
-  storage: { from: () => ({ download: async () => ({ data: null, error: null }) }) },
+  storage: { from: () => ({
+    download: async () => ({ data: null, error: null }),
+    upload: async (path: string, blob: Blob) => { write('audio_uploads', [...read('audio_uploads'), { path, size: blob.size }]); return { data: { path }, error: null } },
+    list: async () => ({ data: [], error: null }),
+  }) },
 }
