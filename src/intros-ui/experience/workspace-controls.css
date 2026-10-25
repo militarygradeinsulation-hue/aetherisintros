@@ -143,3 +143,15 @@
  :root[data-theme][data-experience="business"] body .workspace-navigation-row > .ledger-crm-topbar:not([hidden]) {height:56px!important;min-height:56px!important;padding-block:6px!important}
  :root[data-theme][data-experience="business"] body .workspace-navigation-row .workspace-view-toggle {align-self:center!important}
 }
+
+/* Text-only onboarding actions must not inherit icon-column menu grids. */
+@layer bridge-social-reference {
+ :root[data-theme] body button.onboarding-menu-action,
+ :root[data-theme] body .butler-workspace-controls > div > button:not(.compact-experience-switch) {
+  display:flex!important;align-items:center!important;justify-content:flex-start!important;grid-template-columns:none!important;
+  width:auto!important;min-width:180px!important;max-width:100%!important;height:auto!important;min-height:44px!important;
+  padding:10px 14px!important;box-sizing:border-box!important;white-space:normal!important;word-break:normal!important;overflow-wrap:normal!important;
+  font:600 13px/1.4 system-ui,sans-serif!important;letter-spacing:normal!important;text-align:left!important;flex:0 0 auto!important;
+ }
+ :root[data-theme] body button.onboarding-menu-action {width:100%!important}
+}
