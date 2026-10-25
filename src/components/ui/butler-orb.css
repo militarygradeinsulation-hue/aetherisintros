@@ -51,3 +51,15 @@
     padding:0!important;display:flex!important;align-items:center!important;justify-content:center!important;
   }
 }
+
+/* Legacy phone CSS hides every span inside the launcher. Keep both the
+   actual orb host and its no-WebGL fallback visible, not only their wrapper. */
+@layer bridge-social-reference {
+  :root[data-theme] body .ix-root.ledger-native-app[data-experience] > .ix-assistant button.ask-dock-fab .butler-orb {
+    display:block!important;width:72px!important;height:72px!important;flex:0 0 72px!important;
+    visibility:visible!important;opacity:1!important;
+  }
+  :root[data-theme] body .ix-root.ledger-native-app[data-experience] > .ix-assistant button.ask-dock-fab .butler-orb-fallback {
+    display:block!important;visibility:visible!important;opacity:1!important;
+  }
+}
