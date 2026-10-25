@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { HOME_SLIDES } from './home-slides'
 import './home-slides.css'
 
@@ -15,6 +15,7 @@ export function HomeSlideCarousel() {
   const [paused, setPaused] = useState(false)
   const [reduced, setReduced] = useState(false)
   const count = HOME_SLIDES.length
+  const dotsRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
     const query = window.matchMedia('(prefers-reduced-motion: reduce)')
@@ -37,7 +38,6 @@ export function HomeSlideCarousel() {
     preload.src = next.src
   }, [index, count])
 
-  const step = (direction: number) => setIndex(i => (i + direction + count) % count)
 
   return <>
     <div
@@ -46,10 +46,6 @@ export function HomeSlideCarousel() {
       onMouseLeave={() => setPaused(false)}
       onFocus={() => setPaused(true)}
       onBlur={() => setPaused(false)}
-      onKeyDown={event => {
-        if (event.key === 'ArrowRight') { event.preventDefault(); step(1) }
-        if (event.key === 'ArrowLeft') { event.preventDefault(); step(-1) }
-      }}
     >
       {HOME_SLIDES.map((slide, i) => (
         <div key={slide.src} className={i === index ? 'ael-hero-slide is-active' : 'ael-hero-slide'} aria-hidden={i !== index}>
@@ -71,7 +67,19 @@ export function HomeSlideCarousel() {
       >
         {paused ? 'Play images' : 'Pause images'}
       </button>
-      <div className="ael-hero-slide-dots" role="group" aria-label="Choose a homepage image">
+      <div
+        className="ael-hero-slide-dots"
+        ref={dotsRef}
+        role="group"
+        aria-label="Choose a homepage image"
+        onKeyDown={event => {
+          if (event.key !== 'ArrowRight' && event.key !== 'ArrowLeft') return
+          event.preventDefault()
+          const next = (index + (event.key === 'ArrowRight' ? 1 : -1) + count) % count
+          setIndex(next)
+          dotsRef.current?.querySelectorAll<HTMLButtonElement>('.ael-hero-slide-dot')[next]?.focus()
+        }}
+      >
         {HOME_SLIDES.map((slide, i) => (
           <button
             key={slide.src}
