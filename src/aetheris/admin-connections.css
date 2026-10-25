@@ -6,3 +6,10 @@
 .admin-connection-checks ul { list-style:none; padding:0; display:grid; grid-template-columns:repeat(auto-fit,minmax(min(100%,260px),1fr)); gap:14px; }
 .admin-connection-checks li { padding:16px; border:1px solid currentColor; min-width:0; }
 .admin-connection-checks li h3 { margin:0 0 10px; }
+
+/* Compact bento surfaces and result beams adapted from the supplied component references. */
+.admin-connection-checks{border-color:#82434b;border-radius:18px}.admin-read-map{position:relative;padding-top:22px;isolation:isolate}.admin-read-map ul{position:relative;z-index:1;margin:0;gap:16px}.admin-read-map li{background:#fff;border:1px solid #82434b;border-radius:14px;box-shadow:inset 3px 0 #bd3b53}.admin-read-map li[data-state=read_verified]{box-shadow:inset 3px 0 #3e7b5a}.admin-read-map li strong{display:inline-block;border:1px solid #82434b;border-radius:6px;padding:4px 7px;font-size:12px}.admin-read-map li p{font-size:13px;line-height:1.6}.admin-read-beams{position:absolute;top:0;left:0;pointer-events:none;z-index:0;overflow:visible}.admin-read-beams path{fill:none;stroke-width:1.5}.admin-read-beam-base{stroke:#bd3b53;opacity:.35}.admin-read-beam-confirmed{stroke:#e11d48;stroke-dasharray:12 88;animation:admin-read-confirmed 1.2s ease-out 2;opacity:.8}
+:root[data-theme=dark] .admin-read-map li{background:#1b1718;border-color:#82434b}
+@keyframes admin-read-confirmed{from{stroke-dashoffset:100}to{stroke-dashoffset:0}}
+@media(max-width:600px){.admin-read-beams{display:none}.admin-read-map{padding-top:0}}
+@media(prefers-reduced-motion:reduce){.admin-read-beam-confirmed{animation:none;stroke-dasharray:none}}
