@@ -72,7 +72,8 @@ try {
       const page = await context.newPage();
       page.on('pageerror', error => errors.push(error.message));
       for (const [path] of pages.slice(1)) {
-        await page.goto(base + path, { waitUntil: 'domcontentloaded' });
+        // Let Vite finish initial dependency loading before moving to the next guide.
+        await page.goto(base + path, { waitUntil: 'networkidle', timeout: 60000 });
         await page.getByRole('heading', { level: 1 }).waitFor();
         await page.waitForFunction(theme => document.documentElement.dataset.theme === theme, theme);
         assert(!await page.evaluate(() => document.documentElement.scrollWidth > innerWidth), path + ' fits ' + width);
