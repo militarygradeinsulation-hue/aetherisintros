@@ -11,10 +11,9 @@ describe('Ask Intros connection identity', () => {
     expect(html).toContain('<title>Ask Intros</title>')
     expect(html).not.toContain('Sparkles')
   })
-  it('reuses the identity in the wordmark', () => {
+  it('uses the official logo image in the wordmark', () => {
     const html = renderToStaticMarkup(<AskIntrosLockup variant="compact" />)
-    expect(html).toContain('ask-intros-lockup__symbol')
-    expect(html).toContain('data-ask-intros-mark')
-    expect(html).toContain('WHY ME')
+    expect(html).toContain('/ask-intros-logo.jpg')
+    expect(html).toContain('Why me, why them, why now')
   })
 })
