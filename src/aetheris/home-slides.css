@@ -1,18 +1,34 @@
 /* Homepage hero image area: rotating member brand graphics, no visible controls. */
 
-.ael-hero-slides {
-  position: absolute;
-  inset: 0;
-  z-index: -2;
+:root .ael.ael-compact .ael-hero--carousel {
+  display: flex;
+  flex-direction: column;
+  height: auto;
+  min-height: 0;
+  padding: 120px 0 20px;
+  background: var(--background);
+  gap: 16px;
+}
+
+.ael .ael-hero--carousel::after {
+  display: none;
+}
+
+.ael-hero--carousel .ael-hero-slides {
+  position: relative;
+  width: 100%;
+  height: min(58svh, 540px);
+  flex: none;
+  z-index: 0;
   overflow: hidden;
-  background: #191816;
+  background: var(--background);
 }
 
 .ael-hero-slide {
   position: absolute;
   inset: 0;
   opacity: 0;
-  transition: opacity 1200ms ease;
+  transition: none;
   pointer-events: none;
 }
 
@@ -25,19 +41,28 @@
   inset: 0;
   width: 100%;
   height: 100%;
-  object-fit: cover;
-  object-position: center 55%;
-  filter: brightness(.68) saturate(.8) contrast(1.06);
+  object-fit: contain;
+  object-position: center;
+  filter: none;
 }
 
-/* The legibility wash must never swallow the pictures underneath it. */
-.ael-hero-shade {
-  pointer-events: none;
+:root .ael.ael-compact .ael-hero--carousel .ael-hero-content {
+  width: 100%;
+  max-width: none;
+  padding-inline: 20px;
+}
+
+:root .ael.ael-compact .ael-hero--carousel .ael-hero-actions {
+  justify-content: center;
+  margin: 0;
 }
 
 @media (max-width: 760px) {
-  .ael-hero-slide img {
-    object-position: 62% center;
+  :root .ael.ael-compact .ael-hero--carousel {
+    padding-top: 110px;
+  }
+  .ael-hero--carousel .ael-hero-slides {
+    height: 62svh;
   }
 }
 

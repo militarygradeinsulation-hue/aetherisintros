@@ -1,19 +1,19 @@
-import { ArrowDownRight, ArrowRight, ArrowUpRight } from 'lucide-react'
+import { ArrowRight, ArrowUpRight } from 'lucide-react'
 import { Link } from '@tanstack/react-router'
 import { useAccess } from './access'
 import { AskIntrosLockup } from './AskIntrosLockup'
 import { CinematicHero } from '@/components/ui/cinematic-landing-hero'
 import { CinematicEntrance, CITY_OPENING_VIDEO } from '@/components/ui/cinematic-entrance'
 import { AppearanceToggle } from './AppearanceToggle'
-import { StencilHeadline } from './StencilHeadline'
+import { HomeSlideCarousel } from './HomeSlideCarousel'
 import { PublicStructuredData } from './PublicStructuredData'
 import { PRODUCT_TITLE, PRODUCT_DESCRIPTION } from '@/lib/public-search'
-import { HomeSlideCarousel } from './HomeSlideCarousel'
 import './editorial-landing.css'
 import './architectural-system.css'
 import './compact-homepage.css'
 import './editorial-media.css'
 import './public-burnt-orange.css'
+import './home-slides.css'
 
 /** Compact typographic homepage with no illustrative photography. */
 function JoinAction({ signedIn, className = '' }: { signedIn: boolean; className?: string }) {
@@ -46,27 +46,15 @@ export default function Landing() {
       </div>
     </header>
 
-    <section className="ael-hero" id="ael-main" aria-labelledby="ael-hero-title">
+    <section className="ael-hero ael-hero--carousel" id="ael-main" aria-labelledby="ael-hero-title">
+      <h1 id="ael-hero-title" className="sr-only">Ask Intros — The only social platform that runs your business.</h1>
       <HomeSlideCarousel />
-      <div className="ael-hero-shade" aria-hidden="true" />
-      <div className="ael-architecture-meta" aria-hidden="true"><span>RELATIONSHIPS / BY DESIGN</span><span>ASK INTROS — CONNECTION 001</span></div>
       <div className="ael-hero-content">
-        <div className="ael-platform-strip" aria-label="A purposeful business connection">
-          <p className="ael-platform-statement">A real business need. A relevant person. <strong>A reason to connect.</strong></p>
-          <p className="ael-platform-disclaimer">The relationship network for CEOs. Who matters. Why they matter. Why now.</p>
-        </div>
-        <p className="ael-kicker ael-kicker-light"><span className="ael-dash" /> Relationships by design</p>
-        <h1 id="ael-hero-title" className="stencil-display"><span className="sr-only">The Only social platform that runs your business.</span><StencilHeadline lines={['THE ONLY SOCIAL', 'PLATFORM THAT', 'RUNS YOUR BUSINESS']} className="stencil-headline--hero" /></h1>
-        <p className="ael-hero-lede">Ask Intros connects business networking, introductions with mutual consent, and private relationship context. Share a specific need, explore relevant people, and agree on the next step.</p>
+        <p className="sr-only">Share what you need. Explore relevant people. Request an introduction with context and mutual consent.</p>
         <div className="ael-hero-actions">
           <JoinAction signedIn={signedIn} className="ael-btn ael-btn-gold ai-gradient-button" />
           <Link to="/demo" className="ael-text-link">Explore the demo <ArrowRight aria-hidden="true" size={16} /></Link>
         </div>
-      </div>
-      <div className="ael-hero-bottom">
-        <span>WHY ME. WHY THEM. WHY NOW.</span>
-        <a href="#cinematic-experience">THE EXPERIENCE <ArrowDownRight aria-hidden="true" size={16} /></a>
-        <span>01 / 03</span>
       </div>
     </section>
 
