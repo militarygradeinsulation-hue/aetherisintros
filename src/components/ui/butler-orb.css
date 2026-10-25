@@ -1,7 +1,10 @@
 .butler-orb {position:relative;display:inline-block;width:72px;height:72px;flex:0 0 72px;pointer-events:none;isolation:isolate;border-radius:50%;background:none;filter:none}
 .butler-orb[data-orb-view="social"] {background:none;filter:none}
 .butler-orb > div {position:absolute!important;inset:0}
-.butler-orb canvas {display:block;pointer-events:none}
+.butler-orb canvas {display:block;pointer-events:none;filter:none!important}
+/* The AI bubble keeps its view color: the blanket canvas grayscale in
+   stencil-system.css must never desaturate this bubble (blue Social, red Business). */
+:where(.ix-root,.app-shell,.ask-os,.ael) .butler-orb canvas {filter:none!important}
 .butler-orb-fallback {position:absolute;inset:9px;border-radius:43% 57% 62% 38% / 48% 39% 61% 52%;background:radial-gradient(circle at 30% 24%,#ffeeef,#ed6576 42%,#e31c32 76%);box-shadow:0 8px 24px #0003}
 .butler-orb[data-orb-view="social"] .butler-orb-fallback {background:radial-gradient(circle at 30% 24%,#eef4ff,#6598ed 42%,#2f4be0 76%)}
 /* Override the former Social-only placeholder without touching the Bridge snapshot. */
