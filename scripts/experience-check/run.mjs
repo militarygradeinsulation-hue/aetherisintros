@@ -7,6 +7,39 @@ const output = process.env.EXPERIENCE_SCREENSHOTS || "/tmp/ask-intros-experience
 mkdirSync(output, { recursive: true });
 const browser = await chromium.launch({ headless: true, ...(process.env.PLAYWRIGHT_EXECUTABLE_PATH ? { executablePath: process.env.PLAYWRIGHT_EXECUTABLE_PATH } : {}) });
 try {
+  // A position saved on desktop must never displace the mobile Butler.
+  for (const view of ['social', 'business']) {
+    const mobile = await browser.newContext({ viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true });
+    await mobile.addInitScript(view => {
+      localStorage.setItem('ask-intros.experience.v1', view);
+      localStorage.setItem('aetheris-dock-fab-pos', JSON.stringify({ left: 15, top: 150 }));
+    }, view);
+    const phone = await mobile.newPage();
+    await phone.goto(url, { waitUntil: 'domcontentloaded', timeout: 90000 });
+    const launcher = phone.locator('.ix-assistant .ask-dock-fab');
+    await launcher.waitFor({ timeout: 90000 });
+    const assertPinned = async () => {
+      const box = await launcher.boundingBox();
+      const more = await phone.getByRole('button', { name: 'More menu', exact: true }).filter({ visible: true }).boundingBox();
+      const nav = await phone.getByRole('navigation', { name: 'Mobile navigation', exact: true }).filter({ visible: true }).boundingBox();
+      if (!box || !more || !nav || Math.abs(390 - box.x - box.width - 14) > 2 || box.y + box.height > nav.y || nav.y - box.y - box.height > 32)
+        throw new Error(view + ' Butler is not pinned immediately above More: ' + JSON.stringify({ box, more, nav }));
+    };
+    await assertPinned();
+    const box = await launcher.boundingBox();
+    await phone.mouse.move(box.x + box.width / 2, box.y + box.height / 2);
+    await phone.mouse.down();
+    await phone.mouse.move(40, 200, { steps: 8 });
+    await phone.mouse.up();
+    await assertPinned();
+    await launcher.click();
+    await phone.getByRole('dialog', { name: 'Ask Intros', exact: true }).waitFor();
+    await launcher.click();
+    await assertPinned();
+    await phone.screenshot({ path: output + '/mobile-butler-' + view + '.png' });
+    console.log(view + ': mobile Butler pinned above More with stale position, drag and open/close');
+    await mobile.close();
+  }
   const page = await browser.newPage({ viewport: { width: 1440, height: 1000 } });
   const checkButler = async () => {
     const button = page.locator('.ix-assistant .ask-dock-fab');
@@ -39,7 +72,7 @@ try {
   page.on("pageerror", (e) => errors.push(e.message));
   await page.goto(url, { waitUntil: "domcontentloaded", timeout: 90000 });
   console.log("Navigation returned");
-  await page.getByRole("button", { name: "Social", exact: true }).waitFor({ timeout: 90000 });
+  await page.getByRole("switch", { name: "Business view", exact: true }).waitFor({ timeout: 90000 });
   await page.waitForTimeout(500);
   await page.screenshot({ path: `${output}/business.png`, fullPage: false });
   console.log("Business loaded");
@@ -47,17 +80,17 @@ try {
   await page.evaluate(() => {
     window.__draftNode = document.querySelector("#ledger-post-content");
   });
-  await page.getByRole("button", { name: "Social", exact: true }).click();
+  await page.getByRole("switch", { name: "Business view", exact: true }).uncheck();
   await page.getByRole("heading", { name: "Today, in good company." }).waitFor();
   await checkButler();
   await page.locator("#commons-post").fill("Original Bridge draft");
   await page.getByRole("tab", { name: "Intros", exact: false }).click();
   await page.getByRole("tab", { name: "Posts", exact: true }).click();
   if ((await page.locator("#commons-post").inputValue()) !== "Original Bridge draft") throw new Error("Bridge draft lost across tabs");
-  await page.getByRole("button", { name: "Business", exact: true }).click();
+  await page.getByRole("switch", { name: "Business view", exact: true }).check();
   if ((await page.locator("#ledger-post-content").inputValue()) !== "Keep this draft across both visual views") throw new Error("Business draft lost");
   if (!(await page.evaluate(() => window.__draftNode === document.querySelector("#ledger-post-content")))) throw new Error("Canonical feed remounted");
-  await page.getByRole("button", { name: "Social", exact: true }).click();
+  await page.getByRole("switch", { name: "Business view", exact: true }).uncheck();
   await page.getByRole("tab", { name: "Everything", exact: true }).click();
   if ((await page.locator("#commons-post").inputValue()) !== "Original Bridge draft") throw new Error("Bridge draft lost across views");
   await page.waitForTimeout(500);
@@ -80,9 +113,9 @@ try {
   await search.fill("Marcus");
   await page.waitForTimeout(500);
   await page.screenshot({ path: `${output}/social-people.png`, fullPage: false });
-  await page.getByRole("button", { name: "Business", exact: true }).click();
+  await page.getByRole("switch", { name: "Business view", exact: true }).check();
   if ((await search.inputValue()) !== "Marcus") throw new Error("Directory filter lost");
-  await page.getByRole("button", { name: "Social", exact: true }).click();
+  await page.getByRole("switch", { name: "Business view", exact: true }).uncheck();
   console.log("People filters preserved");
   await checkIntroductions();
   await page
@@ -99,9 +132,9 @@ try {
   if ((await composer.count()) !== 1) throw new Error("Message composer missing");
   {
     await composer.fill("Unsent message");
-    await page.getByRole("button", { name: "Business", exact: true }).click();
+    await page.getByRole("switch", { name: "Business view", exact: true }).check();
     
-    await page.getByRole("button", { name: "Social", exact: true }).click();
+    await page.getByRole("switch", { name: "Business view", exact: true }).uncheck();
     if ((await composer.inputValue()) !== "Unsent message") throw new Error("Bridge message draft lost");
   }
   await page
@@ -117,7 +150,7 @@ try {
   if (palette !== "#fff") throw new Error("Original Bridge light palette missing: " + palette);
   console.log("Light Social theme checked");
   await page.reload();
-  await page.getByRole("button", { name: "Social", exact: true }).waitFor();
+  await page.getByRole("switch", { name: "Business view", exact: true }).waitFor();
   await page.waitForFunction(() => document.documentElement.dataset.experience === "social");
   console.log("Social preference restored");
   await page.setViewportSize({ width: 390, height: 844 });

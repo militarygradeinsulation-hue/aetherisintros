@@ -355,7 +355,7 @@ function AskIntrosDockInner({ page, peopleNames, memberName, briefing, contextPa
   return <>
     <button ref={fabRef} className={`ask-dock-fab ${open ? 'active' : ''}`} aria-label="Ask Intros" aria-expanded={open} title="Ask Intros · drag to move"
       style={fabPos ? { ...clampPoint(fabPos, fabRef.current?.offsetWidth ?? 140, fabRef.current?.offsetHeight ?? 48), right: 'auto', bottom: 'auto' } : undefined}
-      onPointerDown={e => dragFab(e, fabRef.current)}
+      onPointerDown={e => { if (!window.matchMedia('(max-width: 767px)').matches) dragFab(e, fabRef.current) }}
       onClick={() => { if (fabRef.current?.dataset['dragged']) return; setOpen(value => !value) }}>
       {open ? <X size={18} /> : <><span className="ask-dock-blob" aria-hidden="true"><ButlerOrb /></span><AetherisGlyph size={18} /></>}
       {!open && <span>Ask Intros</span>}
