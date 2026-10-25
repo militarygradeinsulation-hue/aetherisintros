@@ -1,5 +1,6 @@
 import { newcomerLane } from '@/features/evidence-loop/matching'
 import { HRWorkspace } from '@/features/hr/HRWorkspace'
+import { PodcastStudioPage } from './pages/PodcastStudioPage'
 import { NetworkValuePage } from '@/features/network-value/NetworkValuePage'
 import { PostOwnerActions } from './PostOwnerActions'
 import { AskIntrosMark } from '@/aetheris/AskIntrosMark'
@@ -2765,6 +2766,7 @@ function Shell({ startPage, feedOnly = false, assistant = true, crmSection }: { 
       diagnostic: <><LeakCheckPanel /><CompanyDiagnosticReport /></>,
       grid: <GridPage />,
       news: <NewsPage />,
+      podcast: <PodcastStudioPage />,
       'business-lobby': <BusinessLobbyPage />,
       'opportunity-exchange': <OpportunityExchangePage />,
       membership: <MembershipPage />,
