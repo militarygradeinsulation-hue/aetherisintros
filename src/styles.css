@@ -355,3 +355,6 @@ body::before {
   :where(.ai-gradient-button,.btn.primary,.eh-primary,.tile-cta,.memory-cta) { animation:none; transition:none; }
   :where(.ai-gradient-button,.btn.primary,.eh-primary,.tile-cta,.memory-cta):hover { transform:none; }
 }
+
+/* Official logo image: let its dark backdrop melt into dark surfaces. */
+html.dark .ask-intros-lockup--image{mix-blend-mode:lighten}
