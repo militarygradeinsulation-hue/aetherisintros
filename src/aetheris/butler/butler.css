@@ -1,0 +1,16 @@
+.ask-dock .butler-history-controls {display:flex;gap:8px;padding:8px 14px;flex-shrink:0}
+.ask-dock .butler-history-controls button,.ask-dock .butler-draft button,.ask-dock .butler-history-list button {color:inherit;background:transparent;border:1px solid currentColor;border-radius:8px;padding:6px 9px;cursor:pointer;display:inline-flex;gap:5px;align-items:center}
+.ask-dock .butler-save-notice {font-size:10px;line-height:1.5;padding:0 14px;margin:0 0 6px}
+.ask-dock .butler-save-notice button {color:inherit;background:transparent;text-decoration:underline;border:0;cursor:pointer}
+.ask-dock .butler-history-list {display:grid;gap:6px;padding:8px 14px;max-height:140px;overflow:auto;flex-shrink:0}
+.ask-dock .butler-draft {padding:12px 14px;display:flex;flex-wrap:wrap;gap:8px;border-top:1px solid currentColor;max-height:240px;overflow:auto;flex-shrink:0}
+.ask-dock .butler-draft textarea {width:100%;min-height:100px;color:inherit;background:transparent;border:1px solid currentColor;padding:8px;border-radius:8px;font:inherit;resize:vertical}
+.ask-dock .butler-files {display:flex;flex-wrap:wrap;gap:6px;padding:8px 14px;font-size:11px;flex-shrink:0}
+.ask-dock .butler-files label {display:inline-flex;align-items:center;gap:4px;cursor:pointer}
+.ask-dock .butler-files input {width:1px;height:1px;position:absolute;opacity:0}
+.ask-dock .butler-files label:focus-within {outline:2px solid currentColor;outline-offset:3px}
+.ask-dock .butler-files span {max-width:100%;overflow-wrap:anywhere}
+.ask-dock .butler-files button {color:inherit;background:transparent;border:0;cursor:pointer}
+.ask-dock .butler-sources {display:grid;gap:5px;font-size:11px}
+.ask-dock .butler-sources a {color:inherit;text-decoration:underline;overflow-wrap:anywhere}
+.ask-dock .ask-dock-log {min-height:90px}
