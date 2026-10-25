@@ -1,3 +1,5 @@
+import { HRWorkspace } from '@/features/hr/HRWorkspace'
+import { NetworkValuePage } from '@/features/network-value/NetworkValuePage'
 import { PostOwnerActions } from './PostOwnerActions'
 import { AskIntrosMark } from '@/aetheris/AskIntrosMark'
 import { PostShareButton } from './PostShareButton'
@@ -2725,6 +2727,10 @@ function Shell({ startPage, feedOnly = false, assistant = true, crmSection }: { 
       evidence: <EvidenceLedgerPage />,
       agentinbox: <AgentInboxPage />,
       referrals: <ReferralsPage />,
+      hr: <HRWorkspace />,
+      benchmarks: <NetworkValuePage mode="benchmarks" />,
+      settlements: <NetworkValuePage mode="settlements" />,
+      capacity: <NetworkValuePage mode="capacity" />,
       autopilot: <><div className="og-stack"><section className="og-tile"><h3>Approval queue</h3><ApprovalQueuePanel /></section><DigitalYouRulesPanel /></div><AutopilotPage /></>,
       ask: <AskNetworkPage />,
       constitution: <ConstitutionPage />,

@@ -125,7 +125,76 @@ jobs:
         env:
           PLAYWRIGHT_MODULE: ${{ github.workspace }}/node_modules/playwright/index.mjs
         run: node scripts/quick-menu-check/run.mjs
+
+  member-navigation:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - uses: oven-sh/setup-bun@v2
+      - name: Install locked dependencies
+        run: bun install --frozen-lockfile
+      - name: Install Chromium
+        run: npx playwright install --with-deps chromium
       - name: Architect across member pages (light and dark browser)
         env:
           PLAYWRIGHT_MODULE: ${{ github.workspace }}/node_modules/playwright/index.mjs
         run: node scripts/architect-check/run.mjs
+
+  network-systems:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - uses: oven-sh/setup-bun@v2
+      - name: Install locked dependencies
+        run: bun install --frozen-lockfile
+      - name: Network domain and database authority tests
+        run: npx vitest run src/features/network-value/model.test.ts scripts/migration-checks/network-value.test.ts
+      - name: Install Chromium
+        run: npx playwright install --with-deps chromium
+      - name: Network systems responsive flows and account boundaries
+        env:
+          NETWORK_SCREENSHOTS: network-screenshots
+        run: node scripts/network-value-check/run.mjs
+      - name: Existing business tool workflows
+        run: |
+          node scripts/business-tools-automation-check/run.mjs
+          node scripts/member-tools-check/run.mjs
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: network-systems-mobile-screens
+          path: network-screenshots
+          if-no-files-found: ignore
+
+  account-hr:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - uses: oven-sh/setup-bun@v2
+      - name: Install locked dependencies
+        run: bun install --frozen-lockfile
+      - name: HR privacy and domain tests
+        run: npx vitest run src/features/hr/model.test.ts scripts/migration-checks/hr-workspace.test.ts
+      - name: Install Chromium
+        run: npx playwright install --with-deps chromium
+      - name: Account HR workflows and responsive layouts
+        env:
+          HR_SCREENSHOTS: hr-screenshots
+        run: node scripts/hr-check/run.mjs
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: hr-mobile-screens
+          path: hr-screenshots
+          if-no-files-found: ignore

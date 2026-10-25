@@ -1,5 +1,17 @@
 # Aetheris specification completion
 
+## Account HR system (Oct 25)
+- [x] Add private People & HR under My Work, Business Tools, onboarding and Butler navigation.
+- [x] Prefill company, industry, service description and location from the signed-in profile; require review before saving the business context. Missing headcount stays blank and the work model remains editable.
+- [x] Add editable employee, hiring, candidate, onboarding/offboarding, time-off, policy, performance, training, benefits, payroll-input and document records with private account ownership and conflict checks.
+- [x] Add tailored checklist creation, due-date overview, audit metadata, record export and approved-hours payroll CSV. No payment, tax, benefits enrollment or automatic employment decision is implied.
+- [x] Add HR Butler conversations and editable drafts through the configured RouteLLM provider, using reviewed business context and explicit submission. Personnel records are not automatically included.
+- [x] Add Drizzle migration 0097, SQL authorization tests and browser workflow coverage. No public or shared-business access is inferred from company names.
+- [ ] Activate the migration through the managed project path and verify real member sessions. Supabase project access is unavailable in this connection; no direct live DDL was performed.
+- [ ] Verify the real AI provider configuration and production response. Provider calls in tests are mocked.
+
+See `docs/ACCOUNT_HR_SYSTEM_2026_10_25.md` for scope, privacy and activation details.
+
 ## Homepage signup prominence and LinkedIn verification (Oct 25)
 - [x] Move a larger Create free account action above the homepage carousel.
 - [x] Check LinkedIn sign-in availability: the signup page reports provider disabled; existing LinkedIn action is disabled. A pasted URL cannot establish ownership.
@@ -7,6 +19,23 @@
 - [x] Prepare three-level membership presentation and resolver candidate; 29 focused tests and 20 isolated resolver/guard checks pass. Existing access and identity cards remain unchanged.
 - [ ] Activate complete direct-write/RPC/service-handler enforcement and paid card issuance only after isolated coverage and live compatibility checks; candidate is not applied. LinkedIn provider credentials, trusted hosted identity check and paid-card compatibility remain blockers.
 - [x] Verify the updated homepage action: 375×668, 64px-tall action at y=110 above slides, navigates to signup; 12 LinkedIn regressions pass and build OK.
+
+## Network-only systems (Oct 25)
+- [x] Implement Capacity Exchange with verified membership, approximate service area, expiring Available/Needed posts, private requests, and explicit terms acceptance with a handoff to Letters.
+- [x] Implement Benchmark Pools with company enrollment, contribution consent, server-enforced 10-company minimum, immutable quarterly releases, give-to-get access, Butler explanation and Executive Report evidence.
+- [x] Implement referral terms, three-party electronic acknowledgements, canonical introduction release gate, responsible-party milestone confirmations and projected fee accounting.
+- [x] Add forward-only Drizzle migration 0096, role-level database tests, command validation and responsive browser regression harness. No concept example records are seeded.
+- [ ] Activate schema through the managed migration path and verify authenticated flows against the actual project. Recover the pre-existing referral schema before releasing settlement introductions.
+- [ ] Assign reviewed company cohorts and operate closed-quarter benchmark releases. Minimum cohort size reduces disclosure risk; it is not an absolute anonymity guarantee.
+- [ ] Confirm commercial terms and e-signature requirements; integrate Stripe Connect onboarding, payment authorization, verified webhooks, idempotent settlement, refunds/disputes and payout reconciliation before moving money.
+- [ ] Buying pools: private member savings, opt-in commitments, verified group offers and purchasing authorization.
+- [ ] Paid inbound gate: refundable deposit terms, response deadlines, recipient choice and refund/charity reconciliation.
+- [ ] Rule watch: trade/state subscriptions, official sources, effective dates and member-specific notifications.
+- [ ] Exit and succession: extend existing acquisition/succession tools with private readiness and consent-based verified matching.
+- [ ] Playbook exchange: permissioned copy into Pocket rooms, versioning and attributed reported outcomes.
+- [ ] Tap to meet: extend existing Event Mode with reciprocal scan, private encounter notes and follow-up reminders.
+
+See `docs/NETWORK_VALUE_SYSTEMS_2026_10_25.md` for release dependencies and validation limits.
 
 # Homepage hero carousel and membership removal (Oct 25)
 - [x] Repair carousel visibility: dedicated uncropped pictures, no text overlays or hover pausing; verified five-second rotation at 375×668 and 1280 desktop, 62 homepage checks passed; build OK.

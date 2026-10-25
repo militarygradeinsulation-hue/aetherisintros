@@ -5,7 +5,7 @@ import {tmpdir} from 'node:os';
 import {dirname,join,resolve} from 'node:path';
 import {fileURLToPath} from 'node:url';
 const here=dirname(fileURLToPath(import.meta.url)),out=mkdtempSync(join(tmpdir(),'business-generation-'));
-await build({entryPoints:[join(here,'entry.tsx')],bundle:true,format:'esm',outdir:out,jsx:'automatic',define:{'process.env.NODE_ENV':'"production"'},plugins:[{name:'mock',setup(b){b.onResolve({filter:/(@\/lib\/businessTools.functions|@\/integrations\/supabase\/client)$/},()=>({path:join(here,'mock.ts')}));}}]});
+await build({entryPoints:[join(here,'entry.tsx')],bundle:true,format:'esm',outdir:out,jsx:'automatic',define:{'process.env.NODE_ENV':'"production"'},plugins:[{name:'mock',setup(b){b.onResolve({filter:/(@\/lib\/networkValue.functions|@\/lib\/businessTools.functions|@\/integrations\/supabase\/client)$/},()=>({path:join(here,'mock.ts')}));}}]});
 const server=createServer((req,res)=>{const asset=req.url==='/entry.js'||req.url==='/entry.css';res.setHeader('Content-Type',req.url==='/entry.js'?'text/javascript':req.url==='/entry.css'?'text/css':'text/html');res.end(asset?readFileSync(join(out,req.url.slice(1))):'<html><head><meta name="viewport" content="width=device-width,initial-scale=1"><link rel="stylesheet" href="/entry.css"></head><body><div id="root"></div><script type="module" src="/entry.js"></script></body></html>');});await new Promise(r=>server.listen(0,'127.0.0.1',r));
 const {chromium}=await import(process.env.PLAYWRIGHT_MODULE??resolve(here,'../../node_modules/playwright/index.mjs'));
 const browser=await chromium.launch({...(process.env.PLAYWRIGHT_EXECUTABLE_PATH?{executablePath:process.env.PLAYWRIGHT_EXECUTABLE_PATH}:{})});

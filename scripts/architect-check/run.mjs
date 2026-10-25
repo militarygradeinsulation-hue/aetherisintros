@@ -179,6 +179,13 @@ try{
     for (const destination of ['Dashboard','Network','Ask Intros','Meetings','Deals & Workspaces','Intelligence','My Work','Library']) {
       await sidebar.getByRole('button',{name:destination,exact:true}).click();
       const section=page.locator('.ledger-section-navigation');
+      if (destination === 'Dashboard') {
+        await page.locator('.ledger-dashboard-stats').waitFor();
+        check(await section.count()===0,theme+' Dashboard omits redundant section navigation');
+        check(await sidebar.getByRole('button',{name:destination,exact:true}).getAttribute('aria-current')==='page',theme+' Dashboard retains its primary navigation selection');
+        await checkBrand(page,theme+' Dashboard navigation');
+        continue;
+      }
       await section.waitFor();
       const labels=await section.locator('nav button').evaluateAll(nodes=>nodes.map(node=>node.getAttribute('aria-label')||node.textContent?.trim()||'').filter(Boolean));
       for (const label of labels) {

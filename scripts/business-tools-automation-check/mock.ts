@@ -5,3 +5,5 @@ export async function createBusinessImage(){if((window as any).failGeneration)th
 export async function saveBusinessTool({data}:any){return {...data,id:crypto.randomUUID(),tool_id:data.toolId,version:1,updated_at:new Date().toISOString()};}
 export async function deliverBusinessTool({data}:any){(window as any).deliveries??=[];if((window as any).failDelivery)throw Error('Delivery unavailable. Retry this action.');(window as any).deliveries.push(data);return {id:data.id,destination:data.destination};}
 export async function deleteBusinessTool(){throw Error('No production writes in browser check');}
+
+export const networkValue=async()=>({benchmarks:[],cohort:null});
