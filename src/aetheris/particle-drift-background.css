@@ -1,0 +1,17 @@
+/* Shared root background; member pages do not mount additional effects. */
+@layer bridge-social-reference {
+  :root[data-experience] body .site-ambient[data-particle-view] {
+    display:block!important;position:fixed!important;inset:0!important;z-index:0!important;
+    opacity:1!important;pointer-events:none!important;mix-blend-mode:normal!important;filter:none!important;
+  }
+  :root[data-experience] body .site-ambient[data-particle-view] > canvas {
+    width:100%!important;height:100%!important;opacity:.75!important;pointer-events:none!important;filter:none!important;
+  }
+  :root[data-experience] body .ix-root,
+  :root[data-experience] body .ix-root .ledger-crm-shell,
+  :root[data-experience] body .ix-root .ledger-crm-body,
+  :root[data-experience] body .ix-root .arch-product-main,
+  :root[data-experience] body .ix-root .ledger-native-content {background-color:transparent!important;background-image:none!important}
+  :root[data-experience="social"] body .ledger-persistent-feed > .ledger-ui-panel {background:transparent!important;box-shadow:none!important}
+  :root[data-experience][data-theme="light"] body .site-ambient[data-particle-view] > canvas {opacity:.4!important}
+}
