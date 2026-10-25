@@ -23,6 +23,10 @@ try {
  await page.goto('http://127.0.0.1:'+server.address().port,{waitUntil:'domcontentloaded'});
  await page.locator('.butler-orb canvas').waitFor();
  await page.waitForTimeout(700);
+ const before=await page.locator('.butler-orb canvas').screenshot();
+ await page.waitForTimeout(600);
+ const after=await page.locator('.butler-orb canvas').screenshot();
+ assert(!before.equals(after),'supplied R3F shader paints an animated blob');
  assert(await page.locator('.butler-orb').getAttribute('data-orb-view')==='business','Business orb selects red palette');
  await page.locator('.butler-orb').screenshot({path:join(out,'business.png')});
  await page.getByRole('button',{name:'Social',exact:true}).click();
