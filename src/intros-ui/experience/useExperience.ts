@@ -25,5 +25,10 @@ export function useExperience() {
       /* Keep the in-memory selection. */
     }
   };
+  useEffect(() => {
+    const choose = (event: Event) => { const view = (event as CustomEvent<unknown>).detail; if (view === 'social' || view === 'business') chooseExperience(view); };
+    window.addEventListener('ask-intros:experience', choose);
+    return () => window.removeEventListener('ask-intros:experience', choose);
+  }, []);
   return { experience, chooseExperience };
 }

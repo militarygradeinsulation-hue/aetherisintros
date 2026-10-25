@@ -51,6 +51,7 @@ function load(): VoiceSettings {
       settings = {
         ...defaults,
         ...parsed,
+        conversation: false,
         voiceName: parsed.voiceName || 'intros-managed',
         speed: voiceSpeeds.includes(parsed.speed as VoiceSpeed) ? parsed.speed as VoiceSpeed : 'normal',
       }
@@ -518,6 +519,7 @@ export interface DictationApi {
   supported: boolean
   listening: boolean
   interim: string
+  error: string
   start: () => void
   stop: () => void
   toggle: () => void
@@ -530,6 +532,7 @@ export interface DictationApi {
 export function useDictation({ onFinal, keepOpen = false }: { onFinal: (text: string) => void; keepOpen?: boolean }): DictationApi {
   const [listening, setListening] = useState(false)
   const [interim, setInterim] = useState('')
+  const [error, setError] = useState('')
   const recognition = useRef<RecognitionLike | null>(null)
   const wanted = useRef(false)
   const handler = useRef(onFinal)
@@ -548,6 +551,7 @@ export function useDictation({ onFinal, keepOpen = false }: { onFinal: (text: st
     const Ctor = recognitionCtor()
     if (!Ctor) return
     wanted.current = true
+    setError('')
     if (recognition.current) { try { recognition.current.abort() } catch { /* ignore */ } }
     const rec = new Ctor()
     recognition.current = rec
@@ -555,6 +559,7 @@ export function useDictation({ onFinal, keepOpen = false }: { onFinal: (text: st
     rec.interimResults = true
     rec.lang = typeof navigator !== 'undefined' ? navigator.language || 'en-US' : 'en-US'
     rec.onresult = event => {
+      if (recognition.current !== rec) return
       let live = ''
       for (let i = event.resultIndex; i < event.results.length; i += 1) {
         const result = event.results[i]
@@ -566,8 +571,17 @@ export function useDictation({ onFinal, keepOpen = false }: { onFinal: (text: st
       }
       setInterim(live.trim())
     }
-    rec.onerror = () => { setListening(false) }
+    rec.onerror = event => {
+      if (recognition.current !== rec || event.error === 'aborted') return
+      wanted.current = false
+      setListening(false)
+      setError(event.error === 'not-allowed' || event.error === 'service-not-allowed'
+        ? 'Microphone access was denied. Allow microphone access in your browser, then try Talk with Butler again.'
+        : event.error === 'audio-capture' ? 'No microphone was found. Connect a microphone and try again.'
+        : 'Voice input stopped. Check your connection and try again, or type your message.')
+    }
     rec.onend = () => {
+      if (recognition.current !== rec) return
       setInterim('')
       if (wanted.current && keep.current) { try { rec.start(); return } catch { /* fall through */ } }
       wanted.current = false
@@ -582,6 +596,7 @@ export function useDictation({ onFinal, keepOpen = false }: { onFinal: (text: st
     supported: dictationSupported(),
     listening,
     interim,
+    error,
     start,
     stop,
     toggle: () => { if (listening) stop(); else start() },

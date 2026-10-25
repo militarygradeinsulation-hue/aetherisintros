@@ -1,3 +1,4 @@
+import { PostOwnerActions } from './PostOwnerActions'
 import { AskIntrosMark } from '@/aetheris/AskIntrosMark'
 import { PostShareButton } from './PostShareButton'
 import { NetworkCommentComposer } from './NetworkCommentComposer'
@@ -576,6 +577,7 @@ function PostCard({ post, member, onOpen }: { post: Post; member: Member | undef
         : <div className="post-author"><SelfAvatar portrait /><span><strong>{net.profile.name || 'You'}</strong><small>{net.profile.title}</small></span></div>}
       <span className="post-kind">{member?.industry ?? net.profile.industries[0] ?? post.kind}</span>
     </header>
+    <PostOwnerActions post={post} onEdit={(text, detail) => net.editPost(post.id, text, detail)} onDelete={() => net.deletePost(post.id)} />
     <h3>{post.text}</h3>
     <p>{post.detail}</p>
     <JournalMedia media={post.media} />

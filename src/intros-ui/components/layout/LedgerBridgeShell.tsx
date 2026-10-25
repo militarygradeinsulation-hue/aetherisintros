@@ -1,6 +1,7 @@
 import { TopNavigation as BridgeTopNavigation } from '../../../bridge-reference/src/intros-ui/components/layout/TopNavigation';
 import { OnboardingGuide } from '../../onboarding/OnboardingGuide';
-import { ExperienceSwitch } from '../../experience/ExperienceSwitch';
+import { CompactExperienceSwitch } from '../../experience/CompactExperienceSwitch';
+import { OnboardingMenuPortal } from '../../onboarding/OnboardingMenuPortal';
 import type { ExperienceView } from '../../experience/preference';
 /* Native port of absolute-ledger-flow/src/components/app/app-shell.tsx.
  * Owns the member frame; all records/actions remain Ask Intros, never the CRM seed data.
@@ -156,7 +157,7 @@ export function LedgerBridgeShell({
           {collapsed ? <ChevronRight size={16} /> : <ChevronLeft size={16} />}
         </button>
       </div>
-      <Nav />
+      <Nav /><button type="button" className="ledger-native-nav-item" aria-label="Onboarding walkthrough" title="Onboarding walkthrough" onClick={startOnboarding}><span aria-hidden="true">?</span><span className="ledger-native-nav-label">Onboarding</span></button>
     </aside>
 
     {drawerOpen && <div className="ledger-native-drawer-backdrop">
@@ -184,9 +185,10 @@ export function LedgerBridgeShell({
         activePage={activePage === 'intelligence' || activePage === 'specter' ? 'workspace' : activePage}
         onNavigate={onNavigate} searchQuery={searchQuery} onSearchChange={onSearchChange}
         unreadCount={unreadCount ?? 0} me={me} onOpenMyProfile={onOpenMyProfile}
-        bell={notifications} onToggleConstellationOverlay={() => onNavigate('bubbles')}/>
+        bell={<><CompactExperienceSwitch value={experience} onChange={onExperienceChange}/>{notifications || <button type="button" aria-label="Introduction requests" onClick={() => onNavigate('intros')}><Bell size={17}/></button>}</>} onToggleConstellationOverlay={() => onNavigate('bubbles')}/>
       </div>
       <header className="ledger-crm-topbar" hidden={experience === 'social'}>
+        <CompactExperienceSwitch value={experience} onChange={onExperienceChange}/>
         <button type="button" className="ledger-native-menu" aria-label="Open navigation" onClick={() => setDrawerOpen(true)}>
           <Menu size={20} />
         </button>
@@ -211,8 +213,7 @@ export function LedgerBridgeShell({
           {userOpen && <AccountMenu/>}
         </div>
       </header>
-      <div className="bridge-experience-control"><ExperienceSwitch value={experience} onChange={onExperienceChange}/></div>
-      <button type="button" className="onboarding-launch" onClick={startOnboarding}>Onboarding · Learn Ask Intros</button>
+      <OnboardingMenuPortal/>
       <OnboardingGuide onNavigate={navigate} mode={mode} />
       <div id="aetheris-workspace-content" className="ledger-native-content"><div hidden={experience === 'social'}><LedgerSectionNavigation activePage={activePage} activeTool={activeTool} onSelect={navigate}/></div>{children}</div>
     </div>

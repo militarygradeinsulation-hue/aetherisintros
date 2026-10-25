@@ -1,3 +1,4 @@
+import { PostOwnerActions } from './PostOwnerActions'
 import { PostShareButton } from './PostShareButton'
 import { JournalMedia } from './journal-media'
 import { NetworkCommentComposer } from './NetworkCommentComposer'
@@ -83,6 +84,7 @@ function FeedPost({ post, member, lead = false }: { post: Post; member?: Member;
   const author = member?.name ?? net.profile.name ?? 'You'
   return <article className={lead ? 'social-feed-card is-lead' : 'social-feed-card'}>
     <header>{member ? <button onClick={() => nav.openMember(member)}><Face person={member} portrait /><span><b>{member.name} <VerifiedBadge memberId={member.id} /></b><small>{[member.title, member.company].filter(Boolean).join(' · ')}</small><em>{post.when}</em></span></button> : <div><SelfFace /><span><b>{author}</b><small>{[net.profile.title, net.profile.company].filter(Boolean).join(' · ')}</small><em>{post.when}</em></span></div>}{post.business ? <BusinessBadge kind={post.kind} /> : <span className="signal-badge">{post.kind}</span>}</header>
+    <PostOwnerActions post={post} onEdit={(text, detail) => net.editPost(post.id, text, detail)} onDelete={() => net.deletePost(post.id)} />
     <div className="social-feed-copy"><h2>{post.text}</h2><p>{post.detail}</p></div>
     <BusinessDetailsView post={post} />
     <JournalMedia media={post.media} />
