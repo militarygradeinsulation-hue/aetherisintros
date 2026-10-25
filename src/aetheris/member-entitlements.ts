@@ -6,6 +6,13 @@ export const entitlementSchema = z.object({
   business: z.boolean(),
   blackCard: z.boolean(),
   linkedinVerified: z.boolean(),
+}).superRefine((e, context) => {
+  if ((e.level === 'basic' && (e.networking || e.business || e.blackCard)) ||
+      (e.level === 'linkedin_verified' && (!e.linkedinVerified || !e.networking || e.business || e.blackCard)) ||
+      (e.level === 'paid' && (!e.networking || !e.business || !e.blackCard)) ||
+      (e.blackCard && e.level !== 'paid')) {
+    context.addIssue({ code: 'custom', message: 'Inconsistent membership permissions' })
+  }
 })
 export type MemberEntitlements = z.infer<typeof entitlementSchema>
 export const basicEntitlements: MemberEntitlements = {

@@ -28,4 +28,8 @@ describe('three membership levels', () => {
     expect(() => parseEntitlements({ linkedin_url: 'https://www.linkedin.com/in/owner' })).toThrow()
     expect(() => parseEntitlements({ level: 'paid' })).toThrow()
   })
+  it('rejects contradictory Basic permissions', () => {
+    expect(() => parseEntitlements({ ...basicEntitlements, business: true })).toThrow()
+    expect(() => parseEntitlements({ ...basicEntitlements, blackCard: true })).toThrow()
+  })
 })
