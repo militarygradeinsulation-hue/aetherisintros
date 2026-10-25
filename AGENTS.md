@@ -15,7 +15,7 @@
 - Professional (LinkedIn) enrichment attaches to canonical `crm_people` via `person_external_profiles` + append-only `person_enrichment_snapshots`, written only by RPCs; CRM fields change only through approved `update_person_field` proposals. Why: no duplicate people, no silent overwrites, full history.
 - LinkedIn results enter only through real hand-off (assistant lookup / manual paste) behind the `ProfessionalProfileProvider` seam; `direct_api` stays unavailable until a licensed provider exists. Why: never fabricate profiles.
 - The Intros shell owns mobile bottom navigation and its overflow menu; reserve safe-area space and lift the assistant above it. Why: thumb access must not obscure page actions or duplicate navigation.
-- The public intro runs a bounded automatic transition after one forward gesture and releases scrolling without another gesture. Why: entering the site must not require repeated swipes or depend on video buffering.
+- The public intro exposes manual entry after a bounded timer independent of media buffering, with skip and reduced-motion access. Why: members choose when to enter without being trapped by video failures.
 - The root shell owns the shared aurora, numeric drift, and connection field; page shells must not mount duplicate background canvases. Why: every route keeps the same ambience without extra animation loops or intercepting input.
 - Shared paper-surface contrast repairs belong in the final site-readability layer, scoped to editorial copy rather than photographic overlays or intelligence graphs. Why: legacy classic-host styles must not leak inverse ink into light surfaces.
 
