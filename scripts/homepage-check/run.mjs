@@ -87,6 +87,14 @@ try {
     try {
       await page.goto(base + '/', { waitUntil: 'domcontentloaded', timeout: 120_000 })
       await page.waitForSelector('.ael-compact', { timeout: 60_000 })
+      // The opening film now waits for the visitor, so dismiss it before inspecting the page.
+      await page.evaluate(() => {
+        const host = document.querySelector('.ask-cinematic-entrance')
+        if (!host) return
+        const button = [...host.querySelectorAll('button')].find(x => /Skip intro|Enter Intros/.test(x.textContent || ''))
+        if (button) button.click()
+      })
+      await page.waitForSelector('.ask-cinematic-entrance', { state: 'detached', timeout: 20_000 }).catch(() => {})
       assert(await page.locator('.vision-page').count() === 0, 'sample-only Vision dashboard is not the primary homepage')
 
       const m = await page.evaluate(() => {
