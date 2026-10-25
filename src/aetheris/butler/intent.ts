@@ -64,3 +64,23 @@ export function voiceApprovalMatches(
     (heard === 'confirm-task' && approval.kind === 'create-task') ||
     (heard === 'confirm-style' && approval.kind === 'save-writing-style')
 }
+
+/**
+ * Opening a page or search is a separate user action, not a side effect of
+ * asking "who", "where", "why", or mentioning an opportunity/tool name.
+ * Pass genuine questions to Butler's conversational research instead.
+ */
+export function explicitlyRequestsToolAction(phrase: string): boolean {
+  const text = withoutWake(phrase)
+    .replace(/^(?:can|could|would|will) you\s+/i, '')
+    .replace(/^i(?:'d| would) like (?:you )?to\s+/i, '')
+  return /^(?:open|bring up|navigate to|go to|take me to|switch to|launch|start|run|show(?: me)?|display|view|find|search(?: for)?|look up|lookup|diagnose|prepare me|create|add|record|list|check|review)\b/i.test(text)
+}
+
+/** A directory search needs its own explicit command, never a question word. */
+export function explicitlyRequestsDirectorySearch(phrase: string): boolean {
+  const text = withoutWake(phrase)
+    .replace(/^(?:can|could|would|will) you\s+/i, '')
+    .replace(/^i(?:'d| would) like (?:you )?to\s+/i, '')
+  return /^(?:find|find me|search(?: for)?|look up|lookup|locate|show(?: me)? (?:people|members|contacts|profiles|directory)|open (?:the )?search|take me to (?:the )?search)\b/i.test(text)
+}
