@@ -1,3 +1,4 @@
+import { ProspectDiscovery } from './ProspectDiscovery'
 import { useEffect, useRef, useState } from 'react'
 import { useServerFn } from '@tanstack/react-start'
 import { ArrowLeft, Copy, ExternalLink, FileUp, Plus, RefreshCw, Settings2 } from 'lucide-react'
@@ -87,6 +88,7 @@ function PrivateEngine({ onBack,onNewPerson,ownerId }: { onBack: () => void; onN
       <Btn kind="secondary" onClick={onNewPerson}><Plus size={14}/> New CRM person</Btn>
       <Btn kind="quiet" disabled={busy} onClick={() => void reload()}><RefreshCw size={14}/> Refresh</Btn>
     </div>
+    {!error&&<ProspectDiscovery onSaved={()=>void reload()}/>}
     {editor && <div className="prospect-editor">
       <label>Label<input value={icp.label} maxLength={120} onChange={e => updateProfile({label:e.target.value})}/></label>
       <label>Objective<select value={icp.objective} onChange={e => updateProfile({objective:e.target.value as Icp['objective']})}>{['client','partner','investor','referral','hire'].map(s => <option key={s}>{s}</option>)}</select></label>

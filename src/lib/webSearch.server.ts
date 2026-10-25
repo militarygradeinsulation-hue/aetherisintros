@@ -1,4 +1,4 @@
-import { publicDocument } from './public-fetch.server'
+import { boundedBody, publicDocument } from './public-fetch.server'
 export interface WebResult {
   title: string
   url: string
@@ -30,9 +30,9 @@ const unwrapDuck = (raw: string): string => {
 /** Reader-proxy search, used when the direct endpoint refuses the request. */
 async function searchProxy(query: string, limit: number): Promise<WebResult[]> {
   const target = `https://duckduckgo.com/html/?q=${encodeURIComponent(query)}`
-  const res = await fetch(`https://r.jina.ai/${target}`, { headers: { accept: 'text/plain' } })
+  const res = await fetch(`https://r.jina.ai/${target}`, { headers: { accept: 'text/plain' }, signal: AbortSignal.timeout(12000) })
   if (!res.ok) throw new Error(`proxy ${res.status}`)
-  const markdown = await res.text()
+  const markdown = new TextDecoder().decode(await boundedBody(res, 1024 * 1024))
 
   const out: WebResult[] = []
   const seen = new Set<string>()
@@ -59,12 +59,12 @@ async function searchProxy(query: string, limit: number): Promise<WebResult[]> {
 /** DuckDuckGo's HTML endpoint, used as a second opinion. */
 async function searchDuck(query: string, limit: number): Promise<WebResult[]> {
   const res = await fetch('https://html.duckduckgo.com/html/', {
-    method: 'POST',
+    method: 'POST', signal: AbortSignal.timeout(12000),
     headers: { 'content-type': 'application/x-www-form-urlencoded', 'user-agent': UA, accept: 'text/html' },
     body: new URLSearchParams({ q: query }).toString(),
   })
   if (!res.ok) throw new Error(`duck ${res.status}`)
-  const html = await res.text()
+  const html = new TextDecoder().decode(await boundedBody(res, 1024 * 1024))
 
   const out: WebResult[] = []
   const seen = new Set<string>()

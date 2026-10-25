@@ -16,7 +16,8 @@ See `docs/ACCOUNT_HR_SYSTEM_2026_10_25.md` for scope, privacy and activation det
 - [x] Move a larger Create free account action above the homepage carousel.
 - [x] Check LinkedIn sign-in availability: the signup page reports provider disabled; existing LinkedIn action is disabled. A pasted URL cannot establish ownership.
 - [x] Replace ownership-first signup requirement: Basic signup remains available without LinkedIn.
-- [ ] Implement and isolate-test three access levels: Basic profile/browsing only, LinkedIn-verified networking, paid full member features and black ID card; preserve existing grants. LinkedIn provider setup remains blocked.
+- [x] Prepare three-level membership presentation and resolver candidate; 29 focused tests and 20 isolated resolver/guard checks pass. Existing access and identity cards remain unchanged.
+- [ ] Activate complete direct-write/RPC/service-handler enforcement and paid card issuance only after isolated coverage and live compatibility checks; candidate is not applied. LinkedIn provider credentials, trusted hosted identity check and paid-card compatibility remain blockers.
 - [x] Verify the updated homepage action: 375×668, 64px-tall action at y=110 above slides, navigates to signup; 12 LinkedIn regressions pass and build OK.
 
 ## Network-only systems (Oct 25)

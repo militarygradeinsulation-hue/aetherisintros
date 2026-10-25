@@ -14,10 +14,11 @@ export function MembershipLevels() {
   const [provider, setProvider] = useState<ProviderReadiness>('unverified')
   const [error, setError] = useState('')
   const [busy, setBusy] = useState(false)
+  const [loaded, setLoaded] = useState(false)
   useEffect(() => {
     const c = new AbortController()
     void checkLinkedInReadiness(c.signal).then(s => { if (!c.signal.aborted) setProvider(s) })
-    void getEntitlements().then(e => { if (!c.signal.aborted) setAccess(e) }).catch(() => { if (!c.signal.aborted) setError('Your new access levels are not available yet. Existing membership remains unchanged.') })
+    void getEntitlements().then(e => { if (!c.signal.aborted) { setAccess(e); setLoaded(true) } }).catch(() => { if (!c.signal.aborted) { setLoaded(true); setError('Membership permissions could not be checked. Please retry.') } })
     return () => c.abort()
   }, [getEntitlements])
   const connect = async () => {
@@ -28,6 +29,7 @@ export function MembershipLevels() {
   }
   return <section className="executive-section aetheris-parity" aria-label="Membership levels">
     <header className="parity-head"><div><h2>Choose how far your membership goes.</h2><p className="og-note">Start free. Verify your LinkedIn account for networking. Paid membership adds full member access and your black ID card.</p></div></header>
+    {loaded && !access && <p role="status" className="og-note">These access levels are being prepared. Your existing membership and card remain unchanged.</p>}
     <div className="parity-grid">
       <article className="module"><h3>Basic · Free</h3><p>Your profile and browsing.</p><p className="og-note">No LinkedIn account required. Posting, messaging, introductions, and business tools are not included.</p></article>
       <article className="module"><h3><Linkedin className="inline h-4 w-4" aria-hidden /> LinkedIn verified</h3><p>Posting, messaging, and introductions.</p><p className="og-note">Connect your own LinkedIn account to verify ownership. Business tools and the black ID card belong to paid membership.</p>

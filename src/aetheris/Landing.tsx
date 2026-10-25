@@ -55,7 +55,28 @@ export default function Landing() {
           <Link to="/demo" className="ael-text-link">Explore the demo <ArrowRight aria-hidden="true" size={16} /></Link>
         </div>
       </div>
-      <HomeSlideCarousel />
+      <div className="ael-carousel-stage">
+        <aside className="ael-carousel-intro" aria-label="Meaningful connections">
+          <p className="ael-carousel-label">WHY ME · WHY THEM · WHY NOW</p>
+          <h2>More connection.<br />More possibility.</h2>
+          <p>Find people who understand what you are building. Start with a shared purpose and a reason to connect.</p>
+          <Link to="/demo" className="ael-text-link">Find your next connection <ArrowRight aria-hidden="true" size={16} /></Link>
+        </aside>
+        <HomeSlideCarousel />
+        <aside className="ael-carousel-options" aria-label="Two ways to explore Ask Intros">
+          <div>
+            <p className="ael-carousel-label">SOCIAL VIEW</p>
+            <h2>Meet the people.</h2>
+            <p>Discover members, share what matters, and turn a conversation into a meaningful introduction.</p>
+          </div>
+          <div>
+            <p className="ael-carousel-label">BUSINESS VIEW</p>
+            <h2>Move things forward.</h2>
+            <p>Bring your relationships, conversations, and next steps together in one workspace.</p>
+          </div>
+          <Link to="/how-it-works" className="ael-text-link">See how it works <ArrowRight aria-hidden="true" size={16} /></Link>
+        </aside>
+      </div>
     </section>
 
     <CinematicHero

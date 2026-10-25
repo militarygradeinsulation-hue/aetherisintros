@@ -1,0 +1,55 @@
+.ask-dock .butler-history-controls {display:flex;gap:8px;padding:8px 14px;flex-shrink:0}
+.ask-dock .butler-history-controls button,.ask-dock .butler-draft button,.ask-dock .butler-history-list button {color:inherit;background:transparent;border:1px solid currentColor;border-radius:8px;padding:6px 9px;cursor:pointer;display:inline-flex;gap:5px;align-items:center}
+.ask-dock .butler-save-notice {font-size:10px;line-height:1.5;padding:0 14px;margin:0 0 6px}
+.ask-dock .butler-save-notice button {color:inherit;background:transparent;text-decoration:underline;border:0;cursor:pointer}
+.ask-dock .butler-history-list {display:grid;gap:6px;padding:8px 14px;max-height:140px;overflow:auto;flex-shrink:0}
+.ask-dock .butler-draft {padding:12px 14px;display:flex;flex-wrap:wrap;gap:8px;border-top:1px solid currentColor;max-height:240px;overflow:auto;flex-shrink:0}
+.ask-dock .butler-draft textarea {width:100%;min-height:100px;color:inherit;background:transparent;border:1px solid currentColor;padding:8px;border-radius:8px;font:inherit;resize:vertical}
+.ask-dock .butler-files {display:flex;flex-wrap:wrap;gap:6px;padding:8px 14px;font-size:11px;flex-shrink:0}
+.ask-dock .butler-files label {display:inline-flex;align-items:center;gap:4px;cursor:pointer}
+.ask-dock .butler-files input {width:1px;height:1px;position:absolute;opacity:0}
+.ask-dock .butler-files label:focus-within {outline:2px solid currentColor;outline-offset:3px}
+.ask-dock .butler-files span {max-width:100%;overflow-wrap:anywhere}
+.ask-dock .butler-files button {color:inherit;background:transparent;border:0;cursor:pointer}
+.ask-dock .butler-sources {display:grid;gap:5px;font-size:11px}
+.ask-dock .butler-sources a {color:inherit;text-decoration:underline;overflow-wrap:anywhere}
+.ask-dock .ask-dock-log {min-height:90px}
+body .ask-dock.butler-conversation {width:min(440px,calc(100vw - 24px));height:min(720px,calc(100dvh - 100px));max-height:calc(100dvh - 100px);display:flex;flex-direction:column;overflow:hidden}
+body .ask-dock.butler-conversation.butler-expanded {width:min(680px,calc(100vw - 24px));height:calc(100dvh - 100px)}
+body .butler-conversation .ask-dock-drag {flex:none;min-height:58px}
+body .butler-conversation .ask-dock-drag small {font-size:11px}
+body .butler-conversation .ask-dock-log {flex:1 1 0;min-height:0;overflow:auto;overscroll-behavior:contain;padding:18px;gap:20px}
+body .butler-conversation .ask-dock-turn {flex:none;max-width:100%;font-size:14px;line-height:1.6}
+body .butler-conversation .ask-dock-input {flex:none;display:flex;align-items:center;gap:8px;padding:12px}
+body .butler-conversation .ask-dock-input>input {min-width:0;flex:1;width:0;font-size:14px}
+body .butler-conversation .butler-attach {position:relative;display:grid;place-items:center;flex:0 0 28px;cursor:pointer}
+body .butler-conversation .butler-attach input {position:absolute;width:1px;height:1px;opacity:0}
+body .butler-conversation .butler-attach:focus-within {outline:2px solid currentColor}
+body .butler-conversation .butler-options {position:relative;flex:none;border-bottom:1px solid #ffffff20}
+body .butler-conversation .butler-options>summary,body .butler-conversation .butler-suggestions>summary {cursor:pointer;padding:9px 14px;font-size:12px;list-style:none}
+body .butler-conversation .butler-options>summary span {float:right;opacity:.6;font-size:10px}
+body .butler-conversation .butler-options-body {max-height:240px;overflow:auto}
+body .butler-conversation .butler-options:not([open])>.butler-options-body {display:none}
+body .butler-conversation .butler-suggestions {flex:none}
+body .butler-conversation .butler-suggestions:not([open])>.ask-dock-openers {display:none}
+body .butler-conversation .ask-dock-voice {flex:none;padding:6px 14px;min-height:0;font-size:11px}
+body .butler-conversation .butler-draft {flex:none;max-height:none;overflow:visible;border-radius:10px;background:#8881}
+body .butler-conversation .butler-save-notice {padding:8px 14px;margin:0}
+@media(max-width:767px){body .ask-dock.butler-conversation,body .ask-dock.butler-conversation.butler-expanded {width:calc(100vw - 16px);height:calc(100dvh - 110px);max-height:calc(100dvh - 110px);left:8px!important;right:auto!important}body .butler-conversation .ask-dock-log{padding:12px}body .butler-conversation .ask-dock-input>input{font-size:16px}}
+
+/* Butler composer buttons: clearly labeled, readable in Social and Business views. */
+:root[data-theme] body .ask-dock .ask-dock-input button[type="button"],
+:root[data-theme] body .ask-dock .ask-dock-input .butler-attach{
+  flex:0 0 40px!important;width:40px!important;height:40px!important;min-height:40px!important;
+  display:grid!important;place-items:center!important;border-radius:10px!important;
+  background:#262931!important;border:1px solid #4a4f5b!important;color:#fff!important;opacity:1!important}
+:root[data-theme] body .ask-dock .ask-dock-input button[type="button"].listening{background:#DC2626!important;border-color:#DC2626!important}
+:root[data-theme] body .ask-dock .ask-dock-input button[type="submit"]{
+  flex:0 0 40px!important;width:40px!important;height:40px!important;min-height:40px!important;
+  display:grid!important;place-items:center!important;border-radius:10px!important;
+  background:#2f4be0!important;border:1px solid #2f4be0!important;color:#fff!important;opacity:1!important}
+:root[data-theme] body .ix-root[data-experience="business"] .ask-dock .ask-dock-input button[type="submit"]{background:#B91C1C!important;border-color:#B91C1C!important}
+:root[data-theme] body .ask-dock .ask-dock-input button[type="submit"]:disabled{background:#262931!important;border-color:#4a4f5b!important;color:#9ea4ac!important;cursor:not-allowed}
+:root[data-theme] body .ask-dock .ask-dock-input :is(button,.butler-attach) svg{color:inherit!important;stroke:currentColor!important}
+:root[data-theme="light"] body .ask-dock .ask-dock-input :is(button[type="button"],.butler-attach),
+:root[data-theme="light"] body .ask-dock .ask-dock-input button[type="submit"]:disabled{background:#f1f1f3!important;border-color:#c8cad0!important;color:#17191e!important}

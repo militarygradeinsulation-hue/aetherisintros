@@ -18,6 +18,7 @@ import { Route as EarlyAccessRouteImport } from './routes/early-access'
 import { Route as FounderStoryRouteImport } from './routes/founder-story'
 import { Route as HowItWorksRouteImport } from './routes/how-it-works'
 import { Route as McpRouteImport } from './routes/mcp'
+import { Route as MeetRouteImport } from './routes/meet'
 import { Route as NewsRouteImport } from './routes/news'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as TryRouteImport } from './routes/try'
@@ -102,6 +103,11 @@ const HowItWorksRoute = HowItWorksRouteImport.update({
 const McpRoute = McpRouteImport.update({
   id: '/mcp',
   path: '/mcp',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const MeetRoute = MeetRouteImport.update({
+  id: '/meet',
+  path: '/meet',
   getParentRoute: () => rootRouteImport,
 } as any)
 const NewsRoute = NewsRouteImport.update({
@@ -328,6 +334,7 @@ export interface FileRoutesByFullPath {
   '/founder-story': typeof FounderStoryRoute
   '/how-it-works': typeof HowItWorksRoute
   '/mcp': typeof McpRoute
+  '/meet': typeof MeetRoute
   '/news': typeof NewsRouteWithChildren
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/try': typeof TryRoute
@@ -379,6 +386,7 @@ export interface FileRoutesByTo {
   '/founder-story': typeof FounderStoryRoute
   '/how-it-works': typeof HowItWorksRoute
   '/mcp': typeof McpRoute
+  '/meet': typeof MeetRoute
   '/news': typeof NewsRouteWithChildren
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/try': typeof TryRoute
@@ -432,6 +440,7 @@ export interface FileRoutesById {
   '/founder-story': typeof FounderStoryRoute
   '/how-it-works': typeof HowItWorksRoute
   '/mcp': typeof McpRoute
+  '/meet': typeof MeetRoute
   '/news': typeof NewsRouteWithChildren
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/try': typeof TryRoute
@@ -485,6 +494,7 @@ export interface FileRouteTypes {
     | '/founder-story'
     | '/how-it-works'
     | '/mcp'
+    | '/meet'
     | '/news'
     | '/sitemap.xml'
     | '/try'
@@ -536,6 +546,7 @@ export interface FileRouteTypes {
     | '/founder-story'
     | '/how-it-works'
     | '/mcp'
+    | '/meet'
     | '/news'
     | '/sitemap.xml'
     | '/try'
@@ -588,6 +599,7 @@ export interface FileRouteTypes {
     | '/founder-story'
     | '/how-it-works'
     | '/mcp'
+    | '/meet'
     | '/news'
     | '/sitemap.xml'
     | '/try'
@@ -641,6 +653,7 @@ export interface RootRouteChildren {
   FounderStoryRoute: typeof FounderStoryRoute
   HowItWorksRoute: typeof HowItWorksRoute
   McpRoute: typeof McpRoute
+  MeetRoute: typeof MeetRoute
   NewsRoute: typeof NewsRouteWithChildren
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   TryRoute: typeof TryRoute
@@ -734,6 +747,13 @@ declare module '@tanstack/react-router' {
       path: '/mcp'
       fullPath: '/mcp'
       preLoaderRoute: typeof McpRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/meet': {
+      id: '/meet'
+      path: '/meet'
+      fullPath: '/meet'
+      preLoaderRoute: typeof MeetRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/news': {
@@ -1079,6 +1099,7 @@ const rootRouteChildren: RootRouteChildren = {
   FounderStoryRoute: FounderStoryRoute,
   HowItWorksRoute: HowItWorksRoute,
   McpRoute: McpRoute,
+  MeetRoute: MeetRoute,
   NewsRoute: NewsRouteWithChildren,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
   TryRoute: TryRoute,
