@@ -11,16 +11,19 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
+import { Route as ActiveMemoryRouteImport } from './routes/active-memory'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as DemoRouteImport } from './routes/demo'
 import { Route as EarlyAccessRouteImport } from './routes/early-access'
 import { Route as FounderStoryRouteImport } from './routes/founder-story'
+import { Route as HowItWorksRouteImport } from './routes/how-it-works'
 import { Route as McpRouteImport } from './routes/mcp'
 import { Route as NewsRouteImport } from './routes/news'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as TryRouteImport } from './routes/try'
 import { Route as VisionRouteImport } from './routes/vision'
 import { Route as VisionProfileRouteImport } from './routes/vision-profile'
+import { Route as WarmIntroductionsRouteImport } from './routes/warm-introductions'
 import { Route as Char91DotwellKnownChar93OauthProtectedResourceRouteImport } from './routes/[.well-known]/oauth-protected-resource'
 import { Route as AuthenticatedAppRouteImport } from './routes/_authenticated/app'
 import { Route as AuthenticatedBusinessAnalystRouteImport } from './routes/_authenticated/business-analyst'
@@ -66,6 +69,11 @@ const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
   id: '/_authenticated',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ActiveMemoryRoute = ActiveMemoryRouteImport.update({
+  id: '/active-memory',
+  path: '/active-memory',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AuthRoute = AuthRouteImport.update({
   id: '/auth',
   path: '/auth',
@@ -84,6 +92,11 @@ const EarlyAccessRoute = EarlyAccessRouteImport.update({
 const FounderStoryRoute = FounderStoryRouteImport.update({
   id: '/founder-story',
   path: '/founder-story',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const HowItWorksRoute = HowItWorksRouteImport.update({
+  id: '/how-it-works',
+  path: '/how-it-works',
   getParentRoute: () => rootRouteImport,
 } as any)
 const McpRoute = McpRouteImport.update({
@@ -114,6 +127,11 @@ const VisionRoute = VisionRouteImport.update({
 const VisionProfileRoute = VisionProfileRouteImport.update({
   id: '/vision-profile',
   path: '/vision-profile',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const WarmIntroductionsRoute = WarmIntroductionsRouteImport.update({
+  id: '/warm-introductions',
+  path: '/warm-introductions',
   getParentRoute: () => rootRouteImport,
 } as any)
 const Char91DotwellKnownChar93OauthProtectedResourceRoute =
@@ -303,16 +321,19 @@ const ApiStripeWebhookRoute = ApiStripeWebhookRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/active-memory': typeof ActiveMemoryRoute
   '/auth': typeof AuthRoute
   '/demo': typeof DemoRoute
   '/early-access': typeof EarlyAccessRoute
   '/founder-story': typeof FounderStoryRoute
+  '/how-it-works': typeof HowItWorksRoute
   '/mcp': typeof McpRoute
   '/news': typeof NewsRouteWithChildren
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/try': typeof TryRoute
   '/vision': typeof VisionRoute
   '/vision-profile': typeof VisionProfileRoute
+  '/warm-introductions': typeof WarmIntroductionsRoute
   '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
   '/app': typeof AuthenticatedAppRoute
   '/business-analyst': typeof AuthenticatedBusinessAnalystRoute
@@ -351,16 +372,19 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/active-memory': typeof ActiveMemoryRoute
   '/auth': typeof AuthRoute
   '/demo': typeof DemoRoute
   '/early-access': typeof EarlyAccessRoute
   '/founder-story': typeof FounderStoryRoute
+  '/how-it-works': typeof HowItWorksRoute
   '/mcp': typeof McpRoute
   '/news': typeof NewsRouteWithChildren
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/try': typeof TryRoute
   '/vision': typeof VisionRoute
   '/vision-profile': typeof VisionProfileRoute
+  '/warm-introductions': typeof WarmIntroductionsRoute
   '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
   '/app': typeof AuthenticatedAppRoute
   '/business-analyst': typeof AuthenticatedBusinessAnalystRoute
@@ -401,16 +425,19 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
+  '/active-memory': typeof ActiveMemoryRoute
   '/auth': typeof AuthRoute
   '/demo': typeof DemoRoute
   '/early-access': typeof EarlyAccessRoute
   '/founder-story': typeof FounderStoryRoute
+  '/how-it-works': typeof HowItWorksRoute
   '/mcp': typeof McpRoute
   '/news': typeof NewsRouteWithChildren
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/try': typeof TryRoute
   '/vision': typeof VisionRoute
   '/vision-profile': typeof VisionProfileRoute
+  '/warm-introductions': typeof WarmIntroductionsRoute
   '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
   '/_authenticated/app': typeof AuthenticatedAppRoute
   '/_authenticated/business-analyst': typeof AuthenticatedBusinessAnalystRoute
@@ -451,16 +478,19 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/active-memory'
     | '/auth'
     | '/demo'
     | '/early-access'
     | '/founder-story'
+    | '/how-it-works'
     | '/mcp'
     | '/news'
     | '/sitemap.xml'
     | '/try'
     | '/vision'
     | '/vision-profile'
+    | '/warm-introductions'
     | '/.well-known/oauth-protected-resource'
     | '/app'
     | '/business-analyst'
@@ -499,16 +529,19 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/active-memory'
     | '/auth'
     | '/demo'
     | '/early-access'
     | '/founder-story'
+    | '/how-it-works'
     | '/mcp'
     | '/news'
     | '/sitemap.xml'
     | '/try'
     | '/vision'
     | '/vision-profile'
+    | '/warm-introductions'
     | '/.well-known/oauth-protected-resource'
     | '/app'
     | '/business-analyst'
@@ -548,16 +581,19 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/_authenticated'
+    | '/active-memory'
     | '/auth'
     | '/demo'
     | '/early-access'
     | '/founder-story'
+    | '/how-it-works'
     | '/mcp'
     | '/news'
     | '/sitemap.xml'
     | '/try'
     | '/vision'
     | '/vision-profile'
+    | '/warm-introductions'
     | '/.well-known/oauth-protected-resource'
     | '/_authenticated/app'
     | '/_authenticated/business-analyst'
@@ -598,16 +634,19 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
+  ActiveMemoryRoute: typeof ActiveMemoryRoute
   AuthRoute: typeof AuthRoute
   DemoRoute: typeof DemoRoute
   EarlyAccessRoute: typeof EarlyAccessRoute
   FounderStoryRoute: typeof FounderStoryRoute
+  HowItWorksRoute: typeof HowItWorksRoute
   McpRoute: typeof McpRoute
   NewsRoute: typeof NewsRouteWithChildren
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   TryRoute: typeof TryRoute
   VisionRoute: typeof VisionRoute
   VisionProfileRoute: typeof VisionProfileRoute
+  WarmIntroductionsRoute: typeof WarmIntroductionsRoute
   Char91DotwellKnownChar93OauthProtectedResourceRoute: typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
   ImpactSlugRoute: typeof ImpactSlugRoute
   InviteCodeRoute: typeof InviteCodeRoute
@@ -648,6 +687,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedRouteRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/active-memory': {
+      id: '/active-memory'
+      path: '/active-memory'
+      fullPath: '/active-memory'
+      preLoaderRoute: typeof ActiveMemoryRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/auth': {
       id: '/auth'
       path: '/auth'
@@ -674,6 +720,13 @@ declare module '@tanstack/react-router' {
       path: '/founder-story'
       fullPath: '/founder-story'
       preLoaderRoute: typeof FounderStoryRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/how-it-works': {
+      id: '/how-it-works'
+      path: '/how-it-works'
+      fullPath: '/how-it-works'
+      preLoaderRoute: typeof HowItWorksRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/mcp': {
@@ -716,6 +769,13 @@ declare module '@tanstack/react-router' {
       path: '/vision-profile'
       fullPath: '/vision-profile'
       preLoaderRoute: typeof VisionProfileRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/warm-introductions': {
+      id: '/warm-introductions'
+      path: '/warm-introductions'
+      fullPath: '/warm-introductions'
+      preLoaderRoute: typeof WarmIntroductionsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/.well-known/oauth-protected-resource': {
@@ -1012,16 +1072,19 @@ const NewsRouteWithChildren = NewsRoute._addFileChildren(NewsRouteChildren)
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
+  ActiveMemoryRoute: ActiveMemoryRoute,
   AuthRoute: AuthRoute,
   DemoRoute: DemoRoute,
   EarlyAccessRoute: EarlyAccessRoute,
   FounderStoryRoute: FounderStoryRoute,
+  HowItWorksRoute: HowItWorksRoute,
   McpRoute: McpRoute,
   NewsRoute: NewsRouteWithChildren,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
   TryRoute: TryRoute,
   VisionRoute: VisionRoute,
   VisionProfileRoute: VisionProfileRoute,
+  WarmIntroductionsRoute: WarmIntroductionsRoute,
   Char91DotwellKnownChar93OauthProtectedResourceRoute:
     Char91DotwellKnownChar93OauthProtectedResourceRoute,
   ImpactSlugRoute: ImpactSlugRoute,

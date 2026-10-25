@@ -4,9 +4,10 @@ import IntrosApp from '@/intros-ui/IntrosApp'
 import { AetherisProviderRoot } from '@/aetheris/AetherisProviderRoot'
 
 export const Route = createFileRoute('/demo')({
-  staticData: { sitemap: true },
+  staticData: { sitemap: false },
   head: () => ({
     meta: [
+      { name: 'robots', content: 'noindex,follow' },
       { title: 'Ask Intros CEO Network — Guided Showcase' },
       {
         name: 'description',

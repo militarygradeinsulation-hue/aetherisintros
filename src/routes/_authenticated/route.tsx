@@ -6,6 +6,7 @@ import { supabase } from '@/integrations/supabase/client'
 export const Route = createFileRoute('/_authenticated')({
   staticData: { sitemap: "exclude-subtree" },
   ssr: false,
+  head: () => ({ meta: [{ name: 'robots', content: 'noindex,nofollow' }] }),
   beforeLoad: async () => {
     if (!AUTH_REQUIRED) return { user: null }
     const { data, error } = await supabase.auth.getUser()

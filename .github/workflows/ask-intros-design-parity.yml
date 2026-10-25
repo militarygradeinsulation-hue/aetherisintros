@@ -4,6 +4,7 @@ on:
   pull_request:
     paths:
       - 'src/**'
+      - 'scripts/public-search-check/**'
       - 'scripts/customize-contrast-check/**'
       - 'scripts/dashboard-network-layout-check/**'
       - 'scripts/editorial-copy-contrast-check/**'
@@ -43,6 +44,11 @@ jobs:
         run: npx vite build
       - name: Install Chromium
         run: npx playwright install --with-deps chromium
+      - name: Public search crawlability and guide layout
+        env:
+          PUBLIC_SEARCH_BROWSER: '1'
+          PLAYWRIGHT_MODULE: ${{ github.workspace }}/node_modules/playwright/index.mjs
+        run: node scripts/public-search-check/run.mjs
       - name: Published Bridge Social View and Business state retention (browser)
         env:
           PLAYWRIGHT_MODULE: ${{ github.workspace }}/node_modules/playwright/index.mjs

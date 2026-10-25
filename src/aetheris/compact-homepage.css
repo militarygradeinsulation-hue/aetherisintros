@@ -394,3 +394,7 @@
 @media (max-width:340px) {
   .ael.ael-compact .ael-compact-story { padding-top:24px; padding-bottom:20px; }
 }
+
+/* Small discovery links keep product explanations reachable without adding homepage sections. */
+.ael.ael-compact .ael-guide-links{display:flex;flex-wrap:wrap;gap:10px 20px;flex-basis:100%;font:500 12px/1.6 Inter,system-ui,sans-serif}
+.ael.ael-compact .ael-guide-links a{color:inherit;text-underline-offset:4px}

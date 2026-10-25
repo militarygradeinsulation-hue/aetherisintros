@@ -28,6 +28,7 @@ export const Route = createFileRoute('/auth')({
   },
   head: () => ({
     meta: [
+      { name: 'robots', content: 'noindex,follow' },
       { title: 'Sign in — Ask Intros' },
       {
         name: 'description',

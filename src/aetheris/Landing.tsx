@@ -6,6 +6,8 @@ import { CinematicHero } from '@/components/ui/cinematic-landing-hero'
 import { CinematicEntrance, CITY_OPENING_VIDEO } from '@/components/ui/cinematic-entrance'
 import { AppearanceToggle } from './AppearanceToggle'
 import { StencilHeadline } from './StencilHeadline'
+import { PublicStructuredData } from './PublicStructuredData'
+import { PRODUCT_TITLE, PRODUCT_DESCRIPTION } from '@/lib/public-search'
 import { HomeSlideCarousel } from './HomeSlideCarousel'
 import './editorial-landing.css'
 import './architectural-system.css'
@@ -25,6 +27,7 @@ export default function Landing() {
   const signedIn = access.signedIn
 
   return <main className="ael ael-compact ael--text">
+    <PublicStructuredData path="/" title={PRODUCT_TITLE} description={PRODUCT_DESCRIPTION} />
     <CinematicEntrance videoSrc={CITY_OPENING_VIDEO} />
     <a className="ael-skip" href="#ael-main">Skip to content</a>
 
@@ -54,7 +57,7 @@ export default function Landing() {
         </div>
         <p className="ael-kicker ael-kicker-light"><span className="ael-dash" /> Relationships by design</p>
         <h1 id="ael-hero-title" className="stencil-display"><span className="sr-only">The Only social platform that runs your business.</span><StencilHeadline lines={['THE ONLY SOCIAL', 'PLATFORM THAT', 'RUNS YOUR BUSINESS']} className="stencil-headline--hero" /></h1>
-        <p className="ael-hero-lede">Share what you need. Explore relevant people. Request an introduction with context and mutual consent.</p>
+        <p className="ael-hero-lede">Ask Intros connects business networking, introductions with mutual consent, and private relationship context. Share a specific need, explore relevant people, and agree on the next step.</p>
         <div className="ael-hero-actions">
           <JoinAction signedIn={signedIn} className="ael-btn ael-btn-gold ai-gradient-button" />
           <Link to="/demo" className="ael-text-link">Explore the demo <ArrowRight aria-hidden="true" size={16} /></Link>
@@ -87,6 +90,12 @@ export default function Landing() {
     <footer className="ael-compact-footer">
       <Link to="/" className="ael-compact-footer-brand" aria-label="Ask Intros home"><span className="stencil-footer-wordmark" style={{ color: "var(--st-ink)", backgroundColor: "var(--st-bg)" }}>ASK INTROS</span></Link>
       <span>WHY ME &middot; WHY THEM &middot; WHY NOW</span>
+      <nav className="ael-guide-links" aria-label="Learn about Ask Intros">
+        <Link to="/how-it-works">How it works</Link>
+        <Link to="/warm-introductions">Warm introductions</Link>
+        <Link to="/active-memory">Active Memory</Link>
+        <Link to="/founder-story">Founder story</Link>
+      </nav>
     </footer>
   </main>
 }
