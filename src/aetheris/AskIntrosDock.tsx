@@ -12,7 +12,7 @@ import { useButlerConversations, type ButlerDisplayTurn } from './butler/convers
 import { readButlerFile, BUTLER_ACCEPT, type ButlerAttachment } from './butler/files'
 import { executeButlerDraft } from '@/lib/butler.functions'
 import { createButlerImage, findButlerReferenceImages, type ButlerReferenceImage } from '@/lib/butlerImages.functions'
-import { imageCreationBrief, imageReferenceQuery, spokenReviewCommand, spokenConfirmationFor, voiceApprovalMatches, type VoiceApproval } from './butler/intent'
+import { imageCreationBrief, imageReferenceQuery, spokenReviewCommand, spokenConfirmationFor, voiceApprovalMatches, explicitlyRequestsToolAction, explicitlyRequestsDirectorySearch, type VoiceApproval } from './butler/intent'
 import './butler/butler.css'
 import { askIntros, type AskIntrosAction } from '@/lib/askIntros.functions'
 import { pageMeta } from './pageMeta'
@@ -397,7 +397,10 @@ function AskIntrosDockInner({ page, peopleNames, memberName, briefing, contextPa
       sending.current = false
       return
     }
-    const destination = hasFiles ? null : recognizeDestination(question)
+    // Conversational questions (who/what/why/where) must never launch a
+    // workspace just because one of the topic keywords appears in them.
+    const openToolRequested = !hasFiles && explicitlyRequestsToolAction(question)
+    const destination = openToolRequested ? recognizeDestination(question) : null
     if (destination) {
       window.dispatchEvent(new CustomEvent('aetheris:navigate', { detail: destination }))
       const msg = destination === 'pocket' ? 'Opening your Pocket. Pick a starting shape and I will review it for you.' : 'Opening your company diagnostic. Press Explain this report and I will walk you through the top priorities.'
@@ -406,7 +409,7 @@ function AskIntrosDockInner({ page, peopleNames, memberName, briefing, contextPa
       sending.current = false
       return
     }
-    const intent = hasFiles ? null : recognizeCapabilityIntent(question)
+    const intent = openToolRequested ? recognizeCapabilityIntent(question) : null
     if (intent) {
       openCapability({ capabilityId: intent.capabilityId, ...(intent.focus ? { focus: intent.focus } : {}) })
       const subject = getActiveSubject()
@@ -415,7 +418,7 @@ function AskIntrosDockInner({ page, peopleNames, memberName, briefing, contextPa
       sending.current = false
       return
     }
-    const ceoCommand = hasFiles ? null : recognizeCommand(question)
+    const ceoCommand = openToolRequested ? recognizeCommand(question) : null
     if (ceoCommand?.view) {
       openCeo(ceoCommand)
       setTurns(current => [...current, { role: 'assistant', content: `Opening ${ceoViewLabel[ceoCommand.view!]}${ceoCommand.arg && ceoCommand.view === 'who' ? ` for “${ceoCommand.arg}”` : ''}. Everything in it comes from your recorded data — no AI needed.`, did: [ceoViewLabel[ceoCommand.view!]] }])
@@ -468,6 +471,11 @@ function AskIntrosDockInner({ page, peopleNames, memberName, briefing, contextPa
       const did: string[] = []
       const prepared: string[] = []
       for (const action of answer.actions) {
+        // A model can propose navigation, but the member must specifically
+        // request it. Question words are not permission to open search.
+        if (action.kind === 'open-search' && !explicitlyRequestsDirectorySearch(question)) continue
+        if (['navigate', 'open-member', 'message-member', 'request-intro', 'open-deals', 'start-deal', 'open-tools', 'open-search', 'open-preferences', 'open-profile'].includes(action.kind) &&
+            !explicitlyRequestsToolAction(question)) continue
         if (action.kind === 'create-file' && action.value) { setFileExport(action.value); prepared.push('File export:\n' + action.value); continue }
         if (['draft-post', 'draft-email', 'create-task', 'save-writing-style'].includes(action.kind) && action.value) {
           resetApproval(); setDraft({ id: crypto.randomUUID(), kind: (action.kind === 'draft-post' ? 'publish-post' : action.kind) as NonNullable<typeof draft>['kind'], text: action.value.slice(0, 4000) });
