@@ -136,3 +136,10 @@
  :root[data-theme] body .commons-caught-up > svg {display:none!important}
  :root[data-theme] body .commons-caught-up::before {content:"";display:block;width:240px;max-width:100%;height:96px;margin:0 0 12px;background:url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20240%2096%22%3E%3Cg%20fill%3D%22none%22%20stroke%3D%22%2394a3b8%22%20stroke-width%3D%221.5%22%3E%3Cpath%20d%3D%22M35%2048Q80%200%20120%2048T205%2048M35%2048Q80%2096%20120%2048T205%2048%22%2F%3E%3Cpath%20d%3D%22M35%2048H205%22%20stroke-dasharray%3D%223%207%22%2F%3E%3C%2Fg%3E%3Cg%20fill%3D%22%230f172a%22%20stroke%3D%22%2393c5fd%22%20stroke-width%3D%222%22%3E%3Ccircle%20cx%3D%2235%22%20cy%3D%2248%22%20r%3D%2215%22%2F%3E%3Ccircle%20cx%3D%22120%22%20cy%3D%2248%22%20r%3D%2223%22%2F%3E%3Ccircle%20cx%3D%22205%22%20cy%3D%2248%22%20r%3D%2215%22%2F%3E%3C%2Fg%3E%3Cg%20fill%3D%22%23e2e8f0%22%3E%3Ccircle%20cx%3D%2235%22%20cy%3D%2244%22%20r%3D%224%22%2F%3E%3Cpath%20d%3D%22M28%2055a7%207%200%200%201%2014%200%22%2F%3E%3Ccircle%20cx%3D%22120%22%20cy%3D%2242%22%20r%3D%226%22%2F%3E%3Cpath%20d%3D%22M109%2060a11%2011%200%200%201%2022%200%22%2F%3E%3Ccircle%20cx%3D%22205%22%20cy%3D%2244%22%20r%3D%224%22%2F%3E%3Cpath%20d%3D%22M198%2055a7%207%200%200%201%2014%200%22%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E") left center/contain no-repeat}
 }
+
+/* Business needs a compact utility bar, independent of the Social logo frame. */
+@layer bridge-social-reference {
+ :root[data-theme][data-experience="business"] body .workspace-navigation-row {height:56px!important;min-height:56px!important}
+ :root[data-theme][data-experience="business"] body .workspace-navigation-row > .ledger-crm-topbar:not([hidden]) {height:56px!important;min-height:56px!important;padding-block:6px!important}
+ :root[data-theme][data-experience="business"] body .workspace-navigation-row .workspace-view-toggle {align-self:center!important}
+}
