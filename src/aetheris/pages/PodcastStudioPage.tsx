@@ -59,7 +59,7 @@ export function PodcastStudioPage() {
   }, [])
   const subjects = useMemo(() => unique([
     ...split(profile.goals), ...split(profile.openTo), clean(profile.building), focus, specialty,
-    ...split(profile.offers), ...split(profile.needs),
+    ...split(profile.expertise), clean(profile.canHelpWith), clean(profile.lookingFor),
   ]).slice(0, 8), [profile, focus, specialty])
   const topics = useMemo(() => {
     const fallback = subjects.length ? subjects : [specialty]
