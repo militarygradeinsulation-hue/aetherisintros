@@ -1,5 +1,11 @@
 # Aetheris specification completion
 
+## Homepage signup prominence and LinkedIn verification (Oct 25)
+- [x] Move a larger Create free account action above the homepage carousel.
+- [x] Check LinkedIn sign-in availability: the signup page reports provider disabled; existing LinkedIn action is disabled. A pasted URL cannot establish ownership.
+- [ ] Enforce ownership-first signup — blocked: LinkedIn identity-provider setup is unavailable; preserve existing signup and member access rather than pretend verification works or enforce a client-only bypassable rule.
+- [x] Verify the updated homepage action: 375×668, 64px-tall action at y=110 above slides, navigates to signup; 12 LinkedIn regressions pass and build OK.
+
 # Homepage hero carousel and membership removal (Oct 25)
 - [x] Repair carousel visibility: dedicated uncropped pictures, no text overlays or hover pausing; verified five-second rotation at 375×668 and 1280 desktop, 62 homepage checks passed; build OK.
 - [x] Turn the empty hero image area into a carousel of the member's ten brand graphics, each held five seconds.

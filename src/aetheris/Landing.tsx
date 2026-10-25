@@ -17,7 +17,7 @@ import './home-slides.css'
 function JoinAction({ signedIn, className = '' }: { signedIn: boolean; className?: string }) {
   return signedIn
     ? <Link className={className} to="/app">Find your next connection <ArrowUpRight aria-hidden="true" size={16} /></Link>
-    : <Link className={className} to="/auth" search={{ mode: 'signup' }}>Create your account <ArrowUpRight aria-hidden="true" size={16} /></Link>
+    : <Link className={className} to="/auth" search={{ mode: 'signup' }}>Create free account <ArrowUpRight aria-hidden="true" size={16} /></Link>
 }
 
 export default function Landing() {
@@ -45,7 +45,6 @@ export default function Landing() {
 
     <section className="ael-hero ael-hero--carousel" id="ael-main" aria-labelledby="ael-hero-title">
       <h1 id="ael-hero-title" className="sr-only">Ask Intros — The only social platform that runs your business.</h1>
-      <HomeSlideCarousel />
       <div className="ael-hero-content">
         <p className="sr-only">Share what you need. Explore relevant people. Request an introduction with context and mutual consent.</p>
         <div className="ael-hero-actions">
@@ -53,6 +52,7 @@ export default function Landing() {
           <Link to="/demo" className="ael-text-link">Explore the demo <ArrowRight aria-hidden="true" size={16} /></Link>
         </div>
       </div>
+      <HomeSlideCarousel />
     </section>
 
     <CinematicHero
