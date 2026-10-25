@@ -69,7 +69,7 @@ export function PodcastStudioPage() {
       (s: string) => ({ title: `The decisions behind ${s}`, angle: `What tradeoffs do experienced practitioners face when working on ${s}?` }),
       (s: string) => ({ title: `Where ${s} goes next`, angle: `What signals should ${audience} watch in ${s}?` }),
     ]
-    return Array.from({ length: 8 }, (_, i) => patterns[(i + variation) % patterns.length](fallback[(i + variation) % fallback.length]))
+    return Array.from({ length: 8 }, (_, i) => patterns[(i + variation) % patterns.length]!(fallback[(i + variation) % fallback.length] ?? specialty))
   }, [subjects, audience, specialty, variation])
   const [angle, setAngle] = useState('')
   const applyTopic = (topic: { title: string; angle: string }) => { setSelected(''); setTitle(topic.title); setAngle(topic.angle); setScript(''); setStatus('Topic selected. Create a draft when ready.') }
