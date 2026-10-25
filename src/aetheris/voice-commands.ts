@@ -100,8 +100,11 @@ export function parseVoiceCommand(input: string, people: string[] = []): AskIntr
   // A bare page name: "events", "settings"
   const bare = matchPage(raw)
   if (bare && raw.split(/\s+/).length <= 3) return act('navigate', null, bare)
-  // Finding: "find Ana Diaz", "search for logistics CFOs", "look up Acme", "who is Ana"
-  if ((m = raw.match(/^(?:find|search(?: for)?|look up|lookup|who is|who's|where is)\s+(.+?)\??$/i))) {
+  // A question beginning with "who" or "where" is NOT a navigation/search
+  // command. It belongs to Butler's conversation, where its full intent can
+  // be considered and a source-backed answer can be given.
+  // Only an explicit request to FIND/SEARCH/LOOK UP launches the app search.
+  if ((m = raw.match(/^(?:find|search(?: for)?|look up|lookup)\s+(.+?)\??$/i))) {
     const person = matchPerson(m[1]!, people)
     return person ? act('open-member', person) : act('open-search', m[1]!.trim())
   }

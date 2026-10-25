@@ -11,6 +11,8 @@ import { downloadButlerFile } from './butler/download'
 import { useButlerConversations, type ButlerDisplayTurn } from './butler/conversations'
 import { readButlerFile, BUTLER_ACCEPT, type ButlerAttachment } from './butler/files'
 import { executeButlerDraft } from '@/lib/butler.functions'
+import { createButlerImage, findButlerReferenceImages, type ButlerReferenceImage } from '@/lib/butlerImages.functions'
+import { imageCreationBrief, imageReferenceQuery, spokenReviewCommand, spokenConfirmationFor, voiceApprovalMatches, explicitlyRequestsToolAction, explicitlyRequestsDirectorySearch, type VoiceApproval } from './butler/intent'
 import './butler/butler.css'
 import { askIntros, type AskIntrosAction } from '@/lib/askIntros.functions'
 import { pageMeta } from './pageMeta'
@@ -81,6 +83,9 @@ function useDrag(onMove: (p: Point) => void, onEnd: (p: Point) => void) {
 }
 
 type Turn = ButlerDisplayTurn
+type ButlerVisual =
+  | { kind: 'generated'; owner: string; turnId: string; prompt: string; image: string }
+  | { kind: 'reference'; owner: string; turnId: string; query: string; results: ButlerReferenceImage[] }
 
 const startingOpeners = [
   'Where are we losing money?',
@@ -147,6 +152,11 @@ function AskIntrosDockInner({ page, peopleNames, memberName, briefing, contextPa
   const [attachments, setAttachments] = useState<ButlerAttachment[]>([])
   const [fileBusy, setFileBusy] = useState(false)
   const [fileError, setFileError] = useState('')
+  // Image previews are session-only: binary data never enters the saved conversation or another account.
+  const [visuals, setVisuals] = useState<ButlerVisual[]>([])
+  const [pendingApproval, setPendingApproval] = useState<VoiceApproval | null>(null)
+  const approvalRef = useRef<VoiceApproval | null>(null)
+  const resetApproval = () => { approvalRef.current = null; setPendingApproval(null) }
   const [showHistory, setShowHistory] = useState(false)
   const [draft, setDraft] = useState<{ id: string; kind: 'publish-post' | 'create-task' | 'save-writing-style' | 'draft-email'; text: string } | null>(null)
   const [fileExport, setFileExport] = useState<string | null>(null)
@@ -154,9 +164,15 @@ function AskIntrosDockInner({ page, peopleNames, memberName, briefing, contextPa
   const [draftError, setDraftError] = useState('')
   const ownerRef = useRef(memory.owner)
   ownerRef.current = memory.owner
+  const draftRef = useRef(draft)
+  draftRef.current = draft
+  useEffect(() => {
+    const approval = approvalRef.current
+    if (approval && (!draft || draft.id !== approval.id || draft.kind !== approval.kind || draft.text !== approval.text)) resetApproval()
+  }, [draft])
   const hadResolvedAccount = useRef(false)
   useEffect(() => {
-    setAttachments([]); setDraft(null); setFileExport(null); setFileError(''); setDraftError('')
+    setAttachments([]); setDraft(null); setFileExport(null); setFileError(''); setDraftError(''); setVisuals([]); resetApproval()
     // Keep a prompt selected while the initial session loads, but never carry
     // a draft across a subsequent sign-in, sign-out, or account change.
     if (hadResolvedAccount.current) setInput('')
@@ -181,19 +197,40 @@ function AskIntrosDockInner({ page, peopleNames, memberName, briefing, contextPa
     } catch (error) { setFileError(error instanceof Error ? error.message : 'File could not be read.') }
     finally { setFileBusy(false) }
   }
-  const commitDraft = async () => {
-    if (!draft || draft.kind === 'draft-email' || draftBusy) return
+  const commitDraft = async (reviewed = draft, approvedByVoice = false) => {
+    if (!reviewed || reviewed.kind === 'draft-email' || draftBusy) return
     const owner = memory.owner
+    resetApproval()
     setDraftBusy(true); setDraftError('')
     try {
-      const result = await executeButlerDraft({ data: { ...draft, kind: draft.kind, owner: owner! } })
+      const result = await executeButlerDraft({ data: { ...reviewed, kind: reviewed.kind, owner: owner! } })
       if (ownerRef.current !== owner) return
-      setTurns(previous => [...previous, { role: 'assistant', content: result.receipt }])
+      setTurns(previous => [...previous, { role: 'assistant', content: (approvedByVoice ? 'Voice confirmation received. ' : '') + result.receipt }])
+      if (approvedByVoice && voiceOutputSupported()) readAloud([result.receipt], 'Ask Intros')
       setDraft(null)
       window.dispatchEvent(new Event('aetheris:business-content-published'))
     } catch (error) { if (ownerRef.current === owner) setDraftError(error instanceof Error ? error.message : 'Action failed. Your draft is still here.') }
     finally { setDraftBusy(false) }
   }
+  useEffect(() => {
+    if (!pendingApproval) return
+    const timer = window.setTimeout(resetApproval, Math.max(0, pendingApproval.expiresAt - Date.now()))
+    return () => window.clearTimeout(timer)
+  }, [pendingApproval])
+
+  const useGeneratedReference = async (image: string) => {
+    if (fileBusy || attachments.length >= 3) { setFileError('Attach up to three reference files.'); return }
+    const owner = memory.owner
+    setFileBusy(true); setFileError('')
+    try {
+      const bytes = await (await fetch(image)).blob()
+      const prepared = await readButlerFile(new File([bytes], 'butler-generated-reference.png', { type: 'image/png' }))
+      if (ownerRef.current === owner) setAttachments(current => [...current, prepared].slice(0, 3))
+    } catch (error) {
+      if (ownerRef.current === owner) setFileError(error instanceof Error ? error.message : 'Could not attach generated image.')
+    } finally { setFileBusy(false) }
+  }
+
   const [openers, setOpeners] = useState<string[]>(startingOpeners)
   const [voice, setVoice] = useVoiceSettings()
   const reader = useReader()
@@ -258,6 +295,90 @@ function AskIntrosDockInner({ page, peopleNames, memberName, briefing, contextPa
     const history = [...turns, { role: 'user' as const, content: question + fileContext }]
     setTurns(history)
     const say = (text: string) => { if ((voice.speakReplies || voice.conversation) && voiceOutputSupported()) readAloud([text], 'Ask Intros') }
+    const reviewCommand = hasFiles ? null : spokenReviewCommand(question)
+    if (reviewCommand) {
+      if (reviewCommand === 'cancel') {
+        resetApproval()
+        const notice = 'Voice approval cancelled. The reviewed draft is still here.'
+        setTurns(current => [...current, { role: 'assistant', content: notice }]); say(notice)
+      } else if (reviewCommand === 'request') {
+        const currentDraft = draftRef.current
+        if (!requestOwner || !currentDraft || currentDraft.kind === 'draft-email') {
+          const notice = 'Nothing is ready to approve. Ask me to prepare a network post, CRM task or writing preference first.'
+          setTurns(current => [...current, { role: 'assistant', content: notice }]); say(notice)
+        } else {
+          const pending: VoiceApproval = {
+            owner: requestOwner, id: currentDraft.id, kind: currentDraft.kind,
+            text: currentDraft.text, expiresAt: Date.now() + 60000,
+          }
+          approvalRef.current = pending; setPendingApproval(pending)
+          const phrase = spokenConfirmationFor(currentDraft.kind)
+          const notice = 'Review the draft shown below. Say "' + phrase + '" within 60 seconds to approve that exact draft, or say "cancel approval".'
+          setTurns(current => [...current, { role: 'assistant', content: notice }]); say(notice)
+        }
+      } else {
+        const pending = approvalRef.current
+        const reviewed = draftRef.current
+        if (voiceApprovalMatches(pending, reviewed, requestOwner, question, Date.now()) && reviewed) {
+          resetApproval()
+          await commitDraft(reviewed, true)
+        } else {
+          resetApproval()
+          const notice = 'I did not approve anything. The confirmation did not match an active, unchanged draft. Review the draft and ask to approve it again.'
+          setTurns(current => [...current, { role: 'assistant', content: notice }]); say(notice)
+        }
+      }
+      sending.current = false
+      return
+    }
+    // Any unrelated utterance cancels a pending confirmation. Ordinary commands
+    // can never inherit authorization from an earlier draft.
+    if (approvalRef.current) resetApproval()
+
+    const createImagePrompt = imageCreationBrief(question)
+    const referenceQuery = imageReferenceQuery(question)
+    if (createImagePrompt || referenceQuery) {
+      if (hasFiles && createImagePrompt) {
+        const notice = 'I can inspect your attached reference, but image edits based on an upload are not connected yet. Remove the attachment and send a text-only image brief to generate a new image.'
+        setTurns(current => [...current, { role: 'assistant', content: notice }]); say(notice)
+        sending.current = false
+        return
+      }
+      if (!requestOwner) {
+        const notice = 'Sign in to generate images or search reference images in Butler.'
+        setTurns(current => [...current, { role: 'assistant', content: notice }]); say(notice)
+        sending.current = false
+        return
+      }
+      setBusy(true)
+      try {
+        const turnId = crypto.randomUUID()
+        if (createImagePrompt) {
+          const response = await createButlerImage({ data: { owner: requestOwner, prompt: createImagePrompt.slice(0, 1400) } })
+          if (ownerRef.current !== requestOwner) return
+          setVisuals(current => [...current, { kind: 'generated', owner: requestOwner, turnId, prompt: response.prompt, image: response.image }])
+          const notice = 'I created an image preview for you. It is not published or saved to your account. You can download it or attach it as a reference.'
+          setTurns(current => [...current, { id: turnId, role: 'assistant', content: notice }]); say(notice)
+        } else if (referenceQuery) {
+          const { results } = await findButlerReferenceImages({ data: { query: referenceQuery } })
+          if (ownerRef.current !== requestOwner) return
+          if (results.length) setVisuals(current => [...current, { kind: 'reference', owner: requestOwner, turnId, query: referenceQuery, results }])
+          const notice = results.length
+            ? 'Here are source-linked image references from Wikimedia Commons. Check the rights and original context before reuse.'
+            : 'No usable public reference image previews were returned. Try a more specific subject.'
+          setTurns(current => [...current, { id: turnId, role: 'assistant', content: notice }]); say(notice)
+        }
+        setAttachments([])
+      } catch (error) {
+        if (ownerRef.current === requestOwner) {
+          const notice = error instanceof Error ? error.message : 'The image tool is unavailable right now.'
+          setTurns(current => [...current, { role: 'assistant', content: notice }]); say(notice)
+        }
+      } finally {
+        setBusy(false); sending.current = false
+      }
+      return
+    }
     // Commands that run instantly: go somewhere, find someone, message, intro, note, post an ask.
     const command = hasFiles ? null : parseVoiceCommand(question, peopleNames)
     if (command) {
@@ -276,7 +397,10 @@ function AskIntrosDockInner({ page, peopleNames, memberName, briefing, contextPa
       sending.current = false
       return
     }
-    const destination = hasFiles ? null : recognizeDestination(question)
+    // Conversational questions (who/what/why/where) must never launch a
+    // workspace just because one of the topic keywords appears in them.
+    const openToolRequested = !hasFiles && explicitlyRequestsToolAction(question)
+    const destination = openToolRequested ? recognizeDestination(question) : null
     if (destination) {
       window.dispatchEvent(new CustomEvent('aetheris:navigate', { detail: destination }))
       const msg = destination === 'pocket' ? 'Opening your Pocket. Pick a starting shape and I will review it for you.' : 'Opening your company diagnostic. Press Explain this report and I will walk you through the top priorities.'
@@ -285,7 +409,7 @@ function AskIntrosDockInner({ page, peopleNames, memberName, briefing, contextPa
       sending.current = false
       return
     }
-    const intent = hasFiles ? null : recognizeCapabilityIntent(question)
+    const intent = openToolRequested ? recognizeCapabilityIntent(question) : null
     if (intent) {
       openCapability({ capabilityId: intent.capabilityId, ...(intent.focus ? { focus: intent.focus } : {}) })
       const subject = getActiveSubject()
@@ -294,7 +418,7 @@ function AskIntrosDockInner({ page, peopleNames, memberName, briefing, contextPa
       sending.current = false
       return
     }
-    const ceoCommand = hasFiles ? null : recognizeCommand(question)
+    const ceoCommand = openToolRequested ? recognizeCommand(question) : null
     if (ceoCommand?.view) {
       openCeo(ceoCommand)
       setTurns(current => [...current, { role: 'assistant', content: `Opening ${ceoViewLabel[ceoCommand.view!]}${ceoCommand.arg && ceoCommand.view === 'who' ? ` for “${ceoCommand.arg}”` : ''}. Everything in it comes from your recorded data — no AI needed.`, did: [ceoViewLabel[ceoCommand.view!]] }])
@@ -347,9 +471,14 @@ function AskIntrosDockInner({ page, peopleNames, memberName, briefing, contextPa
       const did: string[] = []
       const prepared: string[] = []
       for (const action of answer.actions) {
+        // A model can propose navigation, but the member must specifically
+        // request it. Question words are not permission to open search.
+        if (action.kind === 'open-search' && !explicitlyRequestsDirectorySearch(question)) continue
+        if (['navigate', 'open-member', 'message-member', 'request-intro', 'open-deals', 'start-deal', 'open-tools', 'open-search', 'open-preferences', 'open-profile'].includes(action.kind) &&
+            !explicitlyRequestsToolAction(question)) continue
         if (action.kind === 'create-file' && action.value) { setFileExport(action.value); prepared.push('File export:\n' + action.value); continue }
         if (['draft-post', 'draft-email', 'create-task', 'save-writing-style'].includes(action.kind) && action.value) {
-          setDraft({ id: crypto.randomUUID(), kind: (action.kind === 'draft-post' ? 'publish-post' : action.kind) as NonNullable<typeof draft>['kind'], text: action.value.slice(0, 4000) });
+          resetApproval(); setDraft({ id: crypto.randomUUID(), kind: (action.kind === 'draft-post' ? 'publish-post' : action.kind) as NonNullable<typeof draft>['kind'], text: action.value.slice(0, 4000) });
           setDraftError(''); did.push('Draft ready for review.'); prepared.push('Prepared draft:\n' + action.value); continue
         }
         if (action.kind === 'take-note') {
@@ -447,10 +576,14 @@ function AskIntrosDockInner({ page, peopleNames, memberName, briefing, contextPa
       <details className="butler-options"><summary>Conversation options <span>History · settings</span></summary><div className="butler-options-body">
       <div className="butler-history-controls">
         <button type="button" disabled={busy || !memory.ready} onClick={() => { setShowHistory(value => !value); void memory.listHistory() }}><History size={13}/> History</button>
-        <button type="button" disabled={busy || !memory.ready} onClick={() => { setDraft(null); setFileExport(null); setAttachments([]); void memory.switchConversation() }}><Plus size={13}/> New conversation</button>
+        <button type="button" disabled={busy || !memory.ready} onClick={() => { resetApproval(); setDraft(null); setFileExport(null); setAttachments([]); setVisuals([]); void memory.switchConversation() }}><Plus size={13}/> New conversation</button>
       </div>
 
-      {showHistory && <div className="butler-history-list">{memory.history.map(item => <button type="button" key={item.id} disabled={busy} onClick={() => { setDraft(null); setFileExport(null); setAttachments([]); void memory.switchConversation(item.id); setShowHistory(false) }}>{item.title}</button>)}{memory.historyBefore && <button type="button" onClick={() => void memory.listHistory(true)}>More conversations</button>}{!memory.history.length && <span>No saved conversations found.</span>}</div>}
+      <div className="butler-image-quick" aria-label="Image tools">
+        <button type="button" onClick={() => { setInput('Create an image of '); inputRef.current?.focus() }}>Create image</button>
+        <button type="button" onClick={() => { setInput('Show images of '); inputRef.current?.focus() }}>Find reference images</button>
+      </div>
+      {showHistory && <div className="butler-history-list">{memory.history.map(item => <button type="button" key={item.id} disabled={busy} onClick={() => { setDraft(null); setFileExport(null); setAttachments([]); setVisuals([]); resetApproval(); void memory.switchConversation(item.id); setShowHistory(false) }}>{item.title}</button>)}{memory.historyBefore && <button type="button" onClick={() => void memory.listHistory(true)}>More conversations</button>}{!memory.history.length && <span>No saved conversations found.</span>}</div>}
       <ButlerWorkspaceControls welcome={newMemberWelcome} onStart={() => { setOpen(false); window.dispatchEvent(new Event('ask-intros:onboarding')) }} />
 
       </div></details>
@@ -465,6 +598,10 @@ function AskIntrosDockInner({ page, peopleNames, memberName, briefing, contextPa
         {dictation.interim && <em>{dictation.interim}</em>}
       </div>}
 
+      {pendingApproval && <p role="status" className="butler-approval-notice">
+        Draft awaiting voice confirmation. Say <b>{spokenConfirmationFor(pendingApproval.kind)}</b>, or say <b>cancel approval</b>. This expires after 60 seconds and any edit cancels it.
+      </p>}
+
       {dictation.error && <p className="ask-dock-voice-notice" role="alert">{dictation.error} <button type="button" onClick={dictation.start}>Retry voice</button></p>}
       {reader.problem && <p className="ask-dock-voice-notice" role="alert">{reader.problem}</p>}
 
@@ -472,6 +609,24 @@ function AskIntrosDockInner({ page, peopleNames, memberName, briefing, contextPa
         {memory.older && <button type="button" onClick={() => void memory.loadOlder()}>Load older messages</button>}
         {turns.map((turn, index) => <div key={index} className={`ask-dock-turn ${turn.role}`}>
           <p style={{ whiteSpace: 'pre-wrap' }}>{turn.content}</p>
+          {visuals.filter(visual => visual.turnId === turn.id && visual.owner === memory.owner).map(visual =>
+            visual.kind === 'generated'
+              ? <figure className="butler-image-preview" key={visual.turnId}>
+                  <img src={visual.image} alt={'Generated image: ' + visual.prompt.slice(0, 150)} loading="lazy" />
+                  <figcaption>AI generated image. Preview only, not posted or stored.</figcaption>
+                  <div className="butler-image-actions">
+                    <a href={visual.image} download="ask-intros-butler-image.png">Save image</a>
+                    <button type="button" disabled={fileBusy || busy || attachments.length >= 3} onClick={() => void useGeneratedReference(visual.image)}>Use as reference</button>
+                  </div>
+                </figure>
+              : <section className="butler-reference-grid" key={visual.turnId} aria-label={'Image references for ' + visual.query}>
+                  {visual.results.map(item => <figure key={item.source}>
+                    <img src={item.thumbnail} alt={item.title} loading="lazy" referrerPolicy="no-referrer" />
+                    <figcaption>{item.title} · {item.license}</figcaption>
+                    <a href={item.source} target="_blank" rel="noopener noreferrer">View original source and rights</a>
+                  </figure>)}
+                </section>
+          )}
           {turn.sources?.length ? <div className="butler-sources">{turn.sources.map(source => <a href={source.url} key={source.url} target="_blank" rel="noopener noreferrer">{source.title}</a>)}</div> : null}
           {turn.role === 'assistant' && voiceOutputSupported() && <button type="button" className="ask-dock-say"
             aria-label="Read this reply aloud" onClick={() => readAloud([turn.content], 'Ask Intros')}><Volume2 size={12} /></button>}
@@ -488,12 +643,12 @@ function AskIntrosDockInner({ page, peopleNames, memberName, briefing, contextPa
         <textarea aria-label="Edit draft" value={draft.text} disabled={draftBusy} onChange={event => setDraft({ ...draft, text: event.target.value })} maxLength={4000}/>
         {draftError && <p role="alert">{draftError}</p>}
         {draft.kind === 'draft-email' ? <button type="button" onClick={() => { void navigator.clipboard.writeText(draft.text).then(() => setDraftError('Draft copied.')).catch(() => setDraftError('Select the draft text to copy it.')) }}>Copy email draft</button> : <button type="button" disabled={draftBusy || draft.text.trim().length < 4 || !memory.owner} onClick={() => void commitDraft()}>{draftBusy ? 'Saving…' : draft.kind === 'publish-post' ? 'Publish to my network' : 'Save'}</button>}
-        <button type="button" disabled={draftBusy} onClick={() => setDraft(null)}>Dismiss</button>
+        <button type="button" disabled={draftBusy} onClick={() => { resetApproval(); setDraft(null) }}>Dismiss</button>
       </section>}
       </div>
       {(attachments.length>0||fileError||fileBusy)&&<div className="butler-files">
 
-        {attachments.map((file, index) => <span key={index}>{file.name}<button type="button" disabled={busy} aria-label={`Remove ${file.name}`} onClick={() => setAttachments(files => files.filter((_, i) => i !== index))}>×</button></span>)}
+        {attachments.map((file, index) => <span key={index} className="butler-file-chip">{file.image && <img src={file.image} alt="" loading="lazy" />}<span>{file.name}</span><button type="button" disabled={busy} aria-label={`Remove ${file.name}`} onClick={() => setAttachments(files => files.filter((_, i) => i !== index))}>×</button></span>)}
         {fileError && <p role="alert">{fileError}</p>}
       </div>}
       <form className="ask-dock-input" onSubmit={event => { event.preventDefault(); void send(input) }}>
