@@ -1,0 +1,56 @@
+import { build } from 'esbuild';
+import { createServer } from 'node:http';
+import { mkdtempSync,readFileSync } from 'node:fs';
+import { tmpdir } from 'node:os';
+import { dirname,join,resolve } from 'node:path';
+import { fileURLToPath } from 'node:url';
+const here=dirname(fileURLToPath(import.meta.url)),out=mkdtempSync(join(tmpdir(),'butler-entrance-'));
+await build({entryPoints:[join(here,'entry.tsx')],bundle:true,format:'esm',outdir:out,jsx:'automatic',define:{'process.env.NODE_ENV':'"production"'},logLevel:'error'});
+const pending=new Set();
+const server=createServer((req,res)=>{
+ if(req.url==='/pending.mp4'){pending.add(res);res.on('close',()=>pending.delete(res));return;}
+ const type=req.url==='/entry.js'?'text/javascript':req.url==='/entry.css'?'text/css':'text/html';res.setHeader('Content-Type',type);
+ res.end(type==='text/html'?'<html data-experience="business"><head><link rel="stylesheet" href="/entry.css"></head><body style="background:#16161b;color:white"><div id="root"></div><script type="module" src="/entry.js"></script></body></html>':readFileSync(join(out,req.url.slice(1))));
+});
+await new Promise(r=>server.listen(0,'127.0.0.1',r));
+const {chromium}=await import(process.env.PLAYWRIGHT_MODULE??resolve(here,'../../node_modules/playwright/index.mjs'));
+const browser=await chromium.launch({...(process.env.PLAYWRIGHT_EXECUTABLE_PATH ? {executablePath:process.env.PLAYWRIGHT_EXECUTABLE_PATH}:{}),args:['--enable-unsafe-swiftshader']});
+const assert=(ok,label)=>{if(!ok)throw Error(label);console.log('PASS '+label)};
+try {
+ const page=await browser.newPage({viewport:{width:390,height:844}}),errors=[];
+ page.on('pageerror',e=>errors.push(e.message));
+ await page.addInitScript(()=>{HTMLMediaElement.prototype.play=function(){return Promise.resolve()}});
+ await page.goto('http://127.0.0.1:'+server.address().port,{waitUntil:'domcontentloaded'});
+ await page.locator('.butler-orb canvas').waitFor();
+ await page.waitForTimeout(700);
+ assert(await page.locator('.butler-orb').getAttribute('data-orb-view')==='business','Business orb selects red palette');
+ await page.locator('.butler-orb').screenshot({path:join(out,'business.png')});
+ await page.getByRole('button',{name:'Social',exact:true}).click();
+ await page.waitForFunction(()=>document.querySelector('.butler-orb').dataset.orbView==='social');
+ await page.waitForTimeout(500);await page.locator('.butler-orb').screenshot({path:join(out,'social.png')});
+ await page.getByRole('button',{name:'Ask Intros',exact:true}).click();
+ assert(await page.getByRole('dialog').isVisible(),'decorative orb preserves launcher click');
+ await page.getByRole('button',{name:'Start intro'}).click();
+ const film=page.locator('.ask-cinematic-entrance');
+ await film.waitFor();
+ assert(await film.locator('video').evaluate(v=>v.autoplay&&v.muted&&v.playsInline),'intro is muted inline autoplay');
+ assert(await film.evaluate(e=>e.getBoundingClientRect().height===innerHeight),'intro fills mobile viewport');
+ await film.locator('video').evaluate(v=>{Object.defineProperty(v,'duration',{value:10,configurable:true});v.currentTime=9;v.dispatchEvent(new Event('timeupdate'))});
+ assert(Number(await film.locator('.ask-cinematic-entrance-title').evaluate(e=>e.style.opacity))>0,'closing tagline fades in with playback');
+ await page.getByRole('button',{name:'Skip intro'}).click();await film.waitFor({state:'detached'});
+ await page.getByRole('button',{name:'Start intro'}).click();await film.waitFor();
+ await film.locator('video').dispatchEvent('ended');await film.waitFor({state:'detached'});
+ assert(true,'natural end holds tagline then reveals page');
+ await page.getByRole('button',{name:'Start intro'}).click();await film.waitFor();
+ await film.locator('video').dispatchEvent('error');await film.waitFor({state:'detached'});
+ assert(true,'failed video releases entry');
+ await page.getByRole('button',{name:'Start intro'}).click();await film.waitFor();await page.keyboard.press('Escape');await film.waitFor({state:'detached'});
+ assert(true,'Escape dismisses entry');
+ await page.emulateMedia({reducedMotion:'reduce'});await page.getByRole('button',{name:'Start intro'}).click();await film.waitFor({state:'detached'});
+ assert(await page.evaluate(()=>document.body.style.position!=='fixed'),'reduced motion never locks page');
+ await page.locator('.butler-orb canvas').evaluate(c=>c.dispatchEvent(new Event('webglcontextlost',{cancelable:true})));
+ await page.locator('.butler-orb canvas').waitFor({state:'detached'});
+ assert(await page.locator('.butler-orb-fallback').isVisible(),'context loss preserves visible fallback');
+ assert(errors.length===0,'no browser runtime errors: '+errors.join(','));
+ console.log('Screenshots: '+out);
+} finally {await browser.close();for(const res of pending)res.destroy();server.close();}

@@ -1,3 +1,4 @@
+import { ButlerOrb } from '@/components/ui/butler-orb'
 import { AskIntrosMark } from '@/aetheris/AskIntrosMark'
 import { useEffect, useRef, useState } from 'react'
 import { ArrowUp, Mic, MicOff, Radio, Volume2, VolumeX, X } from 'lucide-react'
@@ -354,7 +355,7 @@ function AskIntrosDockInner({ page, peopleNames, memberName, briefing, contextPa
       style={fabPos ? { ...clampPoint(fabPos, fabRef.current?.offsetWidth ?? 140, fabRef.current?.offsetHeight ?? 48), right: 'auto', bottom: 'auto' } : undefined}
       onPointerDown={e => dragFab(e, fabRef.current)}
       onClick={() => { if (fabRef.current?.dataset['dragged']) return; setOpen(value => !value) }}>
-      {open ? <X size={18} /> : <><span className="ask-dock-blob" aria-hidden="true"><ThinkingOrb state="shaping" size={20} theme="dark" /></span><AetherisGlyph size={18} /></>}
+      {open ? <X size={18} /> : <><span className="ask-dock-blob" aria-hidden="true"><ButlerOrb /></span><AetherisGlyph size={18} /></>}
       {!open && <span>Ask Intros</span>}
     </button>
 

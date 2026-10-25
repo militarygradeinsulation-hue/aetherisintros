@@ -41,6 +41,10 @@ jobs:
           node scripts/recovery/member-families.standalone.mjs
       - name: Install Chromium
         run: npx playwright install --with-deps chromium
+      - name: Butler orb and cinematic entrance (browser)
+        env:
+          PLAYWRIGHT_MODULE: ${{ github.workspace }}/node_modules/playwright/index.mjs
+        run: node scripts/butler-entrance-check/run.mjs
       - name: PDF attachment reader (browser)
         env:
           PLAYWRIGHT_MODULE: ${{ github.workspace }}/node_modules/playwright/index.mjs
