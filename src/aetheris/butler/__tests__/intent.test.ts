@@ -5,6 +5,8 @@ import {
   spokenReviewCommand,
   spokenConfirmationFor,
   voiceApprovalMatches,
+  explicitlyRequestsToolAction,
+  explicitlyRequestsDirectorySearch,
   type VoiceApproval,
 } from '../intent'
 
@@ -59,5 +61,46 @@ describe('Butler voice confirmation guard', () => {
     expect(voiceApprovalMatches(taskApproval, task, owner, 'confirm save task', now)).toBe(true)
     expect(voiceApprovalMatches(taskApproval, task, owner, 'confirm publish', now)).toBe(false)
     expect(spokenConfirmationFor('save-writing-style')).toBe('confirm save style')
+  })
+})
+
+describe('Butler intent-based routing', () => {
+  it.each([
+    'who',
+    'Who is this?',
+    'Who is Bo Chen?',
+    'Who can change this?',
+    'Who could fund this?',
+    'Who can I help?',
+    'Where are we losing money?',
+    'Which customers need attention?',
+    'What changed this week?',
+    'I wonder who needs help',
+    'Hey Ask Intros, who should I meet?',
+  ])('does not open a tool for an ordinary question: %s', question => {
+    expect(explicitlyRequestsToolAction(question)).toBe(false)
+    expect(explicitlyRequestsDirectorySearch(question)).toBe(false)
+  })
+
+  it.each([
+    'Find Bo Chen',
+    'Search for CFOs in Indiana',
+    'Look up Acme',
+    'Butler, find Ana',
+    'Can you find people in roofing?',
+    'Please open search',
+    'Show me members in Indiana',
+    'Hey Ask Intros, find board advisors',
+  ])('recognizes an explicit search request: %s', request => {
+    expect(explicitlyRequestsToolAction(request)).toBe(true)
+    expect(explicitlyRequestsDirectorySearch(request)).toBe(true)
+  })
+
+  it('distinguishes a deliberate workspace command from mention of a topic', () => {
+    expect(explicitlyRequestsToolAction('Open the company diagnostic')).toBe(true)
+    expect(explicitlyRequestsToolAction('Show my capital map')).toBe(true)
+    expect(explicitlyRequestsDirectorySearch('Show my capital map')).toBe(false)
+    expect(explicitlyRequestsToolAction('Butler, who can change this?')).toBe(false)
+    expect(explicitlyRequestsToolAction('Could you open the negotiation room?')).toBe(true)
   })
 })
