@@ -325,6 +325,8 @@
     gap:7px;
   }
   .ael.ael-compact .ael-header .ael-signin { display:inline-flex;font-size:9px;letter-spacing:.03em; }
+  /* The hero already offers the signup action; drop the duplicate from the phone header. */
+  .ael.ael-compact .ael-header .ael-nav-cta { display:none; }
   .ael.ael-compact .ael-header .ask-intros-lockup {
     width:clamp(153px,43vw,204px);
     height:auto;
