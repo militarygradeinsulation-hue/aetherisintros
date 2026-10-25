@@ -41,7 +41,7 @@ function ContextLoss({ onLost }: { onLost: () => void }) {
 }
 export default function ButlerBlobCanvas(props: BlobCanvasProps) {
   return <Canvas camera={{ position: [0, 0, 8], fov: 50 }} dpr={[1, 1.5]}
-    gl={{ alpha: true, antialias: true, powerPreference: 'low-power' }}
+    gl={{ alpha: true, antialias: true, powerPreference: 'low-power', preserveDrawingBuffer: true }}
     frameloop={!props.visible ? 'never' : props.reducedMotion ? 'demand' : 'always'}
     onCreated={({ gl }) => { gl.setClearColor(0x000000, 0); }}
     onContextMenu={event => event.preventDefault()}>
