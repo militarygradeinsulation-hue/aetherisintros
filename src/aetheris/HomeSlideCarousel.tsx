@@ -7,12 +7,11 @@ const DWELL_MS = 5000
 /**
  * The homepage hero's image area: the member's own Ask Intros brand graphics,
  * each held for five seconds before the next one arrives. There are no visible
- * controls — the pictures simply move. Hovering holds the current picture, and
+ * controls — the pictures simply move, and
  * a visitor who asks for less motion sees a single still picture instead.
  */
 export function HomeSlideCarousel() {
   const [index, setIndex] = useState(0)
-  const [hovered, setHovered] = useState(false)
   const [reduced, setReduced] = useState(false)
   const count = HOME_SLIDES.length
 
@@ -25,10 +24,10 @@ export function HomeSlideCarousel() {
   }, [])
 
   useEffect(() => {
-    if (hovered || reduced) return
+    if (reduced) return
     const timer = window.setInterval(() => setIndex(i => (i + 1) % count), DWELL_MS)
     return () => window.clearInterval(timer)
-  }, [hovered, reduced, count])
+  }, [reduced, count])
 
   useEffect(() => {
     const next = HOME_SLIDES[(index + 1) % count]
@@ -38,11 +37,7 @@ export function HomeSlideCarousel() {
   }, [index, count])
 
   return (
-    <div
-      className="ael-hero-slides"
-      onMouseEnter={() => setHovered(true)}
-      onMouseLeave={() => setHovered(false)}
-    >
+    <div className="ael-hero-slides">
       {HOME_SLIDES.map((slide, i) => (
         <div key={slide.src} className={i === index ? 'ael-hero-slide is-active' : 'ael-hero-slide'} aria-hidden={i !== index}>
           <img

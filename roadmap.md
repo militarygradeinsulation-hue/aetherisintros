@@ -1,8 +1,9 @@
 # Aetheris specification completion
 
 # Homepage hero carousel and membership removal (Oct 25)
+- [ ] Repair carousel visibility: show uncropped pictures without text overlays and verify rotation on phone and desktop.
 - [x] Turn the empty hero image area into a carousel of the member's ten brand graphics, each held five seconds.
-- [x] Remove the pause control and the dots so only the pictures move; hovering holds a picture, reduced motion shows one still picture.
+- [x] Remove pause controls, dots and hover pausing so only the pictures change; reduced motion shows one still picture.
 - [x] Remove the membership area ("Start with one useful connection") and its navigation link.
 - [x] Update the homepage and photo checks: 62 homepage assertions pass, including the five-second dwell; photo check now allows only the approved hero pictures.
 - [ ] Resolve the photo check's later demo assertions, which expect the Business workspace shell while the demo now opens in the Social presentation — pre-existing, unrelated to this change.
