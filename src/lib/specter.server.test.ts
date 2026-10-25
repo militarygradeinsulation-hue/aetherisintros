@@ -61,3 +61,21 @@ describe('Specter capture transport', () => {
     });
   });
 });
+
+describe('Specter provider capacity recovery',()=>{
+ it('retries a short provider cooldown once with a lightweight evidence request',async()=>{
+  vi.stubEnv('SPECTER_BROWSER_URL','');vi.stubEnv('SPECTER_BROWSER_TOKEN','');vi.stubEnv('JINA_API_KEY','dedicated-reader-key')
+  const fetcher=vi.fn().mockResolvedValueOnce(new Response('busy',{status:429,headers:{'retry-after':'0'}})).mockResolvedValueOnce(new Response('Title: Recovered\nMarkdown Content:\n# Evidence'))
+  vi.stubGlobal('fetch',fetcher)
+  expect((await captureSpecterWebsite('https://company.com')).snapshot.title).toBe('Recovered')
+  expect(fetcher).toHaveBeenCalledTimes(2)
+  expect(fetcher.mock.calls[1]![1].headers.authorization).toBe('Bearer dedicated-reader-key')
+  expect(fetcher.mock.calls[1]![1].headers['x-respond-with']).toBe('markdown')
+ })
+ it('honors a longer Retry-After without issuing repeated requests',async()=>{
+  vi.stubEnv('SPECTER_BROWSER_URL','');vi.stubEnv('SPECTER_BROWSER_TOKEN','')
+  const fetcher=vi.fn().mockResolvedValue(new Response('busy',{status:429,headers:{'retry-after':'90'}}));vi.stubGlobal('fetch',fetcher)
+  await expect(captureSpecterWebsite('https://company.com')).rejects.toThrow('90 seconds')
+  expect(fetcher).toHaveBeenCalledTimes(1)
+ })
+})
