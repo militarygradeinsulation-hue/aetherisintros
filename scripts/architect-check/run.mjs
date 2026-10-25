@@ -32,7 +32,7 @@ async function checkBrand(page, label) {
   check(!warm.length,label+' has no orange brand accents: '+JSON.stringify(warm));
 }
 async function checkMenuAlignment(root,label) {
-  const layout=await root.locator('.ledger-native-nav-item').evaluateAll(buttons=>buttons.map(button=>{
+  const layout=await root.locator('nav.ledger-native-nav .ledger-native-nav-item').evaluateAll(buttons=>buttons.map(button=>{
     const b=button.getBoundingClientRect(),i=button.querySelector('svg').getBoundingClientRect(),t=button.querySelector('.ledger-native-nav-label').getBoundingClientRect();
     const text=button.querySelector('.ledger-native-nav-label');
     return {x:b.x,width:b.width,height:b.height,icon:i.x,label:t.x,clipped:text.scrollWidth-text.clientWidth};
@@ -115,7 +115,7 @@ try{
   browser=await chromium.launch();
   for(const theme of ['dark','light']){
     const context=await browser.newContext({viewport:{width:1440,height:900}});
-    await context.addInitScript(value=>{localStorage.setItem('ask-intros.appearance',value);localStorage.setItem('aetheris.crm.view','full');localStorage.setItem('aetheris.crm.tab','tasks');sessionStorage.setItem('ask-intros.entrance-film.seen','1')},theme);
+    await context.addInitScript(value=>{localStorage.setItem('ask-intros.appearance',value);localStorage.setItem('aetheris.crm.view','full');localStorage.setItem('aetheris.crm.tab','tasks')},theme);
     const page=await context.newPage();
     const errors=[];
     page.on('pageerror',error=>errors.push(error.message));

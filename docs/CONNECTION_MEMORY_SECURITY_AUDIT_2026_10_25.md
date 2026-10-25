@@ -1,6 +1,6 @@
 # Connection, Memory and security audit
 
-Reviewed October 25, 2026 against main 72f7d29c, with subsequent non-overlapping social-asset changes preserved from 793a0a0f.
+Reviewed October 25, 2026 against main 72f7d29c, with subsequent non-overlapping social-asset changes preserved from 793a0a0f and d55fc9c2.
 
 ## Verified boundaries
 
@@ -22,6 +22,10 @@ Local validation covers TypeScript, production build, the complete unit suite in
 ## Verified production privacy rollout
 
 The exact repeatable forward repair in supabase/migrations/20261025150218_privacy_boundary_guards.sql was applied through the original project's database connection. All eight new policies were verified as RESTRICTIVE. A read-only authenticated role check confirmed other-owner private posts were hidden and comments/reactions followed visible posts. No member rows or historical migration ledger entries were changed. The broader source application release is tracked separately by the pull request.
+
+## Scheduler routing repair
+
+Production pg_net responses showed HTTP 404 while pg_cron reported successful SQL execution. The configured app_url was the old aetherisintros.lovable.app origin. Anonymous probes confirmed the cron and push routes return 404 there and correctly return 401 at askintros.vip. The app_url setting was changed conditionally to https://askintros.vip, without changing the dispatch secret. No notification run was manually triggered. Passive HTTP response logs remain the delivery verification boundary; a successful cron SQL statement alone does not prove endpoint execution or provider delivery.
 
 ## Remaining production acceptance
 
