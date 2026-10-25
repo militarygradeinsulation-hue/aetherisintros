@@ -1,4 +1,4 @@
-import { TopNavigation as BridgeTopNavigation } from '../../../bridge-reference/src/intros-ui/components/layout/TopNavigation';
+import { TopNavigation as BridgeTopNavigation } from './SocialTopNavigation';
 import { OnboardingGuide } from '../../onboarding/OnboardingGuide';
 import { CompactExperienceSwitch } from '../../experience/CompactExperienceSwitch';
 import { OnboardingMenuPortal } from '../../onboarding/OnboardingMenuPortal';

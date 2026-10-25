@@ -78,3 +78,27 @@
   :root[data-theme] body .workspace-navigation-row .ask-intros-lockup--header {width:132px!important}
  }
 }
+
+/* Full image, never the legacy cropped symbol/lettering treatment. */
+@layer bridge-social-reference {
+ :root[data-theme] body .workspace-navigation-row {height:96px!important;min-height:96px!important;display:grid!important;grid-template-columns:minmax(0,1fr) auto!important}
+ :root[data-theme] body .workspace-navigation-row > .bridge-navigation-host,
+ :root[data-theme] body .workspace-navigation-row > .ledger-crm-topbar {width:100%!important;height:96px!important;min-height:96px!important;min-width:0!important}
+ :root[data-theme] body .workspace-navigation-row .bridge-navigation-host > .ix-global-header,
+ :root[data-theme] body .workspace-navigation-row .ix-global-header-inner {height:96px!important;min-height:96px!important;max-height:none!important}
+ :root[data-theme] body .workspace-navigation-row .ix-global-brand {flex:0 0 154px!important;width:154px!important;min-width:154px!important}
+ :root[data-theme] body .workspace-navigation-row .official-logo-action {width:154px!important;height:88px!important;min-height:88px!important;overflow:visible!important}
+ :root[data-theme] body .workspace-navigation-row .social-header-complete-logo {position:static!important;display:block!important;width:154px!important;height:88px!important;max-width:100%!important;object-fit:contain!important;object-position:center!important;clip-path:none!important;mask:none!important;transform:none!important;content:normal!important}
+ :root[data-theme] body .workspace-navigation-row .workspace-view-toggle {display:flex!important;visibility:visible!important;position:relative!important;flex:none!important;z-index:2;min-width:144px}
+ :root[data-theme] body .workspace-navigation-row .ix-desktop-nav-link {padding-inline:7px!important;font-size:12px!important}
+ @media(min-width:1101px) {
+  :root[data-theme] body .workspace-navigation-row .ix-desktop-main-nav {display:flex!important;overflow-x:auto;scrollbar-width:thin;justify-content:flex-start!important}
+ }
+ @media(max-width:720px) {
+  :root[data-theme] body .workspace-navigation-row .ix-global-brand,
+  :root[data-theme] body .workspace-navigation-row .official-logo-action {width:120px!important;min-width:120px!important;flex-basis:120px!important}
+  :root[data-theme] body .workspace-navigation-row .social-header-complete-logo {width:120px!important;height:69px!important}
+  :root[data-theme] body .workspace-navigation-row .workspace-view-toggle {min-width:126px}
+  :root[data-theme] body .workspace-navigation-row .ix-global-account-actions {display:none!important}
+ }
+}
