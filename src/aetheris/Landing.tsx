@@ -45,6 +45,8 @@ export default function Landing() {
     </header>
 
     <section className="ael-hero" id="ael-main" aria-labelledby="ael-hero-title">
+      <HomeSlideCarousel />
+      <div className="ael-hero-shade" aria-hidden="true" />
       <div className="ael-architecture-meta" aria-hidden="true"><span>RELATIONSHIPS / BY DESIGN</span><span>ASK INTROS — CONNECTION 001</span></div>
       <div className="ael-hero-content">
         <div className="ael-platform-strip" aria-label="A purposeful business connection">
