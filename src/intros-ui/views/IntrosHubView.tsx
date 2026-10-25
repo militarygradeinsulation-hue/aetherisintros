@@ -423,53 +423,53 @@ export const IntrosHubView: React.FC<IntrosHubViewProps> = ({
         </div>
       )}
 
-      {/* Tab 4: Specter Intelligence + AI Match Synergies */}
+      {/* Compact Specter intelligence and member matching workspace */}
       {activeTab === 'recommendations' && (
-        <div className="space-y-6">
+        <div className="space-y-4 min-w-0">
           <RelationshipMomentBanner />
 
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <SpecterSignalFeed onBuildAsk={handleSpecterSignal} />
-            <GapOpportunityFeed onBuildAsk={handleSpecterSignal} />
+          <div className="grid min-w-0 grid-cols-1 gap-4 xl:grid-cols-2">
+            <div className="min-w-0"><SpecterSignalFeed onBuildAsk={handleSpecterSignal} /></div>
+            <div className="min-w-0"><GapOpportunityFeed onBuildAsk={handleSpecterSignal} /></div>
           </div>
 
-          {/* Member match cards below signals */}
-          <div>
-            <div className="flex items-center gap-2 mb-3">
-              <Sparkles size={13} className="text-[#9CA3AF]" />
-              <span className="text-[11px] font-mono uppercase tracking-widest text-[#9CA3AF]">Network Matches</span>
+          <section aria-label="AI Match Synergies" className="min-w-0 rounded-xl border border-white/10 bg-[#0E121A] p-3 sm:p-4">
+            <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
+              <div className="flex min-w-0 items-center gap-2">
+                <Sparkles size={14} className="shrink-0 text-[#EF4444]" />
+                <h3 className="text-sm font-semibold text-white">AI Match Synergies</h3>
+                <span className="rounded-full bg-white/10 px-2 py-0.5 text-[10px] font-mono text-[#CBD5E1]">{Math.min(networkMembers.length, 4)}</span>
+              </div>
+              <span className="text-[11px] text-[#9CA3AF]">Potential introductions</span>
             </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {networkMembers.slice(0, 4).map((member) => (
-                <div
-                  key={member.id}
-                  className="bg-[#0E121A] border border-white/10 rounded-xl p-5 space-y-3"
-                >
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-3">
-                      <ExecutivePortrait name={member.name} size="md" />
-                      <div>
-                        <div className="text-xs font-semibold text-white">{member.name}</div>
-                        <div className="text-[11px] text-[#9CA3AF]">{member.title}</div>
+            {networkMembers.length === 0 ? (
+              <p className="py-4 text-xs text-[#9CA3AF]">Your network matches will appear here as connections become available.</p>
+            ) : (
+              <div className="grid min-w-0 grid-cols-1 gap-2 lg:grid-cols-2">
+                {networkMembers.slice(0, 4).map((member) => (
+                  <article key={member.id} className="flex min-w-0 flex-col gap-2 rounded-lg border border-white/10 bg-white/[0.025] p-3">
+                    <div className="flex min-w-0 items-start gap-2.5">
+                      <div className="shrink-0"><ExecutivePortrait name={member.name} size="sm" /></div>
+                      <div className="min-w-0 flex-1">
+                        <div className="truncate text-xs font-semibold text-white">{member.name}</div>
+                        <div className="truncate text-[11px] text-[#9CA3AF]">{member.title}</div>
                       </div>
+                      <span className="shrink-0 rounded-md bg-[#EF4444]/10 px-2 py-1 text-[11px] font-semibold tabular-nums text-[#FCA5A5]">{member.matchScore}%</span>
                     </div>
-                    <span className="text-xs font-mono text-[#EF4444] font-bold">
-                      {member.matchScore}% Match
-                    </span>
-                  </div>
-                  <p className="text-xs text-[#CBD5E1] italic">
-                    "{member.bioStatement}"
-                  </p>
-                  <button
-                    onClick={() => onRequestIntro(member)}
-                    className="bridge-primary-action w-full py-2 px-3 text-xs font-semibold transition-colors cursor-pointer text-center"
-                  >
-                    Request Warm Introduction
-                  </button>
-                </div>
-              ))}
-            </div>
-          </div>
+                    {member.bioStatement && (
+                      <p className="line-clamp-2 min-h-0 text-[11px] leading-relaxed text-[#CBD5E1]" title={member.bioStatement}>{member.bioStatement}</p>
+                    )}
+                    <button
+                      onClick={() => onRequestIntro(member)}
+                      className="bridge-primary-action mt-auto self-start rounded-md px-3 py-1.5 text-[11px] font-semibold transition-colors cursor-pointer"
+                    >
+                      Request intro
+                    </button>
+                  </article>
+                ))}
+              </div>
+            )}
+          </section>
         </div>
       )}
 
