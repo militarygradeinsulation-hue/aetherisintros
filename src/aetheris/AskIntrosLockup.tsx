@@ -9,11 +9,11 @@ export function AskIntrosLockup({ variant = 'compact', className = '' }: AskIntr
   return (
     <img
       className={classes}
-      src="/ask-intros-logo.jpg"
+      src="/ask-intros-logo-wide.jpg"
       alt="Ask Intros — Why me, why them, why now"
-      width={1254}
-      height={1254}
-      style={{ objectFit: 'cover', objectPosition: 'center 52%', aspectRatio: '2.2 / 1', height: 'auto', borderRadius: 6 }}
+      width={1015}
+      height={580}
+      style={{ display: "block", height: "auto", borderRadius: 6 }}
     />
   )
 }

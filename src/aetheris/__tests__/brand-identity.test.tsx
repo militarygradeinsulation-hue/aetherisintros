@@ -13,7 +13,7 @@ describe('Ask Intros connection identity', () => {
   })
   it('uses the official logo image in the wordmark', () => {
     const html = renderToStaticMarkup(<AskIntrosLockup variant="compact" />)
-    expect(html).toContain('/ask-intros-logo.jpg')
+    expect(html).toContain('/ask-intros-logo-wide.jpg')
     expect(html).toContain('Why me, why them, why now')
   })
 })
