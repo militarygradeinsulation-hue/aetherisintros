@@ -23,6 +23,8 @@ export const Route = createFileRoute('/')({
       { property: 'og:type', content: 'website' },
       { name: 'twitter:card', content: 'summary_large_image' },
       { name: 'twitter:description', content: description },
+      { property: 'og:image', content: 'https://askintros.vip/ask-intros-social.png' },
+      { name: 'twitter:image', content: 'https://askintros.vip/ask-intros-social.png' },
       { property: 'og:url', content: 'https://askintros.vip/' },
     ],
     links: [{ rel: 'canonical', href: 'https://askintros.vip/' }],
