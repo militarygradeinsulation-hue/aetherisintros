@@ -7,10 +7,23 @@ for (const {target, sha256} of manifest.files) {
 }
 console.log(`${manifest.files.length} original Bridge files match the supplied source byte for byte`);
 
-// The original live-message JSX is used with the canonical, newer send controller.
+// The user-requested mobile inbox, recipient picker and header controls are host
+// integrations. Preserve the pinned reference itself and the untouched Social
+// message body/composer and relationship context. Browser tests cover adapters.
 const liveReference = readFileSync('src/bridge-reference/src/intros-ui/views/LiveMessagesView.tsx','utf8');
-const start = liveReference.indexOf('  return (\n    <div className="max-w-');
-const end = liveReference.indexOf('\n  )\n}', start) + '\n  )'.length;
-const originalRender = liveReference.slice(start, end).replace('  return (','  if (social) return (');
-if (start < 0 || !readFileSync('src/intros-ui/views/LiveMessagesView.tsx','utf8').includes(originalRender)) throw Error('Original Bridge live-message rendering changed');
-console.log('Live message rendering matches original Bridge JSX exactly');
+const liveHost = readFileSync('src/intros-ui/views/LiveMessagesView.tsx','utf8');
+const socialStart = liveHost.indexOf('  if (social) return (');
+const socialEnd = liveHost.indexOf('\n  return (', socialStart);
+if (socialStart < 0 || socialEnd < 0) throw Error('Social live-message integration is missing');
+const socialRender = liveHost.slice(socialStart, socialEnd);
+for (const [label, startMarker, endMarker] of [
+  ['message body and composer', '            <div className="msg-live-chat-body', '            </footer>'],
+  ['relationship context', '        <aside className="hidden lg:flex', '        </aside>'],
+]) {
+  const start = liveReference.indexOf(startMarker);
+  const end = liveReference.indexOf(endMarker, start);
+  if (start < 0 || end < start || !socialRender.includes(liveReference.slice(start, end + endMarker.length))) {
+    throw Error(`Original Bridge Social ${label} changed`);
+  }
+}
+console.log('Social message body, composer and context retain original Bridge JSX; mobile controls use the tested host adapter');
