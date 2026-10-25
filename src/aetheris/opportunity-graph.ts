@@ -451,17 +451,19 @@ export function graphInsights(g: GraphInputs, since: string | null): Insight[] {
 
 /** Deterministic answers for Ask Intros questions about the graph. */
 export function answerGraphQuestion(question: string, g: GraphInputs): string | null {
-  const q = question.toLowerCase()
+  const q = question.toLowerCase().trim().replace(/\s+/g, ' ').replace(/[?.!]+$/, '').trim()
+  // Only precise, complete graph questions should bypass Butler's language
+  // model. A lone "who", "quiet", or "which company" is not a search cue.
   const insights = graphInsights(g, null)
   const pick = (id: string) => insights.find(i => i.id === id)
   const fmt = (i: Insight | undefined, empty: string) => i ? `${i.title}\n\nEvidence:\n${i.evidence.map(e => `• ${e}`).join('\n')}` : empty
-  if (/active mission|my mission/.test(q)) return fmt(pick('mission'), 'You have no active mission yet. Create one from the Active Mission tile on Home.')
-  if (/need.*(i|me).*provide|who needs/.test(q)) return fmt(pick('reverse'), 'No member currently lists a need that matches what you say you can help with. Add to “Can help with” on your Executive Page.')
-  if (/closest to action|which opportunity/.test(q)) return fmt(pick('closest'), 'No open opportunities are recorded in Work yet.')
-  if (/going quiet|cooling|quiet/.test(q)) return fmt(pick('quiet'), 'None of your connected relationships show a quiet or at-risk pattern in the recorded data.')
-  if (/promise.*block|blocking/.test(q)) return fmt(pick('blocking'), 'No overdue promise is linked to an open opportunity.')
-  if (/multiple warm|which company/.test(q)) return fmt(pick('company'), 'No company has two or more of your connections yet.')
-  const intro = q.match(/(?:introduce me to|path to|intro to|reach)\s+(.+?)[?.!]*$/)
+  if (/^(?:who is most relevant to my active mission|show(?: me)? (?:my )?active mission)$/.test(q)) return fmt(pick('mission'), 'You have no active mission yet. Create one from the Active Mission tile on Home.')
+  if (/^(?:who needs something (?:i|we) can provide|who needs my help|show(?: me)? who needs my help)$/.test(q)) return fmt(pick('reverse'), 'No member currently lists a need that matches what you say you can help with. Add to “Can help with” on your Executive Page.')
+  if (/^(?:which opportunity is closest to action|show(?: me)? (?:the )?opportunity closest to action)$/.test(q)) return fmt(pick('closest'), 'No open opportunities are recorded in Work yet.')
+  if (/^(?:which relationships? (?:are|is) going quiet|show(?: me)? (?:my )?(?:quiet|cooling) relationships)$/.test(q)) return fmt(pick('quiet'), 'None of your connected relationships show a quiet or at-risk pattern in the recorded data.')
+  if (/^(?:which promise is blocking progress|show(?: me)? (?:my )?blocking promises)$/.test(q)) return fmt(pick('blocking'), 'No overdue promise is linked to an open opportunity.')
+  if (/^(?:which companies have multiple warm paths|show(?: me)? companies with multiple warm paths)$/.test(q)) return fmt(pick('company'), 'No company has two or more of your connections yet.')
+  const intro = q.match(/^(?:introduce me to|show(?: me)? (?:a )?path to|find (?:a )?path to|path to|intro to|how can i reach)\s+(.+)$/)
   if (intro?.[1]) {
     const name = intro[1].trim()
     const target = g.members.find(m => m.name.toLowerCase().includes(name) || m.company.toLowerCase().includes(name))
