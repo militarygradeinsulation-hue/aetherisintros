@@ -286,7 +286,7 @@ interface NetworkApi {
   respondToAsk: (askId: string, text: string) => string | null
   requestWarmPath: (askId: string) => void
   addObjective: (o: Objective) => void
-  addNote: (personId: string, text: string, scope: PrivacyScope) => void
+  addNote: (personId: string, text: string, scope: PrivacyScope) => Promise<boolean>
   setDigitalYou: (x: DigitalYouProfile) => void
   setAutonomy: (x: AutonomyLevel) => void
   updateIdentity: (fields: { name: string; photo?: File | null }) => Promise<void>
@@ -363,6 +363,9 @@ export function NetworkProvider({ children, mode = 'live' }: { children: React.R
   const [feedError, setFeedError] = useState(false)
   const [networkLoadError, setNetworkLoadError] = useState('')
   const lastSynced = useRef<Persisted | null>(null)
+  const confirmedMemories = useRef(new Set<string>())
+  const writingMemories = useRef(new Set<string>())
+  const [memoryRevision, setMemoryRevision] = useState(0)
   const confirmedProfiles = useRef(new WeakSet<object>())
   // Never overwrite private records after a failed live graph read.
   const privateGraphReady = useRef(!live)
@@ -375,7 +378,8 @@ export function NetworkProvider({ children, mode = 'live' }: { children: React.R
     void (async () => {
       if (!live) {
         const directory = await loadDirectory()
-        if (!cancelled) setDir(directory)
+        if (!cancelled) { setDir(directory); setSynced(true) }
+        return
       }
       const id = await currentUserId()
       if (cancelled) return
@@ -404,6 +408,7 @@ export function NetworkProvider({ children, mode = 'live' }: { children: React.R
         return {}
       })
       if (cancelled) return
+      confirmedMemories.current = new Set([...(remote.learned ?? []), ...(remote.notes ?? [])].map(row => row.id))
       setS(prev => {
         const doc = (remote.doc ?? {}) as Partial<Persisted>
         const next: Persisted = { ...prev }
@@ -500,12 +505,7 @@ export function NetworkProvider({ children, mode = 'live' }: { children: React.R
     }
     // Live introduction transitions are persisted by guarded actions before
     // local state changes. Never replay guessed consent from optimistic UI state.
-    for (const learning of s.learned) {
-      if (!prev.learned.some(l => l.id === learning.id)) saveLearning(userId, learning)
-    }
-    for (const note of s.notes) {
-      if (!prev.notes.some(n => n.id === note.id)) saveNote(userId, note)
-    }
+
     for (const [askId, texts] of Object.entries(s.askResponses)) {
       const before = prev.askResponses[askId] ?? []
       texts.slice(before.length).forEach(text => saveAskResponse(userId, askId, text))
@@ -548,13 +548,43 @@ export function NetworkProvider({ children, mode = 'live' }: { children: React.R
     }
   }, [s, userId, synced, live, dir])
 
+  // Keep unconfirmed context out of retained Memory. A rejected save retains
+  // its exact in-session record behind an explicit Retry; no false success.
+  useEffect(() => {
+    if (!live || !userId || !synced || !privateGraphReady.current) return
+    const owner = userId
+    const persist = (id: string, write: () => Promise<void>) => {
+      if (confirmedMemories.current.has(id) || writingMemories.current.has(id)) return
+      const attempt = async () => {
+        if (identityUserId.current !== owner || writingMemories.current.has(id)) return
+        writingMemories.current.add(id)
+        try {
+          await write()
+          if (identityUserId.current !== owner) return
+          confirmedMemories.current.add(id)
+          setMemoryRevision(value => value + 1)
+        } catch {
+          if (identityUserId.current === owner) reportWriteFailure({
+            title: 'Memory not saved',
+            message: 'This context is not saved to your account. Retry while this session is open.',
+            retry: attempt,
+          })
+        } finally { writingMemories.current.delete(id) }
+      }
+      void attempt()
+    }
+    for (const learning of s.learned) persist(learning.id, () => saveLearning(owner, learning))
+    for (const note of s.notes) persist(note.id, () => saveNote(owner, note))
+  }, [s.learned, s.notes, live, userId, synced])
+
   const api = useMemo<NetworkApi>(() => {
     const patch = (fn: (prev: Persisted) => Partial<Persisted>) => setS(prev => ({ ...prev, ...fn(prev) }))
     const baseMembers = dir.members
     const nameOf = (id: string) => baseMembers.find(m => m.id === id)?.name ?? 'a member'
 
     const remember = (prev: Persisted, l: Omit<Learning, 'id' | 'when'>): Learning[] =>
-      [{ ...l, id: rowId(), when: 'Just now' }, ...prev.learned]
+      !prev.preferences.rememberActions || (l.category === 'Messages' && !prev.preferences.rememberConversations)
+        ? prev.learned : [{ ...l, id: rowId(), when: 'Just now' }, ...prev.learned]
     const log = (prev: Persisted, a: Omit<Signal, 'id' | 'when'>): Signal[] =>
       [{ ...a, id: uid('act'), when: 'Just now' }, ...prev.activity]
 
@@ -611,9 +641,9 @@ export function NetworkProvider({ children, mode = 'live' }: { children: React.R
         ...t,
         messages: live ? t.messages : byId([...t.messages, ...(s.sentMessages[t.id] ?? []).map(m => ({ id: m.id, from: 'me' as const, text: m.text, at: m.at }))]),
       })),
-      learnings: [...s.learned, ...dir.learnings],
+      learnings: [...s.learned.filter(row => !live || confirmedMemories.current.has(row.id)), ...dir.learnings],
       activity: [...s.activity, ...dir.signals],
-      notes: s.notes,
+      notes: s.notes.filter(row => !live || confirmedMemories.current.has(row.id)),
       objectives: s.objectives,
       profile: s.profile,
       digitalYou: s.digitalYou,
@@ -917,10 +947,19 @@ export function NetworkProvider({ children, mode = 'live' }: { children: React.R
         learned: remember(prev, { category: 'Needs', text: `Active need recorded: ${o.title}`, source: 'Your need', confidence: 100, scope: 'private' }),
       })),
 
-      addNote: (personId, text, scope) => patch(prev => ({
-        notes: [{ id: rowId(), personId, text, scope, createdAt: now() }, ...prev.notes],
-        learned: remember(prev, { category: 'People', text, source: `Private note · ${nameOf(personId)}`, confidence: 100, scope }),
-      })),
+      addNote: async (personId, text, scope) => {
+        const body = text.trim()
+        if (!body || body.length > 4000) return false
+        const note: MemoryNote = { id: rowId(), personId, text: body, scope, createdAt: now() }
+        const commit = () => patch(prev => ({ notes: [note, ...prev.notes] }))
+        if (!live) { commit(); return true }
+        return verifiedWrite('Memory', async () => {
+          if (!userId || identityUserId.current !== userId) throw new Error('Sign in to save your Memory.')
+          await saveNote(userId, note)
+          if (identityUserId.current !== userId) throw new Error('The account changed. Your note was not added to this view.')
+          confirmedMemories.current.add(note.id)
+        }, commit)
+      },
 
       setDigitalYou: (x) => patch(() => ({ digitalYou: x })),
       setAutonomy: (x) => patch(() => ({ autonomy: x })),
@@ -1028,7 +1067,7 @@ export function NetworkProvider({ children, mode = 'live' }: { children: React.R
         }
       }),
     }
-  }, [s, dir, synced, feedError, networkLoadError, live, userId])
+  }, [memoryRevision, s, dir, synced, feedError, networkLoadError, live, userId])
 
   return <Ctx.Provider value={api}>{children}</Ctx.Provider>
 }

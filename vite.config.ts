@@ -17,6 +17,8 @@ export default defineConfig({
       if (!id.includes('/src/bridge-reference/') || !/\.[jt]sx?$/.test(id)) return null;
       // Only redirect module locations; the checked-in reference source stays untouched.
       const resolved = code.replace(/(['"])@\/([^'"]+)\1/g, (match, quote, name) => {
+        // Private avatar reads use the account-bound host adapter; reference JSX stays unchanged.
+        if (name === 'aetheris/avatar') return quote + path.resolve('src/aetheris/avatar.tsx') + quote;
         if (name === 'assets/ask-intros-official-logo.jpg.asset.json') {
           return quote + path.resolve('src/intros-ui/experience/bridge-logo.asset.json') + quote;
         }

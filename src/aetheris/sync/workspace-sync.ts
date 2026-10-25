@@ -10,7 +10,7 @@
 import { useSyncExternalStore } from 'react'
 import {
   createStoreReadiness, FAILURES_BEFORE_NOTICE, MAX_STORE_BYTES, keysToClearOnSignOut, mergeStoreData, planInitialSync,
-  retryDelayMs, shouldRetryInitialSync, type RemoteCopy, type SyncedStoreKey,
+  retryDelayMs, type RemoteCopy, type SyncedStoreKey,
 } from './sync-logic'
 
 export interface SyncedStore {
@@ -92,6 +92,7 @@ const inFlight = new Map<SyncedStoreKey, Promise<void>>()
 const storeReadiness = createStoreReadiness()
 const changeCounter = new Map<SyncedStoreKey, number>()
 let userId: string | null = null
+let accountEpoch = 0
 let failures = 0
 let started = false
 
@@ -110,35 +111,31 @@ function noteSaved(at: string | null) {
   setStatus({ failing: false, lastSavedAt: at ?? new Date().toISOString() })
 }
 
-async function fetchRemote(key: SyncedStoreKey): Promise<RemoteCopy | null> {
-  const db = await client()
+async function fetchRemote(key: SyncedStoreKey, uid: string): Promise<RemoteCopy | null> {
+  const { memberClient } = await import('@/integrations/supabase/member-client')
+  const db = await memberClient(uid)
   const { data, error } = await db.from('member_workspace_state')
-    .select('version, data, updated_at').eq('store_key', key).maybeSingle()
+    .select('version, data, updated_at').eq('user_id', uid).eq('store_key', key).abortSignal(AbortSignal.timeout(10_000)).maybeSingle()
   if (error) throw error
   if (!data) return null
-  if (data.updated_at && (!status.lastSavedAt || data.updated_at > status.lastSavedAt)) setStatus({ lastSavedAt: data.updated_at })
   return { version: Number(data.version), data: data.data }
 }
 
 const loading = new Set<SyncedStore>()
 async function initialSync(store: SyncedStore) {
   if (loading.has(store)) return
-  const requestedUserId = userId
+  const requestedEpoch = accountEpoch
   loading.add(store)
   try { await loadFromAccount(store) } finally {
     loading.delete(store)
     const currentStore = stores.get(store.key)
-    if (store.retryOnAccountChange && currentStore && shouldRetryInitialSync(
-      requestedUserId,
-      userId,
-      currentStore === store,
-      storeReadiness.isReady(store.key),
-    )) void initialSync(currentStore)
+    if (currentStore === store && userId && requestedEpoch !== accountEpoch && !storeReadiness.isReady(store.key)) void initialSync(currentStore)
   }
 }
 
 async function loadFromAccount(store: SyncedStore) {
   const uid = userId
+  const epoch = accountEpoch
   if (!uid || stores.get(store.key) !== store || storeReadiness.isReady(store.key)) return
   const meta = readMeta()
   const entry = meta.entries[store.key]
@@ -146,13 +143,13 @@ async function loadFromAccount(store: SyncedStore) {
   const foreign = meta.userId !== null && meta.userId !== uid
   let remote: RemoteCopy | null
   try {
-    remote = await fetchRemote(store.key)
+    remote = await fetchRemote(store.key, uid)
   } catch {
     // Offline or not set up yet: keep working locally, try again later.
-    noteFailure(store.key)
+    if (userId === uid && accountEpoch === epoch && stores.get(store.key) === store) noteFailure(store.key)
     return
   }
-  if (userId !== uid || stores.get(store.key) !== store) return
+  if (userId !== uid || accountEpoch !== epoch || stores.get(store.key) !== store) return
   if (foreign || meta.userId === null) writeMeta({ userId: uid, entries: foreign ? {} : meta.entries })
 
   const plan = planInitialSync({
@@ -185,6 +182,9 @@ async function loadFromAccount(store: SyncedStore) {
 async function saveOnce(key: SyncedStoreKey) {
   const store = stores.get(key)
   if (!store || !userId || !storeReadiness.isReady(key)) return
+  const uid = userId
+  const epoch = accountEpoch
+  const current = () => userId === uid && accountEpoch === epoch && stores.get(key) === store
   const entry = readMeta().entries[key]
   if (!entry?.dirty) return
   const local = readLocal(store.localKey)
@@ -194,14 +194,17 @@ async function saveOnce(key: SyncedStoreKey) {
   const sentAt = changeCounter.get(key) ?? 0
   let result: { saved: boolean; current_version: number | string; current_data: unknown; saved_at: string | null } | undefined
   try {
-    const db = await client()
-    const { data, error } = await db.rpc('save_workspace_state', { p_key: key, p_data: local.data, p_base_version: entry.version })
+    const { memberClient } = await import('@/integrations/supabase/member-client')
+    const db = await memberClient(uid)
+    if (!current()) return
+    const { data, error } = await (db as any).rpc('save_workspace_state', { p_key: key, p_data: local.data, p_base_version: entry.version }).abortSignal(AbortSignal.timeout(10_000)) // eslint-disable-line @typescript-eslint/no-explicit-any
     if (error) throw error
     result = Array.isArray(data) ? data[0] : data
   } catch {
-    noteFailure(key)
+    if (current()) noteFailure(key)
     return
   }
+  if (!current()) return
   if (!result) { noteFailure(key); return }
   const version = Number(result.current_version)
   if (result.saved) {
@@ -247,7 +250,19 @@ export async function flushWorkspaceSync(): Promise<void> {
 
 function onUser(next: string | null) {
   if (next === userId) return
+  const previous = userId
   userId = next
+  accountEpoch += 1
+  for (const timer of timers.values()) clearTimeout(timer)
+  timers.clear()
+  const storedOwner = readMeta().userId
+  if (previous || (next && storedOwner !== next)) {
+    for (const store of stores.values()) {
+      try { localStorage.removeItem(store.localKey) } catch { /* unavailable */ }
+      store.apply(null)
+    }
+    writeMeta({ userId: next, entries: {} })
+  }
   storeReadiness.clear()
   failures = 0
   setStatus({ signedIn: !!next, failing: false, lastSavedAt: null })
@@ -280,8 +295,8 @@ export function registerSyncedStore(store: SyncedStore) {
 }
 
 /** Resolves after the current member's initial account copy has been loaded. */
-export function waitForWorkspaceStoreReady(key: SyncedStoreKey): Promise<void> {
-  return storeReadiness.waitFor(key)
+export async function waitForWorkspaceStoreReady(key: SyncedStoreKey): Promise<void> {
+  while (!storeReadiness.isReady(key)) await storeReadiness.waitFor(key)
 }
 
 /** Called by a live store after it writes its local copy. */
@@ -303,6 +318,7 @@ export async function signOutMember(redirect = '/auth') {
     await Promise.race([flushWorkspaceSync(), new Promise(resolve => setTimeout(resolve, 4_000))])
   } catch { /* best effort */ }
   try {
+    onUser(null)
     const db = await client()
     await db.auth.signOut()
   } catch { /* still clear local data */ }

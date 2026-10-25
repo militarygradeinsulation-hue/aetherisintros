@@ -1,3 +1,4 @@
+import { boundedBody } from './public-fetch.server'
 /**
  * Server-only AI calls through the Lovable AI gateway (and RouteLLM),
  * implemented with plain fetch so they run on the edge runtime.
@@ -28,9 +29,13 @@ async function readResponsesStream(res: Response): Promise<Record<string, unknow
   const decoder = new TextDecoder()
   let buffer = ''
   let completed: Record<string, unknown> | null = null
+  let bytes = 0
+  try {
   for (;;) {
     const { done, value } = await reader.read()
     if (done) break
+    bytes += value.byteLength
+    if (bytes > 2 * 1024 * 1024) throw new Error('gateway response too large')
     buffer += decoder.decode(value, { stream: true })
     const events = buffer.split('\n\n')
     buffer = events.pop() ?? ''
@@ -50,6 +55,7 @@ async function readResponsesStream(res: Response): Promise<Record<string, unknow
     }
   }
   return completed
+  } finally { await reader.cancel().catch(() => {}) }
 }
 
 interface ResponsesOutputItem {
@@ -77,6 +83,7 @@ export async function gatewayChat({ system, messages, tools = [], maxSteps = 8 }
   const apiKey = process.env['LOVABLE_API_KEY']
   if (!apiKey) throw new Error('missing-key')
 
+  const deadline = AbortSignal.timeout(45_000)
   const input: unknown[] = messages.map(m => ({ role: m.role, content: m.content }))
   const wireTools = tools.map(t => ({
     type: 'function',
@@ -88,7 +95,7 @@ export async function gatewayChat({ system, messages, tools = [], maxSteps = 8 }
 
   for (let step = 0; step < maxSteps; step++) {
     const res = await fetch('https://ai.gateway.lovable.dev/v1/responses', {
-      method: 'POST',
+      method: 'POST', signal: deadline,
       headers: {
         'content-type': 'application/json',
         authorization: `Bearer ${apiKey}`,
@@ -134,6 +141,7 @@ export async function routeLlmChat({ system, messages, tools = [], maxSteps = 8 
   const apiKey = process.env['ROUTELLM_API_KEY']
   if (!apiKey) throw new Error('missing-key')
 
+  const deadline = AbortSignal.timeout(45_000)
   const wireMessages: unknown[] = [{ role: 'system', content: system }, ...messages]
   const wireTools = tools.map(t => ({
     type: 'function',
@@ -142,7 +150,7 @@ export async function routeLlmChat({ system, messages, tools = [], maxSteps = 8 
 
   for (let step = 0; step < maxSteps; step++) {
     const res = await fetch('https://routellm.abacus.ai/v1/chat/completions', {
-      method: 'POST',
+      method: 'POST', signal: deadline,
       headers: { 'content-type': 'application/json', authorization: `Bearer ${apiKey}` },
       body: JSON.stringify({
         model: 'route-llm',
@@ -151,7 +159,7 @@ export async function routeLlmChat({ system, messages, tools = [], maxSteps = 8 
       }),
     })
     if (!res.ok) throw new Error(`routellm ${res.status}`)
-    const data = (await res.json()) as {
+    const data = JSON.parse(new TextDecoder().decode(await boundedBody(res, 2 * 1024 * 1024))) as {
       choices?: { message?: { content?: string | null; tool_calls?: { id: string; function: { name: string; arguments: string } }[] } }[]
     }
     const message = data.choices?.[0]?.message

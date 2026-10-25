@@ -19,12 +19,13 @@ export default defineTool({
     let request = supabase
       .from("memories")
       .select("id,kind,category,member_id,text,source,confidence,scope,when_label,created_at")
+      .eq("user_id", ctx.getUserId())
       .order("created_at", { ascending: false })
       .limit(limit ?? 25);
     if (category) request = request.ilike("category", `%${category}%`);
     if (member_id) request = request.eq("member_id", member_id);
     const { data, error } = await request;
-    if (error) return { content: [{ type: "text", text: error.message }], isError: true };
+    if (error) return { content: [{ type: "text", text: "Memory could not be read. Please retry." }], isError: true };
     return {
       content: [{ type: "text", text: JSON.stringify(data ?? []) }],
       structuredContent: { memories: data ?? [] },

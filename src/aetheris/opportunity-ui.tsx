@@ -220,7 +220,9 @@ export function MeetingBriefPanel({ member }: { member: Member }) {
     if (parsed.nextMeeting) await ops.createTask({ title: `Schedule next meeting with ${member.name} (${parsed.nextMeeting})`, personId: person.id, status: 'open', priority: 'medium' })
     const opp = ops.opportunities.find(o => o.personId === person.id && !o.archived && o.status === 'open')
     if (parsed.opportunityChange && opp) await ops.updateOpportunity(opp.id, { detail: `${opp.detail ? `${opp.detail}\n` : ''}${new Date().toLocaleDateString()}: ${parsed.opportunityChange}` })
-    parsed.introduce.forEach(m => net.addNote(member.id, `Consider introducing ${member.name} to ${m.name} (from meeting debrief).`, 'private'))
+    for (const m of parsed.introduce) {
+      if (!await net.addNote(member.id, `Consider introducing ${member.name} to ${m.name} (from meeting debrief).`, 'private')) { setDone('The debrief Memory save was not confirmed. Your draft is retained.'); return }
+    }
     await graph.logEvent('person', person.id, 'meeting_debrief', `Debrief recorded for ${member.name}`, { promises: parsed.promises.length, introduce: parsed.introduce.map(m => m.id) })
     setDone(`Saved: 1 activity, ${parsed.promises.length + (parsed.nextMeeting ? 1 : 0)} tasks${parsed.opportunityChange && opp ? ', opportunity updated' : ''}${parsed.introduce.length ? `, ${parsed.introduce.length} intro ideas` : ''}. No new people were created.`)
     setText('')

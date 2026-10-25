@@ -1,3 +1,4 @@
+import { readPage } from './webSearch.server'
 /**
  * Business-role verification engine.
  *
@@ -48,15 +49,7 @@ const hostOf = (value: string) => {
 /** Fetch a public page's visible text. Failure is reported as unknown, never as a pass. */
 async function readPublicPage(url: string): Promise<string | null> {
   try {
-    const target = url.includes('://') ? url : `https://${url}`
-    const response = await fetch(target, {
-      redirect: 'follow',
-      headers: { 'user-agent': 'AetherisIntrosVerification/1.0 (+https://intros.today)' },
-      signal: AbortSignal.timeout(9000),
-    })
-    if (!response.ok) return null
-    const html = await response.text()
-    return norm(html.replace(/<script[\s\S]*?<\/script>/gi, ' ').replace(/<style[\s\S]*?<\/style>/gi, ' ').replace(/<[^>]+>/g, ' '))
+    return norm(await readPage(url))
   } catch { return null }
 }
 

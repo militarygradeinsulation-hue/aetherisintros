@@ -43,6 +43,7 @@ jobs:
       - name: Database migration checks
         run: |
           node scripts/migration-checks/run.mjs
+          node scripts/migration-checks/privacy-boundary.standalone.mjs
           node scripts/migration-checks/launch-signup.standalone.mjs
           node scripts/recovery/member-families.standalone.mjs
       - name: Business tool generation and image workflow (browser)

@@ -150,7 +150,7 @@ export function ExecutivePage({ person, onClose, onIntro, onMessage }: {
   const addPrivateNote = async () => {
     const value = note.trim()
     if (!value) return
-    net.addNote(person.id, value, 'private')
+    if (!await net.addNote(person.id, value, 'private')) return
     const linked = await ensureCrm()
     if (linked) await ops.addNote('person', linked.id, value)
     setNote('')
