@@ -37,6 +37,14 @@ describe('voice commands', () => {
 
   it('leaves real questions to the assistant', () => {
     expect(parseVoiceCommand('Who in my network knows the logistics industry best and why?', people)).toBeNull()
+    expect(parseVoiceCommand('who', people)).toBeNull()
+    expect(parseVoiceCommand('Who is Arceus?', people)).toBeNull()
+    expect(parseVoiceCommand('Who is Bo Chen?', people)).toBeNull()
+    expect(parseVoiceCommand('Where is Bo Chen?', people)).toBeNull()
+    expect(parseVoiceCommand('Who can change this?', people)).toBeNull()
+    expect(parseVoiceCommand('Who would be the best person to contact?', people)).toBeNull()
+    expect(parseVoiceCommand('find Bo Chen', people)?.kind).toBe('open-member')
+    expect(parseVoiceCommand('search for CFOs in Indiana', people)?.kind).toBe('open-search')
     expect(parseVoiceCommand('What changed this week?')).toBeNull()
     expect(parseVoiceCommand('')).toBeNull()
   })
