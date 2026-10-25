@@ -1,3 +1,4 @@
+import { isAuthRequiredError } from '@/lib/auth-contract'
 import { useMemo, useState } from 'react'
 import { useServerFn } from '@tanstack/react-start'
 import { ArrowLeft, Loader2, Copy, Check } from 'lucide-react'
@@ -27,12 +28,13 @@ export function NewsReader({ item, onBack, publicMode = false }: { item: NewsIte
   const [pending, setPending] = useState<string | null>(null)
   const [custom, setCustom] = useState('')
   const [copied, setCopied] = useState(false)
+  const [askError, setAskError] = useState('')
   const copyArticle = async () => {
     try { await navigator.clipboard.writeText(newsStoryUrl(item)); setCopied(true) }
     catch { setCopied(false) }
   }
 
-  const { data, isLoading, isError } = useQuery<ArticleRead>({
+  const { data, isLoading, isError, error } = useQuery<ArticleRead>({
     queryKey: ['news-read', item.id],
     queryFn: () => read({
       data: {
@@ -55,10 +57,15 @@ export function NewsReader({ item, onBack, publicMode = false }: { item: NewsIte
 
   async function ask(label: string, question: string) {
     if (pending) return
-    setPending(label)
-    const result = await perspective({ data: { title: item.title, source: item.source, text: basis, question } })
-    setViews(prev => [{ label, question, answer: result.answer }, ...prev])
-    setPending(null)
+    setPending(label); setAskError('')
+    try {
+      const result = await perspective({ data: { title: item.title, source: item.source, text: basis.slice(0, 14000), question } })
+      if (result.error) { setAskError('That view could not be generated. Your question is retained.'); return }
+      setViews(prev => [{ label, question, answer: result.answer }, ...prev])
+      setCustom(current => current === question ? '' : current)
+    } catch (cause) {
+      setAskError(isAuthRequiredError(cause) ? 'Sign in to ask questions about this article.' : 'That view could not be generated. Your question is retained.')
+    } finally { setPending(null) }
   }
 
   return <article className="reader">
@@ -102,10 +109,11 @@ export function NewsReader({ item, onBack, publicMode = false }: { item: NewsIte
           onClick={() => ask(view.label, view.question)}
         >{pending === view.label ? 'Thinking…' : view.label}</button>)}
       </div>
-      <form className="reader-ask" onSubmit={e => { e.preventDefault(); const q = custom.trim(); if (!q) return; setCustom(''); void ask('Your question', q) }}>
+      <form className="reader-ask" onSubmit={e => { e.preventDefault(); const q = custom.trim(); if (!q) return; void ask('Your question', q) }}>
         <input value={custom} onChange={e => setCustom(e.target.value)} placeholder="Ask your own question about this piece…" aria-label="Ask a question about this article" />
-        <Btn kind="secondary" disabled={!!pending || !custom.trim()} onClick={() => { const q = custom.trim(); if (!q) return; setCustom(''); void ask('Your question', q) }}>Ask</Btn>
+        <Btn kind="secondary" disabled={!!pending || !custom.trim()} onClick={() => { const q = custom.trim(); if (!q) return; void ask('Your question', q) }}>Ask</Btn>
       </form>
+      {askError && <p role="alert">{askError}</p>}
       {!!views.length && <div className="reader-answers">
         {views.map((view, index) => <div key={`${view.label}-${index}`} className="reader-answer">
           <p className="reader-label">{view.label.toUpperCase()}</p>
@@ -125,7 +133,7 @@ export function NewsReader({ item, onBack, publicMode = false }: { item: NewsIte
       {data.paragraphs.map((para, index) => <p key={index}>{para}</p>)}
     </section>}
 
-    {isError && <section className="module"><p className="sv-empty">This piece could not be read just now. Try again in a moment.</p></section>}
+    {isError && <section className="module"><p className="sv-empty">{isAuthRequiredError(error) ? <a href="/auth">Sign in to read the full article and use Ask Intros analysis.</a> : 'This piece could not be read just now. Try again in a moment.'}</p></section>}
   </article>
 }
 

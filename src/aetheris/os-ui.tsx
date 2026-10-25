@@ -212,15 +212,16 @@ export function VoiceCaptureModal({ onClose }: { onClose: () => void }) {
 
   const review = () => setCapture(parseCapture(text, net.members))
 
-  const commit = () => {
+  const commit = async () => {
     if (!capture) return
     const chosen = capture.proposals.filter(p => approved[p.id])
-    os.saveCapture({ ...capture, proposals: capture.proposals.map(p => ({ ...p, approved: Boolean(approved[p.id]), rejected: !approved[p.id] })), status: 'saved' })
+    for (const p of chosen) {
+      if (p.kind === 'memory' || p.kind === 'person update' || p.kind === 'company update') {
+        if (!await net.addNote(p.personId ?? 'me', p.detail, p.scope)) return
+      }
+    }
     for (const p of chosen) {
       os.addEvidence({ statement: p.detail, sourceLabel: 'Conversation capture', category: 'Known', scope: p.scope, shareable: p.scope !== 'private', confidence: p.confidence, ...(p.personId ? { personId: p.personId } : {}) })
-      if (p.kind === 'memory' || p.kind === 'person update' || p.kind === 'company update') {
-        net.addNote(p.personId ?? 'me', p.detail, p.scope)
-      }
       if (p.kind === 'open loop' || p.kind === 'trigger memory') {
         platform.createLoop({
           title: p.summary, owner: 'me', memberId: p.personId ?? 'me', source: 'Conversation capture',
@@ -242,6 +243,7 @@ export function VoiceCaptureModal({ onClose }: { onClose: () => void }) {
         })
       }
     }
+    os.saveCapture({ ...capture, proposals: capture.proposals.map(p => ({ ...p, approved: Boolean(approved[p.id]), rejected: !approved[p.id] })), status: 'saved' })
     setSaved(true)
   }
 

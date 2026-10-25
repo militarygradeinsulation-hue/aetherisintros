@@ -1,26 +1,18 @@
 import { createFileRoute } from '@tanstack/react-router'
-import { logServerError } from '@/lib/server-error-log'
-
-import { seedNetworkDirectory } from '@/lib/network-seed.server'
 
 /**
- * Idempotent one-shot population of the shared, non-personal network
- * directory. It writes a fixed catalogue and refuses to run once the
- * directory holds rows, so it cannot alter or expose member data.
+ * Retired legacy directory bootstrap. Demo records come from bundled source;
+ * public HTTP requests cannot initialize or overwrite production tables.
  */
 export const Route = createFileRoute('/api/public/seed-network')({
   staticData: { sitemap: false },
   server: {
     handlers: {
-      POST: async ({ request }) => {
-        try {
-          const result = await seedNetworkDirectory()
-          return Response.json(result)
-        } catch (error) {
-          await logServerError(error, request)
-          return Response.json({ error: 'Seeding failed' }, { status: 500 })
-        }
-      },
+      // The demo uses its bundled catalogue. This legacy public entry point
+      // must never invoke a service-role writer on production tables.
+      POST: async () => Response.json({ error: 'Endpoint retired.' }, {
+        status: 410, headers: { 'cache-control': 'no-store' },
+      }),
     },
   },
 })

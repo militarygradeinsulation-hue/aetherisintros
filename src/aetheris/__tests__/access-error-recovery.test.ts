@@ -16,8 +16,9 @@ describe('member access error recovery', () => {
   it('finishes the loading state after an access query fails, without granting live access', () => {
     expect(access).toContain('error: string | null')
     expect(access).toContain('loading: false, error: ACCESS_READ_ERROR')
-    expect(access).toContain('if (!cancelled) setAccess({ ...noAccess, loading: false, error: ACCESS_READ_ERROR })')
-    expect(access).toContain('.catch(() =>')
+    expect(access).toContain('latestAccountRead(fetchAccess, value =>')
+    expect(access).toContain('reader.invalidate()')
+    expect(access).toContain('reader.dispose()')
     expect(access).toContain('return { access, refresh, live: isLiveMember(access) }')
   })
 

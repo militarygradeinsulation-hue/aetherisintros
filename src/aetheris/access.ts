@@ -1,3 +1,4 @@
+import { latestAccountRead } from './lib/latest-account-read'
 /**
  * Early-access gate for the Founding 1,000.
  *
@@ -6,7 +7,7 @@
  * goes through `isLiveMember()` so a new page cannot accidentally admit an
  * unapproved account or read quarantined demo data.
  */
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 
 import { supabase } from '@/integrations/supabase/client'
 import { fetchVerification, type VerificationStatus } from './verification'
@@ -41,7 +42,7 @@ export const noAccess: AccessState = {
 
 /** The single guard every network-facing surface must respect. */
 export const isLiveMember = (access: AccessState) =>
-  access.signedIn && access.emailConfirmed && access.status === 'approved' && access.onboarded
+  !access.loading && !access.error && access.signedIn && access.emailConfirmed && access.status === 'approved' && access.onboarded
     && access.verification !== 'rejected' && access.verification !== 'suspended'
 
 export interface FoundingStats { approved: number; capacity: number; mode: LaunchMode }
@@ -163,36 +164,28 @@ const ACCESS_READ_ERROR = 'We could not verify your membership right now. Your a
 export function useAccess() {
   const [access, setAccess] = useState<AccessState>(noAccess)
 
-  const refresh = useCallback(async (): Promise<AccessState | null> => {
-    setAccess(prev => ({ ...prev, loading: true, error: null }))
-    try {
-      const latest = await fetchAccess()
-      setAccess(latest)
-      return latest
-    } catch {
-      // Fail closed; callers must not treat a failed read as confirmed approval.
-      setAccess({ ...noAccess, loading: false, error: ACCESS_READ_ERROR })
-      return null
-    }
-  }, [])
-
+  const account = useRef<string | null>(null)
+  const reader = useMemo(() => latestAccountRead(fetchAccess, value => {
+    if (!value.loading) account.current = value.userId
+    setAccess(value)
+  },
+    () => ({ ...noAccess }),
+    () => ({ ...noAccess, loading: false, error: ACCESS_READ_ERROR }),
+  ), [])
+  const refresh = useCallback(() => reader.read(), [reader])
   useEffect(() => {
     let cancelled = false
-    const load = () => {
-      void fetchAccess()
-        .then(next => { if (!cancelled) setAccess(next) })
-        .catch(() => {
-          if (!cancelled) setAccess({ ...noAccess, loading: false, error: ACCESS_READ_ERROR })
-        })
-    }
-    load()
-    const { data: sub } = supabase.auth.onAuthStateChange(event => {
+    void reader.read()
+    const { data: sub } = supabase.auth.onAuthStateChange((event, session) => {
       if (event !== 'SIGNED_IN' && event !== 'SIGNED_OUT' && event !== 'USER_UPDATED') return
-      // Auth callbacks run under the client session lock; read after it is released.
-      setTimeout(() => { if (!cancelled) load() }, 0)
+      const changed = (session?.user.id ?? null) !== account.current
+      if (changed) reader.invalidate()
+      // Same-account refreshes retain the mounted workspace and unsent drafts.
+      // Read after the auth callback releases the Supabase session lock.
+      setTimeout(() => { if (!cancelled) void reader.read(changed) }, 0)
     })
-    return () => { cancelled = true; sub.subscription.unsubscribe() }
-  }, [])
+    return () => { cancelled = true; reader.dispose(); sub.subscription.unsubscribe() }
+  }, [reader])
 
   return { access, refresh, live: isLiveMember(access) }
 }

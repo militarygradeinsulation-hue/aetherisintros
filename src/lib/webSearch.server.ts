@@ -1,3 +1,4 @@
+import { publicDocument } from './public-fetch.server'
 export interface WebResult {
   title: string
   url: string
@@ -102,16 +103,11 @@ export async function searchWeb(query: string, limit = 6): Promise<WebResult[]> 
 
 /** Reads one page and returns readable text, for grounding an answer. */
 export async function readPage(url: string, max = 9000): Promise<string> {
-  const direct = await readDirect(url, max).catch(() => '')
-  if (direct.length > 400) return direct
-  const proxied = await readProxy(url, max).catch(() => '')
-  return proxied.length > direct.length ? proxied : direct
+  return readProxy(url, Math.min(Math.max(max, 1), 14_000))
 }
 
 async function readProxy(url: string, max: number): Promise<string> {
-  const res = await fetch(`https://r.jina.ai/${url}`, { headers: { accept: 'text/plain' } })
-  if (!res.ok) throw new Error(`proxy page ${res.status}`)
-  const text = await res.text()
+  const text = await publicDocument(url)
   return text
     .split('\n')
     .filter(line => !/^!\[/.test(line.trim()))
@@ -120,24 +116,3 @@ async function readProxy(url: string, max: number): Promise<string> {
     .slice(0, max)
 }
 
-async function readDirect(url: string, max: number): Promise<string> {
-  const res = await fetch(url, {
-    headers: { 'user-agent': UA, accept: 'text/html,application/xhtml+xml' },
-  })
-  if (!res.ok) throw new Error(`page ${res.status}`)
-  const html = (await res.text())
-    .replace(/<script[\s\S]*?<\/script>/gi, ' ')
-    .replace(/<style[\s\S]*?<\/style>/gi, ' ')
-  const parts: string[] = []
-  const re = /<(p|h1|h2|h3|li)\b[^>]*>([\s\S]*?)<\/\1>/gi
-  let match: RegExpExecArray | null
-  let total = 0
-  while ((match = re.exec(html))) {
-    const text = strip(match[2] ?? '')
-    if (text.length < 40) continue
-    parts.push(text)
-    total += text.length
-    if (total > max) break
-  }
-  return parts.join('\n\n').slice(0, max)
-}

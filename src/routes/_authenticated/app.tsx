@@ -110,5 +110,5 @@ export function Gate({ initialPage, initialWorkspace, initialSearch }: { initial
     label: access.isAdmin ? 'Executive applications' : 'Executive access',
     onOpen: () => setExecutiveOpen(true),
   }
-  return <AetherisProviderRoot mode="live"><ConnectionBanner /><WelcomeDiagnosticBanner /><IntrosApp mode="live" executiveAction={executiveAction} initialPage={initialPage} initialWorkspace={initialWorkspace} initialSearch={initialSearch} /><ExecutiveUpgrade tier={access.tier} isAdmin={access.isAdmin} open={executiveOpen} onOpenChange={setExecutiveOpen} hideTrigger /></AetherisProviderRoot>
+  return <AetherisProviderRoot key={access.userId} mode="live"><ConnectionBanner /><WelcomeDiagnosticBanner /><IntrosApp mode="live" executiveAction={executiveAction} initialPage={initialPage} initialWorkspace={initialWorkspace} initialSearch={initialSearch} /><ExecutiveUpgrade tier={access.tier} isAdmin={access.isAdmin} open={executiveOpen} onOpenChange={setExecutiveOpen} hideTrigger /></AetherisProviderRoot>
 }

@@ -8,9 +8,9 @@ export default defineTool({
   description:
     "Record a piece of learned context in the signed-in member's Active Memory so future introductions and timing improve. Private by default.",
   inputSchema: {
-    text: z.string().trim().min(4).describe("The observation, commitment or context to remember."),
-    category: z.string().trim().min(1).default("People").describe("e.g. People, Needs, Timing, Commitments."),
-    member_id: z.string().trim().min(1).optional().describe("The member this context is about, if any."),
+    text: z.string().trim().min(4).max(4000).describe("The observation, commitment or context to remember."),
+    category: z.string().trim().min(1).max(100).default("People").describe("e.g. People, Needs, Timing, Commitments."),
+    member_id: z.string().trim().min(1).max(200).optional().describe("The member this context is about, if any."),
     scope: z.enum(["private", "team", "organization", "shareable", "public"]).default("private"),
     confidence: z.number().int().min(1).max(100).default(100),
   },
@@ -33,7 +33,7 @@ export default defineTool({
       })
       .select()
       .maybeSingle();
-    if (error) return { content: [{ type: "text", text: error.message }], isError: true };
+    if (error || !data?.id || data.user_id !== ctx.getUserId()) return { content: [{ type: "text", text: "Memory save was not confirmed. Please retry." }], isError: true };
     return {
       content: [{ type: "text", text: "Added to Active Memory." }],
       structuredContent: { memory: data },

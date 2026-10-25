@@ -1,3 +1,6 @@
+import { z } from 'zod'
+import { requireAuthContract } from './auth-gate'
+import { readPage } from './webSearch.server'
 import { createServerFn } from '@tanstack/react-start'
 import { gatewayChat } from './aiGateway.server'
 
@@ -24,65 +27,17 @@ export interface PerspectiveResult {
 
 const MAX_TEXT = 14000
 
-const decode = (value: string): string =>
-  value
-    .replace(/&nbsp;/gi, ' ')
-    .replace(/&amp;/gi, '&')
-    .replace(/&quot;/gi, '"')
-    .replace(/&#0?39;|&apos;|&#8217;/gi, '’')
-    .replace(/&#8220;|&ldquo;/gi, '“')
-    .replace(/&#8221;|&rdquo;/gi, '”')
-    .replace(/&#8212;|&mdash;/gi, '—')
-    .replace(/&[a-z#0-9]+;/gi, ' ')
-
-function extractParagraphs(html: string): string[] {
-  const body = html
-    .replace(/<script[\s\S]*?<\/script>/gi, ' ')
-    .replace(/<style[\s\S]*?<\/style>/gi, ' ')
-    .replace(/<figure[\s\S]*?<\/figure>/gi, ' ')
-  const out: string[] = []
-  const seen = new Set<string>()
-  const re = /<(p|h2|h3)\b[^>]*>([\s\S]*?)<\/\1>/gi
-  let match: RegExpExecArray | null
-  let total = 0
-  const junk = /^(share this|subscribe|advertisement|cookie|sign up|related|posts from this|follow topics|more in this stream|read more|comments|newsletter|by signing up)/i
-  while ((match = re.exec(body))) {
-    const text = decode((match[2] ?? '').replace(/<[^>]*>/g, ' ')).replace(/\s+/g, ' ').trim()
-    if (text.length < 45) continue
-    if (junk.test(text)) continue
-    if (/(email digest|homepage feed|terms of use|privacy notice)/i.test(text)) continue
-    const key = text.toLowerCase().slice(0, 80)
-    if (seen.has(key)) continue
-    seen.add(key)
-    out.push(text)
-    total += text.length
-    if (total > MAX_TEXT) break
-  }
-  return out
-
-}
-
 async function fetchArticle(link: string): Promise<string[]> {
-  const res = await fetch(link, {
-    headers: {
-      'user-agent': 'Mozilla/5.0 (compatible; AskIntrosReader/1.0)',
-      accept: 'text/html,application/xhtml+xml',
-    },
-  })
-  if (!res.ok) throw new Error(`article ${res.status}`)
-  return extractParagraphs(await res.text())
+  return (await readPage(link, MAX_TEXT)).split(/\n\s*\n/).filter(text => text.trim().length >= 45).slice(0, 60)
 }
 
 /** Opens an article inside Ask Intros: original text where available, plus a grounded summary. */
 export const readNewsArticle = createServerFn({ method: 'POST' })
-  .inputValidator((data: {
-    title: string
-    link: string
-    source: string
-    published: string | null
-    image: string | null
-    feedSummary: string
-  }) => data)
+  .middleware([requireAuthContract])
+  .inputValidator((data: unknown) => z.object({
+    title: z.string().max(300), link: z.string().max(2000), source: z.string().max(100),
+    published: z.string().max(100).nullable(), image: z.string().max(2000).nullable(), feedSummary: z.string().max(MAX_TEXT),
+  }).parse(data))
   .handler(async ({ data }): Promise<ArticleRead> => {
     let paragraphs: string[] = []
     try {
@@ -142,7 +97,8 @@ Reply with ONE JSON object and nothing else:
 
 /** Answers one perspective question about an article, grounded in its text. */
 export const askNewsPerspective = createServerFn({ method: 'POST' })
-  .inputValidator((data: { title: string; source: string; text: string; question: string }) => data)
+  .middleware([requireAuthContract])
+  .inputValidator((data: unknown) => z.object({ title: z.string().max(300), source: z.string().max(100), text: z.string().max(MAX_TEXT), question: z.string().trim().min(1).max(2000) }).parse(data))
   .handler(async ({ data }): Promise<PerspectiveResult> => {
     if (!process.env['LOVABLE_API_KEY']) return { answer: 'Ask Intros is not configured on this account yet.', error: 'missing-key' }
 

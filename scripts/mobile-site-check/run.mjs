@@ -136,6 +136,8 @@ try {
    await page.emulateMedia({ reducedMotion: 'reduce' })
    await page.goto(base+'/',{waitUntil:'domcontentloaded',timeout:120000})
    await page.waitForSelector('.ael-compact',{timeout:60000})
+   await page.getByRole('button',{name:/^Enter Intros/}).click({timeout:60000})
+   await page.locator('.ask-cinematic-entrance').waitFor({state:'hidden',timeout:10000})
    await clearLayout(page,'homepage '+vp.width)
    const cta=page.locator('.ael-hero-actions').first()
    const rect=await pos(cta)

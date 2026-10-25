@@ -1,3 +1,4 @@
+import { z } from 'zod'
 import { createServerFn } from '@tanstack/react-start'
 import { readPage, searchWeb } from './webSearch.server'
 import { gatewayChat, routeLlmChat, type ToolDef } from './aiGateway.server'
@@ -147,7 +148,16 @@ const WEB_TOOLS: ToolDef[] = [
 
 export const askIntros = createServerFn({ method: 'POST' })
   .middleware([requireAuthContract])
-  .inputValidator((data: AskIntrosInput) => data)
+  .inputValidator((data: unknown): AskIntrosInput => z.object({
+    messages: z.array(z.object({ role: z.enum(['user', 'assistant']), content: z.string().max(12000) })).max(24),
+    context: z.object({
+      page: z.string().max(100), textSize: z.string().max(30), cursorSize: z.string().max(30),
+      briefing: z.boolean(), contextPanel: z.boolean(), memberName: z.string().max(200),
+      voice: z.object({ speaking: z.boolean(), conversation: z.boolean(), speakReplies: z.boolean() }).optional(),
+      pages: z.array(z.object({ id: z.string().max(100), label: z.string().max(150), blurb: z.string().max(500) })).max(150),
+      people: z.array(z.string().max(200)).max(500),
+    }),
+  }).parse(data) as AskIntrosInput)
   .handler(async ({ data }): Promise<AskIntrosResult> => {
     const routeKey = process.env['ROUTELLM_API_KEY']
     const apiKey = process.env['LOVABLE_API_KEY']
