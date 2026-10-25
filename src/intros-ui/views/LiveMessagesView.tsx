@@ -1,6 +1,6 @@
 import { MemberThumbnail } from '../components/shared/MemberThumbnail';
 import { useEffect, useMemo, useRef, useState } from 'react'
-import { Send, Search, MessageSquare } from 'lucide-react'
+import { Send, Search, MessageSquare, Plus, ArrowLeft } from 'lucide-react'
 import { useNetwork } from '@/aetheris/store'
 import { AttachButton, MessageBody, attachmentPreview } from '@/aetheris/MessageAttachments'
 import { loadReadReceiptsSetting, markThreadRead, saveReadReceiptsSetting, useUnreadCounts } from '@/aetheris/read-receipts'
@@ -18,7 +18,10 @@ function Inner({ onOpenWorkspaces, social = false }: { onOpenWorkspaces?: () => 
   const net = useNetwork()
   const [activeId, setActiveId] = useState<string>(() => (typeof window === 'undefined' ? '' : localStorage.getItem('aetheris-intros-thread') ?? ''))
   const [query, setQuery] = useState('')
-  const [draft, setDraft] = useState('')
+  const [drafts, setDrafts] = useState<Record<string, string>>({})
+  const [pickingRecipient, setPickingRecipient] = useState(false)
+  const [recipientQuery, setRecipientQuery] = useState('')
+  const [recipientError, setRecipientError] = useState('')
   const [briefThreadId, setBriefThreadId] = useState<string | null>(null)
   const [sending, setSending] = useState(false)
   const [readError, setReadError] = useState('')
@@ -29,9 +32,29 @@ function Inner({ onOpenWorkspaces, social = false }: { onOpenWorkspaces?: () => 
     const m = byId.get(t.memberId)
     return !query || (m?.name ?? '').toLowerCase().includes(query.toLowerCase())
   })
-  const active = net.threads.find(t => t.id === activeId) ?? threads[0]
+  // An empty selection means the inbox, never an automatic first conversation.
+  const active = net.threads.find(t => t.id === activeId)
+  const selectedId = useRef(activeId)
+  selectedId.current = activeId
+  const draft = active ? drafts[active.memberId] ?? '' : ''
+  const setDraft = (value: string) => {
+    if (active) setDrafts(current => ({ ...current, [active.memberId]: value }))
+  }
+  const showInbox = pickingRecipient || !active
+  const backToInbox = () => { setActiveId(''); setPickingRecipient(false); setBriefThreadId(null) }
+  const startConversation = (memberId: string) => {
+    try {
+      const threadId = net.openThreadWith(memberId)
+      setActiveId(threadId); setPickingRecipient(false); setQuery(''); setRecipientError('')
+    } catch (error) { setRecipientError(error instanceof Error ? error.message : 'Could not open this conversation. Try again.') }
+  }
+  const recipientSearch = recipientQuery.trim().toLowerCase()
+  const recipients = net.members.filter(member => [member.name, member.company, member.title].some(value => value?.toLowerCase().includes(recipientSearch)))
   const person = active ? byId.get(active.memberId) : undefined
-  useEffect(() => { if (active) localStorage.setItem('aetheris-intros-thread', active.id) }, [active?.id])
+  useEffect(() => {
+    if (!activeId) localStorage.removeItem('aetheris-intros-thread')
+    else if (active) localStorage.setItem('aetheris-intros-thread', active.id)
+  }, [activeId, active?.id])
   useEffect(() => { endRef.current?.scrollIntoView({ block: 'end' }) }, [active?.id, active?.messages.length])
 
   const reads = useUnreadCounts()
@@ -64,38 +87,56 @@ function Inner({ onOpenWorkspaces, social = false }: { onOpenWorkspaces?: () => 
 
   const sendText = async (threadId: string, text: string, messageId?: string) => {
     if (!text.trim() || sending) return
+    const memberId = net.threads.find(thread => thread.id === threadId)?.memberId
+    if (!memberId) return
     const id = messageId ?? crypto.randomUUID()
     setSending(true)
     setFailed(null)
     try {
       const confirmedThreadId = await net.sendMessage(threadId, text, id)
-      if (confirmedThreadId && confirmedThreadId !== threadId) setActiveId(confirmedThreadId)
-      if (active?.id === threadId) setDraft(current => current.trim() === text.trim() ? '' : current)
+      if (confirmedThreadId && confirmedThreadId !== threadId && selectedId.current === threadId) setActiveId(confirmedThreadId)
+      setDrafts(current => ({ ...current, [memberId]: current[memberId]?.trim() === text.trim() ? '' : current[memberId] ?? '' }))
     } catch (cause) {
       setFailed({ id, threadId, text, reason: cause instanceof Error ? cause.message : 'Not sent. Retry this message.' })
-      setDraft(current => current.trim() ? current : text)
+      setDrafts(current => ({ ...current, [memberId]: current[memberId]?.trim() ? current[memberId]! : text }))
     } finally {
       setSending(false)
     }
   }
   const send = () => { if (active && draft.trim()) void sendText(active.id, draft.trim(), failed?.threadId === active.id && failed.text === draft.trim() ? failed.id : undefined) }
 
-  if (social) return (
-    <div className="max-w-[1400px] mx-auto px-3 md:px-6 py-4 ix-live-messages">
-      <div className="mb-3">
-        <p className="text-[13px] text-[var(--msg-muted)]">Private communication</p>
-        <h1 className="msg-heading text-[22px] text-[var(--msg-ink)]">Conversations with <em className="text-[var(--msg-copper)]">relationship context.</em></h1>
-      </div>
-      {readError && <div role="alert" className="mb-2 p-2 border border-red-400/40 bg-[#fff0ed] text-sm text-[#8e302b] rounded">{readError} <button type="button" className="underline font-medium" onClick={() => { if (active) void markThreadRead(active.id).then(() => setReadError('')).catch(() => {}) }}>Retry</button></div>}
-      <div className="grid grid-cols-1 md:grid-cols-[300px_1fr] lg:grid-cols-[300px_1fr_260px] gap-3 h-[calc(100vh-210px)] min-h-[480px]">
-        <aside className={`rounded-xl border border-[var(--msg-border)] bg-[var(--msg-panel)] flex flex-col min-h-0 ${active ? 'hidden md:flex' : 'flex'}`}>
+  const newMessageButton = <button type="button" onClick={() => { setActiveId(''); setPickingRecipient(true); setRecipientQuery(''); setRecipientError('') }}
+    className="msg-primary-action inline-flex min-h-11 shrink-0 items-center justify-center gap-2 rounded-xl px-3 text-sm bg-[var(--msg-accent)] text-[var(--msg-accent-ink)]">
+    <Plus size={18} aria-hidden="true"/>New message
+  </button>
+  const inbox = (<aside aria-label="Conversations" className={`rounded-xl border border-[var(--msg-border)] bg-[var(--msg-panel)] flex flex-col min-h-0 ${showInbox ? 'flex' : 'hidden md:flex'}`}>
+          {pickingRecipient ? <div className="flex flex-col min-h-0 flex-1">
+            <div className="p-3 border-b border-[var(--msg-border)] space-y-3">
+              <button type="button" onClick={backToInbox} className="inline-flex min-h-11 items-center gap-2 text-sm text-[var(--msg-ink)]"><ArrowLeft size={18} aria-hidden="true"/>Conversations</button>
+              <label className="block text-sm text-[var(--msg-ink)]">Search members
+                <input autoFocus value={recipientQuery} onChange={event => setRecipientQuery(event.target.value)} placeholder="Name, company or role"
+                  className="mt-2 w-full min-w-0 min-h-11 rounded-lg px-3 text-base border border-[var(--msg-border)] bg-[var(--msg-panel-inset)] text-[var(--msg-ink)]"/>
+              </label>
+            </div>
+            {recipientError && <p role="alert" className="p-3 text-sm text-[var(--msg-ink)]">{recipientError}</p>}
+            <div className="flex-1 overflow-y-auto">
+              {recipients.map(member =>
+                <button key={member.id} type="button" aria-label={`Message ${member.name}`} onClick={() => startConversation(member.id)}
+                  className="msg-recipient-tile w-full min-h-14 text-left p-3 flex items-center gap-3 border-b border-[var(--msg-border)] hover:bg-[var(--msg-selected)]">
+                  <MemberThumbnail name={member.name} source={member.avatarUrl}/>
+                  <span className="min-w-0"><strong className="block text-sm text-[var(--msg-ink)] truncate">{member.name}</strong><span className="block text-xs text-[var(--msg-muted)] truncate">{[member.title, member.company].filter(Boolean).join(' · ')}</span></span>
+                </button>)}
+              {recipients.length === 0 &&
+                <p role="status" className="p-4 text-sm text-[var(--msg-muted)]">{net.networkLoadError ? 'Members could not be loaded. Refresh to try again.' : !net.synced ? 'Loading members…' : recipientQuery.trim() ? 'No members match your search.' : 'No members are available yet.'}</p>}
+            </div>
+          </div> : <>
           <div className="p-3 border-b border-[var(--msg-border)] relative">
             <Search className="absolute left-5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-[var(--msg-muted)]" />
-            <input value={query} onChange={e => setQuery(e.target.value)} placeholder="Search conversations"
-              className="w-full bg-[var(--msg-panel-inset)] text-sm text-[var(--msg-ink)] rounded-lg pl-8 pr-3 py-2 border border-[var(--msg-border)] focus:outline-none focus:border-[var(--msg-accent)]" />
+            <input value={query} onChange={e => setQuery(e.target.value)} aria-label="Search conversations" placeholder="Search conversations"
+              className="w-full min-h-11 bg-[var(--msg-panel-inset)] text-base text-[var(--msg-ink)] rounded-lg pl-8 pr-3 py-2 border border-[var(--msg-border)] focus:outline-none focus:border-[var(--msg-accent)]" />
           </div>
           <div className="flex-1 overflow-y-auto">
-            {threads.length === 0 && <p className="p-4 text-sm text-[var(--msg-muted)]">No conversations yet. Open a member's profile and choose Message to start one.</p>}
+            {threads.length === 0 && <p className="p-4 text-xs text-[var(--msg-muted)]">{query.trim() ? 'No conversations match your search.' : 'No conversations yet. Choose New message to find someone.'}</p>}
             {threads.map(t => {
               const m = byId.get(t.memberId)
               const last = t.messages[t.messages.length - 1]
@@ -103,50 +144,60 @@ function Inner({ onOpenWorkspaces, social = false }: { onOpenWorkspaces?: () => 
               const count = reads.loaded ? (reads.threads[t.id]?.unread ?? 0) : (t.unread ? 1 : 0)
               const label = reads.loaded ? badgeLabel(count) : ''
               return (
-                <button key={t.id} onClick={() => setActiveId(t.id)}
-                  className={`w-full text-left px-3 py-3 border-b border-[var(--msg-border)] flex gap-3 cursor-pointer ${on ? 'bg-[var(--msg-selected)]' : 'hover:bg-[var(--msg-selected)]'}`}>
-                  <div className="w-9 h-9 shrink-0 rounded-full bg-[var(--msg-incoming)] border border-[var(--msg-border)] flex items-center justify-center text-[13px] text-[var(--msg-ink)]">
-                    {(m?.name ?? '?').split(' ').map(s => s[0]).slice(0, 2).join('')}
-                  </div>
+                <button key={t.id} type="button" data-selected={on} aria-current={on ? 'true' : undefined} onClick={() => { setActiveId(t.id); setBriefThreadId(null) }}
+                  className={`msg-thread-tile w-full text-left px-3 py-3 border-b border-[var(--msg-border)] flex gap-3 cursor-pointer ${on ? 'bg-[var(--msg-selected)]' : 'hover:bg-[var(--msg-selected)]'}`}>
+                  <MemberThumbnail name={m?.name || 'Member'} source={m?.avatarUrl}/>
+
                   <div className="min-w-0 flex-1">
                     <div className="flex items-center justify-between gap-2">
-                      <span className={`text-sm truncate ${count > 0 ? 'text-[var(--msg-ink)] font-medium' : 'text-[var(--msg-ink)]'}`}>{m?.name ?? 'Member'}</span>
+                      <span className={`text-sm truncate ${count > 0 ? 'text-[var(--msg-ink)] font-semibold' : 'text-[var(--msg-ink)]'}`}>{m?.name ?? 'Member'}</span>
                       {count > 0 && (label
-                        ? <span className="min-w-[18px] h-[18px] px-1 rounded-full bg-[var(--msg-accent)] text-[13px] font-medium text-[var(--msg-accent-ink)] flex items-center justify-center shrink-0" aria-label={`${count} unread`}>{label}</span>
+                        ? <span className="min-w-[18px] h-[18px] px-1 rounded-full bg-[var(--msg-accent)] text-[10px] font-semibold text-[var(--msg-accent-ink)] flex items-center justify-center shrink-0" aria-label={`${count} unread`}>{label}</span>
                         : <span className="w-2 h-2 rounded-full bg-[var(--msg-accent)] shrink-0" aria-label="Unread" />)}
                     </div>
-                    <p className="text-sm text-[var(--msg-muted)] truncate">{last ? attachmentPreview(last.text) : t.introContext}</p>
+                    <p className="text-[11px] text-[var(--msg-muted)] truncate">{last ? attachmentPreview(last.text) : t.introContext}</p>
                   </div>
                 </button>
               )
             })}
           </div>
           <div className="p-3 border-t border-[var(--msg-border)] space-y-1">
-            <label className="flex items-center justify-between gap-2 text-sm text-[var(--msg-body)] cursor-pointer">
+            <label className="flex items-center justify-between gap-2 text-xs text-[var(--msg-body)] cursor-pointer">
               <span>Read receipts</span>
-              <input type="checkbox" checked={receipts ?? true} disabled={receipts === null} onChange={() => void toggleReceipts()} className="accent-primary" />
+              <input type="checkbox" checked={receipts ?? true} disabled={receipts === null} onChange={() => void toggleReceipts()} className="accent-[#EF4444]" />
             </label>
-            <p className="text-[13px] text-[var(--msg-muted)]">{receipts === false
+            <p className="text-[11px] text-[var(--msg-muted)]">{receipts === false
               ? 'Off: nobody sees when you have read their messages, and you do not see when they read yours.'
               : 'On: the people you message see "Seen" once you have read their message. Turn off to hide it both ways.'}</p>
-            {receiptsNote && <p className="text-[13px] text-[var(--msg-copper)]" role="alert">{receiptsNote}</p>}
+            {receiptsNote && <p className="text-[11px] text-[var(--msg-copper)]" role="alert">{receiptsNote}</p>}
           </div>
-        </aside>
+          </>}
+        </aside>)
 
-        <section className={`rounded-xl border border-[var(--msg-border)] bg-[var(--msg-panel)] flex-col min-h-0 ${active ? 'flex' : 'hidden md:flex'}`}>
+  if (social) return (
+    <div className="max-w-[1400px] mx-auto px-3 md:px-6 py-4 ix-live-messages">
+      <div className="mb-3 flex flex-wrap items-center justify-between gap-3"><div>
+        <p className="text-[13px] text-[var(--msg-muted)]">Private communication</p>
+        <h1 className="msg-heading text-[22px] text-[var(--msg-ink)]">Conversations with <em className="text-[var(--msg-copper)]">relationship context.</em></h1>
+      </div>{newMessageButton}</div>
+      {readError && <div role="alert" className="mb-2 p-2 border border-red-400/40 bg-[#fff0ed] text-sm text-[#8e302b] rounded">{readError} <button type="button" className="underline font-medium" onClick={() => { if (active) void markThreadRead(active.id).then(() => setReadError('')).catch(() => {}) }}>Retry</button></div>}
+      <div className="grid grid-cols-1 md:grid-cols-[300px_1fr] lg:grid-cols-[300px_1fr_260px] gap-3 h-[calc(100vh-210px)] min-h-[480px]">
+        {inbox}
+
+        <section className={`rounded-xl border border-[var(--msg-border)] bg-[var(--msg-panel)] flex-col min-h-0 ${showInbox ? 'hidden md:flex' : 'flex'}`}>
           {!active ? (
             <div className="flex-1 flex flex-col items-center justify-center text-center p-6 text-[var(--msg-muted)]">
               <MessageSquare className="w-6 h-6 mb-2 text-[var(--msg-copper)]" />
               <p className="text-sm">Select a conversation.</p>
             </div>
           ) : (<>
-            <header className="msg-thread-header px-4 py-3 border-b border-[var(--msg-border)] flex items-center gap-3">
-              <button onClick={() => setActiveId('')} className="md:hidden text-sm text-[var(--msg-copper)] cursor-pointer">← Back</button>
-              <div className="min-w-0">
+            <header className="msg-thread-header px-4 py-3 border-b border-[var(--msg-border)] flex flex-wrap items-center gap-3">
+              <button type="button" onClick={backToInbox} aria-label="Back to conversations" className="md:hidden shrink-0 min-h-11 min-w-11 inline-flex items-center justify-center text-[var(--msg-copper)] cursor-pointer"><ArrowLeft size={20} aria-hidden="true"/></button>
+              <div className="min-w-0 flex-1">
                 <p className="msg-heading text-[18px] font-medium text-[var(--msg-ink)] truncate">{person?.name ?? 'Member'}</p>
                 <p className="text-[13px] text-[var(--msg-muted)] truncate">{[person?.title, person?.company].filter(Boolean).join(' · ')}</p>
               </div>
-              {person && <div className="ml-auto shrink-0 flex flex-wrap items-center justify-end gap-2">
+              {person && <div className="ml-auto min-w-0 basis-full md:basis-auto flex flex-wrap items-center justify-end gap-2">
                 {onOpenWorkspaces && isUuid(active.id) && <StartWorkspaceButton source="dm_thread" sourceId={active.id} withName={person.name} onOpen={onOpenWorkspaces} label="Workspace" />}
                 <OpenDealRoomButton kind="quiet" label="Deal room" draft={{ sourceKind: 'thread', sourceId: active.id, title: draftTitle('thread', person.name), need: active.introContext ?? '', counterpartId: person.id, counterpartName: person.name }} />
               </div>}
@@ -198,71 +249,29 @@ function Inner({ onOpenWorkspaces, social = false }: { onOpenWorkspaces?: () => 
   )
   return (
     <div className="max-w-[1400px] mx-auto px-3 md:px-6 py-4 ix-live-messages">
-      <div className="mb-3">
+      <div className="mb-3 flex flex-wrap items-center justify-between gap-3"><div>
         <p className="text-[10px] font-mono tracking-[0.2em] uppercase text-[var(--msg-muted)]">Private communication</p>
         <h1 className="font-serif-editorial text-2xl md:text-3xl text-[var(--msg-ink)]">Your <em className="text-[var(--msg-copper)]">conversations.</em></h1>
-      </div>
+      </div>{newMessageButton}</div>
       {readError && <div role="alert" className="mb-2 p-2 border border-red-400/40 bg-[#fff0ed] text-xs text-[#8e302b] rounded">{readError} <button type="button" className="underline font-semibold" onClick={() => { if (active) void markThreadRead(active.id).then(() => setReadError('')).catch(() => {}) }}>Retry</button></div>}
       <div className="grid grid-cols-1 md:grid-cols-[300px_1fr] lg:grid-cols-[300px_1fr_260px] gap-3 h-[calc(100vh-210px)] min-h-[480px]">
-        <aside className={`rounded-xl border border-[var(--msg-border)] bg-[var(--msg-panel)] flex flex-col min-h-0 ${active ? 'hidden md:flex' : 'flex'}`}>
-          <div className="p-3 border-b border-[var(--msg-border)] relative">
-            <Search className="absolute left-5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-[var(--msg-muted)]" />
-            <input value={query} onChange={e => setQuery(e.target.value)} placeholder="Search conversations"
-              className="w-full bg-[var(--msg-panel-inset)] text-xs text-[var(--msg-ink)] rounded-lg pl-8 pr-3 py-2 border border-[var(--msg-border)] focus:outline-none focus:border-[var(--msg-accent)]" />
-          </div>
-          <div className="flex-1 overflow-y-auto">
-            {threads.length === 0 && <p className="p-4 text-xs text-[var(--msg-muted)]">No conversations yet. Message someone from their profile.</p>}
-            {threads.map(t => {
-              const m = byId.get(t.memberId)
-              const last = t.messages[t.messages.length - 1]
-              const on = active?.id === t.id
-              const count = reads.loaded ? (reads.threads[t.id]?.unread ?? 0) : (t.unread ? 1 : 0)
-              const label = reads.loaded ? badgeLabel(count) : ''
-              return (
-                <button key={t.id} type="button" data-selected={on} aria-current={on ? 'true' : undefined} onClick={() => setActiveId(t.id)}
-                  className={`msg-thread-tile w-full text-left px-3 py-3 border-b border-[var(--msg-border)] flex gap-3 cursor-pointer ${on ? 'bg-[var(--msg-selected)]' : 'hover:bg-[var(--msg-selected)]'}`}>
-                  <MemberThumbnail name={m?.name || 'Member'} source={m?.avatarUrl}/>
+        {inbox}
 
-                  <div className="min-w-0 flex-1">
-                    <div className="flex items-center justify-between gap-2">
-                      <span className={`text-sm truncate ${count > 0 ? 'text-[var(--msg-ink)] font-semibold' : 'text-[var(--msg-ink)]'}`}>{m?.name ?? 'Member'}</span>
-                      {count > 0 && (label
-                        ? <span className="min-w-[18px] h-[18px] px-1 rounded-full bg-[var(--msg-accent)] text-[10px] font-semibold text-[var(--msg-accent-ink)] flex items-center justify-center shrink-0" aria-label={`${count} unread`}>{label}</span>
-                        : <span className="w-2 h-2 rounded-full bg-[var(--msg-accent)] shrink-0" aria-label="Unread" />)}
-                    </div>
-                    <p className="text-[11px] text-[var(--msg-muted)] truncate">{last ? attachmentPreview(last.text) : t.introContext}</p>
-                  </div>
-                </button>
-              )
-            })}
-          </div>
-          <div className="p-3 border-t border-[var(--msg-border)] space-y-1">
-            <label className="flex items-center justify-between gap-2 text-xs text-[var(--msg-body)] cursor-pointer">
-              <span>Read receipts</span>
-              <input type="checkbox" checked={receipts ?? true} disabled={receipts === null} onChange={() => void toggleReceipts()} className="accent-[#EF4444]" />
-            </label>
-            <p className="text-[11px] text-[var(--msg-muted)]">{receipts === false
-              ? 'Off: nobody sees when you have read their messages, and you do not see when they read yours.'
-              : 'On: the people you message see "Seen" once you have read their message. Turn off to hide it both ways.'}</p>
-            {receiptsNote && <p className="text-[11px] text-[var(--msg-copper)]" role="alert">{receiptsNote}</p>}
-          </div>
-        </aside>
-
-        <section className={`rounded-xl border border-[var(--msg-border)] bg-[var(--msg-panel)] flex-col min-h-0 ${active ? 'flex' : 'hidden md:flex'}`}>
+        <section className={`rounded-xl border border-[var(--msg-border)] bg-[var(--msg-panel)] flex-col min-h-0 ${showInbox ? 'hidden md:flex' : 'flex'}`}>
           {!active ? (
             <div className="flex-1 flex flex-col items-center justify-center text-center p-6 text-[var(--msg-muted)]">
               <MessageSquare className="w-6 h-6 mb-2 text-[var(--msg-copper)]" />
               <p className="text-sm">Select a conversation.</p>
             </div>
           ) : (<>
-            <header className="px-4 py-3 border-b border-[var(--msg-border)] flex items-center gap-3">
-              <button onClick={() => setActiveId('')} className="md:hidden text-xs text-[var(--msg-copper)] cursor-pointer">← Back</button>
+            <header className="msg-thread-header px-4 py-3 border-b border-[var(--msg-border)] flex flex-wrap items-center gap-3">
+              <button type="button" onClick={backToInbox} aria-label="Back to conversations" className="md:hidden shrink-0 min-h-11 min-w-11 inline-flex items-center justify-center text-[var(--msg-copper)] cursor-pointer"><ArrowLeft size={20} aria-hidden="true"/></button>
               <MemberThumbnail name={person?.name || 'Member'} source={person?.avatarUrl}/>
-              <div className="min-w-0">
+              <div className="min-w-0 flex-1">
                 <p className="text-sm font-semibold text-[var(--msg-ink)] truncate">{person?.name ?? 'Member'}</p>
                 <p className="text-[11px] text-[var(--msg-muted)] truncate">{[person?.title, person?.company].filter(Boolean).join(' · ')}</p>
               </div>
-              {person && <div className="ml-auto min-w-0 flex flex-wrap items-center justify-end gap-2">
+              {person && <div className="ml-auto min-w-0 basis-full md:basis-auto flex flex-wrap items-center justify-end gap-2">
                 {isUuid(person.id) && isUuid(active.id) && <button type="button"
                   onClick={() => setBriefThreadId(id => id === active.id ? null : active.id)}
                   aria-expanded={briefThreadId === active.id}

@@ -143,6 +143,10 @@ jobs:
         env:
           PLAYWRIGHT_MODULE: ${{ github.workspace }}/node_modules/playwright/index.mjs
         run: node scripts/architect-check/run.mjs
+      - name: Mobile live messages and recipient selection
+        env:
+          PLAYWRIGHT_MODULE: ${{ github.workspace }}/node_modules/playwright/index.mjs
+        run: node scripts/mobile-messages-check/run.mjs
 
   network-systems:
     runs-on: ubuntu-latest

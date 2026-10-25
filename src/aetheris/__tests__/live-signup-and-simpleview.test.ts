@@ -52,7 +52,7 @@ describe('Simple View verified introduction requests', () => {
 
 describe('Durable member conversation and relationship history', () => {
   it('keeps the real thread selected after its first persisted message', () => {
-    expect(liveMessages).toContain('if (confirmedThreadId && confirmedThreadId !== threadId) setActiveId(confirmedThreadId)')
+    expect(liveMessages).toContain('if (confirmedThreadId && confirmedThreadId !== threadId && selectedId.current === threadId) setActiveId(confirmedThreadId)')
     expect(liveMessages).toContain('net.sendMessage(threadId, text, id)')
     expect(app).toContain('if (savedThreadId && savedThreadId !== threadId) setActiveId(savedThreadId)')
   })
