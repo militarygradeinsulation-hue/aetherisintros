@@ -6,6 +6,7 @@ import './experience/experience.css';
 import './experience/bridge-social-tokens.css';
 import './experience/bridge-social.css';
 import './experience/bridge-social-host.css';
+import './experience/social-premium.css';
 import { NewsTicker } from './components/NewsTicker';
 import React, { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
