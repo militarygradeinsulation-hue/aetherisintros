@@ -1,6 +1,7 @@
-import { useEffect, useRef, type ReactNode } from 'react';
+import { useEffect, useRef, useState, type ReactNode } from 'react';
 import Aurora from '@/intros-ui/Aurora';
 import ParticleDrift from '@/aetheris/ParticleDrift';
+import './particle-drift-background.css';
 import ConstellationField from '@/aetheris/ConstellationField';
 
 /**
@@ -10,6 +11,14 @@ import ConstellationField from '@/aetheris/ConstellationField';
  */
 export function AmbientParallax() {
   const containerRef = useRef<HTMLDivElement>(null);
+  const [view, setView] = useState<string | undefined>();
+  useEffect(() => {
+    const update = () => setView(document.documentElement.dataset['experience']);
+    const observer = new MutationObserver(update);
+    observer.observe(document.documentElement, {attributes:true, attributeFilter:['data-experience']});
+    update();
+    return () => observer.disconnect();
+  }, []);
 
   useEffect(() => {
     let disposed = false;
@@ -17,7 +26,7 @@ export function AmbientParallax() {
     const media = window.matchMedia('(prefers-reduced-motion: reduce)');
     const finePointer = window.matchMedia('(pointer: fine)');
     const init = async () => {
-      if (media.matches || !finePointer.matches || !containerRef.current) return;
+      if (view || media.matches || !finePointer.matches || !containerRef.current) return;
       const [{ default: gsap }, { ScrollTrigger }] = await Promise.all([
         import('gsap'),
         import('gsap/ScrollTrigger'),
@@ -58,11 +67,15 @@ export function AmbientParallax() {
       finePointer.removeEventListener('change', onPreferenceChange);
       cleanup?.();
     };
-  }, []);
+  }, [view]);
 
   const layer = (name: string, child: ReactNode) => (
     <div className="site-ambient-parallax-layer" data-parallax-layer={name}>{child}</div>
   );
+
+  if (view) return <div className="site-ambient" data-particle-view={view} aria-hidden="true">
+    <ParticleDrift className="site-ambient-numbers" view={view === 'social' ? 'social' : 'business'} />
+  </div>;
 
   return <div className="site-ambient" ref={containerRef} aria-hidden="true">
     {layer('1', <Aurora className="site-ambient-lights" colors={['var(--acc, var(--cobalt))', 'var(--acc-bright, var(--cobalt-bright))', 'var(--acc-glow, var(--cobalt))']} duration={22} intensity={0.34} />)}
