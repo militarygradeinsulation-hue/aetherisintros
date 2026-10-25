@@ -13,6 +13,9 @@ export function journalFiles(repo:string):string[] {
   const journal = JSON.parse(readFileSync(join(repo,'drizzle/migrations/meta/_journal.json'),'utf8')) as {entries:{tag:string}[]}
   return journal.entries.map(e => `${e.tag}.sql`)
 }
+// These migrations extend the completed Drizzle history, not its frozen baseline.
+// Bounded historical replay must not apply them before their dependencies exist.
+export const postJournalMigrations = ['20261025182108_meeting_guest_links_records.sql']
 export async function replay(options:{repo:string;schema?:string;fixture?:string;from:number;to:number;collisions:boolean}) {
   const db = new PGlite({extensions:{pg_trgm}})
   const steps:Step[]=[]
@@ -32,7 +35,7 @@ export async function replay(options:{repo:string;schema?:string;fixture?:string
       await execute(options.schema,'supplied-schema-only')
       if(steps.some(s=>s.status==='FAIL')) return {provenance:'supplied schema-only; NOT live-verified',baselineComplete:false,steps,collisionChecks}
     } else {
-      for(const file of readdirSync(join(options.repo,'supabase/migrations')).filter(f=>f.endsWith('.sql')).sort()) await execute(join(options.repo,'supabase/migrations',file),'frozen-baseline')
+      for(const file of readdirSync(join(options.repo,'supabase/migrations')).filter(f=>f.endsWith('.sql') && !postJournalMigrations.includes(f)).sort()) await execute(join(options.repo,'supabase/migrations',file),'frozen-baseline')
       for(const file of files.filter(f=>Number(f.slice(0,4))<options.from)) await execute(join(options.repo,'drizzle/migrations',file),'repo-baseline')
     }
     const baselineComplete=steps.every(s=>s.status==='PASS')
