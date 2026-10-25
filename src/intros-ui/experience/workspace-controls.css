@@ -26,3 +26,19 @@
   :root[data-theme] body .workspace-navigation-row .ledger-native-breadcrumb {display:none!important}
  }
 }
+
+/* Keep the Social wordmark at the left edge and give navigation the remaining width. */
+@layer bridge-social-reference {
+ :root[data-theme] body .bridge-navigation-host > .ix-global-header {padding-inline:12px!important}
+ :root[data-theme] body .bridge-navigation-host .ix-global-header-inner {display:flex!important;align-items:center!important;justify-content:flex-start!important;width:100%!important;max-width:none!important;margin-inline:0!important;padding-inline:0!important;gap:12px!important}
+ :root[data-theme] body .bridge-navigation-host .ix-global-brand {flex:0 0 154px!important;width:154px!important;min-width:0!important;margin:0!important;padding:0!important;transform:none!important}
+ :root[data-theme] body .bridge-navigation-host .official-logo-action {display:flex!important;justify-content:flex-start!important;width:100%!important;min-width:0!important;height:44px!important;margin:0!important;padding:0!important}
+ :root[data-theme] body .bridge-navigation-host .ask-intros-lockup--header {width:154px!important;max-width:100%!important;height:44px!important;object-fit:contain!important;object-position:left center!important;margin:0!important}
+ :root[data-theme] body .bridge-navigation-host .ix-desktop-main-nav {min-width:0!important;flex:1 1 auto!important;margin-inline:0!important;gap:clamp(2px,.6vw,10px)!important}
+ @media(max-width:720px) {
+  :root[data-theme] body .bridge-navigation-host > .ix-global-header {padding-inline:8px!important}
+  :root[data-theme] body .bridge-navigation-host .ix-global-header-inner {gap:6px!important}
+  :root[data-theme] body .bridge-navigation-host .ix-global-brand {flex-basis:100px!important;width:100px!important}
+  :root[data-theme] body .bridge-navigation-host .ask-intros-lockup--header {width:100px!important}
+ }
+}
