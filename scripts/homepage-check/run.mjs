@@ -87,6 +87,14 @@ try {
     try {
       await page.goto(base + '/', { waitUntil: 'domcontentloaded', timeout: 120_000 })
       await page.waitForSelector('.ael-compact', { timeout: 60_000 })
+      // The opening film now waits for the visitor, so dismiss it before inspecting the page.
+      await page.waitForFunction(() => {
+        const host = document.querySelector('.ask-cinematic-entrance')
+        if (!host) return true
+        const button = [...host.querySelectorAll('button')].find(x => /Skip intro|Enter Intros/.test(x.textContent || ''))
+        if (button) button.click()
+        return false
+      }, null, { timeout: 20_000, polling: 500 }).catch(() => {})
       assert(await page.locator('.vision-page').count() === 0, 'sample-only Vision dashboard is not the primary homepage')
 
       const m = await page.evaluate(() => {
@@ -110,10 +118,14 @@ try {
           headerActions: rect('.ael-header-actions'),
           logo: rect('.ael-header .ask-intros-lockup'),
           signup: rect('.ael-header .ael-nav-cta'),
-          membership: rect('#membership'),
           footer: rect('.ael-compact-footer'),
+          carousel: {
+            total: root.querySelectorAll('.ael-hero-slide').length,
+            active: [...root.querySelectorAll('.ael-hero-slide')].findIndex(s => s.classList.contains('is-active')),
+            controls: Boolean(root.querySelector('.ael-hero-slide-controls')),
+          },
           links: Object.fromEntries(
-            ['cinematic-experience', 'membership'].map(id => {
+            ['cinematic-experience'].map(id => {
               return [id, Boolean(root.querySelector('a[href="#' + id + '"]') && document.getElementById(id))]
             }),
           ),
@@ -130,29 +142,35 @@ try {
         hero: Math.round(m.hero?.height ?? 0),
         footer: Math.round(m.footer?.height ?? 0),
       }))
-      assert(m.sections === 3, 'hero, cinematic experience and membership keep the homepage concise')
+      assert(m.sections === 2, 'hero and cinematic experience keep the homepage concise')
       const allowedHeight = viewport.maxHeight + Math.ceil(m.cinematic?.height ?? 0) + 80
       assert(Boolean(m.cinematic && m.cinematicCTA && m.cinematic.height > 380), 'cinematic product demo and working CTA render')
       assert(m.pageHeight <= allowedHeight, 'scroll budget includes one approved cinematic chapter: ' + m.pageHeight + ' <= ' + allowedHeight + ' px')
       assert(m.pageWidth <= m.viewportWidth + 2, 'no horizontal page overflow')
-      assert(Boolean(m.hero && m.heroTitle && m.heroActions && m.membership && m.footer),
-        'headline, primary actions, membership and footer all render')
+      assert(Boolean(m.hero && m.heroTitle && m.heroActions && m.footer),
+        'headline, primary actions and footer all render')
+      assert(m.carousel.total === 10 && m.carousel.controls === false,
+        'ten member pictures rotate in the hero with no visible controls')
       assert(m.hero && m.hero.height <= Math.max(viewport.height * 1.10, 760),
         'hero fits near the first viewport')
-      assert(['cinematic-experience', 'membership'].every(id => m.links[id]),
+      assert(['cinematic-experience'].every(id => m.links[id]),
         'every navigation anchor has a real destination')
       assert(Object.values(m.ctas).every(Boolean), 'hero preview, demo, join and sign-in links remain')
       const onScreen = r => Boolean(r && r.width > 0 && r.right <= viewport.width + 3 && r.x >= -3)
       assert(m.logo && m.logo.width >= (viewport.width <= 420 ? 150 : viewport.width <= 750 ? 175 : 220),
         'approved Ask Intros wordmark is prominent at this breakpoint')
-      assert([m.heroTitle, m.heroActions, m.headerActions, m.logo, m.signup, m.membership, m.cinematicCTA].every(onScreen),
+      assert([m.heroTitle, m.heroActions, m.headerActions, m.logo, m.signup, m.cinematicCTA].every(onScreen),
         'headlines and important actions remain within phone/desktop width')
 
       if (viewport.name === 'desktop') {
         await page.locator('.ael-nav a[href="#cinematic-experience"]').click()
         assert(new URL(page.url()).hash === '#cinematic-experience', 'Experience navigation updates the anchor')
-        await page.locator('.ael-nav a[href="#membership"]').click()
-        assert(new URL(page.url()).hash === '#membership', 'Membership navigation updates the anchor')
+        // Rotation is intentionally still under reduced motion, so test the dwell rule with motion allowed.
+        await page.emulateMedia({ reducedMotion: 'no-preference' })
+        const before = await page.evaluate(() => [...document.querySelectorAll('.ael-hero-slide')].findIndex(s => s.classList.contains('is-active')))
+        await page.waitForTimeout(5600)
+        const after = await page.evaluate(() => [...document.querySelectorAll('.ael-hero-slide')].findIndex(s => s.classList.contains('is-active')))
+        assert(after !== before, 'the hero picture advances on its own after five seconds')
       }
     } catch (error) {
       failed++
