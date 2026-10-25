@@ -1,6 +1,7 @@
+import { scoreMatch } from '@/aetheris/matching'
 import { useEffect, useRef } from 'react'
 import { supabase } from '@/integrations/supabase/client'
-import { loadVisibleMemberProfiles, profileToMember } from '@/aetheris/live'
+import { loadVisibleMemberProfiles, profileToMember, loadMatchSignals } from '@/aetheris/live'
 import { useNetwork } from '@/aetheris/store'
 import type { Member, MemberRole } from '@/aetheris/social'
 import type { NetworkMember } from './networkData'
@@ -54,6 +55,7 @@ function Bridge({ onMembers, onError }: {
   const net = useNetwork()
   const latest = useRef(net.members)
   latest.current = net.members
+  const context=useRef(net);context.current=net
 
   useEffect(() => {
     let alive = true
@@ -64,9 +66,16 @@ function Bridge({ onMembers, onError }: {
         const canonical = await loadVisibleMemberProfiles(null, 100)
         if (!alive) return
         const storeMembers = new Map(latest.current.filter(m => isLiveMemberId(m.id)).map(m => [m.id, m]))
+        const signals=await loadMatchSignals(canonical.map(p=>p.id))
+        if(!alive)return
         const next = canonical
           .filter(p => isLiveMemberId(p.id) && p.id !== session.user!.id)
-          .map(p => toNetworkMember(storeMembers.get(p.id) ?? profileToMember(p, null), Boolean(p.verified_role)))
+          .map(p => {
+            const member={...(storeMembers.get(p.id) ?? profileToMember(p, null)),matchEvidence:signals.get(p.id)}
+            const match=scoreMatch(context.current.profile,member,{connections:context.current.connections,members:context.current.members})
+            const mapped=toNetworkMember({...member,scoreTotal:match.total},Boolean(p.verified_role))
+            return {...mapped,newcomerEligible:Boolean(match.newcomerEligible),matchExplanation:match.components.map(c=>`${c.label}: ${c.evidence}`).join(' ')}
+          })
         onMembers(next)
         onError?.('')
       } catch (error) {
@@ -79,9 +88,11 @@ function Bridge({ onMembers, onError }: {
     void load()
     const onVisible = () => { if (!document.hidden) void load() }
     document.addEventListener('visibilitychange', onVisible)
+    window.addEventListener('aetheris:evidence-changed',onVisible)
     return () => {
       alive = false
       document.removeEventListener('visibilitychange', onVisible)
+      window.removeEventListener('aetheris:evidence-changed',onVisible)
     }
   }, [onMembers, onError, net.synced])
   return null

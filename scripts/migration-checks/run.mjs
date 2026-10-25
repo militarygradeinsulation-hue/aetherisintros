@@ -34,7 +34,7 @@ const ADMIN = '00000000-0000-4000-8000-0000000000ad'
 const BASE = `
 create role anon nologin; create role authenticated nologin; create role service_role nologin bypassrls;
 create schema auth;
-create table auth.users (id uuid primary key, email text, email_confirmed_at timestamptz, last_sign_in_at timestamptz, raw_user_meta_data jsonb not null default '{}');
+create table auth.users (id uuid primary key, created_at timestamptz not null default now(), email text, email_confirmed_at timestamptz, last_sign_in_at timestamptz, raw_user_meta_data jsonb not null default '{}');
 create function auth.uid() returns uuid language sql stable as $$ select nullif(current_setting('request.jwt.claim.sub', true), '')::uuid $$;
 grant usage on schema auth to authenticated, anon, service_role;
 grant execute on function auth.uid() to authenticated, anon, service_role;
@@ -277,6 +277,12 @@ async function boot({ actualMembershipGate = false } = {}) {
   const db = new PGlite()
   await db.exec(BASE)
   await db.exec(SEED)
+  // 0098 now reads recommendation consent. Reuse unchanged historical 0001
+  // instead of a fabricated table. Its prerequisite verification helper is
+  // the canonical frozen definition; this is a disposable baseline only.
+  const verificationHistory=readFileSync(join(migrationsDir,'../../supabase/migrations/20260916200912_3964645f-20d3-4e4d-8641-441afae91086.sql'),'utf8')
+  await db.exec(verificationHistory.match(/create or replace function public.is_verified_member\(\)[\s\S]*?\$\$;/i)[0])
+  await db.exec(readFileSync(join(migrationsDir,'0001_unified_executive_profiles_and_recommendations.sql'),'utf8'))
   for (const m of migrations) {
     try { await db.exec(readFileSync(join(migrationsDir, m), 'utf8')) }
     catch (error) { throw new Error(`Migration ${m} failed: ${error.message}`, { cause: error }) }

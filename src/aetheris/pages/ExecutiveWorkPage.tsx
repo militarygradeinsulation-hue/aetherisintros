@@ -1,3 +1,4 @@
+import { EvidenceWorkspace } from '@/features/evidence-loop/EvidenceWorkspace'
 import { WeeklyDigest } from '@/features/commons-trust/WeeklyDigest'
 import { BusinessTools } from '@/features/business-tools/BusinessTools'
 import { useState } from 'react'
@@ -11,10 +12,11 @@ import { SyndicationRoomsPanel } from '../SyndicationRoomsPanel'
 import { Eyebrow } from '../ui'
 import '../executive-work-intelligence.css'
 
-type WorkbenchTab = 'digest' | 'tools' | 'analyst' | 'referrals' | 'track' | 'storefront' | 'syndication'
+type WorkbenchTab = 'evidence-time' | 'digest' | 'tools' | 'analyst' | 'referrals' | 'track' | 'storefront' | 'syndication'
 
 const tabs: Array<{ id: WorkbenchTab; label: string; icon: typeof BarChart3; copy: string }> = [
   { id: 'tools', label: 'Business Tools', icon: Store, copy: 'Create private content, sales drafts, business reviews, and plans with tools customized for your profile.' },
+  { id: 'evidence-time', label: 'Evidence & Time', icon: BarChart3, copy: 'Private task timing, transparent comparisons, and matching consent.' },
   { id: 'digest', label: 'Weekly Digest', icon: UsersRound, copy: 'A quiet, factual summary of recent posts from the people you follow.' },
   { id: 'analyst', label: 'Business Analyst', icon: BarChart3, copy: 'Strategic analysis from the business and relationship evidence already in Ask Intros.' },
   { id: 'referrals', label: 'Warm Referrals', icon: Network, copy: 'High-context paths to people worth meeting, with a human approval step before outreach.' },
@@ -46,6 +48,7 @@ export function ExecutiveWorkPage() {
     </nav>
 
     <div id="executive-workbench-panel" className="executive-workbench-body" role="region" aria-label={current.label}>
+      {tab === 'evidence-time' && <EvidenceWorkspace />}
       {tab === 'digest' && <WeeklyDigest />}
       {tab === 'tools' && <BusinessTools />}
       {tab === 'analyst' && <BusinessAnalystPanel />}

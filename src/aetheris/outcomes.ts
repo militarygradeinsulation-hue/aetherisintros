@@ -174,6 +174,7 @@ export async function recordOutcome(input: OutcomeInput): Promise<{ error: strin
 
 export async function retractOutcome(id: string): Promise<{ error: string }> {
   const r = await db.from('intro_outcomes').delete().eq('id', id)
+  if (!r.error && typeof window !== 'undefined') window.dispatchEvent(new Event('aetheris:evidence-changed'))
   return { error: r.error?.message ?? '' }
 }
 

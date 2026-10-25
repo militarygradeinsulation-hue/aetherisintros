@@ -1,3 +1,4 @@
+import { EvidenceProvider } from '@/features/evidence-loop/EvidenceWorkspace'
 import type { ReactNode } from 'react'
 
 import { NetworkProvider, type NetworkMode } from './store'
@@ -35,7 +36,7 @@ export function AetherisProviderRoot({
             <ProProvider>
               <OpsProvider>
                 <GraphProvider>
-                  <CeoProvider>{children}</CeoProvider>
+                  <CeoProvider><EvidenceProvider live={mode === 'live'}>{children}</EvidenceProvider></CeoProvider>
                 </GraphProvider>
               </OpsProvider>
             </ProProvider>

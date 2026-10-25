@@ -1,3 +1,4 @@
+import { newcomerLane } from '@/features/evidence-loop/matching'
 import { HRWorkspace } from '@/features/hr/HRWorkspace'
 import { NetworkValuePage } from '@/features/network-value/NetworkValuePage'
 import { PostOwnerActions } from './PostOwnerActions'
@@ -959,14 +960,14 @@ function Discover({ people, select }: { people: Member[]; select: (p: Member) =>
   })
   const mission = useMissionFocus ? activeMission(graph.missions) : undefined
   const fitOf = (person: Member) => missionFit(person, mission).score
-  const ranked = rankMatches(net.profile, filtered, net.connections)
+  const ranked = newcomerLane(rankMatches(net.profile, filtered, net.connections)
     .sort((a, b) => {
       if (!q.trim()) return (b.match.total + fitOf(b.member)) - (a.match.total + fitOf(a.member))
       const terms = q.toLowerCase().split(/\s+/).filter(word => word.length > 2)
       const text = (person: Member) => `${person.title} ${person.company} ${person.industry} ${person.expertise.join(' ')} ${person.needs.join(' ')} ${person.offers.join(' ')} ${person.whatIDo ?? ''} ${person.building ?? ''}`.toLowerCase()
       const relevance = (person: Member) => terms.reduce((score, term) => score + (text(person).includes(term) ? 12 : 0), 0)
       return (relevance(b.member) + b.match.total + fitOf(b.member)) - (relevance(a.member) + a.match.total + fitOf(a.member))
-    }).slice(0, 5)
+    }), x => x.member.id, x => Boolean(x.match.newcomerEligible)).slice(0, 5)
   const featured = ranked.slice(0, 3).map(entry => entry.member)
   const featuredIds = new Set(featured.map(person => person.id))
   const browsePeople = filtered.filter(person => !featuredIds.has(person.id))

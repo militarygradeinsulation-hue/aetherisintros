@@ -28,6 +28,8 @@ export interface NetworkMember {
   avatarUrl: string;
   verified: boolean;
   matchScore: number;
+  newcomerEligible?: boolean;
+  matchExplanation?: string;
   matchTier: 'EXCELLENT FIT' | 'STRONG FIT' | 'GREAT FIT' | 'GOOD FIT' | 'POTENTIAL';
   bioStatement: string;
   fullBio: string;
