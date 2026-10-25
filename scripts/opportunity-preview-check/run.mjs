@@ -48,7 +48,10 @@ try {
       assert(await page.locator('.ai-try').count() === 0, 'questionnaire is removed')
       assert(await page.locator('.ael-hero-actions a[href="/demo"]').count() === 1, 'primary demo opens the actual workspace')
       assert(await page.locator('a[href="/try"]').count() === 0, 'no obsolete questionnaire links')
-      await page.locator('.ask-cinematic-entrance').waitFor({ state: 'hidden', timeout: 60000 })
+      // Reduced motion makes the manual entry control immediately available.
+      // The current entrance deliberately waits for that choice.
+      await page.getByRole('button', { name: /^Enter Intros/ }).click({ timeout: 60000 })
+      await page.locator('.ask-cinematic-entrance').waitFor({ state: 'hidden', timeout: 10000 })
       assert(await page.locator('.ael-hero-actions').isVisible(), 'reduced motion leaves homepage accessible')
       await context.close()
     }

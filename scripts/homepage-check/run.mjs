@@ -81,20 +81,12 @@ try {
     page.on('pageerror', error => console.log('  ! browser page error: ' + error.message.slice(0, 220)))
     await page.addInitScript(() => {
       try { localStorage.setItem('ask-intros.appearance', 'light') } catch { /* optional */ }
-      // Inspect the actual homepage after the one-time cinematic intro (film has a dedicated component test).
-      try { sessionStorage.setItem('ask-intros.entrance-film.seen', '1') } catch { /* optional */ }
     })
     try {
       await page.goto(base + '/', { waitUntil: 'domcontentloaded', timeout: 120_000 })
       await page.waitForSelector('.ael-compact', { timeout: 60_000 })
-      // The opening film now waits for the visitor, so dismiss it before inspecting the page.
-      await page.waitForFunction(() => {
-        const host = document.querySelector('.ask-cinematic-entrance')
-        if (!host) return true
-        const button = [...host.querySelectorAll('button')].find(x => /Skip intro|Enter Intros/.test(x.textContent || ''))
-        if (button) button.click()
-        return false
-      }, null, { timeout: 20_000, polling: 500 }).catch(() => {})
+      await page.getByRole('button', { name: /^Enter Intros/ }).click({ timeout: 60_000 })
+      await page.locator('.ask-cinematic-entrance').waitFor({ state: 'hidden', timeout: 10_000 })
       assert(await page.locator('.vision-page').count() === 0, 'sample-only Vision dashboard is not the primary homepage')
 
       const m = await page.evaluate(() => {

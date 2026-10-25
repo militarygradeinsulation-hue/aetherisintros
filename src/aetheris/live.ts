@@ -1,3 +1,4 @@
+import { memberClient } from '@/integrations/supabase/member-client'
 /**
  * LIVE network data. Every read here is real, user-generated production data:
  * approved member profiles, their posts, their asks and their direct messages.
@@ -351,12 +352,20 @@ const journalUrls = new Map<string, { url: string; expires: number }>()
 
 /** Short-lived signed URL for a private Journal file, cached in memory. */
 export async function journalUrl(path: string): Promise<string | null> {
-  const cached = journalUrls.get(path)
+  const { data: auth } = await supabase.auth.getSession()
+  const viewer = auth.session?.user.id
+  if (!viewer) return null
+  const key = `${viewer}:${path}`
+  const cached = journalUrls.get(key)
   if (cached && cached.expires > Date.now()) return cached.url
-  const { data, error } = await supabase.storage.from('journal').createSignedUrl(path, 60 * 60)
-  if (error || !data?.signedUrl) return null
-  journalUrls.set(path, { url: data.signedUrl, expires: Date.now() + 55 * 60 * 1000 })
-  return data.signedUrl
+  try {
+    const db = await memberClient(viewer)
+    const { data, error } = await db.storage.from('journal').createSignedUrl(path, 5 * 60)
+    const current = await supabase.auth.getSession()
+    if (error || !data?.signedUrl || current.data.session?.user.id !== viewer) return null
+    journalUrls.set(key, { url: data.signedUrl, expires: Date.now() + 4 * 60 * 1000 })
+    return data.signedUrl
+  } catch { return null }
 }
 
 const fire = (work: PromiseLike<unknown>, where = 'live-write') => {

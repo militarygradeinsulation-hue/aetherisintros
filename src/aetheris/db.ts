@@ -14,6 +14,8 @@ import { supabase } from '@/integrations/supabase/client'
 import { parseBusinessDetails } from './business-posts'
 import { reportClientError } from '@/lib/error-report'
 import { requireSavedNetworkRecord } from './lib/network-write-receipt'
+import { confirmMemoryWrite } from './lib/memory-write'
+import { memberClient } from '@/integrations/supabase/member-client'
 import type { PrivacyScope } from './types'
 import {
   learnings as catalogueLearnings, members as catalogueMembers, networkAsks as catalogueAsks,
@@ -197,19 +199,29 @@ export function saveIntro(userId: string, memberId: string, status: IntroState, 
   }, { onConflict: 'user_id,member_id' }), 'intro-persist')
 }
 
-export function saveLearning(userId: string, learning: Learning, memberId?: string) {
-  fire(supabase.from('memories').insert({
-    id: learning.id, user_id: userId, kind: 'learning', category: learning.category,
-    member_id: memberId ?? null, text: learning.text, source: learning.source,
-    confidence: learning.confidence, scope: learning.scope, when_label: learning.when,
-  }), 'memory-learning-persist')
+async function persistMemory(userId: string, row: { id: string; text: string; source: string; [key: string]: unknown }) {
+  const db = await memberClient(userId)
+  const expected = { id: row.id, user_id: userId, text: row.text, source: row.source }
+  await confirmMemoryWrite(
+    () => db.from('memories').insert({ ...row, user_id: userId } as never).select('id,user_id,text,source').maybeSingle(),
+    () => db.from('memories').select('id,user_id,text,source').eq('user_id', userId).eq('text', row.text).eq('source', row.source).order('created_at', { ascending: false }).limit(1).maybeSingle(),
+    expected,
+  )
 }
 
-export function saveNote(userId: string, note: MemoryNote) {
-  fire(supabase.from('memories').insert({
-    id: note.id, user_id: userId, kind: 'note', category: 'People', member_id: note.personId,
+export function saveLearning(userId: string, learning: Learning, memberId?: string): Promise<void> {
+  return persistMemory(userId, {
+    id: learning.id, kind: 'learning', category: learning.category,
+    member_id: memberId ?? null, text: learning.text, source: learning.source,
+    confidence: learning.confidence, scope: learning.scope, when_label: learning.when,
+  })
+}
+
+export function saveNote(userId: string, note: MemoryNote): Promise<void> {
+  return persistMemory(userId, {
+    id: note.id, kind: 'note', category: 'People', member_id: note.personId,
     text: note.text, scope: note.scope, when_label: note.createdAt, source: 'Private note',
-  }), 'memory-note-persist')
+  })
 }
 
 export async function savePost(userId: string, post: Post): Promise<void> {

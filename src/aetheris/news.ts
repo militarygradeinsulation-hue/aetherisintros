@@ -1,3 +1,5 @@
+import { isPublisherImageHost } from './news-image-policy'
+import { publicTarget } from '@/features/specter-detect/investigation'
 import { createContext, useContext, useEffect, useRef, useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { useServerFn } from '@tanstack/react-start'
@@ -8,8 +10,12 @@ export type { NewsItem }
 
 /** Routes publisher artwork through Ask Intros so it always loads in-site. */
 export function newsImageSrc(url: string | null | undefined): string | null {
-  if (!url || !/^https?:\/\//i.test(url)) return null
-  return `/api/public/news-image?url=${encodeURIComponent(url)}`
+  if (!url) return null
+  try {
+    const target = new URL(publicTarget(url))
+    if (target.protocol !== 'https:') return null
+    return isPublisherImageHost(target.hostname) ? `/api/public/news-image?url=${encodeURIComponent(target.href)}` : target.href
+  } catch { return null }
 }
 
 const ImagesContext = createContext<Record<string, string>>({})

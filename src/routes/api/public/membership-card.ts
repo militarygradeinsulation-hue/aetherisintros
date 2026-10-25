@@ -16,7 +16,7 @@ export const Route = createFileRoute('/api/public/membership-card')({
           const png = await membershipCardImage(new URL(request.url).searchParams.get('t') ?? '')
           if (!png) return new Response('Not found', { status: 404 })
           return new Response(png as BodyInit, {
-            headers: { 'content-type': 'image/png', 'cache-control': 'public, max-age=86400', 'x-robots-tag': 'noindex' },
+            headers: { 'content-type': 'image/png', 'cache-control': 'private, no-store, max-age=0', 'x-robots-tag': 'noindex' },
           })
         } catch (error) {
           await logServerError(error, request)

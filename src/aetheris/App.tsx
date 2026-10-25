@@ -1428,7 +1428,7 @@ function Memory({ people, select }: { people: Member[]; select: (p: Member) => v
     <div className="memory-layout">
       <section className="memory-changes">
         <header className="memory-learned-head">
-          <div><span>RECENTLY RETAINED CONTEXT</span><h2>What Intros learned recently.</h2><p>New context is grouped by subject, source, confidence, and who can see it.</p></div>
+          <div><span>RECENTLY RETAINED CONTEXT</span><h2>What Intros learned recently.</h2><p>Saved context is private to your account. Scope labels record your sharing preference; they do not share the entry.</p></div>
           <strong>{shown.length.toString().padStart(2, '0')} items</strong>
         </header>
         <div className="memory-cats">{(['All', ...memoryCategories] as const).map(c =>
@@ -1443,7 +1443,7 @@ function Memory({ people, select }: { people: Member[]; select: (p: Member) => v
                 <small>{relatedPerson?.name} · From: {l.source}</small>
               </div>
               <div className="learned-cell"><strong>{l.confidence}%</strong><small>Confidence</small></div>
-              <div className="learned-cell"><strong>{scopeLabel[l.scope]}</strong><small>{l.scope === 'private' ? 'Only you' : l.scope === 'team' ? 'With your team' : 'Cleared for intros'}</small></div>
+              <div className="learned-cell"><strong>{scopeLabel[l.scope]}</strong><small>Private to your account</small></div>
               <span className="learned-when">{l.when}</span>
             </article>
           })}
@@ -1999,12 +1999,12 @@ function MemberProfile({ person, people, onClose, onDraft, onMessage }: {
       <JournalFeed member={person} name={person.name} />
 
       <section className="mod member-notes">
-        <header><span>ACTIVE MEMORY</span><small><LockKeyhole size={11} /> privacy scoped</small></header>
+        <header><span>ACTIVE MEMORY</span><small><LockKeyhole size={11} /> private to your account</small></header>
         {notes.map(n => <article key={n.id} className="note-row"><b>{scopeLabel[n.scope]}</b><p>{n.text}</p><small>{n.createdAt}</small></article>)}
         <textarea rows={3} value={text} onChange={e => setText(e.target.value)} placeholder="Record what changed in this relationship…" />
         <div className="scope-picker">{scopes.map(s => <button className={scope === s ? 'active' : ''} onClick={() => setScope(s)} key={s}>{scopeLabel[s]}</button>)}</div>
         <small>{scopeText[scope]}</small>
-        <Button kind="secondary" disabled={!text.trim()} onClick={() => { net.addNote(person.id, text.trim(), scope); setText('') }}>Record intelligence</Button>
+        <Button kind="secondary" disabled={!text.trim()} onClick={async () => { const submitted = text; if (await net.addNote(person.id, submitted.trim(), scope)) setText(current => current === submitted ? '' : current) }}>Record intelligence</Button>
       </section>
 
       <footer className="member-footer"><span>THE INTELLIGENCE LAYER FOR MEANINGFUL CONNECTIONS</span><b>ASK INTROS</b></footer>
