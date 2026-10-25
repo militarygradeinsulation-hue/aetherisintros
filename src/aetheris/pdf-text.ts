@@ -19,7 +19,9 @@ export async function readPdfText(file: File, maxPages = 12): Promise<PdfText> {
     import('pdfjs-dist/build/pdf.worker.min.mjs?url'),
   ])
   pdfjs.GlobalWorkerOptions.workerSrc = worker.default
-  const doc = await pdfjs.getDocument({ data: new Uint8Array(await file.arrayBuffer()) }).promise
+  const loading = pdfjs.getDocument({ data: new Uint8Array(await file.arrayBuffer()) })
+  const doc = await loading.promise
+  try {
   const lines: string[] = []
   let largest = { size: 0, text: '' }
   for (let p = 1; p <= Math.min(doc.numPages, maxPages); p++) {
@@ -48,6 +50,6 @@ export async function readPdfText(file: File, maxPages = 12): Promise<PdfText> {
     }
     flush()
   }
-  await doc.destroy()
   return { text: lines.join('\n'), largest: largest.text }
+  } finally { await loading.destroy() }
 }

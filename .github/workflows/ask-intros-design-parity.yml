@@ -30,9 +30,7 @@ jobs:
       - uses: oven-sh/setup-bun@v2
       - name: Install dependencies from public registry
         run: |
-          rm -f bun.lock
-          bun install
-          bun add --no-save playwright@1.56.1
+          bun install --frozen-lockfile
       - name: Verify unchanged Bridge source and generated style scope
         run: |
           node scripts/bridge-reference/check.mjs

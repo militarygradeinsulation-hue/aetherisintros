@@ -81,12 +81,12 @@ try {
     page.on('pageerror', error => console.log('  ! browser page error: ' + error.message.slice(0, 220)))
     await page.addInitScript(() => {
       try { localStorage.setItem('ask-intros.appearance', 'light') } catch { /* optional */ }
-      // Inspect the actual homepage after the one-time cinematic intro (film has a dedicated component test).
-      try { sessionStorage.setItem('ask-intros.entrance-film.seen', '1') } catch { /* optional */ }
     })
     try {
       await page.goto(base + '/', { waitUntil: 'domcontentloaded', timeout: 120_000 })
       await page.waitForSelector('.ael-compact', { timeout: 60_000 })
+      await page.getByRole('button', { name: /^Enter Intros/ }).click({ timeout: 60_000 })
+      await page.locator('.ask-cinematic-entrance').waitFor({ state: 'hidden', timeout: 10_000 })
       assert(await page.locator('.vision-page').count() === 0, 'sample-only Vision dashboard is not the primary homepage')
 
       const m = await page.evaluate(() => {
