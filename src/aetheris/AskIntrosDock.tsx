@@ -139,6 +139,8 @@ function AskIntrosDockInner({ page, peopleNames, memberName, briefing, contextPa
   const [open, setOpen] = useState(false)
   const newMemberWelcome = useButlerWelcome(() => setOpen(true))
   const [input, setInput] = useState('')
+  const inputRef = useRef<HTMLInputElement>(null)
+  const [focusRequest, setFocusRequest] = useState(0)
   const [busy, setBusy] = useState(false)
   const memory = useButlerConversations()
   const { turns, setTurns } = memory
@@ -152,7 +154,21 @@ function AskIntrosDockInner({ page, peopleNames, memberName, briefing, contextPa
   const [draftError, setDraftError] = useState('')
   const ownerRef = useRef(memory.owner)
   ownerRef.current = memory.owner
-  useEffect(() => { setAttachments([]); setDraft(null); setFileExport(null); setInput(''); setFileError(''); setDraftError('') }, [memory.owner])
+  const hadResolvedAccount = useRef(false)
+  useEffect(() => {
+    setAttachments([]); setDraft(null); setFileExport(null); setFileError(''); setDraftError('')
+    // Keep a prompt selected while the initial session loads, but never carry
+    // a draft across a subsequent sign-in, sign-out, or account change.
+    if (hadResolvedAccount.current) setInput('')
+    hadResolvedAccount.current = memory.authReady
+  }, [memory.owner, memory.authReady])
+  useEffect(() => {
+    if (open) {
+      inputRef.current?.focus({ preventScroll: true })
+      const end = inputRef.current?.value.length ?? 0
+      inputRef.current?.setSelectionRange(end, end)
+    }
+  }, [open, focusRequest])
   const addFiles = async (files: FileList | null) => {
     if (!files || fileBusy) return
     const owner = memory.owner
@@ -217,6 +233,7 @@ function AskIntrosDockInner({ page, peopleNames, memberName, briefing, contextPa
       const detail = (event as CustomEvent<string | OpenAssistantDetail | undefined>).detail
       const req: OpenAssistantDetail = typeof detail === 'string' ? { question: detail } : detail ?? {}
       if (req.question) setInput(req.question)
+      setFocusRequest(n => n + 1)
       if (typeof req.x === 'number' && typeof req.y === 'number') {
         // Open right where the member asked for it, kept on screen.
         const at = placeMenu(req.x, req.y, Math.min(expanded?680:440, window.innerWidth - 32), Math.min(window.innerHeight * 0.72, 600), window.innerWidth, window.innerHeight)
@@ -481,7 +498,7 @@ function AskIntrosDockInner({ page, peopleNames, memberName, briefing, contextPa
       </div>}
       <form className="ask-dock-input" onSubmit={event => { event.preventDefault(); void send(input) }}>
         <label className="butler-attach" title="Attach images or files"><Paperclip size={16}/><input aria-label="Attach images or files" type="file" multiple accept={BUTLER_ACCEPT} disabled={busy||fileBusy} onChange={event=>{void addFiles(event.target.files);event.target.value=''}}/></label>
-        <input aria-label="Message Butler" value={input} onChange={event => setInput(event.target.value)} placeholder="Ask, say it, or tell me what to do…" />
+        <input ref={inputRef} aria-label="Message Butler" value={input} onChange={event => setInput(event.target.value)} placeholder="Ask, say it, or tell me what to do…" />
         {dictation.supported && <button type="button" className={dictation.listening ? 'listening' : ''}
           aria-label={dictation.listening ? 'Stop listening' : 'Speak to Ask Intros'} title={dictation.listening ? 'Stop listening' : 'Voice dictation'} onClick={dictation.toggle}>
           {dictation.listening ? <MicOff size={15} /> : <Mic size={15} />}</button>}

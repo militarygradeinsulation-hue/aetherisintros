@@ -9,6 +9,7 @@ const identify = (turn: ButlerDisplayTurn) => ({ ...turn, id: turn.id ?? crypto.
 export function useButlerConversations() {
   const [turns, rawSetTurns] = useState<ButlerDisplayTurn[]>([welcome])
   const [owner, setOwner] = useState<string | null>(null)
+  const [authReady, setAuthReady] = useState(false)
   const [conversation, setConversation] = useState('')
   const [ready, setReady] = useState(false)
   const [notice, setNotice] = useState('Loading conversation…')
@@ -26,7 +27,7 @@ export function useButlerConversations() {
     let live = true
     const reset = (id: string | null) => {
       if (!live) return
-      rawSetTurns([welcome]); saved.current.clear(); setOwner(id); setHistory([]); setOlder(null)
+      rawSetTurns([welcome]); saved.current.clear(); setOwner(id); setAuthReady(true); setHistory([]); setOlder(null)
       let last: string | null = null
       try { if (id) last = localStorage.getItem('butler.last.' + id) } catch { /* optional */ }
       setConversation(last && /^[0-9a-f-]{36}$/i.test(last) ? last : crypto.randomUUID())
@@ -104,6 +105,6 @@ export function useButlerConversations() {
     if (turns.some(t => t.id && !saved.current.has(t.id)) && owner) { setNotice('Save the current conversation before switching.'); return }
     rawSetTurns([welcome]); setConversation(id ?? crypto.randomUUID())
   }
-  return { turns, setTurns, owner, ready, notice, history, historyBefore, older, listHistory, loadOlder, switchConversation,
+  return { turns, setTurns, owner, authReady, ready, notice, history, historyBefore, older, listHistory, loadOlder, switchConversation,
     retrySave: () => { if (!ready) setRetry(n => n + 1); else rawSetTurns(prev => [...prev]) } }
 }
