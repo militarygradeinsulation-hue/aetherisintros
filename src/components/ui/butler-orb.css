@@ -2,8 +2,8 @@
 .butler-orb[data-orb-view="social"] {background:none;filter:none}
 .butler-orb > div {position:absolute!important;inset:0}
 .butler-orb canvas {display:block;pointer-events:none}
-.butler-orb-fallback {position:absolute;inset:9px;border-radius:44% 56% 48% 52% / 52% 43% 57% 48%;background:radial-gradient(circle at 32% 24%,#ffb3b3,#e31c32 45%,#70091a 80%);box-shadow:inset -3px -5px 8px #0005}
-.butler-orb[data-orb-view="social"] .butler-orb-fallback {background:radial-gradient(circle at 32% 24%,#c0ccff,#2f4be0 45%,#192eaa 80%)}
+.butler-orb-fallback {position:absolute;inset:9px;border-radius:43% 57% 62% 38% / 48% 39% 61% 52%;background:radial-gradient(circle at 30% 24%,#ffeeef,#ed6576 42%,#e31c32 76%);box-shadow:0 8px 24px #0003}
+.butler-orb[data-orb-view="social"] .butler-orb-fallback {background:radial-gradient(circle at 30% 24%,#eef4ff,#6598ed 42%,#2f4be0 76%)}
 /* Override the former Social-only placeholder without touching the Bridge snapshot. */
 :root[data-theme] body .ix-root.ledger-native-app[data-experience] > .ix-assistant button.ask-dock-fab > .ask-dock-blob {display:inline-flex!important;width:56px!important;height:56px!important;flex:none;background:none!important;box-shadow:none!important;border-radius:50%!important;pointer-events:none}
 :root[data-theme] body .ix-root.ledger-native-app[data-experience] > .ix-assistant button.ask-dock-fab:not(.active) {padding:4px 14px 4px 4px!important;border-radius:999px!important;min-height:64px}
@@ -41,8 +41,8 @@
   }
   :root[data-theme] body .ix-root.ledger-native-app[data-experience] > .ix-assistant button.ask-dock-fab > .assistant-launcher-label {
     display:block!important;padding:2px 5px!important;border-radius:8px!important;
-    background:#101827!important;color:#fff!important;-webkit-text-fill-color:#fff!important;
-    white-space:nowrap!important;font:500 12px/1.5 var(--sans,system-ui,sans-serif)!important;
+    background:#0c162b!important;color:#fff!important;-webkit-text-fill-color:#fff!important;
+    white-space:nowrap!important;font:500 12px/1.5 Inter,sans-serif!important;
     text-transform:none!important;letter-spacing:normal!important;
   }
   :root[data-theme] body .ix-root.ledger-native-app[data-experience="business"] > .ix-assistant button.ask-dock-fab > .assistant-launcher-label {background:#211014!important}
