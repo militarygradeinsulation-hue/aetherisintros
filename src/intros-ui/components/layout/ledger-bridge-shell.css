@@ -288,7 +288,7 @@
 .ledger-native-nav-item > svg {width:18px;height:18px;justify-self:center}
 :root body .ix-root.ledger-native-app .ledger-crm-shell .ledger-native-nav-label {min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font:inherit!important;letter-spacing:0!important;line-height:1.4}
 .ledger-native-mobile-account > button,.ledger-native-account-dropdown > button {
-  display:grid;grid-template-columns:18px minmax(0,1fr);gap:12px;align-items:center;text-align:left;
+  display:grid;grid-template-columns:auto minmax(0,1fr);gap:12px;align-items:center;text-align:left;
 }
 .ledger-native-account-dropdown {max-height:calc(100dvh - 90px);overflow:auto}
 .ledger-native-mobile-account > button {width:100%;min-height:44px;padding:10px 12px}
