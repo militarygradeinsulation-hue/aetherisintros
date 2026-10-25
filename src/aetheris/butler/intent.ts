@@ -14,7 +14,7 @@ export interface VoiceApproval {
 
 const clean = (value: string) => value.trim().replace(/\s+/g, ' ').replace(/[.!?]+$/, '').trim()
 const withoutWake = (value: string) =>
-  clean(value).replace(/^(?:hey\s+)?butler[,\s:]+/i, '').replace(/^please\s+/i, '').trim()
+  clean(value).replace(/^(?:(?:hey|ok|okay)\s+)?(?:butler|ask intros|intros)[,\s:]+/i, '').replace(/^please\s+/i, '').trim()
 
 /** Never interpret a question *about* image creation as a request to generate. */
 export function imageCreationBrief(phrase: string): string | null {
