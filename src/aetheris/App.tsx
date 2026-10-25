@@ -1,3 +1,4 @@
+import { HRWorkspace } from '@/features/hr/HRWorkspace'
 import { NetworkValuePage } from '@/features/network-value/NetworkValuePage'
 import { PostOwnerActions } from './PostOwnerActions'
 import { AskIntrosMark } from '@/aetheris/AskIntrosMark'
@@ -2726,6 +2727,7 @@ function Shell({ startPage, feedOnly = false, assistant = true, crmSection }: { 
       evidence: <EvidenceLedgerPage />,
       agentinbox: <AgentInboxPage />,
       referrals: <ReferralsPage />,
+      hr: <HRWorkspace />,
       benchmarks: <NetworkValuePage mode="benchmarks" />,
       settlements: <NetworkValuePage mode="settlements" />,
       capacity: <NetworkValuePage mode="capacity" />,

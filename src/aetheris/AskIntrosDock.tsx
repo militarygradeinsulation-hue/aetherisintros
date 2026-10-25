@@ -1,10 +1,17 @@
+import { transcribeButlerAudio } from '@/lib/butlerTranscribe.functions'
+import { blobToBase64 } from './meeting-recorder'
 import { ButlerWorkspaceControls, useButlerWelcome } from '@/intros-ui/onboarding/ButlerWorkspaceControls'
 import { ButlerOrb } from '@/components/ui/butler-orb'
 import { AskIntrosMark } from '@/aetheris/AskIntrosMark'
 import { useEffect, useRef, useState } from 'react'
-import { ArrowUp, Mic, MicOff, Radio, Volume2, VolumeX, X } from 'lucide-react'
+import { Paperclip, History, Plus, ArrowUp, Mic, MicOff, Radio, Volume2, VolumeX, X } from 'lucide-react'
 import { ThinkingOrb } from '@/components/ui/thinking-orbs'
 
+import { downloadButlerFile } from './butler/download'
+import { useButlerConversations, type ButlerDisplayTurn } from './butler/conversations'
+import { readButlerFile, BUTLER_ACCEPT, type ButlerAttachment } from './butler/files'
+import { executeButlerDraft } from '@/lib/butler.functions'
+import './butler/butler.css'
 import { askIntros, type AskIntrosAction } from '@/lib/askIntros.functions'
 import { pageMeta } from './pageMeta'
 import { readTextScale } from './textScale'
@@ -73,7 +80,7 @@ function useDrag(onMove: (p: Point) => void, onEnd: (p: Point) => void) {
   }
 }
 
-interface Turn { role: 'user' | 'assistant'; content: string; did?: string[] }
+type Turn = ButlerDisplayTurn
 
 const startingOpeners = [
   'Where are we losing money?',
@@ -128,21 +135,65 @@ export function AskIntrosDock(props: AskIntrosDockProps) {
   return useIsPrimaryDock() ? <AskIntrosDockInner {...props} /> : null
 }
 
-/** When a command moves to another part of the app the dock remounts; this carries the open
- * conversation across so voice control keeps going on the new page. */
-let handoff: { turns: Turn[]; at: number } | null = null
-const takeHandoff = () => { const h = handoff && Date.now() - handoff.at < 5000 ? handoff : null; handoff = null; return h }
-
 function AskIntrosDockInner({ page, peopleNames, memberName, briefing, contextPanel, run }: AskIntrosDockProps) {
-  const [carried] = useState(takeHandoff)
-  const [open, setOpen] = useState(!!carried)
+  const [open, setOpen] = useState(false)
   const newMemberWelcome = useButlerWelcome(() => setOpen(true))
   const [input, setInput] = useState('')
+  const inputRef = useRef<HTMLInputElement>(null)
+  const [focusRequest, setFocusRequest] = useState(0)
   const [busy, setBusy] = useState(false)
-  const [turns, setTurns] = useState<Turn[]>(() => carried?.turns ?? [{
-    role: 'assistant',
-    content: `I am Ask Intros. Ask me how anything here works, or tell me to do it — read this page to you, change your text size, open a page, post a need, find who matters this week.`,
-  }])
+  const memory = useButlerConversations()
+  const { turns, setTurns } = memory
+  const [attachments, setAttachments] = useState<ButlerAttachment[]>([])
+  const [fileBusy, setFileBusy] = useState(false)
+  const [fileError, setFileError] = useState('')
+  const [showHistory, setShowHistory] = useState(false)
+  const [draft, setDraft] = useState<{ id: string; kind: 'publish-post' | 'create-task' | 'save-writing-style' | 'draft-email'; text: string } | null>(null)
+  const [fileExport, setFileExport] = useState<string | null>(null)
+  const [draftBusy, setDraftBusy] = useState(false)
+  const [draftError, setDraftError] = useState('')
+  const ownerRef = useRef(memory.owner)
+  ownerRef.current = memory.owner
+  const hadResolvedAccount = useRef(false)
+  useEffect(() => {
+    setAttachments([]); setDraft(null); setFileExport(null); setFileError(''); setDraftError('')
+    // Keep a prompt selected while the initial session loads, but never carry
+    // a draft across a subsequent sign-in, sign-out, or account change.
+    if (hadResolvedAccount.current) setInput('')
+    hadResolvedAccount.current = memory.authReady
+  }, [memory.owner, memory.authReady])
+  useEffect(() => {
+    if (open) {
+      inputRef.current?.focus({ preventScroll: true })
+      const end = inputRef.current?.value.length ?? 0
+      inputRef.current?.setSelectionRange(end, end)
+    }
+  }, [open, focusRequest])
+  const addFiles = async (files: FileList | null) => {
+    if (!files || fileBusy) return
+    const owner = memory.owner
+    setFileBusy(true); setFileError('')
+    try {
+      if (attachments.length + files.length > 3) throw new Error('Attach up to three files per request.')
+      const prepared: ButlerAttachment[] = []
+      for (const file of Array.from(files)) prepared.push(await readButlerFile(file))
+      if (ownerRef.current === owner) setAttachments(current => [...current, ...prepared])
+    } catch (error) { setFileError(error instanceof Error ? error.message : 'File could not be read.') }
+    finally { setFileBusy(false) }
+  }
+  const commitDraft = async () => {
+    if (!draft || draft.kind === 'draft-email' || draftBusy) return
+    const owner = memory.owner
+    setDraftBusy(true); setDraftError('')
+    try {
+      const result = await executeButlerDraft({ data: { ...draft, kind: draft.kind, owner: owner! } })
+      if (ownerRef.current !== owner) return
+      setTurns(previous => [...previous, { role: 'assistant', content: result.receipt }])
+      setDraft(null)
+      window.dispatchEvent(new Event('aetheris:business-content-published'))
+    } catch (error) { if (ownerRef.current === owner) setDraftError(error instanceof Error ? error.message : 'Action failed. Your draft is still here.') }
+    finally { setDraftBusy(false) }
+  }
   const [openers, setOpeners] = useState<string[]>(startingOpeners)
   const [voice, setVoice] = useVoiceSettings()
   const reader = useReader()
@@ -174,7 +225,7 @@ function AskIntrosDockInner({ page, peopleNames, memberName, briefing, contextPa
   const [voiceAsk, setVoiceAsk] = useState(0)
   const live = useRef({ open, turns })
   live.current = { open, turns }
-  useEffect(() => () => { if (live.current.open) handoff = { turns: live.current.turns, at: Date.now() } }, [])
+
 
   useEffect(() => {
     const show = (event: Event) => {
@@ -182,9 +233,10 @@ function AskIntrosDockInner({ page, peopleNames, memberName, briefing, contextPa
       const detail = (event as CustomEvent<string | OpenAssistantDetail | undefined>).detail
       const req: OpenAssistantDetail = typeof detail === 'string' ? { question: detail } : detail ?? {}
       if (req.question) setInput(req.question)
+      setFocusRequest(n => n + 1)
       if (typeof req.x === 'number' && typeof req.y === 'number') {
         // Open right where the member asked for it, kept on screen.
-        const at = placeMenu(req.x, req.y, Math.min(390, window.innerWidth - 32), Math.min(window.innerHeight * 0.72, 600), window.innerWidth, window.innerHeight)
+        const at = placeMenu(req.x, req.y, Math.min(expanded?680:440, window.innerWidth - 32), Math.min(window.innerHeight * 0.72, 600), window.innerWidth, window.innerHeight)
         setPos(at)
       }
       if (req.voice) { pendingVoice.current = true; setVoiceAsk(n => n + 1) }
@@ -196,14 +248,18 @@ function AskIntrosDockInner({ page, peopleNames, memberName, briefing, contextPa
   const send = async (text: string) => {
     unlockAudio()
     const question = text.trim()
-    if (!question || sending.current) return
+    if (!question || sending.current || fileBusy || !memory.ready) return
+    const requestOwner = memory.owner
+    const suppliedFiles = attachments
+    const hasFiles = suppliedFiles.length > 0
     sending.current = true
     setInput('')
-    const history = [...turns, { role: 'user' as const, content: question }]
+    const fileContext = suppliedFiles.map(file => `\n[Attachment: ${file.name}]\n${file.text ? file.text.slice(0, 3500) + (file.text.length > 3500 ? '\n[History excerpt; reattach to analyze the full extract again.]' : '') : '[Image supplied for this request; reattach to inspect it again.]'}`).join('')
+    const history = [...turns, { role: 'user' as const, content: question + fileContext }]
     setTurns(history)
     const say = (text: string) => { if ((voice.speakReplies || voice.conversation) && voiceOutputSupported()) readAloud([text], 'Ask Intros') }
     // Commands that run instantly: go somewhere, find someone, message, intro, note, post an ask.
-    const command = parseVoiceCommand(question, peopleNames)
+    const command = hasFiles ? null : parseVoiceCommand(question, peopleNames)
     if (command) {
       let result: string | null
       if (command.kind === 'take-note') {
@@ -220,7 +276,7 @@ function AskIntrosDockInner({ page, peopleNames, memberName, briefing, contextPa
       sending.current = false
       return
     }
-    const destination = recognizeDestination(question)
+    const destination = hasFiles ? null : recognizeDestination(question)
     if (destination) {
       window.dispatchEvent(new CustomEvent('aetheris:navigate', { detail: destination }))
       const msg = destination === 'pocket' ? 'Opening your Pocket. Pick a starting shape and I will review it for you.' : 'Opening your company diagnostic. Press Explain this report and I will walk you through the top priorities.'
@@ -229,7 +285,7 @@ function AskIntrosDockInner({ page, peopleNames, memberName, briefing, contextPa
       sending.current = false
       return
     }
-    const intent = recognizeCapabilityIntent(question)
+    const intent = hasFiles ? null : recognizeCapabilityIntent(question)
     if (intent) {
       openCapability({ capabilityId: intent.capabilityId, ...(intent.focus ? { focus: intent.focus } : {}) })
       const subject = getActiveSubject()
@@ -238,7 +294,7 @@ function AskIntrosDockInner({ page, peopleNames, memberName, briefing, contextPa
       sending.current = false
       return
     }
-    const ceoCommand = recognizeCommand(question)
+    const ceoCommand = hasFiles ? null : recognizeCommand(question)
     if (ceoCommand?.view) {
       openCeo(ceoCommand)
       setTurns(current => [...current, { role: 'assistant', content: `Opening ${ceoViewLabel[ceoCommand.view!]}${ceoCommand.arg && ceoCommand.view === 'who' ? ` for “${ceoCommand.arg}”` : ''}. Everything in it comes from your recorded data — no AI needed.`, did: [ceoViewLabel[ceoCommand.view!]] }])
@@ -248,7 +304,7 @@ function AskIntrosDockInner({ page, peopleNames, memberName, briefing, contextPa
     const speak = (text: string) => {
       if ((voice.speakReplies || voice.conversation) && voiceOutputSupported()) readAloud([text], 'Ask Intros')
     }
-    const local = answerGraphQuestion(question, graphInputs)
+    const local = hasFiles ? null : answerGraphQuestion(question, graphInputs)
     if (local) {
       setTurns(current => [...current, { role: 'assistant', content: local }])
       speak(local)
@@ -257,6 +313,7 @@ function AskIntrosDockInner({ page, peopleNames, memberName, briefing, contextPa
     }
     const { supabase } = await import('@/integrations/supabase/client')
     const { data: sessionData } = await supabase.auth.getSession()
+    if (ownerRef.current !== requestOwner) { sending.current = false; return }
     if (!sessionData.session) {
       speak('Sign in to have a full conversation with Ask Intros. Until then I can open pages, read this page aloud and answer from recorded data.')
       setTurns(current => [...current, { role: 'assistant', content: 'Sign in to have a full conversation with Ask Intros. Until then I can still open pages, change text size, read this page aloud and answer from recorded data — try “What changed?” or “Show my capital map”.' }])
@@ -267,7 +324,8 @@ function AskIntrosDockInner({ page, peopleNames, memberName, briefing, contextPa
     try {
       const answer = await askIntros({
         data: {
-          messages: history.filter(t => t.content).map(t => ({ role: t.role, content: t.content })),
+          messages: history.filter(t => t.content).slice(-24).map(t => ({ role: t.role, content: t.content.slice(0, 16000) })),
+          attachments: suppliedFiles,
           context: {
             page,
             textSize: readTextScale(),
@@ -284,8 +342,16 @@ function AskIntrosDockInner({ page, peopleNames, memberName, briefing, contextPa
           },
         },
       })
+      if (ownerRef.current !== requestOwner) return
+      if (!answer.error) setAttachments([])
       const did: string[] = []
+      const prepared: string[] = []
       for (const action of answer.actions) {
+        if (action.kind === 'create-file' && action.value) { setFileExport(action.value); prepared.push('File export:\n' + action.value); continue }
+        if (['draft-post', 'draft-email', 'create-task', 'save-writing-style'].includes(action.kind) && action.value) {
+          setDraft({ id: crypto.randomUUID(), kind: (action.kind === 'draft-post' ? 'publish-post' : action.kind) as NonNullable<typeof draft>['kind'], text: action.value.slice(0, 4000) });
+          setDraftError(''); did.push('Draft ready for review.'); prepared.push('Prepared draft:\n' + action.value); continue
+        }
         if (action.kind === 'take-note') {
           try { did.push(noteSavedResult(await saveQuickNote(action.value ?? ''))) }
           catch (error) { did.push(noteFailedResult(error)) }
@@ -294,7 +360,7 @@ function AskIntrosDockInner({ page, peopleNames, memberName, briefing, contextPa
         const note = run(action)
         if (note) did.push(note)
       }
-      setTurns(current => [...current, { role: 'assistant', content: answer.reply, did }])
+      setTurns(current => [...current, { role: 'assistant', content: answer.reply + (prepared.length ? '\n\n' + prepared.join('\n\n') : ''), did, sources: answer.sources ?? [] }])
       const next = answer.suggestions.filter(item => item.toLowerCase() !== question.toLowerCase())
       if (next.length) setOpeners(next.slice(0, 4))
       const reads = answer.actions.some(action => action.kind === 'read-page')
@@ -325,7 +391,7 @@ function AskIntrosDockInner({ page, peopleNames, memberName, briefing, contextPa
     void send(phrase)
   }
 
-  const dictation = useDictation({ onFinal: heard, keepOpen: voice.conversation })
+  const dictation = useDictation({ onFinal: heard, keepOpen: voice.conversation, transcribe: async(blob,mimeType)=>(await transcribeButlerAudio({data:{audio:await blobToBase64(blob),mimeType:mimeType as 'audio/webm'|'audio/mp4'|'audio/ogg'}})).text })
 
   /* Conversation mode: listen, answer aloud, then listen again — never while speaking. */
   useEffect(() => {
@@ -336,6 +402,8 @@ function AskIntrosDockInner({ page, peopleNames, memberName, briefing, contextPa
   }, [open, voice.conversation, busy, reader.state, dictation.listening, dictation.supported, dictation.error])
 
   useEffect(() => { if (!open) dictation.stop() }, [open])
+
+  useEffect(()=>{dictation.stop()},[memory.owner]) // Account changes end microphone capture.
 
   // Voice mode from the right-click menu: start a spoken conversation straight away.
   useEffect(() => {
@@ -350,6 +418,7 @@ function AskIntrosDockInner({ page, peopleNames, memberName, briefing, contextPa
     }
   }, [open, voiceAsk]) // eslint-disable-line react-hooks/exhaustive-deps
 
+  const [expanded,setExpanded]=useState(false)
   const status = busy ? 'Thinking' : reader.state !== 'idle' ? 'Speaking' : dictation.listening ? 'Listening' : ''
 
   return <>
@@ -361,8 +430,8 @@ function AskIntrosDockInner({ page, peopleNames, memberName, briefing, contextPa
       {!open && <span className="assistant-launcher-label">Ask Intros</span>}
     </button>
 
-    {open && <aside ref={dockRef} className="ask-dock" role="dialog" aria-label="Ask Intros" data-voice-skip="true"
-      style={pos ? { ...clampPoint(pos, Math.min(390, window.innerWidth - 32), dockRef.current?.offsetHeight ?? 420), right: 'auto', bottom: 'auto' } : undefined}>
+    {open && <aside ref={dockRef} className={'ask-dock butler-conversation'+(expanded?' butler-expanded':'')} role="dialog" aria-label="Ask Intros" data-voice-skip="true"
+      style={pos ? { ...clampPoint(pos, Math.min(expanded?680:440, window.innerWidth - 32), dockRef.current?.offsetHeight ?? 420), right: 'auto', bottom: 'auto' } : undefined}>
       <header className="ask-dock-drag" title="Drag to move" onPointerDown={e => { if ((e.target as HTMLElement).closest('button')) return; dragDock(e, dockRef.current) }}>
         <span className="ask-dock-mark"><AetherisGlyph size={14} /></span>
         <div><b>Ask Intros</b><small>Your butler for the whole system</small></div>
@@ -372,9 +441,20 @@ function AskIntrosDockInner({ page, peopleNames, memberName, briefing, contextPa
           onClick={() => { setVoice({ speakReplies: !voice.speakReplies }); if (voice.speakReplies) stopReading() }}>
           {voice.speakReplies ? <Volume2 size={15} /> : <VolumeX size={15} />}</button>}
         {pos && <button className="icon-btn" aria-label="Move Ask Intros back to the corner" title="Back to the corner" onClick={() => { setPos(null); writePoint(POS_KEY, null) }}>↘</button>}
+        <button className="icon-btn" aria-label={expanded?'Compact conversation':'Expand conversation'} onClick={()=>setExpanded(v=>!v)}>{expanded?'↙':'↗'}</button>
         <button className="icon-btn" aria-label="Close Ask Intros" onClick={() => setOpen(false)}><X size={16} /></button>
       </header>
+      <details className="butler-options"><summary>Conversation options <span>History · settings</span></summary><div className="butler-options-body">
+      <div className="butler-history-controls">
+        <button type="button" disabled={busy || !memory.ready} onClick={() => { setShowHistory(value => !value); void memory.listHistory() }}><History size={13}/> History</button>
+        <button type="button" disabled={busy || !memory.ready} onClick={() => { setDraft(null); setFileExport(null); setAttachments([]); void memory.switchConversation() }}><Plus size={13}/> New conversation</button>
+      </div>
+
+      {showHistory && <div className="butler-history-list">{memory.history.map(item => <button type="button" key={item.id} disabled={busy} onClick={() => { setDraft(null); setFileExport(null); setAttachments([]); void memory.switchConversation(item.id); setShowHistory(false) }}>{item.title}</button>)}{memory.historyBefore && <button type="button" onClick={() => void memory.listHistory(true)}>More conversations</button>}{!memory.history.length && <span>No saved conversations found.</span>}</div>}
       <ButlerWorkspaceControls welcome={newMemberWelcome} onStart={() => { setOpen(false); window.dispatchEvent(new Event('ask-intros:onboarding')) }} />
+
+      </div></details>
+      {/failed|unavailable|before switching/i.test(memory.notice)&&<p className="butler-save-notice" role="alert">{memory.notice} <button type="button" onClick={memory.retrySave}>Retry</button></p>}
 
       {dictation.supported && <div className="ask-dock-voice">
         <button type="button" className={voice.conversation ? 'active' : ''} aria-pressed={voice.conversation}
@@ -385,28 +465,44 @@ function AskIntrosDockInner({ page, peopleNames, memberName, briefing, contextPa
         {dictation.interim && <em>{dictation.interim}</em>}
       </div>}
 
-      {dictation.error && <p className="ask-dock-voice-notice" role="alert">{dictation.error}</p>}
+      {dictation.error && <p className="ask-dock-voice-notice" role="alert">{dictation.error} <button type="button" onClick={dictation.start}>Retry voice</button></p>}
       {reader.problem && <p className="ask-dock-voice-notice" role="alert">{reader.problem}</p>}
-      {!dictation.supported && <p className="ask-dock-voice-notice">Voice input is unavailable in this browser. You can still type a conversation and use the reply’s read-aloud button.</p>}
+
       <div className="ask-dock-log" ref={listRef}>
+        {memory.older && <button type="button" onClick={() => void memory.loadOlder()}>Load older messages</button>}
         {turns.map((turn, index) => <div key={index} className={`ask-dock-turn ${turn.role}`}>
-          <p>{turn.content}</p>
+          <p style={{ whiteSpace: 'pre-wrap' }}>{turn.content}</p>
+          {turn.sources?.length ? <div className="butler-sources">{turn.sources.map(source => <a href={source.url} key={source.url} target="_blank" rel="noopener noreferrer">{source.title}</a>)}</div> : null}
           {turn.role === 'assistant' && voiceOutputSupported() && <button type="button" className="ask-dock-say"
             aria-label="Read this reply aloud" onClick={() => readAloud([turn.content], 'Ask Intros')}><Volume2 size={12} /></button>}
           {turn.did && turn.did.length > 0 && <ul className="ask-dock-did">{turn.did.map(note => <li key={note}>{note}</li>)}</ul>}
         </div>)}
         {busy && <div className="ask-dock-turn assistant"><span className="ask-dock-thinking-pill"><ThinkingOrb state="solving" size={20} theme="dark" /><span>Thinking…</span></span></div>}
+
+      <details className="butler-suggestions"><summary>Suggested questions</summary><div className="ask-dock-openers">{openers.length > 0 && <span className="ask-dock-openers-label">Next</span>}{openers.map(item =>
+        <button key={item} disabled={busy || fileBusy || !memory.ready} onClick={() => void send(item)}>{item}</button>)}</div></details>
+
+      {fileExport && <div className="butler-draft"><span>File ready</span><button type="button" onClick={() => { void downloadButlerFile(fileExport).catch(error => setDraftError(error instanceof Error ? error.message : 'Download failed.')) }}>Download file</button><button type="button" onClick={() => setFileExport(null)}>Dismiss</button>{draftError && <p role="alert">{draftError}</p>}</div>}
+      {draft && <section className="butler-draft" aria-label="Review Butler draft">
+        <b>{draft.kind === 'publish-post' ? 'Review network post' : draft.kind === 'draft-email' ? 'Email draft' : draft.kind === 'create-task' ? 'Review CRM task' : 'Review writing preference'}</b>
+        <textarea aria-label="Edit draft" value={draft.text} disabled={draftBusy} onChange={event => setDraft({ ...draft, text: event.target.value })} maxLength={4000}/>
+        {draftError && <p role="alert">{draftError}</p>}
+        {draft.kind === 'draft-email' ? <button type="button" onClick={() => { void navigator.clipboard.writeText(draft.text).then(() => setDraftError('Draft copied.')).catch(() => setDraftError('Select the draft text to copy it.')) }}>Copy email draft</button> : <button type="button" disabled={draftBusy || draft.text.trim().length < 4 || !memory.owner} onClick={() => void commitDraft()}>{draftBusy ? 'Saving…' : draft.kind === 'publish-post' ? 'Publish to my network' : 'Save'}</button>}
+        <button type="button" disabled={draftBusy} onClick={() => setDraft(null)}>Dismiss</button>
+      </section>}
       </div>
+      {(attachments.length>0||fileError||fileBusy)&&<div className="butler-files">
 
-      <div className="ask-dock-openers">{openers.length > 0 && <span className="ask-dock-openers-label">Next</span>}{openers.map(item =>
-        <button key={item} disabled={busy} onClick={() => void send(item)}>{item}</button>)}</div>
-
+        {attachments.map((file, index) => <span key={index}>{file.name}<button type="button" disabled={busy} aria-label={`Remove ${file.name}`} onClick={() => setAttachments(files => files.filter((_, i) => i !== index))}>×</button></span>)}
+        {fileError && <p role="alert">{fileError}</p>}
+      </div>}
       <form className="ask-dock-input" onSubmit={event => { event.preventDefault(); void send(input) }}>
-        <input value={input} onChange={event => setInput(event.target.value)} placeholder="Ask, say it, or tell me what to do…" />
+        <label className="butler-attach" title="Attach images or files"><Paperclip size={16}/><input aria-label="Attach images or files" type="file" multiple accept={BUTLER_ACCEPT} disabled={busy||fileBusy} onChange={event=>{void addFiles(event.target.files);event.target.value=''}}/></label>
+        <input ref={inputRef} aria-label="Message Butler" value={input} onChange={event => setInput(event.target.value)} placeholder="Ask, say it, or tell me what to do…" />
         {dictation.supported && <button type="button" className={dictation.listening ? 'listening' : ''}
-          aria-label={dictation.listening ? 'Stop listening' : 'Speak to Ask Intros'} onClick={dictation.toggle}>
+          aria-label={dictation.listening ? 'Stop listening' : 'Speak to Ask Intros'} title={dictation.listening ? 'Stop listening' : 'Voice dictation'} onClick={dictation.toggle}>
           {dictation.listening ? <MicOff size={15} /> : <Mic size={15} />}</button>}
-        <button type="submit" aria-label="Send" disabled={busy || !input.trim()}><ArrowUp size={15} /></button>
+        <button type="submit" aria-label="Send" title="Send message" disabled={busy || fileBusy || !memory.ready || !input.trim()}><ArrowUp size={15} /></button>
       </form>
     </aside>}
   </>

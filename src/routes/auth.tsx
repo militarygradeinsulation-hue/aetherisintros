@@ -28,6 +28,7 @@ export const Route = createFileRoute('/auth')({
   },
   head: () => ({
     meta: [
+      { name: 'robots', content: 'noindex,follow' },
       { title: 'Sign in — Ask Intros' },
       {
         name: 'description',
@@ -239,7 +240,7 @@ function AuthPage() {
           </p>
         : <div className="auth-soon" role="status">
             <span><i aria-hidden="true" />MEMBER SIGNUP</span>
-            <p>Create a free Basic account, confirm your email, and complete your profile. C-suite members can apply for reviewed Executive access after joining.</p>
+            <p>Create a free Basic account without LinkedIn, confirm your email, and complete your profile. Basic is for your profile and browsing.</p>
             <div className="auth-soon-actions">
               <Link to="/demo">Explore the demo <ArrowRight size={13} /></Link>
               <Link to="/early-access">Explore Executive access <ArrowRight size={13} /></Link>
@@ -309,7 +310,8 @@ function AuthPage() {
         {mode === 'signin' ? 'New to Ask Intros? Create your account.' : 'Back to sign in'}
       </button>
       {mode === 'reset' && <button type="button" className="auth-switch" onClick={() => { setMode('forgot'); setError(''); setNotice('') }}>Request a new reset link</button>}
-      <Link to="/early-access" className="auth-switch">Want Executive access? Start with Basic.</Link>
+      <p className="auth-notice">Membership update: verified LinkedIn ownership adds posting, messages and introductions; paid membership adds full member access and the black ID card. These new access levels are being prepared; existing membership stays unchanged.</p>
+      <Link to="/early-access" className="auth-switch">Start with a free Basic account.</Link>
       <Link to="/demo" className="auth-switch">Not ready to join? Open the demo.</Link>
 
       <span className="auth-foot"><LockKeyhole size={12} /> Nothing is shared without your explicit opt-in.</span>

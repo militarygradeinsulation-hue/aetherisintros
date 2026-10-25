@@ -1,3 +1,4 @@
+import { ClipRecorder, recordingSupported } from './meeting-recorder'
 /**
  * Voice layer: read anything aloud, and talk to Ask Intros.
  * Managed voice uses the owner's private ElevenLabs voice; device speech is
@@ -529,12 +530,14 @@ export interface DictationApi {
  * Microphone input. `onFinal` fires with a finished phrase.
  * With `keepOpen`, listening restarts itself until stopped — conversation mode.
  */
-export function useDictation({ onFinal, keepOpen = false }: { onFinal: (text: string) => void; keepOpen?: boolean }): DictationApi {
+export function useDictation({ onFinal, keepOpen = false, transcribe }: { onFinal: (text: string) => void; keepOpen?: boolean; transcribe?: (blob: Blob, mimeType: string) => Promise<string> }): DictationApi {
   const [listening, setListening] = useState(false)
   const [interim, setInterim] = useState('')
   const [error, setError] = useState('')
   const recognition = useRef<RecognitionLike | null>(null)
   const wanted = useRef(false)
+  const fallback = useRef<ClipRecorder|null>(null), microphone=useRef<MediaStream|null>(null), epoch=useRef(0), retryTimer=useRef<ReturnType<typeof setTimeout>|null>(null), retries=useRef(0)
+  const transcriber=useRef(transcribe);transcriber.current=transcribe
   const handler = useRef(onFinal)
   const keep = useRef(keepOpen)
   handler.current = onFinal
@@ -542,15 +545,46 @@ export function useDictation({ onFinal, keepOpen = false }: { onFinal: (text: st
 
   const stop = () => {
     wanted.current = false
+    epoch.current++
+    if(retryTimer.current)clearTimeout(retryTimer.current)
+    void fallback.current?.stop();fallback.current=null
+    microphone.current?.getTracks().forEach(t=>t.stop());microphone.current=null
     setListening(false)
     setInterim('')
     try { recognition.current?.stop() } catch { /* already stopped */ }
   }
 
+  const startFallback = async () => {
+    const run=++epoch.current
+    try {
+      if(!transcriber.current||!recordingSupported())throw new Error('Voice recognition is unavailable. Please type your message.')
+      setInterim('Connecting microphone…')
+      const stream=await navigator.mediaDevices.getUserMedia({audio:true})
+      if(run!==epoch.current||!wanted.current){stream.getTracks().forEach(t=>t.stop());return}
+      microphone.current=stream
+      let queue=Promise.resolve(), queued=0
+      const recorder=new ClipRecorder(stream,clip=>{
+        if(queued>=3){stop();setError('Voice transcription fell behind. Please retry with shorter phrases.');return}
+        queued++
+        queue=queue.then(async()=>{
+          if(run!==epoch.current||!wanted.current)return
+          setInterim('Transcribing…')
+          const text=await transcriber.current!(clip.blob,clip.mimeType.split(';')[0]!)
+          if(run!==epoch.current||!wanted.current)return
+          setInterim('')
+          if(text){handler.current(text);if(!keep.current)stop()}
+        }).catch(e=>{if(run===epoch.current){stop();setError(e instanceof Error?e.message:'Voice transcription failed. Please retry.')}}).finally(()=>{queued--})
+      },5000)
+      fallback.current=recorder;recorder.start();setInterim('');setError('');setListening(true)
+    }catch(e){if(run===epoch.current){stop();setError(e instanceof Error?e.message:'Microphone could not start. Check browser permissions.')}}
+  }
+
   const start = () => {
+    if(wanted.current&&listening)return
     const Ctor = recognitionCtor()
-    if (!Ctor) return
+    if (!Ctor) {wanted.current=true;void startFallback();return}
     wanted.current = true
+    retries.current=0
     setError('')
     if (recognition.current) { try { recognition.current.abort() } catch { /* ignore */ } }
     const rec = new Ctor()
@@ -573,27 +607,33 @@ export function useDictation({ onFinal, keepOpen = false }: { onFinal: (text: st
     }
     rec.onerror = event => {
       if (recognition.current !== rec || event.error === 'aborted') return
-      wanted.current = false
-      setListening(false)
-      setError(event.error === 'not-allowed' || event.error === 'service-not-allowed'
-        ? 'Microphone access was denied. Allow microphone access in your browser, then try Talk with Butler again.'
-        : event.error === 'audio-capture' ? 'No microphone was found. Connect a microphone and try again.'
-        : 'Voice input stopped. Check your connection and try again, or type your message.')
+      if(event.error==='no-speech'){setInterim('');return}
+      if((event.error==='network'||event.error==='service-not-allowed') && transcriber.current){
+        rec.onend=null;rec.onresult=null;rec.onerror=null;try{rec.abort()}catch{}
+        recognition.current=null;void startFallback();return
+      }
+      if(event.error==='network' && retries.current<2){retries.current++;setInterim('Reconnecting voice…');return}
+      wanted.current=false;setListening(false)
+      setError(event.error==='not-allowed'?'Microphone permission was denied. Allow microphone access for this site and retry.'
+        :event.error==='service-not-allowed'?'Your browser blocked its speech service. Check browser voice permissions or use another browser.'
+        :event.error==='audio-capture'?'No usable microphone was found. Check your input device.'
+        :'The browser speech service could not connect. Retry voice or type your message.')
     }
+
     rec.onend = () => {
       if (recognition.current !== rec) return
       setInterim('')
-      if (wanted.current && keep.current) { try { rec.start(); return } catch { /* fall through */ } }
+      if (wanted.current && keep.current) { retryTimer.current=setTimeout(()=>{if(!wanted.current||recognition.current!==rec)return;try{rec.start()}catch{wanted.current=false;setListening(false);setError('Voice could not restart. Please retry.')}},retries.current?Math.min(2000,500*retries.current):250);return }
       wanted.current = false
       setListening(false)
     }
-    try { rec.start(); setListening(true) } catch { setListening(false) }
+    try { rec.start(); setListening(true) } catch { wanted.current=false;setListening(false);setError('Voice could not start. Check microphone permissions and retry.') }
   }
 
-  useEffect(() => () => { wanted.current = false; try { recognition.current?.abort() } catch { /* ignore */ } }, [])
+  useEffect(() => () => { wanted.current=false;epoch.current++;if(retryTimer.current)clearTimeout(retryTimer.current);void fallback.current?.stop();microphone.current?.getTracks().forEach(t=>t.stop());try { recognition.current?.abort() } catch {} }, [])
 
   return {
-    supported: dictationSupported(),
+    supported: dictationSupported() || (!!transcribe && recordingSupported()),
     listening,
     interim,
     error,

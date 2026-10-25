@@ -103,14 +103,15 @@ export class ClipRecorder {
   }
 
   /** Stops recording; the clip in progress is still delivered. */
-  stop() {
-    if (!this.running) return
+  stop(): Promise<void> {
+    if (!this.running) return Promise.resolve()
     this.running = false
     if (this.timer !== null) clearTimeout(this.timer)
-    if (this.recorder && this.recorder.state !== 'inactive') this.recorder.stop()
+    const stopped=this.recorder&&this.recorder.state!=='inactive'?new Promise<void>(resolve=>{this.recorder!.addEventListener('stop',()=>resolve(),{once:true});this.recorder!.stop()}):Promise.resolve()
     if (this.meter !== null) clearInterval(this.meter)
     void this.ctx?.close().catch(() => undefined)
     this.ctx = null; this.analyser = null; this.recorder = null
+    return stopped
   }
 }
 

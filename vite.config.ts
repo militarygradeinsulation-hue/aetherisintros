@@ -16,7 +16,10 @@ export default defineConfig({
     transform(code, id) {
       if (!id.includes('/src/bridge-reference/') || !/\.[jt]sx?$/.test(id)) return null;
       // Only redirect module locations; the checked-in reference source stays untouched.
-      const resolved = code.replace(/(['"])@\/([^'"]+)\1/g, (match, quote, name) => {
+      // Both presentations share pointer/physics fixes without editing the pinned snapshot.
+      const adapted = code.replace(/(['"])\.\.\/components\/shared\/FloatingConnectionField\1/g,
+        (_match, quote) => quote + path.resolve('src/intros-ui/components/shared/FloatingConnectionField.tsx') + quote);
+      const resolved = adapted.replace(/(['"])@\/([^'"]+)\1/g, (match, quote, name) => {
         // Private avatar reads use the account-bound host adapter; reference JSX stays unchanged.
         if (name === 'aetheris/avatar') return quote + path.resolve('src/aetheris/avatar.tsx') + quote;
         if (name === 'assets/ask-intros-official-logo.jpg.asset.json') {

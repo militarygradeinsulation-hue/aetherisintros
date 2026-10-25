@@ -51,7 +51,7 @@ function MemberTools(){
   const filtered=BUSINESS_TOOLS.filter(t=>(category==='All'||t.category===category)&&`${t.name} ${t.description}`.toLowerCase().includes(search.toLowerCase()));
   return <section className="business-tools">
     <header><small>ASK INTROS BUSINESS TOOLS</small><h2>Your ideas. Ready for the next step.</h2><p>Private working documents for {profile.name||'your business'}. Create a starting draft, edit it, then save, add content to your calendar, or review and approve a post when ready.</p></header>
-    <nav aria-label="Network business systems" className="bt-actions"><a href="/app?workspace=benchmarks">Benchmark Pools</a><a href="/app?workspace=settlements">Referral Settlement</a><a href="/app?workspace=capacity">Capacity Exchange</a></nav>
+    <nav aria-label="Network business systems" className="bt-actions"><a href="/app?workspace=hr">People &amp; HR</a><a href="/app?workspace=benchmarks">Benchmark Pools</a><a href="/app?workspace=settlements">Referral Settlement</a><a href="/app?workspace=capacity">Capacity Exchange</a></nav>
     <div className="bt-layout"><aside aria-label="Business tool catalog">
       <label>Find a tool<input value={search} onChange={e=>setSearch(e.target.value)} placeholder="Search tools"/></label>
       <label>Category<select value={category} onChange={e=>setCategory(e.target.value)}>{['All',...new Set(BUSINESS_TOOLS.map(t=>t.category))].map(c=><option key={c}>{c}</option>)}</select></label>

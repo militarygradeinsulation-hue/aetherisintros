@@ -90,7 +90,11 @@ export const FloatingConnectionField: React.FC<FloatingConnectionFieldProps> = (
   } | null>(null);
 
   // Transient hover state for gentle highlighting
-  const [hoveredNodeId, setHoveredNodeId] = useState<string | null>(null);
+  const hoveredNodeRef = useRef<string | null>(null);
+  const selectMemberRef = useRef(onSelectMember);
+  selectMemberRef.current = onSelectMember;
+  const dossierRef = useRef(activeDossier);
+  dossierRef.current = activeDossier;
 
   const speedRef = useRef(speedMultiplier);
   speedRef.current = speedMultiplier;
@@ -120,6 +124,9 @@ export const FloatingConnectionField: React.FC<FloatingConnectionFieldProps> = (
 
   // Hold & interaction tracking refs
   const interactionRef = useRef<{
+    pointerId: number | null;
+    offsetX: number;
+    offsetY: number;
     pointerX: number;
     pointerY: number;
     isDown: boolean;
@@ -132,6 +139,9 @@ export const FloatingConnectionField: React.FC<FloatingConnectionFieldProps> = (
     holdTriggered: boolean;
     activeHoldProgress: number; // 0 to 1
   }>({
+    pointerId: null,
+    offsetX: 0,
+    offsetY: 0,
     pointerX: -1000,
     pointerY: -1000,
     isDown: false,
@@ -191,7 +201,10 @@ export const FloatingConnectionField: React.FC<FloatingConnectionFieldProps> = (
     const handleResize = () => {
       setupDimensions();
     };
-    window.addEventListener('resize', handleResize);
+    const resizeObserver = new ResizeObserver(handleResize);
+    resizeObserver.observe(container);
+    nodeTrailsRef.current.clear();
+    radarEchoesRef.current = [];
 
     // Initialize bubble nodes with balanced positions
     const displayCount = density === 'fullscreen' ? Math.min(members.length, 18) : Math.min(members.length, 12);
@@ -251,7 +264,10 @@ export const FloatingConnectionField: React.FC<FloatingConnectionFieldProps> = (
       };
     });
 
-    const render = () => {
+    let previousFrame = performance.now();
+    const render = (timestamp: number) => {
+      const step = Math.min(2, Math.max(0, (timestamp - previousFrame) / (1000 / 60)));
+      previousFrame = timestamp;
       ctx.clearRect(0, 0, width, height);
 
       const nodes = nodesRef.current;
@@ -367,21 +383,21 @@ export const FloatingConnectionField: React.FC<FloatingConnectionFieldProps> = (
       // 2. Physics Update: Very Slow, Graceful Drift
       nodes.forEach((node) => {
         if (interact.draggedNode === node) {
-          node.x = interact.pointerX;
-          node.y = interact.pointerY;
+          node.x = Math.max(node.radius, Math.min(width - node.radius, interact.pointerX - interact.offsetX));
+          node.y = Math.max(node.radius, Math.min(height - node.radius, interact.pointerY - interact.offsetY));
           node.vx = 0;
           node.vy = 0;
         } else if (!pausedRef.current) {
           const spd = speedRef.current;
-          node.vx *= 0.94;
-          node.vy *= 0.94;
+          node.vx *= Math.pow(0.94, step);
+          node.vy *= Math.pow(0.94, step);
 
           // Cap speed to very slow, serene motion
           const currentSpeed = Math.sqrt(node.vx * node.vx + node.vy * node.vy);
           const maxSpeed = 0.32;
           // Gentle independent wander so each bubble floats on its own
-          node.vx += Math.cos(now * 0.00045 + node.pulsePhase * 3) * 0.006;
-          node.vy += Math.sin(now * 0.00038 + node.pulsePhase * 2) * 0.006;
+          node.vx += Math.cos(now * 0.00045 + node.pulsePhase * 3) * 0.006 * step;
+          node.vy += Math.sin(now * 0.00038 + node.pulsePhase * 2) * 0.006 * step;
           if (currentSpeed > maxSpeed && currentSpeed > 0) {
             node.vx = (node.vx / currentSpeed) * maxSpeed;
             node.vy = (node.vy / currentSpeed) * maxSpeed;
@@ -390,14 +406,14 @@ export const FloatingConnectionField: React.FC<FloatingConnectionFieldProps> = (
           // Slow cosmic harmonic drift
           const harmonicX = Math.cos(now * 0.00015 + node.pulsePhase) * 0.02 * spd;
           const harmonicY = Math.sin(now * 0.00018 + node.pulsePhase) * 0.02 * spd;
-          node.x += node.vx + harmonicX;
-          node.y += node.vy + harmonicY;
+          node.x += (node.vx + harmonicX) * step;
+          node.y += (node.vy + harmonicY) * step;
 
           // Soft central tether keeps constellation in radar view
           const dxCenter = cx - node.x;
           const dyCenter = cy - node.y;
-          node.vx += dxCenter * 0.000003 * spd;
-          node.vy += dyCenter * 0.000003 * spd;
+          node.vx += dxCenter * 0.000003 * spd * step;
+          node.vy += dyCenter * 0.000003 * spd * step;
 
           // Containment boundaries
           const pad = node.radius + 18;
@@ -415,8 +431,8 @@ export const FloatingConnectionField: React.FC<FloatingConnectionFieldProps> = (
             const minDist = node.radius + other.radius + 24;
             if (dist < minDist && dist > 0) {
               const push = (minDist - dist) / dist;
-              node.x -= cdx * push * 0.006;
-              node.y -= cdy * push * 0.006;
+              node.x -= cdx * push * 0.006 * step;
+              node.y -= cdy * push * 0.006 * step;
             }
           }
         }
@@ -425,12 +441,12 @@ export const FloatingConnectionField: React.FC<FloatingConnectionFieldProps> = (
       // Update smaller micro connection nodes
       microNodes.forEach((mn) => {
         if (!pausedRef.current) {
-          mn.vx *= 0.96;
-          mn.vy *= 0.96;
+          mn.vx *= Math.pow(0.96, step);
+          mn.vy *= Math.pow(0.96, step);
           const driftX = Math.cos(now * 0.0003 + mn.phase) * 0.02;
           const driftY = Math.sin(now * 0.0003 + mn.phase) * 0.02;
-          mn.x += mn.vx + driftX;
-          mn.y += mn.vy + driftY;
+          mn.x += (mn.vx + driftX) * step;
+          mn.y += (mn.vy + driftY) * step;
 
           // Keep micro nodes close to their connected bubbles
           const p1 = nodes.find((n) => n.id === mn.connectedBubbleIds[0]);
@@ -439,8 +455,8 @@ export const FloatingConnectionField: React.FC<FloatingConnectionFieldProps> = (
             const dy = p1.y - mn.y;
             const d = Math.sqrt(dx * dx + dy * dy);
             if (d > 130) {
-              mn.x += dx * 0.003;
-              mn.y += dy * 0.003;
+              mn.x += dx * 0.003 * step;
+              mn.y += dy * 0.003 * step;
             }
           }
         }
@@ -448,6 +464,10 @@ export const FloatingConnectionField: React.FC<FloatingConnectionFieldProps> = (
 
       // 2B. SVG Motion Trail Tracking for dynamic Radar Visual Effect
       nodes.forEach((node) => {
+        if (interact.draggedNode === node) {
+          nodeTrailsRef.current.delete(node.id);
+          return;
+        }
         let trail = nodeTrailsRef.current.get(node.id);
         if (!trail) {
           trail = [];
@@ -500,7 +520,7 @@ export const FloatingConnectionField: React.FC<FloatingConnectionFieldProps> = (
               ? 'trail-grad-extended'
               : 'trail-grad-prospect';
 
-          const isHovered = hoveredNodeId === node.id;
+          const isHovered = hoveredNodeRef.current === node.id;
           const isHeld = interact.holdTargetNode === node && interact.isDown;
           const isDragged = interact.draggedNode === node;
           const isHighlighted = isHovered || isHeld || isDragged;
@@ -587,7 +607,7 @@ export const FloatingConnectionField: React.FC<FloatingConnectionFieldProps> = (
         // Draw delicate connecting lines to parent bubbles
         mn.connectedBubbleIds.forEach((pId) => {
           const parent = nodes.find((n) => n.id === pId);
-          if (parent) {
+          if (parent && parent !== interact.draggedNode) {
             ctx.save();
             ctx.beginPath();
             ctx.moveTo(mn.x, mn.y);
@@ -624,6 +644,7 @@ export const FloatingConnectionField: React.FC<FloatingConnectionFieldProps> = (
           const n1 = nodes[i];
           if (!(n1 as any)._appearAt) continue;
           const n2 = nodes[j];
+          if (interact.draggedNode === n1 || interact.draggedNode === n2) continue;
           if (!(n2 as any)._appearAt) continue;
           const dx = n1.x - n2.x;
           const dy = n1.y - n2.y;
@@ -632,10 +653,10 @@ export const FloatingConnectionField: React.FC<FloatingConnectionFieldProps> = (
 
           if (dist < maxDist) {
             const isHighlighted =
-              hoveredNodeId === n1.id ||
-              hoveredNodeId === n2.id ||
-              activeDossier?.member.id === n1.id ||
-              activeDossier?.member.id === n2.id;
+              hoveredNodeRef.current === n1.id ||
+              hoveredNodeRef.current === n2.id ||
+              dossierRef.current?.member.id === n1.id ||
+              dossierRef.current?.member.id === n2.id;
 
             const alpha = (1 - dist / maxDist) * (isHighlighted ? 0.9 : 0.4);
 
@@ -661,9 +682,11 @@ export const FloatingConnectionField: React.FC<FloatingConnectionFieldProps> = (
             ctx.beginPath();
             ctx.arc(px, py, 2, 0, Math.PI * 2);
             ctx.fillStyle = `rgba(191, 219, 254, ${alpha * 1.5})`;
+            ctx.save();
             ctx.shadowColor = '#FCA5A5';
             ctx.shadowBlur = 5;
             ctx.fill();
+            ctx.restore();
           }
         }
       }
@@ -697,7 +720,7 @@ export const FloatingConnectionField: React.FC<FloatingConnectionFieldProps> = (
         if (!appearAt) return;
         const appearT = appearAt === 1 ? 1 : Math.min(1, (now - appearAt) / 700);
         const appearScale = 1 - Math.pow(1 - appearT, 3);
-        const isHovered = hoveredNodeId === node.id;
+        const isHovered = hoveredNodeRef.current === node.id;
         const isHeldTarget = interact.holdTargetNode === node && interact.isDown;
         const breathe = Math.sin(now / 2400 + node.pulsePhase) * 0.7;
         const currentRadius = Math.max(1, (node.radius + breathe + (isHovered ? 3.5 : 0)) * appearScale);
@@ -846,125 +869,91 @@ export const FloatingConnectionField: React.FC<FloatingConnectionFieldProps> = (
 
     animId = requestAnimationFrame(render);
 
-    // Pointer helper to find node under coordinate
-    const findNodeAt = (x: number, y: number) => {
-      return nodesRef.current.find(
-        (n) => Math.sqrt((x - n.x) ** 2 + (y - n.y) ** 2) < n.radius + 10
-      );
-    };
-
-    // Event handlers: Hover, Click & Hold, Quick Click, Drag
-    const onPointerMove = (clientX: number, clientY: number) => {
+    // Pointer coordinates use the canvas CSS size, including scaled hosts.
+    const point = (event: PointerEvent) => {
       const rect = canvas.getBoundingClientRect();
-      const x = clientX - rect.left;
-      const y = clientY - rect.top;
+      return { x: (event.clientX - rect.left) * width / (rect.width || 1),
+        y: (event.clientY - rect.top) * height / (rect.height || 1) };
+    };
+    const findNodeAt = (x: number, y: number) => [...nodesRef.current].reverse().find(
+      node => node._appearAt && Math.hypot(x - node.x, y - node.y) < node.radius + 10
+    );
+    const handlePointerMove = (event: PointerEvent) => {
       const interact = interactionRef.current;
+      if (interact.pointerId !== null && event.pointerId !== interact.pointerId) return;
+      const { x, y } = point(event);
       interact.pointerX = x;
       interact.pointerY = y;
-
       if (interact.isDown) {
-        const moved = Math.sqrt((x - interact.startX) ** 2 + (y - interact.startY) ** 2);
-        interact.dragDistance += moved;
-        // If moved more than 10px, cancel hold and allow dragging!
-        if (moved > 10) {
+        interact.dragDistance = Math.max(interact.dragDistance, Math.hypot(x - interact.startX, y - interact.startY));
+        if (interact.dragDistance > 10) {
           interact.holdTargetNode = null;
           interact.activeHoldProgress = 0;
+          canvas.style.cursor = 'grabbing';
         }
       } else {
-        const target = findNodeAt(x, y);
-        if (target) {
-          setHoveredNodeId(target.id);
-          canvas.style.cursor = 'pointer';
-        } else {
-          setHoveredNodeId(null);
-          canvas.style.cursor = 'default';
-        }
+        hoveredNodeRef.current = findNodeAt(x, y)?.id ?? null;
+        canvas.style.cursor = hoveredNodeRef.current ? 'grab' : 'default';
       }
     };
-
-    const onPointerDown = (clientX: number, clientY: number) => {
-      const rect = canvas.getBoundingClientRect();
-      const x = clientX - rect.left;
-      const y = clientY - rect.top;
-      const interact = interactionRef.current;
-      interact.isDown = true;
-      interact.startX = x;
-      interact.startY = y;
-      interact.dragDistance = 0;
-      interact.holdStartTime = Date.now();
-      interact.holdTriggered = false;
-
+    const handlePointerDown = (event: PointerEvent) => {
+      if (!event.isPrimary || event.button !== 0 || interactionRef.current.isDown) return;
+      const { x, y } = point(event);
       const target = findNodeAt(x, y);
-      if (target) {
-        interact.draggedNode = target;
-        interact.holdTargetNode = target;
-      } else {
-        interact.draggedNode = null;
-        interact.holdTargetNode = null;
-      }
+      if (!target) return;
+      event.preventDefault();
+      canvas.setPointerCapture(event.pointerId);
+      Object.assign(interactionRef.current, {
+        pointerId: event.pointerId, pointerX: x, pointerY: y,
+        offsetX: x - target.x, offsetY: y - target.y,
+        isDown: true, startX: x, startY: y, dragDistance: 0,
+        holdStartTime: Date.now(), holdTriggered: false,
+        draggedNode: target, holdTargetNode: target, activeHoldProgress: 0,
+      });
+      nodeTrailsRef.current.delete(target.id);
     };
-
-    const onPointerUp = () => {
+    const finishPointer = (event: PointerEvent, cancelled = false) => {
       const interact = interactionRef.current;
-      const heldTime = Date.now() - interact.holdStartTime;
-      const wasQuickClick = heldTime < 360 && interact.dragDistance < 10;
-      const clickedTarget = interact.holdTargetNode;
-
-      // If released quickly without dragging, it's a CLICK -> open profile directly!
-      if (wasQuickClick && clickedTarget && !interact.holdTriggered) {
-        onSelectMember(clickedTarget.id);
-      }
-
-      interact.isDown = false;
-      interact.draggedNode = null;
-      interact.holdTargetNode = null;
-      interact.activeHoldProgress = 0;
+      if (event.pointerId !== interact.pointerId) return;
+      const target = interact.holdTargetNode;
+      const click = !cancelled && !interact.holdTriggered && interact.dragDistance < 10
+        && Date.now() - interact.holdStartTime < 360;
+      if (interact.draggedNode) nodeTrailsRef.current.delete(interact.draggedNode.id);
+      Object.assign(interact, { pointerId: null, isDown: false, draggedNode: null,
+        holdTargetNode: null, activeHoldProgress: 0 });
+      if (canvas.hasPointerCapture(event.pointerId)) canvas.releasePointerCapture(event.pointerId);
+      canvas.style.cursor = 'grab';
+      if (click && target) selectMemberRef.current(target.id);
     };
-
-    // Mouse listeners
-    const handleMouseMove = (e: MouseEvent) => onPointerMove(e.clientX, e.clientY);
-    const handleMouseDown = (e: MouseEvent) => onPointerDown(e.clientX, e.clientY);
-    const handleMouseUp = () => onPointerUp();
-
-    // Touch listeners
-    const handleTouchMove = (e: TouchEvent) => {
-      if (e.touches.length > 0) {
-        onPointerMove(e.touches[0].clientX, e.touches[0].clientY);
-      }
-    };
-    const handleTouchStart = (e: TouchEvent) => {
-      if (e.touches.length > 0) {
-        onPointerDown(e.touches[0].clientX, e.touches[0].clientY);
-      }
-    };
-    const handleTouchEnd = () => onPointerUp();
-
-    canvas.addEventListener('mousemove', handleMouseMove);
-    canvas.addEventListener('mousedown', handleMouseDown);
-    window.addEventListener('mouseup', handleMouseUp);
-
-    canvas.addEventListener('touchmove', handleTouchMove, { passive: true });
-    canvas.addEventListener('touchstart', handleTouchStart, { passive: true });
-    window.addEventListener('touchend', handleTouchEnd);
-
+    const handlePointerUp = (event: PointerEvent) => finishPointer(event);
+    const handlePointerCancel = (event: PointerEvent) => finishPointer(event, true);
+    const handlePointerLeave = () => { hoveredNodeRef.current = null; };
+    canvas.addEventListener('pointermove', handlePointerMove);
+    canvas.addEventListener('pointerdown', handlePointerDown);
+    canvas.addEventListener('pointerup', handlePointerUp);
+    canvas.addEventListener('pointercancel', handlePointerCancel);
+    canvas.addEventListener('lostpointercapture', handlePointerCancel);
+    canvas.addEventListener('pointerleave', handlePointerLeave);
     return () => {
       cancelAnimationFrame(animId);
-      window.removeEventListener('resize', handleResize);
-      canvas.removeEventListener('mousemove', handleMouseMove);
-      canvas.removeEventListener('mousedown', handleMouseDown);
-      window.removeEventListener('mouseup', handleMouseUp);
-      canvas.removeEventListener('touchmove', handleTouchMove);
-      canvas.removeEventListener('touchstart', handleTouchStart);
-      window.removeEventListener('touchend', handleTouchEnd);
+      resizeObserver.disconnect();
+      Object.assign(interactionRef.current, { pointerId: null, isDown: false,
+        draggedNode: null, holdTargetNode: null, activeHoldProgress: 0 });
+      canvas.removeEventListener('pointermove', handlePointerMove);
+      canvas.removeEventListener('pointerdown', handlePointerDown);
+      canvas.removeEventListener('pointerup', handlePointerUp);
+      canvas.removeEventListener('pointercancel', handlePointerCancel);
+      canvas.removeEventListener('lostpointercapture', handlePointerCancel);
+      canvas.removeEventListener('pointerleave', handlePointerLeave);
     };
-  }, [members, onSelectMember, density]);
+  }, [members, density]);
 
   return (
     <div
       ref={containerRef}
       className={`relative w-full h-full min-h-[420px] overflow-hidden select-none bg-[#07090C] ${className}`}
     >
-      <canvas ref={canvasRef} className="w-full h-full block" />
+      <canvas ref={canvasRef} className="w-full h-full block" style={{ touchAction: 'none' }} />
 
       {/* Dynamic SVG Radar Motion Trails & Expanding Echo Bloom Layer */}
       <svg

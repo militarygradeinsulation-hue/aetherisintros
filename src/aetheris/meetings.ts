@@ -21,6 +21,8 @@ export interface Meeting {
   agenda: string
   introRequestId: string | null
   participants: Participant[]
+  archivedAt?: string | null
+  deletedAt?: string | null
   hasNotes: boolean
 }
 
@@ -29,7 +31,7 @@ export interface TranscriptLine { id: string; speakerId: string; text: string; s
 export interface SavedNotes extends NotesContent { privateNote: string; generatedAt: string | null }
 
 export async function loadMeetings(): Promise<{ data: Meeting[]; error: string }> {
-  const m = await db.from('meetings').select('id, host_id, title, scheduled_for, started_at, ended_at, created_at, agenda, intro_request_id').order('created_at', { ascending: false }).limit(50)
+  const m = await db.from('meetings').select('id, host_id, title, scheduled_for, started_at, ended_at, created_at, agenda, intro_request_id, archived_at, deleted_at').order('created_at', { ascending: false }).limit(50)
   if (m.error) return { data: [], error: m.error.message }
   const rows = (m.data ?? []) as any[]
   const ids = rows.map(r => r.id)
@@ -48,7 +50,7 @@ export async function loadMeetings(): Promise<{ data: Meeting[]; error: string }
   return {
     data: rows.map(r => ({
       id: r.id, hostId: r.host_id, title: r.title, scheduledFor: r.scheduled_for, startedAt: r.started_at, endedAt: r.ended_at, createdAt: r.created_at,
-      agenda: r.agenda ?? '', introRequestId: r.intro_request_id ?? null,
+      archivedAt: r.archived_at, deletedAt: r.deleted_at, agenda: r.agenda ?? '', introRequestId: r.intro_request_id ?? null,
       hasNotes: withNotes.has(r.id),
       participants: ((parts.data ?? []) as any[]).filter(p => p.meeting_id === r.id)
         .map(p => ({ userId: p.user_id, name: names.get(p.user_id) ?? 'A member', role: p.role, notesConsent: p.notes_consent, joinedAt: p.joined_at }))

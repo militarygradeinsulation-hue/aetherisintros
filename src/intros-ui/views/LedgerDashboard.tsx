@@ -13,6 +13,7 @@ import type { ActivePage } from '@/intros-ui/components/layout/TopNavigation';
 import { PageHeader, Panel, StatCard } from '@/intros-ui/components/layout/LedgerUiKit';
 import './ledger-dashboard.css';
 import { LedgerWidgetBoard } from './LedgerWidgetBoard';
+import { DashboardNewsTile } from './DashboardNewsTile';
 import { NetworkHighlights } from './NetworkHighlights';
 import './ledger-widget-board.css';
 
@@ -183,6 +184,7 @@ export function LedgerDashboard({
         </PersistentBridgeFeed>
       </div>
       <div className="ledger-dashboard-secondary">
+        <DashboardNewsTile social={experience === 'social'} onOpen={() => onNavigate('news')}/>
         {panels.people && <Panel title="People to know" subtitle="Browse and build meaningful relationships"
           action={<button type="button" className="ledger-ui-link" onClick={() => onNavigate('people')}>All people <ArrowRight size={13}/></button>}
           bodyClassName="ledger-people-list">

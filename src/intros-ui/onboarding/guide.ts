@@ -1,6 +1,7 @@
 import { ACCOUNT_SECTIONS, WORKSPACE_DESTINATIONS, type NavigationTarget } from '../components/layout/workspace-navigation';
 export type GuideStep = { id: string; title: string; group: string; description: string; instructions: string[]; target?: NavigationTarget };
 const lessons: Record<string, [string, string, string]> = {
+  hr: ['Run private people operations tailored to your business.', 'Review Business setup, add employees and open roles, then use the HR sections to track onboarding, leave, policies, reviews and training.', 'Ask HR Butler for a draft or conversation. Review before saving. Payroll preparation exports approved inputs; it does not pay employees.'],
   'business-lobby': ['Meet and coordinate with other professionals.', 'Open a lobby or available session and review who it is for and how to participate.', 'Review participants and meeting details before joining.'],
   diagnostic: ['Investigate business questions with supporting information.', 'Choose an available diagnostic and provide the context or evidence it asks for.', 'Inspect the findings and their evidence. Missing connections may limit what can be diagnosed.'],
   intelrooms: ['Bring shared research and intelligence into a room.', 'Open an intelligence room and review its context and available material.', 'Check access before adding or sharing information.'],

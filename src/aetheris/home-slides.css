@@ -5,7 +5,7 @@
   flex-direction: column;
   height: auto;
   min-height: 0;
-  padding: 120px 0 20px;
+  padding: 204px 0 20px;
   background: var(--background);
   gap: 16px;
 }
@@ -57,6 +57,15 @@
   margin: 0;
 }
 
+:root .ael.ael-compact .ael-hero--carousel .ael-hero-actions .ael-btn {
+  min-height: 64px;
+  min-width: min(320px, 100%);
+  padding: 18px 28px;
+  font-size: 17px;
+  letter-spacing: 0;
+  text-transform: none;
+}
+
 @media (max-width: 760px) {
   :root .ael.ael-compact .ael-hero--carousel {
     padding-top: 110px;
@@ -69,5 +78,64 @@
 @media (prefers-reduced-motion: reduce) {
   .ael-hero-slide {
     transition: none;
+  }
+}
+
+/* Side panels use the desktop space around the uncropped portrait artwork. */
+.ael-carousel-stage {
+  width: 100%;
+  min-width: 0;
+}
+.ael-carousel-intro,
+.ael-carousel-options {
+  display: none;
+}
+@media (min-width: 1100px) {
+  .ael .ael-carousel-stage {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(300px, 420px) minmax(0, 1fr);
+    align-items: center;
+    gap: clamp(28px, 4vw, 76px);
+    max-width: 1600px;
+    margin-inline: auto;
+    padding-inline: clamp(32px, 4vw, 72px);
+  }
+  .ael .ael-carousel-intro,
+  .ael .ael-carousel-options {
+    display: grid;
+    gap: 24px;
+    min-width: 0;
+    color: var(--st-ink, var(--soft));
+    text-align: left;
+  }
+  .ael .ael-carousel-stage h2 {
+    margin: 0;
+    font-size: clamp(28px, 2.7vw, 48px);
+    line-height: 1.12;
+    letter-spacing: -.03em;
+    color: inherit;
+  }
+  .ael .ael-carousel-stage p {
+    margin: 12px 0 0;
+    font-size: 15px;
+    line-height: 1.65;
+    color: inherit;
+  }
+  .ael .ael-carousel-stage .ael-carousel-label {
+    margin: 0 0 12px;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: .14em;
+  }
+  .ael .ael-carousel-options h2 {
+    font-size: clamp(24px, 2vw, 34px);
+  }
+  .ael .ael-carousel-options > div + div {
+    border-top: 1px solid currentColor;
+    padding-top: 24px;
+  }
+  .ael .ael-carousel-stage .ael-text-link {
+    justify-self: start;
+    white-space: normal;
   }
 }

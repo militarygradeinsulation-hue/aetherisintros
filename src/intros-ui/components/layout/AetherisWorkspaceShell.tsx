@@ -53,6 +53,7 @@ export const MEMBER_TOOL_DESTINATIONS: readonly WorkspaceDestination[] = [
   { label: 'Opportunities', icon: ClipboardList, workspace: 'opportunities' },
   { label: 'Deal Rooms', icon: BriefcaseBusiness, workspace: 'deals' },
   { label: 'Private Workspaces', icon: Users, workspace: 'workspaces' },
+  { label: 'People & HR', icon: Users, workspace: 'hr' },
   { label: 'Benchmark Pools', icon: ClipboardList, workspace: 'benchmarks' },
   { label: 'Referral Settlement', icon: Network, workspace: 'settlements' },
   { label: 'Capacity Exchange', icon: BriefcaseBusiness, workspace: 'capacity' },

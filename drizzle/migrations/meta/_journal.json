@@ -673,6 +673,13 @@
       "when": 1792944671742,
       "tag": "0096_network_value_systems",
       "breakpoints": true
+    },
+    {
+      "idx": 97,
+      "version": "7",
+      "when": 1792946784079,
+      "tag": "0097_account_hr_workspace",
+      "breakpoints": true
     }
   ]
 }
