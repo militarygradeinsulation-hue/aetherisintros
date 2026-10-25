@@ -6,3 +6,9 @@
 .admin-connection-checks ul { list-style:none; padding:0; display:grid; grid-template-columns:repeat(auto-fit,minmax(min(100%,260px),1fr)); gap:14px; }
 .admin-connection-checks li { padding:16px; border:1px solid currentColor; min-width:0; }
 .admin-connection-checks li h3 { margin:0 0 10px; }
+
+/* Result beams connect verified reads only. */
+.admin-read-map{position:relative;padding-top:22px;isolation:isolate}.admin-read-map ul{position:relative;z-index:1;margin:0}.admin-read-beams{position:absolute;top:0;left:0;pointer-events:none;z-index:0;overflow:visible}.admin-read-beams path{fill:none;stroke-width:1.5}.admin-read-beam-base{stroke:#b91c1c;opacity:.3}.admin-read-beam-confirmed{stroke:#dc2626;stroke-dasharray:12 88;animation:admin-read-confirmed 1.2s ease-out 2;opacity:.8}
+@keyframes admin-read-confirmed{from{stroke-dashoffset:100}to{stroke-dashoffset:0}}
+@media(max-width:600px){.admin-read-beams{display:none}.admin-read-map{padding-top:0}}
+@media(prefers-reduced-motion:reduce){.admin-read-beam-confirmed{animation:none;stroke-dasharray:none}}

@@ -1,3 +1,4 @@
+import { ConnectionReadBeams } from './ConnectionReadBeams';
 import { useEffect, useRef, useState } from "react";
 import { useAccess } from "./access";
 import { supabase } from "@/integrations/supabase/client";
@@ -97,15 +98,18 @@ export function AdminConnectionsPanel() {
             {visibleRows.length} reads verified. Checked{" "}
             {new Date(visibleRows[0]!.checkedAt).toLocaleString()}.
           </p>
+          <div className="admin-read-map">
+          <ConnectionReadBeams rows={visibleRows} />
           <ul>
             {visibleRows.map((row) => (
-              <li key={row.id} data-state={row.state}>
+              <li key={row.id} data-connection-id={row.id} data-state={row.state}>
                 <h3>{row.label}</h3>
                 <strong>{labels[row.state]}</strong>
                 <p>{row.detail}</p>
               </li>
             ))}
           </ul>
+          </div>
           <p>
             Opportunity Exchange setup requires migration 0090. A missing-function result can also
             mean an API schema cache needs reloading. See the repository release checklist before
