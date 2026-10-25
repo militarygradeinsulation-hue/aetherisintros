@@ -6,7 +6,8 @@ import { boundedBody } from './public-fetch.server'
  * nothing here may import them.
  */
 
-export interface ChatMessage { role: 'user' | 'assistant'; content: string }
+export type ChatContent = string | Array<{ type: 'text'; text: string } | { type: 'image_url'; image_url: { url: string } }>
+export interface ChatMessage { role: 'user' | 'assistant'; content: ChatContent }
 
 export interface ToolDef {
   name: string
@@ -84,7 +85,7 @@ export async function gatewayChat({ system, messages, tools = [], maxSteps = 8 }
   if (!apiKey) throw new Error('missing-key')
 
   const deadline = AbortSignal.timeout(45_000)
-  const input: unknown[] = messages.map(m => ({ role: m.role, content: m.content }))
+  const input: unknown[] = messages.map(m => ({ role: m.role, content: typeof m.content === 'string' ? m.content : m.content.map(part => part.type === 'text' ? { type: 'input_text', text: part.text } : { type: 'input_image', image_url: part.image_url.url }) }))
   const wireTools = tools.map(t => ({
     type: 'function',
     name: t.name,
