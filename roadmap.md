@@ -476,6 +476,7 @@ First implementation slice, with production activation tracked separately:
 
 - [x] Private opt-in timing for the white paper's six tasks. One active task, explicit reviewed completion, pause on hidden/idle, retry-safe completion, account isolation, export and deletion.
 - [x] Rolling seven-day active time and signed comparison differences. Member-reported observed baselines require at least three samples for the observed-comparison bucket. Estimates stay separate. No causal, net-savings or network-median claim.
+- [x] Both participants receive 7- and 30-day check-ins even after an earlier positive report; each checkpoint needs a new report from that participant.
 - [x] Shared-outcome matching reads accepted, double-opt-in introductions only. Both participants must consent to ranking and share agreeing latest terminal reports. Distinct partners, one-year horizon, minimum three partners, smoothing and a capped transfer from the 24% text-relevance weight.
 - [x] Relevant, available newcomers can opt into first-30-account-day exposure. Ranked lists reserve a position with daily rotation; the Social host exposes a newcomer recommendation without changing the pinned Bridge source. Scores are unchanged by exposure placement.
 - [x] Starter vouches reuse executive recommendations. Recipient approval is now proven server-side; author edits revoke approval and legacy display flags require reconfirmation. Evidence & Time contains the recipient review controls.

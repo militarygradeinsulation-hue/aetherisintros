@@ -223,3 +223,21 @@ describe("Mutual, consented evidence and newcomers", () => {
     expect((await signals(C))[0].approved_vouches).toBe(0);
   });
 });
+
+describe('Seven and thirty day participant check-ins',()=>{
+ it('asks both people at each milestone even after an early positive outcome',async()=>{
+  await db.exec('grant select on public.intro_requests,public.intro_outcomes to authenticated')
+  const id='20000000-0000-4000-8000-000000000099'
+  await db.query("insert into intro_requests(id,user_id,target_user_id,accepted_at) values($1,$2,$3,now()-interval '8 days')",[id,A,B])
+  for(const u of [A,B])await db.query("insert into intro_outcomes(intro_request_id,author_id,stage,created_at) values($1,$2,'outcome',now()-interval '7 days')",[id,u])
+  const due=async(u:string)=>(await as(u,'select * from public.my_due_outcome_checkins()')).find(r=>r.intro_request_id===id)
+  expect((await due(A))?.checkpoint).toBe(7);expect((await due(B))?.checkpoint).toBe(7);expect(await due(C)).toBeUndefined()
+  await db.query("update intro_outcomes set created_at=now()-interval '12 hours' where intro_request_id=$1",[id])
+  expect(await due(A)).toBeUndefined()
+  await db.query("update intro_requests set accepted_at=now()-interval '31 days' where id=$1",[id])
+  await db.query("update intro_outcomes set created_at=now()-interval '24 days' where intro_request_id=$1",[id])
+  expect((await due(A))?.checkpoint).toBe(30);expect((await due(B))?.checkpoint).toBe(30)
+  await db.query("insert into intro_outcomes(intro_request_id,author_id,stage) values($1,$2,'outcome')",[id,A])
+  expect(await due(A)).toBeUndefined();expect((await due(B))?.checkpoint).toBe(30)
+ })
+})

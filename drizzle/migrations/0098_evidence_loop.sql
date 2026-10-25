@@ -171,3 +171,39 @@ CREATE FUNCTION public.match_evidence_signals(p_members uuid[]) RETURNS TABLE(
 ) LANGUAGE sql STABLE SECURITY INVOKER SET search_path='' AS $$SELECT * FROM evidence_private.match_signals(p_members)$$;
 REVOKE ALL ON FUNCTION public.match_evidence_signals(uuid[]) FROM PUBLIC,anon,authenticated;
 GRANT EXECUTE ON FUNCTION public.match_evidence_signals(uuid[]) TO authenticated;
+
+-- A report before day seven cannot satisfy day seven. A positive day-seven
+-- report must not suppress the day-thirty confirmation from either participant.
+CREATE OR REPLACE FUNCTION public.my_due_outcome_checkins()
+RETURNS TABLE(intro_request_id uuid, counterpart_id uuid, accepted_at timestamptz, days_since integer, checkpoint integer, last_stage text)
+LANGUAGE sql STABLE SECURITY INVOKER SET search_path = public AS $$
+  WITH mine AS (
+    SELECT r.id,
+           CASE WHEN r.user_id = auth.uid() THEN r.target_user_id ELSE r.user_id END AS counterpart_id,
+           r.accepted_at,
+           (current_date - r.accepted_at::date) AS days_since
+      FROM public.intro_requests r
+     WHERE r.accepted_at IS NOT NULL
+       AND r.requester_opt_in AND r.member_opt_in
+       AND (r.user_id = auth.uid() OR r.target_user_id = auth.uid())
+  ), staged AS (
+    SELECT m.*,
+           CASE WHEN m.days_since >= 90 THEN 90 WHEN m.days_since >= 30 THEN 30 WHEN m.days_since >= 7 THEN 7 END AS checkpoint,
+           (SELECT o.stage FROM public.intro_outcomes o
+             WHERE o.intro_request_id = m.id AND o.author_id = auth.uid()
+             ORDER BY o.created_at DESC LIMIT 1) AS last_stage,
+           (SELECT max(o.created_at) FROM public.intro_outcomes o
+             WHERE o.intro_request_id = m.id AND o.author_id = auth.uid()) AS last_recorded
+      FROM mine m
+  )
+  SELECT s.id, s.counterpart_id, s.accepted_at, s.days_since, s.checkpoint, s.last_stage
+    FROM staged s
+   WHERE s.checkpoint IS NOT NULL
+     AND s.days_since <= 180
+     AND (s.checkpoint IN (7,30) OR coalesce(s.last_stage, '') NOT IN ('outcome','no_outcome'))
+     AND (s.last_recorded IS NULL OR s.last_recorded < s.accepted_at + make_interval(days => s.checkpoint))
+   ORDER BY s.accepted_at
+$$;
+REVOKE ALL ON FUNCTION public.my_due_outcome_checkins() FROM PUBLIC, anon;
+GRANT EXECUTE ON FUNCTION public.my_due_outcome_checkins() TO authenticated;
+
