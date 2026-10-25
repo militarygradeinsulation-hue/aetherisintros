@@ -26,6 +26,14 @@ try {
         throw new Error(view + ' Butler is not pinned immediately above More: ' + JSON.stringify({ box, more, nav }));
     };
     await assertPinned();
+    const shape = await launcher.evaluate(button => {
+      const blob = button.querySelector('.ask-dock-blob').getBoundingClientRect();
+      const label = button.querySelector('.assistant-launcher-label').getBoundingClientRect();
+      const style = getComputedStyle(button);
+      return { direction: style.flexDirection, background: style.backgroundColor, labelBelow: label.top >= blob.bottom - 1 };
+    });
+    if (shape.direction !== 'column' || shape.background !== 'rgba(0, 0, 0, 0)' || !shape.labelBelow)
+      throw new Error(view + ' does not match the standalone Bridge blob and label: ' + JSON.stringify(shape));
     const box = await launcher.boundingBox();
     await phone.mouse.move(box.x + box.width / 2, box.y + box.height / 2);
     await phone.mouse.down();
