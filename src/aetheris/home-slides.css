@@ -57,6 +57,15 @@
   margin: 0;
 }
 
+:root .ael.ael-compact .ael-hero--carousel .ael-hero-actions .ael-btn {
+  min-height: 64px;
+  min-width: min(320px, 100%);
+  padding: 18px 28px;
+  font-size: 17px;
+  letter-spacing: 0;
+  text-transform: none;
+}
+
 @media (max-width: 760px) {
   :root .ael.ael-compact .ael-hero--carousel {
     padding-top: 110px;
