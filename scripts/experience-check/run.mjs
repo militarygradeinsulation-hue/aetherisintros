@@ -26,6 +26,12 @@ try {
         throw new Error(view + ' Butler is not pinned immediately above More: ' + JSON.stringify({ box, more, nav }));
     };
     await assertPinned();
+    for (const selector of ['.butler-orb', '.butler-orb-fallback']) {
+      const part = launcher.locator(selector);
+      if (!await part.isVisible()) throw new Error(view + ' mobile orb part is hidden: ' + selector);
+      const bounds = await part.boundingBox();
+      if (!bounds || bounds.width < 40 || bounds.height < 40) throw new Error(view + ' mobile orb part has no painted area: ' + selector);
+    }
     const shape = await launcher.evaluate(button => {
       const blob = button.querySelector('.ask-dock-blob').getBoundingClientRect();
       const label = button.querySelector('.assistant-launcher-label').getBoundingClientRect();

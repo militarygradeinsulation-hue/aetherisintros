@@ -54,6 +54,6 @@ varying vec2 vUv;
 varying float vDisplacement;
 void main() {
  float distort=2.0*vDisplacement*u_intensity*sin(vUv.y*10.0+u_time);
- vec3 color=mix(u_color,vec3(1.0),clamp(distort,0.0,1.0));
+ vec3 color=mix(u_color,vec3(1.0),distort);
  gl_FragColor=vec4(color,1.0);
 }`;
