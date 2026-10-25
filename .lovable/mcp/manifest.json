@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "sdk_version": "2.0.4",
+  "sdk_version": "2.3.0",
   "path": "/mcp",
   "auth": {
     "type": "oauth",
@@ -332,18 +332,21 @@
             "text": {
               "type": "string",
               "minLength": 4,
+              "maxLength": 4000,
               "description": "The observation, commitment or context to remember."
             },
             "category": {
               "default": "People",
               "description": "e.g. People, Needs, Timing, Commitments.",
               "type": "string",
-              "minLength": 1
+              "minLength": 1,
+              "maxLength": 100
             },
             "member_id": {
               "description": "The member this context is about, if any.",
               "type": "string",
-              "minLength": 1
+              "minLength": 1,
+              "maxLength": 200
             },
             "scope": {
               "default": "private",
