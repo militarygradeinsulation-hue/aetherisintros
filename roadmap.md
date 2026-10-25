@@ -1,5 +1,12 @@
 # Aetheris specification completion
 
+## Butler orb size and view colors (Oct 25)
+- [x] Shrink the assistant orb from 72px to 60px and restore its view palette (blue Social, red Business) against the workspace monochrome rule.
+- [x] Verify desktop 1280x900 and phone 390x844: orb 60px, canvas un-grayed, red in Business, blue in Social, label visible, no horizontal overflow; entrance check and compilation pass.
+
+## Launch video for LinkedIn, X and Product Hunt (Oct 25)
+- [ ] Produce a short brand-true launch video ready to post on LinkedIn, X and Product Hunt.
+
 ## PR #313 Social reference preview (Oct 24)
 - [x] Import PR #313 at 737bc406 with verified hashes; preserve Business and canonical controllers. Repair host-only logo serving and inherited Social scroll locks without editing reference files.
 - [x] Verify 29 original file hashes, generated CSS, compilation and four-size demo checks; retain canonical feed node, separate drafts, People filters, messages, saved experience and full Social scrolling. Full suite first passed 948 tests; a repeat timed out in one unrelated offline recovery test.
