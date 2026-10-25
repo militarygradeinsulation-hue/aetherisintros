@@ -6,6 +6,7 @@ import { CinematicHero } from '@/components/ui/cinematic-landing-hero'
 import { CinematicEntrance, CITY_OPENING_VIDEO } from '@/components/ui/cinematic-entrance'
 import { AppearanceToggle } from './AppearanceToggle'
 import { StencilHeadline } from './StencilHeadline'
+import { HomeSlideCarousel } from './HomeSlideCarousel'
 import './editorial-landing.css'
 import './architectural-system.css'
 import './compact-homepage.css'
@@ -34,7 +35,6 @@ export default function Landing() {
       <nav className="ael-nav" aria-label="Primary navigation">
         <a href="#cinematic-experience">The experience</a>
         <Link to="/demo">Explore the demo</Link>
-        <a href="#membership">Membership</a>
       </nav>
       <div className="ael-header-actions">
         <AppearanceToggle className="ael-appearance" />
@@ -44,6 +44,8 @@ export default function Landing() {
     </header>
 
     <section className="ael-hero" id="ael-main" aria-labelledby="ael-hero-title">
+      <HomeSlideCarousel />
+      <div className="ael-hero-shade" aria-hidden="true" />
       <div className="ael-architecture-meta" aria-hidden="true"><span>RELATIONSHIPS / BY DESIGN</span><span>ASK INTROS — CONNECTION 001</span></div>
       <div className="ael-hero-content">
         <div className="ael-platform-strip" aria-label="A purposeful business connection">
@@ -81,21 +83,6 @@ export default function Landing() {
       secondaryHref="/demo"
       secondaryLabel="Try the live experience"
     />
-
-    <section className="ael-membership ael-compact-membership" id="membership" aria-labelledby="ael-membership-title">
-      <div className="ael-compact-membership-content">
-        <div>
-          <span className="ael-fine-label">MEMBERSHIP / ASK INTROS</span>
-          <h2 id="ael-membership-title" className="stencil-display"><span className="sr-only">Start with one useful connection.</span><StencilHeadline lines={['START WITH ONE', 'USEFUL CONNECTION']} /></h2>
-          <p>Bring a current need and something you can offer. Relevant connections depend on who has joined and what members choose to share.</p>
-        </div>
-        <div className="ael-membership-actions">
-          <JoinAction signedIn={signedIn} className="ael-btn ael-btn-gold ai-gradient-button" />
-          {!signedIn && <Link to="/auth" className="ael-text-link">Already a member? Sign in <ArrowRight aria-hidden="true" size={16} /></Link>}
-          {!signedIn && <Link to="/early-access" className="ael-text-link">Founding access details <ArrowRight aria-hidden="true" size={16} /></Link>}
-        </div>
-      </div>
-    </section>
 
     <footer className="ael-compact-footer">
       <Link to="/" className="ael-compact-footer-brand" aria-label="Ask Intros home"><span className="stencil-footer-wordmark" style={{ color: "var(--st-ink)", backgroundColor: "var(--st-bg)" }}>ASK INTROS</span></Link>

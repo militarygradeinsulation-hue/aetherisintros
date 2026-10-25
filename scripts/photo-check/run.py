@@ -13,7 +13,18 @@ async def main():
    page.on('pageerror', lambda e: errors.append(str(e)))
    await page.goto('http://localhost:8080/',wait_until='domcontentloaded')
    await page.get_by_role('heading',name='The Only social platform that runs your business.',exact=True).wait_for(timeout=30000)
-   assert await page.locator('.ael-hero img, .ael-compact-story-photo, .ael-membership img').count()==0
+   # The opening film waits for the visitor; dismiss it so the hero itself is what gets inspected.
+   await page.wait_for_function("""() => {
+     const host = document.querySelector('.ask-cinematic-entrance');
+     if (!host) return true;
+     const button = [...host.querySelectorAll('button')].find(x => /Skip intro|Enter Intros/.test(x.textContent || ''));
+     if (button) button.click();
+     return false;
+   }""", timeout=20000)
+   # The hero shows the member's own brand graphics; nothing else may appear in that area.
+   hero_extra = await page.evaluate("() => [...document.querySelectorAll('.ael-hero img')].filter(i => !i.closest('.ael-hero-slide')).length")
+   assert hero_extra == 0, (width, 'stray hero image', hero_extra)
+   assert await page.locator('.ael-compact-story-photo, .ael-membership img').count()==0
    await page.screenshot(path=str(OUT/f'landing-{width}.png'))
    await page.goto('http://localhost:8080/demo',wait_until='domcontentloaded')
    await page.locator('.aetheris-workspace-shell').wait_for(timeout=30000)
