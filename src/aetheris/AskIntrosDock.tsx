@@ -276,6 +276,90 @@ function AskIntrosDockInner({ page, peopleNames, memberName, briefing, contextPa
     const history = [...turns, { role: 'user' as const, content: question + fileContext }]
     setTurns(history)
     const say = (text: string) => { if ((voice.speakReplies || voice.conversation) && voiceOutputSupported()) readAloud([text], 'Ask Intros') }
+    const reviewCommand = hasFiles ? null : spokenReviewCommand(question)
+    if (reviewCommand) {
+      if (reviewCommand === 'cancel') {
+        resetApproval()
+        const notice = 'Voice approval cancelled. The reviewed draft is still here.'
+        setTurns(current => [...current, { role: 'assistant', content: notice }]); say(notice)
+      } else if (reviewCommand === 'request') {
+        const currentDraft = draftRef.current
+        if (!requestOwner || !currentDraft || currentDraft.kind === 'draft-email') {
+          const notice = 'Nothing is ready to approve. Ask me to prepare a network post, CRM task or writing preference first.'
+          setTurns(current => [...current, { role: 'assistant', content: notice }]); say(notice)
+        } else {
+          const pending: VoiceApproval = {
+            owner: requestOwner, id: currentDraft.id, kind: currentDraft.kind,
+            text: currentDraft.text, expiresAt: Date.now() + 60000,
+          }
+          approvalRef.current = pending; setPendingApproval(pending)
+          const phrase = spokenConfirmationFor(currentDraft.kind)
+          const notice = 'Review the draft shown below. Say "' + phrase + '" within 60 seconds to approve that exact draft, or say "cancel approval".'
+          setTurns(current => [...current, { role: 'assistant', content: notice }]); say(notice)
+        }
+      } else {
+        const pending = approvalRef.current
+        const reviewed = draftRef.current
+        if (voiceApprovalMatches(pending, reviewed, requestOwner, question, Date.now()) && reviewed) {
+          resetApproval()
+          await commitDraft(reviewed, true)
+        } else {
+          resetApproval()
+          const notice = 'I did not approve anything. The confirmation did not match an active, unchanged draft. Review the draft and ask to approve it again.'
+          setTurns(current => [...current, { role: 'assistant', content: notice }]); say(notice)
+        }
+      }
+      sending.current = false
+      return
+    }
+    // Any unrelated utterance cancels a pending confirmation. Ordinary commands
+    // can never inherit authorization from an earlier draft.
+    if (approvalRef.current) resetApproval()
+
+    const createImagePrompt = imageCreationBrief(question)
+    const referenceQuery = imageReferenceQuery(question)
+    if (createImagePrompt || referenceQuery) {
+      if (hasFiles && createImagePrompt) {
+        const notice = 'I can inspect your attached reference, but image edits based on an upload are not connected yet. Remove the attachment and send a text-only image brief to generate a new image.'
+        setTurns(current => [...current, { role: 'assistant', content: notice }]); say(notice)
+        sending.current = false
+        return
+      }
+      if (!requestOwner) {
+        const notice = 'Sign in to generate images or search reference images in Butler.'
+        setTurns(current => [...current, { role: 'assistant', content: notice }]); say(notice)
+        sending.current = false
+        return
+      }
+      setBusy(true)
+      try {
+        const turnId = crypto.randomUUID()
+        if (createImagePrompt) {
+          const response = await createButlerImage({ data: { owner: requestOwner, prompt: createImagePrompt.slice(0, 1400) } })
+          if (ownerRef.current !== requestOwner) return
+          setVisuals(current => [...current, { kind: 'generated', owner: requestOwner, turnId, prompt: response.prompt, image: response.image }])
+          const notice = 'I created an image preview for you. It is not published or saved to your account. You can download it or attach it as a reference.'
+          setTurns(current => [...current, { id: turnId, role: 'assistant', content: notice }]); say(notice)
+        } else if (referenceQuery) {
+          const { results } = await findButlerReferenceImages({ data: { query: referenceQuery } })
+          if (ownerRef.current !== requestOwner) return
+          if (results.length) setVisuals(current => [...current, { kind: 'reference', owner: requestOwner, turnId, query: referenceQuery, results }])
+          const notice = results.length
+            ? 'Here are source-linked image references from Wikimedia Commons. Check the rights and original context before reuse.'
+            : 'No usable public reference image previews were returned. Try a more specific subject.'
+          setTurns(current => [...current, { id: turnId, role: 'assistant', content: notice }]); say(notice)
+        }
+        setAttachments([])
+      } catch (error) {
+        if (ownerRef.current === requestOwner) {
+          const notice = error instanceof Error ? error.message : 'The image tool is unavailable right now.'
+          setTurns(current => [...current, { role: 'assistant', content: notice }]); say(notice)
+        }
+      } finally {
+        setBusy(false); sending.current = false
+      }
+      return
+    }
     // Commands that run instantly: go somewhere, find someone, message, intro, note, post an ask.
     const command = hasFiles ? null : parseVoiceCommand(question, peopleNames)
     if (command) {
@@ -367,7 +451,7 @@ function AskIntrosDockInner({ page, peopleNames, memberName, briefing, contextPa
       for (const action of answer.actions) {
         if (action.kind === 'create-file' && action.value) { setFileExport(action.value); prepared.push('File export:\n' + action.value); continue }
         if (['draft-post', 'draft-email', 'create-task', 'save-writing-style'].includes(action.kind) && action.value) {
-          setDraft({ id: crypto.randomUUID(), kind: (action.kind === 'draft-post' ? 'publish-post' : action.kind) as NonNullable<typeof draft>['kind'], text: action.value.slice(0, 4000) });
+          resetApproval(); setDraft({ id: crypto.randomUUID(), kind: (action.kind === 'draft-post' ? 'publish-post' : action.kind) as NonNullable<typeof draft>['kind'], text: action.value.slice(0, 4000) });
           setDraftError(''); did.push('Draft ready for review.'); prepared.push('Prepared draft:\n' + action.value); continue
         }
         if (action.kind === 'take-note') {
