@@ -2,7 +2,7 @@
 import { Suspense, useEffect, useMemo, useRef } from 'react';
 import { Canvas, extend, useFrame, useThree } from '@react-three/fiber';
 import { Environment, Lightformer } from '@react-three/drei';
-import { Color, IcosahedronGeometry, MathUtils, Mesh, Vector3 } from 'three';
+import { Color, IcosahedronGeometry, MathUtils, Mesh, ShaderMaterial, Vector3 } from 'three';
 import { vertexShader, fragmentShader } from './butler-blob-shaders';
 
 extend({ IcosahedronGeometry });
@@ -30,8 +30,9 @@ export function Blob({ color = '#000000', reducedMotion = false, hovered = false
   const currentPosition = useRef(new Vector3());
   useFrame(({ clock, pointer: scenePointer }) => {
     if (!mesh.current || reducedMotion) return;
-    uniforms.u_time.value = 0.4 * clock.getElapsedTime();
-    uniforms.u_intensity.value = MathUtils.lerp(uniforms.u_intensity.value, hovered || hover.current ? 0.7 : 0.5, 0.02);
+    const material = mesh.current.material as ShaderMaterial;
+    material.uniforms['u_time']!.value = 0.4 * clock.getElapsedTime();
+    material.uniforms['u_intensity']!.value = MathUtils.lerp(material.uniforms['u_intensity']!.value, hovered || hover.current ? 0.7 : 0.5, 0.02);
     // The small launcher receives bounded input from its existing button.
     // Full-screen use follows the scene pointer as in the supplied component.
     targetPosition.current.set(pointer ? pointer[0] * 0.22 : scenePointer.x, pointer ? pointer[1] * 0.22 : scenePointer.y, 0);

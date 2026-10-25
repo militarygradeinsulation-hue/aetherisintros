@@ -19,14 +19,20 @@ const assert=(ok,label)=>{if(!ok)throw Error(label);console.log('PASS '+label)};
 try {
  const page=await browser.newPage({viewport:{width:390,height:844}}),errors=[];
  page.on('pageerror',e=>errors.push(e.message));
+ page.on('console',message=>{if(message.type()==='error') console.log('BROWSER '+message.text())});
  await page.addInitScript(()=>{HTMLMediaElement.prototype.play=function(){return Promise.resolve()}});
  await page.goto('http://127.0.0.1:'+server.address().port,{waitUntil:'domcontentloaded'});
  await page.locator('.butler-orb canvas').waitFor();
  await page.waitForTimeout(700);
  const before=await page.locator('.butler-orb canvas').screenshot();
- await page.waitForTimeout(600);
- const after=await page.locator('.butler-orb canvas').screenshot();
- assert(!before.equals(after),'supplied R3F shader paints an animated blob');
+ let animated=false;
+ for(let attempt=0;attempt<16;attempt++) {
+  await page.waitForTimeout(500);
+  const after=await page.locator('.butler-orb canvas').screenshot();
+  if(!before.equals(after)){animated=true;break;}
+ }
+ if(!animated) console.log('RENDER_DIAGNOSTIC',await page.locator('.butler-orb').evaluate(e=>({html:e.outerHTML,hidden:document.hidden,reduced:matchMedia('(prefers-reduced-motion: reduce)').matches})),errors);
+ assert(animated,'supplied R3F shader paints an animated blob');
  assert(await page.locator('.butler-orb').getAttribute('data-orb-view')==='business','Business orb selects red palette');
  await page.locator('.butler-orb').screenshot({path:join(out,'business.png')});
  await page.getByRole('button',{name:'Social',exact:true}).click();
