@@ -12,3 +12,17 @@
 }
 
 .ask-dock-voice-notice{font:12px/1.5 system-ui;padding:10px 14px;margin:0;color:inherit;border-bottom:1px solid #7d8aa344}
+
+/* One shared header slot keeps the switch stationary across experiences. */
+@layer bridge-social-reference {
+ :root[data-theme] body .workspace-navigation-row {display:flex!important;align-items:center!important;flex:none;min-width:0;width:100%;height:64px;position:relative;z-index:60;background:var(--commons-card,var(--ledger-crm-surface,#15171b))}
+ :root[data-theme] body .workspace-navigation-row > .bridge-navigation-host,
+ :root[data-theme] body .workspace-navigation-row > .ledger-crm-topbar {flex:1 1 0;min-width:0;width:0!important;height:64px!important;min-height:64px!important}
+ :root[data-theme] body .workspace-navigation-row > [hidden] {display:none!important}
+ :root[data-theme] body .workspace-navigation-row .bridge-navigation-host > header {height:64px!important;min-height:64px!important}
+ :root[data-theme] body .workspace-view-toggle {display:flex;align-items:center;flex:none;margin:0 12px 0 8px}
+ @media(max-width:720px) {
+  :root[data-theme] body .workspace-view-toggle {margin:0 8px 0 4px}
+  :root[data-theme] body .workspace-navigation-row .ledger-native-breadcrumb {display:none!important}
+ }
+}
