@@ -39,10 +39,10 @@ try {
  assert(Number(await film.locator('.ask-cinematic-entrance-title').evaluate(e=>e.style.opacity))>0,'closing tagline fades in with playback');
  await page.getByRole('button',{name:'Skip intro'}).click();await film.waitFor({state:'detached'});
  await page.getByRole('button',{name:'Start intro'}).click();await film.waitFor();
- await film.locator('video').dispatchEvent('ended');await film.waitFor({state:'detached'});
+ await film.locator('video').dispatchEvent('ended');await page.waitForTimeout(2200);assert(await film.isVisible(),'early video end cannot shorten eight-second entrance');await film.waitFor({state:'detached'});
  assert(true,'natural end holds tagline then reveals page');
  await page.getByRole('button',{name:'Start intro'}).click();await film.waitFor();
- await film.locator('video').dispatchEvent('error');await film.waitFor({state:'detached'});
+ await film.locator('video').dispatchEvent('error');await page.waitForTimeout(2200);assert(await film.isVisible(),'failed video retains branded entrance for several seconds');await film.waitFor({state:'detached'});
  assert(true,'failed video releases entry');
  await page.getByRole('button',{name:'Start intro'}).click();await film.waitFor();await page.keyboard.press('Escape');await film.waitFor({state:'detached'});
  assert(true,'Escape dismisses entry');

@@ -1,0 +1,64 @@
+import { ACCOUNT_SECTIONS, WORKSPACE_DESTINATIONS, type NavigationTarget } from '../components/layout/workspace-navigation';
+export type GuideStep = { id: string; title: string; group: string; description: string; instructions: string[]; target?: NavigationTarget };
+const lessons: Record<string, [string, string, string]> = {
+  'business-lobby': ['Meet and coordinate with other professionals.', 'Open a lobby or available session and review who it is for and how to participate.', 'Review participants and meeting details before joining.'],
+  diagnostic: ['Investigate business questions with supporting information.', 'Choose an available diagnostic and provide the context or evidence it asks for.', 'Inspect the findings and their evidence. Missing connections may limit what can be diagnosed.'],
+  intelrooms: ['Bring shared research and intelligence into a room.', 'Open an intelligence room and review its context and available material.', 'Check access before adding or sharing information.'],
+  executivework: ['Organize deeper planning and executive work.', 'Open the available workspace or planning action and add the requested context.', 'Review proposals and next steps before committing to them.'],
+  providers: ['Find providers for a specific business need.', 'Review provider details and use the available request controls to describe your requirements.', 'Compare fit, scope, and terms before making a commitment.'],
+  'marketplace-pilot': ['Explore participation in the marketplace pilot.', 'Read the pilot information and available participation or interest options.', 'Submitting interest does not by itself confirm acceptance or a purchase.'],
+  capital: ['Explore capital and advisory opportunities.', 'Open an available item and review its requirements and supporting details.', 'Use the offered inquiry controls only after reviewing the terms and fit.'],
+  expertise: ['Find expertise and talent relevant to your work.', 'Review available profiles or opportunities and describe the help you need.', 'Confirm scope, availability, and expectations before proceeding.'],
+  knowledgeassets: ['Organize reusable knowledge and supporting material.', 'Open an asset to review it or use available controls to add material.', 'Check ownership and sharing permissions before distributing an asset.'],
+  vault: ['Keep sensitive work in your private vault.', 'Open an available item or use the vault controls to add material.', 'Review access settings and the content before sharing or exporting.'],
+  home: ['Your daily starting point for updates and relationships.', 'Read the feed and open a post to join the conversation. Use the composer to share an update; review your text and attachments before posting.', 'Explore Dashboard tools to review your work. Arrange available widgets and pin your layout when it feels right.'],
+  news: ['Follow business headlines alongside your network.', 'Open a headline to read its source and use it as context for conversations.', 'Check the publication date and source before relying on a story.'],
+  people: ['Find people and understand why a connection may matter.', 'Search by name, company, or role. Open a profile to review the person before connecting, saving, or requesting an introduction.', 'Use available filters to narrow the directory. In a live account, connection actions affect real members.'],
+  intros: ['Request a thoughtful introduction with useful context.', 'Find the person you want to meet, choose the introduction action, and explain why the connection would help both people.', 'Review your note before submitting. Return here to review incoming requests and their status.'],
+  messages: ['Keep conversations and follow-ups together.', 'Choose a conversation to read its history. Write in the composer, review any attachment, then send when ready.', 'Check the status shown by the app. A missing conversation or unavailable inbox does not confirm delivery.'],
+  meetings: ['Coordinate conversations and track upcoming meetings.', 'Open a meeting or use the scheduling action. Review participants, date, time, and timezone before confirming.', 'Open the meeting details for joining information and preparation.'],
+  crm: ['Organize contacts and move opportunities through your pipeline.', 'Open a contact in CRM to review details, notes, and history. Choose the Pipeline tab to review stages and next actions.', 'Review imports and record changes before saving. Check the save confirmation.'],
+  deals: ['Bring the people and work for a deal into one room.', 'Open a deal room to review its members, shared context, and next steps. Use the available controls to create or manage a room.', 'Check access before sharing documents or inviting someone.'],
+  workspaces: ['Keep private project work organized separately from deal rooms.', 'Open or create a workspace and add the project context and materials you need.', 'Review participants and access before sharing private work.'],
+  insights: ['Understand the relationship signals available to your account.', 'Review the cards and open a finding for its supporting information.', 'Use the available evidence to choose a next action. Missing data is not a confirmed result.'],
+  intelligence: ['Review intelligence about members and relationships.', 'Open a member or available insight to inspect its context.', 'Verify supporting information before acting on a recommendation.'],
+  specter: ['Capture information from a URL for review.', 'Enter a relevant URL in Specter Detect and start the available capture workflow.', 'Review captured information before saving or using it. Live capture requires the access shown on the page.'],
+  work: ['Find work and tools that help move it forward.', 'Review the work shown here and open an item for details and next actions.', 'Use related sections to reach needs, offers, opportunities, and specialist tools.'],
+  needs: ['Tell your network what you need or can offer.', 'Choose the appropriate need or offer action and describe the outcome with enough context for a useful response.', 'Review your audience and details before publishing.'],
+  opportunities: ['Review opportunities and decide which deserve attention.', 'Open an opportunity and inspect its requirements and supporting details.', 'Use the available response or save action after confirming fit and next steps.'],
+  'opportunity-exchange': ['Discover and share opportunities across the network.', 'Browse the exchange and open a listing to review its details and eligibility.', 'Review the information you will share before responding.'],
+  pocket: ['Keep useful material in your private library.', 'Open saved items or use available save and import controls to add material.', 'Review imported rows and attachments before saving.'],
+  profile: ['Help members understand who you are and how you can help.', 'Edit your professional details, interests, and photo using the available profile controls.', 'Review your changes and confirm they saved before leaving.'],
+  preferences: ['Make the workspace comfortable for the way you work.', 'Review available appearance, notification, and other preferences.', 'Restart this walkthrough from Onboarding whenever you need a refresher.'],
+  consent: ['Review your privacy and sharing choices.', 'Read the consent and privacy options before changing them.', 'Only enable sharing you understand and want.'],
+  integrations: ['See which connected services your account can use.', 'Review connection status, then use the connection or management action for a service you want.', 'Read permissions before connecting. Some services require additional setup or administrator access.'],
+  membership: ['Review your membership and available features.', 'Read your current status and the available membership options.', 'Review prices and billing terms before confirming a change.'],
+  passport: ['Build a record of your work and verified outcomes.', 'Review Track Record and Passport, then use available controls to add or review evidence.', 'Only claim outcomes you can support. Check visibility before sharing.'],
+  memory: ['Keep useful relationship context close at hand.', 'Review existing memory and open a person or item for context.', 'Use available note controls to record accurate details you want to remember.'],
+  bubbles: ['Explore relationship signals visually.', 'Select a signal or person to inspect the information behind it.', 'Use the context to decide whether to reach out or request an introduction.'],
+  referrals: ['Find paths to a warm introduction.', 'Review referral paths and the people involved.', 'Add a clear reason and review the request before sending.'],
+  briefing: ['Prepare for meetings with relevant context.', 'Choose an available meeting or person and review the briefing.', 'Verify details and prepare questions and follow-up actions.'],
+  calendar: ['See your schedule in one place.', 'Review dates and events, then open an item for details.', 'Check timezone and participants before changing a meeting.'],
+  events: ['Discover events and participation options.', 'Open an event to review its schedule, audience, and requirements.', 'Review registration details before confirming participation.'],
+  circles: ['Organize relationships into useful circles.', 'Open a circle to review members or use the available creation controls.', 'Choose members deliberately and check visibility before sharing.'],
+  peergroups: ['Connect around shared interests and goals.', 'Open a peer group and review its purpose and participation options.', 'Read the group context before joining or contributing.'],
+  companies: ['Explore organizations connected to your work.', 'Search or open a company to review details and linked people.', 'Verify information before adding it to relationship records.'],
+  grid: ['Explore how relationships connect.', 'Select a person or relationship in the grid to inspect its context.', 'Use the network view to identify a useful next conversation.'],
+};
+const targets = [...WORKSPACE_DESTINATIONS.flatMap(d => [d, ...d.sections].map(target => ({ target, group: d.label }))), ...ACCOUNT_SECTIONS.map(target => ({ target, group: 'Your account' }))];
+const seen = new Set<string>();
+export const GUIDE_STEPS: GuideStep[] = [
+  { id: 'welcome', title: 'Welcome to Ask Intros', group: 'Start here', description: 'A guided tour of your network, conversations, and business tools.', instructions: ['Follow Next for the full tour or choose any topic. Your place is saved on this browser.', 'Choose Try this page to explore, then Continue walkthrough to return. The guide never posts, sends, or changes records for you.'] },
+  { id: 'views', title: 'One system, two views', group: 'Start here', description: 'Social and Business are two presentations of the same workspace.', instructions: ['Use the Social / Business switch to choose your layout. Both views use the same underlying member tools.', 'Use the navigation menu for more destinations on smaller screens. Light and dark appearance is a separate preference.'] },
+  ...targets.filter(({ target }) => { const id = target.tool || target.page; if (seen.has(id)) return false; seen.add(id); return true; }).map(({ target, group }): GuideStep => {
+    const id = target.tool || target.page;
+    const lesson = lessons[id] ?? [`Explore ${target.label} within ${group}.`, `Open ${target.label}, review the page introduction and available items, then choose an item or action to inspect its details.`, 'Follow the fields and instructions shown on the page. Review access requirements and confirmation before saving, sharing, or submitting.'];
+    return { id, title: target.label, group, description: lesson[0], instructions: [lesson[1], lesson[2]], target };
+  }),
+  { id: 'butler', title: 'Your Ask Intros Butler', group: 'Assistance', description: 'The floating orb opens your assistant throughout the member workspace.', instructions: ['Select the orb and describe what you need in plain language. Try: “Help me prepare for a meeting.”', 'Review answers and proposed actions. Capabilities depend on your account and connected information.'] },
+  { id: 'finish', title: 'You are ready to explore', group: 'Finish', description: 'Start with one useful connection and one clear next action.', instructions: ['Complete your profile, find a relevant person, and choose a thoughtful next step.', 'Return to Onboarding to restart the tour or jump to any feature.'] },
+];
+export const GUIDE_KEY = 'ask-intros.walkthrough.v1';
+export function readGuidePosition(): string {
+  try { const id = localStorage.getItem(GUIDE_KEY); return GUIDE_STEPS.some(step => step.id === id) ? id! : 'welcome'; } catch { return 'welcome'; }
+}

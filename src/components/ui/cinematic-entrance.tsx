@@ -7,12 +7,15 @@ import "./cinematic-entrance.css";
 // Film from the supplied MetroHero; the site keeps its automatic, bounded entrance.
 export const CITY_OPENING_VIDEO = "https://cdn.21st.dev/assets/mirror/21/21a77eac28eacbb7e142016eefeaa0b4a766619e51113629a3bc6df6af066c0f.mp4";
 export interface CinematicEntranceProps { videoSrc: string; onComplete?: () => void }
+export const MINIMUM_ENTRANCE_MS = 8000;
 const clamp = (value: number) => Math.max(0, Math.min(1, value));
 
 export function CinematicEntrance({ videoSrc, onComplete }: CinematicEntranceProps) {
   const [visible, setVisible] = useState(true);
   const [exiting, setExiting] = useState(false);
   const [progress, setProgress] = useState(0);
+  const [mediaFailed, setMediaFailed] = useState(false);
+  const startedAt = useRef(Date.now());
   const videoRef = useRef<HTMLVideoElement>(null);
   const endedRef = useRef(false);
   const exitTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -25,7 +28,18 @@ export function CinematicEntrance({ videoSrc, onComplete }: CinematicEntrancePro
     setExiting(true);
     exitTimer.current = setTimeout(() => { setVisible(false); callbackRef.current?.(); }, 450);
   }, []);
+  const finishAutomatically = React.useCallback(() => {
+    if (holdTimer.current) clearTimeout(holdTimer.current);
+    const remaining = Math.max(1800, MINIMUM_ENTRANCE_MS - (Date.now() - startedAt.current));
+    holdTimer.current = setTimeout(finish, remaining);
+  }, [finish]);
   useEffect(() => {
+    if (!mediaFailed) return;
+    const tick = window.setInterval(() => setProgress(clamp((Date.now() - startedAt.current) / MINIMUM_ENTRANCE_MS)), 100);
+    return () => window.clearInterval(tick);
+  }, [mediaFailed]);
+  useEffect(() => {
+    startedAt.current = Date.now();
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
       endedRef.current = true;
       setVisible(false);
@@ -36,6 +50,7 @@ export function CinematicEntrance({ videoSrc, onComplete }: CinematicEntrancePro
     const video = videoRef.current;
     if (!video) return;
     video.muted = true;
+    video.playbackRate = 0.8;
     const playback = video.play();
     playback?.catch(() => { /* The timeout and Skip remain available if autoplay is denied. */ });
     const fallback = window.setTimeout(() => { if (video.currentTime < .1) finish(); }, 9000);
@@ -58,8 +73,8 @@ export function CinematicEntrance({ videoSrc, onComplete }: CinematicEntrancePro
     <video ref={videoRef} src={videoSrc} autoPlay playsInline muted preload="auto"
       style={{ transform: `scale(${1 + progress * .06})` }}
       onTimeUpdate={event => { const video = event.currentTarget; if (Number.isFinite(video.duration) && video.duration > 0) setProgress(clamp(video.currentTime / video.duration)); }}
-      onEnded={() => { setProgress(1); if (!holdTimer.current) holdTimer.current = setTimeout(finish, 1600); }}
-      onError={finish} disablePictureInPicture aria-label="Ask Intros introduction film">
+      onEnded={() => { setProgress(1); finishAutomatically(); }}
+      onError={() => { setMediaFailed(true); finishAutomatically(); }} disablePictureInPicture aria-label="Ask Intros introduction film">
       <track kind="captions" />
     </video>
     <div className="ask-cinematic-entrance-shade" aria-hidden="true" />

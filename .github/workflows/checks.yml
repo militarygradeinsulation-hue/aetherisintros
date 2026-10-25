@@ -41,6 +41,8 @@ jobs:
           node scripts/recovery/member-families.standalone.mjs
       - name: Install Chromium
         run: npx playwright install --with-deps chromium
+      - name: Onboarding walkthrough (browser)
+        run: node scripts/onboarding-check/run.mjs
       - name: Butler orb and cinematic entrance (browser)
         env:
           PLAYWRIGHT_MODULE: ${{ github.workspace }}/node_modules/playwright/index.mjs

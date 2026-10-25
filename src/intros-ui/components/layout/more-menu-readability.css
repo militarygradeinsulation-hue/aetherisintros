@@ -1,0 +1,38 @@
+/* Menu labels must never inherit compact top-navigation sizing. */
+@layer bridge-social-reference {
+  :root[data-theme] body .ix-root .ix-desktop-more-menu {
+    width: min(320px, calc(100vw - 32px)) !important;
+    min-width: 0 !important; max-width: calc(100vw - 32px) !important;
+    padding: 10px !important; box-sizing: border-box;
+    display: flex !important; flex-direction: column !important; gap: 4px !important;
+    max-height: min(70dvh, 560px) !important; overflow-y: auto !important;
+    left: auto !important; right: 0 !important; transform: none !important;
+  }
+  :root[data-theme] body .ix-root :is(.ix-desktop-more-item,.ix-mobile-sheet-item) {
+    display: flex !important; flex-direction: row !important; align-items: center !important;
+    justify-content: flex-start !important; gap: 12px !important;
+    width: 100% !important; min-width: 0 !important; min-height: 48px !important;
+    height: auto !important; flex: 0 0 auto !important; padding: 12px 14px !important;
+    white-space: normal !important; word-break: normal !important; overflow-wrap: break-word !important;
+    font-size: 14px !important; line-height: 1.5 !important; letter-spacing: normal !important;
+    text-align: left !important; text-transform: none !important;
+  }
+  :root[data-theme] body .ix-root :is(.ix-desktop-more-item,.ix-mobile-sheet-item) svg {
+    flex: 0 0 18px !important; width: 18px !important; height: 18px !important;
+  }
+  :root[data-theme] body .ix-root .ix-mobile-sheet {
+    box-sizing: border-box; left: 12px !important; right: 12px !important;
+    width: auto !important; max-width: none !important; min-width: 0 !important;
+    transform: none !important; max-height: calc(100dvh - 130px) !important;
+    overflow-y: auto !important; padding: 12px !important;
+    display: flex !important; flex-direction: column !important; gap: 4px !important;
+  }
+  :root[data-theme] body .ix-root .ledger-native-mobile-sidebar .ledger-native-nav-item {
+    min-height: 48px !important; height: auto !important; white-space: normal !important;
+    grid-template-columns: 20px minmax(0,1fr) !important; gap: 12px !important;
+  }
+  :root[data-theme] body .ix-root .ledger-native-mobile-sidebar .ledger-native-nav-label {
+    white-space: normal !important; overflow: visible !important; text-overflow: clip !important;
+    line-height: 1.5 !important; word-break: normal !important;
+  }
+}

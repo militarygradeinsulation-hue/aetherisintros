@@ -1,4 +1,5 @@
 import { TopNavigation as BridgeTopNavigation } from '../../../bridge-reference/src/intros-ui/components/layout/TopNavigation';
+import { OnboardingGuide } from '../../onboarding/OnboardingGuide';
 import { ExperienceSwitch } from '../../experience/ExperienceSwitch';
 import type { ExperienceView } from '../../experience/preference';
 /* Native port of absolute-ledger-flow/src/components/app/app-shell.tsx.
@@ -6,6 +7,7 @@ import type { ExperienceView } from '../../experience/preference';
  */
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import './ledger-bridge-shell.css';
+import './more-menu-readability.css';
 import { MemberThumbnail } from '../shared/MemberThumbnail';
 import './raised-surfaces.css';
 import './command-surfaces.css';
@@ -80,6 +82,7 @@ export function LedgerBridgeShell({
     if (paletteOpen) searchRef.current?.focus();
   }, [paletteOpen]);
   const closeAll = () => { setDrawerOpen(false); setPaletteOpen(false); setUserOpen(false); };
+  const startOnboarding = () => { closeAll(); window.dispatchEvent(new Event('ask-intros:onboarding')); };
   const navigate = (item: Item) => {
     closeAll();
     if (item.tool) onOpenTool(item.tool);
@@ -104,6 +107,7 @@ export function LedgerBridgeShell({
   const dockActiveId = destinationFor(activePage, activeTool)?.id;
   const openPalette = () => { setQuery(searchQuery); setPaletteOpen(true); };
   const quickCommands = [
+    { id: 'onboarding', label: 'Onboarding walkthrough', onSelect: startOnboarding },
     { id: 'search', label: 'Search people & tools', shortcut: '⌘K', onSelect: openPalette },
     { id: 'assistant', label: 'Ask Intros assistant', onSelect: () => window.dispatchEvent(new CustomEvent('aetheris:open-assistant')) },
     { id: 'intro', label: 'Find an introduction', onSelect: () => { closeAll(); onNavigate('intros'); } },
@@ -129,7 +133,7 @@ export function LedgerBridgeShell({
     </nav>
   );
   const AccountMenu = () => <div className="ledger-native-account-dropdown" role="menu">
-    <div className="ledger-native-account-name">{displayName}</div>
+    <div className="ledger-native-account-name">{displayName}</div><button type="button" role="menuitem" onClick={startOnboarding}>Onboarding walkthrough</button>
     {ACCOUNT_SECTIONS.map(item => <button type="button" role="menuitem" key={item.tool} onClick={() => item.tool === 'profile' ? (closeAll(), onOpenMyProfile()) : navigate(item)}>
       <item.icon size={16} aria-hidden="true"/><span>{item.label}</span>
     </button>)}
@@ -162,7 +166,7 @@ export function LedgerBridgeShell({
           <button type="button" aria-label="Close navigation" onClick={() => setDrawerOpen(false)}><X size={20}/></button>
         </div>
         <Nav mobile />
-        <div className="ledger-native-mobile-account" aria-label="Account options">
+        <div className="ledger-native-mobile-account" aria-label="Account options"><button type="button" onClick={startOnboarding}>Onboarding walkthrough</button>
           <details className="ledger-native-mobile-account-options">
             <summary>Account <ChevronDown size={15} aria-hidden="true"/></summary>
             {ACCOUNT_SECTIONS.map(item => <button type="button" key={item.tool} onClick={() => navigate(item)}><item.icon size={16} aria-hidden="true"/><span>{item.label}</span></button>)}
@@ -208,6 +212,8 @@ export function LedgerBridgeShell({
         </div>
       </header>
       <div className="bridge-experience-control"><ExperienceSwitch value={experience} onChange={onExperienceChange}/></div>
+      <button type="button" className="onboarding-launch" onClick={startOnboarding}>Onboarding · Learn Ask Intros</button>
+      <OnboardingGuide onNavigate={navigate} mode={mode} />
       <div id="aetheris-workspace-content" className="ledger-native-content"><div hidden={experience === 'social'}><LedgerSectionNavigation activePage={activePage} activeTool={activeTool} onSelect={navigate}/></div>{children}</div>
     </div>
 
