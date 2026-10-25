@@ -36,3 +36,20 @@ body .butler-conversation .ask-dock-voice {flex:none;padding:6px 14px;min-height
 body .butler-conversation .butler-draft {flex:none;max-height:none;overflow:visible;border-radius:10px;background:#8881}
 body .butler-conversation .butler-save-notice {padding:8px 14px;margin:0}
 @media(max-width:767px){body .ask-dock.butler-conversation,body .ask-dock.butler-conversation.butler-expanded {width:calc(100vw - 16px);height:calc(100dvh - 110px);max-height:calc(100dvh - 110px);left:8px!important;right:auto!important}body .butler-conversation .ask-dock-log{padding:12px}body .butler-conversation .ask-dock-input>input{font-size:16px}}
+
+/* Butler composer buttons: clearly labeled, readable in Social and Business views. */
+:root[data-theme] body .ask-dock .ask-dock-input button[type="button"],
+:root[data-theme] body .ask-dock .ask-dock-input .butler-attach{
+  flex:0 0 40px!important;width:40px!important;height:40px!important;min-height:40px!important;
+  display:grid!important;place-items:center!important;border-radius:10px!important;
+  background:#262931!important;border:1px solid #4a4f5b!important;color:#fff!important;opacity:1!important}
+:root[data-theme] body .ask-dock .ask-dock-input button[type="button"].listening{background:#DC2626!important;border-color:#DC2626!important}
+:root[data-theme] body .ask-dock .ask-dock-input button[type="submit"]{
+  flex:0 0 40px!important;width:40px!important;height:40px!important;min-height:40px!important;
+  display:grid!important;place-items:center!important;border-radius:10px!important;
+  background:#2f4be0!important;border:1px solid #2f4be0!important;color:#fff!important;opacity:1!important}
+:root[data-theme] body .ix-root[data-experience="business"] .ask-dock .ask-dock-input button[type="submit"]{background:#B91C1C!important;border-color:#B91C1C!important}
+:root[data-theme] body .ask-dock .ask-dock-input button[type="submit"]:disabled{background:#262931!important;border-color:#4a4f5b!important;color:#9ea4ac!important;cursor:not-allowed}
+:root[data-theme] body .ask-dock .ask-dock-input :is(button,.butler-attach) svg{color:inherit!important;stroke:currentColor!important}
+:root[data-theme="light"] body .ask-dock .ask-dock-input :is(button[type="button"],.butler-attach),
+:root[data-theme="light"] body .ask-dock .ask-dock-input button[type="submit"]:disabled{background:#f1f1f3!important;border-color:#c8cad0!important;color:#17191e!important}
