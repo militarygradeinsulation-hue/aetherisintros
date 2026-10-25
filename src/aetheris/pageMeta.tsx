@@ -4,7 +4,7 @@ import {
   History, Home as HomeIcon, Inbox, Landmark, Layers, Lock, Map as MapIcon, MessageSquareText, Network,
   Newspaper, PlaneTakeoff, Puzzle, Radar, ScrollText, Settings2, ShieldAlert, ShieldCheck, Sparkle, Target,
   RefreshCw, ShoppingBag, Star, TrendingUp, UserRound, Users, UsersRound,
-  Lightbulb, Route, Stethoscope, Video, HandHelping,
+  Lightbulb, Route, Stethoscope, Video, HandHelping, Mic2,
 } from 'lucide-react'
 import type { Page } from './nav'
 
@@ -106,6 +106,12 @@ const basePages: BaseMeta[] = [
     next: 'Start a meeting with the person you most need to talk to this week.',
     why: 'Nobody is transcribed unless they turn notes on themselves, and everyone sees who has.',
   }, ['video', 'call', 'meeting', 'zoom', 'notes', 'transcript', 'note taker']),
+  m('podcast', 'Podcast Studio', Mic2, 'OPPORTUNITY & EXECUTION', 'Create personal podcast ideas, outlines and episode scripts from your profile.', {
+    does: 'Builds editable podcast topics and script templates based on your expertise, audience and goals.',
+    look: 'Suggested episode angles, a script editor and private local drafts.',
+    changes: 'Profile updates influence new suggestions; saved drafts stay on the current device.',
+    next: 'Choose a relevant topic and add your own real experience before publishing.',
+  }, ['podcast', 'episodes', 'creator', 'scripts', 'topics', 'audio']),
   m('peergroups', 'Peer Groups', UsersRound, 'OPPORTUNITY & EXECUTION', 'Small confidential groups of peers who meet monthly.', {
     does: 'Holds your peer groups: sessions, a private discussion board and issue processing with six to twelve peers.',
     look: 'The next session, issues the group is working on, and what members have shared.',
@@ -563,7 +569,7 @@ export const networkAdvanced: Page[] = ['directory', 'expertise', 'serendipity',
 export const workTabs: Page[] = ['crm', 'diagnostic', 'pocket', 'opportunities', 'grid', 'calendar', 'outcomes']
 export const workAdvanced: Page[] = ['needs', 'rooms', 'deals', 'workspaces', 'executivework', 'systems', 'strategy', 'simulation', 'collisions', 'capital', 'attribution', 'loops', 'knowledgeassets', 'timemachine', 'business-lobby', 'opportunity-exchange', 'marketplace-pilot']
 export const meTabs: Page[] = ['profile', 'passport', 'permission', 'preferences', 'integrations']
-export const meAdvanced: Page[] = ['identity', 'consent', 'constitution', 'presence', 'vault', 'autopilot', 'membership-upgrade']
+export const meAdvanced: Page[] = ['podcast', 'identity', 'consent', 'constitution', 'presence', 'vault', 'autopilot', 'membership-upgrade']
 
 /** The five capability hubs, in the order members read them. News is a daily destination. */
 export const groupOrder: Hub[] = [
