@@ -50,8 +50,9 @@ describe("Account HR boundaries", () => {
   it("rejects invalid dates, unknown personnel fields, negative pay and approvals without a decision maker", () => {
     expect(
       recordInput.safeParse({
-        ...person,
-        updated_at: undefined,
+        id: person.id,
+        kind: person.kind,
+        version: person.version,
         fields: { ...person.fields, ssn: "private" },
       }).success,
     ).toBe(false);

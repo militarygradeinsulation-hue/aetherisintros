@@ -699,6 +699,7 @@ function RecordEditor({
                 {f.type === "textarea" ? (
                   <textarea
                     name={f.key}
+                    aria-label={f.label + (f.required ? " *" : "")}
                     value={fields[f.key] ?? ""}
                     required={f.required}
                     maxLength={20000}
@@ -707,6 +708,7 @@ function RecordEditor({
                 ) : ["select", "employee", "job"].includes(f.type ?? "") ? (
                   <select
                     name={f.key}
+                    aria-label={f.label + (f.required ? " *" : "")}
                     value={fields[f.key] ?? ""}
                     required={f.required}
                     onChange={(e) => change(f.key, e.target.value)}
@@ -729,6 +731,7 @@ function RecordEditor({
                 ) : (
                   <input
                     name={f.key}
+                    aria-label={f.label + (f.required ? " *" : "")}
                     type={f.type ?? "text"}
                     value={fields[f.key] ?? ""}
                     required={f.required}
@@ -901,7 +904,9 @@ function HRButler({
     [working, setWorking] = useState(false),
     [error, setError] = useState(""),
     [answer, setAnswer] = useState(""),
-    [title, setTitle] = useState("");
+    [title, setTitle] = useState(""),
+    [documentId, setDocumentId] = useState(() => crypto.randomUUID()),
+    [saved, setSaved] = useState(false);
   const active = useRef(true),
     pending = useRef(false);
   useEffect(() => {
@@ -912,7 +917,7 @@ function HRButler({
   }, []);
   async function submit(e: FormEvent) {
     e.preventDefault();
-    if (pending.current) return;
+    if (pending.current || !consent) return;
     pending.current = true;
     setWorking(true);
     setError("");
@@ -922,6 +927,8 @@ function HRButler({
       });
       if (!active.current || result.userId !== account) return;
       setAnswer(result.answer);
+      setDocumentId(crypto.randomUUID());
+      setSaved(false);
       setHistory((old) => [
         ...old.slice(-6),
         { role: "user", content: brief },
@@ -1021,6 +1028,8 @@ function HRButler({
               value={title}
               maxLength={180}
               onChange={(e) => {
+                if (saved) setDocumentId(crypto.randomUUID());
+                setSaved(false);
                 setTitle(e.target.value);
                 onDirty(true);
               }}
@@ -1033,19 +1042,21 @@ function HRButler({
               maxLength={20000}
               value={answer}
               onChange={(e) => {
+                if (saved) setDocumentId(crypto.randomUUID());
+                setSaved(false);
                 setAnswer(e.target.value);
                 onDirty(true);
               }}
             />
           </label>
           <button
-            disabled={parentBusy || working || !title.trim() || !answer.trim()}
+            disabled={parentBusy || working || saved || !title.trim() || !answer.trim()}
             onClick={async () => {
               if (
                 await act({
                   action: "record",
                   record: {
-                    id: crypto.randomUUID(),
+                    id: documentId,
                     kind: "document",
                     version: 0,
                     fields: {
@@ -1058,11 +1069,13 @@ function HRButler({
                     },
                   },
                 })
-              )
+              ) {
+                setSaved(true);
                 onDirty(false);
+              }
             }}
           >
-            Save draft to Documents
+            {saved ? "Saved to Documents" : "Save draft to Documents"}
           </button>
           <button onClick={() => downloadHR("ask-intros-hr-draft.txt", title + "\n\n" + answer)}>
             Download draft
