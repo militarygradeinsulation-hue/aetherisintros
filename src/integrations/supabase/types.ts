@@ -615,6 +615,50 @@ export type Database = {
         }
         Relationships: []
       }
+      business_tool_drafts: {
+        Row: {
+          created_at: string
+          id: string
+          inputs: Json
+          output: string
+          title: string
+          tool_id: string
+          updated_at: string
+          user_id: string
+          version: number
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          inputs?: Json
+          output?: string
+          title: string
+          tool_id: string
+          updated_at?: string
+          user_id: string
+          version?: number
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          inputs?: Json
+          output?: string
+          title?: string
+          tool_id?: string
+          updated_at?: string
+          user_id?: string
+          version?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "business_tool_drafts_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       calendar_events: {
         Row: {
           all_day: boolean

@@ -1,11 +1,14 @@
-.butler-orb {position:relative;display:inline-block;width:72px;height:72px;flex:0 0 72px;pointer-events:none;isolation:isolate;border-radius:50%;background:none;filter:none}
+.butler-orb {position:relative;display:inline-block;width:60px;height:60px;flex:0 0 60px;pointer-events:none;isolation:isolate;border-radius:50%;background:none;filter:none}
 .butler-orb[data-orb-view="social"] {background:none;filter:none}
 .butler-orb > div {position:absolute!important;inset:0}
-.butler-orb canvas {display:block;pointer-events:none}
-.butler-orb-fallback {position:absolute;inset:9px;border-radius:43% 57% 62% 38% / 48% 39% 61% 52%;background:radial-gradient(circle at 30% 24%,#ffeeef,#ed6576 42%,#e31c32 76%);box-shadow:0 8px 24px #0003}
+/* The workspace blanket that turns canvas graphics monochrome must never touch
+   this bubble: it carries the view palette (blue Social, red Business). */
+.butler-orb canvas {display:block;pointer-events:none;filter:none!important}
+:where(.ix-root,.app-shell,.ask-os,.ael) .butler-orb canvas {filter:none!important}
+.butler-orb-fallback {position:absolute;inset:7px;border-radius:43% 57% 62% 38% / 48% 39% 61% 52%;background:radial-gradient(circle at 30% 24%,#ffeeef,#ed6576 42%,#e31c32 76%);box-shadow:0 8px 24px #0003}
 .butler-orb[data-orb-view="social"] .butler-orb-fallback {background:radial-gradient(circle at 30% 24%,#eef4ff,#6598ed 42%,#2f4be0 76%)}
 /* Override the former Social-only placeholder without touching the Bridge snapshot. */
-:root[data-theme] body .ix-root.ledger-native-app[data-experience] > .ix-assistant button.ask-dock-fab > .ask-dock-blob {display:inline-flex!important;width:56px!important;height:56px!important;flex:none;background:none!important;box-shadow:none!important;border-radius:50%!important;pointer-events:none}
+:root[data-theme] body .ix-root.ledger-native-app[data-experience] > .ix-assistant button.ask-dock-fab > .ask-dock-blob {display:inline-flex!important;width:60px!important;height:60px!important;flex:none;background:none!important;box-shadow:none!important;border-radius:50%!important;pointer-events:none}
 :root[data-theme] body .ix-root.ledger-native-app[data-experience] > .ix-assistant button.ask-dock-fab:not(.active) {padding:4px 14px 4px 4px!important;border-radius:999px!important;min-height:64px}
 :root[data-theme] body .ix-root.ledger-native-app[data-experience] > .ix-assistant button.ask-dock-fab:not(.active) > svg {display:none!important}
 
@@ -31,12 +34,12 @@
 @layer bridge-social-reference {
   :root[data-theme] body .ix-root.ledger-native-app[data-experience] > .ix-assistant button.ask-dock-fab:not(.active) {
     display:flex!important;flex-direction:column!important;align-items:center!important;justify-content:flex-start!important;
-    width:76px!important;min-width:76px!important;height:96px!important;min-height:96px!important;
+    width:70px!important;min-width:70px!important;height:88px!important;min-height:88px!important;
     padding:0!important;gap:0!important;background:transparent!important;border:0!important;
     box-shadow:none!important;overflow:visible!important;text-transform:none!important;letter-spacing:normal!important;
   }
   :root[data-theme] body .ix-root.ledger-native-app[data-experience] > .ix-assistant button.ask-dock-fab > .ask-dock-blob {
-    display:block!important;width:72px!important;height:72px!important;flex:0 0 72px!important;
+    display:block!important;width:60px!important;height:60px!important;flex:0 0 60px!important;
     background:none!important;box-shadow:none!important;border:0!important;border-radius:0!important;
   }
   :root[data-theme] body .ix-root.ledger-native-app[data-experience] > .ix-assistant button.ask-dock-fab > .assistant-launcher-label {
@@ -56,7 +59,7 @@
    actual orb host and its no-WebGL fallback visible, not only their wrapper. */
 @layer bridge-social-reference {
   :root[data-theme] body .ix-root.ledger-native-app[data-experience] > .ix-assistant button.ask-dock-fab .butler-orb {
-    display:block!important;width:72px!important;height:72px!important;flex:0 0 72px!important;
+    display:block!important;width:60px!important;height:60px!important;flex:0 0 60px!important;
     visibility:visible!important;opacity:1!important;
   }
   :root[data-theme] body .ix-root.ledger-native-app[data-experience] > .ix-assistant button.ask-dock-fab .butler-orb-fallback {
