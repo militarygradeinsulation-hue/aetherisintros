@@ -41,6 +41,8 @@ jobs:
           node scripts/recovery/member-families.standalone.mjs
       - name: Install Chromium
         run: npx playwright install --with-deps chromium
+      - name: Business tool generation and image workflow (browser)
+        run: node scripts/business-tools-automation-check/run.mjs
       - name: Member business tools, post editing and Butler controls (browser)
         run: node scripts/member-tools-check/run.mjs
       - name: Onboarding walkthrough (browser)
