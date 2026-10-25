@@ -1,5 +1,13 @@
 # Aetheris specification completion
 
+# Homepage hero carousel and membership removal (Oct 25)
+- [x] Turn the empty hero image area into a carousel of the member's ten brand graphics, each held five seconds.
+- [x] Remove the pause control and the dots so only the pictures move; hovering holds a picture, reduced motion shows one still picture.
+- [x] Remove the membership area ("Start with one useful connection") and its navigation link.
+- [x] Update the homepage and photo checks: 62 homepage assertions pass, including the five-second dwell; photo check now allows only the approved hero pictures.
+- [ ] Resolve the photo check's later demo assertions, which expect the Business workspace shell while the demo now opens in the Social presentation — pre-existing, unrelated to this change.
+
+
 ## Butler orb size and view colors (Oct 25)
 - [x] Shrink the assistant orb from 72px to 60px and restore its view palette (blue Social, red Business) against the workspace monochrome rule.
 - [x] Verify desktop 1280x900 and phone 390x844: orb 60px, canvas un-grayed, red in Business, blue in Social, label visible, no horizontal overflow; entrance check and compilation pass.
