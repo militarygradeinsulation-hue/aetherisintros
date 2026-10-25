@@ -3,7 +3,8 @@
 ## Homepage signup prominence and LinkedIn verification (Oct 25)
 - [x] Move a larger Create free account action above the homepage carousel.
 - [x] Check LinkedIn sign-in availability: the signup page reports provider disabled; existing LinkedIn action is disabled. A pasted URL cannot establish ownership.
-- [ ] Enforce ownership-first signup — blocked: LinkedIn identity-provider setup is unavailable; preserve existing signup and member access rather than pretend verification works or enforce a client-only bypassable rule.
+- [x] Replace ownership-first signup requirement: Basic signup remains available without LinkedIn.
+- [ ] Implement three access levels: Basic profile/browsing only, LinkedIn-verified networking, paid full member features and black ID card; server-side enforcement and isolated tests required. LinkedIn provider setup remains blocked.
 - [x] Verify the updated homepage action: 375×668, 64px-tall action at y=110 above slides, navigates to signup; 12 LinkedIn regressions pass and build OK.
 
 # Homepage hero carousel and membership removal (Oct 25)
