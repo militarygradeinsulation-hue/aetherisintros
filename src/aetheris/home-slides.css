@@ -1,0 +1,116 @@
+/* Homepage hero image area: rotating member brand graphics. */
+
+.ael-hero-slides {
+  position: absolute;
+  inset: 0;
+  z-index: -2;
+  overflow: hidden;
+  background: #191816;
+}
+
+.ael-hero-slide {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  transition: opacity 1200ms ease;
+  pointer-events: none;
+}
+
+.ael-hero-slide.is-active {
+  opacity: 1;
+}
+
+.ael-hero-slide img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center 55%;
+  filter: brightness(.68) saturate(.8) contrast(1.06);
+}
+
+/* The legibility wash must never swallow the controls underneath it. */
+.ael-hero-shade {
+  pointer-events: none;
+}
+
+.ael-hero-slide-controls {
+  position: absolute;
+  right: clamp(24px, 5vw, 96px);
+  bottom: clamp(74px, 11vh, 108px);
+  z-index: 3;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.ael-hero-slide-toggle {
+  appearance: none;
+  background: rgba(10, 12, 16, .55);
+  border: 1px solid rgba(255, 255, 255, .38);
+  border-radius: 6px;
+  color: #f1efe9;
+  cursor: pointer;
+  font: 650 9px/1 'Space Grotesk', 'Inter', sans-serif;
+  letter-spacing: .2em;
+  padding: 9px 13px;
+  text-transform: uppercase;
+  transition: background 200ms ease, border-color 200ms ease;
+}
+
+.ael-hero-slide-toggle:hover {
+  background: rgba(10, 12, 16, .8);
+  border-color: rgba(255, 255, 255, .7);
+}
+
+.ael-hero-slide-dots {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.ael-hero-slide-dot {
+  appearance: none;
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, .45);
+  border-radius: 50%;
+  cursor: pointer;
+  height: 8px;
+  padding: 0;
+  transition: background 200ms ease, border-color 200ms ease, transform 200ms ease;
+  width: 8px;
+}
+
+.ael-hero-slide-dot:hover {
+  border-color: rgba(255, 255, 255, .85);
+}
+
+.ael-hero-slide-dot[aria-current="true"] {
+  background: #f1efe9;
+  border-color: #f1efe9;
+  transform: scale(1.2);
+}
+
+.ael-hero-slide-toggle:focus-visible,
+.ael-hero-slide-dot:focus-visible {
+  outline: 2px solid #f1efe9;
+  outline-offset: 3px;
+}
+
+@media (max-width: 760px) {
+  .ael-hero-slide-controls {
+    bottom: 82px;
+    gap: 12px;
+  }
+
+  .ael-hero-slide img {
+    object-position: 62% center;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ael-hero-slide {
+    transition: none;
+  }
+}
