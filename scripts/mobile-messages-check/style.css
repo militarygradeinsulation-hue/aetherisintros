@@ -1,0 +1,6 @@
+@import "tailwindcss";
+@source "../../src/intros-ui/views/LiveMessagesView.tsx";
+@import "../../src/aetheris/messages-inverse-theme.css";
+@import "../../src/intros-ui/messages-readability.css";
+body { margin:0; font-family:Arial,sans-serif; background:#111; }
+html[data-theme="light"] body { background:#fafafa; }
