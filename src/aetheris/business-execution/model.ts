@@ -255,13 +255,13 @@ export function createProposalComparison(id: string): ProposalComparison {
 export function createPlaygroundBlueprint(id: string): ProjectBlueprint {
   return {
     id,
-    title: "Playground site improvement",
+    title: "Project Blueprint",
     brief: "",
     budgetAssumption: { amount: null, currency: null, note: "" },
     requirements: [
       {
         id: `${id}-req-use`,
-        question: "What should the playground support, and for whom?",
+        question: "What should this project achieve, and for whom?",
         answer: "",
       },
       {

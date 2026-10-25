@@ -262,13 +262,13 @@ export function BlueprintWorkbench() {
       <div className="ops-panel">
         <Eyebrow>PRIVATE TO YOUR ACCOUNT · NO AUTOMATIC SHARING</Eyebrow>
         <p className="ops-note">
-          Start with the editable playground/site-improvement template. Budget figures are
+          Start with the editable project planning template. Budget figures are
           user-entered assumptions. Nothing here is linked to an opportunity, Need, or room until
           those integrations have an authorized interface.
         </p>
         <div className="ops-toolbar">
           <Btn onClick={addTemplate}>
-            <Plus size={14} /> New playground blueprint
+            <Plus size={14} /> New project blueprint
           </Btn>
           <span className="ops-note" role="status">
             {sync.failing
