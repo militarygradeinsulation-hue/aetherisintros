@@ -6,7 +6,7 @@
 .ask-crm-bento-head p{color:var(--ledger-crm-muted,#CBD5E1)!important;font:500 12px/1.5 Inter,system-ui,sans-serif!important;margin:3px 0!important}
 .ask-crm-bento-period{display:flex;align-items:center;border-radius:13px!important;padding:4px;gap:4px;background:var(--ledger-crm-surface,#181A20);border:1px solid var(--ledger-crm-border,#FFF3)}
 .ask-crm-bento-period button{padding:8px 13px!important;min-height:36px;background:transparent!important;border:0!important;border-radius:9px!important;color:var(--ledger-crm-ink,#FFF)!important;font:650 12px Inter,system-ui,sans-serif;cursor:pointer}
-.ask-crm-bento-period button[aria-pressed="true"]{background:#EF4444!important;color:#FFF!important;box-shadow:0 4px 13px #0006}
+.ask-crm-bento-period button[aria-pressed="true"]{background:#B91C1C!important;color:#FFF!important;box-shadow:0 4px 13px #0006}
 .ask-crm-bento-grid{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));gap:13px}
 .ask-crm-bento-tile{position:relative;min-width:0;overflow:hidden;border-radius:24px!important;
  border:1px solid #FFFFFF30!important;color:#FFFFFF!important;

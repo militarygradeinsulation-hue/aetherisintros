@@ -45,14 +45,27 @@ try {
         try{localStorage.setItem("ask-intros.appearance",t)}catch{/* private mode */}
       },theme);
       const page=await context.newPage();
+      page.setDefaultTimeout(30_000);
+      console.log('CHECK customization',theme,size.width);
       await page.goto("http://127.0.0.1:"+port+"/demo",{waitUntil:"domcontentloaded",timeout:120000});
       await page.locator('.ledger-dashboard').waitFor({state:'visible',timeout:60000});
       const photos=page.locator('.ledger-feed-entry .ledger-post-photo');
       if(await photos.count()<2)throw Error('Showcase photo posts missing');
-      await page.waitForFunction(()=>[...document.querySelectorAll('.ledger-feed-entry .ledger-post-photo')].every(img=>img.complete&&img.naturalWidth>0));
+      // Showcase photos are lazy loaded. Exercise each image in the real content
+      // viewport before asserting decode, rather than waiting for offscreen images.
+      for(let index=0;index<await photos.count();index++) {
+        console.log('CHECK showcase photo',index,theme,size.width);
+        await photos.nth(index).scrollIntoViewIfNeeded();
+        await page.waitForFunction(i=>{
+          const img=document.querySelectorAll('.ledger-feed-entry .ledger-post-photo')[i];
+          return img.complete&&img.naturalWidth>0;
+        },index);
+      }
       await page.getByRole('region',{name:'Business headlines',exact:true}).waitFor();
       const button=page.getByRole('button',{name:'Customize',exact:true});
       await button.waitFor({state:'visible',timeout:45000});
+      const retainedComposer = page.locator('#ledger-post-content');
+      await retainedComposer.fill('Retain this draft while the activity panel is hidden');
       await button.click();
       const modal=page.getByRole('dialog',{name:'Customize your dashboard'});
       await modal.waitFor({state:'visible',timeout:10000});
@@ -78,8 +91,6 @@ try {
       }
       const activity=modal.getByRole('checkbox',{name:/Network activity/});
       if(!(await activity.isChecked()))throw Error('Default CRM activity section is not visible');
-      const retainedComposer = page.locator('#ledger-post-content');
-      await retainedComposer.fill('Retain this draft while the activity panel is hidden');
       await activity.uncheck();
       // Hidden panels remain mounted so hiding activity never destroys an unsent post.
       if(await page.locator('.ledger-dashboard-feed').isVisible())throw Error('CRM activity did not hide');

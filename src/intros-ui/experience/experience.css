@@ -58,3 +58,13 @@
   }
 }
 
+
+/* AA contrast for the host Business selector; original Bridge styles stay untouched. */
+:root:not([data-experience="social"]) body .ledger-crm-shell .experience-switch button[aria-pressed="true"] { background:#b91c1c !important; color:#fff !important; }
+
+/* These outer Business frames are not scroll containers. Prevent focus and
+   scrollIntoView from moving content horizontally beneath the fixed sidebar. */
+:root:not([data-experience="social"]) body .ix-root.ledger-native-app,
+:root:not([data-experience="social"]) body .ix-root.ledger-native-app .ledger-crm-shell {
+  overflow: clip !important;
+}

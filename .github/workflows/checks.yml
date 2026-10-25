@@ -45,6 +45,10 @@ jobs:
         env:
           PLAYWRIGHT_MODULE: ${{ github.workspace }}/node_modules/playwright/index.mjs
         run: node scripts/butler-entrance-check/run.mjs
+      - name: Contrast and overlay safety (browser)
+        env:
+          PLAYWRIGHT_MODULE: ${{ github.workspace }}/node_modules/playwright/index.mjs
+        run: node scripts/contrast-check/run.mjs
       - name: PDF attachment reader (browser)
         env:
           PLAYWRIGHT_MODULE: ${{ github.workspace }}/node_modules/playwright/index.mjs
@@ -119,7 +123,3 @@ jobs:
         env:
           PLAYWRIGHT_MODULE: ${{ github.workspace }}/node_modules/playwright/index.mjs
         run: node scripts/architect-check/run.mjs
-      - name: Contrast and overlay safety (browser)
-        env:
-          PLAYWRIGHT_MODULE: ${{ github.workspace }}/node_modules/playwright/index.mjs
-        run: node scripts/contrast-check/run.mjs
