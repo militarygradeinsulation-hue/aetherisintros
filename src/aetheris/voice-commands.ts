@@ -25,6 +25,7 @@ export const VOICE_PAGES: Array<{ page: string; label: string; words: string[] }
   { page: 'crm', label: 'CRM', words: ['crm', 'pipeline', 'contacts'] },
   { page: 'deals', label: 'Deals', words: ['deals', 'deal rooms', 'deal room', 'my deals', 'engagements'] },
   { page: 'workspaces', label: 'Workspaces', words: ['workspaces', 'workspace', 'business workspace', 'private workspace'] },
+  { page: 'hr', label: 'People & HR', words: ['hr', 'human resources', 'people and hr', 'hr butler', 'employee management'] },
   { page: 'benchmarks', label: 'Benchmark Pools', words: ['benchmark pools', 'peer benchmarks'] },
   { page: 'settlements', label: 'Referral Settlement', words: ['referral settlement', 'referral fees'] },
   { page: 'capacity', label: 'Capacity Exchange', words: ['capacity exchange', 'idle crews', 'available equipment'] },

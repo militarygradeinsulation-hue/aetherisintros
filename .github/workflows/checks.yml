@@ -158,3 +158,29 @@ jobs:
           name: network-systems-mobile-screens
           path: network-screenshots
           if-no-files-found: ignore
+
+  account-hr:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - uses: oven-sh/setup-bun@v2
+      - name: Install locked dependencies
+        run: bun install --frozen-lockfile
+      - name: HR privacy and domain tests
+        run: npx vitest run src/features/hr/model.test.ts scripts/migration-checks/hr-workspace.test.ts
+      - name: Install Chromium
+        run: npx playwright install --with-deps chromium
+      - name: Account HR workflows and responsive layouts
+        env:
+          HR_SCREENSHOTS: hr-screenshots
+        run: node scripts/hr-check/run.mjs
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: hr-mobile-screens
+          path: hr-screenshots
+          if-no-files-found: ignore

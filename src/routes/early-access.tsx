@@ -13,14 +13,14 @@ export const Route = createFileRoute('/early-access')({
   staticData: { sitemap: true },
   head: () => ({
     meta: [
-      { title: 'Basic & Executive — Ask Intros' },
+      { title: 'Ask Intros Membership | Basic and Executive Access' },
       {
         name: 'description',
         content:
-          'Ask Intros is opening to its first 1,000 members. Claim a founding place and join a business network without selling, mass outreach or spam.',
+          'Explore Ask Intros membership, Basic account creation, and reviewed Executive access for purposeful business networking and introductions.',
       },
-      { property: 'og:title', content: 'Founding 1,000 — Ask Intros' },
-      { property: 'og:description', content: 'The first 1,000 members shape the network. Claim your founding place.' },
+      { property: 'og:title', content: 'Ask Intros Membership | Basic and Executive Access' },
+      { property: 'og:description', content: 'Explore Basic membership and reviewed Executive access to Ask Intros.' },
       { property: 'og:type', content: 'website' },
       { name: 'twitter:card', content: 'summary_large_image' },
       { property: 'og:url', content: 'https://askintros.vip/early-access' },

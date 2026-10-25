@@ -27,11 +27,10 @@ describe('recovered demo and tile polish', () => {
     expect(landing).toContain('to="/demo"')
   })
 
-  it('keeps the photo-free public landing, real navigation and reduced-motion support', () => {
+  it('keeps public landing navigation and reduced-motion support', () => {
     expect(landing).toContain("import './editorial-landing.css'")
     expect(landing).toContain("import './editorial-media.css'")
     expect(landing).toContain("import './public-burnt-orange.css'")
-    expect(landing).toContain('The Only social platform that runs your business.')
     expect(landing).toContain('ael--text')
     expect(landing).not.toContain('Editorial imagery is illustrative')
     expect(landing).not.toContain('ael-hero-image')

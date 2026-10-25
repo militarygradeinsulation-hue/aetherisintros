@@ -7,6 +7,7 @@ import { supabase } from '@/integrations/supabase/client'
 import { billingStatus, startMembershipCheckout } from '@/lib/billing.functions'
 import { Eyebrow } from '../ui'
 import { rpc, SignInRequired, useSessionUser } from './useSessionUser'
+import { MembershipLevels } from './MembershipLevels'
 
 type Plan = { id: string; name: string; description: string | null; amount_cents: number; currency: string; billing_interval: string }
 
@@ -21,7 +22,7 @@ export function MembershipUpgradePage() {
   const { userId, ready } = useSessionUser()
   if (!ready) return <section className="executive-section aetheris-parity"><p className="og-note parity-empty">Loading…</p></section>
   if (!userId) return <div className="aetheris-parity"><SignInRequired what="membership upgrades" /></div>
-  return <UpgradePanel />
+  return <><MembershipLevels /><UpgradePanel /></>
 }
 
 function UpgradePanel() {

@@ -6,6 +6,8 @@ import { CinematicHero } from '@/components/ui/cinematic-landing-hero'
 import { CinematicEntrance, CITY_OPENING_VIDEO } from '@/components/ui/cinematic-entrance'
 import { AppearanceToggle } from './AppearanceToggle'
 import { HomeSlideCarousel } from './HomeSlideCarousel'
+import { PublicStructuredData } from './PublicStructuredData'
+import { PRODUCT_TITLE, PRODUCT_DESCRIPTION } from '@/lib/public-search'
 import './editorial-landing.css'
 import './architectural-system.css'
 import './compact-homepage.css'
@@ -17,7 +19,7 @@ import './home-slides.css'
 function JoinAction({ signedIn, className = '' }: { signedIn: boolean; className?: string }) {
   return signedIn
     ? <Link className={className} to="/app">Find your next connection <ArrowUpRight aria-hidden="true" size={16} /></Link>
-    : <Link className={className} to="/auth" search={{ mode: 'signup' }}>Create your account <ArrowUpRight aria-hidden="true" size={16} /></Link>
+    : <Link className={className} to="/auth" search={{ mode: 'signup' }}>Create free account <ArrowUpRight aria-hidden="true" size={16} /></Link>
 }
 
 export default function Landing() {
@@ -25,6 +27,7 @@ export default function Landing() {
   const signedIn = access.signedIn
 
   return <main className="ael ael-compact ael--text">
+    <PublicStructuredData path="/" title={PRODUCT_TITLE} description={PRODUCT_DESCRIPTION} />
     <CinematicEntrance videoSrc={CITY_OPENING_VIDEO} />
     <a className="ael-skip" href="#ael-main">Skip to content</a>
 
@@ -45,7 +48,6 @@ export default function Landing() {
 
     <section className="ael-hero ael-hero--carousel" id="ael-main" aria-labelledby="ael-hero-title">
       <h1 id="ael-hero-title" className="sr-only">Ask Intros — The only social platform that runs your business.</h1>
-      <HomeSlideCarousel />
       <div className="ael-hero-content">
         <p className="sr-only">Share what you need. Explore relevant people. Request an introduction with context and mutual consent.</p>
         <div className="ael-hero-actions">
@@ -53,6 +55,7 @@ export default function Landing() {
           <Link to="/demo" className="ael-text-link">Explore the demo <ArrowRight aria-hidden="true" size={16} /></Link>
         </div>
       </div>
+      <HomeSlideCarousel />
     </section>
 
     <CinematicHero
@@ -75,6 +78,12 @@ export default function Landing() {
     <footer className="ael-compact-footer">
       <Link to="/" className="ael-compact-footer-brand" aria-label="Ask Intros home"><span className="stencil-footer-wordmark" style={{ color: "var(--st-ink)", backgroundColor: "var(--st-bg)" }}>ASK INTROS</span></Link>
       <span>WHY ME &middot; WHY THEM &middot; WHY NOW</span>
+      <nav className="ael-guide-links" aria-label="Learn about Ask Intros">
+        <Link to="/how-it-works">How it works</Link>
+        <Link to="/warm-introductions">Warm introductions</Link>
+        <Link to="/active-memory">Active Memory</Link>
+        <Link to="/founder-story">Founder story</Link>
+      </nav>
     </footer>
   </main>
 }

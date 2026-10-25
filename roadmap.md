@@ -1,5 +1,24 @@
 # Aetheris specification completion
 
+## Account HR system (Oct 25)
+- [x] Add private People & HR under My Work, Business Tools, onboarding and Butler navigation.
+- [x] Prefill company, industry, service description and location from the signed-in profile; require review before saving the business context. Missing headcount stays blank and the work model remains editable.
+- [x] Add editable employee, hiring, candidate, onboarding/offboarding, time-off, policy, performance, training, benefits, payroll-input and document records with private account ownership and conflict checks.
+- [x] Add tailored checklist creation, due-date overview, audit metadata, record export and approved-hours payroll CSV. No payment, tax, benefits enrollment or automatic employment decision is implied.
+- [x] Add HR Butler conversations and editable drafts through the configured RouteLLM provider, using reviewed business context and explicit submission. Personnel records are not automatically included.
+- [x] Add Drizzle migration 0097, SQL authorization tests and browser workflow coverage. No public or shared-business access is inferred from company names.
+- [ ] Activate the migration through the managed project path and verify real member sessions. Supabase project access is unavailable in this connection; no direct live DDL was performed.
+- [ ] Verify the real AI provider configuration and production response. Provider calls in tests are mocked.
+
+See `docs/ACCOUNT_HR_SYSTEM_2026_10_25.md` for scope, privacy and activation details.
+
+## Homepage signup prominence and LinkedIn verification (Oct 25)
+- [x] Move a larger Create free account action above the homepage carousel.
+- [x] Check LinkedIn sign-in availability: the signup page reports provider disabled; existing LinkedIn action is disabled. A pasted URL cannot establish ownership.
+- [x] Replace ownership-first signup requirement: Basic signup remains available without LinkedIn.
+- [ ] Implement and isolate-test three access levels: Basic profile/browsing only, LinkedIn-verified networking, paid full member features and black ID card; preserve existing grants. LinkedIn provider setup remains blocked.
+- [x] Verify the updated homepage action: 375×668, 64px-tall action at y=110 above slides, navigates to signup; 12 LinkedIn regressions pass and build OK.
+
 ## Network-only systems (Oct 25)
 - [x] Implement Capacity Exchange with verified membership, approximate service area, expiring Available/Needed posts, private requests, and explicit terms acceptance with a handoff to Letters.
 - [x] Implement Benchmark Pools with company enrollment, contribution consent, server-enforced 10-company minimum, immutable quarterly releases, give-to-get access, Butler explanation and Executive Report evidence.
