@@ -34,23 +34,23 @@ jobs:
       # Catch bundling failures before slow browser smoke tests.
       - name: Build
         run: npx vite build
+      - name: Install Chromium
+        run: npx playwright install --with-deps chromium
+      - name: Butler orb and cinematic entrance (browser)
+        env:
+          PLAYWRIGHT_MODULE: ${{ github.workspace }}/node_modules/playwright/index.mjs
+        run: node scripts/butler-entrance-check/run.mjs
       - name: Database migration checks
         run: |
           node scripts/migration-checks/run.mjs
           node scripts/migration-checks/launch-signup.standalone.mjs
           node scripts/recovery/member-families.standalone.mjs
-      - name: Install Chromium
-        run: npx playwright install --with-deps chromium
       - name: Business tool generation and image workflow (browser)
         run: node scripts/business-tools-automation-check/run.mjs
       - name: Member business tools, post editing and Butler controls (browser)
         run: node scripts/member-tools-check/run.mjs
       - name: Onboarding walkthrough (browser)
         run: node scripts/onboarding-check/run.mjs
-      - name: Butler orb and cinematic entrance (browser)
-        env:
-          PLAYWRIGHT_MODULE: ${{ github.workspace }}/node_modules/playwright/index.mjs
-        run: node scripts/butler-entrance-check/run.mjs
       - name: Contrast and overlay safety (browser)
         env:
           PLAYWRIGHT_MODULE: ${{ github.workspace }}/node_modules/playwright/index.mjs
