@@ -165,6 +165,8 @@ try {
       if (viewport.name === 'desktop') {
         await page.locator('.ael-nav a[href="#cinematic-experience"]').click()
         assert(new URL(page.url()).hash === '#cinematic-experience', 'Experience navigation updates the anchor')
+        // Rotation is intentionally still under reduced motion, so test the dwell rule with motion allowed.
+        await page.emulateMedia({ reducedMotion: 'no-preference' })
         const before = await page.evaluate(() => [...document.querySelectorAll('.ael-hero-slide')].findIndex(s => s.classList.contains('is-active')))
         await page.waitForTimeout(5600)
         const after = await page.evaluate(() => [...document.querySelectorAll('.ael-hero-slide')].findIndex(s => s.classList.contains('is-active')))
