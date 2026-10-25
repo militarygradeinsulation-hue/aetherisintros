@@ -27,7 +27,10 @@ async function docxText(file: File): Promise<string> {
       let length = 0
       try { for (;;) { const chunk = await reader.read(); if (chunk.done) break; length += chunk.value.length; if (length > 2 * 1024 * 1024) throw new Error('DOCX text is too large.'); chunks.push(chunk.value) } }
       finally { await reader.cancel() }
-      const xml = await new Blob(chunks).text()
+      const xmlBytes = new Uint8Array(length)
+      let position = 0
+      for (const chunk of chunks) { xmlBytes.set(chunk, position); position += chunk.length }
+      const xml = new TextDecoder().decode(xmlBytes)
       if (/<!DOCTYPE|<!ENTITY/i.test(xml)) throw new Error('Unsupported XML declarations.')
       const doc = new DOMParser().parseFromString(xml, 'application/xml')
       if (doc.getElementsByTagName('parsererror').length) throw new Error('DOCX text could not be read.')
