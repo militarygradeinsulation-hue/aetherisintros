@@ -8,3 +8,21 @@
 :root[data-theme] body .ix-root.ledger-native-app[data-experience] > .ix-assistant button.ask-dock-fab > .ask-dock-blob {display:inline-flex!important;width:56px!important;height:56px!important;flex:none;background:none!important;box-shadow:none!important;border-radius:50%!important;pointer-events:none}
 :root[data-theme] body .ix-root.ledger-native-app[data-experience] > .ix-assistant button.ask-dock-fab:not(.active) {padding:4px 14px 4px 4px!important;border-radius:999px!important;min-height:64px}
 :root[data-theme] body .ix-root.ledger-native-app[data-experience] > .ix-assistant button.ask-dock-fab:not(.active) > svg {display:none!important}
+
+
+/* Phone placement is stable in both views, including previously dragged launchers. */
+@layer bridge-social-reference {
+  @media (max-width: 767px) {
+    :root[data-theme] body .ix-root.ledger-native-app[data-experience] > .ix-assistant button.ask-dock-fab {
+      position:fixed!important;
+      left:auto!important;
+      top:auto!important;
+      right:max(14px,env(safe-area-inset-right,0px))!important;
+      bottom:calc(84px + env(safe-area-inset-bottom,0px))!important;
+      margin:0!important;
+      transform:none!important;
+      cursor:pointer;
+      touch-action:manipulation;
+    }
+  }
+}

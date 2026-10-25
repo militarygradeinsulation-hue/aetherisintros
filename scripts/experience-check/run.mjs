@@ -7,6 +7,39 @@ const output = process.env.EXPERIENCE_SCREENSHOTS || "/tmp/ask-intros-experience
 mkdirSync(output, { recursive: true });
 const browser = await chromium.launch({ headless: true, ...(process.env.PLAYWRIGHT_EXECUTABLE_PATH ? { executablePath: process.env.PLAYWRIGHT_EXECUTABLE_PATH } : {}) });
 try {
+  // A position saved on desktop must never displace the mobile Butler.
+  for (const view of ['social', 'business']) {
+    const mobile = await browser.newContext({ viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true });
+    await mobile.addInitScript(view => {
+      localStorage.setItem('ask-intros.experience.v1', view);
+      localStorage.setItem('aetheris-dock-fab-pos', JSON.stringify({ left: 15, top: 150 }));
+    }, view);
+    const phone = await mobile.newPage();
+    await phone.goto(url, { waitUntil: 'domcontentloaded', timeout: 90000 });
+    const launcher = phone.locator('.ix-assistant .ask-dock-fab');
+    await launcher.waitFor({ timeout: 90000 });
+    const assertPinned = async () => {
+      const box = await launcher.boundingBox();
+      const more = await phone.getByRole('button', { name: 'More menu', exact: true }).filter({ visible: true }).boundingBox();
+      const nav = await phone.getByRole('navigation', { name: 'Mobile navigation', exact: true }).filter({ visible: true }).boundingBox();
+      if (!box || !more || !nav || Math.abs(390 - box.x - box.width - 14) > 2 || box.y + box.height > nav.y || nav.y - box.y - box.height > 32)
+        throw new Error(view + ' Butler is not pinned immediately above More: ' + JSON.stringify({ box, more, nav }));
+    };
+    await assertPinned();
+    const box = await launcher.boundingBox();
+    await phone.mouse.move(box.x + box.width / 2, box.y + box.height / 2);
+    await phone.mouse.down();
+    await phone.mouse.move(40, 200, { steps: 8 });
+    await phone.mouse.up();
+    await assertPinned();
+    await launcher.click();
+    await phone.getByRole('dialog', { name: 'Ask Intros', exact: true }).waitFor();
+    await launcher.click();
+    await assertPinned();
+    await phone.screenshot({ path: output + '/mobile-butler-' + view + '.png' });
+    console.log(view + ': mobile Butler pinned above More with stale position, drag and open/close');
+    await mobile.close();
+  }
   const page = await browser.newPage({ viewport: { width: 1440, height: 1000 } });
   const checkButler = async () => {
     const button = page.locator('.ix-assistant .ask-dock-fab');
