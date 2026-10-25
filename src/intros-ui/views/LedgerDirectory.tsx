@@ -1,3 +1,4 @@
+import { newcomerLane } from '@/features/evidence-loop/matching';
 import { PeopleDirectoryView } from '../../bridge-reference/src/intros-ui/views/PeopleDirectoryView';
 import type { ExperienceView } from '../experience/preference';
 import { MemberThumbnail } from '../components/shared/MemberThumbnail';
@@ -26,12 +27,13 @@ export function LedgerDirectory({
   useEffect(() => { setSearch(searchQuery); }, [searchQuery]);
   const [role, setRole] = useState('all');
   const [sort, setSort] = useState<'name' | 'match'>('match');
-  const filtered = useMemo(() => members.filter(person => {
+  const filtered = useMemo(() => { const rows=members.filter(person => {
     const query = search.trim().toLowerCase();
     const text = [person.name, person.title, person.company, person.industry, person.location].join(' ').toLowerCase();
     return (!query || text.includes(query)) && (role === 'all' || person.roleType === role);
-  }).sort((a, b) => sort === 'name' ? a.name.localeCompare(b.name) : b.matchScore - a.matchScore), [members, search, role, sort]);
-  return <><div hidden={experience !== 'social'}><PeopleDirectoryView members={members} isLive={isLive} onNavigate={onNavigate} onRequestIntro={onRequestIntro} connectedMemberIds={connectedMemberIds} onToggleConnect={onToggleConnect}/></div><div className="ledger-directory" hidden={experience === 'social'}>
+  }).sort((a, b) => sort === 'name' ? a.name.localeCompare(b.name) : b.matchScore - a.matchScore); return sort === 'match' ? newcomerLane(rows,p=>p.id,p=>Boolean(p.newcomerEligible)) : rows; }, [members, search, role, sort]);
+  const newcomer=filtered.find(p=>p.newcomerEligible);
+  return <>{newcomer&&<section className="ledger-directory" aria-label="Newcomer lane"><Panel title="Newcomer lane" subtitle="A relevant new member, with room to build a network. Selection rotates daily; fit scores stay unchanged."><button className="ledger-ui-button secondary" onClick={()=>onNavigate('people',newcomer.id)}>{newcomer.name} · {newcomer.title}</button><p>New to Ask Intros. Recommendations are introductions to explore, not hiring decisions.</p></Panel></section>}<div hidden={experience !== 'social'}><PeopleDirectoryView members={members} isLive={isLive} onNavigate={onNavigate} onRequestIntro={onRequestIntro} connectedMemberIds={connectedMemberIds} onToggleConnect={onToggleConnect}/></div><div className="ledger-directory" hidden={experience === 'social'}>
     <PageHeader eyebrow="Relationships / Contacts" title="People & Network"
       description="Find the people, context and warm paths that matter."
       actions={<>
@@ -75,7 +77,7 @@ export function LedgerDirectory({
             </button></td>
             <td role="cell"><span className="ledger-directory-role">{person.roleType}</span><small>{person.industry || 'Business'}</small></td>
             <td role="cell">{person.location}</td>
-            <td role="cell"><span className="ledger-directory-fit">{person.matchScore}%</span></td>
+            <td role="cell"><span className="ledger-directory-fit">{person.matchScore}%</span>{person.newcomerEligible&&<small>Newcomer eligible</small>}{person.matchExplanation&&<details><summary>Why this match</summary><p>{person.matchExplanation}</p></details>}</td>
             <td role="cell"><span className={connectedMemberIds.has(person.id) ? 'ledger-directory-status connected' : 'ledger-directory-status'}>
               {connectedMemberIds.has(person.id) ? 'Connected' : 'Not connected'}</span></td>
             <td role="cell"><div className="ledger-directory-actions">

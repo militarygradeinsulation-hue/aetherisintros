@@ -1,3 +1,4 @@
+import type { MatchEvidence } from '@/features/evidence-loop/matching'
 import type { BusinessDetails } from './business-posts'
 import { people as seedPeople } from './data'
 import { calculateConnectionScore, determineRadarState } from './lib/engine'
@@ -9,6 +10,7 @@ export type IntroState =
   | 'recommended' | 'requested' | 'waiting' | 'accepted' | 'introduced' | 'conversing' | 'closed'
 
 export interface Member extends Person {
+  matchEvidence?: MatchEvidence | undefined
   role: MemberRole
   industry: string
   expertise: string[]

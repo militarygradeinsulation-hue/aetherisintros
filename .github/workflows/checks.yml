@@ -202,3 +202,29 @@ jobs:
           name: hr-mobile-screens
           path: hr-screenshots
           if-no-files-found: ignore
+
+  evidence-loop:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - uses: oven-sh/setup-bun@v2
+      - name: Install locked dependencies
+        run: bun install --frozen-lockfile
+      - name: Evidence consent, ranking and database authority
+        run: npx vitest run src/features/evidence-loop/model.test.ts scripts/migration-checks/evidence-loop.test.ts src/aetheris/__tests__/matching-evidence.test.ts
+      - name: Install Chromium
+        run: npx playwright install --with-deps chromium
+      - name: Private timing, mobile layout and account boundaries
+        env:
+          EVIDENCE_SCREENSHOTS: evidence-screenshots
+        run: node scripts/evidence-loop-check/run.mjs
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: evidence-time-mobile-screens
+          path: evidence-screenshots
+          if-no-files-found: ignore

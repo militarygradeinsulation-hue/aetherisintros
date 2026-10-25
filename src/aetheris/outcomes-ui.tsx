@@ -39,10 +39,12 @@ function OutcomeForm({ introRequestId, onSaved, quick = QUICK }: { introRequestI
     if (res.error) { setMsg(res.error); return }
     void ghostOutcomeRecorded(introRequestId, stage, stage === 'outcome' ? f.category : undefined)
     setDetail(false)
+    window.dispatchEvent(new Event('aetheris:evidence-changed'))
     onSaved()
   }
 
   return <div className="oc-form">
+    <label className="og-check wide"><input type="checkbox" checked={f.shareable} onChange={e => setF(v => ({ ...v, shareable: e.target.checked }))} /> Share this report with the other participant. Matching use also requires both people to enable it in Evidence & Time. Notes stay private.</label>
     <div className="og-yn">
       {quick.map(s => <button key={s} disabled={busy} onClick={() => void save(s)}>{stageLabel[s]}</button>)}
       <button disabled={busy} className={detail ? 'active' : ''} onClick={() => setDetail(d => !d)}><Flag size={12} /> {stageLabel.outcome}</button>
@@ -55,7 +57,7 @@ function OutcomeForm({ introRequestId, onSaved, quick = QUICK }: { introRequestI
       <label>Approximate value (optional)<select value={f.valueBand} onChange={e => setF(v => ({ ...v, valueBand: e.target.value as ValueBand }))}>
         {VALUE_BANDS.map(b => <option key={b} value={b}>{valueBandLabel[b]}</option>)}</select></label>
       <label className="wide">Private note (only you can read this)<textarea rows={2} maxLength={1000} value={f.note} onChange={e => setF(v => ({ ...v, note: e.target.value }))} /></label>
-      <label className="og-check wide"><input type="checkbox" checked={f.shareable} onChange={e => setF(v => ({ ...v, shareable: e.target.checked }))} /> Let the other participant see this outcome (never the note)</label>
+
       <Btn kind="secondary" disabled={busy} onClick={() => void save('outcome')}><Check size={14} /> Record outcome</Btn>
     </div>}
     {msg && <p className="og-note">{msg}</p>}

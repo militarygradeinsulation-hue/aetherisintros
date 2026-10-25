@@ -469,3 +469,26 @@ See `docs/NETWORK_VALUE_SYSTEMS_2026_10_25.md` for release dependencies and vali
 - [x] Dashboard: default focused social feed, separate tools/activity, closed overview, progressive feed loading and preserved drafts; measured 1440×900 and 390×844 before/after.
 - [ ] Verify the authenticated Dashboard and screenshot-specific live Introductions banner — blocked: requesting account has no mintable session; preview member sign-in required.
 - [ ] Confirm connected GitHub main/CI synchronization — blocked: sandbox exposes managed internal edit history, not GitHub main/CI status.
+
+## Evidence loop (October 2026)
+
+First implementation slice, with production activation tracked separately:
+
+- [x] Private opt-in timing for the white paper's six tasks. One active task, explicit reviewed completion, pause on hidden/idle, retry-safe completion, account isolation, export and deletion.
+- [x] Rolling seven-day active time and signed comparison differences. Member-reported observed baselines require at least three samples for the observed-comparison bucket. Estimates stay separate. No causal, net-savings or network-median claim.
+- [x] Both participants receive 7- and 30-day check-ins even after an earlier positive report; each checkpoint needs a new report from that participant.
+- [x] Shared-outcome matching reads accepted, double-opt-in introductions only. Both participants must consent to ranking and share agreeing latest terminal reports. Distinct partners, one-year horizon, minimum three partners, smoothing and a capped transfer from the 24% text-relevance weight.
+- [x] Relevant, available newcomers can opt into first-30-account-day exposure. Ranked lists reserve a position with daily rotation; the Social host exposes a newcomer recommendation without changing the pinned Bridge source. Scores are unchanged by exposure placement.
+- [x] Starter vouches reuse executive recommendations. Recipient approval is now proven server-side; author edits revoke approval and legacy display flags require reconfirmation. Evidence & Time contains the recipient review controls.
+- [ ] Activate journaled migration 0098 through the managed Drizzle rollout after reconciling the existing production ledger. Source-level tests are not proof of live database compatibility. Until activation the UI disables consent/timing and no outcome/newcomer evidence is returned.
+- [ ] Run a consented member pilot; validate active-time coverage, comparable baseline sampling, outcome rates and newcomer exposure. Publish aggregate claims only after a documented study and appropriate aggregation/consent controls.
+
+Next slices, not implemented by this change:
+
+- [ ] Stack audit: explicit receipt/statement permission, deduplication and actual cancellable workflow checks; net costs must include the real Intros plan, retained tools and migration cost.
+- [ ] Switch kit: supported import validation, actual workflow coverage, two-week parallel use and member-controlled cancellation reminders.
+- [ ] Not-a-fit reasons: private wrong-field/timing/seniority/already-known signals, with explainable preference learning and reset controls.
+- [ ] Freshness: consented weekly questions and server-enforced needs/offers expiry, with renewal and historical provenance.
+- [ ] See what they see: recipient-specific field preview and per-field approval before every sharing/agent action boundary.
+- [ ] Paid trials: jointly approved scope, deliverable, fair payment terms and dispute/cancellation handling; confirmed evidence only. Requires operational settlement, not just a payment-looking screen.
+- [ ] Instrument additional automatic workflow completion boundaries and independently sampled comparison baselines. The initial timer is intentionally member-started and member-completed; it does not silently record every activity.

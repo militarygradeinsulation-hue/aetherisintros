@@ -1,3 +1,4 @@
+import type { MatchEvidence } from '@/features/evidence-loop/matching'
 import { memberClient } from '@/integrations/supabase/member-client'
 /**
  * LIVE network data. Every read here is real, user-generated production data:
@@ -16,6 +17,17 @@ import type { Member, NetworkAsk, Post, Thread } from './social'
 import { isActiveSharedSignal } from './opportunity-graph'
 import type { ScoreBreakdown } from './types'
 import type { GiverBand } from './reciprocity-core'
+
+/** Optional additive contract: failure means no evidence boost or newcomer claim. */
+export async function loadMatchSignals(ids: string[]): Promise<Map<string, MatchEvidence>> {
+ const out=new Map<string,MatchEvidence>()
+ for(let i=0;i<ids.length;i+=100){
+  const {data,error}=await (supabase as any).rpc('match_evidence_signals',{p_members:ids.slice(i,i+100)})
+  if(error) return new Map()
+  for(const r of data??[])out.set(r.member_id,{confirmedPartners:r.confirmed_partners,successfulPartners:r.successful_partners,newcomerUntil:r.newcomer_until,approvedVouches:r.approved_vouches})
+ }
+ return out
+}
 
 export interface LiveProfileRow {
   id: string
@@ -235,6 +247,9 @@ export async function loadLiveDirectory(userId: string): Promise<{ directory: Di
       const byId = new Map<string, GiverBand>(((bands?.data ?? []) as Array<{ member_id: string; band: GiverBand }>).map(b => [b.member_id, b.band]))
       for (const m of members) m.giverBand = byId.get(m.id) ?? null
     }
+
+    const matchSignals=await loadMatchSignals(members.map(m=>m.id))
+    for(const member of members) member.matchEvidence=matchSignals.get(member.id)
 
     const threadIds = (threadRows.data ?? []).map(t => t.id)
     const unreadResponse = threadIds.length
