@@ -5,7 +5,7 @@
   flex-direction: column;
   height: auto;
   min-height: 0;
-  padding: 120px 0 20px;
+  padding: 204px 0 20px;
   background: var(--background);
   gap: 16px;
 }

@@ -14,6 +14,11 @@ import { isIntroTargetId, submitIntroRequest } from '@/aetheris/lib/intro-reques
 import { useNetwork } from '@/aetheris/store';
 import { loadMyProfile } from '@/aetheris/live';
 import { WriteFailureNotice } from '@/aetheris/WriteFailureNotice';
+import { useServerFn } from '@tanstack/react-start';
+import { getMyMemberEntitlements } from '@/lib/member-entitlements.functions';
+import { membershipPageRequirement, type MemberEntitlements } from '@/aetheris/member-entitlements';
+import { MembershipLevels } from '@/aetheris/pages/MembershipLevels';
+import { Button } from '@/components/ui/button';
 import { refreshUnread, useUnreadCounts } from '@/aetheris/read-receipts';
 import { reportWriteFailure } from '@/aetheris/write-failures';
 import './styles.css';
@@ -83,6 +88,17 @@ export default function App({ mode = 'demo', executiveAction, initialPage, initi
   const [activePage, setActivePage] = useState<ActivePage>(initialPage ?? 'home');
   const [crmSection, setCrmSection] = useState<'crm' | 'pipeline'>('crm');
   const [classicPage, setClassicPage] = useState<string>(initialWorkspace ?? 'memory');
+  const readEntitlements = useServerFn(getMyMemberEntitlements);
+  const [entitlements, setEntitlements] = useState<MemberEntitlements | null>(null);
+  const [permissionError, setPermissionError] = useState(false);
+  useEffect(() => {
+    if (mode !== 'live') return;
+    let off = false;
+    void readEntitlements().then(e => { if (!off) setEntitlements(e); }).catch(() => { if (!off) setPermissionError(true); });
+    return () => { off = true; };
+  }, [mode, readEntitlements]);
+  const requirement = membershipPageRequirement(activePage, classicPage);
+  const accessBlocked = mode === 'live' && (permissionError || Boolean(entitlements && requirement && !entitlements[requirement]));
   const [selectedProfileId, setSelectedProfileId] = useState<string>(mode === 'live' ? '' : 'marcus-lee');
   const [members, setMembers] = useState<NetworkMember[]>(mode === 'live' ? [] : NETWORK_MEMBERS);
   const [liveDirectoryError, setLiveDirectoryError] = useState('');
@@ -356,6 +372,7 @@ export default function App({ mode = 'demo', executiveAction, initialPage, initi
           }}/> : undefined}
       >
       <main className="flex-1 arch-product-main" data-arch-page={activePage}>
+        {accessBlocked ? <div className="aetheris-parity"><MembershipLevels /><div className="executive-section"><p role="status">{permissionError ? 'Membership permissions could not be checked. Please retry before using this feature.' : requirement === 'networking' ? 'Verify your LinkedIn account or choose paid membership to use networking.' : 'Paid membership is required for business tools.'}</p><Button onClick={() => { setClassicPage('membership-upgrade'); handleNavigate('workspace'); }}>View membership options</Button></div></div> : <>
         {experience === 'social' ? <BridgeNewsTicker onOpen={() => handleNavigate('news')}/> : <NewsTicker onOpenNews={() => handleNavigate('news')}/>} 
         {activePage === 'home' && (
           <LedgerDashboard
@@ -486,6 +503,7 @@ export default function App({ mode = 'demo', executiveAction, initialPage, initi
         {activePage === 'workspace' && <LedgerWorkspace activeTool={classicPage} onChange={setClassicPage} crmSection={crmSection} onCrmSectionChange={setCrmSection}>
           <div className="ix-classic"><AetherisAppSurface key={classicPage === 'crm' ? `crm-${crmSection}` : classicPage} startPage={classicPage as any} crmSection={crmSection} assistant={false} /></div>
         </LedgerWorkspace>}
+        </>}
       </main>
       </LedgerBridgeShell>
 

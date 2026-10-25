@@ -288,7 +288,7 @@
 .ledger-native-nav-item > svg {width:18px;height:18px;justify-self:center}
 :root body .ix-root.ledger-native-app .ledger-crm-shell .ledger-native-nav-label {min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font:inherit!important;letter-spacing:0!important;line-height:1.4}
 .ledger-native-mobile-account > button,.ledger-native-account-dropdown > button {
-  display:grid;grid-template-columns:18px minmax(0,1fr);gap:12px;align-items:center;text-align:left;
+  display:grid;grid-template-columns:auto minmax(0,1fr);gap:12px;align-items:center;text-align:left;
 }
 .ledger-native-account-dropdown {max-height:calc(100dvh - 90px);overflow:auto}
 .ledger-native-mobile-account > button {width:100%;min-height:44px;padding:10px 12px}
@@ -318,12 +318,13 @@
 
 
 /* Ask Intros floating desktop command dock. Deliberately hidden on mobile:
-   the persistent 4-button touch navigation and floating assistant remain accessible. */
+   the persistent 4-button touch navigation and floating assistant remain accessible.
+   On desktop it stays partially visible at the bottom edge and rises when the
+   pointer reaches that edge, or when one of its controls takes keyboard focus. */
 :root body .ix-root.ledger-native-app .ledger-native-quick-dock {
  position:fixed;left:calc(50% + var(--ledger-crm-sidebar,256px)/2);bottom:0;z-index:85;
  transform:translateX(-50%);pointer-events:none;max-width:calc(100vw - var(--ledger-crm-sidebar,256px) - 36px)
 }
-:root body .ix-root.ledger-native-app .ledger-native-quick-dock .ask-macos-dock{pointer-events:auto}
 :root body .ix-root.ledger-native-app .ledger-native-content{padding-bottom:115px}
 :root body .ix-root.ledger-native-app .ledger-native-search-frame {
  display:flex;flex:none;min-width:0;width:min(38vw,420px);margin-left:auto;
