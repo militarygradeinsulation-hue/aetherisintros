@@ -68,12 +68,13 @@ try {
     const errors = [];
     for (const width of [390, 1280]) for (const theme of ['light', 'dark']) {
       const context = await browser.newContext({ viewport: { width, height: 900 }, colorScheme: theme });
-      await context.addInitScript(theme => { localStorage.setItem('ask-intros.appearance', theme); document.documentElement.dataset.theme = theme; }, theme);
+      await context.addInitScript(theme => { localStorage.setItem('ask-intros.appearance', theme); }, theme);
       const page = await context.newPage();
       page.on('pageerror', error => errors.push(error.message));
       for (const [path] of pages.slice(1)) {
         await page.goto(base + path, { waitUntil: 'domcontentloaded' });
         await page.getByRole('heading', { level: 1 }).waitFor();
+        await page.waitForFunction(theme => document.documentElement.dataset.theme === theme, theme);
         assert(!await page.evaluate(() => document.documentElement.scrollWidth > innerWidth), path + ' fits ' + width);
         const question = page.locator('.public-product-questions details').first();
         await question.locator('summary').click();
