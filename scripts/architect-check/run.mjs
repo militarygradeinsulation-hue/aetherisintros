@@ -211,7 +211,9 @@ try{
     if(process.env.NAV_SCREENSHOT_DIR) await page.screenshot({path:process.env.NAV_SCREENSHOT_DIR+'/'+theme+'-mobile.png'});
     await mobile.getByRole('button',{name:'Network',exact:true}).click();
     check(!(await mobile.isVisible()),theme+' mobile selection closes drawer');
-    await page.locator('.ledger-section-navigation').getByRole('button',{name:'Network map',exact:true}).click();
+    await page.getByRole('button',{name:'More menu',exact:true}).click();
+    await mobile.getByRole('button',{name:'Ask Intros',exact:true}).click();
+    await page.locator('.ledger-section-navigation').getByRole('button',{name:'Live Signal Radar',exact:true}).click();
     check(await page.locator('[data-arch-page="bubbles"]').count()===1,theme+' mobile Network map remains reachable');
     check(await page.locator('.ask-dock-fab').count()===1,theme+' consolidated navigation retains one floating bot');
     await page.getByRole('button',{name:'More menu',exact:true}).click();

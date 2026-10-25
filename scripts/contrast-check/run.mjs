@@ -62,11 +62,22 @@ function measure(selector) {
   {
     const prev = amb?.style.pointerEvents; if (amb) amb.style.pointerEvents = 'auto'
     const r = s.getBoundingClientRect()
+    // Only sample the part visible inside all scrolling/clipping ancestors.
+    let left=0,top=0,right=innerWidth,bottom=innerHeight;
+    for(let parent=s.parentElement;parent;parent=parent.parentElement) {
+      const style=getComputedStyle(parent),box=parent.getBoundingClientRect();
+      if(/auto|scroll|hidden|clip/.test(style.overflowX)) { left=Math.max(left,box.left);right=Math.min(right,box.right); }
+      if(/auto|scroll|hidden|clip/.test(style.overflowY)) { top=Math.max(top,box.top);bottom=Math.min(bottom,box.bottom); }
+    }
     for (const fx of [.08, .29, .5, .71, .92]) for (const fy of [.08, .29, .5, .71, .92]) {
       const x = r.left + r.width * fx, y = r.top + r.height * fy
-      if (x < 0 || y < 0 || x >= innerWidth || y >= innerHeight) continue
+      if (x < left || y < top || x >= right || y >= bottom) continue
       const hit = document.elementFromPoint(x, y)
-      if (hit && !s.contains(hit)) covered = (hit.className && String(hit.className).split(' ')[0]) || hit.tagName.toLowerCase()
+      // Shell launchers intentionally float above scrolling content. Their own
+      // hit targets and content scroll reachability are covered by mobile-site-check.
+      // Continue detecting decorative fields and unknown overlays here.
+      if (hit?.closest('.ledger-native-quick-dock,.ask-dock-fab') && !s.contains(hit)) continue
+      if (hit && !s.contains(hit)) { covered = (hit.className && String(hit.className).split(' ')[0]) || hit.tagName.toLowerCase(); console.log('OVERLAY_DIAGNOSTIC', JSON.stringify({selector,x,y,surface:r.toJSON(),hit:hit.outerHTML.slice(0,300),hitRect:hit.getBoundingClientRect().toJSON(),clip:{left,top,right,bottom}})); }
     }
     if (amb) amb.style.pointerEvents = prev
   }
@@ -113,7 +124,7 @@ async function check(page, name, selector, prefix, { inline = false, field = fal
   if (process.env.SHOTS) await page.screenshot({ path: join(process.env.SHOTS, `${process.env.PREFIX ?? 'check'}-${prefix}${name}.png`) })
   if (!m) { ok(false, `${name}: surface ${selector} is visible`); return }
   if (!inline) ok(m.alpha >= 0.9, `${name}: background alpha ${m.alpha} >= 0.9`)
-  if (!field) ok(!m.covered, `${name}: nothing painted over it` + (m.covered ? ` (covered by ${m.covered})` : ''))
+  if (!field) ok(!m.covered, `${name}: no unexpected overlay on its visible content` + (m.covered ? ` (covered by ${m.covered})` : ''))
   const bad = m.texts.filter(t => t.ratio < t.need)
   const worst = m.texts.reduce((w, t) => (!w || t.ratio < w.ratio ? t : w), null)
   ok(bad.length === 0, `${name}: ${m.texts.length} text items readable (lowest ${worst ? `${worst.ratio}:1 "${worst.text}"` : 'n/a'})` + (bad.length ? ` — below AA: ${bad.slice(0, 4).map(t => `"${t.text}" ${t.ratio}`).join(', ')}` : ''))
@@ -122,7 +133,7 @@ async function check(page, name, selector, prefix, { inline = false, field = fal
 async function open(viewport) {
   const page = await browser.newPage({ viewport })
   page.on('pageerror', e => console.log('  ! page error:', e.message.slice(0, 400)))
-  page.on('console', message => { if (message.type() === 'error') console.log('  ! browser console:', message.text().slice(0, 500)) })
+  page.on('console', message => { if (message.type() === 'error' || message.text().startsWith('OVERLAY_DIAGNOSTIC')) console.log('  ! browser console:', message.text().slice(0, 2000)) })
   page.on('response', response => { if (response.status() >= 400 && response.url().startsWith(base)) console.log('  ! local HTTP:', response.status(), response.url().slice(0, 230)) })
   await page.goto(`${base}/demo`, { waitUntil: 'networkidle', timeout: 120_000 })
   try {
@@ -159,6 +170,8 @@ try {
   }
   await page.getByRole('button',{name:'My board',exact:true}).click();
   await page.waitForTimeout(750);
+  await page.locator('.ledger-widget-board [data-widget-id="pipeline"]').evaluate(el=>el.scrollIntoView({block:'center'}));
+  ok(await page.locator('.ledger-crm-shell').evaluate(el=>el.scrollLeft===0 && el.parentElement.scrollLeft===0),'Business outer frames stay horizontally fixed after focusing the board');
   await check(page,'dashboard-board-pipeline','.ledger-widget-board [data-widget-id="pipeline"] > div','');
   await page.getByRole('button',{name:'Edit layout',exact:true}).click();
   // The member stack is now a two-row tile. Bring the whole tile into the
