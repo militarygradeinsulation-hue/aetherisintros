@@ -9,3 +9,5 @@ export async function deleteBusinessTool({data}:any){drafts=drafts.filter(d=>d.i
 export async function speakWithIntrosVoice(){throw Error('No live speech in tests');}
 
 export async function createBusinessImage(){throw Error("Image generation is not configured");}
+
+export async function deliverBusinessTool(){throw Error('No production writes in browser check');}

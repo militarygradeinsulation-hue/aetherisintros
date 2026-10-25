@@ -5,6 +5,7 @@ import { loadBusinessTools, refineBusinessTool, createBusinessImage, saveBusines
 import { BUSINESS_TOOLS, findBusinessTool } from './catalog';
 import { createWorkingDraft, validateToolInput, type ToolDraft, type ToolInputs } from './drafts';
 import './business-tools.css';
+import { ContentReview } from './ContentReview';
 import { hasWebsiteCapture } from '@/lib/businessTools.engine';
 
 export function BusinessTools() {
@@ -21,6 +22,7 @@ export function BusinessTools() {
   return <MemberTools key={member}/>;
 }
 function MemberTools(){
+  const [review,setReview]=useState<'calendar'|'post'|null>(null);
   const [toolId,setToolId]=useState('sales-scripts');const tool=findBusinessTool(toolId)!;
   const [image,setImage]=useState('');const [imageAvailable,setImageAvailable]=useState(false);
   const [category,setCategory]=useState('All');const [search,setSearch]=useState('');
@@ -46,7 +48,7 @@ function MemberTools(){
   if(!profile)return <section className="business-tools"><p role="alert">{error||'Create your profile to open Business Tools.'}</p><button onClick={()=>void load()}>Retry</button><a href="/onboarding">Complete your profile</a></section>;
   const filtered=BUSINESS_TOOLS.filter(t=>(category==='All'||t.category===category)&&`${t.name} ${t.description}`.toLowerCase().includes(search.toLowerCase()));
   return <section className="business-tools">
-    <header><small>ASK INTROS BUSINESS TOOLS</small><h2>Your ideas. Ready for the next step.</h2><p>Private working documents for {profile.name||'your business'}. Create a starting draft, edit it, then save or export when ready.</p></header>
+    <header><small>ASK INTROS BUSINESS TOOLS</small><h2>Your ideas. Ready for the next step.</h2><p>Private working documents for {profile.name||'your business'}. Create a starting draft, edit it, then save, add content to your calendar, or review and approve a post when ready.</p></header>
     <div className="bt-layout"><aside aria-label="Business tool catalog">
       <label>Find a tool<input value={search} onChange={e=>setSearch(e.target.value)} placeholder="Search tools"/></label>
       <label>Category<select value={category} onChange={e=>setCategory(e.target.value)}>{['All',...new Set(BUSINESS_TOOLS.map(t=>t.category))].map(c=><option key={c}>{c}</option>)}</select></label>
@@ -65,8 +67,11 @@ function MemberTools(){
       <label>Document title<input disabled={busy} maxLength={180} value={title} onChange={e=>{setTitle(e.target.value);setDirty(true);}} placeholder={tool.name}/></label>
       <label>Editable draft<textarea disabled={busy} className="bt-output" maxLength={50000} value={output} onChange={e=>{setOutput(e.target.value);setDirty(true);}} placeholder="Your working document will appear here."/></label>
       <div className="bt-actions"><button disabled={busy||!output||!storageReady} onClick={()=>void save()}>Save privately</button><button disabled={!output||busy} onClick={()=>void navigator.clipboard.writeText(output).then(()=>setNotice('Copied to clipboard.')).catch(()=>setError('Clipboard unavailable. Download your draft instead.'))}>Copy</button><button disabled={!output||busy} onClick={download}>Download</button>{!storageReady&&<button onClick={()=>void load()}>Retry saved work</button>}</div>
+      <div className="bt-actions"><button disabled={busy||!output.trim()||!storageReady} onClick={()=>setReview('calendar')}>Review and add to calendar</button><button disabled={busy||!output.trim()||!storageReady} onClick={()=>setReview('post')}>Review and post to Ask Intros</button></div>
+      <p className="bt-note">Saving is private. Calendar entries do not publish automatically. You approve each post after reviewing its content.</p>
+      {review&&<ContentReview destination={review} toolId={tool.id} title={title||tool.name} output={output} inputs={inputs} onSaved={saved=>setDrafts(old=>[saved,...old.filter(d=>d.id!==saved.id)])} onClose={()=>setReview(null)}/>}
       <p className="bt-note">{dirty?'Unsaved changes. Save or download before leaving.':'Your current document has no unsaved changes.'}</p>
     </div></div>
-    <section aria-label="Saved business documents"><h3>Your saved work</h3>{!drafts.length?<p>No saved documents yet.</p>:<div className="bt-saved">{drafts.map(d=><article key={d.id}><strong>{d.title}</strong><small>{findBusinessTool(d.tool_id)?.name} · {new Date(d.updated_at).toLocaleDateString()}</small><button disabled={busy} onClick={()=>reopen(d)}>Open</button><button disabled={busy} onClick={()=>void remove(d)}>Delete</button></article>)}</div>}</section>
+    <section aria-label="Saved business documents"><h3>Your saved work</h3>{!drafts.length?<p>No saved documents yet.</p>:<div className="bt-saved">{drafts.map(d=><article key={d.id}><strong>{d.title}</strong><small>{findBusinessTool(d.tool_id)?.name} · {new Date(d.updated_at).toLocaleDateString()}</small><button disabled={busy} onClick={()=>reopen(d)}>Review and edit</button><button disabled={busy} onClick={()=>void remove(d)}>Delete</button></article>)}</div>}</section>
   </section>;
 }

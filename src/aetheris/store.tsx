@@ -448,6 +448,7 @@ export function NetworkProvider({ children, mode = 'live' }: { children: React.R
   useEffect(() => {
     if (!live || !userId) return
     const refresh = () => { void loadLiveDirectory(userId).then(({ directory, failed, reason }) => { setFeedError(failed); setNetworkLoadError(failed ? (reason ?? 'Live directory unavailable.') : ''); if (!failed) setDir(directory) }) }
+    window.addEventListener('aetheris:business-content-published', refresh)
     const channel = supabase
       .channel(`dm-${userId}-${Math.random().toString(36).slice(2, 10)}`)
       .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'dm_messages' }, payload => {
@@ -472,7 +473,7 @@ export function NetworkProvider({ children, mode = 'live' }: { children: React.R
         if (t.created_by !== userId) refresh()
       })
       .subscribe()
-    return () => { void supabase.removeChannel(channel) }
+    return () => { window.removeEventListener('aetheris:business-content-published', refresh); void supabase.removeChannel(channel) }
   }, [live, userId])
 
   /* write-through: persist only what changed since the last database read */
