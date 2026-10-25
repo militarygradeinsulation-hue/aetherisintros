@@ -22,7 +22,7 @@
       inset 0 1px 0 var(--glass-highlight), inset 0 -1px 0 rgb(100 140 230 / 7%);
   }
 
-  :root[data-experience="social"][data-theme] body :is(.commons-glass-tile,.commons-card,.commons-butler,.commons-caught-up,.commons-person-card,.meetings-card,.bridge-meeting-option,.meetings-new,.meeting-brief,.collision-card,.strategy-card,.passport-module,.ledger-ui-panel,.ledger-panel,.ledger-metric,.feature-tile,.board-tile,.member-tile,.home-board-tile,.home-feed-widget,.crm-card,.crm-panel,.pipeline-card,.prefs-section,.settings-card,[data-slot="card"]) {
+  :root[data-experience="social"][data-experience][data-theme] body :is(.commons-glass-tile,.commons-card,.commons-butler,.commons-caught-up,.commons-person-card,.meetings-card,.bridge-meeting-option,.meetings-new,.meeting-brief,.collision-card,.strategy-card,.passport-module,.ledger-ui-panel,.ledger-panel,.ledger-metric,.feature-tile,.board-tile,.member-tile,.home-board-tile,.home-feed-widget,.crm-card,.crm-panel,.pipeline-card,.prefs-section,.settings-card,[data-slot="card"]) {
     border-radius: 26px !important;
     /* Background-only shimmer never covers text or intercepts an action. */
     &:hover, &:focus-within {
