@@ -10,7 +10,7 @@ export function LedgerSectionNavigation({ activePage, activeTool, onSelect }: { 
   const sections = isAccount ? ACCOUNT_SECTIONS : destination?.sections || [];
   const detailsRef = useRef<HTMLDetailsElement>(null);
   useEffect(() => { if (detailsRef.current) detailsRef.current.open = false; }, [activePage, activeTool]);
-  if (sections.length < 2) return null;
+  if (sections.length < 2 || destination?.id === 'dashboard') return null;
   const name = isAccount ? 'Account' : destination!.label;
   const render = (target: NavigationTarget) => <button key={target.tool || target.page} type="button" aria-current={targetMatches(target, activePage, activeTool) ? 'page' : undefined}
     onClick={() => onSelect(target)}><target.icon size={16} aria-hidden="true"/><span>{target.label}</span></button>;
