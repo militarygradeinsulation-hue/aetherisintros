@@ -1,3 +1,4 @@
+import { ButlerWorkspaceControls, useButlerWelcome } from '@/intros-ui/onboarding/ButlerWorkspaceControls'
 import { ButlerOrb } from '@/components/ui/butler-orb'
 import { AskIntrosMark } from '@/aetheris/AskIntrosMark'
 import { useEffect, useRef, useState } from 'react'
@@ -135,6 +136,7 @@ const takeHandoff = () => { const h = handoff && Date.now() - handoff.at < 5000 
 function AskIntrosDockInner({ page, peopleNames, memberName, briefing, contextPanel, run }: AskIntrosDockProps) {
   const [carried] = useState(takeHandoff)
   const [open, setOpen] = useState(!!carried)
+  const newMemberWelcome = useButlerWelcome(() => setOpen(true))
   const [input, setInput] = useState('')
   const [busy, setBusy] = useState(false)
   const [turns, setTurns] = useState<Turn[]>(() => carried?.turns ?? [{
@@ -327,11 +329,11 @@ function AskIntrosDockInner({ page, peopleNames, memberName, briefing, contextPa
 
   /* Conversation mode: listen, answer aloud, then listen again — never while speaking. */
   useEffect(() => {
-    if (!open || !voice.conversation || !dictation.supported) { return }
+    if (!open || !voice.conversation || !dictation.supported || dictation.error) { return }
     const idle = !busy && reader.state === 'idle'
     if (idle && !dictation.listening) dictation.start()
     if (!idle && dictation.listening) dictation.stop()
-  }, [open, voice.conversation, busy, reader.state, dictation.listening, dictation.supported])
+  }, [open, voice.conversation, busy, reader.state, dictation.listening, dictation.supported, dictation.error])
 
   useEffect(() => { if (!open) dictation.stop() }, [open])
 
@@ -372,16 +374,20 @@ function AskIntrosDockInner({ page, peopleNames, memberName, briefing, contextPa
         {pos && <button className="icon-btn" aria-label="Move Ask Intros back to the corner" title="Back to the corner" onClick={() => { setPos(null); writePoint(POS_KEY, null) }}>↘</button>}
         <button className="icon-btn" aria-label="Close Ask Intros" onClick={() => setOpen(false)}><X size={16} /></button>
       </header>
+      <ButlerWorkspaceControls welcome={newMemberWelcome} onStart={() => { setOpen(false); window.dispatchEvent(new Event('ask-intros:onboarding')) }} />
 
       {dictation.supported && <div className="ask-dock-voice">
         <button type="button" className={voice.conversation ? 'active' : ''} aria-pressed={voice.conversation}
-          onClick={() => { const next = !voice.conversation; setVoice({ conversation: next }); if (!next) { dictation.stop(); stopReading() } }}>
-          <Radio size={13} /> Conversation mode
+          onClick={() => { unlockAudio(); const next = !voice.conversation; setVoice({ conversation: next, ...(next ? { speakReplies: true, readAloud: true } : {}) }); if (next) dictation.start(); else { dictation.stop(); stopReading() } }}>
+          <Radio size={13} /> {voice.conversation ? 'End conversation' : 'Talk with Butler'}
         </button>
         {status && <span className={`ask-dock-status ${status.toLowerCase()}`}><i />{status}…</span>}
         {dictation.interim && <em>{dictation.interim}</em>}
       </div>}
 
+      {dictation.error && <p className="ask-dock-voice-notice" role="alert">{dictation.error}</p>}
+      {reader.problem && <p className="ask-dock-voice-notice" role="alert">{reader.problem}</p>}
+      {!dictation.supported && <p className="ask-dock-voice-notice">Voice input is unavailable in this browser. You can still type a conversation and use the reply’s read-aloud button.</p>}
       <div className="ask-dock-log" ref={listRef}>
         {turns.map((turn, index) => <div key={index} className={`ask-dock-turn ${turn.role}`}>
           <p>{turn.content}</p>

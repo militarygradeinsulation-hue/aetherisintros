@@ -275,6 +275,8 @@ interface NetworkApi {
   /** Forget a withdrawn request locally; the row itself is deleted by the caller. */
   withdrawIntro: (id: string) => void
   addPost: (text: string, detail?: string, media?: JournalAttachment[], visibility?: 'network' | 'private', kind?: Post['kind'], business?: BusinessDetails) => Promise<void>
+  editPost: (postId: string, text: string, detail: string) => Promise<void>
+  deletePost: (postId: string) => Promise<void>
   respondToPost: (postId: string, memberId: string) => string | null
   togglePostLike: (postId: string) => void
   togglePostRepost: (postId: string, memberId: string) => void
@@ -788,6 +790,32 @@ export function NetworkProvider({ children, mode = 'live' }: { children: React.R
         }))
       },
 
+      editPost: async (postId, text, detail) => {
+        const existing = [...s.ownPosts, ...dir.posts].find(post => post.id === postId);
+        if (!existing || existing.memberId !== 'me') throw new Error('Only the author can edit this post.');
+        if (!text.trim() || text.length > 5000 || detail.length > 20000) throw new Error('Enter post text within the displayed limits.');
+        if (live) {
+          if (!userId) throw new Error('Sign in before editing your post.');
+          const { data, error } = await supabase.from('posts').update({ text: text.trim(), detail: detail.trim() }).eq('id', postId).eq('author_id', userId).eq('text', existing.text).select('id');
+          if (error || !data?.length) throw new Error('Your post was not updated. It may have changed elsewhere. Copy your edits, reload, and retry.');
+        }
+        if (live && identityUserId.current !== userId) throw new Error('Your account changed. Reload before continuing.');
+        const update = (post: Post) => post.id === postId ? { ...post, text: text.trim(), detail: detail.trim() } : post;
+        patch(prev => ({ ownPosts: prev.ownPosts.map(update) }));
+        setDir(prev => ({ ...prev, posts: prev.posts.map(update) }));
+      },
+      deletePost: async (postId) => {
+        const existing = [...s.ownPosts, ...dir.posts].find(post => post.id === postId);
+        if (!existing || existing.memberId !== 'me') throw new Error('Only the author can delete this post.');
+        if (live) {
+          if (!userId) throw new Error('Sign in before deleting your post.');
+          const { data, error } = await supabase.from('posts').delete().eq('id', postId).eq('author_id', userId).select('id');
+          if (error || !data?.length) throw new Error('Deletion could not be confirmed. Reload the feed before trying again.');
+        }
+        if (live && identityUserId.current !== userId) throw new Error('Your account changed. Reload before continuing.');
+        patch(prev => ({ ownPosts: prev.ownPosts.filter(post => post.id !== postId) }));
+        setDir(prev => ({ ...prev, posts: prev.posts.filter(post => post.id !== postId) }));
+      },
       respondToPost: (postId, memberId) => {
         if (memberId === 'me') return null
         const existing = threadFor(s, memberId)
