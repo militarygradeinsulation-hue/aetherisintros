@@ -13,12 +13,12 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as ActiveMemoryRouteImport } from './routes/active-memory'
 import { Route as AuthRouteImport } from './routes/auth'
-import { Route as MeetRouteImport } from './routes/meet'
 import { Route as DemoRouteImport } from './routes/demo'
 import { Route as EarlyAccessRouteImport } from './routes/early-access'
 import { Route as FounderStoryRouteImport } from './routes/founder-story'
 import { Route as HowItWorksRouteImport } from './routes/how-it-works'
 import { Route as McpRouteImport } from './routes/mcp'
+import { Route as MeetRouteImport } from './routes/meet'
 import { Route as NewsRouteImport } from './routes/news'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as TryRouteImport } from './routes/try'
@@ -80,7 +80,6 @@ const AuthRoute = AuthRouteImport.update({
   path: '/auth',
   getParentRoute: () => rootRouteImport,
 } as any)
-const MeetRoute = MeetRouteImport.update({ id: '/meet', path: '/meet', getParentRoute: () => rootRouteImport } as any)
 const DemoRoute = DemoRouteImport.update({
   id: '/demo',
   path: '/demo',
@@ -104,6 +103,11 @@ const HowItWorksRoute = HowItWorksRouteImport.update({
 const McpRoute = McpRouteImport.update({
   id: '/mcp',
   path: '/mcp',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const MeetRoute = MeetRouteImport.update({
+  id: '/meet',
+  path: '/meet',
   getParentRoute: () => rootRouteImport,
 } as any)
 const NewsRoute = NewsRouteImport.update({
@@ -325,12 +329,12 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/active-memory': typeof ActiveMemoryRoute
   '/auth': typeof AuthRoute
-  '/meet': typeof MeetRoute
   '/demo': typeof DemoRoute
   '/early-access': typeof EarlyAccessRoute
   '/founder-story': typeof FounderStoryRoute
   '/how-it-works': typeof HowItWorksRoute
   '/mcp': typeof McpRoute
+  '/meet': typeof MeetRoute
   '/news': typeof NewsRouteWithChildren
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/try': typeof TryRoute
@@ -377,12 +381,12 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/active-memory': typeof ActiveMemoryRoute
   '/auth': typeof AuthRoute
-  '/meet': typeof MeetRoute
   '/demo': typeof DemoRoute
   '/early-access': typeof EarlyAccessRoute
   '/founder-story': typeof FounderStoryRoute
   '/how-it-works': typeof HowItWorksRoute
   '/mcp': typeof McpRoute
+  '/meet': typeof MeetRoute
   '/news': typeof NewsRouteWithChildren
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/try': typeof TryRoute
@@ -431,12 +435,12 @@ export interface FileRoutesById {
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/active-memory': typeof ActiveMemoryRoute
   '/auth': typeof AuthRoute
-  '/meet': typeof MeetRoute
   '/demo': typeof DemoRoute
   '/early-access': typeof EarlyAccessRoute
   '/founder-story': typeof FounderStoryRoute
   '/how-it-works': typeof HowItWorksRoute
   '/mcp': typeof McpRoute
+  '/meet': typeof MeetRoute
   '/news': typeof NewsRouteWithChildren
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/try': typeof TryRoute
@@ -485,12 +489,12 @@ export interface FileRouteTypes {
     | '/'
     | '/active-memory'
     | '/auth'
-    | '/meet'
     | '/demo'
     | '/early-access'
     | '/founder-story'
     | '/how-it-works'
     | '/mcp'
+    | '/meet'
     | '/news'
     | '/sitemap.xml'
     | '/try'
@@ -537,12 +541,12 @@ export interface FileRouteTypes {
     | '/'
     | '/active-memory'
     | '/auth'
-    | '/meet'
     | '/demo'
     | '/early-access'
     | '/founder-story'
     | '/how-it-works'
     | '/mcp'
+    | '/meet'
     | '/news'
     | '/sitemap.xml'
     | '/try'
@@ -590,12 +594,12 @@ export interface FileRouteTypes {
     | '/_authenticated'
     | '/active-memory'
     | '/auth'
-    | '/meet'
     | '/demo'
     | '/early-access'
     | '/founder-story'
     | '/how-it-works'
     | '/mcp'
+    | '/meet'
     | '/news'
     | '/sitemap.xml'
     | '/try'
@@ -644,12 +648,12 @@ export interface RootRouteChildren {
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
   ActiveMemoryRoute: typeof ActiveMemoryRoute
   AuthRoute: typeof AuthRoute
-  MeetRoute: typeof MeetRoute
   DemoRoute: typeof DemoRoute
   EarlyAccessRoute: typeof EarlyAccessRoute
   FounderStoryRoute: typeof FounderStoryRoute
   HowItWorksRoute: typeof HowItWorksRoute
   McpRoute: typeof McpRoute
+  MeetRoute: typeof MeetRoute
   NewsRoute: typeof NewsRouteWithChildren
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   TryRoute: typeof TryRoute
@@ -710,7 +714,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/meet': { id: '/meet'; path: '/meet'; fullPath: '/meet'; preLoaderRoute: typeof MeetRouteImport; parentRoute: typeof rootRouteImport }
     '/demo': {
       id: '/demo'
       path: '/demo'
@@ -744,6 +747,13 @@ declare module '@tanstack/react-router' {
       path: '/mcp'
       fullPath: '/mcp'
       preLoaderRoute: typeof McpRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/meet': {
+      id: '/meet'
+      path: '/meet'
+      fullPath: '/meet'
+      preLoaderRoute: typeof MeetRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/news': {
@@ -1084,12 +1094,12 @@ const rootRouteChildren: RootRouteChildren = {
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
   ActiveMemoryRoute: ActiveMemoryRoute,
   AuthRoute: AuthRoute,
-  MeetRoute: MeetRoute,
   DemoRoute: DemoRoute,
   EarlyAccessRoute: EarlyAccessRoute,
   FounderStoryRoute: FounderStoryRoute,
   HowItWorksRoute: HowItWorksRoute,
   McpRoute: McpRoute,
+  MeetRoute: MeetRoute,
   NewsRoute: NewsRouteWithChildren,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
   TryRoute: TryRoute,

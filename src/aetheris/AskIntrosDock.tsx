@@ -483,9 +483,9 @@ function AskIntrosDockInner({ page, peopleNames, memberName, briefing, contextPa
         <label className="butler-attach" title="Attach images or files"><Paperclip size={16}/><input aria-label="Attach images or files" type="file" multiple accept={BUTLER_ACCEPT} disabled={busy||fileBusy} onChange={event=>{void addFiles(event.target.files);event.target.value=''}}/></label>
         <input aria-label="Message Butler" value={input} onChange={event => setInput(event.target.value)} placeholder="Ask, say it, or tell me what to do…" />
         {dictation.supported && <button type="button" className={dictation.listening ? 'listening' : ''}
-          aria-label={dictation.listening ? 'Stop listening' : 'Speak to Ask Intros'} onClick={dictation.toggle}>
+          aria-label={dictation.listening ? 'Stop listening' : 'Speak to Ask Intros'} title={dictation.listening ? 'Stop listening' : 'Voice dictation'} onClick={dictation.toggle}>
           {dictation.listening ? <MicOff size={15} /> : <Mic size={15} />}</button>}
-        <button type="submit" aria-label="Send" disabled={busy || fileBusy || !memory.ready || !input.trim()}><ArrowUp size={15} /></button>
+        <button type="submit" aria-label="Send" title="Send message" disabled={busy || fileBusy || !memory.ready || !input.trim()}><ArrowUp size={15} /></button>
       </form>
     </aside>}
   </>

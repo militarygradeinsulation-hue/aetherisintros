@@ -3942,6 +3942,32 @@ export type Database = {
           },
         ]
       }
+      meeting_invite_links: {
+        Row: {
+          expires_at: string
+          meeting_id: string
+          token_hash: string
+        }
+        Insert: {
+          expires_at: string
+          meeting_id: string
+          token_hash: string
+        }
+        Update: {
+          expires_at?: string
+          meeting_id?: string
+          token_hash?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "meeting_invite_links_meeting_id_fkey"
+            columns: ["meeting_id"]
+            isOneToOne: true
+            referencedRelation: "meetings"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       meeting_notes: {
         Row: {
           action_items: Json
@@ -4056,7 +4082,9 @@ export type Database = {
       meetings: {
         Row: {
           agenda: string
+          archived_at: string | null
           created_at: string
+          deleted_at: string | null
           ended_at: string | null
           host_id: string
           id: string
@@ -4069,7 +4097,9 @@ export type Database = {
         }
         Insert: {
           agenda?: string
+          archived_at?: string | null
           created_at?: string
+          deleted_at?: string | null
           ended_at?: string | null
           host_id: string
           id?: string
@@ -4082,7 +4112,9 @@ export type Database = {
         }
         Update: {
           agenda?: string
+          archived_at?: string | null
           created_at?: string
+          deleted_at?: string | null
           ended_at?: string | null
           host_id?: string
           id?: string
@@ -8049,6 +8081,16 @@ export type Database = {
           verified_at: string
         }[]
       }
+      manage_meeting_record: {
+        Args: {
+          p_action: string
+          p_agenda?: string
+          p_meeting: string
+          p_scheduled?: string
+          p_title?: string
+        }
+        Returns: undefined
+      }
       mark_approval_executed: { Args: { p_id: string }; Returns: undefined }
       mark_meeting_joined: { Args: { p_meeting: string }; Returns: undefined }
       mark_notifications_read: { Args: { p_ids?: string[] }; Returns: number }
@@ -8285,6 +8327,7 @@ export type Database = {
         Args: { p_org: string; p_user: string }
         Returns: undefined
       }
+      redeem_meeting_invite: { Args: { p_code: string }; Returns: string }
       reject_professional_candidate: {
         Args: { p_person_id: string; p_profile_url: string }
         Returns: undefined
@@ -8315,6 +8358,8 @@ export type Database = {
       }
       revoke_agent_key: { Args: { p_id: string }; Returns: boolean }
       revoke_cohort_invite: { Args: { p_invite: string }; Returns: undefined }
+      revoke_meeting_invite: { Args: { p_meeting: string }; Returns: undefined }
+      rotate_meeting_invite: { Args: { p_meeting: string }; Returns: Json }
       rsvp_event: {
         Args: { p_choice: string; p_event: string }
         Returns: string
