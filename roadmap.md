@@ -1,7 +1,7 @@
 # Aetheris specification completion
 
 # Homepage hero carousel and membership removal (Oct 25)
-- [ ] Repair carousel visibility: show uncropped pictures without text overlays and verify rotation on phone and desktop.
+- [x] Repair carousel visibility: dedicated uncropped pictures, no text overlays or hover pausing; verified five-second rotation at 375×668 and 1280 desktop, 62 homepage checks passed; build OK.
 - [x] Turn the empty hero image area into a carousel of the member's ten brand graphics, each held five seconds.
 - [x] Remove pause controls, dots and hover pausing so only the pictures change; reduced motion shows one still picture.
 - [x] Remove the membership area ("Start with one useful connection") and its navigation link.
