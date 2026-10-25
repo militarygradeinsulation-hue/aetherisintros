@@ -11,6 +11,8 @@ import { downloadButlerFile } from './butler/download'
 import { useButlerConversations, type ButlerDisplayTurn } from './butler/conversations'
 import { readButlerFile, BUTLER_ACCEPT, type ButlerAttachment } from './butler/files'
 import { executeButlerDraft } from '@/lib/butler.functions'
+import { createButlerImage, findButlerReferenceImages, type ButlerReferenceImage } from '@/lib/butlerImages.functions'
+import { imageCreationBrief, imageReferenceQuery, spokenReviewCommand, spokenConfirmationFor, voiceApprovalMatches, type VoiceApproval } from './butler/intent'
 import './butler/butler.css'
 import { askIntros, type AskIntrosAction } from '@/lib/askIntros.functions'
 import { pageMeta } from './pageMeta'
@@ -81,6 +83,9 @@ function useDrag(onMove: (p: Point) => void, onEnd: (p: Point) => void) {
 }
 
 type Turn = ButlerDisplayTurn
+type ButlerVisual =
+  | { kind: 'generated'; owner: string; turnId: string; prompt: string; image: string }
+  | { kind: 'reference'; owner: string; turnId: string; query: string; results: ButlerReferenceImage[] }
 
 const startingOpeners = [
   'Where are we losing money?',
@@ -147,6 +152,11 @@ function AskIntrosDockInner({ page, peopleNames, memberName, briefing, contextPa
   const [attachments, setAttachments] = useState<ButlerAttachment[]>([])
   const [fileBusy, setFileBusy] = useState(false)
   const [fileError, setFileError] = useState('')
+  // Image previews are session-only: binary data never enters the saved conversation or another account.
+  const [visuals, setVisuals] = useState<ButlerVisual[]>([])
+  const [pendingApproval, setPendingApproval] = useState<VoiceApproval | null>(null)
+  const approvalRef = useRef<VoiceApproval | null>(null)
+  const resetApproval = () => { approvalRef.current = null; setPendingApproval(null) }
   const [showHistory, setShowHistory] = useState(false)
   const [draft, setDraft] = useState<{ id: string; kind: 'publish-post' | 'create-task' | 'save-writing-style' | 'draft-email'; text: string } | null>(null)
   const [fileExport, setFileExport] = useState<string | null>(null)
@@ -154,9 +164,15 @@ function AskIntrosDockInner({ page, peopleNames, memberName, briefing, contextPa
   const [draftError, setDraftError] = useState('')
   const ownerRef = useRef(memory.owner)
   ownerRef.current = memory.owner
+  const draftRef = useRef(draft)
+  draftRef.current = draft
+  useEffect(() => {
+    const approval = approvalRef.current
+    if (approval && (!draft || draft.id !== approval.id || draft.kind !== approval.kind || draft.text !== approval.text)) resetApproval()
+  }, [draft])
   const hadResolvedAccount = useRef(false)
   useEffect(() => {
-    setAttachments([]); setDraft(null); setFileExport(null); setFileError(''); setDraftError('')
+    setAttachments([]); setDraft(null); setFileExport(null); setFileError(''); setDraftError(''); setVisuals([]); resetApproval()
     // Keep a prompt selected while the initial session loads, but never carry
     // a draft across a subsequent sign-in, sign-out, or account change.
     if (hadResolvedAccount.current) setInput('')
@@ -181,14 +197,16 @@ function AskIntrosDockInner({ page, peopleNames, memberName, briefing, contextPa
     } catch (error) { setFileError(error instanceof Error ? error.message : 'File could not be read.') }
     finally { setFileBusy(false) }
   }
-  const commitDraft = async () => {
-    if (!draft || draft.kind === 'draft-email' || draftBusy) return
+  const commitDraft = async (reviewed = draft, approvedByVoice = false) => {
+    if (!reviewed || reviewed.kind === 'draft-email' || draftBusy) return
     const owner = memory.owner
+    resetApproval()
     setDraftBusy(true); setDraftError('')
     try {
-      const result = await executeButlerDraft({ data: { ...draft, kind: draft.kind, owner: owner! } })
+      const result = await executeButlerDraft({ data: { ...reviewed, kind: reviewed.kind, owner: owner! } })
       if (ownerRef.current !== owner) return
-      setTurns(previous => [...previous, { role: 'assistant', content: result.receipt }])
+      setTurns(previous => [...previous, { role: 'assistant', content: (approvedByVoice ? 'Voice confirmation received. ' : '') + result.receipt }])
+      if (approvedByVoice && voiceOutputSupported()) readAloud([result.receipt], 'Ask Intros')
       setDraft(null)
       window.dispatchEvent(new Event('aetheris:business-content-published'))
     } catch (error) { if (ownerRef.current === owner) setDraftError(error instanceof Error ? error.message : 'Action failed. Your draft is still here.') }
