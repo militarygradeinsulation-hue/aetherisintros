@@ -1,0 +1,34 @@
+@layer bridge-social-reference {
+  :root body dialog.onboarding-guide.onboarding-guide.onboarding-guide {
+    box-sizing: border-box; width: min(560px, calc(100vw - 24px)); max-height: calc(100dvh - 32px);
+    padding: 0 !important; margin: auto; overflow: hidden; border: 1px solid #ced6e5 !important;
+    border-radius: 28px !important; background: #f8faff !important; color: #172033 !important;
+    box-shadow: 0 30px 100px #0005 !important; font: 15px/1.6 system-ui, sans-serif;
+    backdrop-filter: none !important; animation: none !important;
+  }
+  :root[data-theme="dark"] body dialog.onboarding-guide.onboarding-guide.onboarding-guide { background: #111827 !important; color: #f3f5fb !important; border-color: #334155 !important; }
+  .onboarding-guide::backdrop { background: #03091680; }
+  .onboarding-guide header, .onboarding-guide footer { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 16px 22px; }
+  .onboarding-guide header span { font-size: 11px; font-weight: 700; letter-spacing: .12em; }
+  .onboarding-guide .onboarding-scroll { padding: 0 24px 20px; overflow: auto; max-height: calc(100dvh - 185px); }
+  .onboarding-guide h2 { font: 600 clamp(24px, 5vw, 32px)/1.2 system-ui; margin: 18px 0 12px; color: inherit; }
+  .onboarding-guide p { color: inherit; margin: 12px 0; }
+  .onboarding-guide .onboarding-progress { font-size: 12px; }
+  .onboarding-guide progress { width: 100%; height: 5px; accent-color: #4169e1; }
+  .onboarding-guide ol { padding-left: 22px; list-style: decimal; }
+  .onboarding-guide li { padding-left: 5px; margin: 14px 0; }
+  .onboarding-guide .onboarding-context { font-size: 12px; opacity: .8; }
+  .onboarding-guide label { display: block; font-weight: 600; margin: 16px 0 7px; }
+  .onboarding-guide select { box-sizing: border-box; width: 100%; padding: 12px; color: inherit; background: transparent; border: 1px solid #7d8aa3; border-radius: 12px; font: inherit; }
+  .onboarding-guide option { background: #f8faff; color: #172033; }
+  .onboarding-guide button, .onboarding-resume button, .onboarding-launch { min-height: 44px; padding: 9px 13px; border-radius: 12px; border: 1px solid #7d8aa355; background: transparent; color: inherit; cursor: pointer; font: 600 13px/1.4 system-ui; }
+  .onboarding-guide button:focus-visible, .onboarding-guide select:focus-visible, .onboarding-resume button:focus-visible, .onboarding-launch:focus-visible { outline: 3px solid #739bff; outline-offset: 3px; }
+  .onboarding-guide button:disabled { opacity: .4; cursor: default; }
+  .onboarding-guide .onboarding-next { background: #294fc4; color: #fff; border-color: #294fc4; }
+  .onboarding-guide footer { border-top: 1px solid #7d8aa333; flex-wrap: wrap; }
+  .onboarding-guide footer > div { display: flex; gap: 6px; }
+  .onboarding-guide .onboarding-explore { margin-top: 14px; width: 100%; }
+  :root body .onboarding-resume { position: fixed; bottom: calc(90px + env(safe-area-inset-bottom)); left: 16px; z-index: 9999; display: flex; flex-wrap: wrap; align-items: center; gap: 8px; width: min(430px, calc(100vw - 32px)); box-sizing: border-box; padding: 12px; background: #15213a; color: #fff; border: 1px solid #7180a0; border-radius: 20px; box-shadow: 0 12px 35px #0005; font: 13px system-ui; }
+  .onboarding-resume span { width: 100%; }
+  :root body .onboarding-launch { margin: 4px 12px; color: var(--commons-ink, inherit); }
+}
