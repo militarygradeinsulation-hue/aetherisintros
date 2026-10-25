@@ -31,3 +31,37 @@
     }
   }
 }
+
+@layer bridge-social-reference {
+  @keyframes social-border-shine {
+    0%, 100% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+  }
+
+  /* Adapt the supplied ShineBorder mask to existing tiles without extra wrappers. */
+  :root[data-experience="social"][data-theme] body :is(.commons-card,.commons-person-card,.commons-butler,.commons-caught-up) {
+    position: relative;
+    &::after {
+      content: "";
+      position: absolute;
+      inset: -1px;
+      border-radius: inherit;
+      padding: 1px;
+      pointer-events: none;
+      background-image: radial-gradient(transparent, transparent, #a07cfe, #fe8fb5, #ffbe7b, transparent, transparent);
+      background-size: 300% 300%;
+      opacity: .32;
+      -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+      mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+      -webkit-mask-composite: xor;
+      mask-composite: exclude;
+    }
+    @media (prefers-reduced-motion: no-preference) {
+      &::after { animation: social-border-shine 14s ease-in-out infinite; }
+    }
+  }
+  /* Without mask support keep the ordinary glass edge, never a filled overlay. */
+  @supports not ((mask-composite: exclude) or (-webkit-mask-composite: xor)) {
+    :root[data-experience="social"][data-theme] body :is(.commons-card,.commons-person-card,.commons-butler,.commons-caught-up)::after { display: none; }
+  }
+}
