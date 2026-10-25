@@ -67,3 +67,14 @@
   :root[data-theme] body .workspace-navigation-row .ix-header-profile-action {display:none!important}
  }
 }
+
+/* Give the complete logo and tagline a larger, uncropped frame. */
+@layer bridge-social-reference {
+ :root[data-theme] body .workspace-navigation-row .ix-global-brand {flex:0 0 210px!important;width:210px!important;min-width:210px!important;overflow:visible!important}
+ :root[data-theme] body .workspace-navigation-row .official-logo-action {box-sizing:border-box!important;width:100%!important;height:56px!important;min-height:56px!important;padding:0!important;overflow:visible!important}
+ :root[data-theme] body .workspace-navigation-row .ask-intros-lockup--header {box-sizing:border-box!important;width:210px!important;max-width:100%!important;height:56px!important;max-height:56px!important;object-fit:contain!important;object-position:left center!important;clip-path:none!important;mask:none!important;transform:none!important}
+ @media(max-width:720px) {
+  :root[data-theme] body .workspace-navigation-row .ix-global-brand {flex-basis:132px!important;width:132px!important;min-width:132px!important}
+  :root[data-theme] body .workspace-navigation-row .ask-intros-lockup--header {width:132px!important}
+ }
+}
