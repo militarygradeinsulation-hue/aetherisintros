@@ -11,3 +11,5 @@ export async function speakWithIntrosVoice(){throw Error('No live speech in test
 export async function createBusinessImage(){throw Error("Image generation is not configured");}
 
 export async function deliverBusinessTool(){throw Error('No production writes in browser check');}
+
+export const networkValue=async()=>({benchmarks:[],cohort:null});

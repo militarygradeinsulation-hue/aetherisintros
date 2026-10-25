@@ -1,5 +1,22 @@
 # Aetheris specification completion
 
+## Network-only systems (Oct 25)
+- [x] Implement Capacity Exchange with verified membership, approximate service area, expiring Available/Needed posts, private requests, and explicit terms acceptance with a handoff to Letters.
+- [x] Implement Benchmark Pools with company enrollment, contribution consent, server-enforced 10-company minimum, immutable quarterly releases, give-to-get access, Butler explanation and Executive Report evidence.
+- [x] Implement referral terms, three-party electronic acknowledgements, canonical introduction release gate, responsible-party milestone confirmations and projected fee accounting.
+- [x] Add forward-only Drizzle migration 0096, role-level database tests, command validation and responsive browser regression harness. No concept example records are seeded.
+- [ ] Activate schema through the managed migration path and verify authenticated flows against the actual project. Recover the pre-existing referral schema before releasing settlement introductions.
+- [ ] Assign reviewed company cohorts and operate closed-quarter benchmark releases. Minimum cohort size reduces disclosure risk; it is not an absolute anonymity guarantee.
+- [ ] Confirm commercial terms and e-signature requirements; integrate Stripe Connect onboarding, payment authorization, verified webhooks, idempotent settlement, refunds/disputes and payout reconciliation before moving money.
+- [ ] Buying pools: private member savings, opt-in commitments, verified group offers and purchasing authorization.
+- [ ] Paid inbound gate: refundable deposit terms, response deadlines, recipient choice and refund/charity reconciliation.
+- [ ] Rule watch: trade/state subscriptions, official sources, effective dates and member-specific notifications.
+- [ ] Exit and succession: extend existing acquisition/succession tools with private readiness and consent-based verified matching.
+- [ ] Playbook exchange: permissioned copy into Pocket rooms, versioning and attributed reported outcomes.
+- [ ] Tap to meet: extend existing Event Mode with reciprocal scan, private encounter notes and follow-up reminders.
+
+See `docs/NETWORK_VALUE_SYSTEMS_2026_10_25.md` for release dependencies and validation limits.
+
 # Homepage hero carousel and membership removal (Oct 25)
 - [x] Repair carousel visibility: dedicated uncropped pictures, no text overlays or hover pausing; verified five-second rotation at 375×668 and 1280 desktop, 62 homepage checks passed; build OK.
 - [x] Turn the empty hero image area into a carousel of the member's ten brand graphics, each held five seconds.

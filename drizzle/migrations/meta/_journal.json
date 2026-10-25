@@ -666,6 +666,13 @@
       "when": 1792713876159,
       "tag": "0095_restrict_reputation_score_reads",
       "breakpoints": true
+    },
+    {
+      "idx": 96,
+      "version": "7",
+      "when": 1792944671742,
+      "tag": "0096_network_value_systems",
+      "breakpoints": true
     }
   ]
 }
