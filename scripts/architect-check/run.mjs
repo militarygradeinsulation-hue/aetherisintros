@@ -127,7 +127,19 @@ try{
       const shell=document.querySelector('.ledger-crm-shell');
       const label=document.querySelector('.ledger-ui-page-header h1');
       const css=getComputedStyle(root);
-      return {background:css.backgroundColor,color:css.color,accent:css.getPropertyValue('--ledger-crm-accent').trim(),
+        // The workspace is transparent so the shared particle layer remains visible.
+        let surface = root;
+        let backdrop = 'rgba(0, 0, 0, 0)';
+        while (surface && backdrop === 'rgba(0, 0, 0, 0)') {
+          backdrop = getComputedStyle(surface).backgroundColor;
+          surface = surface.parentElement;
+        }
+        const channels = backdrop.match(/[\d.]+/g)?.slice(0, 3).map(Number) ?? [];
+        const backdropBrightness = backdrop === 'rgba(0, 0, 0, 0)' || channels.length !== 3 ? NaN : channels.reduce((sum, value) => sum + value, 0) / 3;
+        const ambient = document.querySelector('.site-ambient[data-particle-view="business"]');
+        const particlesVisible = Boolean(ambient?.querySelector('canvas')) && getComputedStyle(ambient).pointerEvents === 'none';
+
+      return {backdrop,backdropBrightness,particlesVisible,background:css.backgroundColor,color:css.color,accent:css.getPropertyValue('--ledger-crm-accent').trim(),
         h1:label?.textContent?.trim(),sidebarCount:shell?.querySelectorAll('.ledger-crm-sidebar').length,
         overflow:document.documentElement.scrollWidth-innerWidth,
         rootWidth:root?.getBoundingClientRect().width};
@@ -135,8 +147,8 @@ try{
     check(style.h1==='Command Dashboard',theme+' native CRM dashboard heading');
     check(style.sidebarCount===1,theme+' one persistent CRM sidebar');
     check(style.overflow<=3 && style.rootWidth<=1442,theme+' CRM layout fits viewport');
-    check(style.background===(theme==='dark'?'rgb(10, 10, 10)':'rgb(245, 245, 240)'),
-      theme+' CRM canvas follows black/ivory appearance');
+    check(style.background==='rgba(0, 0, 0, 0)' && style.particlesVisible && (theme==='dark'?style.backdropBrightness<35:style.backdropBrightness>230),
+      theme+' CRM canvas reveals particles over the dark/light page backdrop');
     check(/^#(?:ef4444|b91c1c|cb3000)$/i.test(style.accent),theme+' CRM accent is red, not orange');
     check(await page.locator('.ledger-dashboard-stats .ledger-ui-stat').count()===4,theme+' grounded KPI cards');
     await checkBrand(page,theme+' Dashboard');

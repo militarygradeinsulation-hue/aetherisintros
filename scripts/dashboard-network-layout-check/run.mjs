@@ -62,6 +62,18 @@ try {
         const dashboard = document.querySelector('.ledger-dashboard')
         const bounding = node => node?.getBoundingClientRect()
         const css = root && getComputedStyle(root)
+        // The workspace is transparent so the shared particle layer remains visible.
+        let surface = root;
+        let backdrop = 'rgba(0, 0, 0, 0)';
+        while (surface && backdrop === 'rgba(0, 0, 0, 0)') {
+          backdrop = getComputedStyle(surface).backgroundColor;
+          surface = surface.parentElement;
+        }
+        const channels = backdrop.match(/[\d.]+/g)?.slice(0, 3).map(Number) ?? [];
+        const backdropBrightness = backdrop === 'rgba(0, 0, 0, 0)' || channels.length !== 3 ? NaN : channels.reduce((sum, value) => sum + value, 0) / 3;
+        const ambient = document.querySelector('.site-ambient[data-particle-view="business"]');
+        const particlesVisible = Boolean(ambient?.querySelector('canvas')) && getComputedStyle(ambient).pointerEvents === 'none';
+
         return {
           sidebarWidth: bounding(side)?.width ?? 0,
           sidebarVisible: Boolean(side && getComputedStyle(side).display !== 'none'),
@@ -71,14 +83,14 @@ try {
           bottomVisible: Boolean(bottom && getComputedStyle(bottom).display !== 'none'),
           overflow: document.documentElement.scrollWidth - innerWidth,
           accent: css?.getPropertyValue('--ledger-crm-accent').trim(),
-          background: css?.backgroundColor,
+          background: css?.backgroundColor, backdrop, backdropBrightness, particlesVisible,
           stats: document.querySelectorAll('.ledger-dashboard-stats .ledger-ui-stat').length,
         }
       })
       console.log('CRM ' + viewport.width, metrics)
       assert(metrics.stats === 4, 'CRM data dashboard has four actionable KPI cards', metrics)
-      assert(metrics.background === 'rgb(10, 10, 10)' && /^#(?:ef4444|b91c1c)$/i.test(metrics.accent || ''),
-        'CRM uses black and red rather than orange', metrics)
+      assert(metrics.background === 'rgba(0, 0, 0, 0)' && metrics.backdropBrightness < 35 && metrics.particlesVisible && /^#(?:ef4444|b91c1c)$/i.test(metrics.accent || ''),
+        'CRM uses a dark backdrop with red accents and shared particles', metrics)
       assert(metrics.dashboardWidth > 0 && metrics.overflow <= 3, 'CRM dashboard stays inside viewport', metrics)
       if (viewport.width > 1120) {
         assert(metrics.sidebarVisible && metrics.sidebarWidth >= 245 && metrics.sidebarWidth <= 260,
