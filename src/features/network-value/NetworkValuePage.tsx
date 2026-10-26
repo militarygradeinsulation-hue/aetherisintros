@@ -223,6 +223,7 @@ function Capacity({ data, act }: { data: NetworkSnapshot; act: Action }) {
       });
       if (await act({ action: "capacity_post", id: postId, ...prepared })) {
         f.reset();
+        setKind(prepared.kind);
         setPostId(crypto.randomUUID());
       }
     } catch (error) {
