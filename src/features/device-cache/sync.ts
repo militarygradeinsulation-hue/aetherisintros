@@ -38,9 +38,11 @@ export interface PullReport { applied: number; removed: number; cursor: string }
 export async function pullChanges(store: DeviceStore, remote: Remote): Promise<PullReport> {
   const since = await store.getCursor();
   const { changes, serverTime } = await remote.changesSince(since);
+  // Even permanently failed ('dead') writes are unsent member work: never
+  // let a background pull silently erase an edit that needs manual recovery.
   const unsent = new Set(
     (await store.outbox())
-      .filter(item => !item.dead && item.kind === 'context_upsert')
+      .filter(item => item.kind === 'context_upsert')
       .map(item => (item.payload as { slice?: Slice }).slice)
       .filter((slice): slice is Slice => typeof slice === 'string'),
   );
