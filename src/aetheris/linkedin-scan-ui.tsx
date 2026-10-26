@@ -115,7 +115,6 @@ export function LinkedInScanPanel({
     running.current = true
     try {
       const snapshot = !demo && keys.includes('headline') ? await loadProfileScanContext() : undefined
-      const evidence = evidenceText.trim() ? [AdditionalEvidenceSchema.parse({ label: 'Additional authorized evidence', text: evidenceText, authorized: evidenceAuthorized })] : []
       let next: ScanResult
       let sources: IndexedSource[] = []
       if (mode === 'url') {
@@ -134,6 +133,7 @@ export function LinkedInScanPanel({
           profileText = read.text
           nameHint = read.largest
         }
+        const evidence = evidenceText.trim() ? [AdditionalEvidenceSchema.parse({ label: 'Additional authorized evidence', text: evidenceText, authorized: evidenceAuthorized })] : []
         next = await runLinkedInScan({ text: profileText, url: url.trim(), nameHint, evidence }, demo)
       }
       if (request !== generation.current) return
@@ -183,7 +183,7 @@ export function LinkedInScanPanel({
     {!result && <>
       <div className="li-scan-inputs">
         <label className="li-scan-label" htmlFor={`${uid}-url`}><Link2 size={14} /> LinkedIn link <small>(optional, kept as a reference)</small></label>
-        <input id={`${uid}-url`} value={url} onChange={e => setUrl(e.target.value)} placeholder="linkedin.com/in/name" inputMode="url" autoComplete="url" />
+        <input id={`${uid}-url`} value={url} onChange={e => { setUrl(e.target.value); setConsentedUrl(false) }} placeholder="linkedin.com/in/name" inputMode="url" autoComplete="url" />
         <span className="li-scan-label"><FileText size={14} /> Profile</span>
         <div className="li-scan-tabs" role="tablist" aria-label="How to add the profile">
           <button type="button" role="tab" aria-selected={mode === 'text'} onClick={() => setMode('text')}>Paste text</button>
