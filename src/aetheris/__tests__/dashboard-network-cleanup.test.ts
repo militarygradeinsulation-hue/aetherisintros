@@ -79,4 +79,16 @@ describe('dashboard and network cleanup', () => {
     expect(app).toContain('Opportunity clusters — where several relationships point the same way')
     expect(app).toContain('ix-disclosure')
   })
+  it('opens Dashboard without focusing a post input or triggering iOS zoom', () => {
+    const app = file('../../intros-ui/IntrosApp.tsx')
+    const feed = file('../SocialExperience.tsx')
+    const css = file('../../intros-ui/views/ledger-dashboard.css')
+    expect(feed).toContain('const [composerOpen, setComposerOpen] = useState(compact)')
+    expect(feed).toContain('autoFocusOnOpen={!compact}')
+    expect(feed).toContain('autoFocus={autoFocusOnOpen}')
+    expect(app).toContain('if (openingDashboard) releaseDashboardInputFocus()')
+    expect(css).toContain('font-size: 16px !important')
+    expect(css).not.toContain('user-scalable=no')
+  })
+
 })
