@@ -58,6 +58,7 @@ export default function Landing() {
             : <Link to="/auth" className="ael-btn ael-btn-ghost">Member sign in <ArrowUpRight aria-hidden="true" size={16} /></Link>}
           <Link to="/demo" className="ael-text-link">Explore the demo <ArrowRight aria-hidden="true" size={16} /></Link>
         </div>
+        <ButlerAvatar robot className="butler-home-robot" view="social" />
       </div>
       <div className="ael-carousel-stage">
         <aside className="ael-carousel-intro" aria-label="Meaningful connections">
@@ -65,7 +66,6 @@ export default function Landing() {
           <h2>More connection.<br />More possibility.</h2>
           <p>Find people who understand what you are building. Start with a shared purpose and a reason to connect.</p>
           <Link to="/demo" className="ael-text-link">Find your next connection <ArrowRight aria-hidden="true" size={16} /></Link>
-          <ButlerAvatar robot className="butler-home-robot" view="social" />
         </aside>
         <HomeSlideCarousel />
         <aside className="ael-carousel-options" aria-label="Two ways to explore Ask Intros">

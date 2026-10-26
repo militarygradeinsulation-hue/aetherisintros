@@ -137,7 +137,7 @@ function ContextLoss({ onLost }: { onLost: () => void }) {
 export default function ButlerRobotCanvas(props: ButlerRobotCanvasProps) {
   return (
     <Canvas
-      camera={{ position: [0, 0.08, 2.9], fov: 40 }}
+      camera={{ position: [0, 0.08, 2.25], fov: 40 }}
       dpr={[1, 1.5]}
       gl={{ alpha: true, antialias: true, powerPreference: 'low-power' }}
       frameloop={!props.visible ? 'never' : props.reducedMotion ? 'demand' : 'always'}
