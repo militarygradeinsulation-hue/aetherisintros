@@ -45,9 +45,9 @@ function shuffledOrder(avoidFirst?: number) {
   const order = BUTLER_IDEAS.map((_, i) => i)
   for (let i = order.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
-    [order[i], order[j]] = [order[j], order[i]]
+    const t = order[i]!; order[i] = order[j]!; order[j] = t
   }
-  if (avoidFirst !== undefined && order[0] === avoidFirst) [order[0], order[1]] = [order[1], order[0]]
+  if (avoidFirst !== undefined && order[0] === avoidFirst) { order[0] = order[1]!; order[1] = avoidFirst }
   return order
 }
 
