@@ -109,3 +109,15 @@ body .butler-conversation .ask-dock-drag > div {min-width:0;flex:1}
   .butler-orb.butler-chat-robot {width:68px;height:68px;flex-basis:68px}
   body .butler-conversation .ask-dock-drag {min-height:80px;gap:6px}
 }
+
+/* Floating robot launcher: larger, and no fallback backdrop once the 3D robot renders.
+   Inside the same layer because layered !important outranks unlayered rules. */
+@layer bridge-social-reference {
+  :root[data-theme] body .ix-root.ledger-native-app[data-experience] > .ix-assistant button.ask-dock-fab .butler-orb.butler-fab-robot {
+    width:96px!important;height:96px!important;flex:0 0 96px!important;
+  }
+  :root[data-theme] body .ix-root.ledger-native-app[data-experience] > .ix-assistant button.ask-dock-fab .butler-orb:has(canvas) .butler-orb-fallback {
+    opacity:0!important;visibility:hidden!important;
+  }
+}
+:root[data-theme] body .ask-dock-fab .butler-orb[data-butler-avatar="robot"]:has(canvas) .butler-orb-fallback { display:none!important; }
