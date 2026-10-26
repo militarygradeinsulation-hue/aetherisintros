@@ -26,6 +26,11 @@ BEGIN
     RAISE EXCEPTION 'You may only update your own passport'
       USING ERRCODE = '42501';
   END IF;
+  -- Revocation is monotonic; the original shared token never becomes valid again.
+  IF OLD.revoked = TRUE AND NEW.revoked = FALSE THEN
+    RAISE EXCEPTION 'Revoked passport links cannot be reactivated'
+      USING ERRCODE = '42501';
+  END IF;
   IF public.is_verified_member() THEN
     RETURN NEW;
   END IF;
