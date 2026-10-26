@@ -40,8 +40,8 @@ body .ask-cinematic-entrance-action .ask-cinematic-entrance-enter:is(:hover,:act
 .ask-cinematic-entrance-title {padding-bottom:clamp(110px,20vh,170px)}
 
 /* Classy glass pill for Enter Intros (wins over global square/red button rules). */
-html body .ask-cinematic-entrance-action button.ask-cinematic-entrance-enter,
-html body .ask-cinematic-entrance-action button.ask-cinematic-entrance-enter:is(:hover,:active,:focus-visible) {
+:is(html, #__boost__#__boost2__) body .ask-cinematic-entrance-action button.ask-cinematic-entrance-enter,
+:is(html, #__boost__#__boost2__) body .ask-cinematic-entrance-action button.ask-cinematic-entrance-enter:is(:hover,:active,:focus-visible) {
   background: rgba(255,255,255,.10) !important;
   color: #f7f5f0 !important;
   border: 1px solid rgba(255,255,255,.32) !important;
@@ -55,9 +55,9 @@ html body .ask-cinematic-entrance-action button.ask-cinematic-entrance-enter:is(
   text-transform: uppercase;
   transition: background-color .2s ease, border-color .2s ease !important;
 }
-html body .ask-cinematic-entrance-action button.ask-cinematic-entrance-enter:hover {
+:is(html, #__boost__#__boost2__) body .ask-cinematic-entrance-action button.ask-cinematic-entrance-enter:hover {
   background: rgba(255,255,255,.18) !important;
   border-color: rgba(255,255,255,.5) !important;
 }
-html body .ask-cinematic-entrance-action button.ask-cinematic-entrance-enter::before,
-html body .ask-cinematic-entrance-action button.ask-cinematic-entrance-enter::after { display: none !important; }
+:is(html, #__boost__#__boost2__) body .ask-cinematic-entrance-action button.ask-cinematic-entrance-enter::before,
+:is(html, #__boost__#__boost2__) body .ask-cinematic-entrance-action button.ask-cinematic-entrance-enter::after { display: none !important; }
