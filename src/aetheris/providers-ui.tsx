@@ -5,7 +5,7 @@
  * Data rules live in drizzle/migrations/0045_providers.sql.
  */
 import { ArrowLeft, BadgeCheck, Briefcase, ExternalLink, HandHelping, Inbox, Pencil, Plus, Search, ShieldCheck, Trash2 } from 'lucide-react'
-import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 
 import { supabase } from '@/integrations/supabase/client'
 import {
@@ -48,7 +48,9 @@ export function ProvidersPage() {
   const [error, setError] = useState('')
 
   const [loading, setLoading] = useState(false)
+  const loadGeneration = useRef(0)
   const load = useCallback(async () => {
+    const generation = ++loadGeneration.current
     setLoading(true)
     setError('')
     try {
@@ -58,16 +60,36 @@ export function ProvidersPage() {
         r.error ? `Your requests: ${errText(r.error)}` : '',
         i.error ? `Provider inbox: ${errText(i.error)}` : '',
       ].filter(Boolean)
+      if (generation !== loadGeneration.current) return
       if (failures.length) setError(`Could not load all Trusted Providers data. ${failures.join(' · ')}`)
       // Failed queries must not impersonate an empty, successfully loaded list.
       if (!d.error) setProviders(d.data ?? [])
       if (!r.error) setRequests(r.data ?? [])
       if (!i.error) setInbox(i.data ?? [])
     } catch (cause) {
-      setError(cause instanceof Error ? cause.message : 'Could not load providers. Retry.')
-    } finally { setLoading(false) }
+      if (generation === loadGeneration.current) setError(cause instanceof Error ? cause.message : 'Could not load providers. Retry.')
+    } finally {
+      if (generation === loadGeneration.current) setLoading(false)
+    }
   }, [])
-  useEffect(() => { void load() }, [load])
+  useEffect(() => {
+    let active = true
+    void load()
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(event => {
+      if (event === 'SIGNED_OUT') {
+        loadGeneration.current++
+        setProviders(null)
+        setRequests([])
+        setInbox([])
+        setError('')
+        setLoading(false)
+      } else if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED' || event === 'INITIAL_SESSION') {
+        // Run after the auth callback so the restored session's token is available.
+        setTimeout(() => { if (active) void load() }, 0)
+      }
+    })
+    return () => { active = false; loadGeneration.current++; subscription.unsubscribe() }
+  }, [load])
 
   const shown = useMemo(() => filterProviders(providers ?? [], category, query), [providers, category, query])
   const open = providers?.find(p => p.id === openId) ?? null
@@ -84,7 +106,7 @@ export function ProvidersPage() {
     <nav className="providers-tabs" role="tablist">
       <button role="tab" aria-selected={tab === 'browse'} className={tab === 'browse' ? 'on' : ''} onClick={() => setTab('browse')}>Browse</button>
       <button role="tab" aria-selected={tab === 'requests'} className={tab === 'requests' ? 'on' : ''} onClick={() => setTab('requests')}>My requests{requests.length ? ` · ${requests.length}` : ''}</button>
-      {inbox.length > 0 && <button role="tab" aria-selected={tab === 'inbox'} className={tab === 'inbox' ? 'on' : ''} onClick={() => setTab('inbox')}><Inbox size={13} /> Routed to my firm · {inbox.length}</button>}
+      {(inbox.length > 0 || providers?.some(p => p.mine_contact)) && <button role="tab" aria-selected={tab === 'inbox'} className={tab === 'inbox' ? 'on' : ''} onClick={() => setTab('inbox')}><Inbox size={13} /> Routed to my firm · {inbox.length}</button>}
     </nav>
     {error && <div role="alert" className="og-note" style={{border:'1px solid #aa6565',padding:'12px',borderRadius:8}}>
       {error} <button type="button" className="underline" disabled={loading} onClick={() => void load()}>Retry all three loads</button>
