@@ -147,6 +147,17 @@ jobs:
         env:
           PLAYWRIGHT_MODULE: ${{ github.workspace }}/node_modules/playwright/index.mjs
         run: node scripts/mobile-messages-check/run.mjs
+      - name: Mobile notification panel containment and readability
+        env:
+          PLAYWRIGHT_MODULE: ${{ github.workspace }}/node_modules/playwright/index.mjs
+          NOTIFICATION_SCREENSHOTS: notification-screenshots
+        run: node scripts/notification-popover-check/run.mjs
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: notification-popover-phone-screens
+          path: notification-screenshots
+          if-no-files-found: ignore
 
   network-systems:
     runs-on: ubuntu-24.04
