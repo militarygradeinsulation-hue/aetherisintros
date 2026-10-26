@@ -392,6 +392,17 @@ async function speakCurrent(run: number) {
 export function playPendingButlerAudio() {
   if (state !== 'paused') return
   unlockAudio() // Calling resume in the click stack is critical on iOS Safari.
+  if (managedAudioSource && managedAudioContext) {
+    const ctx = managedAudioContext
+    state = 'speaking'; problem = ''; announce()
+    void ctx.resume().catch(() => {
+      if (ctx !== managedAudioContext) return
+      state = 'paused'
+      problem = 'Butler audio is paused. Tap Play reply again or use a phone voice in Settings.'
+      announce()
+    })
+    return
+  }
   if (activeAudio) {
     const audio = activeAudio
     state = 'speaking'
