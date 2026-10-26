@@ -340,3 +340,16 @@
     transition: none;
   }
 }
+
+/* No box around the homepage robot (global button rules add red borders/underlines on tap). */
+:root[data-theme] body .ael .ael-butler-idea-trigger,
+:root[data-theme] body .ael .ael-butler-idea-trigger:hover,
+:root[data-theme] body .ael .ael-butler-idea-trigger:active,
+:root[data-theme] body .ael .ael-butler-idea-trigger:focus:not(:focus-visible) {
+  border: 0 !important;
+  border-bottom: 0 !important;
+  box-shadow: none !important;
+  background: transparent !important;
+  outline: none !important;
+  -webkit-tap-highlight-color: transparent;
+}
