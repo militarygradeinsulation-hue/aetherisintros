@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 import { ArrowRight, ArrowUpRight } from 'lucide-react'
 import { Link } from '@tanstack/react-router'
 import { useAccess } from './access'
@@ -23,11 +23,41 @@ const BUTLER_IDEAS = [
   'Before a meeting, review the person and the reason you want to connect.',
   'Keep introductions, conversations, and next steps together instead of scattered across tools.',
   'In Business View, review your CRM and relationships to see what deserves attention next.',
+  'Post one clear ask this week. Specific asks get better intros than broad ones.',
+  'List what you can help with, not just what you need. Generosity attracts the right people.',
+  'Every intro here is double opt-in, so both people agree before anyone is connected.',
+  'Revisit a contact you have not spoken to in months. A short check-in often reopens doors.',
+  'Ask for an intro with context: why them, why you, and why now.',
+  'Browse the network by need or expertise instead of by job title.',
+  'After a great conversation, note what you learned so your next follow-up is sharper.',
+  'Offer one introduction for someone else today. Strong networks are built both ways.',
+  'Keep your profile focus current. What you are working on now matters more than your history.',
+  'Use Social View for the people pulse and Business View for pipeline and follow-ups.',
+  'Turn a recurring question into an ask so the right member can find you.',
+  'Verify your LinkedIn to move beyond a basic account and build more trust.',
+  'Before asking for help, check whether a mutual connection can make a warm intro.',
+  'Message people with one sentence about why you reached out. Clarity earns replies.',
+  'Save people worth knowing so you can return when the timing is right.',
+  'Review cooling conversations and decide which ones deserve a next step.',
 ] as const
+
+function shuffledOrder(avoidFirst?: number) {
+  const order = BUTLER_IDEAS.map((_, i) => i)
+  for (let i = order.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    const t = order[i]!; order[i] = order[j]!; order[j] = t
+  }
+  if (avoidFirst !== undefined && order[0] === avoidFirst) { order[0] = order[1]!; order[1] = avoidFirst }
+  return order
+}
 
 function LandingButlerIdeas() {
   const [tip, setTip] = useState(-1)
-  const nextTip = () => setTip(current => (current + 1) % BUTLER_IDEAS.length)
+  const queue = useRef<number[]>([])
+  const nextTip = () => {
+    if (queue.current.length === 0) queue.current = shuffledOrder(tip < 0 ? undefined : tip)
+    setTip(queue.current.shift()!)
+  }
   return <div className="ael-butler-ideas">
     <button type="button" className="ael-butler-idea-trigger"
       onClick={nextTip} aria-label="Ask Butler for an idea about Ask Intros"
