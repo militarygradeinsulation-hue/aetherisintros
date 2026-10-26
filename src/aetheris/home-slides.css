@@ -1,95 +1,42 @@
-/* Homepage hero image area: rotating member brand graphics, no visible controls. */
+/* Public homepage: image-led, full-width editorial carousel with Butler at left.
+   Keep the complete member-supplied slide artwork readable (no cropping). */
 
 :root .ael.ael-compact .ael-hero--carousel {
   display: flex;
   flex-direction: column;
+  align-items: stretch;
   height: auto;
-  min-height: 0;
-  padding: 204px 0 20px;
+  min-height: 100svh;
+  padding: clamp(145px, 15svh, 175px) 0 clamp(20px, 3svh, 34px);
   background: var(--background);
-  gap: 16px;
+  gap: clamp(12px, 2vw, 24px);
 }
 
 .ael .ael-hero--carousel::after {
   display: none;
 }
 
-.ael-hero--carousel .ael-hero-slides {
-  position: relative;
-  width: 100%;
-  height: min(58svh, 540px);
-  flex: none;
-  z-index: 0;
-  overflow: hidden;
-  background: var(--background);
-}
-
-.ael-hero-slide {
-  position: absolute;
-  inset: 0;
-  opacity: 0;
-  transition: none;
-  pointer-events: none;
-}
-
-.ael-hero-slide.is-active {
-  opacity: 1;
-}
-
-.ael-hero-slide img {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
-  object-position: center;
-  filter: none;
-}
-
 :root .ael.ael-compact .ael-hero--carousel .ael-hero-content {
   width: 100%;
   max-width: none;
-  padding-inline: 20px;
+  padding-inline: clamp(14px, 3vw, 48px);
 }
 
 :root .ael.ael-compact .ael-hero--carousel .ael-hero-actions {
+  display: flex;
   justify-content: center;
+  flex-wrap: wrap;
+  row-gap: 12px;
   margin: 0;
 }
 
 :root .ael.ael-compact .ael-hero--carousel .ael-hero-actions .ael-btn {
-  min-height: 64px;
-  min-width: min(320px, 100%);
-  padding: 18px 28px;
-  font-size: 17px;
+  min-height: 60px;
+  min-width: min(300px, 100%);
+  padding: 16px 24px;
+  font-size: 16px;
   letter-spacing: 0;
   text-transform: none;
-}
-
-@media (max-width: 760px) {
-  /* Let the actual logo/control height reserve space, including after fonts load. */
-  :root .ael.ael-compact .ael-header {
-    position: relative;
-    inset: auto;
-  }
-  :root .ael.ael-compact .ael-hero--carousel {
-    padding-top: 20px;
-  }
-  .ael-hero--carousel .ael-hero-slides {
-    height: 62svh;
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .ael-hero-slide {
-    transition: none;
-  }
-}
-
-/* Sign-in button beside the primary signup call to action. */
-:root .ael.ael-compact .ael-hero--carousel .ael-hero-actions {
-  flex-wrap: wrap;
-  row-gap: 14px;
 }
 
 .ael .ael-hero-actions .ael-btn-ghost {
@@ -109,68 +56,287 @@
   outline-offset: 3px;
 }
 
-/* Side panels use the desktop space around the uncropped portrait artwork. */
-.ael-carousel-stage {
+/* Former desktop hero had three columns with the art capped at 420px.
+   Give the art the whole remaining viewport width instead. */
+.ael .ael-carousel-stage {
+  display: grid;
+  grid-template-columns: minmax(270px, clamp(290px, 23vw, 360px)) minmax(0, 1fr);
+  align-items: center;
+  gap: clamp(12px, 2.4vw, 44px);
+  width: 100%;
+  max-width: none;
+  min-width: 0;
+  margin: 0 auto;
+  padding-inline: clamp(16px, 2.6vw, 48px);
+}
+
+.ael .ael-carousel-intro {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  gap: clamp(16px, 2.3svh, 26px);
+  min-width: 0;
+  color: var(--st-ink, var(--soft));
+  text-align: left;
+}
+
+.ael-carousel-copy {
+  display: grid;
+  justify-items: start;
+  gap: 12px;
+  min-width: 0;
+}
+
+.ael .ael-carousel-stage h2 {
+  margin: 0;
+  font-size: clamp(29px, 2.65vw, 44px);
+  line-height: 1.12;
+  letter-spacing: -.03em;
+  color: inherit;
+}
+
+.ael .ael-carousel-stage p {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.55;
+  color: inherit;
+}
+
+.ael .ael-carousel-stage .ael-carousel-label {
+  margin: 0;
+  font-size: 10px;
+  font-weight: 750;
+  letter-spacing: .15em;
+}
+
+.ael .ael-carousel-stage .ael-text-link {
+  justify-self: start;
+  white-space: normal;
+  margin-top: 4px;
+  color: inherit !important;
+  border-bottom-color: color-mix(in srgb, currentColor 45%, transparent);
+}
+
+/* The existing Three.js robot remains animated and tracks the cursor.
+   The public-facing button cycles through genuine product tips. */
+.ael-butler-ideas {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 12px;
   width: 100%;
   min-width: 0;
 }
-.ael-carousel-intro,
-.ael-carousel-options {
-  display: none;
+
+.ael-butler-idea-trigger {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0;
+  max-width: 100%;
+  padding: 0;
+  color: inherit;
+  cursor: pointer;
+  border: 0;
+  background: none;
 }
-@media (min-width: 1100px) {
+
+.ael-butler-idea-trigger:hover .ael-butler-idea-action,
+.ael-butler-idea-trigger:focus-visible .ael-butler-idea-action {
+  color: #8bbcff;
+}
+
+.ael-butler-idea-trigger:focus-visible {
+  outline: 2px solid #8bbcff;
+  outline-offset: 5px;
+  border-radius: 12px;
+}
+
+:root .ael.ael-compact .ael-hero--carousel .butler-orb.butler-home-robot {
+  display: block;
+  width: clamp(205px, 18vw, 280px);
+  height: clamp(205px, 18vw, 280px);
+  flex: none;
+  margin: 0;
+  pointer-events: none;
+}
+
+.ael-butler-idea-action {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding-bottom: 5px;
+  font-size: 10px;
+  font-weight: 750;
+  letter-spacing: .13em;
+  border-bottom: 1px solid currentColor;
+  transition: color .2s ease;
+}
+
+.ael-butler-idea-message {
+  width: 100%;
+  max-width: 320px;
+  min-height: 78px;
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  padding: 12px 14px;
+  color: inherit;
+  background: color-mix(in srgb, var(--background) 92%, var(--foreground) 8%);
+  border: 1px solid color-mix(in srgb, currentColor 18%, transparent);
+  border-radius: 14px;
+}
+
+.ael .ael-carousel-stage .ael-butler-idea-message p {
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+/* Larger, edge-to-edge slide area without cutting off embedded image wording. */
+.ael-hero--carousel .ael-hero-slides {
+  position: relative;
+  width: 100%;
+  height: clamp(490px, 78svh, 900px);
+  min-width: 0;
+  z-index: 0;
+  overflow: hidden;
+  background: var(--background);
+}
+
+.ael-hero-slide {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  transition: none;
+  pointer-events: none;
+}
+
+.ael-hero-slide.is-active {
+  opacity: 1;
+}
+
+.ael-hero-slide img {
+  display: block;
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  max-width: 100%;
+  object-fit: contain;
+  object-position: center;
+  filter: none;
+}
+
+@media (max-width: 899px) {
   .ael .ael-carousel-stage {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 12px;
+    padding-inline: 0;
+  }
+
+  .ael .ael-carousel-intro {
+    padding-inline: clamp(18px, 4vw, 36px);
+  }
+
+  .ael-butler-ideas {
     display: grid;
-    grid-template-columns: minmax(0, 1fr) minmax(300px, 420px) minmax(0, 1fr);
+    grid-template-columns: minmax(140px, 210px) minmax(0, 1fr);
     align-items: center;
-    gap: clamp(28px, 4vw, 76px);
-    max-width: 1600px;
+    max-width: 680px;
+    gap: 14px;
     margin-inline: auto;
-    padding-inline: clamp(32px, 4vw, 72px);
   }
-  .ael .ael-carousel-intro,
-  .ael .ael-carousel-options {
-    display: grid;
-    gap: 24px;
-    min-width: 0;
-    color: var(--st-ink, var(--soft));
-    text-align: left;
+
+  .ael-carousel-copy {
+    display: none;
   }
-  .ael .ael-carousel-stage h2 {
-    margin: 0;
-    font-size: clamp(28px, 2.7vw, 48px);
-    line-height: 1.12;
-    letter-spacing: -.03em;
-    color: inherit;
+
+  :root .ael.ael-compact .ael-hero--carousel .butler-orb.butler-home-robot {
+    width: clamp(140px, 24vw, 210px);
+    height: clamp(140px, 24vw, 210px);
   }
-  .ael .ael-carousel-stage p {
-    margin: 12px 0 0;
-    font-size: 15px;
-    line-height: 1.65;
-    color: inherit;
-  }
-  .ael .ael-carousel-stage .ael-carousel-label {
-    margin: 0 0 12px;
-    font-size: 10px;
-    font-weight: 700;
-    letter-spacing: .14em;
-  }
-  .ael .ael-carousel-options h2 {
-    font-size: clamp(24px, 2vw, 34px);
-  }
-  .ael .ael-carousel-options > div + div {
-    border-top: 1px solid currentColor;
-    padding-top: 24px;
-  }
-  .ael .ael-carousel-stage .ael-text-link {
-    justify-self: start;
-    white-space: normal;
+
+  .ael-hero--carousel .ael-hero-slides {
+    height: clamp(460px, 74svh, 790px);
   }
 }
 
-/* Compact 320px phones: preserve the slide while keeping actions above the fold. */
+@media (max-width: 760px) {
+  :root .ael.ael-compact .ael-header {
+    position: relative;
+    inset: auto;
+  }
+
+  :root .ael.ael-compact .ael-hero--carousel {
+    padding-top: 18px;
+    gap: 12px;
+  }
+
+  :root .ael.ael-compact .ael-hero--carousel .ael-hero-actions {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+  }
+
+  :root .ael.ael-compact .ael-hero--carousel .ael-hero-actions .ael-btn {
+    min-width: 0;
+    min-height: 54px;
+    padding: 10px 12px;
+    font-size: clamp(11px, 3.2vw, 14px);
+    text-align: center;
+    line-height: 1.25;
+  }
+
+  :root .ael.ael-compact .ael-hero--carousel .ael-hero-actions .ael-text-link {
+    grid-column: 1 / -1;
+    justify-self: center;
+  }
+
+  .ael .ael-carousel-intro {
+    padding-inline: 14px;
+  }
+
+  .ael-butler-ideas {
+    grid-template-columns: minmax(118px, 38%) minmax(0, 1fr);
+    gap: 10px;
+  }
+
+  :root .ael.ael-compact .ael-hero--carousel .butler-orb.butler-home-robot {
+    width: clamp(118px, 36vw, 158px);
+    height: clamp(118px, 36vw, 158px);
+  }
+
+  .ael-butler-idea-action {
+    font-size: 8px;
+    letter-spacing: .08em;
+  }
+
+  .ael-butler-idea-message {
+    min-height: 85px;
+    padding: 10px;
+  }
+
+  .ael .ael-carousel-stage .ael-butler-idea-message p {
+    font-size: 12px;
+  }
+
+  .ael-hero--carousel .ael-hero-slides {
+    height: clamp(390px, 68svh, 690px);
+  }
+}
+
 @media (max-width: 340px) {
   .ael-hero--carousel .ael-hero-slides {
-    height: min(53svh, 380px);
+    height: min(64svh, 530px);
+    min-height: 350px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ael-hero-slide,
+  .ael-butler-idea-action {
+    transition: none;
   }
 }
