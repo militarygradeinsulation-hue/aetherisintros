@@ -32,8 +32,8 @@ try {
   if(!before.equals(after)){animated=true;break;}
  }
  if(!animated) console.log('RENDER_DIAGNOSTIC',await page.locator('.butler-orb').evaluate(e=>({html:e.outerHTML,hidden:document.hidden,reduced:matchMedia('(prefers-reduced-motion: reduce)').matches})),errors);
- assert(animated,'Butler 3D robot renders an animated avatar');
- assert(await page.locator('.butler-orb').getAttribute('data-butler-avatar')==='robot','launcher uses the 3D robot avatar');
+ assert(animated,'Butler floating orb renders an animated avatar');
+ assert(await page.locator('.butler-orb').getAttribute('data-butler-avatar')==='orb','launcher retains the floating orb');
  const center=await page.locator('.butler-orb canvas').screenshot();
  await page.mouse.move(0,0);
  await page.waitForTimeout(1000);
