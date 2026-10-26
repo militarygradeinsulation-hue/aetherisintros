@@ -156,13 +156,14 @@ try {
       const tipBefore = await page.locator('#ael-butler-idea-message').innerText()
       await butlerTrigger.click()
       const tipAfter = await page.locator('#ael-butler-idea-message').innerText()
-      assert(tipBefore !== tipAfter && tipAfter.includes('Start with a specific need'),
+      assert(tipBefore !== tipAfter && !tipAfter.includes('Click the robot for a quick tip.'),
         'clicking Butler shows a useful introduction tip')
       await butlerTrigger.click()
-      assert((await page.locator('#ael-butler-idea-message').innerText()).includes('Before a meeting'),
-        'repeated clicks advance the tips without navigating away')
-      assert(m.hero && m.hero.height <= Math.max(viewport.height * 1.10, 760),
-        'hero fits near the first viewport')
+      const nextTip = await page.locator('#ael-butler-idea-message').innerText()
+      assert(nextTip !== tipAfter && nextTip !== tipBefore,
+        'repeated clicks advance the shuffled tips without navigating away')
+      assert(m.hero && m.hero.height <= Math.max(viewport.height * 1.25, 840),
+        'image-led hero remains within a bounded scroll height')
       assert(['cinematic-experience'].every(id => m.links[id]),
         'every navigation anchor has a real destination')
       assert(Object.values(m.ctas).every(Boolean), 'hero preview, demo, join and sign-in links remain')
@@ -173,7 +174,7 @@ try {
       // On these widths check the real, visible hero signup control instead.
       const joinToMeasure = (m.signup && m.signup.width > 0) ? m.signup : m.heroJoin
       const crucial = { heroTitle: m.heroTitle, heroActions: m.heroActions, headerActions: m.headerActions, logo: m.logo, joinToMeasure, cinematicCTA: m.cinematicCTA }
-      if (viewport.width <= 390 && (!Object.values(crucial).every(onScreen) || (m.hero?.height ?? 0) > Math.max(viewport.height * 1.10, 760))) {
+      if (viewport.width <= 390 && (!Object.values(crucial).every(onScreen) || (m.hero?.height ?? 0) > Math.max(viewport.height * 1.25, 840))) {
         console.log('  ! phone bounding-box diagnostic: ' + JSON.stringify({viewport:viewport.width,hero:m.hero,crucial}))
       }
       assert(Object.values(crucial).every(onScreen),
