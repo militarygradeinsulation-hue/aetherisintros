@@ -279,6 +279,7 @@ export function WarmReferralPanel() {
 }
 
 const STYLES = `
+.wr-error { margin: 12px 16px; padding: 10px 12px; border: 1px solid #B45353; border-radius: 8px; background: #3B2025; color: #FECACA; font-size: 13px; }
 .wr-panel {
   --wr-bg: #0e0f11;
   --wr-surface: #16181c;
