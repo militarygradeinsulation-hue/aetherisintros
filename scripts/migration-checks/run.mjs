@@ -291,6 +291,11 @@ async function boot({ actualMembershipGate = false } = {}) {
   if (!passportSource) throw new Error('Historical Passport baseline missing from migration 0003')
   await db.exec(passportSource[1])
   for (const m of migrations) {
+    if (m === '0100_repair_warm_referrals_and_syndication_rooms.sql') {
+      // Live 0100 reconciles legacy objects absent from source-history 0072/0075.
+      // Supply those observed prerequisites only inside disposable PGlite.
+      await db.exec(readFileSync(join(here, '..', 'recovery', 'fixtures', '0100_legacy_live_prerequisites.sql'), 'utf8'))
+    }
     try { await db.exec(readFileSync(join(migrationsDir, m), 'utf8')) }
     catch (error) { throw new Error(`Migration ${m} failed: ${error.message}`, { cause: error }) }
   }
