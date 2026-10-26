@@ -34,11 +34,26 @@ try {
  if(!animated) console.log('RENDER_DIAGNOSTIC',await page.locator('.butler-orb').evaluate(e=>({html:e.outerHTML,hidden:document.hidden,reduced:matchMedia('(prefers-reduced-motion: reduce)').matches})),errors);
  assert(animated,'Butler floating orb renders an animated avatar');
  assert(await page.locator('.butler-orb').getAttribute('data-butler-avatar')==='robot','launcher shows the floating robot');
+ const transparent=await page.locator('.butler-orb').evaluate(el=>{
+   const clear=color=>color==='transparent'||color==='rgba(0, 0, 0, 0)';
+   const canvas=el.querySelector('canvas');
+   return !!canvas&&clear(getComputedStyle(el).backgroundColor)&&clear(getComputedStyle(canvas).backgroundColor)&&canvas.getContext('webgl2')?.getContextAttributes()?.alpha===true;
+ });
+ assert(transparent,'robot has a transparent WebGL canvas and no colored backdrop');
  const center=await page.locator('.butler-orb canvas').screenshot();
  await page.mouse.move(0,0);
  await page.waitForTimeout(1000);
  const moved=await page.locator('.butler-orb canvas').screenshot();
  assert(!center.equals(moved),'Butler avatar continues to move and tracks the page mouse');
+ await page.evaluate(()=>window.dispatchEvent(new PointerEvent('pointerdown',{pointerType:'touch',clientX:0,clientY:0,bubbles:true})));
+ const touchShift=await page.locator('.butler-orb').evaluate(el=>el.style.getPropertyValue('--butler-look-x'));
+ assert(touchShift!==''&&touchShift!=='0px','Butler tracks finger taps without intercepting page input');
+ await page.evaluate(()=>{
+   const finger=new Touch({identifier:1,target:document.body,clientX:innerWidth,clientY:innerHeight});
+   window.dispatchEvent(new TouchEvent('touchmove',{touches:[finger],targetTouches:[finger],changedTouches:[finger],bubbles:true}));
+ });
+ const dragShift=await page.locator('.butler-orb').evaluate(el=>el.style.getPropertyValue('--butler-look-x'));
+ assert(dragShift!==touchShift,'Butler follows a finger drag across the page');
  assert(await page.locator('.butler-orb').getAttribute('data-orb-view')==='business','Business robot selects red palette');
  await page.locator('.butler-orb').screenshot({path:join(out,'business.png')});
  await page.getByRole('button',{name:'Social',exact:true}).click();
