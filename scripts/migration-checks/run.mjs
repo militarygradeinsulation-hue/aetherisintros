@@ -283,6 +283,13 @@ async function boot({ actualMembershipGate = false } = {}) {
   const verificationHistory=readFileSync(join(migrationsDir,'../../supabase/migrations/20260916200912_3964645f-20d3-4e4d-8641-441afae91086.sql'),'utf8')
   await db.exec(verificationHistory.match(/create or replace function public.is_verified_member\(\)[\s\S]*?\$\$;/i)[0])
   await db.exec(readFileSync(join(migrationsDir,'0001_unified_executive_profiles_and_recommendations.sql'),'utf8'))
+  // 0099 depends on the original Passport schema and owner RLS from frozen
+  // historical migration 0003. The PGlite baseline starts at 0022; derive
+  // this prerequisite from its real source instead of inventing a table.
+  const originalGraph = readFileSync(join(migrationsDir,'0003_opportunity_graph_foundation.sql'),'utf8')
+  const passportSource = originalGraph.match(/-- Passports\\s*([\\s\\S]*?)create or replace function public\\.get_passport\\(/i)
+  if (!passportSource) throw new Error('Historical Passport baseline missing from migration 0003')
+  await db.exec(passportSource[1])
   for (const m of migrations) {
     try { await db.exec(readFileSync(join(migrationsDir, m), 'utf8')) }
     catch (error) { throw new Error(`Migration ${m} failed: ${error.message}`, { cause: error }) }
