@@ -192,6 +192,13 @@ Verified connector -> target pairs: ${verifiedPaths.slice(0, 100).join(', ')}`
       throw new Error('Referral generation is unavailable. Existing suggestions were kept.')
     }
 
+    const { data: alreadySuggested, error: existingError } = await db.from('referral_suggestions')
+      .select('suggested_member_id').eq('for_member_id', userId)
+      .in('status', ['pending', 'active', 'snoozed', 'actioned']).limit(300)
+    if (existingError) throw new Error('Existing referral suggestions could not be checked. Nothing new was saved.')
+    const usedTargets = new Set<string>((alreadySuggested ?? []).map(
+      (row: { suggested_member_id: string }) => row.suggested_member_id,
+    ))
     const saved: ReferralSuggestion[] = []
     for (const s of suggestions.slice(0, 5)) {
       const verified = verifiedReferralPath(s, connections, possibleTargets, observedEdges)
@@ -199,6 +206,7 @@ Verified connector -> target pairs: ${verifiedPaths.slice(0, 100).join(', ')}`
       // observed relationship evidence between connector and target.
       if (!verified) continue
       const { target, connector } = verified
+      if (usedTargets.has(target.id)) continue
       const { data: row, error } = await db.from('referral_suggestions').insert({
         for_member_id: userId,
         suggested_member_id: target.id,
@@ -218,6 +226,7 @@ Verified connector -> target pairs: ${verifiedPaths.slice(0, 100).join(', ')}`
       }
       const profiles = new Map<string, Profile>([[target.id, target], [connector.id, connector]])
       saved.push(toSuggestion(row, profiles))
+      usedTargets.add(target.id)
     }
     return saved
   })
@@ -297,6 +306,16 @@ export const requestReferral = createServerFn({ method: 'POST' })
       .select('followee_id').eq('follower_id', userId)
       .eq('followee_id', data.connectorId).eq('kind','connection').maybeSingle()
     if (connectionError || !connection) throw new Error('This connector is no longer one of your confirmed connections.')
+    const { data: secondHop, error: secondHopError } = await db.from('follows')
+      .select('id').eq('follower_id', data.connectorId)
+      .eq('followee_id', data.targetId).eq('kind', 'connection').maybeSingle()
+    if (secondHopError || !secondHop) throw new Error('This connector-to-target relationship cannot be verified now.')
+    const { data: existingRequest, error: duplicateError } = await db.from('referral_requests')
+      .select('id').eq('requester_id', userId).eq('target_member_id', data.targetId)
+      .eq('connector_id', data.connectorId).in('status', ['pending', 'accepted'])
+      .limit(1).maybeSingle()
+    if (duplicateError) throw new Error('Existing referral requests could not be checked. Nothing new was saved.')
+    if (existingRequest) throw new Error('An active request for this introduction already exists.')
     const message = data.message.trim()
     if (!message || message.length > 2000) throw new Error('Provide a message of 1 to 2000 characters.')
     const { data: row, error } = await db.from('referral_requests').insert({
