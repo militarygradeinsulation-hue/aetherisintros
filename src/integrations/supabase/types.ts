@@ -6880,6 +6880,8 @@ export type Database = {
           requester_id: string
           responded_at: string | null
           status: string
+          suggestion_id: string | null
+          target_id: string | null
           target_member_id: string
           updated_at: string
         }
@@ -6892,6 +6894,8 @@ export type Database = {
           requester_id: string
           responded_at?: string | null
           status?: string
+          suggestion_id?: string | null
+          target_id?: string | null
           target_member_id: string
           updated_at?: string
         }
@@ -6904,6 +6908,8 @@ export type Database = {
           requester_id?: string
           responded_at?: string | null
           status?: string
+          suggestion_id?: string | null
+          target_id?: string | null
           target_member_id?: string
           updated_at?: string
         }
@@ -6923,6 +6929,13 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "referral_requests_suggestion_id_fkey"
+            columns: ["suggestion_id"]
+            isOneToOne: false
+            referencedRelation: "referral_suggestions"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "referral_requests_target_member_id_fkey"
             columns: ["target_member_id"]
             isOneToOne: false
@@ -6933,45 +6946,79 @@ export type Database = {
       }
       referral_suggestions: {
         Row: {
+          acted_at: string | null
           actioned_at: string | null
+          connector_user_id: string | null
           context: Json | null
           created_at: string
           dismissed_at: string | null
           for_member_id: string
+          for_user_id: string | null
+          generated_at: string
           id: string
+          path_explanation: string | null
           reason: string | null
           score: number | null
+          shared_context: string | null
+          snoozed_until: string | null
           status: string
+          strength_score: number | null
           suggested_member_id: string
+          target_user_id: string | null
           updated_at: string
         }
         Insert: {
+          acted_at?: string | null
           actioned_at?: string | null
+          connector_user_id?: string | null
           context?: Json | null
           created_at?: string
           dismissed_at?: string | null
           for_member_id: string
+          for_user_id?: string | null
+          generated_at?: string
           id?: string
+          path_explanation?: string | null
           reason?: string | null
           score?: number | null
+          shared_context?: string | null
+          snoozed_until?: string | null
           status?: string
+          strength_score?: number | null
           suggested_member_id: string
+          target_user_id?: string | null
           updated_at?: string
         }
         Update: {
+          acted_at?: string | null
           actioned_at?: string | null
+          connector_user_id?: string | null
           context?: Json | null
           created_at?: string
           dismissed_at?: string | null
           for_member_id?: string
+          for_user_id?: string | null
+          generated_at?: string
           id?: string
+          path_explanation?: string | null
           reason?: string | null
           score?: number | null
+          shared_context?: string | null
+          snoozed_until?: string | null
           status?: string
+          strength_score?: number | null
           suggested_member_id?: string
+          target_user_id?: string | null
           updated_at?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "referral_suggestions_connector_user_id_fkey"
+            columns: ["connector_user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "referral_suggestions_for_member_id_fkey"
             columns: ["for_member_id"]
@@ -6982,6 +7029,13 @@ export type Database = {
           {
             foreignKeyName: "referral_suggestions_suggested_member_id_fkey"
             columns: ["suggested_member_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "referral_suggestions_target_user_id_fkey"
+            columns: ["target_user_id"]
             isOneToOne: false
             referencedRelation: "profiles"
             referencedColumns: ["id"]
@@ -7678,6 +7732,45 @@ export type Database = {
           },
         ]
       }
+      syndication_messages: {
+        Row: {
+          body: string
+          created_at: string
+          id: string
+          room_id: string
+          user_id: string
+        }
+        Insert: {
+          body: string
+          created_at?: string
+          id?: string
+          room_id: string
+          user_id?: string
+        }
+        Update: {
+          body?: string
+          created_at?: string
+          id?: string
+          room_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "syndication_messages_room_id_fkey"
+            columns: ["room_id"]
+            isOneToOne: false
+            referencedRelation: "syndication_rooms"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "syndication_messages_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       syndication_room_members: {
         Row: {
           commitment_amount: number | null
@@ -7690,6 +7783,10 @@ export type Database = {
           room_id: string
           status: string
           updated_at: string
+          user_id: string | null
+          vote: string | null
+          vote_note: string | null
+          voted_at: string | null
         }
         Insert: {
           commitment_amount?: number | null
@@ -7702,6 +7799,10 @@ export type Database = {
           room_id: string
           status?: string
           updated_at?: string
+          user_id?: string | null
+          vote?: string | null
+          vote_note?: string | null
+          voted_at?: string | null
         }
         Update: {
           commitment_amount?: number | null
@@ -7714,6 +7815,10 @@ export type Database = {
           room_id?: string
           status?: string
           updated_at?: string
+          user_id?: string | null
+          vote?: string | null
+          vote_note?: string | null
+          voted_at?: string | null
         }
         Relationships: [
           {
@@ -7737,20 +7842,32 @@ export type Database = {
             referencedRelation: "syndication_rooms"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "syndication_room_members_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
         ]
       }
       syndication_rooms: {
         Row: {
           close_date: string | null
+          closed_at: string | null
           created_at: string
           created_by: string
+          deadline: string | null
           deal_type: string | null
+          decision: string | null
           description: string | null
           documents: Json | null
           id: string
           max_investors: number | null
           metadata: Json | null
           min_investment: number | null
+          opportunity_size: string | null
+          room_type: string
           status: string
           target_raise: number | null
           title: string
@@ -7759,15 +7876,20 @@ export type Database = {
         }
         Insert: {
           close_date?: string | null
+          closed_at?: string | null
           created_at?: string
           created_by: string
+          deadline?: string | null
           deal_type?: string | null
+          decision?: string | null
           description?: string | null
           documents?: Json | null
           id?: string
           max_investors?: number | null
           metadata?: Json | null
           min_investment?: number | null
+          opportunity_size?: string | null
+          room_type?: string
           status?: string
           target_raise?: number | null
           title: string
@@ -7776,15 +7898,20 @@ export type Database = {
         }
         Update: {
           close_date?: string | null
+          closed_at?: string | null
           created_at?: string
           created_by?: string
+          deadline?: string | null
           deal_type?: string | null
+          decision?: string | null
           description?: string | null
           documents?: Json | null
           id?: string
           max_investors?: number | null
           metadata?: Json | null
           min_investment?: number | null
+          opportunity_size?: string | null
+          room_type?: string
           status?: string
           target_raise?: number | null
           title?: string
@@ -8541,6 +8668,11 @@ export type Database = {
       is_org_member: { Args: { p_org: string }; Returns: boolean }
       is_peer_group_facilitator: { Args: { p_group: string }; Returns: boolean }
       is_peer_group_member: { Args: { p_group: string }; Returns: boolean }
+      is_syndication_room_creator: {
+        Args: { p_room: string }
+        Returns: boolean
+      }
+      is_syndication_room_member: { Args: { p_room: string }; Returns: boolean }
       is_uuid_text: { Args: { p: string }; Returns: boolean }
       is_verified_member: { Args: never; Returns: boolean }
       issue_membership_card: {
