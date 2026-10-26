@@ -694,6 +694,13 @@
       "when": 1793044150641,
       "tag": "0099_passport_owner_revocation",
       "breakpoints": true
+    },
+    {
+      "idx": 100,
+      "version": "7",
+      "when": 1793045383253,
+      "tag": "0100_member_context_sync",
+      "breakpoints": true
     }
   ]
 }
