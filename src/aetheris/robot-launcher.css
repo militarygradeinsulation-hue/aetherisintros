@@ -8,8 +8,8 @@
   box-shadow: none !important;
   outline-offset: 4px;
   padding: 0 !important;
-  width: 104px !important;
-  height: 104px !important;
+  width: 116px !important;
+  height: 116px !important;
   min-height: 0 !important;
   border-radius: 50% !important;
   backdrop-filter: none !important;
@@ -20,8 +20,8 @@
 .ask-dock-fab--robot .butler-fab-robot,
 :root[data-theme] body .ask-dock-fab--robot > .butler-fab-robot {
   display: block !important;
-  width: 104px !important;
-  height: 104px !important;
+  width: 116px !important;
+  height: 116px !important;
   background: transparent !important;
   border: 0 !important;
   box-shadow: none !important;
@@ -31,7 +31,7 @@
 @media (max-width: 767px) {
   :root[data-theme] body .ask-dock-fab.ask-dock-fab--robot:not(.active),
   :root[data-theme] body .ix-root.ledger-native-app > .ix-assistant .ask-dock-fab.ask-dock-fab--robot:not(.active),
-  :root[data-theme] body .ask-dock-fab--robot > .butler-fab-robot { width: 84px !important; height: 84px !important; }
+  :root[data-theme] body .ask-dock-fab--robot > .butler-fab-robot { width: 96px !important; height: 96px !important; }
 }
 @keyframes robot-launcher-float { 0%,100% { translate: 0 0; } 50% { translate: 0 -6px; } }
 @media (prefers-reduced-motion: reduce) { .ask-dock-fab--robot { animation: none !important; } }
