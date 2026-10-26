@@ -3,6 +3,8 @@
    clip its left edge on iPhone. Desktop stays aligned to the bell. */
 body .live-bell-panel {
   position: fixed;
+  /* Override the legacy bell-anchored right:0 to avoid an overconstrained box. */
+  right: auto;
   z-index: 12000;
   box-sizing: border-box;
   min-width: 0;
