@@ -182,7 +182,7 @@ export function LinkedInScanPanel({
 
     {!result && <>
       <div className="li-scan-inputs">
-        <label className="li-scan-label" htmlFor={`${uid}-url`}><Link2 size={14} /> LinkedIn link <small>(optional, kept as a reference)</small></label>
+        <label className="li-scan-label" htmlFor={`${uid}-url`}><Link2 size={14} /> LinkedIn link <small>{mode === 'url' ? '(required for public search)' : '(optional, kept as a reference)'}</small></label>
         <input id={`${uid}-url`} value={url} onChange={e => { setUrl(e.target.value); setConsentedUrl(false) }} placeholder="linkedin.com/in/name" inputMode="url" autoComplete="url" />
         <span className="li-scan-label"><FileText size={14} /> Profile</span>
         <div className="li-scan-tabs" role="tablist" aria-label="How to add the profile">
