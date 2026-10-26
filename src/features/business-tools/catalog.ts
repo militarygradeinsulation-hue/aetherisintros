@@ -263,6 +263,15 @@ export const BUSINESS_TOOLS: BusinessTool[] = [
     ]
   },
   {
+    "id": "lien-notice-prep",
+    "name": "Lien & Notice Prep",
+    "category": "Field operations",
+    "description": "Prepare a private project evidence packet and preliminary notice draft for legal review. No deadlines are calculated and nothing is filed.",
+    "fields": ["Project name", "State and county", "Your project role", "Last work or supply date", "Contract counterparty"],
+    "sections": ["Confirm jurisdiction and claimant role", "Gather contract and work evidence", "Verify every legal deadline independently", "Draft preliminary notice for review", "Approve recipients and method with counsel", "Record service and follow up"]
+  },
+
+  {
     "id": "linkedin-playbook",
     "name": "LinkedIn Playbook",
     "category": "Sales & relationships",
@@ -297,6 +306,15 @@ export const BUSINESS_TOOLS: BusinessTool[] = [
       "Risk flags"
     ]
   },
+  {
+    "id": "pay-application-draft",
+    "name": "Pay Application Draft",
+    "category": "Field operations",
+    "description": "Assemble a private progress-billing worksheet and provisional arithmetic from member-entered USD figures; not a payment request or certified AIA form.",
+    "fields": ["Project name", "Billing period", "Contract amount USD", "Earned to date USD", "Retainage withheld to date USD", "Previously certified USD"],
+    "sections": ["Project and billing period", "Reconcile contract and approved changes", "Work completed and stored-material backup", "Retainage and prior certificates", "Provisional current payment due", "Conditional lien waivers and review", "Counterparty approval and submission"]
+  },
+
   {
     "id": "playbook-generator",
     "name": "Playbook Generator",
