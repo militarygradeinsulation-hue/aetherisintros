@@ -187,7 +187,8 @@ export function PhotoEstimatePage() {
       </p>}
       <button type="button" onClick={() => void run()}
         disabled={busy || !available || !consent || photos.length === 0 || trade.trim().length < 2 || brief.trim().length < 12}
-        className="inline-flex min-h-11 items-center gap-2 rounded-lg bg-red-600 px-4 py-2 font-semibold text-white disabled:cursor-not-allowed disabled:opacity-45">
+        className="inline-flex min-h-11 items-center gap-2 rounded-lg px-4 py-2 font-semibold text-white disabled:cursor-not-allowed disabled:opacity-45"
+        style={{ background: 'var(--sys-accent, #B91C1C)' }}>
         <Sparkles size={16} /> {busy ? 'Reviewing photos…' : 'Create unsent scope draft'}
       </button>
     </section>
