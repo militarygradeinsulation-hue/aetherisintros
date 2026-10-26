@@ -8,6 +8,7 @@
  */
 import { isShowcase } from '../showcase'
 import { notifyWorkspaceChange, registerSyncedStore } from '../sync/workspace-sync'
+import { createSupabaseGateway } from './supabase-gateway'
 import type {
   AvailabilityWindow, Circle, CompanyProfile, ConnectionChain, ConnectorReputation, ContextCapsule,
   DigitalHandshake, ID, IntentCard, MeetingContinuity, OpenLoop, OrganizationRelationship, Outcome,
@@ -227,11 +228,11 @@ export function createRemoteDataLayer(gateway: TableGateway): DataLayer {
 
 let active: DataLayer | null = null
 let activeShowcase: boolean | null = null
-/** Single entry point. Swap in `createRemoteDataLayer` once a database is wired. */
+/** Single entry point — uses the remote (Supabase) adapter. */
 export function getDataLayer(): DataLayer {
   if (!active || activeShowcase !== isShowcase()) {
     activeShowcase = isShowcase()
-    active = createLocalDataLayer()
+    active = createRemoteDataLayer(createSupabaseGateway())
   }
   return active
 }

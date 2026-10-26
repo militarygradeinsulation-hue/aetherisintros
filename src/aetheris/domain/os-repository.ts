@@ -8,6 +8,7 @@
  */
 import { isShowcase } from '../showcase'
 import { notifyWorkspaceChange, registerSyncedStore } from '../sync/workspace-sync'
+import { createSupabaseGateway } from './supabase-gateway'
 import type { ID } from './models'
 import type { Repository, TableGateway } from './repository'
 import type {
@@ -196,11 +197,11 @@ export function createRemoteOSLayer(gateway: TableGateway): OSDataLayer {
 
 let active: OSDataLayer | null = null
 let activeShowcase: boolean | null = null
-/** Single entry point. Swap in `createRemoteOSLayer` once a database is wired. */
+/** Single entry point — uses the remote (Supabase) adapter. */
 export function getOSDataLayer(): OSDataLayer {
   if (!active || activeShowcase !== isShowcase()) {
     activeShowcase = isShowcase()
-    active = createLocalOSLayer()
+    active = createRemoteOSLayer(createSupabaseGateway())
   }
   return active
 }

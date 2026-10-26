@@ -8,6 +8,7 @@
  */
 import { isShowcase } from '../showcase'
 import { notifyWorkspaceChange, registerSyncedStore } from '../sync/workspace-sync'
+import { createSupabaseGateway } from './supabase-gateway'
 import type { ID } from './models'
 import type { Repository, TableGateway } from './repository'
 import type {
@@ -65,7 +66,7 @@ export const moatTableNames: Record<MoatCollectionName, string> = {
   reciprocity: 'reciprocity_signals',
   decay: 'relationship_decay_risks',
   representatives: 'digital_representative_policies',
-  availability: 'introduction_availability_windows',
+  availability: 'introduction_availability',
   snapshots: 'network_snapshots',
   attribution: 'outcome_attribution_edges',
   knowledge: 'knowledge_posts',
@@ -223,11 +224,11 @@ export function createRemoteMoatLayer(gateway: TableGateway): MoatDataLayer {
 
 let active: MoatDataLayer | null = null
 let activeShowcase: boolean | null = null
-/** Single entry point. Swap in `createRemoteMoatLayer` once a database is wired. */
+/** Single entry point — uses the remote (Supabase) adapter. */
 export function getMoatDataLayer(): MoatDataLayer {
   if (!active || activeShowcase !== isShowcase()) {
     activeShowcase = isShowcase()
-    active = createLocalMoatLayer()
+    active = createRemoteMoatLayer(createSupabaseGateway())
   }
   return active
 }

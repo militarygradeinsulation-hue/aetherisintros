@@ -8,6 +8,7 @@
  */
 import { isShowcase } from '../showcase'
 import { notifyWorkspaceChange, registerSyncedStore } from '../sync/workspace-sync'
+import { createSupabaseGateway } from './supabase-gateway'
 import type { ID } from './models'
 import type { Repository, TableGateway } from './repository'
 import type {
@@ -276,11 +277,11 @@ export function createRemoteProLayer(gateway: TableGateway): ProDataLayer & {
 
 let active: ProDataLayer | null = null
 let activeShowcase: boolean | null = null
-/** Single entry point. Swap in `createRemoteProLayer` once a database is wired. */
+/** Single entry point — uses the remote (Supabase) adapter. */
 export function getProDataLayer(): ProDataLayer {
   if (!active || activeShowcase !== isShowcase()) {
     activeShowcase = isShowcase()
-    active = createLocalProLayer()
+    active = createRemoteProLayer(createSupabaseGateway())
   }
   return active
 }
