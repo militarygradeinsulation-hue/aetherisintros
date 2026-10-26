@@ -10,14 +10,17 @@ text-shadow:0 4px 36px #000}
 .ask-cinematic-entrance-title span{font:750 11px/1.4 Inter,system-ui,sans-serif;letter-spacing:.3em;color:#FFBABE}
 .ask-cinematic-entrance-title h2{margin:0!important;color:#FFF!important;
 font:800 clamp(31px,6.6vw,81px)/1.08 Inter,system-ui,sans-serif!important;letter-spacing:-.055em}
-.ask-cinematic-entrance-skip{position:absolute;top:calc(25px + env(safe-area-inset-top));right:clamp(20px,5vw,62px);
-border:1px solid #FFFFFF99!important;border-radius:99px!important;
-background:#0B0D13BB!important;color:#FFF!important;min-height:46px;padding:0 20px!important;
-font:650 12px/1 Inter,system-ui,sans-serif!important;letter-spacing:.08em;cursor:pointer;backdrop-filter:blur(10px)}
-.ask-cinematic-entrance-skip:hover{background:#EF4444!important}
-.ask-cinematic-entrance-skip:focus-visible{outline:3px solid #FFF!important;outline-offset:3px!important}
+:root body .ask-cinematic-entrance .ask-cinematic-entrance-skip{position:absolute;top:calc(25px + env(safe-area-inset-top));right:clamp(20px,5vw,62px);
+min-height:44px;padding:0 22px!important;display:inline-flex;align-items:center;gap:8px;
+border:1px solid rgba(255,255,255,.34)!important;border-radius:999px!important;
+background:rgba(12,15,22,.32)!important;color:rgba(255,255,255,.92)!important;
+font:600 11px/1 Inter,system-ui,sans-serif!important;letter-spacing:.22em;text-transform:uppercase;cursor:pointer;
+backdrop-filter:blur(16px) saturate(140%);box-shadow:0 12px 32px rgba(0,0,0,.28)!important;
+transition:background-color .2s ease,border-color .2s ease}
+:root body .ask-cinematic-entrance .ask-cinematic-entrance-skip:hover{background:rgba(255,255,255,.16)!important;border-color:rgba(255,255,255,.6)!important}
+:root body .ask-cinematic-entrance .ask-cinematic-entrance-skip:focus-visible{outline:3px solid #FFF!important;outline-offset:3px!important}
 @media(max-width:600px){.ask-cinematic-entrance-title{bottom:17%}
-.ask-cinematic-entrance-skip{top:calc(14px + env(safe-area-inset-top));right:14px}}
+:root body .ask-cinematic-entrance .ask-cinematic-entrance-skip{top:calc(14px + env(safe-area-inset-top));right:14px}}
 @media(prefers-reduced-motion:reduce){.ask-cinematic-entrance{transition:none}}
 /* MetroHero title-to-tagline reveal, driven by real playback rather than a scroll lock. */
 .ask-cinematic-entrance video {filter:none;transform-origin:center;transition:transform .25s linear}
