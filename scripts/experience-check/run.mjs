@@ -45,13 +45,18 @@ try {
       paintedBounds.height < (useCanvas ? 40 : 30))
       throw new Error(view + ' mobile Butler render/fallback is too small');
     const shape = await launcher.evaluate(button => {
-      const blob = button.querySelector('.ask-dock-blob').getBoundingClientRect();
-      const label = button.querySelector('.assistant-launcher-label').getBoundingClientRect();
+      const avatar = button.querySelector('.butler-orb');
       const style = getComputedStyle(button);
-      return { direction: style.flexDirection, background: style.backgroundColor, labelBelow: label.top >= blob.bottom - 1 };
+      const bounds = avatar?.getBoundingClientRect();
+      return {
+        transparent: style.backgroundColor === 'rgba(0, 0, 0, 0)',
+        robot: avatar?.getAttribute('data-butler-avatar') === 'robot',
+        usable: Boolean(bounds && bounds.width >= 40 && bounds.height >= 40),
+        accessible: button.getAttribute('aria-label') === 'Ask Intros',
+      };
     });
-    if (shape.direction !== 'column' || shape.background !== 'rgba(0, 0, 0, 0)' || !shape.labelBelow)
-      throw new Error(view + ' does not match the standalone Bridge blob and label: ' + JSON.stringify(shape));
+    if (!shape.transparent || !shape.robot || !shape.usable || !shape.accessible)
+      throw new Error(view + ' mobile Butler must remain a floating, usable, accessible robot: ' + JSON.stringify(shape));
     const box = await launcher.boundingBox();
     await phone.mouse.move(box.x + box.width / 2, box.y + box.height / 2);
     await phone.mouse.down();

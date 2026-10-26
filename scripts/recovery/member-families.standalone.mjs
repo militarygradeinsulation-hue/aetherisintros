@@ -72,6 +72,8 @@ try {
   }
   await db.query("insert into public.user_roles(user_id,role) values($1,'admin')", [ADMIN])
   for (const entry of migrations.filter(entry => Number(entry.tag.slice(0, 4)) >= 22 && !missing.has(Number(entry.tag.slice(0, 4))))) {
+    if (entry.tag === '0100_repair_warm_referrals_and_syndication_rooms')
+      await db.exec(read('scripts/recovery/fixtures/0100_legacy_live_prerequisites.sql'))
     await db.exec(read('drizzle/migrations/' + entry.tag + '.sql'))
   }
   const before = await svc('select id,name from public.profiles order by id')
