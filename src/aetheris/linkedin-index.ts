@@ -43,7 +43,11 @@ export function isMatchingOwnerName(savedName: string, resultName: string): bool
   if (own[own.length - 1] !== scanned[scanned.length - 1]) return false
   if (own.join(' ') === scanned.join(' ')) return true
   const first = own[0] ?? '', candidate = scanned[0] ?? ''
-  return first.length >= 2 && candidate.length >= 2 && first.slice(0, 2) === candidate.slice(0, 2)
+  const knownNicknames = [
+    ['joe', 'joseph'], ['bob', 'robert'], ['bill', 'william'],
+    ['mike', 'michael'], ['liz', 'elizabeth'], ['kate', 'katherine'],
+  ]
+  return knownNicknames.some(aliases => aliases.includes(first) && aliases.includes(candidate))
 }
 
 export function selectIndexedMemberSources(hits: readonly IndexedHit[], url: string, savedName: string): IndexedSource[] {
