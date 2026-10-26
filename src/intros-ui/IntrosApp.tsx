@@ -355,7 +355,13 @@ export default function App({ mode = 'demo', executiveAction, initialPage, initi
           activePage={activePage}
           activeTool={classicPage}
           onNavigate={handleNavigate}
-          onOpenTool={tool => { setClassicPage(tool); handleNavigate('workspace'); }}
+          onOpenTool={tool => {
+            // Opening CRM from the primary sidebar must return to the CRM section,
+            // even after a dashboard shortcut previously opened Pipeline.
+            if (tool === 'crm') setCrmSection('crm');
+            setClassicPage(tool);
+            handleNavigate('workspace');
+          }}
           searchQuery={searchQuery}
           onSearchChange={setSearchQuery}
           members={members}
