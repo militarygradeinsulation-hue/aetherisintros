@@ -116,6 +116,9 @@ let activeAudioUrl = ''
  * this context was unlocked while the click was still active. */
 let managedAudioContext: AudioContext | null = null
 let managedAudioSource: AudioBufferSourceNode | null = null
+/** Keep synthesized audio only in this device's memory until played or replaced.
+ * A mobile autoplay block must not force another paid TTS request. */
+let pendingManagedAudio: { blob: Blob; run: number } | null = null
 
 export function unlockAudio() {
   if (typeof window === 'undefined' || readVoiceSettings().voiceName !== 'intros-managed') return
@@ -218,6 +221,7 @@ function base64Audio(value: string, contentType: string): Blob {
 
 function finishSegment(run: number) {
   if (run !== token) return
+  pendingManagedAudio = null
   if (index + 1 < segments.length) { index += 1; announce(); void speakCurrent(run) }
   else stopReading()
 }
@@ -262,33 +266,26 @@ function speakWithDevice(text: string, run: number) {
   }
 }
 
-async function speakCurrent(run: number) {
-  const text = segments[index]
+/** Play an already-synthesized clip. When mobile browsers block async playback,
+ * leave its bytes ready for a *real user tap* instead of showing "Speaking"
+ * indefinitely or silently changing the member's chosen voice. */
+async function playManagedAudio(blob: Blob, run: number): Promise<void> {
   if (run !== token) return
-  if (text === undefined) { stopReading(); return }
-  state = 'speaking'
-  announce()
-
-  if (readVoiceSettings().voiceName !== 'intros-managed') {
-    speakWithDevice(text, run)
-    return
-  }
-
-  try {
-    const { supabase } = await import('@/integrations/supabase/client')
-    const { data: sessionData } = await supabase.auth.getSession()
-    if (run !== token) return
-    if (!sessionData.session) throw new Error('Sign in to hear the private Ask Intros ElevenLabs voice.')
-    const result = await speakWithIntrosVoice({ data: { text: text.slice(0, 1800) } })
-    if (run !== token) return
-    stopActiveAudio()
-    const blob = base64Audio(result.audio, result.contentType)
-    if (managedAudioContext) {
-      // Web Audio is unlocked synchronously on tap and remains eligible to
-      // start the generated voice after authentication / synthesis completes.
-      const ctx = managedAudioContext
-      if (ctx.state !== 'running') await ctx.resume()
+  stopActiveAudio()
+  const ctx = managedAudioContext
+  if (ctx) {
+    try {
+      if (ctx.state !== 'running') {
+        let timeout: ReturnType<typeof setTimeout> | undefined
+        try {
+          await Promise.race([
+            ctx.resume(),
+            new Promise<void>((_, reject) => { timeout = setTimeout(() => reject(new Error('Audio unlock required')), 1800) }),
+          ])
+        } finally { if (timeout) clearTimeout(timeout) }
+      }
       if (run !== token) return
+      if (ctx.state !== 'running') throw new Error('Audio context is not running')
       const buffer = await ctx.decodeAudioData(await blob.arrayBuffer())
       if (run !== token) return
       const source = ctx.createBufferSource()
@@ -302,26 +299,105 @@ async function speakCurrent(run: number) {
         finishSegment(run)
       }
       source.start()
-    } else {
-      // Older browsers without Web Audio can still play through HTMLAudioElement.
-      activeAudioUrl = URL.createObjectURL(blob)
-      const audio = new Audio()
-      audio.volume = 1
-      audio.src = activeAudioUrl
-      audio.playbackRate = rateOf[readVoiceSettings().speed]
-      activeAudio = audio
-      audio.onended = () => { stopActiveAudio(); finishSegment(run) }
-      audio.onerror = () => {
-        if (run !== token) return
-        failManagedReading('Your ElevenLabs voice could not play in this browser. Try another browser or switch voices in Settings.')
-      }
-      await audio.play()
+      problem = ''
+      state = 'speaking'
+      announce()
+      return
+    } catch {
+      // Web Audio is interrupted or cannot decode this clip. Try the native
+      // media element before asking the member to tap Play reply.
+      stopActiveAudio()
     }
+  }
+  if (run !== token) return
+  activeAudioUrl = URL.createObjectURL(blob)
+  const audio = new Audio()
+  audio.preload = 'auto'
+  audio.setAttribute('playsinline', '')
+  audio.volume = 1
+  audio.src = activeAudioUrl
+  audio.playbackRate = rateOf[readVoiceSettings().speed]
+  activeAudio = audio
+  audio.onended = () => {
+    if (run !== token) return
+    stopActiveAudio()
+    finishSegment(run)
+  }
+  audio.onerror = () => {
+    if (run !== token) return
+    failManagedReading('This device could not decode Butler audio. Select a device voice in Settings or try a different browser.')
+  }
+  try {
+    await audio.play()
+    if (run !== token) return
+    problem = ''
+    state = 'speaking'
+    announce()
+  } catch {
+    if (run !== token) return
+    // Preserve activeAudio/src so retrying from an actual tap can start
+    // immediately without waiting for the network or invoking ElevenLabs.
+    state = 'paused'
+    problem = 'Your phone blocked automatic sound. Tap Play reply below to hear Butler. Check media volume if it stays quiet.'
+    announce()
+  }
+}
+
+async function speakCurrent(run: number) {
+  const text = segments[index]
+  if (run !== token) return
+  if (text === undefined) { stopReading(); return }
+  state = 'speaking'
+  announce()
+
+  if (readVoiceSettings().voiceName !== 'intros-managed') {
+    pendingManagedAudio = null
+    speakWithDevice(text, run)
+    return
+  }
+
+  try {
+    const { supabase } = await import('@/integrations/supabase/client')
+    const { data: sessionData } = await supabase.auth.getSession()
+    if (run !== token) return
+    if (!sessionData.session) throw new Error('Sign in to hear the private Ask Intros ElevenLabs voice.')
+    const result = await speakWithIntrosVoice({ data: { text: text.slice(0, 1800) } })
+    if (run !== token) return
+    const blob = base64Audio(result.audio, result.contentType)
+    pendingManagedAudio = { blob, run }
+    await playManagedAudio(blob, run)
   } catch (error) {
     if (run !== token) return
     failManagedReading(error instanceof Error
       ? 'ElevenLabs voice unavailable: ' + error.message
       : 'Your ElevenLabs voice is unavailable. Try again shortly.')
+  }
+}
+
+/** Resume blocked mobile playback using the stored audio without a new API
+ * request. Only called from a visible member-controlled button. */
+export function playPendingButlerAudio() {
+  if (state !== 'paused') return
+  unlockAudio() // Calling resume in the click stack is critical on iOS Safari.
+  if (activeAudio) {
+    const audio = activeAudio
+    state = 'speaking'
+    problem = ''
+    announce()
+    void audio.play().catch(() => {
+      if (audio !== activeAudio) return
+      state = 'paused'
+      problem = 'Butler sound is still blocked. Turn up media volume, check Bluetooth output, or choose a device voice in Settings.'
+      announce()
+    })
+    return
+  }
+  if (pendingManagedAudio && pendingManagedAudio.run === token) {
+    const { blob, run } = pendingManagedAudio
+    state = 'speaking'
+    problem = ''
+    announce()
+    void playManagedAudio(blob, run)
   }
 }
 
@@ -363,6 +439,7 @@ export function stopReading() {
   const hadPlayback = state !== 'idle'
   token += 1
   segments = []
+  pendingManagedAudio = null
   index = 0
   state = 'idle'
   label = ''
@@ -387,6 +464,8 @@ export function pauseReading() {
 
 export function resumeReading() {
   if (state !== 'paused') return
+  if (pendingManagedAudio && !managedAudioSource) { playPendingButlerAudio(); return }
+  unlockAudio()
   if (managedAudioSource && managedAudioContext) void managedAudioContext.resume()
   else if (activeAudio) void activeAudio.play()
   else if (speechSupported()) window.speechSynthesis.resume()
