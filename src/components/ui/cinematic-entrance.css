@@ -38,3 +38,26 @@ body .ask-cinematic-entrance-action .ask-cinematic-entrance-enter:is(:hover,:act
 .ask-cinematic-entrance-enter:focus-visible {outline:3px solid currentColor;outline-offset:4px}
 /* The tagline lifts above the centred entry button so both stay readable. */
 .ask-cinematic-entrance-title {padding-bottom:clamp(110px,20vh,170px)}
+
+/* Classy glass pill for Enter Intros (wins over global square/red button rules). */
+html body .ask-cinematic-entrance-action button.ask-cinematic-entrance-enter,
+html body .ask-cinematic-entrance-action button.ask-cinematic-entrance-enter:is(:hover,:active,:focus-visible) {
+  background: rgba(255,255,255,.10) !important;
+  color: #f7f5f0 !important;
+  border: 1px solid rgba(255,255,255,.32) !important;
+  border-radius: 999px !important;
+  clip-path: none !important;
+  backdrop-filter: blur(18px) saturate(150%) !important;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.35), 0 10px 40px rgba(0,0,0,.35) !important;
+  font-size: 13px !important;
+  letter-spacing: .24em !important;
+  font-weight: 500 !important;
+  text-transform: uppercase;
+  transition: background-color .2s ease, border-color .2s ease !important;
+}
+html body .ask-cinematic-entrance-action button.ask-cinematic-entrance-enter:hover {
+  background: rgba(255,255,255,.18) !important;
+  border-color: rgba(255,255,255,.5) !important;
+}
+html body .ask-cinematic-entrance-action button.ask-cinematic-entrance-enter::before,
+html body .ask-cinematic-entrance-action button.ask-cinematic-entrance-enter::after { display: none !important; }
