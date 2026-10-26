@@ -19,7 +19,14 @@ it('runs the expanded security adapter on unchanged source history including aut
       await db.exec(readFileSync(join(repo, 'supabase/migrations', file), 'utf8'))
     }
     const entries = JSON.parse(readFileSync(join(repo, 'drizzle/migrations/meta/_journal.json'), 'utf8')).entries
-    for (const entry of entries) await db.exec(readFileSync(join(repo, 'drizzle/migrations', entry.tag + '.sql'), 'utf8'))
+    for (const entry of entries) {
+      if (entry.tag === '0100_repair_warm_referrals_and_syndication_rooms') {
+        // Only the disposable catalog needs these observed live prerequisites;
+        // the frozen historical 0072/0075 table names do not match live 0100.
+        await db.exec(readFileSync(join(repo, 'scripts/recovery/fixtures/0100_legacy_live_prerequisites.sql'), 'utf8'))
+      }
+      await db.exec(readFileSync(join(repo, 'drizzle/migrations', entry.tag + '.sql'), 'utf8'))
+    }
     for (const file of postJournalMigrations) await db.exec(readFileSync(join(repo, 'supabase/migrations', file), 'utf8'))
     const report = await checkObservedSecurity(db, repo)
     expect(report.setupError).toBeNull()
