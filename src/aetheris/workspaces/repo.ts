@@ -15,6 +15,26 @@ import type {
 /* eslint-disable @typescript-eslint/no-explicit-any */
 const db = supabase as any;
 
+/** The published database still has the earlier 9-column deal_workspaces table.
+ * Prevent new invitations or partial records until the versioned workspace
+ * schema and RPCs are genuinely present. This is a zero-row metadata probe. */
+export class WorkspaceSchemaUnavailableError extends Error {}
+export const WORKSPACE_MIGRATION_NOTICE =
+  "Private Deal Workspaces are temporarily unavailable: the live database still uses the older workspace layout. Existing member records are preserved; an audited schema upgrade is required before new workspaces can be created or opened.";
+async function requireWorkspaceSchema(): Promise<void> {
+  const result = await db.from("deal_workspaces")
+    .select("id,title,created_by,source_type,source_id,row_version,scope_version")
+    .limit(0);
+  if (result.error) {
+    if (/column|schema cache|does not exist|42703|PGRST204/i.test(result.error.message || "") ||
+        result.error.code === "42703" || result.error.code === "PGRST204") {
+      throw new WorkspaceSchemaUnavailableError(WORKSPACE_MIGRATION_NOTICE);
+    }
+    throw new Error("Could not verify deal workspace access: " + result.error.message);
+  }
+}
+
+
 export interface WorkspaceRow {
   id: string;
   createdBy: string;
@@ -147,6 +167,7 @@ async function rpc<T = unknown>(name: string, args: Record<string, unknown>): Pr
 export async function listWorkspaces(): Promise<
   Array<WorkspaceRow & { myStatus: MemberRow["status"] | null }>
 > {
+  await requireWorkspaceSchema();
   const { data: u } = await db.auth.getUser();
   const uid: string | undefined = u?.user?.id;
   const w = await db
@@ -172,6 +193,7 @@ export async function listWorkspaces(): Promise<
 }
 
 export async function loadWorkspace(id: string): Promise<WorkspaceDetail | null> {
+  await requireWorkspaceSchema();
   const w = await db.from("deal_workspaces").select("*").eq("id", id).maybeSingle();
   if (w.error) throw new Error(w.error.message);
   if (!w.data) return null;
@@ -279,6 +301,7 @@ export async function findWorkspaceForSource(
   type: WorkspaceSource,
   sourceId: string,
 ): Promise<{ id: string; title: string } | null> {
+  await requireWorkspaceSchema();
   const r = await db
     .from("deal_workspaces")
     .select("id, title")
@@ -289,13 +312,14 @@ export async function findWorkspaceForSource(
   return r.data ?? null;
 }
 
-export const createWorkspace = (
+export const createWorkspace = async (
   type: WorkspaceSource,
   sourceId: string,
   v: ValidInput,
   inviteMessage = "",
-) =>
-  rpc<{ id: string; created: boolean }>("create_deal_workspace", {
+) => {
+  await requireWorkspaceSchema();
+  return rpc<{ id: string; created: boolean }>("create_deal_workspace", {
     p_source_type: type,
     p_source_id: sourceId,
     p_title: v.title,
@@ -306,6 +330,7 @@ export const createWorkspace = (
     p_due_on: v.dueOn,
     p_invite_message: inviteMessage.trim(),
   });
+};
 export const respondToInvite = (id: string, accept: boolean) =>
   rpc("respond_workspace_invite", { p_ws: id, p_accept: accept });
 export const inviteMember = (id: string, userId: string, message = "") =>
