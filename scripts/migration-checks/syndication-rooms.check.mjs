@@ -9,9 +9,19 @@ export default async ({ ok, as, svc, A, B, C, ADMIN }) => {
   const who = await as(A, `select auth.uid()::text uid`)
   ok(who.rows?.[0]?.uid === A, 'authenticated syndication check sees caller id')
 
-  // Creation is atomic and guarded: clients cannot insert rooms/members directly.
-  ok(!!(await as(A, `insert into public.syndication_rooms (created_by, title) values ('${A}', 'Direct room')`)).error, 'members cannot bypass guarded room creation')
-  ok(!!(await as(A, `insert into public.syndication_members (room_id, user_id) values ('00000000-0000-4000-8000-000000000099', '${A}')`)).error, 'members cannot bypass guarded invitations')
+  // Observed live reconciliation 0100 permits direct creator-owned room inserts
+  // to support the current app. RLS must reject impersonation and must not
+  // permit a non-creator to add a participant directly.
+  const direct = await as(A, `insert into public.syndication_rooms (created_by, title) values ('${A}', 'Direct room') returning id`)
+  ok(!direct.error && !!direct.rows?.[0]?.id, 'signed-in creator may insert their own room')
+  ok(!!(await as(B, `insert into public.syndication_rooms (created_by, title) values ('${A}', 'Forged room')`)).error,
+    'another member cannot create a room on behalf of its owner')
+  if (direct.rows?.[0]?.id) {
+    const removed = await as(A, `delete from public.syndication_rooms where id='${direct.rows[0].id}' returning id`)
+    ok(!removed.error && removed.rows?.length === 1, 'creator can delete an uninvited draft room')
+  }
+  ok(!!(await as(A, `insert into public.syndication_members (room_id, user_id) values ('00000000-0000-4000-8000-000000000099', '${A}')`)).error,
+    'members cannot bypass guarded invitations')
 
   // A creates a room and invites B in one transaction.
   let r = await as(A, `select (public.create_syndication_room(
