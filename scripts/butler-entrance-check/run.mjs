@@ -10,7 +10,7 @@ const pending=new Set();
 const server=createServer((req,res)=>{
  if(req.url==='/pending.mp4'){pending.add(res);res.on('close',()=>pending.delete(res));return;}
  const type=req.url==='/entry.js'?'text/javascript':req.url==='/entry.css'?'text/css':'text/html';res.setHeader('Content-Type',type);
- res.end(type==='text/html'?'<html data-experience="business"><head><link rel="stylesheet" href="/entry.css"></head><body style="background:#16161b;color:white"><div id="root"></div><script type="module" src="/entry.js"></script></body></html>':readFileSync(join(out,req.url.slice(1))));
+ res.end(type==='text/html'?'<html data-theme="dark" data-experience="business"><head><link rel="stylesheet" href="/entry.css"></head><body style="background:#16161b;color:white"><div id="root"></div><script type="module" src="/entry.js"></script></body></html>':readFileSync(join(out,req.url.slice(1))));
 });
 await new Promise(r=>server.listen(0,'127.0.0.1',r));
 const {chromium}=await import(process.env.PLAYWRIGHT_MODULE??resolve(here,'../../node_modules/playwright/index.mjs'));
@@ -34,11 +34,28 @@ try {
  if(!animated) console.log('RENDER_DIAGNOSTIC',await page.locator('.ask-dock-fab .butler-orb').evaluate(e=>({html:e.outerHTML,hidden:document.hidden,reduced:matchMedia('(prefers-reduced-motion: reduce)').matches})),errors);
  assert(animated,'Butler floating orb renders an animated avatar');
  assert(await page.locator('.ask-dock-fab .butler-orb').getAttribute('data-butler-avatar')==='robot','launcher shows the floating robot');
+ const transparent=await page.locator('.ask-dock-fab .butler-orb').evaluate(el=>{
+   const clear=color=>color==='transparent'||color==='rgba(0, 0, 0, 0)';
+   const canvas=el.querySelector('canvas');
+   return !!canvas&&clear(getComputedStyle(el).backgroundColor)&&clear(getComputedStyle(canvas).backgroundColor)&&canvas.getContext('webgl2')?.getContextAttributes()?.alpha===true;
+ });
+ assert(transparent,'robot has a transparent WebGL canvas and no colored backdrop');
  const center=await page.locator('.ask-dock-fab .butler-orb canvas').screenshot();
  await page.mouse.move(0,0);
  await page.waitForTimeout(1000);
  const moved=await page.locator('.ask-dock-fab .butler-orb canvas').screenshot();
  assert(!center.equals(moved),'Butler avatar continues to move and tracks the page mouse');
+ const mouseShift=await page.locator('.ask-dock-fab .butler-orb').evaluate(el=>el.style.getPropertyValue('--butler-look-x'));
+ assert(mouseShift!==''&&mouseShift!=='0px','robot reacts to mouse movement across the website');
+ await page.evaluate(()=>window.dispatchEvent(new PointerEvent('pointerdown',{pointerType:'touch',clientX:0,clientY:0,bubbles:true})));
+ const touchShift=await page.locator('.ask-dock-fab .butler-orb').evaluate(el=>el.style.getPropertyValue('--butler-look-x'));
+ assert(touchShift!==''&&touchShift!=='0px','robot follows finger taps without blocking underlying controls');
+ await page.evaluate(()=>{
+   const finger=new Touch({identifier:1,target:document.body,clientX:innerWidth,clientY:innerHeight});
+   window.dispatchEvent(new TouchEvent('touchmove',{touches:[finger],targetTouches:[finger],changedTouches:[finger],bubbles:true}));
+ });
+ const dragShift=await page.locator('.ask-dock-fab .butler-orb').evaluate(el=>el.style.getPropertyValue('--butler-look-x'));
+ assert(dragShift!==touchShift,'robot follows finger drags while preserving touch scrolling');
  assert(await page.locator('.ask-dock-fab .butler-orb').getAttribute('data-orb-view')==='business','Business robot selects red palette');
  await page.locator('.ask-dock-fab .butler-orb').screenshot({path:join(out,'business.png')});
  await page.getByRole('button',{name:'Social',exact:true}).click();
