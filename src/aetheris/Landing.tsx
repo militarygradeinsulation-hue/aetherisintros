@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import { ArrowRight, ArrowUpRight } from 'lucide-react'
 import { Link } from '@tanstack/react-router'
 import { useAccess } from './access'
@@ -15,6 +16,31 @@ import './compact-homepage.css'
 import './editorial-media.css'
 import './public-burnt-orange.css'
 import './home-slides.css'
+
+/** Short, concrete ideas for exploring Ask Intros without signing in. */
+const BUTLER_IDEAS = [
+  'Start with a specific need. Ask Intros helps you discover people who may be able to help.',
+  'Before a meeting, review the person and the reason you want to connect.',
+  'Keep introductions, conversations, and next steps together instead of scattered across tools.',
+  'In Business View, review your CRM and relationships to see what deserves attention next.',
+] as const
+
+function LandingButlerIdeas() {
+  const [tip, setTip] = useState(-1)
+  const nextTip = () => setTip(current => (current + 1) % BUTLER_IDEAS.length)
+  return <div className="ael-butler-ideas">
+    <button type="button" className="ael-butler-idea-trigger"
+      onClick={nextTip} aria-label="Ask Butler for an idea about Ask Intros"
+      aria-describedby="ael-butler-idea-message">
+      <ButlerAvatar robot className="butler-home-robot" view="social" />
+      <span className="ael-butler-idea-action">ASK BUTLER FOR AN IDEA <ArrowUpRight aria-hidden="true" size={14}/></span>
+    </button>
+    <div className="ael-butler-idea-message" id="ael-butler-idea-message" role="status" aria-live="polite" aria-atomic="true">
+      <span className="ael-carousel-label">BUTLER'S IDEA</span>
+      <p>{tip < 0 ? 'Click the robot for a quick tip.' : BUTLER_IDEAS[tip]}</p>
+    </div>
+  </div>
+}
 
 /** Compact typographic homepage with no illustrative photography. */
 function JoinAction({ signedIn, className = '' }: { signedIn: boolean; className?: string }) {
@@ -58,29 +84,18 @@ export default function Landing() {
             : <Link to="/auth" className="ael-btn ael-btn-ghost">Member sign in <ArrowUpRight aria-hidden="true" size={16} /></Link>}
           <Link to="/demo" className="ael-text-link">Explore the demo <ArrowRight aria-hidden="true" size={16} /></Link>
         </div>
-        <ButlerAvatar robot className="butler-home-robot" view="social" />
       </div>
       <div className="ael-carousel-stage">
-        <aside className="ael-carousel-intro" aria-label="Meaningful connections">
-          <p className="ael-carousel-label">WHY ME · WHY THEM · WHY NOW</p>
-          <h2>More connection.<br />More possibility.</h2>
-          <p>Find people who understand what you are building. Start with a shared purpose and a reason to connect.</p>
-          <Link to="/demo" className="ael-text-link">Find your next connection <ArrowRight aria-hidden="true" size={16} /></Link>
+        <aside className="ael-carousel-intro" aria-label="Ask Intros and Butler">
+          <LandingButlerIdeas />
+          <div className="ael-carousel-copy">
+            <p className="ael-carousel-label">WHY ME · WHY THEM · WHY NOW</p>
+            <h2>More connection.<br />More possibility.</h2>
+            <p>Find people who understand what you are building. Start with a shared purpose and a reason to connect.</p>
+            <Link to="/demo" className="ael-text-link">Find your next connection <ArrowRight aria-hidden="true" size={16} /></Link>
+          </div>
         </aside>
         <HomeSlideCarousel />
-        <aside className="ael-carousel-options" aria-label="Two ways to explore Ask Intros">
-          <div>
-            <p className="ael-carousel-label">SOCIAL VIEW</p>
-            <h2>Meet the people.</h2>
-            <p>Discover members, share what matters, and turn a conversation into a meaningful introduction.</p>
-          </div>
-          <div>
-            <p className="ael-carousel-label">BUSINESS VIEW</p>
-            <h2>Move things forward.</h2>
-            <p>Bring your relationships, conversations, and next steps together in one workspace.</p>
-          </div>
-          <Link to="/how-it-works" className="ael-text-link">See how it works <ArrowRight aria-hidden="true" size={16} /></Link>
-        </aside>
       </div>
     </section>
 
