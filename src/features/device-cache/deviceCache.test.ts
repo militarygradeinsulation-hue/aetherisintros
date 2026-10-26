@@ -55,6 +55,24 @@ describe('account-owned device sync', () => {
     expect((await pullChanges(store, remote)).applied).toBe(1);
     expect(calls).toEqual(['put:preferences', 'cursor:trusted-cursor']);
   });
+  it('never erases a draft whose queued upload needs manual recovery', async () => {
+    const written: string[] = [];
+    const store = {
+      getCursor: async () => null,
+      outbox: async () => [{ ...item('dead', { slice: 'drafts', payload: { text: 'unsent' } }), dead: true }],
+      putSlice: async (slice: string) => { written.push(slice); },
+      deleteSlice: async (slice: string) => { written.push('delete:' + slice); },
+      setCursor: async () => {},
+    } as unknown as DeviceStore;
+    const remote: Remote = {
+      send: async () => ({ ok: true }),
+      changesSince: async () => ({ serverTime: '2026-10-26T10:00:00Z', changes: [
+        { slice: 'drafts', payload: { text: 'outdated' }, updatedAt: '2026-10-26T09:00:00Z', deleted: false },
+      ] }),
+    };
+    await pullChanges(store, remote);
+    expect(written).toEqual([]);
+  });
   it('stops the queue after a temporary network failure', async () => {
     const events: string[] = [];
     const one = item('first'), two = item('second');
