@@ -32,6 +32,17 @@ export async function prepareDeviceSignOut(): Promise<boolean> {
     const { data } = await supabase.auth.getSession();
     const uid = data.session?.user?.id;
     if (uid) {
+      const { DeviceStore } = await import('./store');
+      const store = await DeviceStore.open(uid);
+      try {
+        const count = await store.pendingCount();
+        if (count > 0 && !window.confirm(
+          count + ' device change(s) are not synced. Signing out will discard them. Sign out anyway?'
+        )) return false;
+      } finally {
+        // The member owns this encrypted store; do not leave a live handle.
+        store.close();
+      }
       const { wipeAccount } = await import('./store');
       await wipeAccount(uid);
     }
