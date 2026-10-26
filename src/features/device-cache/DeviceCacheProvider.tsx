@@ -26,7 +26,17 @@ export function useDeviceCache(): DeviceSession | null {
 /** Central logout guard, shared by all logout buttons via signOutMember(). */
 export async function prepareDeviceSignOut(): Promise<boolean> {
   const device = activeSession;
-  if (!device) return true;
+  if (!device) {
+    // All logout entrypoints, including account settings outside the member
+    // shell, must clear local encrypted data for the current account.
+    const { data } = await supabase.auth.getSession();
+    const uid = data.session?.user?.id;
+    if (uid) {
+      const { wipeAccount } = await import('./store');
+      await wipeAccount(uid);
+    }
+    return true;
+  }
   const pending = await device.pendingBeforeSignOut();
   if (pending > 0 && !window.confirm(
     pending + ' device change(s) have not synced. Signing out will discard them from this device. Sign out anyway?'
