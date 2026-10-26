@@ -59,6 +59,13 @@ try {
   assert.ok(verifiedMemberFunction, 'Historical verified member helper must be present in the synthetic fixture')
   await db.exec(verifiedMemberFunction)
   await db.exec(read('drizzle/migrations/0001_unified_executive_profiles_and_recommendations.sql'))
+  // Migration 0099 assumes the actual original Passport table/RLS from 0003,
+  // which predates this deliberately minimal (0022+) synthetic baseline.
+  // Load that frozen prerequisite; do not invent or replay any newer schema.
+  const history = read('drizzle/migrations/0003_opportunity_graph_foundation.sql')
+  const originalPassport = history.match(/-- Passports\s*([\s\S]*?)create or replace function public\.get_passport\(/i)?.[1]
+  assert.ok(originalPassport, 'Historical Passport table/RLS must exist in the recovery fixture')
+  await db.exec(originalPassport)
   for (const id of [A, B, C, ADMIN]) {
     await db.query('insert into auth.users(id,email_confirmed_at) values($1,now())', [id])
     await db.query('insert into public.profiles(id,name) values($1,$2)', [id, 'Synthetic member'])
