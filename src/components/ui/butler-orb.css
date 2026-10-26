@@ -91,3 +91,21 @@
   opacity:0!important;
 }
 .butler-orb[data-butler-avatar="robot"] canvas { background:transparent!important; }
+
+/* Robot placements are transparent, unframed and separate from the orb launcher. */
+.butler-orb[data-butler-avatar="robot"] {
+  border:0!important;border-radius:0!important;background:transparent!important;
+  box-shadow:none!important;overflow:visible;
+}
+.butler-orb.butler-home-robot {display:block;width:180px;height:180px;flex:0 0 180px;margin:12px auto 0}
+.butler-orb.butler-chat-robot {display:block;width:84px;height:84px;flex:0 0 84px}
+.butler-orb[data-butler-avatar="robot"] .butler-orb-fallback {
+  inset:12% 20% 8%!important;width:60%!important;height:80%!important;
+}
+body .butler-conversation .ask-dock-drag {min-height:96px;gap:10px}
+body .butler-conversation .ask-dock-drag > div {min-width:0;flex:1}
+@media (max-width:767px) {
+  .butler-orb.butler-home-robot {width:140px;height:140px;flex-basis:140px}
+  .butler-orb.butler-chat-robot {width:68px;height:68px;flex-basis:68px}
+  body .butler-conversation .ask-dock-drag {min-height:80px;gap:6px}
+}

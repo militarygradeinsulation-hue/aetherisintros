@@ -6,6 +6,7 @@ import { CinematicHero } from '@/components/ui/cinematic-landing-hero'
 import { CinematicEntrance, CITY_OPENING_VIDEO } from '@/components/ui/cinematic-entrance'
 import { AppearanceToggle } from './AppearanceToggle'
 import { HomeSlideCarousel } from './HomeSlideCarousel'
+import { ButlerAvatar } from '@/components/ui/butler-orb'
 import { PublicStructuredData } from './PublicStructuredData'
 import { PRODUCT_TITLE, PRODUCT_DESCRIPTION } from '@/lib/public-search'
 import './editorial-landing.css'
@@ -64,6 +65,7 @@ export default function Landing() {
           <h2>More connection.<br />More possibility.</h2>
           <p>Find people who understand what you are building. Start with a shared purpose and a reason to connect.</p>
           <Link to="/demo" className="ael-text-link">Find your next connection <ArrowRight aria-hidden="true" size={16} /></Link>
+          <ButlerAvatar robot className="butler-home-robot" view="social" />
         </aside>
         <HomeSlideCarousel />
         <aside className="ael-carousel-options" aria-label="Two ways to explore Ask Intros">

@@ -1,7 +1,7 @@
 import { transcribeButlerAudio } from '@/lib/butlerTranscribe.functions'
 import { blobToBase64 } from './meeting-recorder'
 import { ButlerWorkspaceControls, useButlerWelcome } from '@/intros-ui/onboarding/ButlerWorkspaceControls'
-import { ButlerOrb } from '@/components/ui/butler-orb'
+import { ButlerAvatar, ButlerOrb } from '@/components/ui/butler-orb'
 import { AskIntrosMark } from '@/aetheris/AskIntrosMark'
 import { useEffect, useRef, useState } from 'react'
 import { Paperclip, History, Plus, ArrowUp, Mic, MicOff, Radio, Volume2, VolumeX, X } from 'lucide-react'
@@ -590,7 +590,7 @@ function AskIntrosDockInner({ page, peopleNames, memberName, briefing, contextPa
     {open && <aside ref={dockRef} className={'ask-dock butler-conversation'+(expanded?' butler-expanded':'')} role="dialog" aria-label="Ask Intros" data-voice-skip="true"
       style={pos ? { ...clampPoint(pos, Math.min(expanded?680:440, window.innerWidth - 32), dockRef.current?.offsetHeight ?? 420), right: 'auto', bottom: 'auto' } : undefined}>
       <header className="ask-dock-drag" title="Drag to move" onPointerDown={e => { if ((e.target as HTMLElement).closest('button')) return; dragDock(e, dockRef.current) }}>
-        <span className="ask-dock-mark"><AetherisGlyph size={14} /></span>
+        <ButlerAvatar robot className="butler-chat-robot" />
         <div><b>Ask Intros</b><small>Your butler for the whole system</small></div>
         {voiceOutputSupported() && <button className={`icon-btn ${voice.speakReplies ? 'active' : ''}`}
           aria-label={voice.speakReplies ? 'Stop speaking replies' : 'Speak replies out loud'}

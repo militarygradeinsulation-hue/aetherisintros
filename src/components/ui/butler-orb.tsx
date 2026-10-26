@@ -2,6 +2,7 @@ import { Component, lazy, Suspense, useEffect, useRef, useState, type ReactNode 
 import './butler-orb.css';
 
 const RobotCanvas = lazy(() => import('./butler-robot-canvas'));
+const BlobCanvas = lazy(() => import('./butler-blob-canvas'));
 
 class RobotBoundary extends Component<{ children: ReactNode }, { failed: boolean }> {
   override state = { failed: false };
@@ -14,7 +15,7 @@ class RobotBoundary extends Component<{ children: ReactNode }, { failed: boolean
  * window, while the existing launcher button keeps all clicks, drag handling,
  * keyboard access and voice behavior. No new assistant controller is created.
  */
-export function ButlerOrb() {
+export function ButlerAvatar({ robot = false, className = '', view }: { robot?: boolean; className?: string; view?: 'social' | 'business' }) {
   const host = useRef<HTMLSpanElement>(null);
   const pointer = useRef<[number, number]>([0, 0]);
   const [social, setSocial] = useState(false);
@@ -24,7 +25,7 @@ export function ButlerOrb() {
   const [hovered, setHovered] = useState(false);
 
   useEffect(() => {
-    const sync = () => setSocial(document.documentElement.dataset['experience'] === 'social');
+    const sync = () => setSocial((view ?? document.documentElement.dataset['experience']) === 'social');
     sync();
     const observer = new MutationObserver(sync);
     observer.observe(document.documentElement, { attributes: true, attributeFilter: ['data-experience'] });
@@ -48,7 +49,7 @@ export function ButlerOrb() {
     const button = host.current?.closest('button');
     const move = (event: PointerEvent) => {
       if (event.pointerType !== 'mouse' && event.pointerType !== 'pen') return;
-      const rect = button?.getBoundingClientRect();
+      const rect = (button ?? host.current)?.getBoundingClientRect();
       const cx = rect ? rect.left + rect.width / 2 : window.innerWidth / 2;
       const cy = rect ? rect.top + rect.height / 2 : window.innerHeight / 2;
       const x = (event.clientX - cx) / Math.max(window.innerWidth * 0.48, 1);
@@ -73,12 +74,17 @@ export function ButlerOrb() {
       button?.removeEventListener('pointerenter', enter);
       button?.removeEventListener('pointerleave', leave);
     };
-  }, []);
+  }, [view]);
 
-  return <span ref={host} className="butler-orb" data-orb-view={social ? 'social' : 'business'} data-butler-avatar="robot" aria-hidden="true">
+  return <span ref={host} className={`butler-orb ${className}`} data-orb-view={social ? 'social' : 'business'} data-butler-avatar={robot ? 'robot' : 'orb'} aria-hidden="true">
     <span className="butler-orb-fallback" />
     {ready && <RobotBoundary><Suspense fallback={null}>
-      <RobotCanvas social={social} visible={visible} reducedMotion={reducedMotion} hovered={hovered} pointer={pointer} onLost={() => setReady(false)} />
+      {robot
+        ? <RobotCanvas social={social} visible={visible} reducedMotion={reducedMotion} hovered={hovered} pointer={pointer} onLost={() => setReady(false)} />
+        : <BlobCanvas social={social} visible={visible} reducedMotion={reducedMotion} hovered={hovered} pointer={pointer.current} onLost={() => setReady(false)} />}
     </Suspense></RobotBoundary>}
   </span>;
 }
+
+/** The existing floating launcher keeps the original view-colored orb. */
+export function ButlerOrb() { return <ButlerAvatar />; }
