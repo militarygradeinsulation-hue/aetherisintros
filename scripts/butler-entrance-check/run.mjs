@@ -32,8 +32,14 @@ try {
   if(!before.equals(after)){animated=true;break;}
  }
  if(!animated) console.log('RENDER_DIAGNOSTIC',await page.locator('.butler-orb').evaluate(e=>({html:e.outerHTML,hidden:document.hidden,reduced:matchMedia('(prefers-reduced-motion: reduce)').matches})),errors);
- assert(animated,'supplied R3F shader paints an animated blob');
- assert(await page.locator('.butler-orb').getAttribute('data-orb-view')==='business','Business orb selects red palette');
+ assert(animated,'Butler 3D robot renders an animated avatar');
+ assert(await page.locator('.butler-orb').getAttribute('data-butler-avatar')==='robot','launcher uses the 3D robot avatar');
+ const center=await page.locator('.butler-orb canvas').screenshot();
+ await page.mouse.move(0,0);
+ await page.waitForTimeout(1000);
+ const moved=await page.locator('.butler-orb canvas').screenshot();
+ assert(!center.equals(moved),'Butler avatar continues to move and tracks the page mouse');
+ assert(await page.locator('.butler-orb').getAttribute('data-orb-view')==='business','Business robot selects red palette');
  await page.locator('.butler-orb').screenshot({path:join(out,'business.png')});
  await page.getByRole('button',{name:'Social',exact:true}).click();
  await page.waitForFunction(()=>document.querySelector('.butler-orb').dataset.orbView==='social');
