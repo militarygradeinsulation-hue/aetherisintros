@@ -73,6 +73,6 @@ BEGIN
 END;
 $$;
 REVOKE ALL ON FUNCTION public.ask_context_upsert(text,jsonb,uuid,boolean),
-              FUNCTION public.ask_context_since(timestamptz) FROM PUBLIC, anon, authenticated;
+              public.ask_context_since(timestamptz) FROM PUBLIC, anon, authenticated;
 GRANT EXECUTE ON FUNCTION public.ask_context_upsert(text,jsonb,uuid,boolean),
-                 FUNCTION public.ask_context_since(timestamptz) TO authenticated;
+                 public.ask_context_since(timestamptz) TO authenticated;
