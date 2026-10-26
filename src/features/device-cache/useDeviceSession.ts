@@ -19,6 +19,7 @@ interface AuthClient {
 export const BACKGROUND_SYNC_MS = 60_000;
 export interface DeviceSession {
   ready: boolean;
+  accountId: string | null;
   warm: WarmStart | null;
   pending: number;
   lastSyncError: string | null;
@@ -40,6 +41,7 @@ export function useDeviceSession(
   const remote = useRef<Remote>(supabaseRemote(client, handlers));
   const [warm, setWarm] = useState<WarmStart | null>(null);
   const [ready, setReady] = useState(false);
+  const [accountId, setAccountId] = useState<string | null>(null);
   const [pending, setPending] = useState(0);
   const [lastSyncError, setLastSyncError] = useState<string | null>(null);
 
@@ -79,7 +81,7 @@ export function useDeviceSession(
     const store = storeRef.current, uid = userRef.current;
     storeRef.current = null;
     userRef.current = null;
-    setWarm(null); setPending(0); setReady(false); setLastSyncError(null);
+    setWarm(null); setPending(0); setReady(false); setAccountId(null); setLastSyncError(null);
     if (syncing.current) {
       try { await syncing.current; } catch { /* another session is closing */ }
     }
@@ -94,7 +96,8 @@ export function useDeviceSession(
     storeRef.current = null;
     if (old) old.close();
     userRef.current = userId;
-    setReady(false);
+    setAccountId(userId);
+    setWarm(null); setPending(0); setReady(false);
     try {
       // Start on the device copy; do not wait for the network to paint.
       const { store, warm: initial, synced } = await onSignIn(userId, remote.current);
@@ -110,7 +113,10 @@ export function useDeviceSession(
       if (!result.error) setWarm(await warmStart(store));
       await refreshPending();
     } catch (error) {
-      if (generation.current === epoch) setLastSyncError(error instanceof Error ? error.message : 'Device cache unavailable');
+      if (generation.current === epoch) {
+        userRef.current = null;
+        setLastSyncError(error instanceof Error ? error.message : 'Device cache unavailable');
+      }
     }
   }, [refreshPending]);
 
@@ -167,5 +173,5 @@ export function useDeviceSession(
     return storeRef.current ? storeRef.current.pendingCount() : 0;
   }, [syncNow]);
 
-  return { ready, warm, pending, lastSyncError, save, queue, syncNow, pendingBeforeSignOut, wipe: stop };
+  return { ready, accountId, warm, pending, lastSyncError, save, queue, syncNow, pendingBeforeSignOut, wipe: stop };
 }
