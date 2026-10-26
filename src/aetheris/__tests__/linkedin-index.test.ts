@@ -3,7 +3,7 @@ import {
   indexedProfileName, isMatchingOwnerName, sameIndexedLinkedInProfile,
   previewFromIndexedTitle, selectIndexedMemberSources, indexedSourcesText,
   type IndexedHit,
-} from './linkedin-index'
+} from '../linkedin-index'
 
 const own = 'https://www.linkedin.com/in/jane-doe-123'
 const hits: IndexedHit[] = [
