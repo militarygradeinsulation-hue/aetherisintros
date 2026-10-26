@@ -1,3 +1,4 @@
+import { DeviceCacheProvider } from '@/features/device-cache/DeviceCacheProvider';
 import { BridgeIntroductions } from './experience/BridgeIntroductions';
 import { MessagesView as OriginalMessagesView } from '../bridge-reference/src/intros-ui/views/MessagesView';
 import { BridgeNewsTicker } from './experience/BridgeNewsTicker';
@@ -81,7 +82,7 @@ const SHELL_PAGES: ActivePage[] = ['home', 'people', 'bubbles', 'intros', 'messa
 
 export type ExecutiveAction = { label: string; onOpen: () => void };
 
-export default function App({ mode = 'demo', executiveAction, initialPage, initialWorkspace, initialSearch }: { mode?: 'demo' | 'live'; executiveAction?: ExecutiveAction | undefined; initialPage?: ActivePage | undefined; initialWorkspace?: string | undefined; initialSearch?: string | undefined }) {
+function IntrosWorkspace({ mode = 'demo', executiveAction, initialPage, initialWorkspace, initialSearch }: { mode?: 'demo' | 'live'; executiveAction?: ExecutiveAction | undefined; initialPage?: ActivePage | undefined; initialWorkspace?: string | undefined; initialSearch?: string | undefined }) {
   const { experience, chooseExperience } = useExperience();
   const network = useNetwork();
   const unread = useUnreadCounts(mode === 'live');
@@ -549,4 +550,11 @@ export default function App({ mode = 'demo', executiveAction, initialPage, initi
         />
     </div>
   );
+}
+
+/** One authenticated session and cache for both the Social and Business views. */
+export default function App(props: Parameters<typeof IntrosWorkspace>[0]) {
+  return <DeviceCacheProvider enabled={(props.mode ?? 'demo') === 'live'}>
+    <IntrosWorkspace {...props} />
+  </DeviceCacheProvider>;
 }

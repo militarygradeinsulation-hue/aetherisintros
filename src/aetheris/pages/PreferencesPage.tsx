@@ -1,3 +1,4 @@
+import { DeviceCacheSettings } from '@/features/device-cache/DeviceCacheSettings';
 import { useEffect, useState } from 'react'
 import { Camera, Check, LockKeyhole, MousePointer2, ShieldCheck, Type, Volume2 } from 'lucide-react'
 import { naturalVoices, readAloud, speechSupported, stopReading, useVoiceSettings, voiceSpeedLabels, voiceSpeeds } from '../voice'
@@ -227,6 +228,7 @@ export function PreferencesPage() {
         {tab === 'Security & Privacy' && <section>
           <Eyebrow>SECURITY &amp; PRIVACY</Eyebrow><h2>Verification, devices and your data.</h2>
           <SecurityPage />
+          <DeviceCacheSettings />
         </section>}
         {tab === 'Availability' && <section>
           <Eyebrow>MEETING PREFERENCES</Eyebrow><h2>Make good conversations easier to schedule.</h2>

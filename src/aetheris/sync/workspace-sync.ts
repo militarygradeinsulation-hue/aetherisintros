@@ -314,6 +314,15 @@ export function notifyWorkspaceChange(key: SyncedStoreKey) {
  * does not see them. Demo copies are left alone.
  */
 export async function signOutMember(redirect = '/auth') {
+  // Clear the encrypted cache before redirecting. A cancelled unsent-change
+  // warning or failed privacy wipe must not silently discard offline work.
+  try {
+    const { prepareDeviceSignOut } = await import('@/features/device-cache/DeviceCacheProvider')
+    if (!(await prepareDeviceSignOut())) return
+  } catch (error) {
+    window.alert(error instanceof Error ? error.message : 'Could not clear private device data. Close other Ask Intros tabs and retry sign-out.')
+    return
+  }
   try {
     await Promise.race([flushWorkspaceSync(), new Promise(resolve => setTimeout(resolve, 4_000))])
   } catch { /* best effort */ }
