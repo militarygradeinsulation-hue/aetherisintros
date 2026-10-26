@@ -17,6 +17,10 @@ CREATE TABLE public.member_context_mutations (
   applied_at timestamptz NOT NULL DEFAULT now(),
   PRIMARY KEY (member_id, mutation_id)
 );
+CREATE TRIGGER member_context_freeze BEFORE UPDATE ON public.member_context
+  FOR EACH ROW EXECUTE FUNCTION public.freeze_columns('member_id','slice');
+CREATE TRIGGER member_context_mutations_freeze BEFORE UPDATE ON public.member_context_mutations
+  FOR EACH ROW EXECUTE FUNCTION public.freeze_columns('member_id','mutation_id','applied_at');
 ALTER TABLE public.member_context ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.member_context_mutations ENABLE ROW LEVEL SECURITY;
 REVOKE ALL ON public.member_context, public.member_context_mutations FROM PUBLIC, anon, authenticated;
