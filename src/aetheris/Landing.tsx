@@ -6,6 +6,7 @@ import { CinematicHero } from '@/components/ui/cinematic-landing-hero'
 import { CinematicEntrance, CITY_OPENING_VIDEO } from '@/components/ui/cinematic-entrance'
 import { AppearanceToggle } from './AppearanceToggle'
 import { HomeSlideCarousel } from './HomeSlideCarousel'
+import { ButlerAvatar } from '@/components/ui/butler-orb'
 import { PublicStructuredData } from './PublicStructuredData'
 import { PRODUCT_TITLE, PRODUCT_DESCRIPTION } from '@/lib/public-search'
 import './editorial-landing.css'
@@ -57,6 +58,7 @@ export default function Landing() {
             : <Link to="/auth" className="ael-btn ael-btn-ghost">Member sign in <ArrowUpRight aria-hidden="true" size={16} /></Link>}
           <Link to="/demo" className="ael-text-link">Explore the demo <ArrowRight aria-hidden="true" size={16} /></Link>
         </div>
+        <ButlerAvatar robot className="butler-home-robot" view="social" />
       </div>
       <div className="ael-carousel-stage">
         <aside className="ael-carousel-intro" aria-label="Meaningful connections">

@@ -1,5 +1,9 @@
 # Aetheris specification completion
 
+## Butler avatar placement (Oct 26)
+- [x] Restore the floating orb and show a larger unframed robot in Butler chat and on the public homepage.
+- [x] Verify desktop and phone rendering, chat opening, and view colors; preview screenshots show the blue homepage robot and red Business chat robot/orb without circles, with no runtime errors.
+
 ## Account HR system (Oct 25)
 - [x] Add private People & HR under My Work, Business Tools, onboarding and Butler navigation.
 - [x] Prefill company, industry, service description and location from the signed-in profile; require review before saving the business context. Missing headcount stays blank and the work model remains editable.
