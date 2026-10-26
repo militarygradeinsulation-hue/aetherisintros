@@ -31,6 +31,7 @@ describe('Mindprint-inspired indexed LinkedIn self-import safeguards', () => {
     expect(isMatchingOwnerName('Joe Toney','Joseph Toney')).toBe(true)
     expect(isMatchingOwnerName('Jane Doe','Jane Smith')).toBe(false)
     expect(isMatchingOwnerName('Jane Doe','John Doe')).toBe(false)
+    expect(isMatchingOwnerName('Jane Doe','Jason Doe')).toBe(false)
     expect(indexedProfileName(hits[0]!.title)).toBe('Jane Doe')
   })
   it('does not fall back to a different LinkedIn person when the exact URL is absent', () => {
