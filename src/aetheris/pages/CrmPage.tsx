@@ -90,7 +90,7 @@ export default function CrmPage({ section }: { section?: 'crm' | 'pipeline' | un
 
   /* ------------------------------------------------ full workspace */
 
-  if (!section && view === 'full') {
+  if (section !== 'pipeline' && view === 'full') {
     return <LedgerProvider><FullCrm onBack={() => setWorkspace('basic')} /></LedgerProvider>
   }
 
@@ -115,7 +115,7 @@ export default function CrmPage({ section }: { section?: 'crm' | 'pipeline' | un
       proof="Private to your account. Nothing here is visible to the network."
       action={<Btn onClick={() => setCreating(section === 'pipeline' ? 'opportunity' : 'person')}><Plus size={14} /> {section === 'pipeline' ? 'New opportunity' : 'New person'}</Btn>} />
 
-    {!section && switcher}
+    {section !== 'pipeline' && switcher}
     {section !== 'pipeline' && access.isAdmin && <div className="ops-toolbar"><Btn kind="secondary" onClick={() => setProspecting(true)}><Target size={14} /> Prospect Intelligence</Btn></div>}
 
     {section !== 'pipeline' && <nav className="ops-tabs" role="tablist" aria-label="CRM sections">
