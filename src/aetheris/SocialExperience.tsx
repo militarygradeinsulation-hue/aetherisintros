@@ -190,8 +190,7 @@ export function SocialHome() {
     <FeedMasthead count={feed.length} onCompose={() => setComposerOpen(true)} onBrief={() => setMode('brief')} />
     <FeedTicker />
     <div className="social-home-grid"><SocialRails /><main className="social-feed">
-      {/* Compact Dashboard starts expanded; do not auto-focus its input on mount (iOS zoom). */}
-        <SignalComposer open={composerOpen} setOpen={setComposerOpen} autoFocusOnOpen={!compact} />
+      <SignalComposer open={composerOpen} setOpen={setComposerOpen} />
       <BusinessComposer />
       <nav className="feed-lanes" aria-label="Signal categories">{FEED_LANES.map(item => <button key={item} className={lane === item ? 'active' : ''} onClick={() => setLane(item)}>{item}</button>)}</nav>
       <IntelligenceCards />
@@ -233,7 +232,8 @@ export function EditorialFeed({ onBrief, compact = false }: { onBrief?: () => vo
     <div className="feed-editorial-layout">
       <div className="feed-editorial-main">
         <header className="feed-section-head"><h2 id="editorial-feed-title">Latest from your network</h2><span>{feed.length} live {feed.length === 1 ? 'Signal' : 'Signals'}</span></header>
-        <SignalComposer open={composerOpen} setOpen={setComposerOpen} />
+        {/* The compact Dashboard composer starts open; do not auto-focus it on mount. */}
+        <SignalComposer open={composerOpen} setOpen={setComposerOpen} autoFocusOnOpen={!compact} />
         <details className="dashboard-feed-extra"><summary>Business post</summary><BusinessComposer /></details>
         <nav className="feed-lanes" aria-label="Signal categories">{FEED_LANES.map(item => <button key={item} className={lane === item ? 'active' : ''} onClick={() => { setLane(item); setPostLimit(INITIAL_FEED_COUNT) }}>{item}</button>)}</nav>
         <details className="dashboard-feed-extra"><summary>Insights & activity</summary><IntelligenceCards /><MovingNow /></details>
