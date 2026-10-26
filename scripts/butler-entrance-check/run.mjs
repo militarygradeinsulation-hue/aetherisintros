@@ -40,6 +40,12 @@ try {
    return !!canvas&&clear(getComputedStyle(el).backgroundColor)&&clear(getComputedStyle(canvas).backgroundColor)&&canvas.getContext('webgl2')?.getContextAttributes()?.alpha===true;
  });
  assert(transparent,'robot has a transparent WebGL canvas and no colored backdrop');
+ const buttonVisual=await page.locator('.ask-dock-fab').evaluate(el=>{
+   const color=getComputedStyle(el).backgroundColor;
+   return (color==='transparent'||color==='rgba(0, 0, 0, 0)')&&getComputedStyle(el).borderTopWidth==='0px';
+ });
+ assert(buttonVisual,'Butler launcher has no colored frame or button background');
+ assert(await page.locator('.ask-dock-fab .butler-orb').evaluate(el=>el.getBoundingClientRect().width)>=95,'mobile robot is slightly larger');
  const center=await page.locator('.ask-dock-fab .butler-orb canvas').screenshot();
  await page.mouse.move(0,0);
  await page.waitForTimeout(1000);
