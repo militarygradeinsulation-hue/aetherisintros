@@ -19,6 +19,9 @@ await build({
     b.onResolve({ filter: /^\//, namespace: 'file' }, a => (a.kind === 'url-token' ? { path: a.path, external: true } : undefined))
     b.onResolve({ filter: /^@\/integrations\/supabase\/client$/ }, () => ({ path: join(here, 'db-stub.ts') }))
     b.onResolve({ filter: /^@\/lib\/linkedinImport\.functions$/ }, () => ({ path: join(here, 'server-stub.ts') }))
+    // The self-profile URL lookup is a server action; never bundle its server-only
+    // auth, fetch or Node dependencies into the isolated browser scan harness.
+    b.onResolve({ filter: /^@\/lib\/linkedinUrlLookup\.functions$/ }, () => ({ path: join(here, 'url-stub.ts') }))
     b.onResolve({ filter: /^@\/lib\/voice\.functions$/ }, () => ({ path: join(here, 'voice-stub.ts') }))
     b.onResolve({ filter: /^pdfjs-dist/ }, () => ({ path: 'pdfjs-dist', namespace: 'empty' }))
     b.onLoad({ filter: /.*/, namespace: 'empty' }, () => ({ contents: 'export default {}', loader: 'js' }))
