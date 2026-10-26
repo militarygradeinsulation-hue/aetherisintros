@@ -29,7 +29,7 @@ describe('Butler image intentions', () => {
     expect(imageReferenceQuery('I want to see pictures of civil engineering')).toBe('civil engineering')
     expect(imageReferenceQuery("I'd like to see a picture of a playground")).toBe('a playground')
     expect(imageReferenceQuery('Show me what a barn owl looks like')).toBe('a barn owl')
-    expect(imageReferenceQuery('Butler, show me an image for reference of a dog')).toBeNull()
+    expect(imageReferenceQuery('Butler, show me an image for reference of a dog')).toBe('a dog')
     expect(imageReferenceQuery('What is an image?')).toBeNull()
     expect(imageReferenceQuery('Who is Arceus?')).toBeNull()
   })
