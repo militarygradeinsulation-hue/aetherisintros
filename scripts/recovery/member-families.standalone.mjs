@@ -50,6 +50,12 @@ try {
   const base = harness.split('const BASE = `')[1]?.split('`\n\n// Rows')[0]
   assert.ok(base && !base.includes('${'), 'Synthetic base must remain literal SQL')
   await db.exec(base)
+  // The canonical synthetic BASE intentionally starts after the early Drizzle
+  // executive-profile migrations. Migration 0098 updates their recommendation
+  // table, so restore that exact historical definition in this OFFLINE fixture.
+  // Verification identity is a synthetic stub only, not a production grant.
+  await db.exec("create or replace function public.is_verified_member() returns boolean language sql stable as $ select auth.uid() is not null $")
+  await db.exec(read('drizzle/migrations/0001_unified_executive_profiles_and_recommendations.sql'))
   for (const id of [A, B, C, ADMIN]) {
     await db.query('insert into auth.users(id,email_confirmed_at) values($1,now())', [id])
     await db.query('insert into public.profiles(id,name) values($1,$2)', [id, 'Synthetic member'])
