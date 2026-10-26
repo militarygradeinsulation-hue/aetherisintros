@@ -442,6 +442,7 @@ export function readAloud(passages: string[], readingLabel = 'Reading') {
   index = 0
   label = readingLabel
   token += 1
+  setMobileAudioSession('playback')
   // Unlock the managed ElevenLabs playback context during this user gesture,
   // including on iPhone Safari. Never silently replace their selected voice.
   if (!nativePlayback) unlockAudio()
