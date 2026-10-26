@@ -1,0 +1,11 @@
+.bx-ticker{display:flex;align-items:stretch;min-height:40px;margin:0 0 12px;border:1px solid rgba(255,255,255,.1);border-radius:10px;background:#111215;overflow:hidden}
+.bx-ticker-label{flex:0 0 auto;display:flex;align-items:center;padding:0 14px;background:#b91c1c;color:#fff;font:600 11px/1 'Space Grotesk',Inter,sans-serif;letter-spacing:.14em;text-transform:uppercase;white-space:nowrap}
+.bx-ticker-window{position:relative;flex:1;min-width:0;overflow:hidden;display:flex;align-items:center;mask-image:linear-gradient(90deg,transparent,#000 4%,#000 96%,transparent)}
+.bx-ticker-track{display:flex;width:max-content;animation:bx-ticker 70s linear infinite}
+.bx-ticker:hover .bx-ticker-track{animation-play-state:paused}
+.bx-ticker-run{display:flex;flex:0 0 auto}
+.bx-ticker-item{display:inline-flex;align-items:center;gap:18px;padding-right:18px;color:#f1efe9;font:400 13px/1 Inter,sans-serif;white-space:nowrap}
+.bx-ticker-item i{color:#ef4444;font-style:normal}
+@keyframes bx-ticker{to{transform:translateX(-50%)}}
+@media (prefers-reduced-motion:reduce){.bx-ticker-track{animation:none}.bx-ticker-window{overflow-x:auto}}
+@media (max-width:767px){.bx-ticker-label{padding:0 10px;font-size:10px}.bx-ticker-item{font-size:12px}}
