@@ -146,3 +146,51 @@ body .butler-conversation :is(.butler-image-actions,.butler-reference-grid) :is(
   outline:3px solid #60a5fa!important;outline-offset:3px;
 }
 @media(max-width:420px){body .butler-conversation .butler-reference-grid{grid-template-columns:minmax(0,1fr)}}
+
+/* The sound recovery affordance must be reachable with a thumb on iPhone,
+   visible even when microphone permission or dictation is unavailable. */
+body .ask-dock.butler-conversation .butler-audio-actions {
+  display:flex;align-items:center;flex-wrap:wrap;gap:8px;padding:8px 14px;
+  flex:none;border-bottom:1px solid rgba(148,163,184,.28);
+}
+:root body .ask-dock.butler-conversation .butler-audio-actions button {
+  display:inline-flex!important;align-items:center!important;justify-content:center!important;
+  gap:7px!important;min-height:44px!important;min-width:0!important;
+  padding:8px 12px!important;border-radius:10px!important;
+  background:#1e293b!important;color:#f8fafc!important;-webkit-text-fill-color:#f8fafc!important;
+  border:1px solid #94a3b8!important;font:600 12px/1.4 system-ui,sans-serif!important;
+  cursor:pointer;
+}
+:root body .ask-dock.butler-conversation .butler-audio-actions .butler-play-reply {
+  background:#1d4ed8!important;border-color:#93c5fd!important;
+}
+:root[data-theme="light"] body .ask-dock.butler-conversation .butler-audio-actions button {
+  background:#e2e8f0!important;color:#172033!important;-webkit-text-fill-color:#172033!important;
+  border-color:#64748b!important;
+}
+:root[data-theme="light"] body .ask-dock.butler-conversation .butler-audio-actions .butler-play-reply {
+  background:#1d4ed8!important;color:white!important;-webkit-text-fill-color:white!important;
+}
+body .ask-dock.butler-conversation .butler-audio-actions button:focus-visible {
+  outline:3px solid #60a5fa!important;outline-offset:2px;
+}
+body .butler-conversation .butler-image-unavailable {
+  border-radius:8px;border:1px dashed #94a3b8;padding:12px;
+  font:500 12px/1.5 system-ui,sans-serif;
+}
+@media(max-width:767px) {
+  body .ask-dock.butler-conversation .butler-audio-actions {padding:6px 10px}
+  body .ask-dock.butler-conversation .butler-audio-actions button {flex:1 1 auto}
+}
+
+/* If a picture host denies hotlinking, keep source access and explain why. */
+body .butler-conversation .butler-reference-empty {
+  grid-column:1/-1;display:flex;flex-wrap:wrap;gap:10px;
+  border:1px dashed #94a3b8;border-radius:10px;padding:12px;
+  font:500 12px/1.6 system-ui,sans-serif;
+}
+body .butler-conversation .butler-reference-empty p{width:100%;margin:0}
+body .butler-conversation .butler-reference-empty a{
+  text-decoration:underline;color:inherit!important;min-height:32px;
+  display:inline-flex;align-items:center;
+}

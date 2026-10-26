@@ -29,11 +29,16 @@ export function imageCreationBrief(phrase: string): string | null {
 
 /** A source-backed image lookup is not image generation. */
 export function imageReferenceQuery(phrase: string): string | null {
-  const original = withoutWake(phrase).replace(/^(?:can|could|would) you\s+/i, '')
-  if (!/^(?:show|find|look up|search for|pull up|display)\b/i.test(original)) return null
-  const matched = original.match(/^(?:show|find|look up|search for|pull up|display)\s+(?:me\s+)?(?:(?:some|a|an|the|real|reference|source|licensed|public)\s+)*(?:photos?|images?|pictures?|illustrations?|visuals?)\s+(?:of|for|about|showing)\s+(.+)$/i)
-  return matched?.[1] && matched[1].trim().length >= 2 && matched[1].trim().length <= 120
-    ? matched[1].trim() : null
+  const original = withoutWake(phrase)
+    .replace(/^(?:can|could|would|will) you\s+/i, '')
+    .replace(/^(?:i(?:'d| would) like to|i want to|let me)\s+/i, '')
+    .replace(/^please\s+/i, '')
+  const visual = original.match(
+    /^(?:show|find|look up|search for|pull up|display|see)\s+(?:me\s+)?(?:(?:some|a|an|the|real|reference|source|licensed|public)\s+)*(?:photos?|images?|pictures?|illustrations?|visuals?)\s+(?:of|for|about|showing)\s+(.+)$/i,
+  )
+  const looksLike = original.match(/^show\s+(?:me\s+)?what\s+(.+?)\s+looks?\s+like$/i)
+  const query = (visual?.[1] || looksLike?.[1] || '').replace(/^reference\s+(?:of|for)\s+/i, '').trim()
+  return query.length >= 2 && query.length <= 120 ? query : null
 }
 
 export type SpokenReviewCommand = 'request' | 'confirm-publish' | 'confirm-task' | 'confirm-style' | 'cancel' | null

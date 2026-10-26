@@ -31,7 +31,7 @@ import { noteFailedResult, noteSavedResult } from './quick-note'
 import { placeMenu } from './quick-menu'
 import {
   isStopPhrase, readAloud, readerSnapshot, stopReading, useDictation, useReader, useVoiceSettings, voiceOutputSupported,
-  unlockAudio,
+  unlockAudio, playPendingButlerAudio, speechSupported,
 } from './voice'
 function AetherisGlyph({ size = 18 }: { size?: number }) {
   return <AskIntrosMark size={size} />
@@ -80,6 +80,20 @@ function useDrag(onMove: (p: Point) => void, onEnd: (p: Point) => void) {
     }
     window.addEventListener('pointermove', move); window.addEventListener('pointerup', up)
   }
+}
+
+/** A broken third-party preview must not hide the source or create
+ * the appearance that a remote image was successfully displayed. */
+function ButlerReferenceCard({ item }: { item: ButlerReferenceImage }) {
+  const [failed, setFailed] = useState(false)
+  return <figure>
+    {failed
+      ? <div className="butler-image-unavailable" role="status">Picture preview unavailable. The original source can still be opened.</div>
+      : <img src={item.thumbnail} alt={'Picture reference: ' + item.title} loading="eager"
+          referrerPolicy="no-referrer" onError={() => setFailed(true)} />}
+    <figcaption>{item.title} · {item.provider} · {item.license}</figcaption>
+    <a href={item.source} target="_blank" rel="noopener noreferrer">View original picture and rights</a>
+  </figure>
 }
 
 type Turn = ButlerDisplayTurn
@@ -238,7 +252,7 @@ function AskIntrosDockInner({ page, peopleNames, memberName, briefing, contextPa
   const sending = useRef(false)
   const graphInputs = useGraphInputs()
 
-  useEffect(() => { listRef.current?.scrollTo({ top: listRef.current.scrollHeight }) }, [turns, open])
+  useEffect(() => { listRef.current?.scrollTo({ top: listRef.current.scrollHeight }) }, [turns, visuals, open])
   // Where the panel and the floating button sit; members can drag both anywhere.
   const [pos, setPos] = useState<Point | null>(() => readPoint(POS_KEY))
   const [fabPos, setFabPos] = useState<Point | null>(() => readPoint(FAB_KEY))
@@ -362,10 +376,10 @@ function AskIntrosDockInner({ page, peopleNames, memberName, briefing, contextPa
         } else if (referenceQuery) {
           const { results } = await findButlerReferenceImages({ data: { query: referenceQuery } })
           if (ownerRef.current !== requestOwner) return
-          if (results.length) setVisuals(current => [...current, { kind: 'reference', owner: requestOwner, turnId, query: referenceQuery, results }])
+          setVisuals(current => [...current, { kind: 'reference', owner: requestOwner, turnId, query: referenceQuery, results }])
           const notice = results.length
-            ? 'Here are source-linked image references from Wikimedia Commons. Check the rights and original context before reuse.'
-            : 'No usable public reference image previews were returned. Try a more specific subject.'
+            ? 'Here are source-linked picture references from Wikimedia Commons and Wikipedia. Check each original source and reuse rights.'
+            : 'Neither reference source returned a usable thumbnail for this request. I have added links to search the original sites.'
           setTurns(current => [...current, { id: turnId, role: 'assistant', content: notice }]); say(notice)
         }
         setAttachments([])
@@ -532,7 +546,7 @@ function AskIntrosDockInner({ page, peopleNames, memberName, briefing, contextPa
 
   useEffect(() => { if (!open) dictation.stop() }, [open])
 
-  useEffect(()=>{dictation.stop()},[memory.owner]) // Account changes end microphone capture.
+  useEffect(()=>{dictation.stop();stopReading()},[memory.owner]) // Account changes also discard cached private voice clips.
 
   // Voice mode from the right-click menu: start a spoken conversation straight away.
   useEffect(() => {
@@ -548,7 +562,21 @@ function AskIntrosDockInner({ page, peopleNames, memberName, briefing, contextPa
   }, [open, voiceAsk]) // eslint-disable-line react-hooks/exhaustive-deps
 
   const [expanded,setExpanded]=useState(false)
-  const status = busy ? 'Thinking' : reader.state !== 'idle' ? 'Speaking' : dictation.listening ? 'Listening' : ''
+  const status = busy ? 'Thinking' : reader.state === 'paused' ? 'Ready to play' : reader.state === 'speaking' ? 'Speaking' : dictation.listening ? 'Listening' : ''
+  const latestButlerReply = turns.slice().reverse().find(turn => turn.role === 'assistant' && turn.content.trim())?.content ?? 'I’m your personal butler. You can ask me anything.'
+  const replayButler = () => {
+    // Starting in this tap is crucial on mobile Safari, and the selected
+    // ElevenLabs voice must not silently be replaced with another voice.
+    stopReading()
+    unlockAudio()
+    setVoice({ speakReplies: true, readAloud: true })
+    readAloud([latestButlerReply.slice(0, 900)], 'Butler reply')
+  }
+  const usePhoneVoice = () => {
+    stopReading()
+    setVoice({ voiceName: 'device-default', speakReplies: true, readAloud: true })
+    readAloud([latestButlerReply.slice(0, 900)], 'Butler reply')
+  }
 
   return <>
     <button ref={fabRef} className={`ask-dock-fab ${open ? 'active' : ''}`} aria-label="Ask Intros" aria-expanded={open} title="Ask Intros · drag to move"
@@ -567,7 +595,7 @@ function AskIntrosDockInner({ page, peopleNames, memberName, briefing, contextPa
         {voiceOutputSupported() && <button className={`icon-btn ${voice.speakReplies ? 'active' : ''}`}
           aria-label={voice.speakReplies ? 'Stop speaking replies' : 'Speak replies out loud'}
           title={voice.speakReplies ? 'Speaking replies out loud' : 'Replies are silent'}
-          onClick={() => { setVoice({ speakReplies: !voice.speakReplies }); if (voice.speakReplies) stopReading() }}>
+          onClick={() => { if (voice.speakReplies) stopReading(); else unlockAudio(); setVoice({ speakReplies: !voice.speakReplies }) }}>
           {voice.speakReplies ? <Volume2 size={15} /> : <VolumeX size={15} />}</button>}
         {pos && <button className="icon-btn" aria-label="Move Ask Intros back to the corner" title="Back to the corner" onClick={() => { setPos(null); writePoint(POS_KEY, null) }}>↘</button>}
         <button className="icon-btn" aria-label={expanded?'Compact conversation':'Expand conversation'} onClick={()=>setExpanded(v=>!v)}>{expanded?'↙':'↗'}</button>
@@ -598,6 +626,13 @@ function AskIntrosDockInner({ page, peopleNames, memberName, briefing, contextPa
         {dictation.interim && <em>{dictation.interim}</em>}
       </div>}
 
+      {voiceOutputSupported() && <div className="butler-audio-actions" role="group" aria-label="Butler sound controls">
+        {reader.state === 'paused' && <button type="button" className="butler-play-reply" onClick={playPendingButlerAudio}><Volume2 size={14} /> Play reply</button>}
+        <button type="button" onClick={replayButler}><Volume2 size={14} /> Hear last reply</button>
+        {reader.problem && voice.voiceName === 'intros-managed' && speechSupported() &&
+          <button type="button" onClick={usePhoneVoice}>Use phone voice instead</button>}
+      </div>}
+
       {pendingApproval && <p role="status" className="butler-approval-notice">
         Draft awaiting voice confirmation. Say <b>{spokenConfirmationFor(pendingApproval.kind)}</b>, or say <b>cancel approval</b>. This expires after 60 seconds and any edit cancels it.
       </p>}
@@ -619,12 +654,14 @@ function AskIntrosDockInner({ page, peopleNames, memberName, briefing, contextPa
                     <button type="button" disabled={fileBusy || busy || attachments.length >= 3} onClick={() => void useGeneratedReference(visual.image)}>Use as reference</button>
                   </div>
                 </figure>
-              : <section className="butler-reference-grid" key={visual.turnId} aria-label={'Image references for ' + visual.query}>
-                  {visual.results.map(item => <figure key={item.source}>
-                    <img src={item.thumbnail} alt={item.title} loading="lazy" referrerPolicy="no-referrer" />
-                    <figcaption>{item.title} · {item.license}</figcaption>
-                    <a href={item.source} target="_blank" rel="noopener noreferrer">View original source and rights</a>
-                  </figure>)}
+              : <section className="butler-reference-grid" key={visual.turnId} aria-label={'Picture references for ' + visual.query}>
+                  {visual.results.length
+                    ? visual.results.map(item => <ButlerReferenceCard item={item} key={item.source} />)
+                    : <div className="butler-reference-empty">
+                        <p>No matching preview is available from these sources. You can search their original collections:</p>
+                        <a href={'https://commons.wikimedia.org/w/index.php?search=' + encodeURIComponent(visual.query) + '&title=Special:MediaSearch&type=image'} target="_blank" rel="noopener noreferrer">Wikimedia Commons pictures</a>
+                        <a href={'https://en.wikipedia.org/w/index.php?search=' + encodeURIComponent(visual.query)} target="_blank" rel="noopener noreferrer">Wikipedia articles and images</a>
+                      </div>}
                 </section>
           )}
           {turn.sources?.length ? <div className="butler-sources">{turn.sources.map(source => <a href={source.url} key={source.url} target="_blank" rel="noopener noreferrer">{source.title}</a>)}</div> : null}
