@@ -9,8 +9,21 @@ Scope: **own-member onboarding** on the Executive identity page (`LinkedInImport
 - Scan only fills a **review draft**. Nothing is saved until the member presses Apply, which writes through the existing `updateIdentity` / `updateExecutiveProfile` and re-checks the signed-in user matches the scanning user. Drafts live in component state only (no localStorage, no payload logging).
 - Rescans keep edited fields and offer the scanned value ("Use scanned value"); stale scan results and duplicate scan/apply clicks are ignored.
 
-## Blocked: scanning from a URL alone
-No authorized LinkedIn data source/licence is connected, and installed scraping tools are not assumed authorized. `scanLinkedInProfileUrl` validates the link (only `linkedin.com/in/<handle>`; no credentials, ports, other hosts or IP/network targets) and returns `blocked`. It performs no network fetch (so no redirect/SSRF surface), and the UI says a link alone cannot be scanned. To enable it, implement `LinkedInUrlProvider` (`src/aetheris/linkedin-import.ts`) for a licensed provider, set `available: true`, and pass it from the server function; the adapter result must then go through the same review draft.
+## Public-index URL autofill (Mindprint source comparison, October 26, 2026)
+MINDPRINT's `src/lib/mindprint/autofill.functions.ts` searches public Firecrawl v2 search results and optionally fetches surrounding *public* sources, then sends a bounded corpus to its Lovable AI gateway. This is **not** a LinkedIn authenticated profile API and does not retrieve private profile sections. Mindprint's connector adapter also reports that live LinkedIn partner retrieval is unavailable.
+
+Ask Intros now provides `Scan public link` in the member's own LinkedIn import panel. This optional path:
+- Requires an authenticated member, a profile URL, a positive self-ownership/consent checkbox and per-member rate limiting.
+- Sends an index-only query to Firecrawl when `FIRECRAWL_API_KEY` is configured on **Ask Intros** (never automatically reuses Mindprint's secrets). Otherwise, or on provider failure, falls back to the existing free public search.
+- Retrieves **only search-index titles and snippets**. It never fetches `linkedin.com` pages, signs in with a LinkedIn cookie, collects passwords, bypasses a block or accesses a private profile.
+- Requires an indexed result matching the member's **exact LinkedIn URL** and checks the owner's existing profile name and saved URL. Other sources must have public HTTPS URLs and contain the same professional name and headline.
+- Extracts a modest title/name/company fallback; when `OPENAI_API_KEY` is configured, a separate OpenAI Responses request can propose additional **verbatim grounded** fields from those snippets. It does **not** use `LOVABLE_API_KEY` or consume Lovable AI editor credits.
+- Displays the source URLs, warns the data may be incomplete or outdated, and places every suggestion in the **existing field-by-field review**. Nothing is saved unless the same member selects Apply; owner and concurrent-edit protections still apply.
+- Is **not available for CRM contact imports, prospect enrichment, demo profiling, or third-party batch scans**. The manually pasted text and member-exported PDF remain the best sources for complete experience and education.
+
+This makes URL-only autofill possible **where an accurate indexed result exists**, without pretending that LinkedIn OIDC exposes headline, employment history or posts. A private/licensed LinkedIn profile API would be a separate integration requiring partner approval and member consent. API cost, production configuration, index availability and actual authenticated end-to-end acceptance remain deployment gates. Rate limiting is instance-local and must be replaced with durable per-account budgets before high-volume rollout.
+
+`scanLinkedInUrl` with the existing `NO_URL_PROVIDER` intentionally remains blocked: it represents a direct LinkedIn connector, which is still not available. The new public-index action is separate and truthfully labeled.
 
 ## Limits
 Authenticated server functions (`requireAuthContract`), 60k-character text cap, 10 scans per member per 10 minutes (in-memory per instance), 25 s AI timeout with parser fallback.
@@ -34,6 +47,6 @@ The identity browser harness exercises failed-save retries, per-field consent, a
 - Supported selected own-profile fields use an authenticated owner snapshot and an atomic per-column optimistic update. Account switches, missing baseline fields, concurrent edits and missing write receipts fail closed. Photo and selected profile fields use the same guarded write; local receipt mirroring does not issue a second profile update.
 - Full roles, education, projects, credentials, languages, volunteering, achievements, websites, source evidence and hypotheses remain **ephemeral private review only**, because canonical profile storage has no approved private evidence fields. They are not written to public profiles, CRM notes or an invented workspace key. Applying supported fields clears the scan review. No migration was created or applied.
 - Both the shared scan and older extraction drop ungrounded AI claims. Caller-supplied PDF name hints must occur in the supplied text. AI cannot replace a profile URL with one missing from the submitted link/text.
-- Mindprint source is inaccessible from this workspace; this implementation does not claim parity or source reuse. A shared source export is needed for that comparison.
+- Mindprint's GitHub implementation has now been inspected. The public-index approach is adapted without its Lovable AI gateway or speculative behavioral profiling.
 
 Validation: focused parser/save regressions and the existing scan browser harness pass; the browser harness uses isolated member/store stand-ins, not a real Cloud account. Automatic compilation passes. A real signed-in save and external model/provider calls are unverified; no publication or production database changes occurred. GitHub checks/PR creation are not established by local checks.

@@ -19,6 +19,9 @@ await build({
     b.onResolve({ filter: /^\//, namespace: 'file' }, a => (a.kind === 'url-token' ? { path: a.path, external: true } : undefined))
     b.onResolve({ filter: /^@\/integrations\/supabase\/client$/ }, () => ({ path: join(here, 'db-stub.ts') }))
     b.onResolve({ filter: /^@\/lib\/linkedinImport\.functions$/ }, () => ({ path: join(here, 'server-stub.ts') }))
+    // The self-profile URL lookup is a server action; never bundle its server-only
+    // auth, fetch or Node dependencies into the isolated browser scan harness.
+    b.onResolve({ filter: /^@\/lib\/linkedinUrlLookup\.functions$/ }, () => ({ path: join(here, 'url-stub.ts') }))
     b.onResolve({ filter: /^@\/lib\/voice\.functions$/ }, () => ({ path: join(here, 'voice-stub.ts') }))
     b.onResolve({ filter: /^pdfjs-dist/ }, () => ({ path: 'pdfjs-dist', namespace: 'empty' }))
     b.onLoad({ filter: /.*/, namespace: 'empty' }, () => ({ contents: 'export default {}', loader: 'js' }))
@@ -131,7 +134,45 @@ const form = JSON.parse(await page.textContent('#contact-form'))
 ok(form.name === 'Maya Okafor' && form.company === 'Harbor Freight Labs' && form.title === 'Chief Executive Officer' && !('about' in form), 'Apply fills only the ticked contact fields')
 ok(/Not saved yet/.test(await page.textContent(`${C} .li-scan-outcome`) ?? '') && (await page.evaluate(() => window.__updates.length)) === 1, 'and says the contact is not saved yet')
 
-// 6. Readable: text on the opaque card meets WCAG AA (4.5:1).
+// 6. Public URL autofill is available ONLY to the member profile and requires
+// consent on the current URL. A server-only mock supplies one exact indexed hit.
+await page.goto(base)
+ok(await page.getByRole('tab', { name: 'Scan public link' }).count()===1 &&
+  await page.locator('#contact').getByRole('tab', { name: 'Scan public link' }).count()===0,
+  'public URL lookup is restricted to the member profile, not CRM contacts')
+await page.getByRole('tab', { name: 'Scan public link' }).click()
+ok(await page.isDisabled(scanBtn(P)), 'URL scan requires a URL and consent')
+await page.fill(`${P} input[inputmode=url]`, 'linkedin.com/in/maya-okafor')
+ok(await page.isDisabled(scanBtn(P)), 'public search does not start before consent')
+await page.check(`${P} .li-scan-inputs input[type=checkbox]`)
+await page.fill(`${P} input[inputmode=url]`, 'linkedin.com/in/another-person')
+ok(await page.isDisabled(scanBtn(P)), 'editing the URL revokes previously granted consent')
+await page.fill(`${P} input[inputmode=url]`, 'linkedin.com/in/maya-okafor')
+await page.check(`${P} .li-scan-inputs input[type=checkbox]`)
+ok(await page.isEnabled(scanBtn(P)), 'member can begin own public URL scan after consent')
+await page.click(scanBtn(P))
+await page.waitForSelector(`${P} .li-scan-review`)
+ok((await page.evaluate(() => window.__publicLookups?.length))===1 &&
+  (await page.evaluate(() => window.__publicLookups?.[0]?.consent))===true,
+  'own public lookup executes exactly once with consent')
+ok((await page.textContent(`${P} .li-scan-source`))?.includes('publicly indexed excerpts') &&
+  (await page.textContent(`${P} details`))?.includes('Maya Okafor'),
+  'public index provenance is visible in review')
+ok(await page.inputValue(`${row(P,'company')} input:not([type=checkbox])`) === 'Harbor Freight Labs' &&
+  await page.isChecked(box(P,'title')),
+  'public indexed fields are proposed with editable, selected review fields')
+ok(await page.evaluate(() => window.__updates.length)===0,
+  'public URL lookup never saves the member profile before Apply')
+await page.click(scanBtn(P))
+await page.waitForSelector(`${P} .li-scan-outcome.saved`)
+const indexedWrites = await page.evaluate(() => window.__updates)
+ok(indexedWrites.length===1 && indexedWrites[0].table==='profiles' &&
+  indexedWrites[0].id==='00000000-0000-4000-8000-00000000000a',
+  'applying reviewed index values updates only the authenticated member row')
+ok(!('email' in indexedWrites[0].row) && !('phone' in indexedWrites[0].row),
+  'public index autofill does not invent contact details')
+
+// 7. Readable: text on the opaque card meets WCAG AA (4.5:1).
 const contrast = await page.evaluate(() => {
   const lum = c => { const [r, g, b] = c.match(/\d+(\.\d+)?/g).slice(0, 3).map(Number).map(v => { v /= 255; return v <= 0.03928 ? v / 12.92 : ((v + 0.055) / 1.055) ** 2.4 }); return 0.2126 * r + 0.7152 * g + 0.0722 * b }
   const bgOf = el => { for (let e = el; e; e = e.parentElement) { const b = getComputedStyle(e).backgroundColor; if (!/rgba\(.*, 0\)|transparent/.test(b)) return b } return 'rgb(0,0,0)' }

@@ -183,14 +183,14 @@ export function LinkedInImportPanel({ onApplied, defaultOpen = false }: { onAppl
   if (!open) {
     return <section className="li-scan li-scan-closed">
       <div><Eyebrow>FASTEST WAY TO A COMPLETE PROFILE</Eyebrow><h2>Scan your LinkedIn profile</h2>
-        <p>Paste your LinkedIn profile or add its PDF. You review every field before anything is saved.</p>
+        <p>Scan your LinkedIn URL for public details, or import your profile text or PDF for more complete information. Review every field before saving.</p>
         {done && <p className="li-scan-outcome saved" role="status">{done}</p>}</div>
       <Btn onClick={() => { setOpen(true); setDone('') }}><ScanLine size={15} /> Scan LinkedIn profile</Btn>
     </section>
   }
 
   return <LinkedInScanPanel
-    keys={PROFILE_KEYS} current={current} labels={PROFILE_LABELS} demo={demo}
+    keys={PROFILE_KEYS} current={current} labels={PROFILE_LABELS} demo={demo} allowIndexedUrl={!demo}
     heading="Fill your profile from LinkedIn"
     intro="Your public profile fields are shown to verified members. Your LinkedIn link is shown on your profile."
     applyLabel={demo ? 'Apply to demo profile' : 'Apply to my profile'}

@@ -11,6 +11,8 @@ import { useEffect, useId, useRef, useState, type ReactNode } from 'react'
 
 import { supabase } from '@/integrations/supabase/client'
 import { scanLinkedInProfile } from '@/lib/linkedinImport.functions'
+import { scanIndexedLinkedInUrl } from '@/lib/linkedinUrlLookup.functions'
+import type { IndexedSource } from './linkedin-index'
 import { normalizeLinkedInUrl } from './linkedin-import'
 import { EVIDENCE_ONLY_KEYS, parseAuthorizedScan } from './linkedin-scan'
 import { AdditionalEvidenceSchema, type AdditionalEvidence } from './professional-evidence'
@@ -55,7 +57,7 @@ export async function saveProfileScan(patch: ScanPatch, context?: ProfileScanCon
 const fieldCount = (n: number) => `${n} field${n === 1 ? '' : 's'}`
 
 export function LinkedInScanPanel({
-  keys, current, labels = {}, heading, intro, applyLabel = 'Apply', onApply, onClose, extraStep, extraReview, demo = isShowcase(),
+  keys, current, labels = {}, heading, intro, applyLabel = 'Apply', onApply, onClose, extraStep, extraReview, demo = isShowcase(), allowIndexedUrl = false,
 }: {
   keys: ScanKey[]
   current: ScanPatch
@@ -68,10 +70,15 @@ export function LinkedInScanPanel({
   extraStep?: ReactNode
   extraReview?: ReactNode
   demo?: boolean
+  /** Only the member's own Profile import, never CRM contacts or arbitrary people. */
+  allowIndexedUrl?: boolean
 }) {
   const uid = useId()
   const [url, setUrl] = useState('')
-  const [mode, setMode] = useState<'text' | 'pdf'>('text')
+  const [mode, setMode] = useState<'text' | 'pdf' | 'url'>('text')
+  const [consentedUrl, setConsentedUrl] = useState(false)
+  const [indexedSources, setIndexedSources] = useState<IndexedSource[]>([])
+  const [indexedUsed, setIndexedUsed] = useState(false)
   const [text, setText] = useState('')
   const [pdf, setPdf] = useState<File | null>(null)
   const [busy, setBusy] = useState<'' | 'scan' | 'apply'>('')
@@ -94,6 +101,7 @@ export function LinkedInScanPanel({
       generation.current++; running.current = false
       setResult(null); setRows([]); setChecked(new Set()); setEdits({}); setContext(undefined)
       setText(''); setUrl(''); setPdf(null); setEvidenceText(''); setEvidenceAuthorized(false); setOutcome(null); setError(''); setBusy('')
+      setConsentedUrl(false); setIndexedSources([]); setIndexedUsed(false)
     })
     return () => { generation.current++; data.subscription.unsubscribe() }
   }, [demo])
@@ -107,17 +115,30 @@ export function LinkedInScanPanel({
     running.current = true
     try {
       const snapshot = !demo && keys.includes('headline') ? await loadProfileScanContext() : undefined
-      const evidence = evidenceText.trim() ? [AdditionalEvidenceSchema.parse({ label: 'Additional authorized evidence', text: evidenceText, authorized: evidenceAuthorized })] : []
-      let profileText = text
-      let nameHint = ''
-      if (mode === 'pdf') {
-        if (!pdf) throw new Error('Add the LinkedIn PDF first.')
-        const read = await readPdfText(pdf)
-        profileText = read.text
-        nameHint = read.largest
+      let next: ScanResult
+      let sources: IndexedSource[] = []
+      if (mode === 'url') {
+        if (!allowIndexedUrl || demo) throw new Error('URL autofill is available only for your own signed-in member profile.')
+        if (!consentedUrl || !url.trim()) throw new Error('Paste your own LinkedIn URL and approve the public search.')
+        const response = await scanIndexedLinkedInUrl({ data: { url: url.trim(), consent: true } })
+        if (response.status !== 'ok') throw new Error(response.reason)
+        next = response.result
+        sources = response.sources
+      } else {
+        let profileText = text
+        let nameHint = ''
+        if (mode === 'pdf') {
+          if (!pdf) throw new Error('Add the LinkedIn PDF first.')
+          const read = await readPdfText(pdf)
+          profileText = read.text
+          nameHint = read.largest
+        }
+        const evidence = evidenceText.trim() ? [AdditionalEvidenceSchema.parse({ label: 'Additional authorized evidence', text: evidenceText, authorized: evidenceAuthorized })] : []
+        next = await runLinkedInScan({ text: profileText, url: url.trim(), nameHint, evidence }, demo)
       }
-      const next = await runLinkedInScan({ text: profileText, url: url.trim(), nameHint, evidence }, demo)
       if (request !== generation.current) return
+      setIndexedSources(sources)
+      setIndexedUsed(mode === 'url')
       setContext(snapshot)
       const review = buildReviewRows(keys, scanValues(next.scan), current, labels)
       setRows(review)
@@ -161,43 +182,58 @@ export function LinkedInScanPanel({
 
     {!result && <>
       <div className="li-scan-inputs">
-        <label className="li-scan-label" htmlFor={`${uid}-url`}><Link2 size={14} /> LinkedIn link <small>(optional, kept as a reference)</small></label>
-        <input id={`${uid}-url`} value={url} onChange={e => setUrl(e.target.value)} placeholder="linkedin.com/in/name" inputMode="url" autoComplete="url" />
+        <label className="li-scan-label" htmlFor={`${uid}-url`}><Link2 size={14} /> LinkedIn link <small>{mode === 'url' ? '(required for public search)' : '(optional, kept as a reference)'}</small></label>
+        <input id={`${uid}-url`} value={url} onChange={e => { setUrl(e.target.value); setConsentedUrl(false) }} placeholder="linkedin.com/in/name" inputMode="url" autoComplete="url" />
         <span className="li-scan-label"><FileText size={14} /> Profile</span>
         <div className="li-scan-tabs" role="tablist" aria-label="How to add the profile">
           <button type="button" role="tab" aria-selected={mode === 'text'} onClick={() => setMode('text')}>Paste text</button>
           <button type="button" role="tab" aria-selected={mode === 'pdf'} onClick={() => setMode('pdf')}>LinkedIn PDF</button>
+          {allowIndexedUrl && !demo && <button type="button" role="tab" aria-selected={mode === 'url'} onClick={() => setMode('url')}>Scan public link</button>}
         </div>
         {mode === 'text' ? <>
           <textarea aria-label="Profile text" rows={7} value={text} onChange={e => setText(e.target.value)}
             placeholder="Open the LinkedIn profile, select everything (Ctrl/⌘ + A), copy, and paste it here." />
           <small>Navigation, “People also viewed”, posts and the page footer are removed before reading.</small>
-        </> : <>
+        </> : mode === 'pdf' ? <>
           <button type="button" className={`li-scan-drop${pdf ? ' has-file' : ''}`} onClick={() => pdfInput.current?.click()}
             onDragOver={e => e.preventDefault()} onDrop={e => { e.preventDefault(); const f = e.dataTransfer.files[0]; if (f) setPdf(f) }}>
             {pdf ? <><Check size={15} /> {pdf.name}</> : 'Drop the LinkedIn PDF here, or choose it'}
           </button>
           <input ref={pdfInput} type="file" accept="application/pdf" hidden onChange={e => { const f = e.target.files?.[0]; if (f) setPdf(f); e.target.value = '' }} />
           <small>On the LinkedIn profile, click <b>More</b> (or <b>Resources</b>), then <b>Save to PDF</b>. The PDF is read in your browser.</small>
+        </> : <>
+          <p role="note" className="li-scan-note">Mindprint-style lookup: search publicly indexed pages for your exact LinkedIn link. This does not open private LinkedIn pages. Search results may be incomplete or outdated; the PDF import gives the most complete profile.</p>
+          <label className="li-scan-label">
+            <input type="checkbox" checked={consentedUrl} onChange={e => setConsentedUrl(e.target.checked)} />
+            I own this LinkedIn profile and consent to a one-time public index search and optional independent AI extraction. Nothing is saved without my review.
+          </label>
         </>}
-        <label className="li-scan-label">Additional professional evidence (optional)
+        {mode !== 'url' && <label className="li-scan-label">Additional professional evidence (optional)
           <textarea aria-label="Additional professional evidence" rows={4} maxLength={20000} value={evidenceText} onChange={e => setEvidenceText(e.target.value)} />
-        </label>
-        <label><input type="checkbox" checked={evidenceAuthorized} onChange={e => setEvidenceAuthorized(e.target.checked)} /> I am authorized to provide this evidence about this profile.</label>
+        </label>}
+        {mode !== 'url' && <label><input type="checkbox" checked={evidenceAuthorized} onChange={e => setEvidenceAuthorized(e.target.checked)} /> I am authorized to provide this evidence about this profile.</label>}
         <small>LinkedIn sign-in supplies basic identity only, not your full professional profile.</small>
         {extraStep}
       </div>
       {error && <p className="li-scan-error" role="alert">{error}</p>}
       <div className="li-scan-actions">
-        <Btn disabled={busy === 'scan' || (mode === 'pdf' ? !pdf : text.trim().length < MIN_SCAN_TEXT)} onClick={() => void scan()}>
+        <Btn disabled={busy === 'scan' || (mode === 'url' ? !consentedUrl || !url.trim() : mode === 'pdf' ? !pdf : text.trim().length < MIN_SCAN_TEXT)} onClick={() => void scan()}>
           {busy === 'scan' ? <><Loader2 size={15} className="li-spin" /> Scanning…</> : <><ScanLine size={15} /> Scan</>}
         </Btn>
-        <small>We read only what you add here. LinkedIn is never contacted. Nothing is saved until you apply.</small>
+        <small>{mode === 'url' ? 'Searches public index excerpts only. No LinkedIn login, private content, or automatic save. API credits may apply if configured.' : 'We read only what you add here. LinkedIn is never contacted. Nothing is saved until you apply.'}</small>
       </div>
     </>}
 
     {result && <>
-      <p className="li-scan-source">{sourceLabel(result.source)}{result.truncated ? ' The text was long, so only the first part was read.' : ''}</p>
+      <p className="li-scan-source">{indexedUsed ? 'Extracted from publicly indexed excerpts, not LinkedIn account access. Review every detail; indexed text may be out of date.' : sourceLabel(result.source)}{result.truncated ? ' The text was long, so only the first part was read.' : ''}</p>
+      {indexedUsed && <details className="li-public-review" open>
+        <summary>Public sources used ({indexedSources.length})</summary>
+        {indexedSources.map((source, i) => <p key={i} className="li-scan-note">
+          <a href={source.url} target="_blank" rel="noopener noreferrer nofollow">{source.title}</a>
+          <small> {source.kind === 'linkedin-index' ? '· Indexed LinkedIn result' : '· Other public professional page'}</small>
+          <span> {source.snippet.slice(0, 260)}</span>
+        </p>)}
+      </details>}
       <p className="li-scan-note">{found ? `Found ${fieldCount(found)}. Tick what to apply; you can edit any value first.` : 'No profile details were found in that text. Go back and paste the whole profile page.'}</p>
       <div className="li-scan-review" role="group" aria-label="Review scanned fields">
         <div className="li-scan-row li-scan-cols" aria-hidden="true"><span /><span>Field</span><span>Now</span><span>From LinkedIn</span></div>
@@ -231,7 +267,7 @@ export function LinkedInScanPanel({
         <Btn disabled={busy === 'apply' || (!checked.size && !extraReview)} onClick={() => void apply()}>
           {busy === 'apply' ? <><Loader2 size={15} className="li-spin" /> Applying…</> : <><Check size={15} /> {applyLabel}{checked.size ? ` (${fieldCount(checked.size)})` : ''}</>}
         </Btn>
-        <Btn kind="quiet" disabled={Boolean(busy)} onClick={() => { generation.current++; setResult(null); setContext(undefined) }}>Back</Btn>
+        <Btn kind="quiet" disabled={Boolean(busy)} onClick={() => { generation.current++; setResult(null); setContext(undefined); setIndexedSources([]); setIndexedUsed(false) }}>Back</Btn>
       </div>
     </>}
   </section>
