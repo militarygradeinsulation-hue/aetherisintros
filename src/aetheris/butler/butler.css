@@ -182,3 +182,15 @@ body .butler-conversation .butler-image-unavailable {
   body .ask-dock.butler-conversation .butler-audio-actions {padding:6px 10px}
   body .ask-dock.butler-conversation .butler-audio-actions button {flex:1 1 auto}
 }
+
+/* If a picture host denies hotlinking, keep source access and explain why. */
+body .butler-conversation .butler-reference-empty {
+  grid-column:1/-1;display:flex;flex-wrap:wrap;gap:10px;
+  border:1px dashed #94a3b8;border-radius:10px;padding:12px;
+  font:500 12px/1.6 system-ui,sans-serif;
+}
+body .butler-conversation .butler-reference-empty p{width:100%;margin:0}
+body .butler-conversation .butler-reference-empty a{
+  text-decoration:underline;color:inherit!important;min-height:32px;
+  display:inline-flex;align-items:center;
+}
