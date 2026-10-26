@@ -101,6 +101,11 @@
 .butler-orb.butler-chat-robot {display:block;width:84px;height:84px;flex:0 0 84px}
 .butler-orb[data-butler-avatar="robot"] .butler-orb-fallback {
   inset:12% 20% 8%!important;width:60%!important;height:80%!important;
+  transform:translate3d(var(--butler-look-x,0px),var(--butler-look-y,0px),0) rotate(var(--butler-look-angle,0deg));
+  transition:transform 140ms ease-out;
+}
+@media (prefers-reduced-motion: reduce) {
+  .butler-orb[data-butler-avatar="robot"] .butler-orb-fallback {transform:none;transition:none}
 }
 body .butler-conversation .ask-dock-drag {min-height:96px;gap:10px}
 body .butler-conversation .ask-dock-drag > div {min-width:0;flex:1}
