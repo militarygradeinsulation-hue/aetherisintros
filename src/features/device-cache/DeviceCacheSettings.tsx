@@ -9,6 +9,11 @@ export function DeviceCacheSettings() {
   const [hydrated, setHydrated] = useState(false);
   const [message, setMessage] = useState('');
 
+  // Never display one member's draft after a different member signs in.
+  useEffect(() => {
+    setDraft(''); setHydrated(false); setMessage('');
+  }, [device?.accountId]);
+
   useEffect(() => {
     if (!device?.ready || hydrated) return;
     const cached = device.warm?.slices.drafts?.payload;
