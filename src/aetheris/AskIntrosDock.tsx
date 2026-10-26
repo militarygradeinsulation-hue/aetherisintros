@@ -546,7 +546,7 @@ function AskIntrosDockInner({ page, peopleNames, memberName, briefing, contextPa
 
   useEffect(() => { if (!open) dictation.stop() }, [open])
 
-  useEffect(()=>{dictation.stop()},[memory.owner]) // Account changes end microphone capture.
+  useEffect(()=>{dictation.stop();stopReading()},[memory.owner]) // Account changes also discard cached private voice clips.
 
   // Voice mode from the right-click menu: start a spoken conversation straight away.
   useEffect(() => {
