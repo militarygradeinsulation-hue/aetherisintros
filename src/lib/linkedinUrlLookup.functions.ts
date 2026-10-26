@@ -9,6 +9,7 @@ import { createServerFn } from '@tanstack/react-start'
 import { z } from 'zod'
 import { requireAuthContract } from './auth-gate'
 import { boundedBody } from './public-fetch.server'
+import { readProviderSecret } from './providerSecrets.server'
 import { searchWeb } from './webSearch.server'
 import { createRateLimiter, normalizeLinkedInUrl } from '@/aetheris/linkedin-import'
 import {
@@ -30,7 +31,7 @@ const validInput = z.object({ url: z.string().trim().min(10).max(300), consent: 
 
 function publicSearchKeys(): string[] {
   return [...new Set([
-    process.env['FIRECRAWL_API_KEY'], process.env['FIRECRAWL_API_KEY_1'], process.env['FIRECRAWL_API_KEY_2'],
+    readProviderSecret('FIRECRAWL_API_KEY'), readProviderSecret('FIRECRAWL_API_KEY_1'), readProviderSecret('FIRECRAWL_API_KEY_2'),
   ].filter((key): key is string => Boolean(key?.trim())))]
 }
 
@@ -75,7 +76,7 @@ async function indexedSearch(query: string, limit: number): Promise<{ hits: Inde
 }
 
 async function groundedOpenAiScan(text: string): Promise<ReturnType<typeof parseScanJson>> {
-  const key = process.env['OPENAI_API_KEY']
+  const key = readProviderSecret('OPENAI_API_KEY')
   if (!key) return null
   try {
     const response = await fetch('https://api.openai.com/v1/responses', {
