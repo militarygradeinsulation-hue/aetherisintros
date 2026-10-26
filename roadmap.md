@@ -470,6 +470,11 @@ See `docs/NETWORK_VALUE_SYSTEMS_2026_10_25.md` for release dependencies and vali
 - [ ] Verify the authenticated Dashboard and screenshot-specific live Introductions banner — blocked: requesting account has no mintable session; preview member sign-in required.
 - [ ] Confirm connected GitHub main/CI synchronization — blocked: sandbox exposes managed internal edit history, not GitHub main/CI status.
 
+## Passport revocation repair
+- [x] Apply narrow owner-only revocation policy and guard without replaying historical migrations (0099).
+- [x] Run six isolated permission tests and verify the live policy, grants, and trigger.
+- [ ] Verify revocation through a signed-in member's UI — blocked: requesting account has no mintable session; preview sign-in required.
+
 ## Evidence loop (October 2026)
 
 First implementation slice, with production activation tracked separately:

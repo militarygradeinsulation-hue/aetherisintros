@@ -2971,6 +2971,30 @@ export type Database = {
         }
         Relationships: []
       }
+      evidence_preferences: {
+        Row: {
+          newcomer: boolean
+          owner_id: string
+          ranking: boolean
+          timing: boolean
+          updated_at: string
+        }
+        Insert: {
+          newcomer?: boolean
+          owner_id: string
+          ranking?: boolean
+          timing?: boolean
+          updated_at?: string
+        }
+        Update: {
+          newcomer?: boolean
+          owner_id?: string
+          ranking?: boolean
+          timing?: boolean
+          updated_at?: string
+        }
+        Relationships: []
+      }
       executive_applications: {
         Row: {
           company: string
@@ -3063,6 +3087,7 @@ export type Database = {
           display_approved: boolean
           id: string
           outcome: string
+          recipient_approved_at: string | null
           recipient_id: string
           relationship_context: string
           updated_at: string
@@ -3075,6 +3100,7 @@ export type Database = {
           display_approved?: boolean
           id?: string
           outcome?: string
+          recipient_approved_at?: string | null
           recipient_id: string
           relationship_context?: string
           updated_at?: string
@@ -3087,6 +3113,7 @@ export type Database = {
           display_approved?: boolean
           id?: string
           outcome?: string
+          recipient_approved_at?: string | null
           recipient_id?: string
           relationship_context?: string
           updated_at?: string
@@ -3390,6 +3417,89 @@ export type Database = {
           name?: string
           owner_id?: string
           updated_at?: string
+        }
+        Relationships: []
+      }
+      hr_audit: {
+        Row: {
+          action: string
+          created_at: string
+          id: number
+          kind: string | null
+          owner_id: string
+          record_id: string | null
+        }
+        Insert: {
+          action: string
+          created_at?: string
+          id?: never
+          kind?: string | null
+          owner_id: string
+          record_id?: string | null
+        }
+        Update: {
+          action?: string
+          created_at?: string
+          id?: never
+          kind?: string | null
+          owner_id?: string
+          record_id?: string | null
+        }
+        Relationships: []
+      }
+      hr_records: {
+        Row: {
+          fields: Json
+          id: string
+          kind: string
+          owner_id: string
+          updated_at: string
+          version: number
+        }
+        Insert: {
+          fields: Json
+          id: string
+          kind: string
+          owner_id: string
+          updated_at?: string
+          version?: number
+        }
+        Update: {
+          fields?: Json
+          id?: string
+          kind?: string
+          owner_id?: string
+          updated_at?: string
+          version?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "hr_records_owner_id_fkey"
+            columns: ["owner_id"]
+            isOneToOne: false
+            referencedRelation: "hr_workspaces"
+            referencedColumns: ["owner_id"]
+          },
+        ]
+      }
+      hr_workspaces: {
+        Row: {
+          context: Json
+          owner_id: string
+          updated_at: string
+          version: number
+        }
+        Insert: {
+          context: Json
+          owner_id: string
+          updated_at?: string
+          version?: number
+        }
+        Update: {
+          context?: Json
+          owner_id?: string
+          updated_at?: string
+          version?: number
         }
         Relationships: []
       }
@@ -4970,6 +5080,361 @@ export type Database = {
           user_id?: string
         }
         Relationships: []
+      }
+      nv_benchmark_contributions: {
+        Row: {
+          business_key: string
+          consent_at: string
+          metric: string
+          period: string
+          region: string
+          size_band: string
+          trade: string
+          user_id: string
+          value: number
+        }
+        Insert: {
+          business_key: string
+          consent_at?: string
+          metric: string
+          period: string
+          region: string
+          size_band: string
+          trade: string
+          user_id: string
+          value: number
+        }
+        Update: {
+          business_key?: string
+          consent_at?: string
+          metric?: string
+          period?: string
+          region?: string
+          size_band?: string
+          trade?: string
+          user_id?: string
+          value?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "nv_benchmark_contributions_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "nv_benchmark_enrollments"
+            referencedColumns: ["user_id"]
+          },
+        ]
+      }
+      nv_benchmark_enrollments: {
+        Row: {
+          business_key: string
+          region: string
+          size_band: string
+          trade: string
+          user_id: string
+          verified_at: string
+        }
+        Insert: {
+          business_key: string
+          region: string
+          size_band: string
+          trade: string
+          user_id: string
+          verified_at?: string
+        }
+        Update: {
+          business_key?: string
+          region?: string
+          size_band?: string
+          trade?: string
+          user_id?: string
+          verified_at?: string
+        }
+        Relationships: []
+      }
+      nv_benchmark_releases: {
+        Row: {
+          companies_at_least: number
+          median: number
+          metric: string
+          p25: number
+          p75: number
+          period: string
+          published_at: string
+          region: string
+          size_band: string
+          trade: string
+        }
+        Insert: {
+          companies_at_least: number
+          median: number
+          metric: string
+          p25: number
+          p75: number
+          period: string
+          published_at?: string
+          region: string
+          size_band: string
+          trade: string
+        }
+        Update: {
+          companies_at_least?: number
+          median?: number
+          metric?: string
+          p25?: number
+          p75?: number
+          period?: string
+          published_at?: string
+          region?: string
+          size_band?: string
+          trade?: string
+        }
+        Relationships: []
+      }
+      nv_capacity_letters: {
+        Row: {
+          accepted_at: string | null
+          created_at: string
+          id: string
+          note: string
+          offered_at: string | null
+          post_id: string
+          requester_id: string
+          state: string
+          terms: string
+        }
+        Insert: {
+          accepted_at?: string | null
+          created_at?: string
+          id?: string
+          note: string
+          offered_at?: string | null
+          post_id: string
+          requester_id: string
+          state?: string
+          terms?: string
+        }
+        Update: {
+          accepted_at?: string | null
+          created_at?: string
+          id?: string
+          note?: string
+          offered_at?: string | null
+          post_id?: string
+          requester_id?: string
+          state?: string
+          terms?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "nv_capacity_letters_post_id_fkey"
+            columns: ["post_id"]
+            isOneToOne: false
+            referencedRelation: "nv_capacity_posts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      nv_capacity_posts: {
+        Row: {
+          city: string
+          closed_at: string | null
+          created_at: string
+          details: string
+          expires_at: string
+          id: string
+          kind: string
+          latitude: number
+          longitude: number
+          owner_id: string
+          radius: number
+          starts_at: string
+          title: string
+        }
+        Insert: {
+          city: string
+          closed_at?: string | null
+          created_at?: string
+          details: string
+          expires_at: string
+          id: string
+          kind: string
+          latitude: number
+          longitude: number
+          owner_id: string
+          radius: number
+          starts_at: string
+          title: string
+        }
+        Update: {
+          city?: string
+          closed_at?: string | null
+          created_at?: string
+          details?: string
+          expires_at?: string
+          id?: string
+          kind?: string
+          latitude?: number
+          longitude?: number
+          owner_id?: string
+          radius?: number
+          starts_at?: string
+          title?: string
+        }
+        Relationships: []
+      }
+      nv_locations: {
+        Row: {
+          city: string
+          latitude: number
+          longitude: number
+          user_id: string
+        }
+        Insert: {
+          city: string
+          latitude: number
+          longitude: number
+          user_id: string
+        }
+        Update: {
+          city?: string
+          latitude?: number
+          longitude?: number
+          user_id?: string
+        }
+        Relationships: []
+      }
+      nv_settlement_events: {
+        Row: {
+          actor_id: string
+          agreement_id: string
+          created_at: string
+          evidence: string
+          invoice_cents: number | null
+          step: string
+        }
+        Insert: {
+          actor_id: string
+          agreement_id: string
+          created_at?: string
+          evidence: string
+          invoice_cents?: number | null
+          step: string
+        }
+        Update: {
+          actor_id?: string
+          agreement_id?: string
+          created_at?: string
+          evidence?: string
+          invoice_cents?: number | null
+          step?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "nv_settlement_events_agreement_id_fkey"
+            columns: ["agreement_id"]
+            isOneToOne: false
+            referencedRelation: "nv_settlements"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      nv_settlement_signatures: {
+        Row: {
+          agreement_id: string
+          consent_text: string
+          signed_at: string
+          terms_hash: string
+          typed_name: string
+          user_id: string
+        }
+        Insert: {
+          agreement_id: string
+          consent_text: string
+          signed_at?: string
+          terms_hash: string
+          typed_name: string
+          user_id: string
+        }
+        Update: {
+          agreement_id?: string
+          consent_text?: string
+          signed_at?: string
+          terms_hash?: string
+          typed_name?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "nv_settlement_signatures_agreement_id_fkey"
+            columns: ["agreement_id"]
+            isOneToOne: false
+            referencedRelation: "nv_settlements"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      nv_settlements: {
+        Row: {
+          buyer_id: string
+          cancelled_at: string | null
+          cap_cents: number
+          connector_id: string
+          created_at: string
+          id: string
+          platform_bps: number
+          rate_bps: number
+          referral_id: string | null
+          released_at: string | null
+          seller_id: string
+          terms: Json
+          terms_hash: string
+          title: string
+          window_months: number
+        }
+        Insert: {
+          buyer_id: string
+          cancelled_at?: string | null
+          cap_cents: number
+          connector_id: string
+          created_at?: string
+          id: string
+          platform_bps?: number
+          rate_bps: number
+          referral_id?: string | null
+          released_at?: string | null
+          seller_id: string
+          terms: Json
+          terms_hash: string
+          title: string
+          window_months: number
+        }
+        Update: {
+          buyer_id?: string
+          cancelled_at?: string | null
+          cap_cents?: number
+          connector_id?: string
+          created_at?: string
+          id?: string
+          platform_bps?: number
+          rate_bps?: number
+          referral_id?: string | null
+          released_at?: string | null
+          seller_id?: string
+          terms?: Json
+          terms_hash?: string
+          title?: string
+          window_months?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "nv_settlements_referral_id_fkey"
+            columns: ["referral_id"]
+            isOneToOne: false
+            referencedRelation: "referrals"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       office_hour_requests: {
         Row: {
@@ -7336,6 +7801,42 @@ export type Database = {
           },
         ]
       }
+      task_time_records: {
+        Row: {
+          active_seconds: number
+          baseline_kind: string | null
+          baseline_samples: number
+          baseline_seconds: number | null
+          finished_at: string | null
+          id: string
+          owner_id: string
+          started_at: string
+          task: string
+        }
+        Insert: {
+          active_seconds?: number
+          baseline_kind?: string | null
+          baseline_samples?: number
+          baseline_seconds?: number | null
+          finished_at?: string | null
+          id?: string
+          owner_id: string
+          started_at?: string
+          task: string
+        }
+        Update: {
+          active_seconds?: number
+          baseline_kind?: string | null
+          baseline_samples?: number
+          baseline_seconds?: number | null
+          finished_at?: string | null
+          id?: string
+          owner_id?: string
+          started_at?: string
+          task?: string
+        }
+        Relationships: []
+      }
       threads: {
         Row: {
           commitment: string
@@ -7945,6 +8446,10 @@ export type Database = {
         Returns: boolean
       }
       event_attendees: { Args: { p_event: string }; Returns: Json }
+      evidence_workspace: {
+        Args: { p_action?: string; p_data?: Json }
+        Returns: Json
+      }
       exchange_visible: {
         Args: {
           p: Database["public"]["Tables"]["professional_opportunities"]["Row"]
@@ -8000,6 +8505,7 @@ export type Database = {
         Returns: boolean
       }
       help_tokens: { Args: { p_text: string }; Returns: string[] }
+      hr_workspace: { Args: { p_action: string; p_data?: Json }; Returns: Json }
       icp_save: {
         Args: { p_data: Json; p_expected?: number; p_key: string }
         Returns: Json
@@ -8095,6 +8601,16 @@ export type Database = {
       mark_meeting_joined: { Args: { p_meeting: string }; Returns: undefined }
       mark_notifications_read: { Args: { p_ids?: string[] }; Returns: number }
       mark_thread_read: { Args: { p_thread_id: string }; Returns: string }
+      match_evidence_signals: {
+        Args: { p_members: string[] }
+        Returns: {
+          approved_vouches: number
+          confirmed_partners: number
+          member_id: string
+          newcomer_until: string
+          successful_partners: number
+        }[]
+      }
       match_reasoning: {
         Args: { p_target: string; p_viewer: string }
         Returns: Json
@@ -8258,6 +8774,10 @@ export type Database = {
       }
       network_health: { Args: never; Returns: Json }
       network_proof_metrics: { Args: { p_days?: number }; Returns: Json }
+      network_value: {
+        Args: { p_action: string; p_data?: Json }
+        Returns: Json
+      }
       new_membership_code: { Args: { p_name: string }; Returns: string }
       normalize_company_name: { Args: { p: string }; Returns: string }
       nudge_incomplete_onboarding: { Args: never; Returns: number }
