@@ -27,7 +27,7 @@ export function notificationPanelBounds(
   const oy = viewport.offsetTop ?? 0
   const width = Math.max(0, Math.min(360, viewport.width - gutter * 2))
   const left = viewport.width <= 640
-    ? ox + gutter
+    ? ox + Math.max(gutter, (viewport.width - width) / 2)
     : Math.max(ox + gutter, Math.min(trigger.right - width, ox + viewport.width - gutter - width))
 
   const spaceBelow = Math.max(0, oy + viewport.height - trigger.bottom - gutter - 8)
