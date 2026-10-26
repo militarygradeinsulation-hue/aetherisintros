@@ -12,6 +12,15 @@ await db.exec([
   'grant execute on function auth.uid() to anon,authenticated;',
   'grant usage on schema public to anon,authenticated;',
 ].join('\n'));
+await db.exec(`create function public.freeze_columns() returns trigger language plpgsql as $
+declare c text; begin
+  foreach c in array tg_argv loop
+    if (to_jsonb(new)->c) is distinct from (to_jsonb(old)->c) then
+      raise exception 'identity changed' using errcode='42501';
+    end if;
+  end loop;
+  return new;
+end $;`);
 await db.exec(readFileSync(new URL('../../drizzle/migrations/0100_member_context_sync.sql',import.meta.url),'utf8'));
 const A='00000000-0000-4000-8000-00000000000a',B='00000000-0000-4000-8000-00000000000b';
 await db.exec("insert into auth.users(id) values ('"+A+"'),('"+B+"')");
