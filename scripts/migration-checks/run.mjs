@@ -287,7 +287,7 @@ async function boot({ actualMembershipGate = false } = {}) {
   // historical migration 0003. The PGlite baseline starts at 0022; derive
   // this prerequisite from its real source instead of inventing a table.
   const originalGraph = readFileSync(join(migrationsDir,'0003_opportunity_graph_foundation.sql'),'utf8')
-  const passportSource = originalGraph.match(/-- Passports\\s*([\\s\\S]*?)create or replace function public\\.get_passport\\(/i)
+  const passportSource = originalGraph.match(/-- Passports\s*([\s\S]*?)create or replace function public\.get_passport\(/i)
   if (!passportSource) throw new Error('Historical Passport baseline missing from migration 0003')
   await db.exec(passportSource[1])
   for (const m of migrations) {
