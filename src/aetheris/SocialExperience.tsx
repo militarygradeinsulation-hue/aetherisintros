@@ -33,7 +33,7 @@ function SelfFace({ large = false }: { large?: boolean }) {
   return <Face person={{ id: 'me', name: net.profile.name || 'You', initials: net.profile.initials || 'ME', avatarUrl: net.profile.avatarUrl }} large={large} portrait />
 }
 
-function SignalComposer({ open, setOpen }: { open: boolean; setOpen: (value: boolean) => void }) {
+function SignalComposer({ open, setOpen, autoFocusOnOpen = true }: { open: boolean; setOpen: (value: boolean) => void; autoFocusOnOpen?: boolean }) {
   const net = useNetwork()
   const [type, setType] = useState<SignalLabel>('INSIGHT')
   const [text, setText] = useState('')
@@ -66,7 +66,7 @@ function SignalComposer({ open, setOpen }: { open: boolean; setOpen: (value: boo
     <div className="social-composer-start"><SelfFace /><button onClick={() => setOpen(true)}>Share a Signal…</button></div>
     <div className="signal-type-row">{signalTypes.map(item => <button key={item} className={type === item ? 'active' : ''} onClick={() => { setType(item); setOpen(true) }}>{item}</button>)}</div>
     {open && <div className="social-composer-body">
-      <input autoFocus value={text} onChange={event => setText(event.target.value)} placeholder="What should your network know?" />
+      <input autoFocus={autoFocusOnOpen} value={text} onChange={event => setText(event.target.value)} placeholder="What should your network know?" />
       <textarea rows={4} value={detail} onChange={event => setDetail(event.target.value)} placeholder="Add the context, why now, and what a useful response looks like…" />
       {files.length > 0 && <ul className="signal-file-list">{files.map((file, index) => <li key={`${file.name}-${index}`}><Paperclip size={13} /><span>{file.name}</span><button aria-label={`Remove ${file.name}`} onClick={() => setFiles(current => current.filter((_, at) => at !== index))}><X size={13} /></button></li>)}</ul>}
       <footer><label className="signal-upload"><input type="file" multiple accept="image/*,video/mp4,video/webm,.pdf,.doc,.docx,.ppt,.pptx,.xls,.xlsx,.txt,.csv" onChange={event => { addFiles(event.target.files); event.target.value = '' }} /><Upload size={14} /> Media or document</label>
@@ -190,7 +190,8 @@ export function SocialHome() {
     <FeedMasthead count={feed.length} onCompose={() => setComposerOpen(true)} onBrief={() => setMode('brief')} />
     <FeedTicker />
     <div className="social-home-grid"><SocialRails /><main className="social-feed">
-      <SignalComposer open={composerOpen} setOpen={setComposerOpen} />
+      {/* Compact Dashboard starts expanded; do not auto-focus its input on mount (iOS zoom). */}
+        <SignalComposer open={composerOpen} setOpen={setComposerOpen} autoFocusOnOpen={!compact} />
       <BusinessComposer />
       <nav className="feed-lanes" aria-label="Signal categories">{FEED_LANES.map(item => <button key={item} className={lane === item ? 'active' : ''} onClick={() => setLane(item)}>{item}</button>)}</nav>
       <IntelligenceCards />
