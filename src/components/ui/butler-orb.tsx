@@ -48,7 +48,6 @@ export function ButlerAvatar({ robot = false, className = '', view }: { robot?: 
 
     const button = host.current?.closest('button');
     const move = (event: PointerEvent) => {
-      if (event.pointerType !== 'mouse' && event.pointerType !== 'pen') return;
       const rect = (button ?? host.current)?.getBoundingClientRect();
       const cx = rect ? rect.left + rect.width / 2 : window.innerWidth / 2;
       const cy = rect ? rect.top + rect.height / 2 : window.innerHeight / 2;
@@ -61,6 +60,7 @@ export function ButlerAvatar({ robot = false, className = '', view }: { robot?: 
     const leave = () => setHovered(false);
     const reset = () => { pointer.current = [0, 0]; setHovered(false); };
     window.addEventListener('pointermove', move, { passive: true });
+    window.addEventListener('pointerdown', move, { passive: true });
     window.addEventListener('blur', reset);
     button?.addEventListener('pointerenter', enter);
     button?.addEventListener('pointerleave', leave);
@@ -70,6 +70,7 @@ export function ButlerAvatar({ robot = false, className = '', view }: { robot?: 
       motion.removeEventListener('change', syncMotion);
       document.removeEventListener('visibilitychange', syncVisibility);
       window.removeEventListener('pointermove', move);
+      window.removeEventListener('pointerdown', move);
       window.removeEventListener('blur', reset);
       button?.removeEventListener('pointerenter', enter);
       button?.removeEventListener('pointerleave', leave);
