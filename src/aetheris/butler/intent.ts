@@ -37,7 +37,7 @@ export function imageReferenceQuery(phrase: string): string | null {
     /^(?:show|find|look up|search for|pull up|display|see)\s+(?:me\s+)?(?:(?:some|a|an|the|real|reference|source|licensed|public)\s+)*(?:photos?|images?|pictures?|illustrations?|visuals?)\s+(?:of|for|about|showing)\s+(.+)$/i,
   )
   const looksLike = original.match(/^show\s+(?:me\s+)?what\s+(.+?)\s+looks?\s+like$/i)
-  const query = (visual?.[1] || looksLike?.[1] || '').trim()
+  const query = (visual?.[1] || looksLike?.[1] || '').replace(/^reference\s+(?:of|for)\s+/i, '').trim()
   return query.length >= 2 && query.length <= 120 ? query : null
 }
 
