@@ -74,18 +74,18 @@ function stringOr(value: unknown, fallback: string) {
 function toSuggestion(row: LegacySuggestion, profiles: Map<string, Profile>): ReferralSuggestion {
   const info = details(row)
   const target = profiles.get(row.suggested_member_id)
-  const connectorId = typeof info.connector_user_id === 'string' ? info.connector_user_id : null
+  const connectorId = typeof info['connector_user_id'] === 'string' ? info['connector_user_id'] : null
   const connector = connectorId ? profiles.get(connectorId) : undefined
-  const until = typeof info.snoozed_until === 'string' ? info.snoozed_until : null
+  const until = typeof info['snoozed_until'] === 'string' ? info['snoozed_until'] : null
   return {
     id: row.id,
     target_user_id: row.suggested_member_id,
     connector_user_id: connectorId,
-    target_name: target?.name ?? stringOr(info.target_name, 'Member'),
-    target_title: target?.title ?? stringOr(info.target_title, ''),
-    connector_name: connector?.name ?? stringOr(info.connector_name, 'A connection'),
+    target_name: target?.name ?? stringOr(info['target_name'], 'Member'),
+    target_title: target?.title ?? stringOr(info['target_title'], ''),
+    connector_name: connector?.name ?? stringOr(info['connector_name'], 'A connection'),
     path_explanation: row.reason ?? '',
-    shared_context: typeof info.shared_context === 'string' ? info.shared_context : null,
+    shared_context: typeof info['shared_context'] === 'string' ? info['shared_context'] : null,
     strength_score: Number(row.score ?? 0),
     status: row.status === 'snoozed' && until && new Date(until).getTime() > Date.now()
       ? 'snoozed'
@@ -107,14 +107,14 @@ function parseAiSuggestions(text: string): AiSuggestion[] {
     return parsed.flatMap(item => {
       if (!item || typeof item !== 'object' || Array.isArray(item)) return []
       const s = item as Record<string, unknown>
-      if (typeof s.path_explanation !== 'string') return []
+      if (typeof s['path_explanation'] !== 'string') return []
       return [{
-        target_name: String(s.target_name ?? 'Unknown'),
-        target_title: String(s.target_title ?? ''),
-        connector_name: String(s.connector_name ?? 'Unknown'),
-        path_explanation: s.path_explanation.slice(0, 1600),
-        shared_context: String(s.shared_context ?? '').slice(0, 1600),
-        strength_score: Math.min(100, Math.max(0, Number(s.strength_score ?? 50))),
+        target_name: String(s['target_name'] ?? 'Unknown'),
+        target_title: String(s['target_title'] ?? ''),
+        connector_name: String(s['connector_name'] ?? 'Unknown'),
+        path_explanation: s['path_explanation'].slice(0, 1600),
+        shared_context: String(s['shared_context'] ?? '').slice(0, 1600),
+        strength_score: Math.min(100, Math.max(0, Number(s['strength_score'] ?? 50))),
       }]
     })
   } catch {
@@ -172,21 +172,21 @@ Potential targets: ${(otherMembers ?? []).map((p: Profile) => `${p.name} (${p.ti
 
     const saved: ReferralSuggestion[] = []
     for (const s of suggestions.slice(0, 5)) {
-      const target = all.find(p => p.name.toLowerCase() === s.target_name.toLowerCase() && p.id !== userId)
-      const connector = connections.find(p => p.name.toLowerCase() === s.connector_name.toLowerCase())
+      const target = all.find(p => p.name.toLowerCase() === s['target_name'].toLowerCase() && p.id !== userId)
+      const connector = connections.find(p => p.name.toLowerCase() === s['connector_name'].toLowerCase())
       // Never insert a fabricated member or claim an unverifiable warm path.
       if (!target || !connector || target.id === connector.id) continue
       const { data: row, error } = await db.from('referral_suggestions').insert({
         for_member_id: userId,
         suggested_member_id: target.id,
-        score: s.strength_score,
-        reason: s.path_explanation,
+        score: s['strength_score'],
+        reason: s['path_explanation'],
         context: {
           target_name: target.name,
-          target_title: target.title ?? s.target_title,
+          target_title: target.title ?? s['target_title'],
           connector_user_id: connector.id,
           connector_name: connector.name,
-          shared_context: s.shared_context,
+          shared_context: s['shared_context'],
         },
         status: 'pending',
       }).select('*').single()
@@ -268,7 +268,7 @@ export const requestReferral = createServerFn({ method: 'POST' })
       throw new Error('The referral suggestion is no longer available.')
     const info = suggestion.context && typeof suggestion.context === 'object' && !Array.isArray(suggestion.context)
       ? suggestion.context as Record<string, unknown> : {}
-    if (suggestion.suggested_member_id !== data.targetId || info.connector_user_id !== data.connectorId)
+    if (suggestion.suggested_member_id !== data.targetId || info['connector_user_id'] !== data.connectorId)
       throw new Error('The requested people do not match the saved referral suggestion.')
     const { data: connection, error: connectionError } = await db.from('follows')
       .select('followee_id').eq('follower_id', userId)
