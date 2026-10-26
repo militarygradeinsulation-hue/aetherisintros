@@ -1,5 +1,7 @@
+import { readProviderSecret } from './providerSecrets.server';
+
 export async function generateBusinessImage(prompt: string): Promise<string> {
-  const key = process.env['OPENAI_API_KEY'];
+  const key = readProviderSecret('OPENAI_API_KEY');
   if (!key) throw new Error('Image generation is not connected. Your administrator must configure an image provider. Your brief is still available.');
   const response = await fetch('https://api.openai.com/v1/images/generations', {
     method: 'POST', signal: AbortSignal.timeout(120000),
