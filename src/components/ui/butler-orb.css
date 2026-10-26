@@ -66,3 +66,28 @@
     display:block!important;visibility:visible!important;opacity:1!important;
   }
 }
+
+/* Compact non-WebGL fallback matches the robot, not the replaced blob. */
+.butler-orb[data-butler-avatar="robot"] .butler-orb-fallback {
+  inset: 6px 9px 4px!important;
+  width: 42px!important;
+  height: 47px!important;
+  border-radius: 45% 45% 42% 42%!important;
+  background:
+    radial-gradient(ellipse at 36% 30%,#74b9ff 0 7%,transparent 9%),
+    radial-gradient(ellipse at 64% 30%,#74b9ff 0 7%,transparent 9%),
+    radial-gradient(ellipse at 50% 30%,#080d1a 0 30%,transparent 31%),
+    linear-gradient(#e4eaf2,#aeb5c2)!important;
+  box-shadow: 0 3px 10px #0005!important;
+}
+.butler-orb[data-butler-avatar="robot"][data-orb-view="business"] .butler-orb-fallback {
+  background:
+    radial-gradient(ellipse at 36% 30%,#ff435d 0 7%,transparent 9%),
+    radial-gradient(ellipse at 64% 30%,#ff435d 0 7%,transparent 9%),
+    radial-gradient(ellipse at 50% 30%,#080d1a 0 30%,transparent 31%),
+    linear-gradient(#e4eaf2,#aeb5c2)!important;
+}
+.butler-orb[data-butler-avatar="robot"]:has(canvas) .butler-orb-fallback {
+  opacity:0!important;
+}
+.butler-orb[data-butler-avatar="robot"] canvas { background:transparent!important; }
