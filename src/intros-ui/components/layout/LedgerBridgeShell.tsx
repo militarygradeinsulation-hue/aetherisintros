@@ -1,5 +1,4 @@
 import { TopNavigation as BridgeTopNavigation } from './SocialTopNavigation';
-import { BusinessExplainerTicker } from '../business/BusinessExplainerTicker'
 import { OnboardingGuide } from '../../onboarding/OnboardingGuide';
 import { CompactExperienceSwitch } from '../../experience/CompactExperienceSwitch';
 import { OnboardingMenuPortal } from '../../onboarding/OnboardingMenuPortal';
@@ -218,7 +217,7 @@ export function LedgerBridgeShell({
       </div>
       <OnboardingMenuPortal/>
       <OnboardingGuide onNavigate={navigate} mode={mode} />
-      <div id="aetheris-workspace-content" className="ledger-native-content"><div hidden={experience === 'social'}><BusinessExplainerTicker /><LedgerSectionNavigation activePage={activePage} activeTool={activeTool} onSelect={navigate}/></div>{children}</div>
+      <div id="aetheris-workspace-content" className="ledger-native-content"><div hidden={experience === 'social'}><LedgerSectionNavigation activePage={activePage} activeTool={activeTool} onSelect={navigate}/></div>{children}</div>
     </div>
 
     <div className="ledger-native-quick-dock" aria-label="Desktop quick launch tools">

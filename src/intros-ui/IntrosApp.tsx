@@ -8,6 +8,7 @@ import './experience/bridge-social.css';
 import './experience/bridge-social-host.css';
 import './experience/social-premium.css';
 import { NewsTicker } from './components/NewsTicker';
+import { BusinessExplainerTicker } from './components/business/BusinessExplainerTicker';
 import React, { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { isIntroTargetId, submitIntroRequest } from '@/aetheris/lib/intro-request';
@@ -379,7 +380,7 @@ export default function App({ mode = 'demo', executiveAction, initialPage, initi
       >
       <main className="flex-1 arch-product-main" data-arch-page={activePage}>
         {accessBlocked ? <div className="aetheris-parity"><MembershipLevels /><div className="executive-section"><p role="status">{permissionError ? 'Membership permissions could not be checked. Please retry before using this feature.' : requirement === 'networking' ? 'Verify your LinkedIn account or choose paid membership to use networking.' : 'Paid membership is required for business tools.'}</p><Button onClick={() => { setClassicPage('membership-upgrade'); handleNavigate('workspace'); }}>View membership options</Button></div></div> : <>
-        {experience === 'social' ? <BridgeNewsTicker onOpen={() => handleNavigate('news')}/> : <NewsTicker onOpenNews={() => handleNavigate('news')}/>} 
+        {experience === 'social' ? <BridgeNewsTicker onOpen={() => handleNavigate('news')}/> : <><BusinessExplainerTicker /><NewsTicker onOpenNews={() => handleNavigate('news')}/></>} 
         {activePage === 'home' && (
           <LedgerDashboard
             requests={introRequests} me={me} onReview={setReviewIntroRequest}
