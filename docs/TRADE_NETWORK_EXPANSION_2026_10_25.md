@@ -1,123 +1,92 @@
-# Trade Network and Aetheris Field Intelligence expansion
-Reviewed: 2026-10-25 · implementation: `feature/trade-field-workflows-20261025`
+# Trade Network first source slice: capacity, photo scope and payment evidence
 
-## Release truth and dependencies
+This is a narrow technical companion to the master 27-item roadmap in
+`docs/FIELD_NETWORK_EXPANSION_2026_10_25.md` (PR #349) and tracking epic #350.
+It does not replace #211 (production database recovery) or #278 (live acceptance).
+Source code is not a claim of production deployment, provider connectivity or saved shared records.
 
-Ask Intros has member authentication, verification, CRM, requests, Capacity Exchange, private Letters,
-Referral Settlement, HR, evidence/track record, Butler, meetings/voice and a server-only AI path.
-**Code in main is not proof of a deployed production workflow.** Production backend reconciliation
-is still tracked in #211 and #278. The connected Supabase management account does not manage the
-original project ID `uactagkdvafjombseswx`. Do not apply or replay SQL against unrelated projects,
-rewrite historical migration ledgers, or publish the accessible “Remix of Ask Intros” as the original.
+## 1. Overflow jobs and urgent asks
 
-The baseline for every expansion is: approved verified member identity, tenant-isolated persistent
-state, accurate receipts for writes, consent/provenance, participant-specific read permissions,
-reversible decisions where appropriate, abuse monitoring, and real multi-account release checks.
-Feature names must never imply payments, underwriting, emergency dispatch, insurance coverage,
-legal compliance, or autonomous execution that has not been verified in production.
+`src/features/network-value/job-routing.ts` adapts to the EXISTING
+`networkValue({action:"capacity_post"})` contract. No new table, provider, RPC
+or second network graph is added. Within Capacity Exchange, the member can choose:
 
-## First source increment in this branch
+- **Standard capacity/need:** existing behavior; normal start/expiry window.
+- **Overflow job:** creates a needed post with a summary for verified
+  nearby capacity. It does not transfer customer identity, create a CRM lead,
+  assign a worker or trigger a financial obligation.
+- **Urgent capacity:** creates a needed post expiring exactly two hours after
+  submission. It does not send notifications to responders or promise an SLA.
 
-1. **Overflow routing preview through existing Capacity Exchange.** The workflow posts only a
-   non-identifying *needed capacity* opportunity. Nearby verified members can request the work;
-   the existing private Letter handles bilateral negotiated terms. A potential downstream transfer
-   of customer contact details happens only after that customer agrees. There is no one-tap customer
-   transfer, automatic settlement, or autonomous scheduling yet.
-2. **Two-hour urgent capacity posts.** Existing needed posts get a two-hour server-validated
-   expiry window. They remain location-discoverable to verified members; opt-in responder lists,
-   targeted push/SMS, guaranteed acceptance and service-level timers are **not** yet connected.
-3. **Photo-to-estimate scope preview.** Explicitly authorized member photos are downsized in
-   the browser, camera metadata stripped and sent on command to the existing server-only
-   OpenAI configuration, not Lovable's editor gateway. Output is an editable, unsent, unpriced
-   scope and measurement checklist. No image/video persistence, client quote, dimension
-   measurement, structural guarantee or automatic price is represented.
-4. **Payment reputation calculation boundary.** Pure, tested domain logic suppresses output
-   until there are at least five confirmed paid invoices from three separate verified payee
-   businesses, with explicit aggregation consent. Self-reports, disputed invoices, reversals,
-   future/unpaid records and old records are excluded. It exposes only aggregate days-to-pay,
-   a rounded sample band and month, not individual reports. This **does not** ingest, verify,
-   store or publish production payment records. Business identity, dispute/appeal lifecycle,
-   anti-Sybil controls and partner/processor receipts are required before public deployment.
+Posting overflow or urgency requires an explicit privacy-review checkbox.
+A conservative detector also rejects emails, common US phone numbers and
+street address strings. This detector is a precaution, NOT reliable redaction;
+posters must remove all identifying information themselves and obtain the
+customer's specific permission BEFORE any named contact transfer.
+Existing private Capacity Letters are used for receiving offers and
+counterparty-accepted terms. Any actual downstream customer handoff
+requires new consented CRM-side code and member authorization.
 
-These are incremental source features, not an “all 27 built” claim. The first two extend existing
-Capacity; the third uses the existing server API key; the fourth is a non-publishing core.
+User feedback after a successful post switches to the posted kind.
+No success is claimed until the existing server function confirms the write.
+Where migration 0096 is missing, the existing failure state remains visible.
 
-## Portfolio and build order
+## 2. Photo to Estimate
 
-| Feature | Reuse / dependency | Release condition |
-| --- | --- | --- |
-| Payment reputation | Verified businesses, paid-invoice evidence, existing settlement events | Independent verified receipts; subject notice/dispute/correction; suppressed published cohorts; anti-Sybil controls |
-| Price check | Benchmark Pools privacy release engine | Opt-in sourced purchases, normalized unit/trade/region/currency/period, minimum cohort, confidence bands |
-| Coverage pact | Capacity, Letters, bilateral term acceptance | Explicit reciprocal response obligations, expiration, license/insurance checks, named substitutions and three-way consent where necessary |
-| Overflow routing | Capacity, referrals, CRM, Letters | Consent-gated customer transfer; accepted provider; attribution; optional settlement only with separately approved terms |
-| Urgent asks | Capacity, notifications, opt-in availability | Verified opted-in responders only, short TTL, alert delivery receipts, clock starts at true dispatch time |
-| Missed-call rescue | Telephony provider, SMS, member CRM | Number ownership + forward/webhook verification, signed webhooks, caller consent/opt-out, spam controls, documented delivery and CRM idempotency |
-| Demand pulse | Consented capacity/asks/verified jobs | Coarsened region/trade/week, minimum contributing firms, no reconstruction through drill-down, lag and data coverage shown |
-| Apprentice rotation | People & HR, credential and insurance | Employer/training agreements, lawful supervision, hours confirmation, labor classification and safety requirements |
-| Shadow days | Events, Track Record, consent | Confirmed attendance both sides, host review, private boundaries and no automatic credential inflation |
-| Bilingual Butler | Member messaging, Butler, opt-in preferences | Source and translation both retained; notices and consent unaltered; member approval for consequential sends |
-| Secret-shopper agent | Golden Report and evidence ledger | Recorded business owner consent, controlled test endpoints, lawful disclosure/recording, calling cost caps, verified response metrics |
-| Cash weather | CRM receivables, consented timing & demand signals | Actual member-owned amounts, explainable assumptions, forecasts with uncertainty, avoid confident claims from sparse external data |
-| Photo-to-estimate | OpenAI vision, Business Tools and proposals | Trade scope QA; explicit source measurements/prices, upload security, deletion controls, estimator approval before issuance |
-| Live call copilot | Meeting capture, consent and CRM context | All-party recording/transcription consent; real-time prompt latency, access rules, no automatic price promises |
-| Voice-line Butler | Butler commands, voice auth and confirmations | Verified inbound caller, anti-spoof checks, live action review, human confirmation for posts and financial actions |
-| Prove-it credentials | Verification proof storage, member passport | Issuer attestation, expiry/revocation, signed public yes/no claims, documents never leave private scope |
-| Milestone escrow | Deal rooms, photo evidence, third-party escrow | Licensed escrow/payment partner; disputes, held-funds terms, KYC/AML and no custody by Intros |
-| Construction signal feed | Specter/public data, geography | Per-county authorized permits/registries, dedupe/provenance, no invented contractor need, user-interest controls |
-| Simulated buyer panel | Opted-in win/loss debriefs, AI | Synthetic directional feedback labelled non-predictive; no personal data leaked from debrief corpus |
-| Invoice advance | Payment reputation and factoring partner | Lending/factoring partner bears credit and compliance obligations, explicit member application and no balance sheet exposure |
-| Lien and pay-application agent | Contract dates, state rules, verified photo progress | Jurisdiction/time-zone-aware legal rules checked by counsel, user approval before any notices; no fake filing/guaranteed deadline |
-| Group insurance | Verified businesses, safety and outcome evidence | Licensed broker/carrier, regulated eligibility/rating and user-controlled sharing |
-| Intros Prime | Verified capability, capacity, signed contracts | Separate contracting entity, bonding, insurance, labor/subcontract controls and customer/worker protections |
-| Storm mobilization | Capacity, credentials, urgent needs | Incident activation, verification recency, lawful solicitation, rate visibility, resource/safety dispatch rules |
-| Systems-first acquisitions | Member-owned company data, separate Aetheris entity | Independent opt-in, firewall from private Intros data, disclosed conflicts and valuation/capital governance |
-| Bid pricing model | Thousands of consented, quality-checked bid outcomes | Calibrated uncertainty by trade/region/job, leakage tests, legal review and bias/market impact assessment |
-| Member data cooperative | Explicit enterprise/member governance | Separate informed opt-in, withdrawal economics, disclosure-risk testing, published data sale terms and member revenue allocation |
+`src/features/photo-estimate/PhotoEstimatePage.tsx` is accessible from the
+member Work tools, both shell navigation surfaces and explicit Butler navigation.
+The member chooses up to three images and describes the scope. The browser
+resizes to small JPEG and removes camera EXIF metadata. Upload consent is
+independent and unchecked by default. Images stay local until the member
+clicks **Create unsent scope draft**.
 
-## Sprint priorities
+`src/lib/photoEstimate.functions.ts` authenticates the member, verifies the
+profile belongs to the session, bounds body lengths and image count, applies
+a best-effort local rate check, and calls the configured OpenAI Responses API
+with `OPENAI_API_KEY` (not the Lovable editor or AI gateway). Provider errors
+must not clear the member's draft. Response is an editable, unsent **unpriced**
+scope with visible observations, material categories, risks and measurement
+questions. No pixel-derived quantities, hidden damage claims, labor/cost
+certification or automatic customer dispatch. Nothing is stored server-side
+by this feature. Provider retention remains subject to provider controls.
+Instance-local throttles are not sufficient as global production cost controls.
 
-**Gate 0 — Production trust first:** reconcile migration journals and real application schema, obtain backup/restore
-proof, test approved member A/B, unrelated member, blocked/revoked/anonymous/admin. Confirm source deployment.
-Never quietly activate advanced workflows when an RPC/table is missing.
+To release broadly: confirm API key/model, configure durable account-scoped
+quota/abuse limits, run consent and data-deletion review, add opt-in private
+project storage if members need cross-device drafts, verify on iPhone and
+Android, then perform a sample estimator approval on an actual job.
 
-**Gate 1 — Revenue movement without holding money:** promote Overflow/urgent after live exchange acceptance,
-then implement member-facing consented customer handoff, dedicated outcomes and matching in the existing CRM.
-Build payment evidence ingestion, subject dispute and minimum-sample release next. Separately connect a verified
-telephony partner for missed-call rescue and prove both inbound and outbound delivery.
+## 3. Payment Reputation core (not published)
 
-**Gate 2 — Measured operations:** secret-shopper opt-in tests and photo scope reviewer; then verified regional
-price checks, demand pulse and cash forecasts, all with confidence/data-density labels.
+`src/features/network-value/payment-reputation.ts` contains a pure,
+non-publishing calculation; there is NO runtime payment rating page.
+To calculate a cohort it requires >=5 uniquely identified confirmed paid
+invoices from >=3 distinct verified payee businesses within 365 days.
+It excludes unverified self-reporting, disputes, reversals, consent
+withdrawal, impossible or future dates, and duplicate IDs. It emits only
+rounded average calendar days to pay, a band for how many invoices were
+included and the as-of month. No invoice-level disclosures.
 
-**Gate 3 — Skilled workforce and hands-free execution:** coverage pacts, apprenticeship/shadow days,
-bilingual messages, live call copilot and phone-number Butler after voice/action consent acceptance.
+Before publishing any payment claim: verified legal business identities,
+source-of-truth paid receipts, independent corroboration, dispute/appeal
+and correction lifecycle, permissioned evidence access, reviewer/audit
+history, anti-Sybil and cohort-differencing review, multi-account RLS tests.
+Do not treat the aggregate as a credit score, factor underwriting or debt
+collection justification.
 
-**Gate 4 — Regulated products:** legal notice integrations, licensed factoring, brokered insurance, escrow,
-prime contracting, cooperative data sales and acquisitions each need partner/licensing approval before
-financial execution. Do not assume a payment processor alone makes holding funds lawful.
+## Release and QA boundaries
 
-## Permanent controls
+1. Existing production Supabase target is not accessible through the connected
+   Supabase management account. Do NOT modify a different project, blindly
+   replay migrations or change migration ledgers.
+2. Existing Lovable management access exposes a separate *Remix of Ask Intros*,
+   not the original production project; do NOT deploy the remix as the live app.
+3. Require production build, TypeScript, unit tests and Bridge visual parity,
+   then 320/390px and desktop real-browser checks in both appearances.
+4. Run `npx vitest run src/features/network-value/job-routing.test.ts src/features/network-value/payment-reputation.test.ts`,
+   `npx tsc --noEmit -p .`, `npm run build` and established network tests.
+5. Follow up with authorized member A/B/outsider/revoked API tests for
+   Capacity Exchange plus actual AI provider and customer consent acceptance.
 
-- No customer contact record or precise worksite address in a discoverable capacity post.
-- No customer referral without the customer's specific permission.
-- No verified payment statistics from unverified self-attestation. Subjects may review and challenge.
-- Do not publish aggregates when small-cell or differencing risk exposes businesses.
-- Do not turn member data into lender, advertiser or acquirer intelligence without specific revocable opt-in.
-- No automatic calls, SMS, voice recording, legal filing, settlement or financial decision without
-  consent, provider configuration, relevant compliance review and server-confirmed receipts.
-- No fake completed actions, guaranteed lead response, guaranteed financial outcome, verified
-  license, insurance coverage or membership eligibility when evidence is absent.
-- Any external AI or call service must be server-keyed, bounded, member-consented and rate-limited
-  with costs and failure states visible. Temporary instance-local throttles are not global quotas.
-- Keep every new feature behind its verified backend activation gate; UI and local tests alone are insufficient.
-
-## Verification commands
-
-- `npx tsc --noEmit -p .`
-- `npx vitest run src/features/network-value/job-routing.test.ts src/features/network-value/payment-reputation.test.ts`
-- `npm run build`
-- Existing network systems suite: `node scripts/migration-checks/run.mjs`
-- Visual checks: phone widths 320/390 px, desktop 1280 px, light/dark themes, and both views
-- Production gate: matching live migration ledger, RLS, verified rate-limits, member A/B separation,
-  auth-revocation and real provider acceptance.
-
-This roadmap complements, not supersedes, #211 and #278 or the existing network systems release.
+Broader design and regulated-product dependencies belong in the master
+roadmap and GitHub epic #350, not in this source-slice record.
