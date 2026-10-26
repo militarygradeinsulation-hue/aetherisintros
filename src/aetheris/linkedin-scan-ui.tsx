@@ -233,7 +233,7 @@ export function LinkedInScanPanel({
           <small> {source.kind === 'linkedin-index' ? '· Indexed LinkedIn result' : '· Other public professional page'}</small>
           <span> {source.snippet.slice(0, 260)}</span>
         </p>)}
-      </details>
+      </details>}
       <p className="li-scan-note">{found ? `Found ${fieldCount(found)}. Tick what to apply; you can edit any value first.` : 'No profile details were found in that text. Go back and paste the whole profile page.'}</p>
       <div className="li-scan-review" role="group" aria-label="Review scanned fields">
         <div className="li-scan-row li-scan-cols" aria-hidden="true"><span /><span>Field</span><span>Now</span><span>From LinkedIn</span></div>
