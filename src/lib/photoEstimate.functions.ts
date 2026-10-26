@@ -37,7 +37,7 @@ export const createPhotoEstimateDraft = createServerFn({ method: 'POST' })
     if (!key) throw new Error('Photo analysis is not configured. Your photos remain in your browser.')
     const { data: profile, error } = await context.supabase
       .from('profiles').select('id').eq('id', context.userId).maybeSingle()
-    if (error || !profile) throw new Error('Your verified member profile could not be loaded.')
+    if (error || !profile) throw new Error('Your member profile could not be loaded.')
     reserve(context.userId)
     const safety = [
       'You assist a tradesperson with an UNSENT, UNPRICED construction scope draft.',
