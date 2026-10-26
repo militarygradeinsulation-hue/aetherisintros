@@ -252,3 +252,23 @@
     transition: none !important;
   }
 }
+
+/* Job flow presets sit inside the existing Capacity workspace, never a new dashboard. */
+.nv-routing-choices {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin: 12px 0 16px;
+}
+.nv-routing-choices button {
+  min-width: 0;
+  margin: 0;
+  padding: 8px 12px;
+  border-radius: 12px;
+  font-size: 13px;
+}
+.nv-routing-choices button[aria-pressed="true"] {
+  border-color: var(--commons-accent, #88aee0);
+  background: var(--commons-accent-soft, #3975bc33);
+}

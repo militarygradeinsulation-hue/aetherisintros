@@ -15,6 +15,7 @@ import {
   type NetworkSnapshot,
   type Settlement,
 } from "./model";
+import { prepareJobPost, type JobRoutingMode } from "./job-routing";
 import "./network-value.css";
 
 export type NetworkMode = "benchmarks" | "settlements" | "capacity";
@@ -188,7 +189,9 @@ function Capacity({ data, act }: { data: NetworkSnapshot; act: Action }) {
   const [kind, setKind] = useState<"available" | "needed">("available"),
     [radius, setRadius] = useState(60),
     [clock, setClock] = useState(Date.now()),
-    [postId, setPostId] = useState(() => crypto.randomUUID());
+    [postId, setPostId] = useState(() => crypto.randomUUID()),
+    [postingMode, setPostingMode] = useState<JobRoutingMode>("standard"),
+    [postError, setPostError] = useState("");
   useEffect(() => {
     const timer = setInterval(() => setClock(Date.now()), 30000);
     return () => clearInterval(timer);
@@ -206,20 +209,25 @@ function Capacity({ data, act }: { data: NetworkSnapshot; act: Action }) {
   async function post(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
     const f = e.currentTarget;
-    if (
-      await act({
-        action: "capacity_post",
-        id: postId,
+    setPostError("");
+    try {
+      const prepared = prepareJobPost({
+        mode: postingMode,
         kind: value(f, "kind") as "available" | "needed",
         title: value(f, "title"),
         details: value(f, "details"),
-        starts_at: new Date(value(f, "starts")).toISOString(),
-        expires_at: new Date(value(f, "expires")).toISOString(),
+        starts: value(f, "starts"),
+        expires: value(f, "expires"),
         radius: number(f, "radius"),
-      })
-    ) {
-      f.reset();
-      setPostId(crypto.randomUUID());
+        privacyReviewed: new FormData(f).has("privacyReviewed"),
+      });
+      if (await act({ action: "capacity_post", id: postId, ...prepared })) {
+        f.reset();
+        setKind(prepared.kind);
+        setPostId(crypto.randomUUID());
+      }
+    } catch (error) {
+      setPostError(error instanceof Error ? error.message : "Review your request and try again.");
     }
   }
   const posts = data.posts.filter(
@@ -365,55 +373,121 @@ function Capacity({ data, act }: { data: NetworkSnapshot; act: Action }) {
         </div>
       )}
       <details className="nv-card">
-        <summary>Post capacity or a need</summary>
+        <summary>Post capacity, route overflow, or request urgent help</summary>
+        <p>
+          All three options use the existing Capacity Exchange and private Letters. An urgent
+          post expires after two hours; automated responder notifications are not connected.
+          Sharing a customer’s identity or contact information requires that customer’s approval.
+        </p>
+        <div className="nv-routing-choices" role="group" aria-label="Job network workflow">
+          {([
+            ["standard", "Capacity / need"],
+            ["overflow", "Overflow job"],
+            ["urgent", "Urgent help · 2 hours"],
+          ] as const).map(([option, label]) => (
+            <button
+              type="button"
+              key={option}
+              aria-pressed={postingMode === option}
+              onClick={() => { setPostingMode(option); setPostError(""); }}
+            >
+              {label}
+            </button>
+          ))}
+        </div>
+        {postingMode === "overflow" && (
+          <div className="nv-note">
+            <strong>Overflow routing</strong>
+            <p>
+              Post a high-level job request when a customer’s work is too far away,
+              outside your trade, or beyond your available capacity. Other verified
+              members can request it and agree terms privately. This does not transfer
+              the customer or trigger a referral payment automatically.
+            </p>
+          </div>
+        )}
+        {postingMode === "urgent" && (
+          <div className="nv-note">
+            <strong>Urgent capacity request</strong>
+            <p>
+              Publish a needed post for two hours. Nearby verified members can respond
+              in Letters. Responder opt-in lists, timed push alerts and guaranteed
+              replies are not activated.
+            </p>
+          </div>
+        )}
         <form onSubmit={(e) => void post(e)} className="nv-form">
+          {postingMode === "standard" ? (
+            <label>
+              Post type
+              <select name="kind">
+                <option value="available">Available</option>
+                <option value="needed">Needed</option>
+              </select>
+            </label>
+          ) : <input type="hidden" name="kind" value="needed" />}
           <label>
-            Post type
-            <select name="kind">
-              <option value="available">Available</option>
-              <option value="needed">Needed</option>
-            </select>
-          </label>
-          <label>
-            Title
-            <input name="title" maxLength={120} required />
+            {postingMode === "standard" ? "Title" : "Trade / job type (no customer name)"}
+            <input name="title" maxLength={postingMode === "standard" ? 120 : 100} required />
           </label>
           <label className="nv-wide">
-            Specifics
+            {postingMode === "standard" ? "Specifics" : "Service area, scope, timing and qualifications only"}
             <textarea
               name="details"
               maxLength={2000}
               required
-              placeholder="Crew size, equipment, qualifications, dates, and limits"
+              placeholder={postingMode === "standard"
+                ? "Crew size, equipment, qualifications, dates, and limits"
+                : "General area, trade, project scope, time needed. Do not include names, phone numbers, emails or addresses."}
             />
           </label>
-          <label>
-            Available from
-            <input type="datetime-local" name="starts" required />
-          </label>
-          <label>
-            Expires at
-            <input type="datetime-local" name="expires" required />
-          </label>
+          {postingMode !== "urgent" && (
+            <>
+              <label>
+                Available from
+                <input type="datetime-local" name="starts" required />
+              </label>
+              <label>
+                Expires at
+                <input type="datetime-local" name="expires" required />
+              </label>
+            </>
+          )}
           <label>
             Visible within
             <select name="radius" defaultValue="60">
               {[15, 30, 60, 100].map((n) => (
-                <option key={n} value={n}>
-                  {n} miles
-                </option>
+                <option key={n} value={n}>{n} miles</option>
               ))}
             </select>
           </label>
-          <p>Posts expire within 30 days. Close yours sooner when it is no longer available.</p>
-          <button disabled={!data.verified || !data.location}>Publish capacity post</button>
+          {postingMode !== "standard" && (
+            <label className="nv-check nv-wide">
+              <input type="checkbox" name="privacyReviewed" required />
+              <span>
+                I reviewed this public summary and removed customer names, phone numbers,
+                email addresses, exact job addresses and other identifying details.
+                I will get the customer’s consent before sharing their contact details privately.
+              </span>
+            </label>
+          )}
+          {postError && <p className="nv-wide" role="alert">{postError}</p>}
+          <p className="nv-wide">
+            {postingMode === "urgent"
+              ? "Your post automatically expires in two hours. No text messages or push alerts are sent."
+              : "Posts expire within 30 days. Close yours sooner when it is no longer needed."}
+          </p>
+          <button disabled={!data.verified || !data.location}>
+            {postingMode === "overflow" ? "Post overflow opportunity"
+              : postingMode === "urgent" ? "Post two-hour request" : "Publish capacity post"}
+          </button>
         </form>
       </details>
       <section aria-label="Capacity letters">
         <h2>Letters</h2>
         <p>
           Review requests and agree the work, dates, price, and responsibilities privately. Only the
-          two participants can see each letter.
+          two participants can see each letter. Do not share customer contact details without permission.
         </p>
         {data.letters.map((l) => (
           <article className="nv-card" key={l.id}>

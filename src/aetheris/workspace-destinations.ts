@@ -1,6 +1,6 @@
 /** Public entry links only select existing views; they never grant access. */
 export const MEMBER_WORKSPACE_IDS = [
-  'hr', 'benchmarks', 'settlements', 'capacity',
+  'hr', 'benchmarks', 'settlements', 'capacity', 'photo-estimate',
   'crm', 'needs', 'opportunities', 'deals', 'calendar', 'peergroups', 'workspaces',
   'referrals', 'companies', 'providers', 'pocket', 'profile', 'preferences',
   'diagnostic', 'executivework', 'events', 'memory', 'circles', 'grid',

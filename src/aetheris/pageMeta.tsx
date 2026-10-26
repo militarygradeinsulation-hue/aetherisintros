@@ -4,7 +4,7 @@ import {
   History, Home as HomeIcon, Inbox, Landmark, Layers, Lock, Map as MapIcon, MessageSquareText, Network,
   Newspaper, PlaneTakeoff, Puzzle, Radar, ScrollText, Settings2, ShieldAlert, ShieldCheck, Sparkle, Target,
   RefreshCw, ShoppingBag, Star, TrendingUp, UserRound, Users, UsersRound,
-  Lightbulb, Route, Stethoscope, Video, HandHelping, Mic2,
+  Lightbulb, Route, Stethoscope, Video, HandHelping, Mic2, Camera,
 } from 'lucide-react'
 import type { Page } from './nav'
 
@@ -343,6 +343,12 @@ const basePages: BaseMeta[] = [
   m('hr', 'People & HR', Users, 'OPPORTUNITY & EXECUTION', 'Private HR tailored to your business.', { does: 'Organizes people, hiring, policies, time off and team development.', look: 'Reviewed business context, private records and HR Butler.', changes: 'Only your account can access HR records. AI prepares drafts for your review.', next: 'Confirm your business setup and add your first employee or open role.' }, ['hr', 'human resources', 'employees', 'hiring', 'payroll']),
   m('benchmarks', 'Benchmark Pools', Gauge, 'RELATIONSHIP INTELLIGENCE', 'Private company comparisons from fixed peer cohorts.', { does: 'Compares shared metrics only after ten companies contribute.', look: 'Your cohort, shared metrics and released quarterly comparisons.', changes: 'Contributions remain private and can be withdrawn.', next: 'Verify your company cohort and share a metric.' }, ['benchmarks', 'peer median', 'quartile']),
   m('settlements', 'Referral Settlement', Handshake, 'OPPORTUNITY & EXECUTION', 'Terms and accountable milestones before referral payment.', { does: 'Preserves all three signatures before release.', look: 'Agreed terms, participant confirmations and the projected fee.', changes: 'Payment execution stays unavailable until Connect activation.', next: 'Prepare an agreement for review.' }, ['referral fee', 'settlement']),
+  m('photo-estimate', 'Photo to Estimate', Camera, 'OPPORTUNITY & EXECUTION', 'Private image-assisted job scope drafts with mandatory estimator review.', {
+    does: 'Uses uploaded job photos and member-entered facts to draft an editable scope and measurements checklist.',
+    look: 'Your chosen photos, context, visible observations and questions to verify.',
+    changes: 'A server-side OpenAI provider processes selected images only when you approve analysis; drafts are not sent or saved automatically.',
+    next: 'Review all materials, quantities, pricing assumptions and safety concerns before using a proposal.',
+  }, ['photo', 'estimate', 'takeoff', 'jobsite', 'construction', 'scope']),
   m('capacity', 'Capacity Exchange', Briefcase, 'OPPORTUNITY & EXECUTION', 'Verified local availability with automatic expiry.', { does: 'Connects available crews and equipment with nearby needs.', look: 'Available and Needed posts, distance and expiry.', changes: 'Requests create private Letters for agreed terms.', next: 'Set your location and post or request capacity.' }, ['capacity', 'crew', 'equipment', 'letters']),
   m('executivework', 'Executive Workbench', Briefcase, 'OPPORTUNITY & EXECUTION', 'Business analysis, warm referrals, reputation, proposals and private group decisions in one workbench.', {
     does: 'Brings recovered executive tools into one place without creating five more primary destinations.',
@@ -567,7 +573,7 @@ export const primaryPages: Page[] = ['home', 'network', 'intros', 'messages', 'm
 export const networkTabs: Page[] = ['discover', 'intros', 'companies', 'circles', 'events']
 export const networkAdvanced: Page[] = ['directory', 'expertise', 'serendipity', 'gaps', 'identity', 'organization', 'talent', 'knowledge', 'boards', 'intelrooms', 'passport', 'ask']
 export const workTabs: Page[] = ['crm', 'diagnostic', 'pocket', 'opportunities', 'grid', 'calendar', 'outcomes']
-export const workAdvanced: Page[] = ['needs', 'rooms', 'deals', 'workspaces', 'executivework', 'systems', 'strategy', 'simulation', 'collisions', 'capital', 'attribution', 'loops', 'knowledgeassets', 'timemachine', 'business-lobby', 'opportunity-exchange', 'marketplace-pilot']
+export const workAdvanced: Page[] = ['photo-estimate', 'capacity', 'needs', 'rooms', 'deals', 'workspaces', 'executivework', 'systems', 'strategy', 'simulation', 'collisions', 'capital', 'attribution', 'loops', 'knowledgeassets', 'timemachine', 'business-lobby', 'opportunity-exchange', 'marketplace-pilot']
 export const meTabs: Page[] = ['profile', 'passport', 'permission', 'preferences', 'integrations']
 export const meAdvanced: Page[] = ['podcast', 'identity', 'consent', 'constitution', 'presence', 'vault', 'autopilot', 'membership-upgrade']
 
