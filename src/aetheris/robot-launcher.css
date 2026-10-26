@@ -70,3 +70,18 @@
 }
 @keyframes robot-launcher-float { 0%,100% { translate: 0 0; } 50% { translate: 0 -6px; } }
 @media (prefers-reduced-motion: reduce) { .ask-dock-fab--robot { animation: none !important; } }
+
+/* Social View layered important declarations can outrank unlayered overrides.
+   Keep the robot transparent inside that same cascade layer. */
+@layer bridge-social-reference {
+  :root[data-experience="social"] .ix-commons-bridge button.ask-dock-fab.ask-dock-fab--robot:not(.active),
+  :root[data-theme] body .ix-root.ledger-native-app > .ix-assistant button.ask-dock-fab.ask-dock-fab--robot:not(.active) {
+    background: transparent !important;
+    background-image: none !important;
+    border: 0 !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+  }
+}
