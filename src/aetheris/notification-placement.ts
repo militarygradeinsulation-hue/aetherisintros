@@ -7,8 +7,8 @@ export interface NotificationRect { left: number; right: number; top: number; bo
 export interface NotificationViewport {
   width: number
   height: number
-  offsetLeft?: number
-  offsetTop?: number
+  offsetLeft?: number | undefined
+  offsetTop?: number | undefined
 }
 
 export interface NotificationPanelBounds {
