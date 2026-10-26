@@ -16,7 +16,7 @@ describe('job-to-network routing', () => {
     expect(row.kind).toBe('needed')
     expect(row.title).toMatch(/^Overflow job:/)
     expect(row.radius).toBe(30)
-    expect(row.starts_at).toBe(draft.starts)
+    expect(row.starts_at).toBe(new Date(draft.starts).toISOString())
   })
   it('expires urgent requests in two hours rather than implying an automatic alert', () => {
     const row = prepareJobPost({ ...draft, mode: 'urgent' }, NOW)
