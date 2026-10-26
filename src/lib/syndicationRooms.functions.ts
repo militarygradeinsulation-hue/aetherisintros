@@ -78,14 +78,14 @@ function roomView(row: LegacyRoom): SyndicationRoom {
     id: row.id, created_by: row.created_by, title: row.title,
     room_type: type === 'co-sponsor' || type === 'co-refer' || type === 'other' ? type : 'co-invest',
     description: row.description ?? null,
-    opportunity_size: typeof meta.opportunity_size_label === 'string'
-      ? meta.opportunity_size_label
+    opportunity_size: typeof meta['opportunity_size_label'] === 'string'
+      ? meta['opportunity_size_label']
       : row.target_raise == null ? null : String(row.target_raise),
     deadline: row.close_date ? row.close_date.slice(0, 10) : null,
     status: row.status === 'closed' ? 'closed' : row.status === 'decided' ? 'decided' : 'open',
-    decision: typeof meta.decision === 'string' ? meta.decision : null,
+    decision: typeof meta['decision'] === 'string' ? meta['decision'] : null,
     created_at: row.created_at,
-    closed_at: typeof meta.closed_at === 'string' ? meta.closed_at : null,
+    closed_at: typeof meta['closed_at'] === 'string' ? meta['closed_at'] : null,
   }
 }
 const votes: Record<Vote, string> = { in: 'interested', out: 'not_interested', need_more_info: 'needs_information' }
