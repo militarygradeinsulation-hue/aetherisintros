@@ -41,6 +41,13 @@ try {
       }))
       window.__readAloudUtterances = []
       window.__audioContextUnblocks = 0
+      window.__audioSessionChanges = []
+      const audioSession = {
+        _type: 'auto',
+        get type() { return this._type },
+        set type(next) { this._type = next; window.__audioSessionChanges.push(next) },
+      }
+      Object.defineProperty(navigator, 'audioSession', { configurable: true, value: audioSession })
       class MockAudioContext {
         constructor() { this.state = 'suspended' }
         resume() { window.__audioContextUnblocks++; this.state = 'running'; return Promise.resolve() }
@@ -73,18 +80,21 @@ try {
     await text.click()
     if (scenario.voice === 'intros-managed') {
       await page.waitForFunction(() => window.__audioContextUnblocks > 0, {timeout:5000})
+      await page.waitForFunction(() => window.__audioSessionChanges.includes('playback'), {timeout:5000})
       // A managed voice MUST NOT silently switch to generic browser speech,
       // even on Safari when private ElevenLabs synthesis is unavailable.
       await page.waitForTimeout(1000)
       const recorded = await page.evaluate(() => window.__readAloudUtterances)
       if (recorded.length) throw Error('Selected ElevenLabs voice was replaced with a device voice')
-      console.log('PASS '+scenario.name+': Web Audio unlocked synchronously; no generic voice')
+      console.log('PASS '+scenario.name+': Web Audio unlocked; iPhone session requested speaker playback; no generic voice')
     } else {
       await page.waitForFunction(() => window.__readAloudUtterances.length > 0, {timeout:6000})
       const recorded = await page.evaluate(() => window.__readAloudUtterances)
       if (!recorded.some(text => text.length > 1)) throw Error(scenario.name+': no readable text')
       if (recorded.some(text => text.length > 240)) throw Error(scenario.name+': long native speech segment')
-      console.log('PASS '+scenario.name+': '+recorded.length+' spoken segments; first '+recorded[0].slice(0,80))
+      const route = await page.evaluate(() => window.__audioSessionChanges)
+      if (!route.includes('playback')) throw Error('Device voice did not request playback routing')
+      console.log('PASS '+scenario.name+': '+recorded.length+' spoken segments; requested playback routing')
     }
     if (errors.length) throw Error(scenario.name + ': page error ' + errors.join(', '))
     await context.close()
