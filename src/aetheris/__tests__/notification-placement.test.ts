@@ -14,7 +14,7 @@ describe('mobile notification viewport placement', () => {
     expect(box.top).toBeGreaterThanOrEqual(12)
     expect(box.top + box.maxHeight).toBeLessThanOrEqual(viewport.height - 12)
     expect(box.maxHeight).toBeGreaterThan(100)
-    if (width <= 640) expect(box.left).toBe(12)
+    if (width <= 640) expect(box.left).toBeCloseTo(Math.max(12, (width - box.width) / 2))
   })
 
   it('moves the panel above a lower toolbar without losing scrollable space', () => {
@@ -22,7 +22,7 @@ describe('mobile notification viewport placement', () => {
       { left: 300, right: 340, top: 696, bottom: 740 },
       { width: 390, height: 760 },
     )
-    expect(box.left).toBe(12)
+    expect(box.left).toBe(15)
     expect(box.top + box.maxHeight).toBeLessThanOrEqual(688)
     expect(box.maxHeight).toBeGreaterThan(400)
   })
