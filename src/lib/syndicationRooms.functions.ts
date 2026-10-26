@@ -66,7 +66,7 @@ export const listSyndicationRooms = createServerFn({ method: 'GET' })
 
     // Rooms the user is a member of (but not creator)
     const { data: memberships, error: e2 } = await db
-      .from('syndication_members')
+      .from('syndication_room_members')
       .select('room_id')
       .eq('user_id', userId)
     if (e2) throw new Error(e2.message)
@@ -119,6 +119,7 @@ export const createSyndicationRoom = createServerFn({ method: 'POST' })
         description: data.description?.trim() ?? null,
         opportunity_size: data.opportunitySize?.trim() ?? null,
         deadline: data.deadline ?? null,
+        status: 'open',
       })
       .select()
       .single()
@@ -126,12 +127,12 @@ export const createSyndicationRoom = createServerFn({ method: 'POST' })
 
     // Add creator as a member so they can vote
     const membersToInsert = [
-      { room_id: room.id, user_id: userId },
+      { room_id: room.id, user_id: userId, status: 'active', role: 'lead' },
       ...(data.inviteUserIds ?? [])
         .filter(id => id !== userId)
-        .map(id => ({ room_id: room.id, user_id: id })),
+        .map(id => ({ room_id: room.id, user_id: id, invited_by: userId })),
     ]
-    const { error: membersErr } = await db.from('syndication_members').insert(membersToInsert)
+    const { error: membersErr } = await db.from('syndication_room_members').insert(membersToInsert)
     if (membersErr) throw new Error(membersErr.message)
 
     return room as SyndicationRoom
@@ -150,7 +151,7 @@ export const castVote = createServerFn({ method: 'POST' })
     const userId = context.userId
 
     const { error } = await db
-      .from('syndication_members')
+      .from('syndication_room_members')
       .update({ vote: data.vote, vote_note: data.voteNote ?? null, voted_at: new Date().toISOString() })
       .eq('room_id', data.roomId)
       .eq('user_id', userId)
@@ -158,7 +159,7 @@ export const castVote = createServerFn({ method: 'POST' })
 
     // Auto-close to decided when all members have voted
     const { data: members } = await db
-      .from('syndication_members')
+      .from('syndication_room_members')
       .select('vote')
       .eq('room_id', data.roomId)
     const allVoted = (members ?? []).every((m: { vote: Vote | null }) => m.vote !== null)
@@ -209,7 +210,7 @@ export const getRoomDetails = createServerFn({ method: 'GET' })
     const [{ data: room, error: roomErr }, { data: rawMembers, error: membersErr }, { data: rawMessages, error: messagesErr }] =
       await Promise.all([
         db.from('syndication_rooms').select('*').eq('id', data.roomId).single(),
-        db.from('syndication_members').select('*, profiles(name, initials, avatar_url)').eq('room_id', data.roomId).order('joined_at'),
+        db.from('syndication_room_members').select('*, profiles!syndication_room_members_user_id_fkey(name, initials, avatar_url)').eq('room_id', data.roomId).order('joined_at'),
         db.from('syndication_messages').select('*, profiles(name, initials, avatar_url)').eq('room_id', data.roomId).order('created_at'),
       ])
 
