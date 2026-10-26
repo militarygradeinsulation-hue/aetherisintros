@@ -45,13 +45,17 @@ try {
       paintedBounds.height < (useCanvas ? 40 : 30))
       throw new Error(view + ' mobile Butler render/fallback is too small');
     const shape = await launcher.evaluate(button => {
-      const blob = button.querySelector('.ask-dock-blob').getBoundingClientRect();
-      const label = button.querySelector('.assistant-launcher-label').getBoundingClientRect();
+      const robot = button.querySelector('.butler-fab-robot')?.getBoundingClientRect();
       const style = getComputedStyle(button);
-      return { direction: style.flexDirection, background: style.backgroundColor, labelBelow: label.top >= blob.bottom - 1 };
+      return {
+        robotVisible: !!robot && robot.width >= 90 && robot.height >= 90,
+        background: style.backgroundColor,
+        border: style.borderTopWidth,
+        shadow: style.boxShadow,
+      };
     });
-    if (shape.direction !== 'column' || shape.background !== 'rgba(0, 0, 0, 0)' || !shape.labelBelow)
-      throw new Error(view + ' does not match the standalone Bridge blob and label: ' + JSON.stringify(shape));
+    if (!shape.robotVisible || shape.background !== 'rgba(0, 0, 0, 0)' || shape.border !== '0px' || shape.shadow !== 'none')
+      throw new Error(view + ' floating Butler robot should be larger and completely unframed: ' + JSON.stringify(shape));
     const box = await launcher.boundingBox();
     await phone.mouse.move(box.x + box.width / 2, box.y + box.height / 2);
     await phone.mouse.down();
@@ -70,8 +74,8 @@ try {
   const checkButler = async () => {
     const button = page.locator('.ix-assistant .ask-dock-fab');
     if (await button.count() !== 1) throw new Error('Expected one canonical Butler launcher');
-    const blob = button.locator('.ask-dock-blob');
-    if (!await blob.isVisible()) throw new Error('Social Butler blob is hidden');
+    const robot = button.locator('.butler-orb[data-butler-avatar="robot"]');
+    if (!await robot.isVisible()) throw new Error('Social Butler robot is hidden');
     const bounds = await button.boundingBox();
     const viewport = page.viewportSize();
     if (!bounds || bounds.x < 0 || bounds.y < 0 || bounds.x + bounds.width > viewport.width || bounds.y + bounds.height > viewport.height) throw new Error('Butler is outside the viewport');
@@ -79,7 +83,7 @@ try {
     await page.getByRole('dialog', { name: 'Ask Intros', exact: true }).waitFor();
     await button.click();
     await page.getByRole('dialog', { name: 'Ask Intros', exact: true }).waitFor({ state: 'hidden' });
-    console.log('Social Butler blob is visible and opens its canonical dialog');
+    console.log('Social Butler robot is visible and opens its canonical dialog');
   };
   const checkIntroductions = async (mobile = false) => {
     const nav = page.getByRole('navigation', { name: mobile ? 'Mobile navigation' : 'Desktop navigation', exact: true });
