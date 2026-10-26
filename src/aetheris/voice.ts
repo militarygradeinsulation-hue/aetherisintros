@@ -134,7 +134,6 @@ function setMobileAudioSession(mode: 'playback' | 'play-and-record') {
 export function unlockAudio() {
   if (typeof window === 'undefined' || readVoiceSettings().voiceName !== 'intros-managed') return
   try {
-    setMobileAudioSession('playback')
     const AudioCtor = window.AudioContext
       ?? (window as Window & { webkitAudioContext?: typeof AudioContext }).webkitAudioContext
     if (!AudioCtor) return
