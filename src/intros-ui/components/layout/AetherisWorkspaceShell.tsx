@@ -57,6 +57,7 @@ export const MEMBER_TOOL_DESTINATIONS: readonly WorkspaceDestination[] = [
   { label: 'Benchmark Pools', icon: ClipboardList, workspace: 'benchmarks' },
   { label: 'Referral Settlement', icon: Network, workspace: 'settlements' },
   { label: 'Capacity Exchange', icon: BriefcaseBusiness, workspace: 'capacity' },
+  { label: 'Photo to Estimate', icon: ClipboardList, workspace: 'photo-estimate' },
   { label: 'Referral Engine', icon: Network, workspace: 'referrals' },
   { label: 'Peer Groups', icon: Users, workspace: 'peergroups' },
   { label: 'Calendar', icon: CalendarDays, workspace: 'calendar' },
