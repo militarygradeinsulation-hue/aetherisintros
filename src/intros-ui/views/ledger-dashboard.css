@@ -137,3 +137,13 @@
 .dashboard-news-story:focus-visible {outline:2px solid var(--ledger-crm-accent);outline-offset:3px}
 .dashboard-news-list > p {font-size:12px;line-height:1.6;color:var(--ledger-crm-muted)}
 .dashboard-news-slot {min-width:0;margin-bottom:18px}
+
+/* iOS Safari zooms into focused form controls below 16px. Keep the member
+   Dashboard at its natural scale when someone chooses to type a post. */
+@media (max-width: 767px) {
+  .ix-root .ledger-dashboard .ledger-feed-composer textarea,
+  .ix-root .ledger-dashboard .social-editorial--compact .social-composer-body > textarea,
+  .ix-root .ledger-dashboard .social-editorial--compact .social-composer-body footer select {
+    font-size: 16px !important;
+  }
+}

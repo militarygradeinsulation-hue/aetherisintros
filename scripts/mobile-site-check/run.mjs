@@ -61,6 +61,13 @@ try {
   check(frame.x>=-2&&frame.right<=vp.width+2,'CRM shell fits device width')
   check(frame.height>=vp.height*.7,'CRM frame retains usable viewport height')
   await clearLayout(page,'CRM dashboard '+vp.width)
+  if(vp.width<=767){
+    await page.locator('.ledger-dashboard').waitFor({state:'visible'})
+    const noInputFocus=await page.evaluate(()=>!document.activeElement?.matches('input,textarea,select,[contenteditable="true"]'))
+    check(noInputFocus,'Dashboard opens without automatically focusing a text box')
+    const size=await page.locator('.ledger-dashboard .ledger-feed-composer textarea').evaluate(el=>parseFloat(getComputedStyle(el).fontSize))
+    check(size>=16,'Dashboard composer uses iPhone-safe text size')
+  }
   const butler=page.locator('.ask-dock-fab')
   await butler.waitFor({state:'visible',timeout:30000})
   check(await butler.count()===1,'exactly one floating Ask Intros Butler is present')
@@ -127,6 +134,17 @@ try {
   });
   check(reachability.lastReachable,'last contact row can scroll into the content viewport')
   check(!reachability.needsScroll||reachability.scroll>0,'long CRM directory has a working scroll pane')
+  if(vp.width<=767){
+    await page.locator('.ledger-directory-search input').focus()
+    // Programmatic navigation keeps the old input focused until the new view mounts,
+    // reproducing the iOS zoom case without the browser pre-focusing a nav button.
+    await page.locator('.ledger-native-bottom').getByRole('button',{name:'Dashboard',exact:true}).evaluate(el=>el.click())
+    await page.locator('.ledger-dashboard').waitFor({state:'visible'})
+    check(await page.evaluate(()=>!document.activeElement?.matches('input,textarea,select,[contenteditable="true"]')),
+      'Returning to Dashboard releases input focus instead of zooming')
+    await page.waitForFunction(()=>document.getElementById('aetheris-workspace-content')?.scrollTop===0)
+    check(true,'Dashboard navigation restores the page top')
+  }
   check(!errors.length,'no unhandled JavaScript errors in demo')
   await page.close()
  }

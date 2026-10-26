@@ -166,7 +166,17 @@ export default function App({ mode = 'demo', executiveAction, initialPage, initi
   useEffect(() => { if (mode === 'live') void recordVisit(); }, [mode]);
 
   // Navigation router — only the right-hand content swaps; the shell stays mounted.
+  // A returning Dashboard must not inherit a focused input from Messages,
+  // Search or a feed composer: iOS Safari zooms the viewport around that field.
+  const releaseDashboardInputFocus = () => {
+    const focused = document.activeElement;
+    if (focused?.matches('input, textarea, select, [contenteditable="true"]')) {
+      (focused as HTMLElement).blur();
+    }
+  };
   const handleNavigate = (page: ActivePage, memberId?: string) => {
+    const openingDashboard = page === 'home' && !memberId;
+    if (openingDashboard) releaseDashboardInputFocus();
     if (memberId) {
       setSelectedProfileId(memberId);
       setActivePage('profile');
@@ -174,6 +184,7 @@ export default function App({ mode = 'demo', executiveAction, initialPage, initi
       setActivePage(page);
     }
     requestAnimationFrame(() => {
+      if (openingDashboard) releaseDashboardInputFocus();
       document.getElementById('aetheris-workspace-content')?.scrollTo({ top: 0 });
     });
   };
