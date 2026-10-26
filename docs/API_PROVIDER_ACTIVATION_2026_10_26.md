@@ -3,15 +3,15 @@
 Project: original Ask Intros, not the remix. Deployment through GitHub main, never
 the Lovable editor/chat to spend credits. This file contains **no credentials**.
 
-## Key incident and immediate action
+## Credential hygiene before activation
 
-A user shared what appear to be live OpenAI, ElevenLabs, RocketReach and other
-provider keys in conversation text. Assume those secrets may have been exposed.
-Revoke/rotate the originals at each provider before adding anything to production.
-Don't copy chat content or old keys into a repository, ticket, log, build output,
-localStorage, browser-visible `VITE_` variable, screenshots or project knowledge.
-For the other unlabeled historical tokens and OAuth IDs, first identify their
-issuer and revoke or replace any credential that still works.
+Any credential previously pasted into a chat, issue, log or other non-secret
+channel must be treated as exposed and revoked/rotated at the issuing provider
+before production use. Create fresh, least-privileged project credentials.
+Don't copy credential values into a repository, ticket, log, build output,
+localStorage, browser-visible `VITE_` variable, screenshot or project knowledge.
+Identify the issuing provider for old unlabelled tokens and OAuth credentials
+before deciding whether they still require replacement.
 
 No connected Lovable action currently supports writing or inspecting the project's
 secret values. **The authorized project owner must enter replacement keys in the
