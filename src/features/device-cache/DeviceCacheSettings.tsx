@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { HardDriveDownload, RefreshCw, ShieldCheck } from 'lucide-react';
 import { useDeviceCache } from './DeviceCacheProvider';
 
@@ -8,9 +8,11 @@ export function DeviceCacheSettings() {
   const [draft, setDraft] = useState('');
   const [hydrated, setHydrated] = useState(false);
   const [message, setMessage] = useState('');
+  const lastSaved = useRef<string | null>(null);
 
   // Never display one member's draft after a different member signs in.
   useEffect(() => {
+    lastSaved.current = null;
     setDraft(''); setHydrated(false); setMessage('');
   }, [device?.accountId]);
 
@@ -19,15 +21,16 @@ export function DeviceCacheSettings() {
     const cached = device.warm?.slices.drafts?.payload;
     const value = cached && typeof cached === 'object' && !Array.isArray(cached)
       ? (cached as Record<string, unknown>)['privateWorkingDraft'] : null;
-    if (typeof value === 'string') setDraft(value);
+    if (typeof value === 'string') { setDraft(value); lastSaved.current = value; }
+    else lastSaved.current = '';
     setHydrated(true);
   }, [device?.ready, device?.warm, hydrated]);
 
   useEffect(() => {
-    if (!hydrated || !device?.ready || !device.save) return;
+    if (!hydrated || !device?.ready || !device.save || lastSaved.current === draft) return;
     const timer = window.setTimeout(() => {
       void device.save('drafts', { privateWorkingDraft: draft })
-        .then(() => setMessage('Saved encrypted on this device.'))
+        .then(() => { lastSaved.current = draft; setMessage('Saved encrypted on this device.'); })
         .catch((error: unknown) => setMessage(error instanceof Error ? error.message : 'Could not save private draft.'));
     }, 900);
     return () => window.clearTimeout(timer);
