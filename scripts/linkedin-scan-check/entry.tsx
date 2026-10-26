@@ -20,7 +20,7 @@ function ContactForm() {
 function Page() {
   return <div style={{ padding: 24, minHeight: '100vh', background: '#07090C', color: '#F2EEE6', display: 'grid', gap: 24, maxWidth: 980 }}>
     <div id="profile">
-      <LinkedInScanPanel keys={PROFILE_KEYS} current={CURRENT} demo={false} heading="Fill your profile from LinkedIn"
+      <LinkedInScanPanel keys={PROFILE_KEYS} current={CURRENT} demo={false} allowIndexedUrl heading="Fill your profile from LinkedIn"
         intro="Review every field." applyLabel="Apply to my profile" onApply={saveProfileScan} />
     </div>
     <ContactForm />
