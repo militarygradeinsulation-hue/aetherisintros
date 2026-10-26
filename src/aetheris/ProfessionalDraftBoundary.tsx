@@ -9,7 +9,8 @@ import './professional-drafts.css'
  * adapter with the corresponding permissions is activated.
  */
 const PRIVATE_PLANNERS = new Set([
-  'passport', 'capital', 'expertise', 'talent', 'intelrooms', 'presence',
+  // 'passport' is server-backed (create/revoke via owner-scoped policy), so it stays interactive.
+  'capital', 'expertise', 'talent', 'intelrooms', 'presence',
   'permission', 'vault', 'knowledgeassets',
 ])
 
