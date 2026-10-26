@@ -120,9 +120,21 @@ let managedAudioSource: AudioBufferSourceNode | null = null
  * A mobile autoplay block must not force another paid TTS request. */
 let pendingManagedAudio: { blob: Blob; run: number } | null = null
 
+/** Safari on iPhone can route audio into the quiet receiver after microphone
+ * capture. Request playback routing when Butler reads, and mic routing only
+ * while listening. This API is optional; other browsers keep their defaults. */
+function setMobileAudioSession(mode: 'playback' | 'play-and-record') {
+  if (typeof navigator === 'undefined') return
+  try {
+    const session = (navigator as Navigator & { audioSession?: { type: string } }).audioSession
+    if (session && session.type !== mode) session.type = mode
+  } catch { /* AudioSession is not supported or not writable on this device. */ }
+}
+
 export function unlockAudio() {
   if (typeof window === 'undefined' || readVoiceSettings().voiceName !== 'intros-managed') return
   try {
+    setMobileAudioSession('playback')
     const AudioCtor = window.AudioContext
       ?? (window as Window & { webkitAudioContext?: typeof AudioContext }).webkitAudioContext
     if (!AudioCtor) return
@@ -233,6 +245,7 @@ function speakWithDevice(text: string, run: number) {
     announce()
     return
   }
+  setMobileAudioSession('playback')
   const utterance = new SpeechSynthesisUtterance(text)
   const voice = chosenVoice() ?? bestVoice()
   if (voice) { utterance.voice = voice; utterance.lang = voice.lang }
@@ -272,6 +285,7 @@ function speakWithDevice(text: string, run: number) {
 async function playManagedAudio(blob: Blob, run: number): Promise<void> {
   if (run !== token) return
   stopActiveAudio()
+  setMobileAudioSession('playback')
   const ctx = managedAudioContext
   if (ctx) {
     try {
@@ -628,6 +642,7 @@ export function useDictation({ onFinal, keepOpen = false, transcribe }: { onFina
     if(retryTimer.current)clearTimeout(retryTimer.current)
     void fallback.current?.stop();fallback.current=null
     microphone.current?.getTracks().forEach(t=>t.stop());microphone.current=null
+    setMobileAudioSession('playback')
     setListening(false)
     setInterim('')
     try { recognition.current?.stop() } catch { /* already stopped */ }
@@ -637,6 +652,7 @@ export function useDictation({ onFinal, keepOpen = false, transcribe }: { onFina
     const run=++epoch.current
     try {
       if(!transcriber.current||!recordingSupported())throw new Error('Voice recognition is unavailable. Please type your message.')
+      setMobileAudioSession('play-and-record')
       setInterim('Connecting microphone…')
       const stream=await navigator.mediaDevices.getUserMedia({audio:true})
       if(run!==epoch.current||!wanted.current){stream.getTracks().forEach(t=>t.stop());return}
@@ -667,6 +683,7 @@ export function useDictation({ onFinal, keepOpen = false, transcribe }: { onFina
     setError('')
     if (recognition.current) { try { recognition.current.abort() } catch { /* ignore */ } }
     const rec = new Ctor()
+    setMobileAudioSession('play-and-record')
     recognition.current = rec
     rec.continuous = true
     rec.interimResults = true
