@@ -687,6 +687,13 @@
       "when": 1792963499689,
       "tag": "0098_evidence_loop",
       "breakpoints": true
+    },
+    {
+      "idx": 99,
+      "version": "7",
+      "when": 1793044150641,
+      "tag": "0099_passport_owner_revocation",
+      "breakpoints": true
     }
   ]
 }
