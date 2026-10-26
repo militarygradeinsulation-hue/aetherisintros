@@ -139,6 +139,17 @@ jobs:
         run: bun install --frozen-lockfile
       - name: Install Chromium
         run: npx playwright install --with-deps chromium
+      - name: Mobile notification panel containment and readability
+        env:
+          PLAYWRIGHT_MODULE: ${{ github.workspace }}/node_modules/playwright/index.mjs
+          NOTIFICATION_SCREENSHOTS: notification-screenshots
+        run: node scripts/notification-popover-check/run.mjs
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: notification-popover-phone-screens
+          path: notification-screenshots
+          if-no-files-found: ignore
       - name: Architect across member pages (light and dark browser)
         env:
           PLAYWRIGHT_MODULE: ${{ github.workspace }}/node_modules/playwright/index.mjs

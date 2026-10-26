@@ -3,11 +3,14 @@
  * triggers, see drizzle/migrations/0026) and a short list. Refreshes on an interval and when
  * the tab regains focus; opening an item marks it read.
  */
-import { useCallback, useEffect, useRef, useState } from 'react'
-import { Bell } from 'lucide-react'
+import { useCallback, useEffect, useId, useRef, useState } from 'react'
+import { createPortal } from 'react-dom'
+import { Bell, X } from 'lucide-react'
 
 import { supabase } from '@/integrations/supabase/client'
 import { PushSettings } from './push-ui'
+import { notificationPanelBounds, type NotificationPanelBounds } from './notification-placement'
+import './notification-popover.css'
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 const db = supabase as any
@@ -41,6 +44,11 @@ export function LiveNotificationsBell({ onOpen }: { onOpen: (destination: Return
   const [unread, setUnread] = useState(0)
   const [open, setOpen] = useState(false)
   const ref = useRef<HTMLDivElement>(null)
+  const buttonRef = useRef<HTMLButtonElement>(null)
+  const panelRef = useRef<HTMLDivElement>(null)
+  const popupId = useId()
+  const [bounds, setBounds] = useState<NotificationPanelBounds | null>(null)
+  const focusOnOpen = useRef(false)
 
   const load = useCallback(async () => {
     const { data: auth } = await supabase.auth.getUser()
@@ -62,13 +70,48 @@ export function LiveNotificationsBell({ onOpen }: { onOpen: (destination: Return
   }, [load])
 
   useEffect(() => {
-    if (!open) return
-    const close = (e: MouseEvent) => { if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false) }
-    const esc = (e: KeyboardEvent) => { if (e.key === 'Escape') setOpen(false) }
-    document.addEventListener('mousedown', close)
+    if (!open) { focusOnOpen.current = false; return }
+    const reposition = () => {
+      if (!buttonRef.current) return
+      const viewport = window.visualViewport
+      setBounds(notificationPanelBounds(buttonRef.current.getBoundingClientRect(), {
+        width: viewport?.width ?? window.innerWidth,
+        height: viewport?.height ?? window.innerHeight,
+        offsetLeft: viewport?.offsetLeft,
+        offsetTop: viewport?.offsetTop,
+      }))
+    }
+    const closeOutside = (e: PointerEvent) => {
+      const target = e.target
+      if (!(target instanceof Node)) return
+      if (!ref.current?.contains(target) && !panelRef.current?.contains(target)) setOpen(false)
+    }
+    const esc = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') { setOpen(false); buttonRef.current?.focus() }
+    }
+    reposition()
+    document.addEventListener('pointerdown', closeOutside)
     document.addEventListener('keydown', esc)
-    return () => { document.removeEventListener('mousedown', close); document.removeEventListener('keydown', esc) }
+    window.addEventListener('resize', reposition)
+    window.addEventListener('scroll', reposition, true)
+    window.visualViewport?.addEventListener('resize', reposition)
+    window.visualViewport?.addEventListener('scroll', reposition)
+    return () => {
+      document.removeEventListener('pointerdown', closeOutside)
+      document.removeEventListener('keydown', esc)
+      window.removeEventListener('resize', reposition)
+      window.removeEventListener('scroll', reposition, true)
+      window.visualViewport?.removeEventListener('resize', reposition)
+      window.visualViewport?.removeEventListener('scroll', reposition)
+    }
   }, [open])
+
+  useEffect(() => {
+    if (open && bounds && !focusOnOpen.current) {
+      focusOnOpen.current = true
+      panelRef.current?.focus({ preventScroll: true })
+    }
+  }, [open, bounds])
 
   const markRead = async (ids: string[] | null) => {
     await db.rpc('mark_notifications_read', { p_ids: ids })
@@ -82,18 +125,34 @@ export function LiveNotificationsBell({ onOpen }: { onOpen: (destination: Return
   }
 
   return <div className="live-bell" ref={ref}>
-    <button type="button" className="live-bell-btn" aria-label={unread ? `Notifications, ${unread} unread` : 'Notifications'} aria-expanded={open} onClick={() => setOpen(o => !o)}>
+    <button type="button" ref={buttonRef} className="live-bell-btn"
+      aria-label={unread ? `Notifications, ${unread} unread` : 'Notifications'}
+      aria-haspopup="dialog" aria-controls={open ? popupId : undefined} aria-expanded={open}
+      onClick={() => { setBounds(null); setOpen(o => !o) }}>
       <Bell size={16} aria-hidden />
       {unread > 0 && <span className="live-bell-count">{unread > 9 ? '9+' : unread}</span>}
     </button>
-    {open && <div className="live-bell-panel" role="dialog" aria-label="Notifications">
-      <header><b>Notifications</b>{unread > 0 && <button type="button" onClick={() => void markRead(null)}>Mark all read</button>}</header>
-      {items.length
-        ? <ul>{items.map(n => <li key={n.id}><button type="button" className={n.read ? '' : 'unread'} onClick={() => choose(n)}>
-          <span>{n.text}</span><small>{ageLabel(n.createdAt)}</small>
-        </button></li>)}</ul>
-        : <p>You're caught up. Introduction requests and acceptances will appear here.</p>}
-      <footer className="live-bell-push"><PushSettings compact /></footer>
-    </div>}
+    {open && bounds && createPortal(
+      <div id={popupId} ref={panelRef} className="live-bell-panel"
+        style={{ left: bounds.left, top: bounds.top, width: bounds.width, maxHeight: bounds.maxHeight }}
+        role="dialog" aria-label="Notifications" tabIndex={-1}>
+        <header>
+          <b>Notifications</b>
+          <div className="live-bell-panel-actions">
+            {unread > 0 && <button type="button" onClick={() => void markRead(null)}>Mark all read</button>}
+            <button type="button" aria-label="Close notifications" onClick={() => { setOpen(false); buttonRef.current?.focus() }}>
+              <X size={18} aria-hidden />
+            </button>
+          </div>
+        </header>
+        {items.length
+          ? <ul>{items.map(n => <li key={n.id}><button type="button" className={n.read ? '' : 'unread'} onClick={() => choose(n)}>
+            <span>{n.text}</span><small>{ageLabel(n.createdAt)}</small>
+          </button></li>)}</ul>
+          : <p>You're caught up. Introduction requests and acceptances will appear here.</p>}
+        <footer className="live-bell-push"><PushSettings compact /></footer>
+      </div>,
+      document.body
+    )}
   </div>
 }

@@ -1,0 +1,132 @@
+/* Live notification popover is portaled to document.body and positioned in
+   visual-viewport coordinates, so transformed and narrow header cells cannot
+   clip its left edge on iPhone. Desktop stays aligned to the bell. */
+body .live-bell-panel {
+  position: fixed;
+  /* Override the legacy bell-anchored right:0 to avoid an overconstrained box. */
+  right: auto;
+  z-index: 12000;
+  box-sizing: border-box;
+  min-width: 0;
+  margin: 0;
+  padding: 8px;
+  overflow-x: hidden;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+  background: var(--menu-bg, #0e1116);
+  color: var(--menu-ink, #f2eee6);
+  border: 1px solid var(--menu-line, rgba(255,255,255,.14));
+  border-radius: 14px;
+  box-shadow: 0 18px 48px rgba(0,0,0,.58);
+}
+body .live-bell-panel:focus { outline: none; }
+body .live-bell-panel header {
+  position: sticky;
+  top: -8px;
+  z-index: 1;
+  display: flex;
+  flex-wrap: nowrap;
+  gap: 8px;
+  align-items: center;
+  justify-content: space-between;
+  min-width: 0;
+  padding: 6px 8px;
+  background: var(--menu-bg, #0e1116);
+  border-bottom: 1px solid var(--menu-line, rgba(255,255,255,.14));
+}
+body .live-bell-panel header b {
+  min-width: 0;
+  font-size: 14px;
+  overflow-wrap: anywhere;
+}
+body .live-bell-panel .live-bell-panel-actions {
+  display: flex;
+  flex: none;
+  align-items: center;
+  gap: 5px;
+}
+body .live-bell-panel .live-bell-panel-actions button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  padding: 0 8px;
+  white-space: nowrap;
+  background: transparent;
+  color: var(--menu-ink, #f2eee6);
+  border: 0;
+  border-radius: 8px;
+  cursor: pointer;
+}
+body .live-bell-panel .live-bell-panel-actions button:last-child {
+  width: 44px;
+  padding: 0;
+}
+body .live-bell-panel .live-bell-panel-actions button:hover,
+body .live-bell-panel .live-bell-panel-actions button:focus-visible {
+  background: var(--menu-hover, rgba(245,39,39,.14));
+}
+body .live-bell-panel button:focus-visible {
+  outline: 2px solid #ef4444;
+  outline-offset: 2px;
+}
+body .live-bell-panel ul,
+body .live-bell-panel li,
+body .live-bell-panel footer {
+  min-width: 0;
+  max-width: 100%;
+}
+body .live-bell-panel li button {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: start;
+  gap: 12px;
+  min-height: 44px;
+  width: 100%;
+  white-space: normal;
+}
+body .live-bell-panel li button span {
+  min-width: 0;
+  overflow-wrap: anywhere;
+  white-space: normal;
+  line-height: 1.5;
+}
+body .live-bell-panel li button small {
+  align-self: start;
+  white-space: nowrap;
+  padding-top: 3px;
+}
+body .live-bell-panel .push-settings.compact {
+  width: 100%;
+  min-width: 0;
+  margin: 0;
+  padding: 12px 8px 4px;
+}
+body .live-bell-panel .push-settings.compact p {
+  display: flex;
+  gap: 8px;
+  align-items: flex-start;
+  min-width: 0;
+  line-height: 1.55;
+}
+body .live-bell-panel .push-settings.compact p > span {
+  display: block;
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+body .live-bell-panel .push-actions {
+  min-width: 0;
+  max-width: 100%;
+  flex-wrap: wrap;
+}
+body .live-bell-panel .push-actions button {
+  max-width: 100%;
+  white-space: normal;
+  min-height: 44px;
+}
+@media (max-width: 640px) {
+  body .live-bell-panel { border-radius: 12px; }
+  body .live-bell-panel li button { font-size: 13px; }
+}

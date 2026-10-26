@@ -26,10 +26,10 @@ export function PushSettings({ compact = false }: { compact?: boolean }) {
   }
 
   return <div className={`push-settings${compact ? ' compact' : ''}`}>
-    {state === 'on' && <p><BellRing size={14} aria-hidden /> Notifications are on for this device.</p>}
-    {state === 'off' && <p><BellRing size={14} aria-hidden /> Get introductions, replies and meeting invites on this device as they happen.</p>}
-    {state === 'blocked' && <p><BellRing size={14} aria-hidden /> Notifications are blocked for this site. Allow them in your browser's site settings, then come back.</p>}
-    {state === 'ios-install-first' && <p><Smartphone size={14} aria-hidden /> On iPhone: tap <b>Share</b>, then <b>Add to Home Screen</b>. Open Ask Intros from your Home Screen to turn on notifications.</p>}
+    {state === 'on' && <p><BellRing size={14} aria-hidden /><span>Notifications are on for this device.</span></p>}
+    {state === 'off' && <p><BellRing size={14} aria-hidden /><span>Get introductions, replies and meeting invites on this device as they happen.</span></p>}
+    {state === 'blocked' && <p><BellRing size={14} aria-hidden /><span>Notifications are blocked for this site. Allow them in your browser's site settings, then come back.</span></p>}
+    {state === 'ios-install-first' && <p><Smartphone size={14} aria-hidden /><span>On iPhone: tap <b>Share</b>, then <b>Add to Home Screen</b>. Open Ask Intros from your Home Screen to turn on notifications.</span></p>}
     {state === 'unsupported' && !compact && <p>This browser cannot show notifications.</p>}
     <div className="push-actions">
       {(state === 'on' || state === 'off') && <button type="button" className={state === 'on' ? 'push-btn quiet' : 'push-btn'} disabled={busy} onClick={() => void toggle()}>
