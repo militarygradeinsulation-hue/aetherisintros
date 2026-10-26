@@ -101,6 +101,11 @@
 .butler-orb.butler-chat-robot {display:block;width:84px;height:84px;flex:0 0 84px}
 .butler-orb[data-butler-avatar="robot"] .butler-orb-fallback {
   inset:12% 20% 8%!important;width:60%!important;height:80%!important;
+  transform:translate3d(var(--butler-look-x,0px),var(--butler-look-y,0px),0) rotate(var(--butler-look-angle,0deg));
+  transition:transform 140ms ease-out;
+}
+@media (prefers-reduced-motion: reduce) {
+  .butler-orb[data-butler-avatar="robot"] .butler-orb-fallback {transform:none;transition:none}
 }
 body .butler-conversation .ask-dock-drag {min-height:96px;gap:10px}
 body .butler-conversation .ask-dock-drag > div {min-width:0;flex:1}
@@ -114,7 +119,12 @@ body .butler-conversation .ask-dock-drag > div {min-width:0;flex:1}
    Inside the same layer because layered !important outranks unlayered rules. */
 @layer bridge-social-reference {
   :root[data-theme] body .ix-root.ledger-native-app[data-experience] > .ix-assistant button.ask-dock-fab .butler-orb.butler-fab-robot {
-    width:96px!important;height:96px!important;flex:0 0 96px!important;
+    width:116px!important;height:116px!important;flex:0 0 116px!important;
+  }
+  @media (max-width: 767px) {
+    :root[data-theme] body .ix-root.ledger-native-app[data-experience] > .ix-assistant button.ask-dock-fab .butler-orb.butler-fab-robot {
+      width:96px!important;height:96px!important;flex:0 0 96px!important;
+    }
   }
   :root[data-theme] body .ix-root.ledger-native-app[data-experience] > .ix-assistant button.ask-dock-fab .butler-orb:has(canvas) .butler-orb-fallback {
     opacity:0!important;visibility:hidden!important;
