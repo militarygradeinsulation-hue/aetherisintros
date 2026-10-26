@@ -47,20 +47,29 @@ export function ButlerAvatar({ robot = false, className = '', view }: { robot?: 
     } catch { setReady(false); }
 
     const button = host.current?.closest('button');
-    const move = (event: PointerEvent) => {
-      if (event.pointerType !== 'mouse' && event.pointerType !== 'pen') return;
+    const track = (clientX: number, clientY: number) => {
       const rect = (button ?? host.current)?.getBoundingClientRect();
       const cx = rect ? rect.left + rect.width / 2 : window.innerWidth / 2;
       const cy = rect ? rect.top + rect.height / 2 : window.innerHeight / 2;
-      const x = (event.clientX - cx) / Math.max(window.innerWidth * 0.48, 1);
-      const y = (cy - event.clientY) / Math.max(window.innerHeight * 0.48, 1);
+      const x = (clientX - cx) / Math.max(window.innerWidth * 0.48, 1);
+      const y = (cy - clientY) / Math.max(window.innerHeight * 0.48, 1);
       // Imperative ref changes avoid 60 React renders/second as the mouse moves.
       pointer.current = [Math.max(-1, Math.min(1, x)), Math.max(-1, Math.min(1, y))];
+    };
+    const move = (event: PointerEvent) => track(event.clientX, event.clientY);
+    // Browsers may cancel pointer movement once a finger starts scrolling.
+    // Passive touch listeners keep tracking that gesture without blocking it.
+    const touch = (event: TouchEvent) => {
+      const finger = event.touches[0];
+      if (finger) track(finger.clientX, finger.clientY);
     };
     const enter = () => setHovered(true);
     const leave = () => setHovered(false);
     const reset = () => { pointer.current = [0, 0]; setHovered(false); };
     window.addEventListener('pointermove', move, { passive: true });
+    window.addEventListener('pointerdown', move, { passive: true });
+    window.addEventListener('touchstart', touch, { passive: true });
+    window.addEventListener('touchmove', touch, { passive: true });
     window.addEventListener('blur', reset);
     button?.addEventListener('pointerenter', enter);
     button?.addEventListener('pointerleave', leave);
@@ -70,6 +79,9 @@ export function ButlerAvatar({ robot = false, className = '', view }: { robot?: 
       motion.removeEventListener('change', syncMotion);
       document.removeEventListener('visibilitychange', syncVisibility);
       window.removeEventListener('pointermove', move);
+      window.removeEventListener('pointerdown', move);
+      window.removeEventListener('touchstart', touch);
+      window.removeEventListener('touchmove', touch);
       window.removeEventListener('blur', reset);
       button?.removeEventListener('pointerenter', enter);
       button?.removeEventListener('pointerleave', leave);
