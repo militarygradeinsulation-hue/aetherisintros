@@ -12,7 +12,9 @@
     "build:dev": "vite build --mode development",
     "preview": "vite preview",
     "lint": "eslint .",
-    "format": "prettier --write ."
+    "format": "prettier --write .",
+    "test:device-cache": "vitest run src/features/device-cache/deviceCache.test.ts",
+    "test:device-cache-db": "node scripts/device-cache-check/member_context.pglite.mjs"
   },
   "overrides": {
     "rolldown": "1.2.1",
