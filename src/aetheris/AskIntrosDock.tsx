@@ -31,7 +31,7 @@ import { noteFailedResult, noteSavedResult } from './quick-note'
 import { placeMenu } from './quick-menu'
 import {
   isStopPhrase, readAloud, readerSnapshot, stopReading, useDictation, useReader, useVoiceSettings, voiceOutputSupported,
-  unlockAudio,
+  unlockAudio, playPendingButlerAudio, speechSupported,
 } from './voice'
 function AetherisGlyph({ size = 18 }: { size?: number }) {
   return <AskIntrosMark size={size} />
@@ -238,7 +238,7 @@ function AskIntrosDockInner({ page, peopleNames, memberName, briefing, contextPa
   const sending = useRef(false)
   const graphInputs = useGraphInputs()
 
-  useEffect(() => { listRef.current?.scrollTo({ top: listRef.current.scrollHeight }) }, [turns, open])
+  useEffect(() => { listRef.current?.scrollTo({ top: listRef.current.scrollHeight }) }, [turns, visuals, open])
   // Where the panel and the floating button sit; members can drag both anywhere.
   const [pos, setPos] = useState<Point | null>(() => readPoint(POS_KEY))
   const [fabPos, setFabPos] = useState<Point | null>(() => readPoint(FAB_KEY))
@@ -548,7 +548,21 @@ function AskIntrosDockInner({ page, peopleNames, memberName, briefing, contextPa
   }, [open, voiceAsk]) // eslint-disable-line react-hooks/exhaustive-deps
 
   const [expanded,setExpanded]=useState(false)
-  const status = busy ? 'Thinking' : reader.state !== 'idle' ? 'Speaking' : dictation.listening ? 'Listening' : ''
+  const status = busy ? 'Thinking' : reader.state === 'paused' ? 'Ready to play' : reader.state === 'speaking' ? 'Speaking' : dictation.listening ? 'Listening' : ''
+  const latestButlerReply = turns.slice().reverse().find(turn => turn.role === 'assistant' && turn.content.trim())?.content ?? 'I’m your personal butler. You can ask me anything.'
+  const replayButler = () => {
+    // Starting in this tap is crucial on mobile Safari, and the selected
+    // ElevenLabs voice must not silently be replaced with another voice.
+    stopReading()
+    unlockAudio()
+    setVoice({ speakReplies: true, readAloud: true })
+    readAloud([latestButlerReply.slice(0, 900)], 'Butler reply')
+  }
+  const usePhoneVoice = () => {
+    stopReading()
+    setVoice({ voiceName: 'device-default', speakReplies: true, readAloud: true })
+    readAloud([latestButlerReply.slice(0, 900)], 'Butler reply')
+  }
 
   return <>
     <button ref={fabRef} className={`ask-dock-fab ${open ? 'active' : ''}`} aria-label="Ask Intros" aria-expanded={open} title="Ask Intros · drag to move"
@@ -567,7 +581,7 @@ function AskIntrosDockInner({ page, peopleNames, memberName, briefing, contextPa
         {voiceOutputSupported() && <button className={`icon-btn ${voice.speakReplies ? 'active' : ''}`}
           aria-label={voice.speakReplies ? 'Stop speaking replies' : 'Speak replies out loud'}
           title={voice.speakReplies ? 'Speaking replies out loud' : 'Replies are silent'}
-          onClick={() => { setVoice({ speakReplies: !voice.speakReplies }); if (voice.speakReplies) stopReading() }}>
+          onClick={() => { if (voice.speakReplies) stopReading(); else unlockAudio(); setVoice({ speakReplies: !voice.speakReplies }) }}>
           {voice.speakReplies ? <Volume2 size={15} /> : <VolumeX size={15} />}</button>}
         {pos && <button className="icon-btn" aria-label="Move Ask Intros back to the corner" title="Back to the corner" onClick={() => { setPos(null); writePoint(POS_KEY, null) }}>↘</button>}
         <button className="icon-btn" aria-label={expanded?'Compact conversation':'Expand conversation'} onClick={()=>setExpanded(v=>!v)}>{expanded?'↙':'↗'}</button>
@@ -596,6 +610,13 @@ function AskIntrosDockInner({ page, peopleNames, memberName, briefing, contextPa
         </button>
         {status && <span className={`ask-dock-status ${status.toLowerCase()}`}><i />{status}…</span>}
         {dictation.interim && <em>{dictation.interim}</em>}
+      </div>}
+
+      {voiceOutputSupported() && <div className="butler-audio-actions" role="group" aria-label="Butler sound controls">
+        {reader.state === 'paused' && <button type="button" className="butler-play-reply" onClick={playPendingButlerAudio}><Volume2 size={14} /> Play reply</button>}
+        <button type="button" onClick={replayButler}><Volume2 size={14} /> Hear last reply</button>
+        {reader.problem && voice.voiceName === 'intros-managed' && speechSupported() &&
+          <button type="button" onClick={usePhoneVoice}>Use phone voice instead</button>}
       </div>}
 
       {pendingApproval && <p role="status" className="butler-approval-notice">
