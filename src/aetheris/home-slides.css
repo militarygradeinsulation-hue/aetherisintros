@@ -67,8 +67,13 @@
 }
 
 @media (max-width: 760px) {
+  /* Let the actual logo/control height reserve space, including after fonts load. */
+  :root .ael.ael-compact .ael-header {
+    position: relative;
+    inset: auto;
+  }
   :root .ael.ael-compact .ael-hero--carousel {
-    padding-top: 110px;
+    padding-top: 20px;
   }
   .ael-hero--carousel .ael-hero-slides {
     height: 62svh;
