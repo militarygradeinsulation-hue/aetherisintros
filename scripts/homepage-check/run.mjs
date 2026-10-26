@@ -107,6 +107,9 @@ try {
           cinematicCTA: rect('.ask-cine-cta'),
           heroTitle: rect('#ael-hero-title'),
           heroActions: rect('.ael-hero-actions'),
+          heroSlides: rect('.ael-hero-slides'),
+          butlerRobot: rect('.butler-home-robot'),
+          rightMarketingPanels: root.querySelectorAll('.ael-carousel-options').length,
           heroJoin: rect('.ael-hero-actions a[href^="/auth?"][href*="mode=signup"]'),
           headerActions: rect('.ael-header-actions'),
           logo: rect('.ael-header .ask-intros-lockup'),
@@ -144,6 +147,20 @@ try {
         'headline, primary actions and footer all render')
       assert(m.carousel.total === 10 && m.carousel.controls === false,
         'ten member pictures rotate in the hero with no visible controls')
+      assert(m.rightMarketingPanels === 0, 'unused right marketing column no longer squeezes the imagery')
+      assert(Boolean(m.heroSlides && m.heroSlides.width >= viewport.width * (viewport.width >= 900 ? 0.55 : 0.94)),
+        'large images occupy the majority of the available carousel space')
+      assert(Boolean(m.butlerRobot && m.butlerRobot.width >= (viewport.width >= 900 ? 200 : 115)),
+        'interactive robot is prominent at this breakpoint')
+      const butlerTrigger = page.getByRole('button', { name: 'Ask Butler for an idea about Ask Intros' })
+      const tipBefore = await page.locator('#ael-butler-idea-message').innerText()
+      await butlerTrigger.click()
+      const tipAfter = await page.locator('#ael-butler-idea-message').innerText()
+      assert(tipBefore !== tipAfter && tipAfter.includes('Start with a specific need'),
+        'clicking Butler shows a useful introduction tip')
+      await butlerTrigger.click()
+      assert((await page.locator('#ael-butler-idea-message').innerText()).includes('Before a meeting'),
+        'repeated clicks advance the tips without navigating away')
       assert(m.hero && m.hero.height <= Math.max(viewport.height * 1.10, 760),
         'hero fits near the first viewport')
       assert(['cinematic-experience'].every(id => m.links[id]),
