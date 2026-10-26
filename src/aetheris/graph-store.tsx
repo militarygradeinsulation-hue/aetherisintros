@@ -155,9 +155,32 @@ export function GraphProvider({ children }: { children: ReactNode }) {
       async revokeDelegate(id) { if (signedIn) await run(db.from('delegates').update({ status: 'revoked', permissions: [] }).eq('id', id)) },
       async createPassport(p) {
         if (!signedIn) { setError('Sign in with a verified account to create a passport.'); return }
-        await run(db.from('passports').insert({ kind: p.kind, label: p.label, fields: p.fields, selected_ask_id: p.selectedAskId }))
+        setError('')
+        const { data: saved, error: saveError } = await db.from('passports')
+          .insert({ kind: p.kind, label: p.label, fields: p.fields, selected_ask_id: p.selectedAskId })
+          .select('id').single()
+        if (saveError || !saved?.id) {
+          setError(saveError?.message ?? 'Your passport was not saved. Please try again.')
+          return
+        }
+        await refresh()
       },
-      async revokePassport(id) { if (signedIn) await run(db.from('passports').update({ revoked: true }).eq('id', id)) },
+      async revokePassport(id) {
+        if (!signedIn || !userId) {
+          setError('Sign in as the passport owner to revoke a shared link.')
+          return
+        }
+        setError('')
+        // Verify one owned row was actually updated. A zero-row RLS result is NOT success.
+        const { data: revoked, error: revokeError } = await db.from('passports')
+          .update({ revoked: true }).eq('id', id).eq('owner_id', userId)
+          .select('id').maybeSingle()
+        if (revokeError || !revoked?.id) {
+          setError(revokeError?.message ?? 'Revocation was not confirmed. Do not assume the link has stopped working.')
+          return
+        }
+        await refresh()
+      },
       async logEvent(entityType, entityId, event, summary, detail = {}) {
         if (!signedIn) return
         await db.from('entity_events').insert({ entity_type: entityType, entity_id: entityId, event, summary, detail, source: 'ask-intros' })

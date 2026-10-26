@@ -126,6 +126,8 @@ export function WarmReferralPanel() {
   const queryClient = useQueryClient()
   const [activeDialog, setActiveDialog] = useState<ReferralSuggestion | null>(null)
   const [actingId, setActingId] = useState<string | null>(null)
+  const [actionError, setActionError] = useState('')
+  const reportError = (error: unknown) => setActionError(error instanceof Error ? error.message : 'Could not save this referral action. Retry later.')
 
   const getSuggestionsFn = useServerFn(getReferralSuggestions)
   const generateFn = useServerFn(generateReferralSuggestions)
@@ -143,29 +145,37 @@ export function WarmReferralPanel() {
   const generateMutation = useMutation({
     mutationFn: () => generateFn({}),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['warm-referrals'] })
+      setActionError('')
+      void queryClient.invalidateQueries({ queryKey: ['warm-referrals'] })
     },
+    onError: reportError,
   })
 
   async function handleDismiss(id: string) {
+    setActionError('')
     setActingId(id)
     try {
       await dismissFn({ data: { suggestionId: id } })
       queryClient.setQueryData<ReferralSuggestion[]>(['warm-referrals'], prev =>
         (prev ?? []).filter(s => s.id !== id)
       )
+    } catch (error) {
+      reportError(error)
     } finally {
       setActingId(null)
     }
   }
 
   async function handleSnooze(id: string) {
+    setActionError('')
     setActingId(id)
     try {
       await snoozeFn({ data: { suggestionId: id, days: 7 } })
       queryClient.setQueryData<ReferralSuggestion[]>(['warm-referrals'], prev =>
         (prev ?? []).filter(s => s.id !== id)
       )
+    } catch (error) {
+      reportError(error)
     } finally {
       setActingId(null)
     }
@@ -174,6 +184,12 @@ export function WarmReferralPanel() {
   async function handleSendRequest(message: string) {
     if (!activeDialog) return
     const suggestion = activeDialog
+    if (!suggestion.connector_user_id || !suggestion.target_user_id) {
+      setActionError('This path has no confirmed member and connector. Generate a different verified referral before requesting an introduction.')
+      setActiveDialog(null)
+      return
+    }
+    setActionError('')
     setActingId(suggestion.id)
     try {
       await requestFn({
@@ -188,6 +204,8 @@ export function WarmReferralPanel() {
       queryClient.setQueryData<ReferralSuggestion[]>(['warm-referrals'], prev =>
         (prev ?? []).filter(s => s.id !== suggestion.id)
       )
+    } catch (error) {
+      reportError(error)
     } finally {
       setActingId(null)
     }
@@ -215,6 +233,7 @@ export function WarmReferralPanel() {
         </button>
       </div>
 
+      {actionError && <p role="alert" className="wr-error">{actionError}</p>}
       <div className="wr-body">
         {(isLoading || isRefreshing) && (
           <div className="wr-empty">
@@ -260,6 +279,7 @@ export function WarmReferralPanel() {
 }
 
 const STYLES = `
+.wr-error { margin: 12px 16px; padding: 10px 12px; border: 1px solid #B45353; border-radius: 8px; background: #3B2025; color: #FECACA; font-size: 13px; }
 .wr-panel {
   --wr-bg: #0e0f11;
   --wr-surface: #16181c;

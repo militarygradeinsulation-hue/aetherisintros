@@ -165,7 +165,10 @@ try{
     check(await page.locator('[data-arch-page="workspace"]').count()===1,theme+' authenticated tool frame is preserved');
     const focused=page.locator('.ledger-workspace-modules');
     check(JSON.stringify((await focused.locator('button').allTextContents()).map(s=>s.trim()))===JSON.stringify(['CRM','Pipeline']),theme+' CRM area contains only CRM and Pipeline');
-    check(await page.getByRole('button',{name:'Full CRM & operations',exact:true}).count()===0,theme+' unrelated operations switch is hidden');
+    // The test seeds a saved Full CRM preference. CRM must honor it; Pipeline
+    // remains the canonical basic opportunity board, not the operations ledger.
+    await page.getByRole('button',{name:'Back to basic CRM',exact:true}).waitFor({timeout:30000});
+    check(await page.getByRole('button',{name:'Back to basic CRM',exact:true}).count()===1,theme+' saved full CRM preference opens operations');
     await focused.getByRole('button',{name:'Pipeline',exact:true}).click();
     await page.getByRole('heading',{name:'Your opportunity pipeline.',exact:true}).waitFor();
     await page.getByRole('button',{name:'New opportunity',exact:true}).first().click();
@@ -174,8 +177,11 @@ try{
     check(await page.locator('.ops-board').count()===1,theme+' Pipeline opens canonical opportunity board');
     await checkBrand(page,theme+' Pipeline');
     await focused.getByRole('button',{name:'CRM',exact:true}).click();
+    await page.getByRole('button',{name:'Back to basic CRM',exact:true}).waitFor();
+    check(await page.locator('.ops-board').count()===0,theme+' CRM restores saved operations view');
+    await page.getByRole('button',{name:'Back to basic CRM',exact:true}).click();
     await page.getByRole('tablist',{name:'CRM sections'}).waitFor();
-    check(await page.locator('.ops-board').count()===0,theme+' CRM returns to relationship records');
+    check(await page.getByRole('button',{name:'Full CRM & operations',exact:true}).count()===1,theme+' member can switch back to Full CRM');
     for (const destination of ['Dashboard','Network','Ask Intros','Meetings','Deals & Workspaces','Intelligence','My Work','Library']) {
       await sidebar.getByRole('button',{name:destination,exact:true}).click();
       const section=page.locator('.ledger-section-navigation');

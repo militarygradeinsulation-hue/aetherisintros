@@ -115,16 +115,17 @@ Other active members: ${(otherMembers ?? []).map((p: any) => `${p.name} (${p.tit
       })
       suggestions = parseAiSuggestions(rawText)
     } catch {
-      // Fall through to empty suggestions
+      throw new Error('Referral generation is unavailable. No saved suggestions were changed.')
     }
 
     if (suggestions.length === 0) return []
 
     // Clear previous active suggestions for this user
-    await (db as any).from('referral_suggestions')
+    const { error: replaceError } = await (db as any).from('referral_suggestions')
       .update({ status: 'dismissed' })
       .eq('for_user_id', userId)
       .eq('status', 'active')
+    if (replaceError) throw new Error(`Could not prepare referral suggestions: ${replaceError.message}`)
 
     // Match AI names back to real user IDs where possible
     const allProfiles = [...(connectionProfiles ?? []), ...(otherMembers ?? [])] as Array<{ id: string; name: string; title: string; company: string }>
@@ -144,7 +145,8 @@ Other active members: ${(otherMembers ?? []).map((p: any) => `${p.name} (${p.tit
         status: 'active',
       }).select().single()
 
-      if (!error && row) {
+      if (error || !row) throw new Error(`Referral suggestion was not saved: ${error?.message ?? 'No saved record returned'}`)
+      if (row) {
         stored.push({
           ...(row as ReferralSuggestion),
           target_name: s.target_name,
@@ -195,10 +197,12 @@ export const dismissSuggestion = createServerFn({ method: 'POST' })
   .handler(async ({ data, context }) => {
     const db = (context as any).supabase
     const userId: string = (context as any).userId
-    await (db as any).from('referral_suggestions')
+    const { data: updated, error } = await (db as any).from('referral_suggestions')
       .update({ status: 'dismissed' })
       .eq('id', data.suggestionId)
       .eq('for_user_id', userId)
+      .select('id').maybeSingle()
+    if (error || !updated?.id) throw new Error(error?.message ?? 'Dismissal could not be confirmed.')
   })
 
 export const snoozeSuggestion = createServerFn({ method: 'POST' })
@@ -209,10 +213,12 @@ export const snoozeSuggestion = createServerFn({ method: 'POST' })
     const userId: string = (context as any).userId
     const days = data.days ?? 7
     const snoozeUntil = new Date(Date.now() + days * 24 * 60 * 60 * 1000).toISOString()
-    await (db as any).from('referral_suggestions')
+    const { data: updated, error } = await (db as any).from('referral_suggestions')
       .update({ status: 'snoozed', snoozed_until: snoozeUntil })
       .eq('id', data.suggestionId)
       .eq('for_user_id', userId)
+      .select('id').maybeSingle()
+    if (error || !updated?.id) throw new Error(error?.message ?? 'Snooze could not be confirmed.')
   })
 
 export const requestReferral = createServerFn({ method: 'POST' })
@@ -233,10 +239,11 @@ export const requestReferral = createServerFn({ method: 'POST' })
     if (error) throw new Error(error.message)
 
     // Mark the suggestion as acted on
-    await (db as any).from('referral_suggestions')
+    const { error: markedError } = await (db as any).from('referral_suggestions')
       .update({ status: 'acted_on', acted_at: new Date().toISOString() })
       .eq('id', data.suggestionId)
       .eq('for_user_id', userId)
+    if (markedError) throw new Error(`Referral request saved, but its suggestion status could not update: ${markedError.message}`)
 
     return row as ReferralRequest
   })

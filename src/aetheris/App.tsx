@@ -2748,7 +2748,7 @@ function Shell({ startPage, feedOnly = false, assistant = true, crmSection }: { 
       knowledge: <KnowledgePage />,
       boards: <AdvisoryBoardsPage />,
       integrations: <IntegrationsPage />,
-      passport: <><div className="og-stack"><PassportManager /></div><PassportPage /></>,
+      passport: <><div className="og-stack"><PassportManager /></div><ProfessionalDraftBoundary page="passport" onNavigate={target => setPage(target as Page)}><PassportPage /></ProfessionalDraftBoundary></>,
       opportunities: <OpportunitiesPage />,
       deals: <DealsPage />,
       dealrooms: <DealsPage />,
@@ -2776,7 +2776,7 @@ function Shell({ startPage, feedOnly = false, assistant = true, crmSection }: { 
       'marketplace-pilot': <MarketplacePilotPage />,
     }
   const guardedPageNode = Object.fromEntries(Object.entries(pageNode).map(([id, node]) => [id,
-    <ProfessionalDraftBoundary key={id} page={id} onNavigate={target => setPage(target as Page)}>{node}</ProfessionalDraftBoundary>,
+    id === 'passport' ? node : <ProfessionalDraftBoundary key={id} page={id} onNavigate={target => setPage(target as Page)}>{node}</ProfessionalDraftBoundary>,
   ])) as Partial<Record<Page, ReactNode>>
   const hubLabel: Partial<Record<Page, string>> = {
     discover: 'People', opportunities: 'Pipeline', outcomes: 'Forecast', rooms: 'Rooms', deals: 'Deals',
