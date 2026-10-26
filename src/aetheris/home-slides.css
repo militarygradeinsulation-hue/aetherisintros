@@ -254,12 +254,12 @@
   }
 
   :root .ael.ael-compact .ael-hero--carousel .butler-orb.butler-home-robot {
-    width: clamp(140px, 24vw, 210px);
-    height: clamp(140px, 24vw, 210px);
+    width: clamp(140px, 20vw, 172px);
+    height: clamp(140px, 20vw, 172px);
   }
 
   .ael-hero--carousel .ael-hero-slides {
-    height: clamp(460px, 74svh, 790px);
+    height: clamp(420px, 64svh, 740px);
   }
 }
 
