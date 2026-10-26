@@ -191,7 +191,7 @@ Potential targets: ${(otherMembers ?? []).map((p: Profile) => `${p.name} (${p.ti
         status: 'pending',
       }).select('*').single()
       if (error || !row) {
-        throw new Error(`${saved.length} referral suggestion(s) saved, but the next save failed: ${error?.message ?? 'No receipt returned'}`)
+        throw new Error(`${saved.length} referral suggestion(s) already saved. Referral suggestion was not saved: ${error?.message ?? 'No receipt returned'}`)
       }
       const profiles = new Map<string, Profile>([[target.id, target], [connector.id, connector]])
       saved.push(toSuggestion(row, profiles))
@@ -232,7 +232,7 @@ export const dismissSuggestion = createServerFn({ method: 'POST' })
       .update({ status: 'dismissed', dismissed_at: new Date().toISOString() })
       .eq('id', data.suggestionId).eq('for_member_id', userId)
       .select('id').maybeSingle()
-    if (error || !saved?.id) throw new Error(error?.message ?? 'Dismissal was not confirmed.')
+    if (error || !saved?.id) throw new Error(error?.message ?? 'Dismissal could not be confirmed.')
   })
 
 export const snoozeSuggestion = createServerFn({ method: 'POST' })
@@ -252,7 +252,7 @@ export const snoozeSuggestion = createServerFn({ method: 'POST' })
       .update({ status: 'snoozed', context: { ...contextValue, snoozed_until: snoozedUntil } })
       .eq('id', data.suggestionId).eq('for_member_id', userId)
       .select('id').maybeSingle()
-    if (error || !saved?.id) throw new Error(error?.message ?? 'Snooze was not confirmed.')
+    if (error || !saved?.id) throw new Error(error?.message ?? 'Snooze could not be confirmed.')
   })
 
 export const requestReferral = createServerFn({ method: 'POST' })
