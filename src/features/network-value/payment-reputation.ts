@@ -38,7 +38,7 @@ export function paymentTimingSummary(
   const perBusiness = evidence.flatMap(item => {
     if (item.payerBusinessId !== payerBusinessId || item.payerBusinessId === item.payeeBusinessId ||
         item.verification === 'self_reported' || item.status !== 'confirmed' || !item.aggregateConsent ||
-        !item.id || seen.has(item.id) || !item.verifiedAt) return []
+        !item.id || !item.payeeBusinessId || seen.has(item.id) || !item.verifiedAt) return []
     const issued = Date.parse(item.issuedAt)
     const paid = Date.parse(item.paidAt)
     const verified = Date.parse(item.verifiedAt)
