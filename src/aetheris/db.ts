@@ -148,7 +148,7 @@ export async function loadUserGraph(userId: string, strict = false): Promise<Par
     const introStates: Record<string, IntroState> = {}
     for (const i of intros.data ?? []) introStates[i.member_id] = i.status as IntroState
 
-    const memoryRows = memories.data ?? []
+    const memoryRows = (memories.data ?? []).filter(m => m.category !== 'Butler conversations' && !String(m.source ?? '').startsWith('Butler conversation:'))
     return {
       connections: [...top.filter(id => group('connections').includes(id)), ...group('connections').filter(id => !top.includes(id))], follows: group('follows'), saved: group('saved'),
       introStates,
