@@ -190,7 +190,7 @@ export function LinkedInImportPanel({ onApplied, defaultOpen = false }: { onAppl
   }
 
   return <LinkedInScanPanel
-    keys={PROFILE_KEYS} current={current} labels={PROFILE_LABELS} demo={demo}
+    keys={PROFILE_KEYS} current={current} labels={PROFILE_LABELS} demo={demo} allowIndexedUrl={!demo}
     heading="Fill your profile from LinkedIn"
     intro="Your public profile fields are shown to verified members. Your LinkedIn link is shown on your profile."
     applyLabel={demo ? 'Apply to demo profile' : 'Apply to my profile'}
