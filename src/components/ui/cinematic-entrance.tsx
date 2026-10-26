@@ -76,7 +76,7 @@ export function CinematicEntrance({ videoSrc, onComplete }: CinematicEntrancePro
       <h2>Each Connection Matters.</h2><span>ASK INTROS</span>
     </div>
     <div className="ask-cinematic-entrance-progress" aria-hidden="true"><span style={{ transform: `scaleX(${progress})` }} /></div>
-    {ready && <Button className="ask-cinematic-entrance-enter" size="lg" onClick={finish}>Enter Intros <span aria-hidden="true">↗</span></Button>}
+    {ready && <div className="ask-cinematic-entrance-action"><Button className="ask-cinematic-entrance-enter" type="button" size="lg" onClick={finish}>Enter Intros <span aria-hidden="true">↗</span></Button></div>}
     {!ready && <Button className="ask-cinematic-entrance-skip" variant="outline" type="button" onClick={finish}>Skip intro <span aria-hidden="true">↗</span></Button>}
   </div>;
 }
