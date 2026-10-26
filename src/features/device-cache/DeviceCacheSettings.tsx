@@ -9,22 +9,38 @@ export function DeviceCacheSettings() {
   const [hydrated, setHydrated] = useState(false);
   const [message, setMessage] = useState('');
   const lastSaved = useRef<string | null>(null);
+  const lastReadVersion = useRef<string | null>(null);
 
   // Never display one member's draft after a different member signs in.
   useEffect(() => {
-    lastSaved.current = null;
+    lastSaved.current = null; lastReadVersion.current = null;
     setDraft(''); setHydrated(false); setMessage('');
   }, [device?.accountId]);
 
   useEffect(() => {
-    if (!device?.ready || hydrated) return;
-    const cached = device.warm?.slices.drafts?.payload;
+    if (!device?.ready) return;
+    const slice = device.warm?.slices.drafts;
+    const cached = slice?.payload;
     const value = cached && typeof cached === 'object' && !Array.isArray(cached)
       ? (cached as Record<string, unknown>)['privateWorkingDraft'] : null;
-    if (typeof value === 'string') { setDraft(value); lastSaved.current = value; }
-    else lastSaved.current = '';
-    setHydrated(true);
-  }, [device?.ready, device?.warm, hydrated]);
+    const incoming = typeof value === 'string' ? value : '';
+    if (!hydrated) {
+      setDraft(incoming); lastSaved.current = incoming;
+      lastReadVersion.current = slice?.serverUpdatedAt ?? null;
+      setHydrated(true);
+      return;
+    }
+    // A new device starts with empty local data. Accept its first remote pull
+    // unless the member has already started typing an unsent local edit.
+    const version = slice?.serverUpdatedAt ?? null;
+    if (version && version !== lastReadVersion.current) {
+      if (draft === lastSaved.current) {
+        setDraft(incoming);
+        lastSaved.current = incoming;
+      }
+      lastReadVersion.current = version;
+    }
+  }, [device?.ready, device?.warm, hydrated, draft]);
 
   useEffect(() => {
     if (!hydrated || !device?.ready || !device.save || lastSaved.current === draft) return;
