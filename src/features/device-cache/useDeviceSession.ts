@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { DeviceStore, wipeAccount } from './store';
-import { flushOutbox, onSignIn, onSignOut, pullChanges, warmStart, type WarmStart } from './sync';
+import { DeviceStore, wipeAccount, cleanupOtherAccounts } from './store';
+import { flushOutbox, onSignOut, pullChanges, warmStart, type WarmStart } from './sync';
 import { supabaseRemote, type KindHandler } from './supabaseRemote';
 import type { OutboxKind, Remote, Slice } from './types';
 
@@ -99,26 +99,25 @@ export function useDeviceSession(
     setAccountId(userId);
     setWarm(null); setPending(0); setReady(false);
     try {
-      // Start on the device copy; do not wait for the network to paint.
-      const { store, warm: initial, synced } = await onSignIn(userId, remote.current);
+      // Open locally first. The background work is tracked by syncNow() so
+      // sign-out can await it before deleting this account's encryption key.
+      await cleanupOtherAccounts(userId).catch(() => []);
+      const store = await DeviceStore.open(userId);
+      const initial = await warmStart(store);
       if (generation.current !== epoch) {
         try { await onSignOut(store); } catch { /* stale account cleanup */ }
         return;
       }
       storeRef.current = store;
       setWarm(initial); setPending(initial.pending); setReady(true);
-      const result = await synced;
-      if (generation.current !== epoch) return;
-      setLastSyncError(result.error);
-      if (!result.error) setWarm(await warmStart(store));
-      await refreshPending();
+      void syncNow();
     } catch (error) {
       if (generation.current === epoch) {
         userRef.current = null;
         setLastSyncError(error instanceof Error ? error.message : 'Device cache unavailable');
       }
     }
-  }, [refreshPending]);
+  }, [syncNow]);
 
   useEffect(() => {
     if (!enabled) return;
