@@ -54,10 +54,10 @@ function shuffledOrder(avoidFirst?: number) {
 function LandingButlerIdeas() {
   const [tip, setTip] = useState(-1)
   const queue = useRef<number[]>([])
-  const nextTip = () => setTip(current => {
-    if (queue.current.length === 0) queue.current = shuffledOrder(current < 0 ? undefined : current)
-    return queue.current.shift()!
-  })
+  const nextTip = () => {
+    if (queue.current.length === 0) queue.current = shuffledOrder(tip < 0 ? undefined : tip)
+    setTip(queue.current.shift()!)
+  }
   return <div className="ael-butler-ideas">
     <button type="button" className="ael-butler-idea-trigger"
       onClick={nextTip} aria-label="Ask Butler for an idea about Ask Intros"
