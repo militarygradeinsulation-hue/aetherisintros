@@ -472,6 +472,11 @@ See `docs/NETWORK_VALUE_SYSTEMS_2026_10_25.md` for release dependencies and vali
 
 ## Evidence loop (October 2026)
 
+## Passport revocation repair
+- [x] Apply narrow owner-only revocation policy and guard without replaying historical migrations (0099).
+- [x] Run six isolated permission tests and verify the live policy, grants, and trigger.
+- [ ] Verify revocation through a signed-in member's UI without revoking an existing customer link.
+
 First implementation slice, with production activation tracked separately:
 
 - [x] Private opt-in timing for the white paper's six tasks. One active task, explicit reviewed completion, pause on hidden/idle, retry-safe completion, account isolation, export and deletion.
