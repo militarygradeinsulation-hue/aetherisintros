@@ -82,6 +82,20 @@ function useDrag(onMove: (p: Point) => void, onEnd: (p: Point) => void) {
   }
 }
 
+/** A broken third-party preview must not hide the source or create
+ * the appearance that a remote image was successfully displayed. */
+function ButlerReferenceCard({ item }: { item: ButlerReferenceImage }) {
+  const [failed, setFailed] = useState(false)
+  return <figure>
+    {failed
+      ? <div className="butler-image-unavailable" role="status">Picture preview unavailable. The original source can still be opened.</div>
+      : <img src={item.thumbnail} alt={'Picture reference: ' + item.title} loading="eager"
+          referrerPolicy="no-referrer" onError={() => setFailed(true)} />}
+    <figcaption>{item.title} · {item.provider} · {item.license}</figcaption>
+    <a href={item.source} target="_blank" rel="noopener noreferrer">View original picture and rights</a>
+  </figure>
+}
+
 type Turn = ButlerDisplayTurn
 type ButlerVisual =
   | { kind: 'generated'; owner: string; turnId: string; prompt: string; image: string }
@@ -362,10 +376,10 @@ function AskIntrosDockInner({ page, peopleNames, memberName, briefing, contextPa
         } else if (referenceQuery) {
           const { results } = await findButlerReferenceImages({ data: { query: referenceQuery } })
           if (ownerRef.current !== requestOwner) return
-          if (results.length) setVisuals(current => [...current, { kind: 'reference', owner: requestOwner, turnId, query: referenceQuery, results }])
+          setVisuals(current => [...current, { kind: 'reference', owner: requestOwner, turnId, query: referenceQuery, results }])
           const notice = results.length
-            ? 'Here are source-linked image references from Wikimedia Commons. Check the rights and original context before reuse.'
-            : 'No usable public reference image previews were returned. Try a more specific subject.'
+            ? 'Here are source-linked picture references from Wikimedia Commons and Wikipedia. Check each original source and reuse rights.'
+            : 'Neither reference source returned a usable thumbnail for this request. I have added links to search the original sites.'
           setTurns(current => [...current, { id: turnId, role: 'assistant', content: notice }]); say(notice)
         }
         setAttachments([])
@@ -640,12 +654,14 @@ function AskIntrosDockInner({ page, peopleNames, memberName, briefing, contextPa
                     <button type="button" disabled={fileBusy || busy || attachments.length >= 3} onClick={() => void useGeneratedReference(visual.image)}>Use as reference</button>
                   </div>
                 </figure>
-              : <section className="butler-reference-grid" key={visual.turnId} aria-label={'Image references for ' + visual.query}>
-                  {visual.results.map(item => <figure key={item.source}>
-                    <img src={item.thumbnail} alt={item.title} loading="lazy" referrerPolicy="no-referrer" />
-                    <figcaption>{item.title} · {item.license}</figcaption>
-                    <a href={item.source} target="_blank" rel="noopener noreferrer">View original source and rights</a>
-                  </figure>)}
+              : <section className="butler-reference-grid" key={visual.turnId} aria-label={'Picture references for ' + visual.query}>
+                  {visual.results.length
+                    ? visual.results.map(item => <ButlerReferenceCard item={item} key={item.source} />)
+                    : <div className="butler-reference-empty">
+                        <p>No matching preview is available from these sources. You can search their original collections:</p>
+                        <a href={'https://commons.wikimedia.org/w/index.php?search=' + encodeURIComponent(visual.query) + '&title=Special:MediaSearch&type=image'} target="_blank" rel="noopener noreferrer">Wikimedia Commons pictures</a>
+                        <a href={'https://en.wikipedia.org/w/index.php?search=' + encodeURIComponent(visual.query)} target="_blank" rel="noopener noreferrer">Wikipedia articles and images</a>
+                      </div>}
                 </section>
           )}
           {turn.sources?.length ? <div className="butler-sources">{turn.sources.map(source => <a href={source.url} key={source.url} target="_blank" rel="noopener noreferrer">{source.title}</a>)}</div> : null}
