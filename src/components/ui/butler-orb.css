@@ -69,8 +69,8 @@
 
 /* Compact non-WebGL fallback matches the robot, not the replaced blob. */
 .butler-orb[data-butler-avatar="robot"] .butler-orb-fallback {
-  inset: 6px 12px 4px!important;
-  width: 36px!important;
+  inset: 6px 9px 4px!important;
+  width: 42px!important;
   height: 47px!important;
   border-radius: 45% 45% 42% 42%!important;
   background:
