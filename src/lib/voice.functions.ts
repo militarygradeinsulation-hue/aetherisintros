@@ -2,6 +2,9 @@ import { createServerFn } from '@tanstack/react-start'
 import { z } from 'zod'
 
 import { requireAuthContract } from './auth-gate'
+import { boundedBody } from './public-fetch.server'
+import { createCharacterBudget } from './providerQuota'
+import { readProviderSecret } from './providerSecrets.server'
 
 const speechInput = z.object({
   text: z.string().trim().min(1).max(1800),
@@ -9,15 +12,16 @@ const speechInput = z.object({
 
 const sleep = (milliseconds: number) => new Promise(resolve => setTimeout(resolve, milliseconds))
 
-function safeProviderMessage(body: string, status: number): string {
-  try {
-    const parsed = JSON.parse(body) as { detail?: { message?: string } | string; message?: string }
-    if (typeof parsed.detail === 'object' && typeof parsed.detail?.message === 'string') return parsed.detail.message
-    if (typeof parsed.detail === 'string') return parsed.detail
-    if (typeof parsed.message === 'string') return parsed.message
-  } catch { /* provider returned plain text */ }
-  return body.trim().slice(0, 240) || `Voice service returned ${status}.`
+function safeProviderMessage(status: number): string {
+  if (status === 401 || status === 403) return 'The voice provider rejected the configured credentials.'
+  if (status === 404) return 'The selected ElevenLabs voice cannot be accessed.'
+  if (status === 429) return 'Voice generation reached its provider limit. Try again later.'
+  return 'ElevenLabs voice generation is temporarily unavailable.'
 }
+
+/** In-memory brakes only; provider-side spending caps are also required. */
+const reserveMemberVoice = createCharacterBudget(30, 24000, 60 * 60 * 1000)
+const reserveWorkerVoice = createCharacterBudget(400, 250000, 60 * 60 * 1000)
 
 /** Verify the selected private voice without exposing credentials or the ID. */
 export const getIntrosVoiceStatus = createServerFn({ method: 'GET' })
@@ -27,8 +31,8 @@ export const getIntrosVoiceStatus = createServerFn({ method: 'GET' })
     voiceName?: string
     message: string
   }> => {
-    const key = process.env['ELEVENLABS_API_KEY']
-    const id = process.env['ELEVENLABS_VOICE_ID']
+    const key = readProviderSecret('ELEVENLABS_API_KEY')
+    const id = readProviderSecret('ELEVENLABS_VOICE_ID')
     if (!key || !id) {
       return { status: 'not_configured', message: 'ElevenLabs needs a private API key and your personal voice ID in server settings.' }
     }
@@ -63,10 +67,12 @@ export const getIntrosVoiceStatus = createServerFn({ method: 'GET' })
 export const speakWithIntrosVoice = createServerFn({ method: 'POST' })
   .middleware([requireAuthContract])
   .inputValidator((data: unknown) => speechInput.parse(data))
-  .handler(async ({ data }) => {
-    const apiKey = process.env['ELEVENLABS_API_KEY']
-    const voiceId = process.env['ELEVENLABS_VOICE_ID']
+  .handler(async ({ data, context }) => {
+    const apiKey = readProviderSecret('ELEVENLABS_API_KEY')
+    const voiceId = readProviderSecret('ELEVENLABS_VOICE_ID')
     if (!apiKey || !voiceId) throw new Error('The Intros voice is not configured.')
+    if (!reserveMemberVoice(context.userId, data.text.length) || !reserveWorkerVoice('__worker__', data.text.length))
+      throw new Error('Voice usage limit reached. Try again after your quota resets.')
 
     const url = `https://api.elevenlabs.io/v1/text-to-speech/${encodeURIComponent(voiceId)}?output_format=mp3_44100_128`
     let lastMessage = 'The Intros voice is temporarily unavailable.'
@@ -90,12 +96,12 @@ export const speakWithIntrosVoice = createServerFn({ method: 'POST' })
       })
 
       if (response.ok) {
-        const bytes = await response.arrayBuffer()
+        const bytes = await boundedBody(response, 8 * 1024 * 1024)
         return { audio: Buffer.from(bytes).toString('base64'), contentType: 'audio/mpeg' }
       }
 
-      const body = await response.text()
-      lastMessage = safeProviderMessage(body, response.status)
+      await response.body?.cancel().catch(() => {})
+      lastMessage = safeProviderMessage(response.status)
       const retryable = response.status === 429 || response.status >= 500
       if (!retryable || attempt === 2) throw new Error(lastMessage)
 

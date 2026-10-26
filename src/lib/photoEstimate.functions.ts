@@ -2,6 +2,7 @@ import { createServerFn } from '@tanstack/react-start'
 import { z } from 'zod'
 import { requireAuthContract } from './auth-gate'
 import { boundedBody } from './public-fetch.server'
+import { readProviderSecret } from './providerSecrets.server'
 
 /**
  * Explicit member-triggered vision only. Uses OpenAI's server API key, NOT
@@ -27,13 +28,13 @@ function reserve(member: string) {
 
 export const photoEstimateAvailability = createServerFn({ method: 'GET' })
   .middleware([requireAuthContract])
-  .handler(async () => ({ enabled: Boolean(process.env['OPENAI_API_KEY']) }))
+  .handler(async () => ({ enabled: Boolean(readProviderSecret('OPENAI_API_KEY')) }))
 
 export const createPhotoEstimateDraft = createServerFn({ method: 'POST' })
   .middleware([requireAuthContract])
   .inputValidator(estimateRequest)
   .handler(async ({ data, context }) => {
-    const key = process.env['OPENAI_API_KEY']
+    const key = readProviderSecret('OPENAI_API_KEY')
     if (!key) throw new Error('Photo analysis is not configured. Your photos remain in your browser.')
     const { data: profile, error } = await context.supabase
       .from('profiles').select('id').eq('id', context.userId).maybeSingle()
