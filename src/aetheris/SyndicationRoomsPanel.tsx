@@ -11,6 +11,7 @@ import { ArrowLeft, CheckCircle2, Circle, HelpCircle, MessageSquare, Plus, Send,
 import { useEffect, useRef, useState } from 'react'
 
 import {
+  acceptSyndicationInvite,
   castVote,
   createSyndicationRoom,
   getRoomDetails,
@@ -115,10 +116,12 @@ function CreateRoomForm({ onCreated, onCancel }: CreateFormProps) {
 
       let inviteUserIds: string[] = []
       if (emailList.length > 0) {
-        const { data: profiles } = await (supabase as any)
+        const { data: profiles, error: lookupError } = await (supabase as any)
           .from('profiles')
           .select('id, email')
           .in('email', emailList)
+        if (lookupError || new Set((profiles ?? []).map((p: { email: string }) => p.email.toLowerCase())).size !== new Set(emailList.map(s => s.toLowerCase())).size)
+          throw new Error('One or more invitees were not found or are not visible to you. Check the addresses before creating the room.')
         inviteUserIds = (profiles ?? []).map((p: { id: string }) => p.id)
       }
 
@@ -243,6 +246,7 @@ function RoomDetailView({ roomId, myUserId, onBack }: RoomDetailProps) {
   const [message, setMessage] = useState('')
   const [posting, setPosting] = useState(false)
   const [voting, setVoting] = useState(false)
+  const [accepting, setAccepting] = useState(false)
   const threadRef = useRef<HTMLDivElement>(null)
 
   const load = async () => {
@@ -263,6 +267,19 @@ function RoomDetailView({ roomId, myUserId, onBack }: RoomDetailProps) {
       threadRef.current.scrollTop = threadRef.current.scrollHeight
     }
   }, [details?.messages.length])
+
+  const handleAccept = async () => {
+    setError('')
+    setAccepting(true)
+    try {
+      await acceptSyndicationInvite({ data: { roomId } })
+      await load()
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Could not accept invitation.')
+    } finally {
+      setAccepting(false)
+    }
+  }
 
   const handleVote = async (vote: Vote) => {
     setVoting(true)
@@ -298,7 +315,7 @@ function RoomDetailView({ roomId, myUserId, onBack }: RoomDetailProps) {
   const myMembership = members.find(m => m.user_id === myUserId)
   const myVote = myMembership?.vote ?? null
   const tally = voteTally(members)
-  const allVoted = tally.pending === 0
+  const allVoted = details.fullRosterVisible && tally.total > 0 && tally.pending === 0
 
   return (
     <div className="syn-detail">
@@ -334,10 +351,10 @@ function RoomDetailView({ roomId, myUserId, onBack }: RoomDetailProps) {
         </div>
       )}
 
-      {/* Vote tally */}
+      {/* The legacy RLS exposes only the caller's own roster entry to invitees. */}
       <section className="syn-section">
-        <span className="eyebrow"><Users size={11} /> {members.length} MEMBERS</span>
-        <VoteTallyBar members={members} />
+        <span className="eyebrow"><Users size={11} /> {details.fullRosterVisible ? members.length + ' MEMBERS' : 'MY MEMBERSHIP'}</span>
+        {details.fullRosterVisible ? <VoteTallyBar members={members} /> : <p className="syn-empty">Participant totals are visible to the room owner. Your interest is private to the room.</p>}
         <div className="syn-members-list">
           {members.map(m => (
             <div key={m.id} className="syn-member-row">
@@ -358,12 +375,17 @@ function RoomDetailView({ roomId, myUserId, onBack }: RoomDetailProps) {
         </div>
       </section>
 
-      {/* Your vote */}
-      {myMembership && room.status === 'open' && (
+      {myMembership?.status === 'pending' && <section className="syn-section">
+        <p>Your invitation is pending. Accept it before recording your interest.</p>
+        <button type="button" className="btn primary" disabled={accepting} onClick={() => void handleAccept()}>{accepting ? 'Accepting…' : 'Accept invitation'}</button>
+      </section>}
+
+      {/* This is nonbinding interest, not an agreed financial commitment. */}
+      {myMembership?.status === 'active' && room.status === 'open' && (
         <section className="syn-section syn-vote-section">
-          <span className="eyebrow">YOUR VOTE</span>
+          <span className="eyebrow">YOUR INTEREST (NONBINDING)</span>
           <p className="syn-vote-prompt">
-            {myVote ? `You voted: ${VOTE_LABELS[myVote]}. Change your vote:` : 'How do you want to proceed?'}
+            {myVote ? `Your interest: ${VOTE_LABELS[myVote]}. Change your response:` : 'How interested are you in proceeding? This is not a binding decision.'}
           </p>
           <div className="syn-vote-actions">
             {(['in', 'out', 'need_more_info'] as Vote[]).map(v => (
@@ -377,7 +399,7 @@ function RoomDetailView({ roomId, myUserId, onBack }: RoomDetailProps) {
               </button>
             ))}
           </div>
-          {allVoted && <p className="syn-all-voted"><CheckCircle2 size={13} /> All members have voted.</p>}
+          {allVoted && <p className="syn-all-voted"><CheckCircle2 size={13} /> All visible members recorded an interest. This does not finalize a deal.</p>}
         </section>
       )}
 
@@ -385,7 +407,8 @@ function RoomDetailView({ roomId, myUserId, onBack }: RoomDetailProps) {
       <section className="syn-section syn-thread-section">
         <span className="eyebrow"><MessageSquare size={11} /> DISCUSSION</span>
         <div className="syn-thread" ref={threadRef}>
-          {messages.length === 0 && <p className="syn-empty">No messages yet. Start the conversation.</p>}
+          {!details.discussionAvailable && <p className="syn-empty" role="status">Room discussion is not yet connected to the live protected message store. Nothing can be posted here until that upgrade is completed.</p>}
+          {details.discussionAvailable && messages.length === 0 && <p className="syn-empty">No messages yet. Start the conversation.</p>}
           {messages.map(msg => (
             <div key={msg.id} className={`syn-message${msg.user_id === myUserId ? ' syn-message--mine' : ''}`}>
               <div className="syn-message-meta">
@@ -400,7 +423,7 @@ function RoomDetailView({ roomId, myUserId, onBack }: RoomDetailProps) {
           ))}
         </div>
 
-        {room.status !== 'closed' && (
+        {details.discussionAvailable && room.status !== 'closed' && (
           <form className="syn-compose" onSubmit={e => void handleMessage(e)}>
             <textarea
               className="syn-input"
