@@ -212,7 +212,7 @@ export const getReferralSuggestions = createServerFn({ method: 'GET' })
     if (error) throw new Error(`Could not load referral suggestions: ${error.message}`)
     const rows = (data ?? []) as LegacySuggestion[]
     const ids = rows.flatMap(row => {
-      const connector = details(row).connector_user_id
+      const connector = details(row)['connector_user_id']
       return [row.suggested_member_id, ...(typeof connector === 'string' ? [connector] : [])]
     })
     const names = await profileMap(db, ids)
