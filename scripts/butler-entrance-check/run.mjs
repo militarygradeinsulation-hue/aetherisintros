@@ -22,28 +22,28 @@ try {
  page.on('console',message=>{if(message.type()==='error') console.log('BROWSER '+message.text())});
  await page.addInitScript(()=>{HTMLMediaElement.prototype.play=function(){return Promise.resolve()}});
  await page.goto('http://127.0.0.1:'+server.address().port,{waitUntil:'domcontentloaded'});
- await page.locator('.butler-orb canvas').waitFor();
+ await page.locator('.ask-dock-fab .butler-orb canvas').waitFor();
  await page.waitForTimeout(700);
- const before=await page.locator('.butler-orb canvas').screenshot();
+ const before=await page.locator('.ask-dock-fab .butler-orb canvas').screenshot();
  let animated=false;
  for(let attempt=0;attempt<16;attempt++) {
   await page.waitForTimeout(500);
-  const after=await page.locator('.butler-orb canvas').screenshot();
+  const after=await page.locator('.ask-dock-fab .butler-orb canvas').screenshot();
   if(!before.equals(after)){animated=true;break;}
  }
- if(!animated) console.log('RENDER_DIAGNOSTIC',await page.locator('.butler-orb').evaluate(e=>({html:e.outerHTML,hidden:document.hidden,reduced:matchMedia('(prefers-reduced-motion: reduce)').matches})),errors);
+ if(!animated) console.log('RENDER_DIAGNOSTIC',await page.locator('.ask-dock-fab .butler-orb').evaluate(e=>({html:e.outerHTML,hidden:document.hidden,reduced:matchMedia('(prefers-reduced-motion: reduce)').matches})),errors);
  assert(animated,'Butler floating orb renders an animated avatar');
- assert(await page.locator('.butler-orb').getAttribute('data-butler-avatar')==='robot','launcher shows the floating robot');
- const center=await page.locator('.butler-orb canvas').screenshot();
+ assert(await page.locator('.ask-dock-fab .butler-orb').getAttribute('data-butler-avatar')==='robot','launcher shows the floating robot');
+ const center=await page.locator('.ask-dock-fab .butler-orb canvas').screenshot();
  await page.mouse.move(0,0);
  await page.waitForTimeout(1000);
- const moved=await page.locator('.butler-orb canvas').screenshot();
+ const moved=await page.locator('.ask-dock-fab .butler-orb canvas').screenshot();
  assert(!center.equals(moved),'Butler avatar continues to move and tracks the page mouse');
- assert(await page.locator('.butler-orb').getAttribute('data-orb-view')==='business','Business robot selects red palette');
- await page.locator('.butler-orb').screenshot({path:join(out,'business.png')});
+ assert(await page.locator('.ask-dock-fab .butler-orb').getAttribute('data-orb-view')==='business','Business robot selects red palette');
+ await page.locator('.ask-dock-fab .butler-orb').screenshot({path:join(out,'business.png')});
  await page.getByRole('button',{name:'Social',exact:true}).click();
- await page.waitForFunction(()=>document.querySelector('.butler-orb').dataset.orbView==='social');
- await page.waitForTimeout(500);await page.locator('.butler-orb').screenshot({path:join(out,'social.png')});
+ await page.waitForFunction(()=>document.querySelector('.ask-dock-fab .butler-orb').dataset.orbView==='social');
+ await page.waitForTimeout(500);await page.locator('.ask-dock-fab .butler-orb').screenshot({path:join(out,'social.png')});
  await page.getByRole('button',{name:'Ask Intros',exact:true}).click();
  assert(await page.getByRole('dialog').isVisible(),'decorative orb preserves launcher click');
  await page.getByRole('button',{name:'Start intro'}).click();
@@ -69,9 +69,9 @@ try {
  assert(true,'Escape dismisses entry');
  await page.emulateMedia({reducedMotion:'reduce'});await page.getByRole('button',{name:'Start intro'}).click();await page.getByRole('button',{name:'Enter Intros'}).click();await film.waitFor({state:'detached'});
  assert(await page.evaluate(()=>document.body.style.position!=='fixed'),'reduced motion never locks page');
- await page.locator('.butler-orb canvas').evaluate(c=>c.dispatchEvent(new Event('webglcontextlost',{cancelable:true})));
- await page.locator('.butler-orb canvas').waitFor({state:'detached'});
- assert(await page.locator('.butler-orb-fallback').isVisible(),'context loss preserves visible fallback');
+ await page.locator('.ask-dock-fab .butler-orb canvas').evaluate(c=>c.dispatchEvent(new Event('webglcontextlost',{cancelable:true})));
+ await page.locator('.ask-dock-fab .butler-orb canvas').waitFor({state:'detached'});
+ assert(await page.locator('.ask-dock-fab .butler-orb-fallback').isVisible(),'context loss preserves visible fallback');
  assert(errors.length===0,'no browser runtime errors: '+errors.join(','));
  console.log('Screenshots: '+out);
 } finally {await browser.close();for(const res of pending)res.destroy();server.close();}
