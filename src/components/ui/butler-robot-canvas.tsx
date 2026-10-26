@@ -74,8 +74,16 @@ function ButlerRobot({
     head.current.rotation.x = THREE.MathUtils.damp(head.current.rotation.x, target.headPitch, 6.5, dt);
     body.current.rotation.y = THREE.MathUtils.damp(body.current.rotation.y, target.bodyYaw, 4.8, dt);
     body.current.rotation.z = THREE.MathUtils.damp(body.current.rotation.z, target.bodyRoll, 4.8, dt);
+    // A gentle physical lean follows taps and cursor motion without shifting
+    // the actual launcher hit target away from the member's finger or mouse.
+    body.current.position.x = THREE.MathUtils.damp(body.current.position.x, pointer.current[0] * 0.11, 5.2, dt);
     const t = clock.getElapsedTime();
-    body.current.position.y = Math.sin(t * 1.65) * (hovered ? 0.035 : 0.014);
+    body.current.position.y = THREE.MathUtils.damp(
+      body.current.position.y,
+      Math.sin(t * 1.65) * (hovered ? 0.035 : 0.014) + pointer.current[1] * 0.045,
+      5.2,
+      dt,
+    );
     const cycle = t % 4.1;
     const blink = cycle < 0.17 ? 1 - 0.93 * Math.sin((cycle / 0.17) * Math.PI) : 1;
     eyes.current.scale.y = Math.max(0.07, blink);
@@ -137,7 +145,7 @@ function ContextLoss({ onLost }: { onLost: () => void }) {
 export default function ButlerRobotCanvas(props: ButlerRobotCanvasProps) {
   return (
     <Canvas
-      camera={{ position: [0, 0.08, 2.25], fov: 40 }}
+      camera={{ position: [0, 0.08, 2.12], fov: 40 }}
       dpr={[1, 1.5]}
       gl={{ alpha: true, antialias: true, powerPreference: 'low-power' }}
       frameloop={!props.visible ? 'never' : props.reducedMotion ? 'demand' : 'always'}
