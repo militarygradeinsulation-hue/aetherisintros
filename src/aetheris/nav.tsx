@@ -10,7 +10,7 @@ export type Page =
   | 'directory' | 'passport' | 'opportunities' | 'dealrooms' | 'expertise' | 'talent' | 'capital'
   | 'intelrooms' | 'presence' | 'permission' | 'briefing' | 'vault' | 'knowledgeassets' | 'simple'
   | 'crm' | 'grid' | 'news' | 'pocket' | 'diagnostic' | 'meetings' | 'peergroups' | 'providers' | 'warmpaths' | 'agentinbox' | 'deals' | 'referrals' | 'workspaces' | 'executivework'
-  | 'podcast' | 'hr' | 'benchmarks' | 'settlements' | 'capacity'
+  | 'podcast' | 'photo-estimate' | 'hr' | 'benchmarks' | 'settlements' | 'capacity'
   | 'business-lobby' | 'opportunity-exchange' | 'membership' | 'membership-upgrade' | 'marketplace-pilot'
 
 /** Navigation intents any surface can trigger. */

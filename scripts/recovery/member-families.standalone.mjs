@@ -50,6 +50,15 @@ try {
   const base = harness.split('const BASE = `')[1]?.split('`\n\n// Rows')[0]
   assert.ok(base && !base.includes('${'), 'Synthetic base must remain literal SQL')
   await db.exec(base)
+  // Later evidence-loop migrations reference the canonical executive
+  // recommendations table from 0001. Reproduce the historical prerequisite
+  // in this disposable rehearsal just as the main migration harness does.
+  // This does not touch production schemas or migration ledgers.
+  const verificationHistory = read('supabase/migrations/20260916200912_3964645f-20d3-4e4d-8641-441afae91086.sql')
+  const verifiedMemberFunction = verificationHistory.match(/create or replace function public\.is_verified_member\(\)[\s\S]*?\$\$;/i)?.[0]
+  assert.ok(verifiedMemberFunction, 'Historical verified member helper must be present in the synthetic fixture')
+  await db.exec(verifiedMemberFunction)
+  await db.exec(read('drizzle/migrations/0001_unified_executive_profiles_and_recommendations.sql'))
   for (const id of [A, B, C, ADMIN]) {
     await db.query('insert into auth.users(id,email_confirmed_at) values($1,now())', [id])
     await db.query('insert into public.profiles(id,name) values($1,$2)', [id, 'Synthetic member'])

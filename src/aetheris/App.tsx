@@ -1,5 +1,6 @@
 import { newcomerLane } from '@/features/evidence-loop/matching'
 import { HRWorkspace } from '@/features/hr/HRWorkspace'
+import { PhotoEstimatePage } from '@/features/photo-estimate/PhotoEstimatePage'
 import { PodcastStudioPage } from './pages/PodcastStudioPage'
 import { NetworkValuePage } from '@/features/network-value/NetworkValuePage'
 import { PostOwnerActions } from './PostOwnerActions'
@@ -2733,6 +2734,7 @@ function Shell({ startPage, feedOnly = false, assistant = true, crmSection }: { 
       benchmarks: <NetworkValuePage mode="benchmarks" />,
       settlements: <NetworkValuePage mode="settlements" />,
       capacity: <NetworkValuePage mode="capacity" />,
+      'photo-estimate': <PhotoEstimatePage />,
       autopilot: <><div className="og-stack"><section className="og-tile"><h3>Approval queue</h3><ApprovalQueuePanel /></section><DigitalYouRulesPanel /></div><AutopilotPage /></>,
       ask: <AskNetworkPage />,
       constitution: <ConstitutionPage />,

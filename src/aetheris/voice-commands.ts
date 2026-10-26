@@ -28,6 +28,7 @@ export const VOICE_PAGES: Array<{ page: string; label: string; words: string[] }
   { page: 'hr', label: 'People & HR', words: ['hr', 'human resources', 'people and hr', 'hr butler', 'employee management'] },
   { page: 'benchmarks', label: 'Benchmark Pools', words: ['benchmark pools', 'peer benchmarks'] },
   { page: 'settlements', label: 'Referral Settlement', words: ['referral settlement', 'referral fees'] },
+  { page: 'photo-estimate', label: 'Photo to Estimate', words: ['photo estimate', 'photo to estimate', 'job photo scope'] },
   { page: 'capacity', label: 'Capacity Exchange', words: ['capacity exchange', 'idle crews', 'available equipment'] },
   { page: 'executivework', label: 'Executive Workbench', words: ['executive workbench', 'business analyst', 'warm referrals', 'track record', 'storefront', 'syndication'] },
   { page: 'companies', label: 'Companies', words: ['companies', 'company list'] },

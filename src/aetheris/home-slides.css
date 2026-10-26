@@ -162,3 +162,10 @@
     white-space: normal;
   }
 }
+
+/* Compact 320px phones: preserve the slide while keeping actions above the fold. */
+@media (max-width: 340px) {
+  .ael-hero--carousel .ael-hero-slides {
+    height: min(53svh, 380px);
+  }
+}

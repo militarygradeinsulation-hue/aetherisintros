@@ -107,6 +107,7 @@ try {
           cinematicCTA: rect('.ask-cine-cta'),
           heroTitle: rect('#ael-hero-title'),
           heroActions: rect('.ael-hero-actions'),
+          heroJoin: rect('.ael-hero-actions a[href^="/auth?"][href*="mode=signup"]'),
           headerActions: rect('.ael-header-actions'),
           logo: rect('.ael-header .ask-intros-lockup'),
           signup: rect('.ael-header .ael-nav-cta'),
@@ -151,7 +152,14 @@ try {
       const onScreen = r => Boolean(r && r.width > 0 && r.right <= viewport.width + 3 && r.x >= -3)
       assert(m.logo && m.logo.width >= (viewport.width <= 420 ? 150 : viewport.width <= 750 ? 175 : 220),
         'approved Ask Intros wordmark is prominent at this breakpoint')
-      assert([m.heroTitle, m.heroActions, m.headerActions, m.logo, m.signup, m.cinematicCTA].every(onScreen),
+      // The public phone header intentionally hides its duplicate signup link.
+      // On these widths check the real, visible hero signup control instead.
+      const joinToMeasure = (m.signup && m.signup.width > 0) ? m.signup : m.heroJoin
+      const crucial = { heroTitle: m.heroTitle, heroActions: m.heroActions, headerActions: m.headerActions, logo: m.logo, joinToMeasure, cinematicCTA: m.cinematicCTA }
+      if (viewport.width <= 390 && (!Object.values(crucial).every(onScreen) || (m.hero?.height ?? 0) > Math.max(viewport.height * 1.10, 760))) {
+        console.log('  ! phone bounding-box diagnostic: ' + JSON.stringify({viewport:viewport.width,hero:m.hero,crucial}))
+      }
+      assert(Object.values(crucial).every(onScreen),
         'headlines and important actions remain within phone/desktop width')
 
       if (viewport.name === 'desktop') {
