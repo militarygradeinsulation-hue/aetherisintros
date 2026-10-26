@@ -74,6 +74,27 @@
 /* Social View layered important declarations can outrank unlayered overrides.
    Keep the robot transparent inside that same cascade layer. */
 @layer bridge-social-reference {
+  /* Use the robot's actual dimensions for the accessible hit area too.
+     An older Bridge launcher layer had a 70px-wide blob button. */
+  :root[data-theme] body .ix-root.ledger-native-app[data-experience] > .ix-assistant button.ask-dock-fab.ask-dock-fab--robot:not(.active) {
+    width: 116px !important;
+    min-width: 116px !important;
+    height: 116px !important;
+    min-height: 116px !important;
+    padding: 0 !important;
+    gap: 0 !important;
+    align-items: center !important;
+    justify-content: center !important;
+    overflow: visible !important;
+  }
+  @media (max-width: 767px) {
+    :root[data-theme] body .ix-root.ledger-native-app[data-experience] > .ix-assistant button.ask-dock-fab.ask-dock-fab--robot:not(.active) {
+      width: 96px !important;
+      min-width: 96px !important;
+      height: 96px !important;
+      min-height: 96px !important;
+    }
+  }
   :root[data-experience="social"] .ix-commons-bridge button.ask-dock-fab.ask-dock-fab--robot:not(.active),
   :root[data-theme] body .ix-root.ledger-native-app > .ix-assistant button.ask-dock-fab.ask-dock-fab--robot:not(.active) {
     background: transparent !important;
