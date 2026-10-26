@@ -1,6 +1,7 @@
 import { createServerFn } from '@tanstack/react-start'
 import { gatewayChat } from './aiGateway.server'
 import { requireAuthContract } from './auth-gate'
+import { verifiedReferralPath, type ReferralMember, type ReferralConnectionEdge } from './referral-paths'
 
 /**
  * Production uses the original referral_suggestions / referral_requests schema.
@@ -35,7 +36,7 @@ export interface ReferralRequest {
   responded_at: string | null
 }
 
-const REFERRAL_SYSTEM = `You are a referral path finder for a professional network. Given a member's profile and their connections, identify the 5 warmest referral paths. Return ONLY valid JSON array:
+const REFERRAL_SYSTEM = `You are a referral path finder for a professional network. Given a member's profile and VERIFIED two-hop connection pairs, identify up to 5 relevant referral paths. Use ONLY the provided connector/target pairs. Do not invent relationships. Return ONLY valid JSON array:
 [{"target_name":"...","target_title":"...","connector_name":"...","path_explanation":"...","shared_context":"...","strength_score":75}]`
 
 interface AiSuggestion {
@@ -47,7 +48,7 @@ interface AiSuggestion {
   strength_score: number
 }
 
-type Profile = { id: string; name: string; title?: string | null; company?: string | null }
+type Profile = ReferralMember
 type LegacySuggestion = {
   id: string
   for_member_id: string
@@ -114,7 +115,7 @@ function parseAiSuggestions(text: string): AiSuggestion[] {
         connector_name: String(s['connector_name'] ?? 'Unknown'),
         path_explanation: s['path_explanation'].slice(0, 1600),
         shared_context: String(s['shared_context'] ?? '').slice(0, 1600),
-        strength_score: Math.min(100, Math.max(0, Number(s['strength_score'] ?? 50))),
+        strength_score: Math.min(100, Math.max(0, Number.isFinite(Number(s['strength_score'])) ? Number(s['strength_score']) : 50)),
       }]
     })
   } catch {
@@ -154,11 +155,32 @@ export const generateReferralSuggestions = createServerFn({ method: 'POST' })
       .limit(30)
     if (membersError) throw new Error('The member directory could not be loaded.')
     const connections: Profile[] = connectionProfiles ?? []
-    const all: Profile[] = [...connections, ...(otherMembers ?? [])]
+    const possibleTargets: Profile[] = otherMembers ?? []
+    const targetIds = new Set(possibleTargets.map(member => member.id))
+    // A "warm" referral must have two real relationship edges. The member
+    // follows the connector above; now confirm the connector knows the target.
+    const { data: edges, error: edgesError } = await db.from('follows')
+      .select('follower_id,followee_id')
+      .in('follower_id', connectionIds)
+      .eq('kind', 'connection')
+      .limit(1000)
+    if (edgesError) throw new Error('Verified referral paths could not be loaded.')
+    const observedEdges: ReferralConnectionEdge[] = (edges ?? []).filter(
+      (edge: ReferralConnectionEdge) => targetIds.has(edge.followee_id)
+    )
+    if (!observedEdges.length) return []
+    const connectorsById = new Map(connections.map(person => [person.id, person]))
+    const targetsById = new Map(possibleTargets.map(person => [person.id, person]))
+    const verifiedPaths = observedEdges.flatMap(edge => {
+      const connector = connectorsById.get(edge.follower_id)
+      const target = targetsById.get(edge.followee_id)
+      return connector && target ? [`${connector.name} -> ${target.name}`] : []
+    })
+    if (!verifiedPaths.length) return []
     const userContext = `Member: ${myProfile?.name ?? 'Unknown'}, ${myProfile?.title ?? ''} at ${myProfile?.company ?? ''}
 Bio: ${myProfile?.bio ?? 'Not provided'}
 Connections: ${connections.map(p => `${p.name} (${p.title ?? ''} at ${p.company ?? ''})`).join(', ')}
-Potential targets: ${(otherMembers ?? []).map((p: Profile) => `${p.name} (${p.title ?? ''} at ${p.company ?? ''})`).join(', ')}`
+Verified connector -> target pairs: ${verifiedPaths.slice(0, 100).join(', ')}`
 
     let suggestions: AiSuggestion[]
     try {
@@ -172,10 +194,11 @@ Potential targets: ${(otherMembers ?? []).map((p: Profile) => `${p.name} (${p.ti
 
     const saved: ReferralSuggestion[] = []
     for (const s of suggestions.slice(0, 5)) {
-      const target = all.find(p => p.name.toLowerCase() === s['target_name'].toLowerCase() && p.id !== userId)
-      const connector = connections.find(p => p.name.toLowerCase() === s['connector_name'].toLowerCase())
-      // Never insert a fabricated member or claim an unverifiable warm path.
-      if (!target || !connector || target.id === connector.id) continue
+      const verified = verifiedReferralPath(s, connections, possibleTargets, observedEdges)
+      // Never insert a fabricated member, an ambiguous identity or a path without
+      // observed relationship evidence between connector and target.
+      if (!verified) continue
+      const { target, connector } = verified
       const { data: row, error } = await db.from('referral_suggestions').insert({
         for_member_id: userId,
         suggested_member_id: target.id,
