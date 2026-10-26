@@ -355,7 +355,7 @@ export default function App({ mode = 'demo', executiveAction, initialPage, initi
           activePage={activePage}
           activeTool={classicPage}
           onNavigate={handleNavigate}
-          onOpenTool={tool => { setClassicPage(tool); handleNavigate('workspace'); }}
+          onOpenTool={tool => { if (tool === 'crm') setCrmSection('crm'); setClassicPage(tool); handleNavigate('workspace'); }}
           searchQuery={searchQuery}
           onSearchChange={setSearchQuery}
           members={members}
@@ -381,7 +381,7 @@ export default function App({ mode = 'demo', executiveAction, initialPage, initi
             onOpenPipeline={() => { setCrmSection('pipeline'); setClassicPage('crm'); handleNavigate('workspace'); }}
             posts={feedPosts}
             onNavigate={handleNavigate}
-            onOpenTool={tool => { setClassicPage(tool); handleNavigate('workspace'); }}
+            onOpenTool={tool => { if (tool === 'crm') setCrmSection('crm'); setClassicPage(tool); handleNavigate('workspace'); }}
             onRequestIntro={(member) => setRequestIntroTarget(member)}
             onLikePost={handleLikePost}
             onSavePost={handleSavePost}
