@@ -1,0 +1,27 @@
+name: Ask Intros Live Search Monitor
+
+on:
+  schedule:
+    - cron: '35 13 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: live-search-monitor
+  cancel-in-progress: false
+
+jobs:
+  production-search-readiness:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Validate monitor without external traffic
+        run: node --test scripts/public-search-check/production-monitor.test.mjs
+      - name: Probe public HTTPS routes, sitemap and crawler signals
+        run: node scripts/public-search-check/production-monitor.mjs
