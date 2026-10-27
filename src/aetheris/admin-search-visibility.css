@@ -39,3 +39,5 @@
 :root[data-theme="light"] .search-visibility .sv-table select,:root[data-theme="light"] .search-visibility .sv-table input{color-scheme:light}
 .search-visibility .sv-foot{font-size:12px;margin-top:22px}
 @media(max-width:520px){.search-visibility{padding:15px}.search-visibility .sv-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.search-visibility .sv-stat{padding:11px}.search-visibility .sv-stat strong{font-size:18px}.search-visibility .sv-heading{align-items:stretch}.search-visibility .sv-heading button{width:100%}}
+
+.search-visibility h3.sv-opportunity-title{margin-top:24px}
