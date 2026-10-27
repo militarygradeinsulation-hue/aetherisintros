@@ -6326,3 +6326,9 @@ body:has([role=menu],[role=listbox],.ix-mobile-sheet,.topbar-dropmenu,.notificat
 .meeting-chat-form input:focus-visible,.meeting-chat-form button:focus-visible{outline:2px solid #0F5CCB;outline-offset:2px}
 .meeting-chat-form button{padding:0 .7rem;border-radius:6px;border:0;background:#0F5CCB;color:#fff;cursor:pointer}
 .meeting-chat-form button:disabled{opacity:.45;cursor:not-allowed}
+@media(max-width:900px){
+  .meeting-stage>:first-child{position:sticky;top:0;z-index:2}
+  .meeting-stage video{object-fit:cover;object-position:center}
+  .meeting-chat-list{max-height:160px}
+  .meeting-notes ol,.meeting-notes ul{overscroll-behavior:contain}
+}

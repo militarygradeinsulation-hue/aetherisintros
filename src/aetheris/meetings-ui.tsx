@@ -457,7 +457,7 @@ function LiveRoom({ meeting, userId, local, initialMic, initialCam, initialFacin
   const notesOn = room.roster.filter(p => p.notesConsent)
   const startedBy = room.recordingBy ? nameOf(room.recordingBy) : 'Someone'
   const tail = useRef<HTMLOListElement>(null)
-  useEffect(() => { tail.current?.lastElementChild?.scrollIntoView({ block: 'nearest' }) }, [lines.length])
+  useEffect(() => { const el = tail.current; if (el) el.scrollTop = el.scrollHeight }, [lines.length])
   const inviteable = net.members.filter(m => isLiveId(m.id) && !room.roster.some(p => p.userId === m.id)).slice(0, 30)
 
   const bg = useMeetingBackground(userId)
