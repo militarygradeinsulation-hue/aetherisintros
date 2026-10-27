@@ -13,7 +13,7 @@
 .search-visibility .sv-stat small{font-size:11px;color:var(--sv-muted);line-height:1.45}
 .search-visibility .sv-block{margin-top:25px;padding-top:23px;border-top:1px solid var(--sv-border);min-width:0}
 .search-visibility .sv-heading{display:flex;gap:16px;justify-content:space-between;align-items:center;flex-wrap:wrap}
-.search-visibility .sv-button,.search-visibility .sv-upload{border:1px solid var(--sv-border);background:var(--sv-raised);color:var(--sv-text);border-radius:10px;padding:11px 14px;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:8px;font:600 13px/1.2 inherit;min-height:43px}
+.search-visibility .sv-button,.search-visibility .sv-upload{border:1px solid var(--sv-border);background:var(--sv-raised);color:var(--sv-text);border-radius:10px;padding:11px 14px;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:8px;font-family:inherit;font-size:13px;font-weight:600;line-height:1.2;min-height:43px}
 .search-visibility .sv-button:hover,.search-visibility .sv-upload:hover{border-color:var(--sv-accent)}
 .search-visibility .sv-button:disabled{opacity:.6;cursor:wait}
 .search-visibility .sv-button:focus-visible,.search-visibility .sv-upload:focus-within,.search-visibility select:focus-visible,.search-visibility input:focus-visible{outline:2px solid var(--sv-accent);outline-offset:3px}
