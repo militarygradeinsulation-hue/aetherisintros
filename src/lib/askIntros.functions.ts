@@ -217,7 +217,16 @@ export const askIntros = createServerFn({ method: 'POST' })
         maxSteps: 8,
       }
       // Prefer the member-supplied RouteLLM account so questions never draw on workspace AI credits.
-      const text = routeKey ? await routeLlmChat(request) : await gatewayChat(request)
+      // If RouteLLM rejects or times out (common with large file extracts), fall back to Lovable AI.
+      let text: string
+      if (routeKey) {
+        try { text = await routeLlmChat(request) }
+        catch (routeError) {
+          console.error('RouteLLM failed, falling back:', routeError instanceof Error ? routeError.message : routeError)
+          if (!apiKey) throw routeError
+          text = await gatewayChat(request)
+        }
+      } else text = await gatewayChat(request)
       return { ...parseAnswer(text.trim()), sources: sources.slice(0, 12) }
     } catch (error) {
       const message = error instanceof Error ? error.message : 'Ask Intros could not answer just now.'
