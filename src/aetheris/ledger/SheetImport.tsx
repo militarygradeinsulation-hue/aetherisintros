@@ -9,7 +9,8 @@ import { Check, ChevronLeft, FileUp, RotateCcw, Wand2 } from 'lucide-react'
 import { Btn, Eyebrow } from '../ui'
 import { useOps } from '../crm/store'
 import { safeImportSelection } from '../crm/import-policy'
-import { isDuplicate, safeLinkedInLink } from '../prospect/core'
+import { safeLinkedInLink } from '../prospect/core'
+import { ImportReviewTable } from '../ImportReviewTable'
 import { autoMapColumns } from './contact-automap'
 import { validateProspectGrid } from '../prospect/upload'
 
@@ -74,6 +75,19 @@ const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 type Vals = Partial<Record<'fullName'|'firstName'|'lastName'|'email'|'phone'|'title'|'companyName'|'location'|'linkedinUrl'|'notes'|'name'|'domain'|'website'|'industry'|'employees', string>> & Record<string, string | undefined>
 type Checked = { sourceRow: number; values: Vals; errors: string[]; warnings: string[] }
 
+// Index identity keys once. The previous per-row scan was quadratic on large contact files.
+function personIdentityKeys(value: { email?: string; linkedinUrl?: string; fullName?: string; companyName?: string }): string[] {
+  const normalized = (text?: string) => (text ?? '').trim().toLowerCase()
+  const email = normalized(value.email)
+  const linkedin = value.linkedinUrl ? safeLinkedInLink(value.linkedinUrl) : null
+  const name = normalized(value.fullName), company = normalized(value.companyName)
+  return [
+    ...(email ? ['email:' + email] : []),
+    ...(linkedin ? ['linkedin:' + linkedin] : []),
+    ...(name && company ? ['name-company:' + name + '|' + company] : []),
+  ]
+}
+
 export default function SheetImport({ onBack, initialTarget = 'people' }: { onBack?: () => void; initialTarget?: Target } = {}) {
   const ops = useOps()
   const [target, setTarget] = useState<Target>(initialTarget)
@@ -88,10 +102,11 @@ export default function SheetImport({ onBack, initialTarget = 'people' }: { onBa
   const importedRowsRef = useRef(new Set<string>())
   const [done, setDone] = useState<string | null>(null)
   const [readError, setReadError] = useState<string | null>(null)
+  const [detailRow, setDetailRow] = useState<number | null>(null)
 
   useEffect(() => { const f = takePendingSheet(); if (f) void load(f) }, []) // eslint-disable-line react-hooks/exhaustive-deps
   const headers = grid[0] ?? []
-  const body = grid.slice(1)
+  const body = useMemo(() => grid.slice(1), [grid])
 
   const load = async (file: File) => {
     setDone(null); setReadError(null)
@@ -109,15 +124,16 @@ export default function SheetImport({ onBack, initialTarget = 'people' }: { onBa
       rows = rows.filter(r => r.some(c => c.trim())).map(r => r.length === width ? r : [...r.slice(0, width), ...Array(Math.max(0, width - r.length)).fill('')])
       validateProspectGrid(rows)
       importedRowsRef.current.clear()
+      setDetailRow(null)
       setFileName(file.name); setGrid(rows); setMap(autoMap(rows[0] ?? [], target, rows.slice(1, 51)))
     } catch (error) { setGrid([]); setReadError(error instanceof Error ? error.message : 'That file could not be read.') }
   }
 
-  const switchTarget = (t: Target) => { setTarget(t); setMap(autoMap(headers, t, body.slice(0, 50))); setDone(null) }
+  const switchTarget = (t: Target) => { setTarget(t); setMap(autoMap(headers, t, body.slice(0, 50))); setDetailRow(null); setDone(null) }
 
   const checked: Checked[] = useMemo(() => {
     const seen = new Set<string>()
-    const seenPeople: Array<Partial<import('../crm/types').CrmPerson>> = []
+    const peopleKeys = new Set(ops.people.flatMap(personIdentityKeys))
     const existingEmails = new Set(ops.people.map(p => p.email.toLowerCase()).filter(Boolean))
     const existingCompanies = new Set(ops.companies.map(c => c.name.toLowerCase()))
     return body.map((r, sourceRow) => {
@@ -133,8 +149,9 @@ export default function SheetImport({ onBack, initialTarget = 'people' }: { onBa
           if (!url) errors.push('Invalid LinkedIn profile URL')
           else values.linkedinUrl = url
         }
-        if (isDuplicate(values, [...ops.people, ...seenPeople])) errors.push('Duplicate person identity')
-        seenPeople.push(values)
+        const keys = personIdentityKeys(values)
+        if (keys.some(key => peopleKeys.has(key))) errors.push('Duplicate person identity')
+        keys.forEach(key => peopleKeys.add(key))
         const key = (values.email || values.fullName || '').toLowerCase()
         if (values.email && existingEmails.has(values.email.toLowerCase())) errors.push('Already in your CRM')
         else if (key && seen.has(key)) errors.push('Repeated in this sheet')
@@ -157,6 +174,8 @@ export default function SheetImport({ onBack, initialTarget = 'people' }: { onBa
   const considered = removeDupes ? checked.filter(c => !isDupe(c)) : checked
   const good = considered.filter(c => !c.errors.length)
   const bad = considered.length - good.length
+  const reviewFields = FIELDS[target].filter(f => f.key in map || (f.key === 'fullName' && target === 'people'))
+  const selectedReview = detailRow === null ? null : checked[detailRow] ?? null
   const required = FIELDS[target].filter(f => f.required)
   const missingRequired = target === 'people'
     ? !('fullName' in map) && !('firstName' in map)
@@ -226,7 +245,7 @@ export default function SheetImport({ onBack, initialTarget = 'people' }: { onBa
     }
   }
 
-  const reset = () => { setProgress(null); importedRowsRef.current.clear(); setGrid([]); setFileName(''); setMap({}); setDone(null); setReadError(null) }
+  const reset = () => { setProgress(null); setDetailRow(null); importedRowsRef.current.clear(); setGrid([]); setFileName(''); setMap({}); setDone(null); setReadError(null) }
 
   return <div className="simp">
     <div className="simp-intro">
@@ -249,9 +268,9 @@ export default function SheetImport({ onBack, initialTarget = 'people' }: { onBa
       onDragOver={e => e.preventDefault()}
       onDrop={e => { e.preventDefault(); const f = e.dataTransfer.files[0]; if (f) void load(f) }}>
       <FileUp size={22} />
-      <b>Drop a CSV here, or choose a file</b>
+      <b>Drop a contacts CSV or Excel spreadsheet here, or choose a file</b>
       <small>Exported from Google Sheets, Excel, HubSpot or anywhere else. First row should be column names.</small>
-      <input type="file" accept=".csv,.tsv,.txt,text/csv" className="fcrm-sr"
+      <input type="file" accept=".csv,.tsv,.txt,.xlsx,.xls,.xlsm,.ods,.numbers,text/csv" className="fcrm-sr"
         onChange={e => { const f = e.target.files?.[0]; if (f) void load(f); e.target.value = '' }} />
     </label> : <>
       <section className="simp-block">
@@ -280,19 +299,35 @@ export default function SheetImport({ onBack, initialTarget = 'people' }: { onBa
           <Eyebrow>2 · CHECK ROWS</Eyebrow>
           <span className="simp-file"><b>{good.length}</b> ready · <b>{bad}</b> need attention</span>
         </header>
-        <div className="ops-table-scroll" tabIndex={0} aria-label="Row check">
-          <table className="ops-table">
-            <thead><tr><th>#</th>{FIELDS[target].filter(f => f.key in map || (f.key === 'fullName' && target === 'people')).slice(0, 5).map(f => <th key={f.key}>{f.label}</th>)}<th>Check</th></tr></thead>
-            <tbody>{checked.slice(0, 50).map((c, i) => <tr key={i} className={c.errors.length ? 'simp-bad' : ''}>
-              <td>{i + 1}</td>
-              {FIELDS[target].filter(f => f.key in map || (f.key === 'fullName' && target === 'people')).slice(0, 5).map(f => <td key={f.key}>{c.values[f.key] || '—'}</td>)}
-              <td>{c.errors.length
+        <ImportReviewTable
+          rows={checked}
+          scopeKey={fileName + ':' + target}
+          label="Import row preview"
+          headings={['Source row', ...reviewFields.map(f => f.label), 'Validation', 'Details']}
+          tableClassName="ops-table"
+          renderRow={(c, index) => <tr key={c.sourceRow} className={c.errors.length ? 'simp-bad' : ''} aria-rowindex={index + 2}>
+            <td>{c.sourceRow + 2}</td>
+            {reviewFields.map(f => <td key={f.key} title={c.values[f.key] || ''}>{c.values[f.key] || '—'}</td>)}
+            <td title={[...c.errors, ...c.warnings].join(' · ')}>
+              {c.errors.length
                 ? <span className="fcrm-pill bad">{c.errors.join(' · ')}</span>
-                : <span className="fcrm-pill good">{c.warnings.length ? `Ready · ${c.warnings.join(', ')}` : 'Ready'}</span>}</td>
-            </tr>)}</tbody>
-          </table>
-        </div>
-        {checked.length > 50 && <p className="ops-note">Showing the first 50 of {checked.length} rows. All rows are checked.</p>}
+                : <span className="fcrm-pill good">{c.warnings.length ? 'Ready · ' + c.warnings.join(', ') : 'Ready'}</span>}
+            </td>
+            <td><button type="button" className="import-review-inspect" onClick={() => setDetailRow(index)}
+              aria-label={'Inspect source row ' + (c.sourceRow + 2)}>Inspect</button></td>
+          </tr>}
+        />
+        {selectedReview && <section className="import-review-detail" aria-label="Selected source row details">
+          <h4>Source row {selectedReview.sourceRow + 2} · mapped contact fields</h4>
+          <dl>{FIELDS[target].map(field => <div key={field.key}><dt>{field.label}</dt><dd>{selectedReview.values[field.key] || 'Not provided'}</dd></div>)}</dl>
+          {selectedReview.errors.length > 0 && <p role="alert">{selectedReview.errors.join(' · ')}</p>}
+          {selectedReview.warnings.length > 0 && <p>{selectedReview.warnings.join(' · ')}</p>}
+          <details><summary>Original source columns (read only)</summary>
+            <dl>{headers.map((header, column) => <div key={column}><dt>{header || 'Column ' + (column + 1)}</dt><dd>{body[selectedReview.sourceRow]?.[column] || '—'}</dd></div>)}</dl>
+          </details>
+          <button type="button" className="import-review-inspect" onClick={() => setDetailRow(null)}>Close inspection</button>
+        </section>}
+        <p className="ops-note">Every one of the {checked.length.toLocaleString()} source rows is validated and available to review. Scroll or jump to any row; inspection does not change imported data.</p>
       </section>
 
       {progress && <section className="simp-block" aria-live="polite">
