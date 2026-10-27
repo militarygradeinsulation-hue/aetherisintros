@@ -5,6 +5,7 @@ import { useState } from 'react'
 import logoAsset from '@/assets/aetheris-logo.jpg.asset.json'
 import josephPortraitAsset from '@/assets/portraits/member-joseph.jpg.asset.json'
 import { founderStoryChapters as chapters } from '@/aetheris/founder-story-content'
+import { PublicStructuredData } from '@/aetheris/PublicStructuredData'
 import '@/aetheris/styles.css'
 
 const MIN_PARAGRAPH_LENGTH = 240
@@ -57,6 +58,9 @@ function FounderStoryPage() {
   const [chaptersOpen, setChaptersOpen] = useState(false)
 
   return <main className="founder-book">
+    <PublicStructuredData path="/founder-story"
+      title="Why Joseph Toney Built Ask Intros | Founder Story"
+      description="Meet Joseph Toney, founder of Ask Intros, and read the story behind its approach to business relationships, context, and useful introductions." />
     <header className="founder-book-bar">
       <Link to="/" className="brand-mark" aria-label="Ask Intros Home">
         <img className="brand-logo" src={logoAsset.url} alt="Ask Intros logo" />
