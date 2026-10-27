@@ -5,7 +5,7 @@ The previous SEO releases established server rendered product pages, a sitemap, 
 ## What runs
 
 - GitHub Actions workflow: `Ask Intros Live Search Monitor` (`.github/workflows/live-search-monitor.yml`)
-- Daily at **13:35 UTC** and manually via Actions > Ask Intros Live Search Monitor > Run workflow.
+- Runs once when the workflow is first merged to the default branch, then daily at **13:35 UTC** and manually via Actions > Ask Intros Live Search Monitor > Run workflow.
 - No Lovable agent messages or Lovable code-generation credits.
 - Test URLs: `/robots.txt`, `/sitemap.xml`, and the eleven publicly indexable routes defined in `production-monitor.mjs`.
 - Each public HTML response must return HTTP 200 over the canonical HTTPS hostname, have an Ask Intros title, description, initial H1, exactly one canonical and Organization/WebPage JSON-LD. Robots and sitemap must allow and enumerate canonical URLs.
