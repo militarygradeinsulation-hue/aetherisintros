@@ -520,3 +520,4 @@ Next slices, not implemented by this change:
 - [x] Fix contact file upload from People (Butler says it can't do request)
 - [x] Sync new People contacts to HubSpot (entire portal)
 - [x] Drag and drop: member chooses destination; system reads file and places it
+- [ ] Contact import allows 2,000 rows per file
