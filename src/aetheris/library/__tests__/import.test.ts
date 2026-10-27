@@ -285,6 +285,23 @@ describe("private library imports", () => {
     expect(rows.every((entry) => !entry.record.duplicate_candidate)).toBe(true);
   });
 
+
+  it("keeps every one of 251 CSV rows available for mapping and source review", () => {
+    const csv = "Full Name,Email Address,Company,Title" +
+      Array.from({ length: 251 }, (_, i) => "\\nPerson " + (i + 1) +
+        ",person" + (i + 1) + "@example.test,Example Co,Engineer").join("");
+    const sheet = parseCsv(csv, "bulk.csv")[0]!;
+    const mapped = mapSheetRows(sheet, autoMap(sheet.headers), "bulk.csv");
+    expect(sheet.rows).toHaveLength(251);
+    expect(mapped).toHaveLength(251);
+    expect(mapped[50]!.record.source_row).toBe(52);
+    expect(mapped[250]!.record).toMatchObject({
+      name: "Person 251", email: "person251@example.test", business: "Example Co",
+      title: "Engineer", verification_status: "unverified",
+    });
+    expect(mapped[250]!.record.original_columns["Full Name"]).toBe("Person 251");
+  });
+
   it("preserves duplicate column labels and reports malformed workbooks recoverably", async () => {
     const sheet = parseCsv("Name,Name\nFirst,Second")[0]!;
     const [entry] = mapSheetRows(sheet, autoMap(sheet.headers), "duplicate-headers.csv");

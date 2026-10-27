@@ -333,6 +333,8 @@ export function PrivateLibrary() {
   const duplicateCount = checkedRows.filter(
     (row) => row.record.duplicate_candidate && !row.errors.length,
   ).length;
+  const enrichmentGaps = checkedRows.filter(row => row.record.record_type === "person"
+    && (!row.record.email || !row.record.business || !row.record.title)).length;
   const activeChecked = useMemo(
     () => checkedRows.filter((row) => row.record.source_sheet === activeSheet),
     [checkedRows, activeSheet],
@@ -781,6 +783,10 @@ export function PrivateLibrary() {
             </span>
           </div>
           <p className="pl-note">
+            {enrichmentGaps.toLocaleString()} person records lack an email, company or title and may benefit from evidence-backed enrichment after import.
+            Missing data remains blank and unverified; automatic external lookup is not configured.
+          </p>
+          <p className="pl-note">
             No rows are merged or deleted. Shared phone or email and a matching name alone are not
             identity proof. Company-only rows stay organizations; all imported people remain
             unverified.
@@ -867,17 +873,17 @@ export function PrivateLibrary() {
               <summary>
                 <ShieldAlert size={14} /> {rowErrors.length} row-level issues
               </summary>
-              {rowErrors.slice(0, 100).map((row, index) => (
-                <p key={`${row.source_sheet}:${row.source_row}:${index}`}>
-                  {row.source_sheet} · row {row.source_row}: {row.messages.join(" · ")}
-                </p>
-              ))}
-              {rowErrors.length > 100 && (
-                <small>
-                  Showing the first 100 of {rowErrors.length} row errors; the full report is saved
-                  privately with this import batch.
-                </small>
-              )}
+              <ImportReviewTable
+                rows={rowErrors}
+                scopeKey={file?.name ?? "import-errors"}
+                label="All import row issues"
+                headings={["Sheet", "Source row", "Problem"]}
+                renderRow={(row, index) => <tr key={row.source_sheet + ":" + row.source_row + ":" + index} aria-rowindex={index + 2}>
+                  <td>{row.source_sheet}</td>
+                  <td>{row.source_row}</td>
+                  <td title={row.messages.join(" · ")}>{row.messages.join(" · ")}</td>
+                </tr>}
+              />
             </details>
           )}
         </section>
