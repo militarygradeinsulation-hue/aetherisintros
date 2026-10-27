@@ -55,7 +55,7 @@ const toPerson = (r: Row): CrmPerson => ({
   linkedinUrl: str(r['linkedin_url']), source: str(r['source']), notes: str(r['notes']),
   tags: Array.isArray(r['tags']) ? (r['tags'] as string[]) : [],
   memberId: nul(r['member_id']), profileId: nul(r['profile_id']), directoryContactId: nul(r['directory_contact_id']),
-  lastActivityAt: nul(r['last_activity_at']), archived: bool(r['archived']),
+  lastActivityAt: nul(r['last_activity_at']), archived: bool(r['archived']), deletedAt: nul(r['deleted_at']),
   createdAt: str(r['created_at']), updatedAt: str(r['updated_at']),
 })
 
@@ -282,6 +282,7 @@ export const personRepo = {
     ...(p.memberId !== undefined && { member_id: p.memberId }),
     ...(p.lastActivityAt !== undefined && { last_activity_at: p.lastActivityAt }),
     ...(p.archived !== undefined && { archived: p.archived }),
+    ...(p.deletedAt !== undefined && { deleted_at: p.deletedAt }),
   }, toPerson),
   remove: (id: ID) => supabase.from('crm_people').delete().eq('id', id),
 }

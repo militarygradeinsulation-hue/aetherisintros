@@ -2153,6 +2153,7 @@ export type Database = {
           company_name: string
           created_at: string
           custom: Json
+          deleted_at: string | null
           directory_contact_id: string | null
           email: string
           full_name: string
@@ -2179,6 +2180,7 @@ export type Database = {
           company_name?: string
           created_at?: string
           custom?: Json
+          deleted_at?: string | null
           directory_contact_id?: string | null
           email?: string
           full_name: string
@@ -2205,6 +2207,7 @@ export type Database = {
           company_name?: string
           created_at?: string
           custom?: Json
+          deleted_at?: string | null
           directory_contact_id?: string | null
           email?: string
           full_name?: string

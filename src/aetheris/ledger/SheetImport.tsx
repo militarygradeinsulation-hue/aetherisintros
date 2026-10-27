@@ -85,6 +85,7 @@ export default function SheetImport({ onBack, initialTarget = 'people' }: { onBa
   const [map, setMap] = useState<Record<string, number>>({})
   const [skipBad, setSkipBad] = useState(true)
   const [removeDupes, setRemoveDupes] = useState(true)
+  const [progress, setProgress] = useState<{ done: number; total: number; recent: string[] } | null>(null)
   const [busy, setBusy] = useState(false)
   const importingRef = useRef(false)
   const importedRowsRef = useRef(new Set<string>())
@@ -179,8 +180,11 @@ export default function SheetImport({ onBack, initialTarget = 'people' }: { onBa
     let saved = 0
     let failed = 0
     let failureDetail = ''
-    try {
-      for (const candidate of pending) {
+    setProgress({ done: 0, total: pending.length, recent: [] })
+    const queue = [...pending]
+    // Save several at once and show each contact the moment it lands.
+    const worker = async () => {
+      for (let candidate = queue.shift(); candidate; candidate = queue.shift()) {
         const v = candidate.values
         try {
           const res = target === 'people'
@@ -203,7 +207,12 @@ export default function SheetImport({ onBack, initialTarget = 'people' }: { onBa
           failed += 1
           failureDetail ||= 'The CRM request failed or the network connection was interrupted.'
         }
+        const label = (target === 'people' ? v.fullName : v.name) ?? ''
+        setProgress(p => p && { ...p, done: p.done + 1, recent: [label, ...p.recent].slice(0, 6) })
       }
+    }
+    try {
+      await Promise.all(Array.from({ length: Math.min(4, pending.length) }, worker))
     } finally {
       importingRef.current = false
       setBusy(false)
@@ -221,7 +230,7 @@ export default function SheetImport({ onBack, initialTarget = 'people' }: { onBa
     }
   }
 
-  const reset = () => { importedRowsRef.current.clear(); setGrid([]); setFileName(''); setMap({}); setDone(null); setReadError(null) }
+  const reset = () => { setProgress(null); importedRowsRef.current.clear(); setGrid([]); setFileName(''); setMap({}); setDone(null); setReadError(null) }
 
   return <div className="simp">
     <div className="simp-intro">
@@ -290,6 +299,14 @@ export default function SheetImport({ onBack, initialTarget = 'people' }: { onBa
         {checked.length > 50 && <p className="ops-note">Showing the first 50 of {checked.length} rows. All rows are checked.</p>}
       </section>
 
+      {progress && <section className="simp-block" aria-live="polite">
+        <Eyebrow>{busy ? 'ADDING NOW' : 'FINISHED'} · {progress.done} OF {progress.total}</Eyebrow>
+        <div style={{ height: 6, borderRadius: 3, background: 'rgba(255,255,255,.1)', overflow: 'hidden', margin: '8px 0' }}>
+          <div style={{ width: `${(progress.done / Math.max(1, progress.total)) * 100}%`, height: '100%', background: '#0F5CCB', transition: 'width .2s' }} />
+        </div>
+        <ul style={{ margin: 0, paddingLeft: 18, fontSize: 13, opacity: .85 }}>{progress.recent.map((n, i) => <li key={`${n}-${i}`}>{n} added</li>)}</ul>
+      </section>}
+
       <section className="simp-block simp-go">
         <label className="simp-toggle">
           <input type="checkbox" checked={removeDupes} onChange={e => setRemoveDupes(e.target.checked)} />
@@ -302,7 +319,7 @@ export default function SheetImport({ onBack, initialTarget = 'people' }: { onBa
         <div>
           <Btn kind="quiet" onClick={reset}><RotateCcw size={14} /> Start over</Btn>
           <Btn kind="primary" disabled={busy || missingRequired || !good.length || (!skipBad && bad > 0)} onClick={() => void run()}>
-            {busy ? 'Adding…' : `Add ${good.length} to CRM`}
+            {busy && progress ? `Adding ${progress.done} of ${progress.total}…` : `Add ${good.length} to CRM`}
           </Btn>
         </div>
       </section>
