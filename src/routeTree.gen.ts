@@ -12,18 +12,24 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as ActiveMemoryRouteImport } from './routes/active-memory'
+import { Route as AiNetworkingAssistantRouteImport } from './routes/ai-networking-assistant'
 import { Route as AuthRouteImport } from './routes/auth'
+import { Route as BusinessRelationshipCrmRouteImport } from './routes/business-relationship-crm'
 import { Route as DemoRouteImport } from './routes/demo'
 import { Route as EarlyAccessRouteImport } from './routes/early-access'
+import { Route as ExecutiveNetworkingRouteImport } from './routes/executive-networking'
 import { Route as FounderStoryRouteImport } from './routes/founder-story'
 import { Route as HowItWorksRouteImport } from './routes/how-it-works'
 import { Route as McpRouteImport } from './routes/mcp'
 import { Route as MeetRouteImport } from './routes/meet'
 import { Route as NewsRouteImport } from './routes/news'
+import { Route as RelationshipIntelligenceRouteImport } from './routes/relationship-intelligence'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
+import { Route as SocialBusinessViewsRouteImport } from './routes/social-business-views'
 import { Route as TryRouteImport } from './routes/try'
 import { Route as VisionRouteImport } from './routes/vision'
 import { Route as VisionProfileRouteImport } from './routes/vision-profile'
+import { Route as WarmIntroductionPlaybookRouteImport } from './routes/warm-introduction-playbook'
 import { Route as WarmIntroductionsRouteImport } from './routes/warm-introductions'
 import { Route as Char91DotwellKnownChar93OauthProtectedResourceRouteImport } from './routes/[.well-known]/oauth-protected-resource'
 import { Route as AuthenticatedAppRouteImport } from './routes/_authenticated/app'
@@ -78,9 +84,19 @@ const ActiveMemoryRoute = ActiveMemoryRouteImport.update({
   path: '/active-memory',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AiNetworkingAssistantRoute = AiNetworkingAssistantRouteImport.update({
+  id: '/ai-networking-assistant',
+  path: '/ai-networking-assistant',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AuthRoute = AuthRouteImport.update({
   id: '/auth',
   path: '/auth',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const BusinessRelationshipCrmRoute = BusinessRelationshipCrmRouteImport.update({
+  id: '/business-relationship-crm',
+  path: '/business-relationship-crm',
   getParentRoute: () => rootRouteImport,
 } as any)
 const DemoRoute = DemoRouteImport.update({
@@ -91,6 +107,11 @@ const DemoRoute = DemoRouteImport.update({
 const EarlyAccessRoute = EarlyAccessRouteImport.update({
   id: '/early-access',
   path: '/early-access',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ExecutiveNetworkingRoute = ExecutiveNetworkingRouteImport.update({
+  id: '/executive-networking',
+  path: '/executive-networking',
   getParentRoute: () => rootRouteImport,
 } as any)
 const FounderStoryRoute = FounderStoryRouteImport.update({
@@ -118,9 +139,20 @@ const NewsRoute = NewsRouteImport.update({
   path: '/news',
   getParentRoute: () => rootRouteImport,
 } as any)
+const RelationshipIntelligenceRoute =
+  RelationshipIntelligenceRouteImport.update({
+    id: '/relationship-intelligence',
+    path: '/relationship-intelligence',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
   id: '/sitemap.xml',
   path: '/sitemap.xml',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SocialBusinessViewsRoute = SocialBusinessViewsRouteImport.update({
+  id: '/social-business-views',
+  path: '/social-business-views',
   getParentRoute: () => rootRouteImport,
 } as any)
 const TryRoute = TryRouteImport.update({
@@ -138,6 +170,12 @@ const VisionProfileRoute = VisionProfileRouteImport.update({
   path: '/vision-profile',
   getParentRoute: () => rootRouteImport,
 } as any)
+const WarmIntroductionPlaybookRoute =
+  WarmIntroductionPlaybookRouteImport.update({
+    id: '/warm-introduction-playbook',
+    path: '/warm-introduction-playbook',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const WarmIntroductionsRoute = WarmIntroductionsRouteImport.update({
   id: '/warm-introductions',
   path: '/warm-introductions',
@@ -347,18 +385,24 @@ const LovableEmailTransactionalPreviewRoute =
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/active-memory': typeof ActiveMemoryRoute
+  '/ai-networking-assistant': typeof AiNetworkingAssistantRoute
   '/auth': typeof AuthRoute
+  '/business-relationship-crm': typeof BusinessRelationshipCrmRoute
   '/demo': typeof DemoRoute
   '/early-access': typeof EarlyAccessRoute
+  '/executive-networking': typeof ExecutiveNetworkingRoute
   '/founder-story': typeof FounderStoryRoute
   '/how-it-works': typeof HowItWorksRoute
   '/mcp': typeof McpRoute
   '/meet': typeof MeetRoute
   '/news': typeof NewsRouteWithChildren
+  '/relationship-intelligence': typeof RelationshipIntelligenceRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/social-business-views': typeof SocialBusinessViewsRoute
   '/try': typeof TryRoute
   '/vision': typeof VisionRoute
   '/vision-profile': typeof VisionProfileRoute
+  '/warm-introduction-playbook': typeof WarmIntroductionPlaybookRoute
   '/warm-introductions': typeof WarmIntroductionsRoute
   '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
   '/app': typeof AuthenticatedAppRoute
@@ -402,18 +446,24 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/active-memory': typeof ActiveMemoryRoute
+  '/ai-networking-assistant': typeof AiNetworkingAssistantRoute
   '/auth': typeof AuthRoute
+  '/business-relationship-crm': typeof BusinessRelationshipCrmRoute
   '/demo': typeof DemoRoute
   '/early-access': typeof EarlyAccessRoute
+  '/executive-networking': typeof ExecutiveNetworkingRoute
   '/founder-story': typeof FounderStoryRoute
   '/how-it-works': typeof HowItWorksRoute
   '/mcp': typeof McpRoute
   '/meet': typeof MeetRoute
   '/news': typeof NewsRouteWithChildren
+  '/relationship-intelligence': typeof RelationshipIntelligenceRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/social-business-views': typeof SocialBusinessViewsRoute
   '/try': typeof TryRoute
   '/vision': typeof VisionRoute
   '/vision-profile': typeof VisionProfileRoute
+  '/warm-introduction-playbook': typeof WarmIntroductionPlaybookRoute
   '/warm-introductions': typeof WarmIntroductionsRoute
   '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
   '/app': typeof AuthenticatedAppRoute
@@ -459,18 +509,24 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/active-memory': typeof ActiveMemoryRoute
+  '/ai-networking-assistant': typeof AiNetworkingAssistantRoute
   '/auth': typeof AuthRoute
+  '/business-relationship-crm': typeof BusinessRelationshipCrmRoute
   '/demo': typeof DemoRoute
   '/early-access': typeof EarlyAccessRoute
+  '/executive-networking': typeof ExecutiveNetworkingRoute
   '/founder-story': typeof FounderStoryRoute
   '/how-it-works': typeof HowItWorksRoute
   '/mcp': typeof McpRoute
   '/meet': typeof MeetRoute
   '/news': typeof NewsRouteWithChildren
+  '/relationship-intelligence': typeof RelationshipIntelligenceRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/social-business-views': typeof SocialBusinessViewsRoute
   '/try': typeof TryRoute
   '/vision': typeof VisionRoute
   '/vision-profile': typeof VisionProfileRoute
+  '/warm-introduction-playbook': typeof WarmIntroductionPlaybookRoute
   '/warm-introductions': typeof WarmIntroductionsRoute
   '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
   '/_authenticated/app': typeof AuthenticatedAppRoute
@@ -516,18 +572,24 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/active-memory'
+    | '/ai-networking-assistant'
     | '/auth'
+    | '/business-relationship-crm'
     | '/demo'
     | '/early-access'
+    | '/executive-networking'
     | '/founder-story'
     | '/how-it-works'
     | '/mcp'
     | '/meet'
     | '/news'
+    | '/relationship-intelligence'
     | '/sitemap.xml'
+    | '/social-business-views'
     | '/try'
     | '/vision'
     | '/vision-profile'
+    | '/warm-introduction-playbook'
     | '/warm-introductions'
     | '/.well-known/oauth-protected-resource'
     | '/app'
@@ -571,18 +633,24 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/active-memory'
+    | '/ai-networking-assistant'
     | '/auth'
+    | '/business-relationship-crm'
     | '/demo'
     | '/early-access'
+    | '/executive-networking'
     | '/founder-story'
     | '/how-it-works'
     | '/mcp'
     | '/meet'
     | '/news'
+    | '/relationship-intelligence'
     | '/sitemap.xml'
+    | '/social-business-views'
     | '/try'
     | '/vision'
     | '/vision-profile'
+    | '/warm-introduction-playbook'
     | '/warm-introductions'
     | '/.well-known/oauth-protected-resource'
     | '/app'
@@ -627,18 +695,24 @@ export interface FileRouteTypes {
     | '/'
     | '/_authenticated'
     | '/active-memory'
+    | '/ai-networking-assistant'
     | '/auth'
+    | '/business-relationship-crm'
     | '/demo'
     | '/early-access'
+    | '/executive-networking'
     | '/founder-story'
     | '/how-it-works'
     | '/mcp'
     | '/meet'
     | '/news'
+    | '/relationship-intelligence'
     | '/sitemap.xml'
+    | '/social-business-views'
     | '/try'
     | '/vision'
     | '/vision-profile'
+    | '/warm-introduction-playbook'
     | '/warm-introductions'
     | '/.well-known/oauth-protected-resource'
     | '/_authenticated/app'
@@ -684,18 +758,24 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
   ActiveMemoryRoute: typeof ActiveMemoryRoute
+  AiNetworkingAssistantRoute: typeof AiNetworkingAssistantRoute
   AuthRoute: typeof AuthRoute
+  BusinessRelationshipCrmRoute: typeof BusinessRelationshipCrmRoute
   DemoRoute: typeof DemoRoute
   EarlyAccessRoute: typeof EarlyAccessRoute
+  ExecutiveNetworkingRoute: typeof ExecutiveNetworkingRoute
   FounderStoryRoute: typeof FounderStoryRoute
   HowItWorksRoute: typeof HowItWorksRoute
   McpRoute: typeof McpRoute
   MeetRoute: typeof MeetRoute
   NewsRoute: typeof NewsRouteWithChildren
+  RelationshipIntelligenceRoute: typeof RelationshipIntelligenceRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
+  SocialBusinessViewsRoute: typeof SocialBusinessViewsRoute
   TryRoute: typeof TryRoute
   VisionRoute: typeof VisionRoute
   VisionProfileRoute: typeof VisionProfileRoute
+  WarmIntroductionPlaybookRoute: typeof WarmIntroductionPlaybookRoute
   WarmIntroductionsRoute: typeof WarmIntroductionsRoute
   Char91DotwellKnownChar93OauthProtectedResourceRoute: typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
   ImpactSlugRoute: typeof ImpactSlugRoute
@@ -747,11 +827,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ActiveMemoryRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/ai-networking-assistant': {
+      id: '/ai-networking-assistant'
+      path: '/ai-networking-assistant'
+      fullPath: '/ai-networking-assistant'
+      preLoaderRoute: typeof AiNetworkingAssistantRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/auth': {
       id: '/auth'
       path: '/auth'
       fullPath: '/auth'
       preLoaderRoute: typeof AuthRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/business-relationship-crm': {
+      id: '/business-relationship-crm'
+      path: '/business-relationship-crm'
+      fullPath: '/business-relationship-crm'
+      preLoaderRoute: typeof BusinessRelationshipCrmRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/demo': {
@@ -766,6 +860,13 @@ declare module '@tanstack/react-router' {
       path: '/early-access'
       fullPath: '/early-access'
       preLoaderRoute: typeof EarlyAccessRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/executive-networking': {
+      id: '/executive-networking'
+      path: '/executive-networking'
+      fullPath: '/executive-networking'
+      preLoaderRoute: typeof ExecutiveNetworkingRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/founder-story': {
@@ -803,11 +904,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof NewsRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/relationship-intelligence': {
+      id: '/relationship-intelligence'
+      path: '/relationship-intelligence'
+      fullPath: '/relationship-intelligence'
+      preLoaderRoute: typeof RelationshipIntelligenceRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/sitemap.xml': {
       id: '/sitemap.xml'
       path: '/sitemap.xml'
       fullPath: '/sitemap.xml'
       preLoaderRoute: typeof SitemapDotxmlRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/social-business-views': {
+      id: '/social-business-views'
+      path: '/social-business-views'
+      fullPath: '/social-business-views'
+      preLoaderRoute: typeof SocialBusinessViewsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/try': {
@@ -829,6 +944,13 @@ declare module '@tanstack/react-router' {
       path: '/vision-profile'
       fullPath: '/vision-profile'
       preLoaderRoute: typeof VisionProfileRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/warm-introduction-playbook': {
+      id: '/warm-introduction-playbook'
+      path: '/warm-introduction-playbook'
+      fullPath: '/warm-introduction-playbook'
+      preLoaderRoute: typeof WarmIntroductionPlaybookRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/warm-introductions': {
@@ -1154,18 +1276,24 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
   ActiveMemoryRoute: ActiveMemoryRoute,
+  AiNetworkingAssistantRoute: AiNetworkingAssistantRoute,
   AuthRoute: AuthRoute,
+  BusinessRelationshipCrmRoute: BusinessRelationshipCrmRoute,
   DemoRoute: DemoRoute,
   EarlyAccessRoute: EarlyAccessRoute,
+  ExecutiveNetworkingRoute: ExecutiveNetworkingRoute,
   FounderStoryRoute: FounderStoryRoute,
   HowItWorksRoute: HowItWorksRoute,
   McpRoute: McpRoute,
   MeetRoute: MeetRoute,
   NewsRoute: NewsRouteWithChildren,
+  RelationshipIntelligenceRoute: RelationshipIntelligenceRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
+  SocialBusinessViewsRoute: SocialBusinessViewsRoute,
   TryRoute: TryRoute,
   VisionRoute: VisionRoute,
   VisionProfileRoute: VisionProfileRoute,
+  WarmIntroductionPlaybookRoute: WarmIntroductionPlaybookRoute,
   WarmIntroductionsRoute: WarmIntroductionsRoute,
   Char91DotwellKnownChar93OauthProtectedResourceRoute:
     Char91DotwellKnownChar93OauthProtectedResourceRoute,
@@ -1197,13 +1325,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
