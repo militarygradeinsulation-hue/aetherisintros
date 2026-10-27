@@ -1,5 +1,5 @@
 export interface PublicProductPage {
-  path: '/how-it-works' | '/warm-introductions' | '/active-memory' | '/executive-networking' | '/relationship-intelligence' | '/ai-networking-assistant' | '/business-relationship-crm' | '/social-business-views'
+  path: '/how-it-works' | '/warm-introductions' | '/active-memory' | '/executive-networking' | '/relationship-intelligence' | '/ai-networking-assistant' | '/business-relationship-crm' | '/social-business-views' | '/warm-introduction-playbook'
   title: string
   label?: string
   heading: string
@@ -320,6 +320,87 @@ export const publicProductPages: PublicProductPage[] = [
         "answer": "No. A presentation toggle does not grant sharing permissions. Private records remain private unless a separate authorized action changes their scope."
       }
     ]
-  }
+  },
+{
+  "path": "/warm-introduction-playbook",
+  "label": "Introduction playbook",
+  "title": "How to Request a Warm Business Introduction | Ask Intros",
+  "heading": "How to request a warm business introduction people can actually evaluate.",
+  "description": "A practical executive introduction playbook: decide who to approach, explain why the connection matters, ask permission and follow up without wasting attention.",
+  "summary": "An introduction is not a contact transfer. It is a request for two people to consider spending time together. Before you ask, show the relevance, explain what each person gains and make declining easy. This guide provides a reusable decision framework and realistic message examples.",
+  "sections": [
+    {
+      "heading": "1. Define the outcome before naming the person",
+      "paragraphs": [
+        "Start with the problem, not the prestige of a title. A CEO seeking help with a manufacturing bottleneck needs a different conversation from a founder evaluating a channel partnership. Write down one outcome, one constraint and one next action that a useful conversation might support.",
+        "Weak request: I want to meet more CEOs. Stronger request: I would value a conversation with an owner who has integrated field sales and service scheduling across multiple locations. I am deciding whether to build or buy the coordination layer. The second request makes fit assessable without promising that anyone will respond."
+      ]
+    },
+    {
+      "heading": "2. Answer Why me, Why them, Why now",
+      "paragraphs": [
+        "Why me: Identify your actual role, relevant experience or stake in the problem. Do not manufacture a connection or imply endorsement. Why them: State what publicly shared expertise or permitted context makes this specific person relevant. Why now: Name the decision, deadline or opportunity that makes a conversation useful at this moment.",
+        "These three questions are the Ask Intros decision filter. If the reason to connect is weak or the timing is unclear, research further or wait. A credible reason to decline is more respectful than a rushed request."
+      ]
+    },
+    {
+      "heading": "3. Make the introduction safe for the connector",
+      "paragraphs": [
+        "The person making an introduction is spending some of their own relationship equity. Give them a short message they can review and edit. Explain what the recipient might find relevant and ask whether they are comfortable passing it along. Never assume that access to someone's contact details grants consent to use them.",
+        "Keep confidential revenue figures, customer names, medical details and private meeting notes out of an introduction request unless their owners have explicitly authorized disclosure. A public professional profile is not permission to share everything you know."
+      ]
+    },
+    {
+      "heading": "4. Use a two-step permission request",
+      "paragraphs": [
+        "Message to a connector: I am evaluating how growing service businesses connect sales promises to delivery capacity. I saw that your contact has worked on this problem. Would you be comfortable asking whether they are open to a brief conversation? Here is why the topic may be relevant to both of us. No pressure if the timing is wrong.",
+        "If the connector agrees, they can send a separate note asking the prospective recipient whether they want the introduction. Only when the recipient also agrees should the connection be made. This is the difference between a warm introduction and quietly copying two strangers on a message."
+      ]
+    },
+    {
+      "heading": "5. Give the recipient a useful first message",
+      "paragraphs": [
+        "After mutual agreement, open with context rather than a pitch deck: Thank you for being open to an introduction. I am working on a specific handoff challenge between sales and operations. I would appreciate 15 minutes to compare how you approached it. I can share the field process that worked for our team in return. Would either Tuesday or Thursday fit?",
+        "Do not treat the example as a promise of a meeting, a qualified lead or a specific response rate. Adapt the details to what you genuinely know and can offer. If the other person suggests another format, respect it."
+      ]
+    },
+    {
+      "heading": "6. Record only an agreed next step",
+      "paragraphs": [
+        "If the conversation happens, note the purpose, the information you were invited to keep and any next action both people accepted. An introduction can end with useful advice rather than a commercial opportunity. Avoid inventing a pipeline value or claiming a partnership because two people met.",
+        "A simple follow up closes the loop with the connector without revealing private details: Thank you for making the introduction. We spoke and agreed on a next step. I appreciated the connection. If no meeting happened, say so plainly rather than suggesting an outcome."
+      ]
+    },
+    {
+      "heading": "7. Use a quick decision checklist",
+      "paragraphs": [
+        "Before sending: Can I describe the need in one sentence? Can I explain why this person is relevant using information I am permitted to share? Is the timing real? Have I made the ask optional for the connector and recipient? Have I offered an appropriate next step? If any answer is no, improve the request first.",
+        "Ask Intros brings relationship context, profiles and the introduction workflow into one workspace. Its relevance suggestions are still suggestions: network availability, permissions and mutual interest determine what happens next. The public demonstration uses illustrative people, not evidence that a particular executive is waiting to meet."
+      ]
+    }
+  ],
+  "questions": [
+    {
+      "question": "What is a warm business introduction?",
+      "answer": "A warm business introduction is a connection proposed through an existing relationship or meaningful shared context, with both participants able to accept or decline. It is not just an email with two names copied."
+    },
+    {
+      "question": "What does double opt in mean for an introduction?",
+      "answer": "Double opt in means each intended participant agrees to the connection before a private introduction is made. The connector may first ask each side separately."
+    },
+    {
+      "question": "How long should an introduction request be?",
+      "answer": "Long enough to state the actual need, relevance, timing and next action, but short enough for the recipient to understand without extra research. There is no universal word count or guaranteed response rate."
+    },
+    {
+      "question": "Should I ask for a meeting before a connector checks interest?",
+      "answer": "No. Ask whether the connector is comfortable checking interest first. Only propose meeting details after the prospective recipient agrees to engage."
+    },
+    {
+      "question": "Can Ask Intros guarantee access to CEOs or investors?",
+      "answer": "No. Membership does not guarantee a particular person is available, willing to connect or interested in a deal. Both sides choose whether to participate."
+    }
+  ]
+}
 
 ]
