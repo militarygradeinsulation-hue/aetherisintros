@@ -14,7 +14,7 @@ export function PublicProductPage({ page }: { page: Page }) {
       <div><AppearanceToggle /><Link to="/demo">Explore the demo</Link></div>
     </header>
     <article id="product-explanation">
-      <nav className="public-product-breadcrumb" aria-label="Breadcrumb"><Link to="/">Ask Intros</Link><span aria-hidden="true">/</span><span>{page.path === '/how-it-works' ? 'How it works' : page.path === '/warm-introductions' ? 'Warm introductions' : 'Active Memory'}</span></nav>
+      <nav className="public-product-breadcrumb" aria-label="Breadcrumb"><Link to="/">Ask Intros</Link><span aria-hidden="true">/</span><span>{page.label ?? (page.path === '/how-it-works' ? 'How it works' : page.path === '/warm-introductions' ? 'Warm introductions' : 'Active Memory')}</span></nav>
       <p className="public-product-kicker">WHY ME. WHY THEM. WHY NOW.</p>
       <h1>{page.heading}</h1>
       <p className="public-product-summary">{page.summary}</p>
@@ -24,6 +24,6 @@ export function PublicProductPage({ page }: { page: Page }) {
       </section>
       <aside className="public-product-next"><h2>Explore Ask Intros</h2><p>See the interface, read the membership options, or create your profile.</p><div><Link to="/demo">Explore the demo</Link><Link to="/early-access">Membership options</Link><Link to="/auth" search={{ mode: 'signup' }}>Create an account</Link></div></aside>
     </article>
-    <footer><nav aria-label="Learn about Ask Intros">{publicProductPages.filter(item => item.path !== page.path).map(item => <Link key={item.path} to={item.path}>{item.path === '/how-it-works' ? 'How it works' : item.path === '/warm-introductions' ? 'Warm introductions' : 'Active Memory'}</Link>)}<Link to="/founder-story">Founder story</Link></nav><Link to="/">Ask Intros</Link></footer>
+    <footer><nav aria-label="Learn about Ask Intros">{publicProductPages.filter(item => item.path !== page.path).map(item => <Link key={item.path} to={item.path}>{item.label ?? (item.path === '/how-it-works' ? 'How it works' : item.path === '/warm-introductions' ? 'Warm introductions' : 'Active Memory')}</Link>)}<Link to="/founder-story">Founder story</Link></nav><Link to="/">Ask Intros</Link></footer>
   </main>
 }
