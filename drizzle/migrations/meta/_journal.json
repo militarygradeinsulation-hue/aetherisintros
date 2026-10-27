@@ -736,6 +736,20 @@
       "when": 1793115598023,
       "tag": "0105_meeting_chat_messages",
       "breakpoints": true
+    },
+    {
+      "idx": 106,
+      "version": "7",
+      "when": 1793117140604,
+      "tag": "0106_enforce_member_access_rules",
+      "breakpoints": true
+    },
+    {
+      "idx": 107,
+      "version": "7",
+      "when": 1793117186414,
+      "tag": "0107_company_profiles_owner_scoped",
+      "breakpoints": true
     }
   ]
 }
