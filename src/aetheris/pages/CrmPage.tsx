@@ -29,6 +29,7 @@ import { LinkedInScanPanel } from '../linkedin-scan-ui'
 import FullCrm from '../ledger/FullCrm'
 import SheetImport from '../ledger/SheetImport'
 import { hasPendingSheet } from '../drop-anywhere'
+import { daysLeftInTrash, isTrashExpired } from '../crm/trash'
 import { CrmOverviewBento } from '@/components/ui/crm-overview-bento'
 import { OpenDealRoomButton } from '../deals-ui'
 import { ProspectEngine } from '../prospect/ProspectEngine'
@@ -63,6 +64,12 @@ export default function CrmPage({ section }: { section?: 'crm' | 'pipeline' | un
   const [tab, setTab] = useState<Tab>(() => (section === 'pipeline' ? 'opportunities' : section === 'crm' ? 'overview' : typeof window === 'undefined' ? 'overview' : (localStorage.getItem('aetheris.crm.tab') as Tab) || 'overview'))
   const [selected, setSelected] = useState<Selection>(null)
   const [query, setQuery] = useState('')
+  const [showTrash, setShowTrash] = useState(false)
+  const [filterLife, setFilterLife] = useState('')
+  const [filterCompany, setFilterCompany] = useState('')
+  const [filterHas, setFilterHas] = useState<'' | 'email' | 'phone' | 'no-email' | 'no-phone'>('')
+  const [draftRow, setDraftRow] = useState({ fullName: '', email: '', phone: '', title: '', companyName: '' })
+  const [addingRow, setAddingRow] = useState(false)
   const [creating, setCreating] = useState<'person' | 'company' | 'opportunity' | 'task' | null>(null)
   const [view, setView] = useState<'basic' | 'full'>(() =>
     typeof window === 'undefined' ? 'basic' : (localStorage.getItem('aetheris.crm.view') as 'basic' | 'full') || 'basic')
@@ -76,7 +83,26 @@ export default function CrmPage({ section }: { section?: 'crm' | 'pipeline' | un
   const go = (next: Tab) => { setTab(next); setSelected(null); try { localStorage.setItem('aetheris.crm.tab', next) } catch { /* ignore */ } }
 
 
-  const people = ops.people.filter(p => !p.archived)
+  const people = ops.people.filter(p => !p.archived && !p.deletedAt)
+  const trashed = ops.people.filter(p => p.deletedAt && !isTrashExpired(p.deletedAt))
+  // Anything past 30 days in Trash is removed for good.
+  useEffect(() => {
+    for (const p of ops.people) if (p.deletedAt && isTrashExpired(p.deletedAt)) void ops.deletePersonForever(p.id)
+  }, [ops.people]) // eslint-disable-line react-hooks/exhaustive-deps
+  const companyOptions = [...new Set(people.map(p => p.companyName).filter(Boolean))].sort()
+  const passesFilters = (p: CrmPerson) =>
+    (!filterLife || p.lifecycle === filterLife) && (!filterCompany || p.companyName === filterCompany) &&
+    (filterHas === '' || (filterHas === 'email' ? !!p.email : filterHas === 'phone' ? !!p.phone : filterHas === 'no-email' ? !p.email : !p.phone))
+  const addRow = async () => {
+    if (!draftRow.fullName.trim() || addingRow) return
+    setAddingRow(true)
+    const created = await ops.createPerson({ ...draftRow, fullName: draftRow.fullName.trim(), source: 'Added in People' })
+    setAddingRow(false)
+    if (created) setDraftRow({ fullName: '', email: '', phone: '', title: '', companyName: '' })
+  }
+  const trashPerson = (p: CrmPerson) => {
+    if (window.confirm(`Move ${p.fullName} to Trash? You can restore them for 30 days.`)) void ops.trashPerson(p.id)
+  }
   const companies = ops.companies.filter(c => !c.archived)
   const opportunities = ops.opportunities.filter(o => !o.archived)
   const openOpps = opportunities.filter(o => o.status === 'open')
@@ -182,24 +208,65 @@ export default function CrmPage({ section }: { section?: 'crm' | 'pipeline' | un
         <input value={query} onChange={e => setQuery(e.target.value)} placeholder="Search people, titles, companies…" aria-label="Search people" />
         <Btn kind="secondary" onClick={() => setCreating('person')}><Plus size={14} /> New person</Btn>
         <Btn kind="secondary" onClick={() => setImporting(true)}><FileUp size={14} /> Import people</Btn>
+        <Btn kind={showTrash ? 'primary' : 'quiet'} onClick={() => setShowTrash(v => !v)}>Trash ({trashed.length})</Btn>
       </div>
-      <div className="ops-table-scroll" tabIndex={0} aria-label="CRM people table">
+      {!showTrash && <div className="ops-toolbar" aria-label="Filter people">
+        <select value={filterLife} onChange={e => setFilterLife(e.target.value)} aria-label="Filter by lifecycle">
+          <option value="">All lifecycles</option>{lifecycles.map(l => <option key={l} value={l}>{l}</option>)}
+        </select>
+        <select value={filterCompany} onChange={e => setFilterCompany(e.target.value)} aria-label="Filter by company">
+          <option value="">All companies</option>{companyOptions.map(c => <option key={c} value={c}>{c}</option>)}
+        </select>
+        <select value={filterHas} onChange={e => setFilterHas(e.target.value as typeof filterHas)} aria-label="Filter by contact details">
+          <option value="">Any details</option><option value="email">Has email</option><option value="phone">Has phone</option>
+          <option value="no-email">Missing email</option><option value="no-phone">Missing phone</option>
+        </select>
+        {(filterLife || filterCompany || filterHas) && <Btn kind="quiet" onClick={() => { setFilterLife(''); setFilterCompany(''); setFilterHas('') }}>Clear filters</Btn>}
+      </div>}
+      {showTrash ? <div className="ops-table-scroll" tabIndex={0} aria-label="Trash">
+        <p className="ops-note">Deleted people stay here for 30 days, then they're removed for good.</p>
+        <table className="ops-table">
+          <thead><tr><th>Person</th><th>Company</th><th>Days left</th><th></th></tr></thead>
+          <tbody>
+            {trashed.length === 0 && <tr><td colSpan={4}>Trash is empty.</td></tr>}
+            {trashed.map(p => <tr key={p.id}>
+              <td><b>{p.fullName}</b></td><td>{p.companyName || '—'}</td><td>{daysLeftInTrash(p.deletedAt ?? '')}</td>
+              <td><button className="ops-link" onClick={() => void ops.restorePerson(p.id)}>Restore</button>{' '}
+                <button className="ops-link" onClick={() => { if (window.confirm(`Delete ${p.fullName} forever? This can't be undone.`)) void ops.deletePersonForever(p.id) }}>Delete forever</button></td>
+            </tr>)}
+          </tbody>
+        </table>
+      </div> : <div className="ops-table-scroll" tabIndex={0} aria-label="CRM people table">
       <table className="ops-table">
-        <thead><tr><th>Person</th><th>Lifecycle</th><th>Company</th><th>Title</th><th>Network</th><th>Last activity</th></tr></thead>
+        <thead><tr><th>Person</th><th>Lifecycle</th><th>Company</th><th>Title</th><th>Email</th><th>Phone</th><th>Network</th><th>Last activity</th><th></th></tr></thead>
         <tbody>
-          {people.filter(p => match(`${p.fullName} ${p.title} ${p.companyName} ${p.email}`)).map(p => {
+          <tr className="ops-add-row">
+            <td><input value={draftRow.fullName} onChange={e => setDraftRow(d => ({ ...d, fullName: e.target.value }))} onKeyDown={e => { if (e.key === 'Enter') void addRow() }} placeholder="+ Add a person — full name" aria-label="New person full name" /></td>
+            <td>Lead</td>
+            <td><input value={draftRow.companyName} onChange={e => setDraftRow(d => ({ ...d, companyName: e.target.value }))} onKeyDown={e => { if (e.key === 'Enter') void addRow() }} placeholder="Company" aria-label="New person company" /></td>
+            <td><input value={draftRow.title} onChange={e => setDraftRow(d => ({ ...d, title: e.target.value }))} onKeyDown={e => { if (e.key === 'Enter') void addRow() }} placeholder="Title" aria-label="New person title" /></td>
+            <td><input value={draftRow.email} onChange={e => setDraftRow(d => ({ ...d, email: e.target.value }))} onKeyDown={e => { if (e.key === 'Enter') void addRow() }} placeholder="Email" aria-label="New person email" /></td>
+            <td><input value={draftRow.phone} onChange={e => setDraftRow(d => ({ ...d, phone: e.target.value }))} onKeyDown={e => { if (e.key === 'Enter') void addRow() }} placeholder="Phone" aria-label="New person phone" /></td>
+            <td colSpan={2}></td>
+            <td><Btn kind="primary" disabled={!draftRow.fullName.trim() || addingRow} onClick={() => void addRow()}><Plus size={14} /> {addingRow ? 'Adding…' : 'Add row'}</Btn></td>
+          </tr>
+          {people.filter(passesFilters).filter(p => match(`${p.fullName} ${p.title} ${p.companyName} ${p.email} ${p.phone}`)).map(p => {
             const member = memberFor(p)
             return <tr key={p.id} onClick={() => setSelected({ type: 'person', id: p.id })}>
               <td><b>{p.fullName}</b></td>
               <td><span className="ops-chip">{p.lifecycle}</span></td>
-              <td>{p.companyName || '—'}</td><td>{p.title || '—'}</td>
+              <td>{p.companyName || '—'}</td><td>{p.title || '—'}</td><td>{p.email || '—'}</td><td>{p.phone || '—'}</td>
               <td>{member ? <em className="ops-signal">{member.scoreTotal} · {member.relationshipStatus}</em> : '—'}</td>
               <td>{day(p.lastActivityAt)}</td>
+              <td onClick={e => e.stopPropagation()}>
+                <button className="ops-link" onClick={() => setSelected({ type: 'person', id: p.id })}>View / edit</button>{' '}
+                <button className="ops-link" onClick={() => trashPerson(p)}>Delete</button>
+              </td>
             </tr>
           })}
         </tbody>
       </table>
-      </div>
+      </div>}
     </section>}
 
     {tab === 'companies' && <section>
@@ -401,6 +468,7 @@ function CrmDetail({ selection, onClose, onOpen }: {
           <label>Phone<input defaultValue={person.phone} onBlur={e => void ops.updatePerson(person.id, { phone: e.target.value })} /></label>
           <label>Location<input defaultValue={person.location} onBlur={e => void ops.updatePerson(person.id, { location: e.target.value })} /></label>
           <Btn kind="quiet" onClick={() => { void ops.archivePerson(person.id); onClose() }}>Archive person</Btn>
+          <Btn kind="quiet" onClick={() => { if (window.confirm(`Move ${person.fullName} to Trash? You can restore them for 30 days.`)) { void ops.trashPerson(person.id); onClose() } }}>Delete (to Trash)</Btn>
         </div>}
         {company && <div className="ops-form">
           <label>Name<input defaultValue={company.name} onBlur={e => void ops.updateCompany(company.id, { name: e.target.value })} /></label>
