@@ -12,7 +12,7 @@ import { mcpPlugin } from "@lovable.dev/mcp-js/stacks/tanstack/vite";
 
 // Load all env vars into process.env for server routes only (never added to
 // the client envDefine block, so secrets stay out of the browser bundle).
-const serverEnv = loadEnv(process.env.NODE_ENV ?? "development", process.cwd(), "");
+const serverEnv = loadEnv(process.env["NODE_ENV"] ?? "development", process.cwd(), "");
 Object.assign(process.env, serverEnv);
 
 export default defineConfig({
@@ -40,12 +40,14 @@ export default defineConfig({
       return resolved === code ? null : { code: resolved, map: null };
     },
   }, mcpPlugin()],
-  resolve: {
-    alias: {
-      // Pin entities deep imports and root to the hoisted v4.5.0 copy; a nested v7 breaks SSR.
-      "entities/lib/decode.js": path.resolve(__dirname, "node_modules/entities/lib/decode.js"),
-      "entities/lib/encode.js": path.resolve(__dirname, "node_modules/entities/lib/encode.js"),
-      "entities": path.resolve(__dirname, "node_modules/entities"),
+  vite: {
+    resolve: {
+      alias: {
+        // Pin entities deep imports and root to the hoisted v4.5.0 copy; a nested v7 breaks SSR.
+        "entities/lib/decode.js": path.resolve(__dirname, "node_modules/entities/lib/decode.js"),
+        "entities/lib/encode.js": path.resolve(__dirname, "node_modules/entities/lib/encode.js"),
+        "entities": path.resolve(__dirname, "node_modules/entities"),
+      },
     },
   },
   tanstackStart: {
