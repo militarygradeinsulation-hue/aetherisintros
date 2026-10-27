@@ -26,7 +26,7 @@ function responses(url) {
   return new Response(html(path), { headers: { 'Content-Type': 'text/html; charset=utf-8' } })
 }
 test('public route inventory excludes protected member data', () => {
-  assert.equal(ROUTES.length, 11)
+  assert.equal(ROUTES.length, 12)
   assert(!ROUTES.some(path => path.startsWith('/admin') || path === '/app' || path.startsWith('/api')))
 })
 test('finds missing SEO metadata and noindex in initial server HTML', () => {
