@@ -1,5 +1,6 @@
 import { MeetingShare, MeetingRecordEditor } from './meeting-sharing'
 import { MeetingBackgroundPicker, useMeetingBackground } from './meeting-backgrounds'
+import { MeetingChat } from './meeting-chat'
 import { MeetingAudio, saveMeetingAudio } from './meeting-audio'
 /**
  * Meetings: start a video meeting in one click (or schedule one) with up to three members,
@@ -487,6 +488,7 @@ function LiveRoom({ meeting, userId, local, initialMic, initialCam, initialFacin
       </div>
 
       <aside className="meeting-notes">
+        <MeetingChat meetingId={meeting.id} userId={userId} />
         {(meeting.agenda || room.roster.length > 1) && <details className="meeting-brief-inline">
           <summary><Compass size={14} /> Brief{meeting.agenda ? ' and agenda' : ''}</summary>
           {meeting.agenda && <p className="meeting-agenda-text">{meeting.agenda}</p>}
