@@ -288,7 +288,7 @@ describe("private library imports", () => {
 
   it("keeps every one of 251 CSV rows available for mapping and source review", () => {
     const csv = "Full Name,Email Address,Company,Title" +
-      Array.from({ length: 251 }, (_, i) => "\\nPerson " + (i + 1) +
+      Array.from({ length: 251 }, (_, i) => "\nPerson " + (i + 1) +
         ",person" + (i + 1) + "@example.test,Example Co,Engineer").join("");
     const sheet = parseCsv(csv, "bulk.csv")[0]!;
     const mapped = mapSheetRows(sheet, autoMap(sheet.headers), "bulk.csv");
