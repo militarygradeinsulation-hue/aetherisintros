@@ -191,7 +191,7 @@ export function SpecterDetectPanel() {
         </div>
         <div className="specter-address"><Globe size={16}/><span>{browseTarget || snapshot?.url || 'No website loaded'}</span>{(browseTarget || snapshot?.url) && <a href={browseTarget || snapshot!.url} target="_blank" rel="noopener noreferrer" aria-label="Open original website"><ExternalLink size={16}/></a>}</div>
         <div className="specter-browser-content">
-          {showPreview && browseTarget ? <InteractiveWebsite key={browseTarget} url={browseTarget} title={snapshot?.url === browseTarget ? snapshot.title : new URL(browseTarget).hostname} hasCapture={!!current} onCapture={() => setShowPreview(false)}/> :
+          {showPreview && browseTarget ? <InteractiveWebsite key={browseTarget} url={browseTarget} title={snapshot && snapshot.url === browseTarget ? snapshot.title : new URL(browseTarget).hostname} hasCapture={!!current && snapshot?.url === browseTarget} onCapture={() => setShowPreview(false)}/> :
             current ? <>
               <div className="specter-live-actions"><a className="specter-primary" href={current.snapshot.url} target="_blank" rel="noopener noreferrer">Open full browser <ExternalLink size={15}/></a><button type="button" onClick={() => setShowPreview(true)}>Try embedded view</button></div>
               {current.previewUrl && <CapturedPagePreview key={current.previewUrl} src={current.previewUrl} title={snapshot?.title || 'Website'} onLive={() => setShowPreview(true)}/>}
