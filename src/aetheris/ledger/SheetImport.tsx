@@ -69,17 +69,7 @@ function parseCsv(text: string): string[][] {
   return rows
 }
 
-function autoMap(headers: string[], target: Target): Record<string, number> {
-  const out: Record<string, number> = {}
-  const used = new Set<number>()
-  for (const f of FIELDS[target]) {
-    const i = headers.findIndex((h, idx) => !used.has(idx) && f.hints.some(x => h.toLowerCase().trim() === x))
-      ?? -1
-    const j = i >= 0 ? i : headers.findIndex((h, idx) => !used.has(idx) && f.hints.some(x => h.toLowerCase().includes(x)))
-    if (j >= 0) { out[f.key] = j; used.add(j) }
-  }
-  return out
-}
+const autoMap = (headers: string[], target: Target) => autoMapColumns(headers, target)
 
 const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 type Vals = Partial<Record<'fullName'|'firstName'|'lastName'|'email'|'phone'|'title'|'companyName'|'location'|'linkedinUrl'|'notes'|'name'|'domain'|'website'|'industry'|'employees', string>> & Record<string, string | undefined>
