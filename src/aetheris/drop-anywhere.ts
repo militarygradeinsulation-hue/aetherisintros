@@ -7,13 +7,14 @@ export type DropAction = 'crm-import' | 'butler-post' | 'butler-read' | 'butler-
 export interface DropSuggestion { action: DropAction; label: string; detail: string }
 export interface DroppedFileInfo { name: string; type: string }
 
-const SHEET = /\.(csv|tsv|xlsx|xls)$/i
+const SHEET = /\.(csv|tsv)$/i
+const WORKBOOK = /\.xlsx?$/i
 const IMAGE = /\.(png|jpe?g|gif|webp|heic|avif)$/i
 const DOC = /\.(pdf|docx?|txt|md|rtf|pptx?|xlsx?)$/i
 const URL_RE = /^https?:\/\/\S+$/i
 
 export function classifyFile(file: DroppedFileInfo): DropKind {
-  if (SHEET.test(file.name) || file.type === 'text/csv') return 'contacts'
+  if (SHEET.test(file.name) || WORKBOOK.test(file.name) || file.type === 'text/csv') return 'contacts'
   if (file.type.startsWith('image/') || IMAGE.test(file.name)) return 'image'
   if (DOC.test(file.name) || file.type === 'application/pdf') return 'document'
   return 'document'

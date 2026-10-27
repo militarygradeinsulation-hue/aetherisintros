@@ -51,7 +51,7 @@ export function GlobalDropZone() {
   const confirm = (s: DropSuggestion) => {
     if (!pending) return
     if (s.action === 'crm-import') {
-      const sheet = pending.files.find(f => /\.(csv|tsv|xlsx|xls)$/i.test(f.name) || f.type === 'text/csv') ?? null
+      const sheet = pending.files.find(f => /\.(csv|tsv)$/i.test(f.name) || f.type === 'text/csv') ?? null
       if (sheet) {
         setPendingSheet(sheet)
         window.dispatchEvent(new CustomEvent('aetheris:navigate', { detail: 'crm' }))
