@@ -12,7 +12,7 @@ import { ThinkingOrb } from '@/components/ui/thinking-orbs'
 
 import { downloadButlerFile } from './butler/download'
 import { useButlerConversations, type ButlerDisplayTurn } from './butler/conversations'
-import { readButlerFile, BUTLER_ACCEPT, type ButlerAttachment } from './butler/files'
+import { readButlerFile, type ButlerAttachment } from './butler/files'
 import { executeButlerDraft } from '@/lib/butler.functions'
 import { createButlerImage, findButlerReferenceImages, type ButlerReferenceImage } from '@/lib/butlerImages.functions'
 import { imageCreationBrief, imageReferenceQuery, spokenReviewCommand, spokenConfirmationFor, voiceApprovalMatches, explicitlyRequestsToolAction, explicitlyRequestsDirectorySearch, type VoiceApproval } from './butler/intent'
@@ -735,7 +735,7 @@ function AskIntrosDockInner({ page, peopleNames, memberName, briefing, contextPa
         {fileError && <p role="alert">{fileError}</p>}
       </div>}
       <form className="ask-dock-input" onSubmit={event => { event.preventDefault(); void send(input) }}>
-        <label className="butler-attach" title="Attach images or files"><Paperclip size={16}/><input aria-label="Attach images or files" type="file" multiple accept={BUTLER_ACCEPT} disabled={busy||fileBusy} onChange={event=>{void addFiles(event.target.files);event.target.value=''}}/></label>
+        <label className="butler-attach" title="Attach images or files"><Paperclip size={16}/><input aria-label="Attach images or files" type="file" multiple disabled={busy||fileBusy} onChange={event=>{void addFiles(event.target.files);event.target.value=''}}/></label>
         <input ref={inputRef} aria-label="Message Butler" value={input} onChange={event => setInput(event.target.value)} placeholder="Ask, say it, or tell me what to do…" />
         {dictation.supported && <button type="button" className={dictation.listening ? 'listening' : ''}
           aria-label={dictation.listening ? 'Stop listening' : 'Speak to Ask Intros'} title={dictation.listening ? 'Stop listening' : 'Voice dictation'} onClick={dictation.toggle}>

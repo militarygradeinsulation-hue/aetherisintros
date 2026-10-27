@@ -22,3 +22,13 @@ describe('drop anywhere', () => {
     expect(kindForFiles([{ name: 'p.png', type: 'image/png' }, { name: 'c.csv', type: '' }])).toBe('contacts')
   })
 })
+
+import { describeFile } from '../butler/files'
+describe('any file format', () => {
+  it('an unreadable file still reaches Butler as an honest description, never guessed contents', () => {
+    const d = describeFile('model.dwg', 'application/acad', 2 * 1024 * 1024, 'its contents are not readable text')
+    expect(d).toContain('model.dwg')
+    expect(d).toContain('2.0 MB')
+    expect(d).toContain('do not guess')
+  })
+})
