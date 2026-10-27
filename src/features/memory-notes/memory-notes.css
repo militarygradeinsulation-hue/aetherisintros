@@ -1,0 +1,129 @@
+.memory-notes {
+  margin: 24px 0;
+  padding: clamp(18px, 3vw, 32px);
+  border: 1px solid var(--border);
+  border-radius: 22px;
+  background: var(--card);
+  color: var(--card-foreground);
+  min-width: 0;
+}
+.memory-notes header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+}
+.memory-notes h2 {
+  font-size: clamp(22px, 3vw, 30px);
+  margin: 5px 0 10px;
+}
+.memory-notes p {
+  line-height: 1.6;
+  overflow-wrap: anywhere;
+}
+.memory-notes-eyebrow,
+.memory-notes-meta {
+  font-size: 12px;
+  letter-spacing: 0.07em;
+}
+.memory-notes button {
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 10px 14px;
+  background: var(--secondary);
+  color: var(--secondary-foreground);
+  cursor: pointer;
+}
+.memory-notes button:disabled {
+  opacity: 0.55;
+  cursor: default;
+}
+.memory-notes input,
+.memory-notes textarea,
+.memory-notes select {
+  box-sizing: border-box;
+  width: 100%;
+  min-width: 0;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 12px;
+  background: var(--background);
+  color: var(--foreground);
+  font: inherit;
+  font-size: 16px;
+}
+.memory-notes :focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 3px;
+}
+.memory-notes-form {
+  display: grid;
+  gap: 16px;
+  margin: 22px 0;
+}
+.memory-notes-form label {
+  display: grid;
+  gap: 7px;
+  font-size: 14px;
+}
+.memory-notes-fields {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+.memory-notes-search {
+  display: flex;
+  gap: 10px;
+  margin: 24px 0;
+}
+.memory-notes-list {
+  display: grid;
+  gap: 14px;
+}
+.memory-notes-list article {
+  min-width: 0;
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 20px;
+  background: var(--background);
+  color: var(--foreground);
+}
+.memory-notes-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  text-transform: capitalize;
+}
+.memory-notes h3 {
+  margin: 12px 0 8px;
+  overflow-wrap: anywhere;
+  font-size: 20px;
+}
+.memory-notes-context {
+  white-space: pre-wrap;
+}
+.memory-notes summary {
+  cursor: pointer;
+  padding: 8px 0;
+}
+.memory-notes-body {
+  white-space: pre-wrap;
+  max-height: 480px;
+  overflow: auto;
+}
+.memory-notes footer {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+  margin-top: 18px;
+}
+@media (max-width: 480px) {
+  .memory-notes-fields {
+    grid-template-columns: 1fr;
+  }
+  .memory-notes-search {
+    flex-wrap: wrap;
+  }
+}
