@@ -47,3 +47,24 @@
 @media(prefers-reduced-motion:reduce) {
   :root body .ix-root.ledger-native-app .ledger-native-content :is(.live-exec-stat,.meetings-card,.pl-card) {translate:none!important;transition:none!important}
 }
+
+/* Meetings: readable hierarchy and wrapping across narrow workspaces. */
+.ledger-native-content .meetings { min-width: 0; line-height: 1.55; }
+.ledger-native-content .meetings-head { display: flex; flex-wrap: wrap; align-items: flex-start; gap: 1.25rem 2rem; }
+.ledger-native-content .meetings-head > div:first-child { flex: 1 1 18rem; min-width: 0; }
+.ledger-native-content .meetings-head h1 { line-height: 1.2; margin-block: .45rem .75rem; overflow-wrap: anywhere; }
+.ledger-native-content .meetings-head .og-note { max-width: 68ch; line-height: 1.65; margin-block: .5rem 1rem; }
+.ledger-native-content .meetings .og-inline { display: flex; flex-wrap: wrap; align-items: center; gap: .65rem; min-width: 0; }
+.ledger-native-content .meetings .og-inline > * { max-width: 100%; }
+.ledger-native-content .meetings-sub { line-height: 1.3; margin-block: 1.5rem .8rem; }
+.ledger-native-content .meetings-list { display: grid; gap: 1rem; min-width: 0; }
+.ledger-native-content .meetings-card { display: flex; flex-wrap: wrap; align-items: flex-start; gap: 1rem 1.5rem; padding: 1.25rem; min-width: 0; }
+.ledger-native-content .meetings-card > div:first-child { flex: 1 1 17rem; min-width: 0; }
+.ledger-native-content .meetings-card h3 { line-height: 1.3; margin-block: .55rem; overflow-wrap: anywhere; }
+.ledger-native-content .meetings-card .og-note, .ledger-native-content .meetings-card .meetings-agenda { line-height: 1.6; margin-block: .5rem; overflow-wrap: anywhere; }
+.ledger-native-content .meetings-card .og-inline { flex: 0 1 auto; }
+@media (max-width: 640px) {
+  .ledger-native-content .meetings-head, .ledger-native-content .meetings-card { gap: 1rem; }
+  .ledger-native-content .meetings-card { padding: 1rem; }
+  .ledger-native-content .meetings-head .og-inline, .ledger-native-content .meetings-card .og-inline { width: 100%; }
+}
