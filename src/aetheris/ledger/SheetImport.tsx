@@ -13,9 +13,6 @@ import { isDuplicate, safeLinkedInLink } from '../prospect/core'
 import { autoMapColumns } from './contact-automap'
 import { validateProspectGrid } from '../prospect/upload'
 
-/** Members can import up to this many contacts per file. */
-export const CONTACT_IMPORT_MAX_ROWS = 2000
-
 type Target = 'people' | 'companies'
 type Field = { key: string; label: string; required?: boolean; hints: string[] }
 

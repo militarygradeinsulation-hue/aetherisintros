@@ -31,7 +31,7 @@ describe('identity and safe manual workflow',()=>{
 describe('defensive CRM upload',()=>{
   it('rejects files above 2MB',()=>{expect(()=>validateProspectFile({name:'a.csv',size:2097153})).toThrow()})
   it('rejects non CSV/TSV files',()=>{expect(()=>validateProspectFile({name:'a.exe',size:1})).toThrow()})
-  it('rejects more than 500 records',()=>{expect(()=>validateProspectGrid(Array.from({length:502},()=>['Name']))).toThrow()})
+  it('accepts files of any size — no record cap',()=>{expect(()=>validateProspectGrid(Array.from({length:10001},()=>['Name']))).not.toThrow()})
   it('rejects malformed dimensions and oversized cells',()=>{expect(()=>validateProspectGrid([['a','b'],['one']])).toThrow();expect(()=>validateProspectGrid([['a'],['x'.repeat(10001)]])).toThrow()})
   it('accepts a bounded rectangular file',()=>{expect(()=>validateProspectGrid([['Name','Company'],['Alex','Actual Co']])).not.toThrow()})
 })
