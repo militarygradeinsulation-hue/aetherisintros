@@ -523,3 +523,4 @@ Next slices, not implemented by this change:
 - [x] Contact import allows 2,000 rows per file
 - [ ] Auto-match detects name/email/phone/socials/company/title from cell contents
 - [ ] Fill missing contact details from the web after import (where possible)
+- [ ] Import: Remove duplicates option

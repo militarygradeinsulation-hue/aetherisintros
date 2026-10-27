@@ -182,7 +182,7 @@ export default function SheetImport({ onBack, initialTarget = 'people' }: { onBa
             ? await ops.createPerson({
               fullName: v.fullName ?? '', email: v.email ?? '', phone: v.phone ?? '', title: v.title ?? '',
               companyName: v.companyName ?? '', location: v.location ?? '', linkedinUrl: v.linkedinUrl ?? '',
-              notes: [v.notes, v.socials ? `Socials: ${v.socials}` : ''].filter(Boolean).join('\n'), source: `Import · ${fileName}`,
+              notes: [v.notes, v['socials'] ? `Socials: ${v['socials']}` : ''].filter(Boolean).join('\n'), source: `Import · ${fileName}`,
             })
             : await ops.createCompany({
               name: v.name ?? '', domain: v.domain ?? '', website: v.website ?? '', industry: v.industry ?? '',
