@@ -1,4 +1,5 @@
 import { MeetingShare, MeetingRecordEditor } from './meeting-sharing'
+import { MeetingBackgroundPicker, useMeetingBackground } from './meeting-backgrounds'
 import { MeetingAudio, saveMeetingAudio } from './meeting-audio'
 /**
  * Meetings: start a video meeting in one click (or schedule one) with up to three members,
@@ -458,12 +459,13 @@ function LiveRoom({ meeting, userId, local, initialMic, initialCam, initialFacin
   useEffect(() => { tail.current?.lastElementChild?.scrollIntoView({ block: 'nearest' }) }, [lines.length])
   const inviteable = net.members.filter(m => isLiveId(m.id) && !room.roster.some(p => p.userId === m.id)).slice(0, 30)
 
-  return <section className="meeting-room">
+  const bg = useMeetingBackground(userId)
+  return <section className={`meeting-room${bg.activeUrl ? ' has-bg' : ''}`} style={bg.activeUrl ? { backgroundImage: `linear-gradient(rgba(8,10,14,.55),rgba(8,10,14,.75)),url("${bg.activeUrl}")` } : undefined}>
     <header className="meeting-room-head">
       <div><Eyebrow>{status === 'joined' ? 'LIVE' : status === 'error' ? 'NOT CONNECTED' : 'CONNECTING'}</Eyebrow><h1>{meeting.title}</h1></div>
       {recording && <span className="meeting-recording-badge" role="status"><span className="dot" aria-hidden /> Recording · notes for {notesOn.map(p => (p.userId === userId ? 'you' : p.name)).join(', ') || 'nobody yet'}</span>}
     </header>
-    {isHost&&<MeetingShare meetingId={meeting.id}/>}
+    <div className="meeting-tools">{isHost&&<MeetingShare meetingId={meeting.id}/>}<MeetingBackgroundPicker userId={userId} bg={bg} /></div>
     {problem && <p className="og-note meeting-problem">{problem}</p>}
     {status === 'full' && <p className="og-note meeting-problem">This meeting is full ({MAX_MEETING_PEOPLE} people). You are connected to the first arrivals only.</p>}
 
