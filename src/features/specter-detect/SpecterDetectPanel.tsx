@@ -28,14 +28,14 @@ function CapturedEvidence({ investigation }: { investigation: Investigation }) {
       <a key={index} href={link.href} target="_blank" rel="noopener noreferrer">{link.text || link.href}<ExternalLink size={13}/></a>)}</nav>}
   </section>;
 }
-function InteractiveWebsite({ url, title, onCapture }: { url: string; title: string; onCapture: () => void }) {
+function InteractiveWebsite({ url, title, onCapture, hasCapture }: { url: string; title: string; onCapture: () => void; hasCapture: boolean }) {
   const [failed, setFailed] = useState(false);
   return <div className="specter-live-preview">
     <div className="specter-live-actions">
       <a className="specter-primary" href={url} target="_blank" rel="noopener noreferrer">Open full browser <ExternalLink size={15}/></a>
-      <button type="button" onClick={onCapture}>Return to captured page</button>
+      <button type="button" onClick={onCapture}>{hasCapture ? 'Return to captured page' : 'Close preview'}</button>
     </div>
-    <p className="specter-preview-note">This embedded view works only when the website allows it. If it is blank or refuses to connect, open the full browser. Your captured evidence stays here.</p>
+    <p className="specter-preview-note">This embedded view works only when the website allows it. If it is blank or refuses to connect, open the full browser. {hasCapture ? 'Captured evidence is shown separately.' : 'An interactive preview does not scan or verify website evidence.'}</p>
     {failed ? <div className="specter-viewport" role="status"><p>The embedded preview is unavailable. Open the full browser to use this website, or return to the captured page.</p></div> :
       <iframe className="specter-live-frame" title={`Interactive website: ${title || url}`} src={url}
         sandbox="allow-scripts allow-forms allow-popups allow-popups-to-escape-sandbox allow-downloads"
@@ -59,6 +59,15 @@ export function SpecterDetectPanel() {
   const [tab, setTab] = useState<Tab>('analysis');
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
+  const [cooldownUntil, setCooldownUntil] = useState(0);
+  const [cooldownRemaining, setCooldownRemaining] = useState(0);
+  useEffect(() => {
+    if (!cooldownUntil) { setCooldownRemaining(0); return; }
+    const update = () => setCooldownRemaining(Math.max(0, Math.ceil((cooldownUntil - Date.now()) / 1000)));
+    update();
+    const timer = setInterval(update, 1000);
+    return () => clearInterval(timer);
+  }, [cooldownUntil]);
   const [message, setMessage] = useState('');
   const [showPreview, setShowPreview] = useState(false);
   const [browserExpanded, setBrowserExpanded] = useState(false);
@@ -67,7 +76,7 @@ export function SpecterDetectPanel() {
   const currentOwner = useRef(owner);
   currentOwner.current = owner;
   useEffect(() => {
-    generation.current++; setHistory([]); setIndex(-1); setUrl(''); setBusy(false); setError(''); setMessage(''); setShowPreview(false);
+    generation.current++; setHistory([]); setIndex(-1); setUrl(''); setBusy(false); setError(''); setCooldownUntil(0); setMessage(''); setShowPreview(false);
     return () => { generation.current++; };
   }, [owner]);
   const current = history[index];
@@ -81,6 +90,7 @@ export function SpecterDetectPanel() {
   const news = snapshot?.links.find(link => /news|blog|press/i.test(link.text+' '+link.href));
   const result = snapshot ? detectPublicPage(snapshot) : { findings: [], evidence: [] };
   async function scan(target = url) {
+    if (cooldownUntil > Date.now()) return;
     const request = ++generation.current;
     const requestOwner = owner;
     setError(''); setMessage('');
@@ -91,9 +101,14 @@ export function SpecterDetectPanel() {
       const captured = await scanSpecterWebsite({ data: { url: normalized } });
       if (request !== generation.current || currentOwner.current !== requestOwner) return;
       setHistory(previous => [...previous.slice(0, index + 1), captured].slice(-20));
-      setIndex(Math.min(index + 1, 19)); setTab('analysis'); setShowPreview(false);
+      setIndex(Math.min(index + 1, 19)); setTab('analysis'); setShowPreview(false); setCooldownUntil(0);
     } catch (e) {
-      if (request === generation.current) setError(e instanceof Error ? e.message : 'Website capture failed. Please try again.');
+      if (request === generation.current) {
+        const message = e instanceof Error ? e.message : 'Website capture failed. Please try again.';
+        const match = /website capture provider.*rate limit[\s\S]*?Retry in ([0-9]+) seconds?/i.exec(message);
+        if (match) setCooldownUntil(Date.now() + Math.min(3600, Number(match[1])) * 1000);
+        setError(message);
+      }
     } finally { if (request === generation.current) setBusy(false); }
   }
   function navigate(next: number) {
@@ -152,13 +167,14 @@ export function SpecterDetectPanel() {
   return <section className="specter-shell" data-browser-expanded={browserExpanded} aria-label="Specter Detect">
     <header className="specter-title"><div><p className="specter-kicker">ASK INTROS / AETHERIS</p><h1>SPECTER <span>DETECT</span></h1><p>Investigate companies. Verify information. Make informed decisions.</p></div><button className="specter-mode" onClick={openSaved} disabled={!owner || busy}>Saved Cases</button></header>
     <form className="specter-search" onSubmit={e => { e.preventDefault(); void scan(); }}>
-      <Globe size={20}/><input aria-label="Website URL" placeholder="https://www.company.com" value={url} onChange={e => setUrl(e.target.value)} disabled={busy} required maxLength={2000}/>
-      <button className="specter-primary" type="submit" disabled={busy || !url.trim()}><Search size={18}/>{busy ? 'Scanning…' : 'Scan Website'}</button>
+      <Globe size={20}/><input aria-label="Website URL" placeholder="https://www.company.com" value={url} onChange={e => { setUrl(e.target.value); setShowPreview(false); }} disabled={busy} required maxLength={2000}/>
+      <button className="specter-primary" type="submit" disabled={busy || !browseTarget || cooldownRemaining > 0}><Search size={18}/>{busy ? 'Scanning…' : cooldownRemaining > 0 ? `Retry in ${cooldownRemaining}s` : 'Scan Website'}</button>
+      {browseTarget && <button className="specter-open-browser specter-preview-button" type="button" disabled={busy} onClick={() => setShowPreview(true)}>Preview website</button>}
       {browseTarget && <a className="specter-open-browser" href={browseTarget} target="_blank" rel="noopener noreferrer">Open full browser <ExternalLink size={16}/></a>}
       <button className="specter-icon-button" type="button" aria-label="Export report" disabled={!current || busy} onClick={exportReport}><Download size={19}/></button>
     </form>
     {!owner && <p className="specter-preview-note">Sign in to capture real website evidence. <a href="/auth">Sign in to Ask Intros</a></p>}
-    {error && <p className="specter-error" role="alert">{error}{current ? ` Showing the previous capture from ${snapshot!.url}` : ''}</p>}
+    {error && <p className="specter-error" role="alert">{cooldownRemaining > 0 ? error.replace(/Retry in [0-9]+ seconds?/, `Retry in ${cooldownRemaining} seconds`) : error}{current ? ` Showing the previous capture from ${snapshot!.url}` : ''} {browseTarget && 'You can preview the website or open it in your browser while capture is unavailable.'}</p>}
     <p className="specter-status" role="status">{busy ? 'Capturing public website evidence…' : message || (current ? `${current.mode === 'browser' ? 'Browser capture' : 'Website reader capture'} · ${new Date(snapshot!.capturedAt).toLocaleString()}` : 'Enter a public company website to begin.')}</p>
     <div className="specter-grid" aria-busy={busy}>
       <div className="specter-browser">
@@ -166,21 +182,21 @@ export function SpecterDetectPanel() {
           <button type="button" onClick={() => navigate(index - 1)} disabled={busy || index <= 0} aria-label="Previous investigation"><ArrowLeft size={17}/></button>
           <button type="button" onClick={() => navigate(index + 1)} disabled={busy || index >= history.length - 1} aria-label="Next investigation"><ArrowRight size={17}/></button>
           <span className="specter-tab">{snapshot?.title || 'Website investigation'}</span>
-          <button type="button" onClick={() => void scan(snapshot?.url)} disabled={busy || !snapshot} aria-label="Refresh website capture"><RefreshCw size={16}/></button>
+          <button type="button" onClick={() => void scan(snapshot?.url)} disabled={busy || !snapshot || cooldownRemaining > 0} aria-label="Refresh website capture"><RefreshCw size={16}/></button>
           <button type="button" aria-label={browserExpanded ? 'Restore split view' : 'Expand browser'} aria-pressed={browserExpanded} onClick={() => setBrowserExpanded(value => !value)}>{browserExpanded ? <Minimize2 size={17}/> : <Maximize2 size={17}/>}</button>
           <div className="specter-browser-view-switch" role="group" aria-label="Website view">
-            <button type="button" className={showPreview ? 'active' : ''} aria-pressed={showPreview} disabled={!snapshot} onClick={() => setShowPreview(true)}>Interact</button>
+            <button type="button" className={showPreview ? 'active' : ''} aria-pressed={showPreview} disabled={!browseTarget} onClick={() => setShowPreview(true)}>Interact</button>
             <button type="button" className={!showPreview ? 'active' : ''} aria-pressed={!showPreview} disabled={!current} onClick={() => setShowPreview(false)}>Capture</button>
           </div>
         </div>
-        <div className="specter-address"><Globe size={16}/><span>{snapshot?.url || 'No website loaded'}</span>{snapshot && <a href={snapshot.url} target="_blank" rel="noopener noreferrer" aria-label="Open original website"><ExternalLink size={16}/></a>}</div>
+        <div className="specter-address"><Globe size={16}/><span>{browseTarget || snapshot?.url || 'No website loaded'}</span>{(browseTarget || snapshot?.url) && <a href={browseTarget || snapshot!.url} target="_blank" rel="noopener noreferrer" aria-label="Open original website"><ExternalLink size={16}/></a>}</div>
         <div className="specter-browser-content">
-          {showPreview && snapshot ? <InteractiveWebsite key={snapshot.url + snapshot.capturedAt} url={snapshot.url} title={snapshot.title} onCapture={() => setShowPreview(false)}/> :
+          {showPreview && browseTarget ? <InteractiveWebsite key={browseTarget} url={browseTarget} title={snapshot && snapshot.url === browseTarget ? snapshot.title : new URL(browseTarget).hostname} hasCapture={!!current && snapshot?.url === browseTarget} onCapture={() => setShowPreview(false)}/> :
             current ? <>
               <div className="specter-live-actions"><a className="specter-primary" href={current.snapshot.url} target="_blank" rel="noopener noreferrer">Open full browser <ExternalLink size={15}/></a><button type="button" onClick={() => setShowPreview(true)}>Try embedded view</button></div>
               {current.previewUrl && <CapturedPagePreview key={current.previewUrl} src={current.previewUrl} title={snapshot?.title || 'Website'} onLive={() => setShowPreview(true)}/>}
               <CapturedEvidence investigation={current}/>
-            </> : <div className="specter-viewport"><div className="specter-viewport-mark"><Globe size={46}/><h2>Explore a company</h2><p>Enter a website address to open it in the full browser, or scan it to collect public evidence.</p></div></div>}
+            </> : <div className="specter-viewport"><div className="specter-viewport-mark"><Globe size={46}/><h2>Explore a company</h2><p>Enter a website address to preview it or open it in your browser, or scan it to collect public evidence.</p>{browseTarget && <button type="button" className="specter-primary" onClick={() => setShowPreview(true)}>Preview website</button>}</div></div>}
 
         </div>
         <section className="specter-extracted"><h3>Extracted Information <span>{current ? 'CAPTURED EVIDENCE' : 'AWAITING SCAN'}</span></h3><div className="specter-metrics">{[[List, snapshot?.headings.length || 0, 'Headings'], [Link2, snapshot?.links.length || 0, 'Links'], [ImageIcon, current?.images.length || 0, 'Images'], [Bookmark, contacts.length, 'Contact links'], [FileText, documents.length, 'Documents / guides']].map(([Icon, count, label]) => { const MetricIcon = Icon as typeof List; return <div key={String(label)}><MetricIcon/><strong>{String(count)}</strong><small>{String(label)}</small></div>; })}</div></section>

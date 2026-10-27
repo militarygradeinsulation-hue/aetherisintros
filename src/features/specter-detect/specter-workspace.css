@@ -32,3 +32,8 @@
 @media(max-width:560px){.specter-open-browser{flex:1}.specter-live-actions>a{flex:1}.specter-reader{padding:14px}}
 
 :root .specter-shell .specter-company>svg {color:var(--sp-accent)}
+
+/* Keep the explicit preview action usable even when the evidence provider is unavailable. */
+.specter-preview-button{background:transparent;cursor:pointer;min-height:42px;border-radius:8px}
+.specter-preview-button:disabled{opacity:.45;cursor:not-allowed}
+.specter-preview-button:focus-visible{outline:2px solid var(--sp-accent);outline-offset:2px}
