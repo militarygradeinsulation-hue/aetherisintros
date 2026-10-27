@@ -23,7 +23,7 @@ const JSONB_DATA_TABLES = new Set([
   // Pro layer
   'professional_passport_profiles', 'passport_credentials', 'proof_of_work_nodes',
   'proof_of_work_edges', 'contextual_reputations', 'professional_opportunities',
-  'deal_rooms', 'expertise_offers', 'professional_referrals', 'introducer_records',
+  'pro_deal_rooms', 'expertise_offers', 'professional_referrals', 'introducer_records',
   'capability_problems', 'suggested_teams', 'capital_profiles', 'acquisition_intents',
   'board_advisory_intents', 'industry_rooms', 'industry_intelligence_items', 'peer_councils',
   'event_presences', 'travel_plans', 'professional_availability', 'pitch_permission_requests',

@@ -504,7 +504,7 @@ create table if not exists public.proof_of_work_nodes (id text primary key, owne
 create table if not exists public.proof_of_work_edges (id text primary key, owner_id uuid, scope text, data jsonb not null default '{}', created_at timestamptz not null default now(), updated_at timestamptz not null default now());
 create table if not exists public.contextual_reputations (id text primary key, owner_id uuid, scope text, data jsonb not null default '{}', created_at timestamptz not null default now(), updated_at timestamptz not null default now());
 create table if not exists public.professional_opportunities (id text primary key, owner_id uuid, scope text, data jsonb not null default '{}', created_at timestamptz not null default now(), updated_at timestamptz not null default now());
-create table if not exists public.deal_rooms (id text primary key, owner_id uuid, scope text, data jsonb not null default '{}', created_at timestamptz not null default now(), updated_at timestamptz not null default now());
+create table if not exists public.pro_deal_rooms (id text primary key, owner_id uuid, scope text, data jsonb not null default '{}', created_at timestamptz not null default now(), updated_at timestamptz not null default now());
 create table if not exists public.expertise_offers (id text primary key, owner_id uuid, scope text, data jsonb not null default '{}', created_at timestamptz not null default now(), updated_at timestamptz not null default now());
 create table if not exists public.professional_referrals (id text primary key, owner_id uuid, scope text, data jsonb not null default '{}', created_at timestamptz not null default now(), updated_at timestamptz not null default now());
 create table if not exists public.introducer_records (id text primary key, owner_id uuid, scope text, data jsonb not null default '{}', created_at timestamptz not null default now(), updated_at timestamptz not null default now());
@@ -555,7 +555,7 @@ begin
     -- Pro
     'professional_passport_profiles','passport_credentials','proof_of_work_nodes',
     'proof_of_work_edges','contextual_reputations','professional_opportunities',
-    'deal_rooms','expertise_offers','professional_referrals','introducer_records',
+    'pro_deal_rooms','expertise_offers','professional_referrals','introducer_records',
     'capability_problems','suggested_teams','capital_profiles','acquisition_intents',
     'board_advisory_intents','industry_rooms','industry_intelligence_items','peer_councils',
     'event_presences','travel_plans','professional_availability','pitch_permission_requests',
@@ -580,7 +580,7 @@ begin
   foreach t in array array[
     'systems','placements','circles','digital_handshakes','context_capsules',
     'relationship_weather','open_loops','trigger_memories','connector_reputation','connection_chains',
-    'organization_relationships','availability_windows','meeting_continuity','outcomes',
+    'organization_relationships','meeting_continuity','outcomes',
     'opportunity_rooms','relationship_twins','network_simulations','opportunity_collisions',
     'latent_network_paths','trust_budget_states','relationship_inbox_items','evidence_items',
     'voice_memory_captures','autopilot_actions','network_strategies',
@@ -592,7 +592,7 @@ begin
     'relationship_context_adapters','relationship_context_queries',
     'professional_passport_profiles','passport_credentials','proof_of_work_nodes',
     'proof_of_work_edges','contextual_reputations','professional_opportunities',
-    'deal_rooms','expertise_offers','professional_referrals','introducer_records',
+    'pro_deal_rooms','expertise_offers','professional_referrals','introducer_records',
     'capability_problems','suggested_teams','capital_profiles','acquisition_intents',
     'board_advisory_intents','industry_rooms','industry_intelligence_items','peer_councils',
     'event_presences','travel_plans','professional_availability','pitch_permission_requests',
@@ -610,9 +610,13 @@ begin
   end loop;
 end $$;
 
--- intent_cards uses member_id instead of owner_id
+-- intent_cards + availability_windows use member_id instead of owner_id
 drop policy if exists owner_policy_intent_cards on public.intent_cards;
 create policy owner_policy_intent_cards on public.intent_cards to authenticated
+  using (member_id = auth.uid()) with check (member_id = auth.uid());
+
+drop policy if exists owner_policy_availability_windows on public.availability_windows;
+create policy owner_policy_availability_windows on public.availability_windows to authenticated
   using (member_id = auth.uid()) with check (member_id = auth.uid());
 
 -- company_profiles are shared (no owner scope)

@@ -73,7 +73,7 @@ export const proTableNames: Record<ProCollectionName, string> = {
   proofEdges: 'proof_of_work_edges',
   reputations: 'contextual_reputations',
   opportunities: 'professional_opportunities',
-  dealRooms: 'deal_rooms',
+  dealRooms: 'pro_deal_rooms',
   expertise: 'expertise_offers',
   referrals: 'professional_referrals',
   introducerRecords: 'introducer_records',
