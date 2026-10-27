@@ -104,21 +104,20 @@ export default function SheetImport({ onBack, initialTarget = 'people' }: { onBa
 
   const load = async (file: File) => {
     setDone(null); setReadError(null)
-    const workbook = /\.xlsx$/i.test(file.name)
-    if (!workbook && !/\.(csv|tsv|txt)$/i.test(file.name)) { setReadError('Use a CSV, TSV or Excel (.xlsx) file. Older .xls files: save as .xlsx or CSV first.'); return }
+    const plainText = /\.(csv|tsv|txt)$/i.test(file.name)
     try {
+      if (file.size > 20 * 1024 * 1024) throw new Error('Upload at most 20 MB at a time.')
       let rows: string[][]
-      if (workbook) {
-        if (file.size > 8 * 1024 * 1024) throw new Error('Upload at most 8 MB at a time.')
-        const { parseXlsx } = await import('../library/import')
-        const sheet = (await parseXlsx(await file.arrayBuffer())).find(s => s.headers.length && s.rows.length)
-        if (!sheet) throw new Error('That workbook has no rows under a header.')
-        rows = [sheet.headers, ...sheet.rows.map(r => r.cells)]
-      } else {
-        validateProspectFile(file, 8 * 1024 * 1024)
-        rows = parseCsv(await file.text())
+      if (plainText) rows = parseCsv(await file.text())
+      else {
+        // Any spreadsheet format: Excel (old and new), Numbers, OpenOffice.
+        const { readSheetRows } = await import('../contact-files')
+        rows = await readSheetRows(file)
       }
-      validateProspectGrid(rows, CONTACT_IMPORT_MAX_ROWS)
+      // Exports often have ragged rows (trailing blanks); square them to the header width.
+      const width = rows[0]?.length ?? 0
+      rows = rows.filter(r => r.some(c => c.trim())).map(r => r.length === width ? r : [...r.slice(0, width), ...Array(Math.max(0, width - r.length)).fill('')])
+      validateProspectGrid(rows, CONTACT_IMPORT_MAX_ROWS, 300)
       importedRowsRef.current.clear()
       setFileName(file.name); setGrid(rows); setMap(autoMap(rows[0] ?? [], target))
     } catch (error) { setGrid([]); setReadError(error instanceof Error ? error.message : 'That file could not be read.') }
