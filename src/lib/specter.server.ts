@@ -23,7 +23,7 @@ export async function captureSpecterWebsite(target: string): Promise<Investigati
       });
   const retrySeconds = (value: string | null): number | null => {
     if (!value) return null;
-    const seconds = /^\\d+$/.test(value) ? Number(value) : Math.ceil((Date.parse(value) - Date.now()) / 1000);
+    const seconds = /^[0-9]+$/.test(value) ? Number(value) : Math.ceil((Date.parse(value) - Date.now()) / 1000);
     return Number.isFinite(seconds) && seconds >= 0 ? Math.min(seconds, 3600) : null;
   };
   const rateLimitMessage = (seconds: number) =>
