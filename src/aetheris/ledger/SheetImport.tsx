@@ -84,6 +84,7 @@ export default function SheetImport({ onBack, initialTarget = 'people' }: { onBa
   const [grid, setGrid] = useState<string[][]>([])
   const [map, setMap] = useState<Record<string, number>>({})
   const [skipBad, setSkipBad] = useState(true)
+  const [removeDupes, setRemoveDupes] = useState(true)
   const [busy, setBusy] = useState(false)
   const importingRef = useRef(false)
   const importedRowsRef = useRef(new Set<string>())
@@ -153,8 +154,12 @@ export default function SheetImport({ onBack, initialTarget = 'people' }: { onBa
     })
   }, [body, map, target, ops.people, ops.companies])
 
-  const good = checked.filter(c => !c.errors.length)
-  const bad = checked.length - good.length
+  const DUPE = /^(Duplicate person identity|Already in your CRM|Repeated in this sheet)$/
+  const isDupe = (c: Checked) => c.errors.length > 0 && c.errors.every(e => DUPE.test(e))
+  const dupeCount = checked.filter(isDupe).length
+  const considered = removeDupes ? checked.filter(c => !isDupe(c)) : checked
+  const good = considered.filter(c => !c.errors.length)
+  const bad = considered.length - good.length
   const required = FIELDS[target].filter(f => f.required)
   const missingRequired = target === 'people'
     ? !('fullName' in map) && !('firstName' in map)
@@ -164,7 +169,7 @@ export default function SheetImport({ onBack, initialTarget = 'people' }: { onBa
     // A second click must not create duplicate contacts before the first import finishes.
     if (importingRef.current) return
     setReadError(null)
-    const selected = safeImportSelection(checked, skipBad)
+    const selected = safeImportSelection(considered, skipBad)
     if (selected.error) { setReadError(selected.error); return }
     const pending = selected.rows.filter(row => !importedRowsRef.current.has(`${target}:${row.sourceRow}`))
     if (!pending.length) { setReadError('There are no new valid records to import. All confirmed rows in this file are already saved.'); return }
@@ -287,8 +292,12 @@ export default function SheetImport({ onBack, initialTarget = 'people' }: { onBa
 
       <section className="simp-block simp-go">
         <label className="simp-toggle">
+          <input type="checkbox" checked={removeDupes} onChange={e => setRemoveDupes(e.target.checked)} />
+          Remove duplicates — {dupeCount} found (same person twice in this file, or already in your CRM)
+        </label>
+        <label className="simp-toggle">
           <input type="checkbox" checked={skipBad} onChange={e => setSkipBad(e.target.checked)} />
-          Skip invalid and duplicate rows (otherwise, resolve them before importing)
+          Skip rows with problems (otherwise, resolve them before importing)
         </label>
         <div>
           <Btn kind="quiet" onClick={reset}><RotateCcw size={14} /> Start over</Btn>
