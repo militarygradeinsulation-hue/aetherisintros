@@ -524,3 +524,4 @@ Next slices, not implemented by this change:
 - [x] Auto-match detects name/email/phone/socials/company/title from cell contents
 - [ ] Fill missing contact details from the web after import (where possible)
 - [x] Import: Remove duplicates option
+- [x] Import shows contacts landing live with progress

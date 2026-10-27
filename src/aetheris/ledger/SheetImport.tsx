@@ -230,8 +230,7 @@ export default function SheetImport({ onBack, initialTarget = 'people' }: { onBa
     }
   }
 
-  const reset = () => {
-    setProgress(null) importedRowsRef.current.clear(); setGrid([]); setFileName(''); setMap({}); setDone(null); setReadError(null) }
+  const reset = () => { setProgress(null); importedRowsRef.current.clear(); setGrid([]); setFileName(''); setMap({}); setDone(null); setReadError(null) }
 
   return <div className="simp">
     <div className="simp-intro">
