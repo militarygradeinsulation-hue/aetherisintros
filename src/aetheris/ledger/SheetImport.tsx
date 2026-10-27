@@ -12,6 +12,9 @@ import { safeImportSelection } from '../crm/import-policy'
 import { isDuplicate, safeLinkedInLink } from '../prospect/core'
 import { validateProspectFile, validateProspectGrid } from '../prospect/upload'
 
+/** Members can import up to this many contacts per file. */
+export const CONTACT_IMPORT_MAX_ROWS = 2000
+
 type Target = 'people' | 'companies'
 type Field = { key: string; label: string; required?: boolean; hints: string[] }
 
@@ -101,11 +104,21 @@ export default function SheetImport({ onBack, initialTarget = 'people' }: { onBa
 
   const load = async (file: File) => {
     setDone(null); setReadError(null)
-    if (!/\.(csv|tsv|txt)$/i.test(file.name)) { setReadError('Save the sheet as CSV first (File → Download → CSV), then drop it here.'); return }
+    const workbook = /\.xlsx$/i.test(file.name)
+    if (!workbook && !/\.(csv|tsv|txt)$/i.test(file.name)) { setReadError('Use a CSV, TSV or Excel (.xlsx) file. Older .xls files: save as .xlsx or CSV first.'); return }
     try {
-      validateProspectFile(file)
-      const rows = parseCsv(await file.text())
-      validateProspectGrid(rows)
+      let rows: string[][]
+      if (workbook) {
+        if (file.size > 8 * 1024 * 1024) throw new Error('Upload at most 8 MB at a time.')
+        const { parseXlsx } = await import('../library/import')
+        const sheet = (await parseXlsx(await file.arrayBuffer())).find(s => s.headers.length && s.rows.length)
+        if (!sheet) throw new Error('That workbook has no rows under a header.')
+        rows = [sheet.headers, ...sheet.rows.map(r => r.cells)]
+      } else {
+        validateProspectFile(file, 8 * 1024 * 1024)
+        rows = parseCsv(await file.text())
+      }
+      validateProspectGrid(rows, CONTACT_IMPORT_MAX_ROWS)
       importedRowsRef.current.clear()
       setFileName(file.name); setGrid(rows); setMap(autoMap(rows[0] ?? [], target))
     } catch (error) { setGrid([]); setReadError(error instanceof Error ? error.message : 'That file could not be read.') }

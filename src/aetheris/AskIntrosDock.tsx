@@ -207,6 +207,15 @@ function AskIntrosDockInner({ page, peopleNames, memberName, briefing, contextPa
     const owner = memory.owner
     setFileBusy(true); setFileError('')
     try {
+      // Contact spreadsheets skip Butler and open the CRM import directly.
+      const sheet = Array.from(files).find(f => /\.(csv|tsv|xlsx)$/i.test(f.name) || f.type === 'text/csv')
+      if (sheet) {
+        const { setPendingSheet } = await import('./drop-anywhere')
+        setPendingSheet(sheet)
+        window.dispatchEvent(new CustomEvent('aetheris:navigate', { detail: 'crm' }))
+        window.dispatchEvent(new CustomEvent('aetheris:crm-import'))
+        return
+      }
       if (attachments.length + files.length > 3) throw new Error('Attach up to three files per request.')
       const prepared: ButlerAttachment[] = []
       for (const file of Array.from(files)) prepared.push(await readButlerFile(file))
