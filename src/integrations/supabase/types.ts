@@ -65,6 +65,81 @@ export type Database = {
         }
         Relationships: []
       }
+      acquisition_intents: {
+        Row: {
+          created_at: string
+          data: Json
+          id: string
+          owner_id: string | null
+          scope: string | null
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          data?: Json
+          id: string
+          owner_id?: string | null
+          scope?: string | null
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          data?: Json
+          id?: string
+          owner_id?: string | null
+          scope?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      advisory_boards: {
+        Row: {
+          created_at: string
+          data: Json
+          id: string
+          owner_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          data?: Json
+          id: string
+          owner_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          data?: Json
+          id?: string
+          owner_id?: string | null
+        }
+        Relationships: []
+      }
+      aetheris_standard_acceptances: {
+        Row: {
+          created_at: string
+          data: Json
+          id: string
+          owner_id: string | null
+          scope: string | null
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          data?: Json
+          id: string
+          owner_id?: string | null
+          scope?: string | null
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          data?: Json
+          id?: string
+          owner_id?: string | null
+          scope?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       agent_actions: {
         Row: {
           action: string
@@ -484,6 +559,120 @@ export type Database = {
         }
         Relationships: []
       }
+      autopilot_actions: {
+        Row: {
+          autonomy_level: number
+          created_at: string
+          draft: string | null
+          id: string
+          kind: string
+          owner_id: string
+          person_id: string | null
+          reason: string | null
+          requires_approval: boolean
+          room_id: string | null
+          status: string
+          title: string
+        }
+        Insert: {
+          autonomy_level?: number
+          created_at?: string
+          draft?: string | null
+          id: string
+          kind: string
+          owner_id: string
+          person_id?: string | null
+          reason?: string | null
+          requires_approval?: boolean
+          room_id?: string | null
+          status?: string
+          title: string
+        }
+        Update: {
+          autonomy_level?: number
+          created_at?: string
+          draft?: string | null
+          id?: string
+          kind?: string
+          owner_id?: string
+          person_id?: string | null
+          reason?: string | null
+          requires_approval?: boolean
+          room_id?: string | null
+          status?: string
+          title?: string
+        }
+        Relationships: []
+      }
+      availability_windows: {
+        Row: {
+          booked_by: string | null
+          capsule_id: string | null
+          day: string
+          end_time: string
+          id: string
+          label: string | null
+          meeting_purpose: string | null
+          member_id: string
+          purpose: string
+          start_time: string
+          timezone: string
+        }
+        Insert: {
+          booked_by?: string | null
+          capsule_id?: string | null
+          day: string
+          end_time: string
+          id: string
+          label?: string | null
+          meeting_purpose?: string | null
+          member_id: string
+          purpose?: string
+          start_time: string
+          timezone?: string
+        }
+        Update: {
+          booked_by?: string | null
+          capsule_id?: string | null
+          day?: string
+          end_time?: string
+          id?: string
+          label?: string | null
+          meeting_purpose?: string | null
+          member_id?: string
+          purpose?: string
+          start_time?: string
+          timezone?: string
+        }
+        Relationships: []
+      }
+      board_advisory_intents: {
+        Row: {
+          created_at: string
+          data: Json
+          id: string
+          owner_id: string | null
+          scope: string | null
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          data?: Json
+          id: string
+          owner_id?: string | null
+          scope?: string | null
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          data?: Json
+          id?: string
+          owner_id?: string | null
+          scope?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       business_diagnostics: {
         Row: {
           completed_at: string | null
@@ -885,6 +1074,33 @@ export type Database = {
         }
         Relationships: []
       }
+      capability_problems: {
+        Row: {
+          created_at: string
+          data: Json
+          id: string
+          owner_id: string | null
+          scope: string | null
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          data?: Json
+          id: string
+          owner_id?: string | null
+          scope?: string | null
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          data?: Json
+          id?: string
+          owner_id?: string | null
+          scope?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       capability_proposals: {
         Row: {
           action: Json
@@ -1076,6 +1292,33 @@ export type Database = {
           },
         ]
       }
+      capital_profiles: {
+        Row: {
+          created_at: string
+          data: Json
+          id: string
+          owner_id: string | null
+          scope: string | null
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          data?: Json
+          id: string
+          owner_id?: string | null
+          scope?: string | null
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          data?: Json
+          id?: string
+          owner_id?: string | null
+          scope?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       ceo_relationship_marks: {
         Row: {
           cadence_days: number | null
@@ -1157,6 +1400,75 @@ export type Database = {
         }
         Relationships: []
       }
+      circles: {
+        Row: {
+          active_system_ids: string[]
+          created_at: string
+          description: string | null
+          discussion: Json
+          event_ids: string[]
+          expires_at: string | null
+          health: string | null
+          id: string
+          member_ids: string[]
+          moderator_ids: string[]
+          name: string
+          open_intro_count: number
+          opportunities: string[]
+          owner_id: string
+          purpose: string
+          purpose_status: string
+          relevance_score: number
+          roles_represented: string[]
+          shared_intents: string[]
+          visibility: Database["public"]["Enums"]["visibility_scope"]
+        }
+        Insert: {
+          active_system_ids?: string[]
+          created_at?: string
+          description?: string | null
+          discussion?: Json
+          event_ids?: string[]
+          expires_at?: string | null
+          health?: string | null
+          id: string
+          member_ids?: string[]
+          moderator_ids?: string[]
+          name: string
+          open_intro_count?: number
+          opportunities?: string[]
+          owner_id: string
+          purpose: string
+          purpose_status?: string
+          relevance_score?: number
+          roles_represented?: string[]
+          shared_intents?: string[]
+          visibility?: Database["public"]["Enums"]["visibility_scope"]
+        }
+        Update: {
+          active_system_ids?: string[]
+          created_at?: string
+          description?: string | null
+          discussion?: Json
+          event_ids?: string[]
+          expires_at?: string | null
+          health?: string | null
+          id?: string
+          member_ids?: string[]
+          moderator_ids?: string[]
+          name?: string
+          open_intro_count?: number
+          opportunities?: string[]
+          owner_id?: string
+          purpose?: string
+          purpose_status?: string
+          relevance_score?: number
+          roles_represented?: string[]
+          shared_intents?: string[]
+          visibility?: Database["public"]["Enums"]["visibility_scope"]
+        }
+        Relationships: []
+      }
       companies: {
         Row: {
           about: string
@@ -1187,6 +1499,57 @@ export type Database = {
         }
         Relationships: []
       }
+      company_profiles: {
+        Row: {
+          contextual_paths: string[]
+          dormant_opportunities: string[]
+          id: string
+          industry: string | null
+          location: string | null
+          name: string
+          open_intent_ids: string[]
+          people_ids: string[]
+          previous_conversations: string[]
+          related_circle_ids: string[]
+          relevant_system_ids: string[]
+          size: string | null
+          strongest_entry: string | null
+          timeline: Json
+        }
+        Insert: {
+          contextual_paths?: string[]
+          dormant_opportunities?: string[]
+          id: string
+          industry?: string | null
+          location?: string | null
+          name: string
+          open_intent_ids?: string[]
+          people_ids?: string[]
+          previous_conversations?: string[]
+          related_circle_ids?: string[]
+          relevant_system_ids?: string[]
+          size?: string | null
+          strongest_entry?: string | null
+          timeline?: Json
+        }
+        Update: {
+          contextual_paths?: string[]
+          dormant_opportunities?: string[]
+          id?: string
+          industry?: string | null
+          location?: string | null
+          name?: string
+          open_intent_ids?: string[]
+          people_ids?: string[]
+          previous_conversations?: string[]
+          related_circle_ids?: string[]
+          relevant_system_ids?: string[]
+          size?: string | null
+          strongest_entry?: string | null
+          timeline?: Json
+        }
+        Relationships: []
+      }
       concierge_suggestions: {
         Row: {
           ask_id: string | null
@@ -1214,6 +1577,186 @@ export type Database = {
           id?: string
           note?: string
           suggested_user_id?: string
+        }
+        Relationships: []
+      }
+      connection_chains: {
+        Row: {
+          best_next_hop: string | null
+          id: string
+          owner_id: string
+          recommendation: string | null
+          state: string
+          steps: Json
+          target_id: string
+        }
+        Insert: {
+          best_next_hop?: string | null
+          id: string
+          owner_id: string
+          recommendation?: string | null
+          state?: string
+          steps?: Json
+          target_id: string
+        }
+        Update: {
+          best_next_hop?: string | null
+          id?: string
+          owner_id?: string
+          recommendation?: string | null
+          state?: string
+          steps?: Json
+          target_id?: string
+        }
+        Relationships: []
+      }
+      connector_reputation: {
+        Row: {
+          avg_time_to_respond_days: number | null
+          best_for: string[]
+          connector_id: string
+          context_usefulness: number
+          id: string
+          intro_count: number
+          intro_style: string | null
+          owner_id: string
+          response_rate: number
+          success_count: number
+          topics: string[]
+          trust_score: number
+          typical_response: string | null
+        }
+        Insert: {
+          avg_time_to_respond_days?: number | null
+          best_for?: string[]
+          connector_id: string
+          context_usefulness?: number
+          id: string
+          intro_count?: number
+          intro_style?: string | null
+          owner_id: string
+          response_rate?: number
+          success_count?: number
+          topics?: string[]
+          trust_score?: number
+          typical_response?: string | null
+        }
+        Update: {
+          avg_time_to_respond_days?: number | null
+          best_for?: string[]
+          connector_id?: string
+          context_usefulness?: number
+          id?: string
+          intro_count?: number
+          intro_style?: string | null
+          owner_id?: string
+          response_rate?: number
+          success_count?: number
+          topics?: string[]
+          trust_score?: number
+          typical_response?: string | null
+        }
+        Relationships: []
+      }
+      consent_ledger_entries: {
+        Row: {
+          data: Json
+          id: string
+          owner_id: string | null
+          scope: string | null
+          updated_at: string
+        }
+        Insert: {
+          data?: Json
+          id: string
+          owner_id?: string | null
+          scope?: string | null
+          updated_at?: string
+        }
+        Update: {
+          data?: Json
+          id?: string
+          owner_id?: string | null
+          scope?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      context_capsules: {
+        Row: {
+          id: string
+          intro_count: number
+          last_intro_at: string | null
+          last_meaningful_exchange: string | null
+          mutual_systems: string[]
+          notes: string | null
+          open_loop_ids: string[]
+          owner_id: string
+          person_id: string
+          shared_history: string[]
+          summary: string | null
+          trust_score: number
+          updated_at: string
+          weather: Database["public"]["Enums"]["weather_state"]
+        }
+        Insert: {
+          id: string
+          intro_count?: number
+          last_intro_at?: string | null
+          last_meaningful_exchange?: string | null
+          mutual_systems?: string[]
+          notes?: string | null
+          open_loop_ids?: string[]
+          owner_id: string
+          person_id: string
+          shared_history?: string[]
+          summary?: string | null
+          trust_score?: number
+          updated_at?: string
+          weather?: Database["public"]["Enums"]["weather_state"]
+        }
+        Update: {
+          id?: string
+          intro_count?: number
+          last_intro_at?: string | null
+          last_meaningful_exchange?: string | null
+          mutual_systems?: string[]
+          notes?: string | null
+          open_loop_ids?: string[]
+          owner_id?: string
+          person_id?: string
+          shared_history?: string[]
+          summary?: string | null
+          trust_score?: number
+          updated_at?: string
+          weather?: Database["public"]["Enums"]["weather_state"]
+        }
+        Relationships: []
+      }
+      contextual_reputations: {
+        Row: {
+          created_at: string
+          data: Json
+          id: string
+          owner_id: string | null
+          scope: string | null
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          data?: Json
+          id: string
+          owner_id?: string | null
+          scope?: string | null
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          data?: Json
+          id?: string
+          owner_id?: string | null
+          scope?: string | null
+          updated_at?: string
         }
         Relationships: []
       }
@@ -2513,6 +3056,75 @@ export type Database = {
         }
         Relationships: []
       }
+      digital_handshakes: {
+        Row: {
+          context_ids: string[]
+          created_at: string
+          direction: string
+          id: string
+          message: string | null
+          next_step: string | null
+          outcome: string | null
+          owner_id: string
+          person_id: string
+          replied_at: string | null
+          sent_at: string | null
+          status: string
+          system_ids: string[]
+        }
+        Insert: {
+          context_ids?: string[]
+          created_at?: string
+          direction?: string
+          id: string
+          message?: string | null
+          next_step?: string | null
+          outcome?: string | null
+          owner_id: string
+          person_id: string
+          replied_at?: string | null
+          sent_at?: string | null
+          status?: string
+          system_ids?: string[]
+        }
+        Update: {
+          context_ids?: string[]
+          created_at?: string
+          direction?: string
+          id?: string
+          message?: string | null
+          next_step?: string | null
+          outcome?: string | null
+          owner_id?: string
+          person_id?: string
+          replied_at?: string | null
+          sent_at?: string | null
+          status?: string
+          system_ids?: string[]
+        }
+        Relationships: []
+      }
+      digital_representative_policies: {
+        Row: {
+          data: Json
+          id: string
+          owner_id: string | null
+          updated_at: string
+        }
+        Insert: {
+          data?: Json
+          id: string
+          owner_id?: string | null
+          updated_at?: string
+        }
+        Update: {
+          data?: Json
+          id?: string
+          owner_id?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       digital_you_rules: {
         Row: {
           action: string
@@ -2897,6 +3509,33 @@ export type Database = {
           },
         ]
       }
+      event_presences: {
+        Row: {
+          created_at: string
+          data: Json
+          id: string
+          owner_id: string | null
+          scope: string | null
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          data?: Json
+          id: string
+          owner_id?: string | null
+          scope?: string | null
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          data?: Json
+          id?: string
+          owner_id?: string | null
+          scope?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       event_rsvps: {
         Row: {
           created_at: string
@@ -2968,6 +3607,51 @@ export type Database = {
           source?: string
           type?: string
           user_id?: string
+        }
+        Relationships: []
+      }
+      evidence_items: {
+        Row: {
+          category: string
+          confidence: number
+          created_at: string
+          id: string
+          observed_on: string | null
+          owner_id: string
+          person_id: string | null
+          scope: Database["public"]["Enums"]["privacy_scope"]
+          shareable: boolean
+          source_label: string | null
+          source_type: string
+          statement: string
+        }
+        Insert: {
+          category: string
+          confidence?: number
+          created_at?: string
+          id: string
+          observed_on?: string | null
+          owner_id: string
+          person_id?: string | null
+          scope?: Database["public"]["Enums"]["privacy_scope"]
+          shareable?: boolean
+          source_label?: string | null
+          source_type?: string
+          statement: string
+        }
+        Update: {
+          category?: string
+          confidence?: number
+          created_at?: string
+          id?: string
+          observed_on?: string | null
+          owner_id?: string
+          person_id?: string | null
+          scope?: Database["public"]["Enums"]["privacy_scope"]
+          shareable?: boolean
+          source_label?: string | null
+          source_type?: string
+          statement?: string
         }
         Relationships: []
       }
@@ -3135,6 +3819,33 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      expertise_offers: {
+        Row: {
+          created_at: string
+          data: Json
+          id: string
+          owner_id: string | null
+          scope: string | null
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          data?: Json
+          id: string
+          owner_id?: string | null
+          scope?: string | null
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          data?: Json
+          id?: string
+          owner_id?: string | null
+          scope?: string | null
+          updated_at?: string
+        }
+        Relationships: []
       }
       follows: {
         Row: {
@@ -3503,6 +4214,33 @@ export type Database = {
         }
         Relationships: []
       }
+      human_concierge_reviews: {
+        Row: {
+          created_at: string
+          data: Json
+          id: string
+          owner_id: string | null
+          scope: string | null
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          data?: Json
+          id: string
+          owner_id?: string | null
+          scope?: string | null
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          data?: Json
+          id?: string
+          owner_id?: string | null
+          scope?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       impact_reports: {
         Row: {
           created_at: string
@@ -3548,6 +4286,177 @@ export type Database = {
           published_at?: string | null
           slug?: string
           updated_at?: string
+        }
+        Relationships: []
+      }
+      import_batches: {
+        Row: {
+          created_at: string
+          data: Json
+          id: string
+          owner_id: string | null
+          scope: string | null
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          data?: Json
+          id: string
+          owner_id?: string | null
+          scope?: string | null
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          data?: Json
+          id?: string
+          owner_id?: string | null
+          scope?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      import_proposals: {
+        Row: {
+          batch_id: string | null
+          created_at: string
+          data: Json
+          id: string
+          owner_id: string | null
+          scope: string | null
+          updated_at: string
+        }
+        Insert: {
+          batch_id?: string | null
+          created_at?: string
+          data?: Json
+          id: string
+          owner_id?: string | null
+          scope?: string | null
+          updated_at?: string
+        }
+        Update: {
+          batch_id?: string | null
+          created_at?: string
+          data?: Json
+          id?: string
+          owner_id?: string | null
+          scope?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      industry_intelligence_items: {
+        Row: {
+          created_at: string
+          data: Json
+          id: string
+          owner_id: string | null
+          scope: string | null
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          data?: Json
+          id: string
+          owner_id?: string | null
+          scope?: string | null
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          data?: Json
+          id?: string
+          owner_id?: string | null
+          scope?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      industry_rooms: {
+        Row: {
+          created_at: string
+          data: Json
+          id: string
+          owner_id: string | null
+          scope: string | null
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          data?: Json
+          id: string
+          owner_id?: string | null
+          scope?: string | null
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          data?: Json
+          id?: string
+          owner_id?: string | null
+          scope?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      intent_cards: {
+        Row: {
+          audience: string | null
+          company_filter: string[]
+          created_at: string
+          geography: string | null
+          horizon: string | null
+          id: string
+          industry_filter: string[]
+          is_open: boolean
+          match_score: number
+          member_id: string
+          role_filter: string[]
+          statement: string
+          title: string
+          type: string
+          updated_at: string
+          urgency: string
+          visibility: Database["public"]["Enums"]["visibility_scope"]
+        }
+        Insert: {
+          audience?: string | null
+          company_filter?: string[]
+          created_at?: string
+          geography?: string | null
+          horizon?: string | null
+          id: string
+          industry_filter?: string[]
+          is_open?: boolean
+          match_score?: number
+          member_id: string
+          role_filter?: string[]
+          statement: string
+          title: string
+          type: string
+          updated_at?: string
+          urgency?: string
+          visibility?: Database["public"]["Enums"]["visibility_scope"]
+        }
+        Update: {
+          audience?: string | null
+          company_filter?: string[]
+          created_at?: string
+          geography?: string | null
+          horizon?: string | null
+          id?: string
+          industry_filter?: string[]
+          is_open?: boolean
+          match_score?: number
+          member_id?: string
+          role_filter?: string[]
+          statement?: string
+          title?: string
+          type?: string
+          updated_at?: string
+          urgency?: string
+          visibility?: Database["public"]["Enums"]["visibility_scope"]
         }
         Relationships: []
       }
@@ -3834,6 +4743,54 @@ export type Database = {
         }
         Relationships: []
       }
+      introducer_records: {
+        Row: {
+          created_at: string
+          data: Json
+          id: string
+          owner_id: string | null
+          scope: string | null
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          data?: Json
+          id: string
+          owner_id?: string | null
+          scope?: string | null
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          data?: Json
+          id?: string
+          owner_id?: string | null
+          scope?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      introduction_availability: {
+        Row: {
+          data: Json
+          id: string
+          owner_id: string | null
+          updated_at: string
+        }
+        Insert: {
+          data?: Json
+          id: string
+          owner_id?: string | null
+          updated_at?: string
+        }
+        Update: {
+          data?: Json
+          id?: string
+          owner_id?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       invitations: {
         Row: {
           code: string
@@ -3914,6 +4871,93 @@ export type Database = {
         }
         Relationships: []
       }
+      knowledge_assets: {
+        Row: {
+          created_at: string
+          data: Json
+          id: string
+          owner_id: string | null
+          scope: string | null
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          data?: Json
+          id: string
+          owner_id?: string | null
+          scope?: string | null
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          data?: Json
+          id?: string
+          owner_id?: string | null
+          scope?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      knowledge_posts: {
+        Row: {
+          created_at: string
+          data: Json
+          id: string
+          owner_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          data?: Json
+          id: string
+          owner_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          data?: Json
+          id?: string
+          owner_id?: string | null
+        }
+        Relationships: []
+      }
+      latent_network_paths: {
+        Row: {
+          consent_required: boolean
+          created_at: string
+          hops: Json
+          id: string
+          kind: string
+          owner_id: string
+          statement: string
+          strength_band: string
+          target_label: string
+          target_person_id: string | null
+        }
+        Insert: {
+          consent_required?: boolean
+          created_at?: string
+          hops?: Json
+          id: string
+          kind?: string
+          owner_id: string
+          statement: string
+          strength_band?: string
+          target_label: string
+          target_person_id?: string | null
+        }
+        Update: {
+          consent_required?: boolean
+          created_at?: string
+          hops?: Json
+          id?: string
+          kind?: string
+          owner_id?: string
+          statement?: string
+          strength_band?: string
+          target_label?: string
+          target_person_id?: string | null
+        }
+        Relationships: []
+      }
       launch_settings: {
         Row: {
           capacity: number
@@ -3965,6 +5009,54 @@ export type Database = {
           id?: string
           leak_index?: number
           owner_id?: string
+        }
+        Relationships: []
+      }
+      live_events: {
+        Row: {
+          created_at: string
+          data: Json
+          id: string
+          owner_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          data?: Json
+          id: string
+          owner_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          data?: Json
+          id?: string
+          owner_id?: string | null
+        }
+        Relationships: []
+      }
+      marketplace_listings: {
+        Row: {
+          created_at: string
+          data: Json
+          id: string
+          owner_id: string | null
+          scope: string | null
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          data?: Json
+          id: string
+          owner_id?: string | null
+          scope?: string | null
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          data?: Json
+          id?: string
+          owner_id?: string | null
+          scope?: string | null
+          updated_at?: string
         }
         Relationships: []
       }
@@ -4051,6 +5143,51 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      meeting_continuity: {
+        Row: {
+          after_state: Json | null
+          closed: boolean
+          desired_outcome: string | null
+          goals: string[]
+          id: string
+          member_id: string
+          open_loop_ids: string[]
+          owner_id: string
+          purpose: string | null
+          questions: string[]
+          shared_context: string[]
+          when_label: string | null
+        }
+        Insert: {
+          after_state?: Json | null
+          closed?: boolean
+          desired_outcome?: string | null
+          goals?: string[]
+          id: string
+          member_id: string
+          open_loop_ids?: string[]
+          owner_id: string
+          purpose?: string | null
+          questions?: string[]
+          shared_context?: string[]
+          when_label?: string | null
+        }
+        Update: {
+          after_state?: Json | null
+          closed?: boolean
+          desired_outcome?: string | null
+          goals?: string[]
+          id?: string
+          member_id?: string
+          open_loop_ids?: string[]
+          owner_id?: string
+          purpose?: string | null
+          questions?: string[]
+          shared_context?: string[]
+          when_label?: string | null
+        }
+        Relationships: []
       }
       meeting_invite_links: {
         Row: {
@@ -5048,6 +6185,168 @@ export type Database = {
         }
         Relationships: []
       }
+      network_constitution_rules: {
+        Row: {
+          created_at: string
+          data: Json
+          id: string
+        }
+        Insert: {
+          created_at?: string
+          data?: Json
+          id: string
+        }
+        Update: {
+          created_at?: string
+          data?: Json
+          id?: string
+        }
+        Relationships: []
+      }
+      network_questions: {
+        Row: {
+          created_at: string
+          data: Json
+          id: string
+          owner_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          data?: Json
+          id: string
+          owner_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          data?: Json
+          id?: string
+          owner_id?: string | null
+        }
+        Relationships: []
+      }
+      network_simulations: {
+        Row: {
+          created_at: string
+          effort_band: string | null
+          friction: string[]
+          id: string
+          likelihood_band: string
+          owner_id: string
+          paths: Json
+          people_involved: string[]
+          question: string
+          saved: boolean
+          sequence: string[]
+          target_kind: string
+          target_label: string
+          time_band: string | null
+          uncertainty: string[]
+        }
+        Insert: {
+          created_at?: string
+          effort_band?: string | null
+          friction?: string[]
+          id: string
+          likelihood_band?: string
+          owner_id: string
+          paths?: Json
+          people_involved?: string[]
+          question: string
+          saved?: boolean
+          sequence?: string[]
+          target_kind: string
+          target_label: string
+          time_band?: string | null
+          uncertainty?: string[]
+        }
+        Update: {
+          created_at?: string
+          effort_band?: string | null
+          friction?: string[]
+          id?: string
+          likelihood_band?: string
+          owner_id?: string
+          paths?: Json
+          people_involved?: string[]
+          question?: string
+          saved?: boolean
+          sequence?: string[]
+          target_kind?: string
+          target_label?: string
+          time_band?: string | null
+          uncertainty?: string[]
+        }
+        Relationships: []
+      }
+      network_snapshots: {
+        Row: {
+          created_at: string
+          data: Json
+          id: string
+          owner_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          data?: Json
+          id: string
+          owner_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          data?: Json
+          id?: string
+          owner_id?: string | null
+        }
+        Relationships: []
+      }
+      network_strategies: {
+        Row: {
+          constraints: string[]
+          created_at: string
+          current_people_ids: string[]
+          gaps: string[]
+          goal: string
+          horizon: string | null
+          id: string
+          next_moves: Json
+          owner_id: string
+          target_circles: string[]
+          target_industries: string[]
+          target_roles: string[]
+          updated_at: string
+        }
+        Insert: {
+          constraints?: string[]
+          created_at?: string
+          current_people_ids?: string[]
+          gaps?: string[]
+          goal: string
+          horizon?: string | null
+          id: string
+          next_moves?: Json
+          owner_id: string
+          target_circles?: string[]
+          target_industries?: string[]
+          target_roles?: string[]
+          updated_at?: string
+        }
+        Update: {
+          constraints?: string[]
+          created_at?: string
+          current_people_ids?: string[]
+          gaps?: string[]
+          goal?: string
+          horizon?: string | null
+          id?: string
+          next_moves?: Json
+          owner_id?: string
+          target_circles?: string[]
+          target_industries?: string[]
+          target_roles?: string[]
+          updated_at?: string
+        }
+        Relationships: []
+      }
       notifications: {
         Row: {
           actor_id: string | null
@@ -5477,6 +6776,177 @@ export type Database = {
           },
         ]
       }
+      open_loops: {
+        Row: {
+          closed: boolean
+          closed_at: string | null
+          created_at: string
+          description: string | null
+          due_at: string | null
+          id: string
+          kind: string
+          outcome_note: string | null
+          owner_id: string
+          person_id: string | null
+          title: string
+        }
+        Insert: {
+          closed?: boolean
+          closed_at?: string | null
+          created_at?: string
+          description?: string | null
+          due_at?: string | null
+          id: string
+          kind?: string
+          outcome_note?: string | null
+          owner_id: string
+          person_id?: string | null
+          title: string
+        }
+        Update: {
+          closed?: boolean
+          closed_at?: string | null
+          created_at?: string
+          description?: string | null
+          due_at?: string | null
+          id?: string
+          kind?: string
+          outcome_note?: string | null
+          owner_id?: string
+          person_id?: string | null
+          title?: string
+        }
+        Relationships: []
+      }
+      opportunity_collisions: {
+        Row: {
+          circle_ids: string[]
+          confidence: number
+          created_at: string
+          headline: string
+          id: string
+          owner_id: string
+          people_ids: string[]
+          recommended_action: string | null
+          signals: Json
+          status: string
+          system_ids: string[]
+          timing_event: string | null
+          why_now: string | null
+          window_note: string | null
+        }
+        Insert: {
+          circle_ids?: string[]
+          confidence?: number
+          created_at?: string
+          headline: string
+          id: string
+          owner_id: string
+          people_ids?: string[]
+          recommended_action?: string | null
+          signals?: Json
+          status?: string
+          system_ids?: string[]
+          timing_event?: string | null
+          why_now?: string | null
+          window_note?: string | null
+        }
+        Update: {
+          circle_ids?: string[]
+          confidence?: number
+          created_at?: string
+          headline?: string
+          id?: string
+          owner_id?: string
+          people_ids?: string[]
+          recommended_action?: string | null
+          signals?: Json
+          status?: string
+          system_ids?: string[]
+          timing_event?: string | null
+          why_now?: string | null
+          window_note?: string | null
+        }
+        Relationships: []
+      }
+      opportunity_rooms: {
+        Row: {
+          archived: boolean
+          blockers: string[]
+          circle_ids: string[]
+          company_id: string | null
+          company_name: string | null
+          created_at: string
+          evidence_ids: string[]
+          id: string
+          intent_ids: string[]
+          meeting_ids: string[]
+          name: string
+          next_action: string | null
+          open_loop_ids: string[]
+          outcome: string
+          owner_id: string
+          people_ids: string[]
+          stage: string
+          system_ids: string[]
+          timeline: Json
+          updated_at: string
+          value_note: string | null
+          value_state: Database["public"]["Enums"]["value_state"]
+          weather: string | null
+        }
+        Insert: {
+          archived?: boolean
+          blockers?: string[]
+          circle_ids?: string[]
+          company_id?: string | null
+          company_name?: string | null
+          created_at?: string
+          evidence_ids?: string[]
+          id: string
+          intent_ids?: string[]
+          meeting_ids?: string[]
+          name: string
+          next_action?: string | null
+          open_loop_ids?: string[]
+          outcome: string
+          owner_id: string
+          people_ids?: string[]
+          stage?: string
+          system_ids?: string[]
+          timeline?: Json
+          updated_at?: string
+          value_note?: string | null
+          value_state?: Database["public"]["Enums"]["value_state"]
+          weather?: string | null
+        }
+        Update: {
+          archived?: boolean
+          blockers?: string[]
+          circle_ids?: string[]
+          company_id?: string | null
+          company_name?: string | null
+          created_at?: string
+          evidence_ids?: string[]
+          id?: string
+          intent_ids?: string[]
+          meeting_ids?: string[]
+          name?: string
+          next_action?: string | null
+          open_loop_ids?: string[]
+          outcome?: string
+          owner_id?: string
+          people_ids?: string[]
+          stage?: string
+          system_ids?: string[]
+          timeline?: Json
+          updated_at?: string
+          value_note?: string | null
+          value_state?: Database["public"]["Enums"]["value_state"]
+          weather?: string | null
+        }
+        Relationships: []
+      }
       org_handovers: {
         Row: {
           approved: boolean
@@ -5644,6 +7114,63 @@ export type Database = {
           },
         ]
       }
+      organization_relationship_passports: {
+        Row: {
+          data: Json
+          id: string
+          owner_id: string | null
+          updated_at: string
+        }
+        Insert: {
+          data?: Json
+          id: string
+          owner_id?: string | null
+          updated_at?: string
+        }
+        Update: {
+          data?: Json
+          id?: string
+          owner_id?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      organization_relationships: {
+        Row: {
+          company_name: string
+          id: string
+          note: string | null
+          organization_id: string
+          owner_id: string
+          owner_name: string
+          relationship_type: string
+          scope: Database["public"]["Enums"]["privacy_scope"]
+          strength: number
+        }
+        Insert: {
+          company_name: string
+          id: string
+          note?: string | null
+          organization_id: string
+          owner_id: string
+          owner_name: string
+          relationship_type: string
+          scope?: Database["public"]["Enums"]["privacy_scope"]
+          strength?: number
+        }
+        Update: {
+          company_name?: string
+          id?: string
+          note?: string | null
+          organization_id?: string
+          owner_id?: string
+          owner_name?: string
+          relationship_type?: string
+          scope?: Database["public"]["Enums"]["privacy_scope"]
+          strength?: number
+        }
+        Relationships: []
+      }
       organizations: {
         Row: {
           created_at: string
@@ -5665,6 +7192,150 @@ export type Database = {
           domain?: string
           id?: string
           name?: string
+        }
+        Relationships: []
+      }
+      outcome_attribution_edges: {
+        Row: {
+          created_at: string
+          data: Json
+          id: string
+          owner_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          data?: Json
+          id: string
+          owner_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          data?: Json
+          id?: string
+          owner_id?: string | null
+        }
+        Relationships: []
+      }
+      outcomes: {
+        Row: {
+          circle_id: string | null
+          company_name: string | null
+          confidence: number
+          created_at: string
+          direct_value_note: string | null
+          direct_value_state: Database["public"]["Enums"]["value_state"]
+          evidence: string | null
+          headline: string
+          id: string
+          influenced_value_note: string | null
+          influenced_value_state: Database["public"]["Enums"]["value_state"]
+          member_id: string | null
+          owner_id: string
+          system_id: string | null
+          type: string
+        }
+        Insert: {
+          circle_id?: string | null
+          company_name?: string | null
+          confidence?: number
+          created_at?: string
+          direct_value_note?: string | null
+          direct_value_state?: Database["public"]["Enums"]["value_state"]
+          evidence?: string | null
+          headline: string
+          id: string
+          influenced_value_note?: string | null
+          influenced_value_state?: Database["public"]["Enums"]["value_state"]
+          member_id?: string | null
+          owner_id: string
+          system_id?: string | null
+          type: string
+        }
+        Update: {
+          circle_id?: string | null
+          company_name?: string | null
+          confidence?: number
+          created_at?: string
+          direct_value_note?: string | null
+          direct_value_state?: Database["public"]["Enums"]["value_state"]
+          evidence?: string | null
+          headline?: string
+          id?: string
+          influenced_value_note?: string | null
+          influenced_value_state?: Database["public"]["Enums"]["value_state"]
+          member_id?: string | null
+          owner_id?: string
+          system_id?: string | null
+          type?: string
+        }
+        Relationships: []
+      }
+      outreach_quality_reviews: {
+        Row: {
+          created_at: string
+          data: Json
+          id: string
+          owner_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          data?: Json
+          id: string
+          owner_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          data?: Json
+          id?: string
+          owner_id?: string | null
+        }
+        Relationships: []
+      }
+      outreach_strike_ledgers: {
+        Row: {
+          data: Json
+          id: string
+          owner_id: string | null
+          updated_at: string
+        }
+        Insert: {
+          data?: Json
+          id: string
+          owner_id?: string | null
+          updated_at?: string
+        }
+        Update: {
+          data?: Json
+          id?: string
+          owner_id?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      passport_credentials: {
+        Row: {
+          created_at: string
+          data: Json
+          id: string
+          owner_id: string | null
+          scope: string | null
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          data?: Json
+          id: string
+          owner_id?: string | null
+          scope?: string | null
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          data?: Json
+          id?: string
+          owner_id?: string | null
+          scope?: string | null
+          updated_at?: string
         }
         Relationships: []
       }
@@ -5701,6 +7372,33 @@ export type Database = {
           revoked?: boolean
           selected_ask_id?: string | null
           token?: string
+        }
+        Relationships: []
+      }
+      peer_councils: {
+        Row: {
+          created_at: string
+          data: Json
+          id: string
+          owner_id: string | null
+          scope: string | null
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          data?: Json
+          id: string
+          owner_id?: string | null
+          scope?: string | null
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          data?: Json
+          id?: string
+          owner_id?: string | null
+          scope?: string | null
+          updated_at?: string
         }
         Relationships: []
       }
@@ -6127,6 +7825,146 @@ export type Database = {
           },
         ]
       }
+      pitch_permission_requests: {
+        Row: {
+          created_at: string
+          data: Json
+          id: string
+          owner_id: string | null
+          scope: string | null
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          data?: Json
+          id: string
+          owner_id?: string | null
+          scope?: string | null
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          data?: Json
+          id?: string
+          owner_id?: string | null
+          scope?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      placements: {
+        Row: {
+          circle_relevance: number
+          confidence: number
+          created_at: string
+          evidence_ids: string[]
+          expected_outcome: string | null
+          fit_score: number
+          friction: string | null
+          history: Json
+          id: string
+          mutual_value: string | null
+          next_step: string | null
+          owner_id: string
+          reason_fit: string | null
+          reason_now: string | null
+          scope: Database["public"]["Enums"]["privacy_scope"]
+          source_type: string
+          stage: Database["public"]["Enums"]["placement_stage"]
+          system_id: string | null
+          target_id: string
+          target_label: string
+          target_type: string
+          timing_score: number
+          trust_path: string[]
+          unknowns: string[]
+          updated_at: string
+        }
+        Insert: {
+          circle_relevance?: number
+          confidence?: number
+          created_at?: string
+          evidence_ids?: string[]
+          expected_outcome?: string | null
+          fit_score?: number
+          friction?: string | null
+          history?: Json
+          id: string
+          mutual_value?: string | null
+          next_step?: string | null
+          owner_id: string
+          reason_fit?: string | null
+          reason_now?: string | null
+          scope?: Database["public"]["Enums"]["privacy_scope"]
+          source_type?: string
+          stage?: Database["public"]["Enums"]["placement_stage"]
+          system_id?: string | null
+          target_id: string
+          target_label: string
+          target_type: string
+          timing_score?: number
+          trust_path?: string[]
+          unknowns?: string[]
+          updated_at?: string
+        }
+        Update: {
+          circle_relevance?: number
+          confidence?: number
+          created_at?: string
+          evidence_ids?: string[]
+          expected_outcome?: string | null
+          fit_score?: number
+          friction?: string | null
+          history?: Json
+          id?: string
+          mutual_value?: string | null
+          next_step?: string | null
+          owner_id?: string
+          reason_fit?: string | null
+          reason_now?: string | null
+          scope?: Database["public"]["Enums"]["privacy_scope"]
+          source_type?: string
+          stage?: Database["public"]["Enums"]["placement_stage"]
+          system_id?: string | null
+          target_id?: string
+          target_label?: string
+          target_type?: string
+          timing_score?: number
+          trust_path?: string[]
+          unknowns?: string[]
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "placements_system_id_fkey"
+            columns: ["system_id"]
+            isOneToOne: false
+            referencedRelation: "systems"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      portable_identities: {
+        Row: {
+          data: Json
+          id: string
+          owner_id: string | null
+          updated_at: string
+        }
+        Insert: {
+          data?: Json
+          id: string
+          owner_id?: string | null
+          updated_at?: string
+        }
+        Update: {
+          data?: Json
+          id?: string
+          owner_id?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       post_comments: {
         Row: {
           author_id: string
@@ -6458,6 +8296,114 @@ export type Database = {
           },
         ]
       }
+      pro_deal_rooms: {
+        Row: {
+          created_at: string
+          data: Json
+          id: string
+          owner_id: string | null
+          scope: string | null
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          data?: Json
+          id: string
+          owner_id?: string | null
+          scope?: string | null
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          data?: Json
+          id?: string
+          owner_id?: string | null
+          scope?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      professional_availability: {
+        Row: {
+          created_at: string
+          data: Json
+          id: string
+          owner_id: string | null
+          scope: string | null
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          data?: Json
+          id: string
+          owner_id?: string | null
+          scope?: string | null
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          data?: Json
+          id?: string
+          owner_id?: string | null
+          scope?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      professional_boundary_rules: {
+        Row: {
+          created_at: string
+          data: Json
+          id: string
+          owner_id: string | null
+          scope: string | null
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          data?: Json
+          id: string
+          owner_id?: string | null
+          scope?: string | null
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          data?: Json
+          id?: string
+          owner_id?: string | null
+          scope?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      professional_inbox_decisions: {
+        Row: {
+          created_at: string
+          data: Json
+          id: string
+          owner_id: string | null
+          scope: string | null
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          data?: Json
+          id: string
+          owner_id?: string | null
+          scope?: string | null
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          data?: Json
+          id?: string
+          owner_id?: string | null
+          scope?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       professional_opportunities: {
         Row: {
           created_at: string
@@ -6536,6 +8482,84 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      professional_passport_profiles: {
+        Row: {
+          created_at: string
+          data: Json
+          id: string
+          owner_id: string | null
+          scope: string | null
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          data?: Json
+          id: string
+          owner_id?: string | null
+          scope?: string | null
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          data?: Json
+          id?: string
+          owner_id?: string | null
+          scope?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      professional_passports: {
+        Row: {
+          created_at: string
+          data: Json
+          id: string
+          owner_id: string | null
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          data?: Json
+          id: string
+          owner_id?: string | null
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          data?: Json
+          id?: string
+          owner_id?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      professional_referrals: {
+        Row: {
+          created_at: string
+          data: Json
+          id: string
+          owner_id: string | null
+          scope: string | null
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          data?: Json
+          id: string
+          owner_id?: string | null
+          scope?: string | null
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          data?: Json
+          id?: string
+          owner_id?: string | null
+          scope?: string | null
+          updated_at?: string
+        }
+        Relationships: []
       }
       profiles: {
         Row: {
@@ -6645,6 +8669,60 @@ export type Database = {
           visibility?: string
           want_to_meet?: string
           what_i_do?: string
+        }
+        Relationships: []
+      }
+      proof_of_work_edges: {
+        Row: {
+          created_at: string
+          data: Json
+          id: string
+          owner_id: string | null
+          scope: string | null
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          data?: Json
+          id: string
+          owner_id?: string | null
+          scope?: string | null
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          data?: Json
+          id?: string
+          owner_id?: string | null
+          scope?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      proof_of_work_nodes: {
+        Row: {
+          created_at: string
+          data: Json
+          id: string
+          owner_id: string | null
+          scope: string | null
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          data?: Json
+          id: string
+          owner_id?: string | null
+          scope?: string | null
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          data?: Json
+          id?: string
+          owner_id?: string | null
+          scope?: string | null
+          updated_at?: string
         }
         Relationships: []
       }
@@ -6867,6 +8945,27 @@ export type Database = {
           show_band?: boolean
           updated_at?: string
           user_id?: string
+        }
+        Relationships: []
+      }
+      reciprocity_signals: {
+        Row: {
+          data: Json
+          id: string
+          owner_id: string | null
+          updated_at: string
+        }
+        Insert: {
+          data?: Json
+          id: string
+          owner_id?: string | null
+          updated_at?: string
+        }
+        Update: {
+          data?: Json
+          id?: string
+          owner_id?: string | null
+          updated_at?: string
         }
         Relationships: []
       }
@@ -7105,6 +9204,138 @@ export type Database = {
           },
         ]
       }
+      relationship_context_adapters: {
+        Row: {
+          created_at: string
+          data: Json
+          id: string
+          owner_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          data?: Json
+          id: string
+          owner_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          data?: Json
+          id?: string
+          owner_id?: string | null
+        }
+        Relationships: []
+      }
+      relationship_context_queries: {
+        Row: {
+          created_at: string
+          data: Json
+          id: string
+          owner_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          data?: Json
+          id: string
+          owner_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          data?: Json
+          id?: string
+          owner_id?: string | null
+        }
+        Relationships: []
+      }
+      relationship_decay_risks: {
+        Row: {
+          data: Json
+          id: string
+          owner_id: string | null
+          updated_at: string
+        }
+        Insert: {
+          data?: Json
+          id: string
+          owner_id?: string | null
+          updated_at?: string
+        }
+        Update: {
+          data?: Json
+          id?: string
+          owner_id?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      relationship_gaps: {
+        Row: {
+          created_at: string
+          data: Json
+          id: string
+          owner_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          data?: Json
+          id: string
+          owner_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          data?: Json
+          id?: string
+          owner_id?: string | null
+        }
+        Relationships: []
+      }
+      relationship_inbox_items: {
+        Row: {
+          created_at: string
+          id: string
+          kind: string
+          next_move: string | null
+          owner_id: string
+          person_id: string | null
+          priority: number
+          room_id: string | null
+          snooze_until: string | null
+          status: string
+          title: string
+          what_changed: string | null
+          why_now: string | null
+        }
+        Insert: {
+          created_at?: string
+          id: string
+          kind: string
+          next_move?: string | null
+          owner_id: string
+          person_id?: string | null
+          priority?: number
+          room_id?: string | null
+          snooze_until?: string | null
+          status?: string
+          title: string
+          what_changed?: string | null
+          why_now?: string | null
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          kind?: string
+          next_move?: string | null
+          owner_id?: string
+          person_id?: string | null
+          priority?: number
+          room_id?: string | null
+          snooze_until?: string | null
+          status?: string
+          title?: string
+          what_changed?: string | null
+          why_now?: string | null
+        }
+        Relationships: []
+      }
       relationship_rooms: {
         Row: {
           commitments: Json
@@ -7212,6 +9443,123 @@ export type Database = {
           subject_kind?: string
           until?: string | null
           user_id?: string
+        }
+        Relationships: []
+      }
+      relationship_twins: {
+        Row: {
+          cares_about: string[]
+          communication_style: string | null
+          confidence: number
+          decision_style: string | null
+          id: string
+          inferences: Json
+          motivations: string[]
+          owner_id: string
+          person_id: string
+          recent_changes: string[]
+          scope: Database["public"]["Enums"]["privacy_scope"]
+          typical_response: string | null
+          updated_at: string
+          what_does_not: string[]
+          what_works: string[]
+        }
+        Insert: {
+          cares_about?: string[]
+          communication_style?: string | null
+          confidence?: number
+          decision_style?: string | null
+          id: string
+          inferences?: Json
+          motivations?: string[]
+          owner_id: string
+          person_id: string
+          recent_changes?: string[]
+          scope?: Database["public"]["Enums"]["privacy_scope"]
+          typical_response?: string | null
+          updated_at?: string
+          what_does_not?: string[]
+          what_works?: string[]
+        }
+        Update: {
+          cares_about?: string[]
+          communication_style?: string | null
+          confidence?: number
+          decision_style?: string | null
+          id?: string
+          inferences?: Json
+          motivations?: string[]
+          owner_id?: string
+          person_id?: string
+          recent_changes?: string[]
+          scope?: Database["public"]["Enums"]["privacy_scope"]
+          typical_response?: string | null
+          updated_at?: string
+          what_does_not?: string[]
+          what_works?: string[]
+        }
+        Relationships: []
+      }
+      relationship_vault_exports: {
+        Row: {
+          created_at: string
+          data: Json
+          id: string
+          owner_id: string | null
+          scope: string | null
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          data?: Json
+          id: string
+          owner_id?: string | null
+          scope?: string | null
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          data?: Json
+          id?: string
+          owner_id?: string | null
+          scope?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      relationship_weather: {
+        Row: {
+          id: string
+          last_event_at: string | null
+          last_event_type: string | null
+          momentum_note: string | null
+          owner_id: string
+          person_id: string
+          risk_flags: string[]
+          state: Database["public"]["Enums"]["weather_state"]
+          updated_at: string
+        }
+        Insert: {
+          id: string
+          last_event_at?: string | null
+          last_event_type?: string | null
+          momentum_note?: string | null
+          owner_id: string
+          person_id: string
+          risk_flags?: string[]
+          state?: Database["public"]["Enums"]["weather_state"]
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          last_event_at?: string | null
+          last_event_type?: string | null
+          momentum_note?: string | null
+          owner_id?: string
+          person_id?: string
+          risk_flags?: string[]
+          state?: Database["public"]["Enums"]["weather_state"]
+          updated_at?: string
         }
         Relationships: []
       }
@@ -7441,6 +9789,27 @@ export type Database = {
           messages?: Json
           suggested?: string
           unread?: boolean
+        }
+        Relationships: []
+      }
+      serendipity_matches: {
+        Row: {
+          created_at: string
+          data: Json
+          id: string
+          owner_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          data?: Json
+          id: string
+          owner_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          data?: Json
+          id?: string
+          owner_id?: string | null
         }
         Relationships: []
       }
@@ -7680,6 +10049,33 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      suggested_teams: {
+        Row: {
+          created_at: string
+          data: Json
+          id: string
+          owner_id: string | null
+          scope: string | null
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          data?: Json
+          id: string
+          owner_id?: string | null
+          scope?: string | null
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          data?: Json
+          id?: string
+          owner_id?: string | null
+          scope?: string | null
+          updated_at?: string
+        }
+        Relationships: []
       }
       syndication_interests: {
         Row: {
@@ -7928,6 +10324,87 @@ export type Database = {
           },
         ]
       }
+      systems: {
+        Row: {
+          active_placements: number
+          adoption_count: number
+          best_fit_companies: string[]
+          best_fit_roles: string[]
+          category: string
+          created_at: string
+          description: string
+          evidence: string[]
+          expected_friction: string | null
+          geography: string | null
+          id: string
+          industries: string[]
+          name: string
+          owner_id: string
+          placement_goal: string | null
+          proof: string[]
+          referral_count: number
+          status: Database["public"]["Enums"]["system_status"]
+          target_placements: number
+          thesis: string
+          updated_at: string
+          value_proposition: string | null
+          visibility: Database["public"]["Enums"]["visibility_scope"]
+          who_benefits: string | null
+        }
+        Insert: {
+          active_placements?: number
+          adoption_count?: number
+          best_fit_companies?: string[]
+          best_fit_roles?: string[]
+          category: string
+          created_at?: string
+          description: string
+          evidence?: string[]
+          expected_friction?: string | null
+          geography?: string | null
+          id: string
+          industries?: string[]
+          name: string
+          owner_id: string
+          placement_goal?: string | null
+          proof?: string[]
+          referral_count?: number
+          status?: Database["public"]["Enums"]["system_status"]
+          target_placements?: number
+          thesis: string
+          updated_at?: string
+          value_proposition?: string | null
+          visibility?: Database["public"]["Enums"]["visibility_scope"]
+          who_benefits?: string | null
+        }
+        Update: {
+          active_placements?: number
+          adoption_count?: number
+          best_fit_companies?: string[]
+          best_fit_roles?: string[]
+          category?: string
+          created_at?: string
+          description?: string
+          evidence?: string[]
+          expected_friction?: string | null
+          geography?: string | null
+          id?: string
+          industries?: string[]
+          name?: string
+          owner_id?: string
+          placement_goal?: string | null
+          proof?: string[]
+          referral_count?: number
+          status?: Database["public"]["Enums"]["system_status"]
+          target_placements?: number
+          thesis?: string
+          updated_at?: string
+          value_proposition?: string | null
+          visibility?: Database["public"]["Enums"]["visibility_scope"]
+          who_benefits?: string | null
+        }
+        Relationships: []
+      }
       task_time_records: {
         Row: {
           active_seconds: number
@@ -8009,6 +10486,126 @@ export type Database = {
           show_on_profile?: boolean
           updated_at?: string
           user_id?: string
+        }
+        Relationships: []
+      }
+      transaction_records: {
+        Row: {
+          created_at: string
+          data: Json
+          id: string
+          owner_id: string | null
+          scope: string | null
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          data?: Json
+          id: string
+          owner_id?: string | null
+          scope?: string | null
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          data?: Json
+          id?: string
+          owner_id?: string | null
+          scope?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      travel_plans: {
+        Row: {
+          created_at: string
+          data: Json
+          id: string
+          owner_id: string | null
+          scope: string | null
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          data?: Json
+          id: string
+          owner_id?: string | null
+          scope?: string | null
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          data?: Json
+          id?: string
+          owner_id?: string | null
+          scope?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      trigger_memories: {
+        Row: {
+          acted_on: boolean
+          action_note: string | null
+          id: string
+          observed_at: string
+          owner_id: string
+          person_id: string
+          signal: string
+          trigger_type: string
+        }
+        Insert: {
+          acted_on?: boolean
+          action_note?: string | null
+          id: string
+          observed_at?: string
+          owner_id: string
+          person_id: string
+          signal: string
+          trigger_type: string
+        }
+        Update: {
+          acted_on?: boolean
+          action_note?: string | null
+          id?: string
+          observed_at?: string
+          owner_id?: string
+          person_id?: string
+          signal?: string
+          trigger_type?: string
+        }
+        Relationships: []
+      }
+      trust_budget_states: {
+        Row: {
+          asks_last_90: number
+          connector_id: string
+          fatigue: string
+          id: string
+          note: string | null
+          owner_id: string
+          reciprocity: number
+          updated_at: string
+        }
+        Insert: {
+          asks_last_90?: number
+          connector_id: string
+          fatigue?: string
+          id: string
+          note?: string | null
+          owner_id: string
+          reciprocity?: number
+          updated_at?: string
+        }
+        Update: {
+          asks_last_90?: number
+          connector_id?: string
+          fatigue?: string
+          id?: string
+          note?: string | null
+          owner_id?: string
+          reciprocity?: number
+          updated_at?: string
         }
         Relationships: []
       }
@@ -8170,6 +10767,36 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      voice_memory_captures: {
+        Row: {
+          created_at: string
+          id: string
+          owner_id: string
+          person_id: string | null
+          proposals: Json
+          status: string
+          transcript: string
+        }
+        Insert: {
+          created_at?: string
+          id: string
+          owner_id: string
+          person_id?: string | null
+          proposals?: Json
+          status?: string
+          transcript: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          owner_id?: string
+          person_id?: string | null
+          proposals?: Json
+          status?: string
+          transcript?: string
+        }
+        Relationships: []
       }
       waitlist_entries: {
         Row: {
@@ -9170,12 +11797,31 @@ export type Database = {
     }
     Enums: {
       app_role: "admin" | "moderator" | "member"
+      placement_stage:
+        | "Identified"
+        | "Qualified"
+        | "Warm Path Found"
+        | "Intro Requested"
+        | "Shared"
+        | "Demo/Discussion"
+        | "Pilot"
+        | "Adopted"
+        | "Referred"
+        | "Closed/Not Now"
+      privacy_scope:
+        | "private"
+        | "team"
+        | "organization"
+        | "shareable"
+        | "public"
       privacy_scope_v2:
         | "private"
         | "team"
         | "organization"
         | "shareable"
         | "public"
+      system_status: "draft" | "active" | "placing" | "paused" | "archived"
+      value_state: "known" | "modeled" | "unquantified"
       verification_status:
         | "pending"
         | "scanning"
@@ -9191,6 +11837,16 @@ export type Database = {
         | "managing_partner"
         | "principal"
         | "other"
+      visibility_scope: "private" | "connections" | "network" | "public"
+      weather_state:
+        | "Building"
+        | "Warm"
+        | "Active"
+        | "Waiting"
+        | "Cooling"
+        | "Dormant"
+        | "Reawakening"
+        | "At Risk"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -9319,6 +11975,19 @@ export const Constants = {
   public: {
     Enums: {
       app_role: ["admin", "moderator", "member"],
+      placement_stage: [
+        "Identified",
+        "Qualified",
+        "Warm Path Found",
+        "Intro Requested",
+        "Shared",
+        "Demo/Discussion",
+        "Pilot",
+        "Adopted",
+        "Referred",
+        "Closed/Not Now",
+      ],
+      privacy_scope: ["private", "team", "organization", "shareable", "public"],
       privacy_scope_v2: [
         "private",
         "team",
@@ -9326,6 +11995,8 @@ export const Constants = {
         "shareable",
         "public",
       ],
+      system_status: ["draft", "active", "placing", "paused", "archived"],
+      value_state: ["known", "modeled", "unquantified"],
       verification_status: [
         "pending",
         "scanning",
@@ -9342,6 +12013,17 @@ export const Constants = {
         "managing_partner",
         "principal",
         "other",
+      ],
+      visibility_scope: ["private", "connections", "network", "public"],
+      weather_state: [
+        "Building",
+        "Warm",
+        "Active",
+        "Waiting",
+        "Cooling",
+        "Dormant",
+        "Reawakening",
+        "At Risk",
       ],
     },
   },
