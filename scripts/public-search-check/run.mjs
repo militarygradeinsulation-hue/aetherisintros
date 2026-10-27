@@ -10,10 +10,15 @@ const server = spawn('npx', ['vite', 'dev', '--host', '127.0.0.1', '--port', Str
 const base = `http://127.0.0.1:${port}`;
 const origin = 'https://askintros.vip';
 const pages = [
-  ['/', 'Ask Intros | Business Networking and Warm Introductions'],
+  ['/', 'Ask Intros | Executive Networking and Warm Introductions'],
   ['/how-it-works', 'How Ask Intros Works | Business Networking with Context'],
   ['/warm-introductions', 'Warm Introductions with Mutual Consent | Ask Intros'],
   ['/active-memory', 'Active Memory for Business Relationships | Ask Intros'],
+  ['/executive-networking', 'Executive Networking for CEOs and Founders | Ask Intros'],
+  ['/relationship-intelligence', 'Business Relationship Intelligence and Context | Ask Intros'],
+  ['/ai-networking-assistant', 'AI Networking Assistant and Butler | Ask Intros'],
+  ['/business-relationship-crm', 'Business Relationship CRM and Pipeline | Ask Intros'],
+  ['/social-business-views', 'Social View and Business View in One Platform | Ask Intros'],
 ];
 const read = async path => {
   const response = await fetch(base + path);
