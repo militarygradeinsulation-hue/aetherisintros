@@ -139,6 +139,14 @@ export function scoreExpertise(offer: ExpertiseOffer, need: string) {
   }
 }
 
+/** Whether a member other than the owner may browse this expertise offer.
+ *  Mirrors the database rule on expertise_offers (migration 0108): an offer
+ *  reaches the network only when its owner marked it network or public. */
+export function canBrowseExpertiseOffer(offer: Pick<ExpertiseOffer, 'memberId' | 'visibility'>): boolean {
+  return offer.memberId === 'me' || offer.visibility === 'network' || offer.visibility === 'public'
+}
+
+
 /* ------------------------------------------------ 9 + 10. team builder */
 
 export function buildTeam(

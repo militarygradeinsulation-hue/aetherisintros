@@ -265,9 +265,11 @@ export function ProProvider({ children }: { children: ReactNode }) {
 
     matchExpertise(need) {
       return state.expertise
+        .filter(offer => canBrowseExpertiseOffer(offer))
         .map(offer => ({ offer, fit: scoreExpertise(offer, need) }))
         .sort((a, b) => b.fit.score - a.fit.score)
     },
+
     requestExpertise(id, context) {
       const o = state.expertise.find(x => x.id === id)
       if (o) patch('expertise', id, { requests: [...o.requests, { id: uid('er'), memberId: 'me', context, state: 'requested' as const, when: today() }] })
