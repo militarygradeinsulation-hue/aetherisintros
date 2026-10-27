@@ -12,7 +12,7 @@ import { ThinkingOrb } from '@/components/ui/thinking-orbs'
 
 import { downloadButlerFile } from './butler/download'
 import { useButlerConversations, type ButlerDisplayTurn } from './butler/conversations'
-import { readButlerFile, BUTLER_ACCEPT, type ButlerAttachment } from './butler/files'
+import { readButlerFile, type ButlerAttachment } from './butler/files'
 import { executeButlerDraft } from '@/lib/butler.functions'
 import { createButlerImage, findButlerReferenceImages, type ButlerReferenceImage } from '@/lib/butlerImages.functions'
 import { imageCreationBrief, imageReferenceQuery, spokenReviewCommand, spokenConfirmationFor, voiceApprovalMatches, explicitlyRequestsToolAction, explicitlyRequestsDirectorySearch, type VoiceApproval } from './butler/intent'
@@ -30,6 +30,7 @@ import { getActiveSubject, openCapability } from './capabilities/store'
 import { openCeo } from './ceo-store'
 import { VOICE_PAGES, confirmation, parseVoiceCommand } from './voice-commands'
 import { placeMenu } from './quick-menu'
+import { GlobalDropZone } from './GlobalDropZone'
 import {
   isStopPhrase, readAloud, readerSnapshot, stopReading, useDictation, useReader, useVoiceSettings, voiceOutputSupported,
   unlockAudio, playPendingButlerAudio, speechSupported,
@@ -41,7 +42,7 @@ function AetherisGlyph({ size = 18 }: { size?: number }) {
 export type { AskIntrosAction }
 
 /** What can open the assistant: a question, a spot on screen (right-click), and/or voice mode. */
-export interface OpenAssistantDetail { question?: string; x?: number; y?: number; voice?: boolean }
+export interface OpenAssistantDetail { question?: string; x?: number; y?: number; voice?: boolean; files?: File[] }
 
 const POS_KEY = 'aetheris-dock-pos'
 const FAB_KEY = 'aetheris-dock-fab-pos'
@@ -167,6 +168,7 @@ function AskIntrosDockInner({ page, peopleNames, memberName, briefing, contextPa
   const [attachments, setAttachments] = useState<ButlerAttachment[]>([])
   const [fileBusy, setFileBusy] = useState(false)
   const [fileError, setFileError] = useState('')
+  const [droppedFiles, setDroppedFiles] = useState<File[] | null>(null)
   // Image previews are session-only: binary data never enters the saved conversation or another account.
   const [visuals, setVisuals] = useState<ButlerVisual[]>([])
   const [pendingApproval, setPendingApproval] = useState<VoiceApproval | null>(null)
@@ -200,7 +202,7 @@ function AskIntrosDockInner({ page, peopleNames, memberName, briefing, contextPa
       inputRef.current?.setSelectionRange(end, end)
     }
   }, [open, focusRequest])
-  const addFiles = async (files: FileList | null) => {
+  const addFiles = async (files: FileList | File[] | null) => {
     if (!files || fileBusy) return
     const owner = memory.owner
     setFileBusy(true); setFileError('')
@@ -212,6 +214,7 @@ function AskIntrosDockInner({ page, peopleNames, memberName, briefing, contextPa
     } catch (error) { setFileError(error instanceof Error ? error.message : 'File could not be read.') }
     finally { setFileBusy(false) }
   }
+  useEffect(() => { if (droppedFiles) { setDroppedFiles(null); void addFiles(droppedFiles) } }, [droppedFiles]) // eslint-disable-line react-hooks/exhaustive-deps
   const commitDraft = async (reviewed = draft, approvedByVoice = false) => {
     if (!reviewed || reviewed.kind === 'draft-email' || draftBusy) return
     const owner = memory.owner
@@ -285,6 +288,7 @@ function AskIntrosDockInner({ page, peopleNames, memberName, briefing, contextPa
       const detail = (event as CustomEvent<string | OpenAssistantDetail | undefined>).detail
       const req: OpenAssistantDetail = typeof detail === 'string' ? { question: detail } : detail ?? {}
       if (req.question) setInput(req.question)
+      if (req.files?.length) setDroppedFiles(req.files)
       setFocusRequest(n => n + 1)
       if (typeof req.x === 'number' && typeof req.y === 'number') {
         // Open right where the member asked for it, kept on screen.
@@ -621,6 +625,7 @@ function AskIntrosDockInner({ page, peopleNames, memberName, briefing, contextPa
   }
 
   return <>
+    <GlobalDropZone />
     <button ref={fabRef} className={`ask-dock-fab ask-dock-fab--robot ${open ? 'active' : ''}`} aria-label="Ask Intros" aria-expanded={open} title="Ask Intros · drag to move"
       style={fabPos ? { ...clampPoint(fabPos, fabRef.current?.offsetWidth ?? 140, fabRef.current?.offsetHeight ?? 48), right: 'auto', bottom: 'auto' } : undefined}
       onPointerDown={e => { if (!window.matchMedia('(max-width: 767px)').matches) dragFab(e, fabRef.current) }}
@@ -730,7 +735,7 @@ function AskIntrosDockInner({ page, peopleNames, memberName, briefing, contextPa
         {fileError && <p role="alert">{fileError}</p>}
       </div>}
       <form className="ask-dock-input" onSubmit={event => { event.preventDefault(); void send(input) }}>
-        <label className="butler-attach" title="Attach images or files"><Paperclip size={16}/><input aria-label="Attach images or files" type="file" multiple accept={BUTLER_ACCEPT} disabled={busy||fileBusy} onChange={event=>{void addFiles(event.target.files);event.target.value=''}}/></label>
+        <label className="butler-attach" title="Attach images or files"><Paperclip size={16}/><input aria-label="Attach images or files" type="file" multiple disabled={busy||fileBusy} onChange={event=>{void addFiles(event.target.files);event.target.value=''}}/></label>
         <input ref={inputRef} aria-label="Message Butler" value={input} onChange={event => setInput(event.target.value)} placeholder="Ask, say it, or tell me what to do…" />
         {dictation.supported && <button type="button" className={dictation.listening ? 'listening' : ''}
           aria-label={dictation.listening ? 'Stop listening' : 'Speak to Ask Intros'} title={dictation.listening ? 'Stop listening' : 'Voice dictation'} onClick={dictation.toggle}>

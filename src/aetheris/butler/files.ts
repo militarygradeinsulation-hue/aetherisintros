@@ -1,5 +1,6 @@
 export interface ButlerAttachment { name: string; text?: string; image?: string }
-export const BUTLER_ACCEPT = '.txt,.md,.csv,.tsv,.json,.pdf,.docx,.xlsx,image/png,image/jpeg,image/webp'
+/** Any file may be attached; unreadable formats are passed as a description so Butler can still route them. */
+export const BUTLER_ACCEPT = ''
 const MAX_TEXT = 20000
 const limited = (text: string) => text.length > MAX_TEXT ? text.slice(0, MAX_TEXT - 90) + '\n[Truncated: only the first part of this file is included.]' : text
 
@@ -42,10 +43,11 @@ async function docxText(file: File): Promise<string> {
 }
 
 export async function readButlerFile(file: File): Promise<ButlerAttachment> {
-  if (file.size > 8 * 1024 * 1024) throw new Error('Choose a file smaller than 8 MB.')
   const name = file.name.slice(0, 200), ext = name.split('.').pop()?.toLowerCase()
-  if (/^image\/(png|jpeg|webp)$/.test(file.type)) {
-    const image = await createImageBitmap(file)
+  if (file.size > 8 * 1024 * 1024) return describedOnly(file, name, 'it is larger than 8 MB')
+  if (file.type.startsWith('image/')) {
+    let image: ImageBitmap
+    try { image = await createImageBitmap(file) } catch { return describedOnly(file, name, 'this image format cannot be previewed in the browser') }
     try {
       const canvas = document.createElement('canvas'), scale = Math.min(1, 1600 / Math.max(image.width, image.height))
       canvas.width = Math.max(1, Math.round(image.width * scale)); canvas.height = Math.max(1, Math.round(image.height * scale))
@@ -68,8 +70,23 @@ export async function readButlerFile(file: File): Promise<ButlerAttachment> {
     text = sheets.slice(0, 10).map(sheet => `Sheet: ${sheet.name}\n${JSON.stringify(sheet.headers)}\n${sheet.rows.slice(0, 300).map(row => `Row ${row.sourceRow}: ${JSON.stringify(row.cells)}`).join('\n')}`).join('\n\n')
     text = '[Workbook extract: up to 10 sheets and 300 data rows per sheet; formula results are cached values, not recalculated.]\n' + text
   } else if (ext === 'docx') text = await docxText(file)
-  else if (['txt','md','csv','tsv','json'].includes(ext ?? '')) text = await file.text()
-  else throw new Error('Use TXT, CSV, TSV, JSON, Markdown, PDF, DOCX, XLSX, PNG, JPEG or WebP.')
-  if (!text.trim()) throw new Error('No readable text found. For a scanned document, attach page images.')
+  else if (await looksLikeText(file)) text = await file.text()
+  else return describedOnly(file, name, 'its contents are not readable text')
+  if (!text.trim()) return describedOnly(file, name, 'no readable text was found (scanned pages can be attached as images)')
   return { name, text: limited(text) }
+}
+
+export function describeFile(name: string, type: string, size: number, reason: string): string {
+  const kb = size < 1024 * 1024 ? `${Math.max(1, Math.round(size / 1024))} KB` : `${(size / 1024 / 1024).toFixed(1)} MB`
+  return `[File received: ${name} — ${type || 'unknown type'}, ${kb}. Its contents were not read because ${reason}. Use the name and type to suggest where it belongs; do not guess what it says.]`
+}
+function describedOnly(file: File, name: string, reason: string): ButlerAttachment {
+  return { name, text: describeFile(name, file.type, file.size, reason) }
+}
+/** Treat a file as text when its first bytes decode cleanly with no control characters. */
+async function looksLikeText(file: File): Promise<boolean> {
+  const head = new Uint8Array(await file.slice(0, 4096).arrayBuffer())
+  if (head.includes(0)) return false
+  try { new TextDecoder('utf-8', { fatal: true }).decode(head.length === 4096 ? head.slice(0, 4092) : head) } catch { return false }
+  return true
 }
