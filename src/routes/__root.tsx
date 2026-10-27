@@ -183,7 +183,7 @@ function RootComponent() {
     applyTextScale(readTextScale());
     installClientErrorReporting();
     // Save broad first-touch source data only in this browser session.
-    captureInitialAcquisition(window.location, document.referrer, window.sessionStorage);
+    try { captureInitialAcquisition(window.location, document.referrer, window.sessionStorage); } catch { /* private storage must not block the app */ }
     registerServiceWorker();
     setTimeout(announceGoogleReturn, 400);
   }, []);
