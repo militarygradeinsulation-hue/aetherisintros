@@ -8,6 +8,8 @@ import { MemberThumbnail } from '../components/shared/MemberThumbnail';
 import React, { useEffect, useMemo, useState } from 'react';
 import { Bookmark, Handshake, ListFilter, Network, Search, UserRound, Users, Sparkles, MessageCircle } from 'lucide-react';
 import { SemanticNetworkSearch } from './SemanticNetworkSearch';
+import { loadVisibleMemberProfiles, profileToMember } from '@/aetheris/live';
+import { toNetworkMember } from '@/intros-ui/liveMembers';
 import type { SemanticSearchResult } from '@/lib/semanticSearch.functions';
 import type { NetworkMember } from '@/intros-ui/networkData';
 import type { ActivePage } from '@/intros-ui/components/layout/TopNavigation';
@@ -28,10 +30,26 @@ export function LedgerDirectory({
 }) {
   const [search, setSearch] = useState(searchQuery);
   const [semantic, setSemantic] = useState<SemanticSearchResult | null>(null);
+  const [matchedExtras, setMatchedExtras] = useState<NetworkMember[]>([]);
+  const [matchLoadError, setMatchLoadError] = useState('');
+  useEffect(() => {
+    if (!isLive || !semantic?.matches.length) { setMatchedExtras([]); setMatchLoadError(''); return; }
+    const missing = semantic.matches.map(match => match.id).filter(id => !members.some(person => person.id === id));
+    if (!missing.length) { setMatchedExtras([]); setMatchLoadError(''); return; }
+    let active = true;
+    setMatchedExtras([]);
+    setMatchLoadError('');
+    void loadVisibleMemberProfiles(missing, missing.length).then(rows => {
+      if (!active) return;
+      const wanted = new Set(missing);
+      setMatchedExtras(rows.filter(row => wanted.has(row.id)).map(row => toNetworkMember(profileToMember(row, null), Boolean(row.verified_role))));
+    }).catch(() => { if (active) setMatchLoadError('Some matched member profiles could not be loaded. Retry the search.'); });
+    return () => { active = false; };
+  }, [isLive, semantic, members]);
   const insightById = useMemo(() => new Map((semantic?.matches ?? []).map(match => [match.id, match])), [semantic]);
   const displayMembers = useMemo(() => semantic
-    ? semantic.matches.flatMap(match => { const person = members.find(row => row.id === match.id); return person ? [{...person, matchExplanation: match.insight}] : []; })
-    : members, [members, semantic]);
+    ? semantic.matches.flatMap(match => { const person = [...members, ...matchedExtras].find(row => row.id === match.id); return person ? [{...person, matchExplanation: match.insight}] : []; })
+    : members, [members, matchedExtras, semantic]);
   useEffect(() => { setSearch(searchQuery); }, [searchQuery]);
   const [role, setRole] = useState('all');
   const [sort, setSort] = useState<'name' | 'match'>('match');
@@ -45,7 +63,9 @@ export function LedgerDirectory({
     {semantic && <div role="status" className="mt-3 rounded-xl border border-amber-400/30 bg-[#12151c] p-3 text-xs text-slate-200">
       <strong className="text-amber-300">{displayMembers.length} AI matches</strong> from {semantic.reviewed} approved profiles reviewed.
       {semantic.truncated && <span> More profiles exist; this search covers the first 100 visible records.</span>}
-      {!displayMembers.length && <span> No profiles had sufficiently supported matches. Try another description or standard search.</span>}
+      {!semantic.matches.length && <span> No profiles had sufficiently supported matches. Try another description or standard search.</span>}
+      {semantic.matches.length > displayMembers.length && <span> Some approved matches are still loading or not accessible in this view.</span>}
+      {matchLoadError && <span role="alert"> {matchLoadError}</span>}
     </div>}
     {semantic && displayMembers.length > 0 && <div aria-label="AI match insights" className="mt-3 grid gap-2 sm:grid-cols-2">
       {displayMembers.map(person => <article key={person.id} className="rounded-xl border border-white/15 bg-[#141820] p-3 text-slate-100 shadow-lg">
@@ -55,7 +75,7 @@ export function LedgerDirectory({
         <p className="mt-2 text-xs leading-relaxed text-slate-200">{insightById.get(person.id)?.insight}</p>
         <div className="mt-3 flex flex-wrap gap-2">
           <button type="button" onClick={() => onRequestIntro(person)} className="rounded-md bg-[#b42328] px-3 py-2 text-xs font-semibold text-white">Request Intro</button>
-          <button type="button" onClick={() => onMessage(person)} className="flex items-center gap-1 rounded-md border border-white/30 px-3 py-2 text-xs text-white"><MessageCircle size={13}/> Message</button>
+          {isLive && <button type="button" onClick={() => onMessage(person)} className="flex items-center gap-1 rounded-md border border-white/30 px-3 py-2 text-xs text-white"><MessageCircle size={13}/> Message</button>}
         </div>
       </article>)}
     </div>}
@@ -115,7 +135,7 @@ export function LedgerDirectory({
                 className={savedMemberIds.has(person.id)?'saved':''} onClick={()=>onToggleSave(person.id)}><Bookmark size={14}/></button>
               <button type="button" aria-label={'Request introduction to '+person.name} title="Request introduction"
                 onClick={()=>onRequestIntro(person)}><Handshake size={14}/></button>
-              <button type="button" aria-label={'Message '+person.name} title="Message (opens a conversation, does not send)" onClick={()=>onMessage(person)}><MessageCircle size={14}/></button>
+              {isLive && <button type="button" aria-label={'Message '+person.name} title="Message (opens a conversation, does not send)" onClick={()=>onMessage(person)}><MessageCircle size={14}/></button>}
             </div></td>
           </tr>)}
           </tbody>
