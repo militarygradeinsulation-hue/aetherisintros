@@ -28,6 +28,7 @@ import { CONTACT_KEYS, splitList } from '../linkedin-scan'
 import { LinkedInScanPanel } from '../linkedin-scan-ui'
 import FullCrm from '../ledger/FullCrm'
 import SheetImport from '../ledger/SheetImport'
+import { hasPendingSheet } from '../drop-anywhere'
 import { CrmOverviewBento } from '@/components/ui/crm-overview-bento'
 import { OpenDealRoomButton } from '../deals-ui'
 import { ProspectEngine } from '../prospect/ProspectEngine'
@@ -55,7 +56,8 @@ export default function CrmPage({ section }: { section?: 'crm' | 'pipeline' | un
   const ops = useOps()
   const { access } = useAccess()
   const [prospecting, setProspecting] = useState(false)
-  const [importing, setImporting] = useState(false)
+  const [importing, setImporting] = useState(hasPendingSheet)
+  useEffect(() => { const open = () => setImporting(true); window.addEventListener('aetheris:crm-import', open); return () => window.removeEventListener('aetheris:crm-import', open) }, [])
   const net = useNetwork()
   const nav = useNav()
   const [tab, setTab] = useState<Tab>(() => (section === 'pipeline' ? 'opportunities' : section === 'crm' ? 'overview' : typeof window === 'undefined' ? 'overview' : (localStorage.getItem('aetheris.crm.tab') as Tab) || 'overview'))
