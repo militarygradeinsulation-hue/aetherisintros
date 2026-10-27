@@ -501,3 +501,8 @@ Next slices, not implemented by this change:
 - [ ] See what they see: recipient-specific field preview and per-field approval before every sharing/agent action boundary.
 - [ ] Paid trials: jointly approved scope, deliverable, fair payment terms and dispute/cancellation handling; confirmed evidence only. Requires operational settlement, not just a payment-looking screen.
 - [ ] Instrument additional automatic workflow completion boundaries and independently sampled comparison baselines. The initial timer is intentionally member-started and member-completed; it does not silently record every activity.
+
+## Stripe payments enablement (Oct 27)
+- [ ] Enable built-in Stripe payments (form approval pending).
+- [ ] Confirm seller country and set tax handling default.
+- [ ] Create paid membership product/pricing and wire checkout + webhook.
