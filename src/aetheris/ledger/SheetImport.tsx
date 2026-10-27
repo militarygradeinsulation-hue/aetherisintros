@@ -12,6 +12,9 @@ import { safeImportSelection } from '../crm/import-policy'
 import { isDuplicate, safeLinkedInLink } from '../prospect/core'
 import { validateProspectFile, validateProspectGrid } from '../prospect/upload'
 
+/** Members can import up to this many contacts per file. */
+export const CONTACT_IMPORT_MAX_ROWS = 2000
+
 type Target = 'people' | 'companies'
 type Field = { key: string; label: string; required?: boolean; hints: string[] }
 
@@ -112,10 +115,10 @@ export default function SheetImport({ onBack, initialTarget = 'people' }: { onBa
         if (!sheet) throw new Error('That workbook has no rows under a header.')
         rows = [sheet.headers, ...sheet.rows.map(r => r.cells)]
       } else {
-        validateProspectFile(file)
+        validateProspectFile(file, 8 * 1024 * 1024)
         rows = parseCsv(await file.text())
       }
-      validateProspectGrid(rows)
+      validateProspectGrid(rows, CONTACT_IMPORT_MAX_ROWS)
       importedRowsRef.current.clear()
       setFileName(file.name); setGrid(rows); setMap(autoMap(rows[0] ?? [], target))
     } catch (error) { setGrid([]); setReadError(error instanceof Error ? error.message : 'That file could not be read.') }
