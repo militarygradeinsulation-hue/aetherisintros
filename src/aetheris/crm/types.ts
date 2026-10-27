@@ -56,6 +56,8 @@ export interface CrmPerson {
   lifecycle: Lifecycle
   location: string
   linkedinUrl: string
+  /** Set when the person is in Trash; permanently removed 30 days later. */
+  deletedAt?: string | null
   source: string
   notes: string
   tags: string[]
