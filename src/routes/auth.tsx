@@ -8,6 +8,7 @@ import { supabase } from '@/integrations/supabase/client'
 import { lovable } from '@/integrations/lovable/index'
 import { AUTH_REQUIRED } from '@/aetheris/config'
 import { safeAuthNext } from '@/aetheris/auth-next'
+import { acquisitionSignupMetadata } from '@/aetheris/lib/acquisition-source'
 import { previewInvite, rememberInvite, storedInvite } from '@/aetheris/access'
 import { logSecurityEvent, passwordProblem } from '@/aetheris/verification'
 import { AppearanceToggle } from '@/aetheris/AppearanceToggle'
@@ -177,7 +178,11 @@ function AuthPage() {
           password,
           options: {
             emailRedirectTo: `${window.location.origin}${next || '/early-access'}`,
-            data: { name: name || email.split('@')[0], invite_code: invite.trim() },
+            data: {
+              name: name || email.split('@')[0], invite_code: invite.trim(),
+              // Untrusted first-touch acquisition hints; never authorization signals.
+              ...acquisitionSignupMetadata(window.sessionStorage),
+            },
           },
         })
         if (signUpError) throw signUpError
