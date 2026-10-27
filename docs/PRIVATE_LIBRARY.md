@@ -112,6 +112,18 @@ synthetic client-side parser/normalization tests are:
 npx vitest run src/aetheris/library/__tests__/import.test.ts src/lib/__tests__/contact-export.test.ts
 ```
 
+The private Library supports **complete, scrollable review of each imported sheet** (up to
+the existing 20,000-row file safety ceiling). Its virtualized preview mounts only visible rows,
+but every source row and its complete original columns can be inspected; no 50-row preview
+truncation remains. Errors can also be viewed for every row. The saved Rolodex has an
+incremental **Load next 50 contacts** control so the entire authorized workspace remains
+browseable without an unbounded backend read; each RPC still returns at most 50 scoped summaries.
+
+Mapping and missing-field detection prepare records for review, but they do **not** invent
+emails, professional titles, or companies. Source-backed enrichment suggestions can be added
+to an imported record and accepted field by field. No external enrichment provider is
+configured, so the application must not claim to have automatically enriched records.
+
 The private Library currently supports paginated searching the selected workspace, viewing
 provenance, explicit record-sharing permissions, and manually saving evidence-backed
 enrichment suggestions. No licensed/approved automatic business or professional provider
