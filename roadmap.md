@@ -506,3 +506,6 @@ Next slices, not implemented by this change:
 - [ ] Enable built-in Stripe payments (form approval pending).
 - [ ] Confirm seller country and set tax handling default.
 - [ ] Create paid membership product/pricing and wire checkout + webhook.
+
+## Email infrastructure for notify.askintros.vip (Oct 27)
+- [ ] Check email domain status for notify.askintros.vip; scaffold templates if configured.
