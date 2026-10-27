@@ -30,4 +30,13 @@ describe('CRM import validation and recovery', () => {
     expect(source).toContain('importedRowsRef.current.add')
     expect(source).toContain('!importedRowsRef.current.has')
   })
+  it('offers spreadsheet import from the CRM people view', () => {
+    const page = readFileSync(new URL('../pages/CrmPage.tsx', import.meta.url), 'utf8')
+    const panel = readFileSync(new URL('../ledger/SheetImport.tsx', import.meta.url), 'utf8')
+    expect(page).toContain("import SheetImport from '../ledger/SheetImport'")
+    expect(page).toContain('setImporting(true)')
+    expect(page).toContain('<SheetImport onBack={() => setImporting(false)} initialTarget="people" />')
+    expect(panel).toContain('onBack &&')
+    expect(panel).toContain('useState<Target>(initialTarget)')
+  })
 })
