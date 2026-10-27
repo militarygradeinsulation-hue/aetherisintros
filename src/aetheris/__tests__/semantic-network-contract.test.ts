@@ -16,8 +16,9 @@ describe('Semantic network search integration', () => {
   it('never sends raw messages or relationship graphs to model input', () => {
     const server = file('../../lib/semanticSearch.functions.ts')
     expect(server).toContain('gatewayChat({')
-    expect(server).toContain('JSON.stringify({ query: data.query, candidates })')
-    expect(server).toContain('groundSemanticMatches(parsed, candidates)')
+    expect(server).toContain('JSON.stringify({ query: data.query, candidates: aliases })')
+    expect(server).toContain('const realIds = new Map(aliases.map(')
+    expect(server).toContain('groundSemanticMatches({ matches: resolved }, candidates)')
     expect(server).not.toContain('context.messages')
     expect(server).not.toContain('getPrivateRelationships')
   })
