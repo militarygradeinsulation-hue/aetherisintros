@@ -42,6 +42,7 @@ export const Route = createFileRoute('/founder-story')({
   head: () => ({
     meta: [
       { title: 'Why Joseph Toney Built Ask Intros | Founder Story' },
+      { name: 'robots', content: 'index,follow,max-image-preview:large' },
       { name: 'description', content: 'Meet Joseph Toney, founder of Ask Intros, and read the story behind its approach to business relationships, context, and useful introductions.' },
       { property: 'og:title', content: 'Why Joseph Toney Built Ask Intros | Founder Story' },
       { property: 'og:description', content: 'The founder story behind Ask Intros and its approach to business relationships, context, and useful introductions.' },
