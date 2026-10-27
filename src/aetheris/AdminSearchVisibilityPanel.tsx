@@ -100,6 +100,7 @@ export function AdminSearchVisibilityPanel() {
     <div className="sv-block">
       <div className="sv-heading"><h3><SearchCheck size={17} /> Public technical audit</h3><button type="button" className="sv-button" onClick={() => void checkPages()} disabled={checking}>{checking ? 'Checking pages…' : 'Run HTTP checks'}</button></div>
       <p>Checks this deployment's raw HTML, robots.txt and sitemap. Passing checks do not mean Google or AI tools have indexed the page. If this is a preview hostname, repeat the check on the published domain.</p>
+      <p>GitHub also runs a daily external check of the public domain. <a href="https://github.com/militarygradeinsulation-hue/aetherisintros/actions/workflows/live-search-monitor.yml" target="_blank" rel="noopener noreferrer">View external production checks</a>. This monitor reports crawl readiness, not Google indexing or search rank.</p>
       {typeof window !== 'undefined' && window.location.origin !== SEARCH_CANONICAL_ORIGIN && <p className="sv-warning">Current host: {window.location.origin}. Canonical site: {SEARCH_CANONICAL_ORIGIN}. Results here describe this host, not necessarily the live domain.</p>}
       {crawl && <div className="sv-scroll"><table className="sv-table"><thead><tr><th>Page or file</th><th>Status</th><th>Evidence</th></tr></thead><tbody>
         {crawl.map(row => <tr key={row.path}><td><code>{row.path}</code></td><td><span className={`sv-status sv-status--${row.status}`}>{row.status}</span></td><td>{row.detail}</td></tr>)}
