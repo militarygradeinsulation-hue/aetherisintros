@@ -181,6 +181,7 @@ export function createRemoteMoatLayer(gateway: TableGateway): MoatDataLayer {
   const emit = () => listeners.forEach(l => l(state))
 
   void (async () => {
+    if (isShowcase()) { emit(); return }
     for (const key of Object.keys(moatTableNames) as MoatCollectionName[]) {
       try {
         const rows = await gateway.select(moatTableNames[key])

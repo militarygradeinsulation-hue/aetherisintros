@@ -154,6 +154,7 @@ export function createRemoteOSLayer(gateway: TableGateway): OSDataLayer {
   const emit = () => listeners.forEach(l => l(state))
 
   void (async () => {
+    if (isShowcase()) { emit(); return }
     for (const key of Object.keys(osTableNames) as OSCollectionName[]) {
       try {
         const rows = await gateway.select(osTableNames[key])

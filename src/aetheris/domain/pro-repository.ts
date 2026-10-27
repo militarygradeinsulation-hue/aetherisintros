@@ -224,6 +224,7 @@ export function createRemoteProLayer(gateway: TableGateway): ProDataLayer & {
   const emit = () => listeners.forEach(l => l(state))
 
   const ready = (async () => {
+    if (showcase) { emit(); return }
     for (const key of Object.keys(proTableNames) as ProCollectionName[]) {
       try {
         const rows = await gateway.select(proTableNames[key])
@@ -231,8 +232,7 @@ export function createRemoteProLayer(gateway: TableGateway): ProDataLayer & {
         delete errors[key]
       } catch (err) {
         errors[key] = err instanceof Error ? err.message : 'Could not load this section.'
-        // Live mode must not keep showcase rows on failure.
-        if (!showcase) (state[key] as unknown[]) = []
+        ;(state[key] as unknown[]) = []
       }
     }
     emit()
