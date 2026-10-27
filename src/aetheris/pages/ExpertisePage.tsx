@@ -66,6 +66,8 @@ export function ExpertisePage() {
           <p className="why-intros"><span><b>Why this appears.</b> {fit.why}</span></p>
           <footer className="opp-foot">
             <Btn kind="secondary" onClick={() => pro.toggleExpertiseSave(offer.id)}>{offer.saved ? 'Saved' : 'Save'}</Btn>
+            {mine && <Btn kind="quiet" onClick={() => pro.toggleExpertiseVisibility(offer.id)}>{offer.visibility === 'private' || offer.visibility === 'connections' ? 'Show to network' : 'Hide from network'}</Btn>}
+
             {!mine && <Btn onClick={() => setCtxFor(ctxFor === offer.id ? null : offer.id)}>Request this</Btn>}
             {m && !mine && <Btn kind="quiet" onClick={() => nav.openMember(m)}>Open profile</Btn>}
           </footer>

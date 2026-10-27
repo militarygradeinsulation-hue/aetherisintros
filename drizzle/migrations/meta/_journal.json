@@ -750,6 +750,13 @@
       "when": 1793117186414,
       "tag": "0107_company_profiles_owner_scoped",
       "breakpoints": true
+    },
+    {
+      "idx": 108,
+      "version": "7",
+      "when": 1793117300000,
+      "tag": "0108_expertise_offers_visibility_scoped",
+      "breakpoints": true
     }
   ]
 }
