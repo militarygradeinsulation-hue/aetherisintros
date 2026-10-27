@@ -105,6 +105,11 @@ export function useButlerConversations() {
     if (turns.some(t => t.id && !saved.current.has(t.id)) && owner) { setNotice('Save the current conversation before switching.'); return }
     rawSetTurns([welcome]); setConversation(id ?? crypto.randomUUID())
   }
-  return { turns, setTurns, owner, authReady, ready, notice, history, historyBefore, older, listHistory, loadOlder, switchConversation,
+  const flush = async () => {
+    await queue.current
+    if (scope.current.owner !== owner || scope.current.conversation !== conversation) throw new Error('Account or conversation changed.')
+    if (visible.current.some(turn => turn.id && !saved.current.has(turn.id))) throw new Error('Conversation is not saved yet. Retry saving history first.')
+  }
+  return { turns, setTurns, owner, conversation, flush, authReady, ready, notice, history, historyBefore, older, listHistory, loadOlder, switchConversation,
     retrySave: () => { if (!ready) setRetry(n => n + 1); else rawSetTurns(prev => [...prev]) } }
 }

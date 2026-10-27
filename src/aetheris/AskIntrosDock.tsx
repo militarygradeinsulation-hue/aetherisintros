@@ -1,3 +1,5 @@
+import { saveMemoryNote, saveConversationNote } from '@/lib/memoryNotes.functions'
+import { conversationSaveTitle, localNoteDate, memorySaveRequest, noteFields, NOTES_CHANGED } from '@/features/memory-notes/model'
 import { transcribeButlerAudio } from '@/lib/butlerTranscribe.functions'
 import { blobToBase64 } from './meeting-recorder'
 import { ButlerWorkspaceControls, useButlerWelcome } from '@/intros-ui/onboarding/ButlerWorkspaceControls'
@@ -27,8 +29,6 @@ import { describe as describeCapability } from './capabilities/registry'
 import { getActiveSubject, openCapability } from './capabilities/store'
 import { openCeo } from './ceo-store'
 import { VOICE_PAGES, confirmation, parseVoiceCommand } from './voice-commands'
-import { saveQuickNote } from './quick-note-ui'
-import { noteFailedResult, noteSavedResult } from './quick-note'
 import { placeMenu } from './quick-menu'
 import {
   isStopPhrase, readAloud, readerSnapshot, stopReading, useDictation, useReader, useVoiceSettings, voiceOutputSupported,
@@ -310,6 +310,34 @@ function AskIntrosDockInner({ page, peopleNames, memberName, briefing, contextPa
     const history = [...turns, { role: 'user' as const, content: question + fileContext }]
     setTurns(history)
     const say = (text: string) => { if ((voice.speakReplies || voice.conversation) && voiceOutputSupported()) readAloud([text], 'Ask Intros') }
+    const conversationTitle = hasFiles ? null : conversationSaveTitle(question)
+    if (conversationTitle !== null) {
+      setBusy(true)
+      try {
+        if (!requestOwner) throw new Error('Sign in to save a conversation to Memory Notes.')
+        const through = [...turns].reverse().find(turn => turn.id)?.id
+        if (!through) throw new Error('There is no conversation to save yet. Start a conversation first.')
+        await memory.flush()
+        const note = await saveConversationNote({ data: { owner: requestOwner, id: crypto.randomUUID(), conversation: memory.conversation, through,
+          title: conversationTitle, date: localNoteDate(), context: `Conversation with Butler, saved from ${page}. Request: ${question}`.slice(0, 2000) } })
+        if (ownerRef.current !== requestOwner) return
+        window.dispatchEvent(new Event(NOTES_CHANGED))
+        const receipt = `Saved “${note.title}” to Memory → Notes with its date, context and conversation transcript. I can look it up in future conversations.`
+        setTurns(current => [...current, { role: 'assistant', content: receipt }]); say(receipt)
+      } catch (error) {
+        if (ownerRef.current === requestOwner) { const message = error instanceof Error ? error.message : 'Conversation was not saved to Notes. Please retry.'; setTurns(current => [...current, { role: 'assistant', content: message }]); say(message) }
+      } finally { setBusy(false); sending.current = false }
+      return
+    }
+    const saveRequestedNote = async (value: string, structured: boolean) => {
+      if (!requestOwner) throw new Error('Sign in to save a note to Memory.')
+      if (!memorySaveRequest(question)) throw new Error('No note saved. Ask me explicitly to save a note or idea.')
+      const fields = structured ? JSON.parse(value) : { title: value.trim().split('\n')[0]?.slice(0, 160), content: value, type: 'note', context: `Saved at your request during a Butler conversation on ${page}.` }
+      const note = noteFields.parse({ ...fields, date: fields.date || localNoteDate() })
+      const saved = await saveMemoryNote({ data: { owner: requestOwner, id: crypto.randomUUID(), note, fromButler: true } })
+      if (ownerRef.current === requestOwner) window.dispatchEvent(new Event(NOTES_CHANGED))
+      return `Saved “${saved.title}” to Memory → Notes (${saved.date}). Butler can recall it in future conversations.`
+    }
     const reviewCommand = hasFiles ? null : spokenReviewCommand(question)
     if (reviewCommand) {
       if (reviewCommand === 'cancel') {
@@ -395,12 +423,20 @@ function AskIntrosDockInner({ page, peopleNames, memberName, briefing, contextPa
       return
     }
     // Commands that run instantly: go somewhere, find someone, message, intro, note, post an ask.
-    const command = hasFiles ? null : parseVoiceCommand(question, peopleNames)
+    const parsedCommand = hasFiles ? null : parseVoiceCommand(question, peopleNames)
+    // Short explicit notes work even if the language provider is unavailable.
+    // References such as 'this idea' need the conversational context instead.
+    const directNote = parsedCommand?.kind === 'take-note' && memorySaveRequest(question) &&
+      !/\b(?:this|that|our|the above|titled|called|context|conversation|discussion|chat)\b/i.test(parsedCommand.value ?? '')
+    const command = directNote ? parsedCommand : parsedCommand?.kind === 'take-note' || memorySaveRequest(question) ? null : parsedCommand
     if (command) {
       let result: string | null
       if (command.kind === 'take-note') {
-        try { result = noteSavedResult(await saveQuickNote(command.value ?? '')) }
-        catch (e) { result = noteFailedResult(e) }
+        setBusy(true)
+        try { result = await saveRequestedNote(command.value ?? '', false) }
+        catch (e) { result = e instanceof Error ? e.message : 'Note was not saved.' }
+        finally { setBusy(false) }
+        if (ownerRef.current !== requestOwner) { sending.current = false; return }
       } else result = run(command)
       const reply = confirmation(command, result)
       const answer: Turn = { role: 'assistant', content: reply, ...(result ? { did: [result] } : {}) }
@@ -414,7 +450,7 @@ function AskIntrosDockInner({ page, peopleNames, memberName, briefing, contextPa
     }
     // Conversational questions (who/what/why/where) must never launch a
     // workspace just because one of the topic keywords appears in them.
-    const openToolRequested = !hasFiles && explicitlyRequestsToolAction(question)
+    const openToolRequested = !hasFiles && !memorySaveRequest(question) && explicitlyRequestsToolAction(question)
     const destination = openToolRequested ? recognizeDestination(question) : null
     if (destination) {
       window.dispatchEvent(new CustomEvent('aetheris:navigate', { detail: destination }))
@@ -443,7 +479,7 @@ function AskIntrosDockInner({ page, peopleNames, memberName, briefing, contextPa
     const speak = (text: string) => {
       if ((voice.speakReplies || voice.conversation) && voiceOutputSupported()) readAloud([text], 'Ask Intros')
     }
-    const local = hasFiles ? null : answerGraphQuestion(question, graphInputs)
+    const local = hasFiles || memorySaveRequest(question) || /\b(?:notes?|remember|recall|saved|conversation)\b/i.test(question) ? null : answerGraphQuestion(question, graphInputs)
     if (local) {
       setTurns(current => [...current, { role: 'assistant', content: local }])
       speak(local)
@@ -485,6 +521,7 @@ function AskIntrosDockInner({ page, peopleNames, memberName, briefing, contextPa
       if (!answer.error) setAttachments([])
       const did: string[] = []
       const prepared: string[] = []
+      let noteReceipt: string | null = null
       for (const action of answer.actions) {
         // A model can propose navigation, but the member must specifically
         // request it. Question words are not permission to open search.
@@ -496,20 +533,24 @@ function AskIntrosDockInner({ page, peopleNames, memberName, briefing, contextPa
           resetApproval(); setDraft({ id: crypto.randomUUID(), kind: (action.kind === 'draft-post' ? 'publish-post' : action.kind) as NonNullable<typeof draft>['kind'], text: action.value.slice(0, 4000) });
           setDraftError(''); did.push('Draft ready for review.'); prepared.push('Prepared draft:\n' + action.value); continue
         }
-        if (action.kind === 'take-note') {
-          try { did.push(noteSavedResult(await saveQuickNote(action.value ?? ''))) }
-          catch (error) { did.push(noteFailedResult(error)) }
+        if (action.kind === 'take-note' || action.kind === 'save-memory-note') {
+          if (noteReceipt !== null) continue
+          try { noteReceipt = await saveRequestedNote(action.value ?? '', action.kind === 'save-memory-note') }
+          catch (error) { noteReceipt = 'Note was not saved. ' + (error instanceof Error ? error.message : 'Please retry.') }
+          did.push(noteReceipt)
           continue
         }
         const note = run(action)
         if (note) did.push(note)
       }
-      setTurns(current => [...current, { role: 'assistant', content: answer.reply + (prepared.length ? '\n\n' + prepared.join('\n\n') : ''), did, sources: answer.sources ?? [] }])
+      if (ownerRef.current !== requestOwner) return
+      const reply = noteReceipt ?? answer.reply
+      setTurns(current => [...current, { role: 'assistant', content: reply + (prepared.length ? '\n\n' + prepared.join('\n\n') : ''), did, sources: answer.sources ?? [] }])
       const next = answer.suggestions.filter(item => item.toLowerCase() !== question.toLowerCase())
       if (next.length) setOpeners(next.slice(0, 4))
       const reads = answer.actions.some(action => action.kind === 'read-page')
       if (!reads && (voice.speakReplies || voice.conversation) && voiceOutputSupported()) {
-        readAloud([answer.reply], 'Ask Intros')
+        readAloud([reply], 'Ask Intros')
       }
     } catch (error) {
       const { isAuthRequiredError } = await import('@/lib/auth-contract')

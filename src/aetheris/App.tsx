@@ -1,3 +1,4 @@
+import { MemoryNotes } from '@/features/memory-notes/MemoryNotes'
 import { newcomerLane } from '@/features/evidence-loop/matching'
 import { HRWorkspace } from '@/features/hr/HRWorkspace'
 import { PhotoEstimatePage } from '@/features/photo-estimate/PhotoEstimatePage'
@@ -1408,6 +1409,7 @@ function Memory({ people, select }: { people: Member[]; select: (p: Member) => v
         <button className="memory-cta ai-gradient-button">Your Network Remembers <ArrowRight size={15} /></button>
       </div>
     </section>
+    <MemoryNotes />
     <section className="memory-dark-intro">
       <div><Label signal>ACTIVE MEMORY GRAPH</Label><h2>Not a contact list.<br />A living record of <em>why.</em></h2></div>
     </section>
