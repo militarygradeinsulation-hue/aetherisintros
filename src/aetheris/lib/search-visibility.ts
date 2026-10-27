@@ -100,6 +100,79 @@ export function parseSearchConsoleQueries(csv: string): SearchQuery[] {
   return results.sort((a, b) => b.clicks - a.clicks || b.impressions - a.impressions).slice(0, 25)
 }
 
+/**
+ * Pages.csv is the separately exported Pages dimension from Google Search Console.
+ * It is NOT a conversion report. The URL must belong to the canonical Ask Intros host.
+ */
+export type SearchPage = {
+  url: string
+  path: string
+  clicks: number
+  impressions: number
+  ctr: number | null
+  position: number | null
+}
+export type SearchOpportunity = {
+  path: string
+  reason: 'snippet' | 'content'
+  message: string
+  impressions: number
+  clicks: number
+}
+export function parseSearchConsolePages(csv: string): SearchPage[] {
+  const rows = readCsv(csv)
+  const head = rows[0]!.map(cell => cell.trim().toLowerCase())
+  const pageIndex = head.indexOf('top pages') >= 0 ? head.indexOf('top pages') : head.indexOf('page')
+  const clicksIndex = head.indexOf('clicks')
+  const impressionsIndex = head.indexOf('impressions')
+  const positionIndex = head.indexOf('position')
+  if (pageIndex < 0 || clicksIndex < 0 || impressionsIndex < 0) {
+    throw new Error('Expected Pages.csv with Top pages or Page, Clicks and Impressions columns.')
+  }
+  const pages = new Map<string, SearchPage>()
+  for (const row of rows.slice(1)) {
+    const raw = row[pageIndex]?.trim() ?? ''
+    if (!raw) continue
+    let url: URL
+    try { url = new URL(raw) }
+    catch { throw new Error('Pages.csv contains an invalid page URL.') }
+    if (url.protocol !== 'https:' || url.hostname !== 'askintros.vip' || url.port || url.username || url.password) {
+      throw new Error('Pages.csv includes a URL outside https://askintros.vip. Export only the Ask Intros property.')
+    }
+    const path = url.pathname.replace(/\/$/, '') || '/'
+    const canonical = 'https://askintros.vip' + path
+    const clicks = count(row[clicksIndex], 'Clicks')
+    const impressions = count(row[impressionsIndex], 'Impressions')
+    if (clicks > impressions) throw new Error('Clicks cannot exceed impressions for a page.')
+    if (pages.has(canonical)) throw new Error('Duplicate canonical page rows. Export the Pages dimension without extra breakdowns.')
+    const rank = positionIndex < 0 ? null : position(row[positionIndex])
+    pages.set(canonical, { url: canonical, path, clicks, impressions, ctr: impressions ? clicks / impressions : null, position: rank })
+  }
+  if (pages.size === 0) throw new Error('No valid page rows found.')
+  return [...pages.values()].sort((a,b)=>b.impressions-a.impressions || b.clicks-a.clicks).slice(0,100)
+}
+
+/** Heuristic review flags, not traffic or ranking predictions. */
+export function prioritizeSearchPages(pages: SearchPage[]): SearchOpportunity[] {
+  return pages.flatMap(page => {
+    if (page.impressions < 50) return []
+    const opportunities: SearchOpportunity[] = []
+    if (page.ctr !== null && page.ctr < 0.02) {
+      opportunities.push({
+        path: page.path, reason: 'snippet', impressions: page.impressions, clicks: page.clicks,
+        message: 'Review the title, description and query intent; a low clickthrough rate does not by itself prove a snippet problem.',
+      })
+    }
+    if (page.position !== null && page.position > 10) {
+      opportunities.push({
+        path: page.path, reason: 'content', impressions: page.impressions, clicks: page.clicks,
+        message: 'Review page usefulness, relevant internal links and search intent. Average position varies by query.',
+      })
+    }
+    return opportunities
+  }).sort((a,b)=>b.impressions-a.impressions).slice(0,20)
+}
+
 export const PUBLIC_DISCOVERY_ROUTES = [
   '/', '/how-it-works', '/warm-introductions', '/active-memory',
   '/executive-networking', '/relationship-intelligence', '/ai-networking-assistant',
@@ -112,7 +185,7 @@ export type CrawlResult = { path: string; status: 'pass' | 'warn' | 'fail'; deta
 export async function runSearchCrawl(fetcher: typeof fetch, htmlParser: (html: string) => Document): Promise<CrawlResult[]> {
   const results: CrawlResult[] = []
   const request = async (path: string) => {
-    const response = await fetcher(path, { cache: 'no-store', credentials: 'same-origin' })
+    const response = await fetcher(path, { cache: 'no-store', credentials: 'omit' })
     return { status: response.status, text: await response.text() }
   }
   let sitemap = ''
