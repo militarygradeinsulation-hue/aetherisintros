@@ -3,7 +3,8 @@
  * Writes only through the basic CRM (useOps), so imported records are real,
  * account-scoped, and flow into the full workspace automatically.
  */
-import { useMemo, useRef, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
+import { takePendingSheet } from '../drop-anywhere'
 import { Check, ChevronLeft, FileUp, RotateCcw, Wand2 } from 'lucide-react'
 import { Btn, Eyebrow } from '../ui'
 import { useOps } from '../crm/store'
