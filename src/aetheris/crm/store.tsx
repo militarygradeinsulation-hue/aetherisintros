@@ -150,7 +150,14 @@ export function OpsProvider({ children }: { children: ReactNode }) {
       createPerson: async p => {
         const companyId = p.companyId ?? (p.companyName ? (await ensureCompany(p.companyName))?.id ?? null : null)
         const created = await personRepo.create({ ...p, companyId })
-        if (created) await after('crm_person', created.id, 'created', `${created.fullName} added to CRM`)
+        if (created) {
+          await after('crm_person', created.id, 'created', `${created.fullName} added to CRM`)
+          // Mirror into the company HubSpot portal (admin accounts only; never blocks the CRM save).
+          void import('@/lib/hubspot.functions').then(({ syncPersonToHubspot }) => syncPersonToHubspot({ data: {
+            fullName: created.fullName, email: created.email, phone: created.phone, title: created.title, companyName: created.companyName,
+          } })).then(r => { if (r.synced) toast.success(`${created.fullName} added to HubSpot`); else if (r.reason !== 'not-admin') toast.error(`HubSpot sync failed: ${r.reason}`) })
+            .catch(() => toast.error('HubSpot sync failed.'))
+        }
         return created
       },
       updatePerson: async (id, p) => {

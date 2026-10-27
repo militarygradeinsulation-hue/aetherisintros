@@ -519,3 +519,4 @@ Next slices, not implemented by this change:
 - [x] Accept any file format in drops and Butler; system explains how it handles each
 - [ ] Fix contact file upload from People (Butler says it can't do request)
 - [ ] Sync new People contacts to HubSpot (entire portal)
+- [ ] Drag and drop: member chooses destination; system reads file and places it
