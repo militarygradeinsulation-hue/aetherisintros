@@ -61,6 +61,8 @@ export interface ProApi extends ProCollections {
   requestExpertise(id: ID, context: string): void
   setExpertiseRequestState(offerId: ID, requestId: ID, state: 'requested' | 'scheduled' | 'answered' | 'declined'): void
   toggleExpertiseSave(id: ID): void
+  toggleExpertiseVisibility(id: ID): void
+
   publishExpertise(input: Partial<ExpertiseOffer> & { topic: string; offer: string }): ExpertiseOffer
   giveReferral(input: { refereeId: ID; category: ProfessionalReferral['category']; context: string; evidence: string; relationshipBasis: string; strength?: ProfessionalReferral['strength']; shareable?: boolean }): ProfessionalReferral
   toggleReferralShareable(id: ID): void
@@ -278,6 +280,11 @@ export function ProProvider({ children }: { children: ReactNode }) {
       const o = state.expertise.find(x => x.id === id)
       if (o) patch('expertise', id, { saved: !o.saved })
     },
+    toggleExpertiseVisibility(id) {
+      const o = state.expertise.find(x => x.id === id)
+      if (o) patch('expertise', id, { visibility: o.visibility === 'private' || o.visibility === 'connections' ? 'network' : 'private' })
+    },
+
     publishExpertise(input) {
       const record: ExpertiseOffer = {
         id: uid('ex'), memberId: 'me', audience: 'Members with a specific, bounded question',
