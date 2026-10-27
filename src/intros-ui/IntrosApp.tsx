@@ -100,6 +100,7 @@ export default function App({ mode = 'demo', executiveAction, initialPage, initi
   const requirement = membershipPageRequirement(activePage, classicPage);
   const accessBlocked = mode === 'live' && (permissionError || Boolean(entitlements && requirement && !entitlements[requirement]));
   const [selectedProfileId, setSelectedProfileId] = useState<string>(mode === 'live' ? '' : 'marcus-lee');
+  const [messageRecipientId, setMessageRecipientId] = useState('');
   const [members, setMembers] = useState<NetworkMember[]>(mode === 'live' ? [] : NETWORK_MEMBERS);
   const [liveDirectoryError, setLiveDirectoryError] = useState('');
   const [feedPosts, setFeedPosts] = useState<FeedPost[]>(mode === 'live' ? [] : INITIAL_FEED_POSTS);
@@ -437,6 +438,7 @@ export default function App({ mode = 'demo', executiveAction, initialPage, initi
               onToggleConnect={handleToggleConnect}
               onToggleSave={handleToggleSaveMember}
               onRequestIntro={member => setRequestIntroTarget(member)}
+              onMessage={member => { setMessageRecipientId(member.id); setActivePage('messages'); }}
               onNavigate={handleNavigate}
               searchQuery={searchQuery}
             />
@@ -481,7 +483,7 @@ export default function App({ mode = 'demo', executiveAction, initialPage, initi
           />
         )}
 
-        {mode === 'live' && activePage === 'messages' && <LiveMessagesView social={experience === 'social'} onOpenWorkspaces={() => { setClassicPage('workspaces'); handleNavigate('workspace'); }} />}
+        {mode === 'live' && activePage === 'messages' && <LiveMessagesView social={experience === 'social'} initialRecipientId={messageRecipientId} onRecipientOpened={() => setMessageRecipientId('')} onOpenWorkspaces={() => { setClassicPage('workspaces'); handleNavigate('workspace'); }} />}
         {mode !== 'live' && activePage === 'messages' && (
           <><div hidden={experience !== 'social'}>          <OriginalMessagesView
             conversations={conversations}
