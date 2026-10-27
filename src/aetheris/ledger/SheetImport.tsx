@@ -114,6 +114,9 @@ export default function SheetImport({ onBack, initialTarget = 'people' }: { onBa
         const { readSheetRows } = await import('../contact-files')
         rows = await readSheetRows(file)
       }
+      // Exports often have ragged rows (trailing blanks); square them to the header width.
+      const width = rows[0]?.length ?? 0
+      rows = rows.filter(r => r.some(c => c.trim())).map(r => r.length === width ? r : [...r.slice(0, width), ...Array(Math.max(0, width - r.length)).fill('')])
       validateProspectGrid(rows, CONTACT_IMPORT_MAX_ROWS, 300)
       importedRowsRef.current.clear()
       setFileName(file.name); setGrid(rows); setMap(autoMap(rows[0] ?? [], target))

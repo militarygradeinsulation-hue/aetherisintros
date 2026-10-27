@@ -15,7 +15,8 @@ export async function readSheetRows(file: File): Promise<string[][]> {
   if (TEXT_SHEET.test(file.name) || /csv|tab-separated/i.test(file.type)) {
     const { read, utils } = await import('xlsx')
     const text = await file.text()
-    const wb = read(text, { type: 'string', FS: /\.tsv$/i.test(file.name) || text.split('\n')[0]?.includes('\t') ? '\t' : undefined })
+    const tabs = /\.tsv$/i.test(file.name) || Boolean(text.split('\n')[0]?.includes('\t'))
+    const wb = read(text, tabs ? { type: 'string', FS: '\t' } : { type: 'string' })
     return firstSheet(wb, utils)
   }
   const { read, utils } = await import('xlsx')
