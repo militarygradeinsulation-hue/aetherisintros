@@ -43,6 +43,8 @@ jobs:
         run: npx tsc --noEmit -p .
       - name: Search visibility model tests
         run: npx vitest run src/aetheris/__tests__/search-visibility.test.ts
+      - name: Signup acquisition privacy and source tests
+        run: npx vitest run src/aetheris/__tests__/acquisition-source.test.ts
       - name: External monitor logic tests (no network)
         run: node --test scripts/public-search-check/production-monitor.test.mjs
       - name: Verify raw HTML, canonical URLs and sitemap
