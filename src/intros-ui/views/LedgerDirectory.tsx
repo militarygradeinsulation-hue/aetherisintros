@@ -39,8 +39,8 @@ export function LedgerDirectory({
     const query = search.trim().toLowerCase();
     const text = [person.name, person.title, person.company, person.industry, person.location].join(' ').toLowerCase();
     return (!query || text.includes(query)) && (role === 'all' || person.roleType === role);
-  }).sort((a, b) => sort === 'name' ? a.name.localeCompare(b.name) : b.matchScore - a.matchScore); return sort === 'match' ? newcomerLane(rows,p=>p.id,p=>Boolean(p.newcomerEligible)) : rows; }, [displayMembers, search, role, sort]);
-  const newcomer=filtered.find(p=>p.newcomerEligible);
+  }).sort((a, b) => sort === 'name' ? a.name.localeCompare(b.name) : semantic ? 0 : b.matchScore - a.matchScore); return sort === 'match' && !semantic ? newcomerLane(rows,p=>p.id,p=>Boolean(p.newcomerEligible)) : rows; }, [displayMembers, search, role, sort, semantic]);
+  const newcomer=semantic ? undefined : filtered.find(p=>p.newcomerEligible);
   return <><div className="mb-4"><SemanticNetworkSearch live={isLive} onResults={result => { setSemantic(result); setSearch(''); setRole('all'); }} />
     {semantic && <div role="status" className="mt-3 rounded-xl border border-amber-400/30 bg-[#12151c] p-3 text-xs text-slate-200">
       <strong className="text-amber-300">{displayMembers.length} AI matches</strong> from {semantic.reviewed} approved profiles reviewed.
@@ -88,7 +88,7 @@ export function LedgerDirectory({
         </label>
         <label className="ledger-directory-select"><span className="sr-only">Sort members</span>
           <select aria-label="Sort members" value={sort} onChange={event=>setSort(event.target.value as 'name' | 'match')}>
-            <option value="match">Match score</option><option value="name">Name</option>
+            <option value="match">{semantic ? "AI relevance" : "Match score"}</option><option value="name">Name</option>
           </select>
         </label>
       </div>
