@@ -152,6 +152,7 @@ export default function Landing() {
       <nav className="ael-guide-links" aria-label="Learn about Ask Intros">
         <Link to="/how-it-works">How it works</Link>
         <Link to="/warm-introductions">Warm introductions</Link>
+        <Link to="/warm-introduction-playbook">Introduction playbook</Link>
         <Link to="/active-memory">Active Memory</Link>
         <Link to="/executive-networking">Executive networking</Link>
         <Link to="/relationship-intelligence">Relationship intelligence</Link>

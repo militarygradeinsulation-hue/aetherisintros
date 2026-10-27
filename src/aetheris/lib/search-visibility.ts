@@ -176,7 +176,7 @@ export function prioritizeSearchPages(pages: SearchPage[]): SearchOpportunity[] 
 export const PUBLIC_DISCOVERY_ROUTES = [
   '/', '/how-it-works', '/warm-introductions', '/active-memory', '/early-access', '/founder-story',
   '/executive-networking', '/relationship-intelligence', '/ai-networking-assistant',
-  '/business-relationship-crm', '/social-business-views',
+  '/business-relationship-crm', '/social-business-views', '/warm-introduction-playbook',
 ] as const
 export const SEARCH_CANONICAL_ORIGIN = 'https://askintros.vip'
 export type CrawlResult = { path: string; status: 'pass' | 'warn' | 'fail'; detail: string }
@@ -199,7 +199,7 @@ export async function runSearchCrawl(fetcher: typeof fetch, htmlParser: (html: s
     const doc = htmlParser(sitemap)
     const links = Array.from(doc.getElementsByTagName('loc')).map(node => node.textContent?.trim() ?? '')
     const missing = PUBLIC_DISCOVERY_ROUTES.filter(path => !links.includes(SEARCH_CANONICAL_ORIGIN + path))
-    results.push({ path: '/sitemap.xml', status: response.status === 200 && !missing.length ? 'pass' : 'fail', detail: response.status !== 200 ? 'Sitemap returned HTTP ' + response.status : missing.length ? 'Missing public URLs: ' + missing.join(', ') : 'Eleven expected canonical URLs present.' })
+    results.push({ path: '/sitemap.xml', status: response.status === 200 && !missing.length ? 'pass' : 'fail', detail: response.status !== 200 ? 'Sitemap returned HTTP ' + response.status : missing.length ? 'Missing public URLs: ' + missing.join(', ') : 'Twelve expected canonical URLs present.' })
   } catch { results.push({ path: '/sitemap.xml', status: 'fail', detail: 'Sitemap request failed.' }) }
   for (const path of PUBLIC_DISCOVERY_ROUTES) {
     try {

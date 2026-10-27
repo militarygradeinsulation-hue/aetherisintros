@@ -9,7 +9,7 @@ export const ORIGIN = 'https://askintros.vip'
 export const ROUTES = [
   '/', '/how-it-works', '/warm-introductions', '/active-memory',
   '/executive-networking', '/relationship-intelligence', '/ai-networking-assistant',
-  '/business-relationship-crm', '/social-business-views', '/early-access', '/founder-story',
+  '/business-relationship-crm', '/social-business-views', '/warm-introduction-playbook', '/early-access', '/founder-story',
 ]
 
 function canonical(value) {

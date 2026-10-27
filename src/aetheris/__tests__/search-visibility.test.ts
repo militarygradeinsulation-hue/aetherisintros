@@ -51,6 +51,7 @@ describe('Search Console evidence parser', () => {
   })
   it('lists the actual public routes, not authenticated records', () => {
     expect(PUBLIC_DISCOVERY_ROUTES).toContain('/social-business-views')
+    expect(PUBLIC_DISCOVERY_ROUTES).toContain('/warm-introduction-playbook')
     expect(PUBLIC_DISCOVERY_ROUTES).not.toContain('/app')
     expect(PUBLIC_DISCOVERY_ROUTES).not.toContain('/admin/early-access')
   })

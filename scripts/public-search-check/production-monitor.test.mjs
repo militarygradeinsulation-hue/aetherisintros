@@ -26,7 +26,7 @@ function responses(url) {
   return new Response(html(path), { headers: { 'Content-Type': 'text/html; charset=utf-8' } })
 }
 test('public route inventory excludes protected member data', () => {
-  assert.equal(ROUTES.length, 11)
+  assert.equal(ROUTES.length, 12)
   assert(!ROUTES.some(path => path.startsWith('/admin') || path === '/app' || path.startsWith('/api')))
 })
 test('finds missing SEO metadata and noindex in initial server HTML', () => {
@@ -52,7 +52,7 @@ test('executes production diagnostics without cookies or private URLs', async ()
     fetched.push({ url, options })
     return Promise.resolve(responses(url))
   })
-  assert.equal(run.length, 13)
+  assert.equal(run.length, ROUTES.length + 2)
   assert(run.every(x => x.status === 'PASS'), JSON.stringify(run))
   assert(fetched.every(x => x.options.credentials === 'omit'))
   assert(fetched.every(x => new URL(x.url).origin === ORIGIN))

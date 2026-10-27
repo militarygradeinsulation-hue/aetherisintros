@@ -19,6 +19,7 @@ const pages = [
   ['/ai-networking-assistant', 'AI Networking Assistant and Butler | Ask Intros'],
   ['/business-relationship-crm', 'Business Relationship CRM and Pipeline | Ask Intros'],
   ['/social-business-views', 'Social View and Business View in One Platform | Ask Intros'],
+  ['/warm-introduction-playbook', 'How to Request a Warm Business Introduction | Ask Intros'],
 ];
 const read = async path => {
   const response = await fetch(base + path);
