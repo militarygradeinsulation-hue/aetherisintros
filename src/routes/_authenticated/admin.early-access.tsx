@@ -170,6 +170,7 @@ function AdminRoute() {
       <span className="folio">LAUNCH CONTROL / FOUNDING 1,000</span>
       <h1>Who may <em>join.</em></h1>
       <p>{approved.toLocaleString()} of {capacity.toLocaleString()} founding places claimed.</p>
+      <a href="#search-visibility" className="btn ghost">SEO & AI visibility dashboard</a>
       {notice && <p className="auth-notice" role="status">{notice}</p>}
       {error && <p className="auth-error" role="alert">{error} <button type="button" onClick={() => { setError(''); void reload() }}>Retry loading</button></p>}
     </header>
