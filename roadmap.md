@@ -516,3 +516,4 @@ Next slices, not implemented by this change:
 
 - [x] Enforce the written access rules on 64 member tables (migration 0106) and make company profiles owner-owned (0107) — 2026-10-27
 - [x] CRM People view: added the "Import people" entry so a CSV of contacts can be brought in from CRM itself (panel defaults to People, with Back to CRM) — 2026-10-27
+- [ ] Accept any file format in drops and Butler; system explains how it handles each
