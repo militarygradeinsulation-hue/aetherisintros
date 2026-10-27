@@ -2,7 +2,7 @@ export function validateProspectFile(file: { name: string; size: number }, maxBy
   if (!/\.(csv|tsv|txt)$/i.test(file.name)) throw new Error('Choose a CSV or TSV file.')
   if (file.size > maxBytes) throw new Error(`Upload at most ${Math.round(maxBytes / 1024 / 1024)} MB at a time.`)
 }
-export function validateProspectGrid(rows: string[][], maxRecords = 500, maxColumns = 50) {
+export function validateProspectGrid(rows: string[][], maxRecords = Number.POSITIVE_INFINITY, maxColumns = Number.POSITIVE_INFINITY) {
   if (rows.length < 2) throw new Error('That file has no rows under the header.')
   if (rows.length > maxRecords + 1) throw new Error(`Import at most ${maxRecords.toLocaleString('en-US')} records at a time.`)
   const width = rows[0]?.length ?? 0
