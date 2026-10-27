@@ -11,6 +11,7 @@ import { AdminPeerGroupsPanel } from '@/aetheris/peer-groups-ui'
 import { AdminProvidersPanel } from '@/aetheris/providers-ui'
 import { AdminImpactPanel } from '@/aetheris/impact-ui'
 import { AdminGrowthPanel } from '@/aetheris/growth-ui'
+import { AdminSearchVisibilityPanel } from '@/aetheris/AdminSearchVisibilityPanel'
 import { AdminOverview } from '@/aetheris/admin-overview'
 import { AdminConnectionsPanel } from '@/aetheris/admin-connections'
 import { requireConfirmedAdminWrite } from '@/aetheris/lib/admin-launch-receipt'
@@ -177,6 +178,7 @@ function AdminRoute() {
     <AdminConnectionsPanel />
     <NetworkProofPanel />
     <AdminGrowthPanel />
+    <AdminSearchVisibilityPanel />
     <AdminRevenuePanel />
     <AdminImpactPanel />
     <AdminConciergePanel />
