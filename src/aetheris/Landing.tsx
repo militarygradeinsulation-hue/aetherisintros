@@ -104,9 +104,9 @@ export default function Landing() {
     </header>
 
     <section className="ael-hero ael-hero--carousel" id="ael-main" aria-labelledby="ael-hero-title">
-      <h1 id="ael-hero-title" className="sr-only">Ask Intros — The only social platform that runs your business.</h1>
+      <h1 id="ael-hero-title" className="sr-only">Ask Intros — CEO and executive networking through warm, double opt-in introductions.</h1>
       <div className="ael-hero-content">
-        <p className="sr-only">Share what you need. Explore relevant people. Request an introduction with context and mutual consent.</p>
+        <p className="sr-only">Share what you need. Explore relevant CEOs, founders and operators. Request a warm introduction with context and mutual consent.</p>
         <div className="ael-hero-actions">
           <JoinAction signedIn={signedIn} className="ael-btn ael-btn-gold ai-gradient-button" />
           {signedIn
@@ -121,7 +121,7 @@ export default function Landing() {
           <div className="ael-carousel-copy">
             <p className="ael-carousel-label">WHY ME · WHY THEM · WHY NOW</p>
             <h2>More connection.<br />More possibility.</h2>
-            <p>Find people who understand what you are building. Start with a shared purpose and a reason to connect.</p>
+            <p>Built for CEOs, founders and operators who want warm introductions, not cold outreach. Start with a shared purpose and a reason to connect.</p>
             <Link to="/demo" className="ael-text-link">Find your next connection <ArrowRight aria-hidden="true" size={16} /></Link>
           </div>
         </aside>
@@ -135,11 +135,11 @@ export default function Landing() {
       tagline1="Each Connection"
       tagline2="Matters."
       cardHeading="The next relationship should start with a reason."
-      cardDescription="Share a specific need, discover who can help, and make introductions with mutual consent. An intentional process, not another pile of contacts."
+      cardDescription="Share a specific need, discover executives and founders who can help, and make introductions with mutual consent. An intentional process, not another pile of contacts."
       metricValue={3}
       metricLabel="Simple steps"
       ctaHeading="Every great opportunity begins with a meaningful introduction."
-      ctaDescription="Discover relevant people, know why they matter, and decide together what comes next."
+      ctaDescription="Discover relevant CEOs, founders and operators, know why they matter, and decide together what comes next."
       primaryHref={signedIn ? '/app' : '/auth?mode=signup'}
       primaryLabel={signedIn ? 'Open your network' : 'Create your account'}
       secondaryHref="/demo"

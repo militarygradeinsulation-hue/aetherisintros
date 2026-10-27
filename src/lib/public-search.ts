@@ -1,7 +1,7 @@
 /** Public product identity. Keep titles, visible explanations and structured data aligned. */
 export const PUBLIC_ORIGIN = 'https://askintros.vip'
-export const PRODUCT_TITLE = 'Ask Intros | Business Networking and Warm Introductions'
-export const PRODUCT_DESCRIPTION = 'Ask Intros is a business networking platform for purposeful connections, introductions with mutual consent, and private relationship context.'
+export const PRODUCT_TITLE = 'Ask Intros | CEO & Executive Networking, Warm Introductions'
+export const PRODUCT_DESCRIPTION = 'Ask Intros is the executive networking platform for CEOs, founders and business owners. Share what you need, discover who can help, and meet through warm, double opt-in introductions.'
 export const PUBLIC_IMAGE = `${PUBLIC_ORIGIN}/ask-intros-social.jpg`
 
 export function publicPageHead(title: string, description: string, path: string) {
