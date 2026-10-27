@@ -32,6 +32,10 @@ export interface OpsApi extends OperationalSnapshot {
   createPerson: (p: Partial<CrmPerson>) => Promise<CrmPerson | null>
   updatePerson: (id: ID, p: Partial<CrmPerson>) => Promise<void>
   archivePerson: (id: ID) => Promise<void>
+  /** Moves a person to Trash; kept 30 days, then removed for good. */
+  trashPerson: (id: ID) => Promise<void>
+  restorePerson: (id: ID) => Promise<void>
+  deletePersonForever: (id: ID) => Promise<void>
   personForMember: (memberId: string) => CrmPerson | undefined
   addMemberToCrm: (member: { id: string; name: string; title?: string; company?: string; location?: string }) => Promise<CrmPerson | null>
   /* companies */
@@ -171,6 +175,18 @@ export function OpsProvider({ children }: { children: ReactNode }) {
       archivePerson: async id => {
         await personRepo.update(id, { archived: true })
         await after('crm_person', id, 'archived', 'Person archived')
+      },
+      trashPerson: async id => {
+        await personRepo.update(id, { deletedAt: new Date().toISOString() })
+        await after('crm_person', id, 'trashed', 'Person moved to Trash (kept 30 days)')
+      },
+      restorePerson: async id => {
+        await personRepo.update(id, { deletedAt: null })
+        await after('crm_person', id, 'restored', 'Person restored from Trash')
+      },
+      deletePersonForever: async id => {
+        await personRepo.remove(id)
+        await refresh()
       },
       personForMember,
       addMemberToCrm: async member => {
