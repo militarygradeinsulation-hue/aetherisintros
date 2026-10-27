@@ -1,5 +1,6 @@
 import path from 'node:path';
 import { existsSync } from 'node:fs';
+import { loadEnv } from 'vite';
 // @lovable.dev/vite-tanstack-config already includes the following — do NOT add them manually
 // or the app will break with duplicate plugins:
 //   - TanStack devtools (dev-only, first), tanstackStart, viteReact, tailwindcss, tsConfigPaths,
@@ -8,6 +9,11 @@ import { existsSync } from 'node:fs';
 // You can pass additional config via defineConfig({ vite: { ... }, etc... }) if needed.
 import { defineConfig } from "@lovable.dev/vite-tanstack-config";
 import { mcpPlugin } from "@lovable.dev/mcp-js/stacks/tanstack/vite";
+
+// Load all env vars into process.env for server routes only (never added to
+// the client envDefine block, so secrets stay out of the browser bundle).
+const serverEnv = loadEnv(process.env.NODE_ENV ?? "development", process.cwd(), "");
+Object.assign(process.env, serverEnv);
 
 export default defineConfig({
   plugins: [{
@@ -34,6 +40,14 @@ export default defineConfig({
       return resolved === code ? null : { code: resolved, map: null };
     },
   }, mcpPlugin()],
+  resolve: {
+    alias: {
+      // Pin entities deep imports and root to the hoisted v4.5.0 copy; a nested v7 breaks SSR.
+      "entities/lib/decode.js": path.resolve(__dirname, "node_modules/entities/lib/decode.js"),
+      "entities/lib/encode.js": path.resolve(__dirname, "node_modules/entities/lib/encode.js"),
+      "entities": path.resolve(__dirname, "node_modules/entities"),
+    },
+  },
   tanstackStart: {
     // Redirect TanStack Start's bundled server entry to src/server.ts (our SSR error wrapper).
     // nitro/vite builds from this
