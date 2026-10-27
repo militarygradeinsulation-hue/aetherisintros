@@ -155,7 +155,7 @@ export function OpsProvider({ children }: { children: ReactNode }) {
           // Mirror into the company HubSpot portal (admin accounts only; never blocks the CRM save).
           void import('@/lib/hubspot.functions').then(({ syncPersonToHubspot }) => syncPersonToHubspot({ data: {
             fullName: created.fullName, email: created.email, phone: created.phone, title: created.title, companyName: created.companyName,
-          } })).then(r => { if (!r.synced && (r.reason !== 'not-admin') toast.error(`HubSpot sync failed for ${created.fullName}: ${r.reason}`, { id: 'hubspot-sync' }) })
+          } })).then(r => { if (!r.synced && r.reason !== 'not-admin') toast.error(`HubSpot sync failed for ${created.fullName}: ${r.reason}`, { id: 'hubspot-sync' }) })
             .catch(() => toast.error('HubSpot sync failed.'))
         }
         return created
