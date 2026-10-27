@@ -8,8 +8,6 @@ export type DropAction = 'crm-import' | 'butler-post' | 'butler-read' | 'butler-
 export interface DropSuggestion { action: DropAction; label: string; detail: string }
 export interface DroppedFileInfo { name: string; type: string }
 
-const SHEET = /\.(csv|tsv)$/i
-const WORKBOOK = /\.xlsx$/i
 const IMAGE = /\.(png|jpe?g|gif|webp|heic|avif)$/i
 const DOC = /\.(pdf|docx?|txt|md|rtf|pptx?|xlsx?)$/i
 const URL_RE = /^https?:\/\/\S+$/i

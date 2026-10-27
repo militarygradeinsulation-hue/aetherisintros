@@ -114,7 +114,7 @@ export default function SheetImport({ onBack, initialTarget = 'people' }: { onBa
         const { readSheetRows } = await import('../contact-files')
         rows = await readSheetRows(file)
       }
-      validateProspectGrid(rows, CONTACT_IMPORT_MAX_ROWS)
+      validateProspectGrid(rows, CONTACT_IMPORT_MAX_ROWS, 300)
       importedRowsRef.current.clear()
       setFileName(file.name); setGrid(rows); setMap(autoMap(rows[0] ?? [], target))
     } catch (error) { setGrid([]); setReadError(error instanceof Error ? error.message : 'That file could not be read.') }
