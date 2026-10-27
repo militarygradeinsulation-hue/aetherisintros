@@ -1,0 +1,23 @@
+/* A large import stays scrollable and responsive without mounting thousands of DOM rows. */
+.import-review { min-width: 0; margin-block: 12px; }
+.import-review-controls { display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:12px; margin-block:10px; font-size:13px; line-height:1.5; }
+.import-review-controls form { display:flex; align-items:end; flex-wrap:wrap; gap:8px; }
+.import-review-controls label { display:grid; gap:4px; font-size:12px; }
+.import-review-controls input { width:110px; min-width:0; min-height:36px; padding:7px; background:var(--background,#101010); color:var(--foreground,#fff); border:1px solid var(--border,#555); border-radius:8px; font:inherit; }
+.import-review-controls button,.import-review-inspect { cursor:pointer; border:1px solid var(--border,#666); border-radius:8px; background:var(--secondary,#292929); color:var(--secondary-foreground,#fff); padding:7px 10px; }
+.import-review-controls button:disabled { opacity:.5; cursor:not-allowed; }
+.import-review-scroll { height:min(544px,60vh); min-height:240px; overflow:auto; overscroll-behavior:contain; border:1px solid var(--border,#555); border-radius:10px; }
+.import-review-table { width:100%; table-layout:fixed; border-collapse:collapse; }
+.import-review-table thead th { position:sticky; top:0; z-index:2; background:var(--card,#171717); white-space:normal; line-height:1.35; }
+.import-review-table tbody tr:not(.import-review-spacer) { height:68px; }
+.import-review-table tbody tr:not(.import-review-spacer) td { box-sizing:border-box; height:68px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; max-width:240px; }
+.import-review-table tbody tr:not(.import-review-spacer) td small { display:block; }
+.import-review-table .import-review-spacer,.import-review-table .import-review-spacer td { padding:0!important; border:0!important; line-height:0!important; }
+.import-review-inspect { padding:4px 8px; }
+.import-review-detail { border:1px solid var(--border,#555); border-radius:12px; padding:14px; margin-block:14px; min-width:0; }
+.import-review-detail h4 { margin:0 0 8px; font-size:16px; }
+.import-review-detail dl { display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); gap:10px 16px; margin:10px 0; }
+.import-review-detail dt { font-size:12px; opacity:.75; }
+.import-review-detail dd { margin:4px 0 0; overflow-wrap:anywhere; white-space:pre-wrap; }
+.import-review-detail pre { white-space:pre-wrap; overflow-wrap:anywhere; max-height:280px; overflow-y:auto; }
+@media(max-width:600px) { .import-review-scroll { height:55vh; } .import-review-controls form { width:100%; } }
