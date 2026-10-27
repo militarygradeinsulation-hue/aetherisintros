@@ -60,7 +60,7 @@ export function SemanticNetworkSearch({
         <span className="sr-only">Describe the members to find</span>
         <input value={query} onChange={e => { setQuery(e.target.value); if (error) setError('') }} maxLength={300} disabled={!live || loading}
           aria-label="AI network search" placeholder="Find CEOs looking for distribution partnerships…"
-          className="min-w-0 w-full bg-transparent text-sm text-white placeholder:text-slate-400 outline-none"/>
+          className="min-w-0 w-full bg-transparent text-base sm:text-sm text-white placeholder:text-slate-400 outline-none"/>
       </label>
       <button type="submit" disabled={!live || loading || query.trim().length < 5}
         className="min-h-10 rounded-xl bg-[#b42328] px-5 py-2 text-sm font-semibold text-white disabled:opacity-50 hover:bg-[#d12a31]">
