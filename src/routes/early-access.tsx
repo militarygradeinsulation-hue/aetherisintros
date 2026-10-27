@@ -7,26 +7,17 @@ import { signOutMember } from '@/aetheris/sync/workspace-sync'
 import { storedInvite, claimAccess, foundingLabel, foundingStats, joinWaitlist, useAccess, type AccessState, type FoundingStats } from '@/aetheris/access'
 import { supabase } from '@/integrations/supabase/client'
 import { AppearanceToggle } from '@/aetheris/AppearanceToggle'
+import { PublicStructuredData } from '@/aetheris/PublicStructuredData'
+import { publicPageHead } from '@/lib/public-search'
 import '@/aetheris/styles.css'
 
 export const Route = createFileRoute('/early-access')({
   staticData: { sitemap: true },
-  head: () => ({
-    meta: [
-      { title: 'Ask Intros Membership | Basic and Executive Access' },
-      {
-        name: 'description',
-        content:
-          'Explore Ask Intros membership, Basic account creation, and reviewed Executive access for purposeful business networking and introductions.',
-      },
-      { property: 'og:title', content: 'Ask Intros Membership | Basic and Executive Access' },
-      { property: 'og:description', content: 'Explore Basic membership and reviewed Executive access to Ask Intros.' },
-      { property: 'og:type', content: 'website' },
-      { name: 'twitter:card', content: 'summary_large_image' },
-      { property: 'og:url', content: 'https://askintros.vip/early-access' },
-    ],
-    links: [{ rel: 'canonical', href: 'https://askintros.vip/early-access' }],
-  }),
+  head: () => publicPageHead(
+    'Ask Intros Membership | Basic and Executive Access',
+    'Explore Ask Intros membership, Basic account creation, and reviewed Executive access for purposeful business networking and introductions.',
+    '/early-access',
+  ),
   component: EarlyAccessPage,
 })
 
@@ -97,6 +88,9 @@ function EarlyAccessPage() {
       : 'Registration is closed. Approved members can still sign in.'
 
   return <main className="auth-page">
+    <PublicStructuredData path="/early-access"
+      title="Ask Intros Membership | Basic and Executive Access"
+      description="Explore Ask Intros membership, Basic account creation, and reviewed Executive access for purposeful business networking and introductions." />
     <section className="auth-panel">
       <AppearanceToggle className="auth-appearance" />
       <Link to="/" className="auth-brand">
