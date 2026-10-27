@@ -13,7 +13,7 @@ import type {
 } from './domain/pro-models'
 import { getProDataLayer, type ProCollectionName, type ProCollections } from './domain/pro-repository'
 import {
-  buildTeam, checkBoundaries, composeBriefing, proofGraphFor, rankMarketplace, readCredibility,
+  buildTeam, canBrowseExpertiseOffer, checkBoundaries, composeBriefing, proofGraphFor, rankMarketplace, readCredibility,
   reputationsFor, scoreExpertise, scoreOpportunity, toCsv, universalSearch,
   type BoundaryVerdict, type SearchCorpusItem,
 } from './domain/pro-engine'
