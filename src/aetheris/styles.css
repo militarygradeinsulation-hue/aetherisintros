@@ -6288,3 +6288,27 @@ body:has([role=menu],[role=listbox],.ix-mobile-sheet,.topbar-dropmenu,.notificat
   .ask-dock-openers { max-height: min(28vh, 152px); }
   .ask-dock-openers button { font-size: 13px; min-height: 44px; }
 }
+
+/* Meeting room: readable side rail, invite row and backgrounds */
+.meeting-room.has-bg{background-size:cover;background-position:center;padding:18px;border-radius:12px}
+.meeting-notes{display:flex!important;flex-direction:column;gap:12px;overflow-y:auto;min-height:0}
+.meeting-notes>*{flex:0 0 auto;position:relative}
+.meeting-notes .meeting-transcript{flex:1 1 auto}
+.meeting-consent p,.meeting-butler p{line-height:1.5;margin:0}
+.meeting-butler{display:grid;gap:6px}
+.meeting-invite .meetings-invitees{display:flex;flex-wrap:wrap;gap:8px;max-height:240px;overflow:auto}
+.meeting-invite .meetings-invitees button{display:grid;gap:2px;text-align:left;padding:8px 10px;line-height:1.25;height:auto}
+.meeting-invite .meetings-invitees small{font-size:11px;opacity:.7}
+.meeting-tools{display:flex;flex-wrap:wrap;gap:10px;align-items:flex-start}
+.meeting-share,.meeting-bg{flex:1 1 320px;border:1px solid var(--line-dark);border-radius:10px;padding:10px 14px;background:var(--raised)}
+.meeting-share summary,.meeting-bg summary{cursor:pointer;font-weight:600}
+.meeting-share[open],.meeting-bg[open]{display:grid;gap:10px}
+.meeting-share p{margin:0;font-size:13px;line-height:1.5;color:var(--muted)}
+.meeting-share label{display:grid;gap:4px;font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.meeting-share input{width:100%;padding:8px 10px;border:1px solid var(--line-dark);border-radius:6px;background:rgba(0,0,0,.3);color:inherit;font-size:13px;text-transform:none;letter-spacing:0}
+.meeting-share button{justify-self:start;padding:8px 12px;border-radius:6px}
+.meeting-bg-grid{display:flex;flex-wrap:wrap;gap:8px}
+.meeting-bg-item{position:relative}
+.meeting-bg-swatch{width:96px;height:60px;border-radius:8px;border:1px solid var(--line-dark);background:rgba(0,0,0,.3) center/cover;display:inline-flex;align-items:center;justify-content:center;gap:4px;font-size:12px;cursor:pointer}
+.meeting-bg-swatch[aria-pressed=true]{outline:2px solid #0F5CCB;outline-offset:2px}
+.meeting-bg-del{position:absolute;top:4px;right:4px;width:22px;height:22px;display:grid;place-items:center;border-radius:6px;background:rgba(0,0,0,.65);border:0;color:#fff}
