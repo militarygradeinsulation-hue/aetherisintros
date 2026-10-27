@@ -296,6 +296,8 @@ export function PrivateLibrary() {
   const [activeRecord, setActiveRecord] = useState<LibraryRecord | null>(null);
   const [query, setQuery] = useState("");
   const [searchPage, setSearchPage] = useState(0);
+  const [hasMoreRecords, setHasMoreRecords] = useState(false);
+  const [recordsBusy, setRecordsBusy] = useState(false);
   const [loading, setLoading] = useState(true);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
@@ -380,17 +382,25 @@ export function PrivateLibrary() {
     if (!workspaceId) return;
     let live = true;
     const timer = window.setTimeout(() => {
+      setRecordsBusy(true);
       void searchLibrary(query, workspaceId, searchPage * SEARCH_PAGE_SIZE)
         .then((next) => {
           if (!live) return;
-          setRecords(next);
-          setActiveRecordId((current) =>
-            next.some((record) => record.id === current) ? current : (next[0]?.id ?? ""),
+          // Each RPC remains owner/permission scoped and limited to fifty summary rows.
+          // Append them in the interface so the member can actually browse every contact.
+          setRecords(current =>
+            searchPage === 0
+              ? next
+              : [...current, ...next.filter(row => !current.some(existing => existing.id === row.id))],
           );
+          setHasMoreRecords(next.length === SEARCH_PAGE_SIZE);
+          if (searchPage === 0)
+            setActiveRecordId((current) => next.some(record => record.id === current) ? current : (next[0]?.id ?? ""));
         })
         .catch((e) => {
           if (live) setError(displayError(e, "Search could not be completed."));
-        });
+        })
+        .finally(() => { if (live) setRecordsBusy(false); });
     }, 180);
     return () => {
       live = false;
@@ -417,10 +427,19 @@ export function PrivateLibrary() {
     };
   }, [activeRecordId, refreshVersion]);
 
-  const refresh = () => setRefreshVersion((value) => value + 1);
+  const refresh = () => {
+    setSearchPage(0);
+    setRecords([]);
+    setHasMoreRecords(false);
+    setRefreshVersion(value => value + 1);
+  };
   const updateSearch = (value: string) => {
     setQuery(value);
     setSearchPage(0);
+    setHasMoreRecords(false);
+    setRecords([]);
+    setActiveRecordId("");
+    setActiveRecord(null);
   };
 
   const upload = async (selectedFile: File) => {
@@ -641,6 +660,9 @@ export function PrivateLibrary() {
             onChange={(e) => {
               setWorkspaceId(e.target.value);
               setActiveRecordId("");
+              setActiveRecord(null);
+              setRecords([]);
+              setHasMoreRecords(false);
               setSearchPage(0);
             }}
           >
@@ -861,8 +883,7 @@ export function PrivateLibrary() {
           <div className="pl-subhead">
             <Eyebrow>PRIVATE RECORDS</Eyebrow>
             <span>
-              {records.length}
-              {records.length === SEARCH_PAGE_SIZE ? "+" : ""}
+              {records.length.toLocaleString()} loaded{hasMoreRecords ? " · more available" : ""}
             </span>
           </div>
           {!records.length ? (
@@ -891,22 +912,12 @@ export function PrivateLibrary() {
               </button>
             ))
           )}
-          <div className="pl-actions" aria-label="Search result pages">
-            <Btn
-              kind="quiet"
-              disabled={searchPage === 0}
-              onClick={() => setSearchPage((page) => Math.max(0, page - 1))}
-            >
-              Previous
-            </Btn>
-            <span>Page {searchPage + 1}</span>
-            <Btn
-              kind="quiet"
-              disabled={records.length < SEARCH_PAGE_SIZE}
-              onClick={() => setSearchPage((page) => page + 1)}
-            >
-              Next
-            </Btn>
+          <div className="pl-actions" aria-label="Load more private contacts">
+            <span>{records.length.toLocaleString()} private records displayed · browse above or search by name.</span>
+            {hasMoreRecords && <Btn kind="quiet" disabled={recordsBusy} onClick={() => setSearchPage(page => page + 1)}>
+              {recordsBusy ? "Loading…" : "Load next 50 contacts"}
+            </Btn>}
+            {recordsBusy && <span role="status">Loading private contacts…</span>}
           </div>
         </aside>
         {activeRecord && (
