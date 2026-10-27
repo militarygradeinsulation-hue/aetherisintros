@@ -336,7 +336,7 @@ export function PrivateLibrary() {
   const enrichmentGaps = checkedRows.filter(row => row.record.record_type === "person"
     && (!row.record.email || !row.record.business || !row.record.title)).length;
   const activeChecked = useMemo(
-    () => checkedRows.filter((row) => row.record.source_sheet === activeSheet),
+    () => checkedRows.filter((row) => row.key.startsWith(activeSheet + "\u0000")),
     [checkedRows, activeSheet],
   );
   const inspected = inspectedImportKey ? activeChecked.find(row => row.key === inspectedImportKey) : null;
