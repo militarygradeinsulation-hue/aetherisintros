@@ -10,7 +10,8 @@ import { Btn, Eyebrow } from '../ui'
 import { useOps } from '../crm/store'
 import { safeImportSelection } from '../crm/import-policy'
 import { isDuplicate, safeLinkedInLink } from '../prospect/core'
-import { validateProspectFile, validateProspectGrid } from '../prospect/upload'
+import { autoMapColumns } from './contact-automap'
+import { validateProspectGrid } from '../prospect/upload'
 
 /** Members can import up to this many contacts per file. */
 export const CONTACT_IMPORT_MAX_ROWS = 2000
