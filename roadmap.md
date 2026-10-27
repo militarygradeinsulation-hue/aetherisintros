@@ -526,3 +526,5 @@ Next slices, not implemented by this change:
 - [x] Import: Remove duplicates option
 - [x] Import shows contacts landing live with progress
 - [ ] People: click contact to view/edit/delete; delete → trash kept 30 days
+- [ ] People: inline Add row
+- [ ] People: filter options
