@@ -5144,6 +5144,38 @@ export type Database = {
           },
         ]
       }
+      meeting_chat_messages: {
+        Row: {
+          body: string
+          created_at: string
+          id: string
+          meeting_id: string
+          sender_id: string
+        }
+        Insert: {
+          body: string
+          created_at?: string
+          id?: string
+          meeting_id: string
+          sender_id?: string
+        }
+        Update: {
+          body?: string
+          created_at?: string
+          id?: string
+          meeting_id?: string
+          sender_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "meeting_chat_messages_meeting_id_fkey"
+            columns: ["meeting_id"]
+            isOneToOne: false
+            referencedRelation: "meetings"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       meeting_continuity: {
         Row: {
           after_state: Json | null

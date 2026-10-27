@@ -1,5 +1,6 @@
 import { MeetingShare, MeetingRecordEditor } from './meeting-sharing'
 import { MeetingBackgroundPicker, useMeetingBackground } from './meeting-backgrounds'
+import { MeetingChat } from './meeting-chat'
 import { MeetingAudio, saveMeetingAudio } from './meeting-audio'
 /**
  * Meetings: start a video meeting in one click (or schedule one) with up to three members,
@@ -456,7 +457,7 @@ function LiveRoom({ meeting, userId, local, initialMic, initialCam, initialFacin
   const notesOn = room.roster.filter(p => p.notesConsent)
   const startedBy = room.recordingBy ? nameOf(room.recordingBy) : 'Someone'
   const tail = useRef<HTMLOListElement>(null)
-  useEffect(() => { tail.current?.lastElementChild?.scrollIntoView({ block: 'nearest' }) }, [lines.length])
+  useEffect(() => { const el = tail.current; if (el) el.scrollTop = el.scrollHeight }, [lines.length])
   const inviteable = net.members.filter(m => isLiveId(m.id) && !room.roster.some(p => p.userId === m.id)).slice(0, 30)
 
   const bg = useMeetingBackground(userId)
@@ -487,6 +488,7 @@ function LiveRoom({ meeting, userId, local, initialMic, initialCam, initialFacin
       </div>
 
       <aside className="meeting-notes">
+        <MeetingChat meetingId={meeting.id} userId={userId} />
         {(meeting.agenda || room.roster.length > 1) && <details className="meeting-brief-inline">
           <summary><Compass size={14} /> Brief{meeting.agenda ? ' and agenda' : ''}</summary>
           {meeting.agenda && <p className="meeting-agenda-text">{meeting.agenda}</p>}
