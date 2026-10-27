@@ -13,6 +13,7 @@ import { ThinkingOrb } from '@/components/ui/thinking-orbs'
 import { downloadButlerFile } from './butler/download'
 import { useButlerConversations, type ButlerDisplayTurn } from './butler/conversations'
 import { readButlerFile, type ButlerAttachment } from './butler/files'
+import { isContactSheet } from './contact-files'
 import { executeButlerDraft } from '@/lib/butler.functions'
 import { createButlerImage, findButlerReferenceImages, type ButlerReferenceImage } from '@/lib/butlerImages.functions'
 import { imageCreationBrief, imageReferenceQuery, spokenReviewCommand, spokenConfirmationFor, voiceApprovalMatches, explicitlyRequestsToolAction, explicitlyRequestsDirectorySearch, type VoiceApproval } from './butler/intent'
@@ -208,7 +209,7 @@ function AskIntrosDockInner({ page, peopleNames, memberName, briefing, contextPa
     setFileBusy(true); setFileError('')
     try {
       // Contact spreadsheets skip Butler and open the CRM import directly.
-      const sheet = Array.from(files).find(f => /\.(csv|tsv|xlsx)$/i.test(f.name) || f.type === 'text/csv')
+      const sheet = Array.from(files).find(isContactSheet)
       if (sheet) {
         const { setPendingSheet } = await import('./drop-anywhere')
         setPendingSheet(sheet)

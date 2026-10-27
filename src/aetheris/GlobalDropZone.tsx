@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { butlerPrompt, classifyText, destinationsFor, kindForFiles, setPendingSheet, type DropKind, type DropSuggestion } from './drop-anywhere'
+import { isContactSheet } from './contact-files'
 import './global-drop.css'
 
 interface Pending { kind: DropKind; files: File[]; text: string }
@@ -33,7 +34,7 @@ export function GlobalDropZone() {
       const files = Array.from(e.dataTransfer.files ?? [])
       if (files.length) {
         // Contact spreadsheets go straight to the CRM import — no Butler step.
-        const sheet = files.find(f => /\.(csv|tsv|xlsx)$/i.test(f.name) || f.type === 'text/csv')
+        const sheet = files.find(isContactSheet)
         if (sheet) { openImport(sheet); return }
         setPending({ kind: kindForFiles(files), files: files.slice(0, 3), text: '' }); return
       }
@@ -62,7 +63,7 @@ export function GlobalDropZone() {
   const confirm = (s: DropSuggestion) => {
     if (!pending) return
     if (s.action === 'crm-import') {
-      const sheet = pending.files.find(f => /\.(csv|tsv|xlsx)$/i.test(f.name) || f.type === 'text/csv') ?? null
+      const sheet = pending.files.find(isContactSheet) ?? null
       if (sheet) openImport(sheet)
       else {
         // Not a spreadsheet (PDF, photo of a card, text): Butler reads the people out of it.
