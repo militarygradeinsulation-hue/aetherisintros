@@ -169,6 +169,9 @@ function AuthPage() {
       }
       rememberInvite(invite)
       if (mode === 'signup') {
+        // Private-mode storage restrictions must not stop account creation.
+        let acquisition: Record<string, string> = {}
+        try { acquisition = acquisitionSignupMetadata(window.sessionStorage) } catch { /* optional metric */ }
         // Membership RPCs enforce launch mode and whitelist eligibility after sign-in.
         if (invite.trim() && inviter && !inviter.valid) throw new Error('That invite code is not valid. Check it with the person who sent it.')
         const weak = passwordProblem(password)
@@ -181,7 +184,7 @@ function AuthPage() {
             data: {
               name: name || email.split('@')[0], invite_code: invite.trim(),
               // Untrusted first-touch acquisition hints; never authorization signals.
-              ...acquisitionSignupMetadata(window.sessionStorage),
+              ...acquisition,
             },
           },
         })
