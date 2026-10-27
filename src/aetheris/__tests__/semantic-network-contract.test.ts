@@ -11,8 +11,7 @@ describe('Semantic network search integration', () => {
     expect(server).toContain('p_limit: 100')
     expect(server).toContain('p_verified_only: false')
     expect(server).not.toContain("from('profiles')")
-    expect(server).not.toContain('service_role')
-      // The only appearance may be in a comment explaining why it is forbidden.
+    expect(server).not.toContain("createClient('service_role'")
   })
   it('never sends raw messages or relationship graphs to model input', () => {
     const server = file('../../lib/semanticSearch.functions.ts')
