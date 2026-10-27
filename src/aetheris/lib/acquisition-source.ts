@@ -22,7 +22,7 @@ const ENTRY_PATHS = new Set([
   '/', '/how-it-works', '/warm-introductions', '/active-memory',
   '/executive-networking', '/relationship-intelligence', '/ai-networking-assistant',
   '/business-relationship-crm', '/social-business-views', '/early-access',
-  '/founder-story', '/warm-introduction-playbook', '/auth',
+  '/founder-story', '/warm-introduction-playbook', '/demo', '/auth',
 ])
 
 const SOURCES = new Set([
