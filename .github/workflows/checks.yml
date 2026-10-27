@@ -33,6 +33,8 @@ jobs:
       # Catch bundling failures before slow browser smoke tests.
       - name: Build
         run: npx vite build
+      - name: Public SEO HTML, sitemap and crawler metadata
+        run: node scripts/public-search-check/run.mjs
       - name: Install Chromium
         run: npx playwright install --with-deps chromium
       - name: Butler orb and cinematic entrance (browser)
