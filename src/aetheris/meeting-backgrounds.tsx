@@ -15,7 +15,7 @@ export function useMeetingBackground(userId: string) {
     const paths = (data ?? []).filter(f => f.name && !f.name.startsWith('.')).map(f => `${userId}/${f.name}`)
     if (!paths.length) { setItems([]); return }
     const { data: signed } = await supabase.storage.from(BUCKET).createSignedUrls(paths, 3600)
-    setItems((signed ?? []).filter(s => s.signedUrl).map(s => ({ path: s.path!, url: s.signedUrl })))
+    setItems((signed ?? []).filter(s => s.signedUrl).map(s => ({ path: s.path!, url: s.signedUrl as string })))
   }
   useEffect(() => { setActiveState(localStorage.getItem(`${KEY}.${userId}`) ?? ''); void load() }, [userId])
   const setActive = (p: string) => { setActiveState(p); localStorage.setItem(`${KEY}.${userId}`, p) }
