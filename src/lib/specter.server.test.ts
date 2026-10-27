@@ -78,4 +78,20 @@ describe('Specter provider capacity recovery',()=>{
   await expect(captureSpecterWebsite('https://company.com')).rejects.toThrow('90 seconds')
   expect(fetcher).toHaveBeenCalledTimes(1)
  })
+ it('does not hammer a provider that gives no Retry-After header',async()=>{
+  vi.stubEnv('SPECTER_BROWSER_URL','');vi.stubEnv('SPECTER_BROWSER_TOKEN','')
+  const fetcher=vi.fn().mockResolvedValue(new Response('busy',{status:429}));vi.stubGlobal('fetch',fetcher)
+  await expect(captureSpecterWebsite('https://company.com')).rejects.toThrow('60 seconds')
+  expect(fetcher).toHaveBeenCalledTimes(1)
+ })
+ it('reports the second cooldown if a short retry also receives 429',async()=>{
+  vi.stubEnv('SPECTER_BROWSER_URL','');vi.stubEnv('SPECTER_BROWSER_TOKEN','')
+  const fetcher=vi.fn()
+    .mockResolvedValueOnce(new Response('busy',{status:429,headers:{'retry-after':'0'}}))
+    .mockResolvedValueOnce(new Response('still busy',{status:429,headers:{'retry-after':'120'}}))
+  vi.stubGlobal('fetch',fetcher)
+  await expect(captureSpecterWebsite('https://company.com')).rejects.toThrow('120 seconds')
+  expect(fetcher).toHaveBeenCalledTimes(2)
+ })
+
 })
