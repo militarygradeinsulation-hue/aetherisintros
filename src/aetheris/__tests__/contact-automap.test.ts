@@ -19,3 +19,14 @@ describe('contact auto-match', () => {
     expect(m).toMatchObject({ fullName: 0, firstName: 1, lastName: 2, email: 3, phone: 4, companyName: 5, title: 6 })
   })
 })
+
+describe('auto-match reads cell contents', () => {
+  it('finds name, email, phone, LinkedIn and socials under meaningless headers', () => {
+    const headers = ['Col A', 'Col B', 'Col C', 'Col D', 'Col E']
+    const rows = [
+      ['Jane Doe', 'jane@acme.com', '+1 317 555 0100', 'https://linkedin.com/in/jane', 'https://x.com/jane'],
+      ['John Smith', 'john@beta.io', '(317) 555-0101', 'https://www.linkedin.com/in/john', 'https://instagram.com/john'],
+    ]
+    expect(autoMapColumns(headers, 'people', rows)).toEqual({ fullName: 0, email: 1, phone: 2, linkedinUrl: 3, socials: 4 })
+  })
+})

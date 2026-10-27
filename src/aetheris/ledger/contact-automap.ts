@@ -16,6 +16,7 @@ const ALIASES: Record<MapTarget, Record<string, string[]>> = {
     companyName: ['company', 'company name', 'organization', 'organisation', 'organization name', 'organization 1 name', 'employer', 'account', 'account name', 'business', 'firm'],
     location: ['location', 'city', 'country', 'region', 'state', 'address', 'country region', 'city state'],
     linkedinUrl: ['linkedin', 'linkedin url', 'linkedin profile', 'profile url', 'linkedin profile url', 'url'],
+    socials: ['twitter', 'x', 'twitter url', 'x url', 'instagram', 'facebook', 'tiktok', 'website', 'personal website', 'social', 'socials', 'social profiles'],
     notes: ['notes', 'note', 'comments', 'comment', 'description'],
   },
   companies: {
@@ -37,7 +38,7 @@ const WORDS: Record<MapTarget, Array<[string, RegExp]>> = {
     ['email', /\be ?mail\b/], ['phone', /\b(phone|mobile|cell|tel)\b/], ['linkedinUrl', /linkedin/],
     ['firstName', /\b(first|given)\b/], ['lastName', /\b(last|surname|family)\b/],
     ['companyName', /\b(company|organi[sz]ation|employer|account)\b/], ['title', /\b(title|position|role|job)\b/],
-    ['location', /\b(city|country|location|region|state)\b/], ['notes', /\b(notes?|comments?)\b/], ['fullName', /\bname\b/],
+    ['socials', /\b(twitter|instagram|facebook|tiktok|social|website|youtube)\b/], ['location', /\b(city|country|location|region|state)\b/], ['notes', /\b(notes?|comments?)\b/], ['fullName', /\bname\b/],
   ],
   companies: [
     ['domain', /domain/], ['website', /\b(website|url)\b/], ['industry', /\b(industry|sector)\b/],
@@ -46,7 +47,7 @@ const WORDS: Record<MapTarget, Array<[string, RegExp]>> = {
   ],
 }
 
-export function autoMapColumns(headers: string[], target: MapTarget): Record<string, number> {
+export function autoMapColumns(headers: string[], target: MapTarget, sample: string[][] = []): Record<string, number> {
   const h = headers.map(norm)
   const out: Record<string, number> = {}
   const used = new Set<number>()
@@ -62,6 +63,27 @@ export function autoMapColumns(headers: string[], target: MapTarget): Record<str
     if (field in out) continue
     const i = h.findIndex((x, idx) => !used.has(idx) && re.test(x))
     if (i >= 0) { out[field] = i; used.add(i) }
+  }
+  // Pass 3: read the cells themselves for columns with unhelpful headers ("Column 3", blanks).
+  if (target === 'people' && sample.length) {
+    const share = (i: number, re: RegExp) => {
+      const vals = sample.map(r => (r[i] ?? '').trim()).filter(Boolean)
+      return vals.length ? vals.filter(v => re.test(v)).length / vals.length : 0
+    }
+    const sniff: Array<[string, RegExp]> = [
+      ['email', /^[^\s@]+@[^\s@]+\.[^\s@]+$/],
+      ['linkedinUrl', /linkedin\.com\//i],
+      ['socials', /(twitter\.com|x\.com|instagram\.com|facebook\.com|tiktok\.com|youtube\.com)\//i],
+      ['phone', /^\+?[\d\s().-]{7,20}$/],
+      ['fullName', /^[A-Za-zÀ-ÿ'.-]+(\s+[A-Za-zÀ-ÿ'.-]+){1,3}$/],
+    ]
+    for (const [field, re] of sniff) {
+      if (field in out) continue
+      if (field === 'fullName' && ('firstName' in out || 'lastName' in out)) continue
+      let best = -1, bestShare = 0
+      headers.forEach((_, i) => { if (used.has(i)) return; const s = share(i, re); if (s > bestShare) { best = i; bestShare = s } })
+      if (best >= 0 && bestShare >= 0.6) { out[field] = best; used.add(best) }
+    }
   }
   // A "name" column alongside first/last names is the full name; without first/last it still is.
   return out

@@ -30,6 +30,7 @@ const FIELDS: Record<Target, Field[]> = {
     { key: 'companyName', label: 'Company', hints: ['company', 'organisation', 'organization', 'account', 'employer'] },
     { key: 'location', label: 'Location', hints: ['location', 'city', 'country', 'region'] },
     { key: 'linkedinUrl', label: 'LinkedIn', hints: ['linkedin'] },
+    { key: 'socials', label: 'Socials / website', hints: ['twitter', 'instagram', 'facebook', 'website', 'social'] },
     { key: 'notes', label: 'Notes', hints: ['note', 'comment'] },
   ],
   companies: [
@@ -70,7 +71,7 @@ function parseCsv(text: string): string[][] {
   return rows
 }
 
-const autoMap = (headers: string[], target: Target) => autoMapColumns(headers, target)
+const autoMap = (headers: string[], target: Target, sample: string[][] = []) => autoMapColumns(headers, target, sample)
 
 const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 type Vals = Partial<Record<'fullName'|'firstName'|'lastName'|'email'|'phone'|'title'|'companyName'|'location'|'linkedinUrl'|'notes'|'name'|'domain'|'website'|'industry'|'employees', string>> & Record<string, string | undefined>
@@ -110,11 +111,11 @@ export default function SheetImport({ onBack, initialTarget = 'people' }: { onBa
       rows = rows.filter(r => r.some(c => c.trim())).map(r => r.length === width ? r : [...r.slice(0, width), ...Array(Math.max(0, width - r.length)).fill('')])
       validateProspectGrid(rows, CONTACT_IMPORT_MAX_ROWS, 300)
       importedRowsRef.current.clear()
-      setFileName(file.name); setGrid(rows); setMap(autoMap(rows[0] ?? [], target))
+      setFileName(file.name); setGrid(rows); setMap(autoMap(rows[0] ?? [], target, rows.slice(1, 51)))
     } catch (error) { setGrid([]); setReadError(error instanceof Error ? error.message : 'That file could not be read.') }
   }
 
-  const switchTarget = (t: Target) => { setTarget(t); setMap(autoMap(headers, t)); setDone(null) }
+  const switchTarget = (t: Target) => { setTarget(t); setMap(autoMap(headers, t, body.slice(0, 50))); setDone(null) }
 
   const checked: Checked[] = useMemo(() => {
     const seen = new Set<string>()
@@ -181,7 +182,7 @@ export default function SheetImport({ onBack, initialTarget = 'people' }: { onBa
             ? await ops.createPerson({
               fullName: v.fullName ?? '', email: v.email ?? '', phone: v.phone ?? '', title: v.title ?? '',
               companyName: v.companyName ?? '', location: v.location ?? '', linkedinUrl: v.linkedinUrl ?? '',
-              notes: v.notes ?? '', source: `Import · ${fileName}`,
+              notes: [v.notes, v.socials ? `Socials: ${v.socials}` : ''].filter(Boolean).join('\n'), source: `Import · ${fileName}`,
             })
             : await ops.createCompany({
               name: v.name ?? '', domain: v.domain ?? '', website: v.website ?? '', industry: v.industry ?? '',
@@ -247,7 +248,7 @@ export default function SheetImport({ onBack, initialTarget = 'people' }: { onBa
         <header>
           <Eyebrow>1 · MATCH COLUMNS</Eyebrow>
           <span className="simp-file">{fileName} · {body.length} rows</span>
-          <Btn kind="quiet" onClick={() => setMap(autoMap(headers, target))}><Wand2 size={14} /> Auto-match</Btn>
+          <Btn kind="quiet" onClick={() => setMap(autoMap(headers, target, body.slice(0, 50)))}><Wand2 size={14} /> Auto-match</Btn>
         </header>
         <div className="simp-map">
           {FIELDS[target].map(f => <label key={f.key}>
