@@ -1,0 +1,2 @@
+ALTER TABLE public.crm_people ADD COLUMN IF NOT EXISTS deleted_at timestamptz;
+CREATE INDEX IF NOT EXISTS crm_people_owner_deleted_idx ON public.crm_people (owner_id, deleted_at) WHERE deleted_at IS NOT NULL;
