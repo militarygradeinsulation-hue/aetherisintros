@@ -4,7 +4,7 @@
  * account-scoped, and flow into the full workspace automatically.
  */
 import { useMemo, useRef, useState } from 'react'
-import { Check, FileUp, RotateCcw, Wand2 } from 'lucide-react'
+import { Check, ChevronLeft, FileUp, RotateCcw, Wand2 } from 'lucide-react'
 import { Btn, Eyebrow } from '../ui'
 import { useOps } from '../crm/store'
 import { safeImportSelection } from '../crm/import-policy'
@@ -81,9 +81,9 @@ const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 type Vals = Partial<Record<'fullName'|'firstName'|'lastName'|'email'|'phone'|'title'|'companyName'|'location'|'linkedinUrl'|'notes'|'name'|'domain'|'website'|'industry'|'employees', string>> & Record<string, string | undefined>
 type Checked = { sourceRow: number; values: Vals; errors: string[]; warnings: string[] }
 
-export default function SheetImport() {
+export default function SheetImport({ onBack, initialTarget = 'people' }: { onBack?: () => void; initialTarget?: Target } = {}) {
   const ops = useOps()
-  const [target, setTarget] = useState<Target>('people')
+  const [target, setTarget] = useState<Target>(initialTarget)
   const [fileName, setFileName] = useState('')
   const [grid, setGrid] = useState<string[][]>([])
   const [map, setMap] = useState<Record<string, number>>({})
@@ -214,6 +214,7 @@ export default function SheetImport() {
 
   return <div className="simp">
     <div className="simp-intro">
+      {onBack && <p style={{ margin: '0 0 10px' }}><Btn kind="quiet" onClick={onBack}><ChevronLeft size={14} /> Back to CRM</Btn></p>}
       <Eyebrow>IMPORT</Eyebrow>
       <h3>Bring your spreadsheet in. Keep only what’s clean.</h3>
       <p>Drop a CSV of contacts or companies. Intros matches the columns, flags anything broken or already here, and adds the rest to your CRM.</p>

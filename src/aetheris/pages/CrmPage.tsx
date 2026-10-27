@@ -9,7 +9,7 @@ import { CrmOpportunityReadiness } from '../components/CrmOpportunityReadiness'
 import { useEffect, useState } from 'react'
 import {
   ArrowRight, Building2, CheckCircle2, ChevronLeft, ClipboardList, Compass, Grid3x3,
-  Handshake, LayoutGrid, Plus, ScanLine, Target, UserRound,
+  Handshake, LayoutGrid, Plus, ScanLine, Target, UserRound, FileUp,
 } from 'lucide-react'
 
 import { Btn, Eyebrow, Head } from '../ui'
@@ -27,6 +27,7 @@ import { normalizeLinkedInUrl } from '../linkedin-import'
 import { CONTACT_KEYS, splitList } from '../linkedin-scan'
 import { LinkedInScanPanel } from '../linkedin-scan-ui'
 import FullCrm from '../ledger/FullCrm'
+import SheetImport from '../ledger/SheetImport'
 import { CrmOverviewBento } from '@/components/ui/crm-overview-bento'
 import { OpenDealRoomButton } from '../deals-ui'
 import { ProspectEngine } from '../prospect/ProspectEngine'
@@ -54,6 +55,7 @@ export default function CrmPage({ section }: { section?: 'crm' | 'pipeline' | un
   const ops = useOps()
   const { access } = useAccess()
   const [prospecting, setProspecting] = useState(false)
+  const [importing, setImporting] = useState(false)
   const net = useNetwork()
   const nav = useNav()
   const [tab, setTab] = useState<Tab>(() => (section === 'pipeline' ? 'opportunities' : section === 'crm' ? 'overview' : typeof window === 'undefined' ? 'overview' : (localStorage.getItem('aetheris.crm.tab') as Tab) || 'overview'))
@@ -87,6 +89,7 @@ export default function CrmPage({ section }: { section?: 'crm' | 'pipeline' | un
 
   if (!ops.ready) return <p className="ops-note">Loading your records…</p>
   if (prospecting) return <ProspectEngine onBack={() => setProspecting(false)} onNewPerson={() => {setProspecting(false);setCreating('person')}} />
+  if (importing) return <SheetImport onBack={() => setImporting(false)} initialTarget="people" />
 
   /* ------------------------------------------------ full workspace */
 
@@ -176,6 +179,7 @@ export default function CrmPage({ section }: { section?: 'crm' | 'pipeline' | un
       <div className="ops-toolbar">
         <input value={query} onChange={e => setQuery(e.target.value)} placeholder="Search people, titles, companies…" aria-label="Search people" />
         <Btn kind="secondary" onClick={() => setCreating('person')}><Plus size={14} /> New person</Btn>
+        <Btn kind="secondary" onClick={() => setImporting(true)}><FileUp size={14} /> Import people</Btn>
       </div>
       <div className="ops-table-scroll" tabIndex={0} aria-label="CRM people table">
       <table className="ops-table">
