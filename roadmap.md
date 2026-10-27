@@ -511,3 +511,4 @@ Next slices, not implemented by this change:
 - [x] Check email domain status for notify.askintros.vip; scaffold templates if configured.
 - [ ] Wait for DNS verification of notify.askintros.vip (More → Emails); emails send once verified.
 - [ ] Create the first app email template when a concrete trigger is chosen.
+- [x] Scaffold and brand the six auth email templates (signup, invite, magic link, recovery, email change, reauthentication).
