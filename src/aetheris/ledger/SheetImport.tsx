@@ -10,7 +10,8 @@ import { Btn, Eyebrow } from '../ui'
 import { useOps } from '../crm/store'
 import { safeImportSelection } from '../crm/import-policy'
 import { isDuplicate, safeLinkedInLink } from '../prospect/core'
-import { validateProspectFile, validateProspectGrid } from '../prospect/upload'
+import { autoMapColumns } from './contact-automap'
+import { validateProspectGrid } from '../prospect/upload'
 
 /** Members can import up to this many contacts per file. */
 export const CONTACT_IMPORT_MAX_ROWS = 2000
@@ -29,6 +30,7 @@ const FIELDS: Record<Target, Field[]> = {
     { key: 'companyName', label: 'Company', hints: ['company', 'organisation', 'organization', 'account', 'employer'] },
     { key: 'location', label: 'Location', hints: ['location', 'city', 'country', 'region'] },
     { key: 'linkedinUrl', label: 'LinkedIn', hints: ['linkedin'] },
+    { key: 'socials', label: 'Socials / website', hints: ['twitter', 'instagram', 'facebook', 'website', 'social'] },
     { key: 'notes', label: 'Notes', hints: ['note', 'comment'] },
   ],
   companies: [
@@ -69,17 +71,7 @@ function parseCsv(text: string): string[][] {
   return rows
 }
 
-function autoMap(headers: string[], target: Target): Record<string, number> {
-  const out: Record<string, number> = {}
-  const used = new Set<number>()
-  for (const f of FIELDS[target]) {
-    const i = headers.findIndex((h, idx) => !used.has(idx) && f.hints.some(x => h.toLowerCase().trim() === x))
-      ?? -1
-    const j = i >= 0 ? i : headers.findIndex((h, idx) => !used.has(idx) && f.hints.some(x => h.toLowerCase().includes(x)))
-    if (j >= 0) { out[f.key] = j; used.add(j) }
-  }
-  return out
-}
+const autoMap = (headers: string[], target: Target, sample: string[][] = []) => autoMapColumns(headers, target, sample)
 
 const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 type Vals = Partial<Record<'fullName'|'firstName'|'lastName'|'email'|'phone'|'title'|'companyName'|'location'|'linkedinUrl'|'notes'|'name'|'domain'|'website'|'industry'|'employees', string>> & Record<string, string | undefined>
@@ -92,6 +84,7 @@ export default function SheetImport({ onBack, initialTarget = 'people' }: { onBa
   const [grid, setGrid] = useState<string[][]>([])
   const [map, setMap] = useState<Record<string, number>>({})
   const [skipBad, setSkipBad] = useState(true)
+  const [removeDupes, setRemoveDupes] = useState(true)
   const [busy, setBusy] = useState(false)
   const importingRef = useRef(false)
   const importedRowsRef = useRef(new Set<string>())
@@ -119,11 +112,11 @@ export default function SheetImport({ onBack, initialTarget = 'people' }: { onBa
       rows = rows.filter(r => r.some(c => c.trim())).map(r => r.length === width ? r : [...r.slice(0, width), ...Array(Math.max(0, width - r.length)).fill('')])
       validateProspectGrid(rows, CONTACT_IMPORT_MAX_ROWS, 300)
       importedRowsRef.current.clear()
-      setFileName(file.name); setGrid(rows); setMap(autoMap(rows[0] ?? [], target))
+      setFileName(file.name); setGrid(rows); setMap(autoMap(rows[0] ?? [], target, rows.slice(1, 51)))
     } catch (error) { setGrid([]); setReadError(error instanceof Error ? error.message : 'That file could not be read.') }
   }
 
-  const switchTarget = (t: Target) => { setTarget(t); setMap(autoMap(headers, t)); setDone(null) }
+  const switchTarget = (t: Target) => { setTarget(t); setMap(autoMap(headers, t, body.slice(0, 50))); setDone(null) }
 
   const checked: Checked[] = useMemo(() => {
     const seen = new Set<string>()
@@ -161,8 +154,12 @@ export default function SheetImport({ onBack, initialTarget = 'people' }: { onBa
     })
   }, [body, map, target, ops.people, ops.companies])
 
-  const good = checked.filter(c => !c.errors.length)
-  const bad = checked.length - good.length
+  const DUPE = /^(Duplicate person identity|Already in your CRM|Repeated in this sheet)$/
+  const isDupe = (c: Checked) => c.errors.length > 0 && c.errors.every(e => DUPE.test(e))
+  const dupeCount = checked.filter(isDupe).length
+  const considered = removeDupes ? checked.filter(c => !isDupe(c)) : checked
+  const good = considered.filter(c => !c.errors.length)
+  const bad = considered.length - good.length
   const required = FIELDS[target].filter(f => f.required)
   const missingRequired = target === 'people'
     ? !('fullName' in map) && !('firstName' in map)
@@ -172,7 +169,7 @@ export default function SheetImport({ onBack, initialTarget = 'people' }: { onBa
     // A second click must not create duplicate contacts before the first import finishes.
     if (importingRef.current) return
     setReadError(null)
-    const selected = safeImportSelection(checked, skipBad)
+    const selected = safeImportSelection(considered, skipBad)
     if (selected.error) { setReadError(selected.error); return }
     const pending = selected.rows.filter(row => !importedRowsRef.current.has(`${target}:${row.sourceRow}`))
     if (!pending.length) { setReadError('There are no new valid records to import. All confirmed rows in this file are already saved.'); return }
@@ -190,7 +187,7 @@ export default function SheetImport({ onBack, initialTarget = 'people' }: { onBa
             ? await ops.createPerson({
               fullName: v.fullName ?? '', email: v.email ?? '', phone: v.phone ?? '', title: v.title ?? '',
               companyName: v.companyName ?? '', location: v.location ?? '', linkedinUrl: v.linkedinUrl ?? '',
-              notes: v.notes ?? '', source: `Import · ${fileName}`,
+              notes: [v.notes, v['socials'] ? `Socials: ${v['socials']}` : ''].filter(Boolean).join('\n'), source: `Import · ${fileName}`,
             })
             : await ops.createCompany({
               name: v.name ?? '', domain: v.domain ?? '', website: v.website ?? '', industry: v.industry ?? '',
@@ -256,7 +253,7 @@ export default function SheetImport({ onBack, initialTarget = 'people' }: { onBa
         <header>
           <Eyebrow>1 · MATCH COLUMNS</Eyebrow>
           <span className="simp-file">{fileName} · {body.length} rows</span>
-          <Btn kind="quiet" onClick={() => setMap(autoMap(headers, target))}><Wand2 size={14} /> Auto-match</Btn>
+          <Btn kind="quiet" onClick={() => setMap(autoMap(headers, target, body.slice(0, 50)))}><Wand2 size={14} /> Auto-match</Btn>
         </header>
         <div className="simp-map">
           {FIELDS[target].map(f => <label key={f.key}>
@@ -295,8 +292,12 @@ export default function SheetImport({ onBack, initialTarget = 'people' }: { onBa
 
       <section className="simp-block simp-go">
         <label className="simp-toggle">
+          <input type="checkbox" checked={removeDupes} onChange={e => setRemoveDupes(e.target.checked)} />
+          Remove duplicates — {dupeCount} found (same person twice in this file, or already in your CRM)
+        </label>
+        <label className="simp-toggle">
           <input type="checkbox" checked={skipBad} onChange={e => setSkipBad(e.target.checked)} />
-          Skip invalid and duplicate rows (otherwise, resolve them before importing)
+          Skip rows with problems (otherwise, resolve them before importing)
         </label>
         <div>
           <Btn kind="quiet" onClick={reset}><RotateCcw size={14} /> Start over</Btn>
