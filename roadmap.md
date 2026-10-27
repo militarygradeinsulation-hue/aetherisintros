@@ -525,6 +525,6 @@ Next slices, not implemented by this change:
 - [ ] Fill missing contact details from the web after import (where possible)
 - [x] Import: Remove duplicates option
 - [x] Import shows contacts landing live with progress
-- [ ] People: click contact to view/edit/delete; delete → trash kept 30 days
-- [ ] People: inline Add row
-- [ ] People: filter options
+- [x] People: click contact to view/edit/delete; delete → trash kept 30 days
+- [x] People: inline Add row
+- [x] People: filter options
