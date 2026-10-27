@@ -51,7 +51,14 @@ function Inner({ onOpenWorkspaces, social = false, initialRecipientId, onRecipie
   // One tap from a real directory match opens the existing draft conversation.
   // It never sends a message or bypasses member permissions.
   useEffect(() => {
-    if (!initialRecipientId || !isUuid(initialRecipientId) || !byId.has(initialRecipientId)) return
+    if (!initialRecipientId || !isUuid(initialRecipientId)) return
+    if (!byId.has(initialRecipientId)) {
+      if (!net.synced) return
+      setRecipientError('This person is not available in your messaging directory. You can request an introduction or choose another member.')
+      setPickingRecipient(true)
+      onRecipientOpened?.()
+      return
+    }
     try {
       const threadId = net.openThreadWith(initialRecipientId)
       setActiveId(threadId)
