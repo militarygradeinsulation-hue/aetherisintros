@@ -9,6 +9,12 @@ const hasPayload = (e: DragEvent) => {
   return types.includes('Files') || types.includes('text/uri-list') || types.includes('text/plain')
 }
 
+function openImport(sheet: File) {
+  setPendingSheet(sheet)
+  window.dispatchEvent(new CustomEvent('aetheris:navigate', { detail: 'crm' }))
+  window.dispatchEvent(new CustomEvent('aetheris:crm-import'))
+}
+
 /** Accepts a drop on any screen; Butler suggests a destination and the member confirms. */
 export function GlobalDropZone() {
   const [dragging, setDragging] = useState(false)
@@ -25,7 +31,12 @@ export function GlobalDropZone() {
       if (e.defaultPrevented || !e.dataTransfer) return
       e.preventDefault()
       const files = Array.from(e.dataTransfer.files ?? [])
-      if (files.length) { setPending({ kind: kindForFiles(files), files: files.slice(0, 3), text: '' }); return }
+      if (files.length) {
+        // Contact spreadsheets go straight to the CRM import — no Butler step.
+        const sheet = files.find(f => /\.(csv|tsv|xlsx)$/i.test(f.name) || f.type === 'text/csv')
+        if (sheet) { openImport(sheet); return }
+        setPending({ kind: kindForFiles(files), files: files.slice(0, 3), text: '' }); return
+      }
       const text = (e.dataTransfer.getData('text/uri-list') || e.dataTransfer.getData('text/plain')).trim()
       if (text) setPending({ kind: classifyText(text), files: [], text: text.slice(0, 4000) })
     }
@@ -51,12 +62,9 @@ export function GlobalDropZone() {
   const confirm = (s: DropSuggestion) => {
     if (!pending) return
     if (s.action === 'crm-import') {
-      const sheet = pending.files.find(f => /\.(csv|tsv)$/i.test(f.name) || f.type === 'text/csv') ?? null
-      if (sheet) {
-        setPendingSheet(sheet)
-        window.dispatchEvent(new CustomEvent('aetheris:navigate', { detail: 'crm' }))
-        window.dispatchEvent(new CustomEvent('aetheris:crm-import'))
-      } else {
+      const sheet = pending.files.find(f => /\.(csv|tsv|xlsx)$/i.test(f.name) || f.type === 'text/csv') ?? null
+      if (sheet) openImport(sheet)
+      else {
         // Not a spreadsheet (PDF, photo of a card, text): Butler reads the people out of it.
         window.dispatchEvent(new CustomEvent('aetheris:open-assistant', { detail: { question: butlerPrompt('crm-import', pending.kind, pending.text), files: pending.files } }))
       }
@@ -69,7 +77,7 @@ export function GlobalDropZone() {
   const label = pending ? (pending.files.length ? pending.files.map(f => f.name).join(', ') : pending.text) : ''
 
   return <>
-    {dragging && <div className="global-drop-veil" aria-hidden="true"><div><b>Drop it anywhere</b><span>Butler will suggest where it belongs. Nothing is saved until you confirm.</span></div></div>}
+    {dragging && <div className="global-drop-veil" aria-hidden="true"><div><b>Drop it anywhere</b><span>Contact files open the CRM import. Anything else: you choose where it goes.</span></div></div>}
     {pending && <div className="global-drop-backdrop" onClick={() => setPending(null)}>
       <section className="global-drop-card" role="dialog" aria-modal="true" aria-labelledby="global-drop-title" onClick={e => e.stopPropagation()}>
         <small>YOU CHOOSE · BUTLER'S BEST GUESS FIRST</small>

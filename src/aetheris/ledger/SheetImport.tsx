@@ -101,10 +101,20 @@ export default function SheetImport({ onBack, initialTarget = 'people' }: { onBa
 
   const load = async (file: File) => {
     setDone(null); setReadError(null)
-    if (!/\.(csv|tsv|txt)$/i.test(file.name)) { setReadError('Save the sheet as CSV first (File → Download → CSV), then drop it here.'); return }
+    const workbook = /\.xlsx$/i.test(file.name)
+    if (!workbook && !/\.(csv|tsv|txt)$/i.test(file.name)) { setReadError('Use a CSV, TSV or Excel (.xlsx) file. Older .xls files: save as .xlsx or CSV first.'); return }
     try {
-      validateProspectFile(file)
-      const rows = parseCsv(await file.text())
+      let rows: string[][]
+      if (workbook) {
+        if (file.size > 8 * 1024 * 1024) throw new Error('Upload at most 8 MB at a time.')
+        const { parseXlsx } = await import('../library/import')
+        const sheet = (await parseXlsx(await file.arrayBuffer())).find(s => s.headers.length && s.rows.length)
+        if (!sheet) throw new Error('That workbook has no rows under a header.')
+        rows = [sheet.headers, ...sheet.rows.map(r => r.cells)]
+      } else {
+        validateProspectFile(file)
+        rows = parseCsv(await file.text())
+      }
       validateProspectGrid(rows)
       importedRowsRef.current.clear()
       setFileName(file.name); setGrid(rows); setMap(autoMap(rows[0] ?? [], target))
