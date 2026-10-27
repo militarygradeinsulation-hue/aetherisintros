@@ -60,6 +60,7 @@ import { Route as ApiPublicNewsImageRouteImport } from './routes/api/public/news
 import { Route as ApiPublicSeedNetworkRouteImport } from './routes/api/public/seed-network'
 import { Route as ApiPushDispatchRouteImport } from './routes/api/push/dispatch'
 import { Route as ApiStripeWebhookRouteImport } from './routes/api/stripe/webhook'
+import { Route as LovableEmailTransactionalPreviewRouteImport } from './routes/lovable/email/transactional/preview'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -324,6 +325,12 @@ const ApiStripeWebhookRoute = ApiStripeWebhookRouteImport.update({
   path: '/api/stripe/webhook',
   getParentRoute: () => rootRouteImport,
 } as any)
+const LovableEmailTransactionalPreviewRoute =
+  LovableEmailTransactionalPreviewRouteImport.update({
+    id: '/lovable/email/transactional/preview',
+    path: '/lovable/email/transactional/preview',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -376,6 +383,7 @@ export interface FileRoutesByFullPath {
   '/api/public/seed-network': typeof ApiPublicSeedNetworkRoute
   '/api/push/dispatch': typeof ApiPushDispatchRoute
   '/api/stripe/webhook': typeof ApiStripeWebhookRoute
+  '/lovable/email/transactional/preview': typeof LovableEmailTransactionalPreviewRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -428,6 +436,7 @@ export interface FileRoutesByTo {
   '/api/public/seed-network': typeof ApiPublicSeedNetworkRoute
   '/api/push/dispatch': typeof ApiPushDispatchRoute
   '/api/stripe/webhook': typeof ApiStripeWebhookRoute
+  '/lovable/email/transactional/preview': typeof LovableEmailTransactionalPreviewRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -482,6 +491,7 @@ export interface FileRoutesById {
   '/api/public/seed-network': typeof ApiPublicSeedNetworkRoute
   '/api/push/dispatch': typeof ApiPushDispatchRoute
   '/api/stripe/webhook': typeof ApiStripeWebhookRoute
+  '/lovable/email/transactional/preview': typeof LovableEmailTransactionalPreviewRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -536,6 +546,7 @@ export interface FileRouteTypes {
     | '/api/public/seed-network'
     | '/api/push/dispatch'
     | '/api/stripe/webhook'
+    | '/lovable/email/transactional/preview'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -588,6 +599,7 @@ export interface FileRouteTypes {
     | '/api/public/seed-network'
     | '/api/push/dispatch'
     | '/api/stripe/webhook'
+    | '/lovable/email/transactional/preview'
   id:
     | '__root__'
     | '/'
@@ -641,6 +653,7 @@ export interface FileRouteTypes {
     | '/api/public/seed-network'
     | '/api/push/dispatch'
     | '/api/stripe/webhook'
+    | '/lovable/email/transactional/preview'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -682,6 +695,7 @@ export interface RootRouteChildren {
   ApiPublicSeedNetworkRoute: typeof ApiPublicSeedNetworkRoute
   ApiPushDispatchRoute: typeof ApiPushDispatchRoute
   ApiStripeWebhookRoute: typeof ApiStripeWebhookRoute
+  LovableEmailTransactionalPreviewRoute: typeof LovableEmailTransactionalPreviewRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -1043,6 +1057,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiStripeWebhookRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/lovable/email/transactional/preview': {
+      id: '/lovable/email/transactional/preview'
+      path: '/lovable/email/transactional/preview'
+      fullPath: '/lovable/email/transactional/preview'
+      preLoaderRoute: typeof LovableEmailTransactionalPreviewRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -1129,6 +1150,7 @@ const rootRouteChildren: RootRouteChildren = {
   ApiPublicSeedNetworkRoute: ApiPublicSeedNetworkRoute,
   ApiPushDispatchRoute: ApiPushDispatchRoute,
   ApiStripeWebhookRoute: ApiStripeWebhookRoute,
+  LovableEmailTransactionalPreviewRoute: LovableEmailTransactionalPreviewRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
