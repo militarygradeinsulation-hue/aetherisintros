@@ -1508,6 +1508,7 @@ export type Database = {
           location: string | null
           name: string
           open_intent_ids: string[]
+          owner_id: string | null
           people_ids: string[]
           previous_conversations: string[]
           related_circle_ids: string[]
@@ -1524,6 +1525,7 @@ export type Database = {
           location?: string | null
           name: string
           open_intent_ids?: string[]
+          owner_id?: string | null
           people_ids?: string[]
           previous_conversations?: string[]
           related_circle_ids?: string[]
@@ -1540,6 +1542,7 @@ export type Database = {
           location?: string | null
           name?: string
           open_intent_ids?: string[]
+          owner_id?: string | null
           people_ids?: string[]
           previous_conversations?: string[]
           related_circle_ids?: string[]
