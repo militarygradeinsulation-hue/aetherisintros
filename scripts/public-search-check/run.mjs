@@ -10,7 +10,7 @@ const server = spawn('npx', ['vite', 'dev', '--host', '127.0.0.1', '--port', Str
 const base = `http://127.0.0.1:${port}`;
 const origin = 'https://askintros.vip';
 const pages = [
-  ['/', 'Ask Intros | Executive Networking and Warm Introductions'],
+  ['/', 'Ask Intros | CEO & Executive Networking, Warm Introductions'],
   ['/how-it-works', 'How Ask Intros Works | Business Networking with Context'],
   ['/warm-introductions', 'Warm Introductions with Mutual Consent | Ask Intros'],
   ['/active-memory', 'Active Memory for Business Relationships | Ask Intros'],
@@ -38,7 +38,9 @@ try {
   for (const [path, title] of pages) {
     // Raw HTTP deliberately does not execute JavaScript: this is the crawler's first response.
     const html = await read(path);
-    assert(html.includes(`<title>${title}</title>`), path + ' has the expected unique title');
+    // React server rendering escapes ampersands in HTML text; compare the actual readable title.
+    const foundTitle = html.match(/<title>([\s\S]*?)<\/title>/i)?.[1]?.replace(/&amp;/g, '&').trim();
+    assert.equal(foundTitle, title, path + ' has the expected unique title');
     titles.add(title);
     assert.deepEqual(canonical(html), [origin + path]);
     assert.match(html, /<meta name="robots" content="index,follow,max-image-preview:large"/);
