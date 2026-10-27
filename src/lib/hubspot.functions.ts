@@ -25,16 +25,16 @@ export const syncPersonToHubspot = createServerFn({ method: 'POST' })
   .handler(async ({ data, context }) => {
     const { data: isAdmin } = await context.supabase.rpc('has_role', { _user_id: context.userId, _role: 'admin' })
     if (!isAdmin) return { synced: false as const, reason: 'not-admin' }
-    const lovableKey = process.env.LOVABLE_API_KEY
-    const hubspotKey = process.env.HUBSPOT_API_KEY
+    const lovableKey = process.env['LOVABLE_API_KEY']
+    const hubspotKey = process.env['HUBSPOT_API_KEY']
     if (!lovableKey || !hubspotKey) return { synced: false as const, reason: 'not-configured' }
 
     const [firstname, ...rest] = data.fullName.trim().split(/\s+/)
     const properties: Record<string, string> = { firstname: firstname ?? '', lastname: rest.join(' ') }
-    if (data.email) properties.email = data.email
-    if (data.phone) properties.phone = data.phone
-    if (data.title) properties.jobtitle = data.title
-    if (data.companyName) properties.company = data.companyName
+    if (data.email) properties['email'] = data.email
+    if (data.phone) properties['phone'] = data.phone
+    if (data.title) properties['jobtitle'] = data.title
+    if (data.companyName) properties['company'] = data.companyName
 
     const res = await fetch(GATEWAY_URL + hubspotPath('contacts'), {
       method: 'POST',
