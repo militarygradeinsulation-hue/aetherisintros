@@ -32,3 +32,13 @@ describe('any file format', () => {
     expect(d).toContain('do not guess')
   })
 })
+
+import { destinationsFor } from '../drop-anywhere'
+describe('member chooses destination', () => {
+  it('offers every destination with the best guess first', () => {
+    const d = destinationsFor('image').map(x => x.action)
+    expect(d[0]).toBe('butler-post')
+    expect(d).toEqual(expect.arrayContaining(['crm-import', 'butler-memory', 'butler-message', 'butler-task']))
+    expect(new Set(d).size).toBe(d.length)
+  })
+})

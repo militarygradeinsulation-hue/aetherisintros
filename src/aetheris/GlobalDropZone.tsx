@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
-import { butlerPrompt, classifyText, kindForFiles, setPendingSheet, suggestionsFor, type DropKind, type DropSuggestion } from './drop-anywhere'
+import { butlerPrompt, classifyText, destinationsFor, kindForFiles, setPendingSheet, type DropKind, type DropSuggestion } from './drop-anywhere'
 import './global-drop.css'
 
 interface Pending { kind: DropKind; files: File[]; text: string }
@@ -52,9 +52,14 @@ export function GlobalDropZone() {
     if (!pending) return
     if (s.action === 'crm-import') {
       const sheet = pending.files.find(f => /\.(csv|tsv)$/i.test(f.name) || f.type === 'text/csv') ?? null
-      setPendingSheet(sheet)
-      window.dispatchEvent(new CustomEvent('aetheris:navigate', { detail: 'crm' }))
-      window.dispatchEvent(new CustomEvent('aetheris:crm-import'))
+      if (sheet) {
+        setPendingSheet(sheet)
+        window.dispatchEvent(new CustomEvent('aetheris:navigate', { detail: 'crm' }))
+        window.dispatchEvent(new CustomEvent('aetheris:crm-import'))
+      } else {
+        // Not a spreadsheet (PDF, photo of a card, text): Butler reads the people out of it.
+        window.dispatchEvent(new CustomEvent('aetheris:open-assistant', { detail: { question: butlerPrompt('crm-import', pending.kind, pending.text), files: pending.files } }))
+      }
     } else {
       window.dispatchEvent(new CustomEvent('aetheris:open-assistant', { detail: { question: butlerPrompt(s.action, pending.kind, pending.text), files: pending.files } }))
     }
@@ -67,11 +72,11 @@ export function GlobalDropZone() {
     {dragging && <div className="global-drop-veil" aria-hidden="true"><div><b>Drop it anywhere</b><span>Butler will suggest where it belongs. Nothing is saved until you confirm.</span></div></div>}
     {pending && <div className="global-drop-backdrop" onClick={() => setPending(null)}>
       <section className="global-drop-card" role="dialog" aria-modal="true" aria-labelledby="global-drop-title" onClick={e => e.stopPropagation()}>
-        <small>BUTLER SUGGESTS</small>
+        <small>YOU CHOOSE · BUTLER'S BEST GUESS FIRST</small>
         <h2 id="global-drop-title">Where should this go?</h2>
         <p className="global-drop-item" title={label}>{label}</p>
         <div className="global-drop-options">
-          {suggestionsFor(pending.kind).map((s, i) => <button key={s.action} type="button" className={i === 0 ? 'primary' : ''} autoFocus={i === 0} onClick={() => confirm(s)}><b>{s.label}</b><span>{s.detail}</span></button>)}
+          {destinationsFor(pending.kind).map((s, i) => <button key={s.action} type="button" className={i === 0 ? 'primary' : ''} autoFocus={i === 0} onClick={() => confirm(s)}><b>{s.label}</b><span>{s.detail}</span></button>)}
         </div>
         <button type="button" className="global-drop-cancel" onClick={() => setPending(null)}>Cancel</button>
       </section>
