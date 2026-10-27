@@ -34,7 +34,7 @@ export function publicStructuredData(path: string, title: string, description: s
   const organization = `${PUBLIC_ORIGIN}/#organization`
   const website = `${PUBLIC_ORIGIN}/#website`
   const graph: Record<string, unknown>[] = [
-    { '@type': 'Organization', '@id': organization, name: 'Ask Intros', url: `${PUBLIC_ORIGIN}/`, logo: `${PUBLIC_ORIGIN}/ask-intros-logo-wide.jpg` },
+    { '@type': 'Organization', '@id': organization, name: 'Ask Intros', url: `${PUBLIC_ORIGIN}/`, logo: `${PUBLIC_ORIGIN}/ask-intros-logo-wide.jpg`, description: PRODUCT_DESCRIPTION },
     { '@type': 'WebSite', '@id': website, name: 'Ask Intros', url: `${PUBLIC_ORIGIN}/`, publisher: { '@id': organization }, inLanguage: 'en' },
     { '@type': 'WebPage', '@id': `${url}#webpage`, url, name: title, description, isPartOf: { '@id': website }, about: { '@id': organization }, inLanguage: 'en', ...(path !== '/' ? { breadcrumb: { '@id': `${url}#breadcrumb` } } : {}) },
   ]

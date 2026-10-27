@@ -153,6 +153,11 @@ export default function Landing() {
         <Link to="/how-it-works">How it works</Link>
         <Link to="/warm-introductions">Warm introductions</Link>
         <Link to="/active-memory">Active Memory</Link>
+        <Link to="/executive-networking">Executive networking</Link>
+        <Link to="/relationship-intelligence">Relationship intelligence</Link>
+        <Link to="/ai-networking-assistant">Butler assistant</Link>
+        <Link to="/business-relationship-crm">Relationship CRM</Link>
+        <Link to="/social-business-views">Social and Business views</Link>
         <Link to="/founder-story">Founder story</Link>
       </nav>
     </footer>

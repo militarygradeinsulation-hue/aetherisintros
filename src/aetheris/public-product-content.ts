@@ -1,6 +1,7 @@
 export interface PublicProductPage {
-  path: '/how-it-works' | '/warm-introductions' | '/active-memory'
+  path: '/how-it-works' | '/warm-introductions' | '/active-memory' | '/executive-networking' | '/relationship-intelligence' | '/ai-networking-assistant' | '/business-relationship-crm' | '/social-business-views'
   title: string
+  label?: string
   heading: string
   description: string
   summary: string
@@ -95,4 +96,230 @@ export const publicProductPages: PublicProductPage[] = [
       { question: 'Are AI suggestions verified facts?', answer: 'No. Review the supporting records and source context. An AI suggestion can be useful for deciding what to investigate or ask next, but it should not be presented as a confirmed fact about another person.' },
     ],
   },
+  {
+    "path": "/executive-networking",
+    "label": "Executive networking",
+    "title": "Executive Networking for CEOs and Founders | Ask Intros",
+    "heading": "Executive networking built around a reason to connect.",
+    "description": "Explore how Ask Intros helps CEOs, founders and business operators make purposeful connections, review fit and request mutually agreed introductions.",
+    "summary": "Ask Intros is a business relationship network where people can explain a specific need, show what they can offer, discover relevant context and request introductions with permission. It is designed to make the reason for connecting clearer than a list of contacts.",
+    "sections": [
+      {
+        "heading": "Start with the work, not a connection count",
+        "paragraphs": [
+          "A founder looking for a distribution partner and an operator looking for implementation experience have different reasons to meet. A useful professional profile says what someone is building, what they need now and what they can contribute. Ask Intros puts that context closer to the introduction request.",
+          "Network participation depends on real members, their current profiles and their sharing choices. A suggested connection does not imply that someone is available, endorses a project or will accept a meeting."
+        ]
+      },
+      {
+        "heading": "Use Why me, Why them, Why now",
+        "paragraphs": [
+          "Why me explains the relevance of the requester. Why them explains the other person's experience or role. Why now explains why the timing makes sense. These three questions turn a vague networking request into something another executive can evaluate.",
+          "For example, instead of asking to connect with any CEO, a company owner might request an introduction to someone who has already managed a handoff between sales and operations in a similar business. The example is a model for a request, not a claim about who is in the network."
+        ]
+      },
+      {
+        "heading": "Move from introduction to useful next step",
+        "paragraphs": [
+          "A warm introduction should ask permission and include enough context for both sides to decide. After an accepted introduction, members can keep the conversation and next step near their relationship records.",
+          "Ask Intros offers two presentations of the same workspace. Social View emphasizes people and conversations; Business View emphasizes business context and work. The views do not create separate networks or change permissions."
+        ]
+      }
+    ],
+    "questions": [
+      {
+        "question": "Who can use Ask Intros for executive networking?",
+        "answer": "Founders, CEOs, owners, operators and other business professionals can explore the platform. Basic account creation and reviewed Executive access are different membership paths, with current eligibility explained on the membership page."
+      },
+      {
+        "question": "Does joining guarantee an introduction to an investor or CEO?",
+        "answer": "No. A possible introduction depends on who participates, whether the context fits and whether both people agree. Ask Intros does not guarantee access, funding or sales."
+      },
+      {
+        "question": "How is this different from collecting contacts?",
+        "answer": "A contact list stores names. Ask Intros emphasizes the reason for a relationship, permission to connect and a concrete next step, while preserving private notes and sharing choices."
+      }
+    ]
+  },
+  {
+    "path": "/relationship-intelligence",
+    "label": "Relationship intelligence",
+    "title": "Business Relationship Intelligence and Context | Ask Intros",
+    "heading": "Business relationship intelligence begins with context.",
+    "description": "Learn how Ask Intros organizes relationship context, needs, offers and follow up decisions without treating unverified AI suggestions as facts.",
+    "summary": "Relationship intelligence means using recorded, permissioned context to decide who may be relevant, why a conversation could help and what to do next. Ask Intros combines relationship notes and member context with introductions and business workflows.",
+    "sections": [
+      {
+        "heading": "Connect names with the reasons they matter",
+        "paragraphs": [
+          "A company name and job title are not enough to prepare for a useful conversation. Relevant context may include a known business need, a previous discussion, a resource promised or a next step agreed. Recording the source of that information matters as much as recording the information itself.",
+          "In Ask Intros, Active Memory supports the context behind a relationship. Information may come from your own notes or permitted workspace records; the system should not be assumed to read private external accounts automatically."
+        ]
+      },
+      {
+        "heading": "Keep facts, judgments and suggestions separate",
+        "paragraphs": [
+          "A note entered after a meeting is different from an inference about what someone might want. Members should review what is known and what remains a suggestion before sending a request or taking action.",
+          "Ask Intros uses Why me, Why them and Why now to focus a decision. It cannot certify that a person wants an introduction simply because their profile appears relevant."
+        ]
+      },
+      {
+        "heading": "Respect permission at each step",
+        "paragraphs": [
+          "Private research notes, public profile details and an introduction message can have different sharing scopes. Permission to connect two people is not the same as permission to disclose private details about either person.",
+          "The useful outcome is a better next action: confirm timing, share an agreed resource, or request consent for a conversation. Relationship intelligence supports judgment; it does not replace it."
+        ]
+      }
+    ],
+    "questions": [
+      {
+        "question": "What is relationship intelligence software?",
+        "answer": "It is software that helps organize and interpret the context around professional relationships, including conversations, relevant needs and agreed next steps. Its usefulness depends on accurate records and appropriate permissions."
+      },
+      {
+        "question": "Is relationship intelligence the same as CRM?",
+        "answer": "They overlap. A CRM tracks people, organizations and opportunities. Relationship intelligence emphasizes the context, relevance and timing that make a follow up useful."
+      },
+      {
+        "question": "Does Ask Intros publish member notes or private relationship data?",
+        "answer": "No. Public explanations and demonstrations are separate from private member workspaces. Sharing decisions and access controls still apply to individual records."
+      }
+    ]
+  },
+  {
+    "path": "/ai-networking-assistant",
+    "label": "Butler AI assistant",
+    "title": "AI Networking Assistant and Butler | Ask Intros",
+    "heading": "Meet Butler, the assistant for purposeful networking.",
+    "description": "See how Butler helps members explore Ask Intros, understand relationship workflows and prepare better questions while keeping decisions and consent with people.",
+    "summary": "Butler is Ask Intros' in-product assistant. Its role is to help people find their way through the workspace, understand supported tools and think through a relevant next step. An assistant suggestion is not an endorsement or permission to contact another member.",
+    "sections": [
+      {
+        "heading": "Ask a better question before reaching out",
+        "paragraphs": [
+          "A useful introduction request begins with a specific problem or outcome. Butler can prompt members to explain their need, consider what they can offer and clarify the reason a meeting could be useful.",
+          "For example, replacing 'I want to meet investors' with a specific question about an industry, stage or operating challenge makes it easier to evaluate whether a conversation is appropriate. This is guidance, not a guarantee of a match or capital."
+        ]
+      },
+      {
+        "heading": "Navigate one workspace with two views",
+        "paragraphs": [
+          "In Social View, members focus on people, posts and conversations. In Business View, they work with business tools and relationship records. Butler helps orient people within the supported Ask Intros experience.",
+          "Available assistant actions depend on the member's account, permissions and enabled services. Public demonstrations can show illustrative activity, which should not be confused with real member data or successful live automation."
+        ]
+      },
+      {
+        "heading": "Human consent stays at the center",
+        "paragraphs": [
+          "An AI generated idea can help draft a question or highlight context worth reviewing. It should not silently send a message, disclose a private note or certify a professional relationship.",
+          "Review important actions, verify supporting records and ask each person before arranging an introduction. The reason for using an assistant is to make the next human decision clearer."
+        ]
+      }
+    ],
+    "questions": [
+      {
+        "question": "What does Butler do in Ask Intros?",
+        "answer": "Butler helps explain the interface, offer practical networking prompts and assist with supported workflows. Capabilities can vary with account permissions and the services active in the deployment."
+      },
+      {
+        "question": "Does Butler automatically introduce me to anyone?",
+        "answer": "No. Introductions depend on actual participants, a suitable context and mutual consent. An AI suggestion does not contact or obligate another person."
+      },
+      {
+        "question": "Does Butler know everything about my LinkedIn or other accounts?",
+        "answer": "No. External account information is not automatically available. Any connected or imported information depends on the integrations, permissions and records actually provided."
+      }
+    ]
+  },
+  {
+    "path": "/business-relationship-crm",
+    "label": "Relationship CRM",
+    "title": "Business Relationship CRM and Pipeline | Ask Intros",
+    "heading": "Keep relationships and next steps in the same workspace.",
+    "description": "Explore Ask Intros Business View for contact context, company records, opportunities and follow ups linked to your professional network.",
+    "summary": "Ask Intros brings relationship activity and business organization closer together. Rather than treating a promising conversation as just another contact, Business View gives members a place to organize relevant people, companies, opportunities and work.",
+    "sections": [
+      {
+        "heading": "From a person to a business opportunity",
+        "paragraphs": [
+          "A useful CRM record answers who the person is, what has been discussed and what action comes next. Keeping the context near the record can reduce the need to reconstruct a conversation from separate tools.",
+          "Ask Intros includes business workspace concepts for contacts, companies and opportunities alongside networking. Which tools and integrations are available depends on account access and the current deployment; the public demo is not proof of live synchronization."
+        ]
+      },
+      {
+        "heading": "Do not confuse a lead with a relationship",
+        "paragraphs": [
+          "A contact may be worth knowing without representing an immediate deal. A mutual introduction may lead to advice, a partnership, a referral or no commercial transaction at all.",
+          "Ask Intros frames relationships through Why me, Why them and Why now, so the decision to follow up can reflect relevance and timing rather than a fabricated deal probability."
+        ]
+      },
+      {
+        "heading": "Switch views without splitting your work",
+        "paragraphs": [
+          "Social View and Business View are alternative presentations of the same membership and permitted records, not two separate CRMs. The public social feed is not a place for confidential pipeline notes.",
+          "Teams evaluating a CRM should test actual workflow fit, import rules, access boundaries and available integrations before assuming another subscription can be replaced."
+        ]
+      }
+    ],
+    "questions": [
+      {
+        "question": "Is Ask Intros a CRM or a networking platform?",
+        "answer": "It combines professional networking with business relationship and opportunity tools. It should not be assumed to replace every capability of a dedicated CRM without evaluating the required workflow."
+      },
+      {
+        "question": "Does switching to Social View publish my pipeline?",
+        "answer": "No. The two views change presentation, not sharing permissions. Private business records remain subject to their access controls."
+      },
+      {
+        "question": "Can it guarantee fewer software subscriptions?",
+        "answer": "No. Any consolidation depends on the features and integrations a company actually uses. Compare requirements and verify the real deployment before replacing another tool."
+      }
+    ]
+  },
+  {
+    "path": "/social-business-views",
+    "label": "Social and Business views",
+    "title": "Social View and Business View in One Platform | Ask Intros",
+    "heading": "One network. Two ways to work.",
+    "description": "Compare the Social and Business views in Ask Intros. Both use the same membership and permissions, with different presentations for relationships and business operations.",
+    "summary": "Ask Intros lets members approach their relationships from two perspectives. Social View emphasizes people, posts and conversations. Business View organizes business context and work. Switching views changes the presentation, not the identity or ownership of your data.",
+    "sections": [
+      {
+        "heading": "Social View: discover the people behind the work",
+        "paragraphs": [
+          "Social View is oriented around community activity, profiles and conversations. Members can describe a need, explain an offer and decide whether a meaningful introduction makes sense.",
+          "The interface can show demonstration activity to explain a workflow. Demo people and posts are illustrative, and must not be counted as real members or confirmed outcomes."
+        ]
+      },
+      {
+        "heading": "Business View: organize what happens next",
+        "paragraphs": [
+          "Business View keeps the focus on contact context, opportunities, tasks and other supported workspace tools. It provides a business oriented presentation of the same account rather than a separate relationship database.",
+          "Moving between the two views should not erase an agreed next step, change consent or make notes visible to a different audience. Members still decide what to share."
+        ]
+      },
+      {
+        "heading": "Why keep them connected?",
+        "paragraphs": [
+          "Relationships can begin in a conversation and continue as a project or partnership. Splitting the two stages across disconnected systems makes it harder to remember context and follow through.",
+          "Ask Intros is designed to bring those stages closer together. The exact tools available and their production status should be evaluated in the member account rather than inferred from the public demo."
+        ]
+      }
+    ],
+    "questions": [
+      {
+        "question": "Is Social View a separate Ask Intros account?",
+        "answer": "No. Social and Business are two presentations of the same Ask Intros account and permitted data."
+      },
+      {
+        "question": "Which view should a founder use?",
+        "answer": "Social View is useful for discovering people and conversations. Business View is oriented toward organizing business relationships and next steps. You can choose based on the task."
+      },
+      {
+        "question": "Does changing views change who can see my information?",
+        "answer": "No. A presentation toggle does not grant sharing permissions. Private records remain private unless a separate authorized action changes their scope."
+      }
+    ]
+  }
+
 ]
