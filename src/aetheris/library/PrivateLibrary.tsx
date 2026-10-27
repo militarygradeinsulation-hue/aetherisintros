@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { Check, FileUp, LockKeyhole, Search, ShieldAlert, UserRound, Users, X } from "lucide-react";
 import { Btn, Eyebrow } from "../ui";
+import { ImportReviewTable } from "../ImportReviewTable";
 import {
   IMPORT_FIELDS,
   autoMap,
@@ -307,6 +308,7 @@ export function PrivateLibrary() {
   const [sheets, setSheets] = useState<ImportSheet[]>([]);
   const [mappings, setMappings] = useState<Record<string, ImportMap>>({});
   const [activeSheet, setActiveSheet] = useState("");
+  const [inspectedImportKey, setInspectedImportKey] = useState<string | null>(null);
   const [duplicateChoice, setDuplicateChoice] = useState<DuplicateChoice>(null);
   const [rowErrors, setRowErrors] = useState<
     Array<{ source_sheet: string; source_row: number; messages: string[] }>
@@ -328,7 +330,12 @@ export function PrivateLibrary() {
   const duplicateCount = checkedRows.filter(
     (row) => row.record.duplicate_candidate && !row.errors.length,
   ).length;
-  const activeChecked = checkedRows.filter((row) => row.record.source_sheet === activeSheet);
+  const activeChecked = useMemo(
+    () => checkedRows.filter((row) => row.record.source_sheet === activeSheet),
+    [checkedRows, activeSheet],
+  );
+  const inspected = inspectedImportKey ? activeChecked.find(row => row.key === inspectedImportKey) : null;
+  const importPreviewKey = (file?.name ?? "") + ":" + activeSheet + ":" + activeChecked.length;
 
   const loadWorkspace = async () => {
     setLoading(true);
@@ -445,6 +452,7 @@ export function PrivateLibrary() {
       setSheets(parsed);
       setMappings(Object.fromEntries(parsed.map((sheet) => [sheet.name, autoMap(sheet.headers)])));
       setActiveSheet(parsed[0]?.name ?? "");
+      setInspectedImportKey(null);
       setDuplicateChoice(null);
     } catch (e) {
       setError(displayError(e, "The selected file could not be read."));
@@ -456,6 +464,7 @@ export function PrivateLibrary() {
     setSheets([]);
     setMappings({});
     setActiveSheet("");
+    setInspectedImportKey(null);
     setDuplicateChoice(null);
     setRowErrors([]);
     setNotice("");
@@ -729,7 +738,7 @@ export function PrivateLibrary() {
           {sheets.length > 1 && (
             <label className="pl-map-sheet">
               Review sheet
-              <select value={activeSheet} onChange={(e) => setActiveSheet(e.target.value)}>
+              <select value={activeSheet} onChange={(e) => { setActiveSheet(e.target.value); setInspectedImportKey(null); }}>
                 {sheets.map((sheet) => (
                   <option key={sheet.name}>{sheet.name}</option>
                 ))}
@@ -772,49 +781,46 @@ export function PrivateLibrary() {
               </label>
             </fieldset>
           )}
-          <div className="pl-table-wrap" tabIndex={0} aria-label="Import row preview">
-            <table>
-              <thead>
-                <tr>
-                  <th>Row</th>
-                  <th>Type / name</th>
-                  <th>Business</th>
-                  <th>Email</th>
-                  <th>DNC status</th>
-                  <th>Review</th>
-                </tr>
-              </thead>
-              <tbody>
-                {activeChecked.slice(0, 50).map((entry) => (
-                  <tr key={entry.key}>
-                    <td>{entry.record.source_row}</td>
-                    <td>
-                      <b>{entry.record.name || "—"}</b>
-                      <small>{entry.record.record_type}</small>
-                    </td>
-                    <td>{entry.record.business || "—"}</td>
-                    <td>{entry.record.email || "—"}</td>
-                    <td>{entry.record.dnc_status}</td>
-                    <td>
-                      {entry.errors.length ? (
-                        <span className="pl-bad">{entry.errors.join(" · ")}</span>
-                      ) : entry.record.duplicate_candidate ? (
-                        <span className="pl-duplicate">Possible duplicate</span>
-                      ) : (
-                        entry.warnings[0] || "Ready"
-                      )}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-          {activeChecked.length > 50 && (
-            <p className="pl-note">
-              Showing 50 of {activeChecked.length.toLocaleString()} rows on this sheet. Every row is
-              validated.
-            </p>
-          )}
+          <ImportReviewTable
+            rows={activeChecked}
+            scopeKey={importPreviewKey}
+            label="Private contact import review"
+            headings={["Source row", "Type / name", "Business", "Email", "DNC status", "Review", "Details"]}
+            renderRow={(entry, index) => <tr key={entry.key} aria-rowindex={index + 2}>
+              <td>{entry.record.source_row}</td>
+              <td title={entry.record.name}><b>{entry.record.name || "—"}</b><small>{entry.record.record_type}</small></td>
+              <td title={entry.record.business}>{entry.record.business || "—"}</td>
+              <td title={entry.record.email}>{entry.record.email || "—"}</td>
+              <td>{entry.record.dnc_status}</td>
+              <td title={[...entry.errors, ...entry.warnings].join(" · ")}>
+                {entry.errors.length
+                  ? <span className="pl-bad">{entry.errors.join(" · ")}</span>
+                  : entry.record.duplicate_candidate
+                    ? <span className="pl-duplicate">Possible duplicate</span>
+                    : entry.warnings[0] || "Ready"}
+              </td>
+              <td><button type="button" className="import-review-inspect" onClick={() => setInspectedImportKey(entry.key)}
+                aria-label={"Inspect source row " + entry.record.source_row}>Inspect</button></td>
+            </tr>}
+          />
+          {inspected && <section className="import-review-detail" aria-label="Selected contact import details">
+            <h4>{inspected.record.record_type === "person" ? "Person" : "Organization"} · source row {inspected.record.source_row}</h4>
+            <p className="pl-note">Normalized import mapping (not verified or enriched by an external provider).</p>
+            <dl>{[
+              ["Name", inspected.record.name], ["Email", inspected.record.email],
+              ["Phone", inspected.record.phone], ["Business", inspected.record.business],
+              ["Title", inspected.record.title], ["Location", inspected.record.location],
+              ["Website", inspected.record.website], ["Industry", inspected.record.industry],
+              ["Raw contact person", inspected.record.raw_contact_person],
+              ["Source reference", inspected.record.source_reference], ["DNC", inspected.record.dnc_status],
+            ].map(([label, value]) => <div key={label}><dt>{label}</dt><dd>{value || "Not provided"}</dd></div>)}</dl>
+            <p className="pl-note">Missing fields are left blank. After import, review source-backed enrichment suggestions in the selected contact record.</p>
+            {inspected.errors.length > 0 && <p className="pl-error" role="alert">{inspected.errors.join(" · ")}</p>}
+            {inspected.warnings.length > 0 && <p className="pl-note">{inspected.warnings.join(" · ")}</p>}
+            <details><summary>Original uploaded columns</summary><pre>{JSON.stringify(inspected.record.original_columns, null, 2)}</pre></details>
+            <button type="button" className="import-review-inspect" onClick={() => setInspectedImportKey(null)}>Close inspection</button>
+          </section>}
+          <p className="pl-note">All {activeChecked.length.toLocaleString()} rows on this sheet are available to inspect. Scroll or jump directly to any preview row; all sheets and source columns remain available.</p>
           <div className="pl-actions">
             <Btn kind="quiet" disabled={busy} onClick={resetImport}>
               Cancel import
