@@ -26,13 +26,16 @@ jobs:
           bun install --frozen-lockfile
       - name: Dependency security audit
         run: bun audit --audit-level=high
+      # TanStack Router creates routeTree.gen.ts during the Vite build.
+      # Regenerate routes before TypeScript checks new file-based public routes.
+      - name: Build and regenerate routes
+        run: npx vite build
       - name: Typecheck
         run: npx tsc --noEmit -p .
       - name: Unit tests
         run: npx vitest run
-      # Catch bundling failures before slow browser smoke tests.
-      - name: Build
-        run: npx vite build
+      - name: Public SEO HTML, sitemap and crawler metadata
+        run: node scripts/public-search-check/run.mjs
       - name: Install Chromium
         run: npx playwright install --with-deps chromium
       - name: Butler orb and cinematic entrance (browser)

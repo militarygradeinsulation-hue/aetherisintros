@@ -1,0 +1,47 @@
+name: Public Search Visibility
+
+on:
+  pull_request:
+    paths:
+      - 'src/routes/**'
+      - 'src/aetheris/**'
+      - 'src/lib/public-search.ts'
+      - 'src/lib/sitemap.ts'
+      - 'public/robots.txt'
+      - 'scripts/public-search-check/**'
+      - '.github/workflows/public-search-visibility.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'src/routes/**'
+      - 'src/aetheris/**'
+      - 'src/lib/public-search.ts'
+      - 'src/lib/sitemap.ts'
+      - 'public/robots.txt'
+      - 'scripts/public-search-check/**'
+      - '.github/workflows/public-search-visibility.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  search:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - uses: oven-sh/setup-bun@v2
+      - name: Install locked dependencies
+        run: bun install --frozen-lockfile
+      # Vite regenerates the TanStack route type registry for newly added pages.
+      - name: Build and regenerate routes
+        run: npx vite build
+      - name: Typecheck
+        run: npx tsc --noEmit -p .
+      - name: Search visibility model tests
+        run: npx vitest run src/aetheris/__tests__/search-visibility.test.ts
+      - name: Verify raw HTML, canonical URLs and sitemap
+        run: node scripts/public-search-check/run.mjs

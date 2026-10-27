@@ -36,10 +36,11 @@ jobs:
         run: |
           node scripts/bridge-reference/check.mjs
           node scripts/bridge-reference/styles.mjs --check
+      # Generate the TanStack route type registry before checking new routes.
+      - name: Build production bundle and regenerate routes
+        run: npx vite build
       - name: Typecheck
         run: npx tsc --noEmit -p .
-      - name: Build production bundle
-        run: npx vite build
       - name: Install Chromium
         run: npx playwright install --with-deps chromium
       - name: Public search crawlability and guide layout
