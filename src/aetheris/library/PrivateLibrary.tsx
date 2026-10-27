@@ -298,6 +298,7 @@ export function PrivateLibrary() {
   const [searchPage, setSearchPage] = useState(0);
   const [hasMoreRecords, setHasMoreRecords] = useState(false);
   const [recordsBusy, setRecordsBusy] = useState(false);
+  const [recordsError, setRecordsError] = useState("");
   const [loading, setLoading] = useState(true);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
@@ -383,6 +384,7 @@ export function PrivateLibrary() {
     let live = true;
     const timer = window.setTimeout(() => {
       setRecordsBusy(true);
+      setRecordsError("");
       void searchLibrary(query, workspaceId, searchPage * SEARCH_PAGE_SIZE)
         .then((next) => {
           if (!live) return;
@@ -398,7 +400,7 @@ export function PrivateLibrary() {
             setActiveRecordId((current) => next.some(record => record.id === current) ? current : (next[0]?.id ?? ""));
         })
         .catch((e) => {
-          if (live) setError(displayError(e, "Search could not be completed."));
+          if (live) setRecordsError(displayError(e, "Search could not be completed."));
         })
         .finally(() => { if (live) setRecordsBusy(false); });
     }, 180);
@@ -431,12 +433,14 @@ export function PrivateLibrary() {
     setSearchPage(0);
     setRecords([]);
     setHasMoreRecords(false);
+    setRecordsError("");
     setRefreshVersion(value => value + 1);
   };
   const updateSearch = (value: string) => {
     setQuery(value);
     setSearchPage(0);
     setHasMoreRecords(false);
+    setRecordsError("");
     setRecords([]);
     setActiveRecordId("");
     setActiveRecord(null);
@@ -663,6 +667,7 @@ export function PrivateLibrary() {
               setActiveRecord(null);
               setRecords([]);
               setHasMoreRecords(false);
+              setRecordsError("");
               setSearchPage(0);
             }}
           >
@@ -883,7 +888,7 @@ export function PrivateLibrary() {
           <div className="pl-subhead">
             <Eyebrow>PRIVATE RECORDS</Eyebrow>
             <span>
-              {records.length.toLocaleString()} loaded{hasMoreRecords ? " · more available" : ""}
+              {records.length.toLocaleString()} loaded{hasMoreRecords ? " · more may be available" : ""}
             </span>
           </div>
           {!records.length ? (
@@ -914,10 +919,11 @@ export function PrivateLibrary() {
           )}
           <div className="pl-actions" aria-label="Load more private contacts">
             <span>{records.length.toLocaleString()} private records displayed · browse above or search by name.</span>
-            {hasMoreRecords && <Btn kind="quiet" disabled={recordsBusy} onClick={() => setSearchPage(page => page + 1)}>
+            {hasMoreRecords && !recordsError && <Btn kind="quiet" disabled={recordsBusy} onClick={() => { setRecordsBusy(true); setSearchPage(page => page + 1); }}>
               {recordsBusy ? "Loading…" : "Load next 50 contacts"}
             </Btn>}
             {recordsBusy && <span role="status">Loading private contacts…</span>}
+            {recordsError && <span role="alert">{recordsError} <button type="button" onClick={() => setRefreshVersion(value => value + 1)}>Retry this page</button></span>}
           </div>
         </aside>
         {activeRecord && (
