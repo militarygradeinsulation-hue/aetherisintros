@@ -513,3 +513,5 @@ Next slices, not implemented by this change:
 - [ ] Create the first app email template when a concrete trigger is chosen.
 - [x] Scaffold and brand the six auth email templates (signup, invite, magic link, recovery, email change, reauthentication).
 - [x] Meeting room on phones: keep video centered, don't auto-scroll to chat
+
+- [x] Enforce the written access rules on 64 member tables (migration 0106) and make company profiles owner-owned (0107) — 2026-10-27
