@@ -67,6 +67,27 @@ try {
   for (const path of ['/auth', '/demo', '/app']) assert(!sitemap.includes(`<loc>${origin + path}</loc>`), 'Sitemap excludes ' + path);
   assert.match(await read('/founder-story'), /<title>Why Joseph Toney Built Ask Intros \| Founder Story<\/title>/);
   assert.match(await read('/early-access'), /<title>Ask Intros Membership \| Basic and Executive Access<\/title>/);
+
+  for (const [path, title] of [
+    ['/founder-story', 'Why Joseph Toney Built Ask Intros | Founder Story'],
+    ['/early-access', 'Ask Intros Membership | Basic and Executive Access'],
+  ]) {
+    const html = await read(path);
+    assert(html.includes('<title>' + title + '</title>'), path + ' keeps its published title');
+    assert.deepEqual(canonical(html), [origin + path], path + ' has one canonical URL');
+    assert.match(html, /<meta name="robots" content="index,follow,max-image-preview:large"/);
+    const graphs = [...html.matchAll(/<script type="application\/ld\+json"[^>]*>([\s\S]*?)<\/script>/g)];
+    assert.equal(graphs.length, 1, path + ' has one public entity graph');
+    const nodes = JSON.parse(graphs[0][1])['@graph'];
+    assert(nodes.some(node => node['@type'] === 'Organization' && node.name === 'Ask Intros'));
+    assert(nodes.some(node => node['@type'] === 'WebPage' && node.url === origin + path));
+    if (path === '/founder-story') assert(nodes.some(node =>
+      node['@type'] === 'Person' && node.name === 'Joseph Toney' &&
+      node.sameAs?.includes('https://www.linkedin.com/in/thejosephtoney')
+    ));
+    assert(sitemap.includes('<loc>' + origin + path + '</loc>'), path + ' is in sitemap');
+  }
+
   console.log('PASS discovery links, sitemap and utility noindex');
 
   if (process.env.PUBLIC_SEARCH_BROWSER === '1') {

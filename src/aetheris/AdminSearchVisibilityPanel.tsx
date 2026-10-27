@@ -1,8 +1,8 @@
 import { useState } from 'react'
 import { BarChart3, FileUp, SearchCheck, Sparkles } from 'lucide-react'
 import {
-  parseSearchConsoleDates, parseSearchConsoleQueries, runSearchCrawl,
-  SEARCH_CANONICAL_ORIGIN, type SearchMetrics, type SearchQuery, type CrawlResult,
+  parseSearchConsoleDates, parseSearchConsoleQueries, parseSearchConsolePages, prioritizeSearchPages, runSearchCrawl,
+  SEARCH_CANONICAL_ORIGIN, type SearchMetrics, type SearchQuery, type SearchPage, type CrawlResult,
 } from './lib/search-visibility'
 import './admin-search-visibility.css'
 
@@ -27,15 +27,17 @@ const nodeParser = (html: string) => new DOMParser().parseFromString(html, html.
 export function AdminSearchVisibilityPanel() {
   const [metrics, setMetrics] = useState<SearchMetrics | null>(null)
   const [queries, setQueries] = useState<SearchQuery[] | null>(null)
+  const [pages, setPages] = useState<SearchPage[] | null>(null)
   const [metricsFile, setMetricsFile] = useState('')
   const [queriesFile, setQueriesFile] = useState('')
+  const [pagesFile, setPagesFile] = useState('')
   const [error, setError] = useState('')
   const [crawl, setCrawl] = useState<CrawlResult[] | null>(null)
   const [crawlAt, setCrawlAt] = useState('')
   const [checking, setChecking] = useState(false)
   const [observations, setObservations] = useState<Record<string, Entry>>({})
 
-  const importCsv = async (file: File | undefined, kind: 'dates' | 'queries') => {
+  const importCsv = async (file: File | undefined, kind: 'dates' | 'queries' | 'pages') => {
     if (!file) return
     setError('')
     try {
@@ -45,13 +47,17 @@ export function AdminSearchVisibilityPanel() {
       if (kind === 'dates') {
         setMetrics(parseSearchConsoleDates(csv))
         setMetricsFile(file.name)
-      } else {
+      } else if (kind === 'queries') {
         setQueries(parseSearchConsoleQueries(csv))
         setQueriesFile(file.name)
+      } else {
+        setPages(parseSearchConsolePages(csv))
+        setPagesFile(file.name)
       }
     } catch (cause) {
       if (kind === 'dates') { setMetrics(null); setMetricsFile('') }
-      else { setQueries(null); setQueriesFile('') }
+      else if (kind === 'queries') { setQueries(null); setQueriesFile('') }
+      else { setPages(null); setPagesFile('') }
       setError(cause instanceof Error ? cause.message : 'Could not import the CSV.')
     }
   }
@@ -72,6 +78,7 @@ export function AdminSearchVisibilityPanel() {
   const measured = Object.values(observations).filter(row => row.status !== 'untested')
   const cited = measured.filter(row => row.status === 'cited').length
   const passing = crawl?.filter(row => row.status === 'pass').length ?? 0
+  const pageOpportunities = pages ? prioritizeSearchPages(pages) : []
   const updateEntry = (key: string, patch: Partial<Entry>) => {
     setObservations(previous => ({ ...previous, [key]: { status: previous[key]?.status ?? 'untested', source: previous[key]?.source ?? '', ...patch } }))
   }
@@ -101,10 +108,11 @@ export function AdminSearchVisibilityPanel() {
 
     <div className="sv-block">
       <h3><BarChart3 size={17} /> Google Search Console performance</h3>
-      <p>Export <strong>Dates.csv</strong> from the Search Results performance report for daily totals. You may also import <strong>Queries.csv</strong> for top searches. Files stay in this browser session; nothing is uploaded or saved to the member database.</p>
+      <p>Export <strong>Dates.csv</strong> from the Search Results performance report for daily totals. You may also import <strong>Queries.csv</strong> for top searches and <strong>Pages.csv</strong> for landing page performance. Files stay in this browser session; nothing is uploaded or saved to the member database.</p>
       <div className="sv-upload-row">
         <label className="sv-upload"><FileUp size={16} /><span>Import Dates.csv</span><input type="file" accept=".csv,text/csv" onChange={e => { void importCsv(e.target.files?.[0], 'dates'); e.target.value = '' }} /></label>
         <label className="sv-upload"><FileUp size={16} /><span>Import Queries.csv</span><input type="file" accept=".csv,text/csv" onChange={e => { void importCsv(e.target.files?.[0], 'queries'); e.target.value = '' }} /></label>
+        <label className="sv-upload"><FileUp size={16} /><span>Import Pages.csv</span><input type="file" accept=".csv,text/csv" onChange={e => { void importCsv(e.target.files?.[0], 'pages'); e.target.value = '' }} /></label>
       </div>
       {metrics && <><p className="sv-subline">Source: {metricsFile} · {metrics.days} reported dates · {metrics.firstDate} through {metrics.lastDate}</p><div className="sv-grid sv-grid--metrics">
         <div className="sv-stat"><span>Clicks</span><strong>{format(metrics.clicks)}</strong></div>
@@ -115,7 +123,16 @@ export function AdminSearchVisibilityPanel() {
       {queries && <><p className="sv-subline">Top imported queries · {queriesFile}. Query export is a separate dimension and is not added to daily totals.</p><div className="sv-scroll"><table className="sv-table"><thead><tr><th>Query</th><th>Clicks</th><th>Impressions</th><th>CTR</th></tr></thead><tbody>
         {queries.map((item, i) => <tr key={i}><td>{item.query}</td><td>{format(item.clicks)}</td><td>{format(item.impressions)}</td><td>{percentage(item.ctr)}</td></tr>)}
       </tbody></table></div></>}
-      {!metrics && !queries && <p className="sv-unconnected">No Search Console data imported. A verified Google property and integration are not assumed.</p>}
+      {pages && <><p className="sv-subline">Page dimension · {pagesFile} · {pages.length} imported canonical URLs. Pages, queries and dates are separate views; never add their totals together.</p>
+      <div className="sv-scroll"><table className="sv-table"><thead><tr><th>Page</th><th>Impressions</th><th>Clicks</th><th>CTR</th><th>Average position</th></tr></thead><tbody>
+        {pages.map(page => <tr key={page.path}><td><code>{page.path}</code></td><td>{format(page.impressions)}</td><td>{format(page.clicks)}</td><td>{percentage(page.ctr)}</td><td>{page.position === null ? 'Not reported' : page.position.toFixed(1)}</td></tr>)}
+      </tbody></table></div>
+      <h3 className="sv-opportunity-title">Pages to review</h3>
+      <p>Heuristic opportunities from the imported export: at least 50 impressions, a clickthrough rate below 2%, or an average position above 10. These are starting points, not predictions or confirmed problems.</p>
+      {pageOpportunities.length ? <div className="sv-scroll"><table className="sv-table"><thead><tr><th>Page</th><th>Review focus</th><th>Impressions</th><th>Why review it</th></tr></thead><tbody>
+        {pageOpportunities.map((item, index) => <tr key={item.path + item.reason + index}><td><code>{item.path}</code></td><td>{item.reason === 'snippet' ? 'Search snippet and intent' : 'Page content and links'}</td><td>{format(item.impressions)}</td><td>{item.message}</td></tr>)}
+      </tbody></table></div> : <p className="sv-unconnected">No pages meet those review thresholds in this imported report. This does not prove pages are optimized or indexed.</p>}</>}
+      {!metrics && !queries && !pages && <p className="sv-unconnected">No Search Console data imported. A verified Google property and integration are not assumed.</p>}
     </div>
 
     <div className="sv-block">

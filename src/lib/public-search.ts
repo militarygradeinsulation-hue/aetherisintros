@@ -33,8 +33,10 @@ export function publicStructuredData(path: string, title: string, description: s
   const url = new URL(path, PUBLIC_ORIGIN).href
   const organization = `${PUBLIC_ORIGIN}/#organization`
   const website = `${PUBLIC_ORIGIN}/#website`
+  const founder = `${PUBLIC_ORIGIN}/#founder`
   const graph: Record<string, unknown>[] = [
-    { '@type': 'Organization', '@id': organization, name: 'Ask Intros', url: `${PUBLIC_ORIGIN}/`, logo: `${PUBLIC_ORIGIN}/ask-intros-logo-wide.jpg`, description: PRODUCT_DESCRIPTION },
+    { '@type': 'Organization', '@id': organization, name: 'Ask Intros', url: `${PUBLIC_ORIGIN}/`, logo: `${PUBLIC_ORIGIN}/ask-intros-logo-wide.jpg`, description: PRODUCT_DESCRIPTION, founder: { '@id': founder } },
+    { '@type': 'Person', '@id': founder, name: 'Joseph Toney', url: `${PUBLIC_ORIGIN}/founder-story`, sameAs: ['https://www.linkedin.com/in/thejosephtoney'], affiliation: { '@id': organization } },
     { '@type': 'WebSite', '@id': website, name: 'Ask Intros', url: `${PUBLIC_ORIGIN}/`, publisher: { '@id': organization }, inLanguage: 'en' },
     { '@type': 'WebPage', '@id': `${url}#webpage`, url, name: title, description, isPartOf: { '@id': website }, about: { '@id': organization }, inLanguage: 'en', ...(path !== '/' ? { breadcrumb: { '@id': `${url}#breadcrumb` } } : {}) },
   ]
