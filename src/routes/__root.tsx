@@ -40,6 +40,7 @@ import { installClientErrorReporting, reportClientError } from "../lib/error-rep
 import { registerServiceWorker } from "../aetheris/push-client";
 import { announceGoogleReturn } from "../aetheris/google-ui";
 import { applyTextScale, readTextScale } from "../aetheris/textScale";
+import { captureInitialAcquisition } from "../aetheris/lib/acquisition-source";
 
 function NotFoundComponent() {
   return (
@@ -181,6 +182,8 @@ function RootComponent() {
   useEffect(() => {
     applyTextScale(readTextScale());
     installClientErrorReporting();
+    // Save broad first-touch source data only in this browser session.
+    try { captureInitialAcquisition(window.location, document.referrer, window.sessionStorage); } catch { /* private storage must not block the app */ }
     registerServiceWorker();
     setTimeout(announceGoogleReturn, 400);
   }, []);
