@@ -75,7 +75,7 @@ export function AdminSearchVisibilityPanel() {
   const updateEntry = (key: string, patch: Partial<Entry>) => {
     setObservations(previous => ({ ...previous, [key]: { status: previous[key]?.status ?? 'untested', source: previous[key]?.source ?? '', ...patch } }))
   }
-  return <section className="admin-panel search-visibility" aria-label="SEO and AI search visibility dashboard">
+  return <section id="search-visibility" className="admin-panel search-visibility" aria-label="SEO and AI search visibility dashboard">
     <div className="sv-head">
       <span className="sv-kicker"><SearchCheck size={16} /> SEARCH / DISCOVERY</span>
       <h2>SEO & AI visibility</h2>
