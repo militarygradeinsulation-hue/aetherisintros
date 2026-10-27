@@ -100,7 +100,6 @@ export default function SheetImport({ onBack, initialTarget = 'people' }: { onBa
     setDone(null); setReadError(null)
     const plainText = /\.(csv|tsv|txt)$/i.test(file.name)
     try {
-      if (file.size > 20 * 1024 * 1024) throw new Error('Upload at most 20 MB at a time.')
       let rows: string[][]
       if (plainText) rows = parseCsv(await file.text())
       else {
@@ -111,7 +110,7 @@ export default function SheetImport({ onBack, initialTarget = 'people' }: { onBa
       // Exports often have ragged rows (trailing blanks); square them to the header width.
       const width = rows[0]?.length ?? 0
       rows = rows.filter(r => r.some(c => c.trim())).map(r => r.length === width ? r : [...r.slice(0, width), ...Array(Math.max(0, width - r.length)).fill('')])
-      validateProspectGrid(rows, CONTACT_IMPORT_MAX_ROWS, 300)
+      validateProspectGrid(rows)
       importedRowsRef.current.clear()
       setFileName(file.name); setGrid(rows); setMap(autoMap(rows[0] ?? [], target, rows.slice(1, 51)))
     } catch (error) { setGrid([]); setReadError(error instanceof Error ? error.message : 'That file could not be read.') }
