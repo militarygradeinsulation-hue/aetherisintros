@@ -14,7 +14,7 @@ const isUuid = (v: string) => /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-
 const pageVisible = () => typeof document === 'undefined' || document.visibilityState === 'visible'
 
 /** Native editorial-noir messaging, wired to the live member threads and file attachments. */
-function Inner({ onOpenWorkspaces, social = false }: { onOpenWorkspaces?: () => void; social?: boolean }) {
+function Inner({ onOpenWorkspaces, social = false, initialRecipientId, onRecipientOpened }: { onOpenWorkspaces?: () => void; social?: boolean; initialRecipientId?: string; onRecipientOpened?: () => void }) {
   const net = useNetwork()
   const [activeId, setActiveId] = useState<string>(() => (typeof window === 'undefined' ? '' : localStorage.getItem('aetheris-intros-thread') ?? ''))
   const [query, setQuery] = useState('')
@@ -48,6 +48,21 @@ function Inner({ onOpenWorkspaces, social = false }: { onOpenWorkspaces?: () => 
       setActiveId(threadId); setPickingRecipient(false); setQuery(''); setRecipientError('')
     } catch (error) { setRecipientError(error instanceof Error ? error.message : 'Could not open this conversation. Try again.') }
   }
+  // One tap from a real directory match opens the existing draft conversation.
+  // It never sends a message or bypasses member permissions.
+  useEffect(() => {
+    if (!initialRecipientId || !isUuid(initialRecipientId) || !byId.has(initialRecipientId)) return
+    try {
+      const threadId = net.openThreadWith(initialRecipientId)
+      setActiveId(threadId)
+      setPickingRecipient(false)
+      setRecipientError('')
+      onRecipientOpened?.()
+    } catch (cause) {
+      setRecipientError(cause instanceof Error ? cause.message : 'Could not open this conversation.')
+      onRecipientOpened?.()
+    }
+  }, [initialRecipientId, byId, onRecipientOpened])
   const recipientSearch = recipientQuery.trim().toLowerCase()
   const recipients = net.members.filter(member => [member.name, member.company, member.title].some(value => value?.toLowerCase().includes(recipientSearch)))
   const person = active ? byId.get(active.memberId) : undefined
@@ -333,6 +348,6 @@ function Inner({ onOpenWorkspaces, social = false }: { onOpenWorkspaces?: () => 
   )
 }
 
-export function LiveMessagesView({ onOpenWorkspaces, social = false }: { onOpenWorkspaces?: () => void; social?: boolean } = {}) {
-  return <Inner social={social} {...(onOpenWorkspaces ? { onOpenWorkspaces } : {})} />
+export function LiveMessagesView({ onOpenWorkspaces, social = false, initialRecipientId, onRecipientOpened }: { onOpenWorkspaces?: () => void; social?: boolean; initialRecipientId?: string; onRecipientOpened?: () => void } = {}) {
+  return <Inner social={social} {...(onOpenWorkspaces ? { onOpenWorkspaces } : {})} {...(initialRecipientId ? { initialRecipientId } : {})} {...(onRecipientOpened ? { onRecipientOpened } : {})} />
 }
