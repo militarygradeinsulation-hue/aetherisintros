@@ -10,8 +10,9 @@ const { PGlite } = require('@electric-sql/pglite')
 const { pg_trgm } = require(join(require.resolve('@electric-sql/pglite'), '../contrib/pg_trgm.cjs'))
 const repo = resolve(import.meta.dirname, '../..')
 
-it('runs the expanded security adapter on unchanged source history including automatic signup profiles', async () => {
-  // This is SYNTHETIC source history, not the unavailable production catalog.
+it('runs security checks against source history with explicitly modeled live-only syndication tables', async () => {
+  // This is SYNTHETIC source history plus a documented live-only compatibility fixture.
+  // It does NOT certify that unchanged migrations replay on a completely empty database.
   const db = new PGlite({ extensions: { pg_trgm } })
   try {
     await db.exec(readFileSync(join(repo, 'scripts/recovery/fixtures/platform.sql'), 'utf8'))
@@ -19,7 +20,15 @@ it('runs the expanded security adapter on unchanged source history including aut
       await db.exec(readFileSync(join(repo, 'supabase/migrations', file), 'utf8'))
     }
     const entries = JSON.parse(readFileSync(join(repo, 'drizzle/migrations/meta/_journal.json'), 'utf8')).entries
-    for (const entry of entries) await db.exec(readFileSync(join(repo, 'drizzle/migrations', entry.tag + '.sql'), 'utf8'))
+    // The live catalog contains legacy syndication_room_members and
+    // syndication_interests that the frozen Drizzle history never created.
+    // Inject an explicitly marked SYNTHETIC fixture immediately before migration
+    // 0100, which references those live-only tables. Do not alter source SQL.
+    const liveOnlyFixture = readFileSync(join(repo, 'scripts/recovery/fixtures/live-only-syndication.sql'), 'utf8')
+    for (const entry of entries) {
+      if (entry.tag.startsWith('0100_')) await db.exec(liveOnlyFixture)
+      await db.exec(readFileSync(join(repo, 'drizzle/migrations', entry.tag + '.sql'), 'utf8'))
+    }
     for (const file of postJournalMigrations) await db.exec(readFileSync(join(repo, 'supabase/migrations', file), 'utf8'))
     const report = await checkObservedSecurity(db, repo)
     expect(report.setupError).toBeNull()

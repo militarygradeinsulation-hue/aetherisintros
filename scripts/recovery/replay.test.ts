@@ -13,7 +13,12 @@ describe('offline recovery',()=>{
   expect(target.every(s=>s.status==='PASS')).toBe(true)
   expect(target[0]?.migration).toContain('0058_')
   expect(target[20]?.migration).toContain('0078_')
-  expect(r.collisionChecks.find(c=>c.migration.startsWith('0092'))?.error).toContain('professional_opportunities')
+  // Probe 0092 may execute successfully against this bounded baseline. Never
+  // assume it fails on a relation the baseline already provides.
+  const probe0092 = r.collisionChecks.find(c=>c.migration.startsWith('0092'))
+  expect(probe0092).toBeDefined()
+  expect(probe0092?.status, JSON.stringify(probe0092)).toBe('PASS')
+  expect(probe0092?.existingTables).toEqual([])
  },120000)
  it('identifies missing dependency roots',()=>{
   expect(dependencyRoot('relation "public.meetings" does not exist')).toBe('public.meetings')

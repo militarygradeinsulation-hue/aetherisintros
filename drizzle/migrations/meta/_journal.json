@@ -778,6 +778,13 @@
       "when": 1793140000000,
       "tag": "0111_meeting_personal_briefs",
       "breakpoints": true
+    },
+    {
+      "idx": 112,
+      "version": "7",
+      "when": 1793149000000,
+      "tag": "0112_private_library_monotonic_record_version",
+      "breakpoints": true
     }
   ]
 }
