@@ -31,6 +31,10 @@ jobs:
         with: { node-version: 22 }
       - uses: oven-sh/setup-bun@v2
       - run: bun install --frozen-lockfile
+      - name: Build production bundle
+        run: bunx vite build
+      - name: Typecheck
+        run: bunx tsc --noEmit -p .
       - name: Date grouping test
         run: bunx vitest run src/aetheris/__tests__/meeting-history.test.ts
       - name: Actual RLS and schema compatibility test
