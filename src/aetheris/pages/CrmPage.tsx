@@ -123,11 +123,6 @@ export default function CrmPage({ section }: { section?: 'crm' | 'pipeline' | un
   const passesFilters = (p: CrmPerson) =>
     (!filterLife || p.lifecycle === filterLife) && (!filterCompany || p.companyName === filterCompany) &&
     (filterHas === '' || (filterHas === 'email' ? !!p.email : filterHas === 'phone' ? !!p.phone : filterHas === 'no-email' ? !p.email : !p.phone))
-  const contactsInScope = people.filter(passesFilters)
-    .filter(p => !onlyUploaded || p.source.startsWith('Import · '))
-    .filter(p => match(`${p.fullName} ${p.title} ${p.companyName} ${p.email} ${p.phone}`))
-  const hiddenIncompleteCount = contactsInScope.filter(p => !hasContactDetails(p)).length
-  const visibleContacts = orderPeople(contactsInScope.filter(p => !hideEmpty || hasContactDetails(p)))
   const addRow = async () => {
     if (!draftRow.fullName.trim() || addingRow) return
     setAddingRow(true)
@@ -149,6 +144,11 @@ export default function CrmPage({ section }: { section?: 'crm' | 'pipeline' | un
   const memberFor = (person: CrmPerson) => (person.memberId ? net.members.find(m => m.id === person.memberId) : undefined)
   const term = query.trim().toLowerCase()
   const match = (text: string) => !term || text.toLowerCase().includes(term)
+  const contactsInScope = people.filter(passesFilters)
+    .filter(p => !onlyUploaded || p.source.startsWith('Import · '))
+    .filter(p => match(`${p.fullName} ${p.title} ${p.companyName} ${p.email} ${p.phone}`))
+  const hiddenIncompleteCount = contactsInScope.filter(p => !hasContactDetails(p)).length
+  const visibleContacts = orderPeople(contactsInScope.filter(p => !hideEmpty || hasContactDetails(p)))
 
   if (!ops.ready) return <p className="ops-note">Loading your records…</p>
   if (prospecting) return <ProspectEngine onBack={() => setProspecting(false)} onNewPerson={() => {setProspecting(false);setCreating('person')}} />

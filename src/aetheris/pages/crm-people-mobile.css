@@ -16,6 +16,6 @@
   .crm-mobile-detail > span:last-child { min-width:0; overflow-wrap:anywhere; }
   .crm-mobile-actions { display:flex; flex-wrap:wrap; gap:8px; margin-top:14px; }
   .crm-mobile-actions button { min-height:42px; padding:9px 15px; border:1px solid var(--line-dark,#555);
-    border-radius:9px; background:transparent; color:inherit; font:600 13px/1.2 inherit; cursor:pointer; }
+    border-radius:9px; background:transparent; color:inherit; font:inherit; font-size:13px; font-weight:600; line-height:1.2; cursor:pointer; }
   .crm-mobile-actions .crm-mobile-trash { margin-left:auto; color:#ef7e7e; border-color:rgba(239,126,126,.5); }
 }
