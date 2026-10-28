@@ -300,8 +300,16 @@ async function boot({ actualMembershipGate = false } = {}) {
   if (!passportSource) throw new Error('Historical Passport baseline missing from migration 0003')
   await db.exec(passportSource[1])
   for (const m of migrations) {
-    try { await db.exec(readFileSync(join(migrationsDir, m), 'utf8')) }
-    catch (error) { throw new Error(`Migration ${m} failed: ${error.message}`, { cause: error }) }
+    try {
+      // The live database had legacy syndication tables not declared by frozen
+      // Drizzle 0075. Model that fact explicitly before 0100 in this test-only
+      // PGlite baseline; never apply the fixture as a production migration.
+      if (m.startsWith('0100_') && !privateLibraryFocused) {
+        const synthetic = join(here, '..', 'recovery', 'fixtures', 'live-only-syndication.sql')
+        await db.exec(readFileSync(synthetic, 'utf8'))
+      }
+      await db.exec(readFileSync(join(migrationsDir, m), 'utf8'))
+    } catch (error) { throw new Error(`Migration ${m} failed: ${error.message}`, { cause: error }) }
   }
   // Historical tests model active identities with only a seeded profile.
   // Keep that existing fixture for unrelated business modules. The isolated
