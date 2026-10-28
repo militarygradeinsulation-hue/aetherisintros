@@ -7,10 +7,10 @@ import { gatewayChat } from './aiGateway.server'
 const PROMPT = `You are a meeting prep specialist. Return ONLY valid JSON, no markdown:
 {"their_background":"<2 sentences>","their_current_focus":"<1-2 sentences>","open_needs":[{"need":"...","how_you_can_help":"..."}],"talking_points":[{"point":"...","why_relevant":"..."}],"summary":"<paragraph>"}`
 
-type BriefRequest = { meetingId: string; otherUserId: string }
+type BriefRequest = { meetingId?: string; otherUserId: string }
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
 const validate = (data: BriefRequest): BriefRequest => {
-  if (!UUID.test(data?.meetingId ?? '') || !UUID.test(data?.otherUserId ?? ''))
+  if ((!!data?.meetingId && !UUID.test(data.meetingId)) || !UUID.test(data?.otherUserId ?? ''))
     throw new Error('Invalid meeting or attendee.')
   return data
 }
@@ -31,15 +31,19 @@ export const generateMeetingBrief = createServerFn({ method: 'POST' })
   .handler(async ({ data, context }) => {
     const userId = context.userId
     const db = context.supabase as any
-    const [meeting, roster] = await Promise.all([
-      db.from('meetings').select('id').eq('id', data.meetingId).maybeSingle(),
-      db.from('meeting_participants').select('user_id')
-        .eq('meeting_id', data.meetingId).in('user_id', [userId, data.otherUserId]),
-    ])
-    if (meeting.error || !meeting.data || roster.error ||
-      !(roster.data ?? []).some((row: { user_id: string }) => row.user_id === userId) ||
-      !(roster.data ?? []).some((row: { user_id: string }) => row.user_id === data.otherUserId)) {
-      throw new Error('This attendee is not available in your meeting.')
+    // A genuine meeting uses roster authorization; a direct-message preview does not
+    // persist a meeting-specific record.
+    if (data.meetingId) {
+      const [meeting, roster] = await Promise.all([
+        db.from('meetings').select('id').eq('id', data.meetingId).maybeSingle(),
+        db.from('meeting_participants').select('user_id')
+          .eq('meeting_id', data.meetingId).in('user_id', [userId, data.otherUserId]),
+      ])
+      if (meeting.error || !meeting.data || roster.error ||
+        !(roster.data ?? []).some((row: { user_id: string }) => row.user_id === userId) ||
+        !(roster.data ?? []).some((row: { user_id: string }) => row.user_id === data.otherUserId)) {
+        throw new Error('This attendee is not available in your meeting.')
+      }
     }
     const [myRes, theirRes] = await Promise.all([
       db.from('profiles').select('name,title,company,focus,can_help_with').eq('id', userId).single(),
@@ -65,6 +69,18 @@ export const generateMeetingBrief = createServerFn({ method: 'POST' })
       const text = answer.replace(/^```(?:json)?/i, '').replace(/```\s*$/, '').trim()
       parsed = JSON.parse(text) as Record<string, unknown>
     } catch { parsed = { summary: answer } }
+    if (!data.meetingId) {
+      // Direct-message briefs cannot be associated with an invented meeting.
+      return {
+        id: '', meeting_id: null, user_id: userId, other_user_id: data.otherUserId,
+        their_background: field(parsed['their_background'],4000),
+        their_current_focus: field(parsed['their_current_focus'],2000),
+        open_needs: openNeeds(parsed['open_needs']),
+        talking_points: talkingPoints(parsed['talking_points']),
+        summary: field(parsed['summary'],6000),
+        generated_at: new Date().toISOString(), ephemeral: true,
+      }
+    }
     const { data: row, error } = await db.from('meeting_personal_briefs')
       .upsert({
         user_id: userId,
@@ -86,6 +102,7 @@ export const getLatestBrief = createServerFn({ method: 'GET' })
   .middleware([requireAuthContract])
   .validator(validate)
   .handler(async ({ data, context }) => {
+    if (!data.meetingId) return null
     const { data: row, error } = await (context.supabase as any)
       .from('meeting_personal_briefs').select('*')
       .eq('user_id', context.userId)
