@@ -30,6 +30,7 @@ import FullCrm from '../ledger/FullCrm'
 import SheetImport from '../ledger/SheetImport'
 import { hasPendingSheet } from '../drop-anywhere'
 import { daysLeftInTrash, isTrashExpired } from '../crm/trash'
+import { ContactWebLookup, hasMissingWebFields } from '../crm/ContactWebLookup'
 import { hasContactDetails, initialHideEmptyContacts } from '../crm/contact-visibility'
 import './crm-people-mobile.css'
 import { CrmOverviewBento } from '@/components/ui/crm-overview-bento'
@@ -300,6 +301,7 @@ export default function CrmPage({ section }: { section?: 'crm' | 'pipeline' | un
           <div className="crm-mobile-actions">
             <button type="button" onClick={() => openPerson(p.id)}>View</button>
             <button type="button" onClick={() => openPerson(p.id, true)}>Edit</button>
+            {hasMissingWebFields(p) && <button type="button" onClick={() => openPerson(p.id)}>Find missing</button>}
             <button type="button" className="crm-mobile-trash" onClick={() => trashPerson(p)}>Trash</button>
           </div>
         </article>)}
@@ -340,6 +342,7 @@ export default function CrmPage({ section }: { section?: 'crm' | 'pipeline' | un
                 <button type="button" className="ops-link" aria-label={`Move ${p.fullName} up`} disabled={idx === 0} onClick={() => moveRow(list.map(x => x.id), p.id, list[idx - 1]!.id)}>↑</button>{' '}
                 <button type="button" className="ops-link" aria-label={`Move ${p.fullName} down`} disabled={idx === list.length - 1} onClick={() => moveRow(list.map(x => x.id), p.id, list[idx + 1]!.id)}>↓</button>{' '}
                 <button type="button" className="ops-link" aria-label={`View ${p.fullName}`} onClick={() => openPerson(p.id)}>View</button>{' '}
+                {hasMissingWebFields(p) && <button type="button" className="ops-link" aria-label={`Web lookup for ${p.fullName}`} onClick={() => openPerson(p.id)}>Web lookup</button>}{' '}
                 <button type="button" className="ops-link" aria-label={`Move ${p.fullName} to Trash`} onClick={() => trashPerson(p)}>Trash</button>
               </td>
             </tr>
@@ -530,6 +533,10 @@ function CrmDetail({ selection, onClose, onOpen, startEditing = false }: {
       </div>
     </header>
     {company && <CompanyIntelligence companyId={company.id} />}
+    {person && <ContactWebLookup key={person.id} kind="crm" record={{
+      id:person.id,name:person.fullName,email:person.email,phone:person.phone,
+      title:person.title,updatedAt:person.updatedAt,
+    }} onSaved={()=>ops.refresh()} />}
     {person && <ProfessionalInfo person={person} />}
     {member && <WeatherPanel member={member} />}
 

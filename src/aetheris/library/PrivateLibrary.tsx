@@ -2,6 +2,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Check, FileUp, LockKeyhole, Search, ShieldAlert, UserRound, Users, X } from "lucide-react";
 import { Btn, Eyebrow } from "../ui";
 import { ContactRecordActions } from "./ContactRecordActions";
+import { ContactWebLookup } from "../crm/ContactWebLookup";
 import { ImportReviewTable } from "../ImportReviewTable";
 import {
   IMPORT_FIELDS,
@@ -173,7 +174,7 @@ function Suggestions({
       <div className="pl-subhead">
         <Eyebrow>PUBLIC-SOURCE SUGGESTIONS</Eyebrow>
         <span className="pl-unavailable">
-          Automatic lookup unavailable · no provider configured
+          Public-source research now available above · manual review remains supported
         </span>
       </div>
       <p className="pl-note">
@@ -989,6 +990,25 @@ export function PrivateLibrary() {
                 refresh();
               }}
             />
+            {canWrite && activeRecord.record_type === "person" && (
+              <ContactWebLookup
+                key={activeRecord.id}
+                kind="library"
+                record={{
+                  id: activeRecord.id,
+                  name: activeRecord.name,
+                  email: activeRecord.email,
+                  phone: activeRecord.phone,
+                  title: activeRecord.title,
+                  updatedAt: activeRecord.updated_at,
+                }}
+                onSaved={async () => {
+                  const updated = await getLibraryRecord(activeRecord.id);
+                  if (updated) setActiveRecord(updated);
+                  refresh();
+                }}
+              />
+            )}
             <dl>
               {[
                 ["Phone", activeRecord.phone],

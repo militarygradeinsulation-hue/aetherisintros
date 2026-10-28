@@ -14,7 +14,7 @@ export type ContactLookupResult =
 
 const tidy=(text:string)=>text.replace(/[\p{Cc}<>]/gu,' ').replace(/\s+/g,' ').trim()
 const lower=(text:string)=>tidy(text).toLocaleLowerCase('en-US')
-const regexEscape=(text:string)=>text.replace(/[-/\\^$*+?.()|[\]{}]/g,'\\$&')
+const regexEscape=(text:string)=>[...text].map(ch=>'\\^$.*+?()[]{}|'.includes(ch)?'\\'+ch:ch).join('')
 const EMAIL=/[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}/gi
 const PHONE=/(?:\+\d{1,3}[\s.-]?)?(?:\(\d{2,4}\)|\d{2,4})[\s.-]?\d{3,4}[\s.-]?\d{4}/g
 const PERSONAL=new Set(['gmail.com','yahoo.com','hotmail.com','outlook.com','aol.com','icloud.com','proton.me','protonmail.com'])
