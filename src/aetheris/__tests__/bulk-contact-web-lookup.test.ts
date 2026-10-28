@@ -1,9 +1,9 @@
 import { describe, expect, it } from 'vitest'
-import { uploadedContactsNeedingResearch } from '../crm/BulkContactWebLookup'
+import { uploadedResearchCandidates } from '../crm/contact-web-lookup'
 describe('uploaded contacts research queue',()=>{
   it('only queues uploaded contacts with missing fields',()=>{
     const c=(id:string,source:string,email:string,phone:string,title:string)=>({id,source,email,phone,title})
-    expect(uploadedContactsNeedingResearch([
+    expect(uploadedResearchCandidates([
       c('a','Import · file.csv','','',''),c('b','Added in People','','',''),
       c('c','Import · file.csv','a@b.com','555-0100','CEO'),
       c('d','Import · file.csv','a@b.com','','CEO'),

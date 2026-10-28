@@ -31,6 +31,7 @@ import SheetImport from '../ledger/SheetImport'
 import { hasPendingSheet } from '../drop-anywhere'
 import { daysLeftInTrash, isTrashExpired } from '../crm/trash'
 import { ContactWebLookup, hasMissingWebFields } from '../crm/ContactWebLookup'
+import { BulkContactWebLookup } from '../crm/BulkContactWebLookup'
 import { hasContactDetails, initialHideEmptyContacts } from '../crm/contact-visibility'
 import './crm-people-mobile.css'
 import { CrmOverviewBento } from '@/components/ui/crm-overview-bento'
@@ -72,6 +73,7 @@ export default function CrmPage({ section }: { section?: 'crm' | 'pipeline' | un
   const [filterLife, setFilterLife] = useState('')
   const [filterCompany, setFilterCompany] = useState('')
   const [onlyUploaded, setOnlyUploaded] = useState(false)
+  const [bulkWebOpen, setBulkWebOpen] = useState(false)
   const [filterHas, setFilterHas] = useState<'' | 'email' | 'phone' | 'no-email' | 'no-phone'>('')
   const [draftRow, setDraftRow] = useState({ fullName: '', email: '', phone: '', title: '', companyName: '' })
   const [addingRow, setAddingRow] = useState(false)
@@ -248,9 +250,13 @@ export default function CrmPage({ section }: { section?: 'crm' | 'pipeline' | un
           onClick={() => setOnlyUploaded(value => !value)}>
           <FileUp size={14} /> Uploaded only ({uploadedCount})
         </button>
+        <button type="button" className="btn quiet" aria-expanded={bulkWebOpen} onClick={() => {setBulkWebOpen(v=>!v);setShowTrash(false)}}>
+          {bulkWebOpen ? 'Close web lookup' : 'Find missing details on web'}
+        </button>
         <Btn kind={showTrash ? 'primary' : 'quiet'} onClick={() => setShowTrash(v => !v)}>Trash ({trashed.length})</Btn>
       </div>
-      {!showTrash && onlyUploaded && <p className="ops-note" role="status">Showing only contacts added through the CRM spreadsheet importer. Open any row to view it or choose Edit to jump straight to its fields.</p>}
+      {!showTrash && bulkWebOpen && <BulkContactWebLookup people={people} onSaved={()=>ops.refresh()} onClose={()=>setBulkWebOpen(false)}/>}
+      {!showTrash && onlyUploaded && <p className="ops-note" role="status">Showing only contacts added through the CRM spreadsheet importer. Open any row to view it or choose Edit to jump straight to its fields.</p>
       {!showTrash && <div className="ops-toolbar" aria-label="Filter people">
         <select value={filterLife} onChange={e => setFilterLife(e.target.value)} aria-label="Filter by lifecycle">
           <option value="">All lifecycles</option>{lifecycles.map(l => <option key={l} value={l}>{l}</option>)}

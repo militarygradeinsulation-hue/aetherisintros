@@ -1,8 +1,8 @@
 import { useState } from 'react'
 import { SearchCheck, X } from 'lucide-react'
 import type { CrmPerson } from './types'
-import type { ContactLookupResult, WebContactField } from './contact-web-lookup'
-import { ContactWebFindings, hasMissingWebFields } from './ContactWebLookup'
+import { uploadedResearchCandidates, type ContactLookupResult, type WebContactField } from './contact-web-lookup'
+import { ContactWebFindings } from './ContactWebLookup'
 import { lookupMissingContactWeb, acceptContactWebSuggestions } from '@/lib/contactWebLookup.functions'
 import './bulk-contact-web-lookup.css'
 
@@ -14,8 +14,6 @@ interface Row {
   saved:boolean
   error:string
 }
-export const uploadedContactsNeedingResearch=(contacts:readonly Pick<CrmPerson,'id'|'source'|'email'|'phone'|'title'>[]) =>
-  contacts.filter(c=>c.source.startsWith('Import · ')&&hasMissingWebFields(c))
 
 /** Explicit opt-in batches. Multiple results are previewed, never silently saved. */
 export function BulkContactWebLookup({people,onSaved,onClose}:{
@@ -29,7 +27,7 @@ export function BulkContactWebLookup({people,onSaved,onClose}:{
   const [saving,setSaving]=useState(false)
   const [progress,setProgress]=useState('')
   const [notice,setNotice]=useState('')
-  const eligible=uploadedContactsNeedingResearch(people)
+  const eligible=uploadedResearchCandidates(people)
   const remaining=eligible.filter(c=>!scanned.has(c.id))
   const pending=rows.filter(row=>row.result?.status==='ok'&&!row.saved&&row.selected.size>0).length
   const change=(id:string,patch:Partial<Row>)=>setRows(current=>current.map(row=>row.contact.id===id?{...row,...patch}:row))

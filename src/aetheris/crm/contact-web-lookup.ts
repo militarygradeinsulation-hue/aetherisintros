@@ -121,3 +121,8 @@ export function stillMissingValues(current:Readonly<Record<WebContactField,strin
   for(const item of selected)if(!current[item.field]?.trim()&&!(item.field in patch))patch[item.field]=item.value
   return patch
 }
+
+/** A bulk web lookup includes only imported records with missing work-contact details. */
+export function uploadedResearchCandidates<T extends {id:string;source:string;email:string;phone:string;title:string}>(contacts:readonly T[]):T[] {
+  return contacts.filter(c=>c.source.startsWith('Import · ')&&(!c.email.trim()||!c.phone.trim()||!c.title.trim()))
+}
