@@ -241,7 +241,7 @@ export default function CrmPage({ section }: { section?: 'crm' | 'pipeline' | un
       </div>
     </section>}
 
-    {tab === 'people' && <section>
+    {tab === 'people' && <section className="crm-people-section">
       <div className="ops-toolbar">
         <input value={query} onChange={e => setQuery(e.target.value)} placeholder="Search people, titles, companies…" aria-label="Search people" />
         <Btn kind="secondary" onClick={() => setCreating('person')}><Plus size={14} /> New person</Btn>
@@ -313,7 +313,7 @@ export default function CrmPage({ section }: { section?: 'crm' | 'pipeline' | un
         </article>)}
       </section>
       <div className="ops-table-scroll crm-people-desktop" tabIndex={0} aria-label="CRM people table">
-      <table className="ops-table">
+      <table className="ops-table crm-people-table">
         <thead><tr><th>Person</th><th>Lifecycle</th><th>Company</th><th>Title</th><th>Email</th><th>Phone</th><th>Network</th><th>Last activity</th><th></th></tr></thead>
         <tbody>
           {(!hideEmpty || Object.values(draftRow).some(value => value.trim())) && <tr className="ops-add-row">
@@ -345,11 +345,13 @@ export default function CrmPage({ section }: { section?: 'crm' | 'pipeline' | un
               <td>{member ? <em className="ops-signal">{member.scoreTotal} · {member.relationshipStatus}</em> : '—'}</td>
               <td>{day(p.lastActivityAt)}</td>
               <td onClick={e => e.stopPropagation()}>
+                <div className="crm-people-actions" role="group" aria-label={`Actions for ${p.fullName}`}>
                 <button type="button" className="ops-link" aria-label={`Move ${p.fullName} up`} disabled={idx === 0} onClick={() => moveRow(list.map(x => x.id), p.id, list[idx - 1]!.id)}>↑</button>{' '}
                 <button type="button" className="ops-link" aria-label={`Move ${p.fullName} down`} disabled={idx === list.length - 1} onClick={() => moveRow(list.map(x => x.id), p.id, list[idx + 1]!.id)}>↓</button>{' '}
                 <button type="button" className="ops-link" aria-label={`View ${p.fullName}`} onClick={() => openPerson(p.id)}>View</button>{' '}
                 {hasMissingWebFields(p) && <button type="button" className="ops-link" aria-label={`Web lookup for ${p.fullName}`} onClick={() => openPerson(p.id)}>Web lookup</button>}{' '}
                 <button type="button" className="ops-link" aria-label={`Move ${p.fullName} to Trash`} onClick={() => trashPerson(p)}>Trash</button>
+                </div>
               </td>
             </tr>
           })}
