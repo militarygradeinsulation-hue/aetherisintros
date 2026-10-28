@@ -32,7 +32,7 @@ import { MAX_MEETING_PEOPLE, meetingStatus } from './meeting-notes-format'
 import {
   addActionItemsToTasks, addTranscriptLine, agendaFromCapsule, createMeeting, endMeeting, inviteToMeeting, loadMeetings, loadMyNotes, loadReminderMeetings, loadRoomState, loadTranscript,
   markJoined, queueMeetingToOpen, saveDecisionsToLog, savePrivateNote, setMeetingRecording, setNotesConsent, startIntroMeeting, takeQueuedMeeting,
-  type Meeting, type RoomState, type SavedNotes,
+  type Meeting, type RoomState, type SavedNotes, type TranscriptLine,
 } from './meetings'
 import { useNav } from './nav'
 import { useNetwork } from './store'
@@ -567,14 +567,28 @@ export function MeetingNotesPanel({ meeting, userId, onClose, onSaved }: { meeti
   const [busy, setBusy] = useState(false)
   const [msg, setMsg] = useState('')
   const [draft, setDraft] = useState('')
+  const [savedLines, setSavedLines] = useState<TranscriptLine[]>([])
+  const [loadError, setLoadError] = useState('')
 
   useEffect(() => {
     if (!meeting) return
     let stale = false
     setLoading(true)
-    void loadMyNotes(meeting.id).then(n => { if (stale) return; setNotes(n); setDraft(n?.privateNote ?? ''); setLoading(false) })
+    setLoadError('')
+    setSavedLines([])
+    void Promise.all([loadMyNotes(meeting.id), loadTranscript(meeting.id)])
+      .then(([n, transcript]) => {
+        if (stale) return
+        setNotes(n)
+        setDraft(n?.privateNote ?? '')
+        setSavedLines(transcript)
+      })
+      .catch(error => {
+        if (!stale) setLoadError(error instanceof Error ? error.message : 'Saved meeting information could not be loaded.')
+      })
+      .finally(() => { if (!stale) setLoading(false) })
     return () => { stale = true }
-  }, [meeting])
+  }, [meeting?.id])
 
   if (!meeting) return null
 
@@ -608,10 +622,14 @@ export function MeetingNotesPanel({ meeting, userId, onClose, onSaved }: { meeti
 
   return <section className="executive-section meeting-notes-panel" aria-label={`Notes for ${meeting.title}`}>
     <header><div><Eyebrow><FileText size={12} /> MY NOTES</Eyebrow><h2>{meeting.title}</h2></div><button type="button" className="text-link" onClick={onClose}>Close</button></header>
+    <p className="og-note">Meeting recordings, transcript and private notes are preserved separately. Each attendee sees only information their account can access.</p>
     <MeetingAudio meeting={meeting}/>
-    {loading ? <p className="og-note">Loading…</p> : <>
+    {loadError && <p className="og-note" role="alert">{loadError}</p>}
+    {loading ? <p className="og-note">Loading saved meeting notes and transcript…</p> : <>
       {notes?.summary || notes?.decisions.length || notes?.actionItems.length ? <>
-        {notes.summary && <p>{notes.summary}</p>}
+        {notes.summary && <section className="meeting-saved-summary" aria-label="Saved AI meeting summary">
+          <h3>Meeting summary</h3><p>{notes.summary}</p>
+        </section>}
         {notes.decisions.length > 0 && <><h3>Decisions</h3><ul>{notes.decisions.map((d, i) => <li key={i}>{d}</li>)}</ul>
           <Btn kind="quiet" onClick={() => void toDecisions()}><CheckSquare size={14} /> Save to my decision log</Btn></>}
         {notes.actionItems.length > 0 && <><h3>Action items</h3><ul className="meeting-actions">{notes.actionItems.map((a, i) => <li key={i}>
@@ -620,7 +638,13 @@ export function MeetingNotesPanel({ meeting, userId, onClose, onSaved }: { meeti
         </li>)}</ul>
           <Btn kind="quiet" onClick={() => void toTasks(notes.actionItems)}><ListChecks size={14} /> Add all to my tasks</Btn></>}
         {notes.generatedAt && <p className="og-note">Generated {when(notes.generatedAt)} from what consenting attendees said.</p>}
-      </> : <p className="og-note">No AI notes yet. They are written from the transcript of people who turned notes on.</p>}
+      </> : <p className="og-note">No AI summary saved for your account yet. You can generate one from the consented transcript below.</p>}
+      <details className="meeting-transcript-archive">
+        <summary>Saved transcript ({savedLines.length.toLocaleString()} lines)</summary>
+        {savedLines.length ? <ol>{savedLines.map(line => <li key={line.id}>
+          <b>{line.speakerId === userId ? 'You' : meeting.participants.find(p => p.userId === line.speakerId)?.name ?? 'Participant'}:</b> {line.text}
+        </li>)}</ol> : <p>No transcript lines were saved for this meeting. Enable recording and consent during the call to capture speech.</p>}
+      </details>
       <div className="og-inline"><Btn disabled={busy} onClick={() => void generate()}><Sparkles size={14} /> {busy ? 'Writing notes…' : notes?.generatedAt ? 'Regenerate my notes' : 'Generate my notes'}</Btn></div>
       <label className="meeting-private-note">Your private note (only you can see this)
         <textarea value={draft} maxLength={4000} rows={3} onChange={e => setDraft(e.target.value)} placeholder="Anything you want to remember about this meeting" />
