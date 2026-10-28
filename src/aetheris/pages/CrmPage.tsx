@@ -68,6 +68,7 @@ export default function CrmPage({ section }: { section?: 'crm' | 'pipeline' | un
   const [showTrash, setShowTrash] = useState(false)
   const [filterLife, setFilterLife] = useState('')
   const [filterCompany, setFilterCompany] = useState('')
+  const [onlyUploaded, setOnlyUploaded] = useState(false)
   const [filterHas, setFilterHas] = useState<'' | 'email' | 'phone' | 'no-email' | 'no-phone'>('')
   const [draftRow, setDraftRow] = useState({ fullName: '', email: '', phone: '', title: '', companyName: '' })
   const [addingRow, setAddingRow] = useState(false)
@@ -92,6 +93,7 @@ export default function CrmPage({ section }: { section?: 'crm' | 'pipeline' | un
     for (const p of ops.people) if (p.deletedAt && isTrashExpired(p.deletedAt)) void ops.deletePersonForever(p.id)
   }, [ops.people]) // eslint-disable-line react-hooks/exhaustive-deps
   const companyOptions = [...new Set(people.map(p => p.companyName).filter(Boolean))].sort()
+  const uploadedCount = people.filter(p => p.source.startsWith('Import · ')).length
   const passesFilters = (p: CrmPerson) =>
     (!filterLife || p.lifecycle === filterLife) && (!filterCompany || p.companyName === filterCompany) &&
     (filterHas === '' || (filterHas === 'email' ? !!p.email : filterHas === 'phone' ? !!p.phone : filterHas === 'no-email' ? !p.email : !p.phone))
@@ -210,8 +212,12 @@ export default function CrmPage({ section }: { section?: 'crm' | 'pipeline' | un
         <input value={query} onChange={e => setQuery(e.target.value)} placeholder="Search people, titles, companies…" aria-label="Search people" />
         <Btn kind="secondary" onClick={() => setCreating('person')}><Plus size={14} /> New person</Btn>
         <Btn kind="secondary" onClick={() => setImporting(true)}><FileUp size={14} /> Import people</Btn>
+        <Btn kind={onlyUploaded ? "primary" : "quiet"} onClick={() => setOnlyUploaded(value => !value)} aria-pressed={onlyUploaded}>
+          <FileUp size={14} /> Uploaded only ({uploadedCount})
+        </Btn>
         <Btn kind={showTrash ? 'primary' : 'quiet'} onClick={() => setShowTrash(v => !v)}>Trash ({trashed.length})</Btn>
       </div>
+      {!showTrash && onlyUploaded && <p className="ops-note" role="status">Showing only contacts added through the CRM spreadsheet importer. Open any row to view it or choose Edit to jump straight to its fields.</p>}
       {!showTrash && <div className="ops-toolbar" aria-label="Filter people">
         <select value={filterLife} onChange={e => setFilterLife(e.target.value)} aria-label="Filter by lifecycle">
           <option value="">All lifecycles</option>{lifecycles.map(l => <option key={l} value={l}>{l}</option>)}
@@ -252,7 +258,7 @@ export default function CrmPage({ section }: { section?: 'crm' | 'pipeline' | un
             <td colSpan={2}></td>
             <td><Btn kind="primary" disabled={!draftRow.fullName.trim() || addingRow} onClick={() => void addRow()}><Plus size={14} /> {addingRow ? 'Adding…' : 'Add row'}</Btn></td>
           </tr>
-          {people.filter(passesFilters).filter(p => match(`${p.fullName} ${p.title} ${p.companyName} ${p.email} ${p.phone}`)).map(p => {
+          {people.filter(passesFilters).filter(p => !onlyUploaded || p.source.startsWith('Import · ')).filter(p => match(`${p.fullName} ${p.title} ${p.companyName} ${p.email} ${p.phone}`)).map(p => {
             const member = memberFor(p)
             return <tr key={p.id} onClick={() => openPerson(p.id)}>
               <td><b>{p.fullName}</b></td>
