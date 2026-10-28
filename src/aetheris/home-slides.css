@@ -176,6 +176,7 @@
 }
 
 .ael-butler-idea-message {
+  position: relative;
   width: 100%;
   max-width: 320px;
   min-height: 78px;
@@ -187,6 +188,31 @@
   background: color-mix(in srgb, var(--background) 92%, var(--foreground) 8%);
   border: 1px solid color-mix(in srgb, currentColor 18%, transparent);
   border-radius: 14px;
+}
+
+.ael-butler-idea-close {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  padding: 0;
+  color: inherit;
+  opacity: .55;
+  background: transparent;
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: opacity .15s ease, background .15s ease;
+}
+
+.ael-butler-idea-close:hover,
+.ael-butler-idea-close:focus-visible {
+  opacity: 1;
+  background: color-mix(in srgb, currentColor 12%, transparent);
 }
 
 .ael .ael-carousel-stage .ael-butler-idea-message p {
