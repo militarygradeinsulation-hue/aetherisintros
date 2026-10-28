@@ -771,6 +771,13 @@
       "when": 1793130000000,
       "tag": "0110_private_library_contact_management",
       "breakpoints": true
+    },
+    {
+      "idx": 111,
+      "version": "7",
+      "when": 1793140000000,
+      "tag": "0111_meeting_personal_briefs",
+      "breakpoints": true
     }
   ]
 }

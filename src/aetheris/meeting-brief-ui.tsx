@@ -24,24 +24,25 @@ interface MeetingBrief {
 interface Props {
   otherUserId: string
   otherName: string
+  meetingId: string
 }
 
-export function MeetingBriefPanel({ otherUserId, otherName }: Props) {
+export function MeetingBriefPanel({ otherUserId, otherName, meetingId }: Props) {
   const [brief, setBrief] = useState<MeetingBrief | null>(null)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
 
   useEffect(() => {
-    getLatestBrief({ data: { otherUserId } })
+    getLatestBrief({ data: { otherUserId, meetingId } })
       .then(row => { if (row) setBrief(row as MeetingBrief) })
       .catch(() => {/* silently skip if not available */})
-  }, [otherUserId])
+  }, [otherUserId, meetingId])
 
   async function handleGenerate() {
     setLoading(true)
     setError('')
     try {
-      const row = await generateMeetingBrief({ data: { otherUserId } })
+      const row = await generateMeetingBrief({ data: { otherUserId, meetingId } })
       setBrief(row as MeetingBrief)
     } catch (e: any) {
       setError(e?.message ?? 'Failed to generate brief')
