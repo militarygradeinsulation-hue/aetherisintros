@@ -212,9 +212,10 @@ export default function CrmPage({ section }: { section?: 'crm' | 'pipeline' | un
         <input value={query} onChange={e => setQuery(e.target.value)} placeholder="Search people, titles, companies…" aria-label="Search people" />
         <Btn kind="secondary" onClick={() => setCreating('person')}><Plus size={14} /> New person</Btn>
         <Btn kind="secondary" onClick={() => setImporting(true)}><FileUp size={14} /> Import people</Btn>
-        <Btn kind={onlyUploaded ? "primary" : "quiet"} onClick={() => setOnlyUploaded(value => !value)} aria-pressed={onlyUploaded}>
+        <button type="button" className={`btn ${onlyUploaded ? "primary" : "quiet"}`} aria-pressed={onlyUploaded}
+          onClick={() => setOnlyUploaded(value => !value)}>
           <FileUp size={14} /> Uploaded only ({uploadedCount})
-        </Btn>
+        </button>
         <Btn kind={showTrash ? 'primary' : 'quiet'} onClick={() => setShowTrash(v => !v)}>Trash ({trashed.length})</Btn>
       </div>
       {!showTrash && onlyUploaded && <p className="ops-note" role="status">Showing only contacts added through the CRM spreadsheet importer. Open any row to view it or choose Edit to jump straight to its fields.</p>}
