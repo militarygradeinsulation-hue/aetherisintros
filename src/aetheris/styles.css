@@ -6337,3 +6337,5 @@ body:has([role=menu],[role=listbox],.ix-mobile-sheet,.topbar-dropmenu,.notificat
 .ops-table .ops-cell-input:focus{outline:none;border-color:#0F5CCB;background:rgba(15,92,203,.08)}
 .ops-table tr[draggable]{cursor:grab}
 .ops-table tr.ops-row-dragging{opacity:.45}
+.voice-bar .voice-bar-close{display:inline-grid;place-items:center;min-width:32px;min-height:32px;border-radius:999px;border:1px solid rgba(255,255,255,.14);background:transparent;color:inherit}
+@media (max-width:640px){.voice-bar .voice-bar-close{min-width:40px;min-height:40px}}

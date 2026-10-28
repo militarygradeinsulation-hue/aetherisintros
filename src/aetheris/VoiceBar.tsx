@@ -1,6 +1,6 @@
 /** The reading bar: follow-along controls while Intros reads, plus read-on-tap. */
 import { useEffect } from 'react'
-import { Pause, Play, Rabbit, SkipForward, Square, Volume2 } from 'lucide-react'
+import { Pause, Play, Rabbit, SkipForward, Square, Volume2, X } from 'lucide-react'
 import {
   passagesIn, pauseReading, readAloud, resumeReading, skipSegment, stopReading,
   useReader, useVoiceSettings, voiceSpeedLabels, voiceSpeeds,
@@ -62,6 +62,8 @@ export function VoiceBar() {
       <button type="button" className={voice.tapToRead ? 'active' : ''} aria-pressed={voice.tapToRead}
         onClick={() => setVoice({ tapToRead: !voice.tapToRead })}>Read on tap</button>
       {reading && <button type="button" onClick={stopReading} aria-label="Stop reading"><Square size={13} /></button>}
+      <button type="button" className="voice-bar-close" aria-label="Close reading tile"
+        onClick={() => { stopReading(); setVoice({ tapToRead: false }) }}><X size={14} /></button>
     </div>
   </div>
 }

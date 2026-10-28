@@ -112,6 +112,7 @@ export function parseVoiceCommand(input: string, people: string[] = []): AskIntr
   // Reading and voice controls
   if (/^(read (this|the)? ?page|read (it|this) (to me|out loud|aloud))$/i.test(raw)) return act('read-page')
   if (/^(stop reading|stop talking|be quiet|quiet)$/i.test(raw)) return act('stop-reading')
+  if (/^(remove|close|hide|dismiss) (the )?(hovering )?(talk|reading|read on tap|voice|speak)( tile| bar| box)?$/i.test(raw)) return act('hide-reading-bar')
   if ((m = raw.match(/^make (?:the )?(?:text|words|font) (bigger|larger|smaller)$/i))) return act('text-size', m[1]!.toLowerCase() === 'smaller' ? 'small' : 'large')
   return null
 }

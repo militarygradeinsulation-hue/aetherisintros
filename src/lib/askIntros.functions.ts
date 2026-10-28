@@ -68,6 +68,7 @@ save-memory-note    value = JSON string {"title":"short meaningful title","conte
 take-note           legacy plain-text note action; prefer save-memory-note with title and context.
 read-page           read the page the member is on out loud
 stop-reading        stop reading out loud
+hide-reading-bar    close the floating read-aloud tile ("Read on tap" / hovering talk tile) and turn read-on-tap off
 voice-off           turn spoken replies off
 voice-on            turn spoken replies on
 `
@@ -239,9 +240,13 @@ function parseAnswer(text: string): AskIntrosResult {
   const cleaned = text.replace(/^```(?:json)?/i, '').replace(/```$/, '').trim()
   const start = cleaned.indexOf('{')
   const end = cleaned.lastIndexOf('}')
-  if (start >= 0 && end > start) {
+  // Models sometimes drop the opening `{"reply":"`; try that repair too.
+  const candidates: string[] = []
+  if (start >= 0 && end > start) candidates.push(cleaned.slice(start, end + 1))
+  if (!cleaned.startsWith('{') && /"\s*,\s*"(actions|suggestions)"\s*:/.test(cleaned) && end > 0) candidates.push('{"reply":"' + cleaned.slice(0, end + 1))
+  for (const candidate of candidates) {
     try {
-      const parsed = JSON.parse(cleaned.slice(start, end + 1)) as {
+      const parsed = JSON.parse(candidate) as {
         reply?: unknown
         actions?: unknown
         suggestions?: unknown
@@ -267,8 +272,11 @@ function parseAnswer(text: string): AskIntrosResult {
         return { reply: parsed.reply.trim(), actions, suggestions }
       }
     } catch {
-      /* fall through to plain text */
+      /* try the next repair, then plain text */
     }
   }
+  // Never show raw JSON: keep only the prose before any leaked action payload.
+  const leak = cleaned.search(/"\s*,\s*"(actions|suggestions)"\s*:/)
+  if (leak > 0) return { reply: cleaned.slice(0, leak).replace(/^\{?\s*"reply"\s*:\s*"/, '').replace(/\\"/g, '"').trim(), actions: [], suggestions: [] }
   return { reply: cleaned || 'I did not catch that. Ask me again?', actions: [], suggestions: [] }
 }
