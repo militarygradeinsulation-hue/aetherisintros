@@ -2,6 +2,8 @@ import { MeetingShare, MeetingRecordEditor } from './meeting-sharing'
 import { MeetingBackgroundPicker, useMeetingBackground } from './meeting-backgrounds'
 import { MeetingChat } from './meeting-chat'
 import { MeetingAudio, saveMeetingAudio } from './meeting-audio'
+import { groupMeetingsByDay } from './meeting-history'
+import './meeting-history.css'
 /**
  * Meetings: start a video meeting in one click (or schedule one) with up to three members,
  * check your camera before joining, invite people from inside the call, and press Record to
@@ -30,7 +32,7 @@ import { MAX_MEETING_PEOPLE, meetingStatus } from './meeting-notes-format'
 import {
   addActionItemsToTasks, addTranscriptLine, agendaFromCapsule, createMeeting, endMeeting, inviteToMeeting, loadMeetings, loadMyNotes, loadReminderMeetings, loadRoomState, loadTranscript,
   markJoined, queueMeetingToOpen, saveDecisionsToLog, savePrivateNote, setMeetingRecording, setNotesConsent, startIntroMeeting, takeQueuedMeeting,
-  type Meeting, type RoomState, type SavedNotes,
+  type Meeting, type RoomState, type SavedNotes, type TranscriptLine,
 } from './meetings'
 import { useNav } from './nav'
 import { useNetwork } from './store'
@@ -80,9 +82,26 @@ export function MeetingsPage() {
     return <MeetingRoom meeting={room} userId={graph.userId} onBack={() => setRoomId(null)} onLeave={async () => { setRoomId(null); await refresh(); setNotesId(room.id) }} />
   }
 
+  // Recordings and summaries must remain discoverable even if nobody pressed "End".
   const visible=meetings.filter(m=>recordView==='trash'?!!m.deletedAt:recordView==='archived'?!!m.archivedAt&&!m.deletedAt:!m.archivedAt&&!m.deletedAt)
-  const open = visible.filter(m => meetingStatus(m) !== 'ended')
-  const past = visible.filter(m => meetingStatus(m) === 'ended')
+  const { today, upcoming, earlier } = groupMeetingsByDay(visible)
+  const selectedNotes = notesId ? meetings.find(m => m.id === notesId) : null
+  if (selectedNotes) return <section className="meetings meetings-focus-view">
+    <button className="meeting-focus-back" type="button" onClick={() => setNotesId(null)}>← Back to all meetings</button>
+    <MeetingNotesPanel meeting={selectedNotes} userId={graph.userId} onClose={() => setNotesId(null)} onSaved={refresh} />
+  </section>
+  const selectedBrief = briefId ? meetings.find(m => m.id === briefId) : null
+  if (selectedBrief) return <section className="meetings meetings-focus-view">
+    <button className="meeting-focus-back" type="button" onClick={() => setBriefId(null)}>← Back to all meetings</button>
+    <section className="executive-section meeting-brief-panel">
+      <header><div><Eyebrow><Compass size={12} /> BEFORE YOU MEET</Eyebrow><h2>{selectedBrief.title}</h2></div><button type="button" className="text-link" onClick={() => setBriefId(null)}>Close</button></header>
+      <MeetingBrief meeting={selectedBrief} userId={graph.userId} />
+    </section>
+  </section>
+  const cards = (list: Meeting[]) => <div className="meetings-list">{list.map(m =>
+    <MeetingCard key={m.id} meeting={m} userId={graph.userId!} onSaved={refresh}
+      onJoin={() => setRoomId(m.id)} onNotes={() => setNotesId(m.id)}
+      onBrief={() => setBriefId(m.id)} />)}</div>
 
   return <section className="meetings">
     <header className="meetings-head">
@@ -105,20 +124,22 @@ export function MeetingsPage() {
     }} />
 
     <div className="og-inline"><a href="/meet">Join by code</a>{(['active','archived','trash'] as const).map(v=><button type="button" key={v} aria-pressed={recordView===v} onClick={()=>setRecordView(v)}>{v}</button>)}</div>
-    <h2 className="meetings-sub">Upcoming and live</h2>
-    {open.length ? <div className="meetings-list">{open.map(m => <MeetingCard key={m.id} meeting={m} userId={graph.userId!} onSaved={refresh} onJoin={() => setRoomId(m.id)} onNotes={() => setNotesId(m.id)} onBrief={() => setBriefId(briefId === m.id ? null : m.id)} />)}</div>
-      : <p className="og-note">No meetings yet. Start one and invite the people you want to talk to.</p>}
-
-    {past.length > 0 && <>
-      <h2 className="meetings-sub">Past meetings</h2>
-      <div className="meetings-list">{past.map(m => <MeetingCard key={m.id} meeting={m} userId={graph.userId!} onSaved={refresh} onJoin={() => setRoomId(m.id)} onNotes={() => setNotesId(notesId === m.id ? null : m.id)} onBrief={() => setBriefId(briefId === m.id ? null : m.id)} />)}</div>
-    </>}
-
-    {briefId && meetings.some(m => m.id === briefId) && <section className="executive-section meeting-brief-panel">
-      <header><div><Eyebrow><Compass size={12} /> BEFORE YOU MEET</Eyebrow><h2>{meetings.find(m => m.id === briefId)!.title}</h2></div><button type="button" className="text-link" onClick={() => setBriefId(null)}>Close</button></header>
-      <MeetingBrief meeting={meetings.find(m => m.id === briefId)!} userId={graph.userId} />
+    <div className="meeting-history-intro">
+      <h2>Meeting history & saved recordings</h2>
+      <p>Open <b>Recordings & notes</b> on any meeting to play saved microphone audio, read the transcript and review notes. These remain accessible even when a meeting was not formally ended.</p>
+    </div>
+    <section className="meeting-history-section" aria-label="Today's meetings">
+      <h2 className="meetings-sub">Today <small>({today.length})</small></h2>
+      {today.length ? cards(today) : <p className="og-note">No meetings recorded today.</p>}
+    </section>
+    {upcoming.length > 0 && <section className="meeting-history-section" aria-label="Upcoming meetings">
+      <h2 className="meetings-sub">Upcoming <small>({upcoming.length})</small></h2>
+      {cards(upcoming)}
     </section>}
-    {notesId && <MeetingNotesPanel meeting={meetings.find(m => m.id === notesId) ?? null} userId={graph.userId} onClose={() => setNotesId(null)} onSaved={refresh} />}
+    {earlier.length > 0 && <section className="meeting-history-section" aria-label="Earlier meetings">
+      <h2 className="meetings-sub">Earlier meetings <small>({earlier.length})</small></h2>
+      {cards(earlier)}
+    </section>}
   </section>
 }
 
@@ -137,7 +158,7 @@ function MeetingCard({ meeting, userId, onJoin, onNotes, onBrief, onSaved }: { m
       {status !== 'ended' && others.length > 0 && <Btn kind="quiet" onClick={onBrief}><Compass size={14} /> Brief</Btn>}
       {status === 'scheduled' && meeting.scheduledFor && <Btn kind="quiet" onClick={() => downloadIcs(`${meeting.title.replace(/[^a-z0-9]+/gi, '-').toLowerCase() || 'meeting'}.ics`,
         icsForMeeting({ id: meeting.id, title: meeting.title, startsAt: meeting.scheduledFor!, agenda: meeting.agenda, url: `${location.origin}/app/meetings` }))}><CalendarPlus size={14} /> Add to calendar</Btn>}
-      <Btn kind="quiet" onClick={onNotes}><FileText size={14} /> {meeting.hasNotes ? 'My notes' : 'Notes'}</Btn>
+      <Btn kind="secondary" onClick={onNotes}><FileText size={14} /> {meeting.hasNotes ? 'Recordings & saved notes' : 'Recordings & notes'}</Btn>
     </div>
     {meeting.hostId===userId&&<><MeetingRecordEditor meeting={meeting} onSaved={onSaved}/>{!meeting.endedAt&&!meeting.archivedAt&&!meeting.deletedAt&&<MeetingShare meetingId={meeting.id}/>}</>}
   </article>
@@ -546,14 +567,28 @@ export function MeetingNotesPanel({ meeting, userId, onClose, onSaved }: { meeti
   const [busy, setBusy] = useState(false)
   const [msg, setMsg] = useState('')
   const [draft, setDraft] = useState('')
+  const [savedLines, setSavedLines] = useState<TranscriptLine[]>([])
+  const [loadError, setLoadError] = useState('')
 
   useEffect(() => {
     if (!meeting) return
     let stale = false
     setLoading(true)
-    void loadMyNotes(meeting.id).then(n => { if (stale) return; setNotes(n); setDraft(n?.privateNote ?? ''); setLoading(false) })
+    setLoadError('')
+    setSavedLines([])
+    void Promise.all([loadMyNotes(meeting.id), loadTranscript(meeting.id)])
+      .then(([n, transcript]) => {
+        if (stale) return
+        setNotes(n)
+        setDraft(n?.privateNote ?? '')
+        setSavedLines(transcript)
+      })
+      .catch(error => {
+        if (!stale) setLoadError(error instanceof Error ? error.message : 'Saved meeting information could not be loaded.')
+      })
+      .finally(() => { if (!stale) setLoading(false) })
     return () => { stale = true }
-  }, [meeting])
+  }, [meeting?.id])
 
   if (!meeting) return null
 
@@ -587,10 +622,14 @@ export function MeetingNotesPanel({ meeting, userId, onClose, onSaved }: { meeti
 
   return <section className="executive-section meeting-notes-panel" aria-label={`Notes for ${meeting.title}`}>
     <header><div><Eyebrow><FileText size={12} /> MY NOTES</Eyebrow><h2>{meeting.title}</h2></div><button type="button" className="text-link" onClick={onClose}>Close</button></header>
+    <p className="og-note">Meeting recordings, transcript and private notes are preserved separately. Each attendee sees only information their account can access.</p>
     <MeetingAudio meeting={meeting}/>
-    {loading ? <p className="og-note">Loading…</p> : <>
+    {loadError && <p className="og-note" role="alert">{loadError}</p>}
+    {loading ? <p className="og-note">Loading saved meeting notes and transcript…</p> : <>
       {notes?.summary || notes?.decisions.length || notes?.actionItems.length ? <>
-        {notes.summary && <p>{notes.summary}</p>}
+        {notes.summary && <section className="meeting-saved-summary" aria-label="Saved AI meeting summary">
+          <h3>Meeting summary</h3><p>{notes.summary}</p>
+        </section>}
         {notes.decisions.length > 0 && <><h3>Decisions</h3><ul>{notes.decisions.map((d, i) => <li key={i}>{d}</li>)}</ul>
           <Btn kind="quiet" onClick={() => void toDecisions()}><CheckSquare size={14} /> Save to my decision log</Btn></>}
         {notes.actionItems.length > 0 && <><h3>Action items</h3><ul className="meeting-actions">{notes.actionItems.map((a, i) => <li key={i}>
@@ -599,7 +638,13 @@ export function MeetingNotesPanel({ meeting, userId, onClose, onSaved }: { meeti
         </li>)}</ul>
           <Btn kind="quiet" onClick={() => void toTasks(notes.actionItems)}><ListChecks size={14} /> Add all to my tasks</Btn></>}
         {notes.generatedAt && <p className="og-note">Generated {when(notes.generatedAt)} from what consenting attendees said.</p>}
-      </> : <p className="og-note">No AI notes yet. They are written from the transcript of people who turned notes on.</p>}
+      </> : <p className="og-note">No AI summary saved for your account yet. You can generate one from the consented transcript below.</p>}
+      <details className="meeting-transcript-archive">
+        <summary>Saved transcript ({savedLines.length.toLocaleString()} lines)</summary>
+        {savedLines.length ? <ol>{savedLines.map(line => <li key={line.id}>
+          <b>{line.speakerId === userId ? 'You' : meeting.participants.find(p => p.userId === line.speakerId)?.name ?? 'Participant'}:</b> {line.text}
+        </li>)}</ol> : <p>No transcript lines were saved for this meeting. Enable recording and consent during the call to capture speech.</p>}
+      </details>
       <div className="og-inline"><Btn disabled={busy} onClick={() => void generate()}><Sparkles size={14} /> {busy ? 'Writing notes…' : notes?.generatedAt ? 'Regenerate my notes' : 'Generate my notes'}</Btn></div>
       <label className="meeting-private-note">Your private note (only you can see this)
         <textarea value={draft} maxLength={4000} rows={3} onChange={e => setDraft(e.target.value)} placeholder="Anything you want to remember about this meeting" />
@@ -637,7 +682,7 @@ function MeetingBrief({ meeting, userId, compact = false }: { meeting: Meeting; 
         {p.lastConversation.map((m, i) => <p key={i}><span>{m.fromMe ? 'You' : p.name.split(' ')[0]}:</span> {m.text}</p>)}</div>}
       {p.yourNotes.length > 0 && <div className="meeting-brief-thread"><b>Your private notes</b>{p.yourNotes.map((n, i) => <p key={i}>{n}</p>)}</div>}
       {!p.whyTheyMatter && !p.lookingFor && !p.lastConversation.length && !p.theirAsks.length && <p className="og-note">Little is on record yet. Ask what they are working on and what would help most.</p>}
-      {!compact && isLiveId(p.userId) && <div className="meeting-brief-ai"><AiMeetingBriefPanel otherUserId={p.userId} otherName={p.name} /></div>}
+      {!compact && isLiveId(p.userId) && <div className="meeting-brief-ai"><AiMeetingBriefPanel meetingId={meeting.id} otherUserId={p.userId} otherName={p.name} /></div>}
     </article>)}
   </div>
 }

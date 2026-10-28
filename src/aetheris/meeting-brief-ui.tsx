@@ -24,24 +24,30 @@ interface MeetingBrief {
 interface Props {
   otherUserId: string
   otherName: string
+  meetingId?: string
 }
 
-export function MeetingBriefPanel({ otherUserId, otherName }: Props) {
+export function MeetingBriefPanel({ otherUserId, otherName, meetingId }: Props) {
   const [brief, setBrief] = useState<MeetingBrief | null>(null)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
 
   useEffect(() => {
-    getLatestBrief({ data: { otherUserId } })
-      .then(row => { if (row) setBrief(row as MeetingBrief) })
-      .catch(() => {/* silently skip if not available */})
-  }, [otherUserId])
+    setBrief(null)
+    setError('')
+    if (!meetingId) return
+    let live = true
+    getLatestBrief({ data: { otherUserId, meetingId } })
+      .then(row => { if (live) setBrief((row ?? null) as MeetingBrief | null) })
+      .catch(error => { if (live) setError(error instanceof Error ? error.message : 'Saved brief could not be loaded.') })
+    return () => { live = false }
+  }, [otherUserId, meetingId])
 
   async function handleGenerate() {
     setLoading(true)
     setError('')
     try {
-      const row = await generateMeetingBrief({ data: { otherUserId } })
+      const row = await generateMeetingBrief({ data: meetingId ? { otherUserId, meetingId } : { otherUserId } })
       setBrief(row as MeetingBrief)
     } catch (e: any) {
       setError(e?.message ?? 'Failed to generate brief')
@@ -50,8 +56,13 @@ export function MeetingBriefPanel({ otherUserId, otherName }: Props) {
     }
   }
 
+
   return (
     <div className="meeting-brief">
+      {!meetingId && <p className="text-xs text-[#B4B1A9] leading-relaxed mb-3">
+        This is a profile-based preparation preview. It is not saved to a meeting until you
+        schedule or join one. <a href="/app/meetings" className="underline">Open Meetings</a>
+      </p>}
       <div className="flex items-center justify-between mb-3">
         <p className="text-xs font-semibold text-[#F2EEE6]">Pre-meeting brief — {otherName}</p>
         <button

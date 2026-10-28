@@ -1,0 +1,41 @@
+name: Meeting recordings and personal brief regression
+on:
+  pull_request:
+    paths:
+      - 'src/aetheris/meeting-history.ts'
+      - 'src/aetheris/meeting-audio.tsx'
+      - 'src/aetheris/meetings-ui.tsx'
+      - 'src/aetheris/meeting-brief-ui.tsx'
+      - 'src/lib/meetingBrief.functions.ts'
+      - 'drizzle/migrations/0111_meeting_personal_briefs.sql'
+      - 'scripts/meeting-history-check/**'
+      - '.github/workflows/meeting-history-check.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'src/aetheris/meeting-history.ts'
+      - 'src/aetheris/meeting-audio.tsx'
+      - 'src/aetheris/meetings-ui.tsx'
+      - 'src/aetheris/meeting-brief-ui.tsx'
+      - 'src/lib/meetingBrief.functions.ts'
+      - 'drizzle/migrations/0111_meeting_personal_briefs.sql'
+  workflow_dispatch:
+permissions: { contents: read }
+jobs:
+  meeting-history:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22 }
+      - uses: oven-sh/setup-bun@v2
+      - run: bun install --frozen-lockfile
+      - name: Build production bundle
+        run: bunx vite build
+      - name: Typecheck
+        run: bunx tsc --noEmit -p .
+      - name: Date grouping test
+        run: bunx vitest run src/aetheris/__tests__/meeting-history.test.ts
+      - name: Actual RLS and schema compatibility test
+        run: node scripts/meeting-history-check/run.mjs
