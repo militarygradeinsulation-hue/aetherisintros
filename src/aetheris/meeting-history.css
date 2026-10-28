@@ -1,0 +1,29 @@
+.meetings-focus-view { padding-block:8px 24px; min-width:0; }
+.meeting-focus-back { min-height:44px; margin:0 0 20px; padding:9px 14px; cursor:pointer; color:inherit; background:transparent; border:1px solid var(--line-dark,#666); border-radius:10px; font-size:14px; }
+.meeting-history-intro { margin-block:24px; padding:16px 18px; background:var(--raised,rgba(255,255,255,.03)); border:1px solid var(--line-dark,#555); border-radius:12px; }
+.meeting-history-intro h2 { font-size:20px; line-height:1.25; margin:0 0 8px; }
+.meeting-history-intro p { font-size:14px; line-height:1.6; margin:0; max-width:70ch; }
+.meeting-history-section { margin-block:22px; }
+.meeting-history-section .meetings-sub { display:flex; align-items:baseline; gap:10px; }
+.meeting-history-section .meetings-sub small { font-family:inherit; font-size:13px; opacity:.75; }
+.meetings-focus-view .meeting-notes-panel { margin:0; width:100%; min-width:0; }
+.meetings-focus-view .meeting-notes-panel header { display:flex; flex-wrap:wrap; gap:12px; justify-content:space-between; align-items:flex-start; }
+.meetings-focus-view .meeting-notes-panel header h2 { overflow-wrap:anywhere; line-height:1.3; }
+.meeting-saved-summary { border:1px solid var(--line-dark,#555); padding:14px; margin-block:12px; border-radius:10px; }
+.meeting-saved-summary p { font-size:14px; line-height:1.7; white-space:pre-wrap; overflow-wrap:anywhere; }
+.meeting-transcript-archive { margin-block:14px; border:1px solid var(--line-dark,#555); border-radius:10px; padding:12px; }
+.meeting-transcript-archive summary { font-weight:600; cursor:pointer; font-size:15px; line-height:1.5; }
+.meeting-transcript-archive ol { margin:12px 0 0; padding-left:20px; max-height:370px; overflow:auto; }
+.meeting-transcript-archive li { margin-block:8px; font-size:13px; line-height:1.5; overflow-wrap:anywhere; }
+.meeting-saved-audio { border:1px solid var(--line-dark,#555); border-radius:10px; padding:12px; margin-block:12px; }
+.meeting-saved-audio summary { font-weight:600; font-size:15px; line-height:1.5; cursor:pointer; }
+.meeting-saved-audio audio { width:100%; max-width:100%; margin-block:12px; }
+.meeting-audio-list { display:grid; gap:8px; max-height:280px; overflow:auto; margin:10px 0 0; }
+.meeting-audio-list button { min-height:42px; text-align:left; white-space:normal; overflow-wrap:anywhere; cursor:pointer; color:inherit; padding:8px 10px; border:1px solid var(--line-dark,#666); background:transparent; border-radius:8px; }
+@media(max-width:760px){
+  .meeting-history-intro { padding:12px; margin-block:14px; }
+  .meeting-history-intro h2 { font-size:18px; }
+  .meeting-history-section .meetings-card { padding:14px; }
+  .meeting-history-section .meetings-card .og-inline { display:flex; width:100%; flex-wrap:wrap; gap:8px; }
+  .meeting-history-section .meetings-card .og-inline button { min-height:42px; }
+}
