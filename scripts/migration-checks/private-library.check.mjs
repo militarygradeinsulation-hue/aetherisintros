@@ -123,6 +123,11 @@ export default async ({ ok, as, svc, A, B, C, ADMIN }) => {
     && savedEdit.rows?.[0]?.result?.verification_status === "unverified"
     && savedEdit.rows?.[0]?.result?.original_columns?.Name === "Synthetic Morgan",
     "confirmed edits preserve original import provenance and unverified state");
+  const timestampAdvanced = await as(A,
+    'select $1::timestamptz > $2::timestamptz as increased',
+    [savedEdit.rows?.[0]?.result?.updated_at, originalStamp]);
+  ok(timestampAdvanced.rows?.[0]?.increased === true,
+    "every saved contact edit advances the concurrency timestamp");
   ok(!!(await as(A, "select public.update_private_library_record($1,$2,$3::jsonb)",
     [imported?.id, originalStamp, JSON.stringify({ title: "Stale edit" })])).error,
     "an outdated timestamp cannot overwrite a more recent contact");
