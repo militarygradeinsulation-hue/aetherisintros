@@ -7,7 +7,7 @@ import { gatewayChat } from './aiGateway.server'
 const PROMPT = `You are a meeting prep specialist. Return ONLY valid JSON, no markdown:
 {"their_background":"<2 sentences>","their_current_focus":"<1-2 sentences>","open_needs":[{"need":"...","how_you_can_help":"..."}],"talking_points":[{"point":"...","why_relevant":"..."}],"summary":"<paragraph>"}`
 
-type BriefRequest = { meetingId?: string; otherUserId: string }
+type BriefRequest = { meetingId?: string | undefined; otherUserId: string }
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
 const validate = (data: BriefRequest): BriefRequest => {
   if ((!!data?.meetingId && !UUID.test(data.meetingId)) || !UUID.test(data?.otherUserId ?? ''))
