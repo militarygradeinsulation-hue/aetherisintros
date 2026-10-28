@@ -30,7 +30,7 @@ if (privateLibraryFocused && !process.argv.includes('private-library')) {
 }
 const migrations = journaled.filter(f =>
   Number(f.slice(0, 4)) >= FIRST &&
-  (!privateLibraryFocused || Number(f.slice(0, 4)) <= 66 || f.startsWith('0110_'))
+  (!privateLibraryFocused || Number(f.slice(0, 4)) <= 66 || f.startsWith('0110_') || f.startsWith('0112_'))
 );
 
 const A = '00000000-0000-4000-8000-00000000000a' // requester
