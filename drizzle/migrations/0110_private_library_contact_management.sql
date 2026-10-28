@@ -24,7 +24,7 @@ BEGIN
     RAISE EXCEPTION 'This contact changed since you opened it. Refresh before saving.' USING errcode = '40001';
   END IF;
   IF p_fields IS NULL OR jsonb_typeof(p_fields) IS DISTINCT FROM 'object' OR p_fields = '{}'::jsonb
-    OR jsonb_object_length(p_fields) > array_length(v_allowed,1) THEN
+    OR (SELECT count(*) FROM jsonb_object_keys(p_fields)) > array_length(v_allowed,1) THEN
     RAISE EXCEPTION 'Provide one or more contact fields' USING errcode = '22023';
   END IF;
   FOR v_key IN SELECT jsonb_object_keys(p_fields) LOOP
