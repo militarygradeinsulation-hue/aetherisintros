@@ -5,7 +5,7 @@ import { isShowcase } from '../showcase'
  * One host, twelve modules, all reading the same account ledger. Nothing floats:
  * the module rail switches the panel beside it, exactly like the rest of Intros.
  */
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import {
   Activity as ActivityIcon, BarChart3, Boxes, Building2, ClipboardList, Download, FileText,
   Kanban, Package, FileUp, Receipt, RotateCcw, Sparkles, Truck, UserRound, Users,
@@ -25,6 +25,9 @@ import {
 } from './analytics'
 import { DEAL_STAGES, orderTotal, type DealStage } from './types'
 import { FinanceBento } from '@/components/ui/finance-bento'
+import { hasLedgerContactDetails } from './contact-visibility'
+import { initialHideEmptyContacts } from '../crm/contact-visibility'
+import './full-crm-mobile-contacts.css'
 import { financeBentoFromLedger } from './finance-bento-adapter'
 import { CHART_COLORS, CATEGORY_COLORS, stageChartColor, compactPipelineStageLabel } from './chart-colors'
 
@@ -90,6 +93,19 @@ export default function FullCrm({ onBack }: { onBack: () => void }) {
   })
   const [query, setQuery] = useState('')
   const [hideStarterPref, setHideStarter] = useState(false)
+  const [hideEmptyContacts, setHideEmptyContacts] = useState(false)
+  useEffect(() => {
+    try {
+      setHideEmptyContacts(initialHideEmptyContacts(
+        window.localStorage.getItem('aetheris.crm.hideEmpty'),
+        window.matchMedia('(max-width: 760px)').matches,
+      ))
+    } catch { /* no storage: keep all contacts */ }
+  }, [])
+  const toggleHideEmptyContacts = () => setHideEmptyContacts(current => {
+    try { window.localStorage.setItem('aetheris.crm.hideEmpty', current ? '0' : '1') } catch { /* storage unavailable */ }
+    return !current
+  })
   const [dashboardView, setDashboardView] = useState<'bento' | 'detailed'>(() => {
     if (typeof window === 'undefined') return 'bento'
     return window.localStorage.getItem('aetheris.ledger.dashboardView') === 'detailed' ? 'detailed' : 'bento'
@@ -268,13 +284,34 @@ export default function FullCrm({ onBack }: { onBack: () => void }) {
         })()}
 
         {module === 'contacts' && (() => {
-          const rows = visible(l.contacts).filter(c => match(`${c.firstName} ${c.lastName} ${c.title} ${c.email} ${api.companyName(c.companyId)}`))
+          const searched = visible(l.contacts).filter(c => match(`${c.firstName} ${c.lastName} ${c.title} ${c.email} ${api.companyName(c.companyId)}`))
+          // Default company assignments and generated last-touch timestamps are not
+          // evidence of supplied contact information.
+          const incomplete = searched.filter(c => !hasLedgerContactDetails(c)).length
+          const rows = searched.filter(c => !hideEmptyContacts || hasLedgerContactDetails(c))
           return <>
             <div className="ops-toolbar">
               <input value={query} onChange={e => setQuery(e.target.value)} placeholder="Search contacts…" aria-label="Search contacts" />
+              <button type="button" className={`btn ${hideEmptyContacts ? 'primary' : 'quiet'}`}
+                aria-pressed={hideEmptyContacts} onClick={toggleHideEmptyContacts}>
+                {hideEmptyContacts ? `Show incomplete (${incomplete})` : 'Hide empty rows'}
+              </button>
               <Btn kind="quiet" onClick={() => downloadCsv('contacts.csv', rows)}><Download size={14} /> Export</Btn>
             </div>
-            <div className="ops-table-scroll" tabIndex={0} aria-label="Contacts">
+            {hideEmptyContacts && incomplete > 0 && <p role="status" className="ops-note">
+              Hiding {incomplete} incomplete {incomplete === 1 ? 'contact' : 'contacts'}. They are not deleted; use Show incomplete to review them.
+            </p>}
+            <section className="fcrm-mobile-contact-list" aria-label="Contacts on mobile">
+              {!rows.length && <p className="ops-note">No contacts with populated details match. Select Show incomplete to review name-only records.</p>}
+              {rows.map(c => <article key={c.id} className="fcrm-mobile-contact-card">
+                <h3>{[c.firstName,c.lastName].filter(Boolean).join(' ') || 'Unnamed contact'}</h3>
+                {c.title?.trim() && <p><b>Title</b> {c.title}</p>}
+                {c.email?.trim() && <p><b>Email</b> {c.email}</p>}
+                {c.phone?.trim() && <p><b>Phone</b> {c.phone}</p>}
+                {!hasLedgerContactDetails(c) && <p className="ops-note">Incomplete contact — add details from CRM → People.</p>}
+              </article>)}
+            </section>
+            <div className="ops-table-scroll fcrm-contacts-desktop" tabIndex={0} aria-label="Contacts">
               <table className="ops-table">
                 <thead><tr><th>Contact</th><th>Title</th><th>Account</th><th>Status</th><th>Owner</th><th>Last touch</th></tr></thead>
                 <tbody>{rows.map(c => <tr key={c.id}>

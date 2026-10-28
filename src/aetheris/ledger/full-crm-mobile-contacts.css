@@ -1,0 +1,12 @@
+.fcrm-mobile-contact-list { display:none; }
+@media (max-width:760px) {
+  .fcrm-contacts-desktop { display:none!important; }
+  .fcrm-mobile-contact-list { display:grid; gap:12px; min-width:0; margin:12px 0; }
+  .fcrm-mobile-contact-card { min-width:0; border-radius:13px; padding:16px;
+    border:1px solid var(--line-dark,rgba(255,255,255,.18)); background:var(--raised,#17191b); }
+  .fcrm-mobile-contact-card h3 { font-size:17px; font-weight:700; margin:0 0 12px; line-height:1.35; overflow-wrap:anywhere; }
+  .fcrm-mobile-contact-card p { display:grid; grid-template-columns:65px minmax(0,1fr);
+    gap:10px; margin:0; padding-block:7px; border-bottom:1px solid rgba(255,255,255,.08);
+    line-height:1.45; font-size:13px; overflow-wrap:anywhere; }
+  .fcrm-mobile-contact-card .ops-note { display:block; opacity:.75; border:0; }
+}
