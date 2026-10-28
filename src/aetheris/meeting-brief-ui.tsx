@@ -47,7 +47,7 @@ export function MeetingBriefPanel({ otherUserId, otherName, meetingId }: Props) 
     setLoading(true)
     setError('')
     try {
-      const row = await generateMeetingBrief({ data: { otherUserId, meetingId } })
+      const row = await generateMeetingBrief({ data: meetingId ? { otherUserId, meetingId } : { otherUserId } })
       setBrief(row as MeetingBrief)
     } catch (e: any) {
       setError(e?.message ?? 'Failed to generate brief')
