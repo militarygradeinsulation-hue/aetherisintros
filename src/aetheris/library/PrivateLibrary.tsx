@@ -438,11 +438,14 @@ export function PrivateLibrary() {
   // The list stacks above the detail on phones: bring the selected contact into view.
   useEffect(() => {
     if (!scrollToRecord || !activeRecord || activeRecord.id !== activeRecordId) return;
-    setScrollToRecord(false);
-    if (!window.matchMedia('(max-width: 800px)').matches) return;
+    if (!window.matchMedia('(max-width: 800px)').matches) {
+      setScrollToRecord(false);
+      return;
+    }
     const frame = window.requestAnimationFrame(() => {
       recordDetailRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
       recordDetailRef.current?.focus({ preventScroll: true });
+      setScrollToRecord(false);
     });
     return () => window.cancelAnimationFrame(frame);
   }, [scrollToRecord, activeRecord, activeRecordId]);
