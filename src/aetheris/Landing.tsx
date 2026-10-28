@@ -1,5 +1,5 @@
 import { useRef, useState } from 'react'
-import { ArrowRight, ArrowUpRight } from 'lucide-react'
+import { ArrowRight, ArrowUpRight, X } from 'lucide-react'
 import { Link } from '@tanstack/react-router'
 import { useAccess } from './access'
 import { AskIntrosLockup } from './AskIntrosLockup'
