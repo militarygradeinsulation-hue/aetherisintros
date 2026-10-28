@@ -22,7 +22,16 @@ if (stray.length || missing.length) {
   console.error(`journal drift — unjournaled: ${stray.join(', ') || 'none'}; missing: ${missing.join(', ') || 'none'}`)
   process.exit(1)
 }
-const migrations = journaled.filter(f => Number(f.slice(0, 4)) >= FIRST)
+// Only an explicit private-library-focused invocation may skip unrelated newer
+// migrations while testing one isolated feature. Default full replay remains unchanged.
+const privateLibraryFocused = process.argv.includes('--private-library-focused');
+if (privateLibraryFocused && !process.argv.includes('private-library')) {
+  throw new Error('Focused replay requires the private-library suite name');
+}
+const migrations = journaled.filter(f =>
+  Number(f.slice(0, 4)) >= FIRST &&
+  (!privateLibraryFocused || Number(f.slice(0, 4)) <= 66 || f.startsWith('0110_'))
+);
 
 const A = '00000000-0000-4000-8000-00000000000a' // requester
 const B = '00000000-0000-4000-8000-00000000000b' // target
@@ -313,7 +322,7 @@ async function boot({ actualMembershipGate = false } = {}) {
   return { db, as, svc }
 }
 
-const only = process.argv.slice(2)
+const only = process.argv.slice(2).filter(arg => arg !== '--private-library-focused')
 const suites = readdirSync(here).filter(f => f.endsWith('.check.mjs')).sort()
   .filter(f => !only.length || only.some(o => f.startsWith(o)))
 let pass = 0, fail = 0

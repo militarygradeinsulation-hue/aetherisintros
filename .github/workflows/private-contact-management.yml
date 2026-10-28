@@ -32,4 +32,4 @@ jobs:
       - name: Contact editor field validation
         run: npx vitest run src/aetheris/library/__tests__/contact-record-actions.test.ts
       - name: Owner, editor, viewer and deletion migration tests
-        run: node scripts/migration-checks/run.mjs private-library
+        run: node scripts/migration-checks/run.mjs private-library --private-library-focused
