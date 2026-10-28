@@ -44,7 +44,6 @@ export function MeetingBriefPanel({ otherUserId, otherName, meetingId }: Props) 
   }, [otherUserId, meetingId])
 
   async function handleGenerate() {
-    if (!meetingId) return
     setLoading(true)
     setError('')
     try {
@@ -57,20 +56,13 @@ export function MeetingBriefPanel({ otherUserId, otherName, meetingId }: Props) 
     }
   }
 
-  if (!meetingId) {
-    return <div className="meeting-brief">
-      <p className="text-xs text-[var(--msg-muted,#9CA3AF)]">
-        Pre-meeting intelligence is linked to a real meeting, not a chat thread.
-        Open Meetings to create or select a meeting with {otherName}, then choose Generate Brief.
-      </p>
-      <a href="/app/meetings" className="inline-flex mt-3 min-h-10 items-center underline text-sm">
-        Open Meetings
-      </a>
-    </div>
-  }
 
   return (
     <div className="meeting-brief">
+      {!meetingId && <p className="text-xs text-[#B4B1A9] leading-relaxed mb-3">
+        This is a profile-based preparation preview. It is not saved to a meeting until you
+        schedule or join one. <a href="/app/meetings" className="underline">Open Meetings</a>
+      </p>}
       <div className="flex items-center justify-between mb-3">
         <p className="text-xs font-semibold text-[#F2EEE6]">Pre-meeting brief — {otherName}</p>
         <button
