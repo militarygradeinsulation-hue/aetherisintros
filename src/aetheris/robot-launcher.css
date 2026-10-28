@@ -15,7 +15,8 @@
   backdrop-filter: none !important;
   -webkit-backdrop-filter: none !important;
   filter: none !important;
-  animation: robot-launcher-float 4.5s ease-in-out infinite;
+  /* Keep the interactive button still: Playwright and real taps need a stable hit target. */
+  animation: none !important;
 }
 :root[data-theme] body .ask-dock-fab.ask-dock-fab--robot:not(.active):hover {
   background: transparent !important;
@@ -34,6 +35,12 @@
   pointer-events: none;
   filter: none !important;
   -webkit-backdrop-filter: none !important;
+}
+/* The artwork floats while its accessible, draggable hit target stays stationary.
+   Animating the button's bounding box made clicks unreliable on touch browsers. */
+:root[data-theme] body .ask-dock-fab--robot:not(.active) > .butler-fab-robot {
+  animation: robot-launcher-float 4.5s ease-in-out infinite;
+  transform-origin: center;
 }
 .ask-dock-fab--robot .butler-fab-robot canvas {
   background: transparent !important;
@@ -69,7 +76,7 @@
   :root[data-theme] body .ask-dock-fab--robot > .butler-fab-robot { width: 96px !important; height: 96px !important; }
 }
 @keyframes robot-launcher-float { 0%,100% { translate: 0 0; } 50% { translate: 0 -6px; } }
-@media (prefers-reduced-motion: reduce) { .ask-dock-fab--robot { animation: none !important; } }
+@media (prefers-reduced-motion: reduce) { .ask-dock-fab--robot, .ask-dock-fab--robot > .butler-fab-robot { animation: none !important; } }
 
 /* Social View layered important declarations can outrank unlayered overrides.
    Keep the robot transparent inside that same cascade layer. */
