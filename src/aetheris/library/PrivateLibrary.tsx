@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { Check, FileUp, LockKeyhole, Search, ShieldAlert, UserRound, Users, X } from "lucide-react";
 import { Btn, Eyebrow } from "../ui";
+import { ContactRecordActions } from "./ContactRecordActions";
 import { ImportReviewTable } from "../ImportReviewTable";
 import {
   IMPORT_FIELDS,
@@ -294,6 +295,7 @@ export function PrivateLibrary() {
   const [records, setRecords] = useState<LibrarySearchResult[]>([]);
   const [activeRecordId, setActiveRecordId] = useState("");
   const [activeRecord, setActiveRecord] = useState<LibraryRecord | null>(null);
+  const [editRequestedFor, setEditRequestedFor] = useState<string | null>(null);
   const [query, setQuery] = useState("");
   const [searchPage, setSearchPage] = useState(0);
   const [hasMoreRecords, setHasMoreRecords] = useState(false);
@@ -436,6 +438,7 @@ export function PrivateLibrary() {
     setRecords([]);
     setHasMoreRecords(false);
     setRecordsError("");
+    setEditRequestedFor(null);
     setRefreshVersion(value => value + 1);
   };
   const updateSearch = (value: string) => {
@@ -446,6 +449,7 @@ export function PrivateLibrary() {
     setRecords([]);
     setActiveRecordId("");
     setActiveRecord(null);
+    setEditRequestedFor(null);
   };
 
   const upload = async (selectedFile: File) => {
@@ -667,6 +671,7 @@ export function PrivateLibrary() {
               setWorkspaceId(e.target.value);
               setActiveRecordId("");
               setActiveRecord(null);
+              setEditRequestedFor(null);
               setRecords([]);
               setHasMoreRecords(false);
               setRecordsError("");
@@ -905,22 +910,23 @@ export function PrivateLibrary() {
             </p>
           ) : (
             records.map((record) => (
-              <button
-                key={record.id}
-                className={record.id === activeRecordId ? "active" : ""}
-                onClick={() => setActiveRecordId(record.id)}
-              >
-                {record.record_type === "person" ? <UserRound size={16} /> : <Users size={16} />}
-                <span>
-                  <b>{record.name}</b>
-                  <small>
-                    {record.record_type === "person"
-                      ? record.business || "Private contact"
-                      : "Private organization"}
-                  </small>
-                </span>
-                <em>Private import</em>
-              </button>
+              <div className="pl-contact-row" key={record.id}>
+                <button
+                  type="button"
+                  className={`pl-contact-open ${record.id === activeRecordId ? "active" : ""}`}
+                  aria-label={`View ${record.name}`}
+                  aria-current={record.id === activeRecordId ? "true" : undefined}
+                  onClick={() => { setEditRequestedFor(null); setActiveRecordId(record.id); }}
+                >
+                  {record.record_type === "person" ? <UserRound size={16} /> : <Users size={16} />}
+                  <span>
+                    <b>{record.name}</b>
+                    <small>{record.record_type === "person" ? record.business || "Private contact" : "Private organization"}</small>
+                  </span>
+                </button>
+                {canWrite && <button type="button" className="pl-contact-edit" aria-label={`Edit ${record.name}`}
+                  onClick={() => { setEditRequestedFor(record.id); setActiveRecordId(record.id); }}>Edit</button>}
+              </div>
             ))
           )}
           <div className="pl-actions" aria-label="Load more private contacts">
@@ -943,6 +949,29 @@ export function PrivateLibrary() {
               <span className="pl-verified">Unverified</span>
             </div>
             <h3>{activeRecord.name}</h3>
+            <ContactRecordActions
+              key={activeRecord.id}
+              record={activeRecord}
+              canEdit={canWrite}
+              canDelete={permission === "owner"}
+              startEditing={editRequestedFor === activeRecord.id}
+              onSaved={saved => {
+                setActiveRecord(saved);
+                setEditRequestedFor(null);
+                setRecords(current => current.map(item => item.id === saved.id
+                  ? { ...item, name: saved.name, business: saved.business, title: saved.title }
+                  : item));
+                setNotice(`${saved.name} updated successfully.`);
+              }}
+              onDeleted={id => {
+                setActiveRecord(null);
+                setActiveRecordId("");
+                setEditRequestedFor(null);
+                setRecords(current => current.filter(item => item.id !== id));
+                setNotice("Contact permanently deleted.");
+                refresh();
+              }}
+            />
             <dl>
               {[
                 ["Phone", activeRecord.phone],
