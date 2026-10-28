@@ -5,7 +5,7 @@ import { requireAuthContract } from './auth-gate'
 import { createRateLimiter } from '@/aetheris/linkedin-import'
 import {
   contactLookupIdentity, contactLookupQueries, identityWindows, extractContactQuotes,
-  groundContactQuotes, validContactValue, stillMissingValues,
+  groundContactQuotes, validContactValue, stillMissingValues, quoteGrounded,
   type ContactLookupSource, type ContactLookupSuggestion, type ContactLookupResult, type WebContactField,
 } from '@/aetheris/crm/contact-web-lookup'
 import { isSafeSourceUrl } from '@/aetheris/public-info'
@@ -147,6 +147,41 @@ export const acceptContactWebSuggestions = createServerFn({method:'POST'})
     }
     const values=stillMissingValues({email:current.email,phone:current.phone,title:current.title},chosen)
     if(Object.keys(values).length!==chosen.length)throw new Error('A contact field already has a value. Refresh before saving.')
+    // A browser request is not proof that a lookup was performed. The server
+    // independently repeats the public index lookup and verifies the source
+    // quote about this exact contact BEFORE writing any contact information.
+    const identity=contactLookupIdentity(current.name,current.company,current.location)
+    if(!identity)throw new Error('This contact needs a full name and company or location.')
+    for(const item of chosen) {
+      const when=Date.parse(item.checkedAt)
+      if(!Number.isFinite(when)||when>Date.now()+60_000||Date.now()-when>2*60*60*1000)
+        throw new Error('Public evidence is out of date. Run the lookup again before saving.')
+    }
+    let indexed:Map<string,{url:string;title:string;snippet:string}>
+    try {
+      const {searchWeb}=await import('./webSearch.server')
+      const pages=await Promise.all(contactLookupQueries(identity).map(q=>searchWeb(q,6)))
+      indexed=new Map(pages.flat().filter(page=>isSafeSourceUrl(page.url)).map(page=>[page.url,page]))
+    }catch{
+      throw new Error('Public sources cannot be rechecked at this time. Nothing was changed.')
+    }
+    const {readPage}=await import('./webSearch.server')
+    const sourceCache=new Map<string,ContactLookupSource>()
+    for(const item of chosen) {
+      const result=indexed.get(item.sourceUrl)
+      if(!result)throw new Error('One public citation can no longer be verified. Run the lookup again.')
+      if(!sourceCache.has(item.sourceUrl)) {
+        let text=''
+        try{text=await readPage(result.url,7000)}catch{/* search snippets are sufficient only if they contain the exact quote */}
+        sourceCache.set(item.sourceUrl,{
+          url:result.url,title:result.title,
+          text:[result.title,result.snippet,text].filter(Boolean).join('\n').slice(0,9200),
+        })
+      }
+      const source=sourceCache.get(item.sourceUrl)!
+      if(!quoteGrounded(item.quote,item.value,source,identity))
+        throw new Error('One proposed field is not supported by the current public source. Nothing was saved.')
+    }
     if(data.kind==='library'){
       const {data:updated,error}=await db.rpc('update_private_library_record',{
         p_record_id:data.recordId,p_expected_updated_at:data.expectedUpdatedAt,p_fields:values,

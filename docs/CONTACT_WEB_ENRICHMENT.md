@@ -22,7 +22,7 @@ regex extractor also works if AI is unavailable.
 Every suggestion starts in a **preview** with a checkbox. The member unchecks
 anything unwanted before pressing Save; no writes happen on lookup alone. The
 accept action re-authenticates, checks owner permissions and last-write version,
-rechecks that each field is still empty, writes only selected values, and appends
+rechecks that each field is still empty, verifies that each cited public page remains indexed and its evidence quote actually contains the named person's information, writes only selected values, and appends
 source URLs to the CRM notes so the decision is traceable. Completed fields are
 never overwritten. Uploads and original source columns remain intact.
 
