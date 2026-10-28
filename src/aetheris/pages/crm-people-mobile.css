@@ -1,6 +1,75 @@
+
+/* The People grid must not push actions off the right edge of the CRM workspace.
+   Other CRM tables keep their existing sizing; narrow viewports use detail cards. */
+.crm-people-section { min-width: 0; max-width: 100%; }
+.crm-people-desktop {
+  box-sizing: border-box;
+  min-width: 0;
+  width: 100%;
+  max-width: 100%;
+  overflow-x: auto;
+  scrollbar-width: thin;
+  padding-bottom: 8px;
+}
+.crm-people-desktop .crm-people-table {
+  width: 100%;
+  min-width: 1050px;
+  table-layout: fixed;
+}
+.crm-people-desktop .crm-people-table th,
+.crm-people-desktop .crm-people-table td {
+  box-sizing: border-box;
+  min-width: 0;
+  padding: .5rem .35rem;
+  vertical-align: middle;
+}
+.crm-people-desktop .crm-people-table th:nth-child(1) { width: 14%; }
+.crm-people-desktop .crm-people-table th:nth-child(2) { width: 7%; }
+.crm-people-desktop .crm-people-table th:nth-child(3) { width: 12%; }
+.crm-people-desktop .crm-people-table th:nth-child(4) { width: 11%; }
+.crm-people-desktop .crm-people-table th:nth-child(5) { width: 16%; }
+.crm-people-desktop .crm-people-table th:nth-child(6) { width: 12%; }
+.crm-people-desktop .crm-people-table th:nth-child(7) { width: 7%; }
+.crm-people-desktop .crm-people-table th:nth-child(8) { width: 8%; }
+.crm-people-desktop .crm-people-table th:nth-child(9) { width: 13%; }
+.crm-people-desktop .crm-people-table :is(.ops-cell-input, .ops-add-row input) {
+  display: block;
+  box-sizing: border-box;
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
+  text-overflow: ellipsis;
+}
+.crm-people-desktop .crm-people-table td:nth-child(7),
+.crm-people-desktop .crm-people-table td:nth-child(8) {
+  overflow-wrap: anywhere;
+  font-size: .76rem;
+}
+.crm-people-desktop .crm-people-table :is(th:last-child, td:last-child) {
+  position: sticky;
+  right: 0;
+  z-index: 1;
+  background: var(--raised, #0B0D0F);
+  box-shadow: -6px 0 12px -12px rgba(0,0,0,.8);
+}
+.crm-people-desktop .crm-people-table th:last-child { z-index: 2; }
+.crm-people-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: .3rem .45rem;
+  min-width: 0;
+}
+.crm-people-actions .ops-link { white-space: nowrap; line-height: 1.45; }
+.crm-people-desktop .ops-add-row td:last-child .btn {
+  max-width: 100%;
+  white-space: normal;
+  padding-inline: .45rem;
+}
+
 /* Mobile CRM contacts show only information that actually exists; no empty spreadsheet columns. */
 .crm-mobile-people { display:none; }
-@media(max-width:760px) {
+@media(max-width:1100px) {
   .crm-people-desktop { display:none!important; }
   .crm-mobile-people { display:grid; gap:12px; margin-block:14px; min-width:0; }
   .crm-mobile-person { min-width:0; padding:16px; border:1px solid var(--line-dark,rgba(255,255,255,.18));
