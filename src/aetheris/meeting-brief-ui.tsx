@@ -24,7 +24,7 @@ interface MeetingBrief {
 interface Props {
   otherUserId: string
   otherName: string
-  meetingId: string
+  meetingId?: string
 }
 
 export function MeetingBriefPanel({ otherUserId, otherName, meetingId }: Props) {
@@ -33,12 +33,18 @@ export function MeetingBriefPanel({ otherUserId, otherName, meetingId }: Props) 
   const [error, setError] = useState('')
 
   useEffect(() => {
+    setBrief(null)
+    setError('')
+    if (!meetingId) return
+    let live = true
     getLatestBrief({ data: { otherUserId, meetingId } })
-      .then(row => { if (row) setBrief(row as MeetingBrief) })
-      .catch(() => {/* silently skip if not available */})
+      .then(row => { if (live) setBrief((row ?? null) as MeetingBrief | null) })
+      .catch(error => { if (live) setError(error instanceof Error ? error.message : 'Saved brief could not be loaded.') })
+    return () => { live = false }
   }, [otherUserId, meetingId])
 
   async function handleGenerate() {
+    if (!meetingId) return
     setLoading(true)
     setError('')
     try {
@@ -49,6 +55,18 @@ export function MeetingBriefPanel({ otherUserId, otherName, meetingId }: Props) 
     } finally {
       setLoading(false)
     }
+  }
+
+  if (!meetingId) {
+    return <div className="meeting-brief">
+      <p className="text-xs text-[var(--msg-muted,#9CA3AF)]">
+        Pre-meeting intelligence is linked to a real meeting, not a chat thread.
+        Open Meetings to create or select a meeting with {otherName}, then choose Generate Brief.
+      </p>
+      <a href="/app/meetings" className="inline-flex mt-3 min-h-10 items-center underline text-sm">
+        Open Meetings
+      </a>
+    </div>
   }
 
   return (

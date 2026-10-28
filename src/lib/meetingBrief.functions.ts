@@ -70,11 +70,11 @@ export const generateMeetingBrief = createServerFn({ method: 'POST' })
         user_id: userId,
         meeting_id: data.meetingId,
         other_user_id: data.otherUserId,
-        their_background: field(parsed.their_background, 4000),
-        their_current_focus: field(parsed.their_current_focus, 2000),
-        open_needs: openNeeds(parsed.open_needs),
-        talking_points: talkingPoints(parsed.talking_points),
-        summary: field(parsed.summary, 6000),
+        their_background: field(parsed['their_background'], 4000),
+        their_current_focus: field(parsed['their_current_focus'], 2000),
+        open_needs: openNeeds(parsed['open_needs']),
+        talking_points: talkingPoints(parsed['talking_points']),
+        summary: field(parsed['summary'], 6000),
         generated_at: new Date().toISOString(),
       }, { onConflict: 'user_id,meeting_id,other_user_id' })
       .select().single()
