@@ -72,6 +72,30 @@ export default function CrmPage({ section }: { section?: 'crm' | 'pipeline' | un
   const [filterHas, setFilterHas] = useState<'' | 'email' | 'phone' | 'no-email' | 'no-phone'>('')
   const [draftRow, setDraftRow] = useState({ fullName: '', email: '', phone: '', title: '', companyName: '' })
   const [addingRow, setAddingRow] = useState(false)
+  const [dragId, setDragId] = useState<string | null>(null)
+  const [hideEmpty, setHideEmpty] = useState(false)
+  const [rowOrder, setRowOrder] = useState<string[]>([])
+  useEffect(() => {
+    try {
+      setHideEmpty(localStorage.getItem('aetheris.crm.hideEmpty') === '1')
+      setRowOrder(JSON.parse(localStorage.getItem('aetheris.crm.peopleOrder') || '[]'))
+    } catch { /* ignore */ }
+  }, [])
+  const toggleHideEmpty = () => setHideEmpty(v => { try { localStorage.setItem('aetheris.crm.hideEmpty', v ? '0' : '1') } catch { /* ignore */ } return !v })
+  const saveOrder = (ids: string[]) => { setRowOrder(ids); try { localStorage.setItem('aetheris.crm.peopleOrder', JSON.stringify(ids)) } catch { /* ignore */ } }
+  const orderPeople = (list: CrmPerson[]) => {
+    if (!rowOrder.length) return list
+    const pos = new Map(rowOrder.map((id, i) => [id, i]))
+    return [...list].sort((a, b) => (pos.get(a.id) ?? -1) - (pos.get(b.id) ?? -1))
+  }
+  const moveRow = (visibleIds: string[], fromId: string, toId: string) => {
+    if (fromId === toId) return
+    const ids = [...visibleIds.filter(id => id !== fromId)]
+    const at = ids.indexOf(toId) + (visibleIds.indexOf(fromId) < visibleIds.indexOf(toId) ? 1 : 0)
+    ids.splice(at, 0, fromId)
+    const rest = rowOrder.filter(id => !ids.includes(id))
+    saveOrder([...ids, ...rest])
+  }
   const [creating, setCreating] = useState<'person' | 'company' | 'opportunity' | 'task' | null>(null)
   const [view, setView] = useState<'basic' | 'full'>(() =>
     typeof window === 'undefined' ? 'basic' : (localStorage.getItem('aetheris.crm.view') as 'basic' | 'full') || 'basic')
@@ -231,6 +255,10 @@ export default function CrmPage({ section }: { section?: 'crm' | 'pipeline' | un
           <option value="no-email">Missing email</option><option value="no-phone">Missing phone</option>
         </select>
         {(filterLife || filterCompany || filterHas) && <Btn kind="quiet" onClick={() => { setFilterLife(''); setFilterCompany(''); setFilterHas('') }}>Clear filters</Btn>}
+        <button type="button" className={`btn ${hideEmpty ? 'primary' : 'quiet'}`} aria-pressed={hideEmpty} onClick={() => toggleHideEmpty()}>
+          {hideEmpty ? 'Showing rows with info' : 'Hide empty rows'}
+        </button>
+        {rowOrder.length > 0 && <Btn kind="quiet" onClick={() => saveOrder([])}>Reset order</Btn>}
       </div>}
       {showTrash ? <div className="ops-table-scroll" tabIndex={0} aria-label="Trash">
         <p className="ops-note">Deleted people stay here for 30 days, then they're removed for good.</p>
@@ -259,17 +287,28 @@ export default function CrmPage({ section }: { section?: 'crm' | 'pipeline' | un
             <td colSpan={2}></td>
             <td><Btn kind="primary" disabled={!draftRow.fullName.trim() || addingRow} onClick={() => void addRow()}><Plus size={14} /> {addingRow ? 'Adding…' : 'Add row'}</Btn></td>
           </tr>
-          {people.filter(passesFilters).filter(p => !onlyUploaded || p.source.startsWith('Import · ')).filter(p => match(`${p.fullName} ${p.title} ${p.companyName} ${p.email} ${p.phone}`)).map(p => {
+          {orderPeople(people.filter(passesFilters).filter(p => !onlyUploaded || p.source.startsWith('Import · ')).filter(p => !hideEmpty || hasDetails(p)).filter(p => match(`${p.fullName} ${p.title} ${p.companyName} ${p.email} ${p.phone}`))).map((p, idx, list) => {
             const member = memberFor(p)
-            return <tr key={p.id} onClick={() => openPerson(p.id)}>
-              <td><b>{p.fullName}</b></td>
+            const cell = (field: EditableField) => (
+              <td onClick={e => e.stopPropagation()}>
+                <input className="ops-cell-input" defaultValue={p[field] ?? ''} key={`${p.id}-${field}-${p[field] ?? ''}`} aria-label={`${field} for ${p.fullName}`}
+                  placeholder="—"
+                  onKeyDown={e => { if (e.key === 'Enter') (e.target as HTMLInputElement).blur(); if (e.key === 'Escape') { (e.target as HTMLInputElement).value = p[field] ?? ''; (e.target as HTMLInputElement).blur() } }}
+                  onBlur={e => { const v = e.target.value.trim(); if (v !== (p[field] ?? '') && !(field === 'fullName' && !v)) void ops.updatePerson(p.id, { [field]: v }) }} />
+              </td>
+            )
+            return <tr key={p.id} draggable onDragStart={() => setDragId(p.id)} onDragOver={e => e.preventDefault()}
+              onDrop={() => { if (dragId) moveRow(list.map(x => x.id), dragId, p.id); setDragId(null) }}
+              className={dragId === p.id ? 'ops-row-dragging' : undefined}>
+              {cell('fullName')}
               <td><span className="ops-chip">{p.lifecycle}</span></td>
-              <td>{p.companyName || '—'}</td><td>{p.title || '—'}</td><td>{p.email || '—'}</td><td>{p.phone || '—'}</td>
+              {cell('companyName')}{cell('title')}{cell('email')}{cell('phone')}
               <td>{member ? <em className="ops-signal">{member.scoreTotal} · {member.relationshipStatus}</em> : '—'}</td>
               <td>{day(p.lastActivityAt)}</td>
               <td onClick={e => e.stopPropagation()}>
+                <button type="button" className="ops-link" aria-label={`Move ${p.fullName} up`} disabled={idx === 0} onClick={() => moveRow(list.map(x => x.id), p.id, list[idx - 1].id)}>↑</button>{' '}
+                <button type="button" className="ops-link" aria-label={`Move ${p.fullName} down`} disabled={idx === list.length - 1} onClick={() => moveRow(list.map(x => x.id), p.id, list[idx + 1].id)}>↓</button>{' '}
                 <button type="button" className="ops-link" aria-label={`View ${p.fullName}`} onClick={() => openPerson(p.id)}>View</button>{' '}
-                <button type="button" className="ops-link" aria-label={`Edit ${p.fullName}`} onClick={() => openPerson(p.id, true)}>Edit</button>{' '}
                 <button type="button" className="ops-link" aria-label={`Move ${p.fullName} to Trash`} onClick={() => trashPerson(p)}>Trash</button>
               </td>
             </tr>
