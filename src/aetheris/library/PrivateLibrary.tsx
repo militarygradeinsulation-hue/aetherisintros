@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Check, FileUp, LockKeyhole, Search, ShieldAlert, UserRound, Users, X } from "lucide-react";
 import { Btn, Eyebrow } from "../ui";
 import { ContactRecordActions } from "./ContactRecordActions";
@@ -296,6 +296,8 @@ export function PrivateLibrary() {
   const [activeRecordId, setActiveRecordId] = useState("");
   const [activeRecord, setActiveRecord] = useState<LibraryRecord | null>(null);
   const [editRequestedFor, setEditRequestedFor] = useState<string | null>(null);
+  const [scrollToRecord, setScrollToRecord] = useState(false);
+  const recordDetailRef = useRef<HTMLElement | null>(null);
   const [query, setQuery] = useState("");
   const [searchPage, setSearchPage] = useState(0);
   const [hasMoreRecords, setHasMoreRecords] = useState(false);
@@ -432,6 +434,18 @@ export function PrivateLibrary() {
       live = false;
     };
   }, [activeRecordId, refreshVersion]);
+
+  // The list stacks above the detail on phones: bring the selected contact into view.
+  useEffect(() => {
+    if (!scrollToRecord || !activeRecord || activeRecord.id !== activeRecordId) return;
+    setScrollToRecord(false);
+    if (!window.matchMedia('(max-width: 800px)').matches) return;
+    const frame = window.requestAnimationFrame(() => {
+      recordDetailRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      recordDetailRef.current?.focus({ preventScroll: true });
+    });
+    return () => window.cancelAnimationFrame(frame);
+  }, [scrollToRecord, activeRecord, activeRecordId]);
 
   const refresh = () => {
     setSearchPage(0);
@@ -916,7 +930,7 @@ export function PrivateLibrary() {
                   className={`pl-contact-open ${record.id === activeRecordId ? "active" : ""}`}
                   aria-label={`View ${record.name}`}
                   aria-current={record.id === activeRecordId ? "true" : undefined}
-                  onClick={() => { setEditRequestedFor(null); setActiveRecordId(record.id); }}
+                  onClick={() => { setEditRequestedFor(null); setScrollToRecord(true); setActiveRecordId(record.id); }}
                 >
                   {record.record_type === "person" ? <UserRound size={16} /> : <Users size={16} />}
                   <span>
@@ -925,7 +939,7 @@ export function PrivateLibrary() {
                   </span>
                 </button>
                 {canWrite && <button type="button" className="pl-contact-edit" aria-label={`Edit ${record.name}`}
-                  onClick={() => { setEditRequestedFor(record.id); setActiveRecordId(record.id); }}>Edit</button>}
+                  onClick={() => { setEditRequestedFor(record.id); setScrollToRecord(true); setActiveRecordId(record.id); }}>Edit</button>}
               </div>
             ))
           )}
@@ -939,7 +953,7 @@ export function PrivateLibrary() {
           </div>
         </aside>
         {activeRecord && (
-          <article className="pl-card">
+          <article className="pl-card" ref={recordDetailRef} tabIndex={-1} aria-label="Selected contact details">
             <div className="pl-card-top">
               <span className="pl-private-label">
                 {activeRecord.record_type === "person"
