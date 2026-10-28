@@ -2434,6 +2434,7 @@ function AssistantLayer({ page, onNavigate, onOpenMember, onMessageMember, onReq
         return 'Reading this page to you'
       }
       case 'stop-reading': stopReading(); return 'Stopped reading'
+      case 'hide-reading-bar': stopReading(); setVoiceSettings({ tapToRead: false }); return 'Closed the reading tile'
       case 'voice-off': setVoiceSettings({ speakReplies: false, conversation: false }); stopReading(); return 'Spoken replies off'
       case 'voice-on': setVoiceSettings({ speakReplies: true }); return 'Spoken replies on'
       case 'text-size': { const v = action.value as TextScale | null; if (!v || !textScales.includes(v)) return null; setTextScale(v); return `Text size set to ${v}` }
@@ -2692,6 +2693,7 @@ function Shell({ startPage, feedOnly = false, assistant = true, crmSection }: { 
         return 'Reading this page to you'
       }
       case 'stop-reading': stopReading(); return 'Stopped reading'
+      case 'hide-reading-bar': stopReading(); setVoiceSettings({ tapToRead: false }); return 'Closed the reading tile'
       case 'voice-off': setVoiceSettings({ speakReplies: false, conversation: false }); stopReading(); return 'Spoken replies off'
       case 'voice-on': setVoiceSettings({ speakReplies: true }); return 'Spoken replies on'
       default: return null
