@@ -17,11 +17,11 @@ export function ContactWebFindings({suggestions,selected,onSelect}:{
   onSelect:(field:WebContactField,checked:boolean)=>void
 }) {
   return <div className="contact-web-findings" aria-label="Preview suggested contact details">
-    {suggestions.map(item=><label key={item.field} className="contact-web-finding">
-      <div className="contact-web-finding-choice">
+    {suggestions.map(item=><article key={item.field} className="contact-web-finding">
+      <label className="contact-web-finding-choice">
         <input type="checkbox" checked={selected.has(item.field)} onChange={e=>onSelect(item.field,e.target.checked)}/>
         <span><b>{labels[item.field]}</b><strong>{item.value}</strong></span>
-      </div>
+      </label>
       <blockquote>{item.quote}</blockquote>
       <div className="contact-web-source">
         <a href={item.sourceUrl} target="_blank" rel="noopener noreferrer">
@@ -29,7 +29,7 @@ export function ContactWebFindings({suggestions,selected,onSelect}:{
         </a>
         <small>Checked {new Date(item.checkedAt).toLocaleString()}</small>
       </div>
-    </label>)}
+    </article>)}
   </div>
 }
 
@@ -70,7 +70,7 @@ export function ContactWebLookup({kind,record,onSaved}:{
         kind,recordId:record.id,expectedUpdatedAt:record.updatedAt,confirmed:true,selected:chosen,
       }})
       setResult(null);setSelected(new Set())
-      setNotice('Approved contact fields saved with their public-source links.')
+      setNotice(kind==='crm'?'Approved fields saved; source links added to private CRM notes.':'Approved fields saved; original import provenance preserved.')
       await onSaved()
     }catch(cause){setError(cause instanceof Error?cause.message:'Selected fields could not be saved.')}
     finally{setBusy(null)}
