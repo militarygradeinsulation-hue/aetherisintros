@@ -1,0 +1,35 @@
+name: Private contact management
+on:
+  pull_request:
+    paths:
+      - 'src/aetheris/library/**'
+      - 'src/aetheris/pages/CrmPage.tsx'
+      - 'scripts/migration-checks/private-library.check.mjs'
+      - 'drizzle/migrations/0110_private_library_contact_management.sql'
+      - '.github/workflows/private-contact-management.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'src/aetheris/library/**'
+      - 'src/aetheris/pages/CrmPage.tsx'
+      - 'scripts/migration-checks/private-library.check.mjs'
+      - 'drizzle/migrations/0110_private_library_contact_management.sql'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  private-contacts:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - uses: oven-sh/setup-bun@v2
+      - name: Install locked dependencies
+        run: bun install --frozen-lockfile
+      - name: Contact editor field validation
+        run: npx vitest run src/aetheris/library/__tests__/contact-record-actions.test.ts
+      - name: Owner, editor, viewer and deletion migration tests
+        run: node scripts/migration-checks/run.mjs private-library
