@@ -683,3 +683,9 @@ function CreateForm({ kind, onClose }: { kind: 'person' | 'company' | 'opportuni
     <small>Saved once, available in CRM, Grid and every linked view.</small>
   </section>
 }
+
+type EditableField = 'fullName' | 'companyName' | 'title' | 'email' | 'phone'
+/** A row has information when anything beyond the name is filled in. */
+function hasDetails(p: CrmPerson) {
+  return [p.companyName, p.title, p.email, p.phone].some(v => typeof v === 'string' && v.trim() !== '')
+}
