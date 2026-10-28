@@ -1,0 +1,37 @@
+name: Contact web enrichment review
+on:
+  pull_request:
+    paths:
+      - 'src/aetheris/crm/contact-web-lookup.ts'
+      - 'src/aetheris/crm/ContactWebLookup.tsx'
+      - 'src/aetheris/crm/BulkContactWebLookup.tsx'
+      - 'src/aetheris/pages/CrmPage.tsx'
+      - 'src/aetheris/library/PrivateLibrary.tsx'
+      - 'src/lib/contactWebLookup.functions.ts'
+      - 'src/aetheris/__tests__/contact-web-lookup.test.ts'
+      - 'src/aetheris/__tests__/bulk-contact-web-lookup.test.ts'
+      - '.github/workflows/contact-web-enrichment.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'src/aetheris/crm/contact-web-lookup.ts'
+      - 'src/lib/contactWebLookup.functions.ts'
+  workflow_dispatch:
+permissions: { contents: read }
+jobs:
+  web-lookup:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22 }
+      - uses: oven-sh/setup-bun@v2
+      - name: Install locked dependencies
+        run: bun install --frozen-lockfile
+      - name: Build app
+        run: bunx vite build
+      - name: Check types
+        run: bunx tsc --noEmit -p .
+      - name: Verify identity, source quotes, and review-only field saves
+        run: bunx vitest run src/aetheris/__tests__/contact-web-lookup.test.ts src/aetheris/__tests__/bulk-contact-web-lookup.test.ts
