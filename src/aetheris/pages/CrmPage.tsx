@@ -30,6 +30,8 @@ import FullCrm from '../ledger/FullCrm'
 import SheetImport from '../ledger/SheetImport'
 import { hasPendingSheet } from '../drop-anywhere'
 import { daysLeftInTrash, isTrashExpired } from '../crm/trash'
+import { hasContactDetails, initialHideEmptyContacts } from '../crm/contact-visibility'
+import './crm-people-mobile.css'
 import { CrmOverviewBento } from '@/components/ui/crm-overview-bento'
 import { OpenDealRoomButton } from '../deals-ui'
 import { ProspectEngine } from '../prospect/ProspectEngine'
@@ -77,7 +79,7 @@ export default function CrmPage({ section }: { section?: 'crm' | 'pipeline' | un
   const [rowOrder, setRowOrder] = useState<string[]>([])
   useEffect(() => {
     try {
-      setHideEmpty(localStorage.getItem('aetheris.crm.hideEmpty') === '1')
+      setHideEmpty(initialHideEmptyContacts(localStorage.getItem('aetheris.crm.hideEmpty'), window.matchMedia('(max-width: 760px)').matches))
       setRowOrder(JSON.parse(localStorage.getItem('aetheris.crm.peopleOrder') || '[]'))
     } catch { /* ignore */ }
   }, [])
@@ -121,6 +123,11 @@ export default function CrmPage({ section }: { section?: 'crm' | 'pipeline' | un
   const passesFilters = (p: CrmPerson) =>
     (!filterLife || p.lifecycle === filterLife) && (!filterCompany || p.companyName === filterCompany) &&
     (filterHas === '' || (filterHas === 'email' ? !!p.email : filterHas === 'phone' ? !!p.phone : filterHas === 'no-email' ? !p.email : !p.phone))
+  const contactsInScope = people.filter(passesFilters)
+    .filter(p => !onlyUploaded || p.source.startsWith('Import · '))
+    .filter(p => match(`${p.fullName} ${p.title} ${p.companyName} ${p.email} ${p.phone}`))
+  const hiddenIncompleteCount = contactsInScope.filter(p => !hasContactDetails(p)).length
+  const visibleContacts = orderPeople(contactsInScope.filter(p => !hideEmpty || hasContactDetails(p)))
   const addRow = async () => {
     if (!draftRow.fullName.trim() || addingRow) return
     setAddingRow(true)
@@ -256,10 +263,13 @@ export default function CrmPage({ section }: { section?: 'crm' | 'pipeline' | un
         </select>
         {(filterLife || filterCompany || filterHas) && <Btn kind="quiet" onClick={() => { setFilterLife(''); setFilterCompany(''); setFilterHas('') }}>Clear filters</Btn>}
         <button type="button" className={`btn ${hideEmpty ? 'primary' : 'quiet'}`} aria-pressed={hideEmpty} onClick={() => toggleHideEmpty()}>
-          {hideEmpty ? 'Showing rows with info' : 'Hide empty rows'}
+          {hideEmpty ? `Show incomplete (${hiddenIncompleteCount})` : 'Hide empty rows'}
         </button>
         {rowOrder.length > 0 && <Btn kind="quiet" onClick={() => saveOrder([])}>Reset order</Btn>}
       </div>}
+      {!showTrash && hideEmpty && hiddenIncompleteCount > 0 && <p className="ops-note" role="status">
+        Hiding {hiddenIncompleteCount} incomplete {hiddenIncompleteCount === 1 ? 'contact' : 'contacts'} with no company, title, phone, email, location, LinkedIn or notes. Select "Show incomplete" to edit them.
+      </p>}
       {showTrash ? <div className="ops-table-scroll" tabIndex={0} aria-label="Trash">
         <p className="ops-note">Deleted people stay here for 30 days, then they're removed for good.</p>
         <table className="ops-table">
@@ -273,11 +283,32 @@ export default function CrmPage({ section }: { section?: 'crm' | 'pipeline' | un
             </tr>)}
           </tbody>
         </table>
-      </div> : <div className="ops-table-scroll" tabIndex={0} aria-label="CRM people table">
+      </div> : <>
+      <section className="crm-mobile-people" aria-label="CRM people on mobile">
+        {visibleContacts.length === 0 && <p className="ops-note">No contacts match the current filters. {hideEmpty && hiddenIncompleteCount ? 'Show incomplete to see contacts that need details.' : ''}</p>}
+        {visibleContacts.map(p => <article className="crm-mobile-person" key={p.id}>
+          <header>
+            <button type="button" className="crm-mobile-name" onClick={() => openPerson(p.id)} aria-label={`View ${p.fullName}`}>{p.fullName || 'Unnamed contact'}</button>
+            <span className="ops-chip">{p.lifecycle}</span>
+          </header>
+          {[['Company', p.companyName], ['Title', p.title], ['Email', p.email], ['Phone', p.phone], ['Location', p.location], ['LinkedIn', p.linkedinUrl]]
+            .filter((entry): entry is string[] => typeof entry[1] === 'string' && !!entry[1].trim())
+            .map(([label, value]) => <div className="crm-mobile-detail" key={label}>
+              <span>{label}</span><span>{value}</span>
+            </div>)}
+          {!hasContactDetails(p) && <p className="ops-note">This contact has only a name. Add details to complete the record.</p>}
+          <div className="crm-mobile-actions">
+            <button type="button" onClick={() => openPerson(p.id)}>View</button>
+            <button type="button" onClick={() => openPerson(p.id, true)}>Edit</button>
+            <button type="button" className="crm-mobile-trash" onClick={() => trashPerson(p)}>Trash</button>
+          </div>
+        </article>)}
+      </section>
+      <div className="ops-table-scroll crm-people-desktop" tabIndex={0} aria-label="CRM people table">
       <table className="ops-table">
         <thead><tr><th>Person</th><th>Lifecycle</th><th>Company</th><th>Title</th><th>Email</th><th>Phone</th><th>Network</th><th>Last activity</th><th></th></tr></thead>
         <tbody>
-          <tr className="ops-add-row">
+          {(!hideEmpty || Object.values(draftRow).some(value => value.trim())) && <tr className="ops-add-row">
             <td><input value={draftRow.fullName} onChange={e => setDraftRow(d => ({ ...d, fullName: e.target.value }))} onKeyDown={e => { if (e.key === 'Enter') void addRow() }} placeholder="+ Add a person — full name" aria-label="New person full name" /></td>
             <td>Lead</td>
             <td><input value={draftRow.companyName} onChange={e => setDraftRow(d => ({ ...d, companyName: e.target.value }))} onKeyDown={e => { if (e.key === 'Enter') void addRow() }} placeholder="Company" aria-label="New person company" /></td>
@@ -286,8 +317,8 @@ export default function CrmPage({ section }: { section?: 'crm' | 'pipeline' | un
             <td><input value={draftRow.phone} onChange={e => setDraftRow(d => ({ ...d, phone: e.target.value }))} onKeyDown={e => { if (e.key === 'Enter') void addRow() }} placeholder="Phone" aria-label="New person phone" /></td>
             <td colSpan={2}></td>
             <td><Btn kind="primary" disabled={!draftRow.fullName.trim() || addingRow} onClick={() => void addRow()}><Plus size={14} /> {addingRow ? 'Adding…' : 'Add row'}</Btn></td>
-          </tr>
-          {orderPeople(people.filter(passesFilters).filter(p => !onlyUploaded || p.source.startsWith('Import · ')).filter(p => !hideEmpty || hasDetails(p)).filter(p => match(`${p.fullName} ${p.title} ${p.companyName} ${p.email} ${p.phone}`))).map((p, idx, list) => {
+          </tr>}
+          {visibleContacts.map((p, idx, list) => {
             const member = memberFor(p)
             const cell = (field: EditableField) => (
               <td onClick={e => e.stopPropagation()}>
@@ -315,7 +346,7 @@ export default function CrmPage({ section }: { section?: 'crm' | 'pipeline' | un
           })}
         </tbody>
       </table>
-      </div>}
+      </div></>}
     </section>}
 
     {tab === 'companies' && <section>
@@ -685,7 +716,3 @@ function CreateForm({ kind, onClose }: { kind: 'person' | 'company' | 'opportuni
 }
 
 type EditableField = 'fullName' | 'companyName' | 'title' | 'email' | 'phone'
-/** A row has information when anything beyond the name is filled in. */
-function hasDetails(p: CrmPerson) {
-  return [p.companyName, p.title, p.email, p.phone].some(v => typeof v === 'string' && v.trim() !== '')
-}

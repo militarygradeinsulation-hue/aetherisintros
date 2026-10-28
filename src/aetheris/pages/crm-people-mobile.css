@@ -1,0 +1,21 @@
+/* Mobile CRM contacts show only information that actually exists; no empty spreadsheet columns. */
+.crm-mobile-people { display:none; }
+@media(max-width:760px) {
+  .crm-people-desktop { display:none!important; }
+  .crm-mobile-people { display:grid; gap:12px; margin-block:14px; min-width:0; }
+  .crm-mobile-person { min-width:0; padding:16px; border:1px solid var(--line-dark,rgba(255,255,255,.18));
+    background:var(--raised,#16191d); border-radius:14px; }
+  .crm-mobile-person header { display:flex; justify-content:space-between; align-items:flex-start;
+    gap:12px; margin:0 0 10px; }
+  .crm-mobile-name { text-align:left; font-weight:700; font-size:17px; line-height:1.35;
+    overflow-wrap:anywhere; min-width:0; border:0; padding:0; background:none;
+    color:inherit; cursor:pointer; }
+  .crm-mobile-detail { display:grid; grid-template-columns:minmax(72px,95px) minmax(0,1fr);
+    gap:10px; padding:7px 0; border-bottom:1px solid rgba(255,255,255,.09); font-size:13px; line-height:1.4; }
+  .crm-mobile-detail > span:first-child { opacity:.75; font-weight:600; }
+  .crm-mobile-detail > span:last-child { min-width:0; overflow-wrap:anywhere; }
+  .crm-mobile-actions { display:flex; flex-wrap:wrap; gap:8px; margin-top:14px; }
+  .crm-mobile-actions button { min-height:42px; padding:9px 15px; border:1px solid var(--line-dark,#555);
+    border-radius:9px; background:transparent; color:inherit; font:600 13px/1.2 inherit; cursor:pointer; }
+  .crm-mobile-actions .crm-mobile-trash { margin-left:auto; color:#ef7e7e; border-color:rgba(239,126,126,.5); }
+}
