@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import { readFileSync } from 'node:fs'
-import { createRemoteProLayer } from '../domain/pro-repository'
+import { createRemoteProLayer, proTableNames } from '../domain/pro-repository'
 import type { TableGateway } from '../domain/repository'
 
 const gateway = (over: Partial<TableGateway> = {}): TableGateway => ({
@@ -14,7 +14,7 @@ const gateway = (over: Partial<TableGateway> = {}): TableGateway => ({
 describe('remote professional layer — truthful instrumentation', () => {
   it('reports load errors and never keeps sample rows in live mode', async () => {
     const layer = createRemoteProLayer(gateway({
-      select: async table => { if (table === 'deal_rooms') throw new Error('permission denied'); return [] },
+      select: async table => { if (table === proTableNames.dealRooms) throw new Error('permission denied'); return [] },
     }))
     await layer.ready
     expect(layer.loadErrors().dealRooms).toBe('permission denied')
