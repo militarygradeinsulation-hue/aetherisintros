@@ -6332,3 +6332,8 @@ body:has([role=menu],[role=listbox],.ix-mobile-sheet,.topbar-dropmenu,.notificat
   .meeting-chat-list{max-height:160px}
   .meeting-notes ol,.meeting-notes ul{overscroll-behavior:contain}
 }
+.ops-table .ops-cell-input{width:100%;min-width:7rem;background:transparent;border:1px solid transparent;border-radius:6px;padding:.3rem .4rem;color:inherit;font:inherit}
+.ops-table .ops-cell-input:hover{border-color:rgba(255,255,255,.12)}
+.ops-table .ops-cell-input:focus{outline:none;border-color:#0F5CCB;background:rgba(15,92,203,.08)}
+.ops-table tr[draggable]{cursor:grab}
+.ops-table tr.ops-row-dragging{opacity:.45}

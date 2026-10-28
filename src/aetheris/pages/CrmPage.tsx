@@ -306,8 +306,8 @@ export default function CrmPage({ section }: { section?: 'crm' | 'pipeline' | un
               <td>{member ? <em className="ops-signal">{member.scoreTotal} · {member.relationshipStatus}</em> : '—'}</td>
               <td>{day(p.lastActivityAt)}</td>
               <td onClick={e => e.stopPropagation()}>
-                <button type="button" className="ops-link" aria-label={`Move ${p.fullName} up`} disabled={idx === 0} onClick={() => moveRow(list.map(x => x.id), p.id, list[idx - 1].id)}>↑</button>{' '}
-                <button type="button" className="ops-link" aria-label={`Move ${p.fullName} down`} disabled={idx === list.length - 1} onClick={() => moveRow(list.map(x => x.id), p.id, list[idx + 1].id)}>↓</button>{' '}
+                <button type="button" className="ops-link" aria-label={`Move ${p.fullName} up`} disabled={idx === 0} onClick={() => moveRow(list.map(x => x.id), p.id, list[idx - 1]!.id)}>↑</button>{' '}
+                <button type="button" className="ops-link" aria-label={`Move ${p.fullName} down`} disabled={idx === list.length - 1} onClick={() => moveRow(list.map(x => x.id), p.id, list[idx + 1]!.id)}>↓</button>{' '}
                 <button type="button" className="ops-link" aria-label={`View ${p.fullName}`} onClick={() => openPerson(p.id)}>View</button>{' '}
                 <button type="button" className="ops-link" aria-label={`Move ${p.fullName} to Trash`} onClick={() => trashPerson(p)}>Trash</button>
               </td>
