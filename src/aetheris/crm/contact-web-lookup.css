@@ -1,0 +1,23 @@
+.contact-web-lookup { margin:16px 0; min-width:0; border:1px solid var(--line-dark,rgba(255,255,255,.16)); border-radius:14px; padding:16px; background:var(--raised,rgba(255,255,255,.035)); }
+.contact-web-lookup header { display:flex; align-items:flex-start; justify-content:space-between; flex-wrap:wrap; gap:12px; }
+.contact-web-lookup h3 { font-size:17px; line-height:1.3; margin:0 0 6px; }
+.contact-web-lookup p { font-size:13px; line-height:1.55; margin:6px 0 12px; }
+.contact-web-lookup button,.contact-web-actions button { min-height:42px; padding:9px 13px; border:1px solid var(--line-dark,rgba(255,255,255,.2)); border-radius:9px; background:var(--acc-wash,rgba(238,76,61,.1)); color:inherit; font:inherit; font-size:13px; font-weight:600; cursor:pointer; display:inline-flex; align-items:center; gap:8px; }
+.contact-web-lookup button:disabled,.contact-web-actions button:disabled { opacity:.55; cursor:not-allowed; }
+.contact-web-lookup button.quiet,.contact-web-actions button.quiet { background:transparent; }
+.contact-web-privacy { display:flex; gap:8px; align-items:flex-start; color:var(--muted,#adb4bc); }
+.contact-web-privacy svg { flex-shrink:0; margin-top:2px; }
+.contact-web-findings { display:grid; gap:10px; }
+.contact-web-finding { border:1px solid var(--line-dark,rgba(255,255,255,.18)); border-radius:10px; padding:12px; min-width:0; }
+.contact-web-finding-choice { display:flex; align-items:flex-start; gap:10px; }
+.contact-web-finding-choice input { width:18px; height:18px; flex-shrink:0; margin-top:3px; accent-color:var(--cobalt,#3b82f6); }
+.contact-web-finding-choice span { display:grid; min-width:0; gap:4px; line-height:1.45; }
+.contact-web-finding-choice b { color:var(--muted,#aeb8c3); font-size:12px; }
+.contact-web-finding-choice strong { font-size:15px; overflow-wrap:anywhere; }
+.contact-web-finding blockquote { font-size:12px; border-left:2px solid var(--cobalt,#3b82f6); padding:5px 0 5px 12px; margin:12px 0; white-space:normal; overflow-wrap:anywhere; line-height:1.6; opacity:.9; }
+.contact-web-source { display:flex; flex-wrap:wrap; gap:8px; justify-content:space-between; align-items:center; font-size:12px; }
+.contact-web-source a { display:inline-flex; gap:6px; align-items:center; color:inherit; overflow-wrap:anywhere; }
+.contact-web-source small { opacity:.75; }
+.contact-web-actions { display:flex; flex-wrap:wrap; align-items:center; gap:8px; margin-top:14px; }
+.contact-web-error { color:#f59b9b; } .contact-web-success { color:#7fd1b2; }
+@media(max-width:760px) { .contact-web-lookup { padding:12px; } .contact-web-lookup header button { width:100%; justify-content:center; } .contact-web-actions button { flex:1 1 auto; justify-content:center; } }
