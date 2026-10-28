@@ -9,6 +9,8 @@ on:
       - 'src/lib/meetingBrief.functions.ts'
       - 'drizzle/migrations/0111_meeting_personal_briefs.sql'
       - 'scripts/meeting-history-check/**'
+      - 'src/aetheris/__tests__/meeting-brief-release.test.ts'
+      - 'src/aetheris/__tests__/premeeting-brief-release.test.ts'
       - '.github/workflows/meeting-history-check.yml'
   push:
     branches: [main]
@@ -35,7 +37,7 @@ jobs:
         run: bunx vite build
       - name: Typecheck
         run: bunx tsc --noEmit -p .
-      - name: Date grouping test
-        run: bunx vitest run src/aetheris/__tests__/meeting-history.test.ts
+      - name: Date grouping and personal brief contract tests
+        run: bunx vitest run src/aetheris/__tests__/meeting-history.test.ts src/aetheris/__tests__/meeting-brief-release.test.ts src/aetheris/__tests__/premeeting-brief-release.test.ts
       - name: Actual RLS and schema compatibility test
         run: node scripts/meeting-history-check/run.mjs
