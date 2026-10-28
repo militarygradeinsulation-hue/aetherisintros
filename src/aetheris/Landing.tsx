@@ -53,10 +53,15 @@ function shuffledOrder(avoidFirst?: number) {
 
 function LandingButlerIdeas() {
   const [tip, setTip] = useState(-1)
+  const [dismissed, setDismissed] = useState(false)
   const queue = useRef<number[]>([])
   const nextTip = () => {
+    // Butler can also clear his own tile: tapping the robot while an idea
+    // is showing dismisses it; tapping again brings back a fresh one.
+    if (!dismissed && tip >= 0) { setDismissed(true); return }
     if (queue.current.length === 0) queue.current = shuffledOrder(tip < 0 ? undefined : tip)
     setTip(queue.current.shift()!)
+    setDismissed(false)
   }
   return <div className="ael-butler-ideas">
     <button type="button" className="ael-butler-idea-trigger"
@@ -65,10 +70,16 @@ function LandingButlerIdeas() {
       <ButlerAvatar robot className="butler-home-robot" view="social" />
       <span className="ael-butler-idea-action">ASK BUTLER FOR AN IDEA <ArrowUpRight aria-hidden="true" size={14}/></span>
     </button>
-    <div className="ael-butler-idea-message" id="ael-butler-idea-message" role="status" aria-live="polite" aria-atomic="true">
-      <span className="ael-carousel-label">BUTLER'S IDEA</span>
-      <p>{tip < 0 ? 'Click the robot for a quick tip.' : BUTLER_IDEAS[tip]}</p>
-    </div>
+    {!dismissed && (
+      <div className="ael-butler-idea-message" id="ael-butler-idea-message" role="status" aria-live="polite" aria-atomic="true">
+        <button type="button" className="ael-butler-idea-close"
+          onClick={() => setDismissed(true)} aria-label="Dismiss Butler's idea">
+          <X aria-hidden="true" size={13} />
+        </button>
+        <span className="ael-carousel-label">BUTLER'S IDEA</span>
+        <p>{tip < 0 ? 'Click the robot for a quick tip.' : BUTLER_IDEAS[tip]}</p>
+      </div>
+    )}
   </div>
 }
 
