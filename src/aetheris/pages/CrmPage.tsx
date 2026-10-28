@@ -256,7 +256,7 @@ export default function CrmPage({ section }: { section?: 'crm' | 'pipeline' | un
         <Btn kind={showTrash ? 'primary' : 'quiet'} onClick={() => setShowTrash(v => !v)}>Trash ({trashed.length})</Btn>
       </div>
       {!showTrash && bulkWebOpen && <BulkContactWebLookup people={people} onSaved={()=>ops.refresh()} onClose={()=>setBulkWebOpen(false)}/>}
-      {!showTrash && onlyUploaded && <p className="ops-note" role="status">Showing only contacts added through the CRM spreadsheet importer. Open any row to view it or choose Edit to jump straight to its fields.</p>
+      {!showTrash && onlyUploaded && <p className="ops-note" role="status">Showing only contacts added through the CRM spreadsheet importer. Open any row to view it or choose Edit to jump straight to its fields.</p>}
       {!showTrash && <div className="ops-toolbar" aria-label="Filter people">
         <select value={filterLife} onChange={e => setFilterLife(e.target.value)} aria-label="Filter by lifecycle">
           <option value="">All lifecycles</option>{lifecycles.map(l => <option key={l} value={l}>{l}</option>)}
