@@ -257,3 +257,38 @@ export async function rejectLibrarySuggestion(id: string) {
   const { error } = await db.rpc("reject_private_library_suggestion", { p_suggestion_id: id });
   if (error) throw new Error("This candidate could not be rejected.");
 }
+
+/** Editable fields only; source file, original columns, ownership and verification cannot be changed. */
+export interface LibraryContactEdits {
+  name: string;
+  phone: string;
+  email: string;
+  business: string;
+  title: string;
+  location: string;
+  website: string;
+  industry: string;
+  raw_contact_person: string;
+  dnc_status: string;
+}
+
+export async function updateLibraryRecord(
+  recordId: string,
+  expectedUpdatedAt: string,
+  fields: Partial<LibraryContactEdits>,
+): Promise<LibraryRecord> {
+  const { data, error } = await db.rpc("update_private_library_record", {
+    p_record_id: recordId,
+    p_expected_updated_at: expectedUpdatedAt,
+    p_fields: fields,
+  });
+  return checked(data as LibraryRecord | null, error, "The contact could not be saved.");
+}
+
+export async function deleteLibraryRecord(recordId: string, expectedUpdatedAt: string): Promise<void> {
+  const { data, error } = await db.rpc("delete_private_library_record", {
+    p_record_id: recordId,
+    p_expected_updated_at: expectedUpdatedAt,
+  });
+  if (error || data !== true) throw new Error(error?.message || "The contact was not deleted.");
+}

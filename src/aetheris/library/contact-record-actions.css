@@ -1,0 +1,23 @@
+/* Comfortable, accessible contact details and owner-only actions on mobile and desktop. */
+.pl-contact-row { display:flex; align-items:center; width:100%; gap:8px; border-bottom:1px solid var(--border,#454545); }
+.pl-contact-row > .pl-contact-open { display:flex; align-items:center; min-width:0; flex:1; gap:12px; padding:12px; background:transparent; color:inherit; border:0; border-radius:10px; text-align:left; cursor:pointer; }
+.pl-contact-row > .pl-contact-open.active { background:color-mix(in srgb,var(--primary,#d58c4b) 12%,transparent); }
+.pl-contact-row > .pl-contact-open > span { flex:1; min-width:0; }
+.pl-contact-row > .pl-contact-open b,.pl-contact-row > .pl-contact-open small { display:block; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.pl-contact-row > .pl-contact-open small { opacity:.75; }
+.pl-contact-row > .pl-contact-edit { flex:none; padding:8px 10px; margin-right:5px; border:1px solid var(--border,#666); border-radius:9px; color:inherit; background:transparent; cursor:pointer; }
+.pl-manage { min-width:0; margin-block:14px; }
+.pl-manage-actions { display:flex; gap:10px; align-items:center; flex-wrap:wrap; margin-block:12px; }
+.pl-manage-actions button { display:inline-flex; align-items:center; justify-content:center; gap:8px; min-height:40px; border-radius:10px; border:1px solid var(--border,#666); background:var(--card,#262626); color:inherit; padding:8px 14px; cursor:pointer; }
+.pl-manage-actions button:disabled { opacity:.55; cursor:not-allowed; }
+.pl-manage-actions .pl-manage-danger { border-color:#c85050; color:#f17d7d; }
+.pl-edit-form,.pl-delete-confirm { border:1px solid var(--border,#666); border-radius:16px; padding:18px; margin-block:12px; min-width:0; }
+.pl-edit-form p,.pl-delete-confirm p { line-height:1.55; }
+.pl-edit-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(min(100%,230px),1fr)); gap:16px; margin-top:14px; }
+.pl-edit-grid label,.pl-delete-confirm label { display:grid; gap:7px; min-width:0; font-size:13px; font-weight:600; }
+.pl-edit-grid input,.pl-delete-confirm input { box-sizing:border-box; width:100%; min-height:44px; border:1px solid var(--border,#666); border-radius:10px; background:var(--background,#171717); color:var(--foreground,#fff); padding:10px 12px; font:inherit; }
+.pl-manage-hint { font-size:13px; opacity:.8; }
+.pl-delete-confirm { border-color:#c85050; }
+.pl-delete-confirm strong { display:block; font-size:16px; }
+.pl-delete-confirm label { max-width:450px; }
+@media(max-width:620px){ .pl-contact-row > .pl-contact-edit { padding:8px; } .pl-edit-form,.pl-delete-confirm { padding:12px; } .pl-manage-actions button { flex:1 1 auto; } }

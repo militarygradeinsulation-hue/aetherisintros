@@ -6,7 +6,7 @@ import { CrmOpportunityReadiness } from '../components/CrmOpportunityReadiness'
  * Intros links to. A person entered once is the same person everywhere; nothing
  * is copied between modules.
  */
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import {
   ArrowRight, Building2, CheckCircle2, ChevronLeft, ClipboardList, Compass, Grid3x3,
   Handshake, LayoutGrid, Plus, ScanLine, Target, UserRound, FileUp,
@@ -63,10 +63,12 @@ export default function CrmPage({ section }: { section?: 'crm' | 'pipeline' | un
   const nav = useNav()
   const [tab, setTab] = useState<Tab>(() => (section === 'pipeline' ? 'opportunities' : section === 'crm' ? 'overview' : typeof window === 'undefined' ? 'overview' : (localStorage.getItem('aetheris.crm.tab') as Tab) || 'overview'))
   const [selected, setSelected] = useState<Selection>(null)
+  const [openForEdit, setOpenForEdit] = useState(false)
   const [query, setQuery] = useState('')
   const [showTrash, setShowTrash] = useState(false)
   const [filterLife, setFilterLife] = useState('')
   const [filterCompany, setFilterCompany] = useState('')
+  const [onlyUploaded, setOnlyUploaded] = useState(false)
   const [filterHas, setFilterHas] = useState<'' | 'email' | 'phone' | 'no-email' | 'no-phone'>('')
   const [draftRow, setDraftRow] = useState({ fullName: '', email: '', phone: '', title: '', companyName: '' })
   const [addingRow, setAddingRow] = useState(false)
@@ -80,7 +82,8 @@ export default function CrmPage({ section }: { section?: 'crm' | 'pipeline' | un
     try { localStorage.setItem('aetheris.crm.view', next) } catch { /* ignore */ }
   }
 
-  const go = (next: Tab) => { setTab(next); setSelected(null); try { localStorage.setItem('aetheris.crm.tab', next) } catch { /* ignore */ } }
+  const go = (next: Tab) => { setTab(next); setSelected(null); setOpenForEdit(false); try { localStorage.setItem('aetheris.crm.tab', next) } catch { /* ignore */ } }
+  const openPerson = (id: string, edit = false) => { setSelected({ type: 'person', id }); setOpenForEdit(edit) }
 
 
   const people = ops.people.filter(p => !p.archived && !p.deletedAt)
@@ -90,6 +93,7 @@ export default function CrmPage({ section }: { section?: 'crm' | 'pipeline' | un
     for (const p of ops.people) if (p.deletedAt && isTrashExpired(p.deletedAt)) void ops.deletePersonForever(p.id)
   }, [ops.people]) // eslint-disable-line react-hooks/exhaustive-deps
   const companyOptions = [...new Set(people.map(p => p.companyName).filter(Boolean))].sort()
+  const uploadedCount = people.filter(p => p.source.startsWith('Import · ')).length
   const passesFilters = (p: CrmPerson) =>
     (!filterLife || p.lifecycle === filterLife) && (!filterCompany || p.companyName === filterCompany) &&
     (filterHas === '' || (filterHas === 'email' ? !!p.email : filterHas === 'phone' ? !!p.phone : filterHas === 'no-email' ? !p.email : !p.phone))
@@ -128,7 +132,7 @@ export default function CrmPage({ section }: { section?: 'crm' | 'pipeline' | un
   /* --------------------------------------------------------------- detail */
 
   if (selected) {
-    return <CrmDetail selection={selected} onClose={() => setSelected(null)} onOpen={setSelected} />
+    return <CrmDetail selection={selected} startEditing={openForEdit} onClose={() => { setSelected(null); setOpenForEdit(false) }} onOpen={next => { setOpenForEdit(false); setSelected(next) }} />
   }
 
   const empty = !people.length && !companies.length && !opportunities.length
@@ -208,8 +212,13 @@ export default function CrmPage({ section }: { section?: 'crm' | 'pipeline' | un
         <input value={query} onChange={e => setQuery(e.target.value)} placeholder="Search people, titles, companies…" aria-label="Search people" />
         <Btn kind="secondary" onClick={() => setCreating('person')}><Plus size={14} /> New person</Btn>
         <Btn kind="secondary" onClick={() => setImporting(true)}><FileUp size={14} /> Import people</Btn>
+        <button type="button" className={`btn ${onlyUploaded ? "primary" : "quiet"}`} aria-pressed={onlyUploaded}
+          onClick={() => setOnlyUploaded(value => !value)}>
+          <FileUp size={14} /> Uploaded only ({uploadedCount})
+        </button>
         <Btn kind={showTrash ? 'primary' : 'quiet'} onClick={() => setShowTrash(v => !v)}>Trash ({trashed.length})</Btn>
       </div>
+      {!showTrash && onlyUploaded && <p className="ops-note" role="status">Showing only contacts added through the CRM spreadsheet importer. Open any row to view it or choose Edit to jump straight to its fields.</p>}
       {!showTrash && <div className="ops-toolbar" aria-label="Filter people">
         <select value={filterLife} onChange={e => setFilterLife(e.target.value)} aria-label="Filter by lifecycle">
           <option value="">All lifecycles</option>{lifecycles.map(l => <option key={l} value={l}>{l}</option>)}
@@ -250,17 +259,18 @@ export default function CrmPage({ section }: { section?: 'crm' | 'pipeline' | un
             <td colSpan={2}></td>
             <td><Btn kind="primary" disabled={!draftRow.fullName.trim() || addingRow} onClick={() => void addRow()}><Plus size={14} /> {addingRow ? 'Adding…' : 'Add row'}</Btn></td>
           </tr>
-          {people.filter(passesFilters).filter(p => match(`${p.fullName} ${p.title} ${p.companyName} ${p.email} ${p.phone}`)).map(p => {
+          {people.filter(passesFilters).filter(p => !onlyUploaded || p.source.startsWith('Import · ')).filter(p => match(`${p.fullName} ${p.title} ${p.companyName} ${p.email} ${p.phone}`)).map(p => {
             const member = memberFor(p)
-            return <tr key={p.id} onClick={() => setSelected({ type: 'person', id: p.id })}>
+            return <tr key={p.id} onClick={() => openPerson(p.id)}>
               <td><b>{p.fullName}</b></td>
               <td><span className="ops-chip">{p.lifecycle}</span></td>
               <td>{p.companyName || '—'}</td><td>{p.title || '—'}</td><td>{p.email || '—'}</td><td>{p.phone || '—'}</td>
               <td>{member ? <em className="ops-signal">{member.scoreTotal} · {member.relationshipStatus}</em> : '—'}</td>
               <td>{day(p.lastActivityAt)}</td>
               <td onClick={e => e.stopPropagation()}>
-                <button className="ops-link" onClick={() => setSelected({ type: 'person', id: p.id })}>View / edit</button>{' '}
-                <button className="ops-link" onClick={() => trashPerson(p)}>Delete</button>
+                <button type="button" className="ops-link" aria-label={`View ${p.fullName}`} onClick={() => openPerson(p.id)}>View</button>{' '}
+                <button type="button" className="ops-link" aria-label={`Edit ${p.fullName}`} onClick={() => openPerson(p.id, true)}>Edit</button>{' '}
+                <button type="button" className="ops-link" aria-label={`Move ${p.fullName} to Trash`} onClick={() => trashPerson(p)}>Trash</button>
               </td>
             </tr>
           })}
@@ -377,13 +387,22 @@ export default function CrmPage({ section }: { section?: 'crm' | 'pipeline' | un
 
 /* ------------------------------------------------------------------ detail */
 
-function CrmDetail({ selection, onClose, onOpen }: {
-  selection: NonNullable<Selection>; onClose: () => void; onOpen: (s: Selection) => void
+function CrmDetail({ selection, onClose, onOpen, startEditing = false }: {
+  selection: NonNullable<Selection>; onClose: () => void; onOpen: (s: Selection) => void; startEditing?: boolean
 }) {
   const ops = useOps()
   const net = useNetwork()
   const nav = useNav()
   const [note, setNote] = useState('')
+  const editSection = useRef<HTMLElement | null>(null)
+  useEffect(() => {
+    if (!startEditing || selection.type !== 'person') return
+    const frame = window.requestAnimationFrame(() => {
+      editSection.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+      editSection.current?.querySelector('input')?.focus({ preventScroll: true })
+    })
+    return () => window.cancelAnimationFrame(frame)
+  }, [selection.id, selection.type, startEditing])
   const [activity, setActivity] = useState('')
 
   const person = selection.type === 'person' ? ops.people.find(p => p.id === selection.id) : undefined
@@ -458,8 +477,9 @@ function CrmDetail({ selection, onClose, onOpen }: {
     </section>}
 
     <div className="ops-cols">
-      <section className="ops-panel">
+      <section ref={editSection} className="ops-panel">
         <Eyebrow>EDIT RECORD</Eyebrow>
+        {person && <p className="ops-note">Edit any field below. Changes save when you leave that field. Use Back to CRM to return to your contact list.</p>}
         {person && <div className="ops-form">
           <label>Name<input defaultValue={person.fullName} onBlur={e => void ops.updatePerson(person.id, { fullName: e.target.value })} /></label>
           <label>Title<input defaultValue={person.title} onBlur={e => void ops.updatePerson(person.id, { title: e.target.value })} /></label>

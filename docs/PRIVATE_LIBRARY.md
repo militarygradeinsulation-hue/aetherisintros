@@ -129,3 +129,21 @@ provenance, explicit record-sharing permissions, and manually saving evidence-ba
 enrichment suggestions. No licensed/approved automatic business or professional provider
 is configured, so automatic enrichment must remain unavailable until that integration is
 approved and privacy-reviewed.
+
+## Managing imported contacts
+
+In **Pocket → Private Library**, select a saved contact to view its normalized details.
+**Edit** changes only editable fields (name, phone, email, business, job title, location,
+website, industry, original contact-person text, and do-not-contact status). It never
+modifies import source cells, batch ownership, member status or verification. A stale
+editor cannot overwrite newer saved changes.
+
+**Delete** is a permanent, single-record operation restricted to the private workspace
+owner. The confirmation requires typing the full contact name; shared editors can edit
+but cannot delete. Deleting also removes that record's linked enrichment proposals, and
+an unchanged source file may re-import the contact if uploaded again. There is no
+contact export, bulk-delete, or provider transfer path.
+
+The RPCs require migration `0110_private_library_contact_management` *after*
+the existing private-library migrations. Publishing the interface alone does not
+install backend RPCs. Verify the deployment's actual database before enabling writes.
