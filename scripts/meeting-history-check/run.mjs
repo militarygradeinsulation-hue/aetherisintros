@@ -21,6 +21,7 @@ try {
       user_id uuid not null references auth.users(id),
       primary key(meeting_id,user_id)
     );
+    grant select on public.meeting_participants to authenticated;
     create table public.meeting_briefs(meeting_id uuid not null, content text not null);
     create function public.is_meeting_participant(p_meeting uuid)
     returns boolean language sql stable security definer set search_path=''
@@ -42,7 +43,7 @@ try {
   }
   const insert = 'insert into public.meeting_personal_briefs(user_id,meeting_id,other_user_id,summary) values ($1,$2,$3,$4) returning id'
   const own = await as(A,insert,[A,MID,B,'A private preparation'])
-  assert.equal(own.rows?.length,1,'host can create a personal brief for another attendee')
+  assert.equal(own.rows?.length,1,'host can create a personal brief for another attendee: '+(own.error??''))
   assert.equal((await as(B,"select id from public.meeting_personal_briefs")).rows?.length,0,'other attendee cannot see private brief')
   assert.equal((await as(C,"select id from public.meeting_personal_briefs")).rows?.length,0,'outsider cannot read private brief')
   assert.ok((await as(C,insert,[C,MID,A,'Intrusion'])).error,'outsider cannot create brief')
