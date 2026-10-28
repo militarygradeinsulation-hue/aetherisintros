@@ -100,6 +100,35 @@ export default async ({ ok, as, svc, A, B, C, ADMIN }) => {
       imported?.record_type === "person",
     "unknown do-not-contact and unverified status are preserved",
   );
+  // New contact mutations must be permission checked and preserve original source cells.
+  const originalStamp = (await as(A,
+    "select updated_at from public.get_private_library_record($1)", [imported?.id])).rows?.[0]?.updated_at;
+  ok(!!(await as(B, "select public.update_private_library_record($1,$2,$3::jsonb)",
+    [imported?.id, originalStamp, JSON.stringify({ title: "Outsider" })])).error,
+    "unshared users cannot edit contacts");
+  ok(!!(await as(null, "select public.update_private_library_record($1,$2,$3::jsonb)",
+    [imported?.id, originalStamp, JSON.stringify({ title: "Anonymous" })])).error,
+    "anonymous callers cannot edit contacts");
+  ok(!!(await as(A, "select public.update_private_library_record($1,$2,$3::jsonb)",
+    [imported?.id, originalStamp, JSON.stringify({ owner_id: B, verification_status: "verified" })])).error,
+    "identity and verification changes are not part of the editable whitelist");
+  ok(!!(await as(A, "select public.update_private_library_record($1,$2,$3::jsonb)",
+    [imported?.id, originalStamp, JSON.stringify({ email: "not-email" })])).error,
+    "manual edits validate email on the server");
+  const savedEdit = await as(A,
+    "select public.update_private_library_record($1,$2,$3::jsonb) result",
+    [imported?.id, originalStamp, JSON.stringify({ phone: "555-9999", business: "Updated Example Works" })]);
+  ok(savedEdit.rows?.[0]?.result?.phone === "555-9999"
+    && savedEdit.rows?.[0]?.result?.business === "Updated Example Works"
+    && savedEdit.rows?.[0]?.result?.verification_status === "unverified"
+    && savedEdit.rows?.[0]?.result?.original_columns?.Name === "Synthetic Morgan",
+    "confirmed edits preserve original import provenance and unverified state");
+  ok(!!(await as(A, "select public.update_private_library_record($1,$2,$3::jsonb)",
+    [imported?.id, originalStamp, JSON.stringify({ title: "Stale edit" })])).error,
+    "an outdated timestamp cannot overwrite a more recent contact");
+  ok(!!(await as(A, "update public.private_library_records set phone='555-0000' where id=$1",
+    [imported?.id])).error, "direct table updates remain forbidden even for owners");
+
   const firstDetail = await as(
     A,
     `select r.email,r.original_columns from public.get_private_library_record($1) r`,
@@ -204,6 +233,12 @@ export default async ({ ok, as, svc, A, B, C, ADMIN }) => {
     ).error,
     "read-only sharing cannot write imports",
   );
+  ok(!!(await as(C, "select public.update_private_library_record($1,$2,$3::jsonb)",
+    [imported?.id, savedEdit.rows?.[0]?.result?.updated_at, JSON.stringify({ title: "Read-only" })])).error,
+    "read-only workspace shares cannot edit private contacts");
+  ok(!!(await as(C, "select public.delete_private_library_record($1,$2)",
+    [imported?.id, savedEdit.rows?.[0]?.result?.updated_at])).error,
+    "read-only workspace shares cannot delete private contacts");
   ok(
     !!(await as(C, `select * from public.private_library_records`)).error,
     "a shared viewer cannot use direct table reads as an export path",
@@ -231,6 +266,20 @@ export default async ({ ok, as, svc, A, B, C, ADMIN }) => {
     !!(await as(C, `select public.deny_contact_data_export()`)).error,
     "an explicitly shared editor still cannot export contacts",
   );
+  const editorRecord = (await as(A,
+    "select id,updated_at from public.get_private_library_record((select id from public.search_private_library_records('Synthetic Casey',50,$1,0) limit 1))",
+    [workspaceId])).rows?.[0];
+  const editorUpdate = await as(C,
+    "select public.update_private_library_record($1,$2,$3::jsonb) result",
+    [editorRecord?.id, editorRecord?.updated_at, JSON.stringify({ title: "Approved editor update" })]);
+  ok(editorUpdate.rows?.[0]?.result?.title === "Approved editor update",
+    "an explicitly shared editor can update a contact in their workspace");
+  ok(!!(await as(C, "select public.delete_private_library_record($1,$2)",
+    [editorRecord?.id, editorUpdate.rows?.[0]?.result?.updated_at])).error,
+    "a shared editor cannot permanently delete a private contact");
+  ok(!!(await as(B, "select public.delete_private_library_record($1,$2)",
+    [editorRecord?.id, editorUpdate.rows?.[0]?.result?.updated_at])).error,
+    "an outsider cannot delete another member's contact");
   const pageOne = await as(A, `select id from public.search_private_library_records('',1,$1,0)`, [workspaceId]);
   const pageTwo = await as(A, `select id from public.search_private_library_records('',1,$1,1)`, [workspaceId]);
   ok(
@@ -243,6 +292,21 @@ export default async ({ ok, as, svc, A, B, C, ADMIN }) => {
       .rows?.length,
     "an authorized owner can open an individual contact detail",
   );
+
+  ok(!!(await as(A, "select public.delete_private_library_record($1,$2)",
+    [editorRecord?.id, editorRecord?.updated_at])).error,
+    "a stale editor cannot delete a newer contact version");
+  const deleteResult = await as(A,
+    "select public.delete_private_library_record($1,$2) result",
+    [editorRecord?.id, editorUpdate.rows?.[0]?.result?.updated_at]);
+  ok(deleteResult.rows?.[0]?.result === true,
+    "only the owner can delete the specifically selected contact");
+  ok((await as(A, "select id from public.get_private_library_record($1)",
+    [editorRecord?.id])).rows?.length === 0,
+    "deleted records are no longer available through the detail RPC");
+  ok((await as(A, "select id from public.search_private_library_records('Synthetic Casey',50,$1,0)",
+    [workspaceId])).rows?.length === 0,
+    "deleted contacts disappear from the paginated search");
 
   const recordId = (
     await as(A, `select id from public.search_private_library_records('',50,$1,0) limit 1`, [workspaceId])
@@ -330,8 +394,8 @@ export default async ({ ok, as, svc, A, B, C, ADMIN }) => {
     "revoking a share immediately removes access",
   );
   ok(
-    (await svc(`select count(*)::int n from public.private_library_records`))[0].n === 2,
-    "service role sees both private rows without changing their owner",
+    (await svc(`select count(*)::int n from public.private_library_records`))[0].n === 1,
+    "deleting one contact leaves the other contact in its private workspace",
   );
   const threadId = "dddddddd-dddd-4ddd-8ddd-dddddddddddd";
   await svc(`insert into public.dm_threads(id,member_a,member_b,created_by)
