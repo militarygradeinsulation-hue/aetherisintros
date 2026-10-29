@@ -11,6 +11,7 @@ import { useEffect, useId, useRef, useState, type ReactNode } from 'react'
 
 import { supabase } from '@/integrations/supabase/client'
 import { scanLinkedInProfile } from '@/lib/linkedinImport.functions'
+import { saveMyPersonalMindprint } from '@/lib/personalMindprint.functions'
 import { scanIndexedLinkedInUrl } from '@/lib/linkedinUrlLookup.functions'
 import type { IndexedSource } from './linkedin-index'
 import { normalizeLinkedInUrl } from './linkedin-import'
@@ -88,6 +89,9 @@ export function LinkedInScanPanel({
   const [edits, setEdits] = useState<ScanPatch>({})
   const [checked, setChecked] = useState<Set<ScanKey>>(new Set())
   const [outcome, setOutcome] = useState<ApplyOutcome | null>(null)
+  const [mindprintApproved, setMindprintApproved] = useState(false)
+  const [mindprintBusy, setMindprintBusy] = useState(false)
+  const [mindprintMessage, setMindprintMessage] = useState('')
   const pdfInput = useRef<HTMLInputElement>(null)
   const generation = useRef(0)
   const running = useRef(false)
@@ -101,7 +105,7 @@ export function LinkedInScanPanel({
       generation.current++; running.current = false
       setResult(null); setRows([]); setChecked(new Set()); setEdits({}); setContext(undefined)
       setText(''); setUrl(''); setPdf(null); setEvidenceText(''); setEvidenceAuthorized(false); setOutcome(null); setError(''); setBusy('')
-      setConsentedUrl(false); setIndexedSources([]); setIndexedUsed(false)
+      setConsentedUrl(false); setIndexedSources([]); setIndexedUsed(false); setMindprintApproved(false); setMindprintMessage('')
     })
     return () => { generation.current++; data.subscription.unsubscribe() }
   }, [demo])
@@ -109,7 +113,7 @@ export function LinkedInScanPanel({
   const scan = async () => {
     if (running.current) return
     const request = ++generation.current
-    setError(''); setOutcome(null)
+    setError(''); setOutcome(null); setMindprintApproved(false); setMindprintMessage('')
     if (url.trim() && !normalizeLinkedInUrl(url)) { setError('That is not a LinkedIn profile link. It looks like linkedin.com/in/name.'); return }
     setBusy('scan')
     running.current = true
@@ -165,6 +169,18 @@ export function LinkedInScanPanel({
       if (request !== generation.current) return
       setOutcome({ status: 'failed', message: `Not saved: ${e instanceof Error ? e.message : 'something went wrong.'}` })
     } finally { if (request === generation.current) { setBusy(''); running.current = false } }
+  }
+
+  const saveMindprint = async () => {
+    if (!result || !allowIndexedUrl || demo || !mindprintApproved || mindprintBusy) return
+    const request = generation.current
+    setMindprintBusy(true); setMindprintMessage('')
+    try {
+      await saveMyPersonalMindprint({ data: { scan: result.scan, confirmed: true, provenance: indexedUsed ? 'public_index' : 'supplied_profile' } })
+      if (request === generation.current) setMindprintMessage('Private Mindprint saved. Butler can now use your professional baseline. Your public profile is unchanged.')
+    } catch (cause) {
+      if (request === generation.current) setMindprintMessage(cause instanceof Error ? cause.message : 'Mindprint was not saved.')
+    } finally { if (request === generation.current) setMindprintBusy(false) }
   }
 
   const toggle = (key: ScanKey) => setChecked(c => { const n = new Set(c); if (n.has(key)) n.delete(key); else n.add(key); return n })
@@ -262,6 +278,13 @@ export function LinkedInScanPanel({
         </div>)}
         <p>Evidence and hypotheses stay in this private review, not your public profile. Missing evidence remains unknown.</p>
       </details>}
+      {allowIndexedUrl && !demo && <section className="li-public-review" aria-label="Create my private Mindprint">
+        <strong>Build my private Mindprint</strong>
+        <p>Keep this complete professional history as the baseline for Butler and your account. Unlike the public profile fields, career history, education and achievements remain private. Treat abilities and opportunities as self-reported, not independently verified.</p>
+        <label><input type="checkbox" checked={mindprintApproved} onChange={event => setMindprintApproved(event.target.checked)} disabled={mindprintBusy} /> I reviewed this professional scan and authorize Ask Intros to save it privately for my Butler.</label>
+        <Btn kind="secondary" disabled={!mindprintApproved || mindprintBusy || !!busy} onClick={() => void saveMindprint()}>{mindprintBusy ? 'Saving private Mindprint…' : 'Save private Mindprint for Butler'}</Btn>
+        {mindprintMessage && <p role="status" className="li-scan-note">{mindprintMessage}</p>}
+      </section>}
       {error && <p className="li-scan-error" role="alert">{error}</p>}
       <div className="li-scan-actions">
         <Btn disabled={busy === 'apply' || (!checked.size && !extraReview)} onClick={() => void apply()}>
