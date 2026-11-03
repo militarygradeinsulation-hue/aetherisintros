@@ -34,6 +34,8 @@ export function StartWorkspaceButton({
   const [open, setOpen] = useState(false);
   const [existing, setExisting] = useState<{ id: string; title: string } | null>(null);
   const [checked, setChecked] = useState(false);
+  const [availabilityError, setAvailabilityError] = useState('');
+  const [retry, setRetry] = useState(0);
   const [form, setForm] = useState<WorkspaceInput>({
     title: "",
     scope: "",
@@ -52,6 +54,7 @@ export function StartWorkspaceButton({
     let live = true;
     setChecked(false);
     setExisting(null);
+    setAvailabilityError('');
     findWorkspaceForSource(source, sourceId).then(
       (r) => {
         if (live) {
@@ -59,14 +62,17 @@ export function StartWorkspaceButton({
           setChecked(true);
         }
       },
-      () => {
-        if (live) setChecked(true);
+      (error) => {
+        if (live) {
+          setAvailabilityError(error instanceof Error ? error.message : 'Workspace service is not available.');
+          setChecked(true);
+        }
       },
     );
     return () => {
       live = false;
     };
-  }, [source, sourceId]);
+  }, [source, sourceId, retry]);
 
   const go = (id: string) => {
     try {
@@ -109,6 +115,12 @@ export function StartWorkspaceButton({
       setBusy(false);
     }
   };
+
+  if (availabilityError)
+    return <div className="og-start-workspace" role="alert">
+      <p className="og-note">{availabilityError}</p>
+      <Btn kind="quiet" onClick={() => setRetry(value => value + 1)}>Retry workspace connection</Btn>
+    </div>;
 
   if (existing)
     return (
