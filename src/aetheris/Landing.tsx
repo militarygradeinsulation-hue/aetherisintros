@@ -1,4 +1,5 @@
 import { useRef, useState } from 'react'
+import { LovablePartnerSpotlight } from "@/components/LovablePartnerSpotlight";
 import { ArrowRight, ArrowUpRight, X } from 'lucide-react'
 import { Link } from '@tanstack/react-router'
 import { useAccess } from './access'
@@ -113,6 +114,8 @@ export default function Landing() {
         <JoinAction signedIn={signedIn} className="ael-nav-cta ai-gradient-button" />
       </div>
     </header>
+
+    <LovablePartnerSpotlight />
 
     <section className="ael-hero ael-hero--carousel" id="ael-main" aria-labelledby="ael-hero-title">
       <h1 id="ael-hero-title" className="sr-only">Ask Intros — CEO and executive networking through warm, double opt-in introductions.</h1>
