@@ -1,30 +1,27 @@
 import assert from "node:assert/strict";
-import { createHash } from "node:crypto";
 import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
 
-const entry = process.argv[2] || "src/routes/index.tsx";
-const expectedSha = {
-  "lovable-certified-partner.webp": "6ec8a7a6abbaeb324093b907922a79d89edef29f",
-  "lovable-aetheris-announcement.webp": "eed48921aab22564d403b2bfdf309aa3a490795f",
-  "lovable-referral-qr.svg": "2ce441bc485956f691d0142969e64d411ddd481e",
-};
-function gitSha(content) {
-  return createHash("sha1").update("blob " + content.length + "\0").update(content).digest("hex");
-}
-for (const [name, sha] of Object.entries(expectedSha)) {
-  const bytes = readFileSync(resolve("public/partner", name));
-  assert.equal(gitSha(bytes), sha, name + " must match the original artwork or QR");
-}
+const entry = process.argv[2] || "src/aetheris/Landing.tsx";
 const component = readFileSync(resolve("src/components/LovablePartnerSpotlight.tsx"), "utf8");
 const css = readFileSync(resolve("src/components/LovablePartnerSpotlight.css"), "utf8");
 const page = readFileSync(resolve(entry), "utf8");
-assert.ok(component.includes('https://lovable.dev/?partner_ref=499V5382'), "wrong referral URL");
-assert.ok(component.includes('rel: "sponsored noopener noreferrer"'), "outbound links must be marked sponsored");
-assert.ok(component.includes('10 bonus credits'), "offer not shown");
-assert.ok(component.includes('eligible new users'), "eligibility disclosure missing");
-assert.ok(component.includes('/partner/lovable-referral-qr.svg'), "QR not embedded");
-assert.ok(page.includes('import { LovablePartnerSpotlight } from "@/components/LovablePartnerSpotlight";'), "missing component import");
-assert.ok(page.includes("<LovablePartnerSpotlight"), "component missing from homepage");
-assert.ok(css.includes("@media(max-width:480px)"), "mobile layout missing");
-console.log("PASS: Lovable partner artwork, QR, referral link and homepage placement verified.");
+const banner = readFileSync(resolve("public/partner/lovable-expert-aetheris-banner.svg"), "utf8");
+const qr = readFileSync(resolve("public/partner/lovable-profile-qr.svg"), "utf8");
+const profile = "https://lovable.dev/@theonlyarchitect";
+
+assert.ok(component.includes(profile), "banner must link to the selected Lovable profile");
+assert.ok(component.includes('rel: "noopener noreferrer"'), "outbound links need safe rel attributes");
+assert.ok(component.includes("/partner/lovable-expert-aetheris-banner.svg"), "unified banner missing");
+assert.ok(component.includes("/partner/lovable-profile-qr.svg"), "mobile QR missing");
+assert.ok(!component.includes("lovable-certified-partner.webp"), "old certified badge remains");
+assert.ok(!component.includes("lovable-aetheris-announcement.webp"), "old announcement remains");
+assert.ok(!component.includes("10 bonus credits"), "old marketing section remains");
+assert.ok(page.includes("<LovablePartnerSpotlight"), "top-of-site component missing");
+assert.ok(css.includes(".lv-partner-2026--compact"), "compact workspace layout missing");
+assert.ok(css.includes("@media(max-width:600px)"), "mobile layout missing");
+assert.ok(banner.includes("Lovable Expert Partner 2026"), "banner heading is missing");
+assert.ok(banner.includes("Hire Aetheris Technology"), "banner CTA is missing");
+assert.ok(banner.includes(profile), "banner QR destination does not match profile");
+assert.ok(qr.includes(profile), "QR destination does not match profile");
+console.log("PASS: one unified Lovable Expert banner, profile link, QR and responsive placements");
