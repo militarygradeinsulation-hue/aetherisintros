@@ -1,0 +1,38 @@
+/* Shared Aetheris/Lovable partner section. Scoped to avoid altering site UI. */
+.lv-partner-2026,.lv-partner-2026 *{box-sizing:border-box}
+.lv-partner-2026{position:relative;isolation:isolate;z-index:2;width:100%;padding:clamp(25px,4vw,54px) clamp(16px,3vw,38px);background:radial-gradient(ellipse at 95% 60%,rgba(76,90,192,.21),transparent 50%),radial-gradient(ellipse at 9% 4%,rgba(218,60,88,.16),transparent 45%),#0b101a;color:#f8f7fb;border-block:1px solid rgba(255,255,255,.16);font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+.lv-partner-2026__inner{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,.85fr);gap:clamp(20px,4vw,54px);align-items:center;max-width:1290px;margin:0 auto;min-width:0}
+.lv-partner-2026__copy{min-width:0}
+.lv-partner-2026__eyebrow{margin:0 0 12px;color:#fc8d9b;font-size:11px;line-height:1.5;letter-spacing:.16em;font-weight:800}
+.lv-partner-2026__badge{display:inline-block;max-width:min(100%,330px);border-radius:12px}
+.lv-partner-2026__badge img{display:block;width:100%;height:auto;max-height:115px;object-fit:contain;border-radius:12px}
+.lv-partner-2026 h2{margin:15px 0 10px;color:#fff;font-size:clamp(24px,3.3vw,42px);line-height:1.07;font-weight:850;letter-spacing:-.035em;text-transform:uppercase;text-wrap:balance}
+.lv-partner-2026 h2 span{color:#ff869a}
+.lv-partner-2026__description{margin:0 0 17px!important;max-width:56ch;color:#d1d9e8!important;font-size:15px!important;line-height:1.5!important}
+.lv-partner-2026__cta{display:inline-flex;min-height:46px;justify-content:center;align-items:center;gap:13px;padding:11px 20px;border-radius:999px;border:1px solid #fc8899;background:#c74355;color:#fff!important;text-decoration:none!important;font-size:14px;font-weight:800;transition:background .18s}
+.lv-partner-2026__cta:hover{background:#e25768;color:white}
+.lv-partner-2026__terms{margin:12px 0 0!important;max-width:66ch;color:#aebed0!important;font-size:11px!important;line-height:1.45!important}
+.lv-partner-2026__visuals{display:flex;align-items:center;justify-content:center;gap:clamp(12px,2vw,26px);min-width:0}
+.lv-partner-2026__poster,.lv-partner-2026__qr{display:block;flex:none;text-decoration:none;border-radius:16px}
+.lv-partner-2026__poster img{display:block;width:clamp(130px,16vw,240px);height:auto;aspect-ratio:1;object-fit:contain;border-radius:16px;box-shadow:0 18px 45px rgba(0,0,0,.4)}
+.lv-partner-2026__qr-group{flex:0 0 auto;text-align:center}
+.lv-partner-2026__qr{padding:8px;background:#fff;border-radius:13px}
+.lv-partner-2026__qr img{display:block;width:clamp(104px,12vw,165px);height:auto;aspect-ratio:1}
+.lv-partner-2026__qr-group p{margin:8px 0 0!important;color:#cdd7e8!important;font-size:11px!important;font-weight:700}
+.lv-partner-2026 a:focus-visible{outline:3px solid white;outline-offset:4px}
+@media(max-width:790px){.lv-partner-2026__inner{grid-template-columns:1fr}.lv-partner-2026__visuals{justify-content:flex-start}.lv-partner-2026__poster img{width:min(45vw,220px)}.lv-partner-2026__qr img{width:min(28vw,145px)}}
+@media(max-width:480px){.lv-partner-2026{padding:22px 16px}.lv-partner-2026__eyebrow{font-size:10px;letter-spacing:.08em}.lv-partner-2026 h2{font-size:clamp(23px,7.7vw,36px)}.lv-partner-2026__cta{width:100%}.lv-partner-2026__poster img{width:min(47vw,190px)}.lv-partner-2026__qr img{width:min(29vw,125px)}.lv-partner-2026__qr{padding:5px}}
+/* Obsidian is an IDE, so its top placement must not engulf the work area. */
+.lv-partner-2026--compact{padding:12px 18px;flex:none}
+.lv-partner-2026--compact .lv-partner-2026__inner{display:flex;gap:18px;justify-content:space-between}
+.lv-partner-2026--compact .lv-partner-2026__copy{flex:1}
+.lv-partner-2026--compact .lv-partner-2026__eyebrow{margin-bottom:6px}
+.lv-partner-2026--compact .lv-partner-2026__badge{max-width:190px}
+.lv-partner-2026--compact .lv-partner-2026__badge img{max-height:58px}
+.lv-partner-2026--compact h2{font-size:clamp(17px,1.45vw,22px);margin:6px 0}
+.lv-partner-2026--compact .lv-partner-2026__description{font-size:12px!important;margin-bottom:8px!important}
+.lv-partner-2026--compact .lv-partner-2026__cta{min-height:36px;padding:6px 15px;font-size:12px}
+.lv-partner-2026--compact .lv-partner-2026__terms{font-size:10px!important}
+.lv-partner-2026--compact .lv-partner-2026__poster img{width:105px}
+.lv-partner-2026--compact .lv-partner-2026__qr img{width:86px}
+@media(max-width:900px){.lv-partner-2026--compact .lv-partner-2026__inner{flex-direction:column}.lv-partner-2026--compact .lv-partner-2026__visuals{justify-content:flex-start}}
