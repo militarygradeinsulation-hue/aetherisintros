@@ -1,5 +1,6 @@
 import { ArrowRight, BookOpenText, BriefcaseBusiness, MessageCircle, Network, Send, Users } from 'lucide-react'
 import { useNetwork } from '@/aetheris/store'
+import { ExecutiveBriefPanel } from './ExecutiveBriefPanel'
 import { memberOverviewSnapshot } from '@/aetheris/live-overview'
 import type { ActivePage } from '../layout/TopNavigation'
 import './live-executive-overview.css'
@@ -40,6 +41,11 @@ export function LiveExecutiveOverview({ onNavigate, onWorkspace }: Props) {
       </div>
       <button type="button" className="live-exec-view-feed" onClick={openFeed}>Open social feed <ArrowRight size={15}/></button>
     </div>
+
+    <ExecutiveBriefPanel onOpen={destination => {
+      if (destination === 'intros' || destination === 'meetings') onNavigate(destination)
+      else onWorkspace('crm')
+    }}/>
 
     {summary.state === 'loading' ? <div className="live-exec-state" role="status">Loading your private network overview…</div>
       : summary.state === 'unavailable' ? <div className="live-exec-state live-exec-error" role="alert">
