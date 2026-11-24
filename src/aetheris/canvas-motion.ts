@@ -18,6 +18,8 @@ export function useAmbientCanvas(create: (ctx: CanvasRenderingContext2D, canvas:
     const renderer = create(ctx, canvas);
     const media = window.matchMedia('(prefers-reduced-motion: reduce)');
     let visible = false, raf = 0, last = 0, elapsed = 0, frames = 0;
+    let interacting = false;
+    let resumeTimer: ReturnType<typeof setTimeout> | undefined;
     const render = (step: number) => {
       elapsed += step;
       renderer.draw(step, elapsed);
@@ -33,9 +35,15 @@ export function useAmbientCanvas(create: (ctx: CanvasRenderingContext2D, canvas:
     };
     const sync = () => {
       cancelAnimationFrame(raf); raf = 0;
-      const running = motionEnabled(speed, media.matches, document.hidden, visible);
+      const running = motionEnabled(speed, media.matches, document.hidden, visible && !interacting);
       canvas.dataset['motion'] = running ? 'running' : 'paused';
       if (running) { last = performance.now(); raf = requestAnimationFrame(tick); }
+    };
+    const onInteraction = () => {
+      if (!visible || document.hidden || speed <= 0 || media.matches) return;
+      if (!interacting) { interacting = true; sync(); }
+      clearTimeout(resumeTimer);
+      resumeTimer = setTimeout(() => { interacting = false; sync(); }, 180);
     };
     const resize = () => {
       const width = canvas.clientWidth, height = canvas.clientHeight;
@@ -53,8 +61,12 @@ export function useAmbientCanvas(create: (ctx: CanvasRenderingContext2D, canvas:
     theme.observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
     observer.observe(canvas); intersection.observe(canvas);
     document.addEventListener('visibilitychange', sync); media.addEventListener('change', sync);
+    document.addEventListener('scroll', onInteraction, {capture: true, passive: true});
+    window.addEventListener('aetheris:workspace-navigated', onInteraction);
     resize();
     return () => {
+      clearTimeout(resumeTimer); document.removeEventListener('scroll', onInteraction, true);
+      window.removeEventListener('aetheris:workspace-navigated', onInteraction);
       cancelAnimationFrame(raf); observer.disconnect(); intersection.disconnect(); theme.disconnect();
       document.removeEventListener('visibilitychange', sync); media.removeEventListener('change', sync);
     };

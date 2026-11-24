@@ -157,9 +157,13 @@ try{
     await checkMenuAlignment(sidebar,theme+' desktop');
     if(process.env.NAV_SCREENSHOT_DIR) await page.screenshot({path:process.env.NAV_SCREENSHOT_DIR+'/'+theme+'-desktop.png'});
     await checkDashboardBoard(page,theme);
+    const persistentNav=sidebar.locator('nav.ledger-native-nav');
+    await persistentNav.evaluate(el=>{el.dataset.mountProof='persistent-navigation'});
     await sidebar.getByRole('button',{name:'Network',exact:true}).click();
     await page.locator('.ledger-directory-table').waitFor({state:'visible',timeout:30000});
     check(await page.locator('[data-arch-page="people"]').count()===1,theme+' contacts use CRM records');
+    check(await persistentNav.getAttribute('data-mount-proof')==='persistent-navigation',theme+' sidebar DOM and native scroll survive a tab change');
+    check(await page.locator('#aetheris-workspace-content').evaluate(el=>el.scrollTop===0),theme+' new tab resets its own pane without smooth-scroll animation');
     await checkBrand(page,theme+' Contacts');
     await sidebar.getByRole('button',{name:'CRM & Pipeline',exact:true}).click();
     await page.locator('.ledger-workspace-modules').waitFor({state:'visible',timeout:30000});

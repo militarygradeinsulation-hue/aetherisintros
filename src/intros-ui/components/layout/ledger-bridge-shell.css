@@ -398,3 +398,10 @@
 @media (prefers-reduced-motion:reduce) {
  :root body .ix-root.ledger-native-app .ledger-native-quick-dock .ask-macos-dock {transition:none}
 }
+
+/* The persistent member pane owns vertical scrolling. Keep its available width
+   stable across short and long tabs, and never animate programmatic resets. */
+:root body .ix-root.ledger-native-app #aetheris-workspace-content {
+  scroll-behavior: auto !important;
+  scrollbar-gutter: stable;
+}
