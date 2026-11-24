@@ -11,7 +11,7 @@ import { NetworkCommentComposer } from './NetworkCommentComposer'
 import { memberPhotoSource } from './member-media'
 import './editorial-media.css'
 import { AttachButton, MessageBody, attachmentPreview } from './MessageAttachments'
-import { useEffect, useMemo, useState, type ReactNode } from 'react'
+import { useEffect, useLayoutEffect, useMemo, useRef, useState, type ReactNode } from 'react'
 import { useAppearance } from './AppearanceMode'
 import { Link } from '@tanstack/react-router'
 import {
@@ -2810,10 +2810,26 @@ function Shell({ startPage, feedOnly = false, assistant = true, crmSection }: { 
     window.addEventListener('aetheris:navigate', go)
     return () => window.removeEventListener('aetheris:navigate', go)
   }, [])
-  useEffect(() => { window.scrollTo({ top: 0, behavior: 'auto' }) }, [page, selected?.id])
+  const surfaceRef = useRef<HTMLDivElement>(null)
+  const previousLocation = useRef<string | null>(null)
+  const locationKey = page + ':' + (selected?.id ?? '')
+  useLayoutEffect(() => {
+    const previous = previousLocation.current
+    previousLocation.current = locationKey
+    if (previous === locationKey) return
+    const workspace = surfaceRef.current?.closest<HTMLElement>('#aetheris-workspace-content')
+    if (workspace) {
+      // The parent owns cross-tab scrolling. Only an internal route change
+      // should reset its pane; mounting an embedded feed must never move the page.
+      if (previous !== null) {
+        workspace.scrollTop = 0
+        window.dispatchEvent(new Event('aetheris:workspace-navigated'))
+      }
+    } else window.scrollTo({ top: 0, behavior: 'instant' })
+  }, [locationKey])
 
   return <NavCtx.Provider value={navApi}>
-    <div className={`app-shell social-shell ${feedOnly ? 'home-social-only' : ''} ${contextOpen ? 'show-context' : ''}`}>
+    <div ref={surfaceRef} className={`app-shell social-shell ${feedOnly ? 'home-social-only' : ''} ${contextOpen ? 'show-context' : ''}`}>
       <header className="social-topnav">
         <button className="social-brand" onClick={() => setPage('home')} aria-label={isShowcase() ? 'Ask Intros Home — Demo' : 'Ask Intros Home'}><Brand />{isShowcase() && <span className="demo-flag">Demo</span>}</button>
         <nav aria-label="Primary navigation">{nav.map(item => {

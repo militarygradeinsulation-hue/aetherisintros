@@ -1,7 +1,7 @@
 import { useEffect, useRef } from 'react'
 import {
   advanceSpring, clamp, instrumentPosition, scrollPercent, springSettled,
-  type CaliperSpring,
+  caliperGeometryDue, CALIPER_SECTION_LIMIT, type CaliperSpring,
 } from './scroll-caliper-core'
 import './system-scroll-caliper.css'
 
@@ -67,16 +67,21 @@ export function SystemScrollCaliper() {
     let frame = 0
     let lastFrame = 0
     let lastScroll = performance.now()
-    let lastTop = tracked.scrollTop
     let velocity = 0
     let scrollPos = 0
-    let sectionNumber = -1
-    let sectionTotal = 0
     let rawGap = 0
+    let dirty = true
+    let lastMeasured = -Infinity
+    let sectionScope: Element | null = null
+    let sections: HTMLElement[] = []
+    let sectionsAt = -Infinity
 
     const resize = () => {
-      railHeight = rail.clientHeight
-      if (railHeight < 1) return
+      const nextHeight = rail.clientHeight
+      if (nextHeight < 1) return
+      if (nextHeight === railHeight && svg.dataset['sized'] === 'true') return
+      railHeight = nextHeight
+      svg.dataset['sized'] = 'true'
       svg.setAttribute('viewBox', `0 0 ${W} ${railHeight}`)
       let small = ''
       let large = ''
@@ -92,41 +97,48 @@ export function SystemScrollCaliper() {
       spine.setAttribute('d', `M${W - 0.8} 0V${railHeight}`)
     }
 
-    const measure = () => {
+    const measure = (now: number) => {
+      if (!tracked.isConnected) { tracked = page; primed = false }
       const isPage = tracked === page
       const view = isPage
         ? { top: 0, bottom: window.innerHeight, height: window.innerHeight }
         : tracked.getBoundingClientRect()
       const visibleHeight = isPage ? window.innerHeight : tracked.clientHeight
       const amount = isPage ? window.scrollY : tracked.scrollTop
-      const max = tracked.scrollHeight - visibleHeight
-      rail.dataset['scrollable'] = max > 2 && visibleHeight > 120 ? 'true' : 'false'
+      const fullHeight = tracked.scrollHeight
+      const max = fullHeight - visibleHeight
       scrollPos = amount
-      needle.t = scrollPercent(amount, tracked.scrollHeight, visibleHeight)
+      needle.t = scrollPercent(amount, fullHeight, visibleHeight)
 
       // Only structural section boundaries are inspected. We never read content
       // text, user messages, profile fields, or private network data.
       const scope = isPage ? document.querySelector('main') : tracked
-      const sections = scope
-        ? Array.from(scope.querySelectorAll<HTMLElement>('[data-section], section, article'))
-            .filter(el => el.offsetHeight >= 64 && el.offsetWidth >= 120)
-            .slice(0, 120)
-        : []
-      sectionTotal = sections.length
+      // Cache structural candidates. Apply the limit before reading layout and
+      // never enumerate sections on every spring/paint frame.
+      if (scope !== sectionScope || now - sectionsAt >= 500) {
+        sectionScope = scope
+        sectionsAt = now
+        sections = scope ? Array.from(scope.querySelectorAll<HTMLElement>('[data-section], section, article')).slice(0, CALIPER_SECTION_LIMIT) : []
+      }
+      let sectionTotal = 0
       let best = -1
       let largestOverlap = 0
       let bestBounds: DOMRect | null = null
       for (let i = 0; i < sections.length; i++) {
         const bounds = sections[i]!.getBoundingClientRect()
+        if (bounds.height < 64 || bounds.width < 120) continue
+        const visibleSection = sectionTotal++
         const overlap = Math.max(0, Math.min(bounds.bottom, view.bottom) - Math.max(bounds.top, view.top))
         if (overlap > largestOverlap) {
-          best = i
+          best = visibleSection
           largestOverlap = overlap
           bestBounds = bounds
         }
       }
-      sectionNumber = best
-      sectionChip.textContent = best === -1 ? 'PAGE' : `SEC ${best + 1}/${sectionTotal}`
+      const label = best === -1 ? 'PAGE' : `SEC ${best + 1}/${sectionTotal}`
+      if (sectionChip.textContent !== label) sectionChip.textContent = label
+      const scrollable = max > 2 && visibleHeight > 120 ? 'true' : 'false'
+      if (rail.dataset['scrollable'] !== scrollable) rail.dataset['scrollable'] = scrollable
       if (bestBounds) {
         top.t = instrumentPosition(bestBounds.top, view.top, visibleHeight, railHeight)
         bottom.t = instrumentPosition(bestBounds.bottom, view.top, visibleHeight, railHeight)
@@ -141,12 +153,18 @@ export function SystemScrollCaliper() {
     }
 
     const tick = (now: number) => {
-      const dt = lastFrame ? clamp((now - lastFrame) / 1000, 0, 0.05) : 1 / 60
+      if (document.hidden) { running = false; return }
+      // Decorative motion has no reason to consume the entire display frame.
+      if (lastFrame && now - lastFrame < 30) { frame = requestAnimationFrame(tick); return }
+      const dt = lastFrame ? clamp((now - lastFrame) / 1000, 0, 0.05) : 1 / 30
       lastFrame = now
-      const movement = tracked.scrollTop - lastTop
-      velocity += 0.2 * (movement / Math.max(dt, 0.001) - velocity)
-      lastTop = tracked.scrollTop
-      measure()
+      if (caliperGeometryDue(dirty, now, lastMeasured)) {
+        const previous = scrollPos
+        measure(now)
+        lastMeasured = now
+        dirty = false
+        velocity += 0.2 * ((scrollPos - previous) / Math.max(dt, 0.001) - velocity)
+      } else velocity *= 0.8
       if (reduced || !primed) {
         for (const spring of [top, bottom, needle]) {
           spring.x = spring.t
@@ -167,17 +185,19 @@ export function SystemScrollCaliper() {
       region.setAttribute('y', min.toFixed(2))
       region.setAttribute('height', height.toFixed(2))
       needleMark.style.transform = `translateY(${(min + height * clamp(needle.x, 0, 100) / 100).toFixed(2)}px)`
-      pxChip.textContent = rawGap.toFixed(0)
-      pctChip.textContent = String(Math.round(clamp(needle.x, 0, 100)))
+      const pixels = rawGap.toFixed(0)
+      const percent = String(Math.round(clamp(needle.x, 0, 100)))
+      if (pxChip.textContent !== pixels) pxChip.textContent = pixels
+      if (pctChip.textContent !== percent) pctChip.textContent = percent
 
       const speed = reduced ? 0 : Math.abs(velocity)
       const echoLength = Math.min(10, speed / 200)
       const echoOpacity = Math.min(0.45, speed / 3000)
       echo.style.opacity = echoOpacity < 0.02 ? '0' : echoOpacity.toFixed(2)
-      echo.style.filter = echoOpacity < 0.02 ? 'none' : `blur(${(echoLength / 2).toFixed(2)}px)`
+      // The translucent echo remains, without a per-frame animated blur filter.
       echo.style.transform = `translateY(${(-(scrollPos % 8) + Math.sign(velocity) * echoLength).toFixed(2)}px)`
 
-      if (now - lastScroll > 180 && springSettled(top) && springSettled(bottom) && springSettled(needle)) {
+      if (!dirty && now - lastScroll > 180 && springSettled(top) && springSettled(bottom) && springSettled(needle)) {
         echo.style.opacity = '0'
         echo.style.filter = 'none'
         running = false
@@ -187,7 +207,7 @@ export function SystemScrollCaliper() {
     }
 
     const wake = () => {
-      if (running) return
+      if (running || document.hidden) return
       running = true
       lastFrame = 0
       frame = requestAnimationFrame(tick)
@@ -198,34 +218,51 @@ export function SystemScrollCaliper() {
       const candidate = target instanceof HTMLElement ? target : page
       // Follow a meaningful inner scroll area, but do not jump to textareas,
       // dropdown lists or tiny sliders when their scroll position changes.
-      if (candidate === page ||
-          (candidate.clientHeight > 180 && candidate.clientWidth > 260 &&
-            candidate.scrollHeight > candidate.clientHeight + 8)) {
-        if (tracked !== candidate) {
-          tracked = candidate
-          lastTop = tracked.scrollTop
-          primed = false
-        }
+      if (candidate !== tracked && candidate !== page &&
+          (candidate.clientHeight <= 180 || candidate.clientWidth <= 260 ||
+            candidate.scrollHeight <= candidate.clientHeight + 8)) return
+      if (tracked !== candidate) {
+        tracked = candidate
+        sectionScope = null
+        primed = false
       }
+      dirty = true
       lastScroll = performance.now()
       wake()
     }
 
-    const onResize = () => { resize(); lastScroll = performance.now(); wake() }
+    const onResize = () => { resize(); dirty = true; sectionsAt = -Infinity; lastScroll = performance.now(); wake() }
+    const onNavigation = () => {
+      tracked = document.getElementById('aetheris-workspace-content') ?? page
+      sectionScope = null
+      primed = false
+      dirty = true
+      lastMeasured = -Infinity
+      lastScroll = performance.now()
+      wake()
+    }
+    const onVisibility = () => {
+      if (document.hidden) { cancelAnimationFrame(frame); running = false }
+      else onNavigation()
+    }
     const resizeObserver = new ResizeObserver(onResize)
     resizeObserver.observe(rail)
     resizeObserver.observe(document.documentElement)
-    document.addEventListener('scroll', scroll, true)
+    document.addEventListener('scroll', scroll, { capture: true, passive: true })
+    document.addEventListener('visibilitychange', onVisibility)
+    window.addEventListener('aetheris:workspace-navigated', onNavigation)
     window.addEventListener('resize', onResize)
-    window.addEventListener('pageshow', onResize)
+    window.addEventListener('pageshow', onNavigation)
     resize()
-    wake()
+    onNavigation()
 
     return () => {
       cancelAnimationFrame(frame)
       document.removeEventListener('scroll', scroll, true)
+      document.removeEventListener('visibilitychange', onVisibility)
+      window.removeEventListener('aetheris:workspace-navigated', onNavigation)
       window.removeEventListener('resize', onResize)
-      window.removeEventListener('pageshow', onResize)
+      window.removeEventListener('pageshow', onNavigation)
       resizeObserver.disconnect()
     }
   }, [])

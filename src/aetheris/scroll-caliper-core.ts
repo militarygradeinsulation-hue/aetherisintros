@@ -31,3 +31,10 @@ export function instrumentPosition(edge: number, top: number, visibleHeight: num
 
 /** First-party sections only: avoids exposing live data or reading text from the page. */
 export const CALIPER_SECTIONS = '[data-section], main section, main article'
+
+/** Geometry reads are rate limited independently of the paint/spring frames. */
+export const CALIPER_GEOMETRY_INTERVAL = 125
+export const CALIPER_SECTION_LIMIT = 120
+export function caliperGeometryDue(dirty: boolean, now: number, last: number): boolean {
+  return dirty && now - last >= CALIPER_GEOMETRY_INTERVAL
+}

@@ -18,8 +18,9 @@ describe('workspace tools live in the menu, not above page content', () => {
   })
 
   it('preserves all advanced tools in desktop sidebar and mobile menu', () => {
-    expect(shell).toContain('<Nav />')
-    expect(shell).toContain('<Nav mobile />')
+    expect(shell).toContain('{renderNav()}')
+    expect(shell).toContain('{renderNav(true)}')
+    expect(shell).not.toContain('const Nav = (')
     expect(shell).toContain('PRIMARY_NAV_GROUPS')
     expect(shell).toContain('LedgerSectionNavigation')
     expect(tools).not.toContain('Business workspace modules')

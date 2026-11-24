@@ -5332,6 +5332,53 @@ export type Database = {
           },
         ]
       }
+      meeting_personal_briefs: {
+        Row: {
+          generated_at: string
+          id: string
+          meeting_id: string
+          open_needs: Json
+          other_user_id: string
+          summary: string
+          talking_points: Json
+          their_background: string
+          their_current_focus: string
+          user_id: string
+        }
+        Insert: {
+          generated_at?: string
+          id?: string
+          meeting_id: string
+          open_needs?: Json
+          other_user_id: string
+          summary?: string
+          talking_points?: Json
+          their_background?: string
+          their_current_focus?: string
+          user_id: string
+        }
+        Update: {
+          generated_at?: string
+          id?: string
+          meeting_id?: string
+          open_needs?: Json
+          other_user_id?: string
+          summary?: string
+          talking_points?: Json
+          their_background?: string
+          their_current_focus?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "meeting_personal_briefs_meeting_id_fkey"
+            columns: ["meeting_id"]
+            isOneToOne: false
+            referencedRelation: "meetings"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       meeting_transcript_lines: {
         Row: {
           id: string
