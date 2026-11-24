@@ -559,7 +559,7 @@ function AskIntrosDockInner({ page, peopleNames, memberName, briefing, contextPa
       }
       if (ownerRef.current !== requestOwner) return
       const reply = noteReceipt ?? answer.reply
-      setTurns(current => [...current, { role: 'assistant', content: reply + (prepared.length ? '\n\n' + prepared.join('\n\n') : ''), did, sources: answer.sources ?? [] }])
+      setTurns(current => [...current, { role: 'assistant', content: reply + (prepared.length ? '\n\n' + prepared.join('\n\n') : ''), did, sources: answer.sources ?? [], ...(answer.usage ? { usage: answer.usage } : {}) }])
       const next = answer.suggestions.filter(item => item.toLowerCase() !== question.toLowerCase())
       if (next.length) setOpeners(next.slice(0, 4))
       const reads = answer.actions.some(action => action.kind === 'read-page')
@@ -721,6 +721,7 @@ function AskIntrosDockInner({ page, peopleNames, memberName, briefing, contextPa
                 </section>
           )}
           {turn.sources?.length ? <div className="butler-sources">{turn.sources.map(source => <a href={source.url} key={source.url} target="_blank" rel="noopener noreferrer">{source.title}</a>)}</div> : null}
+          {turn.usage && <details className="butler-sources"><summary>Processing details</summary><small>{turn.usage.providerRequests}/{turn.usage.providerLimit} language-provider requests · {turn.usage.toolReads}/{turn.usage.toolLimit} uncached tool reads{turn.usage.blockedToolReads ? ' · '+turn.usage.blockedToolReads+' reads limited' : ''}. These are request counts, not a bill or a token estimate.</small></details>}
           {turn.role === 'assistant' && voiceOutputSupported() && <button type="button" className="ask-dock-say"
             aria-label="Read this reply aloud" onClick={() => readAloud([turn.content], 'Ask Intros')}><Volume2 size={12} /></button>}
           {turn.did && turn.did.length > 0 && <ul className="ask-dock-did">{turn.did.map(note => <li key={note}>{note}</li>)}</ul>}
