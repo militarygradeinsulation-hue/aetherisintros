@@ -160,6 +160,9 @@ try {
       await page.getByRole('button',{name:'My board',exact:true}).click();
       const stack=page.locator('.ledger-member-stack');
       const memberCards=stack.getByRole('button',{name:/^Select /});
+      // The optional board is loaded on first visit. Wait for the real cards,
+      // then retain the exact original count and interaction assertions.
+      await memberCards.first().waitFor({state:'visible'});
       if(await memberCards.count()!==3)throw Error('Expected three directory-backed member cards');
       const chosenName=(await memberCards.first().getAttribute('aria-label')).replace('Select ','');
       const chosen=stack.getByRole('button',{name:'Select '+chosenName,exact:true});

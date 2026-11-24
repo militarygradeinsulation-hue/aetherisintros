@@ -89,6 +89,7 @@ async function checkDashboardBoard(page,theme) {
   await page.getByRole('button',{name:'My board',exact:true}).click();
   const restored=page.getByRole('region',{name:'Your customizable dashboard board',exact:true});
   await page.waitForFunction(()=>JSON.parse(localStorage.getItem('ask-intros.dashboard.widgets.v1')).items.find(i=>i.id==='network').size==='lg');
+  await restored.getByRole('button',{name:'Edit layout',exact:true}).waitFor({state:'visible'});
   check(await restored.getByRole('button',{name:'Edit layout',exact:true}).isVisible(),theme+' locked preference survives reload');
   check(await restored.locator('[data-widget-id="network"]').evaluate(el=>el.style.gridRow.includes('span 2')),theme+' chosen widget size survives reload');
   await restored.getByRole('button',{name:'Reset board',exact:true}).click();
