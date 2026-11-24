@@ -3,6 +3,7 @@ import { Volume2, Square, ChevronDown } from 'lucide-react'
 import { useOps } from '../crm/store'
 import { readAloud, stopReading, unlockAudio } from '../voice'
 import { buildDiagnostic, explainReport, type DiagnosticArea } from './diagnostic'
+import { GoldenReportActionPanel } from './GoldenReportActionPanel'
 
 const areas: DiagnosticArea[] = ['Revenue', 'Customer retention', 'Coverage', 'Follow-through']
 
@@ -42,6 +43,8 @@ export function CompanyDiagnosticReport({ companyName = 'Your company' }: { comp
       <div><span className="eyebrow">OPEN VALUE IN STALLED DEALS</span><strong>{money.length ? money.map(([c, v]) => `${v.toLocaleString()} ${c}`).join(' · ') : '—'}</strong><small>Exposure, not a confirmed loss.</small></div>
       {areas.map(a => <div key={a}><span className="eyebrow">{a.toUpperCase()}</span><strong>{report.issues.filter(i => i.area === a).length}</strong></div>)}
     </div>
+
+    <GoldenReportActionPanel/>
 
     {!report.issues.length
       ? <p className="dx-empty">{explainReport(report)}</p>

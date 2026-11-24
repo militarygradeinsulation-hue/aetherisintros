@@ -1,0 +1,5 @@
+.golden-actions{border:1px solid var(--border,rgba(127,127,127,.3));border-radius:10px;padding:12px;margin:14px 0;min-width:0}
+.golden-actions>summary{cursor:pointer}.golden-actions>summary span{display:block;font-size:12px;opacity:.8;margin-top:5px}
+.golden-actions-body,.golden-finding,.golden-review{display:grid;gap:10px;min-width:0}.golden-actions-body{padding-top:12px}.golden-finding,.golden-review{border-top:1px solid var(--border,rgba(127,127,127,.3));padding:12px 0}
+.golden-actions p,.golden-actions pre{margin:0;overflow-wrap:anywhere;white-space:pre-wrap;font:inherit}.golden-actions label{display:grid;gap:5px}.golden-actions textarea,.golden-actions select,.golden-actions input{max-width:100%;width:100%;min-width:0;background:transparent;color:inherit;border:1px solid var(--border,rgba(127,127,127,.45));padding:10px;border-radius:6px;font:inherit;font-size:16px}
+.golden-buttons{display:flex;gap:8px;flex-wrap:wrap}.golden-actions button{min-height:40px}.golden-actions button:disabled{opacity:.5}
