@@ -26,15 +26,16 @@ function DockItem({mouseX,reduce,label,hovered,active,badge,onEnter,onClick,chil
  const dist=useTransform(mouseX,(x:number)=>{const r=ref.current?.getBoundingClientRect();return r?x-(r.x+r.width/2):FAR});
  const raw=useTransform(dist,(d:number)=>{const t=Math.min(1,Math.abs(d)/RADIUS);return REST+(PEAK-REST)*(1+Math.cos(Math.PI*t))/2});
  const size=useSpring(raw,{mass:.1,stiffness:240,damping:18});
+ const scale=useTransform(size,value=>value/REST);
  const bounce=useAnimationControls();
  const click=()=>{if(!reduce)void bounce.start({y:[0,-10,0],transition:{duration:.38,ease:EASE}});onClick()};
  return <button ref={ref} type="button" className="ask-macos-dock-item" onMouseEnter={onEnter} onFocus={onEnter} onClick={click}
    aria-label={label+(badge&&badge>0?", "+badge+" unread":"")} aria-current={active?"page":undefined}>
-   <motion.span animate={bounce} className="ask-macos-dock-icon" style={{width:reduce?REST:size,height:reduce?REST:size}}>
+   <motion.span animate={bounce} className="ask-macos-dock-icon" style={{width:REST,height:REST,scale:reduce?1:scale,transformOrigin:'50% 100%'}}>
     {children}{badge&&badge>0?<span className="ask-macos-dock-badge" aria-hidden="true">{badge>99?"99+":badge}</span>:null}
    </motion.span>
    {active?<span className="ask-macos-dock-running" aria-hidden="true"/>:null}
-   <motion.span className="ask-macos-dock-reflection" aria-hidden="true" style={{width:reduce?REST:size,height:reduce?REST*.45:size}}>{children}</motion.span>
+   <motion.span className="ask-macos-dock-reflection" aria-hidden="true" style={{width:REST,height:REST*.45}}>{children}</motion.span>
    <AnimatePresence>{hovered?<motion.span className="ask-macos-dock-tooltip"
     initial={reduce?false:{opacity:0,y:8}} animate={{opacity:1,y:0}} exit={{opacity:0,y:8}}
     transition={reduce?{duration:0}:{duration:.2}}>{label}</motion.span>:null}</AnimatePresence>

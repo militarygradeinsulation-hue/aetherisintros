@@ -114,7 +114,7 @@ export function LedgerBridgeShell({
     { id: 'intro', label: 'Find an introduction', onSelect: () => { closeAll(); onNavigate('intros'); } },
     { id: 'theme', label: 'Switch light / dark', onSelect: toggleTheme },
   ];
-  const Nav = ({ mobile = false }: { mobile?: boolean }) => (
+  const renderNav = (mobile = false) => (
     <nav className="ledger-native-nav ix-desktop-main-nav" aria-label={mobile ? 'Mobile workspace navigation' : 'Desktop navigation'}>
       {NAV_GROUPS.map(group => <div className="ledger-native-group" key={group.title}>
         <p className="ledger-native-group-label">{group.title}</p>
@@ -133,7 +133,7 @@ export function LedgerBridgeShell({
       </div>)}
     </nav>
   );
-  const AccountMenu = () => <div className="ledger-native-account-dropdown" role="menu">
+  const renderAccountMenu = () => <div className="ledger-native-account-dropdown" role="menu">
     <div className="ledger-native-account-name">{displayName}</div><button type="button" role="menuitem" onClick={startOnboarding}>Onboarding walkthrough</button>
     {ACCOUNT_SECTIONS.map(item => <button type="button" role="menuitem" key={item.tool} onClick={() => item.tool === 'profile' ? (closeAll(), onOpenMyProfile()) : navigate(item)}>
       <item.icon size={16} aria-hidden="true"/><span>{item.label}</span>
@@ -157,7 +157,7 @@ export function LedgerBridgeShell({
           {collapsed ? <ChevronRight size={16} /> : <ChevronLeft size={16} />}
         </button>
       </div>
-      <Nav /><button type="button" className="ledger-native-nav-item" aria-label="Onboarding walkthrough" title="Onboarding walkthrough" onClick={startOnboarding}><span aria-hidden="true">?</span><span className="ledger-native-nav-label">Onboarding</span></button>
+      {renderNav()}<button type="button" className="ledger-native-nav-item" aria-label="Onboarding walkthrough" title="Onboarding walkthrough" onClick={startOnboarding}><span aria-hidden="true">?</span><span className="ledger-native-nav-label">Onboarding</span></button>
     </aside>
 
     {drawerOpen && <div className="ledger-native-drawer-backdrop">
@@ -166,7 +166,7 @@ export function LedgerBridgeShell({
         <div className="ledger-native-brand"><span className="ledger-native-logo"><span aria-hidden="true" className="ledger-ai-mono"><span>A</span><span>I</span></span></span><strong>ASK INTROS</strong>
           <button type="button" aria-label="Close navigation" onClick={() => setDrawerOpen(false)}><X size={20}/></button>
         </div>
-        <Nav mobile />
+        {renderNav(true)}
         <div className="ledger-native-mobile-account" aria-label="Account options"><button type="button" onClick={startOnboarding}>Onboarding walkthrough</button>
           <details className="ledger-native-mobile-account-options">
             <summary>Account <ChevronDown size={15} aria-hidden="true"/></summary>
@@ -210,7 +210,7 @@ export function LedgerBridgeShell({
             onClick={() => { setUserOpen(open => !open); }}>
             <MemberThumbnail name={displayName} source={me?.avatarUrl} className="ledger-native-avatar"/><span className="ledger-native-user-label">{displayName}</span><ChevronDown size={13}/>
           </button>
-          {userOpen && <AccountMenu/>}
+          {userOpen && renderAccountMenu()}
         </div>
       </header>
       <div className="workspace-view-toggle"><CompactExperienceSwitch value={experience} onChange={onExperienceChange}/></div>
