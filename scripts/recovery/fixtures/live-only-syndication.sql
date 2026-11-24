@@ -40,3 +40,16 @@ CREATE TABLE IF NOT EXISTS public.syndication_interests (
   UNIQUE(room_id, member_id)
 );
 ALTER TABLE public.syndication_interests ENABLE ROW LEVEL SECURITY;
+
+-- The live catalog also has the legacy referral aliases consumed by 0100.
+-- Source 0072 creates only the newer columns. Model both contracts in this
+-- disposable replay, based on the observed live schema (2026-11-24).
+ALTER TABLE public.referral_suggestions
+  ADD COLUMN IF NOT EXISTS for_member_id uuid NOT NULL REFERENCES public.profiles(id) ON DELETE CASCADE,
+  ADD COLUMN IF NOT EXISTS suggested_member_id uuid NOT NULL REFERENCES public.profiles(id) ON DELETE CASCADE,
+  ADD COLUMN IF NOT EXISTS reason text,
+  ADD COLUMN IF NOT EXISTS score numeric DEFAULT 0,
+  ADD COLUMN IF NOT EXISTS updated_at timestamptz NOT NULL DEFAULT now();
+ALTER TABLE public.referral_requests
+  ADD COLUMN IF NOT EXISTS target_member_id uuid NOT NULL REFERENCES public.profiles(id) ON DELETE CASCADE,
+  ADD COLUMN IF NOT EXISTS updated_at timestamptz NOT NULL DEFAULT now();

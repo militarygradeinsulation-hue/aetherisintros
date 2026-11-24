@@ -301,8 +301,8 @@ async function boot({ actualMembershipGate = false } = {}) {
   await db.exec(passportSource[1])
   for (const m of migrations) {
     try {
-      // The live database had legacy syndication tables not declared by frozen
-      // Drizzle 0075. Model that fact explicitly before 0100 in this test-only
+      // The live database had legacy syndication and referral columns not declared by frozen
+      // Drizzle 0072/0075. Model that fact explicitly before 0100 in this test-only
       // PGlite baseline; never apply the fixture as a production migration.
       if (m.startsWith('0100_') && !privateLibraryFocused) {
         const synthetic = join(here, '..', 'recovery', 'fixtures', 'live-only-syndication.sql')

@@ -5,6 +5,8 @@ export default async ({ ok, as, svc, A, B, C }) => {
   await svc(`insert into auth.users (id) values ('${TARGET}') on conflict do nothing`)
   await svc(`insert into public.profiles (id, name) values ('${TARGET}', 'Taylor Target') on conflict do nothing`)
 
+  await svc(`insert into public.early_access_members(user_id,email,status) values ('${A}','a@ref.test','approved'),('${CONNECTOR}','b@ref.test','approved'),('${TARGET}','t@ref.test','approved') on conflict(user_id) do update set status='approved'`)
+  await svc(`insert into public.relationships(user_id,member_id,kind) values ('${A}','${CONNECTOR}','connection') on conflict do nothing`)
   const suggestion = (await svc(`insert into public.referral_suggestions
     (for_user_id, target_user_id, connector_user_id, path_explanation, shared_context, strength_score)
     values ('${A}', '${TARGET}', '${CONNECTOR}',
@@ -49,6 +51,17 @@ export default async ({ ok, as, svc, A, B, C }) => {
   ok(!!forgedResponse.error || forgedResponse.rows?.length === 0, 'connector cannot bypass the response server action')
   await svc(`update public.referral_requests set status='accepted', responded_at=now() where id='${RID}'`)
   ok((await svc(`select status from public.referral_requests where id='${RID}'`))[0]?.status === 'accepted', 'server records connector acceptance')
+
+  const rows = JSON.stringify([{target_user_id:TARGET,connector_user_id:CONNECTOR,path_explanation:'Possible path via a recorded connector; confirm relationship.',shared_context:'Shared subject',strength_score:70}])
+  ok(!!(await as(A, 'select public.replace_warm_referral_suggestions($1,$2::jsonb)', [A,rows])).error, 'member cannot invoke service-only replacement')
+  const generated = (await svc(`select id from public.replace_warm_referral_suggestions('${A}', '${rows}'::jsonb)`))[0]
+  ok(!!generated?.id, 'server atomically replaces active suggestions without deleting history')
+  const pending = (await svc(`select (public.submit_warm_referral_request('${A}','${generated.id}','${CONNECTOR}','${TARGET}','Please confirm whether you know this contact.')).id id`))[0]
+  const repeat = (await svc(`select (public.submit_warm_referral_request('${A}','${generated.id}','${CONNECTOR}','${TARGET}','Retry same request.')).id id`))[0]
+  ok(pending?.id===repeat?.id, 'retries return the same stored referral request')
+  ok(!!(await as(A, 'select public.submit_warm_referral_request($1,$2,$3,$4,$5)',[A,generated.id,CONNECTOR,TARGET,'Forged direct call'])).error,'member cannot bypass service-only request action')
+  ok(!!(await svc(`select public.submit_warm_referral_request('${C}','${generated.id}','${CONNECTOR}','${TARGET}','Wrong owner')`).then(()=>null,e=>e)), 'server action refuses another owner')
+  ok((await svc(`select status from public.referral_suggestions where id='${generated.id}'`))[0]?.status==='acted_on','request and suggestion transition are atomic')
 
   const high = await svc(`insert into public.referral_suggestions (for_user_id,target_user_id,path_explanation,strength_score)
     values ('${A}','${TARGET}','bad score',150)`).then(() => null, e => e)

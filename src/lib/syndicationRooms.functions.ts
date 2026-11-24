@@ -108,32 +108,15 @@ export const createSyndicationRoom = createServerFn({ method: 'POST' })
   })
   .handler(async ({ data, context }): Promise<SyndicationRoom> => {
     const db = context.supabase as any // eslint-disable-line @typescript-eslint/no-explicit-any
-    const userId = context.userId
-
-    const { data: room, error: roomErr } = await db
-      .from('syndication_rooms')
-      .insert({
-        created_by: userId,
-        title: data.title.trim(),
-        room_type: data.roomType,
-        description: data.description?.trim() ?? null,
-        opportunity_size: data.opportunitySize?.trim() ?? null,
-        deadline: data.deadline ?? null,
-        status: 'open',
-      })
-      .select()
-      .single()
-    if (roomErr) throw new Error(roomErr.message)
-
-    // Add creator as a member so they can vote
-    const membersToInsert = [
-      { room_id: room.id, user_id: userId, status: 'active', role: 'lead' },
-      ...(data.inviteUserIds ?? [])
-        .filter(id => id !== userId)
-        .map(id => ({ room_id: room.id, user_id: id, invited_by: userId })),
-    ]
-    const { error: membersErr } = await db.from('syndication_room_members').insert(membersToInsert)
-    if (membersErr) throw new Error(membersErr.message)
+    const { data: room, error: roomErr } = await db.rpc('create_syndication_room', {
+      p_title: data.title.trim(),
+      p_room_type: data.roomType,
+      p_description: data.description?.trim() ?? null,
+      p_opportunity_size: data.opportunitySize?.trim() ?? null,
+      p_deadline: data.deadline ?? null,
+      p_invite_user_ids: data.inviteUserIds ?? [],
+    })
+    if (roomErr || !room?.id) throw new Error(roomErr?.message ?? 'Room creation was not confirmed.')
 
     return room as SyndicationRoom
   })
@@ -148,32 +131,10 @@ export const castVote = createServerFn({ method: 'POST' })
   })
   .handler(async ({ data, context }): Promise<void> => {
     const db = context.supabase as any // eslint-disable-line @typescript-eslint/no-explicit-any
-    const userId = context.userId
-
-    const { error } = await db
-      .from('syndication_room_members')
-      .update({ vote: data.vote, vote_note: data.voteNote ?? null, voted_at: new Date().toISOString() })
-      .eq('room_id', data.roomId)
-      .eq('user_id', userId)
+    const { error } = await db.rpc('cast_syndication_vote', {
+      p_room_id: data.roomId, p_vote: data.vote, p_note: data.voteNote ?? null,
+    })
     if (error) throw new Error(error.message)
-
-    // Auto-close to decided when all members have voted
-    const { data: members } = await db
-      .from('syndication_room_members')
-      .select('vote')
-      .eq('room_id', data.roomId)
-    const allVoted = (members ?? []).every((m: { vote: Vote | null }) => m.vote !== null)
-    if (allVoted) {
-      const votes: Vote[] = (members ?? []).map((m: { vote: Vote }) => m.vote)
-      const inCount = votes.filter(v => v === 'in').length
-      const outCount = votes.filter(v => v === 'out').length
-      const needMoreCount = votes.filter(v => v === 'need_more_info').length
-      const summary = `${inCount} In / ${outCount} Out / ${needMoreCount} Need More Info`
-      await db
-        .from('syndication_rooms')
-        .update({ status: 'decided', decision: summary, closed_at: new Date().toISOString() })
-        .eq('id', data.roomId)
-    }
   })
 
 /** Post a message to a syndication room discussion thread. */
