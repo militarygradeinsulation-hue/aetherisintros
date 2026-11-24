@@ -30,6 +30,10 @@ export default function ParticleDrift({ className, view = 'social' }: { classNam
     let width = 0
     let height = 0
     let raf = 0
+    let interacting = false
+    let resumeTimer: ReturnType<typeof setTimeout> | undefined
+    let last = 0
+    let rect = canvas.getBoundingClientRect()
     let nodes: Node[] = []
     let beams: Beam[] = []
     const mouse = { x: -1000, y: -1000 }
@@ -37,7 +41,8 @@ export default function ParticleDrift({ className, view = 'social' }: { classNam
     const resize = () => {
       width = canvas.clientWidth
       height = canvas.clientHeight
-      const dpr = Math.min(window.devicePixelRatio || 1, 2)
+      rect = canvas.getBoundingClientRect()
+      const dpr = Math.min(window.devicePixelRatio || 1, window.innerWidth < 768 ? 1 : 1.5)
       canvas.width = width * dpr
       canvas.height = height * dpr
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0)
@@ -45,13 +50,13 @@ export default function ParticleDrift({ className, view = 'social' }: { classNam
 
     const init = () => {
       const count = Math.max(24, Math.round((width * height) / 16000))
-      nodes = Array.from({ length: Math.min(count, 110) }, () => ({
+      nodes = Array.from({ length: Math.min(count, width < 768 ? 32 : 72) }, () => ({
         x: Math.random() * width,
         y: Math.random() * height,
         vy: Math.random() * 0.4 + 0.1,
         char: GLYPHS[Math.floor(Math.random() * GLYPHS.length)]!,
       }))
-      beams = Array.from({ length: Math.min(25, Math.max(8, Math.round(width / 60))) }, () => ({
+      beams = Array.from({ length: Math.min(width < 768 ? 8 : 16, Math.max(6, Math.round(width / 60))) }, () => ({
         x: Math.random() * width,
         y: Math.random() * height,
         length: Math.random() * 100 + 50,
@@ -61,15 +66,14 @@ export default function ParticleDrift({ className, view = 'social' }: { classNam
     }
 
     const onMove = (e: MouseEvent) => {
-      const rect = canvas.getBoundingClientRect()
+      if (interacting || motion.matches || document.hidden) return
       mouse.x = e.clientX - rect.left
       mouse.y = e.clientY - rect.top
     }
     const onLeave = () => { mouse.x = -1000; mouse.y = -1000 }
 
-    let last = 0
-    const draw = (now = 0) => {
-      const step = motion.matches ? 0 : Math.min((now - last) / 16.667 || 1, 2)
+    const draw = (now: number, still = false) => {
+      const step = still || motion.matches ? 0 : Math.min((now - last) / 16.667 || 1, 3)
       last = now
       ctx.clearRect(0, 0, width, height)
 
@@ -119,7 +123,7 @@ export default function ParticleDrift({ className, view = 'social' }: { classNam
           n.x = Math.random() * width
         }
         const dist = Math.hypot(mouse.x - n.x, mouse.y - n.y)
-        if (dist < 180 || Math.random() > 0.98) {
+        if (!still && (dist < 180 || Math.random() > 0.98)) {
           n.char = GLYPHS[Math.floor(Math.random() * GLYPHS.length)]!
         }
         if (dist < 180) {
@@ -134,24 +138,60 @@ export default function ParticleDrift({ className, view = 'social' }: { classNam
         ctx.fillText(n.char, n.x, n.y)
       }
 
-      if (!motion.matches && !document.hidden) raf = requestAnimationFrame(draw)
     }
 
+    const running = () => !motion.matches && !document.hidden && !interacting
+    const tick = (now: number) => {
+      raf = 0
+      if (!running()) return
+      // Preserve the motion at idle but leave the other display frames for UI.
+      if (now - last >= 1000 / 24) draw(now)
+      raf = requestAnimationFrame(tick)
+    }
+    const sync = () => {
+      cancelAnimationFrame(raf)
+      raf = 0
+      const active = running()
+      canvas.dataset['motion'] = active ? 'running' : 'paused'
+      if (active) { last = performance.now(); raf = requestAnimationFrame(tick) }
+    }
+    const redraw = () => {
+      if (!document.hidden) draw(performance.now(), true)
+      sync()
+    }
+    const onInteraction = () => {
+      if (document.hidden || motion.matches) return
+      if (!interacting) {
+        interacting = true
+        onLeave()
+        sync()
+      }
+      clearTimeout(resumeTimer)
+      resumeTimer = setTimeout(() => {
+        interacting = false
+        rect = canvas.getBoundingClientRect()
+        sync()
+      }, 180)
+    }
     resize()
     init()
-    draw()
-    const redraw = () => { cancelAnimationFrame(raf); last = 0; draw() }
+    redraw()
     const onResize = () => { resize(); init(); redraw() }
-    const onVisibility = () => { cancelAnimationFrame(raf); if (!document.hidden) redraw() }
+    const onVisibility = () => { if (document.hidden) sync(); else redraw() }
     const observer = new MutationObserver(() => { updateColor(); redraw() })
     observer.observe(document.documentElement, {attributes:true, attributeFilter:['data-theme']})
     motion.addEventListener('change', redraw)
     document.addEventListener('visibilitychange', onVisibility)
     window.addEventListener('resize', onResize)
-    window.addEventListener('mousemove', onMove)
+    window.addEventListener('mousemove', onMove, {passive:true})
     window.addEventListener('mouseout', onLeave)
+    document.addEventListener('scroll', onInteraction, {capture:true,passive:true})
+    window.addEventListener('aetheris:workspace-navigated', onInteraction)
     return () => {
       cancelAnimationFrame(raf)
+      clearTimeout(resumeTimer)
+      document.removeEventListener('scroll', onInteraction, true)
+      window.removeEventListener('aetheris:workspace-navigated', onInteraction)
       observer.disconnect()
       motion.removeEventListener('change', redraw)
       document.removeEventListener('visibilitychange', onVisibility)
