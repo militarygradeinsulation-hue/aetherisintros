@@ -42,7 +42,7 @@ export async function readExecutiveBrief(db: SupabaseClient<Database>, userId: s
       .gte('scheduled_for', start).lte('scheduled_for', upcoming).order('scheduled_for').limit(LIMIT));
     return rows.state === 'ready' ? { ...rows, rows: rows.rows.map(({ id, title, scheduled_for, intro_request_id, ended_at }) => ({ id, title, scheduled_for, intro_request_id, ended_at })) } : unavailable();
   };
-  const [tasks, opportunities, meetingRows, introductions, contacts, connections, notes, mindprint] = await Promise.all([
+  const [tasks, opportunities, meetingRows, introductions, contacts, connections, notes, mindprint, outcomes] = await Promise.all([
     read(db.from('crm_tasks').select('id,title,due_at,priority,status').eq('owner_id', userId).in('status', ['open','doing'])
       .or('due_at.lte.' + upcoming + ',priority.eq.high').order('due_at', { ascending: true, nullsFirst: false }).limit(LIMIT)),
     read(db.from('crm_opportunities').select('id,name,next_action,expected_close,status,detail,person_id,source,updated_at')
@@ -57,6 +57,8 @@ export async function readExecutiveBrief(db: SupabaseClient<Database>, userId: s
     read(db.from('memories').select('id').eq('user_id', userId).eq('scope','private').eq('kind','saved-note').limit(LIMIT)),
     read(db.from('memories').select('text').eq('user_id', userId).eq('scope','private').eq('category','Personal Mindprint')
       .eq('source','Member-confirmed LinkedIn professional baseline').order('created_at',{ ascending:false }).limit(1)),
+    read(db.from('intro_outcomes').select('intro_request_id,stage,attribution,outcome_category,created_at')
+      .eq('author_id',userId).eq('stage','outcome').order('created_at',{ascending:false}).limit(LIMIT)),
   ]);
   let mindprintState: BriefInputs['mindprint'] = 'unavailable';
   if (mindprint.state === 'ready') {
@@ -68,5 +70,5 @@ export async function readExecutiveBrief(db: SupabaseClient<Database>, userId: s
       } catch { /* unreadable is not absent */ }
     }
   }
-  return buildExecutiveBrief({ tasks, opportunities, meetings: meetingRows, introductions, contacts, connections, notes, mindprint: mindprintState }, now);
+  return buildExecutiveBrief({ tasks, opportunities, meetings: meetingRows, introductions, contacts, connections, notes, mindprint: mindprintState, outcomes }, now);
 }

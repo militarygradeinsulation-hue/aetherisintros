@@ -38,6 +38,7 @@ import { LedgerDashboard } from './views/LedgerDashboard';
 import { LiveExecutiveOverview } from './components/home/LiveExecutiveOverview';
 import { LiveInsightsDashboard } from './views/LiveInsightsDashboard';
 import { LedgerDirectory } from './views/LedgerDirectory';
+import { defaultDirectoryFilters } from './views/directory-window';
 import { ExperienceProfileView } from './views/ExperienceProfileView';
 import { MessagesView } from './views/MessagesView';
 import { IntrosHubView } from './views/IntrosHubView';
@@ -110,6 +111,9 @@ export default function App({ mode = 'demo', executiveAction, initialPage, initi
   );
   const [savedMemberIds, setSavedMemberIds] = useState<Set<string>>(new Set(mode === 'live' ? [] : ['marcus-lee']));
   const [searchQuery, setSearchQuery] = useState(() => mode === 'live' ? (initialSearch ?? '').trim().slice(0, 120) : '');
+  // Account-keyed parent survives workspace tabs. No private searches in persistent storage.
+  const [directoryFilters, setDirectoryFilters] = useState(defaultDirectoryFilters);
+  useEffect(()=>{setDirectoryFilters(previous=>previous.page===0?previous:{...previous,page:0});},[searchQuery]);
   // A router search update can reuse this shell. Apply explicit entry changes
   // without remounting the providers or discarding member feed drafts.
   useEffect(() => { if (initialPage) setActivePage(initialPage); }, [initialPage]);
@@ -455,6 +459,9 @@ export default function App({ mode = 'demo', executiveAction, initialPage, initi
               onRequestIntro={member => setRequestIntroTarget(member)}
               onNavigate={handleNavigate}
               searchQuery={searchQuery}
+              onSearchChange={setSearchQuery}
+              filters={directoryFilters}
+              onFiltersChange={setDirectoryFilters}
             />
           </>
         )}

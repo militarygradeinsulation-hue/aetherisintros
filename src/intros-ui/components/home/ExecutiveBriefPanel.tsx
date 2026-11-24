@@ -40,6 +40,10 @@ export function ExecutiveBriefPanel({ onOpen }: { onOpen: (destination: Destinat
         <button type="button" onClick={() => onOpen(a.destination)} aria-label={'Open ' + a.source + ' workspace for ' + a.title}>Open <ArrowRight size={14}/></button>
       </li>)}</ul> : <p>No actions surfaced in the readable sample. This does not mean every record is current.</p>}
       {brief.moreActions && <p>More actions were identified in the sample. Open the source workspaces to review them.</p>}
+      <div className="exec-brief-results" aria-label="Recorded relationship results">
+        <strong>Relationship outcomes</strong>
+        {brief.relationshipResults ? <p>{brief.relationshipResults.recordedOutcomes} introductions with outcomes in your recent recorded sample. Direct: {brief.relationshipResults.direct} · Influenced: {brief.relationshipResults.influenced} · Context only: {brief.relationshipResults.contextual}.{brief.relationshipResults.limited?' More events exist.':''} Member-reported outcomes, not independently verified revenue.</p> : <p>Outcome records are unavailable. No zero or financial value is assumed.</p>}
+      </div>
       <p className="exec-brief-note">Relationship and memory sample: {brief.sources.filter(s=>s.key==='connections'||s.key==='notes').map(s=>s.key + ': ' + (s.sample === null ? 'unavailable' : String(s.sample) + (s.limited ? '+' : ''))).join(' · ')}.</p>
       <p className="exec-brief-note">Mindprint: {brief.mindprint === 'available' ? 'approved private baseline available' : brief.mindprint === 'not-recorded' ? 'no approved baseline found' : 'unavailable'}. Memory and relationship evidence remain private; read them directly in Butler when needed.</p>
     </div>}

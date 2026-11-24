@@ -59,7 +59,12 @@ function Bridge({ onMembers, onError }: {
 
   useEffect(() => {
     let alive = true
+    let loading = false
+    let queued = false
     const load = async () => {
+      if (!alive || document.hidden) return
+      if (loading) { queued = true; return }
+      loading = true
       try {
         const { data: session, error } = await supabase.auth.getUser()
         if (error || !session.user) throw new Error('Sign in to see approved network members.')
@@ -83,6 +88,11 @@ function Bridge({ onMembers, onError }: {
         // An errored registry is NOT permission to show the fictional catalogue.
         onMembers([])
         onError?.(error instanceof Error ? error.message : 'Live member directory is unavailable.')
+      } finally {
+        loading = false
+        // Coalesce evidence/visibility bursts. Re-read once after the active
+        // load so an event received mid-request cannot be lost.
+        if (queued && alive && !document.hidden) { queued = false; void load() }
       }
     }
     void load()
