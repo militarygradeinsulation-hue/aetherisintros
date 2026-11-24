@@ -301,8 +301,8 @@ async function boot({ actualMembershipGate = false } = {}) {
   await db.exec(passportSource[1])
   for (const m of migrations) {
     try {
-      // The live database had legacy syndication tables not declared by frozen
-      // Drizzle 0075. Model that fact explicitly before 0100 in this test-only
+      // The live database had legacy syndication and referral columns not declared by frozen
+      // Drizzle 0072/0075. Model that fact explicitly before 0100 in this test-only
       // PGlite baseline; never apply the fixture as a production migration.
       if (m.startsWith('0100_') && !privateLibraryFocused) {
         const synthetic = join(here, '..', 'recovery', 'fixtures', 'live-only-syndication.sql')
@@ -345,7 +345,7 @@ console.log(`Migrations: ${migrations.join(', ')}`)
 for (const file of suites) {
   console.log(`\n${file.replace('.check.mjs', '')}`)
   const ok = (cond, msg) => { if (cond) { pass++; console.log('  ✓', msg) } else { fail++; console.log('  ✗', msg) } }
-  const ctx = { ...(await boot({ actualMembershipGate: ['zz-confirmed-onboarding.check.mjs', 'exchange.check.mjs'].includes(file) })), ok, A, B, C, ADMIN }
+  const ctx = { ...(await boot({ actualMembershipGate: ['zz-confirmed-onboarding.check.mjs', 'exchange.check.mjs', 'syndication-rooms.check.mjs', 'warm-referral-engine.check.mjs'].includes(file) })), ok, A, B, C, ADMIN }
   try { await (await import(join(here, file))).default(ctx) } catch (e) { fail++; console.log('  ✗ suite crashed:', e.message) }
   await ctx.db.close()
 }

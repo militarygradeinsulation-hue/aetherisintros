@@ -108,32 +108,15 @@ export const createSyndicationRoom = createServerFn({ method: 'POST' })
   })
   .handler(async ({ data, context }): Promise<SyndicationRoom> => {
     const db = context.supabase as any // eslint-disable-line @typescript-eslint/no-explicit-any
-    const userId = context.userId
-
-    const { data: room, error: roomErr } = await db
-      .from('syndication_rooms')
-      .insert({
-        created_by: userId,
-        title: data.title.trim(),
-        room_type: data.roomType,
-        description: data.description?.trim() ?? null,
-        opportunity_size: data.opportunitySize?.trim() ?? null,
-        deadline: data.deadline ?? null,
-        status: 'open',
-      })
-      .select()
-      .single()
-    if (roomErr) throw new Error(roomErr.message)
-
-    // Add creator as a member so they can vote
-    const membersToInsert = [
-      { room_id: room.id, user_id: userId, status: 'active', role: 'lead' },
-      ...(data.inviteUserIds ?? [])
-        .filter(id => id !== userId)
-        .map(id => ({ room_id: room.id, user_id: id, invited_by: userId })),
-    ]
-    const { error: membersErr } = await db.from('syndication_room_members').insert(membersToInsert)
-    if (membersErr) throw new Error(membersErr.message)
+    const { data: room, error: roomErr } = await db.rpc('create_syndication_room', {
+      p_title: data.title.trim(),
+      p_room_type: data.roomType,
+      p_description: data.description?.trim() ?? null,
+      p_opportunity_size: data.opportunitySize?.trim() ?? null,
+      p_deadline: data.deadline ?? null,
+      p_invite_user_ids: data.inviteUserIds ?? [],
+    })
+    if (roomErr || !room?.id) throw new Error(roomErr?.message ?? 'Room creation was not confirmed.')
 
     return room as SyndicationRoom
   })
@@ -148,32 +131,10 @@ export const castVote = createServerFn({ method: 'POST' })
   })
   .handler(async ({ data, context }): Promise<void> => {
     const db = context.supabase as any // eslint-disable-line @typescript-eslint/no-explicit-any
-    const userId = context.userId
-
-    const { error } = await db
-      .from('syndication_room_members')
-      .update({ vote: data.vote, vote_note: data.voteNote ?? null, voted_at: new Date().toISOString() })
-      .eq('room_id', data.roomId)
-      .eq('user_id', userId)
+    const { error } = await db.rpc('cast_syndication_vote', {
+      p_room_id: data.roomId, p_vote: data.vote, p_note: data.voteNote ?? null,
+    })
     if (error) throw new Error(error.message)
-
-    // Auto-close to decided when all members have voted
-    const { data: members } = await db
-      .from('syndication_room_members')
-      .select('vote')
-      .eq('room_id', data.roomId)
-    const allVoted = (members ?? []).every((m: { vote: Vote | null }) => m.vote !== null)
-    if (allVoted) {
-      const votes: Vote[] = (members ?? []).map((m: { vote: Vote }) => m.vote)
-      const inCount = votes.filter(v => v === 'in').length
-      const outCount = votes.filter(v => v === 'out').length
-      const needMoreCount = votes.filter(v => v === 'need_more_info').length
-      const summary = `${inCount} In / ${outCount} Out / ${needMoreCount} Need More Info`
-      await db
-        .from('syndication_rooms')
-        .update({ status: 'decided', decision: summary, closed_at: new Date().toISOString() })
-        .eq('id', data.roomId)
-    }
   })
 
 /** Post a message to a syndication room discussion thread. */
@@ -210,14 +171,20 @@ export const getRoomDetails = createServerFn({ method: 'GET' })
     const [{ data: room, error: roomErr }, { data: rawMembers, error: membersErr }, { data: rawMessages, error: messagesErr }] =
       await Promise.all([
         db.from('syndication_rooms').select('*').eq('id', data.roomId).single(),
-        db.from('syndication_room_members').select('*, profiles!syndication_room_members_user_id_fkey(name, initials, avatar_url)').eq('room_id', data.roomId).order('joined_at'),
-        db.from('syndication_messages').select('*, profiles(name, initials, avatar_url)').eq('room_id', data.roomId).order('created_at'),
+        db.from('syndication_room_members').select('*').eq('room_id', data.roomId).order('joined_at'),
+        db.from('syndication_messages').select('*').eq('room_id', data.roomId).order('created_at'),
       ])
 
     if (roomErr) throw new Error(roomErr.message)
     if (membersErr) throw new Error(membersErr.message)
     if (messagesErr) throw new Error(messagesErr.message)
 
+    const profileIds = [...new Set<string>([...(rawMembers ?? []), ...(rawMessages ?? [])].map((row:{user_id:string})=>row.user_id).filter(Boolean))]
+    const profiles = new Map<string,{name?:string;initials?:string;avatar_url?:string}>()
+    for(let offset=0;offset<profileIds.length;offset+=100) {
+      const lookup = await db.rpc('visible_member_profiles',{p_member_ids:profileIds.slice(offset,offset+100),p_limit:100,p_offset:0})
+      if (!lookup.error) for (const item of lookup.data ?? []) if (item.profile?.id) profiles.set(item.profile.id,item.profile)
+    }
     const members: SyndicationMember[] = (rawMembers ?? []).map((m: any) => ({ // eslint-disable-line @typescript-eslint/no-explicit-any
       id: m.id,
       room_id: m.room_id,
@@ -226,9 +193,9 @@ export const getRoomDetails = createServerFn({ method: 'GET' })
       vote_note: m.vote_note,
       voted_at: m.voted_at,
       joined_at: m.joined_at,
-      name: m.profiles?.name ?? null,
-      initials: m.profiles?.initials ?? null,
-      avatar_url: m.profiles?.avatar_url ?? null,
+      name: profiles.get(m.user_id)?.name ?? null,
+      initials: profiles.get(m.user_id)?.initials ?? null,
+      avatar_url: profiles.get(m.user_id)?.avatar_url ?? null,
     }))
 
     const messages: SyndicationMessage[] = (rawMessages ?? []).map((m: any) => ({ // eslint-disable-line @typescript-eslint/no-explicit-any
@@ -237,9 +204,9 @@ export const getRoomDetails = createServerFn({ method: 'GET' })
       user_id: m.user_id,
       body: m.body,
       created_at: m.created_at,
-      name: m.profiles?.name ?? null,
-      initials: m.profiles?.initials ?? null,
-      avatar_url: m.profiles?.avatar_url ?? null,
+      name: profiles.get(m.user_id)?.name ?? null,
+      initials: profiles.get(m.user_id)?.initials ?? null,
+      avatar_url: profiles.get(m.user_id)?.avatar_url ?? null,
     }))
 
     return { room: room as SyndicationRoom, members, messages }
