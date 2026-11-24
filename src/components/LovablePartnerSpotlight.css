@@ -11,7 +11,7 @@
   .lv-partner-2026__mobile{display:flex;flex-direction:column;align-items:center;gap:11px;overflow:hidden;padding:22px 12px 24px;border-radius:14px;background:radial-gradient(ellipse at 50% 120%,rgba(207,35,204,.38),transparent 66%),linear-gradient(155deg,#040308,#131021 75%,#161020);color:#fff!important;text-align:center;text-decoration:none}
   .lv-partner-2026__headline{display:flex;flex-direction:column;align-items:center;gap:4px;font:850 clamp(27px,7.5vw,39px)/1.05 Arial,Helvetica,sans-serif;letter-spacing:-.05em}
   .lv-partner-2026__headline b{font-weight:850;background:linear-gradient(100deg,#6c89ff,#e544dd);-webkit-background-clip:text;background-clip:text;color:transparent}
-  .lv-partner-2026__headline strong{font:inherit;background:linear-gradient(95deg,#a455ef,#ed3cb7 55%,#ff8100);-webkit-background-clip:text;background-clip:text;color:transparent}
+  .lv-partner-2026__headline strong{font:inherit;background:linear-gradient(95deg,#a455ef,#ed3cb7 55%,#ef4444);-webkit-background-clip:text;background-clip:text;color:transparent}
   .lv-partner-2026__hire{font:800 clamp(16px,4.4vw,20px)/1.25 Arial,Helvetica,sans-serif}
   .lv-partner-2026__mobile img{display:block;width:min(160px,47vw);height:auto;aspect-ratio:1;border-radius:8px;background:white}
 }

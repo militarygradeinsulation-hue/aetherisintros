@@ -308,6 +308,13 @@ async function boot({ actualMembershipGate = false } = {}) {
         const synthetic = join(here, '..', 'recovery', 'fixtures', 'live-only-syndication.sql')
         await db.exec(readFileSync(synthetic, 'utf8'))
       }
+      // 0101–0108 operate on the domain tables created through the Supabase
+      // migration stream. Replay the actual historical source, not permissive
+      // stubs or skipped RLS statements. This runs only in disposable PGlite.
+      if (m.startsWith('0101_')) {
+        await db.exec(readFileSync(join(migrationsDir, '../../supabase/migrations/20261026120000_wire_remote_data_layers.sql'), 'utf8'))
+        await db.exec('CREATE PUBLICATION supabase_realtime')
+      }
       await db.exec(readFileSync(join(migrationsDir, m), 'utf8'))
     } catch (error) { throw new Error(`Migration ${m} failed: ${error.message}`, { cause: error }) }
   }
