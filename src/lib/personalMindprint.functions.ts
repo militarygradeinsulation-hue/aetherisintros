@@ -1,4 +1,3 @@
-import { createHash } from 'node:crypto'
 import { z } from 'zod'
 import { createServerFn } from '@tanstack/react-start'
 
@@ -11,8 +10,9 @@ export const MINDPRINT_CATEGORY = 'Personal Mindprint'
 export const MINDPRINT_SOURCE = 'Member-confirmed LinkedIn professional baseline'
 
 /** One stable identifier per member avoids duplicate snapshots on double-click or retry. */
-export function personalMindprintId(owner: string): string {
-  const hex = createHash('sha256').update('askintros:personal-mindprint:v1:' + owner).digest('hex')
+export async function personalMindprintId(owner: string): Promise<string> {
+  const digest = await globalThis.crypto.subtle.digest('SHA-256', new TextEncoder().encode('askintros:personal-mindprint:v1:' + owner))
+  const hex = Array.from(new Uint8Array(digest), byte => byte.toString(16).padStart(2, '0')).join('')
   return [hex.slice(0, 8), hex.slice(8, 12), '5' + hex.slice(13, 16), 'a' + hex.slice(17, 20), hex.slice(20, 32)].join('-')
 }
 
@@ -56,7 +56,7 @@ export const saveMyPersonalMindprint = createServerFn({ method: 'POST' })
     // We only keep the structured professional evidence; never persist pasted raw pages,
     // LinkedIn credentials, email, phone, other people's details, or unreviewed psychology.
     const record = {
-      id: personalMindprintId(context.userId), user_id: context.userId,
+      id: await personalMindprintId(context.userId), user_id: context.userId,
       kind: 'note', category: MINDPRINT_CATEGORY, scope: 'private' as const,
       source: MINDPRINT_SOURCE, confidence: 65, when_label: mindprint.updatedAt,
       text: JSON.stringify(mindprint),
@@ -73,7 +73,7 @@ export const loadMyPersonalMindprint = createServerFn({ method: 'POST' })
   .middleware([requireAuthContract])
   .handler(async ({ context }): Promise<{ mindprint: PersonalMindprint | null }> => {
     const { data, error } = await context.supabase.from('memories').select('text')
-      .eq('id', personalMindprintId(context.userId)).eq('user_id', context.userId)
+      .eq('id', await personalMindprintId(context.userId)).eq('user_id', context.userId)
       .eq('category', MINDPRINT_CATEGORY).eq('scope', 'private').maybeSingle()
     if (error) throw new Error('Private Mindprint could not be loaded.')
     if (!data) return { mindprint: null }
@@ -89,7 +89,7 @@ export const deleteMyPersonalMindprint = createServerFn({ method: 'POST' })
   .inputValidator(z.object({ confirmed: z.literal(true) }))
   .handler(async ({ context }) => {
     const { error } = await context.supabase.from('memories').delete()
-      .eq('id', personalMindprintId(context.userId)).eq('user_id', context.userId)
+      .eq('id', await personalMindprintId(context.userId)).eq('user_id', context.userId)
       .eq('scope', 'private').eq('category', MINDPRINT_CATEGORY)
     if (error) throw new Error('The private Mindprint could not be removed.')
     return { removed: true }
