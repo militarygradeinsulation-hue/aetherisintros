@@ -13,7 +13,7 @@ describe('published need recommendations',()=>{
   it('excludes private, expired, invalid, self-authored and nonopen requests',()=>{
     expect(findPublishedNeedMatches({...input,asks:[
       ask('private',{visibility:'private'}),ask('expired',{expiresAt:'2026-11-23'}),ask('invalid',{expiresAt:'invalid'}),
-      ask('own',{mine:true}),ask('closed',{status:'closed'}),ask('legacy',{status:undefined}),
+      ask('own',{mine:true}),ask('closed',{status:'closed'}),(({status: _status, ...legacy}) => legacy)(ask('legacy')),
       ask('valid'),ask('valid')
     ]},now).map(x=>x.id)).toEqual(['valid']);
   });
