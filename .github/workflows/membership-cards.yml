@@ -1,11 +1,10 @@
-# Emails membership cards still waiting to be sent, every 30 minutes. Cards normally go out
-# the moment an admin verifies someone or the member next opens the app; this catches the rest.
-# Uses the same repository secrets as the weekly digest: DIGEST_URL (its origin is used) and
-# CRON_SECRET. Without them it does nothing.
+# Manual-only delivery of membership cards that still need an email.
+# Scheduled runs are disabled to prevent unnecessary recurring GitHub Actions
+# executions. Card generation, immediate delivery on verification, and the
+# authenticated /api/cron/membership-cards endpoint remain unchanged.
+# To process queued cards, launch this workflow manually with Run workflow.
 name: Membership cards
 on:
-  schedule:
-    - cron: '*/30 * * * *'
   workflow_dispatch:
 permissions: {}
 jobs:
