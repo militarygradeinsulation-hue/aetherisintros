@@ -72,7 +72,21 @@ try {
   }
   await db.query("insert into public.user_roles(user_id,role) values($1,'admin')", [ADMIN])
   for (const entry of migrations.filter(entry => Number(entry.tag.slice(0, 4)) >= 22 && !missing.has(Number(entry.tag.slice(0, 4))))) {
-    await db.exec(read('drizzle/migrations/' + entry.tag + '.sql'))
+    // Use the same observed legacy catalog prerequisites as the primary
+    // offline migration suite. This rehearsal intentionally omits only the
+    // three selected member families, not the independent live-only aliases.
+    if (entry.tag.startsWith('0100_')) {
+      await db.exec(read('scripts/recovery/fixtures/live-only-syndication.sql'))
+    }
+    if (entry.tag.startsWith('0101_')) {
+      await db.exec(read('supabase/migrations/20261026120000_wire_remote_data_layers.sql'))
+      await db.exec('CREATE PUBLICATION supabase_realtime')
+    }
+    try {
+      await db.exec(read('drizzle/migrations/' + entry.tag + '.sql'))
+    } catch (error) {
+      throw new Error('Member family rehearsal migration ' + entry.tag + ' failed: ' + error.message, { cause: error })
+    }
   }
   const before = await svc('select id,name from public.profiles order by id')
   for (const family of families) {
