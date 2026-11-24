@@ -1,6 +1,7 @@
 import { ArrowRight, BookOpenText, BriefcaseBusiness, MessageCircle, Network, Send, Users } from 'lucide-react'
 import { useNetwork } from '@/aetheris/store'
 import { ExecutiveBriefPanel } from './ExecutiveBriefPanel'
+import { PublishedNeedMatchesPanel } from './PublishedNeedMatchesPanel'
 import { memberOverviewSnapshot } from '@/aetheris/live-overview'
 import type { ActivePage } from '../layout/TopNavigation'
 import './live-executive-overview.css'
@@ -48,6 +49,8 @@ export function LiveExecutiveOverview({ onNavigate, onWorkspace, onOpenPipeline 
       else if (destination === 'pipeline') onOpenPipeline()
       else onWorkspace('crm')
     }}/>
+
+    <PublishedNeedMatchesPanel onOpen={() => onWorkspace('needs')}/>
 
     {summary.state === 'loading' ? <div className="live-exec-state" role="status">Loading your private network overview…</div>
       : summary.state === 'unavailable' ? <div className="live-exec-state live-exec-error" role="alert">
