@@ -156,6 +156,21 @@ try{
     const sidebar=page.locator('.ledger-crm-sidebar');
     await checkMenuAlignment(sidebar,theme+' desktop');
     if(process.env.NAV_SCREENSHOT_DIR) await page.screenshot({path:process.env.NAV_SCREENSHOT_DIR+'/'+theme+'-desktop.png'});
+    // Test the actual ambient renderer while a member scrolls, then idle.
+    const ambientCanvas=page.locator('.site-ambient[data-particle-view="business"] canvas').first();
+    await ambientCanvas.waitFor({state:'attached'});
+    await page.waitForFunction(()=>document.querySelector('.site-ambient[data-particle-view="business"] canvas')?.dataset.motion==='running');
+    const motionDuringScroll=await page.evaluate(async()=>{
+      const pane=document.getElementById('aetheris-workspace-content');
+      const canvas=document.querySelector('.site-ambient[data-particle-view="business"] canvas');
+      if(!pane||!canvas) return false;
+      // Dispatch within the actual scroll owner. Native wheel/touch remain untouched.
+      pane.dispatchEvent(new Event('scroll'));
+      return canvas.dataset.motion==='paused';
+    });
+    check(motionDuringScroll,theme+' decorative particle processing pauses during native workspace scroll');
+    await page.waitForFunction(()=>document.querySelector('.site-ambient[data-particle-view="business"] canvas')?.dataset.motion==='running');
+    check(true,theme+' particle animation resumes after scroll idle');
     await checkDashboardBoard(page,theme);
     const persistentNav=sidebar.locator('nav.ledger-native-nav');
     await persistentNav.evaluate(el=>{el.dataset.mountProof='persistent-navigation'});
