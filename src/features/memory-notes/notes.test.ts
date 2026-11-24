@@ -145,7 +145,7 @@ describe("Memory Notes", () => {
     expect(mock.requests[0]!.url.searchParams.get("user_id")).toBe("eq." + owner);
     expect(mock.requests[0]!.url.searchParams.get("id")).toBe("eq." + id);
     const missing = database(() => null);
-    expect(await butlerTools(missing.db, owner)[1]!.execute({ id })).toMatchObject({ note: null });
+    expect(await butlerTools(missing.db, owner).find((tool) => tool.name === "read_saved_notes")!.execute({ id })).toMatchObject({ note: null });
   });
   it("captures more than the recent AI window and stops at the requested turn", async () => {
     const turns = Array.from({ length: 502 }, (_, index) => ({
