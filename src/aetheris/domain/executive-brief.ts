@@ -30,6 +30,15 @@ const time = (value: string | null) => value ? Date.parse(value) : NaN;
 const clean = (value: string, fallback: string) => value.trim().slice(0, 160) || fallback;
 const present = (value: string | null) => Boolean(value?.trim());
 const order = { urgent: 0, next: 1, review: 2 } as const;
+export function opportunityEvidenceGaps(o: Pick<BriefOpportunity,'detail'|'next_action'|'expected_close'|'person_id'|'source'>): string[] {
+  return [
+    ...(!present(o.detail) ? ['Recorded need or context'] : []),
+    ...(!present(o.next_action) ? ['Next action'] : []),
+    ...(!Number.isFinite(time(o.expected_close)) ? ['Expected close date'] : []),
+    ...(!o.person_id ? ['Linked CRM contact'] : []),
+    ...(!present(o.source) ? ['Source'] : []),
+  ];
+}
 export function buildExecutiveBrief(input: BriefInputs, now = Date.now()) {
   const actions: BriefAction[] = [];
   const add = (a: Omit<BriefAction, 'id'>) => actions.push({ ...a, id: a.source + ':' + a.recordId });
@@ -48,13 +57,7 @@ export function buildExecutiveBrief(input: BriefInputs, now = Date.now()) {
   for (const o of input.opportunities.state === 'ready' ? input.opportunities.rows : []) {
     if (o.status !== 'open') continue;
     const due = time(o.expected_close);
-    const missingEvidence = [
-      ...(!present(o.detail) ? ['Recorded need or context'] : []),
-      ...(!present(o.next_action) ? ['Next action'] : []),
-      ...(!Number.isFinite(due) ? ['Expected close date'] : []),
-      ...(!o.person_id ? ['Linked CRM contact'] : []),
-      ...(!present(o.source) ? ['Source'] : []),
-    ];
+    const missingEvidence = opportunityEvidenceGaps(o);
     const closeDue = Number.isFinite(due) && due <= now + 7 * DAY;
     if (!missingEvidence.length && !closeDue) continue;
     add({

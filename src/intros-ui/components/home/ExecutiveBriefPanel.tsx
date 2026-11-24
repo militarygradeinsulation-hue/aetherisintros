@@ -40,6 +40,7 @@ export function ExecutiveBriefPanel({ onOpen }: { onOpen: (destination: Destinat
         <button type="button" onClick={() => onOpen(a.destination)} aria-label={'Open ' + a.source + ' workspace for ' + a.title}>Open <ArrowRight size={14}/></button>
       </li>)}</ul> : <p>No actions surfaced in the readable sample. This does not mean every record is current.</p>}
       {brief.moreActions && <p>More actions were identified in the sample. Open the source workspaces to review them.</p>}
+      <p className="exec-brief-note">Relationship and memory sample: {brief.sources.filter(s=>s.key==='connections'||s.key==='notes').map(s=>s.key + ': ' + (s.sample === null ? 'unavailable' : String(s.sample) + (s.limited ? '+' : ''))).join(' · ')}.</p>
       <p className="exec-brief-note">Mindprint: {brief.mindprint === 'available' ? 'approved private baseline available' : brief.mindprint === 'not-recorded' ? 'no approved baseline found' : 'unavailable'}. Memory and relationship evidence remain private; read them directly in Butler when needed.</p>
     </div>}
   </section>;

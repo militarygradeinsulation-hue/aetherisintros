@@ -407,7 +407,7 @@ export default function App({ mode = 'demo', executiveAction, initialPage, initi
             live={mode === 'live'}
             unreadCount={mode === 'live' ? (unread.loaded && !unreadUnavailable ? unread.total : null) : 0}
             socialFeed={mode === 'live' ? <div className="ix-classic"><AetherisAppSurface  feedOnly assistant={false} /></div> : undefined}
-            liveOverview={mode === 'live' ? <LiveExecutiveOverview onNavigate={handleNavigate} onWorkspace={page => { setClassicPage(page); handleNavigate('workspace'); }} /> : undefined}
+            liveOverview={mode === 'live' ? <LiveExecutiveOverview onNavigate={handleNavigate} onOpenPipeline={() => { setCrmSection('pipeline'); setClassicPage('crm'); handleNavigate('workspace'); }} onWorkspace={page => { if (page === 'crm') setCrmSection('crm'); setClassicPage(page); handleNavigate('workspace'); }} /> : undefined}
             actionQueue={mode === 'live' ? <div className="rc-stack">
               <ActivationChecklist onOpen={(target) => {
                 if (target === 'intros') { handleNavigate('intros'); return; }

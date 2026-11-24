@@ -8,13 +8,14 @@ import './live-executive-overview.css'
 interface Props {
   onNavigate: (page: ActivePage) => void
   onWorkspace: (destination: string) => void
+  onOpenPipeline: () => void
 }
 
 /** Shown only behind the verified member access gate in the live workspace.
  * The existing social feed and member graph are the only sources of truth.
  * This component never reads demo identities or writes synthetic metrics.
  */
-export function LiveExecutiveOverview({ onNavigate, onWorkspace }: Props) {
+export function LiveExecutiveOverview({ onNavigate, onWorkspace, onOpenPipeline }: Props) {
   const graph = useNetwork()
   const summary = memberOverviewSnapshot(graph)
   const posts = graph.posts.filter(post => post.visibility !== 'private')
@@ -44,6 +45,7 @@ export function LiveExecutiveOverview({ onNavigate, onWorkspace }: Props) {
 
     <ExecutiveBriefPanel onOpen={destination => {
       if (destination === 'intros' || destination === 'meetings') onNavigate(destination)
+      else if (destination === 'pipeline') onOpenPipeline()
       else onWorkspace('crm')
     }}/>
 

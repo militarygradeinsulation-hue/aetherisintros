@@ -6,15 +6,15 @@ import { MemberThumbnail } from '../components/shared/MemberThumbnail';
 /* Absolute Ledger CRM dashboard composition using the active Ask Intros
  * feed/member callbacks. It never imports absolute-ledger-flow fixture records.
  */
-import React, { useEffect, useState } from 'react';
+import React, { lazy, Suspense, useEffect, useState } from 'react';
 import { ArrowRight, Bookmark, Handshake, Heart, MessageSquare, Plus, Search, Settings2, Users, X } from 'lucide-react';
 import type { FeedPost, IntroRequest, NetworkMember } from '@/intros-ui/networkData';
 import type { ActivePage } from '@/intros-ui/components/layout/TopNavigation';
 import { PageHeader, Panel, StatCard } from '@/intros-ui/components/layout/LedgerUiKit';
 import './ledger-dashboard.css';
-import { LedgerWidgetBoard } from './LedgerWidgetBoard';
+const LedgerWidgetBoard = lazy(() => import('./LedgerWidgetBoard').then(m => ({ default: m.LedgerWidgetBoard })));
 import { DashboardNewsTile } from './DashboardNewsTile';
-import { NetworkHighlights } from './NetworkHighlights';
+const NetworkHighlights = lazy(() => import('./NetworkHighlights').then(m => ({ default: m.NetworkHighlights })));
 import './ledger-widget-board.css';
 
 type PanelKey = 'activity' | 'people' | 'actions' | 'priorities';
@@ -111,7 +111,7 @@ export function LedgerDashboard({
       <button type="button" aria-pressed={view === 'highlights'} aria-controls="dashboard-highlights-view" onClick={() => { setHighlightsVisited(true); setView('highlights'); }}>Network highlights</button>
     </div>
     <section id="dashboard-highlights-view" className="ledger-dashboard-view" hidden={view !== 'highlights'}>
-      {highlightsVisited && <NetworkHighlights live={live} posts={posts} active={view === 'highlights'} onReadFeed={() => setView('activity')} onOpenAuthor={id => id === 'me' && onOpenTool ? onOpenTool('profile') : onNavigate('people', id)} onLikePost={onLikePost} onSavePost={onSavePost}/>}
+      {highlightsVisited && <Suspense fallback={<p role="status">Loading network highlights…</p>}><NetworkHighlights live={live} posts={posts} active={view === 'highlights'} onReadFeed={() => setView('activity')} onOpenAuthor={id => id === 'me' && onOpenTool ? onOpenTool('profile') : onNavigate('people', id)} onLikePost={onLikePost} onSavePost={onSavePost}/></Suspense>}
     </section>
     <section id="dashboard-activity-view" className="ledger-dashboard-view" hidden={view !== 'activity'}>
     <div className="ledger-dashboard-stats">
@@ -210,7 +210,7 @@ export function LedgerDashboard({
     </div>
     </section>
     <section id="dashboard-widget-view" className="ledger-dashboard-view" hidden={view !== 'board'}>
-      {boardVisited && <LedgerWidgetBoard members={members} unreadCount={unreadCount} live={live} onNavigate={onNavigate} onOpenTool={onOpenTool} onOpenPipeline={onOpenPipeline}/>}
+      {boardVisited && <Suspense fallback={<p role="status">Loading your board…</p>}><LedgerWidgetBoard members={members} unreadCount={unreadCount} live={live} onNavigate={onNavigate} onOpenTool={onOpenTool} onOpenPipeline={onOpenPipeline}/></Suspense>}
     </section>
     {customizeOpen && <div className="ledger-customize-backdrop" onMouseDown={event => {
       if (event.target === event.currentTarget) setCustomizeOpen(false);
