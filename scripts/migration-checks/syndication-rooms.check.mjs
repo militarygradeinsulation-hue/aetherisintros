@@ -2,7 +2,9 @@
 // members vote In/Out/Need More Info with notes, discuss in a thread, and see a decision summary.
 export default async ({ ok, as, svc, A, B, C, ADMIN }) => {
   // Syndication rooms only admit approved live members; make the invitee's fixture explicit.
-  await svc(`insert into public.early_access_members (user_id,email,status) values ('${B}','b@syndication.test','approved') on conflict (user_id) do update set status='approved'`)
+  await svc(`update auth.users set email_confirmed_at=now() where id in ('${A}','${B}','${C}')`)
+  await svc(`update public.profiles set onboarded=true where id in ('${A}','${B}','${C}')`)
+  await svc(`insert into public.early_access_members (user_id,email,status) values ('${A}','a@syndication.test','approved'),('${B}','b@syndication.test','approved'),('${C}','c@syndication.test','approved') on conflict (user_id) do update set status='approved'`)
   // Only authenticated users can create a room.
   ok(!!(await as(null, `insert into public.syndication_rooms (created_by, title) values ('${A}', 'Anon room')`)).error, 'visitors cannot create a room')
 
@@ -90,6 +92,10 @@ export default async ({ ok, as, svc, A, B, C, ADMIN }) => {
   // Re-inviting the same member is idempotent through the guarded RPC.
   r = await as(A, `select public.invite_syndication_member('${RID}', '${B}')`)
   ok(!r.error && (await as(A, `select count(*)::int n from public.syndication_room_members where room_id = '${RID}' and user_id = '${B}'`)).rows?.[0]?.n === 1, 'duplicate invitations stay idempotent')
+
+  await svc(`update public.early_access_members set status='revoked' where user_id='${B}'`)
+  ok((await as(B, `select id from public.syndication_rooms where id='${RID}'`)).rows?.length===0,'revoked member loses private room access');
+  ok(!!(await as(B, `select public.cast_syndication_vote('${RID}', 'in')`)).error,'revoked member cannot vote');
 
   // Cascading deletes: deleting the room removes members and messages.
   ok(!(await as(A, `delete from public.syndication_rooms where id = '${RID}' and created_by = '${A}'`)).error, 'creator can delete the room')

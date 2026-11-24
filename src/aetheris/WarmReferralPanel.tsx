@@ -1,4 +1,5 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
+import { supabase } from '@/integrations/supabase/client'
 import { useServerFn } from '@tanstack/react-start'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { Loader2, RefreshCw, X, Clock, ArrowRight, Zap } from 'lucide-react'
@@ -21,7 +22,7 @@ interface IntroDialogProps {
 
 function IntroDialog({ suggestion, onClose, onSend, isSending }: IntroDialogProps) {
   const [message, setMessage] = useState(
-    `Hi ${suggestion.connector_name}, I noticed you know ${suggestion.target_name}. ${suggestion.path_explanation} Would you be willing to make a brief introduction? Happy to do the same for you anytime.`
+    `Hi ${suggestion.connector_name}, do you happen to know ${suggestion.target_name}? If you do, and both of you are comfortable with it, would you consider making an introduction?`
   )
 
   return (
@@ -56,9 +57,9 @@ function IntroDialog({ suggestion, onClose, onSend, isSending }: IntroDialogProp
 function StrengthBadge({ score }: { score: number }) {
   const level = score >= 75 ? 'hot' : score >= 50 ? 'warm' : 'cool'
   return (
-    <span className={`wr-badge wr-badge--${level}`}>
+    <span className={`wr-badge wr-badge--${level}`} title="Profile topic overlap, not a verified relationship or probability">
       <Zap size={10} />
-      {score}
+      Topic match {score}
     </span>
   )
 }
@@ -94,7 +95,7 @@ function SuggestionCard({ suggestion, onAskIntro, onDismiss, onSnooze, isActing 
         <Btn
           kind="primary"
           onClick={() => onAskIntro(suggestion)}
-          disabled={isActing}
+          disabled={isActing || !suggestion.connector_user_id || !suggestion.target_user_id}
           className="wr-ask-btn"
         >
           Ask {suggestion.connector_name} for intro
@@ -123,6 +124,22 @@ function SuggestionCard({ suggestion, onAskIntro, onDismiss, onSnooze, isActing 
 }
 
 export function WarmReferralPanel() {
+  const [userId,setUserId] = useState<string | null>(null)
+  useEffect(() => {
+    let alive = true
+    let changed = false
+    const {data:{subscription}} = supabase.auth.onAuthStateChange((_event,session) => {
+      changed = true
+      if (alive) setUserId(session?.user.id ?? null)
+    })
+    void supabase.auth.getSession().then(({data}) => {
+      if (alive && !changed) setUserId(data.session?.user.id ?? null)
+    })
+    return () => { alive = false; subscription.unsubscribe() }
+  },[])
+  return userId ? <WarmReferralWorkspace key={userId} userId={userId}/> : <p>Sign in to review your private referral candidates.</p>
+}
+function WarmReferralWorkspace({userId}:{userId:string}) {
   const queryClient = useQueryClient()
   const [activeDialog, setActiveDialog] = useState<ReferralSuggestion | null>(null)
   const [actingId, setActingId] = useState<string | null>(null)
@@ -136,7 +153,7 @@ export function WarmReferralPanel() {
   const requestFn = useServerFn(requestReferral)
 
   const { data: suggestions = [], isLoading, isError } = useQuery<ReferralSuggestion[]>({
-    queryKey: ['warm-referrals'],
+    queryKey: ['warm-referrals',userId],
     queryFn: () => getSuggestionsFn({}),
     staleTime: 5 * 60 * 1000,
     refetchOnWindowFocus: false,
@@ -146,7 +163,7 @@ export function WarmReferralPanel() {
     mutationFn: () => generateFn({}),
     onSuccess: () => {
       setActionError('')
-      void queryClient.invalidateQueries({ queryKey: ['warm-referrals'] })
+      void queryClient.invalidateQueries({ queryKey: ['warm-referrals',userId] })
     },
     onError: reportError,
   })
@@ -156,7 +173,7 @@ export function WarmReferralPanel() {
     setActingId(id)
     try {
       await dismissFn({ data: { suggestionId: id } })
-      queryClient.setQueryData<ReferralSuggestion[]>(['warm-referrals'], prev =>
+      queryClient.setQueryData<ReferralSuggestion[]>(['warm-referrals',userId], prev =>
         (prev ?? []).filter(s => s.id !== id)
       )
     } catch (error) {
@@ -171,7 +188,7 @@ export function WarmReferralPanel() {
     setActingId(id)
     try {
       await snoozeFn({ data: { suggestionId: id, days: 7 } })
-      queryClient.setQueryData<ReferralSuggestion[]>(['warm-referrals'], prev =>
+      queryClient.setQueryData<ReferralSuggestion[]>(['warm-referrals',userId], prev =>
         (prev ?? []).filter(s => s.id !== id)
       )
     } catch (error) {
@@ -201,7 +218,7 @@ export function WarmReferralPanel() {
         },
       })
       setActiveDialog(null)
-      queryClient.setQueryData<ReferralSuggestion[]>(['warm-referrals'], prev =>
+      queryClient.setQueryData<ReferralSuggestion[]>(['warm-referrals',userId], prev =>
         (prev ?? []).filter(s => s.id !== suggestion.id)
       )
     } catch (error) {
@@ -220,7 +237,7 @@ export function WarmReferralPanel() {
       <div className="wr-header">
         <div>
           <h2 className="wr-title">Warm Paths to New Connections</h2>
-          <p className="wr-subtitle">AI-surfaced intros through people you already trust</p>
+          <p className="wr-subtitle">Review potential introductions using recorded connections and stated professional capabilities.</p>
         </div>
         <button
           className="wr-refresh-btn"
@@ -238,7 +255,7 @@ export function WarmReferralPanel() {
         {(isLoading || isRefreshing) && (
           <div className="wr-empty">
             <Loader2 size={18} className="spin" />
-            <p>Generating your warm paths…</p>
+            <p>Reading referral evidence…</p>
           </div>
         )}
 
@@ -250,7 +267,7 @@ export function WarmReferralPanel() {
 
         {!isLoading && !isRefreshing && !isError && suggestions.length === 0 && (
           <div className="wr-empty">
-            <p>No suggestions right now — check back tomorrow, or hit Refresh to generate new paths.</p>
+            <p>No saved candidates are available. Select Refresh to compare your current needs and connections.</p>
           </div>
         )}
 

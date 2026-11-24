@@ -5,6 +5,8 @@ export default async ({ ok, as, svc, A, B, C }) => {
   await svc(`insert into auth.users (id) values ('${TARGET}') on conflict do nothing`)
   await svc(`insert into public.profiles (id, name) values ('${TARGET}', 'Taylor Target') on conflict do nothing`)
 
+  await svc(`update auth.users set email_confirmed_at=now() where id in ('${A}','${CONNECTOR}','${TARGET}')`)
+  await svc(`update public.profiles set onboarded=true where id in ('${A}','${CONNECTOR}','${TARGET}')`)
   await svc(`insert into public.early_access_members(user_id,email,status) values ('${A}','a@ref.test','approved'),('${CONNECTOR}','b@ref.test','approved'),('${TARGET}','t@ref.test','approved') on conflict(user_id) do update set status='approved'`)
   await svc(`insert into public.relationships(user_id,member_id,kind) values ('${A}','${CONNECTOR}','connection') on conflict do nothing`)
   const suggestion = (await svc(`insert into public.referral_suggestions

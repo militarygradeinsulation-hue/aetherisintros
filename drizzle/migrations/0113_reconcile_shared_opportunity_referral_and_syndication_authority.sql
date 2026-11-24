@@ -17,14 +17,16 @@ ALTER TABLE public.referral_requests ENABLE ROW LEVEL SECURITY;
 REVOKE ALL ON public.referral_suggestions, public.referral_requests FROM PUBLIC, anon, authenticated;
 GRANT SELECT ON public.referral_suggestions, public.referral_requests TO authenticated;
 GRANT ALL ON public.referral_suggestions, public.referral_requests TO service_role;
+DROP POLICY IF EXISTS ref_suggestions_own_read ON public.referral_suggestions;
 DROP POLICY IF EXISTS ref_suggestions_own ON public.referral_suggestions;
 DROP POLICY IF EXISTS "members read own referral suggestions" ON public.referral_suggestions;
 CREATE POLICY ref_suggestions_own_read ON public.referral_suggestions FOR SELECT TO authenticated
-  USING (for_member_id=auth.uid() AND (for_user_id IS NULL OR for_user_id=auth.uid()));
+  USING (public.is_live_member() AND for_member_id=auth.uid() AND (for_user_id IS NULL OR for_user_id=auth.uid()));
+DROP POLICY IF EXISTS ref_requests_parties_read ON public.referral_requests;
 DROP POLICY IF EXISTS ref_requests_parties ON public.referral_requests;
 DROP POLICY IF EXISTS "referral request parties read" ON public.referral_requests;
 CREATE POLICY ref_requests_parties_read ON public.referral_requests FOR SELECT TO authenticated
-  USING (auth.uid() IN (requester_id, target_member_id, connector_id) AND
+  USING (public.is_live_member() AND auth.uid() IN (requester_id, target_member_id, connector_id) AND
     (target_id IS NULL OR target_id=target_member_id));
 
 -- Private service-only, invoker-rights RPCs. The authenticated server handler
@@ -117,6 +119,9 @@ GRANT UPDATE(title,room_type,description,opportunity_size,deadline,status,decisi
 GRANT UPDATE(vote,vote_note,voted_at) ON public.syndication_room_members TO authenticated;
 GRANT SELECT, INSERT, DELETE ON public.syndication_messages TO authenticated;
 GRANT ALL ON public.syndication_rooms, public.syndication_room_members, public.syndication_messages TO service_role;
+REVOKE ALL ON public.syndication_interests FROM PUBLIC, anon, authenticated;
+GRANT SELECT, INSERT, UPDATE, DELETE ON public.syndication_interests TO authenticated;
+GRANT ALL ON public.syndication_interests TO service_role;
 
 DROP POLICY IF EXISTS "room participants read syndication rooms" ON public.syndication_rooms;
 DROP POLICY IF EXISTS "creator edits syndication room" ON public.syndication_rooms;

@@ -171,14 +171,20 @@ export const getRoomDetails = createServerFn({ method: 'GET' })
     const [{ data: room, error: roomErr }, { data: rawMembers, error: membersErr }, { data: rawMessages, error: messagesErr }] =
       await Promise.all([
         db.from('syndication_rooms').select('*').eq('id', data.roomId).single(),
-        db.from('syndication_room_members').select('*, profiles!syndication_room_members_user_id_fkey(name, initials, avatar_url)').eq('room_id', data.roomId).order('joined_at'),
-        db.from('syndication_messages').select('*, profiles(name, initials, avatar_url)').eq('room_id', data.roomId).order('created_at'),
+        db.from('syndication_room_members').select('*').eq('room_id', data.roomId).order('joined_at'),
+        db.from('syndication_messages').select('*').eq('room_id', data.roomId).order('created_at'),
       ])
 
     if (roomErr) throw new Error(roomErr.message)
     if (membersErr) throw new Error(membersErr.message)
     if (messagesErr) throw new Error(messagesErr.message)
 
+    const profileIds = [...new Set<string>([...(rawMembers ?? []), ...(rawMessages ?? [])].map((row:{user_id:string})=>row.user_id).filter(Boolean))]
+    const profiles = new Map<string,{name?:string;initials?:string;avatar_url?:string}>()
+    for(let offset=0;offset<profileIds.length;offset+=100) {
+      const lookup = await db.rpc('visible_member_profiles',{p_member_ids:profileIds.slice(offset,offset+100),p_limit:100,p_offset:0})
+      if (!lookup.error) for (const item of lookup.data ?? []) if (item.profile?.id) profiles.set(item.profile.id,item.profile)
+    }
     const members: SyndicationMember[] = (rawMembers ?? []).map((m: any) => ({ // eslint-disable-line @typescript-eslint/no-explicit-any
       id: m.id,
       room_id: m.room_id,
@@ -187,9 +193,9 @@ export const getRoomDetails = createServerFn({ method: 'GET' })
       vote_note: m.vote_note,
       voted_at: m.voted_at,
       joined_at: m.joined_at,
-      name: m.profiles?.name ?? null,
-      initials: m.profiles?.initials ?? null,
-      avatar_url: m.profiles?.avatar_url ?? null,
+      name: profiles.get(m.user_id)?.name ?? null,
+      initials: profiles.get(m.user_id)?.initials ?? null,
+      avatar_url: profiles.get(m.user_id)?.avatar_url ?? null,
     }))
 
     const messages: SyndicationMessage[] = (rawMessages ?? []).map((m: any) => ({ // eslint-disable-line @typescript-eslint/no-explicit-any
@@ -198,9 +204,9 @@ export const getRoomDetails = createServerFn({ method: 'GET' })
       user_id: m.user_id,
       body: m.body,
       created_at: m.created_at,
-      name: m.profiles?.name ?? null,
-      initials: m.profiles?.initials ?? null,
-      avatar_url: m.profiles?.avatar_url ?? null,
+      name: profiles.get(m.user_id)?.name ?? null,
+      initials: profiles.get(m.user_id)?.initials ?? null,
+      avatar_url: profiles.get(m.user_id)?.avatar_url ?? null,
     }))
 
     return { room: room as SyndicationRoom, members, messages }
