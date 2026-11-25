@@ -4,6 +4,7 @@ import type { ToolDef } from './aiGateway.server'
 import { findNoteRecords } from './memory-notes.server'
 import { decodeNote, NOTE_KIND } from '@/features/memory-notes/model'
 import { z } from 'zod'
+import { readExecutiveBrief } from './executive-brief.server'
 
 /** Read-only tools use the authenticated request client and an explicit owner predicate. */
 export function butlerTools(db: SupabaseClient<Database>, userId: string): ToolDef[] {
@@ -62,6 +63,14 @@ export function butlerTools(db: SupabaseClient<Database>, userId: string): ToolD
         const result = await findNoteRecords(db, userId, query, offset, 10)
         return { notes: result.notes.map(note => ({ ...note, content: note.content.slice(0, 800), contentTruncated: note.content.length > 800 })), nextOffset: result.hasMore ? offset + 10 : null }
       } catch { return { error: 'Saved notes could not be read. Do not infer that there are no notes.' } }
+    },
+  }, {
+    name: 'read_executive_brief',
+    description: 'Read the signed-in member’s private action brief: due tasks, incomplete open CRM opportunities, upcoming attended meetings, incoming introductions and stale recorded CRM activity. Bounded, read-only evidence; missing sources are not empty. Never treat forecasts as actual revenue or send outreach.',
+    parameters: { type: 'object', properties: {}, additionalProperties: false },
+    execute: async () => {
+      try { return await readExecutiveBrief(db, userId) }
+      catch { return { error: 'Executive brief could not be read; do not infer that no actions exist.' } }
     },
   }]
 }

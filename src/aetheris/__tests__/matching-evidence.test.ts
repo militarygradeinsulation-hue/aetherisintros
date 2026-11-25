@@ -36,6 +36,13 @@ describe('evidence-grounded relationship matching', () => {
     const match = scoreMatch(me, target, { connections: [target.id], members: [target] })
     expect(match.components.find(c => c.label === 'Trust path')?.score).toBe(100)
   })
+  it('does not inflate relevance based on generic sales vocabulary', () => {
+    const buyer = { ...me, lookingFor: 'Looking for business services and help' };
+    const provider = { ...target, offers: ['Business services and help'] };
+    expect(scoreMatch(buyer, provider, {connections: [], members: [provider]}).components.find(c => c.label === 'They can help you')?.score).toBe(0);
+    const relevant = { ...provider, offers: ['Precision machining'] };
+    expect(scoreMatch({...buyer, lookingFor:'Precision machining'}, relevant, {connections: [], members:[relevant]}).components.find(c => c.label === 'They can help you')?.score).toBeGreaterThan(0);
+  });
   it('ranks tied candidates deterministically', () => {
     const x = { ...target, id: 'b' }
     const y = { ...target, id: 'a' }

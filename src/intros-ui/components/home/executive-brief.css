@@ -1,0 +1,12 @@
+.exec-brief{margin-top:14px;padding:12px;border:1px solid var(--le-rule,currentColor);border-radius:10px;min-width:0}
+.exec-brief header,.exec-brief li{display:flex;align-items:flex-start;justify-content:space-between;gap:12px}
+.exec-brief header>div,.exec-brief li>div{min-width:0;flex:1}
+.exec-brief h3,.exec-brief p{margin:4px 0;overflow-wrap:anywhere}
+.exec-brief p,.exec-brief small{font-size:12px;line-height:1.45}
+.exec-brief .exec-brief-note{color:var(--le-muted,currentColor)}
+.exec-brief button{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--le-rule,currentColor)!important;border-radius:6px;padding:8px;color:inherit;white-space:nowrap;min-height:36px}
+.exec-brief button:disabled{opacity:.6;cursor:wait}
+.exec-brief ul{list-style:none;padding:0;margin:8px 0}
+.exec-brief li{padding:9px 0;border-top:1px solid var(--le-rule,currentColor)}
+.exec-brief li strong,.exec-brief li small{display:block;overflow-wrap:anywhere}
+@media(max-width:520px){.exec-brief header{flex-wrap:wrap}.exec-brief li{gap:6px}.exec-brief button{white-space:normal}}

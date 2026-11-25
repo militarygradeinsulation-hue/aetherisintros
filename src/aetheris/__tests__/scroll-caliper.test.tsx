@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import { renderToStaticMarkup } from 'react-dom/server'
 import { SystemScrollCaliper } from '../SystemScrollCaliper'
-import { advanceSpring, clamp, instrumentPosition, scrollPercent, springSettled } from '../scroll-caliper-core'
+import { advanceSpring, clamp, instrumentPosition, scrollPercent, springSettled, caliperGeometryDue, CALIPER_GEOMETRY_INTERVAL, CALIPER_SECTION_LIMIT } from '../scroll-caliper-core'
 
 describe('kinetic scroll caliper', () => {
   it('does not alter scrolling and follows bounded section geometry', () => {
@@ -12,6 +12,16 @@ describe('kinetic scroll caliper', () => {
     expect(instrumentPosition(-100, 100, 300, 600)).toBe(0)
     expect(instrumentPosition(999, 100, 300, 600)).toBe(600)
     expect(clamp(NaN, 0, 100)).toBe(0)
+  })
+
+  it('bounds geometry work independently of display refresh rate', () => {
+    expect(CALIPER_SECTION_LIMIT).toBeLessThanOrEqual(120)
+    let measured = 0, last = -Infinity
+    for (let now = 0; now < 1000; now += 1000 / 120) {
+      if (caliperGeometryDue(true, now, last)) { measured++; last = now }
+    }
+    expect(measured).toBeLessThanOrEqual(Math.ceil(1000 / CALIPER_GEOMETRY_INTERVAL))
+    expect(caliperGeometryDue(false, 10000, 0)).toBe(false)
   })
 
   it('damps toward the measured edge without infinite or invalid values', () => {

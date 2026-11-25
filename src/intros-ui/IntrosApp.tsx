@@ -8,7 +8,7 @@ import './experience/bridge-social.css';
 import './experience/bridge-social-host.css';
 import './experience/social-premium.css';
 import { NewsTicker } from './components/NewsTicker';
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useLayoutEffect, useRef, useMemo } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { isIntroTargetId, submitIntroRequest } from '@/aetheris/lib/intro-request';
 import { useNetwork } from '@/aetheris/store';
@@ -128,19 +128,28 @@ export default function App({ mode = 'demo', executiveAction, initialPage, initi
   useEffect(() => {
     if (mode !== 'live') return;
     let off = false;
+    let loading = false;
     const loadMe = async () => {
-      const { data: u } = await supabase.auth.getUser();
-      if (!u.user || off) return;
-      const profile = await loadMyProfile(u.user.id);
-      if (!off) {
-        const name = profile?.name || u.user.email?.split('@')[0] || '';
-        const avatarUrl = profile?.avatar_url || '';
-        setMe({ name, ...(avatarUrl ? { avatarUrl } : {}) });
-      }
+      if (off || loading || document.hidden) return;
+      loading = true;
+      try {
+        const { data: u } = await supabase.auth.getUser();
+        if (!u.user || off) return;
+        const profile = await loadMyProfile(u.user.id);
+        if (!off) {
+          const name = profile?.name || u.user.email?.split('@')[0] || '';
+          const avatarUrl = profile?.avatar_url || '';
+          setMe(previous => previous?.name === name && (previous.avatarUrl || '') === avatarUrl
+            ? previous : { name, ...(avatarUrl ? { avatarUrl } : {}) });
+        }
+      } catch { /* Keep the last confirmed profile; the next visible refresh can retry. */ }
+      finally { loading = false; }
     };
     void loadMe();
     const t = setInterval(loadMe, 30000);
-    return () => { off = true; clearInterval(t); };
+    const onVisible = () => { if (!document.hidden) void loadMe(); };
+    document.addEventListener('visibilitychange', onVisible);
+    return () => { off = true; clearInterval(t); document.removeEventListener('visibilitychange', onVisible); };
   }, [mode]);
 
   const [unreadUnavailable, setUnreadUnavailable] = useState(false);
@@ -158,9 +167,9 @@ export default function App({ mode = 'demo', executiveAction, initialPage, initi
 
   // Use one canonical member-graph state for connection buttons throughout the
   // live workspace. Demo mode alone owns the local temporary connection set.
-  const activeConnectedMemberIds = mode === 'live'
-    ? new Set(network.connections)
-    : connectedMemberIds;
+  const liveConnectedIds = useMemo(() => new Set(network.connections), [network.connections]);
+  const liveSavedIds = useMemo(() => new Set(network.saved), [network.saved]);
+  const activeConnectedMemberIds = mode === 'live' ? liveConnectedIds : connectedMemberIds;
 
   // Count today's visit once per device for the admin growth report.
   useEffect(() => { if (mode === 'live') void recordVisit(); }, [mode]);
@@ -183,11 +192,18 @@ export default function App({ mode = 'demo', executiveAction, initialPage, initi
     } else {
       setActivePage(page);
     }
-    requestAnimationFrame(() => {
-      if (openingDashboard) releaseDashboardInputFocus();
-      document.getElementById('aetheris-workspace-content')?.scrollTo({ top: 0 });
-    });
   };
+  const routeKey = activePage === 'workspace' ? activePage + ':' + classicPage + ':' + (classicPage === 'crm' ? crmSection : '')
+    : activePage === 'profile' ? activePage + ':' + selectedProfileId : activePage;
+  const previousRoute = useRef(routeKey);
+  useLayoutEffect(() => {
+    if (previousRoute.current === routeKey) return;
+    previousRoute.current = routeKey;
+    if (activePage === 'home') releaseDashboardInputFocus();
+    const content = document.getElementById('aetheris-workspace-content');
+    if (content) content.scrollTop = 0;
+    window.dispatchEvent(new Event('aetheris:workspace-navigated'));
+  }, [routeKey, activePage]);
 
   // Interactions
   const handleToggleConnect = (memberId: string) => {
@@ -407,7 +423,7 @@ export default function App({ mode = 'demo', executiveAction, initialPage, initi
             live={mode === 'live'}
             unreadCount={mode === 'live' ? (unread.loaded && !unreadUnavailable ? unread.total : null) : 0}
             socialFeed={mode === 'live' ? <div className="ix-classic"><AetherisAppSurface  feedOnly assistant={false} /></div> : undefined}
-            liveOverview={mode === 'live' ? <LiveExecutiveOverview onNavigate={handleNavigate} onWorkspace={page => { setClassicPage(page); handleNavigate('workspace'); }} /> : undefined}
+            liveOverview={mode === 'live' ? <LiveExecutiveOverview onNavigate={handleNavigate} onOpenPipeline={() => { setCrmSection('pipeline'); setClassicPage('crm'); handleNavigate('workspace'); }} onWorkspace={page => { if (page === 'crm') setCrmSection('crm'); setClassicPage(page); handleNavigate('workspace'); }} /> : undefined}
             actionQueue={mode === 'live' ? <div className="rc-stack">
               <ActivationChecklist onOpen={(target) => {
                 if (target === 'intros') { handleNavigate('intros'); return; }
@@ -433,7 +449,7 @@ export default function App({ mode = 'demo', executiveAction, initialPage, initi
               members={members}
               isLive={mode === 'live'}
               connectedMemberIds={activeConnectedMemberIds}
-              savedMemberIds={mode === 'live' ? new Set(network.saved) : savedMemberIds}
+              savedMemberIds={mode === 'live' ? liveSavedIds : savedMemberIds}
               onToggleConnect={handleToggleConnect}
               onToggleSave={handleToggleSaveMember}
               onRequestIntro={member => setRequestIntroTarget(member)}

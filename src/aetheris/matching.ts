@@ -28,7 +28,8 @@ export interface MatchResult {
 }
 
 const norm = (value: string) => value.toLowerCase().replace(/[^a-z0-9 ]/g, ' ')
-const words = (value: string) => new Set(norm(value).split(/\s+/).filter(w => w.length > 3))
+const genericWords = new Set(['about','across','also','business','company','doing','every','from','help','have','into','just','looking','make','more','need','needs','offer','offers','only','people','provide','services','some','that','their','them','there','these','they','this','through','want','what','when','where','which','will','with','work','working','would','your'])
+const words = (value: string) => new Set(norm(value).split(/\s+/).filter(w => w.length > 3 && !genericWords.has(w)))
 const overlapCount = (a: Set<string>, b: Set<string>) => [...a].filter(x => b.has(x)).length
 
 function overlapLabels(mine: string[], theirs: string[]): string[] {

@@ -1,4 +1,4 @@
-import { useEffect, useState, type ReactNode, type CSSProperties } from 'react';
+import { useState, type ReactNode, type CSSProperties } from 'react';
 import { ArrowRight, BookOpen, CheckSquare, GripVertical, Lock, Mail, Radar, RotateCcw, Target, Unlock, Users } from 'lucide-react';
 import { DraggableWidgetGrid, type WidgetItem, type WidgetSize } from '@/components/ui/widget-board';
 import { useOps } from '@/aetheris/crm/store';
@@ -16,15 +16,16 @@ export function LedgerWidgetBoard({ members, unreadCount, live, onNavigate, onOp
   onOpenPipeline?: (() => void) | undefined;
 }) {
   const ops = useOps();
-  const [layout, setLayout] = useState<DashboardBoardLayout>(() => normalizeDashboardBoard(null));
-  useEffect(() => {
+  // This optional board mounts only after the user opens it. Read the saved
+  // device layout at mount, before rendering any draggable widgets.
+  const [layout, setLayout] = useState<DashboardBoardLayout>(() => {
+    if (typeof window === 'undefined') return normalizeDashboardBoard(null);
     try {
-      const saved = localStorage.getItem(DASHBOARD_BOARD_KEY);
-      // Reuse recognized IDs from the former board without modifying its preferences.
-      const former = localStorage.getItem('intros.home.board.v2');
-      setLayout(normalizeDashboardBoard(JSON.parse(saved || former || 'null')));
-    } catch { /* Defaults remain usable when storage is unavailable. */ }
-  }, []);
+      const saved = window.localStorage.getItem(DASHBOARD_BOARD_KEY);
+      const former = window.localStorage.getItem('intros.home.board.v2');
+      return normalizeDashboardBoard(JSON.parse(saved || former || 'null'));
+    } catch { return normalizeDashboardBoard(null); }
+  });
   const save = (next: DashboardBoardLayout) => {
     const normalized = normalizeDashboardBoard(next);
     setLayout(normalized);

@@ -1,5 +1,7 @@
 import { ArrowRight, BookOpenText, BriefcaseBusiness, MessageCircle, Network, Send, Users } from 'lucide-react'
 import { useNetwork } from '@/aetheris/store'
+import { ExecutiveBriefPanel } from './ExecutiveBriefPanel'
+import { PublishedNeedMatchesPanel } from './PublishedNeedMatchesPanel'
 import { memberOverviewSnapshot } from '@/aetheris/live-overview'
 import type { ActivePage } from '../layout/TopNavigation'
 import './live-executive-overview.css'
@@ -7,13 +9,14 @@ import './live-executive-overview.css'
 interface Props {
   onNavigate: (page: ActivePage) => void
   onWorkspace: (destination: string) => void
+  onOpenPipeline: () => void
 }
 
 /** Shown only behind the verified member access gate in the live workspace.
  * The existing social feed and member graph are the only sources of truth.
  * This component never reads demo identities or writes synthetic metrics.
  */
-export function LiveExecutiveOverview({ onNavigate, onWorkspace }: Props) {
+export function LiveExecutiveOverview({ onNavigate, onWorkspace, onOpenPipeline }: Props) {
   const graph = useNetwork()
   const summary = memberOverviewSnapshot(graph)
   const posts = graph.posts.filter(post => post.visibility !== 'private')
@@ -40,6 +43,14 @@ export function LiveExecutiveOverview({ onNavigate, onWorkspace }: Props) {
       </div>
       <button type="button" className="live-exec-view-feed" onClick={openFeed}>Open social feed <ArrowRight size={15}/></button>
     </div>
+
+    <ExecutiveBriefPanel onOpen={destination => {
+      if (destination === 'intros' || destination === 'meetings') onNavigate(destination)
+      else if (destination === 'pipeline') onOpenPipeline()
+      else onWorkspace('crm')
+    }}/>
+
+    <PublishedNeedMatchesPanel onOpen={() => onWorkspace('needs')}/>
 
     {summary.state === 'loading' ? <div className="live-exec-state" role="status">Loading your private network overview…</div>
       : summary.state === 'unavailable' ? <div className="live-exec-state live-exec-error" role="alert">
