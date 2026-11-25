@@ -158,10 +158,27 @@ try {
       const tipAfter = await page.locator('#ael-butler-idea-message').innerText()
       assert(tipBefore !== tipAfter && !tipAfter.includes('Click the robot for a quick tip.'),
         'clicking Butler shows a useful introduction tip')
+      // The approved robot interaction toggles the tile: click to show, click
+      // to dismiss, click again for a fresh idea. Test both dismissal paths.
+      const tile = page.locator('#ael-butler-idea-message')
       await butlerTrigger.click()
-      const nextTip = await page.locator('#ael-butler-idea-message').innerText()
-      assert(nextTip !== tipAfter && nextTip !== tipBefore,
-        'repeated clicks advance the shuffled tips without navigating away')
+      await tile.waitFor({ state: 'hidden', timeout: 5000 })
+      assert(await butlerTrigger.getAttribute('aria-expanded') === 'false',
+        'second robot click dismisses the tip with a collapsed accessible state')
+      assert(await butlerTrigger.getAttribute('aria-describedby') === null,
+        'dismissed tile is not an invalid accessible description')
+      await butlerTrigger.click()
+      await tile.waitFor({ state: 'visible', timeout: 5000 })
+      const nextTip = await tile.innerText()
+      assert(nextTip !== tipAfter && nextTip !== tipBefore && await butlerTrigger.getAttribute('aria-expanded') === 'true',
+        'reopening Butler advances the shuffled tips without navigating away')
+      await page.getByRole('button', {name: "Dismiss Butler's idea"}).click()
+      await tile.waitFor({ state: 'hidden', timeout: 5000 })
+      assert(await butlerTrigger.getAttribute('aria-expanded') === 'false', 'explicit close also dismisses the idea')
+      await butlerTrigger.click()
+      await tile.waitFor({ state: 'visible', timeout: 5000 })
+      const thirdTip = await tile.innerText()
+      assert(thirdTip !== nextTip && thirdTip !== tipAfter, 'next reveal keeps the shuffled ideas distinct')
       assert(m.hero && m.hero.height <= Math.max(viewport.height * 1.25, 840),
         'image-led hero remains within a bounded scroll height')
       assert(['cinematic-experience'].every(id => m.links[id]),
