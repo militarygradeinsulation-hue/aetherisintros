@@ -60,6 +60,20 @@ describe('offline forward-only reconciliation planning', () => {
     }
   })
 
+  it('recognizes exact legacy manual markers without certifying execution or approving replay', () => {
+    const tag = '0106_enforce_member_access_rules'
+    const marker = {...row(tag), hash: 'manual:' + tag}
+    const plan = reconciliationPlan({repo,ledger:[marker],pending})
+    expect(plan.migrations.find((m: any) => m.tag === tag)?.status).toBe('MANUAL_UNVERIFIED')
+    expect(plan.blockers.some((b: string) => b.includes('MANUAL_UNVERIFIED'))).toBe(true)
+    expect(plan.unmatchedLedgerRows).toHaveLength(1)
+    expect(plan.productionActivationAllowed).toBe(false)
+    expect(() => reconciliationPlan({repo,ledger:[{...marker,created_at:1}],pending})).toThrow()
+    expect(() => reconciliationPlan({repo,ledger:[{...marker,hash:'manual:unknown'}],pending})).toThrow()
+    const conflict = reconciliationPlan({repo,ledger:[marker,row(tag,2,1)],pending})
+    expect(conflict.migrations.find((m: any) => m.tag === tag)?.status).toBe('AMBIGUOUS')
+  })
+
   it('retains unknown ledger history as a blocker rather than silently discarding it', () => {
     const plan = reconciliationPlan({ repo, ledger: [{ id: 1, hash: 'c'.repeat(64), created_at: 1 }], pending })
     expect(plan.unmatchedLedgerRows).toHaveLength(1)
